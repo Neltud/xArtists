@@ -47,7 +47,7 @@ const Home: React.FC = () => (
   <main className="xa-main">
     <section className="xa-hero">
       <h1>
-        Welcome to <span className="xa-highlight">xArtists</span> Dapp
+        Welcome to <span className="xa-highlight">xArtists</span> Platform
       </h1>
       <p>
         A decentralized platform for staking, NFT rewards, minting, and more.
@@ -72,10 +72,10 @@ const App: React.FC = () => {
   return (
     <Router>
       <div className="xa-root">
-        <header className="xa-header">
-          <div className="xa-logo">
-            <img src="/xartists-logo.png" alt="xArtists Logo" className="xa-logo-img" />
-            <span className="xa-logo-text">xArtists</span>
+        <header className="xa-header pro-header">
+          <div className="pro-title">
+            <span className="pro-title-main">xArtists</span>
+            <span className="pro-title-sub">Decentralized Art Platform</span>
           </div>
           <Nav />
         </header>
@@ -94,7 +94,7 @@ const App: React.FC = () => {
           <Route path="/escrow" element={<EscrowDemo />} />
           <Route path="/tro-dashboard" element={<TRODashboard />} />
         </Routes>
-        <footer className="xa-footer">
+        <footer className="xa-footer pro-footer">
           <span>
             &copy; {new Date().getFullYear()} xArtists. All rights reserved.
           </span>
