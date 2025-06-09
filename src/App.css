@@ -1,0 +1,235 @@
+.xa-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: #222;
+  font-family: system-ui, sans-serif;
+  background: url('/bg-art-gallery.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+.xa-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 40px 16px 40px;
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 2px 8px 0 rgba(60, 60, 100, 0.04);
+}
+
+.xa-logo {
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.xa-logo-img {
+  height: 48px;
+  width: 48px;
+  margin-right: 12px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px 0 rgba(60, 60, 100, 0.10);
+}
+
+.xa-logo-text {
+  color: #5a3be7;
+}
+
+.xa-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.xa-nav a {
+  margin-left: 28px;
+  text-decoration: none;
+  color: #222;
+  font-weight: 500;
+  font-size: 1.08rem;
+  transition: color 0.2s, border-bottom 0.2s, background 0.2s, border-radius 0.2s;
+  border-bottom: 2px solid transparent;
+  padding: 6px 10px 2px 10px;
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  outline: none;
+}
+.xa-nav a.active {
+  color: #5a3be7;
+  border-bottom: 2.5px solid #5a3be7;
+  background: #f3f1fd;
+  font-weight: 700;
+}
+.xa-nav a:focus-visible {
+  outline: 2px solid #5a3be7;
+  outline-offset: 2px;
+  background: #e3e6f3;
+}
+.xa-nav a:hover {
+  color: #5a3be7;
+  background: #f3f1fd;
+  border-radius: 6px 6px 0 0;
+}
+
+.xa-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px 0 16px;
+  background: rgba(255,255,255,0.80);
+  border-radius: 18px;
+  margin: 24px;
+}
+
+.xa-hero {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.xa-hero h1 {
+  font-size: 2.6rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.xa-highlight {
+  color: #5a3be7;
+  background: #e3e6f3;
+  border-radius: 6px;
+  padding: 0 8px;
+}
+
+.xa-hero p {
+  font-size: 1.2rem;
+  color: #555;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+.xa-modules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.xa-module-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px 0 rgba(60, 60, 100, 0.07);
+  padding: 28px 28px 22px 28px;
+  width: 320px;
+  min-height: 180px;
+  text-decoration: none;
+  color: #222;
+  transition: box-shadow 0.2s, transform 0.2s, border 0.2s;
+  border: 2px solid transparent;
+  outline: none;
+}
+.xa-module-card:focus-visible {
+  outline: 2px solid #5a3be7;
+  outline-offset: 2px;
+  background: #f3f1fd;
+}
+.xa-module-card:hover {
+  box-shadow: 0 6px 32px 0 rgba(90, 59, 231, 0.13);
+  border: 2px solid #5a3be7;
+  transform: translateY(-4px) scale(1.025);
+  background: #f8f7fc;
+}
+
+.xa-module-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.xa-module-content h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  color: #5a3be7;
+}
+
+.xa-module-content p {
+  font-size: 1rem;
+  color: #444;
+  margin: 0;
+}
+
+.xa-footer {
+  text-align: center;
+  padding: 18px 0 10px 0;
+  color: #888;
+  font-size: 0.98rem;
+  background: rgba(247,247,250,0.85);
+  border-top: 1px solid #e3e6f3;
+}
+
+@media (max-width: 900px) {
+  .xa-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 18px 16px 10px 16px;
+  }
+  .xa-nav {
+    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+  }
+  .xa-main {
+    padding: 24px 4px 0 4px;
+    margin: 8px;
+  }
+  .xa-modules {
+    gap: 18px;
+  }
+  .xa-module-card {
+    width: 98vw;
+    max-width: 370px;
+  }
+}
+
+@media (max-width: 600px) {
+  .xa-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 2vw 6px 2vw;
+  }
+  .xa-logo-img {
+    height: 36px;
+    width: 36px;
+    margin-right: 8px;
+  }
+  .xa-logo {
+    font-size: 1.3rem;
+  }
+  .xa-main {
+    padding: 10px 2px 0 2px;
+    margin: 2px;
+    border-radius: 8px;
+  }
+  .xa-module-card {
+    padding: 16px 8px 12px 12px;
+    border-radius: 10px;
+    min-width: 0;
+    width: 98vw;
+    max-width: 99vw;
+  }
+  .xa-module-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+  .xa-footer {
+    font-size: 0.95rem;
+    padding: 10px 0 6px 0;
+  }
+}
