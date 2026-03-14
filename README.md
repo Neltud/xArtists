@@ -101,8 +101,7 @@ LIA (Liquidity Intelligence Agent) est un agent IA autonome de trading DeFi sur 
 
 ## 👨‍🎨 À propos
 
-**Nelson Tuduri** — Artiste peintre, fondateur de xArtists  
-Atelier Expositions Nelson Tuduri · 91bis avenue du Bac, Saint-Maur-des-Fossés  
+**Nelson Tuduri** — Artiste peintre, fondateur de xArtists    
 Twitter: [@tudurioriginal](https://twitter.com/tudurioriginal)
 
 ---
