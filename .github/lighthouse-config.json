@@ -1,0 +1,1 @@
+{\n  "settings": {\n    "performance": {\n      "extends": [\n        "lighthouse:default"\n      ],\n      "configPath": "./path/to/your/config.js"\n    }\n  },\n  "assertions": {\n    "categories": {\n      "performance": {\n        "assertionType": "metrics",\n        "failureMessage": "Performance thresholds are not met.",\n        "numericValue": 0.9\n      }\n    }\n  }\n}
