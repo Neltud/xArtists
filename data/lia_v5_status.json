@@ -1,1 +1,25 @@
-{"timestamp":"2026-03-14T00:00:00Z","version":"LIA v5","network":"mainnet","wallet":"erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6","portfolio":{"total_usd":1.87,"egld_balance":0.037,"usdc_balance":0.0,"hatom_health_factor":999.0},"prices":{"egld_usd":4.19,"wbtc_usd":0.0,"wtao_usd":0.0},"market":{"fear_greed_index":8,"guard_status":"WARNING"},"cycle":{"report_sent":false,"summary":"En attente du premier cycle LIA v5"}}
+{
+  "timestamp": "2026-03-14T00:00:00Z",
+  "version": "LIA v5",
+  "network": "mainnet",
+  "wallet": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "portfolio": {
+    "total_usd": 1.87,
+    "egld_balance": 0.0,
+    "usdc_balance": 0.0,
+    "hatom_health_factor": 999.0
+  },
+  "prices": {
+    "egld_usd": 4.19,
+    "wbtc_usd": 83000.0,
+    "wtao_usd": 380.0
+  },
+  "market": {
+    "fear_greed_index": 8,
+    "guard_status": "OK"
+  },
+  "cycle": {
+    "report_sent": false,
+    "summary": "Initialisation LIA v5"
+  }
+}
