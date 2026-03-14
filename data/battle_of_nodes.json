@@ -1,1 +1,48 @@
-{"timestamp":"2026-03-14T00:00:00Z","project":"xArtists — Tuduri Original","artist":"Nelson Tuduri","twitter":"@tudurioriginal","score":21,"rank_estimate":"📊 Participant","submission_success":false,"onchain_tx_hash":"","next_hint":"Déployer NFT Staking sur mainnet (+15pts) | Déployer TRO Governance sur mainnet (+15pts)","staking":{"nft_staking_active":false,"tro_staking_active":false,"nft_staked_count":0,"tro_staked_amount":0.0,"nft_pending_rewards_tro":0.0,"nft_rewards_claimable":false},"governance":{"active_proposals":0},"collections":{"total_mainnet":11,"nfts_in_wallet":0},"tro_token":{"identifier":"TRO-a3d7c5","balance_wallet":0.0,"value_usd":0.0},"portfolio_contribution_usd":0.0,"supernova_features":["finality_sub_1s","adaptive_sharding","ai_agent_integration","nft_defi_bridge","physical_art_tokenization"],"contracts":{"nft_staking":"erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl","tro_governance":"erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8","marketplace":"erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t","nft_minter":"erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn"}}
+{
+  "timestamp": "2026-03-14T00:00:00Z",
+  "project": "xArtists — Tuduri Original",
+  "artist": "@tudurioriginal",
+  "twitter": "@tudurioriginal",
+  "score": 21,
+  "rank_estimate": "Participant",
+  "submission_success": false,
+  "onchain_tx_hash": "",
+  "next_hint": "D\u00e9ployer NFT Staking sur mainnet (+15pts)",
+  "staking": {
+    "nft_staking_active": false,
+    "tro_staking_active": false,
+    "nft_staked_count": 0,
+    "tro_staked_amount": 0.0,
+    "nft_pending_rewards_tro": 0.0,
+    "nft_rewards_claimable": false
+  },
+  "governance": {"active_proposals": 0},
+  "collections": {"total_mainnet": 11, "nfts_in_wallet": 0, "by_collection": {}},
+  "tro_token": {"identifier": "TRO-a3d7c5", "balance_wallet": 0.0, "value_usd": 0.0},
+  "portfolio_contribution_usd": 0.0,
+  "contracts": {
+    "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
+    "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
+    "marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+    "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn"
+  },
+  "dao_active": false,
+  "current_proposal_id": 0,
+  "current_proposal_title": "Aucune proposal active",
+  "vote_results": {
+    "TRO/USDC": {"votes": 0.0, "description": "Paire stable", "risk": "FAIBLE", "dex": "xExchange"},
+    "TRO/WEGLD": {"votes": 0.0, "description": "Paire principale", "risk": "MOYEN", "dex": "xExchange"},
+    "TRO/WBTC": {"votes": 0.0, "description": "Exposition BTC", "risk": "\u00c9LEV\u00c9", "dex": "xExchange"},
+    "TRO/XOXNO": {"votes": 0.0, "description": "\u00c9cosyst\u00e8me NFT MVX", "risk": "\u00c9LEV\u00c9", "dex": "XOXNO"}
+  },
+  "winning_pair": "",
+  "recommended_pair": "TRO/WEGLD",
+  "recommended_dex": "xExchange",
+  "target_pool": "TRO/WEGLD",
+  "target_dex": "xExchange",
+  "liquidity_add_ready": false,
+  "reinvestment_amount_usd": 0.0,
+  "xexchange_pools": [],
+  "onedex_pools": [],
+  "jexchange_pools": []
+}
