@@ -1,1 +1,32 @@
-{"timestamp":"2026-03-14T00:00:00Z","project":"xArtists — Tuduri Original","artist":"Nelson Tuduri","twitter":"@tudurioriginal","network":"mainnet","health":"MONITORING","collections":{"total_mainnet":11,"nfts_in_wallet":0,"by_collection":{}},"tro_token":{"identifier":"TRO-a3d7c5","balance_wallet":0.0,"value_usd":0.0},"staking":{"nft_staking_contract":"erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl","nft_staking_active":false,"nft_staked_count":0,"nft_pending_rewards_tro":0.0,"nft_rewards_claimable":false,"tro_staking_contract":"erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8","tro_staking_active":false,"tro_staked_amount":0.0},"governance":{"active_proposals":0},"portfolio_contribution_usd":0.0,"battle_of_nodes":{"score":21,"rank_estimate":"📊 Participant","supernova_features":["finality_sub_1s","adaptive_sharding","ai_integration"]}}
+{
+  "timestamp": "2026-03-14T00:00:00Z",
+  "project": "xArtists — Tuduri Original",
+  "artist": "@tudurioriginal",
+  "twitter": "@tudurioriginal",
+  "network": "mainnet",
+  "health": "MONITORING",
+  "collections": {
+    "total_mainnet": 11,
+    "nfts_in_wallet": 0,
+    "by_collection": {}
+  },
+  "tro_token": {
+    "identifier": "TRO-a3d7c5",
+    "balance_wallet": 0.0,
+    "value_usd": 0.0
+  },
+  "staking": {
+    "nft_staking_contract": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
+    "nft_staking_active": false,
+    "nft_staked_count": 0,
+    "tro_staking_contract": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
+    "tro_staking_active": false,
+    "tro_staked_amount": 0.0
+  },
+  "governance": {"active_proposals": 0},
+  "portfolio_contribution_usd": 0.0,
+  "battle_of_nodes": {
+    "score": 21,
+    "rank_estimate": "Participant"
+  }
+}
