@@ -3,281 +3,364 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>xArtists — Tuduri Original | LIA v5 Dashboard</title>
-<meta name="description" content="xArtists NFT ecosystem on MultiversX — AI-powered DeFi trading agent LIA v5 by Nelson Tuduri">
+<title>xArtists — LIA v5 Dashboard</title>
 <style>
-  :root {
-    --bg: #0a0e1a;
-    --bg2: #0f1628;
-    --bg3: #141d35;
-    --card: #1a2340;
-    --card2: #1f2a4a;
-    --border: #2a3a6a;
-    --accent: #23f7dd;
-    --accent2: #4d9fff;
-    --accent3: #a855f7;
-    --gold: #f59e0b;
-    --red: #ef4444;
-    --green: #22c55e;
-    --text: #e2e8f0;
-    --text2: #94a3b8;
-    --text3: #64748b;
-    --radius: 12px;
-    --shadow: 0 4px 24px rgba(0,0,0,0.4);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; min-height:100vh; }
-  nav { background:rgba(10,14,26,0.95); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:0 24px; position:sticky; top:0; z-index:100; display:flex; align-items:center; justify-content:space-between; height:64px; }
-  .nav-logo { display:flex; align-items:center; gap:12px; font-weight:700; font-size:18px; }
-  .nav-logo span { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-  .nav-links { display:flex; gap:24px; }
-  .nav-links a { color:var(--text2); text-decoration:none; font-size:14px; transition:color .2s; }
-  .nav-links a:hover { color:var(--accent); }
-  .nav-badge { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#000; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700; }
-  .hero { padding:60px 24px 40px; max-width:1200px; margin:0 auto; }
-  .hero-title { font-size:clamp(32px,5vw,56px); font-weight:800; line-height:1.1; margin-bottom:16px; }
-  .hero-title .gradient { background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-  .hero-sub { color:var(--text2); font-size:18px; max-width:600px; margin-bottom:40px; line-height:1.6; }
-  .hero-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; margin-bottom:40px; }
-  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; text-align:center; transition:transform .2s,border-color .2s; }
-  .stat-card:hover { transform:translateY(-2px); border-color:var(--accent); }
-  .stat-value { font-size:28px; font-weight:800; color:var(--accent); }
-  .stat-label { font-size:12px; color:var(--text3); margin-top:4px; text-transform:uppercase; letter-spacing:.5px; }
-  .stat-sub { font-size:11px; color:var(--text3); margin-top:2px; }
-  .container { max-width:1200px; margin:0 auto; padding:0 24px 60px; }
-  .section-title { font-size:22px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
-  .section-title .dot { width:8px; height:8px; border-radius:50%; background:var(--accent); }
-  .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:20px; margin-bottom:40px; }
-  .grid-3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-bottom:40px; }
-  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); }
-  .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
-  .card-title { font-size:16px; font-weight:600; color:var(--text2); }
-  .badge { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; }
-  .badge-green { background:rgba(34,197,94,.15); color:var(--green); border:1px solid rgba(34,197,94,.3); }
-  .badge-yellow { background:rgba(245,158,11,.15); color:var(--gold); border:1px solid rgba(245,158,11,.3); }
-  .badge-red { background:rgba(239,68,68,.15); color:var(--red); border:1px solid rgba(239,68,68,.3); }
-  .badge-blue { background:rgba(77,159,255,.15); color:var(--accent2); border:1px solid rgba(77,159,255,.3); }
-  .badge-purple { background:rgba(168,85,247,.15); color:var(--accent3); border:1px solid rgba(168,85,247,.3); }
-  .metric-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(42,58,106,.5); }
-  .metric-row:last-child { border-bottom:none; }
-  .metric-key { font-size:13px; color:var(--text2); }
-  .metric-val { font-size:14px; font-weight:600; color:var(--text); }
-  .metric-val.green { color:var(--green); }
-  .metric-val.red { color:var(--red); }
-  .metric-val.gold { color:var(--gold); }
-  .metric-val.accent { color:var(--accent); }
-  .metric-val.blue { color:var(--accent2); }
-  .bon-card { background:linear-gradient(135deg,rgba(35,247,221,.05),rgba(77,159,255,.05)); border:1px solid rgba(35,247,221,.3); border-radius:var(--radius); padding:28px; margin-bottom:40px; }
-  .bon-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
-  .bon-title { font-size:20px; font-weight:700; }
-  .bon-score-ring { position:relative; width:120px; height:120px; flex-shrink:0; }
-  .bon-score-ring svg { transform:rotate(-90deg); }
-  .bon-score-text { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-  .bon-score-num { font-size:28px; font-weight:800; color:var(--accent); }
-  .bon-score-label { font-size:10px; color:var(--text3); }
-  .bon-criteria { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
-  .bon-criterion { display:flex; align-items:center; gap:10px; padding:12px; background:rgba(255,255,255,.03); border-radius:8px; border:1px solid var(--border); }
-  .bon-criterion .icon { font-size:18px; }
-  .bon-criterion .info { flex:1; }
-  .bon-criterion .info .name { font-size:12px; color:var(--text2); }
-  .bon-criterion .info .pts { font-size:14px; font-weight:700; color:var(--accent); }
-  .bon-criterion .status { font-size:16px; }
-  .collections-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin-bottom:40px; }
-  .collection-card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; text-align:center; transition:all .2s; cursor:pointer; }
-  .collection-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 8px 24px rgba(35,247,221,.1); }
-  .collection-icon { font-size:28px; margin-bottom:8px; }
-  .collection-name { font-size:12px; font-weight:600; color:var(--text); margin-bottom:4px; }
-  .collection-id { font-size:10px; color:var(--text3); font-family:monospace; }
-  .collection-floor { font-size:11px; color:var(--accent); margin-top:4px; }
-  .lia-card { background:linear-gradient(135deg,rgba(168,85,247,.05),rgba(77,159,255,.05)); border:1px solid rgba(168,85,247,.3); border-radius:var(--radius); padding:28px; margin-bottom:40px; }
-  .lia-header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
-  .lia-avatar { width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,var(--accent3),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
-  .lia-info h3 { font-size:20px; font-weight:700; }
-  .lia-info p { font-size:13px; color:var(--text2); }
-  .progress-bar { background:rgba(255,255,255,.08); border-radius:20px; height:8px; overflow:hidden; margin:8px 0; }
-  .progress-fill { height:100%; border-radius:20px; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width 1s ease; }
-  .strategies { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-top:16px; }
-  .strategy-pill { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:8px; padding:10px 12px; text-align:center; }
-  .strategy-pill .tp { font-size:16px; font-weight:700; color:var(--accent); }
-  .strategy-pill .sl { font-size:11px; color:var(--red); }
-  .strategy-pill .name { font-size:10px; color:var(--text3); margin-top:2px; }
-  .staking-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; margin-bottom:40px; }
-  .staking-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:24px; }
-  .staking-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
-  .staking-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; }
-  .staking-icon.nft { background:rgba(35,247,221,.1); }
-  .staking-icon.tro { background:rgba(168,85,247,.1); }
-  .staking-title { font-size:16px; font-weight:600; }
-  .staking-addr { font-size:10px; color:var(--text3); font-family:monospace; }
-  footer { border-top:1px solid var(--border); padding:32px 24px; text-align:center; color:var(--text3); font-size:13px; }
-  footer a { color:var(--accent); text-decoration:none; }
-  .footer-links { display:flex; justify-content:center; gap:24px; margin-bottom:12px; flex-wrap:wrap; }
-  .loading { display:inline-block; width:12px; height:12px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  .pulse { animation:pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
-  .live-dot { width:8px; height:8px; border-radius:50%; background:var(--green); display:inline-block; animation:pulse 2s infinite; margin-right:6px; }
-  .last-update { font-size:11px; color:var(--text3); }
-  .alert-banner { background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.3); border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:13px; color:var(--gold); display:none; }
-  .contracts-table { width:100%; border-collapse:collapse; }
-  .contracts-table th { text-align:left; font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:.5px; padding:8px 12px; border-bottom:1px solid var(--border); }
-  .contracts-table td { padding:10px 12px; font-size:13px; border-bottom:1px solid rgba(42,58,106,.3); }
-  .contracts-table tr:last-child td { border-bottom:none; }
-  .addr-short { font-family:monospace; font-size:11px; color:var(--text2); }
-  .addr-short a { color:var(--accent2); text-decoration:none; }
-  @media(max-width:768px) { .nav-links { display:none; } .hero-title { font-size:32px; } .bon-header { flex-direction:column; } .bon-score-ring { margin:0 auto; } }
+  :root{--bg:#0a0a0f;--card:#12121a;--border:#1e1e2e;--accent:#7c3aed;--accent2:#06b6d4;--gold:#f59e0b;--green:#10b981;--red:#ef4444;--text:#e2e8f0;--muted:#64748b}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh}
+  header{background:linear-gradient(135deg,#0f0f1a,#1a0a2e 50%,#0a1a2e);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+  header h1{font-size:1.3rem;font-weight:700;background:linear-gradient(90deg,#7c3aed,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  header .subtitle{font-size:.75rem;color:var(--muted);margin-top:2px}
+  .live-badge{background:#10b98120;border:1px solid #10b981;color:#10b981;padding:4px 10px;border-radius:20px;font-size:.7rem;display:flex;align-items:center;gap:6px}
+  .live-dot{width:6px;height:6px;background:#10b981;border-radius:50%;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  nav{background:var(--card);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;padding:0 16px}
+  nav button{background:none;border:none;color:var(--muted);padding:14px 18px;cursor:pointer;font-size:.85rem;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
+  nav button.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+  nav button:hover{color:var(--text)}
+  .container{max-width:1200px;margin:0 auto;padding:24px 16px}
+  .tab{display:none}.tab.active{display:block}
+  .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+  .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+  .grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+  .card h3{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+  .card .value{font-size:1.6rem;font-weight:700}
+  .card .sub{font-size:.8rem;color:var(--muted);margin-top:4px}
+  .section-title{font-size:1rem;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .badge{padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:600}
+  .badge-green{background:#10b98120;color:#10b981;border:1px solid #10b981}
+  .badge-red{background:#ef444420;color:#ef4444;border:1px solid #ef4444}
+  .badge-yellow{background:#f59e0b20;color:#f59e0b;border:1px solid #f59e0b}
+  .badge-blue{background:#06b6d420;color:#06b6d4;border:1px solid #06b6d4}
+  .badge-purple{background:#7c3aed20;color:#a78bfa;border:1px solid #7c3aed}
+  .progress-bar{background:#1e1e2e;border-radius:4px;height:6px;overflow:hidden;margin-top:8px}
+  .progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s}
+  .contract-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+  .contract-row:last-child{border-bottom:none}
+  .contract-addr a{color:var(--accent2);text-decoration:none;font-family:monospace;font-size:.75rem}
+  .score-ring{position:relative;width:120px;height:120px;margin:0 auto 16px}
+  .score-ring svg{transform:rotate(-90deg)}
+  .score-ring .score-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+  .score-ring .score-num{font-size:1.8rem;font-weight:700;color:var(--gold)}
+  .score-ring .score-label{font-size:.65rem;color:var(--muted)}
+  .criteria-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1e1e2e20}
+  .criteria-row:last-child{border-bottom:none}
+  .criteria-label{flex:1;font-size:.85rem}
+  .criteria-pts{font-size:.75rem;color:var(--gold);font-weight:600}
+  .collection-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s}
+  .collection-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .collection-card .col-id{font-family:monospace;font-size:.7rem;color:var(--accent2)}
+  .collection-card .col-name{font-size:.9rem;font-weight:600;margin:4px 0}
+  .vote-bar{background:#1e1e2e;border-radius:6px;height:8px;overflow:hidden;margin-top:6px}
+  .vote-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s}
+  .pair-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all .2s}
+  .pair-card:hover{border-color:var(--accent)}
+  .btn{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),#5b21b6);color:white}
+  .btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+  .btn-secondary{background:var(--border);color:var(--text)}
+  .wallet-modal{display:none;position:fixed;inset:0;background:#00000080;z-index:100;align-items:center;justify-content:center}
+  .wallet-modal.open{display:flex}
+  .wallet-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:400px;width:90%}
+  .wallet-option{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--border);border-radius:10px;cursor:pointer;margin-bottom:10px;transition:all .2s}
+  .wallet-option:hover{border-color:var(--accent);background:#7c3aed10}
+  .wallet-option .wo-name{font-weight:600;font-size:.9rem}
+  .wallet-option .wo-desc{font-size:.75rem;color:var(--muted)}
+  .lp-pool-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .toggle-switch{position:relative;width:48px;height:26px}
+  .toggle-switch input{opacity:0;width:0;height:0}
+  .toggle-slider{position:absolute;cursor:pointer;inset:0;background:#1e1e2e;border-radius:26px;transition:.3s}
+  .toggle-slider:before{content:'';position:absolute;height:18px;width:18px;left:4px;bottom:4px;background:white;border-radius:50%;transition:.3s}
+  input:checked+.toggle-slider{background:var(--accent)}
+  input:checked+.toggle-slider:before{transform:translateX(22px)}
+  .tx-input{width:100%;background:#1e1e2e;border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:monospace;font-size:.8rem;outline:none}
+  .tx-input:focus{border-color:var(--accent)}
+  .tx-result{background:#1e1e2e;border-radius:8px;padding:14px;margin-top:12px;font-family:monospace;font-size:.8rem;line-height:1.6}
+  .info-box{background:#06b6d415;border:1px solid #06b6d440;border-radius:8px;padding:12px 16px;font-size:.85rem;color:#67e8f9;margin-bottom:16px}
+  .last-update{font-size:.7rem;color:var(--muted);text-align:right;margin-top:8px}
+  footer{text-align:center;padding:24px;color:var(--muted);font-size:.75rem;border-top:1px solid var(--border);margin-top:40px}
+  footer a{color:var(--accent2);text-decoration:none}
+  @media(max-width:600px){.grid-4{grid-template-columns:repeat(2,1fr)}header h1{font-size:1rem}}
 </style>
 </head>
 <body>
-<nav>
-  <div class="nav-logo"><span>🎨 xArtists</span><span style="color:var(--text3);font-weight:400;font-size:14px">× LIA v5</span></div>
-  <div class="nav-links"><a href="#dashboard">Dashboard</a><a href="#bon">Battle of Nodes</a><a href="#collections">Collections</a><a href="#staking">Staking</a><a href="#lia">LIA Agent</a></div>
-  <div class="nav-badge">⚡ Mainnet Live</div>
-</nav>
-<div class="hero" id="dashboard">
-  <div class="hero-title"><span class="gradient">xArtists</span> — Tuduri Original<br><span style="font-size:0.6em;color:var(--text2);font-weight:400">Powered by LIA v5 AI Agent</span></div>
-  <p class="hero-sub">11 collections NFT sur MultiversX mainnet. L'agent IA LIA v5 réinvestit les profits de trading dans l'écosystème xArtists. Participation au Battle of Nodes Supernova.</p>
-  <div class="hero-stats">
-    <div class="stat-card"><div class="stat-value" id="stat-portfolio">$<span class="loading"></span></div><div class="stat-label">Portfolio LIA</div><div class="stat-sub" id="stat-egld-price">EGLD: —</div></div>
-    <div class="stat-card"><div class="stat-value" id="stat-bon-score"><span class="loading"></span></div><div class="stat-label">Score BoN</div><div class="stat-sub" id="stat-bon-rank">—</div></div>
-    <div class="stat-card"><div class="stat-value">11</div><div class="stat-label">Collections</div><div class="stat-sub">Mainnet actives</div></div>
-    <div class="stat-card"><div class="stat-value" id="stat-tro"><span class="loading"></span></div><div class="stat-label">TRO Balance</div><div class="stat-sub" id="stat-tro-usd">—</div></div>
-    <div class="stat-card"><div class="stat-value" id="stat-fg"><span class="loading"></span></div><div class="stat-label">Fear & Greed</div><div class="stat-sub" id="stat-fg-label">—</div></div>
-    <div class="stat-card"><div class="stat-value" id="stat-hf"><span class="loading"></span></div><div class="stat-label">Hatom HF</div><div class="stat-sub" id="stat-guard">Guard: —</div></div>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px;"><span class="live-dot"></span><span class="last-update">Dernière mise à jour: <span id="last-update">chargement...</span></span></div>
-</div>
-<div class="container">
-  <div class="alert-banner" id="alert-banner"></div>
-  <div id="bon">
-    <div class="section-title"><div class="dot"></div> ⚔️ Battle of Nodes — MultiversX Supernova</div>
-    <div class="bon-card">
-      <div class="bon-header">
-        <div>
-          <div class="bon-title">xArtists × LIA v5</div>
-          <div style="color:var(--text2);font-size:13px;margin-top:4px">Nelson Tuduri · @tudurioriginal · Saint-Maur-des-Fossés</div>
-          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;"><span class="badge badge-green">Finality &lt;1s</span><span class="badge badge-blue">Adaptive Sharding</span><span class="badge badge-purple">AI Integration</span><span class="badge badge-yellow">NFT + DeFi Bridge</span></div>
-        </div>
-        <div class="bon-score-ring">
-          <svg width="120" height="120" viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(42,58,106,0.8)" stroke-width="10"/><circle cx="60" cy="60" r="50" fill="none" stroke="url(#grad)" stroke-width="10" stroke-dasharray="314" stroke-dashoffset="314" id="bon-ring" stroke-linecap="round"/><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#23f7dd"/><stop offset="100%" style="stop-color:#4d9fff"/></linearGradient></defs></svg>
-          <div class="bon-score-text"><div class="bon-score-num" id="bon-score-num">—</div><div class="bon-score-label">/100</div></div>
-        </div>
-      </div>
-      <div class="bon-criteria">
-        <div class="bon-criterion"><div class="icon">🔒</div><div class="info"><div class="name">NFT Staking Contract</div><div class="pts" id="bon-nft-staking">+15 pts</div></div><div class="status" id="bon-nft-staking-status">⏳</div></div>
-        <div class="bon-criterion"><div class="icon">🗳️</div><div class="info"><div class="name">TRO Governance</div><div class="pts" id="bon-tro-staking">+15 pts</div></div><div class="status" id="bon-tro-staking-status">⏳</div></div>
-        <div class="bon-criterion"><div class="icon">🖼️</div><div class="info"><div class="name">NFTs Stakés</div><div class="pts" id="bon-nft-staked">+0 pts</div></div><div class="status" id="bon-nft-staked-status">⏳</div></div>
-        <div class="bon-criterion"><div class="icon">💎</div><div class="info"><div class="name">TRO Verrouillé</div><div class="pts" id="bon-tro-locked">+0 pts</div></div><div class="status" id="bon-tro-locked-status">⏳</div></div>
-        <div class="bon-criterion"><div class="icon">🎨</div><div class="info"><div class="name">11 Collections Mainnet</div><div class="pts">+11 pts</div></div><div class="status">✅</div></div>
-        <div class="bon-criterion"><div class="icon">📋</div><div class="info"><div class="name">DAO Proposals</div><div class="pts" id="bon-proposals">+0 pts</div></div><div class="status" id="bon-proposals-status">⏳</div></div>
-        <div class="bon-criterion"><div class="icon">💼</div><div class="info"><div class="name">Portfolio xArtists</div><div class="pts" id="bon-portfolio">+0 pts</div></div><div class="status" id="bon-portfolio-status">⏳</div></div>
-        <div class="bon-criterion"><div class="icon">🤖</div><div class="info"><div class="name">LIA v5 AI Agent</div><div class="pts">+10 pts</div></div><div class="status">✅</div></div>
-      </div>
-    </div>
-  </div>
-  <div id="collections">
-    <div class="section-title"><div class="dot"></div> 🖼️ Collections NFT Mainnet</div>
-    <div class="collections-grid">
-      <div class="collection-card" onclick="window.open('https://explorer.multiversx.com/collections/AGR-9bd53e','_blank')"><div class="collection-icon">🌿</div><div class="collection-name">Agreste</div><div class="collection-id">AGR-9bd53e</div><div class="collection-floor" id="floor-AGR">—</div></div>
-      <div class="collection-card" onclick="window.open('https://explorer.multiversx.com/collections/ALISTOR-a646bc','_blank')"><div class="collection-icon">⚡</div><div class="collection-name">Alistor</div><div class="collection-id">ALISTOR-a646bc</div><div class="collection-floor" id="floor-ALISTOR">—</div></div>
-      <div class="collection-card" onclick="window.open('https://explorer.multiversx.com/collections/ASFT-a6273a','_blank')"><div class="collection-icon">🎨</div><div class="collection-name">xArtists SFT</div><div class="collection-id">ASFT-a6273a</div><div class="collection-floor" id="floor-ASFT">—</div></div>
-      <div class="collection-card" onclick="window.open('https://explorer.multiversx.com/collections/BGG-2b627c','_blank')"><div class="collection-icon">🔮</div><div class="collection-name">Bgg</div><div class="collection-id">BGG-2b627c</div><div class="collection-floor" id="floor-BGG">—</div></div>
-      <div class="collection-card" onclick="window.open('https://explorer.multiversx.com/collections/HP47X2-b71543','_blank')"><div class="collection-icon">🏛️</div><div class="collection-name">HP47X2</div><div class="collection-id">HP47X2-b71543</div><div class="collection-floor" id="floor-HP47X2">—</div></div>
-      <div class="collection-card" onclick="window.open('https://explorer.multiversx.com/collections/MAS-5189b6','_blank')"><div class="collection-icon">🌊</div><div class="collection-name">Mas</div><div class="collection-id">MAS-5189b6</div><div class="collection-floor" id="floor-MAS">—</div></div>
-      <div class="collection-card" onclick="window.open('https://explorer.multiversx.com/collections/NFTUDURI-2990b6','_blank')"><div class="collection-icon">🖌️</div><div class="collection-name">NFTuduri</div><div class="collection-id">NFTUDURI-2990b6</div><div class="collection-floor" id="floor-NFTUDURI">—</div></div>
-      <div class="collection-card" onclick="window.open('https://explorer.multiversx.com/collections/XTR-e5072b','_blank')"><div class="collection-icon">✨</div><div class="collection-name">XTR</div><div class="collection-id">XTR-e5072b</div><div class="collection-floor" id="floor-XTR">—</div></div>
-      <div class="collection-card" onclick="window.open('https://explorer.multiversx.com/collections/XAUS-d9cf1f','_blank')"><div class="collection-icon">🌟</div><div class="collection-name">XAUS</div><div class="collection-id">XAUS-d9cf1f</div><div class="collection-floor" id="floor-XAUS">—</div></div>
-      <div class="collection-card" onclick="window.open('https://explorer.multiversx.com/collections/XAR-cee2e0','_blank')"><div class="collection-icon">🎭</div><div class="collection-name">XAR</div><div class="collection-id">XAR-cee2e0</div><div class="collection-floor" id="floor-XAR">—</div></div>
-      <div class="collection-card" onclick="window.open('https://explorer.multiversx.com/collections/TRO-652d6d','_blank')"><div class="collection-icon">💎</div><div class="collection-name">TRO NFT</div><div class="collection-id">TRO-652d6d</div><div class="collection-floor" id="floor-TRO">—</div></div>
-    </div>
-  </div>
-  <div id="staking">
-    <div class="section-title"><div class="dot"></div> 🔒 Staking & Governance</div>
-    <div class="staking-grid">
-      <div class="staking-card">
-        <div class="staking-header"><div class="staking-icon nft">🖼️</div><div><div class="staking-title">NFT Staking</div><div class="staking-addr"><a href="https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl" target="_blank">erd1qqq...sqxr8cl ↗</a></div></div><span class="badge" id="nft-staking-badge">⏳</span></div>
-        <div class="metric-row"><span class="metric-key">NFTs stakés</span><span class="metric-val accent" id="nft-staked-count">—</span></div>
-        <div class="metric-row"><span class="metric-key">Rewards TRO</span><span class="metric-val gold" id="nft-rewards">—</span></div>
-        <div class="metric-row"><span class="metric-key">Claimable</span><span class="metric-val" id="nft-claimable">—</span></div>
-      </div>
-      <div class="staking-card">
-        <div class="staking-header"><div class="staking-icon tro">🗳️</div><div><div class="staking-title">TRO Governance</div><div class="staking-addr"><a href="https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8" target="_blank">erd1qqq...0ca8 ↗</a></div></div><span class="badge" id="tro-staking-badge">⏳</span></div>
-        <div class="metric-row"><span class="metric-key">TRO stakés</span><span class="metric-val accent" id="tro-staked">—</span></div>
-        <div class="metric-row"><span class="metric-key">Voting Power</span><span class="metric-val blue" id="tro-voting">—</span></div>
-        <div class="metric-row"><span class="metric-key">Proposals actives</span><span class="metric-val gold" id="tro-proposals">—</span></div>
-      </div>
-      <div class="staking-card">
-        <div class="staking-header"><div class="staking-icon" style="background:rgba(245,158,11,.1)">💰</div><div><div class="staking-title">$TRO Token</div><div class="staking-addr"><a href="https://explorer.multiversx.com/tokens/TRO-a3d7c5" target="_blank">TRO-a3d7c5 ↗</a></div></div><span class="badge badge-yellow">Mainnet</span></div>
-        <div class="metric-row"><span class="metric-key">Prix TRO</span><span class="metric-val gold" id="tro-price">—</span></div>
-        <div class="metric-row"><span class="metric-key">Balance wallet</span><span class="metric-val" id="tro-balance-full">—</span></div>
-        <div class="metric-row"><span class="metric-key">Portfolio xArtists</span><span class="metric-val green" id="xartists-portfolio">—</span></div>
-      </div>
-    </div>
-  </div>
-  <div id="lia">
-    <div class="section-title"><div class="dot"></div> 🤖 LIA v5 — AI Trading Agent</div>
-    <div class="lia-card">
-      <div class="lia-header"><div class="lia-avatar">🤖</div><div class="lia-info"><h3>LIA v5 — Liquidity Intelligence Agent</h3><p>Agent IA autonome · MultiversX · Vellum Workflows · Objectif: $3 → $1,000,000</p></div><span class="badge badge-green" id="lia-status">⏳</span></div>
-      <div class="grid-2">
-        <div>
-          <div class="metric-row"><span class="metric-key">Décision</span><span class="metric-val" id="lia-decision">—</span></div>
-          <div class="metric-row"><span class="metric-key">BalanceGuard</span><span class="metric-val" id="lia-guard">—</span></div>
-          <div class="metric-row"><span class="metric-key">EGLD balance</span><span class="metric-val" id="lia-egld">—</span></div>
-          <div class="metric-row"><span class="metric-key">USDC balance</span><span class="metric-val" id="lia-usdc">—</span></div>
-          <div class="metric-row"><span class="metric-key">Hatom HF</span><span class="metric-val" id="lia-hf">—</span></div>
-        </div>
-        <div>
-          <div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px;"><span>Progression $1M</span><span id="million-pct">—</span></div><div class="progress-bar"><div class="progress-fill" id="million-bar" style="width:0%"></div></div></div>
-          <div class="metric-row"><span class="metric-key">Portfolio total</span><span class="metric-val green" id="lia-portfolio">—</span></div>
-          <div class="metric-row"><span class="metric-key">EGLD price</span><span class="metric-val" id="price-egld">—</span></div>
-          <div class="metric-row"><span class="metric-key">WBTC price</span><span class="metric-val gold" id="price-wbtc">—</span></div>
-          <div class="metric-row"><span class="metric-key">wTAO price</span><span class="metric-val" id="price-wtao">—</span></div>
-        </div>
-      </div>
-      <div style="margin-top:20px;"><div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Stratégies actives</div><div class="strategies"><div class="strategy-pill"><div class="tp">+1%</div><div class="sl">SL -0.5%</div><div class="name">TP1 Scalping</div></div><div class="strategy-pill"><div class="tp">+3%</div><div class="sl">SL -1.5%</div><div class="name">TP3 Swing</div></div><div class="strategy-pill"><div class="tp">+5%</div><div class="sl">SL -2.5%</div><div class="name">TP5 Swing</div></div><div class="strategy-pill"><div class="tp">+15%</div><div class="sl">SL -8%</div><div class="name">LIA WBTC</div></div><div class="strategy-pill"><div class="tp">+20%</div><div class="sl">SL -10%</div><div class="name">LIA wTAO</div></div><div class="strategy-pill"><div class="tp">+25%</div><div class="sl">SL -12%</div><div class="name">LIA EGLD</div></div></div></div>
-    </div>
-  </div>
+<header>
   <div>
-    <div class="section-title"><div class="dot"></div> 🔗 Smart Contracts Mainnet</div>
-    <div class="card" style="margin-bottom:40px;">
-      <table class="contracts-table">
-        <thead><tr><th>Contrat</th><th>Adresse</th><th>Statut</th><th>Explorer</th></tr></thead>
-        <tbody>
-          <tr><td><strong>NFT Staking</strong></td><td class="addr-short">erd1qqq...sqxr8cl</td><td><span class="badge" id="ct-nft-staking">⏳</span></td><td class="addr-short"><a href="https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl" target="_blank">↗</a></td></tr>
-          <tr><td><strong>TRO Governance</strong></td><td class="addr-short">erd1qqq...0ca8</td><td><span class="badge" id="ct-tro-staking">⏳</span></td><td class="addr-short"><a href="https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8" target="_blank">↗</a></td></tr>
-          <tr><td><strong>Marketplace</strong></td><td class="addr-short">erd1qqq...354t</td><td><span class="badge badge-green">✅ Actif</span></td><td class="addr-short"><a href="https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t" target="_blank">↗</a></td></tr>
-          <tr><td><strong>NFT Minter</strong></td><td class="addr-short">erd1qqq...nyztkn</td><td><span class="badge badge-green">✅ Actif</span></td><td class="addr-short"><a href="https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn" target="_blank">↗</a></td></tr>
-          <tr><td><strong>Wallet LIA</strong></td><td class="addr-short">erd1p4zy...crn6</td><td><span class="badge badge-green">✅ Actif</span></td><td class="addr-short"><a href="https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6" target="_blank">↗</a></td></tr>
-        </tbody>
-      </table>
+    <h1>⚔️ xArtists — LIA v5 Dashboard</h1>
+    <div class="subtitle">Tuduri Original · MultiversX Mainnet · Battle of Nodes Supernova</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    <button class="btn btn-primary" onclick="openWallet()">&#128279; Connecter Wallet</button>
+  </div>
+</header>
+<nav>
+  <button class="active" onclick="showTab('dashboard',this)">&#128202; Dashboard</button>
+  <button onclick="showTab('bon',this)">&#9876;&#65039; Battle of Nodes</button>
+  <button onclick="showTab('dao',this)">&#128499;&#65039; DAO Vote</button>
+  <button onclick="showTab('liquidity',this)">&#128167; Liquidité TRO</button>
+  <button onclick="showTab('collections',this)">&#128444;&#65039; Collections</button>
+  <button onclick="showTab('staking',this)">&#128274; Staking</button>
+  <button onclick="showTab('lia',this)">&#129302; LIA v5</button>
+  <button onclick="showTab('verify',this)">&#128269; Vérifier TX</button>
+</nav>
+
+<div id="tab-dashboard" class="tab active"><div class="container">
+  <div class="grid-4" style="margin-bottom:20px">
+    <div class="card"><h3>Portfolio Total</h3><div class="value" id="portfolio">$—</div><div class="sub">LIA v5 · Mainnet</div></div>
+    <div class="card"><h3>Prix EGLD</h3><div class="value" id="egldPrice">$—</div><div class="sub">MultiversX</div></div>
+    <div class="card"><h3>Fear &amp; Greed</h3><div class="value" id="fearGreed">—</div><div class="sub" id="fgLabel">—</div></div>
+    <div class="card"><h3>Prix TRO</h3><div class="value" id="troPrice" style="font-size:1.1rem">$—</div><div class="sub">TRO-a3d7c5</div></div>
+  </div>
+  <div class="grid-2" style="margin-bottom:20px">
+    <div class="card"><h3>BalanceGuard</h3><div style="display:flex;align-items:center;gap:10px;margin-top:8px"><span id="guardStatus" class="badge badge-blue">—</span><span id="guardSummary" style="font-size:.8rem;color:var(--muted)">En attente du cycle LIA...</span></div><div class="progress-bar"><div class="progress-fill" id="guardBar" style="width:0%"></div></div></div>
+    <div class="card"><h3>Progression $1M</h3><div class="value" id="millionPct" style="font-size:1.1rem">0.000000%</div><div class="progress-bar"><div class="progress-fill" id="millionBar" style="width:.001%"></div></div><div class="sub" style="margin-top:6px">Objectif: $1,000,000</div></div>
+  </div>
+  <div class="grid-3">
+    <div class="card"><h3>NFTs Stakés</h3><div class="value" id="nftStaked">0</div><div class="sub">xArtists Collections</div></div>
+    <div class="card"><h3>TRO Verrouillé</h3><div class="value" id="troStaked" style="font-size:1.1rem">0.0000</div><div class="sub">TRO Governance</div></div>
+    <div class="card"><h3>BoN Score</h3><div class="value" id="bonScoreDash" style="color:var(--gold)">21/100</div><div class="sub" id="bonRankDash">Participant</div></div>
+  </div>
+  <div class="last-update">Dernière mise à jour: <span id="lastUpdate">—</span> · Refresh auto 60s</div>
+</div></div>
+
+<div id="tab-bon" class="tab"><div class="container">
+  <div class="section-title">⚔️ Battle of Nodes — MultiversX Supernova</div>
+  <div class="grid-2">
+    <div class="card" style="text-align:center">
+      <div class="score-ring">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#1e1e2e" stroke-width="10"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="url(#grad)" stroke-width="10" stroke-dasharray="314" id="scoreArc" stroke-dashoffset="248" stroke-linecap="round"/>
+          <defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#7c3aed"/><stop offset="100%" style="stop-color:#06b6d4"/></linearGradient></defs>
+        </svg>
+        <div class="score-text"><div class="score-num" id="bonScore">21</div><div class="score-label">/ 100</div></div>
+      </div>
+      <div id="bonRank" class="badge badge-yellow" style="display:inline-block">📊 Participant</div>
+      <div style="margin-top:12px;font-size:.8rem;color:var(--muted)">xArtists — Tuduri Original</div>
+      <div style="font-size:.75rem;color:var(--muted)">@tudurioriginal</div>
+    </div>
+    <div class="card">
+      <div class="section-title" style="font-size:.9rem">🎯 Critères évalués</div>
+      <div class="criteria-row"><span style="width:24px;text-align:center" id="c1">❌</span><span class="criteria-label">NFT Staking contract actif</span><span class="criteria-pts">+15pts</span></div>
+      <div class="criteria-row"><span style="width:24px;text-align:center" id="c2">❌</span><span class="criteria-label">TRO Governance contract actif</span><span class="criteria-pts">+15pts</span></div>
+      <div class="criteria-row"><span style="width:24px;text-align:center">⏳</span><span class="criteria-label">NFTs stakés</span><span class="criteria-pts">+3/NFT max 15</span></div>
+      <div class="criteria-row"><span style="width:24px;text-align:center">⏳</span><span class="criteria-label">TRO stakés</span><span class="criteria-pts">+1/1000 TRO max 10</span></div>
+      <div class="criteria-row"><span style="width:24px;text-align:center">✅</span><span class="criteria-label">11 collections mainnet actives</span><span class="criteria-pts">+11pts</span></div>
+      <div class="criteria-row"><span style="width:24px;text-align:center">⏳</span><span class="criteria-label">Proposals DAO actives</span><span class="criteria-pts">+10pts</span></div>
+      <div class="criteria-row"><span style="width:24px;text-align:center">⏳</span><span class="criteria-label">Portfolio xArtists</span><span class="criteria-pts">+5pts</span></div>
+      <div class="criteria-row"><span style="width:24px;text-align:center">✅</span><span class="criteria-label">LIA v5 AI Agent intégré</span><span class="criteria-pts">+10pts</span></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="section-title" style="font-size:.9rem">🔗 Contrats Mainnet</div>
+    <div class="contract-row"><span>NFT Staking</span><span class="contract-addr"><a href="https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl" target="_blank">erd1qqq...sqxr8cl ↗</a></span><span id="nftStakingStatus" class="badge badge-red">❌ Inactif</span></div>
+    <div class="contract-row"><span>TRO Governance</span><span class="contract-addr"><a href="https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8" target="_blank">erd1qqq...0ca8 ↗</a></span><span id="troStakingStatus" class="badge badge-red">❌ Inactif</span></div>
+    <div class="contract-row"><span>Marketplace</span><span class="contract-addr"><a href="https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t" target="_blank">erd1qqq...8354t ↗</a></span><span class="badge badge-blue">🔗 Mainnet</span></div>
+    <div class="contract-row"><span>NFT Minter</span><span class="contract-addr"><a href="https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn" target="_blank">erd1qqq...nyztkn ↗</a></span><span class="badge badge-blue">🔗 Mainnet</span></div>
+  </div>
+</div></div>
+
+<div id="tab-dao" class="tab"><div class="container">
+  <div class="section-title">🗳️ DAO Vote — Allocation Liquidité TRO</div>
+  <div class="info-box">Les holders TRO stakés votent pour choisir quelle paire de liquidité recevra 50% des profits de trading LIA.</div>
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-weight:600" id="proposalTitle">Aucune proposal active</div><div style="font-size:.75rem;color:var(--muted);margin-top:2px">Total votes: <span id="totalVotes">0.0000 TRO</span></div></div>
+      <span id="daoRecommended" class="badge badge-purple">TRO/WEGLD</span>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="pair-card" onclick="selectPair('TRO/USDC')"><div style="font-size:1rem;font-weight:700">TRO / USDC</div><div style="font-size:.7rem;color:var(--muted)">xExchange · <span style="color:var(--green)">Risque FAIBLE</span></div><div style="font-size:.75rem;color:var(--muted);margin-top:4px">Paire stable — IL minimal, APR ~9%</div><div class="vote-bar"><div class="vote-fill" id="vote-TRO/USDC" style="width:0%"></div></div><div style="font-size:.7rem;color:var(--muted);margin-top:4px"><span id="pct-TRO/USDC">0%</span> des votes</div></div>
+    <div class="pair-card" onclick="selectPair('TRO/WEGLD')"><div style="font-size:1rem;font-weight:700">TRO / WEGLD</div><div style="font-size:.7rem;color:var(--muted)">xExchange · <span style="color:var(--gold)">Risque MOYEN</span></div><div style="font-size:.75rem;color:var(--muted);margin-top:4px">Paire principale — liquidité maximale, APR ~12%</div><div class="vote-bar"><div class="vote-fill" id="vote-TRO/WEGLD" style="width:0%"></div></div><div style="font-size:.7rem;color:var(--muted);margin-top:4px"><span id="pct-TRO/WEGLD">0%</span> des votes</div></div>
+    <div class="pair-card" onclick="selectPair('TRO/WBTC')"><div style="font-size:1rem;font-weight:700">TRO / WBTC</div><div style="font-size:.7rem;color:var(--muted)">xExchange · <span style="color:var(--red)">Risque ÉLEVÉ</span></div><div style="font-size:.75rem;color:var(--muted);margin-top:4px">Exposition BTC — APR variable</div><div class="vote-bar"><div class="vote-fill" id="vote-TRO/WBTC" style="width:0%"></div></div><div style="font-size:.7rem;color:var(--muted);margin-top:4px"><span id="pct-TRO/WBTC">0%</span> des votes</div></div>
+    <div class="pair-card" onclick="selectPair('TRO/XOXNO')"><div style="font-size:1rem;font-weight:700">TRO / XOXNO</div><div style="font-size:.7rem;color:var(--muted)">XOXNO DEX · <span style="color:var(--red)">Risque ÉLEVÉ</span></div><div style="font-size:.75rem;color:var(--muted);margin-top:4px">Écosystème NFT MVX — APR élevé</div><div class="vote-bar"><div class="vote-fill" id="vote-TRO/XOXNO" style="width:0%"></div></div><div style="font-size:.7rem;color:var(--muted);margin-top:4px"><span id="pct-TRO/XOXNO">0%</span> des votes</div></div>
+  </div>
+  <div style="margin-top:16px;text-align:center">
+    <button class="btn btn-primary" onclick="voteDAO()">&#128499;&#65039; Voter (nécessite TRO stakés)</button>
+  </div>
+</div></div>
+
+<div id="tab-liquidity" class="tab"><div class="container">
+  <div class="section-title">💧 Pools de Liquidité $TRO</div>
+  <div class="card" style="margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-weight:600">Ajout automatique de liquidité</div><div style="font-size:.75rem;color:var(--muted);margin-top:2px">50% des profits LIA → achat TRO → ajout dans la pool votée</div></div>
+      <label class="toggle-switch"><input type="checkbox" id="liquidityToggle" onchange="toggleLiquidity()"><span class="toggle-slider"></span></label>
+    </div>
+    <div id="liquidityStatus" class="info-box" style="margin-top:12px;margin-bottom:0">⚠️ Désactivé — Pour activer: nœud <strong>TROLiquidityScanner</strong> dans Vellum → <strong>enable_liquidity_add = True</strong></div>
+  </div>
+  <div class="grid-3" style="margin-bottom:16px">
+    <div class="card"><h3>TVL Totale TRO</h3><div class="value" id="troTvl">$0.00</div><div class="sub">3 DEX combinés</div></div>
+    <div class="card"><h3>Pool Cible</h3><div class="value" id="targetPool" style="font-size:1rem">TRO/WEGLD</div><div class="sub" id="targetDex">xExchange</div></div>
+    <div class="card"><h3>Réinvestissement</h3><div class="value" id="reinvestUsd">$0.00</div><div class="sub">50% profits cycle</div></div>
+  </div>
+  <div class="section-title" style="font-size:.9rem">🔵 xExchange</div>
+  <div id="xexPools" class="grid-3" style="margin-bottom:16px"><div class="lp-pool-card"><div style="color:var(--muted)">Scan en cours...</div></div></div>
+  <div class="section-title" style="font-size:.9rem">🟠 OneDex</div>
+  <div id="onedexPools" class="grid-3" style="margin-bottom:16px"><div class="lp-pool-card"><div style="color:var(--muted)">Scan en cours...</div></div></div>
+  <div class="section-title" style="font-size:.9rem">🟡 JEXchange</div>
+  <div id="jexPools" class="grid-3"><div class="lp-pool-card"><div style="color:var(--muted)">Scan en cours...</div></div></div>
+</div></div>
+
+<div id="tab-collections" class="tab"><div class="container">
+  <div class="section-title">🖼️ Collections xArtists — 11 Collections Mainnet</div>
+  <div class="grid-4" id="collectionsGrid"></div>
+  <div class="card" style="margin-top:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-weight:600">$TRO Token</div><div style="font-size:.75rem;color:var(--muted)">TRO-a3d7c5 · Mainnet</div></div>
+      <a href="https://explorer.multiversx.com/tokens/TRO-a3d7c5" target="_blank" class="badge badge-purple">TRO-a3d7c5 ↗</a>
+    </div>
+    <div class="grid-3" style="margin-top:12px">
+      <div><div style="font-size:.75rem;color:var(--muted)">Prix live</div><div style="font-weight:600" id="troPriceCol">$—</div></div>
+      <div><div style="font-size:.75rem;color:var(--muted)">Balance wallet</div><div style="font-weight:600" id="troBalanceCol">0.000000 TRO</div></div>
+      <div><div style="font-size:.75rem;color:var(--muted)">Portfolio xArtists</div><div style="font-weight:600" id="xartistsPortfolio">$0.00</div></div>
+    </div>
+    <div style="margin-top:12px"><button class="btn btn-primary" onclick="buyTRO()">&#128722; Acheter TRO sur xExchange</button></div>
+  </div>
+</div></div>
+
+<div id="tab-staking" class="tab"><div class="container">
+  <div class="grid-2">
+    <div class="card">
+      <div class="section-title" style="font-size:.9rem">🖼️ NFT Staking</div>
+      <div style="margin-bottom:12px"><a href="https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl" target="_blank" style="font-family:monospace;font-size:.75rem;color:var(--accent2)">erd1qqq...sqxr8cl ↗</a><span id="nftStakingBadge" class="badge badge-red" style="margin-left:8px">❌ Inactif</span></div>
+      <div class="grid-2" style="margin-bottom:12px">
+        <div><div style="font-size:.75rem;color:var(--muted)">NFTs stakés</div><div style="font-weight:600" id="nftStakedCount">0</div></div>
+        <div><div style="font-size:.75rem;color:var(--muted)">Rewards TRO</div><div style="font-weight:600" id="nftRewards">0.000000 TRO</div></div>
+      </div>
+      <select id="nftCollection" style="width:100%;background:#1e1e2e;border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);margin-bottom:8px">
+        <option value="">Sélectionner une collection</option>
+        <option value="AGR-9bd53e">AGR-9bd53e (Agreste)</option>
+        <option value="ALISTOR-a646bc">ALISTOR-a646bc (Alistor)</option>
+        <option value="ASFT-a6273a">ASFT-a6273a (xArtists SFT)</option>
+        <option value="BGG-2b627c">BGG-2b627c (Bgg)</option>
+        <option value="HP47X2-b71543">HP47X2-b71543 (HP47X2)</option>
+        <option value="MAS-5189b6">MAS-5189b6 (Mas)</option>
+        <option value="NFTUDURI-2990b6">NFTUDURI-2990b6 (NFTuduri)</option>
+        <option value="XTR-e5072b">XTR-e5072b (XTR)</option>
+        <option value="XAUS-d9cf1f">XAUS-d9cf1f (XAUS)</option>
+        <option value="XAR-cee2e0">XAR-cee2e0 (XAR)</option>
+        <option value="TRO-652d6d">TRO-652d6d (TRO NFT)</option>
+      </select>
+      <input type="number" id="nftNonce" placeholder="Nonce du NFT (ex: 1)" style="width:100%;background:#1e1e2e;border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);margin-bottom:8px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="stakeNFT()">&#128274; Staker ce NFT</button>
+        <button class="btn btn-secondary" onclick="claimNFTRewards()">&#127873; Claim Rewards</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title" style="font-size:.9rem">🗳️ TRO Governance</div>
+      <div style="margin-bottom:12px"><a href="https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8" target="_blank" style="font-family:monospace;font-size:.75rem;color:var(--accent2)">erd1qqq...0ca8 ↗</a><span id="troGovBadge" class="badge badge-red" style="margin-left:8px">❌ Inactif</span></div>
+      <div class="grid-2" style="margin-bottom:12px">
+        <div><div style="font-size:.75rem;color:var(--muted)">TRO stakés</div><div style="font-weight:600" id="troStakedGov">0.0000 TRO</div></div>
+        <div><div style="font-size:.75rem;color:var(--muted)">Proposals actives</div><div style="font-weight:600" id="activeProposals">0</div></div>
+      </div>
+      <input type="number" id="troAmount" placeholder="Montant TRO à staker" style="width:100%;background:#1e1e2e;border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--text);margin-bottom:8px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="stakeTRO()">&#128274; Staker TRO</button>
+        <button class="btn btn-secondary" onclick="unstakeTRO()">&#128275; Unstake TRO</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div id="tab-lia" class="tab"><div class="container">
+  <div class="section-title">🤖 LIA v5 — Liquidity Intelligence Agent</div>
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="card"><h3>Décision actuelle</h3><div style="display:flex;align-items:center;gap:10px;margin-top:8px"><span id="liaDecision" class="badge badge-yellow" style="font-size:1rem;padding:6px 16px">⏸️ WAIT</span><span id="liaConfidence" style="font-size:.85rem;color:var(--muted)">—% confiance</span></div><div style="font-size:.8rem;color:var(--muted);margin-top:8px" id="liaReasoning">En attente du premier cycle...</div></div>
+    <div class="card"><h3>Progression $1M</h3><div class="value" id="liaMillionPct" style="font-size:1.1rem">0.000000%</div><div class="progress-bar"><div class="progress-fill" id="liaMillionBar" style="width:.001%"></div></div><div class="sub" style="margin-top:4px">Objectif: $3 → $1,000,000</div></div>
+  </div>
+  <div class="grid-3" style="margin-bottom:16px">
+    <div class="card"><h3>TP1 Scalping (+1%)</h3><div id="tp1Decision" class="badge badge-yellow">⏸️ WAIT</div></div>
+    <div class="card"><h3>TP3 Swing (+3%)</h3><div id="tp3Decision" class="badge badge-yellow">⏸️ WAIT</div></div>
+    <div class="card"><h3>TP5 Swing (+5%)</h3><div id="tp5Decision" class="badge badge-yellow">⏸️ WAIT</div></div>
+  </div>
+  <div class="card">
+    <div class="section-title" style="font-size:.9rem">📊 Prix live</div>
+    <div class="grid-4">
+      <div><div style="font-size:.75rem;color:var(--muted)">EGLD</div><div style="font-weight:600" id="liaEgld">$—</div></div>
+      <div><div style="font-size:.75rem;color:var(--muted)">WBTC</div><div style="font-weight:600" id="liaWbtc">$—</div></div>
+      <div><div style="font-size:.75rem;color:var(--muted)">wTAO</div><div style="font-weight:600" id="liaWtao">$—</div></div>
+      <div><div style="font-size:.75rem;color:var(--muted)">Fear &amp; Greed</div><div style="font-weight:600" id="liaFg">—</div></div>
+    </div>
+  </div>
+</div></div>
+
+<div id="tab-verify" class="tab"><div class="container">
+  <div class="section-title">🔍 Vérificateur de Transactions</div>
+  <div class="card">
+    <label style="font-size:.85rem;color:var(--muted);display:block;margin-bottom:6px">Hash de transaction MultiversX</label>
+    <input type="text" id="txHashInput" class="tx-input" placeholder="Coller le hash TX ici...">
+    <button class="btn btn-primary" style="margin-top:10px" onclick="verifyTx()">🔍 Vérifier</button>
+    <div id="txResult" class="tx-result" style="display:none"></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="section-title" style="font-size:.9rem">🧪 Diagnostic complet</div>
+    <button class="btn btn-secondary" onclick="runDiagnostic()">▶️ Lancer le diagnostic</button>
+    <div id="diagResult" style="margin-top:12px;font-size:.8rem;line-height:1.8"></div>
+  </div>
+</div></div>
+
+<div class="wallet-modal" id="walletModal">
+  <div class="wallet-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h2>🔗 Connecter votre wallet</h2>
+      <button onclick="closeWallet()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem">✕</button>
+    </div>
+    <div class="wallet-option" onclick="connectXPortal()">
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,#7c3aed,#06b6d4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">📱</div>
+      <div><div class="wo-name">xPortal</div><div class="wo-desc">App mobile MultiversX</div></div>
+    </div>
+    <div class="wallet-option" onclick="connectWebWallet()">
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,#1e40af,#3b82f6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">🌐</div>
+      <div><div class="wo-name">Web Wallet</div><div class="wo-desc">wallet.multiversx.com</div></div>
+    </div>
+    <div class="wallet-option" onclick="connectExtension()">
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,#065f46,#10b981);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">🔌</div>
+      <div><div class="wo-name">Extension navigateur</div><div class="wo-desc">MultiversX DeFi Wallet</div></div>
     </div>
   </div>
 </div>
+
 <footer>
-  <div class="footer-links"><a href="https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6" target="_blank">🔗 Explorer</a><a href="https://github.com/Neltud/xArtists" target="_blank">📦 GitHub</a><a href="https://twitter.com/tudurioriginal" target="_blank">🐦 @tudurioriginal</a><a href="https://bon.multiversx.com" target="_blank">⚔️ Battle of Nodes</a></div>
-  <div>© 2026 Nelson Tuduri — xArtists · Tuduri Original · Saint-Maur-des-Fossés</div>
-  <div style="margin-top:8px;font-size:11px;">Powered by <a href="https://vellum.ai">LIA v5 on Vellum</a> · MultiversX Mainnet · Supernova</div>
+  <div>xArtists — Tuduri Original · <a href="https://twitter.com/tudurioriginal" target="_blank">@tudurioriginal</a> · MultiversX Mainnet</div>
+  <div style="margin-top:4px"><a href="https://explorer.multiversx.com/tokens/TRO-a3d7c5" target="_blank">$TRO Token</a> · <a href="https://neltud.github.io/xArtists" target="_blank">GitHub Pages</a></div>
 </footer>
+
 <script>
-const BASE_URL='https://raw.githubusercontent.com/Neltud/xArtists/main';
-const MVX_API='https://api.multiversx.com';
-async function fetchJSON(url){try{const r=await fetch(url,{cache:'no-store'});if(!r.ok)return null;return await r.json();}catch{return null;}}
-function fmt(v,d=2){if(v===null||v===undefined||v==='')return'—';const n=parseFloat(v);if(isNaN(n))return'—';return n.toFixed(d);}
-function fmtUSD(v){const n=parseFloat(v);if(isNaN(n))return'—';if(n>=1000000)return'$'+(n/1000000).toFixed(2)+'M';if(n>=1000)return'$'+(n/1000).toFixed(1)+'K';return'$'+n.toFixed(2);}
-function setBadge(id,active){const el=document.getElementById(id);if(!el)return;if(active){el.className='badge badge-green';el.textContent='✅ Actif';}else{el.className='badge badge-red';el.textContent='❌ Inactif';}}
-function setEl(id,val,cls=''){const el=document.getElementById(id);if(!el)return;el.textContent=val;if(cls)el.className='metric-val '+cls;}
-async function loadLIAData(){
-  const[lia,xartists,bon]=await Promise.all([fetchJSON(BASE_URL+'/data/lia_v5_status.json'),fetchJSON(BASE_URL+'/data/xartists_onchain.json'),fetchJSON(BASE_URL+'/data/battle_of_nodes.json')]);
-  if(lia){const p=lia.portfolio||{};const prices=lia.prices||{};const market=lia.market||{};setEl('stat-portfolio',fmtUSD(p.total_usd));setEl('stat-egld-price','EGLD: $'+fmt(prices.egld_usd,4));setEl('lia-portfolio',fmtUSD(p.total_usd),'green');setEl('lia-egld',fmt(p.egld_balance,4)+' EGLD');setEl('lia-usdc','$'+fmt(p.usdc_balance,2));setEl('lia-hf',fmt(p.hatom_health_factor,2));setEl('price-egld','$'+fmt(prices.egld_usd,4));setEl('price-wbtc','$'+fmt(prices.wbtc_usd,0));setEl('price-wtao','$'+fmt(prices.wtao_usd,2));setEl('stat-fg',market.fear_greed_index||'—');const fg=parseInt(market.fear_greed_index)||50;const fgLabel=fg<=25?'Extreme Fear':fg<=40?'Fear':fg<=60?'Neutral':fg<=75?'Greed':'Extreme Greed';setEl('stat-fg-label',fgLabel);setEl('stat-hf',fmt(p.hatom_health_factor,2));const guard=market.guard_status||'—';setEl('stat-guard','Guard: '+guard);setEl('lia-guard',guard,guard==='OK'?'green':guard==='WARNING'?'gold':'red');const cycle=lia.cycle||{};setEl('lia-status',cycle.report_sent?'✅ Actif':'⏳ En attente');document.getElementById('lia-status').className='badge '+(cycle.report_sent?'badge-green':'badge-yellow');const ts=lia.timestamp?new Date(lia.timestamp).toLocaleString('fr-FR'):'—';setEl('last-update',ts);}
-  if(xartists){const staking=xartists.staking||{};const tro=xartists.tro_token||{};setBadge('nft-staking-badge',staking.nft_staking_active);setBadge('ct-nft-staking',staking.nft_staking_active);setBadge('tro-staking-badge',staking.tro_staking_active);setBadge('ct-tro-staking',staking.tro_staking_active);setEl('nft-staked-count',staking.nft_staked_count||'0');setEl('nft-rewards',fmt(staking.nft_pending_rewards_tro,6)+' TRO','gold');setEl('nft-claimable',staking.nft_rewards_claimable?'✅ Oui':'❌ Non');setEl('tro-staked',fmt(staking.tro_staked_amount,4)+' TRO','accent');setEl('tro-proposals',(xartists.governance||{}).active_proposals||'0','gold');setEl('tro-price','$'+fmt(tro.price_usd||0,8),'gold');setEl('tro-balance-full',fmt(tro.balance_wallet,6)+' TRO');setEl('stat-tro',fmt(tro.balance_wallet,2));setEl('stat-tro-usd','$'+fmt(tro.value_usd,4));setEl('xartists-portfolio',fmtUSD(xartists.portfolio_contribution_usd),'green');const bonData=xartists.battle_of_nodes||{};const score=bonData.score||0;setEl('stat-bon-score',score+'/100');setEl('stat-bon-rank',bonData.rank_estimate||'—');setEl('bon-score-num',score);const ring=document.getElementById('bon-ring');if(ring)ring.style.strokeDashoffset=314-(314*score/100);document.getElementById('bon-nft-staking-status').textContent=staking.nft_staking_active?'✅':'❌';document.getElementById('bon-tro-staking-status').textContent=staking.tro_staking_active?'✅':'❌';const nftStaked=staking.nft_staked_count||0;setEl('bon-nft-staked','+'+(Math.min(15,nftStaked*3))+' pts');document.getElementById('bon-nft-staked-status').textContent=nftStaked>0?'✅':'⏳';const troStaked=staking.tro_staked_amount||0;setEl('bon-tro-locked','+'+(Math.min(10,Math.floor(troStaked/1000)))+' pts');document.getElementById('bon-tro-locked-status').textContent=troStaked>0?'✅':'⏳';const proposals=(xartists.governance||{}).active_proposals||0;setEl('bon-proposals',proposals>0?'+10 pts':'+0 pts');document.getElementById('bon-proposals-status').textContent=proposals>0?'✅':'⏳';const portUSD=xartists.portfolio_contribution_usd||0;setEl('bon-portfolio',portUSD>=10?'+5 pts':'+0 pts');document.getElementById('bon-portfolio-status').textContent=portUSD>=10?'✅':'⏳';const nftsByCol=(xartists.collections||{}).by_collection||{};Object.entries(nftsByCol).forEach(([colId,count])=>{const prefix=colId.split('-')[0];const el=document.getElementById('floor-'+prefix);if(el)el.textContent=count+' NFT'+(count>1?'s':'')+' dans wallet';});}
-  if(bon&&bon.score!==undefined){setEl('bon-score-num',bon.score);const ring=document.getElementById('bon-ring');if(ring)ring.style.strokeDashoffset=314-(314*bon.score/100);}}
-async function loadLivePrices(){
-  const[mex,fg,econ]=await Promise.all([fetchJSON(MVX_API+'/mex/tokens'),fetchJSON('https://api.alternative.me/fng/?limit=1'),fetchJSON(MVX_API+'/economics')]);
-  if(mex&&Array.isArray(mex)){mex.forEach(t=>{const id=t.identifier||'';const price=parseFloat(t.price||0);if(!price)return;if(id==='WEGLD-bd4d79'||id==='EGLD'){const el=document.getElementById('price-egld');if(el&&el.textContent==='—')setEl('price-egld','$'+price.toFixed(4));const el2=document.getElementById('stat-egld-price');if(el2&&el2.textContent==='EGLD: —')setEl('stat-egld-price','EGLD: $'+price.toFixed(4));}if(id==='WBTC-5349b3'){const el=document.getElementById('price-wbtc');if(el&&el.textContent==='—')setEl('price-wbtc','$'+Math.round(price).toLocaleString());}if(id==='WTAO-a5c6ef'){const el=document.getElementById('price-wtao');if(el&&el.textContent==='—')setEl('price-wtao','$'+price.toFixed(2));}if(id==='TRO-a3d7c5'){const el=document.getElementById('tro-price');if(el&&el.textContent==='—')setEl('tro-price','$'+price.toFixed(8),'gold');}});}
-  if(econ){const p=parseFloat(econ.price||0);if(p>0){const el=document.getElementById('price-egld');if(el&&el.textContent==='—')setEl('price-egld','$'+p.toFixed(4));}}
-  if(fg){const data=(fg.data||[])[0]||{};setEl('stat-fg',data.value||'—');setEl('stat-fg-label',data.value_classification||'—');}}
-async function init(){await Promise.all([loadLIAData(),loadLivePrices()]);const lastUpdate=document.getElementById('last-update');if(lastUpdate&&lastUpdate.textContent==='chargement...'){lastUpdate.textContent='En attente du premier cycle LIA...';const banner=document.getElementById('alert-banner');if(banner){banner.style.display='block';banner.textContent='⚠️ LIA v5 n\'a pas encore tourné — données disponibles après le premier cycle automatique (toutes les heures).';}}}
-init();setInterval(init,60000);
+const BASE='https://raw.githubusercontent.com/Neltud/xArtists/main';
+const MVX='https://api.multiversx.com';
+const NFT_STAKING='erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl';
+const TRO_STAKING='erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8';
+const COLLECTIONS=[{id:'AGR-9bd53e',name:'Agreste'},{id:'ALISTOR-a646bc',name:'Alistor'},{id:'ASFT-a6273a',name:'xArtists SFT'},{id:'BGG-2b627c',name:'Bgg'},{id:'HP47X2-b71543',name:'HP47X2'},{id:'MAS-5189b6',name:'Mas'},{id:'NFTUDURI-2990b6',name:'NFTuduri'},{id:'XTR-e5072b',name:'XTR'},{id:'XAUS-d9cf1f',name:'XAUS'},{id:'XAR-cee2e0',name:'XAR'},{id:'TRO-652d6d',name:'TRO NFT'}];
+let bonData=null;
+function showTab(id,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));document.getElementById('tab-'+id).classList.add('active');btn.classList.add('active');}
+async function loadAllData(){await Promise.all([loadLIAData(),loadMVXPrices(),loadFearGreed(),loadBonData()]);renderCollections();document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString('fr-FR');}
+async function loadLIAData(){try{const r=await fetch(BASE+'/data/lia_v5_status.json');if(!r.ok)return;const d=await r.json();const p=d.portfolio||{};document.getElementById('portfolio').textContent='$'+(p.total_usd||0).toFixed(2);document.getElementById('millionPct').textContent=((p.total_usd||0)/1000000*100).toFixed(6)+'%';document.getElementById('millionBar').style.width=Math.max(.001,(p.total_usd||0)/10000)+'%';document.getElementById('liaMillionPct').textContent=((p.total_usd||0)/1000000*100).toFixed(6)+'%';const g=d.market?.guard_status||'OK';const ge=document.getElementById('guardStatus');ge.textContent=g;ge.className='badge '+(g==='OK'?'badge-green':g==='WARNING'?'badge-yellow':'badge-red');document.getElementById('guardBar').style.width=g==='OK'?'100%':g==='WARNING'?'60%':'20%';const pr=d.prices||{};if(pr.egld_usd){document.getElementById('egldPrice').textContent='$'+pr.egld_usd.toFixed(2);document.getElementById('liaEgld').textContent='$'+pr.egld_usd.toFixed(2);}if(pr.wbtc_usd)document.getElementById('liaWbtc').textContent='$'+pr.wbtc_usd.toLocaleString();if(pr.wtao_usd)document.getElementById('liaWtao').textContent='$'+pr.wtao_usd.toFixed(2);if(d.market?.fear_greed_index)document.getElementById('liaFg').textContent=d.market.fear_greed_index;}catch(e){}}
+async function loadBonData(){try{const r=await fetch(BASE+'/data/battle_of_nodes.json');if(!r.ok)return;bonData=await r.json();const s=bonData.score||21;document.getElementById('bonScore').textContent=s;document.getElementById('bonScoreDash').textContent=s+'/100';document.getElementById('bonRankDash').textContent=bonData.rank_estimate||'Participant';document.getElementById('bonRank').textContent=bonData.rank_estimate||'\ud83d\udcca Participant';document.getElementById('scoreArc').style.strokeDashoffset=314-(314*s/100);document.getElementById('nftStaked').textContent=bonData.staking?.nft_staked_count||0;document.getElementById('troStaked').textContent=(bonData.tro_token?.balance_wallet||0).toFixed(4);document.getElementById('nftStakedCount').textContent=bonData.staking?.nft_staked_count||0;document.getElementById('nftRewards').textContent=(bonData.staking?.nft_pending_rewards_tro||0).toFixed(6)+' TRO';document.getElementById('troStakedGov').textContent=(bonData.staking?.tro_staked_amount||0).toFixed(4)+' TRO';document.getElementById('activeProposals').textContent=bonData.governance?.active_proposals||0;document.getElementById('troBalanceCol').textContent=(bonData.tro_token?.balance_wallet||0).toFixed(6)+' TRO';document.getElementById('xartistsPortfolio').textContent='$'+(bonData.portfolio_contribution_usd||0).toFixed(2);const na=bonData.staking?.nft_staking_active;const ta=bonData.staking?.tro_staking_active;['nftStakingStatus','nftStakingBadge'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=na?'\u2705 Actif':'\u274c Inactif';el.className='badge '+(na?'badge-green':'badge-red');}});['troStakingStatus','troGovBadge'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=ta?'\u2705 Actif':'\u274c Inactif';el.className='badge '+(ta?'badge-green':'badge-red');}});document.getElementById('proposalTitle').textContent=bonData.current_proposal_title||'Aucune proposal active';document.getElementById('totalVotes').textContent=(bonData.total_votes_cast||0).toFixed(4)+' TRO';document.getElementById('daoRecommended').textContent=bonData.recommended_pair||'TRO/WEGLD';document.getElementById('targetPool').textContent=bonData.target_pool||'TRO/WEGLD';document.getElementById('targetDex').textContent=bonData.target_dex||'xExchange';document.getElementById('reinvestUsd').textContent='$'+(bonData.reinvestment_amount_usd||0).toFixed(4);const vr=bonData.vote_results||{};const tot=Object.values(vr).reduce((s,v)=>s+(v.votes||0),0);Object.keys(vr).forEach(p=>{const pct=tot>0?(vr[p].votes/tot*100):0;const b=document.getElementById('vote-'+p);const pe=document.getElementById('pct-'+p);if(b)b.style.width=pct+'%';if(pe)pe.textContent=pct.toFixed(1)+'%';});renderPools(bonData.xexchange_pools||[],'xexPools','\ud83d\udd35');renderPools(bonData.onedex_pools||[],'onedexPools','\ud83d\udfe0');renderPools(bonData.jexchange_pools||[],'jexPools','\ud83d\udfe1');const tvl=(bonData.xexchange_pools||[]).concat(bonData.onedex_pools||[]).concat(bonData.jexchange_pools||[]).reduce((s,p)=>s+(p.tvl_usd||0),0);document.getElementById('troTvl').textContent='$'+tvl.toFixed(2);}catch(e){}}
+function renderPools(pools,cid,emoji){const el=document.getElementById(cid);if(!el)return;if(!pools.length){el.innerHTML='<div class="lp-pool-card"><div style="color:var(--muted)">Aucune pool TRO trouv\u00e9e</div></div>';return;}el.innerHTML=pools.map(p=>`<div class="lp-pool-card"><div style="font-weight:600">${emoji} ${p.pair_name||'?'}</div><div style="font-size:.7rem;color:var(--muted)">${p.dex||''}</div><div style="color:var(--gold);font-size:.85rem;margin-top:4px">TVL: $${(p.tvl_usd||0).toFixed(2)}</div></div>`).join('');}
+async function loadMVXPrices(){try{const r=await fetch(MVX+'/mex/tokens');if(!r.ok)return;const tokens=await r.json();const egld=tokens.find(t=>t.identifier==='WEGLD-bd4d79');const tro=tokens.find(t=>t.identifier==='TRO-a3d7c5');if(egld?.price){const p=parseFloat(egld.price);document.getElementById('egldPrice').textContent='$'+p.toFixed(2);document.getElementById('liaEgld').textContent='$'+p.toFixed(2);}if(tro?.price){const tp=parseFloat(tro.price);document.getElementById('troPrice').textContent='$'+tp.toFixed(8);document.getElementById('troPriceCol').textContent='$'+tp.toFixed(8);}else{try{const r2=await fetch(MVX+'/tokens/TRO-a3d7c5');if(r2.ok){const d=await r2.json();if(d.price){const tp=parseFloat(d.price);document.getElementById('troPrice').textContent='$'+tp.toFixed(8);document.getElementById('troPriceCol').textContent='$'+tp.toFixed(8);}}}catch(e){}}}catch(e){}}
+async function loadFearGreed(){try{const r=await fetch('https://api.alternative.me/fng/?limit=1');if(!r.ok)return;const d=await r.json();const val=d.data?.[0]?.value||50;const label=d.data?.[0]?.value_classification||'Neutral';document.getElementById('fearGreed').textContent=val;document.getElementById('fgLabel').textContent=label;document.getElementById('liaFg').textContent=val+' ('+label+')';}catch(e){}}
+function renderCollections(){const grid=document.getElementById('collectionsGrid');const byCol=bonData?.collections?.by_collection||{};grid.innerHTML=COLLECTIONS.map(c=>`<div class="collection-card" onclick="window.open('https://explorer.multiversx.com/collections/${c.id}','_blank')"><div class="col-id">${c.id}</div><div class="col-name">${c.name}</div><div style="font-size:.75rem;color:var(--muted)">${byCol[c.id]||0} NFT(s)</div></div>`).join('');}
+function openWallet(){document.getElementById('walletModal').classList.add('open');}
+function closeWallet(){document.getElementById('walletModal').classList.remove('open');}
+function connectXPortal(){closeWallet();window.open('https://xportal.com','_blank');alert('\ud83d\udcf1 Ouvrez xPortal sur votre mobile et connectez-vous via wallet.multiversx.com');}
+function connectWebWallet(){closeWallet();window.open('https://wallet.multiversx.com/unlock','_blank');}
+function connectExtension(){closeWallet();window.open('https://chrome.google.com/webstore/detail/multiversx-defi-wallet/dngmlblcodfobpdpecaadgfbcggfjfnm','_blank');}
+function stakeNFT(){const col=document.getElementById('nftCollection').value;const nonce=document.getElementById('nftNonce').value;if(!col||!nonce){alert('S\u00e9lectionnez une collection et entrez un nonce.');return;}const nonceHex=parseInt(nonce).toString(16).padStart(2,'0');const colHex=Array.from(col).map(c=>c.charCodeAt(0).toString(16)).join('');const funcHex=Array.from('stake').map(c=>c.charCodeAt(0).toString(16)).join('');const data=`ESDTNFTTransfer@${colHex}@${nonceHex}@01@${Array.from(NFT_STAKING).map(c=>c.charCodeAt(0).toString(16)).join('')}@${funcHex}`;window.open(`https://wallet.multiversx.com/hook/transaction?receiver=${NFT_STAKING}&value=0&gasLimit=30000000&data=${encodeURIComponent(data)}`,'_blank');}
+function claimNFTRewards(){window.open(`https://wallet.multiversx.com/hook/transaction?receiver=${NFT_STAKING}&value=0&gasLimit=20000000&data=claimRewards`,'_blank');}
+function stakeTRO(){const amount=document.getElementById('troAmount').value;if(!amount||parseFloat(amount)<=0){alert('Entrez un montant TRO.');return;}const amountRaw=BigInt(Math.floor(parseFloat(amount)*1e18)).toString(16);const troHex=Array.from('TRO-a3d7c5').map(c=>c.charCodeAt(0).toString(16)).join('');const funcHex=Array.from('stake').map(c=>c.charCodeAt(0).toString(16)).join('');const data=`ESDTTransfer@${troHex}@${amountRaw}@${funcHex}`;window.open(`https://wallet.multiversx.com/hook/transaction?receiver=${TRO_STAKING}&value=0&gasLimit=20000000&data=${encodeURIComponent(data)}`,'_blank');}
+function unstakeTRO(){window.open(`https://wallet.multiversx.com/hook/transaction?receiver=${TRO_STAKING}&value=0&gasLimit=20000000&data=unstake`,'_blank');}
+function buyTRO(){window.open('https://xexchange.com/swap/WEGLD-bd4d79/TRO-a3d7c5','_blank');}
+function selectPair(pair){alert(`\ud83d\uddf3\ufe0f Pour voter pour ${pair}:\n1. Stakez vos TRO dans l'onglet Staking\n2. Attendez une proposal DAO active\n3. LIA votera automatiquement si enable_auto_vote=True dans Vellum`);}
+function voteDAO(){alert('\ud83d\uddf3\ufe0f Pour voter:\n1. Stakez vos TRO (onglet Staking)\n2. Attendez une proposal active\n3. Ou activez enable_auto_vote=True dans TRODaoVote (Vellum)');}
+function toggleLiquidity(){const checked=document.getElementById('liquidityToggle').checked;const s=document.getElementById('liquidityStatus');if(checked){s.innerHTML='\u2705 Activ\u00e9 — LIA ajoutera automatiquement de la liquidit\u00e9 dans la pool vot\u00e9e.';if(confirm('Pour activer r\u00e9ellement: Vellum \u2192 n\u0153ud TROLiquidityScanner \u2192 enable_liquidity_add = True\n\nOuvrir Vellum?'))window.open('https://app.vellum.ai','_blank');}else{s.innerHTML='\u26a0\ufe0f D\u00e9sactiv\u00e9 — Pour activer: n\u0153ud <strong>TROLiquidityScanner</strong> dans Vellum \u2192 <strong>enable_liquidity_add = True</strong>';}}
+async function verifyTx(){const hash=document.getElementById('txHashInput').value.trim();if(!hash){alert('Entrez un hash de transaction.');return;}const result=document.getElementById('txResult');result.style.display='block';result.innerHTML='<span style="color:var(--gold)">\u23f3 V\u00e9rification...</span>';try{const r=await fetch(`${MVX}/transactions/${hash}?withResults=true`);if(!r.ok){result.innerHTML='<span style="color:var(--red)">\u274c Transaction non trouv\u00e9e</span>';return;}const tx=await r.json();const sc=tx.status==='success'?'color:var(--green)':tx.status==='pending'?'color:var(--gold)':'color:var(--red)';const se=tx.status==='success'?'\u2705':tx.status==='pending'?'\u23f3':'\u274c';result.innerHTML=`<span style="${sc}">${se} Statut: ${(tx.status||'').toUpperCase()}</span>\nFonction: ${tx.function||'transfer'}\nSender: ${(tx.sender||'').slice(0,20)}...\nReceiver: ${(tx.receiver||'').slice(0,20)}...\nGas utilis\u00e9: ${(tx.gasUsed||0).toLocaleString()}\n<a href="https://explorer.multiversx.com/transactions/${hash}" target="_blank" style="color:var(--accent2)">\ud83d\udd17 Voir sur Explorer \u2197</a>`;}catch(e){result.innerHTML='<span style="color:var(--red)">\u274c Erreur: '+e.message+'</span>';}}
+async function runDiagnostic(){const el=document.getElementById('diagResult');el.innerHTML='\u23f3 Diagnostic en cours...';const tests=[{name:'LIA JSON',url:BASE+'/data/lia_v5_status.json'},{name:'BoN JSON',url:BASE+'/data/battle_of_nodes.json'},{name:'MVX API',url:MVX+'/economics'},{name:'TRO Token',url:MVX+'/tokens/TRO-a3d7c5'},{name:'Fear & Greed',url:'https://api.alternative.me/fng/?limit=1'},{name:'NFT Staking',url:MVX+'/accounts/'+NFT_STAKING},{name:'TRO Governance',url:MVX+'/accounts/'+TRO_STAKING}];const results=await Promise.all(tests.map(async t=>{try{const r=await fetch(t.url);return r.ok?`<span style="color:var(--green)">\u2705 ${t.name}</span>`:`<span style="color:var(--red)">\u274c ${t.name} — HTTP ${r.status}</span>`;}catch(e){return `<span style="color:var(--red)">\u274c ${t.name} — ${e.message}</span>`;}}));el.innerHTML=results.join('<br>');}
+loadAllData();
+setInterval(loadAllData,60000);
 </script>
 </body>
 </html>
