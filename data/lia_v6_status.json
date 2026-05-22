@@ -1,0 +1,51 @@
+{
+  "version": "LIA v6",
+  "network": "mainnet",
+  "chain_id": "1",
+  "api": "https://api.multiversx.com",
+  "wallet": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "status": "OPERATIONAL",
+  "last_rebuild": "2026-05-22",
+  "fixes_applied": [
+    "inputs.py cr\u00e9\u00e9 avec class Inputs(BaseInputs)",
+    "workflow.py \u2192 BaseWorkflow[Inputs, BaseState]",
+    "nodes/universal_brain_unified.py cr\u00e9\u00e9 (base TP1/TP3/TP5)",
+    "nodes/universal_executor.py cr\u00e9\u00e9 (base LIAExecutorTP1/TP3/TP5)",
+    "BalanceGuard.Ports.warning \u2192 OrchestratorRouter",
+    "OrchestratorRouter.Ports.strong_buy \u2192 DexFeesReporter",
+    "OrchestratorRouter.Ports.blocked \u2192 AlertDispatcher",
+    "Doubles imports supprim\u00e9s dans 9 fichiers"
+  ],
+  "architecture": {
+    "nodes_total": 54,
+    "base_classes": [
+      "UniversalBrainUnified (TP1/TP3/TP5)",
+      "UniversalExecutor (LIAExecutorTP1/TP3/TP5)"
+    ],
+    "strategies": ["TP1_SCALPING", "TP3_SWING_COURT", "TP5_SWING_MOYEN", "LIABrain", "ContrarianBrain"],
+    "ports": ["ok", "warning", "blocked", "trade", "strong_buy", "yield_only"]
+  },
+  "config": {
+    "dry_run": false,
+    "strategy_profile": "STANDARD",
+    "avg_entry_egld": 4.49,
+    "avg_entry_wbtc": 95000,
+    "avg_entry_wtao": 380,
+    "avg_entry_tro": 0.000097
+  },
+  "xartists": {
+    "collections_mainnet": 11,
+    "tro_token": "TRO-94c925",
+    "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
+    "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
+    "marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+    "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn"
+  },
+  "battle_of_nodes": {
+    "project": "xArtists \u2014 Tuduri Original",
+    "artist": "@tudurioriginal",
+    "twitter": "@tudurioriginal",
+    "website": "https://neltud.github.io/xArtists",
+    "supernova_features": ["finality_sub_1s", "adaptive_sharding", "ai_agent_integration", "nft_defi_bridge", "physical_art_tokenization"]
+  }
+}
