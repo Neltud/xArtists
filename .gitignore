@@ -1,2 +1,38 @@
-node_modules/
+# Dependencies
+**/node_modules
+.pnp
+.pnp.js
+
+# Build outputs
+**/dist
+**/build
+apps/frontend/dist
+docs/
+
+# Environment
 .env
+.env.local
+.env.production
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Rust
+**/target/
+Cargo.lock
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.tmp
+*.log

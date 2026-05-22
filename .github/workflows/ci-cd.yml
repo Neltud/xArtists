@@ -1,0 +1,99 @@
+name: xArtists CI/CD Global (with Cache)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  # ==================== FRONTEND ====================
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: apps/frontend/package-lock.json
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/frontend/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-frontend-npm-${{ hashFiles('apps/frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-frontend-npm-
+
+      - name: Install Frontend Dependencies
+        run: npm ci --prefix apps/frontend
+
+      - name: Type Check
+        run: npm run type-check --prefix apps/frontend
+
+      - name: Lint
+        run: npm run lint --prefix apps/frontend
+
+      - name: Build Frontend
+        run: npm run build --prefix apps/frontend
+
+  # ==================== RUST CONTRACTS ====================
+  contracts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: packages/contracts
+          key: ${{ hashFiles('packages/contracts/**/Cargo.lock') }}
+
+      - name: Check Contracts
+        run: |
+          cargo fmt --all -- --check
+          cargo clippy --all-targets --all-features -- -D warnings
+          cargo build --release
+        working-directory: packages/contracts
+
+  # ==================== TOOLS ====================
+  tools:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Cache Tools Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            tools/faucet/node_modules
+            tools/tip/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-tools-npm-${{ hashFiles('tools/**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-tools-npm-
+
+      - name: Install & Build Tools
+        run: |
+          if [ -d "tools/faucet" ]; then npm ci --prefix tools/faucet; fi
+          if [ -d "tools/tip" ]; then npm ci --prefix tools/tip; fi
