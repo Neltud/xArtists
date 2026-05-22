@@ -1,0 +1,27 @@
+[workspace]
+members = [
+    "packages/contracts",
+    "tools/faucet",
+    "tools/tip",
+]
+resolver = "2"
+
+[workspace.package]
+name = "xartists"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nelson Tuduri <nelson@xartists.com>"]
+license = "MIT"
+repository = "https://github.com/Neltud/xArtists"
+homepage = "https://xartists.com"
+keywords = ["art", "nft", "staking", "multiversx", "dao"]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 0
+debug = true
