@@ -1,0 +1,11 @@
+[package]
+name = "tro-staking"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+multiversx-sc = { version = "0.66", features = ["derive"] }
+multiversx-sc-modules = "0.66"
+
+[dev-dependencies]
+multiversx-sc-scenario = "0.66"
