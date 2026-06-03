@@ -1,20 +1,36 @@
-# 🎨 xArtists — Tuduri Original
+# xArtists — LIA v5
 
-> **LIA v5** — Agent IA autonome qui génère de la valeur via le trading DeFi et la réinvestit dans l’écosystème créatif et financier sur **MultiversX**.
+**MultiversX × Bitcoin × AI Agent Economy**
 
-## 🚀 Mise à Jour Complète (03 Juin 2026)
-- Code entièrement corrigé et optimisé
-- Intégration veille technologique
-- Analyse dApp complète
-- Corrections bugs, sécurité, performance
+## Current Status (June 2026)
 
-[![Live dApp](https://img.shields.io/badge/🌐_Live_dApp-00ff9d?style=for-the-badge)](https://neltud.github.io/xArtists)
-[![MultiversX](https://img.shields.io/badge/MultiversX-Mainnet-4d9fff?style=for-the-badge)](https://multiversx.com)
+### What is implemented:
+- Full Frontend (React + Vite)
+- Bitcoin Layer 2 page with Mock Bridge
+- LIA v5 Discord Bot with automatic strategy
+- Lightning + L402 + X402 payment modules
+- Payment History page
+- Bridge Fees Dashboard
+- TradingView integration
+- Secure Smart Contract Bridge (Timelock + Quorum + ed25519) ready
 
-## Veille Technologique
-- MultiversX : Mise à jour EGLD staking, xExchange v2
-- AI Agents : LIA v5 avec Grok-like capabilities
-- Blockchain Art : NFT royalties auto, on-chain AI generation
+### What is missing / In progress:
+- Full frontend integration of all payment flows
+- Real deployment of the secure bridge on Testnet
+- Multi-sig Owner
+- E2E tests
 
-## Analyse dApp Complète
-Voir `docs/ANALYSE_DAPP_COMPLETE.md`
+## How to run locally
+```bash
+cd apps/frontend
+npm install
+npm run dev
+```
+
+## Live Site
+https://neltud.github.io/xArtists
+
+## Next Steps
+1. Deploy secure bridge on Testnet
+2. Complete frontend payment flows
+3. Add real data to Payment History & Fees Dashboard
