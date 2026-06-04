@@ -24,9 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          # Removed cache-dependency-path to avoid resolution errors
-          # GitHub Actions will still attempt basic caching when possible
+          node-version: '22'
 
       - name: Install dependencies
         run: |
