@@ -1,9 +1,7 @@
-// Récupère le prix EGLD depuis CoinGecko
+// Prix EGLD via CoinGecko
 export const getEgldPrice = async (): Promise<number> => {
   try {
-    const res = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=multiversx&vs_currencies=usd'
-    );
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=multiversx&vs_currencies=usd');
     const data = await res.json();
     return data.multiversx.usd || 3.5;
   } catch {
@@ -11,7 +9,7 @@ export const getEgldPrice = async (): Promise<number> => {
   }
 };
 
-// Récupère les infos du token TRO (TRO-94c925) depuis l'API MultiversX
+// Infos du token TRO-94c925 via API MultiversX
 export const getTroInfo = async () => {
   try {
     const res = await fetch('https://api.multiversx.com/tokens/TRO-94c925');
@@ -20,18 +18,18 @@ export const getTroInfo = async () => {
       price: data.price || 0,
       marketCap: data.marketCap || 0,
       circulatingSupply: data.circulatingSupply || 0,
+      name: data.name || 'TRO',
+      identifier: 'TRO-94c925'
     };
   } catch {
-    return { price: 0, marketCap: 0, circulatingSupply: 0 };
+    return { price: 0, marketCap: 0, circulatingSupply: 0, name: 'TRO', identifier: 'TRO-94c925' };
   }
 };
 
-// Prix BTC depuis CoinGecko
+// Prix BTC via CoinGecko
 export const getBtcPrice = async (): Promise<number> => {
   try {
-    const res = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'
-    );
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
     const data = await res.json();
     return data.bitcoin.usd || 65000;
   } catch {
