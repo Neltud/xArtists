@@ -6,9 +6,12 @@ pub mod modules;
 
 use modules::fees::FeesModule;
 use modules::config::ConfigModule;
+use modules::bridge_logic::BridgeLogicModule;
 
 #[multiversx_sc::contract]
-pub trait BtcBridge: FeesModule + ConfigModule {
+pub trait BtcBridge:
+    FeesModule + ConfigModule + BridgeLogicModule
+{
     #[init]
     fn init(&self) {
         self.bridge_fee_percent().set(50);
