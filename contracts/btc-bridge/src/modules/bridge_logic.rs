@@ -4,9 +4,10 @@ multiversx_sc::imports!();
 
 use crate::modules::fees::FeesModule;
 use crate::modules::config::ConfigModule;
+use multiversx_sc_modules::pause::PauseModule;
 
 #[multiversx_sc::module]
-pub trait BridgeLogicModule: FeesModule + ConfigModule {
+pub trait BridgeLogicModule: FeesModule + ConfigModule + PauseModule {
     #[storage_mapper("sbtcBalance")]
     fn sbtc_balance(&self, address: &ManagedAddress) -> SingleValueMapper<BigUint>;
 
@@ -22,13 +23,14 @@ pub trait BridgeLogicModule: FeesModule + ConfigModule {
         signatures: ManagedVec<ManagedBuffer>,
         nonce: u64,
     ) {
-        self.require_not_paused();
+        self.require_not_paused(); // From PauseModule
+
         let max_amount = self.max_bridge_amount().get();
         require!(btc_amount > 0 && btc_amount <= max_amount, "Invalid amount");
         require!(!self.used_nonces().contains(&nonce), "Nonce already used");
 
-        // TODO: Add quorum signature verification here
-        let valid_signatures = 2u64; // placeholder
+        // TODO: Implement real quorum signature verification
+        let valid_signatures = 2u64;
         let required = self.required_quorum().get();
         require!(valid_signatures >= required, "Quorum not reached");
 
