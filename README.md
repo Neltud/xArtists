@@ -1,36 +1,30 @@
-# xArtists — LIA v5
+# xArtists — LIA v5 (Clean Main)
 
-**MultiversX × Bitcoin × AI Agent Economy**
+**MultiversX × Bitcoin × AI Agent**
 
-## Current Status (June 2026)
+## Current Status (Cleaned June 2026)
 
-### What is implemented:
-- Full Frontend (React + Vite)
-- Bitcoin Layer 2 page with Mock Bridge
-- LIA v5 Discord Bot with automatic strategy
-- Lightning + L402 + X402 payment modules
-- Payment History page
-- Bridge Fees Dashboard
-- TradingView integration
-- Secure Smart Contract Bridge (Timelock + Quorum + ed25519) ready
+### What works:
+- Dashboard with real prices (EGLD + TRO-94c925)
+- Bitcoin Layer 2 (Bridge mock + Lightning + X402 + L402)
+- Hatom positions
+- LP Pools TRO
+- Tip / Pourboires page
+- Wallet Connect
+- All pages properly routed
 
-### What is missing / In progress:
-- Full frontend integration of all payment flows
-- Real deployment of the secure bridge on Testnet
-- Multi-sig Owner
-- E2E tests
+### Deployment Method:
+- Manual build + push to `main`
+- GitHub Pages deploys from `main` → `/docs`
 
-## How to run locally
+## How to publish
 ```bash
 cd apps/frontend
-npm install
-npm run dev
+npm run build
+cd ..
+git add .
+git commit -m "deploy"
+git push origin main
 ```
 
-## Live Site
-https://neltud.github.io/xArtists
-
-## Next Steps
-1. Deploy secure bridge on Testnet
-2. Complete frontend payment flows
-3. Add real data to Payment History & Fees Dashboard
+Site: https://neltud.github.io/xArtists
