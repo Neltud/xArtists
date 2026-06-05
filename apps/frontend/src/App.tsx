@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import Dashboard from './pages/Dashboard';
 import BitcoinLayer2 from './pages/BitcoinLayer2';
@@ -11,8 +12,21 @@ function App() {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => setIsOpen(!isOpen);
-
   const closeMenu = () => setIsOpen(false);
+
+  // Animation variants for mobile menu
+  const menuVariants = {
+    closed: {
+      opacity: 0,
+      height: 0,
+      transition: { duration: 0.25, ease: [0.32, 0.72, 0, 1] }
+    },
+    open: {
+      opacity: 1,
+      height: 'auto',
+      transition: { duration: 0.35, ease: [0.32, 0.72, 0, 1] }
+    }
+  };
 
   return (
     <Router>
@@ -57,7 +71,15 @@ function App() {
               className="md:hidden w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white"
               aria-label="Toggle menu"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <motion.svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="w-6 h-6" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+                animate={{ rotate: isOpen ? 180 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
                 {isOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -68,28 +90,36 @@ function App() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isOpen && (
-          <div className="md:hidden border-t border-zinc-800 bg-zinc-900">
-            <div className="px-6 py-4 flex flex-col gap-1 text-sm">
-              <Link to="/" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300">Dashboard</Link>
-              <Link to="/bitcoin-layer2" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300">Bitcoin Layer 2</Link>
-              <Link to="/hatom" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300">Hatom</Link>
-              <Link to="/lp-pools" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300">LP Pools</Link>
-              <Link to="/tip" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300">Tip</Link>
-              
-              <div className="pt-4 border-t border-zinc-800 mt-2">
-                <Link 
-                  to="/bitcoin-layer2" 
-                  onClick={closeMenu}
-                  className="block w-full text-center px-6 py-3 bg-violet-600 hover:bg-violet-700 rounded-2xl text-sm font-medium"
-                >
-                  Connect Wallet
-                </Link>
+        {/* Animated Mobile Menu with Framer Motion */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial="closed"
+              animate="open"
+              exit="closed"
+              variants={menuVariants}
+              className="md:hidden border-t border-zinc-800 bg-zinc-900 overflow-hidden"
+            >
+              <div className="px-6 py-4 flex flex-col gap-1 text-sm">
+                <Link to="/" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300 active:bg-zinc-800">Dashboard</Link>
+                <Link to="/bitcoin-layer2" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300 active:bg-zinc-800">Bitcoin Layer 2</Link>
+                <Link to="/hatom" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300 active:bg-zinc-800">Hatom</Link>
+                <Link to="/lp-pools" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300 active:bg-zinc-800">LP Pools</Link>
+                <Link to="/tip" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300 active:bg-zinc-800">Tip</Link>
+                
+                <div className="pt-4 border-t border-zinc-800 mt-2">
+                  <Link 
+                    to="/bitcoin-layer2" 
+                    onClick={closeMenu}
+                    className="block w-full text-center px-6 py-3.5 bg-violet-600 hover:bg-violet-700 active:bg-violet-800 rounded-2xl text-sm font-medium transition-colors"
+                  >
+                    Connect Wallet
+                  </Link>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       <Routes>
