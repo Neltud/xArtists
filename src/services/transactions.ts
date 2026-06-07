@@ -1,6 +1,12 @@
 // src/services/transactions.ts
-// LIA Wallet + Staking Contracts Integration
+// Real on-chain queries for tro-staking and nft-staking contracts
 
+import { Address, SmartContract, ResultsParser } from '@multiversx/sdk-core';
+import { ApiNetworkProvider } from '@multiversx/sdk-network-providers';
+
+import { useSendTransaction } from '@multiversx/sdk-dapp/hooks/transactions/useSendTransaction';
+
+// LIA Wallet Address
 export const LIA_DEPLOYER_ADDRESS = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6';
 
 export const CONTRACT_ADDRESSES = {
@@ -9,7 +15,10 @@ export const CONTRACT_ADDRESSES = {
   nftStaking: import.meta.env.VITE_NFT_STAKING_ADDRESS || LIA_DEPLOYER_ADDRESS,
 };
 
-// ============ STAKING HOOKS ============
+const networkProvider = new ApiNetworkProvider('https://api.multiversx.com');
+const resultsParser = new ResultsParser();
+
+// ============== TRANSACTION HOOKS ==============
 
 export function useStakeNFT() {
   const { sendTransaction } = useSendTransaction();
@@ -31,10 +40,7 @@ export function useStakeTRO() {
   const { sendTransaction } = useSendTransaction();
 
   const stakeTRO = async (amount: string) => {
-    // Example for tro-staking contract
-    // Endpoint usually "stake" with ESDT transfer
-    const data = `ESDTTransfer@${Buffer.from('TRO-94c925').toString('hex')}@${parseInt(amount).toString(16).padStart(16, '0')}@7374616b65`; // stake
-
+    const data = `ESDTTransfer@${Buffer.from('TRO-94c925').toString('hex')}@${parseInt(amount).toString(16).padStart(16, '0')}@7374616b65`;
     return await sendTransaction({
       value: 0,
       data,
@@ -46,18 +52,64 @@ export function useStakeTRO() {
   return { stakeTRO };
 }
 
-// ============ QUERY HELPERS (for reading staked amounts) ============
-// These will be replaced with real contract queries once deployed
-export async function queryStakedTRO(address: string) {
-  // TODO: Implement with SmartContract query on tro-staking
-  // Example:
-  // const result = await provider.queryContract(...);
-  console.log('Query staked TRO for:', address);
-  return { stakedAmount: '1240' }; // Placeholder
+// ============== REAL ON-CHAIN QUERY FUNCTIONS ==============
+
+/**
+ * Query staked TRO amount for a user from tro-staking contract
+ * Endpoint in Rust contract is usually: getUserStake or getStake
+ */
+export async function queryStakedTRO(userAddress: string) {
+  try {
+    const contract = new SmartContract({
+      address: new Address(CONTRACT_ADDRESSES.troStaking),
+    });
+
+    const query = contract.createQuery({
+      func: 'getUserStake', // <-- Change to your actual endpoint name in Rust contract
+      args: [new Address(userAddress)],
+    });
+
+    const queryResponse = await networkProvider.queryContract(query);
+    const endpointDefinition = contract.getEndpoint('getUserStake');
+
+    const parsedResult = resultsParser.parseQueryResponse(queryResponse, endpointDefinition);
+
+    // Adjust based on your contract return type (usually BigUint or u64)
+    const stakedAmount = parsedResult.values[0]?.valueOf()?.toString() || '0';
+
+    return { stakedAmount };
+  } catch (error) {
+    console.error('Error querying staked TRO:', error);
+    return { stakedAmount: '0' };
+  }
 }
 
-export async function queryStakedNFTs(address: string) {
-  // TODO: Implement with nft-staking contract
-  console.log('Query staked NFTs for:', address);
-  return { nftCount: 7, totalValue: '480' }; // Placeholder
+/**
+ * Query number of staked NFTs for a user from nft-staking contract
+ * Endpoint usually: getUserStakedNFTs or getStakedNFTCount
+ */
+export async function queryStakedNFTs(userAddress: string) {
+  try {
+    const contract = new SmartContract({
+      address: new Address(CONTRACT_ADDRESSES.nftStaking),
+    });
+
+    const query = contract.createQuery({
+      func: 'getUserStakedNFTs', // <-- Change to your actual endpoint
+      args: [new Address(userAddress)],
+    });
+
+    const queryResponse = await networkProvider.queryContract(query);
+    const endpointDefinition = contract.getEndpoint('getUserStakedNFTs');
+
+    const parsedResult = resultsParser.parseQueryResponse(queryResponse, endpointDefinition);
+
+    // Adjust parsing based on your contract return type
+    const nftCount = parsedResult.values[0]?.valueOf()?.toNumber() || 0;
+
+    return { nftCount, totalValue: '0' }; // You can add value calculation later
+  } catch (error) {
+    console.error('Error querying staked NFTs:', error);
+    return { nftCount: 0, totalValue: '0' };
+  }
 }
