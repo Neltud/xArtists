@@ -1,26 +1,16 @@
-# Deploying Rust Contracts (tro-staking, nft-staking, btc-bridge)
+# Deploying Contracts with LIA Wallet
 
-## Prerequisites
-- Rust + cargo installed
-- mxpy or MultiversX CLI tools
-- Testnet or Mainnet access
+## LIA Deployer
+Use the official LIA / project wallet address for all contract deployments:
+
+```ts
+const LIA_DEPLOYER_ADDRESS = 'erd1qqqqqqqqqqqqqpgq...'; // <-- Replace with real address
+```
 
 ## Steps
-1. Build contract:
-   ```bash
-   cd contracts/tro-staking
-   cargo build --release --target wasm32-unknown-unknown
-   ```
+1. Build all contracts (tro-staking, nft-staking, btc-bridge, minter if separate).
+2. Deploy using LIA wallet (mxpy or MultiversX IDE).
+3. Update `.env` and `transactions.ts` with the new addresses.
+4. Update TRO token references to TRO-94c925 everywhere.
 
-2. Deploy (example with mxpy):
-   ```bash
-   mxpy contract deploy --bytecode output/tro_staking.wasm --pem wallet.pem --gas-limit 200000000
-   ```
-
-3. Note the deployed address and update:
-   - `.env` → VITE_TRO_STAKING_ADDRESS
-   - `src/services/transactions.ts` → CONTRACT_ADDRESSES
-
-Repeat for nft-staking and btc-bridge.
-
-After deployment, implement the exact endpoint names and argument encoding in transactions.ts based on your Rust contract.
+After deployment, real prices will come from MultiversX API + CoinGecko fallback.

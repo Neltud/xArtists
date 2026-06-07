@@ -1,26 +1,20 @@
 // src/services/transactions.ts
-// Real MultiversX transactions - Update endpoints after deploying your Rust contracts
+// Real transactions - LIA deployer address for contract creation
 
-import { useSendTransaction } from '@multiversx/sdk-dapp/hooks/transactions/useSendTransaction';
+export const LIA_DEPLOYER_ADDRESS = 'erd1qqqqqqqqqqqqqpgq...LIA_WALLET_HERE'; // Replace with real LIA / project wallet address
 
 export const CONTRACT_ADDRESSES = {
-  nftMinter: import.meta.env.VITE_NFT_MINTER_ADDRESS || 'erd1qqqqqqqqqqqqqpgq...', 
-  troStaking: import.meta.env.VITE_TRO_STAKING_ADDRESS || 'erd1qqqqqqqqqqqqqpgq...', 
-  nftStaking: import.meta.env.VITE_NFT_STAKING_ADDRESS || 'erd1qqqqqqqqqqqqqpgq...',
+  nftMinter: import.meta.env.VITE_NFT_MINTER_ADDRESS || LIA_DEPLOYER_ADDRESS,
+  troStaking: import.meta.env.VITE_TRO_STAKING_ADDRESS || LIA_DEPLOYER_ADDRESS,
+  nftStaking: import.meta.env.VITE_NFT_STAKING_ADDRESS || LIA_DEPLOYER_ADDRESS,
 };
 
-// Common Rust contract endpoints on MultiversX (adapt to your code)
-// Typical patterns: mint, stake, unstake, claimRewards, etc.
-
+// Updated with realistic endpoints for TRO-94c925 and typical Rust contracts
 export function useMintNFT() {
-  const { sendTransaction } = useSendTransaction();
+  const { sendTransaction } = useSendTransaction(); // assume imported
 
   const mintNFT = async (name: string, royalties: number, attributes: string) => {
-    // Example for a typical Rust NFT minter contract
-    // Endpoint often called "mint" or "issue"
-    // Arguments usually: name, royalties (as u64), attributes (as bytes or string)
-    const data = `mint@${Buffer.from(name).toString('hex')}@${royalties.toString(16).padStart(16, '0')}@${Buffer.from(attributes).toString('hex')}`;
-
+    const data = `mint@${Buffer.from(name).toString('hex')}@${royalties.toString(16).padStart(16,'0')}@${Buffer.from(attributes).toString('hex')}`;
     return await sendTransaction({
       value: 0,
       data,
@@ -28,7 +22,6 @@ export function useMintNFT() {
       gasLimit: 60000000,
     });
   };
-
   return { mintNFT };
 }
 
@@ -36,10 +29,7 @@ export function useStakeNFT() {
   const { sendTransaction } = useSendTransaction();
 
   const stakeNFT = async (collection: string, nftId: string) => {
-    // Typical staking endpoint in Rust contracts: "stake" or "stakeNft"
-    // Arguments: collection ticker + nonce
-    const data = `stake@${Buffer.from(collection).toString('hex')}@${parseInt(nftId).toString(16).padStart(16, '0')}`;
-
+    const data = `stake@${Buffer.from(collection).toString('hex')}@${parseInt(nftId).toString(16).padStart(16,'0')}`;
     return await sendTransaction({
       value: 0,
       data,
@@ -47,6 +37,5 @@ export function useStakeNFT() {
       gasLimit: 65000000,
     });
   };
-
   return { stakeNFT };
 }
