@@ -1,4 +1,5 @@
 import { initMultiversx } from './multiversx';
+import { useState, useEffect } from 'react';
 
 type PoolReserves = {
   reserveToken: bigint | null;
@@ -17,43 +18,73 @@ type OnchainStats = {
 
 const SECONDS_PER_YEAR = 31536000;
 
+function base64ToBigInt(b64: string): bigint {
+  // Browser-friendly base64 -> BigInt
+  try {
+    // atob is available in browser; in Node it may not be, but build target is browser
+    const bin = typeof atob === 'function' ? atob(b64) : Buffer.from(b64, 'base64').toString('binary');
+    let hex = '';
+    for (let i = 0; i < bin.length; i++) {
+      const h = bin.charCodeAt(i).toString(16).padStart(2, '0');
+      hex += h;
+    }
+    if (!hex) return BigInt(0);
+    // ensure hex has even length
+    if (hex.length % 2 !== 0) hex = '0' + hex;
+    return BigInt('0x' + hex);
+  } catch (e) {
+    // fallback
+    return BigInt(0);
+  }
+}
+
+function parseReturnValueToBigInt(value: string): bigint | null {
+  if (!value) return null;
+  const v = value.toString();
+  if (v.startsWith('0x') || v.startsWith('0X')) {
+    try {
+      return BigInt(v);
+    } catch (e) {
+      return null;
+    }
+  }
+  // sometimes SDK returns base64
+  try {
+    // detect base64 by presence of padding or non-hex chars
+    return base64ToBigInt(v);
+  } catch (e) {
+    return null;
+  }
+}
+
 async function tryQueryReserves(proxyProvider: any, poolAddress: string): Promise<PoolReserves | null> {
-  // Try common method names for AMM contracts; fallback to null
-  const candidates = ['getReserves', 'get_reserves', 'getPoolState', 'getPoolInfo', 'get_reserve'];
+  // Try common view names for AMM/Pair contracts
+  const candidates = ['getReserves', 'get_reserves', 'getPoolState', 'getPoolInfo', 'get_reserve', 'getLiquidity'];
   for (const fn of candidates) {
     try {
-      // proxyProvider.queryContract takes different shapes across sdk versions; try a common signature
-      // The SDK may accept {address, func, args}
-      // We'll call proxyProvider.queryContract and inspect result
-      // eslint-disable-next-line no-await-in-loop
       const res = await proxyProvider.queryContract({ address: poolAddress, func: fn, args: [] });
-      // If we get a result with data we attempt to parse numeric values
-      if (res && res.returnData) {
-        // Attempt to decode base64 returnData to numbers
-        // Many SDKs already decode; we handle common shapes
-        // Here we attempt to pick first two numeric fields
-        const rd = res.returnData;
-        // rd often contains hex/base64 strings; best-effort parsing
-        const parsed: any[] = rd.map((r: string) => {
-          try {
-            // if hex
-            if (r.startsWith('0x')) return BigInt(r);
-            // base64 -> buffer
-            const buf = Buffer.from(r, 'base64');
-            // try BigInt from buffer
-            let asHex = '0x' + buf.toString('hex');
-            return BigInt(asHex);
-          } catch (e) {
-            return null;
-          }
-        });
-        if (parsed.length >= 2 && (parsed[0] !== null) && (parsed[1] !== null)) {
-          return { reserveToken: parsed[0], reserveQuote: parsed[1] } as PoolReserves;
+      if (!res) continue;
+      // SDK response shapes vary. Try a few common locations for data
+      // 1) res.returnData -> array of base64/hex strings
+      // 2) res.data or res.returnData[0]
+      const returnData: string[] | undefined = (res as any).returnData || (res as any).data || undefined;
+      if (Array.isArray(returnData) && returnData.length >= 2) {
+        const a = parseReturnValueToBigInt(returnData[0]);
+        const b = parseReturnValueToBigInt(returnData[1]);
+        if (a !== null && b !== null) return { reserveToken: a, reserveQuote: b };
+      }
+      // 3) some SDKs decode to value arrays
+      if ((res as any).decoded && Array.isArray((res as any).decoded) && (res as any).decoded.length >= 2) {
+        try {
+          const d0 = BigInt((res as any).decoded[0]);
+          const d1 = BigInt((res as any).decoded[1]);
+          return { reserveToken: d0, reserveQuote: d1 };
+        } catch (e) {
+          // ignore
         }
       }
     } catch (e) {
-      // ignore and try next
-      // console.debug('query attempt failed', fn, e?.message || e);
+      // try next
     }
   }
   return null;
@@ -68,9 +99,7 @@ export async function getPoolReserves(poolAddress: string): Promise<PoolReserves
 }
 
 async function tryGet24hVolume(poolAddress: string): Promise<number | null> {
-  // Best-effort: use MultiversX explorer metrics API if available
-  // Example endpoint: https://api.multiversx.com/collections/<address>/volume?period=24h
-  // There's no guaranteed standardized endpoint; we try a few known endpoints
+  // Best-effort: try public endpoints (may not exist for all chains/pools)
   const endpoints = [
     `https://api.multiversx.com/address/${poolAddress}/metrics`,
     `https://api.multiversx.com/pairs/${poolAddress}/volume?period=24h`,
@@ -78,12 +107,9 @@ async function tryGet24hVolume(poolAddress: string): Promise<number | null> {
   ];
   for (const url of endpoints) {
     try {
-      // eslint-disable-next-line no-await-in-loop
       const r = await fetch(url);
       if (!r.ok) continue;
-      // eslint-disable-next-line no-await-in-loop
       const json = await r.json();
-      // attempt to locate a 24h volume field
       const v = json.volume24h || json['24h_volume'] || json.volume || json['volume_24h'];
       if (typeof v === 'number') return v;
       if (v && typeof v === 'string') return parseFloat(v);
@@ -95,18 +121,16 @@ async function tryGet24hVolume(poolAddress: string): Promise<number | null> {
 }
 
 export async function calculateAPYFromPool(poolAddress: string, feePercent = 0.003): Promise<OnchainStats> {
-  // feePercent default 0.3% = 0.003
   try {
     const reserves = await getPoolReserves(poolAddress);
     const vol24h = await tryGet24hVolume(poolAddress);
-    // price = reserveQuote / reserveToken (best-effort using BigInt)
     if (!reserves.reserveQuote || !reserves.reserveToken) throw new Error('Invalid reserves');
+    // convert BigInt to Number safely (may lose precision for extremely large values)
     const reserveToken = Number(reserves.reserveToken.toString());
     const reserveQuote = Number(reserves.reserveQuote.toString());
     if (reserveToken === 0) throw new Error('Zero reserve token');
     const price = reserveQuote / reserveToken; // quote per token
-    // TVL in quote units: reserveQuote * 2 (both sides) OR reserveToken*price*2
-    const tvl = reserveQuote * 2;
+    const tvl = reserveQuote * 2; // value in quote units
     let aprFees: number | null = null;
     if (vol24h !== null && tvl > 0) {
       aprFees = ((vol24h * 365 * feePercent) / tvl) * 100; // percent
@@ -117,11 +141,7 @@ export async function calculateAPYFromPool(poolAddress: string, feePercent = 0.0
   }
 }
 
-// React hook
 export function useOnchainStats(poolAddress: string | null, pollInterval = 60000) {
-  const React = (globalThis as any).React;
-  if (!React) throw new Error('React required');
-  const { useState, useEffect } = React;
   const [stats, setStats] = useState<OnchainStats | null>(null);
   const [loading, setLoading] = useState(false);
 
