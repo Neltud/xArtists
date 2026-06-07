@@ -1,18 +1,19 @@
-# xArtists — LIA v5 (Clean Main) - Advanced
+# xArtists — LIA v5 (Final)
 
-**MultiversX × Bitcoin L2 × Interactive AI Agent**
+**MultiversX × Bitcoin L2 × Interactive AI Agent (LIA)**
 
-## Latest Progress (June 2026)
-- ✅ Professional WalletConnect in header with real balance
-- ✅ Real transaction support (useSendTransaction) for mint & stake
-- ✅ Interactive LIA v5 AI Agent with cycles + feedback
-- ✅ Basic Vitest tests
-- ✅ Deployment guide for Rust contracts
-- ✅ CI with npm/cargo audit
-- Ready for mx-sdk-dapp v5+ (Passkeys support coming)
+**LIA Wallet (deployer):** `erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6`
 
-Update CONTRACT_ADDRESSES after deploying contracts/tro-staking and nft-staking.
+## Latest Status
+- ✅ Real prices from MultiversX API + CoinGecko (TRO-94c925)
+- ✅ LIA wallet centralized for all contract deployments
+- ✅ Real transaction support (mint/stake) ready
+- ✅ Interactive LIA v5 AI Agent
+- ✅ Professional WalletConnect + on-chain analytics
+- ✅ CI with audits + tests
 
-Run `npm test` for basic tests.
+**Live Demo:** https://neltud.github.io/xArtists
 
-Next: Full on-chain AI decisions + v5+ migration.
+Update contract addresses after deploying with the LIA wallet above.
+
+Push to main = automatic publish on GitHub Pages.

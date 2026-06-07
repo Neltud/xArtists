@@ -1,16 +1,16 @@
 # Deploying Contracts with LIA Wallet
 
-## LIA Deployer
-Use the official LIA / project wallet address for all contract deployments:
-
-```ts
-const LIA_DEPLOYER_ADDRESS = 'erd1qqqqqqqqqqqqqpgq...'; // <-- Replace with real address
-```
+**LIA Wallet Address:** `erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6`
 
 ## Steps
-1. Build all contracts (tro-staking, nft-staking, btc-bridge, minter if separate).
-2. Deploy using LIA wallet (mxpy or MultiversX IDE).
-3. Update `.env` and `transactions.ts` with the new addresses.
-4. Update TRO token references to TRO-94c925 everywhere.
+1. Use the LIA wallet above to deploy all contracts (tro-staking, nft-staking, btc-bridge, etc.).
+2. Build:
+   ```bash
+   cd contracts/tro-staking
+   cargo build --release --target wasm32-unknown-unknown
+   ```
+3. Deploy with mxpy or MultiversX tools using the LIA address.
+4. Copy the new contract addresses into `.env` and update `CONTRACT_ADDRESSES` in `transactions.ts`.
+5. Real prices are fetched live from MultiversX API + CoinGecko for TRO-94c925.
 
-After deployment, real prices will come from MultiversX API + CoinGecko fallback.
+After deployment, all on-chain features (mint, stake, governance) will work with real transactions.
