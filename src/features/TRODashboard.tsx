@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from '../components/Card';
 import './Features.css';
 import { usePrice } from '../services/price';
+import { useMvxAccount, formatEgldBalance } from '../services/mvx';
 
 const TRO_COINGECKO_ID = import.meta.env.VITE_TRO_COINGECKO_ID || 'tro-94c925';
 const VS_CURRENCY = (import.meta.env.VITE_PRICE_VS || 'usd') as 'usd' | 'eur';
@@ -19,10 +20,28 @@ const formatChange = (n: number | undefined) => {
 
 const TRODashboard: React.FC = () => {
   const price = usePrice(TRO_COINGECKO_ID, VS_CURRENCY, Number(import.meta.env.VITE_PRICE_POLL_INTERVAL || 60000));
+  const { address, account, isLoggedIn } = useMvxAccount();
+
+  const egldBalance = account?.balance ? formatEgldBalance(account.balance) : '0';
 
   return (
     <div className="feature-container">
       <h1>💎 $TRO Token Dashboard</h1>
+      
+      {/* Wallet Connection Status */}
+      <div className="wallet-status">
+        {isLoggedIn ? (
+          <div className="success">
+            ✅ Connected: {address?.slice(0, 8)}...{address?.slice(-6)}
+            <br />EGLD Balance: <strong>{egldBalance} EGLD</strong>
+          </div>
+        ) : (
+          <div className="info">
+            Connect your wallet (xPortal / Extension / Web) to see real on-chain data.
+          </div>
+        )}
+      </div>
+
       <div className="feature-grid">
         <Card title="Price & Market" icon="📈">
           <div className="info-item">
@@ -42,6 +61,26 @@ const TRODashboard: React.FC = () => {
             <strong>{price && price.market_cap_usd ? `$${Number(price.market_cap_usd).toLocaleString()}` : '—'}</strong>
           </div>
         </Card>
+
+        <Card title="On-Chain Stats (Wallet Connected)" icon="🔗">
+          <div className="info-item">
+            <span>Your EGLD Balance:</span>
+            <strong>{isLoggedIn ? `${egldBalance} EGLD` : 'Connect wallet'}</strong>
+          </div>
+          <div className="info-item">
+            <span>TRO Staked (example):</span>
+            <strong>0.0000 TRO</strong> <span className="note">(Query tro-staking contract)</span>
+          </div>
+          <div className="info-item">
+            <span>NFTs Staked:</span>
+            <strong>0</strong> <span className="note">(Use nft-staking contract)</span>
+          </div>
+          <div className="info-item">
+            <span>BoN Score / Goal:</span>
+            <strong>21/100 → $1M</strong> <span className="note">(Live data pending full integration)</span>
+          </div>
+        </Card>
+
         <Card title="Volume & Liquidity" icon="💧">
           <div className="info-item">
             <span>24h Volume:</span>
@@ -57,6 +96,10 @@ const TRODashboard: React.FC = () => {
           </div>
         </Card>
       </div>
+
+      <p className="note">
+        Roadmap: Full on-chain queries via contracts/tro-staking & nft-staking. Deploy contracts & update addresses in services/mvx.ts for live staked amounts, governance, etc.
+      </p>
     </div>
   );
 };
