@@ -1,0 +1,67 @@
+.wallet-connect {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.wallet-connect.connected {
+  background: rgba(46, 139, 87, 0.15);
+  border-color: #2e8b57;
+}
+
+.wallet-info {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  line-height: 1.1;
+}
+
+.wallet-address {
+  font-family: monospace;
+  font-weight: 600;
+  color: #fff;
+}
+
+.wallet-balance {
+  font-size: 0.75rem;
+  color: #a0d2db;
+}
+
+.wallet-method {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #5a3be7, #7c5cff);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(90, 59, 231, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
