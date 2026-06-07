@@ -1,19 +1,26 @@
-# xArtists — LIA v5 (Final)
+# xArtists — LIA v5
 
-**MultiversX × Bitcoin L2 × Interactive AI Agent (LIA)**
+**Version:** 0.5.0
 
-**LIA Wallet (deployer):** `erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6`
+## Versioning & Releases
 
-## Latest Status
-- ✅ Real prices from MultiversX API + CoinGecko (TRO-94c925)
-- ✅ LIA wallet centralized for all contract deployments
-- ✅ Real transaction support (mint/stake) ready
-- ✅ Interactive LIA v5 AI Agent
-- ✅ Professional WalletConnect + on-chain analytics
-- ✅ CI with audits + tests
+This project uses **GitHub Releases** for versioning.
 
-**Live Demo:** https://neltud.github.io/xArtists
+### How to create a new release:
 
-Update contract addresses after deploying with the LIA wallet above.
+1. Make sure all changes are on `main` and tests pass.
+2. Bump version in `package.json` (or use `npm run release` with conventional commits).
+3. Create a new GitHub Release:
+   - Go to **Releases** → **Draft a new release**
+   - Choose a tag (e.g. `v0.5.0`)
+   - Write release notes (what's new, breaking changes, etc.)
+   - Publish release
 
-Push to main = automatic publish on GitHub Pages.
+This will automatically trigger deployment to GitHub Pages.
+
+### Recommended workflow:
+- Use [Conventional Commits](https://www.conventionalcommits.org/)
+- Use `standard-version` or GitHub's release UI
+- Tag format: `vMAJOR.MINOR.PATCH`
+
+Current deployed version is always available at: https://neltud.github.io/xArtists
