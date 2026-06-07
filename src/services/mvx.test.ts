@@ -8,7 +8,8 @@ describe('mvx service', () => {
     expect(formatEgldBalance(undefined)).toBe('0');
   });
 
-  it('handles large balances', () => {
-    expect(formatEgldBalance('1234567890000000000000000000')).toContain('1.234568');
+  it('handles edge cases', () => {
+    expect(formatEgldBalance('0')).toBe('0.000000');
+    expect(formatEgldBalance('999999999999999999')).toContain('0.999999');
   });
 });

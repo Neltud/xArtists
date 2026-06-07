@@ -16,6 +16,7 @@ import DiscoveryParcoursDemo from "./features/DiscoveryParcoursDemo";
 import TRODashboard from "./features/TRODashboard";
 import DemoDropdownMenu from "./features/DemoDropdownMenu";
 import WalletConnect from "./components/WalletConnect";
+import AIAgent from "./features/AIAgent";
 
 // All modules for dropdown menu
 const modules = [
@@ -31,9 +32,9 @@ const modules = [
   { title: "Faucet Demo", description: "Get test tokens and NFTs for development.", icon: "🚰", link: "/faucet" },
   { title: "Escrow Demo", description: "Demo escrow contract for secure NFT updates.", icon: "🔒", link: "/escrow" },
   { title: "TRO Dashboard", description: "Live $TRO token info and stats.", icon: "💎", link: "/tro-dashboard" },
+  { title: "LIA v5 AI Agent", description: "Interactive AI agent with cycles, decisions and on-chain recommendations.", icon: "🤖", link: "/ai-agent" },
 ];
 
-// Only Home link is visible, all others are in dropdown
 function Nav() {
   const location = useLocation();
   return (
@@ -50,13 +51,8 @@ function Nav() {
 const Home: React.FC = () => (
   <main className="xa-main">
     <section className="xa-hero">
-      <h1>
-        Welcome to <span className="xa-highlight">xArtists</span> Platform
-      </h1>
-      <p>
-        A decentralized platform for staking, NFT rewards, minting, and more.
-        Use the <b>Menu</b> to explore all modules and demos.
-      </p>
+      <h1>Welcome to <span className="xa-highlight">xArtists</span> Platform</h1>
+      <p>A decentralized platform for staking, NFT rewards, minting, and AI agents.</p>
     </section>
     <section className="xa-modules">
       {modules.map((mod) => (
@@ -97,11 +93,10 @@ const App: React.FC = () => {
           <Route path="/faucet" element={<FaucetDemo />} />
           <Route path="/escrow" element={<EscrowDemo />} />
           <Route path="/tro-dashboard" element={<TRODashboard />} />
+          <Route path="/ai-agent" element={<AIAgent />} />
         </Routes>
         <footer className="xa-footer pro-footer">
-          <span>
-            &copy; {new Date().getFullYear()} xArtists. All rights reserved.
-          </span>
+          <span>&copy; {new Date().getFullYear()} xArtists. All rights reserved.</span>
         </footer>
       </div>
     </Router>
