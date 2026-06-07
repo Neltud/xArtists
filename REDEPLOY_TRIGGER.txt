@@ -1,0 +1,7 @@
+Redeploy triggered by user @Neltud via GitHub Copilot Chat Assistant
+
+This file was created to force a rebuild and redeployment of the dApp to GitHub Pages.
+
+Timestamp: 2026-06-07T11:10:00Z
+
+Reason: User requested immediate redeploy ("Redeploy now").
