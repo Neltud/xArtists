@@ -62,8 +62,8 @@ jobs:
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: packages/contracts
-          key: ${{ hashFiles('packages/contracts/**/Cargo.lock') }}
+          workspaces: contracts/nft-staking,contracts/tro-staking
+          key: ${{ hashFiles('contracts/**/Cargo.lock') }}
 
       - name: Security Audit (Cargo)
         run: cargo audit || true
@@ -73,7 +73,6 @@ jobs:
           cargo fmt --all -- --check
           cargo clippy --all-targets --all-features -- -D warnings
           cargo build --release
-        working-directory: packages/contracts
 
   # ==================== TOOLS ====================
   tools:
