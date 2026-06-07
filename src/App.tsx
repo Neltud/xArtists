@@ -15,6 +15,7 @@ import DAOGovernanceDemo from "./features/DAOGovernanceDemo";
 import DiscoveryParcoursDemo from "./features/DiscoveryParcoursDemo";
 import TRODashboard from "./features/TRODashboard";
 import DemoDropdownMenu from "./features/DemoDropdownMenu";
+import WalletConnect from "./components/WalletConnect";
 
 // All modules for dropdown menu
 const modules = [
@@ -36,9 +37,12 @@ const modules = [
 function Nav() {
   const location = useLocation();
   return (
-    <nav className="xa-nav" aria-label="Main navigation">
+    <nav className="xa-nav pro-nav" aria-label="Main navigation">
       <Link to="/" className={location.pathname === "/" ? "active" : ""}>Home</Link>
       <DemoDropdownMenu />
+      <div className="nav-wallet">
+        <WalletConnect />
+      </div>
     </nav>
   );
 }
