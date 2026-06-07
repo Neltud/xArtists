@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./DemoFeature.css";
 import { useMvxAccount } from "../services/mvx";
+import { useMintNFT } from "../services/transactions";
 
 const MinterDemo: React.FC = () => {
   const [name, setName] = useState("");
@@ -8,35 +9,34 @@ const MinterDemo: React.FC = () => {
   const [attributes, setAttributes] = useState("");
   const [minted, setMinted] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isMinting, setIsMinting] = useState(false);
 
   const { address, isLoggedIn } = useMvxAccount();
+  const { mintNFT } = useMintNFT();
 
-  function handleMint() {
+  async function handleMint() {
     setMinted(null);
     setError(null);
 
     if (!isLoggedIn) {
-      setError("Please connect your wallet to mint real NFTs on MultiversX.");
+      setError("Please connect your wallet to mint real NFTs.");
       return;
     }
-
     if (!name) {
       setError("NFT name is required.");
       return;
     }
-    if (royalties && (isNaN(Number(royalties)) || Number(royalties) < 0 || Number(royalties) > 100)) {
-      setError("Royalties must be a number between 0 and 100.");
-      return;
+
+    setIsMinting(true);
+    try {
+      // Real transaction
+      const txHash = await mintNFT(name, Number(royalties) || 0, attributes);
+      setMinted(`✅ NFT "${name}" minted! Tx: ${txHash?.slice(0, 10)}... (Update contract address in transactions.ts)`);
+    } catch (err: any) {
+      setError(`Mint failed: ${err.message || 'Unknown error'}`);
+    } finally {
+      setIsMinting(false);
     }
-
-    // TODO: Real mint transaction using SDK + NFT contract
-    // const tx = buildMintTransaction(name, royalties, attributes, contractAddress);
-    // await sendTransaction(tx);
-
-    setMinted(`✅ NFT "${name}" minted on-chain! (Demo + Wallet: ${address?.slice(0,6)}...)`);
-    setName("");
-    setRoyalties("");
-    setAttributes("");
   }
 
   function handleReset() {
@@ -49,41 +49,25 @@ const MinterDemo: React.FC = () => {
 
   return (
     <div className="demo-feature">
-      <h2>🖼️ NFT Minter</h2>
-      <p>
-        <b>Mint unique NFTs</b> with attributes and royalties on MultiversX.
-      </p>
+      <h2>🖼️ NFT Minter (Real Transactions Ready)</h2>
+      <p>Mint NFTs on MultiversX with real on-chain transactions.</p>
 
       {!isLoggedIn && <div className="wallet-warning">Connect wallet to enable real minting.</div>}
 
       <div className="demo-minter-box">
-        <label>
-          Name:
-          <input type="text" placeholder="My NFT" value={name} onChange={e => setName(e.target.value)} />
-        </label>
-        <label>
-          Royalties (%):
-          <input type="number" min="0" max="100" placeholder="5" value={royalties} onChange={e => setRoyalties(e.target.value)} />
-        </label>
-        <label>
-          Attributes:
-          <input type="text" placeholder="e.g. color:blue" value={attributes} onChange={e => setAttributes(e.target.value)} />
-        </label>
-        <button onClick={handleMint} disabled={!name}>
-          {isLoggedIn ? "Mint NFT (Demo + On-chain ready)" : "Connect Wallet to Mint"}
+        <label>Name: <input type="text" value={name} onChange={e => setName(e.target.value)} /></label>
+        <label>Royalties (%): <input type="number" value={royalties} onChange={e => setRoyalties(e.target.value)} /></label>
+        <label>Attributes: <input type="text" value={attributes} onChange={e => setAttributes(e.target.value)} /></label>
+        <button onClick={handleMint} disabled={!name || isMinting}>
+          {isMinting ? 'Minting...' : isLoggedIn ? 'Mint NFT (Real Tx)' : 'Connect Wallet'}
         </button>
       </div>
 
-      {minted && <div style={{ color: "#2e8b57", marginTop: 10 }}>{minted}</div>}
-      {error && <div style={{ color: "#d32f2f", marginTop: 10 }}>{error}</div>}
+      {minted && <div style={{color:'#2e8b57'}}>{minted}</div>}
+      {error && <div style={{color:'#d32f2f'}}>{error}</div>}
 
-      <button style={{ marginTop: 18, background: "#eee", color: "#5a3be7" }} onClick={handleReset}>
-        Reset
-      </button>
-
-      <p className="demo-note">
-        <i>Demo. Real mint will use SDK + NFT contract from contracts/ folder.</i>
-      </p>
+      <button onClick={handleReset} style={{marginTop:18}}>Reset</button>
+      <p className="demo-note">Update CONTRACT_ADDRESSES in src/services/transactions.ts after deploying your Rust NFT contract.</p>
     </div>
   );
 };
