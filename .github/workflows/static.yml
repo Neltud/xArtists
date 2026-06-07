@@ -1,6 +1,7 @@
 # =============================================
 # Deploy Vite React dApp to GitHub Pages
 # ALWAYS deploys from main branch only
+# Production Mainnet Deployment
 # =============================================
 name: Deploy Vite app to GitHub Pages
 
