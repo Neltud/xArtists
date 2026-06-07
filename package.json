@@ -27,7 +27,7 @@
   "dependencies": {
     "@multiversx/sdk-dapp": "^2.0.6",
     "@multiversx/sdk-core": "^11.0.0",
-    "@supabase/supabase-js": "^2.42.5",
+    "@supabase/supabase-js": "^2.107.0",
     "@types/react-router-dom": "^5.3.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
