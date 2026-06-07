@@ -16,6 +16,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Check for Rust project
+      run: |
+        if [ ! -f Cargo.toml ]; then
+          echo "No Cargo.toml found in repo root. Skipping Rust build/test.";
+          exit 0;
+        fi
     - name: Build
       run: cargo build --verbose
     - name: Run tests
