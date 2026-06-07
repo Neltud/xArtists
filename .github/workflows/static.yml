@@ -1,4 +1,7 @@
-# Workflow for building and deploying Vite React app to GitHub Pages
+# =============================================
+# Deploy Vite React dApp to GitHub Pages
+# ALWAYS deploys from main branch only
+# =============================================
 name: Deploy Vite app to GitHub Pages
 
 on:
