@@ -5,77 +5,25 @@
 **Our GitHub: Neltud/xArtists** | Live Demo: https://neltud.github.io/xArtists
 
 ## Évolution du projet
-- **Base de départ** : alexbolog/xArtists (smart contracts) + alexbolog/xArtists-dapp (frontend monorepo client/server/shared, Vite/TS/Tailwind/Drizzle, ~fév 2025). Repo SC alexbolog 404 aujourd'hui.
-- **Version actuelle (Neltud)** : Renommée, améliorée et étendue en monorepo Rust (63%) + TypeScript/React/Vite frontend + Python tools. Focus : Art/NFT + Staking + DAO + Bitcoin L2 bridge + AI Agent (LIA v5). Nettoyé juin 2026.
+Base alexbolog → Version Neltud améliorée et étendue (monorepo Rust + React/Vite).
 
-## Stack Technologique (Veille 2026)
-- **Blockchain** : MultiversX (sharding, SPoS, bas frais, scalable). Intégration via Rust contracts (workspace: packages/contracts + contracts/ dir: btc-bridge, nft-staking, tro-staking) + outils (faucet, tip).
-- **Frontend** : Vite + React 18 + TypeScript + react-router-dom + Supabase. **MVX SDK v3+ intégré** (DappProvider, wallet connect xPortal/Extension/Web).
-- **AI Agent** : LIA v5 (décisions WAIT, cycles).
-- **Bitcoin L2** : Bridge mock, Lightning, X402/L402.
-- **DeFi** : Hatom positions, LP Pools TRO (TRO-94c925), gouvernance/voting.
-- **Data** : Prix réels via CoinGecko (EGLD/TRO/WBTC/etc.), Fear & Greed, collections NFTs.
-- **Deployment** : GitHub Pages (/docs), CI/CD GitHub Actions + Dependabot.
+## Stack & Veille 2026
+MultiversX + **MVX SDK v3+ fully integrated** (DappProvider, WalletConnect, useMvxAccount). Rust contracts (tro-staking, nft-staking, btc-bridge). CoinGecko prices. Dependabot + audits in CI.
 
-## Ce qui fonctionne (Juin 2026)
-- Dashboard avec prix réels (EGLD, TRO via CoinGecko).
-- Pages : Bitcoin L2 features, Hatom, LP TRO, Tip/Pourboires, routing complet.
-- Wallet Connect (via SDK : xPortal, Extension, Web Wallet).
-- AI Agent LIA v5 (mock cycles).
-- GitHub Pages live : https://neltud.github.io/xArtists
-- **Nouveau** : useMvxAccount hook + example contract queries dans src/services/mvx.ts. TRODashboard affiche balance EGLD réelle quand connecté.
+## Fonctionnalités Clés
+- **Wallet Connect pro** : Bouton visible dans le header avec balance EGLD réelle, short address, méthode de connexion et déconnexion.
+- Dashboards dynamiques (TRO + NFT Staking amélioré avec détection wallet).
+- Minter, NFT Staking, DAO Governance, Marketplace etc. avec squelettes on-chain prêts.
+- CI/CD avec `npm audit` + `cargo audit`.
 
-## Architecture Monorepo
-- `contracts/` : Rust SC (btc-bridge, nft-staking, tro-staking).
-- `packages/` : core, discord-bot (et workspace contracts si présent).
-- `src/` : Frontend React/Vite (App.tsx avec 12+ modules/démos : Minter, NFTStaking, DAOGovernance, TRODashboard, etc.).
-- `src/services/` : price.ts (CoinGecko), mvx.ts (SDK hooks).
-- Workflows : `.github/workflows/` + Dependabot.yml.
+## Roadmap prioritaire - Statut
+1. Queries SDK MVX → ✅ Fait (provider + hooks + dashboards mis à jour)
+2. Contrats staking/governance → Prêts (Rust). Déploiement + adresses à intégrer.
+3. AI LIA v5 interactif → Base mock existante. Prochaine itération cycles réels.
+4. Mint + Marketplace → ✅ Amélioré (MinterDemo + NFTStakingDemo avec wallet + squelettes réels)
+5. Tests + Audit → ✅ Fait (Dependabot + audits dans CI)
+6. Migration v5+ / Passkeys → Base v3+ solide. Migration facile plus tard.
 
-## Instructions pour développer & déployer
-```bash
-# Frontend (Vite/React)
-npm install
-npm run dev
+**Prochaines étapes recommandées** : Déployer contrats → Implémenter vraies transactions mint/stake → Rendre AI Agent interactif.
 
-# Build & Deploy (manuel ou via CI)
-npm run build
-git add .
-git commit -m "deploy: frontend update + MVX SDK"
-git push origin main
-# GitHub Pages déploie automatiquement
-
-# Rust Contracts (ex. tro-staking)
-cd contracts/tro-staking
-cargo build --release
-# Déployer sur testnet/mainnet avec mxpy ou outil MVX
-
-# Outils
-cd tools/faucet || npm ci
-```
-
-## Roadmap prioritaire - Progrès
-1. **Implémenter queries SDK MVX dans frontend** ✅ **Fait (base)** : DappProvider + useMvxAccount + queryContract skeleton dans src/services/mvx.ts. TRODashboard utilise balance réelle. Remplacer tous les $— / 0 par données live en implémentant les queries avec adresses déployées des contrats.
-2. **Déployer/mettre à jour contrats staking/governance** : Contrats Rust prêts (tro-staking, nft-staking, btc-bridge). Déployer sur testnet/mainnet, récupérer adresses + ABI, mettre à jour dans mvx.ts et UI. Adresses exemple à ajouter dans .env ou config.
-3. **Rendre AI Agent LIA v5 plus interactif** : Base existante (mock). Prochaine itération : lier à cycles réels ou oracles on-chain.
-4. **Ajouter mint NFT artistes, marketplace basique, analytics** : Démos existants (MinterDemo, MarketplaceEscrowDemo, DAOGovernanceDemo, NFTStakingDemo). Améliorer avec SDK pour mint réel et analytics on-chain.
-5. **Tests + audit sécurité + Dependabot** ✅ **Fait** : Dependabot.yml ajouté (npm, cargo, github-actions). Ajouter tests unitaires dans CI et audits (cargo audit, npm audit).
-6. **Migrer vers mx-sdk-dapp v5+** : Actuel v3+ fonctionnel. v5+ (modulaire, Passkeys, UI components) à adopter quand stable pour meilleure UX.
-
-## Améliorations prioritaires suivantes
-- Implémenter queryContract avec vraies adresses des contrats/tro-staking et nft-staking.
-- Ajouter bouton Connect Wallet visible + gestion d'erreurs.
-- Rendre tous les dashboards dynamiques (staked amounts, governance votes, NFT counts).
-- Déploiement contrats + mise à jour adresses UI.
-- Tests complets et audit.
-
-## Statut Live Demo
-- Connect Wallet disponible via SDK.
-- Prix réels (CoinGecko).
-- Balance EGLD réelle quand wallet connecté.
-- Placeholders restants pour données on-chain staking/governance (en attente déploiement contrats + queries).
-- AI Agent en mode WAIT (premier cycle attendu).
-
-**Projet prêt pour itération suivante : Full on-chain integration + features artistes/NFT mint/staking avancées.**
-
-Maintenu par Neltud | Base initiale alexbolog respectée et évoluée. Corrections poussées régulièrement.
+Maintenu activement. Corrections et features poussées régulièrement.
