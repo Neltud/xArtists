@@ -1,12 +1,12 @@
-# xArtists — LIA v5 (Latest)
+# xArtists — LIA v5
 
-**Version:** 0.5.0
+**Version:** 0.6.0  
 **Live:** https://neltud.github.io/xArtists
 
-## Deployment (Always from main)
+## Deployment
 
-1. Push to `main`
-2. GitHub Actions builds and deploys automatically
-3. **Important:** In repo Settings → Pages, set **Source** to **GitHub Actions**
+- **Always from `main` branch**
+- GitHub Actions builds and deploys to production
+- Settings → Pages must be set to **GitHub Actions**
 
-Everything (code, workflow, releases) is managed from the `main` branch only.
+Latest clean production version with new MainDashboard, staking integration, LIA wallet, and live MultiversX prices.
