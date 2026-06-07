@@ -1,26 +1,32 @@
-# xArtists — LIA v5
+# xArtists - DApp
 
-**Version:** 0.5.0
+This repository contains the xArtists frontend dApp (MultiversX) — NFT staking, TRO dashboard, marketplace, and DAO integrations.
 
-## Versioning & Releases
+Live site (GitHub Pages): https://neltud.github.io/xArtists/  
+(Deployment triggered on each push to main via GitHub Actions)
 
-This project uses **GitHub Releases** for versioning.
+Quick status
+- MultiversX SDK integrated (xPortal / web wallet support)
+- On-chain price & APY via pool reserves implemented (src/services/onchain.ts)
+- Fallback price via CoinGecko kept for cases where no pool address is configured
+- Wallet & staking hooks wired; UI pages updated for TRO dashboard and staking flows
 
-### How to create a new release:
+How to run locally
+1. Install dependencies: npm install (or pnpm / yarn)
+2. Dev server: npm run dev
+3. Build: npm run build
+4. Preview production build: npm run preview
 
-1. Make sure all changes are on `main` and tests pass.
-2. Bump version in `package.json` (or use `npm run release` with conventional commits).
-3. Create a new GitHub Release:
-   - Go to **Releases** → **Draft a new release**
-   - Choose a tag (e.g. `v0.5.0`)
-   - Write release notes (what's new, breaking changes, etc.)
-   - Publish release
+Environment variables (recommended)
+- VITE_NETWORK=mainnet
+- VITE_API_URL (optional)
+- VITE_TRO_POOL_ADDRESS (address of the on-chain pool to use for price/TVL/APY)
+- VITE_TRO_TOKEN_ADDRESS (TRO token contract address)
+- VITE_NFT_STAKING_ADDRESS (NFT staking contract address)
+- VITE_PRICE_POLL_INTERVAL (ms) — default 60000
 
-This will automatically trigger deployment to GitHub Pages.
+Notes & next steps
+- If you want APY/price shown immediately, set VITE_TRO_POOL_ADDRESS to the pool pair address (TRO/USDC or TRO/EGLD).
+- CI will run tests and deploy to GitHub Pages on push to main. Monitor Actions: https://github.com/Neltud/xArtists/actions
 
-### Recommended workflow:
-- Use [Conventional Commits](https://www.conventionalcommits.org/)
-- Use `standard-version` or GitHub's release UI
-- Tag format: `vMAJOR.MINOR.PATCH`
-
-Current deployed version is always available at: https://neltud.github.io/xArtists
+If you want me to perform further cleanup (permanent deletion of files or refactor), confirm and I will proceed with deletions/PRs as requested.
