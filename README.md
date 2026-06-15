@@ -1,12 +1,13 @@
-# xArtists — LIA v5
+# xArtists LIA v5 - Version Mise à Jour Complète Juin 2026
 
-**Version:** 0.6.0  
-**Live:** https://neltud.github.io/xArtists
+Plateforme complète Art + NFT + RWA sur MultiversX avec AI Agent LIA v5, smart contracts, bots, Burnify, etc.
 
-## Deployment
+## Structure Actuelle
+- contracts/ : Smart contracts Rust complets
+- apps/frontend/ : React + routes Gallery, Staking, Governance, Portfolio, RWA
+- packages/mx-agent-kit/ : LIA v5 + Eliza
+- bot-discord/ & bot-x/
 
-- **Always from `main` branch**
-- GitHub Actions builds and deploys to production
-- Settings → Pages must be set to **GitHub Actions**
+Live: https://neltud.github.io/xArtists
 
-Latest clean production version with new MainDashboard, staking integration, LIA wallet, and live MultiversX prices.
+Tout est à jour !
