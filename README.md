@@ -1,12 +1,31 @@
-# xArtists — LIA v5 (Latest)
+# xArtists — LIA v5
 
-**Version:** 0.5.0
-**Live:** https://neltud.github.io/xArtists
+**Plateforme NFT & Art Physique sur MultiversX**
 
-## Deployment (Always from main)
+**Version Finale : 1.0.0** (Juin 2026)
 
-1. Push to `main`
-2. GitHub Actions builds and deploys automatically
-3. **Important:** In repo Settings → Pages, set **Source** to **GitHub Actions**
+## 🌟 Features Complètes
 
-Everything (code, workflow, releases) is managed from the `main` branch only.
+- Dashboard LIA v5 avec AI Agent
+- Galerie Artworks complète
+- Minting NFTs + RWA
+- Staking NFT/TRO
+- Governance DAO
+- Marketplace & Escrow
+- Moonpay On-Ramp
+- LIA Chat Widget (mx-agent-kit)
+- Bots Discord & X
+- Burnify Integration
+
+## 🚀 Navigation
+- Dashboard
+- Gallery
+- Staking
+- Governance
+- Portfolio
+- RWA Claim
+
+Live : https://neltud.github.io/xArtists
+
+**Smart Contracts** déployables dans `/contracts`
+**Prêt pour publication !**

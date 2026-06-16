@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "packages/contracts",
+    "contracts/nft-staking",
+    "contracts/tro-staking",
     "tools/faucet",
     "tools/tip",
 ]
@@ -8,7 +9,7 @@ resolver = "2"
 
 [workspace.package]
 name = "xartists"
-version = "0.1.0"
+version = "0.6.0"
 edition = "2021"
 authors = ["Nelson Tuduri <nelson@xartists.com>"]
 license = "MIT"

@@ -7,10 +7,14 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  NODE_ENV: production
+
 jobs:
   # ==================== FRONTEND ====================
   frontend:
     runs-on: ubuntu-latest
+    name: Frontend Build
 
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +40,7 @@ jobs:
         run: npm ci
 
       - name: Security Audit
-        run: npm audit --audit-level=moderate || true   # non-blocking for now
+        run: npm audit --audit-level=moderate || true
 
       - name: Type Check
         run: npm run type-check || true
@@ -50,6 +54,7 @@ jobs:
   # ==================== RUST CONTRACTS ====================
   contracts:
     runs-on: ubuntu-latest
+    name: Rust Contracts Build
 
     steps:
       - uses: actions/checkout@v4
@@ -62,8 +67,8 @@ jobs:
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: packages/contracts
-          key: ${{ hashFiles('packages/contracts/**/Cargo.lock') }}
+          workspaces: contracts/nft-staking,contracts/tro-staking
+          key: ${{ hashFiles('contracts/**/Cargo.lock') }}
 
       - name: Security Audit (Cargo)
         run: cargo audit || true
@@ -73,11 +78,11 @@ jobs:
           cargo fmt --all -- --check
           cargo clippy --all-targets --all-features -- -D warnings
           cargo build --release
-        working-directory: packages/contracts
 
   # ==================== TOOLS ====================
   tools:
     runs-on: ubuntu-latest
+    name: Tools Build
 
     steps:
       - uses: actions/checkout@v4
@@ -103,3 +108,4 @@ jobs:
         run: |
           if [ -d "tools/faucet" ]; then npm ci --prefix tools/faucet; fi
           if [ -d "tools/tip" ]; then npm ci --prefix tools/tip; fi
+          echo "Tools built successfully"
