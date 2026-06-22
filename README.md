@@ -1,34 +1,17 @@
 # xArtists — Plateforme NFT, RWA & IA Agents sur MultiversX
 
-**Version Unifiée Complète Optimisée v1.0.3** (22 juin 2026)
+**Version Production v1.2.3** — Complete DApp avec Mint Phygital AI, Bitcoin Bridge, DAO Governance, xSafe Multisig, LIA v6.
 
-Frontend provenant de Vellum pushé et intégré, tous contrats Rust, LIA nodes, ready pour daily CI updates.
+Live: https://neltud.github.io/xArtists
 
-[![Deploy](https://github.com/Neltud/xArtists/actions/workflows/pages.yml/badge.svg)](https://github.com/Neltud/xArtists/actions)
+## Features Clés
+- Mint Phygital + AI Generative Previews
+- Bitcoin Bridge + Liquidity Incentives
+- Full DAO Governance avec xSafe Multisig
+- Rewards EGLD + Burnify TRO
+- Treasury Management
+- Landing Marketing + Toutes pages (Portfolio, Marketplace, etc.)
 
-**Live Demo**: [https://neltud.github.io/xArtists](https://neltud.github.io/xArtists)
+Stack: React/Vite + Rust Contracts + LIA Vellum
 
-## ✨ Features
-- Minting NFT/RWA Phygital avec Escrow
-- Staking Hybride NFT + TRO
-- LIA v6 Autonomous Agents Dashboard
-- BTC L2 Bridge
-- xPortal Integration
-
-## Structure
-- `apps/frontend/` : Nouvelle version optimisée (Vellum)
-- `contracts/` : Rust smart contracts
-- `nodes/` : Python LIA agents
-- `packages/` : Core TS
-
-## Quick Start
-```bash
-git clone https://github.com/Neltud/xArtists.git
-cd xArtists
-pnpm install
-pnpm --filter frontend dev
-```
-
-Poussé automatiquement chaque jour via GitHub Actions pour version toujours à jour.
-
-**Contributeurs** : Neltud + Vellum AI
+Prêt pour Mainnet.
