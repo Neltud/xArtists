@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.0](https://github.com/Neltud/xArtists/compare/v0.7.0...v0.8.0) (2026-06-22)
+
+
+### Features
+
+* Add custom MX contract nodes + enhanced error handling in UniversalExecutor ([8173681](https://github.com/Neltud/xArtists/commit/8173681877e4035d3881d2898d58beee527588eb))
+* LIA v6 full stack dApp - GitHub Pages frontend rebuild ([d7aaa52](https://github.com/Neltud/xArtists/commit/d7aaa52ed595bed552c00959cdde0e5d2f39d4bd))
+* Version unifiée complète - nouveau frontend Vellum intégré ([c67d856](https://github.com/Neltud/xArtists/commit/c67d85680cee81373c06ec7ac5c5d7847f910a31))
+
+
+### Documentation
+
+* LIA v6 README - full stack production documentation ([a3f564b](https://github.com/Neltud/xArtists/commit/a3f564b7d690847c911e21737b0273ea254140ea))
+
 ## [0.7.0](https://github.com/Neltud/xArtists/compare/v0.6.0...v0.7.0) (2026-06-15)
 
 
