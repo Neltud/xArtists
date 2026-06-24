@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.9.0](https://github.com/Neltud/xArtists/compare/v0.8.0...v0.9.0) (2026-06-24)
+
+
+### Features
+
+* add mx-agent-kit submodule for Warps v3 AI Agents ([24b0e9a](https://github.com/Neltud/xArtists/commit/24b0e9a78362293f434da5ffff9175ff4469d6f2))
+* add Warps v3 AI Minting Agent component in frontend ([dfc6cac](https://github.com/Neltud/xArtists/commit/dfc6cac25d6dd3499e314bb57c325d14946fdf8d))
+* create xartists-mint-agent character with staking + liquidity skills ([eaf6088](https://github.com/Neltud/xArtists/commit/eaf6088eaaaea8a48802b07fcdc54d0c0e370c77))
+* update deps to latest sdk-dapp v5.6.23 for Warps v3 support + bump version to 1.3.0 ([064fd85](https://github.com/Neltud/xArtists/commit/064fd8561b3a1553a999145d2205f3f430ecf485))
+
+
+### Documentation
+
+* update README with v1.3.0 Warps v3 AI Agents release ([3b2f803](https://github.com/Neltud/xArtists/commit/3b2f803f135b7ea4f6f23e3c2406340ee264ec04))
+
 ## [0.8.0](https://github.com/Neltud/xArtists/compare/v0.7.0...v0.8.0) (2026-06-22)
 
 
