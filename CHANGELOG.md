@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/Neltud/xArtists/compare/v0.9.0...v0.9.1) (2026-06-26)
+
+
+### Documentation
+
+* update CHANGELOG.md with v1.5.0-vellum-production details ([b62909f](https://github.com/Neltud/xArtists/commit/b62909fcb2403ea357ffd518c1eda6bfdb863d68))
+
 ## [v1.5.0-vellum-production] - 2026-06-26
 
 ### 🎉 **Version majeure : Vellum Mainnet Full Integration**
