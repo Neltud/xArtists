@@ -27,6 +27,7 @@ export function fromWei(raw: string | number, decimals = 18): string {
   if (typeof raw === 'number') {
     if (!Number.isFinite(raw) || isNaN(raw)) return '0'
     const result = raw / Math.pow(10, decimals)
+    // toFixed(6) on 0 produces "0.000000" → replace strips to "" → || '0' catches the empty string case
     return result.toFixed(6).replace(/\.?0+$/, '') || '0'
   }
   const str = raw.trim()
@@ -38,7 +39,7 @@ export function fromWei(raw: string | number, decimals = 18): string {
     const fracPart = bigVal % divisor
     if (fracPart === BigInt(0)) return intPart.toString()
     const fracStr = fracPart.toString().padStart(decimals, '0').replace(/0+$/, '')
-    return `${intPart}.${fracStr}`
+    return fracStr ? `${intPart}.${fracStr}` : intPart.toString()
   } catch {
     return '0'
   }
