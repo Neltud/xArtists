@@ -8,9 +8,11 @@ const NAV = [
   { to: '/gallery', label: 'Galerie', emoji: '🖼️' },
   { to: '/trading', label: 'Trading', emoji: '⚡' },
   { to: '/portfolio', label: 'Portfolio', emoji: '📈' },
+  { to: '/hatom', label: 'Hatom', emoji: '🏦' },
+  { to: '/lp', label: 'LP/Farms', emoji: '💧' },
   { to: '/dao', label: 'DAO', emoji: '🗳️' },
-  { to: '/tip', label: 'Tip 💜', emoji: '' },
   { to: '/wallet', label: 'Wallet', emoji: '👛' },
+  { to: '/tip', label: 'Tip 💜', emoji: '' },
 ]
 
 // Validate that string looks like a bech32 MultiversX address (starts with 'erd1', 62 chars)
