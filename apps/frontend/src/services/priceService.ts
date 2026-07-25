@@ -9,20 +9,39 @@ export const getEgldPrice = async (): Promise<number> => {
   }
 };
 
-// Infos du token TRO-94c925 via API MultiversX
+// Infos du token TRO-94c925 via API MultiversX (corrigé)
 export const getTroInfo = async () => {
   try {
     const res = await fetch('https://api.multiversx.com/tokens/TRO-94c925');
     const data = await res.json();
+
+    const decimals = data.decimals || 18;
+    const rawSupply = data.supply ? Number(data.supply) : 0;
+    const rawCirculating = data.circulatingSupply ? Number(data.circulatingSupply) : rawSupply;
+
     return {
       price: data.price || 0,
       marketCap: data.marketCap || 0,
-      circulatingSupply: data.circulatingSupply || 0,
+      circulatingSupply: rawCirculating / Math.pow(10, decimals),
+      totalSupply: rawSupply / Math.pow(10, decimals),
       name: data.name || 'TRO',
-      identifier: 'TRO-94c925'
+      identifier: 'TRO-94c925',
+      holders: data.accounts || 0,
+      transactions: data.transactions || 0,
+      decimals
     };
   } catch {
-    return { price: 0, marketCap: 0, circulatingSupply: 0, name: 'TRO', identifier: 'TRO-94c925' };
+    return {
+      price: 0,
+      marketCap: 0,
+      circulatingSupply: 0,
+      totalSupply: 0,
+      name: 'TRO',
+      identifier: 'TRO-94c925',
+      holders: 0,
+      transactions: 0,
+      decimals: 18
+    };
   }
 };
 
