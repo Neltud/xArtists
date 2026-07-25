@@ -1,0 +1,91 @@
+name: 🚀 Deploy xArtists dApp to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/frontend/**'
+      - 'docs/**'
+      - 'data/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/frontend/package-lock.json
+
+      - name: 📦 Install dependencies
+        working-directory: apps/frontend
+        run: npm ci
+
+      - name: 🏗️ Build React app
+        working-directory: apps/frontend
+        run: npm run build
+        env:
+          VITE_BASE_PATH: /xArtists/
+          VITE_MVX_API: https://api.multiversx.com
+          VITE_WALLET: erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
+
+      - name: 🧹 Clean docs/ (force)
+        run: |
+          find docs/ -type f ! -name '*.md' -delete
+          find docs/ -name '.nojekyll' -delete
+          echo "docs/ nettoyé"
+
+      - name: 📋 Copy dist/ → docs/
+        run: |
+          cp -r apps/frontend/dist/. docs/
+          touch docs/.nojekyll
+          echo "✅ dist/ copié dans docs/"
+
+      - name: 📊 Copy data JSON files
+        run: |
+          mkdir -p docs/data
+          cp -r data/. docs/data/ 2>/dev/null || true
+          echo "✅ data/ copié"
+
+      - name: 🔍 Verify build
+        run: |
+          ls -la docs/
+          echo "index.html size: $(wc -c < docs/index.html) bytes"
+
+      - name: 📤 Commit & Push docs/
+        run: |
+          git config user.name 'LIA v6 Bot'
+          git config user.email 'lia@xartists.io'
+          git add docs/
+          git diff --staged --quiet || git commit -m "🤖 deploy: xArtists dApp $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push
+
+      - name: 🌐 Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: 📦 Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
