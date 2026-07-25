@@ -1,12 +1,14 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 
 const WalletConnectButton: React.FC = () => {
   const { connected, address, shortAddress, disconnect } = useWallet()
+  const navigate = useNavigate()
 
   const handleLogin = () => {
     // In production, trigger xPortal or DeFi Wallet SDK flow here.
-    window.location.href = '/unlock'
+    navigate('/wallet')
   }
 
   if (connected && address) {
