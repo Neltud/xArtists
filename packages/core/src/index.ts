@@ -1,10 +1,9 @@
-// Export all types
-export * from './types';
-export * from './contracts';
-export * from './utils';
+// Export all shared types (interfaces, constants, configs)
+export * from './types'
+// Export all shared utility functions
+export * from './utils'
+// Export contract ABIs and interfaces
+export * from './contracts'
 
-// Export configurations
-export { NetworkConfig, ContractConfig } from './types';
-
-// Version
-export const CORE_VERSION = '1.0.0';
+/** Package version */
+export const CORE_VERSION = '1.1.0'

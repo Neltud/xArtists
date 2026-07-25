@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.12.0](https://github.com/Neltud/xArtists/compare/v0.11.0...v0.12.0) (2026-07-25)
+
+
+### Features
+
+* complete ESDT wallet scan with Hatom & xExchange positions + site reorganization ([#23](https://github.com/Neltud/xArtists/issues/23)) ([a8f797d](https://github.com/Neltud/xArtists/commit/a8f797d90240ab20d7e9572a2106b1e4981b506d))
+
+## [0.11.0](https://github.com/Neltud/xArtists/compare/v0.10.0...v0.11.0) (2026-07-25)
+
+
+### Features
+
+* implement 7-phase xArtists stabilization and improvement plan ([#21](https://github.com/Neltud/xArtists/issues/21)) ([ab050f7](https://github.com/Neltud/xArtists/commit/ab050f7a784617348eddd8f0adb64f3ba393687e))
+
+
+### Bug Fixes
+
+* Correct TRO-94c925 price and supply parsing from MultiversX API ([3e8c712](https://github.com/Neltud/xArtists/commit/3e8c7125e0bab49f982749143342da4e00dad28f))
+* Force publish dashboard - trigger exclusive deploy ([3ffc784](https://github.com/Neltud/xArtists/commit/3ffc78435f229be9793ada085c16e1e4f8234e57))
+* WalletConnectButton navigates to /wallet instead of non-existent /unlock ([#22](https://github.com/Neltud/xArtists/issues/22)) ([314230a](https://github.com/Neltud/xArtists/commit/314230a8b030352afd6ed1f13f0eda995028c53e))
+
 ## [0.10.0](https://github.com/Neltud/xArtists/compare/v0.9.1...v0.10.0) (2026-07-25)
 
 

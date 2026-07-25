@@ -1,51 +1,52 @@
 /**
- * MultiversX Contract Interfaces
+ * MultiversX Contract Interfaces & Real Deployed Addresses
+ * All contracts are live on MultiversX Mainnet (Chain ID: 1)
  */
 
 export interface ContractABI {
-  name: string;
-  address: string;
-  version: string;
-  functions: ContractFunction[];
-  events: ContractEvent[];
+  name: string
+  address: string
+  version: string
+  functions: ContractFunction[]
+  events: ContractEvent[]
 }
 
 export interface ContractFunction {
-  name: string;
-  inputs: FunctionInput[];
-  outputs: FunctionOutput[];
-  payable: boolean;
-  readonly: boolean;
+  name: string
+  inputs: FunctionInput[]
+  outputs: FunctionOutput[]
+  payable: boolean
+  readonly: boolean
 }
 
 export interface FunctionInput {
-  name: string;
-  type: string;
-  description?: string;
+  name: string
+  type: string
+  description?: string
 }
 
 export interface FunctionOutput {
-  name: string;
-  type: string;
-  description?: string;
+  name: string
+  type: string
+  description?: string
 }
 
 export interface ContractEvent {
-  name: string;
-  inputs: EventInput[];
-  description?: string;
+  name: string
+  inputs: EventInput[]
+  description?: string
 }
 
 export interface EventInput {
-  name: string;
-  type: string;
-  indexed: boolean;
+  name: string
+  type: string
+  indexed: boolean
 }
 
-// ========== STAKING CONTRACT ==========
+// ========== TRO GOVERNANCE / STAKING CONTRACT ==========
 export const TRO_STAKING_ABI: ContractABI = {
-  name: 'TRO Staking',
-  address: 'erd1...',
+  name: 'TRO Governance',
+  address: 'erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8',
   version: '1.0.0',
   functions: [
     {
@@ -79,6 +80,16 @@ export const TRO_STAKING_ABI: ContractABI = {
       payable: false,
       readonly: true,
     },
+    {
+      name: 'vote',
+      inputs: [
+        { name: 'proposal_id', type: 'u64' },
+        { name: 'pair_name', type: 'ManagedBuffer' },
+      ],
+      outputs: [],
+      payable: false,
+      readonly: false,
+    },
   ],
   events: [
     {
@@ -95,13 +106,21 @@ export const TRO_STAKING_ABI: ContractABI = {
         { name: 'amount', type: 'BigUint', indexed: false },
       ],
     },
+    {
+      name: 'VoteCast',
+      inputs: [
+        { name: 'proposal_id', type: 'u64', indexed: true },
+        { name: 'voter', type: 'Address', indexed: true },
+        { name: 'pair_name', type: 'ManagedBuffer', indexed: false },
+      ],
+    },
   ],
-};
+}
 
 // ========== NFT STAKING CONTRACT ==========
 export const NFT_STAKING_ABI: ContractABI = {
   name: 'NFT Staking',
-  address: 'erd1...',
+  address: 'erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl',
   version: '1.0.0',
   functions: [
     {
@@ -143,57 +162,92 @@ export const NFT_STAKING_ABI: ContractABI = {
       ],
     },
   ],
-};
+}
 
-// ========== GOVERNANCE CONTRACT ==========
-export const GOVERNANCE_ABI: ContractABI = {
-  name: 'DAO Governance',
-  address: 'erd1...',
+// ========== MARKETPLACE / ESCROW CONTRACT ==========
+export const MARKETPLACE_ABI: ContractABI = {
+  name: 'Marketplace',
+  address: 'erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t',
   version: '1.0.0',
   functions: [
     {
-      name: 'createProposal',
+      name: 'listNft',
       inputs: [
-        { name: 'title', type: 'ManagedBuffer' },
-        { name: 'description', type: 'ManagedBuffer' },
-        { name: 'min_voting_power', type: 'BigUint' },
+        { name: 'price', type: 'BigUint' },
+        { name: 'token_identifier', type: 'TokenIdentifier' },
       ],
-      outputs: [{ name: 'proposal_id', type: 'u64' }],
-      payable: false,
+      outputs: [{ name: 'listing_id', type: 'u64' }],
+      payable: true,
       readonly: false,
     },
     {
-      name: 'vote',
-      inputs: [
-        { name: 'proposal_id', type: 'u64' },
-        { name: 'decision', type: 'VoteDecision' },
-      ],
+      name: 'buyNft',
+      inputs: [{ name: 'listing_id', type: 'u64' }],
+      outputs: [],
+      payable: true,
+      readonly: false,
+    },
+    {
+      name: 'cancelListing',
+      inputs: [{ name: 'listing_id', type: 'u64' }],
       outputs: [],
       payable: false,
       readonly: false,
     },
+  ],
+  events: [
     {
-      name: 'getProposal',
-      inputs: [{ name: 'proposal_id', type: 'u64' }],
-      outputs: [{ name: 'proposal', type: 'Proposal' }],
+      name: 'NftListed',
+      inputs: [
+        { name: 'listing_id', type: 'u64', indexed: true },
+        { name: 'seller', type: 'Address', indexed: true },
+      ],
+    },
+    {
+      name: 'NftSold',
+      inputs: [
+        { name: 'listing_id', type: 'u64', indexed: true },
+        { name: 'buyer', type: 'Address', indexed: true },
+      ],
+    },
+  ],
+}
+
+// ========== NFT MINTER CONTRACT ==========
+export const NFT_MINTER_ABI: ContractABI = {
+  name: 'NFT Minter',
+  address: 'erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn',
+  version: '1.0.0',
+  functions: [
+    {
+      name: 'mint',
+      inputs: [
+        { name: 'token_name', type: 'ManagedBuffer' },
+        { name: 'royalties', type: 'BigUint' },
+        { name: 'uri', type: 'ManagedBuffer' },
+      ],
+      outputs: [{ name: 'nft_id', type: 'TokenIdentifier' }],
+      payable: true,
+      readonly: false,
+    },
+    {
+      name: 'burn',
+      inputs: [{ name: 'token_identifier', type: 'TokenIdentifier' }],
+      outputs: [],
       payable: false,
-      readonly: true,
+      readonly: false,
     },
   ],
   events: [
     {
-      name: 'ProposalCreated',
+      name: 'NftMinted',
       inputs: [
-        { name: 'proposal_id', type: 'u64', indexed: true },
         { name: 'creator', type: 'Address', indexed: true },
-      ],
-    },
-    {
-      name: 'VoteCast',
-      inputs: [
-        { name: 'proposal_id', type: 'u64', indexed: true },
-        { name: 'voter', type: 'Address', indexed: true },
+        { name: 'token_id', type: 'TokenIdentifier', indexed: false },
       ],
     },
   ],
-};
+}
+
+// ========== GOVERNANCE CONTRACT (alias) ==========
+export const GOVERNANCE_ABI = TRO_STAKING_ABI
