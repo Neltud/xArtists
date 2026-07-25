@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/Neltud/xArtists/compare/v0.11.0...v0.12.0) (2026-07-25)
+
+
+### Features
+
+* complete ESDT wallet scan with Hatom & xExchange positions + site reorganization ([#23](https://github.com/Neltud/xArtists/issues/23)) ([a8f797d](https://github.com/Neltud/xArtists/commit/a8f797d90240ab20d7e9572a2106b1e4981b506d))
+
 ## [0.11.0](https://github.com/Neltud/xArtists/compare/v0.10.0...v0.11.0) (2026-07-25)
 
 
