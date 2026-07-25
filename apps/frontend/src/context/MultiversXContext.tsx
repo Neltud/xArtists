@@ -126,7 +126,7 @@ export function MultiversXProvider({ children }: { children: ReactNode }) {
         btc: btcPrice,
         tro: troPrice,
         wtao: 0,
-        fearGreed: fg ? parseInt(fg.value) : 50,
+        fearGreed: fg ? parseInt(fg.value, 10) : 50,
         fearGreedLabel: fg?.value_classification ?? 'Neutral',
       })
 

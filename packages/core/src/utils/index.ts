@@ -24,7 +24,7 @@ export function explorerTokenUrl(tokenId: string): string {
 
 /** Convert raw ESDT balance (18 decimals) to a human-readable decimal string. */
 export function fromWei(raw: string | number, decimals = 18): string {
-  const str = (typeof raw === 'number' ? raw.toString() : raw).trim()
+  const str = (typeof raw === 'number' ? raw.toFixed(0) : raw).trim()
   if (!str || str === '0') return '0'
   try {
     const bigVal = BigInt(str)
