@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import { useWallet } from '../context/WalletContext'
 
 const NAV = [
   { to: '/', label: 'Dashboard', emoji: '📊' },
   { to: '/marketplace', label: 'Marketplace', emoji: '🎨' },
+  { to: '/gallery', label: 'Galerie', emoji: '🖼️' },
   { to: '/trading', label: 'Trading', emoji: '⚡' },
   { to: '/portfolio', label: 'Portfolio', emoji: '📈' },
   { to: '/dao', label: 'DAO', emoji: '🗳️' },
@@ -11,12 +13,37 @@ const NAV = [
   { to: '/wallet', label: 'Wallet', emoji: '👛' },
 ]
 
-const WALLET_SHORT = 'erd1p4zy...crn6'
+// Validate that string looks like a bech32 MultiversX address (starts with 'erd1', 62 chars)
+function isValidErd(addr: string): boolean {
+  return /^erd1[a-z0-9]{58}$/.test(addr.trim())
+}
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [walletConnected, setWalletConnected] = useState(false)
   const [showWalletModal, setShowWalletModal] = useState(false)
+  const [pemInput, setPemInput] = useState('')
+  const [pemError, setPemError] = useState('')
+  const { connected, shortAddress, connect, disconnect } = useWallet()
+
+  const handlePemImport = () => {
+    // Extract address from PEM — look for erd1... pattern inside the key block
+    const match = pemInput.match(/erd1[a-z0-9]{58}/)
+    if (match && isValidErd(match[0])) {
+      connect(match[0], 'pem')
+      setPemInput('')
+      setPemError('')
+      setShowWalletModal(false)
+    } else {
+      setPemError('Adresse non trouvée dans le fichier PEM. Vérifiez le contenu.')
+    }
+  }
+
+  const handleMockConnect = (method: 'xportal' | 'defi_wallet') => {
+    // In production this would call @multiversx/sdk-dapp login flows.
+    // For demo, we connect with the public LIA agent wallet address.
+    connect('erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6', method)
+    setShowWalletModal(false)
+  }
 
   return (
     <>
@@ -53,12 +80,13 @@ export default function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            {walletConnected ? (
+            {connected ? (
               <button
-                onClick={() => setWalletConnected(false)}
-                className="px-3 py-1.5 rounded-lg bg-[#16161f] border border-green-500/30 text-green-400 text-xs mono"
+                onClick={disconnect}
+                className="px-3 py-1.5 rounded-lg bg-[#16161f] border border-green-500/30 text-green-400 text-xs mono hover:border-red-500/40 hover:text-red-400 transition-colors"
+                title="Cliquer pour déconnecter"
               >
-                ✅ {WALLET_SHORT}
+                ✅ {shortAddress}
               </button>
             ) : (
               <button
@@ -105,7 +133,7 @@ export default function Header() {
       {showWalletModal && (
         <div
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-          onClick={() => setShowWalletModal(false)}
+          onClick={() => { setShowWalletModal(false); setPemError('') }}
         >
           <div
             className="card max-w-md w-full animate-fade-in"
@@ -114,7 +142,7 @@ export default function Header() {
             <h2 className="text-xl font-bold mb-6">🔗 Connecter votre Wallet</h2>
 
             <button
-              onClick={() => { setWalletConnected(true); setShowWalletModal(false) }}
+              onClick={() => handleMockConnect('xportal')}
               className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
             >
               <span className="text-3xl">📱</span>
@@ -125,7 +153,7 @@ export default function Header() {
             </button>
 
             <button
-              onClick={() => { setWalletConnected(true); setShowWalletModal(false) }}
+              onClick={() => handleMockConnect('defi_wallet')}
               className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
             >
               <span className="text-3xl">🦊</span>
@@ -138,11 +166,14 @@ export default function Header() {
             <div className="mt-4">
               <p className="text-xs text-gray-500 mb-2">Ou importer un fichier PEM (lecture seule)</p>
               <textarea
-                className="w-full p-3 rounded-lg bg-[#111118] border border-[#2a2a3a] text-xs mono text-gray-300 resize-none h-20"
+                className="w-full p-3 rounded-lg bg-[#111118] border border-[#2a2a3a] text-xs mono text-gray-300 resize-none h-20 focus:outline-none focus:border-purple-500"
                 placeholder="Coller votre clé PEM ici..."
+                value={pemInput}
+                onChange={e => { setPemInput(e.target.value); setPemError('') }}
               />
+              {pemError && <p className="text-xs text-red-400 mt-1">{pemError}</p>}
               <button
-                onClick={() => { setWalletConnected(true); setShowWalletModal(false) }}
+                onClick={handlePemImport}
                 className="btn-primary w-full mt-2 text-sm"
               >
                 Importer PEM
@@ -150,7 +181,7 @@ export default function Header() {
             </div>
 
             <button
-              onClick={() => setShowWalletModal(false)}
+              onClick={() => { setShowWalletModal(false); setPemError('') }}
               className="btn-secondary w-full mt-3 text-sm"
             >
               Annuler
