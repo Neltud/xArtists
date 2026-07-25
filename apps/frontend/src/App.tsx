@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
+import ErrorBoundary from './components/ErrorBoundary'
+import { useMultiversX } from './hooks/useMultiversX'
 
 // Lazy loading de toutes les pages
 const Dashboard = lazy(() => import('./pages/Dashboard'))
@@ -10,6 +12,7 @@ const Portfolio = lazy(() => import('./pages/Portfolio'))
 const DAO = lazy(() => import('./pages/DAO'))
 const Tip = lazy(() => import('./pages/Tip'))
 const Wallet = lazy(() => import('./pages/Wallet'))
+const Gallery = lazy(() => import('./pages/Gallery'))
 
 function PageLoader() {
   return (
@@ -22,31 +25,53 @@ function PageLoader() {
   )
 }
 
+function StaleDataBanner({ isStale, lastUpdate }: { isStale: boolean; lastUpdate: Date | null }) {
+  if (!isStale) return null
+  return (
+    <div className="bg-orange-500/10 border-b border-orange-500/30 px-4 py-2 text-center text-xs text-orange-400">
+      ⚠️ Données potentiellement périmées — dernière mise à jour :{' '}
+      {lastUpdate ? lastUpdate.toLocaleTimeString('fr-FR') : 'inconnue'}.{' '}
+      <button
+        className="underline hover:text-orange-300 transition-colors"
+        onClick={() => window.location.reload()}
+      >
+        Actualiser
+      </button>
+    </div>
+  )
+}
+
 export default function App() {
+  const { isStale, lastUpdate } = useMultiversX()
+
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
       <Header />
+      <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/trading" element={<Trading />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/dao" element={<DAO />} />
-            <Route path="/tip" element={<Tip />} />
-            <Route path="/wallet" element={<Wallet />} />
-            {/* 404 fallback */}
-            <Route path="*" element={
-              <div className="text-center py-20">
-                <p className="text-6xl mb-4">🎨</p>
-                <h2 className="text-2xl font-bold mb-2">Page introuvable</h2>
-                <p className="text-gray-500">Cette page n’existe pas encore.</p>
-              </div>
-            } />
-          </Routes>
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+              <Route path="/marketplace" element={<ErrorBoundary><Marketplace /></ErrorBoundary>} />
+              <Route path="/trading" element={<ErrorBoundary><Trading /></ErrorBoundary>} />
+              <Route path="/portfolio" element={<ErrorBoundary><Portfolio /></ErrorBoundary>} />
+              <Route path="/dao" element={<ErrorBoundary><DAO /></ErrorBoundary>} />
+              <Route path="/gallery" element={<ErrorBoundary><Gallery /></ErrorBoundary>} />
+              <Route path="/tip" element={<ErrorBoundary><Tip /></ErrorBoundary>} />
+              <Route path="/wallet" element={<ErrorBoundary><Wallet /></ErrorBoundary>} />
+              {/* 404 fallback */}
+              <Route path="*" element={
+                <div className="text-center py-20">
+                  <p className="text-6xl mb-4">🎨</p>
+                  <h2 className="text-2xl font-bold mb-2">Page introuvable</h2>
+                  <p className="text-gray-500">Cette page n'existe pas encore.</p>
+                </div>
+              } />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </main>
 
       {/* Footer */}
