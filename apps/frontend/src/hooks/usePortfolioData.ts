@@ -1,23 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useWeb3 } from './useWeb3'
+import { fromWei } from '@xartists/core'
 
 const MVX_API = 'https://api.multiversx.com'
-
-/** Convert a raw ESDT balance string (18 decimals) to a human-readable decimal string. */
-function fromWei(raw: string, decimals = 18): string {
-  if (!raw || raw === '0') return '0'
-  try {
-    const bigVal = BigInt(raw)
-    const divisor = BigInt(10) ** BigInt(decimals)
-    const intPart = bigVal / divisor
-    const fracPart = bigVal % divisor
-    if (fracPart === BigInt(0)) return intPart.toString()
-    const fracStr = fracPart.toString().padStart(decimals, '0').replace(/0+$/, '')
-    return `${intPart}.${fracStr}`
-  } catch {
-    return '0'
-  }
-}
 
 interface PortfolioData {
   egldBalance: string

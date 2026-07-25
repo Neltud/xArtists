@@ -27,7 +27,7 @@ export function fromWei(raw: string | number, decimals = 18): string {
   if (typeof raw === 'number') {
     if (!Number.isFinite(raw) || isNaN(raw)) return '0'
     const result = raw / Math.pow(10, decimals)
-    return isNaN(result) ? '0' : result.toFixed(6).replace(/\.?0+$/, '') || '0'
+    return result.toFixed(6).replace(/\.?0+$/, '') || '0'
   }
   const str = raw.trim()
   if (!str || str === '0') return '0'
