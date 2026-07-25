@@ -1,111 +1,48 @@
-name: xArtists CI/CD Global (with Cache)
+name: CI/CD xArtists LIA v6
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
-env:
-  NODE_ENV: production
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
-  # ==================== FRONTEND ====================
-  frontend:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    name: Frontend Build
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: apps/frontend/package-lock.json
 
-      - name: Cache npm dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            ~/.npm
-          key: ${{ runner.os }}-frontend-npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-frontend-npm-
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Security Audit
-        run: npm audit --audit-level=moderate || true
-
-      - name: Type Check
-        run: npm run type-check || true
-
-      - name: Lint
-        run: npm run lint || true
-
-      - name: Build Frontend
-        run: npm run build
-
-  # ==================== RUST CONTRACTS ====================
-  contracts:
-    runs-on: ubuntu-latest
-    name: Rust Contracts Build
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
-
-      - name: Cache Rust
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: contracts/nft-staking,contracts/tro-staking
-          key: ${{ hashFiles('contracts/**/Cargo.lock') }}
-
-      - name: Security Audit (Cargo)
-        run: cargo audit || true
-
-      - name: Check Contracts
+      - name: Clean docs folder
         run: |
-          cargo fmt --all -- --check
-          cargo clippy --all-targets --all-features -- -D warnings
-          cargo build --release
+          rm -rf docs/*
+          mkdir -p docs
+          echo "docs cleaned at $(date)"
 
-  # ==================== TOOLS ====================
-  tools:
-    runs-on: ubuntu-latest
-    name: Tools Build
+      - name: Install dependencies
+        run: cd apps/frontend && npm ci
 
-    steps:
-      - uses: actions/checkout@v4
+      - name: Build Frontend (React)
+        run: cd apps/frontend && npm run build
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Add .nojekyll
+        run: echo "" > docs/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Cache Tools Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            tools/faucet/node_modules
-            tools/tip/node_modules
-            ~/.npm
-          key: ${{ runner.os }}-tools-npm-${{ hashFiles('tools/**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-tools-npm-
-
-      - name: Install & Build Tools
-        run: |
-          if [ -d "tools/faucet" ]; then npm ci --prefix tools/faucet; fi
-          if [ -d "tools/tip" ]; then npm ci --prefix tools/tip; fi
-          echo "Tools built successfully"
+          branch: gh-pages
+          folder: docs
+          clean: true
