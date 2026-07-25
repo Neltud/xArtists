@@ -22,11 +22,26 @@ export function explorerTokenUrl(tokenId: string): string {
 
 // ─── Token formatting ────────────────────────────────────────────────────────
 
-/** Convert raw ESDT balance (18 decimals) to a human-readable number. */
-export function fromWei(raw: string | number, decimals = 18): number {
-  const n = typeof raw === 'string' ? parseFloat(raw) : raw
-  if (isNaN(n)) return 0
-  return n / Math.pow(10, decimals)
+/** Convert raw ESDT balance (18 decimals) to a human-readable decimal string. */
+export function fromWei(raw: string | number, decimals = 18): string {
+  if (typeof raw === 'number') {
+    if (!Number.isFinite(raw) || isNaN(raw)) return '0'
+    const result = raw / Math.pow(10, decimals)
+    return result.toFixed(6).replace(/\.?0+$/, '') || '0'
+  }
+  const str = raw.trim()
+  if (!str || str === '0') return '0'
+  try {
+    const bigVal = BigInt(str)
+    const divisor = BigInt(10) ** BigInt(decimals)
+    const intPart = bigVal / divisor
+    const fracPart = bigVal % divisor
+    if (fracPart === BigInt(0)) return intPart.toString()
+    const fracStr = fracPart.toString().padStart(decimals, '0').replace(/0+$/, '')
+    return `${intPart}.${fracStr}`
+  } catch {
+    return '0'
+  }
 }
 
 /** Format a USD value with a dollar sign and max 2 decimal places. */

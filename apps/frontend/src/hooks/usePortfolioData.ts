@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useWeb3 } from './useWeb3'
+import { fromWei } from '@xartists/core'
 
 const MVX_API = 'https://api.multiversx.com'
 
@@ -31,14 +32,15 @@ export const usePortfolioData = () => {
 
     const fetchPortfolio = async () => {
       try {
-        const [accountRes, tokensRes] = await Promise.allSettled([
+        const [accountRes, tokensRes, econRes] = await Promise.allSettled([
           fetch(`${MVX_API}/accounts/${address}`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
           fetch(`${MVX_API}/accounts/${address}/tokens?size=20`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
+          fetch(`${MVX_API}/economics`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
         ])
         const account = accountRes.status === 'fulfilled' ? accountRes.value : null
         const tokens = tokensRes.status === 'fulfilled' && Array.isArray(tokensRes.value) ? tokensRes.value : []
-        const egldBalance = account?.balance ? (parseFloat(account.balance) / 1e18).toFixed(6) : '0'
-        const egldPrice = account?.egldPrice ?? 0
+        const egldBalance = account?.balance ? fromWei(account.balance, 18) : '0'
+        const egldPrice = econRes.status === 'fulfilled' ? (econRes.value?.price ?? 0) : 0
         const totalValue = parseFloat(egldBalance) * egldPrice
         setPortfolio({ egldBalance, tokens, nfts: [], totalValue, loading: false, error: null })
       } catch {

@@ -41,7 +41,6 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const disconnect = () => {
     setState({ connected: false, address: '', method: null })
-    localStorage.removeItem(STORAGE_KEY)
   }
 
   const shortAddress = state.address
