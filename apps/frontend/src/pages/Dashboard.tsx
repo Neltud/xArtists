@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react'
 import { useMultiversX } from '../hooks/useMultiversX'
+import { useWalletTokens } from '../hooks/useWalletTokens'
 
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
 
@@ -24,6 +24,7 @@ function StatCard({ label, value, sub, color = '' }: { label: string; value: str
 
 export default function Dashboard() {
   const { prices, liaStatus, xartists, bonData, loading, lastUpdate, refresh } = useMultiversX()
+  const { hatomPosition, lpTokens, farmTokens, totalEsdtUsd, loading: walletLoading } = useWalletTokens()
 
   const portfolio = liaStatus?.portfolio?.total_usd ?? 0
   const hf = liaStatus?.portfolio?.hatom_health_factor ?? 999
@@ -100,6 +101,69 @@ export default function Dashboard() {
               <div className="progress-fill" style={{ width: `${Math.min(millionPct * 100, 100)}%` }} />
             </div>
           </div>
+
+          {/* DeFi Positions Summary */}
+          {!walletLoading && (
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* Hatom summary */}
+              <div className="card border-teal-500/20 bg-teal-500/5">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-teal-400">🏦 Hatom Protocol</p>
+                  <a href="/hatom" className="text-xs text-gray-500 hover:text-white transition-colors">Détails →</a>
+                </div>
+                {hatomPosition ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <p className="text-xs text-gray-500">Supplied</p>
+                      <p className="font-bold text-green-400">${hatomPosition.totalSuppliedUsd.toFixed(2)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Borrowed</p>
+                      <p className="font-bold text-orange-400">${hatomPosition.totalBorrowedUsd.toFixed(2)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Health Factor</p>
+                      <p className={`font-bold ${hfColor}`}>{hf >= 999 ? 'N/A' : hf.toFixed(2)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Net Position</p>
+                      <p className="font-bold text-white">${hatomPosition.netValueUsd.toFixed(2)}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">Aucune position Hatom active</p>
+                )}
+              </div>
+
+              {/* xExchange LP/Farm summary */}
+              <div className="card border-purple-500/20 bg-purple-500/5">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-purple-400">💧 xExchange LP & Farms</p>
+                  <a href="/lp" className="text-xs text-gray-500 hover:text-white transition-colors">Détails →</a>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs text-gray-500">LP Tokens</p>
+                    <p className="font-bold">{lpTokens.length}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Farm Tokens</p>
+                    <p className="font-bold">{farmTokens.length}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Valeur LP</p>
+                    <p className="font-bold text-purple-400">
+                      ${lpTokens.reduce((s, t) => s + t.valueUsd, 0).toFixed(2)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Total ESDT</p>
+                    <p className="font-bold text-white">${totalEsdtUsd.toFixed(2)}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Battle of Nodes */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">

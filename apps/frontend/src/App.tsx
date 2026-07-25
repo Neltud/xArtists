@@ -13,6 +13,8 @@ const DAO = lazy(() => import('./pages/DAO'))
 const Tip = lazy(() => import('./pages/Tip'))
 const Wallet = lazy(() => import('./pages/Wallet'))
 const Gallery = lazy(() => import('./pages/Gallery'))
+const HatomPage = lazy(() => import('./pages/HatomPage'))
+const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
 
 function PageLoader() {
   return (
@@ -61,6 +63,8 @@ export default function App() {
               <Route path="/gallery" element={<ErrorBoundary><Gallery /></ErrorBoundary>} />
               <Route path="/tip" element={<ErrorBoundary><Tip /></ErrorBoundary>} />
               <Route path="/wallet" element={<ErrorBoundary><Wallet /></ErrorBoundary>} />
+              <Route path="/hatom" element={<ErrorBoundary><HatomPage /></ErrorBoundary>} />
+              <Route path="/lp" element={<ErrorBoundary><LPPoolsPage /></ErrorBoundary>} />
               {/* 404 fallback */}
               <Route path="*" element={
                 <div className="text-center py-20">
