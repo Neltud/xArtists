@@ -4,9 +4,9 @@
 
 // ─── Address helpers ─────────────────────────────────────────────────────────
 
-/** Shorten a bech32 MultiversX address for display. */
+/** Shorten a bech32 MultiversX address for display. Returns '—' if the address is too short. */
 export function shortAddress(addr: string, prefixLen = 6, suffixLen = 4): string {
-  if (!addr || addr.length < prefixLen + suffixLen + 3) return addr
+  if (!addr || addr.length < prefixLen + suffixLen + 3) return '—'
   return `${addr.slice(0, prefixLen)}...${addr.slice(-suffixLen)}`
 }
 
@@ -82,8 +82,11 @@ export function fgColor(value: number): string {
 
 // ─── Data freshness ──────────────────────────────────────────────────────────
 
+/** How old (ms) remote data can be before showing a stale warning (2 hours). */
+export const STALE_DATA_THRESHOLD_MS = 2 * 60 * 60 * 1000
+
 /** Return true if `timestamp` ISO string is older than `maxAgeMs` milliseconds. */
-export function isDataStale(timestamp: string | null | undefined, maxAgeMs = 2 * 60 * 60 * 1000): boolean {
+export function isDataStale(timestamp: string | null | undefined, maxAgeMs = STALE_DATA_THRESHOLD_MS): boolean {
   if (!timestamp) return true
   try {
     const age = Date.now() - new Date(timestamp).getTime()

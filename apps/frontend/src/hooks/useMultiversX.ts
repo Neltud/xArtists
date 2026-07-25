@@ -104,14 +104,18 @@ export function useMultiversX() {
       try {
         const mex = await fetch(`${MVX_API}/tokens/${TRO_TOKEN}`).then(r => r.json())
         troPrice = mex?.price ?? 0
-      } catch { /* ignore */ }
+      } catch (e) {
+        console.debug('[useMultiversX] TRO price fetch failed:', e)
+      }
 
       // BTC from CoinGecko (may fail due to CORS in browser)
       let btcPrice = 0
       try {
         const cg = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd').then(r => r.json())
         btcPrice = cg?.bitcoin?.usd ?? 0
-      } catch { /* ignore */ }
+      } catch (e) {
+        console.debug('[useMultiversX] BTC price fetch failed:', e)
+      }
 
       setPrices({
         egld: egldPrice,

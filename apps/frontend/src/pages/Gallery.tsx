@@ -39,7 +39,7 @@ export default function Gallery() {
               collection: col.id,
               collectionName: col.name,
               collectionEmoji: col.emoji,
-              // Deterministic pseudo-score based on identifier hash for demo
+              // Deterministic pseudo-score based on identifier — placeholder pending real LIA AI scoring
               aiScore: 70 + (nft.identifier.charCodeAt(nft.identifier.length - 2) % 30),
             })
           }
@@ -94,7 +94,7 @@ export default function Gallery() {
               {/* Artwork image or placeholder */}
               <div className="aspect-square rounded-xl bg-[#111118] flex items-center justify-center overflow-hidden">
                 {nft.url ? (
-                  <img src={nft.url} alt={nft.name} className="w-full h-full object-cover rounded-xl" loading="lazy" />
+                  <img src={nft.url} alt={`NFT artwork: ${nft.name} (${nft.collectionName})`} className="w-full h-full object-cover rounded-xl" loading="lazy" />
                 ) : (
                   <span className="text-5xl">{nft.collectionEmoji}</span>
                 )}

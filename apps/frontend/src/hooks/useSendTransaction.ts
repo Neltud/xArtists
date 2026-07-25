@@ -6,6 +6,12 @@ interface TransactionDisplayInfo {
   successMessage?: string
 }
 
+/** Stub return shape that will match the real @multiversx/sdk-dapp result once configured. */
+interface SendTransactionResult {
+  sessionId: string | null
+  error: string | null
+}
+
 /**
  * Stub for sending MultiversX transactions.
  * Full implementation requires @multiversx/sdk-dapp + WalletConnect project ID.
@@ -13,7 +19,7 @@ interface TransactionDisplayInfo {
 export const useSendTransaction = () => {
   const { isLoggedIn } = useWeb3()
 
-  const send = async (_transactions: unknown[], _displayInfo?: TransactionDisplayInfo) => {
+  const send = async (_transactions: unknown[], _displayInfo?: TransactionDisplayInfo): Promise<SendTransactionResult> => {
     if (!isLoggedIn) {
       throw new Error('Wallet non connecté')
     }

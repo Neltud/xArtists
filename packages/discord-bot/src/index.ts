@@ -70,6 +70,7 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
+  // Split on spaces; skip the first token ('!lia') since we already matched it above
   const [, ...args] = message.content.split(' ');
   const subcommand = args[0] || 'help';
 

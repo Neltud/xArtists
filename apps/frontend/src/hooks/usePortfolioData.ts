@@ -32,8 +32,8 @@ export const usePortfolioData = () => {
     const fetchPortfolio = async () => {
       try {
         const [accountRes, tokensRes] = await Promise.allSettled([
-          fetch(`${MVX_API}/accounts/${address}`).then(r => r.json()),
-          fetch(`${MVX_API}/accounts/${address}/tokens?size=20`).then(r => r.json()),
+          fetch(`${MVX_API}/accounts/${address}`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
+          fetch(`${MVX_API}/accounts/${address}/tokens?size=20`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
         ])
         const account = accountRes.status === 'fulfilled' ? accountRes.value : null
         const tokens = tokensRes.status === 'fulfilled' && Array.isArray(tokensRes.value) ? tokensRes.value : []

@@ -31,7 +31,12 @@ function StaleDataBanner({ isStale, lastUpdate }: { isStale: boolean; lastUpdate
     <div className="bg-orange-500/10 border-b border-orange-500/30 px-4 py-2 text-center text-xs text-orange-400">
       ⚠️ Données potentiellement périmées — dernière mise à jour :{' '}
       {lastUpdate ? lastUpdate.toLocaleTimeString('fr-FR') : 'inconnue'}.{' '}
-      <span className="underline cursor-pointer" onClick={() => window.location.reload()}>Actualiser</span>
+      <button
+        className="underline hover:text-orange-300 transition-colors"
+        onClick={() => window.location.reload()}
+      >
+        Actualiser
+      </button>
     </div>
   )
 }
