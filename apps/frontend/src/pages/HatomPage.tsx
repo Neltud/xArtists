@@ -3,6 +3,7 @@ import { useMultiversX } from '../hooks/useMultiversX'
 
 const HATOM_DAPP = 'https://app.hatom.com'
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
+const IDENTIFIER_PREVIEW_LENGTH = 20
 
 function HfBadge({ hf }: { hf: number }) {
   if (hf >= 999) return <span className="badge-gray">N/A</span>
@@ -122,7 +123,7 @@ export default function HatomPage() {
                         <td className="py-3 px-3">
                           <p className="font-semibold text-sm">{m.label}</p>
                           {m.identifier && (
-                            <p className="text-xs mono text-gray-500">{m.identifier.slice(0, 20)}...</p>
+                            <p className="text-xs mono text-gray-500">{m.identifier.slice(0, IDENTIFIER_PREVIEW_LENGTH)}...</p>
                           )}
                         </td>
                         <td className="py-3 px-3 text-right mono text-sm text-green-400">
