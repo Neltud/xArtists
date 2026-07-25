@@ -1,0 +1,102 @@
+{
+  "timestamp": "2026-07-25T00:00:00Z",
+  "version": "v2.2.0",
+  "token": {
+    "identifier": "TRO-94c925",
+    "ticker": "TRO",
+    "decimals": 18,
+    "standard": "ESDT",
+    "network": "mainnet",
+    "description": "Token utilitaire xArtists — lien art physique / blockchain"
+  },
+  "pools": {
+    "xExchange": {
+      "status": "ACTIVE",
+      "api_endpoint": "https://api.multiversx.com/mex/pairs?size=500",
+      "scan_method": "filter baseToken.identifier == TRO-94c925 OR quoteToken.identifier == TRO-94c925",
+      "pairs_target": ["TRO/USDC", "TRO/WEGLD", "TRO/WBTC"],
+      "fee_pct": 0.3,
+      "validation": {
+        "min_tvl_usd": 100,
+        "min_volume_24h_usd": 10,
+        "check_contract_active": true
+      }
+    },
+    "OneDex": {
+      "status": "ACTIVE",
+      "contract": "erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc",
+      "scan_method": "viewPair(pair_id) itératif 0..50, filter TRO-94c925",
+      "pairs_target": ["TRO/USDC", "TRO/WEGLD"],
+      "fee_pct": 0.25,
+      "validation": {
+        "max_pair_scan": 50,
+        "consecutive_errors_stop": 5,
+        "decode_abi": true
+      }
+    },
+    "JEXchange": {
+      "status": "ACTIVE",
+      "api_endpoint": "https://api.jexchange.io/pools",
+      "github_pools": "https://raw.githubusercontent.com/jexchange-defi/jex-router-pools/main/pools",
+      "pool_files": ["jexchange_lp.json", "xexchange_lp.json", "onedex_lp.json", "ashswap_lp.json"],
+      "pairs_target": ["TRO/USDC", "TRO/WEGLD", "TRO/XOXNO"],
+      "fee_pct": 0.3,
+      "validation": {
+        "enrich_via_vm_query": true,
+        "func_name": "getReserves"
+      }
+    }
+  },
+  "reinvestment": {
+    "pct_profits": 0.5,
+    "min_amount_usd": 0.1,
+    "dao_vote_required": true,
+    "default_pool": "TRO/WEGLD",
+    "default_dex": "xExchange",
+    "logic": "TRODaoVote → TROLiquidityScanner → select target_pool → add liquidity"
+  },
+  "dao_governance": {
+    "contract": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
+    "token_staking": "TRO-94c925",
+    "quorum_pct": 60,
+    "duration_hours": 24,
+    "candidate_pairs": [
+      {"pair": "TRO/USDC", "risk": "FAIBLE", "dex": "xExchange", "il_risk": "minimal"},
+      {"pair": "TRO/WEGLD", "risk": "MOYEN", "dex": "xExchange", "il_risk": "modéré"},
+      {"pair": "TRO/WBTC", "risk": "ÉLEVÉ", "dex": "xExchange", "il_risk": "élevé"},
+      {"pair": "TRO/XOXNO", "risk": "ÉLEVÉ", "dex": "XOXNO", "il_risk": "élevé"}
+    ]
+  },
+  "validation_checklist": {
+    "xExchange": [
+      "GET /mex/pairs?size=500 → filter TRO-94c925",
+      "Vérifier liquidityUSD > 100",
+      "Vérifier volumeUSD24h > 10",
+      "Récupérer baseToken.price ou quoteToken.price pour tro_price_usd",
+      "Stocker pair.address pour add liquidity"
+    ],
+    "OneDex": [
+      "VM query viewPair(0..50) sur erd1qqq...su3sujc",
+      "Décoder returnData ABI (token_id, reserves, fees)",
+      "Filter first_token_id == TRO-94c925 OR second_token_id == TRO-94c925",
+      "Calculer TVL = tro_reserve * tro_price + other_reserve * other_price"
+    ],
+    "JEXchange": [
+      "GET https://raw.githubusercontent.com/jexchange-defi/jex-router-pools/main/pools/jexchange_lp.json",
+      "Filter tokens_in ou tokens_out contenant TRO-94c925",
+      "VM query getReserves() sur sc_address pour enrichir TVL",
+      "Fallback: GET https://api.jexchange.io/pools"
+    ]
+  },
+  "lia_v6_integration": {
+    "nodes": [
+      "TROLiquidityScanner — scan 3 DEX, calcule TVL, sélectionne target_pool",
+      "TRODaoVote — lit proposals actives, vote selon stratégie LIA",
+      "XArtistsMonitor — prix TRO via all_tokens → /mex/pairs → /tokens → ENV",
+      "MCPConnector — scan pools TRO via /mex/pairs",
+      "DAppDataAggregator — agrège tro_tvl_usd, tro_best_pool, tro_xexchange_pools",
+      "GitHubReporter — pousse battle_of_nodes.json avec tro_pools"
+    ],
+    "price_cascade": "all_tokens (wallet) → /mex/pairs (xExchange) → /tokens/{id} → ENV AVG_ENTRY_TRO"
+  }
+}
