@@ -1,111 +1,163 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useGetAccountInfo, logout } from '@multiversx/sdk-dapp/hooks';
+import { useState } from 'react'
+import { NavLink } from 'react-router-dom'
 
-const Header: React.FC = () => {
-  const { address, isLoggedIn } = useGetAccountInfo();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+const NAV = [
+  { to: '/', label: 'Dashboard', emoji: '📊' },
+  { to: '/marketplace', label: 'Marketplace', emoji: '🎨' },
+  { to: '/trading', label: 'Trading', emoji: '⚡' },
+  { to: '/portfolio', label: 'Portfolio', emoji: '📈' },
+  { to: '/dao', label: 'DAO', emoji: '🗳️' },
+  { to: '/tip', label: 'Tip 💜', emoji: '' },
+  { to: '/wallet', label: 'Wallet', emoji: '👛' },
+]
 
-  const handleLogout = () => {
-    logout();
-  };
+const WALLET_SHORT = 'erd1p4zy...crn6'
 
-  const navItems = [
-    { label: 'Dashboard', path: '/' },
-    { label: 'Gallery', path: '/gallery' },
-    { label: 'Staking', path: '/staking' },
-    { label: 'Governance', path: '/governance' },
-    { label: 'Portfolio', path: '/portfolio' },
-    { label: 'RWA', path: '/rwa-claim' },
-  ];
+export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [walletConnected, setWalletConnected] = useState(false)
+  const [showWalletModal, setShowWalletModal] = useState(false)
 
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-md bg-zinc-950/80 border-b border-zinc-800">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
-            <span className="text-xl font-bold">🎨</span>
-          </div>
-          <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">xArtists</span>
-        </Link>
+    <>
+      <header className="sticky top-0 z-50 bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-[#2a2a3a]">
+        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+          {/* Logo */}
+          <NavLink to="/" className="flex items-center gap-3">
+            <span className="text-2xl">🎨</span>
+            <div>
+              <span className="font-black text-lg gradient-text">xArtists</span>
+              <span className="ml-2 text-xs text-gray-500 font-normal">LIA v6</span>
+            </div>
+          </NavLink>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="text-zinc-300 hover:text-white transition-colors text-sm font-medium"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Wallet Connection */}
-        <div className="flex items-center gap-3">
-          {isLoggedIn && address ? (
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:flex items-center gap-2 bg-zinc-900 px-4 py-2 rounded-xl border border-zinc-800">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                <span className="text-sm text-zinc-400">
-                  {address.slice(0, 6)}...{address.slice(-4)}
-                </span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition-colors"
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {NAV.map(({ to, label }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={to === '/'}
+                className={({ isActive }) =>
+                  `px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    isActive
+                      ? 'bg-purple-600/20 text-purple-400'
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`
+                }
               >
-                Logout
+                {label}
+              </NavLink>
+            ))}
+          </nav>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2">
+            {walletConnected ? (
+              <button
+                onClick={() => setWalletConnected(false)}
+                className="px-3 py-1.5 rounded-lg bg-[#16161f] border border-green-500/30 text-green-400 text-xs mono"
+              >
+                ✅ {WALLET_SHORT}
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowWalletModal(true)}
+                className="btn-primary text-sm px-4 py-2"
+              >
+                🔗 Connecter
+              </button>
+            )}
+
+            {/* Mobile menu */}
+            <button
+              className="md:hidden p-2 rounded-lg text-gray-400 hover:text-white"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              {menuOpen ? '✕' : '☰'}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Nav */}
+        {menuOpen && (
+          <div className="md:hidden border-t border-[#2a2a3a] bg-[#0a0a0f] px-4 py-3 flex flex-col gap-1">
+            {NAV.map(({ to, label, emoji }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={to === '/'}
+                onClick={() => setMenuOpen(false)}
+                className={({ isActive }) =>
+                  `px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                    isActive ? 'bg-purple-600/20 text-purple-400' : 'text-gray-400'
+                  }`
+                }
+              >
+                {emoji} {label}
+              </NavLink>
+            ))}
+          </div>
+        )}
+      </header>
+
+      {/* Wallet Modal */}
+      {showWalletModal && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowWalletModal(false)}
+        >
+          <div
+            className="card max-w-md w-full animate-fade-in"
+            onClick={e => e.stopPropagation()}
+          >
+            <h2 className="text-xl font-bold mb-6">🔗 Connecter votre Wallet</h2>
+
+            <button
+              onClick={() => { setWalletConnected(true); setShowWalletModal(false) }}
+              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
+            >
+              <span className="text-3xl">📱</span>
+              <div className="text-left">
+                <div className="font-semibold">xPortal App</div>
+                <div className="text-sm text-gray-400">Scanner le QR code</div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => { setWalletConnected(true); setShowWalletModal(false) }}
+              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
+            >
+              <span className="text-3xl">🦊</span>
+              <div className="text-left">
+                <div className="font-semibold">MultiversX DeFi Wallet</div>
+                <div className="text-sm text-gray-400">Extension navigateur</div>
+              </div>
+            </button>
+
+            <div className="mt-4">
+              <p className="text-xs text-gray-500 mb-2">Ou importer un fichier PEM (lecture seule)</p>
+              <textarea
+                className="w-full p-3 rounded-lg bg-[#111118] border border-[#2a2a3a] text-xs mono text-gray-300 resize-none h-20"
+                placeholder="Coller votre clé PEM ici..."
+              />
+              <button
+                onClick={() => { setWalletConnected(true); setShowWalletModal(false) }}
+                className="btn-primary w-full mt-2 text-sm"
+              >
+                Importer PEM
               </button>
             </div>
-          ) : (
-            <a
-              href="/unlock"
-              className="px-4 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white rounded-lg text-sm font-medium transition-all"
+
+            <button
+              onClick={() => setShowWalletModal(false)}
+              className="btn-secondary w-full mt-3 text-sm"
             >
-              Connect Wallet
-            </a>
-          )}
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden w-10 h-10 flex items-center justify-center"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            <span className={`text-2xl transition-transform ${mobileMenuOpen ? 'rotate-45' : ''}`}>≡</span>
-          </button>
+              Annuler
+            </button>
+          </div>
         </div>
-      </div>
-
-      {/* Mobile Navigation */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-zinc-900 border-t border-zinc-800"
-          >
-            <nav className="flex flex-col gap-2 p-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className="px-4 py-2 text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
-  );
-};
-
-export default Header;
+      )}
+    </>
+  )
+}
