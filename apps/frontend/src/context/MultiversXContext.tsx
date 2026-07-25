@@ -95,11 +95,11 @@ export function MultiversXProvider({ children }: { children: ReactNode }) {
   const fetchAll = useCallback(async () => {
     try {
       const [econRes, fgRes, liaRes, xaRes, bonRes] = await Promise.allSettled([
-        fetch(`${MVX_API}/economics`).then(r => r.json()),
-        fetch('https://api.alternative.me/fng/?limit=1').then(r => r.json()),
-        fetch(`${RAW_BASE}/data/lia_v6_status.json`).then(r => r.json()),
-        fetch(`${RAW_BASE}/data/xartists_onchain.json`).then(r => r.json()),
-        fetch(`${RAW_BASE}/data/battle_of_nodes.json`).then(r => r.json()),
+        fetch(`${MVX_API}/economics`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
+        fetch('https://api.alternative.me/fng/?limit=1').then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
+        fetch(`${RAW_BASE}/data/lia_v6_status.json`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
+        fetch(`${RAW_BASE}/data/xartists_onchain.json`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
+        fetch(`${RAW_BASE}/data/battle_of_nodes.json`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
       ])
 
       const egldPrice = econRes.status === 'fulfilled' ? (econRes.value?.price ?? 0) : 0
@@ -107,7 +107,7 @@ export function MultiversXProvider({ children }: { children: ReactNode }) {
 
       let troPrice = 0
       try {
-        const mex = await fetch(`${MVX_API}/tokens/${TRO_TOKEN}`).then(r => r.json())
+        const mex = await fetch(`${MVX_API}/tokens/${TRO_TOKEN}`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
         troPrice = mex?.price ?? 0
       } catch (e) {
         console.debug('[MultiversX] TRO price fetch failed:', e)
@@ -115,7 +115,7 @@ export function MultiversXProvider({ children }: { children: ReactNode }) {
 
       let btcPrice = 0
       try {
-        const cg = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd').then(r => r.json())
+        const cg = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd').then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
         btcPrice = cg?.bitcoin?.usd ?? 0
       } catch (e) {
         console.debug('[MultiversX] BTC price fetch failed:', e)
