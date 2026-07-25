@@ -38,7 +38,7 @@ async function safeFetch<T>(url: string, timeoutMs = 5000): Promise<T | null> {
   try {
     const res = await fetch(url, { signal: controller.signal });
     if (!res.ok) return null;
-    return res.json() as Promise<T>;
+    return await res.json() as T;
   } catch {
     return null;
   } finally {
