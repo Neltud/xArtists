@@ -1,0 +1,22 @@
+{
+  "wallet_lia": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "btc_tip": "bc1qrsmtgwlqvd66vkpng26yf8c8s07df332ac052z",
+  "egld_tip": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "tro_token": "TRO-94c925",
+  "gofundme": "https://www.gofundme.com/f/xartists-lia-v6",
+  "apis": {
+    "multiversx": "https://api.multiversx.com",
+    "tro_token": "https://api.multiversx.com/tokens/TRO-94c925",
+    "lia_tokens": "https://api.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6/tokens",
+    "mex_pairs": "https://api.multiversx.com/mex/pairs",
+    "hatom": "https://api.hatom.com"
+  },
+  "tro_pools_expected": [
+    "TRO/EGLD",
+    "TRO/WEGLD",
+    "TRO/USDC",
+    "TRO/MEX",
+    "TRO/WBTC"
+  ],
+  "updated": "2026-07-26"
+}
