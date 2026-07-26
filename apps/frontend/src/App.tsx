@@ -1,10 +1,10 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
+import BottomNav from './components/BottomNav'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useMultiversX } from './hooks/useMultiversX'
 
-// Lazy loading de toutes les pages
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Marketplace = lazy(() => import('./pages/Marketplace'))
 const Trading = lazy(() => import('./pages/Trading'))
@@ -15,6 +15,7 @@ const Wallet = lazy(() => import('./pages/Wallet'))
 const Gallery = lazy(() => import('./pages/Gallery'))
 const HatomPage = lazy(() => import('./pages/HatomPage'))
 const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
+const Agents = lazy(() => import('./pages/Agents'))
 
 function PageLoader() {
   return (
@@ -47,15 +48,19 @@ export default function App() {
   const { isStale, lastUpdate } = useMultiversX()
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
+    <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
       <Header />
       <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main
+        className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-8"
+        style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}
+      >
         <ErrorBoundary>
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+              <Route path="/agents" element={<ErrorBoundary><Agents /></ErrorBoundary>} />
               <Route path="/marketplace" element={<ErrorBoundary><Marketplace /></ErrorBoundary>} />
               <Route path="/trading" element={<ErrorBoundary><Trading /></ErrorBoundary>} />
               <Route path="/portfolio" element={<ErrorBoundary><Portfolio /></ErrorBoundary>} />
@@ -65,7 +70,6 @@ export default function App() {
               <Route path="/wallet" element={<ErrorBoundary><Wallet /></ErrorBoundary>} />
               <Route path="/hatom" element={<ErrorBoundary><HatomPage /></ErrorBoundary>} />
               <Route path="/lp" element={<ErrorBoundary><LPPoolsPage /></ErrorBoundary>} />
-              {/* 404 fallback */}
               <Route path="*" element={
                 <div className="text-center py-20">
                   <p className="text-6xl mb-4">🎨</p>
@@ -78,8 +82,7 @@ export default function App() {
         </ErrorBoundary>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-[#2a2a3a] mt-16 py-8">
+      <footer className="border-t border-[#2a2a3a] mt-8 py-6 hidden md:block">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -89,16 +92,18 @@ export default function App() {
                 <p className="text-xs text-gray-500">@tudurioriginal • MultiversX Mainnet</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 text-sm text-gray-500">
-              <a href="https://github.com/Neltud/xArtists" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">💙 GitHub</a>
-              <a href="https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">🔗 Explorer</a>
-              <a href="https://xexchange.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">🔵 xExchange</a>
+            <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap justify-center">
+              <a href="https://github.com/Neltud/xArtists" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">GitHub</a>
+              <a href="https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Explorer</a>
+              <a href="https://xexchange.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">xExchange</a>
               <span className="text-[#2a2a3a]">|</span>
-              <span>LIA v6 — Vellum Workflows</span>
+              <span>LIA v6 + GreenSmoke</span>
             </div>
           </div>
         </div>
       </footer>
+
+      <BottomNav />
     </div>
   )
 }
