@@ -1,136 +1,109 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { lazy, Suspense } from 'react'
+import { Routes, Route } from 'react-router-dom'
+import Header from './components/Header'
+import BottomNav from './components/BottomNav'
+import ErrorBoundary from './components/ErrorBoundary'
+import { useMultiversX } from './hooks/useMultiversX'
 
-import Dashboard from './pages/Dashboard';
-import BitcoinLayer2 from './pages/BitcoinLayer2';
-import HatomPage from './pages/HatomPage';
-import LPPoolsPage from './pages/LPPoolsPage';
-import TipPage from './pages/TipPage';
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const Marketplace = lazy(() => import('./pages/Marketplace'))
+const Trading = lazy(() => import('./pages/Trading'))
+const Portfolio = lazy(() => import('./pages/Portfolio'))
+const DAO = lazy(() => import('./pages/DAO'))
+const Tip = lazy(() => import('./pages/Tip'))
+const Wallet = lazy(() => import('./pages/Wallet'))
+const Gallery = lazy(() => import('./pages/Gallery'))
+const HatomPage = lazy(() => import('./pages/HatomPage'))
+const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
+const Agents = lazy(() => import('./pages/Agents'))
 
-function App() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleMenu = () => setIsOpen(!isOpen);
-  const closeMenu = () => setIsOpen(false);
-
-  // Animation variants for mobile menu
-  const menuVariants = {
-    closed: {
-      opacity: 0,
-      height: 0,
-      transition: { duration: 0.25, ease: [0.32, 0.72, 0, 1] }
-    },
-    open: {
-      opacity: 1,
-      height: 'auto',
-      transition: { duration: 0.35, ease: [0.32, 0.72, 0, 1] }
-    }
-  };
-
+function PageLoader() {
   return (
-    <Router>
-      {/* Header */}
-      <nav className="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-3" onClick={closeMenu}>
-              <div className="w-9 h-9 bg-violet-600 rounded-2xl flex items-center justify-center">
-                <span className="text-white font-bold text-2xl">x</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-2xl tracking-tighter">xArtists</span>
-                <span className="text-[10px] px-2 py-0.5 bg-zinc-800 text-zinc-400 rounded-full font-mono">LIA v5</span>
-              </div>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-1 text-sm">
-              <Link to="/" className="px-4 py-2 rounded-2xl hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors">Dashboard</Link>
-              <Link to="/bitcoin-layer2" className="px-4 py-2 rounded-2xl hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors">Bitcoin Layer 2</Link>
-              <Link to="/hatom" className="px-4 py-2 rounded-2xl hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors">Hatom</Link>
-              <Link to="/lp-pools" className="px-4 py-2 rounded-2xl hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors">LP Pools</Link>
-              <Link to="/tip" className="px-4 py-2 rounded-2xl hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors">Tip</Link>
-            </div>
-
-            {/* Desktop Wallet Button */}
-            <div className="hidden md:block">
-              <Link 
-                to="/bitcoin-layer2" 
-                className="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 active:bg-violet-800 transition-all rounded-2xl text-sm font-medium flex items-center gap-2"
-              >
-                Connect Wallet
-              </Link>
-            </div>
-
-            {/* Mobile Hamburger */}
-            <button 
-              onClick={toggleMenu} 
-              className="md:hidden w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white"
-              aria-label="Toggle menu"
-            >
-              <motion.svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="w-6 h-6" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-                animate={{ rotate: isOpen ? 180 : 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {isOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Animated Mobile Menu with Framer Motion */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial="closed"
-              animate="open"
-              exit="closed"
-              variants={menuVariants}
-              className="md:hidden border-t border-zinc-800 bg-zinc-900 overflow-hidden"
-            >
-              <div className="px-6 py-4 flex flex-col gap-1 text-sm">
-                <Link to="/" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300 active:bg-zinc-800">Dashboard</Link>
-                <Link to="/bitcoin-layer2" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300 active:bg-zinc-800">Bitcoin Layer 2</Link>
-                <Link to="/hatom" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300 active:bg-zinc-800">Hatom</Link>
-                <Link to="/lp-pools" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300 active:bg-zinc-800">LP Pools</Link>
-                <Link to="/tip" onClick={closeMenu} className="px-4 py-3 rounded-2xl hover:bg-zinc-800 text-zinc-300 active:bg-zinc-800">Tip</Link>
-                
-                <div className="pt-4 border-t border-zinc-800 mt-2">
-                  <Link 
-                    to="/bitcoin-layer2" 
-                    onClick={closeMenu}
-                    className="block w-full text-center px-6 py-3.5 bg-violet-600 hover:bg-violet-700 active:bg-violet-800 rounded-2xl text-sm font-medium transition-colors"
-                  >
-                    Connect Wallet
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
-
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/bitcoin-layer2" element={<BitcoinLayer2 />} />
-        <Route path="/hatom" element={<HatomPage />} />
-        <Route path="/lp-pools" element={<LPPoolsPage />} />
-        <Route path="/tip" element={<TipPage />} />
-      </Routes>
-    </Router>
-  );
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="text-center">
+        <div className="w-12 h-12 rounded-full border-2 border-purple-600 border-t-transparent animate-spin mx-auto mb-4" />
+        <p className="text-gray-500 text-sm">Chargement...</p>
+      </div>
+    </div>
+  )
 }
 
-export default App;
+function StaleDataBanner({ isStale, lastUpdate }: { isStale: boolean; lastUpdate: Date | null }) {
+  if (!isStale) return null
+  return (
+    <div className="bg-orange-500/10 border-b border-orange-500/30 px-4 py-2 text-center text-xs text-orange-400">
+      ⚠️ Données potentiellement périmées — dernière mise à jour :{' '}
+      {lastUpdate ? lastUpdate.toLocaleTimeString('fr-FR') : 'inconnue'}.{' '}
+      <button
+        className="underline hover:text-orange-300 transition-colors"
+        onClick={() => window.location.reload()}
+      >
+        Actualiser
+      </button>
+    </div>
+  )
+}
+
+export default function App() {
+  const { isStale, lastUpdate } = useMultiversX()
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
+      <Header />
+      <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />
+
+      <main
+        className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-8"
+        style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}
+      >
+        <ErrorBoundary>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+              <Route path="/agents" element={<ErrorBoundary><Agents /></ErrorBoundary>} />
+              <Route path="/marketplace" element={<ErrorBoundary><Marketplace /></ErrorBoundary>} />
+              <Route path="/trading" element={<ErrorBoundary><Trading /></ErrorBoundary>} />
+              <Route path="/portfolio" element={<ErrorBoundary><Portfolio /></ErrorBoundary>} />
+              <Route path="/dao" element={<ErrorBoundary><DAO /></ErrorBoundary>} />
+              <Route path="/gallery" element={<ErrorBoundary><Gallery /></ErrorBoundary>} />
+              <Route path="/tip" element={<ErrorBoundary><Tip /></ErrorBoundary>} />
+              <Route path="/wallet" element={<ErrorBoundary><Wallet /></ErrorBoundary>} />
+              <Route path="/hatom" element={<ErrorBoundary><HatomPage /></ErrorBoundary>} />
+              <Route path="/lp" element={<ErrorBoundary><LPPoolsPage /></ErrorBoundary>} />
+              <Route path="*" element={
+                <div className="text-center py-20">
+                  <p className="text-6xl mb-4">🎨</p>
+                  <h2 className="text-2xl font-bold mb-2">Page introuvable</h2>
+                  <p className="text-gray-500">Cette page n'existe pas encore.</p>
+                </div>
+              } />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
+      </main>
+
+      <footer className="border-t border-[#2a2a3a] mt-8 py-6 hidden md:block">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🎨</span>
+              <div>
+                <p className="font-bold">xArtists — LIA v6</p>
+                <p className="text-xs text-gray-500">@tudurioriginal • MultiversX Mainnet</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap justify-center">
+              <a href="https://github.com/Neltud/xArtists" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">GitHub</a>
+              <a href="https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Explorer</a>
+              <a href="https://xexchange.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">xExchange</a>
+              <span className="text-[#2a2a3a]">|</span>
+              <span>LIA v6 + GreenSmoke</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      <BottomNav />
+    </div>
+  )
+}

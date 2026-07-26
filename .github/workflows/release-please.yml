@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,10 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: googleapis/release-please-action@v4
+      - name: Run release-please
+        uses: googleapis/release-please-action@v4
         with:
-          # The token to use for creating releases and PRs
           token: ${{ secrets.GITHUB_TOKEN }}
-          # Path to release-please config (optional but recommended)
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json

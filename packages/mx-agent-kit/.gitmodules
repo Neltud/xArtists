@@ -1,0 +1,4 @@
+# Placeholder for submodule
+[submodule "packages/mx-agent-kit"]
+	path = packages/mx-agent-kit
+	url = https://github.com/multiversx/mx-agent-kit.git

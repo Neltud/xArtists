@@ -1,32 +1,33 @@
-import React from 'react';
-import { Button } from 'react-bootstrap';
-import { useWeb3 } from '../hooks/useWeb3';
-import { logout } from '@multiversx/sdk-dapp/utils';
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useWallet } from '../context/WalletContext'
 
 const WalletConnectButton: React.FC = () => {
-  const { address, isLoggedIn } = useWeb3();
+  const { connected, address, shortAddress, disconnect } = useWallet()
+  const navigate = useNavigate()
 
   const handleLogin = () => {
-    window.location.href = '/unlock';
-  };
+    // In production, trigger xPortal or DeFi Wallet SDK flow here.
+    navigate('/wallet')
+  }
 
-  const handleLogout = () => {
-    logout();
-  };
-
-  if (isLoggedIn && address) {
+  if (connected && address) {
     return (
-      <Button variant="outline-danger" size="sm" onClick={handleLogout}>
-        Déconnecter ({address.slice(0, 6)}...{address.slice(-4)})
-      </Button>
-    );
+      <button
+        className="px-3 py-1.5 rounded-lg bg-[#16161f] border border-green-500/30 text-green-400 text-xs mono hover:border-red-500/40 hover:text-red-400 transition-colors"
+        onClick={disconnect}
+        title="Cliquer pour déconnecter"
+      >
+        ✅ {shortAddress}
+      </button>
+    )
   }
 
   return (
-    <Button variant="primary" size="sm" onClick={handleLogin}>
-      Connecter Wallet
-    </Button>
-  );
-};
+    <button className="btn-primary text-sm px-4 py-2" onClick={handleLogin}>
+      🔗 Connecter Wallet
+    </button>
+  )
+}
 
-export default WalletConnectButton;
+export default WalletConnectButton
