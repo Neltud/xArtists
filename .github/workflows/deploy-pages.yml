@@ -32,12 +32,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: apps/frontend/package-lock.json
 
       - name: 📦 Install dependencies
         working-directory: apps/frontend
-        run: npm ci
+        run: npm install
 
       - name: 🏗️ Build React app
         working-directory: apps/frontend
@@ -47,35 +45,35 @@ jobs:
           VITE_MVX_API: https://api.multiversx.com
           VITE_WALLET: erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
 
-      - name: 🧹 Clean docs/ (force)
+      - name: 🧹 Prepare docs/
         run: |
-          find docs/ -type f ! -name '*.md' -delete
-          find docs/ -name '.nojekyll' -delete
-          echo "docs/ nettoyé"
+          mkdir -p docs
+          # Keep markdown docs; remove previous SPA assets
+          find docs -type f \( -name '*.js' -o -name '*.css' -o -name 'index.html' -o -name '*.svg' -o -name '*.map' \) -delete 2>/dev/null || true
+          rm -rf docs/assets 2>/dev/null || true
 
       - name: 📋 Copy dist/ → docs/
         run: |
           cp -r apps/frontend/dist/. docs/
           touch docs/.nojekyll
-          echo "✅ dist/ copié dans docs/"
+          echo "✅ SPA dist copié"
 
-      - name: 📊 Copy data JSON files
+      - name: 📊 Copy data JSON
         run: |
           mkdir -p docs/data
           cp -r data/. docs/data/ 2>/dev/null || true
-          echo "✅ data/ copié"
 
       - name: 🔍 Verify build
         run: |
           ls -la docs/
-          echo "index.html size: $(wc -c < docs/index.html) bytes"
+          test -f docs/index.html && echo "index.html OK" || (echo "MISSING index.html"; exit 1)
 
       - name: 📤 Commit & Push docs/
         run: |
           git config user.name 'LIA v6 Bot'
           git config user.email 'lia@xartists.io'
           git add docs/
-          git diff --staged --quiet || git commit -m "🤖 deploy: xArtists dApp $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git diff --staged --quiet || git commit -m "🤖 deploy: xArtists SPA $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           git push
 
       - name: 🌐 Setup Pages
