@@ -1,0 +1,139 @@
+{
+  "version": "1.0",
+  "updated_at": "2026-07-26T09:00:00Z",
+  "source": "GreenSmokeNetwork",
+  "agents": {
+    "Liia": {
+      "id": "liia",
+      "name": "Liia",
+      "platform": "GreenSmokeNetwork",
+      "role": "Agent prévisions court terme",
+      "status": "active",
+      "last_run": "2026-07-26T08:45:00Z",
+      "confidence_avg": 0.78,
+      "horizon": "1h–24h",
+      "forecasts": [
+        {
+          "asset": "EGLD",
+          "direction": "bullish",
+          "target_usd": 18.5,
+          "current_ref": 16.2,
+          "confidence": 0.82,
+          "horizon": "24h",
+          "rationale": "Momentum post-Supernova prep + Fear&Greed en hausse",
+          "signal": "BUY_DIP"
+        },
+        {
+          "asset": "TRO-94c925",
+          "direction": "neutral",
+          "target_usd": 0.000012,
+          "current_ref": 0.000011,
+          "confidence": 0.65,
+          "horizon": "12h",
+          "rationale": "Liquidité DAO en attente vote",
+          "signal": "HOLD"
+        },
+        {
+          "asset": "BTC",
+          "direction": "bullish",
+          "target_usd": 118000,
+          "current_ref": 112500,
+          "confidence": 0.74,
+          "horizon": "48h",
+          "rationale": "Corrélation crypto risk-on",
+          "signal": "ACCUMULATE"
+        }
+      ]
+    },
+    "Lia": {
+      "id": "lia-gs",
+      "name": "Lia",
+      "platform": "GreenSmokeNetwork",
+      "role": "Agent prévisions swing / mid-term",
+      "status": "active",
+      "last_run": "2026-07-26T08:30:00Z",
+      "confidence_avg": 0.71,
+      "horizon": "3d–14d",
+      "forecasts": [
+        {
+          "asset": "EGLD",
+          "direction": "bullish",
+          "target_usd": 22.0,
+          "current_ref": 16.2,
+          "confidence": 0.76,
+          "horizon": "7d",
+          "rationale": "Supernova narrative + Battle of Nodes score",
+          "signal": "STRONG_BUY"
+        },
+        {
+          "asset": "WBTC",
+          "direction": "bullish",
+          "target_usd": 120000,
+          "current_ref": 112500,
+          "confidence": 0.68,
+          "horizon": "14d",
+          "rationale": "Macro risk-on + ETF flows",
+          "signal": "BUY"
+        },
+        {
+          "asset": "TRO-94c925",
+          "direction": "bullish",
+          "target_usd": 0.000025,
+          "current_ref": 0.000011,
+          "confidence": 0.62,
+          "horizon": "14d",
+          "rationale": "Market making + NFT utility",
+          "signal": "ACCUMULATE"
+        }
+      ]
+    },
+    "Macro": {
+      "id": "macro",
+      "name": "Macro",
+      "platform": "GreenSmokeNetwork",
+      "role": "Agent macro / info marché",
+      "status": "active",
+      "last_run": "2026-07-26T08:00:00Z",
+      "confidence_avg": 0.80,
+      "horizon": "macro / régime",
+      "forecasts": [
+        {
+          "asset": "CRYPTO_REGIME",
+          "direction": "risk_on",
+          "target_usd": null,
+          "current_ref": null,
+          "confidence": 0.81,
+          "horizon": "30d",
+          "rationale": "Fear&Greed > 55, liquidité stablecoins, RWA flows",
+          "signal": "RISK_ON"
+        },
+        {
+          "asset": "MULTIVERSX_ECO",
+          "direction": "bullish",
+          "target_usd": null,
+          "current_ref": null,
+          "confidence": 0.79,
+          "horizon": "Q3-2026",
+          "rationale": "Supernova mainnet + AI agents + validator growth",
+          "signal": "ECOSYSTEM_GROWTH"
+        },
+        {
+          "asset": "RWA_ART",
+          "direction": "bullish",
+          "target_usd": null,
+          "current_ref": null,
+          "confidence": 0.70,
+          "horizon": "2026",
+          "rationale": "Tokenization art/collectibles en expansion, phygital niche",
+          "signal": "LONG_RWA_ART"
+        }
+      ]
+    }
+  },
+  "aggregated_signals": {
+    "primary": "BULLISH_EGLD",
+    "secondary": "ACCUMULATE_TRO",
+    "regime": "RISK_ON",
+    "recommended_action": "DCA EGLD + TRO, maintain Hatom yield, watch Supernova catalyst"
+  }
+}
