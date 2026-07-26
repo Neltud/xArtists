@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.13.0](https://github.com/Neltud/xArtists/compare/v0.12.0...v0.13.0) (2026-07-26)
+
+
+### Features
+
+* Agents — 6 GreenSmoke (Liia météo, Lia crypto, Macro, Politics, Sport, Tech) + contrats GSN ([9f5f036](https://github.com/Neltud/xArtists/commit/9f5f036a24c3ef1561a4fab35d0106b83f85ea3f))
+* BottomNav mobile — navigation accessible téléphone ([4741ce3](https://github.com/Neltud/xArtists/commit/4741ce34d8c26d78996a3e3411f99b2aae6b83c3))
+* Dashboard — bandeau prévisions GreenSmoke + lien Agents ([b08d98f](https://github.com/Neltud/xArtists/commit/b08d98f51af3deeddf0d99004793cec0faf3b22e))
+* page Agents — monitoring détaillé GreenSmoke (Liia, Lia, Macro) + prévisions ([a3489a1](https://github.com/Neltud/xArtists/commit/a3489a196030fe174fc1d619597313be251072b8))
+* route /agents + BottomNav + padding mobile safe-area ([1dffc99](https://github.com/Neltud/xArtists/commit/1dffc9962f03bbb9d6009a23fc2a8fb860a293d0))
+
+
+### Bug Fixes
+
+* deploy — npm install (pas npm ci) pour build frontend fiable ([39bd356](https://github.com/Neltud/xArtists/commit/39bd35653311f6c69ec300b6b7bdcf598e408d71))
+* Header mobile — menu complet + lien Agents, scroll, z-index ([18a9371](https://github.com/Neltud/xArtists/commit/18a9371f309a59e902f4d9b4e5715e9e821c3f66))
+* remove local @xartists/core dep pour build CI fiable ([7c7a129](https://github.com/Neltud/xArtists/commit/7c7a129d7b3f1210abb0d852600c8d122e931bfa))
+* viewport mobile safe-area + apple-mobile-web-app ([c3d9dc3](https://github.com/Neltud/xArtists/commit/c3d9dc3c6a103ae051682685dd9d42d0e2f2cc2e))
+
+
+### Documentation
+
+* mise à jour analyse dApp complète + veille techno 26 juillet 2026 — code corrigé confirmé ([b6bace2](https://github.com/Neltud/xArtists/commit/b6bace28857756e7c98e95bfe89b5f20274c9f96))
+* README mis à jour — code corrigé + analyse dApp + veille techno 26 juil 2026 ([cc706f2](https://github.com/Neltud/xArtists/commit/cc706f295a5b7f572f446d51cc7adbf0a8ca5659))
+
 ## [0.12.0](https://github.com/Neltud/xArtists/compare/v0.11.0...v0.12.0) (2026-07-25)
 
 
