@@ -1,6 +1,6 @@
 # xArtists — AI + RWA + NFT sur MultiversX
 
-## Mise à Jour 26 juillet 2026
+## Mise à Jour 27 juillet 2026
 **Code pleinement corrigé et poussé.**  
 Voir [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md) pour l’analyse dApp complète + veille technologique à jour.
 
