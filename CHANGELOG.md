@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.14.0](https://github.com/Neltud/xArtists/compare/v0.13.0...v0.14.0) (2026-07-27)
+
+
+### Features
+
+* Config BTC tip address + Hatom + TRO pools endpoints ([73476ed](https://github.com/Neltud/xArtists/commit/73476edc9145a4dd97e899f1901a6debd91af0e5))
+
+
+### Documentation
+
+* mise à jour analyse dApp complète + veille techno 27 juillet 2026 — code pleinement corrigé ([f791070](https://github.com/Neltud/xArtists/commit/f791070b05446a38b2043b6bbf022ff3f80531b1))
+* README — statut code corrigé + analyse à jour 27 juillet 2026 ([32107d5](https://github.com/Neltud/xArtists/commit/32107d536d8da3d0c6f8472d7855c127dcccf936))
+
 ## [0.13.0](https://github.com/Neltud/xArtists/compare/v0.12.0...v0.13.0) (2026-07-26)
 
 
