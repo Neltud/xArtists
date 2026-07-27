@@ -1,4 +1,4 @@
-# Analyse DApp Complète xArtists — Mise à Jour 26 Juillet 2026
+# Analyse DApp Complète xArtists — Mise à Jour 27 Juillet 2026
 
 ## Résumé Exécutif
 xArtists est une DApp innovante sur MultiversX combinant **IA agentique (LIA v5/v6)**, **NFT Phygital / RWA art tokenisé**, **staking**, **DAO** et **bridge BTC expérimental**.  
@@ -20,30 +20,31 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Mises à jour dépendances (sécurité + compatibilité sdk-dapp).
 - Fixes logique voting / rewards / WalletConnect navigation.
 - Optimisations performance frontend, cleanup monorepo, scan ESDT complet.
-- Code pleinement corrigé poussé (CHANGELOG v0.12.0 — 25 juil. 2026).
+- Config BTC tip address + Hatom + TRO pools endpoints (release 0.14.0).
+- Code pleinement corrigé poussé (CHANGELOG + release-please).
 
 ---
 
-## Veille Technologique (26 juillet 2026)
+## Veille Technologique (27 juillet 2026)
 
 ### MultiversX / Protocol
-- **Supernova** : upgrade majeur en cours (roadmap 97.7 %). Objectif finalité sub-seconde (~600 ms block time, cibles tests ~88 ms). Découplage consensus / exécution, sharding avancé, bandwidth optimisé.  
-  - Battle of Nodes (stress test) passé ; mainnet attendu (annonces autour sept. 2026 selon sources).  
+- **Supernova** : upgrade majeur (roadmap 97.7 %). Objectif finalité sub-seconde (~600 ms block time, cibles tests ~88 ms). Découplage consensus / exécution, sharding avancé, bandwidth optimisé.  
+  - Vote gouvernance lancé (janvier 2026) ; Battle of Nodes passé ; mainnet en préparation (annonces autour sept. 2026 selon sources).  
   - Mainnet récent : v1.11.8.0 / v1.11.9.x (maintenance + préparation Supernova).  
-  - Record ~3 267 validateurs — sécurité renforcée.
+  - Record ~3 267 validateurs — sécurité et décentralisation renforcées.
 - **Barnard** (précédent) : governance + optimisations SC, base pour Supernova.
 - Écosystème : xPortal, Hatom, xExchange, focus DeFi + NFT + AI agents.
 
 ### AI Agents on MultiversX
-- Plateforme officielle agents on-chain (agents.multiversx.com — explorer MX-8004, jobs, proofs sur devnet).
+- Plateforme officielle agents on-chain + AI Agent Kit (Eliza framework, Browser-Use).
 - **Warps** : structures on-chain générant UI shareable pour transactions (idéal minting / interactions agents).
-- xPilot (AI software engineering agent), Eliza framework, Browser-Use agents.
+- /AI_MegaWave & Growth Games : focus agents autonomes, DeFAI, orchestration on-chain.
 - Tendance 2026 : agents autonomes qui tradent, gagnent trust on-chain, exécutent cycles économiques complets. xArtists (LIA) s’aligne parfaitement.
 
 ### RWA & Tokenization Art / Phygital
 - Marché RWA tokenisé : ~$24–60 B (selon sources), croissance forte 2025-2026.  
   - Dominant : US Treasuries (~$9–15 B), or / commodities, private credit.  
-  - Art & collectibles : segment en expansion (Masterworks, royalties, high-value pieces) mais plus risqué / moins institutionnel que Treasuries.
+  - Art & collectibles : segment en expansion (royalties, high-value pieces, phygital) mais plus risqué / moins institutionnel que Treasuries.
 - Tendances 2026 : AI-powered tokenization, stablecoins comme rails de liquidité, adoption institutionnelle, phygital (photo physique → AI re-évaluation → metadata on-chain).
 - xArtists positionné sur art tokenisé + Phygital NFTs + agents IA génératifs — niche différenciante.
 
@@ -68,7 +69,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 ### Sécurité
 - Guards & ownership checks dans les contrats.
 - Rate-limiting AI, validation inputs, secret scanning.
-- Dépendances mises à jour (pnpm audit).
+- Dépendances mises à jour (pnpm audit / Dependabot PRs ouvertes).
 - Recommandation : audit externe formalisé avant scale mainnet massif.
 
 ### Fonctionnalités clés live
@@ -90,7 +91,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 ---
 
 **Statut final** : Code complètement corrigé, documenté et poussé.  
-Veille techno et analyse dApp à jour au 26 juillet 2026.  
+Veille techno et analyse dApp à jour au **27 juillet 2026**.  
 Prêt pour itérations et scale avec Supernova.
 
 *Auteur : Neltud (via Grok) — Artiste & créateur*
