@@ -16,7 +16,6 @@ interface Props {
 }
 
 export default function NFTDetailModal({ nft, onClose }: Props) {
-  // Close on Escape, lock scroll while open.
   useEffect(() => {
     if (!nft) return
     const onKey = (e: KeyboardEvent) => {
@@ -44,15 +43,9 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
       aria-modal="true"
       aria-label={`NFT detail: ${nft.name}`}
     >
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-md"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={onClose} />
 
-      {/* Panel */}
       <div className="relative z-10 w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl border border-[#2a2a3a] bg-[#12121a]/95 backdrop-blur-xl shadow-2xl shadow-purple-900/30">
-        {/* Close */}
         <button
           onClick={onClose}
           aria-label="Close"
@@ -64,7 +57,6 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
         </button>
 
         <div className="grid md:grid-cols-2 gap-0">
-          {/* Image */}
           <div className="relative aspect-square md:aspect-auto md:h-full bg-gradient-to-br from-[#15151f] to-[#0a0a0f] overflow-hidden md:rounded-l-3xl">
             {img ? (
               <img
@@ -81,7 +73,6 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
             <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/5 md:rounded-l-3xl" />
           </div>
 
-          {/* Details */}
           <div className="flex flex-col gap-5 p-6 sm:p-8">
             <div>
               <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -104,36 +95,49 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
               </p>
             )}
 
-            {/* Meta grid */}
             <dl className="grid grid-cols-2 gap-3 text-sm">
               <Meta label="Collection" value={nft.collection} mono />
               <Meta label="Nonce" value={nonceLabel(nft)} />
               <Meta label="Creator" value={truncateAddr(nft.creator)} mono />
               <Meta label="Owner" value={truncateAddr(nft.owner) || 'Unowned'} mono />
-              <Meta
-                label="Royalties"
-                value={royalties !== null ? `${royalties}%` : '—'}
-              />
+              <Meta label="Royalties" value={royalties !== null ? `${royalties}%` : '—'} />
               <Meta label="Type" value={typeLabel(nft.type)} />
             </dl>
 
-            {/* Actions */}
-            <div className="mt-auto flex flex-col gap-3 pt-2">
-              <a
-                href={EXPLORER_NFT(nft.identifier)}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-primary text-center text-sm"
-              >
-                View on MultiversX Explorer ↗
-              </a>
+            <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 px-3 py-2.5 text-xs text-gray-400">
+              <p className="font-semibold text-orange-300/90 mb-1">Règles marketplace (cible)</p>
+              <ul className="list-disc pl-4 space-y-0.5">
+                <li>Si NFT en <strong className="text-gray-300">escrow</strong> phygital → vente bloquée jusqu’unlock</li>
+                <li>À chaque vente : <strong className="text-gray-300">burn $TRO</strong> (on-chain, à déployer)</li>
+                <li>Paiement cible : EGLD / USDC / WEGLD / $TRO</li>
+              </ul>
+            </div>
+
+            <div className="mt-auto flex flex-col gap-2 pt-2">
+              <p className="text-[10px] uppercase tracking-widest text-gray-500">Acheter (multi-devises via DEX / market)</p>
               <a
                 href={XOXNO_COLLECTION(nft.collection)}
                 target="_blank"
                 rel="noreferrer"
+                className="btn-primary text-center text-sm"
+              >
+                Buy on XOXNO (EGLD / ESDT) ↗
+              </a>
+              <a
+                href="https://xexchange.com/swap/USDC-c76f1f/TRO-94c925"
+                target="_blank"
+                rel="noreferrer"
                 className="btn-secondary text-center text-sm"
               >
-                Buy / Trade on XOXNO ↗
+                Get $TRO first (xExchange) ↗
+              </a>
+              <a
+                href={EXPLORER_NFT(nft.identifier)}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-secondary text-center text-sm"
+              >
+                View on Explorer ↗
               </a>
             </div>
           </div>
