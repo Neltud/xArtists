@@ -6,6 +6,7 @@ const NAV = [
   { to: '/', label: 'Dashboard', emoji: '📊' },
   { to: '/agents', label: 'Agents IA', emoji: '🧠' },
   { to: '/marketplace', label: 'Marketplace', emoji: '🎨' },
+  { to: '/tro', label: '$TRO', emoji: '🪙' },
   { to: '/gallery', label: 'Galerie', emoji: '🖼️' },
   { to: '/trading', label: 'Trading', emoji: '⚡' },
   { to: '/portfolio', label: 'Portfolio', emoji: '📈' },
@@ -28,12 +29,10 @@ export default function Header() {
   const { connected, shortAddress, connect, disconnect } = useWallet()
   const location = useLocation()
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMenuOpen(false)
   }, [location.pathname])
 
-  // Prevent body scroll when menu open
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = 'hidden'
@@ -72,7 +71,6 @@ export default function Header() {
             </div>
           </NavLink>
 
-          {/* Desktop Nav — scrollable if needed */}
           <nav className="hidden lg:flex items-center gap-0.5 overflow-x-auto max-w-[55%]">
             {NAV.map(({ to, label }) => (
               <NavLink
@@ -110,7 +108,6 @@ export default function Header() {
               </button>
             )}
 
-            {/* Hamburger — visible below lg */}
             <button
               type="button"
               className="lg:hidden p-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 active:bg-white/15 touch-manipulation"
@@ -123,7 +120,6 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile / tablet full menu overlay */}
         {menuOpen && (
           <div
             className="lg:hidden fixed inset-0 top-14 sm:top-16 z-40 bg-black/60"
