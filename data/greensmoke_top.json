@@ -1,9 +1,18 @@
 {
-  "updated": "2026-07-29",
+  "updated": "2026-07-29T21:00:00Z",
   "network": "greensmoke",
+  "source": "manual_seed_until_api",
   "agents": [
-    {"id": "liia", "reputation": 0.72, "bias": "WAIT", "confidence": 0.55},
-    {"id": "macro", "reputation": 0.68, "bias": "WAIT", "confidence": 0.5}
+    {"id": "liia", "reputation": 0.78, "bias": "WAIT", "confidence": 0.58, "roi_30d": null},
+    {"id": "macro", "reputation": 0.74, "bias": "WAIT", "confidence": 0.55, "roi_30d": null},
+    {"id": "gsn-alpha-01", "reputation": 0.71, "bias": "WAIT", "confidence": 0.52, "roi_30d": null},
+    {"id": "gsn-alpha-02", "reputation": 0.69, "bias": "WAIT", "confidence": 0.5, "roi_30d": null},
+    {"id": "gsn-alpha-03", "reputation": 0.67, "bias": "WAIT", "confidence": 0.48, "roi_30d": null},
+    {"id": "gsn-beta-01", "reputation": 0.65, "bias": "WAIT", "confidence": 0.47, "roi_30d": null},
+    {"id": "gsn-beta-02", "reputation": 0.63, "bias": "WAIT", "confidence": 0.45, "roi_30d": null},
+    {"id": "gsn-gamma-01", "reputation": 0.61, "bias": "WAIT", "confidence": 0.44, "roi_30d": null},
+    {"id": "gsn-gamma-02", "reputation": 0.6, "bias": "WAIT", "confidence": 0.42, "roi_30d": null},
+    {"id": "gsn-delta-01", "reputation": 0.6, "bias": "WAIT", "confidence": 0.4, "roi_30d": null}
   ],
-  "note": "Replace with live GreenSmoke API ranking. Max 10 agents used by GreenSmokeConsumer."
+  "note": "Update bias/confidence from app.greensmoke.network rankings. LIA GreenSmokeConsumer uses top 10 with min reputation 0.6."
 }
