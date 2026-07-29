@@ -2,10 +2,10 @@ import { NavLink } from 'react-router-dom'
 
 const ITEMS = [
   { to: '/', label: 'Home', emoji: '📊', end: true },
-  { to: '/agents', label: 'Agents', emoji: '🧠' },
+  { to: '/marketplace', label: 'Art', emoji: '🎨' },
+  { to: '/tro', label: '$TRO', emoji: '🪙' },
   { to: '/trading', label: 'Trade', emoji: '⚡' },
   { to: '/wallet', label: 'Wallet', emoji: '👛' },
-  { to: '/marketplace', label: 'Art', emoji: '🎨' },
 ]
 
 export default function BottomNav() {
