@@ -23,7 +23,11 @@
     "secondary_royalty_pct": 5.0,
     "rwa_escrow_fee_pct": 2.0,
     "lia_performance_fee_pct": 15.0,
-    "listing_fee_egld": 0.01
+    "listing_fee_egld": 0.01,
+    "tro_burn_bps": 100,
+    "tro_burn_note": "100 bps = 1% of sale value in TRO burned on each buyNft — NOT yet on-chain",
+    "block_if_escrow": true,
+    "payment_tokens": ["EGLD", "WEGLD-bd4d79", "USDC-c76f1f", "TRO-94c925"]
   },
   "fiat": {
     "primary": "moonpay",
