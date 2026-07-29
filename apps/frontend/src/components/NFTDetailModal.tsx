@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { NFT } from '../types/nft'
 import {
   nftImageUrl,
@@ -9,6 +9,9 @@ import {
   EXPLORER_NFT,
   XOXNO_COLLECTION,
 } from '../types/nft'
+import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
+import { useSendTransaction } from '../hooks/useSendTransaction'
+import { useWeb3 } from '../hooks/useWeb3'
 
 interface Props {
   nft: NFT | null
@@ -16,6 +19,14 @@ interface Props {
 }
 
 export default function NFTDetailModal({ nft, onClose }: Props) {
+  const { isLoggedIn } = useWeb3()
+  const { send } = useSendTransaction()
+  const { listNft, buyNft, pending, error, lastTx, marketplaceAddress } = useMarketplaceTx()
+  const [listPrice, setListPrice] = useState('1')
+  const [buyPrice, setBuyPrice] = useState('1')
+  const [listingId, setListingId] = useState('1')
+  const [txMsg, setTxMsg] = useState<string | null>(null)
+
   useEffect(() => {
     if (!nft) return
     const onKey = (e: KeyboardEvent) => {
@@ -35,6 +46,65 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
   const img = nftImageUrl(nft)
   const royalties = nftRoyalties(nft)
   const isSFT = typeLabel(nft.type) === 'SFT'
+
+  const onList = async () => {
+    setTxMsg(null)
+    if (!isLoggedIn) {
+      setTxMsg('Connecte ton wallet (xPortal / extension) pour lister.')
+      return
+    }
+    const price = parseFloat(listPrice)
+    if (!(price > 0)) {
+      setTxMsg('Prix EGLD invalide')
+      return
+    }
+    try {
+      await listNft(
+        { tokenId: nft.collection, nonce: nft.nonce, priceEgld: price },
+        async (tx) => {
+          const res = await send([tx], {
+            processingMessage: 'Listing NFT…',
+            successMessage: 'NFT listé',
+            errorMessage: 'Échec listing',
+          })
+          return { hash: res.sessionId ?? undefined }
+        },
+      )
+      setTxMsg('Listing soumis — confirme dans le wallet.')
+    } catch (e: unknown) {
+      setTxMsg(e instanceof Error ? e.message : 'Erreur listing')
+    }
+  }
+
+  const onBuy = async () => {
+    setTxMsg(null)
+    if (!isLoggedIn) {
+      setTxMsg('Connecte ton wallet pour acheter.')
+      return
+    }
+    const price = parseFloat(buyPrice)
+    const id = parseInt(listingId, 10)
+    if (!(price > 0) || !(id >= 0)) {
+      setTxMsg('Listing ID / prix invalides')
+      return
+    }
+    try {
+      await buyNft(
+        { listingId: id, priceEgld: price },
+        async (tx) => {
+          const res = await send([tx], {
+            processingMessage: 'Achat NFT…',
+            successMessage: 'Achat envoyé',
+            errorMessage: 'Échec achat',
+          })
+          return { hash: res.sessionId ?? undefined }
+        },
+      )
+      setTxMsg('Achat soumis — confirme dans le wallet.')
+    } catch (e: unknown) {
+      setTxMsg(e instanceof Error ? e.message : 'Erreur achat')
+    }
+  }
 
   return (
     <div
@@ -104,24 +174,94 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
               <Meta label="Type" value={typeLabel(nft.type)} />
             </dl>
 
+            {/* On-chain List / Buy */}
+            <div className="rounded-xl border border-purple-500/25 bg-purple-500/5 px-3 py-3 text-xs text-gray-300 space-y-3">
+              <p className="font-semibold text-purple-200">Marketplace on-chain (xArtists)</p>
+              <p className="text-[10px] text-gray-500 mono">SC: {marketplaceAddress.slice(0, 16)}…</p>
+
+              <div className="flex flex-wrap items-end gap-2">
+                <label className="flex flex-col gap-1">
+                  <span className="text-[10px] uppercase text-gray-500">List price (EGLD)</span>
+                  <input
+                    type="number"
+                    min="0.001"
+                    step="0.01"
+                    value={listPrice}
+                    onChange={(e) => setListPrice(e.target.value)}
+                    className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
+                  />
+                </label>
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={onList}
+                  className="btn-primary text-sm disabled:opacity-50"
+                >
+                  {pending ? '…' : 'List NFT'}
+                </button>
+              </div>
+
+              <div className="flex flex-wrap items-end gap-2 border-t border-[#2a2a3a] pt-3">
+                <label className="flex flex-col gap-1">
+                  <span className="text-[10px] uppercase text-gray-500">Listing ID</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={listingId}
+                    onChange={(e) => setListingId(e.target.value)}
+                    className="w-24 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
+                  />
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span className="text-[10px] uppercase text-gray-500">Pay (EGLD)</span>
+                  <input
+                    type="number"
+                    min="0.001"
+                    step="0.01"
+                    value={buyPrice}
+                    onChange={(e) => setBuyPrice(e.target.value)}
+                    className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
+                  />
+                </label>
+                <button
+                  type="button"
+                  disabled={pending}
+                  onClick={onBuy}
+                  className="btn-secondary text-sm disabled:opacity-50"
+                >
+                  {pending ? '…' : 'Buy NFT'}
+                </button>
+              </div>
+
+              {(txMsg || error || lastTx) && (
+                <p className="text-[11px] text-amber-200/90">
+                  {txMsg || error}
+                  {lastTx ? ` · tx ${lastTx}` : ''}
+                </p>
+              )}
+              {!isLoggedIn && (
+                <p className="text-[11px] text-gray-500">Wallet requis pour List / Buy on-chain.</p>
+              )}
+            </div>
+
             <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 px-3 py-2.5 text-xs text-gray-400">
-              <p className="font-semibold text-orange-300/90 mb-1">Règles marketplace (cible)</p>
+              <p className="font-semibold text-orange-300/90 mb-1">Règles marketplace</p>
               <ul className="list-disc pl-4 space-y-0.5">
-                <li>Si NFT en <strong className="text-gray-300">escrow</strong> phygital → vente bloquée jusqu’unlock</li>
-                <li>À chaque vente : <strong className="text-gray-300">burn $TRO</strong> (on-chain, à déployer)</li>
+                <li>Escrow phygital → vente bloquée jusqu’unlock</li>
+                <li>Commission : 2,5 % vendeur + 0,5 % acheteur (voir LEGAL.md)</li>
                 <li>Paiement cible : EGLD / USDC / WEGLD / $TRO</li>
               </ul>
             </div>
 
             <div className="mt-auto flex flex-col gap-2 pt-2">
-              <p className="text-[10px] uppercase tracking-widest text-gray-500">Acheter (multi-devises via DEX / market)</p>
+              <p className="text-[10px] uppercase tracking-widest text-gray-500">Marchés externes</p>
               <a
                 href={XOXNO_COLLECTION(nft.collection)}
                 target="_blank"
                 rel="noreferrer"
                 className="btn-primary text-center text-sm"
               >
-                Buy on XOXNO (EGLD / ESDT) ↗
+                Buy on XOXNO ↗
               </a>
               <a
                 href="https://xexchange.com/swap/USDC-c76f1f/TRO-94c925"
@@ -129,7 +269,7 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
                 rel="noreferrer"
                 className="btn-secondary text-center text-sm"
               >
-                Get $TRO first (xExchange) ↗
+                Get $TRO (xExchange) ↗
               </a>
               <a
                 href={EXPLORER_NFT(nft.identifier)}
