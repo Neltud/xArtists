@@ -1,0 +1,48 @@
+name: E2E Playwright
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install frontend deps
+        run: |
+          if [ -f apps/frontend/package.json ]; then
+            cd apps/frontend && npm ci || npm install
+          else
+            npm ci || npm install
+          fi
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E smoke
+        run: |
+          if [ -f playwright.config.ts ] || [ -f playwright.config.js ]; then
+            npx playwright test
+          elif [ -f e2e/smoke.spec.ts ]; then
+            npx playwright test e2e/smoke.spec.ts
+          else
+            echo "No playwright config yet — smoke placeholder OK"
+            exit 0
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
