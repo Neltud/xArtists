@@ -5,8 +5,10 @@ const HATOM_DAPP = 'https://app.hatom.com'
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
 const IDENTIFIER_PREVIEW_LENGTH = 20
 
-function HfBadge({ hf }: { hf: number }) {
-  if (hf >= 999) return <span className="badge-gray">N/A</span>
+function HfBadge({ hf, fromApi }: { hf: number; fromApi: boolean }) {
+  if (!fromApi || hf >= 999) {
+    return <span className="badge-gray">N/A — pas de dette mesurée</span>
+  }
   if (hf >= 2) return <span className="badge-green">✅ {hf.toFixed(2)} — Sûr</span>
   if (hf >= 1.5) return <span className="badge-orange">⚠️ {hf.toFixed(2)} — Attention</span>
   return <span className="badge-red">🚨 {hf.toFixed(2)} — Critique</span>
@@ -16,25 +18,26 @@ export default function HatomPage() {
   const { hatomTokens, hatomPosition, loading, refresh } = useWalletTokens()
   const { liaStatus } = useMultiversX()
 
-  const hf = hatomPosition?.healthFactor ?? liaStatus?.portfolio?.hatom_health_factor ?? 999
+  const fromApi = hatomPosition?.source === 'api'
+  const hf = fromApi
+    ? (hatomPosition?.healthFactor ?? 999)
+    : (liaStatus?.portfolio?.hatom_health_factor ?? 999)
   const supplied = hatomPosition?.totalSuppliedUsd ?? 0
   const borrowed = hatomPosition?.totalBorrowedUsd ?? 0
   const net = supplied - borrowed
   const claimHtm = hatomPosition?.claimableHtm ?? 0
   const claimUsd = hatomPosition?.claimableHtmUsd ?? 0
   const markets = hatomPosition?.markets ?? []
-  const fromApi = hatomPosition?.source === 'api'
 
-  // Fall back: if no Hatom API position, summarise H-tokens from wallet
   const walletSupplied = hatomTokens.reduce((s, t) => s + t.valueUsd, 0)
+  const displaySupplied = fromApi && supplied > 0 ? supplied : walletSupplied
 
   return (
     <div className="animate-fade-in">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black">🏦 Hatom Protocol</h1>
-          <p className="text-gray-500 mt-1">Positions de LIA — lending & borrowing sur MultiversX</p>
+          <p className="text-gray-500 mt-1">Collateral & dette LIA — lending MultiversX</p>
         </div>
         <div className="flex gap-2">
           <button onClick={refresh} className="btn-secondary text-sm">🔄 Actualiser</button>
@@ -52,41 +55,50 @@ export default function HatomPage() {
         </div>
       ) : (
         <>
-          {/* KPIs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="card">
               <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Health Factor</p>
               <div className="mt-1">
-                <HfBadge hf={hf} />
+                <HfBadge hf={hf} fromApi={fromApi} />
               </div>
               <p className="text-xs text-gray-400 mt-2">
-                {hf >= 999 ? 'Pas de dette active' : hf >= 2 ? 'Liquidation éloignée' : 'Surveiller de près!'}
+                {!fromApi
+                  ? 'API Hatom indisponible — HF non fiable'
+                  : hf >= 999
+                    ? 'Pas de dette active'
+                    : hf >= 2
+                      ? 'Liquidation éloignée'
+                      : 'Surveiller de près!'}
               </p>
             </div>
             <div className="card">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Supplied (USD)</p>
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Collateral (USD)</p>
               <p className="text-2xl font-black text-green-400">
-                ${(supplied || walletSupplied).toLocaleString('fr-FR', { maximumFractionDigits: 2 })}
+                ${displaySupplied.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}
               </p>
-              {!fromApi && walletSupplied > 0 && (
-                <p className="text-xs text-gray-500 mt-1">via H-tokens wallet</p>
-              )}
+              <p className="text-xs text-gray-500 mt-1">
+                {fromApi && supplied > 0 ? 'API Hatom (supplied)' : 'H-tokens wallet (approx)'}
+              </p>
             </div>
             <div className="card">
               <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Borrowed (USD)</p>
               <p className={`text-2xl font-black ${borrowed > 0 ? 'text-orange-400' : 'text-gray-500'}`}>
-                ${borrowed.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}
+                {fromApi ? `$${borrowed.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}` : 'N/A'}
               </p>
+              {!fromApi && (
+                <p className="text-xs text-gray-500 mt-1">Nécessite API Hatom</p>
+              )}
             </div>
             <div className="card">
               <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Net Position</p>
               <p className={`text-2xl font-black ${net >= 0 ? 'text-purple-400' : 'text-red-400'}`}>
-                ${net.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}
+                {fromApi
+                  ? `$${net.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`
+                  : `≈ $${walletSupplied.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`}
               </p>
             </div>
           </div>
 
-          {/* Rewards */}
           {(claimHtm > 0 || claimUsd > 0) && (
             <div className="card mb-6 border-teal-500/30 bg-teal-500/5">
               <div className="flex items-center justify-between">
@@ -102,10 +114,9 @@ export default function HatomPage() {
             </div>
           )}
 
-          {/* Per-market breakdown (from API) */}
           {markets.length > 0 && (
             <div className="card mb-6">
-              <h2 className="text-lg font-bold mb-4">📊 Détail par Marché</h2>
+              <h2 className="text-lg font-bold mb-4">📊 Collateral par marché</h2>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
@@ -146,12 +157,11 @@ export default function HatomPage() {
             </div>
           )}
 
-          {/* H-tokens in wallet (always shown) */}
           {hatomTokens.length > 0 && (
             <div className="card mb-6">
-              <h2 className="text-lg font-bold mb-4">🪙 H-Tokens dans le Wallet</h2>
+              <h2 className="text-lg font-bold mb-4">🪙 H-Tokens (collateral proxy)</h2>
               <p className="text-xs text-gray-500 mb-3">
-                Ces tokens représentent votre collateral déposé chez Hatom.
+                Représentent le collateral déposé. Valeurs USD via prix MultiversX API (peuvent différer du dashboard Hatom).
               </p>
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -193,18 +203,16 @@ export default function HatomPage() {
             </div>
           )}
 
-          {/* No position */}
           {!hatomPosition && hatomTokens.length === 0 && (
             <div className="card mb-6 text-center py-12">
               <p className="text-4xl mb-3">🏦</p>
               <p className="text-gray-400 font-semibold">Aucune position Hatom détectée</p>
               <p className="text-sm text-gray-500 mt-1">
-                LIA n'a pas de collateral déposé ou l'API Hatom est temporairement indisponible.
+                Pas de H-tokens wallet et API Hatom sans position.
               </p>
             </div>
           )}
 
-          {/* Info source */}
           <div className="card mb-6">
             <div className="flex items-center gap-3">
               <span className="text-xl">ℹ️</span>
@@ -212,14 +220,13 @@ export default function HatomPage() {
                 <p className="text-sm font-semibold">Source des données</p>
                 <p className="text-xs text-gray-500">
                   {fromApi
-                    ? '✅ Données récupérées via l\'API officielle Hatom'
-                    : '🔍 Données estimées via les H-tokens détectés dans le wallet (API Hatom indisponible)'}
+                    ? '✅ API officielle Hatom — collateral & borrow fiables'
+                    : '🔍 Fallback H-tokens wallet uniquement — borrow/HF non disponibles'}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Quick links */}
           <div className="card">
             <h2 className="text-lg font-bold mb-4">🔗 Liens Rapides</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
