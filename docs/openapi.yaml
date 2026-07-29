@@ -1,0 +1,174 @@
+openapi: 3.0.3
+info:
+  title: xArtists dApp API
+  description: |
+    OpenAPI reference for the xArtists ecosystem on MultiversX.
+    Covers MultiversX gateway endpoints used by the dApp, contract function surfaces,
+    and static data files published with the frontend.
+  version: 0.14.0
+  contact:
+    name: Neltud / Nelson Tuduri
+    url: https://github.com/Neltud/xArtists
+servers:
+  - url: https://api.multiversx.com
+    description: MultiversX Mainnet API
+  - url: https://neltud.github.io/xArtists
+    description: GitHub Pages dApp (static data)
+
+tags:
+  - name: Account
+  - name: Tokens
+  - name: NFTs
+  - name: Contracts
+  - name: dAppData
+
+paths:
+  /accounts/{address}:
+    get:
+      tags: [Account]
+      summary: Account overview
+      parameters:
+        - $ref: '#/components/parameters/Address'
+      responses:
+        '200':
+          description: Account balance, nonce, username
+  /accounts/{address}/tokens:
+    get:
+      tags: [Tokens]
+      summary: ESDT balances for account
+      parameters:
+        - $ref: '#/components/parameters/Address'
+      responses:
+        '200':
+          description: List of ESDT tokens
+  /tokens/{identifier}:
+    get:
+      tags: [Tokens]
+      summary: Token metadata (e.g. TRO-94c925)
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          schema:
+            type: string
+            example: TRO-94c925
+      responses:
+        '200':
+          description: Token info
+  /collections/{collection}/nfts:
+    get:
+      tags: [NFTs]
+      summary: NFTs in a collection
+      parameters:
+        - name: collection
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: NFT list
+  /mex/pairs:
+    get:
+      tags: [Tokens]
+      summary: xExchange pairs
+      responses:
+        '200':
+          description: MEX pairs
+
+  /data/config.json:
+    get:
+      tags: [dAppData]
+      servers:
+        - url: https://neltud.github.io/xArtists
+      summary: dApp runtime config (tips, pools, commissions)
+      responses:
+        '200':
+          description: Config JSON
+  /data/lia_v6_status.json:
+    get:
+      tags: [dAppData]
+      servers:
+        - url: https://neltud.github.io/xArtists
+      summary: LIA v6 production status
+      responses:
+        '200':
+          description: Agent status
+  /data/xartists_collections.json:
+    get:
+      tags: [dAppData]
+      servers:
+        - url: https://neltud.github.io/xArtists
+      summary: Bundled NFT collections for marketplace
+      responses:
+        '200':
+          description: Collections file
+
+components:
+  parameters:
+    Address:
+      name: address
+      in: path
+      required: true
+      schema:
+        type: string
+        example: erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
+
+  schemas:
+    ContractAddresses:
+      type: object
+      properties:
+        nft_staking:
+          type: string
+          example: erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl
+        tro_governance:
+          type: string
+          example: erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8
+        marketplace:
+          type: string
+          example: erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t
+        nft_minter:
+          type: string
+          example: erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn
+
+    MarketplaceFunctions:
+      type: object
+      description: Surface of MARKETPLACE_ABI (listNft, buyNft, cancelListing)
+      properties:
+        listNft:
+          type: object
+          properties:
+            inputs:
+              type: array
+              items:
+                type: string
+              example: [price BigUint, token_identifier TokenIdentifier]
+            payable: true
+        buyNft:
+          type: object
+          properties:
+            inputs:
+              type: array
+              items:
+                type: string
+              example: [listing_id u64]
+            payable: true
+
+    AgentsMarketplaceFunctions:
+      type: object
+      description: Planned on-chain agents marketplace (v0.1 design)
+      properties:
+        listAgentAction:
+          type: string
+          description: List an agent action / Warp for sale
+        buyAgentAction:
+          type: string
+          description: Purchase execution rights for an agent action
+        executeAgentAction:
+          type: string
+          description: Trigger listed agent workflow on-chain
