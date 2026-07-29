@@ -1,7 +1,7 @@
 # xArtists — AI + RWA + NFT sur MultiversX
 
-## Mise à Jour 28 juillet 2026
-**Code pleinement corrigé et poussé.**  
+## Mise à Jour 29 juillet 2026
+**Code pleinement corrigé et poussé (v0.14.0).**  
 Voir [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md) pour l’analyse dApp complète + veille technologique à jour.
 
 **Live Demo** : https://neltud.github.io/xArtists
@@ -13,11 +13,12 @@ Voir [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md) pour l’a
 - Marketplace Escrow RWA + Trading Terminal
 - Wallet ESDT complet (Hatom, xExchange) + Tip EGLD/BTC
 - Bridge BTC expérimental
+- Agents GreenSmoke (6 agents prévisions) + BottomNav mobile
 
 ## Stack
 - Smart Contracts : Rust (MultiversX)
 - Frontend : React + Vite + TypeScript + Tailwind + sdk-dapp
-- Agents : LIA v5/v6 autonomes + Discord bot
+- Agents : LIA v5/v6 autonomes + GreenSmoke + Discord bot
 - Monorepo pnpm + CI/CD GitHub Actions
 
 ## Docs
