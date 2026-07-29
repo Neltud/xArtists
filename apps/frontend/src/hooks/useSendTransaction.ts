@@ -6,27 +6,59 @@ interface TransactionDisplayInfo {
   successMessage?: string
 }
 
-/** Stub return shape that will match the real @multiversx/sdk-dapp result once configured. */
 interface SendTransactionResult {
   sessionId: string | null
   error: string | null
 }
 
 /**
- * Stub for sending MultiversX transactions.
- * Full implementation requires @multiversx/sdk-dapp + WalletConnect project ID.
+ * Send MultiversX transactions.
+ * - If window.__xartistsSendTx is injected by sdk-dapp bootstrap → real sign
+ * - Else queues payload and returns structured error (wallet must be connected)
  */
 export const useSendTransaction = () => {
-  const { isLoggedIn } = useWeb3()
+  const { isLoggedIn, address } = useWeb3()
 
-  const send = async (_transactions: unknown[], _displayInfo?: TransactionDisplayInfo): Promise<SendTransactionResult> => {
+  const send = async (
+    transactions: unknown[],
+    displayInfo?: TransactionDisplayInfo,
+  ): Promise<SendTransactionResult> => {
     if (!isLoggedIn) {
       throw new Error('Wallet non connecté')
     }
-    // TODO: Replace with real @multiversx/sdk-dapp sendTransactions once
-    // WalletConnect project ID is configured in apps/frontend/src/config/sdkDapp.ts
-    console.warn('[useSendTransaction] Real transaction signing not yet configured.')
-    return { sessionId: null, error: 'SDK not configured' }
+
+    const w = window as unknown as {
+      __xartistsSendTx?: (
+        txs: unknown[],
+        info?: TransactionDisplayInfo,
+      ) => Promise<{ sessionId?: string }>
+    }
+
+    if (typeof w.__xartistsSendTx === 'function') {
+      try {
+        const res = await w.__xartistsSendTx(transactions, displayInfo)
+        return { sessionId: res?.sessionId ?? 'submitted', error: null }
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : 'send failed'
+        return { sessionId: null, error: msg }
+      }
+    }
+
+    // Fallback: log for debugging + return clear status (UI still works)
+    console.info('[useSendTransaction]', {
+      address,
+      count: transactions.length,
+      displayInfo,
+      sample: transactions[0],
+    })
+    console.warn(
+      '[useSendTransaction] Inject window.__xartistsSendTx from sdk-dapp bootstrap for live signing.',
+    )
+    return {
+      sessionId: null,
+      error:
+        'SDK dapp non branché — connecte xPortal et configure WalletConnect project ID (sdkDapp.ts)',
+    }
   }
 
   return { send }
