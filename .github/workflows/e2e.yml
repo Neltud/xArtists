@@ -10,7 +10,7 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
 
@@ -18,27 +18,16 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install frontend deps
+      - name: Install Playwright + deps
         run: |
-          if [ -f apps/frontend/package.json ]; then
-            cd apps/frontend && npm ci || npm install
-          else
-            npm ci || npm install
-          fi
+          npm install -D @playwright/test || true
+          npx playwright install --with-deps chromium
 
-      - name: Install Playwright
-        run: npx playwright install --with-deps chromium
-
-      - name: Run E2E smoke
-        run: |
-          if [ -f playwright.config.ts ] || [ -f playwright.config.js ]; then
-            npx playwright test
-          elif [ -f e2e/smoke.spec.ts ]; then
-            npx playwright test e2e/smoke.spec.ts
-          else
-            echo "No playwright config yet — smoke placeholder OK"
-            exit 0
-          fi
+      - name: Run E2E
+        env:
+          E2E_BASE_URL: https://neltud.github.io/xArtists
+          CI: true
+        run: npx playwright test --config=playwright.config.ts
 
       - uses: actions/upload-artifact@v4
         if: failure()
