@@ -1,7 +1,7 @@
 {
   "version": "LIA v6",
   "status": "PRODUCTION_MAINNET",
-  "timestamp": "2026-07-23T00:00:00Z",
+  "timestamp": "2026-07-29T20:45:00Z",
   "serialization": "OK",
   "network": "mainnet",
   "chain_id": "1",
@@ -20,15 +20,24 @@
   },
   "fixes_applied": [
     "nodes/universal_brain_unified.py — créé (base TP1/TP3/TP5)",
-    "nodes/universal_executor.py — créé (base LIAExecutorTP1/3/5)",
-    "inputs.py — class Inputs(BaseInputs) créée",
-    "workflow.py — BaseWorkflow[Inputs, BaseState] corrigé",
-    "Doubles imports supprimés dans 9 fichiers"
+    "nodes/universal_executor.py — exécution swap/stake/unstake/claim + circuit breaker",
+    "nodes/custom_mx_contract_nodes.py — NFT/TRO/marketplace/minter + cache TTL",
+    "packages/core AGENTS_MARKETPLACE_ABI v0.1 design",
+    "PWA manifest + service worker",
+    "docs/ROADMAP_V1.md + openapi.yaml + Docker"
   ],
+  "roadmap": {
+    "doc": "docs/ROADMAP_V1.md",
+    "pwa": "base_delivered",
+    "openapi_docker": "base_delivered",
+    "agents_marketplace": "abi_stub",
+    "next_p0": ["live_tx_signing", "marketplace_list_buy_ui", "agents_sc_deploy"]
+  },
   "dapp": {
     "url": "https://neltud.github.io/xArtists",
-    "pages": ["dashboard", "marketplace", "trading", "portfolio", "dao", "tip", "wallet"],
-    "auto_deploy": true
+    "pages": ["dashboard", "marketplace", "trading", "portfolio", "dao", "tip", "wallet", "agents", "lp", "hatom"],
+    "auto_deploy": true,
+    "pwa": true
   },
   "agents": {
     "LIA": "Vellum Workflows — agent trading autonome mainnet",
@@ -42,7 +51,8 @@
       "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
       "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
       "marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
-      "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn"
+      "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn",
+      "agents_marketplace": "TBD — AGENTS_MARKETPLACE_ABI v0.1"
     }
   }
 }
