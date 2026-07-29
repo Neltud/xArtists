@@ -1,0 +1,48 @@
+{
+  "version": "LIA v6",
+  "status": "PRODUCTION_MAINNET",
+  "timestamp": "2026-07-23T00:00:00Z",
+  "serialization": "OK",
+  "network": "mainnet",
+  "chain_id": "1",
+  "wallet": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "nodes_active": 62,
+  "nodes_unused": 6,
+  "architecture": {
+    "trigger": "ToutesLes30Minutes (cron: 0 */1 * * *)",
+    "entry": "ConnectWallet >> EnvBootstrap",
+    "parallel_data": ["DataHub >> ESDTScanner", "XArtistsMonitor", "TRODaoVote >> TROLiquidityScanner", "TradeLearner", "HatomRedeemEGLD", "MCPConnector", "NonceManager", "FeeOptimizer", "EGLDRebalancer", "AvgEntryUpdater", "OpenClawIdentity", "SwapParamsValidator"],
+    "guard": "BalanceGuard (OK/WARNING/BLOCKED)",
+    "brains": ["LIABrain", "UniversalBrainTP1", "UniversalBrainTP3", "UniversalBrainTP5", "ContrarianBrain"],
+    "router": "OrchestratorRouter (TRADE/STRONG_BUY/YIELD_ONLY/BLOCKED)",
+    "executors": ["LIAExecutor", "LIAExecutorTP1", "LIAExecutorTP3", "LIAExecutorTP5", "ContrarianExecutor", "SmartDexRouter"],
+    "reporters": ["DexFeesReporter", "Reporter", "GitHubReporter", "GitHubDAppPublisher", "TelegramNotifier", "DataValidator", "SmartContractsReporter", "ReinvestmentDecision", "BalanceTracker"]
+  },
+  "fixes_applied": [
+    "nodes/universal_brain_unified.py — créé (base TP1/TP3/TP5)",
+    "nodes/universal_executor.py — créé (base LIAExecutorTP1/3/5)",
+    "inputs.py — class Inputs(BaseInputs) créée",
+    "workflow.py — BaseWorkflow[Inputs, BaseState] corrigé",
+    "Doubles imports supprimés dans 9 fichiers"
+  ],
+  "dapp": {
+    "url": "https://neltud.github.io/xArtists",
+    "pages": ["dashboard", "marketplace", "trading", "portfolio", "dao", "tip", "wallet"],
+    "auto_deploy": true
+  },
+  "agents": {
+    "LIA": "Vellum Workflows — agent trading autonome mainnet",
+    "Liia": "GreenSmokeNetwork — agent prévisions",
+    "Lia": "GreenSmokeNetwork — agent prévisions",
+    "Macro": "GreenSmokeNetwork — agent macro/info"
+  },
+  "xartists": {
+    "collections": 11,
+    "contracts": {
+      "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
+      "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
+      "marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+      "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn"
+    }
+  }
+}
