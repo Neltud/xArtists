@@ -29,30 +29,31 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 ## Veille Technologique (29 juillet 2026)
 
 ### MultiversX / Protocol
-- **Supernova** : upgrade majeur (roadmap ~97.7 %). Objectif finalité sub-seconde (~600 ms block time). Découplage consensus / exécution, sharding avancé, bandwidth optimisé.  
-  - Gouvernance approuvée (support massif). Battle of Nodes / Battle Net activé (Supernova live sur Battle Net depuis mars 2026). Mainnet en préparation avancée.  
-  - Mainnet récent : v1.11.8.0 (29 juin 2026) — stabilité + préparation Supernova.  
-  - Écosystème en croissance : ~9.23 M comptes ; intégration Robinhood live.
-- **Barnard** (précédent) : governance + optimisations SC, base pour Supernova.
-- Écosystème : xPortal, Hatom, xExchange, focus DeFi + NFT + AI agents.
+- **Supernova** : upgrade majeur vers finalité sub-seconde (~600 ms block time). Découplage consensus / exécution, sharding avancé, bandwidth optimisé.
+  - Gouvernance approuvée massivement (vote janv. 2026 ~99.64 %).
+  - **Battle of Nodes** actif depuis le 11 mars 2026 : stress-test pré-mainnet (plus d’1 milliard de transactions traitées, pic public ~120k TPS). Guild Wars en cours pour tester throughput, SC et coordination cross-shard.
+  - Target activation mainnet : Q2/Q3 2026 (sécurité + hardening en cours).
+  - **Barnard** (v1.10.x, activé juillet 2025) : gouvernance on-chain native, timestamps ms, réduction gas factor, base solide pour Supernova.
+  - Releases récentes outils : SpaceCraft SDK v0.66.x (mai-juin 2026), mx-api-service v1.20.0 (juin 2026).
+- Écosystème : xPortal, Hatom, xExchange, focus DeFi + NFT + **Agentic AI / Agentic Payments** live.
 
 ### AI Agents on MultiversX
-- Plateforme officielle agents on-chain + AI Agent Kit (Eliza framework, Browser-Use).
+- Plateforme officielle agents on-chain + AI Agent Kit (Eliza, Browser-Use).
 - **Warps** : structures on-chain générant UI shareable pour transactions (idéal minting / interactions agents).
-- /AI_MegaWave & Growth Games : focus agents autonomes, DeFAI, orchestration on-chain.
-- Tendance 2026 : agents autonomes qui tradent, gagnent trust on-chain, exécutent cycles économiques complets (wallets agent-spécifiques). xArtists (LIA + GreenSmoke) s’aligne parfaitement.
+- Agentic Payments live ; tendance 2026 : agents autonomes qui tradent, gagnent trust on-chain, exécutent cycles économiques complets (wallets agent-spécifiques).
+- xArtists (LIA + GreenSmoke) s’aligne parfaitement sur cette narrative DeFAI / agents.
 
 ### RWA & Tokenization Art / Phygital
-- Marché RWA tokenisé : ~$32–60 B on-chain (selon sources). RWA tokens : meilleure narrative juillet 2026 (+10.7 % médiane).  
-  - Dominant : US Treasuries (~$13–15 B), private credit / asset-backed, or / commodities.  
-  - Art & collectibles : segment en expansion (royalties, high-value pieces, phygital) mais plus risqué / moins institutionnel que Treasuries. Seconde vague de tokenization art en 2026 avec bases plus solides.
+- Marché RWA tokenisé : ~$32,2 B on-chain (juillet 2026, +12,3 % depuis début juillet). Tokens RWA : meilleure narrative du mois (+10,7 % médiane).
+  - Dominant : bonds / Treasuries (~$16,9 B+), private credit, metals / commodities.
+  - Art & collectibles : segment en expansion (royalties, high-value pieces, phygital) — niche plus risquée mais différenciante vs Treasuries institutionnels.
 - Tendances 2026 : AI-powered tokenization, stablecoins comme rails de liquidité, adoption institutionnelle, phygital (photo physique → AI re-évaluation → metadata on-chain).
-- xArtists positionné sur art tokenisé + Phygital NFTs + agents IA génératifs — niche différenciante.
+- xArtists positionné sur **art tokenisé + Phygital NFTs + agents IA génératifs** — positionnement différenciant.
 
 ### Stack technique & tendances
-- Rust SC (MultiversX SpaceVM), TypeScript/React/Vite, pnpm workspaces, Tailwind.
+- Rust SC (MultiversX SpaceVM / SpaceCraft), TypeScript/React/Vite, pnpm workspaces, Tailwind.
 - 2026 : Agentic AI on-chain, cross-chain (BTC L2 / bridge), sub-second UX critique pour trading & minting.
-- Outils : mxpy, sdk-dapp v5+, GitHub Actions, Lighthouse.
+- Outils : mxpy, sdk-dapp v5+, GitHub Actions, Lighthouse, SpaceCraft SDK.
 
 ---
 
@@ -70,7 +71,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 ### Sécurité
 - Guards & ownership checks dans les contrats.
 - Rate-limiting AI, validation inputs, secret scanning.
-- Dépendances mises à jour (pnpm audit / Dependabot PRs ouvertes).
+- Dépendances mises à jour (pnpm audit / Dependabot).
 - Recommandation : audit externe formalisé avant scale mainnet massif.
 
 ### Fonctionnalités clés live
