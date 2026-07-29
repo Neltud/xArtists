@@ -16,6 +16,7 @@ const Gallery = lazy(() => import('./pages/Gallery'))
 const HatomPage = lazy(() => import('./pages/HatomPage'))
 const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
 const Agents = lazy(() => import('./pages/Agents'))
+const TroPage = lazy(() => import('./pages/TroPage'))
 
 function PageLoader() {
   return (
@@ -63,6 +64,7 @@ export default function App() {
               <Route path="/agents" element={<ErrorBoundary><Agents /></ErrorBoundary>} />
               <Route path="/marketplace" element={<ErrorBoundary><Marketplace /></ErrorBoundary>} />
               <Route path="/trading" element={<ErrorBoundary><Trading /></ErrorBoundary>} />
+              <Route path="/tro" element={<ErrorBoundary><TroPage /></ErrorBoundary>} />
               <Route path="/portfolio" element={<ErrorBoundary><Portfolio /></ErrorBoundary>} />
               <Route path="/dao" element={<ErrorBoundary><DAO /></ErrorBoundary>} />
               <Route path="/gallery" element={<ErrorBoundary><Gallery /></ErrorBoundary>} />
