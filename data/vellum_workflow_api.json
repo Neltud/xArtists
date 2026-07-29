@@ -1,0 +1,23 @@
+{
+  "endpoint": "https://predict.vellum.ai/v1/execute-workflow",
+  "method": "POST",
+  "auth_header": "X-API-KEY",
+  "auth_key_source": "vellum:assistant_api_key credential",
+  "content_type": "application/json",
+  "request_body_template": {
+    "workflow_deployment_name": "lia-v6",
+    "release_tag": "production",
+    "executions": [
+      {
+        "name": "lia_cycle",
+        "inputs": []
+      }
+    ]
+  },
+  "notes": "The workflow_deployment_name must match the deployed LIA v6 workflow name in Vellum. The API key is the assistant API key stored in the Vellum platform. To get execution status/logs, poll GET /v1/executions/{execution_id} or use webhook callbacks.",
+  "frontend_integration": {
+    "button_label": "Lancer cycle LIA",
+    "on_click": "POST to a backend route that proxies the Vellum API (never expose API key in frontend)",
+    "log_display": "Poll execution status, show node-by-node log output in a scrollable terminal"
+  }
+}

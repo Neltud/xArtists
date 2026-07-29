@@ -66,7 +66,7 @@ export default function Gallery() {
         <div>
           <h2 className="text-xl font-bold">Tuduri Original</h2>
           <p className="text-sm text-gray-400 mt-1">
-            Artiste plasticien & développeur Web3 basé à Saint-Maur-des-Fossés. Ses œuvres physiques sont tokenisées
+            Artiste plasticien & développeur Web3. Ses œuvres physiques sont tokenisées
             on-chain via $TRO, chaque NFT représentant un certificat d'authenticité immuable.
           </p>
           <div className="flex gap-3 mt-3">

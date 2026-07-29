@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-07-29T15:10:00Z",
+  "egld_price_usd": 2.761222,
+  "source": "MultiversX API - EGLDUSDC-594e5e pair",
+  "pair_address": "erd1qqqqqqqqqqqqqpgqeel2kumf0r8ffyhth7pqdujjat9nx0862jpsg2pqaq",
+  "pair_id": "EGLDUSDC-594e5e",
+  "base_price": 2.761222338625603,
+  "quote_price": 0.99971013696069,
+  "pair_tvl": 1348496.76,
+  "pair_volume_24h": 57498.04,
+  "pair_trades_24h": 499
+}

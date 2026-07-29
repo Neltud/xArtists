@@ -1,0 +1,121 @@
+{
+  "updated_at": "2026-07-29T15:12:00Z",
+  "hatom": {
+    "status": "NO_PUBLIC_REST_API",
+    "api_hatom_com": "DOES NOT RESOLVE - stale config reference removed",
+    "approach": "On-chain VM queries via MultiversX API",
+    "vm_query_endpoint": "https://api.multiversx.com/vm/values/query",
+    "health_factor_formula": "Health Factor = (Sum Collateral Value * Liquidation Factor) / (Sum Borrowed Value). If < 1, position is liquidatable.",
+    "accepted_collateral": ["EGLD", "MEX", "USDC", "RIDE", "HTM", "WBTC"],
+    "htokens_in_wallet": {
+      "HWBTC-49ca31": {
+        "name": "HatomWBTC",
+        "balance": 0.0,
+        "price_usd": 1292.63,
+        "note": "hToken = interest-bearing receipt for supplied collateral"
+      }
+    },
+    "github": "https://github.com/HatomProtocol",
+    "docs": "https://docs.hatom.com"
+  },
+  "xexchange_pools": {
+    "EGLDUSDC": {
+      "id": "EGLDUSDC-594e5e",
+      "address": "erd1qqqqqqqqqqqqqpgqeel2kumf0r8ffyhth7pqdujjat9nx0862jpsg2pqaq",
+      "tvl_usd": 1348497,
+      "volume_24h": 57498,
+      "trades_24h": 499,
+      "base": "WEGLD-bd4d79",
+      "quote": "USDC-c76f1f",
+      "base_price": 2.761222,
+      "quote_price": 0.999710
+    },
+    "EGLDMEX": {
+      "id": "EGLDMEX-0be9e5",
+      "address": "erd1qqqqqqqqqqqqqpgqa0fsfshnff4n76jhcye6k7uvd7qacsq42jpsp6shh2",
+      "tvl_usd": 283164,
+      "volume_24h": 1458,
+      "base": "MEX-455c57",
+      "quote": "WEGLD-bd4d79"
+    },
+    "MEXUSDC": {
+      "id": "MEXUSDC-a57860",
+      "address": "erd1qqqqqqqqqqqqqpgqv0c22xku4vd5ugfh0u53tqufmdkqx5nv2jps8vsccx",
+      "tvl_usd": 22097,
+      "volume_24h": 230,
+      "base": "USDC-c76f1f",
+      "quote": "MEX-455c57"
+    },
+    "TRO_USDC_LP": {
+      "id": "TROUSDC-2a60c7",
+      "note": "LP token in LIA wallet, not in /mex/pairs list. Use xExchange GraphQL API for details.",
+      "graphql_api": "https://api.xexchange.com/graphql"
+    },
+    "TRO_WEGLD_LP": {
+      "id": "TROWEGLD-891183",
+      "note": "LP token in LIA wallet, not in /mex/pairs list. Use xExchange GraphQL API for details.",
+      "graphql_api": "https://api.xexchange.com/graphql"
+    }
+  },
+  "tro_token": {
+    "identifier": "TRO-94c925",
+    "name": "TUDURIORIGINAL",
+    "ticker": "TRO",
+    "price_usd": 0.00006276,
+    "market_cap_usd": 29.89,
+    "supply": 476224,
+    "holders": 574,
+    "total_liquidity_usd": 6.10,
+    "volume_24h": 0.077,
+    "trades_count": 13208,
+    "owner": "erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l",
+    "website": "https://welcome.xartists.art/",
+    "twitter": "https://twitter.com/tudurioriginal",
+    "can_mint": true,
+    "can_burn": true,
+    "is_paused": false
+  },
+  "fiat_onramps": {
+    "primary": {
+      "name": "MoonPay",
+      "status": "ALREADY_INTEGRATED",
+      "url": "https://moonpay.com/buy/egld",
+      "widget": true
+    },
+    "recommended_additions": [
+      {
+        "name": "Onramper",
+        "type": "aggregator",
+        "description": "Single API, aggregates 30+ on-ramps (MoonPay, Transak, Banxa, etc.)",
+        "url": "https://onramper.com"
+      },
+      {
+        "name": "Ramp Network",
+        "type": "widget",
+        "description": "Integrated in xPortal, 170+ countries, 40+ fiat currencies",
+        "url": "https://ramp.network"
+      },
+      {
+        "name": "Transak",
+        "type": "widget",
+        "description": "Buy + sell EGLD, Visa Direct off-ramp",
+        "url": "https://transak.com/buy/egld"
+      }
+    ],
+    "native": {
+      "name": "Binance Connect",
+      "note": "Available in xPortal app, MultiversX Wallet, buy.multiversx.com"
+    }
+  },
+  "vellum_workflow_api": {
+    "trigger_endpoint": "POST /x/lia/trigger (async)",
+    "stream_endpoint": "POST /x/lia/stream (SSE)",
+    "vellum_async_url": "https://predict.vellum.ai/v1/execute-workflow-async",
+    "vellum_stream_url": "https://predict.vellum.ai/v1/execute-workflow-stream",
+    "auth": "X-API-KEY header (stored in credentials vault)",
+    "workflow_deployment_name": "lia-v6",
+    "input_types": ["STRING", "JSON", "CHAT_HISTORY", "ARRAY", "AUDIO", "IMAGE", "VIDEO", "DOCUMENT"],
+    "response_async": { "execution_id": "string" },
+    "response_stream": "SSE events with node-level outputs, state, and errors"
+  }
+}

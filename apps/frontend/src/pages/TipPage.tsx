@@ -5,7 +5,7 @@ const TipPage: React.FC = () => {
   const [selectedMethod, setSelectedMethod] = useState<'btc' | 'egld' | 'gofundme'>('btc');
   const [amount, setAmount] = useState(10);
 
-  const btcAddress = "bc1qrsmtgwlqvd66vkpng26yf8c8s07df332ac052z";
+  const btcAddress = "bc1qglq57zpqjpdqe83dv5lkt4ky39cqmlfsqr8z9s";
   const egldAddress = "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6";
   const gofundmeUrl = "https://gofundme.com/u/27661c1c-0a76-4fcd-85a8-cafc8191622d";
 

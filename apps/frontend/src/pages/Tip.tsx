@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useMultiversX } from '../hooks/useMultiversX'
+import MoonpayButton from '../components/MoonpayButton'
 
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
-const BTC_ADDR = 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh'
+const BTC_ADDR = 'bc1qglq57zpqjpdqe83dv5lkt4ky39cqmlfsqr8z9s'
 
 const SERVICES = [
   { id: 'signal_basic', name: 'Signal LIA Basic', price_egld: 0.001, desc: 'Signal marché complet' },
@@ -95,10 +96,7 @@ export default function Tip() {
         <div className="flex items-start gap-4">
           <span className="text-4xl">🏗️</span>
           <div className="flex-1">
-            <h2 className="text-lg font-bold">GoFundMe — Galerie xArtists 2026</h2>
-            <p className="text-sm text-gray-400 mt-1 mb-4">
-              Ouvrir une galerie physique à Saint-Maur-des-Fossés pour exposer l’art physique tokenisé via $TRO.
-            </p>
+            <h2 className="text-lg font-bold">GoFundMe — xArtists</h2>
             <div className="progress-bar mb-2">
               <div className="progress-fill" style={{ width: '0%' }} />
             </div>
@@ -112,6 +110,19 @@ export default function Tip() {
               💚 Soutenir sur GoFundMe
             </a>
           </div>
+        </div>
+      </div>
+
+      {/* Fiat on-ramp */}
+      <div className="card mb-8 border-emerald-500/20 bg-emerald-500/5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-bold mb-1">💳 Acheter de l'EGLD (fiat)</h2>
+            <p className="text-sm text-gray-400">
+              Approvisionne ton wallet MultiversX par carte bancaire via Moonpay — utile pour tipper, stakez ou soutenir xArtists.
+            </p>
+          </div>
+          <MoonpayButton walletAddress={WALLET} currencyCode="EGLD" label="Acheter EGLD" />
         </div>
       </div>
 

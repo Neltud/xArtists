@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMultiversX } from '../hooks/useMultiversX'
-import { useWalletTokens } from '../hooks/useWalletTokens'
+import { usePortfolioValue } from '../hooks/usePortfolioValue'
+import GSNBanner from '../components/GSNBanner'
+import LIALaunchButton from '../components/LIALaunchButton'
 
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
-const FORECAST_URL = 'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
 
 const AGENTS = [
   { key: 'trading', name: 'LIA Trading', icon: '🤖', desc: 'Scalping + Swing + LIABrain', color: 'text-green-400' },
@@ -27,36 +27,17 @@ function StatCard({ label, value, sub, color = '' }: { label: string; value: str
 
 export default function Dashboard() {
   const { prices, liaStatus, xartists, bonData, loading, lastUpdate, refresh } = useMultiversX()
-  const { hatomPosition, lpTokens, farmTokens, totalEsdtUsd, loading: walletLoading } = useWalletTokens()
-  const [signal, setSignal] = useState<{ primary: string; secondary: string; regime: string; action: string } | null>(null)
+  const portfolio = usePortfolioValue()
 
-  useEffect(() => {
-    fetch(FORECAST_URL + '?t=' + Date.now())
-      .then(r => (r.ok ? r.json() : null))
-      .then(j => {
-        if (j?.aggregated_signals) {
-          setSignal({
-            primary: j.aggregated_signals.primary,
-            secondary: j.aggregated_signals.secondary,
-            regime: j.aggregated_signals.regime,
-            action: j.aggregated_signals.recommended_action,
-          })
-        }
-      })
-      .catch(() => {})
-  }, [])
-
-  const portfolio = liaStatus?.portfolio?.total_usd ?? 0
-  const hf = liaStatus?.portfolio?.hatom_health_factor ?? 999
+  const portfolioUsd = portfolio.totalUsd || (liaStatus?.portfolio?.total_usd ?? 0)
+  const egldPrice = portfolio.egldPrice || prices.egld
   const guard = liaStatus?.market?.guard_status ?? 'OK'
   const bonScore = xartists?.battle_of_nodes?.score ?? bonData?.score ?? 0
   const bonRank = xartists?.battle_of_nodes?.rank_estimate ?? bonData?.rank_estimate ?? 'Participant'
   const nfts = xartists?.collections?.nfts_in_wallet ?? 0
-  const tro = xartists?.tro_token?.balance_wallet ?? 0
-  const millionPct = portfolio / 1_000_000 * 100
+  const millionPct = portfolioUsd / 1_000_000 * 100
 
   const fgColor = prices.fearGreed <= 25 ? 'text-red-400' : prices.fearGreed <= 50 ? 'text-orange-400' : prices.fearGreed <= 75 ? 'text-yellow-400' : 'text-green-400'
-  const hfColor = hf > 2 ? 'text-green-400' : hf > 1.5 ? 'text-orange-400' : 'text-red-400'
   const guardColor = guard === 'OK' ? 'text-green-400' : guard === 'WARNING' ? 'text-orange-400' : 'text-red-400'
 
   return (
@@ -68,7 +49,8 @@ export default function Dashboard() {
             {lastUpdate ? `Mis à jour ${lastUpdate.toLocaleTimeString('fr-FR')}` : 'Chargement...'}
           </p>
         </div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap items-center">
+          <LIALaunchButton />
           <button onClick={refresh} className="btn-secondary text-sm">🔄 Actualiser</button>
           <a
             href={`https://explorer.multiversx.com/accounts/${WALLET}`}
@@ -81,26 +63,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* GreenSmoke forecasts strip */}
-      {signal && (
-        <Link
-          to="/agents"
-          className="card mb-6 block border-purple-500/30 bg-purple-500/5 hover:border-purple-500/50 transition-colors"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-purple-400 mb-1">🔮 Prévisions GreenSmoke</p>
-              <p className="text-sm font-bold text-green-400">{signal.primary}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{signal.action}</p>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="badge-purple">{signal.regime}</span>
-              <span className="badge-green">{signal.secondary}</span>
-              <span className="text-xs text-gray-500">Détails →</span>
-            </div>
-          </div>
-        </Link>
-      )}
+      {/* GreenSmoke translucent banner */}
+      <GSNBanner />
 
       {loading ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
@@ -110,24 +74,31 @@ export default function Dashboard() {
         </div>
       ) : (
         <>
+          {/* Quick stats: portfolio value, EGLD price, fear & greed, balance guard */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4">
-            <StatCard label="Portfolio Total" value={`$${portfolio.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`} sub="LIA v6 mainnet" />
-            <StatCard label="EGLD Price" value={`$${prices.egld.toFixed(4)}`} sub="MultiversX mainnet" />
-            <StatCard label="$TRO Price" value={`$${prices.tro.toFixed(8)}`} sub={`TRO-94c925 • ${tro.toFixed(2)} TRO`} color="text-purple-400" />
+            <StatCard
+              label="Portfolio Total"
+              value={`$${portfolioUsd.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`}
+              sub={`${portfolio.tokens.length} tokens · ${portfolio.nfts.length} NFT`}
+              color="text-purple-400"
+            />
+            <StatCard label="EGLD Price" value={`$${egldPrice.toFixed(4)}`} sub="MEX EGLD/USDC" />
             <StatCard label="Fear & Greed" value={`${prices.fearGreed}`} sub={prices.fearGreedLabel} color={fgColor} />
+            <StatCard label="BalanceGuard" value={guard} color={guardColor} />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            <StatCard label="EGLD Balance" value={`${portfolio.egldBalance.toFixed(6)}`} sub={`$${(portfolio.egldValueUsd).toFixed(2)}`} />
             <StatCard label="BTC Price" value={`$${prices.btc.toLocaleString()}`} />
-            <StatCard label="Hatom HF" value={hf >= 999 ? 'N/A' : hf.toFixed(2)} sub="Health Factor" color={hfColor} />
-            <StatCard label="BalanceGuard" value={guard} color={guardColor} />
-            <StatCard label="NFTs xArtists" value={`${nfts}`} sub="11 collections mainnet" color="text-pink-400" />
+            <StatCard label="NFTs xArtists" value={`${nfts}`} sub="collections mainnet" color="text-pink-400" />
+            <StatCard label="$TRO Price" value={`$${prices.tro.toFixed(8)}`} sub="→ voir DAO" color="text-purple-400" />
           </div>
 
+          {/* Progression $3 → $1,000,000 */}
           <div className="card mb-6">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-gray-500">🎯 Progression $10 → $1,000,000</p>
+                <p className="text-xs font-semibold uppercase tracking-widest text-gray-500">🎯 Progression $3 → $1,000,000</p>
                 <p className="text-2xl font-black mt-1">{millionPct.toFixed(6)}%</p>
               </div>
               <div className="text-right">
@@ -138,69 +109,54 @@ export default function Dashboard() {
             <div className="progress-bar">
               <div className="progress-fill" style={{ width: `${Math.min(millionPct * 100, 100)}%` }} />
             </div>
+            <div className="flex justify-between mt-2">
+              <Link to="/portfolio" className="text-xs text-purple-400 hover:text-purple-300">Détails portfolio →</Link>
+              <span className="text-xs text-gray-500">{millionPct.toFixed(8)}% du million</span>
+            </div>
           </div>
 
-          {!walletLoading && (
-            <div className="grid md:grid-cols-2 gap-4 sm:gap-6 mb-6">
-              <div className="card border-teal-500/20 bg-teal-500/5">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-teal-400">🏦 Hatom Protocol</p>
-                  <Link to="/hatom" className="text-xs text-gray-500 hover:text-white transition-colors">Détails →</Link>
-                </div>
-                {hatomPosition ? (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <p className="text-xs text-gray-500">Supplied</p>
-                      <p className="font-bold text-green-400">${hatomPosition.totalSuppliedUsd.toFixed(2)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Borrowed</p>
-                      <p className="font-bold text-orange-400">${hatomPosition.totalBorrowedUsd.toFixed(2)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Health Factor</p>
-                      <p className={`font-bold ${hfColor}`}>{hf >= 999 ? 'N/A' : hf.toFixed(2)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500">Net Position</p>
-                      <p className="font-bold text-white">${hatomPosition.netValueUsd.toFixed(2)}</p>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">Aucune position Hatom active</p>
-                )}
+          {/* DeFi quick links (Hatom & LP live on their own pages) */}
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6 mb-6">
+            <Link to="/hatom" className="card border-teal-500/20 bg-teal-500/5 hover:border-teal-500/40 transition-colors block">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-semibold uppercase tracking-widest text-teal-400">🏦 Hatom Protocol</p>
+                <span className="text-xs text-gray-500">Détails →</span>
               </div>
+              <p className="text-sm text-gray-400">Lending & borrowing positions de LIA.</p>
+              <p className="text-xs text-gray-500 mt-1">Health factor, supplied/borrowed, rewards.</p>
+            </Link>
 
-              <div className="card border-purple-500/20 bg-purple-500/5">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-purple-400">💧 xExchange LP & Farms</p>
-                  <Link to="/lp" className="text-xs text-gray-500 hover:text-white transition-colors">Détails →</Link>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <p className="text-xs text-gray-500">LP Tokens</p>
-                    <p className="font-bold">{lpTokens.length}</p>
+            <Link to="/lp" className="card border-purple-500/20 bg-purple-500/5 hover:border-purple-500/40 transition-colors block">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-semibold uppercase tracking-widest text-purple-400">💧 xExchange LP & Farms</p>
+                <span className="text-xs text-gray-500">Détails →</span>
+              </div>
+              <p className="text-sm text-gray-400">Positions de liquidité et farming de LIA.</p>
+              <p className="text-xs text-gray-500 mt-1">LP tokens, farm tokens, valeur DeFi.</p>
+            </Link>
+          </div>
+
+          {/* LIA agent status + reputation */}
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6 mb-6">
+            <div className="card">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-semibold uppercase tracking-widest text-gray-500">🤖 Statut Agents LIA</p>
+                <Link to="/agents" className="text-xs text-purple-400 hover:text-purple-300">Monitoring →</Link>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {AGENTS.map(a => (
+                  <div key={a.key} className="flex items-center gap-2 p-2 rounded-lg bg-[#111118]">
+                    <span className="text-lg">{a.icon}</span>
+                    <div className="min-w-0">
+                      <p className={`text-xs font-semibold ${a.color} truncate`}>{a.name}</p>
+                      <p className="text-[10px] text-gray-500 truncate">{a.desc}</p>
+                    </div>
+                    <span className="ml-auto badge-green text-[9px]">●</span>
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Farm Tokens</p>
-                    <p className="font-bold">{farmTokens.length}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Valeur LP</p>
-                    <p className="font-bold text-purple-400">
-                      ${lpTokens.reduce((s, t) => s + t.valueUsd, 0).toFixed(2)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Total ESDT</p>
-                    <p className="font-bold text-white">${totalEsdtUsd.toFixed(2)}</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
-          )}
 
-          <div className="grid md:grid-cols-2 gap-4 sm:gap-6 mb-6">
             <div className="card">
               <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">⚔️ Réputation LIA On-Chain</p>
               <div className="flex items-center gap-4">
@@ -216,36 +172,25 @@ export default function Dashboard() {
               </div>
               <p className="text-xs text-gray-500 mt-1">{bonScore}/100 points</p>
             </div>
-
-            <div className="card">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-semibold uppercase tracking-widest text-gray-500">🤖 Agents IA</p>
-                <Link to="/agents" className="text-xs text-purple-400 hover:text-purple-300">Monitoring →</Link>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {AGENTS.map(a => (
-                  <div key={a.key} className="flex items-center gap-2 p-2 rounded-lg bg-[#111118]">
-                    <span className="text-lg">{a.icon}</span>
-                    <div className="min-w-0">
-                      <p className={`text-xs font-semibold ${a.color} truncate`}>{a.name}</p>
-                      <p className="text-[10px] text-gray-500 truncate">{a.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
 
+          {/* Quick external links */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
             {[
               { href: 'https://xexchange.com', label: 'xExchange', icon: '🔵' },
               { href: 'https://hatom.com', label: 'Hatom', icon: '🏦' },
               { href: 'https://xoxno.com', label: 'XOXNO', icon: '🖼️' },
-              { href: `https://explorer.multiversx.com/tokens/TRO-94c925`, label: '$TRO', icon: '🎨' },
+              { to: '/dao' as const, label: 'DAO / $TRO', icon: '🗳️', internal: true },
             ].map(l => (
-              <a key={l.href} href={l.href} target="_blank" rel="noreferrer" className="btn-secondary text-center text-sm">
-                {l.icon} {l.label}
-              </a>
+              l.internal ? (
+                <Link key={l.label} to={l.to} className="btn-secondary text-center text-sm">
+                  {l.icon} {l.label}
+                </Link>
+              ) : (
+                <a key={l.href} href={l.href} target="_blank" rel="noreferrer" className="btn-secondary text-center text-sm">
+                  {l.icon} {l.label}
+                </a>
+              )
             ))}
           </div>
         </>

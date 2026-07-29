@@ -1,0 +1,66 @@
+{
+  "timestamp": "2026-07-29T15:10:00Z",
+  "wallet": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "network": "mainnet",
+  "egld_price_usd": 2.761222338625603,
+  "total_portfolio_usd": 13.58,
+  "goal_usd": 1000000,
+  "goal_start_usd": 3,
+  "progress_pct": 0.001358,
+  "multiplier_needed": 73627,
+  "wallet_nonce": 1395,
+  "assets": {
+    "egld": {
+      "identifier": "EGLD",
+      "balance": 0.385554,
+      "price_usd": 2.761222,
+      "value_usd": 1.0646
+    },
+    "usdc": {
+      "identifier": "USDC-c76f1f",
+      "name": "WrappedUSDC",
+      "balance": 12.517028,
+      "price_usd": 1.000019,
+      "value_usd": 12.5173
+    },
+    "wegld": {
+      "identifier": "WEGLD-bd4d79",
+      "name": "WrappedEGLD",
+      "balance": 0.000072,
+      "price_usd": 2.761222,
+      "value_usd": 0.0002
+    },
+    "hwbtc": {
+      "identifier": "HWBTC-49ca31",
+      "name": "HatomWBTC",
+      "balance": 0.0,
+      "price_usd": 1292.63,
+      "value_usd": 0
+    },
+    "tro_usdc_lp": {
+      "identifier": "TROUSDC-2a60c7",
+      "name": "TROUSDCLP",
+      "balance": 0.0,
+      "price_usd": 0,
+      "value_usd": 0
+    },
+    "tro_wegld_lp": {
+      "identifier": "TROWEGLD-891183",
+      "name": "TROWEGLDLP",
+      "balance": 0.0,
+      "price_usd": 0,
+      "value_usd": 0
+    }
+  },
+  "nfts": [
+    {
+      "collection": "EGLDUSDCFL-45109b",
+      "nonce": 125180,
+      "name": "EGLDUSDCLPStakedLK",
+      "type": "MetaESDT",
+      "description": "Staked EGLD/USDC LP position on xExchange"
+    }
+  ],
+  "esdt_token_count": 5,
+  "nft_count": 1
+}

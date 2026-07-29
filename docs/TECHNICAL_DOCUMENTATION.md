@@ -204,6 +204,5 @@ WALLET = "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6"
 **$3 → $1,000,000** via compounding DeFi autonome sur MultiversX mainnet.
 
 - Artiste : Nelson Tuduri — @tudurioriginal
-- Galerie : Saint-Maur-des-Fossés, Val-de-Marne
 - GitHub Pages : https://neltud.github.io/xArtists
 - Explorer : https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6

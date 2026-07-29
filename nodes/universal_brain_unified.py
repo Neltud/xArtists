@@ -25,6 +25,30 @@ class UniversalBrainUnified(BaseNode):
     gas_cost_usd: float = 0.05
     max_slippage_pct: float = 0.03
 
+    # --- Typed Vellum node input descriptors (replaces getattr pattern) ---
+    egld_balance: float = 0.0
+    usdc_balance: float = 0.0
+    total_portfolio_usd: float = 0.0
+    hatom_health_factor: float = 999.0
+    egld_price: float = 4.5
+    circuit_breaker_active: bool = False
+    top_opportunities: list[dict[str, Any]] = []
+    wallet_holdings: list[dict[str, Any]] = []
+    btc_rsi_14: float = 50.0
+    egld_rsi_14: float = 50.0
+    wtao_rsi_14: float = 50.0
+    leverage_risk: str = "LOW"
+    aeu_prices_by_ticker: dict[str, float] = {}
+
+    # --- GreenSmoke integration inputs (fed by GreenSmokeConsumer) ---
+    greensmoke_signal: str = "NEUTRAL"  # ACCUMULATE | BUY | HOLD | RISK_OFF | NEUTRAL
+    gs_bias: str = "NEUTRAL"            # BULLISH | BEARISH | NEUTRAL
+    gs_confidence: int = 50
+    gs_regime: str = "NEUTRAL"          # RISK_ON | RISK_OFF | NEUTRAL
+
+    # --- Correlation threshold for diversification ---
+    max_correlation: float = 0.7
+
     class Outputs(BaseNode.Outputs):
         strategy: str
         decision: str
@@ -54,14 +78,14 @@ class UniversalBrainUnified(BaseNode):
     def run(self) -> "UniversalBrainUnified.Outputs":
         self._log("INFO", f"🧠 [{self.strategy_name}] Analyse ESDT...")
 
-        egld_balance = float(getattr(self, "egld_balance", 0) or 0)
-        usdc_balance = float(getattr(self, "usdc_balance", 0) or 0)
-        total_portfolio_usd = float(getattr(self, "total_portfolio_usd", 0) or 0)
-        hatom_health_factor = float(getattr(self, "hatom_health_factor", 999) or 999)
-        egld_price = float(getattr(self, "egld_price", 4.5) or 4.5)
-        circuit_breaker_active = bool(getattr(self, "circuit_breaker_active", False))
-        top_opportunities = list(getattr(self, "top_opportunities", []) or [])
-        wallet_holdings = list(getattr(self, "wallet_holdings", []) or [])
+        egld_balance = float(self.egld_balance or 0)
+        usdc_balance = float(self.usdc_balance or 0)
+        total_portfolio_usd = float(self.total_portfolio_usd or 0)
+        hatom_health_factor = float(self.hatom_health_factor or 999)
+        egld_price = float(self.egld_price or 4.5)
+        circuit_breaker_active = bool(self.circuit_breaker_active)
+        top_opportunities = list(self.top_opportunities or [])
+        wallet_holdings = list(self.wallet_holdings or [])
 
         if circuit_breaker_active or hatom_health_factor < 1.5:
             return self._wait_output("CIRCUIT_BREAKER_OR_HF_CRITIQUE", total_portfolio_usd)
@@ -71,12 +95,12 @@ class UniversalBrainUnified(BaseNode):
         available_budget = round(usdc_avail + egld_tradable * 0.5, 2)
         allocated_budget = round(available_budget * self.budget_allocation_pct, 2)
 
-        btc_rsi = float(getattr(self, "btc_rsi_14", 50) or 50)
-        egld_rsi = float(getattr(self, "egld_rsi_14", 50) or 50)
-        wtao_rsi = float(getattr(self, "wtao_rsi_14", 50) or 50)
+        btc_rsi = float(self.btc_rsi_14 or 50)
+        egld_rsi = float(self.egld_rsi_14 or 50)
+        wtao_rsi = float(self.wtao_rsi_14 or 50)
         rsi_avg = round((btc_rsi + egld_rsi + wtao_rsi) / 3, 1)
 
-        leverage_risk = str(getattr(self, "leverage_risk", "LOW") or "LOW")
+        leverage_risk = str(self.leverage_risk or "LOW")
         if hatom_health_factor < 1.5 or leverage_risk == "EXTREME":
             risk_level = "EXTREME"
         elif hatom_health_factor < 2.0 or leverage_risk == "HIGH":
@@ -92,20 +116,42 @@ class UniversalBrainUnified(BaseNode):
         for token in wallet_holdings:
             ticker = token.get("ticker", "").upper().split("-")[0]
             current_price = float(token.get("price_usd", 0) or 0)
-            avg_entry_prices = getattr(self, "aeu_prices_by_ticker", {}) or {}
+            avg_entry_prices = self.aeu_prices_by_ticker or {}
             entry_price = float(avg_entry_prices.get(ticker, 0) or 0)
             if entry_price > 0 and current_price > 0:
                 roi = (current_price - entry_price) / entry_price * 100
+                # Trailing stop: track highest price since entry, exit when
+                # price drops below trailing_stop while still in profit.
+                highest_since_entry = max(
+                    float(token.get("highest_since_entry", 0) or 0),
+                    current_price,
+                )
+                trailing_stop = highest_since_entry * (1 - self.sl_default_pct / 100)
                 if roi >= self.tp_default_pct:
                     tp_sl_alerts.append({"token": ticker, "type": "TAKE_PROFIT", "roi_pct": round(roi, 2), "tp_pct": self.tp_default_pct})
                 elif roi <= -self.sl_default_pct:
                     tp_sl_alerts.append({"token": ticker, "type": "STOP_LOSS", "roi_pct": round(roi, 2), "sl_pct": self.sl_default_pct})
+                elif roi > 0 and current_price <= trailing_stop:
+                    tp_sl_alerts.append({"token": ticker, "type": "TRAILING_STOP", "roi_pct": round(roi, 2), "sl_pct": self.sl_default_pct})
+
+        # --- GreenSmoke signal: adjust entry thresholds based on regime ---
+        gs_signal = str(self.greensmoke_signal or "NEUTRAL").upper()
+        gs_regime = str(self.gs_regime or "NEUTRAL").upper()
+        # ACCUMULATE: lower the entry bar (allow moderate-conviction buys)
+        effective_min_score_entry = self.min_score_entry - 10 if gs_signal == "ACCUMULATE" else self.min_score_entry
+        # RISK_OFF: force conservative (raise threshold so almost nothing qualifies)
+        if gs_regime == "RISK_OFF":
+            effective_min_score_entry = max(effective_min_score_entry, 90)
 
         for token in top_opportunities[:self.max_tokens_to_buy]:
             score = int(token.get("composite_score", 0) or 0)
             rsi = float(token.get("rsi_14", 50) or 50)
             liquidity = float(token.get("liquidity_usd", 0) or 0)
-            if score >= self.min_score_entry and rsi <= self.max_rsi_entry and liquidity >= self.min_liquidity_usd:
+            # Correlation check: reject tokens too correlated to already-selected ones
+            if not self._passes_correlation_check(token, selected_tokens):
+                self._log("INFO", f"🧠 [{self.strategy_name}] Rejected {token.get('ticker')} — correlation > {self.max_correlation}")
+                continue
+            if score >= effective_min_score_entry and rsi <= self.max_rsi_entry and liquidity >= self.min_liquidity_usd:
                 selected_tokens.append(token)
             elif score >= self.min_score_moderate and rsi <= self.max_rsi_moderate and liquidity >= self.min_liquidity_usd:
                 selected_tokens.append(token)
@@ -131,6 +177,11 @@ class UniversalBrainUnified(BaseNode):
         else:
             decision, confidence, reasoning = "WAIT", 60, f"Conditions défavorables | RSI={rsi_avg:.1f}"
 
+        # --- GreenSmoke RISK_OFF override: never BUY when macro regime is RISK_OFF ---
+        if decision == "BUY" and gs_regime == "RISK_OFF":
+            decision, confidence = "WAIT", 80
+            reasoning = f"RISK_OFF (GreenSmoke) — BUY overridé → WAIT | {reasoning}"
+
         actions, exit_actions = [], []
         if decision == "BUY" and profit_validated:
             budget_per_token = allocated_budget / max(len(selected_tokens), 1)
@@ -141,7 +192,12 @@ class UniversalBrainUnified(BaseNode):
             for alert in tp_sl_alerts:
                 token_data = next((t for t in wallet_holdings if t.get("ticker", "").upper().split("-")[0] == alert["token"]), {})
                 value_usd = float(token_data.get("value_usd", 0) or 0)
-                sell_pct = 0.5 if alert["type"] == "TAKE_PROFIT" else 1.0
+                if alert["type"] == "TAKE_PROFIT":
+                    sell_pct = 0.5
+                elif alert["type"] == "TRAILING_STOP":
+                    sell_pct = 1.0
+                else:
+                    sell_pct = 1.0
                 if value_usd * sell_pct >= self.min_trade_usd:
                     exit_actions.append({"type": f"SELL_{alert['token']}_{alert['type'][:2]}", "amount_usd": round(value_usd * sell_pct, 2), "reason": f"{alert['type']} ROI={alert['roi_pct']:+.1f}%"})
 
@@ -159,6 +215,28 @@ class UniversalBrainUnified(BaseNode):
             profit_validation_detail=profit_detail, tp_sl_alerts=tp_sl_alerts,
             million_progress_pct=round(million_pct, 8),
         )
+
+    def _passes_correlation_check(
+        self, candidate: dict[str, Any], selected: list[dict[str, Any]]
+    ) -> bool:
+        """Reject candidate if it has > max_correlation to any already-selected token.
+
+        Uses ``price_change_pct`` as a simple correlation proxy: if two tokens
+        have very similar 24h price-change percentages, they are treated as
+        correlated (likely same underlying driver).
+        """
+        if not selected:
+            return True
+        cand_pct = float(candidate.get("price_change_pct", 0) or 0)
+        for tok in selected:
+            sel_pct = float(tok.get("price_change_pct", 0) or 0)
+            # Normalised absolute difference (0 = identical move, 1 = opposite).
+            # Convert to a pseudo-correlation: corr = 1 - (|diff| / 100)
+            diff = abs(cand_pct - sel_pct)
+            pseudo_corr = max(0.0, 1.0 - diff / 100.0)
+            if pseudo_corr > self.max_correlation:
+                return False
+        return True
 
     def _wait_output(self, reason: str, portfolio_usd: float) -> "UniversalBrainUnified.Outputs":
         million_pct = min(100.0, portfolio_usd / 1000000 * 100)

@@ -23,4 +23,6 @@ xArtists-master/
 
 # OS
 .DS_Store
-Thumbs.db
+Thumbs.db__pycache__/
+*.pyc
+apps/frontend/bun.lock

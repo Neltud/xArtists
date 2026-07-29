@@ -101,7 +101,6 @@ LIA génère des profits de trading
 Œuvres physiques Tuduri Original
 → Tokenisées via $TRO
 → Chaque NFT = certificat d'authenticité on-chain
-→ Galerie physique Saint-Maur-des-Fossés 2026
 ```
 
 ### 5. 🔥 Burn Mechanism

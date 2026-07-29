@@ -1,23 +1,31 @@
 import { useState } from 'react'
 import { useWalletTokens, type WalletToken } from '../hooks/useWalletTokens'
 import { useMultiversX } from '../hooks/useMultiversX'
+import MoonpayButton from '../components/MoonpayButton'
 
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
 
 type Tab = 'all' | 'esdt' | 'hatom' | 'lp'
+
+function fmtBalance(n: number) {
+  if (n === 0) return '0'
+  if (n < 0.0001) return n.toExponential(2)
+  return n.toLocaleString('fr-FR', { maximumFractionDigits: 6 })
+}
 
 function TokenRow({ t }: { t: WalletToken }) {
   return (
     <tr className="border-b border-[#2a2a3a]/50 hover:bg-[#111118] transition-colors">
       <td className="py-3 px-3">
         <p className="font-semibold text-sm">{t.ticker || t.identifier?.split('-')[0]}</p>
-        <p className="text-xs mono text-gray-500">{t.identifier}</p>
+        <p className="text-xs text-gray-500 truncate max-w-[180px]">{t.name}</p>
+        <p className="text-[10px] mono text-gray-600">{t.identifier}</p>
       </td>
       <td className="py-3 px-3 text-right mono text-sm">
-        {t.balance.toLocaleString('fr-FR', { maximumFractionDigits: 6 })}
+        {fmtBalance(t.balance)}
       </td>
       <td className="py-3 px-3 text-right text-sm">
-        {t.price > 0 ? `$${t.price.toFixed(6)}` : '—'}
+        {t.price > 0 ? `$${t.price.toLocaleString('fr-FR', { maximumFractionDigits: 6 })}` : '—'}
       </td>
       <td className="py-3 px-3 text-right font-bold text-sm">
         {t.valueUsd > 0 ? `$${t.valueUsd.toFixed(2)}` : '—'}
@@ -92,6 +100,19 @@ export default function Wallet() {
           >
             🔗 Explorer
           </a>
+        </div>
+      </div>
+
+      {/* Fiat on-ramp (Moonpay) */}
+      <div className="card mb-6 border-emerald-500/20 bg-emerald-500/5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-1">💳 Acheter EGLD avec fiat</p>
+            <p className="text-sm text-gray-400">
+              On-ramp carte bancaire via Moonpay — EGLD envoyé directement au wallet LIA.
+            </p>
+          </div>
+          <MoonpayButton walletAddress={WALLET} currencyCode="EGLD" />
         </div>
       </div>
 

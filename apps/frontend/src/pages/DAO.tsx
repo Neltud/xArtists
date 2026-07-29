@@ -1,7 +1,7 @@
 import { useMultiversX } from '../hooks/useMultiversX'
 
 export default function DAO() {
-  const { bonData, xartists } = useMultiversX()
+  const { bonData, xartists, prices } = useMultiversX()
 
   const daoActive = bonData?.dao_active ?? false
   const proposalTitle = bonData?.current_proposal_title ?? 'Aucune proposal active'
@@ -10,6 +10,11 @@ export default function DAO() {
   const totalVotes = bonData?.total_votes_cast ?? 0
   const recommendedPair = bonData?.recommended_pair ?? 'TRO/WEGLD'
   const troStaked = xartists?.staking?.tro_staking_active ?? false
+  const nftStaked = xartists?.staking?.nft_staking_active ?? false
+  const nftStakedCount = xartists?.staking?.nft_staked_count ?? 0
+  const troBalance = xartists?.tro_token?.balance_wallet ?? 0
+  const troValueUsd = xartists?.tro_token?.value_usd ?? 0
+  const troPrice = prices.tro || xartists?.tro_token?.price_usd || 0
 
   const pairs = Object.entries(voteResults)
 
@@ -37,6 +42,42 @@ export default function DAO() {
         <div className="card">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Recommandation LIA</p>
           <p className="text-xl font-bold text-yellow-400">{recommendedPair}</p>
+        </div>
+      </div>
+
+      {/* $TRO token + governance overview */}
+      <div className="card mb-8 border-purple-500/20 bg-purple-500/5">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-purple-400">🎨 $TRO — Token de gouvernance</p>
+          <a
+            href="https://explorer.multiversx.com/tokens/TRO-94c925"
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs text-gray-500 hover:text-white transition-colors"
+          >
+            Explorer TRO-94c925 ↗
+          </a>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <p className="text-xs text-gray-500">Prix $TRO</p>
+            <p className="text-xl font-bold text-purple-400">${troPrice.toFixed(8)}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">Balance wallet LIA</p>
+            <p className="text-xl font-bold">{troBalance.toFixed(2)} TRO</p>
+            <p className="text-xs text-gray-500">≈ ${troValueUsd.toFixed(2)}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">NFT Staking</p>
+            <p className="text-xl font-bold">{nftStaked ? '✅ Actif' : '⏳ Pending'}</p>
+            {nftStakedCount > 0 && <p className="text-xs text-gray-500">{nftStakedCount} NFT stakés</p>}
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">TRO Staking</p>
+            <p className="text-xl font-bold">{troStaked ? '✅ Actif' : '⏳ Pending'}</p>
+            <p className="text-xs text-gray-500">Stake → vote weighting</p>
+          </div>
         </div>
       </div>
 

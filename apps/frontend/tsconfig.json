@@ -21,6 +21,7 @@
     "src/pages/BitcoinLayer2.tsx",
     "src/pages/TipPage.tsx",
     "src/pages/BridgeFeesDashboard.tsx",
-    "src/pages/PaymentHistory.tsx"
+    "src/pages/PaymentHistory.tsx",
+    "src/hooks/usePortfolioData.ts"
   ]
 }
