@@ -1,0 +1,9 @@
+{
+  "updated": "2026-07-29",
+  "network": "greensmoke",
+  "agents": [
+    {"id": "liia", "reputation": 0.72, "bias": "WAIT", "confidence": 0.55},
+    {"id": "macro", "reputation": 0.68, "bias": "WAIT", "confidence": 0.5}
+  ],
+  "note": "Replace with live GreenSmoke API ranking. Max 10 agents used by GreenSmokeConsumer."
+}
