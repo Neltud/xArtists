@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -25,23 +25,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Ensure docs folder
+      - name: Prepare docs
         run: |
           mkdir -p docs
-          if [ ! -f docs/index.html ]; then
-            echo "No index.html found in docs"
-          else
-            echo "Dashboard index.html present"
-            ls -la docs/
-          fi
-
-      - name: Ensure .nojekyll
-        run: echo "" > docs/.nojekyll
+          test -f docs/index.html && echo "OK: dashboard index.html present" || echo "WARN: missing docs/index.html"
+          echo "" > docs/.nojekyll
+          ls -la docs/ | head -20
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
