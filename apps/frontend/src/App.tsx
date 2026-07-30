@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
 import ErrorBoundary from './components/ErrorBoundary'
+import PwaInstallBanner from './components/PwaInstallBanner'
 import { useMultiversX } from './hooks/useMultiversX'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
@@ -108,6 +109,7 @@ export default function App() {
         </div>
       </footer>
 
+      <PwaInstallBanner />
       <BottomNav />
     </div>
   )
