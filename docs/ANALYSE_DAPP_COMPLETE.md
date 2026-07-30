@@ -1,4 +1,4 @@
-# Analyse DApp Complète xArtists — Mise à Jour 29 Juillet 2026
+# Analyse DApp Complète xArtists — Mise à Jour 30 Juillet 2026
 
 ## Résumé Exécutif
 xArtists est une DApp innovante sur MultiversX combinant **IA agentique (LIA v5/v6)**, **NFT Phygital / RWA art tokenisé**, **staking**, **DAO** et **bridge BTC expérimental**.  
@@ -6,34 +6,38 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 
 **Live Demo** : https://neltud.github.io/xArtists  
 **Repo** : https://github.com/Neltud/xArtists  
-**Statut** : Production-ready (code pleinement corrigé et poussé — v0.14.0).
+**Statut** : Production-ready (code pleinement corrigé et poussé — v0.14.0+). Dernier commit : E2E Playwright smoke (29 juil 21:05 UTC).
 
 ### Points forts
 - Intégration Warps / AI Agents MultiversX + agents LIA autonomes (trading, minting génératif, yield).
-- Contrats Rust robustes (nft-staking, tro-staking, btc-bridge) avec tests blackbox et guards.
-- Frontend React + Vite + TypeScript + Tailwind + MultiversX SDK-dapp moderne (lazy-loading, dark mode, FR/EN).
+- Contrats Rust robustes (nft-staking, tro-staking, btc-bridge, agents-marketplace) avec tests blackbox et guards.
+- Frontend React + Vite + TypeScript + Tailwind + MultiversX SDK-dapp moderne (lazy-loading, dark mode, FR/EN, PWA).
 - Wallet ESDT complet (Hatom, xExchange positions, prix live EGLD/TRO/BTC).
 - DAO $TRO (quorum 60 %), Marketplace escrow RWA, Tip (EGLD + BTC), Portfolio & Trading Terminal.
-- Monorepo pnpm + CI/CD GitHub Actions + GitHub Pages.
-- Agents GreenSmoke (Liia météo, Lia crypto, Macro, Politics, Sport, Tech) + BottomNav mobile.
+- Monorepo pnpm + CI/CD GitHub Actions + GitHub Pages + Docker.
+- Agents GreenSmoke (Liia météo, Lia crypto, Macro, Politics, Sport, Tech) + BottomNav mobile + PWA.
 
-### Corrections apportées (confirmées)
+### Corrections apportées (confirmées jusqu’au 30 juil 2026)
 - Mises à jour dépendances (sécurité + compatibilité sdk-dapp).
 - Fixes logique voting / rewards / WalletConnect navigation.
 - Optimisations performance frontend, cleanup monorepo, scan ESDT complet.
 - Config BTC tip address + Hatom + TRO pools endpoints (release 0.14.0).
+- Agents GreenSmoke + BottomNav + PWA (manifest + service-worker).
+- E2E Playwright smoke toujours exécuté en CI (`e2e.yml`).
 - Code pleinement corrigé poussé (CHANGELOG + release-please).
 
 ---
 
-## Veille Technologique (29 juillet 2026)
+## Veille Technologique (30 juillet 2026)
 
 ### MultiversX / Protocol
 - **Supernova** : upgrade majeur vers finalité sub-seconde (~600 ms block time). Découplage consensus / exécution, sharding avancé, bandwidth optimisé.
   - Gouvernance approuvée massivement (vote janv. 2026 ~99.64 %).
   - **Battle of Nodes** actif depuis le 11 mars 2026 : stress-test pré-mainnet (plus d’1 milliard de transactions traitées, pic public ~120k TPS). Guild Wars en cours pour tester throughput, SC et coordination cross-shard.
+  - Roadmap officielle : **Supernova Sub-Second Finality à ~97.7 %** (juillet 2026).
   - Target activation mainnet : Q2/Q3 2026 (sécurité + hardening en cours).
   - **Barnard** (v1.10.x, activé juillet 2025) : gouvernance on-chain native, timestamps ms, réduction gas factor, base solide pour Supernova.
+  - Upgrade réseau fin juillet 2026 (Upbit a suspendu temporairement dépôts/retraits EGLD le 24 juil pour support upgrade protocole).
   - Releases récentes outils : SpaceCraft SDK v0.66.x (mai-juin 2026), mx-api-service v1.20.0 (juin 2026).
 - Écosystème : xPortal, Hatom, xExchange, focus DeFi + NFT + **Agentic AI / Agentic Payments** live.
 
@@ -44,16 +48,17 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - xArtists (LIA + GreenSmoke) s’aligne parfaitement sur cette narrative DeFAI / agents.
 
 ### RWA & Tokenization Art / Phygital
-- Marché RWA tokenisé : ~$32,2 B on-chain (juillet 2026, +12,3 % depuis début juillet). Tokens RWA : meilleure narrative du mois (+10,7 % médiane).
+- Marché RWA tokenisé : **~$32,2 B on-chain** (24 juillet 2026, +12,3 % depuis début juillet). Tokens RWA : meilleure narrative du mois (+10,7 % médiane).
   - Dominant : bonds / Treasuries (~$16,9 B+), private credit, metals / commodities.
   - Art & collectibles : segment en expansion (royalties, high-value pieces, phygital) — niche plus risquée mais différenciante vs Treasuries institutionnels.
+  - Solana ~42 % des tokens enregistrés ; Ethereum domine en market cap (~$14,7 B).
 - Tendances 2026 : AI-powered tokenization, stablecoins comme rails de liquidité, adoption institutionnelle, phygital (photo physique → AI re-évaluation → metadata on-chain).
 - xArtists positionné sur **art tokenisé + Phygital NFTs + agents IA génératifs** — positionnement différenciant.
 
 ### Stack technique & tendances
-- Rust SC (MultiversX SpaceVM / SpaceCraft), TypeScript/React/Vite, pnpm workspaces, Tailwind.
+- Rust SC (MultiversX SpaceVM / SpaceCraft), TypeScript/React/Vite, pnpm workspaces, Tailwind, PWA.
 - 2026 : Agentic AI on-chain, cross-chain (BTC L2 / bridge), sub-second UX critique pour trading & minting.
-- Outils : mxpy, sdk-dapp v5+, GitHub Actions, Lighthouse, SpaceCraft SDK.
+- Outils : mxpy, sdk-dapp v5+, GitHub Actions, Lighthouse, SpaceCraft SDK, Playwright E2E.
 
 ---
 
@@ -62,10 +67,10 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 ### Architecture
 | Couche | Technologies | Rôle |
 |--------|--------------|------|
-| Smart Contracts | Rust (nft-staking, tro-staking, btc-bridge, escrow, minter) | Staking rewards, DAO voting, marketplace, mint |
-| Frontend | React 18 + Vite + TS + Tailwind + sdk-dapp | 8+ pages (Dashboard, Marketplace, Trading, Portfolio, DAO, Wallet, Tip, Agents…) |
+| Smart Contracts | Rust (nft-staking, tro-staking, btc-bridge, agents-marketplace, escrow, minter) | Staking rewards, DAO voting, marketplace, mint, agents |
+| Frontend | React 18 + Vite + TS + Tailwind + sdk-dapp + PWA | 13+ pages (Dashboard, Marketplace, Trading, Portfolio, DAO, Wallet, Tip, Agents, Hatom, LP, Gallery…) |
 | AI / Agents | LIA v5/v6 (Vellum + custom), Warps, GreenSmoke, Discord bot | Trading autonome, mint génératif, monitoring, yield, prévisions |
-| Data / Infra | MultiversX API/Gateway, GitHub Pages, pnpm monorepo | Prix live, ESDT scan, deploy auto |
+| Data / Infra | MultiversX API/Gateway, GitHub Pages, pnpm monorepo, Docker | Prix live, ESDT scan, deploy auto |
 | Bridge | BTC expérimental (contracts/btc-bridge) | Cross-chain assets |
 
 ### Sécurité
@@ -82,20 +87,32 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Wallet : balances ESDT + positions Hatom / xExchange.
 - Tip : QR EGLD + BTC.
 - Agents : monitoring GreenSmoke (6 agents) + prévisions.
+- PWA : installable, offline shell, BottomNav mobile safe-area.
+- E2E : smoke Playwright en CI.
 
-### Améliorations futures prioritaires
-1. Full LIA v6 production + agents marketplace on-chain.
-2. Marketplace NFT avancé + liquidity pools TRO.
-3. Mobile PWA / responsive perfectionné.
-4. Tests E2E complets + monitoring on-chain.
-5. Bridge BTC stabilisé + cross-chain RWA.
-6. Documentation API / OpenAPI + Docker.
-7. Alignement Supernova (sub-second finality) dès activation mainnet.
+### Roadmap V1 (7 priorités) — statut 30 juil 2026
+1. Full LIA v6 production + agents marketplace on-chain — 🟡 En cours  
+2. Marketplace NFT avancé + LP TRO — 🟡 Partiel  
+3. Mobile PWA / responsive — 🟢 Base livrée  
+4. Tests E2E complets + monitoring — 🟡 Smoke livré, suite à étendre  
+5. Bridge BTC stabilisé + cross-chain RWA — 🟡 Squelette  
+6. Documentation API / OpenAPI + Docker — 🟢 Base livrée  
+7. Alignement Supernova (sub-second) — 🟡 Préparé (~97.7 % roadmap)
+
+Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
+
+### Améliorations futures prioritaires (P0 immédiat)
+1. Signature tx live executor LIA (trades mainnet confirmés).
+2. List/Buy marketplace end-to-end depuis le dApp (sdk-dapp + ABI).
+3. Agents Marketplace on-chain (contrat + frontend).
+4. Suite E2E Playwright (wallet mock, marketplace, DAO).
+5. Bridge BTC tests blackbox + relayers.
+6. Alignement gas/UI post-activation Supernova.
 
 ---
 
 **Statut final** : Code complètement corrigé, documenté et poussé.  
-Veille techno et analyse dApp à jour au **29 juillet 2026**.  
-Prêt pour itérations et scale avec Supernova.
+Veille techno et analyse dApp à jour au **30 juillet 2026**.  
+Prêt pour itérations et scale avec Supernova (roadmap ~97.7 %).
 
 *Auteur : Neltud (via Grok) — Artiste & créateur*
