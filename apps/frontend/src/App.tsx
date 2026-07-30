@@ -17,6 +17,9 @@ const HatomPage = lazy(() => import('./pages/HatomPage'))
 const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
 const Agents = lazy(() => import('./pages/Agents'))
 const TroPage = lazy(() => import('./pages/TroPage'))
+const StakingPage = lazy(() => import('./pages/StakingPage'))
+const SoulTestnetPage = lazy(() => import('./pages/SoulTestnetPage'))
+const AgentsPolyliaPage = lazy(() => import('./pages/AgentsPolyliaPage'))
 
 function PageLoader() {
   return (
@@ -62,9 +65,11 @@ export default function App() {
             <Routes>
               <Route path="/" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
               <Route path="/agents" element={<ErrorBoundary><Agents /></ErrorBoundary>} />
+              <Route path="/agents/polylia" element={<ErrorBoundary><AgentsPolyliaPage /></ErrorBoundary>} />
               <Route path="/marketplace" element={<ErrorBoundary><Marketplace /></ErrorBoundary>} />
               <Route path="/trading" element={<ErrorBoundary><Trading /></ErrorBoundary>} />
               <Route path="/tro" element={<ErrorBoundary><TroPage /></ErrorBoundary>} />
+              <Route path="/staking" element={<ErrorBoundary><StakingPage /></ErrorBoundary>} />
               <Route path="/portfolio" element={<ErrorBoundary><Portfolio /></ErrorBoundary>} />
               <Route path="/dao" element={<ErrorBoundary><DAO /></ErrorBoundary>} />
               <Route path="/gallery" element={<ErrorBoundary><Gallery /></ErrorBoundary>} />
@@ -72,6 +77,7 @@ export default function App() {
               <Route path="/wallet" element={<ErrorBoundary><Wallet /></ErrorBoundary>} />
               <Route path="/hatom" element={<ErrorBoundary><HatomPage /></ErrorBoundary>} />
               <Route path="/lp" element={<ErrorBoundary><LPPoolsPage /></ErrorBoundary>} />
+              <Route path="/soul-testnet" element={<ErrorBoundary><SoulTestnetPage /></ErrorBoundary>} />
               <Route path="*" element={
                 <div className="text-center py-20">
                   <p className="text-6xl mb-4">🎨</p>
@@ -96,7 +102,7 @@ export default function App() {
             </div>
             <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap justify-center">
               <a href="https://github.com/Neltud/xArtists" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">GitHub</a>
-              <a href="https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Explorer</a>
+              <a href="https://explorer.multiversx.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Explorer</a>
               <a href="https://xexchange.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">xExchange</a>
               <span className="text-[#2a2a3a]">|</span>
               <span>LIA v6 + GreenSmoke</span>
