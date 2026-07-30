@@ -1,0 +1,54 @@
+{
+  "fr": {
+    "nav.home": "Accueil",
+    "nav.marketplace": "Marketplace",
+    "nav.staking": "Staking",
+    "nav.agents": "Agents",
+    "nav.wallet": "Portefeuille",
+    "action.connect": "Connecter",
+    "action.list": "Mettre en vente",
+    "action.buy": "Acheter",
+    "action.offer": "Faire une offre",
+    "action.stake": "Staker",
+    "action.claim": "Réclamer"
+  },
+  "en": {
+    "nav.home": "Home",
+    "nav.marketplace": "Marketplace",
+    "nav.staking": "Staking",
+    "nav.agents": "Agents",
+    "nav.wallet": "Wallet",
+    "action.connect": "Connect",
+    "action.list": "List for sale",
+    "action.buy": "Buy",
+    "action.offer": "Make an offer",
+    "action.stake": "Stake",
+    "action.claim": "Claim"
+  },
+  "ru": {
+    "nav.home": "Главная",
+    "nav.marketplace": "Маркетплейс",
+    "nav.staking": "Стейкинг",
+    "nav.agents": "Агенты",
+    "nav.wallet": "Кошелёк",
+    "action.connect": "Подключить",
+    "action.list": "Выставить",
+    "action.buy": "Купить",
+    "action.offer": "Сделать оффер",
+    "action.stake": "Стейкать",
+    "action.claim": "Забрать"
+  },
+  "es": {
+    "nav.home": "Inicio",
+    "nav.marketplace": "Marketplace",
+    "nav.staking": "Staking",
+    "nav.agents": "Agentes",
+    "nav.wallet": "Cartera",
+    "action.connect": "Conectar",
+    "action.list": "Poner en venta",
+    "action.buy": "Comprar",
+    "action.offer": "Hacer oferta",
+    "action.stake": "Stakear",
+    "action.claim": "Reclamar"
+  }
+}

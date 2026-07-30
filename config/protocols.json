@@ -1,0 +1,83 @@
+{
+  "$schema_comment": "LIA Vellum protocol registry — update addresses from official docs before live",
+  "network_default": "multiversx-mainnet",
+  "force_mode_default": "paper",
+  "wallet_lia": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "gateways": {
+    "multiversx": {
+      "gateway": "https://gateway.multiversx.com",
+      "api": "https://api.multiversx.com",
+      "chain_id": "1"
+    }
+  },
+  "protocols": {
+    "hatom": {
+      "enabled": true,
+      "network": "multiversx-mainnet",
+      "priority": 0,
+      "instruments": ["supply", "withdraw", "borrow", "repay", "liquid_staking"],
+      "controller_mainnet_docs": "erd1qqqqqqqqqqqqqpgqxp28qpnv7rfcmk6qrgxgw5uf2fnp84ar78ssqdk6hr",
+      "controller_note": "VERIFY on https://docs.hatom.com before live",
+      "risk": {
+        "min_health_factor_supply": 1.5,
+        "min_health_factor_borrow": 2.0,
+        "max_borrow_pct_collateral": 0.35
+      },
+      "actions": ["HATOM_SUPPLY", "HATOM_WITHDRAW", "HATOM_BORROW", "HATOM_REPAY"]
+    },
+    "xexchange": {
+      "enabled": true,
+      "network": "multiversx-mainnet",
+      "priority": 0,
+      "instruments": ["swap", "add_lp", "remove_lp", "farm"],
+      "actions": ["SWAP", "ADD_LP", "REMOVE_LP"]
+    },
+    "jexchange": {
+      "enabled": true,
+      "network": "multiversx-mainnet",
+      "priority": 1,
+      "instruments": ["swap", "pools"],
+      "actions": ["SWAP"]
+    },
+    "xoxno": {
+      "enabled": true,
+      "network": "multiversx-mainnet",
+      "priority": 1,
+      "nft_marketplace": true,
+      "lending_enabled": false,
+      "actions": ["XOXNO_NFT_LIST", "XOXNO_NFT_BUY"]
+    },
+    "soul": {
+      "enabled": true,
+      "network": "evm-testnet",
+      "priority": 2,
+      "app": "https://app.soul.io",
+      "mx_native": false,
+      "mainnet_forbidden": true,
+      "testnets": ["ethereum-sepolia", "base-sepolia", "arbitrum-sepolia"],
+      "actions": ["SOUL_SUPPLY_TESTNET", "SOUL_BORROW_TESTNET"]
+    },
+    "xartists_nft_staking": {
+      "enabled": true,
+      "address": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
+      "actions": ["NFT_STAKE", "NFT_UNSTAKE", "CLAIM_NFT_REWARDS"]
+    },
+    "xartists_tro_gov": {
+      "enabled": true,
+      "address": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
+      "actions": ["TRO_STAKE", "TRO_UNSTAKE", "CLAIM_TRO_REWARDS", "DAO_VOTE"]
+    },
+    "xartists_marketplace": {
+      "enabled": true,
+      "address": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+      "actions": ["MARKET_LIST", "MARKET_BUY", "MARKET_CANCEL"]
+    }
+  },
+  "risk_global": {
+    "max_notional_usd_per_run": 50,
+    "circuit_breaker_failures": 3,
+    "min_egld_gas_reserve": 0.05,
+    "small_capital_usd": 50,
+    "prefer_yield_below_usd": 50
+  }
+}
