@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { useWallet } from '../context/WalletContext'
+import { useWallet, LIA_WALLET } from '../context/WalletContext'
+import { sdkDappConfig } from '../config/sdkDapp'
 
 const NAV = [
   { to: '/', label: 'Dashboard', emoji: '📊' },
   { to: '/agents', label: 'Agents IA', emoji: '🧠' },
   { to: '/marketplace', label: 'Marketplace', emoji: '🎨' },
+  { to: '/staking', label: 'Staking', emoji: '🔒' },
   { to: '/tro', label: '$TRO', emoji: '🪙' },
   { to: '/gallery', label: 'Galerie', emoji: '🖼️' },
   { to: '/trading', label: 'Trading', emoji: '⚡' },
@@ -13,20 +15,26 @@ const NAV = [
   { to: '/hatom', label: 'Hatom', emoji: '🏦' },
   { to: '/lp', label: 'LP/Farms', emoji: '💧' },
   { to: '/dao', label: 'DAO', emoji: '🗳️' },
+  { to: '/soul-testnet', label: 'Soul', emoji: '🌉' },
   { to: '/wallet', label: 'Wallet', emoji: '👛' },
   { to: '/tip', label: 'Tip 💜', emoji: '' },
 ]
 
 function isValidErd(addr: string): boolean {
-  return /^erd1[a-z0-9]{58}$/.test(addr.trim())
+  return /^erd1[a-z0-9]{58}$/i.test(addr.trim())
+}
+
+function getCallbackUrl(): string {
+  if (typeof window === 'undefined') return 'https://neltud.github.io/xArtists/'
+  return `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '/') || '/xArtists/'}`
 }
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [showWalletModal, setShowWalletModal] = useState(false)
-  const [pemInput, setPemInput] = useState('')
-  const [pemError, setPemError] = useState('')
-  const { connected, shortAddress, connect, disconnect } = useWallet()
+  const [manualAddr, setManualAddr] = useState('')
+  const [connectError, setConnectError] = useState('')
+  const { connected, shortAddress, connect, disconnect, address } = useWallet()
   const location = useLocation()
 
   useEffect(() => {
@@ -34,29 +42,64 @@ export default function Header() {
   }, [location.pathname])
 
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
+    if (menuOpen) document.body.style.overflow = 'hidden'
+    else document.body.style.overflow = ''
     return () => { document.body.style.overflow = '' }
   }, [menuOpen])
 
-  const handlePemImport = () => {
-    const match = pemInput.match(/erd1[a-z0-9]{58}/)
-    if (match && isValidErd(match[0])) {
-      connect(match[0], 'pem')
-      setPemInput('')
-      setPemError('')
-      setShowWalletModal(false)
-    } else {
-      setPemError('Adresse non trouvée dans le fichier PEM. Vérifiez le contenu.')
+  const openWebWallet = () => {
+    const callback = encodeURIComponent(getCallbackUrl())
+    window.location.href = `https://wallet.multiversx.com/hook/login?callbackUrl=${callback}`
+  }
+
+  const openXPortalDeepLink = () => {
+    // Deep link / store — full WC QR requires @multiversx/sdk-dapp; deep link opens app
+    const deep = sdkDappConfig.customNetworkConfig.walletConnectDeepLink
+    window.open(deep, '_blank', 'noopener,noreferrer')
+    setConnectError(
+      'xPortal opened. For full QR WalletConnect, install @multiversx/sdk-dapp. Or use Web Wallet (recommended now) — your real address will be saved (never the LIA protocol wallet).'
+    )
+  }
+
+  const tryExtension = async () => {
+    setConnectError('')
+    const w = window as unknown as {
+      elrondWallet?: { getAddress?: () => Promise<string> }
+      multiversxWallet?: { getAddress?: () => Promise<string> }
+    }
+    try {
+      const provider = w.elrondWallet || w.multiversxWallet
+      if (provider?.getAddress) {
+        const addr = await provider.getAddress()
+        const res = connect(addr, 'defi_wallet')
+        if (!res.ok) setConnectError(res.error || 'Connect failed')
+        else setShowWalletModal(false)
+        return
+      }
+      setConnectError(
+        'DeFi Wallet extension not detected. Install MultiversX DeFi Wallet, or use Web Wallet.'
+      )
+    } catch (e) {
+      setConnectError(e instanceof Error ? e.message : 'Extension error')
     }
   }
 
-  const handleMockConnect = (method: 'xportal' | 'defi_wallet') => {
-    connect('erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6', method)
-    setShowWalletModal(false)
+  const handleManual = () => {
+    setConnectError('')
+    if (!isValidErd(manualAddr)) {
+      setConnectError('Invalid erd1… address')
+      return
+    }
+    if (manualAddr.trim().toLowerCase() === LIA_WALLET.toLowerCase()) {
+      setConnectError('Cannot use LIA protocol wallet as user. Connect your own wallet.')
+      return
+    }
+    const res = connect(manualAddr.trim(), 'web_wallet')
+    if (!res.ok) setConnectError(res.error || 'Failed')
+    else {
+      setShowWalletModal(false)
+      setManualAddr('')
+    }
   }
 
   return (
@@ -95,16 +138,16 @@ export default function Header() {
               <button
                 onClick={disconnect}
                 className="px-2 sm:px-3 py-1.5 rounded-lg bg-[#16161f] border border-green-500/30 text-green-400 text-[10px] sm:text-xs mono hover:border-red-500/40 hover:text-red-400 transition-colors"
-                title="Cliquer pour déconnecter"
+                title={`${address} — click to disconnect`}
               >
                 ✅ {shortAddress}
               </button>
             ) : (
               <button
-                onClick={() => setShowWalletModal(true)}
+                onClick={() => { setShowWalletModal(true); setConnectError('') }}
                 className="btn-primary text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2"
               >
-                🔗 Connecter
+                🔗 Connect
               </button>
             )}
 
@@ -154,56 +197,78 @@ export default function Header() {
       {showWalletModal && (
         <div
           className="fixed inset-0 bg-black/80 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4"
-          onClick={() => { setShowWalletModal(false); setPemError('') }}
+          onClick={() => { setShowWalletModal(false); setConnectError('') }}
         >
           <div
             className="card max-w-md w-full rounded-t-2xl sm:rounded-2xl animate-fade-in max-h-[90vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}
             style={{ paddingBottom: 'calc(1.25rem + env(safe-area-inset-bottom, 0px))' }}
           >
-            <h2 className="text-xl font-bold mb-6">🔗 Connecter votre Wallet</h2>
+            <h2 className="text-xl font-bold mb-2">Connect wallet</h2>
+            <p className="text-xs text-zinc-500 mb-4">
+              Your wallet only — never the LIA protocol address. WC project:{' '}
+              {sdkDappConfig.walletConnectV2ProjectId.slice(0, 8)}…
+            </p>
 
             <button
-              onClick={() => handleMockConnect('xportal')}
-              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 active:border-purple-500 transition-all mb-3 touch-manipulation"
+              type="button"
+              onClick={openWebWallet}
+              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
+            >
+              <span className="text-3xl">🌐</span>
+              <div className="text-left">
+                <div className="font-semibold">Web Wallet</div>
+                <div className="text-sm text-gray-400">wallet.multiversx.com — recommended</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={openXPortalDeepLink}
+              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
             >
               <span className="text-3xl">📱</span>
               <div className="text-left">
-                <div className="font-semibold">xPortal App</div>
-                <div className="text-sm text-gray-400">Scanner le QR code</div>
+                <div className="font-semibold">xPortal</div>
+                <div className="text-sm text-gray-400">Open app / deep link (QR via sdk-dapp next)</div>
               </div>
             </button>
 
             <button
-              onClick={() => handleMockConnect('defi_wallet')}
-              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 active:border-purple-500 transition-all mb-3 touch-manipulation"
+              type="button"
+              onClick={tryExtension}
+              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
             >
               <span className="text-3xl">🦊</span>
               <div className="text-left">
-                <div className="font-semibold">MultiversX DeFi Wallet</div>
-                <div className="text-sm text-gray-400">Extension navigateur</div>
+                <div className="font-semibold">DeFi Wallet extension</div>
+                <div className="text-sm text-gray-400">Browser extension</div>
               </div>
             </button>
 
-            <div className="mt-4">
-              <p className="text-xs text-gray-500 mb-2">Ou importer un fichier PEM (lecture seule)</p>
-              <textarea
-                className="w-full p-3 rounded-lg bg-[#111118] border border-[#2a2a3a] text-xs mono text-gray-300 resize-none h-20 focus:outline-none focus:border-purple-500"
-                placeholder="Coller votre clé PEM ici..."
-                value={pemInput}
-                onChange={e => { setPemInput(e.target.value); setPemError('') }}
+            <div className="mt-2">
+              <p className="text-xs text-gray-500 mb-2">Or paste your erd1 address (read-only session)</p>
+              <input
+                className="w-full p-3 rounded-lg bg-[#111118] border border-[#2a2a3a] text-xs mono text-gray-300 focus:outline-none focus:border-purple-500"
+                placeholder="erd1..."
+                value={manualAddr}
+                onChange={e => setManualAddr(e.target.value)}
               />
-              {pemError && <p className="text-xs text-red-400 mt-1">{pemError}</p>}
-              <button onClick={handlePemImport} className="btn-primary w-full mt-2 text-sm touch-manipulation">
-                Importer PEM
+              <button type="button" onClick={handleManual} className="btn-primary w-full mt-2 text-sm">
+                Use address
               </button>
             </div>
 
+            {connectError && (
+              <p className="text-xs text-amber-400 mt-3 leading-relaxed">{connectError}</p>
+            )}
+
             <button
-              onClick={() => { setShowWalletModal(false); setPemError('') }}
-              className="btn-secondary w-full mt-3 text-sm touch-manipulation"
+              type="button"
+              onClick={() => { setShowWalletModal(false); setConnectError('') }}
+              className="btn-secondary w-full mt-3 text-sm"
             >
-              Annuler
+              Cancel
             </button>
           </div>
         </div>
