@@ -25,12 +25,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Prepare docs
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+
+      - name: Install & build frontend
+        working-directory: apps/frontend
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          # Prefer full build; fallback vite-only if tsc fails
+          npm run build || npx vite build
+
+      - name: Publish dist → docs
         run: |
           mkdir -p docs
-          test -f docs/index.html && echo "OK: dashboard index.html present" || echo "WARN: missing docs/index.html"
-          echo "" > docs/.nojekyll
-          ls -la docs/ | head -20
+          # Keep legal/docs markdown; replace web assets with React build
+          rm -f docs/index.html
+          rm -rf docs/assets docs/icons 2>/dev/null || true
+          if [ -d apps/frontend/dist ]; then
+            cp -r apps/frontend/dist/* docs/
+            echo "Deployed React dist to docs/"
+          else
+            echo "ERROR: apps/frontend/dist missing"
+            exit 1
+          fi
+          touch docs/.nojekyll
+          echo "force-$(date -u +%Y%m%d%H%M%S)" > docs/DEPLOY_STAMP.txt
+          ls -la docs/ | head -30
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
