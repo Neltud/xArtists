@@ -1,89 +1,48 @@
 """
 GreenSmokeConsumer — bias LIA decisions with top GreenSmoke agents
-+ TrailingStopManager for open positions
++ Dynamic trailing stops (lia.risk.trailing_stop)
 """
 from __future__ import annotations
 
 import json
-import time
-from dataclasses import dataclass, field
+import sys
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Optional
+
+# Allow running from repo root
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+try:
+    from lia.risk.trailing_stop import DynamicTrailingStopManager
+except ImportError:
+    DynamicTrailingStopManager = None  # type: ignore
 
 
 @dataclass
 class AgentSignal:
     agent_id: str
-    reputation: float  # 0..1
-    bias: str  # BUY | SELL | WAIT
+    reputation: float
+    bias: str
     confidence: float
     source: str = "greensmoke"
 
 
-@dataclass
-class Position:
-    token: str
-    entry_price: float
-    size_usd: float
-    high_water: float
-    trail_pct: float = 0.08  # 8% trailing
-    stop_price: float = 0.0
-
-    def __post_init__(self) -> None:
-        if self.stop_price <= 0:
-            self.stop_price = self.entry_price * (1 - self.trail_pct)
-        self.high_water = max(self.high_water, self.entry_price)
-
-    def update(self, price: float) -> Optional[str]:
-        """Returns 'STOP' if trailing stop hit."""
-        if price > self.high_water:
-            self.high_water = price
-            self.stop_price = self.high_water * (1 - self.trail_pct)
-        if price <= self.stop_price:
-            return "STOP"
-        return None
-
-
-class TrailingStopManager:
-    def __init__(self) -> None:
-        self.positions: dict[str, Position] = {}
-
-    def open(self, token: str, entry: float, size_usd: float, trail_pct: float = 0.08) -> None:
-        self.positions[token] = Position(
-            token=token, entry_price=entry, size_usd=size_usd, high_water=entry, trail_pct=trail_pct
-        )
-
-    def on_price(self, token: str, price: float) -> Optional[str]:
-        pos = self.positions.get(token)
-        if not pos:
-            return None
-        action = pos.update(price)
-        if action == "STOP":
-            del self.positions[token]
-        return action
-
-    def snapshot(self) -> list[dict[str, Any]]:
-        return [
-            {
-                "token": p.token,
-                "entry": p.entry_price,
-                "hwm": p.high_water,
-                "stop": p.stop_price,
-                "size_usd": p.size_usd,
-            }
-            for p in self.positions.values()
-        ]
-
-
 class GreenSmokeConsumer:
-    """
-    Fuse top-N GreenSmoke agent signals into LIA regime bias.
-    Without live API: load from data/greensmoke_top.json if present.
-    """
-
-    def __init__(self, min_reputation: float = 0.6, max_external_weight: float = 0.3):
+    def __init__(
+        self,
+        min_reputation: float = 0.6,
+        max_external_weight: float = 0.3,
+        trailing_state_path: str = "data/lia_trailing_state.json",
+    ):
         self.min_reputation = min_reputation
         self.max_external_weight = max_external_weight
-        self.trailing = TrailingStopManager()
+        self.trailing: Any = None
+        if DynamicTrailingStopManager is not None:
+            self.trailing = DynamicTrailingStopManager(state_path=trailing_state_path)
+            self.trailing.load()
 
     def load_signals(self, path: str = "data/greensmoke_top.json") -> list[AgentSignal]:
         try:
@@ -122,21 +81,58 @@ class GreenSmokeConsumer:
         return {"bias": bias, "score": norm, "weight": weight, "n": len(signals)}
 
     def blend_with_lia(self, lia_decision: str, lia_confidence: float, gs: dict[str, Any]) -> dict[str, Any]:
-        """Blend internal LIA decision with GreenSmoke bias (capped weight)."""
         if gs["n"] == 0 or gs["weight"] <= 0:
             return {"decision": lia_decision, "confidence": lia_confidence, "source": "lia_only"}
-        # Simple vote: if GS agrees, boost confidence; if conflicts, reduce size / WAIT
         if gs["bias"] == lia_decision:
             conf = min(0.95, lia_confidence + gs["weight"] * 0.2)
             return {"decision": lia_decision, "confidence": conf, "source": "lia+gs_agree"}
         if lia_decision == "WAIT" or gs["bias"] == "WAIT":
-            return {"decision": lia_decision if lia_confidence >= 0.55 else "WAIT", "confidence": lia_confidence * 0.9, "source": "mixed_wait"}
-        # Conflict: prefer WAIT unless LIA confidence very high
+            return {
+                "decision": lia_decision if lia_confidence >= 0.55 else "WAIT",
+                "confidence": lia_confidence * 0.9,
+                "source": "mixed_wait",
+            }
         if lia_confidence >= 0.75:
             return {"decision": lia_decision, "confidence": lia_confidence * 0.85, "source": "lia_override"}
         return {"decision": "WAIT", "confidence": 0.4, "source": "conflict_wait"}
+
+    def open_trail(
+        self,
+        *,
+        trade_id: str,
+        token: str,
+        entry: float,
+        size_usd: float,
+        side: str = "LONG",
+        atr: float = 0.0,
+        trail_pct: float = 0.08,
+    ) -> Optional[dict[str, Any]]:
+        if not self.trailing:
+            return None
+        pos = self.trailing.open(
+            id=trade_id,
+            token=token,
+            entry=entry,
+            size_usd=size_usd,
+            side=side,
+            atr=atr,
+            trail_pct=trail_pct,
+            trail_mode="hybrid",
+        )
+        self.trailing.persist()
+        return pos.to_dict()
+
+    def tick_price(self, token: str, price: float, atr: Optional[float] = None) -> list[dict[str, Any]]:
+        if not self.trailing:
+            return []
+        results = self.trailing.on_price_by_token(token, price, atr)
+        self.trailing.persist()
+        return results
 
 
 if __name__ == "__main__":
     c = GreenSmokeConsumer()
     print(c.regime_bias(c.load_signals()))
+    if c.trailing:
+        c.open_trail(trade_id="demo-1", token="TRO-94c925", entry=0.000065, size_usd=15, atr=0.000002)
+        print(c.tick_price("TRO-94c925", 0.000070))
