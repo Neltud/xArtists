@@ -1,40 +1,39 @@
-/**
- * Optional MultiversX sdk-dapp provider.
- * Wire in main.tsx after confirming build with installed packages:
- *
- *   import { MxDappProvider } from './providers/MxDappProvider'
- *   <MxDappProvider><App /></MxDappProvider>
- *
- * Until then, WalletContext + Web Wallet redirect remains the production path.
- */
-
 import type { ReactNode } from 'react'
 import { sdkDappConfig } from '../config/sdkDapp'
 
 type Props = { children: ReactNode }
 
 /**
- * Thin wrapper — imports sdk-dapp dynamically-friendly structure.
- * If DappProvider API differs by major version, adjust imports here only.
+ * Attempts to mount official @multiversx/sdk-dapp DappProvider.
+ * Falls back to children-only if package/API not available (build never crashes).
  */
 export function MxDappProvider({ children }: Props) {
-  // Lazy static import pattern: build must resolve @multiversx/sdk-dapp
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   try {
-    // Prefer named export used by sdk-dapp v2/v3 templates
-    // @ts-expect-error resolved at install time
-    const mod = require('@multiversx/sdk-dapp/wrappers/DappProvider') as {
-      DappProvider?: React.ComponentType<Record<string, unknown>>
+    // Vite / ESM: static import paths vary by sdk-dapp major — try common ones via require-style dynamic
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    let DappProvider: React.ComponentType<Record<string, unknown>> | undefined
+
+    try {
+      // @ts-expect-error optional dependency resolved after npm install
+      DappProvider = require('@multiversx/sdk-dapp/wrappers/DappProvider').DappProvider
+    } catch {
+      try {
+        // @ts-expect-error optional
+        DappProvider = require('@multiversx/sdk-dapp').DappProvider
+      } catch {
+        DappProvider = undefined
+      }
     }
-    const DappProvider = mod?.DappProvider
+
     if (!DappProvider) {
       return <>{children}</>
     }
+
     return (
       <DappProvider
         environment={sdkDappConfig.environment}
         customNetworkConfig={sdkDappConfig.customNetworkConfig}
-        dappConfig={{ name: 'xArtists' }}
+        dappConfig={sdkDappConfig.dappConfig}
       >
         {children}
       </DappProvider>

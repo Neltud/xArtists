@@ -4,16 +4,19 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { WalletProvider } from './context/WalletContext'
 import { MultiversXProvider } from './context/MultiversXContext'
+import { MxDappProvider } from './providers/MxDappProvider'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter basename="/xArtists">
-      <WalletProvider>
-        <MultiversXProvider>
-          <App />
-        </MultiversXProvider>
-      </WalletProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+    <MxDappProvider>
+      <BrowserRouter basename="/xArtists">
+        <WalletProvider>
+          <MultiversXProvider>
+            <App />
+          </MultiversXProvider>
+        </WalletProvider>
+      </BrowserRouter>
+    </MxDappProvider>
+  </React.StrictMode>,
 )
