@@ -5,7 +5,10 @@ import App from './App'
 import { WalletProvider } from './context/WalletContext'
 import { MultiversXProvider } from './context/MultiversXContext'
 import { MxDappProvider } from './providers/MxDappProvider'
+import { registerSW } from './pwa/registerSW'
 import './index.css'
+
+registerSW()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
