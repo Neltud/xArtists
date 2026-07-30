@@ -1,5 +1,5 @@
-/* xArtists PWA service worker — cache shell for offline shell */
-const CACHE = 'xartists-shell-v1';
+/* xArtists PWA service worker — cache shell for offline */
+const CACHE = 'xartists-shell-v2';
 const PRECACHE = [
   '/xArtists/',
   '/xArtists/index.html',
@@ -23,9 +23,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
-  // Network-first for API / data; cache-first for shell assets
   const url = new URL(request.url);
-  if (url.pathname.includes('/data/') || url.hostname.includes('multiversx.com')) {
+  if (url.pathname.includes('/data/') || url.hostname.includes('multiversx.com') || url.hostname.includes('coingecko')) {
     event.respondWith(
       fetch(request)
         .then((res) => {
@@ -38,10 +37,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   event.respondWith(
-    caches.match(request).then((cached) => cached || fetch(request).then((res) => {
-      const copy = res.clone();
-      caches.open(CACHE).then((c) => c.put(request, copy));
-      return res;
-    }))
+    caches.match(request).then((cached) =>
+      cached ||
+      fetch(request).then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(request, copy));
+        return res;
+      })
+    )
   );
 });
