@@ -1,6 +1,6 @@
 {
   "name": "xartists-frontend",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,6 +10,9 @@
     "lint": "eslint src --ext ts,tsx"
   },
   "dependencies": {
+    "@multiversx/sdk-core": "^13.17.2",
+    "@multiversx/sdk-dapp": "^3.0.0",
+    "@multiversx/sdk-network-providers": "^2.9.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2"
