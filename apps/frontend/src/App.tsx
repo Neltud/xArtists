@@ -20,6 +20,7 @@ const TroPage = lazy(() => import('./pages/TroPage'))
 const StakingPage = lazy(() => import('./pages/StakingPage'))
 const SoulTestnetPage = lazy(() => import('./pages/SoulTestnetPage'))
 const AgentsPolyliaPage = lazy(() => import('./pages/AgentsPolyliaPage'))
+const BurnifyPage = lazy(() => import('./pages/BurnifyPage'))
 
 function PageLoader() {
   return (
@@ -38,10 +39,7 @@ function StaleDataBanner({ isStale, lastUpdate }: { isStale: boolean; lastUpdate
     <div className="bg-orange-500/10 border-b border-orange-500/30 px-4 py-2 text-center text-xs text-orange-400">
       ⚠️ Données potentiellement périmées — dernière mise à jour :{' '}
       {lastUpdate ? lastUpdate.toLocaleTimeString('fr-FR') : 'inconnue'}.{' '}
-      <button
-        className="underline hover:text-orange-300 transition-colors"
-        onClick={() => window.location.reload()}
-      >
+      <button className="underline hover:text-orange-300 transition-colors" onClick={() => window.location.reload()}>
         Actualiser
       </button>
     </div>
@@ -70,6 +68,7 @@ export default function App() {
               <Route path="/trading" element={<ErrorBoundary><Trading /></ErrorBoundary>} />
               <Route path="/tro" element={<ErrorBoundary><TroPage /></ErrorBoundary>} />
               <Route path="/staking" element={<ErrorBoundary><StakingPage /></ErrorBoundary>} />
+              <Route path="/burnify" element={<ErrorBoundary><BurnifyPage /></ErrorBoundary>} />
               <Route path="/portfolio" element={<ErrorBoundary><Portfolio /></ErrorBoundary>} />
               <Route path="/dao" element={<ErrorBoundary><DAO /></ErrorBoundary>} />
               <Route path="/gallery" element={<ErrorBoundary><Gallery /></ErrorBoundary>} />
@@ -91,22 +90,20 @@ export default function App() {
       </main>
 
       <footer className="border-t border-[#2a2a3a] mt-8 py-6 hidden md:block">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🎨</span>
-              <div>
-                <p className="font-bold">xArtists — LIA v6</p>
-                <p className="text-xs text-gray-500">@tudurioriginal • MultiversX Mainnet</p>
-              </div>
+        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🎨</span>
+            <div>
+              <p className="font-bold">xArtists — LIA v6</p>
+              <p className="text-xs text-gray-500">@tudurioriginal • MultiversX Mainnet</p>
             </div>
-            <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap justify-center">
-              <a href="https://github.com/Neltud/xArtists" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">GitHub</a>
-              <a href="https://explorer.multiversx.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Explorer</a>
-              <a href="https://xexchange.com" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">xExchange</a>
-              <span className="text-[#2a2a3a]">|</span>
-              <span>LIA v6 + GreenSmoke</span>
-            </div>
+          </div>
+          <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap justify-center">
+            <a href="https://github.com/Neltud/xArtists" target="_blank" rel="noreferrer" className="hover:text-white">GitHub</a>
+            <a href="https://explorer.multiversx.com" target="_blank" rel="noreferrer" className="hover:text-white">Explorer</a>
+            <a href="https://xexchange.com" target="_blank" rel="noreferrer" className="hover:text-white">xExchange</a>
+            <span className="text-[#2a2a3a]">|</span>
+            <span>LIA v6 + GreenSmoke</span>
           </div>
         </div>
       </footer>
