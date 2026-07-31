@@ -1,15 +1,14 @@
 import React, { useCallback, useState } from 'react'
 import { useMvxAccount } from '../services/mvx'
 import { useAgentsMarketplace } from '../hooks/useAgentsMarketplace'
+import TxStatusBanner from '../components/TxStatusBanner'
 import { CONTRACTS, shortAddr, explorerAccount } from '../config/contracts'
 import './pages.css'
 
-/** Demo catalog until on-chain indexing is wired */
 const DEMO_LISTINGS = [
   {
     id: 1,
     agentId: 'LIA-v6-circuit-1pct',
-    seller: 'erd1…lia',
     priceEgld: '0.05',
     active: true,
     blurb: 'Signal package compound +1% / guards G01–G17',
@@ -17,7 +16,6 @@ const DEMO_LISTINGS = [
   {
     id: 2,
     agentId: 'GreenSmoke-Macro',
-    seller: 'erd1…gs',
     priceEgld: '0.02',
     active: true,
     blurb: 'Régime RISK_ON / RISK_OFF bias feed',
@@ -31,9 +29,11 @@ const MarketplacePage: React.FC = () => {
     isConfigured,
     pending,
     lastError,
+    txState,
     listAgent,
     buyAgent,
     cancelListing,
+    resetTx,
   } = useAgentsMarketplace()
 
   const [agentId, setAgentId] = useState('LIA-v6-circuit-1pct')
@@ -42,65 +42,81 @@ const MarketplacePage: React.FC = () => {
   const [buyPrice, setBuyPrice] = useState('0.05')
   const [txPreview, setTxPreview] = useState<string | null>(null)
   const [status, setStatus] = useState('')
+  const [autoSend, setAutoSend] = useState(false)
 
   const nonce = account?.nonce ?? 0
+  const balance = account?.balance || '0'
 
   const onList = useCallback(async () => {
-    if (!isLoggedIn || !address) {
-      setStatus('Connecte le wallet d’abord')
-      return
-    }
-    const built = await listAgent(address, nonce, { agentId, priceEgld })
+    setStatus('')
+    const built = await listAgent(
+      address || '',
+      nonce,
+      { agentId, priceEgld },
+      { isLoggedIn, autoSend }
+    )
     if (!built) {
-      setStatus(lastError || 'List failed')
+      setStatus(lastError?.message || 'List échoué')
       return
     }
     setTxPreview(JSON.stringify(built.plain, null, 2))
-    setStatus(
-      'TX listAgentAction prête — signer via sdk-dapp sendTransactions (Extension / xPortal)'
-    )
-    // Integration point: pass built.tx to useSendTransaction().sendTransactions([built.tx])
-  }, [isLoggedIn, address, nonce, agentId, priceEgld, listAgent, lastError])
+    if (built.result?.ok) {
+      setStatus(`List OK — ${built.result.hash}`)
+    } else if (autoSend && built.result && !built.result.ok) {
+      setStatus(built.result.error.message)
+    } else {
+      setStatus('TX listAgentAction prête — active auto-send ou signe via wallet')
+    }
+  }, [address, nonce, agentId, priceEgld, isLoggedIn, autoSend, listAgent, lastError])
 
   const onBuy = useCallback(async () => {
-    if (!isLoggedIn || !address) {
-      setStatus('Connecte le wallet d’abord')
-      return
-    }
-    const built = await buyAgent(address, nonce, {
-      listingId: parseInt(buyId, 10) || 1,
-      priceEgld: buyPrice,
-    })
+    setStatus('')
+    const built = await buyAgent(
+      address || '',
+      nonce,
+      { listingId: parseInt(buyId, 10) || 1, priceEgld: buyPrice },
+      { isLoggedIn, balanceAtomic: balance, autoSend }
+    )
     if (!built) {
-      setStatus(lastError || 'Buy failed')
+      setStatus(lastError?.message || 'Buy échoué')
       return
     }
     setTxPreview(JSON.stringify(built.plain, null, 2))
-    setStatus('TX buyAgentAction prête (EGLD payable) — signer via sdk-dapp')
-  }, [isLoggedIn, address, nonce, buyId, buyPrice, buyAgent, lastError])
+    if (built.result?.ok) setStatus(`Buy OK — ${built.result.hash}`)
+    else if (autoSend && built.result && !built.result.ok) setStatus(built.result.error.message)
+    else setStatus('TX buyAgentAction prête')
+  }, [address, nonce, buyId, buyPrice, isLoggedIn, balance, autoSend, buyAgent, lastError])
 
   const onCancel = useCallback(async () => {
-    if (!isLoggedIn || !address) {
-      setStatus('Connecte le wallet d’abord')
-      return
-    }
-    const built = await cancelListing(address, nonce, parseInt(buyId, 10) || 1)
+    setStatus('')
+    const built = await cancelListing(address || '', nonce, parseInt(buyId, 10) || 1, {
+      isLoggedIn,
+      autoSend,
+    })
     if (!built) {
-      setStatus(lastError || 'Cancel failed')
+      setStatus(lastError?.message || 'Cancel échoué')
       return
     }
     setTxPreview(JSON.stringify(built.plain, null, 2))
-    setStatus('TX cancelListing prête — signer via sdk-dapp')
-  }, [isLoggedIn, address, nonce, buyId, cancelListing, lastError])
+    if (built.result?.ok) setStatus(`Cancel OK — ${built.result.hash}`)
+    else setStatus('TX cancelListing prête')
+  }, [address, nonce, buyId, isLoggedIn, autoSend, cancelListing, lastError])
 
   return (
     <div className="page">
       <header className="page-head">
         <h1>Marketplace · Agents</h1>
-        <p className="muted">
-          List / Buy / Cancel on-chain — SC Agents Marketplace + NFT marketplace existant.
-        </p>
+        <p className="muted">List / Buy / Cancel — erreurs TX classifiées + suivi confirmation.</p>
       </header>
+
+      <TxStatusBanner
+        state={
+          lastError && txState.phase === 'idle'
+            ? { phase: 'failed', error: lastError, message: lastError.message }
+            : txState
+        }
+        onDismiss={resetTx}
+      />
 
       <section className="grid-2">
         <div className="card">
@@ -110,31 +126,28 @@ const MarketplacePage: React.FC = () => {
               {contractAddress}
             </a>
           ) : (
-            <span className="badge warn">Adresse TBD — déployer puis VITE_AGENTS_MARKETPLACE_ADDRESS</span>
+            <span className="badge warn">Adresse TBD — VITE_AGENTS_MARKETPLACE_ADDRESS</span>
           )}
           <p className="muted mt">
-            Endpoints: <code>listAgentAction</code> · <code>buyAgentAction</code> (EGLD) ·{' '}
-            <code>cancelListing</code>
+            <code>listAgentAction</code> · <code>buyAgentAction</code> · <code>cancelListing</code>
           </p>
-          <p className="muted">Fee init typique 250 bps (2,5%)</p>
         </div>
         <div className="card">
-          <h2>NFT Marketplace (existant)</h2>
+          <h2>NFT Marketplace</h2>
           <a href={explorerAccount(CONTRACTS.marketplace)} target="_blank" rel="noreferrer">
             {shortAddr(CONTRACTS.marketplace)}
           </a>
-          <p className="muted mt">listNft / buyNft — collections xArtists</p>
         </div>
       </section>
 
       <section className="card mt">
-        <h2>Catalogue (aperçu)</h2>
+        <h2>Catalogue</h2>
         <table className="tbl">
           <thead>
             <tr>
               <th>ID</th>
               <th>Agent</th>
-              <th>Prix EGLD</th>
+              <th>Prix</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -146,18 +159,28 @@ const MarketplacePage: React.FC = () => {
                   <strong>{l.agentId}</strong>
                   <div className="sub">{l.blurb}</div>
                 </td>
-                <td>{l.priceEgld}</td>
+                <td>{l.priceEgld} EGLD</td>
                 <td>{l.active ? 'active' : 'sold'}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <p className="muted">Index on-chain: query getListing(1..listingCount) après deploy.</p>
+      </section>
+
+      <section className="card mt">
+        <label className="field" style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <input
+            type="checkbox"
+            checked={autoSend}
+            onChange={(e) => setAutoSend(e.target.checked)}
+          />
+          Auto-send via sdk-dapp (signature wallet + poll confirmation)
+        </label>
       </section>
 
       <section className="grid-2 mt">
         <div className="card">
-          <h2>List agent action</h2>
+          <h2>List</h2>
           <label className="field">
             Agent ID
             <input value={agentId} onChange={(e) => setAgentId(e.target.value)} />
@@ -167,7 +190,7 @@ const MarketplacePage: React.FC = () => {
             <input value={priceEgld} onChange={(e) => setPriceEgld(e.target.value)} />
           </label>
           <button className="btn" type="button" disabled={pending || !isConfigured} onClick={onList}>
-            Préparer listAgentAction
+            {autoSend ? 'List & send' : 'Préparer list'}
           </button>
         </div>
         <div className="card">
@@ -182,10 +205,15 @@ const MarketplacePage: React.FC = () => {
           </label>
           <div className="row-actions">
             <button className="btn" type="button" disabled={pending || !isConfigured} onClick={onBuy}>
-              Préparer buy
+              {autoSend ? 'Buy & send' : 'Préparer buy'}
             </button>
-            <button className="btn ghost" type="button" disabled={pending || !isConfigured} onClick={onCancel}>
-              Cancel listing
+            <button
+              className="btn ghost"
+              type="button"
+              disabled={pending || !isConfigured}
+              onClick={onCancel}
+            >
+              Cancel
             </button>
           </div>
         </div>
@@ -194,20 +222,10 @@ const MarketplacePage: React.FC = () => {
       {(status || lastError) && (
         <section className="card mt">
           <h2>Status</h2>
-          <p>{lastError || status}</p>
+          <p>{lastError ? `${lastError.code}: ${lastError.message}` : status}</p>
           {txPreview && <pre className="pre">{txPreview}</pre>}
         </section>
       )}
-
-      <section className="card mt">
-        <h2>Deploy</h2>
-        <pre className="pre">{`# contracts/agents-marketplace
-mxpy contract deploy --bytecode output/agents-marketplace.wasm \\
-  --arguments 250 --project . --pem wallet.pem --recall-nonce --send
-# puis:
-export VITE_AGENTS_MARKETPLACE_ADDRESS=erd1...
-# maj data/contracts.json + src/config/contracts.ts`}</pre>
-      </section>
     </div>
   )
 }

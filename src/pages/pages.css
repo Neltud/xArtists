@@ -96,10 +96,6 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   font-size: 0.88rem;
 }
-.list.mono li {
-  font-family: ui-monospace, monospace;
-  font-size: 0.8rem;
-}
 .badge {
   font-size: 0.75rem;
   padding: 2px 8px;
@@ -124,6 +120,10 @@
   border: none;
   cursor: pointer;
 }
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 .btn.ghost {
   background: transparent;
   border: 1px solid rgba(167, 139, 250, 0.4);
@@ -133,6 +133,22 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+  color: #b4b0c8;
+}
+.field input {
+  background: #0d0b14;
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: #e8e6f0;
+  font-size: 0.9rem;
 }
 .steps {
   margin: 0;
@@ -175,10 +191,6 @@
   height: 100%;
   background: linear-gradient(90deg, #7c3aed, #a78bfa);
   border-radius: 4px;
-}
-.bar-pct {
-  text-align: right;
-  color: #9b97b0;
 }
 .dl {
   display: grid;
