@@ -1,4 +1,4 @@
-# Analyse DApp Complète xArtists — Mise à Jour 30 Juillet 2026
+# Analyse DApp Complète xArtists — Mise à Jour 31 Juillet 2026
 
 ## Résumé Exécutif
 xArtists est une DApp innovante sur MultiversX combinant **IA agentique (LIA v5/v6)**, **NFT Phygital / RWA art tokenisé**, **staking**, **DAO** et **bridge BTC expérimental**.  
@@ -6,7 +6,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 
 **Live Demo** : https://neltud.github.io/xArtists  
 **Repo** : https://github.com/Neltud/xArtists  
-**Statut** : Production-ready (code pleinement corrigé et poussé — v0.14.0+). Dernier commit : E2E Playwright smoke (29 juil 21:05 UTC).
+**Statut** : Production-ready (code pleinement corrigé et poussé — v0.14.0+). Dernier commit documenté : E2E Playwright smoke + docs à jour 31 juil 2026.
 
 ### Points forts
 - Intégration Warps / AI Agents MultiversX + agents LIA autonomes (trading, minting génératif, yield).
@@ -17,7 +17,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Monorepo pnpm + CI/CD GitHub Actions + GitHub Pages + Docker.
 - Agents GreenSmoke (Liia météo, Lia crypto, Macro, Politics, Sport, Tech) + BottomNav mobile + PWA.
 
-### Corrections apportées (confirmées jusqu’au 30 juil 2026)
+### Corrections apportées (confirmées jusqu’au 31 juil 2026)
 - Mises à jour dépendances (sécurité + compatibilité sdk-dapp).
 - Fixes logique voting / rewards / WalletConnect navigation.
 - Optimisations performance frontend, cleanup monorepo, scan ESDT complet.
@@ -25,34 +25,36 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Agents GreenSmoke + BottomNav + PWA (manifest + service-worker).
 - E2E Playwright smoke toujours exécuté en CI (`e2e.yml`).
 - Code pleinement corrigé poussé (CHANGELOG + release-please).
+- Documentation analyse + veille techno synchronisée au 31 juil 2026.
 
 ---
 
-## Veille Technologique (30 juillet 2026)
+## Veille Technologique (31 juillet 2026)
 
 ### MultiversX / Protocol
 - **Supernova** : upgrade majeur vers finalité sub-seconde (~600 ms block time). Découplage consensus / exécution, sharding avancé, bandwidth optimisé.
   - Gouvernance approuvée massivement (vote janv. 2026 ~99.64 %).
-  - **Battle of Nodes** actif depuis le 11 mars 2026 : stress-test pré-mainnet (plus d’1 milliard de transactions traitées, pic public ~120k TPS). Guild Wars en cours pour tester throughput, SC et coordination cross-shard.
-  - Roadmap officielle : **Supernova Sub-Second Finality à ~97.7 %** (juillet 2026).
+  - **Battle of Nodes** actif depuis le 11 mars 2026 : stress-test pré-mainnet (plus d’1 milliard de transactions traitées, pic public ~120k TPS). Guild Wars pour tester throughput, SC et coordination cross-shard.
+  - Roadmap officielle : **Supernova Sub-Second Finality à ~97.7 %** (31 juillet 2026).
   - Target activation mainnet : Q2/Q3 2026 (sécurité + hardening en cours).
-  - **Barnard** (v1.10.x, activé juillet 2025) : gouvernance on-chain native, timestamps ms, réduction gas factor, base solide pour Supernova.
+  - **Barnard** (v1.10.x) : gouvernance on-chain native, timestamps ms, réduction gas factor, base solide pour Supernova.
   - Upgrade réseau fin juillet 2026 (Upbit a suspendu temporairement dépôts/retraits EGLD le 24 juil pour support upgrade protocole).
-  - Releases récentes outils : SpaceCraft SDK v0.66.x (mai-juin 2026), mx-api-service v1.20.0 (juin 2026).
+  - **Guardians** (27 juil 2026) : modèle de sécurité empêchant les tx non autorisées même en cas de vol de clés.
+  - Releases récentes outils : SpaceCraft SDK v0.66.x, mx-api-service v1.20.0.
 - Écosystème : xPortal, Hatom, xExchange, focus DeFi + NFT + **Agentic AI / Agentic Payments** live.
 
 ### AI Agents on MultiversX
 - Plateforme officielle agents on-chain + AI Agent Kit (Eliza, Browser-Use).
-- **Warps** : structures on-chain générant UI shareable pour transactions (idéal minting / interactions agents).
+- **Warps** (v3+) : structures on-chain générant UI shareable pour transactions (idéal minting / interactions agents).
 - Agentic Payments live ; tendance 2026 : agents autonomes qui tradent, gagnent trust on-chain, exécutent cycles économiques complets (wallets agent-spécifiques).
 - xArtists (LIA + GreenSmoke) s’aligne parfaitement sur cette narrative DeFAI / agents.
 
 ### RWA & Tokenization Art / Phygital
-- Marché RWA tokenisé : **~$32,2 B on-chain** (24 juillet 2026, +12,3 % depuis début juillet). Tokens RWA : meilleure narrative du mois (+10,7 % médiane).
-  - Dominant : bonds / Treasuries (~$16,9 B+), private credit, metals / commodities.
+- Marché RWA tokenisé (ex-stablecoins) : **~$33.5–36.8 B on-chain** (rwa.xyz, juillet 2026, +~2.4 % sur 30j ; ~4× early 2025).
+  - Represented asset value ~$370 B ; holders ~1.45 M (+40 % 30j).
+  - Dominant : US Treasuries (~$16.2 B), private credit / asset-backed, commodities (or), equities/ETFs émergents.
   - Art & collectibles : segment en expansion (royalties, high-value pieces, phygital) — niche plus risquée mais différenciante vs Treasuries institutionnels.
-  - Solana ~42 % des tokens enregistrés ; Ethereum domine en market cap (~$14,7 B).
-- Tendances 2026 : AI-powered tokenization, stablecoins comme rails de liquidité, adoption institutionnelle, phygital (photo physique → AI re-évaluation → metadata on-chain).
+  - Tendances 2026 : AI-powered tokenization, stablecoins comme rails de liquidité (~$297 B), adoption institutionnelle, phygital (photo physique → AI re-évaluation → metadata on-chain), perps RWA on-chain.
 - xArtists positionné sur **art tokenisé + Phygital NFTs + agents IA génératifs** — positionnement différenciant.
 
 ### Stack technique & tendances
@@ -90,7 +92,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - PWA : installable, offline shell, BottomNav mobile safe-area.
 - E2E : smoke Playwright en CI.
 
-### Roadmap V1 (7 priorités) — statut 30 juil 2026
+### Roadmap V1 (7 priorités) — statut 31 juil 2026
 1. Full LIA v6 production + agents marketplace on-chain — 🟡 En cours  
 2. Marketplace NFT avancé + LP TRO — 🟡 Partiel  
 3. Mobile PWA / responsive — 🟢 Base livrée  
@@ -112,7 +114,7 @@ Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
 ---
 
 **Statut final** : Code complètement corrigé, documenté et poussé.  
-Veille techno et analyse dApp à jour au **30 juillet 2026**.  
+Veille techno et analyse dApp à jour au **31 juillet 2026**.  
 Prêt pour itérations et scale avec Supernova (roadmap ~97.7 %).
 
 *Auteur : Neltud (via Grok) — Artiste & créateur*
