@@ -11,12 +11,16 @@ export const NETWORK = {
 export const LIA_WALLET =
   'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
 
+const agentsFromEnv =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_AGENTS_MARKETPLACE_ADDRESS) || ''
+
 export const CONTRACTS = {
   nftStaking: 'erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl',
   troGovernance: 'erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8',
   marketplace: 'erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t',
   nftMinter: 'erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn',
-  agentsMarketplace: null as string | null, // TBD after deploy
+  /** Set via VITE_AGENTS_MARKETPLACE_ADDRESS after deploy */
+  agentsMarketplace: (agentsFromEnv || null) as string | null,
 } as const
 
 export const TOKENS = {
@@ -26,9 +30,7 @@ export const TOKENS = {
   HWBTC: 'HWBTC-49ca31',
 } as const
 
-/** Assets LIA may accumulate (UI + policy mirror) */
 export const LIA_ACCUMULATE = ['EGLD', 'WEGLD', 'USDC', 'WBTC', 'HWBTC'] as const
-
 export const LIA_NEVER_HOLD = ['TRO'] as const
 
 export const STRATEGY_BUDGETS = [
@@ -50,7 +52,7 @@ export const GUARDS = [
   'G17 Horizon veto',
 ] as const
 
-export const VELLUM_CRON = '0 */1 * * *' // every hour (docs: ToutesLes30Minutes configurable)
+export const VELLUM_CRON = '0 */1 * * *'
 export const DAPP_URL = 'https://neltud.github.io/xArtists'
 
 export function shortAddr(a: string, n = 6): string {
