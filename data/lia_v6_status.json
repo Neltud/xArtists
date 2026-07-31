@@ -1,49 +1,27 @@
 {
   "version": "LIA v6",
   "status": "PRODUCTION_MAINNET",
-  "timestamp": "2026-07-29T20:45:00Z",
+  "timestamp": "2026-08-01T00:10:00Z",
   "serialization": "OK",
   "network": "mainnet",
   "chain_id": "1",
   "wallet": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "machine_contract": "data/VELLUM_MACHINE_CONTRACT.json",
   "nodes_active": 62,
-  "nodes_unused": 6,
   "architecture": {
-    "trigger": "ToutesLes30Minutes (cron: 0 */1 * * *)",
-    "entry": "ConnectWallet >> EnvBootstrap",
-    "parallel_data": ["DataHub >> ESDTScanner", "XArtistsMonitor", "TRODaoVote >> TROLiquidityScanner", "TradeLearner", "HatomRedeemEGLD", "MCPConnector", "NonceManager", "FeeOptimizer", "EGLDRebalancer", "AvgEntryUpdater", "OpenClawIdentity", "SwapParamsValidator"],
+    "trigger": "cron hourly",
+    "pipeline": "DataHub → Brains+GS → OrchestratorRouter → LiveCycle → CompoundCircuit → Executor → RedistributeTRO → Reporter",
+    "entry_live": "lia.vellum.live_cycle.run_cycle",
+    "entry_compound": "lia.circuit.vellum_cycle.run_cycle",
+    "publish": "lia.vellum.publish_data_for_frontend.publish",
     "guard": "BalanceGuard (OK/WARNING/BLOCKED)",
-    "brains": ["LIABrain", "UniversalBrainTP1", "UniversalBrainTP3", "UniversalBrainTP5", "ContrarianBrain"],
-    "router": "OrchestratorRouter (TRADE/STRONG_BUY/YIELD_ONLY/BLOCKED)",
-    "executors": ["LIAExecutor", "LIAExecutorTP1", "LIAExecutorTP3", "LIAExecutorTP5", "ContrarianExecutor", "SmartDexRouter"],
-    "reporters": ["DexFeesReporter", "Reporter", "GitHubReporter", "GitHubDAppPublisher", "TelegramNotifier", "DataValidator", "SmartContractsReporter", "ReinvestmentDecision", "BalanceTracker"]
-  },
-  "fixes_applied": [
-    "nodes/universal_brain_unified.py — créé (base TP1/TP3/TP5)",
-    "nodes/universal_executor.py — exécution swap/stake/unstake/claim + circuit breaker",
-    "nodes/custom_mx_contract_nodes.py — NFT/TRO/marketplace/minter + cache TTL",
-    "packages/core AGENTS_MARKETPLACE_ABI v0.1 design",
-    "PWA manifest + service worker",
-    "docs/ROADMAP_V1.md + openapi.yaml + Docker"
-  ],
-  "roadmap": {
-    "doc": "docs/ROADMAP_V1.md",
-    "pwa": "base_delivered",
-    "openapi_docker": "base_delivered",
-    "agents_marketplace": "abi_stub",
-    "next_p0": ["live_tx_signing", "marketplace_list_buy_ui", "agents_sc_deploy"]
+    "router": "OrchestratorRouter / symbiosis"
   },
   "dapp": {
     "url": "https://neltud.github.io/xArtists",
-    "pages": ["dashboard", "marketplace", "trading", "portfolio", "dao", "tip", "wallet", "agents", "lp", "hatom"],
-    "auto_deploy": true,
+    "pages": ["dashboard", "marketplace", "trading", "portfolio", "dao", "tip", "wallet", "agents", "lp", "hatom", "tro"],
+    "data_source": "raw.githubusercontent.com/Neltud/xArtists/main/data/",
     "pwa": true
-  },
-  "agents": {
-    "LIA": "Vellum Workflows — agent trading autonome mainnet",
-    "Liia": "GreenSmokeNetwork — agent prévisions",
-    "Lia": "GreenSmokeNetwork — agent prévisions",
-    "Macro": "GreenSmokeNetwork — agent macro/info"
   },
   "xartists": {
     "collections": 11,
@@ -52,7 +30,24 @@
       "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
       "marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
       "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn",
-      "agents_marketplace": "TBD — AGENTS_MARKETPLACE_ABI v0.1"
+      "agents_marketplace": null
     }
+  },
+  "market": {
+    "fear_greed_index": 50,
+    "guard_status": "OK"
+  },
+  "portfolio": {
+    "total_usd": 0,
+    "egld_balance": 0,
+    "hatom_health_factor": 0
+  },
+  "prices": {
+    "egld_usd": 0,
+    "wbtc_usd": 0
+  },
+  "cycle": {
+    "report_sent": false,
+    "summary": "Awaiting Vellum Reporter after LiveCycle + publish_data_for_frontend"
   }
 }
