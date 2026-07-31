@@ -1,11 +1,7 @@
 /**
- * MultiversX nonce polling & local reservation
- *
- * - fetchAccountNonce: live nonce from API (authoritative)
- * - waitNonceStable: poll until consecutive reads agree (no in-flight gap)
- * - NonceTracker: reserve sequential nonces for multi-tx batches
- * - waitNonceAdvanced: after broadcast, wait until network nonce > used
+ * MultiversX nonce polling & local reservation (with network timeouts)
  */
+import { fetchJson, fetchWithTimeout } from './network'
 
 const DEFAULT_API = 'https://api.multiversx.com'
 const DEFAULT_GATEWAY = 'https://gateway.multiversx.com'
@@ -24,8 +20,9 @@ export type PollOptions = {
   intervalMs?: number
   timeoutMs?: number
   signal?: AbortSignal
-  /** Prefer gateway network/status for speed; fallback API accounts */
   preferGateway?: boolean
+  /** Per-request HTTP timeout (default 12s) */
+  fetchTimeoutMs?: number
 }
 
 function assertAddress(address: string): void {
@@ -34,7 +31,6 @@ function assertAddress(address: string): void {
   }
 }
 
-/** Fetch current nonce from MultiversX API accounts endpoint */
 export async function fetchAccountNonce(
   address: string,
   opts: PollOptions = {}
@@ -42,12 +38,15 @@ export async function fetchAccountNonce(
   assertAddress(address)
   const api = opts.api || DEFAULT_API
   const gateway = opts.gateway || DEFAULT_GATEWAY
+  const fetchTimeoutMs = opts.fetchTimeoutMs ?? 12_000
 
   if (opts.preferGateway) {
     try {
-      const gRes = await fetch(`${gateway}/address/${address}/nonce`, {
-        signal: opts.signal,
-      })
+      const gRes = await fetchWithTimeout(
+        `${gateway}/address/${address}/nonce`,
+        {},
+        { timeoutMs: fetchTimeoutMs, retries: 1, signal: opts.signal }
+      )
       if (gRes.ok) {
         const body = await gRes.json()
         const nonce = Number(body?.data?.nonce ?? body?.nonce)
@@ -61,15 +60,18 @@ export async function fetchAccountNonce(
         }
       }
     } catch {
-      // fall through to API
+      /* fall through */
     }
   }
 
-  const res = await fetch(`${api}/accounts/${address}`, { signal: opts.signal })
-  if (!res.ok) {
-    throw new Error(`Nonce fetch failed HTTP ${res.status}`)
-  }
-  const data = await res.json()
+  const data = await fetchJson<{
+    nonce?: number
+    balance?: string
+  }>(`${api}/accounts/${address}`, {}, {
+    timeoutMs: fetchTimeoutMs,
+    retries: 2,
+    signal: opts.signal,
+  })
   const nonce = Number(data?.nonce)
   if (!Number.isFinite(nonce)) {
     throw new Error('Nonce missing in account response')
@@ -83,11 +85,6 @@ export async function fetchAccountNonce(
   }
 }
 
-/**
- * Poll until two consecutive nonce reads are equal (or max samples).
- * Avoids building a TX while a previous one is still mempool-pending
- * without having advanced the network nonce yet incorrectly.
- */
 export async function waitNonceStable(
   address: string,
   opts: PollOptions & { stableReads?: number } = {}
@@ -116,10 +113,6 @@ export async function waitNonceStable(
   throw new Error('waitNonceStable timeout')
 }
 
-/**
- * After sending a TX with `usedNonce`, wait until network nonce is > usedNonce
- * (i.e. TX applied or at least accounted for in account sequence).
- */
 export async function waitNonceAdvanced(
   address: string,
   usedNonce: number,
@@ -140,10 +133,6 @@ export async function waitNonceAdvanced(
   )
 }
 
-/**
- * Poll until network nonce reaches at least `targetNonce` (exclusive end = ready for target).
- * Useful when waiting for prior batch TXs.
- */
 export async function waitNonceAtLeast(
   address: string,
   targetNonce: number,
@@ -152,7 +141,6 @@ export async function waitNonceAtLeast(
   const intervalMs = opts.intervalMs ?? 2000
   const timeoutMs = opts.timeoutMs ?? 120_000
   const start = Date.now()
-
   while (Date.now() - start < timeoutMs) {
     if (opts.signal?.aborted) throw new Error('nonce wait aborted')
     const info = await fetchAccountNonce(address, opts)
@@ -180,10 +168,6 @@ function sleep(ms: number, signal?: AbortSignal): Promise<void> {
   })
 }
 
-/**
- * Local sequential nonce reservation for multi-tx sends from the same account.
- * Call syncFromNetwork() before a batch; next() for each TX; on failure resetFromNetwork().
- */
 export class NonceTracker {
   private address: string
   private nextNonce: number | null = null
@@ -202,7 +186,6 @@ export class NonceTracker {
     return info.nonce
   }
 
-  /** Peek without consuming */
   peek(): number {
     if (this.nextNonce == null) {
       throw new Error('NonceTracker not synced — call syncFromNetwork() first')
@@ -210,18 +193,14 @@ export class NonceTracker {
     return this.nextNonce
   }
 
-  /** Allocate next nonce and bump local counter */
   next(): number {
     const n = this.peek()
     this.nextNonce = n + 1
     return n
   }
 
-  /** Rollback one step (e.g. build failed before broadcast) */
   releaseLast(): void {
-    if (this.nextNonce != null && this.nextNonce > 0) {
-      this.nextNonce -= 1
-    }
+    if (this.nextNonce != null && this.nextNonce > 0) this.nextNonce -= 1
   }
 
   async resetFromNetwork(): Promise<number> {
@@ -229,7 +208,6 @@ export class NonceTracker {
   }
 }
 
-/** Convenience: one-shot fresh nonce for a single TX */
 export async function getFreshNonce(
   address: string,
   opts: PollOptions & { stable?: boolean } = {}

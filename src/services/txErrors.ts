@@ -1,6 +1,7 @@
 /**
  * Transaction error classification & user-facing messages (MultiversX / sdk-dapp)
  */
+import { fetchWithTimeout } from './network'
 
 export type TxErrorCode =
   | 'USER_REJECTED'
@@ -14,6 +15,7 @@ export type TxErrorCode =
   | 'NOT_LOGGED_IN'
   | 'INVALID_PARAMS'
   | 'TX_FAILED'
+  | 'TX_CONCURRENCY'
   | 'UNKNOWN'
 
 export type TxPhase =
@@ -59,28 +61,27 @@ const INSUFFICIENT_PATTERNS = [
   /insufficient balance/i,
   /not enough.*egld/i,
   /insufficientEGLD/i,
-  /failed to estimate.*gas/i,
 ]
 
 const NONCE_PATTERNS = [/nonce/i, /wrong nonce/i, /invalid nonce/i]
-
 const GAS_PATTERNS = [/out of gas/i, /gas limit/i, /insufficient gas/i]
-
 const NETWORK_PATTERNS = [
   /network error/i,
   /failed to fetch/i,
   /ECONNREFUSED/i,
   /timeout/i,
+  /Timeout réseau/i,
+  /NETWORK_TIMEOUT/i,
   /502|503|504/,
 ]
+const CONCURRENCY_PATTERNS = [/déjà en cours/i, /TX_CONCURRENCY/i, /concurrency/i]
 
-/** Map known MultiversX SC return messages */
 const CONTRACT_MSG: Record<string, string> = {
   'listing inactive': 'Cette annonce n’est plus active (déjà achetée ou annulée).',
   'insufficient payment': 'Paiement EGLD insuffisant pour ce listing.',
   'price must be > 0': 'Le prix doit être supérieur à 0.',
   'only seller': 'Seul le vendeur peut annuler ce listing.',
-  'inactive': 'Listing inactif.',
+  inactive: 'Listing inactif.',
   'fee too high': 'Frais marketplace trop élevés (config SC).',
 }
 
@@ -93,7 +94,6 @@ function extractMessage(err: unknown): string {
     if (typeof o.message === 'string') return o.message
     if (typeof o.error === 'string') return o.error
     if (typeof o.returnMessage === 'string') return o.returnMessage
-    if (typeof o.statusMessage === 'string') return o.statusMessage
     try {
       return JSON.stringify(err)
     } catch {
@@ -107,12 +107,13 @@ export function classifyTxError(err: unknown, phase: TxPhase = 'failed'): Classi
   const rawMsg = extractMessage(err)
   const lower = rawMsg.toLowerCase()
 
-  if (!rawMsg && phase === 'cancelled') {
+  if (CONCURRENCY_PATTERNS.some((p) => p.test(rawMsg))) {
     return {
-      code: 'USER_REJECTED',
-      message: 'Transaction annulée.',
+      code: 'TX_CONCURRENCY',
+      message: 'Une transaction est déjà en cours pour ce wallet — attends la fin de la file.',
+      detail: rawMsg,
       retryable: true,
-      phase: 'cancelled',
+      phase,
       raw: err,
     }
   }
@@ -188,7 +189,7 @@ export function classifyTxError(err: unknown, phase: TxPhase = 'failed'): Classi
   if (NETWORK_PATTERNS.some((p) => p.test(rawMsg))) {
     return {
       code: 'NETWORK',
-      message: 'Erreur réseau / API MultiversX. Réessaie dans un instant.',
+      message: 'Erreur / timeout réseau MultiversX. Réessaie dans un instant.',
       detail: rawMsg,
       retryable: true,
       phase,
@@ -244,7 +245,7 @@ export function preflightTxErrors(opts: {
   if (opts.balanceAtomic != null && opts.valueAtomic != null) {
     const bal = BigInt(opts.balanceAtomic)
     const val = BigInt(opts.valueAtomic)
-    const gas = opts.minGasAtomic ?? 50_000_000_000_000n // ~0.00005 EGLD buffer default
+    const gas = opts.minGasAtomic ?? 50_000_000_000_000n
     if (bal < val + gas) {
       return {
         code: 'INSUFFICIENT_FUNDS',
@@ -257,11 +258,13 @@ export function preflightTxErrors(opts: {
   return null
 }
 
-export function explorerTxUrl(hash: string, explorer = 'https://explorer.multiversx.com'): string {
+export function explorerTxUrl(
+  hash: string,
+  explorer = 'https://explorer.multiversx.com'
+): string {
   return `${explorer}/transactions/${hash}`
 }
 
-/** Poll API until success/fail or timeout */
 export async function waitTxStatus(
   hash: string,
   opts: {
@@ -277,11 +280,13 @@ export async function waitTxStatus(
   const start = Date.now()
 
   while (Date.now() - start < timeoutMs) {
-    if (opts.signal?.aborted) {
-      return { status: 'timeout' }
-    }
+    if (opts.signal?.aborted) return { status: 'timeout' }
     try {
-      const res = await fetch(`${api}/transactions/${hash}`)
+      const res = await fetchWithTimeout(
+        `${api}/transactions/${hash}`,
+        {},
+        { timeoutMs: 12_000, retries: 1, signal: opts.signal }
+      )
       if (res.ok) {
         const data = await res.json()
         const st = String(data.status || data.txStatus || '').toLowerCase()
@@ -291,7 +296,7 @@ export async function waitTxStatus(
         }
       }
     } catch {
-      // keep polling
+      /* keep polling */
     }
     await new Promise((r) => setTimeout(r, intervalMs))
   }
