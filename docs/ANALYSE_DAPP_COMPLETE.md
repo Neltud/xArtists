@@ -35,11 +35,11 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - **Supernova** : upgrade majeur vers finalité sub-seconde (~600 ms block time). Découplage consensus / exécution, sharding avancé, bandwidth optimisé.
   - Gouvernance approuvée massivement (vote janv. 2026 ~99.64 %).
   - **Battle of Nodes** actif depuis le 11 mars 2026 : stress-test pré-mainnet (plus d’1 milliard de transactions traitées, pic public ~120k TPS). Guild Wars pour tester throughput, SC et coordination cross-shard.
-  - Roadmap officielle : **Supernova Sub-Second Finality à ~97.7 %** (31 juillet 2026).
+  - Roadmap officielle : **Supernova Sub-Second Finality à ~97.7 %** (31 juillet 2026 — source multiversx.com/roadmap).
   - Target activation mainnet : Q2/Q3 2026 (sécurité + hardening en cours).
   - **Barnard** (v1.10.x) : gouvernance on-chain native, timestamps ms, réduction gas factor, base solide pour Supernova.
   - Upgrade réseau fin juillet 2026 (Upbit a suspendu temporairement dépôts/retraits EGLD le 24 juil pour support upgrade protocole).
-  - **Guardians** (27 juil 2026) : modèle de sécurité empêchant les tx non autorisées même en cas de vol de clés.
+  - **Guardians** (juillet 2026) : modèle de sécurité / social recovery empêchant les tx non autorisées même en cas de vol de clés.
   - Releases récentes outils : SpaceCraft SDK v0.66.x, mx-api-service v1.20.0.
 - Écosystème : xPortal, Hatom, xExchange, focus DeFi + NFT + **Agentic AI / Agentic Payments** live.
 
@@ -47,14 +47,15 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Plateforme officielle agents on-chain + AI Agent Kit (Eliza, Browser-Use).
 - **Warps** (v3+) : structures on-chain générant UI shareable pour transactions (idéal minting / interactions agents).
 - Agentic Payments live ; tendance 2026 : agents autonomes qui tradent, gagnent trust on-chain, exécutent cycles économiques complets (wallets agent-spécifiques).
+- Growth Games / RFPs AI Agents + hackathons /AI_MegaWave (prix jusqu’à $150K).
 - xArtists (LIA + GreenSmoke) s’aligne parfaitement sur cette narrative DeFAI / agents.
 
 ### RWA & Tokenization Art / Phygital
-- Marché RWA tokenisé (ex-stablecoins) : **~$33.5–36.8 B on-chain** (rwa.xyz, juillet 2026, +~2.4 % sur 30j ; ~4× early 2025).
-  - Represented asset value ~$370 B ; holders ~1.45 M (+40 % 30j).
-  - Dominant : US Treasuries (~$16.2 B), private credit / asset-backed, commodities (or), equities/ETFs émergents.
+- Marché RWA tokenisé (ex-stablecoins) : **~$31–36.8 B on-chain** (rwa.xyz / analyses juillet 2026, ~4× early 2025).
+  - Represented asset value ~$369–370 B ; holders ~1 M+.
+  - Dominant : US Treasuries (~$16.2 B), private credit / asset-backed (~$5 B+), equities/ETFs (~$1.9 B) émergents.
   - Art & collectibles : segment en expansion (royalties, high-value pieces, phygital) — niche plus risquée mais différenciante vs Treasuries institutionnels.
-  - Tendances 2026 : AI-powered tokenization, stablecoins comme rails de liquidité (~$297 B), adoption institutionnelle, phygital (photo physique → AI re-évaluation → metadata on-chain), perps RWA on-chain.
+  - Tendances 2026 : AI-powered tokenization, stablecoins comme rails de liquidité (~$290–321 B), adoption institutionnelle, phygital (photo physique → AI re-évaluation → metadata on-chain), perps RWA on-chain.
 - xArtists positionné sur **art tokenisé + Phygital NFTs + agents IA génératifs** — positionnement différenciant.
 
 ### Stack technique & tendances
@@ -110,6 +111,12 @@ Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
 4. Suite E2E Playwright (wallet mock, marketplace, DAO).
 5. Bridge BTC tests blackbox + relayers.
 6. Alignement gas/UI post-activation Supernova.
+
+### Lacunes produit connues (voir `docs/LACUNES_PRODUIT.md`)
+- Burn $TRO à chaque vente NFT (manquant on-chain).
+- Vente bloquée si NFT en escrow (partiel).
+- Achat multi-currency (EGLD/USDC/TRO) manquant.
+- LP TVL live + Hatom HF plus robustes (partiels).
 
 ---
 
