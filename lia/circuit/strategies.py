@@ -9,13 +9,6 @@ Piliers (ordre de robustesse décroissante):
   2. Momentum confirmé multi-TF + regime GreenSmoke RISK_ON
   3. Arb micro écart DEX (xExchange vs OneDex) si spread > fees*2
   4. Yield-first: ne trade pas — stake / LP si score < seuil
-
-Filtres obligatoires avant tout signal BUY:
-  - liquidité pair >= seuil
-  - spread + slippage estimé < edge cible
-  - RSI / score / regime non RISK_OFF
-  - profit_validated (gross >= fees + 1% net)
-  - HF Hatom > 2.0 si collatéral utilisé
 """
 from __future__ import annotations
 
@@ -43,7 +36,6 @@ def mean_reversion_liquid(
     liquidity_usd: float,
     min_liq: float = 50_000,
 ) -> Signal:
-    """Buy dislocation below VWAP when RSI oversold on liquid pairs only."""
     if liquidity_usd < min_liq:
         return Signal("WAIT", token, 0.3, "MR", "low liquidity")
     if vwap_24h <= 0:
@@ -74,8 +66,16 @@ def momentum_regime(
         and volume_spike >= 1.5
         and gs_bias in ("BULLISH", "BUY", "ACCUMULATE")
     ):
-        conf = min(0.88, 0.5 + price_spike * 0.1)
-        return Signal("BUY", token, conf, "MOM", "momentum+regime", meta={"vol_spike": volume_spike})
+        # Fixed: was undefined price_spike NameError
+        conf = min(0.88, 0.5 + price_change_1h * 10 + max(0.0, volume_spike - 1.0) * 0.05)
+        return Signal(
+            "BUY",
+            token,
+            conf,
+            "MOM",
+            "momentum+regime",
+            meta={"vol_spike": volume_spike, "chg_1h": price_change_1h},
+        )
     return Signal("WAIT", token, 0.45, "MOM", "no momentum")
 
 
@@ -108,7 +108,6 @@ def yield_first(
     min_trade_conf: float = 0.65,
     stable_apy: float = 0.08,
 ) -> Signal:
-    """If no high-confidence trade, park capital in stable yield."""
     if trade_confidence < min_trade_conf:
         return Signal(
             "YIELD",
@@ -125,8 +124,7 @@ def fuse_signals(signals: list[Signal]) -> Signal:
     sells = [s for s in signals if s.action == "SELL"]
     yields = [s for s in signals if s.action == "YIELD"]
     if sells and max(s.confidence for s in sells) >= 0.6:
-        best = max(sells, key=lambda s: s.confidence)
-        return best
+        return max(sells, key=lambda s: s.confidence)
     if buys:
         best = max(buys, key=lambda s: s.confidence)
         if best.confidence >= 0.62:
