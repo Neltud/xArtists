@@ -1,0 +1,148 @@
+name: Deploy Smart Contracts
+
+# Déploie nft-marketplace + agents-marketplace via mxpy
+# Secret requis: LIA_WALLET_PEM (contenu du .pem, jamais en git)
+#
+# Usage:
+#   Actions → Deploy Smart Contracts → Run workflow
+#   Inputs: chain (1|D|T), contract (all|nft-marketplace|agents-marketplace), fee_bps
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain:
+        description: "Chain ID — 1=mainnet, D=devnet, T=testnet"
+        required: true
+        default: "D"
+        type: choice
+        options:
+          - "D"
+          - "T"
+          - "1"
+      contract:
+        description: "Which contract(s) to deploy"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - nft-marketplace
+          - agents-marketplace
+      fee_bps:
+        description: "Marketplace fee in basis points (300 = 3%)"
+        required: true
+        default: "300"
+        type: string
+      commit_addresses:
+        description: "Commit updated data/contracts.json back to main"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-scs-${{ github.event.inputs.chain }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      LIA_CHAIN_ID: ${{ github.event.inputs.chain }}
+      FEE_BPS: ${{ github.event.inputs.fee_bps }}
+      DEPLOY_CONTRACT: ${{ github.event.inputs.contract }}
+      LIA_WALLET_PEM: ${{ secrets.LIA_WALLET_PEM }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Require PEM secret
+        run: |
+          if [ -z "${LIA_WALLET_PEM}" ]; then
+            echo "❌ Secret LIA_WALLET_PEM is not set."
+            echo "Settings → Secrets and variables → Actions → New repository secret"
+            echo "Name: LIA_WALLET_PEM  Value: full PEM file contents"
+            exit 1
+          fi
+          echo "✅ LIA_WALLET_PEM is present (value never printed)"
+
+      - name: Set proxy from chain
+        run: |
+          case "${LIA_CHAIN_ID}" in
+            1) echo "LIA_MVX_PROXY=https://gateway.multiversx.com" >> "$GITHUB_ENV" ;;
+            D) echo "LIA_MVX_PROXY=https://devnet-gateway.multiversx.com" >> "$GITHUB_ENV" ;;
+            T) echo "LIA_MVX_PROXY=https://testnet-gateway.multiversx.com" >> "$GITHUB_ENV" ;;
+            *) echo "Unknown chain"; exit 1 ;;
+          esac
+          echo "Chain=${LIA_CHAIN_ID} Contract=${DEPLOY_CONTRACT} FeeBps=${FEE_BPS}"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install mxpy
+        run: |
+          pip install --upgrade pip
+          pip install multiversx-sdk-cli
+          mxpy --version || true
+
+      - name: Setup Rust (wasm build)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            contracts/**/target/
+          key: sc-cargo-${{ runner.os }}-${{ hashFiles('contracts/**/Cargo.toml') }}
+
+      - name: Deploy via Python node
+        id: deploy
+        run: |
+          set -euo pipefail
+          python lia/vellum/deploy_scs_node.py | tee /tmp/deploy_out.json
+          # Fail job if ok=false
+          python - <<'PY'
+          import json, sys
+          raw = open("/tmp/deploy_out.json").read()
+          # last JSON object in output
+          start = raw.rfind("{")
+          if start < 0:
+              print("No JSON output"); sys.exit(1)
+          data = json.loads(raw[start:])
+          print("Summary:", json.dumps({k: data.get(k) for k in ("ok", "results")}, indent=2)[:2000])
+          if not data.get("ok"):
+              sys.exit(1)
+          PY
+
+      - name: Show addresses (no secrets)
+        if: always()
+        run: |
+          if [ -f data/contracts.json ]; then
+            echo "=== data/contracts.json ==="
+            cat data/contracts.json
+          fi
+
+      - name: Commit contracts.json
+        if: ${{ github.event.inputs.commit_addresses == 'true' }}
+        run: |
+          git config user.name "xArtists Deploy Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/contracts.json
+          if git diff --staged --quiet; then
+            echo "No address changes to commit"
+          else
+            git commit -m "chore: update SC addresses after deploy (${{ github.event.inputs.chain }})"
+            git push origin HEAD:main
+          fi
