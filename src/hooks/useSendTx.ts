@@ -1,5 +1,5 @@
 /**
- * Unified send + error handling for MultiversX txs
+ * Unified send + nonce refresh + error handling for MultiversX txs
  */
 import { useCallback, useRef, useState } from 'react'
 import type { Transaction } from '@multiversx/sdk-core'
@@ -11,13 +11,25 @@ import {
   type TxPhase,
   type TxStatusState,
 } from '../services/txErrors'
+import {
+  fetchAccountNonce,
+  getFreshNonce,
+  waitNonceAdvanced,
+} from '../services/nonce'
 
 export type SendTxResult =
-  | { ok: true; hash: string; explorerUrl: string }
+  | { ok: true; hash: string; explorerUrl: string; nonce: number }
   | { ok: false; error: ClassifiedTxError }
 
+export type SendTxOptions = {
+  /** Force re-fetch nonce and patch tx before sign (default true) */
+  refreshNonce?: boolean
+  /** After success, poll until network nonce advances (default true) */
+  waitNonceAdvance?: boolean
+  address?: string
+}
+
 async function trySdkDappSend(tx: Transaction): Promise<string> {
-  // Dynamic import — works when @multiversx/sdk-dapp is present
   try {
     const mod = await import('@multiversx/sdk-dapp/services')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,7 +53,6 @@ async function trySdkDappSend(tx: Transaction): Promise<string> {
       throw new Error('sendTransactions: no hash returned')
     }
   } catch (e) {
-    // If module missing, fall through
     if (e && typeof e === 'object' && 'code' in (e as object)) throw e
     const msg = e instanceof Error ? e.message : String(e)
     if (!/Cannot find module|Failed to fetch dynamically/i.test(msg)) throw e
@@ -49,6 +60,44 @@ async function trySdkDappSend(tx: Transaction): Promise<string> {
   throw new Error(
     'sdk-dapp sendTransactions indisponible — utilise le provider wallet ou installe @multiversx/sdk-dapp'
   )
+}
+
+function readTxNonce(tx: Transaction): number {
+  try {
+    // sdk-core Transaction getNonce()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const n = (tx as any).getNonce?.() ?? (tx as any).nonce
+    if (n != null && typeof n.valueOf === 'function') return Number(n.valueOf())
+    return Number(n)
+  } catch {
+    return -1
+  }
+}
+
+function patchTxNonce(tx: Transaction, nonce: number): void {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const anyTx = tx as any
+    if (typeof anyTx.setNonce === 'function') {
+      anyTx.setNonce(nonce)
+      return
+    }
+    anyTx.nonce = nonce
+  } catch {
+    // ignore — caller may rebuild
+  }
+}
+
+function readTxSender(tx: Transaction): string | null {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const s = (tx as any).getSender?.() ?? (tx as any).sender
+    if (!s) return null
+    if (typeof s.bech32 === 'function') return s.bech32()
+    return String(s)
+  } catch {
+    return null
+  }
 }
 
 export function useSendTx() {
@@ -64,55 +113,114 @@ export function useSendTx() {
     setState((s) => ({ ...s, phase, ...patch }))
   }
 
-  const send = useCallback(async (tx: Transaction): Promise<SendTxResult> => {
-    setPhase('signing', { error: null, message: 'Signature wallet…' })
-    try {
-      const hash = await trySdkDappSend(tx)
-      const explorerUrl = explorerTxUrl(hash)
-      setPhase('broadcasting', { hash, explorerUrl, message: 'Diffusion…' })
+  const send = useCallback(
+    async (tx: Transaction, options: SendTxOptions = {}): Promise<SendTxResult> => {
+      const refreshNonce = options.refreshNonce !== false
+      const waitAdvance = options.waitNonceAdvance !== false
+      let usedNonce = readTxNonce(tx)
 
-      abortRef.current = new AbortController()
-      setPhase('pending', { hash, explorerUrl, message: 'En attente de confirmation…' })
+      try {
+        if (refreshNonce) {
+          setPhase('building', { error: null, message: 'Polling nonce réseau…' })
+          const address = options.address || readTxSender(tx)
+          if (address) {
+            const fresh = await getFreshNonce(address, { stable: true })
+            if (usedNonce !== fresh) {
+              patchTxNonce(tx, fresh)
+              usedNonce = fresh
+            }
+          }
+        }
 
-      const wait = await waitTxStatus(hash, { signal: abortRef.current.signal })
-      if (wait.status === 'success') {
-        setPhase('success', {
+        setPhase('signing', { error: null, message: `Signature (nonce ${usedNonce})…` })
+        const hash = await trySdkDappSend(tx)
+        const explorerUrl = explorerTxUrl(hash)
+        setPhase('broadcasting', { hash, explorerUrl, message: 'Diffusion…' })
+
+        abortRef.current = new AbortController()
+        setPhase('pending', {
           hash,
           explorerUrl,
-          message: 'Transaction confirmée',
-          error: null,
+          message: 'Confirmation on-chain…',
         })
-        return { ok: true, hash, explorerUrl }
-      }
-      if (wait.status === 'fail') {
-        const returnMsg =
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (wait.raw as any)?.returnMessage ||
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (wait.raw as any)?.operations?.[0]?.data ||
-          'TX failed on-chain'
-        const error = classifyTxError(returnMsg, 'failed')
-        setPhase('failed', { hash, explorerUrl, error, message: error.message })
+
+        const wait = await waitTxStatus(hash, { signal: abortRef.current.signal })
+
+        if (wait.status === 'success') {
+          const address = options.address || readTxSender(tx)
+          if (waitAdvance && address && usedNonce >= 0) {
+            try {
+              setPhase('pending', {
+                hash,
+                explorerUrl,
+                message: 'Attente avancement nonce…',
+              })
+              await waitNonceAdvanced(address, usedNonce, {
+                signal: abortRef.current.signal,
+              })
+            } catch {
+              // non-fatal if explorer already success
+            }
+          }
+          setPhase('success', {
+            hash,
+            explorerUrl,
+            message: `Confirmée (nonce ${usedNonce})`,
+            error: null,
+          })
+          return { ok: true, hash, explorerUrl, nonce: usedNonce }
+        }
+
+        if (wait.status === 'fail') {
+          const returnMsg =
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (wait.raw as any)?.returnMessage ||
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (wait.raw as any)?.operations?.[0]?.data ||
+            'TX failed on-chain'
+          const error = classifyTxError(returnMsg, 'failed')
+          // On nonce error, hint refresh
+          if (error.code === 'WRONG_NONCE') {
+            error.message =
+              'Nonce incorrect — le prochain envoi re-pollera le nonce réseau automatiquement.'
+            error.retryable = true
+          }
+          setPhase('failed', { hash, explorerUrl, error, message: error.message })
+          return { ok: false, error }
+        }
+
+        const error = classifyTxError('timeout waiting for confirmation', 'pending')
+        setPhase('pending', {
+          hash,
+          explorerUrl,
+          error,
+          message: 'Timeout — vérifie l’explorer; nonce peut encore avancer.',
+        })
+        return { ok: false, error }
+      } catch (e) {
+        const error = classifyTxError(e, 'failed')
+        if (error.code === 'WRONG_NONCE') {
+          error.message =
+            'Nonce incorrect — rafraîchis puis réessaie (polling auto au prochain send).'
+        }
+        setPhase(error.phase === 'cancelled' ? 'cancelled' : 'failed', {
+          error,
+          message: error.message,
+        })
         return { ok: false, error }
       }
-      // timeout — tx may still confirm later
-      const error = classifyTxError('timeout waiting for confirmation', 'pending')
-      setPhase('pending', {
-        hash,
-        explorerUrl,
-        error,
-        message: 'Timeout — vérifie l’explorer, la TX peut encore confirmer.',
-      })
-      return { ok: false, error }
-    } catch (e) {
-      const error = classifyTxError(e, 'failed')
-      setPhase(error.phase === 'cancelled' ? 'cancelled' : 'failed', {
-        error,
-        message: error.message,
-      })
-      return { ok: false, error }
-    }
+    },
+    []
+  )
+
+  /** Fetch live nonce without sending */
+  const pollNonce = useCallback(async (address: string) => {
+    return getFreshNonce(address, { stable: true })
   }, [])
 
-  return { state, send, reset, setPhase }
+  const peekNetworkNonce = useCallback(async (address: string) => {
+    return (await fetchAccountNonce(address)).nonce
+  }, [])
+
+  return { state, send, reset, setPhase, pollNonce, peekNetworkNonce }
 }
