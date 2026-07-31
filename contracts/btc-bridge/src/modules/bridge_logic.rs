@@ -17,6 +17,9 @@ pub trait BridgeLogicModule: FeesModule + ConfigModule + PauseModule {
     #[storage_mapper("relayerPubKeys")]
     fn relayer_pub_keys(&self) -> VecMapper<ManagedBuffer>;
 
+    #[storage_mapper("totalBridgedIn")]
+    fn total_bridged_in(&self) -> SingleValueMapper<BigUint>;
+
     #[payable("EGLD")]
     #[endpoint(bridgeBtcToSbtc)]
     fn bridge_btc_to_sbtc(
@@ -31,6 +34,7 @@ pub trait BridgeLogicModule: FeesModule + ConfigModule + PauseModule {
         let max_amount = self.max_bridge_amount().get();
         require!(btc_amount > 0 && btc_amount <= max_amount, "Invalid amount");
         require!(!self.used_nonces().contains(&nonce), "Nonce already used");
+        require!(!user_address.is_zero(), "invalid user");
 
         let valid = self.verify_quorum_signatures(&signatures, &btc_amount, &user_address, nonce);
         let required = self.required_quorum().get();
@@ -42,8 +46,32 @@ pub trait BridgeLogicModule: FeesModule + ConfigModule + PauseModule {
 
         self.sbtc_balance(&user_address).update(|b| *b += &amount_after_fee);
         self.used_nonces().insert(nonce);
+        self.total_bridged_in().update(|t| *t += &btc_amount);
 
         self.bridge_event(&user_address, &amount_after_fee, &fee);
+    }
+
+    /// Claim accumulated sBTC balance (accounting credit).
+    /// Production: mint real sBTC ESDT when token id configured.
+    #[endpoint(claimSbtc)]
+    fn claim_sbtc(&self) {
+        self.require_not_paused();
+        let caller = self.blockchain().get_caller();
+        let bal = self.sbtc_balance(&caller).get();
+        require!(bal > 0, "nothing to claim");
+        self.sbtc_balance(&caller).clear();
+        self.claim_event(&caller, &bal);
+        // Note: actual ESDT mint requires sBTC token id in ConfigModule — wire in next deploy
+    }
+
+    #[view(getSbtcBalance)]
+    fn get_sbtc_balance(&self, address: ManagedAddress) -> BigUint {
+        self.sbtc_balance(&address).get()
+    }
+
+    #[view(getTotalBridgedIn)]
+    fn get_total_bridged_in(&self) -> BigUint {
+        self.total_bridged_in().get()
     }
 
     fn verify_quorum_signatures(
@@ -57,7 +85,6 @@ pub trait BridgeLogicModule: FeesModule + ConfigModule + PauseModule {
         let required = self.required_quorum().get();
         let max_relayers = self.relayer_pub_keys().len() as u64;
 
-        // Gas optimization: limit maximum relayers to check
         require!(max_relayers > 0 && max_relayers <= 20, "Invalid number of relayers");
 
         let mut message = ManagedBuffer::new();
@@ -70,7 +97,7 @@ pub trait BridgeLogicModule: FeesModule + ConfigModule + PauseModule {
                 if self.crypto().verify_ed25519(&sig, &message, &self.relayer_pub_keys().get(i)) {
                     valid_count += 1;
                     if valid_count >= required {
-                        return valid_count; // Early exit for gas saving
+                        return valid_count;
                     }
                     break;
                 }
@@ -81,4 +108,7 @@ pub trait BridgeLogicModule: FeesModule + ConfigModule + PauseModule {
 
     #[event("bridge")]
     fn bridge_event(&self, user: &ManagedAddress, amount: &BigUint, fee: &BigUint);
+
+    #[event("claimSbtc")]
+    fn claim_event(&self, user: &ManagedAddress, amount: &BigUint);
 }

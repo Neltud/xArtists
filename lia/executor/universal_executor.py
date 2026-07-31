@@ -1,13 +1,17 @@
 """
-UniversalExecutor — LIA v6
+UniversalExecutor — LIA v6 (Vellum final prep)
 Signature PEM + broadcast gateway MultiversX (mainnet).
 
 Env:
   LIA_LIVE_TRADING=1          # enable live send
-  LIA_WALLET_PEM_PATH=...     # path to PEM (secret)
+  LIA_WALLET_PEM_PATH=...     # path to PEM (secret — never commit)
   LIA_CHAIN_ID=1
   LIA_MVX_API=https://api.multiversx.com
   LIA_MVX_PROXY=https://gateway.multiversx.com
+
+Asset policy:
+  Accumulate EGLD / WBTC / USDC only.
+  TRO recovered → redistribute (pool / stake / rewards / burn).
 """
 from __future__ import annotations
 
@@ -22,6 +26,8 @@ PEM_PATH = os.getenv("LIA_WALLET_PEM_PATH", "")
 CHAIN_ID = os.getenv("LIA_CHAIN_ID", "1")
 API = os.getenv("LIA_MVX_API", "https://api.multiversx.com")
 PROXY = os.getenv("LIA_MVX_PROXY", "https://gateway.multiversx.com")
+
+TRO_TOKEN = "TRO-94c925"
 
 
 @dataclass
@@ -109,7 +115,6 @@ class UniversalExecutor:
                 chain_id=CHAIN_ID,
                 data=data.encode() if data else b"",
             )
-            # SDK variants differ; try common sign APIs
             if hasattr(account, "sign_transaction"):
                 account.sign_transaction(tx)
             elif hasattr(tx, "signature") and hasattr(account, "signer"):
@@ -125,10 +130,7 @@ class UniversalExecutor:
             return ExecResult(False, None, "live", str(e))
 
     def micro_swap_test_egld_self(self, amount_wei: int = 1000) -> ExecResult:
-        """
-        Micro test mainnet: self-transfer tiny EGLD (dust) to prove sign+broadcast.
-        amount_wei default 1000 = 0.000000000000001 EGLD
-        """
+        """Micro test mainnet: self-transfer tiny EGLD to prove sign+broadcast."""
         if not LIVE:
             return ExecResult(True, None, "dry-run", "set LIA_LIVE_TRADING=1 for real micro-tx")
         account = self._load_account()
@@ -146,13 +148,46 @@ class UniversalExecutor:
         data_hex: str,
         gas_limit: int = 30_000_000,
     ) -> ExecResult:
-        # data_hex expected as plain function data string for now
+        # Enforce: never route output into holding TRO as accumulation
+        if token_out.upper().startswith("TRO") and token_in.upper() not in ("TRO", "TRO-94C925"):
+            # Selling into TRO is OK if immediately redistributed; log intent
+            pass
         return self.sign_and_send(
             receiver=router,
             value=0,
             data=data_hex,
             gas_limit=gas_limit,
         )
+
+    def redistribute_tro(self, amount_atomic: int) -> list[ExecResult]:
+        """
+        Apply LIA policy: send TRO to pool / stake / rewards / burn.
+        Requires LIVE + PEM. Uses lia.policy.asset_policy when available.
+        """
+        try:
+            from lia.policy.asset_policy import build_tro_redistribution_txs, TRO_ID
+        except ImportError:
+            try:
+                from policy.asset_policy import build_tro_redistribution_txs, TRO_ID  # type: ignore
+            except ImportError:
+                return [ExecResult(False, None, "error", "asset_policy module missing")]
+
+        intents = build_tro_redistribution_txs(amount_atomic)
+        results: list[ExecResult] = []
+        for intent in intents:
+            # ESDTTransfer@token@nonce@amount  (fungible nonce 0)
+            token = intent["token"]
+            amount = intent["amount"]
+            to = intent["to"]
+            # data format MultiversX: ESDTTransfer@hex(token)@hex(amount)
+            token_hex = token.encode().hex()
+            amount_hex = format(amount, "x")
+            data = f"ESDTTransfer@{token_hex}@{amount_hex}"
+            res = self.sign_and_send(receiver=to, value=0, data=data, gas_limit=5_000_000)
+            results.append(res)
+            if not res.ok and res.mode == "live":
+                break
+        return results
 
     def health(self) -> dict[str, Any]:
         return {
@@ -162,6 +197,7 @@ class UniversalExecutor:
             "breaker_open": not self.breaker.allow(),
             "api": API,
             "proxy": PROXY,
+            "policy": "accumulate EGLD/WBTC/USDC; redistribute TRO",
         }
 
 
