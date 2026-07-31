@@ -1,24 +1,29 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./index.css";
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+import './index.css'
 
-// MultiversX SDK Integration (v3+)
-import { DappProvider } from "@multiversx/sdk-dapp/wrappers/DappProvider";
-import { EnvironmentsEnum } from "@multiversx/sdk-dapp/types";
+import { DappProvider } from '@multiversx/sdk-dapp/wrappers/DappProvider'
+import { EnvironmentsEnum } from '@multiversx/sdk-dapp/types'
+import { WalletConnectV2Provider } from '@multiversx/sdk-dapp/providers/walletConnectV2Provider'
+import { ExtensionProvider } from '@multiversx/sdk-dapp/providers/extensionProvider'
+import { WebWalletProvider } from '@multiversx/sdk-dapp/providers/webWalletProvider'
 
-// Wallet providers
-import { WalletConnectV2Provider } from "@multiversx/sdk-dapp/providers/walletConnectV2Provider";
-import { ExtensionProvider } from "@multiversx/sdk-dapp/providers/extensionProvider";
-import { WebWalletProvider } from "@multiversx/sdk-dapp/providers/webWalletProvider";
+const WC_PROJECT_ID =
+  import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || ''
 
-// Basic config - update chainId / api for mainnet or testnet
+if (!WC_PROJECT_ID) {
+  console.warn(
+    '[xArtists] VITE_WALLETCONNECT_PROJECT_ID manquant — xPortal (WC v2) limité'
+  )
+}
+
 const MVX_CONFIG = {
-  environment: EnvironmentsEnum.mainnet, // or testnet
-  walletConnectV2ProjectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || "your-project-id-here",
-};
+  environment: EnvironmentsEnum.mainnet,
+  walletConnectV2ProjectId: WC_PROJECT_ID || '00000000000000000000000000000000',
+}
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <DappProvider
       environment={MVX_CONFIG.environment}
@@ -28,4 +33,4 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <App />
     </DappProvider>
   </React.StrictMode>
-);
+)

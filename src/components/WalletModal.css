@@ -1,0 +1,93 @@
+.wm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(8, 6, 16, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(6px);
+}
+.wm-panel {
+  width: 100%;
+  max-width: 400px;
+  background: #1a1628;
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+.wm-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.wm-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #f5f3ff;
+}
+.wm-close {
+  background: none;
+  border: none;
+  color: #a78bfa;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+.wm-sub {
+  color: #9b97b0;
+  font-size: 0.85rem;
+  margin: 8px 0 16px;
+}
+.wm-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.wm-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e8e6f0;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+.wm-opt:hover:not(:disabled) {
+  border-color: #a78bfa;
+  background: rgba(167, 139, 250, 0.12);
+}
+.wm-opt:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.wm-opt strong {
+  display: block;
+  font-size: 0.95rem;
+}
+.wm-opt small {
+  color: #9b97b0;
+  font-size: 0.75rem;
+}
+.wm-icon {
+  font-size: 1.4rem;
+}
+.wm-spin {
+  margin-left: auto;
+}
+.wm-error {
+  margin-top: 12px;
+  color: #fca5a5;
+  font-size: 0.85rem;
+}
+.wm-note {
+  margin-top: 14px;
+  font-size: 0.78rem;
+  color: #7a7690;
+  line-height: 1.4;
+}
