@@ -1,0 +1,60 @@
+.tx-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin: 12px 0;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+}
+.tx-banner.tone-ok {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.35);
+  color: #86efac;
+}
+.tx-banner.tone-err {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+}
+.tx-banner.tone-info {
+  background: rgba(167, 139, 250, 0.12);
+  border-color: rgba(167, 139, 250, 0.3);
+  color: #ddd6fe;
+}
+.tx-banner-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.tx-detail {
+  font-size: 0.78rem;
+  opacity: 0.85;
+  word-break: break-word;
+}
+.tx-hint {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+.tx-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tx-banner-actions a {
+  color: inherit;
+  font-weight: 600;
+}
+.tx-dismiss {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.8;
+}
