@@ -27,12 +27,13 @@ from typing import Any, Optional
 
 
 # Canonical strategy registry (must match Vellum / docs)
+# Default budgets sum (entry strategies) = 0.84 <= GLOBAL_ENTRY_BUDGET_CAP 0.85
 STRATEGY_REGISTRY: dict[str, dict[str, Any]] = {
     "TP1": {
         "role": "scalp",
         "tp_pct": 1.0,
-        "sl_pct": 1.0,  # aligned to circuit hard SL (doc had 0.5 — hardened)
-        "default_budget_pct": 0.20,
+        "sl_pct": 1.0,
+        "default_budget_pct": 0.18,
         "max_budget_pct": 0.25,
         "horizon": "ST",
     },
@@ -40,7 +41,7 @@ STRATEGY_REGISTRY: dict[str, dict[str, Any]] = {
         "role": "swing_short",
         "tp_pct": 3.0,
         "sl_pct": 1.5,
-        "default_budget_pct": 0.20,
+        "default_budget_pct": 0.18,
         "max_budget_pct": 0.25,
         "horizon": "ST",
     },
@@ -48,7 +49,7 @@ STRATEGY_REGISTRY: dict[str, dict[str, Any]] = {
         "role": "swing_mid",
         "tp_pct": 5.0,
         "sl_pct": 2.5,
-        "default_budget_pct": 0.15,
+        "default_budget_pct": 0.12,
         "max_budget_pct": 0.20,
         "horizon": "MT",
     },
@@ -56,7 +57,7 @@ STRATEGY_REGISTRY: dict[str, dict[str, Any]] = {
         "role": "core_macro",
         "tp_pct": 15.0,
         "sl_pct": 8.0,
-        "default_budget_pct": 0.25,
+        "default_budget_pct": 0.22,
         "max_budget_pct": 0.35,
         "horizon": "LT",
         "tokens": ["WBTC", "WEGLD", "USDC"],
@@ -96,15 +97,14 @@ STRATEGY_REGISTRY: dict[str, dict[str, Any]] = {
     },
 }
 
-# Soft cap: sum of simultaneous entry budgets cannot exceed this of deployable
 GLOBAL_ENTRY_BUDGET_CAP = 0.85
 
 
 @dataclass
 class StrategyVote:
     strategy: str
-    decision: str  # BUY | SELL | WAIT | YIELD | BLOCK | DELEVERAGE
-    confidence: float  # 0-100 or 0-1 normalized later
+    decision: str
+    confidence: float
     token: str = ""
     amount_usd: float = 0.0
     budget_pct: float = 0.0
@@ -119,7 +119,7 @@ class StrategyVote:
 
 @dataclass
 class SymbiosisResult:
-    mode: str  # TRADE | YIELD_ONLY | BLOCKED | MIXED
+    mode: str
     approved_actions: list[dict[str, Any]]
     rejected: list[dict[str, Any]]
     budget_map: dict[str, float]
@@ -130,8 +130,7 @@ class SymbiosisResult:
     ts: str = ""
 
     def to_dict(self) -> dict[str, Any]:
-        d = asdict(self)
-        return d
+        return asdict(self)
 
 
 def _norm_decision(d: str) -> str:
@@ -159,7 +158,6 @@ def fuse_votes(
     gs_regime: str = "NEUTRAL",
     max_entry_budget_pct: float = GLOBAL_ENTRY_BUDGET_CAP,
 ) -> SymbiosisResult:
-    """Core symbiosis: risk gate → exits → resolve conflicts → normalize budgets."""
     notes: list[str] = []
     conflicts: list[str] = []
     rejected: list[dict[str, Any]] = []
@@ -179,8 +177,11 @@ def fuse_votes(
             ts=_now(),
         )
 
-    # --- 1. Risk gate ---
-    risk_votes = [v for v in votes if v.strategy in ("RiskAgent", "RISK") or v.decision.upper() in ("BLOCK", "DELEVERAGE")]
+    risk_votes = [
+        v
+        for v in votes
+        if v.strategy in ("RiskAgent", "RISK") or v.decision.upper() in ("BLOCK", "DELEVERAGE")
+    ]
     for rv in risk_votes:
         dec = _norm_decision(rv.decision)
         if dec == "BLOCK":
@@ -188,7 +189,11 @@ def fuse_votes(
             return SymbiosisResult(
                 mode="BLOCKED",
                 approved_actions=list(rv.actions) if rv.actions else [{"type": "HALT", "reason": rv.reason}],
-                rejected=[{"strategy": v.strategy, "decision": v.decision, "reason": "risk_block"} for v in votes if v is not rv],
+                rejected=[
+                    {"strategy": v.strategy, "decision": v.decision, "reason": "risk_block"}
+                    for v in votes
+                    if v is not rv
+                ],
                 budget_map={},
                 total_budget_pct=0.0,
                 conflicts_resolved=["all_entries_suppressed_by_risk"],
@@ -204,10 +209,8 @@ def fuse_votes(
     if str(gs_regime).upper() == "RISK_OFF":
         notes.append("GS RISK_OFF → suppress new BUY entries")
 
-    # --- 2. Collect exits (always preferred) ---
     sells = [v for v in votes if _norm_decision(v.decision) == "SELL"]
     for v in sells:
-        tok = _token_key(v.token)
         approved.append(
             {
                 "type": "SELL",
@@ -223,32 +226,37 @@ def fuse_votes(
 
     sell_tokens = {_token_key(v.token) for v in sells if v.token}
 
-    # --- 3. Entries: conflict if same token also SELL ---
     buys = [v for v in votes if _norm_decision(v.decision) == "BUY"]
     if str(gs_regime).upper() == "RISK_OFF":
         for v in buys:
             rejected.append(
-                {"strategy": v.strategy, "decision": "BUY", "reason": "RISK_OFF_suppressed", "token": v.token}
+                {
+                    "strategy": v.strategy,
+                    "decision": "BUY",
+                    "reason": "RISK_OFF_suppressed",
+                    "token": v.token,
+                }
             )
         buys = []
 
-    # Drop buys that fight an exit on same token
     filtered_buys: list[StrategyVote] = []
     for v in buys:
         tk = _token_key(v.token)
         if tk and tk in sell_tokens:
             conflicts.append(f"{v.strategy} BUY {tk} vs SELL — keep SELL")
             rejected.append(
-                {"strategy": v.strategy, "decision": "BUY", "reason": "conflict_sell_priority", "token": v.token}
+                {
+                    "strategy": v.strategy,
+                    "decision": "BUY",
+                    "reason": "conflict_sell_priority",
+                    "token": v.token,
+                }
             )
         else:
             filtered_buys.append(v)
 
-    # --- 4. Rank buys by confidence, assign budgets under global cap ---
     filtered_buys.sort(key=lambda v: v.conf01(), reverse=True)
-
     remaining_cap = max_entry_budget_pct
-    # subtract already reserved by registry defaults if we assign
 
     for v in filtered_buys:
         reg = STRATEGY_REGISTRY.get(v.strategy, {})
@@ -259,7 +267,12 @@ def fuse_votes(
 
         if remaining_cap <= 0.01:
             rejected.append(
-                {"strategy": v.strategy, "decision": "BUY", "reason": "budget_cap_exhausted", "token": v.token}
+                {
+                    "strategy": v.strategy,
+                    "decision": "BUY",
+                    "reason": "budget_cap_exhausted",
+                    "token": v.token,
+                }
             )
             conflicts.append(f"{v.strategy} dropped — global budget cap")
             continue
@@ -269,12 +282,20 @@ def fuse_votes(
         budget_map[v.strategy] = alloc
         amount = v.amount_usd if v.amount_usd > 0 else round(deployable_usd * alloc, 4)
 
-        # CIRCUIT_1PCT: max 1 position enforced
         if v.strategy == "CIRCUIT_1PCT":
-            existing_circuit = [a for a in approved if a.get("strategy") == "CIRCUIT_1PCT" and a.get("type") == "BUY"]
+            existing_circuit = [
+                a
+                for a in approved
+                if a.get("strategy") == "CIRCUIT_1PCT" and a.get("type") == "BUY"
+            ]
             if existing_circuit:
                 rejected.append(
-                    {"strategy": v.strategy, "decision": "BUY", "reason": "circuit_max_1_position", "token": v.token}
+                    {
+                        "strategy": v.strategy,
+                        "decision": "BUY",
+                        "reason": "circuit_max_1_position",
+                        "token": v.token,
+                    }
                 )
                 continue
 
@@ -293,13 +314,16 @@ def fuse_votes(
             }
         )
 
-    # --- 5. Yield only if no blocking risk and (no buys or explicit yield votes) ---
     yields = [v for v in votes if _norm_decision(v.decision) == "YIELD"]
     entry_buys = [a for a in approved if a.get("type") == "BUY"]
     if yields and (not entry_buys or str(gs_regime).upper() == "RISK_OFF"):
         for v in yields:
             for a in v.actions or [
-                {"type": "HATOM_SUPPLY", "amount_usd": v.amount_usd or deployable_usd * 0.3, "reason": v.reason}
+                {
+                    "type": "HATOM_SUPPLY",
+                    "amount_usd": v.amount_usd or deployable_usd * 0.3,
+                    "reason": v.reason,
+                }
             ]:
                 approved.append({**a, "strategy": v.strategy, "priority": 3})
             budget_map[v.strategy] = budget_map.get(v.strategy, 0.0) + float(
@@ -308,10 +332,8 @@ def fuse_votes(
 
     total_pct = round(sum(budget_map.values()), 4)
     if total_pct > max_entry_budget_pct + 0.001:
-        # Should not happen after cap — flag audit
         notes.append(f"AUDIT WARN: total_budget_pct={total_pct} > cap={max_entry_budget_pct}")
 
-    # Mode
     if any(a.get("type") in ("HALT", "DELEVERAGE") for a in approved) and not entry_buys:
         mode = "BLOCKED" if any(a.get("type") == "HALT" for a in approved) else "MIXED"
     elif entry_buys:
@@ -328,7 +350,6 @@ def fuse_votes(
         if _norm_decision(rv.decision) == "DELEVERAGE":
             risk_status = "DELEVERAGE"
 
-    # Sort by priority
     approved.sort(key=lambda a: int(a.get("priority", 9)))
 
     return SymbiosisResult(
@@ -345,30 +366,23 @@ def fuse_votes(
 
 
 def audit_registry_budgets() -> dict[str, Any]:
-    """Static audit: sum of default entry budgets vs cap."""
-    entry_keys = [k for k, v in STRATEGY_REGISTRY.items() if v.get("role") not in ("veto", "idle_yield")]
-    # Realistic simultaneous: TP1+TP3+TP5+LIABrain+Contrarian+CIRCUIT (worst case old docs 32%*3)
-    old_docs_sum = 0.32 * 3 + 1.0 + 0.04  # absurd over-allocation from docs
-    new_defaults = sum(
-        float(STRATEGY_REGISTRY[k]["default_budget_pct"])
-        for k in ("TP1", "TP3", "TP5", "LIABrain", "Contrarian", "CIRCUIT_1PCT")
-    )
+    entry_keys = ("TP1", "TP3", "TP5", "LIABrain", "Contrarian", "CIRCUIT_1PCT")
+    old_docs_sum = 0.32 * 3 + 1.0 + 0.04
+    new_defaults = sum(float(STRATEGY_REGISTRY[k]["default_budget_pct"]) for k in entry_keys)
     return {
         "old_docs_worst_case_sum": round(old_docs_sum, 2),
         "old_docs_problem": old_docs_sum > 1.0,
         "new_default_sum": round(new_defaults, 4),
-        "new_default_ok": new_defaults <= GLOBAL_ENTRY_BUDGET_CAP + 0.05,
+        "new_default_ok": new_defaults <= GLOBAL_ENTRY_BUDGET_CAP + 1e-9,
         "global_cap": GLOBAL_ENTRY_BUDGET_CAP,
         "registry": STRATEGY_REGISTRY,
     }
 
 
 def votes_from_brain_outputs(outputs: list[dict[str, Any]]) -> list[StrategyVote]:
-    """Adapter: map UniversalBrain / Risk / Yield style dicts → StrategyVote."""
     votes: list[StrategyVote] = []
     for o in outputs:
         name = str(o.get("strategy") or o.get("agent") or o.get("name") or "UNKNOWN")
-        # normalize names
         if "TP1" in name.upper():
             name = "TP1"
         elif "TP3" in name.upper():
@@ -420,7 +434,7 @@ def _now() -> str:
 
 
 if __name__ == "__main__":
-    print(json.dumps(audit_registry_budgets(), indent=2)[:1500])
+    print(json.dumps(audit_registry_budgets(), indent=2)[:2000])
     demo = [
         StrategyVote("RiskAgent", "PASS", 60, reason="HF ok"),
         StrategyVote("TP1", "BUY", 80, token="WEGLD-bd4d79", budget_pct=0.32),
