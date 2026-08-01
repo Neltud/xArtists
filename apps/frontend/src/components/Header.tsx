@@ -5,6 +5,7 @@ import { sdkDappConfig } from '../config/sdkDapp'
 
 const NAV = [
   { to: '/', label: 'Dashboard', emoji: '📊' },
+  { to: '/publish', label: 'Publish', emoji: '➕' },
   { to: '/agents', label: 'Agents IA', emoji: '🧠' },
   { to: '/marketplace', label: 'Marketplace', emoji: '🎨' },
   { to: '/staking', label: 'Staking', emoji: '🔒' },

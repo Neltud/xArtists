@@ -1,3 +1,4 @@
+import type { ChangeEventHandler } from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
@@ -227,7 +228,7 @@ export default function Publish() {
     return null
   }
 
-  const onSelectImage: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+  const onSelectImage: ChangeEventHandler<HTMLInputElement> = (event) => {
     const file = event.target.files?.[0] || null
     setSuccess(null)
     if (!file) {

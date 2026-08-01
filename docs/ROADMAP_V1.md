@@ -36,7 +36,12 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 | GreenSmokeConsumer branché sur les brains | P1 | Bias regime dans décisions BUY/WAIT |
 | ContrarianBrain implémenté | P1 | 4 % budget, RSI < 30 + fear |
 | Trailing stops + Kelly sizing | P1 | Positions dynamiques |
-| **Agents Marketplace on-chain** | 🟡 P0 prêt pour devnet | Workspace Cargo isolé + workflow `deploy-scs` ciblé + ABI dans `@xartists/core` ; adresse live à injecter après deploy |
+| **Agents Marketplace on-chain** | 🟡 P0 prêt pour devnet | Workspace Cargo isolé + workflow `deploy-scs` ciblé + ABI dans `@xartists/core` ; catalogue limited edition + UX `/agents` à brancher sur l’adresse live après deploy |
+
+- **Sprint UX artiste / publish**
+  - route `/publish` en 3 étapes (wallet → œuvre → confirmer)
+  - dual CTA clair sur la landing : publier vs explorer
+  - nav mobile-first : Home · Gallery · Publish · Agents · Wallet
 | PerformanceTracker → `data/lia_performance.json` | P1 | Winrate / drawdown sur Dashboard |
 
 ### Agents Marketplace (implémentation P0)

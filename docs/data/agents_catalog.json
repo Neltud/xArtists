@@ -1,0 +1,26 @@
+[
+  {
+    "id": "lia-signal-01",
+    "name": "LIA Signal Pack #1",
+    "supply": 50,
+    "remaining": 50,
+    "priceEgld": "0.5",
+    "description": "Signaux swing et momentum prêts à collectionner en édition limitée."
+  },
+  {
+    "id": "lia-phygital-curator-01",
+    "name": "LIA Curator Pass #1",
+    "supply": 25,
+    "remaining": 19,
+    "priceEgld": "0.85",
+    "description": "Accès prioritaire aux sélections phygitales et aux drops d'artistes."
+  },
+  {
+    "id": "lia-vellum-alpha-01",
+    "name": "LIA Vellum Alpha #1",
+    "supply": 15,
+    "remaining": 11,
+    "priceEgld": "1.2",
+    "description": "Édition premium propulsée par LIA (Vellum) pour collectionneurs actifs."
+  }
+]

@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import NFTDetailModal from '../components/NFTDetailModal'
 import MoonpayButton from '../components/MoonpayButton'
+import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
 import {
   type NFT,
   type CollectionData,
   type CollectionsFile,
   nftImageUrl,
+  nftRoyalties,
   typeLabel,
   nonceLabel,
   DATA_URL,
@@ -15,6 +17,8 @@ import {
 const MVX_API = 'https://api.multiversx.com'
 
 type SortKey = 'name' | 'collection' | 'nonce'
+type PriceFilter = 'all' | 'under1' | '1to5' | '5plus'
+type AssetTypeFilter = 'all' | 'NFT' | 'SFT'
 
 export default function Marketplace() {
   const [collections, setCollections] = useState<CollectionData[]>([])
@@ -30,7 +34,10 @@ export default function Marketplace() {
   )
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<SortKey>('collection')
+  const [priceFilter, setPriceFilter] = useState<PriceFilter>('all')
+  const [typeFilter, setTypeFilter] = useState<AssetTypeFilter>('all')
   const [selected, setSelected] = useState<NFT | null>(null)
+  const { marketplaceAddress } = useMarketplaceTx()
 
   useEffect(() => {
     let cancelled = false
@@ -136,6 +143,12 @@ export default function Marketplace() {
           n.collection?.toLowerCase().includes(q),
       )
     }
+    if (typeFilter !== 'all') {
+      list = list.filter((n) => typeLabel(n.type) === typeFilter)
+    }
+    if (priceFilter !== 'all') {
+      list = list.filter((n) => matchesPriceFilter(n, priceFilter))
+    }
     const sorted = [...list]
     sorted.sort((a, b) => {
       if (sort === 'name') return (a.name || '').localeCompare(b.name || '')
@@ -144,7 +157,7 @@ export default function Marketplace() {
       return c !== 0 ? c : a.nonce - b.nonce
     })
     return sorted
-  }, [allNfts, activeCollection, query, sort])
+  }, [allNfts, activeCollection, priceFilter, query, sort, typeFilter])
 
   return (
     <div className="animate-fade-in">
@@ -169,6 +182,9 @@ export default function Marketplace() {
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
+            <Link to="/publish" className="btn-primary text-sm">
+              Publier une œuvre
+            </Link>
             <MoonpayButton label="Acheter en EUR (MoonPay → EGLD)" className="text-sm!" />
             <button
               onClick={refreshLive}
@@ -203,7 +219,7 @@ export default function Marketplace() {
             className="w-full rounded-xl border border-[#2a2a3a] bg-[#15151f] py-2.5 pl-9 pr-3 text-sm text-gray-200 placeholder:text-gray-500 outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <label className="text-xs text-gray-500">Sort</label>
           <select
             value={sort}
@@ -213,6 +229,27 @@ export default function Marketplace() {
             <option value="collection">Collection</option>
             <option value="name">Name</option>
             <option value="nonce">Nonce</option>
+          </select>
+          <label className="ml-0 text-xs text-gray-500 sm:ml-2">Type</label>
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value as AssetTypeFilter)}
+            className="rounded-xl border border-[#2a2a3a] bg-[#15151f] px-3 py-2 text-sm text-gray-200 outline-none focus:border-purple-500"
+          >
+            <option value="all">All</option>
+            <option value="NFT">NFT</option>
+            <option value="SFT">SFT</option>
+          </select>
+          <label className="ml-0 text-xs text-gray-500 sm:ml-2">Price</label>
+          <select
+            value={priceFilter}
+            onChange={(e) => setPriceFilter(e.target.value as PriceFilter)}
+            className="rounded-xl border border-[#2a2a3a] bg-[#15151f] px-3 py-2 text-sm text-gray-200 outline-none focus:border-purple-500"
+          >
+            <option value="all">Any</option>
+            <option value="under1">Under 1 EGLD</option>
+            <option value="1to5">1–5 EGLD</option>
+            <option value="5plus">5+ EGLD</option>
           </select>
         </div>
       </div>
@@ -234,9 +271,29 @@ export default function Marketplace() {
       {loading ? (
         <SkeletonGrid />
       ) : visibleNfts.length === 0 ? (
-        <div className="rounded-2xl border border-[#2a2a3a] bg-[#15151f] py-20 text-center">
+        <div className="rounded-2xl border border-[#2a2a3a] bg-[#15151f] px-6 py-20 text-center">
           <p className="text-4xl mb-3">🔍</p>
-          <p className="text-gray-400">No NFTs match your search.</p>
+          <p className="text-lg font-semibold text-white">Aucune œuvre ne correspond à tes filtres.</p>
+          <p className="mt-2 text-sm text-gray-400">
+            Réinitialise les filtres ou publie une nouvelle pièce artiste.
+          </p>
+          <div className="mt-5 flex flex-wrap justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('')
+                setPriceFilter('all')
+                setTypeFilter('all')
+                setActiveCollection('all')
+              }}
+              className="btn-secondary text-sm"
+            >
+              Réinitialiser
+            </button>
+            <Link to="/publish" className="btn-primary text-sm">
+              Publier une œuvre
+            </Link>
+          </div>
         </div>
       ) : (
         <>
@@ -297,8 +354,25 @@ function FilterPill({
   )
 }
 
+function nftPriceEgld(nft: NFT): number | null {
+  const price = (nft.metadata as Record<string, unknown> | undefined)?.priceEgld
+  const value = typeof price === 'number' ? price : typeof price === 'string' ? parseFloat(price) : NaN
+  return Number.isFinite(value) ? value : null
+}
+
+function matchesPriceFilter(nft: NFT, filter: PriceFilter): boolean {
+  const price = nftPriceEgld(nft)
+  if (price === null) return false
+  if (filter === 'under1') return price < 1
+  if (filter === '1to5') return price >= 1 && price <= 5
+  if (filter === '5plus') return price > 5
+  return true
+}
+
 function NFTCard({ nft, onClick }: { nft: NFT; onClick: () => void }) {
   const img = nftImageUrl(nft)
+  const royalties = nftRoyalties(nft)
+  const price = nftPriceEgld(nft)
   return (
     <button
       onClick={onClick}
@@ -311,12 +385,21 @@ function NFTCard({ nft, onClick }: { nft: NFT; onClick: () => void }) {
           <div className="flex h-full w-full items-center justify-center text-5xl opacity-60">🎨</div>
         )}
         <span className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] text-gray-200">{typeLabel(nft.type)}</span>
+        {royalties !== null && (
+          <span className="absolute right-2 top-2 rounded-full bg-purple-500/80 px-2 py-0.5 text-[10px] font-semibold text-white">
+            {royalties}% royalty
+          </span>
+        )}
       </div>
       <div className="flex flex-1 flex-col gap-1 p-3">
         <p className="truncate text-sm font-semibold">{nft.name || 'Untitled'}</p>
         <div className="flex items-center justify-between">
           <span className="truncate text-xs text-purple-300/90">{nft.collection_name}</span>
           <span className="mono text-[10px] text-gray-500">{nonceLabel(nft)}</span>
+        </div>
+        <div className="flex items-center justify-between pt-1 text-[11px] text-gray-500">
+          <span>{price !== null ? `${price} EGLD` : 'Prix sur demande'}</span>
+          <span>{royalties !== null ? `${royalties}%` : '—'}</span>
         </div>
       </div>
     </button>

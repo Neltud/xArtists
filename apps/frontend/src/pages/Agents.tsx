@@ -50,6 +50,15 @@ interface ForecastData {
   }
 }
 
+interface LimitedAgentEdition {
+  id: string
+  name: string
+  supply: number
+  remaining: number
+  priceEgld: string
+  description: string
+}
+
 const DOMAIN_ICON: Record<string, string> = {
   weather: '🌤️',
   crypto: '₿',
@@ -85,6 +94,7 @@ function signalBadge(s: string) {
 
 export default function Agents() {
   const [data, setData] = useState<ForecastData | null>(null)
+  const [catalog, setCatalog] = useState<LimitedAgentEdition[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [listAgentId, setListAgentId] = useState('LIA-v6')
@@ -105,7 +115,12 @@ export default function Agents() {
     setLoading(true)
     setError(null)
     try {
-      setData(await fetchMirroredJson<ForecastData>('greensmoke_forecasts.json', { cache: 'no-store', bustCache: true }))
+      const [forecastData, catalogData] = await Promise.all([
+        fetchMirroredJson<ForecastData>('greensmoke_forecasts.json', { cache: 'no-store', bustCache: true }),
+        fetchMirroredJson<LimitedAgentEdition[]>('agents_catalog.json', { cache: 'no-store', bustCache: true }),
+      ])
+      setData(forecastData)
+      setCatalog(catalogData)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur chargement')
     } finally {
@@ -167,13 +182,30 @@ export default function Agents() {
     }
   }
 
+  const onBuyCatalogItem = async (listingId: number, priceEgld: string) => {
+    setMarketplaceMsg(null)
+    const price = parseFloat(priceEgld)
+    if (!(listingId > 0) || !(price > 0)) {
+      setMarketplaceMsg('Listing ID / prix invalides')
+      return
+    }
+    try {
+      await buyAgentAction({ listingId, priceEgld: price })
+      setBuyListingId(String(listingId))
+      setBuyPrice(priceEgld)
+      setMarketplaceMsg('Achat agent soumis — confirme dans le wallet.')
+    } catch (e) {
+      setMarketplaceMsg(e instanceof Error ? e.message : 'Erreur achat agent')
+    }
+  }
+
   return (
     <div className="animate-fade-in pb-20 md:pb-0">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black">🧠 Agents IA GreenSmoke</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Liia · Lia · Macro · Politics · Sport · Tech — on-chain MultiversX
+            Éditions limitées propulsées par LIA (Vellum) + agents GreenSmoke on-chain
             {data?.updated_at && (
               <span className="ml-2">· MAJ {new Date(data.updated_at).toLocaleString('fr-FR')}</span>
             )}
@@ -193,7 +225,7 @@ export default function Agents() {
       </div>
 
       {data?.aggregated_signals && (
-        <div className="card mb-6 border-purple-500/30 bg-purple-500/5">
+         <div className="card mb-6 border-purple-500/30 bg-purple-500/5">
           <p className="text-xs font-semibold uppercase tracking-widest text-purple-400 mb-3">📡 Signaux agrégés (utilisables)</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
             <div>
@@ -249,6 +281,66 @@ export default function Agents() {
         <div className="grid gap-4">{[1, 2, 3].map(i => <div key={i} className="card h-32 animate-pulse" />)}</div>
       )}
       {error && <div className="card border-red-500/30 text-red-400 mb-6">Erreur : {error}</div>}
+
+      <div className="card mb-6 border-purple-500/30 bg-purple-500/5">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-purple-400 mb-2">Limited agents</p>
+            <h2 className="text-xl font-black">Éditions limitées propulsées par LIA (Vellum)</h2>
+            <p className="text-sm text-gray-400 mt-2">
+              Packs collectors pour signaux, curator passes et accès premium agents.
+            </p>
+          </div>
+          {!marketplaceReady && <span className="badge-orange">Deploy en cours</span>}
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {catalog.map((item, index) => {
+            const warp = buildBuyAgentWarp({
+              address: marketplaceAddress,
+              listingId: index + 1,
+              priceEgld: item.priceEgld,
+            })
+
+            return (
+              <div key={item.id} className="rounded-2xl border border-[#2a2a3a] bg-[#111118] p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <span className="badge-purple">LIMITED</span>
+                    <h3 className="mt-3 text-lg font-bold">{item.name}</h3>
+                  </div>
+                  <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-gray-300">
+                    {item.remaining}/{item.supply}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm text-gray-400">{item.description}</p>
+                <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                  <div className="rounded-xl border border-white/5 bg-black/20 p-3">
+                    <p className="text-gray-500">Prix</p>
+                    <p className="mt-1 font-semibold text-white">{item.priceEgld} EGLD</p>
+                  </div>
+                  <div className="rounded-xl border border-white/5 bg-black/20 p-3">
+                    <p className="text-gray-500">Restant</p>
+                    <p className="mt-1 font-semibold text-white">{item.remaining}</p>
+                  </div>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    disabled={!marketplaceReady || marketplacePending}
+                    onClick={() => void onBuyCatalogItem(index + 1, item.priceEgld)}
+                    title={!marketplaceReady ? 'Deploy en cours' : undefined}
+                    className="btn-primary text-sm disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {!marketplaceReady ? 'Deploy en cours' : 'Buy'}
+                  </button>
+                  <WarpButton warp={warp} filename={`${item.id}.json`} disabled={!marketplaceReady} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
 
       <h2 className="text-lg font-bold mb-3">🔮 Agents prévisionnels GreenSmoke (tes agents)</h2>
       <div className="space-y-4 mb-8">

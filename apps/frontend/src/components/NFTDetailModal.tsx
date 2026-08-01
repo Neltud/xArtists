@@ -176,6 +176,7 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
                   type="button"
                   disabled={pending || !marketplaceReady}
                   onClick={onList}
+                  title={!marketplaceReady ? 'Déploiement marketplace en cours' : undefined}
                   className="btn-primary text-sm disabled:opacity-50"
                 >
                   {pending ? '…' : 'List NFT'}
@@ -208,6 +209,7 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
                   type="button"
                   disabled={pending || !marketplaceReady}
                   onClick={onBuy}
+                  title={!marketplaceReady ? 'Déploiement marketplace en cours' : undefined}
                   className="btn-secondary text-sm disabled:opacity-50"
                 >
                   {pending ? '…' : 'Buy NFT'}
