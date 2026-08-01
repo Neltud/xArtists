@@ -10,7 +10,6 @@ import {
   XOXNO_COLLECTION,
 } from '../types/nft'
 import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
-import { useSendTransaction } from '../hooks/useSendTransaction'
 import { useWeb3 } from '../hooks/useWeb3'
 
 interface Props {
@@ -20,7 +19,6 @@ interface Props {
 
 export default function NFTDetailModal({ nft, onClose }: Props) {
   const { isLoggedIn } = useWeb3()
-  const { send } = useSendTransaction()
   const { listNft, buyNft, pending, error, lastTx, marketplaceAddress } = useMarketplaceTx()
   const [listPrice, setListPrice] = useState('1')
   const [buyPrice, setBuyPrice] = useState('1')
@@ -59,18 +57,16 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
       return
     }
     try {
-      await listNft(
-        { tokenId: nft.collection, nonce: nft.nonce, priceEgld: price },
-        async (tx) => {
-          const res = await send([tx], {
-            processingMessage: 'Listing NFT…',
-            successMessage: 'NFT listé',
-            errorMessage: 'Échec listing',
-          })
-          return { hash: res.sessionId ?? undefined }
-        },
-      )
-      setTxMsg('Listing soumis — confirme dans le wallet.')
+      const res = await listNft({
+        tokenId: nft.collection,
+        nonce: nft.nonce,
+        priceEgld: price,
+      })
+      if (res?.error) {
+        setTxMsg(res.error)
+      } else {
+        setTxMsg('Listing soumis — confirme dans le wallet.')
+      }
     } catch (e: unknown) {
       setTxMsg(e instanceof Error ? e.message : 'Erreur listing')
     }
@@ -89,18 +85,12 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
       return
     }
     try {
-      await buyNft(
-        { listingId: id, priceEgld: price },
-        async (tx) => {
-          const res = await send([tx], {
-            processingMessage: 'Achat NFT…',
-            successMessage: 'Achat envoyé',
-            errorMessage: 'Échec achat',
-          })
-          return { hash: res.sessionId ?? undefined }
-        },
-      )
-      setTxMsg('Achat soumis — confirme dans le wallet.')
+      const res = await buyNft({ listingId: id, priceEgld: price })
+      if (res?.error) {
+        setTxMsg(res.error)
+      } else {
+        setTxMsg('Achat soumis — confirme dans le wallet.')
+      }
     } catch (e: unknown) {
       setTxMsg(e instanceof Error ? e.message : 'Erreur achat')
     }
@@ -174,7 +164,6 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
               <Meta label="Type" value={typeLabel(nft.type)} />
             </dl>
 
-            {/* On-chain List / Buy */}
             <div className="rounded-xl border border-purple-500/25 bg-purple-500/5 px-3 py-3 text-xs text-gray-300 space-y-3">
               <p className="font-semibold text-purple-200">Marketplace on-chain (xArtists)</p>
               <p className="text-[10px] text-gray-500 mono">SC: {marketplaceAddress.slice(0, 16)}…</p>
@@ -255,28 +244,13 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
 
             <div className="mt-auto flex flex-col gap-2 pt-2">
               <p className="text-[10px] uppercase tracking-widest text-gray-500">Marchés externes</p>
-              <a
-                href={XOXNO_COLLECTION(nft.collection)}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-primary text-center text-sm"
-              >
+              <a href={XOXNO_COLLECTION(nft.collection)} target="_blank" rel="noreferrer" className="btn-primary text-center text-sm">
                 Buy on XOXNO ↗
               </a>
-              <a
-                href="https://xexchange.com/swap/USDC-c76f1f/TRO-94c925"
-                target="_blank"
-                rel="noreferrer"
-                className="btn-secondary text-center text-sm"
-              >
+              <a href="https://xexchange.com/swap/USDC-c76f1f/TRO-94c925" target="_blank" rel="noreferrer" className="btn-secondary text-center text-sm">
                 Get $TRO (xExchange) ↗
               </a>
-              <a
-                href={EXPLORER_NFT(nft.identifier)}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-secondary text-center text-sm"
-              >
+              <a href={EXPLORER_NFT(nft.identifier)} target="_blank" rel="noreferrer" className="btn-secondary text-center text-sm">
                 View on Explorer ↗
               </a>
             </div>
