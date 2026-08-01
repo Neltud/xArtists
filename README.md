@@ -28,8 +28,17 @@
 - [Analyse DApp complète + Veille techno (1er août 2026)](docs/ANALYSE_DAPP_COMPLETE.md)
 - [OpenAPI](docs/openapi.yaml)
 - [Documentation technique LIA](docs/TECHNICAL_DOCUMENTATION.md)
+- [Résumé Vellum live](docs/VELLUM_RESUME_LIVE.md)
 - [Audit LIA v6](LIA_V6_OPTIMIZATION_AUDIT.md)
 - [CHANGELOG](CHANGELOG.md)
+
+## Flux live LIA / Vellum
+- `OrchestratorRouter → lia.vellum.live_cycle.run_cycle`
+- `→ lia.circuit.vellum_cycle.run_cycle` (optionnel)
+- `→ lia.vellum.publish_data_for_frontend.publish()`
+- `→ git push data/* + docs/data/* + apps/frontend/public/data/*`
+
+**PEM uniquement dans Vellum / secrets runtime, jamais en git ni dans le frontend.**
 
 ```bash
 # Docker (frontend)

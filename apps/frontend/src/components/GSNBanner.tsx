@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { fetchMirroredJson } from '../config/dataSources'
 
 /**
  * GSNBanner — GreenSmokeNetwork translucent signal banner.
@@ -10,10 +11,6 @@ import { useEffect, useState } from 'react'
  * compact auto-scrolling strip of agent forecasts. Gradient tint follows the
  * regime: green (RISK_ON), red (RISK_OFF), gray (NEUTRAL).
  */
-
-const LOCAL_URL = 'data/greensmoke_forecasts.json'
-const REMOTE_FALLBACK =
-  'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
 
 interface GsForecast {
   asset: string
@@ -79,23 +76,19 @@ export default function GSNBanner() {
   useEffect(() => {
     let cancelled = false
     const load = async () => {
-      const urls = [LOCAL_URL, REMOTE_FALLBACK]
-      for (const url of urls) {
-        try {
-          const res = await fetch(`${url}?t=${Date.now()}`)
-          if (!res.ok) continue
-          const json = (await res.json()) as ForecastData
-          if (!json?.aggregated_signals) continue
-          if (!cancelled) {
-            setData(json)
-            setError(false)
-          }
-          return
-        } catch {
-          /* try next source */
+      try {
+        const json = await fetchMirroredJson<ForecastData>('greensmoke_forecasts.json', {
+          cache: 'no-store',
+          bustCache: true,
+        })
+        if (!json?.aggregated_signals) throw new Error('Invalid forecast payload')
+        if (!cancelled) {
+          setData(json)
+          setError(false)
         }
+      } catch {
+        if (!cancelled) setError(true)
       }
-      if (!cancelled) setError(true)
     }
     load()
     const id = setInterval(load, 120_000)

@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Bug Fixes
+
+* align GitHub Pages deploy with frontend package-lock, mirrored data JSON, and strict typed build
+* unify frontend live JSON fetches through local `/xArtists/data/*` with raw GitHub fallback
+* harden marketplace tx wiring, PWA cache refresh, and LIA/BTC tip data defaults
+
 ## [0.14.0](https://github.com/Neltud/xArtists/compare/v0.13.0...v0.14.0) (2026-07-27)
 
 

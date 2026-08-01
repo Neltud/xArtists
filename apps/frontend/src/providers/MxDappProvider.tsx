@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ComponentType, ReactNode } from 'react'
 import { sdkDappConfig } from '../config/sdkDapp'
 
 type Props = { children: ReactNode }
@@ -11,14 +11,14 @@ export function MxDappProvider({ children }: Props) {
   try {
     // Vite / ESM: static import paths vary by sdk-dapp major — try common ones via require-style dynamic
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    let DappProvider: React.ComponentType<Record<string, unknown>> | undefined
+    let DappProvider: ComponentType<Record<string, unknown>> | undefined
 
     try {
-      // @ts-expect-error optional dependency resolved after npm install
+      // @ts-ignore optional dependency resolved at runtime
       DappProvider = require('@multiversx/sdk-dapp/wrappers/DappProvider').DappProvider
     } catch {
       try {
-        // @ts-expect-error optional
+        // @ts-ignore optional dependency resolved at runtime
         DappProvider = require('@multiversx/sdk-dapp').DappProvider
       } catch {
         DappProvider = undefined

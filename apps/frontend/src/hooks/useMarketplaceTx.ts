@@ -4,7 +4,9 @@
  * Vellum final prep — 31 juil 2026
  */
 import { useCallback, useState } from 'react';
+import { useEffect } from 'react';
 import { MARKETPLACE_ADDRESS } from '../../../../packages/core/src/contracts/marketplaceAbi';
+import { fetchMirroredJson } from '../config/dataSources';
 import { useSendTransaction } from './useSendTransaction';
 
 export interface ListNftParams {
@@ -42,9 +44,30 @@ export function useMarketplaceTx() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastTx, setLastTx] = useState<string | null>(null);
+  const [marketplaceAddress, setMarketplaceAddress] = useState(MARKETPLACE_ADDRESS);
   const { send } = useSendTransaction();
 
+  useEffect(() => {
+    let cancelled = false;
+    fetchMirroredJson<{ contracts?: { marketplace?: string | null } }>('contracts.json', {
+      cache: 'no-store',
+    })
+      .then((json) => {
+        const nextAddress = json.contracts?.marketplace;
+        if (!cancelled && nextAddress) {
+          setMarketplaceAddress(nextAddress);
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const buildListTx = useCallback((p: ListNftParams) => {
+    if (!marketplaceAddress) {
+      throw new Error('Marketplace indisponible — adresse SC non configurée');
+    }
     const royaltyBps = p.royaltyBps ?? 500;
     const royaltyReceiver = p.royaltyReceiver ?? '';
     // MultiESDTNFTTransfer style single NFT to SC + endpoint args
@@ -55,7 +78,7 @@ export function useMarketplaceTx() {
       strToHex(p.tokenId),
       numToHex(p.nonce),
       numToHex(1),
-      strToHex(MARKETPLACE_ADDRESS),
+      strToHex(marketplaceAddress),
       strToHex('listNft'),
       numToHex(BigInt(priceAtomic)),
       numToHex(royaltyBps),
@@ -64,24 +87,27 @@ export function useMarketplaceTx() {
       dataParts.push(strToHex(royaltyReceiver));
     }
     return {
-      receiver: MARKETPLACE_ADDRESS, // actual receiver is self for ESDTNFTTransfer; sdk may rewrite
+      receiver: marketplaceAddress, // actual receiver is self for ESDTNFTTransfer; sdk may rewrite
       value: '0',
       gasLimit: 25_000_000,
       data: dataParts.join('@'),
       // Explicit fields for sdk-dapp Transaction factory
       chainID: '1',
     };
-  }, []);
+  }, [marketplaceAddress]);
 
   const buildBuyTx = useCallback((p: BuyNftParams) => {
+    if (!marketplaceAddress) {
+      throw new Error('Marketplace indisponible — adresse SC non configurée');
+    }
     return {
-      receiver: MARKETPLACE_ADDRESS,
+      receiver: marketplaceAddress,
       value: egldToAtomic(p.priceEgld),
       gasLimit: 18_000_000,
       data: `buyNft@${numToHex(p.listingId)}`,
       chainID: '1',
     };
-  }, []);
+  }, [marketplaceAddress]);
 
   const listNft = useCallback(
     async (p: ListNftParams) => {
@@ -147,6 +173,6 @@ export function useMarketplaceTx() {
     pending,
     error,
     lastTx,
-    marketplaceAddress: MARKETPLACE_ADDRESS,
+    marketplaceAddress,
   };
 }

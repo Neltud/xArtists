@@ -3,7 +3,7 @@ import { useMultiversX } from '../hooks/useMultiversX'
 import MoonpayButton from '../components/MoonpayButton'
 
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
-const BTC_ADDR = 'bc1qglq57zpqjpdqe83dv5lkt4ky39cqmlfsqr8z9s'
+const BTC_ADDR = 'bc1qrsmtgwlqvd66vkpng26yf8c8s07df332ac052z'
 
 const SERVICES = [
   { id: 'signal_basic', name: 'Signal LIA Basic', price_egld: 0.001, desc: 'Signal marché complet' },

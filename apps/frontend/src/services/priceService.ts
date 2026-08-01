@@ -1,3 +1,5 @@
+import { fetchMirroredJson } from '../config/dataSources'
+
 // Prix EGLD — MultiversX economics first, CoinGecko fallback
 export const getEgldPrice = async (): Promise<number> => {
   try {
@@ -23,7 +25,21 @@ export const getEgldPrice = async (): Promise<number> => {
 /** Supply documentée e-compass / on-chain approx quand API renvoie raw 0 */
 const TRO_SUPPLY_FALLBACK = 476_223;
 
+async function getTroSupplyFallback(): Promise<number> {
+  try {
+    const config = await fetchMirroredJson<{ tro_supply?: number }>('config.json', {
+      cache: 'no-store',
+    })
+    return config.tro_supply && config.tro_supply > 0
+      ? config.tro_supply
+      : TRO_SUPPLY_FALLBACK
+  } catch {
+    return TRO_SUPPLY_FALLBACK
+  }
+}
+
 export const getTroInfo = async () => {
+  const supplyFallback = await getTroSupplyFallback()
   try {
     const res = await fetch('https://api.multiversx.com/tokens/TRO-94c925');
     const data = await res.json();
@@ -39,10 +55,10 @@ export const getTroInfo = async () => {
 
     // Si l'API renvoie un nombre déjà « humain » ou 0, forcer fallback doc
     if (!Number.isFinite(circulatingSupply) || circulatingSupply <= 0) {
-      circulatingSupply = TRO_SUPPLY_FALLBACK;
+      circulatingSupply = supplyFallback;
     }
     if (!Number.isFinite(totalSupply) || totalSupply <= 0) {
-      totalSupply = TRO_SUPPLY_FALLBACK;
+      totalSupply = supplyFallback;
     }
     // Si division 10^18 a tout cassé (supply déjà non-raw)
     if (circulatingSupply < 1 && rawCirculating > 1000 && rawCirculating < 1e12) {
@@ -70,8 +86,8 @@ export const getTroInfo = async () => {
     return {
       price: 0,
       marketCap: 0,
-      circulatingSupply: TRO_SUPPLY_FALLBACK,
-      totalSupply: TRO_SUPPLY_FALLBACK,
+      circulatingSupply: supplyFallback,
+      totalSupply: supplyFallback,
       name: 'TUDURIORIGINAL',
       identifier: 'TRO-94c925',
       holders: 0,

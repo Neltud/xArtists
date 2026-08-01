@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
+import { fetchMirroredJson } from '../config/dataSources'
+import { getBtcPrice, getTroInfo } from '../services/priceService'
 
 const MVX_API = 'https://api.multiversx.com'
-const RAW_BASE = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
-const TRO_TOKEN = 'TRO-94c925'
 const STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000
 
 function checkStale(timestamp: string | undefined): boolean {
@@ -94,36 +94,24 @@ export function MultiversXProvider({ children }: { children: ReactNode }) {
 
   const fetchAll = useCallback(async () => {
     try {
-      const [econRes, fgRes, liaRes, xaRes, bonRes] = await Promise.allSettled([
+      const [econRes, fgRes, liaRes, xaRes, bonRes, troRes, btcPrice] = await Promise.allSettled([
         fetch(`${MVX_API}/economics`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
         fetch('https://api.alternative.me/fng/?limit=1').then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
-        fetch(`${RAW_BASE}/data/lia_v6_status.json`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
-        fetch(`${RAW_BASE}/data/xartists_onchain.json`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
-        fetch(`${RAW_BASE}/data/battle_of_nodes.json`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() }),
+        fetchMirroredJson<LIAStatus>('lia_v6_status.json', { cache: 'no-store' }),
+        fetchMirroredJson<XArtistsData>('xartists_onchain.json', { cache: 'no-store' }),
+        fetchMirroredJson<BonData>('battle_of_nodes.json', { cache: 'no-store' }),
+        getTroInfo(),
+        getBtcPrice(),
       ])
 
       const egldPrice = econRes.status === 'fulfilled' ? (econRes.value?.price ?? 0) : 0
       const fg = fgRes.status === 'fulfilled' ? fgRes.value?.data?.[0] : null
-
-      let troPrice = 0
-      try {
-        const mex = await fetch(`${MVX_API}/tokens/${TRO_TOKEN}`).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
-        troPrice = mex?.price ?? 0
-      } catch (e) {
-        console.debug('[MultiversX] TRO price fetch failed:', e)
-      }
-
-      let btcPrice = 0
-      try {
-        const cg = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd').then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
-        btcPrice = cg?.bitcoin?.usd ?? 0
-      } catch (e) {
-        console.debug('[MultiversX] BTC price fetch failed:', e)
-      }
+      const troPrice = troRes.status === 'fulfilled' ? troRes.value.price : 0
+      const btc = btcPrice.status === 'fulfilled' ? btcPrice.value : 0
 
       setPrices({
         egld: egldPrice,
-        btc: btcPrice,
+        btc,
         tro: troPrice,
         wtao: 0,
         fearGreed: fg ? parseInt(fg.value, 10) : 50,

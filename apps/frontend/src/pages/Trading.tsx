@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
+import { fetchMirroredJson } from '../config/dataSources'
 import { useMultiversX } from '../hooks/useMultiversX'
-
-const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
 
 interface LiaTrade {
   id?: string
@@ -14,6 +13,7 @@ interface LiaTrade {
   size_usd?: number
   confidence?: number
   source?: string
+  tx?: string
 }
 
 interface TrailPos {
@@ -38,20 +38,14 @@ export default function Trading() {
     let cancelled = false
     ;(async () => {
       try {
-        const [tRes, trRes] = await Promise.all([
-          fetch(`${RAW}/data/lia_trades.json`, { cache: 'no-store' }),
-          fetch(`${RAW}/data/lia_trailing_state.json`, { cache: 'no-store' }),
+        const [tradesData, trailsData] = await Promise.all([
+          fetchMirroredJson<{ trades?: LiaTrade[]; updated?: string }>('lia_trades.json', { cache: 'no-store' }),
+          fetchMirroredJson<{ positions?: TrailPos[] }>('lia_trailing_state.json', { cache: 'no-store' }),
         ])
         if (cancelled) return
-        if (tRes.ok) {
-          const j = await tRes.json()
-          setTrades(Array.isArray(j.trades) ? j.trades.slice(0, 30) : [])
-          setDataTs(j.updated || '')
-        }
-        if (trRes.ok) {
-          const j = await trRes.json()
-          setTrails(Array.isArray(j.positions) ? j.positions : [])
-        }
+        setTrades(Array.isArray(tradesData.trades) ? tradesData.trades.slice(0, 30) : [])
+        setDataTs(tradesData.updated || '')
+        setTrails(Array.isArray(trailsData.positions) ? trailsData.positions : [])
       } catch {
         /* offline / missing files */
       }
@@ -138,7 +132,8 @@ export default function Trading() {
                   <th className="py-2 pr-2">HWM</th>
                   <th className="py-2 pr-2">Stop</th>
                   <th className="py-2 pr-2">Restant</th>
-                  <th className="py-2">Status</th>
+                  <th className="py-2 pr-2">Status</th>
+                  <th className="py-2">Explorer</th>
                 </tr>
               </thead>
               <tbody>
@@ -194,7 +189,21 @@ export default function Trading() {
                       {t.size_usd != null ? `$${t.size_usd}` : '—'}
                     </td>
                     <td className="py-2 pr-2 mono text-xs">{t.entry ?? t.price ?? '—'}</td>
-                    <td className="py-2">{t.status}</td>
+                    <td className="py-2 pr-2">{t.status}</td>
+                    <td className="py-2 text-xs">
+                      {t.tx ? (
+                        <a
+                          href={`https://explorer.multiversx.com/transactions/${t.tx}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-purple-400 hover:text-purple-300"
+                        >
+                          tx ↗
+                        </a>
+                      ) : (
+                        <span className="text-gray-500">—</span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -36,17 +36,20 @@ jobs:
         working-directory: apps/frontend
         run: |
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
-          # Prefer full build; fallback vite-only if tsc fails
-          npm run build || npx vite build
+          mkdir -p public/data
+          cp -f ../../data/*.json public/data/
+          npm run build
 
       - name: Publish dist → docs
         run: |
           mkdir -p docs
+          mkdir -p docs/data
           # Keep legal/docs markdown; replace web assets with React build
           rm -f docs/index.html
           rm -rf docs/assets docs/icons 2>/dev/null || true
           if [ -d apps/frontend/dist ]; then
             cp -r apps/frontend/dist/* docs/
+            cp -f data/*.json docs/data/
             echo "Deployed React dist to docs/"
           else
             echo "ERROR: apps/frontend/dist missing"

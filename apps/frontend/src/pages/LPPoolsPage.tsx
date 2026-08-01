@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { fetchMirroredJson } from '../config/dataSources'
 import { useWalletTokens } from '../hooks/useWalletTokens'
 import { getTroInfo, getEgldPrice } from '../services/priceService'
 
@@ -101,7 +102,7 @@ export default function LPPoolsPage() {
     ;(async () => {
       try {
         const [cfg, tro, egld] = await Promise.all([
-          fetch(`${import.meta.env.BASE_URL}data/config.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+          fetchMirroredJson<{ pools?: PoolCfg[] }>('config.json', { cache: 'no-store' }).catch(() => null),
           getTroInfo(),
           getEgldPrice(),
         ])

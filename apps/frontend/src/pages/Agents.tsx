@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-
-const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
+import { fetchMirroredJson } from '../config/dataSources'
 
 interface Forecast {
   asset: string
@@ -90,9 +89,7 @@ export default function Agents() {
     setLoading(true)
     setError(null)
     try {
-      const r = await fetch(RAW + '?t=' + Date.now())
-      if (!r.ok) throw new Error(`HTTP ${r.status}`)
-      setData((await r.json()) as ForecastData)
+      setData(await fetchMirroredJson<ForecastData>('greensmoke_forecasts.json', { cache: 'no-store', bustCache: true }))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur chargement')
     } finally {

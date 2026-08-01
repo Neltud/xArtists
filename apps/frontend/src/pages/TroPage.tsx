@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
+import { fetchMirroredJson } from '../config/dataSources'
 import { getTroInfo, getEgldPrice } from '../services/priceService'
 
-const CONFIG_URL = `${import.meta.env.BASE_URL}data/config.json`.replace(/\/\//g, '/').replace(':/', '://')
 const TRO_ID = 'TRO-94c925'
 const EXPLORER = `https://explorer.multiversx.com/tokens/${TRO_ID}`
 
@@ -70,7 +70,7 @@ export default function TroPage() {
         const [tro, egldP, cfgRes] = await Promise.all([
           getTroInfo(),
           getEgldPrice(),
-          fetch(`${import.meta.env.BASE_URL}data/config.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+          fetchMirroredJson<AppConfig>('config.json', { cache: 'no-store' }).catch(() => null),
         ])
         if (cancelled) return
         setInfo(tro)

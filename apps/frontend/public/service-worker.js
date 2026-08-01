@@ -1,5 +1,5 @@
 /* xArtists PWA service worker — cache shell for offline */
-const CACHE = 'xartists-shell-v2';
+const CACHE = 'xartists-shell-v3';
 const PRECACHE = [
   '/xArtists/',
   '/xArtists/index.html',
@@ -24,26 +24,20 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
-  if (url.pathname.includes('/data/') || url.hostname.includes('multiversx.com') || url.hostname.includes('coingecko')) {
-    event.respondWith(
-      fetch(request)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(request, copy));
-          return res;
-        })
-        .catch(() => caches.match(request))
-    );
-    return;
-  }
   event.respondWith(
-    caches.match(request).then((cached) =>
-      cached ||
-      fetch(request).then((res) => {
+    fetch(request)
+      .then((res) => {
         const copy = res.clone();
         caches.open(CACHE).then((c) => c.put(request, copy));
         return res;
       })
-    )
+      .catch(async () => {
+        const cached = await caches.match(request);
+        if (cached) return cached;
+        if (request.mode === 'navigate') {
+          return caches.match('/xArtists/index.html');
+        }
+        throw new Error(`Offline and uncached: ${url.pathname}`);
+      })
   );
 });

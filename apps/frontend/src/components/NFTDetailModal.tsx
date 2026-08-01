@@ -10,7 +10,6 @@ import {
   XOXNO_COLLECTION,
 } from '../types/nft'
 import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
-import { useSendTransaction } from '../hooks/useSendTransaction'
 import { useWeb3 } from '../hooks/useWeb3'
 
 interface Props {
@@ -20,7 +19,6 @@ interface Props {
 
 export default function NFTDetailModal({ nft, onClose }: Props) {
   const { isLoggedIn } = useWeb3()
-  const { send } = useSendTransaction()
   const { listNft, buyNft, pending, error, lastTx, marketplaceAddress } = useMarketplaceTx()
   const [listPrice, setListPrice] = useState('1')
   const [buyPrice, setBuyPrice] = useState('1')
@@ -46,6 +44,7 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
   const img = nftImageUrl(nft)
   const royalties = nftRoyalties(nft)
   const isSFT = typeLabel(nft.type) === 'SFT'
+  const marketplaceReady = marketplaceAddress.startsWith('erd1')
 
   const onList = async () => {
     setTxMsg(null)
@@ -59,17 +58,7 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
       return
     }
     try {
-      await listNft(
-        { tokenId: nft.collection, nonce: nft.nonce, priceEgld: price },
-        async (tx) => {
-          const res = await send([tx], {
-            processingMessage: 'Listing NFT…',
-            successMessage: 'NFT listé',
-            errorMessage: 'Échec listing',
-          })
-          return { hash: res.sessionId ?? undefined }
-        },
-      )
+      await listNft({ tokenId: nft.collection, nonce: nft.nonce, priceEgld: price })
       setTxMsg('Listing soumis — confirme dans le wallet.')
     } catch (e: unknown) {
       setTxMsg(e instanceof Error ? e.message : 'Erreur listing')
@@ -89,17 +78,7 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
       return
     }
     try {
-      await buyNft(
-        { listingId: id, priceEgld: price },
-        async (tx) => {
-          const res = await send([tx], {
-            processingMessage: 'Achat NFT…',
-            successMessage: 'Achat envoyé',
-            errorMessage: 'Échec achat',
-          })
-          return { hash: res.sessionId ?? undefined }
-        },
-      )
+      await buyNft({ listingId: id, priceEgld: price })
       setTxMsg('Achat soumis — confirme dans le wallet.')
     } catch (e: unknown) {
       setTxMsg(e instanceof Error ? e.message : 'Erreur achat')
@@ -177,7 +156,9 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
             {/* On-chain List / Buy */}
             <div className="rounded-xl border border-purple-500/25 bg-purple-500/5 px-3 py-3 text-xs text-gray-300 space-y-3">
               <p className="font-semibold text-purple-200">Marketplace on-chain (xArtists)</p>
-              <p className="text-[10px] text-gray-500 mono">SC: {marketplaceAddress.slice(0, 16)}…</p>
+              <p className="text-[10px] text-gray-500 mono">
+                {marketplaceReady ? `SC: ${marketplaceAddress.slice(0, 16)}…` : 'SC marketplace indisponible'}
+              </p>
 
               <div className="flex flex-wrap items-end gap-2">
                 <label className="flex flex-col gap-1">
@@ -193,7 +174,7 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
                 </label>
                 <button
                   type="button"
-                  disabled={pending}
+                  disabled={pending || !marketplaceReady}
                   onClick={onList}
                   className="btn-primary text-sm disabled:opacity-50"
                 >
@@ -225,7 +206,7 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
                 </label>
                 <button
                   type="button"
-                  disabled={pending}
+                  disabled={pending || !marketplaceReady}
                   onClick={onBuy}
                   className="btn-secondary text-sm disabled:opacity-50"
                 >
@@ -241,6 +222,9 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
               )}
               {!isLoggedIn && (
                 <p className="text-[11px] text-gray-500">Wallet requis pour List / Buy on-chain.</p>
+              )}
+              {!marketplaceReady && (
+                <p className="text-[11px] text-orange-300">Marketplace désactivée — adresse contrat absente.</p>
               )}
             </div>
 

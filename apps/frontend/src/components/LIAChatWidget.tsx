@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-
-const RAW_BASE = 'https://raw.githubusercontent.com/Neltud/xArtists/main';
+import { fetchMirroredJson } from '../config/dataSources';
 
 interface ChatMessage {
   role: 'user' | 'lia';
@@ -21,8 +20,8 @@ async function fetchLiveData(): Promise<LiveData> {
   const data: LiveData = {};
   try {
     const [xaRes, bonRes] = await Promise.allSettled([
-      fetch(`${RAW_BASE}/data/xartists_onchain.json`).then(r => r.json()),
-      fetch(`${RAW_BASE}/data/battle_of_nodes.json`).then(r => r.json()),
+      fetchMirroredJson<any>('xartists_onchain.json', { cache: 'no-store' }),
+      fetchMirroredJson<any>('battle_of_nodes.json', { cache: 'no-store' }),
     ]);
     if (xaRes.status === 'fulfilled') {
       data.tro = xaRes.value?.tro_token?.price_usd ?? 0;

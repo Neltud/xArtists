@@ -23,8 +23,8 @@ export default function HatomPage() {
     ? (hatomPosition?.healthFactor ?? 999)
     : (liaStatus?.portfolio?.hatom_health_factor ?? 999)
   const supplied = hatomPosition?.totalSuppliedUsd ?? 0
-  const borrowed = hatomPosition?.totalBorrowedUsd ?? 0
-  const net = supplied - borrowed
+  const borrowed = 0
+  const net = supplied
   const claimHtm = hatomPosition?.claimableHtm ?? 0
   const claimUsd = hatomPosition?.claimableHtmUsd ?? 0
   const markets = hatomPosition?.markets ?? []
@@ -82,12 +82,8 @@ export default function HatomPage() {
             </div>
             <div className="card">
               <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Borrowed (USD)</p>
-              <p className={`text-2xl font-black ${borrowed > 0 ? 'text-orange-400' : 'text-gray-500'}`}>
-                {fromApi ? `$${borrowed.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}` : 'N/A'}
-              </p>
-              {!fromApi && (
-                <p className="text-xs text-gray-500 mt-1">Nécessite API Hatom</p>
-              )}
+              <p className="text-2xl font-black text-gray-500">$0.00</p>
+              <p className="text-xs text-gray-500 mt-1">Borrowing non affiché sur xArtists</p>
             </div>
             <div className="card">
               <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Net Position</p>
@@ -123,9 +119,7 @@ export default function HatomPage() {
                     <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
                       <th className="text-left py-2 px-3">Actif</th>
                       <th className="text-right py-2 px-3">Supplied</th>
-                      <th className="text-right py-2 px-3">Borrowed</th>
                       <th className="text-right py-2 px-3">Supplied USD</th>
-                      <th className="text-right py-2 px-3">Borrowed USD</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -140,14 +134,8 @@ export default function HatomPage() {
                         <td className="py-3 px-3 text-right mono text-sm text-green-400">
                           {m.supplied > 0 ? m.supplied.toLocaleString('fr-FR', { maximumFractionDigits: 4 }) : '—'}
                         </td>
-                        <td className="py-3 px-3 text-right mono text-sm text-orange-400">
-                          {m.borrowed > 0 ? m.borrowed.toLocaleString('fr-FR', { maximumFractionDigits: 4 }) : '—'}
-                        </td>
                         <td className="py-3 px-3 text-right font-bold text-sm">
-                          ${m.valueSuppliedUsd.toFixed(2)}
-                        </td>
-                        <td className="py-3 px-3 text-right font-bold text-sm text-orange-400">
-                          {m.valueBorrowedUsd > 0 ? `$${m.valueBorrowedUsd.toFixed(2)}` : '—'}
+                         ${m.valueSuppliedUsd.toFixed(2)}
                         </td>
                       </tr>
                     ))}
