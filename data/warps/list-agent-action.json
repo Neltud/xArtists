@@ -1,0 +1,43 @@
+{
+  "protocol": "warp:3.0.0",
+  "chain": "multiversx",
+  "name": "xartists-list-agent-action",
+  "title": "List Agent Action",
+  "description": "Create an xArtists agent action listing priced in EGLD.",
+  "actions": [
+    {
+      "type": "contract",
+      "label": "List now",
+      "address": "{{AGENTS_MARKETPLACE_ADDRESS}}",
+      "func": "listAgentAction",
+      "gasLimit": 12000000,
+      "inputs": [
+        {
+          "name": "agent_id",
+          "label": "Agent ID",
+          "description": "Agent identifier exposed in the xArtists agents marketplace.",
+          "type": "string",
+          "position": "arg:1",
+          "source": "field",
+          "required": true,
+          "default": "LIA-v6"
+        },
+        {
+          "name": "price_egld",
+          "label": "Price (EGLD)",
+          "description": "Listing price converted to BigUint atomic EGLD.",
+          "type": "biguint",
+          "position": "arg:2",
+          "source": "field",
+          "required": true,
+          "default": "0.01",
+          "modifier": "scale:18",
+          "min": 0.000001
+        }
+      ]
+    }
+  ],
+  "messages": {
+    "success": "listAgentAction submitted to your MultiversX wallet."
+  }
+}

@@ -17,10 +17,13 @@ Init: `fee_bps` (ex. 250 = 2,5%). Fee reste sur le contrat.
 
 | Fichier | Rôle |
 |---------|------|
-| `src/hooks/useAgentsMarketplace.ts` | Build TX list/buy/cancel |
-| `src/pages/MarketplacePage.tsx` | UI catalogue + formulaires |
+| `apps/frontend/src/hooks/useAgentsMarketplace.ts` | Build TX list/buy |
+| `apps/frontend/src/pages/Agents.tsx` | UI catalogue + formulaires |
+| `apps/frontend/src/services/warpService.ts` | Build JSON Warps buy/list |
+| `apps/frontend/src/components/WarpButton.tsx` | Copy JSON + deep-link placeholder |
 | `packages/core/src/contracts/agentsMarketplaceAbi.ts` | ABI + adresse env |
-| `scripts/deploy_agents_marketplace.sh` | Deploy mxpy |
+| `data/warps/*.json` | Templates Warps v3 |
+| `lia/vellum/deploy_scs_node.py` | Deploy mxpy / Vellum |
 
 ## Config adresse
 
@@ -28,7 +31,7 @@ Init: `fee_bps` (ex. 250 = 2,5%). Fee reste sur le contrat.
 export VITE_AGENTS_MARKETPLACE_ADDRESS=erd1qqq...
 ```
 
-Puis maj `data/contracts.json` et `CONTRACTS.agentsMarketplace` dans `src/config/contracts.ts`.
+Puis maj `data/contracts.json`. Le frontend recharge aussi `contracts.agents_marketplace` automatiquement si l'env est vide.
 
 ## Signature live
 

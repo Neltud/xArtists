@@ -32,17 +32,18 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 | Item | Priorité | Done when |
 |------|----------|-----------|
 | Signature tx live (wallet / pem) dans executor | P0 | Trades mainnet confirmés on-chain |
-| Poll confirmation adaptatif ms + circuit breaker | P0 | Broadcast → confirmation prêt pour Supernova |
+| Poll confirmation adaptatif ms + circuit breaker | ✅ P0 livré | Broadcast → confirmation prêt pour Supernova (`LIA_CONFIRM_POLL_MS_BASE`, `LIA_CONFIRM_POLL_MS_PRE`, `LIA_CONFIRM_MAX_WAIT_S`, `LIA_SUPERNOVA_MODE`) |
 | GreenSmokeConsumer branché sur les brains | P1 | Bias regime dans décisions BUY/WAIT |
 | ContrarianBrain implémenté | P1 | 4 % budget, RSI < 30 + fear |
 | Trailing stops + Kelly sizing | P1 | Positions dynamiques |
-| **Agents Marketplace on-chain** | P0 | Contrat list/buy agent actions + ABI dans `@xartists/core` |
+| **Agents Marketplace on-chain** | 🟡 P0 presque livré | Contrat list/buy agent actions + ABI dans `@xartists/core` + adresse mainnet injectée après deploy |
 | PerformanceTracker → `data/lia_performance.json` | P1 | Winrate / drawdown sur Dashboard |
 
-### Agents Marketplace (design)
-- Contrat Rust : `listAgentAction`, `buyAgentAction`, `executeAgentAction`, royalties creator
-- Frontend : page `/agents` + listing Warps-compatible
-- ABI ajoutée dans `packages/core/src/contracts/index.ts` (stub v0.1)
+### Agents Marketplace (implémentation P0)
+- Contrat Rust : `listAgentAction`, `buyAgentAction`, `cancelListing`, `getListing`
+- Frontend : page `/agents` branchée avec hook `useAgentsMarketplace` + Warps copy/deep-link placeholder
+- ABI alignée dans `packages/core/src/contracts/index.ts` et `packages/core/src/contracts/agentsMarketplaceAbi.ts`
+- Templates Warps : `data/warps/buy-agent-action.json`, `data/warps/list-agent-action.json`, `data/warps/get-listing.json`
 
 ---
 
@@ -138,7 +139,7 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 |------|----------|
 | Gas limits recalibrés pour rounds sub-second | P1 (après activation) |
 | UI : indicateurs finality / shard | P2 |
-| Executor : poll confirmation adaptatif (ms) | ✅ Base prête |
+| Executor : poll confirmation adaptatif (ms) | ✅ Base prête + mode `auto|on|off` documenté |
 | Docs : runbook upgrade validators / SC | P2 |
 
 ---

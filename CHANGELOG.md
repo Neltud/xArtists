@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Features
+
+* add agents marketplace wallet hook, Warps JSON templates, and `/agents` UI wiring for list/buy agent actions
+
 ### Bug Fixes
 
 * align GitHub Pages deploy with frontend package-lock, mirrored data JSON, and strict typed build
@@ -10,6 +14,11 @@
 * fix Deploy xArtists Exclusive setup-node cache path so Pages builds no longer fail before install
 * add TRO + Hatom mirrored JSON fallbacks for live frontend data when upstream APIs are stale or unavailable
 * accept PEM secret text in live executor and add adaptive confirmation polling for Supernova-ready signing
+* guard agents-marketplace buy/cancel against missing listings and align core ABI with the deployed contract shape
+
+### Documentation
+
+* refresh LIA v6 status, roadmap, and product status for Supernova polling envs, agents-marketplace deploy path, and Warps templates
 
 ## [0.14.0](https://github.com/Neltud/xArtists/compare/v0.13.0...v0.14.0) (2026-07-27)
 

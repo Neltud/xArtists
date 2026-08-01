@@ -30,9 +30,17 @@ CHAIN_ID = os.getenv("LIA_CHAIN_ID", "1")
 API = os.getenv("LIA_MVX_API", "https://api.multiversx.com")
 PROXY = os.getenv("LIA_MVX_PROXY", "https://gateway.multiversx.com")
 WAIT_CONFIRMATION = os.getenv("LIA_WAIT_CONFIRMATION", "1") == "1"
-CONFIRM_INITIAL_MS = int(os.getenv("LIA_CONFIRM_INITIAL_MS", "250"))
-CONFIRM_MAX_MS = int(os.getenv("LIA_CONFIRM_MAX_MS", "1500"))
-CONFIRM_TIMEOUT_MS = int(os.getenv("LIA_CONFIRM_TIMEOUT_MS", "20000"))
+SUPERNOVA_MODE = os.getenv("LIA_SUPERNOVA_MODE", "auto").strip().lower() or "auto"
+CONFIRM_POLL_MS_BASE = int(
+    os.getenv("LIA_CONFIRM_POLL_MS_BASE")
+    or os.getenv("LIA_CONFIRM_INITIAL_MS")
+    or "400"
+)
+CONFIRM_POLL_MS_PRE = int(os.getenv("LIA_CONFIRM_POLL_MS_PRE", "1500"))
+CONFIRM_MAX_WAIT_S = int(
+    os.getenv("LIA_CONFIRM_MAX_WAIT_S")
+    or str(max(int(os.getenv("LIA_CONFIRM_TIMEOUT_MS", "45000")) // 1000, 1))
+)
 
 TRO_TOKEN = "TRO-94c925"
 
@@ -82,6 +90,9 @@ class UniversalExecutor:
     def _resolve_pem_path(self) -> str:
         if self._pem_path:
             return self._pem_path
+        if PEM_TEXT and os.path.isfile(PEM_TEXT):
+            self._pem_path = PEM_TEXT
+            return self._pem_path
         if PEM_PATH and os.path.isfile(PEM_PATH):
             self._pem_path = PEM_PATH
             return self._pem_path
@@ -95,6 +106,29 @@ class UniversalExecutor:
             self._pem_path = path
             return self._pem_path
         raise RuntimeError("Missing LIA_WALLET_PEM or LIA_WALLET_PEM_PATH — refuse live sign")
+
+    def _safe_error_detail(self, err: Exception) -> str:
+        detail = str(err) or err.__class__.__name__
+        redactions = [PEM_TEXT, PEM_PATH, self._pem_path or ""]
+        for secret in redactions:
+            if secret:
+                detail = detail.replace(secret, "[redacted]")
+        return detail
+
+    def _supernova_enabled(self) -> bool:
+        if SUPERNOVA_MODE == "on":
+            return True
+        if SUPERNOVA_MODE == "off":
+            return False
+        api = API.lower()
+        proxy = PROXY.lower()
+        return (
+            CHAIN_ID == "1"
+            and "devnet" not in api
+            and "testnet" not in api
+            and "devnet" not in proxy
+            and "testnet" not in proxy
+        )
 
     def _next_nonce(self, address: str) -> int:
         import urllib.request
@@ -111,9 +145,13 @@ class UniversalExecutor:
         with urllib.request.urlopen(url, timeout=20) as r:
             return json.loads(r.read().decode())
 
-    def wait_for_confirmation(self, tx_hash: str) -> dict[str, Any]:
-        delay_ms = max(CONFIRM_INITIAL_MS, 50)
-        deadline = time.time() + max(CONFIRM_TIMEOUT_MS, delay_ms) / 1000
+    def _poll_confirmation(self, tx_hash: str) -> dict[str, Any]:
+        supernova_enabled = self._supernova_enabled()
+        base_delay_ms = max(CONFIRM_POLL_MS_BASE, 50)
+        pre_delay_ms = max(CONFIRM_POLL_MS_PRE, base_delay_ms)
+        max_delay_ms = max(base_delay_ms, pre_delay_ms)
+        delay_ms = base_delay_ms if supernova_enabled else pre_delay_ms
+        deadline = time.time() + max(CONFIRM_MAX_WAIT_S, 1)
         last_status = "pending"
 
         while time.time() < deadline:
@@ -128,9 +166,16 @@ class UniversalExecutor:
                 last_status = "pending"
 
             time.sleep(delay_ms / 1000)
-            delay_ms = min(int(delay_ms * 1.7), max(CONFIRM_MAX_MS, delay_ms))
+            growth = 1.35 if supernova_enabled else 1.6
+            floor_ms = base_delay_ms if supernova_enabled else pre_delay_ms
+            delay_ms = min(max(int(delay_ms * growth), floor_ms), max_delay_ms)
 
-        return {"ok": None, "status": last_status, "timed_out": True}
+        return {
+            "ok": None,
+            "status": last_status,
+            "timed_out": True,
+            "supernova": supernova_enabled,
+        }
 
     def sign_and_send(
         self,
@@ -175,7 +220,7 @@ class UniversalExecutor:
             provider = ProxyNetworkProvider(PROXY)
             tx_hash = provider.send_transaction(tx)
             h = tx_hash if isinstance(tx_hash, str) else str(tx_hash)
-            confirmation = self.wait_for_confirmation(h) if WAIT_CONFIRMATION else None
+            confirmation = self._poll_confirmation(h) if WAIT_CONFIRMATION else None
             if confirmation and confirmation.get("ok") is False:
                 self.breaker.record_failure()
                 return ExecResult(False, h, "live", f"broadcasted {h} but confirmation failed ({confirmation.get('status')})")
@@ -187,7 +232,7 @@ class UniversalExecutor:
             return ExecResult(True, h, "live", f"sent {h}")
         except Exception as e:
             self.breaker.record_failure()
-            return ExecResult(False, None, "live", str(e))
+            return ExecResult(False, None, "live", self._safe_error_detail(e))
 
     def micro_swap_test_egld_self(self, amount_wei: int = 1000) -> ExecResult:
         """Micro test mainnet: self-transfer tiny EGLD to prove sign+broadcast."""
@@ -259,9 +304,11 @@ class UniversalExecutor:
             "proxy": PROXY,
             "confirmation_poll": {
                 "enabled": WAIT_CONFIRMATION,
-                "initial_ms": CONFIRM_INITIAL_MS,
-                "max_ms": CONFIRM_MAX_MS,
-                "timeout_ms": CONFIRM_TIMEOUT_MS,
+                "supernova_mode": SUPERNOVA_MODE,
+                "supernova_enabled": self._supernova_enabled(),
+                "poll_ms_base": CONFIRM_POLL_MS_BASE,
+                "poll_ms_pre": CONFIRM_POLL_MS_PRE,
+                "max_wait_s": CONFIRM_MAX_WAIT_S,
             },
             "policy": "accumulate EGLD/WBTC/USDC; redistribute TRO",
         }

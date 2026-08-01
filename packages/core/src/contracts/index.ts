@@ -3,6 +3,8 @@
  * All contracts are live on MultiversX Mainnet (Chain ID: 1)
  */
 
+import { AGENTS_MARKETPLACE_ADDRESS } from './agentsMarketplaceAbi'
+
 export interface ContractABI {
   name: string
   address: string
@@ -249,23 +251,20 @@ export const NFT_MINTER_ABI: ContractABI = {
   ],
 }
 
-// ========== AGENTS MARKETPLACE (on-chain) — design v0.1 ==========
-/** Address TBD after deploy — placeholder zero SC for typing / frontend wiring */
+// ========== AGENTS MARKETPLACE ==========
 export const AGENTS_MARKETPLACE_ABI: ContractABI = {
   name: 'Agents Marketplace',
-  address: 'erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu',
-  version: '0.1.0-design',
+  address: AGENTS_MARKETPLACE_ADDRESS,
+  version: '0.1.0',
   functions: [
     {
       name: 'listAgentAction',
       inputs: [
         { name: 'agent_id', type: 'ManagedBuffer', description: 'LIA / GreenSmoke / custom agent id' },
-        { name: 'action_uri', type: 'ManagedBuffer', description: 'Warp or workflow URI' },
         { name: 'price', type: 'BigUint' },
-        { name: 'royalty_bps', type: 'u64', description: 'Creator royalty in basis points' },
       ],
-      outputs: [{ name: 'listing_id', type: 'u64' }],
-      payable: true,
+      outputs: [],
+      payable: false,
       readonly: false,
     },
     {
@@ -273,16 +272,6 @@ export const AGENTS_MARKETPLACE_ABI: ContractABI = {
       inputs: [{ name: 'listing_id', type: 'u64' }],
       outputs: [],
       payable: true,
-      readonly: false,
-    },
-    {
-      name: 'executeAgentAction',
-      inputs: [
-        { name: 'listing_id', type: 'u64' },
-        { name: 'params', type: 'ManagedBuffer' },
-      ],
-      outputs: [{ name: 'execution_id', type: 'u64' }],
-      payable: false,
       readonly: false,
     },
     {
@@ -295,32 +284,24 @@ export const AGENTS_MARKETPLACE_ABI: ContractABI = {
     {
       name: 'getListing',
       inputs: [{ name: 'listing_id', type: 'u64' }],
-      outputs: [{ name: 'listing', type: 'AgentListing' }],
+      outputs: [{ name: 'listing', type: 'OptionalValue<AgentListing>' }],
       payable: false,
       readonly: true,
     },
   ],
   events: [
     {
-      name: 'AgentActionListed',
+      name: 'list',
       inputs: [
         { name: 'listing_id', type: 'u64', indexed: true },
         { name: 'seller', type: 'Address', indexed: true },
-        { name: 'agent_id', type: 'ManagedBuffer', indexed: false },
       ],
     },
     {
-      name: 'AgentActionSold',
+      name: 'buy',
       inputs: [
         { name: 'listing_id', type: 'u64', indexed: true },
         { name: 'buyer', type: 'Address', indexed: true },
-      ],
-    },
-    {
-      name: 'AgentActionExecuted',
-      inputs: [
-        { name: 'listing_id', type: 'u64', indexed: true },
-        { name: 'execution_id', type: 'u64', indexed: true },
       ],
     },
   ],

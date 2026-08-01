@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 import { fetchMirroredJson } from '../config/dataSources'
+import { useAgentsMarketplace } from '../hooks/useAgentsMarketplace'
+import WarpButton from '../components/WarpButton'
+import { buildBuyAgentWarp, buildListAgentWarp } from '../services/warpService'
 
 interface Forecast {
   asset: string
@@ -84,6 +87,19 @@ export default function Agents() {
   const [data, setData] = useState<ForecastData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [listAgentId, setListAgentId] = useState('LIA-v6')
+  const [listPrice, setListPrice] = useState('0.01')
+  const [buyListingId, setBuyListingId] = useState('1')
+  const [buyPrice, setBuyPrice] = useState('0.01')
+  const [marketplaceMsg, setMarketplaceMsg] = useState<string | null>(null)
+  const {
+    listAgentAction,
+    buyAgentAction,
+    pending: marketplacePending,
+    error: marketplaceError,
+    lastTx: marketplaceLastTx,
+    marketplaceAddress,
+  } = useAgentsMarketplace()
 
   const load = async () => {
     setLoading(true)
@@ -104,6 +120,52 @@ export default function Agents() {
   }, [])
 
   const agentsList = data ? Object.values(data.agents) : []
+  const marketplaceReady = marketplaceAddress.startsWith('erd1')
+  const buyWarp = buildBuyAgentWarp({
+    address: marketplaceAddress,
+    listingId: parseInt(buyListingId, 10) || 1,
+    priceEgld: buyPrice,
+  })
+  const listWarp = buildListAgentWarp({
+    address: marketplaceAddress,
+    agentId: listAgentId || 'LIA-v6',
+    priceEgld: listPrice,
+  })
+
+  const onListAgent = async () => {
+    setMarketplaceMsg(null)
+    const price = parseFloat(listPrice)
+    if (!listAgentId.trim()) {
+      setMarketplaceMsg('Agent ID requis')
+      return
+    }
+    if (!(price > 0)) {
+      setMarketplaceMsg('Prix EGLD invalide')
+      return
+    }
+    try {
+      await listAgentAction({ agentId: listAgentId.trim(), priceEgld: price })
+      setMarketplaceMsg('Listing agent soumis — confirme dans le wallet.')
+    } catch (e) {
+      setMarketplaceMsg(e instanceof Error ? e.message : 'Erreur listing agent')
+    }
+  }
+
+  const onBuyAgent = async () => {
+    setMarketplaceMsg(null)
+    const listingId = parseInt(buyListingId, 10)
+    const price = parseFloat(buyPrice)
+    if (!(listingId > 0) || !(price > 0)) {
+      setMarketplaceMsg('Listing ID / prix invalides')
+      return
+    }
+    try {
+      await buyAgentAction({ listingId, priceEgld: price })
+      setMarketplaceMsg('Achat agent soumis — confirme dans le wallet.')
+    } catch (e) {
+      setMarketplaceMsg(e instanceof Error ? e.message : 'Erreur achat agent')
+    }
+  }
 
   return (
     <div className="animate-fade-in pb-20 md:pb-0">
@@ -260,6 +322,134 @@ export default function Agents() {
             <span className="badge-green text-[10px]">●</span>
           </div>
         ))}
+      </div>
+
+      <div className="card mb-6 border-purple-500/25 bg-purple-500/5">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-purple-400 mb-2">🛒 Agents Marketplace on-chain</p>
+            <p className="text-sm text-gray-300">
+              Liste et achète des actions d’agents via <code className="text-purple-300">listAgentAction</code> et <code className="text-purple-300">buyAgentAction</code>.
+            </p>
+            <p className="text-[11px] text-gray-500 mono mt-2">
+              {marketplaceReady ? `SC: ${marketplaceAddress}` : 'SC agents-marketplace non configuré — renseigne VITE_AGENTS_MARKETPLACE_ADDRESS ou data/contracts.json'}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href="https://github.com/Neltud/xArtists/blob/main/docs/AGENTS_MARKETPLACE_INTEGRATION.md"
+              target="_blank"
+              rel="noreferrer"
+              className="btn-secondary text-sm"
+            >
+              Doc intégration ↗
+            </a>
+            <a
+              href="https://github.com/JoAiHQ/warps-specs"
+              target="_blank"
+              rel="noreferrer"
+              className="btn-secondary text-sm"
+            >
+              Specs Warps ↗
+            </a>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          <div className="rounded-xl border border-[#2a2a3a] bg-[#111118] p-4 space-y-3">
+            <p className="font-semibold text-sm text-purple-200">Lister une action agent</p>
+            <div className="flex flex-wrap gap-2">
+              <label className="flex flex-col gap-1 flex-1 min-w-[220px]">
+                <span className="text-[10px] uppercase text-gray-500">Agent ID</span>
+                <input
+                  type="text"
+                  value={listAgentId}
+                  onChange={(e) => setListAgentId(e.target.value)}
+                  className="rounded-lg border border-[#2a2a3a] bg-[#15151f] px-3 py-2 text-sm text-white"
+                />
+              </label>
+              <label className="flex flex-col gap-1 w-36">
+                <span className="text-[10px] uppercase text-gray-500">Prix EGLD</span>
+                <input
+                  type="number"
+                  min="0.001"
+                  step="0.001"
+                  value={listPrice}
+                  onChange={(e) => setListPrice(e.target.value)}
+                  className="rounded-lg border border-[#2a2a3a] bg-[#15151f] px-3 py-2 text-sm text-white"
+                />
+              </label>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={marketplacePending || !marketplaceReady}
+                onClick={onListAgent}
+                className="btn-primary text-sm disabled:opacity-50"
+              >
+                {marketplacePending ? '…' : 'List agent'}
+              </button>
+              <WarpButton warp={listWarp} filename="list-agent-action.json" disabled={!marketplaceReady} />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-[#2a2a3a] bg-[#111118] p-4 space-y-3">
+            <p className="font-semibold text-sm text-purple-200">Acheter une action agent</p>
+            <div className="flex flex-wrap gap-2">
+              <label className="flex flex-col gap-1 w-32">
+                <span className="text-[10px] uppercase text-gray-500">Listing ID</span>
+                <input
+                  type="number"
+                  min="1"
+                  value={buyListingId}
+                  onChange={(e) => setBuyListingId(e.target.value)}
+                  className="rounded-lg border border-[#2a2a3a] bg-[#15151f] px-3 py-2 text-sm text-white"
+                />
+              </label>
+              <label className="flex flex-col gap-1 w-36">
+                <span className="text-[10px] uppercase text-gray-500">Paiement EGLD</span>
+                <input
+                  type="number"
+                  min="0.001"
+                  step="0.001"
+                  value={buyPrice}
+                  onChange={(e) => setBuyPrice(e.target.value)}
+                  className="rounded-lg border border-[#2a2a3a] bg-[#15151f] px-3 py-2 text-sm text-white"
+                />
+              </label>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={marketplacePending || !marketplaceReady}
+                onClick={onBuyAgent}
+                className="btn-secondary text-sm disabled:opacity-50"
+              >
+                {marketplacePending ? '…' : 'Buy agent'}
+              </button>
+              <WarpButton warp={buyWarp} filename="buy-agent-action.json" disabled={!marketplaceReady} />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2 mt-4 text-xs">
+          <a href={`${import.meta.env.BASE_URL}data/warps/buy-agent-action.json`} target="_blank" rel="noreferrer" className="text-purple-400 hover:underline">
+            Template Warp buy ↗
+          </a>
+          <a href={`${import.meta.env.BASE_URL}data/warps/list-agent-action.json`} target="_blank" rel="noreferrer" className="text-purple-400 hover:underline">
+            Template Warp list ↗
+          </a>
+          <a href={`${import.meta.env.BASE_URL}data/warps/get-listing.json`} target="_blank" rel="noreferrer" className="text-purple-400 hover:underline">
+            Template Warp getListing ↗
+          </a>
+        </div>
+
+        {(marketplaceMsg || marketplaceError || marketplaceLastTx) && (
+          <p className="text-[11px] text-amber-200/90 mt-3">
+            {marketplaceMsg || marketplaceError}
+            {marketplaceLastTx ? ` · tx ${marketplaceLastTx}` : ''}
+          </p>
+        )}
       </div>
 
       <p className="text-xs text-gray-500 text-center">

@@ -45,6 +45,7 @@ pub trait AgentsMarketplace {
     #[payable("EGLD")]
     #[endpoint(buyAgentAction)]
     fn buy_agent_action(&self, listing_id: u64) {
+        require!(!self.listings(listing_id).is_empty(), "listing not found");
         let mut listing = self.listings(listing_id).get();
         require!(listing.active, "listing inactive");
         let payment = self.call_value().egld_value();
@@ -64,6 +65,7 @@ pub trait AgentsMarketplace {
 
     #[endpoint(cancelListing)]
     fn cancel_listing(&self, listing_id: u64) {
+        require!(!self.listings(listing_id).is_empty(), "listing not found");
         let mut listing = self.listings(listing_id).get();
         require!(listing.active, "inactive");
         require!(

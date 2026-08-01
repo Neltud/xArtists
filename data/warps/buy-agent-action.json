@@ -1,0 +1,44 @@
+{
+  "protocol": "warp:3.0.0",
+  "chain": "multiversx",
+  "name": "xartists-buy-agent-action",
+  "title": "Buy Agent Action",
+  "description": "Buy an xArtists agent action listing with EGLD.",
+  "actions": [
+    {
+      "type": "contract",
+      "label": "Buy now",
+      "address": "{{AGENTS_MARKETPLACE_ADDRESS}}",
+      "func": "buyAgentAction",
+      "gasLimit": 18000000,
+      "inputs": [
+        {
+          "name": "listing_id",
+          "label": "Listing ID",
+          "description": "Listing identifier returned by listAgentAction.",
+          "type": "u64",
+          "position": "arg:1",
+          "source": "field",
+          "required": true,
+          "default": 1,
+          "min": 1
+        },
+        {
+          "name": "payment_egld",
+          "label": "Payment (EGLD)",
+          "description": "EGLD value sent with buyAgentAction.",
+          "type": "biguint",
+          "position": "value",
+          "source": "field",
+          "required": true,
+          "default": "0.01",
+          "modifier": "scale:18",
+          "min": 0.000001
+        }
+      ]
+    }
+  ],
+  "messages": {
+    "success": "buyAgentAction submitted to your MultiversX wallet."
+  }
+}
