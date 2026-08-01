@@ -1,4 +1,4 @@
-# Analyse DApp Complète xArtists — Mise à Jour 31 Juillet 2026
+# Analyse DApp Complète xArtists — Mise à Jour 1er Août 2026
 
 ## Résumé Exécutif
 xArtists est une DApp innovante sur MultiversX combinant **IA agentique (LIA v5/v6)**, **NFT Phygital / RWA art tokenisé**, **staking**, **DAO** et **bridge BTC expérimental**.  
@@ -6,7 +6,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 
 **Live Demo** : https://neltud.github.io/xArtists  
 **Repo** : https://github.com/Neltud/xArtists  
-**Statut** : Production-ready (code pleinement corrigé et poussé — v0.14.0+). Dernier commit documenté : E2E Playwright smoke + docs à jour 31 juil 2026.
+**Statut** : Production-ready (code pleinement corrigé et poussé — v0.14.0+). Dernière mise à jour documentée : 1er août 2026.
 
 ### Points forts
 - Intégration Warps / AI Agents MultiversX + agents LIA autonomes (trading, minting génératif, yield).
@@ -17,7 +17,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Monorepo pnpm + CI/CD GitHub Actions + GitHub Pages + Docker.
 - Agents GreenSmoke (Liia météo, Lia crypto, Macro, Politics, Sport, Tech) + BottomNav mobile + PWA.
 
-### Corrections apportées (confirmées jusqu’au 31 juil 2026)
+### Corrections apportées (confirmées jusqu’au 1er août 2026)
 - Mises à jour dépendances (sécurité + compatibilité sdk-dapp).
 - Fixes logique voting / rewards / WalletConnect navigation.
 - Optimisations performance frontend, cleanup monorepo, scan ESDT complet.
@@ -25,17 +25,17 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Agents GreenSmoke + BottomNav + PWA (manifest + service-worker).
 - E2E Playwright smoke toujours exécuté en CI (`e2e.yml`).
 - Code pleinement corrigé poussé (CHANGELOG + release-please).
-- Documentation analyse + veille techno synchronisée au 31 juil 2026.
+- Documentation analyse + veille techno synchronisée au 1er août 2026.
 
 ---
 
-## Veille Technologique (31 juillet 2026)
+## Veille Technologique (1er août 2026)
 
 ### MultiversX / Protocol
 - **Supernova** : upgrade majeur vers finalité sub-seconde (~600 ms block time). Découplage consensus / exécution, sharding avancé, bandwidth optimisé.
   - Gouvernance approuvée massivement (vote janv. 2026 ~99.64 %).
   - **Battle of Nodes** actif depuis le 11 mars 2026 : stress-test pré-mainnet (plus d’1 milliard de transactions traitées, pic public ~120k TPS). Guild Wars pour tester throughput, SC et coordination cross-shard.
-  - Roadmap officielle : **Supernova Sub-Second Finality à ~97.7 %** (31 juillet 2026 — source multiversx.com/roadmap).
+  - Roadmap officielle : **Supernova Sub-Second Finality à ~97.7 %** (1er août 2026 — source multiversx.com/roadmap).
   - Target activation mainnet : Q2/Q3 2026 (sécurité + hardening en cours).
   - **Barnard** (v1.10.x) : gouvernance on-chain native, timestamps ms, réduction gas factor, base solide pour Supernova.
   - Upgrade réseau fin juillet 2026 (Upbit a suspendu temporairement dépôts/retraits EGLD le 24 juil pour support upgrade protocole).
@@ -51,11 +51,14 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - xArtists (LIA + GreenSmoke) s’aligne parfaitement sur cette narrative DeFAI / agents.
 
 ### RWA & Tokenization Art / Phygital
-- Marché RWA tokenisé (ex-stablecoins) : **~$31–36.8 B on-chain** (rwa.xyz / analyses juillet 2026, ~4× early 2025).
-  - Represented asset value ~$369–370 B ; holders ~1 M+.
-  - Dominant : US Treasuries (~$16.2 B), private credit / asset-backed (~$5 B+), equities/ETFs (~$1.9 B) émergents.
+- Marché RWA tokenisé (données rwa.xyz au 1er août 2026) :
+  - **Distributed Asset Value ~$37.56 B** (+2.75 % sur 30j).
+  - Represented Asset Value ~$358.71 B.
+  - Total Asset Holders ~1.49 M (+43 % sur 30j).
+  - Stablecoins ~$296.63 B.
+  - Dominant : US Treasuries (~$16.2 B), private credit / asset-backed, equities/ETFs (~$1.9 B).
   - Art & collectibles : segment en expansion (royalties, high-value pieces, phygital) — niche plus risquée mais différenciante vs Treasuries institutionnels.
-  - Tendances 2026 : AI-powered tokenization, stablecoins comme rails de liquidité (~$290–321 B), adoption institutionnelle, phygital (photo physique → AI re-évaluation → metadata on-chain), perps RWA on-chain.
+  - Tendances 2026 : AI-powered tokenization, stablecoins comme rails de liquidité, adoption institutionnelle, phygital (photo physique → AI re-évaluation → metadata on-chain), perps RWA on-chain.
 - xArtists positionné sur **art tokenisé + Phygital NFTs + agents IA génératifs** — positionnement différenciant.
 
 ### Stack technique & tendances
@@ -93,7 +96,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - PWA : installable, offline shell, BottomNav mobile safe-area.
 - E2E : smoke Playwright en CI.
 
-### Roadmap V1 (7 priorités) — statut 31 juil 2026
+### Roadmap V1 (7 priorités) — statut 1er août 2026
 1. Full LIA v6 production + agents marketplace on-chain — 🟡 En cours  
 2. Marketplace NFT avancé + LP TRO — 🟡 Partiel  
 3. Mobile PWA / responsive — 🟢 Base livrée  
@@ -121,7 +124,7 @@ Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
 ---
 
 **Statut final** : Code complètement corrigé, documenté et poussé.  
-Veille techno et analyse dApp à jour au **31 juillet 2026**.  
+Veille techno et analyse dApp à jour au **1er août 2026**.  
 Prêt pour itérations et scale avec Supernova (roadmap ~97.7 %).
 
 *Auteur : Neltud (via Grok) — Artiste & créateur*
