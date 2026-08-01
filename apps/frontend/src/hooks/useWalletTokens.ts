@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { fetchLiaHatomSnapshot } from '../services/hatomService'
 
 const MVX_API = 'https://api.multiversx.com'
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
@@ -46,7 +47,7 @@ export interface HatomPosition {
   markets: HatomMarket[]
   claimableHtm: number
   claimableHtmUsd: number
-  source: 'api' | 'wallet'
+  source: 'api' | 'wallet' | 'mirror'
 }
 
 export interface WalletData {
@@ -200,8 +201,53 @@ async function fetchHatomPosition(egldPrice: number): Promise<HatomPosition | nu
       source: 'wallet',
     }
   } catch {
-    return null
+    void egldPrice
   }
+
+  try {
+    const snapshot = await fetchLiaHatomSnapshot()
+    if (
+      snapshot.collateral_usd > 0 ||
+      snapshot.borrowed_usd > 0 ||
+      snapshot.htm_balance > 0 ||
+      snapshot.collateral_tokens.length > 0
+    ) {
+      const markets: HatomMarket[] = snapshot.collateral_tokens.length > 0
+        ? snapshot.collateral_tokens.map((token) => ({
+            label: token.name || token.identifier,
+            identifier: token.identifier,
+            supplied: token.balance,
+            borrowed: 0,
+            valueSuppliedUsd: token.value_usd,
+            valueBorrowedUsd: 0,
+            rewardsHtm: 0,
+          }))
+        : [{
+            label: 'Hatom mirror snapshot',
+            identifier: 'hatom-mirror',
+            supplied: 0,
+            borrowed: 0,
+            valueSuppliedUsd: snapshot.collateral_usd,
+            valueBorrowedUsd: snapshot.borrowed_usd,
+            rewardsHtm: snapshot.htm_balance,
+          }]
+
+      return {
+        healthFactor: 999,
+        totalSuppliedUsd: snapshot.collateral_usd,
+        totalBorrowedUsd: snapshot.borrowed_usd,
+        netValueUsd: snapshot.collateral_usd - snapshot.borrowed_usd,
+        markets,
+        claimableHtm: snapshot.htm_balance,
+        claimableHtmUsd: snapshot.htm_value_usd,
+        source: 'mirror',
+      }
+    }
+  } catch {
+    // ignore mirror fallback failure
+  }
+
+  return null
 }
 
 export function useWalletTokens(): WalletData {

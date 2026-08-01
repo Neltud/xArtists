@@ -32,6 +32,7 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 | Item | Priorité | Done when |
 |------|----------|-----------|
 | Signature tx live (wallet / pem) dans executor | P0 | Trades mainnet confirmés on-chain |
+| Poll confirmation adaptatif ms + circuit breaker | P0 | Broadcast → confirmation prêt pour Supernova |
 | GreenSmokeConsumer branché sur les brains | P1 | Bias regime dans décisions BUY/WAIT |
 | ContrarianBrain implémenté | P1 | 4 % budget, RSI < 30 + fear |
 | Trailing stops + Kelly sizing | P1 | Positions dynamiques |
@@ -137,14 +138,14 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 |------|----------|
 | Gas limits recalibrés pour rounds sub-second | P1 (après activation) |
 | UI : indicateurs finality / shard | P2 |
-| Executor : poll confirmation adaptatif (ms) | P1 |
+| Executor : poll confirmation adaptatif (ms) | ✅ Base prête |
 | Docs : runbook upgrade validators / SC | P2 |
 
 ---
 
 ## Ordre d’exécution recommandé
 
-1. **P0 immédiat** : signature live executor LIA · list/buy marketplace UI · agents marketplace ABI
+1. **P0 immédiat** : signature live executor LIA · fix workflow Deploy xArtists Exclusive · list/buy marketplace UI · agents marketplace ABI
 2. **P1 court terme** : GreenSmoke + trailing · E2E Playwright · LP TRO · bridge tests
 3. **P2 medium** : Supernova gas/UI · RWA escrow complet · ML brains
 

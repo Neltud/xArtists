@@ -1,7 +1,7 @@
 {
   "version": "LIA v6",
   "status": "PRODUCTION_MAINNET",
-  "timestamp": "2026-08-01T00:10:00Z",
+  "timestamp": "2026-08-01T12:20:00Z",
   "serialization": "OK",
   "network": "mainnet",
   "chain_id": "1",
@@ -22,6 +22,12 @@
     "pages": ["dashboard", "marketplace", "trading", "portfolio", "dao", "tip", "wallet", "agents", "lp", "hatom", "tro"],
     "data_source": "raw.githubusercontent.com/Neltud/xArtists/main/data/",
     "pwa": true
+  },
+  "deploy": {
+    "frontend_build": "local build verified",
+    "deploy_xartists_exclusive": "cache path fixed for missing frontend package-lock",
+    "pages_build_deployment": "latest main run green",
+    "base_path": "/xArtists/"
   },
   "xartists": {
     "collections": 11,
@@ -46,8 +52,14 @@
     "egld_usd": 0,
     "wbtc_usd": 0
   },
+  "executor": {
+    "pem_secret": "Vellum only (LIA_WALLET_PEM or LIA_WALLET_PEM_PATH)",
+    "live_signing": "bootstrap ready",
+    "confirmation_poll": "adaptive ms",
+    "circuit_breaker": "enabled"
+  },
   "cycle": {
     "report_sent": false,
-    "summary": "Awaiting Vellum Reporter after LiveCycle + publish_data_for_frontend"
+    "summary": "Awaiting Vellum Reporter after LiveCycle + publish_data_for_frontend; frontend now consumes mirrored TRO/Hatom data fallbacks"
   }
 }

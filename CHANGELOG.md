@@ -7,6 +7,9 @@
 * align GitHub Pages deploy with frontend package-lock, mirrored data JSON, and strict typed build
 * unify frontend live JSON fetches through local `/xArtists/data/*` with raw GitHub fallback
 * harden marketplace tx wiring, PWA cache refresh, and LIA/BTC tip data defaults
+* fix Deploy xArtists Exclusive setup-node cache path so Pages builds no longer fail before install
+* add TRO + Hatom mirrored JSON fallbacks for live frontend data when upstream APIs are stale or unavailable
+* accept PEM secret text in live executor and add adaptive confirmation polling for Supernova-ready signing
 
 ## [0.14.0](https://github.com/Neltud/xArtists/compare/v0.13.0...v0.14.0) (2026-07-27)
 

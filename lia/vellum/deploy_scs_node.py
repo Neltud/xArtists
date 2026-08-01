@@ -63,8 +63,6 @@ def deploy_contract(name: str, pem: str) -> dict[str, Any]:
     if not cdir.is_dir():
         return {"ok": False, "name": name, "error": "missing directory"}
 
-    build = _run(["mxpy", "contract", "build"],)
-    # mxpy needs cwd
     p = subprocess.run(
         ["mxpy", "contract", "build"],
         cwd=str(cdir),
@@ -124,11 +122,16 @@ def run() -> dict[str, Any]:
         data: dict[str, Any] = {}
         if path.exists():
             data = json.loads(path.read_text(encoding="utf-8"))
+        contracts = data.setdefault("contracts", {})
         if addresses.get("nft-marketplace"):
+            contracts["marketplace"] = addresses["nft-marketplace"]
             data["marketplace_nft"] = addresses["nft-marketplace"]
             data["nft-marketplace"] = addresses["nft-marketplace"]
         if addresses.get("agents-marketplace"):
+            contracts["agents_marketplace"] = addresses["agents-marketplace"]
             data["agents_marketplace"] = addresses["agents-marketplace"]
+        data["chainId"] = CHAIN
+        data["network"] = "mainnet" if CHAIN == "1" else "devnet" if CHAIN == "D" else "testnet"
         data["updated"] = __import__("datetime").datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
         data["deployed_via"] = "vellum"
         path.parent.mkdir(parents=True, exist_ok=True)
