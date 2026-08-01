@@ -1,7 +1,7 @@
 {
   "version": "LIA v6",
   "status": "PRODUCTION_MAINNET",
-  "timestamp": "2026-08-01T12:45:00Z",
+  "timestamp": "2026-08-01T13:08:31Z",
   "serialization": "OK",
   "network": "mainnet",
   "chain_id": "1",
@@ -10,7 +10,7 @@
   "nodes_active": 62,
   "architecture": {
     "trigger": "cron hourly",
-    "pipeline": "DataHub → Brains+GS → OrchestratorRouter → LiveCycle → CompoundCircuit → Executor → RedistributeTRO → Reporter",
+    "pipeline": "DataHub \u2192 Brains+GS \u2192 OrchestratorRouter \u2192 LiveCycle \u2192 CompoundCircuit \u2192 Executor \u2192 RedistributeTRO \u2192 Reporter",
     "entry_live": "lia.vellum.live_cycle.run_cycle",
     "entry_compound": "lia.circuit.vellum_cycle.run_cycle",
     "publish": "lia.vellum.publish_data_for_frontend.publish",
@@ -19,7 +19,19 @@
   },
   "dapp": {
     "url": "https://neltud.github.io/xArtists",
-    "pages": ["dashboard", "marketplace", "trading", "portfolio", "dao", "tip", "wallet", "agents", "lp", "hatom", "tro"],
+    "pages": [
+      "dashboard",
+      "marketplace",
+      "trading",
+      "portfolio",
+      "dao",
+      "tip",
+      "wallet",
+      "agents",
+      "lp",
+      "hatom",
+      "tro"
+    ],
     "data_source": "raw.githubusercontent.com/Neltud/xArtists/main/data/",
     "pwa": true
   },
@@ -40,7 +52,12 @@
     }
   },
   "agents_marketplace": {
-    "contract_endpoints": ["listAgentAction", "buyAgentAction", "cancelListing", "getListing"],
+    "contract_endpoints": [
+      "listAgentAction",
+      "buyAgentAction",
+      "cancelListing",
+      "getListing"
+    ],
     "frontend_route": "/agents",
     "warp_templates": [
       "data/warps/buy-agent-action.json",

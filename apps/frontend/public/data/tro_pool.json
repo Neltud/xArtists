@@ -1,0 +1,22 @@
+{
+  "token": "TRO-94c925",
+  "name": "TUDURIORIGINAL",
+  "supply": 476223,
+  "circulating": 476223,
+  "decimals": 18,
+  "pools": [
+    {
+      "dex": "OneDex",
+      "pair": "TRO/EGLD",
+      "pair_id": "TROW EGLD-ca2874",
+      "address": "erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc",
+      "liquidity_usd_approx": 6,
+      "dexscreener": "https://dexscreener.com/multiversx/erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc-trowegld-ca2874",
+      "swap": "https://onedex.app",
+      "status": "active_low_liquidity"
+    }
+  ],
+  "xexchange": [],
+  "note": "Primary liquidity on OneDex. xExchange pairs not listed in public MEX API at this time.",
+  "updated": "2026-07-29"
+}

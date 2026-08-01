@@ -15,6 +15,8 @@ import time
 from pathlib import Path
 from typing import Iterable
 
+from lia.vellum.update_warps_from_contracts import update_warps
+
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
 MIRRORS = [
@@ -35,8 +37,12 @@ CRITICAL = [
     "config.json",
     "greensmoke_top.json",
     "greensmoke_forecasts.json",
+    "agents_catalog.json",
     "lia_tro_policy.json",
     "contracts.json",
+]
+CRITICAL_DIRS = [
+    "warps",
 ]
 
 
@@ -56,6 +62,7 @@ def _touch_status() -> None:
 def mirror_files(names: Iterable[str] | None = None) -> dict:
     names = list(names or CRITICAL)
     _touch_status()
+    warp_sync = update_warps()
     copied: list[str] = []
     missing: list[str] = []
     for name in names:
@@ -67,10 +74,24 @@ def mirror_files(names: Iterable[str] | None = None) -> dict:
             dest_root.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dest_root / name)
         copied.append(name)
+    copied_dirs: list[str] = []
+    for dirname in CRITICAL_DIRS:
+        src_dir = DATA / dirname
+        if not src_dir.is_dir():
+            missing.append(dirname)
+            continue
+        for dest_root in MIRRORS:
+            dest_dir = dest_root / dirname
+            if dest_dir.exists():
+                shutil.rmtree(dest_dir)
+            shutil.copytree(src_dir, dest_dir)
+        copied_dirs.append(dirname)
     return {
         "ok": True,
         "copied": copied,
+        "copied_dirs": copied_dirs,
         "missing": missing,
+        "warp_sync": warp_sync,
         "mirrors": [str(m) for m in MIRRORS],
         "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }

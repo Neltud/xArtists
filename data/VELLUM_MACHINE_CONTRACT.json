@@ -15,6 +15,20 @@
     "VELLUM_API_KEY",
     "TELEGRAM_BOT_TOKEN"
   ],
+  "warps": {
+    "dir": "data/warps",
+    "templates": [
+      "buy-agent-action.json",
+      "list-agent-action.json",
+      "get-listing.json"
+    ],
+    "inject_from": "data/contracts.json#contracts.agents_marketplace",
+    "catalog_source": "data/agents_catalog.json",
+    "default_agent_id": "LIA-v6",
+    "default_price_egld_source": "data/agents_catalog.json#lia-signal-01.priceEgld",
+    "default_herotag": "LIA",
+    "after_deploy_node": "lia.vellum.update_warps_from_contracts.update_warps"
+  },
   "pipeline": [
     {
       "node": "Timer",
@@ -101,6 +115,9 @@
     {
       "node": "Reporter",
       "code": "lia.vellum.publish_data_for_frontend",
+      "calls_before_publish": [
+        "lia.vellum.update_warps_from_contracts.update_warps"
+      ],
       "must_push_git": true,
       "paths": [
         "data/lia_v6_status.json",
@@ -109,7 +126,9 @@
         "data/lia_portfolio.json",
         "data/hatom_lia.json",
         "data/battle_of_nodes.json",
-        "data/xartists_onchain.json"
+        "data/xartists_onchain.json",
+        "data/agents_catalog.json",
+        "data/warps/*.json"
       ],
       "mirror_to": [
         "docs/data/",
@@ -125,7 +144,7 @@
     "/hatom": ["hatom_lia.json"],
     "/tro": ["config.json", "tro_pool.json"],
     "/marketplace": ["xartists_collections.json"],
-    "/agents": ["greensmoke_forecasts.json", "greensmoke_top.json"]
+    "/agents": ["greensmoke_forecasts.json", "greensmoke_top.json", "agents_catalog.json", "warps/*.json"]
   },
   "gaps_blocking_vellum": [
     {
@@ -161,6 +180,6 @@
   ],
   "vellum_python_entry": {
     "recommended": "from lia.vellum.live_cycle import run_cycle; from lia.circuit.vellum_cycle import run_cycle as compound_cycle",
-    "publish": "from lia.vellum.publish_data_for_frontend import publish; publish()"
+    "publish": "from lia.vellum.update_warps_from_contracts import update_warps; update_warps(); from lia.vellum.publish_data_for_frontend import publish; publish()"
   }
 }

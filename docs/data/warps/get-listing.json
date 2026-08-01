@@ -1,0 +1,35 @@
+{
+  "protocol": "warp:3.0.0",
+  "chain": "multiversx",
+  "name": "xartists-get-listing",
+  "title": "Get Agent Listing",
+  "description": "Query an xArtists agent listing by id.",
+  "actions": [
+    {
+      "type": "query",
+      "label": "Get listing",
+      "address": "{{AGENTS_MARKETPLACE_ADDRESS}}",
+      "func": "getListing",
+      "auto": true,
+      "inputs": [
+        {
+          "name": "listing_id",
+          "label": "Listing ID",
+          "description": "Listing identifier to query.",
+          "type": "u64",
+          "position": "arg:1",
+          "source": "field",
+          "required": true,
+          "default": 1,
+          "min": 1
+        }
+      ]
+    }
+  ],
+  "output": {
+    "seller": "$.seller",
+    "agentId": "$.agent_id",
+    "price": "$.price",
+    "active": "$.active"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "updated": "2026-07-31T22:00:00Z",
+  "rule": "LIA accumulates EGLD, WEGLD, WBTC/HWBTC, USDC only. All TRO recovered is redistributed.",
+  "accumulate": [
+    "EGLD",
+    "WEGLD-bd4d79",
+    "USDC-c76f1f",
+    "HWBTC-49ca31",
+    "WBTC"
+  ],
+  "tro_token": "TRO-94c925",
+  "split_bps": {
+    "pool_bps": 4000,
+    "stake_bps": 3000,
+    "rewards_bps": 2000,
+    "burn_bps": 1000
+  },
+  "pool_address": "erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc",
+  "stake_address": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
+  "rewards_address": "",
+  "burn_address": "erd1deaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaqtvj5r6",
+  "vellum": {
+    "node": "tro_redistributor",
+    "trigger": "on_tro_balance_detected",
+    "min_atomic": 1000000000000000
+  }
+}

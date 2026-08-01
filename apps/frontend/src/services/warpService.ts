@@ -1,3 +1,5 @@
+import { localDataUrl } from '../config/dataSources'
+
 export interface WarpInput {
   name: string
   label: string
@@ -30,23 +32,74 @@ export interface WarpTemplate {
 }
 
 interface BuildWarpParams {
-  address: string
+  address?: string | null
   listingId?: number
   agentId?: string
   priceEgld?: string
 }
 
-const EMPTY_ADDRESS = '{{AGENTS_MARKETPLACE_ADDRESS}}'
+interface ContractsFile {
+  contracts?: {
+    agents_marketplace?: string | null
+  }
+  agents_marketplace?: string | null
+}
 
-function normalizeAddress(address: string): string {
-  return address.startsWith('erd1') ? address : EMPTY_ADDRESS
+const ENV_AGENTS_MARKETPLACE_ADDRESS =
+  (typeof import.meta !== 'undefined' &&
+    (import.meta as ImportMeta & { env?: Record<string, string> }).env?.VITE_AGENTS_MARKETPLACE_ADDRESS) ||
+  ''
+
+function isValidAddress(address?: string | null): address is string {
+  return typeof address === 'string' && address.startsWith('erd1')
+}
+
+function normalizeAddress(address?: string | null): string | null {
+  if (isValidAddress(address)) return address
+  if (isValidAddress(ENV_AGENTS_MARKETPLACE_ADDRESS)) return ENV_AGENTS_MARKETPLACE_ADDRESS
+  return null
 }
 
 function normalizeEgld(priceEgld?: string): string {
   return priceEgld && priceEgld.trim() ? priceEgld.trim() : '0.01'
 }
 
-export function buildBuyAgentWarp({ address, listingId = 1, priceEgld }: BuildWarpParams): WarpTemplate {
+function contractsCandidates(): string[] {
+  return Array.from(
+    new Set([
+      localDataUrl('contracts.json'),
+      `${import.meta.env.BASE_URL}data/contracts.json`,
+      '/data/contracts.json',
+      '/public/data/contracts.json',
+    ]),
+  )
+}
+
+export async function resolveAgentsMarketplaceAddress(address?: string | null): Promise<string | null> {
+  const normalized = normalizeAddress(address)
+  if (normalized) return normalized
+
+  for (const url of contractsCandidates()) {
+    try {
+      const response = await fetch(url, { cache: 'no-store' })
+      if (!response.ok) continue
+      const payload = (await response.json()) as ContractsFile
+      const nextAddress = normalizeAddress(
+        payload.contracts?.agents_marketplace ?? payload.agents_marketplace ?? null,
+      )
+      if (nextAddress) return nextAddress
+    } catch {
+      // ignore and continue to next fallback
+    }
+  }
+
+  return null
+}
+
+export function buildBuyAgentWarp({ address, listingId = 1, priceEgld }: BuildWarpParams): WarpTemplate | null {
+  const normalizedAddress = normalizeAddress(address)
+  if (!normalizedAddress) return null
+
   return {
     protocol: 'warp:3.0.0',
     chain: 'multiversx',
@@ -57,7 +110,7 @@ export function buildBuyAgentWarp({ address, listingId = 1, priceEgld }: BuildWa
       {
         type: 'contract',
         label: 'Buy now',
-        address: normalizeAddress(address),
+        address: normalizedAddress,
         func: 'buyAgentAction',
         gasLimit: 18_000_000,
         inputs: [
@@ -93,7 +146,10 @@ export function buildBuyAgentWarp({ address, listingId = 1, priceEgld }: BuildWa
   }
 }
 
-export function buildListAgentWarp({ address, agentId = 'LIA-v6', priceEgld }: BuildWarpParams): WarpTemplate {
+export function buildListAgentWarp({ address, agentId = 'LIA-v6', priceEgld }: BuildWarpParams): WarpTemplate | null {
+  const normalizedAddress = normalizeAddress(address)
+  if (!normalizedAddress) return null
+
   return {
     protocol: 'warp:3.0.0',
     chain: 'multiversx',
@@ -104,7 +160,7 @@ export function buildListAgentWarp({ address, agentId = 'LIA-v6', priceEgld }: B
       {
         type: 'contract',
         label: 'List now',
-        address: normalizeAddress(address),
+        address: normalizedAddress,
         func: 'listAgentAction',
         gasLimit: 12_000_000,
         inputs: [
