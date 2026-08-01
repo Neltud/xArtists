@@ -1,4 +1,6 @@
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { fetchMirroredJson } from '../config/dataSources'
 import { useMultiversX } from '../hooks/useMultiversX'
 import { usePortfolioValue } from '../hooks/usePortfolioValue'
 import GSNBanner from '../components/GSNBanner'
@@ -15,6 +17,43 @@ const AGENTS = [
   { key: 'dao', name: 'LIA DAO', icon: '🗳️', desc: 'Governance + Proposals', color: 'text-pink-400' },
 ]
 
+interface CompoundStreakData {
+  phase?: string
+  mode?: string
+  streak?: {
+    consecutive_losses?: number
+    compound_equity_usd?: number
+    yield_sleeve_usd?: number
+    total_trades?: number
+    last_outcome?: string
+    updated_at?: string
+    halted?: boolean
+    halt_reason?: string
+  }
+}
+
+interface LiaStatusFile {
+  status?: string
+  timestamp?: string
+  cycle?: {
+    summary?: string
+    last_event?: string
+    mode?: string
+  }
+  executor?: {
+    mode?: string
+  }
+  mode?: string
+}
+
+function detectCircuitMode(streak: CompoundStreakData | null, status: LiaStatusFile | null): string | null {
+  const candidates = [streak?.mode, status?.mode, status?.cycle?.mode, status?.executor?.mode]
+  for (const value of candidates) {
+    if (value === 'paper' || value === 'live') return value
+  }
+  return null
+}
+
 function StatCard({ label, value, sub, color = '' }: { label: string; value: string; sub?: string; color?: string }) {
   return (
     <div className="card">
@@ -28,6 +67,8 @@ function StatCard({ label, value, sub, color = '' }: { label: string; value: str
 export default function Dashboard() {
   const { prices, liaStatus, xartists, bonData, loading, lastUpdate, refresh } = useMultiversX()
   const portfolio = usePortfolioValue()
+  const [compoundState, setCompoundState] = useState<CompoundStreakData | null>(null)
+  const [liaCircuitStatus, setLiaCircuitStatus] = useState<LiaStatusFile | null>(null)
 
   const portfolioUsd = portfolio.totalUsd || (liaStatus?.portfolio?.total_usd ?? 0)
   const egldPrice = portfolio.egldPrice || prices.egld
@@ -39,6 +80,41 @@ export default function Dashboard() {
 
   const fgColor = prices.fearGreed <= 25 ? 'text-red-400' : prices.fearGreed <= 50 ? 'text-orange-400' : prices.fearGreed <= 75 ? 'text-yellow-400' : 'text-green-400'
   const guardColor = guard === 'OK' ? 'text-green-400' : guard === 'WARNING' ? 'text-orange-400' : 'text-red-400'
+  const circuitMode = useMemo(() => detectCircuitMode(compoundState, liaCircuitStatus), [compoundState, liaCircuitStatus])
+  const consecutiveLosses = compoundState?.streak?.consecutive_losses ?? 0
+  const compoundEquity = compoundState?.streak?.compound_equity_usd ?? null
+  const yieldSleeve = compoundState?.streak?.yield_sleeve_usd ?? null
+  const totalTreasury = (compoundEquity ?? 0) + (yieldSleeve ?? 0)
+  const halted = compoundState?.streak?.halted ?? false
+  const lastCircuitEvent =
+    compoundState?.streak?.last_outcome ||
+    liaCircuitStatus?.cycle?.last_event ||
+    compoundState?.phase ||
+    liaCircuitStatus?.cycle?.summary ||
+    'Aucun événement publié'
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const [streakData, statusData] = await Promise.all([
+          fetchMirroredJson<CompoundStreakData>('lia_compound_streak.json', { cache: 'no-store' }),
+          fetchMirroredJson<LiaStatusFile>('lia_v6_status.json', { cache: 'no-store' }),
+        ])
+        if (cancelled) return
+        setCompoundState(streakData)
+        setLiaCircuitStatus(statusData)
+      } catch {
+        if (!cancelled) {
+          setCompoundState(null)
+          setLiaCircuitStatus(null)
+        }
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [lastUpdate])
 
   return (
     <div className="animate-fade-in">
@@ -112,6 +188,97 @@ export default function Dashboard() {
             <div className="flex justify-between mt-2">
               <Link to="/portfolio" className="text-xs text-purple-400 hover:text-purple-300">Détails portfolio →</Link>
               <span className="text-xs text-gray-500">{millionPct.toFixed(8)}% du million</span>
+            </div>
+          </div>
+
+          <div className="card mb-6 border-cyan-500/20 bg-cyan-500/5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-cyan-400">🧠 LIA Circuit</p>
+                <h2 className="mt-1 text-xl font-black">Compound equity vs yield sleeve</h2>
+                <p className="mt-2 text-sm text-gray-400">
+                  Le circuit pro garde la boucle de trade d’un côté et le sleeve rendement 30 % de l’autre.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span className={halted ? 'badge-red' : 'badge-green'}>
+                  {halted ? 'HALTED' : 'RUNNING'}
+                </span>
+                <span className="badge-gray">
+                  Mode {circuitMode ?? 'non publié'}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-4 mb-4">
+              <div className="rounded-xl border border-white/5 bg-[#111118] p-3">
+                <p className="text-xs text-gray-500">Compound equity</p>
+                <p className="mt-1 text-lg font-bold text-cyan-300">
+                  {compoundEquity != null ? `$${compoundEquity.toFixed(2)}` : 'N/A'}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/5 bg-[#111118] p-3">
+                <p className="text-xs text-gray-500">Yield sleeve (30%)</p>
+                <p className="mt-1 text-lg font-bold text-teal-300">
+                  {yieldSleeve != null ? `$${yieldSleeve.toFixed(2)}` : 'N/A'}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/5 bg-[#111118] p-3">
+                <p className="text-xs text-gray-500">Consecutive losses</p>
+                <p className={`mt-1 text-lg font-bold ${consecutiveLosses >= 3 ? 'text-red-400' : 'text-white'}`}>
+                  {consecutiveLosses}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/5 bg-[#111118] p-3">
+                <p className="text-xs text-gray-500">Total trades</p>
+                <p className="mt-1 text-lg font-bold text-white">
+                  {compoundState?.streak?.total_trades ?? 0}
+                </p>
+              </div>
+            </div>
+
+            {totalTreasury > 0 && (
+              <div className="mb-4">
+                <div className="mb-2 flex items-center justify-between text-xs text-gray-500">
+                  <span>Répartition publiée</span>
+                  <span>${totalTreasury.toFixed(2)} total</span>
+                </div>
+                <div className="h-3 overflow-hidden rounded-full bg-[#111118]">
+                  <div className="flex h-full">
+                    <div
+                      className="bg-cyan-400"
+                      style={{ width: `${((compoundEquity ?? 0) / totalTreasury) * 100}%` }}
+                    />
+                    <div
+                      className="bg-teal-400"
+                      style={{ width: `${((yieldSleeve ?? 0) / totalTreasury) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="rounded-xl border border-white/5 bg-[#111118] p-3">
+                <p className="text-xs text-gray-500">Last event</p>
+                <p className="mt-1 font-semibold text-white">{lastCircuitEvent}</p>
+                <p className="mt-2 text-xs text-gray-500">
+                  Phase {compoundState?.phase ?? 'N/A'} · status {liaCircuitStatus?.status ?? liaStatus?.status ?? 'N/A'}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/5 bg-[#111118] p-3">
+                <p className="text-xs text-gray-500">Streak file</p>
+                <p className="mt-1 font-semibold text-white">
+                  {compoundState?.streak?.updated_at
+                    ? new Date(compoundState.streak.updated_at).toLocaleString('fr-FR')
+                    : 'Non publié'}
+                </p>
+                <p className="mt-2 text-xs text-gray-500">
+                  {halted
+                    ? compoundState?.streak?.halt_reason || 'Arrêt automatique après trop de pertes'
+                    : 'SL -1% · BE +0.5% · trail après +0.8%'}
+                </p>
+              </div>
             </div>
           </div>
 
