@@ -22,6 +22,7 @@ const StakingPage = lazy(() => import('./pages/StakingPage'))
 const SoulTestnetPage = lazy(() => import('./pages/SoulTestnetPage'))
 const AgentsPolyliaPage = lazy(() => import('./pages/AgentsPolyliaPage'))
 const BurnifyPage = lazy(() => import('./pages/BurnifyPage'))
+const Publish = lazy(() => import('./pages/Publish'))
 
 function PageLoader() {
   return (
@@ -66,6 +67,7 @@ export default function App() {
               <Route path="/agents" element={<ErrorBoundary><Agents /></ErrorBoundary>} />
               <Route path="/agents/polylia" element={<ErrorBoundary><AgentsPolyliaPage /></ErrorBoundary>} />
               <Route path="/marketplace" element={<ErrorBoundary><Marketplace /></ErrorBoundary>} />
+              <Route path="/publish" element={<ErrorBoundary><Publish /></ErrorBoundary>} />
               <Route path="/trading" element={<ErrorBoundary><Trading /></ErrorBoundary>} />
               <Route path="/tro" element={<ErrorBoundary><TroPage /></ErrorBoundary>} />
               <Route path="/staking" element={<ErrorBoundary><StakingPage /></ErrorBoundary>} />
