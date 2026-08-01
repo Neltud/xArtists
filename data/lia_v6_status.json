@@ -48,7 +48,9 @@
       "data/warps/get-listing.json"
     ],
     "deploy_path": "lia/vellum/deploy_scs_node.py or .github/workflows/deploy-scs.yml",
-    "address_source": "VITE_AGENTS_MARKETPLACE_ADDRESS or data/contracts.json"
+    "build_status": "workspace root trimmed to buildable crates; isolated mxpy build ready",
+    "address_source": "VITE_AGENTS_MARKETPLACE_ADDRESS or data/contracts.json",
+    "frontend_rebuild": "run Deploy xArtists Exclusive after updating env/contracts"
   },
   "market": {
     "fear_greed_index": 50,
@@ -66,7 +68,7 @@
   "executor": {
     "pem_secret": "Vellum only (LIA_WALLET_PEM or LIA_WALLET_PEM_PATH)",
     "live_signing": "bootstrap ready",
-    "confirmation_poll": "adaptive ms (LIA_CONFIRM_POLL_MS_BASE=400 / LIA_CONFIRM_POLL_MS_PRE=1500 / LIA_CONFIRM_MAX_WAIT_S=45 / LIA_SUPERNOVA_MODE=auto|on|off)",
+    "confirmation_poll": "adaptive ms (LIA_CONFIRM_POLL_MS_BASE=400 / LIA_CONFIRM_POLL_MS_PRE=1500 / LIA_CONFIRM_MAX_WAIT_S=45 / LIA_SUPERNOVA_MODE=auto|on|off / health() exposes poll_ms_effective)",
     "circuit_breaker": "enabled"
   },
   "cycle": {

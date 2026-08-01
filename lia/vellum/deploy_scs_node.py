@@ -11,6 +11,7 @@ Optional:
   DEPLOY_CONTRACT    — nft-marketplace | agents-marketplace | all
 
 Never log the PEM. Never write PEM to the git repo.
+The builder runs from the requested contract directory only.
 """
 from __future__ import annotations
 
@@ -56,6 +57,15 @@ def _parse_address(log: str) -> str | None:
         return m.group(0)
     m = re.search(r"erd1[a-z0-9]{58}", log)
     return m.group(0) if m else None
+
+
+def _frontend_env(addresses: dict[str, str]) -> dict[str, str]:
+    env: dict[str, str] = {}
+    if addresses.get("nft-marketplace"):
+        env["VITE_MARKETPLACE_ADDRESS"] = addresses["nft-marketplace"]
+    if addresses.get("agents-marketplace"):
+        env["VITE_AGENTS_MARKETPLACE_ADDRESS"] = addresses["agents-marketplace"]
+    return env
 
 
 def deploy_contract(name: str, pem: str) -> dict[str, Any]:
@@ -137,7 +147,12 @@ def run() -> dict[str, Any]:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
-        return {"ok": all(r.get("ok") for r in results), "results": results, "contracts": data}
+        return {
+            "ok": all(r.get("ok") for r in results),
+            "results": results,
+            "contracts": data,
+            "frontend_env": _frontend_env(addresses),
+        }
     finally:
         if created_tmp:
             try:

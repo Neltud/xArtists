@@ -1,9 +1,9 @@
 [workspace]
 members = [
-    "contracts/nft-staking",
-    "contracts/tro-staking",
-    "tools/faucet",
-    "tools/tip",
+    # Keep the workspace limited to buildable SC crates so `mxpy contract build`
+    # does not traverse legacy placeholders that have no targets.
+    "contracts/agents-marketplace",
+    "contracts/nft-marketplace",
 ]
 resolver = "2"
 

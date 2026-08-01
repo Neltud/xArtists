@@ -4,10 +4,16 @@ Signature PEM + broadcast gateway MultiversX (mainnet).
 
 Env:
   LIA_LIVE_TRADING=1          # enable live send
+  LIA_WALLET_PEM=-----BEGIN...# PEM text secret (alternative to path)
   LIA_WALLET_PEM_PATH=...     # path to PEM (secret — never commit)
   LIA_CHAIN_ID=1
   LIA_MVX_API=https://api.multiversx.com
   LIA_MVX_PROXY=https://gateway.multiversx.com
+  LIA_WAIT_CONFIRMATION=1
+  LIA_CONFIRM_POLL_MS_BASE=400
+  LIA_CONFIRM_POLL_MS_PRE=1500
+  LIA_CONFIRM_MAX_WAIT_S=45
+  LIA_SUPERNOVA_MODE=auto     # auto | on | off
 
 Asset policy:
   Accumulate EGLD / WBTC / USDC only.
@@ -177,6 +183,11 @@ class UniversalExecutor:
             "supernova": supernova_enabled,
         }
 
+    def _effective_poll_ms(self) -> int:
+        base_delay_ms = max(CONFIRM_POLL_MS_BASE, 50)
+        pre_delay_ms = max(CONFIRM_POLL_MS_PRE, base_delay_ms)
+        return base_delay_ms if self._supernova_enabled() else pre_delay_ms
+
     def sign_and_send(
         self,
         *,
@@ -308,6 +319,7 @@ class UniversalExecutor:
                 "supernova_enabled": self._supernova_enabled(),
                 "poll_ms_base": CONFIRM_POLL_MS_BASE,
                 "poll_ms_pre": CONFIRM_POLL_MS_PRE,
+                "poll_ms_effective": self._effective_poll_ms(),
                 "max_wait_s": CONFIRM_MAX_WAIT_S,
             },
             "policy": "accumulate EGLD/WBTC/USDC; redistribute TRO",

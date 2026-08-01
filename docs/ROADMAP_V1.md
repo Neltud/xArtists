@@ -10,7 +10,7 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 | # | Priorité | Statut | Phase | Effort |
 |---|----------|--------|-------|--------|
-| 1 | Full LIA v6 production + agents marketplace on-chain | 🟡 En cours | P0–P1 | Élevé |
+| 1 | Full LIA v6 production + agents marketplace on-chain | 🟡 En cours — build/deploy prêt, live deploy restant | P0–P1 | Élevé |
 | 2 | Marketplace NFT avancé + liquidity pools TRO | 🟡 Partiel | P1 | Élevé |
 | 3 | Mobile PWA / responsive perfectionné | 🟢 Livré (base) | P0 | Moyen |
 | 4 | Tests E2E complets + monitoring on-chain | 🔴 À faire | P1–P2 | Élevé |
@@ -36,7 +36,7 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 | GreenSmokeConsumer branché sur les brains | P1 | Bias regime dans décisions BUY/WAIT |
 | ContrarianBrain implémenté | P1 | 4 % budget, RSI < 30 + fear |
 | Trailing stops + Kelly sizing | P1 | Positions dynamiques |
-| **Agents Marketplace on-chain** | 🟡 P0 presque livré | Contrat list/buy agent actions + ABI dans `@xartists/core` + adresse mainnet injectée après deploy |
+| **Agents Marketplace on-chain** | 🟡 P0 prêt pour devnet | Workspace Cargo isolé + workflow `deploy-scs` ciblé + ABI dans `@xartists/core` ; adresse live à injecter après deploy |
 | PerformanceTracker → `data/lia_performance.json` | P1 | Winrate / drawdown sur Dashboard |
 
 ### Agents Marketplace (implémentation P0)
