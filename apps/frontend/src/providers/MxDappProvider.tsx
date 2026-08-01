@@ -14,11 +14,11 @@ export function MxDappProvider({ children }: Props) {
     let DappProvider: React.ComponentType<Record<string, unknown>> | undefined
 
     try {
-      // @ts-expect-error optional dependency resolved after npm install
+      // optional dependency resolved after npm install
       DappProvider = require('@multiversx/sdk-dapp/wrappers/DappProvider').DappProvider
     } catch {
       try {
-        // @ts-expect-error optional
+        // optional
         DappProvider = require('@multiversx/sdk-dapp').DappProvider
       } catch {
         DappProvider = undefined
