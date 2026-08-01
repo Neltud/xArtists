@@ -136,6 +136,7 @@ export default function Agents() {
 
   const agentsList = data ? Object.values(data.agents) : []
   const marketplaceReady = marketplaceAddress.startsWith('erd1')
+  const contractPendingLabel = 'Contrat en déploiement'
   const buyWarp = buildBuyAgentWarp({
     address: marketplaceAddress,
     listingId: parseInt(buyListingId, 10) || 1,
@@ -285,61 +286,82 @@ export default function Agents() {
       <div className="card mb-6 border-purple-500/30 bg-purple-500/5">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-purple-400 mb-2">Limited agents</p>
-            <h2 className="text-xl font-black">Éditions limitées propulsées par LIA (Vellum)</h2>
+            <p className="text-xs font-semibold uppercase tracking-widest text-purple-400 mb-2">LIA limited editions</p>
+            <h2 className="text-xl font-black">Éditions limitées LIA</h2>
             <p className="text-sm text-gray-400 mt-2">
-              Packs collectors pour signaux, curator passes et accès premium agents.
+              Collector passes et accès premium aux agents LIA, avec prix en EGLD et quantité restante affichée clairement.
             </p>
           </div>
-          {!marketplaceReady && <span className="badge-orange">Deploy en cours</span>}
+          {!marketplaceReady && <span className="badge-orange">{contractPendingLabel}</span>}
         </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          {catalog.map((item, index) => {
-            const warp = buildBuyAgentWarp({
-              address: marketplaceAddress,
-              listingId: index + 1,
-              priceEgld: item.priceEgld,
-            })
+        {catalog.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-[#2a2a3a] bg-[#111118] px-6 py-10 text-center">
+            <p className="text-lg font-semibold text-white">Le catalogue des éditions limitées arrive bientôt.</p>
+            <p className="mt-2 text-sm text-gray-400">
+              Reviens un peu plus tard pour découvrir les prochaines éditions LIA.
+            </p>
+            <button type="button" onClick={load} className="btn-secondary mt-5 text-sm">
+              Réessayer
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            {catalog.map((item, index) => {
+              const warp = buildBuyAgentWarp({
+                address: marketplaceAddress,
+                listingId: index + 1,
+                priceEgld: item.priceEgld,
+              })
 
-            return (
-              <div key={item.id} className="rounded-2xl border border-[#2a2a3a] bg-[#111118] p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <span className="badge-purple">LIMITED</span>
-                    <h3 className="mt-3 text-lg font-bold">{item.name}</h3>
+              return (
+                <div key={item.id} className="rounded-2xl border border-[#2a2a3a] bg-[#111118] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <span className="badge-purple">LIMITED</span>
+                      <h3 className="mt-3 text-lg font-bold">{item.name}</h3>
+                    </div>
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-gray-300">
+                      {item.remaining} remaining
+                    </span>
                   </div>
-                  <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-gray-300">
-                    {item.remaining}/{item.supply}
-                  </span>
-                </div>
-                <p className="mt-3 text-sm text-gray-400">{item.description}</p>
-                <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                  <div className="rounded-xl border border-white/5 bg-black/20 p-3">
-                    <p className="text-gray-500">Prix</p>
-                    <p className="mt-1 font-semibold text-white">{item.priceEgld} EGLD</p>
+                  <p className="mt-3 text-sm text-gray-400">{item.description}</p>
+                  <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+                    <div className="rounded-xl border border-white/5 bg-black/20 p-3">
+                      <p className="text-gray-500">Prix EGLD / Price</p>
+                      <p className="mt-1 font-semibold text-white">{item.priceEgld} EGLD</p>
+                    </div>
+                    <div className="rounded-xl border border-white/5 bg-black/20 p-3">
+                      <p className="text-gray-500">Restant / Remaining</p>
+                      <p className="mt-1 font-semibold text-white">{item.remaining}</p>
+                    </div>
+                    <div className="rounded-xl border border-white/5 bg-black/20 p-3">
+                      <p className="text-gray-500">Supply / Total</p>
+                      <p className="mt-1 font-semibold text-white">{item.supply}</p>
+                    </div>
                   </div>
-                  <div className="rounded-xl border border-white/5 bg-black/20 p-3">
-                    <p className="text-gray-500">Restant</p>
-                    <p className="mt-1 font-semibold text-white">{item.remaining}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      disabled={!marketplaceReady || marketplacePending}
+                      onClick={() => void onBuyCatalogItem(index + 1, item.priceEgld)}
+                      title={!marketplaceReady ? contractPendingLabel : undefined}
+                      className="btn-primary text-sm disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {!marketplaceReady ? contractPendingLabel : 'Acheter / Buy'}
+                    </button>
+                    <WarpButton warp={warp} filename={`${item.id}.json`} disabled={!marketplaceReady} />
                   </div>
+                  {!marketplaceReady && (
+                    <p className="mt-2 text-[11px] text-orange-300">
+                      {contractPendingLabel} — l’achat sera disponible dès que l’adresse du smart contract sera publiée.
+                    </p>
+                  )}
                 </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    disabled={!marketplaceReady || marketplacePending}
-                    onClick={() => void onBuyCatalogItem(index + 1, item.priceEgld)}
-                    title={!marketplaceReady ? 'Deploy en cours' : undefined}
-                    className="btn-primary text-sm disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {!marketplaceReady ? 'Deploy en cours' : 'Buy'}
-                  </button>
-                  <WarpButton warp={warp} filename={`${item.id}.json`} disabled={!marketplaceReady} />
-                </div>
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       <h2 className="text-lg font-bold mb-3">🔮 Agents prévisionnels GreenSmoke (tes agents)</h2>

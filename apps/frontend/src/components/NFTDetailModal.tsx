@@ -45,6 +45,7 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
   const royalties = nftRoyalties(nft)
   const isSFT = typeLabel(nft.type) === 'SFT'
   const marketplaceReady = marketplaceAddress.startsWith('erd1')
+  const contractPendingTooltip = 'Contrat en déploiement — achat et mise en vente bientôt disponibles.'
 
   const onList = async () => {
     setTxMsg(null)
@@ -172,15 +173,16 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
                     className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
                   />
                 </label>
-                <button
-                  type="button"
-                  disabled={pending || !marketplaceReady}
-                  onClick={onList}
-                  title={!marketplaceReady ? 'Déploiement marketplace en cours' : undefined}
-                  className="btn-primary text-sm disabled:opacity-50"
-                >
-                  {pending ? '…' : 'List NFT'}
-                </button>
+                <span title={!marketplaceReady ? contractPendingTooltip : undefined} className="inline-flex">
+                  <button
+                    type="button"
+                    disabled={pending || !marketplaceReady}
+                    onClick={onList}
+                    className="btn-primary text-sm disabled:opacity-50"
+                  >
+                    {pending ? '…' : 'List NFT'}
+                  </button>
+                </span>
               </div>
 
               <div className="flex flex-wrap items-end gap-2 border-t border-[#2a2a3a] pt-3">
@@ -205,15 +207,16 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
                     className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
                   />
                 </label>
-                <button
-                  type="button"
-                  disabled={pending || !marketplaceReady}
-                  onClick={onBuy}
-                  title={!marketplaceReady ? 'Déploiement marketplace en cours' : undefined}
-                  className="btn-secondary text-sm disabled:opacity-50"
-                >
-                  {pending ? '…' : 'Buy NFT'}
-                </button>
+                <span title={!marketplaceReady ? contractPendingTooltip : undefined} className="inline-flex">
+                  <button
+                    type="button"
+                    disabled={pending || !marketplaceReady}
+                    onClick={onBuy}
+                    className="btn-secondary text-sm disabled:opacity-50"
+                  >
+                    {pending ? '…' : 'Buy NFT'}
+                  </button>
+                </span>
               </div>
 
               {(txMsg || error || lastTx) && (
@@ -226,7 +229,7 @@ export default function NFTDetailModal({ nft, onClose }: Props) {
                 <p className="text-[11px] text-gray-500">Wallet requis pour List / Buy on-chain.</p>
               )}
               {!marketplaceReady && (
-                <p className="text-[11px] text-orange-300">Marketplace désactivée — adresse contrat absente.</p>
+                <p className="text-[11px] text-orange-300">Contrat en déploiement — l’achat et la mise en vente seront disponibles bientôt.</p>
               )}
             </div>
 

@@ -38,6 +38,7 @@ export default function Marketplace() {
   const [typeFilter, setTypeFilter] = useState<AssetTypeFilter>('all')
   const [selected, setSelected] = useState<NFT | null>(null)
   const { marketplaceAddress } = useMarketplaceTx()
+  const marketplaceReady = marketplaceAddress.startsWith('erd1')
 
   useEffect(() => {
     let cancelled = false
@@ -128,6 +129,11 @@ export default function Marketplace() {
 
   const totalNfts = allNfts.length
   const totalCollections = collectionPills.length
+  const hasFilters =
+    activeCollection !== 'all' ||
+    query.trim().length > 0 ||
+    typeFilter !== 'all' ||
+    priceFilter !== 'all'
 
   const visibleNfts = useMemo(() => {
     let list = allNfts
@@ -183,7 +189,7 @@ export default function Marketplace() {
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link to="/publish" className="btn-primary text-sm">
-              Publier une œuvre
+              Publier mon œuvre
             </Link>
             <MoonpayButton label="Acheter en EUR (MoonPay → EGLD)" className="text-sm!" />
             <button
@@ -220,6 +226,9 @@ export default function Marketplace() {
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Link to="/publish" className="btn-primary text-sm lg:mr-2">
+            Publier mon œuvre
+          </Link>
           <label className="text-xs text-gray-500">Sort</label>
           <select
             value={sort}
@@ -272,27 +281,40 @@ export default function Marketplace() {
         <SkeletonGrid />
       ) : visibleNfts.length === 0 ? (
         <div className="rounded-2xl border border-[#2a2a3a] bg-[#15151f] px-6 py-20 text-center">
-          <p className="text-4xl mb-3">🔍</p>
-          <p className="text-lg font-semibold text-white">Aucune œuvre ne correspond à tes filtres.</p>
+          <p className="text-4xl mb-3">{hasFilters ? '🔍' : '🖼️'}</p>
+          <p className="text-lg font-semibold text-white">
+            {hasFilters
+              ? 'Aucune œuvre disponible pour cette sélection.'
+              : 'La prochaine sélection arrive bientôt.'}
+          </p>
           <p className="mt-2 text-sm text-gray-400">
-            Réinitialise les filtres ou publie une nouvelle pièce artiste.
+            {hasFilters
+              ? 'Essaie une autre collection, ou publie ton œuvre pour enrichir la galerie.'
+              : 'Reviens bientôt pour découvrir de nouvelles œuvres, ou publie la tienne dès maintenant.'}
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                setQuery('')
-                setPriceFilter('all')
-                setTypeFilter('all')
-                setActiveCollection('all')
-              }}
-              className="btn-secondary text-sm"
-            >
-              Réinitialiser
-            </button>
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery('')
+                  setPriceFilter('all')
+                  setTypeFilter('all')
+                  setActiveCollection('all')
+                }}
+                className="btn-secondary text-sm"
+              >
+                Réinitialiser
+              </button>
+            )}
             <Link to="/publish" className="btn-primary text-sm">
-              Publier une œuvre
+              Publier mon œuvre
             </Link>
+            {!marketplaceReady && (
+              <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-2 text-xs text-orange-200">
+                Contrat en déploiement — l’achat on-chain arrive bientôt.
+              </span>
+            )}
           </div>
         </div>
       ) : (
