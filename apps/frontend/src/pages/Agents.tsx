@@ -59,6 +59,49 @@ interface LimitedAgentEdition {
   description: string
 }
 
+interface LiaStatusData {
+  timestamp?: string
+  architecture?: {
+    pipeline?: string
+    publish?: string
+  }
+  deploy?: {
+    frontend_build?: string
+    pages_build_deployment?: string
+    base_path?: string
+  }
+  xartists?: {
+    contracts?: {
+      agents_marketplace?: string | null
+    }
+  }
+  agents_marketplace?: {
+    build_status?: string
+    address_source?: string
+    frontend_rebuild?: string
+    warp_templates?: string[]
+  }
+  cycle?: {
+    summary?: string
+  }
+}
+
+interface VellumMachineContractData {
+  purpose?: string
+  frontend_consumers?: Record<string, string[]>
+  pipeline?: Array<{
+    node: string
+    next?: string[]
+    calls_before_publish?: string[]
+  }>
+  gaps_blocking_vellum?: Array<{
+    id: string
+    priority: number
+    issue: string
+    fix: string
+  }>
+}
+
 const DOMAIN_ICON: Record<string, string> = {
   weather: '🌤️',
   crypto: '₿',
@@ -95,6 +138,8 @@ function signalBadge(s: string) {
 export default function Agents() {
   const [data, setData] = useState<ForecastData | null>(null)
   const [catalog, setCatalog] = useState<LimitedAgentEdition[]>([])
+  const [liaStatus, setLiaStatus] = useState<LiaStatusData | null>(null)
+  const [vellumMachine, setVellumMachine] = useState<VellumMachineContractData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [listAgentId, setListAgentId] = useState('LIA-v6')
@@ -115,12 +160,24 @@ export default function Agents() {
     setLoading(true)
     setError(null)
     try {
-      const [forecastData, catalogData] = await Promise.all([
+      const [forecastResult, catalogResult, statusResult, machineResult] = await Promise.allSettled([
         fetchMirroredJson<ForecastData>('greensmoke_forecasts.json', { cache: 'no-store', bustCache: true }),
         fetchMirroredJson<LimitedAgentEdition[]>('agents_catalog.json', { cache: 'no-store', bustCache: true }),
+        fetchMirroredJson<LiaStatusData>('lia_v6_status.json', { cache: 'no-store', bustCache: true }),
+        fetchMirroredJson<VellumMachineContractData>('VELLUM_MACHINE_CONTRACT.json', {
+          cache: 'no-store',
+          bustCache: true,
+        }),
       ])
-      setData(forecastData)
-      setCatalog(catalogData)
+
+      if (forecastResult.status !== 'fulfilled' || catalogResult.status !== 'fulfilled') {
+        throw new Error('Impossible de charger les données agents / catalogue.')
+      }
+
+      setData(forecastResult.value)
+      setCatalog(catalogResult.value)
+      setLiaStatus(statusResult.status === 'fulfilled' ? statusResult.value : null)
+      setVellumMachine(machineResult.status === 'fulfilled' ? machineResult.value : null)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur chargement')
     } finally {
@@ -136,6 +193,10 @@ export default function Agents() {
 
   const agentsList = data ? Object.values(data.agents) : []
   const marketplaceReady = marketplaceAddress.startsWith('erd1')
+  const publishedMarketplaceAddress = liaStatus?.xartists?.contracts?.agents_marketplace ?? null
+  const publishedMarketplaceReady = Boolean(publishedMarketplaceAddress && publishedMarketplaceAddress.startsWith('erd1'))
+  const criticalGaps =
+    vellumMachine?.gaps_blocking_vellum?.filter((gap) => gap.priority <= 1).sort((a, b) => a.priority - b.priority) ?? []
   const contractPendingLabel = 'Contrat en déploiement'
   const buyWarp = buildBuyAgentWarp({
     address: marketplaceAddress,
@@ -366,7 +427,7 @@ export default function Agents() {
 
       <h2 className="text-lg font-bold mb-3">🔮 Agents prévisionnels GreenSmoke (tes agents)</h2>
       <div className="space-y-4 mb-8">
-        {agentsList.map(agent => (
+        {agentsList.map((agent) => (
           <div key={agent.id} className="card">
             <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
               <div className="flex items-center gap-3">
@@ -422,6 +483,167 @@ export default function Agents() {
             </a>
           </div>
         ))}
+      </div>
+
+      <div className="grid gap-4 mb-6 xl:grid-cols-[1.2fr_0.8fr]">
+        <section className="card border-emerald-500/20 bg-emerald-500/5">
+          <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-2">
+                💸 Répartition des flux
+              </p>
+              <h2 className="text-xl font-black">Où va l’argent quand un agent est vendu ?</h2>
+              <p className="mt-2 text-sm text-gray-400">
+                Le smart contract <code className="text-emerald-300">buyAgentAction</code> encaisse le prix total en EGLD,
+                paie le vendeur net, puis garde la fee protocole dans la trésorerie du contrat.
+              </p>
+            </div>
+            <span className="badge-green">On-chain source of truth</span>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-3">
+            <div className="rounded-xl border border-white/5 bg-[#111118] p-4">
+              <p className="text-xs uppercase tracking-widest text-gray-500">1. Acheteur</p>
+              <p className="mt-2 font-semibold text-white">Paie 100 % du prix affiché</p>
+              <p className="mt-2 text-sm text-gray-400">
+                Le wallet envoie <code className="text-emerald-300">price</code> en EGLD au contrat agents-marketplace.
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/5 bg-[#111118] p-4">
+              <p className="text-xs uppercase tracking-widest text-gray-500">2. Vendeur / issuer</p>
+              <p className="mt-2 font-semibold text-white">Reçoit le net vendeur</p>
+              <p className="mt-2 text-sm text-gray-400">
+                Montant envoyé : <code className="text-emerald-300">price - fee</code>. Il n’y a pas de royalty artiste séparée
+                dans le contrat agents actuel.
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/5 bg-[#111118] p-4">
+              <p className="text-xs uppercase tracking-widest text-gray-500">3. Trésorerie protocole</p>
+              <p className="mt-2 font-semibold text-white">Conserve la fee</p>
+              <p className="mt-2 text-sm text-gray-400">
+                La <code className="text-emerald-300">marketplace fee</code> reste dans le smart contract jusqu’au retrait
+                opérateur. Aucun burn / split LP / staking n’est branché ici aujourd’hui.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-xl border border-white/5 bg-black/20 p-4 text-sm text-gray-300">
+            <p>
+              <span className="font-semibold text-white">Formule exacte :</span>{' '}
+              <code className="text-emerald-300">seller proceeds = listing price - (listing price × fee_bps / 10 000)</code>
+            </p>
+            <p className="mt-2 text-gray-400">
+              Le stock affiché dans les éditions limitées vient de <code className="text-emerald-300">data/agents_catalog.json</code>;
+              ce compteur n’est pas recalculé on-chain par le contrat actuel.
+            </p>
+          </div>
+        </section>
+
+        <section className="card border-cyan-500/20 bg-cyan-500/5">
+          <div className="mb-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-cyan-400 mb-2">
+              🛠️ Préparation Vellum → rebuild → publication
+            </p>
+            <h2 className="text-xl font-black">État de synchronisation frontend</h2>
+            <p className="mt-2 text-sm text-gray-400">
+              Vérifie ici si l’app est prête à être reconstruite et republiée avec les dernières données Vellum.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border border-white/5 bg-[#111118] p-4">
+              <p className="text-xs uppercase tracking-widest text-gray-500">Dernière MAJ statut</p>
+              <p className="mt-2 font-semibold text-white">
+                {liaStatus?.timestamp ? new Date(liaStatus.timestamp).toLocaleString('fr-FR') : 'Non publiée'}
+              </p>
+              <p className="mt-2 text-xs text-gray-400">{liaStatus?.cycle?.summary || 'Aucun résumé de cycle publié.'}</p>
+            </div>
+            <div className="rounded-xl border border-white/5 bg-[#111118] p-4">
+              <p className="text-xs uppercase tracking-widest text-gray-500">Pipeline publié</p>
+              <p className="mt-2 font-semibold text-white">{liaStatus?.architecture?.pipeline || 'Pipeline non remonté'}</p>
+              <p className="mt-2 text-xs text-gray-400">
+                Publish node : {liaStatus?.architecture?.publish || 'non renseigné'}
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/5 bg-[#111118] p-4">
+              <p className="text-xs uppercase tracking-widest text-gray-500">Build / déploiement</p>
+              <p className="mt-2 text-sm text-white">{liaStatus?.deploy?.frontend_build || 'Statut build indisponible'}</p>
+              <p className="mt-2 text-xs text-gray-400">
+                Pages : {liaStatus?.deploy?.pages_build_deployment || 'Statut Pages indisponible'}
+              </p>
+              <p className="mt-2 text-xs text-gray-400">
+                Agents SC : {liaStatus?.agents_marketplace?.build_status || 'Statut build agents indisponible'}
+              </p>
+            </div>
+            <div className="rounded-xl border border-white/5 bg-[#111118] p-4">
+              <p className="text-xs uppercase tracking-widest text-gray-500">Adresse agents-marketplace</p>
+              <p className="mt-2 break-all font-mono text-sm text-white">{publishedMarketplaceAddress || 'null'}</p>
+              <p className="mt-2 text-xs text-gray-400">
+                Source attendue : {liaStatus?.agents_marketplace?.address_source || 'data/contracts.json / env'}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-2 text-sm">
+            <div className="flex items-start gap-2 rounded-xl border border-white/5 bg-black/20 px-3 py-2">
+              <span className={publishedMarketplaceReady ? 'text-emerald-400' : 'text-red-400'}>
+                {publishedMarketplaceReady ? '●' : '●'}
+              </span>
+              <div>
+                <p className="text-white">Mirrored contract address</p>
+                <p className="text-xs text-gray-400">
+                  {publishedMarketplaceReady
+                    ? 'L’adresse agents_marketplace est publiée dans les fichiers miroir.'
+                    : 'Bloquant actuel : contracts.agents_marketplace est encore null côté données publiées.'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2 rounded-xl border border-white/5 bg-black/20 px-3 py-2">
+              <span className={marketplaceReady ? 'text-emerald-400' : 'text-orange-400'}>●</span>
+              <div>
+                <p className="text-white">Wallet actions / Warps</p>
+                <p className="text-xs text-gray-400">
+                  {marketplaceReady
+                    ? `Le frontend peut déjà préparer les transactions via ${marketplaceAddress}.`
+                    : 'Les boutons achat / listing restent bloqués tant que l’adresse n’est pas injectée dans l’env ou contracts.json.'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2 rounded-xl border border-white/5 bg-black/20 px-3 py-2">
+              <span className="text-cyan-400">●</span>
+              <div>
+                <p className="text-white">Rebuild Vellum attendu</p>
+                <p className="text-xs text-gray-400">
+                  {liaStatus?.agents_marketplace?.frontend_rebuild ||
+                    'Relancer update_warps_from_contracts puis publish_data_for_frontend avant le rebuild GitHub Pages.'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {criticalGaps.length > 0 && (
+            <div className="mt-4 rounded-xl border border-orange-500/20 bg-orange-500/10 p-4">
+              <p className="text-sm font-semibold text-orange-200">Blocages prioritaires Vellum</p>
+              <div className="mt-3 space-y-2">
+                {criticalGaps.map((gap) => (
+                  <div key={gap.id} className="rounded-lg border border-white/5 bg-black/20 px-3 py-2">
+                    <p className="text-sm text-white">
+                      {gap.id} · {gap.issue}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-300">{gap.fix}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-4 rounded-xl border border-white/5 bg-black/20 p-4 text-xs text-gray-400">
+            <p>Consumers frontend : {(vellumMachine?.frontend_consumers?.['/agents'] || []).join(' · ') || 'non publiés'}</p>
+            <p className="mt-2">
+              Warps attendus : {(liaStatus?.agents_marketplace?.warp_templates || []).join(' · ') || 'non publiés'}
+            </p>
+          </div>
+        </section>
       </div>
 
       <h2 className="text-lg font-bold mb-3">🤖 Agents opérationnels LIA v6</h2>
