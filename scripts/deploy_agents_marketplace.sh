@@ -17,7 +17,7 @@ fi
 cd "$CDIR"
 if command -v mxpy >/dev/null 2>&1; then
   echo "Building & deploying agents-marketplace fee_bps=$FEE_BPS chain=$CHAIN"
-  mxpy contract build || true
+  mxpy contract build
   # Adjust bytecode path after build
   WASM="$(find output -name '*.wasm' 2>/dev/null | head -1 || true)"
   if [[ -z "$WASM" ]]; then
