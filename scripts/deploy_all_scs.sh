@@ -1,19 +1,12 @@
 #!/usr/bin/env bash
 # Deploy xArtists smart contracts — MAINNET ONLY (CHAIN=1).
-#
-# Prerequisites:
-#   - mxpy (pip install multiversx-sdk-cli)
-#   - PEM with mainnet EGLD for gas
+# Prefer: ./scripts/simulate_deploy_mainnet.sh first, then set GAS_LIMIT.
 #
 # Usage:
 #   export PEM=~/wallets/deployer.pem
 #   export FEE_BPS=300
+#   export GAS_LIMIT=200000000   # or exact from simulate
 #   ./scripts/deploy_mainnet.sh
-#   # or:
-#   export CHAIN=1
-#   export PROXY=https://gateway.multiversx.com
-#   ./scripts/deploy_all_scs.sh
-#   ./scripts/deploy_all_scs.sh agents-marketplace
 
 set -euo pipefail
 
@@ -22,6 +15,8 @@ PEM="${PEM:-${LIA_WALLET_PEM_PATH:-}}"
 CHAIN="${CHAIN:-1}"
 PROXY="${PROXY:-https://gateway.multiversx.com}"
 FEE_BPS="${FEE_BPS:-300}"
+# 80M is often too low once wasm > ~50KB (data gas). Default 200M; max network 600M.
+GAS_LIMIT="${GAS_LIMIT:-200000000}"
 
 if [[ "$CHAIN" != "1" ]]; then
   echo "❌ MAINNET ONLY. Set CHAIN=1 (got CHAIN=$CHAIN)"
@@ -55,7 +50,10 @@ deploy_one() {
   echo ""
   echo "======== BUILD $name (isolated cd) ========"
   cd "$dir"
-  mxpy contract build || {
+  if command -v sc-meta >/dev/null 2>&1; then
+    sc-meta all build || mxpy contract build || true
+  fi
+  mxpy contract build 2>/dev/null || sc-meta all build || {
     echo "Build failed for $name"
     return 1
   }
@@ -66,6 +64,7 @@ deploy_one() {
     echo "No wasm for $name"
     return 1
   fi
+  echo "WASM $(wc -c < "$WASM") bytes | gas-limit=$GAS_LIMIT"
 
   echo "======== DEPLOY $name (fee_bps=$fee_arg MAINNET) ========"
   local LOG
@@ -74,7 +73,7 @@ deploy_one() {
     --pem "$PEM" \
     --proxy "$PROXY" \
     --chain "$CHAIN" \
-    --gas-limit 80000000 \
+    --gas-limit "$GAS_LIMIT" \
     --arguments "$fee_arg" \
     --recall-nonce \
     --send 2>&1) || true
@@ -137,8 +136,4 @@ PY
 
 rm -f "$OUT_JSON.tmp"
 echo ""
-echo "Next (MAINNET):"
-echo "  1. Blackbox micro-amounts: docs/MAINNET_DEPLOY_BLACKBOX.md"
-echo "  2. git add data/contracts.json && commit (addresses only)"
-echo "  3. VITE_AGENTS_MARKETPLACE_ADDRESS=... VITE_AGENTS_FEE_BPS=$FEE_BPS"
-echo "  4. Explorer: https://explorer.multiversx.com"
+echo "Next (MAINNET): docs/MAINNET_DEPLOY_BLACKBOX.md"
