@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import AgentsMarketplacePanel from '../components/AgentsMarketplacePanel'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
 
@@ -133,6 +134,8 @@ export default function Agents() {
         </div>
       </div>
 
+      <AgentsMarketplacePanel />
+
       {data?.aggregated_signals && (
         <div className="card mb-6 border-purple-500/30 bg-purple-500/5">
           <p className="text-xs font-semibold uppercase tracking-widest text-purple-400 mb-3">📡 Signaux agrégés (utilisables)</p>
@@ -159,7 +162,6 @@ export default function Agents() {
         </div>
       )}
 
-      {/* GSN on-chain */}
       {data?.contracts && (
         <div className="card mb-6">
           <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">⛓️ Contrats GreenSmoke Mainnet</p>
