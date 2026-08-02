@@ -1,27 +1,32 @@
 #!/usr/bin/env bash
-# Deploy xArtists smart contracts (devnet-first recommended).
+# Deploy xArtists smart contracts — MAINNET ONLY (CHAIN=1).
 #
 # Prerequisites:
 #   - mxpy (pip install multiversx-sdk-cli)
-#   - PEM with EGLD for gas (devnet faucet OK)
+#   - PEM with mainnet EGLD for gas
 #
 # Usage:
 #   export PEM=~/wallets/deployer.pem
-#   export CHAIN=D
-#   export PROXY=https://devnet-gateway.multiversx.com
 #   export FEE_BPS=300
+#   ./scripts/deploy_mainnet.sh
+#   # or:
+#   export CHAIN=1
+#   export PROXY=https://gateway.multiversx.com
 #   ./scripts/deploy_all_scs.sh
 #   ./scripts/deploy_all_scs.sh agents-marketplace
-#
-# Prefer: ./scripts/deploy_devnet.sh
 
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PEM="${PEM:-${LIA_WALLET_PEM_PATH:-}}"
-CHAIN="${CHAIN:-D}"
-PROXY="${PROXY:-https://devnet-gateway.multiversx.com}"
+CHAIN="${CHAIN:-1}"
+PROXY="${PROXY:-https://gateway.multiversx.com}"
 FEE_BPS="${FEE_BPS:-300}"
+
+if [[ "$CHAIN" != "1" ]]; then
+  echo "❌ MAINNET ONLY. Set CHAIN=1 (got CHAIN=$CHAIN)"
+  exit 1
+fi
 
 if [[ -z "${PEM}" || ! -f "${PEM}" ]]; then
   echo "❌ Set PEM=/path/to/wallet.pem (never commit this file)"
@@ -62,7 +67,7 @@ deploy_one() {
     return 1
   fi
 
-  echo "======== DEPLOY $name (fee_bps=$fee_arg chain=$CHAIN) ========"
+  echo "======== DEPLOY $name (fee_bps=$fee_arg MAINNET) ========"
   local LOG
   LOG=$(mxpy contract deploy \
     --bytecode "$WASM" \
@@ -116,7 +121,8 @@ if path.exists():
         base = {}
 base.update(deployed)
 base["updated"] = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-base["chain"] = "$CHAIN"
+base["chain"] = "1"
+base["network"] = "mainnet"
 base["fee_bps"] = int("$FEE_BPS")
 if "nft-marketplace" in deployed:
     base["marketplace_nft"] = deployed["nft-marketplace"]
@@ -131,8 +137,8 @@ PY
 
 rm -f "$OUT_JSON.tmp"
 echo ""
-echo "Next:"
-echo "  1. Run blackbox checklist: docs/DEVNET_DEPLOY_BLACKBOX.md"
+echo "Next (MAINNET):"
+echo "  1. Blackbox micro-amounts: docs/MAINNET_DEPLOY_BLACKBOX.md"
 echo "  2. git add data/contracts.json && commit (addresses only)"
 echo "  3. VITE_AGENTS_MARKETPLACE_ADDRESS=... VITE_AGENTS_FEE_BPS=$FEE_BPS"
-echo "  4. Explorer: https://devnet-explorer.multiversx.com"
+echo "  4. Explorer: https://explorer.multiversx.com"

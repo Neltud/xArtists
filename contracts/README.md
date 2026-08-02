@@ -1,79 +1,56 @@
-# xArtists Smart Contracts (MultiversX)
+# xArtists Smart Contracts (MultiversX) — MAINNET ONLY
 
 | Contract | Path | Status |
 |----------|------|--------|
-| **NFT Marketplace** | `contracts/nft-marketplace` | P0+P1 hardened — list/buy, royalties, pause, CEI, claimFees, 2-step ownership |
-| **Agents Marketplace** | `contracts/agents-marketplace` | P0+P1 hardened — list/buy, pause, CEI, claimFees, agent_id cap |
-| **BTC Bridge** | `contracts/btc-bridge` | **EXPERIMENTAL ONLY — DO NOT send user funds** |
+| **NFT Marketplace** | `contracts/nft-marketplace` | P0+P1 hardened — mainnet deploy ready |
+| **Agents Marketplace** | `contracts/agents-marketplace` | P0+P1 hardened — mainnet deploy ready |
+| **BTC Bridge** | `contracts/btc-bridge` | **EXPERIMENTAL — DO NOT deploy / no user funds** |
 | NFT Staking | `contracts/nft-staking` | Cargo only — incomplete |
 | TRO Staking | `contracts/tro-staking` | Cargo only — incomplete |
 
-## Security remediation (2026-08-02)
+## Network policy
 
-**P0 applied**
+**Mainnet only** (`CHAIN=1`, `https://gateway.multiversx.com`).  
+Devnet scripts are disabled.
 
-- `upgrade` gated `#[only_owner]`
-- NFT: `listing not found` check; `fee_bps + royalty_bps <= 100%` at list & buy
-- CEI: listing deactivated **before** EGLD/NFT transfers
-- Bridge labeled experimental (no production use)
+## Security (2026-08-02)
 
-**P1 applied**
+**P0+P1 applied:** upgrade/owner ACL, pause, CEI, fee+royalty ≤100%, excess refund, accumulated_fees, 2-step ownership, agent_id length cap.
 
-- Agents: `setPaused` / `isPaused`
-- NFT buy: excess EGLD refunded to buyer
-- `transferOwnership` + `acceptOwnership` (2-step)
-- `accumulated_fees` tracker; `claimFees` pays only that amount
-- `agent_id` length 1..=64
+**P2 open:** collection whitelist, multisig owner, external audit, bridge redesign.
 
-**Still open (P2)**
+See `docs/MAINNET_DEPLOY_BLACKBOX.md`.
 
-- Collection whitelist NFT
-- Multisig / Guardian owner
-- External paid audit before significant TVL
-- Bridge full redesign (mint ESDT, timelock use, relayer de-dup)
-
-See `docs/SECURITY_AUDIT_SC_2026-08-02.md` if present.
-
-## Deploy
+## Deploy mainnet
 
 ```bash
-pip install multiversx-sdk-cli
-export PEM=~/wallets/xartists-deployer.pem   # NEVER commit
-export CHAIN=D   # devnet first
-export PROXY=https://devnet-gateway.multiversx.com
+pip install -U multiversx-sdk-cli
+export PEM=~/wallets/xartists-mainnet.pem   # NEVER commit
 export FEE_BPS=300
 
-# Isolated build (avoid broken workspace members)
-cd contracts/agents-marketplace && mxpy contract build
-cd ../nft-marketplace && mxpy contract build
-
-# Deploy via scripts or Vellum deploy_scs_node
+chmod +x scripts/*.sh
+./scripts/build_scs_isolated.sh
+./scripts/deploy_mainnet.sh agents-marketplace   # first
+./scripts/deploy_mainnet.sh nft-marketplace
+# or both:
+./scripts/deploy_mainnet.sh
 ```
 
-After deploy: write addresses to `data/contracts.json` (no PEM).
+Writes addresses into `data/contracts.json` (`chain: "1"`, `network: "mainnet"`).
 
-## Endpoints — Agents
+After deploy:
 
-| Endpoint | Access |
-|----------|--------|
-| `listAgentAction` | public (not paused) |
-| `buyAgentAction` | payable EGLD |
-| `cancelListing` | seller |
-| `claimFees` | owner |
-| `setPaused` / `setFeeBps` | owner |
-| `transferOwnership` / `acceptOwnership` | owner / pending |
-| views: `getListing`, `getFeeBps`, `getAccumulatedFees`, `isPaused`, `getOwner` | |
+1. Blackbox micro-EGLD checklist (`docs/MAINNET_DEPLOY_BLACKBOX.md`)
+2. Commit `data/contracts.json` only (no PEM)
+3. `VITE_AGENTS_MARKETPLACE_ADDRESS` / `VITE_MARKETPLACE_ADDRESS` / `VITE_AGENTS_FEE_BPS=300`
+4. Explorer: https://explorer.multiversx.com
 
-## Endpoints — NFT
+## Endpoints
 
-| Endpoint | Access |
-|----------|--------|
-| `listNft` | payable 1 NFT |
-| `buyNft` | payable EGLD |
-| `cancelListing` | seller |
-| `claimFees` / `setPaused` / `setFeeBps` | owner |
-| `transferOwnership` / `acceptOwnership` | owner / pending |
+**Agents:** listAgentAction, buyAgentAction (payable EGLD), cancelListing, claimFees, setPaused, setFeeBps, transferOwnership, acceptOwnership + views.
+
+**NFT:** listNft (1 NFT), buyNft (EGLD), cancelListing, claimFees, setPaused, setFeeBps, ownership 2-step + views.
 
 ## BTC Bridge
 
-**EXPERIMENTAL SKELETON.** No real sBTC mint, signature path unverified for production, timelock unused. **Do not deposit user funds.**
+**Do not deploy.** No production mint path.

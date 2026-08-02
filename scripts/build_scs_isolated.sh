@@ -26,7 +26,6 @@ build_one() {
   echo ""
   echo "======== BUILD $name (isolated) ========"
   cd "$dir"
-  # Prefer docker build for reproducible wasm if available
   if mxpy contract build --help 2>&1 | grep -q -- '--docker'; then
     mxpy contract build --docker || mxpy contract build
   else
@@ -54,9 +53,8 @@ if [[ "$FAILED" -ne 0 ]]; then
   echo "Build failed. Common fixes:"
   echo "  rustup target add wasm32-unknown-unknown"
   echo "  pip install -U multiversx-sdk-cli"
-  echo "  Ensure contracts/*/Cargo.toml has multiversx-sc and crate-type cdylib"
   exit 1
 fi
 
 echo ""
-echo "All requested builds OK. Next: ./scripts/deploy_devnet.sh"
+echo "All requested builds OK. Next: ./scripts/deploy_mainnet.sh"
