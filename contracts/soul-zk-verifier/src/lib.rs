@@ -1,32 +1,29 @@
 #![no_std]
 
 //! Soul zk Verifier — MultiversX on-chain gate (Phase 1)
-//!
-//! Phase 1 (this contract):
-//!   - Register scheme: Halo2 | Groth16
-//!   - verifyProof: structural checks + commitment bind + nullifier anti-replay
-//!   - Optional trusted attestor cosign (relayer / prover service)
-//!   - Does NOT run full pairing/Halo2 math on-chain (gas + no native pairing API)
-//!
-//! Phase 2 (future):
-//!   - Plug external verifier library or precompile when available
-//!   - Keep same endpoint ABI: verifyProof
+//! Proof bounds are scheme-aware to reject junk early and limit gas.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
-const MAX_PROOF_LEN: usize = 8192;
-const MIN_PROOF_LEN: usize = 32;
-const MAX_COMMITMENT_LEN: usize = 64;
+// ─── Proof length bounds (bytes) ─────────────────────────────
+// Halo2: flexible transcript; practical range for our envelopes
+const HALO2_PROOF_MIN: usize = 64;
+const HALO2_PROOF_MAX: usize = 4096;
+// Groth16 BN254 compressed-ish / standard ~192–288B; allow headroom
+const GROTH16_PROOF_MIN: usize = 128;
+const GROTH16_PROOF_MAX: usize = 512;
+// Absolute hard cap (DoS)
+const PROOF_HARD_MAX: usize = 4096;
+
+const COMMITMENT_LEN: usize = 32; // sha256
+const NULLIFIER_MIN: usize = 16;
+const NULLIFIER_MAX: usize = 32;
+const CLAIM_TYPE_MAX: usize = 24;
+const VK_HASH_LEN: usize = 32;
+
 const SCHEME_HALO2: u8 = 1;
 const SCHEME_GROTH16: u8 = 2;
-
-#[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, Clone, PartialEq)]
-pub enum SchemeId {
-    None,
-    Halo2,
-    Groth16,
-}
 
 #[multiversx_sc::contract]
 pub trait SoulZkVerifier {
@@ -62,6 +59,14 @@ pub trait SoulZkVerifier {
         self.scheme().set(scheme);
     }
 
+    fn proof_bounds(&self, scheme: u8) -> (usize, usize) {
+        if scheme == SCHEME_GROTH16 {
+            (GROTH16_PROOF_MIN, GROTH16_PROOF_MAX)
+        } else {
+            (HALO2_PROOF_MIN, HALO2_PROOF_MAX)
+        }
+    }
+
     // ─── Admin ───────────────────────────────────────────────
 
     #[endpoint(setPaused)]
@@ -76,14 +81,10 @@ pub trait SoulZkVerifier {
         self.set_scheme_internal(scheme);
     }
 
-    /// Hash of verifying key / circuit params (off-chain Halo2/Groth16 VK)
     #[endpoint(setVkHash)]
     fn set_vk_hash(&self, vk_hash: ManagedBuffer) {
         self.require_owner();
-        require!(
-            vk_hash.len() >= 16 && vk_hash.len() <= MAX_COMMITMENT_LEN,
-            "invalid vk_hash length"
-        );
+        require!(vk_hash.len() == VK_HASH_LEN, "vk_hash must be 32 bytes");
         self.vk_hash().set(&vk_hash);
     }
 
@@ -119,12 +120,6 @@ pub trait SoulZkVerifier {
 
     // ─── Verify ──────────────────────────────────────────────
 
-    /// Phase-1 verify:
-    /// - not paused, scheme set, vk_hash set
-    /// - proof length bounds
-    /// - commitment + nullifier non-empty, nullifier unused
-    /// - if attestation_required: caller must be attestor (prover relay)
-    /// Returns true and marks nullifier used.
     #[endpoint(verifyProof)]
     fn verify_proof(
         &self,
@@ -144,19 +139,20 @@ pub trait SoulZkVerifier {
             "scheme not set"
         );
 
+        let (pmin, pmax) = self.proof_bounds(scheme);
+        let plen = proof.len();
+        require!(plen >= pmin && plen <= pmax, "proof length out of bounds");
+        require!(plen <= PROOF_HARD_MAX, "proof exceeds hard max");
+
+        require!(commitment.len() == COMMITMENT_LEN, "commitment must be 32 bytes");
         require!(
-            proof.len() >= MIN_PROOF_LEN && proof.len() <= MAX_PROOF_LEN,
-            "invalid proof length"
+            nullifier.len() >= NULLIFIER_MIN && nullifier.len() <= NULLIFIER_MAX,
+            "nullifier length out of bounds"
         );
         require!(
-            commitment.len() >= 16 && commitment.len() <= MAX_COMMITMENT_LEN,
-            "invalid commitment"
+            claim_type.len() > 0 && claim_type.len() <= CLAIM_TYPE_MAX,
+            "invalid claim_type length"
         );
-        require!(
-            nullifier.len() >= 8 && nullifier.len() <= MAX_COMMITMENT_LEN,
-            "invalid nullifier"
-        );
-        require!(claim_type.len() > 0 && claim_type.len() <= 32, "invalid claim_type");
         require!(!subject.is_zero(), "zero subject");
 
         require!(!self.nullifiers(&nullifier).get(), "nullifier already used");
@@ -169,27 +165,14 @@ pub trait SoulZkVerifier {
             );
         }
 
-        // Phase 1: structural + anti-replay. Full Halo2/Groth16 check is off-chain;
-        // attestor is responsible for cryptographic validity before calling.
-        // Phase 2: replace this block with native verify against vk_hash.
-
         self.nullifiers(&nullifier).set(true);
         let n = self.verified_count().get() + 1;
         self.verified_count().set(n);
 
-        self.verify_event(
-            n,
-            &subject,
-            &nullifier,
-            &claim_type,
-            epoch,
-            scheme,
-        );
-
+        self.verify_event(n, &subject, &nullifier, &claim_type, epoch, scheme);
         true
     }
 
-    /// View-only structural check (does not consume nullifier)
     #[view(previewVerify)]
     fn preview_verify(
         &self,
@@ -204,10 +187,15 @@ pub trait SoulZkVerifier {
         if scheme != SCHEME_HALO2 && scheme != SCHEME_GROTH16 {
             return false;
         }
-        if proof.len() < MIN_PROOF_LEN || proof.len() > MAX_PROOF_LEN {
+        let (pmin, pmax) = self.proof_bounds(scheme);
+        let plen = proof.len();
+        if plen < pmin || plen > pmax || plen > PROOF_HARD_MAX {
             return false;
         }
-        if commitment.len() < 16 || nullifier.len() < 8 {
+        if commitment.len() != COMMITMENT_LEN {
+            return false;
+        }
+        if nullifier.len() < NULLIFIER_MIN || nullifier.len() > NULLIFIER_MAX {
             return false;
         }
         if self.nullifiers(&nullifier).get() {
@@ -216,7 +204,12 @@ pub trait SoulZkVerifier {
         true
     }
 
-    // ─── Views ───────────────────────────────────────────────
+    #[view(getProofBounds)]
+    fn get_proof_bounds(&self) -> MultiValue2<u32, u32> {
+        let scheme = self.scheme().get();
+        let (a, b) = self.proof_bounds(scheme);
+        (a as u32, b as u32).into()
+    }
 
     #[view(getScheme)]
     fn get_scheme(&self) -> u8 {

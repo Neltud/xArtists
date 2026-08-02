@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "name": "soul-zk-circuit",
   "status": "phase1_onchain_ready",
   "settlement_chain": "multiversx",
@@ -8,8 +8,16 @@
     "primary_id": 1,
     "alternates": ["groth16"],
     "curve": "bn254",
-    "proof_size_bytes_expected": 96,
-    "proof_size_bytes_max": 8192
+    "bounds": {
+      "halo2": {"proof_min": 64, "proof_max": 4096},
+      "groth16": {"proof_min": 128, "proof_max": 512},
+      "hard_max": 4096,
+      "commitment_len": 32,
+      "nullifier_min": 16,
+      "nullifier_max": 32,
+      "vk_hash_len": 32,
+      "claim_type_max": 24
+    }
   },
   "prover": {
     "enabled": false,
@@ -24,31 +32,25 @@
     "contract": "contracts/soul-zk-verifier",
     "endpoint_verify": "verifyProof",
     "endpoint_preview": "previewVerify",
+    "endpoint_bounds": "getProofBounds",
     "phase": 1,
-    "phase_note": "Structural + nullifier + attestor; full Halo2 math off-chain",
     "env_address": "SOUL_ZK_VERIFIER_ADDRESS"
   },
-  "epoch": {
-    "length_sec": 86400,
-    "source": "unix_day"
-  },
+  "epoch": {"length_sec": 86400, "source": "unix_day"},
   "circuits": {
     "credit": {
       "id": "soul_credit_v1",
-      "description": "Prove credit score >= threshold without revealing raw score",
       "public": ["subject", "epoch", "threshold_bps", "nullifier"],
       "private": ["score", "salt"],
       "threshold_bps_default": 5000
     },
     "restake": {
       "id": "soul_restake_v1",
-      "description": "Prove restake position commitment for yield unlock",
       "public": ["subject", "epoch", "asset_id_hash", "amount_commitment", "nullifier"],
       "private": ["amount", "position_id", "salt"]
     },
     "eligibility": {
       "id": "soul_elig_v1",
-      "description": "Prove allowlist / soulbound membership for agent pack",
       "public": ["subject", "epoch", "cohort_root", "nullifier"],
       "private": ["merkle_path", "leaf_salt"]
     }
@@ -59,5 +61,5 @@
     "reject_if_nullifier_seen": true
   },
   "nullifier_store": "data/soul_zk_nullifiers.json",
-  "notes": "Phase1 SC ready. Deploy soul-zk-verifier, setVkHash, setAttestor. Halo2 prove off-chain."
+  "notes": "Bounds tightened v1.2 — scheme-aware; reject gas-waste oversized proofs"
 }
