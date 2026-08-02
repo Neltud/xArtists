@@ -1,29 +1,22 @@
 """
 LIA Statistical Arbitrage — Pairs / Z-Score Mean-Reversion
 =========================================================
-Edge statistique pour le circuit +1 % net.
+Edge statistique optimisé pour le circuit +1 % net.
 
-Principe:
-  - Identifier des paires liquides co-mouvementées (EGLD/USDC, WBTC/USDC, etc.)
-  - Suivre le spread (ou log-ratio) et son z-score
-  - Entrer quand |z| >= entry_z, viser le retour vers mean (z ≈ 0)
-  - Filtrer par half-life (trop long = edge trop lent pour le compounding court)
-  - Toujours respecter les guards + required_gross_pct du CompoundCircuit
+Paramètres calibrés pour maximiser winrate + fréquence d'edges
+valides tout en filtrant les paires trop lentes / illiquides.
 
-Math rapide:
+Math:
   spread_t = log(P_a) - hedge_ratio * log(P_b)
   z = (spread - mean) / std
-  half_life ≈ -log(2) / log(phi)  où phi = AR(1) du spread
-
-Aucune stratégie n'est imbattable: on combine z-score fort +
-liquidité + half-life courte + fees validés.
+  half_life ≈ -log(2) / log(phi)  (AR(1))
 """
 from __future__ import annotations
 
 import json
 import math
 import time
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Optional
 
@@ -35,11 +28,11 @@ class PairConfig:
     token_a: str
     token_b: str
     hedge_ratio: float = 1.0
-    entry_z: float = 2.0
-    exit_z: float = 0.35
-    max_half_life_h: float = 36.0
-    min_liquidity_usd: float = 40_000.0
-    lookback: int = 72  # periods used for mean/std (e.g. hourly)
+    entry_z: float = 1.85
+    exit_z: float = 0.25
+    max_half_life_h: float = 24.0
+    min_liquidity_usd: float = 60_000.0
+    lookback: int = 96
 
 
 @dataclass
@@ -51,12 +44,12 @@ class PairState:
     spread_std: float = 1.0
     last_spread: float = 0.0
     last_z: float = 0.0
-    half_life_h: float = 24.0
+    half_life_h: float = 18.0
     liquidity_a: float = 0.0
     liquidity_b: float = 0.0
     price_a: float = 0.0
     price_b: float = 0.0
-    cointegration_score: float = 0.0  # 0..1 proxy
+    cointegration_score: float = 0.0
     updated_at: str = ""
     sample_count: int = 0
 
@@ -70,13 +63,16 @@ class PairState:
 
 @dataclass
 class StatArbConfig:
-    entry_z: float = 2.0
-    soft_entry_z: float = 1.7
-    exit_z: float = 0.35
-    max_half_life_h: float = 36.0
-    min_liquidity_usd: float = 40_000.0
-    min_cointegration: float = 0.55
+    """Calibrage agressif-mais-sélectif pour LIA compétente."""
+    entry_z: float = 1.85          # fort mais plus d'opportunités qu'à 2.0
+    soft_entry_z: float = 1.50     # zone soft contrôlée
+    exit_z: float = 0.25           # sortie plus proche de la mean
+    max_half_life_h: float = 24.0  # préférer mean-reversion rapide
+    min_liquidity_usd: float = 60_000.0
+    min_cointegration: float = 0.62
     min_std: float = 1e-6
+    min_samples: int = 8           # éviter z bruités au démarrage
+    ewma_alpha: float = 0.06       # mean/std plus stables
     pairs_path: str = "data/lia_statarb_pairs.json"
 
 
@@ -93,13 +89,31 @@ def compute_z(spread: float, mean: float, std: float) -> float:
 
 
 def estimate_half_life(phi: float) -> float:
-    """
-    Approximate half-life in periods from AR(1) coefficient phi.
-    phi in (0, 1) → mean-reverting. Returns hours if input is hourly.
-    """
     if phi <= 0 or phi >= 1:
         return 999.0
     return -math.log(2) / math.log(phi)
+
+
+def _confidence(
+    z_score: float,
+    half_life_h: float,
+    cointegration_score: float,
+    base: float,
+    z_coef: float,
+) -> float:
+    """Score de confiance enrichi: |z| + half-life courte + coint forte."""
+    conf = base + abs(z_score) * z_coef
+    if half_life_h <= 8:
+        conf += 0.12
+    elif half_life_h <= 14:
+        conf += 0.07
+    elif half_life_h <= 20:
+        conf += 0.03
+    if cointegration_score >= 0.80:
+        conf += 0.08
+    elif cointegration_score >= 0.70:
+        conf += 0.04
+    return min(0.95, conf)
 
 
 def statistical_arbitrage(
@@ -111,18 +125,14 @@ def statistical_arbitrage(
     spread_mean: float,
     spread_std: float,
     z_score: Optional[float] = None,
-    half_life_h: float = 24.0,
+    half_life_h: float = 18.0,
     liquidity_a: float = 100_000.0,
     liquidity_b: float = 100_000.0,
     cointegration_score: float = 0.7,
     hedge_ratio: float = 1.0,
+    sample_count: int = 99,
     cfg: Optional[StatArbConfig] = None,
 ) -> Signal:
-    """
-    Core StatArb signal generator.
-    BUY token_a (long the cheap leg) when z is sufficiently negative.
-    SELL token_a when z is sufficiently positive.
-    """
     cfg = cfg or StatArbConfig()
 
     if price_a <= 0 or price_b <= 0:
@@ -143,6 +153,9 @@ def statistical_arbitrage(
             f"coint={cointegration_score:.2f} < {cfg.min_cointegration}",
         )
 
+    if sample_count < cfg.min_samples:
+        return Signal("WAIT", token_a, 0.25, "STATARB", f"samples={sample_count} < {cfg.min_samples}")
+
     if spread_std < cfg.min_std:
         return Signal("WAIT", token_a, 0.25, "STATARB", "std too small")
 
@@ -157,11 +170,11 @@ def statistical_arbitrage(
         "coint": round(cointegration_score, 3),
         "hedge_ratio": hedge_ratio,
         "target_z": 0.0,
+        "exit_z": cfg.exit_z,
     }
 
-    # Strong mean-reversion entry
     if z_score <= -cfg.entry_z:
-        conf = min(0.92, 0.58 + abs(z_score) * 0.09 + (0.15 if half_life_h < 12 else 0))
+        conf = _confidence(z_score, half_life_h, cointegration_score, 0.60, 0.10)
         return Signal(
             "BUY", token_a, conf, "STATARB",
             f"z={z_score:.2f} undervalued vs {token_b}",
@@ -170,7 +183,7 @@ def statistical_arbitrage(
         )
 
     if z_score >= cfg.entry_z:
-        conf = min(0.88, 0.55 + abs(z_score) * 0.08)
+        conf = _confidence(z_score, half_life_h, cointegration_score, 0.56, 0.09)
         return Signal(
             "SELL", token_a, conf, "STATARB",
             f"z={z_score:.2f} overvalued vs {token_b}",
@@ -178,9 +191,9 @@ def statistical_arbitrage(
             meta=meta,
         )
 
-    # Soft entry zone (lower confidence)
     if z_score <= -cfg.soft_entry_z:
-        conf = min(0.72, 0.5 + abs(z_score) * 0.07)
+        conf = _confidence(z_score, half_life_h, cointegration_score, 0.48, 0.08)
+        conf = min(0.78, conf)
         return Signal(
             "BUY", token_a, conf, "STATARB",
             f"soft z={z_score:.2f}",
@@ -189,7 +202,8 @@ def statistical_arbitrage(
         )
 
     if z_score >= cfg.soft_entry_z:
-        conf = min(0.68, 0.48 + abs(z_score) * 0.06)
+        conf = _confidence(z_score, half_life_h, cointegration_score, 0.46, 0.07)
+        conf = min(0.74, conf)
         return Signal(
             "SELL", token_a, conf, "STATARB",
             f"soft z={z_score:.2f}",
@@ -244,9 +258,9 @@ class PairBook:
         hedge_ratio: float = 1.0,
         half_life_h: Optional[float] = None,
         cointegration_score: Optional[float] = None,
-        ewma_alpha: float = 0.08,
+        ewma_alpha: Optional[float] = None,
     ) -> PairState:
-        """Online update of mean/std via EWMA and recompute z."""
+        alpha = ewma_alpha if ewma_alpha is not None else StatArbConfig().ewma_alpha
         key = self._key(token_a, token_b)
         spread = compute_spread(price_a, price_b, hedge_ratio)
 
@@ -256,25 +270,24 @@ class PairBook:
                 token_b=token_b,
                 hedge_ratio=hedge_ratio,
                 spread_mean=spread,
-                spread_std=max(abs(spread) * 0.02, 0.001),
+                spread_std=max(abs(spread) * 0.015, 0.001),
                 last_spread=spread,
                 last_z=0.0,
-                half_life_h=half_life_h or 24.0,
+                half_life_h=half_life_h or 18.0,
                 liquidity_a=liquidity_a,
                 liquidity_b=liquidity_b,
                 price_a=price_a,
                 price_b=price_b,
-                cointegration_score=cointegration_score or 0.6,
+                cointegration_score=cointegration_score or 0.65,
                 sample_count=1,
             )
         else:
             st = self.pairs[key]
-            # EWMA mean & variance
             prev_mean = st.spread_mean
-            st.spread_mean = (1 - ewma_alpha) * prev_mean + ewma_alpha * spread
+            st.spread_mean = (1 - alpha) * prev_mean + alpha * spread
             dev = spread - st.spread_mean
             st.spread_std = math.sqrt(
-                (1 - ewma_alpha) * (st.spread_std ** 2) + ewma_alpha * (dev ** 2)
+                (1 - alpha) * (st.spread_std ** 2) + alpha * (dev ** 2)
             )
             st.spread_std = max(st.spread_std, 1e-6)
             st.last_spread = spread
@@ -318,6 +331,7 @@ class PairBook:
             liquidity_b=st.liquidity_b,
             cointegration_score=st.cointegration_score,
             hedge_ratio=st.hedge_ratio,
+            sample_count=st.sample_count,
             cfg=cfg,
         )
 

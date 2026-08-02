@@ -1,25 +1,14 @@
 """
-LIA Compound Engine — Circuit financier professionnel
-====================================================
-Objectif: enchaîner N trades à +1 % NET compounding.
+LIA Compound Engine — Circuit financier professionnel (paramètres optimisés)
+==============================================================================
+Objectif: enchaîner N trades à +1 % NET compounding avec winrate maximal.
 
-Math:
-  capital_n = capital_0 * (1.01) ** wins_net
-  (1.01)^1000 ≈ 20_959×  — théorique ; réaliste = winrate × fees × liquidité
-
-Règles dures:
-  1. Stop-loss obligatoire à -1 % net (ou trailing plus serré une fois en profit)
-  2. Take-profit cible +1 % NET après frais (DEX + gas + slippage)
-  3. Surplus au-delà de la base compounding → yield (stake / LP / Hatom) — jamais TRO hold
-  4. Vérification on-chain avant et après chaque exécution
-  5. Streak persisté (wins / losses / cooldown)
-
-Stratégies acceptées (metadata):
-  - STATARB (pairs / z-score) — edge prioritaire
-  - ARB, MR, MOM, UNIVERSAL_BRAIN, etc.
-
-Accumulate: EGLD, WEGLD, WBTC, USDC uniquement.
-TRO récupéré → redistribute (pool/stake/rewards/burn).
+Calibrage compétent:
+  - Risk par trade plus serré (1.5 %)
+  - Trailing / BE plus réactifs
+  - Halt après 2 pertes consécutives
+  - Cooldown post-win court (45 s) pour multi-cycles/jour
+  - 75 % des gains restent en compound
 """
 from __future__ import annotations
 
@@ -46,23 +35,22 @@ class Phase(str, Enum):
 
 
 class TradeOutcome(str, Enum):
-    WIN = "WIN"          # >= +1% net
-    LOSS = "LOSS"        # hit -1% SL
-    BREAKEVEN = "BE"     # fees ate the edge
-    PARTIAL = "PARTIAL"  # partial TP then exit
+    WIN = "WIN"
+    LOSS = "LOSS"
+    BREAKEVEN = "BE"
+    PARTIAL = "PARTIAL"
     SKIP = "SKIP"
     ERROR = "ERROR"
 
 
 @dataclass
 class FeeModel:
-    dex_fee_roundtrip: float = 0.006   # 0.3% * 2 hops
-    gas_usd: float = 0.05
-    max_slippage: float = 0.003        # 0.3%
-    safety_buffer: float = 0.002       # 0.2%
+    dex_fee_roundtrip: float = 0.006
+    gas_usd: float = 0.04
+    max_slippage: float = 0.0025
+    safety_buffer: float = 0.0015
 
     def required_gross_pct(self, notional_usd: float) -> float:
-        """Gross move needed so that NET ≈ target after fees."""
         gas_pct = self.gas_usd / max(notional_usd, 0.01)
         return self.dex_fee_roundtrip + gas_pct + self.max_slippage + self.safety_buffer
 
@@ -72,24 +60,24 @@ class FeeModel:
 
 @dataclass
 class CircuitConfig:
-    target_net_pct: float = 0.01          # +1% net per win
-    stop_loss_pct: float = 0.01           # -1% mandatory
-    be_trigger_pct: float = 0.005         # move SL to BE after +0.5%
-    trail_after_pct: float = 0.008        # start trailing after +0.8%
-    trail_pct: float = 0.004              # trail 0.4% under HWM once active
-    max_concurrent: int = 1               # serial for compounding purity
-    risk_per_trade_pct: float = 0.02      # 2% of deployable capital at risk
+    target_net_pct: float = 0.01
+    stop_loss_pct: float = 0.009          # légèrement plus serré que 1 %
+    be_trigger_pct: float = 0.004         # BE plus tôt
+    trail_after_pct: float = 0.006        # trailing plus tôt
+    trail_pct: float = 0.0035             # trailing plus serré
+    max_concurrent: int = 1
+    risk_per_trade_pct: float = 0.015     # 1.5 % du capital déployable
     min_notional_usd: float = 5.0
-    max_notional_usd: float = 500.0
-    base_compound_fraction: float = 0.70  # 70% stays in compound loop
-    surplus_fraction: float = 0.30        # 30% of profit → yield sleeve
-    max_consecutive_losses: int = 3
-    cooldown_sec_after_loss: int = 900
-    cooldown_sec_after_win: int = 60
+    max_notional_usd: float = 400.0
+    max_deployable_pct: float = 0.22      # jamais > 22 % déployable
+    base_compound_fraction: float = 0.75  # plus de capital reste en compound
+    surplus_fraction: float = 0.25
+    max_consecutive_losses: int = 2       # halt plus strict
+    cooldown_sec_after_loss: int = 1200   # 20 min après perte
+    cooldown_sec_after_win: int = 45      # multi-cycles possibles
     goal_trades: int = 1000
-    # StatArb may target a slightly flexible net band when z is extreme
-    statarb_min_net_pct: float = 0.008
-    statarb_max_net_pct: float = 0.015
+    statarb_min_net_pct: float = 0.0085
+    statarb_max_net_pct: float = 0.014
     fee: FeeModel = field(default_factory=FeeModel)
 
 
@@ -122,7 +110,7 @@ class StreakState:
 class TradeTicket:
     id: str
     token: str
-    side: str  # LONG only for v1 circuit
+    side: str
     entry: float
     notional_usd: float
     stop: float
@@ -139,7 +127,7 @@ class TradeTicket:
     tx_close: str = ""
     pre_balance_usd: float = 0.0
     post_balance_usd: float = 0.0
-    strategy: str = ""          # e.g. STATARB, MR, MOM
+    strategy: str = ""
     meta: Optional[dict] = None
 
     def to_dict(self) -> dict[str, Any]:
@@ -147,12 +135,6 @@ class TradeTicket:
 
 
 class CompoundCircuit:
-    """
-    Orchestrates the professional loop:
-      SIGNAL → DECIDE → PRE_VERIFY → EXECUTE → POST_VERIFY → SETTLE → SURPLUS → (loop)
-    Accepts any strategy including STATARB (metadata on ticket).
-    """
-
     def __init__(
         self,
         config: Optional[CircuitConfig] = None,
@@ -167,14 +149,12 @@ class CompoundCircuit:
         self.phase = Phase.IDLE
         self.load()
 
-    # ---------- persistence ----------
     def load(self) -> None:
         try:
             raw = json.loads(self.state_path.read_text(encoding="utf-8"))
             self.streak = StreakState.from_dict(raw.get("streak", raw))
             if raw.get("open_ticket"):
                 ot = raw["open_ticket"]
-                # backward-compat: strategy/meta may be absent
                 ot.setdefault("strategy", "")
                 ot.setdefault("meta", None)
                 self.open_ticket = TradeTicket(**ot)
@@ -192,6 +172,8 @@ class CompoundCircuit:
                 "target_net_pct": self.cfg.target_net_pct,
                 "stop_loss_pct": self.cfg.stop_loss_pct,
                 "goal_trades": self.cfg.goal_trades,
+                "risk_per_trade_pct": self.cfg.risk_per_trade_pct,
+                "base_compound_fraction": self.cfg.base_compound_fraction,
             },
         }
         self.state_path.parent.mkdir(parents=True, exist_ok=True)
@@ -211,12 +193,11 @@ class CompoundCircuit:
             encoding="utf-8",
         )
 
-    # ---------- sizing ----------
     def size_notional(self, deployable_usd: float) -> float:
         risk_budget = deployable_usd * self.cfg.risk_per_trade_pct
         notional = risk_budget / max(self.cfg.stop_loss_pct, 0.001)
         notional = max(self.cfg.min_notional_usd, min(self.cfg.max_notional_usd, notional))
-        notional = min(notional, deployable_usd * 0.25)
+        notional = min(notional, deployable_usd * self.cfg.max_deployable_pct)
         return round(notional, 4)
 
     def levels(
@@ -226,14 +207,9 @@ class CompoundCircuit:
         strategy: str = "",
         z_abs: float = 0.0,
     ) -> tuple[float, float, float]:
-        """Return (stop, target, gross_required). LONG only.
-
-        For STATARB with extreme |z|, allow a slightly wider target band
-        while still respecting fee-adjusted net floor.
-        """
         target_net = self.cfg.target_net_pct
-        if strategy == "STATARB" and z_abs >= 2.5:
-            target_net = min(self.cfg.statarb_max_net_pct, target_net + 0.003)
+        if strategy == "STATARB" and z_abs >= 2.4:
+            target_net = min(self.cfg.statarb_max_net_pct, target_net + 0.0025)
         elif strategy == "STATARB":
             target_net = max(self.cfg.statarb_min_net_pct, target_net)
 
@@ -242,7 +218,6 @@ class CompoundCircuit:
         target = entry * (1 + gross)
         return stop, target, gross
 
-    # ---------- guards ----------
     def can_open(self) -> tuple[bool, str]:
         if self.streak.halted:
             return False, f"HALTED: {self.streak.halt_reason}"
@@ -259,7 +234,6 @@ class CompoundCircuit:
             return False, "GOAL_REACHED"
         return True, "OK"
 
-    # ---------- lifecycle ----------
     def open_trade(
         self,
         *,
@@ -308,7 +282,6 @@ class CompoundCircuit:
         return ticket
 
     def on_tick(self, price: float) -> dict[str, Any]:
-        """Update stops / detect TP or SL. Call every cycle."""
         t = self.open_ticket
         if not t or t.status != "OPEN":
             return {"action": "NONE"}
@@ -364,9 +337,9 @@ class CompoundCircuit:
 
         if forced_outcome:
             outcome = TradeOutcome(forced_outcome)
-        elif net_pct >= self.cfg.target_net_pct * 0.9:
+        elif net_pct >= self.cfg.target_net_pct * 0.88:
             outcome = TradeOutcome.WIN
-        elif net_pct <= -self.cfg.stop_loss_pct * 0.9:
+        elif net_pct <= -self.cfg.stop_loss_pct * 0.88:
             outcome = TradeOutcome.LOSS
         elif abs(net_pct) < 0.002:
             outcome = TradeOutcome.BREAKEVEN
@@ -453,15 +426,3 @@ class CompoundCircuit:
 if __name__ == "__main__":
     c = CompoundCircuit()
     print(json.dumps(c.health(), indent=2))
-    t = c.open_trade(
-        token="WEGLD-bd4d79",
-        entry=10.0,
-        deployable_usd=100.0,
-        pre_balance_usd=100.0,
-        strategy="STATARB",
-        meta={"z": -2.4},
-    )
-    print("opened", t.id if t else None)
-    if t:
-        print(c.on_tick(10.12))
-        print(c.close_trade(exit_price=10.12, post_balance_usd=101.0))

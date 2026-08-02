@@ -1,15 +1,8 @@
 """
-Stratégies quasi-robustes pour le circuit +1% net
-=================================================
-Aucune stratégie n'est imbattable. On combine des edges
-statistiques + filtres stricts + risk management non négociable.
-
-Piliers (ordre de robustesse décroissante):
-  1. Statistical Arbitrage (pairs / z-score / half-life)
-  2. Mean-reversion courte sur paires liquides (EGLD/USDC, WBTC/USDC)
-  3. Momentum confirmé multi-TF + regime GreenSmoke RISK_ON
-  4. Arb micro écart DEX (xExchange vs OneDex) si spread > fees*2
-  5. Yield-first: ne trade pas — stake / LP si score < seuil
+Stratégies quasi-robustes pour le circuit +1% net (calibrage compétent)
+======================================================================
+Priorité: STATARB > ARB > MR > MOM > YIELD
+Seuils de fusion abaissés pour les edges haute priorité.
 """
 from __future__ import annotations
 
@@ -35,18 +28,19 @@ def mean_reversion_liquid(
     vwap_24h: float,
     rsi_14: float,
     liquidity_usd: float,
-    min_liq: float = 50_000,
+    min_liq: float = 60_000,
 ) -> Signal:
     if liquidity_usd < min_liq:
         return Signal("WAIT", token, 0.3, "MR", "low liquidity")
     if vwap_24h <= 0:
         return Signal("WAIT", token, 0.2, "MR", "no vwap")
     deviation = (price - vwap_24h) / vwap_24h
-    if deviation <= -0.012 and rsi_14 <= 35:
-        conf = min(0.9, 0.55 + abs(deviation) * 10 + (35 - rsi_14) / 100)
+    # Un peu plus sélectif: -1.4% / RSI 33
+    if deviation <= -0.014 and rsi_14 <= 33:
+        conf = min(0.9, 0.56 + abs(deviation) * 11 + (33 - rsi_14) / 100)
         return Signal("BUY", token, conf, "MR", f"dev={deviation:.3%} rsi={rsi_14}", price)
-    if deviation >= 0.012 and rsi_14 >= 65:
-        return Signal("SELL", token, 0.6, "MR", f"overbought dev={deviation:.3%}", price)
+    if deviation >= 0.014 and rsi_14 >= 67:
+        return Signal("SELL", token, 0.62, "MR", f"overbought dev={deviation:.3%}", price)
     return Signal("WAIT", token, 0.4, "MR", "no dislocation")
 
 
@@ -60,14 +54,14 @@ def momentum_regime(
     gs_bias: str,
 ) -> Signal:
     if gs_regime == "RISK_OFF":
-        return Signal("WAIT", token, 0.8, "MOM", "RISK_OFF")
+        return Signal("WAIT", token, 0.85, "MOM", "RISK_OFF")
     if (
-        price_change_1h > 0.004
-        and price_change_24h > 0.01
-        and volume_spike >= 1.5
+        price_change_1h > 0.005
+        and price_change_24h > 0.012
+        and volume_spike >= 1.6
         and gs_bias in ("BULLISH", "BUY", "ACCUMULATE")
     ):
-        conf = min(0.88, 0.5 + price_change_1h * 10 + max(0.0, volume_spike - 1.0) * 0.05)
+        conf = min(0.88, 0.52 + price_change_1h * 9 + max(0.0, volume_spike - 1.0) * 0.04)
         return Signal(
             "BUY",
             token,
@@ -90,13 +84,14 @@ def micro_arb(
         return Signal("WAIT", token, 0.2, "ARB", "bad prices")
     mid = (price_a + price_b) / 2
     spread = abs(price_a - price_b) / mid
-    if spread > fee_roundtrip * 2.5:
+    # Exiger un edge plus net vs frais
+    if spread > fee_roundtrip * 2.8:
         return Signal(
             "BUY",
             token,
-            min(0.85, 0.5 + spread * 5),
+            min(0.88, 0.52 + spread * 5.5),
             "ARB",
-            f"spread={spread:.3%} > fees*2.5",
+            f"spread={spread:.3%} > fees*2.8",
             entry_hint=min(price_a, price_b),
         )
     return Signal("WAIT", token, 0.35, "ARB", f"spread={spread:.3%} too thin")
@@ -105,21 +100,20 @@ def micro_arb(
 def yield_first(
     *,
     trade_confidence: float,
-    min_trade_conf: float = 0.65,
+    min_trade_conf: float = 0.60,
     stable_apy: float = 0.08,
 ) -> Signal:
     if trade_confidence < min_trade_conf:
         return Signal(
             "YIELD",
             "USDC-c76f1f",
-            0.7,
+            0.72,
             "YIELD",
             f"no trade edge; target APY~{stable_apy:.0%}",
         )
     return Signal("WAIT", "", 0.5, "YIELD", "trade preferred")
 
 
-# Priority order for fusion (higher = preferred when confidence is close)
 _STRATEGY_PRIORITY = {
     "STATARB": 5,
     "ARB": 4,
@@ -131,11 +125,6 @@ _STRATEGY_PRIORITY = {
 
 
 def fuse_signals(signals: list[Signal]) -> Signal:
-    """
-    Fusion avec priorité explicite:
-      STATARB > Micro-ARB > Mean-Reversion > Momentum > Yield
-    Les SELL à confiance élevée restent prioritaires (protection capital).
-    """
     if not signals:
         return Signal("WAIT", "", 0.3, "FUSE", "empty")
 
@@ -144,15 +133,22 @@ def fuse_signals(signals: list[Signal]) -> Signal:
     yields = [s for s in signals if s.action == "YIELD"]
 
     def rank(s: Signal) -> tuple[float, int]:
-        return (s.confidence, _STRATEGY_PRIORITY.get(s.strategy, 0))
+        # Légère boost de rank pour STATARB afin de le préférer à conf égale
+        prio = _STRATEGY_PRIORITY.get(s.strategy, 0)
+        return (s.confidence + prio * 0.01, prio)
 
-    if sells and max(s.confidence for s in sells) >= 0.6:
+    # Protection capital: SELL dès 0.55
+    if sells and max(s.confidence for s in sells) >= 0.55:
         return max(sells, key=rank)
 
     if buys:
         best = max(buys, key=rank)
-        # Lower threshold for high-priority edges (STATARB / ARB)
-        min_conf = 0.58 if best.strategy in ("STATARB", "ARB") else 0.62
+        if best.strategy == "STATARB":
+            min_conf = 0.55
+        elif best.strategy == "ARB":
+            min_conf = 0.57
+        else:
+            min_conf = 0.62
         if best.confidence >= min_conf:
             return best
 

@@ -1,8 +1,5 @@
 """
-StatArbBrain — Vellum node for Statistical Arbitrage signals.
-=============================================================
-Lit / met à jour le PairBook, génère des signaux z-score et
-les expose au reste du workflow LIA (fuse → CompoundCircuit).
+StatArbBrain — Vellum node (paramètres optimisés pour LIA compétente)
 """
 from __future__ import annotations
 
@@ -21,23 +18,20 @@ from lia.circuit.strategies import Signal, fuse_signals
 class StatArbBrain(BaseNode):
     strategy_name: str = "STATARB_BRAIN"
     pairs_path: str = "data/lia_statarb_pairs.json"
-    entry_z: float = 2.0
-    soft_entry_z: float = 1.7
-    max_half_life_h: float = 36.0
-    min_liquidity_usd: float = 40_000.0
-    min_cointegration: float = 0.55
-    budget_allocation_pct: float = 0.25
+    entry_z: float = 1.85
+    soft_entry_z: float = 1.50
+    max_half_life_h: float = 24.0
+    min_liquidity_usd: float = 60_000.0
+    min_cointegration: float = 0.62
+    budget_allocation_pct: float = 0.30
     target_net_profit_pct: float = 0.01
+    min_hatom_hf: float = 1.8
 
-    # Inputs (fed by upstream Vellum nodes / GreenSmoke / price feeds)
     total_portfolio_usd: float = 0.0
     available_budget_usd: float = 0.0
     circuit_breaker_active: bool = False
     hatom_health_factor: float = 999.0
     gs_regime: str = "NEUTRAL"
-    # List of pair snapshots:
-    # [{token_a, token_b, price_a, price_b, liquidity_a, liquidity_b,
-    #   half_life_h?, cointegration_score?, hedge_ratio?}]
     pairs_market: list[dict[str, Any]] = []
 
     class Outputs(BaseNode.Outputs):
@@ -57,9 +51,10 @@ class StatArbBrain(BaseNode):
         color = "teal"
 
     def run(self) -> "StatArbBrain.Outputs":
-        self._log("INFO", f"📊 [{self.strategy_name}] StatArb scan...")
+        self._log("INFO", f"📊 [{self.strategy_name}] StatArb scan (tuned)...")
 
-        if self.circuit_breaker_active or float(self.hatom_health_factor or 999) < 1.5:
+        hf = float(self.hatom_health_factor or 999)
+        if self.circuit_breaker_active or hf < self.min_hatom_hf:
             return self._wait("CIRCUIT_BREAKER_OR_HF_CRITIQUE")
 
         if str(self.gs_regime or "").upper() == "RISK_OFF":
@@ -116,11 +111,11 @@ class StatArbBrain(BaseNode):
                 liquidity_b=st.liquidity_b,
                 cointegration_score=st.cointegration_score,
                 hedge_ratio=st.hedge_ratio,
+                sample_count=st.sample_count,
                 cfg=cfg,
             )
             signals.append(sig)
 
-        # Also emit signals for already-tracked pairs not in this batch
         for key, st in book.pairs.items():
             if any(s.token == st.token_a for s in signals):
                 continue
@@ -130,8 +125,12 @@ class StatArbBrain(BaseNode):
 
         budget = float(self.available_budget_usd or 0)
         if budget <= 0:
-            budget = float(self.total_portfolio_usd or 0) * 0.2
+            budget = float(self.total_portfolio_usd or 0) * 0.22
         allocated = round(budget * self.budget_allocation_pct, 2)
+
+        # Scale size with confidence for high-conviction STATARB
+        if fused.action == "BUY" and fused.confidence >= 0.80:
+            allocated = round(allocated * 1.15, 2)
 
         actions: list[dict[str, Any]] = []
         decision = fused.action
@@ -163,11 +162,12 @@ class StatArbBrain(BaseNode):
         else:
             decision = "WAIT"
 
-        risk = "LOW"
-        if float(self.hatom_health_factor or 999) < 2.0:
+        if hf < 2.0:
             risk = "HIGH"
-        elif float(self.hatom_health_factor or 999) < 2.5:
+        elif hf < 2.5:
             risk = "MEDIUM"
+        else:
+            risk = "LOW"
 
         best = {
             "action": fused.action,
