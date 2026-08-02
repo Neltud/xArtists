@@ -14,6 +14,10 @@ Règles dures:
   4. Vérification on-chain avant et après chaque exécution
   5. Streak persisté (wins / losses / cooldown)
 
+Stratégies acceptées (metadata):
+  - STATARB (pairs / z-score) — edge prioritaire
+  - ARB, MR, MOM, UNIVERSAL_BRAIN, etc.
+
 Accumulate: EGLD, WEGLD, WBTC, USDC uniquement.
 TRO récupéré → redistribute (pool/stake/rewards/burn).
 """
@@ -83,6 +87,9 @@ class CircuitConfig:
     cooldown_sec_after_loss: int = 900
     cooldown_sec_after_win: int = 60
     goal_trades: int = 1000
+    # StatArb may target a slightly flexible net band when z is extreme
+    statarb_min_net_pct: float = 0.008
+    statarb_max_net_pct: float = 0.015
     fee: FeeModel = field(default_factory=FeeModel)
 
 
@@ -132,6 +139,8 @@ class TradeTicket:
     tx_close: str = ""
     pre_balance_usd: float = 0.0
     post_balance_usd: float = 0.0
+    strategy: str = ""          # e.g. STATARB, MR, MOM
+    meta: Optional[dict] = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -141,6 +150,7 @@ class CompoundCircuit:
     """
     Orchestrates the professional loop:
       SIGNAL → DECIDE → PRE_VERIFY → EXECUTE → POST_VERIFY → SETTLE → SURPLUS → (loop)
+    Accepts any strategy including STATARB (metadata on ticket).
     """
 
     def __init__(
@@ -163,7 +173,11 @@ class CompoundCircuit:
             raw = json.loads(self.state_path.read_text(encoding="utf-8"))
             self.streak = StreakState.from_dict(raw.get("streak", raw))
             if raw.get("open_ticket"):
-                self.open_ticket = TradeTicket(**raw["open_ticket"])
+                ot = raw["open_ticket"]
+                # backward-compat: strategy/meta may be absent
+                ot.setdefault("strategy", "")
+                ot.setdefault("meta", None)
+                self.open_ticket = TradeTicket(**ot)
             self.phase = Phase(raw.get("phase", Phase.IDLE.value))
         except FileNotFoundError:
             pass
@@ -191,7 +205,6 @@ class CompoundCircuit:
             except json.JSONDecodeError:
                 hist = []
         hist.append(ticket.to_dict())
-        # keep last 2000
         hist = hist[-2000:]
         self.tickets_path.write_text(
             json.dumps({"updated": self.streak.updated_at, "tickets": hist}, indent=2),
@@ -201,15 +214,30 @@ class CompoundCircuit:
     # ---------- sizing ----------
     def size_notional(self, deployable_usd: float) -> float:
         risk_budget = deployable_usd * self.cfg.risk_per_trade_pct
-        # With SL at 1%, notional ≈ risk_budget / 0.01
         notional = risk_budget / max(self.cfg.stop_loss_pct, 0.001)
         notional = max(self.cfg.min_notional_usd, min(self.cfg.max_notional_usd, notional))
-        notional = min(notional, deployable_usd * 0.25)  # never > 25% deployable
+        notional = min(notional, deployable_usd * 0.25)
         return round(notional, 4)
 
-    def levels(self, entry: float, notional_usd: float) -> tuple[float, float, float]:
-        """Return (stop, target, gross_required). LONG only."""
-        gross = self.cfg.fee.required_gross_pct(notional_usd) + self.cfg.target_net_pct
+    def levels(
+        self,
+        entry: float,
+        notional_usd: float,
+        strategy: str = "",
+        z_abs: float = 0.0,
+    ) -> tuple[float, float, float]:
+        """Return (stop, target, gross_required). LONG only.
+
+        For STATARB with extreme |z|, allow a slightly wider target band
+        while still respecting fee-adjusted net floor.
+        """
+        target_net = self.cfg.target_net_pct
+        if strategy == "STATARB" and z_abs >= 2.5:
+            target_net = min(self.cfg.statarb_max_net_pct, target_net + 0.003)
+        elif strategy == "STATARB":
+            target_net = max(self.cfg.statarb_min_net_pct, target_net)
+
+        gross = self.cfg.fee.required_gross_pct(notional_usd) + target_net
         stop = entry * (1 - self.cfg.stop_loss_pct)
         target = entry * (1 + gross)
         return stop, target, gross
@@ -240,6 +268,8 @@ class CompoundCircuit:
         deployable_usd: float,
         pre_balance_usd: float,
         tx_open: str = "",
+        strategy: str = "",
+        meta: Optional[dict] = None,
     ) -> Optional[TradeTicket]:
         ok, reason = self.can_open()
         if not ok:
@@ -251,7 +281,11 @@ class CompoundCircuit:
         if notional < self.cfg.min_notional_usd:
             return None
 
-        stop, target, gross = self.levels(entry, notional)
+        z_abs = 0.0
+        if meta and isinstance(meta.get("z"), (int, float)):
+            z_abs = abs(float(meta["z"]))
+
+        stop, target, gross = self.levels(entry, notional, strategy=strategy, z_abs=z_abs)
         ticket = TradeTicket(
             id=f"c-{time.strftime('%Y%m%d')}-{uuid.uuid4().hex[:8]}",
             token=token,
@@ -265,6 +299,8 @@ class CompoundCircuit:
             hwm=entry,
             tx_open=tx_open,
             pre_balance_usd=pre_balance_usd,
+            strategy=strategy,
+            meta=meta,
         )
         self.open_ticket = ticket
         self.phase = Phase.EXECUTE
@@ -280,13 +316,11 @@ class CompoundCircuit:
         if price > t.hwm:
             t.hwm = price
 
-        # Break-even after +be_trigger
         if price >= t.entry * (1 + self.cfg.be_trigger_pct):
-            be_stop = t.entry  # fees ignored at BE — conservative
+            be_stop = t.entry
             if be_stop > t.stop:
                 t.stop = be_stop
 
-        # Activate trailing after trail_after_pct
         if price >= t.entry * (1 + self.cfg.trail_after_pct):
             t.trail_active = True
 
@@ -310,6 +344,7 @@ class CompoundCircuit:
             "target": t.target,
             "hwm": t.hwm,
             "trail_active": t.trail_active,
+            "strategy": t.strategy,
         }
 
     def close_trade(
@@ -329,7 +364,7 @@ class CompoundCircuit:
 
         if forced_outcome:
             outcome = TradeOutcome(forced_outcome)
-        elif net_pct >= self.cfg.target_net_pct * 0.9:  # 90% of target counts as win
+        elif net_pct >= self.cfg.target_net_pct * 0.9:
             outcome = TradeOutcome.WIN
         elif net_pct <= -self.cfg.stop_loss_pct * 0.9:
             outcome = TradeOutcome.LOSS
@@ -345,7 +380,6 @@ class CompoundCircuit:
         t.tx_close = tx_close
         t.post_balance_usd = post_balance_usd
 
-        # streak update
         self.streak.total_trades += 1
         self.streak.last_outcome = outcome.value
         self.streak.last_trade_id = t.id
@@ -355,7 +389,6 @@ class CompoundCircuit:
             self.streak.wins += 1
             self.streak.consecutive_wins += 1
             self.streak.consecutive_losses = 0
-            # compound base + surplus split
             compound_add = pnl_usd * self.cfg.base_compound_fraction
             surplus_add = pnl_usd * self.cfg.surplus_fraction
             self.streak.compound_equity_usd += compound_add
@@ -365,7 +398,7 @@ class CompoundCircuit:
             self.streak.losses += 1
             self.streak.consecutive_losses += 1
             self.streak.consecutive_wins = 0
-            self.streak.compound_equity_usd += pnl_usd  # negative
+            self.streak.compound_equity_usd += pnl_usd
             self.streak.cooldown_until = time.time() + self.cfg.cooldown_sec_after_loss
         else:
             self.streak.consecutive_wins = 0
@@ -392,13 +425,13 @@ class CompoundCircuit:
             "net_pct": t.net_pct,
             "pnl_usd": round(pnl_usd, 4),
             "surplus_usd": round(pnl_usd * self.cfg.surplus_fraction, 4) if outcome == TradeOutcome.WIN else 0.0,
+            "strategy": t.strategy,
             "streak": self.streak.to_dict(),
             "ticket": closed,
         }
 
     def projected_equity(self, start_usd: float, remaining_wins: Optional[int] = None) -> float:
         w = remaining_wins if remaining_wins is not None else max(0, self.cfg.goal_trades - self.streak.wins)
-        # only compound fraction compounds
         r = 1 + self.cfg.target_net_pct * self.cfg.base_compound_fraction
         return start_usd * (r ** w)
 
@@ -420,8 +453,14 @@ class CompoundCircuit:
 if __name__ == "__main__":
     c = CompoundCircuit()
     print(json.dumps(c.health(), indent=2))
-    # demo path
-    t = c.open_trade(token="WEGLD-bd4d79", entry=10.0, deployable_usd=100.0, pre_balance_usd=100.0)
+    t = c.open_trade(
+        token="WEGLD-bd4d79",
+        entry=10.0,
+        deployable_usd=100.0,
+        pre_balance_usd=100.0,
+        strategy="STATARB",
+        meta={"z": -2.4},
+    )
     print("opened", t.id if t else None)
     if t:
         print(c.on_tick(10.12))
