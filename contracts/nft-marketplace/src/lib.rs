@@ -1,8 +1,8 @@
 #![no_std]
 
 //! xArtists NFT Marketplace — MultiversX
-//! listNft / buyNft / cancelListing + creator royalty + marketplace fee
-//! Security: pause, CEI, upgrade only owner, 2-step ownership, fee+royalty cap, excess refund
+//! Security: pause, CEI, storage-owner ACL, 2-step ownership, fee+royalty cap, excess refund
+//! Access control uses storage `owner` so transferOwnership is consistent (not framework only_owner).
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
@@ -36,29 +36,36 @@ pub trait NftMarketplace {
         self.pending_owner().clear();
     }
 
-    #[only_owner]
     #[endpoint(upgrade)]
-    fn upgrade(&self) {}
+    fn upgrade(&self) {
+        self.require_owner();
+    }
 
-    // ─── Admin ───────────────────────────────────────────────
+    fn require_owner(&self) {
+        require!(
+            self.blockchain().get_caller() == self.owner().get(),
+            "only owner"
+        );
+    }
 
-    #[only_owner]
     #[endpoint(setPaused)]
     fn set_paused(&self, value: bool) {
+        self.require_owner();
         self.paused().set(value);
     }
 
-    #[only_owner]
     #[endpoint(setFeeBps)]
     fn set_fee_bps(&self, fee_bps: u16) {
+        self.require_owner();
         require!(fee_bps <= MAX_FEE_BPS, "fee too high");
         self.marketplace_fee_bps().set(fee_bps);
     }
 
-    #[only_owner]
     #[endpoint(transferOwnership)]
     fn transfer_ownership(&self, new_owner: ManagedAddress) {
+        self.require_owner();
         require!(!new_owner.is_zero(), "zero address");
+        require!(new_owner != self.owner().get(), "same owner");
         self.pending_owner().set(&new_owner);
     }
 
@@ -71,9 +78,9 @@ pub trait NftMarketplace {
         self.pending_owner().clear();
     }
 
-    #[only_owner]
     #[endpoint(claimFees)]
     fn claim_fees(&self) {
+        self.require_owner();
         let fees = self.accumulated_fees().get();
         require!(fees > 0, "nothing to claim");
         self.accumulated_fees().set(BigUint::zero());
@@ -81,8 +88,6 @@ pub trait NftMarketplace {
         self.send().direct_egld(&owner, &fees);
         self.claim_event(&owner, &fees);
     }
-
-    // ─── Market ──────────────────────────────────────────────
 
     #[payable("*")]
     #[endpoint(listNft)]
@@ -143,12 +148,11 @@ pub trait NftMarketplace {
         let to_seller = &listing.price - &fee - &royalty;
         let buyer = self.blockchain().get_caller();
 
-        // CEI: effects before interactions
+        // CEI
         listing.active = false;
         self.listings(listing_id).set(listing.clone());
         if fee > 0 {
-            self.accumulated_fees()
-                .update(|f| *f += &fee);
+            self.accumulated_fees().update(|f| *f += &fee);
         }
 
         self.send().direct_esdt(
@@ -183,7 +187,6 @@ pub trait NftMarketplace {
             "only seller"
         );
 
-        // CEI
         listing.active = false;
         self.listings(listing_id).set(listing.clone());
 
@@ -194,8 +197,6 @@ pub trait NftMarketplace {
             &BigUint::from(1u32),
         );
     }
-
-    // ─── Views ───────────────────────────────────────────────
 
     #[view(getListing)]
     fn get_listing(&self, listing_id: u64) -> OptionalValue<Listing<Self::Api>> {
@@ -226,8 +227,6 @@ pub trait NftMarketplace {
         self.paused().get()
     }
 
-    // ─── Events ──────────────────────────────────────────────
-
     #[event("list")]
     fn list_event(&self, #[indexed] id: u64, #[indexed] seller: &ManagedAddress);
 
@@ -236,8 +235,6 @@ pub trait NftMarketplace {
 
     #[event("claim")]
     fn claim_event(&self, #[indexed] owner: &ManagedAddress, amount: &BigUint);
-
-    // ─── Storage ─────────────────────────────────────────────
 
     #[view]
     #[storage_mapper("feeBps")]

@@ -2,7 +2,8 @@
 
 //! Agents Marketplace — list / buy / cancel agent actions (LIA + third-party)
 //! Fee tracked in accumulated_fees; owner claims via claimFees.
-//! Security: pause, CEI, upgrade only owner, 2-step ownership, agent_id len cap.
+//! Security: pause, CEI, upgrade gated by storage owner, 2-step ownership, agent_id len cap.
+//! Note: access control uses storage `owner` (not framework #[only_owner]) so transferOwnership works.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
@@ -20,7 +21,6 @@ pub struct AgentListing<M: ManagedTypeApi> {
 
 #[multiversx_sc::contract]
 pub trait AgentsMarketplace {
-    /// fee_bps: protocol fee in basis points (300 = 3%, max 10%)
     #[init]
     fn init(&self, fee_bps: u16) {
         require!(fee_bps <= MAX_FEE_BPS, "fee too high");
@@ -33,34 +33,42 @@ pub trait AgentsMarketplace {
         self.pending_owner().clear();
     }
 
-    #[only_owner]
+    /// Upgrade callable only by storage owner (redeploy path still governed by chain owner policy)
     #[endpoint(upgrade)]
-    fn upgrade(&self) {}
+    fn upgrade(&self) {
+        self.require_owner();
+    }
+
+    fn require_owner(&self) {
+        require!(
+            self.blockchain().get_caller() == self.owner().get(),
+            "only owner"
+        );
+    }
 
     // ─── Admin ───────────────────────────────────────────────
 
-    #[only_owner]
     #[endpoint(setPaused)]
     fn set_paused(&self, value: bool) {
+        self.require_owner();
         self.paused().set(value);
     }
 
-    #[only_owner]
     #[endpoint(setFeeBps)]
     fn set_fee_bps(&self, fee_bps: u16) {
+        self.require_owner();
         require!(fee_bps <= MAX_FEE_BPS, "fee too high");
         self.marketplace_fee_bps().set(fee_bps);
     }
 
-    /// Step 1: nominate new owner (2-step transfer)
-    #[only_owner]
     #[endpoint(transferOwnership)]
     fn transfer_ownership(&self, new_owner: ManagedAddress) {
+        self.require_owner();
         require!(!new_owner.is_zero(), "zero address");
+        require!(new_owner != self.owner().get(), "same owner");
         self.pending_owner().set(&new_owner);
     }
 
-    /// Step 2: pending owner accepts
     #[endpoint(acceptOwnership)]
     fn accept_ownership(&self) {
         let caller = self.blockchain().get_caller();
@@ -70,10 +78,9 @@ pub trait AgentsMarketplace {
         self.pending_owner().clear();
     }
 
-    /// Owner withdraws accumulated protocol fees only (not arbitrary SC balance)
-    #[only_owner]
     #[endpoint(claimFees)]
     fn claim_fees(&self) {
+        self.require_owner();
         let fees = self.accumulated_fees().get();
         require!(fees > 0, "nothing to claim");
         self.accumulated_fees().set(BigUint::zero());
@@ -105,7 +112,6 @@ pub trait AgentsMarketplace {
         self.list_event(id, &seller);
     }
 
-    /// Buy: payment EGLD >= price. Net → seller. Fee → accumulated_fees.
     #[payable("EGLD")]
     #[endpoint(buyAgentAction)]
     fn buy_agent_action(&self, listing_id: u64) {
@@ -123,12 +129,11 @@ pub trait AgentsMarketplace {
         let to_seller = &listing.price - &fee;
         let buyer = self.blockchain().get_caller();
 
-        // CEI: effects before interactions
+        // CEI
         listing.active = false;
         self.listings(listing_id).set(listing.clone());
         if fee > 0 {
-            self.accumulated_fees()
-                .update(|f| *f += &fee);
+            self.accumulated_fees().update(|f| *f += &fee);
         }
 
         if to_seller > 0 {
@@ -202,8 +207,6 @@ pub trait AgentsMarketplace {
         self.paused().get()
     }
 
-    // ─── Events ──────────────────────────────────────────────
-
     #[event("list")]
     fn list_event(&self, #[indexed] id: u64, #[indexed] seller: &ManagedAddress);
 
@@ -212,8 +215,6 @@ pub trait AgentsMarketplace {
 
     #[event("claim")]
     fn claim_event(&self, #[indexed] owner: &ManagedAddress, amount: &BigUint);
-
-    // ─── Storage ─────────────────────────────────────────────
 
     #[view]
     #[storage_mapper("feeBps")]
