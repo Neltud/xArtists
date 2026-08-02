@@ -1,14 +1,13 @@
 """
 Stratégies quasi-robustes pour le circuit +1% net
 =================================================
-Aucune stratégie n'est imbattable. On combine des edges
-statistiques + filtres stricts + risk management non négociable.
+Piliers:
+  1. Mean-reversion liquide (EGLD/USDC, WBTC/USDC)
+  2. Momentum multi-TF + GreenSmoke RISK_ON
+  3. Micro-arb DEX si spread > fees*2.5
+  4. Yield-first si score < seuil
 
-Piliers (ordre de robustesse décroissante):
-  1. Mean-reversion courte sur paires liquides (EGLD/USDC, WBTC/USDC)
-  2. Momentum confirmé multi-TF + regime GreenSmoke RISK_ON
-  3. Arb micro écart DEX (xExchange vs OneDex) si spread > fees*2
-  4. Yield-first: ne trade pas — stake / LP si score < seuil
+Fuse priority: SELL high conf → BUY (ARB preferred on equal conf) → YIELD → WAIT
 """
 from __future__ import annotations
 
@@ -66,7 +65,6 @@ def momentum_regime(
         and volume_spike >= 1.5
         and gs_bias in ("BULLISH", "BUY", "ACCUMULATE")
     ):
-        # Fixed: was undefined price_spike NameError
         conf = min(0.88, 0.5 + price_change_1h * 10 + max(0.0, volume_spike - 1.0) * 0.05)
         return Signal(
             "BUY",
@@ -98,6 +96,7 @@ def micro_arb(
             "ARB",
             f"spread={spread:.3%} > fees*2.5",
             entry_hint=min(price_a, price_b),
+            meta={"spread": spread, "fee_rt": fee_roundtrip},
         )
     return Signal("WAIT", token, 0.35, "ARB", f"spread={spread:.3%} too thin")
 
@@ -120,13 +119,19 @@ def yield_first(
 
 
 def fuse_signals(signals: list[Signal]) -> Signal:
+    """Priority: protective SELL → best BUY (ARB tie-break) → YIELD → WAIT."""
     buys = [s for s in signals if s.action == "BUY"]
     sells = [s for s in signals if s.action == "SELL"]
     yields = [s for s in signals if s.action == "YIELD"]
     if sells and max(s.confidence for s in sells) >= 0.6:
         return max(sells, key=lambda s: s.confidence)
     if buys:
-        best = max(buys, key=lambda s: s.confidence)
+        # Prefer ARB on near-equal confidence (structural edge vs directional)
+        def buy_key(s: Signal) -> tuple:
+            arb_boost = 0.03 if s.strategy == "ARB" else 0.0
+            return (s.confidence + arb_boost, 1 if s.strategy == "ARB" else 0)
+
+        best = max(buys, key=buy_key)
         if best.confidence >= 0.62:
             return best
     if yields:
