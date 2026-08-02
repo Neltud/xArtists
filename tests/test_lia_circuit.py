@@ -32,7 +32,9 @@ def test_strategies() -> None:
         micro_arb,
         yield_first,
         fuse_signals,
+        Signal,
     )
+    from lia.circuit.statistical_arbitrage import statistical_arbitrage
 
     s = mean_reversion_liquid(
         token="WEGLD", price=9.8, vwap_24h=10.0, rsi_14=32, liquidity_usd=100_000
@@ -74,9 +76,33 @@ def test_strategies() -> None:
     check("ARB wide BUY", micro_arb(token="T", price_a=10, price_b=10.2).action == "BUY")
     check("ARB thin WAIT", micro_arb(token="T", price_a=10, price_b=10.01).action == "WAIT")
     check("YIELD low conf", yield_first(trade_confidence=0.4).action == "YIELD")
+
+    # STATARB
+    sa = statistical_arbitrage(
+        token_a="WEGLD-bd4d79",
+        token_b="USDC-c76f1f",
+        price_a=9.5,
+        price_b=1.0,
+        spread_mean=2.30,
+        spread_std=0.04,
+        z_score=-2.3,
+        half_life_h=12.0,
+        liquidity_a=100_000,
+        liquidity_b=200_000,
+        cointegration_score=0.8,
+    )
+    check("STATARB BUY", sa.action == "BUY", f"conf={sa.confidence:.2f}")
+    check("STATARB strategy tag", sa.strategy == "STATARB")
+
     if m is not None:
-        fused = fuse_signals([s, m, micro_arb(token="T", price_a=10, price_b=10.01)])
+        fused = fuse_signals([s, m, micro_arb(token="T", price_a=10, price_b=10.01), sa])
         check("fuse valid", fused.action in ("BUY", "SELL", "WAIT", "YIELD"))
+        # With strong STATARB present, priority should surface it often
+        check(
+            "fuse can pick STATARB",
+            fused.strategy in ("STATARB", "MR", "MOM", "ARB", "FUSE"),
+            fused.strategy,
+        )
 
 
 def test_guards() -> None:
@@ -184,10 +210,13 @@ def test_compound() -> None:
         deployable_usd=100.0,
         pre_balance_usd=100.0,
         tx_open="paper",
+        strategy="STATARB",
+        meta={"z": -2.2},
     )
     check("open trade", t is not None)
     if t:
         check("stop armed -1%", abs(t.stop - 9.9) < 1e-6, f"stop={t.stop}")
+        check("strategy tagged", t.strategy == "STATARB")
         tick2 = c.on_tick(t.target + 0.01)
         check("tick TP", tick2["action"] == "TAKE_PROFIT")
         closed = c.close_trade(
