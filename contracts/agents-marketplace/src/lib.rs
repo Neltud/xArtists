@@ -1,11 +1,14 @@
 #![no_std]
 
 //! Agents Marketplace — list / buy / cancel agent actions (LIA + third-party)
-//! Fee stays on contract; owner claims via claimFees.
-//! Deploy with mxpy; set VITE_AGENTS_MARKETPLACE_ADDRESS after deploy.
+//! Fee tracked in accumulated_fees; owner claims via claimFees.
+//! Security: pause, CEI, upgrade only owner, 2-step ownership, agent_id len cap.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
+
+const MAX_AGENT_ID_LEN: usize = 64;
+const MAX_FEE_BPS: u16 = 1000;
 
 #[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
 pub struct AgentListing<M: ManagedTypeApi> {
@@ -17,22 +20,79 @@ pub struct AgentListing<M: ManagedTypeApi> {
 
 #[multiversx_sc::contract]
 pub trait AgentsMarketplace {
-    /// fee_bps: protocol fee in basis points (300 = 3%, max 1000 = 10%)
+    /// fee_bps: protocol fee in basis points (300 = 3%, max 10%)
     #[init]
     fn init(&self, fee_bps: u16) {
-        require!(fee_bps <= 1000, "fee too high");
+        require!(fee_bps <= MAX_FEE_BPS, "fee too high");
         self.marketplace_fee_bps().set(fee_bps);
         self.listing_count().set(0u64);
-        self.owner().set(self.blockchain().get_caller());
+        self.accumulated_fees().set(BigUint::zero());
+        self.paused().set(false);
+        let caller = self.blockchain().get_caller();
+        self.owner().set(&caller);
+        self.pending_owner().clear();
     }
 
-    #[upgrade]
+    #[only_owner]
+    #[endpoint(upgrade)]
     fn upgrade(&self) {}
 
-    /// List an agent action / signal package for sale (price in EGLD atomic units)
+    // ─── Admin ───────────────────────────────────────────────
+
+    #[only_owner]
+    #[endpoint(setPaused)]
+    fn set_paused(&self, value: bool) {
+        self.paused().set(value);
+    }
+
+    #[only_owner]
+    #[endpoint(setFeeBps)]
+    fn set_fee_bps(&self, fee_bps: u16) {
+        require!(fee_bps <= MAX_FEE_BPS, "fee too high");
+        self.marketplace_fee_bps().set(fee_bps);
+    }
+
+    /// Step 1: nominate new owner (2-step transfer)
+    #[only_owner]
+    #[endpoint(transferOwnership)]
+    fn transfer_ownership(&self, new_owner: ManagedAddress) {
+        require!(!new_owner.is_zero(), "zero address");
+        self.pending_owner().set(&new_owner);
+    }
+
+    /// Step 2: pending owner accepts
+    #[endpoint(acceptOwnership)]
+    fn accept_ownership(&self) {
+        let caller = self.blockchain().get_caller();
+        require!(!self.pending_owner().is_empty(), "no pending owner");
+        require!(caller == self.pending_owner().get(), "not pending owner");
+        self.owner().set(&caller);
+        self.pending_owner().clear();
+    }
+
+    /// Owner withdraws accumulated protocol fees only (not arbitrary SC balance)
+    #[only_owner]
+    #[endpoint(claimFees)]
+    fn claim_fees(&self) {
+        let fees = self.accumulated_fees().get();
+        require!(fees > 0, "nothing to claim");
+        self.accumulated_fees().set(BigUint::zero());
+        let owner = self.owner().get();
+        self.send().direct_egld(&owner, &fees);
+        self.claim_event(&owner, &fees);
+    }
+
+    // ─── Market ──────────────────────────────────────────────
+
     #[endpoint(listAgentAction)]
     fn list_agent_action(&self, agent_id: ManagedBuffer, price: BigUint) {
+        require!(!self.paused().get(), "paused");
         require!(price > 0, "price must be > 0");
+        require!(
+            agent_id.len() > 0 && agent_id.len() <= MAX_AGENT_ID_LEN,
+            "invalid agent_id length"
+        );
+
         let seller = self.blockchain().get_caller();
         let id = self.listing_count().get() + 1;
         self.listing_count().set(id);
@@ -45,33 +105,42 @@ pub trait AgentsMarketplace {
         self.list_event(id, &seller);
     }
 
-    /// Buy: payment EGLD >= price. Net → seller. Fee remains on SC (treasury).
+    /// Buy: payment EGLD >= price. Net → seller. Fee → accumulated_fees.
     #[payable("EGLD")]
     #[endpoint(buyAgentAction)]
     fn buy_agent_action(&self, listing_id: u64) {
+        require!(!self.paused().get(), "paused");
         require!(!self.listings(listing_id).is_empty(), "listing not found");
+
         let mut listing = self.listings(listing_id).get();
         require!(listing.active, "listing inactive");
+
         let payment = self.call_value().egld_value().clone_value();
         require!(payment >= listing.price, "insufficient payment");
 
         let fee_bps = self.marketplace_fee_bps().get() as u64;
         let fee = &listing.price * fee_bps / 10_000u64;
         let to_seller = &listing.price - &fee;
+        let buyer = self.blockchain().get_caller();
 
-        self.send().direct_egld(&listing.seller, &to_seller);
-        // fee stays on contract balance until claimFees(owner)
-
-        // Refund excess if buyer sent more than price
-        let excess = &payment - &listing.price;
-        if excess > 0 {
-            let caller = self.blockchain().get_caller();
-            self.send().direct_egld(&caller, &excess);
+        // CEI: effects before interactions
+        listing.active = false;
+        self.listings(listing_id).set(listing.clone());
+        if fee > 0 {
+            self.accumulated_fees()
+                .update(|f| *f += &fee);
         }
 
-        listing.active = false;
-        self.listings(listing_id).set(listing);
-        self.buy_event(listing_id, &self.blockchain().get_caller());
+        if to_seller > 0 {
+            self.send().direct_egld(&listing.seller, &to_seller);
+        }
+
+        let excess = &payment - &listing.price;
+        if excess > 0 {
+            self.send().direct_egld(&buyer, &excess);
+        }
+
+        self.buy_event(listing_id, &buyer);
     }
 
     #[endpoint(cancelListing)]
@@ -87,16 +156,7 @@ pub trait AgentsMarketplace {
         self.listings(listing_id).set(listing);
     }
 
-    /// Owner withdraws accumulated protocol fees (full EGLD balance of SC).
-    #[endpoint(claimFees)]
-    fn claim_fees(&self) {
-        let caller = self.blockchain().get_caller();
-        require!(caller == self.owner().get(), "only owner");
-        let balance = self.blockchain().get_sc_balance(&EgldOrEsdtTokenIdentifier::egld(), 0);
-        require!(balance > 0, "nothing to claim");
-        self.send().direct_egld(&caller, &balance);
-        self.claim_event(&caller, &balance);
-    }
+    // ─── Views ───────────────────────────────────────────────
 
     #[view(getListing)]
     fn get_listing(&self, listing_id: u64) -> OptionalValue<AgentListing<Self::Api>> {
@@ -112,6 +172,11 @@ pub trait AgentsMarketplace {
         self.marketplace_fee_bps().get()
     }
 
+    #[view(getAccumulatedFees)]
+    fn get_accumulated_fees(&self) -> BigUint {
+        self.accumulated_fees().get()
+    }
+
     #[view(getContractEgldBalance)]
     fn get_contract_egld_balance(&self) -> BigUint {
         self.blockchain()
@@ -123,6 +188,22 @@ pub trait AgentsMarketplace {
         self.owner().get()
     }
 
+    #[view(getPendingOwner)]
+    fn get_pending_owner(&self) -> OptionalValue<ManagedAddress> {
+        if self.pending_owner().is_empty() {
+            OptionalValue::None
+        } else {
+            OptionalValue::Some(self.pending_owner().get())
+        }
+    }
+
+    #[view(isPaused)]
+    fn is_paused(&self) -> bool {
+        self.paused().get()
+    }
+
+    // ─── Events ──────────────────────────────────────────────
+
     #[event("list")]
     fn list_event(&self, #[indexed] id: u64, #[indexed] seller: &ManagedAddress);
 
@@ -131,6 +212,8 @@ pub trait AgentsMarketplace {
 
     #[event("claim")]
     fn claim_event(&self, #[indexed] owner: &ManagedAddress, amount: &BigUint);
+
+    // ─── Storage ─────────────────────────────────────────────
 
     #[view]
     #[storage_mapper("feeBps")]
@@ -143,6 +226,18 @@ pub trait AgentsMarketplace {
     #[storage_mapper("listings")]
     fn listings(&self, id: u64) -> SingleValueMapper<AgentListing<Self::Api>>;
 
+    #[view]
     #[storage_mapper("owner")]
     fn owner(&self) -> SingleValueMapper<ManagedAddress>;
+
+    #[storage_mapper("pendingOwner")]
+    fn pending_owner(&self) -> SingleValueMapper<ManagedAddress>;
+
+    #[view]
+    #[storage_mapper("paused")]
+    fn paused(&self) -> SingleValueMapper<bool>;
+
+    #[view]
+    #[storage_mapper("accumulatedFees")]
+    fn accumulated_fees(&self) -> SingleValueMapper<BigUint>;
 }

@@ -2,56 +2,78 @@
 
 | Contract | Path | Status |
 |----------|------|--------|
-| **NFT Marketplace** | `contracts/nft-marketplace` | Ready to deploy — list/buy, royalties, pause, claimFees |
-| **Agents Marketplace** | `contracts/agents-marketplace` | Ready to deploy — list/buy agent actions |
-| BTC Bridge | `contracts/btc-bridge` | Experimental skeleton |
-| NFT Staking | `contracts/nft-staking` | Cargo only — complete source later |
-| TRO Staking | `contracts/tro-staking` | Cargo only — complete source later |
+| **NFT Marketplace** | `contracts/nft-marketplace` | P0+P1 hardened — list/buy, royalties, pause, CEI, claimFees, 2-step ownership |
+| **Agents Marketplace** | `contracts/agents-marketplace` | P0+P1 hardened — list/buy, pause, CEI, claimFees, agent_id cap |
+| **BTC Bridge** | `contracts/btc-bridge` | **EXPERIMENTAL ONLY — DO NOT send user funds** |
+| NFT Staking | `contracts/nft-staking` | Cargo only — incomplete |
+| TRO Staking | `contracts/tro-staking` | Cargo only — incomplete |
 
-## Deploy (mainnet)
+## Security remediation (2026-08-02)
 
-**I cannot deploy for you** without your PEM and EGLD. Run locally:
+**P0 applied**
+
+- `upgrade` gated `#[only_owner]`
+- NFT: `listing not found` check; `fee_bps + royalty_bps <= 100%` at list & buy
+- CEI: listing deactivated **before** EGLD/NFT transfers
+- Bridge labeled experimental (no production use)
+
+**P1 applied**
+
+- Agents: `setPaused` / `isPaused`
+- NFT buy: excess EGLD refunded to buyer
+- `transferOwnership` + `acceptOwnership` (2-step)
+- `accumulated_fees` tracker; `claimFees` pays only that amount
+- `agent_id` length 1..=64
+
+**Still open (P2)**
+
+- Collection whitelist NFT
+- Multisig / Guardian owner
+- External paid audit before significant TVL
+- Bridge full redesign (mint ESDT, timelock use, relayer de-dup)
+
+See `docs/SECURITY_AUDIT_SC_2026-08-02.md` if present.
+
+## Deploy
 
 ```bash
-# 1. Tools
 pip install multiversx-sdk-cli
-# rustup target add wasm32-unknown-unknown  # if local build
+export PEM=~/wallets/xartists-deployer.pem   # NEVER commit
+export CHAIN=D   # devnet first
+export PROXY=https://devnet-gateway.multiversx.com
+export FEE_BPS=300
 
-# 2. Wallet (NEVER commit)
-export PEM=~/wallets/xartists-deployer.pem
-export CHAIN=1
-export PROXY=https://gateway.multiversx.com
-export FEE_BPS=300   # 3%
+# Isolated build (avoid broken workspace members)
+cd contracts/agents-marketplace && mxpy contract build
+cd ../nft-marketplace && mxpy contract build
 
-# 3. Deploy both marketplaces
-chmod +x scripts/deploy_all_scs.sh
-./scripts/deploy_all_scs.sh
-
-# Or one by one:
-./scripts/deploy_all_scs.sh nft-marketplace
-./scripts/deploy_all_scs.sh agents-marketplace
+# Deploy via scripts or Vellum deploy_scs_node
 ```
 
-Script writes addresses into `data/contracts.json`.
+After deploy: write addresses to `data/contracts.json` (no PEM).
 
-## After deploy
+## Endpoints — Agents
 
-1. Commit `data/contracts.json` (addresses only, no PEM)
-2. Frontend: `VITE_MARKETPLACE_ADDRESS=<nft-marketplace>`
-3. Update `packages/core/src/contracts/marketplaceAbi.ts` address
-4. Test list/buy with small amount on mainnet
+| Endpoint | Access |
+|----------|--------|
+| `listAgentAction` | public (not paused) |
+| `buyAgentAction` | payable EGLD |
+| `cancelListing` | seller |
+| `claimFees` | owner |
+| `setPaused` / `setFeeBps` | owner |
+| `transferOwnership` / `acceptOwnership` | owner / pending |
+| views: `getListing`, `getFeeBps`, `getAccumulatedFees`, `isPaused`, `getOwner` | |
 
-## Security
+## Endpoints — NFT
 
-- Start with **devnet** (`CHAIN=D`, proxy devnet) if unsure
-- Audit before large TVL
-- Keep owner key offline / hardware when possible
-- `setPaused(true)` emergency
+| Endpoint | Access |
+|----------|--------|
+| `listNft` | payable 1 NFT |
+| `buyNft` | payable EGLD |
+| `cancelListing` | seller |
+| `claimFees` / `setPaused` / `setFeeBps` | owner |
+| `transferOwnership` / `acceptOwnership` | owner / pending |
 
-## NFT Marketplace endpoints
+## BTC Bridge
 
-- `listNft(price, royalty_bps, royalty_receiver)` + pay 1 NFT
-- `buyNft(listing_id)` + pay EGLD
-- `cancelListing(listing_id)`
-- `claimFees` (owner)
-- `setPaused` / `setFeeBps` (owner)
+**EXPERIMENTAL SKELETON.** No real sBTC mint, signature path unverified for production, timelock unused. **Do not deposit user funds.**
