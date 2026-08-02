@@ -1,15 +1,5 @@
 #!/usr/bin/env bash
-# Simulate MAINNET deploy (no broadcast) — exact txGasUnits + fee estimate.
-#
-# Usage:
-#   export PEM=/path/to/mainnet.pem   # required by mxpy even for simulate
-#   ./scripts/simulate_deploy_mainnet.sh
-#   ./scripts/simulate_deploy_mainnet.sh agents-marketplace
-#   ./scripts/simulate_deploy_mainnet.sh nft-marketplace
-#
-# Requires: sc-meta / mxpy build producing contracts/*/output/*.wasm
-# Rustc >= 1.78 recommended for multiversx-sc 0.50.
-
+# Simulate MAINNET deploy (no broadcast) — exact txGasUnits when toolchain OK.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PEM="${PEM:-${LIA_WALLET_PEM_PATH:-}}"
@@ -19,13 +9,18 @@ FEE_BPS="${FEE_BPS:-300}"
 GAS_SIM="${GAS_SIM:-600000000}"
 ONLY="${1:-all}"
 
+redact() { echo "$1" | sed -E 's/-----BEGIN[^-]*-----.*-----END[^-]*-----/[PEM_REDACTED]/g'; }
+
 if [[ -z "${PEM}" || ! -f "${PEM}" ]]; then
-  echo "❌ PEM required (mxpy simulate still needs a wallet file)."
+  echo "❌ PEM required for mxpy simulate"
   exit 1
 fi
-
 if ! command -v mxpy >/dev/null 2>&1; then
-  echo "❌ mxpy not found (pip install multiversx-sdk-cli)"
+  echo "❌ mxpy not found"
+  exit 1
+fi
+if [[ "$FEE_BPS" -gt 1000 ]]; then
+  echo "❌ FEE_BPS max 1000"
   exit 1
 fi
 
@@ -33,43 +28,43 @@ simulate_one() {
   local name="$1"
   local dir="$ROOT/contracts/$name"
   echo ""
-  echo "======== SIMULATE DEPLOY $name (MAINNET, fee_bps=$FEE_BPS) ========"
+  echo "======== SIMULATE $name ========"
+  if [[ ! -d "$dir" ]]; then
+    echo "❌ missing $dir"
+    return 1
+  fi
   cd "$dir"
 
   if ! find output -name "*.wasm" 2>/dev/null | head -1 | grep -q .; then
-    echo "Building $name..."
+    echo "Building..."
     if command -v sc-meta >/dev/null 2>&1; then
       sc-meta all build || true
     fi
-    mxpy contract build 2>/dev/null || sc-meta all build
+    mxpy contract build 2>/dev/null || sc-meta all build || {
+      echo "❌ BUILD FAILED — docs/DEPLOY_ERRORS.md"
+      return 1
+    }
   fi
 
   local WASM
   WASM=$(find output -name "*.wasm" 2>/dev/null | head -1 || true)
   if [[ -z "$WASM" ]]; then
-    echo "❌ No wasm in $dir/output — install sc-meta (Rust >= 1.78) and rebuild"
+    echo "❌ No wasm"
     return 1
   fi
-
   local BYTES
   BYTES=$(wc -c < "$WASM")
-  echo "WASM: $WASM ($BYTES bytes = $(echo "scale=1; $BYTES/1024" | bc) KB)"
+  echo "WASM $BYTES bytes"
 
-  # Theoretical data gas (lower bound for payload size)
-  python3 - <<PY
-bytes = $BYTES
+  python3 - "$BYTES" <<'PY'
+import sys
+bytes = int(sys.argv[1])
 data_gas = 50_000 + 1500 * bytes
-fee_data = data_gas * 1_000_000_000 / 1e18
-print(f"Approx data gas (bytecode only): {data_gas:,}")
-print(f"Approx data fee EGLD:           {fee_data:.6f}")
-if data_gas > 80_000_000:
-    print("⚠️  data gas alone > 80M — do NOT use gas-limit 80000000")
-if data_gas > 200_000_000:
-    print("⚠️  consider GAS_LIMIT=600000000 for deploy")
+print(f"Estimated data gas: {data_gas:,}")
+print(f"Estimated data fee EGLD: {data_gas * 1_000_000_000 / 1e18:.6f}")
 PY
 
-  echo "Running mxpy --simulate gas-limit=$GAS_SIM ..."
-  local LOG
+  set +e
   LOG=$(mxpy contract deploy \
     --bytecode "$WASM" \
     --pem "$PEM" \
@@ -78,35 +73,36 @@ PY
     --gas-limit "$GAS_SIM" \
     --arguments "$FEE_BPS" \
     --recall-nonce \
-    --simulate 2>&1) || true
+    --simulate 2>&1)
+  RC=$?
+  set -e
+  echo "$(redact "$LOG")" | tail -100
 
-  echo "$LOG" | tail -80
+  if echo "$LOG" | grep -qiE 'insufficient funds'; then
+    echo "❌ Simulate reports insufficient funds"
+    return 1
+  fi
 
-  # Extract txGasUnits if present
-  echo "$LOG" | python3 - <<'PY'
-import sys, re, json
-text = sys.stdin.read()
-m = re.search(r'"txGasUnits"\s*:\s*(\d+)', text)
+  echo "$LOG" | python3 -c "
+import sys,re
+text=sys.stdin.read()
+m=re.search(r'\"txGasUnits\"\\s*:\\s*(\d+)', text)
 if m:
-    g = int(m.group(1))
-    # upper-bound fee if all execution at modifier 0.01 is wrong for data-heavy deploy;
-    # report gas units; real fee is on-chain after send
-    print(f"\n✅ txGasUnits = {g:,}")
-    print(f"   Set: export GAS_LIMIT={g}")
-    print(f"   Or with 15% margin: export GAS_LIMIT={int(g * 1.15)}")
+    g=int(m.group(1))
+    print(f'✅ txGasUnits={g}')
+    print(f'export GAS_LIMIT={int(g*1.15)}')
 else:
-    print("\n⚠️  txGasUnits not parsed — inspect log above (status / errors)")
-PY
+    print('⚠️  txGasUnits not found — check status/errors above (docs/DEPLOY_ERRORS.md)')
+    sys.exit(1)
+" || return 1
+  return 0
 }
 
+ERR=0
 if [[ "$ONLY" == "all" || "$ONLY" == "agents-marketplace" ]]; then
-  simulate_one agents-marketplace
+  simulate_one agents-marketplace || ERR=1
 fi
 if [[ "$ONLY" == "all" || "$ONLY" == "nft-marketplace" ]]; then
-  simulate_one nft-marketplace
+  simulate_one nft-marketplace || ERR=1
 fi
-
-echo ""
-echo "Then deploy for real:"
-echo "  export GAS_LIMIT=<txGasUnits from above>"
-echo "  ./scripts/deploy_mainnet.sh agents-marketplace"
+exit "$ERR"
