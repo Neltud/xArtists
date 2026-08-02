@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0",
+  "name": "soul-zk-circuit",
+  "status": "configured_disabled",
+  "settlement_chain": "multiversx",
+  "scheme": {
+    "primary": "groth16",
+    "alternates": ["plonk", "halo2"],
+    "curve": "bn254",
+    "proof_size_bytes_expected": 256
+  },
+  "prover": {
+    "enabled": false,
+    "endpoint": "",
+    "timeout_sec": 30,
+    "env_flag": "SOUL_ZK_PROVER_ENABLED"
+  },
+  "verifier": {
+    "address": null,
+    "chain_id": "1",
+    "endpoint_view": "verifyProof",
+    "env_address": "SOUL_ZK_VERIFIER_ADDRESS"
+  },
+  "epoch": {
+    "length_sec": 86400,
+    "source": "unix_day"
+  },
+  "circuits": {
+    "credit": {
+      "id": "soul_credit_v1",
+      "description": "Prove credit score >= threshold without revealing raw score",
+      "public": ["subject", "epoch", "threshold_bps", "nullifier"],
+      "private": ["score", "salt"],
+      "threshold_bps_default": 5000
+    },
+    "restake": {
+      "id": "soul_restake_v1",
+      "description": "Prove restake position commitment for yield unlock",
+      "public": ["subject", "epoch", "asset_id_hash", "amount_commitment", "nullifier"],
+      "private": ["amount", "position_id", "salt"]
+    },
+    "eligibility": {
+      "id": "soul_elig_v1",
+      "description": "Prove allowlist / soulbound membership for agent pack",
+      "public": ["subject", "epoch", "cohort_root", "nullifier"],
+      "private": ["merkle_path", "leaf_salt"]
+    }
+  },
+  "gates": {
+    "size_boost_max": 1.5,
+    "yield_unlock_requires": "credit|restake",
+    "reject_if_nullifier_seen": true
+  },
+  "nullifier_store": "data/soul_zk_nullifiers.json",
+  "notes": "Flip prover.enabled and set verifier.address only after audit. MVX is settlement."
+}
