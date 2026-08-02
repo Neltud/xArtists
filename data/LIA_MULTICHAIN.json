@@ -1,0 +1,36 @@
+{
+  "version": "2026-08-02",
+  "base_layer": "multiversx",
+  "settlement": {
+    "chain_id": "1",
+    "wallet_lia": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "executable_venues": ["xexchange", "onedex", "hatom"],
+    "sc": ["agents-marketplace", "nft-marketplace"]
+  },
+  "signal_only": ["jupiter", "raydium", "hyperliquid", "soul"],
+  "agents": {
+    "mvx_core": {
+      "module": "lia.agents.mvx_agent",
+      "chain": "multiversx",
+      "tp_mode_default": "log"
+    }
+  },
+  "soul": {
+    "module": "lia.venues.soul",
+    "zk": "lia.venues.soul_zk",
+    "enabled": false,
+    "zk_verifier": null
+  },
+  "dapp": {
+    "url": "https://neltud.github.io/xArtists",
+    "routes": ["/", "/trading", "/portfolio", "/hatom", "/tro", "/marketplace", "/agents", "/lp"]
+  },
+  "production_order": [
+    "sc_deploy_mainnet",
+    "blackbox_micro",
+    "frontend_env_addresses",
+    "pages_build",
+    "vellum_dry_cycle",
+    "live_micro"
+  ]
+}
