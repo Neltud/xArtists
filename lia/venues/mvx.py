@@ -34,15 +34,10 @@ def xexchange_onedex_arb(
     price_onedex: Optional[float] = None,
     fee_roundtrip: float = 0.006,
 ) -> Signal:
-    """
-    Micro-arb between two MVX venues.
-    Callers should pass live mid prices from each DEX when available;
-    falls back to single API price (no arb).
-    """
     if price_xex is None:
         price_xex = fetch_token_price(token)
     if price_onedex is None:
-        price_onedex = price_xex  # no second source → no spread
+        price_onedex = price_xex
     return micro_arb(
         token=token,
         price_a=float(price_xex or 0),
@@ -54,18 +49,41 @@ def xexchange_onedex_arb(
 def hatom_yield_signal(
     *,
     trade_confidence: float,
-    stable_apy: float = 0.08,
+    stable_apy: Optional[float] = None,
     min_trade_conf: float = 0.65,
 ) -> Signal:
-    """Route idle capital narrative to Hatom/USDC sleeve when no trade edge."""
+    """Route idle capital to Hatom yield sleeve when no trade edge."""
+    apy = stable_apy
+    sleeve_usd = 0.0
+    source = "default"
+    try:
+        from lia.venues.hatom import best_stable_supply_apy, fetch_position
+
+        if apy is None:
+            apy = best_stable_supply_apy(0.05)
+            source = "hatom_markets_or_default"
+        pos = fetch_position()
+        sleeve_usd = float(pos.get("total_supplied_usd") or 0)
+        source = pos.get("source") or source
+    except Exception:
+        if apy is None:
+            apy = 0.05
+
     sig = yield_first(
         trade_confidence=trade_confidence,
         min_trade_conf=min_trade_conf,
-        stable_apy=stable_apy,
+        stable_apy=float(apy),
     )
     if sig.action == "YIELD":
-        sig.meta = {**(sig.meta or {}), "venue": "hatom", "chain": "multiversx"}
-        sig.reason = f"hatom/yield_sleeve: {sig.reason}"
+        sig.meta = {
+            **(sig.meta or {}),
+            "venue": "hatom",
+            "chain": "multiversx",
+            "stable_apy": apy,
+            "sleeve_usd": sleeve_usd,
+            "position_source": source,
+        }
+        sig.reason = f"hatom/yield_sleeve APY~{float(apy):.1%} src={source}: {sig.reason}"
     return sig
 
 

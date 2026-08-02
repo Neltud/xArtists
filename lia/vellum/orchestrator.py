@@ -7,7 +7,7 @@ Order:
   3. mvx_agent.decide
   4. live_cycle.run_cycle (trailing)
   5. compound open/tick if BUY and can_open (tp_mode=log)
-  6. publish_data_for_frontend
+  6. publish_hatom + publish_data_for_frontend
 
 LIA_LIVE_TRADING must be 0 until Sprint A SC + blackbox done.
 PEM never logged.
@@ -42,11 +42,6 @@ def run_orchestrator(
     publish: bool = True,
     compound_demo: bool = False,
 ) -> dict[str, Any]:
-    """
-    Single Vellum node entry.
-    market keys: token, price, vwap_24h, rsi_14, liquidity_usd, chg_1h, chg_24h,
-                 volume_spike, gs_regime, gs_bias, price_dex_a, price_dex_b, atr
-    """
     boot = env_bootstrap()
     out: dict[str, Any] = {
         "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -71,7 +66,6 @@ def run_orchestrator(
         "atr": 0.0,
     }
 
-    # 3. Agent MVX
     try:
         from lia.agents.mvx_agent import decide
 
@@ -95,7 +89,6 @@ def run_orchestrator(
         out["agent"] = {"error": str(e)}
         decision = None
 
-    # 4. Live cycle (trailing) — WAIT if no decision
     try:
         from lia.vellum.live_cycle import run_cycle
 
@@ -113,7 +106,6 @@ def run_orchestrator(
     except Exception as e:
         out["live_cycle"] = {"error": str(e)}
 
-    # 5. Compound (tp_mode=log) — paper unless compound_demo with price
     try:
         from lia.circuit.compound_engine import CircuitConfig, CompoundCircuit
 
@@ -142,18 +134,19 @@ def run_orchestrator(
                 out["compound_tick"] = circuit.on_tick(float(m["price"]) * 1.01)
         else:
             out["compound_open"] = None
-            out["compound_note"] = (
-                "skipped — need BUY+executable+price or compound_demo=False (default)"
-            )
     except Exception as e:
         out["compound"] = {"error": str(e)}
 
-    # Guard: never imply live swaps when flag off
     if not boot["live_trading"]:
         out["executor"] = {"live": False, "note": "LIA_LIVE_TRADING=0 — no PEM sends"}
 
-    # 6. Publish
     if publish:
+        try:
+            from lia.vellum.publish_hatom import publish as pub_hatom
+
+            out["hatom_path"] = str(pub_hatom())
+        except Exception as e:
+            out["hatom_publish"] = {"ok": False, "error": str(e)}
         try:
             from lia.vellum.publish_data_for_frontend import publish as pub
 
@@ -162,7 +155,6 @@ def run_orchestrator(
         except Exception as e:
             out["publish"] = {"ok": False, "error": str(e)}
 
-    # Status stamp for frontend
     try:
         status_path = ROOT / "data" / "lia_v6_status.json"
         status = {}
