@@ -1,5 +1,5 @@
 {
-  "version": "2026-08-01",
+  "version": "2026-08-02",
   "purpose": "Source of truth for Vellum to reconfigure nodes until full frontend build understands outputs",
   "dapp_url": "https://neltud.github.io/xArtists",
   "basename": "/xArtists/",
@@ -15,6 +15,19 @@
     "VELLUM_API_KEY",
     "TELEGRAM_BOT_TOKEN"
   ],
+  "treasury": {
+    "agents_marketplace": {
+      "fee_bps_default": 300,
+      "on_buy": "seller receives price - fee; fee stays on SC",
+      "claim": "claimFees endpoint — owner only",
+      "doc": "docs/TREASURY_FLOWS.md",
+      "note": "Agent sale EGLD does NOT enter LIA compound 70/30"
+    },
+    "lia_trading": {
+      "win_split": "70% compound_equity / 30% yield_sleeve",
+      "tro": "40% LP / 30% stake / 20% rewards / 10% burn — never hold"
+    }
+  },
   "pipeline": [
     {
       "node": "Timer",
@@ -88,7 +101,7 @@
       "code": "lia.executor.universal_executor",
       "requires_secret": "LIA_WALLET_PEM",
       "live_flag": "LIA_LIVE_TRADING",
-      "actions": ["swap", "stake", "unstake", "claim", "redistribute_tro", "close"],
+      "actions": ["swap", "stake", "unstake", "claim", "redistribute_tro", "close", "listAgentAction"],
       "next": ["Reporter"]
     },
     {
@@ -109,7 +122,9 @@
         "data/lia_portfolio.json",
         "data/hatom_lia.json",
         "data/battle_of_nodes.json",
-        "data/xartists_onchain.json"
+        "data/xartists_onchain.json",
+        "data/contracts.json",
+        "data/agents_catalog.json"
       ],
       "mirror_to": [
         "docs/data/",
@@ -125,7 +140,7 @@
     "/hatom": ["hatom_lia.json"],
     "/tro": ["config.json", "tro_pool.json"],
     "/marketplace": ["xartists_collections.json"],
-    "/agents": ["greensmoke_forecasts.json", "greensmoke_top.json"]
+    "/agents": ["greensmoke_forecasts.json", "greensmoke_top.json", "agents_catalog.json", "contracts.json"]
   },
   "gaps_blocking_vellum": [
     {
@@ -157,10 +172,17 @@
       "priority": 2,
       "issue": "Frontend build must run after push for SW/PWA",
       "fix": "GitHub Actions Deploy xArtists Exclusive on main"
+    },
+    {
+      "id": "G6",
+      "priority": 1,
+      "issue": "claimFees was missing — added in SC source; redeploy agents-marketplace required for on-chain claim",
+      "fix": "contracts/agents-marketplace claimFees + Vellum deploy"
     }
   ],
   "vellum_python_entry": {
     "recommended": "from lia.vellum.live_cycle import run_cycle; from lia.circuit.vellum_cycle import run_cycle as compound_cycle",
-    "publish": "from lia.vellum.publish_data_for_frontend import publish; publish()"
+    "publish": "from lia.vellum.publish_data_for_frontend import publish; publish()",
+    "deploy_scs": "from lia.vellum.deploy_scs_node import run; run()"
   }
 }

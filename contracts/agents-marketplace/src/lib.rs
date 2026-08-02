@@ -1,7 +1,8 @@
 #![no_std]
 
-//! Agents Marketplace — list / buy / execute agent actions (LIA + third-party)
-//! Deploy with mxpy; replace placeholder address in frontend config after deploy.
+//! Agents Marketplace — list / buy / cancel agent actions (LIA + third-party)
+//! Fee stays on contract; owner claims via claimFees.
+//! Deploy with mxpy; set VITE_AGENTS_MARKETPLACE_ADDRESS after deploy.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
@@ -16,17 +17,19 @@ pub struct AgentListing<M: ManagedTypeApi> {
 
 #[multiversx_sc::contract]
 pub trait AgentsMarketplace {
+    /// fee_bps: protocol fee in basis points (300 = 3%, max 1000 = 10%)
     #[init]
     fn init(&self, fee_bps: u16) {
-        require!(fee_bps <= 1000, "fee too high"); // max 10%
+        require!(fee_bps <= 1000, "fee too high");
         self.marketplace_fee_bps().set(fee_bps);
         self.listing_count().set(0u64);
+        self.owner().set(self.blockchain().get_caller());
     }
 
     #[upgrade]
     fn upgrade(&self) {}
 
-    /// List an agent action / signal package for sale
+    /// List an agent action / signal package for sale (price in EGLD atomic units)
     #[endpoint(listAgentAction)]
     fn list_agent_action(&self, agent_id: ManagedBuffer, price: BigUint) {
         require!(price > 0, "price must be > 0");
@@ -42,20 +45,29 @@ pub trait AgentsMarketplace {
         self.list_event(id, &seller);
     }
 
+    /// Buy: payment EGLD >= price. Net → seller. Fee remains on SC (treasury).
     #[payable("EGLD")]
     #[endpoint(buyAgentAction)]
     fn buy_agent_action(&self, listing_id: u64) {
+        require!(!self.listings(listing_id).is_empty(), "listing not found");
         let mut listing = self.listings(listing_id).get();
         require!(listing.active, "listing inactive");
-        let payment = self.call_value().egld_value();
-        require!(*payment >= listing.price, "insufficient payment");
+        let payment = self.call_value().egld_value().clone_value();
+        require!(payment >= listing.price, "insufficient payment");
 
         let fee_bps = self.marketplace_fee_bps().get() as u64;
         let fee = &listing.price * fee_bps / 10_000u64;
         let to_seller = &listing.price - &fee;
 
         self.send().direct_egld(&listing.seller, &to_seller);
-        // fee stays in contract (treasury claimable by owner)
+        // fee stays on contract balance until claimFees(owner)
+
+        // Refund excess if buyer sent more than price
+        let excess = &payment - &listing.price;
+        if excess > 0 {
+            let caller = self.blockchain().get_caller();
+            self.send().direct_egld(&caller, &excess);
+        }
 
         listing.active = false;
         self.listings(listing_id).set(listing);
@@ -64,6 +76,7 @@ pub trait AgentsMarketplace {
 
     #[endpoint(cancelListing)]
     fn cancel_listing(&self, listing_id: u64) {
+        require!(!self.listings(listing_id).is_empty(), "listing not found");
         let mut listing = self.listings(listing_id).get();
         require!(listing.active, "inactive");
         require!(
@@ -72,6 +85,17 @@ pub trait AgentsMarketplace {
         );
         listing.active = false;
         self.listings(listing_id).set(listing);
+    }
+
+    /// Owner withdraws accumulated protocol fees (full EGLD balance of SC).
+    #[endpoint(claimFees)]
+    fn claim_fees(&self) {
+        let caller = self.blockchain().get_caller();
+        require!(caller == self.owner().get(), "only owner");
+        let balance = self.blockchain().get_sc_balance(&EgldOrEsdtTokenIdentifier::egld(), 0);
+        require!(balance > 0, "nothing to claim");
+        self.send().direct_egld(&caller, &balance);
+        self.claim_event(&caller, &balance);
     }
 
     #[view(getListing)]
@@ -83,11 +107,30 @@ pub trait AgentsMarketplace {
         }
     }
 
+    #[view(getFeeBps)]
+    fn get_fee_bps(&self) -> u16 {
+        self.marketplace_fee_bps().get()
+    }
+
+    #[view(getContractEgldBalance)]
+    fn get_contract_egld_balance(&self) -> BigUint {
+        self.blockchain()
+            .get_sc_balance(&EgldOrEsdtTokenIdentifier::egld(), 0)
+    }
+
+    #[view(getOwner)]
+    fn get_owner_view(&self) -> ManagedAddress {
+        self.owner().get()
+    }
+
     #[event("list")]
     fn list_event(&self, #[indexed] id: u64, #[indexed] seller: &ManagedAddress);
 
     #[event("buy")]
     fn buy_event(&self, #[indexed] id: u64, #[indexed] buyer: &ManagedAddress);
+
+    #[event("claim")]
+    fn claim_event(&self, #[indexed] owner: &ManagedAddress, amount: &BigUint);
 
     #[view]
     #[storage_mapper("feeBps")]
@@ -99,4 +142,7 @@ pub trait AgentsMarketplace {
 
     #[storage_mapper("listings")]
     fn listings(&self, id: u64) -> SingleValueMapper<AgentListing<Self::Api>>;
+
+    #[storage_mapper("owner")]
+    fn owner(&self) -> SingleValueMapper<ManagedAddress>;
 }
