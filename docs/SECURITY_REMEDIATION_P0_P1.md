@@ -2,16 +2,18 @@
 
 Applied on `contracts/agents-marketplace` and `contracts/nft-marketplace`.
 
+Full operator path: **[DEVNET_DEPLOY_BLACKBOX.md](DEVNET_DEPLOY_BLACKBOX.md)**
+
 ## P0
 
 | Item | Status |
 |------|--------|
-| Upgrade only owner | Done both |
+| Upgrade gated by storage owner | Done both |
 | NFT listing exists check | Done |
 | Cap fee + royalty ≤ 100% | Done list + buy |
 | CEI active=false before transfers | Done both |
 | Bridge experimental label | Done README |
-| Blackbox tests | Checklist below — run on devnet |
+| Blackbox tests | See DEVNET_DEPLOY_BLACKBOX.md |
 
 ## P1
 
@@ -23,34 +25,17 @@ Applied on `contracts/agents-marketplace` and `contracts/nft-marketplace`.
 | accumulated_fees vs full balance | Done both |
 | agent_id max length 64 | Done |
 
-## Blackbox checklist (devnet)
+## Scripts
 
-### Agents
-
-- [ ] list price 0 → fail
-- [ ] list agent_id empty or >64 → fail
-- [ ] buy missing id → fail
-- [ ] buy inactive → fail
-- [ ] buy exact → seller net, accumulated_fees += fee
-- [ ] buy overpay → excess refunded
-- [ ] cancel non-seller → fail
-- [ ] setPaused true → list/buy fail
-- [ ] claimFees non-owner → fail
-- [ ] claimFees owner → accumulated_fees 0, owner receives fee total
-- [ ] transferOwnership + acceptOwnership from other → fail until accept
-
-### NFT
-
-- [ ] list without NFT → fail
-- [ ] list royalty 1000 + fee 300 OK; royalty such that sum >10000 → fail
-- [ ] buy missing id → fail
-- [ ] buy overpay → excess refunded
-- [ ] cancel → NFT back to seller
-- [ ] pause → list/buy fail
+```bash
+./scripts/build_scs_isolated.sh
+./scripts/deploy_devnet.sh              # CHAIN=D FEE_BPS=300
+./scripts/deploy_devnet.sh agents-marketplace
+```
 
 ## Deploy note
 
-Redeploy required for on-chain effect. Previous instances without these endpoints stay as-is until migrated.
+Redeploy required for on-chain effect. Old instances stay until new address + contracts.json update.
 
 ## P2 remaining
 

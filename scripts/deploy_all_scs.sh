@@ -1,28 +1,27 @@
 #!/usr/bin/env bash
-# Deploy xArtists smart contracts (mainnet)
+# Deploy xArtists smart contracts (devnet-first recommended).
 #
 # Prerequisites:
-#   - mxpy installed (pip install multiversx-sdk-cli)
-#   - rust + wasm32 target (mxpy contract build uses docker or local)
-#   - PEM wallet with EGLD for gas
+#   - mxpy (pip install multiversx-sdk-cli)
+#   - PEM with EGLD for gas (devnet faucet OK)
 #
 # Usage:
 #   export PEM=~/wallets/deployer.pem
-#   export CHAIN=1          # 1=mainnet, D=devnet, T=testnet
-#   export PROXY=https://gateway.multiversx.com
+#   export CHAIN=D
+#   export PROXY=https://devnet-gateway.multiversx.com
+#   export FEE_BPS=300
 #   ./scripts/deploy_all_scs.sh
-#
-# Optional: deploy only one contract
-#   ./scripts/deploy_all_scs.sh nft-marketplace
 #   ./scripts/deploy_all_scs.sh agents-marketplace
+#
+# Prefer: ./scripts/deploy_devnet.sh
 
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PEM="${PEM:-${LIA_WALLET_PEM_PATH:-}}"
-CHAIN="${CHAIN:-1}"
-PROXY="${PROXY:-https://gateway.multiversx.com}"
-FEE_BPS="${FEE_BPS:-300}"   # 3% marketplace fee default
+CHAIN="${CHAIN:-D}"
+PROXY="${PROXY:-https://devnet-gateway.multiversx.com}"
+FEE_BPS="${FEE_BPS:-300}"
 
 if [[ -z "${PEM}" || ! -f "${PEM}" ]]; then
   echo "❌ Set PEM=/path/to/wallet.pem (never commit this file)"
@@ -49,7 +48,7 @@ deploy_one() {
   fi
 
   echo ""
-  echo "======== BUILD $name ========"
+  echo "======== BUILD $name (isolated cd) ========"
   cd "$dir"
   mxpy contract build || {
     echo "Build failed for $name"
@@ -63,7 +62,7 @@ deploy_one() {
     return 1
   fi
 
-  echo "======== DEPLOY $name (fee_bps=$fee_arg) ========"
+  echo "======== DEPLOY $name (fee_bps=$fee_arg chain=$CHAIN) ========"
   local LOG
   LOG=$(mxpy contract deploy \
     --bytecode "$WASM" \
@@ -84,7 +83,6 @@ deploy_one() {
 
   if [[ -n "$ADDR" ]]; then
     echo "✅ $name → $ADDR"
-    # merge into json with python
     python3 - <<PY
 import json, pathlib
 p = pathlib.Path("$OUT_JSON.tmp")
@@ -104,23 +102,29 @@ if [[ "$ONLY" == "all" || "$ONLY" == "agents-marketplace" ]]; then
   deploy_one "agents-marketplace" "$FEE_BPS"
 fi
 
-# finalize contracts.json
 python3 - <<PY
 import json, pathlib, datetime
 root = pathlib.Path("$ROOT")
-deployed = json.loads((root / "data" / "contracts.deployed.json.tmp").read_text())
+tmp = root / "data" / "contracts.deployed.json.tmp"
+deployed = json.loads(tmp.read_text()) if tmp.exists() else {}
 path = root / "data" / "contracts.json"
 base = {}
 if path.exists():
-    base = json.loads(path.read_text())
+    try:
+        base = json.loads(path.read_text())
+    except Exception:
+        base = {}
 base.update(deployed)
 base["updated"] = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 base["chain"] = "$CHAIN"
+base["fee_bps"] = int("$FEE_BPS")
 if "nft-marketplace" in deployed:
     base["marketplace_nft"] = deployed["nft-marketplace"]
+    base["nft-marketplace"] = deployed["nft-marketplace"]
 if "agents-marketplace" in deployed:
     base["agents_marketplace"] = deployed["agents-marketplace"]
-path.write_text(json.dumps(base, indent=2))
+    base["agents-marketplace"] = deployed["agents-marketplace"]
+path.write_text(json.dumps(base, indent=2) + "\n")
 print("Wrote", path)
 print(json.dumps(base, indent=2))
 PY
@@ -128,6 +132,7 @@ PY
 rm -f "$OUT_JSON.tmp"
 echo ""
 echo "Next:"
-echo "  1. git add data/contracts.json && git commit -m 'chore: deployed SC addresses' && git push"
-echo "  2. Set VITE_MARKETPLACE_ADDRESS=<nft-marketplace erd1...>"
-echo "  3. Verify on https://explorer.multiversx.com"
+echo "  1. Run blackbox checklist: docs/DEVNET_DEPLOY_BLACKBOX.md"
+echo "  2. git add data/contracts.json && commit (addresses only)"
+echo "  3. VITE_AGENTS_MARKETPLACE_ADDRESS=... VITE_AGENTS_FEE_BPS=$FEE_BPS"
+echo "  4. Explorer: https://devnet-explorer.multiversx.com"
