@@ -5,10 +5,11 @@ Aucune stratégie n'est imbattable. On combine des edges
 statistiques + filtres stricts + risk management non négociable.
 
 Piliers (ordre de robustesse décroissante):
-  1. Mean-reversion courte sur paires liquides (EGLD/USDC, WBTC/USDC)
-  2. Momentum confirmé multi-TF + regime GreenSmoke RISK_ON
-  3. Arb micro écart DEX (xExchange vs OneDex) si spread > fees*2
-  4. Yield-first: ne trade pas — stake / LP si score < seuil
+  1. Statistical Arbitrage (pairs / z-score / half-life)
+  2. Mean-reversion courte sur paires liquides (EGLD/USDC, WBTC/USDC)
+  3. Momentum confirmé multi-TF + regime GreenSmoke RISK_ON
+  4. Arb micro écart DEX (xExchange vs OneDex) si spread > fees*2
+  5. Yield-first: ne trade pas — stake / LP si score < seuil
 """
 from __future__ import annotations
 
@@ -66,7 +67,6 @@ def momentum_regime(
         and volume_spike >= 1.5
         and gs_bias in ("BULLISH", "BUY", "ACCUMULATE")
     ):
-        # Fixed: was undefined price_spike NameError
         conf = min(0.88, 0.5 + price_change_1h * 10 + max(0.0, volume_spike - 1.0) * 0.05)
         return Signal(
             "BUY",
@@ -119,16 +119,44 @@ def yield_first(
     return Signal("WAIT", "", 0.5, "YIELD", "trade preferred")
 
 
+# Priority order for fusion (higher = preferred when confidence is close)
+_STRATEGY_PRIORITY = {
+    "STATARB": 5,
+    "ARB": 4,
+    "MR": 3,
+    "MOM": 2,
+    "YIELD": 1,
+    "FUSE": 0,
+}
+
+
 def fuse_signals(signals: list[Signal]) -> Signal:
-    buys = [s for s in signals if s.action == "BUY"]
+    """
+    Fusion avec priorité explicite:
+      STATARB > Micro-ARB > Mean-Reversion > Momentum > Yield
+    Les SELL à confiance élevée restent prioritaires (protection capital).
+    """
+    if not signals:
+        return Signal("WAIT", "", 0.3, "FUSE", "empty")
+
     sells = [s for s in signals if s.action == "SELL"]
+    buys = [s for s in signals if s.action == "BUY"]
     yields = [s for s in signals if s.action == "YIELD"]
+
+    def rank(s: Signal) -> tuple[float, int]:
+        return (s.confidence, _STRATEGY_PRIORITY.get(s.strategy, 0))
+
     if sells and max(s.confidence for s in sells) >= 0.6:
-        return max(sells, key=lambda s: s.confidence)
+        return max(sells, key=rank)
+
     if buys:
-        best = max(buys, key=lambda s: s.confidence)
-        if best.confidence >= 0.62:
+        best = max(buys, key=rank)
+        # Lower threshold for high-priority edges (STATARB / ARB)
+        min_conf = 0.58 if best.strategy in ("STATARB", "ARB") else 0.62
+        if best.confidence >= min_conf:
             return best
+
     if yields:
-        return max(yields, key=lambda s: s.confidence)
+        return max(yields, key=rank)
+
     return Signal("WAIT", "", 0.4, "FUSE", "no consensus")
