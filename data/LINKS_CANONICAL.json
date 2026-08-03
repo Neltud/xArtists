@@ -1,5 +1,5 @@
 {
-  "version": "2026-08-03",
+  "version": "2026-08-03b",
   "dapp": "https://neltud.github.io/xArtists/",
   "github": "https://github.com/Neltud/xArtists",
   "explorer": "https://explorer.multiversx.com",
@@ -9,11 +9,6 @@
   "hatom": "https://app.hatom.com",
   "xoxno": "https://xoxno.com",
   "greensmoke_agents": "https://app.greensmoke.network/agents",
-  "midjourney": "https://www.midjourney.com",
-  "removed_or_avoid": [
-    "docs.hatom.com (often blocked/403 — use app.hatom.com)",
-    "Hard-coded GoFundMe UUID without verification",
-    "Soul primary nav (experimental only at /soul-testnet)"
-  ],
+  "removed": ["midjourney", "gofundme", "docs.hatom.com as primary", "soul primary nav"],
   "primary_nav": ["/", "/agents", "/marketplace", "/gallery", "/trading", "/portfolio", "/tro", "/hatom", "/lp", "/staking", "/dao", "/wallet", "/tip"]
 }
