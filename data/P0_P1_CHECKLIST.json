@@ -1,37 +1,17 @@
 {
-  "updated": "2026-08-03T19:40:00Z",
-  "LIA_LIVE_TRADING": "0 — keep until micro-trades OK",
+  "updated": "2026-08-03T19:54:00Z",
+  "LIA_LIVE_TRADING": "0",
+  "pinata": { "status": "ok", "note": "pinata_connect ok:true — JWT in Vellum only" },
   "P0": [
-    {
-      "id": "deploy_agents",
-      "status": "ops_open",
-      "cmd": "PEM=... ./scripts/deploy_mainnet.sh agents-marketplace"
-    },
-    {
-      "id": "verify_marketplace_codehash",
-      "status": "script_ready",
-      "cmd": "python scripts/verify_marketplace_codehash.py"
-    },
-    {
-      "id": "signature_real",
-      "status": "partial",
-      "note": "bootstrapSendTx + TxCapabilityBanner; need WC login E2E"
-    },
-    {
-      "id": "dao_no_fake_vote",
-      "status": "done",
-      "note": "DAO read-only banner, no vote button"
-    }
+    { "id": "deploy_nft_marketplace", "status": "ops_open", "note": "current address empty code" },
+    { "id": "deploy_agents", "status": "ops_open" },
+    { "id": "verify_codehash", "status": "after_deploy" },
+    { "id": "dao_read_only", "status": "done" },
+    { "id": "nft_counts_live", "status": "done" },
+    { "id": "lia_vs_gsn", "status": "done" }
   ],
   "P1": [
-    {
-      "id": "listings_index",
-      "status": "partial",
-      "note": "activity + listingIdHint click-to-fill; full view pagination later"
-    },
-    {
-      "id": "pinata",
-      "status": "deferred"
-    }
+    { "id": "listings_index", "status": "partial" },
+    { "id": "studio_pin_auto", "status": "ready_when_ops_wires_jwt" }
   ]
 }
