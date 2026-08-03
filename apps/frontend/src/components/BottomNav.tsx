@@ -2,8 +2,8 @@ import { NavLink } from 'react-router-dom'
 
 const ITEMS = [
   { to: '/', label: 'Home', emoji: '📊', end: true },
-  { to: '/marketplace', label: 'Art', emoji: '🎨' },
-  { to: '/tro', label: '$TRO', emoji: '🪙' },
+  { to: '/studio', label: 'Studio', emoji: '🎨' },
+  { to: '/marketplace', label: 'Market', emoji: '🛒' },
   { to: '/trading', label: 'Trade', emoji: '⚡' },
   { to: '/wallet', label: 'Wallet', emoji: '👛' },
 ]

@@ -1,7 +1,7 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-07-31T23:15:00Z",
+  "updated": "2026-08-03T15:20:00Z",
   "contracts": {
     "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
     "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
@@ -9,5 +9,10 @@
     "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn",
     "agents_marketplace": null
   },
-  "notes": "Set agents_marketplace after mxpy deploy; mirror in VITE_AGENTS_MARKETPLACE_ADDRESS"
+  "gaps": {
+    "agents_marketplace": "P0 deploy mainnet FEE_BPS=300",
+    "marketplace_placeBid": "Requires redeploy of nft-marketplace with placeBid codehash",
+    "verify_marketplace_on_explorer": "Confirm live endpoints match repo lib.rs"
+  },
+  "notes": "Mirror addresses in VITE_MARKETPLACE_ADDRESS / VITE_AGENTS_MARKETPLACE_ADDRESS after deploy"
 }
