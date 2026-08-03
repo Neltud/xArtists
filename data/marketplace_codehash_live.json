@@ -1,0 +1,20 @@
+{
+  "address": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+  "checked_at": "2026-08-03T19:44:00Z",
+  "code": "",
+  "codeHash": null,
+  "balance": "0",
+  "nonce": 0,
+  "verdict": "NOT_A_DEPLOYED_CONTRACT",
+  "implication": "List/Buy/Bid TX to this address will fail or do nothing useful. Deploy nft-marketplace wasm to mainnet and replace address.",
+  "explorer": "https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+  "next": [
+    "Build contracts/nft-marketplace",
+    "PEM=... ./scripts/deploy_mainnet.sh nft-marketplace",
+    "PEM=... ./scripts/deploy_mainnet.sh agents-marketplace",
+    "python scripts/post_deploy_contracts.py --marketplace erd1... --agents erd1...",
+    "Set VITE_MARKETPLACE_ADDRESS + VITE_AGENTS_MARKETPLACE_ADDRESS",
+    "Rebuild Pages",
+    "Keep LIA_LIVE_TRADING=0"
+  ]
+}
