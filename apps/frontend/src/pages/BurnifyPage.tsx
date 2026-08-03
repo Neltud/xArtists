@@ -1,24 +1,22 @@
-/**
- * Burnify — TRO / NFT burn for $BFY + EGLD rewards (UI)
- * Legacy demo lived at src/features/BurnifyDemo.tsx (not wired in SPA).
- * External protocol: Burnify on MultiversX (partner ecosystem).
- */
+import { Link } from 'react-router-dom'
+import { LINKS } from '../config/links'
 
+/**
+ * Burnify shell — no on-chain burn until official SC endpoints verified.
+ */
 export default function BurnifyPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
       <header>
         <h1 className="text-2xl font-bold">🔥 Burnify</h1>
         <p className="text-sm text-zinc-400 mt-2">
-          Burn $TRO or selected NFTs to reduce supply and earn rewards (partner protocol on MultiversX).
-          Live on-chain burn requires connected user wallet + verified SC addresses.
+          Partner-ecosystem burn UI shell on MultiversX. No transaction is sent from this page.
         </p>
       </header>
 
       <div className="card space-y-4">
         <p className="text-sm text-amber-300/90 border border-amber-500/30 rounded-lg p-3">
-          Demo / shell UI — no burn is executed until LIA/Vellum + user signature path is validated
-          with official Burnify contract endpoints.
+          Coming online after verified contract addresses + wallet signature path.
         </p>
         <label className="block text-sm text-zinc-400">
           Amount to burn (TRO)
@@ -31,14 +29,17 @@ export default function BurnifyPage() {
           />
         </label>
         <button type="button" className="btn-primary text-sm opacity-50 cursor-not-allowed" disabled>
-          Burn TRO (coming online)
+          Burn TRO (disabled)
         </button>
       </div>
 
-      <div className="text-xs text-zinc-600 space-y-1">
-        <p>Legacy file: <code>src/features/BurnifyDemo.tsx</code></p>
-        <p>Menu route: <code>/burnify</code></p>
-        <p>Ecosystem note: also listed in <code>src/features/EcosystemOverview.tsx</code></p>
+      <div className="flex flex-wrap gap-3 text-sm">
+        <Link to="/tro" className="btn-secondary">
+          $TRO page
+        </Link>
+        <a href={LINKS.explorerToken(LINKS.troToken)} target="_blank" rel="noreferrer" className="btn-secondary">
+          TRO on Explorer
+        </a>
       </div>
     </div>
   )

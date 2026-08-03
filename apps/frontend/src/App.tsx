@@ -5,6 +5,7 @@ import BottomNav from './components/BottomNav'
 import ErrorBoundary from './components/ErrorBoundary'
 import PwaInstallBanner from './components/PwaInstallBanner'
 import { useMultiversX } from './hooks/useMultiversX'
+import { LINKS } from './config/links'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Marketplace = lazy(() => import('./pages/Marketplace'))
@@ -82,7 +83,7 @@ export default function App() {
                 <div className="text-center py-20">
                   <p className="text-6xl mb-4">🎨</p>
                   <h2 className="text-2xl font-bold mb-2">Page introuvable</h2>
-                  <p className="text-gray-500">Cette page n'existe pas encore.</p>
+                  <p className="text-gray-500">Cette page n&apos;existe pas.</p>
                 </div>
               } />
             </Routes>
@@ -100,9 +101,10 @@ export default function App() {
             </div>
           </div>
           <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap justify-center">
-            <a href="https://github.com/Neltud/xArtists" target="_blank" rel="noreferrer" className="hover:text-white">GitHub</a>
-            <a href="https://explorer.multiversx.com" target="_blank" rel="noreferrer" className="hover:text-white">Explorer</a>
-            <a href="https://xexchange.com" target="_blank" rel="noreferrer" className="hover:text-white">xExchange</a>
+            <a href={LINKS.github} target="_blank" rel="noreferrer" className="hover:text-white">GitHub</a>
+            <a href={LINKS.explorer} target="_blank" rel="noreferrer" className="hover:text-white">Explorer</a>
+            <a href={LINKS.xexchange} target="_blank" rel="noreferrer" className="hover:text-white">xExchange</a>
+            <a href={LINKS.hatom} target="_blank" rel="noreferrer" className="hover:text-white">Hatom</a>
             <span className="text-[#2a2a3a]">|</span>
             <span>LIA v6 + GreenSmoke</span>
           </div>
