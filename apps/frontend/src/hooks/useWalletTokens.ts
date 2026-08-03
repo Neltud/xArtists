@@ -1,16 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
+import { LIA_WALLET } from '../config/links'
 
 const MVX_API = 'https://api.multiversx.com'
-const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
 const HATOM_API = 'https://mainnet-api.hatom.com'
 
-/** Token tickers known to be issued by Hatom (H-prefix supply tokens). */
 const HATOM_TICKERS = new Set([
   'HEGLD', 'HUSDC', 'HUSDT', 'HWBTC', 'HMEX', 'HWTAO',
   'HBUSD', 'HSEGLD', 'HUSD', 'HWETH', 'HHTM', 'HUTCHR',
 ])
 
-/** Identifiers (prefix) known to be xExchange LP or Farm MetaESDTs. */
 const XEXCHANGE_LP_PREFIXES = [
   'EGLDMEX', 'WEGLDUSDC', 'WEGLDUSDT', 'EGLDWBTC', 'EGLDWTAO',
   'TROEGLD', 'TROWEGLD', 'TROUSDC',
@@ -50,6 +48,8 @@ export interface HatomPosition {
 }
 
 export interface WalletData {
+  address: string
+  isLia: boolean
   egldBalance: number
   egldValueUsd: number
   tokens: WalletToken[]
@@ -67,42 +67,26 @@ export interface WalletData {
 function categoriseToken(ticker: string, tokenName: string, identifier: string): WalletToken['category'] {
   const upperTicker = ticker.toUpperCase()
   const upperName = tokenName.toUpperCase()
-
-  if (HATOM_TICKERS.has(upperTicker) || upperName.includes('HATOM') || upperName.startsWith('H') && upperTicker.startsWith('H')) {
-    return 'hatom'
-  }
+  if (HATOM_TICKERS.has(upperTicker) || upperName.includes('HATOM')) return 'hatom'
   if (
     XEXCHANGE_LP_PREFIXES.some(p => upperTicker.startsWith(p)) ||
     upperName.includes(' LP') ||
-    upperName.includes('LPTOKEN') ||
-    upperName.includes('LKLP') ||
-    identifier.toLowerCase().includes('lklp')
-  ) {
+    upperName.includes('LPTOKEN')
+  )
     return 'lp'
-  }
-  if (
-    upperName.includes('FARM') ||
-    upperName.includes('LKFARM') ||
-    identifier.toLowerCase().includes('lkfarm') ||
-    identifier.toLowerCase().includes('lkmex')
-  ) {
-    return 'farm'
-  }
+  if (upperName.includes('FARM') || upperName.includes('LKFARM')) return 'farm'
   return 'esdt'
 }
 
-async function fetchAllTokens(): Promise<WalletToken[]> {
-  // Fetch in batches of 250 until we get all tokens
+async function fetchAllTokens(address: string): Promise<WalletToken[]> {
   const results: WalletToken[] = []
   let from = 0
   const size = 250
-
   while (true) {
-    const res = await fetch(`${MVX_API}/accounts/${WALLET}/tokens?size=${size}&from=${from}`)
+    const res = await fetch(`${MVX_API}/accounts/${address}/tokens?size=${size}&from=${from}`)
     if (!res.ok) break
     const batch: any[] = await res.json()
     if (!batch.length) break
-
     for (const t of batch) {
       const decimals = t.decimals ?? 18
       const balance = Number(t.balance ?? 0) / Math.pow(10, decimals)
@@ -122,35 +106,32 @@ async function fetchAllTokens(): Promise<WalletToken[]> {
         category: categoriseToken(ticker, name, t.identifier || ''),
       })
     }
-
     if (batch.length < size) break
     from += size
   }
-
   return results
 }
 
-async function fetchHatomPosition(egldPrice: number): Promise<HatomPosition | null> {
-  // 1. Try official Hatom API
+async function fetchHatomPosition(address: string): Promise<HatomPosition | null> {
   try {
-    const res = await fetch(`${HATOM_API}/lend/v2/userPosition/${WALLET}`, {
+    const res = await fetch(`${HATOM_API}/lend/v2/userPosition/${address}`, {
       headers: { Accept: 'application/json' },
     })
     if (res.ok) {
       const data = await res.json()
       const markets: HatomMarket[] = (data.markets ?? []).map((m: any) => ({
-        label: m.asset ?? m.label ?? m.symbol ?? '?',
-        identifier: m.hTokenIdentifier ?? m.identifier ?? '',
-        supplied: m.supplyAmount ?? m.supplied ?? 0,
-        borrowed: m.borrowAmount ?? m.borrowed ?? 0,
-        valueSuppliedUsd: m.supplyValueUSD ?? m.valueSuppliedUsd ?? 0,
-        valueBorrowedUsd: m.borrowValueUSD ?? m.valueBorrowedUsd ?? 0,
-        rewardsHtm: m.pendingRewards ?? m.rewardsHtm ?? 0,
+        label: m.asset ?? m.label ?? '?',
+        identifier: m.hTokenIdentifier ?? '',
+        supplied: m.supplyAmount ?? 0,
+        borrowed: m.borrowAmount ?? 0,
+        valueSuppliedUsd: m.supplyValueUSD ?? 0,
+        valueBorrowedUsd: m.borrowValueUSD ?? 0,
+        rewardsHtm: m.pendingRewards ?? 0,
       }))
       return {
-        healthFactor: data.healthFactor ?? data.health_factor ?? 999,
-        totalSuppliedUsd: data.totalSupplyUSD ?? data.totalSuppliedUsd ?? 0,
-        totalBorrowedUsd: data.totalBorrowUSD ?? data.totalBorrowedUsd ?? 0,
+        healthFactor: data.healthFactor ?? 999,
+        totalSuppliedUsd: data.totalSupplyUSD ?? 0,
+        totalBorrowedUsd: data.totalBorrowUSD ?? 0,
         netValueUsd: (data.totalSupplyUSD ?? 0) - (data.totalBorrowUSD ?? 0),
         markets,
         claimableHtm: data.pendingRewards ?? 0,
@@ -159,35 +140,27 @@ async function fetchHatomPosition(egldPrice: number): Promise<HatomPosition | nu
       }
     }
   } catch {
-    // API unreachable — fall back to wallet scan
+    /* fallback wallet H-tokens */
   }
-
-  // 2. Fallback: detect H-tokens in wallet to estimate Hatom position
   try {
-    const res = await fetch(`${MVX_API}/accounts/${WALLET}/tokens?size=250&from=0`)
+    const res = await fetch(`${MVX_API}/accounts/${address}/tokens?size=250`)
     if (!res.ok) return null
     const allTokens: any[] = await res.json()
-    const hTokens = allTokens.filter(t => {
-      const tk = (t.ticker || '').toUpperCase()
-      return HATOM_TICKERS.has(tk) || (tk.startsWith('H') && (t.name || '').toLowerCase().includes('hatom'))
-    })
+    const hTokens = allTokens.filter((t: any) => HATOM_TICKERS.has((t.ticker || '').toUpperCase()))
     if (!hTokens.length) return null
-
-    const markets: HatomMarket[] = hTokens.map(t => {
+    const markets: HatomMarket[] = hTokens.map((t: any) => {
       const dec = t.decimals ?? 18
       const bal = Number(t.balance ?? 0) / Math.pow(10, dec)
-      const usd = bal * (t.price ?? 0)
       return {
-        label: (t.ticker || '').replace(/^H/, '') || t.name || t.identifier,
+        label: (t.ticker || '').replace(/^H/, ''),
         identifier: t.identifier || '',
         supplied: bal,
         borrowed: 0,
-        valueSuppliedUsd: usd,
+        valueSuppliedUsd: bal * (t.price ?? 0),
         valueBorrowedUsd: 0,
         rewardsHtm: 0,
       }
     })
-
     const totalSupplied = markets.reduce((s, m) => s + m.valueSuppliedUsd, 0)
     return {
       healthFactor: 999,
@@ -204,7 +177,8 @@ async function fetchHatomPosition(egldPrice: number): Promise<HatomPosition | nu
   }
 }
 
-export function useWalletTokens(): WalletData {
+/** @param address defaults to LIA protocol wallet */
+export function useWalletTokens(address: string = LIA_WALLET): WalletData {
   const [egldBalance, setEgldBalance] = useState(0)
   const [egldPrice, setEgldPrice] = useState(0)
   const [tokens, setTokens] = useState<WalletToken[]>([])
@@ -212,25 +186,22 @@ export function useWalletTokens(): WalletData {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const addr = address?.trim() || LIA_WALLET
+  const isLia = addr.toLowerCase() === LIA_WALLET.toLowerCase()
+
   const fetchAll = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
       const [accountRes, econRes] = await Promise.all([
-        fetch(`${MVX_API}/accounts/${WALLET}`).then(r => r.json()),
+        fetch(`${MVX_API}/accounts/${addr}`).then(r => r.json()),
         fetch(`${MVX_API}/economics`).then(r => r.json()),
       ])
-
       const egld = Number(accountRes.balance ?? 0) / 1e18
       const price = econRes.price ?? 0
       setEgldBalance(egld)
       setEgldPrice(price)
-
-      const [allTokens, hatom] = await Promise.all([
-        fetchAllTokens(),
-        fetchHatomPosition(price),
-      ])
-
+      const [allTokens, hatom] = await Promise.all([fetchAllTokens(addr), fetchHatomPosition(addr)])
       setTokens(allTokens.sort((a, b) => b.valueUsd - a.valueUsd))
       setHatomPosition(hatom)
     } catch (e) {
@@ -238,7 +209,7 @@ export function useWalletTokens(): WalletData {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [addr])
 
   useEffect(() => {
     fetchAll()
@@ -251,6 +222,8 @@ export function useWalletTokens(): WalletData {
   const totalEsdtUsd = tokens.reduce((s, t) => s + t.valueUsd, 0) + egldBalance * egldPrice
 
   return {
+    address: addr,
+    isLia,
     egldBalance,
     egldValueUsd: egldBalance * egldPrice,
     tokens,
