@@ -1,6 +1,5 @@
 """
-Vellum next-run entry — publishes all public data LIA/dApp need.
-Does NOT send live trades unless LIA_LIVE_TRADING=1.
+Vellum next-run entry — publishes public data. Forces paper unless explicitly live.
 """
 from __future__ import annotations
 
@@ -12,8 +11,11 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def main() -> dict:
+    # Default safe: paper
+    if "LIA_LIVE_TRADING" not in os.environ:
+        os.environ["LIA_LIVE_TRADING"] = "0"
     live = os.environ.get("LIA_LIVE_TRADING", "0") == "1"
-    report: dict = {"live": live, "steps": []}
+    report: dict = {"live": live, "steps": [], "policy": "paper until signature+micro-trades OK"}
 
     try:
         from lia.gas.publish import publish as gas_pub
@@ -40,24 +42,25 @@ def main() -> dict:
         report["steps"].append({"id": "hatom", "ok": False, "error": str(e)})
 
     try:
-        from lia.media.storage import storage_status
+        from lia.executor.universal import health_report
 
-        report["media"] = storage_status()
+        report["executor"] = health_report()
     except Exception as e:
-        report["media"] = {"error": str(e)}
+        report["executor"] = {"error": str(e)}
 
     if live:
         report["steps"].append(
             {
                 "id": "live",
                 "ok": False,
-                "error": "Live trading gated — enable only after agents SC + signing + blackbox",
+                "error": "LIVE requested — confirm blackbox+signature before size-up",
             }
         )
     else:
-        report["steps"].append({"id": "live", "ok": True, "skipped": True})
+        report["steps"].append({"id": "live", "ok": True, "skipped": True, "LIA_LIVE_TRADING": 0})
 
     out = ROOT / "data" / "vellum_last_run.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, indent=2), encoding="utf-8")
     report["wrote"] = str(out)
     return report
