@@ -1,24 +1,25 @@
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { sdkDappConfig } from '../config/sdkDapp'
+import { bootstrapSendTx } from './bootstrapSendTx'
 
 type Props = { children: ReactNode }
 
 /**
- * Attempts to mount official @multiversx/sdk-dapp DappProvider.
- * Falls back to children-only if package/API not available (build never crashes).
+ * Mount sdk-dapp DappProvider when available + always bootstrap __xartistsSendTx.
  */
 export function MxDappProvider({ children }: Props) {
-  try {
-    // Vite / ESM: static import paths vary by sdk-dapp major — try common ones via require-style dynamic
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    let DappProvider: React.ComponentType<Record<string, unknown>> | undefined
+  useEffect(() => {
+    bootstrapSendTx()
+  }, [])
 
+  try {
+    let DappProvider: React.ComponentType<Record<string, unknown>> | undefined
     try {
-      // optional dependency resolved after npm install
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       DappProvider = require('@multiversx/sdk-dapp/wrappers/DappProvider').DappProvider
     } catch {
       try {
-        // optional
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         DappProvider = require('@multiversx/sdk-dapp').DappProvider
       } catch {
         DappProvider = undefined
