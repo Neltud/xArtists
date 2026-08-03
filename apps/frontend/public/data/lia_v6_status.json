@@ -4,6 +4,5 @@
   "status": "monitoring",
   "LIA_LIVE_TRADING": 0,
   "market": {"guard_status": "OK"},
-  "portfolio": {"total_usd": 0},
-  "note": "Seed status — python -m lia.vellum.next_run refreshes"
+  "portfolio": {"total_usd": 0}
 }

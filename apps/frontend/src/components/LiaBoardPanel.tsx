@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react'
 
-const BOARD_URL =
-  'https://raw.githubusercontent.com/Neltud/xArtists/main/data/lia_board.json'
+/** Multiple sources — Pages public/data first, then GitHub raw, cache-bust */
+const BOARD_CANDIDATES = [
+  `${import.meta.env.BASE_URL}data/lia_board.json`,
+  'data/lia_board.json',
+  'https://raw.githubusercontent.com/Neltud/xArtists/main/data/lia_board.json',
+  'https://neltud.github.io/xArtists/data/lia_board.json',
+]
 
 type SeriesRow = {
   id: string
@@ -24,13 +29,31 @@ type Board = {
   arb?: {
     actionable?: boolean
     best?: { buy_venue: string; sell_venue: string; edge: number }
-    mids?: Record<string, number>
     note?: string
     block?: { nonce?: number }
   }
   series?: { series?: SeriesRow[]; start_each_usd?: number; horizon_days?: number }
   positions?: { total_usd_approx?: number }
-  feeds?: { venues?: Record<string, { venue?: string; network?: string; ok?: boolean; partial?: boolean }> }
+  updated?: string
+}
+
+async function loadBoard(): Promise<Board> {
+  const t = Date.now()
+  let lastErr = '404'
+  for (const base of BOARD_CANDIDATES) {
+    try {
+      const url = base.includes('?') ? base : `${base}?t=${t}`
+      const r = await fetch(url, { cache: 'no-store' })
+      if (!r.ok) {
+        lastErr = String(r.status)
+        continue
+      }
+      return (await r.json()) as Board
+    } catch (e) {
+      lastErr = e instanceof Error ? e.message : 'fail'
+    }
+  }
+  throw new Error(lastErr)
 }
 
 export default function LiaBoardPanel() {
@@ -38,11 +61,7 @@ export default function LiaBoardPanel() {
   const [err, setErr] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch(BOARD_URL + '?t=' + Date.now())
-      .then(r => {
-        if (!r.ok) throw new Error(String(r.status))
-        return r.json()
-      })
+    loadBoard()
       .then(setBoard)
       .catch(e => setErr(e instanceof Error ? e.message : 'load failed'))
   }, [])
@@ -50,7 +69,9 @@ export default function LiaBoardPanel() {
   if (err) {
     return (
       <div className="card mb-6 text-sm text-amber-400">
-        Board LIA: données absentes ({err}). Vellum: <code>python -m lia.board.publish</code>
+        Board LIA: données absentes ({err}). Après rebuild Pages les seeds{' '}
+        <code>public/data/lia_board.json</code> doivent servir. Vellum:{' '}
+        <code>python -m lia.board.publish</code>
       </div>
     )
   }
@@ -66,6 +87,9 @@ export default function LiaBoardPanel() {
       <div className="card border-teal-500/20">
         <h2 className="text-lg font-bold mb-2">📡 LIA Board — placements & limites</h2>
         <p className="text-xs text-gray-500 mb-3">{board.risk?.note}</p>
+        {board.updated && (
+          <p className="text-[10px] text-gray-600 mb-2">updated {board.updated}</p>
+        )}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
           <div>
             <p className="text-xs text-gray-500">Mode</p>
@@ -101,10 +125,7 @@ export default function LiaBoardPanel() {
             )}
           </p>
         ) : (
-          <p className="text-sm text-gray-500">Pas d&apos;edge (mids alignés ou feeds partiels)</p>
-        )}
-        {board.arb?.block?.nonce != null && (
-          <p className="text-[11px] text-gray-600 mt-1">Block nonce {board.arb.block.nonce}</p>
+          <p className="text-sm text-gray-500">Pas d&apos;edge (seed ou mids alignés) — publish pour live</p>
         )}
       </div>
 
