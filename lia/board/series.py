@@ -1,14 +1,9 @@
 """Three parallel LIA paper series — default $10 start each."""
 from __future__ import annotations
 
-import math
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Optional
-
-from apps_frontend_shim = None  # noqa — keep pure python
-
-from lia.board.positions import fetch_wallet_snapshot  # type: ignore
 
 
 @dataclass
@@ -25,8 +20,22 @@ class SeriesConfig:
 
 DEFAULT_SERIES = [
     SeriesConfig("A", "Series A — Momentum/MR", "momentum", win_rate=0.55),
-    SeriesConfig("B", "Series B — Yield-first", "yield", win_rate=0.52, gain_pct=0.006, loss_pct=0.004),
-    SeriesConfig("C", "Series C — Micro-arb", "arb", win_rate=0.58, gain_pct=0.004, loss_pct=0.003),
+    SeriesConfig(
+        "B",
+        "Series B — Yield-first",
+        "yield",
+        win_rate=0.52,
+        gain_pct=0.006,
+        loss_pct=0.004,
+    ),
+    SeriesConfig(
+        "C",
+        "Series C — Micro-arb",
+        "arb",
+        win_rate=0.58,
+        gain_pct=0.004,
+        loss_pct=0.003,
+    ),
 ]
 
 
@@ -57,9 +66,19 @@ def run_three_series(
     days: int = 30,
     configs: Optional[list[SeriesConfig]] = None,
 ) -> dict[str, Any]:
-    cfgs = configs or [
-        SeriesConfig(c.id, c.name, c.strategy, start_usd=start_usd, win_rate=c.win_rate, gain_pct=c.gain_pct, loss_pct=c.loss_pct)
-        for c in DEFAULT_SERIES
+    base = configs or DEFAULT_SERIES
+    cfgs = [
+        SeriesConfig(
+            c.id,
+            c.name,
+            c.strategy,
+            start_usd=start_usd,
+            trades_per_day=c.trades_per_day,
+            win_rate=c.win_rate,
+            gain_pct=c.gain_pct,
+            loss_pct=c.loss_pct,
+        )
+        for c in base
     ]
     series = [simulate_series(c, days=days) for c in cfgs]
     return {
