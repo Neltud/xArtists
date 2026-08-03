@@ -1,14 +1,8 @@
 import { useEffect, useState } from 'react'
 
 /**
- * GSNBanner — GreenSmokeNetwork translucent signal banner.
- *
- * Fetches the aggregated GreenSmoke forecasts (deployed alongside the app at
- * `data/greensmoke_forecasts.json`) with a fallback to the raw GitHub mirror.
- * Renders a backdrop-blur, semi-transparent horizontal strip showing the
- * aggregated signals (primary, secondary, regime, recommended action) plus a
- * compact auto-scrolling strip of agent forecasts. Gradient tint follows the
- * regime: green (RISK_ON), red (RISK_OFF), gray (NEUTRAL).
+ * GreenSmoke Network — EXTERNAL forecast feed only.
+ * NOT LIA/Vellum agent packs for sale on xArtists marketplace.
  */
 
 const LOCAL_URL = 'data/greensmoke_forecasts.json'
@@ -79,8 +73,7 @@ export default function GSNBanner() {
   useEffect(() => {
     let cancelled = false
     const load = async () => {
-      const urls = [LOCAL_URL, REMOTE_FALLBACK]
-      for (const url of urls) {
+      for (const url of [LOCAL_URL, REMOTE_FALLBACK]) {
         try {
           const res = await fetch(`${url}?t=${Date.now()}`)
           if (!res.ok) continue
@@ -92,7 +85,7 @@ export default function GSNBanner() {
           }
           return
         } catch {
-          /* try next source */
+          /* next */
         }
       }
       if (!cancelled) setError(true)
@@ -111,53 +104,49 @@ export default function GSNBanner() {
   const regime = classifyRegime(sig.regime)
   const style = REGIME_STYLES[regime]
 
-  // Flatten agent forecasts into a compact strip
   const forecasts: { agent: string; f: GsForecast }[] = []
   for (const agent of Object.values(data.agents)) {
     for (const f of agent.forecasts) {
       forecasts.push({ agent: agent.name, f })
     }
   }
-
-  // Duplicate the list for a seamless marquee loop
   const marqueeItems = [...forecasts, ...forecasts]
 
   return (
     <div
       className={`relative overflow-hidden rounded-2xl border ${style.border} bg-[#0d0d14]/60 backdrop-blur-md ${style.glow} mb-6`}
     >
-      {/* gradient wash */}
       <div className={`pointer-events-none absolute inset-0 bg-gradient-to-r ${style.tint}`} />
-
       <div className="relative p-3 sm:p-4">
-        {/* Top row: aggregated signals */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-bold uppercase tracking-widest text-purple-300/90">
-              🔮 GreenSmoke
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-300/90">
+              🔮 GreenSmoke Network
+            </span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full border border-white/10 text-gray-400">
+              feed externe · pas un pack LIA
             </span>
             <span className={`text-sm font-black ${style.text}`}>{sig.primary}</span>
           </div>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className={`badge ${regime === 'RISK_ON' ? 'badge-green' : regime === 'RISK_OFF' ? 'badge-red' : 'badge-gray'}`}>
+            <span
+              className={`badge ${
+                regime === 'RISK_ON' ? 'badge-green' : regime === 'RISK_OFF' ? 'badge-red' : 'badge-gray'
+              }`}
+            >
               {sig.regime}
             </span>
             <span className="badge-purple">{sig.secondary}</span>
           </div>
         </div>
-
-        {/* Recommended action */}
+        <p className="text-[11px] text-gray-500 mb-2">
+          Prévisions GSN affichées à titre informatif. Les <strong className="text-gray-400">packs agents LIA</strong>{" "}
+          (Vellum / marketplace xArtists) sont un produit séparé.
+        </p>
         <p className="text-xs text-gray-400 mb-2">{sig.recommended_action}</p>
-
-        {/* Auto-scrolling compact forecast strip */}
         {forecasts.length > 0 && (
           <div className="relative overflow-hidden">
-            <div
-              className="flex gap-3 whitespace-nowrap will-change-transform"
-              style={{
-                animation: 'gsn-marquee 38s linear infinite',
-              }}
-            >
+            <div className="flex gap-3 whitespace-nowrap" style={{ animation: 'gsn-marquee 38s linear infinite' }}>
               {marqueeItems.map(({ agent, f }, i) => (
                 <span
                   key={`${agent}-${f.asset}-${i}`}
@@ -165,7 +154,15 @@ export default function GSNBanner() {
                 >
                   <span className="text-gray-500">{agent}</span>
                   <span className="font-semibold text-gray-200">{f.asset}</span>
-                  <span className={f.direction.toLowerCase().includes('bull') || f.direction.toLowerCase().includes('risk_on') ? 'text-green-400' : f.direction.toLowerCase().includes('bear') ? 'text-red-400' : 'text-yellow-400'}>
+                  <span
+                    className={
+                      f.direction.toLowerCase().includes('bull') || f.direction.toLowerCase().includes('risk_on')
+                        ? 'text-green-400'
+                        : f.direction.toLowerCase().includes('bear')
+                          ? 'text-red-400'
+                          : 'text-yellow-400'
+                    }
+                  >
                     {f.direction}
                   </span>
                   <span className="text-gray-500">{(f.confidence * 100).toFixed(0)}%</span>
@@ -175,7 +172,6 @@ export default function GSNBanner() {
           </div>
         )}
       </div>
-
       <style>{`
         @keyframes gsn-marquee {
           0% { transform: translateX(0); }
