@@ -1,0 +1,20 @@
+{
+  "updated": "2026-08-03",
+  "P0": [
+    {"id": "signature", "status": "partial", "note": "bootstrapSendTx + need WC login"},
+    {"id": "deploy_agents", "status": "open", "cmd": "./scripts/deploy_mainnet.sh agents-marketplace"},
+    {"id": "marketplace_e2e", "status": "partial", "note": "FE ready; SC+sign"},
+    {"id": "board_publish", "status": "seeded", "cmd": "python -m lia.board.publish"},
+    {"id": "executor", "status": "paper_ready", "cmd": "python -m lia.executor.universal"},
+    {"id": "burn_escrow_sc", "status": "open", "note": "upgrade SC later"},
+    {"id": "security_audit_doc", "status": "done", "doc": "docs/SECURITY_AUDIT_SC.md"},
+    {"id": "deploy_scripts", "status": "done"}
+  ],
+  "P1": [
+    {"id": "greensmoke_kelly", "status": "open"},
+    {"id": "performance_tracker", "status": "seed", "file": "data/lia_performance.json"},
+    {"id": "lp_hatom", "status": "partial"},
+    {"id": "playwright", "status": "open"},
+    {"id": "ci_lighthouse", "status": "open"}
+  ]
+}
