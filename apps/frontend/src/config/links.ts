@@ -1,6 +1,5 @@
 /**
  * Canonical external links — only stable public URLs.
- * Prefer these helpers over hard-coded hrefs scattered in pages.
  */
 
 export const LIA_WALLET =
@@ -24,30 +23,27 @@ export const LINKS = {
   xoxno: 'https://xoxno.com',
   xoxnoCollection: (c: string) => `https://xoxno.com/collection/${c}`,
   greensmokeAgents: 'https://app.greensmoke.network/agents',
-  midjourney: 'https://www.midjourney.com',
   troToken: 'TRO-94c925',
 } as const
 
-/** Primary product routes (header). No experimental / dead shells. */
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/', label: 'Dashboard', emoji: '📊' },
-  { to: '/agents', label: 'Agents IA', emoji: '🧠' },
-  { to: '/marketplace', label: 'Marketplace', emoji: '🎨' },
+  { to: '/studio', label: 'Studio', emoji: '🎨' },
   { to: '/gallery', label: 'Galerie', emoji: '🖼️' },
+  { to: '/marketplace', label: 'Market', emoji: '🛒' },
+  { to: '/agents', label: 'Agents', emoji: '🧠' },
   { to: '/trading', label: 'Trading', emoji: '⚡' },
   { to: '/portfolio', label: 'Portfolio', emoji: '📈' },
   { to: '/tro', label: '$TRO', emoji: '🪙' },
   { to: '/hatom', label: 'Hatom', emoji: '🏦' },
   { to: '/lp', label: 'LP', emoji: '💧' },
-  { to: '/staking', label: 'Staking', emoji: '🔒' },
-  { to: '/dao', label: 'DAO', emoji: '🗳️' },
   { to: '/wallet', label: 'Wallet', emoji: '👛' },
   { to: '/tip', label: 'Tip', emoji: '💜' },
 ]
 
-/** Secondary / experimental — not in primary nav */
 export const SECONDARY_ROUTES = [
+  { to: '/staking', label: 'Staking', note: '' },
+  { to: '/dao', label: 'DAO', note: '' },
   { to: '/soul-testnet', label: 'Soul (experimental)', note: 'No mainnet funds' },
-  { to: '/burnify', label: 'Burnify (shell)', note: 'UI only until SC verified' },
-  { to: '/agents/polylia', label: 'Polylia agents', note: 'Optional' },
+  { to: '/burnify', label: 'Burnify (shell)', note: 'UI only' },
 ] as const
