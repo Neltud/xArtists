@@ -15,22 +15,22 @@ import {
 const MVX_API = 'https://api.multiversx.com'
 
 type SortKey = 'name' | 'collection' | 'nonce'
+type MarketAction = 'buy' | 'sell' | 'offer' | 'bid'
 
 export default function Marketplace() {
   const [collections, setCollections] = useState<CollectionData[]>([])
   const [allNfts, setAllNfts] = useState<NFT[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
-  const [lastUpdated, setLastUpdated] = useState<string>('')
+  const [lastUpdated, setLastUpdated] = useState('')
 
   const [searchParams] = useSearchParams()
   const initialCol = searchParams.get('collection') ?? 'all'
-  const [activeCollection, setActiveCollection] = useState<string>(
-    initialCol !== 'all' ? initialCol : 'all',
-  )
+  const [activeCollection, setActiveCollection] = useState(initialCol !== 'all' ? initialCol : 'all')
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<SortKey>('collection')
   const [selected, setSelected] = useState<NFT | null>(null)
+  const [action, setAction] = useState<MarketAction | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -40,12 +40,11 @@ export default function Marketplace() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const data: CollectionsFile = await res.json()
         if (cancelled) return
-        const nfts = data.collections.flatMap((c) => c.nfts)
         setCollections(data.collections)
-        setAllNfts(nfts)
+        setAllNfts(data.collections.flatMap(c => c.nfts))
         setLastUpdated(data.timestamp || new Date().toISOString())
       } catch (err) {
-        console.warn('[Marketplace] bundled data fetch failed', err)
+        console.warn('[Marketplace] data fetch failed', err)
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -55,13 +54,16 @@ export default function Marketplace() {
     }
   }, [])
 
+  const openNft = (nft: NFT, act: MarketAction | null = null) => {
+    setAction(act)
+    setSelected(nft)
+  }
+
   const refreshLive = useCallback(async () => {
     setRefreshing(true)
     try {
       const target =
-        activeCollection === 'all'
-          ? collections.map((c) => c.identifier)
-          : [activeCollection]
+        activeCollection === 'all' ? collections.map(c => c.identifier) : [activeCollection]
       const fetched: NFT[] = []
       for (const colId of target) {
         try {
@@ -89,14 +91,12 @@ export default function Marketplace() {
         }
       }
       if (fetched.length) {
-        if (activeCollection === 'all') {
-          setAllNfts(fetched)
-        } else {
-          setAllNfts((prev) => {
-            const rest = prev.filter((n) => n.collection !== activeCollection)
+        if (activeCollection === 'all') setAllNfts(fetched)
+        else
+          setAllNfts(prev => {
+            const rest = prev.filter(n => n.collection !== activeCollection)
             return [...rest, ...fetched]
           })
-        }
         setLastUpdated(new Date().toISOString())
       }
     } finally {
@@ -106,34 +106,23 @@ export default function Marketplace() {
 
   const collectionPills = useMemo(() => {
     const counts = new Map<string, number>()
-    for (const n of allNfts) {
-      counts.set(n.collection, (counts.get(n.collection) ?? 0) + 1)
-    }
-    const byId = new Map(collections.map((c) => [c.identifier, c.name]))
-    const out = [...counts.entries()].map(([id, count]) => ({
-      id,
-      name: byId.get(id) ?? id.split('-')[0],
-      count,
-    }))
-    out.sort((a, b) => a.name.localeCompare(b.name))
-    return out
+    for (const n of allNfts) counts.set(n.collection, (counts.get(n.collection) ?? 0) + 1)
+    const byId = new Map(collections.map(c => [c.identifier, c.name]))
+    return [...counts.entries()]
+      .map(([id, count]) => ({ id, name: byId.get(id) ?? id.split('-')[0], count }))
+      .sort((a, b) => a.name.localeCompare(b.name))
   }, [allNfts, collections])
-
-  const totalNfts = allNfts.length
-  const totalCollections = collectionPills.length
 
   const visibleNfts = useMemo(() => {
     let list = allNfts
-    if (activeCollection !== 'all') {
-      list = list.filter((n) => n.collection === activeCollection)
-    }
+    if (activeCollection !== 'all') list = list.filter(n => n.collection === activeCollection)
     const q = query.trim().toLowerCase()
     if (q) {
       list = list.filter(
-        (n) =>
+        n =>
           n.name?.toLowerCase().includes(q) ||
           n.collection_name?.toLowerCase().includes(q) ||
-          n.collection?.toLowerCase().includes(q),
+          n.collection?.toLowerCase().includes(q)
       )
     }
     const sorted = [...list]
@@ -149,33 +138,24 @@ export default function Marketplace() {
   return (
     <div className="animate-fade-in">
       <section className="relative mb-10 overflow-hidden rounded-3xl border border-[#2a2a3a] bg-gradient-to-br from-[#15151f] via-[#12121a] to-[#0a0a0f] p-6 sm:p-10">
-        <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-purple-600/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-indigo-600/20 blur-3xl" />
         <div className="relative">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#2a2a3a] bg-white/5 px-3 py-1 text-xs font-medium text-gray-300 backdrop-blur">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#2a2a3a] bg-white/5 px-3 py-1 text-xs text-gray-300">
             <span className="live-dot" /> MultiversX Mainnet
           </span>
           <h1 className="mt-4 text-4xl sm:text-5xl font-black tracking-tight">
             <span className="gradient-text">xArtists Marketplace</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-base text-gray-400 sm:text-lg">
-            NFT phygital & generative — achat crypto on-chain ou fiat via MoonPay (EGLD) puis paiement wallet.
+          <p className="mt-3 max-w-2xl text-base text-gray-400">
+            Buy · Sell · Offer · Bid — on-chain xArtists SC + XOXNO externe
           </p>
-
-          <div className="mt-6 grid grid-cols-3 gap-3 sm:max-w-lg">
-            <Stat value={totalCollections.toString()} label="Collections" />
-            <Stat value={`${totalNfts}+`} label="NFTs" />
-            <Stat value="Mainnet" label="MultiversX" />
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <MoonpayButton label="Acheter en EUR (MoonPay → EGLD)" className="text-sm!" />
+          <div className="mt-6 flex flex-wrap gap-3">
+            <MoonpayButton label="Acheter EGLD (MoonPay)" className="text-sm!" />
             <button
               onClick={refreshLive}
               disabled={refreshing || loading}
               className="btn-secondary text-xs disabled:opacity-50"
             >
-              {refreshing ? 'Refreshing…' : '↻ Refresh from MultiversX'}
+              {refreshing ? 'Refreshing…' : '↻ Refresh MultiversX'}
             </button>
             {lastUpdated && (
               <span className="text-[11px] text-gray-500">
@@ -187,46 +167,38 @@ export default function Marketplace() {
       </section>
 
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="relative w-full lg:max-w-xs">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-          >
-            <circle cx="11" cy="11" r="7" />
-            <path d="m21 21-4.3-4.3" strokeLinecap="round" />
-          </svg>
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search NFTs or collections…"
-            className="w-full rounded-xl border border-[#2a2a3a] bg-[#15151f] py-2.5 pl-9 pr-3 text-sm text-gray-200 placeholder:text-gray-500 outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <label className="text-xs text-gray-500">Sort</label>
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value as SortKey)}
-            className="rounded-xl border border-[#2a2a3a] bg-[#15151f] px-3 py-2 text-sm text-gray-200 outline-none focus:border-purple-500"
-          >
-            <option value="collection">Collection</option>
-            <option value="name">Name</option>
-            <option value="nonce">Nonce</option>
-          </select>
-        </div>
+        <input
+          type="search"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="Search NFTs…"
+          className="w-full lg:max-w-xs rounded-xl border border-[#2a2a3a] bg-[#15151f] py-2.5 px-3 text-sm outline-none focus:border-purple-500"
+        />
+        <select
+          value={sort}
+          onChange={e => setSort(e.target.value as SortKey)}
+          className="rounded-xl border border-[#2a2a3a] bg-[#15151f] px-3 py-2 text-sm"
+        >
+          <option value="collection">Collection</option>
+          <option value="name">Name</option>
+          <option value="nonce">Nonce</option>
+        </select>
       </div>
 
       <div className="mb-8 flex flex-wrap gap-2">
-        <FilterPill active={activeCollection === 'all'} onClick={() => setActiveCollection('all')} label="All" count={totalNfts} />
-        {collectionPills.map((c) => (
+        <FilterPill
+          active={activeCollection === 'all'}
+          onClick={() => setActiveCollection('all')}
+          label="All"
+          count={allNfts.length}
+        />
+        {collectionPills.map(c => (
           <FilterPill
             key={c.id}
             active={activeCollection === c.id}
             onClick={() => setActiveCollection(c.id)}
             label={c.name}
             count={c.count}
-            sub={c.id.split('-')[0]}
           />
         ))}
       </div>
@@ -234,33 +206,23 @@ export default function Marketplace() {
       {loading ? (
         <SkeletonGrid />
       ) : visibleNfts.length === 0 ? (
-        <div className="rounded-2xl border border-[#2a2a3a] bg-[#15151f] py-20 text-center">
-          <p className="text-4xl mb-3">🔍</p>
-          <p className="text-gray-400">No NFTs match your search.</p>
-        </div>
+        <div className="rounded-2xl border border-[#2a2a3a] py-20 text-center text-gray-400">No NFTs</div>
       ) : (
-        <>
-          <p className="mb-4 text-xs text-gray-500">
-            Showing {visibleNfts.length} NFT{visibleNfts.length !== 1 && 's'}
-          </p>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {visibleNfts.map((nft) => (
-              <NFTCard key={nft.identifier} nft={nft} onClick={() => setSelected(nft)} />
-            ))}
-          </div>
-        </>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {visibleNfts.map(nft => (
+            <NFTCard key={nft.identifier} nft={nft} onOpen={openNft} />
+          ))}
+        </div>
       )}
 
-      <NFTDetailModal nft={selected} onClose={() => setSelected(null)} />
-    </div>
-  )
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="rounded-2xl border border-[#2a2a3a] bg-white/5 px-4 py-3 backdrop-blur">
-      <p className="text-xl font-black sm:text-2xl">{value}</p>
-      <p className="mt-0.5 text-[10px] uppercase tracking-widest text-gray-500">{label}</p>
+      <NFTDetailModal
+        nft={selected}
+        initialAction={action}
+        onClose={() => {
+          setSelected(null)
+          setAction(null)
+        }}
+      />
     </div>
   )
 }
@@ -270,56 +232,73 @@ function FilterPill({
   onClick,
   label,
   count,
-  sub,
 }: {
   active: boolean
   onClick: () => void
   label: string
   count: number
-  sub?: string
 }) {
   return (
     <button
       onClick={onClick}
-      className={[
-        'group inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium transition-all',
+      className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm ${
         active
           ? 'border-purple-500 bg-purple-500/15 text-white'
-          : 'border-[#2a2a3a] bg-[#15151f] text-gray-400 hover:border-purple-500/50 hover:text-white',
-      ].join(' ')}
+          : 'border-[#2a2a3a] bg-[#15151f] text-gray-400'
+      }`}
     >
-      <span>{label}</span>
-      {sub && <span className="mono text-[10px] text-gray-500">{sub}</span>}
-      <span className={['rounded-full px-1.5 py-0.5 text-[10px] font-bold', active ? 'bg-purple-500/30' : 'bg-white/5 text-gray-500'].join(' ')}>
-        {count}
-      </span>
+      {label}
+      <span className="text-[10px] opacity-70">{count}</span>
     </button>
   )
 }
 
-function NFTCard({ nft, onClick }: { nft: NFT; onClick: () => void }) {
+function NFTCard({
+  nft,
+  onOpen,
+}: {
+  nft: NFT
+  onOpen: (n: NFT, a: MarketAction | null) => void
+}) {
   const img = nftImageUrl(nft)
+  const stop = (e: React.MouseEvent, a: MarketAction) => {
+    e.stopPropagation()
+    onOpen(nft, a)
+  }
   return (
-    <button
-      onClick={onClick}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-[#2a2a3a] bg-[#15151f] text-left transition-all hover:-translate-y-1 hover:border-purple-500/60"
-    >
-      <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-[#15151f] to-[#0a0a0f]">
-        {img ? (
-          <img src={img} alt={nft.name} className="h-full w-full object-cover transition-transform group-hover:scale-105" loading="lazy" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-5xl opacity-60">🎨</div>
-        )}
-        <span className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] text-gray-200">{typeLabel(nft.type)}</span>
-      </div>
-      <div className="flex flex-1 flex-col gap-1 p-3">
-        <p className="truncate text-sm font-semibold">{nft.name || 'Untitled'}</p>
-        <div className="flex items-center justify-between">
-          <span className="truncate text-xs text-purple-300/90">{nft.collection_name}</span>
-          <span className="mono text-[10px] text-gray-500">{nonceLabel(nft)}</span>
+    <div className="group flex flex-col overflow-hidden rounded-2xl border border-[#2a2a3a] bg-[#15151f] transition-all hover:border-purple-500/60">
+      <button type="button" onClick={() => onOpen(nft, null)} className="text-left">
+        <div className="relative aspect-square overflow-hidden bg-[#0a0a0f]">
+          {img ? (
+            <img src={img} alt={nft.name} className="h-full w-full object-cover group-hover:scale-105 transition-transform" loading="lazy" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-5xl opacity-60">🎨</div>
+          )}
+          <span className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px]">
+            {typeLabel(nft.type)}
+          </span>
         </div>
+        <div className="p-3 pb-1">
+          <p className="truncate text-sm font-semibold">{nft.name || 'Untitled'}</p>
+          <div className="flex justify-between text-xs">
+            <span className="text-purple-300/90 truncate">{nft.collection_name}</span>
+            <span className="mono text-gray-500">{nonceLabel(nft)}</span>
+          </div>
+        </div>
+      </button>
+      <div className="grid grid-cols-4 gap-1 p-2 pt-0">
+        {(['buy', 'sell', 'offer', 'bid'] as MarketAction[]).map(a => (
+          <button
+            key={a}
+            type="button"
+            onClick={e => stop(e, a)}
+            className="rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] py-1.5 text-[10px] font-semibold uppercase text-gray-300 hover:border-purple-500 hover:text-white"
+          >
+            {a}
+          </button>
+        ))}
       </div>
-    </button>
+    </div>
   )
 }
 
@@ -327,13 +306,7 @@ function SkeletonGrid() {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {[...Array(10)].map((_, i) => (
-        <div key={i} className="overflow-hidden rounded-2xl border border-[#2a2a3a] bg-[#15151f]">
-          <div className="aspect-square animate-pulse bg-[#1a1a2e]" />
-          <div className="space-y-2 p-3">
-            <div className="h-3.5 w-3/4 animate-pulse rounded bg-[#1a1a2e]" />
-            <div className="h-2.5 w-1/2 animate-pulse rounded bg-[#1a1a2e]" />
-          </div>
-        </div>
+        <div key={i} className="aspect-square animate-pulse rounded-2xl bg-[#1a1a2e]" />
       ))}
     </div>
   )
