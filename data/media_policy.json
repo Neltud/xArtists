@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "primary_storage": ["ipfs_pinata", "arweave"],
+  "secondary_links": ["youtube", "vimeo", "artist_website"],
+  "youtube": {
+    "allowed_as_nft_binary": false,
+    "allowed_as_external_url": true,
+    "buy_sell_on_youtube": false,
+    "reason": "YouTube is a streaming platform, not permanent NFT storage or marketplace"
+  },
+  "buy_sell": {
+    "on_chain": ["xartists_nft_marketplace", "xoxno"],
+    "media_must_resolve": "ipfs:// or ar:// or https gateway to pinned content"
+  },
+  "phygital": {
+    "nft": "certificate of authenticity",
+    "physical_delivery": "off_chain"
+  }
+}

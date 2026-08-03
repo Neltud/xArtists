@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useMultiversX } from '../hooks/useMultiversX'
+import LiaBoardPanel from '../components/LiaBoardPanel'
+import { LINKS } from '../config/links'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
 
@@ -53,7 +55,7 @@ export default function Trading() {
           setTrails(Array.isArray(j.positions) ? j.positions : [])
         }
       } catch {
-        /* offline / missing files */
+        /* offline */
       }
     })()
     return () => {
@@ -73,10 +75,12 @@ export default function Trading() {
       <div className="mb-8">
         <h1 className="text-3xl font-black">⚡ Trading Terminal LIA</h1>
         <p className="text-gray-500 mt-1">
-          Signaux Vellum · trailing dynamique · historique trades
+          Board multi-venues · arb block-time · séries $10 · trailing
           {dataTs ? ` · data ${new Date(dataTs).toLocaleString('fr-FR')}` : ''}
         </p>
       </div>
+
+      <LiaBoardPanel />
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <div className="card">
@@ -90,8 +94,7 @@ export default function Trading() {
             </div>
           </div>
           <div className="mt-4 p-3 rounded-lg bg-[#111118] text-xs text-gray-400">
-            PEM et exécution live restent sur <strong className="text-gray-300">Vellum</strong>. Le dashboard lit
-            uniquement les JSON publiés sur GitHub.
+            Exécution live sur <strong className="text-gray-300">Vellum</strong>. Dashboard = JSON GitHub.
           </div>
         </div>
 
@@ -101,14 +104,6 @@ export default function Trading() {
             <div className="flex justify-between">
               <span className="text-gray-400 text-sm">Prix $TRO</span>
               <span className="mono font-bold text-purple-400">${prices.tro.toFixed(8)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400 text-sm">Identifier</span>
-              <span className="mono text-sm">TRO-94c925</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400 text-sm">Supply (cible)</span>
-              <span className="font-bold">476 223</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400 text-sm">Meilleure pool</span>
@@ -122,36 +117,27 @@ export default function Trading() {
         </div>
       </div>
 
-      {/* Trailing stops */}
       <div className="card mb-8">
-        <h2 className="text-lg font-bold mb-4">🎯 Trailing stops (live state)</h2>
+        <h2 className="text-lg font-bold mb-4">🎯 Trailing stops</h2>
         {trails.length === 0 ? (
-          <p className="text-sm text-gray-500">Aucune position ouverte dans lia_trailing_state.json</p>
+          <p className="text-sm text-gray-500">Aucune position dans lia_trailing_state.json</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-xs text-gray-500 border-b border-[#2a2a3a]">
-                  <th className="py-2 pr-2">ID</th>
                   <th className="py-2 pr-2">Token</th>
                   <th className="py-2 pr-2">Entry</th>
-                  <th className="py-2 pr-2">HWM</th>
                   <th className="py-2 pr-2">Stop</th>
-                  <th className="py-2 pr-2">Restant</th>
                   <th className="py-2">Status</th>
                 </tr>
               </thead>
               <tbody>
-                {trails.map((p) => (
+                {trails.map(p => (
                   <tr key={p.id || p.token} className="border-b border-[#1a1a24]">
-                    <td className="py-2 pr-2 mono text-xs">{p.id}</td>
                     <td className="py-2 pr-2">{p.token}</td>
-                    <td className="py-2 pr-2 mono">{p.entry?.toPrecision?.(6) ?? p.entry}</td>
-                    <td className="py-2 pr-2 mono">{p.hwm?.toPrecision?.(6) ?? p.hwm}</td>
-                    <td className="py-2 pr-2 mono text-orange-300">{p.stop?.toPrecision?.(6) ?? p.stop}</td>
-                    <td className="py-2 pr-2">
-                      {p.size_remaining_pct != null ? `${Math.round(p.size_remaining_pct * 100)}%` : '—'}
-                    </td>
+                    <td className="py-2 pr-2 mono">{p.entry}</td>
+                    <td className="py-2 pr-2 mono text-orange-300">{p.stop}</td>
                     <td className="py-2">{p.status ?? 'OPEN'}</td>
                   </tr>
                 ))}
@@ -161,14 +147,10 @@ export default function Trading() {
         )}
       </div>
 
-      {/* Trades history */}
       <div className="card mb-8">
-        <h2 className="text-lg font-bold mb-4">📋 Historique trades LIA</h2>
+        <h2 className="text-lg font-bold mb-4">📋 Historique trades</h2>
         {trades.length === 0 ? (
-          <p className="text-sm text-gray-500">
-            Aucun trade loggé. Vellum doit appeler <code className="text-purple-300">append_trade</code> /{' '}
-            <code className="text-purple-300">live_cycle</code> puis push data/lia_trades.json.
-          </p>
+          <p className="text-sm text-gray-500">Aucun trade loggé — Vellum push data/lia_trades.json</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -177,8 +159,6 @@ export default function Trading() {
                   <th className="py-2 pr-2">Date</th>
                   <th className="py-2 pr-2">Side</th>
                   <th className="py-2 pr-2">Pair</th>
-                  <th className="py-2 pr-2">Size</th>
-                  <th className="py-2 pr-2">Entry/Px</th>
                   <th className="py-2">Status</th>
                 </tr>
               </thead>
@@ -190,10 +170,6 @@ export default function Trading() {
                     </td>
                     <td className="py-2 pr-2 font-semibold">{t.side}</td>
                     <td className="py-2 pr-2 mono text-xs">{t.pair}</td>
-                    <td className="py-2 pr-2">
-                      {t.size_usd != null ? `$${t.size_usd}` : '—'}
-                    </td>
-                    <td className="py-2 pr-2 mono text-xs">{t.entry ?? t.price ?? '—'}</td>
                     <td className="py-2">{t.status}</td>
                   </tr>
                 ))}
@@ -201,29 +177,6 @@ export default function Trading() {
             </table>
           </div>
         )}
-      </div>
-
-      <div className="card mb-8">
-        <h2 className="text-lg font-bold mb-4">📊 Stratégies LIA v6</h2>
-        <div className="grid md:grid-cols-3 gap-4">
-          {[
-            { name: 'TP1 Scalping', tp: '+1%', sl: '-0.5%', desc: 'Scalping rapide', color: 'border-orange-500/30 text-orange-400' },
-            { name: 'TP3 Swing Court', tp: '+3%', sl: '-1.5%', desc: 'Swing court', color: 'border-cyan-500/30 text-cyan-400' },
-            { name: 'TP5 Swing Moyen', tp: '+5%', sl: '-2.5%', desc: 'Swing moyen + trailing', color: 'border-purple-500/30 text-purple-400' },
-            { name: 'LIA Brain WBTC', tp: '+15%', sl: '-8%', desc: 'Bitcoin wrappé', color: 'border-yellow-500/30 text-yellow-400' },
-            { name: 'Trailing hybrid', tp: 'HWM', sl: 'dyn', desc: 'ATR + BE + partial TP', color: 'border-green-500/30 text-green-400' },
-            { name: 'Contrarian', tp: '+0.5%', sl: '-1%', desc: 'Contre-tendance', color: 'border-pink-500/30 text-pink-400' },
-          ].map((s) => (
-            <div key={s.name} className={`p-4 rounded-xl bg-[#111118] border ${s.color.split(' ')[0]}`}>
-              <p className={`font-bold text-sm ${s.color.split(' ')[1]}`}>{s.name}</p>
-              <p className="text-xs text-gray-500 mt-1">{s.desc}</p>
-              <div className="flex gap-3 mt-3">
-                <span className="badge-green text-xs">TP {s.tp}</span>
-                <span className="badge-red text-xs">SL {s.sl}</span>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
 
       {pools.length > 0 && (
@@ -242,14 +195,15 @@ export default function Trading() {
 
       <div className="card">
         <h2 className="text-lg font-bold mb-4">🔀 DEX Mainnet</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { name: 'OneDex TRO', url: 'https://dexscreener.com/multiversx/erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc-trowegld-ca2874', icon: '🟠' },
-            { name: 'xExchange', url: 'https://xexchange.com/swap/USDC-c76f1f/TRO-94c925', icon: '🔵' },
-            { name: 'Hatom', url: 'https://app.hatom.com', icon: '🏦' },
-          ].map((d) => (
+            { name: 'xExchange', url: LINKS.xexchange },
+            { name: 'OneDex', url: LINKS.onedex },
+            { name: 'Hatom', url: LINKS.hatom },
+            { name: 'XOXNO', url: LINKS.xoxno },
+          ].map(d => (
             <a key={d.name} href={d.url} target="_blank" rel="noreferrer" className="btn-secondary text-center text-sm">
-              {d.icon} {d.name}
+              {d.name}
             </a>
           ))}
         </div>

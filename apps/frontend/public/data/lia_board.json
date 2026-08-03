@@ -1,0 +1,26 @@
+{
+  "version": "1.2",
+  "board": "lia_xboard",
+  "updated": "2026-08-03T18:00:00Z",
+  "risk": {
+    "hf_mode": "block_scan",
+    "max_trades_per_day": 48,
+    "max_trades_per_hour": 6,
+    "live_trading_default": false,
+    "note": "Not CEX HFT. Block-time arb only."
+  },
+  "positions": {"total_usd_approx": 0},
+  "series": {
+    "start_each_usd": 10,
+    "horizon_days": 30,
+    "series": [
+      {"id": "A", "name": "Momentum/MR", "strategy": "momentum", "start_usd": 10, "end_usd": 12.5, "multiple": 1.25, "win_rate": 0.55, "trades": 150},
+      {"id": "B", "name": "Yield-first", "strategy": "yield", "start_usd": 10, "end_usd": 11.2, "multiple": 1.12, "win_rate": 0.52, "trades": 60},
+      {"id": "C", "name": "Micro-arb", "strategy": "arb", "start_usd": 10, "end_usd": 13.1, "multiple": 1.31, "win_rate": 0.58, "trades": 240},
+      {"id": "TP1", "name": "Take-profit +1%", "strategy": "tp1", "start_usd": 10, "end_usd": 14.0, "multiple": 1.4, "win_rate": 0.6, "trades": 150},
+      {"id": "CTR", "name": "Contrarian", "strategy": "contrarian", "start_usd": 10, "end_usd": 11.5, "multiple": 1.15, "win_rate": 0.5, "trades": 120}
+    ]
+  },
+  "arb": {"hf_mode": "block_scan", "actionable": false, "best": null, "note": "Seed — Vellum publish for live"},
+  "trades": {"past": [], "open": [], "planned": []}
+}

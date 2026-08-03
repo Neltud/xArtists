@@ -43,12 +43,13 @@ jobs:
         env:
           VITE_BASE_PATH: /xArtists/
           VITE_MVX_API: https://api.multiversx.com
+          # Protocol LIA ops wallet — NOT the end-user session wallet
+          VITE_LIA_PROTOCOL_WALLET: erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
           VITE_WALLET: erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
 
       - name: 🧹 Prepare docs/
         run: |
           mkdir -p docs
-          # Keep markdown docs; remove previous SPA assets
           find docs -type f \( -name '*.js' -o -name '*.css' -o -name 'index.html' -o -name '*.svg' -o -name '*.map' \) -delete 2>/dev/null || true
           rm -rf docs/assets 2>/dev/null || true
 
@@ -56,7 +57,6 @@ jobs:
         run: |
           cp -r apps/frontend/dist/. docs/
           touch docs/.nojekyll
-          echo "✅ SPA dist copié"
 
       - name: 📊 Copy data JSON
         run: |
@@ -65,7 +65,6 @@ jobs:
 
       - name: 🔍 Verify build
         run: |
-          ls -la docs/
           test -f docs/index.html && echo "index.html OK" || (echo "MISSING index.html"; exit 1)
 
       - name: 📤 Commit & Push docs/

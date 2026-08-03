@@ -1,8 +1,15 @@
 """
 Stratégies quasi-robustes pour le circuit +1% net (calibrage compétent)
-======================================================================
 Priorité: STATARB > ARB > MR > MOM > YIELD
 Seuils de fusion abaissés pour les edges haute priorité.
+Stratégies quasi-robustes pour le circuit +1% net
+Piliers:
+  1. Mean-reversion liquide (EGLD/USDC, WBTC/USDC)
+  2. Momentum multi-TF + GreenSmoke RISK_ON
+  3. Micro-arb DEX si spread > fees*2.5
+  4. Yield-first si score < seuil
+
+Fuse priority: SELL high conf → BUY (ARB preferred on equal conf) → YIELD → WAIT
 """
 from __future__ import annotations
 
@@ -62,6 +69,7 @@ def momentum_regime(
         and gs_bias in ("BULLISH", "BUY", "ACCUMULATE")
     ):
         conf = min(0.88, 0.52 + price_change_1h * 9 + max(0.0, volume_spike - 1.0) * 0.04)
+        conf = min(0.88, 0.5 + price_change_1h * 10 + max(0.0, volume_spike - 1.0) * 0.05)
         return Signal(
             "BUY",
             token,
@@ -93,6 +101,7 @@ def micro_arb(
             "ARB",
             f"spread={spread:.3%} > fees*2.8",
             entry_hint=min(price_a, price_b),
+            meta={"spread": spread, "fee_rt": fee_roundtrip},
         )
     return Signal("WAIT", token, 0.35, "ARB", f"spread={spread:.3%} too thin")
 
@@ -128,6 +137,8 @@ def fuse_signals(signals: list[Signal]) -> Signal:
     if not signals:
         return Signal("WAIT", "", 0.3, "FUSE", "empty")
 
+    """Priority: protective SELL → best BUY (ARB tie-break) → YIELD → WAIT."""
+    buys = [s for s in signals if s.action == "BUY"]
     sells = [s for s in signals if s.action == "SELL"]
     buys = [s for s in signals if s.action == "BUY"]
     yields = [s for s in signals if s.action == "YIELD"]
@@ -150,6 +161,13 @@ def fuse_signals(signals: list[Signal]) -> Signal:
         else:
             min_conf = 0.62
         if best.confidence >= min_conf:
+        # Prefer ARB on near-equal confidence (structural edge vs directional)
+        def buy_key(s: Signal) -> tuple:
+            arb_boost = 0.03 if s.strategy == "ARB" else 0.0
+            return (s.confidence + arb_boost, 1 if s.strategy == "ARB" else 0)
+
+        best = max(buys, key=buy_key)
+        if best.confidence >= 0.62:
             return best
 
     if yields:

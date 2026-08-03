@@ -2,30 +2,14 @@ import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useWallet, LIA_WALLET } from '../context/WalletContext'
 import { sdkDappConfig } from '../config/sdkDapp'
-
-const NAV = [
-  { to: '/', label: 'Dashboard', emoji: '📊' },
-  { to: '/agents', label: 'Agents IA', emoji: '🧠' },
-  { to: '/marketplace', label: 'Marketplace', emoji: '🎨' },
-  { to: '/staking', label: 'Staking', emoji: '🔒' },
-  { to: '/tro', label: '$TRO', emoji: '🪙' },
-  { to: '/gallery', label: 'Galerie', emoji: '🖼️' },
-  { to: '/trading', label: 'Trading', emoji: '⚡' },
-  { to: '/portfolio', label: 'Portfolio', emoji: '📈' },
-  { to: '/hatom', label: 'Hatom', emoji: '🏦' },
-  { to: '/lp', label: 'LP/Farms', emoji: '💧' },
-  { to: '/dao', label: 'DAO', emoji: '🗳️' },
-  { to: '/soul-testnet', label: 'Soul', emoji: '🌉' },
-  { to: '/wallet', label: 'Wallet', emoji: '👛' },
-  { to: '/tip', label: 'Tip 💜', emoji: '' },
-]
+import { LINKS, PRIMARY_NAV } from '../config/links'
 
 function isValidErd(addr: string): boolean {
   return /^erd1[a-z0-9]{58}$/i.test(addr.trim())
 }
 
 function getCallbackUrl(): string {
-  if (typeof window === 'undefined') return 'https://neltud.github.io/xArtists/'
+  if (typeof window === 'undefined') return LINKS.dapp
   return `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '/') || '/xArtists/'}`
 }
 
@@ -44,20 +28,20 @@ export default function Header() {
   useEffect(() => {
     if (menuOpen) document.body.style.overflow = 'hidden'
     else document.body.style.overflow = ''
-    return () => { document.body.style.overflow = '' }
+    return () => {
+      document.body.style.overflow = ''
+    }
   }, [menuOpen])
 
   const openWebWallet = () => {
-    const callback = encodeURIComponent(getCallbackUrl())
-    window.location.href = `https://wallet.multiversx.com/hook/login?callbackUrl=${callback}`
+    window.location.href = LINKS.walletLogin(getCallbackUrl())
   }
 
   const openXPortalDeepLink = () => {
-    // Deep link / store — full WC QR requires @multiversx/sdk-dapp; deep link opens app
     const deep = sdkDappConfig.customNetworkConfig.walletConnectDeepLink
     window.open(deep, '_blank', 'noopener,noreferrer')
     setConnectError(
-      'xPortal opened. For full QR WalletConnect, install @multiversx/sdk-dapp. Or use Web Wallet (recommended now) — your real address will be saved (never the LIA protocol wallet).'
+      'xPortal opened. For full QR WalletConnect, use Web Wallet (recommended) — never the LIA protocol wallet.'
     )
   }
 
@@ -76,9 +60,7 @@ export default function Header() {
         else setShowWalletModal(false)
         return
       }
-      setConnectError(
-        'DeFi Wallet extension not detected. Install MultiversX DeFi Wallet, or use Web Wallet.'
-      )
+      setConnectError('DeFi Wallet extension not detected. Install MultiversX DeFi Wallet, or use Web Wallet.')
     } catch (e) {
       setConnectError(e instanceof Error ? e.message : 'Extension error')
     }
@@ -115,7 +97,7 @@ export default function Header() {
           </NavLink>
 
           <nav className="hidden lg:flex items-center gap-0.5 overflow-x-auto max-w-[55%]">
-            {NAV.map(({ to, label }) => (
+            {PRIMARY_NAV.map(({ to, label }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -144,7 +126,10 @@ export default function Header() {
               </button>
             ) : (
               <button
-                onClick={() => { setShowWalletModal(true); setConnectError('') }}
+                onClick={() => {
+                  setShowWalletModal(true)
+                  setConnectError('')
+                }}
                 className="btn-primary text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2"
               >
                 🔗 Connect
@@ -173,7 +158,7 @@ export default function Header() {
               onClick={e => e.stopPropagation()}
               style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}
             >
-              {NAV.map(({ to, label, emoji }) => (
+              {PRIMARY_NAV.map(({ to, label, emoji }) => (
                 <NavLink
                   key={to}
                   to={to}
@@ -197,7 +182,10 @@ export default function Header() {
       {showWalletModal && (
         <div
           className="fixed inset-0 bg-black/80 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4"
-          onClick={() => { setShowWalletModal(false); setConnectError('') }}
+          onClick={() => {
+            setShowWalletModal(false)
+            setConnectError('')
+          }}
         >
           <div
             className="card max-w-md w-full rounded-t-2xl sm:rounded-2xl animate-fade-in max-h-[90vh] overflow-y-auto"
@@ -206,8 +194,7 @@ export default function Header() {
           >
             <h2 className="text-xl font-bold mb-2">Connect wallet</h2>
             <p className="text-xs text-zinc-500 mb-4">
-              Your wallet only — never the LIA protocol address. WC project:{' '}
-              {sdkDappConfig.walletConnectV2ProjectId.slice(0, 8)}…
+              Your wallet only — never the LIA protocol address.
             </p>
 
             <button
@@ -230,7 +217,7 @@ export default function Header() {
               <span className="text-3xl">📱</span>
               <div className="text-left">
                 <div className="font-semibold">xPortal</div>
-                <div className="text-sm text-gray-400">Open app / deep link (QR via sdk-dapp next)</div>
+                <div className="text-sm text-gray-400">Open app / deep link</div>
               </div>
             </button>
 
@@ -259,13 +246,14 @@ export default function Header() {
               </button>
             </div>
 
-            {connectError && (
-              <p className="text-xs text-amber-400 mt-3 leading-relaxed">{connectError}</p>
-            )}
+            {connectError && <p className="text-xs text-amber-400 mt-3 leading-relaxed">{connectError}</p>}
 
             <button
               type="button"
-              onClick={() => { setShowWalletModal(false); setConnectError('') }}
+              onClick={() => {
+                setShowWalletModal(false)
+                setConnectError('')
+              }}
               className="btn-secondary w-full mt-3 text-sm"
             >
               Cancel

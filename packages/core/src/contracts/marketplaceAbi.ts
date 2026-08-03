@@ -1,14 +1,16 @@
 /**
- * Marketplace ABI (MultiversX) — xArtists
- * Endpoints alignés sur le contrat marketplace mainnet (placeholder jusqu'au déploiement final).
+ * NFT Marketplace ABI — list/buy/cancel + placeBid (after SC redeploy).
+ * Address from VITE_MARKETPLACE_ADDRESS or contracts.json marketplace.
  */
 
 export const MARKETPLACE_ADDRESS =
+  (typeof import.meta !== 'undefined' &&
+    (import.meta as any).env?.VITE_MARKETPLACE_ADDRESS) ||
   process.env.VITE_MARKETPLACE_ADDRESS ||
-  'erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t';
+  'erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t'
 
 export const MARKETPLACE_ABI = {
-  name: 'XArtistsMarketplace',
+  name: 'XArtistsNftMarketplace',
   endpoints: [
     {
       name: 'listNft',
@@ -16,18 +18,35 @@ export const MARKETPLACE_ABI = {
       payableInTokens: ['*'],
       inputs: [
         { name: 'price', type: 'BigUint' },
-        { name: 'token_id', type: 'TokenIdentifier' },
-        { name: 'nonce', type: 'u64' },
+        { name: 'royalty_bps', type: 'u16' },
+        { name: 'royalty_receiver', type: 'Address' },
       ],
       outputs: [],
     },
     {
       name: 'buyNft',
       mutability: 'mutable',
-      payableInTokens: ['EGLD', 'ESDTs'],
-      inputs: [
-        { name: 'listing_id', type: 'u64' },
-      ],
+      payableInTokens: ['EGLD'],
+      inputs: [{ name: 'listing_id', type: 'u64' }],
+      outputs: [],
+    },
+    {
+      name: 'placeBid',
+      mutability: 'mutable',
+      payableInTokens: ['EGLD'],
+      inputs: [{ name: 'listing_id', type: 'u64' }],
+      outputs: [],
+    },
+    {
+      name: 'acceptBid',
+      mutability: 'mutable',
+      inputs: [{ name: 'listing_id', type: 'u64' }],
+      outputs: [],
+    },
+    {
+      name: 'withdrawBid',
+      mutability: 'mutable',
+      inputs: [{ name: 'listing_id', type: 'u64' }],
       outputs: [],
     },
     {
@@ -42,20 +61,19 @@ export const MARKETPLACE_ABI = {
       inputs: [{ name: 'listing_id', type: 'u64' }],
       outputs: [{ type: 'optional<Listing>' }],
     },
-  ],
-  types: {
-    Listing: {
-      type: 'struct',
-      fields: [
-        { name: 'seller', type: 'Address' },
-        { name: 'token_id', type: 'TokenIdentifier' },
-        { name: 'nonce', type: 'u64' },
-        { name: 'price', type: 'BigUint' },
-        { name: 'payment_token', type: 'TokenIdentifier' },
-        { name: 'active', type: 'bool' },
-      ],
+    {
+      name: 'getBid',
+      mutability: 'readonly',
+      inputs: [{ name: 'listing_id', type: 'u64' }],
+      outputs: [{ type: 'optional<Bid>' }],
     },
-  },
-} as const;
+  ],
+} as const
 
-export type MarketplaceEndpoint = 'listNft' | 'buyNft' | 'cancelListing' | 'getListing';
+export type MarketplaceEndpoint =
+  | 'listNft'
+  | 'buyNft'
+  | 'placeBid'
+  | 'acceptBid'
+  | 'withdrawBid'
+  | 'cancelListing'

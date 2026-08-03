@@ -1,0 +1,17 @@
+{
+  "updated": "2026-08-03T19:54:00Z",
+  "LIA_LIVE_TRADING": "0",
+  "pinata": { "status": "ok", "note": "pinata_connect ok:true — JWT in Vellum only" },
+  "P0": [
+    { "id": "deploy_nft_marketplace", "status": "ops_open", "note": "current address empty code" },
+    { "id": "deploy_agents", "status": "ops_open" },
+    { "id": "verify_codehash", "status": "after_deploy" },
+    { "id": "dao_read_only", "status": "done" },
+    { "id": "nft_counts_live", "status": "done" },
+    { "id": "lia_vs_gsn", "status": "done" }
+  ],
+  "P1": [
+    { "id": "listings_index", "status": "partial" },
+    { "id": "studio_pin_auto", "status": "ready_when_ops_wires_jwt" }
+  ]
+}

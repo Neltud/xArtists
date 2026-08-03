@@ -1,53 +1,9 @@
 {
-  "version": "LIA v6",
-  "status": "PRODUCTION_MAINNET",
-  "timestamp": "2026-08-01T00:10:00Z",
-  "serialization": "OK",
-  "network": "mainnet",
-  "chain_id": "1",
-  "wallet": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
-  "machine_contract": "data/VELLUM_MACHINE_CONTRACT.json",
-  "nodes_active": 62,
-  "architecture": {
-    "trigger": "cron hourly",
-    "pipeline": "DataHub → Brains+GS → OrchestratorRouter → LiveCycle → CompoundCircuit → Executor → RedistributeTRO → Reporter",
-    "entry_live": "lia.vellum.live_cycle.run_cycle",
-    "entry_compound": "lia.circuit.vellum_cycle.run_cycle",
-    "publish": "lia.vellum.publish_data_for_frontend.publish",
-    "guard": "BalanceGuard (OK/WARNING/BLOCKED)",
-    "router": "OrchestratorRouter / symbiosis"
-  },
-  "dapp": {
-    "url": "https://neltud.github.io/xArtists",
-    "pages": ["dashboard", "marketplace", "trading", "portfolio", "dao", "tip", "wallet", "agents", "lp", "hatom", "tro"],
-    "data_source": "raw.githubusercontent.com/Neltud/xArtists/main/data/",
-    "pwa": true
-  },
-  "xartists": {
-    "collections": 11,
-    "contracts": {
-      "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
-      "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
-      "marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
-      "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn",
-      "agents_marketplace": null
-    }
-  },
-  "market": {
-    "fear_greed_index": 50,
-    "guard_status": "OK"
-  },
-  "portfolio": {
-    "total_usd": 0,
-    "egld_balance": 0,
-    "hatom_health_factor": 0
-  },
-  "prices": {
-    "egld_usd": 0,
-    "wbtc_usd": 0
-  },
-  "cycle": {
-    "report_sent": false,
-    "summary": "Awaiting Vellum Reporter after LiveCycle + publish_data_for_frontend"
-  }
+  "version": "6.0",
+  "updated": "2026-08-03T18:00:00Z",
+  "status": "monitoring",
+  "LIA_LIVE_TRADING": 0,
+  "market": {"guard_status": "OK"},
+  "portfolio": {"total_usd": 0},
+  "note": "Seed status — python -m lia.vellum.next_run refreshes"
 }
