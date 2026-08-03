@@ -1,13 +1,8 @@
 import { useWallet } from '../context/WalletContext'
 
-/**
- * Surfaces signing gaps so users don't think Buy/List succeeded.
- */
+/** Surfaces signing gaps so users don't think Buy/List succeeded. */
 export default function TxCapabilityBanner() {
-  const { connected, provider } = useWallet() as {
-    connected: boolean
-    provider?: string
-  }
+  const { connected, method } = useWallet()
 
   const hasSend =
     typeof window !== 'undefined' &&
@@ -22,11 +17,11 @@ export default function TxCapabilityBanner() {
     )
   }
 
-  if (provider === 'web_wallet' || provider === 'manual') {
+  if (method === 'web_wallet' || !method) {
     return (
       <div className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
-        Session adresse seule ou Web Wallet partiel — la signature on-chain nécessite xPortal / extension
-        avec sdk-dapp (<code>__xartistsSendTx</code>
+        Session adresse / Web Wallet — la signature on-chain fiable demande xPortal ou extension + sdk-dapp (
+        <code>__xartistsSendTx</code>
         {hasSend ? ' ✅' : ' ❌ non injecté'}).
       </div>
     )
@@ -35,8 +30,8 @@ export default function TxCapabilityBanner() {
   if (!hasSend) {
     return (
       <div className="mb-4 rounded-xl border border-orange-500/40 bg-orange-500/10 px-3 py-2 text-xs text-orange-200">
-        Wallet connecté mais <strong>sdk-dapp send non branché</strong> — les TX List/Buy/Bid resteront en
-        erreur jusqu’au bootstrap P0.
+        Wallet connecté mais <strong>sdk-dapp send non branché</strong> — List/Buy/Bid échoueront jusqu’au
+        bootstrap P0.
       </div>
     )
   }
