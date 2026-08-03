@@ -1,20 +1,37 @@
 {
-  "updated": "2026-08-03",
+  "updated": "2026-08-03T19:40:00Z",
+  "LIA_LIVE_TRADING": "0 — keep until micro-trades OK",
   "P0": [
-    {"id": "signature", "status": "partial", "note": "bootstrapSendTx + need WC login"},
-    {"id": "deploy_agents", "status": "open", "cmd": "./scripts/deploy_mainnet.sh agents-marketplace"},
-    {"id": "marketplace_e2e", "status": "partial", "note": "FE ready; SC+sign"},
-    {"id": "board_publish", "status": "seeded", "cmd": "python -m lia.board.publish"},
-    {"id": "executor", "status": "paper_ready", "cmd": "python -m lia.executor.universal"},
-    {"id": "burn_escrow_sc", "status": "open", "note": "upgrade SC later"},
-    {"id": "security_audit_doc", "status": "done", "doc": "docs/SECURITY_AUDIT_SC.md"},
-    {"id": "deploy_scripts", "status": "done"}
+    {
+      "id": "deploy_agents",
+      "status": "ops_open",
+      "cmd": "PEM=... ./scripts/deploy_mainnet.sh agents-marketplace"
+    },
+    {
+      "id": "verify_marketplace_codehash",
+      "status": "script_ready",
+      "cmd": "python scripts/verify_marketplace_codehash.py"
+    },
+    {
+      "id": "signature_real",
+      "status": "partial",
+      "note": "bootstrapSendTx + TxCapabilityBanner; need WC login E2E"
+    },
+    {
+      "id": "dao_no_fake_vote",
+      "status": "done",
+      "note": "DAO read-only banner, no vote button"
+    }
   ],
   "P1": [
-    {"id": "greensmoke_kelly", "status": "open"},
-    {"id": "performance_tracker", "status": "seed", "file": "data/lia_performance.json"},
-    {"id": "lp_hatom", "status": "partial"},
-    {"id": "playwright", "status": "open"},
-    {"id": "ci_lighthouse", "status": "open"}
+    {
+      "id": "listings_index",
+      "status": "partial",
+      "note": "activity + listingIdHint click-to-fill; full view pagination later"
+    },
+    {
+      "id": "pinata",
+      "status": "deferred"
+    }
   ]
 }
