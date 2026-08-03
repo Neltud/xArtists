@@ -1,36 +1,73 @@
-# Pinata / IPFS — stockage permanent (ops)
+# Connecter Pinata (IPFS) — compte Gmail → Vellum → xArtists
 
-## 1. Compte Pinata
+> **Important :** ni Grok ni le repo ne peuvent se connecter à ton Gmail.  
+> Tu crées le compte **Pinata avec Google/Gmail**, tu copies le **JWT**, tu le mets dans **secrets Vellum** uniquement.
 
-1. Créer un compte sur https://pinata.cloud
-2. API Keys → **JWT** (recommandé) ou Key + Secret
-3. Stocker **uniquement** sur Vellum / CI secrets — jamais dans le frontend public
+---
+
+## 1. Créer le compte avec Gmail
+
+1. Ouvre **https://app.pinata.cloud** (ou https://pinata.cloud)
+2. **Sign up** → **Continue with Google** (choisis le Gmail du projet)
+3. Valide l’email si demandé
+4. Menu **API Keys** → **New Key**
+   - Permissions : **pinFileToIPFS** + **pinJSONToIPFS** (+ pinList en lecture si possible)
+   - Copie le **JWT** (long token `eyJ...`) **une seule fois**
+5. Optionnel : Key + Secret si tu préfères l’ancien mode
+
+## 2. Brancher sur Vellum (secrets)
+
+Dans Vellum → Environment / Secrets du workflow LIA :
+
+| Secret | Valeur |
+|--------|--------|
+| `PINATA_JWT` | `eyJ...` (recommandé) |
+| `IPFS_GATEWAY` | `https://gateway.pinata.cloud/ipfs/` |
+
+**Ne jamais** committer le JWT dans GitHub / frontend / Pages.
 
 ```bash
 export PINATA_JWT="eyJ..."
 export IPFS_GATEWAY="https://gateway.pinata.cloud/ipfs/"
-# optionnel gateway dédié : https://your-subdomain.mypinata.cloud/ipfs/
+python -m lia.media.pinata_connect   # test auth
 ```
 
-## 2. Pin fichier + metadata
+## 3. Commandes xArtists
 
 ```bash
-# Metadata dry-run
-python -m lia.media.storage --name "Clip 01"
+# Statut + test API
+python -m lia.media.pinata_connect
 
-# Pin JSON (JWT requis)
-python -m lia.media.storage --name "Clip 01" --pin
+# Pin metadata JSON
+python -m lia.media.storage --name "Œuvre 01" --pin
+
+# Pin fichier image/vidéo/audio
+python -m lia.media.pinata_connect --file ./path/to/art.jpg
 ```
 
-Upload fichier binaire : UI Pinata ou API `pinFileToIPFS`, puis passer `animation_url=ipfs://CID` dans metadata.
+## 4. Flux artiste (Studio)
 
-## 3. Permanence
+```text
+Fichier local (image/vidéo/audio)
+  → Vellum / ops : pinFileToIPFS → CID
+  → metadata JSON (image + animation_url ipfs://…)
+  → pinJSONToIPFS → meta CID
+  → mxpy mint avec URI = ipfs://metaCID
+  → YouTube optionnel = external_url seulement
+```
 
-- **Pin actif Pinata** = hot storage tant que le pin / plan est maintenu
-- Pour **permanance forte** : doubler sur **Arweave** ou Filecoin via offre Pinata/nft.storage selon plan
-- Ne pas s’appuyer sur YouTube pour la permanence
+Le navigateur **ne** possède **pas** le JWT : upload via backend Vellum ou outil ops.
 
-## 4. Gateway dApp
+## 5. Gateway dédié (optionnel)
 
-Metadata on-chain : préférer `ipfs://CID`  
-Affichage navigateur : `https://gateway.pinata.cloud/ipfs/CID`
+Pinata → Gateways → Dedicated → ex. `https://xartists.mypinata.cloud/ipfs/`  
+Puis `IPFS_GATEWAY=https://xartists.mypinata.cloud/ipfs/`
+
+## 6. Dépannage
+
+| Erreur | Cause |
+|--------|--------|
+| `PINATA_JWT not set` | Secret absent dans le shell/Vellum |
+| HTTP 401 | JWT révoqué ou mauvais compte |
+| HTTP 403 | Permissions API key insuffisantes |
+| Timeout | Fichier trop lourd — compresser ou plan Pinata |
