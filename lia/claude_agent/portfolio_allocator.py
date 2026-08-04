@@ -1,8 +1,12 @@
-"""Winrate-weighted allocation + compounding. Reserve slice never absorbs cap excess."""
+"""Winrate-weighted allocation + compounding. Reserve slice never absorbs cap excess.
+
+Also exposes get_allocation() — delegates to external_allocator when provided
+(e.g. compound_pyramids sleeves) so Claude modules do not fork LIA books.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from lia.claude_agent.strategy_base import StrategyPerformance
 
@@ -102,3 +106,48 @@ def compute_allocation(
 
 def compound_budget(current_budget: float, realized_pnl_pct: float) -> float:
     return max(current_budget * (1 + realized_pnl_pct), 0.0)
+
+
+# External allocator: (performances, total_budget, **kwargs) -> AllocationResult | dict
+ExternalAllocator = Callable[..., Any]
+
+
+def get_allocation(
+    performances: List[StrategyPerformance],
+    total_budget: float,
+    *,
+    external_allocator: Optional[ExternalAllocator] = None,
+    reserve_strategy_id: Optional[str] = None,
+    reserve_pct: float = 0.0,
+    exploration_floor_pct: float = 0.05,
+    max_weight_pct: float = 0.60,
+    **kwargs: Any,
+) -> AllocationResult:
+    """
+    Single entry for run_daily / brains.
+    If external_allocator is set (e.g. pyramids_allocator), it wins.
+    """
+    if external_allocator is not None:
+        out = external_allocator(
+            performances,
+            total_budget,
+            reserve_strategy_id=reserve_strategy_id,
+            reserve_pct=reserve_pct,
+            **kwargs,
+        )
+        if isinstance(out, AllocationResult):
+            return out
+        if isinstance(out, dict):
+            return AllocationResult(
+                weights=dict(out.get("weights") or {}),
+                budget_per_strategy=dict(out.get("budget_per_strategy") or {}),
+            )
+        raise AllocationError(f"external_allocator returned {type(out)}")
+    return compute_allocation(
+        performances,
+        total_budget,
+        reserve_strategy_id=reserve_strategy_id,
+        reserve_pct=reserve_pct,
+        exploration_floor_pct=exploration_floor_pct,
+        max_weight_pct=max_weight_pct,
+    )
