@@ -1,12 +1,15 @@
 {
-  "updated": "2026-08-04T15:58:00Z",
-  "branding": {
-    "gallery_title": "xArtists",
-    "nelson_tuduri_in_gallery": false,
-    "nelson_tuduri_in_collection_bios": false
-  },
-  "retention_kpi": ["studio_mint", "sell_art", "buy_nft", "buy_tro"],
-  "bottom_nav": ["Home", "Studio", "Market", "$TRO", "DAO", "Wallet"],
-  "P0": ["deploy_sc", "pages_rebuild", "wallet_sign"],
-  "P1": ["listings_index", "bios_expand", "studio_pin_proxy"]
+  "updated": "2026-08-04T20:05:00Z",
+  "order": [
+    "1_deploy_sc_codehash",
+    "2_user_signature_list_buy",
+    "3_pages_listings",
+    "4_defense_modes_social",
+    "5_paper_journal_allocator",
+    "6_micro_proof",
+    "7_LIA_LIVE_TRADING_micro_only"
+  ],
+  "LIA_LIVE_TRADING": "0",
+  "proof_doc": "docs/MICRO_PROOF.md",
+  "proof_micro_on": false
 }
