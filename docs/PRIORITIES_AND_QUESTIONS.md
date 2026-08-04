@@ -1,27 +1,31 @@
-# Priorités + questions (live audit 2026-08-04)
+# Priorités confirmées (2026-08-04)
 
-## Live https://neltud.github.io/xArtists/
+## Décisions produit
 
-- Pages servait encore une **ancienne build** Dashboard (sans persona / hero 500k) au moment du test texte.
-- Données LIA visibles : ~0,66 EGLD, 8 NFT, $TRO price, GSN banner → **lecture API OK**.
-- Backend = **pas de serveur custom** : front + MultiversX API + JSON GitHub + SC (à déployer). Vellum = ops off-chain.
+- **Branding galerie** : titre + bios = **xArtists uniquement**. Aucun « Nelson Tuduri » en titre ni en bio collection.
+- **Studio ≠ DAO** : deux modules ; BottomNav mobile expose **Studio** et **DAO** (+ Market, $TRO).
+- **KPI rétention n°1** : Studio mint → sell art → buy NFT → buy $TRO.
 
-## Priorités
+## P0
 
-| P | Item |
-|---|------|
-| P0 | Deploy **nft-marketplace** + **agents-marketplace** + codeHash |
-| P0 | Rebuild GH Pages (voir persona, gallery sans titre Nelson, BottomNav DAO) |
-| P0 | Signature wallet réelle (extension / Web) |
-| P1 | Index listings complet post-SC |
-| P1 | Bios collections enrichies (fichier data) |
-| P1 | Parité mobile/desktop (DAO/Galerie dans BottomNav ✅ code) |
-| P2 | Studio pin auto via proxy Pinata |
+1. Deploy SC **nft-marketplace** + **agents-marketplace** + `verify_marketplace_codehash`
+2. Rebuild **GH Pages**
+3. Signature wallet réelle (extension / Web Wallet)
 
-## Questions pour toi
+## P1
 
-1. **Artiste fondateur** : garder « Nelson Tuduri » uniquement en *bio de collection*, jamais en titre galerie ? (fait ainsi)
-2. Autres artistes multi-collections à documenter (noms + bio) ?
-3. EGLD disponible pour deploy SC cette semaine ?
-4. BottomNav mobile : préférer Studio ou Trading à la place d’un des 5 onglets ?
-5. Objectif rétention n°1 : mint Studio, buy NFT, ou $TRO holders ?
+- Index listings post-deploy
+- Bios collections (génériques / multi-artistes plus tard)
+- Studio pin proxy Pinata
+
+## Ops deploy (quand EGLD + PEM)
+
+```bash
+export CHAIN=1 FEE_BPS=300 LIA_LIVE_TRADING=0 PEM=/secure/mainnet.pem
+./scripts/deploy_mainnet.sh nft-marketplace
+./scripts/deploy_mainnet.sh agents-marketplace
+python scripts/post_deploy_contracts.py --marketplace erd1... --agents erd1...
+python scripts/verify_marketplace_codehash.py
+```
+
+Envoyer seulement les adresses `erd1…` (jamais le PEM).

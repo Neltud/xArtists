@@ -1,9 +1,12 @@
 {
-  "updated": "2026-08-04T15:50:00Z",
-  "live_url": "https://neltud.github.io/xArtists/",
-  "backend": "MVX API + static JSON + SC (marketplace not deployed) + Vellum ops",
+  "updated": "2026-08-04T15:58:00Z",
+  "branding": {
+    "gallery_title": "xArtists",
+    "nelson_tuduri_in_gallery": false,
+    "nelson_tuduri_in_collection_bios": false
+  },
+  "retention_kpi": ["studio_mint", "sell_art", "buy_nft", "buy_tro"],
+  "bottom_nav": ["Home", "Studio", "Market", "$TRO", "DAO", "Wallet"],
   "P0": ["deploy_sc", "pages_rebuild", "wallet_sign"],
-  "P1": ["listings_index", "collection_bios", "mobile_nav"],
-  "mobile_nav": ["Home", "Gallery", "Market", "DAO", "Wallet"],
-  "gallery_title": "xArtists only — artist names in collection bios"
+  "P1": ["listings_index", "bios_expand", "studio_pin_proxy"]
 }
