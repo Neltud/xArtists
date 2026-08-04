@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import NFTDetailModal from '../components/NFTDetailModal'
 import MoonpayButton from '../components/MoonpayButton'
+import MarketplaceActivity from '../components/MarketplaceActivity'
 import {
   type NFT,
   type CollectionData,
@@ -23,6 +24,7 @@ export default function Marketplace() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [lastUpdated, setLastUpdated] = useState('')
+  const [listingIdFromIndex, setListingIdFromIndex] = useState<number | null>(null)
 
   const [searchParams] = useSearchParams()
   const initialCol = searchParams.get('collection') ?? 'all'
@@ -137,7 +139,7 @@ export default function Marketplace() {
 
   return (
     <div className="animate-fade-in">
-      <section className="relative mb-10 overflow-hidden rounded-3xl border border-[#2a2a3a] bg-gradient-to-br from-[#15151f] via-[#12121a] to-[#0a0a0f] p-6 sm:p-10">
+      <section className="relative mb-6 overflow-hidden rounded-3xl border border-[#2a2a3a] bg-gradient-to-br from-[#15151f] via-[#12121a] to-[#0a0a0f] p-6 sm:p-10">
         <div className="relative">
           <span className="inline-flex items-center gap-2 rounded-full border border-[#2a2a3a] bg-white/5 px-3 py-1 text-xs text-gray-300">
             <span className="live-dot" /> MultiversX Mainnet
@@ -146,11 +148,12 @@ export default function Marketplace() {
             <span className="gradient-text">xArtists Marketplace</span>
           </h1>
           <p className="mt-3 max-w-2xl text-base text-gray-400">
-            Buy · Sell · Offer · Bid — on-chain xArtists SC + XOXNO externe
+            Buy · Sell · Bid — on-chain après deploy SC · XOXNO en externe
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <MoonpayButton label="Acheter EGLD (MoonPay)" className="text-sm!" />
             <button
+              type="button"
               onClick={refreshLive}
               disabled={refreshing || loading}
               className="btn-secondary text-xs disabled:opacity-50"
@@ -165,6 +168,26 @@ export default function Marketplace() {
           </div>
         </div>
       </section>
+
+      {/* P0: SC not deployed — do not send funds to empty address */}
+      <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+        <strong>P0 — SC marketplace non déployé</strong> (adresse actuelle = compte vide, codeHash null).
+        List / Buy / Bid on-chain resteront en échec jusqu’au deploy +{' '}
+        <code className="text-xs">verify_marketplace_codehash</code>. Utilise XOXNO pour le commerce externe en
+        attendant.
+      </div>
+
+      <MarketplaceActivity
+        onPickListingId={id => {
+          setListingIdFromIndex(id)
+        }}
+      />
+      {listingIdFromIndex != null && (
+        <p className="text-xs text-purple-300 mb-4">
+          Listing ID indexé cliqué : <strong>{listingIdFromIndex}</strong> — sera prérempli à l’ouverture d’un NFT
+          (modal).
+        </p>
+      )}
 
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <input
@@ -218,6 +241,7 @@ export default function Marketplace() {
       <NFTDetailModal
         nft={selected}
         initialAction={action}
+        initialListingId={listingIdFromIndex}
         onClose={() => {
           setSelected(null)
           setAction(null)
@@ -240,6 +264,7 @@ function FilterPill({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm ${
         active
@@ -270,7 +295,12 @@ function NFTCard({
       <button type="button" onClick={() => onOpen(nft, null)} className="text-left">
         <div className="relative aspect-square overflow-hidden bg-[#0a0a0f]">
           {img ? (
-            <img src={img} alt={nft.name} className="h-full w-full object-cover group-hover:scale-105 transition-transform" loading="lazy" />
+            <img
+              src={img}
+              alt={nft.name}
+              className="h-full w-full object-cover group-hover:scale-105 transition-transform"
+              loading="lazy"
+            />
           ) : (
             <div className="flex h-full items-center justify-center text-5xl opacity-60">🎨</div>
           )}
