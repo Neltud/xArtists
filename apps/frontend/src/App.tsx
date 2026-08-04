@@ -27,10 +27,10 @@ const ArtistStudio = lazy(() => import('./pages/ArtistStudio'))
 
 function PageLoader() {
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="flex items-center justify-center min-h-[60vh]" role="status" aria-live="polite">
       <div className="text-center">
         <div className="w-12 h-12 rounded-full border-2 border-purple-600 border-t-transparent animate-spin mx-auto mb-4" />
-        <p className="text-gray-500 text-sm">Chargement...</p>
+        <p className="text-gray-500 text-sm">Chargement…</p>
       </div>
     </div>
   )
@@ -39,10 +39,13 @@ function PageLoader() {
 function StaleDataBanner({ isStale, lastUpdate }: { isStale: boolean; lastUpdate: Date | null }) {
   if (!isStale) return null
   return (
-    <div className="bg-orange-500/10 border-b border-orange-500/30 px-4 py-2 text-center text-xs text-orange-400">
-      ⚠️ Données potentiellement périmées —{' '}
+    <div
+      className="bg-orange-500/10 border-b border-orange-500/30 px-4 py-2 text-center text-xs text-orange-400"
+      role="status"
+    >
+      Données potentiellement périmées —{' '}
       {lastUpdate ? lastUpdate.toLocaleTimeString('fr-FR') : 'inconnue'}.{' '}
-      <button className="underline" onClick={() => window.location.reload()}>
+      <button type="button" className="underline" onClick={() => window.location.reload()}>
         Actualiser
       </button>
     </div>
@@ -54,9 +57,16 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:bg-purple-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg"
+      >
+        Aller au contenu
+      </a>
       <Header />
       <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />
       <main
+        id="main"
         className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-8"
         style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}
       >
@@ -85,6 +95,9 @@ export default function App() {
                 element={
                   <div className="text-center py-20">
                     <h2 className="text-2xl font-bold mb-2">Page introuvable</h2>
+                    <a href="/xArtists/" className="text-purple-400 text-sm">
+                      Retour accueil →
+                    </a>
                   </div>
                 }
               />
@@ -96,7 +109,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <p className="font-bold">xArtists — LIA v6</p>
-            <p className="text-xs text-gray-500">@tudurioriginal · MultiversX Mainnet</p>
+            <p className="text-xs text-gray-500">$TRO supply max 500 000 · MultiversX Mainnet</p>
           </div>
           <div className="flex gap-4 text-sm text-gray-500">
             <a href={LINKS.github} target="_blank" rel="noreferrer" className="hover:text-white">
@@ -107,6 +120,14 @@ export default function App() {
             </a>
             <a href={LINKS.xexchange} target="_blank" rel="noreferrer" className="hover:text-white">
               xExchange
+            </a>
+            <a
+              href="https://tro-art-studio.lovable.app/"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-white"
+            >
+              Site vitrine
             </a>
           </div>
         </div>
