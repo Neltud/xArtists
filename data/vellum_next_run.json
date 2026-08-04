@@ -1,15 +1,24 @@
 {
-  "updated": "2026-08-04T16:10:00Z",
+  "updated": "2026-08-04T19:45:00Z",
+  "prompt": "docs/VELLUM_RECONSTRUCTION_PROMPT_FULL.md",
   "LIA_LIVE_TRADING": "0",
   "auto_execute_claude": false,
   "TRO_MAX_SUPPLY": 500000,
+  "contracts_truth": "data/contracts.json",
   "phases": [
-    "A_deploy_nft_and_agents_marketplace",
-    "B_verify_codehash_post_deploy",
-    "C_publish_board_gas_policy",
-    "D_claude_advisor_journal_only",
-    "E_pages_rebuild_VITE"
+    "0_preflight",
+    "A_deploy_sc",
+    "B_publish_board_gas",
+    "C_strategies_paper_fuse",
+    "D_claude_advisor_only",
+    "E_social_intel_module_if_missing",
+    "F_pages_vite"
   ],
-  "doc": "docs/VELLUM_LIA_RECONSTRUCTION.md",
-  "claude_agent_path": "lia/claude_agent/"
+  "strategies_source": [
+    "lia/circuit/strategies.py",
+    "lia/circuit/strategies_venues.py",
+    "lia/agents/green_smoke_consumer.py",
+    "lia/venues/registry.py",
+    "lia/claude_agent/"
+  ]
 }
