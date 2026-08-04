@@ -1,0 +1,15 @@
+{
+  "updated": "2026-08-04T16:10:00Z",
+  "LIA_LIVE_TRADING": "0",
+  "auto_execute_claude": false,
+  "TRO_MAX_SUPPLY": 500000,
+  "phases": [
+    "A_deploy_nft_and_agents_marketplace",
+    "B_verify_codehash_post_deploy",
+    "C_publish_board_gas_policy",
+    "D_claude_advisor_journal_only",
+    "E_pages_rebuild_VITE"
+  ],
+  "doc": "docs/VELLUM_LIA_RECONSTRUCTION.md",
+  "claude_agent_path": "lia/claude_agent/"
+}
