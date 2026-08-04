@@ -1,7 +1,7 @@
 # xArtists — AI + RWA + NFT sur MultiversX
 
-## Mise à Jour 3 août 2026
-**Code pleinement corrigé (v0.14.0+) + Roadmap V1 active.**  
+## Mise à Jour 4 août 2026
+**Code pleinement corrigé (v0.15.0) + Roadmap V1 active.**  
 - Analyse dApp + Veille techno : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)  
 - **Roadmap 7 priorités** : [`docs/ROADMAP_V1.md`](docs/ROADMAP_V1.md)  
 - PWA (manifest + SW) · OpenAPI · Docker · AgentsMarketplace · E2E Playwright smoke
@@ -25,7 +25,7 @@
 
 ## Docs
 - [Roadmap V1 (7 priorités)](docs/ROADMAP_V1.md)
-- [Analyse DApp complète + Veille techno (3 août 2026)](docs/ANALYSE_DAPP_COMPLETE.md)
+- [Analyse DApp complète + Veille techno (4 août 2026)](docs/ANALYSE_DAPP_COMPLETE.md)
 - [OpenAPI](docs/openapi.yaml)
 - [Documentation technique LIA](docs/TECHNICAL_DOCUMENTATION.md)
 - [Audit LIA v6](LIA_V6_OPTIMIZATION_AUDIT.md)
