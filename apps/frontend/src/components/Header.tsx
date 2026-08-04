@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useWallet, LIA_WALLET } from '../context/WalletContext'
 import { sdkDappConfig } from '../config/sdkDapp'
 import { LINKS, PRIMARY_NAV } from '../config/links'
+import OraclePriceBadge from './OraclePriceBadge'
 
 function isValidErd(addr: string): boolean {
   return /^erd1[a-z0-9]{58}$/i.test(addr.trim())
@@ -96,7 +97,7 @@ export default function Header() {
             </div>
           </NavLink>
 
-          <nav className="hidden lg:flex items-center gap-0.5 overflow-x-auto max-w-[55%]">
+          <nav className="hidden lg:flex items-center gap-0.5 overflow-x-auto max-w-[50%]">
             {PRIMARY_NAV.map(({ to, label }) => (
               <NavLink
                 key={to}
@@ -116,6 +117,9 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <span className="hidden sm:inline-flex">
+              <OraclePriceBadge />
+            </span>
             {connected ? (
               <button
                 onClick={disconnect}
@@ -158,6 +162,9 @@ export default function Header() {
               onClick={e => e.stopPropagation()}
               style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}
             >
+              <div className="px-4 py-2">
+                <OraclePriceBadge />
+              </div>
               {PRIMARY_NAV.map(({ to, label, emoji }) => (
                 <NavLink
                   key={to}
