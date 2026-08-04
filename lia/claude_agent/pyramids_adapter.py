@@ -1,27 +1,19 @@
 """
-Bridge Claude portfolio_allocator ↔ LIA compound_pyramids sleeves.
+Bridge real sleeve allocator (lia.circuit.compound_pyramids) into
+portfolio_allocator.get_allocation(external_allocator=...).
 
-Fixed targets (DEFAULT_PYRAMID):
-  MOM 15% | MR 15% | MICRO_ARB 20% | WEEKLY_SWING 10% | YIELD 25% | RESERVE 15%
+FIXED weights (never winrate):
+  MOM 15% · MR 15% · MICRO_ARB 20% · WEEKLY_SWING 10% · YIELD 25% · RESERVE 15%
 """
 from __future__ import annotations
 
+import importlib
+import warnings
 from typing import Any, Dict, List, Optional
 
 from lia.claude_agent.portfolio_allocator import AllocationResult
 from lia.claude_agent.strategy_base import StrategyPerformance
 
-# --- import real pyramid; hard-fail weights only if import breaks ---
-try:
-    from lia.circuit.compound_pyramids import DEFAULT_PYRAMID, CompoundPyramids
-
-    _PYRAMID_OK = True
-except Exception:  # pragma: no cover
-    DEFAULT_PYRAMID = []  # type: ignore
-    CompoundPyramids = None  # type: ignore
-    _PYRAMID_OK = False
-
-# Canonical fallback identical to DEFAULT_PYRAMID (for offline Claude sandbox)
 _FIXED_WEIGHTS: Dict[str, float] = {
     "MOM": 0.15,
     "MR": 0.15,
@@ -30,53 +22,63 @@ _FIXED_WEIGHTS: Dict[str, float] = {
     "YIELD": 0.25,
     "RESERVE": 0.15,
 }
+assert abs(sum(_FIXED_WEIGHTS.values()) - 1.0) < 1e-9
+
+
+class PyramidsAdapterWarning(UserWarning):
+    pass
+
+
+def _read_weights_from_real_module() -> Optional[Dict[str, float]]:
+    try:
+        module = importlib.import_module("lia.circuit.compound_pyramids")
+    except ImportError:
+        return None
+    pyramid = getattr(module, "DEFAULT_PYRAMID", None)
+    if pyramid is None:
+        warnings.warn(
+            "compound_pyramids importable but no DEFAULT_PYRAMID — using _FIXED_WEIGHTS",
+            PyramidsAdapterWarning,
+        )
+        return None
+    try:
+        weights: Dict[str, float] = {}
+        for sleeve in pyramid:
+            sleeve_id = getattr(sleeve, "id", None) or getattr(sleeve, "name", None)
+            weight = getattr(sleeve, "weight", None)
+            if sleeve_id is None or weight is None:
+                raise AttributeError("sleeve missing id/name or weight")
+            weights[str(sleeve_id)] = float(weight)
+    except (TypeError, AttributeError, ValueError) as e:
+        warnings.warn(f"DEFAULT_PYRAMID shape unexpected ({e!r})", PyramidsAdapterWarning)
+        return None
+    total = sum(weights.values())
+    if total <= 0 or not weights:
+        return None
+    return {sid: w / total for sid, w in weights.items()}
 
 
 def sleeves_to_weights() -> Dict[str, float]:
-    if _PYRAMID_OK and DEFAULT_PYRAMID:
-        return {s.id: float(s.weight) for s in DEFAULT_PYRAMID}
+    live = _read_weights_from_real_module()
+    if live is not None:
+        return live
     return dict(_FIXED_WEIGHTS)
 
 
 def pyramids_external_allocator(
     performances: List[StrategyPerformance],
     total_budget: float,
-    *,
-    reserve_strategy_id: Optional[str] = None,
-    reserve_pct: float = 0.0,
-    use_live_state: bool = False,
-    **_kwargs: Any,
+    **kwargs: Any,
 ) -> AllocationResult:
-    """
-    Always returns pyramid target weights (15/15/20/10/25/15).
-    Does NOT fall back to winrate scoring — that would diverge from LIA book.
-    performances is accepted for API compatibility only.
-    """
-    _ = performances  # intentional: fixed sleeves, not winrate
-    weights: Dict[str, float] = sleeves_to_weights()
+    """Fixed sleeve weights only — performances ignored by design."""
+    _ = performances
+    _ = kwargs
+    weights = sleeves_to_weights()
+    budget_per_strategy = {sid: w * float(total_budget) for sid, w in weights.items()}
+    return AllocationResult(weights=weights, budget_per_strategy=budget_per_strategy)
 
-    if use_live_state and _PYRAMID_OK and CompoundPyramids is not None:
-        try:
-            pyr = CompoundPyramids(total_budget)
-            eq = {sid: max(0.0, st.equity_usd) for sid, st in pyr.sleeves.items()}
-            s = sum(eq.values())
-            if s > 0:
-                weights = {sid: eq.get(sid, 0.0) / s for sid in weights}
-        except Exception:
-            weights = sleeves_to_weights()
 
-    if reserve_strategy_id and reserve_strategy_id in weights and reserve_pct > 0:
-        weights[reserve_strategy_id] = reserve_pct
-        others = [k for k in weights if k != reserve_strategy_id]
-        rest = max(0.0, 1.0 - weights[reserve_strategy_id])
-        osum = sum(weights[k] for k in others) or 1.0
-        for k in others:
-            weights[k] = weights[k] / osum * rest
-
-    total = sum(weights.values()) or 1.0
-    weights = {k: v / total for k, v in weights.items()}
-    budget = {k: weights[k] * float(total_budget) for k in weights}
-    return AllocationResult(weights=weights, budget_per_strategy=budget)
+pyramids_allocator = pyramids_external_allocator  # alias
 
 
 def signal_source_caps() -> Dict[str, float]:
