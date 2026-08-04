@@ -1,75 +1,56 @@
 """
-Post-buy agent fulfillment — API key (limited) + badge mint intent + receipt.
-Triggered by Vellum after detecting buyAgentAction success (not by browser).
+Post-buy fulfillment: API key + NFT rights + optional stake bootstrap.
 """
 from __future__ import annotations
 
-import hashlib
 import json
-import secrets
-import time
-from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
-ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "data" / "agent_purchases"
-
-
-def _api_key(agent_id: str, buyer: str) -> str:
-    raw = f"{agent_id}:{buyer}:{secrets.token_hex(16)}"
-    return "xart_" + hashlib.sha256(raw.encode()).hexdigest()[:32]
+from lia.agents.api_keys import issue_key
+from lia.agents.nft_rights import bind_key, grant_badge_rights
+from lia.agents.agent_stake import open_stake
 
 
 def fulfill_purchase(
     *,
-    listing_id: int,
     agent_id: str,
     buyer: str,
-    tx_hash: str,
-    price_egld: float,
+    collection: str = "AGENTBADGE-pending",
+    nonce: int = 0,
+    starting_egld: Optional[float] = None,
 ) -> dict[str, Any]:
-    """
-    Create receipt + limited API key record.
-    Badge mint is recorded as intent for mxpy/minter (ops).
-    """
-    key = _api_key(agent_id, buyer)
-    receipt = {
-        "version": "1",
-        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "listing_id": listing_id,
-        "agent_id": agent_id,
-        "buyer": buyer,
-        "tx_hash": tx_hash,
-        "price_egld": price_egld,
-        "deliverables": {
-            "api_key_prefix": key[:10] + "…",
-            "api_key_full_storage": "vellum_secret_only",
-            "nft_badge": {
-                "status": "pending_mint",
-                "collection_hint": "XARTISTS-AGENT-BADGE",
-                "metadata": {"agent_id": agent_id, "buyer": buyer, "tx": tx_hash},
-            },
-            "receipt": True,
-        },
-        "api_key_hash": hashlib.sha256(key.encode()).hexdigest(),
-        "scopes": [f"agent:{agent_id}:read", f"agent:{agent_id}:invoke_limited"],
-        "rate_limit_per_day": 100,
-        "note": "Full API key returned only via secure Vellum channel to buyer — never commit plaintext key",
+    rights = grant_badge_rights(
+        collection=collection,
+        nonce=nonce,
+        agent_id=agent_id,
+        owner=buyer,
+    )
+    key = issue_key(agent_id=agent_id, owner=buyer)
+    raw = key.pop("raw_key", None)
+    bind_key(collection, nonce, key["key_id"], buyer)
+    stake = None
+    if starting_egld and starting_egld > 0:
+        stake = open_stake(
+            agent_id=agent_id,
+            owner=buyer,
+            principal_egld=starting_egld,
+            collection=collection,
+            nonce=nonce,
+            lock_nft=False,
+        )
+    return {
+        "rights": rights.to_dict(),
+        "api_key_meta": key,
+        "raw_key_once": raw,
+        "stake": stake,
+        "note": "Deliver raw_key over secure channel only once",
     }
-    # Store hash only in public data; full key must stay in secret manager
-    public = {**receipt, "api_key_plaintext": None}
-    OUT.mkdir(parents=True, exist_ok=True)
-    path = OUT / f"{tx_hash or listing_id}.json"
-    path.write_text(json.dumps(public, indent=2), encoding="utf-8")
-    return {"receipt_path": str(path), "api_key_once": key, "public": public}
 
 
 if __name__ == "__main__":
-    r = fulfill_purchase(
-        listing_id=1,
-        agent_id="lia-trading-v1",
-        buyer="erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gqag2",
-        tx_hash="deadbeef",
-        price_egld=1.0,
+    print(
+        json.dumps(
+            fulfill_purchase(agent_id="xag-demo", buyer="erd1buyer", starting_egld=0.5),
+            indent=2,
+        )[:2000]
     )
-    print(json.dumps({k: r[k] for k in ("receipt_path", "public")}, indent=2))
