@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export type Persona = 'artist' | 'collector' | 'investor' | 'curious'
 
@@ -17,7 +17,8 @@ const PERSONAS: {
     id: 'artist',
     emoji: '🎨',
     title: 'Artiste',
-    blurb: 'Mint, collection, royalties, Studio phygital — garde la valeur de ton œuvre.',
+    blurb:
+      'Créez et publiez vos œuvres (Studio). NFT phygital, royalties, galerie xArtists — vous gardez la valeur de votre art.',
     primary: { to: '/studio', label: 'Ouvrir le Studio' },
     secondary: { to: '/gallery', label: 'Voir la galerie' },
   },
@@ -25,7 +26,8 @@ const PERSONAS: {
     id: 'collector',
     emoji: '🖼️',
     title: 'Collectionneur',
-    blurb: 'Galerie, marketplace, bid — explorer et acquérir des NFT xArtists.',
+    blurb:
+      'Explorez la galerie et le marketplace. Achats on-chain dès que le smart contract est déployé ; XOXNO en alternative.',
     primary: { to: '/gallery', label: 'Explorer la galerie' },
     secondary: { to: '/marketplace', label: 'Marketplace' },
   },
@@ -33,7 +35,8 @@ const PERSONAS: {
     id: 'investor',
     emoji: '📈',
     title: 'Investisseur',
-    blurb: '$TRO (cap 500 000), LP, Hatom, packs agents LIA — suivi protocole.',
+    blurb:
+      'Suivez $TRO (plafond 500 000), le portfolio LIA, les pools et les packs agents. Pas de conseil financier.',
     primary: { to: '/tro', label: 'Token $TRO' },
     secondary: { to: '/portfolio', label: 'Portfolio LIA' },
   },
@@ -41,8 +44,9 @@ const PERSONAS: {
     id: 'curious',
     emoji: '🔎',
     title: 'Curieux',
-    blurb: 'Découvrir LIA, agents, DAO et le tableau de bord sans pression.',
-    primary: { to: '/', label: 'Dashboard' },
+    blurb:
+      'Découvrez le tableau de bord LIA, les agents et la DAO à votre rythme — sans engagement.',
+    primary: { to: '/', label: 'Tableau de bord' },
     secondary: { to: '/agents', label: 'Agents IA' },
   },
 ]
@@ -71,11 +75,8 @@ type Props = {
   onClose?: () => void
 }
 
-/**
- * Fenêtre d'accueil : Qui êtes-vous ?
- * Accessible dialog — focus trap simple via role=dialog + Escape.
- */
 export default function PersonaWelcome({ forceOpen = false, onClose }: Props) {
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [chosen, setChosen] = useState<Persona | null>(null)
 
@@ -102,12 +103,24 @@ export default function PersonaWelcome({ forceOpen = false, onClose }: Props) {
     }
   }, [open, onClose])
 
+  const selectPersona = (id: Persona, goPrimary: boolean) => {
+    setStoredPersona(id)
+    setChosen(id)
+    setOpen(false)
+    onClose?.()
+    if (goPrimary) {
+      const p = PERSONAS.find(x => x.id === id)
+      if (p) navigate(p.primary.to)
+    }
+  }
+
   if (!open) {
     return (
       <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-gray-500">
         {chosen && (
           <span className="rounded-full border border-white/10 px-3 py-1">
-            Parcours : <strong className="text-purple-300">{PERSONAS.find(p => p.id === chosen)?.title}</strong>
+            Parcours :{' '}
+            <strong className="text-purple-300">{PERSONAS.find(p => p.id === chosen)?.title}</strong>
           </span>
         )}
         <button
@@ -127,34 +140,31 @@ export default function PersonaWelcome({ forceOpen = false, onClose }: Props) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="persona-title"
+      aria-describedby="persona-desc"
     >
-      <div className="absolute inset-0 bg-black/75 backdrop-blur-md" onClick={() => { setOpen(false); onClose?.() }} />
+      <div
+        className="absolute inset-0 bg-black/75 backdrop-blur-md"
+        onClick={() => {
+          selectPersona(chosen || 'curious', false)
+        }}
+        aria-hidden
+      />
       <div className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border border-purple-500/30 bg-[#0d0d14] p-6 sm:p-8 shadow-2xl">
         <p className="text-xs uppercase tracking-widest text-purple-400 mb-2">Bienvenue sur xArtists</p>
         <h2 id="persona-title" className="text-2xl sm:text-3xl font-black mb-2">
-          Vous êtes… ?
+          Qui êtes-vous ?
         </h2>
-        <p className="text-sm text-gray-400 mb-6">
-          Choisissez un parcours pour aller droit au but. Vous pourrez changer à tout moment.
+        <p id="persona-desc" className="text-sm text-gray-400 mb-6">
+          Choisissez un parcours pour accéder plus vite aux bonnes pages. Vous pourrez modifier ce choix à tout
+          moment.
         </p>
 
-        <div className="grid sm:grid-cols-2 gap-3" role="list">
+        <div className="grid sm:grid-cols-2 gap-3">
           {PERSONAS.map(p => (
             <button
               key={p.id}
               type="button"
-              role="listitem"
-              onClick={() => {
-                setStoredPersona(p.id)
-                setChosen(p.id)
-                setOpen(false)
-                onClose?.()
-                // soft navigate via full path for GH pages basename
-                window.location.hash = ''
-                const base = import.meta.env.BASE_URL || '/'
-                window.history.pushState({}, '', `${base}${p.primary.to.replace(/^\//, '')}`.replace(/\/\//g, '/'))
-                window.dispatchEvent(new PopStateEvent('popstate'))
-              }}
+              onClick={() => selectPersona(p.id, true)}
               className="text-left rounded-2xl border border-[#2a2a3a] bg-[#12121a] p-4 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
             >
               <span className="text-3xl" aria-hidden>
@@ -173,22 +183,14 @@ export default function PersonaWelcome({ forceOpen = false, onClose }: Props) {
           <button
             type="button"
             className="text-xs text-gray-500 underline"
-            onClick={() => {
-              setStoredPersona('curious')
-              setChosen('curious')
-              setOpen(false)
-              onClose?.()
-            }}
+            onClick={() => selectPersona('curious', false)}
           >
-            Continuer sans choisir (curieux)
+            Continuer sans choisir
           </button>
           <Link
             to="/gallery"
             className="text-xs text-purple-400"
-            onClick={() => {
-              setOpen(false)
-              onClose?.()
-            }}
+            onClick={() => selectPersona('collector', false)}
           >
             Galerie directe →
           </Link>
