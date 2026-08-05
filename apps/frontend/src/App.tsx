@@ -25,6 +25,7 @@ const AgentsPolyliaPage = lazy(() => import('./pages/AgentsPolyliaPage'))
 const BurnifyPage = lazy(() => import('./pages/BurnifyPage'))
 const ArtistStudio = lazy(() => import('./pages/ArtistStudio'))
 const AdsPage = lazy(() => import('./pages/AdsPage'))
+const Editions = lazy(() => import('./pages/Editions'))
 
 function PageLoader() {
   return (
@@ -92,6 +93,7 @@ export default function App() {
               <Route path="/lp" element={<LPPoolsPage />} />
               <Route path="/soul-testnet" element={<SoulTestnetPage />} />
               <Route path="/ads" element={<AdsPage />} />
+              <Route path="/editions" element={<Editions />} />
               <Route
                 path="*"
                 element={
@@ -120,19 +122,14 @@ export default function App() {
             <a href={LINKS.explorer} target="_blank" rel="noreferrer" className="hover:text-white">
               Explorer
             </a>
+            <a href="/xArtists/editions" className="hover:text-white">
+              Editions
+            </a>
             <a href="/xArtists/ads" className="hover:text-white">
               Pub / Ads
             </a>
             <a href={LINKS.xexchange} target="_blank" rel="noreferrer" className="hover:text-white">
               xExchange
-            </a>
-            <a
-              href="https://tro-art-studio.lovable.app/"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-white"
-            >
-              Site vitrine
             </a>
           </div>
         </div>

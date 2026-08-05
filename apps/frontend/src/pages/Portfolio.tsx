@@ -1,12 +1,11 @@
 import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { usePortfolioValue, type PortfolioToken, type PortfolioNft } from '../hooks/usePortfolioValue'
 import { defaultWinRateScenarios } from '../utils/portfolioScenarios'
 import { LINKS } from '../config/links'
+import LiaMultichainPanel from '../components/LiaMultichainPanel'
 
-const WALLET = LINKS.explorer.includes('multiversx')
-  ? 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
-  : 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
-
+const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
 const GOAL_USD = 1_000_000
 const START_USD = 3
 
@@ -44,7 +43,6 @@ function TokenRow({ t }: { t: PortfolioToken }) {
       <td className="py-3 px-3">
         <p className="font-semibold text-sm">{t.ticker || t.identifier.split('-')[0]}</p>
         <p className="text-xs text-gray-500 truncate max-w-[180px]">{t.name}</p>
-        <p className="text-[10px] mono text-gray-600">{t.identifier}</p>
       </td>
       <td className="py-3 px-3 text-right mono text-sm">{fmtBalance(t.balance)}</td>
       <td className="py-3 px-3 text-right text-sm">
@@ -79,9 +77,6 @@ function NftRow({ n }: { n: PortfolioNft }) {
           <div className="min-w-0">
             <p className="font-semibold text-sm">{n.name || n.collection}</p>
             <p className="text-[10px] mono text-gray-600">{n.identifier}</p>
-            <p className="text-[10px] text-gray-500">
-              #{n.nonce} · {n.type}
-            </p>
           </div>
         </div>
       </td>
@@ -96,6 +91,10 @@ function NftRow({ n }: { n: PortfolioNft }) {
   )
 }
 
+/**
+ * LIA protocole only — MVX book + multi-chain + paper scenarios.
+ * User personal balances → /wallet
+ */
 export default function Portfolio() {
   const {
     egldBalance,
@@ -113,7 +112,6 @@ export default function Portfolio() {
 
   const base = totalUsd > 0 ? totalUsd : START_USD
   const scenarios = useMemo(() => defaultWinRateScenarios(base), [base])
-
   const millionPct = (totalUsd / GOAL_USD) * 100
   const logPct =
     totalUsd > START_USD
@@ -128,15 +126,26 @@ export default function Portfolio() {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-3xl font-black">📈 Portfolio & Profits</h1>
-          <p className="text-gray-500 mt-1">Compounding ${START_USD} → $1,000,000 · scénarios 365j</p>
+          <h1 className="text-3xl font-black">📈 Portfolio LIA (protocole)</h1>
+          <p className="text-gray-500 mt-1 text-sm">
+            Book ops MultiversX + BTC/SOL · scénarios paper. {' '}
+            <Link to="/wallet" className="text-green-300 underline">
+              Mon wallet Connect →
+            </Link>
+          </p>
         </div>
-        <button onClick={refresh} className="btn-secondary text-sm self-start sm:self-auto">
+        <button type="button" onClick={refresh} className="btn-secondary text-sm self-start sm:self-auto">
           🔄 Actualiser
         </button>
       </div>
+
+      <div className="mb-6 rounded-xl border border-purple-500/30 bg-purple-500/5 px-3 py-2 text-xs text-purple-100/90">
+        Ceci n’est <strong>pas</strong> ton portefeuille personnel. Wallet user = page Wallet uniquement.
+      </div>
+
+      <LiaMultichainPanel />
 
       {error && (
         <div className="card mb-6 border-red-500/30 text-red-400 text-sm">⚠️ Erreur: {error}</div>
@@ -145,18 +154,18 @@ export default function Portfolio() {
       <div className="card mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-widest">Valeur totale</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest">Valeur MVX estimée</p>
             {loading ? (
               <div className="h-10 w-48 rounded-lg bg-[#16161f] animate-pulse mt-1" />
             ) : (
               <p className="text-4xl font-black gradient-text">{fmtUsd(totalUsd)}</p>
             )}
             <p className="text-xs text-gray-500 mt-1">
-              EGLD @ ${egldPrice.toFixed(4)} · {tokens.length} tokens · {nfts.length} NFT/MetaESDT
+              EGLD @ ${egldPrice.toFixed(4)} · {tokens.length} tokens · {nfts.length} NFT
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-gray-500">Objectif</p>
+            <p className="text-xs text-gray-500">Objectif paper</p>
             <p className="text-2xl font-bold text-purple-400">$1,000,000</p>
             <p className="text-xs text-gray-500">{millionPct.toFixed(6)}% atteint</p>
           </div>
@@ -164,19 +173,12 @@ export default function Portfolio() {
         <div className="progress-bar mb-2">
           <div className="progress-fill" style={{ width: `${Math.min(logPct, 100)}%` }} />
         </div>
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <span>Départ: ${START_USD}</span>
-          <span>Log: {logPct.toFixed(2)}%</span>
-        </div>
       </div>
 
-      {/* 365-day win-rate scenarios */}
       <div className="card mb-6 border-teal-500/20">
-        <h2 className="text-lg font-bold mb-2">📅 Rendement 365 jours — scénarios de win rate</h2>
+        <h2 className="text-lg font-bold mb-2">📅 Rendement 365j — scénarios (illustratif)</h2>
         <p className="text-xs text-gray-500 mb-4">
-          Hypothèses: <strong>5 trades/jour</strong> · gain <strong>+1%</strong> · perte{' '}
-          <strong>−0,8%</strong> · base = valeur portfolio actuelle (ou ${START_USD} si vide).{' '}
-          <span className="text-amber-400/90">Illustratif — pas une promesse de performance.</span>
+          5 trades/j · +1% / −0,8% · <span className="text-amber-400/90">pas une promesse</span>
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -184,8 +186,8 @@ export default function Portfolio() {
               <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
                 <th className="text-left py-2 px-2">Scénario</th>
                 <th className="text-right py-2 px-2">Wins / Losses</th>
-                <th className="text-right py-2 px-2">Valeur fin an</th>
-                <th className="text-right py-2 px-2">Multiple</th>
+                <th className="text-right py-2 px-2">Fin an</th>
+                <th className="text-right py-2 px-2">×</th>
               </tr>
             </thead>
             <tbody>
@@ -202,13 +204,10 @@ export default function Portfolio() {
             </tbody>
           </table>
         </div>
-        <p className="text-[11px] text-gray-600 mt-3">
-          Base calcul: {fmtUsd(base)} · 1 825 trades/an · 100% = tous les trades gagnants
-        </p>
       </div>
 
       <div className="card mb-6">
-        <h2 className="text-lg font-bold mb-4">📊 Répartition</h2>
+        <h2 className="text-lg font-bold mb-4">📊 Répartition MVX</h2>
         <div className="space-y-3">
           {breakdown.map(b => {
             const pct = totalUsd > 0 ? (b.value / totalUsd) * 100 : 0
@@ -237,34 +236,28 @@ export default function Portfolio() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="card">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">EGLD</p>
+          <p className="text-xs text-gray-500 uppercase mb-1">EGLD</p>
           <p className="text-xl font-bold">{egldBalance.toFixed(6)}</p>
           <p className="text-xs text-gray-500">{fmtUsd(egldValueUsd)}</p>
         </div>
         <div className="card">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Prix EGLD</p>
+          <p className="text-xs text-gray-500 uppercase mb-1">Prix EGLD</p>
           <p className="text-xl font-bold text-blue-400">${egldPrice.toFixed(4)}</p>
         </div>
         <div className="card">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Tokens</p>
+          <p className="text-xs text-gray-500 uppercase mb-1">Tokens</p>
           <p className="text-xl font-bold">{tokens.length}</p>
-          <p className="text-xs text-gray-500">{fmtUsd(tokensValueUsd)}</p>
         </div>
         <div className="card">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">NFTs</p>
+          <p className="text-xs text-gray-500 uppercase mb-1">NFTs</p>
           <p className="text-xl font-bold">{nfts.length}</p>
-          <p className="text-xs text-gray-500">{fmtUsd(nftsValueUsd)}</p>
         </div>
       </div>
 
       <div className="card mb-6">
-        <h2 className="text-lg font-bold mb-4">🪙 Tokens ESDT ({tokens.length})</h2>
+        <h2 className="text-lg font-bold mb-4">🪙 ESDT LIA ({tokens.length})</h2>
         {loading ? (
-          <div className="space-y-2">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-12 rounded-lg bg-[#111118] animate-pulse" />
-            ))}
-          </div>
+          <div className="h-12 animate-pulse bg-[#111118] rounded-lg" />
         ) : tokens.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -273,7 +266,7 @@ export default function Portfolio() {
                   <th className="text-left py-2 px-3">Token</th>
                   <th className="text-right py-2 px-3">Balance</th>
                   <th className="text-right py-2 px-3">Prix</th>
-                  <th className="text-right py-2 px-3">Valeur USD</th>
+                  <th className="text-right py-2 px-3">USD</th>
                 </tr>
               </thead>
               <tbody>
@@ -284,23 +277,21 @@ export default function Portfolio() {
             </table>
           </div>
         ) : (
-          <p className="text-center text-gray-500 py-8">Aucun token ESDT</p>
+          <p className="text-center text-gray-500 py-6">Aucun token</p>
         )}
       </div>
 
       <div className="card mb-8">
-        <h2 className="text-lg font-bold mb-4">🖼️ NFTs & MetaESDT ({nfts.length})</h2>
-        {loading ? (
-          <div className="h-14 rounded-lg bg-[#111118] animate-pulse" />
-        ) : nfts.length > 0 ? (
+        <h2 className="text-lg font-bold mb-4">🖼️ NFTs LIA ({nfts.length})</h2>
+        {nfts.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
                   <th className="text-left py-2 px-3">NFT</th>
-                  <th className="text-right py-2 px-3">Balance</th>
+                  <th className="text-right py-2 px-3">Bal</th>
                   <th className="text-right py-2 px-3">Prix</th>
-                  <th className="text-right py-2 px-3">Valeur USD</th>
+                  <th className="text-right py-2 px-3">USD</th>
                 </tr>
               </thead>
               <tbody>
@@ -311,12 +302,12 @@ export default function Portfolio() {
             </table>
           </div>
         ) : (
-          <p className="text-center text-gray-500 py-8">Aucun NFT</p>
+          <p className="text-center text-gray-500 py-6">Aucun NFT</p>
         )}
       </div>
 
       <div className="card mb-8">
-        <h2 className="text-lg font-bold mb-4">🏆 Jalons</h2>
+        <h2 className="text-lg font-bold mb-4">🏆 Jalons paper</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           {MILESTONES.map(m => {
             const reached = totalUsd >= m.threshold
@@ -337,14 +328,8 @@ export default function Portfolio() {
       </div>
 
       <p className="text-xs text-gray-600">
-        Live:{' '}
-        <a
-          className="text-purple-400 hover:underline"
-          href={LINKS.explorerAccount(WALLET)}
-          target="_blank"
-          rel="noreferrer"
-        >
-          explorer wallet LIA
+        <a className="text-purple-400 hover:underline" href={LINKS.explorerAccount(WALLET)} target="_blank" rel="noreferrer">
+          Explorer LIA MVX
         </a>
       </p>
     </div>
