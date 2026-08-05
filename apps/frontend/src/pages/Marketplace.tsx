@@ -1,8 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, Link } from 'react-router-dom'
 import NFTDetailModal from '../components/NFTDetailModal'
 import MoonpayButton from '../components/MoonpayButton'
 import MarketplaceActivity from '../components/MarketplaceActivity'
+import AdSlot from '../components/AdSlot'
+import TreasuryBanner from '../components/TreasuryBanner'
 import {
   type NFT,
   type CollectionData,
@@ -169,25 +171,37 @@ export default function Marketplace() {
         </div>
       </section>
 
-      {/* P0: SC not deployed — do not send funds to empty address */}
       <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-100">
         <strong>P0 — SC marketplace non déployé</strong> (adresse actuelle = compte vide, codeHash null).
         List / Buy / Bid on-chain resteront en échec jusqu’au deploy +{' '}
         <code className="text-xs">verify_marketplace_codehash</code>. Utilise XOXNO pour le commerce externe en
-        attendant.
+        attendant. Fees treasury (policy) = seulement après SC live.
       </div>
 
-      <MarketplaceActivity
-        onPickListingId={id => {
-          setListingIdFromIndex(id)
-        }}
-      />
-      {listingIdFromIndex != null && (
-        <p className="text-xs text-purple-300 mb-4">
-          Listing ID indexé cliqué : <strong>{listingIdFromIndex}</strong> — sera prérempli à l’ouverture d’un NFT
-          (modal).
-        </p>
-      )}
+      <div className="mb-6">
+        <TreasuryBanner compact />
+      </div>
+
+      <div className="mb-6 grid lg:grid-cols-[1fr_280px] gap-4">
+        <div>
+          <MarketplaceActivity
+            onPickListingId={id => {
+              setListingIdFromIndex(id)
+            }}
+          />
+          {listingIdFromIndex != null && (
+            <p className="text-xs text-purple-300 mt-2">
+              Listing ID indexé : <strong>{listingIdFromIndex}</strong>
+            </p>
+          )}
+        </div>
+        <div className="space-y-3">
+          <AdSlot id="market_sidebar" />
+          <Link to="/ads" className="text-[10px] text-gray-500 underline block text-center">
+            Louer cet espace (enchère)
+          </Link>
+        </div>
+      </div>
 
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <input
