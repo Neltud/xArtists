@@ -4,9 +4,11 @@ import { useMultiversX } from '../hooks/useMultiversX'
 import MoonpayButton from '../components/MoonpayButton'
 import TreasuryBanner from '../components/TreasuryBanner'
 import { LINKS, LIA_WALLET } from '../config/links'
+import { LIA_MULTICHAIN } from '../config/multichain'
 
 const WALLET = LIA_WALLET
-const BTC_ADDR = 'bc1qglq57zpqjpdqe83dv5lkt4ky39cqmlfsqr8z9s'
+const BTC_ADDR = LIA_MULTICHAIN.btc.address
+const SOL_ADDR = LIA_MULTICHAIN.sol.address
 
 const SERVICES = [
   { id: 'signal_basic', name: 'Signal LIA Basic', price_egld: 0.001, desc: 'Signal marché complet' },
@@ -33,8 +35,10 @@ export default function Tip() {
       <div className="mb-8">
         <h1 className="text-3xl font-black">💜 Soutenir xArtists</h1>
         <p className="text-gray-500 mt-1">
-          Dons & services protocole — <strong className="text-gray-400">pas un investissement</strong>, pas de parts de
-          fonds (TREASURY_POLICY).
+          Dons & services — <strong className="text-gray-400">pas un investissement</strong>.{' '}
+          <Link to="/editions" className="text-purple-300 underline">
+            xArtists Editions
+          </Link>
         </p>
       </div>
 
@@ -42,77 +46,55 @@ export default function Tip() {
         <TreasuryBanner />
       </div>
 
-      <div className="mb-4 rounded-xl border border-[#2a2a3a] bg-[#12121a] px-3 py-2 text-xs text-gray-400">
-        Adresse ci-dessous = <strong className="text-purple-300">LIA Ops</strong> (collecte actuelle). Split Mission /
-        Reserve = après wallets dédiés. Memo conseillé :{' '}
-        <code className="text-emerald-400">tip:mission</code> ou <code className="text-emerald-400">tip:ops</code>.
-      </div>
-
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <div className="card">
-          <h2 className="text-lg font-bold mb-4">🔷 MultiversX (EGLD / $TRO)</h2>
-          <div className="flex justify-center mb-4">
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${WALLET}&bgcolor=16161f&color=ffffff`}
-              alt="QR EGLD"
-              className="rounded-xl border-4 border-[#2a2a3a]"
-              width={180}
-              height={180}
-            />
-          </div>
+          <h2 className="text-lg font-bold mb-4">🔷 MultiversX (EGLD)</h2>
           <div className="bg-[#111118] rounded-lg p-3 mono text-xs text-gray-300 break-all mb-3">{WALLET}</div>
           <div className="flex gap-2">
             <button type="button" onClick={() => copy(WALLET, 'egld')} className="btn-secondary flex-1 text-sm">
               {copied === 'egld' ? '✅ Copié!' : '📋 Copier'}
             </button>
-            <a
-              href={LINKS.explorerAccount(WALLET)}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-secondary text-sm px-4"
-            >
+            <a href={LINKS.explorerAccount(WALLET)} target="_blank" rel="noreferrer" className="btn-secondary text-sm px-4">
               🔗
             </a>
           </div>
         </div>
 
         <div className="card">
-          <h2 className="text-lg font-bold mb-4">🟠 Bitcoin (BTC)</h2>
-          <div className="flex justify-center mb-4">
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${BTC_ADDR}&bgcolor=16161f&color=f59e0b`}
-              alt="QR BTC"
-              className="rounded-xl border-4 border-[#2a2a3a]"
-              width={180}
-              height={180}
-            />
-          </div>
+          <h2 className="text-lg font-bold mb-4">🟠 Bitcoin</h2>
           <div className="bg-[#111118] rounded-lg p-3 mono text-xs text-gray-300 break-all mb-3">{BTC_ADDR}</div>
           <button type="button" onClick={() => copy(BTC_ADDR, 'btc')} className="btn-secondary w-full text-sm">
             {copied === 'btc' ? '✅ Copié!' : '📋 Copier BTC'}
           </button>
+          <a href={LIA_MULTICHAIN.btc.explorer} target="_blank" rel="noreferrer" className="text-xs text-purple-400 mt-2 inline-block">
+            mempool ↗
+          </a>
+        </div>
+
+        <div className="card md:col-span-2">
+          <h2 className="text-lg font-bold mb-4">◎ Solana</h2>
+          <div className="bg-[#111118] rounded-lg p-3 mono text-xs text-gray-300 break-all mb-3">{SOL_ADDR}</div>
+          <button type="button" onClick={() => copy(SOL_ADDR, 'sol')} className="btn-secondary text-sm">
+            {copied === 'sol' ? '✅ Copié!' : '📋 Copier SOL'}
+          </button>
+          <a href={LIA_MULTICHAIN.sol.explorer} target="_blank" rel="noreferrer" className="text-xs text-purple-400 ml-3">
+            Solscan ↗
+          </a>
         </div>
       </div>
 
       <div className="card mb-8 border-emerald-500/20 bg-emerald-500/5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-bold mb-1">💳 Acheter de l&apos;EGLD (fiat)</h2>
-            <p className="text-sm text-gray-400">MoonPay → ton wallet MultiversX (carte).</p>
+            <h2 className="text-lg font-bold mb-1">💳 Acheter EGLD (fiat)</h2>
+            <p className="text-sm text-gray-400">MoonPay → ton wallet.</p>
           </div>
           <MoonpayButton currencyCode="EGLD" label="Acheter EGLD" />
         </div>
       </div>
 
       <div className="card">
-        <h2 className="text-lg font-bold mb-4">⚡ Services LIA — micropaiements EGLD</h2>
-        <p className="text-xs text-gray-500 mb-4">
-          Prestation ops / rapport — <strong>pas</strong> un rendement sur le tip. Voir aussi{' '}
-          <Link to="/ads" className="text-purple-300 underline">
-            espace pub enchères
-          </Link>
-          .
-        </p>
+        <h2 className="text-lg font-bold mb-4">⚡ Services LIA — micropaiements</h2>
         <div className="space-y-2 mb-6">
           {SERVICES.map(s => (
             <div
@@ -129,13 +111,6 @@ export default function Tip() {
               </div>
             </div>
           ))}
-        </div>
-        <div className="bg-[#111118] rounded-xl p-4 text-sm text-gray-400">
-          <p className="font-semibold text-white mb-2">Comment payer</p>
-          <p>
-            Envoyer EGLD à l&apos;adresse LIA Ops avec data field{' '}
-            <code className="text-purple-300">service_id:…</code> ou memo tip:mission.
-          </p>
         </div>
       </div>
     </div>

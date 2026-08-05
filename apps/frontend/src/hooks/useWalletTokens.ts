@@ -64,7 +64,7 @@ export interface WalletData {
   refresh: () => void
 }
 
-function categoriseToken(ticker: string, tokenName: string, identifier: string): WalletToken['category'] {
+function categoriseToken(ticker: string, tokenName: string, _identifier: string): WalletToken['category'] {
   const upperTicker = ticker.toUpperCase()
   const upperName = tokenName.toUpperCase()
   if (HATOM_TICKERS.has(upperTicker) || upperName.includes('HATOM')) return 'hatom'
@@ -140,7 +140,7 @@ async function fetchHatomPosition(address: string): Promise<HatomPosition | null
       }
     }
   } catch {
-    /* fallback wallet H-tokens */
+    /* fallback */
   }
   try {
     const res = await fetch(`${MVX_API}/accounts/${address}/tokens?size=250`)
@@ -177,19 +177,42 @@ async function fetchHatomPosition(address: string): Promise<HatomPosition | null
   }
 }
 
-/** @param address defaults to LIA protocol wallet */
-export function useWalletTokens(address: string = LIA_WALLET): WalletData {
+const EMPTY: Omit<WalletData, 'refresh'> = {
+  address: '',
+  isLia: false,
+  egldBalance: 0,
+  egldValueUsd: 0,
+  tokens: [],
+  hatomTokens: [],
+  lpTokens: [],
+  farmTokens: [],
+  standardTokens: [],
+  totalEsdtUsd: 0,
+  hatomPosition: null,
+  loading: false,
+  error: null,
+}
+
+/** Pass null/undefined to skip fetch (user wallet page when disconnected). */
+export function useWalletTokens(address: string | null | undefined): WalletData {
   const [egldBalance, setEgldBalance] = useState(0)
   const [egldPrice, setEgldPrice] = useState(0)
   const [tokens, setTokens] = useState<WalletToken[]>([])
   const [hatomPosition, setHatomPosition] = useState<HatomPosition | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(Boolean(address?.trim()))
   const [error, setError] = useState<string | null>(null)
 
-  const addr = address?.trim() || LIA_WALLET
-  const isLia = addr.toLowerCase() === LIA_WALLET.toLowerCase()
+  const addr = address?.trim() || ''
+  const isLia = addr.length > 0 && addr.toLowerCase() === LIA_WALLET.toLowerCase()
 
   const fetchAll = useCallback(async () => {
+    if (!addr) {
+      setEgldBalance(0)
+      setTokens([])
+      setHatomPosition(null)
+      setLoading(false)
+      return
+    }
     setLoading(true)
     setError(null)
     try {
@@ -214,6 +237,10 @@ export function useWalletTokens(address: string = LIA_WALLET): WalletData {
   useEffect(() => {
     fetchAll()
   }, [fetchAll])
+
+  if (!addr) {
+    return { ...EMPTY, refresh: fetchAll }
+  }
 
   const hatomTokens = tokens.filter(t => t.category === 'hatom')
   const lpTokens = tokens.filter(t => t.category === 'lp')
