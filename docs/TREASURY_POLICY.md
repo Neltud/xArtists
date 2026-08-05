@@ -1,106 +1,168 @@
 # Treasury Policy — Fondation décentralisée xArtists
 
-**Version** : 0.1 · **Réseau** : MultiversX mainnet · **Statut** : policy produit (à ratifier DAO / ops)
+**Version** : 0.2 · **Réseau** : MultiversX mainnet · **Statut** : policy produit (à ratifier DAO / ops)
 
-**Principe** : collecte = perf LIA + fees market + tips + services · **pas de vente de parts de fonds**.
+**Principe** : collecte = performance LIA (si live) + fees market + tips + services · **pas de vente de parts de fonds** · **pas de promesse « investissez, LIA vous fait gagner »**.
+
+Appellation : **treasury de fondation décentralisée (protocol-owned)** — distincte d’un fonds LP classique ouvert au public.
 
 ---
 
-## 1. Wallets nommés
+## 1. Ce que nous sommes (et ne sommes pas)
+
+| Fonds LP classique | xArtists |
+|--------------------|----------|
+| LP → fonds → achète de l’art | Activité on-chain / produit → treasury → mission + art |
+| Promesse de performance aux souscripteurs | **Pas de souscription** : collecte = résultats + usage |
+| GP régulé | Fondation décentralisée + règles on-chain / DAO |
+
+La réussite autonome de LIA est un **moteur de treasury**, pas un produit vendu comme un fonds.
+
+---
+
+## 2. Wallets nommés
 
 | Rôle | Adresse | Usage |
 |------|---------|--------|
-| **LIA Ops / Protocol** | `erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6` | Exécution LIA, balances affichées Dashboard « protocole » — **jamais** login user |
+| **LIA Ops / Protocol** | `erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6` | Exécution LIA, gas, balances Dashboard « protocole » — **jamais** login user |
+| **BTC receive (ops)** | `bc1q0rvmym3mc4f5nmfuvpzvkvr236ptx5l243rt4d` | Visibility multi-chain (Portfolio) |
+| **SOL receive (ops)** | `FEcBEmpNGv8yuAnuyAdnZneCMiJMnNGYKaw7cgSzNYwn` | Idem |
 | **Treasury Mission** | `[erd1… À CRÉER / multisig]` | Grants, acquisitions art, drops fondation |
-| **Treasury Reserve** | `[erd1… À CRÉER / multisig]` | Runway, drawdown, imprévus |
-| **Fee Collector (SC)** | SC marketplace (après deploy live) | Accumule fees on-chain → withdraw vers split |
-| **User Connect** | Wallet de l’utilisateur | Tips / achats — hors treasury |
+| **Treasury Reserve** | `[erd1… À CRÉER / multisig]` | Runway risque, drawdown LIA, imprévus |
+| **Fee Collector (SC)** | SC marketplace (après deploy live) | Fees on-chain → withdraw → split |
+| **User Connect** | Wallet de l’utilisateur | Tips / achats — **hors** treasury |
 
-Tant que Mission / Reserve n’existent pas : **tout est encore concentré sur LIA Ops** = dette de transparence (à corriger en priorité).
+Tant que Mission / Reserve n’existent pas : tout concentré sur **LIA Ops** = **dette de transparence** (priorité).
 
-Snapshot on-chain (août 2026) : LIA Ops ≈ **0,66 EGLD** + stock $TRO + NFT ; contrats market/staking/governance **vides** (non opérationnels pour collecter des fees).
+Snapshot (août 2026) : LIA Ops ≈ **0,66+ EGLD** + $TRO + NFT ; SC market/staking/gov **vides** → fees on-chain = 0.
 
 ---
 
-## 2. Sources de collecte & split
+## 3. Sources de collecte
 
-| Source | Condition | Split indicatif (brut reçu) |
-|--------|-----------|------------------------------|
-| **Fees marketplace** | SC live + `codeHash` ≠ null | 40 % Mission · 30 % Reserve · 20 % Ops (gas/dev) · 10 % incentives listings |
+```
+                    ┌─────────────────────────────┐
+                    │  TREASURY FONDATION (DAO)   │
+                    └─────────────▲───────────────┘
+     ┌────────────┬───────────────┼───────────────┬────────────┐
+  LIA PnL    Market fees    Tips / don    $TRO util.   Services
+  (si réel)  (list/buy)     (user→proto)  (utility)    (abo…)
+```
+
+| Source | Condition | Split indicatif (brut) |
+|--------|-----------|-------------------------|
+| **Fees marketplace** | SC live + `codeHash` ≠ null | 40 % Mission · 30 % Reserve · 20 % Ops · 10 % incentives listings |
 | **Tips** | Explicit « don protocole / mission » | 70 % Mission · 20 % Reserve · 10 % Ops |
-| **Pub enchères (ads)** | Paiement memo / SC V2 | 50 % Mission · 25 % Reserve · 15 % Ops · 10 % stakers P2 |
-| **PnL LIA (live)** | `LIA_LIVE_TRADING=1` + gates micro-proof | 30 % Mission · 40 % Reserve · 20 % Ops · 10 % growth/MM |
+| **Pub enchères (ads)** | Memo / SC V2 | 50 % Mission · 25 % Reserve · 15 % Ops · 10 % stakers P2 |
+| **PnL LIA (live)** | `LIA_LIVE_TRADING=1` + micro-proof | 30 % Mission · 40 % Reserve · 20 % Ops · 10 % growth/MM |
 | **PnL LIA (paper)** | `LIA_LIVE_TRADING=0` | **0 cash** — rapport simulé seulement |
-| **Services** (abo, studio, packs agents) | Facturation claire | 50 % Ops · 30 % Mission · 20 % Reserve |
+| **Services** (packs agents 5–25 €, studio, **Editions**) | Facturation claire | 50 % Ops · 30 % Mission · 20 % Reserve |
 
-Pourcentages = **paramètres DAO** (modifiables par vote, pas par LIA seule).
+Pourcentages = **paramètres DAO** (vote), pas LIA seule.
+
+### Compartiments (cible)
+
+| Bucket | % indicatif | Usage |
+|--------|-------------|--------|
+| Runway ops | 20–40 % | Infra, gas, dev, Pinata, audits |
+| Mission art | 20–40 % | Grants, drops, acquisitions |
+| Réserve / risque | 15–25 % | Drawdown LIA, imprévus |
+| Growth / MM | 10–20 % | Liquidité prudente, incentives |
 
 ---
 
-## 3. Qui peut bouger les fonds
+## 4. Qui peut bouger les fonds
 
 | Action | Qui | Comment |
 |--------|-----|---------|
-| Exécution trading / yield LIA | LIA (policy + kill switch) | Dans limites mandat ; report hash / tx |
-| Withdraw fees SC market | Owner SC / multisig ops | Puis split selon §2 sous **7 jours** |
-| Grants / achat art | Multisig Mission ou vote DAO | Mémo public (artiste, montant, objectif) |
-| Transfert Reserve → Ops | Multisig + seuil | Au-delà de X EGLD : vote DAO |
-| Mint $TRO | **Pas** LIA / **pas** Vellum | Uniquement governance humaine + règles supply |
-| Dépenser tip user | N/A | Tip déjà reçu en treasury selon §2 |
+| Trading / yield LIA | LIA (policy + kill switch) | Mandat écrit ; report hash / tx |
+| Withdraw fees SC | Owner SC / multisig ops | Split §3 sous **≤ 7 jours** |
+| Grants / achat art | Multisig Mission ou vote DAO | Mémo public |
+| Reserve → Ops | Multisig + seuil | Au-delà de X EGLD : vote DAO |
+| Mint $TRO | **Pas** LIA / **pas** Vellum | Governance humaine + cap **500 000** |
+| Tips user | N/A | Déjà reçu selon memo tip:mission / tip:ops |
 
-**LIA ne signe pas les grants Mission.** Le DAO $TRO paramètre fees & splits ; il ne « gère » pas le wallet user.
-
----
-
-## 4. Rôle DAO $TRO (treasury)
-
-- Fixer % fee market et % split §2
-- Whitelist collections / éligibilité grants
-- Approuver sorties Reserve > seuil
-- **Ne pas** promettre yield sur tip ou stake = perf LIA
-- **Ne pas** traiter $TRO comme share du fonds
-
-**Supply** : aligné produit actuel (**max 500 000 TRO**) sauf vote documenté contraire.
+**LIA ne signe pas les grants Mission.** Elle peut **proposer** ; le DAO / multisig décide.
 
 ---
 
-## 5. Reporting (crédibilité)
+## 5. Rôle DAO $TRO
+
+- Fixer % fee market et % split §3  
+- Whitelist collections / éligibilité grants  
+- Approuver sorties Reserve > seuil  
+- **Ne pas** promettre « stake $TRO = yield LIA » sans mécanisme réel  
+- **Ne pas** traiter $TRO comme share du fonds  
+
+Supply max produit : **500 000 TRO** sauf vote documenté.
+
+---
+
+## 6. LIA — discipline treasury
+
+- Mandat : univers, max drawdown, kill switch, `LIA_LIVE_TRADING` gated  
+- GSN leaderboard = **score advisory** pré-trade (poids plafonné) — pas exécution seule  
+- Paper d’abord ; live seulement après micro-proof  
+- Séparer **Dashboard marketing** vs **cash on-chain auditable**  
+
+---
+
+## 7. Communication (régulatoire / réputation)
+
+| OK | À éviter |
+|----|----------|
+| Tip / fee / perf = soutien protocole / mission | « Investissez, LIA vous fait gagner » |
+| Fees après SC live | Afficher fees sans codeHash |
+| Paper PnL clairement labellisé | Confondre paper et cash |
+| Editions = lettre culturelle | Éditions = produit yield |
+
+---
+
+## 8. Séquence mission
+
+1. Produit (market, studio, wallet) → fees + tips  
+2. LIA (live prouvée) → grossit treasury  
+3. DAO alloue grants / acquisitions / réserve  
+4. Art détenu = **patrimoine de fondation** (mission), pas parts LP  
+
+Un SPV co-invest tiers = **autre régime juridique** (hors scope v0).
+
+---
+
+## 9. Conditions d’activation cash
+
+| Module | Avant activation |
+|--------|------------------|
+| Fees market | Deploy SC + codeHash + bandeau UI retiré |
+| PnL LIA live | Paper stable + gates + flag explicite |
+| Grants visibles | ≥1 grant/drop avec tx publique |
+| Split auto | Script / procédure ≤ 7 j |
+
+---
+
+## 10. Reporting
 
 | Fréquence | Contenu |
 |-----------|---------|
-| Continu | Adresses §1 publiques (README + `/dao` ou wallet protocole) |
-| Hebdo (auto) | Soldes EGLD / $TRO / NFTs treasury ; fees SC si live |
-| Mensuel | PnL LIA paper **ou** live (séparés) ; grants payés ; % respect du split |
-| Incident | Toute perte > seuil Reserve → post-mortem public |
+| Continu | Adresses §2 publiques |
+| Hebdo | Soldes multi-chain ; fees SC si live → `data/treasury_snapshot.json` |
+| Mensuel | PnL paper **ou** live (séparés) ; grants ; % split respecté |
+| Incident | Perte > seuil Reserve → post-mortem public |
 
-**Dashboard** : labels « LIA Ops » vs « Treasury Mission » vs « Mon wallet ».
-
----
-
-## 6. Conditions d’activation
-
-| Module | Avant activation cash |
-|--------|----------------------|
-| Fees market | Deploy SC + `codeHash` + bandeau UI retiré |
-| PnL LIA live | Paper stable + gates + `LIA_LIVE_TRADING=1` explicite |
-| Grants visibles | ≥1 drop ou grant publié avec tx |
-| Split auto | Script / SC sink ou procédure ops datée ≤7 j |
-| Deploy SC | Solde LIA Ops **rechargé** si simulation > marge (0,66 EGLD = serré pour 2 deploys) |
+UI : labels **LIA Ops** vs **Treasury Mission** vs **Mon wallet**.
 
 ---
 
-## 7. Synthèse
+## 11. Synthèse
 
-La fondation se finance par **l’usage** (fees, tips, ads, services) et, le cas échéant, par une **LIA auditable** ; la DAO fixe les règles de partage ; des wallets publics et des rapports prouvent que ce n’est **ni un bot opaque ni un fonds déguisé**.
+Collecte = **LIA disciplinée** + **fees** + **tips** + **services** · allocation = **DAO / règles** · finalité = **mission artistique + résilience protocole**.  
+Risque principal : promettre une perf LIA, mélanger tip et investissement, ou afficher des fees **sans** SC live.
 
 ---
 
-## Prochaines actions (ordre)
+## Prochaines actions
 
-1. Créer 2 adresses (ou multisig) **Mission + Reserve** · les publier ici
-2. Mettre à jour dApp : labels + liens explorer
-3. **Market live** → brancher fee → premier split réel
-4. Ratifier cette policy (commit + vote DAO informel ou on-chain)
-5. Job hebdo → `data/treasury_snapshot.json` (soldes LIA Ops + SC fees)
-
-Remplacer `[erd1… À CRÉER]` dès que les wallets existent.
+1. Créer Mission + Reserve (multisig) · publier adresses  
+2. Deploy market → premier fee réel + split  
+3. Ratifier policy (commit + vote DAO)  
+4. Job hebdo treasury snapshot  
