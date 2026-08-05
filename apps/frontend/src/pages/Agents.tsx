@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import AgentsMarketplacePanel from '../components/AgentsMarketplacePanel'
 import AgentsDeployStatus from '../components/AgentsDeployStatus'
+import CreateSubAgentForm from '../components/CreateSubAgentForm'
+import TreasuryBanner from '../components/TreasuryBanner'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
 
@@ -113,18 +115,22 @@ export default function Agents() {
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-black">🧠 Agents</h1>
         <p className="text-sm text-gray-500 mt-1">
-          <strong className="text-purple-300">Packs LIA / Vellum</strong> (produit xArtists) et{" "}
-          <strong className="text-emerald-300">prévisions GreenSmoke</strong> (réseau externe) sont{" "}
-          <em>séparés</em> — ne pas confondre.
+          <strong className="text-purple-300">Packs LIA / Vellum</strong> (produit xArtists) ·{" "}
+          <strong className="text-fuchsia-300">Agent Packs NFT limités</strong> (créateur) ·{" "}
+          <strong className="text-emerald-300">GreenSmoke</strong> (externe) — trois couches distinctes.
         </p>
+      </div>
+
+      <div className="mb-6">
+        <TreasuryBanner />
       </div>
 
       {/* ===== 1. LIA PACKS (ours) ===== */}
       <section className="mb-10">
-        <h2 className="text-lg font-bold mb-1 text-purple-200">① Packs agents LIA · Vellum (xArtists)</h2>
+        <h2 className="text-lg font-bold mb-1 text-purple-200">① Packs agents LIA · Vellum (protocole)</h2>
         <p className="text-xs text-gray-500 mb-4">
-          Produits partagés LIA : achat on-chain → clé API limitée + NFT badge + reçu. Exécution ops = wallet LIA +
-          Vellum — <strong>pas</strong> les agents de prévision GreenSmoke.
+          Produits protocole LIA. Achat on-chain → clé API limitée + NFT badge + reçu. Exécution = wallet LIA +
+          Vellum — <strong>pas</strong> GreenSmoke.
         </p>
         <AgentsDeployStatus />
         <AgentsMarketplacePanel />
@@ -142,13 +148,23 @@ export default function Agents() {
         </div>
       </section>
 
+      {/* ===== 1b. Creator sub-agents ===== */}
+      <section className="mb-10">
+        <h2 className="text-lg font-bold mb-1 text-fuchsia-200">①bis Agent Packs NFT limités (créateurs)</h2>
+        <p className="text-xs text-gray-500 mb-4">
+          Sous-agents provisionnés par Vellum pour un <strong>propriétaire</strong> — fonds de départ en escrow isolés
+          du book LIA. List/buy on-chain après deploy agents_marketplace.
+        </p>
+        <CreateSubAgentForm />
+      </section>
+
       {/* ===== 2. GREENSMOKE (external) ===== */}
       <section className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
           <div>
             <h2 className="text-lg font-bold text-emerald-200">② GreenSmoke Network — prévisions (externe)</h2>
             <p className="text-xs text-gray-500 mt-1">
-              Signaux informatifs (Liia météo, crypto, macro…). <strong>Ne sont pas</strong> les packs vendus ci-dessus.
+              Signaux informatifs. <strong>Ne sont pas</strong> les packs vendus ci-dessus.
               {data?.updated_at && (
                 <span className="ml-2">· MAJ {new Date(data.updated_at).toLocaleString('fr-FR')}</span>
               )}
@@ -241,7 +257,7 @@ export default function Agents() {
       </section>
 
       <p className="text-xs text-gray-600 text-center">
-        Voir aussi <code className="text-purple-400">docs/LIA_VS_GREENSMOKE.md</code>
+        Voir docs/LIA_VS_SUBAGENTS.md · TREASURY_POLICY.md
       </p>
     </div>
   )
