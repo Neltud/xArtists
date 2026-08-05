@@ -1,0 +1,21 @@
+{
+  "updated": "2026-08-05",
+  "note": "Receive-only addresses for LIA ops treasury visibility — not for user Connect",
+  "chains": {
+    "multiversx": {
+      "symbol": "EGLD",
+      "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+      "explorer": "https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6"
+    },
+    "bitcoin": {
+      "symbol": "BTC",
+      "address": "bc1q0rvmym3mc4f5nmfuvpzvkvr236ptx5l243rt4d",
+      "explorer": "https://mempool.space/address/bc1q0rvmym3mc4f5nmfuvpzvkvr236ptx5l243rt4d"
+    },
+    "solana": {
+      "symbol": "SOL",
+      "address": "FEcBEmpNGv8yuAnuyAdnZneCMiJMnNGYKaw7cgSzNYwn",
+      "explorer": "https://solscan.io/account/FEcBEmpNGv8yuAnuyAdnZneCMiJMnNGYKaw7cgSzNYwn"
+    }
+  }
+}
