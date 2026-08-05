@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { LINKS } from '../config/links'
+import AdSlot from '../components/AdSlot'
 
 type MediaKind = 'image' | 'video' | 'audio'
 type AssetMode = 'digital' | 'physical'
@@ -12,7 +13,6 @@ const GAS_HINT: Record<string, string> = {
   list_nft: '~0.01–0.03 EGLD (estim.)',
 }
 
-/** KPI rétention : mint → sell → buy NFT → buy $TRO */
 export default function ArtistStudio() {
   const [step, setStep] = useState(1)
   const [collectionName, setCollectionName] = useState('')
@@ -54,12 +54,16 @@ export default function ArtistStudio() {
 
   return (
     <div className="animate-fade-in max-w-3xl mx-auto pb-24 md:pb-8">
-      <header className="mb-6">
+      <header className="mb-4">
         <h1 className="text-3xl font-black">🎨 Studio xArtists</h1>
         <p className="text-gray-500 mt-1 text-sm">
           Parcours artiste : <strong className="text-gray-300">mint → list / sell → market</strong>
         </p>
       </header>
+
+      <div className="mb-6">
+        <AdSlot id="studio_banner" />
+      </div>
 
       <ol className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] sm:text-xs">
         {[
@@ -303,17 +307,20 @@ export default function ArtistStudio() {
             <p>Royalties {royalty}%</p>
           </div>
 
+          <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-100">
+            List on-chain xArtists Market = <strong>bloqué</strong> tant que SC marketplace non déployé (codeHash null).
+            Utiliser XOXNO ou attendre deploy P0.
+          </div>
+
           <ol className="text-sm text-gray-300 space-y-2 list-decimal list-inside border border-[#2a2a3a] rounded-xl p-4">
-            <li>
-              Pin média + JSON metadata (Vellum <code>lia.media</code> / Pinata JWT secret)
-            </li>
-            <li>Connect wallet <strong>artiste</strong> (pas le wallet protocole LIA)</li>
-            <li>Issue collection + mint NFT avec URI IPFS (mxpy / minter SC)</li>
+            <li>Pin média + JSON metadata (Vellum / Pinata JWT)</li>
+            <li>Connect wallet <strong>artiste</strong> (pas LIA protocole)</li>
+            <li>Issue collection + mint NFT avec URI IPFS (mxpy / minter)</li>
             <li>
               List sur <Link to="/marketplace" className="text-purple-300 underline">Marketplace</Link> ou XOXNO
             </li>
             <li>
-              Option : <Link to="/tro" className="text-purple-300 underline">Buy $TRO</Link> pour la gouvernance
+              Option : <Link to="/tro" className="text-purple-300 underline">Buy $TRO</Link>
             </li>
           </ol>
 
@@ -332,7 +339,7 @@ export default function ArtistStudio() {
             </Link>
           </div>
           <p className="text-xs text-gray-500">
-            Gaz mint {GAS_HINT.mint_nft} · list {GAS_HINT.list_nft} · mint auto SC = Sprint suivant post-deploy
+            Gaz mint {GAS_HINT.mint_nft} · list {GAS_HINT.list_nft}
           </p>
           <button type="button" className="btn-secondary text-sm" onClick={() => setStep(3)}>
             ← Métadonnées

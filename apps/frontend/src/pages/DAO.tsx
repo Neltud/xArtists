@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useMultiversX } from '../hooks/useMultiversX'
+import TreasuryBanner from '../components/TreasuryBanner'
 import { LINKS } from '../config/links'
 
 const TRO_ID = 'TRO-94c925'
@@ -16,10 +18,6 @@ type TroTokenLive = {
 
 type HolderRow = { address: string; balance: number }
 
-/**
- * DAO = lecture live $TRO (holders / supply) + proposals JSON.
- * Vote TX on-chain uniquement après ABI + sdk-dapp prouvés (pas de bouton factice).
- */
 export default function DAO() {
   const { bonData, xartists, prices } = useMultiversX()
   const [troLive, setTroLive] = useState<TroTokenLive | null>(null)
@@ -91,16 +89,30 @@ export default function DAO() {
       <div className="mb-6">
         <h1 className="text-3xl font-black">🗳️ Gouvernance DAO xArtists</h1>
         <p className="text-gray-500 mt-1">
-          $TRO live (API MultiversX) · proposals lecture seule · vote TX pas encore branché
+          $TRO live · policy treasury · vote TX pas encore branché
         </p>
       </div>
 
       <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-        <strong>Mode lecture seule (P0 UX).</strong> Pas de bouton « Voter » factice. Données holders &
-        supply = mainnet API. Vote on-chain = après ABI + signature sdk-dapp validés.
+        <strong>Mode lecture seule (P0 UX).</strong> Pas de bouton « Voter » factice. Holders & supply = API mainnet.
+        Vote on-chain = après ABI + sdk-dapp. $TRO n’est <strong>pas</strong> une share du fonds.
       </div>
 
-      {/* Live pool / token */}
+      <div className="mb-6">
+        <TreasuryBanner />
+      </div>
+
+      <p className="mb-6 text-xs">
+        <a
+          href={LINKS.treasuryPolicy}
+          target="_blank"
+          rel="noreferrer"
+          className="text-purple-300 underline"
+        >
+          docs/TREASURY_POLICY.md ↗
+        </a>
+      </p>
+
       <div className="card mb-8 border-purple-500/30 bg-purple-500/5">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
           <p className="text-xs font-semibold uppercase tracking-widest text-purple-400">
@@ -130,7 +142,9 @@ export default function DAO() {
           </div>
           <div>
             <p className="text-xs text-gray-500">Circulating</p>
-            <p className="text-xl font-bold">{circ ? circ.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '—'}</p>
+            <p className="text-xl font-bold">
+              {circ ? circ.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '—'}
+            </p>
             <p className="text-[10px] text-gray-500">cap produit {TRO_MAX_SUPPLY.toLocaleString()}</p>
           </div>
           <div>
@@ -156,9 +170,9 @@ export default function DAO() {
           <a href={LINKS.xexchangeTroUsdc} target="_blank" rel="noreferrer" className="btn-primary text-sm">
             Buy $TRO ↗
           </a>
-          <a href="/studio" className="btn-secondary text-sm">
+          <Link to="/studio" className="btn-secondary text-sm">
             Studio mint
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -227,9 +241,12 @@ export default function DAO() {
       </div>
 
       <div className="card mb-8 border-purple-500/20">
-        <p className="text-xs text-gray-500 mb-1">Balance LIA (ops) — distincte de votre wallet Connect</p>
+        <p className="text-xs text-gray-500 mb-1">Balance LIA Ops — distincte de votre wallet Connect</p>
         <p className="text-xl font-bold">{troBalanceLia.toFixed(2)} TRO</p>
-        <p className="text-xs text-gray-500">≈ ${troValueUsd.toFixed(2)} · NFT staking {nftStaked ? '✅' : '⏳'} {nftStakedCount > 0 && `(${nftStakedCount})`}</p>
+        <p className="text-xs text-gray-500">
+          ≈ ${troValueUsd.toFixed(2)} · NFT staking {nftStaked ? '✅' : '⏳'}{' '}
+          {nftStakedCount > 0 && `(${nftStakedCount})`}
+        </p>
       </div>
 
       <div className="card mb-8">
@@ -288,7 +305,11 @@ export default function DAO() {
       </div>
 
       <div className="card">
-        <h2 className="text-lg font-bold mb-4">Contrats (référence)</h2>
+        <h2 className="text-lg font-bold mb-2">Contrats (référence)</h2>
+        <p className="text-xs text-red-300/90 mb-4">
+          Audit on-chain : adresses governance / staking = <strong>comptes vides</strong> (0 EGLD, pas de fees). Ne pas
+          y envoyer de fonds tant que codeHash non vérifié.
+        </p>
         <div className="space-y-2">
           {[
             { name: 'TRO Governance', addr: 'erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8' },
