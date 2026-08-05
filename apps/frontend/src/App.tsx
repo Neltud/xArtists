@@ -24,6 +24,7 @@ const SoulTestnetPage = lazy(() => import('./pages/SoulTestnetPage'))
 const AgentsPolyliaPage = lazy(() => import('./pages/AgentsPolyliaPage'))
 const BurnifyPage = lazy(() => import('./pages/BurnifyPage'))
 const ArtistStudio = lazy(() => import('./pages/ArtistStudio'))
+const AdsPage = lazy(() => import('./pages/AdsPage'))
 
 function PageLoader() {
   return (
@@ -90,6 +91,7 @@ export default function App() {
               <Route path="/hatom" element={<HatomPage />} />
               <Route path="/lp" element={<LPPoolsPage />} />
               <Route path="/soul-testnet" element={<SoulTestnetPage />} />
+              <Route path="/ads" element={<AdsPage />} />
               <Route
                 path="*"
                 element={
@@ -117,6 +119,9 @@ export default function App() {
             </a>
             <a href={LINKS.explorer} target="_blank" rel="noreferrer" className="hover:text-white">
               Explorer
+            </a>
+            <a href="/xArtists/ads" className="hover:text-white">
+              Pub / Ads
             </a>
             <a href={LINKS.xexchange} target="_blank" rel="noreferrer" className="hover:text-white">
               xExchange

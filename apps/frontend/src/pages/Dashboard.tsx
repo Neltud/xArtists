@@ -6,6 +6,7 @@ import { useLiaOnchainLive } from '../hooks/useLiaOnchainLive'
 import { useWallet } from '../context/WalletContext'
 import GSNBanner from '../components/GSNBanner'
 import LIALaunchButton from '../components/LIALaunchButton'
+import AdSlot from '../components/AdSlot'
 import PersonaWelcome, {
   PersonaQuickLinks,
   getStoredPersona,
@@ -75,6 +76,10 @@ export default function Dashboard() {
 
       <LandingHero connected={connected} />
 
+      <div className="mb-4">
+        <AdSlot id="home_hero" />
+      </div>
+
       <PersonaQuickLinks persona={persona} />
 
       <div id="main-content" tabIndex={-1} className="outline-none">
@@ -112,7 +117,10 @@ export default function Dashboard() {
           <Link to="/wallet" className="underline">
             /wallet · Mon wallet
           </Link>
-          . $TRO supply max = <strong>500 000</strong>.
+          . $TRO supply max = <strong>500 000</strong>.{' '}
+          <Link to="/ads" className="underline text-purple-300">
+            Espace pub
+          </Link>
         </div>
 
         {loading && live.loading ? (
