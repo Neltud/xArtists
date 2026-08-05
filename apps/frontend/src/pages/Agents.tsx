@@ -3,6 +3,7 @@ import AgentsMarketplacePanel from '../components/AgentsMarketplacePanel'
 import AgentsDeployStatus from '../components/AgentsDeployStatus'
 import CreateSubAgentForm from '../components/CreateSubAgentForm'
 import TreasuryBanner from '../components/TreasuryBanner'
+import GsnLeaderboard from '../components/GsnLeaderboard'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
 
@@ -59,7 +60,6 @@ const DOMAIN_ICON: Record<string, string> = {
   tech: '💻',
 }
 
-/** LIA / Vellum shared packs — NOT GreenSmoke forecast agents */
 const LIA_PACKS = [
   { key: 'trading', name: 'LIA Trading', icon: '🤖', desc: 'Vellum · scalping / swing / board', color: 'text-green-400' },
   { key: 'marketplace', name: 'LIA Marketplace', icon: '🎨', desc: 'Vellum · NFT / RWA signals', color: 'text-purple-400' },
@@ -115,9 +115,9 @@ export default function Agents() {
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-black">🧠 Agents</h1>
         <p className="text-sm text-gray-500 mt-1">
-          <strong className="text-purple-300">Packs LIA / Vellum</strong> (produit xArtists) ·{" "}
-          <strong className="text-fuchsia-300">Agent Packs NFT limités</strong> (créateur) ·{" "}
-          <strong className="text-emerald-300">GreenSmoke</strong> (externe) — trois couches distinctes.
+          <strong className="text-purple-300">Packs LIA</strong> ·{' '}
+          <strong className="text-fuchsia-300">Agent Packs NFT 5–25 €</strong> ·{' '}
+          <strong className="text-emerald-300">GreenSmoke</strong> (prévisions externes → score pré-trade)
         </p>
       </div>
 
@@ -125,12 +125,10 @@ export default function Agents() {
         <TreasuryBanner />
       </div>
 
-      {/* ===== 1. LIA PACKS (ours) ===== */}
       <section className="mb-10">
         <h2 className="text-lg font-bold mb-1 text-purple-200">① Packs agents LIA · Vellum (protocole)</h2>
         <p className="text-xs text-gray-500 mb-4">
-          Produits protocole LIA. Achat on-chain → clé API limitée + NFT badge + reçu. Exécution = wallet LIA +
-          Vellum — <strong>pas</strong> GreenSmoke.
+          Produits protocole. Achat on-chain → clé API + NFT badge. ≠ GreenSmoke.
         </p>
         <AgentsDeployStatus />
         <AgentsMarketplacePanel />
@@ -148,27 +146,26 @@ export default function Agents() {
         </div>
       </section>
 
-      {/* ===== 1b. Creator sub-agents ===== */}
       <section className="mb-10">
-        <h2 className="text-lg font-bold mb-1 text-fuchsia-200">①bis Agent Packs NFT limités (créateurs)</h2>
+        <h2 className="text-lg font-bold mb-1 text-fuchsia-200">①bis Agent Packs NFT (5–25 €)</h2>
         <p className="text-xs text-gray-500 mb-4">
-          Sous-agents provisionnés par Vellum pour un <strong>propriétaire</strong> — fonds de départ en escrow isolés
-          du book LIA. List/buy on-chain après deploy agents_marketplace.
+          Sous-agents créateur · escrow isolé du book LIA · pas des agents GSN.
         </p>
         <CreateSubAgentForm />
       </section>
 
-      {/* ===== 2. GREENSMOKE (external) ===== */}
       <section className="mb-8">
+        <h2 className="text-lg font-bold mb-1 text-emerald-200">② GreenSmoke — leaderboard & prévisions</h2>
+        <p className="text-xs text-gray-500 mb-4">
+          Score advisory avant exécution trades LIA (poids plafonné). Lecture seule.
+        </p>
+        <GsnLeaderboard />
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
           <div>
-            <h2 className="text-lg font-bold text-emerald-200">② GreenSmoke Network — prévisions (externe)</h2>
-            <p className="text-xs text-gray-500 mt-1">
-              Signaux informatifs. <strong>Ne sont pas</strong> les packs vendus ci-dessus.
-              {data?.updated_at && (
-                <span className="ml-2">· MAJ {new Date(data.updated_at).toLocaleString('fr-FR')}</span>
-              )}
-            </p>
+            {data?.updated_at && (
+              <p className="text-xs text-gray-500">MAJ {new Date(data.updated_at).toLocaleString('fr-FR')}</p>
+            )}
           </div>
           <div className="flex gap-2">
             <button type="button" onClick={load} className="btn-secondary text-sm">
@@ -188,7 +185,7 @@ export default function Agents() {
         {data?.aggregated_signals && (
           <div className="card mb-4 border-emerald-500/25 bg-emerald-500/5">
             <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-3">
-              Signaux agrégés GSN (lecture seule)
+              Signaux agrégés GSN
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
               <div>
@@ -243,22 +240,12 @@ export default function Agents() {
                   </div>
                 ))}
               </div>
-              <a
-                href={agent.gsn_url || 'https://app.greensmoke.network/agents'}
-                target="_blank"
-                rel="noreferrer"
-                className="text-xs text-emerald-400 mt-3 inline-block"
-              >
-                Ouvrir sur GreenSmoke →
-              </a>
             </div>
           ))}
         </div>
       </section>
 
-      <p className="text-xs text-gray-600 text-center">
-        Voir docs/LIA_VS_SUBAGENTS.md · TREASURY_POLICY.md
-      </p>
+      <p className="text-xs text-gray-600 text-center">docs/REWARDS_AND_PACKS_PRICING.md · 1 $TRO max œuvre physique</p>
     </div>
   )
 }
