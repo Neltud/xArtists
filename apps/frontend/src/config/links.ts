@@ -24,6 +24,8 @@ export const LINKS = {
   xoxnoCollection: (c: string) => `https://xoxno.com/collection/${c}`,
   greensmokeAgents: 'https://app.greensmoke.network/agents',
   troToken: 'TRO-94c925',
+  treasuryPolicy:
+    'https://github.com/Neltud/xArtists/blob/main/docs/TREASURY_POLICY.md',
 } as const
 
 /** Primary product nav — includes DAO (was secondary only). */
@@ -41,10 +43,12 @@ export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/lp', label: 'LP', emoji: '💧' },
   { to: '/wallet', label: 'Wallet', emoji: '👛' },
   { to: '/tip', label: 'Tip', emoji: '💜' },
+  { to: '/ads', label: 'Ads', emoji: '📢' },
 ]
 
 export const SECONDARY_ROUTES = [
   { to: '/staking', label: 'Staking', note: '' },
   { to: '/soul-testnet', label: 'Soul (experimental)', note: 'No mainnet funds' },
   { to: '/burnify', label: 'Burnify (shell)', note: 'UI only' },
+  { to: '/ads', label: 'Pub enchères', note: 'Treasury Mission' },
 ] as const
