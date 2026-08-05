@@ -1,0 +1,15 @@
+{
+  "auctions": [
+    {
+      "id": "auc-home-2026-w33",
+      "slot": "home_hero",
+      "period": "2026-w33",
+      "startsAt": "2026-08-10T00:00:00Z",
+      "endsAt": "2026-08-17T00:00:00Z",
+      "minBidEgld": 0.5,
+      "reserveEgld": 1.0,
+      "status": "open",
+      "bids": []
+    }
+  ]
+}

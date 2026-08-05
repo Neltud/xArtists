@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["updated", "slots"],
+  "properties": {
+    "updated": { "type": "number" },
+    "slots": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["slot", "status", "startsAt", "endsAt"],
+        "properties": {
+          "slot": { "type": "string" },
+          "advertiser": { "type": "string" },
+          "title": { "type": "string" },
+          "imageCid": { "type": "string" },
+          "imageUrl": { "type": "string" },
+          "href": { "type": "string" },
+          "startsAt": { "type": "string" },
+          "endsAt": { "type": "string" },
+          "paidTx": { "type": "string" },
+          "status": { "enum": ["active", "scheduled", "ended", "rejected"] },
+          "bidEgld": { "type": "number" }
+        }
+      }
+    }
+  }
+}
