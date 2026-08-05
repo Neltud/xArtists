@@ -193,20 +193,26 @@ const EMPTY: Omit<WalletData, 'refresh'> = {
   error: null,
 }
 
-/** Pass null/undefined to skip fetch (user wallet page when disconnected). */
-export function useWalletTokens(address: string | null | undefined): WalletData {
+/**
+ * address omitted / undefined → LIA protocol (Hatom, LP pages)
+ * address null → skip fetch (user Wallet when disconnected)
+ * address string → that account
+ */
+export function useWalletTokens(address?: string | null): WalletData {
+  const resolved =
+    address === null ? '' : typeof address === 'string' && address.trim() ? address.trim() : LIA_WALLET
+
   const [egldBalance, setEgldBalance] = useState(0)
   const [egldPrice, setEgldPrice] = useState(0)
   const [tokens, setTokens] = useState<WalletToken[]>([])
   const [hatomPosition, setHatomPosition] = useState<HatomPosition | null>(null)
-  const [loading, setLoading] = useState(Boolean(address?.trim()))
+  const [loading, setLoading] = useState(Boolean(resolved))
   const [error, setError] = useState<string | null>(null)
 
-  const addr = address?.trim() || ''
-  const isLia = addr.length > 0 && addr.toLowerCase() === LIA_WALLET.toLowerCase()
+  const isLia = resolved.length > 0 && resolved.toLowerCase() === LIA_WALLET.toLowerCase()
 
   const fetchAll = useCallback(async () => {
-    if (!addr) {
+    if (!resolved) {
       setEgldBalance(0)
       setTokens([])
       setHatomPosition(null)
@@ -217,14 +223,17 @@ export function useWalletTokens(address: string | null | undefined): WalletData 
     setError(null)
     try {
       const [accountRes, econRes] = await Promise.all([
-        fetch(`${MVX_API}/accounts/${addr}`).then(r => r.json()),
+        fetch(`${MVX_API}/accounts/${resolved}`).then(r => r.json()),
         fetch(`${MVX_API}/economics`).then(r => r.json()),
       ])
       const egld = Number(accountRes.balance ?? 0) / 1e18
       const price = econRes.price ?? 0
       setEgldBalance(egld)
       setEgldPrice(price)
-      const [allTokens, hatom] = await Promise.all([fetchAllTokens(addr), fetchHatomPosition(addr)])
+      const [allTokens, hatom] = await Promise.all([
+        fetchAllTokens(resolved),
+        fetchHatomPosition(resolved),
+      ])
       setTokens(allTokens.sort((a, b) => b.valueUsd - a.valueUsd))
       setHatomPosition(hatom)
     } catch (e) {
@@ -232,13 +241,13 @@ export function useWalletTokens(address: string | null | undefined): WalletData 
     } finally {
       setLoading(false)
     }
-  }, [addr])
+  }, [resolved])
 
   useEffect(() => {
     fetchAll()
   }, [fetchAll])
 
-  if (!addr) {
+  if (!resolved) {
     return { ...EMPTY, refresh: fetchAll }
   }
 
@@ -249,7 +258,7 @@ export function useWalletTokens(address: string | null | undefined): WalletData 
   const totalEsdtUsd = tokens.reduce((s, t) => s + t.valueUsd, 0) + egldBalance * egldPrice
 
   return {
-    address: addr,
+    address: resolved,
     isLia,
     egldBalance,
     egldValueUsd: egldBalance * egldPrice,

@@ -1,15 +1,14 @@
 import { NavLink } from 'react-router-dom'
 
 /**
- * Mobile: KPI rétention = Studio mint · Market buy/sell · $TRO · DAO (module séparé).
- * 6 onglets compacts + safe-area.
+ * Mobile bottom bar — KPI rétention paths + Wallet (user) distinct from Portfolio (LIA).
  */
 const ITEMS = [
   { to: '/', label: 'Home', emoji: '📊', end: true },
   { to: '/studio', label: 'Studio', emoji: '🎨' },
   { to: '/marketplace', label: 'Market', emoji: '🛒' },
-  { to: '/tro', label: '$TRO', emoji: '🪙' },
-  { to: '/dao', label: 'DAO', emoji: '🗳️' },
+  { to: '/agents', label: 'Agents', emoji: '🧠' },
+  { to: '/portfolio', label: 'LIA', emoji: '📈' },
   { to: '/wallet', label: 'Wallet', emoji: '👛' },
 ]
 
