@@ -1,4 +1,4 @@
-# Analyse DApp Complète xArtists — Mise à Jour 5 Août 2026
+# Analyse DApp Complète xArtists — Mise à Jour 6 Août 2026
 
 ## Résumé Exécutif
 xArtists est une DApp innovante sur MultiversX combinant **IA agentique (LIA v5/v6)**, **NFT Phygital / RWA art tokenisé**, **staking**, **DAO** et **bridge BTC expérimental**.  
@@ -6,7 +6,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 
 **Live Demo** : https://neltud.github.io/xArtists  
 **Repo** : https://github.com/Neltud/xArtists  
-**Statut** : Production-ready (code pleinement corrigé et poussé — **v0.15.0+**). Dernière mise à jour documentée : **5 août 2026**.
+**Statut** : Production-ready (code pleinement corrigé et poussé — **v0.15.0+**). Dernière mise à jour documentée : **6 août 2026**.
 
 ### Points forts
 - Intégration Warps / AI Agents MultiversX + agents LIA autonomes (trading, minting génératif, yield).
@@ -17,29 +17,29 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Monorepo pnpm + CI/CD GitHub Actions + GitHub Pages + Docker.
 - Agents GreenSmoke (Liia météo, Lia crypto, Macro, Politics, Sport, Tech) + BottomNav mobile + PWA.
 - Agents Marketplace on-chain (list/buy packs) + fee transparency.
-- Stripe onramp, escrow logic, studio creator journey, dual-product UX, security matrix (commit 4 août).
+- Stripe onramp, escrow logic, studio creator journey, dual-product UX, security matrix.
 
-### Corrections & livraisons confirmées (jusqu’au 5 août 2026)
+### Corrections & livraisons confirmées (jusqu’au 6 août 2026)
 - Release **v0.15.0** (3 août) : Agents Marketplace full integration (ABI + hooks List/Buy + UI + deploy script), LIA circuit financier pro (guards, trailing, multi-horizon, symbiosis), marketplace multi-currency + burn TRO notices, Hatom LIA positions, Pinata/IPFS, PWA install banner, Playwright E2E smoke, nonce polling + TX error handling.
-- 4 août : Stripe onramp, escrow logic Python, studio creator journey, dual-product UX, security matrix documentée.
+- 4–5 août : Stripe onramp, escrow logic Python, studio creator journey, dual-product UX, security matrix documentée.
 - Mises à jour dépendances (sécurité + compatibilité sdk-dapp).
 - Fixes logique voting / rewards / WalletConnect / Header wallet modal (Web Wallet réel, xPortal deep link).
 - Optimisations performance frontend, cleanup monorepo, scan ESDT complet.
 - Config BTC tip address + Hatom + TRO pools endpoints.
-- Documentation analyse + veille techno synchronisée au **5 août 2026**.
+- Documentation analyse + veille techno synchronisée au **6 août 2026** (jour d’activation upgrade mainnet).
 
 ---
 
-## Veille Technologique (5 août 2026)
+## Veille Technologique (6 août 2026)
 
 ### MultiversX / Protocol
-- **Mainnet v1.11.10.0** : shipped, **activation epoch 2198 — jeudi 6 août 2026** (demain). Améliorations VM. Validators invités à upgrader.
+- **Mainnet v1.11.10.0** : shipped fin juillet ; **activation epoch 2198 — jeudi 6 août 2026 (aujourd’hui)**. Améliorations VM. Validators invités à upgrader (optionnel pour observers).
 - **Supernova** : upgrade majeur finalité sub-seconde (~600 ms block time, intra-shard 100–250 ms). Découplage consensus / exécution (Propose/Vote → puis Execute).
   - Gouvernance approuvée massivement (janv. 2026, ~99.64 %).
   - **Battle of Nodes** (depuis 11 mars 2026) : >1 milliard de transactions, pic public ~120k TPS.
   - **Target activation mainnet : 10 septembre 2026** (hardening sécurité en cours ; Supernova Arcade déjà disponible pour tests 600 ms).
   - Guardians (social recovery) + Staking v5 en production / tests finaux.
-- Stats réseau (début août 2026) : ~9.24 M accounts · ~619 M transactions · 14.5 M staked · xPortal 3M+ users · xExchange ~$3.09 M TVL.
+- Stats réseau (début août 2026) : ~9.24 M accounts · ~619 M transactions · 14.5 M staked · ~3 259 validators · xPortal 3M+ users · xExchange ~$3.09 M TVL.
 - Écosystème : xPortal, Hatom, xExchange, focus DeFi + NFT + **Agentic AI / Agentic Payments** live + xMoney Payment Links AI-ready. CertiK Skynet actif.
 - Six ans de Mainnet (30 juillet 2020 → 2026).
 
@@ -52,7 +52,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 
 ### RWA & Tokenization Art / Phygital
 - Marché RWA tokenisé (données mi/fin 2026) :
-  - Valeur on-chain tokenisée (hors stablecoins) : ~$31–36 B (rwa.xyz ~$33.5 B juil. 2026) à ~$51–60 B selon définitions élargies (Bernstein ~$51 B, BeInCrypto/rwa.xyz ~$60 B incl. idle).
+  - Valeur on-chain tokenisée (hors stablecoins) : ~$31–36 B (rwa.xyz ~$33.5 B juil. 2026) à ~$51–60 B selon définitions élargies.
   - Private credit dominant ; US Treasuries ~$13–15 B.
   - Holders en forte croissance (>900k–995k).
   - Paradox : 56 % des assets restent illiquides / idle ; besoin d’accès et d’utilité réelle.
@@ -99,14 +99,14 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - E2E : smoke Playwright en CI (dashboard + marketplace).
 - Page $TRO dédiée + Studio + Burnify + Hatom + LP Pools.
 
-### Roadmap V1 (7 priorités) — statut 5 août 2026
+### Roadmap V1 (7 priorités) — statut 6 août 2026
 1. Full LIA v6 production + agents marketplace on-chain — 🟡 En cours (SC + ABI + UI livrés ; signature live executor & deploy mainnet restants)
 2. Marketplace NFT avancé + LP TRO — 🟡 Partiel (List/Buy UI + multi-currency + burn notices + escrow logic)
 3. Mobile PWA / responsive — 🟢 Base livrée (+ install banner)
 4. Tests E2E complets + monitoring — 🟡 Smoke livré, suite à étendre
 5. Bridge BTC stabilisé + cross-chain RWA — 🟡 Squelette
 6. Documentation API / OpenAPI + Docker — 🟢 Base livrée
-7. Alignement Supernova (sub-second) — 🟡 Préparé (upgrade v1.11.10.0 le **6 août** ; target Supernova **10 sept.**)
+7. Alignement Supernova (sub-second) — 🟡 Préparé (**upgrade v1.11.10.0 activé 6 août** ; target Supernova **10 sept.**)
 
 Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
 
@@ -115,7 +115,7 @@ Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
 2. Deploy mainnet agents-marketplace + nft-marketplace (adresses dans contracts.json).
 3. Suite E2E Playwright (wallet mock, marketplace, DAO).
 4. Bridge BTC tests blackbox + relayers.
-5. Alignement gas/UI post-activation Supernova (10 sept.) / upgrade 6 août.
+5. Alignement gas/UI post-activation Supernova (10 sept.) / post-upgrade 6 août.
 6. Burn $TRO on-chain à chaque vente NFT + multi-currency buy natif.
 
 ### Lacunes produit connues (voir `docs/LACUNES_PRODUIT.md`)
@@ -132,7 +132,7 @@ Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
 ---
 
 **Statut final** : Code complètement corrigé (v0.15.0+), documenté et poussé.  
-Veille techno et analyse dApp à jour au **5 août 2026**.  
-Prêt pour itérations et scale avec upgrade réseau du **6 août** et Supernova (**10 septembre 2026**).
+Veille techno et analyse dApp à jour au **6 août 2026** (activation mainnet v1.11.10.0).  
+Prêt pour itérations et scale avec Supernova (**10 septembre 2026**).
 
 *Auteur : Neltud (via Grok) — Artiste & créateur*
