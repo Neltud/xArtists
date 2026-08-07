@@ -1,4 +1,4 @@
-# Analyse DApp Complète xArtists — Mise à Jour 6 Août 2026
+# Analyse DApp Complète xArtists — Mise à Jour 7 Août 2026
 
 ## Résumé Exécutif
 xArtists est une DApp innovante sur MultiversX combinant **IA agentique (LIA v5/v6)**, **NFT Phygital / RWA art tokenisé**, **staking**, **DAO** et **bridge BTC expérimental**.  
@@ -6,7 +6,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 
 **Live Demo** : https://neltud.github.io/xArtists  
 **Repo** : https://github.com/Neltud/xArtists  
-**Statut** : Production-ready (code pleinement corrigé et poussé — **v0.15.0+**). Dernière mise à jour documentée : **6 août 2026**.
+**Statut** : Production-ready (code pleinement corrigé et poussé — **v0.15.0+**). Dernière mise à jour documentée : **7 août 2026**.
 
 ### Points forts
 - Intégration Warps / AI Agents MultiversX + agents LIA autonomes (trading, minting génératif, yield).
@@ -19,21 +19,22 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Agents Marketplace on-chain (list/buy packs) + fee transparency.
 - Stripe onramp, escrow logic, studio creator journey, dual-product UX, security matrix.
 
-### Corrections & livraisons confirmées (jusqu’au 6 août 2026)
+### Corrections & livraisons confirmées (jusqu’au 7 août 2026)
 - Release **v0.15.0** (3 août) : Agents Marketplace full integration (ABI + hooks List/Buy + UI + deploy script), LIA circuit financier pro (guards, trailing, multi-horizon, symbiosis), marketplace multi-currency + burn TRO notices, Hatom LIA positions, Pinata/IPFS, PWA install banner, Playwright E2E smoke, nonce polling + TX error handling.
 - 4–5 août : Stripe onramp, escrow logic Python, studio creator journey, dual-product UX, security matrix documentée.
+- 6 août : activation mainnet MultiversX v1.11.10.0 (epoch 2198) — améliorations VM ; documentation synchronisée.
 - Mises à jour dépendances (sécurité + compatibilité sdk-dapp).
 - Fixes logique voting / rewards / WalletConnect / Header wallet modal (Web Wallet réel, xPortal deep link).
 - Optimisations performance frontend, cleanup monorepo, scan ESDT complet.
 - Config BTC tip address + Hatom + TRO pools endpoints.
-- Documentation analyse + veille techno synchronisée au **6 août 2026** (jour d’activation upgrade mainnet).
+- Documentation analyse + veille techno synchronisée au **7 août 2026**.
 
 ---
 
-## Veille Technologique (6 août 2026)
+## Veille Technologique (7 août 2026)
 
 ### MultiversX / Protocol
-- **Mainnet v1.11.10.0** : shipped fin juillet ; **activation epoch 2198 — jeudi 6 août 2026 (aujourd’hui)**. Améliorations VM. Validators invités à upgrader (optionnel pour observers).
+- **Mainnet v1.11.10.0** : activé **hier 6 août 2026** (epoch 2198). Améliorations VM. Validators invités à upgrader (optionnel pour observers).
 - **Supernova** : upgrade majeur finalité sub-seconde (~600 ms block time, intra-shard 100–250 ms). Découplage consensus / exécution (Propose/Vote → puis Execute).
   - Gouvernance approuvée massivement (janv. 2026, ~99.64 %).
   - **Battle of Nodes** (depuis 11 mars 2026) : >1 milliard de transactions, pic public ~120k TPS.
@@ -42,6 +43,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Stats réseau (début août 2026) : ~9.24 M accounts · ~619 M transactions · 14.5 M staked · ~3 259 validators · xPortal 3M+ users · xExchange ~$3.09 M TVL.
 - Écosystème : xPortal, Hatom, xExchange, focus DeFi + NFT + **Agentic AI / Agentic Payments** live + xMoney Payment Links AI-ready. CertiK Skynet actif.
 - Six ans de Mainnet (30 juillet 2020 → 2026).
+- Série sécurité MultiversX (août 2026) : focus guards on-chain pour agents autonomes (MX-8004 identity/reputation agents en devnet).
 
 ### AI Agents on MultiversX & tendances 2026
 - Plateforme officielle agents on-chain + AI Agent Kit (OpenClaw, MCP Server SDK, templates).
@@ -49,12 +51,12 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Agentic Payments live (x402 adapté MultiversX) ; agents autonomes qui tradent, gagnent trust on-chain, exécutent cycles économiques complets.
 - Multi-agent systems + Guardian Agents (supervision, compliance) standards.
 - xArtists (LIA + GreenSmoke + Agents Marketplace) s’aligne parfaitement sur la narrative DeFAI / agents. Sub-second finality (Supernova) critique pour agents à latence ~100–250 ms.
+- Sécurité agents : guarded accounts MultiversX (signature seule insuffisante) + identité on-chain agents (MX-8004).
 
 ### RWA & Tokenization Art / Phygital
 - Marché RWA tokenisé (données mi/fin 2026) :
-  - Valeur on-chain tokenisée (hors stablecoins) : ~$31–36 B (rwa.xyz ~$33.5 B juil. 2026) à ~$51–60 B selon définitions élargies.
+  - Valeur on-chain tokenisée (hors stablecoins) : ~$31–36 B (rwa.xyz ~$33.5 B juil. 2026) à ~$51–60 B selon définitions élargies ; juillet 2026 a vu forte croissance (holders >1.3 M, stocks tokenisés $9 B transfers).
   - Private credit dominant ; US Treasuries ~$13–15 B.
-  - Holders en forte croissance (>900k–995k).
   - Paradox : 56 % des assets restent illiquides / idle ; besoin d’accès et d’utilité réelle.
   - Art & collectibles + phygital : segment différenciant (royalties, high-value pieces, photo physique → AI re-évaluation → metadata on-chain).
 - xArtists positionné sur **art tokenisé + Phygital NFTs + agents IA génératifs** — positionnement différenciant vs Treasuries institutionnels.
@@ -99,7 +101,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - E2E : smoke Playwright en CI (dashboard + marketplace).
 - Page $TRO dédiée + Studio + Burnify + Hatom + LP Pools.
 
-### Roadmap V1 (7 priorités) — statut 6 août 2026
+### Roadmap V1 (7 priorités) — statut 7 août 2026
 1. Full LIA v6 production + agents marketplace on-chain — 🟡 En cours (SC + ABI + UI livrés ; signature live executor & deploy mainnet restants)
 2. Marketplace NFT avancé + LP TRO — 🟡 Partiel (List/Buy UI + multi-currency + burn notices + escrow logic)
 3. Mobile PWA / responsive — 🟢 Base livrée (+ install banner)
@@ -132,7 +134,7 @@ Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
 ---
 
 **Statut final** : Code complètement corrigé (v0.15.0+), documenté et poussé.  
-Veille techno et analyse dApp à jour au **6 août 2026** (activation mainnet v1.11.10.0).  
+Veille techno et analyse dApp à jour au **7 août 2026** (J+1 activation mainnet v1.11.10.0).  
 Prêt pour itérations et scale avec Supernova (**10 septembre 2026**).
 
 *Auteur : Neltud (via Grok) — Artiste & créateur*
