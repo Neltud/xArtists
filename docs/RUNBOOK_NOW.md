@@ -1,20 +1,23 @@
 # Runbook immédiat — ordre d’exécution
 
+**Guide détaillé deploy** → [`DEPLOYMENT_STEPS.md`](./DEPLOYMENT_STEPS.md)
+
 ## 0. Déjà fait
 
 - [x] Pinata `pinata_connect → ok: true` (JWT Vellum only)
 - [x] Compteurs NFT live dans le code (wallet vs catalogue)
 - [x] DAO read-only, LIA ≠ GSN, marketplace address = empty (known)
+- [x] Wallet ≠ Portfolio · multi-chain BTC/SOL · TREASURY_POLICY v0.2
 
 ## 1. Rebuild Pages
 
-Push sur `main` déclenche en principe **GitHub Pages** (workflow deploy).
+Push sur `main` → **GitHub Pages** (workflow deploy).
 
 Vérifier après 2–5 min :
 
 - https://neltud.github.io/xArtists/
-- Dashboard : **NFTs wallet LIA** ≈ 8, **collections** ≈ 275+
-- Pas de « 0 » fantôme
+- Dashboard : NFTs wallet LIA · collections catalogue
+- Nav : Studio · Market · Agents · Portfolio LIA · Wallet user · Editions · Ads
 
 Si Pages stale : Actions → workflow Pages → **Re-run**.
 
@@ -24,40 +27,53 @@ Si Pages stale : Actions → workflow Pages → **Re-run**.
 export PINATA_JWT=...   # secret only
 python -m lia.media.pinata_connect --file ./oeuvre.jpg
 python -m lia.media.storage --name "Œuvre 01" --pin
-# → cid + ipfs:// pour mint
 ```
 
-## 3. Deploy SC (PEM + EGLD sur wallet LIA)
+## 3. Deploy SC (étapes complètes)
+
+Voir **`docs/DEPLOYMENT_STEPS.md`**.
+
+Résumé :
 
 ```bash
-export CHAIN=1
-export FEE_BPS=300
-export LIA_LIVE_TRADING=0
-export PEM=/secure/mainnet.pem
+export CHAIN=1 FEE_BPS=300 LIA_LIVE_TRADING=0 PEM=/secure/mainnet.pem
 
-# simulate first if available
-./scripts/simulate_deploy_mainnet.sh   # si présent
+./scripts/build_scs_isolated.sh all
+./scripts/simulate_deploy_mainnet.sh nft-marketplace
+./scripts/simulate_deploy_mainnet.sh agents-marketplace
 
-./scripts/deploy_mainnet.sh nft-marketplace
-./scripts/deploy_mainnet.sh agents-marketplace
-# noter les deux adresses erd1… affichées
+./scripts/deploy_mainnet.sh nft-marketplace    # noter erd1
+./scripts/deploy_mainnet.sh agents-marketplace # noter erd1
 
 python scripts/post_deploy_contracts.py \
   --marketplace erd1... \
   --agents erd1...
 
-python scripts/verify_marketplace_codehash.py
-# codeHash DOIT être non-null
+python scripts/verify_marketplace_codehash.py   # codeHash ≠ null
 ```
+
+Solde LIA : viser **≥ 2–5 EGLD** (pas seulement 0,66).
 
 ## 4. Frontend env + rebuild
 
-```bash
-# VITE_MARKETPLACE_ADDRESS=erd1...
-# VITE_AGENTS_MARKETPLACE_ADDRESS=erd1...
-# rebuild Pages
+```text
+VITE_MARKETPLACE_ADDRESS=erd1...
+VITE_AGENTS_MARKETPLACE_ADDRESS=erd1...
+VITE_AGENTS_FEE_BPS=300
+VITE_CHAIN_ID=1
 ```
 
-## 5. Ne pas toucher
+Commit `data/contracts.json` → rebuild Pages → retirer bannières P0.
 
-`LIA_LIVE_TRADING=0` jusqu’à micro-trades + signature OK.
+## 5. Signature + blackbox
+
+- Connect Web Wallet / extension (pas LIA protocole)
+- Micro List / Buy (`MAINNET_DEPLOY_BLACKBOX.md`)
+- `LIA_LIVE_TRADING=0` jusqu’à micro-trades trading OK
+
+## 6. Ne pas toucher
+
+- PEM dans le repo  
+- Deploy bridge  
+- Fonds vers anciennes adresses empty  
+- Vote DAO factice  
