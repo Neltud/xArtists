@@ -12,12 +12,13 @@ import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
 import { useWeb3 } from '../hooks/useWeb3'
 import { LINKS } from '../config/links'
 import TxCapabilityBanner from './TxCapabilityBanner'
+import UserWalletGuard from './UserWalletGuard'
+import { canListBuyNft, isLiaOpsWallet } from '../config/scStatus'
 
 interface Props {
   nft: NFT | null
   onClose: () => void
   initialAction?: 'buy' | 'sell' | 'offer' | 'bid' | null
-  /** From marketplace activity index click */
   initialListingId?: number | null
 }
 
@@ -27,7 +28,7 @@ export default function NFTDetailModal({
   initialAction = null,
   initialListingId = null,
 }: Props) {
-  const { isLoggedIn } = useWeb3()
+  const { isLoggedIn, address } = useWeb3()
   const {
     listNft,
     buyNft,
@@ -81,8 +82,16 @@ export default function NFTDetailModal({
 
   const guard = (fn: () => Promise<unknown>) => async () => {
     setTxMsg(null)
-    if (!isLoggedIn) {
-      setTxMsg('Connecte ton wallet')
+    if (!canListBuyNft()) {
+      setTxMsg('Marketplace SC non live (codeHash) — List/Buy désactivés')
+      return
+    }
+    if (!isLoggedIn || !address) {
+      setTxMsg('Connecte ton wallet utilisateur (pas LIA ops)')
+      return
+    }
+    if (isLiaOpsWallet(address)) {
+      setTxMsg('Wallet protocole LIA interdit pour List/Buy — utilise ton wallet')
       return
     }
     try {
@@ -119,9 +128,12 @@ export default function NFTDetailModal({
               {nft.collection_name} · {nonceLabel(nft)} · royalties {royalties ?? '—'}% · {typeLabel(nft.type)}
             </p>
             <TxCapabilityBanner />
-            <p className="text-[10px] text-red-300/90">
-              SC marketplace non déployé (codeHash null) — TX on-chain échoueront jusqu’au P0 deploy.
-            </p>
+            {!canListBuyNft() && (
+              <p className="text-[10px] text-red-300/90">
+                SC marketplace non live (codeHash null) — TX on-chain bloquées jusqu’au deploy + verify.
+              </p>
+            )}
+            <UserWalletGuard address={address} action="List / Buy / Bid" />
 
             <div className="flex flex-wrap gap-1">
               {(['buy', 'sell', 'bid', 'manage', 'offer'] as const).map(t => (
@@ -146,7 +158,7 @@ export default function NFTDetailModal({
                 min={0}
                 value={listingId}
                 onChange={e => setListingId(e.target.value)}
-                className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
+                className="rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
               />
             </label>
 
@@ -161,7 +173,7 @@ export default function NFTDetailModal({
                 />
                 <button
                   type="button"
-                  disabled={pending}
+                  disabled={pending || !canListBuyNft()}
                   className="btn-primary text-sm"
                   onClick={guard(() => buyNft({ listingId: id, priceEgld: parseFloat(buyPrice) }))}
                 >
@@ -180,7 +192,7 @@ export default function NFTDetailModal({
                 />
                 <button
                   type="button"
-                  disabled={pending}
+                  disabled={pending || !canListBuyNft()}
                   className="btn-primary text-sm"
                   onClick={guard(() =>
                     listNft({ tokenId: nft.collection, nonce: nft.nonce, priceEgld: parseFloat(listPrice) })
@@ -201,7 +213,7 @@ export default function NFTDetailModal({
                 />
                 <button
                   type="button"
-                  disabled={pending}
+                  disabled={pending || !canListBuyNft()}
                   className="btn-primary text-sm"
                   onClick={guard(() => placeBid({ listingId: id, amountEgld: parseFloat(bidPrice) }))}
                 >
@@ -209,7 +221,7 @@ export default function NFTDetailModal({
                 </button>
                 <button
                   type="button"
-                  disabled={pending}
+                  disabled={pending || !canListBuyNft()}
                   className="btn-secondary text-sm"
                   onClick={guard(() => withdrawBid(id))}
                 >
@@ -222,15 +234,15 @@ export default function NFTDetailModal({
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  disabled={pending}
-                  className="btn-primary text-sm"
+                  disabled={pending || !canListBuyNft()}
+                  className="btn-secondary text-sm"
                   onClick={guard(() => acceptBid(id))}
                 >
-                  Accept bid (seller)
+                  Accept bid
                 </button>
                 <button
                   type="button"
-                  disabled={pending}
+                  disabled={pending || !canListBuyNft()}
                   className="btn-secondary text-sm"
                   onClick={guard(() => cancelListing(id))}
                 >
@@ -240,43 +252,36 @@ export default function NFTDetailModal({
             )}
 
             {tab === 'offer' && (
-              <p className="text-xs text-amber-200/90 border border-amber-500/30 rounded-lg p-3">
-                <strong>Offer</strong> : pas d’endpoint on-chain. Utilise <strong>Bid</strong> sur un listing
-                existant.
+              <p className="text-xs text-gray-400">
+                Offer off-chain / memo — pas d’endpoint escrow dédié tant que design V2 non déployé.
               </p>
             )}
 
-            {(txMsg || error || lastTx) && (
-              <p className="text-[11px] text-amber-200">
-                {txMsg || error}
-                {lastTx ? ` · ${lastTx}` : ''}
-              </p>
+            {(txMsg || error) && (
+              <p className={`text-xs ${error ? 'text-red-400' : 'text-green-400'}`}>{txMsg || error}</p>
+            )}
+            {lastTx && (
+              <a
+                className="text-xs text-purple-300 underline"
+                href={`${LINKS.explorer}/transactions/${lastTx}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Voir TX explorer
+              </a>
             )}
 
-            <div className="mt-auto flex flex-col gap-2 pt-2">
+            <div className="flex gap-3 text-xs mt-2">
+              <a href={EXPLORER_NFT(nft.identifier)} target="_blank" rel="noreferrer" className="text-purple-300">
+                Explorer
+              </a>
               <a
                 href={XOXNO_COLLECTION(nft.collection)}
                 target="_blank"
                 rel="noreferrer"
-                className="btn-secondary text-center text-sm"
+                className="text-gray-400"
               >
-                XOXNO ↗
-              </a>
-              <a
-                href={EXPLORER_NFT(nft.identifier)}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-secondary text-center text-sm"
-              >
-                Explorer ↗
-              </a>
-              <a
-                href={LINKS.xexchangeTroUsdc}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-secondary text-center text-sm"
-              >
-                $TRO ↗
+                XOXNO
               </a>
             </div>
           </div>
