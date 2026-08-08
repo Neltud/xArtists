@@ -10,6 +10,8 @@ import AdSlot from '../components/AdSlot'
 import GuardianStatusPanel from '../components/GuardianStatusPanel'
 import ScStatusBanner from '../components/ScStatusBanner'
 import DataHealthStrip from '../components/DataHealthStrip'
+import PageGuide from '../components/PageGuide'
+import InfoTip, { LabelWithTip } from '../components/InfoTip'
 import PersonaWelcome, {
   PersonaQuickLinks,
   getStoredPersona,
@@ -28,10 +30,25 @@ const AGENTS = [
   { key: 'dao', name: 'LIA DAO', icon: '🗳️', desc: 'Vellum pack', color: 'text-pink-400' },
 ]
 
-function StatCard({ label, value, sub, color = '' }: { label: string; value: string; sub?: string; color?: string }) {
+function StatCard({
+  label,
+  value,
+  sub,
+  color = '',
+  tip,
+}: {
+  label: string
+  value: string
+  sub?: string
+  color?: string
+  tip?: React.ComponentProps<typeof InfoTip>['k']
+}) {
   return (
     <div className="card">
-      <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2 flex items-center gap-1">
+        {label}
+        {tip && <InfoTip k={tip} />}
+      </p>
       <p className={`text-xl sm:text-2xl font-black ${color || 'text-white'}`}>{value}</p>
       {sub && <p className="text-xs text-gray-500 mt-1">{sub}</p>}
     </div>
@@ -79,6 +96,7 @@ export default function Dashboard() {
 
       <LandingHero connected={connected} />
 
+      <PageGuide page="dashboard" />
       <ScStatusBanner />
       <DataHealthStrip />
 
@@ -95,7 +113,8 @@ export default function Dashboard() {
               Dashboard protocole <span className="live-dot ml-2" />
             </h2>
             <p className="text-sm text-gray-500 mt-1">
-              Vue <strong className="text-purple-300">LIA ops</strong> — pas ton wallet Connect
+              Vue <strong className="text-purple-300">LIA ops</strong> — pas ton wallet Connect{' '}
+              <InfoTip k="lia_vs_user" />
             </p>
             <p className="text-[10px] mono text-gray-600 mt-1">
               {LIA_WALLET.slice(0, 18)}…{lastUpdate ? ` · ${lastUpdate.toLocaleTimeString('fr-FR')}` : ''}
@@ -125,7 +144,7 @@ export default function Dashboard() {
           <Link to="/wallet" className="underline">
             /wallet · Mon wallet
           </Link>
-          . $TRO supply max = <strong>500 000</strong>.{' '}
+          . $TRO supply max = <strong>500 000</strong> <InfoTip k="tro_token" />.{' '}
           <Link to="/trading" className="underline text-purple-300">
             Trading / Board
           </Link>{' '}
@@ -153,15 +172,16 @@ export default function Dashboard() {
                 value={`$${portfolioUsd.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`}
                 sub={`${portfolio.tokens.length} tokens`}
                 color="text-purple-400"
+                tip="lia_vs_user"
               />
-              <StatCard label="EGLD Price" value={`$${egldPrice.toFixed(4)}`} sub="Network" />
+              <StatCard label="EGLD Price" value={`$${egldPrice.toFixed(4)}`} sub="Network" tip="oracle" />
               <StatCard
                 label="Fear & Greed"
                 value={`${prices.fearGreed}`}
                 sub={prices.fearGreedLabel}
                 color={fgColor}
               />
-              <StatCard label="BalanceGuard" value={guard} color={guardColor} />
+              <StatCard label="BalanceGuard" value={guard} color={guardColor} tip="guardian" />
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
@@ -175,6 +195,7 @@ export default function Dashboard() {
                 value={`${(live.troBalance || 0).toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`}
                 sub="cap total 500 000"
                 color="text-purple-400"
+                tip="tro_token"
               />
               <StatCard
                 label="NFTs wallet LIA"
@@ -191,7 +212,9 @@ export default function Dashboard() {
             </div>
 
             <div className="card mb-6">
-              <p className="text-xs font-semibold uppercase tracking-widest text-gray-500">Progression LIA</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-500">
+                <LabelWithTip k="live_trading">Progression LIA (paper)</LabelWithTip>
+              </p>
               <p className="text-2xl font-black mt-1">{millionPct.toFixed(6)}%</p>
               <div className="progress-bar mt-2" role="progressbar" aria-valuenow={millionPct}>
                 <div className="progress-fill" style={{ width: `${Math.min(millionPct * 100, 100)}%` }} />
@@ -204,7 +227,9 @@ export default function Dashboard() {
             <div className="grid md:grid-cols-2 gap-4 mb-6">
               <div className="card">
                 <div className="flex justify-between mb-3">
-                  <p className="text-xs uppercase text-gray-500 font-semibold">Packs LIA (Vellum)</p>
+                  <p className="text-xs uppercase text-gray-500 font-semibold flex items-center gap-1">
+                    Packs LIA (Vellum) <InfoTip k="gsn_vs_packs" />
+                  </p>
                   <Link to="/agents" className="text-xs text-purple-400">
                     /agents →
                   </Link>

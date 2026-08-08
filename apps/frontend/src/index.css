@@ -41,7 +41,6 @@
     height: auto;
   }
 
-  /* Prevent layout shift on sticky header */
   header {
     contain: layout style;
   }
@@ -111,7 +110,6 @@
     contain-intrinsic-size: auto 220px;
   }
 
-  /* Aspect boxes — reserve space before image loads (CLS) */
   .aspect-nft {
     aspect-ratio: 1 / 1;
     background: #0a0a0f;
@@ -119,6 +117,30 @@
   .aspect-gallery {
     aspect-ratio: 4 / 5;
     background: #0a0a0f;
+  }
+
+  /* Info bubbles */
+  .info-tip-btn {
+    @apply inline-flex items-center justify-center rounded-full border border-purple-500/40 bg-purple-500/15 text-purple-300 font-bold;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    line-height: 1;
+    min-width: 18px;
+    cursor: help;
+  }
+  .info-tip-btn:hover,
+  .info-tip-btn:focus-visible {
+    @apply border-purple-400 bg-purple-500/30 text-white outline-none;
+  }
+  .info-tip-panel {
+    @apply absolute z-50 left-0 mt-1 w-64 max-w-[min(18rem,calc(100vw-2rem))] rounded-lg border border-[#3a3a5a] bg-[#0e0e16] px-3 py-2 text-[11px] leading-relaxed text-gray-300 shadow-xl;
+  }
+  @media (min-width: 640px) {
+    .info-tip-panel {
+      left: 50%;
+      transform: translateX(-50%);
+    }
   }
 }
 

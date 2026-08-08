@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { useWalletTokens, type WalletToken } from '../hooks/useWalletTokens'
 import { useWallet } from '../context/WalletContext'
 import MoonpayButton from '../components/MoonpayButton'
+import PageGuide from '../components/PageGuide'
+import InfoTip from '../components/InfoTip'
 
 type Tab = 'all' | 'esdt' | 'hatom' | 'lp'
 
@@ -30,10 +32,7 @@ function TokenRow({ t }: { t: WalletToken }) {
   )
 }
 
-/**
- * USER wallet only — no LIA ops duplication.
- * Protocol treasury → /portfolio
- */
+/** USER wallet only — no LIA ops duplication. */
 export default function Wallet() {
   const { connected, address } = useWallet()
 
@@ -79,12 +78,14 @@ export default function Wallet() {
 
   return (
     <div className="animate-fade-in">
+      <PageGuide page="wallet" />
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-black">👛 Mon wallet</h1>
           <p className="text-gray-500 mt-1 text-sm">
-            Soldes <strong className="text-green-300">utilisateur</strong> (Connect). La trésorerie LIA multi-chain est
-            sur{' '}
+            Soldes <strong className="text-green-300">utilisateur</strong> (Connect).{' '}
+            <InfoTip k="lia_vs_user" /> Trésorerie LIA →{' '}
             <Link to="/portfolio" className="text-purple-300 underline">
               Portfolio protocole
             </Link>
@@ -148,8 +149,13 @@ export default function Wallet() {
               <p className="text-xl font-bold">${totalEsdtUsd.toFixed(2)}</p>
             </div>
             <div className="card">
-              <p className="text-xs text-gray-500 uppercase mb-1">Hatom HF</p>
+              <p className="text-xs text-gray-500 uppercase mb-1 flex items-center gap-1">
+                Hatom HF <InfoTip k="hatom" />
+              </p>
               <p className={`text-xl font-bold ${hfColor}`}>{hf >= 999 ? 'N/A' : hf.toFixed(2)}</p>
+              {hf >= 999 && (
+                <p className="text-[10px] text-gray-500 mt-1">Pas de position ou API indisponible</p>
+              )}
             </div>
           </div>
 
