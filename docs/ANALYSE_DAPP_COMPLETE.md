@@ -6,7 +6,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 
 **Live Demo** : https://neltud.github.io/xArtists  
 **Repo** : https://github.com/Neltud/xArtists  
-**Statut** : Production-ready (code pleinement corrigé et poussé — **v0.15.0+**). Dernière mise à jour documentée : **8 août 2026**.
+**Statut** : Production-ready (code pleinement corrigé et poussé — **v0.15.0+**). Dernière mise à jour documentée : **8 août 2026** (12:10 UTC).
 
 ### Points forts
 - Intégration Warps / AI Agents MultiversX + agents LIA autonomes (trading, minting génératif, yield).
@@ -35,7 +35,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 ## Veille Technologique (8 août 2026)
 
 ### MultiversX / Protocol
-- **Mainnet v1.11.10.0** : activé **6 août 2026** (epoch 2198). Améliorations VM. Validators invités à upgrader. Réseau stable J+2.
+- **Mainnet v1.11.10.0** : activé **6 août 2026** (epoch 2198). Améliorations VM. Validators invités à upgrader. Réseau stable J+2 (8 août).
 - **Supernova** : upgrade majeur finalité sub-seconde (~600 ms block time, intra-shard 100–250 ms). Découplage consensus / exécution (Propose/Vote → puis Execute).
   - Gouvernance approuvée massivement (janv. 2026, ~99.64 %).
   - **Battle of Nodes** (depuis 11 mars 2026) : >1 milliard de transactions, pic public ~120k TPS.
@@ -138,4 +138,4 @@ Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
 Veille techno et analyse dApp à jour au **8 août 2026** (J+2 activation mainnet v1.11.10.0).  
 Prêt pour itérations et scale avec Supernova (**10 septembre 2026**).
 
-*Auteur : Neltud (via Grok) — Artiste & créateur*
+*Auteur : Neltud (via Grok) — Artiste & créateur — 8 août 2026*
