@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 """
 Single-process regression runner — avoids N× Python cold starts.
-
-Discovers test_* functions in listed modules, runs them, prints summary.
-Env:
-  REGRESSION_FAILFAST=1  stop on first failure
-  REGRESSION_QUIET=1     less output
 """
 from __future__ import annotations
 
@@ -24,12 +19,12 @@ if str(ROOT) not in sys.path:
 
 os.environ.setdefault("LIA_LIVE_TRADING", "0")
 
-# Ordered modules (path relative to ROOT)
 MODULES = [
     "tests/regression/test_data_contracts.py",
     "tests/regression/test_post_deploy_logic.py",
     "tests/regression/test_trading_stack_gates.py",
     "tests/regression/test_sc_status_flags.py",
+    "tests/regression/test_oracle_config.py",
     "lia/bridge/test_latency.py",
     "lia/guardian/test_spiral.py",
     "lia/risk/test_secure_tp.py",
@@ -66,7 +61,6 @@ def collect_tests(mod: ModuleType) -> list[tuple[str, Callable]]:
         fn = getattr(mod, attr)
         if callable(fn):
             out.append((attr, fn))
-    # Prefer stable order
     out.sort(key=lambda x: x[0])
     return out
 
@@ -88,12 +82,10 @@ def main() -> int:
             continue
 
         tests = collect_tests(mod)
-        # Modules that only run via if __name__ without test_* — call main path
         if not tests and hasattr(mod, "main") and callable(mod.main):
             tests = [("main", mod.main)]
 
         if not tests:
-            # Try running as script body already executed on import
             if not QUIET:
                 print(f"LOAD  {rel} (no test_* — import only)")
             passed += 1
@@ -120,6 +112,8 @@ def main() -> int:
             break
 
     elapsed = time.perf_counter() - t0
+    import json
+
     report = {
         "updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "pass": passed,
@@ -132,8 +126,6 @@ def main() -> int:
     }
     out = ROOT / "data" / "regression_report.json"
     out.parent.mkdir(parents=True, exist_ok=True)
-    import json
-
     out.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     print("")
