@@ -1,11 +1,5 @@
 """
 After every Vellum cycle: mirror critical JSON so the dApp sees fresh data.
-
-1. data/*.json  (source of truth, git-committed)
-2. docs/data/   (GitHub Pages static)
-3. apps/frontend/public/data/  (Vite build embeds)
-
-Call from Vellum Reporter node, then git add/commit/push (existing GitHubReporter).
 """
 from __future__ import annotations
 
@@ -40,7 +34,10 @@ CRITICAL = [
     "rwa_escrow_intents.json",
     "vellum_last_run.json",
     "egld_price.json",
+    "oracle_prices.json",
+    "oracle_config.json",
     "ads_active.json",
+    "treasury_wallets.json",
 ]
 
 
@@ -83,7 +80,6 @@ def mirror_files(names: Iterable[str] | None = None) -> dict:
 
 
 def publish() -> dict:
-    """Alias for Vellum Reporter."""
     return mirror_files()
 
 

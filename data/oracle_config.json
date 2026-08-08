@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "network": "mainnet",
+  "updated": "2026-08-08T15:10:00Z",
+  "api": {
+    "mvx": "https://api.multiversx.com",
+    "timeout_sec": 12
+  },
+  "policy": {
+    "max_age_sec": 120,
+    "max_deviation": 0.05,
+    "prefer_onchain_weight": 2.0,
+    "centralized_weight": 0.75,
+    "min_sources": 1,
+    "reject_if_stale": true
+  },
+  "pairs": [
+    {
+      "symbol": "EGLD-USD",
+      "primary": "mvx_economics",
+      "sources": ["mvx_economics", "mvx_token:WEGLD-bd4d79", "coingecko_egld"],
+      "use_for": ["gas", "micro_trade", "board", "portfolio_mark"]
+    },
+    {
+      "symbol": "WEGLD-USD",
+      "primary": "mvx_token:WEGLD-bd4d79",
+      "sources": ["mvx_token:WEGLD-bd4d79", "mvx_economics"],
+      "use_for": ["dex_mid", "arb"]
+    },
+    {
+      "symbol": "USDC-USD",
+      "primary": "mvx_token:USDC-c76f1f",
+      "sources": ["mvx_token:USDC-c76f1f"],
+      "use_for": ["stable_ref", "yield"]
+    },
+    {
+      "symbol": "TRO-USD",
+      "primary": "mvx_token:TRO-94c925",
+      "sources": ["mvx_token:TRO-94c925"],
+      "use_for": ["dashboard", "dao_display"],
+      "note": "Illiquid — mark-to-market only, not treasury cash equivalent"
+    }
+  ],
+  "tokens": {
+    "WEGLD": "WEGLD-bd4d79",
+    "USDC": "USDC-c76f1f",
+    "TRO": "TRO-94c925",
+    "MEX": "MEX-455c57"
+  },
+  "notes": [
+    "MultiversX has no Chainlink-style push oracle in-repo; prices are indexer-derived from on-chain DEX activity (api.multiversx.com/tokens + /economics).",
+    "CEX (CoinGecko) is secondary reference with lower weight.",
+    "Do not execute live trades on a single stale source."
+  ]
+}

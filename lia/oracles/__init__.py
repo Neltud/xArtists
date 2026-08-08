@@ -1,5 +1,17 @@
-"""Decentralized / on-chain-leaning price oracles for LIA."""
+"""On-chain-leaning price oracles for LIA (MVX indexer + secondary refs)."""
 
-from lia.oracles.price_oracle import PriceOracle, OracleQuote, fetch_egld_usd
+from lia.oracles.price_oracle import (
+    OracleQuote,
+    PriceOracle,
+    fetch_egld_usd,
+    fetch_token_usd,
+    load_config,
+)
 
-__all__ = ["PriceOracle", "OracleQuote", "fetch_egld_usd"]
+__all__ = [
+    "PriceOracle",
+    "OracleQuote",
+    "fetch_egld_usd",
+    "fetch_token_usd",
+    "load_config",
+]
