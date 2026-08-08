@@ -1,17 +1,13 @@
 """
 Cross-chain arb scanner + gated intents (NOT atomic bridge arb).
 ================================================================
-Reality constraints:
-  - MVX ↔ SOL ↔ HL are not atomic without a bridge
-  - Bridge latency + fee + custody risk → large edge required
-  - Default execution = PAPER / SIGNALS only
-  - Live legs only if LIA_LIVE_TRADING=1 AND policy allows AND edge survives slippage
+Latency optimization:
+  - Adaptive bridge penalty from BridgeLatencyOptimizer (not fixed 80 bps)
+  - Prefer INVENTORY_PREPOSITION (0 wait) over message bridges
+  - Edge decay abort if p95 latency kills net edge
+  - Parallel leg prep timeline in intents
 
-Flow:
-  1. Collect mids per chain (MVX DEX cluster, Jupiter/SOL, HL mark)
-  2. Pairwise cross edges
-  3. Subtract fees + slip + bridge_penalty
-  4. Emit intents (buy leg / sell leg) — sequential, never assume atomic
+Live legs only if LIA_LIVE_TRADING=1 AND policy allows AND edge survives.
 """
 from __future__ import annotations
 
@@ -21,6 +17,7 @@ from dataclasses import dataclass
 from typing import Any, Optional
 
 from lia.board.arb import scan_block_arb
+from lia.bridge.latency import BridgeLatencyOptimizer, InventoryBook, adaptive_bridge_penalty_bps
 from lia.risk.leverage_policy import allow_execution
 from lia.risk.secure_tp import live_trading_enabled
 from lia.risk.slippage import (
@@ -29,10 +26,31 @@ from lia.risk.slippage import (
     recommended_slippage_bps,
 )
 
-BRIDGE_PENALTY_BPS = int(os.getenv("LIA_BRIDGE_PENALTY_BPS", "80"))
 MIN_CROSS_EDGE = float(os.getenv("LIA_MIN_CROSS_EDGE", "0.015"))
 MAX_ARB_USD = float(os.getenv("LIA_MAX_CROSS_ARB_USD", "25"))
 FEE_RT = float(os.getenv("LIA_ARB_FEE_RT", "0.008"))
+# Optional fixed floor; adaptive penalty replaces legacy LIA_BRIDGE_PENALTY_BPS when possible
+LEGACY_BRIDGE_BPS = int(os.getenv("LIA_BRIDGE_PENALTY_BPS", "80"))
+
+_OPT: Optional[BridgeLatencyOptimizer] = None
+
+
+def get_bridge_optimizer() -> BridgeLatencyOptimizer:
+    global _OPT
+    if _OPT is None:
+        # Optional bootstrap inventory from env (USD per chain)
+        inv = InventoryBook(
+            balances={
+                "multiversx": float(os.getenv("LIA_INV_MVX_USD", "0") or 0),
+                "solana": float(os.getenv("LIA_INV_SOL_USD", "0") or 0),
+                "hyperliquid": float(os.getenv("LIA_INV_HL_USD", "0") or 0),
+            }
+        )
+        _OPT = BridgeLatencyOptimizer(
+            state_path=os.getenv("LIA_BRIDGE_STATS_PATH", "data/bridge_latency_stats.json"),
+            inventory=inv,
+        )
+    return _OPT
 
 
 @dataclass
@@ -75,6 +93,7 @@ def scan_cross_chain_arb(
     size_usd: float = MAX_ARB_USD,
     atr_pct: float = 0.01,
 ) -> dict[str, Any]:
+    opt = get_bridge_optimizer()
     quotes = _mvx_quotes(token_mvx) + _external_quotes(
         sol_mid=sol_mid, hl_mid=hl_mid, symbol=symbol
     )
@@ -108,7 +127,18 @@ def scan_cross_chain_arb(
                     atr_pct=atr_pct,
                     cross_chain=cross,
                 )
-                bridge_bps = BRIDGE_PENALTY_BPS if cross else 0
+
+                # Adaptive latency-aware penalty (inventory → near-zero wait)
+                if cross:
+                    pen = adaptive_bridge_penalty_bps(
+                        buy_chain, sell_chain, size_usd=size_usd, optimizer=opt
+                    )
+                    bridge_bps = int(pen["penalty_bps"])
+                    route_meta = pen
+                else:
+                    bridge_bps = 0
+                    route_meta = {"mode": "SAME_CHAIN", "penalty_bps": 0}
+
                 net = net_edge_after_slippage(
                     gross,
                     buy_slip_bps=buy_slip["slippage_bps"],
@@ -116,6 +146,15 @@ def scan_cross_chain_arb(
                     fee_roundtrip=FEE_RT,
                     bridge_bps=bridge_bps,
                 )
+
+                plan = opt.plan_parallel_legs(
+                    buy_chain=buy_chain,
+                    sell_chain=sell_chain,
+                    size_usd=size_usd,
+                    net_edge=net,
+                )
+                actionable = bool(net > 0.002 and plan.get("execute"))
+
                 opportunities.append(
                     {
                         "buy": buy_q.__dict__,
@@ -125,8 +164,10 @@ def scan_cross_chain_arb(
                         "buy_slip_bps": buy_slip["slippage_bps"],
                         "sell_slip_bps": sell_slip["slippage_bps"],
                         "bridge_penalty_bps": bridge_bps,
+                        "bridge_route": route_meta,
+                        "latency_plan": plan,
                         "size_usd": size_usd,
-                        "actionable": net > 0.002,
+                        "actionable": actionable,
                         "atomic": False,
                         "risk": "sequential_legs_bridge_latency",
                     }
@@ -141,14 +182,15 @@ def scan_cross_chain_arb(
         "best": best,
         "limits": {
             "min_cross_edge": MIN_CROSS_EDGE,
-            "bridge_penalty_bps": BRIDGE_PENALTY_BPS,
+            "legacy_bridge_penalty_bps": LEGACY_BRIDGE_BPS,
             "max_arb_usd": MAX_ARB_USD,
             "fee_roundtrip": FEE_RT,
+            "inventory": opt.inventory.to_dict(),
         },
         "live": live_trading_enabled(),
         "note": (
-            "Cross-chain arb is sequential + non-atomic. "
-            "Bridge/latency penalty applied. Live legs require LIA_LIVE_TRADING=1 + gates."
+            "Latency optimized: inventory pre-position > fast corridor > msg bridge. "
+            "Edge decay abort if p95 wait kills net. Non-atomic; no auto user-fund bridge."
         ),
         "updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
@@ -165,6 +207,15 @@ def build_arb_intents(
     buy = opp["buy"]
     sell = opp["sell"]
     size = min(float(opp.get("size_usd") or MAX_ARB_USD), MAX_ARB_USD)
+    plan = opp.get("latency_plan") or {}
+
+    if plan and plan.get("survival", {}).get("abort"):
+        return {
+            "ok": False,
+            "reason": "edge_decay_abort",
+            "latency_plan": plan,
+            "intents": [],
+        }
 
     intents: list[dict[str, Any]] = []
     for leg, side in ((buy, "buy"), (sell, "sell")):
@@ -201,16 +252,19 @@ def build_arb_intents(
             }
         )
 
+    route_mode = (opp.get("bridge_route") or {}).get("mode") or plan.get("mode")
     return {
         "ok": True,
         "atomic": False,
-        "bridge_required": buy["chain"] != sell["chain"],
-        "bridge_mode": "MANUAL_OR_FUTURE_ADAPTER",
+        "bridge_required": buy["chain"] != sell["chain"]
+        and route_mode != "INVENTORY_PREPOSITION",
+        "bridge_mode": route_mode or "MANUAL_OR_FUTURE_ADAPTER",
+        "latency_plan": plan,
         "net_edge": opp.get("net_edge"),
         "intents": intents,
         "warning": (
-            "Execute buy leg first only if inventory/bridge path exists; "
-            "otherwise paper-log both legs. Do not send user funds across bridges."
+            "Prefer inventory pre-position to avoid bridge wait. "
+            "Do not send user funds across experimental bridges."
         ),
     }
 
