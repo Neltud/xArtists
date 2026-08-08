@@ -42,7 +42,6 @@ def mean_reversion_liquid(
     if vwap_24h <= 0:
         return Signal("WAIT", token, 0.2, "MR", "no vwap")
     deviation = (price - vwap_24h) / vwap_24h
-    # Un peu plus sélectif: -1.4% / RSI 33
     if deviation <= -0.014 and rsi_14 <= 33:
         conf = min(0.9, 0.56 + abs(deviation) * 11 + (33 - rsi_14) / 100)
         return Signal("BUY", token, conf, "MR", f"dev={deviation:.3%} rsi={rsi_14}", price)
@@ -68,7 +67,6 @@ def momentum_regime(
         and volume_spike >= 1.6
         and gs_bias in ("BULLISH", "BUY", "ACCUMULATE")
     ):
-        conf = min(0.88, 0.52 + price_change_1h * 9 + max(0.0, volume_spike - 1.0) * 0.04)
         conf = min(0.88, 0.5 + price_change_1h * 10 + max(0.0, volume_spike - 1.0) * 0.05)
         return Signal(
             "BUY",
@@ -92,7 +90,6 @@ def micro_arb(
         return Signal("WAIT", token, 0.2, "ARB", "bad prices")
     mid = (price_a + price_b) / 2
     spread = abs(price_a - price_b) / mid
-    # Exiger un edge plus net vs frais
     if spread > fee_roundtrip * 2.8:
         return Signal(
             "BUY",
@@ -137,14 +134,11 @@ def fuse_signals(signals: list[Signal]) -> Signal:
     if not signals:
         return Signal("WAIT", "", 0.3, "FUSE", "empty")
 
-    """Priority: protective SELL → best BUY (ARB tie-break) → YIELD → WAIT."""
     buys = [s for s in signals if s.action == "BUY"]
     sells = [s for s in signals if s.action == "SELL"]
-    buys = [s for s in signals if s.action == "BUY"]
     yields = [s for s in signals if s.action == "YIELD"]
 
     def rank(s: Signal) -> tuple[float, int]:
-        # Légère boost de rank pour STATARB afin de le préférer à conf égale
         prio = _STRATEGY_PRIORITY.get(s.strategy, 0)
         return (s.confidence + prio * 0.01, prio)
 
@@ -153,7 +147,13 @@ def fuse_signals(signals: list[Signal]) -> Signal:
         return max(sells, key=rank)
 
     if buys:
-        best = max(buys, key=rank)
+        # Prefer ARB on near-equal confidence (structural edge vs directional)
+        def buy_key(s: Signal) -> tuple:
+            arb_boost = 0.03 if s.strategy == "ARB" else 0.0
+            prio = _STRATEGY_PRIORITY.get(s.strategy, 0)
+            return (s.confidence + arb_boost + prio * 0.01, 1 if s.strategy == "ARB" else 0)
+
+        best = max(buys, key=buy_key)
         if best.strategy == "STATARB":
             min_conf = 0.55
         elif best.strategy == "ARB":
@@ -161,13 +161,6 @@ def fuse_signals(signals: list[Signal]) -> Signal:
         else:
             min_conf = 0.62
         if best.confidence >= min_conf:
-        # Prefer ARB on near-equal confidence (structural edge vs directional)
-        def buy_key(s: Signal) -> tuple:
-            arb_boost = 0.03 if s.strategy == "ARB" else 0.0
-            return (s.confidence + arb_boost, 1 if s.strategy == "ARB" else 0)
-
-        best = max(buys, key=buy_key)
-        if best.confidence >= 0.62:
             return best
 
     if yields:
