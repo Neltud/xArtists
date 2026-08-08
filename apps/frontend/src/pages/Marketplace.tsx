@@ -6,6 +6,7 @@ import MarketplaceActivity from '../components/MarketplaceActivity'
 import AdSlot from '../components/AdSlot'
 import TreasuryBanner from '../components/TreasuryBanner'
 import ScStatusBanner from '../components/ScStatusBanner'
+import VirtualNftGrid from '../components/VirtualNftGrid'
 import {
   type NFT,
   type CollectionData,
@@ -151,7 +152,7 @@ export default function Marketplace() {
             <span className="gradient-text">xArtists Marketplace</span>
           </h1>
           <p className="mt-3 max-w-2xl text-base text-gray-400">
-            Buy · Sell · Bid — on-chain après deploy SC · XOXNO en externe
+            Buy · Sell · Bid — on-chain après deploy SC · grille virtualisée si volume élevé
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <MoonpayButton label="Acheter EGLD (MoonPay)" className="text-sm!" />
@@ -177,8 +178,7 @@ export default function Marketplace() {
       <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-100">
         <strong>P0 — SC marketplace non déployé</strong> (adresse actuelle = compte vide, codeHash null).
         List / Buy / Bid on-chain resteront en échec jusqu’au deploy +{' '}
-        <code className="text-xs">verify_marketplace_codehash</code>. Utilise XOXNO pour le commerce externe en
-        attendant. Fees treasury (policy) = seulement après SC live.
+        <code className="text-xs">verify_marketplace_codehash</code>.
       </div>
 
       <div className="mb-6">
@@ -248,11 +248,13 @@ export default function Marketplace() {
       ) : visibleNfts.length === 0 ? (
         <div className="rounded-2xl border border-[#2a2a3a] py-20 text-center text-gray-400">No NFTs</div>
       ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {visibleNfts.map(nft => (
-            <NFTCard key={nft.identifier} nft={nft} onOpen={openNft} />
-          ))}
-        </div>
+        <VirtualNftGrid
+          items={visibleNfts}
+          threshold={48}
+          estimateRowHeight={280}
+          getKey={nft => nft.identifier}
+          renderItem={nft => <NFTCard nft={nft} onOpen={openNft} />}
+        />
       )}
 
       <NFTDetailModal
@@ -317,6 +319,7 @@ function NFTCard({
               alt={nft.name}
               className="h-full w-full object-cover group-hover:scale-105 transition-transform"
               loading="lazy"
+              decoding="async"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-5xl opacity-60">🎨</div>

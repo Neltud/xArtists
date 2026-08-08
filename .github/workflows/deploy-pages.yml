@@ -7,6 +7,7 @@ on:
       - 'apps/frontend/**'
       - 'docs/**'
       - 'data/**'
+      - 'scripts/**'
       - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 
@@ -37,13 +38,23 @@ jobs:
         working-directory: apps/frontend
         run: npm install
 
+      - name: 🗜️ Slim NFT catalog (~280KB → ~72KB)
+        run: |
+          # Preserve full dump once
+          if [ -f data/xartists_collections.json ] && [ ! -f data/xartists_collections.full.json ]; then
+            cp data/xartists_collections.json data/xartists_collections.full.json || true
+          fi
+          if [ -f apps/frontend/public/data/xartists_collections.json ] && [ ! -f data/xartists_collections.full.json ]; then
+            cp apps/frontend/public/data/xartists_collections.json data/xartists_collections.full.json || true
+          fi
+          node scripts/slim_collections.mjs
+
       - name: 🏗️ Build React app
         working-directory: apps/frontend
         run: npm run build
         env:
           VITE_BASE_PATH: /xArtists/
           VITE_MVX_API: https://api.multiversx.com
-          # Protocol LIA ops wallet — NOT the end-user session wallet
           VITE_LIA_PROTOCOL_WALLET: erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
           VITE_WALLET: erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
 
@@ -58,14 +69,20 @@ jobs:
           cp -r apps/frontend/dist/. docs/
           touch docs/.nojekyll
 
-      - name: 📊 Copy data JSON
+      - name: 📊 Copy data JSON (slim)
         run: |
           mkdir -p docs/data
           cp -r data/. docs/data/ 2>/dev/null || true
+          # Prefer public slim catalog inside dist already; ensure index+collections pages exist
+          mkdir -p docs/data/collections
+          cp -r apps/frontend/public/data/collections/. docs/data/collections/ 2>/dev/null || true
+          cp apps/frontend/public/data/xartists_collections.json docs/data/ 2>/dev/null || true
+          cp apps/frontend/public/data/xartists_collections.index.json docs/data/ 2>/dev/null || true
 
       - name: 🔍 Verify build
         run: |
           test -f docs/index.html && echo "index.html OK" || (echo "MISSING index.html"; exit 1)
+          test -f docs/data/xartists_collections.json && echo "catalog OK" || echo "WARN no catalog"
 
       - name: 📤 Commit & Push docs/
         run: |
