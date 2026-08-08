@@ -1,87 +1,67 @@
-# LIA Trading Stack — multi-chain · leviers · TP sécurisé
+# LIA Trading Stack — slippage · cross-chain arb · dynamic trail · security
 
-## Ordre d’exécution (inviolable)
+## Ordre d’exécution
 
 ```
-DEFENSE / mode
-    → Venue + leverage policy (chain)
-        → Guardian spiral / equity floor
-            → Fee/gas micro-skip
-                → Secure TP open (log|exp|ladder|fixed)
-                    → ticks: trail + partials + profit lock
+DEFENSE
+  → Venue + leverage policy
+    → Guardian spiral
+      → Slippage guard (size × depth × vol)
+        → Micro fee skip
+          → Secure TP (log) + Dynamic trail open
+            → ticks: trail · partials · profit lock 70%
+  → Cross-chain arb scan (signals / paper intents)
 ```
 
-`LIA_LIVE_TRADING=0` ⇒ tout en **PAPER** (sauf lecture signaux).
+`LIA_LIVE_TRADING=0` ⇒ PAPER.
 
-## Leviers par chaîne
+## Slippage (`lia/risk/slippage.py`)
 
-| Chain | Live max | Paper max | Notes |
-|-------|----------|-----------|--------|
-| **MultiversX** | 1.5× | 2.0× | Spot, LP, Hatom loop ≤ ~1.8× HF-safe |
-| **Solana** | 1.5× | 20× | Jupiter ; high lev paper only |
-| **Hyperliquid** | 1.5× | 20× | Perps paper ; live high lev **blocked** |
-| **Soul** | 1.0× | 1.0× | Experimental / signals |
+| Param | Défaut |
+|-------|--------|
+| base | 30 bps |
+| max | 150 bps |
+| impact | `k * sqrt(notional/depth)` |
+| bridge extra | +40 bps |
 
-## Protocoles / venues
+`guard_quote` → `fill_price` worst-case + reject si > cap.
 
-| Venue | Chain | Rôles | Live? |
-|-------|-------|-------|-------|
-| xExchange / OneDex / AshSwap | MVX | swap, micro-arb | partial |
-| Hatom | MVX | yield, loop | partial |
-| xMEX | MVX | weekly compound | via routes |
-| XOXNO | MVX | NFT external | partial |
-| Jupiter | SOL | routes | planned / signals |
-| Hyperliquid | HL | perps hedge | planned / paper |
-| Soul | multi | restake | experimental |
+## Cross-chain arb (`lia/circuit/cross_chain_arb.py`)
 
-## Take-profit sécurisé
-
-| Couche | Rôle |
-|--------|------|
-| **TpPlan** `log` (défaut) | Scale-out progressif g_min→g_max |
-| **Trailing hybrid** | HWM + BE + step tighten |
-| **min_net_edge** | Skip partial si net < fees |
-| **lock_ratio 70 %** | Gains réalisés non re-risqués |
-| **Guardian lockdown** | Spiral → compoundable → locked |
-
-### Modes TP
-
-- `fixed` — 1 niveau  
-- `log` — densifie tôt, runner  
-- `exp` — niveaux espacés φ  
-- `ladder` — multiples de R  
-
-## API Vellum
+- **Non atomique** (pas de bridge auto v1)
+- MVX mids (block arb) + mids SOL/HL injectés (DataHub)
+- Coûts : fees + slip buy/sell + **bridge penalty 80 bps**
+- Edge min brute 1.5 % ; net min ~20 bps pour `actionable`
+- Size max `LIA_MAX_CROSS_ARB_USD` (défaut 25)
+- Intents PAPER tant que live flag off
 
 ```python
-from lia.circuit.trading_stack import TradingStack
-
-stack = TradingStack()
-st = stack.propose_entry(
-    strategy="MOMENTUM", chain="multiversx", token="EGLD",
-    entry=25.0, size_usd=15.0, equity_usd=100.0,
-    expected_gross=0.02, tp_mode="log",
-)
-# ticks
-stack.on_price(st["id"], 25.4)
-print(stack.status()["ledger"])  # locked vs compoundable
+stack.scan_cross_arb(sol_mid=28.5, hl_mid=None, force_paper=True)
 ```
 
-```python
-from lia.risk.leverage_policy import allow_execution, policy_snapshot
-allow_execution(chain="solana", venue_id="jupiter", requested_leverage=10, strategy="MOMENTUM")
-```
+## Dynamic trailing (`lia/risk/dynamic_trail.py`)
+
+Wrapper de `trailing_stop.py` :
+- hybrid / percent / atr
+- break-even + step tighten
+- à l’arrêt : **exit_price_slippage_adj**
+- persist `data/lia_trailing_state.json`
+
+## Sécurité (continuité)
+
+| Gate | Effet |
+|------|--------|
+| LIA_LIVE_TRADING | bloqué live |
+| leverage policy | SOL/HL live ≤1.5× |
+| guardian spiral | lockdown compoundable |
+| profit lock 70% | pas de re-risk total |
+| slippage cap | pas de fill hors budget |
+| arb non-atomic | warning bridge manuel |
+| max arb USD | micro only |
 
 ## Tests
 
 ```bash
+python -m lia.risk.test_slippage_arb_trail
 python -m lia.risk.test_secure_tp
 ```
-
-## Règles produit
-
-1. Guardian **before** Brain  
-2. Pas de live SOL/HL > 1.5×  
-3. Profit lock ≥ 70 % des nets partiels  
-4. Micro-trade skip si edge < fees+gas  
-5. DEFENSE = zéro nouvel entry  
