@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import NFTDetailModal from '../components/NFTDetailModal'
 import VirtualNftGrid from '../components/VirtualNftGrid'
+import LazyImage from '../components/LazyImage'
 import {
   loadCatalogIndex,
   indexToPartialCollections,
@@ -237,16 +238,14 @@ function GalleryTile({
     <button
       type="button"
       onClick={onClick}
-      className="group relative flex aspect-[4/5] w-full flex-col overflow-hidden rounded-2xl border border-[#2a2a3a] bg-[#15151f] text-left transition-all hover:-translate-y-1 hover:border-purple-500/60 focus-visible:ring-2 focus-visible:ring-purple-500"
+      className="group relative flex aspect-gallery w-full flex-col overflow-hidden rounded-2xl border border-[#2a2a3a] bg-[#15151f] text-left transition-all hover:-translate-y-1 hover:border-purple-500/60 focus-visible:ring-2 focus-visible:ring-purple-500"
     >
       <div className="absolute inset-0 overflow-hidden">
         {img ? (
-          <img
+          <LazyImage
             src={img}
             alt={nft.name || 'NFT'}
             className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-            decoding="async"
           />
         ) : (
           <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent} opacity-40`}>
@@ -269,7 +268,7 @@ function GallerySkeleton() {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4" aria-busy="true">
       {[...Array(8)].map((_, i) => (
-        <div key={i} className="aspect-[4/5] animate-pulse rounded-2xl bg-[#1a1a2e]" />
+        <div key={i} className="aspect-gallery animate-pulse rounded-2xl bg-[#1a1a2e]" />
       ))}
     </div>
   )
