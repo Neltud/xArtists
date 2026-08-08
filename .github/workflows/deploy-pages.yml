@@ -38,7 +38,7 @@ jobs:
         working-directory: apps/frontend
         run: npm install
 
-      - name: 🗜️ Slim NFT catalog (~280KB → ~72KB)
+      - name: 🗜️ Slim NFT catalog
         run: |
           if [ -f data/xartists_collections.json ] && [ ! -f data/xartists_collections.full.json ]; then
             cp data/xartists_collections.json data/xartists_collections.full.json || true
@@ -48,19 +48,10 @@ jobs:
           fi
           node scripts/slim_collections.mjs || echo "WARN slim skipped"
 
-      - name: 📋 Ensure critical public data seeds
+      - name: 📋 Ensure critical public data
         run: |
-          mkdir -p apps/frontend/public/data docs/data
-          for f in lia_board.json lia_v6_status.json contracts.json lia_trades.json \
-                   lia_trailing_state.json lia_portfolio.json hatom_lia.json \
-                   greensmoke_top.json ads_active.json config.json \
-                   xartists_collections.index.json; do
-            if [ -f "data/$f" ]; then
-              cp -f "data/$f" "apps/frontend/public/data/$f"
-              cp -f "data/$f" "docs/data/$f"
-              echo "seeded $f"
-            fi
-          done
+          chmod +x scripts/ensure_pages_data.sh
+          ./scripts/ensure_pages_data.sh
 
       - name: 🏗️ Build React app
         working-directory: apps/frontend
@@ -82,17 +73,13 @@ jobs:
           cp -r apps/frontend/dist/. docs/
           touch docs/.nojekyll
 
-      - name: 📊 Copy data JSON (critical + full data/)
+      - name: 📊 Copy data JSON (never drop board)
         run: |
           mkdir -p docs/data docs/data/collections
           cp -r data/. docs/data/ 2>/dev/null || true
           cp -r apps/frontend/public/data/. docs/data/ 2>/dev/null || true
-          # Explicit board (never 404 after deploy)
-          test -f docs/data/lia_board.json && echo "lia_board OK" || echo "WARN missing lia_board"
-          test -f docs/data/xartists_collections.index.json && echo "index OK" || true
-
-      - name: 🔍 Verify build
-        run: |
+          ./scripts/ensure_pages_data.sh
+          test -f docs/data/lia_board.json && echo "lia_board OK" || (echo "FATAL missing lia_board"; exit 1)
           test -f docs/index.html && echo "index.html OK" || (echo "MISSING index.html"; exit 1)
 
       - name: 📤 Commit & Push docs/

@@ -9,6 +9,7 @@ import LIALaunchButton from '../components/LIALaunchButton'
 import AdSlot from '../components/AdSlot'
 import GuardianStatusPanel from '../components/GuardianStatusPanel'
 import ScStatusBanner from '../components/ScStatusBanner'
+import DataHealthStrip from '../components/DataHealthStrip'
 import PersonaWelcome, {
   PersonaQuickLinks,
   getStoredPersona,
@@ -79,6 +80,7 @@ export default function Dashboard() {
       <LandingHero connected={connected} />
 
       <ScStatusBanner />
+      <DataHealthStrip />
 
       <div className="mb-4">
         <AdSlot id="home_hero" />
@@ -128,8 +130,12 @@ export default function Dashboard() {
             Trading / Board
           </Link>{' '}
           ·{' '}
+          <Link to="/dao" className="underline text-purple-300">
+            DAO
+          </Link>{' '}
+          ·{' '}
           <Link to="/ads" className="underline text-purple-300">
-            Espace pub
+            Pub
           </Link>
         </div>
 

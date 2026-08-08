@@ -1,63 +1,35 @@
-# xArtists dApp — status global (2026-08-08)
+# xArtists dApp — status (2026-08-08)
 
-## Ce qui marche (consultation)
+## Live checks
 
-| Zone | État |
-|------|------|
-| Pages SPA | ✅ live |
-| Galerie / Market UI | ✅ (catalog slim + virtual + progressive) |
-| Dashboard LIA labels | ✅ |
-| Wallet vs Portfolio | ✅ séparés |
-| DAO read-only | ✅ (pas de vote faux) |
-| Board seed JSON | ✅ seeds + deploy copy hardened |
-| Trading stack (paper) | ✅ TP log, trail, slippage, arb, bridge latency |
-| Pinata | ✅ connect OK |
-| SC deploy scripts | ✅ optimized pipeline |
+| Endpoint | Attendu |
+|----------|---------|
+| Pages SPA | 200 |
+| `/data/lia_board.json` | 200 après ce deploy |
+| `/data/xartists_collections.index.json` | 200 |
+| Marketplace codeHash | null jusqu'au deploy SC |
 
-## Bloqué cash (P0)
+## Fait récemment
 
-| Item | État |
-|------|------|
-| nft-marketplace codeHash | ❌ null (compte vide) |
-| agents_marketplace | ❌ null |
-| List/Buy/Bid on-chain | ❌ attend deploy |
-| LIA_LIVE_TRADING | **0** (volontaire) |
+- Runbook deploy + post_deploy_verify auto + regression fast
+- Seeds `docs/data/*` (board, index, status) — corrige 404 Pages
+- `ensure_pages_data.sh` dans CI Pages (fail si board manquant)
+- `DataHealthStrip` sur Dashboard (board + SC flags)
+- UserWalletGuard List/Buy · SC banners dynamiques
+
+## P0 restant (cash)
 
 ```bash
-export PEM=...
-./scripts/preflight_deploy_mainnet.sh
-RUN_DEPLOY=1 ./scripts/deploy_optimized_mainnet.sh
-python scripts/verify_marketplace_codehash.py
+export PEM=... FEE_BPS=300 CHAIN=1
+./scripts/runbook_deploy.sh all
+# VITE_* CODEHASH_OK → rebuild
+# Micro List/Buy wallet USER
 ```
 
-## Architecture rapide
+## P1
 
-```
-User dApp (GH Pages)
-  ├─ read: data/*.json (board, status, catalog)
-  ├─ TX routes only: TxShell + sdk-dapp
-  └─ banners until codeHash ≠ null
+- Mission + Reserve wallets (`set_treasury_wallets.py`)
+- Index listings on-chain
+- Vellum `./scripts/vellum_board_cadence.sh`
 
-LIA Vellum (paper)
-  ├─ Guardian → TradingStack → profit lock
-  ├─ board.publish + publish_data_for_frontend
-  └─ LIA_LIVE_TRADING=0
-
-SC mainnet (pending)
-  ├─ agents-marketplace FEE_BPS=300
-  └─ nft-marketplace placeBid/acceptBid/…
-```
-
-## Prochaines actions (ordre)
-
-1. Rebuild Pages (ce push) → vérifier `/data/lia_board.json` ≠ 404  
-2. Deploy SC (PEM + EGLD)  
-3. post_deploy + VITE_* + rebuild  
-4. Micro List/Buy wallet **user**  
-5. Vellum `python -m lia.board.publish` en cadence  
-6. Mission/Reserve wallets treasury  
-
-## Sécurité trading (rappel)
-
-Guardian → leverage policy → slippage → TP/trail → lock 70 % → live flag  
-Bridge = inventory-first, pas de fonds user auto-bridgés.  
+`LIA_LIVE_TRADING=0` jusqu'à micro-trades OK.
