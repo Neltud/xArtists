@@ -7,10 +7,18 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    target: 'es2020',
+    cssCodeSplit: true,
+    sourcemap: false,
+    chunkSizeWarningLimit: 900,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('@multiversx')) return 'mx-sdk'
+            if (id.includes('react-router')) return 'router'
+            if (id.includes('react-dom') || id.includes('/react/')) return 'react'
+          }
         },
       },
     },

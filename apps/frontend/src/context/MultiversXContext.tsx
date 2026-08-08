@@ -4,6 +4,7 @@ const MVX_API = 'https://api.multiversx.com'
 const RAW_BASE = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
 const TRO_TOKEN = 'TRO-94c925'
 const STALE_THRESHOLD_MS = 2 * 60 * 60 * 1000
+const POLL_MS = 90_000
 
 function checkStale(timestamp: string | undefined): boolean {
   if (!timestamp) return false
@@ -138,6 +139,7 @@ export function MultiversXProvider({ children }: { children: ReactNode }) {
   const [isStale, setIsStale] = useState(false)
 
   const fetchAll = useCallback(async () => {
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return
     try {
       const [econRes, fgRes, liaJson, xaJson, bonJson] = await Promise.allSettled([
         fetch(`${MVX_API}/economics`).then(r => {
@@ -156,29 +158,23 @@ export function MultiversXProvider({ children }: { children: ReactNode }) {
       const egldPrice = econRes.status === 'fulfilled' ? (econRes.value?.price ?? 0) : 0
       const fg = fgRes.status === 'fulfilled' ? fgRes.value?.data?.[0] : null
 
+      // TRO + BTC in parallel, non-blocking for main UI
       let troPrice = 0
-      try {
-        const mex = await fetch(`${MVX_API}/tokens/${TRO_TOKEN}`).then(r => {
-          if (!r.ok) throw new Error(`HTTP ${r.status}`)
-          return r.json()
-        })
-        troPrice = mex?.price ?? 0
-      } catch (e) {
-        console.debug('[MultiversX] TRO price fetch failed:', e)
-      }
-
       let btcPrice = 0
-      try {
-        const cg = await fetch(
-          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'
-        ).then(r => {
-          if (!r.ok) throw new Error(`HTTP ${r.status}`)
-          return r.json()
-        })
-        btcPrice = cg?.bitcoin?.usd ?? 0
-      } catch (e) {
-        console.debug('[MultiversX] BTC price fetch failed:', e)
-      }
+      await Promise.all([
+        fetch(`${MVX_API}/tokens/${TRO_TOKEN}`)
+          .then(r => (r.ok ? r.json() : null))
+          .then(j => {
+            troPrice = j?.price ?? 0
+          })
+          .catch(() => {}),
+        fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')
+          .then(r => (r.ok ? r.json() : null))
+          .then(j => {
+            btcPrice = j?.bitcoin?.usd ?? 0
+          })
+          .catch(() => {}),
+      ])
 
       setPrices({
         egld: egldPrice,
@@ -192,7 +188,6 @@ export function MultiversXProvider({ children }: { children: ReactNode }) {
       let stale = false
       if (liaJson.status === 'fulfilled' && liaJson.value) {
         const v = liaJson.value as LIAStatus
-        // soft defaults so UI never crashes on partial seed
         setLiaStatus({
           version: v.version || '6',
           status: v.status,
@@ -227,8 +222,15 @@ export function MultiversXProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchAll()
-    const interval = setInterval(fetchAll, 60_000)
-    return () => clearInterval(interval)
+    const interval = setInterval(fetchAll, POLL_MS)
+    const onVis = () => {
+      if (document.visibilityState === 'visible') fetchAll()
+    }
+    document.addEventListener('visibilitychange', onVis)
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', onVis)
+    }
   }, [fetchAll])
 
   return (

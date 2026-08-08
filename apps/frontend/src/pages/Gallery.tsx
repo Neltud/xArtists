@@ -11,7 +11,7 @@ import {
   DATA_URL,
 } from '../types/nft'
 
-/** Bios génériques xArtists — aucun nom perso (Nelson Tuduri exclu titre + bio) */
+/** Bios génériques xArtists — aucun nom perso en titre / bio */
 const COLLECTION_BIOS: Record<string, { label: string; bio: string }> = {
   'NFTUDURI-2990b6': {
     label: 'Collection phygital',
@@ -35,6 +35,8 @@ const COLLECTION_BIOS: Record<string, { label: string; bio: string }> = {
   },
 }
 
+const PREVIEW_PER_COLLECTION = 12
+
 export default function Gallery() {
   const [collections, setCollections] = useState<CollectionData[]>([])
   const [loading, setLoading] = useState(true)
@@ -44,7 +46,7 @@ export default function Gallery() {
     let cancelled = false
     ;(async () => {
       try {
-        const res = await fetch(DATA_URL, { cache: 'no-cache' })
+        const res = await fetch(DATA_URL, { cache: 'force-cache' })
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         const data: CollectionsFile = await res.json()
         if (cancelled) return
@@ -119,14 +121,16 @@ function CollectionSection({
   index: number
   onSelect: (nft: NFT) => void
 }) {
+  const [expanded, setExpanded] = useState(false)
   const nfts = collection.nfts
+  const shown = expanded ? nfts : nfts.slice(0, PREVIEW_PER_COLLECTION)
   const accent = ACCENTS[index % ACCENTS.length]
   const meta = COLLECTION_BIOS[collection.identifier] || {
     label: 'xArtists',
     bio: 'Collection du catalogue xArtists sur MultiversX.',
   }
   return (
-    <section aria-labelledby={`col-${collection.identifier}`}>
+    <section aria-labelledby={`col-${collection.identifier}`} className="nft-grid-item">
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-3">
@@ -151,10 +155,17 @@ function CollectionSection({
         </Link>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {nfts.map(nft => (
+        {shown.map(nft => (
           <GalleryTile key={nft.identifier} nft={nft} accent={accent} onClick={() => onSelect(nft)} />
         ))}
       </div>
+      {nfts.length > PREVIEW_PER_COLLECTION && (
+        <div className="mt-4 text-center">
+          <button type="button" className="btn-secondary text-xs" onClick={() => setExpanded(e => !e)}>
+            {expanded ? 'Réduire' : `Voir les ${nfts.length} œuvres`}
+          </button>
+        </div>
+      )}
     </section>
   )
 }
@@ -173,15 +184,16 @@ function GalleryTile({
     <button
       type="button"
       onClick={onClick}
-      className="group relative flex aspect-[4/5] flex-col overflow-hidden rounded-2xl border border-[#2a2a3a] bg-[#15151f] text-left transition-all hover:-translate-y-1 hover:border-purple-500/60 focus-visible:ring-2 focus-visible:ring-purple-500"
+      className="nft-grid-item group relative flex aspect-[4/5] flex-col overflow-hidden rounded-2xl border border-[#2a2a3a] bg-[#15151f] text-left transition-all hover:-translate-y-1 hover:border-purple-500/60 focus-visible:ring-2 focus-visible:ring-purple-500"
     >
       <div className="absolute inset-0 overflow-hidden">
         {img ? (
           <img
             src={img}
             alt={nft.name || 'NFT'}
-            className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
+            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent} opacity-40`}>

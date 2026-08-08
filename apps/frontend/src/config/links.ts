@@ -28,23 +28,30 @@ export const LINKS = {
     'https://github.com/Neltud/xArtists/blob/main/docs/TREASURY_POLICY.md',
 } as const
 
-/** Primary product nav — desktop + mobile drawer */
+/** Desktop top bar — keep short for horizontal space */
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
-  { to: '/', label: 'Dashboard', emoji: '📊' },
+  { to: '/', label: 'Home', emoji: '📊' },
   { to: '/studio', label: 'Studio', emoji: '🎨' },
   { to: '/gallery', label: 'Galerie', emoji: '🖼️' },
   { to: '/marketplace', label: 'Market', emoji: '🛒' },
   { to: '/agents', label: 'Agents', emoji: '🧠' },
   { to: '/trading', label: 'Trading', emoji: '⚡' },
-  { to: '/portfolio', label: 'Portfolio', emoji: '📈' },
+  { to: '/portfolio', label: 'LIA', emoji: '📈' },
   { to: '/wallet', label: 'Wallet', emoji: '👛' },
-  { to: '/tro', label: '$TRO', emoji: '🪙' },
   { to: '/dao', label: 'DAO', emoji: '🗳️' },
+  { to: '/tro', label: '$TRO', emoji: '🪙' },
+]
+
+/** Drawer mobile + footer extras */
+export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/editions', label: 'Editions', emoji: '📰' },
   { to: '/hatom', label: 'Hatom', emoji: '🏦' },
   { to: '/lp', label: 'LP', emoji: '💧' },
   { to: '/tip', label: 'Tip', emoji: '💜' },
   { to: '/ads', label: 'Ads', emoji: '📢' },
+  { to: '/staking', label: 'Staking', emoji: '🔒' },
+  { to: '/soul-testnet', label: 'Soul (exp.)', emoji: '🧪' },
+  { to: '/burnify', label: 'Burnify', emoji: '🔥' },
 ]
 
 export const SECONDARY_ROUTES = [

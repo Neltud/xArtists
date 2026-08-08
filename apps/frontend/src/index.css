@@ -15,14 +15,33 @@
 
   * { box-sizing: border-box; }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   body {
     font-family: 'Inter', system-ui, sans-serif;
     background: var(--bg-primary);
     color: #f0f0ff;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
-  ::-webkit-scrollbar { width: 6px; }
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg-secondary); }
   ::-webkit-scrollbar-thumb { background: #3a3a5a; border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--accent-purple); }
@@ -31,17 +50,22 @@
 @layer components {
   .card {
     @apply bg-[#16161f] border border-[#2a2a3a] rounded-2xl p-5 transition-all duration-200;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 120px;
   }
   .card:hover { border-color: rgba(124,58,237,0.4); }
 
   .btn-primary {
     @apply px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200;
     background: linear-gradient(135deg, #7c3aed, #2563eb);
+    min-height: 44px;
   }
   .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.5; transform: none; cursor: not-allowed; }
 
   .btn-secondary {
     @apply px-4 py-2 rounded-lg border border-[#2a2a3a] bg-[#16161f] text-gray-300 font-medium transition-all duration-200;
+    min-height: 40px;
   }
   .btn-secondary:hover { border-color: #7c3aed; color: white; }
 
@@ -74,11 +98,17 @@
   .mono { font-family: 'JetBrains Mono', monospace; }
 
   .animate-fade-in {
-    animation: fadeIn 0.3s ease-in-out;
+    animation: fadeIn 0.25s ease-out;
+  }
+
+  /* NFT grids — skip offscreen paint */
+  .nft-grid-item {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 220px;
   }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
