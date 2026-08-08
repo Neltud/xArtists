@@ -1,5 +1,4 @@
 // Shared types & helpers for the xArtists NFT marketplace / gallery.
-// Data source: /data/xartists_collections.json (copied from /data/xartists_collections.json)
 
 export interface NFTMedia {
   url?: string
@@ -21,7 +20,6 @@ export interface NFT {
   creator?: string
   owner?: string
   type?: string
-  /** NB: the source JSON key is " royalties" (leading space). */
   royalties?: number | string
 }
 
@@ -37,15 +35,31 @@ export interface CollectionsFile {
   timestamp: string
   total_collections: number
   total_nfts: number
+  version?: string
   collections: CollectionData[]
 }
 
-/** Best available image URL for an NFT (media url > url > thumbnail). */
+/** Lightweight index — preview only, full NFTs loaded per collection page */
+export interface CollectionIndexEntry {
+  identifier: string
+  name: string
+  type: string
+  nft_count: number
+  preview: NFT[]
+}
+
+export interface CollectionsIndexFile {
+  timestamp: string
+  total_collections: number
+  total_nfts: number
+  version?: string
+  collections: CollectionIndexEntry[]
+}
+
 export function nftImageUrl(nft: NFT): string | undefined {
   return nft.url || nft.media?.[0]?.url || nft.media?.[0]?.thumbnailUrl || undefined
 }
 
-/** Resolve a raw royalties value (handles the " royalties" leading-space key). */
 export function nftRoyalties(nft: NFT): number | null {
   const raw = (nft as unknown as Record<string, unknown>)[' royalties'] ?? nft.royalties
   if (raw === undefined || raw === null || raw === '') return null
@@ -67,7 +81,6 @@ export function typeLabel(type?: string): string {
   return type
 }
 
-/** Nonce as a zero-padded short id, e.g. "AGR-9bd53e-05" -> "#05". */
 export function nonceLabel(nft: NFT): string {
   const tail = nft.identifier?.split('-').pop()
   return tail ? `#${tail}` : `#${nft.nonce}`
@@ -80,5 +93,12 @@ export const XOXNO_COLLECTION = (collection: string) =>
 export const XOXNO_NFT = (identifier: string) =>
   `https://xoxno.com/nft/${identifier}`
 
-/** Fetch path for the bundled data file (respects the GitHub Pages base path). */
-export const DATA_URL = `${import.meta.env.BASE_URL}data/xartists_collections.json`
+const BASE = import.meta.env.BASE_URL || '/'
+
+/** Full slim catalog (all collections + all nfts) */
+export const DATA_URL = `${BASE}data/xartists_collections.json`
+/** Fast index (~16 KB) for gallery first paint */
+export const INDEX_URL = `${BASE}data/xartists_collections.index.json`
+/** Per-collection page after expand */
+export const collectionPageUrl = (id: string) =>
+  `${BASE}data/collections/${encodeURIComponent(id)}.json`

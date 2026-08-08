@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom'
 import NFTDetailModal from '../components/NFTDetailModal'
 import VirtualNftGrid from '../components/VirtualNftGrid'
 import {
+  loadCatalogIndex,
+  indexToPartialCollections,
+  loadCollectionPage,
+} from '../lib/catalogLoader'
+import {
   type NFT,
   type CollectionData,
-  type CollectionsFile,
   nftImageUrl,
   nonceLabel,
   typeLabel,
-  DATA_URL,
 } from '../types/nft'
 
 const COLLECTION_BIOS: Record<string, { label: string; bio: string }> = {
@@ -41,21 +44,21 @@ export default function Gallery() {
   const [collections, setCollections] = useState<CollectionData[]>([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<NFT | null>(null)
+  const [mode, setMode] = useState<'index' | 'full'>('index')
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
-      try {
-        const res = await fetch(DATA_URL, { cache: 'force-cache' })
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const data: CollectionsFile = await res.json()
-        if (cancelled) return
-        setCollections(data.collections)
-      } catch (err) {
-        console.warn('[Gallery] data fetch failed', err)
-      } finally {
-        if (!cancelled) setLoading(false)
+      const { index, full } = await loadCatalogIndex()
+      if (cancelled) return
+      if (index?.collections?.length) {
+        setCollections(indexToPartialCollections(index.collections))
+        setMode('index')
+      } else if (full?.collections?.length) {
+        setCollections(full.collections)
+        setMode('full')
       }
+      setLoading(false)
     })()
     return () => {
       cancelled = true
@@ -66,7 +69,11 @@ export default function Gallery() {
     () => [...collections].sort((a, b) => b.nft_count - a.nft_count),
     [collections]
   )
-  const totalNfts = collections.reduce((s, c) => s + c.nft_count, 0)
+  const totalNfts = collections.reduce((s, c) => s + (c.nft_count || c.nfts?.length || 0), 0)
+
+  const onCollectionLoaded = (col: CollectionData) => {
+    setCollections(prev => prev.map(c => (c.identifier === col.identifier ? col : c)))
+  }
 
   return (
     <div className="animate-fade-in">
@@ -80,8 +87,8 @@ export default function Gallery() {
             <span className="gradient-text">xArtists</span>
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-400 sm:text-base">
-            Collections NFT phygital & generative. {collections.length || '…'} collections ·{' '}
-            {totalNfts || '…'}+ œuvres. Catalog slim · grille virtualisée si volume élevé.
+            {collections.length || '…'} collections · {totalNfts || '…'}+ œuvres · chargement{' '}
+            {mode === 'index' ? 'progressif (index → page)' : 'catalogue complet'}.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link to="/studio" className="btn-primary text-xs py-2 px-3">
@@ -102,7 +109,14 @@ export default function Gallery() {
       ) : (
         <div className="space-y-14">
           {ordered.map((col, idx) => (
-            <CollectionSection key={col.identifier} collection={col} index={idx} onSelect={setSelected} />
+            <CollectionSection
+              key={col.identifier}
+              collection={col}
+              index={idx}
+              progressive={mode === 'index'}
+              onSelect={setSelected}
+              onLoaded={onCollectionLoaded}
+            />
           ))}
         </div>
       )}
@@ -115,20 +129,48 @@ export default function Gallery() {
 function CollectionSection({
   collection,
   index,
+  progressive,
   onSelect,
+  onLoaded,
 }: {
   collection: CollectionData
   index: number
+  progressive: boolean
   onSelect: (nft: NFT) => void
+  onLoaded: (col: CollectionData) => void
 }) {
   const [expanded, setExpanded] = useState(false)
-  const nfts = collection.nfts
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [full, setFull] = useState<CollectionData | null>(
+    collection.nfts.length >= collection.nft_count ? collection : null
+  )
+
+  const nfts = full?.nfts || collection.nfts
+  const count = full?.nft_count || collection.nft_count || nfts.length
   const shown = expanded ? nfts : nfts.slice(0, PREVIEW_PER_COLLECTION)
   const accent = ACCENTS[index % ACCENTS.length]
   const meta = COLLECTION_BIOS[collection.identifier] || {
     label: 'xArtists',
     bio: 'Collection du catalogue xArtists sur MultiversX.',
   }
+
+  const handleExpand = async () => {
+    if (expanded) {
+      setExpanded(false)
+      return
+    }
+    if (progressive && !full && nfts.length < count) {
+      setLoadingMore(true)
+      const col = await loadCollectionPage(collection.identifier)
+      setLoadingMore(false)
+      if (col) {
+        setFull(col)
+        onLoaded(col)
+      }
+    }
+    setExpanded(true)
+  }
+
   return (
     <section aria-labelledby={`col-${collection.identifier}`} className="nft-grid-item">
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -140,7 +182,7 @@ function CollectionSection({
             </h2>
           </div>
           <p className="mono mt-1.5 pl-4 text-xs text-gray-500">
-            {collection.identifier} · {nfts.length} œuvres · {typeLabel(collection.type)}
+            {collection.identifier} · {count} œuvres · {typeLabel(collection.type)}
           </p>
           <div className="mt-2 pl-4 max-w-2xl">
             <p className="text-xs font-semibold text-purple-300/90">{meta.label}</p>
@@ -158,15 +200,22 @@ function CollectionSection({
         items={shown}
         threshold={48}
         estimateRowHeight={260}
-        getKey={(nft) => nft.identifier}
-        renderItem={(nft) => (
-          <GalleryTile nft={nft} accent={accent} onClick={() => onSelect(nft)} />
-        )}
+        getKey={nft => nft.identifier}
+        renderItem={nft => <GalleryTile nft={nft} accent={accent} onClick={() => onSelect(nft)} />}
       />
-      {nfts.length > PREVIEW_PER_COLLECTION && (
+      {count > PREVIEW_PER_COLLECTION && (
         <div className="mt-4 text-center">
-          <button type="button" className="btn-secondary text-xs" onClick={() => setExpanded(e => !e)}>
-            {expanded ? 'Réduire' : `Voir les ${nfts.length} œuvres`}
+          <button
+            type="button"
+            className="btn-secondary text-xs"
+            disabled={loadingMore}
+            onClick={handleExpand}
+          >
+            {loadingMore
+              ? 'Chargement…'
+              : expanded
+                ? 'Réduire'
+                : `Voir les ${count} œuvres`}
           </button>
         </div>
       )}
