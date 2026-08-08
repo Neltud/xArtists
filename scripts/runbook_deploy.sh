@@ -8,9 +8,6 @@
 #   ./scripts/runbook_deploy.sh deploy
 #   ./scripts/runbook_deploy.sh verify
 #   ./scripts/runbook_deploy.sh all
-#
-# Env: FEE_BPS=300 CHAIN=1 ONLY=all|agents-marketplace|nft-marketplace
-#      GAS_LIMIT_OVERRIDE=... MAX_RETRIES=2
 
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -32,11 +29,11 @@ usage() {
 Usage: ./scripts/runbook_deploy.sh <dry|deploy|verify|all>
 
   dry     Preflight: build wasm, gas estimate, balance — no txs
-  deploy  Real mainnet deploy (requires dry OK + PEM + RUN path)
-  verify  codeHash check + generate VITE example
-  all     dry → deploy → verify (stops on first failure)
+  deploy  Real mainnet deploy
+  verify  Automated post-deploy checks (codeHash, consistency, VITE)
+  all     dry → deploy → verify
 
-Required: PEM=/path/to.pem   CHAIN=1   FEE_BPS=300
+Required: PEM=/path/to.pem  CHAIN=1  FEE_BPS=300
 Docs: docs/RUNBOOK_DEPLOY.md
 EOF
 }
@@ -62,42 +59,26 @@ phase_deploy() {
   log "═══ PHASE deploy (sends txs) ═══"
   require_mainnet
   require_pem
-  [[ "$LIA_LIVE_TRADING" == "0" ]] || log "WARN: LIA_LIVE_TRADING should stay 0 during SC deploy"
+  [[ "$LIA_LIVE_TRADING" == "0" ]] || log "WARN: LIA_LIVE_TRADING should stay 0"
   export RUN_DEPLOY=1
   "$ROOT/scripts/deploy_optimized_mainnet.sh"
   log "deploy finished — next: ./scripts/runbook_deploy.sh verify"
 }
 
 phase_verify() {
-  log "═══ PHASE verify ═══"
-  python3 "$ROOT/scripts/verify_marketplace_codehash.py" || true
-  python3 "$ROOT/scripts/generate_vite_env.py"
-  if [[ -x "$ROOT/scripts/post_deploy_to_pages.sh" ]] || [[ -f "$ROOT/scripts/post_deploy_to_pages.sh" ]]; then
-    bash "$ROOT/scripts/post_deploy_to_pages.sh" || true
+  log "═══ PHASE verify (automated) ═══"
+  # Full automated suite with API lag retries
+  set +e
+  bash "$ROOT/scripts/post_deploy_verify.sh" --query-views
+  RC=$?
+  set -e
+  if [[ "$RC" -eq 0 ]]; then
+    log "verify PASS — inject VITE_* and rebuild Pages"
+    log "Micro List/Buy with USER wallet only"
+    return 0
   fi
-
-  local LIVE="$ROOT/data/marketplace_codehash_live.json"
-  if [[ -f "$LIVE" ]]; then
-    python3 - <<'PY'
-import json, sys
-from pathlib import Path
-p = Path("data/marketplace_codehash_live.json")
-d = json.loads(p.read_text())
-ok = d.get("all_ok")
-print("all_ok =", ok)
-if not ok:
-    m = d.get("marketplace") or {}
-    a = d.get("agents_marketplace") or {}
-    print("marketplace:", m.get("verdict"), m.get("codeHash"))
-    print("agents:    ", a.get("verdict"), a.get("codeHash"))
-    sys.exit(2)
-print("SUCCESS — inject VITE_* into deploy-pages.yml and push Pages")
-print("Micro List/Buy with USER wallet only (never LIA ops)")
-print("Keep LIA_LIVE_TRADING=0 until micro-trades OK")
-PY
-  else
-    fail "missing $LIVE — run deploy first"
-  fi
+  log "verify exit=$RC — see data/post_deploy_report.json"
+  return "$RC"
 }
 
 case "$PHASE" in
