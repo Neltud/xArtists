@@ -1,116 +1,78 @@
 #!/usr/bin/env bash
-# Regression suite — offline unit + module self-tests.
-# Exit 0 only if all selected suites pass.
+# Fast regression suite.
+# Default: single-process runner (tests/regression/run_all.py) — ~5–15× faster
+# than spawning one Python per file.
+#
+# Modes:
+#   ./scripts/run_regression.sh           # fast (default)
+#   REGRESSION_MODE=legacy ./scripts/run_regression.sh   # one process per file
+#   REGRESSION_MODE=pytest ./scripts/run_regression.sh   # pytest only
+#   REGRESSION_FAILFAST=1 ./scripts/run_regression.sh
+#   REGRESSION_QUIET=1 ./scripts/run_regression.sh
+
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 export PYTHONPATH="$ROOT${PYTHONPATH:+:$PYTHONPATH}"
 export LIA_LIVE_TRADING="${LIA_LIVE_TRADING:-0}"
-
-PASS=0
-FAIL=0
-SKIP=0
-REPORT="$ROOT/data/regression_report.json"
-RESULTS=()
-
-run_one() {
-  local name="$1"
-  shift
-  echo ""
-  echo "━━━ $name ━━━"
-  set +e
-  "$@"
-  local rc=$?
-  set -e
-  if [[ $rc -eq 0 ]]; then
-    echo "PASS $name"
-    PASS=$((PASS + 1))
-    RESULTS+=("{\"name\":\"$name\",\"ok\":true}")
-  else
-    echo "FAIL $name (exit $rc)"
-    FAIL=$((FAIL + 1))
-    RESULTS+=("{\"name\":\"$name\",\"ok\":false,\"exit\":$rc}")
-  fi
-}
-
-run_mod() {
-  local name="$1"
-  local mod="$2"
-  if [[ ! -f "$mod" ]]; then
-    echo "SKIP $name (missing $mod)"
-    SKIP=$((SKIP + 1))
-    RESULTS+=("{\"name\":\"$name\",\"ok\":true,\"skipped\":true}")
-    return 0
-  fi
-  run_one "$name" python3 "$mod"
-}
+MODE="${REGRESSION_MODE:-fast}"
 
 echo "╔════════════════════════════════════════╗"
-echo "║  xArtists regression suite             ║"
+echo "║  xArtists regression ($MODE)           ║"
 echo "╚════════════════════════════════════════╝"
-echo "LIA_LIVE_TRADING=$LIA_LIVE_TRADING PYTHONPATH=$ROOT"
 
-# --- Core regression (new) ---
-run_mod "regression/data_contracts" tests/regression/test_data_contracts.py
-run_mod "regression/post_deploy_logic" tests/regression/test_post_deploy_logic.py
-run_mod "regression/trading_stack_gates" tests/regression/test_trading_stack_gates.py
-run_mod "regression/sc_status_flags" tests/regression/test_sc_status_flags.py
+START=$(date +%s)
 
-# --- Existing module self-tests ---
-run_mod "lia/bridge/latency" lia/bridge/test_latency.py
-run_mod "lia/guardian/spiral" lia/guardian/test_spiral.py
-run_mod "lia/risk/secure_tp" lia/risk/test_secure_tp.py
-run_mod "lia/risk/slippage_arb_trail" lia/risk/test_slippage_arb_trail.py
-run_mod "lia/claude_agent/signal_bus" lia/claude_agent/tests/test_signal_bus.py
-run_mod "lia/claude_agent/pyramids" lia/claude_agent/tests/test_pyramids_adapter.py
-run_mod "tests/lia_circuit" tests/test_lia_circuit.py
-run_mod "tests/statarb" tests/test_statarb.py
-run_mod "tests/symbiosis" tests/test_symbiosis.py
-
-# --- pytest discovery if available ---
-if command -v pytest >/dev/null 2>&1; then
-  run_one "pytest/regression" pytest -q tests/regression lia/bridge/test_latency.py lia/guardian/test_spiral.py lia/risk/test_secure_tp.py lia/risk/test_slippage_arb_trail.py --tb=line
+if [[ "$MODE" == "fast" || "$MODE" == "default" ]]; then
+  python3 tests/regression/run_all.py
+  RC=$?
+elif [[ "$MODE" == "pytest" ]]; then
+  if ! command -v pytest >/dev/null 2>&1; then
+    echo "pytest not installed — falling back to fast runner"
+    python3 tests/regression/run_all.py
+    RC=$?
+  else
+    pytest -q --tb=line -x=${REGRESSION_FAILFAST:-0} \
+      tests/regression \
+      lia/bridge/test_latency.py \
+      lia/guardian/test_spiral.py \
+      lia/risk/test_secure_tp.py \
+      lia/risk/test_slippage_arb_trail.py \
+      lia/claude_agent/tests \
+      tests/test_lia_circuit.py \
+      tests/test_statarb.py \
+      tests/test_symbiosis.py
+    RC=$?
+  fi
+elif [[ "$MODE" == "legacy" ]]; then
+  # Original multi-process path (debug only)
+  PASS=0; FAIL=0; SKIP=0
+  run_mod() {
+    local name="$1" mod="$2"
+    [[ -f "$mod" ]] || { SKIP=$((SKIP+1)); return 0; }
+    set +e; python3 "$mod"; local rc=$?; set -e
+    if [[ $rc -eq 0 ]]; then PASS=$((PASS+1)); else FAIL=$((FAIL+1)); echo "FAIL $name"; fi
+  }
+  run_mod data tests/regression/test_data_contracts.py
+  run_mod post_deploy tests/regression/test_post_deploy_logic.py
+  run_mod trading tests/regression/test_trading_stack_gates.py
+  run_mod sc_status tests/regression/test_sc_status_flags.py
+  run_mod latency lia/bridge/test_latency.py
+  run_mod spiral lia/guardian/test_spiral.py
+  run_mod secure_tp lia/risk/test_secure_tp.py
+  run_mod slip lia/risk/test_slippage_arb_trail.py
+  run_mod signal_bus lia/claude_agent/tests/test_signal_bus.py
+  run_mod pyramids lia/claude_agent/tests/test_pyramids_adapter.py
+  run_mod circuit tests/test_lia_circuit.py
+  run_mod statarb tests/test_statarb.py
+  run_mod symbiosis tests/test_symbiosis.py
+  RC=0; [[ "$FAIL" -eq 0 ]] || RC=1
+  echo "PASS=$PASS FAIL=$FAIL SKIP=$SKIP"
 else
-  echo "SKIP pytest (not installed) — self-tests still ran"
-  SKIP=$((SKIP + 1))
+  echo "Unknown REGRESSION_MODE=$MODE (use fast|pytest|legacy)"
+  exit 2
 fi
 
-# Write report
-mkdir -p "$ROOT/data"
-python3 - <<PY
-import json, time
-from pathlib import Path
-results = [json.loads(x) for x in '''$(printf '%s\n' "${RESULTS[@]}")'''.strip().splitlines() if x.strip()]
-# fallback parse
-raw = """$(IFS=$'\n'; echo "${RESULTS[*]}")"""
-items = []
-for line in raw.splitlines():
-    line = line.strip()
-    if not line:
-        continue
-    try:
-        items.append(json.loads(line))
-    except Exception:
-        pass
-report = {
-    "updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-    "pass": $PASS,
-    "fail": $FAIL,
-    "skip": $SKIP,
-    "ok": $FAIL == 0,
-    "results": items,
-}
-Path("data/regression_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-print("wrote data/regression_report.json")
-print(json.dumps(report, indent=2))
-PY
-
-echo ""
-echo "════════════════════════════"
-echo "PASS=$PASS FAIL=$FAIL SKIP=$SKIP"
-if [[ "$FAIL" -ne 0 ]]; then
-  echo "❌ REGRESSION FAILED"
-  exit 1
-fi
-echo "✅ REGRESSION PASSED"
-exit 0
+END=$(date +%s)
+echo "elapsed $((END - START))s mode=$MODE"
+exit "$RC"

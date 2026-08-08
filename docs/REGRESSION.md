@@ -1,51 +1,48 @@
 # Tests de régression — xArtists
 
-## Lancer localement
+## Lancer (rapide — défaut)
 
 ```bash
 export LIA_LIVE_TRADING=0
 ./scripts/run_regression.sh
+# → tests/regression/run_all.py  (1 process Python, tous les test_*)
 ```
 
-Avec pytest (optionnel) :
+Cible locale : **quelques secondes**, pas des dizaines.
+
+### Modes
+
+| Mode | Commande | Usage |
+|------|----------|--------|
+| **fast** (défaut) | `./scripts/run_regression.sh` | CI + dev |
+| pytest | `REGRESSION_MODE=pytest ./scripts/run_regression.sh` | debug assert |
+| legacy | `REGRESSION_MODE=legacy ./scripts/run_regression.sh` | 1 process / fichier |
 
 ```bash
-pip install pytest
-pytest -q tests/regression
+REGRESSION_FAILFAST=1 REGRESSION_QUIET=1 ./scripts/run_regression.sh
 ```
+
+## Optimisations temps
+
+| Avant | Après |
+|-------|--------|
+| 13× `python3 file.py` (cold start chacun) | **1 process** charge tous les modules |
+| pytest **en plus** des self-tests (double run) | Un seul passage |
+| CI timeout 15 min + pip upgrade | timeout 8 min, cache pip, pas de double suite |
+| confirm_tx start 1s | start **0.4s**, timeout défaut 120s |
 
 ## Périmètre
 
-| Suite | Contenu |
-|-------|---------|
-| `tests/regression/test_data_contracts.py` | Shape `contracts.json`, board, treasury, live flag |
-| `tests/regression/test_post_deploy_logic.py` | codeHash helpers, vite flags, cohérence (mock API) |
-| `tests/regression/test_trading_stack_gates.py` | Guardian, bridge inventory, slippage, live=0 |
-| `tests/regression/test_sc_status_flags.py` | List/Buy gates + LIA ops detection |
-| Modules existants | bridge, guardian, secure_tp, slippage, claude_agent, circuit |
+- `tests/regression/*` (data, post-deploy mock, trading gates, sc flags)
+- bridge / guardian / secure_tp / slippage / claude_agent / circuit / statarb / symbiosis
 
 ## CI
 
-Workflow : `.github/workflows/regression.yml`  
-Triggers : push/PR sur `lia/`, `scripts/`, `tests/`, data critiques  
-Artifact : `regression_report.json`
+`.github/workflows/regression.yml` — concurrency cancel-in-progress, path filters PR, artifact report 14j.
 
 ## Post-deploy
 
-Les tests de régression **ne remplacent pas** `post_deploy_verify` (on-chain).  
-Ordre ops :
-
 ```bash
-./scripts/run_regression.sh          # offline, avant/après code change
-./scripts/runbook_deploy.sh deploy   # mainnet
-./scripts/runbook_deploy.sh verify   # on-chain automated
+./scripts/run_regression.sh            # offline rapide
+./scripts/runbook_deploy.sh verify     # on-chain (réseau)
 ```
-
-## Exit
-
-| Code | Signification |
-|------|----------------|
-| 0 | Tout PASS |
-| 1 | Au moins un FAIL |
-
-`data/regression_report.json` toujours écrit (si le runner atteint la fin).
