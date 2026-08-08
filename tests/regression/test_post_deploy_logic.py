@@ -1,6 +1,7 @@
 """Regression: post_deploy_verify pure helpers (mocked accounts, no network)."""
 from __future__ import annotations
 
+import importlib.util
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -9,7 +10,17 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts import post_deploy_verify as pdv  # type: ignore
+
+def _load_pdv():
+    path = ROOT / "scripts" / "post_deploy_verify.py"
+    spec = importlib.util.spec_from_file_location("post_deploy_verify", path)
+    mod = importlib.util.module_from_spec(spec)
+    assert spec and spec.loader
+    spec.loader.exec_module(mod)
+    return mod
+
+
+pdv = _load_pdv()
 
 
 def test_codehash_of_null():
