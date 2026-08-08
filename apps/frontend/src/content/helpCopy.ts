@@ -1,126 +1,191 @@
 /**
- * Central explanatory copy for InfoTip / PageGuide.
- * Keep honest: no fake live SC, no LIA=user wallet confusion.
+ * Textes des bulles d’info (InfoTip) + guides de page (PageGuide).
+ * Règle : honnête, pas de SC « live » fictif, pas de confusion LIA / user.
  */
 
 export const HELP = {
-  // Global concepts
+  /* ——— Concepts globaux ——— */
   lia_vs_user:
-    "LIA = wallet protocole (ops / paper trading). Ton wallet Connect = page Mon wallet uniquement. Ne confonds pas les deux.",
+    « LIA désigne le wallet protocole (ops, paper trading, trésorerie affichée). Ton portefeuille personnel n’apparaît que sur « Mon wallet » après Connect (extension / Web Wallet). Ne jamais envoyer de fonds « perso » en pensant alimenter LIA, ni l’inverse. »,
+
   sc_pending:
-    "Les smart contracts marketplace / agents ne sont live qu’après deploy mainnet + codeHash vérifié. Sinon List/Buy restent bloqués — c’est volontaire.",
+    « Les smart contracts nft-marketplace et agents-marketplace ne sont considérés live qu’après déploiement mainnet et vérification du codeHash. Tant que le bandeau amber est visible, List / Buy / Bid on-chain restent volontairement bloqués pour éviter de fausses transactions. »,
+
   live_trading:
-    "LIA_LIVE_TRADING=0 : LIA ne signe pas de trades réels. Les boards et scénarios sont paper jusqu’aux micro-trades prouvés.",
+    « Flag LIA_LIVE_TRADING = 0 par défaut : LIA ne signe pas de trades réels. Boards, séries et scénarios sont en mode paper jusqu’à preuve de micro-trades et signature utilisateur validées. Aucune promesse de performance. »,
+
   tro_token:
-    "$TRO (TRO-94c925) est un token d’utilité / culture, supply max produit 500 000. Illiquide : ce n’est ni une part de fonds ni un yield promis.",
+    « $TRO (identifiant ESDT TRO-94c925, nom TUDURIORIGINAL) est le token d’utilité et de culture xArtists. Plafond produit : 500 000 TRO. Illiquide à ce stade : ce n’est ni une part de fonds d’investissement, ni un rendement promis, ni un équivalent cash de la treasury. »,
+
   fees_3pct:
-    "Après deploy, le marketplace prélève fee_bps=300 (3 %). 97 % vont au vendeur ; 3 % restent sur le SC jusqu’à claimFees (owner).",
+    « Une fois le marketplace déployé avec FEE_BPS = 300, chaque achat prélève 3 % de frais : 97 % partent au vendeur, 3 % restent sur le contrat jusqu’à claimFees (owner). Le détail du split fondation (Mission / Reserve / Ops) est décrit dans la policy treasury. »,
+
   gsn_vs_packs:
-    "GreenSmoke = agents de prévision (scores). Packs LIA = sous-agents Vellum limités vendus à part. Ne pas confondre les deux.",
+    « GreenSmoke (GSN) : agents de prévision utilisés pour scorer le marché avant décision LIA. Packs LIA : sous-agents Vellum limités, vendus séparément (cible tarifaire 5–25 €). Ce sont deux produits distincts — ne pas les confondre dans l’UI ni dans le pricing. »,
+
   profit_lock:
-    "Sur un gain réalisé, ~70 % est « locked » (pas re-tradé) et ~30 % reste compoundable — anti spirale de levier.",
+    « Sur un gain net réalisé, environ 70 % est verrouillé (locked) et ne peut pas financer de nouveaux trades via le ledger ; environ 30 % reste compoundable. Objectif : éviter la spirale « gains → levier → drawdown ». »,
+
   guardian:
-    "Le Guardian bloque size-up si levier / drawdown / compound trop agressifs (avant le cerveau de trading).",
+    « Le Guardian (couche risque) s’exécute avant le moteur de trading. Il peut refuser un size-up si le levier, le drawdown ou l’intensité de compound dépassent les seuils. Toujours « Guardian before Brain ». »,
+
   oracle:
-    "Prix EGLD/tokens via indexeur MultiversX (activité DEX on-chain) + références secondaires. Pas de Chainlink xArtists dédié.",
+    « Les prix EGLD et tokens viennent surtout de l’indexeur MultiversX (économie réseau + tokens, reflétant l’activité DEX on-chain), avec références secondaires. xArtists n’a pas déployé d’oracle Chainlink dédié. Ne pas trader live sur une seule source périmée. »,
+
   dao_readonly:
-    "La DAO est en lecture tant que le vote on-chain n’est pas branché de façon fiable (évite un faux « Vote envoyé »).",
+    « L’onglet DAO affiche informations $TRO et gouvernance en lecture. Le vote on-chain n’est pas simulé : aucun message « Vote envoyé » tant que la signature sdk-dapp et le contrat de vote ne sont pas branchés de façon fiable. »,
+
   studio:
-    "Studio : préparer métadonnées, pin IPFS (Pinata), parcours mint. Le mint auto on-chain dépend du minter SC / mxpy.",
+    « Le Studio guide l’artiste : métadonnées, pin IPFS (Pinata), préparation au mint. Le mint on-chain automatique dépend du minter / commandes mxpy et d’une signature wallet utilisateur — pas du wallet LIA protocole. »,
+
   bid_offer:
-    "Bid on-chain nécessite redeploy nft-marketplace avec placeBid. Offer/escrow dédié pas encore d’endpoint — ne saisis pas d’ID fantôme.",
+    « Les enchères (placeBid / acceptBid / withdrawBid) nécessitent un marketplace redéployé avec ces endpoints. « Offer » type escrow n’a pas encore d’endpoint dédié : ne pas saisir d’identifiant de listing inventé. »,
+
   portfolio_scenarios:
-    "Les scénarios 365j sont illustratifs (hypothèses de win-rate). Ce n’est pas une performance passée ni une promesse.",
+    « Les projections sur 365 jours (différents taux de trades gagnants) sont purement illustratives. Hypothèses fixes (ex. taille de trade, +1 % / −0,8 %). Ce n’est ni un historique audité ni une promesse de rendement. »,
+
   hatom:
-    "Hatom = yield / lending MultiversX. HF 999 = non disponible ou sans position — pas un score magique.",
+    « Hatom est un protocole de lending / yield sur MultiversX. Un health factor affiché à 999 signifie en pratique « non disponible » ou absence de position emprunt — ce n’est pas un score de performance maximal. »,
+
   editions:
-    "xArtists Editions : lettre mensuelle art / culture / tech. Abonnement éditorial, pas un produit financier.",
+    « xArtists Editions est une lettre mensuelle (art, culture, technologie, édito vision). Abonnement éditorial : ce n’est pas un produit financier ni un staking. »,
+
   ads:
-    "Pub à enchères : emplacements limités, opt-in. Revenus → treasury mission (pas un investissement).",
+    « L’espace publicitaire fonctionne par enchères sur quelques emplacements premium (opt-in, slots limités). Les revenus visent la treasury mission. Ce n’est pas un investissement ni un tip confondu avec un placement. »,
+
   soul:
-    "Soul / zk = expérimental (souvent testnet). Aucun fonds utilisateur en auto-bridge.",
+    « Soul / preuves zk sont marqués expérimentaux (souvent testnet). Aucun transfert automatique de fonds utilisateurs via bridge expérimental. Zone isolée dans la navigation. »,
+
+  /* ——— Actions / boutons ——— */
+  connect_wallet:
+    « Utilise l’extension MultiversX ou le Web Wallet pour une vraie session de signature. Coller une adresse erd1 sans session ne permet pas de signer List / Buy. Évite le wallet LIA protocole comme session utilisateur. »,
+
+  list_nft:
+    « Lister un NFT envoie une transaction vers le smart contract marketplace (si live). Sans codeHash valide, le bouton reste désactivé. Les frais de listing éventuels sont indiqués dans la config produit. »,
+
+  buy_nft:
+    « Acheter paie le prix affiché (+ structure de fees du SC). Le NFT est transféré selon la logique du contrat. Impossible tant que le marketplace n’est pas déployé et vérifié. »,
+
+  buy_agent:
+    « L’achat d’un pack agent (sous-agent Vellum) dépend du SC agents-marketplace. Après paiement on-chain prévu : accès limité (clé API / slot), éventuel badge NFT, reçu — pas la propriété de LIA protocole. »,
+
+  tip_protocol:
+    « Un tip est un don volontaire vers le protocole ou la mission artistique. Ce n’est pas un ticket d’investissement, ni une part de la performance LIA. »,
+
+  burn_tro:
+    « Un mécanisme de burn $TRO sur vente (ex. 1 % documenté) n’est actif on-chain que lorsque le marketplace live l’implémente. Jusque-là, toute mention de burn est policy produit, pas exécution garantie. »,
+
+  treasury_split:
+    « La policy prévoit de répartir fees, tips et PnL live entre Mission, Reserve, Ops et incentives. Mission et Reserve doivent d’abord exister comme wallets publics ; aujourd’hui beaucoup reste concentré sur LIA ops. »,
+
+  micro_trade:
+    « Un micro-trade peut être ignoré si le gain attendu net (après frais et gaz) est trop faible. LIA évite de brûler du gaz pour un edge négatif. »,
+
+  defense_mode:
+    « Mode DEFENSE / RISK_OFF : pas de nouveau BUY. Activé notamment si régime GSN risk-off, fear & greed très bas, ou drawdown élevé. Capital préservé en priorité. »,
+
+  ipfs_pinata:
+    « Les médias (image, vidéo, audio) destinés à un NFT durable doivent être épinglés (IPFS Pinata / équivalent). Une vidéo YouTube seule n’est pas un stockage on-chain permanent. »,
+
+  phygital:
+    « Œuvre phygital : lien entre NFT et objet physique. Le verrouillage physique peut être un flag métadonnées ; le blocage d’achat on-chain dépend du design escrow / marketplace. »,
 } as const
 
 export type HelpKey = keyof typeof HELP
 
-/** Short page intros */
+/** Guides d’en-tête par route */
 export const PAGE_GUIDE: Record<
   string,
   { title: string; body: string; tips?: HelpKey[] }
 > = {
   dashboard: {
-    title: "Dashboard protocole",
-    body: "Vue LIA ops : soldes, réputation, packs. Ce n’est pas ton wallet personnel.",
-    tips: ['lia_vs_user', 'sc_pending', 'live_trading'],
+    title: 'Dashboard protocole',
+    body: 'Tableau de bord LIA ops : soldes, réputation, packs Vellum, statut risque. Ce n’est pas le portefeuille de l’utilisateur connecté.',
+    tips: ['lia_vs_user', 'sc_pending', 'live_trading', 'tro_token'],
   },
   wallet: {
-    title: "Mon wallet",
-    body: "Soldes de l’adresse Connect uniquement. Portfolio LIA = autre page.",
-    tips: ['lia_vs_user', 'hatom'],
+    title: 'Mon wallet',
+    body: 'Soldes et tokens de l’adresse que tu as connectée. Pour la trésorerie et le book LIA, ouvre Portfolio protocole.',
+    tips: ['lia_vs_user', 'connect_wallet', 'hatom'],
   },
   portfolio: {
-    title: "Portfolio LIA",
-    body: "Trésorerie / book protocole (MVX + multi-chain). Scénarios = paper.",
-    tips: ['lia_vs_user', 'portfolio_scenarios', 'oracle'],
+    title: 'Portfolio LIA (protocole)',
+    body: 'Vue trésorerie / positions du protocole (MultiversX + multi-chain visible). Les scénarios de rendement sont paper et illustratifs.',
+    tips: ['lia_vs_user', 'portfolio_scenarios', 'oracle', 'treasury_split'],
   },
   trading: {
-    title: "Trading & Board LIA",
-    body: "Modes, board, paper trades. Exécution live désactivée par défaut.",
-    tips: ['live_trading', 'guardian', 'profit_lock', 'gsn_vs_packs'],
+    title: 'Trading & Board LIA',
+    body: 'Modes de marché, board, analyses et paper trades. L’exécution live reste coupée tant que les gates sécurité ne sont pas validées.',
+    tips: ['live_trading', 'guardian', 'profit_lock', 'defense_mode', 'gsn_vs_packs', 'micro_trade'],
   },
   marketplace: {
-    title: "Marketplace NFT",
-    body: "Liste, achat, enchères — actifs seulement si le SC est live (codeHash).",
-    tips: ['sc_pending', 'fees_3pct', 'bid_offer'],
+    title: 'Marketplace NFT',
+    body: 'Achat, vente et enchères d’œuvres. Les actions on-chain s’activent seulement après deploy et codeHash du contrat marketplace.',
+    tips: ['sc_pending', 'fees_3pct', 'bid_offer', 'list_nft', 'buy_nft'],
   },
   agents: {
-    title: "Agents LIA",
-    body: "Packs sous-agents Vellum (5–25 € cible). Distinct des prévisions GreenSmoke.",
-    tips: ['gsn_vs_packs', 'sc_pending'],
+    title: 'Agents & packs LIA',
+    body: 'Sous-agents Vellum commercialisés (packs limités). Distinct des agents GreenSmoke de prévision affichés pour le scoring.',
+    tips: ['gsn_vs_packs', 'sc_pending', 'buy_agent'],
   },
   gallery: {
-    title: "Galerie xArtists",
-    body: "Catalogue collections / NFT. Consultation sans wallet obligatoire.",
-    tips: ['studio'],
+    title: 'Galerie xArtists',
+    body: 'Catalogue des collections et NFT. Consultation libre ; la galerie n’est pas intitulée au nom d’un artiste unique.',
+    tips: ['studio', 'phygital'],
   },
   studio: {
-    title: "Studio artiste",
-    body: "Créer, pinner IPFS, préparer mint. Signature wallet user requise pour TX.",
-    tips: ['studio', 'sc_pending'],
+    title: 'Studio artiste',
+    body: 'Parcours pour publier une œuvre : fichiers, métadonnées, pin IPFS, préparation mint. Signature avec ton wallet, pas LIA ops.',
+    tips: ['studio', 'ipfs_pinata', 'sc_pending', 'connect_wallet'],
   },
   dao: {
-    title: "DAO $TRO",
-    body: "Infos gouvernance et $TRO. Vote on-chain non simulé tant que non branché.",
-    tips: ['dao_readonly', 'tro_token'],
+    title: 'DAO $TRO',
+    body: 'Informations de gouvernance et du token. Lecture seule tant que le vote on-chain n’est pas branché sans ambiguïté.',
+    tips: ['dao_readonly', 'tro_token', 'treasury_split'],
   },
   tro: {
-    title: "$TRO",
-    body: "Token utilitaire xArtists. Cap 500 000. Voir docs/TRO.md.",
-    tips: ['tro_token'],
+    title: 'Token $TRO',
+    body: 'Fiche utilitaire $TRO : identité on-chain, plafond 500 000, liens explorer / swap. Pas un prospectus de fonds.',
+    tips: ['tro_token', 'burn_tro', 'oracle'],
   },
   tip: {
-    title: "Tip / soutenir",
-    body: "Don volontaire vers le protocole / mission — pas un investissement.",
-    tips: ['lia_vs_user'],
+    title: 'Tip / soutenir',
+    body: 'Envoi volontaire pour soutenir le protocole ou la mission artistique. Aucun rendement en contrepartie contractuelle.',
+    tips: ['tip_protocol', 'lia_vs_user'],
   },
   hatom: {
-    title: "Hatom",
-    body: "Positions yield / lending liées au protocole ou à ton wallet selon contexte.",
-    tips: ['hatom', 'live_trading'],
+    title: 'Hatom / yield',
+    body: 'Contexte lending et yield MultiversX (positions, HF). LIA peut utiliser Hatom en mode YIELD paper ou live selon flags.',
+    tips: ['hatom', 'live_trading', 'oracle'],
   },
   ads: {
-    title: "Espace pub",
-    body: "Enchères d’emplacements limités. Transparent, opt-in.",
-    tips: ['ads'],
+    title: 'Espace publicitaire',
+    body: 'Enchères pour des emplacements limités sur la dApp. Opt-in, modération, revenus orientés mission — pas un produit d’investissement.',
+    tips: ['ads', 'treasury_split'],
   },
   editions: {
-    title: "Editions",
-    body: "Newsletter art × culture × tech.",
+    title: 'xArtists Editions',
+    body: 'Lettre mensuelle art × culture × technologie et vision xArtists. Contenu éditorial uniquement.',
     tips: ['editions'],
   },
   soul: {
-    title: "Soul (expérimental)",
-    body: "Zone isolée zk / testnet — pas de fonds users auto.",
+    title: 'Soul (expérimental)',
+    body: 'Module isolé (zk / testnet). Aucune promesse mainnet ni bridge automatique de fonds utilisateurs.',
     tips: ['soul'],
   },
+  burnify: {
+    title: 'Burnify (expérimental)',
+    body: 'Zone expérimentale liée aux mécanismes de burn. Vérifier toujours le statut on-chain avant d’envoyer des tokens.',
+    tips: ['burn_tro', 'soul'],
+  },
 }
+
+/** Textes courts pour boutons désactivés */
+export const DISABLED_REASON = {
+  no_sc: 'Smart contract non déployé ou codeHash non vérifié.',
+  no_wallet: 'Connecte un wallet signant (extension ou Web Wallet).',
+  lia_ops_blocked: 'Le wallet protocole LIA ne doit pas être utilisé comme session acheteur.',
+  no_listing_id: 'Identifiant de listing manquant — index on-chain pas encore complet.',
+  paper_only: 'Action paper uniquement (LIA_LIVE_TRADING=0).',
+  dao_vote_off: 'Vote on-chain non activé — lecture seule.',
+} as const
