@@ -1,97 +1,61 @@
 # Smart Contract deploy — optimisé (mainnet only)
 
+> **Entrée canonique:** [`docs/RUNBOOK_DEPLOY.md`](RUNBOOK_DEPLOY.md)  
+> **Orchestrateur:** `./scripts/runbook_deploy.sh <dry|deploy|verify|all>`
+
 ## Objectif
 
-Réduire les échecs (gas, balance, parse adresse) et le temps de diagnostic pour **agents-marketplace** + **nft-marketplace**.
+Réduire les échecs (gas, balance, parse adresse) pour **agents-marketplace** + **nft-marketplace**.
 
-## Pipeline recommandé
-
-```bash
-export PEM=/path/to/mainnet.pem   # jamais commit
-export FEE_BPS=300
-export CHAIN=1
-
-# 1) Preflight (build + balance + GAS_LIMIT par wasm)
-./scripts/preflight_deploy_mainnet.sh
-# ou
-./scripts/simulate_deploy_mainnet.sh
-
-# 2) Deploy réel (un ou les deux)
-RUN_DEPLOY=1 ./scripts/deploy_optimized_mainnet.sh
-# ou ciblé :
-RUN_DEPLOY=1 ONLY=agents-marketplace ./scripts/deploy_optimized_mainnet.sh
-RUN_DEPLOY=1 ONLY=nft-marketplace ./scripts/deploy_optimized_mainnet.sh
-
-# 3) Vérifier
-python scripts/verify_marketplace_codehash.py
-# codeHash ≠ null sur explorer
-
-# 4) Frontend
-# VITE_*_ADDRESS + VITE_*_CODEHASH_OK=1 → rebuild Pages
-```
-
-Legacy (toujours valide) :
+## Pipeline
 
 ```bash
-./scripts/deploy_mainnet.sh agents-marketplace
-./scripts/deploy_mainnet.sh nft-marketplace
+export PEM=/path/to/mainnet.pem FEE_BPS=300 CHAIN=1
+./scripts/runbook_deploy.sh dry
+./scripts/runbook_deploy.sh deploy
+./scripts/runbook_deploy.sh verify
 ```
 
-## Optimisations implémentées
+Sous le capot: `preflight_deploy_mainnet.sh` → `deploy_optimized_mainnet.sh` → `verify_marketplace_codehash.py` → `generate_vite_env.py`.
 
-| Optimisation | Fichier | Effet |
-|--------------|---------|--------|
-| Gas depuis taille WASM + buffer 35 % | `estimate_deploy_gas.py` | Moins d’*out of gas* / moins de surpay |
-| Floor 120M / cap 600M | idem | Respect hard-limit réseau |
-| Balance min ~0.15 EGLD | `preflight_deploy_mainnet.sh` | Stop avant send si fonds insuffisants |
-| Build isolé | `build_scs_isolated.sh` | Pas de workspace SC cassé |
-| Retry gateway + **bump gas** auto | `deploy_optimized_mainnet.sh` | Récupération OOG / 502 |
-| Confirm adaptive (1s→8s) | `confirm_tx_mainnet.py` | Finality Supernova sans spam API |
-| Pas d’adresse fake | deploy scripts | `contracts.json` seulement si confirm OK |
-| post_deploy + codehash enchaînés | deploy_optimized | Une commande pour la suite frontend |
+## Optimisations
 
-## Formule gas (indicatif)
+| Optimisation | Effet |
+|--------------|--------|
+| Gas = taille WASM × 1.35 (floor 120M, cap 600M) | Moins OOG / surpay |
+| Balance min ~0.15–0.25 EGLD | Stop avant send |
+| Build isolé | Workspace SC indépendant |
+| Retry gateway + bump gas | Récupération 502 / OOG |
+| Confirm adaptive 1s→8s | Finality Supernova |
+| Pas d'adresse fake | contracts.json seulement si confirm OK |
+| Phases runbook | dry gratuit avant deploy payant |
+
+## Formule gas
 
 ```
 data_est = 80_000 + 1_800 * wasm_bytes
 recommended = min(600_000_000, max(120_000_000, data_est * 1.35))
 ```
 
-Ajuster si init SC devient plus lourd (nouveaux endpoints).
+## Coûts
 
-## Coûts approximatifs
+| Étape | EGLD |
+|-------|------|
+| dry | 0 |
+| Deploy 1 SC | ~0.05–0.15 |
+| 2 SC + buffer | **>= 0.25** recommandé |
 
-| Étape | EGLD (ordre de grandeur) |
-|-------|---------------------------|
-| Deploy 1 SC | ~0.05–0.15 (gas + data) |
-| 2 SC + buffer | **≥ 0.15–0.30** recommandé sur le wallet |
-| Micro list/buy test | variable, garder marge |
-
-Wallet LIA ops : vérifier le solde live avant `RUN_DEPLOY=1`.
-
-## Erreurs fréquentes → action
-
-Voir aussi `docs/DEPLOY_ERRORS.md`.
+## Erreurs → action
 
 | Symptôme | Action |
 |----------|--------|
-| out of gas | `GAS_LIMIT_OVERRIDE=500000000 RUN_DEPLOY=1 …` |
-| insufficient funds | top-up EGLD sur deployer |
-| codeHash null après deploy | attendre indexation API / re-run verify |
-| adresse non parsée | explorer par tx hash → `post_deploy_contracts.py --agents erd1…` |
-
-## Vellum
-
-```text
-PEM from secret LIA_WALLET_PEM_PATH only
-CHAIN=1 FEE_BPS=300
-preflight → RUN_DEPLOY=1 only when ops explicit
-Never LIA_LIVE_TRADING=1 until micro-trades OK
-On failure: stop, redact PEM, no fake contracts.json
-```
+| out of gas | `GAS_LIMIT_OVERRIDE=500000000 ./scripts/runbook_deploy.sh deploy` |
+| insufficient funds | top-up deployer |
+| codeHash null | re-run `verify` après 30–90 s |
+| adresse non parsée | explorer tx → `post_deploy_contracts.py` |
 
 ## Après succès
 
-1. Blackbox `docs/MAINNET_DEPLOY_BLACKBOX.md`
-2. Retirer bandeaux « SC non déployé » (env CODEHASH_OK)
-3. Micro List/Buy wallet **utilisateur** (pas LIA ops en session)
+1. VITE + rebuild Pages  
+2. Micro List/Buy wallet **user**  
+3. `LIA_LIVE_TRADING=0` jusqu'à preuve micro  

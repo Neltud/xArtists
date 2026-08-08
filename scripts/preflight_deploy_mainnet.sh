@@ -10,7 +10,7 @@ export API="${API:-https://api.multiversx.com}"
 export FEE_BPS="${FEE_BPS:-300}"
 PEM="${PEM:-${LIA_WALLET_PEM_PATH:-}}"
 ONLY="${1:-all}"
-MIN_EGLD_ATOMIC="${MIN_EGLD_ATOMIC:-150000000000000000}"  # 0.15 EGLD safety buffer
+MIN_EGLD_ATOMIC="${MIN_EGLD_ATOMIC:-250000000000000000}"  # 0.25 EGLD recommended buffer
 
 if [[ "$CHAIN" != "1" ]]; then
   echo "❌ MAINNET ONLY (CHAIN=1)"
@@ -33,7 +33,6 @@ if [[ "$FEE_BPS" -gt 1000 ]]; then
   exit 1
 fi
 
-# Derive address from PEM (mxpy)
 ADDR=$(mxpy wallet pem-address "$PEM" 2>/dev/null || true)
 if [[ -z "$ADDR" ]]; then
   ADDR=$(mxpy account get --pem "$PEM" --proxy "$PROXY" 2>/dev/null | grep -oE 'erd1[a-z0-9]{58}' | head -1 || true)
@@ -75,7 +74,6 @@ estimate_one() {
   local REC
   REC=$(python3 "$ROOT/scripts/estimate_deploy_gas.py" "$WASM" --print-only)
   echo "export GAS_LIMIT=$REC   # for $name"
-  # write suggestion file
   mkdir -p "$ROOT/data"
   echo "$REC" > "$ROOT/data/gas_limit_${name}.txt"
 }
@@ -94,8 +92,6 @@ if [[ "$FAILED" -ne 0 ]]; then
   exit 1
 fi
 echo "✅ Preflight OK — next:"
-echo "  export GAS_LIMIT=\$(cat data/gas_limit_agents-marketplace.txt)"
-echo "  ./scripts/deploy_mainnet.sh agents-marketplace"
-echo "  export GAS_LIMIT=\$(cat data/gas_limit_nft-marketplace.txt)"
-echo "  ./scripts/deploy_mainnet.sh nft-marketplace"
-echo "  # or one-shot: RUN_DEPLOY=1 ./scripts/deploy_optimized_mainnet.sh"
+echo "  ./scripts/runbook_deploy.sh deploy"
+echo "  # or: RUN_DEPLOY=1 ./scripts/deploy_optimized_mainnet.sh"
+echo "  # docs: docs/RUNBOOK_DEPLOY.md"
