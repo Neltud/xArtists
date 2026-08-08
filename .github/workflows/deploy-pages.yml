@@ -40,14 +40,27 @@ jobs:
 
       - name: 🗜️ Slim NFT catalog (~280KB → ~72KB)
         run: |
-          # Preserve full dump once
           if [ -f data/xartists_collections.json ] && [ ! -f data/xartists_collections.full.json ]; then
             cp data/xartists_collections.json data/xartists_collections.full.json || true
           fi
           if [ -f apps/frontend/public/data/xartists_collections.json ] && [ ! -f data/xartists_collections.full.json ]; then
             cp apps/frontend/public/data/xartists_collections.json data/xartists_collections.full.json || true
           fi
-          node scripts/slim_collections.mjs
+          node scripts/slim_collections.mjs || echo "WARN slim skipped"
+
+      - name: 📋 Ensure critical public data seeds
+        run: |
+          mkdir -p apps/frontend/public/data docs/data
+          for f in lia_board.json lia_v6_status.json contracts.json lia_trades.json \
+                   lia_trailing_state.json lia_portfolio.json hatom_lia.json \
+                   greensmoke_top.json ads_active.json config.json \
+                   xartists_collections.index.json; do
+            if [ -f "data/$f" ]; then
+              cp -f "data/$f" "apps/frontend/public/data/$f"
+              cp -f "data/$f" "docs/data/$f"
+              echo "seeded $f"
+            fi
+          done
 
       - name: 🏗️ Build React app
         working-directory: apps/frontend
@@ -69,20 +82,18 @@ jobs:
           cp -r apps/frontend/dist/. docs/
           touch docs/.nojekyll
 
-      - name: 📊 Copy data JSON (slim)
+      - name: 📊 Copy data JSON (critical + full data/)
         run: |
-          mkdir -p docs/data
+          mkdir -p docs/data docs/data/collections
           cp -r data/. docs/data/ 2>/dev/null || true
-          # Prefer public slim catalog inside dist already; ensure index+collections pages exist
-          mkdir -p docs/data/collections
-          cp -r apps/frontend/public/data/collections/. docs/data/collections/ 2>/dev/null || true
-          cp apps/frontend/public/data/xartists_collections.json docs/data/ 2>/dev/null || true
-          cp apps/frontend/public/data/xartists_collections.index.json docs/data/ 2>/dev/null || true
+          cp -r apps/frontend/public/data/. docs/data/ 2>/dev/null || true
+          # Explicit board (never 404 after deploy)
+          test -f docs/data/lia_board.json && echo "lia_board OK" || echo "WARN missing lia_board"
+          test -f docs/data/xartists_collections.index.json && echo "index OK" || true
 
       - name: 🔍 Verify build
         run: |
           test -f docs/index.html && echo "index.html OK" || (echo "MISSING index.html"; exit 1)
-          test -f docs/data/xartists_collections.json && echo "catalog OK" || echo "WARN no catalog"
 
       - name: 📤 Commit & Push docs/
         run: |

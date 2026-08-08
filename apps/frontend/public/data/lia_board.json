@@ -1,15 +1,25 @@
 {
-  "version": "1.2",
+  "version": "1.3",
   "board": "lia_xboard",
-  "updated": "2026-08-03T18:00:00Z",
+  "updated": "2026-08-08T14:40:00Z",
   "risk": {
     "hf_mode": "block_scan",
+    "approx_block_time_sec": 6,
+    "max_arb_scans_per_day": 14400,
     "max_trades_per_day": 48,
     "max_trades_per_hour": 6,
+    "min_edge_after_fees": 0.004,
+    "fee_roundtrip": 0.006,
+    "gas_buffer_usd": 0.05,
     "live_trading_default": false,
-    "note": "Not CEX HFT. Block-time arb only."
+    "note": "Not CEX HFT. Block-time arb only. LIA_LIVE_TRADING=0 until SC+signing green."
   },
-  "positions": {"total_usd_approx": 0},
+  "positions": {
+    "wallet": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "label": "LIA Ops (protocol) — not user wallet",
+    "total_usd_approx": 0,
+    "note": "Refresh via python -m lia.board.publish"
+  },
   "series": {
     "start_each_usd": 10,
     "horizon_days": 30,
@@ -18,9 +28,24 @@
       {"id": "B", "name": "Yield-first", "strategy": "yield", "start_usd": 10, "end_usd": 11.2, "multiple": 1.12, "win_rate": 0.52, "trades": 60},
       {"id": "C", "name": "Micro-arb", "strategy": "arb", "start_usd": 10, "end_usd": 13.1, "multiple": 1.31, "win_rate": 0.58, "trades": 240},
       {"id": "TP1", "name": "Take-profit +1%", "strategy": "tp1", "start_usd": 10, "end_usd": 14.0, "multiple": 1.4, "win_rate": 0.6, "trades": 150},
+      {"id": "TP3", "name": "Take-profit +3%", "strategy": "tp3", "start_usd": 10, "end_usd": 11.8, "multiple": 1.18, "win_rate": 0.48, "trades": 90},
+      {"id": "TP5", "name": "Take-profit +5%", "strategy": "tp5", "start_usd": 10, "end_usd": 10.9, "multiple": 1.09, "win_rate": 0.4, "trades": 60},
       {"id": "CTR", "name": "Contrarian", "strategy": "contrarian", "start_usd": 10, "end_usd": 11.5, "multiple": 1.15, "win_rate": 0.5, "trades": 120}
     ]
   },
-  "arb": {"hf_mode": "block_scan", "actionable": false, "best": null, "note": "Seed — Vellum publish for live"},
-  "trades": {"past": [], "open": [], "planned": []}
+  "arb": {
+    "hf_mode": "block_scan",
+    "actionable": false,
+    "best": null,
+    "note": "Seed — run publish for live mids",
+    "pairs": []
+  },
+  "trading_stack": {
+    "tp_mode_default": "log",
+    "lock_ratio": 0.7,
+    "LIA_LIVE_TRADING": 0,
+    "modules": ["secure_tp", "slippage", "dynamic_trail", "cross_chain_arb", "bridge_latency"]
+  },
+  "trades": {"past": [], "open": [], "planned": []},
+  "venues_used_by_lia": ["xexchange", "onedex", "jexchange", "ashswap", "hatom", "xoxno", "soul_experimental"]
 }
