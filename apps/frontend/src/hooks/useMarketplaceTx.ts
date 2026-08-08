@@ -1,10 +1,12 @@
 /**
  * List / Buy / Bid / Accept / Withdraw / Cancel — marketplace SC.
+ * Hard-blocked while isMarketplaceLive() is false.
  * Offer: no endpoint.
  */
 import { useCallback, useState } from 'react'
 import { MARKETPLACE_ADDRESS } from '../../../../packages/core/src/contracts/marketplaceAbi'
 import { useSendTransaction } from './useSendTransaction'
+import { isMarketplaceLive, KNOWN_EMPTY_MARKETPLACE } from '../lib/scStatus'
 
 export interface ListNftParams {
   tokenId: string
@@ -39,14 +41,27 @@ function numToHex(n: number | bigint): string {
   return h.length % 2 === 0 ? h : `0${h}`
 }
 
+const BLOCKED =
+  'Marketplace SC not live (codeHash). Deploy + VITE_MARKETPLACE_CODEHASH_OK=1 before List/Buy.'
+
 export function useMarketplaceTx() {
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lastTx, setLastTx] = useState<string | null>(null)
   const { send } = useSendTransaction()
+  const live = isMarketplaceLive()
 
   const run = useCallback(
     async (tx: object, labels: { processing: string; success: string; fail: string }) => {
+      if (!live) {
+        setError(BLOCKED)
+        throw new Error(BLOCKED)
+      }
+      const recv = (tx as { receiver?: string }).receiver || ''
+      if (recv.toLowerCase() === KNOWN_EMPTY_MARKETPLACE.toLowerCase()) {
+        setError(BLOCKED)
+        throw new Error(BLOCKED)
+      }
       setPending(true)
       setError(null)
       try {
@@ -69,7 +84,7 @@ export function useMarketplaceTx() {
         setPending(false)
       }
     },
-    [send]
+    [send, live]
   )
 
   const listNft = useCallback(
@@ -187,7 +202,8 @@ export function useMarketplaceTx() {
     error,
     lastTx,
     marketplaceAddress: MARKETPLACE_ADDRESS,
+    marketplaceLive: live,
     offerSupported: false as const,
-    bidSupported: true as const,
+    bidSupported: live,
   }
 }

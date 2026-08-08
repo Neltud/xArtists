@@ -22,12 +22,12 @@ MIRRORS = [
     ROOT / "apps" / "frontend" / "public" / "data",
 ]
 
-# Files the frontend actually fetches (raw or Pages)
 CRITICAL = [
     "lia_v6_status.json",
     "lia_trades.json",
     "lia_trailing_state.json",
     "lia_portfolio.json",
+    "lia_board.json",
     "hatom_lia.json",
     "battle_of_nodes.json",
     "xartists_onchain.json",
@@ -37,6 +37,10 @@ CRITICAL = [
     "greensmoke_forecasts.json",
     "lia_tro_policy.json",
     "contracts.json",
+    "rwa_escrow_intents.json",
+    "vellum_last_run.json",
+    "egld_price.json",
+    "ads_active.json",
 ]
 
 
@@ -49,7 +53,9 @@ def _touch_status() -> None:
     except Exception:
         return
     data["timestamp"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    data["status"] = data.get("status") or "PRODUCTION_MAINNET"
+    data["updated"] = data["timestamp"]
+    data["status"] = data.get("status") or "monitoring"
+    data.setdefault("LIA_LIVE_TRADING", 0)
     path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
