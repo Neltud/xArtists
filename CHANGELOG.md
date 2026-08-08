@@ -1,5 +1,110 @@
 # Changelog
 
+## [0.16.0](https://github.com/Neltud/xArtists/compare/v0.15.0...v0.16.0) (2026-08-08)
+
+
+### Features
+
+* **ads:** auction MVP — AdSlot, /ads page, schema, bid memo, treasury split ([d3b8ce6](https://github.com/Neltud/xArtists/commit/d3b8ce67f71ba40d310d1e7a1b29b7944b5b6b92))
+* **ads:** wire AdSlot on Dashboard + /ads route ([914ce4d](https://github.com/Neltud/xArtists/commit/914ce4dee53cca62d623f9ef7e70f5bb4ac3ffad))
+* **agents:** GsnLeaderboard pre-trade score panel on Agents page ([e91dc59](https://github.com/Neltud/xArtists/commit/e91dc59ad71fcf5d78e5f330e01ecf215cbf7cef))
+* **bridge:** latency model, adaptive penalty, inventory pre-position, edge decay abort ([1d05578](https://github.com/Neltud/xArtists/commit/1d0557800ea39cd986a72cdd753d803e7bf8664e))
+* **ci:** regression test suite + runner + GitHub Actions workflow ([b23f55d](https://github.com/Neltud/xArtists/commit/b23f55db9095699a17c4b4f046a5340093735594))
+* **claude_agent:** get_allocation + pyramids external_allocator + SignalBus social cap 0.15 ([d4c56c3](https://github.com/Neltud/xArtists/commit/d4c56c3dfc8f53ecfdbe9383d5e265f16f760b7e))
+* **claude_agent:** merge SignalBus+pyramids adapter (lia imports, bias map, tests) — Claude is advisor not 2nd executor ([6b0bca4](https://github.com/Neltud/xArtists/commit/6b0bca4117ccaca11b12d5e0b2f19d8087e7c715))
+* DAO live TRO holders/pool from MVX API; Studio KPI steps + clearer publish path ([c7e2d72](https://github.com/Neltud/xArtists/commit/c7e2d729941df454837054fa89107a0bd45f19b3))
+* **dapp:** AdSlots market/studio, agents create-prompt UX, treasury banner, ads in secondary nav ([f36ea56](https://github.com/Neltud/xArtists/commit/f36ea569cd057d6b20a3ee79bdcbcafb316cdb95))
+* **dapp:** Guardian panel, status seeds, SEO sitemap, resilient data fetch, SC banners ([4128f9b](https://github.com/Neltud/xArtists/commit/4128f9b39ac724f7f1a1ebf4bffa6cafe205bfd4))
+* **dapp:** post-deploy VITE pipeline, user-wallet List/Buy guard, board cadence, treasury Mission/Reserve skeleton ([3386611](https://github.com/Neltud/xArtists/commit/33866111ccd63af3a684e7ee706d6412dbea67f1))
+* **dapp:** wire TreasuryBanner, CreateSubAgentForm, AdSlot on market ([8deb237](https://github.com/Neltud/xArtists/commit/8deb2373fe8d7ecb75b332f37accf07d96a2cb4a))
+* decentralized price oracles + full review doc + frontend oracle hook v2.6 ([8ad7df5](https://github.com/Neltud/xArtists/commit/8ad7df55bde7ff65933be1b005a3f5e7bfd2e4a9))
+* **e2e:** next_run full pipeline, data mirror, SC live gates, resilient status fetch ([f8b558b](https://github.com/Neltud/xArtists/commit/f8b558b9fdae9d9bbea2f46582370c45f89bf696))
+* **frontend:** show OraclePriceBadge in Header ([2f5f92d](https://github.com/Neltud/xArtists/commit/2f5f92db4b5750f9efcccfb28a70bb50144144da))
+* **front:** persona welcome (artiste/collectionneur/investisseur/curieux), landing Lovable-inspired, TRO supply max 500k, a11y skip-link — publish Pages ([f51124f](https://github.com/Neltud/xArtists/commit/f51124fd453e148d838431f1895fa30acf019592))
+* gallery xArtists branding + artist bios; BottomNav DAO/Gallery mobile; market SC banner; priorities doc; force Pages-facing updates ([9b10f63](https://github.com/Neltud/xArtists/commit/9b10f63dd8f259435f82591125b4cb16d2303445))
+* **gallery:** progressive load index → collections/{id}.json on expand ([7f434c6](https://github.com/Neltud/xArtists/commit/7f434c6d7bafb7ff1537169d622cfbf428447dac))
+* Guardian gate in guarded_cycle + Hyperliquid lev check ([8bf417b](https://github.com/Neltud/xArtists/commit/8bf417bedea2ef5a9e91e9fb23571a65fbc3f19d))
+* Guardian spiral gate + RWA escrow bridge SC scaffold (Guardian before Brain) ([6283d42](https://github.com/Neltud/xArtists/commit/6283d429dd3e29ffa78952c46178f735cdd61f2a))
+* isolate LIA vs owner sub-agents; fiat onramp; agent stake escrow SC + UX journey ([7cac893](https://github.com/Neltud/xArtists/commit/7cac89366e98bf2e424329e354c13755839d0b07))
+* lia/claude_agent suite + Vellum reconstruction master (LIVE_TRADING=0, SC deploy next run, allocator, trade lock) ([90094d9](https://github.com/Neltud/xArtists/commit/90094d9281c167e6d8af377c5ee39631d4387e45))
+* **lia:** defense_circuit — DEFENSE mode activation, BUY block, persist state, wire orchestrator ([441cc9e](https://github.com/Neltud/xArtists/commit/441cc9e76b20c16002260878a330a221465373b3))
+* **lia:** liquidity catalog Hatom/xEx/OneDex/Ash + xMEX weekly compound strategy ([bcad274](https://github.com/Neltud/xArtists/commit/bcad2744ca8171d7e54b35598325154d96a8187a))
+* **lia:** optimized Hatom loop + AshSwap fees + compound pyramids (1000x1% multi-sleeve) ([12b3461](https://github.com/Neltud/xArtists/commit/12b3461cc2c15d26cad480c73b55b090440d10f2))
+* **lia:** secure API keys, NFT rights, agent stake with starting funds ([2bb21eb](https://github.com/Neltud/xArtists/commit/2bb21eb8524212cf1bd8554403e401ed39c0cf64))
+* **lia:** social_intel signals + multi trading modes with triggers (paper-safe) ([cf0923c](https://github.com/Neltud/xArtists/commit/cf0923c631c102d7888a6f34e8df83a9826ce297))
+* **lia:** Statistical Arbitrage (pairs/z-score) for LIA brain + compounding ([#36](https://github.com/Neltud/xArtists/issues/36)) ([d87d41a](https://github.com/Neltud/xArtists/commit/d87d41a2542ccaf3d5206c6530376392e648717f))
+* **lia:** sub-agent factory from user prompt + marketplace listing concept (Vellum) ([5b97f34](https://github.com/Neltud/xArtists/commit/5b97f340b389b3abf419dce7d7cbd85afb51ecec))
+* **lia:** yield risk (IL/leverage/HF) + Hatom routes + Soul experimental routes ([3068098](https://github.com/Neltud/xArtists/commit/3068098f9fa5e27667a00084e302a3ccee23eb84))
+* **lia:** yield strategy + compound/yield brain trained on on-chain memory ([5f5bf44](https://github.com/Neltud/xArtists/commit/5f5bf44d69dcf4e7c6d655dafe48c15275a58ca6))
+* **market:** AdSlot sidebar + treasury note under P0 banner ([68aa83e](https://github.com/Neltud/xArtists/commit/68aa83ee8d6a7a323bd1140f30e154771d8c1371))
+* **market:** UserWalletGuard + SC live gate on List/Buy/Bid modal ([c6906cb](https://github.com/Neltud/xArtists/commit/c6906cb6bea4afa4df97489a65acf7c423f04dc2))
+* multi-chain LIA wallets BTC/SOL, packs 5-25EUR, 1 TRO reward max, Wallet≠Portfolio, GSN leaderboard score, Editions sub ([7e3eb84](https://github.com/Neltud/xArtists/commit/7e3eb8478f6c770780a9129e77a59a8f731953d2))
+* **ops:** automated post-deploy verification suite + report + runbook hook ([e76d84c](https://github.com/Neltud/xArtists/commit/e76d84c5bf73a785cbba5606e6bc46a57a9e1c57))
+* **oracles:** on-chain-leaning price config, multi-token feeds, publish + Vellum hook ([3de54a3](https://github.com/Neltud/xArtists/commit/3de54a398000c5c2931920f83a98e70a38fb78f8))
+* Stripe onramp, escrow logic, studio journey, dual-product UX, security matrix ([5981451](https://github.com/Neltud/xArtists/commit/598145110ea33f9dcf8d316a80e7111b62ca3668))
+* **trading:** secure TP stack, multi-chain lever policy, venue gates, profit lock ([76a4362](https://github.com/Neltud/xArtists/commit/76a43628d92806ca03e3a517a97aae1878656ae5))
+* **trading:** slippage engine, cross-chain arb (gated), dynamic trail manager, security hooks ([093719f](https://github.com/Neltud/xArtists/commit/093719fdd480405d1e06ee181576b92c73295653))
+* **ui:** InfoTip + PageGuide + help copy across dApp; document UX gaps ([56e2ef8](https://github.com/Neltud/xArtists/commit/56e2ef85093ff1c32b01226a3260b9a2db79dcf0))
+* **ui:** PageGuide + tips on Portfolio (LIA vs user clarity) ([bf42b9c](https://github.com/Neltud/xArtists/commit/bf42b9cbd5995efd9f0b6a3bce46744dc3ff1c6d))
+* wire Guardian+RWA into orchestrator, guarded_cycle, policy, HL executor ([7fd79a3](https://github.com/Neltud/xArtists/commit/7fd79a363d680217be34ffd67bb0f472da59eab0))
+
+
+### Bug Fixes
+
+* **circuit:** repair fuse_signals IndentationError (agent decide was broken) ([8febce5](https://github.com/Neltud/xArtists/commit/8febce5b5281006dff5dad63dce6387407322ccc))
+* complete RUNBOOK_DEPLOY + runbook_deploy.sh phase orchestrator ([e73e52f](https://github.com/Neltud/xArtists/commit/e73e52fc04c57351e98178a2f820b465055ce2b1))
+* **cross_chain_arb:** syntax typo in bridge_mode string ([1bb703f](https://github.com/Neltud/xArtists/commit/1bb703fed61b3d6d03be51bd5389b95d57f09038))
+* **dapp:** seed docs/data for Pages 404s, DataHealth strip, ensure_pages_data in deploy ([2b04851](https://github.com/Neltud/xArtists/commit/2b048517e3fdd9f22b5283b8e9611ccc4ef637c2))
+* **dapp:** seed public data (board+index), harden Pages copy, refresh status — close 404s ([ac97450](https://github.com/Neltud/xArtists/commit/ac97450ef3bfe29f1ee4104d3c4b3770f7064617))
+* lacunes remedies — SEO keywords, persona modal FR coherent + useNavigate, connect modal FR, robots/sitemap, Vellum gates note ([02e992d](https://github.com/Neltud/xArtists/commit/02e992d7fd22d8e6c9e9d4171e7bddfc4dd5d003))
+* **regression:** scripts package + import path for post_deploy_verify tests ([8e6919c](https://github.com/Neltud/xArtists/commit/8e6919c86a7a1afe542c6547c581a719a45a0add))
+* restore Marketplace.tsx after accidental empty overwrite ([c916dea](https://github.com/Neltud/xArtists/commit/c916deabc925d5aa6c5d894e6ae94e596baa394e))
+* **trading_stack:** credit ledger locked/compoundable without double-split ([e35ef49](https://github.com/Neltud/xArtists/commit/e35ef4957f1458a9a79520ecf459c7a2ec021e6a))
+* TroPage show max supply 500k; persona navigate via Link-friendly paths ([e68138a](https://github.com/Neltud/xArtists/commit/e68138a458e7c92297e1d9ed734ef0c51d6784c3))
+* useWalletTokens compat Hatom/LP; nav Editions; mobile UX; EXEC_SUMMARY_NEXT ([be0fabf](https://github.com/Neltud/xArtists/commit/be0fabff5ed351ad02fffa696cf22ed404423d58))
+* useWalletTokens skip when no user address; Agents+GSN board; Tip BTC update ([c371bf8](https://github.com/Neltud/xArtists/commit/c371bf84b4ca95e94f49df8091656f6f5d5569c9))
+* valid TS string quotes in helpCopy.ts bubble texts ([8ed43e0](https://github.com/Neltud/xArtists/commit/8ed43e0d1a53b6251244148e5398ac611662c701))
+* Wallet user-only; Portfolio LIA+multi-chain; Editions route; packs 5-25EUR; Tip BTC; Agents GSN board ([701be08](https://github.com/Neltud/xArtists/commit/701be08022b1d5d53cf868248ef86bd254529c77))
+* Wallet=user only, Portfolio=LIA ops+multi-chain BTC/SOL, packs EUR, GSN score UI, Editions ([253ac51](https://github.com/Neltud/xArtists/commit/253ac51e7d78245f3dd8709130d05fdd97540afb))
+* zero Nelson Tuduri in gallery; BottomNav Studio+DAO+Market KPI paths; retention CTAs ([e0c0c1f](https://github.com/Neltud/xArtists/commit/e0c0c1f580453b9f48fd1a6c171b54a07bacc09e))
+
+
+### Performance
+
+* fast regression runner (single process), CI cache, tighter confirm poll ([28836d6](https://github.com/Neltud/xArtists/commit/28836d6c78a051e5213f0b6032929e619a5d0f97))
+* **frontend:** portfolio N+1 kill, vite chunks, visibility pause, gallery CV, fonts ([363978d](https://github.com/Neltud/xArtists/commit/363978dde0aa36de3c42b2300e6a22b8a422308e))
+* **frontend:** virtual NFT grid, lazy MxDapp TX shell, slim catalog, Lighthouse CI ([46d3ecc](https://github.com/Neltud/xArtists/commit/46d3eccd61ab58221ca3c7e18bf8ee719960ad6b))
+* **gallery:** use LazyImage for NFT tiles (decode + CLS) ([f0b18c1](https://github.com/Neltud/xArtists/commit/f0b18c1b0c5bc522d6d2fe83a7b12947761d322a))
+* slim xartists_collections (~72KB) + Gallery VirtualNftGrid + Lighthouse fix ([f6dcc9b](https://github.com/Neltud/xArtists/commit/f6dcc9b2784735df17f73c672b60a0efb041d4a3))
+* **ui:** Header PRIMARY short + SECONDARY_NAV in mobile drawer ([3f954fb](https://github.com/Neltud/xArtists/commit/3f954fb03faec7074d1972f80356f8dd804429c3))
+* vite minify+chunks, SW v3 SWR data, LazyImage, route prefetch, TxShell dynamic import ([b68c6a3](https://github.com/Neltud/xArtists/commit/b68c6a3c4a97f65e64044bb4cbf32d29d5965f43))
+
+
+### Refactoring
+
+* **lia:** unified Vellum trading pipeline + full module architecture map ([d5a312d](https://github.com/Neltud/xArtists/commit/d5a312d310b1c99053f86012a63da9a180ed2c81))
+
+
+### Documentation
+
+* comprehensive $TRO token documentation (TRO.md + factsheet) ([0064013](https://github.com/Neltud/xArtists/commit/0064013c02459c9d17c4bd3d40d8082e0a87eae9))
+* confirme veille techno + analyse dApp complète — 8 août 2026 (J+2 post v1.11.10.0) ([00275c1](https://github.com/Neltud/xArtists/commit/00275c17260881c9a8e2921a707708eb40ea7265))
+* DEPLOYMENT_STEPS.md — étapes mainnet complètes (build→simulate→deploy→verify→Pages) ([f8df2d4](https://github.com/Neltud/xArtists/commit/f8df2d459f821b5468732fbfa0070e120d7a311c))
+* GO_LIVE_DEPLOY — PEM local only; Pages workflows triggered ([3def8b4](https://github.com/Neltud/xArtists/commit/3def8b4eebfb2645852911845b416eaa49bb5999))
+* LIA split mechanisms analysis (TRO redistrib, treasury, profit lock, fees) ([e0278c5](https://github.com/Neltud/xArtists/commit/e0278c50d13b2f532b03dc4ec65efc9f788e5300))
+* MICRO_PROOF checklist — gates before LIA_LIVE_TRADING=1 ([40ab36e](https://github.com/Neltud/xArtists/commit/40ab36e7e4ea246eb9bbb2d68ee264c6ed51c34e))
+* mise à jour 5 août 2026 — veille techno + analyse dApp complète + code pleinement corrigé v0.15.0+ ([20b9eb8](https://github.com/Neltud/xArtists/commit/20b9eb8a03719b553d69fd8d5cf12104236164e5))
+* mise à jour 6 août 2026 — code pleinement corrigé v0.15.0+, veille techno (activation mainnet v1.11.10.0 epoch 2198), analyse dApp complète ([f533bab](https://github.com/Neltud/xArtists/commit/f533baba0f8b2f6a11a34b1401d20051d568716c))
+* mise à jour analyse dApp complète + veille techno 4 août 2026 — code pleinement corrigé (v0.15.0) ([04e224b](https://github.com/Neltud/xArtists/commit/04e224b1b344086cf707663dd360563ef93c9ee4))
+* mise à jour analyse dApp complète + veille techno 7 août 2026 — code pleinement corrigé (v0.15.0+) ([36f2e69](https://github.com/Neltud/xArtists/commit/36f2e690cd66f77bab809f6c636a0fc940964857))
+* open-source AI trading agents survey + xArtists profitability priorities ([00a9205](https://github.com/Neltud/xArtists/commit/00a920569ccc07114244f8caddef4690cb1e2bfe))
+* point Sprint A / DEPLOYMENT_STEPS to optimized SC deploy pipeline ([7883a68](https://github.com/Neltud/xArtists/commit/7883a6819b571dd5633bcd94c805f5188d9e0dce))
+* TREASURY_POLICY v0.2 — foundation model LIA+fees+tips, no LP fund framing ([d6c4931](https://github.com/Neltud/xArtists/commit/d6c4931de5094572c94a9439b4bb0c62d2193a4e))
+* TREASURY_POLICY.md v0.1 — foundation wallets, splits, DAO, activation gates ([57a7e42](https://github.com/Neltud/xArtists/commit/57a7e4229bf4e0b0ce3d941d6e043808976065a2))
+* update analyse dApp + veille techno + roadmap + README — 8 août 2026 (J+2 post v1.11.10.0) ([b061629](https://github.com/Neltud/xArtists/commit/b061629caaf3a48b0633dc413afcbe358271cda0))
+* VELLUM_LIA_AUTONOMOUS_RECAP — full duty list, EGLD flows, auto-learning, gates ([86084ef](https://github.com/Neltud/xArtists/commit/86084ef100a9c72ba6ac351b34a90ed0fbd29280))
+* VELLUM_RECONSTRUCTION_PROMPT_FULL — dApp + LIA strategies + social signals (repo-grounded only) ([40bbd00](https://github.com/Neltud/xArtists/commit/40bbd00dc786da40f16051efe125a3184cc06314))
+
 ## [0.15.0](https://github.com/Neltud/xArtists/compare/v0.14.0...v0.15.0) (2026-08-03)
 
 
