@@ -4,6 +4,7 @@ import Header from './components/Header'
 import BottomNav from './components/BottomNav'
 import ErrorBoundary from './components/ErrorBoundary'
 import PwaInstallBanner from './components/PwaInstallBanner'
+import RoutePrefetch from './components/RoutePrefetch'
 import { useMultiversX } from './hooks/useMultiversX'
 import { LINKS } from './config/links'
 
@@ -28,7 +29,6 @@ const AdsPage = lazy(() => import('./pages/AdsPage'))
 const Editions = lazy(() => import('./pages/Editions'))
 const TxShell = lazy(() => import('./providers/TxShell'))
 
-/** Routes that need sdk-dapp sendTx / signing */
 const TX_PATHS = new Set([
   '/marketplace',
   '/studio',
@@ -162,6 +162,7 @@ export default function App() {
       </footer>
       <PwaInstallBanner />
       <BottomNav />
+      <RoutePrefetch />
     </div>
   )
 }

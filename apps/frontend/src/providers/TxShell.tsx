@@ -1,44 +1,45 @@
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode, type ComponentType } from 'react'
 import { sdkDappConfig } from '../config/sdkDapp'
 import { bootstrapSendTx } from './bootstrapSendTx'
 
 /**
- * Lazy-loaded only on TX-capable routes (Market, Studio, Agents, Tip, Wallet, Staking).
- * Keeps @multiversx/sdk-dapp out of the initial Home/Gallery/Portfolio bundle.
+ * Lazy TX shell — loads @multiversx/sdk-dapp only on signing routes.
+ * Dynamic import (no require) so Vite can code-split cleanly.
  */
 export default function TxShell({ children }: { children: ReactNode }) {
+  const [Provider, setProvider] = useState<ComponentType<Record<string, unknown>> | null>(null)
+
   useEffect(() => {
-    bootstrapSendTx()
+    let cancelled = false
+    ;(async () => {
+      try {
+        const mod = await import('@multiversx/sdk-dapp/wrappers/DappProvider')
+        if (!cancelled && mod.DappProvider) setProvider(() => mod.DappProvider as ComponentType<Record<string, unknown>>)
+      } catch {
+        try {
+          const mod = await import('@multiversx/sdk-dapp')
+          const DP = (mod as { DappProvider?: ComponentType<Record<string, unknown>> }).DappProvider
+          if (!cancelled && DP) setProvider(() => DP)
+        } catch {
+          /* read-only mode */
+        }
+      }
+      if (!cancelled) bootstrapSendTx()
+    })()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
-  try {
-    let DappProvider: React.ComponentType<Record<string, unknown>> | undefined
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      DappProvider = require('@multiversx/sdk-dapp/wrappers/DappProvider').DappProvider
-    } catch {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        DappProvider = require('@multiversx/sdk-dapp').DappProvider
-      } catch {
-        DappProvider = undefined
-      }
-    }
+  if (!Provider) return <>{children}</>
 
-    if (!DappProvider) {
-      return <>{children}</>
-    }
-
-    return (
-      <DappProvider
-        environment={sdkDappConfig.environment}
-        customNetworkConfig={sdkDappConfig.customNetworkConfig}
-        dappConfig={sdkDappConfig.dappConfig}
-      >
-        {children}
-      </DappProvider>
-    )
-  } catch {
-    return <>{children}</>
-  }
+  return (
+    <Provider
+      environment={sdkDappConfig.environment}
+      customNetworkConfig={sdkDappConfig.customNetworkConfig}
+      dappConfig={sdkDappConfig.dappConfig}
+    >
+      {children}
+    </Provider>
+  )
 }

@@ -6,25 +6,33 @@
 |------|--------|
 | Portfolio N+1 kill | No `/tokens/{id}` per token |
 | Poll pause | `visibilitychange` + 90s |
-| Vite chunks | `react` / `router` / `mx-sdk` |
+| Vite chunks | `react` / `router` / `mx-sdk` / `virtual` |
+| esbuild drop | `console` + `debugger` in CI/prod |
 | Lazy routes | all pages `React.lazy` |
-| **Lazy MxDapp** | `TxShell` only on Market/Studio/Agents/Tip/Wallet/Staking/TRO |
+| **Lazy MxDapp** | `TxShell` dynamic import on TX routes only |
 | **Virtual grid** | `@tanstack/react-virtual` when ≥48 tiles |
 | **Slim catalog** | ~280 KB → ~72 KB (`version: slim-1`) |
-| Index + pages | `xartists_collections.index.json` + `public/data/collections/{id}.json` |
-| Lighthouse CI | `.github/workflows/lighthouse.yml` post-deploy |
+| **Progressive gallery** | index ~16 KB → `collections/{id}.json` on expand |
+| **SW v3** | shell cache-first · data/API network-first |
+| **LazyImage** | decode async + fade + error fallback |
+| **RoutePrefetch** | idle-time prefetch Gallery/Market/Portfolio/Trading |
+| Lighthouse CI | post-deploy warn thresholds |
 
 ## Regenerate slim catalog
 
 ```bash
-# keep a full dump optional:
-# cp data/xartists_collections.json data/xartists_collections.full.json
 node scripts/slim_collections.mjs
 ```
 
-## Next (optional)
+## Measure
 
-1. Load gallery from **index** first, then fetch `collections/{id}.json` on expand
-2. Brotli precompress in deploy step for large JSON
-3. Raise Lighthouse performance assert once TTI measured on real CDN
-4. Deploy SC → remove SC banners (UX, not perf)
+```bash
+# after Pages deploy
+# Actions → Lighthouse CI (Pages) → workflow_dispatch
+```
+
+## Still optional
+
+1. WebP CDN for NFT thumbs (depends on media hosts)
+2. Mission/Reserve wallets (product, not perf)
+3. Deploy SC → remove SC banners (UX)

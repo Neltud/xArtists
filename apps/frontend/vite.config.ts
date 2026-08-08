@@ -10,18 +10,26 @@ export default defineConfig({
     target: 'es2020',
     cssCodeSplit: true,
     sourcemap: false,
-    chunkSizeWarningLimit: 900,
+    minify: 'esbuild',
+    reportCompressedSize: true,
+    chunkSizeWarningLimit: 700,
+    modulePreload: { polyfill: true },
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('@multiversx')) return 'mx-sdk'
-            if (id.includes('react-router')) return 'router'
-            if (id.includes('react-dom') || id.includes('/react/')) return 'react'
-          }
+          if (!id.includes('node_modules')) return
+          if (id.includes('@multiversx')) return 'mx-sdk'
+          if (id.includes('@tanstack')) return 'virtual'
+          if (id.includes('react-router')) return 'router'
+          if (id.includes('react-dom') || id.includes('/react/')) return 'react'
         },
       },
     },
+  },
+  esbuild: {
+    // Strip debug noise in production bundles
+    drop: process.env.NODE_ENV === 'production' || process.env.CI ? ['console', 'debugger'] : [],
+    legalComments: 'none',
   },
   server: {
     port: 3000,

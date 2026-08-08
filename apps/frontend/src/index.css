@@ -41,6 +41,11 @@
     height: auto;
   }
 
+  /* Prevent layout shift on sticky header */
+  header {
+    contain: layout style;
+  }
+
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg-secondary); }
   ::-webkit-scrollbar-thumb { background: #3a3a5a; border-radius: 3px; }
@@ -101,10 +106,19 @@
     animation: fadeIn 0.25s ease-out;
   }
 
-  /* NFT grids — skip offscreen paint */
   .nft-grid-item {
     content-visibility: auto;
     contain-intrinsic-size: auto 220px;
+  }
+
+  /* Aspect boxes — reserve space before image loads (CLS) */
+  .aspect-nft {
+    aspect-ratio: 1 / 1;
+    background: #0a0a0f;
+  }
+  .aspect-gallery {
+    aspect-ratio: 4 / 5;
+    background: #0a0a0f;
   }
 }
 
