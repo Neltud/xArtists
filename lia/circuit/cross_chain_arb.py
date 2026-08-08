@@ -29,11 +29,10 @@ from lia.risk.slippage import (
     recommended_slippage_bps,
 )
 
-# Conservative bridge/latency tax (time risk + messaging)
-BRIDGE_PENALTY_BPS = int(os.getenv("LIA_BRIDGE_PENALTY_BPS", "80"))  # 0.80%
-MIN_CROSS_EDGE = float(os.getenv("LIA_MIN_CROSS_EDGE", "0.015"))  # 1.5% gross before costs
-MAX_ARB_USD = float(os.getenv("LIA_MAX_CROSS_ARB_USD", "25"))  # micro size
-FEE_RT = float(os.getenv("LIA_ARB_FEE_RT", "0.008"))  # both legs
+BRIDGE_PENALTY_BPS = int(os.getenv("LIA_BRIDGE_PENALTY_BPS", "80"))
+MIN_CROSS_EDGE = float(os.getenv("LIA_MIN_CROSS_EDGE", "0.015"))
+MAX_ARB_USD = float(os.getenv("LIA_MAX_CROSS_ARB_USD", "25"))
+FEE_RT = float(os.getenv("LIA_ARB_FEE_RT", "0.008"))
 
 
 @dataclass
@@ -59,7 +58,6 @@ def _external_quotes(
     hl_mid: Optional[float] = None,
     symbol: str = "EGLD",
 ) -> list[ChainQuote]:
-    """Inject oracle/API mids from caller (Vellum DataHub)."""
     out: list[ChainQuote] = []
     if sol_mid and sol_mid > 0:
         out.append(ChainQuote("solana", "jupiter", symbol, float(sol_mid)))
@@ -88,7 +86,6 @@ def scan_cross_chain_arb(
     chains = list(by_chain.keys())
     for i, ca in enumerate(chains):
         for cb in chains[i + 1 :]:
-            # best (lowest) buy on ca, best (highest) sell on cb — and reverse
             for buy_chain, sell_chain in ((ca, cb), (cb, ca)):
                 buy_q = min(by_chain[buy_chain], key=lambda x: x.mid_usd)
                 sell_q = max(by_chain[sell_chain], key=lambda x: x.mid_usd)
@@ -129,7 +126,7 @@ def scan_cross_chain_arb(
                         "sell_slip_bps": sell_slip["slippage_bps"],
                         "bridge_penalty_bps": bridge_bps,
                         "size_usd": size_usd,
-                        "actionable": net > 0.002,  # 20 bps net min
+                        "actionable": net > 0.002,
                         "atomic": False,
                         "risk": "sequential_legs_bridge_latency",
                     }
@@ -162,14 +159,12 @@ def build_arb_intents(
     *,
     force_paper: bool = True,
 ) -> dict[str, Any]:
-    """Translate opportunity into two leg intents with security gates."""
     if not opp or not opp.get("actionable"):
         return {"ok": False, "reason": "not_actionable", "intents": []}
 
     buy = opp["buy"]
     sell = opp["sell"]
-    size = float(opp.get("size_usd") or MAX_ARB_USD)
-    size = min(size, MAX_ARB_USD)
+    size = min(float(opp.get("size_usd") or MAX_ARB_USD), MAX_ARB_USD)
 
     intents: list[dict[str, Any]] = []
     for leg, side in ((buy, "buy"), (sell, "sell")):
@@ -206,12 +201,12 @@ def build_arb_intents(
             }
         )
 
-    # Security: never auto-bridge funds in v1 — flag only
     return {
         "ok": True,
         "atomic": False,
         "bridge_required": buy["chain"] != sell["chain"],
-        "bridge_mode": "MANUAL_OR_FUTURE_ADAPTER",n        "net_edge": opp.get("net_edge"),
+        "bridge_mode": "MANUAL_OR_FUTURE_ADAPTER",
+        "net_edge": opp.get("net_edge"),
         "intents": intents,
         "warning": (
             "Execute buy leg first only if inventory/bridge path exists; "
@@ -228,9 +223,9 @@ def run_cross_chain_arb_cycle(
 ) -> dict[str, Any]:
     scan = scan_cross_chain_arb(sol_mid=sol_mid, hl_mid=hl_mid)
     best = scan.get("best")
-    intents = build_arb_intents(best, force_paper=force_paper) if best else {
-        "ok": False,
-        "reason": "no_opportunity",
-        "intents": [],
-    }
+    intents = (
+        build_arb_intents(best, force_paper=force_paper)
+        if best
+        else {"ok": False, "reason": "no_opportunity", "intents": []}
+    )
     return {"scan": scan, "intents": intents}
