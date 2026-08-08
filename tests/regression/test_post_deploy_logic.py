@@ -1,0 +1,80 @@
+"""Regression: post_deploy_verify pure helpers (mocked accounts, no network)."""
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts import post_deploy_verify as pdv  # type: ignore
+
+
+def test_codehash_of_null():
+    assert pdv.codehash_of({}) is None
+    assert pdv.codehash_of({"codeHash": None, "code": ""}) is None
+    assert pdv.codehash_of({"codeHash": "", "code": ""}) is None
+
+
+def test_codehash_of_live():
+    h = "a" * 64
+    assert pdv.codehash_of({"codeHash": h, "code": "deadbeef"}) == h
+
+
+def test_check_account_no_address():
+    r = pdv.check_account("marketplace", None)
+    assert r["ok"] is False
+    assert r["verdict"] == "NO_ADDRESS"
+
+
+def test_check_account_live_mocked():
+    fake = {"codeHash": "b" * 64, "code": "ab", "balance": "1"}
+    with patch.object(pdv, "http_json", return_value=fake):
+        r = pdv.check_account(
+            "marketplace",
+            "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+        )
+    assert r["ok"] is True
+    assert r["verdict"] == "LIVE"
+
+
+def test_check_account_empty_mocked():
+    fake = {"codeHash": None, "code": "", "balance": "0"}
+    with patch.object(pdv, "http_json", return_value=fake):
+        r = pdv.check_account(
+            "agents",
+            "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+        )
+    assert r["ok"] is False
+    assert r["verdict"] == "NOT_DEPLOYED"
+
+
+def test_build_vite_flags():
+    mkt = {"address": "erd1qqq…", "ok": True}
+    ag = {"address": "erd1qqq…", "ok": False}
+    v = pdv.build_vite(mkt, ag)
+    assert v["VITE_MARKETPLACE_CODEHASH_OK"] == "1"
+    assert v["VITE_AGENTS_CODEHASH_OK"] == "0"
+    assert v["VITE_AGENTS_FEE_BPS"] == "300"
+
+
+def test_consistency_mismatch():
+    contracts = {"marketplace": "erd1aaa", "agents_marketplace": "erd1bbb"}
+    deployed = {"nft-marketplace": "erd1aaa", "agents-marketplace": "erd1CCC"}
+    checks = pdv.check_deployed_consistency(contracts, deployed)
+    by_id = {c["id"]: c for c in checks}
+    assert by_id["consistency_nft-marketplace"]["pass"] is True
+    assert by_id["consistency_agents-marketplace"]["pass"] is False
+
+
+if __name__ == "__main__":
+    test_codehash_of_null()
+    test_codehash_of_live()
+    test_check_account_no_address()
+    test_check_account_live_mocked()
+    test_check_account_empty_mocked()
+    test_build_vite_flags()
+    test_consistency_mismatch()
+    print("OK test_post_deploy_logic")
