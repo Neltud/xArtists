@@ -72,7 +72,6 @@ class TradingStack:
         if skip:
             return {"ok": False, "reason": why, "execution": "SKIP_FEE"}
 
-        # Size cannot exceed compoundable + allocated equity slice
         max_from_ledger = self.ledger.compoundable_usd + equity_usd * 0.25
         size = min(size_usd, max_from_ledger if max_from_ledger > 0 else size_usd)
 
@@ -102,11 +101,14 @@ class TradingStack:
 
     def on_price(self, position_id: str, price: float, **kwargs: Any) -> dict[str, Any]:
         res = self.tp.on_tick(position_id, price, **kwargs)
+        # Partials already split locked vs compoundable — apply directly
         for p in res.get("partials", []):
-            self.ledger.credit(p.get("locked_usd", 0) + p.get("compoundable_usd", 0), lock_ratio=0.70)
-            # credit() re-splits; align with partial already split:
-            # adjust by using lock_ratio 1.0 path on locked portion only
-        if "LOCKDOWN" in "|".join(res.get("actions", [])):
+            locked = float(p.get("locked_usd") or 0)
+            comp = float(p.get("compoundable_usd") or 0)
+            self.ledger.locked_usd += locked
+            self.ledger.compoundable_usd += comp
+            self.ledger.lifetime_realized_net += locked + comp
+        if any(str(a).startswith("LOCKDOWN") for a in res.get("actions", [])):
             self.ledger.force_lockdown()
         self.ledger.save(self.ledger_path)
         res["ledger"] = self.ledger.to_dict()
