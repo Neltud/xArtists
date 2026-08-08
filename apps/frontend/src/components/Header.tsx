@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useWallet, LIA_WALLET } from '../context/WalletContext'
 import { sdkDappConfig } from '../config/sdkDapp'
-import { LINKS, PRIMARY_NAV } from '../config/links'
+import { LINKS, PRIMARY_NAV, SECONDARY_NAV } from '../config/links'
 import OraclePriceBadge from './OraclePriceBadge'
 
 function isValidErd(addr: string): boolean {
@@ -93,11 +93,11 @@ export default function Header() {
             <span className="text-xl sm:text-2xl shrink-0">🎨</span>
             <div className="min-w-0">
               <span className="font-black text-base sm:text-lg gradient-text">xArtists</span>
-              <span className="ml-1.5 text-[10px] sm:text-xs text-gray-500 font-normal hidden xs:inline">LIA v6</span>
+              <span className="ml-1.5 text-[10px] sm:text-xs text-gray-500 font-normal hidden sm:inline">LIA v6</span>
             </div>
           </NavLink>
 
-          <nav className="hidden lg:flex items-center gap-0.5 overflow-x-auto max-w-[50%]">
+          <nav className="hidden lg:flex items-center gap-0.5 overflow-x-auto max-w-[55%] scrollbar-none">
             {PRIMARY_NAV.map(({ to, label }) => (
               <NavLink
                 key={to}
@@ -123,7 +123,7 @@ export default function Header() {
             {connected ? (
               <button
                 onClick={disconnect}
-                className="px-2 sm:px-3 py-1.5 rounded-lg bg-[#16161f] border border-green-500/30 text-green-400 text-[10px] sm:text-xs mono hover:border-red-500/40 hover:text-red-400 transition-colors"
+                className="px-2 sm:px-3 py-1.5 rounded-lg bg-[#16161f] border border-green-500/30 text-green-400 text-[10px] sm:text-xs mono hover:border-red-500/40 hover:text-red-400 transition-colors min-h-[40px]"
                 title={`${address} — click to disconnect`}
               >
                 ✅ {shortAddress}
@@ -142,7 +142,7 @@ export default function Header() {
 
             <button
               type="button"
-              className="lg:hidden p-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 active:bg-white/15 touch-manipulation"
+              className="lg:hidden p-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 active:bg-white/15 touch-manipulation min-h-[44px] min-w-[44px]"
               onClick={() => setMenuOpen(o => !o)}
               aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
               aria-expanded={menuOpen}
@@ -181,6 +181,22 @@ export default function Header() {
                   <span>{label}</span>
                 </NavLink>
               ))}
+              <p className="px-4 pt-3 pb-1 text-[10px] uppercase tracking-widest text-gray-600">Plus</p>
+              {SECONDARY_NAV.map(({ to, label, emoji }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onClick={() => setMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all touch-manipulation ${
+                      isActive ? 'bg-purple-600/20 text-purple-300' : 'text-gray-400 active:bg-white/10'
+                    }`
+                  }
+                >
+                  <span className="text-lg w-8 text-center">{emoji || '·'}</span>
+                  <span>{label}</span>
+                </NavLink>
+              ))}
             </div>
           </div>
         )}
@@ -207,7 +223,7 @@ export default function Header() {
             <button
               type="button"
               onClick={openWebWallet}
-              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
+              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3 min-h-[56px]"
             >
               <span className="text-3xl">🌐</span>
               <div className="text-left">
@@ -219,7 +235,7 @@ export default function Header() {
             <button
               type="button"
               onClick={openXPortalDeepLink}
-              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
+              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3 min-h-[56px]"
             >
               <span className="text-3xl">📱</span>
               <div className="text-left">
@@ -231,7 +247,7 @@ export default function Header() {
             <button
               type="button"
               onClick={tryExtension}
-              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
+              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3 min-h-[56px]"
             >
               <span className="text-3xl">🦊</span>
               <div className="text-left">
