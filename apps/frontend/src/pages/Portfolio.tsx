@@ -4,6 +4,8 @@ import { usePortfolioValue, type PortfolioToken, type PortfolioNft } from '../ho
 import { defaultWinRateScenarios } from '../utils/portfolioScenarios'
 import { LINKS } from '../config/links'
 import LiaMultichainPanel from '../components/LiaMultichainPanel'
+import PageGuide from '../components/PageGuide'
+import InfoTip from '../components/InfoTip'
 
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
 const GOAL_USD = 1_000_000
@@ -91,10 +93,6 @@ function NftRow({ n }: { n: PortfolioNft }) {
   )
 }
 
-/**
- * LIA protocole only — MVX book + multi-chain + paper scenarios.
- * User personal balances → /wallet
- */
 export default function Portfolio() {
   const {
     egldBalance,
@@ -126,11 +124,13 @@ export default function Portfolio() {
 
   return (
     <div className="animate-fade-in">
+      <PageGuide page="portfolio" />
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-3xl font-black">📈 Portfolio LIA (protocole)</h1>
           <p className="text-gray-500 mt-1 text-sm">
-            Book ops MultiversX + BTC/SOL · scénarios paper. {' '}
+            Book ops MultiversX + BTC/SOL · scénarios paper. <InfoTip k="lia_vs_user" />{' '}
             <Link to="/wallet" className="text-green-300 underline">
               Mon wallet Connect →
             </Link>
@@ -176,7 +176,9 @@ export default function Portfolio() {
       </div>
 
       <div className="card mb-6 border-teal-500/20">
-        <h2 className="text-lg font-bold mb-2">📅 Rendement 365j — scénarios (illustratif)</h2>
+        <h2 className="text-lg font-bold mb-2 flex items-center gap-1.5">
+          📅 Rendement 365j — scénarios <InfoTip k="portfolio_scenarios" />
+        </h2>
         <p className="text-xs text-gray-500 mb-4">
           5 trades/j · +1% / −0,8% · <span className="text-amber-400/90">pas une promesse</span>
         </p>
@@ -241,7 +243,9 @@ export default function Portfolio() {
           <p className="text-xs text-gray-500">{fmtUsd(egldValueUsd)}</p>
         </div>
         <div className="card">
-          <p className="text-xs text-gray-500 uppercase mb-1">Prix EGLD</p>
+          <p className="text-xs text-gray-500 uppercase mb-1 flex items-center gap-1">
+            Prix EGLD <InfoTip k="oracle" />
+          </p>
           <p className="text-xl font-bold text-blue-400">${egldPrice.toFixed(4)}</p>
         </div>
         <div className="card">
