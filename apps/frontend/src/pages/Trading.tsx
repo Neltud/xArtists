@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useMultiversX } from '../hooks/useMultiversX'
 import LiaBoardPanel from '../components/LiaBoardPanel'
+import GuardianStatusPanel from '../components/GuardianStatusPanel'
+import ScStatusBanner from '../components/ScStatusBanner'
 import { LINKS } from '../config/links'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
@@ -72,14 +74,16 @@ export default function Trading() {
 
   return (
     <div className="animate-fade-in">
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-black">⚡ Trading Terminal LIA</h1>
         <p className="text-gray-500 mt-1">
-          Board multi-venues · arb block-time · séries $10 · trailing
+          Board multi-venues · arb block-time · séries $10 · trailing · Guardian first
           {dataTs ? ` · data ${new Date(dataTs).toLocaleString('fr-FR')}` : ''}
         </p>
       </div>
 
+      <ScStatusBanner />
+      <GuardianStatusPanel />
       <LiaBoardPanel />
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
@@ -89,12 +93,13 @@ export default function Trading() {
             <div className="text-5xl font-black text-gray-400">⏸️</div>
             <div>
               <p className="text-2xl font-bold">MONITORING</p>
-              <p className="text-sm text-gray-500">Cycle Vellum (gate → trailing → close)</p>
-              <span className={`badge-gray mt-2 ${guardColor}`}>Guard: {guard}</span>
+              <p className="text-sm text-gray-500">Cycle Vellum (Guardian → gate → trailing)</p>
+              <span className={`badge-gray mt-2 ${guardColor}`}>BalanceGuard: {guard}</span>
             </div>
           </div>
           <div className="mt-4 p-3 rounded-lg bg-[#111118] text-xs text-gray-400">
-            Exécution live sur <strong className="text-gray-300">Vellum</strong>. Dashboard = JSON GitHub.
+            <strong className="text-gray-300">LIA_LIVE_TRADING=0</strong> — pas d’envoi PEM. Dashboard =
+            JSON GitHub / Pages.
           </div>
         </div>
 

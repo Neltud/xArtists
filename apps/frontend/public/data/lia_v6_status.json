@@ -1,8 +1,21 @@
 {
-  "version": "6.0",
-  "updated": "2026-08-03T18:00:00Z",
+  "version": "6.1",
+  "updated": "2026-08-08T13:40:00Z",
   "status": "monitoring",
   "LIA_LIVE_TRADING": 0,
-  "market": {"guard_status": "OK"},
-  "portfolio": {"total_usd": 0}
+  "market": { "guard_status": "OK" },
+  "portfolio": { "total_usd": 0 },
+  "orchestrator": {
+    "chain_id": "1",
+    "live_trading": false,
+    "tp_mode": "log",
+    "agent_action": "WAIT",
+    "guardian": {
+      "allow": true,
+      "reason": "ok",
+      "max_notional": 150.0,
+      "spiral_score": 0.05,
+      "effective_leverage": 0.8
+    }
+  }
 }

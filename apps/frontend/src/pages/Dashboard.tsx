@@ -7,6 +7,8 @@ import { useWallet } from '../context/WalletContext'
 import GSNBanner from '../components/GSNBanner'
 import LIALaunchButton from '../components/LIALaunchButton'
 import AdSlot from '../components/AdSlot'
+import GuardianStatusPanel from '../components/GuardianStatusPanel'
+import ScStatusBanner from '../components/ScStatusBanner'
 import PersonaWelcome, {
   PersonaQuickLinks,
   getStoredPersona,
@@ -76,6 +78,8 @@ export default function Dashboard() {
 
       <LandingHero connected={connected} />
 
+      <ScStatusBanner />
+
       <div className="mb-4">
         <AdSlot id="home_hero" />
       </div>
@@ -110,6 +114,8 @@ export default function Dashboard() {
           </div>
         </div>
 
+        <GuardianStatusPanel />
+
         <GSNBanner />
 
         <div className="mb-4 rounded-xl border border-purple-500/30 bg-purple-500/10 px-3 py-2 text-xs text-purple-100">
@@ -118,6 +124,10 @@ export default function Dashboard() {
             /wallet · Mon wallet
           </Link>
           . $TRO supply max = <strong>500 000</strong>.{' '}
+          <Link to="/trading" className="underline text-purple-300">
+            Trading / Board
+          </Link>{' '}
+          ·{' '}
           <Link to="/ads" className="underline text-purple-300">
             Espace pub
           </Link>
