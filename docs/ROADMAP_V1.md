@@ -1,5 +1,5 @@
 # xArtists Roadmap V1 — 7 Priorités
-**Date :** 7 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
+**Date :** 8 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
 
 Ce document formalise les 7 axes prioritaires issus de l’analyse dApp complète.
 Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères de done**.
@@ -122,8 +122,8 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ## 7. Alignement Supernova (sub-second finality)
 
-### Contexte (7 août 2026)
-- **Mainnet v1.11.10.0 activé le 6 août** (epoch 2198) — améliorations VM.
+### Contexte (8 août 2026)
+- **Mainnet v1.11.10.0 activé le 6 août** (epoch 2198) — améliorations VM. Réseau stable J+2.
 - Battle of Nodes depuis mars 2026 (>1B tx, ~120k TPS stress).
 - **Target Supernova mainnet : 10 septembre 2026**.
 - Supernova Arcade disponible pour tests 600 ms.
@@ -158,4 +158,4 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ---
 
-*Maintenu par Neltud (@tudurioriginal) via Grok — 7 août 2026*
+*Maintenu par Neltud (@tudurioriginal) via Grok — 8 août 2026*
