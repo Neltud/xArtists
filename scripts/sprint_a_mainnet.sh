@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Sprint A — Mainnet SC (blocking /agents buy)
-# Does NOT send txs unless RUN_DEPLOY=1 and PEM set.
+# Sprint A — Mainnet SC (blocking /agents buy + NFT market)
+# Optimized path: preflight → optional RUN_DEPLOY via deploy_optimized_mainnet.sh
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
@@ -8,9 +8,7 @@ cd "$ROOT"
 export CHAIN="${CHAIN:-1}"
 export PROXY="${PROXY:-https://gateway.multiversx.com}"
 export FEE_BPS="${FEE_BPS:-300}"
-export GAS_LIMIT="${GAS_LIMIT:-200000000}"
 RUN_DEPLOY="${RUN_DEPLOY:-0}"
-RUN_SIMULATE="${RUN_SIMULATE:-0}"
 
 echo "=== Sprint A MAINNET ONLY (CHAIN=$CHAIN FEE_BPS=$FEE_BPS) ==="
 if [[ "$CHAIN" != "1" ]]; then
@@ -19,43 +17,21 @@ if [[ "$CHAIN" != "1" ]]; then
 fi
 
 echo ""
-echo "[1] Build isolé"
-if [[ -x scripts/build_scs_isolated.sh ]]; then
-  ./scripts/build_scs_isolated.sh || echo "⚠️  build script failed — run sc-meta manually"
-else
-  for d in agents-marketplace nft-marketplace; do
-    echo "  → contracts/$d"
-    (cd "contracts/$d" && (sc-meta all build 2>/dev/null || mxpy contract build 2>/dev/null || true))
-  done
-fi
+echo "[1–2] Preflight (build + balance + gas estimate)"
+./scripts/preflight_deploy_mainnet.sh all || exit $?
 
 echo ""
-echo "[2] Simulate (set RUN_SIMULATE=1 + PEM)"
-if [[ "$RUN_SIMULATE" == "1" ]]; then
-  ./scripts/simulate_deploy_mainnet.sh agents-marketplace || true
-  ./scripts/simulate_deploy_mainnet.sh nft-marketplace || true
-else
-  echo "  skip — export RUN_SIMULATE=1 PEM=... to run"
-fi
-
-echo ""
-echo "[3] Deploy (set RUN_DEPLOY=1 + PEM)"
+echo "[3] Deploy"
 if [[ "$RUN_DEPLOY" == "1" ]]; then
-  ./scripts/deploy_mainnet.sh agents-marketplace
-  ./scripts/deploy_mainnet.sh nft-marketplace
-  echo "  → check data/contracts.json"
+  RUN_DEPLOY=1 ./scripts/deploy_optimized_mainnet.sh
 else
-  echo "  skip — export RUN_DEPLOY=1 PEM=... after successful simulate"
+  echo "  skip — export RUN_DEPLOY=1 PEM=... after preflight OK"
+  echo "  RUN_DEPLOY=1 ./scripts/deploy_optimized_mainnet.sh"
 fi
 
 echo ""
-echo "[4] Blackbox — follow docs/MAINNET_DEPLOY_BLACKBOX.md section 3–4"
-echo "[5] Frontend env:"
-echo "  VITE_AGENTS_MARKETPLACE_ADDRESS=<erd1 from contracts.json>"
-echo "  VITE_AGENTS_FEE_BPS=300"
-echo "  VITE_MARKETPLACE_ADDRESS=<nft>"
-echo "[6] git add data/contracts.json && commit && Pages rebuild"
+echo "[4] Blackbox — docs/MAINNET_DEPLOY_BLACKBOX.md"
+echo "[5] Frontend env — see deploy_optimized output / docs/SC_DEPLOY_OPTIMIZED.md"
+echo "[6] git commit data/contracts.json + rebuild Pages"
 echo ""
-echo "Vellum Sprint B after A:"
-echo "  LIA_LIVE_TRADING=0"
-echo "  python -m lia.vellum.orchestrator"
+echo "Keep LIA_LIVE_TRADING=0 until micro-trades OK"
