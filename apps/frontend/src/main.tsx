@@ -4,22 +4,23 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { WalletProvider } from './context/WalletContext'
 import { MultiversXProvider } from './context/MultiversXContext'
-import { MxDappProvider } from './providers/MxDappProvider'
 import { registerSW } from './pwa/registerSW'
 import './index.css'
 
 registerSW()
 
+/**
+ * MxDapp / sdk-dapp is NOT mounted globally — only on TX routes via TxShell (lazy).
+ * This cuts initial JS for Home / Gallery / Board visitors.
+ */
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <MxDappProvider>
-      <BrowserRouter basename="/xArtists">
-        <WalletProvider>
-          <MultiversXProvider>
-            <App />
-          </MultiversXProvider>
-        </WalletProvider>
-      </BrowserRouter>
-    </MxDappProvider>
+    <BrowserRouter basename="/xArtists">
+      <WalletProvider>
+        <MultiversXProvider>
+          <App />
+        </MultiversXProvider>
+      </WalletProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 )

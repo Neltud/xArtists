@@ -1,18 +1,20 @@
 {
   "name": "xartists-frontend",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext ts,tsx"
+    "lint": "eslint src --ext ts,tsx",
+    "slim-catalog": "node ../../scripts/slim_collections.mjs"
   },
   "dependencies": {
     "@multiversx/sdk-core": "^13.17.2",
     "@multiversx/sdk-dapp": "^3.0.0",
     "@multiversx/sdk-network-providers": "^2.9.3",
+    "@tanstack/react-virtual": "^3.10.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2"

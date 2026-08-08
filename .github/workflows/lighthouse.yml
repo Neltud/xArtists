@@ -1,0 +1,37 @@
+name: Lighthouse CI (Pages)
+
+on:
+  workflow_dispatch:
+  schedule:
+    # weekly Monday 06:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_run:
+    workflows: ["🚀 Deploy xArtists dApp to GitHub Pages"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⏳ Wait for Pages CDN
+        run: sleep 45
+
+      - name: 🔦 Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            https://neltud.github.io/xArtists/
+            https://neltud.github.io/xArtists/gallery
+            https://neltud.github.io/xArtists/marketplace
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          runs: 1
+          configPath: ./lighthouserc.json
+
+      - name: Checkout config
+        uses: actions/checkout@v4
+        if: always()

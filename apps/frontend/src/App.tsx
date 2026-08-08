@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -26,6 +26,19 @@ const BurnifyPage = lazy(() => import('./pages/BurnifyPage'))
 const ArtistStudio = lazy(() => import('./pages/ArtistStudio'))
 const AdsPage = lazy(() => import('./pages/AdsPage'))
 const Editions = lazy(() => import('./pages/Editions'))
+const TxShell = lazy(() => import('./providers/TxShell'))
+
+/** Routes that need sdk-dapp sendTx / signing */
+const TX_PATHS = new Set([
+  '/marketplace',
+  '/studio',
+  '/agents',
+  '/agents/polylia',
+  '/tip',
+  '/wallet',
+  '/staking',
+  '/tro',
+])
 
 function PageLoader() {
   return (
@@ -54,6 +67,17 @@ function StaleDataBanner({ isStale, lastUpdate }: { isStale: boolean; lastUpdate
   )
 }
 
+function TxGate({ children }: { children: React.ReactNode }) {
+  const { pathname } = useLocation()
+  const needsTx = TX_PATHS.has(pathname)
+  if (!needsTx) return <>{children}</>
+  return (
+    <Suspense fallback={<>{children}</>}>
+      <TxShell>{children}</TxShell>
+    </Suspense>
+  )
+}
+
 export default function App() {
   const { isStale, lastUpdate } = useMultiversX()
 
@@ -73,40 +97,42 @@ export default function App() {
         style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}
       >
         <ErrorBoundary>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/studio" element={<ArtistStudio />} />
-              <Route path="/agents" element={<Agents />} />
-              <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
-              <Route path="/marketplace" element={<Marketplace />} />
-              <Route path="/trading" element={<Trading />} />
-              <Route path="/tro" element={<TroPage />} />
-              <Route path="/staking" element={<StakingPage />} />
-              <Route path="/burnify" element={<BurnifyPage />} />
-              <Route path="/portfolio" element={<Portfolio />} />
-              <Route path="/dao" element={<DAO />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/tip" element={<Tip />} />
-              <Route path="/wallet" element={<Wallet />} />
-              <Route path="/hatom" element={<HatomPage />} />
-              <Route path="/lp" element={<LPPoolsPage />} />
-              <Route path="/soul-testnet" element={<SoulTestnetPage />} />
-              <Route path="/ads" element={<AdsPage />} />
-              <Route path="/editions" element={<Editions />} />
-              <Route
-                path="*"
-                element={
-                  <div className="text-center py-20">
-                    <h2 className="text-2xl font-bold mb-2">Page introuvable</h2>
-                    <a href="/xArtists/" className="text-purple-400 text-sm">
-                      Retour accueil →
-                    </a>
-                  </div>
-                }
-              />
-            </Routes>
-          </Suspense>
+          <TxGate>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/studio" element={<ArtistStudio />} />
+                <Route path="/agents" element={<Agents />} />
+                <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
+                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/trading" element={<Trading />} />
+                <Route path="/tro" element={<TroPage />} />
+                <Route path="/staking" element={<StakingPage />} />
+                <Route path="/burnify" element={<BurnifyPage />} />
+                <Route path="/portfolio" element={<Portfolio />} />
+                <Route path="/dao" element={<DAO />} />
+                <Route path="/gallery" element={<Gallery />} />
+                <Route path="/tip" element={<Tip />} />
+                <Route path="/wallet" element={<Wallet />} />
+                <Route path="/hatom" element={<HatomPage />} />
+                <Route path="/lp" element={<LPPoolsPage />} />
+                <Route path="/soul-testnet" element={<SoulTestnetPage />} />
+                <Route path="/ads" element={<AdsPage />} />
+                <Route path="/editions" element={<Editions />} />
+                <Route
+                  path="*"
+                  element={
+                    <div className="text-center py-20">
+                      <h2 className="text-2xl font-bold mb-2">Page introuvable</h2>
+                      <a href="/xArtists/" className="text-purple-400 text-sm">
+                        Retour accueil →
+                      </a>
+                    </div>
+                  }
+                />
+              </Routes>
+            </Suspense>
+          </TxGate>
         </ErrorBoundary>
       </main>
       <footer className="border-t border-[#2a2a3a] mt-8 py-6 hidden md:block">
