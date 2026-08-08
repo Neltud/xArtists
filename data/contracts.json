@@ -1,13 +1,14 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-08-03T19:44:00Z",
+  "updated": "2026-08-08T13:30:00Z",
   "contracts": {
     "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
     "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
     "marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
     "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn",
-    "agents_marketplace": null
+    "agents_marketplace": null,
+    "rwa_escrow_bridge": null
   },
   "verification": {
     "marketplace_mainnet": {
@@ -17,12 +18,14 @@
       "checked": "2026-08-03",
       "doc": "data/marketplace_codehash_live.json"
     },
-    "agents_marketplace": "null — never deployed"
+    "agents_marketplace": "null — never deployed",
+    "rwa_escrow_bridge": "null — scaffold only (contracts/rwa-escrow-bridge); deploy after market"
   },
   "gaps": {
     "marketplace": "P0 deploy nft-marketplace wasm and replace address",
     "agents_marketplace": "P0 deploy agents-marketplace FEE_BPS=300",
+    "rwa_escrow_bridge": "P2 after market live + Guardian intents stable",
     "VITE_": "Set after real deploy addresses known"
   },
-  "notes": "Do not send user funds to marketplace address until codeHash non-null on explorer"
+  "notes": "Do not send user funds to marketplace or rwa addresses until codeHash non-null on explorer"
 }

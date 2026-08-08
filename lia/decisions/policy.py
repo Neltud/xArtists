@@ -1,6 +1,7 @@
 """
 LIA / Vellum decision processes — risk-tiered gates for long-term dApp ops.
 All functions are pure policy: return allow/deny + risk + reason.
+Guardian spiral + SOL perps + RWA escrow integrated.
 """
 from __future__ import annotations
 
@@ -116,6 +117,90 @@ def risk_dao_vote_button(*, send_tx_ready: bool, vote_abi_ready: bool) -> Decisi
     return Decision(True, "high", "VOTE_LIVE", "On-chain vote", "test on small proposal")
 
 
+def risk_guardian_compound(
+    *,
+    equity_usd: float,
+    notional_usd: float,
+    ret_roe: float = 0.0,
+    drawdown: float = 0.0,
+    compound_intensity: float = 0.0,
+    consecutive_wins: int = 0,
+    mode: str = "COMPOUND",
+) -> Decision:
+    """Policy wrapper around lia.guardian.spiral.guardian_gate."""
+    try:
+        from lia.guardian.spiral import guardian_gate
+
+        v = guardian_gate(
+            equity=equity_usd,
+            notional=notional_usd,
+            ret_roe=ret_roe,
+            drawdown=drawdown,
+            compound_intensity=compound_intensity,
+            consecutive_wins=consecutive_wins,
+            mode=mode,
+        )
+        if not v.allow:
+            risk = "critical" if v.reason in ("spiral_score", "leverage_cap") else "high"
+            return Decision(
+                False,
+                risk,
+                f"GUARDIAN_{v.reason.upper()}",
+                f"Guardian blocked: {v.reason} (spiral={v.spiral_score:.3f} lev={v.effective_leverage:.2f})",
+                "reduce size / wait DEFENSE clear",
+            )
+        return Decision(
+            True,
+            "medium",
+            "GUARDIAN_OK",
+            f"max_notional={v.max_notional:.2f}",
+            "proceed under max_notional",
+        )
+    except Exception as e:
+        return Decision(False, "critical", "GUARDIAN_ERR", str(e), "fix import / inputs")
+
+
+def risk_sol_perps(*, live: bool, leverage: float) -> Decision:
+    try:
+        from lia.guardian.spiral import sol_perps_allowed
+
+        v = sol_perps_allowed(live=live, requested_leverage=leverage)
+        if not v.allow:
+            return Decision(
+                False,
+                "critical",
+                "SOL_LEV_BLOCK",
+                v.reason,
+                "signals-only or lev ≤ 1.5 live",
+            )
+        if v.reason == "sol_paper_high_lev_ok":
+            return Decision(True, "high", "SOL_PAPER_HIGH_LEV", v.reason, "never promote to live as-is")
+        return Decision(True, "medium", "SOL_OK", v.reason, "")
+    except Exception as e:
+        return Decision(False, "critical", "SOL_ERR", str(e), "")
+
+
+def risk_rwa_escrow(
+    *,
+    guardian_allow: bool,
+    pnl_usd: float,
+    sc_deployed: bool = False,
+) -> Decision:
+    if not guardian_allow:
+        return Decision(False, "high", "RWA_GUARDIAN", "Guardian deny — no escrow intent", "")
+    if pnl_usd <= 0:
+        return Decision(False, "low", "RWA_NO_PNL", "No positive PnL for Mission bucket", "")
+    if not sc_deployed:
+        return Decision(
+            True,
+            "medium",
+            "RWA_INTENT_ONLY",
+            "Journal EscrowIntent only — rwa-escrow-bridge not deployed",
+            "deploy after market SC; do not send funds to null",
+        )
+    return Decision(True, "high", "RWA_OPEN_OK", "May call openEscrow", "meta_hash + deadline required")
+
+
 def evaluate_run_gates(
     *,
     agents_sc: bool = False,
@@ -124,6 +209,7 @@ def evaluate_run_gates(
     signature: bool = False,
     micro_trades: bool = False,
     pinata: bool = False,
+    rwa_sc: bool = False,
 ) -> dict[str, Any]:
     """Single snapshot for Vellum next_run reporting."""
     return {
@@ -132,6 +218,11 @@ def evaluate_run_gates(
         ).to_dict(),
         "buy_agent": risk_buy_agent(sc_deployed=agents_sc, fulfillment_ready=fulfillment).to_dict(),
         "bid": risk_marketplace_bid(codehash_has_bid=bid_codehash).to_dict(),
+        "guardian_sample": risk_guardian_compound(
+            equity_usd=100, notional_usd=50, compound_intensity=0.2
+        ).to_dict(),
+        "sol_live_15x": risk_sol_perps(live=True, leverage=15.0).to_dict(),
+        "rwa": risk_rwa_escrow(guardian_allow=True, pnl_usd=1.0, sc_deployed=rwa_sc).to_dict(),
         "pinata": Decision(
             pinata,
             "medium" if not pinata else "low",
@@ -139,7 +230,7 @@ def evaluate_run_gates(
             "JWT configured" if pinata else "Deferred — finish later",
             "export PINATA_JWT in Vellum",
         ).to_dict(),
-        "policy_version": "2026-08-03",
+        "policy_version": "2026-08-08",
     }
 
 

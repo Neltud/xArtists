@@ -5,12 +5,14 @@ Order:
   1. Env bootstrap (chain=1, live flag)
   2. Optional DataHub-shaped inputs (caller passes market)
   3. mvx_agent.decide
-  4. live_cycle.run_cycle (trailing)
-  5. compound open/tick if BUY and can_open (tp_mode=log)
-  6. publish_hatom + publish_data_for_frontend
+  4. Guardian gate (before compound / size-up)
+  5. live_cycle.run_cycle (trailing)
+  6. compound open/tick if BUY and guardian + can_open (tp_mode=log)
+  7. RWA escrow intent on demo settle (paper)
+  8. publish_hatom + publish_data_for_frontend
 
 LIA_LIVE_TRADING must be 0 until Sprint A SC + blackbox done.
-PEM never logged.
+PEM never logged. Guardian before Brain.
 """
 from __future__ import annotations
 
@@ -41,6 +43,7 @@ def run_orchestrator(
     market: Optional[dict[str, Any]] = None,
     publish: bool = True,
     compound_demo: bool = False,
+    portfolio: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
     boot = env_bootstrap()
     out: dict[str, Any] = {
@@ -65,6 +68,12 @@ def run_orchestrator(
         "gs_bias": "NEUTRAL",
         "atr": 0.0,
     }
+    pf = portfolio or {
+        "equity_usd": 100.0,
+        "notional_usd": 0.0,
+        "drawdown": 0.0,
+        "consecutive_wins": 0,
+    }
 
     try:
         from lia.agents.mvx_agent import decide
@@ -88,6 +97,28 @@ def run_orchestrator(
     except Exception as e:
         out["agent"] = {"error": str(e)}
         decision = None
+
+    # --- Guardian before any size-up / compound ---
+    equity = float(pf.get("equity_usd") or 100)
+    size_hint = float((out.get("agent") or {}).get("size_usd_hint") or 0)
+    notional = float(pf.get("notional_usd") or 0) or size_hint
+    mode = str(m.get("mode") or ("DEFENSE" if str(m.get("gs_regime") or "").upper() == "RISK_OFF" else "COMPOUND"))
+    try:
+        from lia.vellum.guardian_hook import check_before_open
+
+        g = check_before_open(
+            equity_usd=equity,
+            notional_usd=max(notional, size_hint),
+            ret_roe=float(pf.get("ret_roe") or 0),
+            drawdown=float(pf.get("drawdown") or 0),
+            compound_intensity=float(pf.get("compound_intensity") or 0.2),
+            consecutive_wins=int(pf.get("consecutive_wins") or 0),
+            mode=mode,
+        )
+        out["guardian"] = g
+    except Exception as e:
+        out["guardian"] = {"allow": False, "reason": f"guardian_error:{e}"}
+        g = out["guardian"]
 
     try:
         from lia.vellum.live_cycle import run_cycle
@@ -114,26 +145,53 @@ def run_orchestrator(
         health = circuit.health()
         out["compound_health"] = health
 
+        guardian_ok = bool(g.get("allow"))
         if (
             compound_demo
+            and guardian_ok
             and decision
             and decision.action == "BUY"
             and decision.executable
             and float(m.get("price") or 0) > 0
             and health.get("can_open", (False,))[0]
         ):
+            deploy = min(
+                float(decision.size_usd_hint or 10),
+                float(g.get("max_notional") or 10),
+            )
             t = circuit.open_trade(
                 token=str(decision.token),
                 entry=float(m["price"]),
-                deployable_usd=float(decision.size_usd_hint or 10),
-                pre_balance_usd=100.0,
+                deployable_usd=deploy,
+                pre_balance_usd=equity,
                 tp_mode=cfg.tp_mode,
             )
             out["compound_open"] = t.to_dict() if t else None
             if t:
-                out["compound_tick"] = circuit.on_tick(float(m["price"]) * 1.01)
+                tick = circuit.on_tick(float(m["price"]) * 1.01)
+                out["compound_tick"] = tick
+                # Paper settle path → RWA intent journal
+                try:
+                    from lia.vellum.guardian_hook import on_trade_settled
+
+                    out["rwa_intent"] = on_trade_settled(
+                        trade_id=str(getattr(t, "id", None) or f"paper-{out['ts']}"),
+                        pnl_usd=float((tick or {}).get("unrealized_pnl_usd") or 0.5),
+                        equity_usd=equity,
+                        notional_usd=deploy,
+                        ret_roe=0.01,
+                        drawdown=float(pf.get("drawdown") or 0),
+                        compound_intensity=0.2,
+                        consecutive_wins=int(pf.get("consecutive_wins") or 0),
+                        mode=mode,
+                        persist=True,
+                    )
+                except Exception as e:
+                    out["rwa_intent"] = {"error": str(e)}
         else:
             out["compound_open"] = None
+            if compound_demo and not guardian_ok:
+                out["compound_blocked_by_guardian"] = g.get("reason")
     except Exception as e:
         out["compound"] = {"error": str(e)}
 
@@ -169,6 +227,7 @@ def run_orchestrator(
             "live_trading": boot["live_trading"],
             "tp_mode": boot["tp_mode"],
             "agent_action": (out.get("agent") or {}).get("action"),
+            "guardian": out.get("guardian"),
         }
         status_path.parent.mkdir(parents=True, exist_ok=True)
         status_path.write_text(json.dumps(status, indent=2), encoding="utf-8")

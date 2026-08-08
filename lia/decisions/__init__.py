@@ -6,6 +6,9 @@ from lia.decisions.policy import (
     risk_tro_reward,
     risk_mint_uri,
     risk_dao_vote_button,
+    risk_guardian_compound,
+    risk_sol_perps,
+    risk_rwa_escrow,
     evaluate_run_gates,
 )
 
@@ -17,5 +20,8 @@ __all__ = [
     "risk_tro_reward",
     "risk_mint_uri",
     "risk_dao_vote_button",
+    "risk_guardian_compound",
+    "risk_sol_perps",
+    "risk_rwa_escrow",
     "evaluate_run_gates",
 ]
