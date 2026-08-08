@@ -1,14 +1,15 @@
 """
-Guarded cycle — STATARB intégré + CircuitGuards + Compound
-=========================================================
+Guarded cycle — STATARB + CircuitGuards + Guardian spiral + Compound
+====================================================================
 Entry point Vellum / cron:
   run_guarded_cycle(...)
-    0. build_fused_signal (STATARB prioritaire depuis pairs_market)
+    0. build_fused_signal
     1. Build context (streak, memory, portfolio)
     2. preflight ALL guards (risk scale dynamique)
+    2b. Guardian spiral / defense (before open)
     3. If ok + BUY intent → open with strategy/meta + armed stops
     4. If open ticket → runtime_action (SL/BE/trail/TIME_STOP)
-    5. On close → record daily counter + surplus plan
+    5. On close → record + optional RWA intent
 """
 from __future__ import annotations
 
@@ -56,7 +57,6 @@ def run_guarded_cycle(
 ) -> dict[str, Any]:
     gs = gs or {}
 
-    # --- 0. Fuse STATARB (+ aux) unless a strong explicit signal is forced ---
     fused_sig = build_fused_signal(
         pairs_market=pairs_market,
         market=market,
@@ -65,7 +65,6 @@ def run_guarded_cycle(
         pairs_path=pairs_path,
         include_aux=True,
     )
-    # Prefer hub signal; keep external only if hub is WAIT and external is actionable
     if signal and str(signal.get("action", "WAIT")).upper() in ("BUY", "SELL"):
         if fused_sig.get("action") == "WAIT":
             fused_sig = {
@@ -83,11 +82,9 @@ def run_guarded_cycle(
     guards = CircuitGuards()
     circuit = CompoundCircuit()
 
-    # --- manage open position with G14 + G19 runtime ---
     if circuit.open_ticket:
         price = float(market.get("price") or 0)
         t = circuit.open_ticket
-        # Prefer ticket token price if pairs provide it
         if pairs_market:
             for snap in pairs_market:
                 if str(snap.get("token_a") or "") == t.token and float(snap.get("price_a") or 0) > 0:
@@ -109,17 +106,41 @@ def run_guarded_cycle(
         if action in ("STOP_LOSS", "TAKE_PROFIT", "TIME_STOP"):
             forced = "LOSS" if action in ("STOP_LOSS", "TIME_STOP") else "WIN"
             if action == "TIME_STOP":
-                # time-stop: classify by net if possible via close_trade default logic
-                forced = None  # let close_trade decide from net_pct
+                forced = None
             result = circuit.close_trade(
                 exit_price=price,
                 post_balance_usd=float(portfolio.get("total_usd") or 0),
                 forced_outcome=forced,
             )
+            rwa_out: dict[str, Any] = {}
+            try:
+                from lia.vellum.guardian_hook import on_trade_settled
+
+                pnl = 0.0
+                if isinstance(result, dict):
+                    pnl = float(result.get("net_pnl_usd") or result.get("pnl_usd") or 0)
+                equity = float(
+                    circuit.streak.compound_equity_usd + circuit.streak.yield_sleeve_usd
+                )
+                rwa_out = on_trade_settled(
+                    trade_id=str(getattr(t, "id", None) or f"close-{int(time.time())}"),
+                    pnl_usd=pnl,
+                    equity_usd=equity or float(portfolio.get("total_usd") or 0),
+                    notional_usd=float(getattr(t, "notional_usd", 0) or 0),
+                    ret_roe=float(portfolio.get("ret_roe") or 0),
+                    drawdown=float(portfolio.get("drawdown") or 0),
+                    compound_intensity=float(portfolio.get("compound_intensity") or 0.2),
+                    consecutive_wins=int(circuit.streak.consecutive_wins or 0),
+                    mode=str(market.get("lia_mode") or "COMPOUND"),
+                    persist=True,
+                )
+            except Exception as e:
+                rwa_out = {"error": str(e)}
             return {
                 "event": "CLOSED",
                 "action": action,
                 "result": result,
+                "rwa_intent": rwa_out,
                 "signal": signal,
                 "guards": guards.status(),
                 "phase": circuit.phase.value,
@@ -133,7 +154,6 @@ def run_guarded_cycle(
             "phase": circuit.phase.value,
         }
 
-    # --- memory / pace ---
     hours_swap = 999.0
     memory_meta: dict[str, Any] = {}
     if fetch_memory:
@@ -147,13 +167,14 @@ def run_guarded_cycle(
     can_open, reason = circuit.can_open()
     equity = float(circuit.streak.compound_equity_usd + circuit.streak.yield_sleeve_usd)
     peak = float(circuit.streak.peak_equity_usd or equity)
+    if equity <= 0:
+        equity = float(portfolio.get("total_usd") or portfolio.get("equity_usd") or 0)
 
     token = str(
         signal.get("token")
         or market.get("token")
         or "WEGLD-bd4d79"
     )
-    # Resolve price for the chosen token
     entry = float(market.get("price") or 0)
     if signal.get("entry_hint"):
         entry = float(signal["entry_hint"]) or entry
@@ -190,7 +211,6 @@ def run_guarded_cycle(
         strategy=str(signal.get("strategy") or ""),
     )
 
-    # multi-horizon (STATARB conf threshold handled in vote_short_term)
     fused = decide(
         signal_action=str(signal.get("action") or "WAIT"),
         signal_conf=float(signal.get("confidence") or 0.5),
@@ -241,15 +261,53 @@ def run_guarded_cycle(
     if entry <= 0:
         return {"event": "ERROR", "error": "invalid entry price", "preflight": pre, "signal": signal}
 
-    # Apply risk_scale from preflight + horizon size_mult
     size_mult = float(fused.size_mult or 1.0)
     risk_scale = float(pre.get("risk_scale") or 1.0)
     deployable = float(portfolio.get("deployable_usd") or 0) * min(1.0, max(0.05, size_mult * risk_scale))
+
+    # Guardian spiral — before Brain open
+    lia_mode = str(
+        market.get("lia_mode")
+        or ("DEFENSE" if str(gs.get("regime") or "").upper() in ("RISK_OFF", "FEAR") else "COMPOUND")
+    )
+    guardian: dict[str, Any] = {}
+    try:
+        from lia.vellum.guardian_hook import check_before_open
+
+        guardian = check_before_open(
+            equity_usd=max(equity, float(portfolio.get("total_usd") or 0), 1.0),
+            notional_usd=deployable,
+            ret_roe=float(portfolio.get("ret_roe") or 0),
+            drawdown=float(portfolio.get("drawdown") or 0),
+            compound_intensity=float(portfolio.get("compound_intensity") or 0.25),
+            consecutive_wins=int(circuit.streak.consecutive_wins or 0),
+            mode=lia_mode,
+        )
+        if not guardian.get("allow"):
+            return {
+                "event": "GUARDIAN_BLOCK",
+                "guardian": guardian,
+                "preflight": pre,
+                "decision": fused.to_dict(),
+                "signal": signal,
+                "guards": guards.status(),
+                "phase": Phase.IDLE.value,
+            }
+        max_n = float(guardian.get("max_notional") or deployable)
+        deployable = min(deployable, max_n) if max_n > 0 else deployable
+    except Exception as e:
+        return {
+            "event": "GUARDIAN_ERROR",
+            "error": str(e),
+            "preflight": pre,
+            "signal": signal,
+        }
 
     strategy = str(signal.get("strategy") or "")
     meta = signal.get("meta") or {}
     if strategy:
         meta = {**meta, "strategy": strategy}
+    meta = {**meta, "guardian": guardian}
 
     ticket = circuit.open_trade(
         token=token,
@@ -264,16 +322,14 @@ def run_guarded_cycle(
         return {
             "event": "OPEN_FAIL",
             "preflight": pre,
+            "guardian": guardian,
             "can_open": circuit.can_open(),
             "signal": signal,
             "guards": guards.status(),
         }
 
-    # Prefer circuit levels (already STATARB-aware) but ensure guard alignment
     armed = guards.arm_stops(entry, ticket.notional_usd)
-    # Keep the more conservative stop (higher stop price for LONG)
     ticket.stop = max(ticket.stop, armed["stop"])
-    # Keep closer target if guard requires less gross? Prefer circuit target for STATARB flexibility
     if strategy != "STATARB":
         ticket.target = armed["target"]
         ticket.gross_required_pct = armed["gross_required_pct"]
@@ -285,6 +341,7 @@ def run_guarded_cycle(
         "event": "OPENED",
         "ticket": ticket.to_dict(),
         "armed_stops": armed,
+        "guardian": guardian,
         "decision": fused.to_dict(),
         "signal": signal,
         "preflight": pre,
