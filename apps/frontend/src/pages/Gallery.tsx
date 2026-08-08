@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import NFTDetailModal from '../components/NFTDetailModal'
+import VirtualNftGrid from '../components/VirtualNftGrid'
 import {
   type NFT,
   type CollectionData,
@@ -11,7 +12,6 @@ import {
   DATA_URL,
 } from '../types/nft'
 
-/** Bios génériques xArtists — aucun nom perso en titre / bio */
 const COLLECTION_BIOS: Record<string, { label: string; bio: string }> = {
   'NFTUDURI-2990b6': {
     label: 'Collection phygital',
@@ -81,7 +81,7 @@ export default function Gallery() {
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-400 sm:text-base">
             Collections NFT phygital & generative. {collections.length || '…'} collections ·{' '}
-            {totalNfts || '…'}+ œuvres. Mint et vente via Studio · Market.
+            {totalNfts || '…'}+ œuvres. Catalog slim · grille virtualisée si volume élevé.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link to="/studio" className="btn-primary text-xs py-2 px-3">
@@ -154,11 +154,15 @@ function CollectionSection({
           Sell / Buy →
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {shown.map(nft => (
-          <GalleryTile key={nft.identifier} nft={nft} accent={accent} onClick={() => onSelect(nft)} />
-        ))}
-      </div>
+      <VirtualNftGrid
+        items={shown}
+        threshold={48}
+        estimateRowHeight={260}
+        getKey={(nft) => nft.identifier}
+        renderItem={(nft) => (
+          <GalleryTile nft={nft} accent={accent} onClick={() => onSelect(nft)} />
+        )}
+      />
       {nfts.length > PREVIEW_PER_COLLECTION && (
         <div className="mt-4 text-center">
           <button type="button" className="btn-secondary text-xs" onClick={() => setExpanded(e => !e)}>
@@ -184,7 +188,7 @@ function GalleryTile({
     <button
       type="button"
       onClick={onClick}
-      className="nft-grid-item group relative flex aspect-[4/5] flex-col overflow-hidden rounded-2xl border border-[#2a2a3a] bg-[#15151f] text-left transition-all hover:-translate-y-1 hover:border-purple-500/60 focus-visible:ring-2 focus-visible:ring-purple-500"
+      className="group relative flex aspect-[4/5] w-full flex-col overflow-hidden rounded-2xl border border-[#2a2a3a] bg-[#15151f] text-left transition-all hover:-translate-y-1 hover:border-purple-500/60 focus-visible:ring-2 focus-visible:ring-purple-500"
     >
       <div className="absolute inset-0 overflow-hidden">
         {img ? (
