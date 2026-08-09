@@ -7,6 +7,13 @@ from lia.guardian.spiral import (
     spiral_score,
     sol_perps_allowed,
 )
+from lia.guardian.preflight import (
+    KillSwitch,
+    KillState,
+    PreFlightValidator,
+    ProposedOrder,
+    PortfolioSnapshot,
+)
 
 __all__ = [
     "GuardianVerdict",
@@ -14,4 +21,9 @@ __all__ = [
     "guardian_gate",
     "spiral_score",
     "sol_perps_allowed",
+    "KillSwitch",
+    "KillState",
+    "PreFlightValidator",
+    "ProposedOrder",
+    "PortfolioSnapshot",
 ]
