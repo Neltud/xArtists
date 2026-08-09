@@ -4,6 +4,7 @@ import Header from './components/Header'
 import BottomNav from './components/BottomNav'
 import ErrorBoundary from './components/ErrorBoundary'
 import PwaInstallBanner from './components/PwaInstallBanner'
+import PrivateReleaseStrip from './components/PrivateReleaseStrip'
 import RoutePrefetch from './components/RoutePrefetch'
 import { useMultiversX } from './hooks/useMultiversX'
 import { LINKS } from './config/links'
@@ -89,6 +90,7 @@ export default function App() {
       >
         Aller au contenu
       </a>
+      <PrivateReleaseStrip />
       <Header />
       <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />
       <main
