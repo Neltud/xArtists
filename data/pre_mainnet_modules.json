@@ -1,0 +1,10 @@
+{
+  "updated": "2026-08-09T20:25:00Z",
+  "policy": "No user funds on pre-mainnet modules. MVX mainnet is settlement layer.",
+  "modules": [
+    {"id": "soul", "route": "/soul-testnet", "status": "pre-mainnet", "acceptUserFunds": false},
+    {"id": "burnify", "route": "/burnify", "status": "shell", "acceptUserFunds": false},
+    {"id": "polylia", "route": "/agents/polylia", "status": "pre-mainnet", "acceptUserFunds": false},
+    {"id": "rwa_bridge", "route": null, "status": "pre-mainnet", "acceptUserFunds": false}
+  ]
+}

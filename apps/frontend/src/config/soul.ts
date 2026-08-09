@@ -1,8 +1,7 @@
-/** Soul Protocol — experimental only (not in primary nav) */
+/** Soul Protocol — pre-mainnet only (not in primary nav) */
 export const SOUL = {
-  /** No public app link until verified — avoid 404/phishing risk */
   appUrl: null as string | null,
-  status: 'experimental' as const,
+  status: 'pre-mainnet' as const,
   mxNative: false,
   testnets: [
     { id: 11155111, name: 'Ethereum Sepolia' },
@@ -10,5 +9,5 @@ export const SOUL = {
     { id: 421614, name: 'Arbitrum Sepolia' },
   ],
   disclaimer:
-    'Experimental integration. Not in primary navigation. No mainnet user funds. Third-party risk. Not financial advice.',
+    'Pre-mainnet integration. Not in primary navigation. No mainnet user funds. Third-party risk. Not financial advice.',
 }
