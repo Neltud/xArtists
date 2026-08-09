@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import PageGuide from '../components/PageGuide'
+import InfoTip from '../components/InfoTip'
+import { HELP } from '../content/helpCopy'
 
 const TABS = ['TRO', 'NFT', 'Rewards', 'Help'] as const
 
@@ -8,11 +11,16 @@ export default function StakingPage() {
   return (
     <div className="animate-fade-in space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">Staking</h1>
+        <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2">
+          Staking
+          <InfoTip tone="warn">{HELP.liaVsUser.body}</InfoTip>
+        </h1>
         <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
           Lock $TRO or stake xArtists NFTs to earn rewards and voting power. Sign with your own wallet (xPortal / Web Wallet) — never the LIA protocol address.
         </p>
       </header>
+
+      <PageGuide page="staking" />
 
       <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
         {TABS.map((t) => (
