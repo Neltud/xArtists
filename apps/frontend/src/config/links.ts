@@ -28,7 +28,6 @@ export const LINKS = {
     'https://github.com/Neltud/xArtists/blob/main/docs/TREASURY_POLICY.md',
 } as const
 
-/** Desktop top bar — keep short for horizontal space */
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/', label: 'Home', emoji: '📊' },
   { to: '/studio', label: 'Studio', emoji: '🎨' },
@@ -42,7 +41,6 @@ export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/tro', label: '$TRO', emoji: '🪙' },
 ]
 
-/** Drawer mobile + footer extras */
 export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/editions', label: 'Editions', emoji: '📰' },
   { to: '/hatom', label: 'Hatom', emoji: '🏦' },
@@ -50,12 +48,12 @@ export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/tip', label: 'Tip', emoji: '💜' },
   { to: '/ads', label: 'Ads', emoji: '📢' },
   { to: '/staking', label: 'Staking', emoji: '🔒' },
-  { to: '/soul-testnet', label: 'Soul (exp.)', emoji: '🧪' },
-  { to: '/burnify', label: 'Burnify', emoji: '🔥' },
+  { to: '/soul-testnet', label: 'Soul (pre-mainnet)', emoji: '🧪' },
+  { to: '/burnify', label: 'Burnify (pre-mainnet)', emoji: '🔥' },
 ]
 
 export const SECONDARY_ROUTES = [
   { to: '/staking', label: 'Staking', note: '' },
-  { to: '/soul-testnet', label: 'Soul (experimental)', note: 'No mainnet funds' },
-  { to: '/burnify', label: 'Burnify (shell)', note: 'UI only' },
+  { to: '/soul-testnet', label: 'Soul (pre-mainnet)', note: 'No mainnet funds' },
+  { to: '/burnify', label: 'Burnify (pre-mainnet)', note: 'UI shell only' },
 ] as const
