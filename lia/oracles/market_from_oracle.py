@@ -5,6 +5,7 @@ Priority:
   1. Fresh PriceOracle().run (network)
   2. data/oracle_prices.json if age < max_age
   3. data/egld_price.json / lia_v6_status market fallback
+  4. dex_mids attach (economics / token / mex)
 """
 from __future__ import annotations
 
@@ -131,6 +132,12 @@ def build_market_from_oracle(
     }
     if extra:
         market.update(extra)
+    try:
+        from lia.oracles.dex_mids import attach_to_market
+
+        market = attach_to_market(market)
+    except Exception as e:
+        market["dex_mids_error"] = str(e)[:120]
     return market
 
 
