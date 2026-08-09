@@ -1,8 +1,6 @@
 /**
- * Progressive catalog loading:
- * 1. index (~16 KB) → headers + 4 previews
- * 2. collections/{id}.json on expand
- * 3. fallback full slim catalog if index/pages missing
+ * Progressive catalog: index first, page on expand, full fallback.
+ * Timed fetchJson (abort 10–15s).
  */
 import {
   type CollectionData,
@@ -13,6 +11,7 @@ import {
   INDEX_URL,
   collectionPageUrl,
 } from '../types/nft'
+import { fetchJson } from './fetchJson'
 
 const cache = new Map<string, CollectionData>()
 
@@ -21,18 +20,19 @@ export async function loadCatalogIndex(): Promise<{
   full: CollectionsFile | null
 }> {
   try {
-    const r = await fetch(INDEX_URL, { cache: 'force-cache' })
-    if (r.ok) {
-      const index = (await r.json()) as CollectionsIndexFile
-      if (index?.collections?.length) return { index, full: null }
-    }
+    const index = await fetchJson<CollectionsIndexFile>(INDEX_URL, {
+      timeoutMs: 10000,
+      cache: 'default',
+    })
+    if (index?.collections?.length) return { index, full: null }
   } catch {
     /* fall through */
   }
   try {
-    const r = await fetch(DATA_URL, { cache: 'force-cache' })
-    if (!r.ok) return { index: null, full: null }
-    const full = (await r.json()) as CollectionsFile
+    const full = await fetchJson<CollectionsFile>(DATA_URL, {
+      timeoutMs: 15000,
+      cache: 'force-cache',
+    })
     return { index: null, full }
   } catch {
     return { index: null, full: null }
@@ -52,22 +52,22 @@ export function indexToPartialCollections(entries: CollectionIndexEntry[]): Coll
 export async function loadCollectionPage(id: string): Promise<CollectionData | null> {
   if (cache.has(id)) return cache.get(id)!
   try {
-    const r = await fetch(collectionPageUrl(id), { cache: 'force-cache' })
-    if (r.ok) {
-      const col = (await r.json()) as CollectionData
-      if (col?.identifier) {
-        cache.set(id, col)
-        return col
-      }
+    const col = await fetchJson<CollectionData>(collectionPageUrl(id), {
+      timeoutMs: 10000,
+      cache: 'default',
+    })
+    if (col?.identifier) {
+      cache.set(id, col)
+      return col
     }
   } catch {
     /* fall through */
   }
-  // Fallback: full catalog slice
   try {
-    const r = await fetch(DATA_URL, { cache: 'force-cache' })
-    if (!r.ok) return null
-    const full = (await r.json()) as CollectionsFile
+    const full = await fetchJson<CollectionsFile>(DATA_URL, {
+      timeoutMs: 15000,
+      cache: 'force-cache',
+    })
     const col = full.collections?.find(c => c.identifier === id)
     if (col) {
       cache.set(id, col)
