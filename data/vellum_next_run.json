@@ -1,24 +1,16 @@
 {
-  "updated": "2026-08-04T19:45:00Z",
-  "prompt": "docs/VELLUM_RECONSTRUCTION_PROMPT_FULL.md",
-  "LIA_LIVE_TRADING": "0",
-  "auto_execute_claude": false,
-  "TRO_MAX_SUPPLY": 500000,
-  "contracts_truth": "data/contracts.json",
-  "phases": [
-    "0_preflight",
-    "A_deploy_sc",
-    "B_publish_board_gas",
-    "C_strategies_paper_fuse",
-    "D_claude_advisor_only",
-    "E_social_intel_module_if_missing",
-    "F_pages_vite"
+  "updated": "2026-08-09T19:50:00Z",
+  "release": "private",
+  "prompt": "docs/VELLUM_PRIVATE_RELEASE_PROMPT.md",
+  "workflow_nodes": "data/vellum_workflow_nodes_private.json",
+  "strategy_adapters": "data/vellum_strategy_adapters.json",
+  "flags": {"CHAIN": "1", "LIA_LIVE_TRADING": "0", "LIA_TP_MODE": "log"},
+  "priority": [
+    "Run paper pipeline + publish board/oracles",
+    "Rebuild GH Pages",
+    "Keep SC banners until codeHash",
+    "Deploy SC when PEM ready",
+    "Register micro-proofs before any LIVE=1"
   ],
-  "strategies_source": [
-    "lia/circuit/strategies.py",
-    "lia/circuit/strategies_venues.py",
-    "lia/agents/green_smoke_consumer.py",
-    "lia/venues/registry.py",
-    "lia/claude_agent/"
-  ]
+  "forbidden": ["auto live trades", "commit PEM", "claim market live without codeHash"]
 }
