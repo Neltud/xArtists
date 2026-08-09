@@ -80,6 +80,9 @@ class StreakState:
     total_pnl_usd: float = 0.0
     compound_usd: float = 0.0
     surplus_usd: float = 0.0
+    compound_equity_usd: float = 0.0
+    yield_sleeve_usd: float = 0.0
+    peak_equity_usd: float = 0.0
     halted: bool = False
     halt_reason: str = ""
     cooldown_until: float = 0.0
@@ -107,6 +110,8 @@ class TradeTicket:
     strategy: str = ""
     meta: Optional[dict] = None
     peak: float = 0.0
+    hwm: float = 0.0
+    trail_active: bool = False
     tp_mode: str = "fixed"
     tp_plan: Optional[dict[str, Any]] = None
     size_remaining_pct: float = 1.0
@@ -185,6 +190,9 @@ class CompoundCircuit:
             "halt_reason": self.streak.halt_reason,
             "cooldown_until": self.streak.cooldown_until,
             "tp_mode": self.cfg.tp_mode,
+            "peak_equity_usd": self.streak.peak_equity_usd,
+            "compound_equity_usd": self.streak.compound_equity_usd,
+            "yield_sleeve_usd": self.streak.yield_sleeve_usd,
         }
 
     def can_open(self) -> tuple[bool, str]:
@@ -257,6 +265,7 @@ class CompoundCircuit:
             strategy=strategy,
             meta=meta,
             peak=entry,
+            hwm=entry,
             tp_mode=self.cfg.tp_mode,
         )
         self.open_ticket = ticket
@@ -267,20 +276,22 @@ class CompoundCircuit:
     def on_tick(self, price: float) -> dict[str, Any]:
         t = self.open_ticket
         if not t:
-            return {"event": "NO_TICKET"}
+            return {"event": "NO_TICKET", "action": "NONE"}
         t.peak = max(t.peak or t.entry, price)
+        t.hwm = max(t.hwm or t.entry, price)
         ret = (price - t.entry) / t.entry if t.entry else 0.0
         if price <= t.stop:
-            return {"event": "STOP", "price": price, "ret": ret}
+            return {"event": "STOP", "action": "STOP_LOSS", "price": price, "ret": ret}
         if price >= t.target:
-            return {"event": "TARGET", "price": price, "ret": ret}
+            return {"event": "TARGET", "action": "TAKE_PROFIT", "price": price, "ret": ret}
         if ret >= self.cfg.trail_after_pct:
+            t.trail_active = True
             trail_stop = t.peak * (1.0 - self.cfg.trail_pct)
             if price <= trail_stop:
-                return {"event": "TRAIL", "price": price, "ret": ret, "trail_stop": trail_stop}
+                return {"event": "TRAIL", "action": "TRAIL_STOP", "price": price, "ret": ret, "trail_stop": trail_stop}
             if ret >= self.cfg.be_trigger_pct and t.stop < t.entry:
                 t.stop = t.entry
-        return {"event": "HOLD", "price": price, "ret": ret, "peak": t.peak}
+        return {"event": "HOLD", "action": "HOLD", "price": price, "ret": ret, "peak": t.peak, "stop": t.stop}
 
     def close_trade(
         self,
@@ -288,6 +299,8 @@ class CompoundCircuit:
         exit_price: float,
         tx_close: str = "",
         reason: str = "",
+        post_balance_usd: float | None = None,
+        forced_outcome: str | None = None,
     ) -> dict[str, Any]:
         t = self.open_ticket
         if not t:
@@ -297,13 +310,28 @@ class CompoundCircuit:
         fee_drag = t.notional_usd * self.cfg.fee.required_gross_pct(t.notional_usd)
         net = gross_pnl - fee_drag * (1 if gross_pnl > 0 else 0.5)
 
+        if forced_outcome:
+            fo = forced_outcome.upper()
+            if fo == "LOSS":
+                net = -abs(net) if net != 0 else -t.notional_usd * self.cfg.stop_loss_pct
+            elif fo == "WIN":
+                net = abs(net) if net != 0 else t.notional_usd * self.cfg.target_net_pct
+            elif fo in ("BE", "BREAKEVEN"):
+                net = 0.0
+        if post_balance_usd is not None and t.pre_balance_usd:
+            net = float(post_balance_usd) - float(t.pre_balance_usd)
+
         if net > 0:
             outcome = TradeOutcome.WIN
             self.streak.wins += 1
             self.streak.consecutive_wins += 1
             self.streak.consecutive_losses = 0
-            self.streak.compound_usd += net * self.cfg.base_compound_fraction
-            self.streak.surplus_usd += net * self.cfg.surplus_fraction
+            comp = net * self.cfg.base_compound_fraction
+            self.streak.compound_usd += comp
+            self.streak.compound_equity_usd += comp
+            sur = net * self.cfg.surplus_fraction
+            self.streak.surplus_usd += sur
+            self.streak.yield_sleeve_usd += sur * 0.5
             self.streak.cooldown_until = time.time() + self.cfg.cooldown_sec_after_win
         elif net < 0:
             outcome = TradeOutcome.LOSS
