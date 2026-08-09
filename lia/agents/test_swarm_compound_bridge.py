@@ -5,11 +5,8 @@ import os
 
 os.environ["LIA_LIVE_TRADING"] = "0"
 
-from lia.agents.swarm_compound_bridge import (
-    decide_swarm,
-    run_integrated_cycle,
-    run_n_integrated,
-)
+from lia.agents.swarm_compound_bridge import decide_swarm, run_integrated_cycle
+from lia.agents.swarm_compound_lab import run_n_integrated
 from lia.circuit.compound_engine import CompoundCircuit
 
 
