@@ -3,6 +3,9 @@ import { useMultiversX } from '../hooks/useMultiversX'
 import LiaBoardPanel from '../components/LiaBoardPanel'
 import GuardianStatusPanel from '../components/GuardianStatusPanel'
 import ScStatusBanner from '../components/ScStatusBanner'
+import PageGuide from '../components/PageGuide'
+import DeskPanel from '../components/DeskPanel'
+import InfoTip from '../components/InfoTip'
 import { LINKS } from '../config/links'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
@@ -74,16 +77,20 @@ export default function Trading() {
 
   return (
     <div className="animate-fade-in">
+      <PageGuide page="trading" />
+
       <div className="mb-6">
         <h1 className="text-3xl font-black">⚡ Trading Terminal LIA</h1>
         <p className="text-gray-500 mt-1">
-          Board multi-venues · arb block-time · séries $10 · trailing · Guardian first
+          Board multi-venues · arb block-time · séries $10 · trailing · Guardian first{' '}
+          <InfoTip k="live_trading" />
           {dataTs ? ` · data ${new Date(dataTs).toLocaleString('fr-FR')}` : ''}
         </p>
       </div>
 
       <ScStatusBanner />
       <GuardianStatusPanel />
+      <DeskPanel />
       <LiaBoardPanel />
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
@@ -118,100 +125,79 @@ export default function Trading() {
               <span className="text-gray-400 text-sm">Reco LIA</span>
               <span className="font-bold text-yellow-400">{recommendedPair}</span>
             </div>
+            <div className="flex justify-between">
+              <span className="text-gray-400 text-sm">Supply max produit</span>
+              <span className="font-bold">500 000</span>
+            </div>
           </div>
+          <a
+            href={LINKS.xexchange || 'https://xexchange.com'}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-secondary text-sm mt-4 inline-block"
+          >
+            Ouvrir DEX →
+          </a>
         </div>
-      </div>
-
-      <div className="card mb-8">
-        <h2 className="text-lg font-bold mb-4">🎯 Trailing stops</h2>
-        {trails.length === 0 ? (
-          <p className="text-sm text-gray-500">Aucune position dans lia_trailing_state.json</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs text-gray-500 border-b border-[#2a2a3a]">
-                  <th className="py-2 pr-2">Token</th>
-                  <th className="py-2 pr-2">Entry</th>
-                  <th className="py-2 pr-2">Stop</th>
-                  <th className="py-2">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {trails.map(p => (
-                  <tr key={p.id || p.token} className="border-b border-[#1a1a24]">
-                    <td className="py-2 pr-2">{p.token}</td>
-                    <td className="py-2 pr-2 mono">{p.entry}</td>
-                    <td className="py-2 pr-2 mono text-orange-300">{p.stop}</td>
-                    <td className="py-2">{p.status ?? 'OPEN'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      <div className="card mb-8">
-        <h2 className="text-lg font-bold mb-4">📋 Historique trades</h2>
-        {trades.length === 0 ? (
-          <p className="text-sm text-gray-500">Aucun trade loggé — Vellum push data/lia_trades.json</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs text-gray-500 border-b border-[#2a2a3a]">
-                  <th className="py-2 pr-2">Date</th>
-                  <th className="py-2 pr-2">Side</th>
-                  <th className="py-2 pr-2">Pair</th>
-                  <th className="py-2">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {trades.map((t, i) => (
-                  <tr key={t.id || i} className="border-b border-[#1a1a24]">
-                    <td className="py-2 pr-2 text-xs text-gray-400">
-                      {t.ts ? new Date(t.ts).toLocaleString('fr-FR') : '—'}
-                    </td>
-                    <td className="py-2 pr-2 font-semibold">{t.side}</td>
-                    <td className="py-2 pr-2 mono text-xs">{t.pair}</td>
-                    <td className="py-2">{t.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
       </div>
 
       {pools.length > 0 && (
         <div className="card mb-8">
-          <h2 className="text-lg font-bold mb-4">💧 Pools $TRO</h2>
-          <div className="space-y-2">
-            {pools.slice(0, 5).map((p: { pair_name?: string; tvl_usd?: number }, i: number) => (
-              <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-[#111118]">
-                <span className="font-semibold text-sm">{p.pair_name}</span>
-                <span className="text-green-400 font-bold">${(p.tvl_usd ?? 0).toFixed(2)} TVL</span>
-              </div>
+          <p className="text-xs font-semibold uppercase text-gray-500 mb-3">Pools (snapshot)</p>
+          <ul className="text-sm space-y-1 text-gray-400">
+            {pools.slice(0, 8).map((p: string | { name?: string }, i: number) => (
+              <li key={i}>{typeof p === 'string' ? p : p.name || JSON.stringify(p)}</li>
             ))}
-          </div>
+          </ul>
         </div>
       )}
 
-      <div className="card">
-        <h2 className="text-lg font-bold mb-4">🔀 DEX Mainnet</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[
-            { name: 'xExchange', url: LINKS.xexchange },
-            { name: 'OneDex', url: LINKS.onedex },
-            { name: 'Hatom', url: LINKS.hatom },
-            { name: 'XOXNO', url: LINKS.xoxno },
-          ].map(d => (
-            <a key={d.name} href={d.url} target="_blank" rel="noreferrer" className="btn-secondary text-center text-sm">
-              {d.name}
-            </a>
-          ))}
-        </div>
+      <div className="card mb-8">
+        <h2 className="text-lg font-bold mb-3">Trades paper (JSON)</h2>
+        {trades.length === 0 ? (
+          <p className="text-sm text-gray-500">Aucun trade publié — Vellum board / pipeline.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
+                  <th className="text-left py-2">Pair</th>
+                  <th className="text-left py-2">Side</th>
+                  <th className="text-right py-2">Size</th>
+                  <th className="text-right py-2">Conf</th>
+                </tr>
+              </thead>
+              <tbody>
+                {trades.map((t, i) => (
+                  <tr key={t.id || i} className="border-b border-[#2a2a3a]/40">
+                    <td className="py-2">{t.pair || '—'}</td>
+                    <td className="py-2">{t.side || t.status || '—'}</td>
+                    <td className="py-2 text-right mono">{t.size_usd ?? '—'}</td>
+                    <td className="py-2 text-right mono">{t.confidence ?? '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <div className="card mb-8">
+        <h2 className="text-lg font-bold mb-3">Trailing (state)</h2>
+        {trails.length === 0 ? (
+          <p className="text-sm text-gray-500">Pas de positions trailing publiées.</p>
+        ) : (
+          <ul className="text-sm space-y-2">
+            {trails.map((tr, i) => (
+              <li key={tr.id || i} className="flex justify-between gap-2 border-b border-[#2a2a3a]/30 py-1">
+                <span>{tr.token || tr.id}</span>
+                <span className="mono text-gray-400">
+                  stop {tr.stop ?? '—'} · hwm {tr.hwm ?? '—'}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   )
