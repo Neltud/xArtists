@@ -1,9 +1,8 @@
 """
-CLI / Vellum entry — autonomous swarm + legacy open-loop cycle.
+CLI / Vellum entry — swarm / legacy / integrated (swarm↔compound).
 
   PYTHONPATH=. LIA_LIVE_TRADING=0 python -m lia.agents.run_autonomous
-  PYTHONPATH=. python -m lia.agents.run_autonomous --mode swarm
-  PYTHONPATH=. python -m lia.agents.run_autonomous --mode legacy
+  PYTHONPATH=. python -m lia.agents.run_autonomous --mode integrated
 """
 from __future__ import annotations
 
@@ -52,6 +51,27 @@ def run_swarm() -> dict:
     return run_swarm_cycle(market=market, book=book, persist=True, settle=True)
 
 
+def run_integrated() -> dict:
+    from lia.agents.swarm_compound_bridge import run_integrated_cycle
+
+    status = _load_json(ROOT / "data" / "lia_v6_status.json")
+    port = status.get("portfolio") or {}
+    market = {
+        "token": "WEGLD-bd4d79",
+        "price": float((status.get("market") or {}).get("egld_price") or 10),
+        "rsi_14": float((status.get("market") or {}).get("rsi_14") or 50),
+        "trend_7d_pct": float((status.get("market") or {}).get("trend_7d_pct") or 0),
+        "fear_greed": float((status.get("market") or {}).get("fear_greed") or 50),
+        "gs_bias": str((status.get("market") or {}).get("gs_bias") or "NEUTRAL"),
+        "liquidity_usd": 150000,
+    }
+    book = {
+        "equity_usd": float(port.get("total_usd") or 100),
+        "deployable_usd": float(port.get("total_usd") or 40) * 0.4,
+    }
+    return run_integrated_cycle(market=market, book=book, simulate_fill=True)
+
+
 def run_legacy() -> dict:
     from lia.circuit.autonomous_loop import run_autonomous_cycle
 
@@ -85,13 +105,17 @@ def main() -> int:
         )
         return 2
     p = argparse.ArgumentParser(description="LIA autonomous agents")
-    p.add_argument("--mode", choices=("swarm", "legacy", "both"), default="swarm")
+    p.add_argument(
+        "--mode", choices=("swarm", "legacy", "both", "integrated"), default="swarm"
+    )
     args = p.parse_args()
     out: dict = {"mode": args.mode}
     if args.mode in ("swarm", "both"):
         out["swarm"] = run_swarm()
     if args.mode in ("legacy", "both"):
         out["legacy"] = run_legacy()
+    if args.mode == "integrated":
+        out["integrated"] = run_integrated()
     print(json.dumps(out, indent=2))
     return 0
 
