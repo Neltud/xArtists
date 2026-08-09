@@ -1,16 +1,6 @@
 """
-Bridge latency optimization — model, measure, route, abort.
-===========================================================
-Goal: minimize *economic* latency cost of cross-chain arb without
-assuming atomic bridges or moving user funds blindly.
-
-Strategies (ordered by effective latency):
-  1. INVENTORY_PREPOSITION — already have size on both legs (0 bridge wait)
-  2. FAST_CORRIDOR        — pick lowest p95 route
-  3. PARALLEL_PREP        — build both leg txs while quotes are hot
-  4. EDGE_DECAY_ABORT     — cancel if ETA > max_latency or edge dies
-
-Live bridge adapters remain experimental; default is PAPER + metrics.
+Bridge latency optimizer — inventory-first, then lowest p95 corridor.
+Experimental: no user funds auto-bridge. Paper / ops only.
 """
 from __future__ import annotations
 
@@ -18,13 +8,11 @@ import json
 import math
 import os
 import time
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
-
-# Vol proxy: bps of edge risk per second of latency (conservative)
-EDGE_DECAY_BPS_PER_SEC = float(os.getenv("LIA_EDGE_DECAY_BPS_PER_SEC", "0.8"))
+EDGE_DECAY_BPS_PER_SEC = float(os.getenv("LIA_BRIDGE_DECAY_BPS_PER_SEC", "0.8"))
 MAX_BRIDGE_LATENCY_SEC = float(os.getenv("LIA_MAX_BRIDGE_LATENCY_SEC", "90"))
 TARGET_LATENCY_SEC = float(os.getenv("LIA_TARGET_BRIDGE_LATENCY_SEC", "12"))
 
@@ -34,11 +22,10 @@ class CorridorStats:
     src: str
     dst: str
     route_id: str
-    # empirical or calibrated defaults (seconds)
     p50_sec: float
     p95_sec: float
     fee_bps: float
-    reliability: float = 0.95  # 0..1
+    reliability: float = 0.95
     samples: int = 0
     last_updated: float = field(default_factory=time.time)
 
@@ -47,7 +34,6 @@ class CorridorStats:
         return f"{self.src}->{self.dst}:{self.route_id}"
 
 
-# Calibrated starting points (update via record_sample)
 DEFAULT_CORRIDORS: list[CorridorStats] = [
     CorridorStats("multiversx", "solana", "inventory", 0.0, 0.5, 0.0, 0.99),
     CorridorStats("solana", "multiversx", "inventory", 0.0, 0.5, 0.0, 0.99),
@@ -55,7 +41,6 @@ DEFAULT_CORRIDORS: list[CorridorStats] = [
     CorridorStats("hyperliquid", "multiversx", "inventory", 0.0, 0.5, 0.0, 0.99),
     CorridorStats("solana", "hyperliquid", "inventory", 0.0, 0.5, 0.0, 0.99),
     CorridorStats("hyperliquid", "solana", "inventory", 0.0, 0.5, 0.0, 0.99),
-    # CEX-like hop / future message bridge (slow)
     CorridorStats("multiversx", "solana", "msg_bridge_v0", 45.0, 120.0, 25.0, 0.85),
     CorridorStats("solana", "multiversx", "msg_bridge_v0", 45.0, 120.0, 25.0, 0.85),
     CorridorStats("multiversx", "hyperliquid", "msg_bridge_v0", 60.0, 150.0, 30.0, 0.80),
@@ -67,8 +52,6 @@ DEFAULT_CORRIDORS: list[CorridorStats] = [
 
 @dataclass
 class InventoryBook:
-    """Pre-positioned notionals per chain (USD). Fastest path = use inventory."""
-
     balances: dict[str, float] = field(default_factory=dict)
 
     def available(self, chain: str) -> float:
@@ -121,7 +104,7 @@ class BridgeLatencyOptimizer:
         self.state_path.parent.mkdir(parents=True, exist_ok=True)
         payload = {
             "updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "corridors": [c.__dict__ for c in self.corridors.values()],
+            "corridors": [asdict(c) for c in self.corridors.values()],
             "inventory": self.inventory.to_dict(),
         }
         self.state_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -140,10 +123,8 @@ class BridgeLatencyOptimizer:
         c = self.corridors.get(key) or CorridorStats(
             src, dst, route_id, latency_sec, latency_sec * 1.5, fee_bps or 20.0
         )
-        # EWMA-ish update
         alpha = 0.25 if c.samples > 5 else 0.5
         c.p50_sec = (1 - alpha) * c.p50_sec + alpha * latency_sec
-        # rough p95: max with decay toward sample*1.4
         target_p95 = max(latency_sec * 1.4, c.p50_sec * 1.8)
         c.p95_sec = (1 - alpha * 0.7) * c.p95_sec + (alpha * 0.7) * target_p95
         if fee_bps is not None:
@@ -168,7 +149,6 @@ class BridgeLatencyOptimizer:
         size_usd: float,
         prefer_inventory: bool = True,
     ) -> dict[str, Any]:
-        """Pick route minimizing latency cost + fee, with inventory short-circuit."""
         if src == dst:
             return {
                 "ok": True,
@@ -180,7 +160,6 @@ class BridgeLatencyOptimizer:
                 "route_id": "local",
             }
 
-        # 1) Inventory: if we already hold on dst, no bridge wait for sell leg
         if prefer_inventory and self.inventory.can_cover(dst, size_usd):
             return {
                 "ok": True,
@@ -193,9 +172,9 @@ class BridgeLatencyOptimizer:
                 "note": "Use pre-positioned inventory on destination — fastest path",
             }
 
-        routes = self.list_routes(src, dst)
+        # Exclude inventory pseudo-routes when balances cannot cover
+        routes = [c for c in self.list_routes(src, dst) if c.route_id != "inventory"]
         if not routes:
-            # fallback synthetic slow
             return {
                 "ok": False,
                 "mode": "NO_ROUTE",
@@ -207,7 +186,6 @@ class BridgeLatencyOptimizer:
             }
 
         def score(c: CorridorStats) -> float:
-            # lower is better: p95 latency cost + fee + unreliability
             lat_pen = self.latency_penalty_bps(c.p95_sec)
             risk = (1.0 - c.reliability) * 40.0
             return lat_pen + c.fee_bps + risk
@@ -229,28 +207,19 @@ class BridgeLatencyOptimizer:
 
     @staticmethod
     def latency_penalty_bps(latency_sec: float) -> float:
-        """Convert time risk into edge bps (decay + floor)."""
         lat = max(0.0, latency_sec)
-        # concave: first seconds costly, then linear
         return EDGE_DECAY_BPS_PER_SEC * lat + 5.0 * math.sqrt(lat)
 
-    def edge_survives(
-        self,
-        net_edge: float,
-        *,
-        latency_p95: float,
-        extra_bps: float = 0.0,
-    ) -> dict[str, Any]:
-        """Will net edge still be positive after waiting p95 latency?"""
+    def edge_survives(self, net_edge: float, latency_p95: float) -> dict[str, Any]:
         decay = self.latency_penalty_bps(latency_p95) / 10_000.0
-        extra = extra_bps / 10_000.0
-        remaining = net_edge - decay - extra
+        remaining = net_edge - decay
         return {
-            "survives": remaining > 0.0015,  # 15 bps floor
-            "remaining_edge": round(remaining, 6),
-            "decay": round(decay, 6),
+            "net_edge": net_edge,
+            "decay": decay,
+            "remaining": remaining,
             "latency_p95": latency_p95,
             "abort": remaining <= 0.0015 or latency_p95 > MAX_BRIDGE_LATENCY_SEC,
+            "survives": remaining > 0.0015 and latency_p95 <= MAX_BRIDGE_LATENCY_SEC,
         }
 
     def plan_parallel_legs(
@@ -261,53 +230,37 @@ class BridgeLatencyOptimizer:
         size_usd: float,
         net_edge: float,
     ) -> dict[str, Any]:
-        """Optimize path: inventory first, else best corridor + parallel prep."""
-        t0 = time.time()
         route = self.best_route(buy_chain, sell_chain, size_usd=size_usd)
-        survival = self.edge_survives(
-            net_edge,
-            latency_p95=float(route.get("latency_p95") or 999),
-            extra_bps=float(route.get("fee_bps") or 0),
+        surv = self.edge_survives(
+            net_edge, latency_p95=float(route.get("latency_p95") or 999)
         )
-
-        # Parallel prep timeline (paper)
-        timeline = [
-            {"t_ms": 0, "step": "LOCK_QUOTES"},
-            {"t_ms": 5, "step": "BUILD_BUY_TX"},
-            {"t_ms": 5, "step": "BUILD_SELL_TX"},  # parallel with buy
-            {"t_ms": 15, "step": "SIMULATE_BOTH"},
-        ]
         if route.get("mode") == "INVENTORY_PREPOSITION":
-            timeline.append({"t_ms": 20, "step": "EXECUTE_BOTH_LEGS_NO_BRIDGE"})
-        else:
-            timeline.append({"t_ms": 25, "step": "EXECUTE_BUY"})
-            timeline.append(
-                {
-                    "t_ms": 25 + int(1000 * float(route.get("latency_p50") or 0)),
-                    "step": "BRIDGE_OR_WAIT",
-                }
-            )
-            timeline.append(
-                {
-                    "t_ms": 25 + int(1000 * float(route.get("latency_p95") or 0)),
-                    "step": "EXECUTE_SELL_OR_ABORT",
-                }
-            )
-
+            return {
+                "execute": True,
+                "mode": "INVENTORY_PREPOSITION",
+                "route": route,
+                "edge": surv,
+                "legs": [
+                    {
+                        "action": "USE_INVENTORY",
+                        "chain": sell_chain,
+                        "t_ms": 25 + int(1000 * float(route.get("latency_p95") or 0)),
+                    }
+                ],
+            }
         return {
-            "route": route,
-            "survival": survival,
-            "execute": bool(route.get("ok") and not survival["abort"]),
+            "execute": bool(surv.get("survives") and route.get("ok")),
             "mode": route.get("mode"),
-            "timeline": timeline,
-            "plan_ms": int((time.time() - t0) * 1000),
-            "target_latency_sec": TARGET_LATENCY_SEC,
-            "max_latency_sec": MAX_BRIDGE_LATENCY_SEC,
-            "recommendation": (
-                "PREPOSITION_INVENTORY"
-                if route.get("mode") != "INVENTORY_PREPOSITION"
-                else "USE_INVENTORY"
-            ),
+            "route": route,
+            "edge": surv,
+            "legs": [
+                {
+                    "action": "PREPOSITION_INVENTORY"
+                    if route.get("mode") != "INVENTORY_PREPOSITION"
+                    else "USE_INVENTORY",
+                    "chain": sell_chain,
+                }
+            ],
         }
 
 
@@ -315,12 +268,12 @@ def adaptive_bridge_penalty_bps(
     src: str,
     dst: str,
     *,
-    size_usd: float = 25.0,
+    size_usd: float,
     optimizer: Optional[BridgeLatencyOptimizer] = None,
 ) -> dict[str, Any]:
-    """Replace fixed LIA_BRIDGE_PENALTY_BPS with latency-aware penalty."""
     opt = optimizer or BridgeLatencyOptimizer()
-    route = opt.best_route(src, dst, size_usd=size_usd)
-    # floor 15 bps even for inventory (execution risk)
-    penalty = max(15.0, float(route.get("penalty_bps") or 80.0))
-    return {"penalty_bps": int(round(penalty)), **route}
+    r = opt.best_route(src, dst, size_usd=size_usd)
+    return {
+        "penalty_bps": float(r.get("penalty_bps") or 80),
+        "route": r,
+    }
