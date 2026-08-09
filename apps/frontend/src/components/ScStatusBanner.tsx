@@ -1,42 +1,78 @@
-import { Link } from 'react-router-dom'
-import {
-  AGENTS_LIVE,
-  MARKETPLACE_LIVE,
-  canBuyAgent,
-  canListBuyNft,
-} from '../config/scStatus'
-
 /**
- * Honest SC banner — hides when both markets live (codeHash OK at build time).
+ * ScStatusBanner — honest on-chain readiness (no false "live market").
+ * Reads contracts.json mirror; agents_marketplace null = not live.
  */
-export default function ScStatusBanner() {
-  if (canListBuyNft() && canBuyAgent()) return null
+import { useEffect, useState } from 'react'
 
-  const mkt = MARKETPLACE_LIVE ? 'live' : 'pas live (codeHash null)'
-  const ag = AGENTS_LIVE ? 'live' : 'pas live (null)'
+const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
+
+interface ContractsFile {
+  network?: string
+  chainId?: string
+  updated?: string
+  contracts?: {
+    marketplace?: string | null
+    agents_marketplace?: string | null
+    nft_staking?: string | null
+    tro_governance?: string | null
+  }
+  notes?: string
+}
+
+function shortAddr(a?: string | null) {
+  if (!a) return '—'
+  if (a.length < 16) return a
+  return `${a.slice(0, 8)}…${a.slice(-6)}`
+}
+
+export default function ScStatusBanner({ className = '' }: { className?: string }) {
+  const [c, setC] = useState<ContractsFile | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch(`${RAW}/data/contracts.json`, { cache: 'no-store' })
+        if (!res.ok) return
+        const j = (await res.json()) as ContractsFile
+        if (!cancelled) setC(j)
+      } catch {
+        /* offline */
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const agentsLive = Boolean(c?.contracts?.agents_marketplace)
+  const marketLive = Boolean(c?.contracts?.marketplace)
 
   return (
     <div
-      className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-100/95 leading-relaxed"
-      role="status"
+      className={`rounded-xl border px-4 py-3 text-xs ${
+        agentsLive && marketLive
+          ? 'border-emerald-500/30 bg-emerald-950/20 text-emerald-200'
+          : 'border-orange-500/30 bg-orange-950/20 text-orange-200'
+      } ${className}`}
     >
-      <strong className="text-amber-200">On-chain market :</strong> NFT marketplace{' '}
-      <span className="text-amber-300/90">{mkt}</span> · agents{' '}
-      <span className="text-amber-300/90">{ag}</span>.{' '}
-      {!canListBuyNft() && (
-        <>
-          List / Buy / Bid bloqués jusqu’au deploy +{' '}
-          <code className="text-[10px]">verify_marketplace_codehash</code>.{' '}
-        </>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <span className="font-semibold">
+          SC · {c?.network ?? 'mainnet'} (chain {c?.chainId ?? '1'})
+        </span>
+        <span>
+          Marketplace NFT : {marketLive ? `live ${shortAddr(c?.contracts?.marketplace)}` : 'adresse absente'}
+        </span>
+        <span>
+          Agents Marketplace :{' '}
+          {agentsLive ? `live ${shortAddr(c?.contracts?.agents_marketplace)}` : 'non déployé (null)'}
+        </span>
+      </div>
+      {!agentsLive && (
+        <p className="mt-1 text-[11px] opacity-80">
+          Pas de faux « live market » agents tant que codeHash + adresse mainnet ne sont pas publiés.
+        </p>
       )}
-      <Link to="/studio" className="underline text-purple-300">
-        Studio
-      </Link>{' '}
-      ·{' '}
-      <Link to="/gallery" className="underline text-purple-300">
-        Galerie
-      </Link>{' '}
-      consultables. Deploy : <code className="text-[10px]">docs/SC_DEPLOY_OPTIMIZED.md</code>
     </div>
   )
 }

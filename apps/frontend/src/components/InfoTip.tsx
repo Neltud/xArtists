@@ -1,55 +1,48 @@
-import { useId, useState, useRef, useEffect } from 'react'
-import { HELP, type HelpKey } from '../content/helpCopy'
+/**
+ * InfoTip — accessible bubble for honest UX explanations.
+ * Best practice: clarify LIA vs user scope, paper vs live, SC status.
+ */
+import { useId, useState } from 'react'
 
-type Props = {
-  /** Key in HELP map, or raw text via `text` */
-  k?: HelpKey
-  text?: string
+interface InfoTipProps {
+  /** Short label shown next to the trigger (optional) */
   label?: string
+  /** Body text of the tip */
+  children: React.ReactNode
+  /** Visual tone */
+  tone?: 'info' | 'warn' | 'ok'
+  /** Placement of the popup */
+  side?: 'top' | 'bottom'
   className?: string
 }
 
-/**
- * Accessible info bubble — click/tap or keyboard.
- * Mobile-friendly (no hover-only).
- */
-export default function InfoTip({ k, text, label = 'Info', className = '' }: Props) {
-  const id = useId()
+const TONE: Record<NonNullable<InfoTipProps['tone']>, string> = {
+  info: 'border-purple-500/40 bg-purple-950/90 text-purple-100',
+  warn: 'border-orange-500/40 bg-orange-950/90 text-orange-100',
+  ok: 'border-emerald-500/40 bg-emerald-950/90 text-emerald-100',
+}
+
+export default function InfoTip({
+  label,
+  children,
+  tone = 'info',
+  side = 'bottom',
+  className = '',
+}: InfoTipProps) {
   const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLSpanElement>(null)
-  const body = text || (k ? HELP[k] : '')
-
-  useEffect(() => {
-    if (!open) return
-    const onDoc = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('mousedown', onDoc)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener('mousedown', onDoc)
-      document.removeEventListener('keydown', onKey)
-    }
-  }, [open])
-
-  if (!body) return null
+  const id = useId()
 
   return (
-    <span ref={ref} className={`info-tip relative inline-flex align-middle ${className}`}>
+    <span className={`relative inline-flex items-center gap-1 ${className}`}>
+      {label && <span className="text-xs text-gray-400">{label}</span>}
       <button
         type="button"
-        className="info-tip-btn"
-        aria-label={label}
+        aria-describedby={open ? id : undefined}
         aria-expanded={open}
-        aria-controls={id}
-        onClick={e => {
-          e.preventDefault()
-          e.stopPropagation()
-          setOpen(v => !v)
-        }}
+        aria-label="Plus d'informations"
+        className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-gray-600 bg-gray-800 text-[10px] font-bold text-gray-300 hover:border-purple-500 hover:text-purple-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+        onClick={() => setOpen((v) => !v)}
+        onBlur={() => setOpen(false)}
       >
         i
       </button>
@@ -57,36 +50,13 @@ export default function InfoTip({ k, text, label = 'Info', className = '' }: Pro
         <span
           id={id}
           role="tooltip"
-          className="info-tip-panel"
+          className={`absolute z-50 w-64 max-w-[80vw] rounded-lg border px-3 py-2 text-left text-xs leading-relaxed shadow-xl ${TONE[tone]} ${
+            side === 'top' ? 'bottom-full mb-2 left-0' : 'top-full mt-2 left-0'
+          }`}
         >
-          {body}
-          <button
-            type="button"
-            className="mt-2 text-[10px] text-purple-300 underline"
-            onClick={() => setOpen(false)}
-          >
-            Fermer
-          </button>
+          {children}
         </span>
       )}
-    </span>
-  )
-}
-
-/** Inline label + tip */
-export function LabelWithTip({
-  children,
-  k,
-  text,
-}: {
-  children: React.ReactNode
-  k?: HelpKey
-  text?: string
-}) {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      {children}
-      <InfoTip k={k} text={text} />
     </span>
   )
 }
