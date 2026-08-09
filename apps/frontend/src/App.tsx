@@ -39,6 +39,7 @@ const TX_PATHS = new Set([
   '/wallet',
   '/staking',
   '/tro',
+  '/burnify',
 ])
 
 function PageLoader() {
