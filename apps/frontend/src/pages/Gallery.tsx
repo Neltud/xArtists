@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import NFTDetailModal from '../components/NFTDetailModal'
 import VirtualNftGrid from '../components/VirtualNftGrid'
 import LazyImage from '../components/LazyImage'
+import PageGuide from '../components/PageGuide'
 import {
   loadCatalogIndex,
   indexToPartialCollections,
@@ -78,6 +79,7 @@ export default function Gallery() {
 
   return (
     <div className="animate-fade-in">
+      <PageGuide page="gallery" />
       <section className="relative mb-10 overflow-hidden rounded-3xl border border-[#2a2a3a] bg-gradient-to-br from-[#15151f] via-[#12121a] to-[#0a0a0f] p-6 sm:p-12">
         <div className="pointer-events-none absolute -top-32 right-0 h-80 w-80 rounded-full bg-fuchsia-600/15 blur-3xl" />
         <div className="relative">
