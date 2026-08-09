@@ -3,7 +3,7 @@ LIA Vellum — unified trading + data pipeline (canonical entry).
 ==============================================================
 Organized cycle:
   bootstrap → oracles → gas → board → (social soft) → agent
-  → desk debate → mode select → Guardian → TradingStack → arb scan
+  → desk debate + fuse → mode select → Guardian → TradingStack → arb scan
   → hatom → mirror → status / vellum_last_run
 
 Never sends PEM unless LIA_LIVE_TRADING=1 (still gated).
@@ -46,7 +46,7 @@ def run_pipeline(
     report: dict[str, Any] = {
         "ts": _ts(),
         "pipeline": "lia.vellum.pipeline",
-        "version": "1.1",
+        "version": "1.2",
         "live": live,
         "chain_id": chain,
         "steps": [],
@@ -59,7 +59,6 @@ def run_pipeline(
         return report
     _step(report, "bootstrap", True, live=live, tp_mode=os.environ.get("LIA_TP_MODE", "log"))
 
-    # --- 1 Oracles ---
     try:
         from lia.oracles.publish import publish as oracle_pub
 
@@ -75,7 +74,6 @@ def run_pipeline(
         _step(report, "oracles", False, error=str(e))
         egld = 0.0
 
-    # --- 2 Gas ---
     try:
         from lia.gas.publish import publish as gas_pub
 
@@ -83,7 +81,6 @@ def run_pipeline(
     except Exception as e:
         _step(report, "gas", False, error=str(e))
 
-    # --- 3 Board ---
     try:
         from lia.board.publish import publish as board_pub
 
@@ -91,7 +88,6 @@ def run_pipeline(
     except Exception as e:
         _step(report, "board", False, error=str(e))
 
-    # --- 4 Social (soft) ---
     try:
         from lia.signals.social_intel import refresh as social_refresh  # type: ignore
 
@@ -120,7 +116,6 @@ def run_pipeline(
         "compound_intensity": 0.2,
     }
 
-    # --- 5 Agent ---
     decision = None
     try:
         from lia.agents.mvx_agent import decide
@@ -148,9 +143,8 @@ def run_pipeline(
         _step(report, "agent", False, error=str(e))
         ad = {}
 
-    # --- 5b Desk debate ---
     try:
-        from lia.circuit.desk_debate import debate as desk_debate
+        from lia.circuit.desk_debate import debate as desk_debate, fuse_agent_desk
 
         desk = desk_debate(
             price=float(m.get("price") or 0),
@@ -167,6 +161,13 @@ def run_pipeline(
             spread_edge=float(m.get("spread_edge") or 0),
         )
         report["desk"] = desk.to_dict()
+        fused = fuse_agent_desk(
+            str(ad.get("action") or "WAIT"),
+            float(ad.get("confidence") or 0),
+            desk,
+            agent_size_hint=float(ad.get("size_usd_hint") or 0),
+        )
+        report["fuse"] = fused
         _step(
             report,
             "desk",
@@ -174,13 +175,14 @@ def run_pipeline(
             action=desk.action,
             risk_veto=desk.risk_veto,
             confidence=desk.confidence,
+            agreement=getattr(desk, "agreement", None),
+            fuse=fused.get("source"),
         )
         if not ad.get("action") or str(ad.get("action")).upper() in ("WAIT", "HOLD", ""):
-            report["desk_fuse_hint"] = desk.action
+            report["desk_fuse_hint"] = fused.get("action") or desk.action
     except Exception as e:
         _step(report, "desk", False, error=str(e))
 
-    # --- 6 Mode ---
     try:
         from lia.circuit.trading_modes import select_mode
 
@@ -208,7 +210,6 @@ def run_pipeline(
         report["mode"] = {"id": mode_id, "error": str(e)}
         _step(report, "mode", False, error=str(e))
 
-    # --- 7 Guardian ---
     equity = float(pf.get("equity_usd") or 100)
     size_hint = float(ad.get("size_usd_hint") or 0)
     notional = float(pf.get("notional_usd") or 0) or size_hint
@@ -231,13 +232,11 @@ def run_pipeline(
         report["guardian"] = g
         _step(report, "guardian", False, error=str(e))
 
-    # --- 8 TradingStack ---
     try:
         from lia.circuit.trading_stack import TradingStack
 
         stack = TradingStack()
         stack_out: dict[str, Any] = {"status": stack.status()}
-
         if run_stack_demo and g.get("allow") and mode_id not in ("DEFENSE", "RISK_OFF"):
             if str(ad.get("action") or "").upper() == "BUY" and float(m.get("price") or 0) > 0:
                 prop = stack.propose_entry(
@@ -255,41 +254,17 @@ def run_pipeline(
                     atr=float(m.get("atr") or 0),
                 )
                 stack_out["propose"] = prop
-                if prop.get("ok") and prop.get("id"):
-                    ticks = []
-                    px = float(m["price"])
-                    for mul in (1.005, 1.01, 1.012):
-                        ticks.append(
-                            stack.on_price(
-                                prop["id"],
-                                px * mul,
-                                equity_usd=equity,
-                                venue_id=prop.get("venue") or "xexchange",
-                            )
-                        )
-                    stack_out["ticks"] = ticks
-
         stack_out["arb"] = stack.scan_cross_arb(force_paper=True)
         stack_out["status"] = stack.status()
         report["trading_stack"] = {
             "live_flag": live,
             "ledger": stack_out["status"].get("ledger"),
-            "propose_ok": (stack_out.get("propose") or {}).get("ok"),
             "arb_best": ((stack_out.get("arb") or {}).get("scan") or {}).get("best"),
         }
-        _step(
-            report,
-            "trading_stack",
-            True,
-            mode=mode_id,
-            guardian_allow=bool(g.get("allow")),
-        )
-        if run_stack_demo:
-            report["trading_stack_detail"] = stack_out
+        _step(report, "trading_stack", True, mode=mode_id, guardian_allow=bool(g.get("allow")))
     except Exception as e:
         _step(report, "trading_stack", False, error=str(e))
 
-    # --- 9 Live cycle ---
     try:
         from lia.vellum.live_cycle import run_cycle
 
@@ -307,7 +282,6 @@ def run_pipeline(
     except Exception as e:
         _step(report, "live_cycle", False, error=str(e))
 
-    # --- 10 Hatom ---
     try:
         from lia.vellum.publish_hatom import publish as pub_hatom
 
@@ -320,25 +294,17 @@ def run_pipeline(
         except Exception as e2:
             _step(report, "hatom", False, error=str(e2))
 
-    # --- 11 Mirror ---
     if publish:
         try:
             from lia.vellum.publish_data_for_frontend import publish as mirror
 
             mres = mirror()
-            _step(
-                report,
-                "mirror",
-                bool(mres.get("ok", True)),
-                copied=mres.get("copied"),
-                missing=mres.get("missing"),
-            )
+            _step(report, "mirror", bool(mres.get("ok", True)), copied=mres.get("copied"), missing=mres.get("missing"))
         except Exception as e:
             _step(report, "mirror", False, error=str(e))
     else:
         _step(report, "mirror", True, skipped=True)
 
-    # --- 12 Executor health ---
     try:
         from lia.executor.universal import health_report
 
@@ -348,16 +314,10 @@ def run_pipeline(
         _step(report, "executor_health", False, error=str(e))
 
     if live:
-        _step(
-            report,
-            "live_trading",
-            False,
-            error="LIVE=1 but pipeline does not auto-send; use explicit executor after micro-proof",
-        )
+        _step(report, "live_trading", False, error="LIVE=1 — no auto-send in pipeline")
     else:
         _step(report, "live_trading", True, skipped=True, LIA_LIVE_TRADING=0)
 
-    # --- Status ---
     try:
         status_path = ROOT / "data" / "lia_v6_status.json"
         status: dict[str, Any] = {}
@@ -372,11 +332,12 @@ def run_pipeline(
         status["status"] = status.get("status") or "monitoring"
         status["orchestrator"] = {
             "pipeline": "lia.vellum.pipeline",
+            "version": "1.2",
             "chain_id": chain,
             "live_trading": live,
-            "tp_mode": os.environ.get("LIA_TP_MODE", "log"),
             "agent_action": ad.get("action"),
             "desk_action": (report.get("desk") or {}).get("action"),
+            "fuse": report.get("fuse"),
             "mode": mode_id,
             "guardian": report.get("guardian"),
         }
@@ -394,16 +355,12 @@ def run_pipeline(
     for dest in (ROOT / "docs" / "data", ROOT / "apps" / "frontend" / "public" / "data"):
         try:
             dest.mkdir(parents=True, exist_ok=True)
-            (dest / "vellum_last_run.json").write_text(
-                json.dumps(slim, indent=2, default=str), encoding="utf-8"
-            )
+            (dest / "vellum_last_run.json").write_text(json.dumps(slim, indent=2, default=str), encoding="utf-8")
         except OSError:
             pass
 
     report["ok"] = all(
-        s.get("ok", True)
-        for s in report["steps"]
-        if s.get("id") in ("bootstrap", "guardian", "agent")
+        s.get("ok", True) for s in report["steps"] if s.get("id") in ("bootstrap", "guardian", "agent")
     )
     return report
 
