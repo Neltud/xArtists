@@ -1,6 +1,5 @@
 /**
- * ScStatusBanner — honest on-chain readiness (no false "live market").
- * Reads contracts.json mirror; agents_marketplace null = not live.
+ * ScStatusBanner — honest on-chain readiness (address ≠ codeHash live).
  */
 import { useEffect, useState } from 'react'
 
@@ -45,34 +44,34 @@ export default function ScStatusBanner({ className = '' }: { className?: string 
     }
   }, [])
 
-  const agentsLive = Boolean(c?.contracts?.agents_marketplace)
-  const marketLive = Boolean(c?.contracts?.marketplace)
+  const agentsAddr = c?.contracts?.agents_marketplace
+  const marketAddr = c?.contracts?.marketplace
+  const agentsConfigured = Boolean(agentsAddr)
+  const marketConfigured = Boolean(marketAddr)
 
   return (
     <div
-      className={`rounded-xl border px-4 py-3 text-xs ${
-        agentsLive && marketLive
-          ? 'border-emerald-500/30 bg-emerald-950/20 text-emerald-200'
-          : 'border-orange-500/30 bg-orange-950/20 text-orange-200'
-      } ${className}`}
+      className={`rounded-xl border px-4 py-3 text-xs border-orange-500/30 bg-orange-950/20 text-orange-200 ${className}`}
     >
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <span className="font-semibold">
           SC · {c?.network ?? 'mainnet'} (chain {c?.chainId ?? '1'})
         </span>
         <span>
-          Marketplace NFT : {marketLive ? `live ${shortAddr(c?.contracts?.marketplace)}` : 'adresse absente'}
+          Marketplace NFT :{' '}
+          {marketConfigured
+            ? `configuré ${shortAddr(marketAddr)} — vérifier codeHash explorer`
+            : 'adresse absente'}
         </span>
         <span>
           Agents Marketplace :{' '}
-          {agentsLive ? `live ${shortAddr(c?.contracts?.agents_marketplace)}` : 'non déployé (null)'}
+          {agentsConfigured ? `configuré ${shortAddr(agentsAddr)}` : 'non déployé (null)'}
         </span>
       </div>
-      {!agentsLive && (
-        <p className="mt-1 text-[11px] opacity-80">
-          Pas de faux « live market » agents tant que codeHash + adresse mainnet ne sont pas publiés.
-        </p>
-      )}
+      <p className="mt-1 text-[11px] opacity-80">
+        List / Buy / Bid on-chain seulement après codeHash ≠ null et micro-preuves. Jusque-là :
+        consultation + Studio / pin — pas de faux « market live ».
+      </p>
     </div>
   )
 }
