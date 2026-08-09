@@ -1,7 +1,7 @@
 {
-  "version": 1,
+  "version": 2,
   "network": "mainnet",
-  "updated": "2026-08-08T15:10:00Z",
+  "updated": "2026-08-09T19:30:00Z",
   "api": {
     "mvx": "https://api.multiversx.com",
     "timeout_sec": 12
@@ -13,6 +13,13 @@
     "centralized_weight": 0.75,
     "min_sources": 1,
     "reject_if_stale": true
+  },
+  "trading_universe": {
+    "policy": "Any liquid ESDT with oracle mark may be used for buy/sell/TP subject to lia/policy/esdt_universe.py gates",
+    "core": ["WEGLD-bd4d79", "USDC-c76f1f", "USDT-f8cf68", "MEX-455c57"],
+    "deny_default": ["TRO-94c925"],
+    "liq_floor_usd": 25000,
+    "max_oracle_age_sec": 120
   },
   "pairs": [
     {
@@ -39,17 +46,25 @@
       "sources": ["mvx_token:TRO-94c925"],
       "use_for": ["dashboard", "dao_display"],
       "note": "Illiquid — mark-to-market only, not treasury cash equivalent"
+    },
+    {
+      "symbol": "MEX-USD",
+      "primary": "mvx_token:MEX-455c57",
+      "sources": ["mvx_token:MEX-455c57"],
+      "use_for": ["trade", "board"]
     }
   ],
   "tokens": {
     "WEGLD": "WEGLD-bd4d79",
     "USDC": "USDC-c76f1f",
     "TRO": "TRO-94c925",
-    "MEX": "MEX-455c57"
+    "MEX": "MEX-455c57",
+    "USDT": "USDT-f8cf68"
   },
   "notes": [
-    "MultiversX has no Chainlink-style push oracle in-repo; prices are indexer-derived from on-chain DEX activity (api.multiversx.com/tokens + /economics).",
+    "MultiversX has no Chainlink-style push oracle in-repo; prices are indexer-derived from on-chain DEX activity.",
     "CEX (CoinGecko) is secondary reference with lower weight.",
-    "Do not execute live trades on a single stale source."
+    "Do not execute live trades on a single stale source.",
+    "v2: trading_universe + ESDT gates — not every token live without liquidity."
   ]
 }
