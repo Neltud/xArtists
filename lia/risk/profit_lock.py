@@ -75,3 +75,21 @@ class ProfitLedger:
             lockdown_count=int(raw.get("lockdown_count", 0)),
             updated=float(raw.get("updated", time.time())),
         )
+
+
+def credit_for_equity(
+    ledger: "ProfitLedger",
+    net_usd: float,
+    equity_usd: float,
+    *,
+    start: float = 3.0,
+    goal: float = 1_000_000.0,
+) -> dict[str, float]:
+    """Adaptive lock ratio from million_path phase (70% default mid-path)."""
+    try:
+        from lia.circuit.million_path import adaptive_lock_ratio
+
+        ratio = adaptive_lock_ratio(equity_usd, start, goal)
+    except Exception:
+        ratio = 0.70
+    return ledger.credit(net_usd, lock_ratio=ratio)
