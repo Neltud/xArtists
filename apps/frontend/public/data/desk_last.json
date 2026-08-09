@@ -1,0 +1,18 @@
+{
+  "updated": "2026-08-09T15:16:00Z",
+  "desk": {
+    "action": "YIELD",
+    "confidence": 0.35,
+    "net_score": 0.0,
+    "risk_veto": false,
+    "agreement": 0.5,
+    "rationale": "stub — run python -m lia.vellum.pipeline",
+    "roles": [],
+    "paper": true
+  },
+  "fuse": {
+    "action": "YIELD",
+    "source": "stub"
+  },
+  "pipeline": "1.3"
+}
