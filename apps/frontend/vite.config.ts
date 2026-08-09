@@ -13,6 +13,7 @@ export default defineConfig({
     minify: 'esbuild',
     reportCompressedSize: true,
     chunkSizeWarningLimit: 700,
+    assetsInlineLimit: 4096,
     modulePreload: { polyfill: true },
     rollupOptions: {
       output: {
@@ -27,7 +28,6 @@ export default defineConfig({
     },
   },
   esbuild: {
-    // Strip debug noise in production bundles
     drop: process.env.NODE_ENV === 'production' || process.env.CI ? ['console', 'debugger'] : [],
     legalComments: 'none',
   },
