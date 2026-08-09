@@ -1,13 +1,19 @@
 """
-LIA Vellum — unified trading + data pipeline (canonical entry).
-==============================================================
-Organized cycle:
-  bootstrap → oracles → gas → board → (social soft) → agent
-  → desk debate + fuse → mode select → Guardian → TradingStack → arb scan
-  → hatom → mirror → status / vellum_last_run
+LIA Vellum pipeline v1.3 — canonical cycle (paper-first).
+=======================================================
+Order:
+  bootstrap → oracles → gas → board → social → agent
+  → desk + fuse → mode → Guardian → TradingStack (skip if DEFENSE)
+  → live_cycle → hatom → mirror → status / vellum_last_run
 
-Never sends PEM unless LIA_LIVE_TRADING=1 (still gated).
-Mainnet only (CHAIN=1).
+v1.3:
+  - per-step timing_ms
+  - desk_last.json + fuse in last_run
+  - early skip trading_stack when DEFENSE / risk_veto
+  - summary block (actions, ok, elapsed)
+  - soft failures never abort whole cycle (except chain != 1)
+
+LIA_LIVE_TRADING default 0 · mainnet only · no PEM auto-send.
 """
 from __future__ import annotations
 
@@ -18,15 +24,35 @@ from pathlib import Path
 from typing import Any, Optional
 
 ROOT = Path(__file__).resolve().parents[2]
+VERSION = "1.3"
 
 
 def _ts() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
-def _step(report: dict, sid: str, ok: bool, **extra: Any) -> None:
-    row = {"id": sid, "ok": ok, **extra}
+def _step(report: dict, sid: str, ok: bool, t0: float, **extra: Any) -> None:
+    row = {
+        "id": sid,
+        "ok": ok,
+        "timing_ms": round((time.perf_counter() - t0) * 1000, 1),
+        **extra,
+    }
     report.setdefault("steps", []).append(row)
+
+
+def _mirror_json(name: str, payload: dict[str, Any]) -> None:
+    raw = json.dumps(payload, indent=2, default=str)
+    for dest in (
+        ROOT / "data" / name,
+        ROOT / "docs" / "data" / name,
+        ROOT / "apps" / "frontend" / "public" / "data" / name,
+    ):
+        try:
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_text(raw, encoding="utf-8")
+        except OSError:
+            pass
 
 
 def run_pipeline(
@@ -36,6 +62,7 @@ def run_pipeline(
     publish: bool = True,
     run_stack_demo: bool = False,
 ) -> dict[str, Any]:
+    wall0 = time.perf_counter()
     if "LIA_LIVE_TRADING" not in os.environ:
         os.environ["LIA_LIVE_TRADING"] = "0"
     if "CHAIN" not in os.environ:
@@ -46,7 +73,7 @@ def run_pipeline(
     report: dict[str, Any] = {
         "ts": _ts(),
         "pipeline": "lia.vellum.pipeline",
-        "version": "1.2",
+        "version": VERSION,
         "live": live,
         "chain_id": chain,
         "steps": [],
@@ -55,46 +82,56 @@ def run_pipeline(
 
     if chain != "1":
         report["error"] = "MAINNET ONLY — refuse chain != 1"
-        _step(report, "bootstrap", False, error=report["error"])
+        _step(report, "bootstrap", False, wall0, error=report["error"])
+        report["elapsed_ms"] = round((time.perf_counter() - wall0) * 1000, 1)
         return report
-    _step(report, "bootstrap", True, live=live, tp_mode=os.environ.get("LIA_TP_MODE", "log"))
 
+    t0 = time.perf_counter()
+    _step(report, "bootstrap", True, t0, live=live, tp_mode=os.environ.get("LIA_TP_MODE", "log"))
+
+    # --- 1 Oracles ---
+    t0 = time.perf_counter()
+    egld = 0.0
     try:
         from lia.oracles.publish import publish as oracle_pub
 
         p = oracle_pub()
-        egld = 0.0
         op = ROOT / "data" / "oracle_prices.json"
         if op.exists():
             oj = json.loads(op.read_text(encoding="utf-8"))
             egld = float(oj.get("egld_usd") or oj.get("price") or 0)
-        _step(report, "oracles", True, path=str(p), egld_usd=egld)
         report["egld_usd"] = egld
+        _step(report, "oracles", True, t0, path=str(p), egld_usd=egld)
     except Exception as e:
-        _step(report, "oracles", False, error=str(e))
-        egld = 0.0
+        _step(report, "oracles", False, t0, error=str(e))
 
+    # --- 2 Gas ---
+    t0 = time.perf_counter()
     try:
         from lia.gas.publish import publish as gas_pub
 
-        _step(report, "gas", True, path=str(gas_pub()))
+        _step(report, "gas", True, t0, path=str(gas_pub()))
     except Exception as e:
-        _step(report, "gas", False, error=str(e))
+        _step(report, "gas", False, t0, error=str(e))
 
+    # --- 3 Board ---
+    t0 = time.perf_counter()
     try:
         from lia.board.publish import publish as board_pub
 
-        _step(report, "board", True, path=str(board_pub()))
+        _step(report, "board", True, t0, path=str(board_pub()))
     except Exception as e:
-        _step(report, "board", False, error=str(e))
+        _step(report, "board", False, t0, error=str(e))
 
+    # --- 4 Social ---
+    t0 = time.perf_counter()
     try:
         from lia.signals.social_intel import refresh as social_refresh  # type: ignore
 
         s = social_refresh() if callable(social_refresh) else {}
-        _step(report, "social", True, summary=str(s)[:120] if s else "ok")
+        _step(report, "social", True, t0, summary=str(s)[:120] if s else "ok")
     except Exception as e:
-        _step(report, "social", True, skipped=True, note=str(e)[:80])
+        _step(report, "social", True, t0, skipped=True, note=str(e)[:80])
 
     m = dict(market or {})
     m.setdefault("token", "WEGLD-bd4d79")
@@ -116,7 +153,9 @@ def run_pipeline(
         "compound_intensity": 0.2,
     }
 
-    decision = None
+    # --- 5 Agent ---
+    t0 = time.perf_counter()
+    ad: dict[str, Any] = {}
     try:
         from lia.agents.mvx_agent import decide
 
@@ -137,12 +176,15 @@ def run_pipeline(
         )
         ad = decision.to_dict() if hasattr(decision, "to_dict") else dict(decision)
         report["agent"] = ad
-        _step(report, "agent", True, action=ad.get("action"), confidence=ad.get("confidence"))
+        _step(report, "agent", True, t0, action=ad.get("action"), confidence=ad.get("confidence"))
     except Exception as e:
         report["agent"] = {"error": str(e)}
-        _step(report, "agent", False, error=str(e))
-        ad = {}
+        _step(report, "agent", False, t0, error=str(e))
 
+    # --- 5b Desk + fuse ---
+    t0 = time.perf_counter()
+    desk_v: dict[str, Any] = {}
+    fused: dict[str, Any] = {}
     try:
         from lia.circuit.desk_debate import debate as desk_debate, fuse_agent_desk
 
@@ -160,7 +202,8 @@ def run_pipeline(
             drawdown=float(pf.get("drawdown") or 0),
             spread_edge=float(m.get("spread_edge") or 0),
         )
-        report["desk"] = desk.to_dict()
+        desk_v = desk.to_dict()
+        report["desk"] = desk_v
         fused = fuse_agent_desk(
             str(ad.get("action") or "WAIT"),
             float(ad.get("confidence") or 0),
@@ -168,10 +211,15 @@ def run_pipeline(
             agent_size_hint=float(ad.get("size_usd_hint") or 0),
         )
         report["fuse"] = fused
+        _mirror_json(
+            "desk_last.json",
+            {"updated": report["ts"], "desk": desk_v, "fuse": fused, "pipeline": VERSION},
+        )
         _step(
             report,
             "desk",
             True,
+            t0,
             action=desk.action,
             risk_veto=desk.risk_veto,
             confidence=desk.confidence,
@@ -181,12 +229,14 @@ def run_pipeline(
         if not ad.get("action") or str(ad.get("action")).upper() in ("WAIT", "HOLD", ""):
             report["desk_fuse_hint"] = fused.get("action") or desk.action
     except Exception as e:
-        _step(report, "desk", False, error=str(e))
+        _step(report, "desk", False, t0, error=str(e))
 
+    # --- 6 Mode ---
+    t0 = time.perf_counter()
+    mode_id = "YIELD"
     try:
         from lia.circuit.trading_modes import select_mode
 
-        desk_v = report.get("desk") or {}
         fuse_action = str(ad.get("action") or "WAIT")
         if desk_v.get("risk_veto"):
             fuse_action = "YIELD"
@@ -203,16 +253,18 @@ def run_pipeline(
             drawdown_pct=float(pf.get("drawdown") or 0),
         )
         report["mode"] = mode.to_dict() if hasattr(mode, "to_dict") else {"id": str(mode)}
-        _step(report, "mode", True, mode_id=report["mode"].get("id"))
         mode_id = str(report["mode"].get("id") or "YIELD")
+        _step(report, "mode", True, t0, mode_id=mode_id)
     except Exception as e:
-        mode_id = "YIELD"
         report["mode"] = {"id": mode_id, "error": str(e)}
-        _step(report, "mode", False, error=str(e))
+        _step(report, "mode", False, t0, error=str(e))
 
+    # --- 7 Guardian ---
+    t0 = time.perf_counter()
     equity = float(pf.get("equity_usd") or 100)
     size_hint = float(ad.get("size_usd_hint") or 0)
     notional = float(pf.get("notional_usd") or 0) or size_hint
+    g: dict[str, Any] = {"allow": False, "reason": "unset"}
     try:
         from lia.vellum.guardian_hook import check_before_open
 
@@ -226,51 +278,71 @@ def run_pipeline(
             mode=mode_id,
         )
         report["guardian"] = g
-        _step(report, "guardian", bool(g.get("allow")), reason=g.get("reason"))
+        _step(report, "guardian", bool(g.get("allow")), t0, reason=g.get("reason"))
     except Exception as e:
         g = {"allow": False, "reason": f"guardian_error:{e}"}
         report["guardian"] = g
-        _step(report, "guardian", False, error=str(e))
+        _step(report, "guardian", False, t0, error=str(e))
 
+    # --- 8 TradingStack (skip heavy path on DEFENSE / risk_veto) ---
+    t0 = time.perf_counter()
+    defense = mode_id.upper() in ("DEFENSE", "RISK_OFF") or bool(desk_v.get("risk_veto"))
     try:
         from lia.circuit.trading_stack import TradingStack
 
         stack = TradingStack()
-        stack_out: dict[str, Any] = {"status": stack.status()}
-        if run_stack_demo and g.get("allow") and mode_id not in ("DEFENSE", "RISK_OFF"):
-            if str(ad.get("action") or "").upper() == "BUY" and float(m.get("price") or 0) > 0:
-                prop = stack.propose_entry(
-                    strategy=str(ad.get("strategy") or "MOMENTUM"),
-                    chain="multiversx",
-                    token=str(m.get("token") or "WEGLD-bd4d79"),
-                    entry=float(m["price"]),
-                    size_usd=min(float(ad.get("size_usd_hint") or 10), float(g.get("max_notional") or 25)),
-                    equity_usd=equity,
-                    expected_gross=0.015,
-                    mode=mode_id,
-                    drawdown=float(pf.get("drawdown") or 0),
-                    consecutive_wins=int(pf.get("consecutive_wins") or 0),
-                    tp_mode=os.environ.get("LIA_TP_MODE", "log"),
-                    atr=float(m.get("atr") or 0),
-                )
-                stack_out["propose"] = prop
-        stack_out["arb"] = stack.scan_cross_arb(force_paper=True)
-        stack_out["status"] = stack.status()
-        report["trading_stack"] = {
-            "live_flag": live,
-            "ledger": stack_out["status"].get("ledger"),
-            "arb_best": ((stack_out.get("arb") or {}).get("scan") or {}).get("best"),
-        }
-        _step(report, "trading_stack", True, mode=mode_id, guardian_allow=bool(g.get("allow")))
+        if defense and not run_stack_demo:
+            st = stack.status()
+            report["trading_stack"] = {
+                "skipped": True,
+                "reason": "defense_or_risk_veto",
+                "live_flag": live,
+                "ledger": st.get("ledger"),
+            }
+            # Still cheap arb scan paper
+            report["trading_stack"]["arb"] = stack.scan_cross_arb(force_paper=True)
+            _step(report, "trading_stack", True, t0, skipped=True, mode=mode_id)
+        else:
+            stack_out: dict[str, Any] = {"status": stack.status()}
+            if run_stack_demo and g.get("allow") and not defense:
+                if str(ad.get("action") or "").upper() == "BUY" and float(m.get("price") or 0) > 0:
+                    prop = stack.propose_entry(
+                        strategy=str(ad.get("strategy") or "MOMENTUM"),
+                        chain="multiversx",
+                        token=str(m.get("token") or "WEGLD-bd4d79"),
+                        entry=float(m["price"]),
+                        size_usd=min(
+                            float(ad.get("size_usd_hint") or 10),
+                            float(g.get("max_notional") or 25),
+                        ),
+                        equity_usd=equity,
+                        expected_gross=0.015,
+                        mode=mode_id,
+                        drawdown=float(pf.get("drawdown") or 0),
+                        consecutive_wins=int(pf.get("consecutive_wins") or 0),
+                        tp_mode=os.environ.get("LIA_TP_MODE", "log"),
+                        atr=float(m.get("atr") or 0),
+                    )
+                    stack_out["propose"] = prop
+            stack_out["arb"] = stack.scan_cross_arb(force_paper=True)
+            stack_out["status"] = stack.status()
+            report["trading_stack"] = {
+                "live_flag": live,
+                "ledger": stack_out["status"].get("ledger"),
+                "arb_best": ((stack_out.get("arb") or {}).get("scan") or {}).get("best"),
+            }
+            _step(report, "trading_stack", True, t0, mode=mode_id, guardian_allow=bool(g.get("allow")))
     except Exception as e:
-        _step(report, "trading_stack", False, error=str(e))
+        _step(report, "trading_stack", False, t0, error=str(e))
 
+    # --- 9 Live cycle trailing ---
+    t0 = time.perf_counter()
     try:
         from lia.vellum.live_cycle import run_cycle
 
         live_c = run_cycle(
-            decision=str(ad.get("action") or "WAIT"),
-            confidence=float(ad.get("confidence") or 0.4),
+            decision=str(ad.get("action") or fused.get("action") or "WAIT"),
+            confidence=float(ad.get("confidence") or fused.get("confidence") or 0.4),
             size_usd=float(ad.get("size_usd_hint") or 0),
             token=str(ad.get("token") or m.get("token") or "WEGLD-bd4d79"),
             entry=float(m.get("price") or 0) or None,
@@ -278,46 +350,62 @@ def run_pipeline(
             side="LONG",
         )
         report["live_cycle"] = live_c
-        _step(report, "live_cycle", True)
+        _step(report, "live_cycle", True, t0)
     except Exception as e:
-        _step(report, "live_cycle", False, error=str(e))
+        _step(report, "live_cycle", False, t0, error=str(e))
 
+    # --- 10 Hatom ---
+    t0 = time.perf_counter()
     try:
         from lia.vellum.publish_hatom import publish as pub_hatom
 
-        _step(report, "hatom", True, path=str(pub_hatom()))
+        _step(report, "hatom", True, t0, path=str(pub_hatom()))
     except Exception as e:
         try:
             from lia.venues.hatom import publish_hatom
 
-            _step(report, "hatom", True, path=str(publish_hatom()))
+            _step(report, "hatom", True, t0, path=str(publish_hatom()))
         except Exception as e2:
-            _step(report, "hatom", False, error=str(e2))
+            _step(report, "hatom", False, t0, error=str(e2))
 
+    # --- 11 Mirror ---
+    t0 = time.perf_counter()
     if publish:
         try:
             from lia.vellum.publish_data_for_frontend import publish as mirror
 
             mres = mirror()
-            _step(report, "mirror", bool(mres.get("ok", True)), copied=mres.get("copied"), missing=mres.get("missing"))
+            _step(
+                report,
+                "mirror",
+                bool(mres.get("ok", True)),
+                t0,
+                copied=mres.get("copied"),
+                missing=mres.get("missing"),
+            )
         except Exception as e:
-            _step(report, "mirror", False, error=str(e))
+            _step(report, "mirror", False, t0, error=str(e))
     else:
-        _step(report, "mirror", True, skipped=True)
+        _step(report, "mirror", True, t0, skipped=True)
 
+    # --- 12 Executor health ---
+    t0 = time.perf_counter()
     try:
         from lia.executor.universal import health_report
 
         report["executor"] = health_report()
-        _step(report, "executor_health", True, live=live)
+        _step(report, "executor_health", True, t0, live=live)
     except Exception as e:
-        _step(report, "executor_health", False, error=str(e))
+        _step(report, "executor_health", False, t0, error=str(e))
 
+    t0 = time.perf_counter()
     if live:
-        _step(report, "live_trading", False, error="LIVE=1 — no auto-send in pipeline")
+        _step(report, "live_trading", False, t0, error="LIVE=1 — no auto-send in pipeline")
     else:
-        _step(report, "live_trading", True, skipped=True, LIA_LIVE_TRADING=0)
+        _step(report, "live_trading", True, t0, skipped=True, LIA_LIVE_TRADING=0)
 
+    # --- Status ---
+    t0 = time.perf_counter()
     try:
         status_path = ROOT / "data" / "lia_v6_status.json"
         status: dict[str, Any] = {}
@@ -332,36 +420,42 @@ def run_pipeline(
         status["status"] = status.get("status") or "monitoring"
         status["orchestrator"] = {
             "pipeline": "lia.vellum.pipeline",
-            "version": "1.2",
+            "version": VERSION,
             "chain_id": chain,
             "live_trading": live,
             "agent_action": ad.get("action"),
-            "desk_action": (report.get("desk") or {}).get("action"),
-            "fuse": report.get("fuse"),
+            "desk_action": desk_v.get("action"),
+            "fuse": fused,
             "mode": mode_id,
-            "guardian": report.get("guardian"),
+            "guardian": g,
         }
         status_path.parent.mkdir(parents=True, exist_ok=True)
         status_path.write_text(json.dumps(status, indent=2), encoding="utf-8")
-        _step(report, "status", True, path=str(status_path))
+        _step(report, "status", True, t0, path=str(status_path))
     except Exception as e:
-        _step(report, "status", False, error=str(e))
+        _step(report, "status", False, t0, error=str(e))
 
-    out = ROOT / "data" / "vellum_last_run.json"
-    out.parent.mkdir(parents=True, exist_ok=True)
+    elapsed = round((time.perf_counter() - wall0) * 1000, 1)
+    fails = [s["id"] for s in report["steps"] if not s.get("ok", True)]
+    report["summary"] = {
+        "version": VERSION,
+        "elapsed_ms": elapsed,
+        "mode": mode_id,
+        "agent": ad.get("action"),
+        "desk": desk_v.get("action"),
+        "fuse": fused.get("action") if fused else None,
+        "fuse_source": fused.get("source") if fused else None,
+        "guardian_allow": bool(g.get("allow")),
+        "risk_veto": bool(desk_v.get("risk_veto")),
+        "failed_steps": fails,
+        "ok": len(fails) == 0 or set(fails).isdisjoint({"bootstrap"}),
+    }
+    report["elapsed_ms"] = elapsed
+    report["ok"] = report["summary"]["ok"]
+
     slim = {k: v for k, v in report.items() if k != "trading_stack_detail"}
-    out.write_text(json.dumps(slim, indent=2, default=str), encoding="utf-8")
-    report["wrote"] = str(out)
-    for dest in (ROOT / "docs" / "data", ROOT / "apps" / "frontend" / "public" / "data"):
-        try:
-            dest.mkdir(parents=True, exist_ok=True)
-            (dest / "vellum_last_run.json").write_text(json.dumps(slim, indent=2, default=str), encoding="utf-8")
-        except OSError:
-            pass
-
-    report["ok"] = all(
-        s.get("ok", True) for s in report["steps"] if s.get("id") in ("bootstrap", "guardian", "agent")
-    )
+    _mirror_json("vellum_last_run.json", slim)
+    report["wrote"] = str(ROOT / "data" / "vellum_last_run.json")
     return report
 
 
