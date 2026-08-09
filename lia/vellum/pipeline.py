@@ -3,7 +3,7 @@ LIA Vellum — unified trading + data pipeline (canonical entry).
 ==============================================================
 Organized cycle:
   bootstrap → oracles → gas → board → (social soft) → agent
-  → mode select → Guardian → TradingStack → arb scan
+  → desk debate → mode select → Guardian → TradingStack → arb scan
   → hatom → mirror → status / vellum_last_run
 
 Never sends PEM unless LIA_LIVE_TRADING=1 (still gated).
@@ -46,7 +46,7 @@ def run_pipeline(
     report: dict[str, Any] = {
         "ts": _ts(),
         "pipeline": "lia.vellum.pipeline",
-        "version": "1.0",
+        "version": "1.1",
         "live": live,
         "chain_id": chain,
         "steps": [],
@@ -64,7 +64,6 @@ def run_pipeline(
         from lia.oracles.publish import publish as oracle_pub
 
         p = oracle_pub()
-        # read egld for market default
         egld = 0.0
         op = ROOT / "data" / "oracle_prices.json"
         if op.exists():
@@ -101,7 +100,6 @@ def run_pipeline(
     except Exception as e:
         _step(report, "social", True, skipped=True, note=str(e)[:80])
 
-    # --- Market defaults ---
     m = dict(market or {})
     m.setdefault("token", "WEGLD-bd4d79")
     if not float(m.get("price") or 0) and egld > 0:
@@ -150,15 +148,53 @@ def run_pipeline(
         _step(report, "agent", False, error=str(e))
         ad = {}
 
+    # --- 5b Desk debate ---
+    try:
+        from lia.circuit.desk_debate import debate as desk_debate
+
+        desk = desk_debate(
+            price=float(m.get("price") or 0),
+            vwap_24h=float(m.get("vwap_24h") or 0),
+            rsi_14=float(m.get("rsi_14") or 50),
+            price_change_1h=float(m.get("price_change_1h") or 0),
+            price_change_24h=float(m.get("price_change_24h") or 0),
+            volume_spike=float(m.get("volume_spike") or 1),
+            gs_regime=str(m.get("gs_regime") or "NEUTRAL"),
+            gs_bias=str(m.get("gs_bias") or "NEUTRAL"),
+            fear_greed=m.get("fear_greed"),
+            rumor_flag=bool(m.get("rumor_flag")),
+            drawdown=float(pf.get("drawdown") or 0),
+            spread_edge=float(m.get("spread_edge") or 0),
+        )
+        report["desk"] = desk.to_dict()
+        _step(
+            report,
+            "desk",
+            True,
+            action=desk.action,
+            risk_veto=desk.risk_veto,
+            confidence=desk.confidence,
+        )
+        if not ad.get("action") or str(ad.get("action")).upper() in ("WAIT", "HOLD", ""):
+            report["desk_fuse_hint"] = desk.action
+    except Exception as e:
+        _step(report, "desk", False, error=str(e))
+
     # --- 6 Mode ---
     try:
         from lia.circuit.trading_modes import select_mode
 
+        desk_v = report.get("desk") or {}
+        fuse_action = str(ad.get("action") or "WAIT")
+        if desk_v.get("risk_veto"):
+            fuse_action = "YIELD"
+        elif fuse_action.upper() in ("WAIT", "HOLD", "") and report.get("desk_fuse_hint"):
+            fuse_action = str(report["desk_fuse_hint"])
         mode = select_mode(
             gs_regime=str(m.get("gs_regime") or "NEUTRAL"),
-            fuse_action=str(ad.get("action") or "WAIT"),
+            fuse_action=fuse_action,
             fuse_strategy=str(ad.get("strategy") or ad.get("primary_strategy") or ""),
-            fuse_confidence=float(ad.get("confidence") or 0),
+            fuse_confidence=float(ad.get("confidence") or desk_v.get("confidence") or 0),
             fear_greed=m.get("fear_greed"),
             rumor_flag=bool(m.get("rumor_flag")),
             has_open_position=bool(pf.get("has_open_position")),
@@ -233,7 +269,6 @@ def run_pipeline(
                         )
                     stack_out["ticks"] = ticks
 
-        # Always paper arb scan (signals)
         stack_out["arb"] = stack.scan_cross_arb(force_paper=True)
         stack_out["status"] = stack.status()
         report["trading_stack"] = {
@@ -254,7 +289,7 @@ def run_pipeline(
     except Exception as e:
         _step(report, "trading_stack", False, error=str(e))
 
-    # --- 9 Live cycle trailing (compat orchestrator) ---
+    # --- 9 Live cycle ---
     try:
         from lia.vellum.live_cycle import run_cycle
 
@@ -303,7 +338,7 @@ def run_pipeline(
     else:
         _step(report, "mirror", True, skipped=True)
 
-    # --- 12 Executor health (no send) ---
+    # --- 12 Executor health ---
     try:
         from lia.executor.universal import health_report
 
@@ -322,7 +357,7 @@ def run_pipeline(
     else:
         _step(report, "live_trading", True, skipped=True, LIA_LIVE_TRADING=0)
 
-    # --- Status file ---
+    # --- Status ---
     try:
         status_path = ROOT / "data" / "lia_v6_status.json"
         status: dict[str, Any] = {}
@@ -341,6 +376,7 @@ def run_pipeline(
             "live_trading": live,
             "tp_mode": os.environ.get("LIA_TP_MODE", "log"),
             "agent_action": ad.get("action"),
+            "desk_action": (report.get("desk") or {}).get("action"),
             "mode": mode_id,
             "guardian": report.get("guardian"),
         }
@@ -350,10 +386,8 @@ def run_pipeline(
     except Exception as e:
         _step(report, "status", False, error=str(e))
 
-    # --- Persist last run ---
     out = ROOT / "data" / "vellum_last_run.json"
     out.parent.mkdir(parents=True, exist_ok=True)
-    # trim detail for size
     slim = {k: v for k, v in report.items() if k != "trading_stack_detail"}
     out.write_text(json.dumps(slim, indent=2, default=str), encoding="utf-8")
     report["wrote"] = str(out)

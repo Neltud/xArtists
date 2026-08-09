@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-Single-process regression runner — avoids N× Python cold starts.
-"""
+"""Single-process regression runner — avoids N× Python cold starts."""
 from __future__ import annotations
 
 import importlib.util
@@ -25,6 +23,7 @@ MODULES = [
     "tests/regression/test_trading_stack_gates.py",
     "tests/regression/test_sc_status_flags.py",
     "tests/regression/test_oracle_config.py",
+    "tests/regression/test_desk_debate.py",
     "lia/bridge/test_latency.py",
     "lia/guardian/test_spiral.py",
     "lia/risk/test_secure_tp.py",
