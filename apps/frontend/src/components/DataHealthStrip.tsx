@@ -9,30 +9,45 @@ const BOARD_URLS = [
 type Health = {
   board: boolean
   boardUpdated?: string
+  oracle: boolean
 }
 
-/** Compact health: board JSON + SC flags (build-time). */
+/** Compact health: board JSON + oracle + SC flags (build-time). */
 export default function DataHealthStrip() {
-  const [h, setH] = useState<Health>({ board: false })
+  const [h, setH] = useState<Health>({ board: false, oracle: false })
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       const t = Date.now()
+      let boardOk = false
+      let boardUpdated: string | undefined
       for (const u of BOARD_URLS) {
         try {
           const r = await fetch(`${u}?t=${t}`, { cache: 'no-store' })
           if (!r.ok) continue
           const j = await r.json()
-          if (!cancelled) {
-            setH({ board: true, boardUpdated: j.updated || j.timestamp })
-          }
-          return
+          boardOk = true
+          boardUpdated = j.updated || j.timestamp
+          break
         } catch {
           /* try next */
         }
       }
-      if (!cancelled) setH({ board: false })
+
+      let oracleOk = false
+      try {
+        const o = await fetch(`${import.meta.env.BASE_URL}data/oracle_prices.json?t=${t}`, {
+          cache: 'no-store',
+        })
+        oracleOk = o.ok
+      } catch {
+        /* ignore */
+      }
+
+      if (!cancelled) {
+        setH({ board: boardOk, boardUpdated, oracle: oracleOk })
+      }
     })()
     return () => {
       cancelled = true
@@ -53,6 +68,7 @@ export default function DataHealthStrip() {
   return (
     <div className="mb-4 flex flex-wrap items-center gap-2 text-[10px] text-gray-500">
       {pill(h.board, h.board ? 'Board OK' : 'Board…')}
+      {pill(h.oracle, h.oracle ? 'Oracle OK' : 'Oracle…')}
       {pill(MARKETPLACE_LIVE, MARKETPLACE_LIVE ? 'NFT SC live' : 'NFT SC pending')}
       {pill(AGENTS_LIVE, AGENTS_LIVE ? 'Agents SC live' : 'Agents SC pending')}
       {h.boardUpdated && (
