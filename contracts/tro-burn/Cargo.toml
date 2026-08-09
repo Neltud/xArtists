@@ -1,0 +1,21 @@
+[package]
+name = "tro-burn"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+multiversx-sc = "0.53.2"
+
+[dev-dependencies]
+multiversx-sc-scenario = "0.53.2"
+
+[profile.release]
+codegen-units = 1
+opt-level = "z"
+lto = true
+debug = false
+panic = "abort"
