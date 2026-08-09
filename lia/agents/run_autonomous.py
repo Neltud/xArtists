@@ -1,5 +1,5 @@
 """
-CLI / Vellum entry — swarm / legacy / integrated (swarm↔compound).
+CLI / Vellum entry — swarm / legacy / integrated (oracle-backed market).
 
   PYTHONPATH=. LIA_LIVE_TRADING=0 python -m lia.agents.run_autonomous
   PYTHONPATH=. python -m lia.agents.run_autonomous --mode integrated
@@ -26,49 +26,25 @@ def _load_json(path: Path) -> dict:
 
 def run_swarm() -> dict:
     from lia.agents.autonomous_swarm import run_swarm_cycle
+    from lia.oracles.market_from_oracle import build_book_from_status, build_market_from_oracle
 
     status = _load_json(ROOT / "data" / "lia_v6_status.json")
-    port = status.get("portfolio") or {}
-    market = {
-        "token": "WEGLD-bd4d79",
-        "price": float((status.get("market") or {}).get("egld_price") or port.get("egld_price") or 0),
-        "rsi_14": float((status.get("market") or {}).get("rsi_14") or 50),
-        "trend_7d_pct": float((status.get("market") or {}).get("trend_7d_pct") or 0),
-        "fear_greed": float((status.get("market") or {}).get("fear_greed") or 50),
-        "gs_bias": str((status.get("market") or {}).get("gs_bias") or "NEUTRAL"),
-        "gs_regime": str((status.get("market") or {}).get("guard_status") or "NEUTRAL"),
-        "liquidity_usd": 150000,
-    }
+    market = build_market_from_oracle(refresh=True, status=status)
     gs = _load_json(ROOT / "data" / "greensmoke_forecasts.json")
     agg = (gs.get("aggregated_signals") or {}) if isinstance(gs, dict) else {}
     if agg.get("bias"):
         market["gs_bias"] = str(agg.get("bias"))
-    book = {
-        "equity_usd": float(port.get("total_usd") or 100),
-        "deployable_usd": float(port.get("deployable_usd") or port.get("total_usd") or 40) * 0.4,
-        "drawdown": float(port.get("drawdown") or 0),
-    }
+    book = build_book_from_status(status)
     return run_swarm_cycle(market=market, book=book, persist=True, settle=True)
 
 
 def run_integrated() -> dict:
     from lia.agents.swarm_compound_bridge import run_integrated_cycle
+    from lia.oracles.market_from_oracle import build_book_from_status, build_market_from_oracle
 
     status = _load_json(ROOT / "data" / "lia_v6_status.json")
-    port = status.get("portfolio") or {}
-    market = {
-        "token": "WEGLD-bd4d79",
-        "price": float((status.get("market") or {}).get("egld_price") or 10),
-        "rsi_14": float((status.get("market") or {}).get("rsi_14") or 50),
-        "trend_7d_pct": float((status.get("market") or {}).get("trend_7d_pct") or 0),
-        "fear_greed": float((status.get("market") or {}).get("fear_greed") or 50),
-        "gs_bias": str((status.get("market") or {}).get("gs_bias") or "NEUTRAL"),
-        "liquidity_usd": 150000,
-    }
-    book = {
-        "equity_usd": float(port.get("total_usd") or 100),
-        "deployable_usd": float(port.get("total_usd") or 40) * 0.4,
-    }
+    market = build_market_from_oracle(refresh=True, status=status)
+    book = build_book_from_status(status)
     return run_integrated_cycle(market=market, book=book, simulate_fill=True)
 
 
