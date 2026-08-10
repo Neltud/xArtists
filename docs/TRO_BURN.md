@@ -1,19 +1,23 @@
-# $TRO burn — `contracts/tro-burn`
+# Burnify xArtists — SC dédié `tro-burn`
 
-## Endpoint
-`burnTro` (payable ESDT) — only configured token (TRO-94c925) → `esdt_local_burn`.
+Pas un service externe. Burn $TRO + rewards EGLD.
 
-## Deploy checklist
-1. Build/deploy wasm (owner LIA ops / multisig)
-2. Token manager: **ESDTLocalBurn** role for SC address
-3. `contracts.json` → `tro_burn: erd1…`
-4. Env: `VITE_TRO_BURN_ADDRESS` + `VITE_TRO_BURN_CODEHASH_OK=1`
-5. Rebuild Pages
+## Flux
+1. Ops : `fundRewards` (EGLD) → pool SC
+2. User : `ESDTTransfer@TRO@amount@burnTro`
+3. Burn on-chain + reward EGLD au burner
+4. `protocol_fee_bps` de la reward → `reward_wallet` (LIA)
 
-## TX
-`ESDTTransfer@TRO-94c925@amount@burnTro` → tro-burn SC
+Pool vide → burn OK, reward 0.
 
-User signs only. LIA never burns user tokens.
+## Init exemple
+- tro = TRO-94c925
+- reward_wallet = LIA ops
+- egld_per_whole_tro = 1e15 (0.001 EGLD / TRO)
+- protocol_fee_bps = 1000 (10%)
+- decimals = 6
 
-## vs partner Burnify
-xArtists = pure deflation. Partner BFY rewards = external, optional later.
+## Env front
+VITE_TRO_BURN_ADDRESS · VITE_TRO_BURN_CODEHASH_OK=1 · VITE_TRO_BURN_EGLD_PER_TRO
+
+Rôle token : ESDTLocalBurn sur le SC.
