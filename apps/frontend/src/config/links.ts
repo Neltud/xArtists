@@ -55,5 +55,5 @@ export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
 export const SECONDARY_ROUTES = [
   { to: '/staking', label: 'Staking', note: '' },
   { to: '/soul-testnet', label: 'Soul (pre-mainnet)', note: 'No mainnet funds' },
-  { to: '/burnify', label: 'Burnify (pre-mainnet)', note: 'UI shell only' },
+  { to: '/burnify', label: 'Burnify (pre-mainnet)', note: 'tro-burn SC + EGLD rewards after deploy' },
 ] as const
