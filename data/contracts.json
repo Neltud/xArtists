@@ -1,7 +1,8 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-08-09T20:35:00Z",
+  "updated": "2026-08-10T20:00:00Z",
+  "chain_note": "MultiversX mainnet config v1.11.11.0 (2026-08-10): miniblock checks, no activation epoch",
   "contracts": {
     "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
     "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
@@ -15,18 +16,17 @@
     "marketplace_mainnet": {
       "codeHash": null,
       "code_empty": true,
-      "verdict": "NOT_DEPLOYED — address is empty account on mainnet",
-      "checked": "2026-08-03"
+      "verdict": "NOT_DEPLOYED — empty account"
     },
     "agents_marketplace": "null — never deployed",
-    "rwa_escrow_bridge": "null — scaffold only",
-    "tro_burn": "null — contracts/tro-burn ready, not deployed"
+    "tro_burn": "null — tro-burn burnTro+fundRewards+LIA fee ready",
+    "rwa_escrow_bridge": "null — scaffold"
   },
   "gaps": {
-    "marketplace": "P0 deploy nft-marketplace wasm and replace address",
-    "agents_marketplace": "P0 deploy agents-marketplace FEE_BPS=300",
-    "tro_burn": "Deploy contracts/tro-burn; grant ESDTLocalBurn; VITE_TRO_BURN_*",
-    "rwa_escrow_bridge": "P2 after market live"
+    "marketplace": "P0 deploy nft-marketplace + codeHash",
+    "agents_marketplace": "P0 deploy FEE_BPS=300",
+    "tro_burn": "Deploy; ESDTLocalBurn; fundRewards; VITE_TRO_BURN_*",
+    "rwa_escrow_bridge": "P2 after market"
   },
-  "notes": "Do not send user funds until codeHash non-null on explorer"
+  "notes": "Do not send user funds until codeHash non-null"
 }
