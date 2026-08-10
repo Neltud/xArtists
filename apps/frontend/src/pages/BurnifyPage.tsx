@@ -4,6 +4,7 @@ import PreMainnetBanner from '../components/PreMainnetBanner'
 import { PRE_MAINNET_MODULES } from '../config/preMainnet'
 import { useBurnTro } from '../hooks/useBurnTro'
 import { LINKS, LIA_WALLET } from '../config/links'
+import { quoteBurnReward } from '../lib/troBurnQuote'
 
 const mod = PRE_MAINNET_MODULES.find((m) => m.id === 'burnify')
 
@@ -25,6 +26,9 @@ export default function BurnifyPage() {
   const [fundEgld, setFundEgld] = useState('0.1')
   const [localErr, setLocalErr] = useState<string | null>(null)
   const [showFund, setShowFund] = useState(false)
+
+  const hint = Number(egldPerTroHint) || 0.001
+  const q = quoteBurnReward(Number(amount) || 0, { egldPerWholeTro: hint, protocolFeeBps: 1000 })
 
   const onBurn = async () => {
     setLocalErr(null)
@@ -62,7 +66,6 @@ export default function BurnifyPage() {
         <p className="text-sm text-zinc-400 mt-2">
           SC <strong className="text-zinc-200">xArtists dédié</strong> (<code className="text-xs">tro-burn</code>)
           : brûle <span className="font-mono">{tokenId}</span>, reward EGLD au burner, fee → wallet LIA.
-          Pas un service externe.
         </p>
       </header>
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 space-y-2 text-sm">
@@ -100,6 +103,21 @@ export default function BurnifyPage() {
             className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-white disabled:opacity-60"
           />
         </label>
+        <div className="rounded-lg bg-zinc-900/80 border border-zinc-800 px-3 py-2 text-xs text-zinc-400 space-y-1">
+          <div className="flex justify-between">
+            <span>Estimate reward (si pool OK)</span>
+            <span className="font-mono text-zinc-200">{q.rewardTotalEgld.toFixed(6)} EGLD</span>
+          </div>
+          <div className="flex justify-between">
+            <span>→ toi</span>
+            <span className="font-mono text-emerald-400/90">{q.toUserEgld.toFixed(6)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>→ LIA (fee 10%)</span>
+            <span className="font-mono text-violet-300/90">{q.toProtocolEgld.toFixed(6)}</span>
+          </div>
+          <p className="text-[10px] text-zinc-600">Indicatif off-chain — le SC plafonne au pool réel.</p>
+        </div>
         {(error || localErr) && (
           <p className="text-sm text-red-400 border border-red-500/30 rounded-lg p-3">
             {localErr || error}
@@ -152,7 +170,12 @@ export default function BurnifyPage() {
         <Link to="/tro" className="text-violet-400 hover:underline">
           ← $TRO
         </Link>
-        <a href={LINKS.explorerAccount(LIA_WALLET)} target="_blank" rel="noreferrer" className="text-zinc-400 hover:underline">
+        <a
+          href={LINKS.explorerAccount(LIA_WALLET)}
+          target="_blank"
+          rel="noreferrer"
+          className="text-zinc-400 hover:underline"
+        >
           Wallet LIA
         </a>
       </div>
