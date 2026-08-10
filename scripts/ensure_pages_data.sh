@@ -13,32 +13,32 @@ CRITICAL=(
   lia_portfolio.json
   hatom_lia.json
   greensmoke_top.json
+  greensmoke_forecasts.json
   ads_active.json
   config.json
   xartists_collections.index.json
   treasury_wallets.json
   post_deploy_report.json
   marketplace_codehash_live.json
+  oracle_prices.json
+  egld_price.json
+  desk_last.json
+  vellum_last_run.json
+  go_live_gates.json
+  pre_mainnet_modules.json
+  agents_catalog.json
+  tro_tokenomics.json
 )
 
-DESTS=(
-  "apps/frontend/public/data"
-  "docs/data"
-)
-
-for dest in "${DESTS[@]}"; do
-  mkdir -p "$dest"
-done
+DESTS=("apps/frontend/public/data" "docs/data")
+for dest in "${DESTS[@]}"; do mkdir -p "$dest"; done
 
 for f in "${CRITICAL[@]}"; do
   if [[ -f "data/$f" ]]; then
-    for dest in "${DESTS[@]}"; do
-      cp -f "data/$f" "$dest/$f"
-    done
+    for dest in "${DESTS[@]}"; do cp -f "data/$f" "$dest/$f"; done
     echo "ok $f"
   else
     echo "miss data/$f"
   fi
 done
-
 echo "ensure_pages_data done"
