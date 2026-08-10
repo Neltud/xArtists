@@ -1,7 +1,8 @@
-# xArtists Roadmap V1 — 7 Priorités
-**Date :** 9 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
+# Roadmap V1 xArtists — 7 priorités
 
-Ce document formalise les 7 axes prioritaires issus de l’analyse dApp complète.
+**Date :** 10 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
+
+Ce document formalise les 7 axes prioritaires issus de l’analyse dApp complète.  
 Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères de done**.
 
 ---
@@ -23,139 +24,96 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 ## 1. Full LIA v6 production + agents marketplace on-chain
 
 ### État actuel
-- LIA v6 : 62 nœuds Vellum, statut `PRODUCTION_MAINNET`
-- `UniversalExecutor` : plus un stub — swaps / stake / unstake / claim + circuit breaker
-- `MxContractCustomNode` : queries NFT staking, TRO, marketplace, minter + cache TTL
-- Audit détaillé : `LIA_V6_OPTIMIZATION_AUDIT.md`
-- Agents Marketplace : SC + ABI + hooks List/Buy + UI livrés (v0.15.0)
+- LIA v6 : 62 nœuds Vellum, statut PRODUCTION_MAINNET
+- UniversalExecutor : plus un stub — swaps / stake / unstake / claim + circuit breaker
+- Agents Marketplace : ABI alignée, hooks List/Buy, UI, deploy script livrés (v0.15.0)
+- Fee split helper + catalog packs limités
 
-### Livrables restants
-| Item | Priorité | Done when |
-|------|----------|-----------|
-| Signature tx live (wallet / pem) dans executor | P0 | Trades mainnet confirmés on-chain |
-| GreenSmokeConsumer branché sur les brains | P1 | Bias regime dans décisions BUY/WAIT |
-| ContrarianBrain implémenté | P1 | 4 % budget, RSI < 30 + fear |
-| Trailing stops + Kelly sizing | P1 | Positions dynamiques |
-| Deploy mainnet agents-marketplace | P0 | Adresses dans contracts.json |
-| PerformanceTracker → `data/lia_performance.json` | P1 | Winrate / drawdown sur Dashboard |
+### Livrables restants (P0)
+- Signature live executor (PEM / wallet) + confirmation on-chain des trades
+- Deploy mainnet agents-marketplace + adresses dans contracts.json
+- GreenSmoke + trailing stops production
+
+### Critères de done
+- Trades LIA visibles on-chain en mainnet
+- List/Buy packs end-to-end sans erreur
 
 ---
 
 ## 2. Marketplace NFT avancé + liquidity pools TRO
 
 ### État actuel
-- UI galerie + filtres + refresh API MultiversX
-- Contrats marketplace / escrow + List/Buy UI + multi-currency notices + burn TRO notices
-- Page `/lp` existante ; pool OneDex TRO/EGLD dans `data/config.json`
+- List/Buy UI + multi-currency notices + burn TRO notices
 - Escrow logic ajoutée (4 août)
+- LP TRO : endpoints + page présente
 
-### Livrables
-| Item | Priorité |
-|------|----------|
-| Boutons List / Buy via sdk-dapp (MARKETPLACE_ABI) end-to-end | P0 |
-| Affichage prix listing on-chain | P0 |
-| LPPoolsPage : add/remove liquidity TRO/EGLD (OneDex) | P1 |
-| Escrow RWA flow complet (photo → AI → metadata) | P1 |
-| Filtres prix / royalties / type | P2 |
+### Livrables restants
+- Burn $TRO on-chain à chaque vente
+- Achat multi-currency natif (EGLD/USDC/TRO)
+- TVL live + charts LP
 
 ---
 
-## 3. Mobile PWA / responsive perfectionné ✅ (base)
+## 3. Mobile PWA / responsive perfectionné
 
-### Livré
-- `apps/frontend/public/manifest.webmanifest`
-- `apps/frontend/public/service-worker.js` (cache shell offline)
-- Meta PWA dans `index.html` (theme-color, apple-mobile-web-app)
-- BottomNav + safe-area + install banner
+### État actuel
+- 🟢 Base livrée : manifest + service-worker + install banner + BottomNav safe-area
 
-### Suite
-- Icons 192/512 générés
-- Audit Lighthouse mobile ≥ 90
+### Améliorations optionnelles
+- Offline caching avancé, push notifications (si besoin)
 
 ---
 
 ## 4. Tests E2E complets + monitoring on-chain
 
 ### État actuel
-- Playwright smoke (dashboard + marketplace) en CI (`e2e.yml`)
-- Vitest au root
-- Monitoring = GitHubReporter + JSON status
+- Smoke Playwright (dashboard + marketplace) en CI
 
-### Livrables
-| Item | Priorité |
-|------|----------|
-| Playwright : wallet mock, marketplace full, DAO vote | P1 |
-| Monitoring : health endpoint + alert Telegram si LIA halt | P1 |
-| Dashboard on-chain : last 20 txs LIA wallet | P2 |
+### Livrables restants
+- Suite étendue (wallet mock, DAO, agents marketplace, trading)
+- Monitoring on-chain (alertes LIA, circuit breakers)
 
 ---
 
 ## 5. Bridge BTC stabilisé + cross-chain RWA
 
 ### État actuel
-- Contrat `contracts/btc-bridge` : fees, config, quorum signatures, pause, admin
-- Endpoint `bridgeBtcToSbtc` (expérimental)
-- Tip BTC address configurée
+- Squelette contracts/btc-bridge + tip BTC
 
 ### Livrables
-| Item | Priorité |
-|------|----------|
-| Tests blackbox bridge (nonce, quorum, pause) | P1 |
-| Relayers config mainnet + monitoring | P1 |
-| UI Tip / Bridge page unifiée | P2 |
-| Lien RWA escrow ↔ sBTC collateral (design) | P2 |
+- Tests blackbox + relayers
+- Documentation latence + sécurité
 
 ---
 
-## 6. Documentation API / OpenAPI + Docker ✅ (base)
+## 6. Documentation API / OpenAPI + Docker
 
-### Livré
-- `docs/openapi.yaml` — contrats + endpoints dApp + MultiversX API used
-- `Dockerfile` multi-stage (Node build → nginx)
-- `docker-compose.yml` (frontend + optionnel proxy)
-
-### Suite
-- Swagger UI sur `/docs/api`
-- CI build image GHCR
+### État actuel
+- 🟢 Base livrée : openapi.yaml + Docker + CI build image GHCR
 
 ---
 
 ## 7. Alignement Supernova (sub-second finality)
 
-### Contexte (9 août 2026)
-- **Mainnet v1.11.10.0 activé le 6 août** (epoch 2198) — améliorations VM. Réseau **stable J+3**.
+### Contexte (10 août 2026)
+- **Mainnet v1.11.10.0 activé le 6 août** (epoch 2198) — améliorations VM. Réseau **stable J+4**.
 - Battle of Nodes depuis mars 2026 (>1B tx, ~120k TPS stress).
-- **Target Supernova mainnet : 10 septembre 2026**.
-- Supernova Arcade disponible pour tests 600 ms.
+- Hardening intensif (rapport 9 août) : intégration tests, guardians, replay historical, transition guards.
+- **Target activation Supernova : 10 septembre 2026**.
 
-### Actions préparatoires
-| Item | Priorité |
-|------|----------|
-| Gas limits recalibrés pour rounds sub-second | P1 (après activation Supernova) |
-| UI : indicateurs finality / shard | P2 |
-| Executor : poll confirmation adaptatif (ms) | P1 |
-| Docs : runbook upgrade validators / SC | P2 |
+### Actions xArtists
+- Préparer gas estimates + UI pour latence ~100–250 ms intra-shard
+- Valider executor LIA post-Supernova
+- Mettre à jour docs dès activation
 
 ---
 
 ## Ordre d’exécution recommandé
 
-1. **P0 immédiat** : signature live executor LIA · deploy mainnet agents/nft marketplace · list/buy end-to-end
-2. **P1 court terme** : GreenSmoke + trailing · E2E Playwright étendu · LP TRO · bridge tests
-3. **P2 medium** : Supernova gas/UI (post 10 sept.) · RWA escrow complet · ML brains
+1) **P0 immédiat** : signature live executor LIA · deploy mainnet agents/nft marketplace · list/buy end-to-end  
+2) **P1 court terme** : GreenSmoke + trailing · E2E Playwright étendu · LP TRO · bridge tests  
+3) **P2** : Supernova alignment (post-10 sept.) · scale monitoring
 
 ---
 
-## Critères de sortie « Production complète »
-
-- [ ] LIA exécute ≥ 1 trade live confirmé / jour sans circuit breaker
-- [ ] Marketplace : list + buy end-to-end depuis le dApp
-- [ ] PWA installable (Lighthouse PWA ≥ 90)
-- [ ] Suite E2E verte en CI
-- [ ] Bridge BTC : tests blackbox + quorum ≥ 2 relayers
-- [ ] OpenAPI publié + image Docker buildable
-- [ ] Checklist Supernova validée post-activation mainnet (10 sept.)
-
----
-
-*Maintenu par Neltud (@tudurioriginal) via Grok — 9 août 2026*
+*Mise à jour : 10 août 2026 — Neltud via Grok*
