@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { getTroInfo, getEgldPrice } from '../services/priceService'
 
 const TRO_ID = 'TRO-94c925'
@@ -55,7 +56,7 @@ export default function TroPage() {
           getTroInfo(),
           getEgldPrice(),
           fetch(`${import.meta.env.BASE_URL}data/config.json`)
-            .then(r => (r.ok ? r.json() : null))
+            .then((r) => (r.ok ? r.json() : null))
             .catch(() => null),
         ])
         if (cancelled) return
@@ -87,7 +88,7 @@ export default function TroPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {BUY_LINKS.filter(l => l.primary).map(l => (
+          {BUY_LINKS.filter((l) => l.primary).map((l) => (
             <a key={l.url} href={l.url} target="_blank" rel="noreferrer" className="btn-primary text-sm">
               {l.icon} Buy $TRO
             </a>
@@ -148,7 +149,7 @@ export default function TroPage() {
           <div className="card mb-6 border-purple-500/30 bg-purple-500/5">
             <h2 className="text-lg font-bold mb-2">Acheter $TRO</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {BUY_LINKS.map(l => (
+              {BUY_LINKS.map((l) => (
                 <a
                   key={l.url}
                   href={l.url}
@@ -175,6 +176,20 @@ export default function TroPage() {
               </div>
             </div>
           )}
+
+          <div className="rounded-xl border border-orange-500/25 bg-orange-950/20 p-4 mb-6">
+            <h2 className="font-semibold text-orange-100 mb-1">🔥 Burnify · déflation $TRO</h2>
+            <p className="text-sm text-zinc-400 mb-3">
+              SC xArtists dédié : brûle $TRO et peut redistribuer de l'EGLD (pool LIA). Pre-mainnet
+              jusqu'au deploy + codeHash.
+            </p>
+            <Link
+              to="/burnify"
+              className="inline-flex rounded-lg bg-orange-600/90 hover:bg-orange-500 px-4 py-2 text-sm font-medium text-white"
+            >
+              Ouvrir Burnify →
+            </Link>
+          </div>
         </>
       )}
     </div>
