@@ -14,6 +14,7 @@ import { LINKS } from '../config/links'
 import TxCapabilityBanner from './TxCapabilityBanner'
 import UserWalletGuard from './UserWalletGuard'
 import { canListBuyNft, isLiaOpsWallet } from '../config/scStatus'
+import { signBlockReason } from '../lib/txCapability'
 
 interface Props {
   nft: NFT | null
@@ -28,7 +29,7 @@ export default function NFTDetailModal({
   initialAction = null,
   initialListingId = null,
 }: Props) {
-  const { isLoggedIn, address } = useWeb3()
+  const { isLoggedIn, address, method } = useWeb3()
   const {
     listNft,
     buyNft,
@@ -80,6 +81,7 @@ export default function NFTDetailModal({
   const royalties = nftRoyalties(nft)
   const id = parseInt(listingId, 10)
   const live = canListBuyNft()
+  const signBlock = signBlockReason(method)
 
   const guard = (fn: () => Promise<unknown>) => async () => {
     setTxMsg(null)
@@ -95,6 +97,10 @@ export default function NFTDetailModal({
       setTxMsg('Wallet protocole LIA interdit pour List/Buy — utilise ton wallet')
       return
     }
+    if (signBlock) {
+      setTxMsg(signBlock)
+      return
+    }
     try {
       await fn()
       setTxMsg('TX soumise — confirme dans le wallet si demandé')
@@ -102,6 +108,8 @@ export default function NFTDetailModal({
       setTxMsg(e instanceof Error ? e.message : 'Erreur')
     }
   }
+
+  const txDisabled = pending || !live || !!signBlock
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 animate-fade-in" role="dialog">
@@ -126,7 +134,8 @@ export default function NFTDetailModal({
             <h2 className="text-2xl font-black">{nft.name || 'Untitled'}</h2>
             <p className="mono text-xs text-gray-500">{nft.identifier}</p>
             <p className="text-xs text-gray-400">
-              {nft.collection_name} · {nonceLabel(nft)} · royalties {royalties ?? '—'}% · {typeLabel(nft.type)}
+              {nft.collection_name} · {nonceLabel(nft)} · royalties {royalties ?? '—'}% ·{' '}
+              {typeLabel(nft.type)}
             </p>
             <TxCapabilityBanner />
             {!live && (
@@ -168,7 +177,7 @@ export default function NFTDetailModal({
                 className="rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
               />
               <span className="normal-case text-gray-600">
-                P1 : index on-chain des listings pour supprimer la saisie manuelle
+                P1 : index on-chain (`data/listings_index.json`) pour supprimer la saisie manuelle
               </span>
             </label>
 
@@ -183,7 +192,7 @@ export default function NFTDetailModal({
                 />
                 <button
                   type="button"
-                  disabled={pending || !live}
+                  disabled={txDisabled}
                   className="btn-primary text-sm"
                   onClick={guard(() => buyNft({ listingId: id, priceEgld: parseFloat(buyPrice) }))}
                 >
@@ -202,10 +211,14 @@ export default function NFTDetailModal({
                 />
                 <button
                   type="button"
-                  disabled={pending || !live}
+                  disabled={txDisabled}
                   className="btn-primary text-sm"
                   onClick={guard(() =>
-                    listNft({ tokenId: nft.collection, nonce: nft.nonce, priceEgld: parseFloat(listPrice) })
+                    listNft({
+                      tokenId: nft.collection,
+                      nonce: nft.nonce,
+                      priceEgld: parseFloat(listPrice),
+                    })
                   )}
                 >
                   List / Sell
@@ -223,7 +236,7 @@ export default function NFTDetailModal({
                 />
                 <button
                   type="button"
-                  disabled={pending || !live}
+                  disabled={txDisabled}
                   className="btn-primary text-sm"
                   onClick={guard(() => placeBid({ listingId: id, amountEgld: parseFloat(bidPrice) }))}
                 >
@@ -231,7 +244,7 @@ export default function NFTDetailModal({
                 </button>
                 <button
                   type="button"
-                  disabled={pending || !live}
+                  disabled={txDisabled}
                   className="btn-secondary text-sm"
                   onClick={guard(() => withdrawBid(id))}
                 >
@@ -244,7 +257,7 @@ export default function NFTDetailModal({
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  disabled={pending || !live}
+                  disabled={txDisabled}
                   className="btn-secondary text-sm"
                   onClick={guard(() => acceptBid(id))}
                 >
@@ -252,7 +265,7 @@ export default function NFTDetailModal({
                 </button>
                 <button
                   type="button"
-                  disabled={pending || !live}
+                  disabled={txDisabled}
                   className="btn-secondary text-sm"
                   onClick={guard(() => cancelListing(id))}
                 >
@@ -264,13 +277,10 @@ export default function NFTDetailModal({
             {tab === 'offer' && (
               <div className="rounded-xl border border-dashed border-gray-600 bg-[#0a0a0f] px-3 py-3 text-xs text-gray-400 space-y-2">
                 <p>
-                  <strong className="text-gray-300">Offer</strong> n’a pas d’endpoint on-chain.
-                  Pas d’escrow dédié en V1 — évite les faux « offre acceptée ».
+                  <strong className="text-gray-300">Offer</strong> n’a pas d’endpoint on-chain (voir{' '}
+                  <code className="text-[10px]">docs/OFFER_V2_DEFERRED.md</code>).
                 </p>
-                <p>
-                  V2 prévu : SC escrow (lock EGLD + accept/refuse vendeur). Jusque-là utilise Bid si le
-                  listing est live, ou contact hors chaîne sans promesse on-chain.
-                </p>
+                <p>Utilise Bid si le listing est live. Escrow Offer = V2 si volume.</p>
               </div>
             )}
 
