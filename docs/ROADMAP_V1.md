@@ -1,6 +1,6 @@
 # Roadmap V1 xArtists — 7 priorités
 
-**Date :** 10 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
+**Date :** 11 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
 
 Ce document formalise les 7 axes prioritaires issus de l’analyse dApp complète.  
 Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères de done**.
@@ -28,10 +28,11 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 - UniversalExecutor : plus un stub — swaps / stake / unstake / claim + circuit breaker
 - Agents Marketplace : ABI alignée, hooks List/Buy, UI, deploy script livrés (v0.15.0)
 - Fee split helper + catalog packs limités
+- Paper mode par défaut (`LIA_LIVE_TRADING=0`)
 
 ### Livrables restants (P0)
 - Signature live executor (PEM / wallet) + confirmation on-chain des trades
-- Deploy mainnet agents-marketplace + adresses dans contracts.json
+- Deploy mainnet agents-marketplace + adresses dans contracts.json + codeHash
 - GreenSmoke + trailing stops production
 
 ### Critères de done
@@ -46,8 +47,10 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 - List/Buy UI + multi-currency notices + burn TRO notices
 - Escrow logic ajoutée (4 août)
 - LP TRO : endpoints + page présente
+- SC nft-marketplace : adresse présente, **codeHash null** (not live)
 
 ### Livrables restants
+- Deploy mainnet + codeHash verify
 - Burn $TRO on-chain à chaque vente
 - Achat multi-currency natif (EGLD/USDC/TRO)
 - TVL live + charts LP
@@ -95,10 +98,11 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ## 7. Alignement Supernova (sub-second finality)
 
-### Contexte (10 août 2026)
-- **Mainnet v1.11.10.0 activé le 6 août** (epoch 2198) — améliorations VM. Réseau **stable J+4**.
+### Contexte (11 août 2026)
+- **Mainnet v1.11.10.0 activé le 6 août** (epoch 2198) — améliorations VM. Réseau **stable J+5**.
+- **Mainnet v1.11.11.0** sorti **10 août** — extra checks miniblocks (pas d’activation epoch).
 - Battle of Nodes depuis mars 2026 (>1B tx, ~120k TPS stress).
-- Hardening intensif (rapport 9 août) : intégration tests, guardians, replay historical, transition guards.
+- Hardening intensif (rapport 9 août) : intégration tests, guardians, replay historical, transition guards, mini-block pre-fetching proof-driven.
 - **Target activation Supernova : 10 septembre 2026**.
 
 ### Actions xArtists
@@ -110,10 +114,10 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ## Ordre d’exécution recommandé
 
-1) **P0 immédiat** : signature live executor LIA · deploy mainnet agents/nft marketplace · list/buy end-to-end  
-2) **P1 court terme** : GreenSmoke + trailing · E2E Playwright étendu · LP TRO · bridge tests  
+1) **P0 immédiat** : signature live executor LIA · deploy mainnet agents/nft marketplace · list/buy end-to-end · codeHash  
+2) **P1 court terme** : GreenSmoke + trailing · E2E Playwright étendu · LP TRO · deploy tro-burn · bridge tests  
 3) **P2** : Supernova alignment (post-10 sept.) · scale monitoring
 
 ---
 
-*Mise à jour : 10 août 2026 — Neltud via Grok*
+*Mise à jour : 11 août 2026 — Neltud via Grok*
