@@ -1,0 +1,375 @@
+================================================================================
+xArtists / LIA — AUDIT EXTERNE INTÉGRAL (dApp complète)
+Document TXT exhaustif — priorité SÉCURITÉ
+Date de rédaction : 2026-08-11
+Réseau cible : MultiversX MAINNET uniquement (CHAIN=1)
+Repo : https://github.com/Neltud/xArtists
+Périmètre : frontend SPA, backend LIA/Vellum, smart contracts, treasury, ops
+================================================================================
+
+0. RÉSUMÉ EXÉCUTIF (pour auditeur externe)
+--------------------------------------------------------------------------------
+xArtists est une dApp MultiversX combinant :
+  - Galerie / Studio NFT (art phygital + digital)
+  - Marketplace NFT + marketplace d’agents IA (packs LIA)
+  - Token $TRO (TRO-94c925, plafond produit 500 000)
+  - Agent de trading autonome LIA (paper-first, gates fail-closed)
+  - Intégrations DeFi (Hatom, xExchange, Burnify protocole, etc.)
+  - Fondation / treasury (fees, tips, PnL LIA) — policy documentée
+
+POSTURE DE RISQUE ACTUELLE (honnête) :
+  * Trading LIA LIVE = DÉSACTIVÉ (LIA_LIVE_TRADING=0)
+  * Marketplace NFT adresse présente MAIS codeHash NULL (compte vide)
+  * agents_marketplace = NULL (jamais déployé)
+  * tro_burn (SC xArtists) = NULL (code prêt, non déployé)
+  * Micro-preuves on-chain réussies = 0
+  * go_live_gates : all_critical_ok=false, allow_live_trading=false
+
+VERDICT PRODUIT : code et UX largement « private release / pre-mainnet ».
+  Les modules qui collecteraient de l’argent utilisateur on-chain (Buy NFT,
+  Buy agent, Vote TX, Burnify user SC) sont volontairement bloqués ou
+  bandeaux « SC non déployé ». C’est la bonne posture tant que les SC ne
+  sont pas live avec codeHash vérifié.
+
+================================================================================
+1. CARTE D’ARCHITECTURE
+--------------------------------------------------------------------------------
+1.1 Monorepo
+  apps/frontend/     SPA React + Vite + TypeScript + Tailwind + sdk-dapp
+  contracts/         Rust MultiversX (sc-meta / mxpy)
+  lia/               Orchestrateur Python (Vellum, guardian, executor, board…)
+  data/              JSON runtime (board, oracles, contracts, states)
+  scripts/           Deploy mainnet, post_deploy, gates, ensure_pages_data
+  docs/              Policies, runbooks, audits
+  .github/workflows/ CI Pages, regression, rust, lighthouse, deploy-scs
+  packages/          mx-agent-kit, core, discord-bot
+  e2e/               Playwright
+  src/               Legacy React (hors SPA Vite — attention dualité)
+
+1.2 Flux utilisateur (haut niveau)
+  Visiteur → GH Pages SPA
+    → Connect wallet (xPortal / Web / extension) ≠ wallet LIA protocole
+    → Studio (mint/metadata IPFS Pinata) / Gallery / Marketplace
+    → Agents (packs LIA vs GreenSmoke forecasts — séparés)
+    → Trading / Portfolio = vues LIA paper + oracles (pas le portefeuille user)
+    → DAO lecture ($TRO) ; vote on-chain non garanti sans SC/sdk complet
+    → Tip / Ads / Editions (contenu + monétisation soft)
+
+1.3 Flux LIA (ops)
+  Timer Vellum → perception (oracles, social, board)
+    → décision (modes DEFENSE/COMPOUND/MICRO_ARB/…)
+    → Guardian (VaR/Kelly/preflight)
+    → Executor (paper par défaut)
+    → publish JSON → Pages
+  Burnify protocol path : stake BFY → batches TRO → claim EGLD après X batches
+  (module lia/burnify/, wallet LIA uniquement)
+
+1.4 Séparation des rôles d’argent (critique sécurité produit)
+  LIA Ops (erd1p4zyy…lerqu0crn6)  = exécution protocole, balances Dashboard « protocole »
+  User Connect                      = tips, buys — JAMAIS le wallet LIA en session user
+  Fee Collector SC                  = après deploy market/agents (claimFees owner)
+  Mission / Reserve                 = policy treasury (adresses à créer / multisig)
+
+================================================================================
+2. FRONTEND — PAGES ET FONCTIONS
+--------------------------------------------------------------------------------
+Routes (apps/frontend/src/App.tsx) :
+  /                 Dashboard (stats LIA, ScStatusBanner, DataHealth)
+  /studio           Artist Studio (mint path, IPFS)
+  /gallery          Galerie xArtists (pas « Nelson Tuduri » en titre)
+  /marketplace      List/Buy/Bid UI — bloqué si codeHash null
+  /agents           Packs LIA + GSN leaderboard (séparés)
+  /agents/polylia   Experimental / pre-mainnet
+  /trading          Board LIA / modes paper
+  /portfolio        Positions / simu LIA (≠ Wallet user)
+  /wallet           Wallet utilisateur connecté
+  /tro              Tokenomics $TRO (max 500 000)
+  /dao              Gouvernance lecture
+  /staking          NFT/TRO staking UI
+  /burnify          A: protocole Burnify LIA · B: tro-burn SC user
+  /hatom            Hatom integration views
+  /lp               LP pools
+  /tip              Tips protocole
+  /ads              Emplacements pub (MVP)
+  /editions         Newsletter / édito
+  /soul-testnet     Experimental isolé
+
+Contrôles UX sécurité :
+  * UserWalletGuard — bloque List/Buy si session = LIA protocol wallet
+  * WalletContext refuse connexion adresse LIA comme « user »
+  * ScStatusBanner / PreMainnetBanner / PrivateReleaseStrip
+  * AgentsDeployStatus explicite (Buy désactivé)
+  * sdk-dapp : pem:false côté config front (pas de PEM dans le navigateur)
+
+================================================================================
+3. SMART CONTRACTS — INVENTAIRE ET SÉCURITÉ
+--------------------------------------------------------------------------------
+3.1 Registre data/contracts.json (2026-08-10)
+
+  nft_staking        erd1…xr8cl     (adresse historique — vérifier codeHash live)
+  tro_governance     erd1…e0ca8     (idem)
+  marketplace        erd1…8354t     CODEHASH NULL — compte VIDE
+  nft_minter         erd1…yztkn
+  agents_marketplace null
+  rwa_escrow_bridge  null
+  tro_burn           null
+
+3.2 contracts/ dans le repo (code source)
+
+  agents-marketplace
+    - fee_bps (max 1000), buyAgentAction, claimFees (owner)
+    - pause, transferOwnership (storage owner)
+    - CEI documenté ; fee reste sur SC jusqu’à claimFees
+  nft-marketplace
+    - fee + royalty ≤ 100%, buyNft, placeBid/acceptBid path in code
+    - pause, upgrade owner, active=false avant transfers (CEI)
+    - listing must exist
+  tro-burn
+    - burnTro + fundRewards + fee bps → reward_wallet LIA
+    - pause, ESDTLocalBurn requis post-deploy
+  tro-staking / nft-staking
+    - présents ; usage prod à valider vs adresses registry
+  agent-stake-escrow
+    - escrow sub-agents
+  btc-bridge / rwa-escrow-bridge / soul-zk-verifier
+    - EXPERIMENTAL — ne pas accepter fonds users
+
+3.3 Findings sécurité SC (priorité)
+
+  P0 — Marketplace address dans config pointe vers compte VIDE
+       → Risque : utilisateur pourrait croire le market live
+       → Mitigation UI : bandeaux + gates ; NE PAS retirer les bandeaux
+         tant que codeHash null
+
+  P0 — agents_marketplace non déployé
+       → Buy agent impossible (correct) ; ne pas activer flags front
+
+  P0 — Owner post-deploy = wallet LIA (single key)
+       → SPOF / pas de multisig Mission+Reserve
+       → Recommandation : cold/multisig pour owner SC dès volume
+
+  P1 — Upgrade path only_owner : policy d’upgrade chaîne à documenter
+  P1 — Tests blackbox non exécutés sur mainnet (pas de SC live)
+  P1 — Bridge BTC / RWA : label experimental only (déjà intention)
+  P2 — Audit externe payant avant TVL significatif
+  P2 — Whitelist collections NFT (optionnel)
+
+3.4 Burnify (deux chemins — ne pas confondre)
+
+  A) Protocole burnify.app (externe)
+     - BFY-8344ff ; staking erd1…ssfrts0f
+     - LIA : deposit BFY → batches TRO → claimRewards EGLD après X batches
+     - Module lia/burnify/ ; flags LIA_LIVE_TRADING + LIA_BURNIFY_LIVE
+  B) SC tro-burn xArtists
+     - Produit user optionnel ; non déployé
+
+================================================================================
+4. BACKEND LIA / VELLUM — SÉCURITÉ EXÉCUTION
+--------------------------------------------------------------------------------
+4.1 Gates (lia/security/go_live_gates.py)
+  Critical : CHAIN=1, marketplace codeHash, agents codeHash, no PEM in repo
+  Non-critical / conditional : micro_proofs, live_flag
+  Résultat snapshot audit : allow_live_trading=false
+
+4.2 Guardian
+  Modes DEFENSE / COMPOUND / MICRO_ARB / MOMENTUM / MEAN_REVERSION / YIELD
+  SOCIAL_WATCH / ADVISOR
+  Kelly, trailing, correlation (P1)
+  Hyperliquid live leverage hard-capped (env LIA_HL_MAX_LEVERAGE ~1.5)
+
+4.3 Executor
+  universal / multi_venue / jupiter / hyperliquid
+  Paper by default
+  Secrets : LIA_HL_PRIVATE_KEY, PEM paths — UNIQUEMENT secrets manager Vellum
+  Interdiction : commit PEM, clés API Pinata JWT, pepper API keys
+
+4.4 Agents API keys (lia/agents/api_keys.py)
+  Scopes interdits : tx:sign, live:trade, pem:read, admin
+  Pepper env XARTISTS_API_KEY_PEPPER (pas en git)
+
+4.5 Burnify agent
+  claim_after_batches=5 (policy) — claim non optionnel au seuil
+  Gas reserve EGLD
+  TRO listing flag (tro_listed) — si TRO non listé Burnify, batch path off
+
+================================================================================
+5. TREASURY & TOKENOMICS
+--------------------------------------------------------------------------------
+5.1 $TRO
+  Identifier : TRO-94c925
+  Supply max produit : 500 000 (toute mention 1_000_000 obsolète)
+  Utilité : DAO, incentives, burn paths
+  Liquidité : faible (ne pas valoriser treasury TRO comme cash)
+
+5.2 Fee model marketplace agents (prévu)
+  FEE_BPS=300 (3%)
+  to_seller = price - fee ; fee reste sur SC → claimFees owner
+
+5.3 Fee NFT (prévu)
+  fee_bps + royalty_bps ≤ 10000
+  accumulated_fees claimable owner
+
+5.4 Policy fondation (docs/TREASURY_POLICY.md)
+  Split indicatif fees : Mission / Reserve / Ops / incentives
+  Mission + Reserve wallets : À CRÉER (dette transparence)
+  Snapshot historique LIA ops : faible liquidité EGLD + TRO + NFTs
+
+5.5 Rewards créateurs (product intent)
+  1 TRO max / NFT œuvre réelle (policy produit)
+  Packs sub-agents : 5–25 €
+  Ne pas confondre packs LIA vendus et agents GreenSmoke (prévisions)
+
+================================================================================
+6. SÉCRETS, CI, SUPPLY CHAIN
+--------------------------------------------------------------------------------
+OK observés :
+  * no_pem_in_repo gate clean (snapshot)
+  * .gitignore attendu pour PEM / .env
+  * Front pem:false
+  * Pinata JWT : secret Vellum only (doc)
+
+À vérifier par auditeur :
+  * Historique git pour fuites de secrets (scan trufflehog / gitleaks)
+  * Workflows GitHub : permissions least-privilege, secrets scope
+  * Qui a accès Vellum secrets (PEM, Pinata, HL key)
+  * Branch protection main + review obligatoire
+  * Dependabot / npm audit / cargo audit
+
+CI workflows présents :
+  pages, deploy-frontend, deploy-scs, regression, e2e, lighthouse, rust,
+  release-please, static, jekyll-gh-pages, deploy-exclusive, ci-cd
+
+Risque : multiple pipelines Pages (conflits d’artifacts) — consolider si possible.
+
+================================================================================
+7. SURFACE D’ATTAQUE — SCÉNARIOS
+--------------------------------------------------------------------------------
+A. User coller adresse LIA en « session manuelle »
+   → Mitigé WalletContext / UserWalletGuard (vérifier E2E)
+
+B. Front affiche Buy alors que SC vide
+   → Mitigé bandeaux + codeHash null ; risque de regression si VITE_* forcé
+
+C. LIA_LIVE_TRADING=1 sans micro-proof
+   → Gates doivent bloquer ; tester explicitement
+
+D. Sub-agent API key utilisée pour signer TX
+   → Scopes interdisent tx:sign ; vérifier enforcement serveur
+
+E. Owner SC compromis
+   → claimFees / upgrade / pause monopolisés — multisig requis avant TVL
+
+F. Bridge experimental utilisé avec fonds users
+   → Labels pre-mainnet ; s’assurer aucun deep-link « deposit »
+
+G. Confusion Portfolio LIA vs Wallet user
+   → Copy UX ; auditeur doit valider wording live Pages
+
+H. Burnify batch TRO si token non listé
+   → Intent-only ; ne pas exécuter TX batch sans listing confirmé
+
+================================================================================
+8. LACUNES / MANQUES (PRIORISÉS)
+--------------------------------------------------------------------------------
+=== P0 SÉCURITÉ / CASH ===
+[ ] Deploy nft-marketplace + verify codeHash non-null on explorer
+[ ] Deploy agents-marketplace FEE_BPS=300 + codeHash
+[ ] post_deploy_contracts.py + VITE_* uniquement après verify
+[ ] Retirer bandeaux SEULEMENT après codeHash OK
+[ ] Micro-preuves TX user (List/Buy) enregistrées
+[ ] Garder LIA_LIVE_TRADING=0 jusqu’à micro-trades OK
+[ ] Créer wallets Mission + Reserve (ou multisig) et les publier
+
+=== P0 UX / CONFUSION ===
+[ ] Signature wallet réelle E2E (extension / web wallet) — pas coller erd1
+[ ] Index listings (fin ID manuel) post-deploy
+[ ] Rebuild GH Pages après contracts.json
+[ ] Vérifier absence Vote DAO « faux positif » (TX non envoyée)
+
+=== P1 ===
+[ ] Pause agents-marketplace + tests blackbox list/buy/cancel/claim
+[ ] transferOwnership 2-step validé en blackbox
+[ ] Refund excess NFT buy
+[ ] Studio pin IPFS auto via backend (JWT server-side)
+[ ] Trailing + Kelly + correlation matrix live paper
+[ ] CI consolidé + Lighthouse budget
+[ ] Owner SC → multisig progressif
+
+=== P2 ===
+[ ] Audit externe payant
+[ ] Redesign bridge (mint ESDT, timelock, relayers)
+[ ] Whitelist collections
+[ ] Soul zk prover réel (pas placeholders mainnet)
+[ ] Ads auction on-chain
+
+=== DETTE TECHNIQUE ===
+[ ] Dualité src/ (legacy) vs apps/frontend — clarifier source de vérité
+[ ] xArtists-master/ archive dans repo — risque confusion
+[ ] TRO listing Burnify à confirmer ops
+[ ] nft_staking / tro_governance codeHash live non revérifié dans ce doc
+
+================================================================================
+9. QUESTIONS POUR LE DONNEUR D’ORDRE / OPS
+--------------------------------------------------------------------------------
+Q1. Owner des SC après deploy : wallet LIA hot, ou multisig / cold wallet dès J0 ?
+Q2. Mission + Reserve : générer 2 adresses maintenant (même à 0 EGLD) ?
+Q3. TRO est-il officiellement listé sur Burnify.app pour les batches ?
+Q4. Budget max EGLD LIA pour gas + fundRewards + batches Burnify (runway) ?
+Q5. claimFees marketplace : cadence (hebdo) et split auto scripté vers Mission/Reserve ?
+Q6. Sub-agents : escrow on-chain obligatoire avant vente, ou fulfillment off-chain OK v1 ?
+Q7. Qui détient les secrets Vellum (PEM, Pinata, HL) — liste nominative + rotation ?
+Q8. Vote DAO on-chain : SC governance actuel est-il le bon codehash à utiliser ?
+Q9. Acceptable de laisser GH Pages public en « private release » avec bandeaux, ou
+    restriction Cloudflare / auth basique ?
+Q10. Objectif v1 prioritaire : GMV NFT, holders $TRO, ou perf paper LIA documentée ?
+
+================================================================================
+10. CHECKLIST AUDITEUR EXTERNE (SUGGESTÉE)
+--------------------------------------------------------------------------------
+[ ] Cloner repo @ commit SHA daté ; noter SHA dans le rapport
+[ ] Scanner secrets (gitleaks) historique + working tree
+[ ] Vérifier chaque adresse contracts.json sur explorer (code / balance / owner)
+[ ] Relire agents-marketplace + nft-marketplace (CEI, pause, fee caps, ownership)
+[ ] Confirmer front : impossible Buy si codeHash null (build production)
+[ ] Confirmer UserWalletGuard bloque adresse LIA
+[ ] Exécuter go_live_gates avec LIA_LIVE_TRADING=0 et =1
+[ ] Revue workflows GitHub permissions
+[ ] Revue lia/executor/* pour chemins live non gated
+[ ] Revue Pinata / media upload paths (JWT never in front bundle)
+[ ] Test manuel Connect → session → List attempt
+[ ] Documenter supply $TRO on-chain vs claim produit 500k
+
+================================================================================
+11. RÉFÉRENCES INTERNES
+--------------------------------------------------------------------------------
+docs/TREASURY_POLICY.md
+docs/TREASURY_FLOWS.md
+docs/SECURITY_REMEDIATION_P0_P1.md
+docs/SECURITY_AUDIT_SC.md
+docs/BURNIFY_PROTOCOL_LIA.md
+docs/TRO_BURN.md
+docs/DEEP_OPS_CHECKLIST.md
+docs/STATUS_2026-08-10.md
+data/contracts.json
+lia/security/go_live_gates.py
+scripts/deploy_mainnet.sh
+scripts/deploy_tro_burn.sh
+
+================================================================================
+12. CONCLUSION SÉCURITÉ
+--------------------------------------------------------------------------------
+Le projet montre une maturité documentaire et des gates paper/fail-closed
+solides pour un stade pre-TVL. Les risques majeurs ne sont plus « code absent »
+mais :
+  (1) déploiement SC et vérification codeHash avant d’ouvrir le cash user ;
+  (2) concentration owner LIA single-key ;
+  (3) dette Mission/Reserve non matérialisée ;
+  (4) confusion possible user si bandeaux retirés trop tôt ;
+  (5) surface multichain (HL/Solana) si flags live activés sans discipline.
+
+Recommandation : traiter P0 deploy + verify + multisig treasury AVANT tout
+LIA_LIVE_TRADING=1 et avant tout marketing « marketplace live ».
+
+— Fin du document AUDIT_EXTERNAL_FULL.txt —
+SHA repo à compléter par l’auditeur au moment du clone.
+================================================================================
