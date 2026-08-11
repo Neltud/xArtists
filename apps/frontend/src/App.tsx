@@ -21,6 +21,7 @@ const Gallery = lazy(() => import('./pages/Gallery'))
 const HatomPage = lazy(() => import('./pages/HatomPage'))
 const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
 const Agents = lazy(() => import('./pages/Agents'))
+const MyPacks = lazy(() => import('./pages/MyPacks'))
 const TroPage = lazy(() => import('./pages/TroPage'))
 const StakingPage = lazy(() => import('./pages/StakingPage'))
 const SoulTestnetPage = lazy(() => import('./pages/SoulTestnetPage'))
@@ -36,6 +37,7 @@ const TX_PATHS = new Set([
   '/studio',
   '/agents',
   '/agents/polylia',
+  '/my-packs',
   '/tip',
   '/wallet',
   '/staking',
@@ -100,6 +102,7 @@ export default function App() {
                 <Route path="/trading" element={<Trading />} />
                 <Route path="/studio" element={<ArtistStudio />} />
                 <Route path="/agents" element={<Agents />} />
+                <Route path="/my-packs" element={<MyPacks />} />
                 <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
                 <Route path="/tro" element={<TroPage />} />
                 <Route path="/staking" element={<StakingPage />} />

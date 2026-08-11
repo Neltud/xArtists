@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import AgentsMarketplacePanel from '../components/AgentsMarketplacePanel'
 import AgentsDeployStatus from '../components/AgentsDeployStatus'
 import CreateSubAgentForm from '../components/CreateSubAgentForm'
@@ -7,6 +8,7 @@ import GsnLeaderboard from '../components/GsnLeaderboard'
 import AgentPacksGrid from '../components/AgentPacksGrid'
 import AgentPackJourney from '../components/AgentPackJourney'
 import RwaAssetsStrip from '../components/RwaAssetsStrip'
+import PackCheckout from '../components/PackCheckout'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
 
@@ -106,12 +108,18 @@ export default function Agents() {
 
   return (
     <div className="animate-fade-in pb-20 md:pb-0">
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-black">🧠 Agents</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          <strong className="text-purple-300">3 packs LIA</strong> (Pulse · Yield · Sentinel) · stake NFT ·{' '}
-          <strong className="text-emerald-300">GreenSmoke</strong> = prévisions seulement
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black">🧠 Agents</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            <strong className="text-purple-300">Access packs</strong> Pulse · Yield · Sentinel ·{' '}
+            <strong className="text-amber-300">Model C</strong> (paper) ·{' '}
+            <strong className="text-emerald-300">GSN</strong> signal only
+          </p>
+        </div>
+        <Link to="/my-packs" className="btn-primary text-sm text-center">
+          My Packs →
+        </Link>
       </div>
 
       <div className="mb-6">
@@ -119,15 +127,17 @@ export default function Agents() {
       </div>
 
       <section className="mb-10">
-        <h2 className="text-lg font-bold mb-1 text-purple-200">① Trois packs IA · produits</h2>
+        <h2 className="text-lg font-bold mb-1 text-purple-200">① Access packs · catalogue</h2>
         <p className="text-xs text-gray-500 mb-4">
-          SKU commerciaux. Modules internes LIA (RWA, DAO…) ne sont pas vendus séparément. Achat on-chain
-          après deploy agents_marketplace.
+          Prix = intensité de signaux (18 / 12 / 8 €). Fiat checkout → membership NFT. Pas un fonds.
         </p>
         <AgentsDeployStatus />
         <AgentsMarketplacePanel />
         <div className="mt-4">
           <AgentPacksGrid />
+        </div>
+        <div className="mt-6">
+          <PackCheckout />
         </div>
         <div className="mt-6">
           <AgentPackJourney />
@@ -141,16 +151,14 @@ export default function Agents() {
 
       <section className="mb-10">
         <h2 className="text-lg font-bold mb-1 text-fuchsia-200">①bis Créer un sous-agent (intent)</h2>
-        <p className="text-xs text-gray-500 mb-4">
-          Prompt → intent Vellum · toujours dans 5–25 € · ≠ GSN.
-        </p>
+        <p className="text-xs text-gray-500 mb-4">Prompt → intent Vellum · corridor 5–25 € · ≠ GSN.</p>
         <CreateSubAgentForm />
       </section>
 
       <section className="mb-8">
         <h2 className="text-lg font-bold mb-1 text-emerald-200">② GreenSmoke — leaderboard & prévisions</h2>
         <p className="text-xs text-gray-500 mb-4">
-          Score advisory avant exécution trades LIA (poids plafonné). Lecture seule.
+          Signal pré-trade uniquement (poids plafonné). <strong>Pas un pack à vendre.</strong>
         </p>
         <GsnLeaderboard />
 
@@ -239,7 +247,7 @@ export default function Agents() {
       </section>
 
       <p className="text-xs text-gray-600 text-center">
-        docs/AGENT_PACKS_AND_RWA.md · 1 $TRO max œuvre physique
+        docs/ACCESS_PACK_CHECKOUT.md · Model C · paper only
       </p>
     </div>
   )
