@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Build agents-marketplace + nft-marketplace + tro-burn in isolation.
+# Build agents-marketplace + nft-marketplace + tro-burn + treasury-splitter (+ optional rwa).
 # Usage:
 #   ./scripts/build_scs_isolated.sh
-#   ./scripts/build_scs_isolated.sh tro-burn
+#   ./scripts/build_scs_isolated.sh treasury-splitter
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ONLY="${1:-all}"
@@ -46,6 +46,12 @@ fi
 if [[ "$ONLY" == "all" || "$ONLY" == "tro-burn" ]]; then
   build_one tro-burn || FAILED=1
 fi
+if [[ "$ONLY" == "all" || "$ONLY" == "treasury-splitter" ]]; then
+  build_one treasury-splitter || FAILED=1
+fi
+if [[ "$ONLY" == "all" || "$ONLY" == "rwa-escrow-bridge" ]]; then
+  build_one rwa-escrow-bridge || FAILED=1
+fi
 
 if [[ "$FAILED" -ne 0 ]]; then
   echo ""
@@ -56,4 +62,4 @@ if [[ "$FAILED" -ne 0 ]]; then
 fi
 
 echo ""
-echo "All requested builds OK. Next: ./scripts/deploy_mainnet.sh or ./scripts/deploy_tro_burn.sh"
+echo "All requested builds OK."
