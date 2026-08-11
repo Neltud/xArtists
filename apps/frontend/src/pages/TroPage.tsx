@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getTroInfo, getEgldPrice } from '../services/priceService'
+import TreasurySplitViz from '../components/treasury/TreasurySplitViz'
+import TroBurnFeed from '../components/treasury/TroBurnFeed'
 
 const TRO_ID = 'TRO-94c925'
 const EXPLORER = `https://explorer.multiversx.com/tokens/${TRO_ID}`
@@ -38,33 +40,36 @@ const BUY_LINKS = [
     icon: '🔵',
     primary: true,
   },
-  { name: 'JEXchange', url: 'https://app.jexchange.io', icon: '🟡', primary: false },
-  { name: 'AshSwap', url: 'https://ashswap.io', icon: '🔥', primary: false },
 ]
 
 export default function TroPage() {
   const [info, setInfo] = useState<TroInfo | null>(null)
   const [egld, setEgld] = useState(0)
-  const [cfg, setCfg] = useState<AppConfig | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [pools, setPools] = useState<PoolCfg[]>([])
+  const [err, setErr] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
-        const [tro, egldP, cfgRes] = await Promise.all([
-          getTroInfo(),
-          getEgldPrice(),
-          fetch(`${import.meta.env.BASE_URL}data/config.json`)
-            .then((r) => (r.ok ? r.json() : null))
-            .catch(() => null),
-        ])
-        if (cancelled) return
-        setInfo(tro)
-        setEgld(egldP)
-        setCfg(cfgRes)
-      } finally {
-        if (!cancelled) setLoading(false)
+        const [t, e] = await Promise.all([getTroInfo(), getEgldPrice()])
+        if (!cancelled) {
+          setInfo(t)
+          setEgld(e)
+        }
+      } catch (ex) {
+        if (!cancelled) setErr(ex instanceof Error ? ex.message : 'load failed')
+      }
+      try {
+        const r = await fetch(`${import.meta.env.BASE_URL}data/config.json?t=${Date.now()}`, {
+          cache: 'no-store',
+        })
+        if (r.ok) {
+          const j = (await r.json()) as AppConfig
+          if (!cancelled && j.pools) setPools(j.pools)
+        }
+      } catch {
+        /* optional */
       }
     })()
     return () => {
@@ -72,11 +77,14 @@ export default function TroPage() {
     }
   }, [])
 
-  const pool = cfg?.pools?.[0]
   const priceEgld = info && egld > 0 && info.price > 0 ? info.price / egld : 0
 
   return (
     <div className="animate-fade-in">
+      <div className="mb-6 grid md:grid-cols-2 gap-4">
+        <TreasurySplitViz />
+        <TroBurnFeed />
+      </div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black">
@@ -99,98 +107,51 @@ export default function TroPage() {
         </div>
       </div>
 
-      <div className="mb-6 rounded-xl border border-purple-500/30 bg-purple-500/10 px-4 py-3 text-sm text-purple-100">
-        <strong>Plafond produit :</strong> 500 000 TRO maximum. Toute mention 1 000 000 est obsolète.
+      {err && <p className="text-amber-400 text-sm mb-4">{err}</p>}
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+        <div className="card">
+          <p className="text-xs text-gray-500">Price USD</p>
+          <p className="text-xl font-bold">{info ? `$${info.price.toFixed(6)}` : '—'}</p>
+        </div>
+        <div className="card">
+          <p className="text-xs text-gray-500">Price EGLD</p>
+          <p className="text-xl font-bold">{priceEgld ? priceEgld.toFixed(8) : '—'}</p>
+        </div>
+        <div className="card">
+          <p className="text-xs text-gray-500">Market cap</p>
+          <p className="text-xl font-bold">{info ? `$${info.marketCap.toFixed(0)}` : '—'}</p>
+        </div>
+        <div className="card">
+          <p className="text-xs text-gray-500">Holders</p>
+          <p className="text-xl font-bold">{info ? info.holders.toLocaleString() : '—'}</p>
+        </div>
       </div>
 
-      {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" aria-busy="true">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="card h-24 animate-pulse bg-[#16161f]" />
-          ))}
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="card">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Prix USD</p>
-              <p className="text-2xl font-black text-purple-400">
-                ${info?.price ? info.price.toFixed(8) : '—'}
-              </p>
-              {priceEgld > 0 && (
-                <p className="text-xs text-gray-500 mt-1 mono">{priceEgld.toFixed(8)} EGLD</p>
-              )}
-            </div>
-            <div className="card">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Market Cap</p>
-              <p className="text-2xl font-black">
-                ${
-                  info?.marketCap
-                    ? info.marketCap.toLocaleString('en-US', { maximumFractionDigits: 0 })
-                    : '—'
-                }
-              </p>
-            </div>
-            <div className="card">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Supply circ.</p>
-              <p className="text-2xl font-black">
-                {info?.circulatingSupply
-                  ? info.circulatingSupply.toLocaleString('fr-FR', { maximumFractionDigits: 0 })
-                  : '—'}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">Max {MAX_SUPPLY.toLocaleString('fr-FR')}</p>
-            </div>
-            <div className="card">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Holders</p>
-              <p className="text-2xl font-black">{info?.holders ?? '—'}</p>
-            </div>
-          </div>
+      <p className="text-xs text-gray-500 mb-4">
+        $TRO is a utility token for the xArtists protocol — not a fund share. Tips ≠ investment.{' '}
+        <Link to="/dao" className="text-purple-300 underline">
+          DAO / policy
+        </Link>
+      </p>
 
-          <div className="card mb-6 border-purple-500/30 bg-purple-500/5">
-            <h2 className="text-lg font-bold mb-2">Acheter $TRO</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {BUY_LINKS.map((l) => (
-                <a
-                  key={l.url}
-                  href={l.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={l.primary ? 'btn-primary text-center text-sm' : 'btn-secondary text-center text-sm'}
-                >
-                  {l.icon} {l.name}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {pool && (
-            <div className="card mb-6">
-              <h2 className="text-lg font-bold mb-4">Liquidity — {pool.pair}</h2>
-              <p className="mono text-xs break-all text-gray-300">{pool.address}</p>
-              <div className="flex flex-wrap gap-2 mt-4">
-                {pool.dexscreener && (
-                  <a href={pool.dexscreener} target="_blank" rel="noreferrer" className="btn-secondary text-xs">
-                    DexScreener ↗
+      {pools.length > 0 && (
+        <div className="card mb-6">
+          <h2 className="text-sm font-bold mb-2">Pools (config)</h2>
+          <ul className="text-xs space-y-1">
+            {pools.map((p) => (
+              <li key={p.address} className="flex flex-wrap gap-2">
+                <span>{p.dex}</span>
+                <span className="text-gray-500">{p.pair}</span>
+                {p.swap_url && (
+                  <a href={p.swap_url} className="text-purple-300 underline" target="_blank" rel="noreferrer">
+                    swap
                   </a>
                 )}
-              </div>
-            </div>
-          )}
-
-          <div className="rounded-xl border border-orange-500/25 bg-orange-950/20 p-4 mb-6">
-            <h2 className="font-semibold text-orange-100 mb-1">🔥 Burnify · déflation $TRO</h2>
-            <p className="text-sm text-zinc-400 mb-3">
-              SC xArtists dédié : brûle $TRO et peut redistribuer de l'EGLD (pool LIA). Pre-mainnet
-              jusqu'au deploy + codeHash.
-            </p>
-            <Link
-              to="/burnify"
-              className="inline-flex rounded-lg bg-orange-600/90 hover:bg-orange-500 px-4 py-2 text-sm font-medium text-white"
-            >
-              Ouvrir Burnify →
-            </Link>
-          </div>
-        </>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   )
