@@ -4,7 +4,7 @@ Guardian BEFORE Brain. VaR + fractional Kelly + kill-switch + death-spiral.
 Prefer deny/resize over allow when unsure. No I/O in validate().
 
 Kill-switch: ARMED --trip(soft)--> TRIPPED --trip(hard)--> KILLED
-Ops reset only after post-mortem (never auto-reset on live).
+Reset: via KillResetCircuit (request → confirm) — never auto on live.
 """
 from __future__ import annotations
 
@@ -56,6 +56,7 @@ class KillSwitch:
         self.state = KillState.KILLED if hard else KillState.TRIPPED
 
     def reset(self) -> None:
+        """Raw arm — prefer confirm_kill_reset / KillResetCircuit."""
         self.state = KillState.ARMED
         self.reason = KillReason.NONE
         self.detail = ""
@@ -219,6 +220,43 @@ class PreFlightValidator:
             kill_state=kill or self.kill.state.value,
             latency_hint_ms=round((time.perf_counter() - t0) * 1000, 4),
         )
+
+    def request_kill_reset(self, operator_id: str, note: str = ""):
+        """Step 1 for hard kills. Returns ResetResult."""
+        from lia.guardian.kill_reset import KillResetCircuit
+
+        if not hasattr(self, "_reset_circuit"):
+            self._reset_circuit = KillResetCircuit()
+        return self._reset_circuit.request_reset(
+            operator_id=operator_id,
+            state=self.kill.state.value,
+            reason=self.kill.reason.value,
+            tripped_at=self.kill.tripped_at,
+            note=note,
+        )
+
+    def confirm_kill_reset(
+        self,
+        operator_id: str,
+        post_mortem_ref: str = "",
+        token: str = "",
+    ):
+        """Step 2 — if authorized, arms the switch. Returns ResetResult."""
+        from lia.guardian.kill_reset import KillResetCircuit, apply_reset_to_kill_switch
+
+        if not hasattr(self, "_reset_circuit"):
+            self._reset_circuit = KillResetCircuit()
+        result = self._reset_circuit.confirm_reset(
+            operator_id=operator_id,
+            state=self.kill.state.value,
+            reason=self.kill.reason.value,
+            tripped_at=self.kill.tripped_at,
+            post_mortem_ref=post_mortem_ref,
+            token=token,
+        )
+        apply_reset_to_kill_switch(self.kill, result)
+        return result
+
 
 # re-export math helpers for tests
 from lia.guardian.math_core import kelly_fraction as kelly_fraction  # noqa: E402
