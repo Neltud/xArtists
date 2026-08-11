@@ -1,0 +1,16 @@
+[package]
+name = "treasury-splitter"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies.multiversx-sc]
+version = "0.54.0"
+
+[dev-dependencies.multiversx-sc-scenario]
+version = "0.54.0"
+
+[workspace]
