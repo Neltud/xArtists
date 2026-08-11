@@ -1,11 +1,13 @@
 {
   "version": 1,
   "network": "mainnet",
-  "updated": null,
-  "marketplace_address": null,
+  "updated": "2026-08-11T05:00:00Z",
+  "marketplace_address": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
   "codehash_ok": false,
-  "note": "Populated after SC deploy + indexer (Vellum or scripts/index_marketplace_listings.py). Empty until codeHash live.",
+  "codeHash": null,
+  "note": "Empty until deploy + codeHash. Account verified empty on API 2026-08-11 (balance 0). Do not send user funds.",
   "listings": [],
+  "activity": [],
   "schema": {
     "listing_id": "u64 on-chain",
     "token_id": "COLLECTION-xxxxxx",
