@@ -1,7 +1,7 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-08-10T20:00:00Z",
+  "updated": "2026-08-11T01:30:00Z",
   "chain_note": "MultiversX mainnet config v1.11.11.0 (2026-08-10): miniblock checks, no activation epoch",
   "contracts": {
     "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
@@ -10,7 +10,8 @@
     "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn",
     "agents_marketplace": null,
     "rwa_escrow_bridge": null,
-    "tro_burn": null
+    "tro_burn": null,
+    "treasury_splitter": null
   },
   "verification": {
     "marketplace_mainnet": {
@@ -20,13 +21,15 @@
     },
     "agents_marketplace": "null — never deployed",
     "tro_burn": "null — tro-burn burnTro+fundRewards+LIA fee ready",
-    "rwa_escrow_bridge": "null — scaffold"
+    "rwa_escrow_bridge": "null — dispute+verification proof ready",
+    "treasury_splitter": "null — SC ready contracts/treasury-splitter"
   },
   "gaps": {
     "marketplace": "P0 deploy nft-marketplace + codeHash",
     "agents_marketplace": "P0 deploy FEE_BPS=300",
     "tro_burn": "Deploy; ESDTLocalBurn; fundRewards; VITE_TRO_BURN_*",
-    "rwa_escrow_bridge": "P2 after market"
+    "rwa_escrow_bridge": "P2 after market; attestor=LIA",
+    "treasury_splitter": "P0 after Mission+Reserve wallets; receiveAndSplit 40/30/30"
   },
   "notes": "Do not send user funds until codeHash non-null"
 }
