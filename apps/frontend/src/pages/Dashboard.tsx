@@ -7,7 +7,7 @@ import { useWallet } from '../context/WalletContext'
 import GSNBanner from '../components/GSNBanner'
 import LIALaunchButton from '../components/LIALaunchButton'
 import AdSlot from '../components/AdSlot'
-import GuardianStatusPanel from '../components/GuardianStatusPanel'
+import CommanderStrip from '../components/commander/CommanderStrip'
 import ScStatusBanner from '../components/ScStatusBanner'
 import DataHealthStrip from '../components/DataHealthStrip'
 import PageGuide from '../components/PageGuide'
@@ -17,253 +17,128 @@ import PersonaWelcome, {
   getStoredPersona,
   type Persona,
 } from '../components/PersonaWelcome'
-import LandingHero from './LandingHero'
-import ExplainCards from './ExplainCards'
-import { LIA_WALLET } from '../config/links'
 
-const AGENTS = [
-  { key: 'trading', name: 'LIA Trading', icon: '🤖', desc: 'Vellum pack', color: 'text-green-400' },
-  { key: 'marketplace', name: 'LIA Marketplace', icon: '🎨', desc: 'Vellum pack', color: 'text-purple-400' },
-  { key: 'yield', name: 'LIA Yield', icon: '🌾', desc: 'Vellum pack', color: 'text-teal-400' },
-  { key: 'security', name: 'LIA Security', icon: '🛡️', desc: 'Vellum pack', color: 'text-blue-400' },
-  { key: 'rwa', name: 'LIA RWA', icon: '🏗️', desc: 'Vellum pack', color: 'text-yellow-400' },
-  { key: 'dao', name: 'LIA DAO', icon: '🗳️', desc: 'Vellum pack', color: 'text-pink-400' },
+const QUICK = [
+  { key: 'studio', name: 'Studio', icon: '🎨', desc: 'Mint & publish', color: 'text-pink-400' },
+  { key: 'gallery', name: 'Gallery', icon: '🖼️', desc: 'Collections', color: 'text-purple-400' },
+  { key: 'marketplace', name: 'Market', icon: '🏪', desc: 'List / Buy', color: 'text-blue-400' },
+  { key: 'agents', name: 'Agents', icon: '🤖', desc: 'LIA packs', color: 'text-cyan-400' },
+  { key: 'trading', name: 'LIA Trading', icon: '📈', desc: 'Vellum pack', color: 'text-green-400' },
+  { key: 'tro', name: '$TRO', icon: '💎', desc: 'Token', color: 'text-yellow-400' },
 ]
 
 function StatCard({
   label,
   value,
-  sub,
-  color = '',
   tip,
 }: {
   label: string
   value: string
-  sub?: string
-  color?: string
-  tip?: React.ComponentProps<typeof InfoTip>['k']
+  tip?: string
 }) {
   return (
     <div className="card">
-      <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2 flex items-center gap-1">
+      <p className="text-xs text-gray-500 flex items-center gap-1">
         {label}
-        {tip && <InfoTip k={tip} />}
+        {tip ? <InfoTip k={tip as any} /> : null}
       </p>
-      <p className={`text-xl sm:text-2xl font-black ${color || 'text-white'}`}>{value}</p>
-      {sub && <p className="text-xs text-gray-500 mt-1">{sub}</p>}
+      <p className="text-xl font-bold mt-1">{value}</p>
     </div>
   )
 }
 
 export default function Dashboard() {
-  const { prices, liaStatus, xartists, bonData, loading, lastUpdate, refresh } = useMultiversX()
-  const portfolio = usePortfolioValue()
+  const { balance } = useMultiversX()
+  const { totalUsd } = usePortfolioValue()
   const live = useLiaOnchainLive()
-  const { connected } = useWallet()
-  const [persona, setPersona] = useState<Persona | null>(null)
+  const { address } = useWallet()
+  const [persona, setPersona] = useState<Persona | null>(() => getStoredPersona())
 
   useEffect(() => {
     setPersona(getStoredPersona())
   }, [])
 
-  const portfolioUsd = portfolio.totalUsd || (liaStatus?.portfolio?.total_usd ?? 0)
-  const egldPrice = portfolio.egldPrice || prices.egld
-  const guard = liaStatus?.market?.guard_status ?? 'OK'
-  const bonScore = xartists?.battle_of_nodes?.score ?? bonData?.score ?? 0
-  const bonRank = xartists?.battle_of_nodes?.rank_estimate ?? bonData?.rank_estimate ?? 'Participant'
-
-  const nftsWallet = live.nftInWallet || xartists?.collections?.nfts_in_wallet || portfolio.nfts.length || 0
-  const nftsCatalog =
-    (xartists?.collections as { nfts_in_collections_sum?: number })?.nfts_in_collections_sum ??
-    xartists?.collections?.total_mainnet ??
-    0
-
-  const millionPct = (portfolioUsd / 1_000_000) * 100
-  const fgColor =
-    prices.fearGreed <= 25
-      ? 'text-red-400'
-      : prices.fearGreed <= 50
-        ? 'text-orange-400'
-        : prices.fearGreed <= 75
-          ? 'text-yellow-400'
-          : 'text-green-400'
-  const guardColor =
-    guard === 'OK' ? 'text-green-400' : guard === 'WARNING' ? 'text-orange-400' : 'text-red-400'
-
   return (
-    <div className="animate-fade-in">
-      <PersonaWelcome onClose={() => setPersona(getStoredPersona())} />
-
-      <LandingHero connected={connected} />
-
+    <div className="max-w-6xl mx-auto px-4 py-6">
       <PageGuide page="dashboard" />
+      <PrivateReleaseIfAny />
+
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold mb-1">xArtists Command Center</h1>
+        <p className="text-sm text-gray-400">
+          AI trading + RWA marketplace · MultiversX mainnet · paper LIA until gates pass
+        </p>
+      </div>
+
       <ScStatusBanner />
       <DataHealthStrip />
 
-      <div className="mb-4">
-        <AdSlot id="home_hero" />
+      {!persona && (
+        <PersonaWelcome
+          onSelect={(p) => {
+            setPersona(p)
+          }}
+        />
+      )}
+      {persona && <PersonaQuickLinks persona={persona} />}
+
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button
+          type="button"
+          onClick={() => {
+            live.refresh()
+          }}
+          className="btn-secondary text-sm"
+        >
+          Actualiser
+        </button>
       </div>
 
-      <PersonaQuickLinks persona={persona} />
+      <CommanderStrip />
 
-      <div id="main-content" tabIndex={-1} className="outline-none">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-black">
-              Dashboard protocole <span className="live-dot ml-2" />
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              Vue <strong className="text-purple-300">LIA ops</strong> — pas ton wallet Connect{' '}
-              <InfoTip k="lia_vs_user" />
-            </p>
-            <p className="text-[10px] mono text-gray-600 mt-1">
-              {LIA_WALLET.slice(0, 18)}…{lastUpdate ? ` · ${lastUpdate.toLocaleTimeString('fr-FR')}` : ''}
-            </p>
-          </div>
-          <div className="flex gap-2 flex-wrap items-center">
-            <LIALaunchButton />
-            <button
-              type="button"
-              onClick={() => {
-                refresh()
-                live.refresh()
-              }}
-              className="btn-secondary text-sm"
-            >
-              Actualiser
-            </button>
-          </div>
-        </div>
+      <GSNBanner />
 
-        <GuardianStatusPanel />
+      <div className="mb-4 rounded-xl border border-purple-500/30 bg-purple-500/10 px-3 py-2 text-xs text-purple-100">
+        Portfolio = wallet LIA (protocole). Ton compte →{' '}
+        <Link to="/wallet" className="underline">
+          /wallet · Mon wallet
+        </Link>
+        . $TRO supply max = <strong>500 000</strong> <InfoTip k="tro_token" />.{' '}
+        <Link to="/trading" className="underline text-purple-300">
+          Trading / Board
+        </Link>
+      </div>
 
-        <GSNBanner />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <StatCard label="EGLD (live)" value={balance != null ? balance.toFixed(4) : '—'} />
+        <StatCard label="Portfolio USD" value={totalUsd != null ? `$${totalUsd.toFixed(0)}` : '—'} />
+        <StatCard label="NFT wallet LIA" value={String(live.nftCount ?? '—')} tip="lia_nfts" />
+        <StatCard label="Session" value={address ? `${address.slice(0, 6)}…` : 'non connecté'} />
+      </div>
 
-        <div className="mb-4 rounded-xl border border-purple-500/30 bg-purple-500/10 px-3 py-2 text-xs text-purple-100">
-          Portfolio = wallet LIA. Ton compte →{' '}
-          <Link to="/wallet" className="underline">
-            /wallet · Mon wallet
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+        {QUICK.map((q) => (
+          <Link
+            key={q.key}
+            to={`/${q.key === 'trading' ? 'trading' : q.key}`}
+            className="card hover:border-purple-500/40 transition-colors"
+          >
+            <span className={`text-lg ${q.color}`}>{q.icon}</span>
+            <p className="font-semibold text-sm mt-1">{q.name}</p>
+            <p className="text-xs text-gray-500">{q.desc}</p>
           </Link>
-          . $TRO supply max = <strong>500 000</strong> <InfoTip k="tro_token" />.{' '}
-          <Link to="/trading" className="underline text-purple-300">
-            Trading / Board
-          </Link>{' '}
-          ·{' '}
-          <Link to="/dao" className="underline text-purple-300">
-            DAO
-          </Link>{' '}
-          ·{' '}
-          <Link to="/ads" className="underline text-purple-300">
-            Pub
-          </Link>
-        </div>
+        ))}
+      </div>
 
-        {loading && live.loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8" aria-busy="true">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="card h-24 animate-pulse bg-[#16161f]" />
-            ))}
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4">
-              <StatCard
-                label="LIA Portfolio ≈"
-                value={`$${portfolioUsd.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`}
-                sub={`${portfolio.tokens.length} tokens`}
-                color="text-purple-400"
-                tip="lia_vs_user"
-              />
-              <StatCard label="EGLD Price" value={`$${egldPrice.toFixed(4)}`} sub="Network" tip="oracle" />
-              <StatCard
-                label="Fear & Greed"
-                value={`${prices.fearGreed}`}
-                sub={prices.fearGreedLabel}
-                color={fgColor}
-              />
-              <StatCard label="BalanceGuard" value={guard} color={guardColor} tip="guardian" />
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
-              <StatCard
-                label="LIA EGLD"
-                value={`${(live.egldBalance || portfolio.egldBalance).toFixed(4)}`}
-                sub="live API"
-              />
-              <StatCard
-                label="LIA $TRO"
-                value={`${(live.troBalance || 0).toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`}
-                sub="cap total 500 000"
-                color="text-purple-400"
-                tip="tro_token"
-              />
-              <StatCard
-                label="NFTs wallet LIA"
-                value={`${nftsWallet}`}
-                sub="possession, pas catalogue"
-                color="text-pink-400"
-              />
-              <StatCard
-                label="NFTs collections"
-                value={nftsCatalog > 11 ? `${nftsCatalog}` : '275+'}
-                sub="catalogue mainnet"
-                color="text-teal-300"
-              />
-            </div>
-
-            <div className="card mb-6">
-              <p className="text-xs font-semibold uppercase tracking-widest text-gray-500">
-                <LabelWithTip k="live_trading">Progression LIA (paper)</LabelWithTip>
-              </p>
-              <p className="text-2xl font-black mt-1">{millionPct.toFixed(6)}%</p>
-              <div className="progress-bar mt-2" role="progressbar" aria-valuenow={millionPct}>
-                <div className="progress-fill" style={{ width: `${Math.min(millionPct * 100, 100)}%` }} />
-              </div>
-              <Link to="/portfolio" className="text-xs text-purple-400 mt-2 inline-block">
-                Portfolio détail →
-              </Link>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-              <div className="card">
-                <div className="flex justify-between mb-3">
-                  <p className="text-xs uppercase text-gray-500 font-semibold flex items-center gap-1">
-                    Packs LIA (Vellum) <InfoTip k="gsn_vs_packs" />
-                  </p>
-                  <Link to="/agents" className="text-xs text-purple-400">
-                    /agents →
-                  </Link>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {AGENTS.map(a => (
-                    <div key={a.key} className="flex gap-2 p-2 rounded-lg bg-[#111118]">
-                      <span aria-hidden>{a.icon}</span>
-                      <div>
-                        <p className={`text-xs font-semibold ${a.color}`}>{a.name}</p>
-                        <p className="text-[10px] text-gray-500">{a.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="card">
-                <p className="text-xs uppercase text-gray-500 mb-3">Réputation LIA</p>
-                <div className="flex items-center gap-4">
-                  <div className="text-4xl font-black gradient-text">{bonScore}</div>
-                  <div>
-                    <p className="font-bold">{bonRank}</p>
-                    <Link to="/dao" className="text-xs text-purple-400">
-                      DAO lecture seule →
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <ExplainCards />
-          </>
-        )}
+      <div className="flex flex-wrap gap-3 items-center">
+        <LIALaunchButton />
+        <AdSlot slotId="home_hero" />
       </div>
     </div>
   )
+}
+
+/** Soft strip if PrivateReleaseStrip is global in App; local noop helper. */
+function PrivateReleaseIfAny() {
+  return null
 }
