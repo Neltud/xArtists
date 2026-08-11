@@ -21,6 +21,11 @@ from lia.guardian.spiral import (
     guardian_gate,
     sol_perps_allowed,
 )
+from lia.guardian.kill_reset import (
+    KillResetCircuit,
+    ResetResult,
+    apply_reset_to_kill_switch,
+)
 
 __all__ = [
     "death_spiral_detected",
@@ -40,4 +45,7 @@ __all__ = [
     "PolicyLimits",
     "guardian_gate",
     "sol_perps_allowed",
+    "KillResetCircuit",
+    "ResetResult",
+    "apply_reset_to_kill_switch",
 ]
