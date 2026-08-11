@@ -1,4 +1,4 @@
-# Product locks — Packs · GSN · Pricing
+# Product locks — Packs · GSN · Pricing · Capital multi-agent
 
 ## Prix = intensité de signaux
 
@@ -8,16 +8,22 @@
 | **Yield** | ●● | **12** | 8–20 |
 | **Sentinel** | ● | **8** | 5–15 |
 
-Règle : **plus de signaux / activité d’exécution → pack plus cher**.  
-LIA (Vellum) ajuste chaque list price dans son corridor (et 5–25 € global) pour la **marge**.  
-DAO plus tard : **BPS de pool**, pas le micro-pricing quotidien.
+LIA ajuste pour marge · DAO plus tard = BPS pool.
 
-## Autres locks
+## GSN
 
-| Sujet | Lock |
-|-------|------|
-| GSN | Info + signal only — **pas vendu** |
-| v1 | Droit produit (Buy → Stake → Claim) — pas un fonds |
-| Deposit | v1.5 escrow pack only |
-| RWA | Metadata d’abord |
-| UX | Buy → Stake → (Deposit) → Claim |
+Informational + signal only — **pas vendu**.
+
+## Capital user → agent qui trade
+
+| Phase | Comportement |
+|-------|----------------|
+| **v1** | Buy → Stake → Claim share. **Pas** de deposit trading (droit produit). |
+| **v1.5+** | Deposit → **escrow pack** (pas wallet LIA ops). LIA **une décision** → routeur multi-capital → tickets par `agent_id` filtrés par pack. |
+| **Interdit** | Envoyer des fonds directement à l’adresse LIA ops “pour mon agent”. |
+
+Voir `docs/MULTI_AGENT_CAPITAL.md` + `lia/agents/multi_capital_router.py` (paper).
+
+## UX
+
+Buy → Stake → (Deposit escrow) → Claim
