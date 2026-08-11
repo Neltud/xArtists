@@ -38,6 +38,14 @@ CRITICAL = [
     "oracle_config.json",
     "ads_active.json",
     "treasury_wallets.json",
+    "desk_last.json",
+    "lia_performance.json",
+    "lia_guards_state.json",
+    "lia_decision_gates.json",
+    "pre_mainnet_modules.json",
+    "guardian_kill_log.json",
+    "bridge_outbox.json",
+    "burnify_lia_state.json",
 ]
 
 
@@ -53,6 +61,9 @@ def _touch_status() -> None:
     data["updated"] = data["timestamp"]
     data["status"] = data.get("status") or "monitoring"
     data.setdefault("LIA_LIVE_TRADING", 0)
+    orch = data.setdefault("orchestrator", {})
+    g = orch.setdefault("guardian", {})
+    g.setdefault("kill_state", "ARMED" if g.get("allow", True) else "TRIPPED")
     path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
