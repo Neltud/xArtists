@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { formatAgentCheckoutLine, getAgentsFeeBps, splitAgentSale } from '../utils/agentFee'
+import { canBuyAgent, AGENTS_MARKETPLACE_ADDRESS } from '../config/scStatus'
 
 const CATALOG_RAW =
   'https://raw.githubusercontent.com/Neltud/xArtists/main/data/agents_catalog.json'
@@ -27,8 +28,11 @@ type Catalog = {
 export default function AgentsMarketplacePanel() {
   const [catalog, setCatalog] = useState<Catalog | null>(null)
   const [scAddress, setScAddress] = useState<string | null>(
-    (import.meta.env.VITE_AGENTS_MARKETPLACE_ADDRESS as string) || null
+    AGENTS_MARKETPLACE_ADDRESS || null
   )
+
+  // Live = codeHash OK flag + valid address (never address-only)
+  const live = canBuyAgent()
 
   useEffect(() => {
     const t = Date.now()
@@ -42,14 +46,14 @@ export default function AgentsMarketplacePanel() {
         const addr =
           j?.contracts?.agents_marketplace ||
           j?.agents_marketplace ||
-          import.meta.env.VITE_AGENTS_MARKETPLACE_ADDRESS
+          AGENTS_MARKETPLACE_ADDRESS
         if (addr && typeof addr === 'string' && addr.startsWith('erd1')) setScAddress(addr)
+        else setScAddress(null)
       })
       .catch(() => {})
   }, [])
 
   const feeBps = catalog?.fee_bps ?? getAgentsFeeBps()
-  const live = Boolean(scAddress)
   const packs = catalog?.packs || []
 
   return (
@@ -61,11 +65,12 @@ export default function AgentsMarketplacePanel() {
           {' · '}97% créateur · 3% treasury SC (claimFees owner)
         </p>
         {live ? (
-          <p className="text-[11px] mono text-purple-400 break-all">SC {scAddress}</p>
+          <p className="text-[11px] mono text-purple-400 break-all">SC live {scAddress}</p>
         ) : (
           <p className="text-sm text-amber-400">
-            ⏳ Sprint A : deploy mainnet agents-marketplace — Buy on-chain désactivé tant que
-            l&apos;adresse est null
+            ⏳ Sprint A : deploy mainnet agents-marketplace +{' '}
+            <code className="text-[10px]">VITE_AGENTS_CODEHASH_OK=1</code> — Buy on-chain désactivé
+            {scAddress ? ` (adresse connue mais codeHash non validé)` : ' (adresse null)'}
           </p>
         )}
       </div>
@@ -85,7 +90,11 @@ export default function AgentsMarketplacePanel() {
                 type="button"
                 disabled={!live || p.remaining <= 0}
                 className="btn-primary text-sm mt-3 disabled:opacity-40 disabled:cursor-not-allowed"
-                title={live ? `Seller ${split.sellerEgld.toFixed(4)} EGLD` : 'SC not deployed'}
+                title={
+                  live
+                    ? `Seller ${split.sellerEgld.toFixed(4)} EGLD · fee ${split.feeEgld.toFixed(4)}`
+                    : 'SC not live (deploy + codeHash)'
+                }
               >
                 {live ? 'Buy (wallet)' : 'Bientôt'}
               </button>

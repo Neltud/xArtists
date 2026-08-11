@@ -79,11 +79,12 @@ export default function NFTDetailModal({
   const img = nftImageUrl(nft)
   const royalties = nftRoyalties(nft)
   const id = parseInt(listingId, 10)
+  const live = canListBuyNft()
 
   const guard = (fn: () => Promise<unknown>) => async () => {
     setTxMsg(null)
-    if (!canListBuyNft()) {
-      setTxMsg('Marketplace SC non live (codeHash) — List/Buy désactivés')
+    if (!live) {
+      setTxMsg('Marketplace SC non live (codeHash) — List/Buy/Bid désactivés')
       return
     }
     if (!isLoggedIn || !address) {
@@ -128,7 +129,7 @@ export default function NFTDetailModal({
               {nft.collection_name} · {nonceLabel(nft)} · royalties {royalties ?? '—'}% · {typeLabel(nft.type)}
             </p>
             <TxCapabilityBanner />
-            {!canListBuyNft() && (
+            {!live && (
               <p className="text-[10px] text-red-300/90">
                 SC marketplace non live (codeHash null) — TX on-chain bloquées jusqu’au deploy + verify.
               </p>
@@ -142,14 +143,20 @@ export default function NFTDetailModal({
                   type="button"
                   onClick={() => setTab(t)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize ${
-                    tab === t ? 'bg-purple-600 text-white' : 'bg-[#15151f] border border-[#2a2a3a] text-gray-400'
+                    tab === t
+                      ? 'bg-purple-600 text-white'
+                      : t === 'offer'
+                        ? 'bg-[#15151f] border border-dashed border-gray-600 text-gray-500'
+                        : 'bg-[#15151f] border border-[#2a2a3a] text-gray-400'
                   }`}
                 >
                   {t}
                 </button>
               ))}
             </div>
-            <p className="text-[10px] mono text-gray-500">SC {marketplaceAddress.slice(0, 18)}…</p>
+            <p className="text-[10px] mono text-gray-500">
+              SC {marketplaceAddress ? `${marketplaceAddress.slice(0, 18)}…` : '—'}
+            </p>
 
             <label className="flex flex-col gap-1 text-[10px] uppercase text-gray-500">
               Listing ID
@@ -160,6 +167,9 @@ export default function NFTDetailModal({
                 onChange={e => setListingId(e.target.value)}
                 className="rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
               />
+              <span className="normal-case text-gray-600">
+                P1 : index on-chain des listings pour supprimer la saisie manuelle
+              </span>
             </label>
 
             {tab === 'buy' && (
@@ -173,7 +183,7 @@ export default function NFTDetailModal({
                 />
                 <button
                   type="button"
-                  disabled={pending || !canListBuyNft()}
+                  disabled={pending || !live}
                   className="btn-primary text-sm"
                   onClick={guard(() => buyNft({ listingId: id, priceEgld: parseFloat(buyPrice) }))}
                 >
@@ -186,13 +196,13 @@ export default function NFTDetailModal({
               <div className="flex flex-wrap gap-2 items-end">
                 <input
                   type="number"
-                  value={listPrice}
+egocio value={listPrice}
                   onChange={e => setListPrice(e.target.value)}
                   className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm"
                 />
                 <button
                   type="button"
-                  disabled={pending || !canListBuyNft()}
+                  disabled={pending || !live}
                   className="btn-primary text-sm"
                   onClick={guard(() =>
                     listNft({ tokenId: nft.collection, nonce: nft.nonce, priceEgld: parseFloat(listPrice) })
@@ -213,7 +223,7 @@ export default function NFTDetailModal({
                 />
                 <button
                   type="button"
-                  disabled={pending || !canListBuyNft()}
+                  disabled={pending || !live}
                   className="btn-primary text-sm"
                   onClick={guard(() => placeBid({ listingId: id, amountEgld: parseFloat(bidPrice) }))}
                 >
@@ -221,7 +231,7 @@ export default function NFTDetailModal({
                 </button>
                 <button
                   type="button"
-                  disabled={pending || !canListBuyNft()}
+                  disabled={pending || !live}
                   className="btn-secondary text-sm"
                   onClick={guard(() => withdrawBid(id))}
                 >
@@ -234,7 +244,7 @@ export default function NFTDetailModal({
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  disabled={pending || !canListBuyNft()}
+                  disabled={pending || !live}
                   className="btn-secondary text-sm"
                   onClick={guard(() => acceptBid(id))}
                 >
@@ -242,7 +252,7 @@ export default function NFTDetailModal({
                 </button>
                 <button
                   type="button"
-                  disabled={pending || !canListBuyNft()}
+                  disabled={pending || !live}
                   className="btn-secondary text-sm"
                   onClick={guard(() => cancelListing(id))}
                 >
@@ -252,9 +262,16 @@ export default function NFTDetailModal({
             )}
 
             {tab === 'offer' && (
-              <p className="text-xs text-gray-400">
-                Offer off-chain / memo — pas d’endpoint escrow dédié tant que design V2 non déployé.
-              </p>
+              <div className="rounded-xl border border-dashed border-gray-600 bg-[#0a0a0f] px-3 py-3 text-xs text-gray-400 space-y-2">
+                <p>
+                  <strong className="text-gray-300">Offer</strong> n’a pas d’endpoint on-chain.
+                  Pas d’escrow dédié en V1 — évite les faux « offre acceptée ».
+                </p>
+                <p>
+                  V2 prévu : SC escrow (lock EGLD + accept/refuse vendeur). Jusque-là utilise Bid si le
+                  listing est live, ou contact hors chaîne sans promesse on-chain.
+                </p>
+              </div>
             )}
 
             {(txMsg || error) && (

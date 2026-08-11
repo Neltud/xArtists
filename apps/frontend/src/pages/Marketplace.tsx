@@ -7,6 +7,7 @@ import AdSlot from '../components/AdSlot'
 import TreasuryBanner from '../components/TreasuryBanner'
 import ScStatusBanner from '../components/ScStatusBanner'
 import VirtualNftGrid from '../components/VirtualNftGrid'
+import { canListBuyNft } from '../config/scStatus'
 import {
   type NFT,
   type CollectionData,
@@ -37,6 +38,8 @@ export default function Marketplace() {
   const [sort, setSort] = useState<SortKey>('collection')
   const [selected, setSelected] = useState<NFT | null>(null)
   const [action, setAction] = useState<MarketAction | null>(null)
+
+  const marketLive = canListBuyNft()
 
   useEffect(() => {
     let cancelled = false
@@ -152,7 +155,7 @@ export default function Marketplace() {
             <span className="gradient-text">xArtists Marketplace</span>
           </h1>
           <p className="mt-3 max-w-2xl text-base text-gray-400">
-            Buy · Sell · Bid — on-chain après deploy SC · grille virtualisée si volume élevé
+            Buy · Sell · Bid on-chain après deploy SC · Offer = pas d’endpoint (V2) · grille virtualisée
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <MoonpayButton label="Acheter EGLD (MoonPay)" className="text-sm!" />
@@ -175,11 +178,14 @@ export default function Marketplace() {
 
       <ScStatusBanner />
 
-      <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-        <strong>P0 — SC marketplace non déployé</strong> (adresse actuelle = compte vide, codeHash null).
-        List / Buy / Bid on-chain resteront en échec jusqu’au deploy +{' '}
-        <code className="text-xs">verify_marketplace_codehash</code>.
-      </div>
+      {!marketLive && (
+        <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+          <strong>P0 — SC marketplace non live</strong> (codeHash null / compte vide).
+          List / Buy / Bid on-chain restent bloqués jusqu’au deploy +{' '}
+          <code className="text-xs">verify_marketplace_codehash</code> +{' '}
+          <code className="text-xs">VITE_MARKETPLACE_CODEHASH_OK=1</code>.
+        </div>
+      )}
 
       <div className="mb-6">
         <TreasuryBanner compact />
@@ -194,7 +200,7 @@ export default function Marketplace() {
           />
           {listingIdFromIndex != null && (
             <p className="text-xs text-purple-300 mt-2">
-              Listing ID indexé : <strong>{listingIdFromIndex}</strong>
+              Listing ID indexé : <strong>{listingIdFromIndex}</strong> (saisie manuelle encore requise sans index complet)
             </p>
           )}
         </div>
@@ -253,7 +259,9 @@ export default function Marketplace() {
           threshold={48}
           estimateRowHeight={280}
           getKey={nft => nft.identifier}
-          renderItem={nft => <NFTCard nft={nft} onOpen={openNft} />}
+          renderItem={nft => (
+            <NFTCard nft={nft} onOpen={openNft} marketLive={marketLive} />
+          )}
         />
       )}
 
@@ -300,13 +308,19 @@ function FilterPill({
 function NFTCard({
   nft,
   onOpen,
+  marketLive,
 }: {
   nft: NFT
   onOpen: (n: NFT, a: MarketAction | null) => void
+  marketLive: boolean
 }) {
   const img = nftImageUrl(nft)
   const stop = (e: React.MouseEvent, a: MarketAction) => {
     e.stopPropagation()
+    if (a === 'offer') {
+      onOpen(nft, 'offer')
+      return
+    }
     onOpen(nft, a)
   }
   return (
@@ -337,16 +351,33 @@ function NFTCard({
         </div>
       </button>
       <div className="grid grid-cols-4 gap-1 p-2 pt-0">
-        {(['buy', 'sell', 'offer', 'bid'] as MarketAction[]).map(a => (
-          <button
-            key={a}
-            type="button"
-            onClick={e => stop(e, a)}
-            className="rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] py-1.5 text-[10px] font-semibold uppercase text-gray-300 hover:border-purple-500 hover:text-white"
-          >
-            {a}
-          </button>
-        ))}
+        {(['buy', 'sell', 'bid', 'offer'] as MarketAction[]).map(a => {
+          const isOffer = a === 'offer'
+          const gated = !marketLive && a !== 'offer'
+          return (
+            <button
+              key={a}
+              type="button"
+              onClick={e => stop(e, a)}
+              title={
+                isOffer
+                  ? 'Offer : pas d’endpoint on-chain (V2 escrow)'
+                  : gated
+                    ? 'SC marketplace non live'
+                    : a
+              }
+              className={`rounded-lg border py-1.5 text-[10px] font-semibold uppercase ${
+                isOffer
+                  ? 'border-dashed border-gray-600 bg-[#0a0a0f] text-gray-500'
+                  : gated
+                    ? 'border-[#2a2a3a] bg-[#0a0a0f] text-gray-500 opacity-70'
+                    : 'border-[#2a2a3a] bg-[#0a0a0f] text-gray-300 hover:border-purple-500 hover:text-white'
+              }`}
+            >
+              {a}
+            </button>
+          )
+        })}
       </div>
     </div>
   )

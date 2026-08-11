@@ -2,6 +2,7 @@
  * ScStatusBanner — honest on-chain readiness (address ≠ codeHash live).
  */
 import { useEffect, useState } from 'react'
+import { canListBuyNft, canBuyAgent } from '../config/scStatus'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
 
@@ -15,6 +16,14 @@ interface ContractsFile {
     nft_staking?: string | null
     tro_governance?: string | null
   }
+  verification?: {
+    marketplace_mainnet?: {
+      codeHash?: string | null
+      code_empty?: boolean
+      verdict?: string
+    }
+    agents_marketplace?: string
+  }
   notes?: string
 }
 
@@ -26,6 +35,8 @@ function shortAddr(a?: string | null) {
 
 export default function ScStatusBanner({ className = '' }: { className?: string }) {
   const [c, setC] = useState<ContractsFile | null>(null)
+  const marketLive = canListBuyNft()
+  const agentsLive = canBuyAgent()
 
   useEffect(() => {
     let cancelled = false
@@ -46,31 +57,50 @@ export default function ScStatusBanner({ className = '' }: { className?: string 
 
   const agentsAddr = c?.contracts?.agents_marketplace
   const marketAddr = c?.contracts?.marketplace
-  const agentsConfigured = Boolean(agentsAddr)
-  const marketConfigured = Boolean(marketAddr)
+  const verdict = c?.verification?.marketplace_mainnet?.verdict
+  const codeEmpty = c?.verification?.marketplace_mainnet?.code_empty
+  const codeHash = c?.verification?.marketplace_mainnet?.codeHash
+
+  const border = marketLive && agentsLive
+    ? 'border-green-500/30 bg-green-950/20 text-green-200'
+    : 'border-orange-500/30 bg-orange-950/20 text-orange-200'
 
   return (
-    <div
-      className={`rounded-xl border px-4 py-3 text-xs border-orange-500/30 bg-orange-950/20 text-orange-200 ${className}`}
-    >
+    <div className={`rounded-xl border px-4 py-3 text-xs ${border} ${className}`}>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <span className="font-semibold">
           SC · {c?.network ?? 'mainnet'} (chain {c?.chainId ?? '1'})
         </span>
         <span>
           Marketplace NFT :{' '}
-          {marketConfigured
-            ? `configuré ${shortAddr(marketAddr)} — vérifier codeHash explorer`
-            : 'adresse absente'}
+          {marketLive ? (
+            <span className="text-green-300">LIVE {shortAddr(marketAddr)}</span>
+          ) : marketAddr ? (
+            <>
+              configuré {shortAddr(marketAddr)}
+              {codeEmpty || !codeHash
+                ? ' — codeHash null / compte vide'
+                : ` — ${verdict || 'vérifier codeHash'}`}
+            </>
+          ) : (
+            'adresse absente'
+          )}
         </span>
         <span>
           Agents Marketplace :{' '}
-          {agentsConfigured ? `configuré ${shortAddr(agentsAddr)}` : 'non déployé (null)'}
+          {agentsLive ? (
+            <span className="text-green-300">LIVE {shortAddr(agentsAddr)}</span>
+          ) : agentsAddr ? (
+            `configuré ${shortAddr(agentsAddr)} — codeHash non OK`
+          ) : (
+            'non déployé (null)'
+          )}
         </span>
       </div>
       <p className="mt-1 text-[11px] opacity-80">
-        List / Buy / Bid on-chain seulement après codeHash ≠ null et micro-preuves. Jusque-là :
-        consultation + Studio / pin — pas de faux « market live ».
+        List / Buy / Bid on-chain seulement après codeHash ≠ null et{' '}
+        <code>VITE_*_CODEHASH_OK=1</code>. Jusque-là : consultation + Studio / pin — pas de faux « market
+        live ». Voir docs/CLICK_TX_MATRIX.md.
       </p>
     </div>
   )
