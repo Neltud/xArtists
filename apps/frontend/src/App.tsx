@@ -5,6 +5,7 @@ import BottomNav from './components/BottomNav'
 import ErrorBoundary from './components/ErrorBoundary'
 import PwaInstallBanner from './components/PwaInstallBanner'
 import PrivateReleaseStrip from './components/PrivateReleaseStrip'
+import GuardianStatusBar from './components/shared/GuardianStatusBar'
 import RoutePrefetch from './components/RoutePrefetch'
 import { useMultiversX } from './hooks/useMultiversX'
 import { LINKS } from './config/links'
@@ -84,31 +85,22 @@ export default function App() {
   const { isStale, lastUpdate } = useMultiversX()
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:bg-purple-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg"
-      >
-        Aller au contenu
-      </a>
+    <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-white">
       <PrivateReleaseStrip />
+      <GuardianStatusBar />
       <Header />
       <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />
-      <main
-        id="main"
-        className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-8"
-        style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}
-      >
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-4">
         <ErrorBoundary>
           <TxGate>
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/trading" element={<Trading />} />
                 <Route path="/studio" element={<ArtistStudio />} />
                 <Route path="/agents" element={<Agents />} />
                 <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
-                <Route path="/marketplace" element={<Marketplace />} />
-                <Route path="/trading" element={<Trading />} />
                 <Route path="/tro" element={<TroPage />} />
                 <Route path="/staking" element={<StakingPage />} />
                 <Route path="/burnify" element={<BurnifyPage />} />
