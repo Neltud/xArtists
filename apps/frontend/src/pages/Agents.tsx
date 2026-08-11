@@ -4,6 +4,9 @@ import AgentsDeployStatus from '../components/AgentsDeployStatus'
 import CreateSubAgentForm from '../components/CreateSubAgentForm'
 import TreasuryBanner from '../components/TreasuryBanner'
 import GsnLeaderboard from '../components/GsnLeaderboard'
+import AgentPacksGrid from '../components/AgentPacksGrid'
+import AgentPackJourney from '../components/AgentPackJourney'
+import RwaAssetsStrip from '../components/RwaAssetsStrip'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
 
@@ -60,15 +63,6 @@ const DOMAIN_ICON: Record<string, string> = {
   tech: '💻',
 }
 
-const LIA_PACKS = [
-  { key: 'trading', name: 'LIA Trading', icon: '🤖', desc: 'Vellum · scalping / swing / board', color: 'text-green-400' },
-  { key: 'marketplace', name: 'LIA Marketplace', icon: '🎨', desc: 'Vellum · NFT / RWA signals', color: 'text-purple-400' },
-  { key: 'yield', name: 'LIA Yield', icon: '🌾', desc: 'Vellum · Hatom / farms sleeve', color: 'text-teal-400' },
-  { key: 'security', name: 'LIA Security', icon: '🛡️', desc: 'Vellum · BalanceGuard', color: 'text-blue-400' },
-  { key: 'rwa', name: 'LIA RWA', icon: '🏗️', desc: 'Vellum · phygital / $TRO', color: 'text-yellow-400' },
-  { key: 'dao', name: 'LIA DAO', icon: '🗳️', desc: 'Vellum · governance assist', color: 'text-pink-400' },
-]
-
 function dirColor(d: string) {
   const x = d.toLowerCase()
   if (x.includes('bull') || x.includes('risk_on') || x === 'buy') return 'text-green-400'
@@ -115,9 +109,8 @@ export default function Agents() {
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-black">🧠 Agents</h1>
         <p className="text-sm text-gray-500 mt-1">
-          <strong className="text-purple-300">Packs LIA</strong> ·{' '}
-          <strong className="text-fuchsia-300">Agent Packs NFT 5–25 €</strong> ·{' '}
-          <strong className="text-emerald-300">GreenSmoke</strong> (prévisions externes → score pré-trade)
+          <strong className="text-purple-300">3 packs LIA</strong> (Pulse · Yield · Sentinel) · stake NFT ·{' '}
+          <strong className="text-emerald-300">GreenSmoke</strong> = prévisions seulement
         </p>
       </div>
 
@@ -126,30 +119,30 @@ export default function Agents() {
       </div>
 
       <section className="mb-10">
-        <h2 className="text-lg font-bold mb-1 text-purple-200">① Packs agents LIA · Vellum (protocole)</h2>
+        <h2 className="text-lg font-bold mb-1 text-purple-200">① Trois packs IA · produits</h2>
         <p className="text-xs text-gray-500 mb-4">
-          Produits protocole. Achat on-chain → clé API + NFT badge. ≠ GreenSmoke.
+          SKU commerciaux. Modules internes LIA (RWA, DAO…) ne sont pas vendus séparément. Achat on-chain
+          après deploy agents_marketplace.
         </p>
         <AgentsDeployStatus />
         <AgentsMarketplacePanel />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
-          {LIA_PACKS.map(a => (
-            <div key={a.key} className="card flex items-center gap-3 border-purple-500/20">
-              <span className="text-2xl">{a.icon}</span>
-              <div className="flex-1 min-w-0">
-                <p className={`font-semibold text-sm ${a.color}`}>{a.name}</p>
-                <p className="text-[11px] text-gray-500 truncate">{a.desc}</p>
-              </div>
-              <span className="badge-purple text-[10px]">LIA</span>
-            </div>
-          ))}
+        <div className="mt-4">
+          <AgentPacksGrid />
+        </div>
+        <div className="mt-6">
+          <AgentPackJourney />
         </div>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-lg font-bold mb-1 text-fuchsia-200">①bis Agent Packs NFT (5–25 €)</h2>
+        <h2 className="text-lg font-bold mb-1 text-amber-200">①ter Actifs RWA (market art)</h2>
+        <RwaAssetsStrip />
+      </section>
+
+      <section className="mb-10">
+        <h2 className="text-lg font-bold mb-1 text-fuchsia-200">①bis Créer un sous-agent (intent)</h2>
         <p className="text-xs text-gray-500 mb-4">
-          Sous-agents créateur · escrow isolé du book LIA · pas des agents GSN.
+          Prompt → intent Vellum · toujours dans 5–25 € · ≠ GSN.
         </p>
         <CreateSubAgentForm />
       </section>
@@ -245,7 +238,9 @@ export default function Agents() {
         </div>
       </section>
 
-      <p className="text-xs text-gray-600 text-center">docs/REWARDS_AND_PACKS_PRICING.md · 1 $TRO max œuvre physique</p>
+      <p className="text-xs text-gray-600 text-center">
+        docs/AGENT_PACKS_AND_RWA.md · 1 $TRO max œuvre physique
+      </p>
     </div>
   )
 }
