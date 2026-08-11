@@ -1,10 +1,14 @@
 /**
- * Marketplace activity + best-effort listing id hints from recent SC txs.
+ * Marketplace activity + listing id index (P1).
+ * Static JSON: data/listings_index.json (Vellum / indexer).
+ * Live fallback: recent SC txs on explorer API.
  */
 
 import { MARKETPLACE_ADDRESS } from '../../../../packages/core/src/contracts/marketplaceAbi'
 
 const API = 'https://api.multiversx.com'
+const RAW_INDEX =
+  'https://raw.githubusercontent.com/Neltud/xArtists/main/data/listings_index.json'
 
 export type IndexedListingHint = {
   txHash: string
@@ -12,19 +16,46 @@ export type IndexedListingHint = {
   function?: string
   status?: string
   sender?: string
-  /** Parsed from data hex when possible */
   listingIdHint?: number | null
+}
+
+export type CatalogListing = {
+  listing_id: number
+  token_id: string
+  nonce: number
+  price_egld: string
+  seller: string
+  active: boolean
+  tx_list?: string
+}
+
+export type ListingsIndexFile = {
+  version: number
+  network: string
+  updated: string | null
+  marketplace_address: string | null
+  codehash_ok: boolean
+  listings: CatalogListing[]
+  note?: string
 }
 
 function parseListingIdFromData(data?: string): number | null {
   if (!data || typeof data !== 'string') return null
-  // common: function@hexId or ESDTNFTTransfer@...@listNft@...
   const parts = data.split('@')
   for (let i = 0; i < parts.length; i++) {
     const p = parts[i]
     if (!p) continue
-    const fn = Buffer.from(p, 'hex').toString('utf8')
-    if (['buyNft', 'placeBid', 'acceptBid', 'cancelListing', 'withdrawBid'].includes(fn)) {
+    let fn = p
+    try {
+      if (/^[0-9a-fA-F]+$/.test(p) && p.length % 2 === 0) {
+        fn = Array.from(new Uint8Array(p.match(/.{1,2}/g)!.map(h => parseInt(h, 16))))
+          .map(b => String.fromCharCode(b))
+          .join('')
+      }
+    } catch {
+      /* keep p */
+    }
+    if (['buyNft', 'placeBid', 'acceptBid', 'cancelListing', 'withdrawBid', 'listNft'].includes(fn)) {
       const next = parts[i + 1]
       if (next && /^[0-9a-fA-F]+$/.test(next)) {
         try {
@@ -35,8 +66,18 @@ function parseListingIdFromData(data?: string): number | null {
       }
     }
   }
-  // sometimes function name is plain in API `function` field only
   return null
+}
+
+/** Published index (empty until deploy + indexer). */
+export async function fetchListingsIndex(): Promise<ListingsIndexFile | null> {
+  try {
+    const res = await fetch(`${RAW_INDEX}?t=${Date.now()}`, { cache: 'no-store' })
+    if (!res.ok) return null
+    return (await res.json()) as ListingsIndexFile
+  } catch {
+    return null
+  }
 }
 
 export async function fetchMarketplaceActivity(
@@ -52,7 +93,6 @@ export async function fetchMarketplaceActivity(
     return rows.map(r => {
       const fn = r.function || r.action?.name
       let listingIdHint: number | null = parseListingIdFromData(r.data)
-      // API may expose arguments
       if (listingIdHint == null && Array.isArray(r.arguments) && r.arguments[0] != null) {
         const n = Number(r.arguments[0])
         if (!Number.isNaN(n)) listingIdHint = n

@@ -7,7 +7,8 @@ export const LIA_WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0l
 export interface WalletState {
   connected: boolean
   address: string
-  method: 'xportal' | 'defi_wallet' | 'web_wallet' | 'pem' | null
+  /** paste_readonly = manual erd1 — never signs TX */
+  method: 'xportal' | 'defi_wallet' | 'web_wallet' | 'paste_readonly' | 'pem' | null
 }
 
 interface WalletContextValue extends WalletState {
@@ -15,6 +16,8 @@ interface WalletContextValue extends WalletState {
   disconnect: () => void
   shortAddress: string
   isLiaAddress: boolean
+  /** True only for non-paste sessions (still need __xartistsSendTx for real sign) */
+  canAttemptSign: boolean
 }
 
 const WalletContext = createContext<WalletContextValue | null>(null)
@@ -27,15 +30,10 @@ function isValidErd(addr: string): boolean {
 function addressFromUrl(): string | null {
   if (typeof window === 'undefined') return null
   const q = new URLSearchParams(window.location.search)
-  const candidates = [
-    q.get('address'),
-    q.get('addr'),
-    q.get('loginAddress'),
-  ]
+  const candidates = [q.get('address'), q.get('addr'), q.get('loginAddress')]
   for (const c of candidates) {
     if (c && isValidErd(c)) return c.trim()
   }
-  // hash fragment sometimes
   const hash = window.location.hash || ''
   const m = hash.match(/erd1[a-z0-9]{58}/i)
   return m ? m[0] : null
@@ -47,10 +45,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) {
         const parsed = JSON.parse(raw) as WalletState
-        // Clear legacy mock sessions that used LIA address
         if (parsed.address?.toLowerCase() === LIA_WALLET.toLowerCase()) {
           return { connected: false, address: '', method: null }
         }
+        // migrate legacy: web_wallet without real login → treat as paste if no session flag
         return parsed
       }
     } catch {
@@ -59,13 +57,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     return { connected: false, address: '', method: null }
   })
 
-  // Capture web wallet callback once
   useEffect(() => {
     const fromUrl = addressFromUrl()
     if (!fromUrl) return
     if (fromUrl.toLowerCase() === LIA_WALLET.toLowerCase()) return
+    // Real web-wallet redirect callback
     setState({ connected: true, address: fromUrl, method: 'web_wallet' })
-    // clean query without reload loop
     try {
       const url = new URL(window.location.href)
       url.searchParams.delete('address')
@@ -93,7 +90,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (a.toLowerCase() === LIA_WALLET.toLowerCase()) {
       return {
         ok: false,
-        error: 'LIA protocol wallet cannot be used as user connection. Use your own xPortal / DeFi / Web wallet.',
+        error:
+          'LIA protocol wallet cannot be used as user connection. Use your own xPortal / DeFi / Web wallet.',
       }
     }
     setState({ connected: true, address: a, method })
@@ -109,9 +107,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     : ''
 
   const isLiaAddress = state.address.toLowerCase() === LIA_WALLET.toLowerCase()
+  const canAttemptSign =
+    state.connected &&
+    !!state.method &&
+    state.method !== 'paste_readonly' &&
+    state.method !== 'pem'
 
   return (
-    <WalletContext.Provider value={{ ...state, connect, disconnect, shortAddress, isLiaAddress }}>
+    <WalletContext.Provider
+      value={{ ...state, connect, disconnect, shortAddress, isLiaAddress, canAttemptSign }}
+    >
       {children}
     </WalletContext.Provider>
   )

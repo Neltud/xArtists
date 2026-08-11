@@ -1,8 +1,14 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-08-11T04:00:00Z",
+  "updated": "2026-08-11T04:50:00Z",
   "chain_note": "MultiversX mainnet config v1.11.11.0 (2026-08-10): miniblock checks, no activation epoch",
+  "wallets": {
+    "lia_ops": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "mission": null,
+    "reserve": null,
+    "note": "Create Mission + Reserve (EOA or multisig), publish here + TREASURY_POLICY. Never use LIA ops as user Connect."
+  },
   "contracts": {
     "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
     "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
@@ -27,9 +33,13 @@
   "gaps": {
     "marketplace": "P0 deploy nft-marketplace + codeHash",
     "agents_marketplace": "P0 deploy FEE_BPS=300",
+    "mission_reserve": "P1 create wallets + publish",
+    "listings_index": "P1 fill data/listings_index.json after deploy",
+    "pinata_proxy": "P1 backend only — JWT never in frontend",
+    "offer_v2": "Deferred until GMV justifies escrow SC",
     "tro_burn": "Deploy; ESDTLocalBurn; fundRewards; VITE_TRO_BURN_*",
     "rwa_escrow_bridge": "P2 after market; attestor=LIA",
     "treasury_splitter": "P0 after Mission+Reserve+Reward+Ops wallets; receiveAndSplit 40/30/20/10"
   },
-  "notes": "Do not send user funds until codeHash non-null"
+  "notes": "Do not send user funds until codeHash non-null. Micro List/Buy = user wallet only."
 }

@@ -19,7 +19,7 @@ export default function Header() {
   const [showWalletModal, setShowWalletModal] = useState(false)
   const [manualAddr, setManualAddr] = useState('')
   const [connectError, setConnectError] = useState('')
-  const { connected, shortAddress, connect, disconnect, address } = useWallet()
+  const { connected, shortAddress, connect, disconnect, address, method } = useWallet()
   const location = useLocation()
 
   useEffect(() => {
@@ -61,7 +61,9 @@ export default function Header() {
         else setShowWalletModal(false)
         return
       }
-      setConnectError('DeFi Wallet extension not detected. Install MultiversX DeFi Wallet, or use Web Wallet.')
+      setConnectError(
+        'DeFi Wallet extension not detected. Install MultiversX DeFi Wallet, or use Web Wallet.'
+      )
     } catch (e) {
       setConnectError(e instanceof Error ? e.message : 'Extension error')
     }
@@ -77,11 +79,13 @@ export default function Header() {
       setConnectError('Cannot use LIA protocol wallet as user. Connect your own wallet.')
       return
     }
-    const res = connect(manualAddr.trim(), 'web_wallet')
+    // Explicit paste_readonly — cannot List/Buy/Bid
+    const res = connect(manualAddr.trim(), 'paste_readonly')
     if (!res.ok) setConnectError(res.error || 'Failed')
     else {
       setShowWalletModal(false)
       setManualAddr('')
+      setConnectError('')
     }
   }
 
@@ -93,7 +97,9 @@ export default function Header() {
             <span className="text-xl sm:text-2xl shrink-0">🎨</span>
             <div className="min-w-0">
               <span className="font-black text-base sm:text-lg gradient-text">xArtists</span>
-              <span className="ml-1.5 text-[10px] sm:text-xs text-gray-500 font-normal hidden sm:inline">LIA v6</span>
+              <span className="ml-1.5 text-[10px] sm:text-xs text-gray-500 font-normal hidden sm:inline">
+                LIA v6
+              </span>
             </div>
           </NavLink>
 
@@ -123,10 +129,14 @@ export default function Header() {
             {connected ? (
               <button
                 onClick={disconnect}
-                className="px-2 sm:px-3 py-1.5 rounded-lg bg-[#16161f] border border-green-500/30 text-green-400 text-[10px] sm:text-xs mono hover:border-red-500/40 hover:text-red-400 transition-colors min-h-[40px]"
-                title={`${address} — click to disconnect`}
+                className={`px-2 sm:px-3 py-1.5 rounded-lg bg-[#16161f] border text-[10px] sm:text-xs mono transition-colors min-h-[40px] ${
+                  method === 'paste_readonly'
+                    ? 'border-amber-500/40 text-amber-300 hover:border-red-500/40'
+                    : 'border-green-500/30 text-green-400 hover:border-red-500/40 hover:text-red-400'
+                }`}
+                title={`${address} · ${method || '—'} — click to disconnect`}
               >
-                ✅ {shortAddress}
+                {method === 'paste_readonly' ? '👁' : '✅'} {shortAddress}
               </button>
             ) : (
               <button
@@ -217,7 +227,8 @@ export default function Header() {
           >
             <h2 className="text-xl font-bold mb-2">Connect wallet</h2>
             <p className="text-xs text-zinc-500 mb-4">
-              Your wallet only — never the LIA protocol address.
+              Your wallet only — never the LIA protocol address. Paste erd1 = <strong>read-only</strong>{' '}
+              (no List/Buy).
             </p>
 
             <button
@@ -228,7 +239,7 @@ export default function Header() {
               <span className="text-3xl">🌐</span>
               <div className="text-left">
                 <div className="font-semibold">Web Wallet</div>
-                <div className="text-sm text-gray-400">wallet.multiversx.com — recommended</div>
+                <div className="text-sm text-gray-400">wallet.multiversx.com — recommended for TX</div>
               </div>
             </button>
 
@@ -252,20 +263,22 @@ export default function Header() {
               <span className="text-3xl">🦊</span>
               <div className="text-left">
                 <div className="font-semibold">DeFi Wallet extension</div>
-                <div className="text-sm text-gray-400">Browser extension</div>
+                <div className="text-sm text-gray-400">Browser extension — best for micro List/Buy</div>
               </div>
             </button>
 
             <div className="mt-2">
-              <p className="text-xs text-gray-500 mb-2">Or paste your erd1 address (read-only session)</p>
+              <p className="text-xs text-amber-400/90 mb-2">
+                Or paste erd1 — <strong>read-only</strong> (cannot sign List/Buy/Bid)
+              </p>
               <input
                 className="w-full p-3 rounded-lg bg-[#111118] border border-[#2a2a3a] text-xs mono text-gray-300 focus:outline-none focus:border-purple-500"
                 placeholder="erd1..."
                 value={manualAddr}
                 onChange={e => setManualAddr(e.target.value)}
               />
-              <button type="button" onClick={handleManual} className="btn-primary w-full mt-2 text-sm">
-                Use address
+              <button type="button" onClick={handleManual} className="btn-secondary w-full mt-2 text-sm">
+                Use address (read-only)
               </button>
             </div>
 

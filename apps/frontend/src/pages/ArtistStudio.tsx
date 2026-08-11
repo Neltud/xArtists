@@ -75,7 +75,9 @@ export default function ArtistStudio() {
           <li
             key={s.n}
             className={`rounded-xl border px-2 py-2 text-center ${
-              step === i + 1 ? 'border-purple-500 bg-purple-500/15 text-purple-100' : 'border-[#2a2a3a] text-gray-500'
+              step === i + 1
+                ? 'border-purple-500 bg-purple-500/15 text-purple-100'
+                : 'border-[#2a2a3a] text-gray-500'
             }`}
           >
             <span className="font-black">{s.n}</span> {s.t}
@@ -188,8 +190,17 @@ export default function ArtistStudio() {
             ))}
           </div>
 
+          <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-3 text-xs text-indigo-100/90 space-y-1">
+            <p className="font-semibold">Pin auto Studio = proxy backend (P1)</p>
+            <p>
+              JWT Pinata <strong>jamais</strong> dans le navigateur. Ops :{' '}
+              <code className="text-[10px]">python -m lia.media.pinata_connect</code> · voir{' '}
+              <code className="text-[10px]">docs/PINATA_PROXY.md</code>.
+            </p>
+          </div>
+
           <label className="block text-sm text-gray-400">
-            URI IPFS / gateway
+            URI IPFS / gateway (après pin ops)
             <input
               className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2.5 mono text-xs"
               value={ipfsUri}
@@ -199,7 +210,7 @@ export default function ArtistStudio() {
           </label>
 
           <label className="block text-sm text-gray-400">
-            Fichier (préparation — pin via Vellum / Pinata JWT)
+            Fichier (préparation locale — pin hors front)
             <input
               type="file"
               accept={media === 'image' ? 'image/*' : media === 'video' ? 'video/*' : 'audio/*'}
@@ -212,7 +223,8 @@ export default function ArtistStudio() {
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-100/90 space-y-2">
             <p className="font-semibold">YouTube ≠ stockage NFT</p>
             <p>
-              Lien promo uniquement (<code>external_url</code>). Vente = marketplace on-chain + média IPFS/Arweave.
+              Lien promo uniquement (<code>external_url</code>). Vente = marketplace on-chain + média
+              IPFS/Arweave.
             </p>
             <label className="block text-gray-300">
               YouTube (optionnel)
@@ -228,8 +240,8 @@ export default function ArtistStudio() {
 
           {mode === 'physical' && (
             <p className="text-xs text-teal-200/90 border border-teal-500/30 rounded-lg p-3">
-              Phygital : NFT = certificat. Livraison physique hors chaîne. Rewards $TRO créateur = règles Vellum (1ère
-              vente).
+              Phygital : NFT = certificat. Livraison physique hors chaîne. Rewards $TRO créateur = 1
+              TRO max / œuvre réelle (règle produit).
             </p>
           )}
 
@@ -285,7 +297,12 @@ export default function ArtistStudio() {
             <button type="button" className="btn-secondary text-sm" onClick={() => setStep(2)}>
               ←
             </button>
-            <button type="button" className="btn-primary text-sm flex-1" disabled={!ready} onClick={() => setStep(4)}>
+            <button
+              type="button"
+              className="btn-primary text-sm flex-1"
+              disabled={!ready}
+              onClick={() => setStep(4)}
+            >
               Continuer →
             </button>
           </div>
@@ -308,16 +325,18 @@ export default function ArtistStudio() {
           </div>
 
           <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-100">
-            List on-chain xArtists Market = <strong>bloqué</strong> tant que SC marketplace non déployé (codeHash null).
-            Utiliser XOXNO ou attendre deploy P0.
+            List on-chain xArtists Market = <strong>bloqué</strong> tant que SC marketplace non déployé
+            (codeHash null). Wallet user (pas LIA) + signature réelle requis — voir{' '}
+            <code className="text-[10px]">docs/MICRO_LIST_BUY_USER.md</code>.
           </div>
 
           <ol className="text-sm text-gray-300 space-y-2 list-decimal list-inside border border-[#2a2a3a] rounded-xl p-4">
-            <li>Pin média + JSON metadata (Vellum / Pinata JWT)</li>
-            <li>Connect wallet <strong>artiste</strong> (pas LIA protocole)</li>
+            <li>Pin média + JSON (Vellum / proxy — JWT hors front)</li>
+            <li>Connect wallet <strong>artiste</strong> (extension / Web Wallet — pas paste, pas LIA)</li>
             <li>Issue collection + mint NFT avec URI IPFS (mxpy / minter)</li>
             <li>
-              List sur <Link to="/marketplace" className="text-purple-300 underline">Marketplace</Link> ou XOXNO
+              List sur <Link to="/marketplace" className="text-purple-300 underline">Marketplace</Link>{' '}
+              ou XOXNO
             </li>
             <li>
               Option : <Link to="/tro" className="text-purple-300 underline">Buy $TRO</Link>
@@ -329,7 +348,7 @@ export default function ArtistStudio() {
               Web Wallet
             </a>
             <a href="https://pinata.cloud" target="_blank" rel="noreferrer" className="btn-secondary text-sm">
-              Pinata
+              Pinata (ops)
             </a>
             <Link to="/marketplace" className="btn-secondary text-sm">
               Sell on Market

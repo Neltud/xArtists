@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "network": "mainnet",
+  "updated": null,
+  "marketplace_address": null,
+  "codehash_ok": false,
+  "note": "Populated after SC deploy + indexer (Vellum or scripts/index_marketplace_listings.py). Empty until codeHash live.",
+  "listings": [],
+  "schema": {
+    "listing_id": "u64 on-chain",
+    "token_id": "COLLECTION-xxxxxx",
+    "nonce": "u64",
+    "price_egld": "string decimal",
+    "seller": "erd1…",
+    "active": "bool",
+    "tx_list": "optional hash"
+  }
+}
