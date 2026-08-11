@@ -1,15 +1,13 @@
 #![no_std]
 
-//! xArtists Treasury Splitter — receives protocol fees / LIA PnL sink and
-//! splits EGLD atomically into Mission / Reserve / Community pools.
-//! Default bps: Mission 4000 · Reserve 3000 · Community 3000.
-//! Adjustable only by owner (multisig / DAO executor).
+//! xArtists Treasury Splitter — 40/30/20/10 Mission/Reserve/Reward/Ops.
+//! receiveAndSplit(EGLD) atomic. setSplitBps sum=10000 owner (multisig/DAO).
+//! Dust → ops. Pause + 2-step ownership.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
 const BPS_DENOM: u64 = 10_000;
-const MAX_BPS: u16 = 10_000;
 
 #[multiversx_sc::contract]
 pub trait TreasurySplitter {
@@ -18,17 +16,19 @@ pub trait TreasurySplitter {
         &self,
         mission: ManagedAddress,
         reserve: ManagedAddress,
-        community: ManagedAddress,
+        reward: ManagedAddress,
+        ops: ManagedAddress,
         mission_bps: u16,
         reserve_bps: u16,
-        community_bps: u16,
+        reward_bps: u16,
+        ops_bps: u16,
     ) {
-        require!(!mission.is_zero() && !reserve.is_zero() && !community.is_zero(), "zero dest");
+        require!(!mission.is_zero() && !reserve.is_zero() && !reward.is_zero() && !ops.is_zero(), "zero dest");
         require!(
-            (mission_bps as u32) + (reserve_bps as u32) + (community_bps as u32) == BPS_DENOM as u32,
+            (mission_bps as u32) + (reserve_bps as u32) + (reward_bps as u32) + (ops_bps as u32)
+                == BPS_DENOM as u32,
             "bps must sum 10000"
         );
-        require!(mission != reserve && mission != community && reserve != community, "dup dest");
 
         let caller = self.blockchain().get_caller();
         self.owner().set(&caller);
@@ -37,23 +37,20 @@ pub trait TreasurySplitter {
 
         self.mission().set(&mission);
         self.reserve().set(&reserve);
-        self.community().set(&community);
+        self.reward().set(&reward);
+        self.ops().set(&ops);
         self.mission_bps().set(mission_bps);
         self.reserve_bps().set(reserve_bps);
-        self.community_bps().set(community_bps);
+        self.reward_bps().set(reward_bps);
+        self.ops_bps().set(ops_bps);
         self.total_split().set(BigUint::zero());
     }
 
     #[endpoint(upgrade)]
-    fn upgrade(&self) {
-        self.require_owner();
-    }
+    fn upgrade(&self) { self.require_owner(); }
 
     fn require_owner(&self) {
-        require!(
-            self.blockchain().get_caller() == self.owner().get(),
-            "only owner"
-        );
+        require!(self.blockchain().get_caller() == self.owner().get(), "only owner");
     }
 
     #[endpoint(setPaused)]
@@ -80,17 +77,17 @@ pub trait TreasurySplitter {
     }
 
     #[endpoint(setSplitBps)]
-    fn set_split_bps(&self, mission_bps: u16, reserve_bps: u16, community_bps: u16) {
+    fn set_split_bps(&self, mission_bps: u16, reserve_bps: u16, reward_bps: u16, ops_bps: u16) {
         self.require_owner();
-        require!(mission_bps <= MAX_BPS && reserve_bps <= MAX_BPS && community_bps <= MAX_BPS, "bps");
         require!(
-            (mission_bps as u32) + (reserve_bps as u32) + (community_bps as u32) == BPS_DENOM as u32,
+            (mission_bps as u32) + (reserve_bps as u32) + (reward_bps as u32) + (ops_bps as u32)
+                == BPS_DENOM as u32,
             "bps must sum 10000"
         );
         self.mission_bps().set(mission_bps);
         self.reserve_bps().set(reserve_bps);
-        self.community_bps().set(community_bps);
-        self.split_updated_event(mission_bps, reserve_bps, community_bps);
+        self.reward_bps().set(reward_bps);
+        self.ops_bps().set(ops_bps);
     }
 
     #[endpoint(setDestinations)]
@@ -98,14 +95,15 @@ pub trait TreasurySplitter {
         &self,
         mission: ManagedAddress,
         reserve: ManagedAddress,
-        community: ManagedAddress,
+        reward: ManagedAddress,
+        ops: ManagedAddress,
     ) {
         self.require_owner();
-        require!(!mission.is_zero() && !reserve.is_zero() && !community.is_zero(), "zero dest");
-        require!(mission != reserve && mission != community && reserve != community, "dup dest");
+        require!(!mission.is_zero() && !reserve.is_zero() && !reward.is_zero() && !ops.is_zero(), "zero dest");
         self.mission().set(&mission);
         self.reserve().set(&reserve);
-        self.community().set(&community);
+        self.reward().set(&reward);
+        self.ops().set(&ops);
     }
 
     #[payable("EGLD")]
@@ -118,72 +116,37 @@ pub trait TreasurySplitter {
     }
 
     fn split_internal(&self, amount: BigUint) {
-        let m_bps = self.mission_bps().get() as u64;
-        let c_bps = self.community_bps().get() as u64;
+        let m = self.mission_bps().get() as u64;
+        let r = self.reserve_bps().get() as u64;
+        let w = self.reward_bps().get() as u64;
 
-        let to_mission = &amount * m_bps / BPS_DENOM;
-        let to_community = &amount * c_bps / BPS_DENOM;
-        let to_reserve = &amount - &to_mission - &to_community;
-
-        let mission = self.mission().get();
-        let reserve = self.reserve().get();
-        let community = self.community().get();
+        let to_mission = &amount * m / BPS_DENOM;
+        let to_reserve = &amount * r / BPS_DENOM;
+        let to_reward = &amount * w / BPS_DENOM;
+        let to_ops = &amount - &to_mission - &to_reserve - &to_reward;
 
         let prev = self.total_split().get();
         self.total_split().set(&(prev + &amount));
 
-        if to_mission > 0 {
-            self.send().direct_egld(&mission, &to_mission);
-        }
-        if to_reserve > 0 {
-            self.send().direct_egld(&reserve, &to_reserve);
-        }
-        if to_community > 0 {
-            self.send().direct_egld(&community, &to_community);
-        }
+        if to_mission > 0 { self.send().direct_egld(&self.mission().get(), &to_mission); }
+        if to_reserve > 0 { self.send().direct_egld(&self.reserve().get(), &to_reserve); }
+        if to_reward > 0 { self.send().direct_egld(&self.reward().get(), &to_reward); }
+        if to_ops > 0 { self.send().direct_egld(&self.ops().get(), &to_ops); }
 
-        self.split_event(&amount, &to_mission, &to_reserve, &to_community);
-    }
-
-    #[view(getConfig)]
-    fn get_config(&self) -> MultiValue6<ManagedAddress, ManagedAddress, ManagedAddress, u16, u16, u16> {
-        (
-            self.mission().get(),
-            self.reserve().get(),
-            self.community().get(),
-            self.mission_bps().get(),
-            self.reserve_bps().get(),
-            self.community_bps().get(),
-        )
-            .into()
+        self.split_event(&amount, &to_mission, &to_reserve, &to_reward, &to_ops);
     }
 
     #[view(getTotalSplit)]
-    fn get_total_split(&self) -> BigUint {
-        self.total_split().get()
-    }
+    fn get_total_split(&self) -> BigUint { self.total_split().get() }
 
     #[view(getOwner)]
-    fn get_owner(&self) -> ManagedAddress {
-        self.owner().get()
-    }
+    fn get_owner(&self) -> ManagedAddress { self.owner().get() }
 
     #[view(isPaused)]
-    fn is_paused(&self) -> bool {
-        self.paused().get()
-    }
+    fn is_paused(&self) -> bool { self.paused().get() }
 
     #[event("split")]
-    fn split_event(
-        &self,
-        amount: &BigUint,
-        mission: &BigUint,
-        reserve: &BigUint,
-        community: &BigUint,
-    );
-
-    #[event("splitUpdated")]
-    fn split_updated_event(&self, mission_bps: u16, reserve_bps: u16, community_bps: u16);
+    fn split_event(&self, amount: &BigUint, mission: &BigUint, reserve: &BigUint, reward: &BigUint, ops: &BigUint);
 
     #[view]
     #[storage_mapper("owner")]
@@ -205,8 +168,12 @@ pub trait TreasurySplitter {
     fn reserve(&self) -> SingleValueMapper<ManagedAddress>;
 
     #[view]
-    #[storage_mapper("community")]
-    fn community(&self) -> SingleValueMapper<ManagedAddress>;
+    #[storage_mapper("reward")]
+    fn reward(&self) -> SingleValueMapper<ManagedAddress>;
+
+    #[view]
+    #[storage_mapper("ops")]
+    fn ops(&self) -> SingleValueMapper<ManagedAddress>;
 
     #[view]
     #[storage_mapper("missionBps")]
@@ -217,8 +184,12 @@ pub trait TreasurySplitter {
     fn reserve_bps(&self) -> SingleValueMapper<u16>;
 
     #[view]
-    #[storage_mapper("communityBps")]
-    fn community_bps(&self) -> SingleValueMapper<u16>;
+    #[storage_mapper("rewardBps")]
+    fn reward_bps(&self) -> SingleValueMapper<u16>;
+
+    #[view]
+    #[storage_mapper("opsBps")]
+    fn ops_bps(&self) -> SingleValueMapper<u16>;
 
     #[view]
     #[storage_mapper("totalSplit")]
