@@ -1,18 +1,10 @@
 # Où est Burnify ?
 
-## Dans le repo
+### 1) Protocole Burnify.app (LIA)
+- `lia/burnify/` · `docs/BURNIFY_PROTOCOL_LIA.md` · UI `/burnify` section A
+- Flux : stake BFY → batches TRO → claim EGLD après X batches
 
-| Emplacement | État |
-|-------------|------|
-| `src/features/BurnifyDemo.tsx` | **Demo statique** (legacy, hors SPA Vite `apps/frontend`) |
-| `src/features/DemoDropdownMenu.tsx` | Lien menu demo `/burnify` |
-| `src/features/EcosystemOverview.tsx` | Mention burning / Burnify |
-| `apps/frontend/src/pages/BurnifyPage.tsx` | **Page SPA** `/burnify` (shell UI, pas de burn live) |
+### 2) SC xArtists tro-burn (users)
+- `contracts/tro-burn` · `deploy_tro_burn.sh` · section B `/burnify`
 
-## Externe (écosystème MultiversX)
-
-Burnify = protocole partenaire de burn (TRO/NFT → $BFY / rewards). Pas un smart contract xArtists propriétaire dans ce monorepo (à brancher via adresses officielles Burnify quand validées).
-
-## Product vision
-
-Burn = réduction d’offre + utilité $TRO / NFT. LIA ne doit pas burner le wallet user sans signature user.
+LIA ne signe jamais avec le wallet utilisateur connecté.
