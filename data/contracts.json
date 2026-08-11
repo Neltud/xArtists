@@ -1,7 +1,7 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-08-11T01:30:00Z",
+  "updated": "2026-08-11T04:00:00Z",
   "chain_note": "MultiversX mainnet config v1.11.11.0 (2026-08-10): miniblock checks, no activation epoch",
   "contracts": {
     "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
@@ -29,7 +29,7 @@
     "agents_marketplace": "P0 deploy FEE_BPS=300",
     "tro_burn": "Deploy; ESDTLocalBurn; fundRewards; VITE_TRO_BURN_*",
     "rwa_escrow_bridge": "P2 after market; attestor=LIA",
-    "treasury_splitter": "P0 after Mission+Reserve wallets; receiveAndSplit 40/30/30"
+    "treasury_splitter": "P0 after Mission+Reserve+Reward+Ops wallets; receiveAndSplit 40/30/20/10"
   },
   "notes": "Do not send user funds until codeHash non-null"
 }
