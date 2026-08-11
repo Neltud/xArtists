@@ -196,7 +196,7 @@ export default function NFTDetailModal({
               <div className="flex flex-wrap gap-2 items-end">
                 <input
                   type="number"
-egocio value={listPrice}
+                  value={listPrice}
                   onChange={e => setListPrice(e.target.value)}
                   className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm"
                 />
