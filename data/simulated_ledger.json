@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "mode": "paper",
+  "no_real_money": true,
+  "updated": "2026-08-11T21:40:00Z",
+  "note": "Regenerate with: python3 scripts/simulate_multi_capital_ledger.py",
+  "math_notes": {
+    "size_usd": "capital * PACK_MAX_RISK_FRAC[pack] * confidence",
+    "pulse_frac": 0.08,
+    "yield_frac": 0.05,
+    "sentinel_frac": 0.02,
+    "min_ticket_usd": 5.0
+  },
+  "example_A_micro_arb": {
+    "decision": {"strategy": "MICRO_ARB", "action": "BUY", "confidence": 0.72},
+    "expected": {
+      "ag_pulse_alice": "ok size ≈ 100*0.08*0.72 = 5.76",
+      "ag_pulse_bob": "ok size ≈ 40*0.08*0.72 = 2.304 → below min → reject unless ≥5",
+      "ag_yield_carol": "blocked pack_yield_blocks_MICRO_ARB",
+      "ag_sent_dave": "blocked pack_sentinel_blocks_MICRO_ARB",
+      "ag_pulse_dust": "capital_below_min"
+    }
+  }
+}

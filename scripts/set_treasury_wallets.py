@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -27,13 +29,10 @@ def main() -> None:
     ap.add_argument("--reward", default=None)
     args = ap.parse_args()
 
-    # ensure schema
-    from init_treasury_schema import main as init_main  # type: ignore
-
-    try:
-        init_main()
-    except Exception:
-        pass
+    # Ensure 4-slot schema without fragile imports
+    init = ROOT / "scripts" / "init_treasury_schema.py"
+    if init.exists():
+        subprocess.run([sys.executable, str(init)], check=False)
 
     data = json.loads(PATH.read_text(encoding="utf-8")) if PATH.exists() else {"wallets": {}}
     data.setdefault("wallets", {})
@@ -78,7 +77,12 @@ def main() -> None:
         CONTRACTS.write_text(json.dumps(c, indent=2) + "\n", encoding="utf-8")
         print("updated", CONTRACTS)
 
-    print(json.dumps({k: data["wallets"].get(k) for k in ("mission", "reserve", "reward", "ops", "lia_ops")}, indent=2))
+    print(
+        json.dumps(
+            {k: data["wallets"].get(k) for k in ("mission", "reserve", "reward", "ops", "lia_ops")},
+            indent=2,
+        )
+    )
     print("Update docs/TREASURY_POLICY.md with addresses.")
 
 
