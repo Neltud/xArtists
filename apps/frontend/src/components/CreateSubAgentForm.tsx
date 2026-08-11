@@ -6,7 +6,7 @@ export default function CreateSubAgentForm() {
   const { connected, address } = useWallet()
   const [prompt, setPrompt] = useState('')
   const [name, setName] = useState('')
-  const [priceEur, setPriceEur] = useState('10')
+  const [priceEur, setPriceEur] = useState(String(PACK_PRICE_EUR.list))
   const [msg, setMsg] = useState('')
 
   const onSubmit = (e: React.FormEvent) => {
@@ -17,7 +17,7 @@ export default function CreateSubAgentForm() {
     }
     const eur = Number(priceEur)
     if (!Number.isFinite(eur) || eur < PACK_PRICE_EUR.min || eur > PACK_PRICE_EUR.max) {
-      setMsg(`Prix pack : ${PACK_PRICE_EUR.min}–${PACK_PRICE_EUR.max} € uniquement.`)
+      setMsg(`Prix pack : ${PACK_PRICE_EUR.min}–${PACK_PRICE_EUR.max} € (catalogue ${PACK_PRICE_EUR.list} €).`)
       return
     }
     const intent = {
@@ -25,10 +25,12 @@ export default function CreateSubAgentForm() {
       prompt: prompt.trim().slice(0, 2000),
       name: name.trim() || undefined,
       price_eur: eur,
-      price_bounds: PACK_PRICE_EUR,
+      price_list_default: PACK_PRICE_EUR.list,
+      price_bounds: { min: PACK_PRICE_EUR.min, max: PACK_PRICE_EUR.max },
       creator: connected && address ? address : 'anonymous',
       product: 'lia_subagent_pack',
       not: 'greensmoke_forecast_agent',
+      pricing: 'lia_vellum_sets_price_for_margin',
       note: 'Vellum lia.agents.vellum_provision — list after agents_marketplace live',
     }
     try {
@@ -37,7 +39,7 @@ export default function CreateSubAgentForm() {
       /* ignore */
     }
     setMsg(
-      `Intent pack ${eur} € enregistré. ≠ GreenSmoke. List on-chain après deploy agents_marketplace.`
+      `Intent ${eur} € enregistré (défaut catalogue ${PACK_PRICE_EUR.list} €). ≠ GreenSmoke. List on-chain après deploy.`
     )
   }
 
@@ -45,8 +47,11 @@ export default function CreateSubAgentForm() {
     <form onSubmit={onSubmit} className="card border-purple-500/20 space-y-3">
       <h3 className="font-semibold text-sm text-purple-200">Créer un Agent Pack (NFT limité)</h3>
       <p className="text-[11px] text-gray-500">
-        Produit <strong>LIA sub-agent</strong> · prix <strong>{PACK_PRICE_EUR.min}–{PACK_PRICE_EUR.max} €</strong> ·
-        séparé des agents prévisionnels GreenSmoke.
+        Catalogue <strong>{PACK_PRICE_EUR.list} €</strong> · corridor{' '}
+        <strong>
+          {PACK_PRICE_EUR.min}–{PACK_PRICE_EUR.max} €
+        </strong>{' '}
+        · LIA fixe le prix pour la marge · ≠ GreenSmoke (signal only)
       </p>
       <label className="block text-xs text-gray-500">
         Prompt

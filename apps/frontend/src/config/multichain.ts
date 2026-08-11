@@ -18,5 +18,16 @@ export const LIA_MULTICHAIN = {
   },
 } as const
 
-export const PACK_PRICE_EUR = { min: 5, max: 25 } as const
+/**
+ * Pack pricing policy (product lock 2026-08).
+ * - listPriceEur: prix vitrine par défaut (10 € / pack)
+ * - min/max: corridor dans lequel LIA (Vellum) peut ajuster pour marge / demande
+ */
+export const PACK_PRICE_EUR = {
+  min: 5,
+  max: 25,
+  /** Prix catalogue v1 — les 3 profils */
+  list: 10,
+} as const
+
 export const PHYSICAL_NFT_TRO_REWARD_MAX = 1

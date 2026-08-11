@@ -1,16 +1,16 @@
-import { PACK_JOURNEY_STEPS, FUNDING_MODELS } from '../config/agentPacks'
+import { PACK_JOURNEY_STEPS, FUNDING_MODELS, GSN_POLICY, PACK_PRICING_POLICY } from '../config/agentPacks'
 
 export default function AgentPackJourney() {
-  const rec = FUNDING_MODELS.B_escrow_stake
-  const simple = FUNDING_MODELS.C_no_user_capital
+  const v1 = FUNDING_MODELS.C_no_user_capital
 
   return (
     <section className="card border-fuchsia-500/20 mb-6" aria-labelledby="journey-title">
       <h3 id="journey-title" className="font-bold text-fuchsia-200 mb-1">
-        Parcours utilisateur (impeccable)
+        Parcours · Buy → Stake → (Deposit) → Claim
       </h3>
       <p className="text-xs text-zinc-500 mb-4">
-        Ordre fixe — chaque étape a un état UI clair (bloqué / prêt / fait).
+        Grammaire unique Art & Agents. Prix catalogue{' '}
+        <strong className="text-zinc-300">{PACK_PRICING_POLICY.listEur} €</strong> — LIA ajuste pour marge.
       </p>
       <ol className="space-y-3">
         {PACK_JOURNEY_STEPS.map(s => (
@@ -26,28 +26,13 @@ export default function AgentPackJourney() {
         ))}
       </ol>
 
-      <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950/50 p-3 space-y-3">
-        <p className="text-[10px] uppercase tracking-widest text-zinc-500">
-          Stake puis envoyer des tokens ?
+      <div className="mt-5 rounded-xl border border-teal-500/25 bg-teal-950/20 p-3 space-y-2">
+        <p className="text-[10px] uppercase tracking-widest text-teal-400/90">v1 verrouillé — {v1.id}</p>
+        <p className="text-xs text-zinc-300">{v1.when}</p>
+        <p className="text-[11px] text-zinc-500">
+          Pas de mandat de gestion · pas de dépôt trading user vers LIA ops · GSN :{' '}
+          {GSN_POLICY.description}
         </p>
-        <div className="text-xs text-zinc-300 space-y-2">
-          <p>
-            <strong className="text-teal-300">Recommandé v1 ({simple.id})</strong> : le pack donne un{' '}
-            <em>droit de part</em> sur le pool protocole alloué au profil —{' '}
-            <strong>sans</strong> que l’utilisateur envoie du capital de trading. Moins de confusion
-            « fonds géré ».
-          </p>
-          <p>
-            <strong className="text-amber-200">v1.5 ({rec.id})</strong> : après stake NFT,{' '}
-            <code className="text-[10px]">deposit</code> vers un <strong>escrow SC du pack</strong>{' '}
-            (pas le wallet LIA ops). Cap par agent · withdraw unstake · LIA exécute seulement dans les
-            bornes SC. Jamais « colle ton EGLD à erd1 LIA ».
-          </p>
-          <p className="text-zinc-500">
-            Éviter le modèle A (tokens → adresse agent libre) : ressemble à de la custody et mélange
-            les soldes.
-          </p>
-        </div>
       </div>
     </section>
   )

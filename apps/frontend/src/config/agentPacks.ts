@@ -1,6 +1,11 @@
 /**
- * Les 3 profils pack IA commercialisés (≠ GreenSmoke, ≠ 6 modules internes LIA).
- * Prix : LIA propose dans [PACK_PRICE_EUR.min, max] ; settlement on-chain après agents_marketplace.
+ * 3 packs IA commercialisés (≠ GreenSmoke, ≠ modules internes LIA).
+ *
+ * Product locks:
+ * - list price v1 = 10 € / pack (LIA peut ajuster dans 5–25 € pour marge)
+ * - GSN = informational + signal only (not sold)
+ * - v1 = droit produit (model C), pas un mandat de gestion
+ * - DAO peut plus tard voter les BPS de pool, pas le prix unitaire au quotidien
  */
 
 import { PACK_PRICE_EUR } from './multichain'
@@ -12,48 +17,40 @@ export type AgentPackProfile = {
   name: string
   tagline: string
   icon: string
-  /** Bornes EUR — LIA affine le prix listé */
-  priceEur: { min: number; max: number; default: number }
-  /** Stratégies LIA mirrorées (paper/live selon gates) */
+  priceEur: { min: number; max: number; list: number }
   strategies: string[]
-  /** Fréquence indicative d’activité */
   activity: string
-  /** Ce que le holder reçoit concrètement */
   entitlements: string[]
-  /** Ce que ce n’est PAS */
   notIncluded: string[]
-  /** % indicatif du pool de partage pack (doc produit, pas un APY) */
   shareOfPackPoolBps: number
   risk: 'medium' | 'lower' | 'low'
   color: string
 }
 
-/**
- * Trois packs seulement — clarté UX.
- * Les anciens labels (Trading/Marketplace/Security/RWA/DAO) restent des
- * *modules internes* LIA, pas des SKU à vendre.
- */
+const LIST = PACK_PRICE_EUR.list
+
 export const AGENT_PACKS: AgentPackProfile[] = [
   {
     id: 'pulse',
     name: 'Pulse',
     tagline: 'Micro-mouvements · momentum · board MVX',
     icon: '⚡',
-    priceEur: { min: PACK_PRICE_EUR.min, max: 15, default: 12 },
+    priceEur: { min: PACK_PRICE_EUR.min, max: PACK_PRICE_EUR.max, list: LIST },
     strategies: ['MICRO_ARB', 'MOMENTUM', 'MEAN_REVERSION'],
     activity: 'Plusieurs cycles / jour (paper → micro live LIA ops)',
     entitlements: [
       'NFT pack (badge + slot)',
       'Clé API limitée (read status + journal pack)',
-      'Part du pool Pulse selon règles on-chain / epoch',
-      'Accès Warps / deep-link pack (quand live)',
+      'Droit de part pool Pulse (epoch / règles on-chain)',
+      'Warps / deep-link pack (quand live)',
     ],
     notIncluded: [
       'Contrôle du wallet LIA protocole',
       'Garantie de rendement',
-      'Agents GreenSmoke',
+      'Produit GreenSmoke',
+      'Mandat de gestion de fonds',
     ],
-    shareOfPackPoolBps: 4000, // 40 % du pool packs → Pulse holders (indicatif v1)
+    shareOfPackPoolBps: 4000,
     risk: 'medium',
     color: 'text-green-400',
   },
@@ -62,20 +59,16 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     name: 'Yield',
     tagline: 'Hatom · LP · compound lent',
     icon: '🌾',
-    priceEur: { min: 8, max: 20, default: 15 },
+    priceEur: { min: PACK_PRICE_EUR.min, max: PACK_PRICE_EUR.max, list: LIST },
     strategies: ['YIELD', 'COMPOUND'],
     activity: '1–7 actions / semaine (lend, claim, rebalance)',
     entitlements: [
       'NFT pack Yield',
       'Clé API limitée',
-      'Part du pool Yield (fees / sleeve yield alloué)',
-      'Vue positions Hatom/LP liées au sleeve (lecture)',
+      'Droit de part pool Yield',
+      'Vue lecture Hatom/LP sleeve',
     ],
-    notIncluded: [
-      'Leverage illimité',
-      'Soul mainnet funds',
-      'APY annoncé',
-    ],
+    notIncluded: ['Leverage illimité', 'Soul mainnet funds', 'APY annoncé', 'Mandat de gestion'],
     shareOfPackPoolBps: 3500,
     risk: 'lower',
     color: 'text-teal-400',
@@ -85,76 +78,89 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     name: 'Sentinel',
     tagline: 'Défense · risk-off · capital preservation bias',
     icon: '🛡️',
-    priceEur: { min: 10, max: PACK_PRICE_EUR.max, default: 18 },
+    priceEur: { min: PACK_PRICE_EUR.min, max: PACK_PRICE_EUR.max, list: LIST },
     strategies: ['DEFENSE', 'SOCIAL_WATCH', 'ADVISOR'],
-    activity: 'Veille continue · peu de trades · priorise HF / kill-switch',
+    activity: 'Veille continue · peu de trades · HF / kill-switch',
     entitlements: [
       'NFT pack Sentinel',
       'Clé API limitée',
-      'Part du pool Sentinel (plus stable, plus bas upside)',
+      'Droit de part pool Sentinel',
       'Alertes risk / Guardian (lecture)',
     ],
-    notIncluded: [
-      'Chasse au rendement agressif',
-      'Override du Guardian LIA',
-    ],
+    notIncluded: ['Override Guardian LIA', 'Promesse de rendement', 'Produit GreenSmoke'],
     shareOfPackPoolBps: 2500,
     risk: 'low',
     color: 'text-blue-400',
   },
 ]
 
+/** GreenSmoke — jamais un pack à vendre */
+export const GSN_POLICY = {
+  role: 'informational_and_signal' as const,
+  sold: false,
+  description:
+    'Leaderboard + forecasts : information et signal pré-trade (poids plafonné). Pas de SKU, pas de prix pack.',
+  weightCapNote: 'social / GSN composite capped (ex. 0.15) dans SignalBus',
+} as const
+
+export const PACK_PRICING_POLICY = {
+  listEur: PACK_PRICE_EUR.list,
+  corridor: { min: PACK_PRICE_EUR.min, max: PACK_PRICE_EUR.max },
+  whoSetsPrice: 'LIA_vellum' as const,
+  goal: 'margin_and_demand' as const,
+  daoLater: 'pool_bps_and_treasury_split' as const,
+  note:
+    'LIA fixe le prix listé (défaut 10 €) dans 5–25 € pour générer de la marge protocole. La DAO vote plus tard les BPS de répartition de pool, pas le micro-pricing quotidien.',
+} as const
+
 export const PACK_JOURNEY_STEPS = [
   {
     id: 1,
     title: 'Choisir un pack',
-    body: 'Pulse · Yield · Sentinel. Prix affiché = proposition LIA dans la fourchette.',
+    body: `Pulse · Yield · Sentinel — ${LIST} € catalogue (LIA peut ajuster 5–25 €).`,
   },
   {
     id: 2,
-    title: 'Acheter (Buy agent)',
-    body: 'Paiement EGLD (ou stable listé) → SC agents_marketplace. Reçu on-chain + mint NFT badge.',
+    title: 'Buy agent',
+    body: 'Paiement → SC agents_marketplace. NFT badge + reçu. Droit produit, pas un fonds.',
   },
   {
     id: 3,
-    title: 'Stake le NFT agent',
-    body: 'Le NFT entre en stake (slot actif). Sans stake : badge cosmétique, pas de part de pool.',
+    title: 'Stake le NFT',
+    body: 'Active le droit de part de pool. Sans stake : badge seulement.',
   },
   {
     id: 4,
-    title: 'Provisionner (optionnel)',
-    body: 'Envoyer des tokens vers l’escrow *du pack* (pas le wallet LIA ops). Cap par pack. LIA n’y touche qu’avec règles SC.',
+    title: 'Deposit (option v1.5)',
+    body: 'Escrow SC du pack uniquement — jamais wallet LIA ops. v1 peut omettre cette étape.',
   },
   {
     id: 5,
-    title: 'Epoch & claim',
-    body: 'À chaque epoch, split du pool pack → holders stakés. Claim user (non-custodial).',
+    title: 'Claim epoch',
+    body: 'User claim sa share. Non-custodial.',
   },
 ] as const
 
-/**
- * Deux modèles de “envoyer des tokens” — on recommande B pour la clarté juridique/UX.
- */
 export const FUNDING_MODELS = {
-  A_direct_to_agent: {
-    id: 'A',
-    label: 'Tokens → adresse agent isolée',
-    recommended: false,
-    risk: 'Confusion avec LIA ops ; comptabilité difficile ; custody perception',
-    when: 'Uniquement si SC escrow dédié par agent_id + claimFees clair',
+  C_no_user_capital: {
+    id: 'C',
+    label: 'Droit produit seulement (v1 verrouillé)',
+    recommended: true,
+    risk: 'Pas de TVL trading user — promesse claire',
+    when: 'Prix pack 10 € = accès + share pool protocole. Pas de mandat de gestion.',
   },
   B_escrow_stake: {
     id: 'B',
-    label: 'Stake NFT + deposit escrow pack (recommandé)',
-    recommended: true,
-    risk: 'Plus de surface SC, mais parcours lisible',
-    when: 'Buy → stake → deposit(amount) → share epoch → withdraw unstake',
+    label: 'Stake + deposit escrow pack (v1.5)',
+    recommended: false,
+    risk: 'Surface SC plus large',
+    when: 'Après agents_marketplace + escrow audit',
   },
-  C_no_user_capital: {
-    id: 'C',
-    label: 'Pack = droit de part sur perf LIA protocole seulement',
-    recommended: true,
-    risk: 'Moins de TVL user ; promesse plus simple',
-    when: 'v1 : prix pack seul finance le droit ; pas de dépôt user dans le book de trading',
+  A_direct_to_agent: {
+    id: 'A',
+    label: 'Tokens → adresse agent libre',
+    recommended: false,
+    risk: 'Custody perception',
+    when: 'Interdit produit',
   },
 } as const
