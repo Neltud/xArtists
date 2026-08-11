@@ -4,9 +4,9 @@ export default function AgentPacksGrid() {
   return (
     <div>
       <p className="text-xs text-zinc-500 mb-3">
-        Catalogue <strong className="text-white">{PACK_PRICING_POLICY.listEur} €</strong> / pack · LIA peut
-        ajuster dans {PACK_PRICING_POLICY.corridor.min}–{PACK_PRICING_POLICY.corridor.max} € pour la marge
-        protocole · DAO = BPS pool plus tard
+        <strong className="text-zinc-300">Plus de signaux = plus cher</strong> —{' '}
+        {PACK_PRICING_POLICY.ranking}. LIA ajuste pour la marge (corridor{' '}
+        {PACK_PRICING_POLICY.corridor.min}–{PACK_PRICING_POLICY.corridor.max} €).
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {AGENT_PACKS.map(p => (
@@ -29,6 +29,10 @@ export default function AgentPacksGrid() {
             <p className="text-2xl font-black text-white mb-1">
               {p.priceEur.list} €
               <span className="text-xs font-normal text-zinc-500 ml-2">list</span>
+            </p>
+            <p className="text-[11px] text-amber-200/80 mb-2">
+              Intensité signaux {'●'.repeat(p.signalIntensity)}
+              {'○'.repeat(3 - p.signalIntensity)}
             </p>
             <p className="text-[11px] text-zinc-500 mb-2">
               Corridor {p.priceEur.min}–{p.priceEur.max} € · {p.strategies.join(' · ')}
