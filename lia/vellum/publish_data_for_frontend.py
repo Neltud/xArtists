@@ -39,6 +39,7 @@ CRITICAL = [
     "ads_active.json",
     "treasury_wallets.json",
     "desk_last.json",
+    "tro_burn_feed.json",
     "lia_performance.json",
     "lia_guards_state.json",
     "lia_decision_gates.json",
