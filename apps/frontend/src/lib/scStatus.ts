@@ -1,11 +1,17 @@
 /**
  * On-chain SC readiness for UI gates.
- * Known empty marketplace address must never receive user funds.
+ * Re-exports + helpers aligned with config/scStatus (single source of truth).
  */
 
-/** Historical placeholder — empty account on mainnet (codeHash null) */
-export const KNOWN_EMPTY_MARKETPLACE =
-  'erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t'
+export {
+  KNOWN_EMPTY_MARKETPLACE,
+  MARKETPLACE_ADDRESS as ENV_MARKETPLACE,
+  canListBuyNft,
+  canBuyAgent,
+  marketplaceReceiverOrThrow,
+  NFT_MARKET_FEE_BPS,
+  AGENTS_FEE_BPS,
+} from '../config/scStatus'
 
 export function envMarketplace(): string {
   return (import.meta.env.VITE_MARKETPLACE_ADDRESS as string | undefined)?.trim() || ''
@@ -15,19 +21,16 @@ export function envAgentsMarketplace(): string {
   return (import.meta.env.VITE_AGENTS_MARKETPLACE_ADDRESS as string | undefined)?.trim() || ''
 }
 
+/** @deprecated prefer canListBuyNft from config */
 export function isMarketplaceLive(): boolean {
-  const a = envMarketplace()
-  if (!a || !a.startsWith('erd1')) return false
-  if (a.toLowerCase() === KNOWN_EMPTY_MARKETPLACE.toLowerCase()) return false
-  // Explicit opt-in after verify_marketplace_codehash
-  const flag = (import.meta.env.VITE_MARKETPLACE_CODEHASH_OK as string | undefined) === '1'
-  return flag
+  // dynamic import path kept for useMarketplaceTx
+  const { canListBuyNft } = require('../config/scStatus') as typeof import('../config/scStatus')
+  return canListBuyNft()
 }
 
 export function isAgentsMarketplaceLive(): boolean {
-  const a = envAgentsMarketplace()
-  if (!a || !a.startsWith('erd1')) return false
-  return (import.meta.env.VITE_AGENTS_CODEHASH_OK as string | undefined) === '1'
+  const { canBuyAgent } = require('../config/scStatus') as typeof import('../config/scStatus')
+  return canBuyAgent()
 }
 
 export function agentsFeeBps(): number {
