@@ -2,6 +2,7 @@
  * Home — hub dApp (not LIA ops portfolio).
  * Restored after broken Dashboard.legacy-shim re-export.
  */
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useMultiversX } from '../hooks/useMultiversX'
 import { useWallet } from '../context/WalletContext'
@@ -11,7 +12,11 @@ import CommanderStrip from '../components/commander/CommanderStrip'
 import ScStatusBanner from '../components/ScStatusBanner'
 import DataHealthStrip from '../components/DataHealthStrip'
 import PageGuide from '../components/PageGuide'
-import PersonaWelcome, { PersonaQuickLinks } from '../components/PersonaWelcome'
+import PersonaWelcome, {
+  PersonaQuickLinks,
+  getStoredPersona,
+  type Persona,
+} from '../components/PersonaWelcome'
 import DualMarketplaceStrip from '../components/DualMarketplaceStrip'
 import ExplainCards from './ExplainCards'
 import LandingHero from './LandingHero'
@@ -19,6 +24,18 @@ import LandingHero from './LandingHero'
 export default function Dashboard() {
   const { liaStatus, isStale } = useMultiversX()
   const { connected, shortAddress, method } = useWallet()
+  const [persona, setPersona] = useState<Persona | null>(null)
+
+  useEffect(() => {
+    setPersona(getStoredPersona())
+    const onStorage = () => setPersona(getStoredPersona())
+    window.addEventListener('storage', onStorage)
+    const id = window.setInterval(() => setPersona(getStoredPersona()), 2000)
+    return () => {
+      window.removeEventListener('storage', onStorage)
+      clearInterval(id)
+    }
+  }, [])
 
   const mode = (liaStatus as { mode?: string } | null)?.mode
   const live = (liaStatus as { live_trading?: boolean } | null)?.live_trading
@@ -30,7 +47,7 @@ export default function Dashboard() {
       <LandingHero />
 
       <PersonaWelcome />
-      <PersonaQuickLinks />
+      <PersonaQuickLinks persona={persona} />
 
       <DualMarketplaceStrip />
 
