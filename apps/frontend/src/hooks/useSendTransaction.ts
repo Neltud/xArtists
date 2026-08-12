@@ -1,4 +1,4 @@
-import { useWallet } from '../context/WalletContext'
+import { useWallet, LIA_WALLET } from '../context/WalletContext'
 import { canSignOnChain, signBlockReason } from '../lib/txCapability'
 
 interface TransactionDisplayInfo {
@@ -12,7 +12,7 @@ interface SendTransactionResult {
   error: string | null
 }
 
-/** Send MultiversX TX — blocks paste_readonly and missing sdk-dapp. */
+/** Send MultiversX TX — blocks paste_readonly, LIA ops, and missing sdk-dapp. */
 export const useSendTransaction = () => {
   const { connected, address, method } = useWallet()
 
@@ -22,6 +22,14 @@ export const useSendTransaction = () => {
   ): Promise<SendTransactionResult> => {
     if (!connected) {
       throw new Error('Wallet non connecté')
+    }
+
+    if (address && address.toLowerCase() === LIA_WALLET.toLowerCase()) {
+      return {
+        sessionId: null,
+        error:
+          'Wallet protocole LIA interdit pour les TX user (List/Buy). Déconnecte et utilise ton wallet.',
+      }
     }
 
     const block = signBlockReason(method)
