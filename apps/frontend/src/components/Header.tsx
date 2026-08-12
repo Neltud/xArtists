@@ -4,6 +4,7 @@ import { useWallet, LIA_WALLET } from '../context/WalletContext'
 import { sdkDappConfig } from '../config/sdkDapp'
 import { LINKS, PRIMARY_NAV, SECONDARY_NAV } from '../config/links'
 import OraclePriceBadge from './OraclePriceBadge'
+import { OPEN_CONNECT_EVENT } from '../lib/walletEvents'
 
 function isValidErd(addr: string): boolean {
   return /^erd1[a-z0-9]{58}$/i.test(addr.trim())
@@ -33,6 +34,15 @@ export default function Header() {
       document.body.style.overflow = ''
     }
   }, [menuOpen])
+
+  useEffect(() => {
+    const open = () => {
+      setShowWalletModal(true)
+      setConnectError('')
+    }
+    window.addEventListener(OPEN_CONNECT_EVENT, open)
+    return () => window.removeEventListener(OPEN_CONNECT_EVENT, open)
+  }, [])
 
   const openWebWallet = () => {
     window.location.href = LINKS.walletLogin(getCallbackUrl())
@@ -76,9 +86,7 @@ export default function Header() {
       return
     }
     if (manualAddr.trim().toLowerCase() === LIA_WALLET.toLowerCase()) {
-      setConnectError(
-        'Impossible d’utiliser le wallet protocole LIA. Connecte ton propre wallet.'
-      )
+      setConnectError('Impossible d’utiliser le wallet protocole LIA. Connecte ton propre wallet.')
       return
     }
     const res = connect(manualAddr.trim(), 'paste_readonly')
@@ -230,8 +238,8 @@ export default function Header() {
           >
             <h2 className="text-xl font-bold mb-2">Connecter le wallet</h2>
             <p className="text-xs text-zinc-500 mb-4">
-              <strong className="text-zinc-300">Ton</strong> wallet uniquement — jamais l’adresse protocole
-              LIA. Coller erd1 = <strong>lecture seule</strong> (pas de List/Buy).
+              <strong className="text-zinc-300">Ton</strong> wallet MultiversX — jamais LIA protocole.
+              Coller erd1 = <strong>lecture seule</strong> (pas de List/Buy).
             </p>
 
             <button
@@ -272,7 +280,7 @@ export default function Header() {
 
             <div className="mt-2">
               <p className="text-xs text-amber-400/90 mb-2">
-                Ou coller erd1 — <strong>lecture seule</strong> (ne signe pas List/Buy/Bid)
+                Ou coller erd1 — <strong>lecture seule</strong>
               </p>
               <input
                 className="w-full p-3 rounded-lg bg-[#111118] border border-[#2a2a3a] text-xs mono text-gray-300 focus:outline-none focus:border-purple-500"
