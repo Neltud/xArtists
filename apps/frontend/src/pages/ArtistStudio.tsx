@@ -5,8 +5,10 @@ import AdSlot from '../components/AdSlot'
 import PageGuide from '../components/PageGuide'
 import TxCapabilityBanner from '../components/TxCapabilityBanner'
 import ScStatusBanner from '../components/ScStatusBanner'
+import LiaVsUserBanner from '../components/LiaVsUserBanner'
 import { canListBuyNft } from '../config/scStatus'
 import { useWallet } from '../context/WalletContext'
+import { requestOpenConnect } from '../lib/walletEvents'
 
 type MediaKind = 'image' | 'video' | 'audio'
 type AssetMode = 'digital' | 'physical'
@@ -34,6 +36,7 @@ export default function ArtistStudio() {
   const [ipfsUri, setIpfsUri] = useState('')
   const [youtubeUrl, setYoutubeUrl] = useState('')
   const [copied, setCopied] = useState(false)
+  const [cmdCopied, setCmdCopied] = useState(false)
 
   const marketLive = canListBuyNft()
   const canSign = connected && method !== 'paste_readonly'
@@ -102,6 +105,23 @@ export default function ArtistStudio() {
     marketLive,
   ])
 
+  const mxpyTemplate = useMemo(() => {
+    const t = (ticker || 'XART').toUpperCase()
+    const uri = ipfsUri || 'ipfs://Qm_REPLACE'
+    return [
+      '# Template ops — remplacer PEM / collection id après issue',
+      `# Collection: ${collectionName || '…'} · ticker ${t}`,
+      `# Metadata JSON: exporter depuis Studio puis pin IPFS`,
+      '',
+      'mxpy --verbose contract call $MINTER_SC \\',
+      '  --pem=$PEM --gas-limit=20000000 --chain=1 --proxy=https://gateway.multiversx.com \\',
+      `  --function=mintNft --arguments str:${t} str:${(title || 'Untitled').replace(/'/g, '')} str:${uri}`,
+      '',
+      '# List (après deploy marketplace + codeHash OK):',
+      '#  → dApp Market → Sell (wallet artiste, pas LIA ops)',
+    ].join('\n')
+  }, [ticker, collectionName, title, ipfsUri])
+
   const downloadMeta = () => {
     const blob = new Blob([metadataJson], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -122,19 +142,45 @@ export default function ArtistStudio() {
     }
   }
 
+  const copyCmd = async () => {
+    try {
+      await navigator.clipboard.writeText(mxpyTemplate)
+      setCmdCopied(true)
+      setTimeout(() => setCmdCopied(false), 2000)
+    } catch {
+      /* ignore */
+    }
+  }
+
   return (
     <div className="animate-fade-in max-w-3xl mx-auto pb-24 md:pb-8">
       <PageGuide page="studio" />
+      <LiaVsUserBanner tone="user" />
 
       <header className="mb-4">
         <h1 className="text-3xl font-black">🎨 Studio xArtists</h1>
         <p className="text-gray-500 mt-1 text-sm">
-          Parcours artiste : <strong className="text-gray-300">préparer → pin → mint → list / sell</strong>
+          Parcours artiste :{' '}
+          <strong className="text-gray-300">préparer → pin → mint → list / sell</strong>
         </p>
       </header>
 
       <ScStatusBanner />
       <TxCapabilityBanner />
+
+      {!connected ? (
+        <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-100 flex flex-wrap items-center justify-between gap-2">
+          <span>Connecte ton wallet artiste pour mint / list (pas LIA ops).</span>
+          <button type="button" className="btn-primary text-xs" onClick={requestOpenConnect}>
+            🔗 Connect
+          </button>
+        </div>
+      ) : (
+        <p className="mb-4 text-[11px] text-zinc-500 mono break-all">
+          Session {method} · {address}
+          {!canSign && ' · lecture seule'}
+        </p>
+      )}
 
       <div className="mb-6">
         <AdSlot id="studio_banner" />
@@ -299,7 +345,8 @@ export default function ArtistStudio() {
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-100/90 space-y-2">
             <p className="font-semibold">YouTube ≠ stockage NFT</p>
             <p>
-              Lien promo uniquement (<code>external_url</code>). Vente = marketplace + média IPFS/Arweave.
+              Lien promo uniquement (<code>external_url</code>). Vente = marketplace + média
+              IPFS/Arweave.
             </p>
             <label className="block text-gray-300">
               YouTube (optionnel)
@@ -405,7 +452,8 @@ export default function ArtistStudio() {
           <h2 className="font-bold">4 — Mint & sell</h2>
           <div className="rounded-xl bg-[#111118] border border-[#2a2a3a] p-4 text-sm space-y-1">
             <p>
-              {collectionName} {albumTitle && `· ${albumTitle}`} · <span className="mono">{ticker}</span>
+              {collectionName} {albumTitle && `· ${albumTitle}`} ·{' '}
+              <span className="mono">{ticker}</span>
             </p>
             <p>
               {title} · {media} · {mode} · {storage}
@@ -424,17 +472,26 @@ export default function ArtistStudio() {
           {!marketLive && (
             <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-100">
               List on-chain xArtists Market = <strong>bloqué</strong> tant que SC marketplace non live
-              (codeHash). Après mint : XOXNO possible, ou attendre deploy +{' '}
-              <code className="text-[10px]">docs/MICRO_LIST_BUY_USER.md</code>.
+              (codeHash). Après mint : XOXNO possible, ou attendre deploy.
             </div>
           )}
 
+          <div className="rounded-xl border border-[#2a2a3a] bg-[#0a0a0f] p-3">
+            <div className="flex justify-between items-center mb-2">
+              <p className="text-xs font-semibold text-zinc-400">Template mxpy (ops)</p>
+              <button type="button" className="btn-secondary text-[10px] py-1" onClick={copyCmd}>
+                {cmdCopied ? 'Copié' : 'Copier'}
+              </button>
+            </div>
+            <pre className="text-[10px] mono text-zinc-500 overflow-x-auto whitespace-pre-wrap">
+              {mxpyTemplate}
+            </pre>
+          </div>
+
           <ol className="text-sm text-gray-300 space-y-2 list-decimal list-inside border border-[#2a2a3a] rounded-xl p-4">
-            <li>Pin média + JSON metadata (ops Pinata / proxy — JWT hors front)</li>
-            <li>
-              Connect wallet <strong>artiste</strong> (extension / Web Wallet — pas paste, pas LIA)
-            </li>
-            <li>Issue collection + mint NFT avec URI IPFS (mxpy / minter SC)</li>
+            <li>Pin média + JSON metadata (ops Pinata — JWT hors front)</li>
+            <li>Connect wallet artiste (extension / Web Wallet — pas paste, pas LIA)</li>
+            <li>Issue collection + mint avec URI IPFS (mxpy / minter SC)</li>
             <li>
               List sur{' '}
               <Link to="/marketplace" className="text-purple-300 underline">
@@ -445,19 +502,18 @@ export default function ArtistStudio() {
                 XOXNO
               </a>
             </li>
-            <li>
-              Option :{' '}
-              <Link to="/tro" className="text-purple-300 underline">
-                Buy $TRO
-              </Link>
-            </li>
           </ol>
 
           <div className="flex flex-wrap gap-2">
             <button type="button" className="btn-secondary text-sm" onClick={downloadMeta}>
               Export metadata JSON
             </button>
-            <a href={LINKS.walletWeb} target="_blank" rel="noreferrer" className="btn-primary text-sm">
+            {!canSign && (
+              <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
+                🔗 Connect artiste
+              </button>
+            )}
+            <a href={LINKS.walletWeb} target="_blank" rel="noreferrer" className="btn-secondary text-sm">
               Web Wallet
             </a>
             <Link to="/marketplace" className="btn-secondary text-sm">

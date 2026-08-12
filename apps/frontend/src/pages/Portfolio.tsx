@@ -2,13 +2,12 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { usePortfolioValue, type PortfolioToken, type PortfolioNft } from '../hooks/usePortfolioValue'
 import { defaultWinRateScenarios } from '../utils/portfolioScenarios'
-import { LINKS } from '../config/links'
+import { LINKS, LIA_WALLET } from '../config/links'
 import LiaMultichainPanel from '../components/LiaMultichainPanel'
 import PageGuide from '../components/PageGuide'
 import InfoTip from '../components/InfoTip'
 import LiaVsUserBanner from '../components/LiaVsUserBanner'
 
-const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
 const GOAL_USD = 1_000_000
 const START_USD = 3
 
@@ -94,6 +93,7 @@ function NftRow({ n }: { n: PortfolioNft }) {
   )
 }
 
+/** Protocol LIA book — never user Connect balances. */
 export default function Portfolio() {
   const {
     egldBalance,
@@ -143,6 +143,10 @@ export default function Portfolio() {
       </div>
 
       <LiaVsUserBanner tone="protocol" />
+
+      <p className="mb-4 text-[11px] mono text-zinc-600 break-all">
+        LIA ops · {LIA_WALLET}
+      </p>
 
       <LiaMultichainPanel />
 
@@ -333,12 +337,16 @@ export default function Portfolio() {
       <p className="text-xs text-gray-600">
         <a
           className="text-purple-400 hover:underline"
-          href={LINKS.explorerAccount(WALLET)}
+          href={LINKS.explorerAccount(LIA_WALLET)}
           target="_blank"
           rel="noreferrer"
         >
           Explorer LIA MVX
         </a>
+        {' · '}
+        <Link to="/tip" className="text-purple-400 hover:underline">
+          Tip protocole
+        </Link>
         {' · '}
         docs/LIA_VS_USER.md
       </p>
