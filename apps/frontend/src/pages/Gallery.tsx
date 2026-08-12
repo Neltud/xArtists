@@ -4,6 +4,7 @@ import NFTDetailModal from '../components/NFTDetailModal'
 import VirtualNftGrid from '../components/VirtualNftGrid'
 import LazyImage from '../components/LazyImage'
 import PageGuide from '../components/PageGuide'
+import AdSlot from '../components/AdSlot'
 import {
   loadCatalogIndex,
   indexToPartialCollections,
@@ -17,27 +18,46 @@ import {
   typeLabel,
 } from '../types/nft'
 
+/**
+ * Bios produit — jamais de nom d’artiste en titre de galerie.
+ * Identifiers on-chain (ex. NFTUDURI-*) restent techniques ; labels UI = xArtists.
+ */
 const COLLECTION_BIOS: Record<string, { label: string; bio: string }> = {
   'NFTUDURI-2990b6': {
-    label: 'Collection phygital',
-    bio: 'Œuvres 1/1 et séries — sculpture, vidéo, provenance on-chain MultiversX.',
+    label: 'Phygital · 1/1',
+    bio: 'Œuvres uniques et séries — sculpture, vidéo, provenance on-chain MultiversX. Certificat numérique pour pièces physiques.',
   },
   'TRO-652d6d': {
-    label: 'Collection $TRO',
-    bio: 'Pièces liées au token TRO-94c925 et aux artworks tokenisés.',
+    label: 'Écosystème $TRO',
+    bio: 'Pièces liées au token TRO-94c925 (cap 500 000) et aux artworks tokenisés de la fondation.',
   },
   'XTR-e5072b': {
-    label: 'xTuduri SFT',
-    bio: 'Montages vidéo et éditions SFT du catalogue xArtists.',
+    label: 'Éditions SFT',
+    bio: 'Montages vidéo et semi-fongibles du catalogue xArtists — éditions limitées.',
   },
   'XAUS-d9cf1f': {
-    label: 'xArtists',
-    bio: 'Identité visuelle et drops écosystème xArtists.',
+    label: 'Identité xArtists',
+    bio: 'Drops d’identité visuelle et pièces écosystème de la galerie.',
   },
   'XAR-cee2e0': {
-    label: 'xArtists',
-    bio: 'Série art génératif / éditions limitées.',
+    label: 'Éditions limitées',
+    bio: 'Série art génératif et éditions limitées xArtists.',
   },
+  'AGR-': {
+    label: 'AGR',
+    bio: 'Collection du catalogue xArtists (MultiversX).',
+  },
+}
+
+function bioFor(identifier: string): { label: string; bio: string } {
+  if (COLLECTION_BIOS[identifier]) return COLLECTION_BIOS[identifier]
+  for (const [k, v] of Object.entries(COLLECTION_BIOS)) {
+    if (k.endsWith('-') && identifier.startsWith(k.slice(0, -1))) return v
+  }
+  return {
+    label: 'xArtists',
+    bio: 'Collection du catalogue public xArtists sur MultiversX mainnet.',
+  }
 }
 
 const PREVIEW_PER_COLLECTION = 12
@@ -80,6 +100,7 @@ export default function Gallery() {
   return (
     <div className="animate-fade-in">
       <PageGuide page="gallery" />
+
       <section className="relative mb-10 overflow-hidden rounded-3xl border border-[#2a2a3a] bg-gradient-to-br from-[#15151f] via-[#12121a] to-[#0a0a0f] p-6 sm:p-12">
         <div className="pointer-events-none absolute -top-32 right-0 h-80 w-80 rounded-full bg-fuchsia-600/15 blur-3xl" />
         <div className="relative">
@@ -90,8 +111,11 @@ export default function Gallery() {
             <span className="gradient-text">xArtists</span>
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-400 sm:text-base">
-            {collections.length || '…'} collections · {totalNfts || '…'}+ œuvres · chargement{' '}
-            {mode === 'index' ? 'progressif (index → page)' : 'catalogue complet'}.
+            Galerie publique de la fondation — {collections.length || '…'} collections ·{' '}
+            {totalNfts || '…'}+ œuvres · chargement {mode === 'index' ? 'progressif' : 'complet'}.
+          </p>
+          <p className="mt-1 text-[11px] text-zinc-600">
+            Titre galerie = xArtists uniquement. Les noms on-chain des collections restent techniques.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <Link to="/studio" className="btn-primary text-xs py-2 px-3">
@@ -107,8 +131,20 @@ export default function Gallery() {
         </div>
       </section>
 
+      <div className="mb-8">
+        <AdSlot id="drop_feature" />
+      </div>
+
       {loading ? (
         <GallerySkeleton />
+      ) : ordered.length === 0 ? (
+        <div className="rounded-2xl border border-[#2a2a3a] py-16 text-center text-gray-400">
+          <p className="font-semibold">Catalogue en chargement ou vide</p>
+          <p className="text-xs mt-2">Vérifier data/xartists_collections*.json sur Pages</p>
+          <Link to="/studio" className="btn-primary text-sm mt-4 inline-block">
+            Ouvrir le Studio
+          </Link>
+        </div>
       ) : (
         <div className="space-y-14">
           {ordered.map((col, idx) => (
@@ -152,10 +188,7 @@ function CollectionSection({
   const count = full?.nft_count || collection.nft_count || nfts.length
   const shown = expanded ? nfts : nfts.slice(0, PREVIEW_PER_COLLECTION)
   const accent = ACCENTS[index % ACCENTS.length]
-  const meta = COLLECTION_BIOS[collection.identifier] || {
-    label: 'xArtists',
-    bio: 'Collection du catalogue xArtists sur MultiversX.',
-  }
+  const meta = bioFor(collection.identifier)
 
   const handleExpand = async () => {
     if (expanded) {
@@ -179,8 +212,14 @@ function CollectionSection({
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-3">
-            <span className={`h-7 w-1.5 shrink-0 rounded-full bg-gradient-to-b ${accent}`} aria-hidden />
-            <h2 id={`col-${collection.identifier}`} className="text-2xl font-black sm:text-3xl truncate">
+            <span
+              className={`h-7 w-1.5 shrink-0 rounded-full bg-gradient-to-b ${accent}`}
+              aria-hidden
+            />
+            <h2
+              id={`col-${collection.identifier}`}
+              className="text-2xl font-black sm:text-3xl truncate"
+            >
               {collection.name}
             </h2>
           </div>
@@ -214,11 +253,7 @@ function CollectionSection({
             disabled={loadingMore}
             onClick={handleExpand}
           >
-            {loadingMore
-              ? 'Chargement…'
-              : expanded
-                ? 'Réduire'
-                : `Voir les ${count} œuvres`}
+            {loadingMore ? 'Chargement…' : expanded ? 'Réduire' : `Voir les ${count} œuvres`}
           </button>
         </div>
       )}
@@ -250,7 +285,9 @@ function GalleryTile({
             className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent} opacity-40`}>
+          <div
+            className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent} opacity-40`}
+          >
             <span className="text-5xl">🎨</span>
           </div>
         )}
