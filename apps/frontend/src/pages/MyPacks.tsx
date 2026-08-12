@@ -3,7 +3,9 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import PackCheckout from '../components/PackCheckout'
 import PageGuide from '../components/PageGuide'
+import LiaVsUserBanner from '../components/LiaVsUserBanner'
 import { AGENT_PACKS } from '../config/agentPacks'
+import { requestOpenConnect } from '../lib/walletEvents'
 
 type LedgerFile = {
   scenarios?: Record<
@@ -31,7 +33,7 @@ const LEDGER_URL =
 const API = (import.meta.env.VITE_ACCESS_API_BASE as string | undefined) || ''
 
 export default function MyPacks() {
-  const { connected, address } = useWallet()
+  const { connected, address, method } = useWallet()
   const [params] = useSearchParams()
   const [ledger, setLedger] = useState<LedgerFile | null>(null)
   const [err, setErr] = useState<string | null>(null)
@@ -119,6 +121,7 @@ export default function MyPacks() {
   return (
     <div className="animate-fade-in max-w-3xl mx-auto pb-24 md:pb-8 space-y-6">
       <PageGuide page="my-packs" />
+      <LiaVsUserBanner tone="user" />
 
       <header>
         <h1 className="text-2xl sm:text-3xl font-black">My Packs</h1>
@@ -140,8 +143,7 @@ export default function MyPacks() {
         >
           <p className="font-semibold">Payment flow returned</p>
           <p className="mt-1 opacity-90">
-            {mintStatus ||
-              'Mint after verified Stripe webhook. Keep tab open if polling enabled.'}
+            {mintStatus || 'Mint after verified Stripe webhook. Keep tab open if polling enabled.'}
           </p>
         </div>
       )}
@@ -157,9 +159,20 @@ export default function MyPacks() {
       <section className="card">
         <h2 className="font-bold text-sm text-zinc-300 mb-2">Wallet (destination mint)</h2>
         {connected && address ? (
-          <p className="font-mono text-xs text-zinc-400 break-all">{address}</p>
+          <>
+            <p className="font-mono text-xs text-zinc-400 break-all">{address}</p>
+            <p className="text-[10px] text-zinc-600 mt-1">
+              method {method || '—'}{' '}
+              {method === 'paste_readonly' && '· lecture seule OK pour destination mint'}
+            </p>
+          </>
         ) : (
-          <p className="text-xs text-zinc-500">Connect MultiversX avant checkout.</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-xs text-zinc-500">Connect MultiversX avant checkout.</p>
+            <button type="button" onClick={requestOpenConnect} className="btn-primary text-xs">
+              🔗 Connect
+            </button>
+          </div>
         )}
       </section>
 

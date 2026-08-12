@@ -49,6 +49,7 @@ export type PageGuideKey =
   | 'my-packs'
   | 'studio'
   | 'tip'
+  | 'editions'
 
 export const PAGE_GUIDE: Record<
   PageGuideKey,
@@ -63,8 +64,12 @@ export const PAGE_GUIDE: Record<
   },
   trading: {
     title: 'Trading Terminal LIA',
-    bullets: ['Signaux + paper.', 'Guardian-first.', 'LIA_LIVE_TRADING=0 par défaut.'],
-    warn: 'Paper — pas d’ordre auto sur vos fonds.',
+    bullets: [
+      'Board protocole (JSON) — pas ton compte.',
+      'Guardian-first · trades taggés paper.',
+      'LIA_LIVE_TRADING=0 jusqu’aux micro-preuves.',
+    ],
+    warn: 'Aucun ordre auto sur vos fonds.',
   },
   wallet: {
     title: 'Mon wallet (utilisateur)',
@@ -76,7 +81,7 @@ export const PAGE_GUIDE: Record<
   },
   portfolio: {
     title: 'Portfolio LIA (protocole)',
-    bullets: ['Board LIA ops.', 'Séparé de /wallet.'],
+    bullets: ['Book LIA ops.', 'Séparé de /wallet.'],
   },
   marketplace: {
     title: 'Marketplace NFT / RWA',
@@ -97,14 +102,14 @@ export const PAGE_GUIDE: Record<
     bullets: [
       '4 étapes : collection → IPFS → metadata → mint/list.',
       'JWT Pinata jamais dans le front (proxy ops).',
-      'Export JSON metadata pour mxpy / minter.',
-      'Wallet artiste ≠ LIA ops. List bloqué si SC market non live.',
+      'Export JSON + template mxpy.',
+      'Wallet artiste ≠ LIA ops.',
     ],
-    warn: 'Mint on-chain nécessite wallet signant + gaz EGLD.',
+    warn: 'Mint on-chain = wallet signant + gaz EGLD.',
   },
   dao: {
     title: 'DAO $TRO',
-    bullets: ['Gouvernance lecture / vote selon SC.', 'Pas de faux vote sans sdk-dapp.'],
+    bullets: ['Gouvernance lecture / holders live.', 'Pas de faux vote sans sdk-dapp.'],
   },
   gallery: {
     title: 'Gallery',
@@ -126,9 +131,16 @@ export const PAGE_GUIDE: Record<
     title: 'Tip / dons',
     bullets: [
       'Don volontaire vers LIA Ops — pas un investissement.',
-      'Tip on-chain : wallet user signant + memo tip:mission|reserve|ops.',
-      'Copie manuelle EGLD / BTC / SOL toujours possible.',
+      'Tip on-chain : wallet user + memo tip:mission|reserve|ops.',
     ],
     warn: 'Ne confonds pas tip et achat de parts de fonds.',
+  },
+  editions: {
+    title: 'xArtists Editions',
+    bullets: [
+      'Lettre mensuelle art · culture · tech + édito.',
+      'Abonnement ≠ investissement / yield.',
+      'Paiement V1 : tip on-chain memo sub:editions.',
+    ],
   },
 }

@@ -1,5 +1,32 @@
 {
-  "updated": "2026-07-30T21:30:00Z",
-  "trades": [],
-  "note": "Appended by lia/vellum/nodes_trailing_cycle.append_trade — shown on Trading dashboard"
+  "updated": "2026-08-12T12:50:00Z",
+  "network": "mainnet",
+  "live_trading": false,
+  "note": "Paper samples until Vellum append_trade + LIA_LIVE_TRADING=1 after micro-proofs. Not user funds.",
+  "trades": [
+    {
+      "id": "paper-sample-001",
+      "ts": "2026-08-12T10:00:00Z",
+      "pair": "WEGLD/USDC",
+      "side": "BUY",
+      "status": "paper",
+      "entry": 12.5,
+      "size_usd": 10,
+      "confidence": 0.61,
+      "source": "MOMENTUM",
+      "paper": true
+    },
+    {
+      "id": "paper-sample-002",
+      "ts": "2026-08-12T11:30:00Z",
+      "pair": "TRO/USDC",
+      "side": "HOLD",
+      "status": "paper",
+      "entry": null,
+      "size_usd": 0,
+      "confidence": 0.4,
+      "source": "YIELD",
+      "paper": true
+    }
+  ]
 }

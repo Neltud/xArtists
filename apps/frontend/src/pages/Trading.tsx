@@ -7,6 +7,7 @@ import ScStatusBanner from '../components/ScStatusBanner'
 import PageGuide from '../components/PageGuide'
 import DeskPanel from '../components/DeskPanel'
 import InfoTip from '../components/InfoTip'
+import LiaVsUserBanner from '../components/LiaVsUserBanner'
 import { LINKS } from '../config/links'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
@@ -22,6 +23,7 @@ interface LiaTrade {
   size_usd?: number
   confidence?: number
   source?: string
+  paper?: boolean
 }
 
 interface TrailPos {
@@ -41,27 +43,30 @@ export default function Trading() {
   const [trades, setTrades] = useState<LiaTrade[]>([])
   const [trails, setTrails] = useState<TrailPos[]>([])
   const [dataTs, setDataTs] = useState('')
+  const [loadErr, setLoadErr] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
         const [tRes, trRes] = await Promise.all([
-          fetch(`${RAW}/data/lia_trades.json`, { cache: 'no-store' }),
-          fetch(`${RAW}/data/lia_trailing_state.json`, { cache: 'no-store' }),
+          fetch(`${RAW}/data/lia_trades.json?t=${Date.now()}`, { cache: 'no-store' }),
+          fetch(`${RAW}/data/lia_trailing_state.json?t=${Date.now()}`, { cache: 'no-store' }),
         ])
         if (cancelled) return
         if (tRes.ok) {
           const j = await tRes.json()
           setTrades(Array.isArray(j.trades) ? j.trades.slice(0, 30) : [])
           setDataTs(j.updated || '')
+        } else {
+          setLoadErr(`trades HTTP ${tRes.status}`)
         }
         if (trRes.ok) {
           const j = await trRes.json()
           setTrails(Array.isArray(j.positions) ? j.positions : [])
         }
       } catch {
-        /* offline */
+        if (!cancelled) setLoadErr('board offline')
       }
     })()
     return () => {
@@ -76,16 +81,18 @@ export default function Trading() {
   const winningPair = bonData?.winning_pair ?? 'TRO/WEGLD'
   const recommendedPair = bonData?.recommended_pair ?? 'TRO/WEGLD'
   const liveFlag = Boolean((liaStatus as { live_trading?: boolean } | null)?.live_trading)
+  const mode = (liaStatus as { mode?: string } | null)?.mode
 
   return (
     <div className="animate-fade-in">
       <PageGuide page="trading" />
+      <LiaVsUserBanner tone="protocol" />
 
       <div className="mb-6">
         <h1 className="text-3xl font-black">⚡ Trading Terminal LIA</h1>
         <p className="text-gray-500 mt-1">
           Board multi-venues · arb block-time · trailing · Guardian first{' '}
-          <InfoTip k="live_trading" />
+          <InfoTip k="paperFirst" />
           {dataTs ? ` · data ${new Date(dataTs).toLocaleString('fr-FR')}` : ''}
         </p>
       </div>
@@ -97,13 +104,17 @@ export default function Trading() {
         ) : (
           <span> LIA_LIVE_TRADING=0 · aucun ordre sur tes fonds.</span>
         )}{' '}
-        Access packs (Model C) →{' '}
+        Access packs →{' '}
         <Link to="/my-packs" className="underline text-amber-50">
           My Packs
         </Link>
         . Book LIA →{' '}
         <Link to="/portfolio" className="underline text-amber-50">
           Portfolio
+        </Link>
+        . Wallet user →{' '}
+        <Link to="/wallet" className="underline text-amber-50">
+          Wallet
         </Link>
         .
       </div>
@@ -115,23 +126,29 @@ export default function Trading() {
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <div className="card">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">🧠 Signal LIA v6</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">
+            🧠 Signal LIA v6
+          </p>
           <div className="flex items-center gap-6">
-            <div className="text-5xl font-black text-gray-400">⏸️</div>
+            <div className="text-5xl font-black text-gray-400">{liveFlag ? '🔴' : '⏸️'}</div>
             <div>
-              <p className="text-2xl font-bold">MONITORING</p>
-              <p className="text-sm text-gray-500">Cycle Vellum (Guardian → gate → trailing)</p>
+              <p className="text-2xl font-bold">{liveFlag ? 'LIVE FLAG' : 'MONITORING'}</p>
+              <p className="text-sm text-gray-500">
+                {mode || 'Cycle Vellum'} · Guardian → gate → trailing
+              </p>
               <span className={`badge-gray mt-2 ${guardColor}`}>BalanceGuard: {guard}</span>
             </div>
           </div>
           <div className="mt-4 p-3 rounded-lg bg-[#111118] text-xs text-gray-400">
-            <strong className="text-gray-300">Paper board</strong> — JSON GitHub / Pages. Exécution
-            live seulement après micro-preuves + flag ops explicite.
+            <strong className="text-gray-300">Paper board</strong> — JSON GitHub / Pages. Live seulement
+            après micro-preuves + flag ops.
           </div>
         </div>
 
         <div className="card">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">🪙 Analyse $TRO</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">
+            🪙 Analyse $TRO
+          </p>
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-400 text-sm">Prix $TRO</span>
@@ -151,12 +168,12 @@ export default function Trading() {
             </div>
           </div>
           <a
-            href={LINKS.xexchange || 'https://xexchange.com'}
+            href={LINKS.xexchangeTroUsdc}
             target="_blank"
             rel="noreferrer"
             className="btn-secondary text-sm mt-4 inline-block"
           >
-            Ouvrir DEX →
+            Swap $TRO →
           </a>
         </div>
       </div>
@@ -174,6 +191,7 @@ export default function Trading() {
 
       <div className="card mb-8">
         <h2 className="text-lg font-bold mb-3">Trades paper (JSON)</h2>
+        {loadErr && <p className="text-xs text-amber-400 mb-2">{loadErr}</p>}
         {trades.length === 0 ? (
           <p className="text-sm text-gray-500">
             Aucun trade publié —{' '}
@@ -188,6 +206,7 @@ export default function Trading() {
                   <th className="text-left py-2">Side</th>
                   <th className="text-right py-2">Size</th>
                   <th className="text-right py-2">Conf</th>
+                  <th className="text-left py-2">Tag</th>
                 </tr>
               </thead>
               <tbody>
@@ -197,6 +216,9 @@ export default function Trading() {
                     <td className="py-2">{t.side || t.status || '—'}</td>
                     <td className="py-2 text-right mono">{t.size_usd ?? '—'}</td>
                     <td className="py-2 text-right mono">{t.confidence ?? '—'}</td>
+                    <td className="py-2 text-[10px] text-amber-300/90">
+                      {t.paper !== false ? 'paper' : 'check'}
+                    </td>
                   </tr>
                 ))}
               </tbody>
