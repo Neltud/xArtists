@@ -6,6 +6,7 @@ import { LINKS } from '../config/links'
 import LiaMultichainPanel from '../components/LiaMultichainPanel'
 import PageGuide from '../components/PageGuide'
 import InfoTip from '../components/InfoTip'
+import LiaVsUserBanner from '../components/LiaVsUserBanner'
 
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
 const GOAL_USD = 1_000_000
@@ -130,7 +131,7 @@ export default function Portfolio() {
         <div>
           <h1 className="text-3xl font-black">📈 Portfolio LIA (protocole)</h1>
           <p className="text-gray-500 mt-1 text-sm">
-            Book ops MultiversX + BTC/SOL · scénarios paper. <InfoTip k="lia_vs_user" />{' '}
+            Book ops MultiversX + BTC/SOL · scénarios paper. <InfoTip k="liaVsUser" />{' '}
             <Link to="/wallet" className="text-green-300 underline">
               Mon wallet Connect →
             </Link>
@@ -141,9 +142,7 @@ export default function Portfolio() {
         </button>
       </div>
 
-      <div className="mb-6 rounded-xl border border-purple-500/30 bg-purple-500/5 px-3 py-2 text-xs text-purple-100/90">
-        Ceci n’est <strong>pas</strong> ton portefeuille personnel. Wallet user = page Wallet uniquement.
-      </div>
+      <LiaVsUserBanner tone="protocol" />
 
       <LiaMultichainPanel />
 
@@ -154,7 +153,7 @@ export default function Portfolio() {
       <div className="card mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-widest">Valeur MVX estimée</p>
+            <p className="text-xs text-gray-500 uppercase tracking-widest">Valeur MVX LIA estimée</p>
             {loading ? (
               <div className="h-10 w-48 rounded-lg bg-[#16161f] animate-pulse mt-1" />
             ) : (
@@ -177,7 +176,7 @@ export default function Portfolio() {
 
       <div className="card mb-6 border-teal-500/20">
         <h2 className="text-lg font-bold mb-2 flex items-center gap-1.5">
-          📅 Rendement 365j — scénarios <InfoTip k="portfolio_scenarios" />
+          📅 Rendement 365j — scénarios <InfoTip k="paperFirst" />
         </h2>
         <p className="text-xs text-gray-500 mb-4">
           5 trades/j · +1% / −0,8% · <span className="text-amber-400/90">pas une promesse</span>
@@ -209,7 +208,7 @@ export default function Portfolio() {
       </div>
 
       <div className="card mb-6">
-        <h2 className="text-lg font-bold mb-4">📊 Répartition MVX</h2>
+        <h2 className="text-lg font-bold mb-4">📊 Répartition MVX LIA</h2>
         <div className="space-y-3">
           {breakdown.map(b => {
             const pct = totalUsd > 0 ? (b.value / totalUsd) * 100 : 0
@@ -238,13 +237,13 @@ export default function Portfolio() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="card">
-          <p className="text-xs text-gray-500 uppercase mb-1">EGLD</p>
+          <p className="text-xs text-gray-500 uppercase mb-1">EGLD LIA</p>
           <p className="text-xl font-bold">{egldBalance.toFixed(6)}</p>
           <p className="text-xs text-gray-500">{fmtUsd(egldValueUsd)}</p>
         </div>
         <div className="card">
           <p className="text-xs text-gray-500 uppercase mb-1 flex items-center gap-1">
-            Prix EGLD <InfoTip k="oracle" />
+            Prix EGLD <InfoTip k="scStatus" />
           </p>
           <p className="text-xl font-bold text-blue-400">${egldPrice.toFixed(4)}</p>
         </div>
@@ -332,9 +331,16 @@ export default function Portfolio() {
       </div>
 
       <p className="text-xs text-gray-600">
-        <a className="text-purple-400 hover:underline" href={LINKS.explorerAccount(WALLET)} target="_blank" rel="noreferrer">
+        <a
+          className="text-purple-400 hover:underline"
+          href={LINKS.explorerAccount(WALLET)}
+          target="_blank"
+          rel="noreferrer"
+        >
           Explorer LIA MVX
         </a>
+        {' · '}
+        docs/LIA_VS_USER.md
       </p>
     </div>
   )

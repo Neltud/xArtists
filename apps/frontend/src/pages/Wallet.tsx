@@ -5,6 +5,7 @@ import { useWallet } from '../context/WalletContext'
 import MoonpayButton from '../components/MoonpayButton'
 import PageGuide from '../components/PageGuide'
 import InfoTip from '../components/InfoTip'
+import LiaVsUserBanner from '../components/LiaVsUserBanner'
 
 type Tab = 'all' | 'esdt' | 'hatom' | 'lp'
 
@@ -85,11 +86,7 @@ export default function Wallet() {
           <h1 className="text-3xl font-black">👛 Mon wallet</h1>
           <p className="text-gray-500 mt-1 text-sm">
             Soldes <strong className="text-green-300">utilisateur</strong> (Connect).{' '}
-            <InfoTip k="lia_vs_user" /> Trésorerie LIA →{' '}
-            <Link to="/portfolio" className="text-purple-300 underline">
-              Portfolio protocole
-            </Link>
-            .
+            <InfoTip k="liaVsUser" />
           </p>
         </div>
         {connected && (
@@ -99,11 +96,14 @@ export default function Wallet() {
         )}
       </div>
 
+      <LiaVsUserBanner tone="user" />
+
       {!connected || !address ? (
         <div className="card border-amber-500/30 bg-amber-500/5 text-center py-12">
           <p className="text-lg font-semibold mb-2">Connecte ton wallet</p>
           <p className="text-sm text-gray-400 mb-4">
-            Cette page n’affiche que <strong>ton</strong> adresse. Pour EGLD / BTC / SOL de LIA → Portfolio.
+            Cette page n’affiche que <strong>ton</strong> adresse. Pour EGLD / BTC / SOL de LIA →
+            Portfolio.
           </p>
           <Link to="/portfolio" className="btn-secondary text-sm">
             Voir Portfolio LIA →
@@ -150,7 +150,7 @@ export default function Wallet() {
             </div>
             <div className="card">
               <p className="text-xs text-gray-500 uppercase mb-1 flex items-center gap-1">
-                Hatom HF <InfoTip k="hatom" />
+                Hatom HF <InfoTip k="scStatus" />
               </p>
               <p className={`text-xl font-bold ${hfColor}`}>{hf >= 999 ? 'N/A' : hf.toFixed(2)}</p>
               {hf >= 999 && (
