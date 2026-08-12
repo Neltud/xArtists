@@ -1,4 +1,4 @@
-# Analyse DApp Complète xArtists — Mise à Jour 11 Août 2026
+# Analyse DApp Complète xArtists — Mise à Jour 12 Août 2026
 
 ## Résumé Exécutif
 xArtists est une DApp innovante sur MultiversX combinant **IA agentique (LIA v5/v6)**, **NFT Phygital / RWA art tokenisé**, **staking**, **DAO** et **bridge BTC expérimental**.  
@@ -6,9 +6,9 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 
 **Live Demo** : https://neltud.github.io/xArtists  
 **Repo** : https://github.com/Neltud/xArtists  
-**Statut** : Production-ready (code pleinement corrigé et poussé — **v0.15.0+**). Dernière mise à jour documentée : **11 août 2026**.
+**Statut** : Production-ready (code pleinement corrigé et poussé — **v0.15.0+**). Dernière mise à jour documentée : **12 août 2026**.
 
-**Release posture (11 août)** : private / pre-mainnet — Paper LIA par défaut (`LIA_LIVE_TRADING=0`) ; marketplace & agents SC **not live** (codeHash null) jusqu’à deploy + verify ; UI fail-closed.
+**Release posture (12 août)** : private / pre-mainnet — Paper LIA par défaut (`LIA_LIVE_TRADING=0`) ; marketplace & agents SC **not live** (codeHash null) jusqu’à deploy + verify ; UI fail-closed.
 
 ### Points forts
 - Intégration Warps / AI Agents MultiversX + agents LIA autonomes (trading, minting génératif, yield).
@@ -21,13 +21,14 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Agents Marketplace on-chain (list/buy packs) + fee transparency.
 - Stripe onramp, escrow logic, studio creator journey, dual-product UX, security matrix.
 
-### Corrections & livraisons confirmées (jusqu’au 11 août 2026)
+### Corrections & livraisons confirmées (jusqu’au 12 août 2026)
 - Release **v0.15.0** (3 août) : Agents Marketplace full integration (ABI + hooks List/Buy + UI + deploy script), LIA circuit financier pro (guards, trailing, multi-horizon, symbiosis), marketplace multi-currency + burn TRO notices, Hatom LIA positions, Pinata/IPFS, PWA install banner, Playwright E2E smoke, nonce polling + TX error handling.
 - 4–5 août : Stripe onramp, escrow logic Python, studio creator journey, dual-product UX, security matrix documentée.
 - 6 août : activation mainnet MultiversX **v1.11.10.0** (epoch 2198) — améliorations VM ; documentation synchronisée.
 - 7–9 août : veille techno rafraîchie (J+3 post-activation), confirmation stabilité réseau, alignement docs README / Roadmap / Analyse.
 - **10 août** : mainnet **v1.11.11.0** (extra checks miniblocks, pas d’activation epoch) ; docs resynchronisées ; status dApp à jour.
 - **11 août** : analyse + veille J+5 post-v1.11.10.0 / J+1 post-v1.11.11.0 ; hardening Supernova en cours (rapport hebdo 9 août) ; code corrigé confirmé poussé.
+- **12 août** : veille techno J+6 / J+2 ; code pleinement corrigé reconfirmé ; docs analyse + roadmap + status synchronisées ; push complet.
 - Mises à jour dépendances (sécurité + compatibilité sdk-dapp).
 - Fixes logique voting / rewards / WalletConnect / Header wallet modal (Web Wallet réel, xPortal deep link).
 - Optimisations performance frontend, cleanup monorepo, scan ESDT complet.
@@ -35,11 +36,11 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 
 ---
 
-## Veille Technologique (11 août 2026)
+## Veille Technologique (12 août 2026)
 
 ### MultiversX / Protocol
-- **Mainnet v1.11.10.0** : activé **6 août 2026** (epoch 2198). Améliorations VM. Réseau **stable J+5** (11 août).
-- **Mainnet v1.11.11.0** : sorti **10 août 2026** — extra checks sur création de miniblocks ; **pas d’activation epoch** (upgrade node immédiat recommandé).
+- **Mainnet v1.11.10.0** : activé **6 août 2026** (epoch 2198). Améliorations VM. Réseau **stable J+6** (12 août).
+- **Mainnet v1.11.11.0** : sorti **10 août 2026** — extra checks sur création de miniblocks ; **pas d’activation epoch** (upgrade node immédiat recommandé). Réseau **stable J+2**.
 - **Supernova** : upgrade majeur finalité sub-seconde (~600 ms block time, intra-shard 100–250 ms). Découplage consensus / exécution (Propose/Vote → puis Execute).
   - Gouvernance approuvée massivement (janv. 2026, ~99.64 %).
   - **Battle of Nodes** (depuis 11 mars 2026) : >1 milliard de transactions, pic public ~120k TPS.
@@ -108,7 +109,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - E2E : smoke Playwright en CI (dashboard + marketplace).
 - Page $TRO dédiée + Studio + Burnify + Hatom + LP Pools.
 
-### Roadmap V1 (7 priorités) — statut 11 août 2026
+### Roadmap V1 (7 priorités) — statut 12 août 2026
 1. Full LIA v6 production + agents marketplace on-chain — 🟡 En cours (SC + ABI + UI livrés ; signature live executor & deploy mainnet restants)
 2. Marketplace NFT avancé + LP TRO — 🟡 Partiel (List/Buy UI + multi-currency + burn notices + escrow logic)
 3. Mobile PWA / responsive — 🟢 Base livrée (+ install banner)
@@ -142,7 +143,7 @@ Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
 ---
 
 **Statut final** : Code complètement corrigé (v0.15.0+), documenté et poussé.  
-Veille techno et analyse dApp à jour au **11 août 2026** (J+5 activation mainnet v1.11.10.0 + v1.11.11.0 + hardening Supernova).  
+Veille techno et analyse dApp à jour au **12 août 2026** (J+6 activation mainnet v1.11.10.0 + J+2 v1.11.11.0 + hardening Supernova).  
 Prêt pour itérations et scale avec Supernova (**10 septembre 2026**).
 
-*Auteur : Neltud (via Grok) — Artiste & créateur — 11 août 2026*
+*Auteur : Neltud (via Grok) — Artiste & créateur — 12 août 2026*
