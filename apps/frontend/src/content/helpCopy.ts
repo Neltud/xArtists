@@ -10,27 +10,27 @@ export const HELP = {
   },
   paperFirst: {
     title: 'Paper-first',
-    body: 'LIA_LIVE_TRADING=0 par défaut. Les trades affichés sont paper / simulation jusqu’à micro-preuve + signature validée. Aucun fonds utilisateur n’est engagé sans action wallet explicite.',
+    body: 'LIA_LIVE_TRADING=0 par défaut. Les trades affichés sont paper / simulation jusqu’à micro-preuve + signature validée.',
   },
   guardianFirst: {
     title: 'Guardian avant Brain',
-    body: 'Aucun ordre n’est proposé si le Guardian (spiral_score, leverage, risk) refuse. Le Brain ne décide qu’après le gate de sécurité.',
+    body: 'Aucun ordre n’est proposé si le Guardian refuse. Le Brain ne décide qu’après le gate de sécurité.',
   },
   profitLock: {
     title: 'Profit lock 70/30',
-    body: 'Sur gain net : 70 % restent en compound (equity de trading), 30 % vont en surplus / reserve policy. Paramètres dans CircuitConfig.',
+    body: 'Sur gain net : 70 % compound, 30 % surplus / reserve policy.',
   },
   scStatus: {
     title: 'Smart contracts',
-    body: 'Marketplace NFT et Agents Marketplace : code source prêt. agents_marketplace = null jusqu’au deploy mainnet + codeHash. List/Buy bloqués tant que codeHash OK absent.',
+    body: 'Marketplace NFT et Agents : code source prêt. List/Buy bloqués tant que codeHash OK absent.',
   },
   mainnetOnly: {
     title: 'Mainnet only',
-    body: 'Builds et chemins de deploy forcés mainnet (chainId 1).',
+    body: 'Builds et deploy forcés mainnet (chainId 1).',
   },
   troUtility: {
     title: '$TRO',
-    body: 'Token utilitaire (cap 500k). Rewards, staking, gouvernance DAO (quorum 60 %). 1 TRO max pour NFT physique (policy RWA).',
+    body: 'Token utilitaire (cap 500k). 1 TRO max pour NFT physique (policy RWA).',
   },
 } as const
 
@@ -47,6 +47,7 @@ export type PageGuideKey =
   | 'tro'
   | 'hatom'
   | 'my-packs'
+  | 'studio'
 
 export const PAGE_GUIDE: Record<
   PageGuideKey,
@@ -55,92 +56,65 @@ export const PAGE_GUIDE: Record<
   dashboard: {
     title: 'Home',
     bullets: [
-      'Hub dApp : persona, dual marketplace (Art + Agents), état SC, Guardian.',
-      'Wallet Connect = session utilisateur. Portfolio = board LIA protocole.',
-      'My Packs = access Model C (paper), pas un dépôt de trading.',
+      'Hub dApp : persona, dual market, SC, Guardian.',
+      'Wallet = user · Portfolio = LIA · My Packs = access paper.',
     ],
   },
   trading: {
     title: 'Trading Terminal LIA',
-    bullets: [
-      'Signaux Vellum + trailing + historique paper.',
-      'Guardian-first : pas d’ordre si risk gate KO.',
-      'Live trading désactivé jusqu’à micro-preuve (LIA_LIVE_TRADING=0).',
-    ],
-    warn: 'Paper / simulation — aucun ordre on-chain automatique sur vos fonds.',
+    bullets: ['Signaux + paper.', 'Guardian-first.', 'LIA_LIVE_TRADING=0 par défaut.'],
+    warn: 'Paper — pas d’ordre auto sur vos fonds.',
   },
   wallet: {
     title: 'Mon wallet (utilisateur)',
-    bullets: [
-      'Soldes de l’adresse Connect uniquement.',
-      'Jamais le wallet LIA protocole ici.',
-      'Pour treasury LIA → page Portfolio.',
-    ],
+    bullets: ['Soldes Connect uniquement.', 'Treasury LIA → Portfolio.'],
   },
   portfolio: {
     title: 'Portfolio LIA (protocole)',
-    bullets: [
-      'Agrégation valeur LIA ops + positions suivies.',
-      'Séparé de /wallet (utilisateur).',
-      'Données oracles / API MultiversX + data/ GitHub.',
-    ],
+    bullets: ['Board LIA ops.', 'Séparé de /wallet.'],
   },
   marketplace: {
     title: 'Marketplace NFT / RWA',
-    bullets: [
-      'List / Buy après codeHash marketplace live.',
-      'paste_readonly ne peut pas signer.',
-      'Fees + royalties selon SC.',
-    ],
-    warn: 'SC non live = bandeau + pas de faux market.',
+    bullets: ['List/Buy après codeHash.', 'paste_readonly = pas de signature.', 'Offer = V2.'],
+    warn: 'SC non live = pas de faux market.',
   },
   agents: {
     title: 'Agents',
-    bullets: [
-      '3 packs Access : Pulse 18 € · Yield 12 € · Sentinel 8 €.',
-      'GSN = signal only, pas un produit vendu.',
-      'Checkout fiat → membership (Model C) via My Packs.',
-    ],
+    bullets: ['Pulse 18 € · Yield 12 € · Sentinel 8 €.', 'GSN = signal only.', 'Model C access.'],
   },
   'my-packs': {
     title: 'My Packs',
+    bullets: ['Access pass Model C.', 'Perf = paper router.', 'Pas de deposit trading.'],
+    warn: 'Pas un fonds géré.',
+  },
+  studio: {
+    title: 'Studio artiste',
     bullets: [
-      'Access pass membership — Model C.',
-      'Performance affichée = paper router LIA.',
-      'Aucun fonds user tradé pour le pack à ce stade.',
+      '4 étapes : collection → IPFS → metadata → mint/list.',
+      'JWT Pinata jamais dans le front (proxy ops).',
+      'Export JSON metadata pour mxpy / minter.',
+      'Wallet artiste ≠ LIA ops. List bloqué si SC market non live.',
     ],
-    warn: 'Pas un fonds géré. Pas de deposit trading.',
+    warn: 'Mint on-chain nécessite wallet signant + gaz EGLD.',
   },
   dao: {
     title: 'DAO $TRO',
-    bullets: [
-      'Gouvernance (quorum 60 %).',
-      'Vote on-chain seulement si UI + SC branchés — sinon lecture.',
-    ],
+    bullets: ['Gouvernance lecture / vote selon SC.', 'Pas de faux vote sans sdk-dapp.'],
   },
   gallery: {
     title: 'Gallery',
-    bullets: [
-      'Collections xArtists mainnet + filtres.',
-      'Phygital / RWA : 1 TRO max œuvre physique (à la vente).',
-    ],
+    bullets: ['Catalogue xArtists.', '1 TRO max œuvre physique (policy).'],
   },
   staking: {
     title: 'Staking',
-    bullets: ['NFT / TRO staking selon contrats déployés.', 'Rewards claim via wallet utilisateur.'],
+    bullets: ['Selon contrats déployés.'],
   },
   tro: {
     title: '$TRO',
-    bullets: [
-      'Cap supply 500 000.',
-      'Utilité : rewards, staking, DAO, RWA physical claim.',
-    ],
+    bullets: ['Cap 500 000.', 'Utilité rewards / DAO / RWA claim.'],
   },
   hatom: {
     title: 'Hatom / Yield',
-    bullets: [
-      'Positions Hatom (lecture) — priorité MVX pour LIA.',
-      'Soul = pre-mainnet séparé.',
-    ],
+    bullets: ['Lecture positions MVX.', 'Soul = pre-mainnet isolé.'],
   },
 }

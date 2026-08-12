@@ -2,6 +2,11 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { LINKS } from '../config/links'
 import AdSlot from '../components/AdSlot'
+import PageGuide from '../components/PageGuide'
+import TxCapabilityBanner from '../components/TxCapabilityBanner'
+import ScStatusBanner from '../components/ScStatusBanner'
+import { canListBuyNft } from '../config/scStatus'
+import { useWallet } from '../context/WalletContext'
 
 type MediaKind = 'image' | 'video' | 'audio'
 type AssetMode = 'digital' | 'physical'
@@ -14,6 +19,7 @@ const GAS_HINT: Record<string, string> = {
 }
 
 export default function ArtistStudio() {
+  const { connected, address, method } = useWallet()
   const [step, setStep] = useState(1)
   const [collectionName, setCollectionName] = useState('')
   const [albumTitle, setAlbumTitle] = useState('')
@@ -27,6 +33,10 @@ export default function ArtistStudio() {
   const [fileName, setFileName] = useState('')
   const [ipfsUri, setIpfsUri] = useState('')
   const [youtubeUrl, setYoutubeUrl] = useState('')
+  const [copied, setCopied] = useState(false)
+
+  const marketLive = canListBuyNft()
+  const canSign = connected && method !== 'paste_readonly'
 
   const ytOk =
     !youtubeUrl.trim() ||
@@ -52,14 +62,79 @@ export default function ArtistStudio() {
   )
   const ready = checklist.every(c => c.ok)
 
+  const metadataJson = useMemo(() => {
+    const meta: Record<string, unknown> = {
+      name: title || collectionName || 'Untitled',
+      description: description || '',
+      image: ipfsUri || undefined,
+      external_url: youtubeUrl.trim() || undefined,
+      attributes: [
+        { trait_type: 'collection', value: collectionName },
+        { trait_type: 'album', value: albumTitle || undefined },
+        { trait_type: 'ticker', value: ticker },
+        { trait_type: 'media', value: media },
+        { trait_type: 'mode', value: mode },
+        { trait_type: 'storage', value: storage },
+        { trait_type: 'royalties_pct', value: royalty },
+        ...(mode === 'physical'
+          ? [{ trait_type: 'rwa_physical', value: true }, { trait_type: 'tro_reward_cap', value: 1 }]
+          : []),
+      ].filter(a => a.value !== undefined && a.value !== ''),
+      xartists: {
+        studio: true,
+        model: 'phygital_optional',
+        list_blocked_until_marketplace_live: !marketLive,
+      },
+    }
+    return JSON.stringify(meta, null, 2)
+  }, [
+    title,
+    collectionName,
+    description,
+    ipfsUri,
+    youtubeUrl,
+    albumTitle,
+    ticker,
+    media,
+    mode,
+    storage,
+    royalty,
+    marketLive,
+  ])
+
+  const downloadMeta = () => {
+    const blob = new Blob([metadataJson], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${(ticker || 'xart').toLowerCase()}-metadata.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const copyMeta = async () => {
+    try {
+      await navigator.clipboard.writeText(metadataJson)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      /* ignore */
+    }
+  }
+
   return (
     <div className="animate-fade-in max-w-3xl mx-auto pb-24 md:pb-8">
+      <PageGuide page="studio" />
+
       <header className="mb-4">
         <h1 className="text-3xl font-black">🎨 Studio xArtists</h1>
         <p className="text-gray-500 mt-1 text-sm">
-          Parcours artiste : <strong className="text-gray-300">mint → list / sell → market</strong>
+          Parcours artiste : <strong className="text-gray-300">préparer → pin → mint → list / sell</strong>
         </p>
       </header>
+
+      <ScStatusBanner />
+      <TxCapabilityBanner />
 
       <div className="mb-6">
         <AdSlot id="studio_banner" />
@@ -92,7 +167,9 @@ export default function ArtistStudio() {
             type="button"
             onClick={() => setStep(n)}
             className={`px-3 py-1.5 rounded-full border min-h-[40px] ${
-              step === n ? 'border-purple-500 bg-purple-500/20 text-purple-200' : 'border-[#2a2a3a] text-gray-500'
+              step === n
+                ? 'border-purple-500 bg-purple-500/20 text-purple-200'
+                : 'border-[#2a2a3a] text-gray-500'
             }`}
           >
             Étape {n}
@@ -194,8 +271,7 @@ export default function ArtistStudio() {
             <p className="font-semibold">Pin auto Studio = proxy backend (P1)</p>
             <p>
               JWT Pinata <strong>jamais</strong> dans le navigateur. Ops :{' '}
-              <code className="text-[10px]">python -m lia.media.pinata_connect</code> · voir{' '}
-              <code className="text-[10px]">docs/PINATA_PROXY.md</code>.
+              <code className="text-[10px]">python -m lia.media.pinata_connect</code>
             </p>
           </div>
 
@@ -223,8 +299,7 @@ export default function ArtistStudio() {
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-100/90 space-y-2">
             <p className="font-semibold">YouTube ≠ stockage NFT</p>
             <p>
-              Lien promo uniquement (<code>external_url</code>). Vente = marketplace on-chain + média
-              IPFS/Arweave.
+              Lien promo uniquement (<code>external_url</code>). Vente = marketplace + média IPFS/Arweave.
             </p>
             <label className="block text-gray-300">
               YouTube (optionnel)
@@ -240,8 +315,8 @@ export default function ArtistStudio() {
 
           {mode === 'physical' && (
             <p className="text-xs text-teal-200/90 border border-teal-500/30 rounded-lg p-3">
-              Phygital : NFT = certificat. Livraison physique hors chaîne. Rewards $TRO créateur = 1
-              TRO max / œuvre réelle (règle produit).
+              Phygital : NFT = certificat. Livraison physique hors chaîne. Rewards $TRO créateur ={' '}
+              <strong>1 TRO max</strong> / œuvre réelle (à la vente).
             </p>
           )}
 
@@ -282,7 +357,7 @@ export default function ArtistStudio() {
               min={0}
               max={10}
               value={royalty}
-              onChange={e => setRoyalty(Number(e.target.value))}
+              onChange={e => setRoyalty(Math.min(10, Math.max(0, Number(e.target.value))))}
               className="mt-1 w-32 rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2"
             />
           </label>
@@ -293,6 +368,22 @@ export default function ArtistStudio() {
               </li>
             ))}
           </ul>
+
+          <div className="rounded-xl border border-[#2a2a3a] bg-[#0a0a0f] p-3">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <p className="text-xs font-semibold text-zinc-400">Aperçu metadata JSON (mint)</p>
+              <div className="flex gap-2">
+                <button type="button" className="btn-secondary text-[10px] py-1" onClick={copyMeta}>
+                  {copied ? 'Copié' : 'Copier'}
+                </button>
+                <button type="button" className="btn-secondary text-[10px] py-1" onClick={downloadMeta}>
+                  Télécharger
+                </button>
+              </div>
+            </div>
+            <pre className="text-[10px] mono text-zinc-500 overflow-x-auto max-h-40">{metadataJson}</pre>
+          </div>
+
           <div className="flex gap-2">
             <button type="button" className="btn-secondary text-sm" onClick={() => setStep(2)}>
               ←
@@ -322,39 +413,58 @@ export default function ArtistStudio() {
             {ipfsUri && <p className="mono text-xs text-purple-300 break-all">{ipfsUri}</p>}
             {youtubeUrl && <p className="text-xs text-gray-400">YouTube : {youtubeUrl}</p>}
             <p>Royalties {royalty}%</p>
+            {address && (
+              <p className="text-xs text-zinc-500 mono break-all">
+                Creator wallet : {address}
+                {!canSign && ' (read-only — reconnecte pour mint)'}
+              </p>
+            )}
           </div>
 
-          <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-100">
-            List on-chain xArtists Market = <strong>bloqué</strong> tant que SC marketplace non déployé
-            (codeHash null). Wallet user (pas LIA) + signature réelle requis — voir{' '}
-            <code className="text-[10px]">docs/MICRO_LIST_BUY_USER.md</code>.
-          </div>
+          {!marketLive && (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-100">
+              List on-chain xArtists Market = <strong>bloqué</strong> tant que SC marketplace non live
+              (codeHash). Après mint : XOXNO possible, ou attendre deploy +{' '}
+              <code className="text-[10px]">docs/MICRO_LIST_BUY_USER.md</code>.
+            </div>
+          )}
 
           <ol className="text-sm text-gray-300 space-y-2 list-decimal list-inside border border-[#2a2a3a] rounded-xl p-4">
-            <li>Pin média + JSON (Vellum / proxy — JWT hors front)</li>
-            <li>Connect wallet <strong>artiste</strong> (extension / Web Wallet — pas paste, pas LIA)</li>
-            <li>Issue collection + mint NFT avec URI IPFS (mxpy / minter)</li>
+            <li>Pin média + JSON metadata (ops Pinata / proxy — JWT hors front)</li>
             <li>
-              List sur <Link to="/marketplace" className="text-purple-300 underline">Marketplace</Link>{' '}
-              ou XOXNO
+              Connect wallet <strong>artiste</strong> (extension / Web Wallet — pas paste, pas LIA)
+            </li>
+            <li>Issue collection + mint NFT avec URI IPFS (mxpy / minter SC)</li>
+            <li>
+              List sur{' '}
+              <Link to="/marketplace" className="text-purple-300 underline">
+                Marketplace
+              </Link>{' '}
+              {marketLive ? '(SC live)' : '(après deploy)'} ou{' '}
+              <a href={LINKS.xoxno} target="_blank" rel="noreferrer" className="text-purple-300 underline">
+                XOXNO
+              </a>
             </li>
             <li>
-              Option : <Link to="/tro" className="text-purple-300 underline">Buy $TRO</Link>
+              Option :{' '}
+              <Link to="/tro" className="text-purple-300 underline">
+                Buy $TRO
+              </Link>
             </li>
           </ol>
 
           <div className="flex flex-wrap gap-2">
+            <button type="button" className="btn-secondary text-sm" onClick={downloadMeta}>
+              Export metadata JSON
+            </button>
             <a href={LINKS.walletWeb} target="_blank" rel="noreferrer" className="btn-primary text-sm">
               Web Wallet
-            </a>
-            <a href="https://pinata.cloud" target="_blank" rel="noreferrer" className="btn-secondary text-sm">
-              Pinata (ops)
             </a>
             <Link to="/marketplace" className="btn-secondary text-sm">
               Sell on Market
             </Link>
-            <Link to="/dao" className="btn-secondary text-sm">
-              DAO / $TRO
+            <Link to="/gallery" className="btn-secondary text-sm">
+              Galerie
             </Link>
           </div>
           <p className="text-xs text-gray-500">
