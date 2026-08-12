@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom'
 import { useMultiversX } from '../hooks/useMultiversX'
 import MoonpayButton from '../components/MoonpayButton'
 import TreasuryBanner from '../components/TreasuryBanner'
+import TipEgldTransfer from '../components/TipEgldTransfer'
+import TxCapabilityBanner from '../components/TxCapabilityBanner'
+import PageGuide from '../components/PageGuide'
 import { LINKS, LIA_WALLET } from '../config/links'
 import { LIA_MULTICHAIN } from '../config/multichain'
 
@@ -32,6 +35,8 @@ export default function Tip() {
 
   return (
     <div className="animate-fade-in">
+      <PageGuide page="tip" />
+
       <div className="mb-8">
         <h1 className="text-3xl font-black">💜 Soutenir xArtists</h1>
         <p className="text-gray-500 mt-1">
@@ -49,16 +54,20 @@ export default function Tip() {
         <a href={LINKS.treasuryPolicy} target="_blank" rel="noreferrer" className="underline">
           TREASURY_POLICY
         </a>
-        . Memo recommandé : <code className="text-[10px]">tip:mission</code>
+        .
       </div>
+
+      <TxCapabilityBanner />
 
       <div className="mb-6">
         <TreasuryBanner />
       </div>
 
+      <TipEgldTransfer />
+
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <div className="card">
-          <h2 className="text-lg font-bold mb-4">🔷 MultiversX (EGLD)</h2>
+          <h2 className="text-lg font-bold mb-4">🔷 MultiversX (EGLD) — copie manuelle</h2>
           <div className="bg-[#111118] rounded-lg p-3 mono text-xs text-gray-300 break-all mb-3">
             {WALLET}
           </div>
@@ -135,8 +144,8 @@ export default function Tip() {
       <div className="card">
         <h2 className="text-lg font-bold mb-2">⚡ Services LIA — barème indicatif</h2>
         <p className="text-xs text-zinc-500 mb-4">
-          Paiement manuel vers l’adresse EGLD ci-dessus avec memo service id. Pas de prestation
-          automatisée on-chain pour l’instant.
+          Paiement manuel vers l’adresse EGLD avec memo service id. Pas de prestation automatisée
+          on-chain pour l’instant.
         </p>
         <div className="space-y-2 mb-6">
           {SERVICES.map(s => (

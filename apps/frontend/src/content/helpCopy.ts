@@ -48,6 +48,7 @@ export type PageGuideKey =
   | 'hatom'
   | 'my-packs'
   | 'studio'
+  | 'tip'
 
 export const PAGE_GUIDE: Record<
   PageGuideKey,
@@ -67,7 +68,11 @@ export const PAGE_GUIDE: Record<
   },
   wallet: {
     title: 'Mon wallet (utilisateur)',
-    bullets: ['Soldes Connect uniquement.', 'Treasury LIA → Portfolio.'],
+    bullets: [
+      'Soldes + NFT via API MultiversX sur ton adresse Connect.',
+      'paste = lecture seule · Web Wallet / extension pour signer.',
+      'Treasury LIA → page Portfolio.',
+    ],
   },
   portfolio: {
     title: 'Portfolio LIA (protocole)',
@@ -103,7 +108,7 @@ export const PAGE_GUIDE: Record<
   },
   gallery: {
     title: 'Gallery',
-    bullets: ['Catalogue xArtists.', '1 TRO max œuvre physique (policy).'],
+    bullets: ['Catalogue xArtists (titre = xArtists).', '1 TRO max œuvre physique (policy).'],
   },
   staking: {
     title: 'Staking',
@@ -116,5 +121,14 @@ export const PAGE_GUIDE: Record<
   hatom: {
     title: 'Hatom / Yield',
     bullets: ['Lecture positions MVX.', 'Soul = pre-mainnet isolé.'],
+  },
+  tip: {
+    title: 'Tip / dons',
+    bullets: [
+      'Don volontaire vers LIA Ops — pas un investissement.',
+      'Tip on-chain : wallet user signant + memo tip:mission|reserve|ops.',
+      'Copie manuelle EGLD / BTC / SOL toujours possible.',
+    ],
+    warn: 'Ne confonds pas tip et achat de parts de fonds.',
   },
 }
