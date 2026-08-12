@@ -28,12 +28,14 @@ export const LINKS = {
     'https://github.com/Neltud/xArtists/blob/main/docs/TREASURY_POLICY.md',
 } as const
 
+/** Primary desktop nav — core product paths */
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/', label: 'Home', emoji: '📊' },
   { to: '/studio', label: 'Studio', emoji: '🎨' },
   { to: '/gallery', label: 'Galerie', emoji: '🖼️' },
   { to: '/marketplace', label: 'Market', emoji: '🛒' },
   { to: '/agents', label: 'Agents', emoji: '🧠' },
+  { to: '/my-packs', label: 'My Packs', emoji: '🎫' },
   { to: '/trading', label: 'Trading', emoji: '⚡' },
   { to: '/portfolio', label: 'LIA', emoji: '📈' },
   { to: '/wallet', label: 'Wallet', emoji: '👛' },
