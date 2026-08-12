@@ -1,12 +1,15 @@
 /**
  * List / Buy / Bid / Accept / Withdraw / Cancel — marketplace SC.
  * Hard-blocked while isMarketplaceLive() is false.
- * Offer: no endpoint.
+ * Receiver always from VITE live address — never empty placeholder.
  */
 import { useCallback, useState } from 'react'
-import { MARKETPLACE_ADDRESS } from '../../../../packages/core/src/contracts/marketplaceAbi'
 import { useSendTransaction } from './useSendTransaction'
-import { isMarketplaceLive, KNOWN_EMPTY_MARKETPLACE } from '../lib/scStatus'
+import {
+  isMarketplaceLive,
+  marketplaceReceiverOrThrow,
+  KNOWN_EMPTY_MARKETPLACE,
+} from '../lib/scStatus'
 
 export interface ListNftParams {
   tokenId: string
@@ -57,15 +60,23 @@ export function useMarketplaceTx() {
         setError(BLOCKED)
         throw new Error(BLOCKED)
       }
-      const recv = (tx as { receiver?: string }).receiver || ''
-      if (recv.toLowerCase() === KNOWN_EMPTY_MARKETPLACE.toLowerCase()) {
+      let receiver: string
+      try {
+        receiver = marketplaceReceiverOrThrow()
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : BLOCKED
+        setError(msg)
+        throw new Error(msg)
+      }
+      if (receiver.toLowerCase() === KNOWN_EMPTY_MARKETPLACE.toLowerCase()) {
         setError(BLOCKED)
         throw new Error(BLOCKED)
       }
+      const payload = { ...(tx as Record<string, unknown>), receiver }
       setPending(true)
       setError(null)
       try {
-        const res = await send([tx], {
+        const res = await send([payload], {
           processingMessage: labels.processing,
           successMessage: labels.success,
           errorMessage: labels.fail,
@@ -91,12 +102,13 @@ export function useMarketplaceTx() {
     async (p: ListNftParams) => {
       const royaltyBps = p.royaltyBps ?? 500
       const priceAtomic = egldToAtomic(p.priceEgld)
+      const sc = marketplaceReceiverOrThrow()
       const dataParts = [
         'ESDTNFTTransfer',
         strToHex(p.tokenId),
         numToHex(p.nonce),
         numToHex(1),
-        strToHex(MARKETPLACE_ADDRESS),
+        strToHex(sc),
         strToHex('listNft'),
         numToHex(BigInt(priceAtomic)),
         numToHex(royaltyBps),
@@ -104,7 +116,6 @@ export function useMarketplaceTx() {
       if (p.royaltyReceiver) dataParts.push(strToHex(p.royaltyReceiver))
       return run(
         {
-          receiver: MARKETPLACE_ADDRESS,
           value: '0',
           gasLimit: 25_000_000,
           data: dataParts.join('@'),
@@ -120,7 +131,6 @@ export function useMarketplaceTx() {
     async (p: BuyNftParams) =>
       run(
         {
-          receiver: MARKETPLACE_ADDRESS,
           value: egldToAtomic(p.priceEgld),
           gasLimit: 18_000_000,
           data: `buyNft@${numToHex(p.listingId)}`,
@@ -135,7 +145,6 @@ export function useMarketplaceTx() {
     async (p: PlaceBidParams) =>
       run(
         {
-          receiver: MARKETPLACE_ADDRESS,
           value: egldToAtomic(p.amountEgld),
           gasLimit: 12_000_000,
           data: `placeBid@${numToHex(p.listingId)}`,
@@ -150,7 +159,6 @@ export function useMarketplaceTx() {
     async (listingId: number) =>
       run(
         {
-          receiver: MARKETPLACE_ADDRESS,
           value: '0',
           gasLimit: 18_000_000,
           data: `acceptBid@${numToHex(listingId)}`,
@@ -165,7 +173,6 @@ export function useMarketplaceTx() {
     async (listingId: number) =>
       run(
         {
-          receiver: MARKETPLACE_ADDRESS,
           value: '0',
           gasLimit: 10_000_000,
           data: `withdrawBid@${numToHex(listingId)}`,
@@ -180,7 +187,6 @@ export function useMarketplaceTx() {
     async (listingId: number) =>
       run(
         {
-          receiver: MARKETPLACE_ADDRESS,
           value: '0',
           gasLimit: 12_000_000,
           data: `cancelListing@${numToHex(listingId)}`,
@@ -190,6 +196,13 @@ export function useMarketplaceTx() {
       ),
     [run]
   )
+
+  let marketplaceAddress = ''
+  try {
+    if (live) marketplaceAddress = marketplaceReceiverOrThrow()
+  } catch {
+    marketplaceAddress = ''
+  }
 
   return {
     listNft,
@@ -201,7 +214,7 @@ export function useMarketplaceTx() {
     pending,
     error,
     lastTx,
-    marketplaceAddress: MARKETPLACE_ADDRESS,
+    marketplaceAddress,
     marketplaceLive: live,
     offerSupported: false as const,
     bidSupported: live,
