@@ -13,14 +13,20 @@ import { useWeb3 } from '../hooks/useWeb3'
 import { LINKS } from '../config/links'
 import TxCapabilityBanner from './TxCapabilityBanner'
 import UserWalletGuard from './UserWalletGuard'
-import { canListBuyNft, isLiaOpsWallet } from '../config/scStatus'
+import { canListBuyNft, isLiaOpsWallet, NFT_MARKET_FEE_BPS } from '../config/scStatus'
 import { signBlockReason } from '../lib/txCapability'
+import { resolveListingIdForNft } from '../lib/resolveListingId'
 
 interface Props {
   nft: NFT | null
   onClose: () => void
   initialAction?: 'buy' | 'sell' | 'offer' | 'bid' | null
   initialListingId?: number | null
+}
+
+function feeSplit(price: number, feeBps: number) {
+  const fee = (price * feeBps) / 10_000
+  return { fee, toSeller: price - fee, feeBps }
 }
 
 export default function NFTDetailModal({
@@ -46,6 +52,7 @@ export default function NFTDetailModal({
   const [buyPrice, setBuyPrice] = useState('1')
   const [bidPrice, setBidPrice] = useState('0.5')
   const [listingId, setListingId] = useState('1')
+  const [indexHint, setIndexHint] = useState<string | null>(null)
   const [txMsg, setTxMsg] = useState<string | null>(null)
   const [tab, setTab] = useState<'buy' | 'sell' | 'offer' | 'bid' | 'manage'>(
     initialAction === 'offer' ? 'offer' : initialAction || 'buy'
@@ -58,8 +65,28 @@ export default function NFTDetailModal({
   useEffect(() => {
     if (initialListingId != null && initialListingId >= 0) {
       setListingId(String(initialListingId))
+      setIndexHint('from activity / parent')
     }
   }, [initialListingId, nft?.identifier])
+
+  // Auto-resolve listing id from published index (token + nonce)
+  useEffect(() => {
+    if (!nft) return
+    let cancelled = false
+    ;(async () => {
+      const hit = await resolveListingIdForNft(nft.collection, nft.nonce)
+      if (cancelled || !hit) return
+      setListingId(String(hit.listingId))
+      if (hit.priceEgld) {
+        setBuyPrice(hit.priceEgld)
+        setListPrice(hit.priceEgld)
+      }
+      setIndexHint(`index id=${hit.listingId}`)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [nft?.identifier, nft?.collection, nft?.nonce])
 
   useEffect(() => {
     if (!nft) return
@@ -82,6 +109,10 @@ export default function NFTDetailModal({
   const id = parseInt(listingId, 10)
   const live = canListBuyNft()
   const signBlock = signBlockReason(method)
+  const priceN = parseFloat(buyPrice) || 0
+  const split = feeSplit(priceN, NFT_MARKET_FEE_BPS)
+  const royaltyBps = royalties != null ? royalties * 100 : 500
+  const royaltyPlusFee = royaltyBps + NFT_MARKET_FEE_BPS
 
   const guard = (fn: () => Promise<unknown>) => async () => {
     setTxMsg(null)
@@ -112,7 +143,10 @@ export default function NFTDetailModal({
   const txDisabled = pending || !live || !!signBlock
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 animate-fade-in" role="dialog">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 animate-fade-in"
+      role="dialog"
+    >
       <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={onClose} />
       <div className="relative z-10 w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl border border-[#2a2a3a] bg-[#12121a]/95">
         <button
@@ -140,7 +174,8 @@ export default function NFTDetailModal({
             <TxCapabilityBanner />
             {!live && (
               <p className="text-[10px] text-red-300/90">
-                SC marketplace non live (codeHash null) — TX on-chain bloquées jusqu’au deploy + verify.
+                SC marketplace non live (codeHash null) — TX on-chain bloquées jusqu’au deploy +
+                verify.
               </p>
             )}
             <UserWalletGuard address={address} action="List / Buy / Bid" />
@@ -164,7 +199,7 @@ export default function NFTDetailModal({
               ))}
             </div>
             <p className="text-[10px] mono text-gray-500">
-              SC {marketplaceAddress ? `${marketplaceAddress.slice(0, 18)}…` : '—'}
+              SC {marketplaceAddress ? `${marketplaceAddress.slice(0, 18)}…` : '— (not live)'}
             </p>
 
             <label className="flex flex-col gap-1 text-[10px] uppercase text-gray-500">
@@ -173,13 +208,33 @@ export default function NFTDetailModal({
                 type="number"
                 min={0}
                 value={listingId}
-                onChange={e => setListingId(e.target.value)}
+                onChange={e => {
+                  setListingId(e.target.value)
+                  setIndexHint('manual')
+                }}
                 className="rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
               />
               <span className="normal-case text-gray-600">
-                P1 : index on-chain (`data/listings_index.json`) pour supprimer la saisie manuelle
+                {indexHint
+                  ? `Source: ${indexHint}`
+                  : 'P1: index listings (token+nonce) ou activité SC'}
               </span>
             </label>
+
+            {(tab === 'buy' || tab === 'sell') && priceN > 0 && (
+              <div className="rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] px-3 py-2 text-[11px] text-gray-400 space-y-1">
+                <p>
+                  Fee market estimé {(NFT_MARKET_FEE_BPS / 100).toFixed(1)}% →{' '}
+                  <span className="text-amber-200">{split.fee.toFixed(4)} EGLD</span> · seller ≈{' '}
+                  <span className="text-teal-300">{split.toSeller.toFixed(4)} EGLD</span>
+                </p>
+                {royaltyPlusFee > 10_000 && (
+                  <p className="text-red-300">
+                    Attention: royalty+fee &gt; 100% — SC doit rejeter (cap P0).
+                  </p>
+                )}
+              </div>
+            )}
 
             {tab === 'buy' && (
               <div className="flex flex-wrap gap-2 items-end">
@@ -277,10 +332,10 @@ export default function NFTDetailModal({
             {tab === 'offer' && (
               <div className="rounded-xl border border-dashed border-gray-600 bg-[#0a0a0f] px-3 py-3 text-xs text-gray-400 space-y-2">
                 <p>
-                  <strong className="text-gray-300">Offer</strong> n’a pas d’endpoint on-chain (voir{' '}
-                  <code className="text-[10px]">docs/OFFER_V2_DEFERRED.md</code>).
+                  <strong className="text-gray-300">Offer</strong> n’a pas d’endpoint on-chain (V2
+                  escrow).
                 </p>
-                <p>Utilise Bid si le listing est live. Escrow Offer = V2 si volume.</p>
+                <p>Utilise Bid si le listing est live.</p>
               </div>
             )}
 
@@ -299,7 +354,12 @@ export default function NFTDetailModal({
             )}
 
             <div className="flex gap-3 text-xs mt-2">
-              <a href={EXPLORER_NFT(nft.identifier)} target="_blank" rel="noreferrer" className="text-purple-300">
+              <a
+                href={EXPLORER_NFT(nft.identifier)}
+                target="_blank"
+                rel="noreferrer"
+                className="text-purple-300"
+              >
                 Explorer
               </a>
               <a
