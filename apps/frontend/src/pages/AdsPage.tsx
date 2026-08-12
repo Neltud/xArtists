@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { LIA_WALLET } from '../config/links'
+import { Link } from 'react-router-dom'
+import { LIA_WALLET, LINKS } from '../config/links'
 
 const SLOTS = [
   { id: 'home_hero', label: 'Dashboard hero', format: '1200×400 · 7 jours' },
@@ -15,24 +16,36 @@ export default function AdsPage() {
   const [href, setHref] = useState('')
   const [amount, setAmount] = useState('1')
   const [cid, setCid] = useState('')
+  const [copied, setCopied] = useState(false)
 
   const memo = `ad-bid:${slot}:${period}`
 
+  const copyMemo = () => {
+    navigator.clipboard.writeText(memo).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
+    <div className="max-w-2xl mx-auto space-y-8 animate-fade-in">
       <header>
         <h1 className="text-2xl font-bold gradient-text">Espace pub · enchères</h1>
         <p className="text-sm text-gray-400 mt-2 leading-relaxed">
-          Emplacements premium limités (3–5). Location d’espace pour drops et events culturels —{' '}
-          <strong className="text-gray-300">pas un investissement</strong>. Revenus → treasury Mission /
-          Reserve (traçable).
+          Emplacements premium limités. Location d’espace pour drops et events culturels —{' '}
+          <strong className="text-gray-300">pas un investissement</strong>. Revenus → treasury (traçable).
         </p>
       </header>
+
+      <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-xs text-amber-100/90">
+        Paiement V1 = transfer EGLD manuel vers <strong>LIA Ops</strong> avec memo. SC enchères = V2. Max
+        1 pub active / slot.
+      </div>
 
       <section className="card space-y-3">
         <h2 className="font-semibold">Slots</h2>
         <ul className="text-sm text-gray-400 space-y-2">
-          {SLOTS.map((s) => (
+          {SLOTS.map(s => (
             <li key={s.id} className="flex justify-between gap-4 border-b border-[#2a2a3a] pb-2">
               <span className="text-gray-200">{s.label}</span>
               <span className="text-xs mono text-gray-500">{s.format}</span>
@@ -44,17 +57,16 @@ export default function AdsPage() {
       <section className="card space-y-4">
         <h2 className="font-semibold">Bid V1 (paiement manuel)</h2>
         <p className="text-xs text-gray-500">
-          1) Prépare ton créatif (IPFS) · 2) Envoie EGLD vers treasury avec le memo · 3) Ops valide →
-          diffusion. SC enchères = V2.
+          1) Créatif IPFS · 2) EGLD + memo · 3) Ops valide → diffusion.
         </p>
         <label className="block text-xs text-gray-500">
           Slot
           <select
             className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm"
             value={slot}
-            onChange={(e) => setSlot(e.target.value)}
+            onChange={e => setSlot(e.target.value)}
           >
-            {SLOTS.map((s) => (
+            {SLOTS.map(s => (
               <option key={s.id} value={s.id}>
                 {s.label}
               </option>
@@ -66,7 +78,7 @@ export default function AdsPage() {
           <input
             className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm mono"
             value={period}
-            onChange={(e) => setPeriod(e.target.value)}
+            onChange={e => setPeriod(e.target.value)}
           />
         </label>
         <label className="block text-xs text-gray-500">
@@ -74,8 +86,8 @@ export default function AdsPage() {
           <input
             className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Drop Alistor — mars"
+            onChange={e => setTitle(e.target.value)}
+            placeholder="Drop xArtists — mars"
           />
         </label>
         <label className="block text-xs text-gray-500">
@@ -83,7 +95,7 @@ export default function AdsPage() {
           <input
             className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm"
             value={href}
-            onChange={(e) => setHref(e.target.value)}
+            onChange={e => setHref(e.target.value)}
             placeholder="https://…"
           />
         </label>
@@ -92,7 +104,7 @@ export default function AdsPage() {
           <input
             className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm mono"
             value={cid}
-            onChange={(e) => setCid(e.target.value)}
+            onChange={e => setCid(e.target.value)}
             placeholder="Qm…"
           />
         </label>
@@ -101,30 +113,42 @@ export default function AdsPage() {
           <input
             className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={e => setAmount(e.target.value)}
           />
         </label>
 
         <div className="rounded-lg bg-[#0d0d14] border border-purple-500/30 p-3 text-xs space-y-2">
           <p>
-            <span className="text-gray-500">Treasury Mission</span>
+            <span className="text-gray-500">Treasury (LIA Ops — Mission en attente d’adresses dédiées)</span>
             <br />
             <span className="mono text-purple-300 break-all">{LIA_WALLET}</span>
           </p>
-          <p>
+          <p className="flex flex-wrap items-center gap-2">
             <span className="text-gray-500">Memo obligatoire</span>
-            <br />
             <span className="mono text-emerald-400">{memo}</span>
+            <button type="button" onClick={copyMemo} className="btn-secondary text-[10px] px-2 py-1">
+              {copied ? '✅' : 'Copier'}
+            </button>
           </p>
           <p className="text-gray-500">
-            Catégories autorisées : art, drop, event culturel, outil créatif. Interdit d’imiter Connect /
-            Buy.
+            Autorisé : art, drop, event culturel, outil créatif. Interdit d’imiter Connect / Buy.
           </p>
+          <a
+            href={LINKS.explorerAccount(LIA_WALLET)}
+            target="_blank"
+            rel="noreferrer"
+            className="text-purple-300 underline"
+          >
+            Explorer treasury ↗
+          </a>
         </div>
       </section>
 
       <p className="text-xs text-gray-600 text-center">
-        Après paiement, contacte ops avec txHash + créatif pour modération.
+        Après paiement : txHash + créatif → ops ·{' '}
+        <Link to="/tip" className="text-purple-400 underline">
+          Tip
+        </Link>
       </p>
     </div>
   )

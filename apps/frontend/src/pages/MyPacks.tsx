@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import PackCheckout from '../components/PackCheckout'
+import PageGuide from '../components/PageGuide'
 import { AGENT_PACKS } from '../config/agentPacks'
 
 type LedgerFile = {
@@ -60,10 +61,11 @@ export default function MyPacks() {
     }
   }, [])
 
-  // Poll mint status after Stripe return
   useEffect(() => {
     if (!paid || !sessionId || !API) {
-      if (paid && !sessionId) setMintStatus('Payment return detected — waiting for webhook mint (no session_id in URL).')
+      if (paid && !sessionId) {
+        setMintStatus('Payment return — waiting webhook mint (no session_id).')
+      }
       return
     }
     let stop = false
@@ -73,7 +75,9 @@ export default function MyPacks() {
         const r = await fetch(`${API}/v1/checkout/status/${sessionId}`)
         const j = await r.json()
         if (stop) return
-        setMintStatus(`${j.status}${j.tx_hash ? ` · tx ${String(j.tx_hash).slice(0, 12)}…` : ''}${j.error ? ` · ${j.error}` : ''}`)
+        setMintStatus(
+          `${j.status}${j.tx_hash ? ` · tx ${String(j.tx_hash).slice(0, 12)}…` : ''}${j.error ? ` · ${j.error}` : ''}`
+        )
         if (j.status === 'minted' || j.status === 'failed') return
       } catch {
         if (!stop) setMintStatus('Polling mint status…')
@@ -114,11 +118,13 @@ export default function MyPacks() {
 
   return (
     <div className="animate-fade-in max-w-3xl mx-auto pb-24 md:pb-8 space-y-6">
+      <PageGuide page="my-packs" />
+
       <header>
         <h1 className="text-2xl sm:text-3xl font-black">My Packs</h1>
         <p className="text-sm text-zinc-500 mt-1">
-          Access membership · <span className="text-amber-300 font-medium">PAPER</span> · Model C — no
-          managed funds
+          Access membership · <span className="text-amber-300 font-medium">PAPER</span> · Model C — pas un
+          fonds géré
         </p>
       </header>
 
@@ -128,29 +134,32 @@ export default function MyPacks() {
         </div>
       )}
       {paid && (
-        <div className="rounded-xl border border-teal-500/40 bg-teal-500/10 px-4 py-3 text-xs text-teal-100" role="status">
+        <div
+          className="rounded-xl border border-teal-500/40 bg-teal-500/10 px-4 py-3 text-xs text-teal-100"
+          role="status"
+        >
           <p className="font-semibold">Payment flow returned</p>
           <p className="mt-1 opacity-90">
             {mintStatus ||
-              'Mint runs only after verified Stripe webhook. Keep this tab open if polling is enabled.'}
+              'Mint after verified Stripe webhook. Keep tab open if polling enabled.'}
           </p>
         </div>
       )}
 
       <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-xs text-amber-100/90 leading-relaxed">
-        You purchase an <strong>access pass</strong> to the LIA ecosystem. Trades below are{' '}
-        <strong>simulated (paper)</strong> for demonstration. <strong>No real funds</strong> are traded for
-        this pack at this stage.
+        Tu achètes un <strong>access pass</strong> écosystème LIA. Les trades ci-dessous sont{' '}
+        <strong>simulés (paper)</strong>. <strong>Aucun capital réel</strong> n’est tradé pour ce pack à
+        ce stade. ≠ GreenSmoke · ≠ Portfolio LIA ops.
       </div>
 
       <PackCheckout />
 
       <section className="card">
-        <h2 className="font-bold text-sm text-zinc-300 mb-2">Wallet (mint destination)</h2>
+        <h2 className="font-bold text-sm text-zinc-300 mb-2">Wallet (destination mint)</h2>
         {connected && address ? (
           <p className="font-mono text-xs text-zinc-400 break-all">{address}</p>
         ) : (
-          <p className="text-xs text-zinc-500">Connect MultiversX wallet before checkout.</p>
+          <p className="text-xs text-zinc-500">Connect MultiversX avant checkout.</p>
         )}
       </section>
 
@@ -166,10 +175,6 @@ export default function MyPacks() {
               (s.tickets || []).filter(t => t.pack === p.id && t.ok && t.size_usd > 0)
             )
             const notional = tickets.reduce((s, t) => s + t.size_usd, 0)
-            const pnl = Object.values(ledger?.scenarios || {}).reduce(
-              (s, sc) => s + (sc.totals?.pnl_usd_paper || 0) * (tickets.length ? 0.33 : 0),
-              0
-            )
             return (
               <div key={p.id} className="rounded-lg border border-zinc-800 bg-zinc-950/40 p-3">
                 <p className={`font-semibold text-sm ${p.color}`}>
@@ -190,7 +195,8 @@ export default function MyPacks() {
         <h2 className="font-bold text-sm text-zinc-300 mb-3">Simulation feed</h2>
         {feed.length === 0 ? (
           <p className="text-xs text-zinc-500">
-            No tickets — run <code className="text-[10px]">python scripts/simulate_multi_capital_ledger.py</code>
+            No tickets —{' '}
+            <code className="text-[10px]">python scripts/simulate_multi_capital_ledger.py</code>
           </p>
         ) : (
           <ul className="space-y-2">
@@ -215,6 +221,10 @@ export default function MyPacks() {
       <p className="text-center text-xs text-zinc-600">
         <Link to="/agents" className="text-purple-400 hover:underline">
           ← Packs catalog
+        </Link>
+        {' · '}
+        <Link to="/portfolio" className="text-purple-400 hover:underline">
+          Portfolio LIA
         </Link>
         {' · '}
         docs/PHASE1_MODEL_C_PROTOCOL.md

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useWalletTokens } from '../hooks/useWalletTokens'
 import { getTroInfo, getEgldPrice } from '../services/priceService'
+import LiaVsUserBanner from '../components/LiaVsUserBanner'
 
 const XEXCHANGE_APP = 'https://xexchange.com'
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
@@ -22,7 +24,14 @@ function CategorySection({
 }: {
   title: string
   icon: string
-  tokens: Array<{ identifier: string; ticker: string; name: string; balance: number; price: number; valueUsd: number }>
+  tokens: Array<{
+    identifier: string
+    ticker: string
+    name: string
+    balance: number
+    price: number
+    valueUsd: number
+  }>
   emptyText: string
 }) {
   const total = tokens.reduce((s, t) => s + t.valueUsd, 0)
@@ -32,9 +41,7 @@ function CategorySection({
         <h2 className="text-lg font-bold">
           {icon} {title}
         </h2>
-        {tokens.length > 0 && (
-          <span className="badge-purple">${total.toFixed(2)} USD</span>
-        )}
+        {tokens.length > 0 && <span className="badge-purple">${total.toFixed(2)} USD</span>}
       </div>
       {tokens.length === 0 ? (
         <p className="text-center text-gray-500 py-6">{emptyText}</p>
@@ -52,7 +59,10 @@ function CategorySection({
             </thead>
             <tbody>
               {tokens.map(t => (
-                <tr key={t.identifier} className="border-b border-[#2a2a3a]/50 hover:bg-[#111118] transition-colors">
+                <tr
+                  key={t.identifier}
+                  className="border-b border-[#2a2a3a]/50 hover:bg-[#111118] transition-colors"
+                >
                   <td className="py-3 px-3">
                     <p className="font-semibold text-sm">{t.ticker || t.name}</p>
                     <p className="text-xs mono text-gray-500">{t.identifier}</p>
@@ -89,7 +99,12 @@ function CategorySection({
 export default function LPPoolsPage() {
   const { lpTokens, farmTokens, loading, refresh, totalEsdtUsd } = useWalletTokens()
   const [pool, setPool] = useState<PoolCfg | null>(null)
-  const [poolMeta, setPoolMeta] = useState<{ troPrice: number; egldPrice: number; poolEgld: number | null; poolTroHint: string }>({
+  const [poolMeta, setPoolMeta] = useState<{
+    troPrice: number
+    egldPrice: number
+    poolEgld: number | null
+    poolTroHint: string
+  }>({
     troPrice: 0,
     egldPrice: 0,
     poolEgld: null,
@@ -101,7 +116,9 @@ export default function LPPoolsPage() {
     ;(async () => {
       try {
         const [cfg, tro, egld] = await Promise.all([
-          fetch(`${import.meta.env.BASE_URL}data/config.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+          fetch(`${import.meta.env.BASE_URL}data/config.json`)
+            .then(r => (r.ok ? r.json() : null))
+            .catch(() => null),
           getTroInfo(),
           getEgldPrice(),
         ])
@@ -113,11 +130,13 @@ export default function LPPoolsPage() {
         let poolTroHint = ''
         if (p?.address) {
           try {
-            const acc = await fetch(`${MVX_API}/accounts/${p.address}`).then((r) => r.json())
+            const acc = await fetch(`${MVX_API}/accounts/${p.address}`).then(r => r.json())
             poolEgld = Number(acc.balance ?? 0) / 1e18
-            const tokens = await fetch(`${MVX_API}/accounts/${p.address}/tokens?size=50`).then((r) => r.json())
+            const tokens = await fetch(`${MVX_API}/accounts/${p.address}/tokens?size=50`).then(r =>
+              r.json()
+            )
             const troTok = Array.isArray(tokens)
-              ? tokens.find((t: any) => (t.identifier || '').startsWith('TRO-'))
+              ? tokens.find((t: { identifier?: string }) => (t.identifier || '').startsWith('TRO-'))
               : null
             if (troTok) {
               const dec = troTok.decimals ?? 18
@@ -153,24 +172,38 @@ export default function LPPoolsPage() {
 
   return (
     <div className="animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-black">💧 Liquidity & Farms</h1>
-          <p className="text-gray-500 mt-1">Pool $TRO + positions LP/Farm wallet LIA</p>
+          <p className="text-gray-500 mt-1">
+            Pool $TRO publique + positions LP/Farm <strong className="text-purple-300">wallet LIA</strong>
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button onClick={refresh} className="btn-secondary text-sm">🔄 Actualiser</button>
-          <a href="/xArtists/tro" className="btn-primary text-sm">🎨 $TRO / Buy</a>
-          <a href={`${XEXCHANGE_APP}/farms`} target="_blank" rel="noreferrer" className="btn-secondary text-sm">
+          <button type="button" onClick={refresh} className="btn-secondary text-sm">
+            🔄 Actualiser
+          </button>
+          <Link to="/tro" className="btn-primary text-sm">
+            $TRO / Buy
+          </Link>
+          <a
+            href={`${XEXCHANGE_APP}/farms`}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-secondary text-sm"
+          >
             xExchange
           </a>
         </div>
       </div>
 
-      {/* Official TRO pool from config — not only wallet LP tokens */}
+      <LiaVsUserBanner tone="protocol" />
+
       {pool && (
         <div className="card mb-6 border-purple-500/25 bg-purple-500/5">
-          <h2 className="text-lg font-bold mb-3">📌 Pool {pool.pair} — {pool.dex}</h2>
+          <h2 className="text-lg font-bold mb-3">
+            📌 Pool {pool.pair} — {pool.dex}
+          </h2>
           <p className="text-xs mono text-gray-500 mb-4 break-all">{pool.address}</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
             <div className="rounded-xl bg-[#111118] p-3">
@@ -194,13 +227,12 @@ export default function LPPoolsPage() {
             <div className="rounded-xl bg-[#111118] p-3">
               <p className="text-[10px] uppercase text-gray-500">TVL est. (2× EGLD)</p>
               <p className="font-bold text-green-400">
-                {poolTvlUsd != null ? `$${poolTvlUsd.toLocaleString('fr-FR', { maximumFractionDigits: 0 })}` : '—'}
+                {poolTvlUsd != null
+                  ? `$${poolTvlUsd.toLocaleString('fr-FR', { maximumFractionDigits: 0 })}`
+                  : '—'}
               </p>
             </div>
           </div>
-          <p className="text-xs text-gray-500 mb-3">
-            Reserves lues via API MultiversX (balance compte pool). Pour le prix mid exact, utiliser DexScreener.
-          </p>
           <div className="flex flex-wrap gap-2">
             {pool.dexscreener && (
               <a href={pool.dexscreener} target="_blank" rel="noreferrer" className="btn-primary text-xs">
@@ -226,36 +258,36 @@ export default function LPPoolsPage() {
         <>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
             <div className="card">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">LP Positions (wallet)</p>
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">LP (wallet LIA)</p>
               <p className="text-2xl font-black">{lpTokens.length}</p>
               <p className="text-sm text-gray-400 mt-1">${totalLp.toFixed(2)} USD</p>
             </div>
             <div className="card">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Farm Positions</p>
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Farm</p>
               <p className="text-2xl font-black">{farmTokens.length}</p>
               <p className="text-sm text-gray-400 mt-1">${totalFarm.toFixed(2)} USD</p>
             </div>
             <div className="card">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Total DeFi wallet</p>
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Total DeFi LIA</p>
               <p className="text-2xl font-black text-purple-400">${totalDefi.toFixed(2)}</p>
               <p className="text-xs text-gray-500 mt-1">
-                {totalEsdtUsd > 0 ? `${((totalDefi / totalEsdtUsd) * 100).toFixed(1)}% du portfolio` : ''}
+                {totalEsdtUsd > 0 ? `${((totalDefi / totalEsdtUsd) * 100).toFixed(1)}% ESDT LIA` : ''}
               </p>
             </div>
           </div>
 
           <CategorySection
-            title="LP Tokens (Liquidité du wallet LIA)"
+            title="LP Tokens (LIA)"
             icon="💧"
             tokens={lpTokens}
-            emptyText="Aucun LP token dans le wallet LIA — la pool OneDex ci-dessus peut quand même avoir de la liquidité externe."
+            emptyText="Aucun LP dans le wallet LIA — la pool publique ci-dessus peut avoir de la liquidité externe."
           />
 
           <CategorySection
-            title="Farm / Staking Tokens"
+            title="Farm / Staking Tokens (LIA)"
             icon="🌾"
             tokens={farmTokens}
-            emptyText="Aucun farm token détecté dans le wallet de LIA"
+            emptyText="Aucun farm token LIA"
           />
 
           <div className="card">
@@ -265,11 +297,25 @@ export default function LPPoolsPage() {
                 { href: `${XEXCHANGE_APP}/swap`, label: 'Swap', icon: '🔄' },
                 { href: `${XEXCHANGE_APP}/pools`, label: 'Pools', icon: '💧' },
                 { href: `${XEXCHANGE_APP}/farms`, label: 'Farms', icon: '🌾' },
-                { href: `${XEXCHANGE_APP}/swap/USDC-c76f1f/TRO-94c925`, label: 'Buy $TRO', icon: '🎨' },
+                {
+                  href: `${XEXCHANGE_APP}/swap/USDC-c76f1f/TRO-94c925`,
+                  label: 'Buy $TRO',
+                  icon: '🎨',
+                },
                 { href: 'https://onedex.app', label: 'OneDex', icon: '🟠' },
-                { href: `https://explorer.multiversx.com/accounts/${WALLET}`, label: 'Explorer Wallet', icon: '🔍' },
+                {
+                  href: `https://explorer.multiversx.com/accounts/${WALLET}`,
+                  label: 'Explorer LIA',
+                  icon: '🔍',
+                },
               ].map(l => (
-                <a key={l.href} href={l.href} target="_blank" rel="noreferrer" className="btn-secondary text-sm text-center">
+                <a
+                  key={l.href}
+                  href={l.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary text-sm text-center"
+                >
                   {l.icon} {l.label}
                 </a>
               ))}
