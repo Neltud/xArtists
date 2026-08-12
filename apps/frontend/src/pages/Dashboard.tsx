@@ -97,7 +97,7 @@ export default function Dashboard() {
 
       <GSNBanner />
 
-      <AdSlot slotId="home_hero" />
+      <AdSlot id="home_hero" />
 
       <ExplainCards />
 

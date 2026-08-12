@@ -6,7 +6,9 @@ import MarketplaceActivity from '../components/MarketplaceActivity'
 import AdSlot from '../components/AdSlot'
 import TreasuryBanner from '../components/TreasuryBanner'
 import ScStatusBanner from '../components/ScStatusBanner'
+import TxCapabilityBanner from '../components/TxCapabilityBanner'
 import VirtualNftGrid from '../components/VirtualNftGrid'
+import PageGuide from '../components/PageGuide'
 import { canListBuyNft } from '../config/scStatus'
 import {
   type NFT,
@@ -146,6 +148,8 @@ export default function Marketplace() {
 
   return (
     <div className="animate-fade-in">
+      <PageGuide page="marketplace" />
+
       <section className="relative mb-6 overflow-hidden rounded-3xl border border-[#2a2a3a] bg-gradient-to-br from-[#15151f] via-[#12121a] to-[#0a0a0f] p-6 sm:p-10">
         <div className="relative">
           <span className="inline-flex items-center gap-2 rounded-full border border-[#2a2a3a] bg-white/5 px-3 py-1 text-xs text-gray-300">
@@ -177,6 +181,7 @@ export default function Marketplace() {
       </section>
 
       <ScStatusBanner />
+      <TxCapabilityBanner />
 
       {!marketLive && (
         <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-100">
@@ -200,7 +205,8 @@ export default function Marketplace() {
           />
           {listingIdFromIndex != null && (
             <p className="text-xs text-purple-300 mt-2">
-              Listing ID indexé : <strong>{listingIdFromIndex}</strong> (saisie manuelle encore requise sans index complet)
+              Listing ID indexé : <strong>{listingIdFromIndex}</strong> (saisie manuelle encore requise
+              sans index complet)
             </p>
           )}
         </div>
@@ -259,9 +265,7 @@ export default function Marketplace() {
           threshold={48}
           estimateRowHeight={280}
           getKey={nft => nft.identifier}
-          renderItem={nft => (
-            <NFTCard nft={nft} onOpen={openNft} marketLive={marketLive} />
-          )}
+          renderItem={nft => <NFTCard nft={nft} onOpen={openNft} marketLive={marketLive} />}
         />
       )}
 
@@ -317,10 +321,6 @@ function NFTCard({
   const img = nftImageUrl(nft)
   const stop = (e: React.MouseEvent, a: MarketAction) => {
     e.stopPropagation()
-    if (a === 'offer') {
-      onOpen(nft, 'offer')
-      return
-    }
     onOpen(nft, a)
   }
   return (
