@@ -42,7 +42,7 @@ export default function Header() {
     const deep = sdkDappConfig.customNetworkConfig.walletConnectDeepLink
     window.open(deep, '_blank', 'noopener,noreferrer')
     setConnectError(
-      'xPortal opened. For full QR WalletConnect, use Web Wallet (recommended) — never the LIA protocol wallet.'
+      'xPortal ouvert. Pour QR WalletConnect complet : Web Wallet recommandé — jamais le wallet protocole LIA.'
     )
   }
 
@@ -57,31 +57,32 @@ export default function Header() {
       if (provider?.getAddress) {
         const addr = await provider.getAddress()
         const res = connect(addr, 'defi_wallet')
-        if (!res.ok) setConnectError(res.error || 'Connect failed')
+        if (!res.ok) setConnectError(res.error || 'Connexion échouée')
         else setShowWalletModal(false)
         return
       }
       setConnectError(
-        'DeFi Wallet extension not detected. Install MultiversX DeFi Wallet, or use Web Wallet.'
+        'Extension DeFi Wallet non détectée. Installe MultiversX DeFi Wallet, ou utilise Web Wallet.'
       )
     } catch (e) {
-      setConnectError(e instanceof Error ? e.message : 'Extension error')
+      setConnectError(e instanceof Error ? e.message : 'Erreur extension')
     }
   }
 
   const handleManual = () => {
     setConnectError('')
     if (!isValidErd(manualAddr)) {
-      setConnectError('Invalid erd1… address')
+      setConnectError('Adresse erd1… invalide')
       return
     }
     if (manualAddr.trim().toLowerCase() === LIA_WALLET.toLowerCase()) {
-      setConnectError('Cannot use LIA protocol wallet as user. Connect your own wallet.')
+      setConnectError(
+        'Impossible d’utiliser le wallet protocole LIA. Connecte ton propre wallet.'
+      )
       return
     }
-    // Explicit paste_readonly — cannot List/Buy/Bid
     const res = connect(manualAddr.trim(), 'paste_readonly')
-    if (!res.ok) setConnectError(res.error || 'Failed')
+    if (!res.ok) setConnectError(res.error || 'Échec')
     else {
       setShowWalletModal(false)
       setManualAddr('')
@@ -128,18 +129,20 @@ export default function Header() {
             </span>
             {connected ? (
               <button
+                type="button"
                 onClick={disconnect}
                 className={`px-2 sm:px-3 py-1.5 rounded-lg bg-[#16161f] border text-[10px] sm:text-xs mono transition-colors min-h-[40px] ${
                   method === 'paste_readonly'
                     ? 'border-amber-500/40 text-amber-300 hover:border-red-500/40'
                     : 'border-green-500/30 text-green-400 hover:border-red-500/40 hover:text-red-400'
                 }`}
-                title={`${address} · ${method || '—'} — click to disconnect`}
+                title={`${address} · ${method || '—'} — clic pour déconnecter`}
               >
                 {method === 'paste_readonly' ? '👁' : '✅'} {shortAddress}
               </button>
             ) : (
               <button
+                type="button"
                 onClick={() => {
                   setShowWalletModal(true)
                   setConnectError('')
@@ -225,10 +228,10 @@ export default function Header() {
             onClick={e => e.stopPropagation()}
             style={{ paddingBottom: 'calc(1.25rem + env(safe-area-inset-bottom, 0px))' }}
           >
-            <h2 className="text-xl font-bold mb-2">Connect wallet</h2>
+            <h2 className="text-xl font-bold mb-2">Connecter le wallet</h2>
             <p className="text-xs text-zinc-500 mb-4">
-              Your wallet only — never the LIA protocol address. Paste erd1 = <strong>read-only</strong>{' '}
-              (no List/Buy).
+              <strong className="text-zinc-300">Ton</strong> wallet uniquement — jamais l’adresse protocole
+              LIA. Coller erd1 = <strong>lecture seule</strong> (pas de List/Buy).
             </p>
 
             <button
@@ -239,7 +242,7 @@ export default function Header() {
               <span className="text-3xl">🌐</span>
               <div className="text-left">
                 <div className="font-semibold">Web Wallet</div>
-                <div className="text-sm text-gray-400">wallet.multiversx.com — recommended for TX</div>
+                <div className="text-sm text-gray-400">wallet.multiversx.com — recommandé pour TX</div>
               </div>
             </button>
 
@@ -251,7 +254,7 @@ export default function Header() {
               <span className="text-3xl">📱</span>
               <div className="text-left">
                 <div className="font-semibold">xPortal</div>
-                <div className="text-sm text-gray-400">Open app / deep link</div>
+                <div className="text-sm text-gray-400">Ouvrir l’app / deep link</div>
               </div>
             </button>
 
@@ -262,14 +265,14 @@ export default function Header() {
             >
               <span className="text-3xl">🦊</span>
               <div className="text-left">
-                <div className="font-semibold">DeFi Wallet extension</div>
-                <div className="text-sm text-gray-400">Browser extension — best for micro List/Buy</div>
+                <div className="font-semibold">Extension DeFi Wallet</div>
+                <div className="text-sm text-gray-400">Idéal pour micro List/Buy</div>
               </div>
             </button>
 
             <div className="mt-2">
               <p className="text-xs text-amber-400/90 mb-2">
-                Or paste erd1 — <strong>read-only</strong> (cannot sign List/Buy/Bid)
+                Ou coller erd1 — <strong>lecture seule</strong> (ne signe pas List/Buy/Bid)
               </p>
               <input
                 className="w-full p-3 rounded-lg bg-[#111118] border border-[#2a2a3a] text-xs mono text-gray-300 focus:outline-none focus:border-purple-500"
@@ -278,11 +281,13 @@ export default function Header() {
                 onChange={e => setManualAddr(e.target.value)}
               />
               <button type="button" onClick={handleManual} className="btn-secondary w-full mt-2 text-sm">
-                Use address (read-only)
+                Utiliser l’adresse (lecture seule)
               </button>
             </div>
 
-            {connectError && <p className="text-xs text-amber-400 mt-3 leading-relaxed">{connectError}</p>}
+            {connectError && (
+              <p className="text-xs text-amber-400 mt-3 leading-relaxed">{connectError}</p>
+            )}
 
             <button
               type="button"
@@ -292,7 +297,7 @@ export default function Header() {
               }}
               className="btn-secondary w-full mt-3 text-sm"
             >
-              Cancel
+              Annuler
             </button>
           </div>
         </div>
