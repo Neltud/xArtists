@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
 import InfoTip from '../components/InfoTip'
+import LiaVsUserBanner from '../components/LiaVsUserBanner'
 import { HELP } from '../content/helpCopy'
 
 const TABS = ['TRO', 'NFT', 'Rewards', 'Help'] as const
@@ -13,17 +15,24 @@ export default function StakingPage() {
       <header>
         <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2">
           Staking
-          <InfoTip tone="warn">{HELP.liaVsUser.body}</InfoTip>
+          <InfoTip k="liaVsUser" />
         </h1>
         <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
-          Lock $TRO or stake xArtists NFTs to earn rewards and voting power. Sign with your own wallet (xPortal / Web Wallet) — never the LIA protocol address.
+          Lock $TRO ou stake NFT xArtists — wallet <strong className="text-green-300">utilisateur</strong>{' '}
+          uniquement. SC staking non live = UI informative.
         </p>
       </header>
 
       <PageGuide page="staking" />
+      <LiaVsUserBanner tone="user" />
+
+      <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-xs text-amber-100/90">
+        Endpoints stake / unstake / claim <strong>désactivés</strong> tant que le SC staking n’est pas
+        déployé + codeHash. Pas de faux bouton qui simule un envoi.
+      </div>
 
       <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
-        {TABS.map((t) => (
+        {TABS.map(t => (
           <button
             key={t}
             type="button"
@@ -39,13 +48,21 @@ export default function StakingPage() {
 
       {tab === 'TRO' && (
         <div className="card space-y-4">
-          <h2 className="font-semibold">$TRO staking modes</h2>
+          <h2 className="font-semibold">$TRO staking (design)</h2>
           <ul className="text-sm text-zinc-400 space-y-2">
-            <li><strong className="text-zinc-200">Flexible</strong> — unstake anytime</li>
-            <li><strong className="text-zinc-200">Bonded 30 / 90 days</strong> — higher APR</li>
-            <li><strong className="text-zinc-200">Vote-locked</strong> — DAO voting power</li>
+            <li>
+              <strong className="text-zinc-200">Flexible</strong> — unstake anytime
+            </li>
+            <li>
+              <strong className="text-zinc-200">Bonded 30 / 90 j</strong> — APR plus élevé (policy)
+            </li>
+            <li>
+              <strong className="text-zinc-200">Vote-locked</strong> — pouvoir DAO
+            </li>
           </ul>
-          <p className="text-xs text-zinc-600">Connect wallet, then stake via on-chain txs (sdk-dapp next).</p>
+          <button type="button" disabled className="btn-secondary text-sm opacity-50 cursor-not-allowed">
+            Stake $TRO — SC bientôt
+          </button>
         </div>
       )}
 
@@ -53,23 +70,38 @@ export default function StakingPage() {
         <div className="card space-y-4">
           <h2 className="font-semibold">NFT staking</h2>
           <p className="text-sm text-zinc-400">
-            Stake NFTs from xArtists collections to earn rewards. Set boosts may apply.
+            Stake collections xArtists pour rewards / boost. Activation post-deploy SC.
           </p>
+          <Link to="/gallery" className="btn-secondary text-sm inline-block">
+            Voir la galerie →
+          </Link>
         </div>
       )}
 
       {tab === 'Rewards' && (
         <div className="card space-y-3">
           <h2 className="font-semibold">Rewards report</h2>
-          <p className="text-sm text-zinc-400">RewardsAgent paper report will appear in data/rewards_report.json when the Vellum workflow runs.</p>
+          <p className="text-sm text-zinc-400">
+            Rapport paper Vellum → <code className="text-[10px]">data/rewards_report.json</code> quand le
+            workflow tourne.
+          </p>
         </div>
       )}
 
       {tab === 'Help' && (
         <div className="card text-sm text-zinc-400 space-y-2">
-          <p><strong className="text-zinc-200">Gas:</strong> keep some EGLD for fees.</p>
-          <p><strong className="text-zinc-200">Risk:</strong> contracts and rewards are not guaranteed.</p>
-          <p><strong className="text-zinc-200">Wallet:</strong> use xPortal / Web Wallet — never paste a PEM in the public UI.</p>
+          <p>
+            <strong className="text-zinc-200">Gas :</strong> garder de l’EGLD.
+          </p>
+          <p>
+            <strong className="text-zinc-200">Risque :</strong> rewards non garantis.
+          </p>
+          <p>
+            <strong className="text-zinc-200">Wallet :</strong> {HELP.liaVsUser.body}
+          </p>
+          <Link to="/dao" className="text-purple-300 underline text-xs">
+            DAO / policy →
+          </Link>
         </div>
       )}
     </div>

@@ -9,6 +9,7 @@ import AgentPacksGrid from '../components/AgentPacksGrid'
 import AgentPackJourney from '../components/AgentPackJourney'
 import RwaAssetsStrip from '../components/RwaAssetsStrip'
 import PackCheckout from '../components/PackCheckout'
+import PageGuide from '../components/PageGuide'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
 
@@ -52,8 +53,6 @@ interface ForecastData {
     live_feed?: string
     agents_directory?: string
   }
-  contracts?: Record<string, string>
-  token?: { identifier: string; explorer: string }
 }
 
 const DOMAIN_ICON: Record<string, string> = {
@@ -108,6 +107,8 @@ export default function Agents() {
 
   return (
     <div className="animate-fade-in pb-20 md:pb-0">
+      <PageGuide page="agents" />
+
       <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black">🧠 Agents</h1>
@@ -122,6 +123,12 @@ export default function Agents() {
         </Link>
       </div>
 
+      <div className="mb-6 rounded-xl border border-zinc-700/50 bg-zinc-900/40 px-4 py-3 text-[11px] text-zinc-400 leading-relaxed">
+        <strong className="text-zinc-200">3 produits distincts</strong> — (1) Access packs xArtists à
+        acheter · (2) sous-agents créés via intent (corridor 5–25 €) · (3) GreenSmoke ={' '}
+        <em>prévisions externes</em>, pas à vendre. Buy on-chain agents = SC marketplace seulement.
+      </div>
+
       <div className="mb-6">
         <TreasuryBanner />
       </div>
@@ -129,7 +136,7 @@ export default function Agents() {
       <section className="mb-10">
         <h2 className="text-lg font-bold mb-1 text-purple-200">① Access packs · catalogue</h2>
         <p className="text-xs text-gray-500 mb-4">
-          Prix = intensité de signaux (18 / 12 / 8 €). Fiat checkout → membership NFT. Pas un fonds.
+          Prix = intensité de signaux (18 / 12 / 8 €). Fiat → membership NFT. Pas un fonds.
         </p>
         <AgentsDeployStatus />
         <AgentsMarketplacePanel />
@@ -151,7 +158,9 @@ export default function Agents() {
 
       <section className="mb-10">
         <h2 className="text-lg font-bold mb-1 text-fuchsia-200">①bis Créer un sous-agent (intent)</h2>
-        <p className="text-xs text-gray-500 mb-4">Prompt → intent Vellum · corridor 5–25 € · ≠ GSN.</p>
+        <p className="text-xs text-gray-500 mb-4">
+          Prompt → intent Vellum · corridor 5–25 € · <strong>≠ GSN</strong>.
+        </p>
         <CreateSubAgentForm />
       </section>
 
@@ -165,7 +174,9 @@ export default function Agents() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
           <div>
             {data?.updated_at && (
-              <p className="text-xs text-gray-500">MAJ {new Date(data.updated_at).toLocaleString('fr-FR')}</p>
+              <p className="text-xs text-gray-500">
+                MAJ {new Date(data.updated_at).toLocaleString('fr-FR')}
+              </p>
             )}
           </div>
           <div className="flex gap-2">
@@ -207,7 +218,11 @@ export default function Agents() {
         )}
 
         {loading && !data && (
-          <div className="grid gap-4 mb-4">{[1, 2].map(i => <div key={i} className="card h-24 animate-pulse" />)}</div>
+          <div className="grid gap-4 mb-4">
+            {[1, 2].map(i => (
+              <div key={i} className="card h-24 animate-pulse" />
+            ))}
+          </div>
         )}
         {error && <div className="card border-red-500/30 text-red-400 mb-4">GSN feed : {error}</div>}
 
@@ -224,7 +239,7 @@ export default function Agents() {
                     </p>
                   </div>
                 </div>
-                <span className="badge-gray text-[10px]">externe</span>
+                <span className="badge-gray text-[10px]">externe · pas à vendre</span>
               </div>
               <div className="space-y-2">
                 {agent.forecasts.map((f, i) => (
@@ -246,9 +261,7 @@ export default function Agents() {
         </div>
       </section>
 
-      <p className="text-xs text-gray-600 text-center">
-        docs/ACCESS_PACK_CHECKOUT.md · Model C · paper only
-      </p>
+      <p className="text-xs text-gray-600 text-center">docs/ACCESS_PACK_CHECKOUT.md · Model C · paper only</p>
     </div>
   )
 }

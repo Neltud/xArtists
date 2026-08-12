@@ -4,6 +4,7 @@ import { SOUL, SOUL_ACTIONS, SOUL_POLICY, type SoulActionId } from '../config/so
 import { LINKS } from '../config/links'
 import PreMainnetBanner from '../components/PreMainnetBanner'
 import { PRE_MAINNET_MODULES } from '../config/preMainnet'
+import LiaVsUserBanner from '../components/LiaVsUserBanner'
 
 const mod = PRE_MAINNET_MODULES.find(m => m.id === 'soul')
 
@@ -22,7 +23,12 @@ function liaDecision(opts: {
   wantCrossChain: boolean
 }): { action: SoulActionId; ok: boolean; reason: string; amountUsd: number } {
   if (opts.defense) {
-    return { action: 'skip', ok: false, reason: 'DEFENSE / RISK_OFF — aucun nouveau risque Soul', amountUsd: 0 }
+    return {
+      action: 'skip',
+      ok: false,
+      reason: 'DEFENSE / RISK_OFF — aucun nouveau risque Soul',
+      amountUsd: 0,
+    }
   }
   if (opts.wantCrossChain) {
     return {
@@ -33,7 +39,12 @@ function liaDecision(opts: {
     }
   }
   if (opts.amountUsd < SOUL_POLICY.minAmountUsd) {
-    return { action: 'skip', ok: false, reason: `Montant < ${SOUL_POLICY.minAmountUsd} USD`, amountUsd: opts.amountUsd }
+    return {
+      action: 'skip',
+      ok: false,
+      reason: `Montant < ${SOUL_POLICY.minAmountUsd} USD`,
+      amountUsd: opts.amountUsd,
+    }
   }
   if (opts.wantBorrow) {
     return {
@@ -76,27 +87,28 @@ export default function SoulTestnetPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-in pb-24 md:pb-8">
       <PreMainnetBanner module={mod} />
+      <LiaVsUserBanner tone="protocol" />
 
       <header>
         <h1 className="text-2xl sm:text-3xl font-black tracking-tight">Soul Protocol</h1>
         <p className="text-zinc-400 text-sm mt-2">
-          Couche de liquidité <strong className="text-amber-200">cross-chain</strong> (Aave / Compound /
-          Venus…) — statut{' '}
-          <span className="text-amber-300 font-medium">{SOUL.status}</span>. Settlement xArtists ={' '}
-          <strong className="text-purple-300">MultiversX</strong>
+          Couche liquidité <strong className="text-amber-200">cross-chain</strong> (Aave / Compound /
+          Venus…) — statut <span className="text-amber-300 font-medium">{SOUL.status}</span>. Settlement
+          xArtists = <strong className="text-purple-300">MultiversX</strong>
           {SOUL.mxNative ? ' + marchés Soul natifs' : ' (pas de marché Soul natif MVX aujourd’hui)'}.
         </p>
         <p className="text-zinc-500 text-xs mt-2">{SOUL.disclaimer}</p>
+        <p className="text-[11px] text-red-300/90 mt-2 font-medium">
+          Aucune TX user · aucun dépôt Connect sur Soul experimental · Hatom = lending MVX de prod.
+        </p>
       </header>
 
-      {/* Process lending / borrowing */}
       <section className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 sm:p-5">
         <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-1">
-          Processus lend / borrow (docs.soul.io)
+          Processus lend / borrow
         </h2>
         <p className="text-xs text-zinc-500 mb-4">
-          Ordre conceptuel Controller / sToken. UI = éducation + paper LIA —{' '}
-          <strong className="text-red-300/90">aucune TX user</strong>.
+          Ordre conceptuel Controller / sToken. UI = éducation + paper LIA.
         </p>
         <ol className="space-y-3">
           {SOUL_ACTIONS.map(a => (
@@ -116,9 +128,13 @@ export default function SoulTestnetPage() {
                 </span>
                 <span className="flex gap-1 text-[10px]">
                   {a.liaPaper ? (
-                    <span className="rounded-full bg-teal-500/20 text-teal-300 px-2 py-0.5">LIA paper OK</span>
+                    <span className="rounded-full bg-teal-500/20 text-teal-300 px-2 py-0.5">
+                      LIA paper OK
+                    </span>
                   ) : (
-                    <span className="rounded-full bg-zinc-700 text-zinc-400 px-2 py-0.5">LIA paper skip</span>
+                    <span className="rounded-full bg-zinc-700 text-zinc-400 px-2 py-0.5">
+                      LIA paper skip
+                    </span>
                   )}
                   <span
                     className={`rounded-full px-2 py-0.5 ${
@@ -137,20 +153,14 @@ export default function SoulTestnetPage() {
             </li>
           ))}
         </ol>
-        <p className="text-[11px] text-zinc-500 mt-3">
-          Base protocols : {SOUL.baseProtocols.join(' · ')}. Cross-chain = cluster Controller + messagerie —
-          pas un simple bridge de tokens.
-        </p>
       </section>
 
-      {/* LIA decisions */}
       <section className="rounded-xl border border-purple-500/25 bg-purple-950/20 p-4 sm:p-5">
         <h2 className="text-sm font-bold uppercase tracking-wider text-purple-300 mb-2">
           Comment LIA décide (SoulRouter)
         </h2>
         <p className="text-xs text-zinc-400 mb-4">
-          Source : <code className="text-[10px]">lia/defi/soul_routes.py</code> · aligné{' '}
-          <code className="text-[10px]">docs/LIA_HATOM_SOUL_YIELD.md</code>
+          <code className="text-[10px]">lia/defi/soul_routes.py</code> · paper only
         </p>
 
         <div className="grid sm:grid-cols-2 gap-3 mb-4">
@@ -201,41 +211,32 @@ export default function SoulTestnetPage() {
           <p className="font-mono text-purple-200">{decision.action}</p>
           <p className="text-xs text-zinc-300 mt-1">{decision.reason}</p>
           {decision.ok && (
-            <p className="text-xs text-teal-300 mt-1">amount_usd ≈ {decision.amountUsd.toFixed(2)} · paper=true</p>
+            <p className="text-xs text-teal-300 mt-1">
+              amount_usd ≈ {decision.amountUsd.toFixed(2)} · paper=true
+            </p>
           )}
         </div>
 
         <ul className="mt-4 text-xs text-zinc-400 space-y-1.5 list-disc list-inside">
           <li>
-            <strong className="text-zinc-200">Priorité</strong> : Hatom (MVX) avant Soul pour yield exécutable
+            <strong className="text-zinc-200">Priorité</strong> : Hatom (MVX) avant Soul
           </li>
           <li>
-            <strong className="text-zinc-200">auto_route</strong> : SUPPLY seulement, ×{' '}
-            {SOUL_POLICY.autoSupplyFraction} du montant, min HF open {SOUL_POLICY.minHfOpen},{' '}
-            <em>0</em> leverage loop
+            <strong className="text-zinc-200">auto_route</strong> : SUPPLY seulement · 0 leverage loop
           </li>
           <li>
-            <strong className="text-zinc-200">DEFENSE</strong> / fear / DD → SKIP (même logique Guardian)
+            <strong className="text-zinc-200">DEFENSE</strong> → SKIP (Guardian)
           </li>
           <li>
-            <strong className="text-zinc-200">mvx_agent</strong> : strategy <code>SOUL</code> →{' '}
-            <code>executable=False</code> jusqu’aux gates mainnet
-          </li>
-          <li>
-            Wallet LIA ops uniquement pour futurs intents ; <strong>jamais</strong> wallet user Connect pour
-            Soul experimental
+            Wallet <strong>LIA ops</strong> seulement pour futurs intents — jamais Connect user
           </li>
         </ul>
       </section>
 
-      {/* Paper HF simulator */}
       <section className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 sm:p-5">
         <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-2">
           Simulateur HF (pédagogique)
         </h2>
-        <p className="text-[11px] text-zinc-500 mb-3">
-          Formule illustrative : HF ≈ (collateral × liquidationThreshold) / debt — pas les params live Soul.
-        </p>
         <div className="grid grid-cols-2 gap-3 mb-3">
           <label className="text-xs text-zinc-400">
             Collateral USD
@@ -262,12 +263,8 @@ export default function SoulTestnetPage() {
             {hf >= 999 ? 'N/A (no debt)' : hf.toFixed(2)}
           </span>
         </p>
-        <p className="text-[11px] text-zinc-500 mt-1">
-          LIA n’ouvre pas de borrow Soul tant que HF policy &lt; {SOUL_POLICY.minHfOpen} ou venue experimental.
-        </p>
       </section>
 
-      {/* Mainnet anticipation */}
       <section className="rounded-xl border border-zinc-800 p-4 sm:p-5">
         <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-400 mb-2">
           Anticipation mainnet ({gatesDone}/{SOUL.mainnetGates.length} gates)
@@ -277,25 +274,6 @@ export default function SoulTestnetPage() {
             <li key={g.id} className="flex gap-2 text-xs text-zinc-300">
               <span>{g.done ? '✅' : '⬜'}</span>
               <span>{g.label}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="text-[11px] text-amber-200/80 mt-3">
-          Même après mainnet Soul public : xArtists n’active les fonds user / LIA live Soul que si tous les
-          gates + flag ops explicite. Hatom reste le lending MVX de production.
-        </p>
-      </section>
-
-      {/* Testnets ref */}
-      <section className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
-        <h2 className="text-sm uppercase tracking-wider text-zinc-500 mb-3">
-          Réseaux de référence (test) — pas de dépôt xArtists
-        </h2>
-        <ul className="space-y-2 text-sm">
-          {SOUL.testnets.map(n => (
-            <li key={n.id} className="flex justify-between border-b border-zinc-800 pb-1">
-              <span>{n.name}</span>
-              <span className="font-mono text-zinc-500">chainId {n.id}</span>
             </li>
           ))}
         </ul>
@@ -316,16 +294,6 @@ export default function SoulTestnetPage() {
         >
           docs.soul.io ↗
         </a>
-        {SOUL.appUrl && (
-          <a
-            href={SOUL.appUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex justify-center rounded-lg border border-zinc-700 px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800"
-          >
-            app.soul.io ↗ (externe)
-          </a>
-        )}
         <a
           href={LINKS.explorer}
           target="_blank"
