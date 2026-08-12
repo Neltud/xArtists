@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useMultiversX } from '../hooks/useMultiversX'
 import LiaBoardPanel from '../components/LiaBoardPanel'
 import GuardianStatusPanel from '../components/GuardianStatusPanel'
@@ -74,6 +75,7 @@ export default function Trading() {
   const pools = bonData?.xexchange_pools ?? []
   const winningPair = bonData?.winning_pair ?? 'TRO/WEGLD'
   const recommendedPair = bonData?.recommended_pair ?? 'TRO/WEGLD'
+  const liveFlag = Boolean((liaStatus as { live_trading?: boolean } | null)?.live_trading)
 
   return (
     <div className="animate-fade-in">
@@ -82,10 +84,28 @@ export default function Trading() {
       <div className="mb-6">
         <h1 className="text-3xl font-black">⚡ Trading Terminal LIA</h1>
         <p className="text-gray-500 mt-1">
-          Board multi-venues · arb block-time · séries $10 · trailing · Guardian first{' '}
+          Board multi-venues · arb block-time · trailing · Guardian first{' '}
           <InfoTip k="live_trading" />
           {dataTs ? ` · data ${new Date(dataTs).toLocaleString('fr-FR')}` : ''}
         </p>
+      </div>
+
+      <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+        <strong>Paper / protocole LIA</strong> — ce n’est pas ton compte de trading.
+        {liveFlag ? (
+          <span className="text-red-200"> Flag live détecté dans le status JSON — vérifier ops.</span>
+        ) : (
+          <span> LIA_LIVE_TRADING=0 · aucun ordre sur tes fonds.</span>
+        )}{' '}
+        Access packs (Model C) →{' '}
+        <Link to="/my-packs" className="underline text-amber-50">
+          My Packs
+        </Link>
+        . Book LIA →{' '}
+        <Link to="/portfolio" className="underline text-amber-50">
+          Portfolio
+        </Link>
+        .
       </div>
 
       <ScStatusBanner />
@@ -105,8 +125,8 @@ export default function Trading() {
             </div>
           </div>
           <div className="mt-4 p-3 rounded-lg bg-[#111118] text-xs text-gray-400">
-            <strong className="text-gray-300">LIA_LIVE_TRADING=0</strong> — pas d’envoi PEM. Dashboard =
-            JSON GitHub / Pages.
+            <strong className="text-gray-300">Paper board</strong> — JSON GitHub / Pages. Exécution
+            live seulement après micro-preuves + flag ops explicite.
           </div>
         </div>
 
@@ -155,7 +175,10 @@ export default function Trading() {
       <div className="card mb-8">
         <h2 className="text-lg font-bold mb-3">Trades paper (JSON)</h2>
         {trades.length === 0 ? (
-          <p className="text-sm text-gray-500">Aucun trade publié — Vellum board / pipeline.</p>
+          <p className="text-sm text-gray-500">
+            Aucun trade publié —{' '}
+            <code className="text-[10px]">python -m lia.board.publish</code> / Vellum.
+          </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -189,7 +212,10 @@ export default function Trading() {
         ) : (
           <ul className="text-sm space-y-2">
             {trails.map((tr, i) => (
-              <li key={tr.id || i} className="flex justify-between gap-2 border-b border-[#2a2a3a]/30 py-1">
+              <li
+                key={tr.id || i}
+                className="flex justify-between gap-2 border-b border-[#2a2a3a]/30 py-1"
+              >
                 <span>{tr.token || tr.id}</span>
                 <span className="mono text-gray-400">
                   stop {tr.stop ?? '—'} · hwm {tr.hwm ?? '—'}
