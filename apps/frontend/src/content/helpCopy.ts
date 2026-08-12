@@ -22,11 +22,11 @@ export const HELP = {
   },
   scStatus: {
     title: 'Smart contracts',
-    body: 'Marketplace NFT et Agents Marketplace : code source prêt (pause, CEI, fee cap, 2-step ownership). agents_marketplace adresse = null jusqu’au deploy mainnet + codeHash.',
+    body: 'Marketplace NFT et Agents Marketplace : code source prêt. agents_marketplace = null jusqu’au deploy mainnet + codeHash. List/Buy bloqués tant que codeHash OK absent.',
   },
   mainnetOnly: {
     title: 'Mainnet only',
-    body: 'Builds et chemins de deploy forcés mainnet (chainId 1). Devnet désactivé côté scripts opérateurs.',
+    body: 'Builds et chemins de deploy forcés mainnet (chainId 1).',
   },
   troUtility: {
     title: '$TRO',
@@ -46,17 +46,18 @@ export type PageGuideKey =
   | 'staking'
   | 'tro'
   | 'hatom'
+  | 'my-packs'
 
 export const PAGE_GUIDE: Record<
   PageGuideKey,
   { title: string; bullets: string[]; warn?: string }
 > = {
   dashboard: {
-    title: 'Dashboard',
+    title: 'Home',
     bullets: [
-      'Vue synthétique LIA (portfolio treasury, guard status, Battle of Nodes).',
-      'Les montants LIA ne sont pas votre solde wallet.',
-      'Actualisez si le bandeau « données périmées » apparaît.',
+      'Hub dApp : persona, dual marketplace (Art + Agents), état SC, Guardian.',
+      'Wallet Connect = session utilisateur. Portfolio = board LIA protocole.',
+      'My Packs = access Model C (paper), pas un dépôt de trading.',
     ],
   },
   trading: {
@@ -64,74 +65,82 @@ export const PAGE_GUIDE: Record<
     bullets: [
       'Signaux Vellum + trailing + historique paper.',
       'Guardian-first : pas d’ordre si risk gate KO.',
-      'Modes : DEFENSE / COMPOUND / MICRO_ARB / MOMENTUM / YIELD…',
       'Live trading désactivé jusqu’à micro-preuve (LIA_LIVE_TRADING=0).',
     ],
     warn: 'Paper / simulation — aucun ordre on-chain automatique sur vos fonds.',
   },
   wallet: {
-    title: 'Wallet (scan LIA treasury)',
+    title: 'Mon wallet (utilisateur)',
     bullets: [
-      'Scan ESDT / Hatom / LP de l’adresse LIA (treasury).',
-      'Pour votre propre wallet : connectez xPortal (bouton Header).',
-      'Hatom health factor et positions yield sont lus en lecture seule.',
+      'Soldes de l’adresse Connect uniquement.',
+      'Jamais le wallet LIA protocole ici.',
+      'Pour treasury LIA → page Portfolio.',
     ],
-    warn: 'Cette page liste le wallet LIA, pas automatiquement le vôtre.',
   },
   portfolio: {
-    title: 'Portfolio',
+    title: 'Portfolio LIA (protocole)',
     bullets: [
-      'Agrégation valeur LIA + positions suivies.',
-      'Séparation claire treasury vs utilisateur une fois wallet connecté.',
-      'Données oracles / API MultiversX + fichiers data/ GitHub.',
+      'Agrégation valeur LIA ops + positions suivies.',
+      'Séparé de /wallet (utilisateur).',
+      'Données oracles / API MultiversX + data/ GitHub.',
     ],
   },
   marketplace: {
     title: 'Marketplace NFT / RWA',
     bullets: [
-      'List / Buy via sdk-dapp lorsque wallet connecté.',
-      'SC marketplace déployé ; fees + royalties capés (≤ 10 %).',
-      'Agents Marketplace : adresse à renseigner après deploy mainnet.',
+      'List / Buy après codeHash marketplace live.',
+      'paste_readonly ne peut pas signer.',
+      'Fees + royalties selon SC.',
     ],
+    warn: 'SC non live = bandeau + pas de faux market.',
   },
   agents: {
     title: 'Agents',
     bullets: [
-      'Catalogue agents LIA + GreenSmoke + Warps.',
-      'List/Buy actions agents dès que SC agents_marketplace est live.',
-      'GSN = prévisions advisory ; packs sub-agents LIA = marketplace séparé.',
+      '3 packs Access : Pulse 18 € · Yield 12 € · Sentinel 8 €.',
+      'GSN = signal only, pas un produit vendu.',
+      'Checkout fiat → membership (Model C) via My Packs.',
     ],
+  },
+  'my-packs': {
+    title: 'My Packs',
+    bullets: [
+      'Access pass membership — Model C.',
+      'Performance affichée = paper router LIA.',
+      'Aucun fonds user tradé pour le pack à ce stade.',
+    ],
+    warn: 'Pas un fonds géré. Pas de deposit trading.',
   },
   dao: {
     title: 'DAO $TRO',
     bullets: [
-      'Gouvernance on-chain (quorum 60 %).',
-      'Staking TRO requis pour voter selon policy contrat.',
+      'Gouvernance (quorum 60 %).',
+      'Vote on-chain seulement si UI + SC branchés — sinon lecture.',
     ],
   },
   gallery: {
     title: 'Gallery',
     bullets: [
       'Collections xArtists mainnet + filtres.',
-      'Phygital / RWA : 1 TRO max pour NFT physique (policy).',
+      'Phygital / RWA : 1 TRO max œuvre physique (à la vente).',
     ],
   },
   staking: {
     title: 'Staking',
-    bullets: ['NFT staking + TRO staking selon contrats déployés.', 'Rewards claim via wallet utilisateur.'],
+    bullets: ['NFT / TRO staking selon contrats déployés.', 'Rewards claim via wallet utilisateur.'],
   },
   tro: {
     title: '$TRO',
     bullets: [
+      'Cap supply 500 000.',
       'Utilité : rewards, staking, DAO, RWA physical claim.',
-      'LIA ne conserve pas de TRO long terme (asset policy redistribute).',
     ],
   },
   hatom: {
     title: 'Hatom / Yield',
     bullets: [
-      'Positions Hatom lues en lecture seule (wallet LIA).',
-      'LIA Yield agent peut allouer selon policy (pas de live sans flag).',
+      'Positions Hatom (lecture) — priorité MVX pour LIA.',
+      'Soul = pre-mainnet séparé.',
     ],
   },
 }

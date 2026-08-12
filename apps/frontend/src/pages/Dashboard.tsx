@@ -42,7 +42,7 @@ export default function Dashboard() {
 
   return (
     <div className="animate-fade-in space-y-6 pb-8">
-      <PageGuide page="home" />
+      <PageGuide page="dashboard" />
 
       <LandingHero />
 
