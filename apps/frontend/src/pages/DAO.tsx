@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMultiversX } from '../hooks/useMultiversX'
 import TreasuryBanner from '../components/TreasuryBanner'
+import PageGuide from '../components/PageGuide'
 import { LINKS } from '../config/links'
 
 const TRO_ID = 'TRO-94c925'
@@ -86,6 +87,8 @@ export default function DAO() {
 
   return (
     <div className="animate-fade-in">
+      <PageGuide page="dao" />
+
       <div className="mb-6">
         <h1 className="text-3xl font-black">🗳️ Gouvernance DAO xArtists</h1>
         <p className="text-gray-500 mt-1">
@@ -94,8 +97,9 @@ export default function DAO() {
       </div>
 
       <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-        <strong>Mode lecture seule (P0 UX).</strong> Pas de bouton « Voter » factice. Holders & supply = API mainnet.
-        Vote on-chain = après ABI + sdk-dapp. $TRO n’est <strong>pas</strong> une share du fonds.
+        <strong>Mode lecture seule (P0 UX).</strong> Pas de bouton « Voter » factice. Holders & supply =
+        API mainnet. Vote on-chain = après ABI + sdk-dapp. $TRO n’est <strong>pas</strong> une share du
+        fonds.
       </div>
 
       <div className="mb-6">
@@ -307,13 +311,19 @@ export default function DAO() {
       <div className="card">
         <h2 className="text-lg font-bold mb-2">Contrats (référence)</h2>
         <p className="text-xs text-red-300/90 mb-4">
-          Audit on-chain : adresses governance / staking = <strong>comptes vides</strong> (0 EGLD, pas de fees). Ne pas
-          y envoyer de fonds tant que codeHash non vérifié.
+          Audit on-chain : adresses governance / staking = <strong>comptes vides</strong> (0 EGLD).
+          Ne pas y envoyer de fonds tant que codeHash non vérifié.
         </p>
         <div className="space-y-2">
           {[
-            { name: 'TRO Governance', addr: 'erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8' },
-            { name: 'NFT Staking', addr: 'erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl' },
+            {
+              name: 'TRO Governance',
+              addr: 'erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8',
+            },
+            {
+              name: 'NFT Staking',
+              addr: 'erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl',
+            },
           ].map(c => (
             <div key={c.addr} className="flex items-center justify-between p-3 rounded-lg bg-[#111118]">
               <div>
