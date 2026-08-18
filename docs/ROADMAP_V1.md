@@ -1,6 +1,6 @@
 # Roadmap V1 xArtists — 7 priorités
 
-**Date :** 17 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
+**Date :** 18 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
 
 Ce document formalise les 7 axes prioritaires issus de l’analyse dApp complète.  
 Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères de done**.
@@ -98,13 +98,13 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ## 7. Alignement Supernova (sub-second finality)
 
-### Contexte (17 août 2026)
-- **Mainnet v1.11.10.0 activé le 6 août** (epoch 2198) — améliorations VM. Réseau **stable J+11**.
-- **Mainnet v1.11.11.0** sorti **10 août** — extra checks miniblocks (pas d’activation epoch). Réseau **stable J+7**.
+### Contexte (18 août 2026)
+- **Mainnet v1.11.10.0 activé le 6 août** (epoch 2198) — améliorations VM. Réseau **stable J+12**.
+- **Mainnet v1.11.11.0** sorti **10 août** — extra checks miniblocks (pas d’activation epoch). Réseau **stable J+8**.
 - Battle of Nodes depuis mars 2026 (>1B tx, ~120k TPS stress).
 - Hardening intensif (rapport 9 août) : intégration tests, guardians, replay historical, transition guards, mini-block pre-fetching proof-driven.
-- Rapport hebdo **16 août** : metablock reference checks (strict inclusion budget), dedup gossip messages (bande passante), cleanup inactive peers + stale acks, perf testing p2p broadcasting.
-- **Target activation Supernova : 10 septembre 2026**.
+- Rapport hebdo **16 août** : metablock reference checks (strict inclusion budget), dedup gossip messages (bande passante), cleanup inactive peers + stale acks, perf testing p2p broadcasting, fuzz coverage, consensus-in-the-loop simulator, chaos testing.
+- Countdown officiel (17 août) : **~27 jours** → target activation Supernova **~10 septembre 2026**.
 
 ### Actions xArtists
 - Préparer gas estimates + UI pour latence ~100–250 ms intra-shard
@@ -121,4 +121,4 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ---
 
-*Mise à jour : 17 août 2026 — Neltud via Grok*
+*Mise à jour : 18 août 2026 — Neltud via Grok*
