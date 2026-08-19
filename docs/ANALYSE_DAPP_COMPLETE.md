@@ -1,4 +1,4 @@
-# Analyse DApp Complète xArtists — Mise à Jour 18 Août 2026
+# Analyse DApp Complète xArtists — Mise à Jour 19 Août 2026
 
 ## Résumé Exécutif
 xArtists est une DApp innovante sur MultiversX combinant **IA agentique (LIA v5/v6)**, **NFT Phygital / RWA art tokenisé**, **staking**, **DAO** et **bridge BTC expérimental**.  
@@ -6,9 +6,9 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 
 **Live Demo** : https://neltud.github.io/xArtists  
 **Repo** : https://github.com/Neltud/xArtists  
-**Statut** : Production-ready (code pleinement corrigé et poussé — **v0.15.0+**). Dernière mise à jour documentée : **18 août 2026**.
+**Statut** : Production-ready (code pleinement corrigé et poussé — **v0.15.0+**). Dernière mise à jour documentée : **19 août 2026**.
 
-**Release posture (18 août)** : private / pre-mainnet — Paper LIA par défaut (`LIA_LIVE_TRADING=0`) ; marketplace & agents SC **not live** (codeHash null) jusqu’à deploy + verify ; UI fail-closed.
+**Release posture (19 août)** : private / pre-mainnet — Paper LIA par défaut (`LIA_LIVE_TRADING=0`) ; marketplace & agents SC **not live** (codeHash null) jusqu’à deploy + verify ; UI fail-closed.
 
 ### Points forts
 - Intégration Warps / AI Agents MultiversX + agents LIA autonomes (trading, minting génératif, yield).
@@ -21,7 +21,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - Agents Marketplace on-chain (list/buy packs) + fee transparency.
 - Stripe onramp, escrow logic, studio creator journey, dual-product UX, security matrix.
 
-### Corrections & livraisons confirmées (jusqu’au 18 août 2026)
+### Corrections & livraisons confirmées (jusqu’au 19 août 2026)
 - Release **v0.15.0** (3 août) : Agents Marketplace full integration (ABI + hooks List/Buy + UI + deploy script), LIA circuit financier pro (guards, trailing, multi-horizon, symbiosis), marketplace multi-currency + burn TRO notices, Hatom LIA positions, Pinata/IPFS, PWA install banner, Playwright E2E smoke, nonce polling + TX error handling.
 - 4–5 août : Stripe onramp, escrow logic Python, studio creator journey, dual-product UX, security matrix documentée.
 - 6 août : activation mainnet MultiversX **v1.11.10.0** (epoch 2198) — améliorations VM ; documentation synchronisée.
@@ -30,6 +30,7 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - **11–16 août** : analyse + veille post-upgrades ; hardening Supernova (rapports 9 & 16 août) ; code corrigé confirmé poussé.
 - **17 août** : veille techno J+11 / J+7 ; rapport hebdo 16 août (metablock checks, gossip dedup, peer cleanup, p2p perf) ; aucun incident réseau ; marché RWA ~$38.1 B ; code pleinement corrigé reconfirmé et docs poussées ; P0 deploy SC inchangé.
 - **18 août** : status J+12 / J+8 ; countdown Supernova ~27 jours (annonce officielle MultiversX) ; focus agentique « What an agent needs to transact » ; stats réseau 9.24 M accounts / 621 M tx ; code pleinement corrigé reconfirmé et docs poussées.
+- **19 août** : status J+13 / J+9 ; countdown Supernova **~22 jours** (target ~10 septembre 2026) ; réseau stable, aucun incident post-upgrades ; code pleinement corrigé reconfirmé (v0.15.0+) et docs poussées.
 - Mises à jour dépendances (sécurité + compatibilité sdk-dapp).
 - Fixes logique voting / rewards / WalletConnect / Header wallet modal (Web Wallet réel, xPortal deep link).
 - Optimisations performance frontend, cleanup monorepo, scan ESDT complet.
@@ -37,19 +38,19 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 
 ---
 
-## Veille Technologique (18 août 2026)
+## Veille Technologique (19 août 2026)
 
 ### MultiversX / Protocol
-- **Mainnet v1.11.10.0** : activé **6 août 2026** (epoch 2198). Améliorations VM. Réseau **stable J+12** (18 août).
-- **Mainnet v1.11.11.0** : sorti **10 août 2026** — extra checks sur création de miniblocks ; **pas d’activation epoch**. Réseau **stable J+8**.
+- **Mainnet v1.11.10.0** : activé **6 août 2026** (epoch 2198). Améliorations VM. Réseau **stable J+13** (19 août).
+- **Mainnet v1.11.11.0** : sorti **10 août 2026** — extra checks sur création de miniblocks ; **pas d’activation epoch**. Réseau **stable J+9**.
 - **Supernova** : upgrade majeur finalité sub-seconde (~600 ms block time, intra-shard 100–250 ms). Découplage consensus / exécution (Propose/Vote → puis Execute).
   - Gouvernance approuvée massivement (janv. 2026, ~99.64 %).
   - **Battle of Nodes** (depuis 11 mars 2026) : >1 milliard de transactions, pic public ~120k TPS.
-  - **Target activation mainnet : ~10 septembre 2026** (countdown officiel ~27 jours au 17 août ; hardening sécurité intensif ; Supernova Arcade disponible pour tests 600 ms).
+  - **Target activation mainnet : ~10 septembre 2026** (countdown officiel **~22 jours** au 19 août ; hardening sécurité intensif ; Supernova Arcade disponible pour tests 600 ms).
   - Rapport hebdo **9 août** : tests d’intégration renforcés, guardians coverage, replay historical data, transition guards, startup validation activation boundary, full runs sur chain simulator + internal testnet ; mini-block pre-fetching proof-driven.
   - Rapport hebdo **16 août** (@AdrianDobrita) : reworked metablock reference checks (strict inclusion budget) ; reduced broadcast bandwidth by deduplicating gossip messages ; cleaned up inactive peer connections and stale acknowledgments ; performance testing on the p2p broadcasting improvements ; increased fuzz coverage (protocol, VM, state, crypto) ; consensus-in-the-loop chain simulator testing suite ; chaos testing scenarios ; state accesses tool adapted for Supernova.
   - Guardians (social recovery) + Staking v5 en production / tests finaux (Q3 2026).
-- Stats réseau (17–18 août 2026) : ~9.24 M accounts · ~621 M transactions · 14.5 M staked · 3200+ validators · xPortal 3M+ users · xExchange ~$3.04 M TVL · 0.6 M USD 7d volume.
+- Stats réseau (17–19 août 2026) : ~9.24 M accounts · ~621 M transactions · 14.5 M staked · 3200+ validators · xPortal 3M+ users · xExchange ~$3.04 M TVL · 0.6 M USD 7d volume.
 - Écosystème : xPortal, Hatom, xExchange, focus DeFi + NFT + **Agentic AI / Agentic Payments** live + xMoney Payment Links AI-ready + card issuing / recurring billing. CertiK Skynet actif.
 - Six ans de Mainnet (30 juillet 2020 → 2026).
 - Série sécurité MultiversX (août 2026) : focus guards on-chain pour agents autonomes (MX-8004 identity/reputation agents en devnet).
@@ -113,14 +114,14 @@ Plateforme conçue pour empower les artistes, engager les collectors et éduquer
 - E2E : smoke Playwright en CI (dashboard + marketplace).
 - Page $TRO dédiée + Studio + Burnify + Hatom + LP Pools.
 
-### Roadmap V1 (7 priorités) — statut 18 août 2026
+### Roadmap V1 (7 priorités) — statut 19 août 2026
 1. Full LIA v6 production + agents marketplace on-chain — 🟡 En cours (SC + ABI + UI livrés ; signature live executor & deploy mainnet restants)
 2. Marketplace NFT avancé + LP TRO — 🟡 Partiel (List/Buy UI + multi-currency + burn notices + escrow logic)
 3. Mobile PWA / responsive — 🟢 Base livrée (+ install banner)
 4. Tests E2E complets + monitoring — 🟡 Smoke livré, suite à étendre
 5. Bridge BTC stabilisé + cross-chain RWA — 🟡 Squelette
 6. Documentation API / OpenAPI + Docker — 🟢 Base livrée
-7. Alignement Supernova (sub-second) — 🟡 Préparé (**v1.11.10.0** activé 6 août ; **v1.11.11.0** 10 août ; target Supernova **~10 sept.** — countdown ~27 j, hardening intensif, rapport 16 août)
+7. Alignement Supernova (sub-second) — 🟡 Préparé (**v1.11.10.0** activé 6 août ; **v1.11.11.0** 10 août ; target Supernova **~10 sept.** — countdown **~22 j**, hardening intensif, rapport 16 août)
 
 Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
 
@@ -147,7 +148,7 @@ Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
 ---
 
 **Statut final** : Code complètement corrigé (v0.15.0+), documenté et poussé.  
-Veille techno et analyse dApp à jour au **18 août 2026** (J+12 activation mainnet v1.11.10.0 + J+8 v1.11.11.0 + hardening Supernova rapport 16 août + countdown ~27 j).  
+Veille techno et analyse dApp à jour au **19 août 2026** (J+13 activation mainnet v1.11.10.0 + J+9 v1.11.11.0 + hardening Supernova rapport 16 août + countdown **~22 j**).  
 Prêt pour itérations et scale avec Supernova (**~10 septembre 2026**).
 
-*Auteur : Neltud (via Grok) — Artiste & créateur — 18 août 2026*
+*Auteur : Neltud (via Grok) — Artiste & créateur — 19 août 2026*
