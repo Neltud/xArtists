@@ -1,6 +1,6 @@
 # Roadmap V1 — xArtists
 
-**Date :** 20 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
+**Date :** 22 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
 
 Ce document formalise les 7 axes prioritaires issus de l’analyse dApp complète.  
 Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères de done**.
@@ -108,12 +108,13 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ## 7. Alignement Supernova (sub-second finality)
 
-### Contexte (20 août 2026)
-* **Mainnet v1.11.10.0** activé le 6 août (epoch 2198) — améliorations VM. Réseau **stable J+14**.
-* **Mainnet v1.11.11.0** (10 août) — miniblock checks, pas d’activation epoch. **J+10**.
-* **Supernova Devnet** : activation **20 août ~14:25 UTC** (epoch 6439).
-* **Target mainnet** : ~10 septembre 2026 (countdown **~21 jours**).
+### Contexte (22 août 2026)
+* **Mainnet v1.11.10.0** activé le 6 août (epoch 2198) — améliorations VM. Réseau **stable J+16**.
+* **Mainnet v1.11.11.0** (10 août) — miniblock checks, pas d’activation epoch. **J+12**.
+* **Supernova Devnet** : **LIVE** depuis le **20 août 2026** (~14:46 UTC — rounds 600 ms).
+* **Target mainnet** : Upgrade **1er septembre** · Activation **10 septembre 2026** (countdown **~19 jours**).
 * Hardening : rapport 16 août (metablock, gossip dedup, fuzz, chaos, state accesses).
+* Builders sprint : http://supernova-sprint.xyz/builders
 
 ### Livrables
 * Observer gas / latence / UX sur Devnet dès activation
@@ -132,4 +133,4 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ---
 
-*Synchronisé avec ANALYSE_DAPP_COMPLETE.md — 20 août 2026*
+*Synchronisé avec ANALYSE_DAPP_COMPLETE.md — 22 août 2026*
