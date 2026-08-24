@@ -1,0 +1,36 @@
+{
+  "schema": "xartists.compounding.echelons.v1",
+  "updated": "2026-08-25T00:00:00Z",
+  "mode": "paper",
+  "live_trading": false,
+  "note": "Seed paper echelons. Regenerate with: PYTHONPATH=. python -m lia.compounding",
+  "assumptions": {
+    "fee_bps_roundtrip": 30,
+    "gas_usd_per_leg": 0.04,
+    "strategies": {
+      "S05": {"tp_pct": 0.5, "sl_pct": 0.35},
+      "S1": {"tp_pct": 1.0, "sl_pct": 0.5},
+      "S2": {"tp_pct": 2.0, "sl_pct": 1.0}
+    },
+    "profit_sink": "USDC"
+  },
+  "echelons": [
+    {"id": "E1", "label": "Echelon 1", "equity_usd": 1003.68, "peak_usd": 1005.0, "trades": 10, "wins": 6, "losses": 4, "net_pnl_usd": 3.68, "status": "active", "last_strategy": "S1", "curve": [{"t": 0, "equity": 1000}, {"t": 10, "equity": 1003.68}]},
+    {"id": "E2", "label": "Echelon 2", "equity_usd": 998.2, "peak_usd": 1002.0, "trades": 10, "wins": 5, "losses": 5, "net_pnl_usd": -1.8, "status": "active", "last_strategy": "S05", "curve": [{"t": 0, "equity": 1000}, {"t": 10, "equity": 998.2}]},
+    {"id": "E3", "label": "Echelon 3", "equity_usd": 1004.1, "peak_usd": 1006.0, "trades": 10, "wins": 6, "losses": 4, "net_pnl_usd": 4.1, "status": "active", "last_strategy": "S2", "curve": [{"t": 0, "equity": 1000}, {"t": 10, "equity": 1004.1}]},
+    {"id": "E4", "label": "Echelon 4", "equity_usd": 999.5, "peak_usd": 1001.0, "trades": 10, "wins": 5, "losses": 5, "net_pnl_usd": -0.5, "status": "active", "last_strategy": "S1", "curve": [{"t": 0, "equity": 1000}, {"t": 10, "equity": 999.5}]},
+    {"id": "E5", "label": "Echelon 5", "equity_usd": 1001.2, "peak_usd": 1003.0, "trades": 10, "wins": 6, "losses": 4, "net_pnl_usd": 1.2, "status": "active", "last_strategy": "S1", "curve": [{"t": 0, "equity": 1000}, {"t": 10, "equity": 1001.2}]},
+    {"id": "E6", "label": "Echelon 6", "equity_usd": 997.8, "peak_usd": 1000.0, "trades": 10, "wins": 4, "losses": 6, "net_pnl_usd": -2.2, "status": "active", "last_strategy": "S05", "curve": [{"t": 0, "equity": 1000}, {"t": 10, "equity": 997.8}]},
+    {"id": "E7", "label": "Echelon 7", "equity_usd": 1002.4, "peak_usd": 1004.0, "trades": 10, "wins": 6, "losses": 4, "net_pnl_usd": 2.4, "status": "active", "last_strategy": "S2", "curve": [{"t": 0, "equity": 1000}, {"t": 10, "equity": 1002.4}]},
+    {"id": "E8", "label": "Echelon 8", "equity_usd": 1000.1, "peak_usd": 1002.0, "trades": 10, "wins": 5, "losses": 5, "net_pnl_usd": 0.1, "status": "active", "last_strategy": "S1", "curve": [{"t": 0, "equity": 1000}, {"t": 10, "equity": 1000.1}]},
+    {"id": "E9", "label": "Echelon 9", "equity_usd": 1003.0, "peak_usd": 1005.0, "trades": 10, "wins": 6, "losses": 4, "net_pnl_usd": 3.0, "status": "active", "last_strategy": "S1", "curve": [{"t": 0, "equity": 1000}, {"t": 10, "equity": 1003.0}]},
+    {"id": "E10", "label": "Echelon 10", "equity_usd": 996.3, "peak_usd": 1000.0, "trades": 10, "wins": 4, "losses": 6, "net_pnl_usd": -3.7, "status": "active", "last_strategy": "S05", "curve": [{"t": 0, "equity": 1000}, {"t": 10, "equity": 996.3}]}
+  ],
+  "aggregate": {
+    "equity_usd": 10006.28,
+    "net_pnl_usd": 6.28,
+    "trades": 100,
+    "win_rate": 0.53,
+    "variance_pnl": 0.267
+  }
+}

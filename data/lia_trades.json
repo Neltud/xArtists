@@ -1,32 +1,11 @@
 {
-  "updated": "2026-08-12T12:50:00Z",
+  "updated": "2026-08-25T00:00:00Z",
   "network": "mainnet",
   "live_trading": false,
-  "note": "Paper samples until Vellum append_trade + LIA_LIVE_TRADING=1 after micro-proofs. Not user funds.",
+  "note": "Paper samples with strategy + fees. Regenerate: python -m lia.compounding",
   "trades": [
-    {
-      "id": "paper-sample-001",
-      "ts": "2026-08-12T10:00:00Z",
-      "pair": "WEGLD/USDC",
-      "side": "BUY",
-      "status": "paper",
-      "entry": 12.5,
-      "size_usd": 10,
-      "confidence": 0.61,
-      "source": "MOMENTUM",
-      "paper": true
-    },
-    {
-      "id": "paper-sample-002",
-      "ts": "2026-08-12T11:30:00Z",
-      "pair": "TRO/USDC",
-      "side": "HOLD",
-      "status": "paper",
-      "entry": null,
-      "size_usd": 0,
-      "confidence": 0.4,
-      "source": "YIELD",
-      "paper": true
-    }
+    {"id": "paper-E1-S1-001", "ts": "2026-08-24T10:00:00Z", "echelon": "E1", "pair": "WEGLD/USDC", "side": "BUY", "status": "closed_tp", "strategy": "S1", "size_usd": 50, "fee_usd": 0.15, "gas_usd": 0.04, "pnl_net_usd": 0.31, "paper": true},
+    {"id": "paper-E2-S05-001", "ts": "2026-08-24T11:00:00Z", "echelon": "E2", "pair": "TRO/USDC", "side": "SELL", "status": "closed_sl", "strategy": "S05", "size_usd": 40, "fee_usd": 0.12, "gas_usd": 0.04, "pnl_net_usd": -0.3, "paper": true},
+    {"id": "paper-E3-S2-001", "ts": "2026-08-24T12:30:00Z", "echelon": "E3", "pair": "WEGLD/USDC", "side": "BUY", "status": "closed_tp", "strategy": "S2", "size_usd": 60, "fee_usd": 0.18, "gas_usd": 0.04, "pnl_net_usd": 0.98, "paper": true}
   ]
 }
