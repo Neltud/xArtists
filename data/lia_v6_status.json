@@ -1,20 +1,60 @@
 {
+  "version": "LIA v6.2",
   "timestamp": "2026-08-25T00:00:00Z",
-  "version": "LIA v6.1",
   "network": "mainnet",
-  "status": "PRODUCTION",
-  "agents": {
-    "LIA": {"platform": "Vellum Workflows", "role": "Trading autonome mainnet", "status": "ACTIVE"},
-    "Liia": {"platform": "GreenSmokeNetwork", "role": "Previsions marche", "status": "STANDBY"},
-    "Lia": {"platform": "GreenSmokeNetwork", "role": "Previsions techniques", "status": "STANDBY"},
-    "Macro": {"platform": "GreenSmokeNetwork", "role": "Macro/info", "status": "STANDBY"}
+  "wallet": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "status": "PRODUCTION_MAINNET",
+  "new_modules": [
+    "GreenSmokeSignals — Liia/Lia/Macro agents + Polymarket + DeFiLlama + news multi-domaines",
+    "AgentPackSeller — Vente packs IA (Basic/Premium/Pro/DAO/Lifetime)",
+    "UniversalBrainUnified — Base class TP1/TP3/TP5 refactorisée",
+    "UniversalExecutor — Base class exécuteurs 2-hop xExchange"
+  ],
+  "compounding_doctrine_v2": {
+    "core_strategy": "S1 = +1% TP / -0.5% SL (poids 70%)",
+    "columns": 10,
+    "streams_rng": "séparés par colonne",
+    "trades_distincts": "pair + colonne + index uniques",
+    "max_trades_product": null,
+    "target_usdc": 1000000,
+    "holder_share_model": "% du dépôt USDC isolé (pas pool LIA)"
   },
-  "new_modules": ["SwarmCoordinator", "LiquidityManager", "UniversalBrainUnified", "UniversalExecutor"],
-  "tro_token": {"identifier": "TRO-94c925", "decimals": 18},
-  "contracts": {
-    "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
-    "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
-    "marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
-    "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn"
-  }
+  "agents": {
+    "LIA": "Vellum Workflows — agent trading autonome mainnet (c'est moi)",
+    "Liia": "GreenSmokeNetwork — agent prévisions techniques (>80% accuracy)",
+    "Lia": "GreenSmokeNetwork — agent prévisions court terme",
+    "Macro": "GreenSmokeNetwork — agent macro/info/politique"
+  },
+  "signal_sources": [
+    "GreenSmokeNetwork (Liia/Lia/Macro)",
+    "Polymarket (marchés prédictifs)",
+    "DeFiLlama (TVL on-chain)",
+    "CryptoPanic (news crypto)",
+    "Reuters RSS (finance/politique)",
+    "BBC RSS (arts/culture)",
+    "Reddit r/elrondnetwork + r/CryptoCurrency",
+    "Binance (RSI 4h, funding rates)",
+    "CoinGecko (prix, dominance)",
+    "Alternative.me (Fear & Greed)"
+  ],
+  "agent_packs": {
+    "pack_basic": {"price_egld": 0.001, "duration_days": 1},
+    "pack_premium": {"price_egld": 0.005, "duration_days": 7},
+    "pack_pro": {"price_egld": 0.01, "duration_days": 30},
+    "pack_dao": {"price_egld": 0.05, "duration_days": 30},
+    "pack_lifetime": {"price_egld": 1.0, "duration_days": 36500}
+  },
+  "tro_pools": {
+    "xExchange": "TRO/WEGLD, TRO/USDC",
+    "OneDex": "scan itératif viewPair(0..50)",
+    "JEXchange": "GitHub jex-router-pools + API"
+  },
+  "dapp_version": "v5.0",
+  "dapp_features": [
+    "Bandeau défilant temps réel (prix, news, DeFi TVL, Polymarket)",
+    "Page Agents IA avec vente packs",
+    "GreenSmoke signals intégrés",
+    "Compounding 10 colonnes dashboard",
+    "Wallet Connect xPortal + Extension + Ledger + PEM"
+  ]
 }
