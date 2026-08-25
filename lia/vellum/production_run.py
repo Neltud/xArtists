@@ -3,7 +3,7 @@ Vellum production entry — one command for operator.
 
   PYTHONPATH=. LIA_LIVE_TRADING=0 CHAIN=1 python -m lia.vellum.production_run
 
-Phases: gates → pipeline publish → commander enrich → mirror → optional deploy_scs.
+Phases: gates → pipeline publish → commander enrich → compounding (soft) → mirror → optional deploy_scs.
 Never sets LIA_LIVE_TRADING=1. Deploy only if VELLUM_DEPLOY_SCS=1 + PEM.
 """
 from __future__ import annotations
@@ -74,6 +74,16 @@ def phase_commander_enrich() -> dict[str, Any]:
     return {"ok": True, "kill_state": g.get("kill_state"), "path": str(path)}
 
 
+def phase_compounding() -> dict[str, Any]:
+    """Soft-fail paper compounding (10 echelons). Never blocks the pipeline."""
+    try:
+        from lia.compounding.step import run_step
+
+        return run_step({"compounding_legs": 10, "compounding_seed": None})
+    except Exception as e:
+        return {"ok": False, "soft": True, "module": "compounding", "error": str(e)}
+
+
 def phase_mirror() -> dict[str, Any]:
     from lia.vellum.publish_data_for_frontend import publish
 
@@ -111,15 +121,19 @@ def run() -> dict[str, Any]:
     report["phases"]["gates"] = phase_gates()
     report["phases"]["pipeline"] = phase_pipeline()
     report["phases"]["commander"] = phase_commander_enrich()
+    report["phases"]["compounding"] = phase_compounding()
     report["phases"]["mirror"] = phase_mirror()
     report["phases"]["deploy_scs"] = phase_deploy_scs()
 
     pipe = report["phases"].get("pipeline") or {}
+    comp = report["phases"].get("compounding") or {}
     report["summary"] = {
         "pipeline_ok": bool(pipe.get("ok", pipe.get("summary", {}).get("ok"))),
         "guardian_allow": (pipe.get("summary") or {}).get("guardian_allow"),
         "mode": (pipe.get("summary") or {}).get("mode"),
         "commander_ok": bool((report["phases"].get("commander") or {}).get("ok")),
+        "compounding_ok": bool(comp.get("ok")),
+        "compounding_soft": bool(comp.get("soft", True)),
         "mirror_copied": len((report["phases"].get("mirror") or {}).get("copied") or []),
         "deploy_skipped": bool((report["phases"].get("deploy_scs") or {}).get("skipped")),
         "allow_live_trading": bool(

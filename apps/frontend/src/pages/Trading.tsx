@@ -8,6 +8,7 @@ import PageGuide from '../components/PageGuide'
 import DeskPanel from '../components/DeskPanel'
 import InfoTip from '../components/InfoTip'
 import LiaVsUserBanner from '../components/LiaVsUserBanner'
+import CompoundingPanel from '../components/CompoundingPanel'
 import { LINKS } from '../config/links'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
@@ -24,6 +25,11 @@ interface LiaTrade {
   confidence?: number
   source?: string
   paper?: boolean
+  echelon?: string
+  strategy?: string
+  fee_usd?: number
+  gas_usd?: number
+  pnl_net_usd?: number
 }
 
 interface TrailPos {
@@ -124,6 +130,8 @@ export default function Trading() {
       <DeskPanel />
       <LiaBoardPanel />
 
+      <CompoundingPanel />
+
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <div className="card">
           <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">
@@ -199,23 +207,35 @@ export default function Trading() {
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm min-w-[640px]">
               <thead>
                 <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
+                  <th className="text-left py-2">Echelon</th>
                   <th className="text-left py-2">Pair</th>
+                  <th className="text-left py-2">Strat</th>
                   <th className="text-left py-2">Side</th>
                   <th className="text-right py-2">Size</th>
-                  <th className="text-right py-2">Conf</th>
+                  <th className="text-right py-2">Fee</th>
+                  <th className="text-right py-2">PnL net</th>
                   <th className="text-left py-2">Tag</th>
                 </tr>
               </thead>
               <tbody>
                 {trades.map((t, i) => (
                   <tr key={t.id || i} className="border-b border-[#2a2a3a]/40">
+                    <td className="py-2 text-xs">{t.echelon || '—'}</td>
                     <td className="py-2">{t.pair || '—'}</td>
+                    <td className="py-2 text-xs text-purple-300">{t.strategy || t.source || '—'}</td>
                     <td className="py-2">{t.side || t.status || '—'}</td>
                     <td className="py-2 text-right mono">{t.size_usd ?? '—'}</td>
-                    <td className="py-2 text-right mono">{t.confidence ?? '—'}</td>
+                    <td className="py-2 text-right mono text-gray-500">{t.fee_usd ?? '—'}</td>
+                    <td
+                      className={`py-2 text-right mono ${
+                        (t.pnl_net_usd ?? 0) >= 0 ? 'text-green-400' : 'text-red-400'
+                      }`}
+                    >
+                      {t.pnl_net_usd ?? '—'}
+                    </td>
                     <td className="py-2 text-[10px] text-amber-300/90">
                       {t.paper !== false ? 'paper' : 'check'}
                     </td>
