@@ -5,6 +5,7 @@ import PackCheckout from '../components/PackCheckout'
 import PageGuide from '../components/PageGuide'
 import LiaVsUserBanner from '../components/LiaVsUserBanner'
 import { AGENT_PACKS } from '../config/agentPacks'
+import { timingDefaults } from '../config/chainTiming'
 import { requestOpenConnect } from '../lib/walletEvents'
 
 type LedgerFile = {
@@ -72,6 +73,7 @@ export default function MyPacks() {
     }
     let stop = false
     let n = 0
+    const pollMs = timingDefaults().mintStatusPollMs
     const poll = async () => {
       try {
         const r = await fetch(`${API}/v1/checkout/status/${sessionId}`)
@@ -85,7 +87,7 @@ export default function MyPacks() {
         if (!stop) setMintStatus('Polling mint status…')
       }
       n += 1
-      if (n < 40 && !stop) setTimeout(poll, 3000)
+      if (n < 40 && !stop) setTimeout(poll, pollMs)
     }
     poll()
     return () => {
