@@ -154,6 +154,46 @@ export default function MyPacks() {
         ce stade. ≠ GreenSmoke · ≠ Portfolio LIA ops.
       </div>
 
+      <div
+        className="rounded-xl border border-purple-500/35 bg-purple-500/10 px-4 py-3 text-xs text-purple-50 leading-relaxed"
+        role="status"
+      >
+        <p className="font-semibold text-purple-100">Capital agent (optionnel) — spec prête</p>
+        <p className="mt-1 text-purple-100/90">
+          Après mint on-chain : dépôt <strong>isolé par NFT</strong>, plafond{' '}
+          <strong>10× prix mint</strong>, trades sous Guardian + Intent, retrait après cooldown{' '}
+          <strong>48h</strong>. Pas de pool partagé (pas de contagion).
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled
+            className="rounded-lg border border-purple-400/30 bg-purple-950/40 px-3 py-1.5 text-[11px] text-purple-200/70 cursor-not-allowed"
+            title="SC capital-escrow non déployé"
+          >
+            Fund · Soon
+          </button>
+          <button
+            type="button"
+            disabled
+            className="rounded-lg border border-purple-400/30 bg-purple-950/40 px-3 py-1.5 text-[11px] text-purple-200/70 cursor-not-allowed"
+            title="SC capital-escrow non déployé"
+          >
+            Withdraw · Soon
+          </button>
+          <Link
+            to="/trading"
+            className="rounded-lg border border-teal-500/40 bg-teal-500/10 px-3 py-1.5 text-[11px] text-teal-100 hover:bg-teal-500/20"
+          >
+            Voir compounding LIA (paper) →
+          </Link>
+        </div>
+        <p className="mt-2 text-[10px] text-purple-200/60">
+          Spec : packages/capital-escrow-pack · docs/AGENT_CAPITAL_ESCROW.md · mint SC encore codeHash
+          null
+        </p>
+      </div>
+
       <PackCheckout />
 
       <section className="card">
@@ -234,6 +274,10 @@ export default function MyPacks() {
       <p className="text-center text-xs text-zinc-600">
         <Link to="/agents" className="text-purple-400 hover:underline">
           ← Packs catalog
+        </Link>
+        {' · '}
+        <Link to="/trading" className="text-purple-400 hover:underline">
+          Trading / compounding
         </Link>
         {' · '}
         <Link to="/portfolio" className="text-purple-400 hover:underline">
