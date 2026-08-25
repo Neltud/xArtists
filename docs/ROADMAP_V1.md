@@ -1,6 +1,6 @@
 # Roadmap V1 — xArtists
 
-**Date :** 22 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
+**Date :** 25 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
 
 Ce document formalise les 7 axes prioritaires issus de l’analyse dApp complète.  
 Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères de done**.
@@ -45,7 +45,7 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 ### État actuel
 * List / Buy / Offer / Bid UI + multi-currency notices + burn TRO notices
 * Escrow logic Python + Stripe onramp
-* SC nft-marketplace prêt (P0+P1 hardened), codeHash null
+* SC nft-marketplace prêt (P0+P1 hardened), codeHash null (empty account)
 
 ### Livrables restants
 * Deploy mainnet + codeHash
@@ -108,29 +108,32 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ## 7. Alignement Supernova (sub-second finality)
 
-### Contexte (22 août 2026)
-* **Mainnet v1.11.10.0** activé le 6 août (epoch 2198) — améliorations VM. Réseau **stable J+16**.
-* **Mainnet v1.11.11.0** (10 août) — miniblock checks, pas d’activation epoch. **J+12**.
-* **Supernova Devnet** : **LIVE** depuis le **20 août 2026** (~14:46 UTC — rounds 600 ms).
-* **Target mainnet** : Upgrade **1er septembre** · Activation **10 septembre 2026** (countdown **~19 jours**).
-* Hardening : rapport 16 août (metablock, gossip dedup, fuzz, chaos, state accesses).
-* Builders sprint : http://supernova-sprint.xyz/builders
+### Contexte (25 août 2026)
+* **Mainnet v1.11.10.0** activé le 6 août (epoch 2198) — VM. Réseau **stable J+19**.
+* **Mainnet v1.11.11.0** (10 août) — miniblock checks. **J+15**.
+* **Supernova Devnet** : **LIVE** depuis le **20 août** (600 ms rounds, J+5).
+* **Target mainnet** : Upgrade nodes **1er septembre** · Activation **10 septembre 2026** (countdown **~16 jours**).
+* Note protocole (24 août) : timeouts / deadlines calibrés sur 6 s seront off by **10×** — adresses, ABIs, SDK inchangés.
+* Stats (24 août) : 9.25 M accounts · 623 M tx · xExchange $3.68 M TVL · pic 238 K tx/jour.
+* Builders : http://supernova-sprint.xyz/builders · arcade https://supernova-arcade.xyz/arcade
 
 ### Livrables
-* Observer gas / latence / UX sur Devnet dès activation
+* Observer gas / latence / UX sur Devnet
+* Aligner polling nonce, TX timeouts frontend + LIA pour 600 ms **avant** le 10 sept.
 * Alignement UI + gas estimates post-mainnet Supernova
 
 ### Critères de done
 * dApp responsive <1 s finality intra-shard après activation mainnet
+* Aucun timeout hardcodé 6 s restant dans le path critique
 
 ---
 
 ## Ordre d’exécution recommandé
 
-1. **P0 immédiat** : signature live executor LIA · deploy mainnet agents/nft marketplace · list/buy end-to-end · codeHash
-2. **P1 court terme** : GreenSmoke + trailing · E2E Playwright étendu · LP TRO · deploy tro-burn · bridge tests
-3. **P2** : Supernova mainnet alignment (~10 sept.) · RWA escrow live · audit externe
+1. **P0 immédiat** : wallets Mission/Reserve/Reward/Ops · deploy mainnet agents/nft marketplace · list/buy E2E · codeHash
+2. **P1 court terme** : GreenSmoke + trailing · E2E Playwright étendu · LP TRO · deploy tro-burn · bridge tests · timeouts ×10
+3. **P2** : Supernova mainnet alignment (10 sept.) · RWA escrow live · audit externe
 
 ---
 
-*Synchronisé avec ANALYSE_DAPP_COMPLETE.md — 22 août 2026*
+*Synchronisé avec STATUS_2026-08-25.md — 25 août 2026*
