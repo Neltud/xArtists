@@ -1,6 +1,8 @@
 # Vellum Operator — run NOW
 
-**CHAIN=1 · LIA_LIVE_TRADING=0 · PEM secrets only.**
+**CHAIN=1 · LIA_LIVE_TRADING=0 · PEM secrets only in vault.**
+
+Deploy détaillé : **[`VELLUM_DEPLOY.md`](VELLUM_DEPLOY.md)**
 
 ## One-shot (paper + publish frontend)
 
@@ -9,28 +11,25 @@ export CHAIN=1 LIA_LIVE_TRADING=0 PYTHONPATH=.
 python -m lia.vellum.production_run
 ```
 
-Cadence Timer : **3–5 min**.
+Cadence Timer : **3–5 min**. Deploy phase **skipped** si `VELLUM_DEPLOY_SCS≠1`.
 
-Writes: `lia_v6_status.json` (kill_state for Commander), mirrors `public/data`, `vellum_production_run.json`.
-
-## Deploy SC (opt-in)
+## Deploy SC via Vellum
 
 ```bash
-export PEM=/secrets/mainnet.pem FEE_BPS=300
-# Prefer explicit scripts; or:
-export VELLUM_DEPLOY_SCS=1
+# 1) Dry (build only)
+export VELLUM_DEPLOY_SCS=1 VELLUM_DEPLOY_DRY=1 CHAIN=1 LIA_LIVE_TRADING=0 PYTHONPATH=.
+# vault: LIA_WALLET_PEM
 python -m lia.vellum.production_run
+
+# 2) Real send
+export VELLUM_DEPLOY_DRY=0
+python -m lia.vellum.production_run
+
+# 3) Verify (obligatoire avant flags VITE)
+python scripts/verify_marketplace_codehash.py
 ```
 
-## Nouveautés
-
-| Module | Vellum |
-|--------|--------|
-| Guardian + death-spiral | pipeline step guardian |
-| Kill reset | **manual ops only** |
-| Commander UI | status.orchestrator.guardian.kill_state |
-| Splitter 40/30/20/10 | after Mission/Reserve wallets |
-| Board/status 404 | production_run mirror |
+Ou module direct : `python -m lia.vellum.deploy_scs_node`
 
 ## Interdits
 
