@@ -3,8 +3,9 @@ Vellum production entry — one command for operator.
 
   PYTHONPATH=. LIA_LIVE_TRADING=0 CHAIN=1 python -m lia.vellum.production_run
 
-Phases: chain_timing → gates → pipeline → commander → compounding (soft)
-        → signals → pretrade_gate → brain_cycle (soft) → mirror → optional deploy_scs.
+Phases: chain_timing → gates → pipeline → commander → compounding
+        → signals → pretrade_gate → brain_cycle → paper_leg → mirror
+        → optional deploy_scs.
 Never sets LIA_LIVE_TRADING=1. Deploy only if VELLUM_DEPLOY_SCS=1 + PEM.
 """
 from __future__ import annotations
@@ -76,10 +77,24 @@ def phase_commander_enrich() -> dict[str, Any]:
     g.setdefault("effective_leverage", 1.0)
     orch.setdefault("mode", orch.get("mode") or "YIELD")
     orch.setdefault("live_trading", False)
+
+    # Attach last brain / proof snapshots if present
+    for name, key in (
+        ("lia_brain_cycle.json", "brain"),
+        ("lia_last_decision_proof.json", "last_decision_proof"),
+        ("lia_pretrade_gate.json", "pretrade"),
+    ):
+        p = ROOT / "data" / name
+        if p.is_file():
+            try:
+                orch[key] = json.loads(p.read_text(encoding="utf-8"))
+            except Exception:
+                pass
+
     status["updated"] = _ts()
     status["timestamp"] = status["updated"]
     status.setdefault("LIA_LIVE_TRADING", 0)
-    path.write_text(json.dumps(status, indent=2), encoding="utf-8")
+    path.write_text(json.dumps(status, indent=2, default=str), encoding="utf-8")
     for dest in (
         ROOT / "apps" / "frontend" / "public" / "data" / "lia_v6_status.json",
         ROOT / "docs" / "data" / "lia_v6_status.json",
@@ -138,7 +153,6 @@ def phase_pretrade_gate() -> dict[str, Any]:
 
 
 def phase_brain_cycle() -> dict[str, Any]:
-    """Soft: EV + Meta + optional paper DecisionProof."""
     try:
         from lia.brain.cycle import run_brain_cycle
 
@@ -153,6 +167,29 @@ def phase_brain_cycle() -> dict[str, Any]:
         }
     except Exception as e:
         return {"ok": False, "soft": True, "module": "brain_cycle", "error": str(e)}
+
+
+def phase_paper_leg() -> dict[str, Any]:
+    """Soft: one paper leg via gate → EV → DecisionProof (no chain)."""
+    try:
+        from lia.executor.paper_with_proof import execute_paper_leg
+
+        leg = execute_paper_leg(
+            decision="BUY",
+            confidence=0.62,
+            size_usd=15.0,
+            require_ev=True,
+        )
+        return {
+            "ok": bool(leg.get("ok")),
+            "soft": True,
+            "module": "paper_leg",
+            "verification": leg.get("verification"),
+            "reason": leg.get("reason"),
+            "paper": True,
+        }
+    except Exception as e:
+        return {"ok": False, "soft": True, "module": "paper_leg", "error": str(e)}
 
 
 def phase_mirror() -> dict[str, Any]:
@@ -197,11 +234,15 @@ def run() -> dict[str, Any]:
     report["phases"]["signals"] = phase_signals()
     report["phases"]["pretrade_gate"] = phase_pretrade_gate()
     report["phases"]["brain_cycle"] = phase_brain_cycle()
+    report["phases"]["paper_leg"] = phase_paper_leg()
+    # Re-enrich commander after brain/leg wrote JSON
+    report["phases"]["commander_refresh"] = phase_commander_enrich()
     report["phases"]["mirror"] = phase_mirror()
     report["phases"]["deploy_scs"] = phase_deploy_scs()
 
     pipe = report["phases"].get("pipeline") or {}
     brain = report["phases"].get("brain_cycle") or {}
+    leg = report["phases"].get("paper_leg") or {}
     report["summary"] = {
         "pipeline_ok": bool(pipe.get("ok", pipe.get("summary", {}).get("ok"))),
         "guardian_allow": (pipe.get("summary") or {}).get("guardian_allow"),
@@ -213,6 +254,8 @@ def run() -> dict[str, Any]:
         "brain_ok": bool(brain.get("ok")),
         "brain_ev_viable": brain.get("ev_viable"),
         "brain_has_proof": brain.get("has_proof"),
+        "paper_leg_ok": bool(leg.get("ok")),
+        "paper_leg_verify": leg.get("verification"),
         "mirror_copied": len((report["phases"].get("mirror") or {}).get("copied") or []),
         "deploy_skipped": bool((report["phases"].get("deploy_scs") or {}).get("skipped")),
         "allow_live_trading": bool(

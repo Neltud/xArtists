@@ -1,21 +1,20 @@
-# Project status — 2026-08-26 (soir)
+# Project status — 2026-08-26 (soir, profondeur)
 
 | Capacité | Prêt ? |
 |----------|--------|
-| Dashboard / parcours 4 étapes / onboarding | Oui |
-| Trading paper + compounding 10 col + annual UI | Oui |
-| Brain cycle UI (EV · Meta · DecisionProof paper) | Oui |
-| Signaux GSN≥80% · Polymarket · free · fusion · ticker | Oui (advisory) |
-| Pretrade + attach_proof + paper_with_proof executor | Oui (soft) |
-| DecisionProof module (`lia/intent`) | Oui — commitment, pas SNARK |
-| Commander UI | Oui |
-| Pin IPFS (Pinata) | Oui (JWT secret ops) |
-| List / Buy / Bid NFT on-chain | **Non** — codeHash null |
-| Buy agent on-chain | **Non** — agents_marketplace null |
-| LIA live trading | **Non** — LIA_LIVE_TRADING=0 |
-| Capital escrow Fund UI | Spec + Soon |
-| Treasury splitter live | Non — Mission/Reserve pending |
+| Dashboard / parcours / onboarding | Oui |
+| Trading: board · fusion · brain · paper legs · compounding · annual | Oui |
+| production_run: … → brain → **paper_leg** → mirror | Oui |
+| DecisionProof paper + anti-replay store | Oui |
+| Status orchestrator.brain / pretrade / proof | Oui |
+| Signaux GSN≥80% · ticker | Oui (advisory) |
+| List/Buy/mint on-chain | **Non** — codeHash null |
+| Agents marketplace SC | **Non** |
+| LIA live | **Non** |
+| Escrow capital Fund | Spec |
 
-Gates: `allow_live_trading=false`.  
-Operator: `python -m lia.vellum.production_run` (inclut `brain_cycle`).  
-Gaps: `docs/GAP_REVIEW_FULL_2026-08-25.md`.
+Docs: `VELLUM_WORKFLOW_MAP.md` · `COHERENCE_AUDIT_2026-08-26.md` · `DECISION_PROOF_AND_BRAIN.md`
+
+```bash
+PYTHONPATH=. CHAIN=1 LIA_LIVE_TRADING=0 python -m lia.vellum.production_run
+```
