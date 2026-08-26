@@ -58,6 +58,9 @@ CRITICAL = [
     "free_signals.json",
     "social_intel.json",
     "lia_intel_catalog.json",
+    "lia_brain_cycle.json",
+    "lia_last_decision_proof.json",
+    "decision_proofs_used.json",
 ]
 
 

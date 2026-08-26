@@ -4,7 +4,7 @@ Vellum production entry — one command for operator.
   PYTHONPATH=. LIA_LIVE_TRADING=0 CHAIN=1 python -m lia.vellum.production_run
 
 Phases: chain_timing → gates → pipeline → commander → compounding (soft)
-        → signals fusion (soft) → pretrade_gate (soft) → mirror → optional deploy_scs.
+        → signals → pretrade_gate → brain_cycle (soft) → mirror → optional deploy_scs.
 Never sets LIA_LIVE_TRADING=1. Deploy only if VELLUM_DEPLOY_SCS=1 + PEM.
 """
 from __future__ import annotations
@@ -121,7 +121,6 @@ def phase_signals() -> dict[str, Any]:
 
 
 def phase_pretrade_gate() -> dict[str, Any]:
-    """Soft: apply fusion gate + write orchestrator.signals into status."""
     try:
         from lia.signals.pretrade_gate import enrich_status
 
@@ -136,6 +135,24 @@ def phase_pretrade_gate() -> dict[str, Any]:
         }
     except Exception as e:
         return {"ok": False, "soft": True, "module": "pretrade_gate", "error": str(e)}
+
+
+def phase_brain_cycle() -> dict[str, Any]:
+    """Soft: EV + Meta + optional paper DecisionProof."""
+    try:
+        from lia.brain.cycle import run_brain_cycle
+
+        r = run_brain_cycle()
+        return {
+            "ok": True,
+            "soft": True,
+            "module": "brain_cycle",
+            "ev_viable": (r.get("ev") or {}).get("is_viable"),
+            "has_proof": bool(r.get("decision_proof")),
+            "verification": ((r.get("decision_proof") or {}).get("verification")),
+        }
+    except Exception as e:
+        return {"ok": False, "soft": True, "module": "brain_cycle", "error": str(e)}
 
 
 def phase_mirror() -> dict[str, Any]:
@@ -179,23 +196,23 @@ def run() -> dict[str, Any]:
     report["phases"]["compounding"] = phase_compounding()
     report["phases"]["signals"] = phase_signals()
     report["phases"]["pretrade_gate"] = phase_pretrade_gate()
+    report["phases"]["brain_cycle"] = phase_brain_cycle()
     report["phases"]["mirror"] = phase_mirror()
     report["phases"]["deploy_scs"] = phase_deploy_scs()
 
     pipe = report["phases"].get("pipeline") or {}
-    comp = report["phases"].get("compounding") or {}
-    sig = report["phases"].get("signals") or {}
-    gate = report["phases"].get("pretrade_gate") or {}
+    brain = report["phases"].get("brain_cycle") or {}
     report["summary"] = {
         "pipeline_ok": bool(pipe.get("ok", pipe.get("summary", {}).get("ok"))),
         "guardian_allow": (pipe.get("summary") or {}).get("guardian_allow"),
         "mode": (pipe.get("summary") or {}).get("mode"),
         "commander_ok": bool((report["phases"].get("commander") or {}).get("ok")),
-        "compounding_ok": bool(comp.get("ok")),
-        "signals_ok": bool(sig.get("ok")),
-        "signals_decision": sig.get("decision"),
-        "pretrade_ok": bool(gate.get("ok")),
-        "pretrade_decision": (gate.get("fused") or {}).get("decision"),
+        "compounding_ok": bool((report["phases"].get("compounding") or {}).get("ok")),
+        "signals_ok": bool((report["phases"].get("signals") or {}).get("ok")),
+        "pretrade_ok": bool((report["phases"].get("pretrade_gate") or {}).get("ok")),
+        "brain_ok": bool(brain.get("ok")),
+        "brain_ev_viable": brain.get("ev_viable"),
+        "brain_has_proof": brain.get("has_proof"),
         "mirror_copied": len((report["phases"].get("mirror") or {}).get("copied") or []),
         "deploy_skipped": bool((report["phases"].get("deploy_scs") or {}).get("skipped")),
         "allow_live_trading": bool(
