@@ -3,9 +3,9 @@ Vellum production entry — one command for operator.
 
   PYTHONPATH=. LIA_LIVE_TRADING=0 CHAIN=1 python -m lia.vellum.production_run
 
-Phases: chain_timing → gates → pipeline → commander → compounding
-        → signals → pretrade_gate → brain_cycle → paper_leg (if EV viable)
-        → commander_refresh → mirror → optional deploy_scs.
+Phases: chain_timing → gates → risk_manager → pipeline → commander → compounding
+        → signals → pretrade → brain → paper_leg → commander_refresh → mirror
+        → optional deploy_scs.
 Never sets LIA_LIVE_TRADING=1. Deploy only if VELLUM_DEPLOY_SCS=1 + PEM.
 """
 from __future__ import annotations
@@ -21,6 +21,33 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def _ts() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
+def _portfolio_drawdown() -> float:
+    """Best-effort drawdown from published portfolio / status."""
+    for name in ("lia_portfolio.json", "lia_v6_status.json"):
+        p = ROOT / "data" / name
+        if not p.is_file():
+            continue
+        try:
+            j = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        for key in ("drawdown", "drawdown_pct", "dd"):
+            if key in j and j[key] is not None:
+                try:
+                    v = float(j[key])
+                    return v / 100.0 if v > 1.0 else v
+                except (TypeError, ValueError):
+                    pass
+        pf = j.get("portfolio") or j.get("book") or {}
+        if isinstance(pf, dict) and pf.get("drawdown") is not None:
+            try:
+                v = float(pf["drawdown"])
+                return v / 100.0 if v > 1.0 else v
+            except (TypeError, ValueError):
+                pass
+    return 0.0
 
 
 def phase_chain_timing() -> dict[str, Any]:
@@ -54,6 +81,27 @@ def phase_gates() -> dict[str, Any]:
         return {"ok": False, "error": str(e), "allow_live_trading": False}
 
 
+def phase_risk_manager() -> dict[str, Any]:
+    """Hard drawdown ceiling — may set LOCKED (paper state file)."""
+    try:
+        from lia.security.risk_manager import RiskManager
+
+        dd = _portfolio_drawdown()
+        rm = RiskManager(persist=True)
+        v = rm.check_safety_status(dd)
+        return {
+            "ok": v.ok,
+            "module": "risk_manager",
+            "locked": v.locked,
+            "current_drawdown": v.current_drawdown,
+            "max_allowed": v.max_allowed,
+            "event": v.event,
+            "reason": v.reason,
+        }
+    except Exception as e:
+        return {"ok": False, "soft": True, "module": "risk_manager", "error": str(e)}
+
+
 def phase_pipeline() -> dict[str, Any]:
     from lia.vellum.pipeline import run_pipeline
 
@@ -83,6 +131,7 @@ def phase_commander_enrich() -> dict[str, Any]:
         ("lia_last_decision_proof.json", "last_decision_proof"),
         ("lia_pretrade_gate.json", "pretrade"),
         ("lia_paper_legs.json", "paper_legs"),
+        ("risk_manager_state.json", "risk_manager"),
     ):
         p = ROOT / "data" / name
         if p.is_file():
@@ -90,6 +139,13 @@ def phase_commander_enrich() -> dict[str, Any]:
                 orch[key] = json.loads(p.read_text(encoding="utf-8"))
             except Exception:
                 pass
+
+    # Reflect risk lock on guardian kill_state for Commander UI
+    rm = orch.get("risk_manager") or {}
+    if rm.get("locked"):
+        g["allow"] = False
+        g["kill_state"] = "TRIPPED"
+        g["reason"] = rm.get("last_event") or rm.get("lock_reason") or "risk_manager_locked"
 
     status["updated"] = _ts()
     status["timestamp"] = status["updated"]
@@ -104,7 +160,12 @@ def phase_commander_enrich() -> dict[str, Any]:
             dest.write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
         except OSError:
             pass
-    return {"ok": True, "kill_state": g.get("kill_state"), "path": str(path)}
+    return {
+        "ok": True,
+        "kill_state": g.get("kill_state"),
+        "risk_locked": bool(rm.get("locked")),
+        "path": str(path),
+    }
 
 
 def phase_compounding() -> dict[str, Any]:
@@ -169,8 +230,20 @@ def phase_brain_cycle() -> dict[str, Any]:
         return {"ok": False, "soft": True, "module": "brain_cycle", "error": str(e)}
 
 
-def phase_paper_leg(brain_phase: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Soft: paper leg only when brain EV marked viable (or brain unavailable)."""
+def phase_paper_leg(
+    brain_phase: dict[str, Any] | None = None,
+    risk_phase: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    risk_phase = risk_phase or {}
+    if risk_phase.get("locked"):
+        return {
+            "ok": True,
+            "soft": True,
+            "module": "paper_leg",
+            "skipped": True,
+            "reason": "risk_manager_locked",
+            "paper": True,
+        }
     brain_phase = brain_phase or {}
     if brain_phase.get("ok") and brain_phase.get("ev_viable") is False:
         return {
@@ -213,7 +286,9 @@ def phase_deploy_scs() -> dict[str, Any]:
         return {"ok": True, "skipped": True, "reason": "VELLUM_DEPLOY_SCS!=1"}
     pem = os.environ.get("PEM") or os.environ.get("LIA_WALLET_PEM_PATH") or ""
     if not pem or not Path(pem).is_file():
-        return {"ok": False, "error": "PEM missing"}
+        # Also allow PEM text via deploy node
+        if not (os.environ.get("LIA_WALLET_PEM") or "").startswith("-----"):
+            return {"ok": False, "error": "PEM missing"}
     try:
         from lia.vellum.deploy_scs_node import run as deploy_run
 
@@ -238,6 +313,8 @@ def run() -> dict[str, Any]:
 
     report["phases"]["chain_timing"] = phase_chain_timing()
     report["phases"]["gates"] = phase_gates()
+    risk = phase_risk_manager()
+    report["phases"]["risk_manager"] = risk
     report["phases"]["pipeline"] = phase_pipeline()
     report["phases"]["commander"] = phase_commander_enrich()
     report["phases"]["compounding"] = phase_compounding()
@@ -245,7 +322,7 @@ def run() -> dict[str, Any]:
     report["phases"]["pretrade_gate"] = phase_pretrade_gate()
     brain = phase_brain_cycle()
     report["phases"]["brain_cycle"] = brain
-    report["phases"]["paper_leg"] = phase_paper_leg(brain)
+    report["phases"]["paper_leg"] = phase_paper_leg(brain, risk)
     report["phases"]["commander_refresh"] = phase_commander_enrich()
     report["phases"]["mirror"] = phase_mirror()
     report["phases"]["deploy_scs"] = phase_deploy_scs()
@@ -256,6 +333,8 @@ def run() -> dict[str, Any]:
         "pipeline_ok": bool(pipe.get("ok", pipe.get("summary", {}).get("ok"))),
         "guardian_allow": (pipe.get("summary") or {}).get("guardian_allow"),
         "mode": (pipe.get("summary") or {}).get("mode"),
+        "risk_locked": bool(risk.get("locked")),
+        "risk_ok": bool(risk.get("ok")),
         "commander_ok": bool((report["phases"].get("commander") or {}).get("ok")),
         "compounding_ok": bool((report["phases"].get("compounding") or {}).get("ok")),
         "signals_ok": bool((report["phases"].get("signals") or {}).get("ok")),

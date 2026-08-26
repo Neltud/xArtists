@@ -4,6 +4,7 @@ import { useLiaSlowPath } from '../../hooks/useLiaSlowPath'
 import GuardianKillBadge from './GuardianKillBadge'
 import BrainActivityFeed from './BrainActivityFeed'
 import RiskMetricsPanel from './RiskMetricsPanel'
+import RiskLockBanner from '../RiskLockBanner'
 
 function CommanderStrip() {
   const fast = useLiaFastPath()
@@ -23,6 +24,8 @@ function CommanderStrip() {
           </button>
         </div>
       )}
+
+      <RiskLockBanner />
 
       <GuardianKillBadge
         killState={fast.killState}
@@ -49,7 +52,7 @@ function CommanderStrip() {
 
       {fast.err && !fast.doc && (
         <p className="text-xs text-amber-400/90 mt-2">
-          Fast path offline — {fast.err}. Publish : <code>python -m lia.board.publish</code>
+          Fast path offline — {fast.err}. Publish : <code>python -m lia.vellum.production_run</code>
         </p>
       )}
     </section>

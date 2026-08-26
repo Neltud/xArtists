@@ -62,6 +62,7 @@ CRITICAL = [
     "lia_last_decision_proof.json",
     "decision_proofs_used.json",
     "lia_paper_legs.json",
+    "risk_manager_state.json",
 ]
 
 

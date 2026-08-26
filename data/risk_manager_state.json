@@ -1,0 +1,9 @@
+{
+  "updated": "2026-08-26T21:34:00Z",
+  "locked": false,
+  "max_drawdown": 0.15,
+  "last_event": null,
+  "current_drawdown": 0.0,
+  "module": "lia.security.risk_manager",
+  "paper_note": "Off-chain until Risk_Manager.wasm deployed"
+}
