@@ -9,6 +9,8 @@ import DeskPanel from '../components/DeskPanel'
 import InfoTip from '../components/InfoTip'
 import LiaVsUserBanner from '../components/LiaVsUserBanner'
 import CompoundingPanel from '../components/CompoundingPanel'
+import SignalsFusionPanel from '../components/SignalsFusionPanel'
+import AnnualYieldPanel from '../components/AnnualYieldPanel'
 import { LINKS } from '../config/links'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
@@ -97,7 +99,7 @@ export default function Trading() {
       <div className="mb-6">
         <h1 className="text-3xl font-black">⚡ Trading Terminal LIA</h1>
         <p className="text-gray-500 mt-1">
-          Board multi-venues · arb block-time · trailing · Guardian first{' '}
+          Board multi-venues · arb · trailing · GSN≥80% · Polymarket · Guardian first{' '}
           <InfoTip k="paperFirst" />
           {dataTs ? ` · data ${new Date(dataTs).toLocaleString('fr-FR')}` : ''}
         </p>
@@ -130,7 +132,9 @@ export default function Trading() {
       <DeskPanel />
       <LiaBoardPanel />
 
+      <SignalsFusionPanel />
       <CompoundingPanel />
+      <AnnualYieldPanel />
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <div className="card">
@@ -142,7 +146,7 @@ export default function Trading() {
             <div>
               <p className="text-2xl font-bold">{liveFlag ? 'LIVE FLAG' : 'MONITORING'}</p>
               <p className="text-sm text-gray-500">
-                {mode || 'Cycle Vellum'} · Guardian → gate → trailing
+                {mode || 'Cycle Vellum'} · Guardian → fusion → trailing
               </p>
               <span className={`badge-gray mt-2 ${guardColor}`}>BalanceGuard: {guard}</span>
             </div>
