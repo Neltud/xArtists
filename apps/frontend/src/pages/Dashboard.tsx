@@ -10,6 +10,7 @@ import AdSlot from '../components/AdSlot'
 import CommanderStrip from '../components/commander/CommanderStrip'
 import ScStatusBanner from '../components/ScStatusBanner'
 import DataHealthStrip from '../components/DataHealthStrip'
+import LiaPathStrip from '../components/LiaPathStrip'
 import PageGuide from '../components/PageGuide'
 import PersonaWelcome, {
   PersonaQuickLinks,
@@ -57,6 +58,8 @@ export default function Dashboard() {
       <ScStatusBanner />
 
       <DataHealthStrip />
+
+      <LiaPathStrip />
 
       <CommanderStrip />
 
