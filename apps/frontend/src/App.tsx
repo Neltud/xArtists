@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
 import SignalTicker from './components/SignalTicker'
+import FirstVisitOnboarding from './components/FirstVisitOnboarding'
 import ErrorBoundary from './components/ErrorBoundary'
 import PwaInstallBanner from './components/PwaInstallBanner'
 import PrivateReleaseStrip from './components/PrivateReleaseStrip'
@@ -160,6 +161,7 @@ export default function App() {
         </div>
       </footer>
       <PwaInstallBanner />
+      <FirstVisitOnboarding />
       <SignalTicker />
       <BottomNav />
       <RoutePrefetch />

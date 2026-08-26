@@ -10,6 +10,7 @@ import AgentPackJourney from '../components/AgentPackJourney'
 import RwaAssetsStrip from '../components/RwaAssetsStrip'
 import PackCheckout from '../components/PackCheckout'
 import PageGuide from '../components/PageGuide'
+import AgentsJourneyStrip from '../components/AgentsJourneyStrip'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
 
@@ -108,25 +109,31 @@ export default function Agents() {
   return (
     <div className="animate-fade-in pb-20 md:pb-0">
       <PageGuide page="agents" />
+      <AgentsJourneyStrip />
 
       <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black">🧠 Agents</h1>
           <p className="text-sm text-gray-500 mt-1">
-            <strong className="text-purple-300">Access packs</strong> Pulse · Yield · Sentinel ·{' '}
-            <strong className="text-amber-300">Model C</strong> (paper) ·{' '}
-            <strong className="text-emerald-300">GSN</strong> signal only
+            <strong className="text-purple-300">Access packs</strong> ·{' '}
+            <strong className="text-amber-300">Model C paper</strong> ·{' '}
+            <strong className="text-emerald-300">GSN ≥80%</strong> signal LIA only
           </p>
         </div>
-        <Link to="/my-packs" className="btn-primary text-sm text-center">
-          My Packs →
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link to="/my-packs" className="btn-primary text-sm text-center">
+            My Packs →
+          </Link>
+          <Link to="/trading" className="btn-secondary text-sm text-center">
+            Board LIA →
+          </Link>
+        </div>
       </div>
 
       <div className="mb-6 rounded-xl border border-zinc-700/50 bg-zinc-900/40 px-4 py-3 text-[11px] text-zinc-400 leading-relaxed">
-        <strong className="text-zinc-200">3 produits distincts</strong> — (1) Access packs xArtists à
-        acheter · (2) sous-agents créés via intent (corridor 5–25 €) · (3) GreenSmoke ={' '}
-        <em>prévisions externes</em>, pas à vendre. Buy on-chain agents = SC marketplace seulement.
+        <strong className="text-zinc-200">3 produits distincts</strong> — (1) Access packs xArtists ·
+        (2) sous-agents intent (5–25 €) · (3) GreenSmoke = prévisions externes filtrées ≥80% pour LIA,{' '}
+        <em>pas à vendre</em>. Buy on-chain = SC marketplace seulement.
       </div>
 
       <div className="mb-6">
@@ -136,7 +143,7 @@ export default function Agents() {
       <section className="mb-10">
         <h2 className="text-lg font-bold mb-1 text-purple-200">① Access packs · catalogue</h2>
         <p className="text-xs text-gray-500 mb-4">
-          Prix = intensité de signaux (18 / 12 / 8 €). Fiat → membership NFT. Pas un fonds.
+          Prix = intensité de signaux. Fiat → membership NFT. Pas un fonds.
         </p>
         <AgentsDeployStatus />
         <AgentsMarketplacePanel />
@@ -167,7 +174,8 @@ export default function Agents() {
       <section className="mb-8">
         <h2 className="text-lg font-bold mb-1 text-emerald-200">② GreenSmoke — leaderboard & prévisions</h2>
         <p className="text-xs text-gray-500 mb-4">
-          Signal pré-trade uniquement (poids plafonné). <strong>Pas un pack à vendre.</strong>
+          LIA n’utilise que les agents <strong>≥ 80% accuracy</strong> (poids max 30%). Pas un pack à
+          vendre.
         </p>
         <GsnLeaderboard />
 

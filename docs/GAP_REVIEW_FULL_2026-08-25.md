@@ -1,51 +1,57 @@
-# Review complète dApp xArtists — lacunes (2026-08-25)
+# Review lacunes xArtists — MAJ 2026-08-26
 
-## Maturité par domaine
+## Maturité
 
 | Domaine | Maturité | Notes |
 |---------|----------|-------|
-| Front Vite/React + routes | **Élevée** | Trading, packs, staking UI, paper badges |
-| Oracle prix | **Élevée** | `lia/oracles/*` + publish pipeline |
-| Compounding 10 col + 1% | **Moyenne+** | v2 doctrine + annual sim + UI |
-| Mémoire on-chain | **Moyenne** | `lia/memory/onchain_memory.py` existe |
-| Vellum production_run | **Élevée** | gates → pipeline → compounding soft → mirror |
-| Guardian / policy / intent | **Moyenne+** | modules présents, path live gated |
-| SC mint agents | **Faible** | codeHash null — bloque mint réel |
-| SC staking / escrow | **Faible** | specs + validators, pas deploy prod |
-| Capital holder % dépôt | **Spec** | docs + validator |
-| Intel marketplace agents→LIA | **Catalog** | quote paper only |
-| RWA / Supernova | **Spec** | docs + rwa hooks |
-| IPFS media NFT | **Partiel** | Pinata path, media PENDING ops |
+| Front + parcours UX | **Élevée** | Journey, onboarding, Trading panels, ticker |
+| Oracle | **Élevée** | pipeline + mirror |
+| Compounding 10 col + annual | **Élevée** | v2 + UI |
+| Signaux GSN/Poly/free/fusion | **Élevée** | ≥80% GSN · pretrade_gate |
+| Vellum production_run | **Élevée** | signals + pretrade + mirror élargi |
+| Guardian / gates | **Moyenne+** | live OFF |
+| SC mint / market / agents | **Faible** | codeHash null — **P0** |
+| Capital escrow SC | **Spec** | validator OK · UI Soon |
+| Intel pay on-chain | **Catalog** | |
+| RWA SC | **Spec** | |
 | Live trading | **OFF** | correct |
 
-## Lacunes P0 (bloquantes live)
-1. **SC agents marketplace** non déployé / codeHash null
-2. **Micro-preuves** on-chain insuffisantes pour `allow_live_trading`
-3. **PEM + EGLD** ops pour deploy seulement sous flags
-4. **Wire mirror** : s’assurer que `compounding_*.json` + `lia_intel_catalog.json` sont dans publish list
+## Résolu depuis 25 août
+- Mirror CRITICAL : compounding, signal_ticker, fusion, intel catalog
+- GSN seuil 80% + consumer aligné
+- Polymarket + free feeds + fusion + ticker UI
+- Pretrade gate + board signals snapshot
+- UX parcours Home + Agents + onboarding 1ère visite
+- Annual yield panel Trading
 
-## Lacunes P1
-5. Settlement pay intel (USDC) on-chain
-6. SC capital-escrow + UI Fund live
-7. RWA SC après trading micro-live
-8. Enrichir front annual_sim panel
-9. Cadence release git / Pages automatisée stable
+## P0 encore ouverts (bloquants produit on-chain)
+1. Deploy **nft-marketplace** + **agents-marketplace** → codeHash ≠ null
+2. Wallets Mission / Reserve / Reward / Ops publiés dans `contracts.json`
+3. Micro-preuves on-chain avant tout flag live
+4. `verify_marketplace_codehash.py` exit 0 avant VITE flags
 
-## Lacunes P2
-10. Xmvx social diffusion pro
-11. Ledger UX / WC domain polish
-12. Multi-pay mint (EGLD + USDC + TRO)
+## P1
+5. Capital-escrow SC + Fund/Withdraw live
+6. Settlement USDC intel marketplace
+7. Executor paper appelle `apply_gate` à chaque leg (hook partiel)
+8. Feed GSN live réel (au-delà seeds GitHub)
+9. IPFS media packs 100%
 
-## Ce qui est correct
-- Paper-first, badges, isolation capital NFT
-- Oracle déjà intégré au pipeline
-- 10 colonnes : pas de max trades produit, cœur 1%, pertes possibles (sim annuel)
-- Vellum brief autonomie documenté
+## P2 / problèmes connus
+10. `docs/STATUS.md` était périmé → rafraîchi
+11. WalletConnect domain / Ledger UX polish
+12. Multi-pay mint (EGLD/USDC/TRO)
+13. Xmvx diffusion sociale
+14. Risk: confusion user entre pack access et capital trading (mitigé copy + onboarding)
+15. Risk: Polymarket API indispo → offline seed (OK fail-soft)
 
-## Prochaine action ops
+## Problèmes volontairement non « fixés »
+- Live trading OFF — ne pas forcer
+- Pas de faux List/Buy sans codeHash
+- Pas de promesse de rendement (sim annuelle avec pertes)
+
+## Ops
 ```bash
 git pull
-PYTHONPATH=. LIA_LIVE_TRADING=0 python -m lia.compounding.annual_yield_sim
-PYTHONPATH=. python -c "from lia.marketplace.intel_catalog import publish_catalog; publish_catalog()"
-PYTHONPATH=. CHAIN=1 python -m lia.vellum.production_run
+PYTHONPATH=. CHAIN=1 LIA_LIVE_TRADING=0 python -m lia.vellum.production_run
 ```
