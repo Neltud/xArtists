@@ -1,0 +1,21 @@
+{
+  "updated": "2026-08-26T08:00:00Z",
+  "note": "Offline Polymarket sample when Gamma API unavailable",
+  "markets": [
+    {
+      "question": "Fed cuts rates before year end?",
+      "outcomePrices": ["0.62", "0.38"],
+      "slug": "fed-cuts-sample"
+    },
+    {
+      "question": "Bitcoin above 100k by October?",
+      "outcomePrices": ["0.41", "0.59"],
+      "slug": "btc-100k-sample"
+    },
+    {
+      "question": "Major art auction record this quarter?",
+      "outcomePrices": ["0.33", "0.67"],
+      "slug": "art-auction-sample"
+    }
+  ]
+}

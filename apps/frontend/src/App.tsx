@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
+import SignalTicker from './components/SignalTicker'
 import ErrorBoundary from './components/ErrorBoundary'
 import PwaInstallBanner from './components/PwaInstallBanner'
 import PrivateReleaseStrip from './components/PrivateReleaseStrip'
@@ -87,7 +88,7 @@ export default function App() {
   const { isStale, lastUpdate } = useMultiversX()
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-white">
+    <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-white pb-20 md:pb-10">
       <PrivateReleaseStrip />
       <GuardianStatusBar />
       <Header />
@@ -133,7 +134,7 @@ export default function App() {
           </TxGate>
         </ErrorBoundary>
       </main>
-      <footer className="border-t border-[#2a2a3a] mt-8 py-6 hidden md:block">
+      <footer className="border-t border-[#2a2a3a] mt-8 py-6 hidden md:block mb-8">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <p className="font-bold">xArtists — LIA v6</p>
@@ -159,6 +160,7 @@ export default function App() {
         </div>
       </footer>
       <PwaInstallBanner />
+      <SignalTicker />
       <BottomNav />
       <RoutePrefetch />
     </div>
