@@ -1,4 +1,4 @@
-"""Guardian + RWA hook for Vellum / orchestrator (before Brain size-up)."""
+"""Guardian + RiskManager + RWA hook for Vellum (before Brain size-up)."""
 from __future__ import annotations
 
 import json
@@ -28,6 +28,28 @@ def check_before_open(
     mode: str = "COMPOUND",
     policy: Optional[PolicyLimits] = None,
 ) -> dict[str, Any]:
+    # 1) Risk Manager hard lock (drawdown ceiling)
+    risk: dict[str, Any] = {}
+    try:
+        from lia.security.risk_manager import RiskManager
+
+        rm = RiskManager(persist=True)
+        rv = rm.check_safety_status(float(drawdown))
+        risk = rv.to_dict()
+        if rv.locked or not rv.ok:
+            return {
+                "allow": False,
+                "reason": f"risk_manager:{rv.reason}",
+                "max_notional": 0.0,
+                "spiral_score": 1.0,
+                "effective_leverage": 0.0,
+                "kill_state": "TRIPPED",
+                "risk_manager": risk,
+            }
+    except Exception as e:
+        risk = {"error": str(e)}
+
+    # 2) Guardian spiral / Kelly / mode
     v = guardian_gate(
         equity=equity_usd,
         notional=notional_usd,
@@ -44,6 +66,8 @@ def check_before_open(
         "max_notional": v.max_notional,
         "spiral_score": v.spiral_score,
         "effective_leverage": v.effective_leverage,
+        "kill_state": "ARMED" if v.allow else "BLOCK",
+        "risk_manager": risk,
     }
 
 
@@ -71,7 +95,14 @@ def on_trade_settled(
     meta_hash_hint: str = "",
     persist: bool = True,
 ) -> dict[str, Any]:
-    """After paper/live close: Guardian → optional RWA EscrowIntent (no chain tx)."""
+    """After paper/live close: Risk tick + Guardian → optional RWA EscrowIntent."""
+    try:
+        from lia.security.risk_manager import RiskManager
+
+        RiskManager(persist=True).check_safety_status(float(drawdown))
+    except Exception:
+        pass
+
     event = TradeSettled(
         trade_id=trade_id,
         pnl_usd=pnl_usd,
@@ -89,7 +120,9 @@ def on_trade_settled(
         "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "trade_id": trade_id,
         "pnl_usd": pnl_usd,
-        "intent": None if intent is None else {
+        "intent": None
+        if intent is None
+        else {
             "trade_id": intent.trade_id,
             "amount_usd": intent.amount_usd,
             "reason": intent.reason,
