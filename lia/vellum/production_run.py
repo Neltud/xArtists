@@ -4,8 +4,8 @@ Vellum production entry — one command for operator.
   PYTHONPATH=. LIA_LIVE_TRADING=0 CHAIN=1 python -m lia.vellum.production_run
 
 Phases: chain_timing → gates → pipeline → commander → compounding
-        → signals → pretrade_gate → brain_cycle → paper_leg → mirror
-        → optional deploy_scs.
+        → signals → pretrade_gate → brain_cycle → paper_leg (if EV viable)
+        → commander_refresh → mirror → optional deploy_scs.
 Never sets LIA_LIVE_TRADING=1. Deploy only if VELLUM_DEPLOY_SCS=1 + PEM.
 """
 from __future__ import annotations
@@ -78,11 +78,11 @@ def phase_commander_enrich() -> dict[str, Any]:
     orch.setdefault("mode", orch.get("mode") or "YIELD")
     orch.setdefault("live_trading", False)
 
-    # Attach last brain / proof snapshots if present
     for name, key in (
         ("lia_brain_cycle.json", "brain"),
         ("lia_last_decision_proof.json", "last_decision_proof"),
         ("lia_pretrade_gate.json", "pretrade"),
+        ("lia_paper_legs.json", "paper_legs"),
     ):
         p = ROOT / "data" / name
         if p.is_file():
@@ -169,8 +169,18 @@ def phase_brain_cycle() -> dict[str, Any]:
         return {"ok": False, "soft": True, "module": "brain_cycle", "error": str(e)}
 
 
-def phase_paper_leg() -> dict[str, Any]:
-    """Soft: one paper leg via gate → EV → DecisionProof (no chain)."""
+def phase_paper_leg(brain_phase: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Soft: paper leg only when brain EV marked viable (or brain unavailable)."""
+    brain_phase = brain_phase or {}
+    if brain_phase.get("ok") and brain_phase.get("ev_viable") is False:
+        return {
+            "ok": True,
+            "soft": True,
+            "module": "paper_leg",
+            "skipped": True,
+            "reason": "ev_not_viable",
+            "paper": True,
+        }
     try:
         from lia.executor.paper_with_proof import execute_paper_leg
 
@@ -233,15 +243,14 @@ def run() -> dict[str, Any]:
     report["phases"]["compounding"] = phase_compounding()
     report["phases"]["signals"] = phase_signals()
     report["phases"]["pretrade_gate"] = phase_pretrade_gate()
-    report["phases"]["brain_cycle"] = phase_brain_cycle()
-    report["phases"]["paper_leg"] = phase_paper_leg()
-    # Re-enrich commander after brain/leg wrote JSON
+    brain = phase_brain_cycle()
+    report["phases"]["brain_cycle"] = brain
+    report["phases"]["paper_leg"] = phase_paper_leg(brain)
     report["phases"]["commander_refresh"] = phase_commander_enrich()
     report["phases"]["mirror"] = phase_mirror()
     report["phases"]["deploy_scs"] = phase_deploy_scs()
 
     pipe = report["phases"].get("pipeline") or {}
-    brain = report["phases"].get("brain_cycle") or {}
     leg = report["phases"].get("paper_leg") or {}
     report["summary"] = {
         "pipeline_ok": bool(pipe.get("ok", pipe.get("summary", {}).get("ok"))),
@@ -255,6 +264,7 @@ def run() -> dict[str, Any]:
         "brain_ev_viable": brain.get("ev_viable"),
         "brain_has_proof": brain.get("has_proof"),
         "paper_leg_ok": bool(leg.get("ok")),
+        "paper_leg_skipped": bool(leg.get("skipped")),
         "paper_leg_verify": leg.get("verification"),
         "mirror_copied": len((report["phases"].get("mirror") or {}).get("copied") or []),
         "deploy_skipped": bool((report["phases"].get("deploy_scs") or {}).get("skipped")),
