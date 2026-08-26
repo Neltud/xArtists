@@ -1,6 +1,7 @@
 """
 Pre-trade signal gate: run fusion then optionally shrink/block size.
 Advisory path for paper + live (live still needs Guardian/Intent).
+Optionally attaches DecisionProof when size allowed.
 """
 from __future__ import annotations
 
@@ -18,12 +19,15 @@ def apply_gate(
     lia_decision: str = "WAIT",
     lia_confidence: float = 0.5,
     size_usd: float = 0.0,
+    attach_proof: bool = False,
+    asset_id: str = "USDC-c76f1f",
 ) -> dict[str, Any]:
     """
     Returns gated decision + size.
     - conflict / low conf → WAIT, size 0
     - external agree → mild size boost cap
     - rumor / poly extreme politics → no boost
+    - attach_proof=True → DecisionProof paper when size > 0
     """
     try:
         from lia.signals.fusion import fuse
@@ -44,7 +48,6 @@ def apply_gate(
     conf = float(fused.get("confidence") or lia_confidence)
     source = str(fused.get("source") or "unknown")
 
-    # Map HOLD-like
     if decision in ("HOLD", "SKIP"):
         decision = "WAIT"
 
@@ -53,18 +56,37 @@ def apply_gate(
 
     if not allow_size:
         gated_size = 0.0
-        decision = "WAIT" if decision not in ("BUY", "SELL") else decision
         if conf < 0.45:
             decision = "WAIT"
-            gated_size = 0.0
 
-    # Mild boost only on agreement, never more than 1.15x, never on conflict sources
     if source == "lia+external_agree" and gated_size > 0:
         gated_size = min(gated_size * 1.1, size_usd * 1.15 if size_usd > 0 else gated_size)
 
     if source in ("external_conflict_wait", "social_rumor_block", "conflict_wait"):
         decision = "WAIT"
         gated_size = 0.0
+
+    proof_block: dict[str, Any] | None = None
+    if attach_proof and gated_size > 0 and decision in ("BUY", "SELL"):
+        try:
+            from lia.intent.decision_proof import (
+                ACTION_SWAP,
+                generate_decision_proof,
+                verify_decision_proof,
+            )
+
+            atomic = int(gated_size * 1_000_000)
+            proof = generate_decision_proof(
+                action_type=ACTION_SWAP,
+                asset_id=asset_id,
+                amount=max(atomic, 1),
+                target_price=1_000_000,
+                paper=True,
+            )
+            vr = verify_decision_proof(proof, mark_used=True, allow_live=False)
+            proof_block = {"proof": proof.to_dict(), "verification": vr.value}
+        except Exception as e:
+            proof_block = {"error": str(e)}
 
     out = {
         "updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -80,6 +102,7 @@ def apply_gate(
             "source": source,
             "allow_size": gated_size > 0,
         },
+        "decision_proof": proof_block,
         "fusion_summary": {
             "external_norm": fused.get("external_norm"),
             "external_weight_sum": fused.get("external_weight_sum"),
@@ -94,7 +117,6 @@ def apply_gate(
 
 
 def enrich_status(status: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Attach last gate + fusion into lia_v6_status orchestrator block."""
     path = ROOT / "data" / "lia_v6_status.json"
     if status is None:
         if path.is_file():
@@ -123,4 +145,9 @@ def enrich_status(status: dict[str, Any] | None = None) -> dict[str, Any]:
 
 
 if __name__ == "__main__":
-    print(json.dumps(apply_gate(lia_decision="BUY", lia_confidence=0.6, size_usd=25), indent=2)[:2000])
+    print(
+        json.dumps(
+            apply_gate(lia_decision="BUY", lia_confidence=0.6, size_usd=25, attach_proof=True),
+            indent=2,
+        )[:2500]
+    )
