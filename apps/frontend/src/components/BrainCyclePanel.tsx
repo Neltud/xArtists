@@ -49,14 +49,25 @@ export default function BrainCyclePanel() {
   useEffect(() => {
     let c = false
     ;(async () => {
-      try {
-        const r = await fetch(`${RAW}?t=${Date.now()}`, { cache: 'no-store' })
-        if (!r.ok) throw new Error(`HTTP ${r.status}`)
-        const j = (await r.json()) as BrainCycle
-        if (!c) setData(j)
-      } catch (e) {
-        if (!c) setErr(e instanceof Error ? e.message : 'offline')
+      const urls = [
+        `${import.meta.env.BASE_URL}data/lia_brain_cycle.json?t=${Date.now()}`,
+        `${RAW}?t=${Date.now()}`,
+      ]
+      for (const url of urls) {
+        try {
+          const r = await fetch(url, { cache: 'no-store' })
+          if (!r.ok) continue
+          const j = (await r.json()) as BrainCycle
+          if (!c) {
+            setData(j)
+            setErr(null)
+          }
+          return
+        } catch {
+          /* next */
+        }
       }
+      if (!c) setErr('brain offline — python -m lia.brain.cycle')
     })()
     return () => {
       c = true
@@ -93,12 +104,12 @@ export default function BrainCyclePanel() {
           <div className="rounded-lg border border-white/5 bg-black/30 p-3">
             <p className="text-[10px] uppercase text-zinc-500">EV</p>
             <p className="font-mono font-semibold mt-1">
-              {ev?.expected_value != null ? `$${ev.expected_value.toFixed(2)}` : '—'}
+              {ev?.expected_value != null ? `$${Number(ev.expected_value).toFixed(2)}` : '—'}
             </p>
             <p className="text-[11px] text-zinc-500 mt-1">
               P(profit){' '}
               {ev?.probability_of_profit != null
-                ? `${(ev.probability_of_profit * 100).toFixed(1)}%`
+                ? `${(Number(ev.probability_of_profit) * 100).toFixed(1)}%`
                 : '—'}
             </p>
             <span
@@ -117,7 +128,8 @@ export default function BrainCyclePanel() {
             <p className="font-semibold mt-1 text-purple-200">{data.meta?.primary || '—'}</p>
             <p className="text-[11px] text-zinc-500">scale back {data.meta?.secondary || '—'}</p>
             <p className="text-[11px] text-zinc-500 mt-1">
-              vol {data.meta?.volatility != null ? data.meta.volatility.toFixed(2) : '—'}
+              vol{' '}
+              {data.meta?.volatility != null ? Number(data.meta.volatility).toFixed(2) : '—'}
             </p>
           </div>
 
@@ -125,8 +137,11 @@ export default function BrainCyclePanel() {
             <p className="text-[10px] uppercase text-zinc-500">Portfolio</p>
             <p className="font-semibold mt-1">{data.portfolio?.plan || '—'}</p>
             <p className="text-[11px] text-zinc-500">
-              exposure {data.portfolio?.current_vol_proxy?.toFixed(2) ?? '—'} ·{' '}
-              {data.portfolio?.rebalance ? 'rebalance' : 'hold'}
+              exposure{' '}
+              {data.portfolio?.current_vol_proxy != null
+                ? Number(data.portfolio.current_vol_proxy).toFixed(2)
+                : '—'}{' '}
+              · {data.portfolio?.rebalance ? 'rebalance' : 'hold'}
             </p>
           </div>
 
@@ -135,8 +150,12 @@ export default function BrainCyclePanel() {
             {proof ? (
               <>
                 <p className="font-semibold mt-1 text-teal-200">{proof.verification || '—'}</p>
-                <p className="text-[10px] text-zinc-500 mono truncate mt-1" title={proof.proof?.decision_id}>
-                  {proof.proof?.action_name || '—'} · {(proof.proof?.decision_id || '').slice(0, 12)}…
+                <p
+                  className="text-[10px] text-zinc-500 mono truncate mt-1"
+                  title={proof.proof?.decision_id}
+                >
+                  {proof.proof?.action_name || '—'} ·{' '}
+                  {(proof.proof?.decision_id || '').slice(0, 12)}…
                 </p>
                 <span className="text-[10px] text-amber-300/90">paper commitment</span>
               </>
@@ -149,9 +168,11 @@ export default function BrainCyclePanel() {
 
       {data?.conquest && (
         <p className="text-[11px] text-zinc-500 mt-3">
-          Conquest {data.conquest.source}→{data.conquest.dest} · net $'
-          {data.conquest.net_profit?.toFixed?.(2) ?? data.conquest.net_profit} ·{' '}
-          {data.conquest.viable ? 'viable' : 'skip'}
+          Conquest {data.conquest.source}→{data.conquest.dest} · net $
+          {typeof data.conquest.net_profit === 'number'
+            ? data.conquest.net_profit.toFixed(2)
+            : data.conquest.net_profit}{' '}
+          · {data.conquest.viable ? 'viable' : 'skip'}
         </p>
       )}
     </section>

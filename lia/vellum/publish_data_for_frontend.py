@@ -61,6 +61,7 @@ CRITICAL = [
     "lia_brain_cycle.json",
     "lia_last_decision_proof.json",
     "decision_proofs_used.json",
+    "lia_paper_legs.json",
 ]
 
 
