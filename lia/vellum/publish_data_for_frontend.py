@@ -29,10 +29,12 @@ CRITICAL = [
     "config.json",
     "greensmoke_top.json",
     "greensmoke_forecasts.json",
+    "gsn_leaderboard_score.json",
     "lia_tro_policy.json",
     "contracts.json",
     "rwa_escrow_intents.json",
     "vellum_last_run.json",
+    "vellum_production_run.json",
     "egld_price.json",
     "oracle_prices.json",
     "oracle_config.json",
@@ -47,6 +49,16 @@ CRITICAL = [
     "guardian_kill_log.json",
     "bridge_outbox.json",
     "burnify_lia_state.json",
+    # compounding + annual sim
+    "compounding_echelons.json",
+    "compounding_annual_sim.json",
+    # signals fusion (GSN / Polymarket / free feeds)
+    "lia_signal_fusion.json",
+    "signal_ticker.json",
+    "polymarket_signals.json",
+    "free_signals.json",
+    "social_intel.json",
+    "lia_intel_catalog.json",
 ]
 
 
