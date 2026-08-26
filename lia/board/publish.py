@@ -1,4 +1,4 @@
-"""Publish data/lia_board.json — positions, feeds, arb, series, risk."""
+"""Publish data/lia_board.json — positions, feeds, arb, series, risk, signals."""
 from __future__ import annotations
 
 import json
@@ -14,6 +14,24 @@ from lia.venues.onchain_feeds import all_placement_feeds
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def _signals_snapshot() -> dict[str, Any]:
+    """Best-effort attach fusion/pretrade without failing board publish."""
+    out: dict[str, Any] = {"ok": False}
+    fusion_path = ROOT / "data" / "lia_signal_fusion.json"
+    gate_path = ROOT / "data" / "lia_pretrade_gate.json"
+    try:
+        if fusion_path.is_file():
+            out["fusion"] = json.loads(fusion_path.read_text(encoding="utf-8")).get("fused")
+            out["ok"] = True
+        if gate_path.is_file():
+            out["pretrade"] = json.loads(gate_path.read_text(encoding="utf-8")).get("gated")
+            out["ok"] = True
+    except (json.JSONDecodeError, OSError) as e:
+        out["error"] = str(e)
+    out["note"] = "GSN>=80% + Polymarket + free feeds — advisory"
+    return out
+
+
 def build_board(
     *,
     series_start: float = 10.0,
@@ -25,13 +43,14 @@ def build_board(
     series = run_three_series(start_usd=series_start, days=series_days, include_all=True)
     arb = scan_block_arb(token=token, feeds=feeds, trades_today=0)
     return {
-        "version": "1.1",
+        "version": "1.2",
         "board": "lia_xboard",
         "risk": DEFAULT_LIMITS.to_dict(),
         "feeds": feeds,
         "positions": positions,
         "series": series,
         "arb": arb,
+        "signals": _signals_snapshot(),
         "trades": {
             "past": [],
             "open": [],

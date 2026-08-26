@@ -49,11 +49,10 @@ CRITICAL = [
     "guardian_kill_log.json",
     "bridge_outbox.json",
     "burnify_lia_state.json",
-    # compounding + annual sim
     "compounding_echelons.json",
     "compounding_annual_sim.json",
-    # signals fusion (GSN / Polymarket / free feeds)
     "lia_signal_fusion.json",
+    "lia_pretrade_gate.json",
     "signal_ticker.json",
     "polymarket_signals.json",
     "free_signals.json",

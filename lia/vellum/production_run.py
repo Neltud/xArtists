@@ -4,7 +4,7 @@ Vellum production entry — one command for operator.
   PYTHONPATH=. LIA_LIVE_TRADING=0 CHAIN=1 python -m lia.vellum.production_run
 
 Phases: chain_timing → gates → pipeline → commander → compounding (soft)
-        → signals fusion (soft) → mirror → optional deploy_scs.
+        → signals fusion (soft) → pretrade_gate (soft) → mirror → optional deploy_scs.
 Never sets LIA_LIVE_TRADING=1. Deploy only if VELLUM_DEPLOY_SCS=1 + PEM.
 """
 from __future__ import annotations
@@ -23,7 +23,6 @@ def _ts() -> str:
 
 
 def phase_chain_timing() -> dict[str, Any]:
-    """Probe /stats.refreshRate so executor polls match the live chain (Supernova auto)."""
     try:
         from lia.gas.chain_timing import probe_api, timing_defaults
 
@@ -94,7 +93,6 @@ def phase_commander_enrich() -> dict[str, Any]:
 
 
 def phase_compounding() -> dict[str, Any]:
-    """Soft-fail paper compounding (10 echelons). Never blocks the pipeline."""
     try:
         from lia.compounding.step import run_step
 
@@ -104,7 +102,6 @@ def phase_compounding() -> dict[str, Any]:
 
 
 def phase_signals() -> dict[str, Any]:
-    """Soft-fail: GSN>=80% + Polymarket + free multi-domain → fusion + ticker."""
     try:
         from lia.signals.fusion import fuse
 
@@ -121,6 +118,24 @@ def phase_signals() -> dict[str, Any]:
         }
     except Exception as e:
         return {"ok": False, "soft": True, "module": "signals_fusion", "error": str(e)}
+
+
+def phase_pretrade_gate() -> dict[str, Any]:
+    """Soft: apply fusion gate + write orchestrator.signals into status."""
+    try:
+        from lia.signals.pretrade_gate import enrich_status
+
+        st = enrich_status()
+        sig = (st.get("orchestrator") or {}).get("signals") or {}
+        return {
+            "ok": True,
+            "soft": True,
+            "module": "pretrade_gate",
+            "fused": sig.get("fused"),
+            "updated": sig.get("updated"),
+        }
+    except Exception as e:
+        return {"ok": False, "soft": True, "module": "pretrade_gate", "error": str(e)}
 
 
 def phase_mirror() -> dict[str, Any]:
@@ -163,21 +178,24 @@ def run() -> dict[str, Any]:
     report["phases"]["commander"] = phase_commander_enrich()
     report["phases"]["compounding"] = phase_compounding()
     report["phases"]["signals"] = phase_signals()
+    report["phases"]["pretrade_gate"] = phase_pretrade_gate()
     report["phases"]["mirror"] = phase_mirror()
     report["phases"]["deploy_scs"] = phase_deploy_scs()
 
     pipe = report["phases"].get("pipeline") or {}
     comp = report["phases"].get("compounding") or {}
     sig = report["phases"].get("signals") or {}
+    gate = report["phases"].get("pretrade_gate") or {}
     report["summary"] = {
         "pipeline_ok": bool(pipe.get("ok", pipe.get("summary", {}).get("ok"))),
         "guardian_allow": (pipe.get("summary") or {}).get("guardian_allow"),
         "mode": (pipe.get("summary") or {}).get("mode"),
         "commander_ok": bool((report["phases"].get("commander") or {}).get("ok")),
         "compounding_ok": bool(comp.get("ok")),
-        "compounding_soft": bool(comp.get("soft", True)),
         "signals_ok": bool(sig.get("ok")),
         "signals_decision": sig.get("decision"),
+        "pretrade_ok": bool(gate.get("ok")),
+        "pretrade_decision": (gate.get("fused") or {}).get("decision"),
         "mirror_copied": len((report["phases"].get("mirror") or {}).get("copied") or []),
         "deploy_skipped": bool((report["phases"].get("deploy_scs") or {}).get("skipped")),
         "allow_live_trading": bool(
