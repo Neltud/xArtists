@@ -1,19 +1,15 @@
-# Project status — 2026-08-26 (soir, profondeur)
+# Project status — 2026-08-26 (DEMO READY)
 
 | Capacité | Prêt ? |
 |----------|--------|
-| Dashboard / parcours / onboarding | Oui |
-| Trading: board · fusion · brain · paper legs · compounding · annual | Oui |
-| production_run: … → brain → **paper_leg** → mirror | Oui |
-| DecisionProof paper + anti-replay store | Oui |
-| Status orchestrator.brain / pretrade / proof | Oui |
-| Signaux GSN≥80% · ticker | Oui (advisory) |
+| **DEMO mode only** (bandeau + posture) | **Oui** |
+| Lectures live API MVX (prix, soldes) | Oui |
+| Board / brain / fusion / legs / compounding paper | Oui |
+| Risk Manager + Guardian Commander | Oui |
 | List/Buy/mint on-chain | **Non** — codeHash null |
-| Agents marketplace SC | **Non** |
-| LIA live | **Non** |
-| Escrow capital Fund | Spec |
+| LIA live trading | **Non** |
 
-Docs: `VELLUM_WORKFLOW_MAP.md` · `COHERENCE_AUDIT_2026-08-26.md` · `DECISION_PROOF_AND_BRAIN.md`
+Guide démo : [`DEMO_READY.md`](DEMO_READY.md)
 
 ```bash
 PYTHONPATH=. CHAIN=1 LIA_LIVE_TRADING=0 python -m lia.vellum.production_run

@@ -7,6 +7,7 @@ import FirstVisitOnboarding from './components/FirstVisitOnboarding'
 import ErrorBoundary from './components/ErrorBoundary'
 import PwaInstallBanner from './components/PwaInstallBanner'
 import PrivateReleaseStrip from './components/PrivateReleaseStrip'
+import DemoModeBanner from './components/DemoModeBanner'
 import GuardianStatusBar from './components/shared/GuardianStatusBar'
 import RoutePrefetch from './components/RoutePrefetch'
 import { useMultiversX } from './hooks/useMultiversX'
@@ -90,6 +91,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-white pb-20 md:pb-10">
+      <DemoModeBanner />
       <PrivateReleaseStrip />
       <GuardianStatusBar />
       <Header />
@@ -138,8 +140,10 @@ export default function App() {
       <footer className="border-t border-[#2a2a3a] mt-8 py-6 hidden md:block mb-8">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <p className="font-bold">xArtists — LIA v6</p>
-            <p className="text-xs text-gray-500">$TRO supply max 500 000 · MultiversX Mainnet</p>
+            <p className="font-bold">xArtists — LIA v6 · DEMO</p>
+            <p className="text-xs text-gray-500">
+              $TRO max 500 000 · MultiversX · paper trading · live network reads
+            </p>
           </div>
           <div className="flex gap-4 text-sm text-gray-500">
             <a href={LINKS.github} target="_blank" rel="noreferrer" className="hover:text-white">
@@ -150,9 +154,6 @@ export default function App() {
             </a>
             <a href="/xArtists/editions" className="hover:text-white">
               Editions
-            </a>
-            <a href="/xArtists/ads" className="hover:text-white">
-              Pub / Ads
             </a>
             <a href={LINKS.xexchange} target="_blank" rel="noreferrer" className="hover:text-white">
               xExchange
