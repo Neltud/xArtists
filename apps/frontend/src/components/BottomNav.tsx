@@ -1,15 +1,11 @@
 import { NavLink } from 'react-router-dom'
 
-/**
- * Mobile bottom bar — KPI paths.
- * Wallet = user · Portfolio/LIA = protocole · Agents includes packs entry.
- */
 const ITEMS = [
   { to: '/', label: 'Home', emoji: '📊', end: true },
-  { to: '/studio', label: 'Studio', emoji: '🎨' },
+  { to: '/sim', label: 'Sim', emoji: '🧪' },
   { to: '/marketplace', label: 'Market', emoji: '🛒' },
   { to: '/agents', label: 'Agents', emoji: '🧠' },
-  { to: '/my-packs', label: 'Packs', emoji: '🎫' },
+  { to: '/trading', label: 'Trade', emoji: '⚡' },
   { to: '/wallet', label: 'Wallet', emoji: '👛' },
 ]
 

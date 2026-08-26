@@ -48,6 +48,18 @@ export default function Dashboard() {
 
       <LandingHero connected={connected} onConnect={requestOpenConnect} />
 
+      <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <p className="text-sm font-semibold text-cyan-100">Simulation Lab</p>
+          <p className="text-[11px] text-zinc-500">
+            Trades LIA simulés · parcours user · tous les modules · SC soon
+          </p>
+        </div>
+        <Link to="/sim" className="btn-primary text-xs py-2 px-4">
+          Ouvrir le lab →
+        </Link>
+      </div>
+
       <UserJourneyStrip />
 
       <PersonaWelcome />
@@ -92,8 +104,8 @@ export default function Dashboard() {
             <Link to="/trading" className="text-xs text-teal-300 hover:underline">
               Trading →
             </Link>
-            <Link to="/portfolio" className="text-xs text-purple-400 hover:underline">
-              Portfolio →
+            <Link to="/sim" className="text-xs text-cyan-300 hover:underline">
+              Sim trades →
             </Link>
           </div>
         </div>
@@ -118,7 +130,10 @@ export default function Dashboard() {
       <ExplainCards />
 
       <p className="text-center text-[11px] text-zinc-600">
-        $TRO supply max 500 000 · MultiversX · wallet user ≠ LIA ops · SignalTicker en bas
+        $TRO supply max 500 000 · MultiversX · wallet user ≠ LIA ops ·{' '}
+        <Link to="/sim" className="text-cyan-500/80 hover:underline">
+          Simulation Lab
+        </Link>
       </p>
     </div>
   )

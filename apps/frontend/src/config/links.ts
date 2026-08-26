@@ -31,6 +31,7 @@ export const LINKS = {
 /** Primary desktop nav — core product paths */
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/', label: 'Home', emoji: '📊' },
+  { to: '/sim', label: 'Sim Lab', emoji: '🧪' },
   { to: '/studio', label: 'Studio', emoji: '🎨' },
   { to: '/gallery', label: 'Galerie', emoji: '🖼️' },
   { to: '/marketplace', label: 'Market', emoji: '🛒' },

@@ -33,6 +33,7 @@ const BurnifyPage = lazy(() => import('./pages/BurnifyPage'))
 const ArtistStudio = lazy(() => import('./pages/ArtistStudio'))
 const AdsPage = lazy(() => import('./pages/AdsPage'))
 const Editions = lazy(() => import('./pages/Editions'))
+const SimulationLab = lazy(() => import('./pages/SimulationLab'))
 const TxShell = lazy(() => import('./providers/TxShell'))
 
 const TX_PATHS = new Set([
@@ -102,6 +103,8 @@ export default function App() {
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/sim" element={<SimulationLab />} />
+                <Route path="/simulation" element={<SimulationLab />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/trading" element={<Trading />} />
                 <Route path="/studio" element={<ArtistStudio />} />
@@ -142,21 +145,18 @@ export default function App() {
           <div>
             <p className="font-bold">xArtists — LIA v6 · DEMO</p>
             <p className="text-xs text-gray-500">
-              $TRO max 500 000 · MultiversX · paper trading · live network reads
+              Simulation Lab · paper trading · live network reads · SC soon
             </p>
           </div>
           <div className="flex gap-4 text-sm text-gray-500">
             <a href={LINKS.github} target="_blank" rel="noreferrer" className="hover:text-white">
               GitHub
             </a>
+            <a href="/xArtists/sim" className="hover:text-white">
+              Sim Lab
+            </a>
             <a href={LINKS.explorer} target="_blank" rel="noreferrer" className="hover:text-white">
               Explorer
-            </a>
-            <a href="/xArtists/editions" className="hover:text-white">
-              Editions
-            </a>
-            <a href={LINKS.xexchange} target="_blank" rel="noreferrer" className="hover:text-white">
-              xExchange
             </a>
           </div>
         </div>
