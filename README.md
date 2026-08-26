@@ -67,6 +67,29 @@ LIA Ops (public): `erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn
 
 ---
 
+## Build steps (summary)
+
+Full guide: **[`docs/BUILD_STEPS.md`](docs/BUILD_STEPS.md)**
+
+```bash
+# Frontend
+cd apps/frontend && npm ci && npm run build
+
+# LIA paper data → public/data
+export PYTHONPATH=. CHAIN=1 LIA_LIVE_TRADING=0
+python -m lia.vellum.production_run
+
+# SC (optional, before mainnet deploy)
+./scripts/build_scs_isolated.sh all
+
+# Gates
+python -m lia.security.go_live_gates
+```
+
+Push `main` → GitHub Actions builds Pages automatically.
+
+---
+
 ## Security posture (gates)
 
 ```bash
@@ -94,7 +117,7 @@ python -m lia.vellum.production_run
 Timer cadence: **3–5 min**.  
 Deploy SC is **opt-in** (`VELLUM_DEPLOY_SCS=1` + PEM secret only).
 
-Full operator notes: [`docs/VELLUM_OPERATOR_NOW.md`](docs/VELLUM_OPERATOR_NOW.md)
+Full operator notes: [`docs/VELLUM_OPERATOR_NOW.md`](docs/VELLUM_OPERATOR_NOW.md) · map: [`docs/VELLUM_WORKFLOW_MAP.md`](docs/VELLUM_WORKFLOW_MAP.md)
 
 ---
 
@@ -148,19 +171,16 @@ SC: `contracts/treasury-splitter` · Policy: [`docs/TREASURY_POLICY.md`](docs/TR
 
 | Doc | Purpose |
 |-----|---------|
-| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | **Analyse dApp + veille techno (26 août)** |
+| [BUILD_STEPS.md](docs/BUILD_STEPS.md) | **Étapes de build front / LIA / SC / CI** |
+| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Analyse dApp + veille techno |
 | [ROADMAP_V1.md](docs/ROADMAP_V1.md) | 7 priorités V1 |
 | [AUDIT_EXTERNAL_FULL.txt](docs/AUDIT_EXTERNAL_FULL.txt) | Full external audit |
 | [VELLUM_OPERATOR_NOW.md](docs/VELLUM_OPERATOR_NOW.md) | Operator run |
+| [VELLUM_WORKFLOW_MAP.md](docs/VELLUM_WORKFLOW_MAP.md) | Workflows Vellum ↔ modules |
 | [TREASURY_POLICY.md](docs/TREASURY_POLICY.md) | Foundation treasury |
-| [TREASURY_SPLITTER.md](docs/TREASURY_SPLITTER.md) | Splitter SC |
 | [GUARDIAN_FAST_PATH.md](docs/GUARDIAN_FAST_PATH.md) | Risk FAST path |
-| [KILL_SWITCH_RESET.md](docs/KILL_SWITCH_RESET.md) | Kill reset circuit |
-| [FRONTEND_COMMANDER_ARCHITECTURE.md](docs/FRONTEND_COMMANDER_ARCHITECTURE.md) | Commander UI |
-| [SECURITY_REMEDIATION_P0_P1.md](docs/SECURITY_REMEDIATION_P0_P1.md) | SC remediation |
 | [RUNBOOK_NOW.md](docs/RUNBOOK_NOW.md) | Immediate ops |
 | [STATUS.md](docs/STATUS.md) | Capability matrix |
-| [STATUS_2026-08-26.md](docs/STATUS_2026-08-26.md) | **Status du jour** |
 
 ---
 
