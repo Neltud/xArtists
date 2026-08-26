@@ -69,10 +69,12 @@ export const PAGE_GUIDE: Record<
     bullets: [
       'Board protocole (JSON) — pas ton compte.',
       'Fusion signaux : GSN ≥80 % · Polymarket · feeds gratuits.',
+      'Brain cycle : EV Monte-Carlo · Meta swarm · DecisionProof paper.',
+      'Paper legs : gate → EV → preuve (aucune signature chain).',
       'Compounding 10 colonnes · sim annuelle avec pertes possibles.',
       'Guardian-first · LIA_LIVE_TRADING=0 jusqu’aux micro-preuves.',
     ],
-    warn: 'Aucun ordre auto sur vos fonds.',
+    warn: 'Aucun ordre auto sur vos fonds. DecisionProof ≠ SNARK live.',
   },
   wallet: {
     title: 'Mon wallet (utilisateur)',
