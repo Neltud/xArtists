@@ -5,12 +5,12 @@
 dApp (GitHub Pages): https://neltud.github.io/xArtists/  
 Repo: https://github.com/Neltud/xArtists  
 
-**Status (2026-08-25): private / pre-mainnet release**  
+**Status (2026-08-26): private / pre-mainnet release**  
 - Paper LIA by default (`LIA_LIVE_TRADING=0`)  
 - Marketplace & agents SC: **not live** (empty / null `codeHash`) until deploy + verify  
 - UI fail-closed: no fake “live market” claims without on-chain code  
 - **Code pleinement corrigé (v0.15.0+)** — analyse dApp + veille techno à jour  
-- Supernova **Devnet LIVE** (600 ms, depuis 20 août) · mainnet upgrade **1 sept.** · activation **10 sept.** (countdown **~16 j**)
+- Supernova **Devnet LIVE** (600 ms, J+6) · upgrade nodes **1 sept. (J-6)** · activation **10 sept. (J-15)** · polls TX **auto-detect** `refreshRate`
 
 ---
 
@@ -148,7 +148,7 @@ SC: `contracts/treasury-splitter` · Policy: [`docs/TREASURY_POLICY.md`](docs/TR
 
 | Doc | Purpose |
 |-----|---------|
-| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | **Analyse dApp + veille techno** |
+| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | **Analyse dApp + veille techno (26 août)** |
 | [ROADMAP_V1.md](docs/ROADMAP_V1.md) | 7 priorités V1 |
 | [AUDIT_EXTERNAL_FULL.txt](docs/AUDIT_EXTERNAL_FULL.txt) | Full external audit |
 | [VELLUM_OPERATOR_NOW.md](docs/VELLUM_OPERATOR_NOW.md) | Operator run |
@@ -160,7 +160,7 @@ SC: `contracts/treasury-splitter` · Policy: [`docs/TREASURY_POLICY.md`](docs/TR
 | [SECURITY_REMEDIATION_P0_P1.md](docs/SECURITY_REMEDIATION_P0_P1.md) | SC remediation |
 | [RUNBOOK_NOW.md](docs/RUNBOOK_NOW.md) | Immediate ops |
 | [STATUS.md](docs/STATUS.md) | Capability matrix |
-| [STATUS_2026-08-25.md](docs/STATUS_2026-08-25.md) | **Status du jour** |
+| [STATUS_2026-08-26.md](docs/STATUS_2026-08-26.md) | **Status du jour** |
 
 ---
 

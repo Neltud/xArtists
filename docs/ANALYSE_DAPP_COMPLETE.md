@@ -1,160 +1,188 @@
-# Analyse DApp Complète xArtists — Mise à Jour 22 Août 2026
+# Analyse DApp Complète xArtists — 26 août 2026
 
-## Résumé Exécutif
-xArtists est une DApp innovante sur MultiversX combinant **IA agentique (LIA v5/v6)**, **NFT Phygital / RWA art tokenisé**, **staking**, **DAO** et **bridge BTC expérimental**.  
-Plateforme conçue pour empower les artistes, engager les collectors et éduquer via un écosystème sécurisé, transparent et durable.
+## Résumé exécutif
 
-**Live Demo** : https://neltud.github.io/xArtists  
-**Repo** : https://github.com/Neltud/xArtists  
-**Statut** : Production-ready (code pleinement corrigé et poussé — **v0.15.0+**). Dernière mise à jour documentée : **22 août 2026**.
+xArtists est une dApp **MultiversX mainnet** qui combine **galerie NFT / phygital (RWA art)**, **marketplace on-chain (fail-closed)**, **token utilitaire $TRO (cap 500 000)**, **DAO**, et l’agent **LIA v6** (paper-first, Guardian → Brain).
 
-**Release posture (22 août)** : private / pre-mainnet — Paper LIA par défaut (`LIA_LIVE_TRADING=0`) ; marketplace & agents SC **not live** (codeHash null) jusqu’à deploy + verify ; UI fail-closed.
+| | |
+|---|---|
+| **Live** | https://neltud.github.io/xArtists/ |
+| **Repo** | https://github.com/Neltud/xArtists |
+| **Posture** | Private / pre-mainnet — **pas un marché live** |
+| **LIA** | `LIA_LIVE_TRADING=0` (paper) |
+| **SC market / agents** | **codeHash null** — List/Buy/Bid bloqués |
+| **Code** | Corrigé et poussé **26 août 2026** (v0.15.0+ / sprint 0.16) |
 
-### Points forts
-- Intégration Warps / AI Agents MultiversX + agents LIA autonomes (trading, minting génératif, yield).
-- Contrats Rust robustes (nft-staking, tro-staking, btc-bridge, agents-marketplace, nft-marketplace, escrow, minter, soul-zk-verifier, treasury-splitter, tro-burn) avec tests blackbox et guards.
-- Frontend React + Vite + TypeScript + Tailwind + MultiversX SDK-dapp moderne (lazy-loading, dark mode, FR/EN, PWA).
-- Wallet ESDT complet (Hatom, xExchange positions, prix live EGLD/TRO/BTC).
-- DAO $TRO (quorum 60 %), Marketplace escrow RWA, Tip (EGLD + BTC), Portfolio & Trading Terminal.
-- Monorepo pnpm + CI/CD GitHub Actions + GitHub Pages + Docker.
-- Agents GreenSmoke (Liia météo, Lia crypto, Macro, Politics, Sport, Tech) + BottomNav mobile + PWA.
-- Agents Marketplace on-chain (list/buy packs) + fee transparency.
-- Stripe onramp, escrow logic, studio creator journey, dual-product UX, security matrix.
-
-### Corrections & livraisons confirmées (jusqu’au 22 août 2026)
-- Release **v0.15.0** (3 août) : Agents Marketplace full integration (ABI + hooks List/Buy + UI + deploy script), LIA circuit financier pro (guards, trailing, multi-horizon, symbiosis), marketplace multi-currency + burn TRO notices, Hatom LIA positions, Pinata/IPFS, PWA install banner, Playwright E2E smoke, nonce polling + TX error handling.
-- 4–5 août : Stripe onramp, escrow logic Python, studio creator journey, dual-product UX, security matrix documentée.
-- 6 août : activation mainnet MultiversX **v1.11.10.0** (epoch 2198) — améliorations VM ; documentation synchronisée.
-- 7–9 août : veille techno rafraîchie, confirmation stabilité réseau, alignement docs README / Roadmap / Analyse.
-- **10 août** : mainnet **v1.11.11.0** (extra checks miniblocks, pas d’activation epoch) ; docs resynchronisées ; status dApp à jour.
-- **11–16 août** : analyse + veille post-upgrades ; hardening Supernova (rapports 9 & 16 août) ; code corrigé confirmé poussé.
-- **17 août** : veille techno J+11 / J+7 ; rapport hebdo 16 août (metablock checks, gossip dedup, peer cleanup, p2p perf) ; aucun incident réseau ; marché RWA ~$38.1 B ; code pleinement corrigé reconfirmé et docs poussées ; P0 deploy SC inchangé.
-- **18 août** : status J+12 / J+8 ; countdown Supernova ~27 jours (annonce officielle MultiversX) ; focus agentique « What an agent needs to transact » ; stats réseau 9.24 M accounts / 621 M tx ; code pleinement corrigé reconfirmé et docs poussées.
-- **19 août** : status J+13 / J+9 ; countdown Supernova **~22 jours** (target ~10 septembre 2026) ; réseau stable, aucun incident post-upgrades ; code pleinement corrigé reconfirmé (v0.15.0+) et docs poussées.
-- **20 août** : status J+14 / J+10 ; **Supernova Devnet activation** (~14:25–14:46 UTC) ; countdown mainnet **~21 jours** ; API service v1.21.0 (19 août) ; code pleinement corrigé reconfirmé et docs poussées.
-- **21 août** : status J+15 / J+11 ; **Supernova Devnet LIVE** (600 ms rounds confirmés) ; timeline officielle mainnet : upgrade **1 sept.** · activation **10 sept.** ; code pleinement corrigé reconfirmé et docs poussées.
-- **22 août** : status J+16 / J+12 ; Supernova Devnet LIVE (J+2) ; countdown mainnet **~19 jours** ; builders sprint (supernova-sprint.xyz) ; code pleinement corrigé reconfirmé et docs poussées.
-- Mises à jour dépendances (sécurité + compatibilité sdk-dapp).
-- Fixes logique voting / rewards / WalletConnect / Header wallet modal (Web Wallet réel, xPortal deep link).
-- Optimisations performance frontend, cleanup monorepo, scan ESDT complet.
-- Config BTC tip address + Hatom + TRO pools endpoints.
+Ce n’est **pas** un fonds d’investissement retail. Pas de promesse de performance. Tips ≠ investissement. Wallet **user Connect** ≠ wallet **LIA Ops**.
 
 ---
 
-## Veille Technologique (22 août 2026)
+## Verdict produit (26 août)
 
-### MultiversX / Protocol
-- **Mainnet v1.11.10.0** : activé **6 août 2026** (epoch 2198). Améliorations VM. Réseau **stable J+16** (22 août).
-- **Mainnet v1.11.11.0** : sorti **10 août 2026** — extra checks sur création de miniblocks ; **pas d’activation epoch**. Réseau **stable J+12**.
-- **API service v1.21.0** (19 août) : suppression limite pagination 10k, WebSocket subscription, NFT media / thumbnails / pricing / caching fixes.
-- **Supernova** : upgrade majeur finalité sub-seconde (~600 ms block time, intra-shard 100–250 ms). Découplage consensus / exécution (Propose/Vote → puis Execute).
-  - Gouvernance approuvée massivement (janv. 2026, ~99.64 %).
-  - **Battle of Nodes** (depuis 11 mars 2026) : >1 milliard de transactions, pic public ~120k TPS.
-  - **Devnet** : **LIVE** depuis le **20 août 2026** (~14:46 UTC — rounds 600 ms). Annonce officielle @MultiversX : « Supernova is live on Devnet. Mainnet Upgrade begins September 1. Activation September 10. »
-  - **Mainnet** : Upgrade commence **1er septembre 2026** · Activation **10 septembre 2026** (countdown officiel **~19 jours** au 22 août ; hardening sécurité intensif ; Supernova Arcade disponible pour tests 600 ms).
-  - Builders : http://supernova-sprint.xyz/builders — pointer l’app sur Devnet pour préparer le build.
-  - Rapport hebdo **9 août** : tests d’intégration renforcés, guardians coverage, replay historical data, transition guards, startup validation activation boundary, full runs sur chain simulator + internal testnet ; mini-block pre-fetching proof-driven.
-  - Rapport hebdo **16 août** (@AdrianDobrita) : reworked metablock reference checks (strict inclusion budget) ; reduced broadcast bandwidth by deduplicating gossip messages ; cleaned up inactive peer connections and stale acknowledgments ; performance testing on the p2p broadcasting improvements ; increased fuzz coverage (protocol, VM, state, crypto) ; consensus-in-the-loop chain simulator testing suite ; chaos testing scenarios ; state accesses tool adapted for Supernova.
-  - Guardians (social recovery) + Staking v5 en production / tests finaux (Q3 2026).
-- Stats réseau (réf. 17–19 août 2026) : ~9.24 M accounts · ~621 M transactions · 14.5 M staked · 3200+ validators · xPortal 3M+ users · xExchange ~$3.04 M TVL · 0.6 M USD 7d volume.
-- Écosystème : xPortal, Hatom, xExchange, focus DeFi + NFT + **Agentic AI / Agentic Payments** live + xMoney Payment Links AI-ready + card issuing / recurring billing. CertiK Skynet actif.
-- Six ans de Mainnet (30 juillet 2020 → 2026).
-- Série sécurité MultiversX (août 2026) : focus guards on-chain pour agents autonomes (MX-8004 identity/reputation agents en devnet).
+| Surface | État réel | Risque si on ment |
+|---------|-----------|-------------------|
+| Galerie / Studio / collections | UI live, données JSON + API NFT | Faible |
+| Marketplace List/Buy/Bid | **Fermé** jusqu’à codeHash | Critique — UI fail-closed |
+| Agents packs on-chain | **Non déployé** | Critique |
+| Wallet connect (Web / xPortal / DeFi) | Connect + lecture ESDT | Moyen (WC QR incomplet) |
+| LIA board / compounding paper | Paper + JSON publish | Moyen — badge PAPER obligatoire |
+| DAO | Read-first | Moyen |
+| Treasury splitter | Code prêt, wallets Mission/Reserve/Reward/Ops **null** | Bloquant deploy fees |
+| Bridge BTC | EXPERIMENTAL — no user funds | Interdit live |
 
-### AI Agents on MultiversX & tendances 2026
-- Plateforme officielle agents on-chain + AI Agent Kit (OpenClaw, MCP Server SDK, templates).
-- **Warps v3+** : structures on-chain générant UI shareable pour transactions (idéal minting / interactions agents) + langage natif pour LLM.
-- Agentic Payments live (x402 adapté MultiversX) ; agents autonomes qui tradent, gagnent trust on-chain, exécutent cycles économiques complets.
-- Multi-agent systems + Guardian Agents (supervision, compliance) standards.
-- xArtists (LIA + GreenSmoke + Agents Marketplace) s’aligne parfaitement sur la narrative DeFAI / agents. Sub-second finality (Supernova) critique pour agents à latence ~100–250 ms.
-- Sécurité agents : guarded accounts MultiversX (signature seule insuffisante) + identité on-chain agents (MX-8004).
-- Contenu officiel 17 août : « What an agent needs to transact » — validation narrative pour LIA + packs marketplace.
-
-### RWA & Tokenization Art / Phygital
-- Marché RWA tokenisé (données mi-août 2026) :
-  - Valeur on-chain tokenisée (hors stablecoins) : **~$38.1 B** (rwa.xyz) ; fourchette trackers ~$31–38 B ; définitions élargies jusqu’à ~$51–60 B (dont part idle significative).
-  - Private credit dominant ; US Treasuries ~$13–15 B.
-  - Ondo Finance leader (~8 % share, ~$3.43 B AUM).
-  - Paradox liquidité : une part importante des assets reste peu tradée ; besoin d’accès et d’utilité réelle.
-  - Art & collectibles + phygital : segment différenciant (royalties, high-value pieces, photo physique → AI re-évaluation → metadata on-chain).
-- xArtists positionné sur **art tokenisé + Phygital NFTs + agents IA génératifs** — positionnement différenciant vs Treasuries institutionnels.
-
-### Stack technique & tendances
-- Rust SC (MultiversX SpaceVM / SpaceCraft), TypeScript/React/Vite, pnpm workspaces, Tailwind, PWA.
-- 2026 : Agentic AI on-chain, cross-chain (BTC L2 / bridge), sub-second UX critique pour trading & minting (préparation Supernova mainnet 10 sept. ; Devnet live 20 août).
-- Outils : mxpy, sdk-dapp v5+, GitHub Actions, Lighthouse, SpaceCraft SDK, Playwright E2E, Pinata IPFS, Stripe onramp.
+**Source of truth UI :** `apps/frontend` (Vite + React 18 + TS + Tailwind + sdk-dapp).  
+`src/` = dette legacy. `docs/index.html` **doit** être la SPA Vite (`#root`), jamais le monolithe Tailwind CDN.
 
 ---
 
-## Analyse Technique Complète
+## Corrections poussées le 26 août 2026
 
-### Architecture
-| Couche | Technologies | Rôle |
-|--------|--------------|------|
-| Smart Contracts | Rust (nft-staking, tro-staking, btc-bridge, agents-marketplace, nft-marketplace, escrow, minter, soul-zk-verifier, treasury-splitter, tro-burn) | Staking rewards, DAO voting, marketplace, mint, agents, zk, treasury, burn |
-| Frontend | React 18 + Vite + TS + Tailwind + sdk-dapp + PWA (`apps/frontend`) | 15+ pages (Dashboard, Marketplace, Trading, Portfolio, DAO, Wallet, Tip, Agents, Hatom, LP, Gallery, Studio, Burnify, $TRO…) |
-| AI / Agents | LIA v5/v6 (Vellum + custom), Warps, GreenSmoke, Discord bot, Agents Marketplace | Trading autonome, mint génératif, monitoring, yield, prévisions, packs on-chain |
-| Data / Infra | MultiversX API/Gateway, GitHub Pages, pnpm monorepo, Docker, Pinata | Prix live, ESDT scan, deploy auto, IPFS |
-| Bridge | BTC expérimental (contracts/btc-bridge) | Cross-chain assets |
-| Payments | Stripe onramp + EGLD/BTC tip | Fiat on-ramp + tips |
-
-### Sécurité
-- Guards & ownership checks dans les contrats.
-- Rate-limiting AI, validation inputs, secret scanning.
-- Dépendances mises à jour (pnpm audit / Dependabot).
-- Circuit LIA : preflight, runtime SL/BE/trail, halt, asset policy, daily limits, verify on-chain.
-- Security matrix + dual-product UX documentées (PRODUCT_SPLIT_AND_SECURITY.md).
-- Go-live gates : `LIA_LIVE_TRADING=0` tant que codeHash null.
-- Recommandation : audit externe formalisé avant scale mainnet massif.
-
-### Fonctionnalités clés (code ready / UI live)
-- Dashboard : portfolio, prix temps réel, agents LIA, Battle of Nodes score, bandeau GreenSmoke, trades + trailing state.
-- Marketplace : NFT + Arts Physiques + Escrow RWA + Buy/Sell/Offer/Bid + multi-currency notices + MoonPay fiat + Stripe onramp (SC not live until codeHash).
-- Trading Terminal : signaux LIA, $TRO, exécution, LiaBoard (arb + series).
-- DAO : voting UI (read-first until SC + signature E2E).
-- Wallet : balances ESDT + positions Hatom / xExchange (séparation claire LIA vs user).
-- Tip : QR EGLD + BTC.
-- Agents : monitoring GreenSmoke (6 agents) + prévisions + **Agents Marketplace packs** (fee split) — SC pending deploy.
-- Studio : creator journey + dual-product UX.
-- PWA : installable (banner Android/Chrome + iOS), offline shell, BottomNav mobile safe-area.
-- E2E : smoke Playwright en CI (dashboard + marketplace).
-- Page $TRO dédiée + Studio + Burnify + Hatom + LP Pools.
-
-### Roadmap V1 (7 priorités) — statut 22 août 2026
-1. Full LIA v6 production + agents marketplace on-chain — 🟡 En cours (SC + ABI + UI livrés ; signature live executor & deploy mainnet restants)
-2. Marketplace NFT avancé + LP TRO — 🟡 Partiel (List/Buy UI + multi-currency + burn notices + escrow logic)
-3. Mobile PWA / responsive — 🟢 Base livrée (+ install banner)
-4. Tests E2E complets + monitoring — 🟡 Smoke livré, suite à étendre
-5. Bridge BTC stabilisé + cross-chain RWA — 🟡 Squelette
-6. Documentation API / OpenAPI + Docker — 🟢 Base livrée
-7. Alignement Supernova (sub-second) — 🟡 Préparé (**v1.11.10.0** activé 6 août ; **v1.11.11.0** 10 août ; **Devnet Supernova LIVE 20 août** ; target mainnet **10 sept.** — countdown **~19 j**, upgrade 1 sept., hardening intensif)
-
-Voir détail : [`docs/ROADMAP_V1.md`](ROADMAP_V1.md)
-
-### Améliorations futures prioritaires (P0 immédiat)
-1. Signature tx live executor LIA (trades mainnet confirmés on-chain).
-2. Deploy mainnet agents-marketplace + nft-marketplace (adresses dans contracts.json + codeHash).
-3. Suite E2E Playwright (wallet mock, marketplace, DAO).
-4. Bridge BTC tests blackbox + relayers.
-5. Alignement gas/UI post-activation Supernova mainnet (10 sept.) / observation Devnet live.
-6. Burn $TRO on-chain à chaque vente NFT + multi-currency buy natif.
-7. Deploy tro-burn + fundRewards (Burnify).
-
-### Lacunes produit connues (voir `docs/LACUNES_PRODUIT.md`)
-- Burn $TRO à chaque vente NFT (manquant on-chain — notices UI présentes).
-- Vente bloquée si NFT en escrow (partiel — logique escrow ajoutée 4 août).
-- Achat multi-currency (EGLD/USDC/TRO) natif manquant (liens + notices).
-- LP TVL live + Hatom HF plus robustes (partiels).
-
-### Points d’attention LIA v6 (extrait audit)
-- Executor encore partiellement stub → priorité absolue pour trades live (PEM/wallet signing skeleton présent).
-- Inputs typés Vellum, intégration GreenSmoke, trailing stops, metrics performance à finaliser.
-- Voir `LIA_V6_OPTIMIZATION_AUDIT.md` pour la matrice P0/P1 complète.
+1. **Pages SPA** — garde CI : refuser `cdn.tailwindcss.com` dans `docs/index.html` (le site live servait encore l’ancien HTML CDN v5.0, d’où l’absence de bandeau Private / codeHash).
+2. **Connect hero** — le bouton « Connecter le wallet » du LandingHero était **inerte** (`onConnect` non branché). Désormais `requestOpenConnect()` → modal Header.
+3. **Honesty UI** — badge Private (plus de « live-dot »), DualMarketplaceStrip affiche « consultation / SC non déployé », countdown Supernova dans le bandeau.
+4. **Supernova auto-detect** — `refreshRate` API (`6000` mainnet / `600` Devnet) pilote les polls TX/nonce **sans rebuild** le 10 sept. Flags `VITE_SUPERNOVA` / `CHAIN_SUPERNOVA` restent un override.
+5. **Fail-closed SC** — le test de régression autorisait à tort le placeholder empty account (`…j8354t`) si `CODEHASH_OK=1`. Aligné sur `scStatus.ts`.
+6. **Vellum** — `production_run` sonde `/stats` en phase `chain_timing` (fail-soft).
 
 ---
 
-**Statut final** : Code complètement corrigé (v0.15.0+), documenté et poussé.  
-Veille techno et analyse dApp à jour au **22 août 2026** (J+16 activation mainnet v1.11.10.0 + J+12 v1.11.11.0 + **Supernova Devnet LIVE J+2** + countdown mainnet **~19 j** · upgrade 1 sept. · activation 10 sept.).  
-Prêt pour itérations et scale avec Supernova mainnet (**10 septembre 2026**).
+## Veille technologique — 26 août 2026
 
-*Auteur : Neltud (via Grok) — Artiste & créateur — 22 août 2026*
+### MultiversX / protocole
+
+| Item | Fait (26 août) |
+|------|----------------|
+| Mainnet | **v1.11.11.0** (10 août, miniblock checks, pas d’epoch d’activation). Précédent **v1.11.10.0** activé 6 août (epoch 2198, VM). Stable **J+20 / J+16**. |
+| Block time mainnet | `refreshRate` **6000 ms** (epoch **2217**, ~9.247 M accounts, **623.09 M** tx, 3 shards) |
+| **Supernova Devnet** | **LIVE** depuis le **20 août** — `refreshRate` **600 ms** (J+6). ~2.06 M accounts, 29.3 M tx, epoch 6472, 24k rounds/epoch |
+| Mainnet upgrade nodes | **1er septembre 2026** (**J-6**) |
+| Mainnet activation | **10 septembre 2026** (**J-15**) |
+| Roadmap officielle | Supernova sub-second **97.7 %** |
+| API | v1.21.0 (19 août) — pagination `searchAfter`, WebSocket, NFT media/thumbs |
+| Telemetry | **Dashboard de retour** (25 août, 17:00 UTC) — https://telemetry.multiversx.com/ |
+| Momentum | **27 août, 16:00 UTC** — dernier épisode avant Supernova, @AdrianDobrita + @radu_chis |
+| Note protocole (24 août) | *« Every timeout and deadline you tuned to the six second clock is about to be off by 10x. »* — adresses, ABIs, SDK **inchangés** |
+| Stats écosystème (24–26 août) | 9.25 M accounts · 623 M tx · 14.5 M staked · 3200+ nodes · xPortal 3M+ · xExchange **~$3.68 M TVL** · 1.6 M USD 7d · pic **238 K tx/jour** |
+
+**Implication xArtists :** polls TX/nonce auto-adaptés. Ne **pas** flipper `VITE_SUPERNOVA=1` sur le build Pages **avant** le 10 sept. (mainnet encore à 6 s). Devnet tests : `CHAIN_SUPERNOVA=1` ou pointer `VITE_MVX_API` vers `https://devnet-api.multiversx.com` (le probe lira 600).
+
+### Agents / DeFAI
+
+- Cookbook MultiversX : **61** projets agents-ready.
+- Narrative officielle : *What an agent needs to transact* + UCP/x402 + guarded accounts.
+- Warps v3+ = UI shareable on-chain pour mint / TX agents.
+- MX-8004 identité/réputation agents (devnet).
+- xArtists (LIA + GreenSmoke + Agents Marketplace) est **aligné** ; le goulot n’est plus le récit, c’est le **codeHash + micro-TX**.
+
+### RWA / art tokenisé (26 août)
+
+Source [rwa.xyz](https://app.rwa.xyz/) au **25–26 août 2026** :
+
+| Métrique | Valeur |
+|----------|--------|
+| Distributed asset value (ex-stables) | **$38.30 B** (+1.85 % / 30j) |
+| Represented asset value | **$353.11 B** |
+| Mid-year trackers | ~$31–36 B on-chain ; définitions larges $51–60 B (dont idle) |
+| Drivers | Private credit + Treasuries ; equities tokenisées en accélération (Nasdaq) |
+| Liquidité | Toujours le paradoxe : beaucoup de mint/redeem, peu de secondary |
+
+**Position xArtists :** art + phygital + royalties + re-évaluation IA — **différenciant** vs Treasuries institutionnels. Tant que l’escrow RWA n’est pas déployé, rester en **catalogue + Studio**, pas en « RWA live ».
+
+### Stack 2026 (à surveiller, pas à merger à l’aveugle)
+
+- **sdk-dapp v5+** est le standard doc (fév. 2026). `apps/frontend` est encore sur **sdk-dapp ^3**. PRs Dependabot Vite 8 / ESLint 10 / Vitest 4 **ouvertes** — ne pas merger sans smoke Pages.
+- SpaceCraft / mxpy pour SC Rust.
+- PWA + Playwright smoke déjà en place.
+
+---
+
+## Architecture
+
+```
+User wallet ──► dApp Pages (SPA Vite) ──► MultiversX mainnet SC
+                     ▲                         (seulement si codeHash ≠ null)
+                     │ JSON publish
+LIA Vellum ──► production_run ──► data/*.json ──► apps/frontend/public/data
+                     │
+              chain_timing probe (/stats.refreshRate)
+              Guardian FAST  →  Brain SLOW  →  paper (live gated)
+```
+
+### Wallets (ne pas mélanger)
+
+| Rôle | Usage |
+|------|--------|
+| **LIA Ops** | Exécution protocole — **jamais** session user |
+| **User Connect** | Tips / buys |
+| **Mission / Reserve / Reward / Ops** | Destinations treasury — **à créer avant** splitter |
+
+LIA Ops (public) : `erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6`
+
+### Couches
+
+| Couche | Tech | Rôle |
+|--------|------|------|
+| SC Rust | nft-marketplace, agents-marketplace, treasury-splitter, tro-burn, rwa-escrow, nft-staking, tro-staking, btc-bridge, soul-zk | Market, agents, fees, burn, RWA, staking |
+| Frontend | `apps/frontend` React 18 + Vite + Tailwind + sdk-dapp | 20+ routes, PWA, fail-closed TX |
+| LIA | package `lia/` (Vellum, Guardian, oracles, compounding 10 col) | Paper cycle 3–5 min |
+| Data | `data/*.json` miroir `public/data` | Board, collections, contracts |
+| CI | GitHub Actions → GH Pages (`docs/` = SPA + markdown) | Deploy exclusive + pages |
+
+---
+
+## Sécurité / gates
+
+```bash
+PYTHONPATH=. LIA_LIVE_TRADING=0 python -m lia.security.go_live_gates
+```
+
+Attendu pre-deploy : `allow_live_trading=false`, marketplace `codeHash` null, agents null, micro_proofs = 0.
+
+- Guardian : VaR, Kelly, death-spiral, kill-switch.
+- Kill reset : **ops-only**, jamais auto (`docs/KILL_SWITCH_RESET.md`).
+- `canListBuyNft()` / `canBuyAgent()` : adresse réelle **et** `VITE_*_CODEHASH_OK` **et** ≠ placeholder empty.
+- Audit pack : [`docs/AUDIT_EXTERNAL_FULL.txt`](AUDIT_EXTERNAL_FULL.txt).
+
+---
+
+## Roadmap V1 — statut 26 août
+
+| # | Axe | Statut |
+|---|-----|--------|
+| 1 | LIA v6 + agents marketplace on-chain | 🟡 SC+ABI+UI ; deploy + signature live restants |
+| 2 | Market NFT + LP TRO | 🟡 UI List/Buy ; codeHash null |
+| 3 | PWA mobile | 🟢 Base |
+| 4 | E2E + monitoring | 🟡 Smoke ; suite à étendre |
+| 5 | Bridge BTC + RWA | 🟡 Squelette — no user funds |
+| 6 | Docs / Docker / OpenAPI | 🟢 Base |
+| 7 | Supernova | 🟡 **Auto-detect livré** ; activation 10 sept. J-15 |
+
+### P0 (ordre strict — inchangé)
+
+1. Créer wallets Mission + Reserve + Reward + Ops → `contracts.json` + TREASURY_POLICY  
+2. Deploy nft-marketplace + agents-marketplace (`FEE_BPS=300`) → **codeHash verify**  
+3. `post_deploy` + micro-TX user + rebuild Pages (`VITE_*_CODEHASH_OK=1` **seulement** si hash ≠ null)  
+4. Deploy treasury-splitter → claimFees 40 / 30 / 20 / 10  
+5. Paper stable → seulement alors `LIA_LIVE_TRADING=1` micro-size  
+6. Observer Devnet ; le 10 sept. le probe bascule tout seul (ne pas forcer le flag trop tôt)
+
+---
+
+## Lacunes connues (honnêtes)
+
+- Burn $TRO on-chain à chaque vente NFT : notices UI, SC `tro-burn` non déployé.
+- Achat multi-currency natif (EGLD/USDC/TRO) : liens + notices, pas le buy SC.
+- WalletConnect QR complet : Web Wallet recommandé ; deep link xPortal.
+- sdk-dapp v3 vs v5 doc : dette, pas un blocker P0.
+- Dual tree `src/` vs `apps/frontend`.
+- Dependabot Vite 8 / ESLint 10 : **ne pas merger** sans smoke.
+
+Détail : [`docs/LACUNES_PRODUIT.md`](LACUNES_PRODUIT.md) · [`docs/GAP_REVIEW_FULL_2026-08-25.md`](GAP_REVIEW_FULL_2026-08-25.md)
+
+---
+
+**Statut final 26 août 2026 :** code pleinement corrigé (fail-closed, connect, SPA Pages, Supernova auto-detect), documenté et poussé.  
+Veille : Devnet 600 ms J+6 · mainnet 6 s J-15 avant activation · RWA $38.3 B · telemetry + Momentum 27 août.  
+Prêt pour **ops P0 (wallets + deploy SC)** — pas pour claims « market live ».
+
+*Auteur : Neltud (via Grok) — 26 août 2026*

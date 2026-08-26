@@ -1,7 +1,10 @@
 /**
  * Hero d'accueil — inspiré tro-art-studio.lovable.app
- * Supply $TRO plafonné à 500 000 (max).
+ * Supply $TRO plafonné à 500 000 (max). Honesty: private / paper-first.
  */
+
+import { Link } from 'react-router-dom'
+import { requestOpenConnect } from '../lib/walletEvents'
 
 type Props = {
   onConnect?: () => void
@@ -9,6 +12,11 @@ type Props = {
 }
 
 export default function LandingHero({ onConnect, connected }: Props) {
+  const handleConnect = () => {
+    if (onConnect) onConnect()
+    else requestOpenConnect()
+  }
+
   return (
     <section
       className="relative overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-[#12121a] via-[#0a0a12] to-[#1a1030] p-6 sm:p-10 mb-6"
@@ -19,8 +27,7 @@ export default function LandingHero({ onConnect, connected }: Props) {
 
       <div className="relative max-w-3xl">
         <div className="inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1 text-xs text-violet-300 mb-4">
-          <span className="live-dot" aria-hidden />
-          MultiversX mainnet · LIA v6 · xArtists
+          Private · Paper LIA · market après codeHash
         </div>
 
         <h1 id="hero-title" className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.1] mb-4">
@@ -29,26 +36,27 @@ export default function LandingHero({ onConnect, connected }: Props) {
         </h1>
 
         <p className="text-zinc-400 text-sm sm:text-base leading-relaxed max-w-xl mb-6">
-          xArtists réunit agents IA, NFTs d&apos;art et œuvres tokenisées sur MultiversX — marketplace,
+          xArtists réunit agents IA, NFTs d'art et œuvres tokenisées sur MultiversX — marketplace,
           $TRO (cap <strong className="text-white">500 000 max</strong>), Studio artiste et tableau de bord LIA.
+          List/Buy on-chain uniquement après deploy SC vérifié.
         </p>
 
         <div className="flex flex-wrap gap-3 mb-8">
           {!connected ? (
-            <button type="button" onClick={onConnect} className="btn-primary text-sm sm:text-base">
+            <button type="button" onClick={handleConnect} className="btn-primary text-sm sm:text-base">
               Connecter le wallet
             </button>
           ) : (
-            <a href="#main-content" className="btn-primary text-sm sm:text-base inline-flex items-center">
-              Continuer
-            </a>
+            <Link to="/wallet" className="btn-primary text-sm sm:text-base inline-flex items-center">
+              Mon wallet
+            </Link>
           )}
-          <a href="/xArtists/studio" className="btn-secondary text-sm sm:text-base inline-flex items-center">
+          <Link to="/studio" className="btn-secondary text-sm sm:text-base inline-flex items-center">
             Studio artiste
-          </a>
-          <a href="/xArtists/gallery" className="btn-secondary text-sm sm:text-base inline-flex items-center">
+          </Link>
+          <Link to="/gallery" className="btn-secondary text-sm sm:text-base inline-flex items-center">
             Galerie
-          </a>
+          </Link>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center" role="list">

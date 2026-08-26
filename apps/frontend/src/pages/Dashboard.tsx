@@ -20,6 +20,7 @@ import PersonaWelcome, {
 import DualMarketplaceStrip from '../components/DualMarketplaceStrip'
 import ExplainCards from './ExplainCards'
 import LandingHero from './LandingHero'
+import { requestOpenConnect } from '../lib/walletEvents'
 
 export default function Dashboard() {
   const { liaStatus, isStale } = useMultiversX()
@@ -44,7 +45,7 @@ export default function Dashboard() {
     <div className="animate-fade-in space-y-6 pb-8">
       <PageGuide page="dashboard" />
 
-      <LandingHero />
+      <LandingHero connected={connected} onConnect={requestOpenConnect} />
 
       <PersonaWelcome />
       <PersonaQuickLinks persona={persona} />

@@ -21,6 +21,24 @@ def _ts() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
+def phase_chain_timing() -> dict[str, Any]:
+    """Probe /stats.refreshRate so executor polls match the live chain (Supernova auto)."""
+    try:
+        from lia.gas.chain_timing import probe_api, timing_defaults
+
+        probed = probe_api()
+        td = timing_defaults()
+        return {
+            "ok": bool(probed.get("ok")),
+            "mode": td["mode"],
+            "round_ms": td["round_ms"],
+            "tx_status_poll_ms": td["tx_status_poll_ms"],
+            "error": probed.get("error"),
+        }
+    except Exception as e:
+        return {"ok": False, "error": str(e), "mode": "pre_supernova"}
+
+
 def phase_gates() -> dict[str, Any]:
     try:
         from lia.security.go_live_gates import evaluate_gates
@@ -118,6 +136,7 @@ def run() -> dict[str, Any]:
         "phases": {},
     }
 
+    report["phases"]["chain_timing"] = phase_chain_timing()
     report["phases"]["gates"] = phase_gates()
     report["phases"]["pipeline"] = phase_pipeline()
     report["phases"]["commander"] = phase_commander_enrich()

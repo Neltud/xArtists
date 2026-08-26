@@ -1,7 +1,7 @@
 # Supernova timeouts — patch xArtists
 
-**Date :** 25 août 2026  
-**Contexte :** MultiversX Supernova Devnet LIVE (600 ms) · mainnet activation **10 septembre 2026**.
+**Date :** 26 août 2026  
+**Contexte :** MultiversX Supernova Devnet LIVE (600 ms, J+6) · mainnet activation **10 septembre 2026 (J-15)**.
 
 > « Every timeout and deadline you tuned to the six second clock is about to be off by 10x. »  
 > — @CodeMultiversX, 24 août 2026
@@ -12,14 +12,18 @@
 
 ---
 
-## Flag unique
+## Flag unique + auto-detect (26 août)
 
 | Couche | Variable | Quand |
 |--------|----------|--------|
-| Node / scripts / LIA | `CHAIN_SUPERNOVA=1` (ou `SUPERNOVA=1`) | Devnet tests **maintenant** · mainnet **à partir du 10 sept.** |
-| Frontend (Vite) | `VITE_SUPERNOVA=1` | Idem — rebuild Pages après flip |
+| Node / scripts / LIA | `CHAIN_SUPERNOVA=1` (ou `SUPERNOVA=1`) | Force polls 600 ms (Devnet tests) |
+| Node / LIA | `CHAIN_SUPERNOVA=0` | Force 6 s |
+| Frontend (Vite) | `VITE_SUPERNOVA=1` / `=0` | Idem — override build |
+| **Défaut (unset)** | **auto** | `GET /stats` → `refreshRate ≤ 1000` ⇒ supernova |
 
-Sans flag → mode **pre_supernova** (poll ~3 s TX, nonce ~1.5–2 s) — sûr sur mainnet actuel à 6 s.
+Sans override : mainnet actuel (6000) reste en polls 3 s ; **le 10 sept. le probe bascule tout seul** (front au boot, LIA dans `production_run` phase `chain_timing`). Ne pas mettre `VITE_SUPERNOVA=1` sur Pages tant que mainnet = 6 s.
+
+`probe_api()` / `probeChainTiming()` sont fail-soft : en cas d’erreur API, defaults conservateurs (6 s).
 
 ---
 

@@ -1,8 +1,8 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-08-11T04:50:00Z",
-  "chain_note": "MultiversX mainnet config v1.11.11.0 (2026-08-10): miniblock checks, no activation epoch",
+  "updated": "2026-08-26T06:00:00Z",
+  "chain_note": "Mainnet refreshRate 6000 (epoch 2217, 26 Aug). Supernova Devnet 600. Activation mainnet 10 Sep 2026.",
   "wallets": {
     "lia_ops": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "mission": null,

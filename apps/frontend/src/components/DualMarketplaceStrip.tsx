@@ -1,7 +1,11 @@
 import { Link } from 'react-router-dom'
+import { canListBuyNft, canBuyAgent } from '../config/scStatus'
 
-/** Product clarity: Art/RWA market vs Agents IA market */
+/** Product clarity: Art/RWA market vs Agents IA market — fail-closed until codeHash. */
 export default function DualMarketplaceStrip() {
+  const artLive = canListBuyNft()
+  const agentsLive = canBuyAgent()
+
   return (
     <section className="mb-8 grid gap-3 sm:grid-cols-2" aria-label="Deux marketplaces">
       <Link
@@ -13,7 +17,9 @@ export default function DualMarketplaceStrip() {
         <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
           Studio → Galerie → List/Buy/Bid. Œuvres numériques et phygital. Fees → treasury fondation.
         </p>
-        <span className="inline-block mt-3 text-xs font-semibold text-violet-300">Ouvrir le market art →</span>
+        <span className="inline-block mt-3 text-xs font-semibold text-violet-300">
+          {artLive ? 'Ouvrir le market art →' : 'Consultation · on-chain après codeHash →'}
+        </span>
       </Link>
       <Link
         to="/agents"
@@ -24,7 +30,9 @@ export default function DualMarketplaceStrip() {
         <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
           Clone LIA en NFT limité (5–25 €) · stake · 3 profils. Revenu passif selon règles pack — pas GreenSmoke.
         </p>
-        <span className="inline-block mt-3 text-xs font-semibold text-teal-300">Ouvrir les agents →</span>
+        <span className="inline-block mt-3 text-xs font-semibold text-teal-300">
+          {agentsLive ? 'Ouvrir les agents →' : 'Packs paper · SC agents non déployé →'}
+        </span>
       </Link>
     </section>
   )

@@ -1,6 +1,6 @@
 # Roadmap V1 — xArtists
 
-**Date :** 25 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
+**Date :** 26 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
 
 Ce document formalise les 7 axes prioritaires issus de l’analyse dApp complète.  
 Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères de done**.
@@ -17,7 +17,7 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 | 4 | Tests E2E complets + monitoring on-chain | 🟡 Smoke livré | P1–P2 | Élevé |
 | 5 | Bridge BTC stabilisé + cross-chain RWA | 🟡 Squelette | P2 | Élevé |
 | 6 | Documentation API / OpenAPI + Docker | 🟢 Livré (base) | P0 | Moyen |
-| 7 | Alignement Supernova (sub-second finality) | 🟡 Préparé | P2 | Moyen |
+| 7 | Alignement Supernova (sub-second finality) | 🟡 Auto-detect livré | P2 | Moyen |
 
 ---
 
@@ -108,18 +108,20 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ## 7. Alignement Supernova (sub-second finality)
 
-### Contexte (25 août 2026)
-* **Mainnet v1.11.10.0** activé le 6 août (epoch 2198) — VM. Réseau **stable J+19**.
-* **Mainnet v1.11.11.0** (10 août) — miniblock checks. **J+15**.
-* **Supernova Devnet** : **LIVE** depuis le **20 août** (600 ms rounds, J+5).
-* **Target mainnet** : Upgrade nodes **1er septembre** · Activation **10 septembre 2026** (countdown **~16 jours**).
-* Note protocole (24 août) : timeouts / deadlines calibrés sur 6 s seront off by **10×** — adresses, ABIs, SDK inchangés.
-* Stats (24 août) : 9.25 M accounts · 623 M tx · xExchange $3.68 M TVL · pic 238 K tx/jour.
+### Contexte (26 août 2026)
+* **Mainnet v1.11.10.0** activé le 6 août (epoch 2198) — VM. Réseau **stable J+20**.
+* **Mainnet v1.11.11.0** (10 août) — miniblock checks. **J+16**.
+* **Supernova Devnet** : **LIVE** depuis le **20 août** (600 ms rounds, J+6) — `/stats.refreshRate=600`.
+* **Target mainnet** : Upgrade nodes **1er septembre (J-6)** · Activation **10 septembre 2026 (J-15)**.
+* **Auto-detect** : front + LIA lisent `refreshRate` (≤1000 ms → polls Supernova). Override `CHAIN_SUPERNOVA` / `VITE_SUPERNOVA`.
+* Note protocole (24 août) : timeouts calibrés sur 6 s seront off by **10×** — adresses, ABIs, SDK inchangés.
+* Stats (26 août, API) : 9.247 M accounts · 623.09 M tx · epoch 2217 · xExchange ~$3.68 M TVL.
+* Telemetry : https://telemetry.multiversx.com/ · Momentum 27 août 16:00 UTC.
 * Builders : http://supernova-sprint.xyz/builders · arcade https://supernova-arcade.xyz/arcade
 
 ### Livrables
 * Observer gas / latence / UX sur Devnet
-* Aligner polling nonce, TX timeouts frontend + LIA pour 600 ms **avant** le 10 sept.
+* Aligner polling nonce, TX timeouts frontend + LIA pour 600 ms **avant** le 10 sept. → **auto-detect livré 26 août**
 * Alignement UI + gas estimates post-mainnet Supernova
 
 ### Critères de done
@@ -136,4 +138,4 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ---
 
-*Synchronisé avec STATUS_2026-08-25.md — 25 août 2026*
+*Synchronisé avec STATUS_2026-08-26.md — 26 août 2026*

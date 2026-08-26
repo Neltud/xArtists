@@ -6,28 +6,64 @@
  * - Mainnet: node upgrade 1 Sep · activation 10 Sep 2026
  * - ABIs / addresses / gas model unchanged; timeouts calibrated on 6s are off by ~10×
  *
- * Flip `CHAIN_SUPERNOVA=1` (Node) or set VITE_SUPERNOVA=1 (Vite) after mainnet activation.
- * Until then defaults stay conservative (6s-era polling) so mainnet is not hammered.
+ * Flags:
+ *   CHAIN_SUPERNOVA=1 | SUPERNOVA=1 | VITE_SUPERNOVA=1 → force supernova
+ *   …=0|false|off → force pre
+ *   unset → auto from last applyStatsRefreshRate() / probe (default conservative)
  */
 
 export type ChainTimingMode = 'pre_supernova' | 'supernova'
 
-function envFlag(name: string): boolean {
+export const SUPERNOVA_REFRESH_RATE_MAX_MS = 1_000
+
+let detectedMode: ChainTimingMode | null = null
+
+function envFlag(name: string): string {
   try {
-    // Node / scripts
     if (typeof process !== 'undefined' && process.env?.[name]) {
-      const v = String(process.env[name]).toLowerCase()
-      return v === '1' || v === 'true' || v === 'yes'
+      return String(process.env[name]).trim().toLowerCase()
     }
   } catch {
     /* ignore */
   }
-  return false
+  return ''
+}
+
+function combinedEnv(): string {
+  return envFlag('CHAIN_SUPERNOVA') || envFlag('SUPERNOVA') || envFlag('VITE_SUPERNOVA')
+}
+
+function envForceSupernova(): boolean {
+  const v = combinedEnv()
+  return v === '1' || v === 'true' || v === 'yes' || v === 'on'
+}
+
+function envForcePre(): boolean {
+  const v = combinedEnv()
+  return v === '0' || v === 'false' || v === 'off' || v === 'no'
+}
+
+export function modeFromRefreshRate(refreshRateMs: number): ChainTimingMode {
+  if (Number.isFinite(refreshRateMs) && refreshRateMs > 0 && refreshRateMs <= SUPERNOVA_REFRESH_RATE_MAX_MS) {
+    return 'supernova'
+  }
+  return 'pre_supernova'
+}
+
+export function applyStatsRefreshRate(refreshRateMs: number): ChainTimingMode {
+  detectedMode = modeFromRefreshRate(refreshRateMs)
+  return detectedMode
+}
+
+export function detectedChainTiming(): ChainTimingMode | null {
+  return detectedMode
 }
 
 /** True when Supernova-speed polling is desired (Devnet now, Mainnet from 10 Sep). */
 export function isSupernovaMode(): boolean {
-  return envFlag('CHAIN_SUPERNOVA') || envFlag('SUPERNOVA') || envFlag('VITE_SUPERNOVA')
+  if (envForcePre()) return false
+  if (envForceSupernova()) return true
+  return detectedMode === 'supernova'
 }
 
 export function chainTimingMode(): ChainTimingMode {
@@ -38,49 +74,38 @@ export function chainTimingMode(): ChainTimingMode {
  * Recommended defaults. Gas limits are NOT changed by Supernova.
  */
 export const CHAIN_TIMING = {
-  /** Protocol round time (informational) */
   roundMs: {
     pre_supernova: 6_000,
     supernova: 600,
   } as const,
-
-  /**
-   * Poll interval while waiting for TX status on the API.
-   * Pre: ~half-round · Supernova: ~1–2 rounds without flooding the API.
-   */
   txStatusPollMs: {
     pre_supernova: 3_000,
     supernova: 800,
   } as const,
-
-  /** Overall wait for a single TX to finalize */
   txStatusTimeoutMs: {
     pre_supernova: 120_000,
     supernova: 45_000,
   } as const,
-
-  /** Nonce stability / advance polling */
   noncePollMs: {
     pre_supernova: 1_500,
     supernova: 500,
   } as const,
-
   nonceAdvancePollMs: {
     pre_supernova: 2_000,
     supernova: 600,
   } as const,
-
   nonceStableTimeoutMs: {
     pre_supernova: 45_000,
     supernova: 20_000,
   } as const,
-
   nonceAdvanceTimeoutMs: {
     pre_supernova: 120_000,
     supernova: 45_000,
   } as const,
-
-  /** Per-request HTTP timeout to API/gateway (network RTT, not block time) */
+  mintStatusPollMs: {
+    pre_supernova: 3_000,
+    supernova: 1_500,
+  } as const,
   fetchTimeoutMs: 12_000,
 } as const
 
@@ -95,6 +120,7 @@ export function timingDefaults() {
     nonceAdvancePollMs: CHAIN_TIMING.nonceAdvancePollMs[mode],
     nonceStableTimeoutMs: CHAIN_TIMING.nonceStableTimeoutMs[mode],
     nonceAdvanceTimeoutMs: CHAIN_TIMING.nonceAdvanceTimeoutMs[mode],
+    mintStatusPollMs: CHAIN_TIMING.mintStatusPollMs[mode],
     fetchTimeoutMs: CHAIN_TIMING.fetchTimeoutMs,
   }
 }

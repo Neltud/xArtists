@@ -1,8 +1,16 @@
 import { Link } from 'react-router-dom'
 
-/**
- * Private / early-access honesty strip — no false production claims.
- */
+/** Private / early-access honesty strip — no false production claims. */
+const SUPERNOVA_UTC = Date.UTC(2026, 8, 10) // 10 Sep 2026
+
+function supernovaLabel(): string {
+  const days = Math.ceil((SUPERNOVA_UTC - Date.now()) / 86_400_000)
+  if (days > 1) return `Supernova mainnet ${days} j`
+  if (days === 1) return 'Supernova mainnet demain'
+  if (days === 0) return 'Supernova mainnet aujourd’hui'
+  return 'Supernova mainnet'
+}
+
 export default function PrivateReleaseStrip() {
   return (
     <div
@@ -12,6 +20,8 @@ export default function PrivateReleaseStrip() {
       <span className="font-semibold text-violet-100">Private release</span>
       <span className="mx-1.5 text-violet-500">·</span>
       Paper LIA · market on-chain seulement après codeHash · pas de promesse de performance
+      <span className="mx-1.5 text-violet-500">·</span>
+      <span className="text-violet-300/80">{supernovaLabel()}</span>
       <span className="mx-1.5 text-violet-500">·</span>
       <Link to="/marketplace" className="underline text-violet-100/90 hover:text-white">
         Market

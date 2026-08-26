@@ -72,6 +72,16 @@ jobs:
         run: |
           cp -r apps/frontend/dist/. docs/
           touch docs/.nojekyll
+          # Guard: never ship the legacy Tailwind-CDN monolith as Pages index
+          if grep -q 'cdn.tailwindcss.com' docs/index.html; then
+            echo "FATAL: docs/index.html is the legacy CDN app, not the Vite SPA"
+            exit 1
+          fi
+          if ! grep -q 'id="root"' docs/index.html; then
+            echo "FATAL: SPA #root missing in docs/index.html"
+            exit 1
+          fi
+          echo "SPA index OK"
 
       - name: 📊 Copy data JSON (never drop board)
         run: |

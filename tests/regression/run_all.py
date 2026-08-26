@@ -22,6 +22,7 @@ MODULES = [
     "tests/regression/test_post_deploy_logic.py",
     "tests/regression/test_trading_stack_gates.py",
     "tests/regression/test_sc_status_flags.py",
+    "tests/regression/test_chain_timing.py",
     "tests/regression/test_oracle_config.py",
     "tests/regression/test_desk_debate.py",
     "lia/bridge/test_latency.py",
