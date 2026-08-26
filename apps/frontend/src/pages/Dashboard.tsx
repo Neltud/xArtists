@@ -1,6 +1,5 @@
 /**
- * Home — hub dApp (not LIA ops portfolio).
- * Restored after broken Dashboard.legacy-shim re-export.
+ * Home — hub dApp, parcours utilisateur prioritaire.
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
@@ -18,6 +17,7 @@ import PersonaWelcome, {
   type Persona,
 } from '../components/PersonaWelcome'
 import DualMarketplaceStrip from '../components/DualMarketplaceStrip'
+import UserJourneyStrip from '../components/UserJourneyStrip'
 import ExplainCards from './ExplainCards'
 import LandingHero from './LandingHero'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -47,6 +47,8 @@ export default function Dashboard() {
 
       <LandingHero connected={connected} onConnect={requestOpenConnect} />
 
+      <UserJourneyStrip />
+
       <PersonaWelcome />
       <PersonaQuickLinks persona={persona} />
 
@@ -59,7 +61,7 @@ export default function Dashboard() {
       <CommanderStrip />
 
       <section className="grid sm:grid-cols-3 gap-3">
-        <div className="card">
+        <div className="card border-l-2 border-l-purple-500/50">
           <p className="text-[10px] uppercase tracking-widest text-zinc-500">Session user</p>
           <p className="text-sm font-semibold mt-1">
             {connected ? (
@@ -73,26 +75,36 @@ export default function Dashboard() {
               <span className="text-zinc-500">Non connecté</span>
             )}
           </p>
-          <Link to="/wallet" className="text-xs text-purple-400 mt-2 inline-block">
+          <Link to="/wallet" className="text-xs text-purple-400 mt-2 inline-block hover:underline">
             Mon wallet →
           </Link>
         </div>
-        <div className="card">
+        <div className="card border-l-2 border-l-teal-500/50">
           <p className="text-[10px] uppercase tracking-widest text-zinc-500">LIA board</p>
           <p className="text-sm font-semibold mt-1">
             {mode || '—'} · {live ? 'LIVE' : 'PAPER'}
             {isStale ? ' · stale' : ''}
           </p>
-          <Link to="/portfolio" className="text-xs text-purple-400 mt-2 inline-block">
-            Portfolio protocole →
-          </Link>
+          <div className="flex flex-wrap gap-2 mt-2">
+            <Link to="/trading" className="text-xs text-teal-300 hover:underline">
+              Trading →
+            </Link>
+            <Link to="/portfolio" className="text-xs text-purple-400 hover:underline">
+              Portfolio →
+            </Link>
+          </div>
         </div>
-        <div className="card">
+        <div className="card border-l-2 border-l-amber-500/50">
           <p className="text-[10px] uppercase tracking-widest text-zinc-500">Access packs</p>
           <p className="text-sm font-semibold mt-1">Model C · paper</p>
-          <Link to="/my-packs" className="text-xs text-purple-400 mt-2 inline-block">
-            My Packs →
-          </Link>
+          <div className="flex flex-wrap gap-2 mt-2">
+            <Link to="/agents" className="text-xs text-amber-200/90 hover:underline">
+              Catalog →
+            </Link>
+            <Link to="/my-packs" className="text-xs text-purple-400 hover:underline">
+              My Packs →
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -103,7 +115,7 @@ export default function Dashboard() {
       <ExplainCards />
 
       <p className="text-center text-[11px] text-zinc-600">
-        $TRO supply max 500 000 · MultiversX · wallet user ≠ LIA ops
+        $TRO supply max 500 000 · MultiversX · wallet user ≠ LIA ops · SignalTicker en bas
       </p>
     </div>
   )

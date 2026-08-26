@@ -56,18 +56,21 @@ export const PAGE_GUIDE: Record<
   { title: string; bullets: string[]; warn?: string }
 > = {
   dashboard: {
-    title: 'Home',
+    title: 'Home — parcours',
     bullets: [
-      'Hub dApp : persona, dual market, SC, Guardian.',
-      'Wallet = user · Portfolio = LIA · My Packs = access paper.',
+      'Étapes : Connecter → Packs → Board LIA → Studio/Galerie.',
+      'Wallet = toi · Portfolio/Trading = protocole LIA (paper).',
+      'My Packs = access pass, pas un dépôt de trading.',
+      'Bandeau signaux en bas (GSN, Polymarket, feeds).',
     ],
   },
   trading: {
     title: 'Trading Terminal LIA',
     bullets: [
       'Board protocole (JSON) — pas ton compte.',
-      'Guardian-first · trades taggés paper.',
-      'LIA_LIVE_TRADING=0 jusqu’aux micro-preuves.',
+      'Fusion signaux : GSN ≥80 % · Polymarket · feeds gratuits.',
+      'Compounding 10 colonnes · sim annuelle avec pertes possibles.',
+      'Guardian-first · LIA_LIVE_TRADING=0 jusqu’aux micro-preuves.',
     ],
     warn: 'Aucun ordre auto sur vos fonds.',
   },
@@ -90,11 +93,19 @@ export const PAGE_GUIDE: Record<
   },
   agents: {
     title: 'Agents',
-    bullets: ['Pulse 18 € · Yield 12 € · Sentinel 8 €.', 'GSN = signal only.', 'Model C access.'],
+    bullets: [
+      'Packs limités (accès écosystème).',
+      'GSN = prédictions externes ≥80 % pour LIA (pas tes packs).',
+      'Capital agent optionnel = escrow isolé (Soon).',
+    ],
   },
   'my-packs': {
     title: 'My Packs',
-    bullets: ['Access pass Model C.', 'Perf = paper router.', 'Pas de deposit trading.'],
+    bullets: [
+      'Access pass Model C.',
+      'Perf affichée = paper.',
+      'Fund capital agent = bientôt (isolé, plafond 10×).',
+    ],
     warn: 'Pas un fonds géré.',
   },
   studio: {
@@ -102,7 +113,6 @@ export const PAGE_GUIDE: Record<
     bullets: [
       '4 étapes : collection → IPFS → metadata → mint/list.',
       'JWT Pinata jamais dans le front (proxy ops).',
-      'Export JSON + template mxpy.',
       'Wallet artiste ≠ LIA ops.',
     ],
     warn: 'Mint on-chain = wallet signant + gaz EGLD.',
@@ -113,7 +123,7 @@ export const PAGE_GUIDE: Record<
   },
   gallery: {
     title: 'Gallery',
-    bullets: ['Catalogue xArtists (titre = xArtists).', '1 TRO max œuvre physique (policy).'],
+    bullets: ['Catalogue xArtists.', '1 TRO max œuvre physique (policy).'],
   },
   staking: {
     title: 'Staking',
@@ -138,9 +148,8 @@ export const PAGE_GUIDE: Record<
   editions: {
     title: 'xArtists Editions',
     bullets: [
-      'Lettre mensuelle art · culture · tech + édito.',
+      'Lettre mensuelle art · culture · tech.',
       'Abonnement ≠ investissement / yield.',
-      'Paiement V1 : tip on-chain memo sub:editions.',
     ],
   },
 }
