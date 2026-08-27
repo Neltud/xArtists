@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import App from './App'
 import { WalletProvider } from './context/WalletContext'
 import { MultiversXProvider } from './context/MultiversXContext'
@@ -12,17 +12,18 @@ registerSW()
 void probeChainTiming()
 
 /**
- * MxDapp / sdk-dapp is NOT mounted globally — only on TX routes via TxShell (lazy).
- * This cuts initial JS for Home / Gallery / Board visitors.
+ * HashRouter — GitHub Pages serves HTTP 404 for /xArtists/entity etc.
+ * Hash routes always load index.html (200) so lazy pages never fail on refresh.
+ * URLs: https://neltud.github.io/xArtists/#/entity
  */
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter basename="/xArtists">
+    <HashRouter>
       <WalletProvider>
         <MultiversXProvider>
           <App />
         </MultiversXProvider>
       </WalletProvider>
-    </BrowserRouter>
+    </HashRouter>
   </React.StrictMode>,
 )

@@ -5,6 +5,7 @@ import BottomNav from './components/BottomNav'
 import SignalTicker from './components/SignalTicker'
 import FirstVisitOnboarding from './components/FirstVisitOnboarding'
 import ErrorBoundary from './components/ErrorBoundary'
+import PageLoader from './components/PageLoader'
 import PwaInstallBanner from './components/PwaInstallBanner'
 import PrivateReleaseStrip from './components/PrivateReleaseStrip'
 import DemoModeBanner from './components/DemoModeBanner'
@@ -51,17 +52,6 @@ const TX_PATHS = new Set([
   '/tro',
   '/burnify',
 ])
-
-function PageLoader() {
-  return (
-    <div className="flex items-center justify-center min-h-[60vh]" role="status" aria-live="polite">
-      <div className="text-center">
-        <div className="w-12 h-12 rounded-full border-2 border-purple-600 border-t-transparent animate-spin mx-auto mb-4" />
-        <p className="text-gray-500 text-sm">Chargement…</p>
-      </div>
-    </div>
-  )
-}
 
 function StaleDataBanner({ isStale, lastUpdate }: { isStale: boolean; lastUpdate: Date | null }) {
   if (!isStale) return null
@@ -134,7 +124,7 @@ export default function App() {
                   element={
                     <div className="text-center py-20">
                       <h2 className="text-2xl font-bold mb-2">Page introuvable</h2>
-                      <a href="/xArtists/" className="text-purple-400 text-sm">
+                      <a href="/xArtists/#/" className="text-purple-400 text-sm">
                         Retour accueil →
                       </a>
                     </div>
@@ -149,10 +139,10 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <p className="font-bold">xArtists — LIA v6</p>
-            <p className="text-xs text-gray-500">Entité · succursales · paper + live reads</p>
+            <p className="text-xs text-gray-500">Hash routes · paper + live reads</p>
           </div>
           <div className="flex gap-4 text-sm text-gray-500">
-            <a href="/xArtists/entity" className="hover:text-white">
+            <a href="/xArtists/#/entity" className="hover:text-white">
               Entité
             </a>
             <a href={LINKS.github} target="_blank" rel="noreferrer" className="hover:text-white">
