@@ -1,0 +1,47 @@
+{
+  "ts": "2026-08-26T16:28:00Z",
+  "module": "lia.brain.cycle",
+  "paper": true,
+  "ev": {
+    "expected_value": 12.48,
+    "probability_of_profit": 0.728,
+    "max_loss": -48.2,
+    "is_viable": true
+  },
+  "meta": {
+    "volatility": 0.42,
+    "primary": "Harvester",
+    "secondary": "Predator",
+    "capital_pool": 1000000.0,
+    "paper": true
+  },
+  "portfolio": {
+    "current_vol_proxy": 0.4,
+    "target": 0.5,
+    "rebalance": false,
+    "plan": "HOLD"
+  },
+  "conquest": {
+    "source": "MultiversX",
+    "dest": "Ethereum",
+    "net_profit": -48.55,
+    "viable": false,
+    "note": "paper advisory — bridge live gated separately"
+  },
+  "decision_proof": {
+    "proof": {
+      "decision_id": "a1b2c3d4e5f6789012345678seedpaper01abcdef0123456789abcd",
+      "action_type": 0,
+      "action_name": "SWAP",
+      "asset_id": "USDC-c76f1f",
+      "amount": 1000000000,
+      "target_price": 1010000,
+      "zk_proof": "seed_commitment_not_a_snark",
+      "agent_signature": "seed_paper_mark",
+      "agent_id": "LIA_CORE_01",
+      "paper": true
+    },
+    "verification": "PaperOnly"
+  },
+  "note": "Seed for Pages UI — regenerate with python -m lia.brain.cycle"
+}

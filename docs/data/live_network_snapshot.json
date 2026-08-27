@@ -1,0 +1,18 @@
+{
+  "updated": "2026-08-27T14:05:54Z",
+  "source": "api.multiversx.com",
+  "network": "mainnet",
+  "economics": {
+    "egld_price_usd": 3.4,
+    "market_cap_usd": 104228421,
+    "staked": 14546687,
+    "apr": 0.087005
+  },
+  "lia_ops": {
+    "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "balance_egld": 0.0690655611237758,
+    "nonce": 1437,
+    "shard": 2
+  },
+  "notes": "Production snapshot — read-only live MultiversX mainnet"
+}

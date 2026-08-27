@@ -1,0 +1,13 @@
+{
+  "decision_id": "a1b2c3d4e5f6789012345678seedpaper01abcdef0123456789abcd",
+  "action_type": 0,
+  "action_name": "SWAP",
+  "asset_id": "USDC-c76f1f",
+  "amount": 1000000000,
+  "target_price": 1010000,
+  "zk_proof": "seed_commitment_not_a_snark",
+  "agent_signature": "seed_paper_mark",
+  "agent_id": "LIA_CORE_01",
+  "paper": true,
+  "ttl_seconds": 120
+}

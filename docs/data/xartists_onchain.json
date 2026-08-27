@@ -1,1 +1,40 @@
-{"timestamp":"2026-06-20T00:00:00Z","project":"xArtists - Tuduri Original","artist":"@tudurioriginal","network":"mainnet","health":"CONTRACTS_LIVE","collections":{"total_mainnet":11,"nfts_in_wallet":0,"identifiers":["AGR-9bd53e","ALISTOR-a646bc","ASFT-a6273a","BGG-2b627c","HP47X2-b71543","MAS-5189b6","NFTUDURI-2990b6","XTR-e5072b","XAUS-d9cf1f","XAR-cee2e0","TRO-652d6d"]},"tro_token":{"identifier":"TRO-94c925","balance_wallet":0,"value_usd":0,"price_usd":0.000097},"staking":{"nft_staking_contract":"erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl","nft_staking_active":true,"nft_staked_count":0,"tro_staking_contract":"erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8","tro_staking_active":true,"tro_staked_amount":0},"governance":{"active_proposals":0,"marketplace":"erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t","nft_minter":"erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn"},"battle_of_nodes":{"score":40,"rank_estimate":"TOP 50%","supernova_features":["finality_sub_1s","adaptive_sharding","ai_integration"]},"lia_v6":{"agent":"LIA v6 - Liquidity Intelligence Agent","platform":"Vellum Workflows","target":"$3 to $1,000,000 via DeFi compounding","status":"PRODUCTION"}}
+{
+  "timestamp": "2026-08-03T19:50:00Z",
+  "project": "xArtists",
+  "network": "mainnet",
+  "health": "DATA_LIVE_SC_MARKETPLACE_NOT_DEPLOYED",
+  "wallet_lia": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "collections": {
+    "total_mainnet": 11,
+    "nfts_in_collections_sum": 275,
+    "nfts_in_wallet": 8,
+    "nfts_in_wallet_note": "Live API count — not catalog size",
+    "identifiers": [
+      "AGR-9bd53e",
+      "ALISTOR-a646bc",
+      "ASFT-a6273a",
+      "BGG-2b627c",
+      "HP47X2-b71543",
+      "MAS-5189b6",
+      "NFTUDURI-2990b6",
+      "XTR-e5072b",
+      "XAUS-d9cf1f",
+      "XAR-cee2e0",
+      "TRO-652d6d"
+    ]
+  },
+  "tro_token": {
+    "identifier": "TRO-94c925",
+    "balance_wallet": 54177.088984,
+    "decimals": 6
+  },
+  "staking": {
+    "nft_staking_active": true,
+    "nft_staked_count": 0,
+    "tro_staking_active": true
+  },
+  "battle_of_nodes": {
+    "score": 40,
+    "rank_estimate": "TOP 50%"
+  }
+}

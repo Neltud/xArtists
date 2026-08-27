@@ -1,0 +1,9 @@
+{
+  "_comment": "Example only — copy to data/social_watchlist.json and fill; secrets stay in Vellum env",
+  "x_lists": [],
+  "x_accounts": [],
+  "reddit_subs": ["MultiversX", "defi", "CryptoCurrency"],
+  "keywords": ["EGLD", "MultiversX", "TRO-94c925", "xArtists", "Supernova"],
+  "weight_cap": 0.15,
+  "rumor_keywords": ["rumor", "allegedly", "unconfirmed", "leaked"]
+}

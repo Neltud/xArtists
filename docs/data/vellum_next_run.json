@@ -1,0 +1,16 @@
+{
+  "updated": "2026-08-09T19:50:00Z",
+  "release": "private",
+  "prompt": "docs/VELLUM_PRIVATE_RELEASE_PROMPT.md",
+  "workflow_nodes": "data/vellum_workflow_nodes_private.json",
+  "strategy_adapters": "data/vellum_strategy_adapters.json",
+  "flags": {"CHAIN": "1", "LIA_LIVE_TRADING": "0", "LIA_TP_MODE": "log"},
+  "priority": [
+    "Run paper pipeline + publish board/oracles",
+    "Rebuild GH Pages",
+    "Keep SC banners until codeHash",
+    "Deploy SC when PEM ready",
+    "Register micro-proofs before any LIVE=1"
+  ],
+  "forbidden": ["auto live trades", "commit PEM", "claim market live without codeHash"]
+}

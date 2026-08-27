@@ -1,0 +1,14 @@
+{
+  "LIA_LIVE_TRADING": "0",
+  "updated": "2026-08-04T20:00:00Z",
+  "sc": {
+    "marketplace": null,
+    "agents": null,
+    "codeHash_non_null": false
+  },
+  "user_txs": [],
+  "lia_paper_cycles_ok": false,
+  "lia_live_micro_txs": [],
+  "proof_micro_on": false,
+  "notes": "Copy to micro_proof_log.json and fill tx hashes after tests"
+}

@@ -1,5 +1,13 @@
 {
-  "updated": "2026-07-30T21:30:00Z",
-  "trades": [],
-  "note": "Appended by lia/vellum/nodes_trailing_cycle.append_trade — shown on Trading dashboard"
+  "updated": "2026-08-25T09:40:00Z",
+  "network": "mainnet",
+  "live_trading": false,
+  "note": "Paper — core S1 1% · distinct echelons · no max trades. Regenerate: python -m lia.compounding",
+  "trades": [
+    {"id": "paper-E1-S1-0001", "ts": "2026-08-25T09:00:00Z", "echelon": "E1", "pair": "WEGLD/USDC", "side": "BUY", "status": "closed_tp", "strategy": "S1", "tp_pct": 1.0, "sl_pct": 0.5, "size_usd": 50, "fee_usd": 0.15, "gas_usd": 0.04, "pnl_net_usd": 0.31, "paper": true},
+    {"id": "paper-E2-S1-0001", "ts": "2026-08-25T09:05:00Z", "echelon": "E2", "pair": "TRO/USDC", "side": "BUY", "status": "closed_tp", "strategy": "S1", "tp_pct": 1.0, "sl_pct": 0.5, "size_usd": 50, "fee_usd": 0.15, "gas_usd": 0.04, "pnl_net_usd": 0.31, "paper": true},
+    {"id": "paper-E3-S2-0001", "ts": "2026-08-25T09:10:00Z", "echelon": "E3", "pair": "MEX/USDC", "side": "BUY", "status": "closed_tp", "strategy": "S2", "tp_pct": 2.0, "sl_pct": 1.0, "size_usd": 50, "fee_usd": 0.15, "gas_usd": 0.04, "pnl_net_usd": 0.81, "paper": true},
+    {"id": "paper-E4-S05-0001", "ts": "2026-08-25T09:15:00Z", "echelon": "E4", "pair": "WEGLD/TRO", "side": "SELL", "status": "closed_sl", "strategy": "S05", "tp_pct": 0.5, "sl_pct": 0.35, "size_usd": 50, "fee_usd": 0.15, "gas_usd": 0.04, "pnl_net_usd": -0.365, "paper": true},
+    {"id": "paper-E5-S1-0001", "ts": "2026-08-25T09:20:00Z", "echelon": "E5", "pair": "HTM/USDC", "side": "BUY", "status": "closed_tp", "strategy": "S1", "tp_pct": 1.0, "sl_pct": 0.5, "size_usd": 50, "fee_usd": 0.15, "gas_usd": 0.04, "pnl_net_usd": 0.31, "paper": true}
+  ]
 }

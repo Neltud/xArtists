@@ -1,39 +1,48 @@
 {
-  "version": "2026-08-02",
-  "updated_at": "2026-08-02T12:00:00Z",
+  "version": "2026-08-09",
+  "updated_at": "2026-08-09T18:00:00Z",
   "fee_bps": 300,
-  "fee_note": "Protocol fee on buyAgentAction; net goes to seller. See docs/TREASURY_FLOWS.md",
+  "fee_note": "Protocol fee 3% on buyAgentAction; 97% to seller. claimFees owner only. See docs/TREASURY_FLOWS.md",
+  "price_policy_eur": {"min": 5, "max": 25, "note": "Pack sub-agents LIA: 5–25 EUR equivalent"},
   "marketplace_address": null,
   "packs": [
     {
       "id": "lia-signal-01",
       "name": "LIA Signal Pack #1",
-      "description": "Signaux trading LIA v6 (edition limitée) — powered by Vellum",
+      "description": "Signaux trading LIA v6 (édition limitée) — Vellum · distinct de GreenSmoke",
       "supply": 50,
       "remaining": 50,
       "price_egld": "0.5",
+      "price_eur_hint": 12,
       "seller": "LIA",
       "status": "listed_pending_deploy"
     },
     {
       "id": "lia-yield-01",
       "name": "LIA Yield Bias Pack",
-      "description": "Bias yield / Hatom / regime GreenSmoke — edition limitée",
+      "description": "Bias yield / Hatom / regime — édition limitée",
       "supply": 30,
       "remaining": 30,
       "price_egld": "0.35",
+      "price_eur_hint": 8,
       "seller": "LIA",
       "status": "listed_pending_deploy"
     },
     {
       "id": "lia-artist-assist-01",
       "name": "Artist Assist Pack",
-      "description": "Aide metadata / pricing suggestions pour publication œuvre",
+      "description": "Aide metadata / pricing pour publication œuvre",
       "supply": 100,
       "remaining": 100,
-      "price_egld": "0.2",
+      "price_egld": "0.25",
+      "price_eur_hint": 6,
       "seller": "LIA",
       "status": "listed_pending_deploy"
     }
-  ]
+  ],
+  "distinction": {
+    "lia_packs": "Sub-agents Vellum vendus (NFT/API limitée)",
+    "gsn": "GreenSmoke = prévisions score trades LIA, non vendus ici",
+    "swarm": "Agents autonomes paper LIA ops — pas des packs marketplace"
+  }
 }

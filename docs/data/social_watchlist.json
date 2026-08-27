@@ -1,0 +1,17 @@
+{
+  "keywords": [
+    "EGLD",
+    "MultiversX",
+    "xArtists",
+    "TRO-94c925",
+    "Supernova",
+    "Hatom",
+    "xExchange"
+  ],
+  "reddit_subs": ["MultiversX", "defi", "CryptoCurrency"],
+  "x_accounts": [],
+  "weight_cap": 0.15,
+  "rumor_keywords": ["rumor", "rumour", "allegedly", "unconfirmed", "leaked", "rumeur"],
+  "refresh_minutes": 10,
+  "notes": "x_accounts filled via Vellum secret config; fetchers inject SocialItem lists"
+}
