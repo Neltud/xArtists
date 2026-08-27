@@ -72,7 +72,8 @@ jobs:
         run: |
           cp -r apps/frontend/dist/. docs/
           touch docs/.nojekyll
-          # Guard: never ship the legacy Tailwind-CDN monolith as Pages index
+          # SPA deep links on GitHub Pages: serve index for unknown paths
+          cp docs/index.html docs/404.html
           if grep -q 'cdn.tailwindcss.com' docs/index.html; then
             echo "FATAL: docs/index.html is the legacy CDN app, not the Vite SPA"
             exit 1
@@ -81,7 +82,7 @@ jobs:
             echo "FATAL: SPA #root missing in docs/index.html"
             exit 1
           fi
-          echo "SPA index OK"
+          echo "SPA index + 404.html OK"
 
       - name: 📊 Copy data JSON (never drop board)
         run: |
@@ -90,6 +91,7 @@ jobs:
           cp -r apps/frontend/public/data/. docs/data/ 2>/dev/null || true
           ./scripts/ensure_pages_data.sh
           test -f docs/data/lia_board.json && echo "lia_board OK" || (echo "FATAL missing lia_board"; exit 1)
+          test -f docs/data/entity_map.json && echo "entity_map OK" || echo "WARN entity_map missing"
           test -f docs/index.html && echo "index.html OK" || (echo "MISSING index.html"; exit 1)
 
       - name: 📤 Commit & Push docs/
