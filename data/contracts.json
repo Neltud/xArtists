@@ -1,8 +1,8 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-08-26T06:00:00Z",
-  "chain_note": "Mainnet refreshRate 6000 (epoch 2217, 26 Aug). Supernova Devnet 600. Activation mainnet 10 Sep 2026.",
+  "updated": "2026-08-27T18:00:00Z",
+  "chain_note": "Mainnet only. Demo UI GO_DEMO. SC marketplace/agents pending codeHash.",
   "wallets": {
     "lia_ops": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "mission": null,
@@ -26,20 +26,20 @@
       "verdict": "NOT_DEPLOYED — empty account"
     },
     "agents_marketplace": "null — never deployed",
-    "tro_burn": "null — tro-burn burnTro+fundRewards+LIA fee ready",
-    "rwa_escrow_bridge": "null — dispute+verification proof ready",
+    "tro_burn": "null — tro-burn ready",
+    "rwa_escrow_bridge": "null — dispute+verification ready",
     "treasury_splitter": "null — SC ready contracts/treasury-splitter"
   },
   "gaps": {
     "marketplace": "P0 deploy nft-marketplace + codeHash",
     "agents_marketplace": "P0 deploy FEE_BPS=300",
     "mission_reserve": "P1 create wallets + publish",
-    "listings_index": "P1 fill data/listings_index.json after deploy",
-    "pinata_proxy": "P1 backend only — JWT never in frontend",
-    "offer_v2": "Deferred until GMV justifies escrow SC",
-    "tro_burn": "Deploy; ESDTLocalBurn; fundRewards; VITE_TRO_BURN_*",
-    "rwa_escrow_bridge": "P2 after market; attestor=LIA",
-    "treasury_splitter": "P0 after Mission+Reserve+Reward+Ops wallets; receiveAndSplit 40/30/20/10"
+    "listings_index": "P1 after deploy",
+    "pinata_proxy": "P1 backend only — JWT never in frontend"
   },
-  "notes": "Do not send user funds until codeHash non-null. Micro List/Buy = user wallet only."
+  "ui_status": {
+    "verdict": "GO_DEMO",
+    "lia_live_trading": false,
+    "pages": "https://neltud.github.io/xArtists/"
+  }
 }

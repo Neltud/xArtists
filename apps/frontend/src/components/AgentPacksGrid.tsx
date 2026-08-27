@@ -1,12 +1,19 @@
+import { Link } from 'react-router-dom'
 import { AGENT_PACKS, PACK_PRICING_POLICY } from '../config/agentPacks'
+import { canBuyAgent } from '../config/scStatus'
 
 export default function AgentPacksGrid() {
+  const mintLive = canBuyAgent()
+
   return (
     <div>
       <p className="text-xs text-zinc-500 mb-3">
         <strong className="text-zinc-300">Plus de signaux = plus cher</strong> —{' '}
         {PACK_PRICING_POLICY.ranking}. LIA ajuste pour la marge (corridor{' '}
         {PACK_PRICING_POLICY.corridor.min}–{PACK_PRICING_POLICY.corridor.max} €).
+        {!mintLive && (
+          <span className="text-amber-300/90"> Mint on-chain pending codeHash agents SC.</span>
+        )}
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {AGENT_PACKS.map(p => (
@@ -47,10 +54,24 @@ export default function AgentPacksGrid() {
                 <li key={e}>✓ {e}</li>
               ))}
             </ul>
-            <p className="text-[10px] text-zinc-600 border-t border-zinc-800 pt-2">
+            <p className="text-[10px] text-zinc-600 border-t border-zinc-800 pt-2 mb-3">
               Risque {p.risk} · droit produit · pas un fonds · pas GSN
               {p.id === 'voyage' ? ' · agent de voyage v1 advisory' : ''}
             </p>
+            <div className="flex flex-wrap gap-2 mt-auto">
+              {p.id === 'voyage' ? (
+                <Link to="/agents/voyage" className="btn-primary text-xs py-2 px-3 flex-1 text-center">
+                  Ouvrir Voyage
+                </Link>
+              ) : (
+                <Link to="/my-packs" className="btn-secondary text-xs py-2 px-3 flex-1 text-center">
+                  My Packs
+                </Link>
+              )}
+              <Link to="/trading" className="btn-secondary text-xs py-2 px-3 text-center">
+                Board
+              </Link>
+            </div>
           </article>
         ))}
       </div>
