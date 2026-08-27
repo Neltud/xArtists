@@ -1,26 +1,27 @@
-# Agent de Voyage
+# Agent de voyage
 
 ## Produit
 
-Pack thématique **Voyage** (14 € catalogue, corridor 9–22 €) dans `agentPacks.ts`.
+| Couche | Contenu |
+|--------|--------|
+| Pack NFT | `voyage` — list ~14 €, intensity 2 |
+| Catalogue | `lia-voyage-01` (pending SC deploy) |
+| GSN | Agent **Voyage** — DEST_LISBON, RWA_HOSPITALITY, CULTURE_FLOW |
+| UI | `VoyageAgentPanel` sur `/agents` |
 
-- **Rôle** : signaux mobilité, culture, RWA hospitality soft
-- **v1** : paper / advisory — **pas** de réservation réelle ni custodie dépôt voyage
-- **Données** : `data/voyage_signals.json` + bandeau GSN domaine travel (quand feed live)
-- **UI** : `VoyageAgentPanel` sur Dashboard / Agents
+## v1 scope
 
-## Relation Sovereign (fichiers joints EVM)
+- Signaux destinations / saisonnalité (paper)
+- Corrélation crypto × tourisme (lecture)
+- Veille RWA hospitality / culture
+- Bandeau GSN domain travel
 
-Les contrats Solidity joints (`Marketplace_Escrow`, `Sovereign_Governance`, `TRO_Master`) sont une **référence conceptuelle** omnichain / Sepolia — **pas** le chemin mainnet MultiversX xArtists.
+## v1 NOT
 
-### Alertes sécurité (escrow EVM joint)
+- Booking hôtel/vol réel
+- Custodie dépôt voyage
+- Assurance voyage
 
-- `confirmDelivery` + `withdraw` transfèrent `address(this).balance` entier → **risque de drainage multi-listings**
-- Pas de mapping buyer / refund propre
-- À ne **pas** déployer tel quel en prod
+## LIA / Vellum
 
-Chemin prod xArtists : SC **Rust MultiversX** (`contracts/agents-marketplace`, etc.) + LIA Vellum paper → micro-live.
-
-## Vellum
-
-LIA peut lire `voyage_signals.json` avec poids max ~10 % et filtre GSN — **jamais** exécution auto v1.
+Traiter `TRAVEL_SIGNAL` comme sleeve advisory dans la fusion de signaux (poids plafonné comme GSN), **jamais** exécution booking.

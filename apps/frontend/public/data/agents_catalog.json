@@ -1,6 +1,6 @@
 {
-  "version": "2026-08-02",
-  "updated_at": "2026-08-02T12:00:00Z",
+  "version": "2026-08-27",
+  "updated_at": "2026-08-27T17:00:00Z",
   "fee_bps": 300,
   "fee_note": "Protocol fee on buyAgentAction; net goes to seller. See docs/TREASURY_FLOWS.md",
   "marketplace_address": null,
@@ -13,7 +13,8 @@
       "remaining": 50,
       "price_egld": "0.5",
       "seller": "LIA",
-      "status": "listed_pending_deploy"
+      "status": "listed_pending_deploy",
+      "pack_profile": "pulse"
     },
     {
       "id": "lia-yield-01",
@@ -23,7 +24,8 @@
       "remaining": 30,
       "price_egld": "0.35",
       "seller": "LIA",
-      "status": "listed_pending_deploy"
+      "status": "listed_pending_deploy",
+      "pack_profile": "yield"
     },
     {
       "id": "lia-artist-assist-01",
@@ -33,7 +35,20 @@
       "remaining": 100,
       "price_egld": "0.2",
       "seller": "LIA",
-      "status": "listed_pending_deploy"
+      "status": "listed_pending_deploy",
+      "pack_profile": "sentinel"
+    },
+    {
+      "id": "lia-voyage-01",
+      "name": "Agent de Voyage Pack",
+      "description": "Signaux destinations, culture, RWA hospitality — advisory only v1 (pas de booking)",
+      "supply": 40,
+      "remaining": 40,
+      "price_egld": "0.4",
+      "seller": "LIA",
+      "status": "listed_pending_deploy",
+      "pack_profile": "voyage",
+      "domain": "travel"
     }
   ]
 }
