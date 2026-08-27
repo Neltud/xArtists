@@ -1,0 +1,10 @@
+{
+  "updated": "2026-08-27T18:50:00Z",
+  "source": "multiversx_api_and_stubs",
+  "mode": "live_read_when_available",
+  "prices": {
+    "EGLD": { "usd": null },
+    "TRO-94c925": { "usd": null },
+    "USDC-c76f1f": { "usd": 1.0 }
+  }
+}
