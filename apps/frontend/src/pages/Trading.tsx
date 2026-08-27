@@ -13,6 +13,7 @@ import SignalsFusionPanel from '../components/SignalsFusionPanel'
 import AnnualYieldPanel from '../components/AnnualYieldPanel'
 import BrainCyclePanel from '../components/BrainCyclePanel'
 import PaperLegsPanel from '../components/PaperLegsPanel'
+import LiquidityPanel from '../components/LiquidityPanel'
 import { LINKS } from '../config/links'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
@@ -101,7 +102,7 @@ export default function Trading() {
       <div className="mb-6">
         <h1 className="text-3xl font-black">⚡ Trading Terminal LIA</h1>
         <p className="text-gray-500 mt-1">
-          Board · fusion · EV · DecisionProof · paper legs · Guardian{' '}
+          Board · fusion · EV · DecisionProof · paper legs · Guardian · liquidity{' '}
           <InfoTip k="paperFirst" />
           {dataTs ? ` · data ${new Date(dataTs).toLocaleString('fr-FR')}` : ''}
         </p>
@@ -110,7 +111,7 @@ export default function Trading() {
       <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
         <strong>Paper / protocole LIA</strong> — ce n’est pas ton compte de trading.
         {liveFlag ? (
-          <span className="text-red-200"> Flag live détecté dans le status JSON — vérifier ops.</span>
+          <span className="text-red-200"> Flag live détecté — vérifier ops.</span>
         ) : (
           <span> LIA_LIVE_TRADING=0 · aucun ordre sur tes fonds.</span>
         )}{' '}
@@ -130,6 +131,7 @@ export default function Trading() {
       </div>
 
       <ScStatusBanner />
+      <LiquidityPanel />
       <GuardianStatusPanel />
       <DeskPanel />
       <LiaBoardPanel />
@@ -156,68 +158,47 @@ export default function Trading() {
             </div>
           </div>
           <div className="mt-4 p-3 rounded-lg bg-[#111118] text-xs text-gray-400">
-            <strong className="text-gray-300">Paper board</strong> — JSON GitHub / Pages. Live seulement
-            après micro-preuves + flag ops.
+            <strong className="text-gray-300">Paper board</strong> — JSON GitHub / Pages.
           </div>
         </div>
 
         <div className="card">
           <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">
-            🪙 Analyse $TRO
+            Pools / focus
           </p>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-400 text-sm">Prix $TRO</span>
-              <span className="mono font-bold text-purple-400">${prices.tro.toFixed(8)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400 text-sm">Meilleure pool</span>
-              <span className="font-bold text-green-400">{winningPair}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400 text-sm">Reco LIA</span>
-              <span className="font-bold text-yellow-400">{recommendedPair}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400 text-sm">Supply max produit</span>
-              <span className="font-bold">500 000</span>
-            </div>
-          </div>
+          <p className="text-sm text-zinc-400 mb-2">
+            Winning <span className="text-white font-mono">{winningPair}</span>
+          </p>
+          <p className="text-sm text-zinc-400 mb-4">
+            Recommended <span className="text-white font-mono">{recommendedPair}</span>
+          </p>
+          <ul className="text-xs space-y-1 text-zinc-500 max-h-32 overflow-auto">
+            {(Array.isArray(pools) ? pools : []).slice(0, 8).map((p: { name?: string; pair?: string }, i: number) => (
+              <li key={i}>{p.name || p.pair || 'pool'}</li>
+            ))}
+          </ul>
           <a
-            href={LINKS.xexchangeTroUsdc}
+            href={LINKS.xexchange}
             target="_blank"
             rel="noreferrer"
-            className="btn-secondary text-sm mt-4 inline-block"
+            className="text-xs text-purple-300 underline mt-3 inline-block"
           >
-            Swap $TRO →
+            xExchange ↗
           </a>
         </div>
       </div>
 
-      {pools.length > 0 && (
-        <div className="card mb-8">
-          <p className="text-xs font-semibold uppercase text-gray-500 mb-3">Pools (snapshot)</p>
-          <ul className="text-sm space-y-1 text-gray-400">
-            {pools.slice(0, 8).map((p: string | { name?: string }, i: number) => (
-              <li key={i}>{typeof p === 'string' ? p : p.name || JSON.stringify(p)}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {loadErr && <p className="text-xs text-amber-400 mb-4">Board load: {loadErr}</p>}
 
-      <div className="card mb-8">
-        <h2 className="text-lg font-bold mb-3">Trades paper (JSON)</h2>
-        {loadErr && <p className="text-xs text-amber-400 mb-2">{loadErr}</p>}
+      <div className="card mb-8 overflow-x-auto">
+        <h2 className="text-lg font-bold mb-3">Trades paper (derniers)</h2>
         {trades.length === 0 ? (
-          <p className="text-sm text-gray-500">
-            Aucun trade publié —{' '}
-            <code className="text-[10px]">python -m lia.board.publish</code> / Vellum.
-          </p>
+          <p className="text-sm text-gray-500">Aucun trade publié dans lia_trades.json.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[640px]">
+          <div className="min-w-[640px]">
+            <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
+                <tr className="text-gray-500 border-b border-[#2a2a3a]">
                   <th className="text-left py-2">Echelon</th>
                   <th className="text-left py-2">Pair</th>
                   <th className="text-left py-2">Strat</th>
