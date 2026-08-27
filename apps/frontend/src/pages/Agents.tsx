@@ -12,16 +12,20 @@ import PackCheckout from '../components/PackCheckout'
 import PageGuide from '../components/PageGuide'
 import AgentsJourneyStrip from '../components/AgentsJourneyStrip'
 
-const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
+const LOCAL = `${import.meta.env.BASE_URL}data/greensmoke_forecasts.json`
+const RAW_PUBLIC =
+  'https://raw.githubusercontent.com/Neltud/xArtists/main/apps/frontend/public/data/greensmoke_forecasts.json'
+const RAW_DATA =
+  'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
 
 interface Forecast {
   asset: string
   direction: string
-  target_usd: number | null
-  current_ref: number | null
+  target_usd?: number | null
+  current_ref?: number | null
   confidence: number
-  horizon: string
-  rationale: string
+  horizon?: string
+  rationale?: string
   signal: string
 }
 
@@ -30,27 +34,31 @@ interface GsAgent {
   name: string
   domain?: string
   domain_fr?: string
-  platform: string
-  role: string
-  status: string
+  platform?: string
+  role?: string
+  status?: string
   on_chain_activity?: boolean
   gsn_url?: string
-  last_run: string
-  confidence_avg: number
-  horizon: string
-  forecasts: Forecast[]
+  last_run?: string
+  confidence_avg?: number
+  confidence?: number
+  accuracy?: number
+  bias?: string
+  horizon?: string
+  forecasts?: Forecast[]
   example_markets?: string[]
 }
 
 interface ForecastData {
-  version: string
-  updated_at: string
-  agents: Record<string, GsAgent>
-  aggregated_signals: {
-    primary: string
-    secondary: string
-    regime: string
-    recommended_action: string
+  version?: string
+  updated_at?: string
+  updated?: string
+  agents?: Record<string, GsAgent>
+  aggregated_signals?: {
+    primary?: string
+    secondary?: string
+    regime?: string
+    recommended_action?: string
     live_feed?: string
     agents_directory?: string
   }
@@ -63,20 +71,44 @@ const DOMAIN_ICON: Record<string, string> = {
   politics: '🏛️',
   sports: '⚽',
   tech: '💻',
+  finance: '📊',
 }
 
 function dirColor(d: string) {
-  const x = d.toLowerCase()
+  const x = (d || '').toLowerCase()
   if (x.includes('bull') || x.includes('risk_on') || x === 'buy') return 'text-green-400'
   if (x.includes('bear') || x.includes('risk_off') || x === 'sell') return 'text-red-400'
   return 'text-yellow-400'
 }
 
 function signalBadge(s: string) {
-  const u = s.toUpperCase()
+  const u = (s || '').toUpperCase()
   if (u.includes('BUY') || u.includes('RISK_ON') || u.includes('LONG')) return 'badge-green'
   if (u.includes('SELL') || u.includes('RISK_OFF')) return 'badge-red'
   return 'badge-orange'
+}
+
+function normalizeAgent(id: string, raw: GsAgent): GsAgent {
+  const forecasts = Array.isArray(raw.forecasts)
+    ? raw.forecasts
+    : raw.bias || raw.accuracy != null
+      ? [
+          {
+            asset: (raw.domain || 'GSN').toUpperCase(),
+            direction: String(raw.bias || 'watch'),
+            signal: String(raw.bias || 'MONITOR'),
+            confidence: Number(raw.confidence ?? raw.accuracy ?? 0.5),
+            horizon: 'seed',
+            rationale: raw.accuracy != null ? `accuracy ${(Number(raw.accuracy) * 100).toFixed(0)}%` : '',
+          },
+        ]
+      : []
+  return {
+    ...raw,
+    id: raw.id || id,
+    name: raw.name || id,
+    forecasts,
+  }
 }
 
 export default function Agents() {
@@ -87,15 +119,22 @@ export default function Agents() {
   const load = async () => {
     setLoading(true)
     setError(null)
-    try {
-      const r = await fetch(RAW + '?t=' + Date.now())
-      if (!r.ok) throw new Error(`HTTP ${r.status}`)
-      setData((await r.json()) as ForecastData)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erreur chargement')
-    } finally {
-      setLoading(false)
+    let lastErr: string | null = null
+    for (const url of [LOCAL, RAW_PUBLIC, RAW_DATA]) {
+      try {
+        const r = await fetch(url + '?t=' + Date.now())
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        const json = (await r.json()) as ForecastData
+        if (!json || typeof json !== 'object') throw new Error('invalid json')
+        setData(json)
+        setLoading(false)
+        return
+      } catch (e) {
+        lastErr = e instanceof Error ? e.message : 'Erreur chargement'
+      }
     }
+    setError(lastErr || 'Erreur chargement')
+    setLoading(false)
   }
 
   useEffect(() => {
@@ -104,7 +143,9 @@ export default function Agents() {
     return () => clearInterval(id)
   }, [])
 
-  const agentsList = data ? Object.values(data.agents) : []
+  const agentsList = data?.agents
+    ? Object.entries(data.agents).map(([id, a]) => normalizeAgent(id, a || { id, name: id }))
+    : []
 
   return (
     <div className="animate-fade-in pb-20 md:pb-0">
@@ -181,9 +222,9 @@ export default function Agents() {
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
           <div>
-            {data?.updated_at && (
+            {(data?.updated_at || data?.updated) && (
               <p className="text-xs text-gray-500">
-                MAJ {new Date(data.updated_at).toLocaleString('fr-FR')}
+                MAJ {new Date(data.updated_at || data.updated || '').toLocaleString('fr-FR')}
               </p>
             )}
           </div>
@@ -210,18 +251,26 @@ export default function Agents() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
               <div>
                 <p className="text-xs text-gray-500">Primary</p>
-                <p className="font-bold text-green-400 text-sm">{data.aggregated_signals.primary}</p>
+                <p className="font-bold text-green-400 text-sm">
+                  {data.aggregated_signals.primary || '—'}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Secondary</p>
-                <p className="font-bold text-purple-400 text-sm">{data.aggregated_signals.secondary}</p>
+                <p className="font-bold text-purple-400 text-sm">
+                  {data.aggregated_signals.secondary || '—'}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Régime</p>
-                <p className="font-bold text-teal-400 text-sm">{data.aggregated_signals.regime}</p>
+                <p className="font-bold text-teal-400 text-sm">
+                  {data.aggregated_signals.regime || '—'}
+                </p>
               </div>
             </div>
-            <p className="text-sm text-gray-300">{data.aggregated_signals.recommended_action}</p>
+            <p className="text-sm text-gray-300">
+              {data.aggregated_signals.recommended_action || ''}
+            </p>
           </div>
         )}
 
@@ -243,14 +292,14 @@ export default function Agents() {
                   <div>
                     <p className="font-bold text-lg">{agent.name}</p>
                     <p className="text-xs text-gray-500">
-                      GSN · {agent.domain_fr || agent.domain} · {agent.role}
+                      GSN · {agent.domain_fr || agent.domain || '—'} · {agent.role || 'forecast'}
                     </p>
                   </div>
                 </div>
                 <span className="badge-gray text-[10px]">externe · pas à vendre</span>
               </div>
               <div className="space-y-2">
-                {agent.forecasts.map((f, i) => (
+                {(Array.isArray(agent.forecasts) ? agent.forecasts : []).map((f, i) => (
                   <div
                     key={i}
                     className="p-3 rounded-xl bg-[#111118] border border-[#2a2a3a] flex flex-col sm:flex-row sm:items-center gap-2"
@@ -259,10 +308,13 @@ export default function Agents() {
                       <p className="font-semibold text-sm">{f.asset}</p>
                       <p className={`text-xs font-bold ${dirColor(f.direction)}`}>{f.direction}</p>
                     </div>
-                    <div className="flex-1 text-xs text-gray-400">{f.rationale}</div>
+                    <div className="flex-1 text-xs text-gray-400">{f.rationale || ''}</div>
                     <span className={signalBadge(f.signal)}>{f.signal}</span>
                   </div>
                 ))}
+                {(!agent.forecasts || agent.forecasts.length === 0) && (
+                  <p className="text-xs text-zinc-500">Aucune ligne de forecast pour cet agent.</p>
+                )}
               </div>
             </div>
           ))}
