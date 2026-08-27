@@ -1,38 +1,16 @@
-/**
- * DEMO MODE — product posture for public / investor demos.
- *
- * ON (always for this release):
- * - Paper LIA board, compounding, brain, fusion, ticker
- * - Live READ-ONLY MultiversX API (balances, prices, network)
- * - Wallet connect for tips / explore (user signs their own TX only)
- *
- * OFF until codeHash + ops:
- * - Marketplace List/Buy, agents mint buy on-chain
- * - LIA_LIVE_TRADING automatic execution
- */
+/** Demo mode flags — honest product surface until SC + micro-live. */
 
-/** Build-time: VITE_DEMO_MODE=0 to hide strip (not recommended pre-mainnet) */
-const envOff =
-  typeof import.meta !== 'undefined' &&
-  (import.meta as ImportMeta & { env?: Record<string, string> }).env?.VITE_DEMO_MODE === '0'
+export const DEMO_MODE = true
 
-export const DEMO_MODE = !envOff
-
-export const DEMO_LABEL = 'DEMO · PAPER LIA · LIVE DATA READS'
-
-export const DEMO_SUMMARY = {
-  trading: 'paper' as const,
-  liaLiveTrading: false,
-  marketplaceOnChain: false,
-  agentsOnChain: false,
-  liveReads: true,
-  userWalletOptional: true,
-}
+export const DEMO_LABEL = 'DEMO · PAPER LIA'
 
 export const DEMO_BULLETS = [
-  'Board LIA, compounding 10 colonnes, brain EV, fusion signaux = paper (JSON Vellum)',
-  'Prix / soldes / réseau = lectures live API MultiversX (pas de faux chiffres SC)',
-  'Marketplace & agents SC = non déployés (codeHash null) — pas de List/Buy simulé',
-  'Wallet Connect = optionnel (tips, exploration) — LIA n’utilise jamais ta session',
-  'Aucun ordre live LIA tant que LIA_LIVE_TRADING=0 + micro-preuves',
+  'Board / compounding / paper legs : JSON paper (Vellum) — pas ton compte.',
+  'Lectures MultiversX live (prix, soldes) quand API OK.',
+  'Marketplace & agents mint : bloqués tant que codeHash null.',
+  'Agent Voyage : signaux advisory — pas de booking.',
+  'On-ramp : MoonPay hosted + simulation UI (pas de secret webhook en front).',
+  'Liquidity orchestrator : paper only — pas de bridge live.',
+  'LIA_LIVE_TRADING=0 jusqu’aux micro-preuves ops.',
+  'Wallet LIA ops ≠ wallet utilisateur.',
 ] as const

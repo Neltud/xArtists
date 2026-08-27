@@ -10,6 +10,8 @@ export type IntentAction =
   | 'VIEW_WALLET'
   | 'VIEW_PACKS'
   | 'VIEW_VOYAGE'
+  | 'VIEW_ENTITY'
+  | 'ONRAMP'
   | 'TIP'
   | 'STAKE'
   | 'SIMULATE'
@@ -37,6 +39,20 @@ const RULES: { re: RegExp; action: IntentAction; route: string; summary: string;
       conf: 0.92,
     },
     {
+      re: /\b(entité|entity|org|organisation|succursale)\b/i,
+      action: 'VIEW_ENTITY',
+      route: '/entity',
+      summary: 'Carte entité xArtists + succursales',
+      conf: 0.9,
+    },
+    {
+      re: /\b(moonpay|on-?ramp|fiat|carte bancaire|google pay|apple pay)\b/i,
+      action: 'ONRAMP',
+      route: '/',
+      summary: 'On-ramp fiat (MoonPay / demo) — ouvrir ⌘K buy',
+      conf: 0.88,
+    },
+    {
       re: /\b(agent|pack|oracle|sentinel|pulse|yield)\b/i,
       action: 'BUY_AGENT',
       route: '/agents',
@@ -51,10 +67,10 @@ const RULES: { re: RegExp; action: IntentAction; route: string; summary: string;
       conf: 0.8,
     },
     {
-      re: /\b(trad|lia|board|compound|signal)\b/i,
+      re: /\b(trad|lia|board|compound|signal|liquidit)\b/i,
       action: 'VIEW_TRADING',
       route: '/trading',
-      summary: 'Terminal LIA paper',
+      summary: 'Terminal LIA paper + liquidity',
       conf: 0.9,
     },
     {
@@ -123,7 +139,7 @@ export function parseIntent(raw: string): StructuredIntent {
         route: rule.route,
         summary: rule.summary,
         payment_asset: tro ? 'TRO' : undefined,
-        notes: 'Paper orchestration — pas d’exécution omnichain automatique',
+        notes: 'Paper path — aucune signature chain depuis le parser',
         paper: true,
       }
     }
@@ -133,8 +149,8 @@ export function parseIntent(raw: string): StructuredIntent {
     raw: text,
     confidence: 0.2,
     route: '/',
-    summary: 'Intention non reconnue — essayer « voyage », « trading », « pack »',
-    notes: 'Parser local rules only',
+    summary: 'Intention non reconnue — essayer voyage, entity, trading, buy EGLD',
+    notes: 'Élargir les règles ou brancher LIA-Parser Vellum',
     paper: true,
   }
 }
