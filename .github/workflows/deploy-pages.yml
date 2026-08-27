@@ -80,7 +80,6 @@ jobs:
             echo "FATAL: SPA #root missing in docs/index.html"
             exit 1
           fi
-          # CRITICAL: 404 must be byte-identical to index (same asset hashes)
           cp -f docs/index.html docs/404.html
           INDEX_JS=$(grep -oE 'assets/index-[^"/]+\.js' docs/index.html | head -1)
           FOURO_JS=$(grep -oE 'assets/index-[^"/]+\.js' docs/404.html | head -1)
@@ -91,7 +90,6 @@ jobs:
             exit 1
           fi
           test -f "docs/$INDEX_JS" || { echo "FATAL missing $INDEX_JS"; exit 1; }
-          echo "SPA index + 404.html OK (matched assets)"
 
       - name: 📊 Copy data JSON (never drop board)
         run: |
@@ -99,11 +97,20 @@ jobs:
           cp -r data/. docs/data/ 2>/dev/null || true
           cp -r apps/frontend/public/data/. docs/data/ 2>/dev/null || true
           ./scripts/ensure_pages_data.sh
-          # Re-sync 404 after any later writes that might touch HTML
+          # FINAL 404 sync after all writes
           cp -f docs/index.html docs/404.html
           test -f docs/data/lia_board.json && echo "lia_board OK" || (echo "FATAL missing lia_board"; exit 1)
           test -f docs/data/entity_map.json && echo "entity_map OK" || echo "WARN entity_map missing"
+          test -f docs/data/voyage_agent.json && echo "voyage OK" || echo "WARN voyage missing"
           test -f docs/index.html && echo "index.html OK" || (echo "MISSING index.html"; exit 1)
+
+      - name: 🔒 Final SPA guard
+        run: |
+          cp -f docs/index.html docs/404.html
+          INDEX_JS=$(grep -oE 'assets/index-[^"/]+\.js' docs/index.html | head -1)
+          FOURO_JS=$(grep -oE 'assets/index-[^"/]+\.js' docs/404.html | head -1)
+          [ "$INDEX_JS" = "$FOURO_JS" ] && [ -n "$INDEX_JS" ] || { echo FATAL 404 drift; exit 1; }
+          echo "FINAL index/404 matched: $INDEX_JS"
 
       - name: 📤 Commit & Push docs/
         run: |
