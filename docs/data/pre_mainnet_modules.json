@@ -3,9 +3,9 @@
   "policy": "No user funds on pre-mainnet modules until codeHash. MVX mainnet settlement.",
   "modules": [
     {"id": "soul", "route": "/soul-testnet", "status": "pre-mainnet", "acceptUserFunds": false},
-    {"id": "burnify", "route": "/burnify", "status": "pre-mainnet", "acceptUserFunds": false, "sc": "tro-burn", "note": "EGLD rewards after deploy+fund"},
+    {"id": "burnify", "route": "/burnify", "status": "pre-mainnet", "acceptUserFunds": false, "sc": "tro-burn"},
     {"id": "polylia", "route": "/agents/polylia", "status": "pre-mainnet", "acceptUserFunds": false},
     {"id": "rwa_bridge", "route": null, "status": "pre-mainnet", "acceptUserFunds": false}
   ],
-  "chain": {"network": "mainnet", "note": "MVX config v1.11.11.0 — validator patch, no activation epoch"}
+  "chain": {"network": "mainnet", "note": "MVX config v1.11.11.0"}
 }

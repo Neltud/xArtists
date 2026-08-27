@@ -1,13 +1,45 @@
 {
   "updated": "2026-08-27T17:20:00Z",
-  "entity": {"name": "xArtists", "dapp": "https://neltud.github.io/xArtists/"},
+  "entity": {
+    "name": "xArtists",
+    "type": "Organisation protocole · MultiversX",
+    "mission": "Marketplace NFT/RWA + agents IA + $TRO utility · LIA (Vellum) cerveau paper puis live",
+    "hq": "MultiversX Mainnet",
+    "token": "TRO-94c925",
+    "supply_cap": 500000,
+    "dapp": "https://neltud.github.io/xArtists/",
+    "github": "https://github.com/Neltud/xArtists"
+  },
   "branches": [
-    {"id": "lia", "route": "/trading", "status": "paper_live_data"},
-    {"id": "voyage", "route": "/agents/voyage", "status": "paper_ui"},
-    {"id": "onramp", "route": "/", "status": "demo_moonpay"},
-    {"id": "liquidity", "route": "/trading", "status": "paper"},
-    {"id": "marketplace", "route": "/marketplace", "status": "sc_pending"},
-    {"id": "agents", "route": "/agents", "status": "sc_pending"}
+    {"id": "lia", "name": "LIA / Vellum Brain", "kind": "cerveau", "status": "paper_live_data", "route": "/trading", "desc": "Décision, EV, fusion signaux, paper legs, risk lock", "evolution": "Shadow → micro-live après codeHash + LIA_LIVE_CONFIRMED"},
+    {"id": "marketplace", "name": "Marketplace NFT", "kind": "commerce", "status": "sc_pending", "route": "/marketplace", "desc": "List / Buy œuvres · 1 TRO max physique policy", "evolution": "Deploy marketplace + verify codeHash"},
+    {"id": "agents", "name": "Agents Packs", "kind": "produit", "status": "sc_pending", "route": "/agents", "desc": "Pulse/Yield/Sentinel/Voyage · Model C", "evolution": "agents_marketplace FEE_BPS=300"},
+    {"id": "studio", "name": "Artist Studio", "kind": "création", "status": "ui_live", "route": "/studio", "desc": "Collection · IPFS · mint EGLD", "evolution": "Proxy Pinata ops-only"},
+    {"id": "tro", "name": "$TRO Utility", "kind": "token", "status": "live_read", "route": "/tro", "desc": "Swap, DAO, burn path", "evolution": "tro-burn + buy-back flywheel"},
+    {"id": "dao", "name": "DAO / Gouvernance", "kind": "gouvernance", "status": "live_read", "route": "/dao", "desc": "Votes holders", "evolution": "Mutation proposals SC"},
+    {"id": "treasury", "name": "Treasury / Tips", "kind": "finance", "status": "partial", "route": "/tip", "desc": "Tips + split 40/30/20/10", "evolution": "treasury_splitter deploy"},
+    {"id": "staking", "name": "Staking & LP", "kind": "defi", "status": "ui_live", "route": "/staking", "desc": "Pools xExchange / OneDex / NFT stake", "evolution": "Rewards on-chain unifiés"},
+    {"id": "rwa", "name": "RWA / Escrow", "kind": "réel", "status": "shell", "route": "/marketplace", "desc": "Actifs physiques + escrow", "evolution": "rwa_escrow après market"},
+    {"id": "soul", "name": "Soul / Identity", "kind": "identité", "status": "paper", "route": "/", "desc": "Paper Soul Score", "evolution": "SBT on-chain MVX"},
+    {"id": "sim", "name": "Simulation Lab", "kind": "demo", "status": "ui_live", "route": "/sim", "desc": "Trades simulés · parcours", "evolution": "Brancher TX post-deploy"},
+    {"id": "hatom", "name": "Hatom / Yield", "kind": "partenaire", "status": "external", "route": "/hatom", "desc": "Lecture non custodiale", "evolution": "Intégration externe"},
+    {"id": "voyage", "name": "Agent de Voyage", "kind": "produit", "status": "paper_ui", "route": "/agents/voyage", "desc": "Travel/culture/RWA hospitality advisory", "evolution": "Mint pack après SC"},
+    {"id": "onramp", "name": "Fiat On-Ramp", "kind": "funding", "status": "demo_moonpay", "route": "/", "desc": "MoonPay + ⌘K buy", "evolution": "Webhook HMAC serveur"},
+    {"id": "liquidity", "name": "Liquidity Orchestrator", "kind": "ops", "status": "paper", "route": "/trading", "desc": "Rebalance paper cycle", "evolution": "Bridge health avant live"}
   ],
-  "review": {"verdict": "GO_DEMO", "date": "2026-08-27"}
+  "roadmap": [
+    "P0 Deploy marketplace + agents SC · codeHash",
+    "P0 Mission + Reserve wallets · splitter",
+    "P1 IPFS proxy · listings index",
+    "P1 Micro List/Buy user wallet",
+    "P2 RWA escrow · Soul SBT",
+    "P2 LIA micro-live après preuves"
+  ],
+  "review": {
+    "date": "2026-08-27",
+    "verdict": "GO_DEMO",
+    "live_shell_ok": true,
+    "sc_marketplace": "pending_codehash",
+    "lia_live_trading": false
+  }
 }

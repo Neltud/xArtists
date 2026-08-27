@@ -1,10 +1,10 @@
 {
-  "version": "2.0",
-  "updated_at": "2026-08-27T14:30:00Z",
+  "version": "2.1",
+  "updated_at": "2026-08-27T17:10:00Z",
   "source": "GreenSmokeNetwork",
   "network": "MultiversX mainnet",
   "dapp": "https://app.greensmoke.network",
-  "note": "Full forecast rows required by UI (Array). Compact accuracy-only agents are normalized client-side.",
+  "note": "Includes Voyage / travel agent. Array forecasts required by UI.",
   "agents": {
     "Liia": {
       "id": "liia",
@@ -73,6 +73,42 @@
         }
       ]
     },
+    "Voyage": {
+      "id": "voyage-travel",
+      "name": "Voyage",
+      "domain": "travel",
+      "domain_fr": "voyage / tourisme",
+      "role": "Agent de voyage — signaux mobilité & culture",
+      "status": "active",
+      "confidence_avg": 0.76,
+      "accuracy": 0.82,
+      "forecasts": [
+        {
+          "asset": "DEST_LISBON",
+          "direction": "bullish",
+          "confidence": 0.78,
+          "horizon": "30d",
+          "rationale": "Saisonnalité + météo Liia alignée — demande tourisme fort",
+          "signal": "WATCH_DESTINATION"
+        },
+        {
+          "asset": "RWA_HOSPITALITY",
+          "direction": "neutral",
+          "confidence": 0.71,
+          "horizon": "90d",
+          "rationale": "Veille RWA séjour — correl crypto risk-on, pas de booking on-chain v1",
+          "signal": "ADVISORY"
+        },
+        {
+          "asset": "CULTURE_FLOW",
+          "direction": "bullish",
+          "confidence": 0.74,
+          "horizon": "14d",
+          "rationale": "Flux culture / events — sleeve pack Voyage xArtists",
+          "signal": "CULTURE_ON"
+        }
+      ]
+    },
     "gsn-elite-9": {
       "id": "gsn-elite-9",
       "name": "GSN Elite MVX",
@@ -95,9 +131,9 @@
   },
   "aggregated_signals": {
     "primary": "BULLISH_CRYPTO",
-    "secondary": "RISK_ON_MACRO",
+    "secondary": "TRAVEL_WATCH_LISBON",
     "regime": "RISK_ON",
-    "recommended_action": "Suivre signaux GSN ≥80% en advisory only — pas d'exécution auto",
+    "recommended_action": "Crypto GSN ≥80% + Voyage advisory (destinations) — pas d'exécution auto ni booking",
     "agents_directory": "https://app.greensmoke.network/agents"
   }
 }
