@@ -1,49 +1,38 @@
-# Sovereign EVM — référence (piste parallèle)
+# Sovereign EVM — référence (pas runtime MVX)
 
-Stack **principale xArtists = MultiversX** (Rust SC, sdk-dapp, Pages).  
-Les contrats Solidity ci-dessous sont une **piste EVM / lab** (Sepolia) — **ne pas** déployer avec des clés dans le repo.
+Fichiers fournis (Solidity / Foundry) : idées **cross-chain / lab**, pas le déploiement principal xArtists (MultiversX).
 
-## Fichiers conceptuels reçus
+## Contrats
 
 | Contrat | Rôle |
 |---------|------|
-| `TRO_Master` | ERC-20 Ownable + mint owner |
-| `Sovereign_Governance` | Vote pondéré `balanceOf(TRO)` |
+| `TRO_Master` | ERC20 mint owner |
+| `Sovereign_Governance` | Vote pondéré balance $TRO |
 | `Marketplace_Escrow` | Listing + lock ETH + confirm delivery |
-| `DeploySovereignCore` | Script Foundry Sepolia |
 
-## ⚠️ Failles critiques (Marketplace_Escrow)
+## ⚠️ Sécurité (ne pas déployer tel quel en prod)
 
-1. **`confirmDelivery`** fait `transfer(address(this).balance)` → vide **tout** le contrat, pas seulement le listing.
-2. **`withdraw()`** public : n’importe qui peut vider le contrat.
-3. Pas de mapping `buyer` par listing → pas de refund propre / dispute.
-4. Pas de `assetId` vérifié on-chain (NFT transfer).
+**Marketplace_Escrow**
+- `confirmDelivery` fait `transfer(address(this).balance)` → **vide tout le contrat**, pas seulement le prix du listing
+- `withdraw()` : **n’importe qui** peut retirer tout le balance
+- Pas de mapping buyer / refund / dispute réel
+- Pas de lien NFT / asset on-chain (seul `assetId` string)
 
-→ **Ne pas déployer en prod** sans rewrite (balances par listing, onlyBuyer/onlySeller, pull payment).
+**Sovereign_Governance**
+- Vote = snapshot `balanceOf` au moment du vote (pas de lock / snapshot block)
+- `executeProposal` onlyOwner sans quorum ni logique métier
 
-## Gouvernance
+**TRO_Master**
+- Mint illimité onlyOwner — ok lab, pas tokenomics $TRO MVX (max supply 500k ESDT)
 
-- Vote = snapshot `balanceOf` au moment du vote (pas de lock, flash-loanable).
-- `executeProposal` onlyOwner sans quorum → centralisé.
+## Mapping xArtists
 
-## Alignement xArtists
-
-| EVM concept | Équivalent MVX / dApp |
-|-------------|------------------------|
-| TRO_Master | ESDT `$TRO` existant |
+| EVM lab | MVX / dApp |
+|---------|------------|
+| TRO_Master | ESDT $TRO on MultiversX |
 | Governance | page `/dao` + paper |
-| Marketplace_Escrow | SC marketplace Rust (codeHash pending) |
-| IdentityDashboard | Paper Soul + entity map |
-| LIA_Monitor | `LiaMonitor.tsx` Vite |
+| Marketplace_Escrow | SC `agents-marketplace` / NFT market (Rust) |
+| IdentityDashboard UI | paper soul + packs |
+| LIA_Monitor UI | `LiaMonitor` Vite |
 
-## Agent de voyage
-
-- Pack UI : `AGENT_PACKS` id `voyage`
-- Catalogue : `lia-voyage-01`
-- GSN agent : `Voyage` dans `greensmoke_forecasts.json`
-- Panel : `VoyageAgentPanel.tsx`
-
-## Secrets
-
-Ne **jamais** committer `PRIVATE_KEY` / Alchemy URL réelle.  
-Utiliser secrets CI / Vellum wallet PEM hors git.
+Deploy Foundry Sepolia = optionnel lab. **LIA live path reste MultiversX + Vellum.**

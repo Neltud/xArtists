@@ -1,10 +1,10 @@
 {
   "version": "2.1",
-  "updated_at": "2026-08-27T17:00:00Z",
+  "updated_at": "2026-08-27T17:10:00Z",
   "source": "GreenSmokeNetwork",
   "network": "MultiversX mainnet",
   "dapp": "https://app.greensmoke.network",
-  "note": "Full forecast rows required by UI (Array). Includes Voyage / travel agent.",
+  "note": "Includes Voyage / travel agent. Array forecasts required by UI.",
   "agents": {
     "Liia": {
       "id": "liia",

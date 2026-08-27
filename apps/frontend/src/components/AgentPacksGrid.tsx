@@ -8,11 +8,15 @@ export default function AgentPacksGrid() {
         {PACK_PRICING_POLICY.ranking}. LIA ajuste pour la marge (corridor{' '}
         {PACK_PRICING_POLICY.corridor.min}–{PACK_PRICING_POLICY.corridor.max} €).
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {AGENT_PACKS.map(p => (
           <article
             key={p.id}
-            className="card border-purple-500/25 flex flex-col"
+            className={`card flex flex-col ${
+              p.id === 'voyage'
+                ? 'border-amber-500/35 ring-1 ring-amber-500/15'
+                : 'border-purple-500/25'
+            }`}
             aria-labelledby={`pack-${p.id}`}
           >
             <div className="flex items-start gap-3 mb-3">
@@ -45,6 +49,7 @@ export default function AgentPacksGrid() {
             </ul>
             <p className="text-[10px] text-zinc-600 border-t border-zinc-800 pt-2">
               Risque {p.risk} · droit produit · pas un fonds · pas GSN
+              {p.id === 'voyage' ? ' · agent de voyage v1 advisory' : ''}
             </p>
           </article>
         ))}
