@@ -32,6 +32,7 @@ const TroPage = lazy(() => import('./pages/TroPage'))
 const StakingPage = lazy(() => import('./pages/StakingPage'))
 const SoulTestnetPage = lazy(() => import('./pages/SoulTestnetPage'))
 const AgentsPolyliaPage = lazy(() => import('./pages/AgentsPolyliaPage'))
+const VoyageAgentPage = lazy(() => import('./pages/VoyageAgentPage'))
 const BurnifyPage = lazy(() => import('./pages/BurnifyPage'))
 const ArtistStudio = lazy(() => import('./pages/ArtistStudio'))
 const AdsPage = lazy(() => import('./pages/AdsPage'))
@@ -45,6 +46,7 @@ const TX_PATHS = new Set([
   '/studio',
   '/agents',
   '/agents/polylia',
+  '/agents/voyage',
   '/my-packs',
   '/tip',
   '/wallet',
@@ -106,6 +108,7 @@ export default function App() {
                 <Route path="/agents" element={<Agents />} />
                 <Route path="/my-packs" element={<MyPacks />} />
                 <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
+                <Route path="/agents/voyage" element={<VoyageAgentPage />} />
                 <Route path="/tro" element={<TroPage />} />
                 <Route path="/staking" element={<StakingPage />} />
                 <Route path="/burnify" element={<BurnifyPage />} />
@@ -144,6 +147,9 @@ export default function App() {
           <div className="flex gap-4 text-sm text-gray-500">
             <a href="/xArtists/#/entity" className="hover:text-white">
               Entité
+            </a>
+            <a href="/xArtists/#/agents/voyage" className="hover:text-white">
+              Voyage
             </a>
             <a href={LINKS.github} target="_blank" rel="noreferrer" className="hover:text-white">
               GitHub
