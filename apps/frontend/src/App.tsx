@@ -8,6 +8,8 @@ import ErrorBoundary from './components/ErrorBoundary'
 import PwaInstallBanner from './components/PwaInstallBanner'
 import PrivateReleaseStrip from './components/PrivateReleaseStrip'
 import DemoModeBanner from './components/DemoModeBanner'
+import IntentBar from './components/IntentBar'
+import LiaMonitor from './components/LiaMonitor'
 import GuardianStatusBar from './components/shared/GuardianStatusBar'
 import RoutePrefetch from './components/RoutePrefetch'
 import { useMultiversX } from './hooks/useMultiversX'
@@ -145,7 +147,7 @@ export default function App() {
           <div>
             <p className="font-bold">xArtists — LIA v6 · DEMO</p>
             <p className="text-xs text-gray-500">
-              Simulation Lab · paper trading · live network reads · SC soon
+              Intent ⌘K · Soul paper · LIA Monitor · SC soon
             </p>
           </div>
           <div className="flex gap-4 text-sm text-gray-500">
@@ -163,6 +165,8 @@ export default function App() {
       </footer>
       <PwaInstallBanner />
       <FirstVisitOnboarding />
+      <IntentBar />
+      <LiaMonitor />
       <SignalTicker />
       <BottomNav />
       <RoutePrefetch />

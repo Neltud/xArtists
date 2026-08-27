@@ -11,6 +11,7 @@ import CommanderStrip from '../components/commander/CommanderStrip'
 import ScStatusBanner from '../components/ScStatusBanner'
 import DataHealthStrip from '../components/DataHealthStrip'
 import LiaPathStrip from '../components/LiaPathStrip'
+import PaperSoulScore from '../components/PaperSoulScore'
 import PageGuide from '../components/PageGuide'
 import PersonaWelcome, {
   PersonaQuickLinks,
@@ -50,15 +51,22 @@ export default function Dashboard() {
 
       <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-sm font-semibold text-cyan-100">Simulation Lab</p>
+          <p className="text-sm font-semibold text-cyan-100">Intention · Soul · Monitor</p>
           <p className="text-[11px] text-zinc-500">
-            Trades LIA simulés · parcours user · tous les modules · SC soon
+            ⌘K / Ctrl+K · score paper · flux LIA (bas droite)
           </p>
         </div>
-        <Link to="/sim" className="btn-primary text-xs py-2 px-4">
-          Ouvrir le lab →
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link to="/sim" className="btn-secondary text-xs py-2 px-3">
+            Sim Lab
+          </Link>
+          <Link to="/trading" className="btn-primary text-xs py-2 px-3">
+            Trading →
+          </Link>
+        </div>
       </div>
+
+      <PaperSoulScore />
 
       <UserJourneyStrip />
 
@@ -105,7 +113,7 @@ export default function Dashboard() {
               Trading →
             </Link>
             <Link to="/sim" className="text-xs text-cyan-300 hover:underline">
-              Sim trades →
+              Sim →
             </Link>
           </div>
         </div>
@@ -130,10 +138,15 @@ export default function Dashboard() {
       <ExplainCards />
 
       <p className="text-center text-[11px] text-zinc-600">
-        $TRO supply max 500 000 · MultiversX · wallet user ≠ LIA ops ·{' '}
-        <Link to="/sim" className="text-cyan-500/80 hover:underline">
-          Simulation Lab
-        </Link>
+        Matrice Sovereign →{' '}
+        <a
+          className="text-cyan-500/80 hover:underline"
+          href="https://github.com/Neltud/xArtists/blob/main/docs/SOVEREIGN_INTEGRATION_MATRIX.md"
+          target="_blank"
+          rel="noreferrer"
+        >
+          docs/SOVEREIGN_INTEGRATION_MATRIX.md
+        </a>
       </p>
     </div>
   )
