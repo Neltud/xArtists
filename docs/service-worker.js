@@ -1,9 +1,7 @@
-/* xArtists PWA — shell cache + stale-while-revalidate for data JSON */
-const SHELL = 'xartists-shell-v3'
-const DATA = 'xartists-data-v3'
+/* xArtists PWA — v4: never serve stale index/404; network-first HTML */
+const SHELL = 'xartists-shell-v4'
+const DATA = 'xartists-data-v4'
 const PRECACHE = [
-  '/xArtists/',
-  '/xArtists/index.html',
   '/xArtists/manifest.webmanifest',
 ]
 
@@ -38,7 +36,14 @@ function isAsset(url) {
   return /\.(js|css|woff2?|svg|png|webp|ico)$/i.test(url.pathname)
 }
 
-/** Network-first, cache fallback (fresh data preferred) */
+function isHtmlNav(request, url) {
+  if (request.mode === 'navigate') return true
+  if (url.pathname.endsWith('.html')) return true
+  if (url.pathname === '/xArtists' || url.pathname === '/xArtists/') return true
+  if (url.pathname.startsWith('/xArtists/') && !isAsset(url) && !isDataPath(url)) return true
+  return false
+}
+
 function networkFirst(request, cacheName) {
   return fetch(request)
     .then((res) => {
@@ -51,11 +56,9 @@ function networkFirst(request, cacheName) {
     .catch(() => caches.match(request))
 }
 
-/** Cache-first for static build assets */
 function cacheFirst(request, cacheName) {
   return caches.match(request).then((cached) => {
     if (cached) {
-      // Background refresh
       fetch(request)
         .then((res) => {
           if (res && res.ok) caches.open(cacheName).then((c) => c.put(request, res))
@@ -77,16 +80,26 @@ self.addEventListener('fetch', (event) => {
   const { request } = event
   if (request.method !== 'GET') return
   const url = new URL(request.url)
-
-  // Never hijack browser navigations to external wallets
-  if (request.mode === 'navigate' && !url.pathname.startsWith('/xArtists')) return
-
-  if (isDataPath(url) || isApi(url)) {
+  if (url.origin !== self.location.origin) {
+    if (isApi(url)) {
+      event.respondWith(networkFirst(request, DATA))
+    }
+    return
+  }
+  if (isHtmlNav(request, url)) {
+    event.respondWith(
+      fetch(request)
+        .then((res) => res)
+        .catch(() => caches.match('/xArtists/index.html'))
+    )
+    return
+  }
+  if (isDataPath(url)) {
     event.respondWith(networkFirst(request, DATA))
     return
   }
-
-  if (isAsset(url) || url.origin === self.location.origin) {
+  if (isAsset(url)) {
     event.respondWith(cacheFirst(request, SHELL))
+    return
   }
 })

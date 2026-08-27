@@ -65,15 +65,13 @@ jobs:
       - name: 🧹 Prepare docs/
         run: |
           mkdir -p docs
-          find docs -type f \( -name '*.js' -o -name '*.css' -o -name 'index.html' -o -name '*.svg' -o -name '*.map' \) -delete 2>/dev/null || true
+          find docs -type f \( -name '*.js' -o -name '*.css' -o -name 'index.html' -o -name '404.html' -o -name '*.svg' -o -name '*.map' \) -delete 2>/dev/null || true
           rm -rf docs/assets 2>/dev/null || true
 
       - name: 📋 Copy dist/ → docs/
         run: |
           cp -r apps/frontend/dist/. docs/
           touch docs/.nojekyll
-          # SPA deep links on GitHub Pages: serve index for unknown paths
-          cp docs/index.html docs/404.html
           if grep -q 'cdn.tailwindcss.com' docs/index.html; then
             echo "FATAL: docs/index.html is the legacy CDN app, not the Vite SPA"
             exit 1
@@ -82,7 +80,18 @@ jobs:
             echo "FATAL: SPA #root missing in docs/index.html"
             exit 1
           fi
-          echo "SPA index + 404.html OK"
+          # CRITICAL: 404 must be byte-identical to index (same asset hashes)
+          cp -f docs/index.html docs/404.html
+          INDEX_JS=$(grep -oE 'assets/index-[^"/]+\.js' docs/index.html | head -1)
+          FOURO_JS=$(grep -oE 'assets/index-[^"/]+\.js' docs/404.html | head -1)
+          echo "index → $INDEX_JS"
+          echo "404   → $FOURO_JS"
+          if [ "$INDEX_JS" != "$FOURO_JS" ] || [ -z "$INDEX_JS" ]; then
+            echo "FATAL: index/404 asset mismatch"
+            exit 1
+          fi
+          test -f "docs/$INDEX_JS" || { echo "FATAL missing $INDEX_JS"; exit 1; }
+          echo "SPA index + 404.html OK (matched assets)"
 
       - name: 📊 Copy data JSON (never drop board)
         run: |
@@ -90,6 +99,8 @@ jobs:
           cp -r data/. docs/data/ 2>/dev/null || true
           cp -r apps/frontend/public/data/. docs/data/ 2>/dev/null || true
           ./scripts/ensure_pages_data.sh
+          # Re-sync 404 after any later writes that might touch HTML
+          cp -f docs/index.html docs/404.html
           test -f docs/data/lia_board.json && echo "lia_board OK" || (echo "FATAL missing lia_board"; exit 1)
           test -f docs/data/entity_map.json && echo "entity_map OK" || echo "WARN entity_map missing"
           test -f docs/index.html && echo "index.html OK" || (echo "MISSING index.html"; exit 1)
