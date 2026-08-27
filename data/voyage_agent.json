@@ -1,0 +1,88 @@
+{
+  "id": "voyage",
+  "name": "Agent de Voyage",
+  "updated": "2026-08-27T17:00:00Z",
+  "mode": "paper_advisory",
+  "pack_id": "voyage",
+  "list_eur": 14,
+  "scope_v1": [
+    "Signaux destinations / saisonnalité",
+    "Corrélation crypto × tourisme (lecture)",
+    "Veille RWA hospitality / culture",
+    "Bandeau GSN domaine travel"
+  ],
+  "not_v1": [
+    "Booking hôtel/vol réel",
+    "Custodie dépôt voyage",
+    "Assurance voyage"
+  ],
+  "destinations": [
+    {
+      "id": "lisbon",
+      "label": "Lisbonne",
+      "season": "shoulder",
+      "bias": "watch",
+      "score": 0.72,
+      "note": "Température / tourisme aligné GSN weather"
+    },
+    {
+      "id": "bali",
+      "label": "Bali",
+      "season": "high",
+      "bias": "accumulate_culture",
+      "score": 0.68,
+      "note": "Flux culture + RWA hospitality narrative"
+    },
+    {
+      "id": "tokyo",
+      "label": "Tokyo",
+      "season": "event",
+      "bias": "monitor",
+      "score": 0.65,
+      "note": "Tech + tourism correlation"
+    },
+    {
+      "id": "marrakech",
+      "label": "Marrakech",
+      "season": "peak",
+      "bias": "risk_on_mild",
+      "score": 0.7,
+      "note": "Saisonnalité forte — signal culture"
+    }
+  ],
+  "signals": [
+    {
+      "id": "v-1",
+      "type": "TRAVEL_SIGNAL",
+      "asset": "TOURISM_INDEX",
+      "direction": "mild_bull",
+      "confidence": 0.71,
+      "horizon": "30d",
+      "rationale": "Flux saisonnier + stablecoins travel corridors"
+    },
+    {
+      "id": "v-2",
+      "type": "RWA_STAY",
+      "asset": "HOSP_RWA",
+      "direction": "watch",
+      "confidence": 0.64,
+      "horizon": "90d",
+      "rationale": "Narrative RWA hospitality — advisory only"
+    },
+    {
+      "id": "v-3",
+      "type": "CULTURE_FLOW",
+      "asset": "CULTURE_NFT",
+      "direction": "neutral",
+      "confidence": 0.6,
+      "horizon": "14d",
+      "rationale": "Corrélation art / destinations — pas d’exécution auto"
+    }
+  ],
+  "lia_policy": {
+    "weight_cap": 0.12,
+    "requires_accuracy_gte": 0.8,
+    "execution": "never_auto_v1",
+    "note": "LIA may use travel signals as soft bias only in paper fusion"
+  }
+}

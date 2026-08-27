@@ -9,6 +9,7 @@ export type IntentAction =
   | 'VIEW_TRADING'
   | 'VIEW_WALLET'
   | 'VIEW_PACKS'
+  | 'VIEW_VOYAGE'
   | 'TIP'
   | 'STAKE'
   | 'SIMULATE'
@@ -29,7 +30,14 @@ export type StructuredIntent = {
 const RULES: { re: RegExp; action: IntentAction; route: string; summary: string; conf: number }[] =
   [
     {
-      re: /\b(agent|pack|oracle|sentinel)\b/i,
+      re: /\b(voyage|travel|touris|destination|hospitalit|séjour|sejour)\b/i,
+      action: 'VIEW_VOYAGE',
+      route: '/agents/voyage',
+      summary: 'Agent de Voyage — signaux travel / culture (paper)',
+      conf: 0.92,
+    },
+    {
+      re: /\b(agent|pack|oracle|sentinel|pulse|yield)\b/i,
       action: 'BUY_AGENT',
       route: '/agents',
       summary: 'Ouvrir le catalogue Agents / packs',
@@ -123,10 +131,10 @@ export function parseIntent(raw: string): StructuredIntent {
   return {
     action: 'UNKNOWN',
     raw: text,
-    confidence: 0.3,
-    route: '/sim',
-    summary: 'Intention ambiguë — ouvrir Simulation Lab ou reformuler',
-    notes: 'Essayez : trading, agent, nft, wallet, tip, stake, dao, sim',
+    confidence: 0.2,
+    route: '/',
+    summary: 'Intention non reconnue — essayer « voyage », « trading », « pack »',
+    notes: 'Parser local rules only',
     paper: true,
   }
 }

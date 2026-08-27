@@ -1,26 +1,30 @@
-# Agent de Voyage (xArtists)
+# Agent de Voyage
 
-## Produit
+**Pack id :** `voyage` · **list** ~14 € · corridor 9–22 €  
+**Route UI :** `/#/agents/voyage`  
+**Données :** `data/voyage_agent.json`
 
-| Couche | Rôle |
-|--------|------|
-| **Pack NFT `voyage`** | Badge + accès sleeve (list ~14 €) — `agentPacks.ts` / `lia-voyage-01` |
-| **GSN agent `Voyage`** | Forecasts travel/culture (accuracy ~82%) — advisory LIA only |
-| **UI** | `VoyageAgentPanel` + grille packs 4 colonnes + domaine ✈️ |
+## Rôle v1 (paper)
 
-## v1 inclus
-- Signaux destinations / saisonnalité (paper)
+- Signaux destinations / saisonnalité
 - Corrélation crypto × tourisme (lecture)
 - Veille RWA hospitality / culture
-- Bandeau / liste GSN domaine `travel`
+- Soft bias LIA (poids plafonné ~12 %, jamais exécution auto)
 
-## v1 exclus
-- Booking hôtel / vol réel
-- Custodie dépôt voyage
+## Hors scope v1
+
+- Réservation hôtel / vol réelle
+- Custodie fonds voyage
 - Assurance voyage
 
-## Lien RWA / escrow (vision)
+## Intégration
 
-Les specs EVM `Marketplace_Escrow` (Sepolia) servent de **référence conceptuelle** pour un futur escrow séjour — **pas** le runtime MultiversX actuel. Primauté : SC Rust MVX + paper LIA.
+| Couche | Fichier |
+|--------|--------|
+| Config packs | `apps/frontend/src/config/agentPacks.ts` |
+| Panel | `VoyageAgentPanel.tsx` |
+| Page | `VoyageAgentPage.tsx` |
+| Intent ⌘K | `intentParser` → `VIEW_VOYAGE` |
+| Catalogue SC (pending) | `agents_catalog.json` → `lia-voyage-01` |
 
-Voir `docs/SOVEREIGN_EVM_REFERENCE.md`.
+Après deploy SC : mint NFT pack Voyage comme Pulse/Yield/Sentinel.
