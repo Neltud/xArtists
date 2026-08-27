@@ -1,16 +1,18 @@
-# Status — 2026-08-27 · v2.8.0-demo-live
+# Status — 2026-08-27 · v2.9.0-demo
 
 | Item | State |
 |------|--------|
-| Tag cible | **v2.8.0-demo-live** |
 | Pages | https://neltud.github.io/xArtists/ |
-| Router | **HashRouter** (`#/entity` …) |
-| Build Vite | Green |
-| Live MVX reads | Yes |
-| SC market/agents | Pending |
-| Audit | [AUDIT_RELEASE_v2.8.0.md](AUDIT_RELEASE_v2.8.0.md) |
+| Shell 404/index | **synced** |
+| Data JSON | voyage + liquidity **200** |
+| Voyage agent | `/#/agents/voyage` |
+| On-ramp | MoonPay + FiatOnRampModal |
+| Verdict | **GO_DEMO** — [COMPLETE_DAPP_REVIEW](COMPLETE_DAPP_REVIEW_2026-08-27.md) |
+| SC market/agents | **Pending** codeHash |
+| LIA live | **OFF** |
 
-```bash
-git tag -a v2.8.0-demo-live -m "Demo live release"
-git push origin v2.8.0-demo-live
-```
+## Prochaine série
+
+1. Deploy SC · codeHash  
+2. Tag release  
+3. Micro List/Buy  
