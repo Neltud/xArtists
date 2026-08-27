@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 import { useWallet } from '../context/WalletContext'
 import AccessTermsModal from './AccessTermsModal'
+import { canBuyAgent } from '../config/scStatus'
 
 /**
  * Access Pack checkout — Model C.
@@ -17,10 +19,11 @@ export default function PackCheckout() {
 
   const pack = AGENT_PACKS.find(p => p.id === selected)
   const apiBase = (import.meta.env.VITE_ACCESS_API_BASE as string | undefined) || ''
+  const mintLive = canBuyAgent()
 
   const startBuy = (id: PackId) => {
     if (!connected || !address?.startsWith('erd1')) {
-      setMsg('Connect your MultiversX wallet (erd1…) before checkout — NFT is minted to that address.')
+      setMsg('Connecte ton wallet MultiversX (erd1…) avant checkout — le NFT part vers cette adresse.')
       return
     }
     setSelected(id)
@@ -42,6 +45,7 @@ export default function PackCheckout() {
         price_eur: pack.priceEur.list,
         buyer_address: address,
         paper_only: true,
+        mint_sc_live: mintLive,
         ts: new Date().toISOString(),
       }
       try {
@@ -50,8 +54,10 @@ export default function PackCheckout() {
         /* ignore */
       }
       setMsg(
-        `Terms accepted. Intent saved for ${pack.name} (${pack.priceEur.list} €). ` +
-          `Wire VITE_ACCESS_API_BASE + Stripe to open live Checkout. Mint runs only after verified webhook.`
+        `Conditions acceptées. Intent enregistré pour ${pack.name} (${pack.priceEur.list} €). ` +
+          (mintLive
+            ? 'SC agents live — brancher Stripe/webhook pour mint.'
+            : 'SC agents non déployé (codeHash). Intent paper uniquement.')
       )
       setStatus('done')
       return
@@ -69,56 +75,67 @@ export default function PackCheckout() {
         window.location.href = data.url
         return
       }
-      setMsg(`Session ${data.id || ''} created but no URL — check Stripe keys.`)
+      setMsg(`Session ${data.id || ''} créée sans URL — vérifier Stripe.`)
       setStatus('done')
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : 'Checkout failed')
+      setMsg(e instanceof Error ? e.message : 'Checkout échoué')
       setStatus('idle')
     }
   }
 
   return (
-    <section className="card border-purple-500/25 mb-6">
-      <h3 className="font-bold text-purple-200 mb-1">Purchase Access Pack</h3>
-      <p className="text-xs text-zinc-500 mb-4">
-        Fiat → membership NFT · <strong className="text-amber-200/80">Model C</strong> · paper performance
-        only · not a fund
+    <div className="card border-purple-500/20">
+      <h3 className="font-bold text-sm mb-1">Checkout packs (Model C)</h3>
+      <p className="text-[11px] text-zinc-500 mb-4">
+        Paiement fiat → mint NFT pack vers ton erd1. Sans API Stripe : intent local paper.
       </p>
-      <div className="grid sm:grid-cols-3 gap-3">
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
         {AGENT_PACKS.map(p => (
           <button
             key={p.id}
             type="button"
             onClick={() => startBuy(p.id)}
-            className={`text-left rounded-xl border px-3 py-3 transition-colors ${
+            className={`rounded-xl border px-3 py-3 text-left transition-colors ${
               selected === p.id
-                ? 'border-purple-500 bg-purple-500/15'
-                : 'border-zinc-700 hover:border-zinc-500'
+                ? 'border-cyan-400/50 bg-cyan-500/10'
+                : p.id === 'voyage'
+                  ? 'border-amber-500/30 bg-amber-950/20 hover:border-amber-400/40'
+                  : 'border-white/10 bg-white/5 hover:border-purple-400/40'
             }`}
           >
-            <span className="text-xl">{p.icon}</span>
-            <p className={`font-semibold text-sm mt-1 ${p.color}`}>{p.name}</p>
-            <p className="text-lg font-black text-white">{p.priceEur.list} €</p>
-            <p className="text-[10px] text-zinc-500 mt-1">Signaux {'●'.repeat(p.signalIntensity)}</p>
+            <span className="text-lg">{p.icon}</span>
+            <p className="text-xs font-bold text-white mt-1">{p.name}</p>
+            <p className="text-[10px] text-zinc-500">{p.priceEur.list} €</p>
           </button>
         ))}
       </div>
-      {msg && <p className="text-xs text-amber-200/90 mt-4 leading-relaxed">{msg}</p>}
-      {status === 'redirect' && (
-        <p className="text-xs text-zinc-400 mt-2" role="status">
-          Opening secure payment…
+
+      {msg && (
+        <p className="text-xs text-amber-100/90 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 mb-3">
+          {msg}
         </p>
       )}
+
+      {status === 'done' && selected === 'voyage' && (
+        <Link to="/agents/voyage" className="btn-primary text-xs py-2 px-3 inline-block mb-2">
+          Voir l’agent Voyage →
+        </Link>
+      )}
+
+      {!connected && (
+        <p className="text-[11px] text-zinc-500">Connecte un wallet pour démarrer le checkout.</p>
+      )}
+
       <AccessTermsModal
-        open={termsOpen && !!pack}
+        open={termsOpen}
         packName={pack?.name || ''}
-        priceEur={pack?.priceEur.list || 0}
-        onAccept={onAcceptTerms}
-        onCancel={() => {
+        onClose={() => {
           setTermsOpen(false)
           setStatus('idle')
         }}
+        onAccept={onAcceptTerms}
       />
-    </section>
+    </div>
   )
 }

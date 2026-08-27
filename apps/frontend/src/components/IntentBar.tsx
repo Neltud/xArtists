@@ -33,6 +33,18 @@ export default function IntentBar() {
     setPreview(q.trim() ? parseIntent(q) : null)
   }, [q, open])
 
+  const openOnRamp = (raw: string) => {
+    const lower = raw.toLowerCase()
+    const amountMatch = lower.match(/(\d+(?:[.,]\d+)?)/)
+    setOnRamp({
+      intent: raw,
+      amount: amountMatch ? amountMatch[1].replace(',', '.') : '50',
+      asset: 'EGLD',
+    })
+    setOpen(false)
+    setQ('')
+  }
+
   const submit = useCallback(() => {
     const intent = parseIntent(q)
     setPreview(intent)
@@ -40,18 +52,12 @@ export default function IntentBar() {
     window.dispatchEvent(new CustomEvent('lia-intent', { detail: intent }))
 
     const lower = q.toLowerCase()
-    if (
-      /\b(achète|acheter|buy|card|fiat|moonpay|carte)\b/i.test(lower) &&
-      /\b(egld|tro|\$tro|usdc)?\b/i.test(lower)
-    ) {
-      const amountMatch = lower.match(/(\d+(?:[.,]\d+)?)/)
-      setOnRamp({
-        intent: q,
-        amount: amountMatch ? amountMatch[1].replace(',', '.') : '50',
-        asset: /\btro\b|\$tro/i.test(lower) ? 'EGLD' : 'EGLD',
-      })
-      setOpen(false)
-      setQ('')
+    const buyLike =
+      /\b(achète|acheter|buy|card|fiat|moonpay|carte)\b/i.test(lower) ||
+      intent.action === 'ONRAMP'
+
+    if (buyLike) {
+      openOnRamp(q)
       return
     }
 
@@ -92,7 +98,7 @@ export default function IntentBar() {
                 onKeyDown={e => {
                   if (e.key === 'Enter') submit()
                 }}
-                placeholder='Ex: « voyage » · « buy 50 EGLD » · « trading »'
+                placeholder='Ex: « voyage » · « entity » · « buy 50 EGLD » · « trading »'
                 className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-600 focus:outline-none"
               />
               <kbd className="hidden sm:inline text-[10px] text-zinc-600 border border-zinc-700 rounded px-1">
@@ -116,7 +122,7 @@ export default function IntentBar() {
             )}
             {!preview && (
               <p className="px-4 py-3 text-[11px] text-zinc-600">
-                Essaie : voyage · pack · trading · buy 50 EGLD · tip
+                Essaie : voyage · entity · pack · trading · buy 50 EGLD · tip · sim
               </p>
             )}
           </div>
