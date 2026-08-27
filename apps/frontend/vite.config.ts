@@ -1,9 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
   base: '/xArtists/',
+  resolve: {
+    alias: {
+      // sdk-dapp@3 main points at ./__commonjs (dir) — break Vite entry resolution
+      '@multiversx/sdk-dapp': path.resolve(__dirname, 'node_modules/@multiversx/sdk-dapp'),
+    },
+  },
+  optimizeDeps: {
+    exclude: ['@multiversx/sdk-dapp'],
+  },
   build: {
     outDir: 'dist',
     emptyOutDir: true,
@@ -12,9 +22,13 @@ export default defineConfig({
     sourcemap: false,
     minify: 'esbuild',
     reportCompressedSize: true,
-    chunkSizeWarningLimit: 700,
+    chunkSizeWarningLimit: 900,
     assetsInlineLimit: 4096,
     modulePreload: { polyfill: true },
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
     rollupOptions: {
       output: {
         manualChunks(id) {

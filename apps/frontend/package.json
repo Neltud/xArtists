@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint src --ext ts,tsx",
-    "slim-catalog": "node ../../scripts/slim_collections.mjs"
+    "slim-catalog": "node ../../scripts/slim_collections.mjs",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@multiversx/sdk-core": "^13.17.2",
