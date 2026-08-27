@@ -20,6 +20,7 @@ import PersonaWelcome, {
 } from '../components/PersonaWelcome'
 import DualMarketplaceStrip from '../components/DualMarketplaceStrip'
 import UserJourneyStrip from '../components/UserJourneyStrip'
+import VoyageAgentPanel from '../components/VoyageAgentPanel'
 import ExplainCards from './ExplainCards'
 import LandingHero from './LandingHero'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -75,6 +76,8 @@ export default function Dashboard() {
 
       <DualMarketplaceStrip />
 
+      <VoyageAgentPanel />
+
       <ScStatusBanner />
 
       <DataHealthStrip />
@@ -119,7 +122,7 @@ export default function Dashboard() {
         </div>
         <div className="card border-l-2 border-l-amber-500/50">
           <p className="text-[10px] uppercase tracking-widest text-zinc-500">Access packs</p>
-          <p className="text-sm font-semibold mt-1">Model C · paper</p>
+          <p className="text-sm font-semibold mt-1">Model C · paper · Voyage</p>
           <div className="flex flex-wrap gap-2 mt-2">
             <Link to="/agents" className="text-xs text-amber-200/90 hover:underline">
               Catalog →
