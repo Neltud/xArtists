@@ -1,11 +1,21 @@
 {
   "network": "mainnet",
+  "chainId": "1",
   "updated": "2026-08-27T18:00:00Z",
+  "contracts": {
+    "marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+    "agents_marketplace": null
+  },
   "verification": {
     "marketplace_mainnet": {
       "codeHash": null,
+      "code_empty": true,
       "verdict": "NOT_DEPLOYED — empty account"
-    }
+    },
+    "agents_marketplace": "null — never deployed"
   },
-  "ui_status": { "verdict": "GO_DEMO", "lia_live_trading": false }
+  "ui_status": {
+    "verdict": "GO_DEMO",
+    "lia_live_trading": false
+  }
 }
