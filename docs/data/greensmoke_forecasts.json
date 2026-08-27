@@ -1,39 +1,103 @@
 {
-  "updated": "2026-08-26T08:00:00Z",
-  "note": "Seed GSN forecasts — replace with live GreenSmoke feed. Only accuracy>=0.80 used by LIA.",
+  "version": "2.0",
+  "updated_at": "2026-08-27T14:30:00Z",
+  "source": "GreenSmokeNetwork",
+  "network": "MultiversX mainnet",
+  "dapp": "https://app.greensmoke.network",
+  "note": "Full forecast rows required by UI (Array). Compact accuracy-only agents are normalized client-side.",
   "agents": {
-    "gsn-alpha-1": {
-      "name": "GSN Alpha Macro",
-      "domain": "finance",
-      "accuracy": 0.84,
-      "confidence": 0.78,
-      "bias": "BUY",
-      "status": "active"
+    "Liia": {
+      "id": "liia",
+      "name": "Liia",
+      "domain": "weather",
+      "domain_fr": "météo",
+      "role": "Agent prévisions météo",
+      "status": "active",
+      "confidence_avg": 0.72,
+      "accuracy": 0.72,
+      "forecasts": [
+        {
+          "asset": "WEATHER_LISBON",
+          "direction": "watch",
+          "confidence": 0.7,
+          "horizon": "24h",
+          "rationale": "Prévisions température max — marchés GSN",
+          "signal": "MONITOR"
+        }
+      ]
     },
-    "gsn-crypto-7": {
-      "name": "GSN Crypto Pulse",
+    "Lia": {
+      "id": "lia-crypto",
+      "name": "Lia",
       "domain": "crypto",
-      "accuracy": 0.81,
-      "confidence": 0.72,
-      "bias": "WAIT",
-      "status": "active"
+      "domain_fr": "crypto",
+      "role": "Agent prévisions crypto",
+      "status": "active",
+      "confidence_avg": 0.74,
+      "accuracy": 0.84,
+      "forecasts": [
+        {
+          "asset": "EGLD",
+          "direction": "bullish",
+          "confidence": 0.74,
+          "horizon": "7d",
+          "rationale": "Momentum écosystème + Supernova",
+          "signal": "ACCUMULATE"
+        },
+        {
+          "asset": "BTC",
+          "direction": "bullish",
+          "confidence": 0.7,
+          "horizon": "14d",
+          "rationale": "Régime risk-on crypto",
+          "signal": "BUY"
+        }
+      ]
     },
-    "gsn-noise-3": {
-      "name": "GSN Low Acc (filtered out)",
-      "domain": "politics",
-      "accuracy": 0.61,
-      "confidence": 0.9,
-      "bias": "BUY",
-      "status": "active"
+    "Macro": {
+      "id": "macro",
+      "name": "Macro",
+      "domain": "macro",
+      "role": "Macro / FX",
+      "status": "active",
+      "confidence_avg": 0.78,
+      "accuracy": 0.81,
+      "forecasts": [
+        {
+          "asset": "CRYPTO_REGIME",
+          "direction": "risk_on",
+          "confidence": 0.78,
+          "horizon": "30d",
+          "rationale": "Liquidité + flows RWA",
+          "signal": "RISK_ON"
+        }
+      ]
     },
     "gsn-elite-9": {
+      "id": "gsn-elite-9",
       "name": "GSN Elite MVX",
       "domain": "crypto",
+      "role": "Elite filter ≥80%",
+      "status": "active",
+      "confidence_avg": 0.88,
       "accuracy": 0.88,
-      "confidence": 0.8,
-      "bias": "BUY",
-      "status": "active"
+      "forecasts": [
+        {
+          "asset": "EGLD",
+          "direction": "bullish",
+          "confidence": 0.88,
+          "horizon": "7d",
+          "rationale": "Elite accuracy gate for LIA",
+          "signal": "BUY"
+        }
+      ]
     }
   },
-  "aggregated_signals": { "regime": "risk_on_mild", "primary": "crypto" }
+  "aggregated_signals": {
+    "primary": "BULLISH_CRYPTO",
+    "secondary": "RISK_ON_MACRO",
+    "regime": "RISK_ON",
+    "recommended_action": "Suivre signaux GSN ≥80% en advisory only — pas d'exécution auto",
+    "agents_directory": "https://app.greensmoke.network/agents"
+  }
 }
