@@ -1,44 +1,34 @@
 #!/usr/bin/env bash
-# Copy critical JSON into every place Pages / Vite may serve.
+# Ensure critical JSON exist under apps/frontend/public/data and docs/data
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$ROOT"
+PUB="$ROOT/apps/frontend/public/data"
+DATA="$ROOT/data"
+DOCS="$ROOT/docs/data"
+mkdir -p "$PUB" "$DOCS"
 
 CRITICAL=(
   lia_board.json
   lia_v6_status.json
-  contracts.json
-  lia_trades.json
-  lia_trailing_state.json
-  lia_portfolio.json
-  hatom_lia.json
-  greensmoke_top.json
+  entity_map.json
+  live_network_snapshot.json
   greensmoke_forecasts.json
-  ads_active.json
-  config.json
-  xartists_collections.index.json
-  treasury_wallets.json
-  post_deploy_report.json
-  marketplace_codehash_live.json
-  oracle_prices.json
-  egld_price.json
-  desk_last.json
-  vellum_last_run.json
-  go_live_gates.json
-  pre_mainnet_modules.json
+  voyage_agent.json
   agents_catalog.json
-  tro_tokenomics.json
+  config.json
+  oracle_prices.json
+  risk_manager_state.json
 )
 
-DESTS=("apps/frontend/public/data" "docs/data")
-for dest in "${DESTS[@]}"; do mkdir -p "$dest"; done
-
 for f in "${CRITICAL[@]}"; do
-  if [[ -f "data/$f" ]]; then
-    for dest in "${DESTS[@]}"; do cp -f "data/$f" "$dest/$f"; done
-    echo "ok $f"
+  if [[ -f "$DATA/$f" ]]; then
+    cp -f "$DATA/$f" "$PUB/$f" 2>/dev/null || true
+    cp -f "$DATA/$f" "$DOCS/$f" 2>/dev/null || true
+  elif [[ -f "$PUB/$f" ]]; then
+    cp -f "$PUB/$f" "$DOCS/$f" 2>/dev/null || true
   else
-    echo "miss data/$f"
+    echo "WARN missing $f"
   fi
 done
-echo "ensure_pages_data done"
+
+echo "ensure_pages_data OK"

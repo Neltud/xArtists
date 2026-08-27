@@ -1,15 +1,19 @@
 /**
- * Sovereign Intent Bar — Cmd/Ctrl+K · parse local · navigate (paper).
+ * Sovereign Intent Bar — Cmd/Ctrl+K · parse local · navigate / on-ramp (paper).
  */
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { parseIntent, type StructuredIntent } from '../lib/intentParser'
 import { recordIntentActivity } from '../lib/paperSoul'
+import FiatOnRampModal from './onramp/FiatOnRampModal'
 
 export default function IntentBar() {
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState('')
   const [preview, setPreview] = useState<StructuredIntent | null>(null)
+  const [onRamp, setOnRamp] = useState<{ intent: string; amount: string; asset: string } | null>(
+    null
+  )
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -34,6 +38,23 @@ export default function IntentBar() {
     setPreview(intent)
     recordIntentActivity(intent.action)
     window.dispatchEvent(new CustomEvent('lia-intent', { detail: intent }))
+
+    const lower = q.toLowerCase()
+    if (
+      /\b(achète|acheter|buy|card|fiat|moonpay|carte)\b/i.test(lower) &&
+      /\b(egld|tro|\$tro|usdc)?\b/i.test(lower)
+    ) {
+      const amountMatch = lower.match(/(\d+(?:[.,]\d+)?)/)
+      setOnRamp({
+        intent: q,
+        amount: amountMatch ? amountMatch[1].replace(',', '.') : '50',
+        asset: /\btro\b|\$tro/i.test(lower) ? 'EGLD' : 'EGLD',
+      })
+      setOpen(false)
+      setQ('')
+      return
+    }
+
     if (intent.route) {
       navigate(intent.route)
       setOpen(false)
@@ -71,7 +92,7 @@ export default function IntentBar() {
                 onKeyDown={e => {
                   if (e.key === 'Enter') submit()
                 }}
-                placeholder='Ex: « ouvrir trading » · « pack agent » · « tip »'
+                placeholder='Ex: « voyage » · « buy 50 EGLD » · « trading »'
                 className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-600 focus:outline-none"
               />
               <kbd className="hidden sm:inline text-[10px] text-zinc-600 border border-zinc-700 rounded px-1">
@@ -81,30 +102,34 @@ export default function IntentBar() {
             {preview && (
               <div className="px-4 py-3 text-xs space-y-1">
                 <p className="text-zinc-400">
-                  Action{' '}
-                  <strong className="text-cyan-300">{preview.action}</strong>
+                  Action <strong className="text-cyan-300">{preview.action}</strong>
                   <span className="text-zinc-600 ml-2">
                     conf {(preview.confidence * 100).toFixed(0)}%
                   </span>
                 </p>
                 <p className="text-white">{preview.summary}</p>
-                {preview.payment_asset && (
-                  <p className="text-purple-300">Asset hint: {preview.payment_asset}</p>
-                )}
                 <p className="text-[10px] text-amber-200/70">{preview.notes}</p>
                 <button type="button" className="btn-primary text-xs mt-2 w-full" onClick={submit}>
-                  Aller → {preview.route}
+                  Exécuter →
                 </button>
               </div>
             )}
             {!preview && (
               <p className="px-4 py-3 text-[11px] text-zinc-600">
-                Paper only · pas d’exécution omnichain · SC marketplace bientôt
+                Essaie : voyage · pack · trading · buy 50 EGLD · tip
               </p>
             )}
           </div>
         </div>
       )}
+
+      <FiatOnRampModal
+        isOpen={Boolean(onRamp)}
+        onClose={() => setOnRamp(null)}
+        intent={onRamp?.intent}
+        amount={onRamp?.amount}
+        asset={onRamp?.asset}
+      />
     </>
   )
 }
