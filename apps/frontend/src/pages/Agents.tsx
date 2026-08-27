@@ -11,6 +11,7 @@ import RwaAssetsStrip from '../components/RwaAssetsStrip'
 import PackCheckout from '../components/PackCheckout'
 import PageGuide from '../components/PageGuide'
 import AgentsJourneyStrip from '../components/AgentsJourneyStrip'
+import VoyageAgentPanel from '../components/VoyageAgentPanel'
 
 const LOCAL = `${import.meta.env.BASE_URL}data/greensmoke_forecasts.json`
 const RAW_PUBLIC =
@@ -72,6 +73,7 @@ const DOMAIN_ICON: Record<string, string> = {
   sports: '⚽',
   tech: '💻',
   finance: '📊',
+  travel: '✈️',
 }
 
 function dirColor(d: string) {
@@ -157,8 +159,8 @@ export default function Agents() {
           <h1 className="text-2xl sm:text-3xl font-black">🧠 Agents</h1>
           <p className="text-sm text-gray-500 mt-1">
             <strong className="text-purple-300">Access packs</strong> ·{' '}
-            <strong className="text-amber-300">Model C paper</strong> ·{' '}
-            <strong className="text-emerald-300">GSN ≥80%</strong> signal LIA only
+            <strong className="text-amber-300">Voyage</strong> ·{' '}
+            <strong className="text-emerald-300">GSN ≥80%</strong>
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -172,14 +174,15 @@ export default function Agents() {
       </div>
 
       <div className="mb-6 rounded-xl border border-zinc-700/50 bg-zinc-900/40 px-4 py-3 text-[11px] text-zinc-400 leading-relaxed">
-        <strong className="text-zinc-200">3 produits distincts</strong> — (1) Access packs xArtists ·
-        (2) sous-agents intent (5–25 €) · (3) GreenSmoke = prévisions externes filtrées ≥80% pour LIA,{' '}
-        <em>pas à vendre</em>. Buy on-chain = SC marketplace seulement.
+        <strong className="text-zinc-200">4 produits</strong> — packs Pulse/Yield/Sentinel/Voyage · sous-agents
+        intent · GreenSmoke (externe) · RWA art. Buy on-chain = SC marketplace seulement.
       </div>
 
       <div className="mb-6">
         <TreasuryBanner />
       </div>
+
+      <VoyageAgentPanel />
 
       <section className="mb-10">
         <h2 className="text-lg font-bold mb-1 text-purple-200">① Access packs · catalogue</h2>
@@ -321,7 +324,9 @@ export default function Agents() {
         </div>
       </section>
 
-      <p className="text-xs text-gray-600 text-center">docs/ACCESS_PACK_CHECKOUT.md · Model C · paper only</p>
+      <p className="text-xs text-gray-600 text-center">
+        docs/AGENT_VOYAGE.md · Model C · paper only
+      </p>
     </div>
   )
 }
