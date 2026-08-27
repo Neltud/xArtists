@@ -36,6 +36,7 @@ const ArtistStudio = lazy(() => import('./pages/ArtistStudio'))
 const AdsPage = lazy(() => import('./pages/AdsPage'))
 const Editions = lazy(() => import('./pages/Editions'))
 const SimulationLab = lazy(() => import('./pages/SimulationLab'))
+const EntityMap = lazy(() => import('./pages/EntityMap'))
 const TxShell = lazy(() => import('./providers/TxShell'))
 
 const TX_PATHS = new Set([
@@ -105,6 +106,8 @@ export default function App() {
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/entity" element={<EntityMap />} />
+                <Route path="/org" element={<EntityMap />} />
                 <Route path="/sim" element={<SimulationLab />} />
                 <Route path="/simulation" element={<SimulationLab />} />
                 <Route path="/marketplace" element={<Marketplace />} />
@@ -145,17 +148,15 @@ export default function App() {
       <footer className="border-t border-[#2a2a3a] mt-8 py-6 hidden md:block mb-8">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <p className="font-bold">xArtists — LIA v6 · DEMO</p>
-            <p className="text-xs text-gray-500">
-              Intent ⌘K · Soul paper · LIA Monitor · SC soon
-            </p>
+            <p className="font-bold">xArtists — LIA v6</p>
+            <p className="text-xs text-gray-500">Entité · succursales · paper + live reads</p>
           </div>
           <div className="flex gap-4 text-sm text-gray-500">
+            <a href="/xArtists/entity" className="hover:text-white">
+              Entité
+            </a>
             <a href={LINKS.github} target="_blank" rel="noreferrer" className="hover:text-white">
               GitHub
-            </a>
-            <a href="/xArtists/sim" className="hover:text-white">
-              Sim Lab
             </a>
             <a href={LINKS.explorer} target="_blank" rel="noreferrer" className="hover:text-white">
               Explorer

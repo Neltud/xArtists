@@ -1,0 +1,18 @@
+{
+  "updated": "2026-08-27T13:25:00Z",
+  "source": "api.multiversx.com",
+  "network": "mainnet",
+  "economics": {
+    "egld_price_usd": 3.4,
+    "market_cap_usd": 104228421,
+    "staked": 14546641,
+    "apr": 0.087005
+  },
+  "lia_ops": {
+    "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "balance_egld": 0.069065561123775807,
+    "nonce": 1437,
+    "shard": 2
+  },
+  "notes": "Read-only live snapshot for Entity page. Refresh via ops curl or Vellum."
+}
