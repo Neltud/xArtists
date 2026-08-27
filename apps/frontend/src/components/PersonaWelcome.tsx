@@ -36,18 +36,18 @@ const PERSONAS: {
     emoji: '📈',
     title: 'Investisseur',
     blurb:
-      'Suivez $TRO (plafond 500 000), le portfolio LIA, les pools et les packs agents. Pas de conseil financier.',
-    primary: { to: '/tro', label: 'Token $TRO' },
-    secondary: { to: '/portfolio', label: 'Portfolio LIA' },
+      'Suivez $TRO (plafond 500 000), le board LIA paper, les packs agents et l’entité protocole. Pas de conseil financier.',
+    primary: { to: '/trading', label: 'Board LIA' },
+    secondary: { to: '/entity', label: 'Entité xArtists' },
   },
   {
     id: 'curious',
     emoji: '🔎',
     title: 'Curieux',
     blurb:
-      'Découvrez le tableau de bord LIA, les agents et la DAO à votre rythme — sans engagement.',
-    primary: { to: '/', label: 'Tableau de bord' },
-    secondary: { to: '/agents', label: 'Agents IA' },
+      'Explorez l’entité, le Sim Lab, l’agent Voyage et les packs — sans engagement.',
+    primary: { to: '/entity', label: 'Voir l’entité' },
+    secondary: { to: '/agents/voyage', label: 'Agent Voyage' },
   },
 ]
 
@@ -188,11 +188,11 @@ export default function PersonaWelcome({ forceOpen = false, onClose }: Props) {
             Continuer sans choisir
           </button>
           <Link
-            to="/gallery"
+            to="/sim"
             className="text-xs text-purple-400"
-            onClick={() => selectPersona('collector', false)}
+            onClick={() => selectPersona('curious', false)}
           >
-            Galerie directe →
+            Sim Lab →
           </Link>
         </div>
       </div>
@@ -210,8 +210,8 @@ export function PersonaQuickLinks({ persona }: { persona: Persona | null }) {
       <Link to={p.secondary.to} className="btn-secondary text-center text-xs sm:text-sm py-2.5">
         {p.secondary.label}
       </Link>
-      <Link to="/studio" className="btn-secondary text-center text-xs sm:text-sm py-2.5">
-        Studio
+      <Link to="/sim" className="btn-secondary text-center text-xs sm:text-sm py-2.5">
+        Sim Lab
       </Link>
       <Link to="/agents" className="btn-secondary text-center text-xs sm:text-sm py-2.5">
         Agents
