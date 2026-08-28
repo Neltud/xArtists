@@ -1,8 +1,8 @@
 name: Deploy xArtists Exclusive
 
+# Manual only — auto-push uses "🚀 Deploy xArtists dApp to GitHub Pages"
+# (same concurrency group `pages` was cancelling the working SPA pipeline).
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-exclusive-manual
   cancel-in-progress: true
 
 jobs:
@@ -29,20 +29,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: apps/frontend/package-lock.json
+          # no npm cache: apps/frontend has no package-lock.json
 
       - name: Install & build frontend
         working-directory: apps/frontend
         run: |
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
-          # Prefer full build; fallback vite-only if tsc fails
           npm run build || npx vite build
 
       - name: Publish dist → docs
         run: |
           mkdir -p docs
-          # Keep legal/docs markdown; replace web assets with React build
           rm -f docs/index.html
           rm -rf docs/assets docs/icons 2>/dev/null || true
           if [ -d apps/frontend/dist ]; then
@@ -53,6 +50,7 @@ jobs:
             exit 1
           fi
           touch docs/.nojekyll
+          cp -f docs/index.html docs/404.html
           echo "force-$(date -u +%Y%m%d%H%M%S)" > docs/DEPLOY_STAMP.txt
           ls -la docs/ | head -30
 

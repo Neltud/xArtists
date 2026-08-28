@@ -7,6 +7,7 @@
 - `contracts.json`: staking / governance / minter probed empty (same as marketplace)
 - DataHealthStrip local Vite: `compounding_echelons.json` + `lia_signal_fusion.json` in `public/data`
 - Private strip: node-upgrade countdown (1 Sep) + activation (10 Sep)
+- CI: Exclusive / Deploy Frontend no longer auto-push on `main` (they cancelled the working Pages pipeline via concurrency group `pages`)
 
 ### Docs
 - `ANALYSE_DAPP_COMPLETE.md` recap + tech watch **28 Aug 2026**
