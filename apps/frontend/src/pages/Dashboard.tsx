@@ -21,6 +21,7 @@ import DualMarketplaceStrip from '../components/DualMarketplaceStrip'
 import UserJourneyStrip from '../components/UserJourneyStrip'
 import UserPathHub from '../components/UserPathHub'
 import HomeQuickActions from '../components/HomeQuickActions'
+import SocialOpsStrip from '../components/SocialOpsStrip'
 import ExplainCards from './ExplainCards'
 import LandingHero from './LandingHero'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -63,6 +64,9 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2 text-[11px]">
+          <Link to="/sitemap" className="btn-secondary py-1.5 px-3">
+            Plan du site
+          </Link>
           <Link to="/entity" className="btn-secondary py-1.5 px-3">
             Entité
           </Link>
@@ -71,6 +75,8 @@ export default function Dashboard() {
           </Link>
         </div>
       </div>
+
+      <SocialOpsStrip />
 
       <ScStatusBanner />
       <DataHealthStrip />

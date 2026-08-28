@@ -40,6 +40,7 @@ const AdsPage = lazy(() => import('./pages/AdsPage'))
 const Editions = lazy(() => import('./pages/Editions'))
 const SimulationLab = lazy(() => import('./pages/SimulationLab'))
 const EntityMap = lazy(() => import('./pages/EntityMap'))
+const SiteMapPage = lazy(() => import('./pages/SiteMapPage'))
 const TxShell = lazy(() => import('./providers/TxShell'))
 
 const TX_PATHS = new Set([
@@ -106,6 +107,7 @@ export default function App() {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/entity" element={<EntityMap />} />
                 <Route path="/org" element={<EntityMap />} />
+                <Route path="/sitemap" element={<SiteMapPage />} />
                 <Route path="/sim" element={<SimulationLab />} />
                 <Route path="/simulation" element={<SimulationLab />} />
                 <Route path="/marketplace" element={<Marketplace />} />
@@ -153,14 +155,17 @@ export default function App() {
             <p className="text-xs text-gray-500">Hash routes · paper + live reads</p>
           </div>
           <div className="flex gap-4 text-sm text-gray-500">
+            <a href="/xArtists/#/sitemap" className="hover:text-white">
+              Plan
+            </a>
             <a href="/xArtists/#/entity" className="hover:text-white">
               Entité
             </a>
             <a href="/xArtists/#/tours" className="hover:text-white">
               Tours
             </a>
-            <a href="/xArtists/#/agents/lightning" className="hover:text-white">
-              Lightning
+            <a href="/xArtists/#/agents" className="hover:text-white">
+              Packs
             </a>
             <a href={LINKS.github} target="_blank" rel="noreferrer" className="hover:text-white">
               GitHub
