@@ -1,47 +1,55 @@
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { sdkDappConfig } from '../config/sdkDapp'
 import { bootstrapSendTx } from './bootstrapSendTx'
 
 type Props = { children: ReactNode }
 
 /**
- * Mount sdk-dapp DappProvider when available + always bootstrap __xartistsSendTx.
+ * Mounts MultiversX sdk-dapp DappProvider when the package resolves (Vite ESM).
+ * Falls back to children-only if import fails (build/Pages still works).
  */
 export function MxDappProvider({ children }: Props) {
+  const [Provider, setProvider] = useState<React.ComponentType<Record<string, unknown>> | null>(
+    null
+  )
+
   useEffect(() => {
     bootstrapSendTx()
   }, [])
 
-  try {
-    let DappProvider: React.ComponentType<Record<string, unknown>> | undefined
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      DappProvider = require('@multiversx/sdk-dapp/wrappers/DappProvider').DappProvider
-    } catch {
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        DappProvider = require('@multiversx/sdk-dapp').DappProvider
+        const mod = await import('@multiversx/sdk-dapp/wrappers/DappProvider')
+        const C = (mod as { DappProvider?: React.ComponentType<Record<string, unknown>> }).DappProvider
+        if (!cancelled && C) setProvider(() => C)
       } catch {
-        DappProvider = undefined
+        try {
+          const mod = await import('@multiversx/sdk-dapp')
+          const C = (mod as { DappProvider?: React.ComponentType<Record<string, unknown>> }).DappProvider
+          if (!cancelled && C) setProvider(() => C)
+        } catch {
+          /* optional */
+        }
       }
+    })()
+    return () => {
+      cancelled = true
     }
+  }, [])
 
-    if (!DappProvider) {
-      return <>{children}</>
-    }
+  if (!Provider) return <>{children}</>
 
-    return (
-      <DappProvider
-        environment={sdkDappConfig.environment}
-        customNetworkConfig={sdkDappConfig.customNetworkConfig}
-        dappConfig={sdkDappConfig.dappConfig}
-      >
-        {children}
-      </DappProvider>
-    )
-  } catch {
-    return <>{children}</>
-  }
+  return (
+    <Provider
+      environment={sdkDappConfig.environment}
+      customNetworkConfig={sdkDappConfig.customNetworkConfig}
+      dappConfig={sdkDappConfig.dappConfig}
+    >
+      {children}
+    </Provider>
+  )
 }
 
 export default MxDappProvider

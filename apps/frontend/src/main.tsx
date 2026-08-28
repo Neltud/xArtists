@@ -4,6 +4,7 @@ import { HashRouter } from 'react-router-dom'
 import App from './App'
 import { WalletProvider } from './context/WalletContext'
 import { MultiversXProvider } from './context/MultiversXContext'
+import { MxDappProvider } from './providers/MxDappProvider'
 import { registerSW } from './pwa/registerSW'
 import { probeChainTiming } from './config/chainTiming'
 import './index.css'
@@ -12,18 +13,20 @@ registerSW()
 void probeChainTiming()
 
 /**
- * HashRouter — GitHub Pages serves HTTP 404 for /xArtists/entity etc.
- * Hash routes always load index.html (200) so lazy pages never fail on refresh.
- * URLs: https://neltud.github.io/xArtists/#/entity
+ * HashRouter — GitHub Pages SPA.
+ * MxDappProvider wraps sdk-dapp when available (WC / extension).
+ * WalletProvider keeps session + web-wallet redirect address.
  */
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HashRouter>
-      <WalletProvider>
-        <MultiversXProvider>
-          <App />
-        </MultiversXProvider>
-      </WalletProvider>
+      <MxDappProvider>
+        <WalletProvider>
+          <MultiversXProvider>
+            <App />
+          </MultiversXProvider>
+        </WalletProvider>
+      </MxDappProvider>
     </HashRouter>
   </React.StrictMode>,
 )
