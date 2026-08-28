@@ -1,44 +1,54 @@
 /**
- * Intent protocol — Sprint 1 + Sprint 2 (Métabolisme).
- * LIA commande ; $TRO = actif économique séparé.
+ * v3.0 — Protocole d’intention LIA (typage strict).
+ * Amounts = chaînes atomic uniquement (BigInt-safe). Jamais de number float pour TX.
  */
 
 export type IntentType =
+  | 'SWAP'
   | 'TRADE_SWAP'
   | 'SWAP_EXCHANGE'
   | 'ADD_LIQUIDITY'
   | 'REMOVE_LIQUIDITY'
+  | 'TRANSFER'
   | 'TRANSFER_TOKEN'
+  | 'STAKE'
   | 'STAKE_ASSET'
   | 'UNSTAKE_ASSET'
   | 'TIP'
+  | 'MINT'
   | 'MINT_NFT'
   | 'BALANCE_QUERY'
   | 'INFO'
   | 'UNKNOWN'
 
+export type AssetId = string
+/** Atomic integer as decimal string — parse with BigInt() only */
+export type AmountAtomic = string
+
 export type IntentChain = 'multiversx'
+
+export type NetworkMode = 'mainnet' | 'devnet' | 'testnet'
 
 export interface IntentMetadata {
   slippageBps?: number
   gasLimit?: number
   reason?: string
   confidence?: number
+  /** true = never broadcast */
   paper?: boolean
   userConfirmedLive?: boolean
-  /** Sprint 2 — quote snapshot */
   quoteId?: string
-  expectedOutAtomic?: string
+  expectedOutAtomic?: AmountAtomic
   routeDex?: string
   priceImpactBps?: number
+  network?: NetworkMode
 }
 
 export interface Intent {
   type: IntentType
-  assetFrom: string
-  assetTo: string
-  /** Atomic amount string (BigInt-safe) */
-  amount: string
+  assetFrom: AssetId
+  assetTo: AssetId
+  amount: AmountAtomic
   targetAddress?: string
   chain: IntentChain
   metadata: IntentMetadata
@@ -46,7 +56,7 @@ export interface Intent {
   id?: string
 }
 
-export type ValidationLevel = 'SYNTAX' | 'SECURITY' | 'PARAMETERS'
+export type ValidationLevel = 'SYNTAX' | 'SECURITY' | 'PARAMETERS' | 'ASSET'
 
 export interface ValidationIssue {
   level: ValidationLevel
@@ -64,6 +74,7 @@ export interface ValidationResult {
 export type TxLifecycle =
   | 'idle'
   | 'validating'
+  | 'validated'
   | 'pending_signature'
   | 'broadcast'
   | 'pending'
@@ -77,9 +88,9 @@ export interface ExecutionResult {
   message: string
   paper: boolean
   intent: Intent
+  stageError?: 'VALIDATION' | 'SIGNATURE' | 'TRANSMISSION' | 'CONFIRMATION' | null
 }
 
-/** Sprint 2 — quote affichée pendant la frappe */
 export interface SwapQuotePreview {
   assetFrom: string
   assetTo: string
@@ -91,4 +102,13 @@ export interface SwapQuotePreview {
   route: string[]
   stale: boolean
   paper: true
+}
+
+/** Normalize legacy type aliases */
+export function canonicalIntentType(t: IntentType): IntentType {
+  if (t === 'TRADE_SWAP' || t === 'SWAP_EXCHANGE') return 'SWAP'
+  if (t === 'TRANSFER_TOKEN') return 'TRANSFER'
+  if (t === 'STAKE_ASSET') return 'STAKE'
+  if (t === 'MINT_NFT') return 'MINT'
+  return t
 }
