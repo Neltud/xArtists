@@ -1,7 +1,16 @@
 import { useEffect, useState } from 'react'
-import { MoonpayButton } from '../MoonpayButton'
+import { useWallet } from '../../context/WalletContext'
+import {
+  openMoonpayBuy,
+  isMoonpayLive,
+  maySupportApplePay,
+  MOONPAY_DEFAULT_WALLET,
+  type MoonpayPaymentMethod,
+} from '../../lib/moonpay'
+import ExpressPaymentOptions, { type ExpressKind } from './ExpressPaymentOptions'
+import MoonpayButton from '../MoonpayButton'
 
-type Step = 'ready' | 'paying' | 'verifying' | 'success'
+type Step = 'ready' | 'redirecting' | 'sim_success'
 
 export type FiatOnRampModalProps = {
   isOpen: boolean
@@ -13,8 +22,8 @@ export type FiatOnRampModalProps = {
 }
 
 /**
- * Fiat on-ramp modal (demo + MoonPay redirect).
- * Vite/MVX — no framer-motion. Real settlement = MoonPay hosted page.
+ * Fiat on-ramp — Apple Pay / Google Pay / card via MoonPay hosted widget.
+ * Native Apple Pay merchant ID is NOT used on GH Pages (requires Apple Pay JS + backend).
  */
 export default function FiatOnRampModal({
   isOpen,
@@ -24,7 +33,18 @@ export default function FiatOnRampModal({
   asset = 'EGLD',
   walletAddress,
 }: FiatOnRampModalProps) {
+  const { address, connected } = useWallet()
   const [step, setStep] = useState<Step>('ready')
+
+  const recipient =
+    walletAddress?.startsWith('erd1')
+      ? walletAddress
+      : connected && address?.startsWith('erd1')
+        ? address
+        : MOONPAY_DEFAULT_WALLET
+
+  const currency =
+    asset === '$TRO' || asset === 'TRO' ? 'EGLD' : asset || 'EGLD'
 
   useEffect(() => {
     if (isOpen) setStep('ready')
@@ -32,9 +52,24 @@ export default function FiatOnRampModal({
 
   if (!isOpen) return null
 
-  const simulateVerify = () => {
-    setStep('verifying')
-    window.setTimeout(() => setStep('success'), 1800)
+  const launch = (method?: MoonpayPaymentMethod) => {
+    setStep('redirecting')
+    openMoonpayBuy({
+      walletAddress: recipient,
+      currencyCode: currency,
+      paymentMethod: method,
+      baseCurrencyAmount: amount,
+      baseCurrencyCode: 'usd',
+    })
+    window.setTimeout(() => setStep('ready'), 2000)
+  }
+
+  const onExpress = (kind: ExpressKind, method?: MoonpayPaymentMethod) => {
+    if (kind === 'moonpay') {
+      launch(undefined)
+      return
+    }
+    launch(method)
   }
 
   return (
@@ -49,7 +84,7 @@ export default function FiatOnRampModal({
         className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-zinc-900 shadow-2xl animate-fade-in"
         onClick={e => e.stopPropagation()}
       >
-        <div className="relative h-20 bg-gradient-to-br from-cyan-500/20 to-purple-600/20 flex items-center justify-center">
+        <div className="relative h-20 bg-gradient-to-br from-zinc-100/10 to-purple-600/20 flex items-center justify-center">
           <button
             type="button"
             onClick={onClose}
@@ -59,11 +94,11 @@ export default function FiatOnRampModal({
             ✕
           </button>
           <div className="text-center">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-400 font-bold">
-              Funding
+            <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-300 font-bold">
+              Apple Pay · Google Pay · Card
             </p>
             <h2 id="onramp-title" className="text-lg font-bold text-white">
-              On-Ramp Fiat → {asset}
+              On-Ramp → {currency}
             </h2>
           </div>
         </div>
@@ -80,53 +115,79 @@ export default function FiatOnRampModal({
             </div>
             <div className="flex justify-between text-zinc-400">
               <span>Recevoir</span>
-              <span className="text-cyan-400">{asset}</span>
+              <span className="text-cyan-400">{currency}</span>
             </div>
+            <div className="flex justify-between text-zinc-400 text-[11px]">
+              <span>Wallet</span>
+              <span className="text-zinc-300 font-mono truncate max-w-[12rem]" title={recipient}>
+                {recipient.slice(0, 8)}…{recipient.slice(-6)}
+              </span>
+            </div>
+            {!connected && (
+              <p className="text-[10px] text-amber-300/90">
+                Connecte ton wallet pour recevoir sur ton erd1 (sinon adresse ops par défaut).
+              </p>
+            )}
           </div>
 
           {step === 'ready' && (
-            <div className="space-y-3">
-              <p className="text-xs text-zinc-500">
-                Paiement réel via MoonPay (hosted). Simulation locale pour démo UI.
-              </p>
-              <MoonpayButton
-                walletAddress={walletAddress}
-                currencyCode={asset === '$TRO' || asset === 'TRO' ? 'EGLD' : asset}
-                label={`Ouvrir MoonPay → ${asset}`}
-                className="w-full"
-              />
-              <button type="button" className="btn-secondary w-full text-sm" onClick={simulateVerify}>
-                Simuler paiement (demo)
+            <>
+              <button
+                type="button"
+                onClick={() => launch('apple_pay')}
+                className="w-full py-3.5 rounded-2xl bg-black border border-white/20 text-white font-semibold flex items-center justify-center gap-2 hover:bg-zinc-900 transition-colors"
+              >
+                <span className="text-lg" aria-hidden>
+                  
+                </span>
+                Payer avec Apple Pay
               </button>
-              <div className="grid grid-cols-3 gap-2 pt-1">
-                {(['Google Pay', 'Apple Pay', 'Card'] as const).map(label => (
-                  <button
-                    key={label}
-                    type="button"
-                    className="rounded-xl border border-white/10 bg-white/5 py-2 text-[10px] text-zinc-300 hover:bg-white/10"
-                    onClick={simulateVerify}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
+              {maySupportApplePay() ? (
+                <p className="text-[10px] text-emerald-400/90 text-center">
+                  Appareil compatible détecté — finalisation dans MoonPay (Safari recommandé).
+                </p>
+              ) : (
+                <p className="text-[10px] text-zinc-500 text-center">
+                  Apple Pay web : Safari + carte liée. Sinon choisis Google Pay ou carte.
+                </p>
+              )}
+
+              <ExpressPaymentOptions onSelect={onExpress} />
+
+              <MoonpayButton
+                walletAddress={recipient}
+                currencyCode={currency}
+                baseCurrencyAmount={amount}
+                label="Ouvrir MoonPay (tous moyens)"
+                className="w-full btn-secondary text-sm py-3"
+              />
+
+              <button
+                type="button"
+                className="w-full text-[11px] text-zinc-500 underline"
+                onClick={() => setStep('sim_success')}
+              >
+                Simuler succès UI (demo sans paiement)
+              </button>
+            </>
           )}
 
-          {step === 'verifying' && (
+          {step === 'redirecting' && (
             <div className="text-center py-8 space-y-3">
               <div className="w-10 h-10 mx-auto rounded-full border-2 border-cyan-500 border-t-transparent animate-spin" />
-              <p className="text-sm text-zinc-300 font-mono">Vérification…</p>
-              <p className="text-[11px] text-zinc-500">Webhook / LIA orchestration (paper)</p>
+              <p className="text-sm text-zinc-300">Ouverture de MoonPay…</p>
+              <p className="text-[11px] text-zinc-500">
+                {isMoonpayLive() ? 'Clé publique configurée' : 'Mode staging — VITE_MOONPAY_PUBLIC_KEY'}
+              </p>
             </div>
           )}
 
-          {step === 'success' && (
+          {step === 'sim_success' && (
             <div className="text-center py-8 space-y-3">
               <p className="text-3xl">✓</p>
-              <h3 className="text-xl font-bold text-white">Succès (demo)</h3>
+              <h3 className="text-xl font-bold text-white">Demo OK</h3>
               <p className="text-sm text-zinc-400">
-                En prod : livraison {asset} après webhook MoonPay signé.
+                Aucun débit réel. Pour payer vraiment, utilise Apple Pay / MoonPay ci-dessus.
               </p>
               <button type="button" className="btn-primary text-sm" onClick={onClose}>
                 Fermer
@@ -136,7 +197,7 @@ export default function FiatOnRampModal({
         </div>
 
         <div className="px-6 py-3 bg-black/30 text-center text-[10px] text-zinc-500 uppercase tracking-widest">
-          MoonPay · MultiversX · pas de clé secrète en front
+          Apple Pay via MoonPay · pas d’iframe · pas de secret en front
         </div>
       </div>
     </div>
