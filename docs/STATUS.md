@@ -1,16 +1,12 @@
-# Status — 2026-08-28 · v2.9.4-ux
+# Status — 2026-08-28 · v2.9.5
 
 | Item | State |
 |------|--------|
 | Pages | https://neltud.github.io/xArtists/ |
-| UX | 4 chemins home · bottom nav clarifié |
-| Trinity | LIP + Guardian + Terminal |
-| Marketing | `docs/marketing/VIRAL_POSTING_KIT.md` |
-| ETH contracts | LIAToken · LIATROToken · GenesisSale · LIATestToken (ref) |
-| SC MVX market | **Pending** |
-| LIA live trading | **OFF** |
-| Verdict launch | **GO_DEMO** / commerce **NO-GO** |
+| Vellum | Cerveau LIA (payant) · repo = corps |
+| Agents page | Packs only · Tours séparé |
+| X drafts | Automation horaire Grok (pas post API) |
+| SC MVX | Pending |
+| Live trading | OFF |
 
-## P0
-
-Deploy SC MVX + codeHash · fund LIA EGLD · micro tip · Stripe API optionnel
+Docs : `VELLUM_XARTISTS_BOUNDARY.md` · `SITE_MAP_TABS.md` · `marketing/X_POST_AUTOMATION.md`
