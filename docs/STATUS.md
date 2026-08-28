@@ -1,18 +1,11 @@
-# Status — 2026-08-28 · v2.9.7
+# Status — 2026-08-28 · v2.9.8-sprint1
 
 | Item | State |
 |------|--------|
-| Demo | https://neltud.github.io/xArtists/ |
-| Zapier | **Compte user** — OAuth X à finaliser côté Zapier (pas automatisable ici) |
-| Modules | SiteMap · SocialOpsStrip · Tours/Agents scope |
-| Vellum | Cerveau LIA |
-| SC MVX | Pending |
-| Live | OFF |
+| Sprint 1 | Doctrine + Intent + MVX service + useLIA |
+| Default | **Paper** |
+| Live gate | `VITE_LIA_LIVE_TRADING=1` + user confirm + wallet sign |
+| Zapier | Manuel user |
+| SC market | Pending |
 
-## Zapier (toi)
-
-1. Create connection → X  
-2. Zap Schedule 30m → LLM → Create Tweet  
-3. Publish On  
-
-Grok ne peut pas cliquer OAuth dans ton navigateur.
+Doc : `docs/SPRINT1_ANCRAGE_VERITE.md`
