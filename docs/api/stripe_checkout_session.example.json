@@ -1,0 +1,15 @@
+{
+  "request": {
+    "pack_id": "pulse",
+    "buyer_address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "success_url": "https://neltud.github.io/xArtists/#/my-packs?paid=1",
+    "cancel_url": "https://neltud.github.io/xArtists/#/my-packs?cancelled=1",
+    "currency": "eur",
+    "provider": "stripe",
+    "mode": "payment"
+  },
+  "response": {
+    "id": "cs_test_example",
+    "url": "https://checkout.stripe.com/c/pay/cs_test_example"
+  }
+}

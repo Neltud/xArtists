@@ -4,11 +4,16 @@ import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 import { useWallet } from '../context/WalletContext'
 import AccessTermsModal from './AccessTermsModal'
 import { canBuyAgent } from '../config/scStatus'
+import {
+  startStripeCardPayment,
+  isStripeConfigured,
+  getAccessApiBase,
+  getStripePublishableKey,
+} from '../lib/stripe'
 
 /**
  * Access Pack checkout — Model C.
- * Real Stripe session requires ACCESS_API_BASE backend.
- * Without API: records local intent + shows honest next steps.
+ * Cards: Stripe Checkout Session (API) or Payment Link env fallback.
  */
 export default function PackCheckout() {
   const { connected, address } = useWallet()
@@ -18,8 +23,10 @@ export default function PackCheckout() {
   const [msg, setMsg] = useState('')
 
   const pack = AGENT_PACKS.find(p => p.id === selected)
-  const apiBase = (import.meta.env.VITE_ACCESS_API_BASE as string | undefined) || ''
   const mintLive = canBuyAgent()
+  const stripeOk = isStripeConfigured()
+  const hasApi = Boolean(getAccessApiBase())
+  const pk = getStripePublishableKey()
 
   const startBuy = (id: PackId) => {
     if (!connected || !address?.startsWith('erd1')) {
@@ -36,11 +43,32 @@ export default function PackCheckout() {
     setTermsOpen(false)
     if (!pack || !address) return
     setStatus('redirect')
+    setMsg('Ouverture Stripe…')
 
-    if (!apiBase) {
+    try {
+      const mode = await startStripeCardPayment({
+        packId: pack.id,
+        buyerAddress: address,
+      })
+
+      if (mode === 'redirect') {
+        return
+      }
+
+      if (mode === 'payment_link') {
+        setMsg(
+          `Lien Stripe ouvert pour ${pack.name} (${pack.priceEur.list} €). ` +
+            'Après paiement, le webhook serveur déclenche le mint (si API configurée).'
+        )
+        setStatus('done')
+        return
+      }
+
+      // paper
       const intent = {
         product: 'access_pack',
         model: 'C',
+        provider: 'stripe_pending',
         pack_id: pack.id,
         price_eur: pack.priceEur.list,
         buyer_address: address,
@@ -54,43 +82,37 @@ export default function PackCheckout() {
         /* ignore */
       }
       setMsg(
-        `Conditions acceptées. Intent enregistré pour ${pack.name} (${pack.priceEur.list} €). ` +
-          (mintLive
-            ? 'SC agents live — brancher Stripe/webhook pour mint.'
-            : 'SC agents non déployé (codeHash). Intent paper uniquement.')
+        `Conditions acceptées. Intent paper pour ${pack.name} (${pack.priceEur.list} €). ` +
+          'Configure VITE_ACCESS_API_BASE (Checkout Session) ou VITE_STRIPE_PAYMENT_LINK_* pour payer par carte.'
       )
       setStatus('done')
-      return
-    }
-
-    try {
-      const r = await fetch(`${apiBase}/v1/checkout/session`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pack_id: pack.id, buyer_address: address }),
-      })
-      if (!r.ok) throw new Error(`HTTP ${r.status}`)
-      const data = (await r.json()) as { url?: string; id?: string }
-      if (data.url) {
-        window.location.href = data.url
-        return
-      }
-      setMsg(`Session ${data.id || ''} créée sans URL — vérifier Stripe.`)
-      setStatus('done')
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : 'Checkout échoué')
+      setMsg(e instanceof Error ? e.message : 'Checkout Stripe échoué')
       setStatus('idle')
     }
   }
 
   return (
     <div className="card border-purple-500/20">
-      <h3 className="font-bold text-sm mb-1">Checkout packs (Model C)</h3>
+      <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
+        <h3 className="font-bold text-sm">Checkout packs · Stripe (carte)</h3>
+        <span
+          className={`text-[10px] uppercase px-2 py-0.5 rounded-full border ${
+            stripeOk
+              ? 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10'
+              : 'border-amber-500/40 text-amber-200 bg-amber-500/10'
+          }`}
+        >
+          {hasApi ? 'API Stripe' : stripeOk ? 'Payment Link' : 'Paper'}
+        </span>
+      </div>
       <p className="text-[11px] text-zinc-500 mb-4">
-        Paiement fiat → mint NFT pack vers ton erd1. Sans API Stripe : intent local paper.
+        Carte bancaire via <strong className="text-zinc-300">Stripe Checkout</strong> → mint NFT pack vers ton
+        erd1 après webhook. On-ramp crypto (EGLD) reste MoonPay (Apple/Google Pay).
+        {pk && <span className="text-zinc-600"> · pk configurée</span>}
       </p>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
         {AGENT_PACKS.map(p => (
           <button
             key={p.id}
@@ -99,14 +121,12 @@ export default function PackCheckout() {
             className={`rounded-xl border px-3 py-3 text-left transition-colors ${
               selected === p.id
                 ? 'border-cyan-400/50 bg-cyan-500/10'
-                : p.id === 'voyage'
-                  ? 'border-amber-500/30 bg-amber-950/20 hover:border-amber-400/40'
-                  : 'border-white/10 bg-white/5 hover:border-purple-400/40'
+                : 'border-white/10 bg-white/5 hover:border-purple-400/40'
             }`}
           >
             <span className="text-lg">{p.icon}</span>
             <p className="text-xs font-bold text-white mt-1">{p.name}</p>
-            <p className="text-[10px] text-zinc-500">{p.priceEur.list} €</p>
+            <p className="text-[10px] text-zinc-500">{p.priceEur.list} € · carte Stripe</p>
           </button>
         ))}
       </div>
@@ -117,14 +137,14 @@ export default function PackCheckout() {
         </p>
       )}
 
-      {status === 'done' && selected === 'voyage' && (
-        <Link to="/agents/voyage" className="btn-primary text-xs py-2 px-3 inline-block mb-2">
-          Voir l’agent Voyage →
+      {status === 'done' && (
+        <Link to="/my-packs" className="btn-secondary text-xs py-2 px-3 inline-block mb-2">
+          Voir My Packs →
         </Link>
       )}
 
       {!connected && (
-        <p className="text-[11px] text-zinc-500">Connecte un wallet pour démarrer le checkout.</p>
+        <p className="text-[11px] text-zinc-500">Connecte un wallet pour démarrer le checkout carte.</p>
       )}
 
       <AccessTermsModal
