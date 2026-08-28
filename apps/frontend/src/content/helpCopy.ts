@@ -1,6 +1,6 @@
 /**
  * Centralized help copy — PageGuide + InfoTip.
- * Honest UX: LIA treasury ≠ user wallet; paper-first; SC status explicit.
+ * Agents IA = Pulse·Yield·Sentinel only. Tours art = separate service.
  */
 
 export const HELP = {
@@ -51,7 +51,7 @@ export type PageGuideKey =
   | 'tip'
   | 'editions'
   | 'entity'
-  | 'voyage'
+  | 'tours'
   | 'sim'
 
 export const PAGE_GUIDE: Record<
@@ -61,47 +61,40 @@ export const PAGE_GUIDE: Record<
   dashboard: {
     title: 'Home — parcours',
     bullets: [
-      'Étapes : Connecter → Packs → Board LIA → Studio/Galerie.',
-      'Raccourcis : Voyage · On-ramp Fiat · Board · Packs.',
-      '⌘K : intention (buy EGLD → on-ramp, voyage, trading…).',
+      'Étapes : Connecter → Packs IA → Board LIA → Galerie.',
+      'Raccourcis : Tours art · On-ramp · Board · Packs NFT.',
+      '⌘K : intention (buy EGLD, tours, trading…).',
       'Wallet = toi · Portfolio/Trading = protocole LIA (paper).',
-      'My Packs = access pass, pas un dépôt de trading.',
+      'My Packs = access pass NFT, pas un dépôt de trading.',
     ],
   },
   entity: {
     title: 'Entité xArtists',
     bullets: [
-      'Carte de l’organisation protocole et de ses 15 succursales.',
-      'Verdict GO_DEMO = UI + data live + LIA paper — pas le commerce SC.',
+      'Carte de l’organisation et des succursales.',
+      'GO_DEMO = UI + data + LIA paper — pas le commerce SC.',
       'LIA ops wallet ≠ wallet utilisateur.',
-      'Roadmap P0 : deploy SC + codeHash avant micro List/Buy.',
     ],
     warn: 'Pas de faux GMV tant que marketplace/agents codeHash null.',
   },
-  voyage: {
-    title: 'Agent de Voyage',
+  tours: {
+    title: 'Tours artistiques',
     bullets: [
-      'Pack thématique travel / culture / RWA hospitality.',
-      'Signaux advisory uniquement (v1) — pas de réservation hôtel/vol.',
-      'LIA peut utiliser un soft bias (weight_cap 0.12) en fusion paper.',
-      'Mint NFT pack après deploy SC agents.',
+      'Service culturel : expos, visites, parcours art.',
+      'Complètement séparé des packs Agents IA.',
+      'Pas un NFT pack agent, pas de réservation aérienne.',
     ],
-    warn: 'Aucun booking ni custody voyage.',
+    warn: 'Ce n’est pas un agent IA ni un pack marketplace agents.',
   },
   sim: {
     title: 'Simulation Lab',
-    bullets: [
-      'Parcours et modules simulés pour démo exhaustive.',
-      'Trades LIA paper — brancher TX après deploy SC.',
-    ],
+    bullets: ['Scénarios paper.', 'Aucun ordre live.'],
   },
   trading: {
     title: 'Trading Terminal LIA',
     bullets: [
-      'Board protocole (JSON) — pas ton compte.',
-      'Liquidity Orchestrator paper (pas de bridge live).',
-      'Fusion signaux : GSN ≥80 % · Polymarket · feeds.',
-      'Compounding 10 colonnes · paper legs · Guardian-first.',
+      'Board protocole paper.',
+      'Fusion signaux · compounding · Guardian-first.',
       'LIA_LIVE_TRADING=0 jusqu’aux micro-preuves.',
     ],
     warn: 'Aucun ordre auto sur vos fonds.',
@@ -109,9 +102,9 @@ export const PAGE_GUIDE: Record<
   wallet: {
     title: 'Mon wallet (utilisateur)',
     bullets: [
-      'Soldes + NFT via API MultiversX sur ton adresse Connect.',
-      'paste = lecture seule · Web Wallet / extension pour signer.',
-      'Treasury LIA → page Portfolio.',
+      'Soldes + NFT via API MultiversX.',
+      'paste = lecture seule · Web Wallet pour signer.',
+      'Treasury LIA → Portfolio.',
     ],
   },
   portfolio: {
@@ -120,38 +113,31 @@ export const PAGE_GUIDE: Record<
   },
   marketplace: {
     title: 'Marketplace NFT / RWA',
-    bullets: ['List/Buy après codeHash.', 'paste_readonly = pas de signature.', 'Offer = V2.'],
+    bullets: ['List/Buy après codeHash.', 'paste_readonly = pas de signature.'],
     warn: 'SC non live = pas de faux market.',
   },
   agents: {
-    title: 'Agents',
+    title: 'Packs Agents NFT',
     bullets: [
-      'Packs : Pulse · Yield · Sentinel · Voyage.',
-      'GSN = prédictions externes ≥80 % pour LIA (pas tes packs).',
-      'Capital agent optionnel = escrow isolé (Soon).',
+      'Uniquement Pulse · Yield · Sentinel.',
+      'GSN = prédictions externes (pas tes packs).',
+      'Tours artistiques = page /tours (autre service).',
     ],
+    warn: 'Aucun travel agent dans les packs IA.',
   },
   'my-packs': {
     title: 'My Packs',
-    bullets: [
-      'Access pass Model C.',
-      'Perf affichée = paper.',
-      'Fund capital agent = bientôt (isolé, plafond 10×).',
-    ],
+    bullets: ['Access pass Model C.', 'Perf = paper.', 'Pas un fonds géré.'],
     warn: 'Pas un fonds géré.',
   },
   studio: {
     title: 'Studio artiste',
-    bullets: [
-      '4 étapes : collection → IPFS → metadata → mint/list.',
-      'JWT Pinata jamais dans le front (proxy ops).',
-      'Wallet artiste ≠ LIA ops.',
-    ],
-    warn: 'Mint on-chain = wallet signant + gaz EGLD.',
+    bullets: ['Collection → IPFS → metadata → mint/list.', 'Wallet artiste ≠ LIA ops.'],
+    warn: 'Mint on-chain = wallet + gaz EGLD.',
   },
   dao: {
     title: 'DAO $TRO',
-    bullets: ['Gouvernance lecture / holders live.', 'Pas de faux vote sans sdk-dapp.'],
+    bullets: ['Gouvernance lecture / holders.'],
   },
   gallery: {
     title: 'Gallery',
@@ -163,25 +149,19 @@ export const PAGE_GUIDE: Record<
   },
   tro: {
     title: '$TRO',
-    bullets: ['Cap 500 000.', 'Utilité rewards / DAO / RWA claim.'],
+    bullets: ['Cap 500 000.', 'Utilité rewards / DAO / RWA.'],
   },
   hatom: {
     title: 'Hatom / Yield',
-    bullets: ['Lecture positions MVX.', 'Soul = pre-mainnet isolé.'],
+    bullets: ['Lecture positions MVX.'],
   },
   tip: {
     title: 'Tip / dons',
-    bullets: [
-      'Don volontaire vers LIA Ops — pas un investissement.',
-      'Tip on-chain : wallet user + memo tip:mission|reserve|ops.',
-    ],
-    warn: 'Ne confonds pas tip et achat de parts de fonds.',
+    bullets: ['Don volontaire vers LIA Ops — pas un investissement.'],
+    warn: 'Ne confonds pas tip et achat de parts.',
   },
   editions: {
     title: 'xArtists Editions',
-    bullets: [
-      'Lettre mensuelle art · culture · tech.',
-      'Abonnement ≠ investissement / yield.',
-    ],
+    bullets: ['Lettre mensuelle art · culture · tech.'],
   },
 }
