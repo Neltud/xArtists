@@ -1,7 +1,7 @@
 # Supernova timeouts — patch xArtists
 
-**Date :** 26 août 2026  
-**Contexte :** MultiversX Supernova Devnet LIVE (600 ms, J+6) · mainnet activation **10 septembre 2026 (J-15)**.
+**Date :** 28 août 2026  
+**Contexte :** MultiversX Supernova Devnet LIVE (600 ms, **J+8**) · upgrade nodes **1er septembre (J-4)** · activation **10 septembre 2026 (J-13)**.
 
 > « Every timeout and deadline you tuned to the six second clock is about to be off by 10x. »  
 > — @CodeMultiversX, 24 août 2026

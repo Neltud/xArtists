@@ -27,6 +27,19 @@ def test_contracts_json_shape():
     m = c.get("marketplace")
     if m is not None:
         assert str(m).startswith("erd1")
+    v = d.get("verification") or {}
+    market = v.get("marketplace_mainnet") or {}
+    assert market.get("codeHash") in (None, "", "null")
+    assert "NOT_DEPLOYED" in str(market.get("verdict") or "")
+    for key in ("nft_staking", "tro_governance", "nft_minter"):
+        entry = v.get(key) or {}
+        if isinstance(entry, dict):
+            assert entry.get("codeHash") in (None, "", "null")
+            assert "NOT_DEPLOYED" in str(entry.get("verdict") or "")
+    wallets = d.get("wallets") or {}
+    assert wallets.get("mission") is None
+    assert wallets.get("reserve") is None
+    assert int(d.get("ui_status", {}).get("lia_live_trading") or 0) == 0
 
 
 def test_lia_v6_status_live_flag_default_off():

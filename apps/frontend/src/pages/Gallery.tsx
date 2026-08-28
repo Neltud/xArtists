@@ -105,7 +105,7 @@ export default function Gallery() {
         <div className="pointer-events-none absolute -top-32 right-0 h-80 w-80 rounded-full bg-fuchsia-600/15 blur-3xl" />
         <div className="relative">
           <span className="inline-flex items-center gap-2 rounded-full border border-[#2a2a3a] bg-white/5 px-3 py-1 text-xs font-medium text-gray-300">
-            <span className="live-dot" /> Galerie · MultiversX Mainnet
+            <span className="live-dot" /> Galerie · lecture MultiversX mainnet
           </span>
           <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
             <span className="gradient-text">xArtists</span>

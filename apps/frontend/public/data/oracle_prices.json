@@ -1,10 +1,10 @@
 {
-  "updated": "2026-08-27T18:50:00Z",
-  "source": "multiversx_api_and_stubs",
+  "updated": "2026-08-28T04:33:00Z",
+  "source": "multiversx_api_economics_and_stubs",
   "mode": "live_read_when_available",
   "prices": {
-    "EGLD": { "usd": null },
-    "TRO-94c925": { "usd": null },
+    "EGLD": { "usd": 3.43, "note": "api.multiversx.com/economics 28 Aug 2026" },
+    "TRO-94c925": { "usd": null, "pair": "TRO/WEGLD" },
     "USDC-c76f1f": { "usd": 1.0 }
   }
 }

@@ -1,6 +1,6 @@
 # Roadmap V1 — xArtists
 
-**Date :** 26 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+
+**Date :** 28 août 2026 | **Repo :** Neltud/xArtists @ v0.15.0+ / sprint 0.16
 
 Ce document formalise les 7 axes prioritaires issus de l’analyse dApp complète.  
 Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères de done**.
@@ -108,15 +108,15 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ## 7. Alignement Supernova (sub-second finality)
 
-### Contexte (26 août 2026)
-* **Mainnet v1.11.10.0** activé le 6 août (epoch 2198) — VM. Réseau **stable J+20**.
-* **Mainnet v1.11.11.0** (10 août) — miniblock checks. **J+16**.
-* **Supernova Devnet** : **LIVE** depuis le **20 août** (600 ms rounds, J+6) — `/stats.refreshRate=600`.
-* **Target mainnet** : Upgrade nodes **1er septembre (J-6)** · Activation **10 septembre 2026 (J-15)**.
+### Contexte (28 août 2026)
+* **Mainnet v1.11.10.0** activé le 6 août (epoch 2198) — VM. Réseau **stable J+22**.
+* **Mainnet v1.11.11.0** (10 août) — miniblock checks. **J+18**.
+* **Supernova Devnet** : **LIVE** depuis le **20 août** (600 ms rounds, **J+8**) — `/stats.refreshRate=600`.
+* **Target mainnet** : Upgrade nodes **1er septembre (J-4)** · Activation **10 septembre 2026 (J-13)**.
 * **Auto-detect** : front + LIA lisent `refreshRate` (≤1000 ms → polls Supernova). Override `CHAIN_SUPERNOVA` / `VITE_SUPERNOVA`.
 * Note protocole (24 août) : timeouts calibrés sur 6 s seront off by **10×** — adresses, ABIs, SDK inchangés.
-* Stats (26 août, API) : 9.247 M accounts · 623.09 M tx · epoch 2217 · xExchange ~$3.68 M TVL.
-* Telemetry : https://telemetry.multiversx.com/ · Momentum 27 août 16:00 UTC.
+* Stats (28 août, API) : 9.249 M accounts · 623.43 M tx · epoch 2219 · EGLD $3.43 · xExchange TVL mesuré ~$2.19 M (50 paires).
+* Telemetry : https://telemetry.multiversx.com/ · Momentum 27 août **passé**.
 * Builders : http://supernova-sprint.xyz/builders · arcade https://supernova-arcade.xyz/arcade
 
 ### Livrables
@@ -138,4 +138,4 @@ Chaque axe a un **statut**, des **livrables**, une **phase** et des **critères 
 
 ---
 
-*Synchronisé avec STATUS_2026-08-26.md — 26 août 2026*
+*Synchronisé avec STATUS_2026-08-28.md et ANALYSE_DAPP_COMPLETE.md — 28 août 2026*

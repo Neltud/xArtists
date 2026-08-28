@@ -2,7 +2,7 @@
  * MultiversX chain timing (frontend).
  *
  * Pre-Supernova mainnet: 6s rounds. Supernova: 600ms (Devnet LIVE since 20 Aug 2026;
- * mainnet activation 10 Sep 2026). ABIs / addresses / gas unchanged.
+ * node upgrade 1 Sep 2026; mainnet activation 10 Sep 2026). ABIs / addresses / gas unchanged.
  *
  * Mode resolution (first match):
  *   VITE_SUPERNOVA=1|true|yes  → force supernova polls

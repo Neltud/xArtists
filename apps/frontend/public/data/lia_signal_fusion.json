@@ -1,0 +1,25 @@
+{
+  "updated": "2026-08-26T13:00:00Z",
+  "mode": "paper_advisory",
+  "live_trading": false,
+  "input": { "lia_decision": "WAIT", "lia_confidence": 0.5 },
+  "fused": {
+    "decision": "WAIT",
+    "confidence": 0.5,
+    "source": "lia_primary",
+    "external_norm": 0.12,
+    "external_weight_sum": 0.28
+  },
+  "legs": {
+    "gsn": {
+      "n_elite": 3,
+      "bias": "BUY",
+      "gsn_weight": 0.24,
+      "top_avg_accuracy": 0.843
+    },
+    "polymarket": { "bias": "WAIT", "weight": 0.04, "n": 3 },
+    "free_feeds": { "bias": "BUY", "weight": 0.06, "n": 5 },
+    "social": { "bias": "WAIT", "weight": 0.0, "n": 0, "rumor_flag": false }
+  },
+  "note": "Fusion advisory only — Guardian + Intent required before any live size"
+}

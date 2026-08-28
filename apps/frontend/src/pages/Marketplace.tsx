@@ -153,7 +153,13 @@ export default function Marketplace() {
       <section className="relative mb-6 overflow-hidden rounded-3xl border border-[#2a2a3a] bg-gradient-to-br from-[#15151f] via-[#12121a] to-[#0a0a0f] p-6 sm:p-10">
         <div className="relative">
           <span className="inline-flex items-center gap-2 rounded-full border border-[#2a2a3a] bg-white/5 px-3 py-1 text-xs text-gray-300">
-            <span className="live-dot" /> MultiversX Mainnet
+            {canListBuyNft() ? (
+              <>
+                <span className="live-dot" /> MultiversX Mainnet · SC live
+              </>
+            ) : (
+              <>Mainnet · lecture · SC non déployé</>
+            )}
           </span>
           <h1 className="mt-4 text-4xl sm:text-5xl font-black tracking-tight">
             <span className="gradient-text">xArtists Marketplace</span>
