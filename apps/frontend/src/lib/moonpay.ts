@@ -14,9 +14,7 @@ export type MoonpayPaymentMethod =
 export type BuildMoonpayUrlOpts = {
   walletAddress: string
   currencyCode?: string
-  /** Prefer Apple Pay / Google Pay / card */
   paymentMethod?: MoonpayPaymentMethod
-  /** Fiat amount hint (USD) */
   baseCurrencyAmount?: string | number
   baseCurrencyCode?: string
   redirectURL?: string
@@ -40,46 +38,30 @@ export function buildMoonpayBuyUrl(opts: BuildMoonpayUrlOpts): string {
   const live = Boolean(getMoonpayPublicKey())
   const base = live ? 'https://buy.moonpay.com' : 'https://buy-staging.moonpay.com'
 
-  const currencyCode = (opts.currencyCode || 'EGLD').replace(/^\$/, '')
+  let currencyCode = (opts.currencyCode || 'EGLD').replace(/^\$/, '').toUpperCase()
+  if (currencyCode === 'TRO') currencyCode = 'EGLD'
+
   const walletAddress = opts.walletAddress?.startsWith('erd1')
     ? opts.walletAddress
     : DEFAULT_WALLET
 
   const params = new URLSearchParams({
     apiKey: publicKey,
-    currencyCode: currencyCode === 'TRO' ? 'EGLD' : currencyCode,
+    currencyCode,
     walletAddress,
+    theme: 'dark',
+    colorCode: (opts.colorCode || '7c3aed').replace('#', ''),
   })
-
-  if (currencyCode.toUpperCase() === 'EGLD' || currencyCode.toUpperCase() === 'TRO') {
-    params.set('currencyCode', 'egl d'.includes(' ') ? 'EGLD' : 'EGLD')
-    params.set('currencyCode', 'EGLD')
-  }
 
   if (opts.paymentMethod) {
     params.set('paymentMethod', opts.paymentMethod)
   }
   if (opts.baseCurrencyAmount != null && opts.baseCurrencyAmount !== '') {
     params.set('baseCurrencyAmount', String(opts.baseCurrencyAmount))
-  }
-  if (opts.baseCurrencyCode) {
-    params.set('baseCurrencyCode', opts.baseCurrencyCode)
-  } else if (opts.baseCurrencyAmount != null) {
-    params.set('baseCurrencyCode', 'usd')
+    params.set('baseCurrencyCode', (opts.baseCurrencyCode || 'usd').toLowerCase())
   }
   if (opts.redirectURL) {
     params.set('redirectURL', opts.redirectURL)
-  }
-  if (opts.colorCode) {
-    params.set('colorCode', opts.colorCode.replace('#', ''))
-  } else {
-    params.set('colorCode', '7c3aed')
-  }
-
-  // MultiversX EGLD
-  if ((params.get('currencyCode') || '').toUpperCase() === 'EGLD') {
-    // chain param supported on some MoonPay builds
-    params.set('theme', 'dark')
   }
 
   return `${base}/?${params.toString()}`
@@ -90,14 +72,13 @@ export function openMoonpayBuy(opts: BuildMoonpayUrlOpts): void {
   window.open(url, '_blank', 'noopener,noreferrer')
 }
 
-/** Rough client hint — real availability decided inside MoonPay + Apple. */
+/** Client hint only — MoonPay + Apple decide final availability. */
 export function maySupportApplePay(): boolean {
   if (typeof window === 'undefined') return false
   const ua = navigator.userAgent || ''
   const isAppleDevice = /iPhone|iPad|iPod|Macintosh/.test(ua)
   const isSafari =
     /Safari/.test(ua) && !/Chrome|Chromium|Edg|Firefox|Android/.test(ua)
-  // Safari on Mac / iOS is the primary Apple Pay web surface
   return isAppleDevice && (isSafari || /iPhone|iPad|iPod/.test(ua))
 }
 
