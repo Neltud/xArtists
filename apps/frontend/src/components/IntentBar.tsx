@@ -1,16 +1,29 @@
 /**
- * Sovereign Intent Bar — Cmd/Ctrl+K · parse local · navigate / on-ramp (paper).
+ * Sovereign Intent Bar — Cmd/Ctrl+K
+ * Route rules (intentParser) + LIP-1 resolve + Guardian (lipBridge).
  */
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { parseIntent, type StructuredIntent } from '../lib/intentParser'
 import { recordIntentActivity } from '../lib/paperSoul'
+import {
+  resolveLip,
+  lipToRoute,
+  type LipIntent,
+  type GuardianVerdict,
+} from '../lib/lipBridge'
 import FiatOnRampModal from './onramp/FiatOnRampModal'
+
+type LiaUiState = 'idle' | 'thinking' | 'success' | 'error'
 
 export default function IntentBar() {
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState('')
   const [preview, setPreview] = useState<StructuredIntent | null>(null)
+  const [lip, setLip] = useState<LipIntent | null>(null)
+  const [guardian, setGuardian] = useState<GuardianVerdict | null>(null)
+  const [liaState, setLiaState] = useState<LiaUiState>('idle')
+  const [clarify, setClarify] = useState<string | null>(null)
   const [onRamp, setOnRamp] = useState<{ intent: string; amount: string; asset: string } | null>(
     null
   )
@@ -30,7 +43,22 @@ export default function IntentBar() {
 
   useEffect(() => {
     if (!open) return
-    setPreview(q.trim() ? parseIntent(q) : null)
+    if (!q.trim()) {
+      setPreview(null)
+      setLip(null)
+      setGuardian(null)
+      setClarify(null)
+      setLiaState('idle')
+      return
+    }
+    setLiaState('thinking')
+    const routeIntent = parseIntent(q)
+    setPreview(routeIntent)
+    const resolved = resolveLip(q)
+    setLip(resolved.intent)
+    setGuardian(resolved.guardian)
+    setClarify(resolved.ok ? null : resolved.clarify)
+    setLiaState(resolved.ok ? 'success' : 'error')
   }, [q, open])
 
   const openOnRamp = (raw: string) => {
@@ -46,27 +74,62 @@ export default function IntentBar() {
   }
 
   const submit = useCallback(() => {
+    setLiaState('thinking')
     const intent = parseIntent(q)
+    const resolved = resolveLip(q)
     setPreview(intent)
+    setLip(resolved.intent)
+    setGuardian(resolved.guardian)
     recordIntentActivity(intent.action)
-    window.dispatchEvent(new CustomEvent('lia-intent', { detail: intent }))
+    window.dispatchEvent(
+      new CustomEvent('lia-intent', {
+        detail: { route: intent, lip: resolved.intent, guardian: resolved.guardian },
+      })
+    )
 
     const lower = q.toLowerCase()
     const buyLike =
-      /\b(achète|acheter|buy|card|fiat|moonpay|carte)\b/i.test(lower) ||
+      /\b(achète|acheter|buy|card|fiat|moonpay|carte|google pay|apple pay)\b/i.test(lower) ||
       intent.action === 'ONRAMP'
 
     if (buyLike) {
+      setLiaState('success')
       openOnRamp(q)
       return
     }
 
-    if (intent.route) {
-      navigate(intent.route)
+    // Prefer nav routes from classic parser; fallback LIP
+    const route = intent.route || lipToRoute(resolved.intent)
+    if (route && route !== '/') {
+      setLiaState('success')
+      navigate(route)
+      setOpen(false)
+      setQ('')
+      return
+    }
+
+    if (!resolved.ok) {
+      setClarify(resolved.clarify)
+      setLiaState('error')
+      return
+    }
+
+    setLiaState('success')
+    if (route) {
+      navigate(route)
       setOpen(false)
       setQ('')
     }
   }, [q, navigate])
+
+  const stateColor =
+    liaState === 'thinking'
+      ? 'text-amber-300'
+      : liaState === 'success'
+        ? 'text-emerald-300'
+        : liaState === 'error'
+          ? 'text-rose-300'
+          : 'text-zinc-500'
 
   return (
     <>
@@ -82,7 +145,7 @@ export default function IntentBar() {
 
       {open && (
         <div
-          className="fixed inset-0 z-[70] flex items-start justify-center bg-black/70 pt-[15vh] px-4"
+          className="fixed inset-0 z-[70] flex items-start justify-center bg-black/70 pt-[12vh] px-4"
           onClick={() => setOpen(false)}
         >
           <div
@@ -90,7 +153,9 @@ export default function IntentBar() {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center gap-2 border-b border-[#2a2a3a] px-4 py-3">
-              <span className="text-cyan-400 text-sm">✦</span>
+              <span className={`text-sm ${stateColor}`}>
+                {liaState === 'thinking' ? '◉' : liaState === 'success' ? '✓' : liaState === 'error' ? '!' : '✦'}
+              </span>
               <input
                 autoFocus
                 value={q}
@@ -98,31 +163,66 @@ export default function IntentBar() {
                 onKeyDown={e => {
                   if (e.key === 'Enter') submit()
                 }}
-                placeholder='Ex: « voyage » · « entity » · « buy 50 EGLD » · « trading »'
+                placeholder='Ex: « tours paris » · « solde TRO » · « buy 50 EGLD »'
                 className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-600 focus:outline-none"
               />
               <kbd className="hidden sm:inline text-[10px] text-zinc-600 border border-zinc-700 rounded px-1">
                 ESC
               </kbd>
             </div>
+
+            <div className="px-4 py-2 flex items-center justify-between text-[10px] uppercase tracking-wider">
+              <span className={stateColor}>
+                LIA · {liaState === 'idle' ? 'ready' : liaState}
+              </span>
+              {guardian && (
+                <span className={guardian.allowed ? 'text-emerald-500/80' : 'text-rose-400/90'}>
+                  Guardian {guardian.code}
+                </span>
+              )}
+            </div>
+
             {preview && (
-              <div className="px-4 py-3 text-xs space-y-1">
+              <div className="px-4 pb-3 text-xs space-y-1 border-t border-white/5 pt-2">
                 <p className="text-zinc-400">
-                  Action <strong className="text-cyan-300">{preview.action}</strong>
+                  Route <strong className="text-cyan-300">{preview.action}</strong>
                   <span className="text-zinc-600 ml-2">
                     conf {(preview.confidence * 100).toFixed(0)}%
                   </span>
                 </p>
                 <p className="text-white">{preview.summary}</p>
-                <p className="text-[10px] text-amber-200/70">{preview.notes}</p>
-                <button type="button" className="btn-primary text-xs mt-2 w-full" onClick={submit}>
+              </div>
+            )}
+
+            {lip && (
+              <div className="px-4 pb-3 text-[11px] space-y-1 font-mono text-zinc-400">
+                <p>
+                  LIP <span className="text-violet-300">{lip.intent_type}</span> · {lip.chain} ·{' '}
+                  {lip.decimals} dec · atomic {lip.amount_atomic.slice(0, 18)}
+                  {lip.amount_atomic.length > 18 ? '…' : ''}
+                </p>
+                <p className="text-zinc-500">{lip.reason}</p>
+                {lip.requires_human_approval && (
+                  <p className="text-amber-300/90">Human-in-the-loop requis (seuil TRO)</p>
+                )}
+              </div>
+            )}
+
+            {clarify && (
+              <p className="px-4 pb-2 text-xs text-rose-200/90">{clarify}</p>
+            )}
+
+            {(preview || lip) && (
+              <div className="px-4 pb-4">
+                <button type="button" className="btn-primary text-xs w-full" onClick={submit}>
                   Exécuter →
                 </button>
               </div>
             )}
-            {!preview && (
+
+            {!preview && !q.trim() && (
               <p className="px-4 py-3 text-[11px] text-zinc-600">
-                Essaie : voyage · entity · pack · trading · buy 50 EGLD · tip · sim
+                Essaie : tours · lightning · entity · trading · buy 50 EGLD · solde TRO
               </p>
             )}
           </div>
