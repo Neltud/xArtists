@@ -1,12 +1,12 @@
-# Status — 2026-08-28 · v2.9.5
+# Status — 2026-08-28 · v2.9.6
 
 | Item | State |
 |------|--------|
-| Pages | https://neltud.github.io/xArtists/ |
-| Vellum | Cerveau LIA (payant) · repo = corps |
-| Agents page | Packs only · Tours séparé |
-| X drafts | Automation horaire Grok (pas post API) |
+| Demo | https://neltud.github.io/xArtists/ |
+| Vellum | Cerveau LIA (payant) |
+| X posting | Spec Vellum 30m + Zapier path · Grok = drafts only |
+| Agents ≠ Tours | Enforced UI |
 | SC MVX | Pending |
-| Live trading | OFF |
+| Live | OFF |
 
-Docs : `VELLUM_XARTISTS_BOUNDARY.md` · `SITE_MAP_TABS.md` · `marketing/X_POST_AUTOMATION.md`
+Marketing ops : `docs/marketing/X_API_AND_VELLUM_WORKFLOW.md` · `ZAPIER_SETUP.md` · `VELLUM_SOCIAL_WORKFLOW_SPEC.json`
