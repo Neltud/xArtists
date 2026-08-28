@@ -1,0 +1,13 @@
+{
+  "plugin_id": "X-ARTISTS-01",
+  "plugin_name": "X-Artists Creative & IP Module",
+  "dependency_version": "Core-v1.0",
+  "target_modules": ["packages/agent-modules/x-artists", "apps/frontend"],
+  "capabilities": {
+    "intelligence": ["NFT_MINTING", "METADATA_GENERATION", "ROYALTY_MANAGEMENT"],
+    "blockchain": ["ERC721_ETHEREUM", "ESDT_MULTIVERSX"],
+    "storage": ["IPFS_INTEGRATION"]
+  },
+  "required_interfaces": ["ILiaBrainAdapter", "IActionAdapter", "IUiAdapter"],
+  "status": "partial_live_ui"
+}

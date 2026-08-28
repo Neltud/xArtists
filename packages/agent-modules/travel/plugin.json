@@ -1,0 +1,12 @@
+{
+  "plugin_id": "TRAVEL-01",
+  "plugin_name": "LIA Travel Concierge",
+  "note": "Lifestyle module — not an AI agent pack. Align with /tours art service where cultural.",
+  "target_modules": ["packages/agent-modules/travel", "apps/frontend/#/tours"],
+  "capabilities": {
+    "intelligence": ["FLIGHT_SEARCH", "HOTEL_RESERVATION", "PRICE_COMPARISON"],
+    "api_integration": ["AMADEUS_API", "SKYSCANNER_API"],
+    "payment": "Unified-Payment-Gateway"
+  },
+  "status": "blueprint"
+}
