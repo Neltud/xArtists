@@ -1,10 +1,13 @@
 /**
- * Sprint 1 — Protocole d'intention (schéma strict).
- * LIA commande ; $TRO = actif économique séparé (mint/burn/stake policy).
+ * Intent protocol — Sprint 1 + Sprint 2 (Métabolisme).
+ * LIA commande ; $TRO = actif économique séparé.
  */
 
 export type IntentType =
   | 'TRADE_SWAP'
+  | 'SWAP_EXCHANGE'
+  | 'ADD_LIQUIDITY'
+  | 'REMOVE_LIQUIDITY'
   | 'TRANSFER_TOKEN'
   | 'STAKE_ASSET'
   | 'UNSTAKE_ASSET'
@@ -17,33 +20,29 @@ export type IntentType =
 export type IntentChain = 'multiversx'
 
 export interface IntentMetadata {
-  /** Slippage bps, e.g. 50 = 0.5% */
   slippageBps?: number
-  /** Gas limit hint (MVX gas limit units) */
   gasLimit?: number
-  /** Human note / NL source */
   reason?: string
-  /** Confidence 0–1 from parser */
   confidence?: number
-  /** Paper simulation — never broadcast */
   paper?: boolean
-  /** Explicit user confirmation for live */
   userConfirmedLive?: boolean
+  /** Sprint 2 — quote snapshot */
+  quoteId?: string
+  expectedOutAtomic?: string
+  routeDex?: string
+  priceImpactBps?: number
 }
 
 export interface Intent {
   type: IntentType
-  /** ESDT id or EGLD */
   assetFrom: string
   assetTo: string
-  /** Atomic amount as decimal string (no float) */
+  /** Atomic amount string (BigInt-safe) */
   amount: string
-  /** erd1… for transfers */
   targetAddress?: string
   chain: IntentChain
   metadata: IntentMetadata
   timestamp: string
-  /** Optional correlation id */
   id?: string
 }
 
@@ -58,13 +57,19 @@ export interface ValidationIssue {
 export interface ValidationResult {
   ok: boolean
   issues: ValidationIssue[]
-  /** true → may proceed to wallet sign path (still needs provider) */
   canExecute: boolean
-  /** true → UI paper path only */
   forcePaper: boolean
 }
 
-export type TxLifecycle = 'idle' | 'validating' | 'pending_signature' | 'broadcast' | 'pending' | 'success' | 'error' | 'rejected'
+export type TxLifecycle =
+  | 'idle'
+  | 'validating'
+  | 'pending_signature'
+  | 'broadcast'
+  | 'pending'
+  | 'success'
+  | 'error'
+  | 'rejected'
 
 export interface ExecutionResult {
   lifecycle: TxLifecycle
@@ -72,4 +77,18 @@ export interface ExecutionResult {
   message: string
   paper: boolean
   intent: Intent
+}
+
+/** Sprint 2 — quote affichée pendant la frappe */
+export interface SwapQuotePreview {
+  assetFrom: string
+  assetTo: string
+  amountInHuman: string
+  amountOutHuman: string
+  rate: number
+  dex: string
+  priceImpactBps: number
+  route: string[]
+  stale: boolean
+  paper: true
 }

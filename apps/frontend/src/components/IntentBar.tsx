@@ -1,6 +1,6 @@
 /**
  * Sovereign Intent Bar — Cmd/Ctrl+K
- * Route rules (intentParser) + LIP-1 resolve + Guardian (lipBridge).
+ * LIP + Guardian + Sprint 2 swap quote preview.
  */
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -13,6 +13,7 @@ import {
   type GuardianVerdict,
 } from '../lib/lipBridge'
 import FiatOnRampModal from './onramp/FiatOnRampModal'
+import SwapQuoteStrip from './SwapQuoteStrip'
 
 type LiaUiState = 'idle' | 'thinking' | 'success' | 'error'
 
@@ -98,7 +99,6 @@ export default function IntentBar() {
       return
     }
 
-    // Prefer nav routes from classic parser; fallback LIP
     const route = intent.route || lipToRoute(resolved.intent)
     if (route && route !== '/') {
       setLiaState('success')
@@ -163,7 +163,7 @@ export default function IntentBar() {
                 onKeyDown={e => {
                   if (e.key === 'Enter') submit()
                 }}
-                placeholder='Ex: « tours paris » · « solde TRO » · « buy 50 EGLD »'
+                placeholder='Ex: « swap 1 EGLD USDC » · « tours » · « solde TRO »'
                 className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-600 focus:outline-none"
               />
               <kbd className="hidden sm:inline text-[10px] text-zinc-600 border border-zinc-700 rounded px-1">
@@ -182,6 +182,8 @@ export default function IntentBar() {
               )}
             </div>
 
+            <SwapQuoteStrip query={q} />
+
             {preview && (
               <div className="px-4 pb-3 text-xs space-y-1 border-t border-white/5 pt-2">
                 <p className="text-zinc-400">
@@ -198,19 +200,13 @@ export default function IntentBar() {
               <div className="px-4 pb-3 text-[11px] space-y-1 font-mono text-zinc-400">
                 <p>
                   LIP <span className="text-violet-300">{lip.intent_type}</span> · {lip.chain} ·{' '}
-                  {lip.decimals} dec · atomic {lip.amount_atomic.slice(0, 18)}
-                  {lip.amount_atomic.length > 18 ? '…' : ''}
+                  {lip.decimals} dec
                 </p>
                 <p className="text-zinc-500">{lip.reason}</p>
-                {lip.requires_human_approval && (
-                  <p className="text-amber-300/90">Human-in-the-loop requis (seuil TRO)</p>
-                )}
               </div>
             )}
 
-            {clarify && (
-              <p className="px-4 pb-2 text-xs text-rose-200/90">{clarify}</p>
-            )}
+            {clarify && <p className="px-4 pb-2 text-xs text-rose-200/90">{clarify}</p>}
 
             {(preview || lip) && (
               <div className="px-4 pb-4">
@@ -222,7 +218,7 @@ export default function IntentBar() {
 
             {!preview && !q.trim() && (
               <p className="px-4 py-3 text-[11px] text-zinc-600">
-                Essaie : tours · lightning · entity · trading · buy 50 EGLD · solde TRO
+                Essaie : swap 1 EGLD USDC · tours · lightning · trading · buy 50 EGLD
               </p>
             )}
           </div>

@@ -1,11 +1,10 @@
-# Status — 2026-08-28 · v2.9.8-sprint1
+# Status — 2026-08-28 · v2.9.9-sprint2
 
-| Item | State |
-|------|--------|
-| Sprint 1 | Doctrine + Intent + MVX service + useLIA |
-| Default | **Paper** |
-| Live gate | `VITE_LIA_LIVE_TRADING=1` + user confirm + wallet sign |
-| Zapier | Manuel user |
-| SC market | Pending |
+| Sprint | State |
+|--------|--------|
+| 1 Ancrage | Doctrine + useLIA + MVX service |
+| 2 Métabolisme | liquidity + aggregator + quote IntentBar |
+| 3 Intelligence | Pending |
+| 4 Multichain | Pending |
 
-Doc : `docs/SPRINT1_ANCRAGE_VERITE.md`
+Live swaps : OFF · paper quotes ON
