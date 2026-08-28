@@ -1,0 +1,57 @@
+{
+  "version": "1.0",
+  "collection": "xArtists Agent Packs",
+  "ticker_hint": "XAPACK-pending",
+  "chain": "multiversx",
+  "note": "NFT access packs — mint SC pending. Tours art is NOT a pack.",
+  "series": [
+    {
+      "id": "pulse",
+      "name": "Pulse",
+      "tier": "A",
+      "max_supply": 333,
+      "price_eur": 18,
+      "attributes": [
+        { "trait_type": "Series", "value": "Pulse" },
+        { "trait_type": "Signal", "value": "High" },
+        { "trait_type": "Strategies", "value": "MICRO_ARB,MOMENTUM,MEAN_REVERSION" }
+      ],
+      "image": "ipfs://pending/pulse.png",
+      "description": "NFT pack Pulse — access slot + board signals. Not investment advice."
+    },
+    {
+      "id": "yield",
+      "name": "Yield",
+      "tier": "B",
+      "max_supply": 500,
+      "price_eur": 12,
+      "attributes": [
+        { "trait_type": "Series", "value": "Yield" },
+        { "trait_type": "Signal", "value": "Medium" },
+        { "trait_type": "Strategies", "value": "YIELD,COMPOUND" }
+      ],
+      "image": "ipfs://pending/yield.png",
+      "description": "NFT pack Yield — DeFi sleeve view. No APY guarantee."
+    },
+    {
+      "id": "sentinel",
+      "name": "Sentinel",
+      "tier": "C",
+      "max_supply": 777,
+      "price_eur": 8,
+      "attributes": [
+        { "trait_type": "Series", "value": "Sentinel" },
+        { "trait_type": "Signal", "value": "Guard" },
+        { "trait_type": "Strategies", "value": "GUARD,ALERT" }
+      ],
+      "image": "ipfs://pending/sentinel.png",
+      "description": "NFT pack Sentinel — alerts & risk sleeve."
+    }
+  ],
+  "mint": {
+    "sc_status": "pending_deploy",
+    "payment": ["stripe_eur", "egld", "usdc", "tro"],
+    "royalties_bps": 500,
+    "receiver": "buyer_wallet_erd1"
+  }
+}
