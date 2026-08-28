@@ -1,4 +1,8 @@
-import { maySupportApplePay, type MoonpayPaymentMethod } from '../../lib/moonpay'
+import {
+  maySupportApplePay,
+  maySupportGooglePay,
+  type MoonpayPaymentMethod,
+} from '../../lib/moonpay'
 
 export type ExpressKind = 'apple' | 'google' | 'card' | 'moonpay'
 
@@ -10,18 +14,18 @@ const ITEMS: {
   accent: string
 }[] = [
   {
+    kind: 'google',
+    method: 'google_pay',
+    label: 'Google Pay',
+    sub: 'Chrome / Android · MoonPay',
+    accent: 'border-blue-400/30 hover:bg-blue-500/10',
+  },
+  {
     kind: 'apple',
     method: 'apple_pay',
     label: 'Apple Pay',
     sub: 'Safari · MoonPay hosted',
     accent: 'border-white/20 hover:bg-white/10',
-  },
-  {
-    kind: 'google',
-    method: 'google_pay',
-    label: 'Google Pay',
-    sub: 'via MoonPay',
-    accent: 'border-white/10 hover:bg-white/10',
   },
   {
     kind: 'card',
@@ -44,6 +48,7 @@ export default function ExpressPaymentOptions({
   onSelect: (kind: ExpressKind, method?: MoonpayPaymentMethod) => void
 }) {
   const appleOk = maySupportApplePay()
+  const googleOk = maySupportGooglePay()
 
   return (
     <div className="mt-2 space-y-2">
@@ -51,7 +56,12 @@ export default function ExpressPaymentOptions({
         Express checkout
       </p>
       {ITEMS.map(it => {
-        const disabledHint = it.kind === 'apple' && !appleOk
+        const hint =
+          it.kind === 'apple' && !appleOk
+            ? 'Surtout Safari / appareil Apple — MoonPay confirmera.'
+            : it.kind === 'google' && !googleOk
+              ? 'Surtout Chrome / Android — MoonPay confirmera.'
+              : null
         return (
           <button
             key={it.kind}
@@ -61,13 +71,18 @@ export default function ExpressPaymentOptions({
           >
             <div>
               <p className="text-sm text-white font-medium flex items-center gap-2">
+                {it.kind === 'google' && (
+                  <span className="font-black text-blue-400" aria-hidden>
+                    G
+                  </span>
+                )}
                 {it.kind === 'apple' && <span aria-hidden></span>}
                 {it.label}
               </p>
               <p className="text-[10px] text-zinc-500 uppercase tracking-widest">{it.sub}</p>
-              {disabledHint && (
+              {hint && (
                 <p className="text-[10px] text-amber-400/90 mt-0.5 normal-case tracking-normal">
-                  Disponible surtout sur Safari / appareil Apple — MoonPay confirmera.
+                  {hint}
                 </p>
               )}
             </div>

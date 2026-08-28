@@ -1,43 +1,28 @@
 # Apple Pay — intégration xArtists
 
-## Approche retenue
+## Approche
 
-**Apple Pay via MoonPay hosted widget** (`paymentMethod=apple_pay`).
+**Apple Pay via MoonPay** (`paymentMethod=apple_pay`).
 
-Pourquoi pas Apple Pay JS natif seul sur GitHub Pages :
-
-- Nécessite un **Merchant ID** Apple + domaine vérifié + session serveur
-- MoonPay gère KYC, conformité et règlement crypto (EGLD)
-- Doc MoonPay : widget **hors iframe** (on utilise `window.open`)
-
-Réf. paramètres : [MoonPay on-ramp parameters](https://dev.moonpay.com/widget/on-ramp/customization/parameters) — `paymentMethod` inclut `apple_pay`, `google_pay`, `credit_debit_card`.
+Parité Google Pay : [GOOGLE_PAY_ONRAMP.md](GOOGLE_PAY_ONRAMP.md).
 
 ## Code
 
 | Fichier | Rôle |
 |---------|------|
-| `apps/frontend/src/lib/moonpay.ts` | `buildMoonpayBuyUrl` / `openMoonpayBuy` |
-| `MoonpayButton.tsx` | CTA + `paymentMethod` |
-| `FiatOnRampModal.tsx` | Bouton **Payer avec Apple Pay** + Express |
-| `ExpressPaymentOptions.tsx` | Apple / Google / Card / MoonPay |
+| `lib/moonpay.ts` | URL + hints Apple/Google |
+| `FiatOnRampModal.tsx` | Boutons Google Pay + Apple Pay |
+| `ExpressPaymentOptions.tsx` | Liste express |
+| `MoonpayButton.tsx` | CTA paramétrable |
 
 ## Config
 
 ```env
-VITE_MOONPAY_PUBLIC_KEY=pk_live_…   # ou pk_test_…
+VITE_MOONPAY_PUBLIC_KEY=pk_live_…
 ```
-
-Sans clé → `buy-staging.moonpay.com` (démo).
 
 ## UX
 
-1. Connecter wallet (erd1) recommandé  
-2. ⌘K → `buy 50 EGLD` ou Home → On-Ramp  
-3. **Payer avec Apple Pay** → MoonPay avec `paymentMethod=apple_pay`  
-4. Safari / iOS + carte dans Wallet Apple  
+⌘K → `buy 50 EGLD` → **Payer avec Apple Pay** / **Google Pay**.
 
-## Limites
-
-- Disponibilité Apple Pay = région + appareil + compte MoonPay merchant  
-- Pas de webhook secret en front (serveur pour ORDER_COMPLETED)  
-- $TRO : on-ramp en **EGLD** puis swap (xExchange) tant que MoonPay ne liste pas TRO  
+Widget hors iframe (`window.open`) — requis pour wallet pays MoonPay.

@@ -4,6 +4,7 @@ import {
   openMoonpayBuy,
   isMoonpayLive,
   maySupportApplePay,
+  maySupportGooglePay,
   MOONPAY_DEFAULT_WALLET,
   type MoonpayPaymentMethod,
 } from '../../lib/moonpay'
@@ -21,10 +22,7 @@ export type FiatOnRampModalProps = {
   walletAddress?: string
 }
 
-/**
- * Fiat on-ramp — Apple Pay / Google Pay / card via MoonPay hosted widget.
- * Native Apple Pay merchant ID is NOT used on GH Pages (requires Apple Pay JS + backend).
- */
+/** Fiat on-ramp — Google Pay + Apple Pay + card via MoonPay hosted. */
 export default function FiatOnRampModal({
   isOpen,
   onClose,
@@ -84,7 +82,7 @@ export default function FiatOnRampModal({
         className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-zinc-900 shadow-2xl animate-fade-in"
         onClick={e => e.stopPropagation()}
       >
-        <div className="relative h-20 bg-gradient-to-br from-zinc-100/10 to-purple-600/20 flex items-center justify-center">
+        <div className="relative h-20 bg-gradient-to-br from-blue-500/15 via-zinc-100/5 to-purple-600/20 flex items-center justify-center">
           <button
             type="button"
             onClick={onClose}
@@ -95,7 +93,7 @@ export default function FiatOnRampModal({
           </button>
           <div className="text-center">
             <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-300 font-bold">
-              Apple Pay · Google Pay · Card
+              Google Pay · Apple Pay · Card
             </p>
             <h2 id="onramp-title" className="text-lg font-bold text-white">
               On-Ramp → {currency}
@@ -132,27 +130,61 @@ export default function FiatOnRampModal({
 
           {step === 'ready' && (
             <>
-              <button
-                type="button"
-                onClick={() => launch('apple_pay')}
-                className="w-full py-3.5 rounded-2xl bg-black border border-white/20 text-white font-semibold flex items-center justify-center gap-2 hover:bg-zinc-900 transition-colors"
-              >
-                <span className="text-lg" aria-hidden>
-                  
-                </span>
-                Payer avec Apple Pay
-              </button>
-              {maySupportApplePay() ? (
-                <p className="text-[10px] text-emerald-400/90 text-center">
-                  Appareil compatible détecté — finalisation dans MoonPay (Safari recommandé).
-                </p>
-              ) : (
-                <p className="text-[10px] text-zinc-500 text-center">
-                  Apple Pay web : Safari + carte liée. Sinon choisis Google Pay ou carte.
-                </p>
-              )}
+              <div className="grid grid-cols-1 gap-2">
+                <button
+                  type="button"
+                  onClick={() => launch('google_pay')}
+                  className="w-full py-3.5 rounded-2xl bg-white text-zinc-900 font-semibold flex items-center justify-center gap-2 hover:bg-zinc-100 transition-colors border border-white/10"
+                >
+                  <span
+                    className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white border border-zinc-200 text-[11px] font-black text-[#4285F4]"
+                    aria-hidden
+                  >
+                    G
+                  </span>
+                  Payer avec Google Pay
+                </button>
+                {maySupportGooglePay() ? (
+                  <p className="text-[10px] text-emerald-400/90 text-center">
+                    Navigateur compatible détecté — finalisation dans MoonPay.
+                  </p>
+                ) : (
+                  <p className="text-[10px] text-zinc-500 text-center">
+                    Google Pay : Chrome / Android + moyen de paiement Google.
+                  </p>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => launch('apple_pay')}
+                  className="w-full py-3.5 rounded-2xl bg-black border border-white/20 text-white font-semibold flex items-center justify-center gap-2 hover:bg-zinc-900 transition-colors"
+                >
+                  <span className="text-lg" aria-hidden>
+                    
+                  </span>
+                  Payer avec Apple Pay
+                </button>
+                {maySupportApplePay() ? (
+                  <p className="text-[10px] text-emerald-400/90 text-center">
+                    Appareil compatible — Safari recommandé.
+                  </p>
+                ) : (
+                  <p className="text-[10px] text-zinc-500 text-center">
+                    Apple Pay web : Safari + carte dans Apple Wallet.
+                  </p>
+                )}
+              </div>
 
               <ExpressPaymentOptions onSelect={onExpress} />
+
+              <MoonpayButton
+                walletAddress={recipient}
+                currencyCode={currency}
+                baseCurrencyAmount={amount}
+                paymentMethod="credit_debit_card"
+                label="Payer par carte (MoonPay)"
+                className="w-full rounded-2xl border border-white/10 bg-white/5 py-3 text-sm font-semibold text-white hover:bg-white/10"
+              />
 
               <MoonpayButton
                 walletAddress={recipient}
@@ -187,7 +219,7 @@ export default function FiatOnRampModal({
               <p className="text-3xl">✓</p>
               <h3 className="text-xl font-bold text-white">Demo OK</h3>
               <p className="text-sm text-zinc-400">
-                Aucun débit réel. Pour payer vraiment, utilise Apple Pay / MoonPay ci-dessus.
+                Aucun débit réel. Pour payer vraiment, utilise Google Pay / Apple Pay / MoonPay.
               </p>
               <button type="button" className="btn-primary text-sm" onClick={onClose}>
                 Fermer
@@ -197,7 +229,7 @@ export default function FiatOnRampModal({
         </div>
 
         <div className="px-6 py-3 bg-black/30 text-center text-[10px] text-zinc-500 uppercase tracking-widest">
-          Apple Pay via MoonPay · pas d’iframe · pas de secret en front
+          Google Pay + Apple Pay via MoonPay · pas d’iframe · pas de secret en front
         </div>
       </div>
     </div>

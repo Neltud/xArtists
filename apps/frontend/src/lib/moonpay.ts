@@ -1,7 +1,7 @@
 /**
  * MoonPay hosted on-ramp helpers.
- * Apple Pay: paymentMethod=apple_pay (Safari / device with Apple Pay).
- * Widget must NOT run in a sandboxed iframe for Apple Pay — we use window.open.
+ * Apple Pay / Google Pay: paymentMethod=apple_pay | google_pay
+ * Do not embed widget in sandboxed iframe for wallet pays — use window.open.
  * @see https://dev.moonpay.com/widget/on-ramp/customization/parameters
  */
 
@@ -68,11 +68,10 @@ export function buildMoonpayBuyUrl(opts: BuildMoonpayUrlOpts): string {
 }
 
 export function openMoonpayBuy(opts: BuildMoonpayUrlOpts): void {
-  const url = buildMoonpayBuyUrl(opts)
-  window.open(url, '_blank', 'noopener,noreferrer')
+  window.open(buildMoonpayBuyUrl(opts), '_blank', 'noopener,noreferrer')
 }
 
-/** Client hint only — MoonPay + Apple decide final availability. */
+/** Safari / iOS-ish hint only. */
 export function maySupportApplePay(): boolean {
   if (typeof window === 'undefined') return false
   const ua = navigator.userAgent || ''
@@ -80,6 +79,14 @@ export function maySupportApplePay(): boolean {
   const isSafari =
     /Safari/.test(ua) && !/Chrome|Chromium|Edg|Firefox|Android/.test(ua)
   return isAppleDevice && (isSafari || /iPhone|iPad|iPod/.test(ua))
+}
+
+/** Chrome / Android hint for Google Pay. */
+export function maySupportGooglePay(): boolean {
+  if (typeof window === 'undefined') return false
+  const ua = navigator.userAgent || ''
+  if (/iPhone|iPad|iPod/.test(ua) && !/CriOS/.test(ua)) return false
+  return /Chrome|Chromium|Edg|SamsungBrowser|Android/.test(ua)
 }
 
 export { DEFAULT_WALLET as MOONPAY_DEFAULT_WALLET }

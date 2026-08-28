@@ -11,15 +11,10 @@ interface MoonpayButtonProps {
   currencyCode?: string
   label?: string
   className?: string
-  /** Pre-select Apple Pay / Google Pay / card in MoonPay widget */
   paymentMethod?: MoonpayPaymentMethod
   baseCurrencyAmount?: string | number
 }
 
-/**
- * MoonPay hosted on-ramp (EGLD / crypto).
- * Apple Pay: pass paymentMethod="apple_pay" — works best in Safari; not in iframe.
- */
 export const MoonpayButton: React.FC<MoonpayButtonProps> = ({
   walletAddress = MOONPAY_DEFAULT_WALLET,
   currencyCode = 'EGLD',
@@ -68,7 +63,12 @@ export const MoonpayButton: React.FC<MoonpayButtonProps> = ({
         </>
       ) : (
         <>
-          {paymentMethod === 'apple_pay' ? '' : '💳'} {label || defaultLabel}
+          {paymentMethod === 'google_pay'
+            ? 'G'
+            : paymentMethod === 'apple_pay'
+              ? ''
+              : '💳'}{' '}
+          {label || defaultLabel}
           {!live && (
             <span className="text-[10px] font-normal opacity-80 ml-1">(staging)</span>
           )}
