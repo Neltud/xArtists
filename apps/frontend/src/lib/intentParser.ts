@@ -11,6 +11,7 @@ export type IntentAction =
   | 'VIEW_PACKS'
   | 'VIEW_VOYAGE'
   | 'VIEW_ENTITY'
+  | 'VIEW_LIGHTNING'
   | 'ONRAMP'
   | 'TIP'
   | 'STAKE'
@@ -37,6 +38,13 @@ const RULES: { re: RegExp; action: IntentAction; route: string; summary: string;
       route: '/agents/voyage',
       summary: 'Agent de Voyage — signaux travel / culture (paper)',
       conf: 0.92,
+    },
+    {
+      re: /\b(lightning|bitcoin|btc|sats|sato|l402|faucet)\b/i,
+      action: 'VIEW_LIGHTNING',
+      route: '/agents/lightning',
+      summary: 'Lightning Agent Wallet (BTC MCP — pas MultiversX)',
+      conf: 0.9,
     },
     {
       re: /\b(entité|entity|org|organisation|succursale)\b/i,
@@ -149,7 +157,7 @@ export function parseIntent(raw: string): StructuredIntent {
     raw: text,
     confidence: 0.2,
     route: '/',
-    summary: 'Intention non reconnue — essayer voyage, entity, trading, buy EGLD',
+    summary: 'Intention non reconnue — essayer voyage, lightning, entity, trading, buy EGLD',
     notes: 'Élargir les règles ou brancher LIA-Parser Vellum',
     paper: true,
   }
