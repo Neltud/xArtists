@@ -1,0 +1,6 @@
+{
+  "id": "lightning_mcp",
+  "status": "optional_ops_mcp",
+  "chain": "bitcoin_lightning",
+  "docs_url": "https://lightningfaucet.com/build/"
+}

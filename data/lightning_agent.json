@@ -1,0 +1,30 @@
+{
+  "id": "lightning_mcp",
+  "name": "Lightning Agent Wallet",
+  "provider": "Lightning Faucet",
+  "package": "lightning-wallet-mcp",
+  "updated": "2026-08-28T08:50:00Z",
+  "status": "optional_ops_mcp",
+  "chain": "bitcoin_lightning",
+  "not_multiversx": true,
+  "install": {
+    "mcp": "npx -y lightning-wallet-mcp",
+    "cli": "npm i -g lightning-wallet-mcp && lw register"
+  },
+  "docs_url": "https://lightningfaucet.com/build/",
+  "capabilities": [
+    "register_operator",
+    "balance",
+    "pay invoice / L402 API",
+    "create_invoice",
+    "withdraw self-custody (product feature)"
+  ],
+  "xartists_policy": {
+    "front": "docs_and_status_only",
+    "vellum": "optional MCP on ops host",
+    "live_flag": "LIGHTNING_AGENT_LIVE",
+    "budget_sats_day_suggested": 10000,
+    "segregate_from_mvx_ops": true
+  },
+  "pricing_note": "Platform fee ~2% on payments per Lightning Faucet public docs; free to start / promo sats may apply"
+}
