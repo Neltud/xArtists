@@ -12,6 +12,7 @@ import PackCheckout from '../components/PackCheckout'
 import PageGuide from '../components/PageGuide'
 import AgentsJourneyStrip from '../components/AgentsJourneyStrip'
 import LightningAgentPanel from '../components/LightningAgentPanel'
+import StripeCardBanner from '../components/StripeCardBanner'
 
 const LOCAL = `${import.meta.env.BASE_URL}data/greensmoke_forecasts.json`
 const RAW_PUBLIC =
@@ -68,7 +69,7 @@ export default function Agents() {
         <div>
           <h1 className="text-3xl font-black">Agents</h1>
           <p className="text-sm text-zinc-500 mt-1">
-            Packs IA Pulse · Yield · Sentinel · Lightning MCP ops · GSN
+            Packs IA · Stripe carte · Lightning MCP · GSN
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -84,6 +85,7 @@ export default function Agents() {
         </div>
       </header>
 
+      <StripeCardBanner />
       <LightningAgentPanel compact />
 
       <AgentsJourneyStrip />
@@ -102,8 +104,8 @@ export default function Agents() {
 
       <section className="card text-xs text-zinc-500">
         <p>
-          Packs = access NFT IA. <Link to="/tours" className="text-rose-300 underline">Tours artistiques</Link>{' '}
-          = service culturel (expos, visites) — pas un quatrième pack.
+          Cartes = Stripe (packs). On-ramp EGLD = MoonPay (Apple / Google Pay). Tours artistiques = service
+          culturel séparé.
         </p>
       </section>
     </div>
