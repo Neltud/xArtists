@@ -11,7 +11,6 @@ import RwaAssetsStrip from '../components/RwaAssetsStrip'
 import PackCheckout from '../components/PackCheckout'
 import PageGuide from '../components/PageGuide'
 import AgentsJourneyStrip from '../components/AgentsJourneyStrip'
-import VoyageAgentPanel from '../components/VoyageAgentPanel'
 import LightningAgentPanel from '../components/LightningAgentPanel'
 
 const LOCAL = `${import.meta.env.BASE_URL}data/greensmoke_forecasts.json`
@@ -20,35 +19,13 @@ const RAW_PUBLIC =
 const RAW_DATA =
   'https://raw.githubusercontent.com/Neltud/xArtists/main/data/greensmoke_forecasts.json'
 
-interface Forecast {
-  asset: string
-  direction: string
-  target_usd?: number | null
-  current_ref?: number | null
-  confidence: number
-  horizon?: string
-  rationale?: string
-  signal: string
-}
-
 interface GsAgent {
   id: string
   name: string
   domain?: string
-  domain_fr?: string
-  platform?: string
-  role?: string
-  status?: string
-  on_chain_activity?: boolean
-  gsn_url?: string
-  last_run?: string
-  confidence_avg?: number
   confidence?: number
   accuracy?: number
-  bias?: string
-  horizon?: string
-  forecasts?: Forecast[]
-  example_markets?: string[]
+  forecasts?: unknown[]
 }
 
 export default function Agents() {
@@ -58,17 +35,12 @@ export default function Agents() {
   useEffect(() => {
     let cancelled = false
     const load = async () => {
-      const urls = [LOCAL, RAW_PUBLIC, RAW_DATA]
-      for (const url of urls) {
+      for (const url of [LOCAL, RAW_PUBLIC, RAW_DATA]) {
         try {
           const r = await fetch(`${url}?t=${Date.now()}`, { cache: 'no-store' })
           if (!r.ok) continue
           const j = await r.json()
-          const list = Array.isArray(j.agents)
-            ? j.agents
-            : Array.isArray(j)
-              ? j
-              : []
+          const list = Array.isArray(j.agents) ? j.agents : Array.isArray(j) ? j : []
           if (!cancelled) {
             setAgents(list)
             setErr(null)
@@ -96,12 +68,12 @@ export default function Agents() {
         <div>
           <h1 className="text-3xl font-black">Agents</h1>
           <p className="text-sm text-zinc-500 mt-1">
-            Packs MVX · Voyage · Lightning MCP · signaux GSN
+            Packs IA Pulse · Yield · Sentinel · Lightning MCP ops · GSN
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link to="/agents/voyage" className="btn-secondary text-xs py-2 px-3">
-            Voyage
+          <Link to="/tours" className="btn-secondary text-xs py-2 px-3">
+            Tours artistiques
           </Link>
           <Link to="/agents/lightning" className="btn-secondary text-xs py-2 px-3">
             Lightning
@@ -113,7 +85,6 @@ export default function Agents() {
       </header>
 
       <LightningAgentPanel compact />
-      <VoyageAgentPanel compact />
 
       <AgentsJourneyStrip />
       <AgentPackJourney />
@@ -131,8 +102,8 @@ export default function Agents() {
 
       <section className="card text-xs text-zinc-500">
         <p>
-          GSN = signaux externes pour LIA (seuil ≥80 % en fusion). Les packs xArtists sont des access
-          NFT séparés — pas un produit GreenSmoke revendu.
+          Packs = access NFT IA. <Link to="/tours" className="text-rose-300 underline">Tours artistiques</Link>{' '}
+          = service culturel (expos, visites) — pas un quatrième pack.
         </p>
       </section>
     </div>

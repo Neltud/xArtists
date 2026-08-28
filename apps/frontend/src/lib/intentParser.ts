@@ -1,6 +1,5 @@
 /**
  * Lightweight intent parser (rules) — Sovereign LIA-Parser subset.
- * No remote LLM. Maps FR/EN phrases → structured intent + route.
  */
 
 export type IntentAction =
@@ -9,7 +8,7 @@ export type IntentAction =
   | 'VIEW_TRADING'
   | 'VIEW_WALLET'
   | 'VIEW_PACKS'
-  | 'VIEW_VOYAGE'
+  | 'VIEW_TOURS'
   | 'VIEW_ENTITY'
   | 'VIEW_LIGHTNING'
   | 'ONRAMP'
@@ -33,10 +32,10 @@ export type StructuredIntent = {
 const RULES: { re: RegExp; action: IntentAction; route: string; summary: string; conf: number }[] =
   [
     {
-      re: /\b(voyage|travel|touris|destination|hospitalit|séjour|sejour)\b/i,
-      action: 'VIEW_VOYAGE',
-      route: '/agents/voyage',
-      summary: 'Agent de Voyage — signaux travel / culture (paper)',
+      re: /\b(tour|tours|expo|exposition|galerie|museum|musée|visite|art\s*tour|voyage)\b/i,
+      action: 'VIEW_TOURS',
+      route: '/tours',
+      summary: 'Tours artistiques — visites & expos (pas un pack IA)',
       conf: 0.92,
     },
     {
@@ -57,21 +56,21 @@ const RULES: { re: RegExp; action: IntentAction; route: string; summary: string;
       re: /\b(moonpay|on-?ramp|fiat|carte bancaire|google pay|apple pay)\b/i,
       action: 'ONRAMP',
       route: '/',
-      summary: 'On-ramp fiat (MoonPay / demo) — ouvrir ⌘K buy',
+      summary: 'On-ramp fiat (MoonPay / demo)',
       conf: 0.88,
     },
     {
       re: /\b(agent|pack|oracle|sentinel|pulse|yield)\b/i,
       action: 'BUY_AGENT',
       route: '/agents',
-      summary: 'Ouvrir le catalogue Agents / packs',
+      summary: 'Packs IA : Pulse · Yield · Sentinel',
       conf: 0.85,
     },
     {
       re: /\b(nft|œuvre|oeuvre|marketplace|acheter.*(art|nft))\b/i,
       action: 'BUY_NFT',
       route: '/marketplace',
-      summary: 'Marketplace NFT (SC soon — preview only)',
+      summary: 'Marketplace NFT (SC soon)',
       conf: 0.8,
     },
     {
@@ -106,7 +105,7 @@ const RULES: { re: RegExp; action: IntentAction; route: string; summary: string;
       re: /\b(stake|staking)\b/i,
       action: 'STAKE',
       route: '/staking',
-      summary: 'Staking (SC selon déploiement)',
+      summary: 'Staking',
       conf: 0.8,
     },
     {
@@ -157,7 +156,7 @@ export function parseIntent(raw: string): StructuredIntent {
     raw: text,
     confidence: 0.2,
     route: '/',
-    summary: 'Intention non reconnue — essayer voyage, lightning, entity, trading, buy EGLD',
+    summary: 'Intention non reconnue — tours, lightning, entity, trading, buy EGLD',
     notes: 'Élargir les règles ou brancher LIA-Parser Vellum',
     paper: true,
   }

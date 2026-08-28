@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
 import SignalTicker from './components/SignalTicker'
@@ -32,7 +32,7 @@ const TroPage = lazy(() => import('./pages/TroPage'))
 const StakingPage = lazy(() => import('./pages/StakingPage'))
 const SoulTestnetPage = lazy(() => import('./pages/SoulTestnetPage'))
 const AgentsPolyliaPage = lazy(() => import('./pages/AgentsPolyliaPage'))
-const VoyageAgentPage = lazy(() => import('./pages/VoyageAgentPage'))
+const ArtToursPage = lazy(() => import('./pages/ArtToursPage'))
 const LightningAgentPage = lazy(() => import('./pages/LightningAgentPage'))
 const BurnifyPage = lazy(() => import('./pages/BurnifyPage'))
 const ArtistStudio = lazy(() => import('./pages/ArtistStudio'))
@@ -47,7 +47,6 @@ const TX_PATHS = new Set([
   '/studio',
   '/agents',
   '/agents/polylia',
-  '/agents/voyage',
   '/my-packs',
   '/tip',
   '/wallet',
@@ -115,7 +114,8 @@ export default function App() {
                 <Route path="/agents" element={<Agents />} />
                 <Route path="/my-packs" element={<MyPacks />} />
                 <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
-                <Route path="/agents/voyage" element={<VoyageAgentPage />} />
+                <Route path="/tours" element={<ArtToursPage />} />
+                <Route path="/agents/voyage" element={<Navigate to="/tours" replace />} />
                 <Route path="/agents/lightning" element={<LightningAgentPage />} />
                 <Route path="/tro" element={<TroPage />} />
                 <Route path="/staking" element={<StakingPage />} />
@@ -156,8 +156,8 @@ export default function App() {
             <a href="/xArtists/#/entity" className="hover:text-white">
               Entité
             </a>
-            <a href="/xArtists/#/agents/voyage" className="hover:text-white">
-              Voyage
+            <a href="/xArtists/#/tours" className="hover:text-white">
+              Tours
             </a>
             <a href="/xArtists/#/agents/lightning" className="hover:text-white">
               Lightning

@@ -23,21 +23,22 @@ export const LINKS = {
   xoxno: 'https://xoxno.com',
   xoxnoCollection: (c: string) => `https://xoxno.com/collection/${c}`,
   greensmokeAgents: 'https://app.greensmoke.network/agents',
+  lightningFaucetBuild: 'https://lightningfaucet.com/build/',
   troToken: 'TRO-94c925',
   treasuryPolicy:
     'https://github.com/Neltud/xArtists/blob/main/docs/TREASURY_POLICY.md',
 } as const
 
-/** Primary desktop nav — core product paths */
+/** Primary desktop nav */
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/', label: 'Home', emoji: '📊' },
   { to: '/entity', label: 'Entité', emoji: '🏛️' },
   { to: '/sim', label: 'Sim Lab', emoji: '🧪' },
   { to: '/studio', label: 'Studio', emoji: '🎨' },
   { to: '/gallery', label: 'Galerie', emoji: '🖼️' },
+  { to: '/tours', label: 'Tours', emoji: '🗺️' },
   { to: '/marketplace', label: 'Market', emoji: '🛒' },
   { to: '/agents', label: 'Agents', emoji: '🧠' },
-  { to: '/agents/voyage', label: 'Voyage', emoji: '✈️' },
   { to: '/my-packs', label: 'My Packs', emoji: '🎫' },
   { to: '/trading', label: 'Trading', emoji: '⚡' },
   { to: '/portfolio', label: 'LIA', emoji: '📈' },
@@ -47,6 +48,7 @@ export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
 ]
 
 export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
+  { to: '/agents/lightning', label: 'Lightning', emoji: '⚡' },
   { to: '/editions', label: 'Editions', emoji: '📰' },
   { to: '/hatom', label: 'Hatom', emoji: '🏦' },
   { to: '/lp', label: 'LP', emoji: '💧' },

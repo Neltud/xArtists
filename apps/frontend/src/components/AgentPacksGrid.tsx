@@ -8,22 +8,21 @@ export default function AgentPacksGrid() {
   return (
     <div>
       <p className="text-xs text-zinc-500 mb-3">
-        <strong className="text-zinc-300">Plus de signaux = plus cher</strong> —{' '}
-        {PACK_PRICING_POLICY.ranking}. LIA ajuste pour la marge (corridor{' '}
-        {PACK_PRICING_POLICY.corridor.min}–{PACK_PRICING_POLICY.corridor.max} €).
+        <strong className="text-zinc-300">Packs IA uniquement</strong> — Pulse · Yield · Sentinel.{' '}
+        {PACK_PRICING_POLICY.ranking}.{' '}
+        <Link to="/tours" className="text-rose-300 underline">
+          Tours artistiques
+        </Link>{' '}
+        = service culturel séparé.
         {!mintLive && (
-          <span className="text-amber-300/90"> Mint on-chain pending codeHash agents SC.</span>
+          <span className="text-amber-300/90"> Mint on-chain pending codeHash.</span>
         )}
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {AGENT_PACKS.map(p => (
           <article
             key={p.id}
-            className={`card flex flex-col ${
-              p.id === 'voyage'
-                ? 'border-amber-500/35 ring-1 ring-amber-500/15'
-                : 'border-purple-500/25'
-            }`}
+            className="card flex flex-col border-purple-500/25"
             aria-labelledby={`pack-${p.id}`}
           >
             <div className="flex items-start gap-3 mb-3">
@@ -42,32 +41,20 @@ export default function AgentPacksGrid() {
               <span className="text-xs font-normal text-zinc-500 ml-2">list</span>
             </p>
             <p className="text-[11px] text-amber-200/80 mb-2">
-              Intensité signaux {'●'.repeat(p.signalIntensity)}
+              Intensité {'●'.repeat(p.signalIntensity)}
               {'○'.repeat(3 - p.signalIntensity)}
             </p>
-            <p className="text-[11px] text-zinc-500 mb-2">
-              Corridor {p.priceEur.min}–{p.priceEur.max} € · {p.strategies.join(' · ')}
-            </p>
+            <p className="text-[11px] text-zinc-500 mb-2">{p.strategies.join(' · ')}</p>
             <p className="text-[11px] text-zinc-500 mb-3">{p.activity}</p>
             <ul className="text-xs text-zinc-300 space-y-1 mb-3 flex-1">
               {p.entitlements.map(e => (
                 <li key={e}>✓ {e}</li>
               ))}
             </ul>
-            <p className="text-[10px] text-zinc-600 border-t border-zinc-800 pt-2 mb-3">
-              Risque {p.risk} · droit produit · pas un fonds · pas GSN
-              {p.id === 'voyage' ? ' · agent de voyage v1 advisory' : ''}
-            </p>
             <div className="flex flex-wrap gap-2 mt-auto">
-              {p.id === 'voyage' ? (
-                <Link to="/agents/voyage" className="btn-primary text-xs py-2 px-3 flex-1 text-center">
-                  Ouvrir Voyage
-                </Link>
-              ) : (
-                <Link to="/my-packs" className="btn-secondary text-xs py-2 px-3 flex-1 text-center">
-                  My Packs
-                </Link>
-              )}
+              <Link to="/my-packs" className="btn-secondary text-xs py-2 px-3 flex-1 text-center">
+                My Packs
+              </Link>
               <Link to="/trading" className="btn-secondary text-xs py-2 px-3 text-center">
                 Board
               </Link>
