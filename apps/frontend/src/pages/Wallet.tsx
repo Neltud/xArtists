@@ -10,7 +10,7 @@ import { requestOpenConnect } from '../lib/walletEvents'
 
 export default function Wallet() {
   const { connected, address, shortAddress, method, canAttemptSign } = useWallet()
-  const account = useUserAccount()
+  const account = useUserAccount(connected ? address : null)
 
   return (
     <div className="animate-fade-in space-y-6 pb-10 max-w-xl">
@@ -32,9 +32,10 @@ export default function Wallet() {
           <p className="text-sm">
             EGLD ≈{' '}
             <span className="font-mono text-white">
-              {account?.egld != null ? String(account.egld) : '…'}
+              {account.loading ? '…' : account.balanceEgld.toFixed(4)}
             </span>
           </p>
+          {account.error && <p className="text-xs text-amber-400">{account.error}</p>}
           <p className="text-[11px] text-zinc-500">
             Session {method} · {shortAddress}
             {!canAttemptSign && ' · mode lecture seule'}
@@ -65,8 +66,8 @@ export default function Wallet() {
       )}
 
       <p className="text-[11px] text-zinc-600 leading-relaxed">
-        Après Web Wallet, tu reviens sur neltud.github.io avec <code className="text-zinc-400">?address=erd1…</code>{' '}
-        — la session est enregistrée. Signature TX = provider sdk-dapp / extension selon méthode.
+        Après Web Wallet, retour sur neltud.github.io avec adresse en query — session stockée.
+        Signature TX selon provider (web / extension).
       </p>
     </div>
   )
