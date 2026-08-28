@@ -14,6 +14,7 @@ import AnnualYieldPanel from '../components/AnnualYieldPanel'
 import BrainCyclePanel from '../components/BrainCyclePanel'
 import PaperLegsPanel from '../components/PaperLegsPanel'
 import LiquidityPanel from '../components/LiquidityPanel'
+import RelayerPaperStrip from '../components/RelayerPaperStrip'
 import { LINKS } from '../config/links'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
@@ -98,6 +99,7 @@ export default function Trading() {
     <div className="animate-fade-in">
       <PageGuide page="trading" />
       <LiaVsUserBanner tone="protocol" />
+      <RelayerPaperStrip />
 
       <div className="mb-6">
         <h1 className="text-3xl font-black">⚡ Trading Terminal LIA</h1>
