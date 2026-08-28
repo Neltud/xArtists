@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "lightning-wallet": {
+      "command": "npx",
+      "args": ["-y", "lightning-wallet-mcp"],
+      "env": {
+        "LIGHTNING_WALLET_API_KEY": "${LIGHTNING_WALLET_API_KEY}"
+      }
+    }
+  }
+}

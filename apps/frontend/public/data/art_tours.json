@@ -1,0 +1,28 @@
+{
+  "id": "art_tours",
+  "name": "Tours artistiques xArtists",
+  "updated": "2026-08-28T08:00:00Z",
+  "kind": "cultural_service",
+  "not_an_ai_agent_pack": true,
+  "list_eur_from": 29,
+  "cities": [
+    { "id": "paris", "label": "Paris", "focus": "galeries · foires", "score": 0.88 },
+    { "id": "lisbon", "label": "Lisbonne", "focus": "contemporain · studios", "score": 0.8 },
+    { "id": "tokyo", "label": "Tokyo", "focus": "musées · digital art", "score": 0.82 },
+    { "id": "marrakech", "label": "Marrakech", "focus": "artisans · biennales", "score": 0.78 }
+  ],
+  "sample_tours": [
+    {
+      "id": "t-expo-week",
+      "title": "Week-end expos",
+      "duration": "2j",
+      "includes": ["2 visites guidées", "pass galerie", "livret"]
+    },
+    {
+      "id": "t-studio-day",
+      "title": "Journée studios",
+      "duration": "1j",
+      "includes": ["3 ateliers", "rencontre artiste"]
+    }
+  ]
+}

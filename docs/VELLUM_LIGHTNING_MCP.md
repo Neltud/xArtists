@@ -1,31 +1,84 @@
-# Vellum · Lightning MCP (optionnel)
+# Configurer Lightning MCP pour Vellum / LIA
 
-## Pourquoi
+Package : [`lightning-wallet-mcp`](https://www.npmjs.com/package/lightning-wallet-mcp)  
+Produit : [Lightning Faucet Build](https://lightningfaucet.com/build/)
 
-LIA peut payer des APIs L402 / recevoir des micro-paiements **Bitcoin Lightning** via [lightning-wallet-mcp](https://lightningfaucet.com/build/), **en parallèle** du rail MultiversX (NFT, $TRO, board).
+## 1. Hôte ops uniquement
 
-## Install hôte ops (pas le navigateur)
+Ne **jamais** embarquer le MCP dans le front GitHub Pages.  
+Exécution : machine Vellum / agent host (stdio MCP).
 
-```bash
-npx -y lightning-wallet-mcp
-# ou
-npm i -g lightning-wallet-mcp && lw register --name "LIA-xArtists"
+## 2. Config MCP (self-register)
+
+Fichier exemple repo : [`.mcp.json.example`](../.mcp.json.example)
+
+```json
+{
+  "mcpServers": {
+    "lightning-wallet": {
+      "command": "npx",
+      "args": ["-y", "lightning-wallet-mcp"]
+    }
+  }
+}
 ```
 
-MCP client config : voir `docs/LIGHTNING_AGENT_WALLET.md`.
+Puis demander à l’agent : *« Register a new Lightning Wallet operator account »*  
+→ tool `register_operator` → **sauvegarder `api_key` + `recovery_code` hors git**.
 
-## Flags
+## 3. Config avec clé déjà émise
+
+```json
+{
+  "mcpServers": {
+    "lightning-wallet": {
+      "command": "npx",
+      "args": ["-y", "lightning-wallet-mcp"],
+      "env": {
+        "LIGHTNING_WALLET_API_KEY": "lf_…"
+      }
+    }
+  }
+}
+```
+
+Env Vellum recommandé :
 
 ```text
-LIGHTNING_AGENT_LIVE=0   # défaut
-# =1 seulement après register + budget sats/jour + recovery hors git
+LIGHTNING_WALLET_API_KEY=…    # secret vault
+LIGHTNING_AGENT_LIVE=0        # 1 seulement après budget + tests
+LIGHTNING_BUDGET_SATS_DAY=10000
 ```
 
-## Isolation
+## 4. CLI parallèle
 
-- Wallet Lightning ≠ wallet EGLD LIA ops ≠ wallet utilisateur dApp
-- Pas de clé dans le repo GitHub Pages
+```bash
+npm i -g lightning-wallet-mcp
+export LIGHTNING_WALLET_API_KEY=$(lw register --name "LIA-xArtists" | jq -r '.api_key')
+lw balance
+# lw pay-api "https://lightningfaucet.com/api/l402/fortune"
+```
 
-## Front
+## 5. Outils utiles (extrait)
 
-UI status : `/#/agents/lightning`
+| Tool | Usage LIA |
+|------|-----------|
+| `register_operator` | Bootstrap ops |
+| `check_balance` | Garde-fou budget |
+| `pay_l402_api` / `lw pay-api` | APIs payantes micropaiement |
+| `create_invoice` | Encaisser un service agent |
+| `create_agent` / `fund_agent` | Sous-agents plafonnés |
+| `withdraw` | Sortie self-custody |
+
+## 6. Isolation xArtists
+
+| Wallet | Usage |
+|--------|--------|
+| MultiversX LIA ops | Deploy SC, gas EGLD, tips MVX |
+| Lightning operator | L402, micro-BTC, pas de $TRO |
+| User xPortal | NFT, packs Pulse/Yield/Sentinel |
+
+## 7. Front
+
+Statut UI : https://neltud.github.io/xArtists/#/agents/lightning  
+Pas de paiement Lightning depuis le navigateur utilisateur v1.
