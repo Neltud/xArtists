@@ -1,10 +1,11 @@
-# Status — 2026-08-28 · v2.9.9-sprint2
+# Status — 2026-08-28 · v2.10.0-ceo30
 
-| Sprint | State |
+| Pillar | State |
 |--------|--------|
-| 1 Ancrage | Doctrine + useLIA + MVX service |
-| 2 Métabolisme | liquidity + aggregator + quote IntentBar |
-| 3 Intelligence | Pending |
-| 4 Multichain | Pending |
-
-Live swaps : OFF · paper quotes ON
+| Tech S1–S2 | Modules in repo |
+| Safety Manifesto | docs/SAFETY_MANIFESTO.md |
+| Vellum kit | docs/VELLUM_INTEGRATION_KIT.md |
+| TRO economy spec | docs/TRO_ECONOMY_BURN_STAKE.md |
+| Doctrine audit | src/core/doctrine.audit.ts |
+| Live | OFF |
+| SC | Pending |
