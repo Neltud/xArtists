@@ -1,13 +1,13 @@
 import { NavLink } from 'react-router-dom'
 
+/** Mobile nav — 5 destinations max, labels métier clairs. */
 const ITEMS = [
-  { to: '/', label: 'Home', emoji: '📊', end: true },
-  { to: '/sim', label: 'Sim', emoji: '🧪' },
-  { to: '/marketplace', label: 'Market', emoji: '🛒' },
-  { to: '/agents', label: 'Agents', emoji: '🧠' },
-  { to: '/trading', label: 'Trade', emoji: '⚡' },
+  { to: '/', label: 'Home', emoji: '🏠', end: true },
+  { to: '/gallery', label: 'Art', emoji: '🖼️' },
+  { to: '/agents', label: 'Packs', emoji: '🧠' },
+  { to: '/trading', label: 'LIA', emoji: '⚡' },
   { to: '/wallet', label: 'Wallet', emoji: '👛' },
-]
+] as const
 
 export default function BottomNav() {
   return (
