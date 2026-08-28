@@ -1,30 +1,16 @@
-# Status — 2026-08-28 · v2.9.3-trinity
+# Status — 2026-08-28 · v2.9.4-ux
 
 | Item | State |
 |------|--------|
 | Pages | https://neltud.github.io/xArtists/ |
-| Demo | **GO_DEMO** |
-| Trinity packages | `packages/core-protocol` · `lia-intelligence` |
-| IntentBar | LIP + Guardian + states |
-| TerminalLog / Monitor | Event `lia-intent` |
-| Relayer | **Paper** (strip UI) |
-| Stripe packs | API / Payment Links env |
-| Apple/Google Pay | MoonPay `paymentMethod` |
-| SC market/agents | **Pending** codeHash |
+| UX | 4 chemins home · bottom nav clarifié |
+| Trinity | LIP + Guardian + Terminal |
+| Marketing | `docs/marketing/VIRAL_POSTING_KIT.md` |
+| ETH contracts | LIAToken · LIATROToken · GenesisSale · LIATestToken (ref) |
+| SC MVX market | **Pending** |
 | LIA live trading | **OFF** |
+| Verdict launch | **GO_DEMO** / commerce **NO-GO** |
 
-## Docs
+## P0
 
-- [OPERATION_TRINITY](OPERATION_TRINITY.md)
-- [TRINITY_FRONTEND_WIRE](TRINITY_FRONTEND_WIRE.md)
-- [WAR_ROOM_GRAFANA](WAR_ROOM_GRAFANA.md)
-- [STRIPE_CARDS](STRIPE_CARDS.md)
-- [APPLE_PAY_ONRAMP](APPLE_PAY_ONRAMP.md)
-
-## P0 ops
-
-1. Deploy marketplace + agents SC  
-2. codeHash verify  
-3. Fund LIA EGLD  
-4. Micro tip / List-Buy  
-5. Optional: VITE_ACCESS_API_BASE Stripe  
+Deploy SC MVX + codeHash · fund LIA EGLD · micro tip · Stripe API optionnel
