@@ -1,10 +1,10 @@
-# Status — 2026-08-28 · v3.0.0-core
+# Status — 2026-08-29 · v3.0.1-tx-monitor
 
 | Item | State |
 |------|--------|
-| Core v3 | doctrine · MVX service · intent · useLIA |
-| Fake TX timers | Removed from execute path |
-| Real balance / TX status | API MultiversX |
-| Live SWAP | Gated + needs signAndSend + DEX route |
-| Agents | Pulse·Yield·Sentinel only |
-| Tours | Separate service |
+| TransactionMonitor | API poll réel |
+| TxMonitorPanel | /trading |
+| MultiversXExecutionAdapter | No fake broadcast |
+| Vellum naming | Orchestration only |
+| Live trading | OFF |
+| Verdict | GO_DEMO · NO-GO volume |

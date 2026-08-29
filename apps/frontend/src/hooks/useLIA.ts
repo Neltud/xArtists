@@ -1,8 +1,8 @@
 /**
- * v3.0 — Orchestrateur UI → Doctrine → MultiversXService → statut on-chain.
+ * v3.0 — Orchestrateur UI → Doctrine → MultiversXService → TransactionMonitor.
  * Aucun setTimeout pour simuler une TX réussie.
  */
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import type {
   ExecutionResult,
   Intent,
@@ -12,6 +12,7 @@ import type {
 } from '../types/intent'
 import { validateIntent } from '../core/doctrine'
 import { multiversXService, type SignAndSendFn } from '../services/multiversXService'
+import { transactionMonitor, type TxNetwork } from '../services/transactionMonitor'
 
 function toIntentType(raw: string): IntentType {
   const s = raw.toLowerCase()
@@ -25,7 +26,6 @@ function toIntentType(raw: string): IntentType {
   return 'UNKNOWN'
 }
 
-/** Human → atomic EGLD 18 decimals (string only). */
 function extractAmountAtomic(raw: string, decimals = 18): string {
   const m = raw.match(/(\d+(?:[.,]\d+)?)/)
   if (!m) return '0'
@@ -56,7 +56,7 @@ export function parseNaturalToIntent(raw: string, opts?: { paper?: boolean }): I
       confidence: type === 'UNKNOWN' ? 0.3 : 0.8,
       slippageBps: 50,
       gasLimit: 60_000_000,
-      network: (import.meta.env.VITE_MX_NETWORK as 'mainnet' | 'devnet' | 'testnet') || 'mainnet',
+      network: (import.meta.env.VITE_MX_NETWORK as TxNetwork) || 'mainnet',
     },
     timestamp: new Date().toISOString(),
     id: `intent-${Date.now()}`,
@@ -68,56 +68,44 @@ export function useLIA() {
   const [lastValidation, setLastValidation] = useState<ValidationResult | null>(null)
   const [lastResult, setLastResult] = useState<ExecutionResult | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const pollRef = useRef<number | null>(null)
 
-  const stopPoll = useCallback(() => {
-    if (pollRef.current != null) {
-      window.clearInterval(pollRef.current)
-      pollRef.current = null
-    }
+  const watchTx = useCallback((hash: string, network: TxNetwork = 'mainnet', intentId?: string) => {
+    setLifecycle('pending')
+    transactionMonitor.watch(hash, {
+      network,
+      intentId,
+      onUpdate: tx => {
+        if (tx.status === 'success') {
+          setLifecycle('success')
+          setLastResult(prev =>
+            prev
+              ? {
+                  ...prev,
+                  lifecycle: 'success',
+                  message: `Confirmé on-chain — ${hash.slice(0, 12)}…`,
+                  stageError: null,
+                }
+              : prev
+          )
+        } else if (tx.status === 'fail') {
+          setLifecycle('error')
+          setError('TX échouée on-chain')
+          setLastResult(prev =>
+            prev
+              ? {
+                  ...prev,
+                  lifecycle: 'error',
+                  message: 'Confirmation : TX fail',
+                  stageError: 'CONFIRMATION',
+                }
+              : prev
+          )
+        } else if (tx.error) {
+          setError(tx.error)
+        }
+      },
+    })
   }, [])
-
-  /** Poll API réelle jusqu’à success/fail (pas un faux timer de succès). */
-  const watchTx = useCallback(
-    (hash: string) => {
-      stopPoll()
-      setLifecycle('pending')
-      let ticks = 0
-      pollRef.current = window.setInterval(() => {
-        ticks += 1
-        void multiversXService.monitorTransactionStatus(hash).then(st => {
-          if (st === 'success') {
-            stopPoll()
-            setLifecycle('success')
-            setLastResult(prev =>
-              prev
-                ? { ...prev, lifecycle: 'success', message: `Confirmé on-chain — ${hash.slice(0, 12)}…` }
-                : prev
-            )
-          } else if (st === 'fail') {
-            stopPoll()
-            setLifecycle('error')
-            setError('TX échouée on-chain')
-            setLastResult(prev =>
-              prev
-                ? {
-                    ...prev,
-                    lifecycle: 'error',
-                    message: 'Confirmation : TX fail',
-                    stageError: 'CONFIRMATION',
-                  }
-                : prev
-            )
-          } else if (ticks > 40) {
-            stopPoll()
-            setLifecycle('pending')
-            setError('Statut encore pending — vérifier explorer')
-          }
-        })
-      }, 3000)
-    },
-    [stopPoll]
-  )
 
   const runIntent = useCallback(
     async (intent: Intent, signAndSend?: SignAndSendFn) => {
@@ -141,9 +129,7 @@ export function useLIA() {
       setLifecycle('validated')
 
       const needSign =
-        intent.metadata?.paper === false &&
-        intent.metadata?.userConfirmedLive === true
-
+        intent.metadata?.paper === false && intent.metadata?.userConfirmedLive === true
       if (needSign) setLifecycle('pending_signature')
 
       const result = await multiversXService.executeIntent(intent, { signAndSend })
@@ -154,7 +140,8 @@ export function useLIA() {
         setError(result.message)
       }
       if (result.lifecycle === 'broadcast' && result.txHash) {
-        watchTx(result.txHash)
+        const net = (intent.metadata?.network as TxNetwork) || 'mainnet'
+        watchTx(result.txHash, net, intent.id)
       }
       return result
     },
@@ -173,6 +160,10 @@ export function useLIA() {
     return multiversXService.getRealBalance(address, assetId)
   }, [])
 
+  const monitorHash = useCallback((hash: string, network: TxNetwork = 'mainnet') => {
+    watchTx(hash, network)
+  }, [watchTx])
+
   return {
     lifecycle,
     lastValidation,
@@ -183,7 +174,8 @@ export function useLIA() {
     getBalance,
     validateIntent,
     parseNaturalToIntent,
+    monitorHash,
     service: multiversXService,
-    stopPoll,
+    transactionMonitor,
   }
 }
