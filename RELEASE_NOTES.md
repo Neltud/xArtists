@@ -1,30 +1,16 @@
-# xArtists v3.3.0
+# xArtists v3.4.1 — Demo release
 
-**Demo organized ship — 2026-08-29**
-
-## Highlights
-
-- Interactive **world art map** on Art Tours (`/#/tours`)
-- **Agents** page = NFT packs only (Pulse · Yield · Sentinel) — **no travel agent**
-- **On-chain TX monitoring** (MultiversX API) — no fake success hashes
-- **Core v3** : Doctrine → MultiversX service → useLIA lifecycle
-- Naming fixed : **Vellum = AI orchestration**, execution = MultiversX
+**Published:** 2026-08-29
 
 ## Demo
-
 https://neltud.github.io/xArtists/
 
-| Route | Purpose |
-|-------|---------|
-| `/#/tours` | Cultural art tours + map |
-| `/#/agents` | AI agent NFT packs |
-| `/#/trading` | LIA paper board + TX monitor |
-| `/#/wallet` | MultiversX Web wallet |
+## Highlights
+- Aurora Glass design system
+- Polished Home · Agents · Trading · Wallet · Art Tours
+- TX monitor · Art world map · packs-only Agents
 
-## Safety
+## Repo
+https://github.com/Neltud/xArtists
 
-Paper default · live gated · atomic amounts · Guardian doctrine
-
-**GO_DEMO** · **NO-GO** user funds volume until SC deploy + audit gates
-
-Full notes: `docs/RELEASE_v3.3.0.md`
+Tag: `v3.4.1`
