@@ -1,11 +1,30 @@
-## xArtists v1.0.0 Release Notes
+# xArtists v3.3.0
 
-**Date**: Juin 2026
+**Demo organized ship — 2026-08-29**
 
-### Highlights
-- Full xPortal integration (In-App Browser + xGenie AI)
-- On-chain monitoring & security workflows
-- Production-ready with E2E tests
-- Enhanced LIA Dashboard and RWA features
+## Highlights
 
-Voir README pour détails.
+- Interactive **world art map** on Art Tours (`/#/tours`)
+- **Agents** page = NFT packs only (Pulse · Yield · Sentinel) — **no travel agent**
+- **On-chain TX monitoring** (MultiversX API) — no fake success hashes
+- **Core v3** : Doctrine → MultiversX service → useLIA lifecycle
+- Naming fixed : **Vellum = AI orchestration**, execution = MultiversX
+
+## Demo
+
+https://neltud.github.io/xArtists/
+
+| Route | Purpose |
+|-------|---------|
+| `/#/tours` | Cultural art tours + map |
+| `/#/agents` | AI agent NFT packs |
+| `/#/trading` | LIA paper board + TX monitor |
+| `/#/wallet` | MultiversX Web wallet |
+
+## Safety
+
+Paper default · live gated · atomic amounts · Guardian doctrine
+
+**GO_DEMO** · **NO-GO** user funds volume until SC deploy + audit gates
+
+Full notes: `docs/RELEASE_v3.3.0.md`
