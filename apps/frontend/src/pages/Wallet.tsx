@@ -12,6 +12,13 @@ export default function Wallet() {
   const { connected, address, shortAddress, method, canAttemptSign } = useWallet()
   const account = useUserAccount(connected ? address : null)
 
+  const egldLabel =
+    account.loading || !connected
+      ? null
+      : Number.isFinite(account.balanceEgld)
+        ? account.balanceEgld.toLocaleString('en-US', { maximumFractionDigits: 6 })
+        : '—'
+
   return (
     <div className="animate-fade-in space-y-6 pb-10 max-w-xl">
       <PageGuide page="wallet" />
@@ -39,11 +46,7 @@ export default function Wallet() {
           <div className="card space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="mono text-sm text-white">{shortAddress}</span>
-              <span
-                className={
-                  method === 'paste_readonly' ? 'badge-orange' : 'badge-green'
-                }
-              >
+              <span className={method === 'paste_readonly' ? 'badge-orange' : 'badge-green'}>
                 {method === 'paste_readonly' ? 'lecture seule' : method || 'connecté'}
               </span>
             </div>
@@ -63,9 +66,12 @@ export default function Wallet() {
               <p className="text-rose-400 text-sm">{account.error}</p>
             ) : (
               <p className="display text-2xl text-white">
-                {account.egldHuman ?? '—'}
+                {egldLabel}
                 <span className="text-sm font-normal text-zinc-500 ml-2">EGLD</span>
               </p>
+            )}
+            {account.nftCount > 0 && (
+              <p className="text-xs text-zinc-500 mt-2">{account.nftCount} NFT</p>
             )}
           </div>
 
