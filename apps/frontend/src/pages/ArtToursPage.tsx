@@ -49,26 +49,24 @@ export default function ArtToursPage() {
     <div className="animate-fade-in space-y-6 pb-10">
       <PageGuide page="tours" />
 
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-rose-400/80">
-            Service culturel · pas un pack IA
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="space-y-2">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-rose-400/80 font-semibold">
+            Service culturel
           </p>
-          <h1 className="text-3xl font-black">Art Tours</h1>
-          <p className="text-sm text-zinc-500 mt-1">
-            Carte mondiale des lieux d’art · expos · parcours
-          </p>
+          <h1 className="display text-3xl sm:text-4xl">Art Tours</h1>
+          <p className="muted">Carte mondiale · expos · parcours — pas un pack IA</p>
         </div>
-        <Link to="/agents" className="btn-secondary text-xs py-2 px-3">
-          Packs IA (autre offre)
+        <Link to="/agents" className="btn-secondary text-xs">
+          Packs IA
         </Link>
       </header>
 
       <ToursScopeBanner />
 
-      <section aria-labelledby="map-title">
-        <h2 id="map-title" className="text-lg font-bold text-white mb-2">
-          Carte mondiale interactive
+      <section aria-labelledby="map-title" className="space-y-3">
+        <h2 id="map-title" className="display text-lg">
+          Carte mondiale
         </h2>
         <ArtWorldMap />
       </section>
@@ -78,7 +76,7 @@ export default function ArtToursPage() {
           <div className="card space-y-2 text-sm text-zinc-300">
             {doc.name && <p className="font-bold text-white">{doc.name}</p>}
             {doc.list_eur_from != null && (
-              <p className="text-zinc-400">À partir de {doc.list_eur_from} €</p>
+              <p className="text-zinc-500 text-xs">À partir de {doc.list_eur_from} €</p>
             )}
             {Array.isArray(doc.scope_v1) && (
               <ul className="list-disc pl-5 text-zinc-400 text-xs space-y-1">
@@ -88,9 +86,9 @@ export default function ArtToursPage() {
               </ul>
             )}
             {Array.isArray(doc.not_v1) && (
-              <div className="pt-2 border-t border-white/5">
+              <div className="pt-2 divider">
                 <p className="text-[10px] uppercase text-zinc-600 mb-1">Hors scope</p>
-                <ul className="list-disc pl-5 text-zinc-500 text-xs">
+                <ul className="list-disc pl-5 text-zinc-500 text-xs space-y-0.5">
                   {doc.not_v1.map(s => (
                     <li key={s}>{s}</li>
                   ))}
@@ -101,10 +99,10 @@ export default function ArtToursPage() {
 
           {Array.isArray(doc.sample_tours) && doc.sample_tours.length > 0 && (
             <div className="card space-y-2">
-              <p className="text-xs uppercase text-zinc-500">Exemples de parcours</p>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500">Parcours exemples</p>
               <ul className="space-y-2">
                 {doc.sample_tours.map(t => (
-                  <li key={t.id} className="border-b border-white/5 pb-2">
+                  <li key={t.id} className="border-b border-white/[0.05] pb-2 last:border-0">
                     <span className="text-white font-medium text-sm">{t.title}</span>
                     {t.duration && (
                       <span className="text-zinc-500 text-xs ml-2">{t.duration}</span>
@@ -121,11 +119,10 @@ export default function ArtToursPage() {
       )}
 
       <p className="text-[11px] text-zinc-600">
-        Les packs Agents (Pulse · Yield · Sentinel) sont sur{' '}
+        Packs Agents →{' '}
         <Link to="/agents" className="text-violet-300 underline">
           /agents
         </Link>
-        . Art Tours n’est pas un travel agent ni un NFT pack IA.
       </p>
     </div>
   )

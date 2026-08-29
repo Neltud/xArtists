@@ -38,37 +38,43 @@ export default function Trading() {
     <div className="animate-fade-in space-y-6 pb-10">
       <PageGuide page="trading" />
 
-      <header>
-        <h1 className="text-3xl font-black">Trading · LIA</h1>
-        <p className="text-sm text-zinc-500 mt-1">
-          Board protocole paper · monitoring TX on-chain quand broadcast
+      <header className="space-y-2">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-violet-400/80 font-semibold">
+          LIA desk
         </p>
+        <h1 className="display text-3xl sm:text-4xl">Trading</h1>
+        <p className="muted">Board protocole paper · monitoring TX si broadcast</p>
       </header>
 
       <GuardianStatusPanel />
 
-      <div className="card space-y-3">
-        <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-          Intention (paper via Doctrine)
+      <div className="card space-y-3 !border-violet-500/15">
+        <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+          Intention (paper · Doctrine)
         </p>
         <div className="flex flex-wrap gap-2">
           <input
             value={cmd}
             onChange={e => setCmd(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && void run()}
-            placeholder='ex: swap 1 EGLD USDC · solde'
-            className="flex-1 min-w-[200px] rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
+            placeholder="ex: swap 1 EGLD USDC · solde"
+            className="input-field flex-1 min-w-[200px]"
           />
-          <button type="button" className="btn-primary text-sm" disabled={busy} onClick={() => void run()}>
+          <button
+            type="button"
+            className="btn-primary text-sm"
+            disabled={busy}
+            onClick={() => void run()}
+          >
             {busy ? '…' : 'Valider'}
           </button>
         </div>
         <p className="text-[11px] text-zinc-500">
-          Lifecycle: <span className="text-cyan-300">{lifecycle}</span>
+          Lifecycle: <span className="text-cyan-300 mono">{lifecycle}</span>
           {error && <span className="text-rose-400 ml-2">{error}</span>}
         </p>
         {lastResult && (
-          <p className="text-[11px] text-zinc-400 font-mono">{lastResult.message}</p>
+          <p className="text-[11px] text-zinc-400 mono break-all">{lastResult.message}</p>
         )}
       </div>
 

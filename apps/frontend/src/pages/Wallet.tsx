@@ -16,59 +16,74 @@ export default function Wallet() {
     <div className="animate-fade-in space-y-6 pb-10 max-w-xl">
       <PageGuide page="wallet" />
 
-      <header>
-        <h1 className="text-3xl font-black">Wallet</h1>
-        <p className="text-sm text-zinc-500 mt-1">
-          Ton compte MultiversX · pas le wallet LIA protocole
+      <header className="space-y-2">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-400/80 font-semibold">
+          Compte
         </p>
+        <h1 className="display text-3xl sm:text-4xl">Wallet</h1>
+        <p className="muted">Ton compte MultiversX · jamais le wallet protocole LIA</p>
       </header>
 
-      <WalletConnectPanel />
+      {!connected ? (
+        <div className="card space-y-4">
+          <p className="text-sm text-zinc-400">
+            Connecte Web Wallet, xPortal ou extension pour voir les soldes et signer.
+          </p>
+          <button type="button" className="btn-primary w-full sm:w-auto" onClick={() => requestOpenConnect()}>
+            Connecter
+          </button>
+          <WalletConnectPanel />
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="card space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="mono text-sm text-white">{shortAddress}</span>
+              <span
+                className={
+                  method === 'paste_readonly' ? 'badge-orange' : 'badge-green'
+                }
+              >
+                {method === 'paste_readonly' ? 'lecture seule' : method || 'connecté'}
+              </span>
+            </div>
+            <p className="mono text-[10px] text-zinc-600 break-all">{address}</p>
+            {canAttemptSign === false && (
+              <p className="text-xs text-amber-400/90">
+                Mode lecture seule — reconnecte via Web Wallet pour signer.
+              </p>
+            )}
+          </div>
 
-      {connected && (
-        <div className="card space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Compte</p>
-          <p className="font-mono text-xs break-all text-zinc-300">{address}</p>
-          <p className="text-sm">
-            EGLD ≈{' '}
-            <span className="font-mono text-white">
-              {account.loading ? '…' : account.balanceEgld.toFixed(4)}
-            </span>
-          </p>
-          {account.error && <p className="text-xs text-amber-400">{account.error}</p>}
-          <p className="text-[11px] text-zinc-500">
-            Session {method} · {shortAddress}
-            {!canAttemptSign && ' · mode lecture seule'}
-          </p>
-          <div className="flex flex-wrap gap-2 text-xs">
-            <Link to="/tip" className="btn-primary py-1.5 px-3">
-              Tip
+          <div className="card">
+            <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Solde EGLD</p>
+            {account.loading ? (
+              <p className="text-zinc-500 text-sm">Chargement…</p>
+            ) : account.error ? (
+              <p className="text-rose-400 text-sm">{account.error}</p>
+            ) : (
+              <p className="display text-2xl text-white">
+                {account.egldHuman ?? '—'}
+                <span className="text-sm font-normal text-zinc-500 ml-2">EGLD</span>
+              </p>
+            )}
+          </div>
+
+          <WalletConnectPanel />
+
+          <div className="flex flex-wrap gap-2">
+            <Link to="/marketplace" className="btn-secondary text-xs">
+              Marketplace
             </Link>
-            <Link to="/agents" className="btn-secondary py-1.5 px-3">
+            <Link to="/agents" className="btn-secondary text-xs">
               Packs
             </Link>
-            <a
-              href={`https://explorer.multiversx.com/accounts/${address}`}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-secondary py-1.5 px-3"
-            >
-              Explorer
-            </a>
+            <Link to="/tip" className="btn-secondary text-xs">
+              Tip
+            </Link>
           </div>
         </div>
       )}
-
-      {!connected && (
-        <button type="button" className="text-xs text-cyan-400 underline" onClick={requestOpenConnect}>
-          Ouvrir aussi le modal header
-        </button>
-      )}
-
-      <p className="text-[11px] text-zinc-600 leading-relaxed">
-        Après Web Wallet, retour sur neltud.github.io avec adresse en query — session stockée.
-        Signature TX selon provider (web / extension).
-      </p>
     </div>
   )
 }

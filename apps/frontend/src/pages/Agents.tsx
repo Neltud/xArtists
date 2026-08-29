@@ -67,19 +67,20 @@ export default function Agents() {
     <div className="animate-fade-in space-y-6 pb-10">
       <PageGuide page="agents" />
 
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-3xl font-black">Packs Agents NFT</h1>
-          <p className="text-sm text-zinc-500 mt-1">
-            Pulse · Yield · Sentinel uniquement — pas de travel agent
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="space-y-2">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-violet-400/80 font-semibold">
+            NFT packs
           </p>
+          <h1 className="display text-3xl sm:text-4xl">Agents</h1>
+          <p className="muted">Pulse · Yield · Sentinel — pas de travel agent</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link to="/my-packs" className="btn-primary text-xs py-2 px-3">
+          <Link to="/my-packs" className="btn-primary text-xs">
             My Packs
           </Link>
-          <Link to="/tours" className="btn-secondary text-xs py-2 px-3">
-            Art Tours (service séparé)
+          <Link to="/tours" className="btn-secondary text-xs">
+            Art Tours
           </Link>
         </div>
       </header>
@@ -98,7 +99,7 @@ export default function Agents() {
       <CreateSubAgentForm />
 
       <section className="card">
-        <h2 className="text-lg font-bold mb-2">GSN · prédiction</h2>
+        <h2 className="display text-lg mb-1">GSN · prédiction</h2>
         <p className="text-xs text-zinc-500 mb-3">
           Signaux externes — indépendant des packs NFT et d’Art Tours.
         </p>
