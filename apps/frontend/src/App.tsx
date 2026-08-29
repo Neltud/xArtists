@@ -66,7 +66,7 @@ function StaleDataBanner({
   if (!isStale) return null
   return (
     <div
-      className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-2 text-center text-xs text-amber-100"
+      className="bg-amber-500/10 border-b border-amber-500/25 px-4 py-2 text-center text-xs text-amber-100"
       role="status"
     >
       Données potentiellement périmées —{' '}
@@ -93,13 +93,13 @@ export default function App() {
   const { isStale, lastUpdate } = useMultiversX()
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f] text-white pb-20 md:pb-10">
+    <div className="app-shell pb-20 md:pb-8">
       <DemoModeBanner />
       <PrivateReleaseStrip />
       <GuardianStatusBar />
       <Header />
       <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-4">
+      <main className="flex-1 page-wrap py-5 sm:py-8">
         <ErrorBoundary>
           <TxGate>
             <Suspense fallback={<PageLoader />}>
@@ -135,9 +135,9 @@ export default function App() {
                 <Route
                   path="*"
                   element={
-                    <div className="text-center py-20">
-                      <h2 className="text-2xl font-bold mb-2">Page introuvable</h2>
-                      <a href="/xArtists/#/" className="text-purple-400 text-sm">
+                    <div className="text-center py-24 space-y-3">
+                      <h2 className="display text-2xl">Page introuvable</h2>
+                      <a href="/xArtists/#/" className="text-cyan-400 text-sm hover:underline">
                         Retour accueil →
                       </a>
                     </div>
@@ -148,29 +148,39 @@ export default function App() {
           </TxGate>
         </ErrorBoundary>
       </main>
-      <footer className="border-t border-[#2a2a3a] mt-8 py-6 hidden md:block mb-8">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <footer className="border-t border-white/[0.06] mt-auto py-8 hidden md:block">
+        <div className="page-wrap flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <p className="font-bold">xArtists — LIA v6</p>
-            <p className="text-xs text-gray-500">Hash routes · paper + live reads</p>
+            <p className="display text-sm text-white">xArtists</p>
+            <p className="text-[11px] text-zinc-600 mt-0.5">Aurora · paper-first · MultiversX</p>
           </div>
-          <div className="flex gap-4 text-sm text-gray-500">
-            <a href="/xArtists/#/sitemap" className="hover:text-white">
+          <div className="flex flex-wrap justify-center gap-4 text-xs text-zinc-500">
+            <a href="/xArtists/#/sitemap" className="hover:text-cyan-300 transition-colors">
               Plan
             </a>
-            <a href="/xArtists/#/entity" className="hover:text-white">
+            <a href="/xArtists/#/entity" className="hover:text-cyan-300 transition-colors">
               Entité
             </a>
-            <a href="/xArtists/#/tours" className="hover:text-white">
+            <a href="/xArtists/#/tours" className="hover:text-cyan-300 transition-colors">
               Tours
             </a>
-            <a href="/xArtists/#/agents" className="hover:text-white">
+            <a href="/xArtists/#/agents" className="hover:text-cyan-300 transition-colors">
               Packs
             </a>
-            <a href={LINKS.github} target="_blank" rel="noreferrer" className="hover:text-white">
+            <a
+              href={LINKS.github}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-cyan-300 transition-colors"
+            >
               GitHub
             </a>
-            <a href={LINKS.explorer} target="_blank" rel="noreferrer" className="hover:text-white">
+            <a
+              href={LINKS.explorer}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-cyan-300 transition-colors"
+            >
               Explorer
             </a>
           </div>
