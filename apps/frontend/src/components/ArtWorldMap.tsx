@@ -1,5 +1,6 @@
 /**
- * Carte mondiale interactive — zoom/pan · destinations artistiques · expos live.
+ * Carte mondiale RÉELLE — Leaflet + tuiles Carto Dark.
+ * Zoom/pan natifs · 72 destinations · expos live.
  * Service culturel Tours (≠ pack IA).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -21,15 +22,14 @@ export type ArtLocation = {
   region?: string
 }
 
-const W = 960
-const H = 480
-const MIN_ZOOM = 1
-const MAX_ZOOM = 6
+/** Minimal Leaflet typings (CDN load — no npm @types/leaflet required). */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LeafletNS = any
 
-function project(lat: number, lng: number): { x: number; y: number } {
-  const x = ((lng + 180) / 360) * W
-  const y = ((90 - lat) / 180) * H
-  return { x, y }
+declare global {
+  interface Window {
+    L?: LeafletNS
+  }
 }
 
 function statusBadge(status: string): string {
@@ -38,25 +38,41 @@ function statusBadge(status: string): string {
   return 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'
 }
 
-type View = { scale: number; tx: number; ty: number }
+const LEAFLET_CSS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+const LEAFLET_JS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
 
-function clampView(v: View): View {
-  const scale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, v.scale))
-  const maxTx = 0
-  const minTx = W * (1 - scale)
-  const maxTy = 0
-  const minTy = H * (1 - scale)
-  return {
-    scale,
-    tx: Math.min(maxTx, Math.max(minTx, v.tx)),
-    ty: Math.min(maxTy, Math.max(minTy, v.ty)),
-  }
+/** Load Leaflet from CDN once (no npm peer risk). */
+function loadLeaflet(): Promise<LeafletNS> {
+  return new Promise((resolve, reject) => {
+    if (window.L) {
+      resolve(window.L as LeafletNS)
+      return
+    }
+    if (!document.querySelector(`link[href="${LEAFLET_CSS}"]`)) {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = LEAFLET_CSS
+      document.head.appendChild(link)
+    }
+    const existing = document.querySelector(`script[src="${LEAFLET_JS}"]`) as HTMLScriptElement | null
+    if (existing) {
+      existing.addEventListener('load', () => resolve(window.L as LeafletNS))
+      existing.addEventListener('error', () => reject(new Error('Leaflet load failed')))
+      if (window.L) resolve(window.L as LeafletNS)
+      return
+    }
+    const script = document.createElement('script')
+    script.src = LEAFLET_JS
+    script.async = true
+    script.onload = () => resolve(window.L as LeafletNS)
+    script.onerror = () => reject(new Error('Leaflet load failed'))
+    document.head.appendChild(script)
+  })
 }
 
 export default function ArtWorldMap() {
   const [locations, setLocations] = useState<ArtLocation[]>([])
   const [selected, setSelected] = useState<ArtLocation | null>(null)
-  const [hover, setHover] = useState<string | null>(null)
   const [expos, setExpos] = useState<ArtExhibition[]>([])
   const [expoLoading, setExpoLoading] = useState(false)
   const [expoError, setExpoError] = useState<string | null>(null)
@@ -65,11 +81,18 @@ export default function ArtWorldMap() {
   const [locsLoading, setLocsLoading] = useState(true)
   const [filter, setFilter] = useState('')
   const [regionFilter, setRegionFilter] = useState<string | 'all'>('all')
+  const [mapReady, setMapReady] = useState(false)
+  const [mapError, setMapError] = useState<string | null>(null)
 
-  const [view, setView] = useState<View>({ scale: 1, tx: 0, ty: 0 })
-  const dragging = useRef(false)
-  const lastPtr = useRef<{ x: number; y: number } | null>(null)
-  const svgRef = useRef<SVGSVGElement | null>(null)
+  const mapElRef = useRef<HTMLDivElement | null>(null)
+  const mapRef = useRef<LeafletNS>(null)
+  const layerRef = useRef<LeafletNS>(null)
+  const LRef = useRef<LeafletNS>(null)
+  const selectedRef = useRef<ArtLocation | null>(null)
+
+  useEffect(() => {
+    selectedRef.current = selected
+  }, [selected])
 
   useEffect(() => {
     let cancelled = false
@@ -134,21 +157,16 @@ export default function ArtWorldMap() {
     }
   }, [])
 
-  const zoomToCity = useCallback((loc: ArtLocation, targetScale = 3.2) => {
-    const { x, y } = project(loc.lat, loc.lng)
-    const scale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, targetScale))
-    const tx = W / 2 - x * scale
-    const ty = H / 2 - y * scale
-    setView(clampView({ scale, tx, ty }))
-  }, [])
-
   const onSelect = useCallback(
     (loc: ArtLocation) => {
       setSelected(loc)
-      zoomToCity(loc)
       void loadCityExpos(loc.id)
+      const map = mapRef.current
+      if (map) {
+        map.flyTo([loc.lat, loc.lng], Math.max(map.getZoom(), 5), { duration: 0.8 })
+      }
     },
-    [loadCityExpos, zoomToCity]
+    [loadCityExpos]
   )
 
   const refreshAll = useCallback(async () => {
@@ -168,59 +186,59 @@ export default function ArtWorldMap() {
     }
   }, [selected])
 
-  const zoomBy = useCallback((factor: number, cx = W / 2, cy = H / 2) => {
-    setView(prev => {
-      const nextScale = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, prev.scale * factor))
-      const k = nextScale / prev.scale
-      const tx = cx - (cx - prev.tx) * k
-      const ty = cy - (cy - prev.ty) * k
-      return clampView({ scale: nextScale, tx, ty })
-    })
-  }, [])
+  useEffect(() => {
+    let cancelled = false
+    let map: LeafletNS = null
 
-  const resetView = useCallback(() => {
-    setView({ scale: 1, tx: 0, ty: 0 })
-  }, [])
+    ;(async () => {
+      try {
+        const L = await loadLeaflet()
+        if (cancelled || !mapElRef.current) return
+        LRef.current = L
 
-  const onWheel = useCallback(
-    (e: React.WheelEvent<SVGSVGElement>) => {
-      e.preventDefault()
-      const svg = svgRef.current
-      if (!svg) return
-      const rect = svg.getBoundingClientRect()
-      const mx = ((e.clientX - rect.left) / rect.width) * W
-      const my = ((e.clientY - rect.top) / rect.height) * H
-      const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15
-      zoomBy(factor, mx, my)
-    },
-    [zoomBy]
-  )
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        delete (L.Icon.Default.prototype as any)._getIconUrl
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+          shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        })
 
-  const onPointerDown = useCallback((e: React.PointerEvent<SVGSVGElement>) => {
-    if (e.button !== 0) return
-    dragging.current = true
-    lastPtr.current = { x: e.clientX, y: e.clientY }
-    ;(e.target as Element).setPointerCapture?.(e.pointerId)
-  }, [])
+        map = L.map(mapElRef.current, {
+          center: [20, 10],
+          zoom: 2,
+          minZoom: 2,
+          maxZoom: 12,
+          worldCopyJump: true,
+          zoomControl: true,
+          attributionControl: true,
+        })
 
-  const onPointerMove = useCallback((e: React.PointerEvent<SVGSVGElement>) => {
-    if (!dragging.current || !lastPtr.current) return
-    const svg = svgRef.current
-    if (!svg) return
-    const rect = svg.getBoundingClientRect()
-    const dx = ((e.clientX - lastPtr.current.x) / rect.width) * W
-    const dy = ((e.clientY - lastPtr.current.y) / rect.height) * H
-    lastPtr.current = { x: e.clientX, y: e.clientY }
-    setView(prev => clampView({ ...prev, tx: prev.tx + dx, ty: prev.ty + dy }))
-  }, [])
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> · &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          subdomains: 'abcd',
+          maxZoom: 19,
+        }).addTo(map)
 
-  const onPointerUp = useCallback((e: React.PointerEvent<SVGSVGElement>) => {
-    dragging.current = false
-    lastPtr.current = null
-    try {
-      ;(e.target as Element).releasePointerCapture?.(e.pointerId)
-    } catch {
-      /* ignore */
+        layerRef.current = L.layerGroup().addTo(map)
+        mapRef.current = map
+        setMapReady(true)
+
+        setTimeout(() => map?.invalidateSize(), 120)
+        setTimeout(() => map?.invalidateSize(), 400)
+      } catch (e) {
+        if (!cancelled) setMapError(e instanceof Error ? e.message : 'Map init failed')
+      }
+    })()
+
+    return () => {
+      cancelled = true
+      if (map) {
+        map.remove()
+      }
+      mapRef.current = null
+      layerRef.current = null
     }
   }, [])
 
@@ -242,27 +260,69 @@ export default function ArtWorldMap() {
     })
   }, [locations, filter, regionFilter])
 
-  const points = useMemo(
-    () =>
-      filtered.map(loc => {
-        const { x, y } = project(loc.lat, loc.lng)
-        return { ...loc, x, y }
-      }),
-    [filtered]
-  )
+  useEffect(() => {
+    const L = LRef.current
+    const layer = layerRef.current
+    const map = mapRef.current
+    if (!L || !layer || !map || !mapReady) return
 
-  const showLabels = view.scale >= 1.6 || points.length <= 20
+    layer.clearLayers()
+
+    filtered.forEach(loc => {
+      const isSel = selectedRef.current?.id === loc.id
+      const r = isSel ? 11 : 7
+      const marker = L.circleMarker([loc.lat, loc.lng], {
+        radius: r,
+        color: isSel ? '#fecdd3' : '#fb7185',
+        weight: isSel ? 2.5 : 1.5,
+        fillColor: isSel ? '#f43f5e' : '#e11d48',
+        fillOpacity: isSel ? 0.95 : 0.8,
+        opacity: 1,
+      })
+
+      marker.bindTooltip(
+        `<strong>${loc.city}</strong><br/><span style="opacity:.8">${loc.country}</span>`,
+        {
+          direction: 'top',
+          offset: [0, -6],
+          opacity: 0.95,
+          className: 'xart-map-tooltip',
+        }
+      )
+
+      marker.on('click', () => {
+        onSelect(loc)
+      })
+
+      marker.addTo(layer)
+    })
+  }, [filtered, mapReady, selected, onSelect])
+
+  useEffect(() => {
+    const L = LRef.current
+    const map = mapRef.current
+    if (!L || !map || !mapReady || filtered.length === 0) return
+    if (selected) return
+
+    try {
+      const bounds = L.latLngBounds(filtered.map(l => [l.lat, l.lng] as [number, number]))
+      map.fitBounds(bounds.pad(0.25), { maxZoom: 5, animate: true })
+    } catch {
+      /* ignore */
+    }
+  }, [filtered, mapReady]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500">
         <span>
           {locsLoading
-            ? 'Chargement carte…'
+            ? 'Chargement destinations…'
             : `${locations.length} destinations · ${filtered.length} visibles · ${globalCount} expos`}
           {feedUpdated && (
             <span className="ml-2 text-zinc-600">· maj {feedUpdated.slice(0, 10)}</span>
           )}
+          {mapReady && <span className="ml-2 text-emerald-500/80">· carte live</span>}
         </span>
         <button
           type="button"
@@ -294,91 +354,44 @@ export default function ArtWorldMap() {
             </option>
           ))}
         </select>
+        <button
+          type="button"
+          className="text-[11px] text-zinc-400 hover:text-white underline underline-offset-2"
+          onClick={() => {
+            setSelected(null)
+            setExpos([])
+            const map = mapRef.current
+            if (map) map.setView([20, 10], 2)
+          }}
+        >
+          Vue monde
+        </button>
       </div>
 
-      <div className="relative rounded-2xl border border-rose-500/25 bg-gradient-to-b from-[#0a1020] to-[#0c0c14] overflow-hidden select-none">
-        <div className="absolute top-2 right-2 z-10 flex flex-col gap-1">
-          <button type="button" aria-label="Zoom in" onClick={() => zoomBy(1.35)} className="h-8 w-8 rounded-lg border border-white/15 bg-black/50 text-white text-lg leading-none hover:bg-rose-500/30">+</button>
-          <button type="button" aria-label="Zoom out" onClick={() => zoomBy(1 / 1.35)} className="h-8 w-8 rounded-lg border border-white/15 bg-black/50 text-white text-lg leading-none hover:bg-rose-500/30">−</button>
-          <button type="button" aria-label="Reset view" onClick={resetView} className="h-8 w-8 rounded-lg border border-white/15 bg-black/50 text-[10px] text-zinc-300 hover:bg-white/10" title="Reset">1:1</button>
+      <div className="relative rounded-2xl border border-rose-500/25 overflow-hidden bg-[#0a0a12] shadow-[0_0_40px_rgba(244,63,94,0.08)]">
+        <div
+          ref={mapElRef}
+          className="w-full h-[min(62vh,520px)] min-h-[320px] z-0"
+          role="application"
+          aria-label="Carte mondiale réelle — destinations artistiques"
+        />
+
+        {!mapReady && !mapError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-[#0a0a12]/90 text-zinc-400 text-sm">
+            Chargement de la carte réelle…
+          </div>
+        )}
+        {mapError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-[#0a0a12]/95 text-rose-400 text-sm px-4 text-center">
+            Impossible de charger Leaflet : {mapError}
+          </div>
+        )}
+
+        <div className="absolute bottom-2 left-3 z-[400] pointer-events-none">
+          <p className="text-[10px] text-zinc-400/90 bg-black/50 rounded-md px-2 py-1 backdrop-blur-sm">
+            Carte réelle OSM/CARTO · zoom molette · clic marqueur = expos · service culturel
+          </p>
         </div>
-
-        <div className="absolute top-2 left-2 z-10 rounded-md bg-black/40 px-2 py-1 text-[10px] text-zinc-400 mono">
-          ×{view.scale.toFixed(1)}
-        </div>
-
-        <svg
-          ref={svgRef}
-          viewBox={`0 0 ${W} ${H}`}
-          className="w-full h-auto max-h-[480px] cursor-grab active:cursor-grabbing touch-none"
-          role="img"
-          aria-label="Carte mondiale interactive — zoom molette, glisser pour déplacer"
-          onWheel={onWheel}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerLeave={onPointerUp}
-        >
-          <g transform={`translate(${view.tx} ${view.ty}) scale(${view.scale})`}>
-            <rect width={W} height={H} fill="#0a1220" />
-            {[0.25, 0.5, 0.75].map(p => (
-              <line key={`h-${p}`} x1={0} y1={H * p} x2={W} y2={H * p} stroke="#1e293b" strokeWidth={1 / view.scale} />
-            ))}
-            {[0.2, 0.4, 0.6, 0.8].map(p => (
-              <line key={`v-${p}`} x1={W * p} y1={0} x2={W * p} y2={H} stroke="#1e293b" strokeWidth={1 / view.scale} />
-            ))}
-            <ellipse cx={180} cy={200} rx={90} ry={110} fill="#132033" opacity={0.9} />
-            <ellipse cx={480} cy={180} rx={70} ry={90} fill="#132033" opacity={0.9} />
-            <ellipse cx={520} cy={280} rx={55} ry={80} fill="#132033" opacity={0.85} />
-            <ellipse cx={780} cy={220} rx={100} ry={70} fill="#132033" opacity={0.9} />
-            <ellipse cx={850} cy={360} rx={60} ry={40} fill="#132033" opacity={0.85} />
-            <ellipse cx={250} cy={360} rx={50} ry={70} fill="#132033" opacity={0.85} />
-
-            {points.map(p => {
-              const active = selected?.id === p.id || hover === p.id
-              const r = (active ? 8 : 5) / Math.sqrt(view.scale)
-              return (
-                <g
-                  key={p.id}
-                  className="cursor-pointer"
-                  onMouseEnter={() => setHover(p.id)}
-                  onMouseLeave={() => setHover(null)}
-                  onClick={e => {
-                    e.stopPropagation()
-                    onSelect(p)
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      onSelect(p)
-                    }
-                  }}
-                >
-                  <circle cx={p.x} cy={p.y} r={r + 6 / Math.sqrt(view.scale)} fill="#f43f5e" opacity={active ? 0.3 : 0.12} />
-                  <circle cx={p.x} cy={p.y} r={r} fill={active ? '#fb7185' : '#e11d48'} stroke="#fecdd3" strokeWidth={(active ? 2 : 1) / view.scale} />
-                  {showLabels && (
-                    <text
-                      x={p.x + 8 / Math.sqrt(view.scale)}
-                      y={p.y + 3 / Math.sqrt(view.scale)}
-                      fill="#e2e8f0"
-                      fontSize={Math.max(9, 11 / Math.sqrt(view.scale * 0.85))}
-                      className="pointer-events-none"
-                      style={{ fontFamily: 'system-ui, sans-serif' }}
-                    >
-                      {p.city}
-                    </text>
-                  )}
-                </g>
-              )
-            })}
-          </g>
-        </svg>
-
-        <p className="absolute bottom-2 left-3 text-[10px] text-zinc-500 max-w-[70%]">
-          Molette = zoom · glisser = déplacer · clic ville = expos · service culturel (pas un pack IA)
-        </p>
       </div>
 
       <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1">
@@ -407,10 +420,19 @@ export default function ArtWorldMap() {
                 <span className="text-zinc-500 font-normal text-sm">· {selected.country}</span>
               </p>
               <p className="text-zinc-400 text-xs mt-0.5">{selected.focus}</p>
+              <p className="text-[10px] text-zinc-600 mono mt-0.5">
+                {selected.lat.toFixed(3)}, {selected.lng.toFixed(3)}
+              </p>
             </div>
             <div className="flex gap-2">
-              <button type="button" className="text-[11px] text-cyan-400/90 hover:text-cyan-300" onClick={() => zoomToCity(selected, 4)}>
-                Zoom ×4
+              <button
+                type="button"
+                className="text-[11px] text-cyan-400/90 hover:text-cyan-300"
+                onClick={() => {
+                  mapRef.current?.flyTo([selected.lat, selected.lng], 8, { duration: 0.7 })
+                }}
+              >
+                Zoom ×8
               </button>
               <button
                 type="button"
@@ -428,7 +450,10 @@ export default function ArtWorldMap() {
           {selected.venues && selected.venues.length > 0 && (
             <ul className="flex flex-wrap gap-1.5">
               {selected.venues.map(v => (
-                <li key={v} className="rounded-md border border-white/10 bg-black/30 px-2 py-0.5 text-[11px] text-zinc-300">
+                <li
+                  key={v}
+                  className="rounded-md border border-white/10 bg-black/30 px-2 py-0.5 text-[11px] text-zinc-300"
+                >
                   {v}
                 </li>
               ))}
@@ -436,33 +461,60 @@ export default function ArtWorldMap() {
           )}
 
           {selected.score != null && (
-            <p className="text-[10px] text-zinc-500">Intensité scène {(selected.score * 100).toFixed(0)}%</p>
+            <p className="text-[10px] text-zinc-500">
+              Intensité scène {(selected.score * 100).toFixed(0)}%
+            </p>
           )}
 
           <div className="divider pt-2">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[10px] uppercase tracking-wider text-rose-300/90 font-semibold">Expositions · temps réel</p>
-              {expoLoading && <span className="text-[10px] text-zinc-500 animate-pulse">Chargement…</span>}
+              <p className="text-[10px] uppercase tracking-wider text-rose-300/90 font-semibold">
+                Expositions · temps réel
+              </p>
+              {expoLoading && (
+                <span className="text-[10px] text-zinc-500 animate-pulse">Chargement…</span>
+              )}
             </div>
+
             {expoError && <p className="text-xs text-rose-400 mb-2">{expoError}</p>}
+
             {!expoLoading && expos.length === 0 && (
-              <p className="text-xs text-zinc-500">Aucune expo indexée pour {selected.city}. Autres destinations ont des fiches lieux.</p>
+              <p className="text-xs text-zinc-500">
+                Aucune expo indexée pour {selected.city}. Fiche lieux + focus disponibles.
+              </p>
             )}
+
             <ul className="space-y-2">
               {expos.map(ex => (
-                <li key={ex.id} className="rounded-xl border border-white/[0.06] bg-black/25 px-3 py-2.5">
+                <li
+                  key={ex.id}
+                  className="rounded-xl border border-white/[0.06] bg-black/25 px-3 py-2.5"
+                >
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-white leading-snug">{ex.title}</p>
                       <p className="text-[11px] text-zinc-400 mt-0.5">{ex.venue}</p>
-                      <p className="text-[10px] text-zinc-600 mt-0.5 mono">{ex.start} → {ex.end}</p>
+                      <p className="text-[10px] text-zinc-600 mt-0.5 mono">
+                        {ex.start} → {ex.end}
+                      </p>
                     </div>
-                    <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${statusBadge(ex.status)}`}>
-                      {ex.status === 'ongoing' ? 'En cours' : ex.status === 'upcoming' ? 'À venir' : ex.status}
+                    <span
+                      className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${statusBadge(ex.status)}`}
+                    >
+                      {ex.status === 'ongoing'
+                        ? 'En cours'
+                        : ex.status === 'upcoming'
+                          ? 'À venir'
+                          : ex.status}
                     </span>
                   </div>
                   {ex.url && (
-                    <a href={ex.url} target="_blank" rel="noreferrer" className="inline-block mt-1.5 text-[11px] text-cyan-400/90 hover:text-cyan-300 underline underline-offset-2">
+                    <a
+                      href={ex.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-block mt-1.5 text-[11px] text-cyan-400/90 hover:text-cyan-300 underline underline-offset-2"
+                    >
                       Site officiel ↗
                     </a>
                   )}
@@ -472,6 +524,41 @@ export default function ArtWorldMap() {
           </div>
         </div>
       )}
+
+      <style>{`
+        .xart-map-tooltip {
+          background: rgba(12, 12, 20, 0.92) !important;
+          border: 1px solid rgba(244, 63, 94, 0.35) !important;
+          color: #f4f4f5 !important;
+          border-radius: 8px !important;
+          padding: 6px 10px !important;
+          font-size: 12px !important;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.45) !important;
+        }
+        .xart-map-tooltip::before {
+          border-top-color: rgba(244, 63, 94, 0.35) !important;
+        }
+        .leaflet-container {
+          font-family: inherit;
+          background: #0a0a12;
+        }
+        .leaflet-control-zoom a {
+          background: rgba(12,12,20,0.9) !important;
+          color: #e4e4e7 !important;
+          border-color: rgba(255,255,255,0.12) !important;
+        }
+        .leaflet-control-zoom a:hover {
+          background: rgba(244, 63, 94, 0.25) !important;
+        }
+        .leaflet-control-attribution {
+          background: rgba(0,0,0,0.55) !important;
+          color: #71717a !important;
+          font-size: 10px !important;
+        }
+        .leaflet-control-attribution a {
+          color: #a1a1aa !important;
+        }
+      `}</style>
     </div>
   )
 }
