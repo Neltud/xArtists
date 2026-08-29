@@ -30,6 +30,7 @@ interface GsAgent {
   forecasts?: unknown[]
 }
 
+/** Packs IA NFT only — never travel / art tours. */
 export default function Agents() {
   const [agents, setAgents] = useState<GsAgent[]>([])
   const [err, setErr] = useState<string | null>(null)
@@ -70,7 +71,7 @@ export default function Agents() {
         <div>
           <h1 className="text-3xl font-black">Packs Agents NFT</h1>
           <p className="text-sm text-zinc-500 mt-1">
-            Pulse · Yield · Sentinel — NFT d’accès · pas de travel agent
+            Pulse · Yield · Sentinel uniquement — pas de travel agent
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -78,7 +79,7 @@ export default function Agents() {
             My Packs
           </Link>
           <Link to="/tours" className="btn-secondary text-xs py-2 px-3">
-            Tours art (autre service)
+            Art Tours (service séparé)
           </Link>
         </div>
       </header>
@@ -98,7 +99,9 @@ export default function Agents() {
 
       <section className="card">
         <h2 className="text-lg font-bold mb-2">GSN · prédiction</h2>
-        <p className="text-xs text-zinc-500 mb-3">Indépendant des packs NFT Pulse/Yield/Sentinel.</p>
+        <p className="text-xs text-zinc-500 mb-3">
+          Signaux externes — indépendant des packs NFT et d’Art Tours.
+        </p>
         {err && <p className="text-xs text-amber-400 mb-2">{err}</p>}
         <GsnLeaderboard agents={agents} />
       </section>

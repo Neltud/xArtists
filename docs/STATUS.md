@@ -1,10 +1,8 @@
-# Status — 2026-08-29 · v3.0.1-tx-monitor
+# Status — 2026-08-29 · v3.0.2-art-map
 
 | Item | State |
 |------|--------|
-| TransactionMonitor | API poll réel |
-| TxMonitorPanel | /trading |
-| MultiversXExecutionAdapter | No fake broadcast |
-| Vellum naming | Orchestration only |
+| Art Tours map | Interactive world map /#/tours |
+| Agents | Pulse·Yield·Sentinel only — no travel pack |
+| TX monitor | /trading |
 | Live trading | OFF |
-| Verdict | GO_DEMO · NO-GO volume |

@@ -1,0 +1,128 @@
+{
+  "version": "1.0",
+  "updated": "2026-08-29",
+  "service": "art_tours_cultural",
+  "not_an_ai_agent_pack": true,
+  "locations": [
+    {
+      "id": "paris",
+      "city": "Paris",
+      "country": "France",
+      "lat": 48.8566,
+      "lng": 2.3522,
+      "focus": "Galeries · foires · street art",
+      "venues": ["Centre Pompidou", "Palais de Tokyo", "Marais galleries"],
+      "score": 0.92
+    },
+    {
+      "id": "lisbon",
+      "city": "Lisbonne",
+      "country": "Portugal",
+      "lat": 38.7223,
+      "lng": -9.1393,
+      "focus": "Contemporain · azulejos · studios",
+      "venues": ["MAAT", "Museu Coleção Berardo"],
+      "score": 0.8
+    },
+    {
+      "id": "tokyo",
+      "city": "Tokyo",
+      "country": "Japan",
+      "lat": 35.6762,
+      "lng": 139.6503,
+      "focus": "Musées · design · digital art",
+      "venues": ["Mori Art Museum", "teamLab"],
+      "score": 0.85
+    },
+    {
+      "id": "marrakech",
+      "city": "Marrakech",
+      "country": "Morocco",
+      "lat": 31.6295,
+      "lng": -7.9811,
+      "focus": "Biennales · artisans · riads-galeries",
+      "venues": ["Musée Yves Saint Laurent", "Medina galleries"],
+      "score": 0.78
+    },
+    {
+      "id": "nyc",
+      "city": "New York",
+      "country": "USA",
+      "lat": 40.7128,
+      "lng": -74.006,
+      "focus": "MoMA · Chelsea · street",
+      "venues": ["MoMA", "The Met", "Chelsea galleries"],
+      "score": 0.94
+    },
+    {
+      "id": "berlin",
+      "city": "Berlin",
+      "country": "Germany",
+      "lat": 52.52,
+      "lng": 13.405,
+      "focus": "Kunst · off-spaces · techno-art",
+      "venues": ["Hamburger Bahnhof", "KW Institute"],
+      "score": 0.86
+    },
+    {
+      "id": "mexico",
+      "city": "Mexico City",
+      "country": "Mexico",
+      "lat": 19.4326,
+      "lng": -99.1332,
+      "focus": "Muralisme · contemporain",
+      "venues": ["Museo Frida Kahlo", "MUAC"],
+      "score": 0.84
+    },
+    {
+      "id": "seoul",
+      "city": "Seoul",
+      "country": "South Korea",
+      "lat": 37.5665,
+      "lng": 126.978,
+      "focus": "Media art · design",
+      "venues": ["MMCA", "Dongdaemun Design Plaza"],
+      "score": 0.83
+    },
+    {
+      "id": "lagos",
+      "city": "Lagos",
+      "country": "Nigeria",
+      "lat": 6.5244,
+      "lng": 3.3792,
+      "focus": "Scène contemporaine africaine",
+      "venues": ["Nike Art Gallery", "Art Twenty One"],
+      "score": 0.77
+    },
+    {
+      "id": "sydney",
+      "city": "Sydney",
+      "country": "Australia",
+      "lat": -33.8688,
+      "lng": 151.2093,
+      "focus": "Biennale · harbour museums",
+      "venues": ["MCA", "Art Gallery of NSW"],
+      "score": 0.81
+    },
+    {
+      "id": "sao_paulo",
+      "city": "São Paulo",
+      "country": "Brazil",
+      "lat": -23.5505,
+      "lng": -46.6333,
+      "focus": "Bienal · street art",
+      "venues": ["MASP", "Pinacoteca"],
+      "score": 0.82
+    },
+    {
+      "id": "dubai",
+      "city": "Dubai",
+      "country": "UAE",
+      "lat": 25.2048,
+      "lng": 55.2708,
+      "focus": "Foire · districts créatifs",
+      "venues": ["Alserkal Avenue", "Dubai Design District"],
+      "score": 0.79
+    }
+  ]
+}

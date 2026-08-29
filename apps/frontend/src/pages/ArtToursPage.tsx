@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
 import ToursScopeBanner from '../components/ToursScopeBanner'
+import ArtWorldMap from '../components/ArtWorldMap'
 
 type City = { id: string; label: string; focus?: string; score?: number; note?: string }
 type Tour = { id: string; title: string; duration?: string; includes?: string[] }
@@ -13,11 +14,10 @@ type Doc = {
   not_v1?: string[]
   cities?: City[]
   sample_tours?: Tour[]
-  cta?: string
   not_an_ai_agent_pack?: boolean
 }
 
-/** Service culturel complet — PAS un pack agent IA / travel agent. */
+/** Service culturel — PAS un pack agent IA / travel agent. */
 export default function ArtToursPage() {
   const [doc, setDoc] = useState<Doc | null>(null)
 
@@ -48,54 +48,69 @@ export default function ArtToursPage() {
   return (
     <div className="animate-fade-in space-y-6 pb-10">
       <PageGuide page="tours" />
-      <header>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-rose-400/80">Service culturel</p>
-        <h1 className="text-3xl font-black">Tours artistiques</h1>
-        <p className="text-sm text-zinc-500 mt-1">
-          Expositions, visites guidées, parcours art — pas un agent IA
-        </p>
+
+      <header className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-rose-400/80">
+            Service culturel · pas un pack IA
+          </p>
+          <h1 className="text-3xl font-black">Art Tours</h1>
+          <p className="text-sm text-zinc-500 mt-1">
+            Carte mondiale des lieux d’art · expos · parcours
+          </p>
+        </div>
+        <Link to="/agents" className="btn-secondary text-xs py-2 px-3">
+          Packs IA (autre offre)
+        </Link>
       </header>
 
       <ToursScopeBanner />
 
+      <section aria-labelledby="map-title">
+        <h2 id="map-title" className="text-lg font-bold text-white mb-2">
+          Carte mondiale interactive
+        </h2>
+        <ArtWorldMap />
+      </section>
+
       {doc && (
-        <div className="card space-y-3 text-sm text-zinc-300">
-          {doc.name && <p className="font-bold text-white">{doc.name}</p>}
-          {doc.list_eur_from != null && (
-            <p className="text-zinc-400">À partir de {doc.list_eur_from} €</p>
-          )}
-          {Array.isArray(doc.scope_v1) && (
-            <ul className="list-disc pl-5 text-zinc-400">
-              {doc.scope_v1.map(s => (
-                <li key={s}>{s}</li>
-              ))}
-            </ul>
-          )}
-          {Array.isArray(doc.cities) && doc.cities.length > 0 && (
-            <div>
-              <p className="text-xs uppercase text-zinc-500 mb-1">Villes</p>
-              <ul className="flex flex-wrap gap-2">
-                {doc.cities.map(c => (
-                  <li
-                    key={c.id}
-                    className="rounded-lg border border-white/10 px-2 py-1 text-xs text-zinc-300"
-                  >
-                    {c.label}
-                    {c.focus ? ` · ${c.focus}` : ''}
-                  </li>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="card space-y-2 text-sm text-zinc-300">
+            {doc.name && <p className="font-bold text-white">{doc.name}</p>}
+            {doc.list_eur_from != null && (
+              <p className="text-zinc-400">À partir de {doc.list_eur_from} €</p>
+            )}
+            {Array.isArray(doc.scope_v1) && (
+              <ul className="list-disc pl-5 text-zinc-400 text-xs space-y-1">
+                {doc.scope_v1.map(s => (
+                  <li key={s}>{s}</li>
                 ))}
               </ul>
-            </div>
-          )}
+            )}
+            {Array.isArray(doc.not_v1) && (
+              <div className="pt-2 border-t border-white/5">
+                <p className="text-[10px] uppercase text-zinc-600 mb-1">Hors scope</p>
+                <ul className="list-disc pl-5 text-zinc-500 text-xs">
+                  {doc.not_v1.map(s => (
+                    <li key={s}>{s}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
           {Array.isArray(doc.sample_tours) && doc.sample_tours.length > 0 && (
-            <div>
-              <p className="text-xs uppercase text-zinc-500 mb-1">Exemples</p>
+            <div className="card space-y-2">
+              <p className="text-xs uppercase text-zinc-500">Exemples de parcours</p>
               <ul className="space-y-2">
                 {doc.sample_tours.map(t => (
                   <li key={t.id} className="border-b border-white/5 pb-2">
-                    <span className="text-white font-medium">{t.title}</span>
+                    <span className="text-white font-medium text-sm">{t.title}</span>
                     {t.duration && (
                       <span className="text-zinc-500 text-xs ml-2">{t.duration}</span>
+                    )}
+                    {t.includes && (
+                      <p className="text-[11px] text-zinc-500 mt-0.5">{t.includes.join(' · ')}</p>
                     )}
                   </li>
                 ))}
@@ -105,20 +120,13 @@ export default function ArtToursPage() {
         </div>
       )}
 
-      {!doc && (
-        <p className="text-sm text-zinc-500">
-          Catalogue tours en chargement / bientôt enrichi. Service distinct des packs NFT.
-        </p>
-      )}
-
-      <div className="flex flex-wrap gap-2 text-xs">
-        <Link to="/gallery" className="btn-secondary py-2 px-3">
-          Galerie
+      <p className="text-[11px] text-zinc-600">
+        Les packs Agents (Pulse · Yield · Sentinel) sont sur{' '}
+        <Link to="/agents" className="text-violet-300 underline">
+          /agents
         </Link>
-        <Link to="/agents" className="btn-secondary py-2 px-3">
-          Packs IA (autre offre)
-        </Link>
-      </div>
+        . Art Tours n’est pas un travel agent ni un NFT pack IA.
+      </p>
     </div>
   )
 }
