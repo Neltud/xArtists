@@ -1,37 +1,37 @@
 import { NavLink } from 'react-router-dom'
 
-/** Mobile nav — 5 destinations max, labels métier clairs. */
 const ITEMS = [
-  { to: '/', label: 'Home', emoji: '🏠', end: true },
-  { to: '/gallery', label: 'Art', emoji: '🖼️' },
-  { to: '/agents', label: 'Packs', emoji: '🧠' },
-  { to: '/trading', label: 'LIA', emoji: '⚡' },
-  { to: '/wallet', label: 'Wallet', emoji: '👛' },
+  { to: '/', label: 'Home', icon: '◈', end: true },
+  { to: '/marketplace', label: 'Market', icon: '▣' },
+  { to: '/agents', label: 'Agents', icon: '◎' },
+  { to: '/trading', label: 'Trade', icon: '⚡' },
+  { to: '/tours', label: 'Tours', icon: '◉' },
+  { to: '/wallet', label: 'Wallet', icon: '◇' },
 ] as const
 
 export default function BottomNav() {
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a0f]/95 backdrop-blur-xl border-t border-[#2a2a3a]"
+      className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-white/[0.08] glass"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
-      aria-label="Navigation mobile"
+      aria-label="Navigation principale"
     >
-      <div className="flex items-stretch justify-around h-14 max-w-xl mx-auto px-0.5">
-        {ITEMS.map(({ to, label, emoji, end }) => (
+      <div className="grid grid-cols-6 gap-0.5 px-1 pt-1.5 pb-1">
+        {ITEMS.map(({ to, label, icon, end }) => (
           <NavLink
             key={to}
             to={to}
             end={end}
             className={({ isActive }) =>
-              `flex flex-col items-center justify-center flex-1 gap-0.5 text-[9px] sm:text-[10px] font-medium transition-colors touch-manipulation min-h-[44px] min-w-0 ${
-                isActive ? 'text-purple-400' : 'text-gray-500'
+              `flex flex-col items-center gap-0.5 py-1.5 rounded-xl text-[10px] font-medium transition-all ${
+                isActive
+                  ? 'text-cyan-300 bg-violet-500/15'
+                  : 'text-zinc-500 active:bg-white/5'
               }`
             }
           >
-            <span className="text-base sm:text-lg leading-none" aria-hidden>
-              {emoji}
-            </span>
-            <span className="truncate max-w-full">{label}</span>
+            <span className="text-base leading-none">{icon}</span>
+            <span>{label}</span>
           </NavLink>
         ))}
       </div>
