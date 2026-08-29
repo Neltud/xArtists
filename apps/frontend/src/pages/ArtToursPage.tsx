@@ -55,7 +55,7 @@ export default function ArtToursPage() {
             Service culturel
           </p>
           <h1 className="display text-3xl sm:text-4xl">Art Tours</h1>
-          <p className="muted">Carte mondiale · expos · parcours — pas un pack IA</p>
+          <p className="muted">Carte mondiale réelle · expos · parcours — pas un pack IA</p>
         </div>
         <Link to="/agents" className="btn-secondary text-xs">
           Packs IA
@@ -66,8 +66,11 @@ export default function ArtToursPage() {
 
       <section aria-labelledby="map-title" className="space-y-3">
         <h2 id="map-title" className="display text-lg">
-          Carte mondiale
+          Carte mondiale réelle
         </h2>
+        <p className="text-xs text-zinc-500 -mt-1">
+          Fond cartographique OSM / CARTO Dark · zoom, pan, marqueurs artistiques, expos en direct
+        </p>
         <ArtWorldMap />
       </section>
 
