@@ -1,8 +1,14 @@
-# Status — 2026-08-29 · v3.0.2-art-map
+# Status — 2026-08-29 · v3.0.2 published
 
 | Item | State |
 |------|--------|
-| Art Tours map | Interactive world map /#/tours |
-| Agents | Pulse·Yield·Sentinel only — no travel pack |
-| TX monitor | /trading |
-| Live trading | OFF |
+| **Demo** | https://neltud.github.io/xArtists/ |
+| Branch | `main` |
+| Art Tours map | `/#/tours` interactive world map |
+| Agents | Pulse · Yield · Sentinel only (no travel pack) |
+| TX monitor | `/#/trading` |
+| Wallet Web | `/#/wallet` |
+| Live LIA trading | **OFF** |
+| SC mint | Pending |
+
+**Verdict:** GO_DEMO · NO-GO funds volume
