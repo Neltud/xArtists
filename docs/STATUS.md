@@ -1,9 +1,11 @@
-# Status — v3.4.1 + CI fix
+# Status — v3.4.3 UI polish
 
 | Item | State |
 |------|--------|
-| Version | 3.4.1 |
+| Version | **3.4.3** |
 | Demo | https://neltud.github.io/xArtists/ |
-| CI fix | npm install --legacy-peer-deps · sdk-core 13 |
-| Actions | https://github.com/Neltud/xArtists/actions |
-| Tag | https://github.com/Neltud/xArtists/releases/new?tag=v3.4.1 |
+| Pages polished | Gallery · Studio · DAO · Portfolio (aurora glass heroes + zinc tokens) |
+| CI | static.yml → apps/frontend + legacy-peer-deps |
+| Tag | v3.4.3 |
+
+Hard refresh: Ctrl+Shift+R

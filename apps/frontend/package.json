@@ -1,17 +1,18 @@
 {
   "name": "xartists-frontend",
   "private": true,
-  "version": "3.3.0",
+  "version": "3.4.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@multiversx/sdk-core": "^13.0.0",
     "@multiversx/sdk-dapp": "^3.0.0",
     "@multiversx/sdk-network-providers": "^2.0.0",
+    "@tanstack/react-virtual": "^3.13.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.0",

@@ -21,12 +21,12 @@ export function MxDappProvider({ children }: Props) {
     let cancelled = false
     ;(async () => {
       try {
-        const mod = await import('@multiversx/sdk-dapp/wrappers/DappProvider')
+        const mod = await import(/* @vite-ignore */ '@multiversx/sdk-dapp/wrappers/DappProvider')
         const C = (mod as { DappProvider?: React.ComponentType<Record<string, unknown>> }).DappProvider
         if (!cancelled && C) setProvider(() => C)
       } catch {
         try {
-          const mod = await import('@multiversx/sdk-dapp')
+          const mod = await import(/* @vite-ignore */ '@multiversx/sdk-dapp')
           const C = (mod as { DappProvider?: React.ComponentType<Record<string, unknown>> }).DappProvider
           if (!cancelled && C) setProvider(() => C)
         } catch {

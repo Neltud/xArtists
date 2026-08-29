@@ -1,13 +1,15 @@
 import { NavLink } from 'react-router-dom'
 
-const ITEMS = [
+type NavItem = { to: string; label: string; icon: string; end?: boolean }
+
+const ITEMS: NavItem[] = [
   { to: '/', label: 'Home', icon: '◈', end: true },
   { to: '/marketplace', label: 'Market', icon: '▣' },
   { to: '/agents', label: 'Agents', icon: '◎' },
   { to: '/trading', label: 'Trade', icon: '⚡' },
   { to: '/tours', label: 'Tours', icon: '◉' },
   { to: '/wallet', label: 'Wallet', icon: '◇' },
-] as const
+]
 
 export default function BottomNav() {
   return (
@@ -21,7 +23,7 @@ export default function BottomNav() {
           <NavLink
             key={to}
             to={to}
-            end={end}
+            end={!!end}
             className={({ isActive }) =>
               `flex flex-col items-center gap-0.5 py-1.5 rounded-xl text-[10px] font-medium transition-all ${
                 isActive
@@ -30,7 +32,9 @@ export default function BottomNav() {
               }`
             }
           >
-            <span className="text-base leading-none">{icon}</span>
+            <span className="text-base leading-none" aria-hidden>
+              {icon}
+            </span>
             <span>{label}</span>
           </NavLink>
         ))}
