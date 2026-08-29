@@ -1,13 +1,12 @@
-# Status — v3.3.0
+# Status — v3.3.0 PUBLISHED
 
-| Item | State |
-|------|--------|
-| **Release** | **v3.3.0** |
+| Item | Link |
+|------|------|
+| **Repo** | https://github.com/Neltud/xArtists |
+| **Main** | https://github.com/Neltud/xArtists/tree/main |
 | **Demo** | https://neltud.github.io/xArtists/ |
-| Art Tours map | `/#/tours` |
-| Agents | Pulse·Yield·Sentinel only |
-| TX monitor | `/#/trading` |
-| Live trading | OFF |
-| Verdict | GO_DEMO · NO-GO volume |
+| **Release notes** | https://github.com/Neltud/xArtists/blob/main/docs/RELEASE_v3.3.0.md |
+| **Changelog** | https://github.com/Neltud/xArtists/blob/main/CHANGELOG.md |
+| **Create tag v3.3.0** | https://github.com/Neltud/xArtists/releases/new?tag=v3.3.0 |
 
-Notes : [RELEASE_v3.3.0.md](./RELEASE_v3.3.0.md) · [CHANGELOG.md](../CHANGELOG.md)
+Code on `main` is the published body. Tag Release UI en 1 clic si besoin.
