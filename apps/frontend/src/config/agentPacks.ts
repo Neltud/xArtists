@@ -92,20 +92,36 @@ export const AGENT_PACKS: AgentPackProfile[] = [
 export const PACK_PRICING_POLICY = {
   ranking: 'Pulse (18€) > Yield (12€) > Sentinel (8€)',
   corridor: { min: PACK_PRICE_EUR.min, max: PACK_PRICE_EUR.max },
+  listEur: 18,
   note: 'Catalogue lié à la densité de signaux. Tours artistiques = service séparé, pas un pack IA.',
 }
 
 export const PACK_JOURNEY_STEPS = [
   {
+    id: '1',
     title: 'Choisir un pack IA',
     body: 'Pulse · Yield · Sentinel uniquement. Pas de travel agent.',
   },
   {
+    id: '2',
     title: 'Connecter le wallet',
     body: 'erd1 utilisateur — jamais le wallet ops LIA.',
   },
   {
+    id: '3',
     title: 'Checkout / mint NFT',
     body: 'Fiat ou on-chain selon SC + API. Intent paper si SC pending.',
   },
 ]
+
+export const FUNDING_MODELS = {
+  C_no_user_capital: {
+    id: 'C',
+    when: "Aucun capital utilisateur n'est confié à LIA pour exécution trading. Packs = accès signal + droit de pool uniquement.",
+  },
+} as const
+
+export const GSN_POLICY = {
+  description:
+    'Gas Station Network optionnel pour micro-tx (mint / claim) — utilisateur peut payer gas ou sponsor limité.',
+} as const

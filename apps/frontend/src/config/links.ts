@@ -29,32 +29,33 @@ export const LINKS = {
     'https://github.com/Neltud/xArtists/blob/main/docs/TREASURY_POLICY.md',
 } as const
 
-/** Primary desktop nav */
+/** Primary desktop nav (Header filters a subset for the top bar) */
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
-  { to: '/', label: 'Home', emoji: '📊' },
-  { to: '/entity', label: 'Entité', emoji: '🏛️' },
-  { to: '/sim', label: 'Sim Lab', emoji: '🧪' },
-  { to: '/studio', label: 'Studio', emoji: '🎨' },
-  { to: '/gallery', label: 'Galerie', emoji: '🖼️' },
-  { to: '/tours', label: 'Tours', emoji: '🗺️' },
-  { to: '/marketplace', label: 'Market', emoji: '🛒' },
-  { to: '/agents', label: 'Agents', emoji: '🧠' },
-  { to: '/my-packs', label: 'My Packs', emoji: '🎫' },
+  { to: '/', label: 'Home', emoji: '◈' },
+  { to: '/marketplace', label: 'Market', emoji: '▣' },
+  { to: '/agents', label: 'Agents', emoji: '◎' },
   { to: '/trading', label: 'Trading', emoji: '⚡' },
-  { to: '/portfolio', label: 'LIA', emoji: '📈' },
-  { to: '/wallet', label: 'Wallet', emoji: '👛' },
-  { to: '/dao', label: 'DAO', emoji: '🗳️' },
+  { to: '/tours', label: 'Tours', emoji: '◉' },
+  { to: '/gallery', label: 'Galerie', emoji: '🖼' },
+  { to: '/wallet', label: 'Wallet', emoji: '◇' },
   { to: '/tro', label: '$TRO', emoji: '🪙' },
+  { to: '/studio', label: 'Studio', emoji: '🎨' },
+  { to: '/portfolio', label: 'LIA', emoji: '📈' },
+  { to: '/dao', label: 'DAO', emoji: '🗳️' },
+  { to: '/my-packs', label: 'My Packs', emoji: '🎫' },
 ]
 
 export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
+  { to: '/entity', label: 'Entité', emoji: '🏛' },
+  { to: '/sim', label: 'Sim Lab', emoji: '🧪' },
+  { to: '/sitemap', label: 'Plan', emoji: '🗺' },
   { to: '/agents/lightning', label: 'Lightning', emoji: '⚡' },
   { to: '/editions', label: 'Editions', emoji: '📰' },
   { to: '/hatom', label: 'Hatom', emoji: '🏦' },
   { to: '/lp', label: 'LP', emoji: '💧' },
   { to: '/tip', label: 'Tip', emoji: '💜' },
-  { to: '/ads', label: 'Ads', emoji: '📢' },
   { to: '/staking', label: 'Staking', emoji: '🔒' },
+  { to: '/ads', label: 'Ads', emoji: '📢' },
   { to: '/soul-testnet', label: 'Soul (pre-mainnet)', emoji: '🧪' },
   { to: '/burnify', label: 'Burnify (pre-mainnet)', emoji: '🔥' },
 ]
