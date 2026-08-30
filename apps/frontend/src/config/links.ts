@@ -37,6 +37,7 @@ export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/trading', label: 'Trading', emoji: '⚡' },
   { to: '/tours', label: 'Tours', emoji: '◉' },
   { to: '/gallery', label: 'Galerie', emoji: '🖼' },
+  { to: '/museum', label: 'Musée 3D', emoji: '🏛️' },
   { to: '/wallet', label: 'Wallet', emoji: '◇' },
   { to: '/tro', label: '$TRO', emoji: '🪙' },
   { to: '/studio', label: 'Studio', emoji: '🎨' },
