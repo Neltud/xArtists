@@ -264,13 +264,69 @@ export default function MuseumPage() {
       {space === 'world_tour' && <GuidedWorldTour />}
 
       {space === 'vr_core' && (
-        <div className="relative rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-950/40 to-black px-6 py-10 space-y-4">
-          <h2 className="text-xl font-bold text-white">VR Core — roadmap</h2>
-          <p className="text-sm text-zinc-400">
-            WebXR (R3F) non packagé dans cette démo CI. Le corridor Catzligue affiche déjà les
-            vraies œuvres MultiversX.
+        <div className="relative rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-950/50 via-black to-[#0a0612] px-5 sm:px-6 py-8 sm:py-10 space-y-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-violet-300/80 font-semibold">
+                Roadmap · WebXR
+              </p>
+              <h2 className="text-xl sm:text-2xl font-bold text-white mt-1">VR Core</h2>
+            </div>
+            <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-1 text-[10px] text-amber-200 font-semibold">
+              LIA Pass · mint SC pending
+            </span>
+          </div>
+
+          <p className="text-sm text-zinc-300 leading-relaxed max-w-xl">
+            Stack cible : <strong className="text-zinc-100">React Three Fiber</strong> +{' '}
+            <code className="text-violet-300 text-xs">@react-three/xr</code> (WebXR). Accès : NFT{' '}
+            <strong className="text-zinc-100">LIA Pass</strong> (codeHash null — pas encore minté).
           </p>
-          <LiaHost space="vr_core" />
+
+          <ul className="grid sm:grid-cols-2 gap-2 text-[12px] text-zinc-400">
+            <li className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+              <span className="text-emerald-300/90 font-medium">Gratuit</span>
+              <br />
+              Catzligue · visite guidée mondiale
+            </li>
+            <li className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+              <span className="text-cyan-300/90 font-medium">Wallet</span>
+              <br />
+              Mydee — tes NFTs on-chain
+            </li>
+            <li className="rounded-xl border border-violet-500/25 bg-violet-500/10 px-3 py-2 sm:col-span-2">
+              <span className="text-violet-200 font-medium">LIA Pass</span>
+              <br />
+              Immersion casque — pas dans cette build. Corridor CSS + guide = fondation v1.
+            </li>
+          </ul>
+
+          <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-[11px] text-zinc-500 leading-relaxed">
+            <strong className="text-zinc-400">Sécurité</strong> — ce module n’émet aucune TX.
+            Achats / mint passent par Guardian + signature wallet réelle (TransactionWatcher). Pas de
+            setTimeout fake-success.
+          </div>
+
+          <div className="relative min-h-[80px]">
+            <LiaHost space="vr_core" />
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="btn-secondary text-xs"
+              onClick={() => setSpace('catzligue')}
+            >
+              ← Catzligue (gratuit)
+            </button>
+            <button
+              type="button"
+              className="btn-secondary text-xs"
+              onClick={() => setSpace('world_tour')}
+            >
+              Visite guidée
+            </button>
+          </div>
         </div>
       )}
 
