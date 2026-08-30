@@ -4,7 +4,8 @@ import { useWallet } from '../context/WalletContext'
 import { sdkDappConfig } from '../config/sdkDapp'
 import { LINKS, PRIMARY_NAV, SECONDARY_NAV } from '../config/links'
 import OraclePriceBadge from './OraclePriceBadge'
-import { OPEN_CONNECT_EVENT } from '../lib/walletEvents'
+import StatusIndicator from './ui/StatusIndicator'
+import { OPEN_CONNECT_EVENT, requestOpenAssets } from '../lib/walletEvents'
 
 function isValidErd(addr: string): boolean {
   return /^erd1[a-z0-9]{58}$/i.test(addr.trim())
@@ -16,7 +17,9 @@ function getCallbackUrl(): string {
 }
 
 const DESKTOP_NAV = PRIMARY_NAV.filter(n =>
-  ['/', '/marketplace', '/agents', '/trading', '/tours', '/gallery', '/wallet', '/tro'].includes(n.to)
+  ['/', '/marketplace', '/agents', '/trading', '/tours', '/gallery', '/museum', '/wallet', '/tro'].includes(
+    n.to
+  )
 )
 
 export default function Header() {
@@ -111,9 +114,7 @@ export default function Header() {
                 key={to}
                 to={to}
                 end={to === '/'}
-                className={({ isActive }) =>
-                  `nav-pill ${isActive ? 'nav-pill-active' : ''}`
-                }
+                className={({ isActive }) => `nav-pill ${isActive ? 'nav-pill-active' : ''}`}
               >
                 {label}
               </NavLink>
@@ -121,6 +122,17 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden sm:block">
+              <StatusIndicator />
+            </div>
+            <button
+              type="button"
+              className="hidden sm:inline-flex btn-secondary text-[10px] !py-1 !px-2"
+              onClick={() => requestOpenAssets()}
+              title="Asset Hub"
+            >
+              Assets
+            </button>
             <div className="hidden md:block">
               <OraclePriceBadge />
             </div>
@@ -176,7 +188,18 @@ export default function Header() {
               }}
               onClick={e => e.stopPropagation()}
             >
-              <div className="px-3 py-2">
+              <div className="px-3 py-2 flex flex-wrap gap-2 items-center">
+                <StatusIndicator />
+                <button
+                  type="button"
+                  className="btn-secondary text-[10px] !py-1 !px-2"
+                  onClick={() => {
+                    setMenuOpen(false)
+                    requestOpenAssets()
+                  }}
+                >
+                  Assets
+                </button>
                 <OraclePriceBadge />
               </div>
               {PRIMARY_NAV.map(({ to, label, emoji }) => (
@@ -257,7 +280,7 @@ export default function Header() {
               },
               {
                 title: 'Extension DeFi',
-                sub: 'Micro List / Buy',
+                sub: 'Chrome List / Buy',
                 icon: '🦊',
                 onClick: () => void tryExtension(),
               },
