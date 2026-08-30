@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
@@ -14,6 +14,8 @@ import LiaMonitor from './components/LiaMonitor'
 import GuardianStatusBar from './components/shared/GuardianStatusBar'
 import RoutePrefetch from './components/RoutePrefetch'
 import { useMultiversX } from './hooks/useMultiversX'
+import AssetDrawer from './components/ui/AssetDrawer'
+import { OPEN_ASSETS_EVENT } from './lib/walletEvents'
 import { LINKS } from './config/links'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
@@ -92,6 +94,12 @@ function TxGate({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const { isStale, lastUpdate } = useMultiversX()
+  const [assetsOpen, setAssetsOpen] = useState(false)
+  useEffect(() => {
+    const open = () => setAssetsOpen(true)
+    window.addEventListener(OPEN_ASSETS_EVENT, open)
+    return () => window.removeEventListener(OPEN_ASSETS_EVENT, open)
+  }, [])
 
   return (
     <div className="app-shell pb-20 md:pb-8">
@@ -199,6 +207,7 @@ export default function App() {
       <SignalTicker />
       <BottomNav />
       <RoutePrefetch />
+      <AssetDrawer open={assetsOpen} onClose={() => setAssetsOpen(false)} />
     </div>
   )
 }
