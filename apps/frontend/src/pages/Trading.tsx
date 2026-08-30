@@ -10,9 +10,11 @@ import PaperLegsPanel from '../components/PaperLegsPanel'
 import GuardianStatusPanel from '../components/GuardianStatusPanel'
 import LiaRunStrip from '../components/LiaRunStrip'
 import { useLIA } from '../hooks/useLIA'
+import TransactionOverlay, { lifecycleToPhase } from '../components/ui/TransactionOverlay'
 
 export default function Trading() {
   const { lifecycle, lastResult, error, runNatural } = useLIA()
+  const [overlayClosed, setOverlayClosed] = useState(false)
   const [cmd, setCmd] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -25,9 +27,14 @@ export default function Trading() {
     return () => window.removeEventListener('lia-intent', onIntent)
   }, [])
 
+  useEffect(() => {
+    setOverlayClosed(false)
+  }, [lifecycle])
+
   const run = async () => {
     if (!cmd.trim()) return
     setBusy(true)
+    setOverlayClosed(false)
     try {
       await runNatural(cmd.trim(), true)
     } finally {
@@ -38,6 +45,17 @@ export default function Trading() {
   return (
     <div className="animate-fade-in space-y-6 pb-10">
       <PageGuide page="trading" />
+      <TransactionOverlay
+        phase={
+          overlayClosed &&
+          (lifecycle === 'success' || lifecycle === 'error' || lifecycle === 'rejected')
+            ? 'IDLE'
+            : lifecycleToPhase(lifecycle, error)
+        }
+        detail={error || lastResult?.message}
+        txHash={lastResult?.txHash}
+        onClose={() => setOverlayClosed(true)}
+      />
 
       <LiaRunStrip />
 
