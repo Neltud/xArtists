@@ -11,6 +11,7 @@ import SocialOpsStrip from '../components/SocialOpsStrip'
 import ScStatusBanner from '../components/ScStatusBanner'
 import DataHealthStrip from '../components/DataHealthStrip'
 import LiaRunStrip from '../components/LiaRunStrip'
+import Lia3DBridge from '../components/ui/Lia3DBridge'
 import { useEffect, useState } from 'react'
 
 function PersonaQuickLinks({ persona }: { persona: string }) {
@@ -25,6 +26,9 @@ function PersonaQuickLinks({ persona }: { persona: string }) {
       </Link>
       <Link to="/tours" className="btn-secondary !py-1.5 !px-3 text-xs">
         Tours
+      </Link>
+      <Link to="/museum" className="btn-secondary !py-1.5 !px-3 text-xs">
+        Musée
       </Link>
     </div>
   )
@@ -49,7 +53,8 @@ export default function Dashboard() {
 
       <LiaRunStrip />
 
-      {/* Hero */}
+      <Lia3DBridge />
+
       <section className="relative overflow-hidden rounded-3xl border border-white/[0.08] p-6 sm:p-10">
         <div
           className="absolute inset-0 opacity-90"
@@ -67,12 +72,15 @@ export default function Dashboard() {
             <span className="gradient-text">action</span>
           </h1>
           <p className="text-zinc-400 text-sm sm:text-base leading-relaxed max-w-lg">
-            xArtists — galerie NFT, packs agents, Art Tours et board LIA. Paper par défaut. Ton wallet
-            signe. Vellum orchestre côté ops.
+            xArtists — galerie NFT, packs agents, Art Tours, musée immersif et board LIA. Paper par
+            défaut. Ton wallet signe. Vellum orchestre côté ops.
           </p>
           <div className="flex flex-wrap gap-2 pt-1">
             <Link to="/agents" className="btn-primary">
               Packs Agents
+            </Link>
+            <Link to="/museum" className="btn-secondary">
+              Musée 3D
             </Link>
             <Link to="/tours" className="btn-secondary">
               Art Tours
@@ -116,6 +124,9 @@ export default function Dashboard() {
             </li>
             <li>
               <strong className="text-zinc-300">Tours</strong> = service culturel, pas un pack IA
+            </li>
+            <li>
+              <strong className="text-zinc-300">Musée</strong> = Catzligue / Mydee / guide mondial
             </li>
             <li>
               <strong className="text-zinc-300">Trading</strong> = board LIA paper
