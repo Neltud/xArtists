@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
 import ToursScopeBanner from '../components/ToursScopeBanner'
 import ArtWorldMap from '../components/ArtWorldMap'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 type City = { id: string; label: string; focus?: string; score?: number; note?: string }
 type Tour = { id: string; title: string; duration?: string; includes?: string[] }
@@ -69,9 +70,11 @@ export default function ArtToursPage() {
           Carte mondiale réelle
         </h2>
         <p className="text-xs text-zinc-500 -mt-1">
-          Fond cartographique OSM / CARTO Dark · zoom, pan, marqueurs artistiques, expos en direct
+          Fond OSM / CARTO / relief / satellite · zoom · marqueurs · expos
         </p>
-        <ArtWorldMap />
+        <ErrorBoundary>
+          <ArtWorldMap />
+        </ErrorBoundary>
       </section>
 
       {doc && (
