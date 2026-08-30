@@ -21,6 +21,7 @@ import {
   type NFT,
 } from '../types/nft'
 import { requestOpenConnect } from '../lib/walletEvents'
+import { consumeTravelDestination } from '../lib/travelBridge'
 
 function preferImage(n: NFT): string | undefined {
   const thumb = n.media?.[0]?.thumbnailUrl
@@ -80,6 +81,7 @@ export default function MuseumPage() {
   const [colFilter, setColFilter] = useState<string>('all')
   const [catalogLoading, setCatalogLoading] = useState(true)
   const [catalogError, setCatalogError] = useState<string | null>(null)
+  const [travelBanner, setTravelBanner] = useState<string | null>(null)
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
 
@@ -96,6 +98,27 @@ export default function MuseumPage() {
     })()
     return () => {
       c = true
+    }
+  }, [])
+
+  useEffect(() => {
+    const hash = typeof window !== 'undefined' ? window.location.hash : ''
+    const q = hash.includes('?') ? hash.split('?')[1] : ''
+    const params = new URLSearchParams(q || (typeof window !== 'undefined' ? window.location.search : ''))
+    const spaceQ = params.get('space') as MuseumSpaceId | null
+    const cityQ = params.get('city')
+    const travel = consumeTravelDestination()
+    if (spaceQ && ['catzligue', 'mydee', 'world_tour', 'vr_core'].includes(spaceQ)) {
+      setSpace(spaceQ)
+    } else if (travel?.space) {
+      setSpace(travel.space)
+    }
+    if (travel?.city || cityQ) {
+      const city = travel?.city || cityQ || ''
+      setTravelBanner(
+        `Voyage LIA : ${city}${travel?.focus ? ` — ${travel.focus}` : ''}. Corridor Catzligue chargé.`
+      )
+      if (!spaceQ && !travel?.space) setSpace('catzligue')
     }
   }, [])
 
@@ -137,6 +160,12 @@ export default function MuseumPage() {
           )}
         </p>
       </header>
+
+      {travelBanner && (
+        <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-100">
+          {travelBanner}
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {MUSEUM_SPACES.map(s => (
