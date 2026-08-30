@@ -24,6 +24,7 @@ const DAO = lazy(() => import('./pages/DAO'))
 const Tip = lazy(() => import('./pages/Tip'))
 const Wallet = lazy(() => import('./pages/Wallet'))
 const Gallery = lazy(() => import('./pages/Gallery'))
+const MuseumPage = lazy(() => import('./pages/MuseumPage'))
 const HatomPage = lazy(() => import('./pages/HatomPage'))
 const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
 const Agents = lazy(() => import('./pages/Agents'))
@@ -125,6 +126,8 @@ export default function App() {
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/dao" element={<DAO />} />
                 <Route path="/gallery" element={<Gallery />} />
+                <Route path="/museum" element={<MuseumPage />} />
+                <Route path="/musee" element={<MuseumPage />} />
                 <Route path="/tip" element={<Tip />} />
                 <Route path="/wallet" element={<Wallet />} />
                 <Route path="/hatom" element={<HatomPage />} />
@@ -160,6 +163,9 @@ export default function App() {
             </a>
             <a href="/xArtists/#/entity" className="hover:text-cyan-300 transition-colors">
               Entité
+            </a>
+            <a href="/xArtists/#/museum" className="hover:text-cyan-300 transition-colors">
+              Musée
             </a>
             <a href="/xArtists/#/tours" className="hover:text-cyan-300 transition-colors">
               Tours
