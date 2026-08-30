@@ -1,5 +1,32 @@
 # Changelog — xArtists
 
+## [0.17.0](https://github.com/Neltud/xArtists/compare/v0.16.0...v0.17.0) (2026-08-30)
+
+
+### Features
+
+* **guardian+travel:** MultiversX Guardian API (no fake SUCCESS) + map-to-museum bridge ([2f64816](https://github.com/Neltud/xArtists/commit/2f64816a505becefe7957417d0be31e8ef391fad))
+* **museum:** Catzligue corridor with real MultiversX catalog artworks ([1b81726](https://github.com/Neltud/xArtists/commit/1b81726a3d20287b5430706f33f575d4a9ac3030))
+* **museum:** consume travel context from world tour ([1120c58](https://github.com/Neltud/xArtists/commit/1120c58b67d51f2a1d45b82fedacec34312664b7))
+* **museum:** CSS 3D corridor, LIA host, guided world tour UI ([1837162](https://github.com/Neltud/xArtists/commit/183716247c0429f90eba7f89a9df9855abdded88))
+* **museum:** LIA immersive museum v1 — Catzligue, Mydee, guided world tour ([bc59f43](https://github.com/Neltud/xArtists/commit/bc59f43e7859bf948d2cbd46d3eec532678656d6))
+* **museum:** load full real catalog, collection filters, up to 64 artworks ([df427d3](https://github.com/Neltud/xArtists/commit/df427d3724c042a249f123d614fb29a3d97ffc5f))
+* **museum:** MuseumCorridor + MuseumPage routes hub ([fff939c](https://github.com/Neltud/xArtists/commit/fff939c222f2e7b040cbb29ada00dc973033a4dd))
+* **museum:** register /museum and /musee routes ([19553ee](https://github.com/Neltud/xArtists/commit/19553eef279cb11b702cd8b1bed7360974cb9203))
+* **museum:** travel bridge world tour → Catzligue with destination banner ([5466781](https://github.com/Neltud/xArtists/commit/546678154307c85564443d18abc193d51c3a3a72))
+* **museum:** VR Core freemium panel + security notice ([b9bdfeb](https://github.com/Neltud/xArtists/commit/b9bdfeb2b7acf7bfe0d12184774f03a5781cf806))
+* **ui:** AssetDrawer + TransactionOverlay (no fake-success) ([c306c96](https://github.com/Neltud/xArtists/commit/c306c969a2213fc5a13dd56710d0f02eb7e583fb))
+* **ui:** AssetDrawer slide-over + App shell wiring ([c12f909](https://github.com/Neltud/xArtists/commit/c12f9091816c71342c4da8a838cce2ced044c3a1))
+* **ui:** StatusIndicator + Assets button in Header ([27331fa](https://github.com/Neltud/xArtists/commit/27331fa9b0a99761999895d17265db65c80b9200))
+* **ui:** StatusIndicator + Assets button in Header; Lia3DBridge on Home ([ca88c8a](https://github.com/Neltud/xArtists/commit/ca88c8afd702f8f4b83674e6622752719b8f8e2a))
+* **ui:** StatusIndicator, AssetDrawer, TransactionOverlay, Lia3DBridge, useAssets ([4bd7916](https://github.com/Neltud/xArtists/commit/4bd79163f8366357111e758329f2e9df8d257a74))
+* **ui:** wire AssetDrawer into App shell ([2a8f6e0](https://github.com/Neltud/xArtists/commit/2a8f6e0750436000c3ff4365e8bce8396639f0cf))
+
+
+### Documentation
+
+* **museum:** VR Core honest freemium roadmap + security notice ([bcd7e8d](https://github.com/Neltud/xArtists/commit/bcd7e8d7b07e8e2f9f88a50b739890a6d4479e93))
+
 ## [0.16.0](https://github.com/Neltud/xArtists/compare/v0.15.0...v0.16.0) (2026-08-30)
 
 
