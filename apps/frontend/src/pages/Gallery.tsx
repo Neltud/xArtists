@@ -67,6 +67,8 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<NFT | null>(null)
   const [mode, setMode] = useState<'index' | 'full'>('index')
+  const [q, setQ] = useState('')
+  const [typeFilter, setTypeFilter] = useState<'all' | 'NonFungibleESDT' | 'SemiFungibleESDT'>('all')
 
   useEffect(() => {
     let cancelled = false
@@ -87,10 +89,26 @@ export default function Gallery() {
     }
   }, [])
 
-  const ordered = useMemo(
-    () => [...collections].sort((a, b) => b.nft_count - a.nft_count),
-    [collections]
-  )
+  const ordered = useMemo(() => {
+    let rows = [...collections].sort((a, b) => (b.nft_count || 0) - (a.nft_count || 0))
+    if (typeFilter !== 'all') {
+      rows = rows.filter(
+        c =>
+          (c.type || '').toLowerCase().includes(typeFilter.toLowerCase().replace('esdt', '')) ||
+          c.type === typeFilter
+      )
+    }
+    if (q.trim()) {
+      const qq = q.trim().toLowerCase()
+      rows = rows.filter(
+        c =>
+          (c.name || '').toLowerCase().includes(qq) ||
+          (c.identifier || '').toLowerCase().includes(qq) ||
+          bioFor(c.identifier).label.toLowerCase().includes(qq)
+      )
+    }
+    return rows
+  }, [collections, q, typeFilter])
   const totalNfts = collections.reduce((s, c) => s + (c.nft_count || c.nfts?.length || 0), 0)
 
   const onCollectionLoaded = (col: CollectionData) => {
@@ -135,13 +153,54 @@ export default function Gallery() {
         <AdSlot id="drop_feature" />
       </div>
 
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3 flex-wrap">
+        <div className="flex flex-wrap gap-2 text-[11px]">
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-zinc-300">
+            {collections.length} collections
+          </span>
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-zinc-300">
+            {totalNfts}+ œuvres
+          </span>
+          <span className="rounded-full border border-fuchsia-500/25 bg-fuchsia-500/10 px-3 py-1 text-fuchsia-100/90">
+            mode {mode}
+          </span>
+        </div>
+        <div className="flex flex-1 flex-wrap gap-2 items-center min-w-0">
+          <input
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            placeholder="Filtrer collection…"
+            className="input-field flex-1 min-w-[160px] text-sm"
+            aria-label="Filtrer collections"
+          />
+          <select
+            value={typeFilter}
+            onChange={e => setTypeFilter(e.target.value as typeof typeFilter)}
+            className="input-field text-sm w-auto"
+            aria-label="Type"
+          >
+            <option value="all">Tous types</option>
+            <option value="NonFungibleESDT">NFT</option>
+            <option value="SemiFungibleESDT">SFT</option>
+          </select>
+        </div>
+      </div>
+
       {loading ? (
         <GallerySkeleton />
       ) : ordered.length === 0 ? (
-        <div className="rounded-2xl border border-[#2a2a3a] py-16 text-center text-gray-400">
-          <p className="font-semibold">Catalogue en chargement ou vide</p>
-          <p className="text-xs mt-2">Vérifier data/xartists_collections*.json sur Pages</p>
-          <Link to="/studio" className="btn-primary text-sm mt-4 inline-block">
+        <div className="rounded-2xl border border-[#2a2a3a] py-16 text-center text-gray-400 space-y-3">
+          <p className="font-semibold">
+            {collections.length === 0
+              ? 'Catalogue en chargement ou vide'
+              : 'Aucune collection pour ce filtre'}
+          </p>
+          <p className="text-xs">
+            {collections.length === 0
+              ? 'Vérifier data/xartists_collections*.json sur Pages'
+              : 'Élargis la recherche ou ouvre le Studio pour préparer un mint.'}
+          </p>
+          <Link to="/studio" className="btn-primary text-sm mt-2 inline-block">
             Ouvrir le Studio
           </Link>
         </div>
