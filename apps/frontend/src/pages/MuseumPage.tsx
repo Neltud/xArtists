@@ -1,6 +1,5 @@
 /**
- * LIA Immersive Museum — Catzligue · Mydee · World Tour · VR Core (gated).
- * Premium roadmap module · no fake TX success · real NFT frames when available.
+ * LIA Immersive Museum — real MultiversX catalog + user NFTs.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -14,40 +13,85 @@ import GuidedWorldTour from '../components/museum/GuidedWorldTour'
 import { MUSEUM_SPACES, type MuseumSpaceId } from '../lib/museumSpaces'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
-import { loadCatalogIndex, indexToPartialCollections } from '../lib/catalogLoader'
-import { nftImageUrl, type NFT } from '../types/nft'
+import {
+  DATA_URL,
+  nftImageUrl,
+  type CollectionData,
+  type CollectionsFile,
+  type NFT,
+} from '../types/nft'
 import { requestOpenConnect } from '../lib/walletEvents'
 
-function framesFromCatalog(nfts: NFT[]): FrameItem[] {
-  return nfts.slice(0, 24).map(n => ({
+function preferImage(n: NFT): string | undefined {
+  const thumb = n.media?.[0]?.thumbnailUrl
+  const full = n.url || n.media?.[0]?.url
+  if (thumb && /^https?:\/\//i.test(thumb)) return thumb
+  if (full && /^https?:\/\//i.test(full)) return full
+  return nftImageUrl(n)
+}
+
+function framesFromNfts(nfts: NFT[]): FrameItem[] {
+  return nfts.map(n => ({
     id: n.identifier,
     title: n.name || n.identifier,
-    subtitle: n.collection || n.type,
-    image: nftImageUrl(n),
+    subtitle: n.collection_name || n.collection,
+    collection: n.collection,
+    description: n.metadata?.description,
+    type: n.type,
+    image: preferImage(n),
     href: `https://explorer.multiversx.com/nfts/${n.identifier}`,
   }))
 }
 
+async function loadFullCatalog(): Promise<{ collections: CollectionData[]; nfts: NFT[] }> {
+  const urls = [
+    DATA_URL,
+    'https://raw.githubusercontent.com/Neltud/xArtists/main/apps/frontend/public/data/xartists_collections.json',
+    'https://raw.githubusercontent.com/Neltud/xArtists/main/data/xartists_collections.json',
+  ]
+  for (const u of urls) {
+    try {
+      const r = await fetch(`${u}${u.includes('?') ? '&' : '?'}t=${Date.now()}`, {
+        cache: 'no-store',
+      })
+      if (!r.ok) continue
+      const j = (await r.json()) as CollectionsFile
+      const cols = j.collections || []
+      if (!cols.length) continue
+      const nfts = cols.flatMap(c =>
+        (c.nfts || []).map(n => ({
+          ...n,
+          collection: n.collection || c.identifier,
+          collection_name: n.collection_name || c.name,
+        }))
+      )
+      return { collections: cols, nfts }
+    } catch {
+      /* next */
+    }
+  }
+  return { collections: [], nfts: [] }
+}
+
 export default function MuseumPage() {
   const [space, setSpace] = useState<MuseumSpaceId>('catzligue')
-  const [catalogFrames, setCatalogFrames] = useState<FrameItem[]>([])
+  const [allNfts, setAllNfts] = useState<NFT[]>([])
+  const [collections, setCollections] = useState<CollectionData[]>([])
+  const [colFilter, setColFilter] = useState<string>('all')
   const [catalogLoading, setCatalogLoading] = useState(true)
+  const [catalogError, setCatalogError] = useState<string | null>(null)
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
 
   useEffect(() => {
     let c = false
     ;(async () => {
-      const { index, full } = await loadCatalogIndex()
+      setCatalogLoading(true)
+      const { collections: cols, nfts } = await loadFullCatalog()
       if (c) return
-      let nfts: NFT[] = []
-      if (full?.collections?.length) {
-        nfts = full.collections.flatMap(col => col.nfts || []).slice(0, 24)
-      } else if (index?.collections?.length) {
-        const partial = indexToPartialCollections(index.collections)
-        nfts = partial.flatMap(col => col.nfts || []).slice(0, 24)
-      }
-      setCatalogFrames(framesFromCatalog(nfts))
+      setCollections(cols)
+      setAllNfts(nfts)
+      setCatalogError(cols.length ? null : 'Catalogue indisponible')
       setCatalogLoading(false)
     })()
     return () => {
@@ -55,7 +99,21 @@ export default function MuseumPage() {
     }
   }, [])
 
-  const mydeeFrames = useMemo(() => framesFromUserNfts(account.nfts || []), [account.nfts])
+  const catalogFrames = useMemo(() => {
+    let rows = allNfts
+    if (colFilter !== 'all') {
+      rows = rows.filter(n => n.collection === colFilter)
+    }
+    const withImg = rows.filter(n => preferImage(n))
+    const ordered = (withImg.length ? withImg : rows).slice(0, 64)
+    return framesFromNfts(ordered)
+  }, [allNfts, colFilter])
+
+  const mydeeFrames = useMemo(
+    () => framesFromUserNfts(account.nfts || []),
+    [account.nfts]
+  )
+
   const current = MUSEUM_SPACES.find(s => s.id === space)!
 
   return (
@@ -64,14 +122,19 @@ export default function MuseumPage() {
 
       <header className="space-y-2">
         <p className="text-[10px] uppercase tracking-[0.25em] text-fuchsia-400/90 font-semibold">
-          Musée immersif · LIA host
+          Musée immersif · données MultiversX
         </p>
         <h1 className="display text-3xl sm:text-4xl">
           Musée <span className="gradient-text">xArtists</span>
         </h1>
         <p className="text-sm text-zinc-400 max-w-xl leading-relaxed">
-          Galerie 3D (corridor CSS) · visite guidée mondiale · Mydee on-chain. VR Core / WebXR =
-          premium roadmap (LIA Pass). Aucune TX simulée.
+          Catzligue = catalogue public réel · Mydee = tes NFTs on-chain · visite guidée mondiale.
+          {allNfts.length > 0 && (
+            <span className="text-zinc-500">
+              {' '}
+              · {allNfts.length} œuvres · {collections.length} collections
+            </span>
+          )}
         </p>
       </header>
 
@@ -100,24 +163,59 @@ export default function MuseumPage() {
           Espace · <strong className="text-zinc-300">{current.name}</strong>
         </span>
         <span>{current.tagline}</span>
-        <span className="text-zinc-600">
-          accès{' '}
-          {current.access === 'free' ? 'libre' : current.access === 'wallet' ? 'wallet' : 'LIA Pass'}
-        </span>
       </div>
 
       {space === 'catzligue' && (
         <div className="relative space-y-3">
+          {collections.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
+              <button
+                type="button"
+                onClick={() => setColFilter('all')}
+                className={`rounded-full border px-2.5 py-1 text-[10px] ${
+                  colFilter === 'all'
+                    ? 'border-cyan-400/40 bg-cyan-500/15 text-cyan-100'
+                    : 'border-white/10 text-zinc-500'
+                }`}
+              >
+                Toutes ({allNfts.length})
+              </button>
+              {collections.map(c => (
+                <button
+                  key={c.identifier}
+                  type="button"
+                  onClick={() => setColFilter(c.identifier)}
+                  className={`rounded-full border px-2.5 py-1 text-[10px] ${
+                    colFilter === c.identifier
+                      ? 'border-violet-400/40 bg-violet-500/15 text-violet-100'
+                      : 'border-white/10 text-zinc-500'
+                  }`}
+                >
+                  {c.name || c.identifier} ({c.nft_count || c.nfts?.length || 0})
+                </button>
+              ))}
+            </div>
+          )}
+
           {catalogLoading ? (
-            <p className="text-sm text-zinc-500">Chargement catalogue…</p>
+            <p className="text-sm text-zinc-500">Chargement du catalogue MultiversX…</p>
+          ) : catalogError && !catalogFrames.length ? (
+            <p className="text-sm text-rose-300/90">{catalogError}</p>
           ) : (
             <MuseumCorridor
               frames={catalogFrames}
               theme="cyber"
-              emptyLabel="Catalogue vide — publier data/xartists_collections ou ouvrir le Studio."
+              emptyLabel="Aucune œuvre avec média dans ce filtre."
             />
           )}
-          <LiaHost space="catzligue" />
+          <LiaHost
+            space="catzligue"
+            lineExtra={
+              catalogFrames.length
+                ? `${catalogFrames.length} cadres chargés depuis le catalogue xArtists (mainnet).`
+                : null
+            }
+          />
           <p className="text-[11px] text-zinc-600">
             <Link to="/gallery" className="text-violet-300 underline">
               Galerie 2D
@@ -137,7 +235,11 @@ export default function MuseumPage() {
               <p className="text-sm text-amber-100">
                 Connecte ton wallet pour charger Mydee (NFTs on-chain).
               </p>
-              <button type="button" className="btn-primary text-sm" onClick={() => requestOpenConnect()}>
+              <button
+                type="button"
+                className="btn-primary text-sm"
+                onClick={() => requestOpenConnect()}
+              >
                 🔗 Connect
               </button>
             </div>
@@ -164,22 +266,17 @@ export default function MuseumPage() {
       {space === 'vr_core' && (
         <div className="relative rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-950/40 to-black px-6 py-10 space-y-4">
           <h2 className="text-xl font-bold text-white">VR Core — roadmap</h2>
-          <ul className="text-sm text-zinc-400 space-y-2 list-disc pl-5">
-            <li>Stack cible : React Three Fiber + @react-three/xr (WebXR)</li>
-            <li>Accès : NFT LIA Pass (mint SC pending — codeHash null)</li>
-            <li>Freemium : Catzligue + visite guidée gratuits · Mydee = wallet</li>
-          </ul>
-          <p className="text-xs text-amber-200/90 border border-amber-500/30 rounded-lg px-3 py-2">
-            Pas d’immersion casque dans cette build. Corridor CSS + guide mondial = fondation v1.
+          <p className="text-sm text-zinc-400">
+            WebXR (R3F) non packagé dans cette démo CI. Le corridor Catzligue affiche déjà les
+            vraies œuvres MultiversX.
           </p>
           <LiaHost space="vr_core" />
         </div>
       )}
 
       <section className="rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-[11px] text-zinc-500 leading-relaxed">
-        <strong className="text-zinc-400">Sécurité</strong> — ce module n’émet aucune TX. Achats /
-        mint passent par Guardian + signature wallet réelle (TransactionWatcher). Pas de setTimeout
-        fake-success.
+        Catalogue : <code className="text-zinc-400">data/xartists_collections.json</code> · médias
+        MultiversX CDN / IPFS · aucune TX simulée.
       </section>
     </div>
   )
