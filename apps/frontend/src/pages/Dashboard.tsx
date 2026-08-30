@@ -10,6 +10,7 @@ import AdSlot from '../components/AdSlot'
 import SocialOpsStrip from '../components/SocialOpsStrip'
 import ScStatusBanner from '../components/ScStatusBanner'
 import DataHealthStrip from '../components/DataHealthStrip'
+import LiaRunStrip from '../components/LiaRunStrip'
 import { useEffect, useState } from 'react'
 
 function PersonaQuickLinks({ persona }: { persona: string }) {
@@ -45,6 +46,8 @@ export default function Dashboard() {
   return (
     <div className="animate-fade-in space-y-6 pb-10">
       <PageGuide page="home" />
+
+      <LiaRunStrip />
 
       {/* Hero */}
       <section className="relative overflow-hidden rounded-3xl border border-white/[0.08] p-6 sm:p-10">

@@ -8,6 +8,7 @@ import CompoundingPanel from '../components/CompoundingPanel'
 import LiaBoardPanel from '../components/LiaBoardPanel'
 import PaperLegsPanel from '../components/PaperLegsPanel'
 import GuardianStatusPanel from '../components/GuardianStatusPanel'
+import LiaRunStrip from '../components/LiaRunStrip'
 import { useLIA } from '../hooks/useLIA'
 
 export default function Trading() {
@@ -37,6 +38,8 @@ export default function Trading() {
   return (
     <div className="animate-fade-in space-y-6 pb-10">
       <PageGuide page="trading" />
+
+      <LiaRunStrip />
 
       <header className="space-y-2">
         <p className="text-[10px] uppercase tracking-[0.2em] text-violet-400/80 font-semibold">
