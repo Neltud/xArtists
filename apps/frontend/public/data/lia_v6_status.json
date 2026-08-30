@@ -1,10 +1,16 @@
 {
-  "version": "6.1",
-  "updated": "2026-08-08T13:40:00Z",
-  "status": "monitoring",
+  "version": "6.2",
+  "updated": "2026-08-30T11:05:52Z",
+  "timestamp": "2026-08-30T11:05:52Z",
+  "status": "paper_run",
   "LIA_LIVE_TRADING": 0,
   "market": { "guard_status": "OK" },
   "portfolio": { "total_usd": 0 },
+  "sc": {
+    "marketplace_codeHash": null,
+    "agents_marketplace": null,
+    "note": "Marketplace/agents codeHash null — fail closed for list/buy"
+  },
   "orchestrator": {
     "chain_id": "1",
     "live_trading": false,
@@ -12,10 +18,16 @@
     "agent_action": "WAIT",
     "guardian": {
       "allow": true,
-      "reason": "ok",
+      "reason": "paper_ok",
       "max_notional": 150.0,
       "spiral_score": 0.05,
       "effective_leverage": 0.8
     }
+  },
+  "modules": {
+    "trading_stack": true,
+    "slippage": true,
+    "bridge_latency": true,
+    "secure_tp": true
   }
 }
