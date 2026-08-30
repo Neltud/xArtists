@@ -1,12 +1,22 @@
 /**
- * Wallet utilisateur — connect live + soldes lecture API.
+ * Wallet utilisateur — connect live + soldes + NFTs on-chain (API MultiversX).
+ * Jamais le wallet protocole LIA.
  */
 import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
 import WalletConnectPanel from '../components/WalletConnectPanel'
+import MyNftPacksStrip from '../components/MyNftPacksStrip'
 import { useWallet } from '../context/WalletContext'
-import { useUserAccount } from '../hooks/useUserAccount'
+import { useUserAccount, type UserNft } from '../hooks/useUserAccount'
 import { requestOpenConnect } from '../lib/walletEvents'
+import { LINKS } from '../config/links'
+
+function nftThumb(n: UserNft): string | undefined {
+  if (n.url && /^https?:\/\//i.test(n.url)) return n.url
+  const m = n.media?.[0]?.url
+  if (m && /^https?:\/\//i.test(m)) return m
+  return undefined
+}
 
 export default function Wallet() {
   const { connected, address, shortAddress, method, canAttemptSign } = useWallet()
@@ -34,7 +44,7 @@ export default function Wallet() {
       {!connected ? (
         <div className="card space-y-4">
           <p className="text-sm text-zinc-400">
-            Connecte Web Wallet, xPortal ou extension pour voir les soldes et signer.
+            Connecte Web Wallet, xPortal ou extension pour voir soldes, NFTs on-chain et signer.
           </p>
           <button type="button" className="btn-primary w-full sm:w-auto" onClick={() => requestOpenConnect()}>
             Connecter
@@ -56,6 +66,23 @@ export default function Wallet() {
                 Mode lecture seule — reconnecte via Web Wallet pour signer.
               </p>
             )}
+            <div className="flex flex-wrap gap-2 text-[10px]">
+              <a
+                href={`https://explorer.multiversx.com/accounts/${address}`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-cyan-400/90 hover:text-cyan-300 underline underline-offset-2"
+              >
+                Explorer ↗
+              </a>
+              <button
+                type="button"
+                onClick={() => account.refresh()}
+                className="text-zinc-500 hover:text-white"
+              >
+                ↻ Refresh
+              </button>
+            </div>
           </div>
 
           <div className="card">
@@ -70,10 +97,77 @@ export default function Wallet() {
                 <span className="text-sm font-normal text-zinc-500 ml-2">EGLD</span>
               </p>
             )}
-            {account.nftCount > 0 && (
-              <p className="text-xs text-zinc-500 mt-2">{account.nftCount} NFT</p>
-            )}
+            <p className="text-xs text-zinc-500 mt-2">
+              {account.nftCount} NFT on-chain
+              {account.refreshedAt
+                ? ` · maj ${new Date(account.refreshedAt).toLocaleTimeString()}`
+                : ''}
+            </p>
           </div>
+
+          {/* My NFTs — fetch live API MultiversX on connected erd1 */}
+          <section className="card space-y-3" aria-labelledby="my-nfts-title">
+            <div className="flex items-center justify-between gap-2">
+              <h2 id="my-nfts-title" className="text-[10px] uppercase tracking-wider text-violet-300/90 font-semibold">
+                My NFTs
+              </h2>
+              <span className="text-[10px] text-zinc-600 mono">{account.nfts.length}</span>
+            </div>
+
+            {account.loading && account.nfts.length === 0 && (
+              <p className="text-sm text-zinc-500">Chargement des NFTs…</p>
+            )}
+
+            {!account.loading && account.nfts.length === 0 && (
+              <p className="text-sm text-zinc-500">
+                Aucun NFT NonFungible / SemiFungible sur cette adresse.
+              </p>
+            )}
+
+            {account.nfts.length > 0 && (
+              <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {account.nfts.map(n => {
+                  const thumb = nftThumb(n)
+                  const href =
+                    typeof LINKS?.explorerNft === 'function'
+                      ? LINKS.explorerNft(n.identifier)
+                      : `https://explorer.multiversx.com/nfts/${n.identifier}`
+                  return (
+                    <li key={n.identifier}>
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block rounded-xl border border-white/10 bg-black/30 overflow-hidden hover:border-violet-400/40 transition-colors"
+                      >
+                        <div className="aspect-square bg-zinc-900/80 flex items-center justify-center">
+                          {thumb ? (
+                            <img
+                              src={thumb}
+                              alt={n.name}
+                              loading="lazy"
+                              className="w-full h-full object-cover"
+                              onError={e => {
+                                ;(e.target as HTMLImageElement).style.display = 'none'
+                              }}
+                            />
+                          ) : (
+                            <span className="text-2xl opacity-40">🖼️</span>
+                          )}
+                        </div>
+                        <div className="px-2 py-1.5">
+                          <p className="text-[11px] text-white truncate font-medium">{n.name}</p>
+                          <p className="text-[9px] text-zinc-500 truncate mono">{n.collection}</p>
+                        </div>
+                      </a>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </section>
+
+          <MyNftPacksStrip />
 
           <WalletConnectPanel />
 
@@ -83,6 +177,9 @@ export default function Wallet() {
             </Link>
             <Link to="/agents" className="btn-secondary text-xs">
               Packs
+            </Link>
+            <Link to="/my-packs" className="btn-secondary text-xs">
+              My Packs
             </Link>
             <Link to="/tip" className="btn-secondary text-xs">
               Tip
