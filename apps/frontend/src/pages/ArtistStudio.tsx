@@ -157,12 +157,26 @@ export default function ArtistStudio() {
       <PageGuide page="studio" />
       <LiaVsUserBanner tone="user" />
 
-      <header className="mb-4">
-        <h1 className="text-3xl font-black">🎨 Studio xArtists</h1>
-        <p className="text-gray-500 mt-1 text-sm">
+      <header className="mb-4 space-y-2">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-violet-400/80 font-semibold">
+          Création · MultiversX
+        </p>
+        <h1 className="text-3xl font-black">
+          🎨 Studio <span className="gradient-text">xArtists</span>
+        </h1>
+        <p className="text-gray-500 text-sm">
           Parcours artiste :{' '}
           <strong className="text-gray-300">préparer → pin → mint → list / sell</strong>
+          {' · '}wallet artiste (pas LIA ops)
         </p>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <Link to="/gallery" className="btn-secondary text-xs">
+            Galerie
+          </Link>
+          <Link to="/marketplace" className="btn-secondary text-xs">
+            Marketplace
+          </Link>
+        </div>
       </header>
 
       <ScStatusBanner />
@@ -206,7 +220,7 @@ export default function ArtistStudio() {
         ))}
       </ol>
 
-      <div className="flex flex-wrap gap-2 mb-6 text-xs font-semibold">
+      <div className="flex flex-wrap gap-2 mb-4 text-xs font-semibold">
         {[1, 2, 3, 4].map(n => (
           <button
             key={n}
@@ -221,6 +235,28 @@ export default function ArtistStudio() {
             Étape {n}
           </button>
         ))}
+      </div>
+
+      <div
+        className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden mb-4"
+        aria-hidden
+        data-studio-progress
+      >
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-400 transition-all duration-300"
+          style={{ width: `${(step / 4) * 100}%` }}
+        />
+      </div>
+
+      <div className="mb-6 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] text-zinc-400 flex flex-wrap gap-x-4 gap-y-1">
+        <span>
+          Draft · <strong className="text-zinc-200">{collectionName || '—'}</strong>
+        </span>
+        <span className="mono truncate max-w-[220px]">
+          {ipfsUri ? (ipfsUri.length > 28 ? `${ipfsUri.slice(0, 28)}…` : ipfsUri) : 'média pending'}
+        </span>
+        <span>{mode === 'physical' ? 'RWA / physical' : 'digital'}</span>
+        <span>étape {step}/4</span>
       </div>
 
       {step === 1 && (
