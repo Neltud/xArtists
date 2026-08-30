@@ -1,13 +1,15 @@
 /**
- * Visite guidée mondiale — stops from art_world_locations + LIA narration.
+ * Visite guidée mondiale — stops from art_tour_locations + LIA narration.
  * Cultural service (Tours) — not an agent pack.
  */
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { museumTravelHref } from '../../lib/travelBridge'
 import { loadTourStops, type TourStop } from '../../lib/museumSpaces'
 import LiaHost from './LiaHost'
 
 export default function GuidedWorldTour() {
+  const navigate = useNavigate()
   const [stops, setStops] = useState<TourStop[]>([])
   const [i, setI] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -26,16 +28,16 @@ export default function GuidedWorldTour() {
     }
   }, [])
 
-  const stop = stops[i]
+  const stop = stops[i] || null
 
   return (
-    <div className="relative space-y-4">
-      <div className="relative min-h-[280px] rounded-2xl border border-cyan-500/20 overflow-hidden bg-gradient-to-br from-[#0a1628] via-[#0a0e18] to-black">
+    <div className="space-y-4">
+      <div className="relative overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-[#0a1628] via-[#0a0e18] to-black">
         <div
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-50"
           style={{
-            backgroundImage:
-              'radial-gradient(circle at 20% 30%, rgba(56,189,248,0.25), transparent 40%), radial-gradient(circle at 80% 70%, rgba(167,139,250,0.2), transparent 40%)',
+            background:
+              'radial-gradient(ellipse at 20% 30%, rgba(34,211,238,0.15), transparent 50%), radial-gradient(ellipse at 80% 70%, rgba(139,92,246,0.12), transparent 40%)',
           }}
         />
         <div className="relative z-[1] p-6 sm:p-8 flex flex-col justify-center min-h-[280px]">
@@ -71,6 +73,24 @@ export default function GuidedWorldTour() {
                 <Link to="/tours" className="btn-secondary text-xs">
                   Carte mondiale Tours
                 </Link>
+                <button
+                  type="button"
+                  className="btn-primary text-xs"
+                  onClick={() =>
+                    navigate(
+                      museumTravelHref({
+                        id: stop.id,
+                        city: stop.city,
+                        country: stop.country,
+                        focus: stop.focus,
+                        space: 'catzligue',
+                        source: 'world_tour',
+                      })
+                    )
+                  }
+                >
+                  Entrer dans le musée →
+                </button>
               </div>
             </>
           )}
