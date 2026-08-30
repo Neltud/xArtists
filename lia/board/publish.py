@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -71,6 +72,8 @@ def build_board(
 
 def publish(**kwargs: Any) -> Path:
     data = build_board(**kwargs)
+    data["updated"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    data.setdefault("trading_stack", {"LIA_LIVE_TRADING": 0, "tp_mode_default": "log"})
     path = ROOT / "data" / "lia_board.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2), encoding="utf-8")
