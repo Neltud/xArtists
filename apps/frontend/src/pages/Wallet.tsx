@@ -1,5 +1,5 @@
 /**
- * Wallet utilisateur — connect live + soldes + NFTs on-chain (API MultiversX).
+ * Wallet utilisateur — connect live + soldes + tokens ESDT + NFTs on-chain.
  * Jamais le wallet protocole LIA.
  */
 import { Link } from 'react-router-dom'
@@ -44,7 +44,7 @@ export default function Wallet() {
       {!connected ? (
         <div className="card space-y-4">
           <p className="text-sm text-zinc-400">
-            Connecte Web Wallet, xPortal ou extension pour voir soldes, NFTs on-chain et signer.
+            Connecte Web Wallet, xPortal ou extension pour voir soldes, tokens, NFTs on-chain et signer.
           </p>
           <button type="button" className="btn-primary w-full sm:w-auto" onClick={() => requestOpenConnect()}>
             Connecter
@@ -75,11 +75,7 @@ export default function Wallet() {
               >
                 Explorer ↗
               </a>
-              <button
-                type="button"
-                onClick={() => account.refresh()}
-                className="text-zinc-500 hover:text-white"
-              >
+              <button type="button" onClick={() => account.refresh()} className="text-zinc-500 hover:text-white">
                 ↻ Refresh
               </button>
             </div>
@@ -98,14 +94,56 @@ export default function Wallet() {
               </p>
             )}
             <p className="text-xs text-zinc-500 mt-2">
-              {account.nftCount} NFT on-chain
+              {account.tokens.length} ESDT · {account.nftCount} NFT
               {account.refreshedAt
                 ? ` · maj ${new Date(account.refreshedAt).toLocaleTimeString()}`
                 : ''}
             </p>
           </div>
 
-          {/* My NFTs — fetch live API MultiversX on connected erd1 */}
+          <section className="card space-y-3" aria-labelledby="my-tokens-title">
+            <div className="flex items-center justify-between gap-2">
+              <h2 id="my-tokens-title" className="text-[10px] uppercase tracking-wider text-cyan-300/90 font-semibold">
+                My Tokens
+              </h2>
+              <span className="text-[10px] text-zinc-600 mono">{account.tokens.length}</span>
+            </div>
+            {account.loading && account.tokens.length === 0 && (
+              <p className="text-sm text-zinc-500">Chargement tokens ESDT…</p>
+            )}
+            {!account.loading && account.tokens.length === 0 && (
+              <p className="text-sm text-zinc-500">Aucun token ESDT sur cette adresse.</p>
+            )}
+            {account.tokens.length > 0 && (
+              <ul className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+                {account.tokens.map(t => (
+                  <li
+                    key={t.identifier}
+                    className="flex items-center justify-between gap-2 rounded-lg border border-white/[0.06] bg-black/25 px-2.5 py-1.5"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-xs text-white font-medium truncate">
+                        {t.ticker}
+                        <span className="text-zinc-500 font-normal ml-1.5">{t.name}</span>
+                      </p>
+                      <p className="text-[9px] text-zinc-600 mono truncate">{t.identifier}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-xs text-zinc-200 mono">
+                        {t.balance.toLocaleString(undefined, { maximumFractionDigits: 6 })}
+                      </p>
+                      {t.valueUsd > 0 && (
+                        <p className="text-[10px] text-zinc-500">
+                          ≈ ${t.valueUsd.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
           <section className="card space-y-3" aria-labelledby="my-nfts-title">
             <div className="flex items-center justify-between gap-2">
               <h2 id="my-nfts-title" className="text-[10px] uppercase tracking-wider text-violet-300/90 font-semibold">
@@ -113,17 +151,12 @@ export default function Wallet() {
               </h2>
               <span className="text-[10px] text-zinc-600 mono">{account.nfts.length}</span>
             </div>
-
             {account.loading && account.nfts.length === 0 && (
               <p className="text-sm text-zinc-500">Chargement des NFTs…</p>
             )}
-
             {!account.loading && account.nfts.length === 0 && (
-              <p className="text-sm text-zinc-500">
-                Aucun NFT NonFungible / SemiFungible sur cette adresse.
-              </p>
+              <p className="text-sm text-zinc-500">Aucun NFT NonFungible / SemiFungible sur cette adresse.</p>
             )}
-
             {account.nfts.length > 0 && (
               <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {account.nfts.map(n => {
@@ -172,18 +205,10 @@ export default function Wallet() {
           <WalletConnectPanel />
 
           <div className="flex flex-wrap gap-2">
-            <Link to="/marketplace" className="btn-secondary text-xs">
-              Marketplace
-            </Link>
-            <Link to="/agents" className="btn-secondary text-xs">
-              Packs
-            </Link>
-            <Link to="/my-packs" className="btn-secondary text-xs">
-              My Packs
-            </Link>
-            <Link to="/tip" className="btn-secondary text-xs">
-              Tip
-            </Link>
+            <Link to="/marketplace" className="btn-secondary text-xs">Marketplace</Link>
+            <Link to="/agents" className="btn-secondary text-xs">Packs</Link>
+            <Link to="/my-packs" className="btn-secondary text-xs">My Packs</Link>
+            <Link to="/tip" className="btn-secondary text-xs">Tip</Link>
           </div>
         </div>
       )}

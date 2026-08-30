@@ -4,9 +4,12 @@ import { useWallet } from '../context/WalletContext'
 import PackCheckout from '../components/PackCheckout'
 import PageGuide from '../components/PageGuide'
 import LiaVsUserBanner from '../components/LiaVsUserBanner'
+import MyNftPacksStrip from '../components/MyNftPacksStrip'
 import { AGENT_PACKS } from '../config/agentPacks'
 import { timingDefaults } from '../config/chainTiming'
 import { requestOpenConnect } from '../lib/walletEvents'
+import { useUserAccount } from '../hooks/useUserAccount'
+import { matchOnChainPacks, loadOwnedPacks } from '../lib/nftPacks'
 
 type LedgerFile = {
   scenarios?: Record<
@@ -35,6 +38,9 @@ const API = (import.meta.env.VITE_ACCESS_API_BASE as string | undefined) || ''
 
 export default function MyPacks() {
   const { connected, address, method } = useWallet()
+  const account = useUserAccount(connected ? address : null)
+  const chainHits = useMemo(() => matchOnChainPacks(account.nfts), [account.nfts])
+  const sessionPacks = useMemo(() => loadOwnedPacks(), [account.refreshedAt, connected])
   const [params] = useSearchParams()
   const [ledger, setLedger] = useState<LedgerFile | null>(null)
   const [err, setErr] = useState<string | null>(null)
@@ -128,10 +134,27 @@ export default function MyPacks() {
       <header>
         <h1 className="text-2xl sm:text-3xl font-black">My Packs</h1>
         <p className="text-sm text-zinc-500 mt-1">
-          Access membership · <span className="text-amber-300 font-medium">PAPER</span> · Model C — pas un
-          fonds géré
+          Access membership · on-chain si NFT détecté · sinon{' '}
+          <span className="text-amber-300 font-medium">PAPER</span> session · Model C — pas un fonds
+          géré
         </p>
+        {chainHits.length > 0 && (
+          <p className="text-xs text-emerald-400/90 mt-1">
+            {chainHits.length} pack NFT on-chain · {new Set(chainHits.map(h => h.packId)).size}{' '}
+            série(s)
+          </p>
+        )}
+        {!connected && (
+          <p className="text-xs text-zinc-500 mt-1">Connecte erd1 pour lire la propriété on-chain.</p>
+        )}
+        {sessionPacks.length > 0 && chainHits.length === 0 && (
+          <p className="text-xs text-amber-400/80 mt-1">
+            Session paper locale : {sessionPacks.join(', ')} (pas une preuve on-chain)
+          </p>
+        )}
       </header>
+
+      <MyNftPacksStrip />
 
       {cancelled && (
         <div className="rounded-xl border border-zinc-600 bg-zinc-900/80 px-4 py-3 text-xs text-zinc-300">
@@ -230,10 +253,14 @@ export default function MyPacks() {
               (s.tickets || []).filter(t => t.pack === p.id && t.ok && t.size_usd > 0)
             )
             const notional = tickets.reduce((s, t) => s + t.size_usd, 0)
+            const onChain = chainHits.some(h => h.packId === p.id)
             return (
               <div key={p.id} className="rounded-lg border border-zinc-800 bg-zinc-950/40 p-3">
                 <p className={`font-semibold text-sm ${p.color}`}>
                   {p.icon} {p.name}
+                  {onChain && (
+                    <span className="ml-2 text-[9px] uppercase text-emerald-400/90">on-chain</span>
+                  )}
                 </p>
                 <p className="text-[10px] text-zinc-500 mt-1">Simulated notional</p>
                 <p className="text-lg font-black text-white mt-1">
@@ -278,12 +305,12 @@ export default function MyPacks() {
           ← Packs catalog
         </Link>
         {' · '}
-        <Link to="/trading" className="text-purple-400 hover:underline">
-          Trading / compounding
+        <Link to="/wallet" className="text-purple-400 hover:underline">
+          Wallet / My Tokens
         </Link>
         {' · '}
-        <Link to="/portfolio" className="text-purple-400 hover:underline">
-          Portfolio LIA
+        <Link to="/trading" className="text-purple-400 hover:underline">
+          Trading / compounding
         </Link>
         {' · '}
         docs/PHASE1_MODEL_C_PROTOCOL.md
