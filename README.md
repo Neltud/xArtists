@@ -5,10 +5,11 @@
 dApp (GitHub Pages): https://neltud.github.io/xArtists/  
 Repo: https://github.com/Neltud/xArtists  
 
-**Status (2026-08-28): private / pre-mainnet release**  
+**Status (2026-08-30): private / pre-mainnet release**  
 - Paper LIA by default (`LIA_LIVE_TRADING=0`)  
 - Marketplace, agents, staking, gov, minter SC: **not live** (empty / null `codeHash`) until deploy + verify  
 - UI fail-closed: no fake “live market” claims without on-chain code  
+- Reality Switch (paper vs live chrome) = **chemin**, pas un live allumé — [`docs/REALITY_SWITCH.md`](docs/REALITY_SWITCH.md)  
 - Supernova: Devnet 600 ms (J+8) · mainnet node upgrade **1 Sep (J-4)** · activation **10 Sep (J-13)**  
 
 Recap + veille : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)
@@ -97,5 +98,8 @@ Map: [`docs/VELLUM_WORKFLOW_MAP.md`](docs/VELLUM_WORKFLOW_MAP.md)
 | [SC_DEPLOY_COMMANDS.md](docs/SC_DEPLOY_COMMANDS.md) | Commandes deploy SC |
 | [STATUS.md](docs/STATUS.md) | Capability matrix |
 | [VELLUM_WORKFLOW_MAP.md](docs/VELLUM_WORKFLOW_MAP.md) | Workflows Vellum |
+| [REALITY_SWITCH.md](docs/REALITY_SWITCH.md) | Paper vs live chrome (chemin, live OFF) |
+| [LIVE_EXECUTION_SPECS.md](docs/LIVE_EXECUTION_SPECS.md) | useMultiversX · AssetService · Guardian / Watcher |
+| [ROADMAP_TRUST_INFRA.md](docs/ROADMAP_TRUST_INFRA.md) | Sprint 1–3 connexion → agenticité → écosystème |
 
 No PEM, JWT, or private keys in git — ever.
