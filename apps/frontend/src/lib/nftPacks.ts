@@ -1,5 +1,6 @@
 /**
  * NFT Pack series — metadata + local ownership (paper until SC mint).
+ * On-chain matching via VITE_AGENT_PACK_COLLECTIONS + name heuristics.
  */
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 
@@ -76,4 +77,97 @@ export async function fetchNftPacksCatalog(): Promise<NftPacksFile | null> {
     }
   }
   return null
+}
+
+/** Optional env: comma-separated MultiversX collection tickers for agent packs. */
+export function agentPackCollectionIds(): string[] {
+  try {
+    const raw = (import.meta.env.VITE_AGENT_PACK_COLLECTIONS as string | undefined) || ''
+    return raw
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean)
+  } catch {
+    return []
+  }
+}
+
+const PACK_NAME_HINTS: Record<PackId, string[]> = {
+  pulse: ['pulse'],
+  yield: ['yield'],
+  sentinel: ['sentinel'],
+}
+
+export type OnChainPackHit = {
+  packId: PackId
+  identifier: string
+  name: string
+  collection: string
+  nonce: number
+  url?: string
+}
+
+/**
+ * Map user NFTs → agent packs (Pulse / Yield / Sentinel).
+ * 1) Collection ID match via VITE_AGENT_PACK_COLLECTIONS
+ * 2) Name heuristics (until SC mint publishes ticker)
+ */
+export function matchOnChainPacks(
+  nfts: Array<{
+    identifier: string
+    collection?: string
+    name?: string
+    nonce?: number
+    url?: string
+    media?: { url?: string }[]
+  }>
+): OnChainPackHit[] {
+  const cols = new Set(agentPackCollectionIds().map(c => c.toUpperCase()))
+  const hits: OnChainPackHit[] = []
+  const seen = new Set<string>()
+
+  for (const n of nfts) {
+    const col = (n.collection || '').toUpperCase()
+    const name = (n.name || '').toLowerCase()
+    const id = (n.identifier || '').toLowerCase()
+    let packId: PackId | null = null
+
+    if (cols.size && cols.has(col)) {
+      for (const [pid, hints] of Object.entries(PACK_NAME_HINTS) as [PackId, string[]][]) {
+        if (hints.some(h => name.includes(h) || id.includes(h))) {
+          packId = pid
+          break
+        }
+      }
+      if (!packId) packId = 'pulse'
+    } else {
+      for (const [pid, hints] of Object.entries(PACK_NAME_HINTS) as [PackId, string[]][]) {
+        if (hints.some(h => name.includes(h))) {
+          packId = pid
+          break
+        }
+      }
+    }
+
+    if (!packId) continue
+    const key = `${packId}:${n.identifier}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    const url =
+      n.url ||
+      (Array.isArray(n.media) && n.media[0]?.url ? n.media[0].url : undefined)
+    hits.push({
+      packId,
+      identifier: n.identifier,
+      name: n.name || n.identifier,
+      collection: n.collection || '',
+      nonce: n.nonce ?? 0,
+      url,
+    })
+  }
+  return hits
+}
+
+export function ownedPackIdsFromChain(hits: OnChainPackHit[]): PackId[] {
+  return [...new Set(hits.map(h => h.packId))]
 }
