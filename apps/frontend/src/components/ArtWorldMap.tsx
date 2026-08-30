@@ -38,7 +38,6 @@ function statusBadge(status: string): string {
   return 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'
 }
 
-/** Couleurs par région (marqueurs + légende). */
 const REGION_COLORS: Record<string, { fill: string; stroke: string; label: string }> = {
   europe: { fill: '#38bdf8', stroke: '#7dd3fc', label: 'Europe' },
   americas: { fill: '#f43f5e', stroke: '#fda4af', label: 'Amériques' },
@@ -295,6 +294,7 @@ export default function ArtWorldMap() {
     }
   }, [])
 
+  // Switch basemap — never call LayerGroup.bringToFront (breaks some CDN builds)
   useEffect(() => {
     const L = LRef.current
     const map = mapRef.current
@@ -302,15 +302,34 @@ export default function ArtWorldMap() {
 
     const bm = BASEMAPS[basemap]
     if (baseLayerRef.current) {
-      map.removeLayer(baseLayerRef.current)
+      try {
+        map.removeLayer(baseLayerRef.current)
+      } catch {
+        /* ignore */
+      }
     }
-    const layer = L.tileLayer(bm.url, {
+    const tile = L.tileLayer(bm.url, {
       attribution: bm.attribution,
       maxZoom: bm.maxZoom,
       subdomains: bm.subdomains || 'abc',
     }).addTo(map)
-    if (layerRef.current) layerRef.current.bringToFront()
-    baseLayerRef.current = layer
+    if (typeof tile.setZIndex === 'function') {
+      try {
+        tile.setZIndex(0)
+      } catch {
+        /* ignore */
+      }
+    }
+    const markers = layerRef.current
+    if (markers) {
+      try {
+        if (map.hasLayer(markers)) map.removeLayer(markers)
+        markers.addTo(map)
+      } catch {
+        /* ignore */
+      }
+    }
+    baseLayerRef.current = tile
   }, [basemap, mapReady])
 
   const regions = useMemo(() => {
