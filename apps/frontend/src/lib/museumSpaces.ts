@@ -54,7 +54,7 @@ export type TourStop = {
   lng?: number
 }
 
-/** Fallback stops if art_world_locations.json offline */
+/** Fallback stops if art_tour_locations.json offline */
 export const FALLBACK_TOUR_STOPS: TourStop[] = [
   { id: 'paris', city: 'Paris', country: 'France', focus: 'Modern & phygital', region: 'europe' },
   { id: 'london', city: 'London', country: 'UK', focus: 'Contemporary', region: 'europe' },
@@ -70,24 +70,24 @@ export const FALLBACK_TOUR_STOPS: TourStop[] = [
 
 export async function loadTourStops(): Promise<TourStop[]> {
   const urls = [
-    `${import.meta.env.BASE_URL}data/art_world_locations.json`,
-    'https://raw.githubusercontent.com/Neltud/xArtists/main/data/art_world_locations.json',
+    `${import.meta.env.BASE_URL}data/art_tour_locations.json`,
+    'https://raw.githubusercontent.com/Neltud/xArtists/main/data/art_tour_locations.json',
   ]
   for (const u of urls) {
     try {
       const r = await fetch(`${u}?t=${Date.now()}`, { cache: 'no-store' })
       if (!r.ok) continue
       const j = await r.json()
-      const rows = Array.isArray(j) ? j : j.locations || j.cities || []
-      if (!Array.isArray(rows) || !rows.length) continue
-      return rows.map((x: Record<string, unknown>) => ({
-        id: String(x.id || x.city || '').toLowerCase().replace(/\s+/g, '-'),
+      const rows = Array.isArray(j) ? j : j.locations || j.stops || []
+      if (!rows.length) continue
+      return rows.map((x: Record<string, unknown>, i: number) => ({
+        id: String(x.id || x.slug || `stop-${i}`),
         city: String(x.city || x.name || '—'),
         country: String(x.country || ''),
-        focus: String(x.focus || x.note || 'Art destination'),
+        focus: String(x.focus || x.theme || x.note || ''),
         region: x.region ? String(x.region) : undefined,
         lat: typeof x.lat === 'number' ? x.lat : undefined,
-        lng: typeof x.lng === 'number' ? x.lng : undefined,
+        lng: typeof x.lng === 'number' ? x.lng : typeof x.lon === 'number' ? x.lon : undefined,
       }))
     } catch {
       /* next */
@@ -112,6 +112,8 @@ export const LIA_HOST_LINES: Record<MuseumSpaceId, string[]> = {
   ],
   vr_core: [
     'VR Core nécessite un LIA Pass (NFT d’accès) — pas encore minté on-chain.',
-    'WebXR (R3F + @react-three/xr) est sur la roadmap premium.',
+    'Stack cible : React Three Fiber + @react-three/xr (WebXR).',
+    'Freemium : Catzligue + visite guidée gratuits · Mydee = wallet.',
+    'Aucune TX ici — mint Pass via Guardian + signature wallet réelle.',
   ],
 }
