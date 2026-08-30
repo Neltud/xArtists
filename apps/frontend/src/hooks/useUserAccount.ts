@@ -1,5 +1,6 @@
 /**
  * Live MultiversX account for the connected USER wallet (never LIA ops).
+ * Account + ESDT tokens + NFTs (NonFungible / SemiFungible).
  */
 import { useCallback, useEffect, useState } from 'react'
 
@@ -15,6 +16,15 @@ export type UserNft = {
   type?: string
 }
 
+export type UserToken = {
+  identifier: string
+  ticker: string
+  name: string
+  balance: number
+  decimals: number
+  valueUsd: number
+}
+
 export type UserAccount = {
   balanceEgld: number
   balanceAtomic: string
@@ -22,6 +32,7 @@ export type UserAccount = {
   shard?: number
   nftCount: number
   nfts: UserNft[]
+  tokens: UserToken[]
   loading: boolean
   error: string | null
   refreshedAt: number | null
@@ -36,11 +47,49 @@ function atomicToEgld(atomic: string): number {
   }
 }
 
+function mapToken(t: Record<string, unknown>): UserToken | null {
+  const decimals = Number(t.decimals ?? 18)
+  const raw = String(t.balance ?? '0')
+  let balance = 0
+  try {
+    balance = Number(BigInt(raw)) / Math.pow(10, decimals)
+  } catch {
+    balance = Number(raw) / Math.pow(10, decimals)
+  }
+  if (!Number.isFinite(balance) || balance <= 0) return null
+  const identifier = String(t.identifier || '')
+  const ticker =
+    String(t.ticker || '') ||
+    (identifier.includes('-') ? identifier.split('-')[0] : identifier)
+  const price = Number(t.price ?? 0)
+  return {
+    identifier,
+    ticker,
+    name: String(t.name || ticker),
+    balance,
+    decimals,
+    valueUsd: price > 0 ? balance * price : 0,
+  }
+}
+
+function mapNft(r: Record<string, unknown>): UserNft {
+  return {
+    identifier: String(r.identifier || ''),
+    collection: String(r.collection || ''),
+    name: String(r.name || r.identifier || ''),
+    nonce: Number(r.nonce ?? 0),
+    url: typeof r.url === 'string' ? r.url : undefined,
+    media: Array.isArray(r.media) ? (r.media as UserNft['media']) : undefined,
+    type: typeof r.type === 'string' ? r.type : undefined,
+  }
+}
+
 export function useUserAccount(address: string | null | undefined): UserAccount {
   const [balanceAtomic, setBalanceAtomic] = useState('0')
   const [nonce, setNonce] = useState(0)
   const [shard, setShard] = useState<number | undefined>()
   const [nfts, setNfts] = useState<UserNft[]>([])
+  const [tokens, setTokens] = useState<UserToken[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [refreshedAt, setRefreshedAt] = useState<number | null>(null)
@@ -53,6 +102,7 @@ export function useUserAccount(address: string | null | undefined): UserAccount 
       setBalanceAtomic('0')
       setNonce(0)
       setNfts([])
+      setTokens([])
       setError(null)
       return
     }
@@ -61,9 +111,12 @@ export function useUserAccount(address: string | null | undefined): UserAccount 
       setLoading(true)
       setError(null)
       try {
-        const [accRes, nftRes] = await Promise.all([
+        const [accRes, nftRes, tokRes] = await Promise.all([
           fetch(`${API}/accounts/${address}`),
-          fetch(`${API}/accounts/${address}/nfts?size=100&type=NonFungibleESDT,SemiFungibleESDT`),
+          fetch(
+            `${API}/accounts/${address}/nfts?size=100&type=NonFungibleESDT,SemiFungibleESDT`
+          ),
+          fetch(`${API}/accounts/${address}/tokens?size=200`),
         ])
         if (!accRes.ok) throw new Error(`Account HTTP ${accRes.status}`)
         const acc = await accRes.json()
@@ -72,23 +125,26 @@ export function useUserAccount(address: string | null | undefined): UserAccount 
         setNonce(Number(acc.nonce ?? 0))
         setShard(typeof acc.shard === 'number' ? acc.shard : undefined)
 
-        let list: UserNft[] = []
+        let nftList: UserNft[] = []
         if (nftRes.ok) {
-          const rows: any[] = await nftRes.json()
+          const rows = await nftRes.json()
+          if (Array.isArray(rows)) nftList = rows.map(mapNft)
+        }
+
+        let tokList: UserToken[] = []
+        if (tokRes.ok) {
+          const rows = await tokRes.json()
           if (Array.isArray(rows)) {
-            list = rows.map(r => ({
-              identifier: r.identifier,
-              collection: r.collection,
-              name: r.name || r.identifier,
-              nonce: r.nonce,
-              url: r.url,
-              media: r.media,
-              type: r.type,
-            }))
+            tokList = rows
+              .map(mapToken)
+              .filter((x): x is UserToken => x != null)
+              .sort((a, b) => b.valueUsd - a.valueUsd || b.balance - a.balance)
           }
         }
+
         if (!cancelled) {
-          setNfts(list)
+          setNfts(nftList)
+          setTokens(tokList)
           setRefreshedAt(Date.now())
         }
       } catch (e) {
@@ -109,6 +165,7 @@ export function useUserAccount(address: string | null | undefined): UserAccount 
     shard,
     nftCount: nfts.length,
     nfts,
+    tokens,
     loading,
     error,
     refreshedAt,
