@@ -1,5 +1,5 @@
 /**
- * Carte mondiale RÉELLE — Leaflet + tuiles Carto Dark.
+ * Carte mondiale RÉELLE — Leaflet + relief / couleurs / satellite.
  * Zoom/pan natifs · 72 destinations · expos live.
  * Service culturel Tours (≠ pack IA).
  */
@@ -38,10 +38,61 @@ function statusBadge(status: string): string {
   return 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'
 }
 
+/** Couleurs par région (marqueurs + légende). */
+const REGION_COLORS: Record<string, { fill: string; stroke: string; label: string }> = {
+  europe: { fill: '#38bdf8', stroke: '#7dd3fc', label: 'Europe' },
+  americas: { fill: '#f43f5e', stroke: '#fda4af', label: 'Amériques' },
+  asia: { fill: '#a78bfa', stroke: '#c4b5fd', label: 'Asie' },
+  africa: { fill: '#fbbf24', stroke: '#fde68a', label: 'Afrique' },
+  oceania: { fill: '#2dd4bf', stroke: '#5eead4', label: 'Océanie' },
+}
+
+function regionStyle(region?: string) {
+  return REGION_COLORS[region || ''] || { fill: '#e11d48', stroke: '#fecdd3', label: 'Autre' }
+}
+
+type BasemapId = 'relief' | 'color' | 'satellite' | 'dark'
+
+const BASEMAPS: Record<
+  BasemapId,
+  { label: string; url: string; attribution: string; maxZoom: number; subdomains?: string }
+> = {
+  relief: {
+    label: 'Relief',
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution:
+      'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>, <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
+    maxZoom: 17,
+    subdomains: 'abc',
+  },
+  color: {
+    label: 'Couleur',
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> · &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 19,
+    subdomains: 'abcd',
+  },
+  satellite: {
+    label: 'Satellite',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution:
+      'Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
+    maxZoom: 19,
+  },
+  dark: {
+    label: 'Nuit',
+    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> · &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 19,
+    subdomains: 'abcd',
+  },
+}
+
 const LEAFLET_CSS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
 const LEAFLET_JS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
 
-/** Load Leaflet from CDN once (no npm peer risk). */
 function loadLeaflet(): Promise<LeafletNS> {
   return new Promise((resolve, reject) => {
     if (window.L) {
@@ -81,12 +132,14 @@ export default function ArtWorldMap() {
   const [locsLoading, setLocsLoading] = useState(true)
   const [filter, setFilter] = useState('')
   const [regionFilter, setRegionFilter] = useState<string | 'all'>('all')
+  const [basemap, setBasemap] = useState<BasemapId>('relief')
   const [mapReady, setMapReady] = useState(false)
   const [mapError, setMapError] = useState<string | null>(null)
 
   const mapElRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<LeafletNS>(null)
   const layerRef = useRef<LeafletNS>(null)
+  const baseLayerRef = useRef<LeafletNS>(null)
   const LRef = useRef<LeafletNS>(null)
   const selectedRef = useRef<ArtLocation | null>(null)
 
@@ -208,18 +261,19 @@ export default function ArtWorldMap() {
           center: [20, 10],
           zoom: 2,
           minZoom: 2,
-          maxZoom: 12,
+          maxZoom: 17,
           worldCopyJump: true,
           zoomControl: true,
           attributionControl: true,
         })
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> · &copy; <a href="https://carto.com/attributions">CARTO</a>',
-          subdomains: 'abcd',
-          maxZoom: 19,
+        const bm = BASEMAPS.relief
+        const base = L.tileLayer(bm.url, {
+          attribution: bm.attribution,
+          maxZoom: bm.maxZoom,
+          subdomains: bm.subdomains || 'abc',
         }).addTo(map)
+        baseLayerRef.current = base
 
         layerRef.current = L.layerGroup().addTo(map)
         mapRef.current = map
@@ -234,13 +288,30 @@ export default function ArtWorldMap() {
 
     return () => {
       cancelled = true
-      if (map) {
-        map.remove()
-      }
+      if (map) map.remove()
       mapRef.current = null
       layerRef.current = null
+      baseLayerRef.current = null
     }
   }, [])
+
+  useEffect(() => {
+    const L = LRef.current
+    const map = mapRef.current
+    if (!L || !map || !mapReady) return
+
+    const bm = BASEMAPS[basemap]
+    if (baseLayerRef.current) {
+      map.removeLayer(baseLayerRef.current)
+    }
+    const layer = L.tileLayer(bm.url, {
+      attribution: bm.attribution,
+      maxZoom: bm.maxZoom,
+      subdomains: bm.subdomains || 'abc',
+    }).addTo(map)
+    if (layerRef.current) layerRef.current.bringToFront()
+    baseLayerRef.current = layer
+  }, [basemap, mapReady])
 
   const regions = useMemo(() => {
     const s = new Set(locations.map(l => l.region).filter(Boolean) as string[])
@@ -270,18 +341,20 @@ export default function ArtWorldMap() {
 
     filtered.forEach(loc => {
       const isSel = selectedRef.current?.id === loc.id
-      const r = isSel ? 11 : 7
+      const style = regionStyle(loc.region)
+      const r = isSel ? 12 : 7
       const marker = L.circleMarker([loc.lat, loc.lng], {
         radius: r,
-        color: isSel ? '#fecdd3' : '#fb7185',
-        weight: isSel ? 2.5 : 1.5,
-        fillColor: isSel ? '#f43f5e' : '#e11d48',
-        fillOpacity: isSel ? 0.95 : 0.8,
+        color: isSel ? '#fff' : style.stroke,
+        weight: isSel ? 3 : 1.5,
+        fillColor: style.fill,
+        fillOpacity: isSel ? 1 : 0.88,
         opacity: 1,
       })
 
       marker.bindTooltip(
-        `<strong>${loc.city}</strong><br/><span style="opacity:.8">${loc.country}</span>`,
+        `<strong>${loc.city}</strong><br/><span style="opacity:.85">${loc.country}</span>` +
+          (loc.region ? `<br/><span style="color:${style.fill}">${style.label}</span>` : ''),
         {
           direction: 'top',
           offset: [0, -6],
@@ -290,10 +363,7 @@ export default function ArtWorldMap() {
         }
       )
 
-      marker.on('click', () => {
-        onSelect(loc)
-      })
-
+      marker.on('click', () => onSelect(loc))
       marker.addTo(layer)
     })
   }, [filtered, mapReady, selected, onSelect])
@@ -350,7 +420,7 @@ export default function ArtWorldMap() {
           <option value="all">Toutes régions</option>
           {regions.map(r => (
             <option key={r} value={r}>
-              {r}
+              {REGION_COLORS[r]?.label || r}
             </option>
           ))}
         </select>
@@ -368,12 +438,30 @@ export default function ArtWorldMap() {
         </button>
       </div>
 
+      <div className="flex flex-wrap gap-1.5 items-center">
+        <span className="text-[10px] uppercase tracking-wider text-zinc-600 mr-1">Fond</span>
+        {(Object.keys(BASEMAPS) as BasemapId[]).map(id => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setBasemap(id)}
+            className={`rounded-full border px-2.5 py-1 text-[11px] transition-colors ${
+              basemap === id
+                ? 'border-cyan-400/50 bg-cyan-500/15 text-cyan-100'
+                : 'border-white/10 text-zinc-400 hover:border-white/25'
+            }`}
+          >
+            {BASEMAPS[id].label}
+          </button>
+        ))}
+      </div>
+
       <div className="relative rounded-2xl border border-rose-500/25 overflow-hidden bg-[#0a0a12] shadow-[0_0_40px_rgba(244,63,94,0.08)]">
         <div
           ref={mapElRef}
           className="w-full h-[min(62vh,520px)] min-h-[320px] z-0"
           role="application"
-          aria-label="Carte mondiale réelle — destinations artistiques"
+          aria-label="Carte mondiale réelle avec relief et couleurs"
         />
 
         {!mapReady && !mapError && (
@@ -387,28 +475,57 @@ export default function ArtWorldMap() {
           </div>
         )}
 
-        <div className="absolute bottom-2 left-3 z-[400] pointer-events-none">
-          <p className="text-[10px] text-zinc-400/90 bg-black/50 rounded-md px-2 py-1 backdrop-blur-sm">
-            Carte réelle OSM/CARTO · zoom molette · clic marqueur = expos · service culturel
+        <div className="absolute top-2 left-2 z-[400] rounded-lg bg-black/55 backdrop-blur-sm border border-white/10 px-2.5 py-2 text-[10px] text-zinc-300 space-y-1">
+          <p className="uppercase tracking-wider text-zinc-500 mb-1">Régions</p>
+          {Object.entries(REGION_COLORS).map(([key, v]) => (
+            <div key={key} className="flex items-center gap-1.5">
+              <span
+                className="inline-block h-2.5 w-2.5 rounded-full shrink-0"
+                style={{ background: v.fill, boxShadow: `0 0 6px ${v.fill}` }}
+              />
+              <span>{v.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="absolute bottom-2 left-3 z-[400] pointer-events-none max-w-[70%]">
+          <p className="text-[10px] text-zinc-300/90 bg-black/50 rounded-md px-2 py-1 backdrop-blur-sm">
+            {basemap === 'relief' && 'Relief OpenTopoMap · contours & terrain'}
+            {basemap === 'color' && 'Couleurs CARTO Voyager'}
+            {basemap === 'satellite' && 'Imagerie satellite Esri'}
+            {basemap === 'dark' && 'Mode nuit CARTO'}
+            {' · '}clic marqueur = expos
           </p>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1">
-        {filtered.map(loc => (
-          <button
-            key={loc.id}
-            type="button"
-            onClick={() => onSelect(loc)}
-            className={`rounded-full border px-2 py-0.5 text-[10px] transition-colors ${
-              selected?.id === loc.id
-                ? 'border-rose-400/60 bg-rose-500/20 text-rose-100'
-                : 'border-white/10 text-zinc-400 hover:border-rose-400/40'
-            }`}
-          >
-            {loc.city}
-          </button>
-        ))}
+        {filtered.map(loc => {
+          const style = regionStyle(loc.region)
+          return (
+            <button
+              key={loc.id}
+              type="button"
+              onClick={() => onSelect(loc)}
+              className={`rounded-full border px-2 py-0.5 text-[10px] transition-colors ${
+                selected?.id === loc.id
+                  ? 'border-white/40 bg-white/10 text-white'
+                  : 'border-white/10 text-zinc-400 hover:border-white/25'
+              }`}
+              style={
+                selected?.id === loc.id
+                  ? { borderColor: style.stroke, background: `${style.fill}33` }
+                  : undefined
+              }
+            >
+              <span
+                className="inline-block h-1.5 w-1.5 rounded-full mr-1 align-middle"
+                style={{ background: style.fill }}
+              />
+              {loc.city}
+            </button>
+          )
+        })}
       </div>
 
       {selected && (
@@ -422,6 +539,11 @@ export default function ArtWorldMap() {
               <p className="text-zinc-400 text-xs mt-0.5">{selected.focus}</p>
               <p className="text-[10px] text-zinc-600 mono mt-0.5">
                 {selected.lat.toFixed(3)}, {selected.lng.toFixed(3)}
+                {selected.region && (
+                  <span className="ml-2" style={{ color: regionStyle(selected.region).fill }}>
+                    · {regionStyle(selected.region).label}
+                  </span>
+                )}
               </p>
             </div>
             <div className="flex gap-2">
