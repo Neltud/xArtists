@@ -32,6 +32,14 @@ export const HELP = {
     title: '$TRO',
     body: 'Token utilitaire (cap 500k). 1 TRO max pour NFT physique (policy RWA).',
   },
+  museumGame: {
+    title: 'Musée exploration',
+    body: 'WASD ou flèches pour avancer dans la galerie. E ou clic pour inspecter une œuvre. Intention d’achat = paper tant que le marketplace SC n’est pas vérifié.',
+  },
+  softLaunch: {
+    title: 'Soft launch paper',
+    body: 'Démo publique honnête : lectures on-chain, packs limités, trading LIA off, SC market/agents pending.',
+  },
 } as const
 
 export type PageGuideKey =
@@ -59,109 +67,85 @@ export const PAGE_GUIDE: Record<
   { title: string; bullets: string[]; warn?: string }
 > = {
   dashboard: {
-    title: 'Home — parcours',
+    title: 'Home',
     bullets: [
-      'Étapes : Connecter → Packs IA → Board LIA → Galerie.',
-      'Raccourcis : Tours art · On-ramp · Board · Packs NFT.',
-      '⌘K : intention (buy EGLD, tours, trading…).',
-      'Wallet = toi · Portfolio/Trading = protocole LIA (paper).',
-      'My Packs = access pass NFT, pas un dépôt de trading.',
+      'Parcours : Connect → Wallet → Musée → Tours → Packs.',
+      '⌘K : intention LIA (paper par défaut).',
+      'Wallet = toi · Trading/Portfolio = protocole LIA paper.',
     ],
   },
   entity: {
-    title: 'Entité xArtists',
-    bullets: [
-      'Carte de l’organisation et des succursales.',
-      'GO_DEMO = UI + data + LIA paper — pas le commerce SC.',
-      'LIA ops wallet ≠ wallet utilisateur.',
-    ],
-    warn: 'Pas de faux GMV tant que marketplace/agents codeHash null.',
+    title: 'Entité',
+    bullets: ['Organisation xArtists.', 'GO_DEMO paper — pas le commerce SC.'],
+    warn: 'Pas de faux GMV tant que codeHash null.',
   },
   tours: {
-    title: 'Tours artistiques',
+    title: 'Tours art',
     bullets: [
-      'Service culturel : expos, visites, parcours art.',
-      'Complètement séparé des packs Agents IA.',
-      'Pas un NFT pack agent, pas de réservation aérienne.',
+      'Service culturel (expos, parcours).',
+      'Séparés des packs Agents IA.',
     ],
-    warn: 'Ce n’est pas un agent IA ni un pack marketplace agents.',
-  },
-  sim: {
-    title: 'Simulation Lab',
-    bullets: ['Scénarios paper.', 'Aucun ordre live.'],
   },
   trading: {
-    title: 'Trading Terminal LIA',
-    bullets: [
-      'Board protocole paper.',
-      'Fusion signaux · compounding · Guardian-first.',
-      'LIA_LIVE_TRADING=0 jusqu’aux micro-preuves.',
-    ],
+    title: 'Trading LIA',
+    bullets: ['Board paper.', 'Guardian-first.', 'Live OFF par défaut.'],
     warn: 'Aucun ordre auto sur vos fonds.',
   },
   wallet: {
-    title: 'Mon wallet (utilisateur)',
-    bullets: [
-      'Soldes + NFT via API MultiversX.',
-      'paste = lecture seule · Web Wallet pour signer.',
-      'Treasury LIA → Portfolio.',
-    ],
+    title: 'Wallet',
+    bullets: ['Soldes + NFT API MultiversX.', 'paste = lecture seule.'],
   },
   portfolio: {
-    title: 'Portfolio LIA (protocole)',
-    bullets: ['Book LIA ops.', 'Séparé de /wallet.'],
+    title: 'Portfolio LIA',
+    bullets: ['Book protocole.', 'Séparé de /wallet.'],
   },
   marketplace: {
-    title: 'Marketplace NFT / RWA',
-    bullets: ['List/Buy après codeHash.', 'paste_readonly = pas de signature.'],
+    title: 'Marketplace',
+    bullets: ['List/Buy après codeHash.', 'Catalogue lisible en paper.'],
     warn: 'SC non live = pas de faux market.',
   },
   agents: {
-    title: 'Packs Agents NFT',
-    bullets: [
-      'Uniquement Pulse · Yield · Sentinel.',
-      'GSN = prédictions externes (pas tes packs).',
-      'Tours artistiques = page /tours (autre service).',
-    ],
-    warn: 'Aucun travel agent dans les packs IA.',
-  },
-  'my-packs': {
-    title: 'My Packs',
-    bullets: ['Access pass Model C.', 'Perf = paper.', 'Pas un fonds géré.'],
-    warn: 'Pas un fonds géré.',
-  },
-  studio: {
-    title: 'Studio artiste',
-    bullets: ['Collection → IPFS → metadata → mint/list.', 'Wallet artiste ≠ LIA ops.'],
-    warn: 'Mint on-chain = wallet + gaz EGLD.',
+    title: 'Packs',
+    bullets: ['Pulse · Yield · Sentinel.', 'Pas un dépôt de trading.'],
   },
   dao: {
-    title: 'DAO $TRO',
-    bullets: ['Gouvernance lecture / holders.'],
+    title: 'DAO',
+    bullets: ['Gouvernance produit.', 'Pas de promesse de rendement.'],
   },
   gallery: {
-    title: 'Gallery',
-    bullets: ['Catalogue xArtists.', '1 TRO max œuvre physique (policy).'],
+    title: 'Galerie',
+    bullets: ['Catalogue collections.', 'Musée = exploration 3D.'],
   },
   staking: {
     title: 'Staking',
-    bullets: ['Selon contrats déployés.'],
+    bullets: ['Modules stake selon SC live.'],
   },
   tro: {
     title: '$TRO',
-    bullets: ['Cap 500 000.', 'Utilité rewards / DAO / RWA.'],
+    bullets: ['Utilitaire.', 'Burns documentés (Burnify).'],
   },
   hatom: {
-    title: 'Hatom / Yield',
-    bullets: ['Lecture positions MVX.'],
+    title: 'Hatom',
+    bullets: ['Lecture DeFi.', 'Pas d’exécution auto.'],
+  },
+  'my-packs': {
+    title: 'My Packs',
+    bullets: ['Access pass / collections on-chain quand dispo.'],
+  },
+  studio: {
+    title: 'Studio',
+    bullets: ['Création / brouillons artiste.'],
   },
   tip: {
-    title: 'Tip / dons',
-    bullets: ['Don volontaire vers LIA Ops — pas un investissement.'],
-    warn: 'Ne confonds pas tip et achat de parts.',
+    title: 'Tip',
+    bullets: ['Pourboire optionnel.', '≠ investissement.'],
   },
   editions: {
-    title: 'xArtists Editions',
-    bullets: ['Lettre mensuelle art · culture · tech.'],
+    title: 'Editions',
+    bullets: ['Éditions limitées produit.'],
+  },
+  sim: {
+    title: 'Sim Lab',
+    bullets: ['Simulations paper uniquement.'],
   },
 }
