@@ -1,5 +1,5 @@
 /**
- * Réseau de musées — xArtists 1er, puis ailes Met Open Access (CDN images).
+ * Réseau de musées — xArtists 1er, puis musées-ville avec œuvres Met Open Access.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -22,7 +22,9 @@ import {
 import { requestOpenConnect } from '../lib/walletEvents'
 import { consumeTravelDestination } from '../lib/travelBridge'
 import {
+  buildMuseumNetwork,
   loadMuseumNetwork,
+  museumIdForCity,
   VIRTUAL_MUSEUMS,
   type VirtualMuseum,
 } from '../lib/museumWorldCatalog'
@@ -83,7 +85,9 @@ async function loadFullCatalog(): Promise<{ collections: CollectionData[]; nfts:
 export default function MuseumPage() {
   const [tab, setTab] = useState<Tab>('visit')
   const [museumId, setMuseumId] = useState<string>('xartists')
-  const [museums, setMuseums] = useState<VirtualMuseum[]>(VIRTUAL_MUSEUMS)
+  const [museums, setMuseums] = useState<VirtualMuseum[]>(() =>
+    buildMuseumNetwork(import.meta.env.BASE_URL || '/')
+  )
   const [allNfts, setAllNfts] = useState<NFT[]>([])
   const [catalogLoading, setCatalogLoading] = useState(true)
   const [travelBanner, setTravelBanner] = useState<string | null>(null)
@@ -126,8 +130,13 @@ export default function MuseumPage() {
     const travel = consumeTravelDestination()
     if (travel?.city || cityQ) {
       const city = travel?.city || cityQ || ''
-      setTravelBanner(`Voyage LIA : ${city}. Musée xArtists prêt.`)
-      setMuseumId('xartists')
+      const mid = museumIdForCity(city)
+      setTravelBanner(
+        mid
+          ? `Voyage LIA : ${city} → ${mid}. Œuvres iconiques prêtes.`
+          : `Voyage LIA : ${city}. Choisis une ville du réseau ou xArtists.`
+      )
+      setMuseumId(mid || 'xartists')
       setTab('visit')
     }
   }, [])
@@ -154,12 +163,12 @@ export default function MuseumPage() {
           Musée <span className="gradient-text">xArtists</span>
         </h1>
         <p className="page-sub inline-flex flex-wrap items-center gap-1">
-          xArtists + ailes Met (~100 peintures Open Access)
+          xArtists + musées-ville (œuvres Met Open Access)
           <InfoTip>
-            <strong className="text-white block mb-1">Images</strong>
+            <strong className="text-white block mb-1">Clic ville</strong>
             <span className="text-zinc-400">
-              CDN Met Museum (domaine public). Pad tactile · WASD · Inspecter. Wikimedia bloqué en
-              sandbox — d’où le bascule Met.
+              Guide mondial ou pastille Paris/London… ouvre la salle de cette ville avec tableaux
+              iconiques. xArtists = NFT MultiversX.
             </span>
           </InfoTip>
         </p>
@@ -236,13 +245,13 @@ export default function MuseumPage() {
               emptyLabel={
                 museum.source === 'onchain'
                   ? 'Aucune œuvre catalogue pour l’instant.'
-                  : 'Chargement des œuvres…'
+                  : 'Aucune œuvre pour cette ville.'
               }
             />
           )}
 
           <p className="text-[10px] text-zinc-600 leading-relaxed">
-            Images © Met Museum Open Access (PD). Pad tactile · cadres agrandis · progression en %.
+            Pastilles ville = salles PD (Met CDN). xArtists = NFT on-chain.
           </p>
         </div>
       )}
