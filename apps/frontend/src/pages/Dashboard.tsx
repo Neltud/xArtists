@@ -12,6 +12,7 @@ import ScStatusBanner from '../components/ScStatusBanner'
 import DataHealthStrip from '../components/DataHealthStrip'
 import LiaRunStrip from '../components/LiaRunStrip'
 import Lia3DBridge from '../components/ui/Lia3DBridge'
+import SoftLaunchPath from '../components/SoftLaunchPath'
 import { useEffect, useState } from 'react'
 
 function PersonaQuickLinks({ persona }: { persona: string }) {
@@ -53,6 +54,8 @@ export default function Dashboard() {
 
       <LiaRunStrip />
 
+      <SoftLaunchPath />
+
       <Lia3DBridge />
 
       <section className="relative overflow-hidden rounded-3xl border border-white/[0.08] p-6 sm:p-10">
@@ -65,7 +68,7 @@ export default function Dashboard() {
         />
         <div className="relative z-[1] max-w-2xl space-y-4">
           <p className="text-[11px] uppercase tracking-[0.25em] text-cyan-400/90 font-semibold">
-            MultiversX · Agent layer
+            Soft launch · MultiversX · paper
           </p>
           <h1 className="display text-4xl sm:text-5xl leading-[1.05]">
             L’intention devient{' '}
@@ -73,7 +76,7 @@ export default function Dashboard() {
           </h1>
           <p className="text-zinc-400 text-sm sm:text-base leading-relaxed max-w-lg">
             xArtists — galerie NFT, packs agents, Art Tours, musée immersif et board LIA. Paper par
-            défaut. Ton wallet signe. Vellum orchestre côté ops.
+            défaut. Ton wallet signe. Vellum orchestre côté ops. SC market/agents en verify avant live.
           </p>
           <div className="flex flex-wrap gap-2 pt-1">
             <Link to="/agents" className="btn-primary">
@@ -117,7 +120,7 @@ export default function Dashboard() {
       <div className="grid md:grid-cols-2 gap-4">
         <PaperSoulScore />
         <div className="card text-xs text-zinc-500 space-y-2">
-          <p className="font-semibold text-zinc-200 text-sm">À retenir</p>
+          <p className="font-semibold text-zinc-200 text-sm">Soft launch — à retenir</p>
           <ul className="list-disc pl-4 space-y-1.5">
             <li>
               <strong className="text-zinc-300">Packs</strong> = Pulse / Yield / Sentinel
@@ -126,13 +129,13 @@ export default function Dashboard() {
               <strong className="text-zinc-300">Tours</strong> = service culturel, pas un pack IA
             </li>
             <li>
-              <strong className="text-zinc-300">Musée</strong> = Catzligue / Mydee / guide mondial
+              <strong className="text-zinc-300">Musée</strong> = mur + zoom + intention d’achat
             </li>
             <li>
               <strong className="text-zinc-300">Trading</strong> = board LIA paper
               {live ? ' · ⚠ flag live' : ' · live OFF'}
             </li>
-            <li>Stripe · MoonPay pour on-ramp</li>
+            <li>Marketplace on-chain seulement après codeHash vérifié</li>
           </ul>
         </div>
       </div>
