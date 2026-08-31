@@ -1,13 +1,14 @@
 import { NavLink } from 'react-router-dom'
 
+/** Soft-launch mobile nav — cœur produit. */
 type NavItem = { to: string; label: string; icon: string; end?: boolean }
 
 const ITEMS: NavItem[] = [
   { to: '/', label: 'Home', icon: '◈', end: true },
-  { to: '/marketplace', label: 'Market', icon: '▣' },
-  { to: '/agents', label: 'Agents', icon: '◎' },
-  { to: '/trading', label: 'Trade', icon: '⚡' },
+  { to: '/agents', label: 'Packs', icon: '◎' },
+  { to: '/museum', label: 'Musée', icon: '🏛' },
   { to: '/tours', label: 'Tours', icon: '◉' },
+  { to: '/gallery', label: 'Galerie', icon: '▣' },
   { to: '/wallet', label: 'Wallet', icon: '◇' },
 ]
 

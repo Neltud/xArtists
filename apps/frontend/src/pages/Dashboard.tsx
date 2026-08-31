@@ -1,5 +1,5 @@
 /**
- * Home demo — calme. Pas d’ops Zapier / codeHash / pastilles SC sur la page d’accueil.
+ * Home demo — verrouillée clean. Aucun strip ops / SC / health.
  */
 import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
@@ -27,14 +27,14 @@ export default function Dashboard() {
           className="absolute inset-0 opacity-90"
           style={{
             background:
-              'radial-gradient(ellipse 70% 80% at 10% 20%, rgba(139,92,246,0.25), transparent), radial-gradient(ellipse 50% 60% at 90% 80%, rgba(34,211,238,0.12), transparent)',
+              'radial-gradient(ellipse 70% 80% at 10% 20%, rgba(139,92,246,0.22), transparent), radial-gradient(ellipse 50% 60% at 90% 80%, rgba(34,211,238,0.1), transparent)',
           }}
         />
         <div className="relative z-[1] max-w-2xl space-y-4">
           <p className="text-[11px] uppercase tracking-[0.25em] text-cyan-400/90 font-semibold">
             MultiversX · xArtists
           </p>
-          <h1 className="display text-4xl sm:text-5xl leading-[1.05]">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white leading-tight">
             Galerie · packs · <span className="gradient-text">musée</span>
           </h1>
           <p className="text-zinc-400 text-sm sm:text-base leading-relaxed max-w-lg">
@@ -62,7 +62,7 @@ export default function Dashboard() {
 
       {!persona && <PersonaWelcome />}
 
-      <div className="card text-xs text-zinc-500 space-y-2">
+      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 text-xs text-zinc-500 space-y-2">
         <p className="font-semibold text-zinc-200 text-sm">En bref</p>
         <ul className="list-disc pl-4 space-y-1.5">
           <li>
@@ -70,8 +70,7 @@ export default function Dashboard() {
             NFT d’entitlement)
           </li>
           <li>
-            <strong className="text-zinc-300">Tours / Musée</strong> — culture & visite, pas un pack
-            IA
+            <strong className="text-zinc-300">Tours / Musée</strong> — culture & visite, pas un pack IA
           </li>
           <li>
             <strong className="text-zinc-300">Trading</strong> — board LIA en paper sur la démo
@@ -88,8 +87,12 @@ export default function Dashboard() {
           Marketplace
         </Link>
         {' · '}
-        <Link to="/trading" className="text-cyan-300/90 hover:underline">
-          Trading
+        <Link to="/my-packs" className="text-cyan-300/90 hover:underline">
+          My Packs
+        </Link>
+        {' · '}
+        <Link to="/legal" className="text-cyan-300/90 hover:underline">
+          Mentions légales
         </Link>
       </p>
     </div>
