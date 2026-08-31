@@ -167,6 +167,113 @@ export default function Agents() {
         })}
       </div>
 
+      <section className="mb-10 overflow-x-auto rounded-2xl border border-white/10">
+        <table className="w-full min-w-[640px] text-left text-[13px]">
+          <caption className="sr-only">Comparatif des packs Pulse, Yield et Sentinel</caption>
+          <thead>
+            <tr className="border-b border-white/10 bg-white/[0.03]">
+              <th className="px-4 py-3 font-medium text-zinc-500">Critère</th>
+              {AGENT_PACKS.map(p => (
+                <th key={p.id} className="px-4 py-3 font-semibold text-white">
+                  {p.name}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="text-zinc-400">
+            <tr className="border-b border-white/[0.06]">
+              <td className="px-4 py-3 text-zinc-500">Prix list</td>
+              {AGENT_PACKS.map(p => (
+                <td key={p.id} className="px-4 py-3 text-white font-medium tabular-nums">
+                  {p.priceEur.list} €
+                </td>
+              ))}
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="px-4 py-3 text-zinc-500">Profil</td>
+              {AGENT_PACKS.map(p => (
+                <td key={p.id} className="px-4 py-3">
+                  {RISK_LABEL[p.risk]}
+                </td>
+              ))}
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="px-4 py-3 text-zinc-500">Intensité signaux</td>
+              {AGENT_PACKS.map(p => (
+                <td key={p.id} className="px-4 py-3">
+                  <span className="inline-flex gap-0.5" aria-label={`${p.signalIntensity} sur 3`}>
+                    {[1, 2, 3].map(i => (
+                      <span
+                        key={i}
+                        className={`h-1.5 w-4 rounded-full ${
+                          i <= p.signalIntensity ? ACCENT[p.id].bar : 'bg-white/10'
+                        }`}
+                      />
+                    ))}
+                  </span>
+                </td>
+              ))}
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="px-4 py-3 text-zinc-500">Cadence</td>
+              {AGENT_PACKS.map(p => (
+                <td key={p.id} className="px-4 py-3 text-[12px] leading-snug">
+                  {p.activity}
+                </td>
+              ))}
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="px-4 py-3 text-zinc-500">Stratégies</td>
+              {AGENT_PACKS.map(p => (
+                <td key={p.id} className="px-4 py-3 font-mono text-[11px] text-zinc-300">
+                  {p.strategies.join(', ')}
+                </td>
+              ))}
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="px-4 py-3 text-zinc-500">NFT d’accès</td>
+              {AGENT_PACKS.map(p => (
+                <td key={p.id} className="px-4 py-3 text-zinc-300">
+                  Oui
+                </td>
+              ))}
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="px-4 py-3 text-zinc-500">Clé API limitée</td>
+              {AGENT_PACKS.map(p => (
+                <td key={p.id} className="px-4 py-3">
+                  {p.entitlements.some(e => /API/i.test(e)) ? 'Oui' : '—'}
+                </td>
+              ))}
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="px-4 py-3 text-zinc-500">Part de pool</td>
+              {AGENT_PACKS.map(p => (
+                <td key={p.id} className="px-4 py-3 tabular-nums">
+                  {(p.shareOfPackPoolBps / 100).toFixed(0)} %
+                </td>
+              ))}
+            </tr>
+            <tr className="border-b border-white/[0.06]">
+              <td className="px-4 py-3 text-zinc-500">Rendement garanti</td>
+              {AGENT_PACKS.map(p => (
+                <td key={p.id} className="px-4 py-3 text-zinc-500">
+                  Non
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <td className="px-4 py-3 text-zinc-500">Mandat de gestion</td>
+              {AGENT_PACKS.map(p => (
+                <td key={p.id} className="px-4 py-3 text-zinc-500">
+                  Non
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
       <section
         id="pack-pay"
         className="rounded-2xl border border-white/10 bg-zinc-950/60 p-5 sm:p-6"
