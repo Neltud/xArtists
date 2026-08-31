@@ -9,6 +9,7 @@ import MuseumCorridor, {
   framesFromUserNfts,
   type FrameItem,
 } from '../components/museum/MuseumCorridor'
+import MuseumGameHall from '../components/museum/MuseumGameHall'
 import GuidedWorldTour from '../components/museum/GuidedWorldTour'
 import { MUSEUM_SPACES, type MuseumSpaceId } from '../lib/museumSpaces'
 import { useWallet } from '../context/WalletContext'
@@ -104,7 +105,9 @@ export default function MuseumPage() {
   useEffect(() => {
     const hash = typeof window !== 'undefined' ? window.location.hash : ''
     const q = hash.includes('?') ? hash.split('?')[1] : ''
-    const params = new URLSearchParams(q || (typeof window !== 'undefined' ? window.location.search : ''))
+    const params = new URLSearchParams(
+      q || (typeof window !== 'undefined' ? window.location.search : '')
+    )
     const spaceQ = params.get('space') as MuseumSpaceId | null
     const cityQ = params.get('city')
     const travel = consumeTravelDestination()
@@ -116,7 +119,7 @@ export default function MuseumPage() {
     if (travel?.city || cityQ) {
       const city = travel?.city || cityQ || ''
       setTravelBanner(
-        `Voyage LIA : ${city}${travel?.focus ? ` — ${travel.focus}` : ''}. Corridor Catzligue chargé.`
+        `Voyage LIA : ${city}${travel?.focus ? ` — ${travel.focus}` : ''}. Galerie chargée.`
       )
       if (!spaceQ && !travel?.space) setSpace('catzligue')
     }
@@ -140,34 +143,27 @@ export default function MuseumPage() {
   const current = MUSEUM_SPACES.find(s => s.id === space)!
 
   return (
-    <div className="animate-fade-in space-y-6 pb-12 max-w-4xl mx-auto">
+    <div className="animate-fade-in space-y-5 pb-12 max-w-4xl mx-auto">
       <PageGuide page="gallery" />
 
-      <header className="space-y-2">
-        <p className="text-[10px] uppercase tracking-[0.25em] text-fuchsia-400/90 font-semibold">
-          Musée immersif · données MultiversX
-        </p>
-        <h1 className="display text-3xl sm:text-4xl">
+      <header className="space-y-1.5">
+        <p className="section-label text-fuchsia-400/80">Musée · MultiversX</p>
+        <h1 className="page-title">
           Musée <span className="gradient-text">xArtists</span>
         </h1>
-        <p className="text-sm text-zinc-400 max-w-xl leading-relaxed">
-          Catzligue = catalogue public réel · Mydee = tes NFTs on-chain · visite guidée mondiale.
-          {allNfts.length > 0 && (
-            <span className="text-zinc-500">
-              {' '}
-              · {allNfts.length} œuvres · {collections.length} collections
-            </span>
-          )}
+        <p className="page-sub">
+          Explore (WASD) · Mydee = wallet · guide mondial
+          {allNfts.length > 0 && <span className="text-zinc-600"> · {allNfts.length} œuvres</span>}
         </p>
       </header>
 
       {travelBanner && (
-        <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-100">
+        <div className="rounded-xl border border-cyan-500/25 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-100">
           {travelBanner}
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {MUSEUM_SPACES.map(s => (
           <button
             key={s.id}
@@ -175,29 +171,22 @@ export default function MuseumPage() {
             onClick={() => setSpace(s.id)}
             className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
               space === s.id
-                ? 'border-fuchsia-400/50 bg-fuchsia-500/20 text-fuchsia-100'
-                : 'border-white/10 text-zinc-400 hover:text-white'
+                ? 'border-fuchsia-400/45 bg-fuchsia-500/15 text-fuchsia-100'
+                : 'border-white/10 text-zinc-500 hover:text-white'
             }`}
           >
             {s.name}
             {s.access === 'lia_pass' && (
-              <span className="ml-1 text-[9px] text-amber-300/90">PASS</span>
+              <span className="ml-1 text-[9px] text-amber-300/80">PASS</span>
             )}
           </button>
         ))}
       </div>
 
-      <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-[11px] text-zinc-500 flex flex-wrap gap-x-4 gap-y-1">
-        <span>
-          Espace · <strong className="text-zinc-300">{current.name}</strong>
-        </span>
-        <span>{current.tagline}</span>
-      </div>
-
       {space === 'catzligue' && (
-        <div className="relative space-y-3">
+        <div className="space-y-3">
           {collections.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
+            <div className="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto">
               <button
                 type="button"
                 onClick={() => setColFilter('all')}
@@ -220,37 +209,28 @@ export default function MuseumPage() {
                       : 'border-white/10 text-zinc-500'
                   }`}
                 >
-                  {c.name || c.identifier} ({c.nft_count || c.nfts?.length || 0})
+                  {c.name || c.identifier}
                 </button>
               ))}
             </div>
           )}
 
           {catalogLoading ? (
-            <p className="text-sm text-zinc-500">Chargement du catalogue MultiversX…</p>
+            <p className="text-sm text-zinc-500">Chargement…</p>
           ) : catalogError && !catalogFrames.length ? (
             <p className="text-sm text-rose-300/90">{catalogError}</p>
           ) : (
-            <MuseumCorridor
+            <MuseumGameHall
               frames={catalogFrames}
-              theme="cyber"
               emptyLabel="Aucune œuvre avec média dans ce filtre."
             />
           )}
-          <LiaHost
-            space="catzligue"
-            lineExtra={
-              catalogFrames.length
-                ? `${catalogFrames.length} cadres chargés depuis le catalogue xArtists (mainnet).`
-                : null
-            }
-          />
           <p className="text-[11px] text-zinc-600">
-            <Link to="/gallery" className="text-violet-300 underline">
+            <Link to="/gallery" className="text-violet-300/90 hover:underline">
               Galerie 2D
             </Link>
             {' · '}
-            <Link to="/studio" className="text-violet-300 underline">
+            <Link to="/studio" className="text-violet-300/90 hover:underline">
               Studio
             </Link>
           </p>
@@ -258,18 +238,16 @@ export default function MuseumPage() {
       )}
 
       {space === 'mydee' && (
-        <div className="relative space-y-3">
+        <div className="space-y-3">
           {!connected ? (
-            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-6 text-center space-y-3">
-              <p className="text-sm text-amber-100">
-                Connecte ton wallet pour charger Mydee (NFTs on-chain).
-              </p>
+            <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-6 text-center space-y-3">
+              <p className="text-sm text-amber-100/90">Connecte ton wallet pour Mydee.</p>
               <button
                 type="button"
                 className="btn-primary text-sm"
                 onClick={() => requestOpenConnect()}
               >
-                🔗 Connect
+                Connect
               </button>
             </div>
           ) : account.loading && !mydeeFrames.length ? (
@@ -278,91 +256,30 @@ export default function MuseumPage() {
             <MuseumCorridor
               frames={mydeeFrames}
               theme="sanctuary"
-              emptyLabel="Aucun NFT NonFungible/SFT sur cette adresse."
+              emptyLabel="Aucun NFT sur cette adresse."
             />
           )}
-          <LiaHost space="mydee" />
-          <p className="text-[11px] text-zinc-600">
-            <Link to="/wallet" className="text-cyan-300 underline">
-              Wallet · My NFTs
-            </Link>
-          </p>
         </div>
       )}
 
       {space === 'world_tour' && <GuidedWorldTour />}
 
       {space === 'vr_core' && (
-        <div className="relative rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-950/50 via-black to-[#0a0612] px-5 sm:px-6 py-8 sm:py-10 space-y-5">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-violet-300/80 font-semibold">
-                Roadmap · WebXR
-              </p>
-              <h2 className="text-xl sm:text-2xl font-bold text-white mt-1">VR Core</h2>
-            </div>
-            <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-1 text-[10px] text-amber-200 font-semibold">
-              LIA Pass · mint SC pending
+        <div className="rounded-2xl border border-violet-500/20 bg-violet-950/20 px-5 py-8 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-lg font-bold text-white">VR Core</h2>
+            <span className="text-[10px] text-amber-200/90 border border-amber-500/30 rounded-full px-2 py-0.5">
+              LIA Pass pending
             </span>
           </div>
-
-          <p className="text-sm text-zinc-300 leading-relaxed max-w-xl">
-            Stack cible : <strong className="text-zinc-100">React Three Fiber</strong> +{' '}
-            <code className="text-violet-300 text-xs">@react-three/xr</code> (WebXR). Accès : NFT{' '}
-            <strong className="text-zinc-100">LIA Pass</strong> (codeHash null — pas encore minté).
+          <p className="text-sm text-zinc-400">
+            WebXR (R3F) — roadmap. Exploration WASD = fondation v1 gratuite.
           </p>
-
-          <ul className="grid sm:grid-cols-2 gap-2 text-[12px] text-zinc-400">
-            <li className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-              <span className="text-emerald-300/90 font-medium">Gratuit</span>
-              <br />
-              Catzligue · visite guidée mondiale
-            </li>
-            <li className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-              <span className="text-cyan-300/90 font-medium">Wallet</span>
-              <br />
-              Mydee — tes NFTs on-chain
-            </li>
-            <li className="rounded-xl border border-violet-500/25 bg-violet-500/10 px-3 py-2 sm:col-span-2">
-              <span className="text-violet-200 font-medium">LIA Pass</span>
-              <br />
-              Immersion casque — pas dans cette build. Corridor CSS + guide = fondation v1.
-            </li>
-          </ul>
-
-          <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-[11px] text-zinc-500 leading-relaxed">
-            <strong className="text-zinc-400">Sécurité</strong> — ce module n’émet aucune TX.
-            Achats / mint passent par Guardian + signature wallet réelle (TransactionWatcher). Pas de
-            setTimeout fake-success.
-          </div>
-
-          <div className="relative min-h-[80px]">
-            <LiaHost space="vr_core" />
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              className="btn-secondary text-xs"
-              onClick={() => setSpace('catzligue')}
-            >
-              ← Catzligue (gratuit)
-            </button>
-            <button
-              type="button"
-              className="btn-secondary text-xs"
-              onClick={() => setSpace('world_tour')}
-            >
-              Visite guidée
-            </button>
-          </div>
+          <button type="button" className="btn-secondary text-xs" onClick={() => setSpace('catzligue')}>
+            ← Catzligue
+          </button>
         </div>
       )}
-
-      <section className="rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-[11px] text-zinc-500 leading-relaxed">
-        Catalogue : <code className="text-zinc-400">data/xartists_collections.json</code> · médias
-        MultiversX CDN / IPFS · aucune TX simulée.
-      </section>
     </div>
   )
 }
