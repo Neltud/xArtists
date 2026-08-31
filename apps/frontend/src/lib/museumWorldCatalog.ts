@@ -1,8 +1,9 @@
 /**
  * Réseau de musées — xArtists en premier.
- * 100+ peintures Met (domaine public) via catalog.json + CDN Met.
+ * 100+ peintures Met (domaine public) via catalog.json / MET_WORKS embed.
  */
 import type { FrameItem } from '../components/museum/MuseumCorridor'
+import { MET_WORKS } from '../data/metCatalog'
 
 export type VirtualMuseumId =
   | 'xartists'
@@ -39,7 +40,6 @@ export type CatalogWork = {
 
 function toFrame(w: CatalogWork, base: string): FrameItem {
   const local = w.file ? `${base}${w.file}` : undefined
-  // Prefer Met CDN (reliable) then local mirror under public/museum/
   const image = w.remote || local || undefined
   return {
     id: w.id,
@@ -64,7 +64,6 @@ const WING_META: { id: string; name: string; tagline: string; room: VirtualMuseu
   { id: 'met_wing_h', name: 'Met · Aile H', tagline: 'Collection ouverte', room: 'cyber' },
 ]
 
-/** Charge le catalogue local (100 œuvres) + construit les ailes */
 export async function loadMuseumNetwork(baseUrl: string): Promise<VirtualMuseum[]> {
   const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'
   let works: CatalogWork[] = []
@@ -73,6 +72,9 @@ export async function loadMuseumNetwork(baseUrl: string): Promise<VirtualMuseum[
     if (r.ok) works = await r.json()
   } catch {
     /* empty */
+  }
+  if (!works.length) {
+    works = MET_WORKS as CatalogWork[]
   }
 
   const frames = works.map(w => toFrame(w, base))
