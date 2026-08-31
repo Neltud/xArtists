@@ -1,44 +1,14 @@
+/**
+ * Home demo — calme. Pas d’ops Zapier / codeHash / pastilles SC sur la page d’accueil.
+ */
 import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
-import PaperSoulScore from '../components/PaperSoulScore'
 import PersonaWelcome from '../components/PersonaWelcome'
-import DualMarketplaceStrip from '../components/DualMarketplaceStrip'
-import CommanderStrip from '../components/commander/CommanderStrip'
-import GSNBanner from '../components/GSNBanner'
-import ExplainCards from './ExplainCards'
-import AdSlot from '../components/AdSlot'
-import SocialOpsStrip from '../components/SocialOpsStrip'
-import ScStatusBanner from '../components/ScStatusBanner'
-import DataHealthStrip from '../components/DataHealthStrip'
-import LiaRunStrip from '../components/LiaRunStrip'
-import Lia3DBridge from '../components/ui/Lia3DBridge'
 import SoftLaunchPath from '../components/SoftLaunchPath'
 import { useEffect, useState } from 'react'
 
-function PersonaQuickLinks({ persona }: { persona: string }) {
-  return (
-    <div className="card flex flex-wrap gap-2 items-center">
-      <span className="text-xs text-zinc-500">Profil · {persona}</span>
-      <Link to="/agents" className="btn-secondary !py-1.5 !px-3 text-xs">
-        Packs
-      </Link>
-      <Link to="/trading" className="btn-secondary !py-1.5 !px-3 text-xs">
-        Trading
-      </Link>
-      <Link to="/tours" className="btn-secondary !py-1.5 !px-3 text-xs">
-        Tours
-      </Link>
-      <Link to="/museum" className="btn-secondary !py-1.5 !px-3 text-xs">
-        Musée
-      </Link>
-    </div>
-  )
-}
-
 export default function Dashboard() {
   const [persona, setPersona] = useState<string | null>(null)
-  const live =
-    typeof import.meta !== 'undefined' && import.meta.env?.VITE_LIA_LIVE_TRADING === '1'
 
   useEffect(() => {
     try {
@@ -49,14 +19,8 @@ export default function Dashboard() {
   }, [])
 
   return (
-    <div className="animate-fade-in space-y-6 pb-10">
+    <div className="animate-fade-in space-y-6 pb-10 max-w-3xl">
       <PageGuide page="home" />
-
-      <LiaRunStrip />
-
-      <SoftLaunchPath />
-
-      <Lia3DBridge />
 
       <section className="relative overflow-hidden rounded-3xl border border-white/[0.08] p-6 sm:p-10">
         <div
@@ -68,83 +32,66 @@ export default function Dashboard() {
         />
         <div className="relative z-[1] max-w-2xl space-y-4">
           <p className="text-[11px] uppercase tracking-[0.25em] text-cyan-400/90 font-semibold">
-            Soft launch · MultiversX · paper
+            MultiversX · xArtists
           </p>
           <h1 className="display text-4xl sm:text-5xl leading-[1.05]">
-            L’intention devient{' '}
-            <span className="gradient-text">action</span>
+            Galerie · packs · <span className="gradient-text">musée</span>
           </h1>
           <p className="text-zinc-400 text-sm sm:text-base leading-relaxed max-w-lg">
-            xArtists — galerie NFT, packs agents, Art Tours, musée immersif et board LIA. Paper par
-            défaut. Ton wallet signe. Vellum orchestre côté ops. SC market/agents en verify avant live.
+            NFT MultiversX, packs agents Pulse · Yield · Sentinel, visites musée et Art Tours. Mode
+            paper par défaut — pas de trading live sur cette démo.
           </p>
           <div className="flex flex-wrap gap-2 pt-1">
-            <Link to="/agents" className="btn-primary">
-              Packs Agents
-            </Link>
-            <Link to="/museum" className="btn-secondary">
+            <Link to="/museum" className="btn-primary">
               Musée 3D
             </Link>
-            <Link to="/tours" className="btn-secondary">
-              Art Tours
+            <Link to="/agents" className="btn-secondary">
+              Packs
             </Link>
-            <Link to="/marketplace" className="btn-secondary">
-              Marketplace
+            <Link to="/gallery" className="btn-secondary">
+              Galerie
+            </Link>
+            <Link to="/tours" className="btn-secondary">
+              Tours
             </Link>
           </div>
-          <p className="text-[11px] text-zinc-600">
-            ⌘K / Ctrl+K — intention · Guardian · on-ramp EGLD
-          </p>
         </div>
       </section>
 
-      <div className="flex flex-wrap gap-2">
-        <Link to="/sitemap" className="btn-ghost text-xs">
-          Plan du site
-        </Link>
-        <Link to="/entity" className="btn-ghost text-xs">
-          Entité
-        </Link>
-        <Link to="/sim" className="btn-ghost text-xs">
-          Sim Lab
-        </Link>
-      </div>
-
-      <SocialOpsStrip />
-      <ScStatusBanner />
-      <DataHealthStrip />
+      <SoftLaunchPath compact />
 
       {!persona && <PersonaWelcome />}
-      {persona && <PersonaQuickLinks persona={persona} />}
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <PaperSoulScore />
-        <div className="card text-xs text-zinc-500 space-y-2">
-          <p className="font-semibold text-zinc-200 text-sm">Soft launch — à retenir</p>
-          <ul className="list-disc pl-4 space-y-1.5">
-            <li>
-              <strong className="text-zinc-300">Packs</strong> = Pulse / Yield / Sentinel
-            </li>
-            <li>
-              <strong className="text-zinc-300">Tours</strong> = service culturel, pas un pack IA
-            </li>
-            <li>
-              <strong className="text-zinc-300">Musée</strong> = mur + zoom + intention d’achat
-            </li>
-            <li>
-              <strong className="text-zinc-300">Trading</strong> = board LIA paper
-              {live ? ' · ⚠ flag live' : ' · live OFF'}
-            </li>
-            <li>Marketplace on-chain seulement après codeHash vérifié</li>
-          </ul>
-        </div>
+      <div className="card text-xs text-zinc-500 space-y-2">
+        <p className="font-semibold text-zinc-200 text-sm">En bref</p>
+        <ul className="list-disc pl-4 space-y-1.5">
+          <li>
+            <strong className="text-zinc-300">Packs</strong> — Pulse · Yield · Sentinel (accès agent,
+            NFT d’entitlement)
+          </li>
+          <li>
+            <strong className="text-zinc-300">Tours / Musée</strong> — culture & visite, pas un pack
+            IA
+          </li>
+          <li>
+            <strong className="text-zinc-300">Trading</strong> — board LIA en paper sur la démo
+          </li>
+        </ul>
       </div>
 
-      <DualMarketplaceStrip />
-      <CommanderStrip />
-      <GSNBanner />
-      <ExplainCards />
-      <AdSlot />
+      <p className="text-[11px] text-zinc-600">
+        <Link to="/wallet" className="text-cyan-300/90 hover:underline">
+          Wallet
+        </Link>
+        {' · '}
+        <Link to="/marketplace" className="text-cyan-300/90 hover:underline">
+          Marketplace
+        </Link>
+        {' · '}
+        <Link to="/trading" className="text-cyan-300/90 hover:underline">
+          Trading
+        </Link>
+      </p>
     </div>
   )
 }
