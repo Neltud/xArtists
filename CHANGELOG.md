@@ -1,5 +1,24 @@
 # Changelog — xArtists
 
+## [0.19.0](https://github.com/Neltud/xArtists/compare/v0.18.0...v0.19.0) (2026-08-31)
+
+
+### Features
+
+* **legal:** /legal routes + professional footer on all viewports ([e690c69](https://github.com/Neltud/xArtists/commit/e690c69f28d948cca85d30402e6e6777f1134df7))
+* **legal+ux:** mentions légales, footer pro, bandeau démo allégé ([ec6c8d7](https://github.com/Neltud/xArtists/commit/ec6c8d78fd2913747c48fea8e9e103fa2037ef11))
+
+
+### Bug Fixes
+
+* **home:** demo-clean — remove ops X, SC banners, status pills from Dashboard ([27b4ae4](https://github.com/Neltud/xArtists/commit/27b4ae434afc1c4ba5e453816801748787b7c07c))
+* **museum:** map cities → real museums (Louvre, Rijks, Uffizi…) not Met wings ([dd4ebb0](https://github.com/Neltud/xArtists/commit/dd4ebb07f2b79ef095199dd9a20365b24f302a04))
+* **packs:** ONE grid of 3 — no repeated IA/NFT pack lists on Agents ([30325e6](https://github.com/Neltud/xArtists/commit/30325e662ef009b9244da8f3399667eb6c5e30df))
+* **packs:** PackCheckout = single selection only (no second 3-pack grid) ([d5557b1](https://github.com/Neltud/xArtists/commit/d5557b1337a2f24defabf8cf547991f3efaad0ef))
+* **ux:** Galerie publique / Mes NFTs; un seul rayon packs (plus de doublon IA+NFT) ([239bc60](https://github.com/Neltud/xArtists/commit/239bc601c5b1260a30327110f7beadd512815a24))
+* **ux:** Mydee → Mes NFTs label ([03ded44](https://github.com/Neltud/xArtists/commit/03ded44ce3aa84ae5206d3d4af0ef620deb38899))
+* **ux:** rename museum tabs; Agents = single 3-pack grid (no IA/NFT double) ([8f147ba](https://github.com/Neltud/xArtists/commit/8f147ba386e3c73cb52a57cee1e9296bbb7194eb))
+
 ## [0.18.0](https://github.com/Neltud/xArtists/compare/v0.17.0...v0.18.0) (2026-08-31)
 
 
