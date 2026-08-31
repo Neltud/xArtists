@@ -1,6 +1,6 @@
 /**
  * LIA Immersive Museum — spaces & access (honest freemium).
- * Catzligue = public · Mydee = wallet · VR Core = LIA Pass (pending).
+ * Galerie publique = free · Mes NFTs = wallet · VR Core = LIA Pass (pending).
  */
 
 export type MuseumSpaceId = 'catzligue' | 'mydee' | 'vr_core' | 'world_tour'
@@ -16,15 +16,15 @@ export type MuseumSpace = {
 export const MUSEUM_SPACES: MuseumSpace[] = [
   {
     id: 'catzligue',
-    name: 'Catzligue',
-    tagline: 'Galerie publique xArtists — cyber-minimal',
+    name: 'Galerie publique',
+    tagline: 'Visite libre — collections xArtists & musées-ville',
     access: 'free',
     theme: 'cyber',
   },
   {
     id: 'mydee',
-    name: 'Mydee',
-    tagline: 'Sanctuaire privé — tes NFTs on-chain',
+    name: 'Mes NFTs',
+    tagline: 'Tes œuvres on-chain (wallet connecté)',
     access: 'wallet',
     theme: 'sanctuary',
   },
@@ -78,42 +78,21 @@ export async function loadTourStops(): Promise<TourStop[]> {
       const r = await fetch(`${u}?t=${Date.now()}`, { cache: 'no-store' })
       if (!r.ok) continue
       const j = await r.json()
-      const rows = Array.isArray(j) ? j : j.locations || j.stops || []
-      if (!rows.length) continue
-      return rows.map((x: Record<string, unknown>, i: number) => ({
-        id: String(x.id || x.slug || `stop-${i}`),
-        city: String(x.city || x.name || '—'),
-        country: String(x.country || ''),
-        focus: String(x.focus || x.theme || x.note || ''),
-        region: x.region ? String(x.region) : undefined,
-        lat: typeof x.lat === 'number' ? x.lat : undefined,
-        lng: typeof x.lng === 'number' ? x.lng : typeof x.lon === 'number' ? x.lon : undefined,
-      }))
+      const rows = Array.isArray(j) ? j : j.stops || j.locations || []
+      if (rows.length) {
+        return rows.map((x: Record<string, unknown>, i: number) => ({
+          id: String(x.id || x.city || i),
+          city: String(x.city || x.label || '—'),
+          country: String(x.country || ''),
+          focus: String(x.focus || x.note || ''),
+          region: x.region ? String(x.region) : undefined,
+          lat: typeof x.lat === 'number' ? x.lat : undefined,
+          lng: typeof x.lng === 'number' ? x.lng : undefined,
+        }))
+      }
     } catch {
       /* next */
     }
   }
   return FALLBACK_TOUR_STOPS
-}
-
-export const LIA_HOST_LINES: Record<MuseumSpaceId, string[]> = {
-  catzligue: [
-    'Bienvenue dans Catzligue — galerie publique xArtists.',
-    'Les cadres affichent le catalogue MultiversX (lecture seule).',
-    'Dis-moi « guide-moi » pour une visite, ou ouvre Mydee avec ton wallet.',
-  ],
-  mydee: [
-    'Mydee — ton sanctuaire. Seuls tes NFTs on-chain apparaissent ici.',
-    'Aucune transaction simulée : ce que tu vois vient de l’API MultiversX.',
-  ],
-  world_tour: [
-    'Visite guidée mondiale — destinations culturelles (service Tours).',
-    'Je te mène de ville en ville. Les expos live sont sur la carte Tours.',
-  ],
-  vr_core: [
-    'VR Core nécessite un LIA Pass (NFT d’accès) — pas encore minté on-chain.',
-    'Stack cible : React Three Fiber + @react-three/xr (WebXR).',
-    'Freemium : Catzligue + visite guidée gratuits · Mydee = wallet.',
-    'Aucune TX ici — mint Pass via Guardian + signature wallet réelle.',
-  ],
 }
