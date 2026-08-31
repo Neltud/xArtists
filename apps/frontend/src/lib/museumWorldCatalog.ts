@@ -1,5 +1,6 @@
 /**
- * Réseau de musées par VILLE — clic ville → salle + œuvres (Met Open Access).
+ * Lieux carte / guide → VRAIS musées (pas d’ailes Met A/B/C).
+ * Œuvres Met Open Access regroupées par tradition du lieu.
  */
 import type { FrameItem } from '../components/museum/MuseumCorridor'
 import { MET_WORKS } from '../data/metCatalog'
@@ -25,65 +26,326 @@ export type CatalogWork = {
   remote?: string | null
 }
 
-const CITY_DEFS: {
+const PLACE_MUSEUMS: {
   id: string
   name: string
   city: string
   country: string
   tagline: string
   room: VirtualMuseum['room']
-  aliases?: string[]
+  aliases: string[]
+  match: string[]
 }[] = [
-  { id: 'paris', name: 'Paris · Salons', city: 'Paris', country: 'France', tagline: 'Galeries · foires · street art', room: 'stone', aliases: ['paris'] },
-  { id: 'london', name: 'London · Galleries', city: 'London', country: 'UK', tagline: 'National collections', room: 'white', aliases: ['london', 'londres'] },
-  { id: 'amsterdam', name: 'Amsterdam · Golden Age', city: 'Amsterdam', country: 'Pays-Bas', tagline: 'Âge d’or', room: 'dark' },
-  { id: 'florence', name: 'Florence · Renaissance', city: 'Florence', country: 'Italie', tagline: 'Renaissance', room: 'white', aliases: ['florence', 'firenze'] },
-  { id: 'madrid', name: 'Madrid · Prado spirit', city: 'Madrid', country: 'Espagne', tagline: 'Siècle d’or', room: 'stone' },
-  { id: 'newyork', name: 'New York · Met spirit', city: 'New York', country: 'USA', tagline: 'Open Access Met', room: 'gold', aliases: ['newyork', 'nyc', 'new york'] },
-  { id: 'berlin', name: 'Berlin · Modern', city: 'Berlin', country: 'Allemagne', tagline: 'Capitales', room: 'cyber' },
-  { id: 'vienna', name: 'Vienna · Secession', city: 'Vienna', country: 'Autriche', tagline: 'Empires', room: 'gold', aliases: ['vienna', 'wien', 'vienne'] },
-  { id: 'rome', name: 'Rome · Eternal', city: 'Rome', country: 'Italie', tagline: 'Éternelle', room: 'stone', aliases: ['rome', 'roma'] },
-  { id: 'brussels', name: 'Brussels · Crossroads', city: 'Brussels', country: 'Belgique', tagline: 'Carrefour', room: 'white', aliases: ['brussels', 'bruxelles'] },
-  { id: 'milan', name: 'Milan · Design', city: 'Milan', country: 'Italie', tagline: 'Nord italien', room: 'white', aliases: ['milan', 'milano'] },
-  { id: 'prague', name: 'Prague · Central', city: 'Prague', country: 'Tchéquie', tagline: 'Europe centrale', room: 'dark', aliases: ['prague', 'praha'] },
-  { id: 'lisbon', name: 'Lisbon · Atlantic', city: 'Lisbon', country: 'Portugal', tagline: 'Atlantique', room: 'white', aliases: ['lisbon', 'lisbonne', 'lisboa'] },
-  { id: 'porto', name: 'Porto · Douro', city: 'Porto', country: 'Portugal', tagline: 'Douro', room: 'stone' },
-  { id: 'moscow', name: 'Moscow · Hermitage spirit', city: 'Moscow', country: 'Russie', tagline: 'Collections impériales', room: 'gold', aliases: ['moscow', 'moscou'] },
-  { id: 'warsaw', name: 'Warsaw · Central', city: 'Warsaw', country: 'Pologne', tagline: 'Europe centrale', room: 'dark', aliases: ['warsaw', 'varsovie'] },
-  { id: 'budapest', name: 'Budapest · Danube', city: 'Budapest', country: 'Hongrie', tagline: 'Danube', room: 'gold' },
-  { id: 'barcelona', name: 'Barcelona · Modernisme', city: 'Barcelona', country: 'Espagne', tagline: 'Modernisme', room: 'white', aliases: ['barcelona', 'barcelone'] },
-  { id: 'venice', name: 'Venice · Lagoon', city: 'Venice', country: 'Italie', tagline: 'Lagune', room: 'gold', aliases: ['venice', 'venise', 'venezia'] },
+  {
+    id: 'louvre',
+    name: 'Musée du Louvre',
+    city: 'Paris',
+    country: 'France',
+    tagline: 'Chefs-d’œuvre · Paris',
+    room: 'stone',
+    aliases: ['paris', 'louvre'],
+    match: ['rembrandt', 'raphael', 'lippi', 'mantegna', 'delacroix', 'courbet', 'david', 'holy', 'madonna'],
+  },
+  {
+    id: 'orsay',
+    name: 'Musée d’Orsay',
+    city: 'Paris',
+    country: 'France',
+    tagline: 'XIXe · impressionnisme · Paris',
+    room: 'gold',
+    aliases: ['orsay'],
+    match: ['manet', 'degas', 'monet', 'renoir', 'pissarro', 'cezanne', 'gauguin', 'fantin', 'seurat', 'toulouse', 'van gogh'],
+  },
+  {
+    id: 'nglondon',
+    name: 'National Gallery',
+    city: 'London',
+    country: 'UK',
+    tagline: 'Collection nationale · Londres',
+    room: 'white',
+    aliases: ['london', 'londres', 'national gallery'],
+    match: ['turner', 'constable', 'holbein', 'van eyck', 'vermeer', 'hogarth'],
+  },
+  {
+    id: 'rijks',
+    name: 'Rijksmuseum',
+    city: 'Amsterdam',
+    country: 'Pays-Bas',
+    tagline: 'Âge d’or hollandais',
+    room: 'dark',
+    aliases: ['amsterdam', 'rijks', 'rijksmuseum'],
+    match: ['rembrandt', 'vermeer', 'steen', 'claesz', 'van goyen', 'hals', 'ruysch', 'brouwer', 'ter brugghen'],
+  },
+  {
+    id: 'vangogh',
+    name: 'Van Gogh Museum',
+    city: 'Amsterdam',
+    country: 'Pays-Bas',
+    tagline: 'Vincent van Gogh',
+    room: 'white',
+    aliases: ['vangogh', 'van gogh museum'],
+    match: ['van gogh', 'gogh'],
+  },
+  {
+    id: 'uffizi',
+    name: 'Galerie des Offices',
+    city: 'Florence',
+    country: 'Italie',
+    tagline: 'Renaissance florentine',
+    room: 'white',
+    aliases: ['florence', 'firenze', 'uffizi'],
+    match: ['botticelli', 'lippi', 'cosimo', 'raffaellino', 'cred', 'pollaiuolo'],
+  },
+  {
+    id: 'prado',
+    name: 'Musée du Prado',
+    city: 'Madrid',
+    country: 'Espagne',
+    tagline: 'Siècle d’or espagnol',
+    room: 'stone',
+    aliases: ['madrid', 'prado'],
+    match: ['goya', 'velazquez', 'el greco', 'greco', 'murillo'],
+  },
+  {
+    id: 'met',
+    name: 'The Met',
+    city: 'New York',
+    country: 'USA',
+    tagline: 'Metropolitan Museum · Open Access',
+    room: 'gold',
+    aliases: ['new york', 'newyork', 'nyc', 'met'],
+    match: [],
+  },
+  {
+    id: 'gemaldegalerie',
+    name: 'Gemäldegalerie',
+    city: 'Berlin',
+    country: 'Allemagne',
+    tagline: 'Peinture européenne · Berlin',
+    room: 'cyber',
+    aliases: ['berlin'],
+    match: ['cranach', 'holbein'],
+  },
+  {
+    id: 'kunsthistorisches',
+    name: 'Kunsthistorisches Museum',
+    city: 'Vienna',
+    country: 'Autriche',
+    tagline: 'Collections impériales · Vienne',
+    room: 'gold',
+    aliases: ['vienna', 'wien', 'vienne'],
+    match: ['bruegel', 'rubens', 'titian'],
+  },
+  {
+    id: 'vatican',
+    name: 'Musées du Vatican',
+    city: 'Rome',
+    country: 'Italie',
+    tagline: 'Vatican · Rome',
+    room: 'stone',
+    aliases: ['rome', 'roma', 'vatican'],
+    match: ['raphael', 'carracci', 'caravaggio'],
+  },
+  {
+    id: 'mrbab',
+    name: 'Musées royaux des Beaux-Arts',
+    city: 'Brussels',
+    country: 'Belgique',
+    tagline: 'Bruxelles',
+    room: 'white',
+    aliases: ['brussels', 'bruxelles'],
+    match: ['rubens', 'bruegel'],
+  },
+  {
+    id: 'brera',
+    name: 'Pinacoteca di Brera',
+    city: 'Milan',
+    country: 'Italie',
+    tagline: 'Milan',
+    room: 'white',
+    aliases: ['milan', 'milano', 'brera'],
+    match: ['mantegna', 'hayez'],
+  },
+  {
+    id: 'ngprague',
+    name: 'Národní galerie',
+    city: 'Prague',
+    country: 'Tchéquie',
+    tagline: 'Galerie nationale · Prague',
+    room: 'dark',
+    aliases: ['prague', 'praha'],
+    match: ['mucha'],
+  },
+  {
+    id: 'mauritshuis',
+    name: 'Mauritshuis',
+    city: 'The Hague',
+    country: 'Pays-Bas',
+    tagline: 'La Haye · Vermeer',
+    room: 'gold',
+    aliases: ['hague', 'la haye', 'den haag', 'mauritshuis'],
+    match: ['vermeer', 'fabritius'],
+  },
+  {
+    id: 'tate',
+    name: 'Tate Britain',
+    city: 'London',
+    country: 'UK',
+    tagline: 'Art britannique',
+    room: 'white',
+    aliases: ['tate'],
+    match: ['turner', 'millais', 'constable'],
+  },
+  {
+    id: 'hermitage',
+    name: 'Musée de l’Ermitage',
+    city: 'Saint Petersburg',
+    country: 'Russie',
+    tagline: 'Collection impériale',
+    room: 'gold',
+    aliases: ['petersburg', 'hermitage', 'moscow', 'moscou'],
+    match: ['rembrandt', 'leonardo'],
+  },
+  {
+    id: 'mnac',
+    name: 'MNAC / modernisme',
+    city: 'Barcelona',
+    country: 'Espagne',
+    tagline: 'Barcelone',
+    room: 'white',
+    aliases: ['barcelona', 'barcelone'],
+    match: ['picasso'],
+  },
+  {
+    id: 'accademia',
+    name: 'Gallerie dell’Accademia',
+    city: 'Venice',
+    country: 'Italie',
+    tagline: 'Venise',
+    room: 'gold',
+    aliases: ['venice', 'venise', 'venezia'],
+    match: ['titian', 'canaletto', 'tiepolo', 'bellini'],
+  },
+  {
+    id: 'gulbenkian',
+    name: 'Fondation Gulbenkian',
+    city: 'Lisbon',
+    country: 'Portugal',
+    tagline: 'Lisbonne',
+    room: 'white',
+    aliases: ['lisbon', 'lisbonne', 'lisboa'],
+    match: ['renoir', 'monet', 'degas'],
+  },
+  {
+    id: 'soares',
+    name: 'Museu Soares dos Reis',
+    city: 'Porto',
+    country: 'Portugal',
+    tagline: 'Porto',
+    room: 'stone',
+    aliases: ['porto'],
+    match: [],
+  },
+  {
+    id: 'mfabudapest',
+    name: 'Szépművészeti Múzeum',
+    city: 'Budapest',
+    country: 'Hongrie',
+    tagline: 'Budapest',
+    room: 'gold',
+    aliases: ['budapest'],
+    match: ['goya', 'el greco'],
+  },
+  {
+    id: 'mnw',
+    name: 'Muzeum Narodowe',
+    city: 'Warsaw',
+    country: 'Pologne',
+    tagline: 'Varsovie',
+    room: 'dark',
+    aliases: ['warsaw', 'varsovie'],
+    match: [],
+  },
 ]
 
-function toFrame(w: CatalogWork, base: string): FrameItem {
+function toFrame(w: CatalogWork, base: string, museumLabel: string): FrameItem {
   const local = w.file ? `${base}${w.file}` : undefined
   const image = w.remote || local || undefined
   return {
     id: w.id,
     title: w.title,
     subtitle: [w.artist, w.year].filter(Boolean).join(' · '),
-    collection: w.museum || 'The Met',
-    description: `Domaine public — ${w.artist}${w.year ? `, ${w.year}` : ''}. Met Open Access.`,
+    collection: museumLabel,
+    description: `Présenté dans l’esprit de ${museumLabel}. Image Met Open Access (PD). ${w.artist}${w.year ? `, ${w.year}` : ''}.`,
     image,
     type: 'Public domain',
     href: w.remote || local,
   }
 }
 
-function normalizeCity(s: string): string {
+function normalize(s: string): string {
   return s
     .toLowerCase()
     .normalize('NFD')
     .replace(/\p{M}/gu, '')
-    .replace(/[^a-z]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+}
+
+function workBlob(w: CatalogWork): string {
+  return normalize(`${w.title} ${w.artist}`)
+}
+
+function assignWorks(base: string): Map<string, FrameItem[]> {
+  const byId = new Map<string, FrameItem[]>()
+  for (const p of PLACE_MUSEUMS) byId.set(p.id, [])
+
+  const works = (MET_WORKS as CatalogWork[]).filter(w => w.remote || w.file)
+  const used = new Set<string>()
+
+  for (const p of PLACE_MUSEUMS) {
+    const keys = p.match.filter(k => k.trim().length > 1)
+    if (!keys.length) continue
+    for (const w of works) {
+      if (used.has(w.id)) continue
+      const blob = workBlob(w)
+      if (keys.some(k => blob.includes(normalize(k)))) {
+        byId.get(p.id)!.push(toFrame(w, base, p.name))
+        used.add(w.id)
+      }
+    }
+  }
+
+  const rest = works.filter(w => !used.has(w.id))
+  const metList = byId.get('met')!
+  for (const w of rest) {
+    metList.push(toFrame(w, base, 'The Met'))
+    used.add(w.id)
+  }
+
+  const pool = metList.length ? metList : [...byId.values()].flat()
+  for (const p of PLACE_MUSEUMS) {
+    const arr = byId.get(p.id)!
+    if (arr.length >= 2 || !pool.length) continue
+    let i = 0
+    while (arr.length < 3 && i < pool.length) {
+      const src = pool[(p.id.length * 3 + i) % pool.length]
+      arr.push({
+        ...src,
+        id: `${src.id}-${p.id}-${i}`,
+        collection: p.name,
+        description: `Présenté dans l’esprit de ${p.name}. ${src.description || ''}`,
+      })
+      i++
+    }
+  }
+
+  return byId
 }
 
 export function buildMuseumNetwork(baseUrl = '/'): VirtualMuseum[] {
   const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'
-  const works = (MET_WORKS as CatalogWork[]).filter(w => w.remote || w.file)
-  const frames = works.map(w => toFrame(w, base))
-  const n = CITY_DEFS.length || 1
-  const chunk = Math.max(1, Math.ceil((frames.length || 1) / n))
+  const assigned = assignWorks(base)
 
   const list: VirtualMuseum[] = [
     {
@@ -98,20 +360,19 @@ export function buildMuseumNetwork(baseUrl = '/'): VirtualMuseum[] {
     },
   ]
 
-  CITY_DEFS.forEach((def, i) => {
-    let slice = frames.slice(i * chunk, (i + 1) * chunk)
-    if (!slice.length && frames.length) slice = [frames[i % frames.length]]
+  for (const p of PLACE_MUSEUMS) {
+    const works = assigned.get(p.id) || []
     list.push({
-      id: def.id,
-      name: def.name,
-      city: def.city,
-      country: def.country,
-      tagline: `${def.tagline} · ${slice.length} œuvres`,
+      id: p.id,
+      name: p.name,
+      city: p.city,
+      country: p.country,
+      tagline: `${p.tagline} · ${works.length} œuvres`,
       source: 'public_domain',
-      room: def.room,
-      works: slice,
+      room: p.room,
+      works,
     })
-  })
+  }
 
   return list
 }
@@ -122,13 +383,16 @@ export async function loadMuseumNetwork(baseUrl: string): Promise<VirtualMuseum[
 
 export function museumIdForCity(city: string | undefined | null): string | null {
   if (!city) return null
-  const n = normalizeCity(city)
-  const hit = CITY_DEFS.find(d => {
-    if (normalizeCity(d.city) === n || normalizeCity(d.id) === n) return true
-    if (d.aliases?.some(a => normalizeCity(a) === n)) return true
-    return normalizeCity(d.name).includes(n)
-  })
-  return hit?.id ?? null
+  const n = normalize(city).replace(/\s/g, '')
+  if (n === 'paris') return 'louvre'
+  if (n === 'amsterdam') return 'rijks'
+  if (n === 'london' || n === 'londres') return 'nglondon'
+  for (const p of PLACE_MUSEUMS) {
+    if (normalize(p.city).replace(/\s/g, '') === n) return p.id
+    if (normalize(p.id).replace(/\s/g, '') === n) return p.id
+    if (p.aliases.some(a => normalize(a).replace(/\s/g, '') === n)) return p.id
+  }
+  return null
 }
 
 export const VIRTUAL_MUSEUMS: VirtualMuseum[] = buildMuseumNetwork('/')
