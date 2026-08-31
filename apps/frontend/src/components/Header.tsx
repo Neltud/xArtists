@@ -17,7 +17,7 @@ function getCallbackUrl(): string {
 }
 
 const DESKTOP_NAV = PRIMARY_NAV.filter(n =>
-  ['/', '/marketplace', '/agents', '/trading', '/tours', '/gallery', '/museum', '/wallet', '/tro'].includes(
+  ['/', '/agents', '/museum', '/tours', '/gallery', '/wallet', '/marketplace', '/my-packs'].includes(
     n.to
   )
 )
@@ -221,7 +221,7 @@ export default function Header() {
                 </NavLink>
               ))}
               <p className="px-4 pt-3 pb-1 text-[10px] uppercase tracking-[0.2em] text-zinc-600">
-                Plus
+                Lab · pré-mainnet
               </p>
               {SECONDARY_NAV.map(({ to, label, emoji }) => (
                 <NavLink
