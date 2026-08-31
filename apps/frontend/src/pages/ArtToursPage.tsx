@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
-import ToursScopeBanner from '../components/ToursScopeBanner'
+import InfoTip from '../components/InfoTip'
 import ArtWorldMap from '../components/ArtWorldMap'
 import ErrorBoundary from '../components/ErrorBoundary'
 
@@ -47,31 +47,30 @@ export default function ArtToursPage() {
   }, [])
 
   return (
-    <div className="animate-fade-in space-y-6 pb-10">
+    <div className="animate-fade-in space-y-5 pb-10 max-w-4xl">
       <PageGuide page="tours" />
-
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div className="space-y-2">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-rose-400/80 font-semibold">
-            Service culturel
-          </p>
-          <h1 className="display text-3xl sm:text-4xl">Art Tours</h1>
-          <p className="muted">Carte mondiale réelle · expos · parcours — pas un pack IA</p>
-        </div>
-        <Link to="/agents" className="btn-secondary text-xs">
-          Packs IA
-        </Link>
+      <header className="space-y-1">
+        <p className="section-label text-rose-400/80">Culture</p>
+        <h1 className="page-title">Art Tours</h1>
+        <p className="page-sub inline-flex flex-wrap items-center gap-1">
+          Service culturel — pas un pack agent
+          <InfoTip>
+            <strong className="text-white block mb-1">Art Tours</strong>
+            <span className="text-zinc-400">
+              Visites et parcours art. Séparé de Pulse · Yield · Sentinel.
+            </span>
+          </InfoTip>
+        </p>
+        <p className="text-xs text-zinc-500 pt-1">
+          <Link to="/museum" className="text-cyan-300/90 hover:underline">
+            Musée 3D
+          </Link>
+        </p>
       </header>
 
-      <ToursScopeBanner />
-
-      <section aria-labelledby="map-title" className="space-y-3">
-        <h2 id="map-title" className="display text-lg">
-          Carte mondiale réelle
-        </h2>
-        <p className="text-xs text-zinc-500 -mt-1">
-          Fond OSM / CARTO / relief / satellite · zoom · marqueurs · expos
-        </p>
+      <section className="space-y-2">
+        <h2 className="text-sm font-semibold text-zinc-300">Carte mondiale</h2>
+        <p className="text-[11px] text-zinc-600">OSM / CARTO · zoom · marqueurs · expos</p>
         <ErrorBoundary>
           <ArtWorldMap />
         </ErrorBoundary>
@@ -92,7 +91,7 @@ export default function ArtToursPage() {
               </ul>
             )}
             {Array.isArray(doc.not_v1) && (
-              <div className="pt-2 divider">
+              <div className="pt-2 border-t border-white/5">
                 <p className="text-[10px] uppercase text-zinc-600 mb-1">Hors scope</p>
                 <ul className="list-disc pl-5 text-zinc-500 text-xs space-y-0.5">
                   {doc.not_v1.map(s => (
@@ -126,7 +125,7 @@ export default function ArtToursPage() {
 
       <p className="text-[11px] text-zinc-600">
         Packs Agents →{' '}
-        <Link to="/agents" className="text-violet-300 underline">
+        <Link to="/agents" className="text-violet-300/90 hover:underline">
           /agents
         </Link>
       </p>
