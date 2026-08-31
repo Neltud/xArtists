@@ -1,16 +1,26 @@
-/** Demo mode flags — honest product surface until SC + micro-live. */
+/** Soft launch — honest product surface until SC verify + optional micro-live. */
 
 export const DEMO_MODE = true
 
-export const DEMO_LABEL = 'DEMO · PAPER LIA'
+/** Soft launch public banner */
+export const DEMO_LABEL = 'SOFT LAUNCH · PAPER'
 
 export const DEMO_BULLETS = [
-  'Board / compounding / paper legs : JSON paper (Vellum) — pas ton compte.',
-  'Lectures MultiversX live (prix, soldes) quand API OK.',
-  'Marketplace & agents mint : bloqués tant que codeHash null.',
-  'Agent Voyage : signaux advisory — pas de booking.',
-  'On-ramp : MoonPay hosted + simulation UI (pas de secret webhook en front).',
-  'Liquidity orchestrator : paper only — pas de bridge live.',
-  'LIA_LIVE_TRADING=0 jusqu’aux micro-preuves ops.',
-  'Wallet LIA ops ≠ wallet utilisateur.',
+  'Soft launch paper : board LIA / compounding = JSON Vellum — pas ton compte.',
+  'Lectures MultiversX live (prix, soldes, NFTs) quand l’API répond.',
+  'Marketplace & mint agents : bloqués tant que codeHash null (fail-closed).',
+  'Packs actifs : Pulse · Yield · Sentinel uniquement.',
+  'Art Tours = service CULTURE (pas un pack agent).',
+  'Musée : catalogue réel + Mydee wallet · achat = intention paper / Guardian.',
+  'Trading LIA live OFF (LIA_LIVE_TRADING=0) jusqu’aux preuves ops.',
+  'Wallet protocole LIA ≠ wallet utilisateur — jamais coller le wallet ops.',
+] as const
+
+/** Critical path for soft-launch QA */
+export const SOFT_LAUNCH_PATH = [
+  { to: '/', label: 'Accueil', emoji: '⌂' },
+  { to: '/wallet', label: 'Wallet', emoji: '◇' },
+  { to: '/museum', label: 'Musée', emoji: '🖼' },
+  { to: '/tours', label: 'Tours', emoji: '🗺' },
+  { to: '/agents', label: 'Packs', emoji: '✦' },
 ] as const
