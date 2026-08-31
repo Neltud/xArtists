@@ -4,6 +4,7 @@
  */
 import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
+import InfoTip from '../components/InfoTip'
 import WalletConnectPanel from '../components/WalletConnectPanel'
 import MyNftPacksStrip from '../components/MyNftPacksStrip'
 import { useWallet } from '../context/WalletContext'
@@ -30,21 +31,22 @@ export default function Wallet() {
         : '—'
 
   return (
-    <div className="animate-fade-in space-y-6 pb-10 max-w-xl">
+    <div className="animate-fade-in space-y-5 pb-10 max-w-xl">
       <PageGuide page="wallet" />
 
-      <header className="space-y-2">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-400/80 font-semibold">
-          Compte
+      <header className="space-y-1">
+        <p className="section-label text-cyan-400/80">Compte</p>
+        <h1 className="page-title">Wallet</h1>
+        <p className="page-sub inline-flex flex-wrap items-center gap-1">
+          Ton MultiversX — pas le wallet protocole LIA
+          <InfoTip k="liaVsUser" />
         </p>
-        <h1 className="display text-3xl sm:text-4xl">Wallet</h1>
-        <p className="muted">Ton compte MultiversX · jamais le wallet protocole LIA</p>
       </header>
 
       {!connected ? (
         <div className="card space-y-4">
           <p className="text-sm text-zinc-400">
-            Connecte Web Wallet, xPortal ou extension pour voir soldes, tokens, NFTs on-chain et signer.
+            Connecte Web Wallet, xPortal ou extension pour voir soldes, tokens, NFTs et signer.
           </p>
           <button type="button" className="btn-primary w-full sm:w-auto" onClick={() => requestOpenConnect()}>
             Connecter
@@ -155,7 +157,7 @@ export default function Wallet() {
               <p className="text-sm text-zinc-500">Chargement des NFTs…</p>
             )}
             {!account.loading && account.nfts.length === 0 && (
-              <p className="text-sm text-zinc-500">Aucun NFT NonFungible / SemiFungible sur cette adresse.</p>
+              <p className="text-sm text-zinc-500">Aucun NFT sur cette adresse.</p>
             )}
             {account.nfts.length > 0 && (
               <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -208,7 +210,7 @@ export default function Wallet() {
             <Link to="/marketplace" className="btn-secondary text-xs">Marketplace</Link>
             <Link to="/agents" className="btn-secondary text-xs">Packs</Link>
             <Link to="/my-packs" className="btn-secondary text-xs">My Packs</Link>
-            <Link to="/tip" className="btn-secondary text-xs">Tip</Link>
+            <Link to="/museum" className="btn-secondary text-xs">Musée</Link>
           </div>
         </div>
       )}
