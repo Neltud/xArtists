@@ -4,11 +4,9 @@ import NFTDetailModal from '../components/NFTDetailModal'
 import MoonpayButton from '../components/MoonpayButton'
 import MarketplaceActivity from '../components/MarketplaceActivity'
 import AdSlot from '../components/AdSlot'
-import TreasuryBanner from '../components/TreasuryBanner'
-import ScStatusBanner from '../components/ScStatusBanner'
-import TxCapabilityBanner from '../components/TxCapabilityBanner'
 import VirtualNftGrid from '../components/VirtualNftGrid'
 import PageGuide from '../components/PageGuide'
+import InfoTip from '../components/InfoTip'
 import { canListBuyNft } from '../config/scStatus'
 import {
   type NFT,
@@ -147,107 +145,77 @@ export default function Marketplace() {
   }, [allNfts, activeCollection, query, sort])
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in space-y-5 pb-10">
       <PageGuide page="marketplace" />
 
-      <section className="relative mb-6 overflow-hidden rounded-3xl border border-[#2a2a3a] bg-gradient-to-br from-[#15151f] via-[#12121a] to-[#0a0a0f] p-6 sm:p-10">
-        <div className="relative">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#2a2a3a] bg-white/5 px-3 py-1 text-xs text-gray-300">
-            {canListBuyNft() ? (
-              <>
-                <span className="live-dot" /> MultiversX Mainnet · SC live
-              </>
-            ) : (
-              <>Mainnet · lecture · SC non déployé</>
-            )}
-          </span>
-          <h1 className="mt-4 text-4xl sm:text-5xl font-black tracking-tight">
-            <span className="gradient-text">xArtists Marketplace</span>
-          </h1>
-          <p className="mt-3 max-w-2xl text-base text-gray-400">
-            Buy · Sell · Bid on-chain après deploy SC · Offer = pas d’endpoint (V2) · grille virtualisée
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <MoonpayButton label="Acheter EGLD (MoonPay)" className="text-sm!" />
-            <button
-              type="button"
-              onClick={refreshLive}
-              disabled={refreshing || loading}
-              className="btn-secondary text-xs disabled:opacity-50"
-            >
-              {refreshing ? 'Refreshing…' : '↻ Refresh MultiversX'}
-            </button>
-            {lastUpdated && (
-              <span className="text-[11px] text-gray-500">
-                Updated {new Date(lastUpdated).toLocaleDateString()}
-              </span>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <ScStatusBanner />
-      <TxCapabilityBanner />
-
-      {!marketLive && (
-        <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-100">
-          <strong>P0 — SC marketplace non live</strong> (codeHash null / compte vide).
-          List / Buy / Bid on-chain restent bloqués jusqu’au deploy +{' '}
-          <code className="text-xs">verify_marketplace_codehash</code> +{' '}
-          <code className="text-xs">VITE_MARKETPLACE_CODEHASH_OK=1</code>.
-        </div>
-      )}
-
-      <div className="mb-6">
-        <TreasuryBanner compact />
-      </div>
-
-      <div className="mb-6 grid lg:grid-cols-[1fr_280px] gap-4">
-        <div>
-          <MarketplaceActivity
-            onPickListingId={id => {
-              setListingIdFromIndex(id)
-            }}
-          />
-          {listingIdFromIndex != null && (
-            <p className="text-xs text-purple-300 mt-2">
-              Listing ID indexé : <strong>{listingIdFromIndex}</strong> (saisie manuelle encore requise
-              sans index complet)
-            </p>
+      <header className="space-y-1">
+        <p className="section-label text-cyan-400/80">
+          {marketLive ? 'Mainnet · SC live' : 'Mainnet · lecture'}
+        </p>
+        <h1 className="page-title">
+          <span className="gradient-text">Marketplace</span>
+        </h1>
+        <p className="page-sub inline-flex flex-wrap items-center gap-1">
+          Catalogue MultiversX · list/buy après verify SC
+          <InfoTip k="scStatus" />
+          <InfoTip k="paperFirst" />
+        </p>
+        <div className="flex flex-wrap gap-2 pt-2">
+          <MoonpayButton label="Acheter EGLD" className="text-sm!" />
+          <button
+            type="button"
+            onClick={refreshLive}
+            disabled={refreshing || loading}
+            className="btn-secondary text-xs disabled:opacity-50"
+          >
+            {refreshing ? '…' : '↻ Refresh'}
+          </button>
+          {lastUpdated && (
+            <span className="text-[11px] text-zinc-600 self-center">
+              {new Date(lastUpdated).toLocaleDateString()}
+            </span>
           )}
         </div>
-        <div className="space-y-3">
+      </header>
+
+      {!marketLive && (
+        <p className="text-[11px] text-amber-200/80 border border-amber-500/20 bg-amber-500/5 rounded-xl px-3 py-2 inline-flex items-center gap-1.5">
+          SC market non live — lecture seule
+          <InfoTip tone="warn" k="scStatus" />
+        </p>
+      )}
+
+      <div className="grid lg:grid-cols-[1fr_240px] gap-4">
+        <MarketplaceActivity onPickListingId={id => setListingIdFromIndex(id)} />
+        <div className="hidden lg:block">
           <AdSlot id="market_sidebar" />
-          <Link to="/ads" className="text-[10px] text-gray-500 underline block text-center">
-            Louer cet espace (enchère)
-          </Link>
         </div>
       </div>
 
-      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <input
           type="search"
           value={query}
           onChange={e => setQuery(e.target.value)}
-          placeholder="Search NFTs…"
-          className="w-full lg:max-w-xs rounded-xl border border-[#2a2a3a] bg-[#15151f] py-2.5 px-3 text-sm outline-none focus:border-purple-500"
+          placeholder="Rechercher…"
+          className="w-full sm:max-w-xs rounded-xl border border-white/10 bg-black/40 py-2.5 px-3 text-sm outline-none focus:border-violet-400/40"
         />
         <select
           value={sort}
           onChange={e => setSort(e.target.value as SortKey)}
-          className="rounded-xl border border-[#2a2a3a] bg-[#15151f] px-3 py-2 text-sm"
+          className="rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm"
         >
           <option value="collection">Collection</option>
-          <option value="name">Name</option>
+          <option value="name">Nom</option>
           <option value="nonce">Nonce</option>
         </select>
       </div>
 
-      <div className="mb-8 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         <FilterPill
           active={activeCollection === 'all'}
           onClick={() => setActiveCollection('all')}
-          label="All"
+          label="Toutes"
           count={allNfts.length}
         />
         {collectionPills.map(c => (
@@ -264,7 +232,9 @@ export default function Marketplace() {
       {loading ? (
         <SkeletonGrid />
       ) : visibleNfts.length === 0 ? (
-        <div className="rounded-2xl border border-[#2a2a3a] py-20 text-center text-gray-400">No NFTs</div>
+        <div className="rounded-2xl border border-white/10 py-16 text-center text-zinc-500 text-sm">
+          Aucun NFT
+        </div>
       ) : (
         <VirtualNftGrid
           items={visibleNfts}
@@ -284,6 +254,16 @@ export default function Marketplace() {
           setAction(null)
         }}
       />
+
+      <p className="text-[11px] text-zinc-600">
+        <Link to="/museum" className="text-violet-300/90 hover:underline">
+          Musée
+        </Link>
+        {' · '}
+        <Link to="/gallery" className="text-violet-300/90 hover:underline">
+          Galerie
+        </Link>
+      </p>
     </div>
   )
 }
@@ -303,14 +283,14 @@ function FilterPill({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm ${
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] ${
         active
-          ? 'border-purple-500 bg-purple-500/15 text-white'
-          : 'border-[#2a2a3a] bg-[#15151f] text-gray-400'
+          ? 'border-violet-400/45 bg-violet-500/15 text-violet-100'
+          : 'border-white/10 text-zinc-500'
       }`}
     >
       {label}
-      <span className="text-[10px] opacity-70">{count}</span>
+      <span className="opacity-60">{count}</span>
     </button>
   )
 }
@@ -330,9 +310,9 @@ function NFTCard({
     onOpen(nft, a)
   }
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl border border-[#2a2a3a] bg-[#15151f] transition-all hover:border-purple-500/60">
+    <div className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-colors hover:border-violet-400/35">
       <button type="button" onClick={() => onOpen(nft, null)} className="text-left">
-        <div className="relative aspect-square overflow-hidden bg-[#0a0a0f]">
+        <div className="relative aspect-square overflow-hidden bg-black/40">
           {img ? (
             <img
               src={img}
@@ -342,17 +322,17 @@ function NFTCard({
               decoding="async"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-5xl opacity-60">🎨</div>
+            <div className="flex h-full items-center justify-center text-4xl opacity-40">🎨</div>
           )}
           <span className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px]">
             {typeLabel(nft.type)}
           </span>
         </div>
-        <div className="p-3 pb-1">
+        <div className="p-2.5 pb-1">
           <p className="truncate text-sm font-semibold">{nft.name || 'Untitled'}</p>
-          <div className="flex justify-between text-xs">
-            <span className="text-purple-300/90 truncate">{nft.collection_name}</span>
-            <span className="mono text-gray-500">{nonceLabel(nft)}</span>
+          <div className="flex justify-between text-[11px]">
+            <span className="text-violet-300/80 truncate">{nft.collection_name}</span>
+            <span className="mono text-zinc-600">{nonceLabel(nft)}</span>
           </div>
         </div>
       </button>
@@ -367,17 +347,17 @@ function NFTCard({
               onClick={e => stop(e, a)}
               title={
                 isOffer
-                  ? 'Offer : pas d’endpoint on-chain (V2 escrow)'
+                  ? 'Offer V2'
                   : gated
-                    ? 'SC marketplace non live'
+                    ? 'SC non live'
                     : a
               }
               className={`rounded-lg border py-1.5 text-[10px] font-semibold uppercase ${
                 isOffer
-                  ? 'border-dashed border-gray-600 bg-[#0a0a0f] text-gray-500'
+                  ? 'border-dashed border-white/10 text-zinc-600'
                   : gated
-                    ? 'border-[#2a2a3a] bg-[#0a0a0f] text-gray-500 opacity-70'
-                    : 'border-[#2a2a3a] bg-[#0a0a0f] text-gray-300 hover:border-purple-500 hover:text-white'
+                    ? 'border-white/10 text-zinc-600 opacity-70'
+                    : 'border-white/10 text-zinc-300 hover:border-violet-400/40'
               }`}
             >
               {a}
@@ -391,9 +371,9 @@ function NFTCard({
 
 function SkeletonGrid() {
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-      {[...Array(10)].map((_, i) => (
-        <div key={i} className="aspect-square animate-pulse rounded-2xl bg-[#1a1a2e]" />
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+      {[...Array(8)].map((_, i) => (
+        <div key={i} className="aspect-square animate-pulse rounded-2xl bg-white/5" />
       ))}
     </div>
   )
