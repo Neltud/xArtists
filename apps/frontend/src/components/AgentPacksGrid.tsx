@@ -1,22 +1,24 @@
 import { Link } from 'react-router-dom'
-import { AGENT_PACKS, PACK_PRICING_POLICY } from '../config/agentPacks'
+import { AGENT_PACKS, PACK_PRICING_POLICY, type PackId } from '../config/agentPacks'
 import { canBuyAgent } from '../config/scStatus'
 
-export default function AgentPacksGrid() {
+type Props = {
+  onBuy?: (id: PackId) => void
+}
+
+export default function AgentPacksGrid({ onBuy }: Props) {
   const mintLive = canBuyAgent()
 
   return (
     <div>
       <p className="text-xs text-zinc-500 mb-3">
-        <strong className="text-zinc-300">Packs IA uniquement</strong> — Pulse · Yield · Sentinel.{' '}
-        {PACK_PRICING_POLICY.ranking}.{' '}
-        <Link to="/tours" className="text-rose-300 underline">
-          Tours artistiques
+        <strong className="text-zinc-300">Trois packs</strong> — accès agent + NFT d’entitlement (même
+        produit). {PACK_PRICING_POLICY.ranking}.{' '}
+        <Link to="/tours" className="text-rose-300/90 hover:underline">
+          Tours
         </Link>{' '}
-        = service culturel séparé.
-        {!mintLive && (
-          <span className="text-amber-300/90"> Mint on-chain pending codeHash.</span>
-        )}
+        = culture, hors packs.
+        {!mintLive && <span className="text-amber-300/90"> Mint SC plus tard.</span>}
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {AGENT_PACKS.map(p => (
@@ -45,16 +47,25 @@ export default function AgentPacksGrid() {
               {'○'.repeat(3 - p.signalIntensity)}
             </p>
             <p className="text-[11px] text-zinc-500 mb-2">{p.strategies.join(' · ')}</p>
-            <p className="text-[11px] text-zinc-500 mb-3">{p.activity}</p>
             <ul className="text-xs text-zinc-300 space-y-1 mb-3 flex-1">
-              {p.entitlements.map(e => (
+              {p.entitlements.slice(0, 4).map(e => (
                 <li key={e}>✓ {e}</li>
               ))}
             </ul>
             <div className="flex flex-wrap gap-2 mt-auto">
-              <Link to="/my-packs" className="btn-secondary text-xs py-2 px-3 flex-1 text-center">
-                My Packs
-              </Link>
+              {onBuy ? (
+                <button
+                  type="button"
+                  className="btn-primary text-xs py-2 px-3 flex-1"
+                  onClick={() => onBuy(p.id)}
+                >
+                  Choisir
+                </button>
+              ) : (
+                <Link to="/agents" className="btn-primary text-xs py-2 px-3 flex-1 text-center">
+                  Voir
+                </Link>
+              )}
               <Link to="/trading" className="btn-secondary text-xs py-2 px-3 text-center">
                 Board
               </Link>
