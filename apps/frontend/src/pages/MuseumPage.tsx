@@ -1,5 +1,5 @@
 /**
- * Réseau de musées — xArtists en premier, puis visites virtuelles (domaine public).
+ * Réseau de musées — xArtists 1er, puis ailes Met Open Access (CDN images).
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -21,7 +21,11 @@ import {
 } from '../types/nft'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { consumeTravelDestination } from '../lib/travelBridge'
-import { VIRTUAL_MUSEUMS, type VirtualMuseumId } from '../lib/museumWorldCatalog'
+import {
+  loadMuseumNetwork,
+  VIRTUAL_MUSEUMS,
+  type VirtualMuseum,
+} from '../lib/museumWorldCatalog'
 import InfoTip from '../components/InfoTip'
 
 type Tab = 'visit' | 'mydee' | 'world_tour'
@@ -78,14 +82,25 @@ async function loadFullCatalog(): Promise<{ collections: CollectionData[]; nfts:
 
 export default function MuseumPage() {
   const [tab, setTab] = useState<Tab>('visit')
-  const [museumId, setMuseumId] = useState<VirtualMuseumId>('xartists')
+  const [museumId, setMuseumId] = useState<string>('xartists')
+  const [museums, setMuseums] = useState<VirtualMuseum[]>(VIRTUAL_MUSEUMS)
   const [allNfts, setAllNfts] = useState<NFT[]>([])
   const [catalogLoading, setCatalogLoading] = useState(true)
   const [travelBanner, setTravelBanner] = useState<string | null>(null)
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
 
-  const museum = VIRTUAL_MUSEUMS.find(m => m.id === museumId) || VIRTUAL_MUSEUMS[0]
+  const museum = museums.find(m => m.id === museumId) || museums[0] || VIRTUAL_MUSEUMS[0]
+
+  useEffect(() => {
+    let cxl = false
+    loadMuseumNetwork(import.meta.env.BASE_URL || '/').then(list => {
+      if (!cxl && list.length) setMuseums(list)
+    })
+    return () => {
+      cxl = true
+    }
+  }, [])
 
   useEffect(() => {
     let c = false
@@ -139,11 +154,12 @@ export default function MuseumPage() {
           Musée <span className="gradient-text">xArtists</span>
         </h1>
         <p className="page-sub inline-flex flex-wrap items-center gap-1">
-          Premier musée du site — puis visites virtuelles (domaine public)
+          xArtists + ailes Met (~100 peintures Open Access)
           <InfoTip>
-            <strong className="text-white block mb-1">Mobile & tablette</strong>
+            <strong className="text-white block mb-1">Images</strong>
             <span className="text-zinc-400">
-              Pad directionnel + Inspecter. Desktop : WASD. Hors xArtists = Wikimedia domaine public.
+              CDN Met Museum (domaine public). Pad tactile · WASD · Inspecter. Wikimedia bloqué en
+              sandbox — d’où le bascule Met.
             </span>
           </InfoTip>
         </p>
@@ -181,7 +197,7 @@ export default function MuseumPage() {
       {tab === 'visit' && (
         <div className="space-y-3">
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x">
-            {VIRTUAL_MUSEUMS.map(m => (
+            {museums.map(m => (
               <button
                 key={m.id}
                 type="button"
@@ -196,19 +212,17 @@ export default function MuseumPage() {
                 <p className="text-[10px] text-zinc-500 truncate">
                   {m.city}
                   {m.id === 'xartists' && <span className="text-cyan-300/90"> · 1er</span>}
+                  {m.source === 'public_domain' && m.works?.length
+                    ? ` · ${m.works.length}`
+                    : ''}
                 </p>
               </button>
             ))}
           </div>
 
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <div>
-              <p className="text-sm font-medium text-zinc-200">{museum.name}</p>
-              <p className="text-[11px] text-zinc-500">
-                {museum.tagline}
-                {museum.source === 'public_domain' && ' · domaine public'}
-              </p>
-            </div>
+          <div>
+            <p className="text-sm font-medium text-zinc-200">{museum.name}</p>
+            <p className="text-[11px] text-zinc-500">{museum.tagline}</p>
           </div>
 
           {museum.source === 'onchain' && catalogLoading ? (
@@ -222,14 +236,13 @@ export default function MuseumPage() {
               emptyLabel={
                 museum.source === 'onchain'
                   ? 'Aucune œuvre catalogue pour l’instant.'
-                  : 'Aucune œuvre dans ce musée.'
+                  : 'Chargement des œuvres…'
               }
             />
           )}
 
           <p className="text-[10px] text-zinc-600 leading-relaxed">
-            xArtists = NFT MultiversX. Autres = Wikimedia domaine public (culturel / éducatif). Pad
-            tactile mobile & tablette.
+            Images © Met Museum Open Access (PD). Pad tactile · cadres agrandis · progression en %.
           </p>
         </div>
       )}
@@ -239,11 +252,7 @@ export default function MuseumPage() {
           {!connected ? (
             <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-6 text-center space-y-3">
               <p className="text-sm text-amber-100/90">Connecte ton wallet pour Mydee.</p>
-              <button
-                type="button"
-                className="btn-primary text-sm"
-                onClick={() => requestOpenConnect()}
-              >
+              <button type="button" className="btn-primary text-sm" onClick={() => requestOpenConnect()}>
                 Connect
               </button>
             </div>
