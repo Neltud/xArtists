@@ -1,17 +1,15 @@
 /**
- * LIA Immersive Museum — real MultiversX catalog + user NFTs.
+ * Réseau de musées — xArtists en premier, puis visites virtuelles (domaine public).
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
-import LiaHost from '../components/museum/LiaHost'
 import MuseumCorridor, {
   framesFromUserNfts,
   type FrameItem,
 } from '../components/museum/MuseumCorridor'
 import MuseumGameHall from '../components/museum/MuseumGameHall'
 import GuidedWorldTour from '../components/museum/GuidedWorldTour'
-import { MUSEUM_SPACES, type MuseumSpaceId } from '../lib/museumSpaces'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
 import {
@@ -23,6 +21,10 @@ import {
 } from '../types/nft'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { consumeTravelDestination } from '../lib/travelBridge'
+import { VIRTUAL_MUSEUMS, type VirtualMuseumId } from '../lib/museumWorldCatalog'
+import InfoTip from '../components/InfoTip'
+
+type Tab = 'visit' | 'mydee' | 'world_tour'
 
 function preferImage(n: NFT): string | undefined {
   const thumb = n.media?.[0]?.thumbnailUrl
@@ -49,7 +51,6 @@ async function loadFullCatalog(): Promise<{ collections: CollectionData[]; nfts:
   const urls = [
     DATA_URL,
     'https://raw.githubusercontent.com/Neltud/xArtists/main/apps/frontend/public/data/xartists_collections.json',
-    'https://raw.githubusercontent.com/Neltud/xArtists/main/data/xartists_collections.json',
   ]
   for (const u of urls) {
     try {
@@ -76,25 +77,23 @@ async function loadFullCatalog(): Promise<{ collections: CollectionData[]; nfts:
 }
 
 export default function MuseumPage() {
-  const [space, setSpace] = useState<MuseumSpaceId>('catzligue')
+  const [tab, setTab] = useState<Tab>('visit')
+  const [museumId, setMuseumId] = useState<VirtualMuseumId>('xartists')
   const [allNfts, setAllNfts] = useState<NFT[]>([])
-  const [collections, setCollections] = useState<CollectionData[]>([])
-  const [colFilter, setColFilter] = useState<string>('all')
   const [catalogLoading, setCatalogLoading] = useState(true)
-  const [catalogError, setCatalogError] = useState<string | null>(null)
   const [travelBanner, setTravelBanner] = useState<string | null>(null)
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
+
+  const museum = VIRTUAL_MUSEUMS.find(m => m.id === museumId) || VIRTUAL_MUSEUMS[0]
 
   useEffect(() => {
     let c = false
     ;(async () => {
       setCatalogLoading(true)
-      const { collections: cols, nfts } = await loadFullCatalog()
+      const { nfts } = await loadFullCatalog()
       if (c) return
-      setCollections(cols)
       setAllNfts(nfts)
-      setCatalogError(cols.length ? null : 'Catalogue indisponible')
       setCatalogLoading(false)
     })()
     return () => {
@@ -108,52 +107,45 @@ export default function MuseumPage() {
     const params = new URLSearchParams(
       q || (typeof window !== 'undefined' ? window.location.search : '')
     )
-    const spaceQ = params.get('space') as MuseumSpaceId | null
     const cityQ = params.get('city')
     const travel = consumeTravelDestination()
-    if (spaceQ && ['catzligue', 'mydee', 'world_tour', 'vr_core'].includes(spaceQ)) {
-      setSpace(spaceQ)
-    } else if (travel?.space) {
-      setSpace(travel.space)
-    }
     if (travel?.city || cityQ) {
       const city = travel?.city || cityQ || ''
-      setTravelBanner(
-        `Voyage LIA : ${city}${travel?.focus ? ` — ${travel.focus}` : ''}. Galerie chargée.`
-      )
-      if (!spaceQ && !travel?.space) setSpace('catzligue')
+      setTravelBanner(`Voyage LIA : ${city}. Musée xArtists prêt.`)
+      setMuseumId('xartists')
+      setTab('visit')
     }
   }, [])
 
-  const catalogFrames = useMemo(() => {
-    let rows = allNfts
-    if (colFilter !== 'all') {
-      rows = rows.filter(n => n.collection === colFilter)
-    }
-    const withImg = rows.filter(n => preferImage(n))
-    const ordered = (withImg.length ? withImg : rows).slice(0, 64)
-    return framesFromNfts(ordered)
-  }, [allNfts, colFilter])
+  const xartistsFrames = useMemo(() => {
+    const withImg = allNfts.filter(n => preferImage(n))
+    return framesFromNfts((withImg.length ? withImg : allNfts).slice(0, 48))
+  }, [allNfts])
+
+  const visitFrames = museum.source === 'onchain' ? xartistsFrames : museum.works
 
   const mydeeFrames = useMemo(
     () => framesFromUserNfts(account.nfts || []),
     [account.nfts]
   )
 
-  const current = MUSEUM_SPACES.find(s => s.id === space)!
-
   return (
-    <div className="animate-fade-in space-y-5 pb-12 max-w-4xl mx-auto">
+    <div className="animate-fade-in space-y-4 pb-12 max-w-4xl mx-auto">
       <PageGuide page="gallery" />
 
-      <header className="space-y-1.5">
-        <p className="section-label text-fuchsia-400/80">Musée · MultiversX</p>
+      <header className="space-y-1">
+        <p className="section-label text-fuchsia-400/80">Réseau de musées</p>
         <h1 className="page-title">
           Musée <span className="gradient-text">xArtists</span>
         </h1>
-        <p className="page-sub">
-          Explore (WASD) · Mydee = wallet · guide mondial
-          {allNfts.length > 0 && <span className="text-zinc-600"> · {allNfts.length} œuvres</span>}
+        <p className="page-sub inline-flex flex-wrap items-center gap-1">
+          Premier musée du site — puis visites virtuelles (domaine public)
+          <InfoTip>
+            <strong className="text-white block mb-1">Mobile & tablette</strong>
+            <span className="text-zinc-400">
+              Pad directionnel + Inspecter. Desktop : WASD. Hors xArtists = Wikimedia domaine public.
+            </span>
+          </InfoTip>
         </p>
       </header>
 
@@ -164,80 +156,85 @@ export default function MuseumPage() {
       )}
 
       <div className="flex flex-wrap gap-1.5">
-        {MUSEUM_SPACES.map(s => (
+        {(
+          [
+            ['visit', 'Visite'],
+            ['mydee', 'Mydee'],
+            ['world_tour', 'Guide mondial'],
+          ] as const
+        ).map(([id, label]) => (
           <button
-            key={s.id}
+            key={id}
             type="button"
-            onClick={() => setSpace(s.id)}
-            className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
-              space === s.id
+            onClick={() => setTab(id)}
+            className={`rounded-full border px-3 py-1.5 text-xs font-medium ${
+              tab === id
                 ? 'border-fuchsia-400/45 bg-fuchsia-500/15 text-fuchsia-100'
-                : 'border-white/10 text-zinc-500 hover:text-white'
+                : 'border-white/10 text-zinc-500'
             }`}
           >
-            {s.name}
-            {s.access === 'lia_pass' && (
-              <span className="ml-1 text-[9px] text-amber-300/80">PASS</span>
-            )}
+            {label}
           </button>
         ))}
       </div>
 
-      {space === 'catzligue' && (
+      {tab === 'visit' && (
         <div className="space-y-3">
-          {collections.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto">
+          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x">
+            {VIRTUAL_MUSEUMS.map(m => (
               <button
+                key={m.id}
                 type="button"
-                onClick={() => setColFilter('all')}
-                className={`rounded-full border px-2.5 py-1 text-[10px] ${
-                  colFilter === 'all'
-                    ? 'border-cyan-400/40 bg-cyan-500/15 text-cyan-100'
-                    : 'border-white/10 text-zinc-500'
+                onClick={() => setMuseumId(m.id)}
+                className={`snap-start shrink-0 rounded-xl border px-3 py-2 text-left min-w-[8.5rem] transition-colors ${
+                  museumId === m.id
+                    ? 'border-cyan-400/45 bg-cyan-500/10'
+                    : 'border-white/10 bg-white/[0.02]'
                 }`}
               >
-                Toutes ({allNfts.length})
+                <p className="text-[11px] font-semibold text-white truncate">{m.name}</p>
+                <p className="text-[10px] text-zinc-500 truncate">
+                  {m.city}
+                  {m.id === 'xartists' && <span className="text-cyan-300/90"> · 1er</span>}
+                </p>
               </button>
-              {collections.map(c => (
-                <button
-                  key={c.identifier}
-                  type="button"
-                  onClick={() => setColFilter(c.identifier)}
-                  className={`rounded-full border px-2.5 py-1 text-[10px] ${
-                    colFilter === c.identifier
-                      ? 'border-violet-400/40 bg-violet-500/15 text-violet-100'
-                      : 'border-white/10 text-zinc-500'
-                  }`}
-                >
-                  {c.name || c.identifier}
-                </button>
-              ))}
-            </div>
-          )}
+            ))}
+          </div>
 
-          {catalogLoading ? (
-            <p className="text-sm text-zinc-500">Chargement…</p>
-          ) : catalogError && !catalogFrames.length ? (
-            <p className="text-sm text-rose-300/90">{catalogError}</p>
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <div>
+              <p className="text-sm font-medium text-zinc-200">{museum.name}</p>
+              <p className="text-[11px] text-zinc-500">
+                {museum.tagline}
+                {museum.source === 'public_domain' && ' · domaine public'}
+              </p>
+            </div>
+          </div>
+
+          {museum.source === 'onchain' && catalogLoading ? (
+            <p className="text-sm text-zinc-500">Chargement catalogue MultiversX…</p>
           ) : (
             <MuseumGameHall
-              frames={catalogFrames}
-              emptyLabel="Aucune œuvre avec média dans ce filtre."
+              key={museumId}
+              frames={visitFrames}
+              room={museum.room}
+              allowBuy={museum.source === 'onchain'}
+              emptyLabel={
+                museum.source === 'onchain'
+                  ? 'Aucune œuvre catalogue pour l’instant.'
+                  : 'Aucune œuvre dans ce musée.'
+              }
             />
           )}
-          <p className="text-[11px] text-zinc-600">
-            <Link to="/gallery" className="text-violet-300/90 hover:underline">
-              Galerie 2D
-            </Link>
-            {' · '}
-            <Link to="/studio" className="text-violet-300/90 hover:underline">
-              Studio
-            </Link>
+
+          <p className="text-[10px] text-zinc-600 leading-relaxed">
+            xArtists = NFT MultiversX. Autres = Wikimedia domaine public (culturel / éducatif). Pad
+            tactile mobile & tablette.
           </p>
         </div>
       )}
 
-      {space === 'mydee' && (
+      {tab === 'mydee' && (
         <div className="space-y-3">
           {!connected ? (
             <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-6 text-center space-y-3">
@@ -262,24 +259,17 @@ export default function MuseumPage() {
         </div>
       )}
 
-      {space === 'world_tour' && <GuidedWorldTour />}
+      {tab === 'world_tour' && <GuidedWorldTour />}
 
-      {space === 'vr_core' && (
-        <div className="rounded-2xl border border-violet-500/20 bg-violet-950/20 px-5 py-8 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-lg font-bold text-white">VR Core</h2>
-            <span className="text-[10px] text-amber-200/90 border border-amber-500/30 rounded-full px-2 py-0.5">
-              LIA Pass pending
-            </span>
-          </div>
-          <p className="text-sm text-zinc-400">
-            WebXR (R3F) — roadmap. Exploration WASD = fondation v1 gratuite.
-          </p>
-          <button type="button" className="btn-secondary text-xs" onClick={() => setSpace('catzligue')}>
-            ← Catzligue
-          </button>
-        </div>
-      )}
+      <p className="text-[11px] text-zinc-600">
+        <Link to="/gallery" className="text-violet-300/90 hover:underline">
+          Galerie 2D
+        </Link>
+        {' · '}
+        <Link to="/tours" className="text-violet-300/90 hover:underline">
+          Carte Tours
+        </Link>
+      </p>
     </div>
   )
 }
