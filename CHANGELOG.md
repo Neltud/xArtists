@@ -1,5 +1,49 @@
 # Changelog — xArtists
 
+## [0.18.0](https://github.com/Neltud/xArtists/compare/v0.17.0...v0.18.0) (2026-08-31)
+
+
+### Features
+
+* calm Tours + expanded museum network (Tate, Hermitage, Vatican, British, Graphic) ([d013b5c](https://github.com/Neltud/xArtists/commit/d013b5c7dbff829a3333f634ecd56dceb6c89ae3))
+* **museum:** Catzligue uses WASD game hall; slimmer header ([0997739](https://github.com/Neltud/xArtists/commit/09977393f30dad09f9da8a047a09f2ceed45a079))
+* **museum:** embed MET_WORKS A/B (100 Met Open Access paintings) ([fadbc59](https://github.com/Neltud/xArtists/commit/fadbc59fb43f3e3f0b6127035ed02746c2ab52cd))
+* **museum:** expand PD catalogs — 3–5 iconic works per venue ([c6fecfd](https://github.com/Neltud/xArtists/commit/c6fecfd0375ef34e324594ee6f630d9a65b758bd))
+* **museum:** full room (walls/ceiling/floor) + mobile/tablet D-pad ([358ebc5](https://github.com/Neltud/xArtists/commit/358ebc50b9a41f09f9f3d5c0927c57adca7f9aab))
+* **museum:** game hall room walls + mobile pad; MuseumPage multi-visit UI ([3516bd2](https://github.com/Neltud/xArtists/commit/3516bd2b36f1be7fbd30fa109ed9f82cf7859085))
+* **museum:** load 100 Met works into wings via loadMuseumNetwork ([a911d48](https://github.com/Neltud/xArtists/commit/a911d4808b3c0b0dff675799353a835d8ac0ceee))
+* **museum:** loadMuseumNetwork + Met Open Access catalog (100 works) ([73ffcc8](https://github.com/Neltud/xArtists/commit/73ffcc8365e4aa27422eda7fa6c0faa1585a6162))
+* **museum:** MET_B 45 works with Met CDN URLs ([6a451f3](https://github.com/Neltud/xArtists/commit/6a451f31c7d501316100cde3ce995957ced6d39c))
+* **museum:** MET_WORKS embed 100 PD + network loader fallback ([bbf1bab](https://github.com/Neltud/xArtists/commit/bbf1bab4de8153d0cb6400ee8bb5d6a9307f3b8b))
+* **museum:** multi-museum network, PD art rooms, mobile/tablet pad ([48c10df](https://github.com/Neltud/xArtists/commit/48c10df3bb6fe88ab74525fddb8492031b5e5b47))
+* **museum:** MuseumGameHall — WASD walk, inspect E, buy intent ([dac0e6d](https://github.com/Neltud/xArtists/commit/dac0e6deeddf6813d28f89c0d38ed04d9cc20cf4))
+* **museum:** Tate, Hermitage, Vatican, British Museum, Affiche & rue + more icons ([5c4b88c](https://github.com/Neltud/xArtists/commit/5c4b88c7c237d1ee087284d3af34045e62a4cc1d))
+* **museum:** wall gallery, zoom lightbox, buy intent paper/Guardian ([12a70e5](https://github.com/Neltud/xArtists/commit/12a70e55e1a3062d1e9d2a92e0a3317247998902))
+* **museum:** wall room, zoom lightbox, buy intent paper/Guardian ([efefe4e](https://github.com/Neltud/xArtists/commit/efefe4ec87432e61767ff8886585a05724381414))
+* **museum:** WASD game hall + help keys museumGame/softLaunch ([97c7b85](https://github.com/Neltud/xArtists/commit/97c7b854cc46b81f72d5a38fde81bfa8c55b8001))
+* **soft-launch:** PAPER banner path + wall museum zoom + buy intent (no fake SUCCESS) ([96f7679](https://github.com/Neltud/xArtists/commit/96f7679ef83fc1ecca46587a21f92d4370cfb37d))
+* **ux+museum:** calm Wallet/Gallery/Portfolio/Tours/Studio/DAO + expand venues (graphic/street ancestors) ([93b5c52](https://github.com/Neltud/xArtists/commit/93b5c527614ba677ce635a9c3f5f5eab4230fec0))
+* **ux:** calm Marketplace — banners → ? tips ([9b644ff](https://github.com/Neltud/xArtists/commit/9b644fffed4780c7965fd71eb1a9174252d73cb1))
+* **ux:** calm Trading + Packs; expand PD museum catalogs ([6c01142](https://github.com/Neltud/xArtists/commit/6c01142bae5228cb5eb07474bfb57969db26ad0a))
+* **ux:** calm Wallet header + InfoTip LIA≠user ([d15cecd](https://github.com/Neltud/xArtists/commit/d15cecd05fc657e7040f123842d4ba500b47d42a))
+* **ux:** InfoTip ?, compact PageGuide, MuseumGameHall WASD exploration ([5feee4c](https://github.com/Neltud/xArtists/commit/5feee4cbb1e6e314f211d8b06d3df9120e1647ae))
+
+
+### Bug Fixes
+
+* **museum:** 100 Met PD works via catalog.json + CDN; improve 3D UX ([a9b7a3b](https://github.com/Neltud/xArtists/commit/a9b7a3b03124f16a12eb5be9b2abf6bd93779485))
+* **museum:** city chip + Entrer open city museum with works ([6a4015e](https://github.com/Neltud/xArtists/commit/6a4015ed4066b201334ed44cd573d654db49887e))
+* **museum:** city museums with works; click city opens salle + icons ([8b490ee](https://github.com/Neltud/xArtists/commit/8b490ee8e371246f1769e8ba6dd87cc00bdb9e4c))
+* **museum:** city travel selects city museum not only xArtists ([94bba3c](https://github.com/Neltud/xArtists/commit/94bba3c8b7cdf6565f34db8e49cf1867ac5fabbb))
+* **museum:** more city aliases map to museum salles ([a20b01d](https://github.com/Neltud/xArtists/commit/a20b01dc24f3a816ae4bb0345bf74a640169af80))
+
+
+### Documentation
+
+* **marketing:** draft X 17:15 CEST — board paper LIA ([8007dc0](https://github.com/Neltud/xArtists/commit/8007dc0d7552c58b3c89673de6b62852a6f1b1f8))
+* **marketing:** draft X 2026-08-31 — thème $TRO / écosystème ([307fc1b](https://github.com/Neltud/xArtists/commit/307fc1ba9ec6282f9e3b2fcdbc393ff08432eb23))
+* **marketing:** draft X 2026-08-31 15h — thème intention ⌘K ([759112f](https://github.com/Neltud/xArtists/commit/759112f415a5fd2cd0c30eb9877df85a62789630))
+
 ## [0.17.0](https://github.com/Neltud/xArtists/compare/v0.16.0...v0.17.0) (2026-08-30)
 
 
