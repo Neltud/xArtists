@@ -1,5 +1,5 @@
 /**
- * Packs Agents — Pulse · Yield · Sentinel only. Calm layout.
+ * Packs Agents — Pulse · Yield · Sentinel only (one product line).
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -11,7 +11,6 @@ import AgentPacksGrid from '../components/AgentPacksGrid'
 import PackCheckout from '../components/PackCheckout'
 import PageGuide from '../components/PageGuide'
 import InfoTip from '../components/InfoTip'
-import NftPacksGallery from '../components/NftPacksGallery'
 
 const LOCAL = `${import.meta.env.BASE_URL}data/greensmoke_forecasts.json`
 const RAW_PUBLIC =
@@ -65,15 +64,15 @@ export default function Agents() {
       <PageGuide page="agents" />
 
       <header className="space-y-1">
-        <p className="section-label text-emerald-400/80">Packs IA</p>
-        <h1 className="page-title">Agents</h1>
+        <p className="section-label text-emerald-400/80">Agents</p>
+        <h1 className="page-title">Packs</h1>
         <p className="page-sub inline-flex flex-wrap items-center gap-1">
-          Pulse · Yield · Sentinel
+          3 packs — Pulse · Yield · Sentinel
           <InfoTip>
-            <strong className="text-white block mb-1">Périmètre</strong>
+            <strong className="text-white block mb-1">Un seul produit</strong>
             <span className="text-zinc-400">
-              Packs agents NFT uniquement. Tours art = service culture séparé. Mint on-chain bloqué tant
-              que codeHash agents null.
+              Chaque pack = accès agent IA, livré comme NFT d’entitlement (pas deux catalogues « IA »
+              et « NFT »). Tours art = culture, hors packs. Mint SC tant que codeHash null.
             </span>
           </InfoTip>
           <InfoTip k="scStatus" />
@@ -82,7 +81,6 @@ export default function Agents() {
 
       <AgentPacksGrid />
       <PackCheckout />
-      <NftPacksGallery />
 
       <AgentsDeployStatus />
       <AgentsMarketplacePanel />
