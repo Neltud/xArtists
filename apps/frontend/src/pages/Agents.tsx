@@ -1,18 +1,16 @@
+/**
+ * Packs Agents — Pulse · Yield · Sentinel only. Calm layout.
+ */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AgentsMarketplacePanel from '../components/AgentsMarketplacePanel'
 import AgentsDeployStatus from '../components/AgentsDeployStatus'
 import CreateSubAgentForm from '../components/CreateSubAgentForm'
-import TreasuryBanner from '../components/TreasuryBanner'
 import GsnLeaderboard from '../components/GsnLeaderboard'
 import AgentPacksGrid from '../components/AgentPacksGrid'
-import AgentPackJourney from '../components/AgentPackJourney'
-import RwaAssetsStrip from '../components/RwaAssetsStrip'
 import PackCheckout from '../components/PackCheckout'
 import PageGuide from '../components/PageGuide'
-import AgentsJourneyStrip from '../components/AgentsJourneyStrip'
-import StripeCardBanner from '../components/StripeCardBanner'
-import AgentsScopeBanner from '../components/AgentsScopeBanner'
+import InfoTip from '../components/InfoTip'
 import NftPacksGallery from '../components/NftPacksGallery'
 
 const LOCAL = `${import.meta.env.BASE_URL}data/greensmoke_forecasts.json`
@@ -30,7 +28,6 @@ interface GsAgent {
   forecasts?: unknown[]
 }
 
-/** Packs IA NFT only — never travel / art tours. */
 export default function Agents() {
   const [agents, setAgents] = useState<GsAgent[]>([])
   const [err, setErr] = useState<string | null>(null)
@@ -64,48 +61,52 @@ export default function Agents() {
   }, [])
 
   return (
-    <div className="animate-fade-in space-y-6 pb-10">
+    <div className="animate-fade-in space-y-5 pb-10 max-w-4xl">
       <PageGuide page="agents" />
 
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div className="space-y-2">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-violet-400/80 font-semibold">
-            NFT packs
-          </p>
-          <h1 className="display text-3xl sm:text-4xl">Agents</h1>
-          <p className="muted">Pulse · Yield · Sentinel — pas de travel agent</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Link to="/my-packs" className="btn-primary text-xs">
-            My Packs
-          </Link>
-          <Link to="/tours" className="btn-secondary text-xs">
-            Art Tours
-          </Link>
-        </div>
+      <header className="space-y-1">
+        <p className="section-label text-emerald-400/80">Packs IA</p>
+        <h1 className="page-title">Agents</h1>
+        <p className="page-sub inline-flex flex-wrap items-center gap-1">
+          Pulse · Yield · Sentinel
+          <InfoTip>
+            <strong className="text-white block mb-1">Périmètre</strong>
+            <span className="text-zinc-400">
+              Packs agents NFT uniquement. Tours art = service culture séparé. Mint on-chain bloqué tant
+              que codeHash agents null.
+            </span>
+          </InfoTip>
+          <InfoTip k="scStatus" />
+        </p>
       </header>
 
-      <AgentsScopeBanner />
-      <NftPacksGallery />
-      <AgentsJourneyStrip />
-      <StripeCardBanner />
-      <AgentPackJourney />
       <AgentPacksGrid />
       <PackCheckout />
+      <NftPacksGallery />
+
       <AgentsDeployStatus />
       <AgentsMarketplacePanel />
-      <TreasuryBanner />
-      <RwaAssetsStrip />
-      <CreateSubAgentForm />
 
-      <section className="card">
-        <h2 className="display text-lg mb-1">GSN · prédiction</h2>
-        <p className="text-xs text-zinc-500 mb-3">
-          Signaux externes — indépendant des packs NFT et d’Art Tours.
-        </p>
-        {err && <p className="text-xs text-amber-400 mb-2">{err}</p>}
-        <GsnLeaderboard agents={agents} />
-      </section>
+      <details className="rounded-xl border border-white/10 bg-white/[0.02]">
+        <summary className="cursor-pointer px-4 py-3 text-xs text-zinc-400 hover:text-zinc-200">
+          Signaux GSN · détail
+          {err && <span className="ml-2 text-amber-400/80">({err})</span>}
+        </summary>
+        <div className="px-4 pb-4 space-y-3 border-t border-white/5 pt-3">
+          <GsnLeaderboard agents={agents} />
+          <CreateSubAgentForm />
+        </div>
+      </details>
+
+      <p className="text-[11px] text-zinc-600">
+        <Link to="/my-packs" className="text-violet-300/90 hover:underline">
+          My Packs
+        </Link>
+        {' · '}
+        <Link to="/tours" className="text-violet-300/90 hover:underline">
+          Art Tours (culture)
+        </Link>
+      </p>
     </div>
   )
 }
