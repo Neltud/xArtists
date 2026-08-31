@@ -1,6 +1,5 @@
 /**
- * Visite guidée mondiale — stops from art_tour_locations + LIA narration.
- * Cultural service (Tours) — not an agent pack.
+ * Visite guidée mondiale — clic ville → musée ville + œuvres iconiques.
  */
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -29,6 +28,19 @@ export default function GuidedWorldTour() {
   }, [])
 
   const stop = stops[i] || null
+
+  const enterMuseum = (s: TourStop) => {
+    navigate(
+      museumTravelHref({
+        id: s.id,
+        city: s.city,
+        country: s.country,
+        focus: s.focus,
+        space: 'catzligue',
+        source: 'world_tour',
+      })
+    )
+  }
 
   return (
     <div className="space-y-4">
@@ -71,24 +83,9 @@ export default function GuidedWorldTour() {
                   Suivant →
                 </button>
                 <Link to="/tours" className="btn-secondary text-xs">
-                  Carte mondiale Tours
+                  Carte Tours
                 </Link>
-                <button
-                  type="button"
-                  className="btn-primary text-xs"
-                  onClick={() =>
-                    navigate(
-                      museumTravelHref({
-                        id: stop.id,
-                        city: stop.city,
-                        country: stop.country,
-                        focus: stop.focus,
-                        space: 'catzligue',
-                        source: 'world_tour',
-                      })
-                    )
-                  }
-                >
+                <button type="button" className="btn-primary text-xs" onClick={() => enterMuseum(stop)}>
                   Entrer dans le musée →
                 </button>
               </div>
@@ -99,7 +96,7 @@ export default function GuidedWorldTour() {
           space="world_tour"
           lineExtra={
             stop
-              ? `Nous sommes à ${stop.city}. Focus : ${stop.focus}. Ouvre la carte Tours pour les expos en cours.`
+              ? `Nous sommes à ${stop.city}. Tape une ville ou Entrer pour la salle d’œuvres iconiques.`
               : null
           }
         />
@@ -111,7 +108,10 @@ export default function GuidedWorldTour() {
             <button
               key={s.id + idx}
               type="button"
-              onClick={() => setI(idx)}
+              onClick={() => {
+                setI(idx)
+                enterMuseum(s)
+              }}
               className={`rounded-full border px-2.5 py-1 text-[10px] transition-colors ${
                 idx === i
                   ? 'border-cyan-400/50 bg-cyan-500/20 text-cyan-100'
