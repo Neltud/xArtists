@@ -27,6 +27,7 @@ const Tip = lazy(() => import('./pages/Tip'))
 const Wallet = lazy(() => import('./pages/Wallet'))
 const Gallery = lazy(() => import('./pages/Gallery'))
 const MuseumPage = lazy(() => import('./pages/MuseumPage'))
+const LegalPage = lazy(() => import('./pages/LegalPage'))
 const HatomPage = lazy(() => import('./pages/HatomPage'))
 const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
 const Agents = lazy(() => import('./pages/Agents'))
@@ -136,6 +137,8 @@ export default function App() {
                 <Route path="/gallery" element={<Gallery />} />
                 <Route path="/museum" element={<MuseumPage />} />
                 <Route path="/musee" element={<MuseumPage />} />
+                <Route path="/legal" element={<LegalPage />} />
+                <Route path="/mentions-legales" element={<LegalPage />} />
                 <Route path="/tip" element={<Tip />} />
                 <Route path="/wallet" element={<Wallet />} />
                 <Route path="/hatom" element={<HatomPage />} />
@@ -148,7 +151,7 @@ export default function App() {
                   element={
                     <div className="text-center py-24 space-y-3">
                       <h2 className="display text-2xl">Page introuvable</h2>
-                      <a href="/xArtists/#/" className="text-cyan-400 text-sm hover:underline">
+                      <a href="#/" className="text-cyan-400 text-sm hover:underline">
                         Retour accueil →
                       </a>
                     </div>
@@ -159,45 +162,45 @@ export default function App() {
           </TxGate>
         </ErrorBoundary>
       </main>
-      <footer className="border-t border-white/[0.06] mt-auto py-8 hidden md:block">
-        <div className="page-wrap flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <p className="display text-sm text-white">xArtists</p>
-            <p className="text-[11px] text-zinc-600 mt-0.5">Aurora · paper-first · MultiversX</p>
+      <footer className="border-t border-white/[0.06] mt-auto py-6 mb-16 md:mb-0">
+        <div className="page-wrap flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-white tracking-tight">xArtists</p>
+              <p className="text-[11px] text-zinc-600 mt-1 max-w-xs leading-relaxed">
+                Démo MultiversX · paper-first · packs Pulse · Yield · Sentinel · musée & tours.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-zinc-500">
+              <a href="#/museum" className="hover:text-zinc-300 transition-colors">
+                Musée
+              </a>
+              <a href="#/agents" className="hover:text-zinc-300 transition-colors">
+                Packs
+              </a>
+              <a href="#/tours" className="hover:text-zinc-300 transition-colors">
+                Tours
+              </a>
+              <a href="#/gallery" className="hover:text-zinc-300 transition-colors">
+                Galerie
+              </a>
+              <a href="#/legal" className="hover:text-zinc-300 transition-colors">
+                Mentions légales
+              </a>
+              <a
+                href={LINKS.github}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-zinc-300 transition-colors"
+              >
+                GitHub
+              </a>
+            </div>
           </div>
-          <div className="flex flex-wrap justify-center gap-4 text-xs text-zinc-500">
-            <a href="/xArtists/#/sitemap" className="hover:text-cyan-300 transition-colors">
-              Plan
-            </a>
-            <a href="/xArtists/#/entity" className="hover:text-cyan-300 transition-colors">
-              Entité
-            </a>
-            <a href="/xArtists/#/museum" className="hover:text-cyan-300 transition-colors">
-              Musée
-            </a>
-            <a href="/xArtists/#/tours" className="hover:text-cyan-300 transition-colors">
-              Tours
-            </a>
-            <a href="/xArtists/#/agents" className="hover:text-cyan-300 transition-colors">
-              Packs
-            </a>
-            <a
-              href={LINKS.github}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-cyan-300 transition-colors"
-            >
-              GitHub
-            </a>
-            <a
-              href={LINKS.explorer}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-cyan-300 transition-colors"
-            >
-              Explorer
-            </a>
-          </div>
+          <p className="text-[10px] text-zinc-600 leading-relaxed border-t border-white/[0.04] pt-3">
+            Pas un conseil en investissement. Soft launch : trading LIA paper · SC selon statut
+            on-chain. © 2026 xArtists.
+          </p>
         </div>
       </footer>
       <PwaInstallBanner />
