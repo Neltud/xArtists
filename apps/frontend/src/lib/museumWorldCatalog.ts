@@ -1,24 +1,12 @@
 /**
- * Réseau de musées — xArtists en premier.
- * 100+ peintures Met (domaine public) via catalog.json / MET_WORKS embed.
+ * Réseau de musées par VILLE — clic ville → salle + œuvres (Met Open Access).
+ * xArtists reste le premier (on-chain).
  */
 import type { FrameItem } from '../components/museum/MuseumCorridor'
 import { MET_WORKS } from '../data/metCatalog'
 
-export type VirtualMuseumId =
-  | 'xartists'
-  | 'met_wing_a'
-  | 'met_wing_b'
-  | 'met_wing_c'
-  | 'met_wing_d'
-  | 'met_wing_e'
-  | 'met_wing_f'
-  | 'met_wing_g'
-  | 'met_wing_h'
-  | 'graphic'
-
 export type VirtualMuseum = {
-  id: VirtualMuseumId | string
+  id: string
   name: string
   city: string
   country: string
@@ -38,6 +26,28 @@ export type CatalogWork = {
   remote?: string | null
 }
 
+const CITY_DEFS: {
+  id: string
+  name: string
+  city: string
+  country: string
+  tagline: string
+  room: VirtualMuseum['room']
+}[] = [
+  { id: 'paris', name: 'Paris · Salons', city: 'Paris', country: 'France', tagline: 'Galeries · foires · street art', room: 'stone' },
+  { id: 'london', name: 'London · Galleries', city: 'London', country: 'UK', tagline: 'National collections', room: 'white' },
+  { id: 'amsterdam', name: 'Amsterdam · Golden Age', city: 'Amsterdam', country: 'Pays-Bas', tagline: 'Âge d’or hollandais', room: 'dark' },
+  { id: 'florence', name: 'Florence · Renaissance', city: 'Florence', country: 'Italie', tagline: 'Renaissance toscane', room: 'white' },
+  { id: 'madrid', name: 'Madrid · Prado spirit', city: 'Madrid', country: 'Espagne', tagline: 'Siècle d’or', room: 'stone' },
+  { id: 'newyork', name: 'New York · Met spirit', city: 'New York', country: 'USA', tagline: 'Open Access Met', room: 'gold' },
+  { id: 'berlin', name: 'Berlin · Modern', city: 'Berlin', country: 'Allemagne', tagline: 'Capitales culturelles', room: 'cyber' },
+  { id: 'vienna', name: 'Vienna · Secession', city: 'Vienna', country: 'Autriche', tagline: 'Empires & salons', room: 'gold' },
+  { id: 'rome', name: 'Rome · Eternal', city: 'Rome', country: 'Italie', tagline: 'Antiquité & baroque', room: 'stone' },
+  { id: 'brussels', name: 'Brussels · Crossroads', city: 'Brussels', country: 'Belgique', tagline: 'Carrefour européen', room: 'white' },
+  { id: 'milan', name: 'Milan · Design', city: 'Milan', country: 'Italie', tagline: 'Nord italien', room: 'white' },
+  { id: 'prague', name: 'Prague · Central', city: 'Prague', country: 'Tchéquie', tagline: 'Europe centrale', room: 'dark' },
+]
+
 function toFrame(w: CatalogWork, base: string): FrameItem {
   const local = w.file ? `${base}${w.file}` : undefined
   const image = w.remote || local || undefined
@@ -46,41 +56,29 @@ function toFrame(w: CatalogWork, base: string): FrameItem {
     title: w.title,
     subtitle: [w.artist, w.year].filter(Boolean).join(' · '),
     collection: w.museum || 'The Met',
-    description: `Domaine public — ${w.artist}${w.year ? `, ${w.year}` : ''}. Met Museum Open Access.`,
+    description: `Domaine public — ${w.artist}${w.year ? `, ${w.year}` : ''}. Met Open Access.`,
     image,
     type: 'Public domain',
     href: w.remote || local,
   }
 }
 
-const WING_META: { id: string; name: string; tagline: string; room: VirtualMuseum['room'] }[] = [
-  { id: 'met_wing_a', name: 'Met · Aile A', tagline: 'Renaissance & premiers maîtres', room: 'stone' },
-  { id: 'met_wing_b', name: 'Met · Aile B', tagline: 'Portraits européens', room: 'gold' },
-  { id: 'met_wing_c', name: 'Met · Aile C', tagline: 'Paysages & marine', room: 'white' },
-  { id: 'met_wing_d', name: 'Met · Aile D', tagline: 'Scènes de genre', room: 'dark' },
-  { id: 'met_wing_e', name: 'Met · Aile E', tagline: 'Religieux & allégorie', room: 'stone' },
-  { id: 'met_wing_f', name: 'Met · Aile F', tagline: 'XVIIe–XVIIIe', room: 'gold' },
-  { id: 'met_wing_g', name: 'Met · Aile G', tagline: 'Études & figures', room: 'white' },
-  { id: 'met_wing_h', name: 'Met · Aile H', tagline: 'Collection ouverte', room: 'cyber' },
-]
+function normalizeCity(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/[^a-z]/g, '')
+}
 
-export async function loadMuseumNetwork(baseUrl: string): Promise<VirtualMuseum[]> {
+export function buildMuseumNetwork(baseUrl = '/'): VirtualMuseum[] {
   const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'
-  let works: CatalogWork[] = []
-  try {
-    const r = await fetch(`${base}museum/catalog.json?t=${Date.now()}`, { cache: 'no-store' })
-    if (r.ok) works = await r.json()
-  } catch {
-    /* empty */
-  }
-  if (!works.length) {
-    works = MET_WORKS as CatalogWork[]
-  }
-
+  const works = (MET_WORKS as CatalogWork[]).filter(w => w.remote || w.file)
   const frames = works.map(w => toFrame(w, base))
-  const chunk = Math.max(1, Math.ceil((frames.length || 1) / WING_META.length))
+  const n = CITY_DEFS.length || 1
+  const chunk = Math.max(1, Math.ceil(frames.length / n))
 
-  const museums: VirtualMuseum[] = [
+  const list: VirtualMuseum[] = [
     {
       id: 'xartists',
       name: 'Musée xArtists',
@@ -93,37 +91,45 @@ export async function loadMuseumNetwork(baseUrl: string): Promise<VirtualMuseum[
     },
   ]
 
-  WING_META.forEach((meta, i) => {
+  CITY_DEFS.forEach((def, i) => {
     const slice = frames.slice(i * chunk, (i + 1) * chunk)
-    if (!slice.length && i > 0) return
-    museums.push({
-      id: meta.id,
-      name: meta.name,
-      city: 'New York',
-      country: 'USA',
-      tagline: `${meta.tagline} · ${slice.length} œuvres`,
+    const worksForCity =
+      slice.length > 0 ? slice : frames.length ? [frames[i % frames.length]] : []
+    list.push({
+      id: def.id,
+      name: def.name,
+      city: def.city,
+      country: def.country,
+      tagline: `${def.tagline} · ${worksForCity.length} œuvres`,
       source: 'public_domain',
-      room: meta.room,
-      works: slice,
+      room: def.room,
+      works: worksForCity,
     })
   })
 
-  return museums
+  return list
 }
 
-export const VIRTUAL_MUSEUMS: VirtualMuseum[] = [
-  {
-    id: 'xartists',
-    name: 'Musée xArtists',
-    city: 'MultiversX',
-    country: 'On-chain',
-    tagline: 'Premier musée — NFT mainnet',
-    source: 'onchain',
-    room: 'cyber',
-    works: [],
-  },
-]
+export async function loadMuseumNetwork(baseUrl: string): Promise<VirtualMuseum[]> {
+  return buildMuseumNetwork(baseUrl)
+}
+
+export function museumIdForCity(city: string | undefined | null): string | null {
+  if (!city) return null
+  const n = normalizeCity(city)
+  const hit = CITY_DEFS.find(
+    d =>
+      normalizeCity(d.city) === n ||
+      normalizeCity(d.id) === n ||
+      normalizeCity(d.name).includes(n)
+  )
+  return hit?.id ?? null
+}
+
+export const VIRTUAL_MUSEUMS: VirtualMuseum[] = buildMuseumNetwork('/')
 
 export function getMuseum(id: string, list: VirtualMuseum[] = VIRTUAL_MUSEUMS) {
   return list.find(m => m.id === id)
 }
+
+export type VirtualMuseumId = string
