@@ -1,5 +1,5 @@
 /**
- * Réseau de musées — xArtists 1er, puis musées-ville avec œuvres Met Open Access.
+ * Réseau de musées — xArtists 1er, puis musées-ville (Met Open Access).
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -148,7 +148,7 @@ export default function MuseumPage() {
 
   const visitFrames = museum.source === 'onchain' ? xartistsFrames : museum.works
 
-  const mydeeFrames = useMemo(
+  const myNftFrames = useMemo(
     () => framesFromUserNfts(account.nfts || []),
     [account.nfts]
   )
@@ -163,12 +163,11 @@ export default function MuseumPage() {
           Musée <span className="gradient-text">xArtists</span>
         </h1>
         <p className="page-sub inline-flex flex-wrap items-center gap-1">
-          xArtists + musées-ville (œuvres Met Open Access)
+          Visite libre · Mes NFTs · musées-ville
           <InfoTip>
-            <strong className="text-white block mb-1">Clic ville</strong>
+            <strong className="text-white block mb-1">Onglets</strong>
             <span className="text-zinc-400">
-              Guide mondial ou pastille Paris/London… ouvre la salle de cette ville avec tableaux
-              iconiques. xArtists = NFT MultiversX.
+              Visite = galerie publique + Louvre/Rijks… · Mes NFTs = wallet · Guide = villes carte.
             </span>
           </InfoTip>
         </p>
@@ -184,7 +183,7 @@ export default function MuseumPage() {
         {(
           [
             ['visit', 'Visite'],
-            ['mydee', 'Mydee'],
+            ['mydee', 'Mes NFTs'],
             ['world_tour', 'Guide mondial'],
           ] as const
         ).map(([id, label]) => (
@@ -245,14 +244,10 @@ export default function MuseumPage() {
               emptyLabel={
                 museum.source === 'onchain'
                   ? 'Aucune œuvre catalogue pour l’instant.'
-                  : 'Aucune œuvre pour cette ville.'
+                  : 'Aucune œuvre pour ce musée.'
               }
             />
           )}
-
-          <p className="text-[10px] text-zinc-600 leading-relaxed">
-            Pastilles ville = salles PD (Met CDN). xArtists = NFT on-chain.
-          </p>
         </div>
       )}
 
@@ -260,16 +255,18 @@ export default function MuseumPage() {
         <div className="space-y-3">
           {!connected ? (
             <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-6 text-center space-y-3">
-              <p className="text-sm text-amber-100/90">Connecte ton wallet pour Mydee.</p>
+              <p className="text-sm text-amber-100/90">
+                Connecte ton wallet pour afficher tes NFTs dans la salle.
+              </p>
               <button type="button" className="btn-primary text-sm" onClick={() => requestOpenConnect()}>
                 Connect
               </button>
             </div>
-          ) : account.loading && !mydeeFrames.length ? (
+          ) : account.loading && !myNftFrames.length ? (
             <p className="text-sm text-zinc-500">Lecture NFTs…</p>
           ) : (
             <MuseumCorridor
-              frames={mydeeFrames}
+              frames={myNftFrames}
               theme="sanctuary"
               emptyLabel="Aucun NFT sur cette adresse."
             />
