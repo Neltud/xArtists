@@ -25,7 +25,6 @@ const Portfolio = lazy(() => import('./pages/Portfolio'))
 const DAO = lazy(() => import('./pages/DAO'))
 const Tip = lazy(() => import('./pages/Tip'))
 const Wallet = lazy(() => import('./pages/Wallet'))
-const Gallery = lazy(() => import('./pages/Gallery'))
 const MuseumPage = lazy(() => import('./pages/MuseumPage'))
 const LegalPage = lazy(() => import('./pages/LegalPage'))
 const HatomPage = lazy(() => import('./pages/HatomPage'))
@@ -134,9 +133,10 @@ export default function App() {
                 <Route path="/burnify" element={<BurnifyPage />} />
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/dao" element={<DAO />} />
-                <Route path="/gallery" element={<Gallery />} />
+                <Route path="/gallery" element={<Navigate to="/museum" replace />} />
                 <Route path="/museum" element={<MuseumPage />} />
-                <Route path="/musee" element={<MuseumPage />} />
+                <Route path="/musee" element={<Navigate to="/museum" replace />} />
+                <Route path="/collection" element={<Navigate to="/museum?tab=mine" replace />} />
                 <Route path="/legal" element={<LegalPage />} />
                 <Route path="/mentions-legales" element={<LegalPage />} />
                 <Route path="/tip" element={<Tip />} />
@@ -168,21 +168,18 @@ export default function App() {
             <div>
               <p className="text-sm font-semibold text-white tracking-tight">xArtists</p>
               <p className="text-[11px] text-zinc-600 mt-1 max-w-xs leading-relaxed">
-                Démo MultiversX · paper-first · packs Pulse · Yield · Sentinel · musée & tours.
+                Galerie · packs · MultiversX — démo paper-first.
               </p>
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-zinc-500">
               <a href="#/museum" className="hover:text-zinc-300 transition-colors">
-                Musée
+                Galerie
               </a>
               <a href="#/agents" className="hover:text-zinc-300 transition-colors">
                 Packs
               </a>
               <a href="#/tours" className="hover:text-zinc-300 transition-colors">
                 Tours
-              </a>
-              <a href="#/gallery" className="hover:text-zinc-300 transition-colors">
-                Galerie
               </a>
               <a href="#/legal" className="hover:text-zinc-300 transition-colors">
                 Mentions légales
@@ -198,8 +195,8 @@ export default function App() {
             </div>
           </div>
           <p className="text-[10px] text-zinc-600 leading-relaxed border-t border-white/[0.04] pt-3">
-            Pas un conseil en investissement. Soft launch : trading LIA paper · SC selon statut
-            on-chain. © 2026 xArtists.
+            Pas un conseil en investissement. Démonstration — pas de trading live par défaut. © 2026
+            xArtists.
           </p>
         </div>
       </footer>
