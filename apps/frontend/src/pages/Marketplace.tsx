@@ -6,7 +6,6 @@ import MarketplaceActivity from '../components/MarketplaceActivity'
 import AdSlot from '../components/AdSlot'
 import VirtualNftGrid from '../components/VirtualNftGrid'
 import PageGuide from '../components/PageGuide'
-import InfoTip from '../components/InfoTip'
 import { canListBuyNft } from '../config/scStatus'
 import {
   type NFT,
@@ -145,22 +144,21 @@ export default function Marketplace() {
   }, [allNfts, activeCollection, query, sort])
 
   return (
-    <div className="animate-fade-in space-y-5 pb-10">
+    <div className="animate-fade-in space-y-5 pb-10 max-w-5xl">
       <PageGuide page="marketplace" />
 
-      <header className="space-y-1">
-        <p className="section-label text-cyan-400/80">
-          {marketLive ? 'Mainnet · SC live' : 'Mainnet · lecture'}
+      <header className="space-y-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+          MultiversX
         </p>
-        <h1 className="page-title">
-          <span className="gradient-text">Marketplace</span>
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+          Marketplace
         </h1>
-        <p className="page-sub inline-flex flex-wrap items-center gap-1">
-          Catalogue MultiversX · list/buy après verify SC
-          <InfoTip k="scStatus" />
-          <InfoTip k="paperFirst" />
+        <p className="text-sm text-zinc-400 max-w-lg">
+          Catalogue d’œuvres et collections. Les achats en direct s’ouvrent dès que le marché est
+          disponible.
         </p>
-        <div className="flex flex-wrap gap-2 pt-2">
+        <div className="flex flex-wrap gap-2 pt-1">
           <MoonpayButton label="Acheter EGLD" className="text-sm!" />
           <button
             type="button"
@@ -168,20 +166,14 @@ export default function Marketplace() {
             disabled={refreshing || loading}
             className="btn-secondary text-xs disabled:opacity-50"
           >
-            {refreshing ? '…' : '↻ Refresh'}
+            {refreshing ? 'Actualisation…' : 'Actualiser'}
           </button>
-          {lastUpdated && (
-            <span className="text-[11px] text-zinc-600 self-center">
-              {new Date(lastUpdated).toLocaleDateString()}
-            </span>
-          )}
         </div>
       </header>
 
       {!marketLive && (
-        <p className="text-[11px] text-amber-200/80 border border-amber-500/20 bg-amber-500/5 rounded-xl px-3 py-2 inline-flex items-center gap-1.5">
-          SC market non live — lecture seule
-          <InfoTip tone="warn" k="scStatus" />
+        <p className="text-[12px] text-zinc-500 border border-white/10 bg-white/[0.03] rounded-xl px-3 py-2">
+          Consultation du catalogue — les transactions d’achat s’activeront plus tard.
         </p>
       )}
 
@@ -198,7 +190,7 @@ export default function Marketplace() {
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="Rechercher…"
-          className="w-full sm:max-w-xs rounded-xl border border-white/10 bg-black/40 py-2.5 px-3 text-sm outline-none focus:border-violet-400/40"
+          className="w-full sm:max-w-xs rounded-xl border border-white/10 bg-black/40 py-2.5 px-3 text-sm outline-none focus:border-white/25"
         />
         <select
           value={sort}
@@ -207,7 +199,7 @@ export default function Marketplace() {
         >
           <option value="collection">Collection</option>
           <option value="name">Nom</option>
-          <option value="nonce">Nonce</option>
+          <option value="nonce">N°</option>
         </select>
       </div>
 
@@ -256,12 +248,12 @@ export default function Marketplace() {
       />
 
       <p className="text-[11px] text-zinc-600">
-        <Link to="/museum" className="text-violet-300/90 hover:underline">
-          Musée
+        <Link to="/museum" className="hover:text-zinc-400 underline-offset-2 hover:underline">
+          Galerie 3D
         </Link>
         {' · '}
-        <Link to="/gallery" className="text-violet-300/90 hover:underline">
-          Galerie
+        <Link to="/wallet" className="hover:text-zinc-400 underline-offset-2 hover:underline">
+          Wallet
         </Link>
       </p>
     </div>
@@ -285,7 +277,7 @@ function FilterPill({
       onClick={onClick}
       className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] ${
         active
-          ? 'border-violet-400/45 bg-violet-500/15 text-violet-100'
+          ? 'border-white/25 bg-white/10 text-white'
           : 'border-white/10 text-zinc-500'
       }`}
     >
@@ -310,7 +302,7 @@ function NFTCard({
     onOpen(nft, a)
   }
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-colors hover:border-violet-400/35">
+    <div className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-colors hover:border-white/25">
       <button type="button" onClick={() => onOpen(nft, null)} className="text-left">
         <div className="relative aspect-square overflow-hidden bg-black/40">
           {img ? (
@@ -331,7 +323,7 @@ function NFTCard({
         <div className="p-2.5 pb-1">
           <p className="truncate text-sm font-semibold">{nft.name || 'Untitled'}</p>
           <div className="flex justify-between text-[11px]">
-            <span className="text-violet-300/80 truncate">{nft.collection_name}</span>
+            <span className="text-zinc-400 truncate">{nft.collection_name}</span>
             <span className="mono text-zinc-600">{nonceLabel(nft)}</span>
           </div>
         </div>
@@ -345,19 +337,13 @@ function NFTCard({
               key={a}
               type="button"
               onClick={e => stop(e, a)}
-              title={
-                isOffer
-                  ? 'Offer V2'
-                  : gated
-                    ? 'SC non live'
-                    : a
-              }
+              title={gated ? 'Bientôt disponible' : a}
               className={`rounded-lg border py-1.5 text-[10px] font-semibold uppercase ${
                 isOffer
                   ? 'border-dashed border-white/10 text-zinc-600'
                   : gated
                     ? 'border-white/10 text-zinc-600 opacity-70'
-                    : 'border-white/10 text-zinc-300 hover:border-violet-400/40'
+                    : 'border-white/10 text-zinc-300 hover:border-white/30'
               }`}
             >
               {a}
