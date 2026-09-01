@@ -1,10 +1,10 @@
 /**
- * Réseau de musées — xArtists 1er, puis musées-ville (Met Open Access).
+ * Galerie unique — 3D · collection wallet · carte.
+ * /gallery → redirect. Vocabulaire grand public.
  */
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import PageGuide from '../components/PageGuide'
-import MuseumCorridor, {
+import { Link, useSearchParams } from 'react-router-dom'
+import {
   framesFromUserNfts,
   type FrameItem,
 } from '../components/museum/MuseumCorridor'
@@ -28,9 +28,8 @@ import {
   VIRTUAL_MUSEUMS,
   type VirtualMuseum,
 } from '../lib/museumWorldCatalog'
-import InfoTip from '../components/InfoTip'
 
-type Tab = 'visit' | 'mydee' | 'world_tour'
+type Mode = 'explore' | 'mine' | 'map'
 
 function preferImage(n: NFT): string | undefined {
   const thumb = n.media?.[0]?.thumbnailUrl
@@ -82,9 +81,19 @@ async function loadFullCatalog(): Promise<{ collections: CollectionData[]; nfts:
   return { collections: [], nfts: [] }
 }
 
+const MODES: { id: Mode; label: string }[] = [
+  { id: 'explore', label: 'Explorer' },
+  { id: 'mine', label: 'Ma collection' },
+  { id: 'map', label: 'Carte' },
+]
+
 export default function MuseumPage() {
-  const [tab, setTab] = useState<Tab>('visit')
-  const [museumId, setMuseumId] = useState<string>('xartists')
+  const [params] = useSearchParams()
+  const initial = params.get('tab')
+  const [mode, setMode] = useState<Mode>(
+    initial === 'mine' || initial === 'map' ? initial : 'explore'
+  )
+  const [museumId, setMuseumId] = useState('xartists')
   const [museums, setMuseums] = useState<VirtualMuseum[]>(() =>
     buildMuseumNetwork(import.meta.env.BASE_URL || '/')
   )
@@ -93,7 +102,6 @@ export default function MuseumPage() {
   const [travelBanner, setTravelBanner] = useState<string | null>(null)
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
-
   const museum = museums.find(m => m.id === museumId) || museums[0] || VIRTUAL_MUSEUMS[0]
 
   useEffect(() => {
@@ -123,21 +131,17 @@ export default function MuseumPage() {
   useEffect(() => {
     const hash = typeof window !== 'undefined' ? window.location.hash : ''
     const q = hash.includes('?') ? hash.split('?')[1] : ''
-    const params = new URLSearchParams(
+    const sp = new URLSearchParams(
       q || (typeof window !== 'undefined' ? window.location.search : '')
     )
-    const cityQ = params.get('city')
+    const cityQ = sp.get('city')
     const travel = consumeTravelDestination()
     if (travel?.city || cityQ) {
       const city = travel?.city || cityQ || ''
       const mid = museumIdForCity(city)
-      setTravelBanner(
-        mid
-          ? `Voyage LIA : ${city} → ${mid}. Œuvres iconiques prêtes.`
-          : `Voyage LIA : ${city}. Choisis une ville du réseau ou xArtists.`
-      )
+      setTravelBanner(mid ? `Direction ${city}` : `Direction ${city}`)
       setMuseumId(mid || 'xartists')
-      setTab('visit')
+      setMode('explore')
     }
   }, [])
 
@@ -147,144 +151,135 @@ export default function MuseumPage() {
   }, [allNfts])
 
   const visitFrames = museum.source === 'onchain' ? xartistsFrames : museum.works
-
-  const myNftFrames = useMemo(
-    () => framesFromUserNfts(account.nfts || []),
-    [account.nfts]
-  )
+  const myFrames = useMemo(() => framesFromUserNfts(account.nfts || []), [account.nfts])
 
   return (
-    <div className="animate-fade-in space-y-4 pb-12 max-w-4xl mx-auto">
-      <PageGuide page="gallery" />
-
-      <header className="space-y-1">
-        <p className="section-label text-fuchsia-400/80">Réseau de musées</p>
-        <h1 className="page-title">
-          Musée <span className="gradient-text">xArtists</span>
-        </h1>
-        <p className="page-sub inline-flex flex-wrap items-center gap-1">
-          Visite libre · Mes NFTs · musées-ville
-          <InfoTip>
-            <strong className="text-white block mb-1">Onglets</strong>
-            <span className="text-zinc-400">
-              Visite = galerie publique + Louvre/Rijks… · Mes NFTs = wallet · Guide = villes carte.
-            </span>
-          </InfoTip>
+    <div className="animate-fade-in pb-12 max-w-5xl mx-auto">
+      <header className="mb-6 space-y-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+          xArtists
+        </p>
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Galerie</h1>
+        <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl">
+          Une seule expérience : promenez-vous dans les salles, ouvrez votre collection, ou voyagez
+          de ville en ville.
         </p>
       </header>
 
-      {travelBanner && (
-        <div className="rounded-xl border border-cyan-500/25 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-100">
-          {travelBanner}
-        </div>
-      )}
-
-      <div className="flex flex-wrap gap-1.5">
-        {(
-          [
-            ['visit', 'Visite'],
-            ['mydee', 'Mes NFTs'],
-            ['world_tour', 'Guide mondial'],
-          ] as const
-        ).map(([id, label]) => (
+      <div className="flex flex-wrap gap-1.5 mb-5">
+        {MODES.map(m => (
           <button
-            key={id}
+            key={m.id}
             type="button"
-            onClick={() => setTab(id)}
-            className={`rounded-full border px-3 py-1.5 text-xs font-medium ${
-              tab === id
-                ? 'border-fuchsia-400/45 bg-fuchsia-500/15 text-fuchsia-100'
-                : 'border-white/10 text-zinc-500'
+            onClick={() => setMode(m.id)}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+              mode === m.id
+                ? 'bg-white text-zinc-900'
+                : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-200'
             }`}
           >
-            {label}
+            {m.label}
           </button>
         ))}
       </div>
 
-      {tab === 'visit' && (
-        <div className="space-y-3">
+      {travelBanner && (
+        <div className="mb-4 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-300">
+          {travelBanner}
+        </div>
+      )}
+
+      {mode === 'explore' && (
+        <div className="space-y-4">
           <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x">
             {museums.map(m => (
               <button
                 key={m.id}
                 type="button"
                 onClick={() => setMuseumId(m.id)}
-                className={`snap-start shrink-0 rounded-xl border px-3 py-2 text-left min-w-[8.5rem] transition-colors ${
+                className={`snap-start shrink-0 rounded-2xl border px-3.5 py-2.5 text-left min-w-[9rem] transition-colors ${
                   museumId === m.id
-                    ? 'border-cyan-400/45 bg-cyan-500/10'
-                    : 'border-white/10 bg-white/[0.02]'
+                    ? 'border-white/30 bg-white/10'
+                    : 'border-white/10 bg-black/30 hover:border-white/15'
                 }`}
               >
-                <p className="text-[11px] font-semibold text-white truncate">{m.name}</p>
-                <p className="text-[10px] text-zinc-500 truncate">
-                  {m.city}
-                  {m.id === 'xartists' && <span className="text-cyan-300/90"> · 1er</span>}
-                  {m.source === 'public_domain' && m.works?.length
-                    ? ` · ${m.works.length}`
-                    : ''}
-                </p>
+                <p className="text-[12px] font-semibold text-white truncate">{m.name}</p>
+                <p className="text-[10px] text-zinc-500 truncate mt-0.5">{m.city}</p>
               </button>
             ))}
           </div>
 
-          <div>
-            <p className="text-sm font-medium text-zinc-200">{museum.name}</p>
-            <p className="text-[11px] text-zinc-500">{museum.tagline}</p>
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <p className="text-base font-medium text-white">{museum.name}</p>
+              <p className="text-[12px] text-zinc-500">{museum.tagline}</p>
+            </div>
+            <p className="text-[11px] text-zinc-600 hidden sm:block">
+              Déplacez-vous · touchez une œuvre pour l’agrandir
+            </p>
           </div>
 
           {museum.source === 'onchain' && catalogLoading ? (
-            <p className="text-sm text-zinc-500">Chargement catalogue MultiversX…</p>
+            <div className="rounded-2xl border border-white/10 bg-zinc-950/80 h-[min(70vh,520px)] flex items-center justify-center">
+              <p className="text-sm text-zinc-500">Préparation de la salle…</p>
+            </div>
           ) : (
-            <MuseumGameHall
-              key={museumId}
-              frames={visitFrames}
-              room={museum.room}
-              allowBuy={museum.source === 'onchain'}
-              emptyLabel={
-                museum.source === 'onchain'
-                  ? 'Aucune œuvre catalogue pour l’instant.'
-                  : 'Aucune œuvre pour ce musée.'
-              }
-            />
+            <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
+              <MuseumGameHall
+                key={museumId}
+                frames={visitFrames}
+                room={museum.room}
+                allowBuy={museum.source === 'onchain'}
+                emptyLabel="Aucune œuvre pour ce lieu pour l’instant."
+              />
+            </div>
           )}
         </div>
       )}
 
-      {tab === 'mydee' && (
-        <div className="space-y-3">
+      {mode === 'mine' && (
+        <div className="space-y-4">
+          <p className="text-sm text-zinc-400 max-w-lg">
+            Vos NFT MultiversX dans le même espace immersif.
+          </p>
           {!connected ? (
-            <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 px-4 py-6 text-center space-y-3">
-              <p className="text-sm text-amber-100/90">
-                Connecte ton wallet pour afficher tes NFTs dans la salle.
-              </p>
-              <button type="button" className="btn-primary text-sm" onClick={() => requestOpenConnect()}>
-                Connect
+            <div className="rounded-2xl border border-white/10 bg-zinc-950/60 px-6 py-12 text-center space-y-4">
+              <p className="text-sm text-zinc-300">Connectez votre wallet pour voir votre collection.</p>
+              <button type="button" className="btn-primary" onClick={() => requestOpenConnect()}>
+                Connecter
               </button>
             </div>
-          ) : account.loading && !myNftFrames.length ? (
-            <p className="text-sm text-zinc-500">Lecture NFTs…</p>
+          ) : account.loading && !myFrames.length ? (
+            <p className="text-sm text-zinc-500">Lecture de la collection…</p>
           ) : (
-            <MuseumCorridor
-              frames={myNftFrames}
-              theme="sanctuary"
-              emptyLabel="Aucun NFT sur cette adresse."
-            />
+            <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
+              <MuseumGameHall
+                frames={myFrames}
+                room="dark"
+                allowBuy={false}
+                emptyLabel="Aucun NFT sur cette adresse."
+              />
+            </div>
           )}
         </div>
       )}
 
-      {tab === 'world_tour' && <GuidedWorldTour />}
-
-      <p className="text-[11px] text-zinc-600">
-        <Link to="/gallery" className="text-violet-300/90 hover:underline">
-          Galerie 2D
-        </Link>
-        {' · '}
-        <Link to="/tours" className="text-violet-300/90 hover:underline">
-          Carte Tours
-        </Link>
-      </p>
+      {mode === 'map' && (
+        <div className="space-y-3">
+          <p className="text-sm text-zinc-400">
+            Choisissez une ville — la salle s’ouvre dans Explorer.
+          </p>
+          <GuidedWorldTour />
+          <p className="text-[11px] text-zinc-600">
+            <Link
+              to="/tours"
+              className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
+            >
+              Carte monde détaillée
+            </Link>
+          </p>
+        </div>
+      )}
     </div>
   )
 }
