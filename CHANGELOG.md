@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.20.0](https://github.com/Neltud/xArtists/compare/v0.19.0...v0.20.0) (2026-08-31)
+
+
+### Features
+
+* **agents:** comparative table Pulse · Yield · Sentinel ([9e5dc48](https://github.com/Neltud/xArtists/commit/9e5dc48502506d04e7a52f830c720fb2144879e8))
+* **agents:** full professional rebuild of Packs page — one clear product line ([b7eb9f0](https://github.com/Neltud/xArtists/commit/b7eb9f07daf678cac6a8df0959fad51a982c009b))
+
 ## [0.19.0](https://github.com/Neltud/xArtists/compare/v0.18.0...v0.19.0) (2026-08-31)
 
 
