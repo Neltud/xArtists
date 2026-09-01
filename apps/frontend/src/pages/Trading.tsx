@@ -1,14 +1,10 @@
 /**
- * Trading board LIA — paper-first, calm layout.
+ * Board LIA — paper, présentation grand public.
  */
 import { useEffect, useState } from 'react'
-import PageGuide from '../components/PageGuide'
+import { Link } from 'react-router-dom'
 import InfoTip from '../components/InfoTip'
-import TxMonitorPanel from '../components/TxMonitorPanel'
-import CompoundingPanel from '../components/CompoundingPanel'
 import LiaBoardPanel from '../components/LiaBoardPanel'
-import PaperLegsPanel from '../components/PaperLegsPanel'
-import GuardianStatusPanel from '../components/GuardianStatusPanel'
 import { useLIA } from '../hooks/useLIA'
 import TransactionOverlay, { lifecycleToPhase } from '../components/ui/TransactionOverlay'
 
@@ -17,6 +13,7 @@ export default function Trading() {
   const [overlayClosed, setOverlayClosed] = useState(false)
   const [cmd, setCmd] = useState('')
   const [busy, setBusy] = useState(false)
+  const [showAdvanced, setShowAdvanced] = useState(false)
 
   useEffect(() => {
     const onIntent = (e: Event) => {
@@ -39,8 +36,7 @@ export default function Trading() {
   }
 
   return (
-    <div className="animate-fade-in space-y-5 pb-10 max-w-4xl">
-      <PageGuide page="trading" />
+    <div className="animate-fade-in space-y-5 pb-10 max-w-3xl">
       <TransactionOverlay
         phase={
           overlayClosed &&
@@ -53,34 +49,30 @@ export default function Trading() {
         onClose={() => setOverlayClosed(true)}
       />
 
-      <header className="space-y-1">
-        <p className="section-label text-violet-400/80">LIA · paper</p>
-        <h1 className="page-title">Trading</h1>
-        <p className="page-sub inline-flex flex-wrap items-center gap-1">
-          Board protocole — pas ton wallet retail
-          <InfoTip k="paperFirst" />
-          <InfoTip k="liaVsUser" />
-          <InfoTip k="guardianFirst" />
+      <header className="space-y-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Board</p>
+        <h1 className="text-3xl font-semibold tracking-tight text-white">Trading</h1>
+        <p className="text-sm text-zinc-400 inline-flex flex-wrap items-center gap-1 max-w-xl">
+          Simulation paper — aucune exécution sur votre portefeuille dans cette démo
+          <InfoTip>
+            <strong className="text-white block mb-1">Mode paper</strong>
+            <span className="text-zinc-400">
+              Les commandes alimentent le board LIA en simulation. Pas d’ordre live tant que le mode
+              live n’est pas activé explicitement.
+            </span>
+          </InfoTip>
         </p>
       </header>
 
-      <div className="card space-y-3 !border-violet-500/15">
-        <div className="flex items-center gap-1.5">
-          <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Intention</p>
-          <InfoTip>
-            <strong className="text-white block mb-1">Commande LIA</strong>
-            <span className="text-zinc-400">
-              Texte libre → Doctrine / Guardian. Paper par défaut. Aucun ordre auto sur tes fonds.
-            </span>
-          </InfoTip>
-        </div>
+      <div className="rounded-2xl border border-white/10 bg-zinc-950/50 p-4 space-y-3">
+        <p className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Intention</p>
         <div className="flex flex-col sm:flex-row gap-2">
           <input
             value={cmd}
             onChange={e => setCmd(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && run()}
-            placeholder="ex. buy EGLD paper · status board"
-            className="flex-1 rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-violet-400/40"
+            placeholder="ex. statut board · acheter EGLD paper"
+            className="flex-1 rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-white/25"
           />
           <button
             type="button"
@@ -88,18 +80,28 @@ export default function Trading() {
             disabled={busy || !cmd.trim()}
             onClick={run}
           >
-            {busy ? '…' : 'Exécuter'}
+            {busy ? '…' : 'Envoyer'}
           </button>
         </div>
       </div>
 
-      <GuardianStatusPanel />
       <LiaBoardPanel />
-      <div className="grid sm:grid-cols-2 gap-4">
-        <CompoundingPanel />
-        <PaperLegsPanel />
-      </div>
-      <TxMonitorPanel />
+
+      <button
+        type="button"
+        className="text-[12px] text-zinc-500 hover:text-zinc-300"
+        onClick={() => setShowAdvanced(s => !s)}
+      >
+        {showAdvanced ? 'Masquer les détails' : 'Détails techniques'}
+      </button>
+      {showAdvanced && (
+        <p className="text-[11px] text-zinc-600 leading-relaxed">
+          Mode ops : compounding / guardian / legs. Démo publique = board paper.{' '}
+          <Link to="/agents" className="text-zinc-400 underline-offset-2 hover:underline">
+            Packs
+          </Link>
+        </p>
+      )}
     </div>
   )
 }

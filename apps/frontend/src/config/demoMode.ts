@@ -1,26 +1,21 @@
-/** Soft launch — honest product surface until SC verify + optional micro-live. */
+/** Soft launch — surface produit grand public. */
 
 export const DEMO_MODE = true
 
-/** Soft launch public banner */
-export const DEMO_LABEL = 'SOFT LAUNCH · PAPER'
+export const DEMO_LABEL = 'DÉMO'
 
 export const DEMO_BULLETS = [
-  'Soft launch paper : board LIA / compounding = JSON Vellum — pas ton compte.',
-  'Lectures MultiversX live (prix, soldes, NFTs) quand l’API répond.',
-  'Marketplace & mint agents : bloqués tant que codeHash null (fail-closed).',
-  'Packs actifs : Pulse · Yield · Sentinel uniquement.',
-  'Art Tours = service CULTURE (pas un pack agent).',
-  'Musée : catalogue réel + Mydee wallet · achat = intention paper / Guardian.',
-  'Trading LIA live OFF (LIA_LIVE_TRADING=0) jusqu’aux preuves ops.',
-  'Wallet protocole LIA ≠ wallet utilisateur — jamais coller le wallet ops.',
+  'Démonstration : exploration libre, wallet en lecture, packs en mode paper.',
+  'Galerie 3D unifiée (lieux + votre collection).',
+  'Packs Pulse · Yield · Sentinel — pas un fonds, pas de rendement promis.',
+  'Art Tours = culture, hors packs agents.',
+  'Paiements carte : Stripe / Paybox quand configurés côté serveur.',
 ] as const
 
-/** Critical path for soft-launch QA */
 export const SOFT_LAUNCH_PATH = [
   { to: '/', label: 'Accueil', emoji: '⌂' },
-  { to: '/wallet', label: 'Wallet', emoji: '◇' },
-  { to: '/museum', label: 'Musée', emoji: '🖼' },
-  { to: '/tours', label: 'Tours', emoji: '🗺' },
+  { to: '/museum', label: 'Galerie', emoji: '🖼' },
   { to: '/agents', label: 'Packs', emoji: '✦' },
+  { to: '/wallet', label: 'Wallet', emoji: '◇' },
+  { to: '/tours', label: 'Tours', emoji: '🗺' },
 ] as const
