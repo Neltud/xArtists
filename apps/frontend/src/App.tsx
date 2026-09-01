@@ -17,6 +17,7 @@ import { useMultiversX } from './hooks/useMultiversX'
 import AssetDrawer from './components/ui/AssetDrawer'
 import { OPEN_ASSETS_EVENT } from './lib/walletEvents'
 import { LINKS } from './config/links'
+import { DEMO_MODE } from './config/demoMode'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Marketplace = lazy(() => import('./pages/Marketplace'))
@@ -104,10 +105,10 @@ export default function App() {
   return (
     <div className="app-shell pb-20 md:pb-8">
       <DemoModeBanner />
-      <PrivateReleaseStrip />
-      <GuardianStatusBar />
+      {!DEMO_MODE && <PrivateReleaseStrip />}
+      {!DEMO_MODE && <GuardianStatusBar />}
       <Header />
-      <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />
+      {!DEMO_MODE && <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />}
       <main className="flex-1 page-wrap py-5 sm:py-8">
         <ErrorBoundary>
           <TxGate>
@@ -202,9 +203,9 @@ export default function App() {
       </footer>
       <PwaInstallBanner />
       <FirstVisitOnboarding />
-      <IntentBar />
-      <LiaMonitor />
-      <SignalTicker />
+      {!DEMO_MODE && <IntentBar />}
+      {!DEMO_MODE && <LiaMonitor />}
+      {!DEMO_MODE && <SignalTicker />}
       <BottomNav />
       <RoutePrefetch />
       <AssetDrawer open={assetsOpen} onClose={() => setAssetsOpen(false)} />
