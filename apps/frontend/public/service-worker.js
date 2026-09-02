@@ -1,9 +1,7 @@
-/* xArtists PWA — v4: never serve stale index/404; network-first HTML */
-const SHELL = 'xartists-shell-v4'
-const DATA = 'xartists-data-v4'
-const PRECACHE = [
-  '/xArtists/manifest.webmanifest',
-]
+/* xArtists PWA — v5: invalidate stale docs SPA caches */
+const SHELL = 'xartists-shell-v5'
+const DATA = 'xartists-data-v5'
+const PRECACHE = ['/xArtists/manifest.webmanifest']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -14,7 +12,8 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   const keep = new Set([SHELL, DATA])
   event.waitUntil(
-    caches.keys()
+    caches
+      .keys()
       .then((keys) => Promise.all(keys.filter((k) => !keep.has(k)).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   )
