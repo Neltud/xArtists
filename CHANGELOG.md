@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.21.1](https://github.com/Neltud/xArtists/compare/v0.21.0...v0.21.1) (2026-09-02)
+
+
+### Documentation
+
+* **marketing:** draft X 15:45 CEST — thème tours art (CULTURE) ([0ec9f5b](https://github.com/Neltud/xArtists/commit/0ec9f5b9880c045bce196dabd6a532eb9e89748c))
+* **marketing:** draft X 2026-09-02 — board paper LIA ([26ebbf8](https://github.com/Neltud/xArtists/commit/26ebbf856f409e542969c925bbe2a1ec4027b921))
+
 ## [0.21.0](https://github.com/Neltud/xArtists/compare/v0.20.0...v0.21.0) (2026-09-01)
 
 
