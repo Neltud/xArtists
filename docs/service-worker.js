@@ -24,11 +24,16 @@ function isDataPath(url) {
   return url.pathname.includes('/xArtists/data/') || url.pathname.includes('/data/')
 }
 
+function hasDomain(hostname, domain) {
+  return hostname === domain || hostname.endsWith(`.${domain}`)
+}
+
 function isApi(url) {
+  const host = url.hostname.toLowerCase()
   return (
-    url.hostname.includes('multiversx.com') ||
-    url.hostname.includes('coingecko.com') ||
-    url.hostname.includes('api.')
+    hasDomain(host, 'multiversx.com') ||
+    hasDomain(host, 'coingecko.com') ||
+    host.startsWith('api.')
   )
 }
 

@@ -26,6 +26,9 @@ concurrency:
   group: regression-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   python-regression:
     runs-on: ubuntu-latest

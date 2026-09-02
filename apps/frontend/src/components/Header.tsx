@@ -1,33 +1,41 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { useWallet } from '../context/WalletContext'
+import { useWallet, LIA_WALLET } from '../context/WalletContext'
 import { sdkDappConfig } from '../config/sdkDapp'
-import { LINKS, PRIMARY_NAV, SECONDARY_NAV } from '../config/links'
-import OraclePriceBadge from './OraclePriceBadge'
-import StatusIndicator from './ui/StatusIndicator'
-import { OPEN_CONNECT_EVENT, requestOpenAssets } from '../lib/walletEvents'
+
+const NAV = [
+  { to: '/', label: 'Dashboard', emoji: '📊' },
+  { to: '/publish', label: 'Publish', emoji: '➕' },
+  { to: '/agents', label: 'Agents IA', emoji: '🧠' },
+  { to: '/marketplace', label: 'Marketplace', emoji: '🎨' },
+  { to: '/staking', label: 'Staking', emoji: '🔒' },
+  { to: '/tro', label: '$TRO', emoji: '🪙' },
+  { to: '/gallery', label: 'Galerie', emoji: '🖼️' },
+  { to: '/trading', label: 'Trading', emoji: '⚡' },
+  { to: '/portfolio', label: 'Portfolio', emoji: '📈' },
+  { to: '/hatom', label: 'Hatom', emoji: '🏦' },
+  { to: '/lp', label: 'LP/Farms', emoji: '💧' },
+  { to: '/dao', label: 'DAO', emoji: '🗳️' },
+  { to: '/soul-testnet', label: 'Soul', emoji: '🌉' },
+  { to: '/wallet', label: 'Wallet', emoji: '👛' },
+  { to: '/tip', label: 'Tip 💜', emoji: '' },
+]
 
 function isValidErd(addr: string): boolean {
   return /^erd1[a-z0-9]{58}$/i.test(addr.trim())
 }
 
 function getCallbackUrl(): string {
-  if (typeof window === 'undefined') return LINKS.dapp
+  if (typeof window === 'undefined') return 'https://neltud.github.io/xArtists/'
   return `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '/') || '/xArtists/'}`
 }
-
-const DESKTOP_NAV = PRIMARY_NAV.filter(n =>
-  ['/', '/agents', '/museum', '/tours', '/gallery', '/wallet', '/marketplace', '/my-packs'].includes(
-    n.to
-  )
-)
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [showWalletModal, setShowWalletModal] = useState(false)
   const [manualAddr, setManualAddr] = useState('')
   const [connectError, setConnectError] = useState('')
-  const { connected, shortAddress, connect, disconnect, address, method } = useWallet()
+  const { connected, shortAddress, connect, disconnect, address } = useWallet()
   const location = useLocation()
 
   useEffect(() => {
@@ -37,28 +45,21 @@ export default function Header() {
   useEffect(() => {
     if (menuOpen) document.body.style.overflow = 'hidden'
     else document.body.style.overflow = ''
-    return () => {
-      document.body.style.overflow = ''
-    }
+    return () => { document.body.style.overflow = '' }
   }, [menuOpen])
 
-  useEffect(() => {
-    const open = () => {
-      setShowWalletModal(true)
-      setConnectError('')
-    }
-    window.addEventListener(OPEN_CONNECT_EVENT, open)
-    return () => window.removeEventListener(OPEN_CONNECT_EVENT, open)
-  }, [])
-
   const openWebWallet = () => {
-    window.location.href = LINKS.walletLogin(getCallbackUrl())
+    const callback = encodeURIComponent(getCallbackUrl())
+    window.location.href = `https://wallet.multiversx.com/hook/login?callbackUrl=${callback}`
   }
 
   const openXPortalDeepLink = () => {
+    // Deep link / store — full WC QR requires @multiversx/sdk-dapp; deep link opens app
     const deep = sdkDappConfig.customNetworkConfig.walletConnectDeepLink
     window.open(deep, '_blank', 'noopener,noreferrer')
-    setConnectError('xPortal ouvert. Web Wallet recommandé pour les TX signées.')
+    setConnectError(
+      'xPortal opened. For full QR WalletConnect, install @multiversx/sdk-dapp. Or use Web Wallet (recommended now) — your real address will be saved (never the LIA protocol wallet).'
+    )
   }
 
   const tryExtension = async () => {
@@ -72,23 +73,30 @@ export default function Header() {
       if (provider?.getAddress) {
         const addr = await provider.getAddress()
         const res = connect(addr, 'defi_wallet')
-        if (!res.ok) setConnectError(res.error || 'Connexion échouée')
+        if (!res.ok) setConnectError(res.error || 'Connect failed')
         else setShowWalletModal(false)
         return
       }
-      setConnectError('Extension MultiversX introuvable. Utilise Web Wallet.')
+      setConnectError(
+        'DeFi Wallet extension not detected. Install MultiversX DeFi Wallet, or use Web Wallet.'
+      )
     } catch (e) {
-      setConnectError(e instanceof Error ? e.message : 'Erreur extension')
+      setConnectError(e instanceof Error ? e.message : 'Extension error')
     }
   }
 
   const handleManual = () => {
+    setConnectError('')
     if (!isValidErd(manualAddr)) {
-      setConnectError('Adresse erd1 invalide')
+      setConnectError('Invalid erd1… address')
       return
     }
-    const res = connect(manualAddr.trim(), 'paste_readonly')
-    if (!res.ok) setConnectError(res.error || 'Échec')
+    if (manualAddr.trim().toLowerCase() === LIA_WALLET.toLowerCase()) {
+      setConnectError('Cannot use LIA protocol wallet as user. Connect your own wallet.')
+      return
+    }
+    const res = connect(manualAddr.trim(), 'web_wallet')
+    if (!res.ok) setConnectError(res.error || 'Failed')
     else {
       setShowWalletModal(false)
       setManualAddr('')
@@ -97,145 +105,89 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-white/[0.06] glass">
-        <div className="page-wrap flex items-center justify-between gap-3 h-14 sm:h-16">
-          <NavLink to="/" className="flex items-center gap-2.5 shrink-0 group">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 text-sm font-black text-white shadow-glow">
-              xA
-            </span>
-            <span className="display text-lg text-white group-hover:opacity-90 hidden sm:inline">
-              xArtists
-            </span>
+      <header className="sticky top-0 z-50 bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-[#2a2a3a]">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-2">
+          <NavLink to="/" className="flex items-center gap-2 min-w-0" onClick={() => setMenuOpen(false)}>
+            <span className="text-xl sm:text-2xl shrink-0">🎨</span>
+            <div className="min-w-0">
+              <span className="font-black text-base sm:text-lg gradient-text">xArtists</span>
+              <span className="ml-1.5 text-[10px] sm:text-xs text-gray-500 font-normal hidden xs:inline">LIA v6</span>
+            </div>
           </NavLink>
 
-          <nav className="hidden xl:flex items-center gap-0.5 flex-1 justify-center max-w-3xl overflow-x-auto">
-            {DESKTOP_NAV.map(({ to, label }) => (
+          <nav className="hidden lg:flex items-center gap-0.5 overflow-x-auto max-w-[55%]">
+            {NAV.map(({ to, label }) => (
               <NavLink
                 key={to}
                 to={to}
                 end={to === '/'}
-                className={({ isActive }) => `nav-pill ${isActive ? 'nav-pill-active' : ''}`}
+                className={({ isActive }) =>
+                  `px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                    isActive
+                      ? 'bg-purple-600/20 text-purple-400'
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`
+                }
               >
                 {label}
               </NavLink>
             ))}
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hidden sm:block">
-              <StatusIndicator />
-            </div>
-            <button
-              type="button"
-              className="hidden sm:inline-flex btn-secondary text-[10px] !py-1 !px-2"
-              onClick={() => requestOpenAssets()}
-              title="Asset Hub"
-            >
-              Assets
-            </button>
-            <div className="hidden md:block">
-              <OraclePriceBadge />
-            </div>
-
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {connected ? (
               <button
-                type="button"
-                onClick={() => disconnect()}
-                className={`mono text-[11px] sm:text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${
-                  method === 'paste_readonly'
-                    ? 'border-amber-500/40 text-amber-300 hover:border-rose-500/40'
-                    : 'border-emerald-500/30 text-emerald-300 hover:border-rose-500/40'
-                }`}
-                title={`${address} · ${method || '—'}`}
+                onClick={disconnect}
+                className="px-2 sm:px-3 py-1.5 rounded-lg bg-[#16161f] border border-green-500/30 text-green-400 text-[10px] sm:text-xs mono hover:border-red-500/40 hover:text-red-400 transition-colors"
+                title={`${address} — click to disconnect`}
               >
-                {method === 'paste_readonly' ? '👁' : '●'} {shortAddress}
+                ✅ {shortAddress}
               </button>
             ) : (
               <button
-                type="button"
-                onClick={() => {
-                  setShowWalletModal(true)
-                  setConnectError('')
-                }}
-                className="btn-primary text-xs sm:text-sm !py-1.5 !px-3"
+                onClick={() => { setShowWalletModal(true); setConnectError('') }}
+                className="btn-primary text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2"
               >
-                Connect
+                🔗 Connect
               </button>
             )}
 
             <button
               type="button"
-              className="xl:hidden p-2.5 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 min-h-[44px] min-w-[44px]"
+              className="lg:hidden p-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 active:bg-white/15 touch-manipulation"
               onClick={() => setMenuOpen(o => !o)}
-              aria-label={menuOpen ? 'Fermer' : 'Menu'}
+              aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
               aria-expanded={menuOpen}
             >
-              <span className="text-xl">{menuOpen ? '✕' : '☰'}</span>
+              <span className="text-xl leading-none">{menuOpen ? '✕' : '☰'}</span>
             </button>
           </div>
         </div>
 
         {menuOpen && (
           <div
-            className="xl:hidden fixed inset-0 top-14 sm:top-16 z-40 bg-black/70 backdrop-blur-sm"
+            className="lg:hidden fixed inset-0 top-14 sm:top-16 z-40 bg-black/60"
             onClick={() => setMenuOpen(false)}
           >
             <div
-              className="border-b border-white/[0.08] max-h-[calc(100vh-3.5rem)] overflow-y-auto px-3 py-3 flex flex-col gap-0.5 shadow-2xl"
-              style={{
-                background: 'rgba(8,8,14,0.96)',
-                paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
-              }}
+              className="bg-[#0a0a0f] border-b border-[#2a2a3a] max-h-[calc(100vh-3.5rem)] overflow-y-auto px-3 py-3 flex flex-col gap-0.5 shadow-2xl"
               onClick={e => e.stopPropagation()}
+              style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}
             >
-              <div className="px-3 py-2 flex flex-wrap gap-2 items-center">
-                <StatusIndicator />
-                <button
-                  type="button"
-                  className="btn-secondary text-[10px] !py-1 !px-2"
-                  onClick={() => {
-                    setMenuOpen(false)
-                    requestOpenAssets()
-                  }}
-                >
-                  Assets
-                </button>
-                <OraclePriceBadge />
-              </div>
-              {PRIMARY_NAV.map(({ to, label, emoji }) => (
+              {NAV.map(({ to, label, emoji }) => (
                 <NavLink
                   key={to}
                   to={to}
                   end={to === '/'}
                   onClick={() => setMenuOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium ${
-                      isActive
-                        ? 'bg-violet-500/20 text-violet-200 border border-violet-400/20'
-                        : 'text-zinc-300 active:bg-white/5'
+                    `flex items-center gap-3 px-4 py-3.5 rounded-xl text-base font-medium transition-all touch-manipulation ${
+                      isActive ? 'bg-purple-600/25 text-purple-300' : 'text-gray-300 active:bg-white/10'
                     }`
                   }
                 >
-                  <span className="w-7 text-center opacity-80">{emoji || '·'}</span>
-                  {label}
-                </NavLink>
-              ))}
-              <p className="px-4 pt-3 pb-1 text-[10px] uppercase tracking-[0.2em] text-zinc-600">
-                Lab · pré-mainnet
-              </p>
-              {SECONDARY_NAV.map(({ to, label, emoji }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  onClick={() => setMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm ${
-                      isActive ? 'text-cyan-300' : 'text-zinc-500'
-                    }`
-                  }
-                >
-                  <span className="w-7 text-center">{emoji || '·'}</span>
-                  {label}
+                  <span className="text-xl w-8 text-center">{emoji || '·'}</span>
+                  <span>{label}</span>
                 </NavLink>
               ))}
             </div>
@@ -245,70 +197,66 @@ export default function Header() {
 
       {showWalletModal && (
         <div
-          className="fixed inset-0 bg-black/80 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm"
-          onClick={() => {
-            setShowWalletModal(false)
-            setConnectError('')
-          }}
+          className="fixed inset-0 bg-black/80 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4"
+          onClick={() => { setShowWalletModal(false); setConnectError('') }}
         >
           <div
-            className="card max-w-md w-full rounded-t-3xl sm:rounded-3xl animate-fade-in max-h-[90vh] overflow-y-auto !border-violet-500/20"
+            className="card max-w-md w-full rounded-t-2xl sm:rounded-2xl animate-fade-in max-h-[90vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}
             style={{ paddingBottom: 'calc(1.25rem + env(safe-area-inset-bottom, 0px))' }}
           >
-            <p className="text-[10px] uppercase tracking-[0.2em] text-violet-400/80 mb-1">
-              MultiversX
-            </p>
-            <h2 className="display text-xl mb-2">Connecter le wallet</h2>
-            <p className="text-xs text-zinc-500 mb-4 leading-relaxed">
-              <strong className="text-zinc-300">Ton</strong> wallet — jamais le wallet protocole LIA.
-              Adresse collée = lecture seule.
+            <h2 className="text-xl font-bold mb-2">Connect wallet</h2>
+            <p className="text-xs text-zinc-500 mb-4">
+              Your wallet only — never the LIA protocol address. WC project:{' '}
+              {sdkDappConfig.walletConnectV2ProjectId.slice(0, 8)}…
             </p>
 
-            {[
-              {
-                title: 'Web Wallet',
-                sub: 'wallet.multiversx.com — recommandé',
-                icon: '🌐',
-                onClick: openWebWallet,
-              },
-              {
-                title: 'xPortal',
-                sub: 'App mobile / deep link',
-                icon: '📱',
-                onClick: openXPortalDeepLink,
-              },
-              {
-                title: 'Extension DeFi',
-                sub: 'Chrome List / Buy',
-                icon: '🦊',
-                onClick: () => void tryExtension(),
-              },
-            ].map(opt => (
-              <button
-                key={opt.title}
-                type="button"
-                onClick={opt.onClick}
-                className="w-full flex items-center gap-4 p-4 rounded-2xl border border-white/10 bg-white/[0.03] hover:border-violet-500/40 hover:bg-violet-500/5 transition-all mb-2.5 min-h-[56px] text-left"
-              >
-                <span className="text-2xl">{opt.icon}</span>
-                <div>
-                  <div className="font-semibold text-white">{opt.title}</div>
-                  <div className="text-xs text-zinc-500">{opt.sub}</div>
-                </div>
-              </button>
-            ))}
+            <button
+              type="button"
+              onClick={openWebWallet}
+              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
+            >
+              <span className="text-3xl">🌐</span>
+              <div className="text-left">
+                <div className="font-semibold">Web Wallet</div>
+                <div className="text-sm text-gray-400">wallet.multiversx.com — recommended</div>
+              </div>
+            </button>
 
-            <div className="mt-3 pt-3 divider">
-              <p className="text-xs text-amber-400/90 mb-2">Ou coller erd1 — lecture seule</p>
+            <button
+              type="button"
+              onClick={openXPortalDeepLink}
+              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
+            >
+              <span className="text-3xl">📱</span>
+              <div className="text-left">
+                <div className="font-semibold">xPortal</div>
+                <div className="text-sm text-gray-400">Open app / deep link (QR via sdk-dapp next)</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={tryExtension}
+              className="w-full flex items-center gap-4 p-4 rounded-xl bg-[#111118] border border-[#2a2a3a] hover:border-purple-500 transition-all mb-3"
+            >
+              <span className="text-3xl">🦊</span>
+              <div className="text-left">
+                <div className="font-semibold">DeFi Wallet extension</div>
+                <div className="text-sm text-gray-400">Browser extension</div>
+              </div>
+            </button>
+
+            <div className="mt-2">
+              <p className="text-xs text-gray-500 mb-2">Or paste your erd1 address (read-only session)</p>
               <input
-                className="input-field mono text-xs"
-                placeholder="erd1…"
+                className="w-full p-3 rounded-lg bg-[#111118] border border-[#2a2a3a] text-xs mono text-gray-300 focus:outline-none focus:border-purple-500"
+                placeholder="erd1..."
                 value={manualAddr}
                 onChange={e => setManualAddr(e.target.value)}
               />
-              <button type="button" onClick={handleManual} className="btn-secondary w-full mt-2 text-sm">
-                Utiliser l’adresse
+              <button type="button" onClick={handleManual} className="btn-primary w-full mt-2 text-sm">
+                Use address
               </button>
             </div>
 
@@ -318,13 +266,10 @@ export default function Header() {
 
             <button
               type="button"
-              onClick={() => {
-                setShowWalletModal(false)
-                setConnectError('')
-              }}
-              className="btn-ghost w-full mt-2 text-sm"
+              onClick={() => { setShowWalletModal(false); setConnectError('') }}
+              className="btn-secondary w-full mt-3 text-sm"
             >
-              Annuler
+              Cancel
             </button>
           </div>
         </div>

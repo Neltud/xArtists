@@ -33,6 +33,11 @@ on:
         required: true
         default: "300"
         type: string
+      mainnet_gas_verified:
+        description: "Required for chain=1 only — confirm gas has been verified"
+        required: true
+        default: false
+        type: boolean
       commit_addresses:
         description: "Commit updated data/contracts.json back to main"
         required: true
@@ -80,6 +85,14 @@ jobs:
           esac
           echo "Chain=${LIA_CHAIN_ID} Contract=${DEPLOY_CONTRACT} FeeBps=${FEE_BPS}"
 
+      - name: Require gas verification for mainnet
+        run: |
+          if [ "${LIA_CHAIN_ID}" = "1" ] && [ "${{ github.event.inputs.mainnet_gas_verified }}" != "true" ]; then
+            echo "❌ Refusing mainnet deploy without explicit gas verification."
+            echo "Run devnet/testnet first, verify gas, then re-run with mainnet_gas_verified=true."
+            exit 1
+          fi
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -111,17 +124,18 @@ jobs:
         id: deploy
         run: |
           set -euo pipefail
-          python lia/vellum/deploy_scs_node.py | tee /tmp/deploy_out.json
-          # Fail job if ok=false
+          python lia/vellum/deploy_scs_node.py > /tmp/deploy_out.json
           python - <<'PY'
-          import json, sys
-          raw = open("/tmp/deploy_out.json").read()
-          # last JSON object in output
-          start = raw.rfind("{")
-          if start < 0:
-              print("No JSON output"); sys.exit(1)
-          data = json.loads(raw[start:])
+          import json, os, sys
+          data = json.load(open("/tmp/deploy_out.json"))
           print("Summary:", json.dumps({k: data.get(k) for k in ("ok", "results")}, indent=2)[:2000])
+          frontend_env = data.get("frontend_env") or {}
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as envf:
+              for key, value in frontend_env.items():
+                  print(f"{key}={value}", file=envf)
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as outf:
+              for key, value in frontend_env.items():
+                  print(f"{key.lower()}={value}", file=outf)
           if not data.get("ok"):
               sys.exit(1)
           PY
@@ -133,6 +147,21 @@ jobs:
             echo "=== data/contracts.json ==="
             cat data/contracts.json
           fi
+
+      - name: Post-deploy frontend handoff
+        if: always()
+        run: |
+          {
+            echo "## Frontend handoff"
+            if [ -n "${VITE_MARKETPLACE_ADDRESS:-}" ]; then
+              echo "- Marketplace env: \`VITE_MARKETPLACE_ADDRESS=${VITE_MARKETPLACE_ADDRESS}\`"
+            fi
+            if [ -n "${VITE_AGENTS_MARKETPLACE_ADDRESS:-}" ]; then
+              echo "- Agents env: \`VITE_AGENTS_MARKETPLACE_ADDRESS=${VITE_AGENTS_MARKETPLACE_ADDRESS}\`"
+            fi
+            echo "- `data/contracts.json` has been updated by the deploy helper."
+            echo "- Re-run **Deploy xArtists Exclusive** so GitHub Pages rebuilds with the latest address data."
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Commit contracts.json
         if: ${{ github.event.inputs.commit_addresses == 'true' }}

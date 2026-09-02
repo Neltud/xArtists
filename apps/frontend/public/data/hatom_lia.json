@@ -1,0 +1,21 @@
+{
+  "wallet": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "protocol": "Hatom",
+  "mode": "supply_only",
+  "borrow": false,
+  "positions": {
+    "collateral_usd": null,
+    "borrowed_usd": 0,
+    "health_factor": null,
+    "htm_staked": null,
+    "htm_rewards_claimable": null,
+    "note": "Values must be refreshed from Hatom / MultiversX API or Vellum workflow. Dashboard should not show $0 when positions exist."
+  },
+  "display_rules": {
+    "show_borrow": false,
+    "show_collateral": true,
+    "show_htm_staking": true,
+    "claim_htm_if_usd_gt": 5
+  },
+  "updated": "2026-07-29"
+}

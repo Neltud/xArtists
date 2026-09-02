@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { fetchMirroredJson } from '../config/dataSources'
 import { getTroInfo, getEgldPrice } from '../services/priceService'
-import TreasurySplitViz from '../components/treasury/TreasurySplitViz'
-import TroBurnFeed from '../components/treasury/TroBurnFeed'
-import PageGuide from '../components/PageGuide'
 
 const TRO_ID = 'TRO-94c925'
 const EXPLORER = `https://explorer.multiversx.com/tokens/${TRO_ID}`
-/** Product hard cap — never display 1_000_000 as max */
-const MAX_SUPPLY = 500_000
 
 interface TroInfo {
   price: number
@@ -31,46 +26,58 @@ interface PoolCfg {
 interface AppConfig {
   pools?: PoolCfg[]
   commissions?: Record<string, number>
+  tro_token?: string
+  tro_name?: string
 }
 
 const BUY_LINKS = [
-  { name: 'OneDex TRO/EGLD', url: 'https://onedex.app', icon: '🟠', primary: true },
+  {
+    name: 'OneDex TRO/EGLD',
+    url: 'https://onedex.app',
+    icon: '🟠',
+    primary: true,
+  },
   {
     name: 'xExchange USDC→TRO',
     url: 'https://xexchange.com/swap/USDC-c76f1f/TRO-94c925',
     icon: '🔵',
     primary: true,
   },
+  {
+    name: 'JEXchange',
+    url: 'https://app.jexchange.io',
+    icon: '🟡',
+    primary: false,
+  },
+  {
+    name: 'AshSwap',
+    url: 'https://ashswap.io',
+    icon: '🔥',
+    primary: false,
+  },
 ]
 
 export default function TroPage() {
   const [info, setInfo] = useState<TroInfo | null>(null)
   const [egld, setEgld] = useState(0)
-  const [pools, setPools] = useState<PoolCfg[]>([])
-  const [err, setErr] = useState<string | null>(null)
+  const [cfg, setCfg] = useState<AppConfig | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
-        const [t, e] = await Promise.all([getTroInfo(), getEgldPrice()])
-        if (!cancelled) {
-          setInfo(t)
-          setEgld(e)
-        }
-      } catch (ex) {
-        if (!cancelled) setErr(ex instanceof Error ? ex.message : 'load failed')
-      }
-      try {
-        const r = await fetch(`${import.meta.env.BASE_URL}data/config.json?t=${Date.now()}`, {
-          cache: 'no-store',
-        })
-        if (r.ok) {
-          const j = (await r.json()) as AppConfig
-          if (!cancelled && j.pools) setPools(j.pools)
-        }
-      } catch {
-        /* optional */
+        const [tro, egldP, cfgRes] = await Promise.all([
+          getTroInfo(),
+          getEgldPrice(),
+          fetchMirroredJson<AppConfig>('config.json', { cache: 'no-store' }).catch(() => null),
+        ])
+        if (cancelled) return
+        setInfo(tro)
+        setEgld(egldP)
+        setCfg(cfgRes)
+      } finally {
+        if (!cancelled) setLoading(false)
       }
     })()
     return () => {
@@ -78,116 +85,156 @@ export default function TroPage() {
     }
   }, [])
 
+  const pool = cfg?.pools?.[0]
   const priceEgld = info && egld > 0 && info.price > 0 ? info.price / egld : 0
-  const circ = info?.circulatingSupply ?? 0
-  const supplyPct = MAX_SUPPLY > 0 ? Math.min(100, (circ / MAX_SUPPLY) * 100) : 0
 
   return (
     <div className="animate-fade-in">
-      <PageGuide page="tro" />
-
-      <div className="mb-6 grid md:grid-cols-2 gap-4">
-        <TreasurySplitViz />
-        <TroBurnFeed />
-      </div>
-
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black">
             <span className="gradient-text">$TRO</span>{' '}
-            <span className="text-lg font-semibold text-gray-400">xArtists utility</span>
+            <span className="text-lg font-semibold text-gray-400">TUDURIORIGINAL</span>
           </h1>
-          <p className="text-gray-500 mt-1 mono text-sm">
-            {TRO_ID} · Supply max{' '}
-            <strong className="text-white">{MAX_SUPPLY.toLocaleString('fr-FR')}</strong> (hard cap produit)
-          </p>
+          <p className="text-gray-500 mt-1 mono text-sm">{TRO_ID} · MultiversX Mainnet</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {BUY_LINKS.filter(l => l.primary).map(l => (
+          {BUY_LINKS.filter((l) => l.primary).map((l) => (
             <a key={l.url} href={l.url} target="_blank" rel="noreferrer" className="btn-primary text-sm">
-              {l.icon} Buy $TRO
+              {l.icon} Buy $TRO — {l.name.split(' ')[0]}
             </a>
           ))}
           <a href={EXPLORER} target="_blank" rel="noreferrer" className="btn-secondary text-sm">
             Explorer ↗
           </a>
-          <Link to="/dao" className="btn-secondary text-sm">
-            DAO
-          </Link>
         </div>
       </div>
 
-      {err && <p className="text-amber-400 text-sm mb-4">{err}</p>}
+      {loading ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="card h-24 animate-pulse bg-[#16161f]" />
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="card">
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Prix USD</p>
+              <p className="text-2xl font-black text-purple-400">
+                ${info?.price ? info.price.toFixed(8) : '—'}
+              </p>
+              {priceEgld > 0 && (
+                <p className="text-xs text-gray-500 mt-1 mono">{priceEgld.toFixed(8)} EGLD</p>
+              )}
+            </div>
+            <div className="card">
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Market Cap</p>
+              <p className="text-2xl font-black">
+                ${info?.marketCap ? info.marketCap.toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—'}
+              </p>
+            </div>
+            <div className="card">
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Supply circ.</p>
+              <p className="text-2xl font-black">
+                {info?.circulatingSupply
+                  ? info.circulatingSupply.toLocaleString('fr-FR', { maximumFractionDigits: 0 })
+                  : '—'}
+              </p>
+            </div>
+            <div className="card">
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Holders</p>
+              <p className="text-2xl font-black">{info?.holders ?? '—'}</p>
+              <p className="text-xs text-gray-500 mt-1">{info?.transactions ?? 0} txs</p>
+            </div>
+          </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <div className="card">
-          <p className="text-xs text-gray-500">Price USD</p>
-          <p className="text-xl font-bold">{info ? `$${info.price.toFixed(6)}` : '—'}</p>
-        </div>
-        <div className="card">
-          <p className="text-xs text-gray-500">Price EGLD</p>
-          <p className="text-xl font-bold">{priceEgld ? priceEgld.toFixed(8) : '—'}</p>
-        </div>
-        <div className="card">
-          <p className="text-xs text-gray-500">Market cap</p>
-          <p className="text-xl font-bold">{info ? `$${info.marketCap.toFixed(0)}` : '—'}</p>
-        </div>
-        <div className="card">
-          <p className="text-xs text-gray-500">Holders</p>
-          <p className="text-xl font-bold">{info ? info.holders.toLocaleString() : '—'}</p>
-        </div>
-      </div>
+          {/* Buy panel */}
+          <div className="card mb-6 border-purple-500/30 bg-purple-500/5">
+            <h2 className="text-lg font-bold mb-2">🛒 Acheter $TRO</h2>
+            <p className="text-sm text-gray-400 mb-4">
+              Swap via DEX MultiversX. Paiement possible en EGLD, USDC, WEGLD selon la pool.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {BUY_LINKS.map((l) => (
+                <a
+                  key={l.url}
+                  href={l.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={l.primary ? 'btn-primary text-center text-sm' : 'btn-secondary text-center text-sm'}
+                >
+                  {l.icon} {l.name}
+                </a>
+              ))}
+            </div>
+          </div>
 
-      <div className="card mb-6">
-        <div className="flex justify-between text-[10px] text-gray-500 mb-1">
-          <span>Circulating vs cap 500 000</span>
-          <span>{supplyPct.toFixed(1)}%</span>
-        </div>
-        <div className="h-2 rounded-full bg-[#0a0a0f] overflow-hidden">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-500"
-            style={{ width: `${supplyPct}%` }}
-          />
-        </div>
-        <p className="text-[10px] text-zinc-600 mt-2">
-          Circulating on-chain (API) · cap = règle produit xArtists, pas un supply affiché à 1M.
-        </p>
-      </div>
-
-      <p className="text-xs text-gray-500 mb-4">
-        $TRO = token utilitaire (rewards, DAO, RWA claim 1 TRO max physique) —{' '}
-        <strong className="text-gray-400">pas une share de fonds</strong>. Tips ≠ investissement.{' '}
-        <Link to="/dao" className="text-purple-300 underline">
-          DAO / policy
-        </Link>
-        {' · '}
-        <Link to="/tip" className="text-purple-300 underline">
-          Tip
-        </Link>
-      </p>
-
-      {pools.length > 0 && (
-        <div className="card mb-6">
-          <h2 className="text-sm font-bold mb-2">Pools (config)</h2>
-          <ul className="text-xs space-y-1">
-            {pools.map(p => (
-              <li key={p.address} className="flex flex-wrap gap-2">
-                <span>{p.dex}</span>
-                <span className="text-gray-500">{p.pair}</span>
-                {p.swap_url && (
-                  <a
-                    href={p.swap_url}
-                    className="text-purple-300 underline"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    swap
+          {/* Pool */}
+          {pool && (
+            <div className="card mb-6">
+              <h2 className="text-lg font-bold mb-4">💧 Liquidity Pool — {pool.pair}</h2>
+              <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-xs text-gray-500 uppercase mb-1">DEX</p>
+                  <p className="font-semibold">{pool.dex}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase mb-1">Adresse pool</p>
+                  <p className="mono text-xs break-all text-gray-300">{pool.address}</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-4">
+                {pool.dexscreener && (
+                  <a href={pool.dexscreener} target="_blank" rel="noreferrer" className="btn-secondary text-xs">
+                    DexScreener ↗
                   </a>
                 )}
+                {pool.swap_url && (
+                  <a href={pool.swap_url} target="_blank" rel="noreferrer" className="btn-primary text-xs">
+                    Swap / Add LP ↗
+                  </a>
+                )}
+                <a
+                  href={`https://explorer.multiversx.com/accounts/${pool.address}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary text-xs"
+                >
+                  Explorer pool ↗
+                </a>
+              </div>
+            </div>
+          )}
+
+          {/* Tokenomics / burn design */}
+          <div className="card mb-6">
+            <h2 className="text-lg font-bold mb-4">🔥 Tokenomics marketplace (design)</h2>
+            <ul className="space-y-2 text-sm text-gray-400">
+              <li>
+                <span className="text-white font-medium">Burn $TRO à la vente NFT</span> — prévu on-chain à chaque{' '}
+                <code className="text-purple-300">buyNft</code> (pas encore déployé sur le SC marketplace actuel).
               </li>
-            ))}
-          </ul>
-        </div>
+              <li>
+                <span className="text-white font-medium">Escrow phygital</span> — si le NFT est locké en escrow, list/buy{' '}
+                <span className="text-orange-400">bloqué</span> jusqu’à unlock.
+              </li>
+              <li>
+                <span className="text-white font-medium">Multi-currency</span> — cible : EGLD, USDC, WEGLD, $TRO (UI achete via DEX en attendant).
+              </li>
+              {cfg?.commissions && (
+                <li className="pt-2 border-t border-[#2a2a3a]">
+                  Fees config (doc) : seller {cfg.commissions.marketplace_seller_fee_pct}% · buyer{' '}
+                  {cfg.commissions.marketplace_buyer_fee_pct}% · royalty secondaire{' '}
+                  {cfg.commissions.secondary_royalty_pct}% · escrow RWA {cfg.commissions.rwa_escrow_fee_pct}%
+                </li>
+              )}
+            </ul>
+            <p className="text-xs text-gray-600 mt-3">
+              Détail des lacunes : <span className="mono">docs/LACUNES_PRODUIT.md</span>
+            </p>
+          </div>
+        </>
       )}
     </div>
   )

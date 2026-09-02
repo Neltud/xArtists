@@ -1,8 +1,5 @@
 import { useWalletTokens } from '../hooks/useWalletTokens'
 import { useMultiversX } from '../hooks/useMultiversX'
-import LiaVsUserBanner from '../components/LiaVsUserBanner'
-import PageGuide from '../components/PageGuide'
-import { Link } from 'react-router-dom'
 
 const HATOM_DAPP = 'https://app.hatom.com'
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
@@ -26,8 +23,8 @@ export default function HatomPage() {
     ? (hatomPosition?.healthFactor ?? 999)
     : (liaStatus?.portfolio?.hatom_health_factor ?? 999)
   const supplied = hatomPosition?.totalSuppliedUsd ?? 0
-  const borrowed = hatomPosition?.totalBorrowedUsd ?? 0
-  const net = supplied - borrowed
+  const borrowed = 0
+  const net = supplied
   const claimHtm = hatomPosition?.claimableHtm ?? 0
   const claimUsd = hatomPosition?.claimableHtmUsd ?? 0
   const markets = hatomPosition?.markets ?? []
@@ -37,22 +34,13 @@ export default function HatomPage() {
 
   return (
     <div className="animate-fade-in">
-      <PageGuide page="hatom" />
-      <LiaVsUserBanner tone="protocol" />
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black">🏦 Hatom Protocol</h1>
-          <p className="text-gray-500 mt-1">
-            Positions <strong className="text-purple-300">LIA protocole</strong> — lending MultiversX ·{' '}
-            <Link to="/wallet" className="text-green-300 underline">
-              Mon wallet →
-            </Link>
-          </p>
+          <p className="text-gray-500 mt-1">Collateral & dette LIA — lending MultiversX</p>
         </div>
         <div className="flex gap-2">
-          <button type="button" onClick={refresh} className="btn-secondary text-sm">
-            🔄 Actualiser
-          </button>
+          <button onClick={refresh} className="btn-secondary text-sm">🔄 Actualiser</button>
           <a href={HATOM_DAPP} target="_blank" rel="noreferrer" className="btn-primary text-sm">
             🏦 Ouvrir Hatom
           </a>
@@ -94,10 +82,8 @@ export default function HatomPage() {
             </div>
             <div className="card">
               <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Borrowed (USD)</p>
-              <p className={`text-2xl font-black ${borrowed > 0 ? 'text-orange-400' : 'text-gray-500'}`}>
-                {fromApi ? `$${borrowed.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}` : 'N/A'}
-              </p>
-              {!fromApi && <p className="text-xs text-gray-500 mt-1">Nécessite API Hatom</p>}
+              <p className="text-2xl font-black text-gray-500">$0.00</p>
+              <p className="text-xs text-gray-500 mt-1">Borrowing non affiché sur xArtists</p>
             </div>
             <div className="card">
               <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Net Position</p>
@@ -133,9 +119,7 @@ export default function HatomPage() {
                     <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
                       <th className="text-left py-2 px-3">Actif</th>
                       <th className="text-right py-2 px-3">Supplied</th>
-                      <th className="text-right py-2 px-3">Borrowed</th>
                       <th className="text-right py-2 px-3">Supplied USD</th>
-                      <th className="text-right py-2 px-3">Borrowed USD</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -144,26 +128,14 @@ export default function HatomPage() {
                         <td className="py-3 px-3">
                           <p className="font-semibold text-sm">{m.label}</p>
                           {m.identifier && (
-                            <p className="text-xs mono text-gray-500">
-                              {m.identifier.slice(0, IDENTIFIER_PREVIEW_LENGTH)}...
-                            </p>
+                            <p className="text-xs mono text-gray-500">{m.identifier.slice(0, IDENTIFIER_PREVIEW_LENGTH)}...</p>
                           )}
                         </td>
                         <td className="py-3 px-3 text-right mono text-sm text-green-400">
-                          {m.supplied > 0
-                            ? m.supplied.toLocaleString('fr-FR', { maximumFractionDigits: 4 })
-                            : '—'}
-                        </td>
-                        <td className="py-3 px-3 text-right mono text-sm text-orange-400">
-                          {m.borrowed > 0
-                            ? m.borrowed.toLocaleString('fr-FR', { maximumFractionDigits: 4 })
-                            : '—'}
+                          {m.supplied > 0 ? m.supplied.toLocaleString('fr-FR', { maximumFractionDigits: 4 }) : '—'}
                         </td>
                         <td className="py-3 px-3 text-right font-bold text-sm">
-                          ${m.valueSuppliedUsd.toFixed(2)}
-                        </td>
-                        <td className="py-3 px-3 text-right font-bold text-sm text-orange-400">
-                          {m.valueBorrowedUsd > 0 ? `$${m.valueBorrowedUsd.toFixed(2)}` : '—'}
+                         ${m.valueSuppliedUsd.toFixed(2)}
                         </td>
                       </tr>
                     ))}
@@ -177,7 +149,7 @@ export default function HatomPage() {
             <div className="card mb-6">
               <h2 className="text-lg font-bold mb-4">🪙 H-Tokens (collateral proxy)</h2>
               <p className="text-xs text-gray-500 mb-3">
-                Collateral déposé. Valeurs USD via API MultiversX (peuvent différer du dashboard Hatom).
+                Représentent le collateral déposé. Valeurs USD via prix MultiversX API (peuvent différer du dashboard Hatom).
               </p>
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -208,9 +180,7 @@ export default function HatomPage() {
                   </tbody>
                   <tfoot>
                     <tr className="border-t border-[#2a2a3a]">
-                      <td colSpan={3} className="py-3 px-3 text-sm text-gray-400 font-semibold">
-                        Total H-tokens
-                      </td>
+                      <td colSpan={3} className="py-3 px-3 text-sm text-gray-400 font-semibold">Total H-tokens</td>
                       <td className="py-3 px-3 text-right font-black text-green-400">
                         ${hatomTokens.reduce((s, t) => s + t.valueUsd, 0).toFixed(2)}
                       </td>
@@ -252,21 +222,11 @@ export default function HatomPage() {
                 { href: `${HATOM_DAPP}/dashboard`, label: 'Mon Dashboard Hatom', icon: '📊' },
                 { href: `${HATOM_DAPP}/market/EGLD`, label: 'Marché EGLD', icon: '💎' },
                 { href: `${HATOM_DAPP}/market/USDC`, label: 'Marché USDC', icon: '💵' },
-                {
-                  href: `https://explorer.multiversx.com/accounts/${WALLET}`,
-                  label: 'Explorer LIA Ops',
-                  icon: '🔗',
-                },
+                { href: `https://explorer.multiversx.com/accounts/${WALLET}`, label: 'Explorer Wallet', icon: '🔗' },
                 { href: 'https://docs.hatom.com', label: 'Documentation', icon: '📚' },
                 { href: `${HATOM_DAPP}/market`, label: 'Tous les marchés', icon: '🏪' },
               ].map(l => (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-secondary text-sm text-center"
-                >
+                <a key={l.href} href={l.href} target="_blank" rel="noreferrer" className="btn-secondary text-sm text-center">
                   {l.icon} {l.label}
                 </a>
               ))}

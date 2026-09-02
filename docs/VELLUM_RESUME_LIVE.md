@@ -6,14 +6,14 @@
 
 ```
 Timer (1–2h)
-  → Fetch signal LIA (brains / orchestrator)
+  → OrchestratorRouter / symbiosis
   → Python: lia.vellum.live_cycle.run_cycle(
         decision=..., confidence=..., size_usd=...,
         token="TRO-94c925", atr=...
     )
-  → Si closes: Executor close position
-  → Si TRO balance > min: redistribute_tro (40% LP / 30% stake / 20% rewards / 10% burn)
-  → Push data/lia_trades.json + data/lia_trailing_state.json → GitHub (reporter existant)
+  → Optionnel si trade / compound: lia.circuit.vellum_cycle.run_cycle(...)
+  → publish: lia.vellum.publish_data_for_frontend.publish()
+  → git push data/* + docs/data/* + apps/frontend/public/data/*
 ```
 
 ## Node one-liner
@@ -47,4 +47,4 @@ print(run_cycle(
 
 ## Après chaque run Vellum
 
-Commit/push des JSON `data/*` pour que le **dashboard GitHub Pages** se mette à jour.
+Commit/push des JSON `data/*` puis miroir `docs/data/*` et `apps/frontend/public/data/*` pour que le **dashboard GitHub Pages** se mette à jour.

@@ -1,33 +1,95 @@
 {
-  "version": "6.2",
-  "updated": "2026-08-30T11:05:52Z",
-  "timestamp": "2026-08-30T11:05:52Z",
-  "status": "paper_run",
-  "LIA_LIVE_TRADING": 0,
-  "market": { "guard_status": "OK" },
-  "portfolio": { "total_usd": 0 },
-  "sc": {
-    "marketplace_codeHash": null,
-    "agents_marketplace": null,
-    "note": "Marketplace/agents codeHash null — fail closed for list/buy"
+  "version": "LIA v6",
+  "status": "PRODUCTION_MAINNET",
+  "timestamp": "2026-08-01T13:08:31Z",
+  "serialization": "OK",
+  "network": "mainnet",
+  "chain_id": "1",
+  "wallet": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "machine_contract": "data/VELLUM_MACHINE_CONTRACT.json",
+  "nodes_active": 62,
+  "architecture": {
+    "trigger": "cron hourly",
+    "pipeline": "DataHub \u2192 Brains+GS \u2192 OrchestratorRouter \u2192 LiveCycle \u2192 CompoundCircuit \u2192 Executor \u2192 RedistributeTRO \u2192 Reporter",
+    "entry_live": "lia.vellum.live_cycle.run_cycle",
+    "entry_compound": "lia.circuit.vellum_cycle.run_cycle",
+    "publish": "lia.vellum.publish_data_for_frontend.publish",
+    "guard": "BalanceGuard (OK/WARNING/BLOCKED)",
+    "router": "OrchestratorRouter / symbiosis"
   },
-  "orchestrator": {
-    "chain_id": "1",
-    "live_trading": false,
-    "tp_mode": "log",
-    "agent_action": "WAIT",
-    "guardian": {
-      "allow": true,
-      "reason": "paper_ok",
-      "max_notional": 150.0,
-      "spiral_score": 0.05,
-      "effective_leverage": 0.8
+  "dapp": {
+    "url": "https://neltud.github.io/xArtists",
+    "pages": [
+      "dashboard",
+      "marketplace",
+      "trading",
+      "portfolio",
+      "dao",
+      "tip",
+      "wallet",
+      "agents",
+      "lp",
+      "hatom",
+      "tro"
+    ],
+    "data_source": "raw.githubusercontent.com/Neltud/xArtists/main/data/",
+    "pwa": true
+  },
+  "deploy": {
+    "frontend_build": "local build verified",
+    "deploy_xartists_exclusive": "cache path fixed for missing frontend package-lock",
+    "pages_build_deployment": "latest main run green",
+    "base_path": "/xArtists/"
+  },
+  "xartists": {
+    "collections": 11,
+    "contracts": {
+      "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
+      "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
+      "marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+      "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn",
+      "agents_marketplace": null
     }
   },
-  "modules": {
-    "trading_stack": true,
-    "slippage": true,
-    "bridge_latency": true,
-    "secure_tp": true
+  "agents_marketplace": {
+    "contract_endpoints": [
+      "listAgentAction",
+      "buyAgentAction",
+      "cancelListing",
+      "getListing"
+    ],
+    "frontend_route": "/agents",
+    "warp_templates": [
+      "data/warps/buy-agent-action.json",
+      "data/warps/list-agent-action.json",
+      "data/warps/get-listing.json"
+    ],
+    "deploy_path": "lia/vellum/deploy_scs_node.py or .github/workflows/deploy-scs.yml",
+    "build_status": "workspace root trimmed to buildable crates; isolated mxpy build ready",
+    "address_source": "VITE_AGENTS_MARKETPLACE_ADDRESS or data/contracts.json",
+    "frontend_rebuild": "run Deploy xArtists Exclusive after updating env/contracts"
+  },
+  "market": {
+    "fear_greed_index": 50,
+    "guard_status": "OK"
+  },
+  "portfolio": {
+    "total_usd": 0,
+    "egld_balance": 0,
+    "hatom_health_factor": 0
+  },
+  "prices": {
+    "egld_usd": 0,
+    "wbtc_usd": 0
+  },
+  "executor": {
+    "pem_secret": "Vellum only (LIA_WALLET_PEM or LIA_WALLET_PEM_PATH)",
+    "live_signing": "bootstrap ready",
+    "confirmation_poll": "adaptive ms (LIA_CONFIRM_POLL_MS_BASE=400 / LIA_CONFIRM_POLL_MS_PRE=1500 / LIA_CONFIRM_MAX_WAIT_S=45 / LIA_SUPERNOVA_MODE=auto|on|off / health() exposes poll_ms_effective)",
+    "circuit_breaker": "enabled"
+  },
+  "cycle": {
+    "report_sent": false,
+    "summary": "Awaiting Vellum Reporter after LiveCycle + publish_data_for_frontend; frontend now consumes mirrored TRO/Hatom data fallbacks"
   }
 }

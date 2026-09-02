@@ -1,8 +1,8 @@
 name: Deploy xArtists Exclusive
 
-# Manual only — auto-push uses "🚀 Deploy xArtists dApp to GitHub Pages"
-# (same concurrency group `pages` was cancelling the working SPA pipeline).
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages-exclusive-manual
+  group: pages
   cancel-in-progress: true
 
 jobs:
@@ -29,28 +29,31 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          # no npm cache: apps/frontend has no package-lock.json
 
       - name: Install & build frontend
         working-directory: apps/frontend
         run: |
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
-          npm run build || npx vite build
+          mkdir -p public/data
+          cp -f ../../data/*.json public/data/
+          npm run build
 
       - name: Publish dist → docs
         run: |
           mkdir -p docs
+          mkdir -p docs/data
+          # Keep legal/docs markdown; replace web assets with React build
           rm -f docs/index.html
           rm -rf docs/assets docs/icons 2>/dev/null || true
           if [ -d apps/frontend/dist ]; then
             cp -r apps/frontend/dist/* docs/
+            cp -f data/*.json docs/data/
             echo "Deployed React dist to docs/"
           else
             echo "ERROR: apps/frontend/dist missing"
             exit 1
           fi
           touch docs/.nojekyll
-          cp -f docs/index.html docs/404.html
           echo "force-$(date -u +%Y%m%d%H%M%S)" > docs/DEPLOY_STAMP.txt
           ls -la docs/ | head -30
 

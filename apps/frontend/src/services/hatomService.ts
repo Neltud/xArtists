@@ -3,8 +3,22 @@
  * Uses MultiversX account tokens; HTM identified by ticker.
  */
 
+import { fetchMirroredJson } from '../config/dataSources'
+
 const LIA = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6';
 const API = 'https://api.multiversx.com';
+
+interface HatomMirrorData {
+  wallet?: string
+  positions?: {
+    collateral_usd?: number | null
+    borrowed_usd?: number
+    health_factor?: number | null
+    htm_rewards_claimable?: number | null
+    note?: string
+  }
+  updated?: string
+}
 
 export interface HatomSnapshot {
   wallet: string;
@@ -20,6 +34,42 @@ export interface HatomSnapshot {
   borrowed_usd: number;
   note: string;
   updated: string;
+}
+
+async function fetchMirroredSnapshot(updated: string): Promise<HatomSnapshot | null> {
+  try {
+    const mirror = await fetchMirroredJson<HatomMirrorData>('hatom_lia.json', {
+      cache: 'no-store',
+      bustCache: true,
+    })
+    const collateralUsd = Number(mirror.positions?.collateral_usd ?? 0)
+    const borrowedUsd = Number(mirror.positions?.borrowed_usd ?? 0)
+    const claimableHtm = Number(mirror.positions?.htm_rewards_claimable ?? 0)
+
+    if (collateralUsd <= 0 && borrowedUsd <= 0 && claimableHtm <= 0 && !mirror.positions?.note) {
+      return null
+    }
+
+    return {
+      wallet: mirror.wallet || LIA,
+      collateral_tokens: collateralUsd > 0
+        ? [{
+            identifier: 'hatom-mirror',
+            name: 'Hatom mirror snapshot',
+            balance: 0,
+            value_usd: collateralUsd,
+          }]
+        : [],
+      collateral_usd: collateralUsd,
+      htm_balance: 0,
+      htm_value_usd: 0,
+      borrowed_usd: borrowedUsd,
+      note: mirror.positions?.note || 'Mirrored Hatom snapshot from Vellum',
+      updated: mirror.updated || updated,
+    }
+  } catch {
+    return null
+  }
 }
 
 export async function fetchLiaHatomSnapshot(): Promise<HatomSnapshot> {
@@ -75,6 +125,10 @@ export async function fetchLiaHatomSnapshot(): Promise<HatomSnapshot> {
       updated,
     };
   } catch (e) {
+    const mirrored = await fetchMirroredSnapshot(updated)
+    if (mirrored) {
+      return mirrored
+    }
     return {
       wallet: LIA,
       collateral_tokens: [],

@@ -3,6 +3,7 @@ import type { NFT } from '../types/nft'
 import {
   nftImageUrl,
   nftRoyalties,
+  truncateAddr,
   typeLabel,
   nonceLabel,
   EXPLORER_NFT,
@@ -10,83 +11,19 @@ import {
 } from '../types/nft'
 import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
 import { useWeb3 } from '../hooks/useWeb3'
-import { LINKS } from '../config/links'
-import TxCapabilityBanner from './TxCapabilityBanner'
-import UserWalletGuard from './UserWalletGuard'
-import { canListBuyNft, isLiaOpsWallet, NFT_MARKET_FEE_BPS } from '../config/scStatus'
-import { signBlockReason } from '../lib/txCapability'
-import { resolveListingIdForNft } from '../lib/resolveListingId'
 
 interface Props {
   nft: NFT | null
   onClose: () => void
-  initialAction?: 'buy' | 'sell' | 'offer' | 'bid' | null
-  initialListingId?: number | null
 }
 
-function feeSplit(price: number, feeBps: number) {
-  const fee = (price * feeBps) / 10_000
-  return { fee, toSeller: price - fee, feeBps }
-}
-
-export default function NFTDetailModal({
-  nft,
-  onClose,
-  initialAction = null,
-  initialListingId = null,
-}: Props) {
-  const { isLoggedIn, address, method } = useWeb3()
-  const {
-    listNft,
-    buyNft,
-    placeBid,
-    acceptBid,
-    withdrawBid,
-    cancelListing,
-    pending,
-    error,
-    lastTx,
-    marketplaceAddress,
-  } = useMarketplaceTx()
+export default function NFTDetailModal({ nft, onClose }: Props) {
+  const { isLoggedIn } = useWeb3()
+  const { listNft, buyNft, pending, error, lastTx, marketplaceAddress } = useMarketplaceTx()
   const [listPrice, setListPrice] = useState('1')
   const [buyPrice, setBuyPrice] = useState('1')
-  const [bidPrice, setBidPrice] = useState('0.5')
   const [listingId, setListingId] = useState('1')
-  const [indexHint, setIndexHint] = useState<string | null>(null)
   const [txMsg, setTxMsg] = useState<string | null>(null)
-  const [tab, setTab] = useState<'buy' | 'sell' | 'offer' | 'bid' | 'manage'>(
-    initialAction === 'offer' ? 'offer' : initialAction || 'buy'
-  )
-
-  useEffect(() => {
-    if (initialAction) setTab(initialAction === 'offer' ? 'offer' : initialAction)
-  }, [initialAction, nft?.identifier])
-
-  useEffect(() => {
-    if (initialListingId != null && initialListingId >= 0) {
-      setListingId(String(initialListingId))
-      setIndexHint('from activity / parent')
-    }
-  }, [initialListingId, nft?.identifier])
-
-  // Auto-resolve listing id from published index (token + nonce)
-  useEffect(() => {
-    if (!nft) return
-    let cancelled = false
-    ;(async () => {
-      const hit = await resolveListingIdForNft(nft.collection, nft.nonce)
-      if (cancelled || !hit) return
-      setListingId(String(hit.listingId))
-      if (hit.priceEgld) {
-        setBuyPrice(hit.priceEgld)
-        setListPrice(hit.priceEgld)
-      }
-      setIndexHint(`index id=${hit.listingId}`)
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [nft?.identifier, nft?.collection, nft?.nonce])
 
   useEffect(() => {
     if (!nft) return
@@ -94,11 +31,11 @@ export default function NFTDetailModal({
       if (e.key === 'Escape') onClose()
     }
     document.addEventListener('keydown', onKey)
-    const prev = document.body.style.overflow
+    const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
       document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = prev
+      document.body.style.overflow = prevOverflow
     }
   }, [nft, onClose])
 
@@ -106,274 +43,246 @@ export default function NFTDetailModal({
 
   const img = nftImageUrl(nft)
   const royalties = nftRoyalties(nft)
-  const id = parseInt(listingId, 10)
-  const live = canListBuyNft()
-  const signBlock = signBlockReason(method)
-  const priceN = parseFloat(buyPrice) || 0
-  const split = feeSplit(priceN, NFT_MARKET_FEE_BPS)
-  const royaltyBps = royalties != null ? royalties * 100 : 500
-  const royaltyPlusFee = royaltyBps + NFT_MARKET_FEE_BPS
+  const isSFT = typeLabel(nft.type) === 'SFT'
+  const marketplaceReady = marketplaceAddress.startsWith('erd1')
+  const contractPendingTooltip = 'Contrat en déploiement — achat et mise en vente bientôt disponibles.'
 
-  const guard = (fn: () => Promise<unknown>) => async () => {
+  const onList = async () => {
     setTxMsg(null)
-    if (!live) {
-      setTxMsg('Marketplace SC non live (codeHash) — List/Buy/Bid désactivés')
+    if (!isLoggedIn) {
+      setTxMsg('Connecte ton wallet (xPortal / extension) pour lister.')
       return
     }
-    if (!isLoggedIn || !address) {
-      setTxMsg('Connecte ton wallet utilisateur (pas LIA ops)')
-      return
-    }
-    if (isLiaOpsWallet(address)) {
-      setTxMsg('Wallet protocole LIA interdit pour List/Buy — utilise ton wallet')
-      return
-    }
-    if (signBlock) {
-      setTxMsg(signBlock)
+    const price = parseFloat(listPrice)
+    if (!(price > 0)) {
+      setTxMsg('Prix EGLD invalide')
       return
     }
     try {
-      await fn()
-      setTxMsg('TX soumise — confirme dans le wallet si demandé')
+      await listNft({ tokenId: nft.collection, nonce: nft.nonce, priceEgld: price })
+      setTxMsg('Listing soumis — confirme dans le wallet.')
     } catch (e: unknown) {
-      setTxMsg(e instanceof Error ? e.message : 'Erreur')
+      setTxMsg(e instanceof Error ? e.message : 'Erreur listing')
     }
   }
 
-  const txDisabled = pending || !live || !!signBlock
+  const onBuy = async () => {
+    setTxMsg(null)
+    if (!isLoggedIn) {
+      setTxMsg('Connecte ton wallet pour acheter.')
+      return
+    }
+    const price = parseFloat(buyPrice)
+    const id = parseInt(listingId, 10)
+    if (!(price > 0) || !(id >= 0)) {
+      setTxMsg('Listing ID / prix invalides')
+      return
+    }
+    try {
+      await buyNft({ listingId: id, priceEgld: price })
+      setTxMsg('Achat soumis — confirme dans le wallet.')
+    } catch (e: unknown) {
+      setTxMsg(e instanceof Error ? e.message : 'Erreur achat')
+    }
+  }
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 animate-fade-in"
       role="dialog"
+      aria-modal="true"
+      aria-label={`NFT detail: ${nft.name}`}
     >
       <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl border border-[#2a2a3a] bg-[#12121a]/95">
+
+      <div className="relative z-10 w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl border border-[#2a2a3a] bg-[#12121a]/95 backdrop-blur-xl shadow-2xl shadow-purple-900/30">
         <button
-          type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 h-9 w-9 rounded-full border border-[#2a2a3a]"
+          aria-label="Close"
+          className="absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-[#2a2a3a] bg-[#15151f]/80 text-gray-300 hover:border-purple-500 hover:text-white transition-all duration-300"
         >
-          ✕
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
         </button>
-        <div className="grid md:grid-cols-2">
-          <div className="aspect-square bg-[#0a0a0f]">
+
+        <div className="grid md:grid-cols-2 gap-0">
+          <div className="relative aspect-square md:aspect-auto md:h-full bg-gradient-to-br from-[#15151f] to-[#0a0a0f] overflow-hidden md:rounded-l-3xl">
             {img ? (
-              <img src={img} alt={nft.name} className="h-full w-full object-cover" />
+              <img
+                src={img}
+                alt={`NFT artwork: ${nft.name} from the ${nft.collection_name} collection`}
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
             ) : (
-              <div className="flex h-full items-center justify-center text-6xl">🎨</div>
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-purple-600/30 via-indigo-600/20 to-fuchsia-500/30">
+                <span className="text-6xl opacity-60">🎨</span>
+              </div>
             )}
+            <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/5 md:rounded-l-3xl" />
           </div>
-          <div className="flex flex-col gap-3 p-6">
-            <h2 className="text-2xl font-black">{nft.name || 'Untitled'}</h2>
-            <p className="mono text-xs text-gray-500">{nft.identifier}</p>
-            <p className="text-xs text-gray-400">
-              {nft.collection_name} · {nonceLabel(nft)} · royalties {royalties ?? '—'}% ·{' '}
-              {typeLabel(nft.type)}
-            </p>
-            <TxCapabilityBanner />
-            {!live && (
-              <p className="text-[10px] text-red-300/90">
-                SC marketplace non live (codeHash null) — TX on-chain bloquées jusqu’au deploy +
-                verify.
+
+          <div className="flex flex-col gap-5 p-6 sm:p-8">
+            <div>
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center rounded-full bg-purple-500/10 px-3 py-1 text-xs font-semibold text-purple-300 border border-purple-500/20">
+                  {nft.collection_name}
+                </span>
+                <span className="inline-flex items-center rounded-full bg-white/5 px-3 py-1 text-xs font-medium text-gray-300 border border-[#2a2a3a]">
+                  {isSFT ? 'SFT' : 'NFT'}
+                </span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black leading-tight tracking-tight">
+                {nft.name || 'Untitled'}
+              </h2>
+              <p className="mono mt-1 text-xs text-gray-500">{nft.identifier}</p>
+            </div>
+
+            {nft.metadata?.description && (
+              <p className="text-sm leading-relaxed text-gray-400 line-clamp-4">
+                {nft.metadata.description}
               </p>
             )}
-            <UserWalletGuard address={address} action="List / Buy / Bid" />
 
-            <div className="flex flex-wrap gap-1">
-              {(['buy', 'sell', 'bid', 'manage', 'offer'] as const).map(t => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setTab(t)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize ${
-                    tab === t
-                      ? 'bg-purple-600 text-white'
-                      : t === 'offer'
-                        ? 'bg-[#15151f] border border-dashed border-gray-600 text-gray-500'
-                        : 'bg-[#15151f] border border-[#2a2a3a] text-gray-400'
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
+            <dl className="grid grid-cols-2 gap-3 text-sm">
+              <Meta label="Collection" value={nft.collection} mono />
+              <Meta label="Nonce" value={nonceLabel(nft)} />
+              <Meta label="Creator" value={truncateAddr(nft.creator)} mono />
+              <Meta label="Owner" value={truncateAddr(nft.owner) || 'Unowned'} mono />
+              <Meta label="Royalties" value={royalties !== null ? `${royalties}%` : '—'} />
+              <Meta label="Type" value={typeLabel(nft.type)} />
+            </dl>
+
+            {/* On-chain List / Buy */}
+            <div className="rounded-xl border border-purple-500/25 bg-purple-500/5 px-3 py-3 text-xs text-gray-300 space-y-3">
+              <p className="font-semibold text-purple-200">Marketplace on-chain (xArtists)</p>
+              <p className="text-[10px] text-gray-500 mono">
+                {marketplaceReady ? `SC: ${marketplaceAddress.slice(0, 16)}…` : 'SC marketplace indisponible'}
+              </p>
+
+              <div className="flex flex-wrap items-end gap-2">
+                <label className="flex flex-col gap-1">
+                  <span className="text-[10px] uppercase text-gray-500">List price (EGLD)</span>
+                  <input
+                    type="number"
+                    min="0.001"
+                    step="0.01"
+                    value={listPrice}
+                    onChange={(e) => setListPrice(e.target.value)}
+                    className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
+                  />
+                </label>
+                <span title={!marketplaceReady ? contractPendingTooltip : undefined} className="inline-flex">
+                  <button
+                    type="button"
+                    disabled={pending || !marketplaceReady}
+                    onClick={onList}
+                    className="btn-primary text-sm disabled:opacity-50"
+                  >
+                    {pending ? '…' : 'List NFT'}
+                  </button>
+                </span>
+              </div>
+
+              <div className="flex flex-wrap items-end gap-2 border-t border-[#2a2a3a] pt-3">
+                <label className="flex flex-col gap-1">
+                  <span className="text-[10px] uppercase text-gray-500">Listing ID</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={listingId}
+                    onChange={(e) => setListingId(e.target.value)}
+                    className="w-24 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
+                  />
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span className="text-[10px] uppercase text-gray-500">Pay (EGLD)</span>
+                  <input
+                    type="number"
+                    min="0.001"
+                    step="0.01"
+                    value={buyPrice}
+                    onChange={(e) => setBuyPrice(e.target.value)}
+                    className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
+                  />
+                </label>
+                <span title={!marketplaceReady ? contractPendingTooltip : undefined} className="inline-flex">
+                  <button
+                    type="button"
+                    disabled={pending || !marketplaceReady}
+                    onClick={onBuy}
+                    className="btn-secondary text-sm disabled:opacity-50"
+                  >
+                    {pending ? '…' : 'Buy NFT'}
+                  </button>
+                </span>
+              </div>
+
+              {(txMsg || error || lastTx) && (
+                <p className="text-[11px] text-amber-200/90">
+                  {txMsg || error}
+                  {lastTx ? ` · tx ${lastTx}` : ''}
+                </p>
+              )}
+              {!isLoggedIn && (
+                <p className="text-[11px] text-gray-500">Wallet requis pour List / Buy on-chain.</p>
+              )}
+              {!marketplaceReady && (
+                <p className="text-[11px] text-orange-300">Contrat en déploiement — l’achat et la mise en vente seront disponibles bientôt.</p>
+              )}
             </div>
-            <p className="text-[10px] mono text-gray-500">
-              SC {marketplaceAddress ? `${marketplaceAddress.slice(0, 18)}…` : '— (not live)'}
-            </p>
 
-            <label className="flex flex-col gap-1 text-[10px] uppercase text-gray-500">
-              Listing ID
-              <input
-                type="number"
-                min={0}
-                value={listingId}
-                onChange={e => {
-                  setListingId(e.target.value)
-                  setIndexHint('manual')
-                }}
-                className="rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
-              />
-              <span className="normal-case text-gray-600">
-                {indexHint
-                  ? `Source: ${indexHint}`
-                  : 'P1: index listings (token+nonce) ou activité SC'}
-              </span>
-            </label>
+            <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 px-3 py-2.5 text-xs text-gray-400">
+              <p className="font-semibold text-orange-300/90 mb-1">Règles marketplace</p>
+              <ul className="list-disc pl-4 space-y-0.5">
+                <li>Escrow phygital → vente bloquée jusqu’unlock</li>
+                <li>Commission : 2,5 % vendeur + 0,5 % acheteur (voir LEGAL.md)</li>
+                <li>Paiement cible : EGLD / USDC / WEGLD / $TRO</li>
+              </ul>
+            </div>
 
-            {(tab === 'buy' || tab === 'sell') && priceN > 0 && (
-              <div className="rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] px-3 py-2 text-[11px] text-gray-400 space-y-1">
-                <p>
-                  Fee market estimé {(NFT_MARKET_FEE_BPS / 100).toFixed(1)}% →{' '}
-                  <span className="text-amber-200">{split.fee.toFixed(4)} EGLD</span> · seller ≈{' '}
-                  <span className="text-teal-300">{split.toSeller.toFixed(4)} EGLD</span>
-                </p>
-                {royaltyPlusFee > 10_000 && (
-                  <p className="text-red-300">
-                    Attention: royalty+fee &gt; 100% — SC doit rejeter (cap P0).
-                  </p>
-                )}
-              </div>
-            )}
-
-            {tab === 'buy' && (
-              <div className="flex flex-wrap gap-2 items-end">
-                <input
-                  type="number"
-                  value={buyPrice}
-                  onChange={e => setBuyPrice(e.target.value)}
-                  className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm"
-                  placeholder="EGLD"
-                />
-                <button
-                  type="button"
-                  disabled={txDisabled}
-                  className="btn-primary text-sm"
-                  onClick={guard(() => buyNft({ listingId: id, priceEgld: parseFloat(buyPrice) }))}
-                >
-                  Buy
-                </button>
-              </div>
-            )}
-
-            {tab === 'sell' && (
-              <div className="flex flex-wrap gap-2 items-end">
-                <input
-                  type="number"
-                  value={listPrice}
-                  onChange={e => setListPrice(e.target.value)}
-                  className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm"
-                />
-                <button
-                  type="button"
-                  disabled={txDisabled}
-                  className="btn-primary text-sm"
-                  onClick={guard(() =>
-                    listNft({
-                      tokenId: nft.collection,
-                      nonce: nft.nonce,
-                      priceEgld: parseFloat(listPrice),
-                    })
-                  )}
-                >
-                  List / Sell
-                </button>
-              </div>
-            )}
-
-            {tab === 'bid' && (
-              <div className="flex flex-wrap gap-2 items-end">
-                <input
-                  type="number"
-                  value={bidPrice}
-                  onChange={e => setBidPrice(e.target.value)}
-                  className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm"
-                />
-                <button
-                  type="button"
-                  disabled={txDisabled}
-                  className="btn-primary text-sm"
-                  onClick={guard(() => placeBid({ listingId: id, amountEgld: parseFloat(bidPrice) }))}
-                >
-                  Place bid
-                </button>
-                <button
-                  type="button"
-                  disabled={txDisabled}
-                  className="btn-secondary text-sm"
-                  onClick={guard(() => withdrawBid(id))}
-                >
-                  Withdraw bid
-                </button>
-              </div>
-            )}
-
-            {tab === 'manage' && (
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  disabled={txDisabled}
-                  className="btn-secondary text-sm"
-                  onClick={guard(() => acceptBid(id))}
-                >
-                  Accept bid
-                </button>
-                <button
-                  type="button"
-                  disabled={txDisabled}
-                  className="btn-secondary text-sm"
-                  onClick={guard(() => cancelListing(id))}
-                >
-                  Cancel listing
-                </button>
-              </div>
-            )}
-
-            {tab === 'offer' && (
-              <div className="rounded-xl border border-dashed border-gray-600 bg-[#0a0a0f] px-3 py-3 text-xs text-gray-400 space-y-2">
-                <p>
-                  <strong className="text-gray-300">Offer</strong> n’a pas d’endpoint on-chain (V2
-                  escrow).
-                </p>
-                <p>Utilise Bid si le listing est live.</p>
-              </div>
-            )}
-
-            {(txMsg || error) && (
-              <p className={`text-xs ${error ? 'text-red-400' : 'text-green-400'}`}>{txMsg || error}</p>
-            )}
-            {lastTx && (
-              <a
-                className="text-xs text-purple-300 underline"
-                href={`${LINKS.explorer}/transactions/${lastTx}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Voir TX explorer
-              </a>
-            )}
-
-            <div className="flex gap-3 text-xs mt-2">
-              <a
-                href={EXPLORER_NFT(nft.identifier)}
-                target="_blank"
-                rel="noreferrer"
-                className="text-purple-300"
-              >
-                Explorer
-              </a>
+            <div className="mt-auto flex flex-col gap-2 pt-2">
+              <p className="text-[10px] uppercase tracking-widest text-gray-500">Marchés externes</p>
               <a
                 href={XOXNO_COLLECTION(nft.collection)}
                 target="_blank"
                 rel="noreferrer"
-                className="text-gray-400"
+                className="btn-primary text-center text-sm"
               >
-                XOXNO
+                Buy on XOXNO ↗
+              </a>
+              <a
+                href="https://xexchange.com/swap/USDC-c76f1f/TRO-94c925"
+                target="_blank"
+                rel="noreferrer"
+                className="btn-secondary text-center text-sm"
+              >
+                Get $TRO (xExchange) ↗
+              </a>
+              <a
+                href={EXPLORER_NFT(nft.identifier)}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-secondary text-center text-sm"
+              >
+                View on Explorer ↗
               </a>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+function Meta({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div className="rounded-xl border border-[#2a2a3a] bg-[#15151f] px-3 py-2.5">
+      <dt className="text-[10px] uppercase tracking-widest text-gray-500">{label}</dt>
+      <dd className={`mt-0.5 truncate text-sm font-semibold text-gray-200 ${mono ? 'mono' : ''}`}>
+        {value}
+      </dd>
     </div>
   )
 }

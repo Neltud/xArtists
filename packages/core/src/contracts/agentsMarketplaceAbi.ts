@@ -10,7 +10,7 @@ export const AGENTS_MARKETPLACE_ADDRESS =
 
 export const AGENTS_MARKETPLACE_ABI = {
   name: 'Agents Marketplace',
-  /** Empty until deploy — UI shows TBD */
+  /** Env can override; apps/frontend also hydrates from data/contracts.json after deploy */
   address: AGENTS_MARKETPLACE_ADDRESS,
   version: '0.1.0',
   endpoints: {
@@ -37,6 +37,7 @@ export const AGENTS_MARKETPLACE_ABI = {
       payable: false,
       readonly: true,
       inputs: [{ name: 'listing_id', type: 'u64' }],
+      outputs: [{ name: 'listing', type: 'Option<AgentListing>' }],
     },
     listingCount: {
       name: 'listingCount',

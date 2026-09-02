@@ -1,40 +1,32 @@
 import { NavLink } from 'react-router-dom'
 
-type NavItem = { to: string; label: string; icon: string; end?: boolean }
-
-const ITEMS: NavItem[] = [
-  { to: '/', label: 'Home', icon: '◈', end: true },
-  { to: '/agents', label: 'Packs', icon: '◎' },
-  { to: '/museum', label: 'Galerie', icon: '🖼' },
-  { to: '/tours', label: 'Tours', icon: '◉' },
-  { to: '/wallet', label: 'Wallet', icon: '◇' },
-  { to: '/marketplace', label: 'Market', icon: '▣' },
+const ITEMS = [
+  { to: '/', label: 'Home', emoji: '📊', end: true },
+  { to: '/gallery', label: 'Gallery', emoji: '🖼️' },
+  { to: '/publish', label: 'Publish', emoji: '➕' },
+  { to: '/agents', label: 'Agents', emoji: '🧠' },
+  { to: '/wallet', label: 'Wallet', emoji: '👛' },
 ]
 
 export default function BottomNav() {
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-white/[0.08] glass"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a0f]/95 backdrop-blur-xl border-t border-[#2a2a3a]"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
-      aria-label="Navigation principale"
     >
-      <div className="grid grid-cols-6 gap-0.5 px-1 pt-1.5 pb-1">
-        {ITEMS.map(({ to, label, icon, end }) => (
+      <div className="flex items-stretch justify-around h-16 max-w-lg mx-auto">
+        {ITEMS.map(({ to, label, emoji, end }) => (
           <NavLink
             key={to}
             to={to}
-            end={!!end}
+            end={end}
             className={({ isActive }) =>
-              `flex flex-col items-center gap-0.5 py-1.5 rounded-xl text-[10px] font-medium transition-all ${
-                isActive
-                  ? 'text-cyan-300 bg-violet-500/15'
-                  : 'text-zinc-500 active:bg-white/5'
+              `flex flex-col items-center justify-center flex-1 gap-0.5 text-[10px] font-medium transition-colors ${
+                isActive ? 'text-purple-400' : 'text-gray-500'
               }`
             }
           >
-            <span className="text-base leading-none" aria-hidden>
-              {icon}
-            </span>
+            <span className="text-xl leading-none">{emoji}</span>
             <span>{label}</span>
           </NavLink>
         ))}

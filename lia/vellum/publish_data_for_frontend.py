@@ -1,5 +1,11 @@
 """
 After every Vellum cycle: mirror critical JSON so the dApp sees fresh data.
+
+1. data/*.json  (source of truth, git-committed)
+2. docs/data/   (GitHub Pages static)
+3. apps/frontend/public/data/  (Vite build embeds)
+
+Call from Vellum Reporter node, then git add/commit/push (existing GitHubReporter).
 """
 from __future__ import annotations
 
@@ -9,6 +15,8 @@ import time
 from pathlib import Path
 from typing import Iterable
 
+from lia.vellum.update_warps_from_contracts import update_warps
+
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
 MIRRORS = [
@@ -16,12 +24,12 @@ MIRRORS = [
     ROOT / "apps" / "frontend" / "public" / "data",
 ]
 
+# Files the frontend actually fetches (raw or Pages)
 CRITICAL = [
     "lia_v6_status.json",
     "lia_trades.json",
     "lia_trailing_state.json",
     "lia_portfolio.json",
-    "lia_board.json",
     "hatom_lia.json",
     "battle_of_nodes.json",
     "xartists_onchain.json",
@@ -29,40 +37,12 @@ CRITICAL = [
     "config.json",
     "greensmoke_top.json",
     "greensmoke_forecasts.json",
-    "gsn_leaderboard_score.json",
+    "agents_catalog.json",
     "lia_tro_policy.json",
     "contracts.json",
-    "rwa_escrow_intents.json",
-    "vellum_last_run.json",
-    "vellum_production_run.json",
-    "egld_price.json",
-    "oracle_prices.json",
-    "oracle_config.json",
-    "ads_active.json",
-    "treasury_wallets.json",
-    "desk_last.json",
-    "tro_burn_feed.json",
-    "lia_performance.json",
-    "lia_guards_state.json",
-    "lia_decision_gates.json",
-    "pre_mainnet_modules.json",
-    "guardian_kill_log.json",
-    "bridge_outbox.json",
-    "burnify_lia_state.json",
-    "compounding_echelons.json",
-    "compounding_annual_sim.json",
-    "lia_signal_fusion.json",
-    "lia_pretrade_gate.json",
-    "signal_ticker.json",
-    "polymarket_signals.json",
-    "free_signals.json",
-    "social_intel.json",
-    "lia_intel_catalog.json",
-    "lia_brain_cycle.json",
-    "lia_last_decision_proof.json",
-    "decision_proofs_used.json",
-    "lia_paper_legs.json",
-    "risk_manager_state.json",
+]
+CRITICAL_DIRS = [
+    "warps",
 ]
 
 
@@ -75,18 +55,14 @@ def _touch_status() -> None:
     except Exception:
         return
     data["timestamp"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    data["updated"] = data["timestamp"]
-    data["status"] = data.get("status") or "monitoring"
-    data.setdefault("LIA_LIVE_TRADING", 0)
-    orch = data.setdefault("orchestrator", {})
-    g = orch.setdefault("guardian", {})
-    g.setdefault("kill_state", "ARMED" if g.get("allow", True) else "TRIPPED")
+    data["status"] = data.get("status") or "PRODUCTION_MAINNET"
     path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
 def mirror_files(names: Iterable[str] | None = None) -> dict:
     names = list(names or CRITICAL)
     _touch_status()
+    warp_sync = update_warps()
     copied: list[str] = []
     missing: list[str] = []
     for name in names:
@@ -98,16 +74,31 @@ def mirror_files(names: Iterable[str] | None = None) -> dict:
             dest_root.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dest_root / name)
         copied.append(name)
+    copied_dirs: list[str] = []
+    for dirname in CRITICAL_DIRS:
+        src_dir = DATA / dirname
+        if not src_dir.is_dir():
+            missing.append(dirname)
+            continue
+        for dest_root in MIRRORS:
+            dest_dir = dest_root / dirname
+            if dest_dir.exists():
+                shutil.rmtree(dest_dir)
+            shutil.copytree(src_dir, dest_dir)
+        copied_dirs.append(dirname)
     return {
         "ok": True,
         "copied": copied,
+        "copied_dirs": copied_dirs,
         "missing": missing,
+        "warp_sync": warp_sync,
         "mirrors": [str(m) for m in MIRRORS],
         "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
 
 
 def publish() -> dict:
+    """Alias for Vellum Reporter."""
     return mirror_files()
 
 

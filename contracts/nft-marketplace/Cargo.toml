@@ -8,6 +8,3 @@ crate-type = ["cdylib"]
 
 [dependencies]
 multiversx-sc = "0.50"
-
-[dev-dependencies]
-multiversx-sc-scenario = "0.50"

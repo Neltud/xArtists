@@ -1,105 +1,51 @@
-# xArtists
+# xArtists — AI + RWA + NFT sur MultiversX
 
-**AI trading + RWA / NFT marketplace on MultiversX mainnet**
+## Mise à Jour 1er août 2026
+**Code pleinement corrigé (v0.14.0+) + Roadmap V1 active.**  
+- Analyse dApp + Veille techno : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)  
+- **Roadmap 7 priorités** : [`docs/ROADMAP_V1.md`](docs/ROADMAP_V1.md)  
+- PWA (manifest + SW) · OpenAPI · Docker · AgentsMarketplace · E2E Playwright smoke
 
-dApp (GitHub Pages): https://neltud.github.io/xArtists/  
-Repo: https://github.com/Neltud/xArtists  
+**Live Demo** : https://neltud.github.io/xArtists
 
-**Status (2026-08-30): private / pre-mainnet release**  
-- Paper LIA by default (`LIA_LIVE_TRADING=0`)  
-- Marketplace, agents, staking, gov, minter SC: **not live** (empty / null `codeHash`) until deploy + verify  
-- UI fail-closed: no fake “live market” claims without on-chain code  
-- Reality Switch (paper vs live chrome) = **chemin**, pas un live allumé — [`docs/REALITY_SWITCH.md`](docs/REALITY_SWITCH.md)  
-- Supernova: Devnet 600 ms (J+8) · mainnet node upgrade **1 Sep (J-4)** · activation **10 Sep (J-13)**  
+## Key Features
+- AI Generative Art + Phygital NFTs (Warps / LIA agents)
+- Staking NFT & $TRO + Liquidity
+- DAO Governance (quorum 60 %)
+- Marketplace Escrow RWA + Trading Terminal
+- Wallet ESDT complet (Hatom, xExchange) + Tip EGLD/BTC
+- Bridge BTC expérimental
+- Agents GreenSmoke (6 agents prévisions) + BottomNav mobile + **PWA**
 
-Recap + veille : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)
+## Stack
+- Smart Contracts : Rust (MultiversX)
+- Frontend : React + Vite + TypeScript + Tailwind + sdk-dapp + PWA
+- Agents : LIA v5/v6 autonomes + GreenSmoke + Discord bot
+- Monorepo pnpm + CI/CD GitHub Actions + Docker + Playwright E2E
 
----
+## Docs
+- [Roadmap V1 (7 priorités)](docs/ROADMAP_V1.md)
+- [Analyse DApp complète + Veille techno (1er août 2026)](docs/ANALYSE_DAPP_COMPLETE.md)
+- [OpenAPI](docs/openapi.yaml)
+- [Documentation technique LIA](docs/TECHNICAL_DOCUMENTATION.md)
+- [Résumé Vellum live](docs/VELLUM_RESUME_LIVE.md)
+- [Audit LIA v6](LIA_V6_OPTIMIZATION_AUDIT.md)
+- [CHANGELOG](CHANGELOG.md)
 
-## What it is
+## Flux live LIA / Vellum
+- `OrchestratorRouter → lia.vellum.live_cycle.run_cycle`
+- `→ lia.circuit.vellum_cycle.run_cycle` (optionnel)
+- `→ lia.vellum.publish_data_for_frontend.publish()`
+- `→ git push data/* + docs/data/* + apps/frontend/public/data/*`
 
-| Layer | Role |
-|-------|------|
-| **Studio / Gallery** | Create & browse NFT collections |
-| **Marketplace** | List / Buy / Bid (after SC deploy + codeHash) |
-| **Agents** | Limited LIA sub-agent packs |
-| **LIA** | Autonomous agent (Guardian → Brain → paper/live) |
-| **$TRO** | Utility token — max supply product 500 000 |
-
-Not a retail investment fund. Tips ≠ investment.
-
----
-
-## Environment variables
-
-Full reference: **[`docs/ENVIRONMENT_VARIABLES.md`](docs/ENVIRONMENT_VARIABLES.md)**  
-Frontend template: [`apps/frontend/.env.example`](apps/frontend/.env.example)
-
-```bash
-# Paper ops (Python)
-export PYTHONPATH=. CHAIN=1 LIA_LIVE_TRADING=0
-
-# Front (build) — codeHash flags ONLY after verify
-# VITE_MARKETPLACE_CODEHASH_OK=1
-# VITE_AGENTS_CODEHASH_OK=1
-# Do NOT set VITE_SUPERNOVA=1 on Pages before 10 Sep 2026
-```
-
-Secrets (PEM, Pinata JWT, HMAC) stay in Vellum / ops vault — **never** in git.
-
----
-
-## Build steps (summary)
-
-Guide: [`docs/BUILD_STEPS.md`](docs/BUILD_STEPS.md) · SC: [`docs/SC_DEPLOY_COMMANDS.md`](docs/SC_DEPLOY_COMMANDS.md)
+**PEM uniquement dans Vellum / secrets runtime, jamais en git ni dans le frontend.**
 
 ```bash
-cd apps/frontend && npm ci && npm run build
-export PYTHONPATH=. CHAIN=1 LIA_LIVE_TRADING=0
-python -m lia.vellum.production_run
-./scripts/build_scs_isolated.sh all   # optional
-python -m lia.security.go_live_gates
+# Docker (frontend)
+docker compose up --build
+# → http://localhost:8080/xArtists/
 ```
 
-Push `main` → GitHub Actions → Pages.
+Contribuez ! 🎨
 
----
-
-## Deploy SC (mainnet only)
-
-```bash
-export CHAIN=1 FEE_BPS=300 LIA_LIVE_TRADING=0 PEM=/secure/mainnet.pem
-./scripts/runbook_deploy.sh dry
-./scripts/runbook_deploy.sh deploy
-./scripts/runbook_deploy.sh verify
-python scripts/verify_marketplace_codehash.py
-```
-
----
-
-## Vellum / LIA
-
-```bash
-export CHAIN=1 LIA_LIVE_TRADING=0 PYTHONPATH=.
-python -m lia.vellum.production_run
-```
-
-Map: [`docs/VELLUM_WORKFLOW_MAP.md`](docs/VELLUM_WORKFLOW_MAP.md)
-
----
-
-## Docs index
-
-| Doc | Purpose |
-|-----|--------|
-| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap dApp + veille (28 août 2026) |
-| [ENVIRONMENT_VARIABLES.md](docs/ENVIRONMENT_VARIABLES.md) | **Variables d’environnement** |
-| [BUILD_STEPS.md](docs/BUILD_STEPS.md) | Build front / LIA / SC |
-| [SC_DEPLOY_COMMANDS.md](docs/SC_DEPLOY_COMMANDS.md) | Commandes deploy SC |
-| [STATUS.md](docs/STATUS.md) | Capability matrix |
-| [VELLUM_WORKFLOW_MAP.md](docs/VELLUM_WORKFLOW_MAP.md) | Workflows Vellum |
-| [REALITY_SWITCH.md](docs/REALITY_SWITCH.md) | Paper vs live chrome (chemin, live OFF) |
-| [LIVE_EXECUTION_SPECS.md](docs/LIVE_EXECUTION_SPECS.md) | useMultiversX · AssetService · Guardian / Watcher |
-| [ROADMAP_TRUST_INFRA.md](docs/ROADMAP_TRUST_INFRA.md) | Sprint 1–3 connexion → agenticité → écosystème |
-
-No PEM, JWT, or private keys in git — ever.
+**Artiste / Creator** : Nelson Tuduri (@tudurioriginal)

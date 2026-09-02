@@ -9,6 +9,7 @@
 | gate → open_trailing → tick → close | `lia/vellum/live_cycle.py` | ✅ |
 | append_trade | `nodes_trailing_cycle.py` + `data/lia_trades.json` | ✅ |
 | redistribute TRO no-hold | policy + executor hook dans live_cycle | 🟡 appeler `redistribute_tro` live |
+| confirmation poll adaptatif | `lia/executor/universal_executor.py` | ✅ base/pre + `LIA_SUPERNOVA_MODE=auto|on|off` |
 | Doc resume | `docs/VELLUM_RESUME_LIVE.md` | ✅ |
 
 **Action Vellum :** coller `run_cycle(...)` après le dernier publish ; push JSON `data/*` vers GitHub.
@@ -19,7 +20,8 @@
 |------|--------|
 | Liste trades LIA | ✅ `Trading.tsx` lit `lia_trades.json` |
 | État trailing | ✅ `lia_trailing_state.json` |
-| Hatom réel | ✅ service `hatomService.ts` (ESDT wallet proxy) |
+| Hatom réel | ✅ service `hatomService.ts` + fallback `hatom_lia.json` |
+| TRO fallback | ✅ `priceService.ts` lit aussi `config.json` + `tro_pool.json` |
 
 ## $TRO
 
@@ -47,3 +49,10 @@
 2. Secrets PEM + `LIA_LIVE_TRADING`
 3. Après run : push `data/lia_trades.json` + `lia_trailing_state.json`
 4. Relancer **Deploy xArtists Exclusive** pour publier le nouveau Trading UI
+
+## P0 restant clair
+
+1. Déployer `agents-marketplace` mainnet puis renseigner `data/contracts.json` / `VITE_AGENTS_MARKETPLACE_ADDRESS`
+2. ✅ UI `/agents` branchée pour list/buy + Warps JSON (`apps/frontend/src/hooks/useAgentsMarketplace.ts`, `WarpButton.tsx`, `warpService.ts`)
+3. Étendre Playwright wallet mock + marketplace + DAO
+4. Ajouter indicateurs finality/shard UI après disponibilité Supernova mainnet
