@@ -3,8 +3,6 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { sdkDappConfig } from '../config/sdkDapp'
 import { LINKS, PRIMARY_NAV, SECONDARY_NAV } from '../config/links'
-import OraclePriceBadge from './OraclePriceBadge'
-import StatusIndicator from './ui/StatusIndicator'
 import { OPEN_CONNECT_EVENT, requestOpenAssets } from '../lib/walletEvents'
 
 function isValidErd(addr: string): boolean {
@@ -16,10 +14,9 @@ function getCallbackUrl(): string {
   return `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '/') || '/xArtists/'}`
 }
 
+/** Barre desktop — cœur produit uniquement (pas de doublon Galerie). */
 const DESKTOP_NAV = PRIMARY_NAV.filter(n =>
-  ['/', '/agents', '/museum', '/tours', '/gallery', '/wallet', '/marketplace', '/my-packs'].includes(
-    n.to
-  )
+  ['/', '/museum', '/agents', '/tours', '/wallet', '/marketplace'].includes(n.to)
 )
 
 export default function Header() {
@@ -108,7 +105,7 @@ export default function Header() {
             </span>
           </NavLink>
 
-          <nav className="hidden xl:flex items-center gap-0.5 flex-1 justify-center max-w-3xl overflow-x-auto">
+          <nav className="hidden lg:flex items-center gap-0.5 flex-1 justify-center max-w-2xl overflow-x-auto">
             {DESKTOP_NAV.map(({ to, label }) => (
               <NavLink
                 key={to}
@@ -122,21 +119,6 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hidden sm:block">
-              <StatusIndicator />
-            </div>
-            <button
-              type="button"
-              className="hidden sm:inline-flex btn-secondary text-[10px] !py-1 !px-2"
-              onClick={() => requestOpenAssets()}
-              title="Asset Hub"
-            >
-              Assets
-            </button>
-            <div className="hidden md:block">
-              <OraclePriceBadge />
-            </div>
-
             {connected ? (
               <button
                 type="button"
@@ -165,7 +147,7 @@ export default function Header() {
 
             <button
               type="button"
-              className="xl:hidden p-2.5 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 min-h-[44px] min-w-[44px]"
+              className="lg:hidden p-2.5 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 min-h-[44px] min-w-[44px]"
               onClick={() => setMenuOpen(o => !o)}
               aria-label={menuOpen ? 'Fermer' : 'Menu'}
               aria-expanded={menuOpen}
@@ -177,7 +159,7 @@ export default function Header() {
 
         {menuOpen && (
           <div
-            className="xl:hidden fixed inset-0 top-14 sm:top-16 z-40 bg-black/70 backdrop-blur-sm"
+            className="lg:hidden fixed inset-0 top-14 sm:top-16 z-40 bg-black/70 backdrop-blur-sm"
             onClick={() => setMenuOpen(false)}
           >
             <div
@@ -188,20 +170,6 @@ export default function Header() {
               }}
               onClick={e => e.stopPropagation()}
             >
-              <div className="px-3 py-2 flex flex-wrap gap-2 items-center">
-                <StatusIndicator />
-                <button
-                  type="button"
-                  className="btn-secondary text-[10px] !py-1 !px-2"
-                  onClick={() => {
-                    setMenuOpen(false)
-                    requestOpenAssets()
-                  }}
-                >
-                  Assets
-                </button>
-                <OraclePriceBadge />
-              </div>
               {PRIMARY_NAV.map(({ to, label, emoji }) => (
                 <NavLink
                   key={to}
@@ -221,7 +189,7 @@ export default function Header() {
                 </NavLink>
               ))}
               <p className="px-4 pt-3 pb-1 text-[10px] uppercase tracking-[0.2em] text-zinc-600">
-                Lab · pré-mainnet
+                Lab
               </p>
               {SECONDARY_NAV.map(({ to, label, emoji }) => (
                 <NavLink
@@ -261,8 +229,7 @@ export default function Header() {
             </p>
             <h2 className="display text-xl mb-2">Connecter le wallet</h2>
             <p className="text-xs text-zinc-500 mb-4 leading-relaxed">
-              <strong className="text-zinc-300">Ton</strong> wallet — jamais le wallet protocole LIA.
-              Adresse collée = lecture seule.
+              Votre wallet — pas une adresse protocole.
             </p>
 
             {[
@@ -274,13 +241,13 @@ export default function Header() {
               },
               {
                 title: 'xPortal',
-                sub: 'App mobile / deep link',
+                sub: 'App mobile',
                 icon: '📱',
                 onClick: openXPortalDeepLink,
               },
               {
-                title: 'Extension DeFi',
-                sub: 'Chrome List / Buy',
+                title: 'Extension',
+                sub: 'Navigateur',
                 icon: '🦊',
                 onClick: () => void tryExtension(),
               },

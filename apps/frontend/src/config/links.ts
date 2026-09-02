@@ -1,5 +1,5 @@
 /**
- * Canonical external links — only stable public URLs.
+ * Canonical external links + nav (no duplicate routes).
  */
 
 export const LIA_WALLET =
@@ -21,10 +21,8 @@ export const LINKS = {
   hatom: 'https://app.hatom.com',
   hatomDashboard: 'https://app.hatom.com',
   xoxno: 'https://xoxno.com',
-  /** Bridge DeFi — USDT / USDT0 → MultiversX */
   xoxnoBridge: 'https://xoxno.com/defi/bridge',
   xoxnoCollection: (c: string) => `https://xoxno.com/collection/${c}`,
-  /** Omnichain USDT (LayerZero OFT) */
   usdt0: 'https://usdt0.to',
   greensmokeAgents: 'https://app.greensmoke.network/agents',
   lightningFaucetBuild: 'https://lightningfaucet.com/build/',
@@ -33,20 +31,20 @@ export const LINKS = {
     'https://github.com/Neltud/xArtists/blob/main/docs/TREASURY_POLICY.md',
 } as const
 
-/** Primary — cœur soft launch (Header filtre un sous-ensemble desktop). */
+/** Menu principal — une entrée Galerie (pas /gallery + /museum). */
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/', label: 'Home', emoji: '◈' },
-  { to: '/agents', label: 'Packs', emoji: '◎' },
   { to: '/museum', label: 'Galerie', emoji: '🖼' },
+  { to: '/agents', label: 'Packs', emoji: '◎' },
+  { to: '/my-packs', label: 'My Packs', emoji: '🎫' },
   { to: '/tours', label: 'Tours', emoji: '◉' },
   { to: '/wallet', label: 'Wallet', emoji: '◇' },
   { to: '/marketplace', label: 'Market', emoji: '▣' },
-  { to: '/my-packs', label: 'My Packs', emoji: '🎫' },
   { to: '/trading', label: 'Trading', emoji: '⚡' },
   { to: '/legal', label: 'Légal', emoji: '§' },
 ]
 
-/** Secondary — lab / pre-mainnet (préfixe Lab ·). */
+/** Lab — hors parcours démo. */
 export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/studio', label: 'Studio', emoji: '🎨' },
   { to: '/tro', label: '$TRO', emoji: '🪙' },
@@ -61,4 +59,7 @@ export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/tip', label: 'Tip', emoji: '💜' },
   { to: '/soul-testnet', label: 'Lab · Soul', emoji: '🧪' },
   { to: '/burnify', label: 'Lab · Burnify', emoji: '🔥' },
+  { to: '/ads', label: 'Lab · Ads', emoji: '📢' },
+  { to: '/editions', label: 'Lab · Editions', emoji: '📰' },
+  { to: '/agents/lightning', label: 'Lab · Lightning', emoji: '⚡' },
 ]
