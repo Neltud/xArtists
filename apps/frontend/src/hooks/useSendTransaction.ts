@@ -1,4 +1,5 @@
-import { useWeb3 } from './useWeb3'
+import { useWallet, LIA_WALLET } from '../context/WalletContext'
+import { canSignOnChain, signBlockReason } from '../lib/txCapability'
 
 interface TransactionDisplayInfo {
   processingMessage?: string
@@ -11,26 +12,43 @@ interface SendTransactionResult {
   error: string | null
 }
 
-/**
- * Send MultiversX transactions.
- * - If window.__xartistsSendTx is injected by sdk-dapp bootstrap → real sign
- * - Else queues payload and returns structured error (wallet must be connected)
- */
+/** Send MultiversX TX — blocks paste_readonly, LIA ops, and missing sdk-dapp. */
 export const useSendTransaction = () => {
-  const { isLoggedIn, address } = useWeb3()
+  const { connected, address, method } = useWallet()
 
   const send = async (
     transactions: unknown[],
-    displayInfo?: TransactionDisplayInfo,
+    displayInfo?: TransactionDisplayInfo
   ): Promise<SendTransactionResult> => {
-    if (!isLoggedIn) {
+    if (!connected) {
       throw new Error('Wallet non connecté')
+    }
+
+    if (address && address.toLowerCase() === LIA_WALLET.toLowerCase()) {
+      return {
+        sessionId: null,
+        error:
+          'Wallet protocole LIA interdit pour les TX user (List/Buy). Déconnecte et utilise ton wallet.',
+      }
+    }
+
+    const block = signBlockReason(method)
+    if (block) {
+      return { sessionId: null, error: block }
+    }
+
+    if (!canSignOnChain(method)) {
+      return {
+        sessionId: null,
+        error:
+          'Signature non disponible — xPortal / DeFi Wallet + TxShell (page Market), pas coller erd1.',
+      }
     }
 
     const w = window as unknown as {
       __xartistsSendTx?: (
         txs: unknown[],
-        info?: TransactionDisplayInfo,
+        info?: TransactionDisplayInfo
       ) => Promise<{ sessionId?: string }>
     }
 
@@ -44,20 +62,10 @@ export const useSendTransaction = () => {
       }
     }
 
-    // Fallback: log for debugging + return clear status (UI still works)
-    console.info('[useSendTransaction]', {
-      address,
-      count: transactions.length,
-      displayInfo,
-      sample: transactions[0],
-    })
-    console.warn(
-      '[useSendTransaction] Inject window.__xartistsSendTx from sdk-dapp bootstrap for live signing.',
-    )
+    console.info('[useSendTransaction]', { address, count: transactions.length, displayInfo })
     return {
       sessionId: null,
-      error:
-        'SDK dapp non branché — connecte xPortal et configure WalletConnect project ID (sdkDapp.ts)',
+      error: 'SDK dapp non branché — __xartistsSendTx manquant après TxShell.',
     }
   }
 

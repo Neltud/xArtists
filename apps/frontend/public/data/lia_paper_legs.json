@@ -1,0 +1,31 @@
+{
+  "updated": "2026-08-26T16:30:00Z",
+  "legs": [
+    {
+      "ts": "2026-08-26T16:30:00Z",
+      "ok": true,
+      "paper": true,
+      "gate": {
+        "decision": "BUY",
+        "confidence": 0.62,
+        "size_usd": 25.0,
+        "source": "seed",
+        "allow_size": true
+      },
+      "ev": {
+        "expected_value": 8.1,
+        "probability_of_profit": 0.71,
+        "max_loss": -22.4,
+        "is_viable": true
+      },
+      "decision_proof": {
+        "decision_id": "seedleg01paperonly",
+        "action_name": "SWAP",
+        "amount": 25000000,
+        "paper": true
+      },
+      "verification": "PaperOnly",
+      "note": "Seed leg — regenerate with python -m lia.executor.paper_with_proof"
+    }
+  ]
+}

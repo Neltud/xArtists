@@ -1,0 +1,14 @@
+{
+  "version": "2026-08-03b",
+  "dapp": "https://neltud.github.io/xArtists/",
+  "github": "https://github.com/Neltud/xArtists",
+  "explorer": "https://explorer.multiversx.com",
+  "wallet": "https://wallet.multiversx.com",
+  "xexchange": "https://xexchange.com",
+  "onedex": "https://onedex.app",
+  "hatom": "https://app.hatom.com",
+  "xoxno": "https://xoxno.com",
+  "greensmoke_agents": "https://app.greensmoke.network/agents",
+  "removed": ["midjourney", "gofundme", "docs.hatom.com as primary", "soul primary nav"],
+  "primary_nav": ["/", "/agents", "/marketplace", "/gallery", "/trading", "/portfolio", "/tro", "/hatom", "/lp", "/staking", "/dao", "/wallet", "/tip"]
+}

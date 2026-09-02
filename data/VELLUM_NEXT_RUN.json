@@ -1,0 +1,52 @@
+{
+  "version": "2026-08-03",
+  "network": "mainnet",
+  "LIA_LIVE_TRADING": 0,
+  "preflight": [
+    "No PEM in frontend",
+    "CHAIN=1 only",
+    "PINATA_JWT optional for media pin"
+  ],
+  "steps": [
+    {
+      "id": "gas",
+      "cmd": "python -m lia.gas.publish",
+      "writes": ["data/mvx_gas.json"]
+    },
+    {
+      "id": "board",
+      "cmd": "python -m lia.board.publish",
+      "writes": ["data/lia_board.json"]
+    },
+    {
+      "id": "hatom",
+      "cmd": "python -c \"from lia.venues.hatom import publish_hatom; publish_hatom()\"",
+      "optional": true
+    },
+    {
+      "id": "media_status",
+      "cmd": "python -c \"from lia.media.storage import storage_status; import json; print(json.dumps(storage_status(), indent=2))\""
+    },
+    {
+      "id": "orchestrator_dry",
+      "cmd": "python -m lia.vellum.orchestrator",
+      "env": {"LIA_LIVE_TRADING": "0"}
+    },
+    {
+      "id": "git_push_data",
+      "note": "Commit data/*.json so Pages/raw.githubusercontent update"
+    }
+  ],
+  "blocked_until": {
+    "agents_buy": "data/contracts.json agents_marketplace non-null",
+    "nft_bid_live": "redeploy nft-marketplace with placeBid",
+    "signing": "window.__xartistsSendTx bootstrap"
+  },
+  "read_docs": [
+    "docs/DAPP_FULL_AUDIT.md",
+    "docs/DAPP_COMPOSITION.md",
+    "docs/MEDIA_STORAGE.md",
+    "docs/MXPY_MINT_NFT.md",
+    "docs/USER_JOURNEYS.md"
+  ]
+}

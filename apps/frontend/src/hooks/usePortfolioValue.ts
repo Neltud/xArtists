@@ -1,8 +1,14 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 const MVX_API = 'https://api.multiversx.com'
 const WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
 const EGLD_USDC_PAIR = 'EGLDUSDC-594e5e'
+/** Cap network chatter — N+1 /tokens/{id} was killing TTI on Portfolio/Dashboard */
+const MAX_TOKEN_PAGES = 2
+const TOKEN_PAGE_SIZE = 100
+const MAX_NFT_PAGES = 2
+const NFT_PAGE_SIZE = 50
+const POLL_MS = 90_000
 
 export interface PortfolioToken {
   identifier: string
@@ -42,12 +48,7 @@ export interface PortfolioValue {
   refresh: () => void
 }
 
-/**
- * Fetch EGLD price from the EGLD/USDC MEX pair (basePrice), with a fallback
- * to the /economics endpoint price.
- */
 async function fetchEgldPrice(): Promise<number> {
-  // 1. Try the single-pair endpoint as specified.
   try {
     const res = await fetch(`${MVX_API}/mex/pairs/${EGLD_USDC_PAIR}`)
     if (res.ok) {
@@ -57,20 +58,6 @@ async function fetchEgldPrice(): Promise<number> {
   } catch {
     /* fall through */
   }
-
-  // 2. Fallback: list all pairs and find ours by id.
-  try {
-    const res = await fetch(`${MVX_API}/mex/pairs`)
-    if (res.ok) {
-      const pairs: any[] = await res.json()
-      const pair = pairs.find(p => p?.id === EGLD_USDC_PAIR)
-      if (pair?.basePrice && pair.basePrice > 0) return Number(pair.basePrice)
-    }
-  } catch {
-    /* fall through */
-  }
-
-  // 3. Last resort: /economics price.
   try {
     const res = await fetch(`${MVX_API}/economics`)
     if (res.ok) {
@@ -80,17 +67,18 @@ async function fetchEgldPrice(): Promise<number> {
   } catch {
     /* ignore */
   }
-
   return 0
 }
 
-async function fetchAllTokens(egldPrice: number): Promise<PortfolioToken[]> {
+/** Use only prices already on the account-token payload — no per-token follow-up. */
+async function fetchAllTokens(): Promise<PortfolioToken[]> {
   const results: PortfolioToken[] = []
   let from = 0
-  const size = 250
 
-  while (true) {
-    const res = await fetch(`${MVX_API}/accounts/${WALLET}/tokens?size=${size}&from=${from}`)
+  for (let page = 0; page < MAX_TOKEN_PAGES; page++) {
+    const res = await fetch(
+      `${MVX_API}/accounts/${WALLET}/tokens?size=${TOKEN_PAGE_SIZE}&from=${from}`
+    )
     if (!res.ok) break
     const batch: any[] = await res.json()
     if (!batch.length) break
@@ -99,27 +87,11 @@ async function fetchAllTokens(egldPrice: number): Promise<PortfolioToken[]> {
       const decimals = t.decimals ?? 18
       const balance = Number(t.balance ?? 0) / Math.pow(10, decimals)
       if (balance <= 0) continue
-      const ticker = t.ticker || (t.identifier ? t.identifier.split('-')[0] : '')
-      const name = t.name || ticker
-
-      let price = t.price ?? 0
-      // For tokens without a price in the account-token listing, fetch the
-      // token definition which exposes a `price` field.
-      if (!price || price <= 0) {
-        try {
-          const tRes = await fetch(`${MVX_API}/tokens/${t.identifier}`)
-          if (tRes.ok) {
-            const tDef = await tRes.json()
-            price = tDef?.price ?? 0
-          }
-        } catch {
-          /* keep price = 0 */
-        }
-      }
-
+      const ticker = t.ticker || (t.identifier ? String(t.identifier).split('-')[0] : '')
+      const price = Number(t.price ?? 0)
       results.push({
         identifier: t.identifier || ticker,
-        name,
+        name: t.name || ticker,
         ticker,
         balance,
         decimals,
@@ -128,8 +100,8 @@ async function fetchAllTokens(egldPrice: number): Promise<PortfolioToken[]> {
       })
     }
 
-    if (batch.length < size) break
-    from += size
+    if (batch.length < TOKEN_PAGE_SIZE) break
+    from += TOKEN_PAGE_SIZE
   }
 
   return results.sort((a, b) => b.valueUsd - a.valueUsd)
@@ -138,10 +110,11 @@ async function fetchAllTokens(egldPrice: number): Promise<PortfolioToken[]> {
 async function fetchAllNfts(): Promise<PortfolioNft[]> {
   const results: PortfolioNft[] = []
   let from = 0
-  const size = 100
 
-  while (true) {
-    const res = await fetch(`${MVX_API}/accounts/${WALLET}/nfts?size=${size}&from=${from}`)
+  for (let page = 0; page < MAX_NFT_PAGES; page++) {
+    const res = await fetch(
+      `${MVX_API}/accounts/${WALLET}/nfts?size=${NFT_PAGE_SIZE}&from=${from}`
+    )
     if (!res.ok) break
     const batch: any[] = await res.json()
     if (!batch.length) break
@@ -149,8 +122,8 @@ async function fetchAllNfts(): Promise<PortfolioNft[]> {
     for (const n of batch) {
       const decimals = n.decimals ?? 0
       const balance = n.balance ? Number(n.balance) / Math.pow(10, decimals) : 1
-      const price = n.price ?? 0
-      const valueUsd = n.valueUsd ?? balance * price
+      const price = Number(n.price ?? 0)
+      const valueUsd = Number(n.valueUsd ?? balance * price)
       results.push({
         identifier: n.identifier || `${n.collection}-${n.nonce}`,
         name: n.name || n.collection || '',
@@ -166,8 +139,8 @@ async function fetchAllNfts(): Promise<PortfolioNft[]> {
       })
     }
 
-    if (batch.length < size) break
-    from += size
+    if (batch.length < NFT_PAGE_SIZE) break
+    from += NFT_PAGE_SIZE
   }
 
   return results.sort((a, b) => b.valueUsd - a.valueUsd)
@@ -180,8 +153,12 @@ export function usePortfolioValue(): PortfolioValue {
   const [nfts, setNfts] = useState<PortfolioNft[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const busy = useRef(false)
 
   const fetchAll = useCallback(async () => {
+    if (busy.current) return
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return
+    busy.current = true
     setLoading(true)
     setError(null)
     try {
@@ -194,24 +171,28 @@ export function usePortfolioValue(): PortfolioValue {
       setEgldBalance(egld)
       setEgldPrice(price)
 
-      const [allTokens, allNfts] = await Promise.all([
-        fetchAllTokens(price),
-        fetchAllNfts(),
-      ])
-
+      const [allTokens, allNfts] = await Promise.all([fetchAllTokens(), fetchAllNfts()])
       setTokens(allTokens)
       setNfts(allNfts)
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     } finally {
       setLoading(false)
+      busy.current = false
     }
   }, [])
 
   useEffect(() => {
     fetchAll()
-    const id = setInterval(fetchAll, 60_000)
-    return () => clearInterval(id)
+    const id = setInterval(fetchAll, POLL_MS)
+    const onVis = () => {
+      if (document.visibilityState === 'visible') fetchAll()
+    }
+    document.addEventListener('visibilitychange', onVis)
+    return () => {
+      clearInterval(id)
+      document.removeEventListener('visibilitychange', onVis)
+    }
   }, [fetchAll])
 
   const egldValueUsd = egldBalance * egldPrice

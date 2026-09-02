@@ -1,0 +1,60 @@
+name: Regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lia/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'data/contracts.json'
+      - 'data/treasury_wallets.json'
+      - 'data/lia_v6_status.json'
+      - 'data/lia_board.json'
+      - '.github/workflows/regression.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'lia/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'data/contracts.json'
+      - '.github/workflows/regression.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: regression-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Fast regression (single process)
+        env:
+          LIA_LIVE_TRADING: '0'
+          PYTHONPATH: ${{ github.workspace }}
+          REGRESSION_MODE: fast
+          REGRESSION_QUIET: '0'
+        run: |
+          chmod +x scripts/run_regression.sh
+          ./scripts/run_regression.sh
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-report
+          path: data/regression_report.json
+          if-no-files-found: ignore
+          retention-days: 14

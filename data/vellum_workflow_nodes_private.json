@@ -1,0 +1,29 @@
+{
+  "version": "private-release-1.0",
+  "updated": "2026-08-09T19:50:00Z",
+  "network": "mainnet",
+  "pipeline_module": "lia.vellum.pipeline",
+  "pipeline_version": "1.3",
+  "default_flags": {"CHAIN": "1", "LIA_LIVE_TRADING": "0", "LIA_TP_MODE": "log"},
+  "timer_nodes": [
+    {"id": "timer_board", "cron": "*/5 * * * *", "runs": ["board_publish", "oracles_publish"]},
+    {"id": "timer_full_cycle", "cron": "0 * * * *", "runs": ["full_pipeline"]}
+  ],
+  "nodes": [
+    {"id": "env_bootstrap"},
+    {"id": "oracles", "module": "lia.oracles.publish"},
+    {"id": "board", "module": "lia.board.publish"},
+    {"id": "social", "note": "cap ≤ 0.15"},
+    {"id": "agent_decision"},
+    {"id": "desk_fuse", "module": "lia.circuit.desk_debate"},
+    {"id": "mode_router", "adapters_ref": "data/vellum_strategy_adapters.json"},
+    {"id": "guardian", "module": "lia.guardian.preflight"},
+    {"id": "trading_stack", "skip_if": ["DEFENSE", "guardian.deny"]},
+    {"id": "live_cycle", "mode": "paper_until_gates"},
+    {"id": "mirror_reporter"},
+    {"id": "go_live_gates", "module": "lia.security.go_live_gates"},
+    {"id": "onchain_micro_proof", "module": "lia.security.onchain_micro_proof"},
+    {"id": "deploy_sc", "type": "manual_gated", "requires": ["PEM", "EGLD"]}
+  ],
+  "forbidden_in_timer": ["deploy_sc", "LIA_LIVE_TRADING=1"]
+}

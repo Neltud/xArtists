@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "source": "reddit",
+      "text": "MultiversX ecosystem looking bullish after protocol upgrades",
+      "weight": 1.0
+    },
+    {
+      "source": "x",
+      "text": "Unconfirmed rumor about delisting — allegedly",
+      "weight": 1.2
+    }
+  ]
+}

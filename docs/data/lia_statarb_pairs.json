@@ -1,0 +1,39 @@
+{
+  "updated_at": "2026-08-02T15:00:00Z",
+  "pairs": {
+    "WEGLD-bd4d79|USDC-c76f1f": {
+      "token_a": "WEGLD-bd4d79",
+      "token_b": "USDC-c76f1f",
+      "hedge_ratio": 1.0,
+      "spread_mean": 2.302585,
+      "spread_std": 0.035,
+      "last_spread": 2.302585,
+      "last_z": 0.0,
+      "half_life_h": 18.0,
+      "liquidity_a": 250000.0,
+      "liquidity_b": 800000.0,
+      "price_a": 10.0,
+      "price_b": 1.0,
+      "cointegration_score": 0.78,
+      "updated_at": "2026-08-02T15:00:00Z",
+      "sample_count": 1
+    },
+    "WBTC-...|USDC-c76f1f": {
+      "token_a": "WBTC",
+      "token_b": "USDC-c76f1f",
+      "hedge_ratio": 1.0,
+      "spread_mean": 11.0021,
+      "spread_std": 0.028,
+      "last_spread": 11.0021,
+      "last_z": 0.0,
+      "half_life_h": 22.0,
+      "liquidity_a": 180000.0,
+      "liquidity_b": 800000.0,
+      "price_a": 60000.0,
+      "price_b": 1.0,
+      "cointegration_score": 0.72,
+      "updated_at": "2026-08-02T15:00:00Z",
+      "sample_count": 1
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "updated": "2026-08-11T05:05:00Z",
+  "status": "pre-mainnet",
+  "experimental": true,
+  "mx_native": false,
+  "user_funds": false,
+  "lia": {
+    "router": "lia.defi.soul_routes.SoulRouter",
+    "auto_route": "SUPPLY only · 50% sleeve · paper=true",
+    "borrow": false,
+    "leverage_loops": 0,
+    "cross_chain_lend": false,
+    "min_hf_open": 2.0,
+    "min_amount_usd": 5,
+    "defense_blocks": true,
+    "mvx_agent_executable": false
+  },
+  "priority": {
+    "1": "Hatom MultiversX (production path)",
+    "2": "Soul paper signals only",
+    "3": "Soul live after mainnet gates + audit"
+  },
+  "mainnet_gates": {
+    "docs_api": false,
+    "controller_addresses": false,
+    "audit": false,
+    "zk_verifier_optional": false,
+    "paper_stable_30d": false,
+    "hatom_micro_proofs": false,
+    "user_funds_blocked": true,
+    "flag_SOUL_ENABLED": "testnet"
+  },
+  "actions_v1": {
+    "soul_supply": "paper",
+    "soul_add_collateral": "paper",
+    "soul_borrow": "blocked",
+    "soul_repay": "paper",
+    "soul_withdraw": "paper",
+    "soul_cross_chain_lend": "blocked"
+  },
+  "docs": [
+    "docs/SOUL_LIA_DECISIONS.md",
+    "docs/LIA_HATOM_SOUL_YIELD.md",
+    "https://docs.soul.io/"
+  ]
+}

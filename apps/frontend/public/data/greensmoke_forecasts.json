@@ -1,51 +1,27 @@
 {
-  "version": "2.0",
-  "updated_at": "2026-07-26T09:20:00Z",
+  "version": "2.1",
+  "updated_at": "2026-08-27T17:10:00Z",
   "source": "GreenSmokeNetwork",
   "network": "MultiversX mainnet",
   "dapp": "https://app.greensmoke.network",
-  "token": {
-    "identifier": "GSN-514265",
-    "name": "GreenSmokeNetwork",
-    "decimals": 18,
-    "explorer": "https://explorer.multiversx.com/tokens/GSN-514265"
-  },
-  "identity_nft": "GSNAGENT-d8d495",
-  "contracts": {
-    "identity_registry": "erd1qqqqqqqqqqqqqpgqh43jd4wdy5cskjgwndtaz9m8evlhxgslkgjqllgusu",
-    "reputation": "erd1qqqqqqqqqqqqqpgqeryfhggp8zthg0ys3h74mh6dv5gcumkgkgjq0ht8j7",
-    "prediction_market": "erd1qqqqqqqqqqqqqpgquuf5zc7nqsaud3ta27yarygx5xn7p8hkkgjqtulw8w",
-    "agent_template": "erd1qqqqqqqqqqqqqpgqaslv0epscp7xk5uhavph4uyqqfvegr8akgjqsz3pug",
-    "factory": "erd1qqqqqqqqqqqqqpgqw7c8n450xwv4t7dr3qea99fz98prplypkgjqu90fkr",
-    "leaderboard": "erd1qqqqqqqqqqqqqpgqqz8qntgn02z5l7pvmavzwx82dnmgf0pukgjqcg3gh6",
-    "xsafe_multisig": "erd1qqqqqqqqqqqqqpgq7pceh6mvdtkfqwxdnsrcdnxzu22awhtrkgjqn2qtru"
-  },
+  "note": "Includes Voyage / travel agent. Array forecasts required by UI.",
   "agents": {
     "Liia": {
       "id": "liia",
       "name": "Liia",
       "domain": "weather",
       "domain_fr": "météo",
-      "platform": "GreenSmokeNetwork",
       "role": "Agent prévisions météo",
       "status": "active",
-      "on_chain_activity": true,
-      "example_markets": [
-        "Will the daily maximum temperature in Lisbon, Portugal exceed threshold"
-      ],
-      "gsn_url": "https://app.greensmoke.network/agents",
-      "last_run": "2026-07-26T08:45:00Z",
       "confidence_avg": 0.72,
-      "horizon": "24h–7d",
+      "accuracy": 0.72,
       "forecasts": [
         {
           "asset": "WEATHER_LISBON",
           "direction": "watch",
-          "target_usd": null,
-          "current_ref": null,
-          "confidence": 0.70,
+          "confidence": 0.7,
           "horizon": "24h",
-          "rationale": "Prévisions température max — marchés ouverts on-chain GSN",
+          "rationale": "Prévisions température max — marchés GSN",
           "signal": "MONITOR"
         }
       ]
@@ -55,45 +31,23 @@
       "name": "Lia",
       "domain": "crypto",
       "domain_fr": "crypto",
-      "platform": "GreenSmokeNetwork",
       "role": "Agent prévisions crypto",
       "status": "active",
-      "on_chain_activity": true,
-      "example_markets": [
-        "Will FIL trade above $0.75",
-        "GBP/JPY forecasts"
-      ],
-      "gsn_url": "https://app.greensmoke.network/agents",
-      "last_run": "2026-07-26T08:30:00Z",
-      "confidence_avg": 0.68,
-      "horizon": "1d–14d",
+      "confidence_avg": 0.74,
+      "accuracy": 0.84,
       "forecasts": [
         {
           "asset": "EGLD",
           "direction": "bullish",
-          "target_usd": 18.5,
-          "current_ref": null,
           "confidence": 0.74,
           "horizon": "7d",
-          "rationale": "Momentum écosystème + narrative Supernova",
+          "rationale": "Momentum écosystème + Supernova",
           "signal": "ACCUMULATE"
-        },
-        {
-          "asset": "TRO-94c925",
-          "direction": "neutral",
-          "target_usd": null,
-          "current_ref": null,
-          "confidence": 0.60,
-          "horizon": "7d",
-          "rationale": "Liquidité limitée — attendre catalyst NFT/DAO",
-          "signal": "HOLD"
         },
         {
           "asset": "BTC",
           "direction": "bullish",
-          "target_usd": 118000,
-          "current_ref": null,
-          "confidence": 0.70,
+          "confidence": 0.7,
           "horizon": "14d",
           "rationale": "Régime risk-on crypto",
           "signal": "BUY"
@@ -104,134 +58,82 @@
       "id": "macro",
       "name": "Macro",
       "domain": "macro",
-      "domain_fr": "macroéconomie",
-      "platform": "GreenSmokeNetwork",
-      "role": "Agent macroéconomie / FX",
+      "role": "Macro / FX",
       "status": "active",
-      "on_chain_activity": true,
-      "example_markets": [
-        "Will GBP/CHF trade above 1.0900",
-        "USD/INR, EUR/CAD reference rates"
-      ],
-      "gsn_url": "https://app.greensmoke.network/agents",
-      "last_run": "2026-07-26T08:00:00Z",
-      "confidence_avg": 0.75,
-      "horizon": "7d–30d",
+      "confidence_avg": 0.78,
+      "accuracy": 0.81,
       "forecasts": [
         {
           "asset": "CRYPTO_REGIME",
           "direction": "risk_on",
-          "target_usd": null,
-          "current_ref": null,
           "confidence": 0.78,
           "horizon": "30d",
-          "rationale": "Liquidité stablecoins + flows RWA",
+          "rationale": "Liquidité + flows RWA",
           "signal": "RISK_ON"
+        }
+      ]
+    },
+    "Voyage": {
+      "id": "voyage-travel",
+      "name": "Voyage",
+      "domain": "travel",
+      "domain_fr": "voyage / tourisme",
+      "role": "Agent de voyage — signaux mobilité & culture",
+      "status": "active",
+      "confidence_avg": 0.76,
+      "accuracy": 0.82,
+      "forecasts": [
+        {
+          "asset": "DEST_LISBON",
+          "direction": "bullish",
+          "confidence": 0.78,
+          "horizon": "30d",
+          "rationale": "Saisonnalité + météo Liia alignée — demande tourisme fort",
+          "signal": "WATCH_DESTINATION"
         },
         {
-          "asset": "MULTIVERSX_ECO",
-          "direction": "bullish",
-          "target_usd": null,
-          "current_ref": null,
-          "confidence": 0.76,
-          "horizon": "Q3-2026",
-          "rationale": "Supernova + growth validators + AI agents",
-          "signal": "ECOSYSTEM_GROWTH"
-        }
-      ]
-    },
-    "Politics": {
-      "id": "politics",
-      "name": "Politics",
-      "domain": "politics",
-      "domain_fr": "politique",
-      "platform": "GreenSmokeNetwork",
-      "role": "Agent prévisions politiques / géopolitique",
-      "status": "active",
-      "on_chain_activity": true,
-      "example_markets": [],
-      "gsn_url": "https://app.greensmoke.network/agents",
-      "last_run": "2026-07-26T07:30:00Z",
-      "confidence_avg": 0.55,
-      "horizon": "event-driven",
-      "forecasts": [
-        {
-          "asset": "GEO_POLITICS",
-          "direction": "watch",
-          "target_usd": null,
-          "current_ref": null,
-          "confidence": 0.55,
-          "horizon": "event",
-          "rationale": "Marchés prediction GSN domaine politics — suivi on-chain",
-          "signal": "MONITOR"
-        }
-      ]
-    },
-    "Sport": {
-      "id": "sport",
-      "name": "Sport",
-      "domain": "sports",
-      "domain_fr": "sport",
-      "platform": "GreenSmokeNetwork",
-      "role": "Agent prévisions sportives",
-      "status": "active",
-      "on_chain_activity": true,
-      "example_markets": [
-        "MLS / MLB match outcomes"
-      ],
-      "gsn_url": "https://app.greensmoke.network/agents",
-      "last_run": "2026-07-26T07:00:00Z",
-      "confidence_avg": 0.58,
-      "horizon": "match-day",
-      "forecasts": [
-        {
-          "asset": "SPORTS_EVENTS",
-          "direction": "watch",
-          "target_usd": null,
-          "current_ref": null,
-          "confidence": 0.58,
-          "horizon": "event",
-          "rationale": "Marchés sports GSN (MLS, MLB, etc.)",
-          "signal": "MONITOR"
-        }
-      ]
-    },
-    "Tech": {
-      "id": "tech",
-      "name": "Tech",
-      "domain": "tech",
-      "domain_fr": "technologies",
-      "platform": "GreenSmokeNetwork",
-      "role": "Agent prévisions technologies / open-source",
-      "status": "active",
-      "on_chain_activity": true,
-      "example_markets": [
-        "GitHub stars thresholds (pytorch, open-webui, langflow)"
-      ],
-      "gsn_url": "https://app.greensmoke.network/agents",
-      "last_run": "2026-07-26T07:15:00Z",
-      "confidence_avg": 0.65,
-      "horizon": "7d–90d",
-      "forecasts": [
-        {
-          "asset": "AI_OSS",
-          "direction": "bullish",
-          "target_usd": null,
-          "current_ref": null,
-          "confidence": 0.68,
+          "asset": "RWA_HOSPITALITY",
+          "direction": "neutral",
+          "confidence": 0.71,
           "horizon": "90d",
-          "rationale": "Croissance frameworks AI open-source — marchés GSN tech",
-          "signal": "LONG_TECH"
+          "rationale": "Veille RWA séjour — correl crypto risk-on, pas de booking on-chain v1",
+          "signal": "ADVISORY"
+        },
+        {
+          "asset": "CULTURE_FLOW",
+          "direction": "bullish",
+          "confidence": 0.74,
+          "horizon": "14d",
+          "rationale": "Flux culture / events — sleeve pack Voyage xArtists",
+          "signal": "CULTURE_ON"
+        }
+      ]
+    },
+    "gsn-elite-9": {
+      "id": "gsn-elite-9",
+      "name": "GSN Elite MVX",
+      "domain": "crypto",
+      "role": "Elite filter ≥80%",
+      "status": "active",
+      "confidence_avg": 0.88,
+      "accuracy": 0.88,
+      "forecasts": [
+        {
+          "asset": "EGLD",
+          "direction": "bullish",
+          "confidence": 0.88,
+          "horizon": "7d",
+          "rationale": "Elite accuracy gate for LIA",
+          "signal": "BUY"
         }
       ]
     }
   },
   "aggregated_signals": {
-    "primary": "BULLISH_CRYPTO_VIA_LIA",
-    "secondary": "RISK_ON_MACRO",
+    "primary": "BULLISH_CRYPTO",
+    "secondary": "TRAVEL_WATCH_LISBON",
     "regime": "RISK_ON",
-    "recommended_action": "Suivre Lia (crypto) + Macro on-chain sur app.greensmoke.network ; DCA EGLD/TRO si aligné",
-    "live_feed": "https://app.greensmoke.network/activity",
+    "recommended_action": "Crypto GSN ≥80% + Voyage advisory (destinations) — pas d'exécution auto ni booking",
     "agents_directory": "https://app.greensmoke.network/agents"
   }
 }

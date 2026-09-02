@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>xArtists</title>
+    <script>
+      var path = location.pathname.replace(/^\/xArtists\/?/, '') || '';
+      var search = location.search || '';
+      location.replace('/xArtists/#/' + path.replace(/^\//, '') + search);
+    </script>
+    <meta http-equiv="refresh" content="0;url=/xArtists/#/" />
+  </head>
+  <body>
+    <p><a href="/xArtists/#/">xArtists</a></p>
+  </body>
+</html>

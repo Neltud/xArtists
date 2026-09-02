@@ -1,0 +1,59 @@
+{
+  "name": "xArtists_social_x_30m",
+  "description": "Draft + optional post to X every 30 minutes. Secrets only in Vellum vault.",
+  "schedule": "*/30 * * * *",
+  "timezone": "Europe/Paris",
+  "nodes": [
+    {
+      "id": "schedule",
+      "type": "trigger.cron",
+      "config": { "expression": "*/30 * * * *" }
+    },
+    {
+      "id": "draft",
+      "type": "llm.prompt",
+      "config": {
+        "model": "gpt-4o-mini",
+        "system": "You write short X posts for xArtists/LIA. Never promise live trading, gasless, or auto-swap. Paper/demo only until ops gates open. Tours art is NOT an AI pack.",
+        "user_template": "Theme rotation index {{run_index}}: intent_bar | packs | lia_board | tours | wallet | TRO. Link https://neltud.github.io/xArtists/ Max 280 chars. FR or EN."
+      }
+    },
+    {
+      "id": "guard",
+      "type": "code",
+      "config": {
+        "reject_if_contains": ["live trading on", "guaranteed profit", "gasless live", "travel agent pack"]
+      }
+    },
+    {
+      "id": "post_x",
+      "type": "http.request",
+      "enabled": false,
+      "config": {
+        "method": "POST",
+        "url": "https://api.x.com/2/tweets",
+        "auth": "oauth1_user_context_from_secrets",
+        "body": { "text": "{{draft.text}}" },
+        "note": "Enable after X secrets configured. Or replace with Zapier webhook."
+      }
+    },
+    {
+      "id": "webhook_zapier",
+      "type": "http.request",
+      "enabled": false,
+      "config": {
+        "method": "POST",
+        "url": "{{secrets.ZAPIER_CATCH_HOOK}}",
+        "body": { "text": "{{draft.text}}", "source": "vellum" }
+      }
+    }
+  ],
+  "secrets_required": [
+    "X_API_KEY",
+    "X_API_KEY_SECRET",
+    "X_ACCESS_TOKEN",
+    "X_ACCESS_TOKEN_SECRET",
+    "ZAPIER_CATCH_HOOK"
+  ],
+  "status": "SPEC_ONLY_COMPLETE_IN_VELLUM_UI"
+}

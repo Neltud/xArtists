@@ -1,13 +1,68 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-07-31T23:15:00Z",
+  "updated": "2026-08-28T04:40:00Z",
+  "chain_note": "Mainnet only. Demo UI GO_DEMO. ALL product SCs empty (codeHash null) as of 28 Aug 2026 API probe.",
+  "wallets": {
+    "lia_ops": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "mission": null,
+    "reserve": null,
+    "reward": null,
+    "ops": null,
+    "note": "Create Mission + Reserve + Reward + Ops (EOA or multisig), publish here + TREASURY_POLICY. Never use LIA ops as user Connect."
+  },
   "contracts": {
     "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
     "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
     "marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
     "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn",
-    "agents_marketplace": null
+    "agents_marketplace": null,
+    "rwa_escrow_bridge": null,
+    "tro_burn": null,
+    "treasury_splitter": null
   },
-  "notes": "Set agents_marketplace after mxpy deploy; mirror in VITE_AGENTS_MARKETPLACE_ADDRESS"
+  "verification": {
+    "probed_at": "2026-08-28T04:33:00Z",
+    "api": "https://api.multiversx.com/accounts/{address}",
+    "marketplace_mainnet": {
+      "codeHash": null,
+      "code_empty": true,
+      "balance": "0",
+      "verdict": "NOT_DEPLOYED — empty account"
+    },
+    "nft_staking": {
+      "codeHash": null,
+      "code_empty": true,
+      "balance": "0",
+      "verdict": "NOT_DEPLOYED — empty account"
+    },
+    "tro_governance": {
+      "codeHash": null,
+      "code_empty": true,
+      "balance": "0",
+      "verdict": "NOT_DEPLOYED — empty account"
+    },
+    "nft_minter": {
+      "codeHash": null,
+      "code_empty": true,
+      "balance": "0",
+      "verdict": "NOT_DEPLOYED — empty account"
+    },
+    "agents_marketplace": "null — never deployed",
+    "tro_burn": "null — tro-burn ready, not deployed",
+    "rwa_escrow_bridge": "null — dispute+verification ready, not deployed",
+    "treasury_splitter": "null — SC ready contracts/treasury-splitter, dest wallets null"
+  },
+  "gaps": {
+    "marketplace": "P0 deploy nft-marketplace + codeHash",
+    "agents_marketplace": "P0 deploy FEE_BPS=300",
+    "mission_reserve": "P0 create wallets + publish",
+    "listings_index": "P1 after deploy",
+    "pinata_proxy": "P1 backend only — JWT never in frontend"
+  },
+  "ui_status": {
+    "verdict": "GO_DEMO",
+    "lia_live_trading": false,
+    "pages": "https://neltud.github.io/xArtists/"
+  }
 }

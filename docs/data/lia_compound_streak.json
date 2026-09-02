@@ -1,0 +1,25 @@
+{
+  "phase": "IDLE",
+  "streak": {
+    "wins": 0,
+    "losses": 0,
+    "consecutive_wins": 0,
+    "consecutive_losses": 0,
+    "total_trades": 0,
+    "compound_equity_usd": 13.58,
+    "yield_sleeve_usd": 0.0,
+    "peak_equity_usd": 13.58,
+    "last_outcome": "",
+    "last_trade_id": "",
+    "cooldown_until": 0.0,
+    "halted": false,
+    "halt_reason": "",
+    "updated_at": "2026-07-31T22:25:00Z"
+  },
+  "open_ticket": null,
+  "config": {
+    "target_net_pct": 0.01,
+    "stop_loss_pct": 0.01,
+    "goal_trades": 1000
+  }
+}

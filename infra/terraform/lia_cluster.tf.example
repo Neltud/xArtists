@@ -1,0 +1,5 @@
+# EXAMPLE ONLY — do not apply with real secrets in git
+# resource "aws_eks_cluster" "lia_cluster" { ... }
+# resource "aws_db_instance" "lia_db" { ... }
+# resource "aws_secretsmanager_secret" "lia_secrets" { ... }
+# Secrets: OPENAI_API_KEY, chain keys — vault only

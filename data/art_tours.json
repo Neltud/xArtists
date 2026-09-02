@@ -1,0 +1,65 @@
+{
+  "id": "art_tours",
+  "name": "Tours artistiques xArtists",
+  "updated": "2026-08-28T08:00:00Z",
+  "kind": "cultural_service",
+  "not_an_ai_agent_pack": true,
+  "list_eur_from": 29,
+  "scope_v1": [
+    "Visites d’expositions et galeries",
+    "Itinéraires artistiques par ville",
+    "Agenda culturel + lien éditions xArtists",
+    "Parcours phygital quand œuvre listée"
+  ],
+  "not_v1": [
+    "Pack agent IA",
+    "Booking hôtel/vol",
+    "Custodie fonds voyage",
+    "Signaux trading automatiques"
+  ],
+  "cities": [
+    {
+      "id": "paris",
+      "label": "Paris",
+      "focus": "galeries · foires · street art",
+      "score": 0.88,
+      "note": "Hub éditions + expos temporaires"
+    },
+    {
+      "id": "lisbon",
+      "label": "Lisbonne",
+      "focus": "art contemporain · azulejos · studios",
+      "score": 0.8,
+      "note": "Scène émergente + résidences"
+    },
+    {
+      "id": "tokyo",
+      "label": "Tokyo",
+      "focus": "musées · design · digital art",
+      "score": 0.82,
+      "note": "Croisement tech / culture"
+    },
+    {
+      "id": "marrakech",
+      "label": "Marrakech",
+      "focus": "biennales · artisans · riads-galeries",
+      "score": 0.78,
+      "note": "Parcours matériel / immatériel"
+    }
+  ],
+  "sample_tours": [
+    {
+      "id": "t-expo-week",
+      "title": "Week-end expos",
+      "duration": "2j",
+      "includes": ["2 visites guidées", "pass galerie partenaire", "livret édition"]
+    },
+    {
+      "id": "t-studio-day",
+      "title": "Journée studios",
+      "duration": "1j",
+      "includes": ["3 ateliers", "rencontre artiste", "option phygital mint"]
+    }
+  ],
+  "cta": "Demander un itinéraire — LIA informe, réservation humaine / partenaire v1"
+}

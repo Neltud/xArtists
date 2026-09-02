@@ -1,0 +1,23 @@
+{
+  "updated": "2026-08-30T11:05:52Z",
+  "network": "mainnet",
+  "paper": true,
+  "live_trading": false,
+  "mint_live": false,
+  "packs_total": 3,
+  "series_a": 3,
+  "gsn_elite_min": 0.8,
+  "ipfs": "PENDING",
+  "sdk": {
+    "dapp": "v3",
+    "core": "v13",
+    "target": "v5.7 / core 15.4"
+  },
+  "sc": {
+    "agents_marketplace": null,
+    "secondary_listings": false,
+    "mint_enabled": false
+  },
+  "coherence_last": "69/69",
+  "note": "Demo GO_DEMO · paper · packs Pulse·Yield·Sentinel · Tours = culture"
+}

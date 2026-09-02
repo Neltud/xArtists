@@ -1,0 +1,16 @@
+{
+  "equity_usd": 3.0,
+  "goal_usd": 1000000.0,
+  "start_usd": 3.0,
+  "progress_pct": 0.0003,
+  "multiple": 1.0,
+  "phase": "BOOTSTRAP",
+  "policy": {
+    "lock_ratio": 0.5,
+    "tp_mode": "fixed",
+    "max_risk_pct": 0.005,
+    "compound_intensity": 0.3
+  },
+  "disclaimer": "Projections assume stable edge and no black swans. Fast growth and capital safety are in tension — Guardian enforces safety first.",
+  "projection_note": "At 55% WR ±1% and 5 trades/day: ~7 years from $3. Pure +1% only: 1279 steps. Raise starting capital and edge before raising speed."
+}

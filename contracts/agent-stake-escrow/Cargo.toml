@@ -1,0 +1,13 @@
+[package]
+name = "agent-stake-escrow"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+multiversx-sc = "0.50.3"
+
+[dev-dependencies]
+multiversx-sc-scenario = "0.50.3"

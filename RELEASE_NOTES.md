@@ -1,11 +1,16 @@
-## xArtists v1.0.0 Release Notes
+# xArtists v3.4.1 — Demo release
 
-**Date**: Juin 2026
+**Published:** 2026-08-29
 
-### Highlights
-- Full xPortal integration (In-App Browser + xGenie AI)
-- On-chain monitoring & security workflows
-- Production-ready with E2E tests
-- Enhanced LIA Dashboard and RWA features
+## Demo
+https://neltud.github.io/xArtists/
 
-Voir README pour détails.
+## Highlights
+- Aurora Glass design system
+- Polished Home · Agents · Trading · Wallet · Art Tours
+- TX monitor · Art world map · packs-only Agents
+
+## Repo
+https://github.com/Neltud/xArtists
+
+Tag: `v3.4.1`

@@ -1,0 +1,16 @@
+{
+  "version": "1.0",
+  "updated": "2026-08-09T19:50:00Z",
+  "priority_order": ["DEFENSE", "COMPOUND", "MICRO_ARB", "MOMENTUM", "MEAN_REVERSION", "YIELD", "SOCIAL_WATCH", "ADVISOR"],
+  "modes": {
+    "DEFENSE": {"triggers": ["RISK_OFF", "fear_index_lte_25", "drawdown_gte_0.12"], "allow_new_buy": false, "size_mult": 0.0},
+    "COMPOUND": {"triggers": ["open_position"], "tp_mode": "log", "partial_tp": true, "trailing": true},
+    "MICRO_ARB": {"triggers": ["spread_gt_2_5x_fees", "confidence_gte_0.62"], "max_trades_day": 80, "note": "block-time not sub-ms HFT"},
+    "MOMENTUM": {"triggers": ["trend_up", "gsn_bullish"], "sleeve": "MOMENTUM"},
+    "MEAN_REVERSION": {"triggers": ["vwap_deviation", "rsi_extreme"], "sleeve": "MEAN_REV"},
+    "YIELD": {"triggers": ["no_trade_edge"], "venues": ["hatom"], "risks": ["impermanent_loss"]},
+    "SOCIAL_WATCH": {"signal_weight_cap": 0.15, "allow_new_buy": false},
+    "ADVISOR": {"execution": false, "note": "fuse only — never bypass Guardian"}
+  },
+  "fusion": {"signal_bus_cap_social": 0.15, "guardian_first": true}
+}

@@ -1,0 +1,28 @@
+{
+  "updated": "2026-08-08T15:15:00Z",
+  "token_id": "TRO-94c925",
+  "name": "TUDURIORIGINAL",
+  "ticker": "TRO",
+  "network": "mainnet",
+  "decimals": 6,
+  "product_supply_cap": 500000,
+  "api_supply_approx": 476224,
+  "website": "https://welcome.xartists.art/",
+  "explorer": "https://explorer.multiversx.com/tokens/TRO-94c925",
+  "api": "https://api.multiversx.com/tokens/TRO-94c925",
+  "owner_token_manager": "erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l",
+  "lia_ops_wallet": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "not": [
+    "investment_fund_share",
+    "lia_yield_promise",
+    "treasury_cash_equivalent"
+  ],
+  "roles": [
+    "artistic_utility",
+    "dao_governance_utility",
+    "creator_incentives",
+    "optional_payment_token"
+  ],
+  "lia_policy": "redistribute_all_TRO_recovered",
+  "docs": "docs/TRO.md"
+}

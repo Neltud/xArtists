@@ -1,0 +1,16 @@
+{
+  "schema": "xartists.lia.intel_catalog.v1",
+  "updated": "2026-08-25T09:45:00Z",
+  "seller": "LIA",
+  "currency": "USDC",
+  "buyers": "autonomous_agents_and_pack_holders",
+  "settlement_status": "catalog_only",
+  "products": [
+    {"id": "lia.signal.board.v1", "name": "Board signals pack (paper)", "kind": "signal_stream", "price_usdc": 5.0, "period": "24h", "live_settlement": false},
+    {"id": "lia.oracle.mids.v1", "name": "Oracle mid prices", "kind": "oracle", "price_usdc": 2.0, "period": "1h", "live_settlement": false},
+    {"id": "lia.compounding.echelons.v2", "name": "10-column compounding state", "kind": "analytics", "price_usdc": 3.0, "period": "cycle", "live_settlement": false},
+    {"id": "lia.analysis.desk.v1", "name": "Desk debate + risk memo", "kind": "report", "price_usdc": 15.0, "period": "daily", "live_settlement": false},
+    {"id": "lia.memory.onchain.v1", "name": "On-chain memory digest", "kind": "memory", "price_usdc": 8.0, "period": "daily", "live_settlement": false}
+  ],
+  "docs": "docs/LIA_INTEL_MARKETPLACE.md"
+}

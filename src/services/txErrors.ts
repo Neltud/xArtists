@@ -2,6 +2,7 @@
  * Transaction error classification & user-facing messages (MultiversX / sdk-dapp)
  */
 import { fetchWithTimeout } from './network'
+import { timingDefaults } from '../config/chainTiming'
 
 export type TxErrorCode =
   | 'USER_REJECTED'
@@ -275,8 +276,9 @@ export async function waitTxStatus(
   } = {}
 ): Promise<{ status: 'success' | 'fail' | 'timeout'; raw?: unknown }> {
   const api = opts.api || 'https://api.multiversx.com'
-  const timeoutMs = opts.timeoutMs ?? 120_000
-  const intervalMs = opts.intervalMs ?? 3000
+  const t = timingDefaults()
+  const timeoutMs = opts.timeoutMs ?? t.txStatusTimeoutMs
+  const intervalMs = opts.intervalMs ?? t.txStatusPollMs
   const start = Date.now()
 
   while (Date.now() - start < timeoutMs) {
@@ -285,7 +287,7 @@ export async function waitTxStatus(
       const res = await fetchWithTimeout(
         `${api}/transactions/${hash}`,
         {},
-        { timeoutMs: 12_000, retries: 1, signal: opts.signal }
+        { timeoutMs: t.fetchTimeoutMs, retries: 1, signal: opts.signal }
       )
       if (res.ok) {
         const data = await res.json()

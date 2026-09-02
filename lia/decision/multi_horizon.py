@@ -1,14 +1,9 @@
 """
 Multi-Horizon Decision Engine — viser l'infaillibilité relative
 ==============================================================
-Court terme (CT)  : minutes → heures   — circuit +1% / SL -1%
+Court terme (CT)  : minutes → heures   — circuit +1% / SL (STATARB intégré)
 Moyen terme (MT)  : jours → semaines   — accumulation / DCA cadence
 Long terme (LT)   : mois               — allocation cible + réinvestissement ouvert
-
-« Infaillible » = pas de promesse de gain, mais:
-  - aucune décision sans alignement multi-horizon
-  - veto si un horizon contredit fortement un autre
-  - mémoire on-chain + streak + régime macro
 """
 from __future__ import annotations
 
@@ -20,7 +15,7 @@ from typing import Any, Optional
 
 
 class Horizon(str, Enum):
-    ST = "short"   # court terme
+    ST = "short"
     MT = "medium"
     LT = "long"
 
@@ -28,9 +23,9 @@ class Horizon(str, Enum):
 class Intent(str, Enum):
     BUY = "BUY"
     SELL = "SELL"
-    ACCUMULATE = "ACCUMULATE"  # DCA buy smaller
+    ACCUMULATE = "ACCUMULATE"
     HOLD = "HOLD"
-    YIELD = "YIELD"            # park stables
+    YIELD = "YIELD"
     REBALANCE = "REBALANCE"
     WAIT = "WAIT"
     HALT = "HALT"
@@ -42,7 +37,7 @@ class HorizonVote:
     intent: str
     confidence: float
     reason: str
-    size_mult: float = 1.0  # 1.0 = full ST size; 0.25 = DCA slice
+    size_mult: float = 1.0
 
 
 @dataclass
@@ -60,21 +55,28 @@ class FusedDecision:
         return asdict(self)
 
 
-# --- Target long-term allocation (LIA holds only EGLD/WBTC/USDC family) ---
 LT_TARGETS = {
-    "USDC": 0.45,   # stable core
-    "EGLD": 0.30,   # network beta
-    "WBTC": 0.20,   # macro hedge
+    "USDC": 0.45,
+    "EGLD": 0.30,
+    "WBTC": 0.20,
     "YIELD_BUFFER": 0.05,
 }
 
-# Cadence defaults (hours)
 CADENCE = {
-    "min_hours_between_st_trades": 0.5,   # 30 min floor
-    "dca_interval_hours": 24,             # MT accumulate once / day max
-    "rebalance_interval_hours": 168,      # LT rebalance weekly
-    "max_st_trades_per_day": 8,
-    "accumulate_pct_of_deployable": 0.05, # 5% slices for DCA
+    "min_hours_between_st_trades": 0.33,  # ~20 min (align guards)
+    "dca_interval_hours": 24,
+    "rebalance_interval_hours": 168,
+    "max_st_trades_per_day": 6,
+    "accumulate_pct_of_deployable": 0.05,
+}
+
+# Confidence floors by strategy for ST BUY
+_ST_CONF_FLOOR = {
+    "STATARB": 0.55,
+    "ARB": 0.57,
+    "MR": 0.62,
+    "MOM": 0.62,
+    "EXT": 0.62,
 }
 
 
@@ -82,6 +84,7 @@ def vote_short_term(
     *,
     signal_action: str,
     signal_conf: float,
+    signal_strategy: str = "",
     circuit_can_open: bool,
     circuit_reason: str,
     gs_regime: str,
@@ -94,10 +97,21 @@ def vote_short_term(
         return HorizonVote(Horizon.ST.value, Intent.WAIT.value, 0.7, f"ST: {circuit_reason}")
     if hours_since_swap < CADENCE["min_hours_between_st_trades"]:
         return HorizonVote(Horizon.ST.value, Intent.WAIT.value, 0.75, "ST: cadence floor")
-    if signal_action == "BUY" and signal_conf >= 0.62 and profit_validated:
-        return HorizonVote(Horizon.ST.value, Intent.BUY.value, signal_conf, "ST: edge +1% circuit", 1.0)
+
+    strat = (signal_strategy or "").upper()
+    floor = _ST_CONF_FLOOR.get(strat, 0.62)
+
+    if signal_action == "BUY" and signal_conf >= floor and profit_validated:
+        tag = f"ST: {strat or 'edge'} +1% circuit" if strat else "ST: edge +1% circuit"
+        # Slight size boost for high-conviction STATARB
+        size = 1.0
+        if strat == "STATARB" and signal_conf >= 0.80:
+            size = 1.1
+        return HorizonVote(Horizon.ST.value, Intent.BUY.value, signal_conf, tag, size)
+
     if signal_action == "SELL":
-        return HorizonVote(Horizon.ST.value, Intent.SELL.value, max(signal_conf, 0.7), "ST: exit signal")
+        return HorizonVote(Horizon.ST.value, Intent.SELL.value, max(signal_conf, 0.7), f"ST: exit {strat or 'signal'}")
+
     return HorizonVote(Horizon.ST.value, Intent.WAIT.value, 0.5, "ST: no edge")
 
 
@@ -109,19 +123,17 @@ def vote_medium_term(
     hours_since_dca: float,
     deployable_usd: float,
 ) -> HorizonVote:
-    """Accumulation / DCA when trend not hostile."""
     if hours_since_dca < CADENCE["dca_interval_hours"]:
         return HorizonVote(Horizon.MT.value, Intent.HOLD.value, 0.6, "MT: DCA interval not elapsed")
     if deployable_usd < 5:
         return HorizonVote(Horizon.MT.value, Intent.HOLD.value, 0.55, "MT: low deployable")
-    # mild downtrend + not overbought → accumulate
     if trend_7d_pct <= 0 and trend_7d_pct > -15 and rsi_14 < 55 and gs_bias != "BEARISH":
         return HorizonVote(
             Horizon.MT.value,
             Intent.ACCUMULATE.value,
             0.68,
             f"MT: DCA dip trend_7d={trend_7d_pct:.1f}%",
-            CADENCE["accumulate_pct_of_deployable"] / 0.25,  # relative to ST full size
+            CADENCE["accumulate_pct_of_deployable"] / 0.25,
         )
     if trend_7d_pct > 8 and rsi_14 > 65:
         return HorizonVote(Horizon.MT.value, Intent.HOLD.value, 0.65, "MT: extended — no DCA")
@@ -136,7 +148,6 @@ def vote_long_term(
     hours_since_rebalance: float,
     total_usd: float,
 ) -> HorizonVote:
-    """Rebalance toward LT_TARGETS if drift > 8%."""
     if total_usd < 20:
         return HorizonVote(Horizon.LT.value, Intent.HOLD.value, 0.5, "LT: capital too small")
     if hours_since_rebalance < CADENCE["rebalance_interval_hours"]:
@@ -175,14 +186,6 @@ def fuse_horizons(
     mt: HorizonVote,
     lt: HorizonVote,
 ) -> FusedDecision:
-    """
-    Règles d'alignement (veto = sécurité):
-      - HALT/WAIT ST bloque les BUY agressifs
-      - SELL ST prioritaire
-      - BUY ST seulement si MT/LT ne sont pas YIELD/BEARISH fort
-      - ACCUMULATE si ST wait mais MT/LT accumulent
-      - YIELD si 2+ horizons YIELD
-    """
     votes = [st, mt, lt]
     reasons = [v.reason for v in votes]
 
@@ -208,7 +211,6 @@ def fuse_horizons(
             )
         return FusedDecision(Intent.BUY.value, st.confidence, st.size_mult, reasons, [asdict(v) for v in votes])
 
-    # ST wait — allow MT/LT accumulate
     if mt.intent == Intent.ACCUMULATE.value or lt.intent == Intent.ACCUMULATE.value:
         best = mt if mt.intent == Intent.ACCUMULATE.value else lt
         return FusedDecision(
@@ -234,13 +236,6 @@ def open_loop_reinvest_plan(
     pnl_usd: float = 0.0,
     deployable_usd: float = 0.0,
 ) -> dict[str, Any]:
-    """
-    Boucle ouverte autonome:
-      profit → split compound / yield sleeve (déjà dans compound_engine)
-      ACCUMULATE → slice fixe du déployable
-      YIELD → 100% idle USDC → Hatom/LP
-      REBALANCE → ordres de trim/add vers LT_TARGETS
-    """
     plan: dict[str, Any] = {
         "mode": "open_loop",
         "actions": [],
@@ -262,8 +257,8 @@ def open_loop_reinvest_plan(
         plan["actions"].append(
             {
                 "type": "SURPLUS_SPLIT",
-                "compound_pct": 0.70,
-                "yield_pct": 0.30,
+                "compound_pct": 0.75,
+                "yield_pct": 0.25,
                 "pnl_usd": pnl_usd,
             }
         )
@@ -274,6 +269,7 @@ def decide(
     *,
     signal_action: str = "WAIT",
     signal_conf: float = 0.5,
+    signal_strategy: str = "",
     circuit_can_open: bool = True,
     circuit_reason: str = "OK",
     gs_regime: str = "NEUTRAL",
@@ -291,6 +287,7 @@ def decide(
     st = vote_short_term(
         signal_action=signal_action,
         signal_conf=signal_conf,
+        signal_strategy=signal_strategy,
         circuit_can_open=circuit_can_open,
         circuit_reason=circuit_reason,
         gs_regime=gs_regime,
@@ -321,6 +318,7 @@ if __name__ == "__main__":
     d = decide(
         signal_action="BUY",
         signal_conf=0.72,
+        signal_strategy="STATARB",
         profit_validated=True,
         hours_since_swap=2.0,
         trend_7d_pct=-3.0,

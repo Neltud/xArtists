@@ -1,0 +1,32 @@
+{
+  "updated": "2026-08-27T17:20:00Z",
+  "entity": {
+    "name": "xArtists",
+    "type": "Organisation protocole · MultiversX",
+    "mission": "Marketplace NFT/RWA + agents IA + $TRO utility · LIA (Vellum) cerveau paper puis live",
+    "hq": "MultiversX Mainnet",
+    "token": "TRO-94c925",
+    "supply_cap": 500000,
+    "dapp": "https://neltud.github.io/xArtists/",
+    "github": "https://github.com/Neltud/xArtists"
+  },
+  "branches": [
+    {"id": "lia", "name": "LIA / Vellum Brain", "kind": "cerveau", "status": "paper_live_data", "route": "/trading", "desc": "Décision, EV, fusion signaux, paper legs, risk lock", "evolution": "Shadow → micro-live après codeHash + LIA_LIVE_CONFIRMED"},
+    {"id": "marketplace", "name": "Marketplace NFT", "kind": "commerce", "status": "sc_pending", "route": "/marketplace", "desc": "List / Buy œuvres", "evolution": "Deploy + codeHash"},
+    {"id": "agents", "name": "Agents Packs", "kind": "produit", "status": "sc_pending", "route": "/agents", "desc": "Pulse/Yield/Sentinel/Voyage", "evolution": "SC mint"},
+    {"id": "studio", "name": "Artist Studio", "kind": "création", "status": "ui_live", "route": "/studio", "desc": "Collection · IPFS", "evolution": "Pinata ops"},
+    {"id": "tro", "name": "$TRO", "kind": "token", "status": "live_read", "route": "/tro", "desc": "Utility", "evolution": "burn path"},
+    {"id": "dao", "name": "DAO", "kind": "gouvernance", "status": "live_read", "route": "/dao", "desc": "Votes", "evolution": "SC proposals"},
+    {"id": "treasury", "name": "Treasury", "kind": "finance", "status": "partial", "route": "/tip", "desc": "Tips", "evolution": "splitter"},
+    {"id": "staking", "name": "Staking", "kind": "defi", "status": "ui_live", "route": "/staking", "desc": "Pools", "evolution": "rewards"},
+    {"id": "rwa", "name": "RWA", "kind": "réel", "status": "shell", "route": "/marketplace", "desc": "Escrow", "evolution": "SC"},
+    {"id": "soul", "name": "Soul", "kind": "identité", "status": "paper", "route": "/", "desc": "Paper score", "evolution": "SBT"},
+    {"id": "sim", "name": "Sim Lab", "kind": "demo", "status": "ui_live", "route": "/sim", "desc": "Simulation", "evolution": "TX"},
+    {"id": "hatom", "name": "Hatom", "kind": "partenaire", "status": "external", "route": "/hatom", "desc": "Yield", "evolution": "liens"},
+    {"id": "voyage", "name": "Agent Voyage", "kind": "produit", "status": "paper_ui", "route": "/agents/voyage", "desc": "Travel signals", "evolution": "mint"},
+    {"id": "onramp", "name": "On-Ramp", "kind": "funding", "status": "demo_moonpay", "route": "/", "desc": "MoonPay", "evolution": "webhook"},
+    {"id": "liquidity", "name": "Liquidity", "kind": "ops", "status": "paper", "route": "/trading", "desc": "Rebalance paper", "evolution": "bridges"}
+  ],
+  "roadmap": ["P0 SC deploy", "P0 splitter", "P1 List/Buy", "P2 RWA", "P2 micro-live"],
+  "review": {"date": "2026-08-27", "verdict": "GO_DEMO", "live_shell_ok": true, "sc_marketplace": "pending_codehash", "lia_live_trading": false}
+}

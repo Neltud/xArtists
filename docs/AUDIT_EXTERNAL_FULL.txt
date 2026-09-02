@@ -1,0 +1,168 @@
+================================================================================
+xArtists / LIA — AUDIT EXTERNE INTÉGRAL (dApp complète)
+Document TXT exhaustif — analyse détaillée + meilleures pratiques
+SHA clone de référence : b2e860a (à re-noter par l’auditeur au moment du clone)
+Date : 2026-08-11
+Réseau cible : MultiversX MAINNET uniquement (CHAIN=1)
+Repo : https://github.com/Neltud/xArtists
+dApp Pages : https://neltud.github.io/xArtists/
+================================================================================
+
+0. RÉSUMÉ EXÉCUTIF
+--------------------------------------------------------------------------------
+xArtists est une dApp MultiversX combinant :
+  • Galerie / Studio NFT (phygital + digital) + marketplace
+  • Packs d’agents IA LIA (distincts des prévisions GreenSmoke)
+  • Token $TRO (TRO-94c925, plafond produit 500 000)
+  • Agent de trading autonome LIA (paper-first, Guardian, kill-switch)
+  • DeFi (Hatom, xExchange, Burnify protocole, etc.)
+  • Treasury de fondation (fees + tips + PnL LIA) + splitter 40/30/20/10
+  • UI « Command Center » (CommanderStrip : Guardian + Brain + Risk)
+
+POSTURE DE RISQUE (gates 2026-08-11) :
+  LIA_LIVE_TRADING                 = 0
+  allow_live_trading               = false
+  all_critical_ok                  = false
+  marketplace codeHash             = NULL (compte vide)
+  agents_marketplace               = null
+  treasury_splitter / tro_burn /
+    rwa_escrow_bridge              = null (code source prêt)
+  micro_proofs réussis             = 0
+  PEM in repo                      = clean
+
+VERDICT : private release / pre-mainnet HONNÊTE.
+Le front et LIA refusent d’ouvrir le cash utilisateur tant que les SC
+critiques n’ont pas de codeHash vérifié. Le goulet n’est plus le code
+applicatif : c’est le déploiement mainnet + wallets Mission/Reserve/Reward/Ops
++ multisig owner.
+
+================================================================================
+1. CARTE D’ARCHITECTURE
+--------------------------------------------------------------------------------
+1.1 Monorepo
+  apps/frontend/     SPA Vite + React 18 + TS + Tailwind + sdk-dapp
+  src/               Legacy React (DETTE — dualité)
+  contracts/         Rust MultiversX
+  lia/               Orchestrateur Python (Vellum, guardian, executor…)
+  data/              JSON runtime
+  scripts/           Deploy, post_deploy, gates
+  docs/              Policies, runbooks, audits
+  .github/workflows/ CI Pages / regression / rust / lighthouse
+
+1.2 Contrats (data/contracts.json)
+  marketplace         erd1…8354t     CODEHASH NULL — compte VIDE
+  agents_marketplace  null
+  treasury_splitter   null   (code 40/30/20/10 Mission/Reserve/Reward/Ops)
+  tro_burn / rwa_escrow_bridge null (code prêt)
+
+1.3 LIA : guardian (preflight, kill_reset), vellum (pipeline, production_run),
+  executor, security/go_live_gates, treasury, bridge, burnify, board, oracles
+
+1.4 Wallets : LIA Ops ≠ User ; Mission/Reserve/Reward/Ops CREATE_REQUIRED
+
+================================================================================
+2. FRONTEND
+--------------------------------------------------------------------------------
+Vite + React + Tailwind + sdk-dapp. CommanderStrip (FAST/SLOW path).
+Guards: UserWalletGuard, ScStatusBanner, AgentsDeployStatus, PreMainnetBanner,
+PrivateReleaseStrip. Portfolio LIA ≠ Wallet user. Packs LIA ≠ GreenSmoke.
+
+================================================================================
+3. SMART CONTRACTS — FINDINGS
+--------------------------------------------------------------------------------
+P0 Market empty account · agents null · single-key owner · treasury wallets absent
+P1 Blackbox not run mainnet · doc gap 40/30/30 vs code 40/30/20/10
+P2 External audit · whitelist · bridge redesign
+SC patterns: CEI, pause, 2-step ownership, fee caps — good when deployed
+
+================================================================================
+4. GUARDIAN / KILL / VELLUM
+--------------------------------------------------------------------------------
+PreFlightValidator: VaR, Kelly, death-spiral ; latency << 10ms
+Kill: ARMED→TRIPPED→KILLED ; reset ops-only (2-step hard, cooldown, LIVE ACK)
+production_run: gates→pipeline→commander→mirror ; deploy only VELLUM_DEPLOY_SCS=1
+LIA_LIVE_TRADING default 0 · allow_live_trading false until codeHash+proofs
+
+================================================================================
+5. TREASURY
+--------------------------------------------------------------------------------
+$TRO max 500000 · Split 40/30/20/10 · claimFees→splitter after deploy
+No fund shares sold · tips ≠ investment
+
+================================================================================
+6. SECRETS / CI
+--------------------------------------------------------------------------------
+PEM clean in repo · Pinata JWT Vellum-only · audit gitleaks + workflow perms
+Multiple Pages workflows = consolidation risk
+
+================================================================================
+7. ATTACK SCENARIOS
+--------------------------------------------------------------------------------
+LIA as user session · Buy on empty SC · LIVE without proofs · owner key compromise
+· auto kill-reset · experimental bridge deposits — mitigations documented in code/UI
+
+================================================================================
+8. LACUNES P0
+--------------------------------------------------------------------------------
+[ ] Create Mission+Reserve+Reward+Ops wallets
+[ ] Deploy nft-marketplace + agents-marketplace + codeHash verify
+[ ] post_deploy + VITE_* only after verify ; bandeaux only after codeHash
+[ ] Micro-proofs user TX ; LIA_LIVE_TRADING=0 until then
+[ ] Multisig owner path ; real wallet signature E2E ; index listings
+[ ] Fix contracts.json gaps text 40/30/30 → 40/30/20/10
+
+P1: splitter deploy, blackbox, pin backend, CI consolidate, equity in status
+P2: paid audit, RWA live, bridge redesign, Soul zk real
+
+================================================================================
+9. BEST PRACTICES
+--------------------------------------------------------------------------------
+SC: CEI+pause+multisig · claimFees→split ≤7d · blackbox before live marketing
+FE: fail-closed codeHash · protocole≠user labels · apps/frontend only
+LIA: production_run cadence · Guardian before Brain · kill reset manual
+Treasury: public addresses even at 0 · no performance promises
+Ops: verify before VITE · private release until codeHash
+
+================================================================================
+10. QUESTIONS OPS
+--------------------------------------------------------------------------------
+Q1 Owner SC timeline to multisig?
+Q2 Create 4 treasury wallets this week?
+Q3 Confirm split 40/30/20/10?
+Q4 Reward pool address type?
+Q5 TRO on Burnify listed?
+Q6 EGLD runway budget?
+Q7 claimFees cadence?
+Q8 Sub-agent escrow on-chain v1?
+Q9 Vellum secrets holders + rotation?
+Q10 Governance SC codeHash valid for votes?
+Q11 Public Pages vs restricted?
+Q12 KPI v1 priority?
+Q13 RWA attestor = LIA or dedicated?
+Q14 SOL bridge paper exit criteria?
+
+================================================================================
+11. AUDITOR CHECKLIST
+--------------------------------------------------------------------------------
+[ ] SHA-dated clone · gitleaks · explorer codeHash each address
+[ ] Review SC sources · FE Buy blocked · UserWalletGuard · gates LIVE 0/1
+[ ] Guardian+kill_reset tests · production_run without PEM
+[ ] No JWT in front bundle · TRO supply claim vs chain · no perf promises
+
+================================================================================
+12. REFERENCES
+--------------------------------------------------------------------------------
+TREASURY_POLICY · TREASURY_SPLITTER · GUARDIAN_FAST_PATH · KILL_SWITCH_RESET
+FRONTEND_COMMANDER_ARCHITECTURE · VELLUM_OPERATOR_NOW · SECURITY_REMEDIATION_P0_P1
+data/contracts.json · lia/vellum/production_run.py · lia/guardian/*
+
+================================================================================
+13. CONCLUSION
+--------------------------------------------------------------------------------
+Solid paper/fail-closed maturity pre-TVL. Remaining risk is operational:
+deploy+verify before user cash, multisig, materialize treasury wallets,
+never market live without codeHash. Order: wallets → deploy market/agents →
+verify → post_deploy → micro-TX → production_run cadence → splitter → then LIVE.
+
+— Fin AUDIT_EXTERNAL_FULL.txt —
+================================================================================

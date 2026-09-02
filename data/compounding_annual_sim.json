@@ -1,0 +1,30 @@
+{
+  "schema": "xartists.compounding.annual_sim.v1",
+  "updated": "2026-08-25T09:45:00Z",
+  "mode": "paper",
+  "disclaimer": "Simulation only. Includes losing columns. Not financial advice.",
+  "assumptions": {
+    "core_tp_pct": 1.0,
+    "core_sl_pct": 0.5,
+    "trades_per_year": 250,
+    "forced_loss_columns": ["E7", "E8"]
+  },
+  "echelons": [
+    {"id": "E1", "return_1y_pct": 12.4, "lost_money": false, "stress": 0.0},
+    {"id": "E2", "return_1y_pct": 8.1, "lost_money": false, "stress": 0.05},
+    {"id": "E3", "return_1y_pct": 14.2, "lost_money": false, "stress": 0.0},
+    {"id": "E4", "return_1y_pct": 3.5, "lost_money": false, "stress": 0.1},
+    {"id": "E5", "return_1y_pct": 11.0, "lost_money": false, "stress": 0.0},
+    {"id": "E6", "return_1y_pct": 5.2, "lost_money": false, "stress": 0.08},
+    {"id": "E7", "return_1y_pct": -18.6, "lost_money": true, "stress": 0.35},
+    {"id": "E8", "return_1y_pct": -22.1, "lost_money": true, "stress": 0.4},
+    {"id": "E9", "return_1y_pct": 16.8, "lost_money": false, "stress": 0.0},
+    {"id": "E10", "return_1y_pct": 10.3, "lost_money": false, "stress": 0.05}
+  ],
+  "aggregate": {
+    "portfolio_return_1y_pct": 4.08,
+    "losing_columns": ["E7", "E8"],
+    "n_losing": 2,
+    "note": "Equal-weight 10 columns; losses on E7/E8 drag portfolio but do not wipe others"
+  }
+}

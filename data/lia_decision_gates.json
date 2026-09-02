@@ -1,0 +1,9 @@
+{
+  "version": "2026-08-03",
+  "note": "Snapshot policy defaults — refresh via python -m lia.decisions.policy",
+  "live_trading": {"allow": true, "risk": "low", "code": "PAPER", "reason": "LIA_LIVE_TRADING=0 default"},
+  "buy_agent": {"allow": false, "risk": "low", "code": "SC_NULL"},
+  "bid": {"allow": false, "risk": "high", "code": "NO_BID_ENDPOINT", "reason": "verify codehash"},
+  "pinata": {"allow": false, "risk": "medium", "code": "PINATA", "reason": "Deferred — finish later"},
+  "tro_rewards": {"trigger_nft": "first_sale", "trigger_collection": "first_physical_mint", "pool": 50000}
+}

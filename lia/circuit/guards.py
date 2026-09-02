@@ -1,7 +1,6 @@
 """
-LIA Circuit Guards — garde-fous obligatoires
-============================================
-Tous les checks avant / pendant / après un trade.
+LIA Circuit Guards — garde-fous optimisés (risk management compétent)
+=====================================================================
 Aucun trade ne passe sans `preflight_ok`.
 Aucun hold TRO. SL toujours armé.
 
@@ -10,19 +9,22 @@ Garde-fous:
   G02  COOLDOWN temporelle
   G03  POSITION déjà ouverte (max 1)
   G04  GOAL trades atteint
-  G05  Cadence / pace (min hours since last swap)
+  G05  Cadence / pace
   G06  Daily trade count cap
   G07  Asset policy (token autorisé accumulation)
-  G08  Notional min/max + risk budget
+  G08  Notional min/max + risk budget dynamique
   G09  Profit validated (gross >= fees + target net)
   G10  Liquidity pair minimum
   G11  GreenSmoke RISK_OFF → no BUY
   G12  Hatom HF critique
-  G13  Pre-verify on-chain (balance EGLD / nonce)
-  G14  Runtime SL / BE / trailing (toujours armés à l'open)
+  G13  Pre-verify on-chain
+  G14  Runtime SL / BE / trailing
   G15  Post-verify tx status
-  G16  Drawdown circuit (equity vs peak)
+  G16  Drawdown circuit (hard)
   G17  Multi-horizon veto flag
+  G18  Volatility filter (ATR / range trop large)
+  G19  Time-stop (max hold duration)
+  G20  Soft drawdown warning (réduit le risk)
 """
 from __future__ import annotations
 
@@ -33,7 +35,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
 
-# --- defaults aligned with compound_engine + multi_horizon ---
 ACCUMULATE_PREFIXES = ("EGLD", "WEGLD", "USDC", "WBTC", "HWBTC", "BTC")
 BLOCKED_HOLD = ("TRO", "TRO-94C925", "TUDURIORIGINAL")
 
@@ -56,6 +57,9 @@ class GuardCode(str, Enum):
     G15_POST_CHAIN = "G15_POST_CHAIN"
     G16_DRAWDOWN = "G16_DRAWDOWN"
     G17_HORIZON_VETO = "G17_HORIZON_VETO"
+    G18_VOLATILITY = "G18_VOLATILITY"
+    G19_TIME_STOP = "G19_TIME_STOP"
+    G20_SOFT_DD = "G20_SOFT_DD"
 
 
 @dataclass
@@ -71,28 +75,48 @@ class GuardResult:
 
 @dataclass
 class GuardConfig:
-    min_hours_between_trades: float = 0.5
-    max_trades_per_day: int = 8
+    """Calibrage risk management compétent — aligné CompoundCircuit optimisé."""
+    # Pace & frequency
+    min_hours_between_trades: float = 0.33   # ~20 min
+    max_trades_per_day: int = 6              # qualité > quantité
+
+    # Sizing
     min_notional_usd: float = 5.0
-    max_notional_usd: float = 500.0
-    max_pct_deployable: float = 0.25
-    risk_per_trade_pct: float = 0.02
-    stop_loss_pct: float = 0.01
+    max_notional_usd: float = 350.0
+    max_pct_deployable: float = 0.20         # jamais > 20 %
+    risk_per_trade_pct: float = 0.015        # 1.5 % equity at risk
+    risk_scale_min: float = 0.50             # floor after soft DD / low conf
+    risk_scale_max: float = 1.20             # ceiling on high conf + streak
+
+    # Stops / targets (short-horizon +1% net)
+    stop_loss_pct: float = 0.009
     target_net_pct: float = 0.01
-    min_liquidity_usd: float = 10_000.0
+    be_trigger_pct: float = 0.004
+    trail_after_pct: float = 0.006
+    trail_pct: float = 0.0035
+
+    # Market quality
+    min_liquidity_usd: float = 60_000.0
     min_egld_gas: float = 0.02
-    min_hatom_hf: float = 1.5
-    max_drawdown_pct: float = 0.15  # 15% from peak → halt
-    max_consecutive_losses: int = 3
+    min_hatom_hf: float = 1.8
+    max_atr_pct: float = 0.04               # bloquer si ATR 1h > 4 % du prix
+    max_hold_seconds: float = 4 * 3600      # time-stop 4 h
+
+    # Drawdown
+    max_drawdown_pct: float = 0.12           # hard halt 12 %
+    soft_drawdown_pct: float = 0.06          # réduit le risk dès 6 %
+    max_consecutive_losses: int = 2
+
+    # Fees (réalistes MultiversX DEX)
     dex_fee_rt: float = 0.006
-    gas_usd: float = 0.05
-    max_slippage: float = 0.003
-    safety_buffer: float = 0.002
+    gas_usd: float = 0.04
+    max_slippage: float = 0.0025
+    safety_buffer: float = 0.0015
 
 
 @dataclass
 class DailyCounter:
-    day: str = ""  # YYYY-MM-DD UTC
+    day: str = ""
     trades: int = 0
 
     def bump(self) -> int:
@@ -111,7 +135,7 @@ class DailyCounter:
 
 
 class CircuitGuards:
-    """Central guard rail for LIA circuit."""
+    """Central guard rail for LIA circuit — optimized risk."""
 
     def __init__(
         self,
@@ -165,6 +189,59 @@ class CircuitGuards:
         self.manual_halt = False
         self.manual_halt_reason = ""
         self.save()
+
+    # ----- dynamic risk scaling -----
+
+    def risk_scale(
+        self,
+        *,
+        confidence: float = 0.7,
+        consecutive_wins: int = 0,
+        consecutive_losses: int = 0,
+        equity_usd: float = 0.0,
+        peak_usd: float = 0.0,
+        gs_regime: str = "NEUTRAL",
+        strategy: str = "",
+    ) -> float:
+        """
+        Multiplier appliqué au risk_per_trade_pct.
+        < 1 en soft DD / low conf / post-loss ; > 1 si high conf + streak.
+        """
+        scale = 1.0
+
+        # Soft drawdown → reduce
+        if peak_usd > 0 and equity_usd > 0:
+            dd = (peak_usd - equity_usd) / peak_usd
+            if dd >= self.cfg.soft_drawdown_pct:
+                # linear taper from 1.0 at soft_dd to risk_scale_min at hard_dd
+                span = max(self.cfg.max_drawdown_pct - self.cfg.soft_drawdown_pct, 1e-6)
+                t = min(1.0, (dd - self.cfg.soft_drawdown_pct) / span)
+                scale *= 1.0 - t * (1.0 - self.cfg.risk_scale_min)
+
+        # Confidence
+        if confidence < 0.60:
+            scale *= 0.70
+        elif confidence >= 0.85:
+            scale *= 1.10
+        elif confidence >= 0.75:
+            scale *= 1.05
+
+        # Streak
+        if consecutive_losses >= 1:
+            scale *= 0.75
+        if consecutive_wins >= 3:
+            scale *= 1.08
+        elif consecutive_wins >= 5:
+            scale *= 1.12
+
+        # Regime
+        regime = str(gs_regime).upper()
+        if regime == "RISK_OFF":
+            scale *= 0.0  # will be blocked anyway by G11
+        elif regime == "RISK_ON" and strategy == "STATARB":
+            scale *= 1.05
+
+        return max(self.cfg.risk_scale_min, min(self.cfg.risk_scale_max, scale))
 
     # ----- individual checks -----
 
@@ -240,15 +317,20 @@ class CircuitGuards:
             )
         return GuardResult(True, GuardCode.G07_ASSET.value, "ok")
 
-    def check_notional(self, deployable_usd: float, proposed_notional: Optional[float] = None) -> GuardResult:
+    def check_notional(
+        self,
+        deployable_usd: float,
+        proposed_notional: Optional[float] = None,
+        risk_mult: float = 1.0,
+    ) -> GuardResult:
         if deployable_usd < self.cfg.min_notional_usd:
             return GuardResult(
                 False,
                 GuardCode.G08_NOTIONAL.value,
                 f"deployable ${deployable_usd:.2f} < min ${self.cfg.min_notional_usd}",
             )
-        # compute max allowed
-        risk_budget = deployable_usd * self.cfg.risk_per_trade_pct
+        effective_risk = self.cfg.risk_per_trade_pct * max(self.cfg.risk_scale_min, min(self.cfg.risk_scale_max, risk_mult))
+        risk_budget = deployable_usd * effective_risk
         notional = risk_budget / max(self.cfg.stop_loss_pct, 0.001)
         notional = max(self.cfg.min_notional_usd, min(self.cfg.max_notional_usd, notional))
         notional = min(notional, deployable_usd * self.cfg.max_pct_deployable)
@@ -257,9 +339,14 @@ class CircuitGuards:
                 False,
                 GuardCode.G08_NOTIONAL.value,
                 f"proposed ${proposed_notional:.2f} > allowed ${notional:.2f}",
-                {"max_notional": notional},
+                {"max_notional": notional, "risk_mult": risk_mult},
             )
-        return GuardResult(True, GuardCode.G08_NOTIONAL.value, "ok", {"max_notional": round(notional, 4)})
+        return GuardResult(
+            True,
+            GuardCode.G08_NOTIONAL.value,
+            "ok",
+            {"max_notional": round(notional, 4), "risk_mult": round(risk_mult, 3), "effective_risk_pct": round(effective_risk, 5)},
+        )
 
     def check_profit_validated(self, notional_usd: float, expected_gross_pct: Optional[float] = None) -> GuardResult:
         gas_pct = self.cfg.gas_usd / max(notional_usd, 0.01)
@@ -314,8 +401,51 @@ class CircuitGuards:
             return GuardResult(False, GuardCode.G17_HORIZON_VETO.value, reason or "multi-horizon veto")
         return GuardResult(True, GuardCode.G17_HORIZON_VETO.value, "ok")
 
+    def check_volatility(self, atr_pct: Optional[float] = None) -> GuardResult:
+        """G18 — bloquer si volatilité trop élevée pour un TP +1% net."""
+        if atr_pct is None:
+            return GuardResult(True, GuardCode.G18_VOLATILITY.value, "ok (no atr)")
+        if atr_pct > self.cfg.max_atr_pct:
+            return GuardResult(
+                False,
+                GuardCode.G18_VOLATILITY.value,
+                f"ATR {atr_pct:.2%} > max {self.cfg.max_atr_pct:.0%}",
+                {"atr_pct": atr_pct},
+            )
+        return GuardResult(True, GuardCode.G18_VOLATILITY.value, "ok", {"atr_pct": atr_pct})
+
+    def check_time_stop(self, opened_at: float, now: Optional[float] = None) -> GuardResult:
+        """G19 — force exit si hold trop long (edge +1% expiré)."""
+        now = now if now is not None else time.time()
+        held = now - opened_at
+        if held >= self.cfg.max_hold_seconds:
+            return GuardResult(
+                False,
+                GuardCode.G19_TIME_STOP.value,
+                f"time-stop: held {held/3600:.1f}h >= {self.cfg.max_hold_seconds/3600:.0f}h",
+                {"held_sec": held},
+            )
+        return GuardResult(True, GuardCode.G19_TIME_STOP.value, "ok", {"held_sec": held})
+
+    def check_soft_drawdown(self, equity_usd: float, peak_usd: float) -> GuardResult:
+        """G20 — warning only: always ok, but meta carries scale hint."""
+        if peak_usd <= 0:
+            return GuardResult(True, GuardCode.G20_SOFT_DD.value, "ok", {"soft": False, "suggested_scale": 1.0})
+        dd = (peak_usd - equity_usd) / peak_usd
+        soft = dd >= self.cfg.soft_drawdown_pct
+        scale = 1.0
+        if soft:
+            span = max(self.cfg.max_drawdown_pct - self.cfg.soft_drawdown_pct, 1e-6)
+            t = min(1.0, (dd - self.cfg.soft_drawdown_pct) / span)
+            scale = 1.0 - t * (1.0 - self.cfg.risk_scale_min)
+        return GuardResult(
+            True,
+            GuardCode.G20_SOFT_DD.value,
+            "soft DD active" if soft else "ok",
+            {"soft": soft, "drawdown_pct": round(dd, 4), "suggested_scale": round(scale, 3)},
+        )
+
     def arm_stops(self, entry: float, notional_usd: float) -> dict[str, float]:
-        """G14 — always return hard stop + target at open."""
         gas_pct = self.cfg.gas_usd / max(notional_usd, 0.01)
         gross = (
             self.cfg.dex_fee_rt
@@ -327,10 +457,11 @@ class CircuitGuards:
         return {
             "stop": entry * (1 - self.cfg.stop_loss_pct),
             "target": entry * (1 + gross),
-            "be_trigger": entry * (1 + 0.005),
-            "trail_activate": entry * (1 + 0.008),
-            "trail_pct": 0.004,
+            "be_trigger": entry * (1 + self.cfg.be_trigger_pct),
+            "trail_activate": entry * (1 + self.cfg.trail_after_pct),
+            "trail_pct": self.cfg.trail_pct,
             "gross_required_pct": gross,
+            "max_hold_seconds": self.cfg.max_hold_seconds,
         }
 
     def runtime_action(
@@ -342,18 +473,19 @@ class CircuitGuards:
         target: float,
         hwm: float,
         trail_active: bool,
+        opened_at: Optional[float] = None,
     ) -> dict[str, Any]:
-        """G14 runtime — update BE/trail logic and emit action."""
+        """G14 + G19 runtime."""
         new_hwm = max(hwm, price)
         new_stop = stop
         new_trail = trail_active
 
-        if price >= entry * 1.005:
+        if price >= entry * (1 + self.cfg.be_trigger_pct):
             new_stop = max(new_stop, entry)
-        if price >= entry * 1.008:
+        if price >= entry * (1 + self.cfg.trail_after_pct):
             new_trail = True
         if new_trail:
-            trail_stop = new_hwm * (1 - 0.004)
+            trail_stop = new_hwm * (1 - self.cfg.trail_pct)
             new_stop = max(new_stop, trail_stop)
 
         action = "HOLD"
@@ -361,6 +493,10 @@ class CircuitGuards:
             action = "STOP_LOSS"
         elif price >= target:
             action = "TAKE_PROFIT"
+        elif opened_at is not None:
+            ts = self.check_time_stop(opened_at)
+            if not ts.ok:
+                action = "TIME_STOP"
 
         return {
             "action": action,
@@ -369,8 +505,6 @@ class CircuitGuards:
             "trail_active": new_trail,
             "code": GuardCode.G14_RUNTIME.value,
         }
-
-    # ----- aggregated preflight -----
 
     def preflight(
         self,
@@ -383,6 +517,7 @@ class CircuitGuards:
         hours_since_swap: float = 999.0,
         has_open_position: bool = False,
         consecutive_losses: int = 0,
+        consecutive_wins: int = 0,
         halted_flag: bool = False,
         halt_reason: str = "",
         cooldown_until: float = 0.0,
@@ -398,8 +533,20 @@ class CircuitGuards:
         proposed_notional: Optional[float] = None,
         pre_chain_ok: bool = True,
         pre_chain_detail: str = "skipped",
+        atr_pct: Optional[float] = None,
+        confidence: float = 0.7,
+        strategy: str = "",
     ) -> dict[str, Any]:
-        """Run all open-gates. Returns {ok, blockers, warnings, max_notional, stops_template}."""
+        scale = self.risk_scale(
+            confidence=confidence,
+            consecutive_wins=consecutive_wins,
+            consecutive_losses=consecutive_losses,
+            equity_usd=equity_usd,
+            peak_usd=peak_usd,
+            gs_regime=gs_regime,
+            strategy=strategy,
+        )
+
         checks: list[GuardResult] = [
             self.check_halt(consecutive_losses, halted_flag, halt_reason),
             self.check_cooldown(cooldown_until),
@@ -408,12 +555,14 @@ class CircuitGuards:
             self.check_pace(hours_since_swap),
             self.check_daily_cap(),
             self.check_asset(token),
-            self.check_notional(deployable_usd, proposed_notional),
+            self.check_notional(deployable_usd, proposed_notional, risk_mult=scale),
             self.check_liquidity(liquidity_usd),
             self.check_regime(gs_regime, intent),
             self.check_hf(hatom_hf),
             self.check_drawdown(equity_usd if equity_usd else peak_usd, peak_usd if peak_usd else equity_usd),
             self.check_horizon_veto(horizon_veto, horizon_veto_reason),
+            self.check_volatility(atr_pct),
+            self.check_soft_drawdown(equity_usd if equity_usd else peak_usd, peak_usd if peak_usd else equity_usd),
         ]
 
         notional_meta = next((c.meta for c in checks if c.code == GuardCode.G08_NOTIONAL.value), {})
@@ -444,8 +593,9 @@ class CircuitGuards:
             "blockers": blockers,
             "passed": [c.to_dict() for c in checks if c.ok],
             "max_notional": max_notional,
-            "stops_template": self.arm_stops(1.0, max_notional),  # relative; scale by entry at open
-            "guards_version": "1.0.0",
+            "risk_scale": round(scale, 3),
+            "stops_template": self.arm_stops(1.0, max_notional),
+            "guards_version": "2.0.0-risk-opt",
         }
 
     def record_trade_opened(self) -> None:
@@ -460,6 +610,7 @@ class CircuitGuards:
             "manual_halt_reason": self.manual_halt_reason,
             "blocked_until": self.blocked_until,
             "config": asdict(self.cfg),
+            "guards_version": "2.0.0-risk-opt",
         }
 
 
@@ -473,6 +624,8 @@ if __name__ == "__main__":
         equity_usd=50,
         peak_usd=50,
         profit_validated=True,
+        confidence=0.8,
+        strategy="STATARB",
     )
     print(json.dumps(r, indent=2))
     print(json.dumps(g.status(), indent=2))

@@ -1,0 +1,7 @@
+{
+  "pool_remaining_tro": 50000,
+  "distributed_tro": 0,
+  "mode": "standard",
+  "cap_per_collection_nft": 500,
+  "note": "Initial ops pool — stop rewards at 0; refill from fees/treasury policy"
+}

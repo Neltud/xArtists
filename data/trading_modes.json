@@ -1,0 +1,26 @@
+{
+  "updated": "2026-08-04T19:50:00Z",
+  "modes": [
+    "DEFENSE",
+    "YIELD",
+    "MICRO_ARB",
+    "MEAN_REVERSION",
+    "MOMENTUM",
+    "COMPOUND",
+    "ADVISOR",
+    "SOCIAL_WATCH"
+  ],
+  "priority": [
+    "DEFENSE",
+    "COMPOUND",
+    "MICRO_ARB",
+    "MOMENTUM",
+    "MEAN_REVERSION",
+    "YIELD",
+    "SOCIAL_WATCH"
+  ],
+  "social_weight_cap": 0.15,
+  "gs_max_external_weight": 0.3,
+  "LIA_LIVE_TRADING": "0",
+  "module": "lia.circuit.mode_orchestrator"
+}

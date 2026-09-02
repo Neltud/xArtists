@@ -1,0 +1,27 @@
+{
+  "ts": "2026-08-09T15:16:00Z",
+  "pipeline": "lia.vellum.pipeline",
+  "version": "1.3",
+  "live": false,
+  "chain_id": "1",
+  "desk": {
+    "action": "YIELD",
+    "confidence": 0.35,
+    "net_score": 0.0,
+    "risk_veto": false,
+    "agreement": 0.5,
+    "rationale": "stub — run python -m lia.vellum.pipeline",
+    "roles": [],
+    "paper": true
+  },
+  "fuse": {
+    "action": "YIELD",
+    "source": "stub"
+  },
+  "summary": {
+    "ok": true,
+    "mode": "YIELD",
+    "note": "stub until Vellum publish"
+  },
+  "ok": true
+}

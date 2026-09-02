@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "network": "mainnet",
+  "updated": "2026-08-08T14:50:00Z",
+  "wallets": {
+    "lia_ops": {
+      "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+      "role": "LIA Ops / Protocol",
+      "status": "live",
+      "note": "Never use as user session for List/Buy"
+    },
+    "mission": {
+      "address": null,
+      "role": "Treasury Mission",
+      "status": "CREATE_REQUIRED",
+      "note": "Grants, art acquisitions, drops — prefer multisig"
+    },
+    "reserve": {
+      "address": null,
+      "role": "Treasury Reserve",
+      "status": "CREATE_REQUIRED",
+      "note": "Runway, drawdown, incidents — prefer multisig"
+    },
+    "btc_ops": {
+      "address": "bc1q0rvmym3mc4f5nmfuvpzvkvr236ptx5l243rt4d",
+      "role": "BTC receive (ops visibility)",
+      "status": "live"
+    },
+    "sol_ops": {
+      "address": "FEcBEmpNGv8yuAnuyAdnZneCMiJMnNGYKaw7cgSzNYwn",
+      "role": "SOL receive (ops visibility)",
+      "status": "live"
+    }
+  },
+  "create_mission_reserve": {
+    "steps": [
+      "mxpy wallet new --format pem --outfile mission.pem  # offline cold preferred",
+      "mxpy wallet new --format pem --outfile reserve.pem",
+      "mxpy wallet pem-address mission.pem",
+      "mxpy wallet pem-address reserve.pem",
+      "python scripts/set_treasury_wallets.py --mission erd1... --reserve erd1...",
+      "Fund minimally for visibility; store PEM in hardware/offline only",
+      "Prefer migrate to multisig when available"
+    ]
+  },
+  "split_policy": "docs/TREASURY_POLICY.md"
+}

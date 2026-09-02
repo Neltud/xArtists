@@ -1,0 +1,9 @@
+{
+  "items": [
+    {"domain": "politics", "source": "seed", "title": "Macro calendar: watch CPI / policy speeches", "bias": "WAIT", "score": 0},
+    {"domain": "culture", "source": "seed", "title": "Digital art fairs — attention cycle steady", "bias": "WAIT", "score": 0.05},
+    {"domain": "arts", "source": "seed", "title": "Phygital collections — narrative support for creator markets", "bias": "BUY", "score": 0.15},
+    {"domain": "finance", "source": "seed", "title": "Risk sentiment mixed — no extreme positioning", "bias": "WAIT", "score": 0},
+    {"domain": "crypto", "source": "seed", "title": "MVX ecosystem narrative (Supernova) — medium horizon", "bias": "BUY", "score": 0.2}
+  ]
+}

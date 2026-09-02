@@ -1,0 +1,14 @@
+{
+  "updated": "2026-08-04T13:45:00Z",
+  "LIA_LIVE_TRADING": "0",
+  "commands": [
+    "python -m lia.decisions.policy",
+    "python -m lia.gas.micro_trade",
+    "python -m lia.media.pinata_connect"
+  ],
+  "after_sc_deploy": [
+    "python scripts/post_deploy_contracts.py --marketplace erd1... --agents erd1...",
+    "python scripts/verify_marketplace_codehash.py"
+  ],
+  "frontend": "push main → GH Pages rebuild"
+}

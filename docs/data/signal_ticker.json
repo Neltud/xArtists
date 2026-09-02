@@ -1,0 +1,13 @@
+{
+  "updated": "2026-08-26T08:00:00Z",
+  "lines": [
+    "GSN Elite MVX acc=88% bias=BUY",
+    "GSN Alpha Macro acc=84% bias=BUY",
+    "Polymarket 62% · Fed cuts rates before year end?",
+    "Polymarket 41% · Bitcoin above 100k by October?",
+    "CRYPTO · MVX ecosystem narrative (Supernova) — medium horizon",
+    "ARTS · Phygital collections — narrative support for creator markets",
+    "LIA fusion WAIT conf=0.50 src=lia_primary · PAPER"
+  ],
+  "fused": { "decision": "WAIT", "confidence": 0.5, "source": "lia_primary" }
+}

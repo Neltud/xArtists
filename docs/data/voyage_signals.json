@@ -1,0 +1,43 @@
+{
+  "updated": "2026-08-27T17:00:00Z",
+  "agent": "voyage",
+  "mode": "paper",
+  "note": "Signaux agent de voyage — advisory only. Pas de booking on-chain v1.",
+  "signals": [
+    {
+      "id": "tv-01",
+      "destination": "Lisbon",
+      "theme": "culture_tech",
+      "bias": "watch",
+      "confidence": 0.62,
+      "horizon": "30d",
+      "rationale": "Corrélation mild events tech + saison tourisme",
+      "rwa_link": null
+    },
+    {
+      "id": "tv-02",
+      "destination": "MultiversX_ecosystem",
+      "theme": "crypto_mobility",
+      "bias": "accumulate_signal",
+      "confidence": 0.71,
+      "horizon": "14d",
+      "rationale": "Flux conférence / community travel correlated with EGLD narrative",
+      "rwa_link": "hospitality_soft"
+    },
+    {
+      "id": "tv-03",
+      "destination": "Mediterranean",
+      "theme": "seasonal",
+      "bias": "neutral",
+      "confidence": 0.55,
+      "horizon": "90d",
+      "rationale": "Saisonnalité classique — pas de signal exécution LIA",
+      "rwa_link": null
+    }
+  ],
+  "lia_policy": {
+    "max_weight": 0.1,
+    "requires_gsn_filter": true,
+    "execution": "never_auto_v1"
+  }
+}

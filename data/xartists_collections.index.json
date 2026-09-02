@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-07-29T15:20:00Z",
+  "total_collections": 11,
+  "total_nfts": 173,
+  "version": "index-1",
+  "collections": [
+    {"identifier": "NFTUDURI-2990b6", "name": "NFTUDURI", "type": "NonFungibleESDT", "nft_count": 50, "preview": []},
+    {"identifier": "TRO-652d6d", "name": "TRO", "type": "NonFungibleESDT", "nft_count": 37, "preview": []},
+    {"identifier": "MAS-5189b6", "name": "MAS", "type": "NonFungibleESDT", "nft_count": 27, "preview": []},
+    {"identifier": "HP47X2-b71543", "name": "HP47X2", "type": "NonFungibleESDT", "nft_count": 19, "preview": []},
+    {"identifier": "ALISTOR-a646bc", "name": "ALISTOR", "type": "NonFungibleESDT", "nft_count": 12, "preview": []},
+    {"identifier": "BGG-2b627c", "name": "BGG", "type": "NonFungibleESDT", "nft_count": 8, "preview": []},
+    {"identifier": "XAUS-d9cf1f", "name": "XAUS", "type": "NonFungibleESDT", "nft_count": 7, "preview": []},
+    {"identifier": "AGR-9bd53e", "name": "AlGorRhythm", "type": "NonFungibleESDT", "nft_count": 5, "preview": []},
+    {"identifier": "XAR-cee2e0", "name": "XAR", "type": "NonFungibleESDT", "nft_count": 3, "preview": []},
+    {"identifier": "XTR-e5072b", "name": "XTR", "type": "SemiFungibleESDT", "nft_count": 3, "preview": []},
+    {"identifier": "ASFT-a6273a", "name": "ASFT", "type": "SemiFungibleESDT", "nft_count": 2, "preview": []}
+  ]
+}

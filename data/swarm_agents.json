@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-08-25T00:00:00Z",
+  "swarm_version": "1.0",
+  "agents": [
+    {"name": "LIA", "platform": "Vellum Workflows", "role": "Trading autonome mainnet", "weight": 0.5, "status": "ACTIVE"},
+    {"name": "Liia", "platform": "GreenSmokeNetwork", "role": "Previsions marche", "weight": 0.2, "status": "STANDBY"},
+    {"name": "Lia", "platform": "GreenSmokeNetwork", "role": "Previsions techniques", "weight": 0.15, "status": "STANDBY"},
+    {"name": "Macro", "platform": "GreenSmokeNetwork", "role": "Macro/info", "weight": 0.15, "status": "STANDBY"}
+  ],
+  "consensus_threshold": 0.6,
+  "voting_method": "weighted_confidence"
+}

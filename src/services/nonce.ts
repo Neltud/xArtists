@@ -1,7 +1,9 @@
 /**
  * MultiversX nonce polling & local reservation (with network timeouts)
+ * Defaults follow src/config/chainTiming.ts (pre-Supernova vs Supernova).
  */
 import { fetchJson, fetchWithTimeout } from './network'
+import { timingDefaults } from '../config/chainTiming'
 
 const DEFAULT_API = 'https://api.multiversx.com'
 const DEFAULT_GATEWAY = 'https://gateway.multiversx.com'
@@ -21,7 +23,7 @@ export type PollOptions = {
   timeoutMs?: number
   signal?: AbortSignal
   preferGateway?: boolean
-  /** Per-request HTTP timeout (default 12s) */
+  /** Per-request HTTP timeout (default from chainTiming) */
   fetchTimeoutMs?: number
 }
 
@@ -38,7 +40,8 @@ export async function fetchAccountNonce(
   assertAddress(address)
   const api = opts.api || DEFAULT_API
   const gateway = opts.gateway || DEFAULT_GATEWAY
-  const fetchTimeoutMs = opts.fetchTimeoutMs ?? 12_000
+  const t = timingDefaults()
+  const fetchTimeoutMs = opts.fetchTimeoutMs ?? t.fetchTimeoutMs
 
   if (opts.preferGateway) {
     try {
@@ -89,8 +92,9 @@ export async function waitNonceStable(
   address: string,
   opts: PollOptions & { stableReads?: number } = {}
 ): Promise<AccountNonceInfo> {
-  const intervalMs = opts.intervalMs ?? 1500
-  const timeoutMs = opts.timeoutMs ?? 45_000
+  const t = timingDefaults()
+  const intervalMs = opts.intervalMs ?? t.noncePollMs
+  const timeoutMs = opts.timeoutMs ?? t.nonceStableTimeoutMs
   const needStable = opts.stableReads ?? 2
   const start = Date.now()
   let last = -1
@@ -118,8 +122,9 @@ export async function waitNonceAdvanced(
   usedNonce: number,
   opts: PollOptions = {}
 ): Promise<AccountNonceInfo> {
-  const intervalMs = opts.intervalMs ?? 2000
-  const timeoutMs = opts.timeoutMs ?? 120_000
+  const t = timingDefaults()
+  const intervalMs = opts.intervalMs ?? t.nonceAdvancePollMs
+  const timeoutMs = opts.timeoutMs ?? t.nonceAdvanceTimeoutMs
   const start = Date.now()
 
   while (Date.now() - start < timeoutMs) {
@@ -138,8 +143,9 @@ export async function waitNonceAtLeast(
   targetNonce: number,
   opts: PollOptions = {}
 ): Promise<AccountNonceInfo> {
-  const intervalMs = opts.intervalMs ?? 2000
-  const timeoutMs = opts.timeoutMs ?? 120_000
+  const t = timingDefaults()
+  const intervalMs = opts.intervalMs ?? t.nonceAdvancePollMs
+  const timeoutMs = opts.timeoutMs ?? t.nonceAdvanceTimeoutMs
   const start = Date.now()
   while (Date.now() - start < timeoutMs) {
     if (opts.signal?.aborted) throw new Error('nonce wait aborted')

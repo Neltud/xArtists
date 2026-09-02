@@ -1,11 +1,12 @@
 """
-Boucle ouverte autonome LIA
-===========================
-1. Refresh mémoire on-chain (explorer API)
-2. Multi-horizon decision
-3. Circuit ST si BUY
-4. DCA / YIELD / REBALANCE selon fusion
-5. Persist décisions + cadence timestamps
+Boucle ouverte autonome LIA — STATARB intégré
+=============================================
+1. Refresh mémoire on-chain
+2. build_fused_signal (pairs_market → STATARB prioritaires)
+3. Multi-horizon decision
+4. Circuit ST si BUY
+5. DCA / YIELD / REBALANCE selon fusion
+6. Persist décisions + cadence timestamps
 """
 from __future__ import annotations
 
@@ -19,6 +20,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
+from lia.circuit.signal_hub import build_fused_signal
 from lia.decision.multi_horizon import decide, Intent
 from lia.memory.onchain_memory import build_memory, hours_since_last_swap, should_pace_trade, DEFAULT_WALLET
 
@@ -40,7 +42,6 @@ def _load_state() -> dict[str, Any]:
 def _save_state(state: dict[str, Any]) -> None:
     state["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    # keep last 100 decisions
     state["decisions"] = state.get("decisions", [])[-100:]
     STATE_PATH.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
@@ -51,14 +52,26 @@ def run_autonomous_cycle(
     portfolio: dict[str, Any],
     gs: Optional[dict[str, Any]] = None,
     signal: Optional[dict[str, Any]] = None,
+    pairs_market: Optional[list[dict[str, Any]]] = None,
     circuit_can_open: bool = True,
     circuit_reason: str = "OK",
     profit_validated: bool = False,
     fetch_memory: bool = True,
     wallet: str = DEFAULT_WALLET,
+    pairs_path: str = "data/lia_statarb_pairs.json",
 ) -> dict[str, Any]:
     gs = gs or {}
-    signal = signal or {"action": "WAIT", "confidence": 0.5}
+
+    fused_sig = build_fused_signal(
+        pairs_market=pairs_market,
+        market=market,
+        gs=gs,
+        external_signal=signal,
+        pairs_path=pairs_path,
+        include_aux=True,
+    )
+    signal = fused_sig
+
     state = _load_state()
     now = time.time()
 
@@ -68,7 +81,7 @@ def run_autonomous_cycle(
         try:
             snap = build_memory(address=wallet, size=50)
             hours_swap = hours_since_last_swap(snap)
-            pace_ok, pace_msg = should_pace_trade(snap, min_hours_between=0.5)
+            pace_ok, pace_msg = should_pace_trade(snap, min_hours_between=0.33)
             memory_meta = {
                 "tx_count": snap.tx_count,
                 "by_kind": snap.by_kind,
@@ -89,7 +102,6 @@ def run_autonomous_cycle(
 
     weights = portfolio.get("weights") or {}
     if not weights and portfolio.get("total_usd"):
-        # derive crude weights from known keys
         total = float(portfolio.get("total_usd") or 1)
         weights = {
             "USDC": float(portfolio.get("usdc_usd") or 0) / total,
@@ -100,6 +112,7 @@ def run_autonomous_cycle(
     fused = decide(
         signal_action=str(signal.get("action") or "WAIT"),
         signal_conf=float(signal.get("confidence") or 0.5),
+        signal_strategy=str(signal.get("strategy") or ""),
         circuit_can_open=circuit_can_open,
         circuit_reason=circuit_reason,
         gs_regime=str(gs.get("regime") or "NEUTRAL"),
@@ -126,6 +139,8 @@ def run_autonomous_cycle(
             "intent": fused.intent,
             "confidence": fused.confidence,
             "veto": fused.veto,
+            "signal_strategy": signal.get("strategy"),
+            "signal_action": signal.get("action"),
             "reinvest": fused.reinvest,
         }
     )
@@ -133,16 +148,17 @@ def run_autonomous_cycle(
 
     return {
         "decision": fused.to_dict(),
+        "signal": signal,
         "memory": memory_meta,
         "explorer": f"https://explorer.multiversx.com/accounts/{wallet}",
         "state_path": str(STATE_PATH),
-        "note": "Open-loop: execute reinvest.actions via UniversalExecutor; never hold TRO",
+        "note": "Open-loop: STATARB via signal_hub; execute reinvest.actions via UniversalExecutor; never hold TRO",
     }
 
 
 if __name__ == "__main__":
     out = run_autonomous_cycle(
-        market={"trend_7d_pct": -4, "rsi_14": 40},
+        market={"trend_7d_pct": -4, "rsi_14": 40, "token": "WEGLD-bd4d79", "price": 9.5},
         portfolio={
             "deployable_usd": 40,
             "total_usd": 50,
@@ -150,8 +166,19 @@ if __name__ == "__main__":
             "egld_usd": 15,
             "wbtc_usd": 5,
         },
-        signal={"action": "BUY", "confidence": 0.7},
+        pairs_market=[
+            {
+                "token_a": "WEGLD-bd4d79",
+                "token_b": "USDC-c76f1f",
+                "price_a": 9.5,
+                "price_b": 1.0,
+                "liquidity_a": 150000,
+                "liquidity_b": 400000,
+                "half_life_h": 12,
+                "cointegration_score": 0.8,
+            }
+        ],
         profit_validated=True,
-        fetch_memory=False,  # offline-safe demo
+        fetch_memory=False,
     )
     print(json.dumps(out, indent=2))

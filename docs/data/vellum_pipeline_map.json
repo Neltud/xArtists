@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "updated": "2026-08-08T15:25:00Z",
+  "entry": "python -m lia.vellum.pipeline",
+  "alias": "python -m lia.vellum.next_run",
+  "live_default": 0,
+  "order": [
+    "bootstrap",
+    "oracles",
+    "gas",
+    "board",
+    "social",
+    "agent",
+    "mode",
+    "guardian",
+    "trading_stack",
+    "live_cycle",
+    "hatom",
+    "mirror",
+    "executor_health",
+    "status"
+  ],
+  "layers": {
+    "perception": ["lia.oracles", "lia.venues.onchain_feeds", "lia.board", "lia.signals", "lia.gas"],
+    "cognition": ["lia.agents.mvx_agent", "lia.circuit.strategies", "lia.circuit.trading_modes", "lia.claude_agent"],
+    "guardian": ["lia.guardian.spiral", "lia.risk.leverage_policy", "lia.risk.slippage", "lia.risk.profit_lock"],
+    "execution_plan": ["lia.circuit.trading_stack", "lia.risk.secure_tp", "lia.risk.dynamic_trail", "lia.circuit.cross_chain_arb"],
+    "yield": ["lia.defi", "lia.venues.hatom"],
+    "publish": ["lia.vellum.publish_data_for_frontend", "lia.board.publish", "lia.oracles.publish"]
+  },
+  "modes_priority": [
+    "DEFENSE",
+    "COMPOUND",
+    "MICRO_ARB",
+    "MOMENTUM",
+    "MEAN_REVERSION",
+    "YIELD",
+    "SOCIAL_WATCH",
+    "ADVISOR"
+  ],
+  "gates": {
+    "LIA_LIVE_TRADING": 0,
+    "guardian_before_brain": true,
+    "mainnet_only": true
+  }
+}

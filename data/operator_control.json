@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "updated": "2026-08-12T02:00:00Z",
+  "paused": false,
+  "reason": "",
+  "paused_by": null,
+  "paused_at": null,
+  "resume_requires": "human_operator",
+  "note": "Human Ultimate Safeguard — LIA may execute only when paused=false AND LIA_LIVE_TRADING gates pass. Set via: python -m lia.ops.operator_control pause|resume",
+  "lia_hot_wallet_owner": "human_operator",
+  "model_c": true
+}

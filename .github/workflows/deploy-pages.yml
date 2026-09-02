@@ -7,6 +7,7 @@ on:
       - 'apps/frontend/**'
       - 'docs/**'
       - 'data/**'
+      - 'scripts/**'
       - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 
@@ -37,36 +38,79 @@ jobs:
         working-directory: apps/frontend
         run: npm install
 
+      - name: 🗜️ Slim NFT catalog
+        run: |
+          if [ -f data/xartists_collections.json ] && [ ! -f data/xartists_collections.full.json ]; then
+            cp data/xartists_collections.json data/xartists_collections.full.json || true
+          fi
+          if [ -f apps/frontend/public/data/xartists_collections.json ] && [ ! -f data/xartists_collections.full.json ]; then
+            cp apps/frontend/public/data/xartists_collections.json data/xartists_collections.full.json || true
+          fi
+          node scripts/slim_collections.mjs || echo "WARN slim skipped"
+
+      - name: 📋 Ensure critical public data
+        run: |
+          chmod +x scripts/ensure_pages_data.sh
+          ./scripts/ensure_pages_data.sh
+
       - name: 🏗️ Build React app
         working-directory: apps/frontend
         run: npm run build
         env:
           VITE_BASE_PATH: /xArtists/
           VITE_MVX_API: https://api.multiversx.com
+          VITE_LIA_PROTOCOL_WALLET: erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
           VITE_WALLET: erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
 
       - name: 🧹 Prepare docs/
         run: |
           mkdir -p docs
-          # Keep markdown docs; remove previous SPA assets
-          find docs -type f \( -name '*.js' -o -name '*.css' -o -name 'index.html' -o -name '*.svg' -o -name '*.map' \) -delete 2>/dev/null || true
+          find docs -type f \( -name '*.js' -o -name '*.css' -o -name 'index.html' -o -name '404.html' -o -name '*.svg' -o -name '*.map' \) -delete 2>/dev/null || true
           rm -rf docs/assets 2>/dev/null || true
 
       - name: 📋 Copy dist/ → docs/
         run: |
           cp -r apps/frontend/dist/. docs/
           touch docs/.nojekyll
-          echo "✅ SPA dist copié"
+          if grep -q 'cdn.tailwindcss.com' docs/index.html; then
+            echo "FATAL: docs/index.html is the legacy CDN app, not the Vite SPA"
+            exit 1
+          fi
+          if ! grep -q 'id="root"' docs/index.html; then
+            echo "FATAL: SPA #root missing in docs/index.html"
+            exit 1
+          fi
+          cp -f docs/index.html docs/404.html
+          INDEX_JS=$(grep -oE 'assets/index-[^"/]+\.js' docs/index.html | head -1)
+          FOURO_JS=$(grep -oE 'assets/index-[^"/]+\.js' docs/404.html | head -1)
+          echo "index → $INDEX_JS"
+          echo "404   → $FOURO_JS"
+          if [ "$INDEX_JS" != "$FOURO_JS" ] || [ -z "$INDEX_JS" ]; then
+            echo "FATAL: index/404 asset mismatch"
+            exit 1
+          fi
+          test -f "docs/$INDEX_JS" || { echo "FATAL missing $INDEX_JS"; exit 1; }
 
-      - name: 📊 Copy data JSON
+      - name: 📊 Copy data JSON (never drop board)
         run: |
-          mkdir -p docs/data
+          mkdir -p docs/data docs/data/collections
           cp -r data/. docs/data/ 2>/dev/null || true
-
-      - name: 🔍 Verify build
-        run: |
-          ls -la docs/
+          cp -r apps/frontend/public/data/. docs/data/ 2>/dev/null || true
+          ./scripts/ensure_pages_data.sh
+          # FINAL 404 sync after all writes
+          cp -f docs/index.html docs/404.html
+          test -f docs/data/lia_board.json && echo "lia_board OK" || (echo "FATAL missing lia_board"; exit 1)
+          test -f docs/data/entity_map.json && echo "entity_map OK" || echo "WARN entity_map missing"
+          test -f docs/data/voyage_agent.json && echo "voyage OK" || echo "WARN voyage missing"
           test -f docs/index.html && echo "index.html OK" || (echo "MISSING index.html"; exit 1)
+
+      - name: 🔒 Final SPA guard
+        run: |
+          cp -f docs/index.html docs/404.html
+          INDEX_JS=$(grep -oE 'assets/index-[^"/]+\.js' docs/index.html | head -1)
+          FOURO_JS=$(grep -oE 'assets/index-[^"/]+\.js' docs/404.html | head -1)
+          [ "$INDEX_JS" = "$FOURO_JS" ] && [ -n "$INDEX_JS" ] || { echo FATAL 404 drift; exit 1; }
+          echo "FINAL index/404 matched: $INDEX_JS"
 
       - name: 📤 Commit & Push docs/
         run: |

@@ -1,0 +1,36 @@
+{
+  "alert_rules": [
+    {
+      "id": "ALERT_P1_CRITICAL_ERROR_RATE",
+      "name": "CRITICAL: High Transaction Failure Rate",
+      "condition": "relayer_errors_total > 5% in 5 minutes",
+      "severity": "P1",
+      "action": "Notify ops + Emergency Lockdown",
+      "description": "Taux d'échec Relayer > 5%."
+    },
+    {
+      "id": "ALERT_P1_SECURITY_ATTACK",
+      "name": "CRITICAL: Massive Guardian Intervention",
+      "condition": "guardian_interventions_total > 10 in 1 minute",
+      "severity": "P1",
+      "action": "Notify security + rate limit",
+      "description": "Vague de blocs Guardian."
+    },
+    {
+      "id": "ALERT_P2_AI_LATENCY",
+      "name": "WARNING: High LLM Latency",
+      "condition": "lia_llm_response_duration_seconds > 5s",
+      "severity": "P2",
+      "action": "Notify dev",
+      "description": "Latence Brain élevée."
+    },
+    {
+      "id": "ALERT_P3_GAS_SPIKE",
+      "name": "INFO: High Gas Price",
+      "condition": "blockchain_gas_price_gwei > 100",
+      "severity": "P3",
+      "action": "Notify UI",
+      "description": "Gas élevé — informer utilisateurs."
+    }
+  ]
+}

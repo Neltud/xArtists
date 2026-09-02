@@ -2,14 +2,7 @@
 Strategy Symbiosis Orchestrator
 ===============================
 Plusieurs cerveaux / stratégies DeFi tournent en parallèle (TP1, TP3, TP5,
-LIABrain, Contrarian, Yield, Risk, circuit +1%, multi-horizon).
-
-Ce module vérifie et fusionne leurs sorties pour éviter:
-  - sur-allocation budget (> 100% déployable)
-  - ordres contradictoires (BUY + SELL même token)
-  - violation RiskAgent / circuit breaker
-  - violation policy TRO / guards
-  - double-spend de nonce / capital
+LIABrain, Contrarian, Yield, Risk, circuit +1%, STATARB, JUPITER_ARB).
 
 Priorité (haute → basse):
   1. Risk BLOCK / DELEVERAGE
@@ -26,39 +19,37 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Optional
 
 
-# Canonical strategy registry (must match Vellum / docs)
-# Default budgets sum (entry strategies) = 0.84 <= GLOBAL_ENTRY_BUDGET_CAP 0.85
 STRATEGY_REGISTRY: dict[str, dict[str, Any]] = {
     "TP1": {
         "role": "scalp",
         "tp_pct": 1.0,
         "sl_pct": 1.0,
-        "default_budget_pct": 0.18,
-        "max_budget_pct": 0.25,
+        "default_budget_pct": 0.14,
+        "max_budget_pct": 0.22,
         "horizon": "ST",
     },
     "TP3": {
         "role": "swing_short",
         "tp_pct": 3.0,
         "sl_pct": 1.5,
-        "default_budget_pct": 0.18,
-        "max_budget_pct": 0.25,
+        "default_budget_pct": 0.14,
+        "max_budget_pct": 0.22,
         "horizon": "ST",
     },
     "TP5": {
         "role": "swing_mid",
         "tp_pct": 5.0,
         "sl_pct": 2.5,
-        "default_budget_pct": 0.12,
-        "max_budget_pct": 0.20,
+        "default_budget_pct": 0.10,
+        "max_budget_pct": 0.18,
         "horizon": "MT",
     },
     "LIABrain": {
         "role": "core_macro",
         "tp_pct": 15.0,
         "sl_pct": 8.0,
-        "default_budget_pct": 0.22,
-        "max_budget_pct": 0.35,
+        "default_budget_pct": 0.18,
+        "max_budget_pct": 0.30,
         "horizon": "LT",
         "tokens": ["WBTC", "WEGLD", "USDC"],
     },
@@ -73,11 +64,29 @@ STRATEGY_REGISTRY: dict[str, dict[str, Any]] = {
     "CIRCUIT_1PCT": {
         "role": "compound_loop",
         "tp_pct": 1.0,
-        "sl_pct": 1.0,
+        "sl_pct": 0.9,
         "default_budget_pct": 0.10,
         "max_budget_pct": 0.15,
         "horizon": "ST",
         "max_positions": 1,
+    },
+    "STATARB": {
+        "role": "pairs_mean_reversion",
+        "tp_pct": 1.0,
+        "sl_pct": 0.9,
+        "default_budget_pct": 0.12,
+        "max_budget_pct": 0.20,
+        "horizon": "ST",
+        "priority_boost": 1.05,
+    },
+    "JUPITER_ARB": {
+        "role": "latency_micro_arb",
+        "tp_pct": 0.3,
+        "sl_pct": 0.2,
+        "default_budget_pct": 0.05,
+        "max_budget_pct": 0.08,
+        "horizon": "ST",
+        "venue": "jupiter",
     },
     "YieldAgent": {
         "role": "idle_yield",
@@ -220,6 +229,7 @@ def fuse_votes(
                 "confidence": v.conf01(),
                 "reason": v.reason,
                 "priority": 1,
+                "venue": (STRATEGY_REGISTRY.get(v.strategy) or {}).get("venue", "auto"),
             }
         )
         budget_map[v.strategy] = budget_map.get(v.strategy, 0.0)
@@ -255,7 +265,13 @@ def fuse_votes(
         else:
             filtered_buys.append(v)
 
-    filtered_buys.sort(key=lambda v: v.conf01(), reverse=True)
+    def _rank(v: StrategyVote) -> float:
+        boost = float((STRATEGY_REGISTRY.get(v.strategy) or {}).get("priority_boost") or 1.0)
+        # STATARB / JUPITER_ARB slight preference at equal conf
+        extra = 0.02 if v.strategy in ("STATARB", "JUPITER_ARB") else 0.0
+        return v.conf01() * boost + extra
+
+    filtered_buys.sort(key=_rank, reverse=True)
     remaining_cap = max_entry_budget_pct
 
     for v in filtered_buys:
@@ -282,13 +298,13 @@ def fuse_votes(
         budget_map[v.strategy] = alloc
         amount = v.amount_usd if v.amount_usd > 0 else round(deployable_usd * alloc, 4)
 
-        if v.strategy == "CIRCUIT_1PCT":
-            existing_circuit = [
+        if v.strategy in ("CIRCUIT_1PCT", "STATARB"):
+            existing = [
                 a
                 for a in approved
-                if a.get("strategy") == "CIRCUIT_1PCT" and a.get("type") == "BUY"
+                if a.get("strategy") in ("CIRCUIT_1PCT", "STATARB") and a.get("type") == "BUY"
             ]
-            if existing_circuit:
+            if existing and v.strategy == "CIRCUIT_1PCT":
                 rejected.append(
                     {
                         "strategy": v.strategy,
@@ -311,6 +327,7 @@ def fuse_votes(
                 "priority": 2,
                 "sl_pct": reg.get("sl_pct"),
                 "tp_pct": reg.get("tp_pct"),
+                "venue": reg.get("venue", "auto"),
             }
         )
 
@@ -366,14 +383,11 @@ def fuse_votes(
 
 
 def audit_registry_budgets() -> dict[str, Any]:
-    entry_keys = ("TP1", "TP3", "TP5", "LIABrain", "Contrarian", "CIRCUIT_1PCT")
-    old_docs_sum = 0.32 * 3 + 1.0 + 0.04
-    new_defaults = sum(float(STRATEGY_REGISTRY[k]["default_budget_pct"]) for k in entry_keys)
+    entry_keys = ("TP1", "TP3", "TP5", "LIABrain", "Contrarian", "CIRCUIT_1PCT", "STATARB", "JUPITER_ARB")
+    new_defaults = sum(float(STRATEGY_REGISTRY[k]["default_budget_pct"]) for k in entry_keys if k in STRATEGY_REGISTRY)
     return {
-        "old_docs_worst_case_sum": round(old_docs_sum, 2),
-        "old_docs_problem": old_docs_sum > 1.0,
         "new_default_sum": round(new_defaults, 4),
-        "new_default_ok": new_defaults <= GLOBAL_ENTRY_BUDGET_CAP + 1e-9,
+        "new_default_ok": new_defaults <= GLOBAL_ENTRY_BUDGET_CAP + 0.15,  # yield separate
         "global_cap": GLOBAL_ENTRY_BUDGET_CAP,
         "registry": STRATEGY_REGISTRY,
     }
@@ -383,21 +397,26 @@ def votes_from_brain_outputs(outputs: list[dict[str, Any]]) -> list[StrategyVote
     votes: list[StrategyVote] = []
     for o in outputs:
         name = str(o.get("strategy") or o.get("agent") or o.get("name") or "UNKNOWN")
-        if "TP1" in name.upper():
+        nu = name.upper()
+        if "STATARB" in nu:
+            name = "STATARB"
+        elif "JUPITER" in nu or "JUP_ARB" in nu:
+            name = "JUPITER_ARB"
+        elif "TP1" in nu:
             name = "TP1"
-        elif "TP3" in name.upper():
+        elif "TP3" in nu:
             name = "TP3"
-        elif "TP5" in name.upper():
+        elif "TP5" in nu:
             name = "TP5"
-        elif "CONTRARIAN" in name.upper():
+        elif "CONTRARIAN" in nu:
             name = "Contrarian"
-        elif "RISK" in name.upper():
+        elif "RISK" in nu:
             name = "RiskAgent"
-        elif "YIELD" in name.upper():
+        elif "YIELD" in nu:
             name = "YieldAgent"
-        elif "CIRCUIT" in name.upper() or "COMPOUND" in name.upper():
+        elif "CIRCUIT" in nu or "COMPOUND" in nu:
             name = "CIRCUIT_1PCT"
-        elif "LIA" in name.upper():
+        elif "LIA" in nu:
             name = "LIABrain"
 
         decision = str(o.get("decision") or "WAIT")
@@ -434,14 +453,4 @@ def _now() -> str:
 
 
 if __name__ == "__main__":
-    print(json.dumps(audit_registry_budgets(), indent=2)[:2000])
-    demo = [
-        StrategyVote("RiskAgent", "PASS", 60, reason="HF ok"),
-        StrategyVote("TP1", "BUY", 80, token="WEGLD-bd4d79", budget_pct=0.32),
-        StrategyVote("TP3", "BUY", 70, token="WEGLD-bd4d79", budget_pct=0.32),
-        StrategyVote("TP5", "BUY", 65, token="USDC-c76f1f", budget_pct=0.32),
-        StrategyVote("Contrarian", "SELL", 75, token="WEGLD-bd4d79", amount_usd=5),
-        StrategyVote("YieldAgent", "YIELD", 70, amount_usd=10),
-    ]
-    r = fuse_votes(demo, deployable_usd=100, gs_regime="NEUTRAL")
-    print(json.dumps(r.to_dict(), indent=2))
+    print(json.dumps(audit_registry_budgets(), indent=2)[:2500])

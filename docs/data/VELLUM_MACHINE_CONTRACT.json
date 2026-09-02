@@ -1,0 +1,188 @@
+{
+  "version": "2026-08-02",
+  "purpose": "Source of truth for Vellum to reconfigure nodes until full frontend build understands outputs",
+  "dapp_url": "https://neltud.github.io/xArtists",
+  "basename": "/xArtists/",
+  "wallet_lia": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "tokens": {
+    "TRO": "TRO-94c925",
+    "USDC": "USDC-c76f1f",
+    "WEGLD": "WEGLD-bd4d79"
+  },
+  "secrets_vellum_only": [
+    "LIA_WALLET_PEM",
+    "LIA_LIVE_TRADING",
+    "VELLUM_API_KEY",
+    "TELEGRAM_BOT_TOKEN"
+  ],
+  "treasury": {
+    "agents_marketplace": {
+      "fee_bps_default": 300,
+      "on_buy": "seller receives price - fee; fee stays on SC",
+      "claim": "claimFees endpoint — owner only",
+      "doc": "docs/TREASURY_FLOWS.md",
+      "note": "Agent sale EGLD does NOT enter LIA compound 70/30"
+    },
+    "lia_trading": {
+      "win_split": "70% compound_equity / 30% yield_sleeve",
+      "tro": "40% LP / 30% stake / 20% rewards / 10% burn — never hold"
+    }
+  },
+  "pipeline": [
+    {
+      "node": "Timer",
+      "cadence": "0 */1 * * *",
+      "next": ["EnvBootstrap"]
+    },
+    {
+      "node": "EnvBootstrap",
+      "code": null,
+      "outputs": ["chain_id", "api", "proxy", "live_flag"],
+      "next": ["DataHub"]
+    },
+    {
+      "node": "DataHub",
+      "outputs": ["market", "portfolio", "prices"],
+      "market_schema": {
+        "token": "string",
+        "price": "float",
+        "vwap_24h": "float",
+        "rsi_14": "float",
+        "liquidity_usd": "float",
+        "price_change_1h": "float",
+        "price_change_24h": "float",
+        "volume_spike": "float",
+        "price_dex_a": "float",
+        "price_dex_b": "float",
+        "atr": "float"
+      },
+      "next": ["GreenSmoke", "Brains", "BalanceGuard"]
+    },
+    {
+      "node": "GreenSmoke",
+      "code": "lia.agents.green_smoke_consumer",
+      "reads": ["data/greensmoke_top.json"],
+      "outputs": ["bias", "score", "weight"],
+      "next": ["OrchestratorRouter"]
+    },
+    {
+      "node": "Brains",
+      "parallel": ["LIABrain", "UniversalBrainTP1", "TP3", "TP5", "Contrarian"],
+      "outputs": ["votes"],
+      "next": ["OrchestratorRouter"]
+    },
+    {
+      "node": "OrchestratorRouter",
+      "code": "lia.orchestration.symbiosis",
+      "outputs": ["decision", "confidence", "size_usd", "regime"],
+      "decision_enum": ["BUY", "SELL", "WAIT", "YIELD_ONLY", "BLOCKED", "STRONG_BUY"],
+      "next": ["LiveCycle"]
+    },
+    {
+      "node": "LiveCycle",
+      "code": "lia.vellum.live_cycle.run_cycle",
+      "inputs": ["decision", "confidence", "size_usd", "token", "atr", "fee_usd", "edge_usd"],
+      "also_calls": ["gate_cycle", "open_trailing", "trailing_tick", "append_trade"],
+      "writes": [
+        "data/lia_trades.json",
+        "data/lia_trailing_state.json"
+      ],
+      "next": ["CompoundCircuit", "RedistributeTRO", "Reporter"]
+    },
+    {
+      "node": "CompoundCircuit",
+      "code": "lia.circuit.vellum_cycle.run_cycle",
+      "mode": "paper|live",
+      "writes": ["data/lia_compound_streak.json"],
+      "next": ["Executor"]
+    },
+    {
+      "node": "Executor",
+      "code": "lia.executor.universal_executor",
+      "requires_secret": "LIA_WALLET_PEM",
+      "live_flag": "LIA_LIVE_TRADING",
+      "actions": ["swap", "stake", "unstake", "claim", "redistribute_tro", "close", "listAgentAction"],
+      "next": ["Reporter"]
+    },
+    {
+      "node": "RedistributeTRO",
+      "code": "lia.policy.asset_policy + executor.redistribute_tro",
+      "reads": ["data/lia_tro_policy.json"],
+      "rule": "no hold TRO operational wallet — 40% LP 30% stake 20% rewards 10% burn",
+      "next": ["Reporter"]
+    },
+    {
+      "node": "Reporter",
+      "code": "lia.vellum.publish_data_for_frontend",
+      "must_push_git": true,
+      "paths": [
+        "data/lia_v6_status.json",
+        "data/lia_trades.json",
+        "data/lia_trailing_state.json",
+        "data/lia_portfolio.json",
+        "data/hatom_lia.json",
+        "data/battle_of_nodes.json",
+        "data/xartists_onchain.json",
+        "data/contracts.json",
+        "data/agents_catalog.json"
+      ],
+      "mirror_to": [
+        "docs/data/",
+        "apps/frontend/public/data/"
+      ],
+      "frontend_fetch": "https://raw.githubusercontent.com/Neltud/xArtists/main/data/<file>.json"
+    }
+  ],
+  "frontend_consumers": {
+    "/": ["lia_v6_status.json", "xartists_onchain.json", "battle_of_nodes.json"],
+    "/trading": ["lia_trades.json", "lia_trailing_state.json", "battle_of_nodes.json"],
+    "/portfolio": ["lia_portfolio.json", "lia_v6_status.json"],
+    "/hatom": ["hatom_lia.json"],
+    "/tro": ["config.json", "tro_pool.json"],
+    "/marketplace": ["xartists_collections.json"],
+    "/agents": ["greensmoke_forecasts.json", "greensmoke_top.json", "agents_catalog.json", "contracts.json"]
+  },
+  "gaps_blocking_vellum": [
+    {
+      "id": "G1",
+      "priority": 0,
+      "issue": "Reporter must mirror data/ → docs/data + public/data after every cycle",
+      "fix": "lia/vellum/publish_data_for_frontend.py"
+    },
+    {
+      "id": "G2",
+      "priority": 0,
+      "issue": "lia_v6_status.json timestamp stale — update every cycle",
+      "fix": "Reporter writes status after LiveCycle"
+    },
+    {
+      "id": "G3",
+      "priority": 1,
+      "issue": "agents_marketplace address null",
+      "fix": "deploy via Vellum deploy_scs_node or manual mxpy"
+    },
+    {
+      "id": "G4",
+      "priority": 1,
+      "issue": "Two cycle entrypoints (live_cycle vs vellum_cycle) — wire both in order",
+      "fix": "Orchestrator → LiveCycle(trailing) then CompoundCircuit if TRADE"
+    },
+    {
+      "id": "G5",
+      "priority": 2,
+      "issue": "Frontend build must run after push for SW/PWA",
+      "fix": "GitHub Actions Deploy xArtists Exclusive on main"
+    },
+    {
+      "id": "G6",
+      "priority": 1,
+      "issue": "claimFees was missing — added in SC source; redeploy agents-marketplace required for on-chain claim",
+      "fix": "contracts/agents-marketplace claimFees + Vellum deploy"
+    }
+  ],
+  "vellum_python_entry": {
+    "recommended": "from lia.vellum.live_cycle import run_cycle; from lia.circuit.vellum_cycle import run_cycle as compound_cycle",
+    "publish": "from lia.vellum.publish_data_for_frontend import publish; publish()",
+    "deploy_scs": "from lia.vellum.deploy_scs_node import run; run()"
+  }
+}

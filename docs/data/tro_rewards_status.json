@@ -1,0 +1,23 @@
+{
+  "updated": "2026-08-03T18:40:00Z",
+  "mode": "standard",
+  "nft_cap": 500,
+  "rules": {
+    "collection_tro": 5,
+    "per_nft_tro": 1,
+    "physical_only_standard": true
+  },
+  "pool": {
+    "pool_remaining_tro": 50000,
+    "distributed_tro": 0
+  },
+  "estimates": {
+    "soft_launch_20col_100nft": {
+      "tro_out": 2100,
+      "usd_at_0.01": 21,
+      "usd_at_0.10": 210
+    },
+    "max_per_collection_standard": 505,
+    "max_per_collection_pro": 10005
+  }
+}

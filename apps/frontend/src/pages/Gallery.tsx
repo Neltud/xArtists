@@ -1,99 +1,209 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import NFTDetailModal from '../components/NFTDetailModal'
+import VirtualNftGrid from '../components/VirtualNftGrid'
+import LazyImage from '../components/LazyImage'
+import PageGuide from '../components/PageGuide'
+import AdSlot from '../components/AdSlot'
+import {
+  loadCatalogIndex,
+  indexToPartialCollections,
+  loadCollectionPage,
+} from '../lib/catalogLoader'
 import {
   type NFT,
   type CollectionData,
-  type CollectionsFile,
   nftImageUrl,
   nonceLabel,
   typeLabel,
-  DATA_URL,
 } from '../types/nft'
+
+/**
+ * Bios produit — jamais de nom d’artiste en titre de galerie.
+ * Identifiers on-chain (ex. NFTUDURI-*) restent techniques ; labels UI = xArtists.
+ */
+const COLLECTION_BIOS: Record<string, { label: string; bio: string }> = {
+  'NFTUDURI-2990b6': {
+    label: 'Phygital · 1/1',
+    bio: 'Œuvres uniques et séries — sculpture, vidéo, provenance on-chain MultiversX. Certificat numérique pour pièces physiques.',
+  },
+  'TRO-652d6d': {
+    label: 'Écosystème $TRO',
+    bio: 'Pièces liées au token TRO-94c925 (cap 500 000) et aux artworks tokenisés de la fondation.',
+  },
+  'XTR-e5072b': {
+    label: 'Éditions SFT',
+    bio: 'Montages vidéo et semi-fongibles du catalogue xArtists — éditions limitées.',
+  },
+  'XAUS-d9cf1f': {
+    label: 'Identité xArtists',
+    bio: 'Drops d’identité visuelle et pièces écosystème de la galerie.',
+  },
+  'XAR-cee2e0': {
+    label: 'Éditions limitées',
+    bio: 'Série art génératif et éditions limitées xArtists.',
+  },
+  'AGR-': {
+    label: 'AGR',
+    bio: 'Collection du catalogue xArtists (MultiversX).',
+  },
+}
+
+function bioFor(identifier: string): { label: string; bio: string } {
+  if (COLLECTION_BIOS[identifier]) return COLLECTION_BIOS[identifier]
+  for (const [k, v] of Object.entries(COLLECTION_BIOS)) {
+    if (k.endsWith('-') && identifier.startsWith(k.slice(0, -1))) return v
+  }
+  return {
+    label: 'xArtists',
+    bio: 'Collection du catalogue public xArtists sur MultiversX mainnet.',
+  }
+}
+
+const PREVIEW_PER_COLLECTION = 12
 
 export default function Gallery() {
   const [collections, setCollections] = useState<CollectionData[]>([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<NFT | null>(null)
+  const [mode, setMode] = useState<'index' | 'full'>('index')
+  const [q, setQ] = useState('')
+  const [typeFilter, setTypeFilter] = useState<'all' | 'NonFungibleESDT' | 'SemiFungibleESDT'>('all')
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
-      try {
-        const res = await fetch(DATA_URL, { cache: 'force-cache' })
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        const data: CollectionsFile = await res.json()
-        if (cancelled) return
-        setCollections(data.collections)
-      } catch (err) {
-        console.warn('[Gallery] bundled data fetch failed', err)
-      } finally {
-        if (!cancelled) setLoading(false)
+      const { index, full } = await loadCatalogIndex()
+      if (cancelled) return
+      if (index?.collections?.length) {
+        setCollections(indexToPartialCollections(index.collections))
+        setMode('index')
+      } else if (full?.collections?.length) {
+        setCollections(full.collections)
+        setMode('full')
       }
+      setLoading(false)
     })()
     return () => {
       cancelled = true
     }
   }, [])
 
-  // Sort collections by NFT count descending (largest body of work first).
-  const ordered = useMemo(
-    () => [...collections].sort((a, b) => b.nft_count - a.nft_count),
-    [collections],
-  )
+  const ordered = useMemo(() => {
+    let rows = [...collections].sort((a, b) => (b.nft_count || 0) - (a.nft_count || 0))
+    if (typeFilter !== 'all') {
+      rows = rows.filter(
+        c =>
+          (c.type || '').toLowerCase().includes(typeFilter.toLowerCase().replace('esdt', '')) ||
+          c.type === typeFilter
+      )
+    }
+    if (q.trim()) {
+      const qq = q.trim().toLowerCase()
+      rows = rows.filter(
+        c =>
+          (c.name || '').toLowerCase().includes(qq) ||
+          (c.identifier || '').toLowerCase().includes(qq) ||
+          bioFor(c.identifier).label.toLowerCase().includes(qq)
+      )
+    }
+    return rows
+  }, [collections, q, typeFilter])
+  const totalNfts = collections.reduce((s, c) => s + (c.nft_count || c.nfts?.length || 0), 0)
 
-  const totalNfts = collections.reduce((s, c) => s + c.nft_count, 0)
+  const onCollectionLoaded = (col: CollectionData) => {
+    setCollections(prev => prev.map(c => (c.identifier === col.identifier ? col : c)))
+  }
 
   return (
     <div className="animate-fade-in">
-      {/* ===== Artist hero ===== */}
-      <section className="relative mb-12 overflow-hidden rounded-3xl border border-[#2a2a3a] bg-gradient-to-br from-[#15151f] via-[#12121a] to-[#0a0a0f] p-6 sm:p-12">
+      <PageGuide page="gallery" />
+
+      <section className="relative mb-10 overflow-hidden rounded-3xl border border-[#2a2a3a] bg-gradient-to-br from-[#15151f] via-[#12121a] to-[#0a0a0f] p-6 sm:p-12">
         <div className="pointer-events-none absolute -top-32 right-0 h-80 w-80 rounded-full bg-fuchsia-600/15 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 left-0 h-80 w-80 rounded-full bg-violet-600/15 blur-3xl" />
-        <div className="relative grid gap-8 md:grid-cols-[auto_1fr] md:items-center">
-          {/* Avatar */}
-          <div className="flex items-center justify-center">
-            <div className="relative flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 p-[3px] shadow-2xl shadow-purple-900/40 sm:h-40 sm:w-40">
-              <div className="flex h-full w-full items-center justify-center rounded-full bg-[#0a0a0f] text-5xl sm:text-6xl">
-                🎨
-              </div>
-            </div>
-          </div>
-
-          {/* Bio */}
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#2a2a3a] bg-white/5 px-3 py-1 text-xs font-medium text-gray-300 backdrop-blur">
-              <span className="live-dot" /> Curated Artist Gallery
-            </span>
-            <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
-              <span className="gradient-text">Nelson Tuduri</span>
-            </h1>
-            <p className="mt-1 text-sm font-medium text-purple-300/80">
-              xArtists — Creator · MultiversX Mainnet
-            </p>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-gray-400 sm:text-base">
-              Contemporary visual artist, musician and Web3 creator. Through the
-              xArtists ecosystem, physical and generative works are tokenised
-              on-chain — each NFT an immutable certificate of authenticity and
-              provenance. Explore {collections.length} collections and{' '}
-              {totalNfts}+ tokenised works below.
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              <span className="badge-purple">{collections.length} collections</span>
-              <span className="badge-green">✅ Mainnet</span>
-              <span className="badge-gray">RWA · Phygital</span>
-              <Link to="/marketplace" className="badge-gray hover:border-purple-500 hover:text-white transition-all">
-                Browse marketplace →
-              </Link>
-            </div>
+        <div className="relative">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#2a2a3a] bg-white/5 px-3 py-1 text-xs font-medium text-gray-300">
+            <span className="live-dot" /> Galerie · lecture MultiversX mainnet
+          </span>
+          <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+            <span className="gradient-text">xArtists</span>
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-400 sm:text-base">
+            Galerie publique de la fondation — {collections.length || '…'} collections ·{' '}
+            {totalNfts || '…'}+ œuvres · chargement {mode === 'index' ? 'progressif' : 'complet'}.
+          </p>
+          <p className="mt-1 text-[11px] text-zinc-600">
+            Titre galerie = xArtists uniquement. Les noms on-chain des collections restent techniques.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <Link to="/studio" className="btn-primary text-xs py-2 px-3">
+              Mint / Studio
+            </Link>
+            <Link to="/marketplace" className="btn-secondary text-xs py-2 px-3">
+              Buy NFT
+            </Link>
+            <Link to="/tro" className="btn-secondary text-xs py-2 px-3">
+              Buy $TRO
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* ===== Collection sections ===== */}
+      <div className="mb-8">
+        <AdSlot id="drop_feature" />
+      </div>
+
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3 flex-wrap">
+        <div className="flex flex-wrap gap-2 text-[11px]">
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-zinc-300">
+            {collections.length} collections
+          </span>
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-zinc-300">
+            {totalNfts}+ œuvres
+          </span>
+          <span className="rounded-full border border-fuchsia-500/25 bg-fuchsia-500/10 px-3 py-1 text-fuchsia-100/90">
+            mode {mode}
+          </span>
+        </div>
+        <div className="flex flex-1 flex-wrap gap-2 items-center min-w-0">
+          <input
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            placeholder="Filtrer collection…"
+            className="input-field flex-1 min-w-[160px] text-sm"
+            aria-label="Filtrer collections"
+          />
+          <select
+            value={typeFilter}
+            onChange={e => setTypeFilter(e.target.value as typeof typeFilter)}
+            className="input-field text-sm w-auto"
+            aria-label="Type"
+          >
+            <option value="all">Tous types</option>
+            <option value="NonFungibleESDT">NFT</option>
+            <option value="SemiFungibleESDT">SFT</option>
+          </select>
+        </div>
+      </div>
+
       {loading ? (
         <GallerySkeleton />
+      ) : ordered.length === 0 ? (
+        <div className="rounded-2xl border border-[#2a2a3a] py-16 text-center text-gray-400 space-y-3">
+          <p className="font-semibold">
+            {collections.length === 0
+              ? 'Catalogue en chargement ou vide'
+              : 'Aucune collection pour ce filtre'}
+          </p>
+          <p className="text-xs">
+            {collections.length === 0
+              ? 'Vérifier data/xartists_collections*.json sur Pages'
+              : 'Élargis la recherche ou ouvre le Studio pour préparer un mint.'}
+          </p>
+          <Link to="/studio" className="btn-primary text-sm mt-2 inline-block">
+            Ouvrir le Studio
+          </Link>
+        </div>
       ) : (
         <div className="space-y-14">
           {ordered.map((col, idx) => (
@@ -101,7 +211,9 @@ export default function Gallery() {
               key={col.identifier}
               collection={col}
               index={idx}
+              progressive={mode === 'index'}
               onSelect={setSelected}
+              onLoaded={onCollectionLoaded}
             />
           ))}
         </div>
@@ -112,53 +224,98 @@ export default function Gallery() {
   )
 }
 
-/* ---------------- Collection section ---------------- */
-
 function CollectionSection({
   collection,
   index,
+  progressive,
   onSelect,
+  onLoaded,
 }: {
   collection: CollectionData
   index: number
+  progressive: boolean
   onSelect: (nft: NFT) => void
+  onLoaded: (col: CollectionData) => void
 }) {
-  const nfts = collection.nfts
-  // Deterministic gradient accent per collection for header flair.
+  const [expanded, setExpanded] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [full, setFull] = useState<CollectionData | null>(
+    collection.nfts.length >= collection.nft_count ? collection : null
+  )
+
+  const nfts = full?.nfts || collection.nfts
+  const count = full?.nft_count || collection.nft_count || nfts.length
+  const shown = expanded ? nfts : nfts.slice(0, PREVIEW_PER_COLLECTION)
   const accent = ACCENTS[index % ACCENTS.length]
+  const meta = bioFor(collection.identifier)
+
+  const handleExpand = async () => {
+    if (expanded) {
+      setExpanded(false)
+      return
+    }
+    if (progressive && !full && nfts.length < count) {
+      setLoadingMore(true)
+      const col = await loadCollectionPage(collection.identifier)
+      setLoadingMore(false)
+      if (col) {
+        setFull(col)
+        onLoaded(col)
+      }
+    }
+    setExpanded(true)
+  }
 
   return (
-    <section>
-      {/* Section header */}
+    <section aria-labelledby={`col-${collection.identifier}`} className="nft-grid-item">
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
+        <div className="min-w-0">
           <div className="flex items-center gap-3">
             <span
-              className={`h-7 w-1.5 rounded-full bg-gradient-to-b ${accent}`}
+              className={`h-7 w-1.5 shrink-0 rounded-full bg-gradient-to-b ${accent}`}
               aria-hidden
             />
-            <h2 className="text-2xl font-black tracking-tight sm:text-3xl">
+            <h2
+              id={`col-${collection.identifier}`}
+              className="text-2xl font-black sm:text-3xl truncate"
+            >
               {collection.name}
             </h2>
           </div>
           <p className="mono mt-1.5 pl-4 text-xs text-gray-500">
-            {collection.identifier} · {nfts.length} works · {typeLabel(collection.type)}
+            {collection.identifier} · {count} œuvres · {typeLabel(collection.type)}
           </p>
+          <div className="mt-2 pl-4 max-w-2xl">
+            <p className="text-xs font-semibold text-purple-300/90">{meta.label}</p>
+            <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">{meta.bio}</p>
+          </div>
         </div>
         <Link
           to={`/marketplace?collection=${encodeURIComponent(collection.identifier)}`}
-          className="btn-secondary shrink-0 text-xs"
+          className="btn-secondary shrink-0 text-xs self-start sm:self-auto"
         >
-          View Collection →
+          Sell / Buy →
         </Link>
       </div>
-
-      {/* Artwork grid (gallery feel — varied content, fixed card heights) */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {nfts.map((nft) => (
-          <GalleryTile key={nft.identifier} nft={nft} accent={accent} onClick={() => onSelect(nft)} />
-        ))}
-      </div>
+      <VirtualNftGrid
+        items={shown}
+        threshold={48}
+        estimateRowHeight={260}
+        getKey={nft => nft.identifier}
+        renderItem={nft => <GalleryTile nft={nft} accent={accent} onClick={() => onSelect(nft)} />}
+      />
+      {count > PREVIEW_PER_COLLECTION && (
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            className="btn-secondary text-xs"
+            disabled={loadingMore}
+            onClick={handleExpand}
+          >
+            {loadingMore ? 'Chargement…' : expanded ? 'Réduire' : `Voir les ${count} œuvres`}
+          </button>
+        </div>
+      )}
     </section>
   )
 }
@@ -175,56 +332,41 @@ function GalleryTile({
   const img = nftImageUrl(nft)
   return (
     <button
+      type="button"
       onClick={onClick}
-      className="group relative flex aspect-[4/5] flex-col overflow-hidden rounded-2xl border border-[#2a2a3a] bg-[#15151f] text-left transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/60 hover:shadow-2xl hover:shadow-purple-900/30"
+      className="group relative flex aspect-gallery w-full flex-col overflow-hidden rounded-2xl border border-[#2a2a3a] bg-[#15151f] text-left transition-all hover:-translate-y-1 hover:border-purple-500/60 focus-visible:ring-2 focus-visible:ring-purple-500"
     >
-      {/* Image fills the tile */}
       <div className="absolute inset-0 overflow-hidden">
         {img ? (
-          <img
+          <LazyImage
             src={img}
-            alt={`Artwork: ${nft.name} from ${nft.collection_name}`}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-            loading="lazy"
+            alt={nft.name || 'NFT'}
+            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent} opacity-40`}>
-            <span className="text-5xl opacity-70">🎨</span>
+          <div
+            className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent} opacity-40`}
+          >
+            <span className="text-5xl">🎨</span>
           </div>
         )}
       </div>
-
-      {/* Gradient overlay + caption */}
-      <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/85 via-black/20 to-transparent p-3 opacity-90 transition-opacity duration-300 group-hover:opacity-100">
-        <p className="truncate text-sm font-bold text-white drop-shadow">{nft.name || 'Untitled'}</p>
-        <div className="mt-0.5 flex items-center justify-between">
-          <span className="mono truncate text-[10px] text-gray-300/90">{nonceLabel(nft)}</span>
-          <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-semibold text-gray-200 backdrop-blur">
-            {typeLabel(nft.type)}
-          </span>
+      <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/85 via-black/20 to-transparent p-3">
+        <p className="truncate text-sm font-bold text-white">{nft.name || 'Untitled'}</p>
+        <div className="mt-0.5 flex justify-between gap-1">
+          <span className="mono text-[10px] text-gray-300">{nonceLabel(nft)}</span>
+          <span className="text-[9px] bg-white/10 px-1.5 rounded shrink-0">{typeLabel(nft.type)}</span>
         </div>
       </div>
     </button>
   )
 }
 
-/* ---------------- Skeleton ---------------- */
-
 function GallerySkeleton() {
   return (
-    <div className="space-y-14">
-      {[...Array(3)].map((_, s) => (
-        <div key={s}>
-          <div className="mb-5 h-8 w-56 animate-pulse rounded-lg bg-[#1a1a2e]" />
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {[...Array(10)].map((_, i) => (
-              <div
-                key={i}
-                className="aspect-[4/5] animate-pulse rounded-2xl border border-[#2a2a3a] bg-[#1a1a2e]"
-              />
-            ))}
-          </div>
-        </div>
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4" aria-busy="true">
+      {[...Array(8)].map((_, i) => (
+        <div key={i} className="aspect-gallery animate-pulse rounded-2xl bg-[#1a1a2e]" />
       ))}
     </div>
   )
@@ -237,9 +379,4 @@ const ACCENTS = [
   'from-indigo-500 to-cyan-500',
   'from-rose-500 to-orange-500',
   'from-emerald-500 to-teal-500',
-  'from-sky-500 to-blue-600',
-  'from-amber-500 to-yellow-500',
-  'from-purple-500 to-pink-500',
-  'from-cyan-500 to-emerald-500',
-  'from-slate-400 to-violet-500',
 ]
