@@ -1,19 +1,28 @@
-# Deploy Vite React dApp to GitHub Pages (main only)
+# Deploy Vite React dApp to GitHub Pages
+# Live site was serving stale docs/assets/* while main had clean source.
+# This workflow builds apps/frontend and syncs dist → docs/ (branch /docs Pages).
 name: Deploy Vite app to GitHub Pages
 
 on:
   push:
     branches: ["main"]
+    paths-ignore:
+      - "docs/assets/**"
+      - "docs/index.html"
+      - "docs/404.html"
+      - "docs/**/*.md"
+      - "**.md"
+      - "docs/marketing/**"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
 concurrency:
   group: "pages-static"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -24,26 +33,86 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
-          cache-dependency-path: apps/frontend/package.json
+          cache-dependency-path: apps/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
+
+      - name: Verify Dashboard source (must be clean home)
+        run: |
+          head -5 src/pages/Dashboard.tsx
+          if grep -q 'Catzligue\|L.intention devient\|Posts X' src/pages/Dashboard.tsx; then
+            echo '::error::Dashboard.tsx still contains ops/home clutter'
+            exit 1
+          fi
+          echo 'Dashboard source OK'
 
       - name: Build
         run: npm run build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
-      - name: Upload artifact
+      - name: Stamp build id
+        run: |
+          echo "${{ github.sha }}" > dist/BUILD_SHA.txt
+          date -u +%Y-%m-%dT%H:%M:%SZ > dist/BUILD_TIME.txt
+
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: apps/frontend/dist
+
+      - name: Sync dist → docs/ (GitHub Pages source = branch main /docs)
+        working-directory: .
+        run: |
+          set -e
+          rm -rf docs/assets
+          mkdir -p docs/assets
+          cp -R apps/frontend/dist/assets/. docs/assets/
+          cp apps/frontend/dist/index.html docs/index.html
+          if [ -f apps/frontend/dist/404.html ]; then
+            cp apps/frontend/dist/404.html docs/404.html
+          else
+            cp apps/frontend/dist/index.html docs/404.html
+          fi
+          # public extras
+          for f in manifest.webmanifest service-worker.js favicon.svg robots.txt sitemap.xml; do
+            if [ -f "apps/frontend/dist/$f" ]; then cp "apps/frontend/dist/$f" "docs/$f"; fi
+          done
+          if [ -d apps/frontend/dist/museum ]; then
+            rm -rf docs/museum
+            cp -R apps/frontend/dist/museum docs/museum
+          fi
+          if [ -d apps/frontend/dist/data ]; then
+            mkdir -p docs/data
+            cp -R apps/frontend/dist/data/. docs/data/
+          fi
+          cp apps/frontend/dist/BUILD_SHA.txt docs/BUILD_SHA.txt
+          cp apps/frontend/dist/BUILD_TIME.txt docs/BUILD_TIME.txt
+          echo "Synced dist → docs. SHA=${{ github.sha }}"
+
+      - name: Commit docs SPA sync
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html docs/404.html docs/assets docs/BUILD_SHA.txt docs/BUILD_TIME.txt \
+            docs/manifest.webmanifest docs/service-worker.js docs/favicon.svg docs/robots.txt docs/sitemap.xml \
+            docs/museum docs/data 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No docs changes to commit"
+          else
+            git commit -m "chore(pages): sync Vite dist → docs/ ${{ github.sha }} [skip ci]"
+            git push origin HEAD:main
+          fi
 
   deploy:
     environment:
