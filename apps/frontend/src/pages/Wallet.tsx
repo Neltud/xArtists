@@ -6,6 +6,7 @@ import PageGuide from '../components/PageGuide'
 import InfoTip from '../components/InfoTip'
 import WalletConnectPanel from '../components/WalletConnectPanel'
 import MyNftPacksStrip from '../components/MyNftPacksStrip'
+import BridgeUsdtCard from '../components/BridgeUsdtCard'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount, type UserNft } from '../hooks/useUserAccount'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -46,6 +47,8 @@ export default function Wallet() {
           </InfoTip>
         </p>
       </header>
+
+      <BridgeUsdtCard />
 
       {!connected ? (
         <div className="rounded-2xl border border-white/10 bg-zinc-950/50 p-5 space-y-4">
