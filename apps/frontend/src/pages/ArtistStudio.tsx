@@ -20,6 +20,17 @@ const GAS_HINT: Record<string, string> = {
   list_nft: '~0.01–0.03 EGLD (estim.)',
 }
 
+function isAllowedYoutubeUrl(value: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(value)
+    if (protocol !== 'https:' && protocol !== 'http:') return false
+    const host = hostname.toLowerCase()
+    return host === 'youtube.com' || host.endsWith('.youtube.com') || host === 'youtu.be'
+  } catch {
+    return false
+  }
+}
+
 export default function ArtistStudio() {
   const { connected, address, method } = useWallet()
   const [step, setStep] = useState(1)
@@ -41,10 +52,7 @@ export default function ArtistStudio() {
   const marketLive = canListBuyNft()
   const canSign = connected && method !== 'paste_readonly'
 
-  const ytOk =
-    !youtubeUrl.trim() ||
-    youtubeUrl.includes('youtube.com/') ||
-    youtubeUrl.includes('youtu.be/')
+  const ytOk = !youtubeUrl.trim() || isAllowedYoutubeUrl(youtubeUrl.trim())
 
   const checklist = useMemo(
     () => [
