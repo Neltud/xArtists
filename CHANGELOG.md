@@ -1,5 +1,24 @@
 # Changelog — xArtists
 
+## [0.21.0](https://github.com/Neltud/xArtists/compare/v0.20.0...v0.21.0) (2026-09-01)
+
+
+### Features
+
+* **complete:** public demo polish — Trading/Market calm, DEMO label, soft path Galerie ([c93fc09](https://github.com/Neltud/xArtists/commit/c93fc09e11a9badc91535e3980dc959fb8273888))
+* **demo:** hide Guardian/Intent/ticker chrome when DEMO_MODE ([32f26fa](https://github.com/Neltud/xArtists/commit/32f26fa1db11a560fdaec8ab627a6eeffaa27d38))
+* **demo:** hide ops chrome in DEMO_MODE; calm Wallet; 3D ambient light; Paybox docs ([ec28812](https://github.com/Neltud/xArtists/commit/ec288121bb2282a3b12075deee94c59b441b1719))
+* **gallery:** single public Galerie — Explorer · Ma collection · Carte (3D hall) ([863c3ee](https://github.com/Neltud/xArtists/commit/863c3eef4870f20e6cf5abf981718db9e4778972))
+* **gallery:** unified 3D Galerie page; /gallery redirect; Paybox helper; public copy ([8ac6e54](https://github.com/Neltud/xArtists/commit/8ac6e5493d3049eff7d68f68a532cc20fbebde15))
+* **market:** public-facing Marketplace copy and calm header ([170340a](https://github.com/Neltud/xArtists/commit/170340a570bb1ab2cb9925e29111d7cd4ee2d9d5))
+* **routes:** /gallery and /musee → unified Galerie; footer wording ([752af38](https://github.com/Neltud/xArtists/commit/752af38835d44590a67a38bc0d978dc7ef970253))
+
+
+### Documentation
+
+* **marketing:** draft X 2026-09-01 — thème wallet MultiversX ([7384931](https://github.com/Neltud/xArtists/commit/73849310d8c0927e28965f44756e2d47b6bbabd1))
+* **marketing:** draft X 2026-09-01 18:15 CEST — $TRO / écosystème ([577e375](https://github.com/Neltud/xArtists/commit/577e3756f39dc4b847e994057763b6031ae64243))
+
 ## [0.20.0](https://github.com/Neltud/xArtists/compare/v0.19.0...v0.20.0) (2026-08-31)
 
 
