@@ -21,7 +21,11 @@ export const LINKS = {
   hatom: 'https://app.hatom.com',
   hatomDashboard: 'https://app.hatom.com',
   xoxno: 'https://xoxno.com',
+  /** Bridge DeFi — USDT / USDT0 → MultiversX */
+  xoxnoBridge: 'https://xoxno.com/defi/bridge',
   xoxnoCollection: (c: string) => `https://xoxno.com/collection/${c}`,
+  /** Omnichain USDT (LayerZero OFT) */
+  usdt0: 'https://usdt0.to',
   greensmokeAgents: 'https://app.greensmoke.network/agents',
   lightningFaucetBuild: 'https://lightningfaucet.com/build/',
   troToken: 'TRO-94c925',
@@ -33,9 +37,8 @@ export const LINKS = {
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/', label: 'Home', emoji: '◈' },
   { to: '/agents', label: 'Packs', emoji: '◎' },
-  { to: '/museum', label: 'Musée', emoji: '🏛' },
+  { to: '/museum', label: 'Galerie', emoji: '🖼' },
   { to: '/tours', label: 'Tours', emoji: '◉' },
-  { to: '/gallery', label: 'Galerie', emoji: '🖼' },
   { to: '/wallet', label: 'Wallet', emoji: '◇' },
   { to: '/marketplace', label: 'Market', emoji: '▣' },
   { to: '/my-packs', label: 'My Packs', emoji: '🎫' },
@@ -43,7 +46,7 @@ export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/legal', label: 'Légal', emoji: '§' },
 ]
 
-/** Secondary — lab / pre-mainnet gelés (préfixe Lab ·). */
+/** Secondary — lab / pre-mainnet (préfixe Lab ·). */
 export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/studio', label: 'Studio', emoji: '🎨' },
   { to: '/tro', label: '$TRO', emoji: '🪙' },
@@ -58,13 +61,4 @@ export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/tip', label: 'Tip', emoji: '💜' },
   { to: '/soul-testnet', label: 'Lab · Soul', emoji: '🧪' },
   { to: '/burnify', label: 'Lab · Burnify', emoji: '🔥' },
-  { to: '/ads', label: 'Lab · Ads', emoji: '📢' },
-  { to: '/editions', label: 'Lab · Editions', emoji: '📰' },
-  { to: '/agents/lightning', label: 'Lab · Lightning', emoji: '⚡' },
 ]
-
-export const SECONDARY_ROUTES = [
-  { to: '/staking', label: 'Staking', note: '' },
-  { to: '/soul-testnet', label: 'Soul (pre-mainnet)', note: 'No mainnet funds' },
-  { to: '/burnify', label: 'Burnify (pre-mainnet)', note: 'tro-burn SC + EGLD rewards after deploy' },
-] as const
