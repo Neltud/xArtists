@@ -50,10 +50,6 @@ export type RoomBlueprint = {
   source?: string
 }
 
-/**
- * museumId → fichier blueprint (public/blueprints/{ref}.json)
- * Générés depuis les samples musée du studio (Export JSON).
- */
 export const MUSEUM_BLUEPRINT_REF: Record<
   string,
   { source: 'blend-sample' | 'json'; ref: string }

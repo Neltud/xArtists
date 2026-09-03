@@ -40,11 +40,9 @@ export async function loadBlueprint(museumId: string): Promise<RoomBlueprint | n
   return null
 }
 
-/** Collision simple : hors emprise plan = bloqué (pour déplacement futur R3F). */
 export function pointInBlueprintFloor(bp: RoomBlueprint, x: number, y: number): boolean {
   const rooms = bp.rooms || []
   if (!rooms.length) {
-    // bbox murs
     let minX = Infinity,
       minY = Infinity,
       maxX = -Infinity,

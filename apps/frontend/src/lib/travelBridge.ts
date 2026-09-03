@@ -10,6 +10,8 @@ export type TravelDestination = {
   focus?: string
   space?: 'catzligue' | 'mydee' | 'world_tour' | 'vr_core'
   source?: 'tours' | 'world_tour' | 'map'
+  /** id musée résolu (louvre, rijks…) */
+  museumId?: string
 }
 
 const KEY = 'xartists_travel'
@@ -51,6 +53,7 @@ export function museumTravelHref(d: TravelDestination): string {
   if (d.space) q.set('space', d.space)
   if (d.city) q.set('city', d.city)
   if (d.id) q.set('stop', d.id)
+  if (d.museumId) q.set('museum', d.museumId)
   const s = q.toString()
   return s ? `/museum?${s}` : '/museum'
 }
