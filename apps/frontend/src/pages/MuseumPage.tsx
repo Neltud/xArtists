@@ -1,5 +1,5 @@
 /**
- * Galerie — chargement progressif (cache) + salles public_domain immédiates.
+ * Galerie — chargement progressif + architecture 3D par lieu.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -28,6 +28,7 @@ import {
   type VirtualMuseum,
 } from '../lib/museumWorldCatalog'
 import { preloadImages } from '../lib/imagePreload'
+import { layoutForMuseum } from '../lib/museumLayouts'
 
 type Mode = 'explore' | 'mine' | 'map'
 
@@ -52,7 +53,6 @@ function framesFromNfts(nfts: NFT[]): FrameItem[] {
   }))
 }
 
-/** Cache session — un seul fetch catalogue, pas de cache-bust. */
 let catalogPromise: Promise<{ collections: CollectionData[]; nfts: NFT[] }> | null = null
 
 async function loadFullCatalog(): Promise<{ collections: CollectionData[]; nfts: NFT[] }> {
@@ -108,6 +108,7 @@ export default function MuseumPage() {
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const museum = museums.find(m => m.id === museumId) || museums[0] || VIRTUAL_MUSEUMS[0]
+  const layout = layoutForMuseum(museumId)
 
   useEffect(() => {
     let cxl = false
@@ -158,7 +159,6 @@ export default function MuseumPage() {
 
   const visitFrames = museum.source === 'onchain' ? xartistsFrames : museum.works
 
-  /** Précharge les 6 premières images de la salle active. */
   useEffect(() => {
     preloadImages(
       visitFrames.map(f => f.image),
@@ -167,7 +167,6 @@ export default function MuseumPage() {
   }, [museumId, visitFrames])
 
   const myFrames = useMemo(() => framesFromUserNfts(account.nfts || []), [account.nfts])
-
   const showHallLoader = museum.source === 'onchain' && catalogLoading && !visitFrames.length
 
   return (
@@ -178,7 +177,7 @@ export default function MuseumPage() {
         </p>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Galerie</h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl">
-          Une seule expérience : salles immersives, votre collection, ou voyage de ville en ville.
+          Chaque lieu a son plan et son ambiance — explorez comme dans un monde ouvert culturel.
         </p>
       </header>
 
@@ -228,7 +227,9 @@ export default function MuseumPage() {
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
               <p className="text-base font-medium text-white">{museum.name}</p>
-              <p className="text-[12px] text-zinc-500">{museum.tagline}</p>
+              <p className="text-[12px] text-zinc-500">
+                {museum.tagline} · plan {layout.label}
+              </p>
             </div>
             <p className="text-[11px] text-zinc-600 hidden sm:block">
               Déplacez-vous · touchez une œuvre
@@ -243,6 +244,7 @@ export default function MuseumPage() {
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
               <MuseumGameHall
                 key={museumId}
+                museumId={museumId}
                 frames={visitFrames}
                 room={museum.room}
                 allowBuy={museum.source === 'onchain'}
@@ -270,6 +272,7 @@ export default function MuseumPage() {
           ) : (
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
               <MuseumGameHall
+                museumId="xartists"
                 frames={myFrames}
                 room="dark"
                 allowBuy={false}

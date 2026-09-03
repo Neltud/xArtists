@@ -1,5 +1,5 @@
 /**
- * Salle 3D CSS — rendu proche + préchargement des œuvres à venir.
+ * Salle 3D CSS — architecture différente par musée (layout plan).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FrameItem } from './MuseumCorridor'
@@ -7,6 +7,7 @@ import { canListBuyNft } from '../../config/scStatus'
 import { useWallet } from '../../context/WalletContext'
 import { requestOpenConnect } from '../../lib/walletEvents'
 import { preloadImages } from '../../lib/imagePreload'
+import { artPosition, layoutForMuseum } from '../../lib/museumLayouts'
 import InfoTip from '../InfoTip'
 
 const STEP = 0.05
@@ -91,15 +92,18 @@ export default function MuseumGameHall({
   frames,
   emptyLabel = 'Aucune œuvre',
   room = 'cyber',
+  museumId = 'xartists',
   allowBuy = true,
 }: {
   frames: FrameItem[]
   emptyLabel?: string
   room?: RoomTheme
+  museumId?: string
   allowBuy?: boolean
 }) {
+  const layout = useMemo(() => layoutForMuseum(museumId), [museumId])
   const list = useMemo(() => frames.slice(0, MAX_FRAMES), [frames])
-  const maxZ = Math.max(1.2, list.length * 0.5)
+  const maxZ = Math.max(1.2, list.length * layout.artSpacing)
   const [z, setZ] = useState(0.12)
   const [lookY, setLookY] = useState(0)
   const [inspect, setInspect] = useState<FrameItem | null>(null)
@@ -113,33 +117,34 @@ export default function MuseumGameHall({
   const theme = ROOM[room] || ROOM.cyber
   const lightText = room === 'white'
 
+  const sideInset = Math.round(((1 - layout.naveWidth) / 2) * 100)
+
   const nearest = useMemo(() => {
     if (!list.length) return null
     let best = list[0]
     let bestD = Infinity
     list.forEach((item, i) => {
-      const artZ = (i + 1) * (maxZ / (list.length + 1))
+      const { artZ } = artPosition(layout, i, list.length, maxZ)
       const d = Math.abs(artZ - z)
       if (d < bestD) {
         bestD = d
         best = item
       }
     })
-    return bestD < 0.5 ? best : null
-  }, [list, z, maxZ])
+    return bestD < 0.55 ? best : null
+  }, [list, z, maxZ, layout])
 
-  /** Précharge les images dans le cône de vision + 2 suivantes. */
   useEffect(() => {
     const urls: string[] = []
     list.forEach((item, i) => {
-      const artZ = (i + 1) * (maxZ / (list.length + 1))
+      const { artZ } = artPosition(layout, i, list.length, maxZ)
       const rel = artZ - z
       if (rel >= RENDER_BEHIND - 0.3 && rel <= RENDER_AHEAD + 0.8 && item.image) {
         urls.push(item.image)
       }
     })
     preloadImages(urls, 8)
-  }, [list, z, maxZ])
+  }, [list, z, maxZ, layout])
 
   const setKey = (k: string, on: boolean) => {
     keys.current[k] = on
@@ -215,7 +220,7 @@ export default function MuseumGameHall({
     <div className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500">
         <span className="inline-flex items-center gap-1">
-          Visite virtuelle
+          {layout.label}
           <InfoTip k="museumGame" />
         </span>
         <span className="mono text-zinc-600 text-[10px]">{Math.round((z / maxZ) * 100)}%</span>
@@ -226,7 +231,7 @@ export default function MuseumGameHall({
         style={{ height: 'min(72vh, 520px)', background: theme.fog }}
         tabIndex={0}
         role="application"
-        aria-label="Galerie 3D"
+        aria-label={`Galerie 3D · ${layout.label}`}
       >
         <div
           className="absolute inset-0"
@@ -236,32 +241,40 @@ export default function MuseumGameHall({
           }}
         >
           <div
-            className="absolute inset-x-0 top-0 h-[22%]"
+            className="absolute inset-x-0 top-0"
             style={{
+              height: `${Math.round(layout.ceilingScale * 100)}%`,
               background: theme.ceiling,
-              transform: 'perspective(700px) rotateX(-55deg)',
+              transform: `perspective(700px) rotateX(-${layout.wallPitch}deg)`,
               transformOrigin: 'center top',
             }}
           />
           <div
-            className="absolute left-0 top-[10%] bottom-[18%] w-[22%]"
+            className="absolute left-0 top-[10%] bottom-[18%]"
             style={{
+              width: `${sideInset}%`,
               background: theme.wall,
-              transform: 'perspective(800px) rotateY(58deg)',
+              transform: `perspective(800px) rotateY(${layout.wallYaw}deg)`,
               transformOrigin: 'left center',
             }}
           />
           <div
-            className="absolute right-0 top-[10%] bottom-[18%] w-[22%]"
+            className="absolute right-0 top-[10%] bottom-[18%]"
             style={{
+              width: `${sideInset}%`,
               background: theme.wall,
-              transform: 'perspective(800px) rotateY(-58deg)',
+              transform: `perspective(800px) rotateY(-${layout.wallYaw}deg)`,
               transformOrigin: 'right center',
             }}
           />
           <div
-            className="absolute left-[18%] right-[18%] top-[12%] bottom-[22%]"
-            style={{ background: theme.wall, boxShadow: 'inset 0 0 60px rgba(0,0,0,0.35)' }}
+            className="absolute top-[12%] bottom-[22%]"
+            style={{
+              left: `${sideInset}%`,
+              right: `${sideInset}%`,
+              background: theme.wall,
+              boxShadow: 'inset 0 0 60px rgba(0,0,0,0.35)',
+            }}
           />
           <div
             className="absolute inset-x-0 bottom-0 h-[28%]"
@@ -269,19 +282,18 @@ export default function MuseumGameHall({
               background: `linear-gradient(to top, rgba(0,0,0,0.5), transparent),
                 repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 40px),
                 ${theme.floor}`,
-              transform: 'perspective(700px) rotateX(58deg)',
+              transform: `perspective(700px) rotateX(${layout.wallPitch + 3}deg)`,
               transformOrigin: 'center bottom',
             }}
           />
 
           {list.map((item, i) => {
-            const artZ = (i + 1) * (maxZ / (list.length + 1))
+            const { artZ, side, xBias } = artPosition(layout, i, list.length, maxZ)
             const rel = artZ - z
             if (rel < RENDER_BEHIND || rel > RENDER_AHEAD) return null
             const scale = Math.max(0.32, 1.2 - rel * 0.38)
             const opacity = Math.max(0.12, 1 - rel * 0.38)
-            const side = i % 2 === 0 ? -1 : 1
-            const xPct = 50 + side * (16 + rel * 5)
+            const xPct = 50 + side * (layout.artSide + rel * 5) + xBias
             const yPct = 40 - rel * 2.5
             const isNear = nearest?.id === item.id
             const imgBroken = broken[item.id]
@@ -293,7 +305,7 @@ export default function MuseumGameHall({
                 style={{
                   left: `${xPct}%`,
                   top: `${yPct}%`,
-                  width: `${Math.round(92 * scale)}px`,
+                  width: `${Math.round(layout.frameScale * scale)}px`,
                   opacity,
                   zIndex: Math.round(120 - rel * 35),
                   transform: 'translate(-50%, -50%)',
