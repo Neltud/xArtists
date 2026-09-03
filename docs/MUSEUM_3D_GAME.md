@@ -1,91 +1,58 @@
 # Musée 3D · architecture par lieu · galerie-jeu
 
-## Intention
+## Réponse courte
 
-Chaque **musée / lieu / galerie** a un **plan et une architecture différents**.
+**Oui** — [`blend-glade-wolf-grove`](https://github.com/Neltud/blend-glade-wolf-grove) construit **chaque bâtiment** (plan + volume).  
+**xArtists** charge le plan, **place les œuvres**, gère **déplacement + interaction** (inspect / achat paper).
 
-| Couche | Où |
-|--------|-----|
-| **Studio plan → volume 3D** | [`Neltud/blend-glade-wolf-grove`](https://github.com/Neltud/blend-glade-wolf-grove) |
-| **Galerie dApp + œuvres** | `Neltud/xArtists` (`MuseumGameHall`, `museumLayouts`) |
-
----
-
-## Outil dédié : blend-glade-wolf-grove
-
-Stack : **React Three Fiber** + **Three.js**, édition plan 2D, extrusion 3D.
-
-### Modèle de données (`src/lib/plan/types.ts`)
-
-```ts
-FloorPlan {
-  walls: Wall[]      // segments x1,y1,x2,y2 + height + thickness
-  openings: Opening[] // portes / fenêtres sur wallId
-  rooms: Room[]      // polygones + sol
-  furniture: Furniture[]
-  wallHeight, wallThickness
-}
+```
+Studio (plans uniques)
+   ↓ Export JSON (RoomBlueprint + artAnchors)
+public/blueprints/*.json
+   ↓ loadBlueprint(museumId)
+Galerie 3D (CSS v1 · R3F v2) + œuvres + WASD/touch
 ```
 
-Géométrie 3D : `wallSolids()` découpe les murs autour des ouvertures (`src/lib/plan/geometry.ts`).
+## Rôles
 
-Samples prêts : **Haussmann**, **Villa Claire**, **Atelier** (`samples.ts`).
+| Repo | Responsabilité |
+|------|----------------|
+| **blend-glade-wolf-grove** | Dessin murs/portes/fenêtres, volume R3F, samples musée, **Export JSON** |
+| **xArtists** | Carte monde, catalogue œuvres, wallet, déplacement, inspect, intention d’achat |
 
-UI : plan 2D (`plan-canvas`) · scène 3D (`scene-3d`) · chrome studio.
+## Workflow pour un musée
 
-### Rôle pour xArtists
+1. Ouvrir le studio → modèle **Grande Galerie / Nef / Cabinet / Rotonde / Cyber** (ou tracer).
+2. **Export JSON → xArtists** (télécharge `*-blueprint.json` avec `artAnchors`).
+3. Copier vers `apps/frontend/public/blueprints/{id}.json`.
+4. Lier dans `MUSEUM_BLUEPRINT_REF` (déjà fait pour les lieux majeurs).
+5. La page Galerie charge le blueprint + œuvres du lieu + déplacement.
 
-1. Dessiner / importer le **plan réel** d’un musée (ou approximation).
-2. Exporter `FloorPlan` JSON (= `RoomBlueprint` côté xArtists).
-3. xArtists charge le blueprint + place les **œuvres** sur `artAnchors`.
-4. Fallback live actuel : layouts CSS paramétriques (`museumLayouts.ts`) si pas de mesh.
+## Mapping
 
-Contrat TypeScript miroir : `apps/frontend/src/lib/roomBlueprint.ts`.
+| Musée | Blueprint | Layout CSS fallback |
+|-------|-----------|---------------------|
+| Louvre / Prado / NG | `gallery-corridor` | grand_corridor |
+| Orsay / Met | `glass-nave` | glass_nave |
+| Rijks / Mauritshuis | `cabinet` | cabinet |
+| Uffizi | `rotunda` | rotunda |
+| xArtists | `cyber-grid` | cyber_grid |
 
----
+## Interaction (déjà / à venir)
 
-## Mapping actuel (layout CSS v1)
+- **Déjà** : WASD / pad tactile, regard, inspect œuvre, intention d’achat paper, preload images.
+- **V2** : collision sur polygone `rooms`, ancrages `artAnchors` pour position mur exacte, rendu R3F optionnel du même `FloorPlan`.
+- **V3 jeu** : missions, score, multi-salles dans un même plan.
 
-| Lieu | Layout CSS | Plan sample (proxy) |
-|------|------------|---------------------|
-| xArtists | `cyber_grid` | studio |
-| Louvre | `grand_corridor` | haussmann |
-| Orsay | `glass_nave` | villa |
-| National Gallery | `dual_gallery` | haussmann |
-| Rijks | `cabinet` | studio |
-| Uffizi | `rotunda` | villa |
-| Met | `courtyard` | villa |
+## Fichiers clés
 
----
+**Studio**
+- `src/lib/plan/export.ts` — `toRoomBlueprint` + `downloadPlanJson`
+- `src/lib/plan/museum-samples.ts` — plans musée
+- Chrome : bouton **Export JSON → xArtists**
 
-## Roadmap intégration
-
-**V1 (live)** — layouts CSS distincts + preload œuvres.  
-**V2** — import `RoomBlueprint` / `FloorPlan` JSON depuis le studio ; rendu R3F optionnel dans la galerie.  
-**V3 jeu** — monde ouvert culturel : villes → bâtiments (plans) → salles → missions / score / packs (paper-first).
-
-### Export minimal à ajouter dans blend-glade-wolf-grove
-
-```ts
-// ex. exportPlanJson(plan: FloorPlan): string
-JSON.stringify(plan)
-```
-
-Puis dépôt sous `xArtists/apps/frontend/public/blueprints/{museumId}.json`.
-
----
-
-## Direction « galerie jeu »
-
-- Exploration type open-world **culturel** (pas FPS réel).
-- Boucle : se déplacer, entrer dans un bâtiment unique, inspecter, missions, earn (points / NFT d’accès).
-- « Capture » = claim / parcours / intention d’achat paper — aligné soft launch.
-
----
-
-## Fichiers xArtists
-
-- `apps/frontend/src/lib/museumLayouts.ts`
+**xArtists**
 - `apps/frontend/src/lib/roomBlueprint.ts`
-- `apps/frontend/src/components/museum/MuseumGameHall.tsx`
-- `apps/frontend/src/lib/museumWorldCatalog.ts`
+- `apps/frontend/src/lib/loadBlueprint.ts`
+- `apps/frontend/src/lib/museumLayouts.ts` (fallback CSS)
+- `MuseumGameHall.tsx` — gameplay visite

@@ -1,7 +1,6 @@
 /**
  * Contrat d’import plan→salle pour la galerie 3D.
  * Aligné sur FloorPlan de https://github.com/Neltud/blend-glade-wolf-grove
- * (src/lib/plan/types.ts) — source de vérité architecture.
  */
 
 export type Vec2 = { x: number; y: number }
@@ -28,16 +27,14 @@ export type Opening = {
 
 export type ArtAnchor = {
   id: string
-  /** position monde plan (m) */
+  wallId?: string
   x: number
   y: number
-  /** orientation mur (rad) */
   facing: number
-  /** id œuvre optionnel (frame catalog) */
+  height?: number
   frameId?: string
 }
 
-/** Blueprint exportable depuis blend-glade-wolf-grove → xArtists MuseumGameHall / R3F. */
 export type RoomBlueprint = {
   id: string
   name: string
@@ -46,26 +43,31 @@ export type RoomBlueprint = {
   wallThickness: number
   walls: WallSeg[]
   openings: Opening[]
-  /** polygones de salles (sol) */
-  rooms?: { id: string; name: string; polygon: Vec2[] }[]
-  /** ancrages pour accrocher les œuvres */
+  rooms?: { id: string; name: string; polygon: Vec2[]; floor?: string }[]
   artAnchors?: ArtAnchor[]
-  /** id layout CSS fallback si mesh pas chargé */
   layoutFallback?: string
+  schema?: string
+  source?: string
 }
 
-/** Map musée xArtists → plan sample ou export JSON futur. */
+/**
+ * museumId → fichier blueprint (public/blueprints/{ref}.json)
+ * Générés depuis les samples musée du studio (Export JSON).
+ */
 export const MUSEUM_BLUEPRINT_REF: Record<
   string,
   { source: 'blend-sample' | 'json'; ref: string }
 > = {
-  louvre: { source: 'blend-sample', ref: 'haussmann' }, // grande enfilade — proxy
-  orsay: { source: 'blend-sample', ref: 'villa' },
-  xartists: { source: 'blend-sample', ref: 'studio' },
-  nglondon: { source: 'blend-sample', ref: 'haussmann' },
-  rijks: { source: 'blend-sample', ref: 'studio' },
-  uffizi: { source: 'blend-sample', ref: 'villa' },
-  met: { source: 'blend-sample', ref: 'villa' },
+  louvre: { source: 'json', ref: 'gallery-corridor' },
+  prado: { source: 'json', ref: 'gallery-corridor' },
+  orsay: { source: 'json', ref: 'glass-nave' },
+  nglondon: { source: 'json', ref: 'gallery-corridor' },
+  rijks: { source: 'json', ref: 'cabinet' },
+  mauritshuis: { source: 'json', ref: 'cabinet' },
+  vangogh: { source: 'json', ref: 'cabinet' },
+  uffizi: { source: 'json', ref: 'rotunda' },
+  met: { source: 'json', ref: 'glass-nave' },
+  xartists: { source: 'json', ref: 'cyber-grid' },
 }
 
 export const BLEND_STUDIO_REPO = 'https://github.com/Neltud/blend-glade-wolf-grove'
