@@ -1,5 +1,5 @@
 /**
- * Galerie — chargement progressif + architecture 3D par lieu.
+ * Galerie — plan par lieu + lien carte (city / museum query).
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -29,6 +29,8 @@ import {
 } from '../lib/museumWorldCatalog'
 import { preloadImages } from '../lib/imagePreload'
 import { layoutForMuseum } from '../lib/museumLayouts'
+import { loadBlueprint } from '../lib/loadBlueprint'
+import type { RoomBlueprint } from '../lib/roomBlueprint'
 
 type Mode = 'explore' | 'mine' | 'map'
 
@@ -105,6 +107,7 @@ export default function MuseumPage() {
   const [allNfts, setAllNfts] = useState<NFT[]>([])
   const [catalogLoading, setCatalogLoading] = useState(true)
   const [travelBanner, setTravelBanner] = useState<string | null>(null)
+  const [blueprint, setBlueprint] = useState<RoomBlueprint | null>(null)
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const museum = museums.find(m => m.id === museumId) || museums[0] || VIRTUAL_MUSEUMS[0]
@@ -141,15 +144,35 @@ export default function MuseumPage() {
       q || (typeof window !== 'undefined' ? window.location.search : '')
     )
     const cityQ = sp.get('city')
+    const museumQ = sp.get('museum')
     const travel = consumeTravelDestination()
-    if (travel?.city || cityQ) {
-      const city = travel?.city || cityQ || ''
-      const mid = museumIdForCity(city)
-      setTravelBanner(`Direction ${city}`)
+    const city = travel?.city || cityQ || ''
+    const mid =
+      travel?.museumId || museumQ || (city ? museumIdForCity(city) : null) || null
+    if (city || mid) {
+      setTravelBanner(
+        city
+          ? mid
+            ? `Direction ${city} · ${mid}`
+            : `Direction ${city} — choisissez un lieu ci-dessous`
+          : mid
+            ? `Salle ${mid}`
+            : null
+      )
       setMuseumId(mid || 'xartists')
       setMode('explore')
     }
   }, [])
+
+  useEffect(() => {
+    let c = false
+    loadBlueprint(museumId).then(bp => {
+      if (!c) setBlueprint(bp)
+    })
+    return () => {
+      c = true
+    }
+  }, [museumId])
 
   const xartistsFrames = useMemo(() => {
     const withImg = allNfts.filter(n => preferImage(n))
@@ -177,7 +200,7 @@ export default function MuseumPage() {
         </p>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Galerie</h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl">
-          Chaque lieu a son plan et son ambiance — explorez comme dans un monde ouvert culturel.
+          Carte → ville → salle unique. Chaque lieu a son plan et ses œuvres.
         </p>
       </header>
 
@@ -228,7 +251,10 @@ export default function MuseumPage() {
             <div>
               <p className="text-base font-medium text-white">{museum.name}</p>
               <p className="text-[12px] text-zinc-500">
-                {museum.tagline} · plan {layout.label}
+                {museum.tagline} · {blueprint?.name || layout.label}
+                {blueprint?.artAnchors?.length
+                  ? ` · ${blueprint.artAnchors.length} ancrages`
+                  : ''}
               </p>
             </div>
             <p className="text-[11px] text-zinc-600 hidden sm:block">
