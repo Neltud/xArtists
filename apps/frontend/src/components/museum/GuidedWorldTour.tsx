@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { museumTravelHref } from '../../lib/travelBridge'
+import { museumIdForCity } from '../../lib/museumWorldCatalog'
 import { loadTourStops, type TourStop } from '../../lib/museumSpaces'
 import LiaHost from './LiaHost'
 
@@ -30,14 +31,16 @@ export default function GuidedWorldTour() {
   const stop = stops[i] || null
 
   const enterMuseum = (s: TourStop) => {
+    const mid = museumIdForCity(s.city)
     navigate(
       museumTravelHref({
         id: s.id,
         city: s.city,
         country: s.country,
         focus: s.focus,
-        space: 'catzligue',
+        space: 'world_tour',
         source: 'world_tour',
+        museumId: mid || undefined,
       })
     )
   }
