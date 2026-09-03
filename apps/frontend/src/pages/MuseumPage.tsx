@@ -1,6 +1,5 @@
 /**
- * Galerie unique — 3D · collection wallet · carte.
- * /gallery → redirect. Vocabulaire grand public.
+ * Galerie — chargement progressif (cache) + salles public_domain immédiates.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -28,11 +27,12 @@ import {
   VIRTUAL_MUSEUMS,
   type VirtualMuseum,
 } from '../lib/museumWorldCatalog'
+import { preloadImages } from '../lib/imagePreload'
 
 type Mode = 'explore' | 'mine' | 'map'
 
 function preferImage(n: NFT): string | undefined {
-  const thumb = n.media?.[0]?.thumbnailUrl
+  const thumb = n.media?.[0]?.thumbnailUrl as string | undefined
   const full = n.url || n.media?.[0]?.url
   if (thumb && /^https?:\/\//i.test(thumb)) return thumb
   if (full && /^https?:\/\//i.test(full)) return full
@@ -52,33 +52,38 @@ function framesFromNfts(nfts: NFT[]): FrameItem[] {
   }))
 }
 
+/** Cache session — un seul fetch catalogue, pas de cache-bust. */
+let catalogPromise: Promise<{ collections: CollectionData[]; nfts: NFT[] }> | null = null
+
 async function loadFullCatalog(): Promise<{ collections: CollectionData[]; nfts: NFT[] }> {
-  const urls = [
-    DATA_URL,
-    'https://raw.githubusercontent.com/Neltud/xArtists/main/apps/frontend/public/data/xartists_collections.json',
-  ]
-  for (const u of urls) {
-    try {
-      const r = await fetch(`${u}${u.includes('?') ? '&' : '?'}t=${Date.now()}`, {
-        cache: 'no-store',
-      })
-      if (!r.ok) continue
-      const j = (await r.json()) as CollectionsFile
-      const cols = j.collections || []
-      if (!cols.length) continue
-      const nfts = cols.flatMap(c =>
-        (c.nfts || []).map(n => ({
-          ...n,
-          collection: n.collection || c.identifier,
-          collection_name: n.collection_name || c.name,
-        }))
-      )
-      return { collections: cols, nfts }
-    } catch {
-      /* next */
+  if (catalogPromise) return catalogPromise
+  catalogPromise = (async () => {
+    const urls = [
+      DATA_URL,
+      `${import.meta.env.BASE_URL || '/'}data/xartists_collections.json`,
+    ]
+    for (const u of urls) {
+      try {
+        const r = await fetch(u, { cache: 'force-cache' })
+        if (!r.ok) continue
+        const j = (await r.json()) as CollectionsFile
+        const cols = j.collections || []
+        if (!cols.length) continue
+        const nfts = cols.flatMap(c =>
+          (c.nfts || []).map(n => ({
+            ...n,
+            collection: n.collection || c.identifier,
+            collection_name: n.collection_name || c.name,
+          }))
+        )
+        return { collections: cols, nfts }
+      } catch {
+        /* next */
+      }
     }
-  }
-  return { collections: [], nfts: [] }
+    return { collections: [], nfts: [] }
+  })()
+  return catalogPromise
 }
 
 const MODES: { id: Mode; label: string }[] = [
@@ -139,7 +144,7 @@ export default function MuseumPage() {
     if (travel?.city || cityQ) {
       const city = travel?.city || cityQ || ''
       const mid = museumIdForCity(city)
-      setTravelBanner(mid ? `Direction ${city}` : `Direction ${city}`)
+      setTravelBanner(`Direction ${city}`)
       setMuseumId(mid || 'xartists')
       setMode('explore')
     }
@@ -147,11 +152,23 @@ export default function MuseumPage() {
 
   const xartistsFrames = useMemo(() => {
     const withImg = allNfts.filter(n => preferImage(n))
-    return framesFromNfts((withImg.length ? withImg : allNfts).slice(0, 48))
+    const list = (withImg.length ? withImg : allNfts).slice(0, 24)
+    return framesFromNfts(list)
   }, [allNfts])
 
   const visitFrames = museum.source === 'onchain' ? xartistsFrames : museum.works
+
+  /** Précharge les 6 premières images de la salle active. */
+  useEffect(() => {
+    preloadImages(
+      visitFrames.map(f => f.image),
+      6
+    )
+  }, [museumId, visitFrames])
+
   const myFrames = useMemo(() => framesFromUserNfts(account.nfts || []), [account.nfts])
+
+  const showHallLoader = museum.source === 'onchain' && catalogLoading && !visitFrames.length
 
   return (
     <div className="animate-fade-in pb-12 max-w-5xl mx-auto">
@@ -161,8 +178,7 @@ export default function MuseumPage() {
         </p>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Galerie</h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl">
-          Une seule expérience : promenez-vous dans les salles, ouvrez votre collection, ou voyagez
-          de ville en ville.
+          Une seule expérience : salles immersives, votre collection, ou voyage de ville en ville.
         </p>
       </header>
 
@@ -215,11 +231,11 @@ export default function MuseumPage() {
               <p className="text-[12px] text-zinc-500">{museum.tagline}</p>
             </div>
             <p className="text-[11px] text-zinc-600 hidden sm:block">
-              Déplacez-vous · touchez une œuvre pour l’agrandir
+              Déplacez-vous · touchez une œuvre
             </p>
           </div>
 
-          {museum.source === 'onchain' && catalogLoading ? (
+          {showHallLoader ? (
             <div className="rounded-2xl border border-white/10 bg-zinc-950/80 h-[min(70vh,520px)] flex items-center justify-center">
               <p className="text-sm text-zinc-500">Préparation de la salle…</p>
             </div>

@@ -1,15 +1,19 @@
 /**
- * Salle 3D CSS — murs / sol / plafond, exploration mobile + desktop.
+ * Salle 3D CSS — rendu proche + préchargement des œuvres à venir.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FrameItem } from './MuseumCorridor'
 import { canListBuyNft } from '../../config/scStatus'
 import { useWallet } from '../../context/WalletContext'
 import { requestOpenConnect } from '../../lib/walletEvents'
+import { preloadImages } from '../../lib/imagePreload'
 import InfoTip from '../InfoTip'
 
 const STEP = 0.05
 const LOOK_MAX = 32
+const MAX_FRAMES = 20
+const RENDER_AHEAD = 2.4
+const RENDER_BEHIND = 0.15
 
 type RoomTheme = 'cyber' | 'stone' | 'gold' | 'white' | 'dark'
 
@@ -94,12 +98,13 @@ export default function MuseumGameHall({
   room?: RoomTheme
   allowBuy?: boolean
 }) {
-  const list = useMemo(() => frames.slice(0, 36), [frames])
+  const list = useMemo(() => frames.slice(0, MAX_FRAMES), [frames])
   const maxZ = Math.max(1.2, list.length * 0.5)
   const [z, setZ] = useState(0.12)
   const [lookY, setLookY] = useState(0)
   const [inspect, setInspect] = useState<FrameItem | null>(null)
   const [buyMsg, setBuyMsg] = useState<string | null>(null)
+  const [broken, setBroken] = useState<Record<string, boolean>>({})
   const keys = useRef<Record<string, boolean>>({})
   const hold = useRef<Record<string, boolean>>({})
   const raf = useRef(0)
@@ -121,6 +126,19 @@ export default function MuseumGameHall({
       }
     })
     return bestD < 0.5 ? best : null
+  }, [list, z, maxZ])
+
+  /** Précharge les images dans le cône de vision + 2 suivantes. */
+  useEffect(() => {
+    const urls: string[] = []
+    list.forEach((item, i) => {
+      const artZ = (i + 1) * (maxZ / (list.length + 1))
+      const rel = artZ - z
+      if (rel >= RENDER_BEHIND - 0.3 && rel <= RENDER_AHEAD + 0.8 && item.image) {
+        urls.push(item.image)
+      }
+    })
+    preloadImages(urls, 8)
   }, [list, z, maxZ])
 
   const setKey = (k: string, on: boolean) => {
@@ -174,14 +192,14 @@ export default function MuseumGameHall({
     if (!f) return
     if (!connected) {
       requestOpenConnect()
-      setBuyMsg('Connecte ton wallet pour une intention d’achat.')
+      setBuyMsg('Connectez votre wallet pour une intention d’achat.')
       return
     }
     dispatchBuyIntent(f)
     setBuyMsg(
       marketLive
-        ? 'Intention BUY_NFT → Guardian. Signature wallet pour TX réelle.'
-        : 'Intention paper — SC market non live. Pas de SUCCESS simulé.'
+        ? 'Intention d’achat envoyée — signature wallet requise.'
+        : 'Intention paper — marché on-chain pas encore live.'
     )
   }, [inspect, nearest, connected, marketLive, allowBuy])
 
@@ -208,7 +226,7 @@ export default function MuseumGameHall({
         style={{ height: 'min(72vh, 520px)', background: theme.fog }}
         tabIndex={0}
         role="application"
-        aria-label="Galerie 3D mobile et desktop"
+        aria-label="Galerie 3D"
       >
         <div
           className="absolute inset-0"
@@ -259,13 +277,14 @@ export default function MuseumGameHall({
           {list.map((item, i) => {
             const artZ = (i + 1) * (maxZ / (list.length + 1))
             const rel = artZ - z
-            if (rel < -0.2 || rel > 2.6) return null
+            if (rel < RENDER_BEHIND || rel > RENDER_AHEAD) return null
             const scale = Math.max(0.32, 1.2 - rel * 0.38)
             const opacity = Math.max(0.12, 1 - rel * 0.38)
             const side = i % 2 === 0 ? -1 : 1
             const xPct = 50 + side * (16 + rel * 5)
             const yPct = 40 - rel * 2.5
             const isNear = nearest?.id === item.id
+            const imgBroken = broken[item.id]
             return (
               <button
                 key={item.id}
@@ -283,26 +302,39 @@ export default function MuseumGameHall({
               >
                 <div
                   className={`relative aspect-[4/5] p-[5%] border-2 ${
-                    isNear ? 'border-cyan-400/55' : lightText ? 'border-stone-600/40' : 'border-white/20'
+                    isNear
+                      ? 'border-cyan-400/55'
+                      : lightText
+                        ? 'border-stone-600/40'
+                        : 'border-white/20'
                   }`}
                   style={{
                     background: lightText
                       ? 'linear-gradient(145deg, #f5f0e6, #ddd5c8)'
                       : 'linear-gradient(145deg, #2a2a32, #121218)',
-                    boxShadow: isNear ? '0 0 28px rgba(34,211,238,0.3)' : '0 14px 28px rgba(0,0,0,0.45)',
+                    boxShadow: isNear
+                      ? '0 0 28px rgba(34,211,238,0.3)'
+                      : '0 14px 28px rgba(0,0,0,0.45)',
                   }}
                 >
                   <div className="absolute inset-[5%] bg-black overflow-hidden">
-                    {item.image ? (
+                    {item.image && !imgBroken ? (
                       <img
                         src={item.image}
                         alt={item.title}
                         className="h-full w-full object-cover"
-                        loading={rel < 1.2 ? 'eager' : 'lazy'}
+                        loading={rel < 1.0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        fetchPriority={isNear ? 'high' : 'low'}
+                        width={160}
+                        height={200}
                         draggable={false}
+                        onError={() => setBroken(b => ({ ...b, [item.id]: true }))}
                       />
                     ) : (
-                      <div className="h-full w-full flex items-center justify-center opacity-40">🖼</div>
+                      <div className="h-full w-full flex items-center justify-center opacity-40 text-xs px-1 text-center">
+                        {item.title.slice(0, 24)}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -312,7 +344,11 @@ export default function MuseumGameHall({
         </div>
 
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className={`w-2.5 h-2.5 border rounded-full ${lightText ? 'border-stone-700/40' : 'border-white/30'}`} />
+          <div
+            className={`w-2.5 h-2.5 border rounded-full ${
+              lightText ? 'border-stone-700/40' : 'border-white/30'
+            }`}
+          />
         </div>
 
         <div className="absolute top-2 left-2 right-2 flex justify-between gap-2 pointer-events-none">
@@ -341,7 +377,7 @@ export default function MuseumGameHall({
           </div>
           <button
             type="button"
-            className="rounded-full border border-cyan-400/40 bg-cyan-500/20 text-cyan-50 text-xs font-semibold px-4 py-2.5 active:scale-95 shadow-lg"
+            className="rounded-full border border-cyan-400/40 bg-cyan-500/20 text-cyan-50 text-xs font-semibold px-4 py-2.5 active:scale-95 shadow-lg disabled:opacity-40"
             disabled={!nearest}
             onClick={() => nearest && setInspect(nearest)}
           >
@@ -351,7 +387,7 @@ export default function MuseumGameHall({
       </div>
 
       {buyMsg && (
-        <p className="text-[11px] text-amber-200/90 border border-amber-500/25 bg-amber-500/10 rounded-lg px-2.5 py-1.5">
+        <p className="text-[11px] text-zinc-400 border border-white/10 bg-white/[0.03] rounded-lg px-2.5 py-1.5">
           {buyMsg}
         </p>
       )}
@@ -369,15 +405,23 @@ export default function MuseumGameHall({
           >
             <div className="flex gap-3">
               <div className="w-24 sm:w-36 shrink-0 aspect-[4/5] rounded-lg overflow-hidden border border-white/10 bg-black">
-                {inspect.image ? (
-                  <img src={inspect.image} alt="" className="w-full h-full object-cover" />
+                {inspect.image && !broken[inspect.id] ? (
+                  <img
+                    src={inspect.image}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    decoding="async"
+                    fetchPriority="high"
+                  />
                 ) : (
-                  <div className="h-full flex items-center justify-center opacity-40">🖼</div>
+                  <div className="h-full flex items-center justify-center opacity-40">◈</div>
                 )}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-base font-semibold text-white">{inspect.title}</p>
-                <p className="text-[11px] text-zinc-500 mt-1">{inspect.subtitle || inspect.collection}</p>
+                <p className="text-[11px] text-zinc-500 mt-1">
+                  {inspect.subtitle || inspect.collection}
+                </p>
                 {inspect.description && (
                   <p className="text-xs text-zinc-400 mt-2 line-clamp-5">{inspect.description}</p>
                 )}
@@ -390,10 +434,15 @@ export default function MuseumGameHall({
                 </button>
               )}
               {!allowBuy && (
-                <span className="text-[10px] text-zinc-500 self-center">Domaine public — visite libre</span>
+                <span className="text-[10px] text-zinc-500 self-center">Visite libre</span>
               )}
               {inspect.href && (
-                <a href={inspect.href} target="_blank" rel="noreferrer" className="btn-secondary text-xs">
+                <a
+                  href={inspect.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary text-xs"
+                >
                   Source ↗
                 </a>
               )}
