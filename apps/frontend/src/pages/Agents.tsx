@@ -1,6 +1,5 @@
 /**
- * Packs Agents IA — page produit unique, design pro.
- * Pulse · Yield · Sentinel uniquement. NFT = forme d’accès, pas un 2e rayon.
+ * Packs — une grille + comparatif mince + un seul checkout.
  */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -43,30 +42,20 @@ export default function Agents() {
 
   return (
     <div className="animate-fade-in pb-14 max-w-5xl mx-auto">
-      <header className="mb-10 space-y-4">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-          Agents IA · MultiversX
+      <header className="mb-10 space-y-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+          Packs
         </p>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
-          Trois packs d’accès
+          Pulse · Yield · Sentinel
         </h1>
-        <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl">
-          Pulse, Yield et Sentinel donnent accès aux signaux et au board LIA. Chaque pack est un
-          produit unique, livré comme NFT d’entitlement — pas un fonds, pas de rendement promis.
+        <p className="text-zinc-400 text-[15px] leading-relaxed max-w-lg">
+          Trois accès agents, un seul parcours d’achat. NFT d’entitlement — pas un fonds, pas de
+          rendement promis.
         </p>
-        <ul className="flex flex-wrap gap-x-5 gap-y-1 text-[12px] text-zinc-500">
-          <li>Mode paper sur la démo</li>
-          <li>Wallet utilisateur pour toute signature</li>
-          <li>
-            <Link to="/tours" className="text-zinc-400 underline-offset-2 hover:underline">
-              Art Tours
-            </Link>{' '}
-            = culture, hors packs
-          </li>
-        </ul>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-12">
         {AGENT_PACKS.map(p => {
           const a = ACCENT[p.id]
           const isOn = selected === p.id
@@ -84,65 +73,25 @@ export default function Agents() {
                   {RISK_LABEL[p.risk]}
                 </span>
               </div>
-              <p className="text-[13px] text-zinc-400 mb-4 min-h-[2.5rem]">{p.tagline}</p>
+              <p className="text-[13px] text-zinc-400 mb-4">{p.tagline}</p>
 
-              <p className="text-3xl font-semibold text-white tabular-nums tracking-tight mb-1">
+              <p className="text-3xl font-semibold text-white tabular-nums tracking-tight mb-5">
                 {p.priceEur.list}
                 <span className="text-base font-normal text-zinc-500 ml-1">€</span>
               </p>
-              <p className="text-[11px] text-zinc-600 mb-5">prix list · accès pack</p>
-
-              <div className="mb-4">
-                <p className="text-[10px] uppercase tracking-wider text-zinc-600 mb-1.5">
-                  Intensité signaux
-                </p>
-                <div className="flex gap-1">
-                  {[1, 2, 3].map(i => (
-                    <span
-                      key={i}
-                      className={`h-1 flex-1 rounded-full ${
-                        i <= p.signalIntensity ? a.bar : 'bg-white/10'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <p className="text-[11px] text-zinc-500 mt-2">{p.activity}</p>
-              </div>
-
-              <div className="mb-4">
-                <p className="text-[10px] uppercase tracking-wider text-zinc-600 mb-1.5">
-                  Stratégies
-                </p>
-                <p className="text-[12px] text-zinc-300 font-mono tracking-wide">
-                  {p.strategies.join(' · ')}
-                </p>
-              </div>
 
               <div className="mb-3 flex-1">
-                <p className="text-[10px] uppercase tracking-wider text-zinc-600 mb-1.5">Inclus</p>
-                <ul className="space-y-1">
+                <ul className="space-y-1.5">
                   {p.entitlements.map(e => (
                     <li key={e} className="text-[12px] text-zinc-300 flex gap-2">
-                      <span className="text-zinc-600 shrink-0">—</span>
+                      <span className="text-zinc-600">—</span>
                       <span>{e}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="mb-5">
-                <p className="text-[10px] uppercase tracking-wider text-zinc-600 mb-1.5">
-                  Non inclus
-                </p>
-                <ul className="space-y-1">
-                  {p.notIncluded.slice(0, 3).map(e => (
-                    <li key={e} className="text-[11px] text-zinc-500 flex gap-2">
-                      <span className="text-zinc-700 shrink-0">×</span>
-                      <span>{e}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <p className="text-[11px] text-zinc-600 mb-4">{p.activity}</p>
 
               <button
                 type="button"
@@ -167,12 +116,12 @@ export default function Agents() {
         })}
       </div>
 
-      <section className="mb-10 overflow-x-auto rounded-2xl border border-white/10">
-        <table className="w-full min-w-[640px] text-left text-[13px]">
-          <caption className="sr-only">Comparatif des packs Pulse, Yield et Sentinel</caption>
+      <section className="mb-10 overflow-x-auto rounded-2xl border border-white/[0.07]">
+        <table className="w-full min-w-[520px] text-left text-[13px]">
+          <caption className="sr-only">Comparatif packs</caption>
           <thead>
             <tr className="border-b border-white/10 bg-white/[0.03]">
-              <th className="px-4 py-3 font-medium text-zinc-500">Critère</th>
+              <th className="px-4 py-3 font-medium text-zinc-500"> </th>
               {AGENT_PACKS.map(p => (
                 <th key={p.id} className="px-4 py-3 font-semibold text-white">
                   {p.name}
@@ -182,7 +131,7 @@ export default function Agents() {
           </thead>
           <tbody className="text-zinc-400">
             <tr className="border-b border-white/[0.06]">
-              <td className="px-4 py-3 text-zinc-500">Prix list</td>
+              <td className="px-4 py-3 text-zinc-500">Prix</td>
               {AGENT_PACKS.map(p => (
                 <td key={p.id} className="px-4 py-3 text-white font-medium tabular-nums">
                   {p.priceEur.list} €
@@ -198,48 +147,7 @@ export default function Agents() {
               ))}
             </tr>
             <tr className="border-b border-white/[0.06]">
-              <td className="px-4 py-3 text-zinc-500">Intensité signaux</td>
-              {AGENT_PACKS.map(p => (
-                <td key={p.id} className="px-4 py-3">
-                  <span className="inline-flex gap-0.5" aria-label={`${p.signalIntensity} sur 3`}>
-                    {[1, 2, 3].map(i => (
-                      <span
-                        key={i}
-                        className={`h-1.5 w-4 rounded-full ${
-                          i <= p.signalIntensity ? ACCENT[p.id].bar : 'bg-white/10'
-                        }`}
-                      />
-                    ))}
-                  </span>
-                </td>
-              ))}
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="px-4 py-3 text-zinc-500">Cadence</td>
-              {AGENT_PACKS.map(p => (
-                <td key={p.id} className="px-4 py-3 text-[12px] leading-snug">
-                  {p.activity}
-                </td>
-              ))}
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="px-4 py-3 text-zinc-500">Stratégies</td>
-              {AGENT_PACKS.map(p => (
-                <td key={p.id} className="px-4 py-3 font-mono text-[11px] text-zinc-300">
-                  {p.strategies.join(', ')}
-                </td>
-              ))}
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="px-4 py-3 text-zinc-500">NFT d’accès</td>
-              {AGENT_PACKS.map(p => (
-                <td key={p.id} className="px-4 py-3 text-zinc-300">
-                  Oui
-                </td>
-              ))}
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="px-4 py-3 text-zinc-500">Clé API limitée</td>
+              <td className="px-4 py-3 text-zinc-500">Clé API</td>
               {AGENT_PACKS.map(p => (
                 <td key={p.id} className="px-4 py-3">
                   {p.entitlements.some(e => /API/i.test(e)) ? 'Oui' : '—'}
@@ -247,15 +155,7 @@ export default function Agents() {
               ))}
             </tr>
             <tr className="border-b border-white/[0.06]">
-              <td className="px-4 py-3 text-zinc-500">Part de pool</td>
-              {AGENT_PACKS.map(p => (
-                <td key={p.id} className="px-4 py-3 tabular-nums">
-                  {(p.shareOfPackPoolBps / 100).toFixed(0)} %
-                </td>
-              ))}
-            </tr>
-            <tr className="border-b border-white/[0.06]">
-              <td className="px-4 py-3 text-zinc-500">Rendement garanti</td>
+              <td className="px-4 py-3 text-zinc-500">Rendement promis</td>
               {AGENT_PACKS.map(p => (
                 <td key={p.id} className="px-4 py-3 text-zinc-500">
                   Non
@@ -283,12 +183,12 @@ export default function Agents() {
             <h2 className="text-sm font-semibold text-white">Souscription</h2>
             <p className="text-[12px] text-zinc-500 mt-0.5">
               {active
-                ? `${active.name} · ${active.priceEur.list} € · paiement carte puis NFT d’accès`
-                : 'Choisissez un pack ci-dessus pour continuer.'}
+                ? `${active.name} · ${active.priceEur.list} €`
+                : 'Sélectionnez un pack ci-dessus.'}
             </p>
           </div>
           {!mintLive && (
-            <span className="text-[10px] uppercase tracking-wider text-amber-200/80 border border-amber-500/25 rounded-full px-2 py-0.5">
+            <span className="text-[10px] text-zinc-600 border border-white/10 rounded-full px-2 py-0.5">
               Mint on-chain ultérieur
             </span>
           )}
@@ -296,16 +196,11 @@ export default function Agents() {
         <PackCheckout packId={selected} onClear={() => setSelected(null)} />
       </section>
 
-      <p className="mt-8 text-[12px] text-zinc-600 leading-relaxed max-w-2xl">
-        Les packs n’entraînent aucun mandat de gestion sur vos fonds. Le board LIA reste en paper sur
-        cette démo. Après achat, suivez l’état dans{' '}
-        <Link
-          to="/my-packs"
-          className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
-        >
+      <p className="mt-8 text-[12px] text-zinc-600">
+        Suivi après achat :{' '}
+        <Link to="/my-packs" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
           My Packs
         </Link>
-        .
       </p>
     </div>
   )
