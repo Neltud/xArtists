@@ -1,11 +1,30 @@
 /**
- * Home demo — verrouillée clean. Aucun strip ops / SC / health.
+ * Home — haut de gamme, zéro redondance (pas de double CTA Galerie/Musée, pas de strips ops).
  */
 import { Link } from 'react-router-dom'
-import PageGuide from '../components/PageGuide'
-import PersonaWelcome from '../components/PersonaWelcome'
-import SoftLaunchPath from '../components/SoftLaunchPath'
 import { useEffect, useState } from 'react'
+import PersonaWelcome from '../components/PersonaWelcome'
+
+const PILLARS = [
+  {
+    to: '/museum',
+    label: 'Galerie',
+    title: 'Visite immersif',
+    body: 'Salles 3D, collection wallet, musées-ville.',
+  },
+  {
+    to: '/agents',
+    label: 'Packs',
+    title: 'Pulse · Yield · Sentinel',
+    body: 'Accès agents — un parcours d’achat unique.',
+  },
+  {
+    to: '/tours',
+    label: 'Tours',
+    title: 'Destinations art',
+    body: 'Carte culturelle — hors packs agents.',
+  },
+] as const
 
 export default function Dashboard() {
   const [persona, setPersona] = useState<string | null>(null)
@@ -19,82 +38,78 @@ export default function Dashboard() {
   }, [])
 
   return (
-    <div className="animate-fade-in space-y-6 pb-10 max-w-3xl">
-      <PageGuide page="home" />
-
-      <section className="relative overflow-hidden rounded-3xl border border-white/[0.08] p-6 sm:p-10">
+    <div className="animate-fade-in space-y-10 pb-14 max-w-4xl mx-auto">
+      <section className="relative overflow-hidden rounded-[1.75rem] border border-white/[0.07] px-6 py-10 sm:px-12 sm:py-14">
         <div
-          className="absolute inset-0 opacity-90"
+          className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(ellipse 70% 80% at 10% 20%, rgba(139,92,246,0.22), transparent), radial-gradient(ellipse 50% 60% at 90% 80%, rgba(34,211,238,0.1), transparent)',
+              'radial-gradient(ellipse 80% 90% at 0% 0%, rgba(139,92,246,0.28), transparent 55%), radial-gradient(ellipse 60% 70% at 100% 100%, rgba(34,211,238,0.12), transparent 50%)',
           }}
         />
-        <div className="relative z-[1] max-w-2xl space-y-4">
-          <p className="text-[11px] uppercase tracking-[0.25em] text-cyan-400/90 font-semibold">
-            MultiversX · xArtists
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.35]"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
+            backgroundSize: '48px 48px',
+          }}
+        />
+        <div className="relative z-[1] max-w-xl space-y-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
+            xArtists
           </p>
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white leading-tight">
-            Galerie · packs · <span className="gradient-text">musée</span>
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white leading-[1.08]">
+            L’art on-chain,{' '}
+            <span className="gradient-text">sans le bruit</span>
           </h1>
-          <p className="text-zinc-400 text-sm sm:text-base leading-relaxed max-w-lg">
-            NFT MultiversX, packs agents Pulse · Yield · Sentinel, visites musée et Art Tours. Mode
-            paper par défaut — pas de trading live sur cette démo.
+          <p className="text-zinc-400 text-base leading-relaxed">
+            Galerie immersive, packs d’accès et tours culturels sur MultiversX. Démo paper — votre
+            wallet reste le vôtre.
           </p>
-          <div className="flex flex-wrap gap-2 pt-1">
-            <Link to="/museum" className="btn-primary">
-              Musée 3D
+          <div className="flex flex-wrap gap-3 pt-1">
+            <Link to="/museum" className="btn-primary !px-6 !py-3">
+              Entrer dans la galerie
             </Link>
-            <Link to="/agents" className="btn-secondary">
-              Packs
-            </Link>
-            <Link to="/gallery" className="btn-secondary">
-              Galerie
-            </Link>
-            <Link to="/tours" className="btn-secondary">
-              Tours
+            <Link to="/agents" className="btn-secondary !px-6 !py-3">
+              Voir les packs
             </Link>
           </div>
         </div>
       </section>
 
-      <SoftLaunchPath compact />
+      <section className="grid sm:grid-cols-3 gap-3">
+        {PILLARS.map(p => (
+          <Link
+            key={p.to}
+            to={p.to}
+            className="group rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5 transition-all duration-300 hover:border-white/15 hover:bg-white/[0.04]"
+          >
+            <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-600 group-hover:text-zinc-400">
+              {p.label}
+            </p>
+            <p className="mt-2 text-[15px] font-semibold text-white tracking-tight">{p.title}</p>
+            <p className="mt-1.5 text-[13px] text-zinc-500 leading-relaxed">{p.body}</p>
+          </Link>
+        ))}
+      </section>
 
       {!persona && <PersonaWelcome />}
 
-      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 text-xs text-zinc-500 space-y-2">
-        <p className="font-semibold text-zinc-200 text-sm">En bref</p>
-        <ul className="list-disc pl-4 space-y-1.5">
-          <li>
-            <strong className="text-zinc-300">Packs</strong> — Pulse · Yield · Sentinel (accès agent,
-            NFT d’entitlement)
-          </li>
-          <li>
-            <strong className="text-zinc-300">Tours / Musée</strong> — culture & visite, pas un pack IA
-          </li>
-          <li>
-            <strong className="text-zinc-300">Trading</strong> — board LIA en paper sur la démo
-          </li>
-        </ul>
-      </div>
-
-      <p className="text-[11px] text-zinc-600">
-        <Link to="/wallet" className="text-cyan-300/90 hover:underline">
+      <footer className="flex flex-wrap gap-x-5 gap-y-2 text-[12px] text-zinc-600">
+        <Link to="/wallet" className="hover:text-zinc-300 transition-colors">
           Wallet
         </Link>
-        {' · '}
-        <Link to="/marketplace" className="text-cyan-300/90 hover:underline">
+        <Link to="/marketplace" className="hover:text-zinc-300 transition-colors">
           Marketplace
         </Link>
-        {' · '}
-        <Link to="/my-packs" className="text-cyan-300/90 hover:underline">
+        <Link to="/my-packs" className="hover:text-zinc-300 transition-colors">
           My Packs
         </Link>
-        {' · '}
-        <Link to="/legal" className="text-cyan-300/90 hover:underline">
+        <Link to="/legal" className="hover:text-zinc-300 transition-colors">
           Mentions légales
         </Link>
-      </p>
+      </footer>
     </div>
   )
 }
