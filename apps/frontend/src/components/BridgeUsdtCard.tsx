@@ -1,44 +1,41 @@
 /**
- * Pont stablecoins → MultiversX via XOXNO (USDT0 / LayerZero path).
- * External product — xArtists n’opère pas le bridge.
+ * Pont stablecoins → MultiversX (XOXNO / USDT0) — externe, discret.
  */
 import { LINKS } from '../config/links'
 
 export default function BridgeUsdtCard({ compact = false }: { compact?: boolean }) {
   return (
     <div
-      className={`rounded-2xl border border-white/10 bg-white/[0.03] ${
-        compact ? 'px-3 py-2.5' : 'px-4 py-3.5'
+      className={`rounded-2xl border border-white/[0.07] bg-white/[0.02] ${
+        compact ? 'px-3.5 py-3' : 'px-4 py-3.5'
       }`}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
-        Stablecoins → MultiversX
+      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-600">
+        Financer le wallet
       </p>
-      <p className={`text-sm text-zinc-300 mt-1.5 leading-relaxed ${compact ? '' : 'max-w-md'}`}>
-        Amenez du <span className="text-white font-medium">USDT</span> (chemin USDT0 / LayerZero)
-        vers MultiversX via le bridge XOXNO — puis packs, galerie, market.
+      <p className={`text-[13px] text-zinc-400 mt-1 leading-relaxed ${compact ? '' : 'max-w-md'}`}>
+        USDT via XOXNO (chemin USDT0) vers MultiversX.
       </p>
-      <div className="flex flex-wrap gap-2 mt-3">
+      <div className="flex flex-wrap gap-2 mt-2.5">
         <a
           href={LINKS.xoxnoBridge}
           target="_blank"
           rel="noreferrer"
-          className="btn-primary text-xs !py-2"
+          className="btn-secondary text-xs !py-1.5"
         >
           Bridge XOXNO
         </a>
-        <a
-          href={LINKS.usdt0}
-          target="_blank"
-          rel="noreferrer"
-          className="btn-secondary text-xs !py-2"
-        >
-          USDT0
-        </a>
+        {!compact && (
+          <a
+            href={LINKS.usdt0}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-ghost text-xs !py-1.5"
+          >
+            USDT0
+          </a>
+        )}
       </div>
-      <p className="text-[10px] text-zinc-600 mt-2 leading-relaxed">
-        Service tiers (XOXNO / USDT0). Pas opéré par xArtists. Vérifiez toujours l’URL et le réseau.
-      </p>
     </div>
   )
 }
