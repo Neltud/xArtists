@@ -1,5 +1,52 @@
 # Changelog — xArtists
 
+## [0.22.0](https://github.com/Neltud/xArtists/compare/v0.21.1...v0.22.0) (2026-09-04)
+
+
+### Features
+
+* **bridge:** USDT0 / XOXNO path — fund MultiversX wallet for packs (external, honest) ([b8a330f](https://github.com/Neltud/xArtists/commit/b8a330fa9a4a2b889e688c7f9e25f1123187a43a))
+* **map:** city → museumId travel link (GuidedWorldTour + ArtWorldMap CTA + MuseumPage) ([ead4a85](https://github.com/Neltud/xArtists/commit/ead4a853ac1b7bdff690c4a691db03fdaab1876e))
+* **map:** MapMuseumEnter CTA + MuseumPage city/museum query + blueprint load ([455e3f8](https://github.com/Neltud/xArtists/commit/455e3f85c608b40f02fa3adf18c05fdca18bc771))
+* **map:** wire MapMuseumEnter CTA on city selection ([c688e15](https://github.com/Neltud/xArtists/commit/c688e153a7bf507c0420ba78560d9f3d7914ad1c))
+* **museum:** CSS-3D room built from RoomBlueprint walls + art anchors ([f6d7ab2](https://github.com/Neltud/xArtists/commit/f6d7ab2e55cc304e46e8c712fffe7e72490e6e8e))
+* **museum:** enrich blueprints with details, plaques, materials ([3f3cf8b](https://github.com/Neltud/xArtists/commit/3f3cf8b2af65f77956288e4acfcc74b2229ade33))
+* **museum:** gallery-corridor, glass-nave, rotunda blueprints ([54c0954](https://github.com/Neltud/xArtists/commit/54c095453263be9c4239007a4313895329e8cd62))
+* **museum:** load RoomBlueprint JSON from studio + map museumId → plan ([53b39b1](https://github.com/Neltud/xArtists/commit/53b39b1556f93eec288e626f088e178c35c65bd1))
+* **museum:** public/blueprints RoomBlueprint JSON (5 venues) ([1dafc61](https://github.com/Neltud/xArtists/commit/1dafc614e906d9a958142b215133e302ac90ba9b))
+* **museum:** rich room details — openings, moldings, floor materials, HUD, info panel ([3948b8e](https://github.com/Neltud/xArtists/commit/3948b8e294bfda3384d4a4dd9b668b3535930b45))
+* **museum:** room details — openings, baseboards, plaques, lighting, HUD ([5e9e7a6](https://github.com/Neltud/xArtists/commit/5e9e7a69b63a7f8e1dc44f81163932c11e55cc5e))
+* **museum:** RoomBlueprint JSON (gallery, nave, cabinet, rotunda, cyber) + loaders ([d4fab8d](https://github.com/Neltud/xArtists/commit/d4fab8d12d6485a82a4f4ea5bc384b87b3686e92))
+* **museum:** unique 3D layout per venue + game architecture roadmap (plan→room) ([df86d5c](https://github.com/Neltud/xArtists/commit/df86d5c385381de7ee1ee615942be2c3de67388d))
+* **museum:** use MuseumBlueprintRoom when RoomBlueprint walls available ([c1acae9](https://github.com/Neltud/xArtists/commit/c1acae9b076f1817c7bb3d288ebed4e4c0248bde))
+* **museum:** wire per-venue 3D layouts into MuseumGameHall ([3aae7b9](https://github.com/Neltud/xArtists/commit/3aae7b95729afe50bb75322a1b439b17cb00554b))
+* **wallet:** show XOXNO USDT0 bridge card ([169203b](https://github.com/Neltud/xArtists/commit/169203b94884c8dbb108b1252c5326e292c4fed6))
+
+
+### Bug Fixes
+
+* **agents:** single 3-pack UI only · feat(museum): real CSS-3D rooms from RoomBlueprint walls ([1ed2603](https://github.com/Neltud/xArtists/commit/1ed260349bf748efe0ff1befd66a75d6bf172c7b))
+* **ci:** sync Vite dist → docs/ so live Pages matches main (not stale SPA) ([6102e11](https://github.com/Neltud/xArtists/commit/6102e1177769d7240891e2005845e4c6b09b8096))
+* **map:** restore ArtWorldMap + MapMuseumEnter CTA ([bfe69cf](https://github.com/Neltud/xArtists/commit/bfe69cf387d1b388dbc3a5c301ef67c55e92b6eb))
+* **pwa:** bump SW cache to v5 — drop stale shell after docs resync ([a93fbdf](https://github.com/Neltud/xArtists/commit/a93fbdfdd201d7d23990372963cc3c7eb634d76e))
+
+
+### Performance
+
+* **museum:** progressive catalog cache + preload nearest artworks in 3D hall ([8dc2509](https://github.com/Neltud/xArtists/commit/8dc25090fe877e80460146fd7998a78e51404d44))
+
+
+### Documentation
+
+* **marketing:** draft X 18:28 CEST — $TRO / écosystème ([4dd0286](https://github.com/Neltud/xArtists/commit/4dd02868838336e0547087aa3b52bf8bff429f87))
+* **marketing:** draft X 2026-09-02 19:19 CEST — thème intention ⌘K ([e067467](https://github.com/Neltud/xArtists/commit/e0674673eaaa51a8ff9a0c645c61f1c42fadd270))
+* **marketing:** draft X 2026-09-03 — thème packs IA ([60dad77](https://github.com/Neltud/xArtists/commit/60dad771f8fa388c2ae7c02b43000ad851516be0))
+* **marketing:** draft X 2026-09-03 14:22 board paper LIA ([5e57401](https://github.com/Neltud/xArtists/commit/5e57401c95ea886d89b164caa363058248e4a6f9))
+* **marketing:** draft X 2026-09-03 20:12 wallet MultiversX ([3cb22d3](https://github.com/Neltud/xArtists/commit/3cb22d3804124961cfe29e91902572cc7519170e))
+* **marketing:** draft X 2026-09-04 — thème intention ⌘K ([7f7a9bc](https://github.com/Neltud/xArtists/commit/7f7a9bccab485d9d6d2fd0a5d124f6a2227ec084))
+* **marketing:** draft X 22:09 CEST — thème $TRO / écosystème ([d43cd21](https://github.com/Neltud/xArtists/commit/d43cd21fca8ea0664ec8e8f37b0063d9b6530d0b))
+* **museum:** link blend-glade-wolf-grove FloorPlan → RoomBlueprint bridge ([5ac293c](https://github.com/Neltud/xArtists/commit/5ac293c268f1d6944e196daf4b7bcd29931d12e3))
+
 ## [0.21.1](https://github.com/Neltud/xArtists/compare/v0.21.0...v0.21.1) (2026-09-02)
 
 
