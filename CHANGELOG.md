@@ -1,5 +1,30 @@
 # Changelog — xArtists
 
+## [0.27.0](https://github.com/Neltud/xArtists/compare/v0.26.0...v0.27.0) (2026-09-04)
+
+
+### Features
+
+* **dao:** LP TRO multi-DEX vote power + staking yield separation ([190e6e0](https://github.com/Neltud/xArtists/commit/190e6e0702ba140c0ae723de49a1281da6a3d939))
+* **dao:** TRO LP multi-DEX vote power (xExchange · OneDex · JExchange) ([2e19e42](https://github.com/Neltud/xArtists/commit/2e19e4251f91de3db655f641f42bc3071fc9f743))
+* **dao:** wire DaoLpVotePower — TRO LP multi-DEX vote weight ([7c1fffe](https://github.com/Neltud/xArtists/commit/7c1fffee1cbf7d762c8cb1e15e994cf24f52608b))
+* **lab:** museum multiplayer R3F (opt-in) + MultiversX QuantOracle stubs ([ba6f1b5](https://github.com/Neltud/xArtists/commit/ba6f1b56f9f86a5c44dec81189e9d1422239c90d))
+* **market:** show TRO hype score via QuantOracle ([62208cf](https://github.com/Neltud/xArtists/commit/62208cf227605acc3cc4ad3f406311c76c76ef2b))
+* museum lab multiplayer path, TRO hype on Market, agent 002/003 media manifest ([d3f737c](https://github.com/Neltud/xArtists/commit/d3f737c5caaf473643c9c84b32cd803db3dba860))
+* TRO pools registry — yield farming on Staking + LP vote power on DAO ([58a6201](https://github.com/Neltud/xArtists/commit/58a620121c34931c2aa994e69bbd8eda2d22193b))
+* TRO/EGLD yield on Staking + multi-DEX LP vote power on DAO (xEx/OneDex/JEx) ([7e20633](https://github.com/Neltud/xArtists/commit/7e20633c25626c33be236b965ef6086f94a130d7))
+* wire /museum/lab route + TroHypeCard on Market ([f9cbc79](https://github.com/Neltud/xArtists/commit/f9cbc79cf067e14f8173d6c44c5f06787b57b24e))
+
+
+### Bug Fixes
+
+* restore MarketPage + TroHypeCard (after accidental PLACEHOLDER) ([0096697](https://github.com/Neltud/xArtists/commit/009669795794d2269a9ab5e628f720bea5e9ea53))
+
+
+### Documentation
+
+* agent 002/003 media paths + museum lab link ([12f5ba0](https://github.com/Neltud/xArtists/commit/12f5ba056b31e98d6b1365b05e4d8f04b18e8d41))
+
 ## [0.26.0](https://github.com/Neltud/xArtists/compare/v0.25.0...v0.26.0) (2026-09-04)
 
 
