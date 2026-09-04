@@ -1,55 +1,45 @@
-import { useEffect, useMemo, useState } from 'react'
+/**
+ * Tours artistiques — carte + musées 3D (service CULTURE, pas un pack agent).
+ */
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import PageGuide from '../components/PageGuide'
 import InfoTip from '../components/InfoTip'
 import ArtWorldMap from '../components/ArtWorldMap'
 import ErrorBoundary from '../components/ErrorBoundary'
+import CityMuseumDirectory from '../components/museum/CityMuseumDirectory'
 import { museumTravelHref } from '../lib/travelBridge'
-import {
-  buildMuseumNetwork,
-  museumIdForCity,
-  type VirtualMuseum,
-} from '../lib/museumWorldCatalog'
+import { VIRTUAL_MUSEUMS, type VirtualMuseum } from '../lib/museumWorldCatalog'
 
-type City = { id: string; label: string; focus?: string; score?: number; note?: string }
-type Tour = { id: string; title: string; duration?: string; includes?: string[] }
-
-type Doc = {
+type ToursDoc = {
   name?: string
   list_eur_from?: number
   scope_v1?: string[]
-  not_v1?: string[]
-  cities?: City[]
-  sample_tours?: Tour[]
-  not_an_ai_agent_pack?: boolean
+  cities?: { id: string; label?: string }[]
+  sample_tours?: { id: string; title: string; duration?: string }[]
 }
 
-/** Service culturel — PAS un pack agent IA. */
 export default function ArtToursPage() {
   const navigate = useNavigate()
-  const [doc, setDoc] = useState<Doc | null>(null)
-  const museums = useMemo(
-    () => buildMuseumNetwork(import.meta.env.BASE_URL || '/').filter(m => m.id !== 'xartists'),
-    []
-  )
+  const [doc, setDoc] = useState<ToursDoc | null>(null)
+  const museums = VIRTUAL_MUSEUMS
 
   useEffect(() => {
     let c = false
-    const urls = [
-      `${import.meta.env.BASE_URL}data/art_tours.json`,
-      'https://raw.githubusercontent.com/Neltud/xArtists/main/data/art_tours.json',
-    ]
     ;(async () => {
-      for (const url of urls) {
-        try {
-          const r = await fetch(`${url}?t=${Date.now()}`)
+      try {
+        const urls = [
+          `${import.meta.env.BASE_URL || '/'}data/tours.json`,
+          `${import.meta.env.BASE_URL || '/'}data/art_tours.json`,
+        ]
+        for (const u of urls) {
+          const r = await fetch(u, { cache: 'force-cache' })
           if (!r.ok) continue
           const j = await r.json()
           if (!c) setDoc(j)
-          return
-        } catch {
-          /* next */
+          break
         }
+      } catch {
+        /* ignore */
       }
     })()
     return () => {
@@ -71,31 +61,26 @@ export default function ArtToursPage() {
     )
   }
 
-  const enterCity = (cityLabel: string) => {
-    const mid = museumIdForCity(cityLabel) || 'louvre'
-    const m = museums.find(x => x.id === mid)
+  const enterCity = (city: string) => {
     navigate(
       museumTravelHref({
-        id: mid,
-        city: cityLabel,
-        focus: m?.name,
+        id: city,
+        city,
         space: 'world_tour',
         source: 'tours',
-        museumId: mid,
       })
     )
   }
 
   return (
-    <div className="animate-fade-in space-y-5 pb-10 max-w-4xl">
-      <PageGuide page="tours" />
-      <header className="space-y-1">
-        <p className="section-label text-rose-400/80">Culture</p>
-        <h1 className="page-title">Art Tours</h1>
-        <p className="page-sub inline-flex flex-wrap items-center gap-1">
-          Service culturel — sélectionnez une ville → salle 3D
+    <div className="animate-fade-in pb-12 max-w-5xl mx-auto space-y-8">
+      <header className="space-y-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Culture</p>
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Tours artistiques</h1>
+        <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl inline-flex flex-wrap items-center gap-1">
+          Carte mondiale · musées 3D surréalistes · expos en temps réel
           <InfoTip>
-            <strong className="text-white block mb-1">Art Tours</strong>
+            <strong className="text-white block mb-1">Service CULTURE</strong>
             <span className="text-zinc-400">
               Carte + musées (Louvre, Ermitage…). Séparé de Pulse · Yield · Sentinel.
             </span>
@@ -103,19 +88,18 @@ export default function ArtToursPage() {
         </p>
       </header>
 
-      {/* Accès direct musées */}
       <section className="space-y-2">
         <h2 className="text-sm font-semibold text-zinc-300">Entrer dans un musée 3D</h2>
         <p className="text-[11px] text-zinc-600">
-          Plans inspirés des typologies réelles (enfilade Louvre, nef Orsay, salon Ermitage…).
+          Plans inspirés des typologies réelles — atmosphère surréaliste WebGL.
         </p>
         <div className="flex flex-wrap gap-2">
-          {museums.slice(0, 16).map(m => (
+          {museums.slice(0, 20).map(m => (
             <button
               key={m.id}
               type="button"
               onClick={() => enterMuseum(m)}
-              className="rounded-2xl border border-white/10 bg-black/30 hover:border-rose-400/40 hover:bg-rose-500/10 px-3 py-2 text-left min-w-[8.5rem] transition-colors"
+              className="rounded-2xl border border-white/10 bg-gradient-to-br from-violet-500/10 to-rose-500/5 hover:border-rose-400/40 px-3 py-2 text-left min-w-[8.5rem] transition-colors"
             >
               <p className="text-[12px] font-semibold text-white truncate">{m.name}</p>
               <p className="text-[10px] text-zinc-500">{m.city}</p>
@@ -124,14 +108,15 @@ export default function ArtToursPage() {
         </div>
       </section>
 
-      <section className="space-y-2">
+      <section className="space-y-3">
         <h2 className="text-sm font-semibold text-zinc-300">Carte mondiale</h2>
         <p className="text-[11px] text-zinc-600">
-          Clic marqueur → expos · bouton <strong className="text-zinc-400">Entrer</strong> → visite 3D
+          Clic marqueur → expos · boutons <strong className="text-zinc-400">Musées 3D</strong> → visite
         </p>
         <ErrorBoundary>
           <ArtWorldMap />
         </ErrorBoundary>
+        <CityMuseumDirectory />
       </section>
 
       {doc?.cities && doc.cities.length > 0 && (
@@ -167,7 +152,6 @@ export default function ArtToursPage() {
               </ul>
             )}
           </div>
-
           {Array.isArray(doc.sample_tours) && doc.sample_tours.length > 0 && (
             <div className="card space-y-2">
               <p className="text-[10px] uppercase tracking-wider text-zinc-500">Parcours exemples</p>
