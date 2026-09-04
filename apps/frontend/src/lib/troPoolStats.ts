@@ -9,6 +9,7 @@ export type PoolLive = {
   volume24h: number | null
   state: string
   lpTokenId?: string
+  address?: string
 }
 
 export async function fetchMexTroPairs(): Promise<PoolLive[]> {
@@ -34,14 +35,18 @@ export async function fetchMexTroPairs(): Promise<PoolLive[]> {
         volume24h: typeof p.volume24h === 'number' ? p.volume24h : null,
         state: p.state || 'unknown',
         lpTokenId: p.id,
+        address: p.address,
       }))
   } catch {
     return []
   }
 }
 
-/** Approx TVL from account EGLD*2 for non-mex pools */
-export async function fetchPoolAccountTvl(address: string, egldPrice: number): Promise<number | null> {
+/** Approx TVL from account EGLD*2 for non-mex pools (OneDex / JEx) */
+export async function fetchPoolAccountTvl(
+  address: string,
+  egldPrice: number
+): Promise<number | null> {
   if (!address) return null
   try {
     const r = await fetch(`${API}/accounts/${address}`, { cache: 'no-store' })
@@ -60,5 +65,35 @@ export function matchLive(pool: TroPool, lives: PoolLive[]): PoolLive | undefine
     const byId = lives.find(l => l.lpTokenId === pool.lpTokenId || l.id === pool.lpTokenId)
     if (byId) return byId
   }
-  return lives.find(l => pool.address && l.id.includes(pool.address.slice(0, 12)))
+  if (pool.address) {
+    const byAddr = lives.find(
+      l => l.address === pool.address || (l.id && pool.address.includes(l.id.slice(0, 16)))
+    )
+    if (byAddr) return byAddr
+  }
+  return undefined
+}
+
+/** Aggregate TVL for vote-power display */
+export async function loadVotePoolTvls(
+  pools: TroPool[],
+  egldPrice: number
+): Promise<Record<string, number | null>> {
+  const mex = await fetchMexTroPairs()
+  const out: Record<string, number | null> = {}
+  await Promise.all(
+    pools.map(async p => {
+      const live = matchLive(p, mex)
+      if (live?.tvlUsd != null) {
+        out[p.id] = live.tvlUsd
+        return
+      }
+      if (p.address) {
+        out[p.id] = await fetchPoolAccountTvl(p.address, egldPrice)
+      } else {
+        out[p.id] = null
+      }
+    })
+  )
+  return out
 }
