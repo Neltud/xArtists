@@ -1,5 +1,6 @@
 /**
  * Galerie — plan par lieu + lien carte (city / museum query).
+ * Salle 3D réelle si blueprint murs dispo, sinon corridor CSS.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -8,6 +9,7 @@ import {
   type FrameItem,
 } from '../components/museum/MuseumCorridor'
 import MuseumGameHall from '../components/museum/MuseumGameHall'
+import MuseumBlueprintRoom from '../components/museum/MuseumBlueprintRoom'
 import GuidedWorldTour from '../components/museum/GuidedWorldTour'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
@@ -200,7 +202,7 @@ export default function MuseumPage() {
         </p>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Galerie</h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl">
-          Carte → ville → salle unique. Chaque lieu a son plan et ses œuvres.
+          Carte → ville → salle 3D. Chaque lieu a son plan (murs) et ses œuvres.
         </p>
       </header>
 
@@ -253,12 +255,12 @@ export default function MuseumPage() {
               <p className="text-[12px] text-zinc-500">
                 {museum.tagline} · {blueprint?.name || layout.label}
                 {blueprint?.artAnchors?.length
-                  ? ` · ${blueprint.artAnchors.length} ancrages`
+                  ? ` · ${blueprint.artAnchors.length} ancrages · 3D plan`
                   : ''}
               </p>
             </div>
             <p className="text-[11px] text-zinc-600 hidden sm:block">
-              Déplacez-vous · touchez une œuvre
+              WASD · touchez une œuvre
             </p>
           </div>
 
@@ -268,14 +270,25 @@ export default function MuseumPage() {
             </div>
           ) : (
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
-              <MuseumGameHall
-                key={museumId}
-                museumId={museumId}
-                frames={visitFrames}
-                room={museum.room}
-                allowBuy={museum.source === 'onchain'}
-                emptyLabel="Aucune œuvre pour ce lieu pour l’instant."
-              />
+              {blueprint && blueprint.walls?.length ? (
+                <MuseumBlueprintRoom
+                  key={museumId + '-bp'}
+                  blueprint={blueprint}
+                  frames={visitFrames}
+                  room={museum.room}
+                  allowBuy={museum.source === 'onchain'}
+                  emptyLabel="Aucune œuvre pour ce lieu pour l’instant."
+                />
+              ) : (
+                <MuseumGameHall
+                  key={museumId}
+                  museumId={museumId}
+                  frames={visitFrames}
+                  room={museum.room}
+                  allowBuy={museum.source === 'onchain'}
+                  emptyLabel="Aucune œuvre pour ce lieu pour l’instant."
+                />
+              )}
             </div>
           )}
         </div>
