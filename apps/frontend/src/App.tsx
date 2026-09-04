@@ -28,6 +28,7 @@ const DAO = lazy(() => import('./pages/DAO'))
 const Tip = lazy(() => import('./pages/Tip'))
 const Wallet = lazy(() => import('./pages/Wallet'))
 const MuseumPage = lazy(() => import('./pages/MuseumPage'))
+const MuseumLabPage = lazy(() => import('./pages/MuseumLabPage'))
 const LegalPage = lazy(() => import('./pages/LegalPage'))
 const HatomPage = lazy(() => import('./pages/HatomPage'))
 const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
@@ -139,6 +140,7 @@ export default function App() {
                 <Route path="/dao" element={<DAO />} />
                 <Route path="/gallery" element={<Navigate to="/museum" replace />} />
                 <Route path="/museum" element={<MuseumPage />} />
+                <Route path="/museum/lab" element={<MuseumLabPage />} />
                 <Route path="/musee" element={<Navigate to="/museum" replace />} />
                 <Route path="/collection" element={<Navigate to="/museum?tab=mine" replace />} />
                 <Route path="/legal" element={<LegalPage />} />
