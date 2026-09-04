@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.26.0](https://github.com/Neltud/xArtists/compare/v0.25.0...v0.26.0) (2026-09-04)
+
+
+### Features
+
+* **nft:** xAiAx collection metadata — Agent 001 Pulse pack entitlement ([9d047d4](https://github.com/Neltud/xArtists/commit/9d047d4afa322ee298cb6da892adad806cbde068))
+
 ## [0.25.0](https://github.com/Neltud/xArtists/compare/v0.24.0...v0.25.0) (2026-09-04)
 
 
