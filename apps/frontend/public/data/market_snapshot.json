@@ -1,0 +1,29 @@
+{
+  "fearGreed": { "value": 54, "classification": "Neutral" },
+  "regime": "neutral",
+  "regimeLabel": "Neutre",
+  "btcDominance": 54.2,
+  "assets": [
+    { "id": "bitcoin", "symbol": "BTC", "name": "Bitcoin", "price": 64000, "change24h": 1.2, "marketCap": 1.2e12, "volume24h": 2.5e10 },
+    { "id": "ethereum", "symbol": "ETH", "name": "Ethereum", "price": 3200, "change24h": 0.8, "marketCap": 3.8e11, "volume24h": 1.2e10 },
+    { "id": "solana", "symbol": "SOL", "name": "Solana", "price": 145, "change24h": -1.5, "marketCap": 6.5e10, "volume24h": 2.1e9 },
+    { "id": "ripple", "symbol": "XRP", "name": "XRP", "price": 0.62, "change24h": 0.3, "marketCap": 3.4e10, "volume24h": 1.1e9 },
+    { "id": "cardano", "symbol": "ADA", "name": "Cardano", "price": 0.45, "change24h": -0.4, "marketCap": 1.6e10, "volume24h": 4e8 },
+    { "id": "avalanche-2", "symbol": "AVAX", "name": "Avalanche", "price": 28, "change24h": 2.1, "marketCap": 1.1e10, "volume24h": 3.5e8 },
+    { "id": "chainlink", "symbol": "LINK", "name": "Chainlink", "price": 14.2, "change24h": 1.0, "marketCap": 8e9, "volume24h": 2.8e8 },
+    { "id": "the-graph", "symbol": "GRT", "name": "The Graph", "price": 0.18, "change24h": -0.9, "marketCap": 1.7e9, "volume24h": 5e7 }
+  ],
+  "news": [
+    { "id": "1", "title": "Markets digest macro data — crypto follows risk tone", "source": "Fallback", "url": "https://neltud.github.io/xArtists/" },
+    { "id": "2", "title": "BTC dominance steady near mid-50s", "source": "Fallback" },
+    { "id": "3", "title": "Layer-1 flows mixed on the day", "source": "Fallback" },
+    { "id": "4", "title": "No live feed — showing cached snapshot", "source": "xArtists" }
+  ],
+  "liaBrief": [
+    "Sentiment agrégé : 54 · Neutral.",
+    "Régime affiché : transition.",
+    "Synthèse publique — détail modèle LIA / Vellum non exposé."
+  ],
+  "updatedAt": "2026-09-04T00:00:00Z",
+  "source": "fallback"
+}
