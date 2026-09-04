@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.24.0](https://github.com/Neltud/xArtists/compare/v0.23.0...v0.24.0) (2026-09-04)
+
+
+### Features
+
+* **museum:** ACES lights, NPC+real visitors, floor sculptures, ArtworkDossier ([d6243dc](https://github.com/Neltud/xArtists/commit/d6243dc4924506ac98e32599b60e13ecd3993149))
+* **museum:** GTA-style WebGL hall — mouse look, strafe, wall-hung frames ([a62befc](https://github.com/Neltud/xArtists/commit/a62befc15839d63296082e8e5df806f34422e154))
+* **museum:** lighting + visitors + sculptures 3D + full artwork dossier ([209eea2](https://github.com/Neltud/xArtists/commit/209eea2002b73c48a519ac1ebe4195a9292b4257))
+* **museum:** realistic layout plans + Tours city→museum + nav polish ([9ed6859](https://github.com/Neltud/xArtists/commit/9ed685957a17c36bcd8c0a79b4023b99ade577e6))
+* **museum:** richer lighting, visitors, sculpture, full artwork dossier ([e648d41](https://github.com/Neltud/xArtists/commit/e648d41b6fdfdf3af2a810d25b85949d235c8290))
+* **museum:** WebGL visitors + sculptures + lighting + dossier; enrich catalog meta ([46e5946](https://github.com/Neltud/xArtists/commit/46e59460e9d8050de9d0bf1d1a605237240e1b3a))
+
 ## [0.23.0](https://github.com/Neltud/xArtists/compare/v0.22.0...v0.23.0) (2026-09-04)
 
 
