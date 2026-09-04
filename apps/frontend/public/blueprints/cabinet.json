@@ -1,1 +1,49 @@
-{"id":"cabinet","name":"Cabinet","description":"Rijks / Mauritshuis","wallHeight":3.6,"wallThickness":0.24,"walls":[{"id":"c-s","x1":0,"y1":0,"x2":10,"y2":0,"height":3.6,"thickness":0.24},{"id":"c-e","x1":10,"y1":0,"x2":10,"y2":8,"height":3.6,"thickness":0.24},{"id":"c-n","x1":10,"y1":8,"x2":0,"y2":8,"height":3.6,"thickness":0.24},{"id":"c-w","x1":0,"y1":8,"x2":0,"y2":0,"height":3.6,"thickness":0.24}],"openings":[{"id":"c-d","wallId":"c-s","type":"door","offset":4.2,"width":1.2,"height":2.4,"sill":0},{"id":"c-w1","wallId":"c-n","type":"window","offset":2,"width":2.5,"height":1.8,"sill":1.0}],"rooms":[{"id":"c-r","name":"Cabinet","polygon":[{"x":0,"y":0},{"x":10,"y":0},{"x":10,"y":8},{"x":0,"y":8}],"floor":"oak"}],"artAnchors":[{"id":"art-1","wallId":"c-s","x":0.6,"y":0.0,"facing":1.5708,"height":1.6},{"id":"art-2","wallId":"c-s","x":2.8,"y":0.0,"facing":1.5708,"height":1.6},{"id":"art-3","wallId":"c-s","x":7.2,"y":0.0,"facing":1.5708,"height":1.6},{"id":"art-4","wallId":"c-e","x":10.0,"y":0.6,"facing":3.1416,"height":1.6},{"id":"art-5","wallId":"c-e","x":10.0,"y":2.8,"facing":3.1416,"height":1.6},{"id":"art-6","wallId":"c-e","x":10.0,"y":5.0,"facing":3.1416,"height":1.6},{"id":"art-7","wallId":"c-e","x":10.0,"y":7.2,"facing":3.1416,"height":1.6},{"id":"art-8","wallId":"c-n","x":9.4,"y":8.0,"facing":4.7124,"height":1.6},{"id":"art-9","wallId":"c-n","x":5.0,"y":8.0,"facing":4.7124,"height":1.6},{"id":"art-10","wallId":"c-n","x":2.8,"y":8.0,"facing":4.7124,"height":1.6},{"id":"art-11","wallId":"c-w","x":0.0,"y":7.4,"facing":0.0,"height":1.6},{"id":"art-12","wallId":"c-w","x":0.0,"y":5.2,"facing":0.0,"height":1.6},{"id":"art-13","wallId":"c-w","x":0.0,"y":3.0,"facing":0.0,"height":1.6},{"id":"art-14","wallId":"c-w","x":0.0,"y":0.8,"facing":0.0,"height":1.6}],"schema":"xartists.roomBlueprint.v1","source":"blend-glade-wolf-grove"}
+{
+  "id": "cabinet",
+  "name": "Cabinet intime",
+  "description": "Petite salle feutrée — boiseries, lumière basse (Rijks / Mauritshuis)",
+  "wallHeight": 3.4,
+  "wallThickness": 0.35,
+  "details": {
+    "era": "XVIIe hollandais",
+    "city": "Amsterdam / La Haye",
+    "capacity": 18,
+    "lighting": "spot",
+    "ambient": "Bois sombre · spots discrets sur chaque panneau"
+  },
+  "walls": [
+    {"id": "c-s", "x1": 0, "y1": 0, "x2": 9, "y2": 0, "height": 3.4, "thickness": 0.35, "material": "wood"},
+    {"id": "c-e", "x1": 9, "y1": 0, "x2": 9, "y2": 7, "height": 3.4, "thickness": 0.35, "material": "wood"},
+    {"id": "c-n", "x1": 9, "y1": 7, "x2": 0, "y2": 7, "height": 3.4, "thickness": 0.35, "material": "wood"},
+    {"id": "c-w", "x1": 0, "y1": 7, "x2": 0, "y2": 0, "height": 3.4, "thickness": 0.35, "material": "wood"}
+  ],
+  "openings": [
+    {"id": "c-d", "wallId": "c-w", "type": "door", "offset": 2.8, "width": 1.4, "height": 2.4, "sill": 0},
+    {"id": "c-w1", "wallId": "c-n", "type": "window", "offset": 2.5, "width": 1.8, "height": 1.6, "sill": 1.1}
+  ],
+  "rooms": [
+    {
+      "id": "c-main",
+      "name": "Cabinet",
+      "polygon": [{"x": 0, "y": 0}, {"x": 9, "y": 0}, {"x": 9, "y": 7}, {"x": 0, "y": 7}],
+      "floor": "wood",
+      "note": "9 × 7 m — accrochage dense à hauteur d’œil"
+    }
+  ],
+  "artAnchors": [
+    {"id": "c1", "wallId": "c-s", "x": 1.2, "y": 0, "facing": 1.5708, "height": 1.45, "plaque": "Panneau sud"},
+    {"id": "c2", "wallId": "c-s", "x": 3.2, "y": 0, "facing": 1.5708, "height": 1.45},
+    {"id": "c3", "wallId": "c-s", "x": 5.2, "y": 0, "facing": 1.5708, "height": 1.5},
+    {"id": "c4", "wallId": "c-s", "x": 7.2, "y": 0, "facing": 1.5708, "height": 1.45},
+    {"id": "c5", "wallId": "c-e", "x": 9, "y": 1.5, "facing": 3.1416, "height": 1.45},
+    {"id": "c6", "wallId": "c-e", "x": 9, "y": 3.5, "facing": 3.1416, "height": 1.5, "plaque": "Mur est"},
+    {"id": "c7", "wallId": "c-e", "x": 9, "y": 5.5, "facing": 3.1416, "height": 1.45},
+    {"id": "c8", "wallId": "c-n", "x": 7, "y": 7, "facing": 4.7124, "height": 1.45},
+    {"id": "c9", "wallId": "c-n", "x": 4.5, "y": 7, "facing": 4.7124, "height": 1.45},
+    {"id": "c10", "wallId": "c-n", "x": 2, "y": 7, "facing": 4.7124, "height": 1.45},
+    {"id": "c11", "wallId": "c-w", "x": 0, "y": 5.5, "facing": 0, "height": 1.45},
+    {"id": "c12", "wallId": "c-w", "x": 0, "y": 1.2, "facing": 0, "height": 1.45}
+  ],
+  "schema": "xartists.roomBlueprint.v1",
+  "source": "blend-glade-wolf-grove"
+}

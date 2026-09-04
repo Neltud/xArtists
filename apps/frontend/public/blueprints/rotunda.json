@@ -1,1 +1,58 @@
-{"id":"rotunda","name":"Rotonde","description":"Uffizi spirit","wallHeight":4.8,"wallThickness":0.3,"walls":[{"id":"r-w0","x1":13.464,"y1":4.293,"x2":9.707,"y2":0.536,"height":4.8,"thickness":0.3},{"id":"r-w1","x1":9.707,"y1":0.536,"x2":4.293,"y2":0.536,"height":4.8,"thickness":0.3},{"id":"r-w2","x1":4.293,"y1":0.536,"x2":0.536,"y2":4.293,"height":4.8,"thickness":0.3},{"id":"r-w3","x1":0.536,"y1":4.293,"x2":0.536,"y2":9.707,"height":4.8,"thickness":0.3},{"id":"r-w4","x1":0.536,"y1":9.707,"x2":4.293,"y2":13.464,"height":4.8,"thickness":0.3},{"id":"r-w5","x1":4.293,"y1":13.464,"x2":9.707,"y2":13.464,"height":4.8,"thickness":0.3},{"id":"r-w6","x1":9.707,"y1":13.464,"x2":13.464,"y2":9.707,"height":4.8,"thickness":0.3},{"id":"r-w7","x1":13.464,"y1":9.707,"x2":13.464,"y2":4.293,"height":4.8,"thickness":0.3}],"openings":[{"id":"r-d","wallId":"r-w0","type":"door","offset":1.5,"width":1.6,"height":2.8,"sill":0},{"id":"r-win1","wallId":"r-w2","type":"window","offset":1.2,"width":1.8,"height":2,"sill":1.2}],"rooms":[{"id":"r-r","name":"Rotonde","polygon":[{"x":13.464,"y":4.293},{"x":9.707,"y":0.536},{"x":4.293,"y":0.536},{"x":0.536,"y":4.293},{"x":0.536,"y":9.707},{"x":4.293,"y":13.464},{"x":9.707,"y":13.464},{"x":13.464,"y":9.707}],"floor":"stone"}],"artAnchors":[{"id":"art-1","wallId":"r-w1","x":8.5,"y":0.536,"facing":1.57,"height":1.6},{"id":"art-2","wallId":"r-w1","x":5.5,"y":0.536,"facing":1.57,"height":1.6},{"id":"art-3","wallId":"r-w3","x":0.536,"y":5.5,"facing":0,"height":1.6},{"id":"art-4","wallId":"r-w3","x":0.536,"y":8.5,"facing":0,"height":1.6},{"id":"art-5","wallId":"r-w5","x":5.5,"y":13.464,"facing":4.71,"height":1.6},{"id":"art-6","wallId":"r-w5","x":8.5,"y":13.464,"facing":4.71,"height":1.6},{"id":"art-7","wallId":"r-w7","x":13.464,"y":8.5,"facing":3.14,"height":1.6},{"id":"art-8","wallId":"r-w7","x":13.464,"y":5.5,"facing":3.14,"height":1.6}],"schema":"xartists.roomBlueprint.v1","source":"blend-glade-wolf-grove"}
+{
+  "id": "rotunda",
+  "name": "Rotonde",
+  "description": "Salle circulaire approximée — accrochage en couronne (Uffizi)",
+  "wallHeight": 6.0,
+  "wallThickness": 0.4,
+  "details": {
+    "era": "Renaissance / néoclassique",
+    "city": "Florence",
+    "capacity": 60,
+    "lighting": "daylight",
+    "ambient": "Couronne de lumière · parcours circulaire"
+  },
+  "walls": [
+    {"id": "r0", "x1": 8, "y1": 0, "x2": 13.66, "y2": 2.34, "height": 6, "thickness": 0.4, "material": "stone"},
+    {"id": "r1", "x1": 13.66, "y1": 2.34, "x2": 16, "y2": 8, "height": 6, "thickness": 0.4, "material": "stone"},
+    {"id": "r2", "x1": 16, "y1": 8, "x2": 13.66, "y2": 13.66, "height": 6, "thickness": 0.4, "material": "stone"},
+    {"id": "r3", "x1": 13.66, "y1": 13.66, "x2": 8, "y2": 16, "height": 6, "thickness": 0.4, "material": "stone"},
+    {"id": "r4", "x1": 8, "y1": 16, "x2": 2.34, "y2": 13.66, "height": 6, "thickness": 0.4, "material": "stone"},
+    {"id": "r5", "x1": 2.34, "y1": 13.66, "x2": 0, "y2": 8, "height": 6, "thickness": 0.4, "material": "stone"},
+    {"id": "r6", "x1": 0, "y1": 8, "x2": 2.34, "y2": 2.34, "height": 6, "thickness": 0.4, "material": "stone"},
+    {"id": "r7", "x1": 2.34, "y1": 2.34, "x2": 8, "y2": 0, "height": 6, "thickness": 0.4, "material": "stone"}
+  ],
+  "openings": [
+    {"id": "r-d", "wallId": "r6", "type": "door", "offset": 1.2, "width": 2.0, "height": 3.0, "sill": 0},
+    {"id": "r-w1", "wallId": "r1", "type": "window", "offset": 1.5, "width": 2.2, "height": 2.5, "sill": 2.0},
+    {"id": "r-w2", "wallId": "r3", "type": "window", "offset": 1.5, "width": 2.2, "height": 2.5, "sill": 2.0},
+    {"id": "r-w3", "wallId": "r5", "type": "window", "offset": 1.5, "width": 2.2, "height": 2.5, "sill": 2.0}
+  ],
+  "rooms": [
+    {
+      "id": "r-main",
+      "name": "Rotonde",
+      "polygon": [
+        {"x": 8, "y": 0}, {"x": 13.66, "y": 2.34}, {"x": 16, "y": 8}, {"x": 13.66, "y": 13.66},
+        {"x": 8, "y": 16}, {"x": 2.34, "y": 13.66}, {"x": 0, "y": 8}, {"x": 2.34, "y": 2.34}
+      ],
+      "floor": "marble",
+      "note": "Polygone 8 côtés · diam. ~16 m"
+    }
+  ],
+  "artAnchors": [
+    {"id": "ra0", "x": 10.8, "y": 1.2, "facing": 2.0, "height": 1.6, "plaque": "Secteur 1"},
+    {"id": "ra1", "x": 14.8, "y": 5.2, "facing": 2.75, "height": 1.6},
+    {"id": "ra2", "x": 14.8, "y": 10.8, "facing": 3.5, "height": 1.65},
+    {"id": "ra3", "x": 10.8, "y": 14.8, "facing": 4.2, "height": 1.6},
+    {"id": "ra4", "x": 5.2, "y": 14.8, "facing": 5.0, "height": 1.6, "plaque": "Secteur 5"},
+    {"id": "ra5", "x": 1.2, "y": 10.8, "facing": 5.7, "height": 1.6},
+    {"id": "ra6", "x": 1.2, "y": 5.2, "facing": 0.4, "height": 1.6},
+    {"id": "ra7", "x": 5.2, "y": 1.2, "facing": 1.1, "height": 1.6},
+    {"id": "ra8", "x": 12.5, "y": 3.5, "facing": 2.4, "height": 1.55},
+    {"id": "ra9", "x": 12.5, "y": 12.5, "facing": 3.9, "height": 1.55},
+    {"id": "ra10", "x": 3.5, "y": 12.5, "facing": 5.3, "height": 1.55},
+    {"id": "ra11", "x": 3.5, "y": 3.5, "facing": 0.75, "height": 1.55}
+  ],
+  "schema": "xartists.roomBlueprint.v1",
+  "source": "blend-glade-wolf-grove"
+}
