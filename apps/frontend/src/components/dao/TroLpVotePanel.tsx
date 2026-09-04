@@ -1,6 +1,6 @@
 /**
- * Pouvoir de vote DAO basé sur les pools LP TRO (multi-DEX).
- * Lecture seule — pas de vote TX factice.
+ * Pouvoir de vote DAO — pools LP TRO (xExchange · OneDex · JExchange).
+ * Lecture seule. Yield farming reste sur /staking (pas ici).
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -13,6 +13,7 @@ import {
 import { fetchMexTroPairs, fetchPoolAccountTvl, matchLive, type PoolLive } from '../../lib/troPoolStats'
 import { getEgldPrice } from '../../services/priceService'
 import { LINKS } from '../../config/links'
+import { useWallet } from '../../context/WalletContext'
 
 type Row = {
   pool: TroPool
@@ -20,9 +21,34 @@ type Row = {
   voteUnits: number
 }
 
+async function fetchUserLpHints(address: string): Promise<{ token: string; balance: number }[]> {
+  try {
+    const r = await fetch(
+      `https://api.multiversx.com/accounts/${address}/tokens?size=200`,
+      { cache: 'no-store' }
+    )
+    if (!r.ok) return []
+    const list = (await r.json()) as Array<{ identifier?: string; balance?: string; decimals?: number }>
+    return (Array.isArray(list) ? list : [])
+      .filter(t => {
+        const id = (t.identifier || '').toUpperCase()
+        return id.includes('TRO') && (id.includes('WEGLD') || id.includes('EGLD') || id.includes('USDC') || id.includes('LP'))
+      })
+      .map(t => ({
+        token: t.identifier || '',
+        balance: Number(t.balance || 0) / 10 ** (t.decimals ?? 18),
+      }))
+      .filter(x => x.balance > 0)
+  } catch {
+    return []
+  }
+}
+
 export default function TroLpVotePanel() {
+  const { connected, address } = useWallet()
   const [rows, setRows] = useState<Row[]>([])
   const [loading, setLoading] = useState(true)
+  const [userLp, setUserLp] = useState<{ token: string; balance: number }[]>([])
 
   useEffect(() => {
     let c = false
@@ -42,6 +68,13 @@ export default function TroLpVotePanel() {
           out.push({ pool: p, tvlUsd: tvl, voteUnits })
         }
         if (!c) setRows(out)
+
+        if (connected && address) {
+          const lp = await fetchUserLpHints(address)
+          if (!c) setUserLp(lp)
+        } else if (!c) {
+          setUserLp([])
+        }
       } finally {
         if (!c) setLoading(false)
       }
@@ -49,7 +82,7 @@ export default function TroLpVotePanel() {
     return () => {
       c = true
     }
-  }, [])
+  }, [connected, address])
 
   const totalVote = rows.reduce((s, r) => s + r.voteUnits, 0)
 
@@ -62,14 +95,18 @@ export default function TroLpVotePanel() {
           </p>
           <h2 className="text-lg font-bold text-white mt-1">xExchange · OneDex · JExchange</h2>
         </div>
-        <Link to="/staking" className="text-xs text-zinc-400 hover:text-white underline-offset-2 hover:underline">
-          Yield farming →
+        <Link
+          to="/staking"
+          className="text-xs text-zinc-400 hover:text-white underline-offset-2 hover:underline"
+        >
+          Yield farming (hors DAO) →
         </Link>
       </div>
 
       <p className="text-[12px] text-zinc-400 mb-4 leading-relaxed">
-        Pondération paper : 1 USD de liquidité TRO en pool ≈ 1 unité de vote. Les holders $TRO restent
-        la base ; les LP multi-DEX renforcent le poids. Vote TX = après SC governance.
+        Pondération paper : liquidité TRO en pool multi-DEX renforce le poids de vote. Holders $TRO =
+        base. <strong className="text-zinc-300">Yield / farms = page Staking</strong>, pas ici. Vote TX
+        on-chain = après SC governance.
       </p>
 
       {loading ? (
@@ -94,6 +131,9 @@ export default function TroLpVotePanel() {
                     {pool.lpTokenId && (
                       <span className="block text-[10px] mono text-zinc-600">{pool.lpTokenId}</span>
                     )}
+                    {pool.note && (
+                      <span className="block text-[10px] text-zinc-600 mt-0.5">{pool.note}</span>
+                    )}
                   </td>
                   <td className="py-2.5 pr-2 text-right tabular-nums text-zinc-300">
                     {tvlUsd != null
@@ -101,7 +141,9 @@ export default function TroLpVotePanel() {
                       : '—'}
                   </td>
                   <td className="py-2.5 text-right tabular-nums font-semibold text-fuchsia-300">
-                    {voteUnits > 0 ? voteUnits.toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—'}
+                    {voteUnits > 0
+                      ? voteUnits.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                      : '—'}
                   </td>
                 </tr>
               ))}
@@ -109,14 +151,37 @@ export default function TroLpVotePanel() {
             <tfoot>
               <tr className="border-t border-white/10">
                 <td colSpan={3} className="py-3 text-zinc-500 text-xs">
-                  Total unités (paper)
+                  Total unités pool (paper · écosystème)
                 </td>
                 <td className="py-3 text-right font-bold text-white tabular-nums">
-                  {totalVote > 0 ? totalVote.toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—'}
+                  {totalVote > 0
+                    ? totalVote.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                    : '—'}
                 </td>
               </tr>
             </tfoot>
           </table>
+        </div>
+      )}
+
+      {connected && address && (
+        <div className="mt-4 rounded-xl border border-white/10 bg-black/30 px-3 py-3">
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Votre LP TRO</p>
+          {userLp.length === 0 ? (
+            <p className="text-[12px] text-zinc-500">
+              Aucun LP TRO détecté sur ce wallet. Ajoutez de la liquidité sur un DEX listé pour
+              renforcer le poids (paper).
+            </p>
+          ) : (
+            <ul className="space-y-1">
+              {userLp.map(u => (
+                <li key={u.token} className="text-[12px] text-zinc-300 flex justify-between gap-2">
+                  <span className="mono text-zinc-400 truncate">{u.token}</span>
+                  <span className="tabular-nums text-white">{u.balance.toFixed(4)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
 
@@ -140,6 +205,9 @@ export default function TroLpVotePanel() {
         >
           Explorer TRO
         </a>
+        <Link to="/staking" className="btn-secondary text-xs">
+          Staking yield
+        </Link>
       </div>
     </div>
   )
