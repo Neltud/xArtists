@@ -1,5 +1,5 @@
 /**
- * Analyse de marché — sprint A : F&G · assets · régime · news · brief LIA public.
+ * Analyse — A–E : F&G · assets · corr · funding · Vellum · events · LIA ≥10 USDC · Soul.
  */
 import { useEffect, useState } from 'react'
 import {
@@ -16,8 +16,16 @@ import InfoTip from '../components/InfoTip'
 import {
   loadMarketSnapshot,
   formatUsd,
+  corrColor,
   type MarketSnapshot,
 } from '../lib/marketData'
+import {
+  MIN_USDC_DEPLOY,
+  LIA_CHAIN_PRIORITY,
+  liaDeployStatus,
+} from '../config/liaTreasuryPolicy'
+import { SOUL_PROTOCOL } from '../config/soulProtocol'
+import { LIA_WALLET, LINKS } from '../config/links'
 
 function FngGauge({ value, label }: { value: number; label: string }) {
   const color =
@@ -48,10 +56,27 @@ function FngGauge({ value, label }: { value: number; label: string }) {
   )
 }
 
+async function fetchLiaUsdc(): Promise<number> {
+  try {
+    const r = await fetch(
+      `https://api.multiversx.com/accounts/${LIA_WALLET}/tokens/${encodeURIComponent('USDC-c76f1f')}`,
+      { cache: 'no-store' }
+    )
+    if (!r.ok) return 0
+    const j = (await r.json()) as { balance?: string; decimals?: number }
+    const bal = Number(j.balance || 0)
+    const dec = j.decimals ?? 6
+    return bal / 10 ** dec
+  } catch {
+    return 0
+  }
+}
+
 export default function MarketPage() {
   const [snap, setSnap] = useState<MarketSnapshot | null>(null)
   const [loading, setLoading] = useState(true)
   const [err, setErr] = useState<string | null>(null)
+  const [liaUsdc, setLiaUsdc] = useState<number | null>(null)
 
   useEffect(() => {
     let c = false
@@ -59,8 +84,11 @@ export default function MarketPage() {
       setLoading(true)
       setErr(null)
       try {
-        const s = await loadMarketSnapshot()
-        if (!c) setSnap(s)
+        const [s, usdc] = await Promise.all([loadMarketSnapshot(), fetchLiaUsdc()])
+        if (!c) {
+          setSnap(s)
+          setLiaUsdc(usdc)
+        }
       } catch (e) {
         if (!c) setErr(e instanceof Error ? e.message : 'Erreur chargement')
       } finally {
@@ -78,6 +106,8 @@ export default function MarketPage() {
       change: Number(a.change24h.toFixed(2)),
     })) || []
 
+  const deploy = liaDeployStatus(liaUsdc ?? 0)
+
   return (
     <div className="animate-fade-in pb-14 max-w-5xl mx-auto space-y-8">
       <header className="space-y-3">
@@ -88,12 +118,12 @@ export default function MarketPage() {
           Analyse
         </h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl inline-flex flex-wrap items-center gap-1">
-          Indicateurs publics · synthèse LIA limitée
+          Indicateurs publics · corr · funding · events · politique LIA
           <InfoTip>
             <strong className="text-white block mb-1">Transparence</strong>
             <span className="text-zinc-400">
-              Fear &amp; Greed, prix et news viennent d’APIs ouvertes. Les modèles Vellum restent
-              côté serveur — ici uniquement des agrégats.
+              Données ouvertes + agrégats. Vellum secret hors front. Placement LIA si USDC ≥{' '}
+              {MIN_USDC_DEPLOY} (exécution Guardian).
             </span>
           </InfoTip>
         </p>
@@ -118,7 +148,6 @@ export default function MarketPage() {
 
       {snap && !loading && (
         <>
-          {/* Top row: F&G + regime */}
           <div className="grid sm:grid-cols-3 gap-3">
             <div className="sm:col-span-1 rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5">
               <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-600 mb-1">
@@ -134,8 +163,7 @@ export default function MarketPage() {
                   {snap.regimeLabel}
                 </p>
                 <p className="text-[13px] text-zinc-500 mt-2 leading-relaxed">
-                  Lecture composite (sentiment + variation moyenne 24h des actifs suivis). Pas un
-                  signal d’entrée.
+                  Composite sentiment + variation 24h. Pas un signal d’entrée.
                 </p>
               </div>
               <div className="flex flex-wrap gap-4 text-[13px]">
@@ -152,33 +180,175 @@ export default function MarketPage() {
                   <p className="text-white font-medium tabular-nums">{snap.assets.length}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-zinc-600 uppercase tracking-wider">News</p>
-                  <p className="text-white font-medium tabular-nums">{snap.news.length}</p>
+                  <p className="text-[10px] text-zinc-600 uppercase tracking-wider">Events</p>
+                  <p className="text-white font-medium tabular-nums">{snap.events.length}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Brief LIA */}
-          <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] p-5 space-y-2">
-            <p className="text-[10px] uppercase tracking-[0.18em] text-violet-300/80">
-              Synthèse LIA
-            </p>
-            <ul className="space-y-1.5">
-              {snap.liaBrief.map((line, i) => (
-                <li key={i} className="text-[13px] text-zinc-300 leading-relaxed flex gap-2">
-                  <span className="text-violet-400/60 shrink-0">—</span>
-                  <span>{line}</span>
+          {/* LIA treasury policy */}
+          <section
+            className={`rounded-2xl border p-5 space-y-3 ${
+              deploy.armed
+                ? 'border-emerald-500/25 bg-emerald-500/[0.04]'
+                : 'border-amber-500/20 bg-amber-500/[0.03]'
+            }`}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                LIA · trésorerie
+              </p>
+              <span
+                className={`text-[10px] uppercase px-2 py-0.5 rounded-full border ${
+                  deploy.armed
+                    ? 'border-emerald-500/40 text-emerald-300'
+                    : 'border-amber-500/40 text-amber-200'
+                }`}
+              >
+                {deploy.armed ? 'Armée' : 'En attente'}
+              </span>
+            </div>
+            <p className="text-[13px] text-zinc-300 leading-relaxed">{deploy.message}</p>
+            <div className="flex flex-wrap gap-4 text-[12px]">
+              <div>
+                <p className="text-[10px] text-zinc-600 uppercase">USDC wallet</p>
+                <p className="tabular-nums text-white font-medium">
+                  {liaUsdc != null ? liaUsdc.toFixed(2) : '—'} / {MIN_USDC_DEPLOY}
+                </p>
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] text-zinc-600 uppercase">Adresse</p>
+                <a
+                  href={LINKS.explorerAccount(LIA_WALLET)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-zinc-400 hover:text-cyan-300 truncate block max-w-[14rem] text-[11px]"
+                >
+                  {LIA_WALLET.slice(0, 12)}…
+                </a>
+              </div>
+            </div>
+            <ul className="space-y-1.5 pt-1">
+              {LIA_CHAIN_PRIORITY.map(c => (
+                <li key={c.id} className="text-[12px] text-zinc-400 flex gap-2">
+                  <span className="text-zinc-600 shrink-0 w-16 uppercase text-[10px] tracking-wide pt-0.5">
+                    {c.status === 'active_policy' ? '1' : c.status === 'next' ? '2' : '3'}
+                  </span>
+                  <span>
+                    <span className="text-zinc-200 font-medium">{c.label}</span>
+                    <span className="text-zinc-600"> — {c.notes}</span>
+                  </span>
                 </li>
               ))}
             </ul>
           </section>
 
-          {/* 24h changes chart */}
+          {/* D Vellum + LIA briefs */}
+          <div className="grid sm:grid-cols-2 gap-3">
+            <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] p-5 space-y-2">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-violet-300/80">
+                Synthèse LIA
+              </p>
+              <ul className="space-y-1.5">
+                {snap.liaBrief.map((line, i) => (
+                  <li key={i} className="text-[13px] text-zinc-300 leading-relaxed flex gap-2">
+                    <span className="text-violet-400/60 shrink-0">—</span>
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <section className="rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5 space-y-2">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                Board Vellum (public)
+              </p>
+              <ul className="space-y-1.5">
+                {snap.vellumBrief.map((line, i) => (
+                  <li key={i} className="text-[13px] text-zinc-300 leading-relaxed flex gap-2">
+                    <span className="text-zinc-600 shrink-0">—</span>
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+
+          {/* B Correlation heatmap */}
+          <section className="rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5">
+            <div className="flex items-baseline justify-between gap-2 mb-4">
+              <h2 className="text-sm font-semibold text-white">Corrélation 7j</h2>
+              <p className="text-[11px] text-zinc-600">Pearson · retours journaliers</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="text-[12px] mx-auto">
+                <thead>
+                  <tr>
+                    <th className="p-1.5" />
+                    {snap.correlation.symbols.map(s => (
+                      <th key={s} className="p-1.5 text-zinc-500 font-medium text-center">
+                        {s}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {snap.correlation.matrix.map((row, i) => (
+                    <tr key={snap.correlation.symbols[i]}>
+                      <td className="p-1.5 text-zinc-500 font-medium">{snap.correlation.symbols[i]}</td>
+                      {row.map((v, j) => (
+                        <td key={j} className="p-1">
+                          <div
+                            className="w-12 h-10 sm:w-14 sm:h-11 rounded-lg flex items-center justify-center tabular-nums text-[11px] font-medium text-zinc-950"
+                            style={{ background: corrColor(v) }}
+                            title={`${snap.correlation.symbols[i]} / ${snap.correlation.symbols[j]}`}
+                          >
+                            {v.toFixed(2)}
+                          </div>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-[11px] text-zinc-600 mt-3">
+              Corrélation ≠ causalité. Utilisé pour le contexte de régime, pas pour auto-trade.
+            </p>
+          </section>
+
+          {/* C Funding */}
+          <section className="rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5">
+            <div className="flex items-baseline justify-between gap-2 mb-3">
+              <h2 className="text-sm font-semibold text-white">Funding perp</h2>
+              <p className="text-[11px] text-zinc-600">Dernier taux · %</p>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {snap.funding.map(f => (
+                <div
+                  key={f.symbol}
+                  className="rounded-xl border border-white/[0.06] bg-black/30 px-3 py-3 text-center"
+                >
+                  <p className="text-[11px] text-zinc-500">{f.symbol}</p>
+                  <p
+                    className={`text-lg font-semibold tabular-nums mt-1 ${
+                      f.rate >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                    }`}
+                  >
+                    {f.rate >= 0 ? '+' : ''}
+                    {f.rate.toFixed(4)}%
+                  </p>
+                  <p className="text-[10px] text-zinc-600 mt-1">{f.source}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 24h chart */}
           <section className="rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5">
             <div className="flex items-baseline justify-between gap-2 mb-4">
               <h2 className="text-sm font-semibold text-white">Variation 24h</h2>
-              <p className="text-[11px] text-zinc-600">Majors suivis</p>
+              <p className="text-[11px] text-zinc-600">Majors</p>
             </div>
             <div className="h-52 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -216,7 +386,7 @@ export default function MarketPage() {
             </div>
           </section>
 
-          {/* Assets table */}
+          {/* Assets */}
           <section className="rounded-2xl border border-white/[0.07] overflow-hidden">
             <div className="px-4 py-3 border-b border-white/[0.06] flex justify-between">
               <h2 className="text-sm font-semibold text-white">Actifs</h2>
@@ -263,6 +433,45 @@ export default function MarketPage() {
             </div>
           </section>
 
+          {/* E Events */}
+          <section className="space-y-3">
+            <h2 className="text-sm font-semibold text-white">Events taggés</h2>
+            {snap.events.length === 0 ? (
+              <p className="text-[13px] text-zinc-500">Aucun événement légal / halt / delist dans le fil.</p>
+            ) : (
+              <ul className="space-y-2">
+                {snap.events.map(ev => (
+                  <li key={ev.id}>
+                    <a
+                      href={ev.url || '#'}
+                      target={ev.url ? '_blank' : undefined}
+                      rel="noreferrer"
+                      className="block rounded-xl border border-white/[0.07] bg-zinc-950/40 px-4 py-3 hover:border-white/15"
+                    >
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+                          {ev.kind}
+                        </span>
+                        <span
+                          className={`text-[10px] uppercase px-1.5 py-0.5 rounded ${
+                            ev.severity === 'high'
+                              ? 'bg-rose-500/20 text-rose-300'
+                              : ev.severity === 'med'
+                                ? 'bg-amber-500/20 text-amber-200'
+                                : 'bg-zinc-500/20 text-zinc-400'
+                          }`}
+                        >
+                          {ev.severity}
+                        </span>
+                      </div>
+                      <p className="text-[13px] text-zinc-200 leading-snug">{ev.title}</p>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
           {/* News */}
           <section className="space-y-3">
             <h2 className="text-sm font-semibold text-white">Fil d’actualité</h2>
@@ -287,7 +496,6 @@ export default function MarketPage() {
                   ) : (
                     <div className="rounded-xl border border-white/[0.07] bg-zinc-950/40 px-4 py-3">
                       <p className="text-[13px] text-zinc-200">{n.title}</p>
-                      <p className="text-[11px] text-zinc-600 mt-1">{n.source}</p>
                     </div>
                   )}
                 </li>
@@ -295,9 +503,33 @@ export default function MarketPage() {
             </ul>
           </section>
 
+          {/* Soul Protocol prep */}
+          <section className="rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-sm font-semibold text-white">{SOUL_PROTOCOL.label}</h2>
+              <span className="text-[10px] uppercase tracking-wider text-zinc-500 border border-white/10 px-2 py-0.5 rounded-full">
+                {SOUL_PROTOCOL.status}
+              </span>
+            </div>
+            <p className="text-[13px] text-zinc-400 leading-relaxed">{SOUL_PROTOCOL.thesis}</p>
+            <p className="text-[12px] text-zinc-500">
+              LIA : intentions paper <strong className="text-zinc-400">lend / stake $SO</strong> après
+              MultiversX et mainnet public. Supply {SOUL_PROTOCOL.tokenomicsPublic.totalSupply.toLocaleString()}{' '}
+              · ~{SOUL_PROTOCOL.tokenomicsPublic.circulatingAtTgePct}% au TGE (sources publiques).
+            </p>
+            <a
+              href={SOUL_PROTOCOL.x}
+              target="_blank"
+              rel="noreferrer"
+              className="text-[12px] text-cyan-400/90 hover:underline"
+            >
+              @0xSoulProtocol ↗
+            </a>
+          </section>
+
           <p className="text-[11px] text-zinc-600 leading-relaxed max-w-2xl">
-            Pas un conseil en investissement. Données tierces susceptibles d’être retardées ou
-            incomplètes. Corrélation ≠ causalité — sprints suivants : matrice, funding, events.
+            Pas un conseil en investissement. Pas d’auto-exécution depuis cette page. Placement LIA
+            conditionné au seuil USDC et à Guardian / Vellum.
           </p>
         </>
       )}

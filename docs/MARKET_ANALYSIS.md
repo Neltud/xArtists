@@ -1,18 +1,29 @@
-# Page Analyse `/market` — sprint A
+# Page Analyse `/market`
 
-## Contenu live
-- Fear & Greed (alternative.me)
-- 8 majors (CoinGecko markets)
-- Dominance BTC (CoinGecko global)
-- News (CryptoCompare)
-- Régime risk-on / neutre / risk-off (règle simple F&G + variation moyenne)
-- Brief LIA **public** (agrégats uniquement)
+## Sprint A
+- Fear & Greed, 8 assets, régime, news, brief LIA public
 
-## Fallback
-`public/data/market_snapshot.json` si les APIs échouent (CORS / rate limit).
+## Sprint B — Corrélation
+- Matrice Pearson 7j (BTC ETH SOL XRP) via CoinGecko `market_chart`
+- Affichage heatmap ; disclaimer corrélation ≠ causalité
 
-## Suite (B–D)
-- Matrice de corrélation 7j
-- Funding / OI
-- Endpoint synthèse Vellum
-- Events (procès, delist)
+## Sprint C — Funding
+- Dernier funding rate Binance USDT-M (BTC ETH SOL) + fallback
+
+## Sprint D — Board Vellum (public)
+- Agrégats uniquement (régime, paire corr max, events haute sévérité, politique allocation)
+- Modèle Vellum réel reste hors front
+
+## Sprint E — Events
+- Tagging headlines : legal, delist, halt, macro, protocol
+
+## LIA trésorerie
+- Wallet : `LIA_WALLET` (`links.ts`)
+- **Seuil : ≥ 10 USDC** (`MIN_USDC_DEPLOY`) avant intention de placement
+- Ordre : MultiversX → Solana → Soul Protocol ($SO lend/stake)
+- Lecture solde USDC-c76f1f via API MultiversX (affichage seulement)
+
+## Soul Protocol
+- Config `apps/frontend/src/config/soulProtocol.ts`
+- X : [@0xSoulProtocol](https://x.com/0xSoulProtocol) — omnichain liquidity / lending
+- 2026-09 : private mainnet done, public approaching, $SO tokenomics publiques, **pas de TX live** jusqu’adresses mainnet figées
