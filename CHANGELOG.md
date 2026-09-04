@@ -1,5 +1,20 @@
 # Changelog — xArtists
 
+## [0.28.0](https://github.com/Neltud/xArtists/compare/v0.27.0...v0.28.0) (2026-09-04)
+
+
+### Features
+
+* **map:** museum 3D list from catalog per city + wire venues prop ([20fef49](https://github.com/Neltud/xArtists/commit/20fef499a343b412c79964ffa1a9ceee3a027a31))
+* **museum:** surreal 3D atmosphere + city dropdown + map museum directory links ([103f901](https://github.com/Neltud/xArtists/commit/103f9015b3e8d867e2f00995a284a723b240e4df))
+* **museum:** surreal WebGL particles + iridescent lights ([8bd0988](https://github.com/Neltud/xArtists/commit/8bd0988402953435dd57962dec48c6b402c39a33))
+* **tours:** restore ArtWorldMap + CityMuseumDirectory under map ([b900d2e](https://github.com/Neltud/xArtists/commit/b900d2e8259de6185560b6ccd7c739792c8cbcc3))
+
+
+### Bug Fixes
+
+* restore MuseumWebGLHall + surreal particles ([6ffa6b6](https://github.com/Neltud/xArtists/commit/6ffa6b65ffe1b1df8423e7c4e27c5cea6dcacd41))
+
 ## [0.27.0](https://github.com/Neltud/xArtists/compare/v0.26.0...v0.27.0) (2026-09-04)
 
 
