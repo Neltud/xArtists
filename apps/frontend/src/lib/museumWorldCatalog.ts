@@ -1,9 +1,9 @@
 /**
- * Lieux carte / guide → VRAIS musées (pas d’ailes Met A/B/C).
- * Œuvres Met Open Access regroupées par tradition du lieu.
+ * Lieux carte → vrais musées + métadonnées œuvres enrichies.
  */
 import type { FrameItem } from '../components/museum/MuseumCorridor'
 import { MET_WORKS } from '../data/metCatalog'
+import { enrichPublicDomainFrame } from './artworkMeta'
 
 export type VirtualMuseum = {
   id: string
@@ -271,7 +271,7 @@ const PLACE_MUSEUMS: {
 function toFrame(w: CatalogWork, base: string, museumLabel: string): FrameItem {
   const local = w.file ? `${base}${w.file}` : undefined
   const image = w.remote || local || undefined
-  return {
+  return enrichPublicDomainFrame({
     id: w.id,
     title: w.title,
     subtitle: [w.artist, w.year].filter(Boolean).join(' · '),
@@ -280,7 +280,13 @@ function toFrame(w: CatalogWork, base: string, museumLabel: string): FrameItem {
     image,
     type: 'Public domain',
     href: w.remote || local,
-  }
+    artist: w.artist,
+    date: w.year,
+    medium: 'physical',
+    kind: 'painting',
+    onSale: false,
+    license: 'Met Open Access / domaine public',
+  })
 }
 
 function normalize(s: string): string {
@@ -330,12 +336,14 @@ function assignWorks(base: string): Map<string, FrameItem[]> {
     let i = 0
     while (arr.length < 3 && i < pool.length) {
       const src = pool[(p.id.length * 3 + i) % pool.length]
-      arr.push({
-        ...src,
-        id: `${src.id}-${p.id}-${i}`,
-        collection: p.name,
-        description: `Présenté dans l’esprit de ${p.name}. ${src.description || ''}`,
-      })
+      arr.push(
+        enrichPublicDomainFrame({
+          ...src,
+          id: `${src.id}-${p.id}-${i}`,
+          collection: p.name,
+          description: `Présenté dans l’esprit de ${p.name}. ${src.description || ''}`,
+        })
+      )
       i++
     }
   }
