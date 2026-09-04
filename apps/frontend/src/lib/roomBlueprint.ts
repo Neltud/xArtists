@@ -13,6 +13,8 @@ export type WallSeg = {
   y2: number
   thickness: number
   height: number
+  /** Material hint for renderer */
+  material?: 'stone' | 'plaster' | 'wood' | 'glass' | 'metal' | 'concrete'
 }
 
 export type Opening = {
@@ -31,8 +33,20 @@ export type ArtAnchor = {
   x: number
   y: number
   facing: number
+  /** Hauteur centre cadre depuis le sol (m) */
   height?: number
   frameId?: string
+  /** Plaque murale optionnelle */
+  plaque?: string
+}
+
+export type RoomMeta = {
+  id: string
+  name: string
+  polygon: Vec2[]
+  floor?: 'stone' | 'wood' | 'marble' | 'concrete' | 'tile'
+  /** Texte d’ambiance / cartouche */
+  note?: string
 }
 
 export type RoomBlueprint = {
@@ -43,11 +57,19 @@ export type RoomBlueprint = {
   wallThickness: number
   walls: WallSeg[]
   openings: Opening[]
-  rooms?: { id: string; name: string; polygon: Vec2[]; floor?: string }[]
+  rooms?: RoomMeta[]
   artAnchors?: ArtAnchor[]
   layoutFallback?: string
   schema?: string
   source?: string
+  /** Détails scénographiques */
+  details?: {
+    era?: string
+    city?: string
+    capacity?: number
+    lighting?: 'daylight' | 'spot' | 'museum' | 'neon'
+    ambient?: string
+  }
 }
 
 export const MUSEUM_BLUEPRINT_REF: Record<
@@ -64,6 +86,32 @@ export const MUSEUM_BLUEPRINT_REF: Record<
   uffizi: { source: 'json', ref: 'rotunda' },
   met: { source: 'json', ref: 'glass-nave' },
   xartists: { source: 'json', ref: 'cyber-grid' },
+  kmska: { source: 'json', ref: 'gallery-corridor' },
+  pinacoteca: { source: 'json', ref: 'rotunda' },
+  bozar: { source: 'json', ref: 'glass-nave' },
 }
 
 export const BLEND_STUDIO_REPO = 'https://github.com/Neltud/blend-glade-wolf-grove'
+
+/** Surface approximative m² depuis le premier polygone room. */
+export function blueprintAreaM2(bp: RoomBlueprint): number {
+  const poly = bp.rooms?.[0]?.polygon
+  if (!poly || poly.length < 3) {
+    let minX = Infinity,
+      minY = Infinity,
+      maxX = -Infinity,
+      maxY = -Infinity
+    for (const w of bp.walls) {
+      minX = Math.min(minX, w.x1, w.x2)
+      minY = Math.min(minY, w.y1, w.y2)
+      maxX = Math.max(maxX, w.x1, w.x2)
+      maxY = Math.max(maxY, w.y1, w.y2)
+    }
+    return Math.max(0, (maxX - minX) * (maxY - minY))
+  }
+  let a = 0
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    a += poly[j].x * poly[i].y - poly[i].x * poly[j].y
+  }
+  return Math.abs(a) / 2
+}
