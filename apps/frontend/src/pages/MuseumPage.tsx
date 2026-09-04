@@ -1,5 +1,5 @@
 /**
- * Galerie — chaque musée ouvre une salle 3D (blueprint toujours présent).
+ * Galerie — chaque musée ouvre une salle 3D WebGL (fallback CSS).
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -7,7 +7,7 @@ import {
   framesFromUserNfts,
   type FrameItem,
 } from '../components/museum/MuseumCorridor'
-import MuseumBlueprintRoom from '../components/museum/MuseumBlueprintRoom'
+import MuseumHall from '../components/museum/MuseumHall'
 import GuidedWorldTour from '../components/museum/GuidedWorldTour'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
@@ -203,7 +203,7 @@ export default function MuseumPage() {
         </p>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Galerie</h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl">
-          Chaque musée a sa salle 3D — murs, portes, œuvres. WASD pour vous déplacer.
+          Salles WebGL (Three.js) — murs, sol, œuvres texturées. WASD / pad tactile.
         </p>
       </header>
 
@@ -254,13 +254,10 @@ export default function MuseumPage() {
             <div>
               <p className="text-base font-medium text-white">{museum.name}</p>
               <p className="text-[12px] text-zinc-500">
-                {museum.tagline} · {blueprint.name}
-                {blueprint.artAnchors?.length
-                  ? ` · ${blueprint.artAnchors.length} ancrages · 3D`
-                  : ' · 3D'}
+                {museum.tagline} · {blueprint.name} · WebGL
               </p>
             </div>
-            <p className="text-[11px] text-zinc-600 hidden sm:block">WASD · Inspecter</p>
+            <p className="text-[11px] text-zinc-600 hidden sm:block">WASD · E inspecter</p>
           </div>
 
           {showHallLoader ? (
@@ -269,7 +266,7 @@ export default function MuseumPage() {
             </div>
           ) : (
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
-              <MuseumBlueprintRoom
+              <MuseumHall
                 key={museumId}
                 blueprint={blueprint}
                 frames={visitFrames}
@@ -285,7 +282,7 @@ export default function MuseumPage() {
       {mode === 'mine' && (
         <div className="space-y-4">
           <p className="text-sm text-zinc-400 max-w-lg">
-            Vos NFT MultiversX dans le hall 3D xArtists.
+            Vos NFT MultiversX dans le hall WebGL xArtists.
           </p>
           {!connected ? (
             <div className="rounded-2xl border border-white/10 bg-zinc-950/60 px-6 py-12 text-center space-y-4">
@@ -298,7 +295,7 @@ export default function MuseumPage() {
             <p className="text-sm text-zinc-500">Lecture de la collection…</p>
           ) : (
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
-              <MuseumBlueprintRoom
+              <MuseumHall
                 blueprint={mineBlueprint}
                 frames={myFrames}
                 room="dark"
@@ -313,7 +310,7 @@ export default function MuseumPage() {
       {mode === 'map' && (
         <div className="space-y-3">
           <p className="text-sm text-zinc-400">
-            Choisissez une ville — ouverture de la salle 3D dans Explorer.
+            Choisissez une ville — salle WebGL dans Explorer.
           </p>
           <GuidedWorldTour />
           <p className="text-[11px] text-zinc-600">
