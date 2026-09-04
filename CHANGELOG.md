@@ -1,5 +1,14 @@
 # Changelog — xArtists
 
+## [0.25.0](https://github.com/Neltud/xArtists/compare/v0.24.0...v0.25.0) (2026-09-04)
+
+
+### Features
+
+* Pompidou + Palais de Tokyo plans; wire venues prop on map ([0789be9](https://github.com/Neltud/xArtists/commit/0789be925540b7d07f584c9e2dfede60d47354c3))
+* Pompidou/Tokyo layout keys + ArtWorldMap venues clickable via MapMuseumEnter ([22ac138](https://github.com/Neltud/xArtists/commit/22ac138425165a52c6cd21c8da2fb79e6468a671))
+* venue→museum 3D click, legal Nelson Tuduri, museum registry, pack audit ([6d1285a](https://github.com/Neltud/xArtists/commit/6d1285aff28857b9ecd1dabecc8b39600560b2e4))
+
 ## [0.24.0](https://github.com/Neltud/xArtists/compare/v0.23.0...v0.24.0) (2026-09-04)
 
 
