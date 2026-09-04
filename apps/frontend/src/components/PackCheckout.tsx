@@ -1,3 +1,6 @@
+/**
+ * Checkout — un seul pack parmi Pulse · Yield · Sentinel (jamais d’autres agents).
+ */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
@@ -8,10 +11,11 @@ import {
   startStripeCardPayment,
   isStripeConfigured,
   getAccessApiBase,
-  getStripePublishableKey,
 } from '../lib/stripe'
 
-/** Checkout Model C — un pack à la fois, pas de 2e grille de 3. */
+const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
+const PACKS = AGENT_PACKS.filter(p => ONLY.includes(p.id)).slice(0, 3)
+
 export default function PackCheckout({
   packId: forcedId = null,
   onClear,
@@ -20,21 +24,24 @@ export default function PackCheckout({
   onClear?: () => void
 } = {}) {
   const { connected, address } = useWallet()
-  const [selected, setSelected] = useState<PackId | null>(forcedId)
+  const [selected, setSelected] = useState<PackId | null>(
+    forcedId && ONLY.includes(forcedId) ? forcedId : null
+  )
   useEffect(() => {
-    if (forcedId) setSelected(forcedId)
+    if (forcedId && ONLY.includes(forcedId)) setSelected(forcedId)
+    else if (forcedId === null) setSelected(null)
   }, [forcedId])
   const [termsOpen, setTermsOpen] = useState(false)
   const [status, setStatus] = useState<'idle' | 'terms' | 'redirect' | 'done'>('idle')
   const [msg, setMsg] = useState('')
 
-  const pack = AGENT_PACKS.find(p => p.id === selected)
+  const pack = PACKS.find(p => p.id === selected)
   const mintLive = canBuyAgent()
   const stripeOk = isStripeConfigured()
   const hasApi = Boolean(getAccessApiBase())
-  const pk = getStripePublishableKey()
 
   const startBuy = (id: PackId) => {
+    if (!ONLY.includes(id)) return
     if (!connected || !address?.startsWith('erd1')) {
       setMsg('Connecte ton wallet MultiversX (erd1…) avant checkout.')
       setSelected(id)
@@ -89,7 +96,7 @@ export default function PackCheckout({
   }
 
   return (
-    <div className="card space-y-3">
+    <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-bold text-white">Paiement</h2>
         <span
@@ -102,10 +109,6 @@ export default function PackCheckout({
           {hasApi ? 'API Stripe' : stripeOk ? 'Payment Link' : 'Paper'}
         </span>
       </div>
-      <p className="text-[11px] text-zinc-500">
-        Un pack choisi → Stripe → NFT d’accès vers ton erd1.
-        {pk ? ' · pk ok' : ''}
-      </p>
 
       {selected && pack ? (
         <div className="rounded-xl border border-cyan-400/30 bg-cyan-500/5 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
@@ -114,7 +117,7 @@ export default function PackCheckout({
               {pack.icon} {pack.name}
             </p>
             <p className="text-[11px] text-zinc-500">
-              {pack.priceEur.list} € · Stripe · NFT d’accès
+              {pack.priceEur.list} € · NFT d’accès (Pulse · Yield · Sentinel uniquement)
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -133,29 +136,12 @@ export default function PackCheckout({
           </div>
         </div>
       ) : (
-        <div className="flex flex-wrap items-center gap-2">
-          <label className="text-xs text-zinc-500" htmlFor="pack-select">
-            Pack
-          </label>
-          <select
-            id="pack-select"
-            className="rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white"
-            defaultValue=""
-            onChange={e => {
-              const v = e.target.value as PackId
-              if (v) startBuy(v)
-            }}
-          >
-            <option value="" disabled>
-              Choisir…
-            </option>
-            {AGENT_PACKS.map(p => (
-              <option key={p.id} value={p.id}>
-                {p.name} — {p.priceEur.list} €
-              </option>
-            ))}
-          </select>
-        </div>
+        <p className="text-[12px] text-zinc-500">
+          Sélectionnez <strong className="text-zinc-400">Pulse</strong>,{' '}
+          <strong className="text-zinc-400">Yield</strong> ou{' '}
+          <strong className="text-zinc-400">Sentinel</strong> dans la grille ci-dessus — pas d’autre
+          agent.
+        </p>
       )}
 
       {msg && (

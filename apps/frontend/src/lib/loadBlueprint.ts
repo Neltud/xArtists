@@ -1,28 +1,25 @@
 /**
- * Charge un RoomBlueprint exporté depuis blend-glade-wolf-grove.
- * Fichiers : public/blueprints/{id}.json
+ * Charge un RoomBlueprint — toujours un plan 3D pour chaque musée.
+ * 1) JSON public/blueprints si dispo
+ * 2) sinon plan embarqué (builtin)
  */
 import type { RoomBlueprint } from './roomBlueprint'
 import { MUSEUM_BLUEPRINT_REF } from './roomBlueprint'
+import { builtinBlueprintForMuseum, MUSEUM_TO_LAYOUT } from './builtinBlueprints'
 
-const cache = new Map<string, RoomBlueprint | null>()
+const cache = new Map<string, RoomBlueprint>()
 
-export async function loadBlueprint(museumId: string): Promise<RoomBlueprint | null> {
-  if (cache.has(museumId)) return cache.get(museumId) ?? null
+export async function loadBlueprint(museumId: string): Promise<RoomBlueprint> {
+  if (cache.has(museumId)) return cache.get(museumId)!
 
   const ref = MUSEUM_BLUEPRINT_REF[museumId]
   const file =
     ref?.source === 'json'
       ? ref.ref
-      : ref?.source === 'blend-sample'
-        ? ref.ref
-        : museumId
+      : MUSEUM_TO_LAYOUT[museumId] || museumId
 
   const base = import.meta.env.BASE_URL || '/'
-  const urls = [
-    `${base}blueprints/${file}.json`,
-    `${base}blueprints/${museumId}.json`,
-  ]
+  const urls = [`${base}blueprints/${file}.json`, `${base}blueprints/${museumId}.json`]
 
   for (const url of urls) {
     try {
@@ -36,8 +33,10 @@ export async function loadBlueprint(museumId: string): Promise<RoomBlueprint | n
       /* next */
     }
   }
-  cache.set(museumId, null)
-  return null
+
+  const fallback = builtinBlueprintForMuseum(museumId)
+  cache.set(museumId, fallback)
+  return fallback
 }
 
 export function pointInBlueprintFloor(bp: RoomBlueprint, x: number, y: number): boolean {
@@ -53,7 +52,8 @@ export function pointInBlueprintFloor(bp: RoomBlueprint, x: number, y: number): 
       maxX = Math.max(maxX, w.x1, w.x2)
       maxY = Math.max(maxY, w.y1, w.y2)
     }
-    return x >= minX && x <= maxX && y >= minY && y <= maxY
+    const pad = 0.35
+    return x >= minX + pad && x <= maxX - pad && y >= minY + pad && y <= maxY - pad
   }
   for (const room of rooms) {
     if (pointInPolygon({ x, y }, room.polygon)) return true

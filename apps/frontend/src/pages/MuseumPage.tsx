@@ -1,6 +1,5 @@
 /**
- * Galerie — plan par lieu + lien carte (city / museum query).
- * Salle 3D réelle si blueprint murs dispo, sinon corridor CSS.
+ * Galerie — chaque musée ouvre une salle 3D (blueprint toujours présent).
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -8,7 +7,6 @@ import {
   framesFromUserNfts,
   type FrameItem,
 } from '../components/museum/MuseumCorridor'
-import MuseumGameHall from '../components/museum/MuseumGameHall'
 import MuseumBlueprintRoom from '../components/museum/MuseumBlueprintRoom'
 import GuidedWorldTour from '../components/museum/GuidedWorldTour'
 import { useWallet } from '../context/WalletContext'
@@ -30,8 +28,8 @@ import {
   type VirtualMuseum,
 } from '../lib/museumWorldCatalog'
 import { preloadImages } from '../lib/imagePreload'
-import { layoutForMuseum } from '../lib/museumLayouts'
 import { loadBlueprint } from '../lib/loadBlueprint'
+import { builtinBlueprintForMuseum } from '../lib/builtinBlueprints'
 import type { RoomBlueprint } from '../lib/roomBlueprint'
 
 type Mode = 'explore' | 'mine' | 'map'
@@ -109,11 +107,12 @@ export default function MuseumPage() {
   const [allNfts, setAllNfts] = useState<NFT[]>([])
   const [catalogLoading, setCatalogLoading] = useState(true)
   const [travelBanner, setTravelBanner] = useState<string | null>(null)
-  const [blueprint, setBlueprint] = useState<RoomBlueprint | null>(null)
+  const [blueprint, setBlueprint] = useState<RoomBlueprint>(() =>
+    builtinBlueprintForMuseum('xartists')
+  )
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const museum = museums.find(m => m.id === museumId) || museums[0] || VIRTUAL_MUSEUMS[0]
-  const layout = layoutForMuseum(museumId)
 
   useEffect(() => {
     let cxl = false
@@ -156,7 +155,7 @@ export default function MuseumPage() {
         city
           ? mid
             ? `Direction ${city} · ${mid}`
-            : `Direction ${city} — choisissez un lieu ci-dessous`
+            : `Direction ${city}`
           : mid
             ? `Salle ${mid}`
             : null
@@ -167,9 +166,10 @@ export default function MuseumPage() {
   }, [])
 
   useEffect(() => {
+    setBlueprint(builtinBlueprintForMuseum(museumId))
     let c = false
     loadBlueprint(museumId).then(bp => {
-      if (!c) setBlueprint(bp)
+      if (!c && bp?.walls?.length) setBlueprint(bp)
     })
     return () => {
       c = true
@@ -193,6 +193,7 @@ export default function MuseumPage() {
 
   const myFrames = useMemo(() => framesFromUserNfts(account.nfts || []), [account.nfts])
   const showHallLoader = museum.source === 'onchain' && catalogLoading && !visitFrames.length
+  const mineBlueprint = useMemo(() => builtinBlueprintForMuseum('xartists'), [])
 
   return (
     <div className="animate-fade-in pb-12 max-w-5xl mx-auto">
@@ -202,7 +203,7 @@ export default function MuseumPage() {
         </p>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Galerie</h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl">
-          Carte → ville → salle 3D. Chaque lieu a son plan (murs) et ses œuvres.
+          Chaque musée a sa salle 3D — murs, portes, œuvres. WASD pour vous déplacer.
         </p>
       </header>
 
@@ -253,15 +254,13 @@ export default function MuseumPage() {
             <div>
               <p className="text-base font-medium text-white">{museum.name}</p>
               <p className="text-[12px] text-zinc-500">
-                {museum.tagline} · {blueprint?.name || layout.label}
-                {blueprint?.artAnchors?.length
-                  ? ` · ${blueprint.artAnchors.length} ancrages · 3D plan`
-                  : ''}
+                {museum.tagline} · {blueprint.name}
+                {blueprint.artAnchors?.length
+                  ? ` · ${blueprint.artAnchors.length} ancrages · 3D`
+                  : ' · 3D'}
               </p>
             </div>
-            <p className="text-[11px] text-zinc-600 hidden sm:block">
-              WASD · touchez une œuvre
-            </p>
+            <p className="text-[11px] text-zinc-600 hidden sm:block">WASD · Inspecter</p>
           </div>
 
           {showHallLoader ? (
@@ -270,25 +269,14 @@ export default function MuseumPage() {
             </div>
           ) : (
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
-              {blueprint && blueprint.walls?.length ? (
-                <MuseumBlueprintRoom
-                  key={museumId + '-bp'}
-                  blueprint={blueprint}
-                  frames={visitFrames}
-                  room={museum.room}
-                  allowBuy={museum.source === 'onchain'}
-                  emptyLabel="Aucune œuvre pour ce lieu pour l’instant."
-                />
-              ) : (
-                <MuseumGameHall
-                  key={museumId}
-                  museumId={museumId}
-                  frames={visitFrames}
-                  room={museum.room}
-                  allowBuy={museum.source === 'onchain'}
-                  emptyLabel="Aucune œuvre pour ce lieu pour l’instant."
-                />
-              )}
+              <MuseumBlueprintRoom
+                key={museumId}
+                blueprint={blueprint}
+                frames={visitFrames}
+                room={museum.room}
+                allowBuy={museum.source === 'onchain'}
+                emptyLabel="Aucune œuvre pour ce lieu pour l’instant."
+              />
             </div>
           )}
         </div>
@@ -297,7 +285,7 @@ export default function MuseumPage() {
       {mode === 'mine' && (
         <div className="space-y-4">
           <p className="text-sm text-zinc-400 max-w-lg">
-            Vos NFT MultiversX dans le même espace immersif.
+            Vos NFT MultiversX dans le hall 3D xArtists.
           </p>
           {!connected ? (
             <div className="rounded-2xl border border-white/10 bg-zinc-950/60 px-6 py-12 text-center space-y-4">
@@ -310,8 +298,8 @@ export default function MuseumPage() {
             <p className="text-sm text-zinc-500">Lecture de la collection…</p>
           ) : (
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
-              <MuseumGameHall
-                museumId="xartists"
+              <MuseumBlueprintRoom
+                blueprint={mineBlueprint}
                 frames={myFrames}
                 room="dark"
                 allowBuy={false}
@@ -325,7 +313,7 @@ export default function MuseumPage() {
       {mode === 'map' && (
         <div className="space-y-3">
           <p className="text-sm text-zinc-400">
-            Choisissez une ville — la salle s’ouvre dans Explorer.
+            Choisissez une ville — ouverture de la salle 3D dans Explorer.
           </p>
           <GuidedWorldTour />
           <p className="text-[11px] text-zinc-600">

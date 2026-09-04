@@ -1,6 +1,4 @@
 # Deploy Vite React dApp to GitHub Pages
-# Live site was serving stale docs/assets/* while main had clean source.
-# This workflow builds apps/frontend and syncs dist → docs/ (branch /docs Pages).
 name: Deploy Vite app to GitHub Pages
 
 on:
@@ -55,6 +53,18 @@ jobs:
           fi
           echo 'Dashboard source OK'
 
+      - name: Verify Agents = 3 packs only
+        run: |
+          if ! grep -q 'Pulse · Yield · Sentinel' src/pages/Agents.tsx; then
+            echo '::error::Agents.tsx must advertise exactly 3 packs'
+            exit 1
+          fi
+          if grep -qiE 'voyage|travel agent|agent art|NftPacksGallery' src/pages/Agents.tsx; then
+            echo '::error::Agents.tsx must not list travel/art agents'
+            exit 1
+          fi
+          echo 'Agents OK'
+
       - name: Build
         run: npm run build
         env:
@@ -83,7 +93,6 @@ jobs:
           else
             cp apps/frontend/dist/index.html docs/404.html
           fi
-          # public extras
           for f in manifest.webmanifest service-worker.js favicon.svg robots.txt sitemap.xml; do
             if [ -f "apps/frontend/dist/$f" ]; then cp "apps/frontend/dist/$f" "docs/$f"; fi
           done
@@ -94,6 +103,14 @@ jobs:
           if [ -d apps/frontend/dist/data ]; then
             mkdir -p docs/data
             cp -R apps/frontend/dist/data/. docs/data/
+          fi
+          # Blueprints 3D — requis pour salles musée en démo live
+          if [ -d apps/frontend/dist/blueprints ]; then
+            rm -rf docs/blueprints
+            cp -R apps/frontend/dist/blueprints docs/blueprints
+          elif [ -d apps/frontend/public/blueprints ]; then
+            rm -rf docs/blueprints
+            cp -R apps/frontend/public/blueprints docs/blueprints
           fi
           cp apps/frontend/dist/BUILD_SHA.txt docs/BUILD_SHA.txt
           cp apps/frontend/dist/BUILD_TIME.txt docs/BUILD_TIME.txt
@@ -106,7 +123,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/index.html docs/404.html docs/assets docs/BUILD_SHA.txt docs/BUILD_TIME.txt \
             docs/manifest.webmanifest docs/service-worker.js docs/favicon.svg docs/robots.txt docs/sitemap.xml \
-            docs/museum docs/data 2>/dev/null || true
+            docs/museum docs/data docs/blueprints 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No docs changes to commit"
           else

@@ -1,6 +1,5 @@
 /**
  * Contrat d’import plan→salle pour la galerie 3D.
- * Aligné sur FloorPlan de https://github.com/Neltud/blend-glade-wolf-grove
  */
 
 export type Vec2 = { x: number; y: number }
@@ -13,7 +12,6 @@ export type WallSeg = {
   y2: number
   thickness: number
   height: number
-  /** Material hint for renderer */
   material?: 'stone' | 'plaster' | 'wood' | 'glass' | 'metal' | 'concrete'
 }
 
@@ -33,10 +31,8 @@ export type ArtAnchor = {
   x: number
   y: number
   facing: number
-  /** Hauteur centre cadre depuis le sol (m) */
   height?: number
   frameId?: string
-  /** Plaque murale optionnelle */
   plaque?: string
 }
 
@@ -45,7 +41,6 @@ export type RoomMeta = {
   name: string
   polygon: Vec2[]
   floor?: 'stone' | 'wood' | 'marble' | 'concrete' | 'tile'
-  /** Texte d’ambiance / cartouche */
   note?: string
 }
 
@@ -62,7 +57,6 @@ export type RoomBlueprint = {
   layoutFallback?: string
   schema?: string
   source?: string
-  /** Détails scénographiques */
   details?: {
     era?: string
     city?: string
@@ -72,28 +66,42 @@ export type RoomBlueprint = {
   }
 }
 
+/** Tous les lieux catalogue → fichier JSON (enrichissement optionnel). */
 export const MUSEUM_BLUEPRINT_REF: Record<
   string,
-  { source: 'blend-sample' | 'json'; ref: string }
+  { source: 'json'; ref: string }
 > = {
+  xartists: { source: 'json', ref: 'cyber-grid' },
   louvre: { source: 'json', ref: 'gallery-corridor' },
   prado: { source: 'json', ref: 'gallery-corridor' },
-  orsay: { source: 'json', ref: 'glass-nave' },
   nglondon: { source: 'json', ref: 'gallery-corridor' },
+  kmska: { source: 'json', ref: 'gallery-corridor' },
+  gemaldegalerie: { source: 'json', ref: 'gallery-corridor' },
+  vatican: { source: 'json', ref: 'gallery-corridor' },
+  hermitage: { source: 'json', ref: 'gallery-corridor' },
+  tate: { source: 'json', ref: 'gallery-corridor' },
+  orsay: { source: 'json', ref: 'glass-nave' },
+  met: { source: 'json', ref: 'glass-nave' },
+  bozar: { source: 'json', ref: 'glass-nave' },
+  gulbenkian: { source: 'json', ref: 'glass-nave' },
+  mrbab: { source: 'json', ref: 'glass-nave' },
   rijks: { source: 'json', ref: 'cabinet' },
   mauritshuis: { source: 'json', ref: 'cabinet' },
   vangogh: { source: 'json', ref: 'cabinet' },
+  ngprague: { source: 'json', ref: 'cabinet' },
+  mnw: { source: 'json', ref: 'cabinet' },
+  soares: { source: 'json', ref: 'cabinet' },
+  mfabudapest: { source: 'json', ref: 'cabinet' },
   uffizi: { source: 'json', ref: 'rotunda' },
-  met: { source: 'json', ref: 'glass-nave' },
-  xartists: { source: 'json', ref: 'cyber-grid' },
-  kmska: { source: 'json', ref: 'gallery-corridor' },
   pinacoteca: { source: 'json', ref: 'rotunda' },
-  bozar: { source: 'json', ref: 'glass-nave' },
+  brera: { source: 'json', ref: 'rotunda' },
+  kunsthistorisches: { source: 'json', ref: 'rotunda' },
+  accademia: { source: 'json', ref: 'rotunda' },
+  mnac: { source: 'json', ref: 'rotunda' },
 }
 
 export const BLEND_STUDIO_REPO = 'https://github.com/Neltud/blend-glade-wolf-grove'
 
-/** Surface approximative m² depuis le premier polygone room. */
 export function blueprintAreaM2(bp: RoomBlueprint): number {
   const poly = bp.rooms?.[0]?.polygon
   if (!poly || poly.length < 3) {
