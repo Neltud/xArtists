@@ -42,5 +42,43 @@
     "lia_tokens": "https://api.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6/tokens",
     "mex_pairs": "https://api.multiversx.com/mex/pairs"
   },
+  "ops_release": {
+    "publication_operator": "vellum",
+    "mode": "pre-mainnet",
+    "mainnet_only": true,
+    "keep_lia_live_trading_off": true,
+    "allow_user_marketplace_actions": false,
+    "allow_live_ops_flags": false,
+    "strict_sequence": [
+      "paper_cycle",
+      "publish_pages_artifacts",
+      "deploy_scs",
+      "verify_codehash",
+      "micro_smokes_user_wallet",
+      "live_ops_flags"
+    ],
+    "proofs_required": [
+      "marketplace_codehash_verified",
+      "agents_codehash_verified",
+      "tip_smoke",
+      "list_smoke",
+      "buy_smoke",
+      "mint_pack_smoke"
+    ],
+    "contracts": {
+      "marketplace": {
+        "address": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+        "codehash_ok": false,
+        "verdict": "NOT_DEPLOYED"
+      },
+      "agents_marketplace": {
+        "address": null,
+        "codehash_ok": false,
+        "verdict": "NO_ADDRESS"
+      }
+    },
+    "lia_protocol_wallet": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "checked": "2026-08-28T04:40:00Z"
+  },
   "updated": "2026-07-29"
 }

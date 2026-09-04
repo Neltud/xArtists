@@ -15,14 +15,15 @@ Vellum Workflow (secret)
 git pull origin main
   ▼
 python -m lia.vellum.production_run
-  │  … paper phases …
+ │  … paper phases + public data mirror …
   └─ phase deploy_scs → lia.vellum.deploy_scs_node
-         │
-         ├─ mxpy contract build (nft / agents)
-         ├─ mxpy contract deploy --send (si pas DRY)
-         └─ data/contracts.json (adresses) + data/vellum_deploy_scs.json
-  ▼
-Ops: verify codeHash → VITE flags → Pages rebuild
+        │   (refus si prérequis paper/publication KO
+        │    ou si wallet ops < min EGLD)
+        ├─ mxpy contract build (nft / agents)
+        ├─ mxpy contract deploy --send (si pas DRY)
+        └─ data/contracts.json (adresses) + data/vellum_deploy_scs.json
+ ▼
+Ops: verify codeHash → update `data/config.json` + VITE flags → Pages rebuild
 ```
 
 **Paper quotidien :** `VELLUM_DEPLOY_SCS` absent ou `0` → phase deploy **skipped**.
@@ -51,6 +52,7 @@ Ne jamais echo / commit le PEM. Le node redacte les blocs PEM dans les logs.
 | `VELLUM_DEPLOY_DRY` | `0` / `1` | `1` = build only, pas de `--send` |
 | `DEPLOY_CONTRACT` | `all` · `nft-marketplace` · `agents-marketplace` | Cible |
 | `FEE_BPS` | `300` | Argument constructeur |
+| `LIA_DEPLOYER_MIN_EGLD` | `0.25` | Solde mini wallet ops avant vrai deploy |
 | `LIA_MVX_PROXY` / `PROXY` | gateway mainnet | API |
 | `PYTHONPATH` | `.` | Racine repo |
 
@@ -83,7 +85,7 @@ python -m lia.vellum.deploy_scs_node
 
 ## Workflow Vellum C — Deploy réel mainnet
 
-Prérequis : balance EGLD déployeur, code audité, dry OK.
+Prérequis : balance EGLD déployeur ≥ seuil mini, code audité, dry OK.
 
 ```bash
 git pull origin main
@@ -95,12 +97,14 @@ export DEPLOY_CONTRACT=all
 python -m lia.vellum.production_run
 ```
 
-Puis **hors Vellum ou step suivant** :
+Puis **dans la suite ops Vellum** :
 
 ```bash
 python scripts/verify_marketplace_codehash.py   # exit 0 obligatoire
 python scripts/post_deploy_contracts.py --marketplace erd1... --agents erd1...
-# Commit data/contracts.json (adresses publiques uniquement)
+# refresh data/config.json + .env.mainnet.example publics
+python scripts/post_deploy_verify.py --retry 5
+# Commit data/contracts.json / data/config.json (adresses publiques uniquement)
 # CI : VITE_MARKETPLACE_CODEHASH_OK=1 VITE_AGENTS_CODEHASH_OK=1 → rebuild Pages
 ```
 
@@ -121,11 +125,13 @@ export PEM=$LIA_WALLET_PEM_PATH   # si fichier
 Tu es LIA ops sur MultiversX mainnet.
 1. git pull origin main
 2. Paper: CHAIN=1 LIA_LIVE_TRADING=0 python -m lia.vellum.production_run
-3. Deploy SC seulement si instruction explicite + VELLUM_DEPLOY_SCS=1
-4. Toujours VELLUM_DEPLOY_DRY=1 d’abord
-5. Après deploy réel: verify_marketplace_codehash.py exit 0
-6. Ne jamais logger ni committer le PEM
-7. Ne jamais LIA_LIVE_TRADING=1 sans micro-preuves
+3. Publier les artefacts publics avant toute action prioritaire
+4. Deploy SC seulement si instruction explicite + VELLUM_DEPLOY_SCS=1
+5. Toujours VELLUM_DEPLOY_DRY=1 d’abord
+6. Refuser le deploy si le wallet ops n’a pas assez d’EGLD
+7. Après deploy réel: verify_marketplace_codehash.py exit 0
+8. Ne jamais logger ni committer le PEM
+9. Ne jamais LIA_LIVE_TRADING=1 sans micro-preuves user
 Code source: repo Neltud/xArtists (modules lia/vellum/*)
 ```
 

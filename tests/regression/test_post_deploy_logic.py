@@ -80,6 +80,18 @@ def test_consistency_mismatch():
     assert by_id["consistency_agents-marketplace"]["pass"] is False
 
 
+def test_build_release_state_fail_closed():
+    mkt = {"address": "erd1market", "ok": True, "verdict": "LIVE"}
+    ag = {"address": None, "ok": False, "verdict": "NO_ADDRESS"}
+    rel = pdv.build_release_state(mkt, ag, critical_ok=False)
+    assert rel["publication_operator"] == "vellum"
+    assert rel["mode"] == "pre-mainnet"
+    assert rel["allow_user_marketplace_actions"] is False
+    assert rel["allow_live_ops_flags"] is False
+    assert rel["contracts"]["marketplace"]["codehash_ok"] is True
+    assert rel["contracts"]["agents_marketplace"]["codehash_ok"] is False
+
+
 if __name__ == "__main__":
     test_codehash_of_null()
     test_codehash_of_live()
@@ -88,4 +100,5 @@ if __name__ == "__main__":
     test_check_account_empty_mocked()
     test_build_vite_flags()
     test_consistency_mismatch()
+    test_build_release_state_fail_closed()
     print("OK test_post_deploy_logic")

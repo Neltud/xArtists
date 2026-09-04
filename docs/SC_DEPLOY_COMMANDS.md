@@ -19,7 +19,8 @@ export PROXY=https://gateway.multiversx.com
 # export ONLY=nft-marketplace   # ou agents-marketplace | all
 ```
 
-Balance déployeur recommandée : **≥ ~0.25 EGLD**.
+Balance déployeur recommandée : **≥ 0.25 EGLD**.  
+Le node `lia.vellum.deploy_scs_node` refuse désormais le **vrai deploy** si le wallet ops est sous ce seuil.
 
 ---
 
@@ -128,6 +129,7 @@ export VELLUM_DEPLOY_SCS=1
 export PEM=/secure/mainnet.pem   # ou LIA_WALLET_PEM_PATH
 PYTHONPATH=. python -m lia.vellum.production_run
 # phase deploy_scs appelle lia.vellum.deploy_scs_node si flag + PEM OK
+# et seulement après cycle paper + mirror public OK
 ```
 
 Sans `VELLUM_DEPLOY_SCS=1` → phase **skipped** (comportement normal paper).
@@ -139,10 +141,11 @@ Sans `VELLUM_DEPLOY_SCS=1` → phase **skipped** (comportement normal paper).
 1. `runbook_deploy.sh dry`  
 2. `runbook_deploy.sh deploy` (nft + agents)  
 3. `verify_marketplace_codehash.py` **exit 0**  
-4. Flags `VITE_*_CODEHASH_OK=1` + rebuild Pages  
-5. Micro List/Buy avec **wallet utilisateur** (pas LIA ops)  
-6. Treasury wallets → `deploy_treasury_splitter.sh`  
-7. Garder `LIA_LIVE_TRADING=0` jusqu’aux micro-preuves trading  
+4. `post_deploy_verify.py` met à jour `data/config.json` + `.env.mainnet.example`  
+5. Flags `VITE_*_CODEHASH_OK=1` + rebuild Pages  
+6. Micro List/Buy avec **wallet utilisateur** (pas LIA ops)  
+7. Treasury wallets → `deploy_treasury_splitter.sh`  
+8. Garder `LIA_LIVE_TRADING=0` jusqu’aux micro-preuves trading  
 
 ---
 

@@ -48,6 +48,16 @@ def test_lia_v6_status_live_flag_default_off():
     assert int(flag) == 0 or flag is False
 
 
+def test_public_release_state_is_fail_closed():
+    d = _load("config.json")
+    rel = d.get("ops_release") or {}
+    assert rel.get("publication_operator") == "vellum"
+    assert rel.get("mode") == "pre-mainnet"
+    assert rel.get("allow_user_marketplace_actions") is False
+    assert rel.get("allow_live_ops_flags") is False
+    assert "verify_codehash" in (rel.get("strict_sequence") or [])
+
+
 def test_treasury_wallets_shape():
     d = _load("treasury_wallets.json")
     w = d.get("wallets") or {}
@@ -77,6 +87,7 @@ def test_agents_fee_bps_policy():
 if __name__ == "__main__":
     test_contracts_json_shape()
     test_lia_v6_status_live_flag_default_off()
+    test_public_release_state_is_fail_closed()
     test_treasury_wallets_shape()
     test_lia_board_seed()
     test_agents_fee_bps_policy()
