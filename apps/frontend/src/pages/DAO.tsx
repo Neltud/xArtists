@@ -4,6 +4,7 @@ import { useMultiversX } from '../hooks/useMultiversX'
 import TreasuryBanner from '../components/TreasuryBanner'
 import PageGuide from '../components/PageGuide'
 import { LINKS } from '../config/links'
+import DaoLpVotePower from '../components/dao/DaoLpVotePower'
 
 const TRO_ID = 'TRO-94c925'
 const API = 'https://api.multiversx.com'
@@ -92,19 +93,24 @@ export default function DAO() {
       <div className="mb-6">
         <h1 className="text-3xl font-black">🗳️ Gouvernance DAO xArtists</h1>
         <p className="text-gray-500 mt-1">
-          $TRO live · policy treasury · vote TX pas encore branché
+          $TRO live · LP multi-DEX (vote weight) · policy treasury · vote TX pas encore branché
         </p>
       </div>
 
       <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
         <strong>Mode lecture seule (P0 UX).</strong> Pas de bouton « Voter » factice. Holders & supply =
-        API mainnet. Vote on-chain = après ABI + sdk-dapp. $TRO n’est <strong>pas</strong> une share du
-        fonds.
+        API mainnet. Vote on-chain = après ABI + sdk-dapp. Yield farming TRO/EGLD ={' '}
+        <Link to="/staking" className="underline text-amber-50">
+          /staking
+        </Link>
+        , pas ici.
       </div>
 
       <div className="mb-6">
         <TreasuryBanner />
       </div>
+
+      <DaoLpVotePower />
 
       <p className="mb-6 text-xs">
         <a
@@ -149,83 +155,55 @@ export default function DAO() {
             <p className="text-xl font-bold">
               {circ ? circ.toLocaleString(undefined, { maximumFractionDigits: 0 }) : '—'}
             </p>
-            <p className="text-[10px] text-gray-500">cap produit {TRO_MAX_SUPPLY.toLocaleString()}</p>
           </div>
           <div>
             <p className="text-xs text-gray-500">Market cap</p>
             <p className="text-xl font-bold">
-              {troLive?.marketCap != null ? `$${troLive.marketCap.toFixed(2)}` : '—'}
+              {troLive?.marketCap
+                ? `$${troLive.marketCap.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+                : '—'}
             </p>
           </div>
         </div>
         <div className="mt-4">
-          <div className="flex justify-between text-[10px] text-gray-500 mb-1">
-            <span>Supply vs cap 500k</span>
+          <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <span>Supply vs max {TRO_MAX_SUPPLY.toLocaleString()}</span>
             <span>{supplyPct.toFixed(1)}%</span>
           </div>
-          <div className="h-2 rounded-full bg-[#0a0a0f] overflow-hidden">
+          <div className="h-2 rounded-full bg-white/5 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-purple-600 to-fuchsia-500"
+              className="h-full rounded-full bg-purple-500/80"
               style={{ width: `${supplyPct}%` }}
             />
           </div>
         </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <a href={LINKS.xexchangeTroUsdc} target="_blank" rel="noreferrer" className="btn-primary text-sm">
-            Buy $TRO ↗
-          </a>
-          <Link to="/studio" className="btn-secondary text-sm">
-            Studio mint
-          </Link>
-        </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="card">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Statut données</p>
-          <p className="text-xl font-bold">{daoActive ? '🟢 Live JSON' : '⏸️ Standby'}</p>
-        </div>
-        <div className="card">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">TRO Staking signal</p>
-          <p className="text-xl font-bold">{troStaked ? '✅' : '⏳'}</p>
-        </div>
-        <div className="card">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Votes (JSON)</p>
-          <p className="text-xl font-bold">{Number(totalVotes).toFixed(2)} TRO</p>
-        </div>
-        <div className="card">
-          <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Reco LIA</p>
-          <p className="text-xl font-bold text-yellow-400">{recommendedPair}</p>
-        </div>
-      </div>
+      {holdersErr && (
+        <p className="text-sm text-amber-200 mb-4">Holders: {holdersErr}</p>
+      )}
 
       <div className="card mb-8">
-        <h2 className="text-lg font-bold mb-2">Top holders $TRO (mainnet)</h2>
-        <p className="text-xs text-gray-500 mb-4">
-          Source API <code>/tokens/{TRO_ID}/accounts</code> — pas le contrat de vote.
-        </p>
-        {holdersErr && <p className="text-sm text-red-400 mb-2">{holdersErr}</p>}
+        <h2 className="text-lg font-bold mb-3">Top holders $TRO</h2>
         {loadingHolders ? (
-          <p className="text-gray-500 text-sm">Chargement…</p>
+          <p className="text-sm text-gray-500">Chargement…</p>
         ) : holders.length === 0 ? (
-          <p className="text-gray-500 text-sm">Aucun holder listé</p>
+          <p className="text-sm text-gray-500">Aucun holder listé.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs text-gray-500 border-b border-[#2a2a3a]">
-                  <th className="py-2 pr-2">#</th>
-                  <th className="py-2 pr-2">Wallet</th>
-                  <th className="py-2 text-right">Balance TRO</th>
+                <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
+                  <th className="text-left py-2">Adresse</th>
+                  <th className="text-right py-2">Balance</th>
                 </tr>
               </thead>
               <tbody>
-                {holders.map((h, i) => (
-                  <tr key={h.address} className="border-b border-[#1a1a24]">
-                    <td className="py-2 pr-2 text-gray-500">{i + 1}</td>
-                    <td className="py-2 pr-2 mono text-xs">
+                {holders.map(h => (
+                  <tr key={h.address} className="border-b border-[#2a2a3a]/40">
+                    <td className="py-2 mono text-xs">
                       <a
-                        href={LINKS.explorerAccount(h.address)}
+                        href={`${LINKS.explorer}/accounts/${h.address}`}
                         target="_blank"
                         rel="noreferrer"
                         className="hover:text-purple-300"
@@ -233,7 +211,7 @@ export default function DAO() {
                         {h.address.slice(0, 12)}…{h.address.slice(-6)}
                       </a>
                     </td>
-                    <td className="py-2 text-right font-semibold">
+                    <td className="py-2 text-right tabular-nums">
                       {h.balance.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                     </td>
                   </tr>
@@ -244,103 +222,38 @@ export default function DAO() {
         )}
       </div>
 
-      <div className="card mb-8 border-purple-500/20">
-        <p className="text-xs text-gray-500 mb-1">Balance LIA Ops — distincte de votre wallet Connect</p>
-        <p className="text-xl font-bold">{troBalanceLia.toFixed(2)} TRO</p>
-        <p className="text-xs text-gray-500">
-          ≈ ${troValueUsd.toFixed(2)} · NFT staking {nftStaked ? '✅' : '⏳'}{' '}
-          {nftStakedCount > 0 && `(${nftStakedCount})`}
-        </p>
-      </div>
-
       <div className="card mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="text-2xl">📋</span>
-          <div>
-            <h2 className="text-lg font-bold">Proposal (aperçu JSON)</h2>
-            <p className="text-sm text-gray-400">{proposalTitle}</p>
-          </div>
-        </div>
-        {pairs.length > 0 ? (
-          <div className="space-y-3">
-            {pairs.map(([pair, data]: [string, any]) => {
-              const votes = data.votes ?? 0
-              const pct = totalVotes > 0 ? (votes / totalVotes) * 100 : 0
-              const isWinning = pair === winningPair
-              return (
-                <div
-                  key={pair}
-                  className={`p-4 rounded-xl border ${
-                    isWinning ? 'border-yellow-500/40 bg-yellow-500/5' : 'border-[#2a2a3a] bg-[#111118]'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold">
-                      {pair} {isWinning && '🏆'}
-                    </span>
-                    <span className="text-sm text-gray-400">
-                      {pct.toFixed(1)}% ({Number(votes).toFixed(2)} TRO)
-                    </span>
-                  </div>
-                  <div className="h-2 rounded-full bg-[#0a0a0f] overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${Math.min(pct, 100)}%`,
-                        background: isWinning
-                          ? 'linear-gradient(90deg, #d97706, #dc2626)'
-                          : 'linear-gradient(90deg, #7c3aed, #2563eb)',
-                      }}
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {data.description} · Risque: {data.risk}
-                  </p>
-                </div>
-              )
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-8 text-gray-500">
-            <p>Aucune proposal JSON chargée</p>
-            <p className="text-sm mt-1">Les holders $TRO ci-dessus restent live via API</p>
-          </div>
+        <h2 className="text-lg font-bold mb-2">Proposal / votes (paper board)</h2>
+        <p className="text-sm text-gray-400 mb-2">
+          Status: {daoActive ? 'active' : 'idle'} · {proposalTitle}
+        </p>
+        <p className="text-xs text-gray-500">
+          Votes cast (board): {totalVotes} · winning: {winningPair || '—'} · reco: {recommendedPair}
+        </p>
+        {pairs.length > 0 && (
+          <ul className="mt-3 space-y-1 text-sm">
+            {pairs.map(([k, v]) => (
+              <li key={k} className="flex justify-between">
+                <span>{k}</span>
+                <span className="tabular-nums">{String(v)}</span>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 
-      <div className="card">
-        <h2 className="text-lg font-bold mb-2">Contrats (référence)</h2>
-        <p className="text-xs text-red-300/90 mb-4">
-          Audit on-chain : adresses governance / staking = <strong>comptes vides</strong> (0 EGLD).
-          Ne pas y envoyer de fonds tant que codeHash non vérifié.
+      <div className="card mb-8 text-sm text-gray-400 space-y-2">
+        <p>
+          Staking SC: TRO {troStaked ? 'on' : 'off'} · NFT {nftStaked ? `on (${nftStakedCount})` : 'off'}
         </p>
-        <div className="space-y-2">
-          {[
-            {
-              name: 'TRO Governance',
-              addr: 'erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8',
-            },
-            {
-              name: 'NFT Staking',
-              addr: 'erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl',
-            },
-          ].map(c => (
-            <div key={c.addr} className="flex items-center justify-between p-3 rounded-lg bg-[#111118]">
-              <div>
-                <p className="font-semibold text-sm">{c.name}</p>
-                <p className="text-xs mono text-gray-500">{c.addr.slice(0, 28)}…</p>
-              </div>
-              <a
-                href={LINKS.explorerAccount(c.addr)}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-secondary text-xs px-3 py-1.5"
-              >
-                Explorer
-              </a>
-            </div>
-          ))}
-        </div>
+        <p>
+          Wallet LIA TRO: {troBalanceLia} (~${troValueUsd.toFixed?.(2) ?? troValueUsd})
+        </p>
+        <p>
+          <Link to="/staking" className="text-purple-300 underline">
+            Yield TRO/EGLD → /staking
+          </Link>
+        </p>
       </div>
     </div>
   )
