@@ -1,0 +1,33 @@
+{
+  "collection_media": {
+    "xAiAx": {
+      "agent": "001",
+      "pack": "pulse",
+      "title": "Agent 001",
+      "class": "Crystal Sentinel",
+      "animation": "media/xAiAx-001.mp4",
+      "poster": "media/xAiAx-001-poster.svg",
+      "status": "reference_delivered"
+    },
+    "xAiAy": {
+      "agent": "002",
+      "pack": "yield",
+      "title": "Agent 002",
+      "class": "Harvest Core",
+      "animation": "media/xAiAy-002.mp4",
+      "poster": "media/xAiAy-002-poster.svg",
+      "status": "poster_ready_video_pending"
+    },
+    "xAiAs": {
+      "agent": "003",
+      "pack": "sentinel",
+      "title": "Agent 003",
+      "class": "Aegis Watch",
+      "animation": "media/xAiAs-003.mp4",
+      "poster": "media/xAiAs-003-poster.svg",
+      "status": "poster_ready_video_pending"
+    }
+  },
+  "note": "Agent 001 video reference exists off-repo. 002/003: generate IA media in same style (Yield=growth gold-green, Sentinel=cool blue shield).",
+  "updated": "2026-09-04"
+}
