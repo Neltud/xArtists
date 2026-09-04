@@ -1,7 +1,7 @@
 /** CTA carte → musée 3D (ville + lieux cliquables) */
 import { useNavigate } from 'react-router-dom'
 import { museumTravelHref } from '../../lib/travelBridge'
-import { VIRTUAL_MUSEUMS } from '../../lib/museumWorldCatalog'
+import { VIRTUAL_MUSEUMS, getMuseum } from '../../lib/museumWorldCatalog'
 import { museumIdForVenue, venuesForCity } from '../../lib/museumVenueMap'
 
 export default function MapMuseumEnter({
@@ -26,16 +26,21 @@ export default function MapMuseumEnter({
       museumId: museumIdForVenue(v, city),
     })) || []
 
-  // fusion unique par museumId
+  // musées catalog pour cette ville
+  const fromCatalog = VIRTUAL_MUSEUMS.filter(
+    m => m.city.toLowerCase() === city.toLowerCase()
+  ).map(m => ({ label: m.name, museumId: m.id }))
+
   const seen = new Set<string>()
-  const list = [...featured, ...fromData].filter(v => {
-    if (seen.has(v.museumId + v.label)) return false
-    seen.add(v.museumId + v.label)
+  const list = [...fromCatalog, ...featured, ...fromData].filter(v => {
+    const k = v.museumId
+    if (seen.has(k)) return false
+    seen.add(k)
     return true
   })
 
-  const defaultId = museumIdForVenue(city, city)
-  const defaultMuseum = VIRTUAL_MUSEUMS.find(m => m.id === defaultId)
+  const defaultId = list[0]?.museumId || museumIdForVenue(city, city)
+  const defaultMuseum = getMuseum(defaultId) || VIRTUAL_MUSEUMS.find(m => m.id === defaultId)
 
   const go = (museumId: string, label?: string) => {
     navigate(
@@ -52,27 +57,45 @@ export default function MapMuseumEnter({
   }
 
   return (
-    <div className="flex flex-col gap-3 pt-2">
-      {list.length > 0 && (
-        <div className="space-y-1.5">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-600">Musées 3D</p>
+    <div className="flex flex-col gap-3 pt-2 border-t border-white/10">
+      <div className="space-y-1.5">
+        <p className="text-[10px] uppercase tracking-[0.18em] text-rose-300/90">
+          Musées 3D · {city}
+        </p>
+        {list.length === 0 ? (
+          <p className="text-[11px] text-zinc-500">Aucune salle mappée — entrée xArtists.</p>
+        ) : (
           <div className="flex flex-wrap gap-1.5">
-            {list.map(v => (
-              <button
-                key={v.label + v.museumId}
-                type="button"
-                onClick={() => go(v.museumId, v.label)}
-                className="rounded-md border border-white/15 bg-black/40 hover:border-rose-400/50 hover:bg-rose-500/10 px-2.5 py-1.5 text-[11px] text-zinc-200 transition-colors"
-              >
-                {v.label}
-              </button>
-            ))}
+            {list.map(v => {
+              const meta = getMuseum(v.museumId)
+              return (
+                <button
+                  key={v.museumId}
+                  type="button"
+                  onClick={() => go(v.museumId, v.label)}
+                  className="rounded-xl border border-white/15 bg-gradient-to-br from-fuchsia-500/15 via-violet-500/10 to-cyan-500/5 hover:border-fuchsia-400/50 hover:shadow-[0_0_20px_rgba(232,121,249,0.15)] px-3 py-2 text-left transition-all max-w-[14rem]"
+                >
+                  <span className="block text-[12px] font-semibold text-white leading-tight">
+                    {v.label}
+                  </span>
+                  {meta?.tagline && (
+                    <span className="block text-[10px] text-zinc-500 mt-0.5 line-clamp-1">
+                      {meta.tagline}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      <button type="button" className="btn-primary text-xs self-start" onClick={() => go(defaultId)}>
-        Entrer · {defaultMuseum?.name || 'Musée 3D'} →
+      <button
+        type="button"
+        className="btn-primary text-xs self-start shadow-[0_0_24px_rgba(244,63,94,0.25)]"
+        onClick={() => go(defaultId)}
+      >
+        Entrer dans le musée 3D · {defaultMuseum?.name || 'xArtists'} →
       </button>
     </div>
   )
