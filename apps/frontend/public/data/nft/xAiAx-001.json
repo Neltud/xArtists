@@ -1,0 +1,25 @@
+{
+  "name": "Agent 001",
+  "description": "Entitlement NFT Pack Pulse (xArtists). Agent crystallin — bouclier hexagonal d’énergie. Accès signaux haute fréquence · board paper. Pas un fonds, pas de rendement promis.",
+  "collection": "xArtists AI Agents",
+  "ticker": "xAiAx",
+  "nonce": 1,
+  "attributes": [
+    { "trait_type": "Pack", "value": "Pulse" },
+    { "trait_type": "Agent", "value": "001" },
+    { "trait_type": "Artist", "value": "NT" },
+    { "trait_type": "Date", "value": "2027" },
+    { "trait_type": "Technique", "value": "IA generated" },
+    { "trait_type": "Class", "value": "Crystal Sentinel" },
+    { "trait_type": "Rarity", "value": "Genesis" },
+    { "trait_type": "Signal intensity", "value": 3 }
+  ],
+  "properties": {
+    "artist": "NT",
+    "date": "2027",
+    "technique": "IA generated",
+    "pack": "pulse",
+    "onSale": false
+  },
+  "external_url": "https://neltud.github.io/xArtists/#/my-packs"
+}
