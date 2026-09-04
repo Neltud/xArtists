@@ -1,4 +1,4 @@
-/** CTA carte → musée 3D (ville + lieux cliquables) */
+/** CTA carte → musée 3D (ville + lieux cliquables depuis le catalog) */
 import { useNavigate } from 'react-router-dom'
 import { museumTravelHref } from '../../lib/travelBridge'
 import { VIRTUAL_MUSEUMS, getMuseum } from '../../lib/museumWorldCatalog'
@@ -26,21 +26,19 @@ export default function MapMuseumEnter({
       museumId: museumIdForVenue(v, city),
     })) || []
 
-  // musées catalog pour cette ville
   const fromCatalog = VIRTUAL_MUSEUMS.filter(
     m => m.city.toLowerCase() === city.toLowerCase()
   ).map(m => ({ label: m.name, museumId: m.id }))
 
   const seen = new Set<string>()
   const list = [...fromCatalog, ...featured, ...fromData].filter(v => {
-    const k = v.museumId
-    if (seen.has(k)) return false
-    seen.add(k)
+    if (seen.has(v.museumId)) return false
+    seen.add(v.museumId)
     return true
   })
 
   const defaultId = list[0]?.museumId || museumIdForVenue(city, city)
-  const defaultMuseum = getMuseum(defaultId) || VIRTUAL_MUSEUMS.find(m => m.id === defaultId)
+  const defaultMuseum = getMuseum(defaultId)
 
   const go = (museumId: string, label?: string) => {
     navigate(
