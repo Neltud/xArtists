@@ -1,5 +1,32 @@
 # Changelog — xArtists
 
+## [0.23.0](https://github.com/Neltud/xArtists/compare/v0.22.0...v0.23.0) (2026-09-04)
+
+
+### Features
+
+* **market:** /market analysis page — F&G, assets, regime, news (sprint A) ([1cce918](https://github.com/Neltud/xArtists/commit/1cce918fc35589da96d2e6ca64428a3f74509b98))
+* **market+lia:** B–E analyse (corr, funding, vellum brief, events) + LIA ≥10 USDC + Soul $SO prep ([2f4699a](https://github.com/Neltud/xArtists/commit/2f4699accd27ec7937128da34a9328be5d538f0b))
+* **market:** UI B–E + LIA treasury panel + Soul prep docs ([f5094f2](https://github.com/Neltud/xArtists/commit/f5094f25727de5a3cafbbc5668fc3f3e816bb30a))
+* **market:** wire /market route + nav Analyse ([d877555](https://github.com/Neltud/xArtists/commit/d877555f7d895c06afae3bb1262b2e4bc7cce125))
+* **museum:** WebGL Three.js room renderer + CSS fallback ([e29f347](https://github.com/Neltud/xArtists/commit/e29f347ede0d3f68b988d424d28207a42d6630f6))
+* **payments:** Stripe + Paybox checkout wired for packs (1+3) ([455835b](https://github.com/Neltud/xArtists/commit/455835b95f3de218f455a33f21db1c937fcadcf0))
+
+
+### Bug Fixes
+
+* **demo:** 3D rooms for every museum (builtin blueprints + docs sync) · agents 3 packs only ([33214b1](https://github.com/Neltud/xArtists/commit/33214b1e59dcbab938856fd035296bbd9215f108))
+
+
+### Performance
+
+* **museum:** optimize 3D load — RAF via refs, texture queue, frustum cull, pause when hidden ([c37e648](https://github.com/Neltud/xArtists/commit/c37e6484632b308684532e3abba8da999d34d2e5))
+
+
+### Documentation
+
+* **marketing:** draft X 2026-09-04 15:24 packs IA ([0405d21](https://github.com/Neltud/xArtists/commit/0405d21b38c499a4db999c4af4dfa5e11d438f8c))
+
 ## [0.22.0](https://github.com/Neltud/xArtists/compare/v0.21.1...v0.22.0) (2026-09-04)
 
 
