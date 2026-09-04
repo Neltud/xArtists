@@ -23,15 +23,18 @@ import re
 import subprocess
 import tempfile
 import time
+import urllib.request
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 PROXY = os.getenv("LIA_MVX_PROXY") or os.getenv("PROXY") or "https://gateway.multiversx.com"
+API = os.getenv("LIA_MVX_API") or "https://api.multiversx.com"
 CHAIN = str(os.getenv("LIA_CHAIN_ID") or os.getenv("CHAIN") or "1")
 FEE_BPS = os.getenv("FEE_BPS", "300")
 WHICH = os.getenv("DEPLOY_CONTRACT", "all")
 DRY = os.getenv("VELLUM_DEPLOY_DRY", "0").strip() in ("1", "true", "TRUE", "yes")
+MIN_DEPLOYER_EGLD = float(os.getenv("LIA_DEPLOYER_MIN_EGLD", "0.25"))
 
 
 def _ts() -> str:
@@ -64,6 +67,47 @@ def _run(cmd: list[str], cwd: str | None = None) -> tuple[int, str]:
         flags=re.DOTALL,
     )
     return p.returncode, out
+
+
+def _http_json(url: str) -> dict[str, Any]:
+    req = urllib.request.Request(url, headers={"Accept": "application/json"})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return json.loads(r.read().decode())
+
+
+def _deployer_address(pem: str) -> str | None:
+    explicit = (os.getenv("LIA_DEPLOYER_ADDRESS") or "").strip()
+    if explicit.startswith("erd1"):
+        return explicit
+    rc, out = _run(["mxpy", "wallet", "pem-address", "--pem", pem])
+    if rc != 0:
+        return None
+    for token in out.split():
+        if token.startswith("erd1"):
+            return token.strip()
+    return None
+
+
+def _deployer_balance_gate(pem: str) -> dict[str, Any]:
+    addr = _deployer_address(pem)
+    if not addr:
+        return {
+            "ok": False,
+            "error": "unable to resolve deployer address from PEM",
+            "min_required_egld": MIN_DEPLOYER_EGLD,
+        }
+    data = _http_json(f"{API.rstrip('/')}/accounts/{addr}")
+    raw = data.get("balance") or "0"
+    try:
+        balance_egld = int(str(raw)) / 1e18
+    except (TypeError, ValueError):
+        balance_egld = 0.0
+    return {
+        "ok": balance_egld >= MIN_DEPLOYER_EGLD,
+        "address": addr,
+        "balance_egld": balance_egld,
+        "min_required_egld": MIN_DEPLOYER_EGLD,
+    }
 
 
 def _parse_address(log: str) -> str | None:
@@ -145,6 +189,23 @@ def run() -> dict[str, Any]:
     pem = _pem_path()
     created_tmp = tempfile.gettempdir() in pem or pem.startswith("/tmp")
     try:
+        deployer_gate = _deployer_balance_gate(pem)
+        if not DRY and not deployer_gate.get("ok"):
+            return {
+                "ok": False,
+                "ts": _ts(),
+                "dry": DRY,
+                "chain": CHAIN,
+                "proxy": PROXY,
+                "deployed_via": "vellum",
+                "error": "insufficient deployer EGLD or deployer account lookup failed",
+                "deployer": deployer_gate,
+                "next": [
+                    "Fund the LIA ops deployer wallet with enough EGLD",
+                    "Re-run Vellum paper/publication cycle",
+                    "Retry deploy only after funding + verify preconditions",
+                ],
+            }
         targets: list[str] = []
         if WHICH in ("all", "nft-marketplace"):
             targets.append("nft-marketplace")
@@ -178,7 +239,9 @@ def run() -> dict[str, Any]:
             "dry": DRY,
             "chain": CHAIN,
             "proxy": PROXY,
+            "deployed_via": "vellum",
             "fee_bps": FEE_BPS,
+            "deployer": deployer_gate,
             "targets": targets,
             "results": results,
             "contracts": data,

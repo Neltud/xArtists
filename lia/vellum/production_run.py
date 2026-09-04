@@ -17,6 +17,14 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
+STRICT_SEQUENCE = [
+    "paper_cycle",
+    "publish_public_artifacts",
+    "deploy_scs_if_requested_and_funded",
+    "verify_codehash_onchain",
+    "run_user_micro_smokes",
+    "enable_live_ops_flags",
+]
 
 
 def _ts() -> str:
@@ -281,9 +289,52 @@ def phase_mirror() -> dict[str, Any]:
     return publish()
 
 
-def phase_deploy_scs() -> dict[str, Any]:
+def phase_priority_gate(report: dict[str, Any]) -> dict[str, Any]:
+    phases = report.get("phases") or {}
+    pipeline = phases.get("pipeline") or {}
+    commander = phases.get("commander_refresh") or phases.get("commander") or {}
+    mirror = phases.get("mirror") or {}
+    gates = phases.get("gates") or {}
+    blockers: list[str] = []
+
+    if str(report.get("LIA_LIVE_TRADING", "0")).strip() in ("1", "true", "TRUE", "yes"):
+        blockers.append("LIA_LIVE_TRADING must stay 0 during Vellum publication/deploy")
+    if not bool(gates.get("ok")):
+        blockers.append("go_live_gates did not complete successfully")
+    if not bool(pipeline.get("ok", (pipeline.get("summary") or {}).get("ok"))):
+        blockers.append("paper pipeline failed before deploy step")
+    if not bool(commander.get("ok")):
+        blockers.append("commander status refresh failed")
+    if not bool(mirror.get("ok")):
+        blockers.append("public data mirror failed")
+
+    return {
+        "ok": not blockers,
+        "blockers": blockers,
+        "operator": "vellum",
+        "mode": "pre-mainnet",
+        "strict_sequence": STRICT_SEQUENCE,
+        "refuse_priority_actions_without_proofs": True,
+        "requires": {
+            "paper_cycle": True,
+            "public_artifacts": True,
+            "mainnet_only": str(report.get("CHAIN", "1")) == "1",
+            "live_trading_off": str(report.get("LIA_LIVE_TRADING", "0")) == "0",
+        },
+    }
+
+
+def phase_deploy_scs(priority_gate: dict[str, Any] | None = None) -> dict[str, Any]:
     if os.environ.get("VELLUM_DEPLOY_SCS", "0") != "1":
         return {"ok": True, "skipped": True, "reason": "VELLUM_DEPLOY_SCS!=1"}
+    gate = priority_gate or {}
+    if not gate.get("ok"):
+        return {
+            "ok": False,
+            "skipped": True,
+            "reason": "priority_gate_blocked",
+            "blockers": gate.get("blockers") or ["paper/publication prerequisites missing"],
+        }
     pem = os.environ.get("PEM") or os.environ.get("LIA_WALLET_PEM_PATH") or ""
     if not pem or not Path(pem).is_file():
         # Also allow PEM text via deploy node
@@ -306,8 +357,17 @@ def run() -> dict[str, Any]:
     report: dict[str, Any] = {
         "ts": _ts(),
         "module": "lia.vellum.production_run",
+        "operator": "vellum",
         "LIA_LIVE_TRADING": os.environ.get("LIA_LIVE_TRADING", "0"),
         "CHAIN": os.environ.get("CHAIN", "1"),
+        "release_doctrine": {
+            "publication_operator": "vellum",
+            "mode": "pre-mainnet",
+            "mainnet_only": True,
+            "keep_live_trading_off_until_micro_smokes": True,
+            "require_verified_codehash_before_live_ui": True,
+            "strict_sequence": STRICT_SEQUENCE,
+        },
         "phases": {},
     }
 
@@ -325,7 +385,8 @@ def run() -> dict[str, Any]:
     report["phases"]["paper_leg"] = phase_paper_leg(brain, risk)
     report["phases"]["commander_refresh"] = phase_commander_enrich()
     report["phases"]["mirror"] = phase_mirror()
-    report["phases"]["deploy_scs"] = phase_deploy_scs()
+    report["phases"]["priority_gate"] = phase_priority_gate(report)
+    report["phases"]["deploy_scs"] = phase_deploy_scs(report["phases"]["priority_gate"])
 
     pipe = report["phases"].get("pipeline") or {}
     leg = report["phases"].get("paper_leg") or {}
@@ -346,6 +407,7 @@ def run() -> dict[str, Any]:
         "paper_leg_skipped": bool(leg.get("skipped")),
         "paper_leg_verify": leg.get("verification"),
         "mirror_copied": len((report["phases"].get("mirror") or {}).get("copied") or []),
+        "priority_gate_ok": bool((report["phases"].get("priority_gate") or {}).get("ok")),
         "deploy_skipped": bool((report["phases"].get("deploy_scs") or {}).get("skipped")),
         "allow_live_trading": bool(
             (report["phases"].get("gates") or {}).get("allow_live_trading")
