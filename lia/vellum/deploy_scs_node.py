@@ -96,7 +96,15 @@ def _deployer_balance_gate(pem: str) -> dict[str, Any]:
             "error": "unable to resolve deployer address from PEM",
             "min_required_egld": MIN_DEPLOYER_EGLD,
         }
-    data = _http_json(f"{API.rstrip('/')}/accounts/{addr}")
+    try:
+        data = _http_json(f"{API.rstrip('/')}/accounts/{addr}")
+    except Exception as e:
+        return {
+            "ok": False,
+            "address": addr,
+            "error": f"balance_lookup_failed: {e}",
+            "min_required_egld": MIN_DEPLOYER_EGLD,
+        }
     raw = data.get("balance") or "0"
     try:
         balance_egld = int(str(raw)) / 1e18
