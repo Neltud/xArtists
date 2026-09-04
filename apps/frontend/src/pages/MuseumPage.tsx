@@ -1,5 +1,5 @@
 /**
- * Galerie — chaque musée ouvre une salle 3D WebGL (fallback CSS).
+ * Galerie — salles 3D jeu vidéo · tableaux accrochés aux murs.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -187,7 +187,7 @@ export default function MuseumPage() {
   useEffect(() => {
     preloadImages(
       visitFrames.map(f => f.image),
-      6
+      8
     )
   }, [museumId, visitFrames])
 
@@ -203,7 +203,8 @@ export default function MuseumPage() {
         </p>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Galerie</h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl">
-          Salles WebGL (Three.js) — murs, sol, œuvres texturées. WASD / pad tactile.
+          Musées en 3D — tableaux accrochés aux murs. Marchez comme dans un jeu : viser, sprinter,
+          inspecter.
         </p>
       </header>
 
@@ -254,10 +255,12 @@ export default function MuseumPage() {
             <div>
               <p className="text-base font-medium text-white">{museum.name}</p>
               <p className="text-[12px] text-zinc-500">
-                {museum.tagline} · {blueprint.name} · WebGL
+                {museum.tagline} · {blueprint.name} · visite 3D
               </p>
             </div>
-            <p className="text-[11px] text-zinc-600 hidden sm:block">WASD · E inspecter</p>
+            <p className="text-[11px] text-zinc-600 hidden sm:block">
+              Clic viser · WASD · E œuvre
+            </p>
           </div>
 
           {showHallLoader ? (
@@ -282,7 +285,7 @@ export default function MuseumPage() {
       {mode === 'mine' && (
         <div className="space-y-4">
           <p className="text-sm text-zinc-400 max-w-lg">
-            Vos NFT MultiversX dans le hall WebGL xArtists.
+            Vos NFT MultiversX accrochés dans le hall 3D xArtists.
           </p>
           {!connected ? (
             <div className="rounded-2xl border border-white/10 bg-zinc-950/60 px-6 py-12 text-center space-y-4">
@@ -310,7 +313,7 @@ export default function MuseumPage() {
       {mode === 'map' && (
         <div className="space-y-3">
           <p className="text-sm text-zinc-400">
-            Choisissez une ville — salle WebGL dans Explorer.
+            Ville → salle 3D dans Explorer.
           </p>
           <GuidedWorldTour />
           <p className="text-[11px] text-zinc-600">
