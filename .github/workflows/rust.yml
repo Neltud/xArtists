@@ -23,28 +23,72 @@ jobs:
         components: rustfmt, clippy
 
     - name: Cache Rust
-      uses: Swatinem/rust-cache@v2
+      uses: actions/cache@v4
       with:
-        workspaces: contracts/nft-staking,contracts/tro-staking
-        
-    - name: Check for Rust project
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          contracts/**/target/
+        key: rust-${{ runner.os }}-${{ hashFiles('contracts/**/Cargo.toml', 'contracts/**/Cargo.lock') }}
+
+    - name: Discover Rust crates
+      id: crates
       run: |
-        if [ ! -f Cargo.toml ]; then
-          echo "No Cargo.toml found in repo root. Skipping Rust build/test.";
-          exit 0;
+        set -euo pipefail
+        mapfile -t manifests < <(find contracts -mindepth 2 -maxdepth 2 -name Cargo.toml ! -path '*/meta/*' | sort)
+
+        selected=()
+        for manifest in "${manifests[@]}"; do
+          crate_dir="$(dirname "$manifest")"
+          if [ -f "$crate_dir/src/lib.rs" ] || [ -f "$crate_dir/src/main.rs" ]; then
+            selected+=("$manifest")
+          else
+            echo "Skipping incomplete crate: $manifest"
+          fi
+        done
+
+        if [ "${#selected[@]}" -eq 0 ]; then
+          echo "No complete Rust crates found."
+          exit 0
         fi
-        
+
+        {
+          echo 'manifests<<EOF'
+          printf '%s\n' "${selected[@]}"
+          echo 'EOF'
+        } >> "$GITHUB_OUTPUT"
+
+        printf 'Selected crates:\n%s\n' "${selected[@]}"
+
     - name: Format Check
-      run: cargo fmt --all -- --check
+      if: steps.crates.outputs.manifests != ''
+      run: |
+        while IFS= read -r manifest; do
+          cargo fmt --manifest-path "$manifest" --all -- --check
+        done <<< "${{ steps.crates.outputs.manifests }}"
       continue-on-error: true
       
     - name: Clippy Lint
-      run: cargo clippy --all-targets --all-features -- -D warnings
+      if: steps.crates.outputs.manifests != ''
+      run: |
+        while IFS= read -r manifest; do
+          cargo clippy --manifest-path "$manifest" --all-targets --all-features -- -D warnings
+        done <<< "${{ steps.crates.outputs.manifests }}"
       continue-on-error: true
       
     - name: Build
-      run: cargo build --release --verbose
+      if: steps.crates.outputs.manifests != ''
+      run: |
+        while IFS= read -r manifest; do
+          cargo build --manifest-path "$manifest" --release --verbose
+        done <<< "${{ steps.crates.outputs.manifests }}"
       
     - name: Run tests
-      run: cargo test --verbose --release
+      if: steps.crates.outputs.manifests != ''
+      run: |
+        while IFS= read -r manifest; do
+          cargo test --manifest-path "$manifest" --verbose --release
+        done <<< "${{ steps.crates.outputs.manifests }}"
       continue-on-error: true
