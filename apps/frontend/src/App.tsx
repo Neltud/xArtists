@@ -21,6 +21,7 @@ import { DEMO_MODE } from './config/demoMode'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Marketplace = lazy(() => import('./pages/Marketplace'))
+const MarketPage = lazy(() => import('./pages/MarketPage'))
 const Trading = lazy(() => import('./pages/Trading'))
 const Portfolio = lazy(() => import('./pages/Portfolio'))
 const DAO = lazy(() => import('./pages/DAO'))
@@ -121,6 +122,8 @@ export default function App() {
                 <Route path="/sim" element={<SimulationLab />} />
                 <Route path="/simulation" element={<SimulationLab />} />
                 <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/market" element={<MarketPage />} />
+                <Route path="/analyse" element={<Navigate to="/market" replace />} />
                 <Route path="/trading" element={<Trading />} />
                 <Route path="/studio" element={<ArtistStudio />} />
                 <Route path="/agents" element={<Agents />} />
@@ -175,6 +178,9 @@ export default function App() {
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-zinc-500">
               <a href="#/museum" className="hover:text-zinc-300 transition-colors">
                 Galerie
+              </a>
+              <a href="#/market" className="hover:text-zinc-300 transition-colors">
+                Analyse
               </a>
               <a href="#/agents" className="hover:text-zinc-300 transition-colors">
                 Packs

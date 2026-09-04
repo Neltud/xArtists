@@ -4,11 +4,11 @@ type NavItem = { to: string; label: string; icon: string; end?: boolean }
 
 const ITEMS: NavItem[] = [
   { to: '/', label: 'Home', icon: '◈', end: true },
-  { to: '/agents', label: 'Packs', icon: '◎' },
   { to: '/museum', label: 'Galerie', icon: '🖼' },
+  { to: '/market', label: 'Analyse', icon: '◐' },
+  { to: '/agents', label: 'Packs', icon: '◎' },
   { to: '/tours', label: 'Tours', icon: '◉' },
   { to: '/wallet', label: 'Wallet', icon: '◇' },
-  { to: '/marketplace', label: 'Market', icon: '▣' },
 ]
 
 export default function BottomNav() {
