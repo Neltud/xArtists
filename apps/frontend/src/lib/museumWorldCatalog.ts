@@ -1,9 +1,8 @@
 /**
- * Lieux carte → vrais musées + métadonnées œuvres enrichies.
+ * Lieux carte / guide → VRAIS musées + métadonnées œuvre exhaustives.
  */
 import type { FrameItem } from '../components/museum/MuseumCorridor'
 import { MET_WORKS } from '../data/metCatalog'
-import { enrichPublicDomainFrame } from './artworkMeta'
 
 export type VirtualMuseum = {
   id: string
@@ -24,6 +23,8 @@ export type CatalogWork = {
   museum?: string
   file?: string
   remote?: string | null
+  medium?: string
+  dimensions?: string
 }
 
 const PLACE_MUSEUMS: {
@@ -268,25 +269,64 @@ const PLACE_MUSEUMS: {
   },
 ]
 
+function guessTechnique(title: string, artist: string): string {
+  const t = `${title} ${artist}`.toLowerCase()
+  if (/bronze|marble|stone|sculpture|bust/.test(t)) return 'Sculpture'
+  if (/watercolor|aquarelle/.test(t)) return 'Aquarelle'
+  if (/drawing|dessin|chalk|crayon/.test(t)) return 'Dessin'
+  if (/print|etching|engraving|lithograph/.test(t)) return 'Estampe'
+  return 'Huile sur toile (typique) · Met Open Access'
+}
+
 function toFrame(w: CatalogWork, base: string, museumLabel: string): FrameItem {
   const local = w.file ? `${base}${w.file}` : undefined
   const image = w.remote || local || undefined
-  return enrichPublicDomainFrame({
+  const isSculpture = /sculpt|bronze|marble|bust/i.test(`${w.title} ${w.artist}`)
+  return {
     id: w.id,
     title: w.title,
     subtitle: [w.artist, w.year].filter(Boolean).join(' · '),
-    collection: museumLabel,
-    description: `Présenté dans l’esprit de ${museumLabel}. Image Met Open Access (PD). ${w.artist}${w.year ? `, ${w.year}` : ''}.`,
-    image,
-    type: 'Public domain',
-    href: w.remote || local,
     artist: w.artist,
     date: w.year,
+    collection: museumLabel,
+    description: `Présenté dans l’esprit de ${museumLabel}. Image Met Museum Open Access (domaine public). ${w.artist}${w.year ? `, ${w.year}` : ''}.`,
+    image,
+    type: isSculpture ? 'Sculpture' : 'Peinture',
+    kind: isSculpture ? 'sculpture' : 'painting',
     medium: 'physical',
-    kind: 'painting',
+    technique: w.medium || guessTechnique(w.title, w.artist),
+    dimensions: w.dimensions || 'Dimensions d’origine : voir source Met',
     onSale: false,
-    license: 'Met Open Access / domaine public',
-  })
+    priceLabel: 'Collection musée — pas en vente',
+    license: 'Public domain (Met Open Access)',
+    provenance: museumLabel,
+    href: w.remote || local,
+  }
+}
+
+/** Sculptures 3D procédurales (socle + forme) dans chaque musée */
+function proceduralSculptures(museumId: string, museumLabel: string): FrameItem[] {
+  const names = [
+    { title: 'Figure debout (interprétation 3D)', technique: 'Marbre synthétique / mesh' },
+    { title: 'Buste (interprétation 3D)', technique: 'Bronze virtuel' },
+    { title: 'Forme abstraite', technique: 'Pierre · géométrie' },
+  ]
+  return names.map((n, i) => ({
+    id: `sculpt-${museumId}-${i}`,
+    title: n.title,
+    artist: 'Atelier xArtists · interprétation',
+    date: '2026',
+    subtitle: 'Sculpture 3D',
+    collection: museumLabel,
+    kind: 'sculpture' as const,
+    medium: 'digital' as const,
+    technique: n.technique,
+    dimensions: '≈ 0,4 × 0,4 × 1,6 m (échelle salle)',
+    onSale: false,
+    priceLabel: 'Pas en vente — installation salle',
+    license: 'Démo xArtists',
+    description: 'Sculpture procédurale Three.js pour animer le volume de la salle (pas un scan d’œuvre classée).',
+  }))
 }
 
 function normalize(s: string): string {
@@ -336,16 +376,16 @@ function assignWorks(base: string): Map<string, FrameItem[]> {
     let i = 0
     while (arr.length < 3 && i < pool.length) {
       const src = pool[(p.id.length * 3 + i) % pool.length]
-      arr.push(
-        enrichPublicDomainFrame({
-          ...src,
-          id: `${src.id}-${p.id}-${i}`,
-          collection: p.name,
-          description: `Présenté dans l’esprit de ${p.name}. ${src.description || ''}`,
-        })
-      )
+      arr.push({
+        ...src,
+        id: `${src.id}-${p.id}-${i}`,
+        collection: p.name,
+        provenance: p.name,
+        description: `Présenté dans l’esprit de ${p.name}. ${src.description || ''}`,
+      })
       i++
     }
+    arr.push(...proceduralSculptures(p.id, p.name))
   }
 
   return byId
@@ -364,7 +404,7 @@ export function buildMuseumNetwork(baseUrl = '/'): VirtualMuseum[] {
       tagline: 'Premier musée — NFT mainnet',
       source: 'onchain',
       room: 'cyber',
-      works: [],
+      works: proceduralSculptures('xartists', 'Musée xArtists'),
     },
   ]
 
@@ -375,7 +415,7 @@ export function buildMuseumNetwork(baseUrl = '/'): VirtualMuseum[] {
       name: p.name,
       city: p.city,
       country: p.country,
-      tagline: `${p.tagline} · ${works.length} œuvres`,
+      tagline: `${p.tagline} · ${works.filter(w => w.kind !== 'sculpture').length} toiles + sculptures`,
       source: 'public_domain',
       room: p.room,
       works,
