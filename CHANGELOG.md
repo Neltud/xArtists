@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.28.2](https://github.com/Neltud/xArtists/compare/v0.28.1...v0.28.2) (2026-09-05)
+
+
+### Bug Fixes
+
+* **agents:** un seul lot Pulse·Yield·Sentinel — kill marketplace catalog doublon + catalogs ([7809b83](https://github.com/Neltud/xArtists/commit/7809b832bc57ebf2ecd8aeb6ce6bc8be23d70f74))
+
 ## [0.28.1](https://github.com/Neltud/xArtists/compare/v0.28.0...v0.28.1) (2026-09-05)
 
 
