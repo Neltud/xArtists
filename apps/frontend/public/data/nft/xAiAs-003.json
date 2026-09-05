@@ -1,0 +1,27 @@
+{
+  "name": "Agent 003",
+  "description": "Entitlement NFT Pack Sentinel (xArtists). Agent de veille — alertes risk · sleeve protection. Signaux sparses. Pas un fonds, pas d’exécution trading agressive.",
+  "collection": "xArtists AI Agents — Sentinel",
+  "ticker": "xAiAs",
+  "nonce": 1,
+  "attributes": [
+    { "trait_type": "Pack", "value": "Sentinel" },
+    { "trait_type": "Agent", "value": "003" },
+    { "trait_type": "Artist", "value": "NT" },
+    { "trait_type": "Date", "value": "2027" },
+    { "trait_type": "Technique", "value": "IA generated" },
+    { "trait_type": "Class", "value": "Aegis Watch" },
+    { "trait_type": "Rarity", "value": "Genesis" },
+    { "trait_type": "Signal intensity", "value": 1 },
+    { "trait_type": "Collection", "value": "xAiAs" }
+  ],
+  "properties": {
+    "artist": "NT",
+    "date": "2027",
+    "technique": "IA generated",
+    "pack": "sentinel",
+    "collection_ticker": "xAiAs",
+    "onSale": false
+  },
+  "external_url": "https://neltud.github.io/xArtists/#/my-packs"
+}

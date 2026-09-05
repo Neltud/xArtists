@@ -1,12 +1,14 @@
 /**
- * Galerie murale immersive (CSS 3D) — œuvre au mur, zoom, intention d'achat.
- * Pas de Three.js (CI-safe). Achat = intent paper / Guardian — jamais fake SUCCESS.
+ * Types + corridor CSS (fallback). Fiche œuvre exhaustive partagée WebGL.
  */
 import { useEffect, useMemo, useState } from 'react'
 import type { UserNft } from '../../hooks/useUserAccount'
 import { canListBuyNft } from '../../config/scStatus'
 import { useWallet } from '../../context/WalletContext'
 import { requestOpenConnect } from '../../lib/walletEvents'
+
+export type ArtworkKind = 'painting' | 'sculpture' | 'nft' | 'mixed' | 'unknown'
+export type ArtworkMedium = 'physical' | 'digital' | 'hybrid'
 
 export type FrameItem = {
   id: string
@@ -17,7 +19,19 @@ export type FrameItem = {
   collection?: string
   description?: string
   type?: string
+  /** Affichage prix */
   priceLabel?: string
+  artist?: string
+  date?: string
+  technique?: string
+  dimensions?: string
+  medium?: ArtworkMedium
+  kind?: ArtworkKind
+  onSale?: boolean
+  priceEur?: number
+  currency?: string
+  provenance?: string
+  license?: string
 }
 
 function thumb(n: UserNft): string | undefined {
@@ -36,6 +50,12 @@ export function framesFromUserNfts(nfts: UserNft[]): FrameItem[] {
     collection: n.collection,
     image: thumb(n),
     href: `https://explorer.multiversx.com/nfts/${n.identifier}`,
+    artist: 'Créateur on-chain',
+    medium: 'digital',
+    kind: 'nft',
+    technique: 'NFT MultiversX',
+    onSale: false,
+    license: 'On-chain ownership',
   }))
 }
 
@@ -57,6 +77,111 @@ function dispatchBuyIntent(frame: FrameItem) {
   )
 }
 
+/** Fiche œuvre complète (modal partagée) */
+export function ArtworkDossier({
+  frame,
+  allowBuy,
+  marketLive,
+  onBuy,
+  onClose,
+}: {
+  frame: FrameItem
+  allowBuy?: boolean
+  marketLive?: boolean
+  onBuy?: () => void
+  onClose: () => void
+}) {
+  const medium =
+    frame.medium === 'digital'
+      ? 'Œuvre numérique'
+      : frame.medium === 'hybrid'
+        ? 'Hybride (physique + numérique)'
+        : frame.medium === 'physical'
+          ? 'Œuvre physique'
+          : 'Non précisé'
+  const sale =
+    frame.onSale === true
+      ? frame.priceLabel ||
+        (frame.priceEur != null ? `${frame.priceEur} ${frame.currency || '€'}` : 'En vente')
+      : frame.onSale === false
+        ? 'Pas en vente'
+        : frame.priceLabel || '—'
+
+  const rows: { k: string; v: string }[] = [
+    { k: 'Titre', v: frame.title },
+    { k: 'Artiste', v: frame.artist || frame.subtitle || '—' },
+    { k: 'Date', v: frame.date || '—' },
+    { k: 'Technique', v: frame.technique || frame.type || '—' },
+    { k: 'Support', v: medium },
+    { k: 'Genre', v: frame.kind || '—' },
+    { k: 'Dimensions', v: frame.dimensions || '—' },
+    { k: 'Collection', v: frame.collection || '—' },
+    { k: 'Prix / statut', v: sale },
+    { k: 'Licence', v: frame.license || '—' },
+  ]
+  if (frame.provenance) rows.push({ k: 'Provenance', v: frame.provenance })
+
+  return (
+    <div
+      className="fixed inset-0 z-[90] flex items-end sm:items-center justify-center bg-black/85 backdrop-blur-sm p-3"
+      role="dialog"
+      aria-modal
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-lg rounded-2xl border border-white/15 bg-[#0c0c14] p-4 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex gap-3">
+          <div className="w-28 sm:w-36 shrink-0 aspect-[4/5] rounded-lg overflow-hidden border border-white/10 bg-black">
+            {frame.image ? (
+              <img src={frame.image} alt="" className="w-full h-full object-cover" decoding="async" />
+            ) : (
+              <div className="h-full flex items-center justify-center text-zinc-600 text-xs">
+                {frame.kind === 'sculpture' ? 'Sculpture' : '◈'}
+              </div>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-base font-semibold text-white leading-snug">{frame.title}</p>
+            <p className="text-[12px] text-zinc-400 mt-1">{frame.artist || frame.subtitle}</p>
+            {frame.description && (
+              <p className="text-xs text-zinc-500 mt-2 line-clamp-4 leading-relaxed">
+                {frame.description}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <dl className="grid grid-cols-1 gap-1.5 text-[12px] border-t border-white/[0.06] pt-3">
+          {rows.map(r => (
+            <div key={r.k} className="flex gap-2 justify-between">
+              <dt className="text-zinc-600 shrink-0">{r.k}</dt>
+              <dd className="text-zinc-300 text-right">{r.v}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className="flex flex-wrap gap-2 pt-1">
+          {allowBuy && frame.onSale !== false && (
+            <button type="button" className="btn-primary text-xs" onClick={onBuy}>
+              {marketLive ? 'Acheter…' : 'Intention d’achat'}
+            </button>
+          )}
+          {frame.href && (
+            <a href={frame.href} target="_blank" rel="noreferrer" className="btn-secondary text-xs">
+              Source ↗
+            </a>
+          )}
+          <button type="button" className="btn-ghost text-xs" onClick={onClose}>
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function MuseumCorridor({
   frames,
   theme = 'cyber',
@@ -67,8 +192,7 @@ export default function MuseumCorridor({
   emptyLabel?: string
 }) {
   const [focus, setFocus] = useState(0)
-  const [zoom, setZoom] = useState(false)
-  const [zoomScale, setZoomScale] = useState(1)
+  const [inspect, setInspect] = useState(false)
   const [buyMsg, setBuyMsg] = useState<string | null>(null)
   const list = useMemo(() => frames, [frames])
   const f = list[Math.min(focus, Math.max(0, list.length - 1))] || null
@@ -77,34 +201,9 @@ export default function MuseumCorridor({
 
   useEffect(() => {
     setFocus(0)
-    setZoom(false)
-    setZoomScale(1)
+    setInspect(false)
     setBuyMsg(null)
   }, [frames])
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setZoom(false)
-        setZoomScale(1)
-      }
-      if (e.key === 'ArrowLeft') setFocus(x => Math.max(0, x - 1))
-      if (e.key === 'ArrowRight') setFocus(x => Math.min(list.length - 1, x + 1))
-      if (e.key === '+' || e.key === '=') setZoomScale(s => Math.min(3, s + 0.25))
-      if (e.key === '-') setZoomScale(s => Math.max(1, s - 0.25))
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [list.length])
-
-  const wallTone =
-    theme === 'sanctuary'
-      ? 'from-[#2a1f18] via-[#1a1210] to-[#0c0a08]'
-      : theme === 'globe'
-        ? 'from-[#0c1a2e] via-[#0a1220] to-[#060810]'
-        : theme === 'void'
-          ? 'from-[#12121a] via-[#0a0a10] to-black'
-          : 'from-[#16161f] via-[#0e0e16] to-[#08080c]'
 
   const onBuy = () => {
     if (!f) return
@@ -114,259 +213,44 @@ export default function MuseumCorridor({
       return
     }
     dispatchBuyIntent(f)
-    if (marketLive) {
-      setBuyMsg(
-        'Intention BUY_NFT émise → Guardian. Signature wallet requise pour toute TX réelle (SC live).'
-      )
-    } else {
-      setBuyMsg(
-        'Intention paper enregistrée (⌘K / Trading). Marketplace SC non live — aucun SUCCESS simulé, aucun prélèvement.'
-      )
-    }
+    setBuyMsg(
+      marketLive
+        ? 'Intention BUY_NFT → Guardian. Signature requise.'
+        : 'Intention paper — SC market non live.'
+    )
   }
 
   if (!list.length) {
     return (
-      <div
-        className={`relative min-h-[320px] rounded-2xl border border-white/10 bg-gradient-to-b ${wallTone} flex items-center justify-center`}
-      >
-        <p className="text-sm text-zinc-500 px-4 text-center">{emptyLabel}</p>
+      <div className="min-h-[280px] rounded-2xl border border-white/10 flex items-center justify-center text-sm text-zinc-500">
+        {emptyLabel}
       </div>
     )
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
-      <div
-        className={`relative h-[420px] sm:h-[520px] bg-gradient-to-b ${wallTone}`}
-        style={{ perspective: '1200px' }}
-      >
-        <div
-          className="absolute inset-x-0 top-0 h-[18%] opacity-80"
-          style={{
-            background:
-              'linear-gradient(to bottom, rgba(0,0,0,0.55), transparent), repeating-linear-gradient(90deg, transparent, transparent 64px, rgba(255,255,255,0.03) 65px)',
-          }}
-        />
-        <div
-          className="absolute inset-x-0 bottom-0 h-[28%]"
-          style={{
-            background:
-              'linear-gradient(to top, rgba(0,0,0,0.85), transparent), repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 56px)',
-            transform: 'rotateX(72deg)',
-            transformOrigin: 'bottom center',
-          }}
-        />
-        <div
-          className="absolute inset-x-[6%] top-[12%] bottom-[22%] rounded-sm border border-white/[0.06]"
-          style={{
-            background:
-              theme === 'sanctuary'
-                ? 'linear-gradient(180deg, #3a2a22 0%, #241812 100%)'
-                : 'linear-gradient(180deg, #1c1c28 0%, #12121a 100%)',
-            boxShadow: 'inset 0 0 80px rgba(0,0,0,0.45)',
-          }}
-        >
-          <div className="absolute inset-x-4 top-6 h-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          {f && (
-            <button
-              type="button"
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[42%] group"
-              style={{ width: 'min(42%, 220px)' }}
-              onClick={() => {
-                setZoom(true)
-                setZoomScale(1.2)
-              }}
-              aria-label={`Voir ${f.title} en grand`}
-            >
-              <div
-                className="relative aspect-[4/5] p-[7%] bg-gradient-to-br from-zinc-200/20 via-zinc-800 to-black border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.55)] group-hover:border-cyan-400/40 transition-colors"
-                style={{
-                  boxShadow:
-                    '0 24px 40px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.08)',
-                }}
-              >
-                <div className="absolute inset-[7%] bg-black overflow-hidden">
-                  {f.image ? (
-                    <img
-                      src={f.image}
-                      alt={f.title}
-                      className="h-full w-full object-cover"
-                      loading="eager"
-                    />
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center text-3xl opacity-40">
-                      🖼
-                    </div>
-                  )}
-                </div>
-              </div>
-              <p className="mt-2 text-center text-[10px] text-zinc-400 truncate">{f.title}</p>
-              <p className="text-center text-[9px] text-cyan-300/70 opacity-0 group-hover:opacity-100 transition-opacity">
-                Cliquer pour zoomer
-              </p>
-            </button>
-          )}
+    <div className="relative overflow-hidden rounded-2xl border border-white/10">
+      <div className="p-4 space-y-3 bg-zinc-950">
+        <p className="text-sm text-white font-medium">{f?.title}</p>
+        <p className="text-[11px] text-zinc-500">{f?.artist || f?.subtitle}</p>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" className="btn-secondary text-xs" onClick={() => setInspect(true)}>
+            Fiche complète
+          </button>
+          <button type="button" className="btn-primary text-xs" onClick={onBuy}>
+            Intention d’achat
+          </button>
         </div>
-        <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 px-2 overflow-x-auto">
-          {list.slice(Math.max(0, focus - 4), focus + 5).map((item, idx) => {
-            const realIdx = Math.max(0, focus - 4) + idx
-            const active = realIdx === focus
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setFocus(realIdx)}
-                className={`shrink-0 w-11 h-14 rounded border overflow-hidden ${
-                  active
-                    ? 'border-cyan-400/60 ring-1 ring-cyan-400/30'
-                    : 'border-white/10 opacity-70'
-                }`}
-              >
-                {item.image ? (
-                  <img src={item.image} alt="" className="w-full h-full object-cover" loading="lazy" />
-                ) : (
-                  <span className="text-[10px] text-zinc-600">·</span>
-                )}
-              </button>
-            )
-          })}
-        </div>
+        {buyMsg && <p className="text-[11px] text-amber-200">{buyMsg}</p>}
       </div>
-
-      <div className="border-t border-white/10 bg-black/70 px-3 py-3 sm:px-4 space-y-2">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm sm:text-base text-white font-semibold truncate">{f?.title}</p>
-            <p className="text-[11px] text-zinc-500 mono truncate">
-              {f?.collection || f?.subtitle}
-              {f?.type ? ` · ${f.type}` : ''}
-              {f?.priceLabel ? ` · ${f.priceLabel}` : ''}
-            </p>
-            {f?.description && (
-              <p className="text-xs text-zinc-400 mt-1 line-clamp-2 max-w-xl">{f.description}</p>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-2 shrink-0 items-center">
-            <button
-              type="button"
-              className="btn-secondary text-[11px] py-1 px-2"
-              disabled={focus <= 0}
-              onClick={() => setFocus(x => Math.max(0, x - 1))}
-            >
-              ←
-            </button>
-            <span className="text-[11px] text-zinc-500 mono">
-              {focus + 1}/{list.length}
-            </span>
-            <button
-              type="button"
-              className="btn-secondary text-[11px] py-1 px-2"
-              disabled={focus >= list.length - 1}
-              onClick={() => setFocus(x => Math.min(list.length - 1, x + 1))}
-            >
-              →
-            </button>
-            <button
-              type="button"
-              className="btn-secondary text-[11px] py-1 px-2"
-              onClick={() => {
-                setZoom(true)
-                setZoomScale(1.25)
-              }}
-            >
-              Zoom
-            </button>
-            {f?.href && (
-              <a
-                href={f.href}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-secondary text-[11px] py-1 px-2"
-              >
-                Explorer ↗
-              </a>
-            )}
-            <button type="button" className="btn-primary text-[11px] py-1 px-2.5" onClick={onBuy}>
-              {marketLive ? 'Acheter…' : 'Intention d’achat'}
-            </button>
-          </div>
-        </div>
-        {buyMsg && (
-          <p className="text-[11px] text-amber-200/90 leading-relaxed border border-amber-500/25 bg-amber-500/10 rounded-lg px-2.5 py-1.5">
-            {buyMsg}
-          </p>
-        )}
-        <p className="text-[10px] text-zinc-600">
-          ← → naviguer · Zoom / + − · Esc ferme · achat = intent paper tant que SC market non vérifié
-        </p>
-      </div>
-
-      {zoom && f && (
-        <div
-          className="fixed inset-0 z-[90] flex items-center justify-center bg-black/85 backdrop-blur-sm p-4"
-          role="dialog"
-          aria-modal
-          aria-label="Zoom œuvre"
-          onClick={() => {
-            setZoom(false)
-            setZoomScale(1)
-          }}
-        >
-          <div className="relative max-w-3xl w-full" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-2 gap-2">
-              <p className="text-sm text-white font-medium truncate">{f.title}</p>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  className="btn-secondary text-[11px] py-1"
-                  onClick={() => setZoomScale(s => Math.max(1, s - 0.25))}
-                >
-                  −
-                </button>
-                <button
-                  type="button"
-                  className="btn-secondary text-[11px] py-1"
-                  onClick={() => setZoomScale(s => Math.min(3, s + 0.25))}
-                >
-                  +
-                </button>
-                <button
-                  type="button"
-                  className="btn-secondary text-[11px] py-1"
-                  onClick={() => {
-                    setZoom(false)
-                    setZoomScale(1)
-                  }}
-                >
-                  Fermer
-                </button>
-              </div>
-            </div>
-            <div className="overflow-auto max-h-[75vh] rounded-xl border border-white/15 bg-black">
-              <div
-                className="origin-center transition-transform duration-200 mx-auto"
-                style={{ transform: `scale(${zoomScale})`, width: '100%' }}
-              >
-                {f.image ? (
-                  <img src={f.image} alt={f.title} className="w-full h-auto object-contain" />
-                ) : (
-                  <p className="text-zinc-500 p-12 text-center">Pas d’image</p>
-                )}
-              </div>
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button type="button" className="btn-primary text-xs" onClick={onBuy}>
-                {marketLive ? 'Acheter…' : 'Intention d’achat (paper)'}
-              </button>
-              {f.href && (
-                <a href={f.href} target="_blank" rel="noreferrer" className="btn-secondary text-xs">
-                  Fiche Explorer
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
+      {inspect && f && (
+        <ArtworkDossier
+          frame={f}
+          allowBuy
+          marketLive={marketLive}
+          onBuy={onBuy}
+          onClose={() => setInspect(false)}
+        />
       )}
     </div>
   )

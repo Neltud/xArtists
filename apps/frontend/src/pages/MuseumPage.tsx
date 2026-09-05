@@ -1,6 +1,5 @@
 /**
- * Galerie unique — 3D · collection wallet · carte.
- * /gallery → redirect. Vocabulaire grand public.
+ * Galerie — salles 3D jeu vidéo · tableaux accrochés aux murs.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -8,7 +7,7 @@ import {
   framesFromUserNfts,
   type FrameItem,
 } from '../components/museum/MuseumCorridor'
-import MuseumGameHall from '../components/museum/MuseumGameHall'
+import MuseumHall from '../components/museum/MuseumHall'
 import GuidedWorldTour from '../components/museum/GuidedWorldTour'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
@@ -28,11 +27,15 @@ import {
   VIRTUAL_MUSEUMS,
   type VirtualMuseum,
 } from '../lib/museumWorldCatalog'
+import { preloadImages } from '../lib/imagePreload'
+import { loadBlueprint } from '../lib/loadBlueprint'
+import { builtinBlueprintForMuseum } from '../lib/builtinBlueprints'
+import type { RoomBlueprint } from '../lib/roomBlueprint'
 
 type Mode = 'explore' | 'mine' | 'map'
 
 function preferImage(n: NFT): string | undefined {
-  const thumb = n.media?.[0]?.thumbnailUrl
+  const thumb = n.media?.[0]?.thumbnailUrl as string | undefined
   const full = n.url || n.media?.[0]?.url
   if (thumb && /^https?:\/\//i.test(thumb)) return thumb
   if (full && /^https?:\/\//i.test(full)) return full
@@ -52,33 +55,37 @@ function framesFromNfts(nfts: NFT[]): FrameItem[] {
   }))
 }
 
+let catalogPromise: Promise<{ collections: CollectionData[]; nfts: NFT[] }> | null = null
+
 async function loadFullCatalog(): Promise<{ collections: CollectionData[]; nfts: NFT[] }> {
-  const urls = [
-    DATA_URL,
-    'https://raw.githubusercontent.com/Neltud/xArtists/main/apps/frontend/public/data/xartists_collections.json',
-  ]
-  for (const u of urls) {
-    try {
-      const r = await fetch(`${u}${u.includes('?') ? '&' : '?'}t=${Date.now()}`, {
-        cache: 'no-store',
-      })
-      if (!r.ok) continue
-      const j = (await r.json()) as CollectionsFile
-      const cols = j.collections || []
-      if (!cols.length) continue
-      const nfts = cols.flatMap(c =>
-        (c.nfts || []).map(n => ({
-          ...n,
-          collection: n.collection || c.identifier,
-          collection_name: n.collection_name || c.name,
-        }))
-      )
-      return { collections: cols, nfts }
-    } catch {
-      /* next */
+  if (catalogPromise) return catalogPromise
+  catalogPromise = (async () => {
+    const urls = [
+      DATA_URL,
+      `${import.meta.env.BASE_URL || '/'}data/xartists_collections.json`,
+    ]
+    for (const u of urls) {
+      try {
+        const r = await fetch(u, { cache: 'force-cache' })
+        if (!r.ok) continue
+        const j = (await r.json()) as CollectionsFile
+        const cols = j.collections || []
+        if (!cols.length) continue
+        const nfts = cols.flatMap(c =>
+          (c.nfts || []).map(n => ({
+            ...n,
+            collection: n.collection || c.identifier,
+            collection_name: n.collection_name || c.name,
+          }))
+        )
+        return { collections: cols, nfts }
+      } catch {
+        /* next */
+      }
     }
-  }
-  return { collections: [], nfts: [] }
+    return { collections: [], nfts: [] }
+  })()
+  return catalogPromise
 }
 
 const MODES: { id: Mode; label: string }[] = [
@@ -100,6 +107,9 @@ export default function MuseumPage() {
   const [allNfts, setAllNfts] = useState<NFT[]>([])
   const [catalogLoading, setCatalogLoading] = useState(true)
   const [travelBanner, setTravelBanner] = useState<string | null>(null)
+  const [blueprint, setBlueprint] = useState<RoomBlueprint>(() =>
+    builtinBlueprintForMuseum('xartists')
+  )
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const museum = museums.find(m => m.id === museumId) || museums[0] || VIRTUAL_MUSEUMS[0]
@@ -135,23 +145,55 @@ export default function MuseumPage() {
       q || (typeof window !== 'undefined' ? window.location.search : '')
     )
     const cityQ = sp.get('city')
+    const museumQ = sp.get('museum')
     const travel = consumeTravelDestination()
-    if (travel?.city || cityQ) {
-      const city = travel?.city || cityQ || ''
-      const mid = museumIdForCity(city)
-      setTravelBanner(mid ? `Direction ${city}` : `Direction ${city}`)
+    const city = travel?.city || cityQ || ''
+    const mid =
+      travel?.museumId || museumQ || (city ? museumIdForCity(city) : null) || null
+    if (city || mid) {
+      setTravelBanner(
+        city
+          ? mid
+            ? `Direction ${city} · ${mid}`
+            : `Direction ${city}`
+          : mid
+            ? `Salle ${mid}`
+            : null
+      )
       setMuseumId(mid || 'xartists')
       setMode('explore')
     }
   }, [])
 
+  useEffect(() => {
+    setBlueprint(builtinBlueprintForMuseum(museumId))
+    let c = false
+    loadBlueprint(museumId).then(bp => {
+      if (!c && bp?.walls?.length) setBlueprint(bp)
+    })
+    return () => {
+      c = true
+    }
+  }, [museumId])
+
   const xartistsFrames = useMemo(() => {
     const withImg = allNfts.filter(n => preferImage(n))
-    return framesFromNfts((withImg.length ? withImg : allNfts).slice(0, 48))
+    const list = (withImg.length ? withImg : allNfts).slice(0, 24)
+    return framesFromNfts(list)
   }, [allNfts])
 
   const visitFrames = museum.source === 'onchain' ? xartistsFrames : museum.works
+
+  useEffect(() => {
+    preloadImages(
+      visitFrames.map(f => f.image),
+      8
+    )
+  }, [museumId, visitFrames])
+
   const myFrames = useMemo(() => framesFromUserNfts(account.nfts || []), [account.nfts])
+  const showHallLoader = museum.source === 'onchain' && catalogLoading && !visitFrames.length
+  const mineBlueprint = useMemo(() => builtinBlueprintForMuseum('xartists'), [])
 
   return (
     <div className="animate-fade-in pb-12 max-w-5xl mx-auto">
@@ -161,8 +203,8 @@ export default function MuseumPage() {
         </p>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Galerie</h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl">
-          Une seule expérience : promenez-vous dans les salles, ouvrez votre collection, ou voyagez
-          de ville en ville.
+          Musées en 3D — tableaux accrochés aux murs. Marchez comme dans un jeu : viser, sprinter,
+          inspecter.
         </p>
       </header>
 
@@ -212,21 +254,24 @@ export default function MuseumPage() {
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
               <p className="text-base font-medium text-white">{museum.name}</p>
-              <p className="text-[12px] text-zinc-500">{museum.tagline}</p>
+              <p className="text-[12px] text-zinc-500">
+                {museum.tagline} · {blueprint.name} · visite 3D
+              </p>
             </div>
             <p className="text-[11px] text-zinc-600 hidden sm:block">
-              Déplacez-vous · touchez une œuvre pour l’agrandir
+              Clic viser · WASD · E œuvre
             </p>
           </div>
 
-          {museum.source === 'onchain' && catalogLoading ? (
+          {showHallLoader ? (
             <div className="rounded-2xl border border-white/10 bg-zinc-950/80 h-[min(70vh,520px)] flex items-center justify-center">
               <p className="text-sm text-zinc-500">Préparation de la salle…</p>
             </div>
           ) : (
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
-              <MuseumGameHall
+              <MuseumHall
                 key={museumId}
+                blueprint={blueprint}
                 frames={visitFrames}
                 room={museum.room}
                 allowBuy={museum.source === 'onchain'}
@@ -240,7 +285,7 @@ export default function MuseumPage() {
       {mode === 'mine' && (
         <div className="space-y-4">
           <p className="text-sm text-zinc-400 max-w-lg">
-            Vos NFT MultiversX dans le même espace immersif.
+            Vos NFT MultiversX accrochés dans le hall 3D xArtists.
           </p>
           {!connected ? (
             <div className="rounded-2xl border border-white/10 bg-zinc-950/60 px-6 py-12 text-center space-y-4">
@@ -253,7 +298,8 @@ export default function MuseumPage() {
             <p className="text-sm text-zinc-500">Lecture de la collection…</p>
           ) : (
             <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
-              <MuseumGameHall
+              <MuseumHall
+                blueprint={mineBlueprint}
                 frames={myFrames}
                 room="dark"
                 allowBuy={false}
@@ -267,7 +313,7 @@ export default function MuseumPage() {
       {mode === 'map' && (
         <div className="space-y-3">
           <p className="text-sm text-zinc-400">
-            Choisissez une ville — la salle s’ouvre dans Explorer.
+            Ville → salle 3D dans Explorer.
           </p>
           <GuidedWorldTour />
           <p className="text-[11px] text-zinc-600">

@@ -9,6 +9,7 @@ import {
   fetchCityExhibitions,
   loadExhibitionFeed,
 } from '../services/artExhibitions'
+import MapMuseumEnter from './museum/MapMuseumEnter'
 
 export type ArtLocation = {
   id: string
@@ -22,7 +23,6 @@ export type ArtLocation = {
   region?: string
 }
 
-/** Minimal Leaflet typings (CDN load — no npm @types/leaflet required). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type LeafletNS = any
 
@@ -294,7 +294,6 @@ export default function ArtWorldMap() {
     }
   }, [])
 
-  // Switch basemap — never call LayerGroup.bringToFront (breaks some CDN builds)
   useEffect(() => {
     const L = LRef.current
     const map = mapRef.current
@@ -513,7 +512,7 @@ export default function ArtWorldMap() {
             {basemap === 'color' && 'Couleurs CARTO Voyager'}
             {basemap === 'satellite' && 'Imagerie satellite Esri'}
             {basemap === 'dark' && 'Mode nuit CARTO'}
-            {' · '}clic marqueur = expos
+            {' · '}clic marqueur = expos · Entrer = musée
           </p>
         </div>
       </div>
@@ -607,33 +606,30 @@ export default function ArtWorldMap() {
             </p>
           )}
 
+          <MapMuseumEnter
+            id={selected.id}
+            city={selected.city}
+            country={selected.country}
+            focus={selected.focus}
+          />
+
           <div className="divider pt-2">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[10px] uppercase tracking-wider text-rose-300/90 font-semibold">
-                Expositions · temps réel
+                Expositions
               </p>
-              {expoLoading && (
-                <span className="text-[10px] text-zinc-500 animate-pulse">Chargement…</span>
-              )}
+              {expoLoading && <span className="text-[10px] text-zinc-500">Chargement…</span>}
             </div>
-
-            {expoError && <p className="text-xs text-rose-400 mb-2">{expoError}</p>}
-
-            {!expoLoading && expos.length === 0 && (
-              <p className="text-xs text-zinc-500">
-                Aucune expo indexée pour {selected.city}. Fiche lieux + focus disponibles.
-              </p>
+            {expoError && <p className="text-[11px] text-rose-400">{expoError}</p>}
+            {!expoLoading && !expoError && expos.length === 0 && (
+              <p className="text-[11px] text-zinc-500">Aucune expo listée pour cette ville.</p>
             )}
-
             <ul className="space-y-2">
               {expos.map(ex => (
-                <li
-                  key={ex.id}
-                  className="rounded-xl border border-white/[0.06] bg-black/25 px-3 py-2.5"
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-2">
+                <li key={ex.id || ex.title} className="rounded-lg border border-white/10 bg-black/20 px-3 py-2">
+                  <div className="flex gap-2 justify-between">
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-white leading-snug">{ex.title}</p>
+                      <p className="text-sm text-white font-medium truncate">{ex.title}</p>
                       <p className="text-[11px] text-zinc-400 mt-0.5">{ex.venue}</p>
                       <p className="text-[10px] text-zinc-600 mt-0.5 mono">
                         {ex.start} → {ex.end}

@@ -1,0 +1,125 @@
+/**
+ * Contrat d’import plan→salle pour la galerie 3D.
+ */
+
+export type Vec2 = { x: number; y: number }
+
+export type WallSeg = {
+  id: string
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+  thickness: number
+  height: number
+  material?: 'stone' | 'plaster' | 'wood' | 'glass' | 'metal' | 'concrete'
+}
+
+export type Opening = {
+  id: string
+  wallId: string
+  type: 'door' | 'window'
+  offset: number
+  width: number
+  height: number
+  sill: number
+}
+
+export type ArtAnchor = {
+  id: string
+  wallId?: string
+  x: number
+  y: number
+  facing: number
+  height?: number
+  frameId?: string
+  plaque?: string
+}
+
+export type RoomMeta = {
+  id: string
+  name: string
+  polygon: Vec2[]
+  floor?: 'stone' | 'wood' | 'marble' | 'concrete' | 'tile'
+  note?: string
+}
+
+export type RoomBlueprint = {
+  id: string
+  name: string
+  description?: string
+  wallHeight: number
+  wallThickness: number
+  walls: WallSeg[]
+  openings: Opening[]
+  rooms?: RoomMeta[]
+  artAnchors?: ArtAnchor[]
+  layoutFallback?: string
+  schema?: string
+  source?: string
+  details?: {
+    era?: string
+    city?: string
+    capacity?: number
+    lighting?: 'daylight' | 'spot' | 'museum' | 'neon'
+    ambient?: string
+  }
+}
+
+/** Tous les lieux catalogue → fichier JSON (enrichissement optionnel). */
+export const MUSEUM_BLUEPRINT_REF: Record<
+  string,
+  { source: 'json'; ref: string }
+> = {
+  xartists: { source: 'json', ref: 'cyber-grid' },
+  louvre: { source: 'json', ref: 'gallery-corridor' },
+  prado: { source: 'json', ref: 'gallery-corridor' },
+  nglondon: { source: 'json', ref: 'gallery-corridor' },
+  kmska: { source: 'json', ref: 'gallery-corridor' },
+  gemaldegalerie: { source: 'json', ref: 'gallery-corridor' },
+  vatican: { source: 'json', ref: 'gallery-corridor' },
+  hermitage: { source: 'json', ref: 'gallery-corridor' },
+  tate: { source: 'json', ref: 'gallery-corridor' },
+  orsay: { source: 'json', ref: 'glass-nave' },
+  met: { source: 'json', ref: 'glass-nave' },
+  bozar: { source: 'json', ref: 'glass-nave' },
+  gulbenkian: { source: 'json', ref: 'glass-nave' },
+  mrbab: { source: 'json', ref: 'glass-nave' },
+  rijks: { source: 'json', ref: 'cabinet' },
+  mauritshuis: { source: 'json', ref: 'cabinet' },
+  vangogh: { source: 'json', ref: 'cabinet' },
+  ngprague: { source: 'json', ref: 'cabinet' },
+  mnw: { source: 'json', ref: 'cabinet' },
+  soares: { source: 'json', ref: 'cabinet' },
+  mfabudapest: { source: 'json', ref: 'cabinet' },
+  uffizi: { source: 'json', ref: 'rotunda' },
+  pinacoteca: { source: 'json', ref: 'rotunda' },
+  brera: { source: 'json', ref: 'rotunda' },
+  kunsthistorisches: { source: 'json', ref: 'rotunda' },
+  accademia: { source: 'json', ref: 'rotunda' },
+  mnac: { source: 'json', ref: 'rotunda' },
+}
+
+export const BLEND_STUDIO_REPO = 'https://github.com/Neltud/blend-glade-wolf-grove'
+
+export function blueprintAreaM2(bp: RoomBlueprint): number {
+  const poly = bp.rooms?.[0]?.polygon
+  if (!poly || poly.length < 3) {
+    let minX = Infinity,
+      minY = Infinity,
+      maxX = -Infinity,
+      maxY = -Infinity
+    for (const w of bp.walls) {
+      minX = Math.min(minX, w.x1, w.x2)
+      minY = Math.min(minY, w.y1, w.y2)
+      maxX = Math.max(maxX, w.x1, w.x2)
+      maxY = Math.max(maxY, w.y1, w.y2)
+    }
+    return Math.max(0, (maxX - minX) * (maxY - minY))
+  }
+  let a = 0
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    a += poly[j].x * poly[i].y - poly[i].x * poly[j].y
+  }
+  return Math.abs(a) / 2
+}

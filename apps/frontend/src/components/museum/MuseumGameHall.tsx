@@ -1,15 +1,20 @@
 /**
- * Salle 3D CSS — murs / sol / plafond, exploration mobile + desktop.
+ * Salle 3D CSS — architecture différente par musée (layout plan).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FrameItem } from './MuseumCorridor'
 import { canListBuyNft } from '../../config/scStatus'
 import { useWallet } from '../../context/WalletContext'
 import { requestOpenConnect } from '../../lib/walletEvents'
+import { preloadImages } from '../../lib/imagePreload'
+import { artPosition, layoutForMuseum } from '../../lib/museumLayouts'
 import InfoTip from '../InfoTip'
 
 const STEP = 0.05
 const LOOK_MAX = 32
+const MAX_FRAMES = 20
+const RENDER_AHEAD = 2.4
+const RENDER_BEHIND = 0.15
 
 type RoomTheme = 'cyber' | 'stone' | 'gold' | 'white' | 'dark'
 
@@ -87,19 +92,23 @@ export default function MuseumGameHall({
   frames,
   emptyLabel = 'Aucune œuvre',
   room = 'cyber',
+  museumId = 'xartists',
   allowBuy = true,
 }: {
   frames: FrameItem[]
   emptyLabel?: string
   room?: RoomTheme
+  museumId?: string
   allowBuy?: boolean
 }) {
-  const list = useMemo(() => frames.slice(0, 36), [frames])
-  const maxZ = Math.max(1.2, list.length * 0.5)
+  const layout = useMemo(() => layoutForMuseum(museumId), [museumId])
+  const list = useMemo(() => frames.slice(0, MAX_FRAMES), [frames])
+  const maxZ = Math.max(1.2, list.length * layout.artSpacing)
   const [z, setZ] = useState(0.12)
   const [lookY, setLookY] = useState(0)
   const [inspect, setInspect] = useState<FrameItem | null>(null)
   const [buyMsg, setBuyMsg] = useState<string | null>(null)
+  const [broken, setBroken] = useState<Record<string, boolean>>({})
   const keys = useRef<Record<string, boolean>>({})
   const hold = useRef<Record<string, boolean>>({})
   const raf = useRef(0)
@@ -108,20 +117,34 @@ export default function MuseumGameHall({
   const theme = ROOM[room] || ROOM.cyber
   const lightText = room === 'white'
 
+  const sideInset = Math.round(((1 - layout.naveWidth) / 2) * 100)
+
   const nearest = useMemo(() => {
     if (!list.length) return null
     let best = list[0]
     let bestD = Infinity
     list.forEach((item, i) => {
-      const artZ = (i + 1) * (maxZ / (list.length + 1))
+      const { artZ } = artPosition(layout, i, list.length, maxZ)
       const d = Math.abs(artZ - z)
       if (d < bestD) {
         bestD = d
         best = item
       }
     })
-    return bestD < 0.5 ? best : null
-  }, [list, z, maxZ])
+    return bestD < 0.55 ? best : null
+  }, [list, z, maxZ, layout])
+
+  useEffect(() => {
+    const urls: string[] = []
+    list.forEach((item, i) => {
+      const { artZ } = artPosition(layout, i, list.length, maxZ)
+      const rel = artZ - z
+      if (rel >= RENDER_BEHIND - 0.3 && rel <= RENDER_AHEAD + 0.8 && item.image) {
+        urls.push(item.image)
+      }
+    })
+    preloadImages(urls, 8)
+  }, [list, z, maxZ, layout])
 
   const setKey = (k: string, on: boolean) => {
     keys.current[k] = on
@@ -174,14 +197,14 @@ export default function MuseumGameHall({
     if (!f) return
     if (!connected) {
       requestOpenConnect()
-      setBuyMsg('Connecte ton wallet pour une intention d’achat.')
+      setBuyMsg('Connectez votre wallet pour une intention d’achat.')
       return
     }
     dispatchBuyIntent(f)
     setBuyMsg(
       marketLive
-        ? 'Intention BUY_NFT → Guardian. Signature wallet pour TX réelle.'
-        : 'Intention paper — SC market non live. Pas de SUCCESS simulé.'
+        ? 'Intention d’achat envoyée — signature wallet requise.'
+        : 'Intention paper — marché on-chain pas encore live.'
     )
   }, [inspect, nearest, connected, marketLive, allowBuy])
 
@@ -197,7 +220,7 @@ export default function MuseumGameHall({
     <div className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500">
         <span className="inline-flex items-center gap-1">
-          Visite virtuelle
+          {layout.label}
           <InfoTip k="museumGame" />
         </span>
         <span className="mono text-zinc-600 text-[10px]">{Math.round((z / maxZ) * 100)}%</span>
@@ -208,7 +231,7 @@ export default function MuseumGameHall({
         style={{ height: 'min(72vh, 520px)', background: theme.fog }}
         tabIndex={0}
         role="application"
-        aria-label="Galerie 3D mobile et desktop"
+        aria-label={`Galerie 3D · ${layout.label}`}
       >
         <div
           className="absolute inset-0"
@@ -218,32 +241,40 @@ export default function MuseumGameHall({
           }}
         >
           <div
-            className="absolute inset-x-0 top-0 h-[22%]"
+            className="absolute inset-x-0 top-0"
             style={{
+              height: `${Math.round(layout.ceilingScale * 100)}%`,
               background: theme.ceiling,
-              transform: 'perspective(700px) rotateX(-55deg)',
+              transform: `perspective(700px) rotateX(-${layout.wallPitch}deg)`,
               transformOrigin: 'center top',
             }}
           />
           <div
-            className="absolute left-0 top-[10%] bottom-[18%] w-[22%]"
+            className="absolute left-0 top-[10%] bottom-[18%]"
             style={{
+              width: `${sideInset}%`,
               background: theme.wall,
-              transform: 'perspective(800px) rotateY(58deg)',
+              transform: `perspective(800px) rotateY(${layout.wallYaw}deg)`,
               transformOrigin: 'left center',
             }}
           />
           <div
-            className="absolute right-0 top-[10%] bottom-[18%] w-[22%]"
+            className="absolute right-0 top-[10%] bottom-[18%]"
             style={{
+              width: `${sideInset}%`,
               background: theme.wall,
-              transform: 'perspective(800px) rotateY(-58deg)',
+              transform: `perspective(800px) rotateY(-${layout.wallYaw}deg)`,
               transformOrigin: 'right center',
             }}
           />
           <div
-            className="absolute left-[18%] right-[18%] top-[12%] bottom-[22%]"
-            style={{ background: theme.wall, boxShadow: 'inset 0 0 60px rgba(0,0,0,0.35)' }}
+            className="absolute top-[12%] bottom-[22%]"
+            style={{
+              left: `${sideInset}%`,
+              right: `${sideInset}%`,
+              background: theme.wall,
+              boxShadow: 'inset 0 0 60px rgba(0,0,0,0.35)',
+            }}
           />
           <div
             className="absolute inset-x-0 bottom-0 h-[28%]"
@@ -251,21 +282,21 @@ export default function MuseumGameHall({
               background: `linear-gradient(to top, rgba(0,0,0,0.5), transparent),
                 repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 40px),
                 ${theme.floor}`,
-              transform: 'perspective(700px) rotateX(58deg)',
+              transform: `perspective(700px) rotateX(${layout.wallPitch + 3}deg)`,
               transformOrigin: 'center bottom',
             }}
           />
 
           {list.map((item, i) => {
-            const artZ = (i + 1) * (maxZ / (list.length + 1))
+            const { artZ, side, xBias } = artPosition(layout, i, list.length, maxZ)
             const rel = artZ - z
-            if (rel < -0.2 || rel > 2.6) return null
+            if (rel < RENDER_BEHIND || rel > RENDER_AHEAD) return null
             const scale = Math.max(0.32, 1.2 - rel * 0.38)
             const opacity = Math.max(0.12, 1 - rel * 0.38)
-            const side = i % 2 === 0 ? -1 : 1
-            const xPct = 50 + side * (16 + rel * 5)
+            const xPct = 50 + side * (layout.artSide + rel * 5) + xBias
             const yPct = 40 - rel * 2.5
             const isNear = nearest?.id === item.id
+            const imgBroken = broken[item.id]
             return (
               <button
                 key={item.id}
@@ -274,7 +305,7 @@ export default function MuseumGameHall({
                 style={{
                   left: `${xPct}%`,
                   top: `${yPct}%`,
-                  width: `${Math.round(92 * scale)}px`,
+                  width: `${Math.round(layout.frameScale * scale)}px`,
                   opacity,
                   zIndex: Math.round(120 - rel * 35),
                   transform: 'translate(-50%, -50%)',
@@ -283,26 +314,39 @@ export default function MuseumGameHall({
               >
                 <div
                   className={`relative aspect-[4/5] p-[5%] border-2 ${
-                    isNear ? 'border-cyan-400/55' : lightText ? 'border-stone-600/40' : 'border-white/20'
+                    isNear
+                      ? 'border-cyan-400/55'
+                      : lightText
+                        ? 'border-stone-600/40'
+                        : 'border-white/20'
                   }`}
                   style={{
                     background: lightText
                       ? 'linear-gradient(145deg, #f5f0e6, #ddd5c8)'
                       : 'linear-gradient(145deg, #2a2a32, #121218)',
-                    boxShadow: isNear ? '0 0 28px rgba(34,211,238,0.3)' : '0 14px 28px rgba(0,0,0,0.45)',
+                    boxShadow: isNear
+                      ? '0 0 28px rgba(34,211,238,0.3)'
+                      : '0 14px 28px rgba(0,0,0,0.45)',
                   }}
                 >
                   <div className="absolute inset-[5%] bg-black overflow-hidden">
-                    {item.image ? (
+                    {item.image && !imgBroken ? (
                       <img
                         src={item.image}
                         alt={item.title}
                         className="h-full w-full object-cover"
-                        loading={rel < 1.2 ? 'eager' : 'lazy'}
+                        loading={rel < 1.0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        fetchPriority={isNear ? 'high' : 'low'}
+                        width={160}
+                        height={200}
                         draggable={false}
+                        onError={() => setBroken(b => ({ ...b, [item.id]: true }))}
                       />
                     ) : (
-                      <div className="h-full w-full flex items-center justify-center opacity-40">🖼</div>
+                      <div className="h-full w-full flex items-center justify-center opacity-40 text-xs px-1 text-center">
+                        {item.title.slice(0, 24)}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -312,7 +356,11 @@ export default function MuseumGameHall({
         </div>
 
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className={`w-2.5 h-2.5 border rounded-full ${lightText ? 'border-stone-700/40' : 'border-white/30'}`} />
+          <div
+            className={`w-2.5 h-2.5 border rounded-full ${
+              lightText ? 'border-stone-700/40' : 'border-white/30'
+            }`}
+          />
         </div>
 
         <div className="absolute top-2 left-2 right-2 flex justify-between gap-2 pointer-events-none">
@@ -341,7 +389,7 @@ export default function MuseumGameHall({
           </div>
           <button
             type="button"
-            className="rounded-full border border-cyan-400/40 bg-cyan-500/20 text-cyan-50 text-xs font-semibold px-4 py-2.5 active:scale-95 shadow-lg"
+            className="rounded-full border border-cyan-400/40 bg-cyan-500/20 text-cyan-50 text-xs font-semibold px-4 py-2.5 active:scale-95 shadow-lg disabled:opacity-40"
             disabled={!nearest}
             onClick={() => nearest && setInspect(nearest)}
           >
@@ -351,7 +399,7 @@ export default function MuseumGameHall({
       </div>
 
       {buyMsg && (
-        <p className="text-[11px] text-amber-200/90 border border-amber-500/25 bg-amber-500/10 rounded-lg px-2.5 py-1.5">
+        <p className="text-[11px] text-zinc-400 border border-white/10 bg-white/[0.03] rounded-lg px-2.5 py-1.5">
           {buyMsg}
         </p>
       )}
@@ -369,15 +417,23 @@ export default function MuseumGameHall({
           >
             <div className="flex gap-3">
               <div className="w-24 sm:w-36 shrink-0 aspect-[4/5] rounded-lg overflow-hidden border border-white/10 bg-black">
-                {inspect.image ? (
-                  <img src={inspect.image} alt="" className="w-full h-full object-cover" />
+                {inspect.image && !broken[inspect.id] ? (
+                  <img
+                    src={inspect.image}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    decoding="async"
+                    fetchPriority="high"
+                  />
                 ) : (
-                  <div className="h-full flex items-center justify-center opacity-40">🖼</div>
+                  <div className="h-full flex items-center justify-center opacity-40">◈</div>
                 )}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-base font-semibold text-white">{inspect.title}</p>
-                <p className="text-[11px] text-zinc-500 mt-1">{inspect.subtitle || inspect.collection}</p>
+                <p className="text-[11px] text-zinc-500 mt-1">
+                  {inspect.subtitle || inspect.collection}
+                </p>
                 {inspect.description && (
                   <p className="text-xs text-zinc-400 mt-2 line-clamp-5">{inspect.description}</p>
                 )}
@@ -390,10 +446,15 @@ export default function MuseumGameHall({
                 </button>
               )}
               {!allowBuy && (
-                <span className="text-[10px] text-zinc-500 self-center">Domaine public — visite libre</span>
+                <span className="text-[10px] text-zinc-500 self-center">Visite libre</span>
               )}
               {inspect.href && (
-                <a href={inspect.href} target="_blank" rel="noreferrer" className="btn-secondary text-xs">
+                <a
+                  href={inspect.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary text-xs"
+                >
                   Source ↗
                 </a>
               )}

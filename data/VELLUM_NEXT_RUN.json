@@ -1,11 +1,19 @@
 {
-  "version": "2026-08-03",
+  "version": "2026-09-05",
   "network": "mainnet",
   "LIA_LIVE_TRADING": 0,
+  "supernova": {
+    "epoch": 2233,
+    "at_utc": "2026-09-10T17:45:00Z",
+    "round": 32157661,
+    "config": "v2.0.6.0",
+    "doc": "docs/SUPERNOVA_EPOCH_2233.md"
+  },
   "preflight": [
     "No PEM in frontend",
-    "CHAIN=1 only",
-    "PINATA_JWT optional for media pin"
+    "CHAIN=1 only for mainnet ops",
+    "LIA_LIVE_TRADING=0 until explicit GO",
+    "Supernova checklist if date >= 2026-09-10T17:45:00Z"
   ],
   "steps": [
     {
@@ -19,34 +27,44 @@
       "writes": ["data/lia_board.json"]
     },
     {
-      "id": "hatom",
-      "cmd": "python -c \"from lia.venues.hatom import publish_hatom; publish_hatom()\"",
-      "optional": true
-    },
-    {
-      "id": "media_status",
-      "cmd": "python -c \"from lia.media.storage import storage_status; import json; print(json.dumps(storage_status(), indent=2))\""
-    },
-    {
       "id": "orchestrator_dry",
       "cmd": "python -m lia.vellum.orchestrator",
-      "env": {"LIA_LIVE_TRADING": "0"}
+      "env": { "LIA_LIVE_TRADING": "0" }
     },
     {
       "id": "git_push_data",
       "note": "Commit data/*.json so Pages/raw.githubusercontent update"
+    },
+    {
+      "id": "sc_devnet",
+      "note": "Actions → Deploy Smart Contracts → chain=D → verify",
+      "blocked_by": "LIA_WALLET_PEM secret"
+    },
+    {
+      "id": "sc_mainnet",
+      "note": "chain=1 only after devnet OK + codeHash verify",
+      "cmds": [
+        "python scripts/verify_marketplace_codehash.py",
+        "bash scripts/post_deploy_verify.sh --query-views"
+      ]
+    },
+    {
+      "id": "sdk_dapp_post_supernova",
+      "note": "After epoch 2233: WC login + read TRO + optional micro-TX",
+      "doc": "docs/SUPERNOVA_EPOCH_2233.md"
     }
   ],
   "blocked_until": {
-    "agents_buy": "data/contracts.json agents_marketplace non-null",
-    "nft_bid_live": "redeploy nft-marketplace with placeBid",
-    "signing": "window.__xartistsSendTx bootstrap"
+    "agents_buy": "data/contracts.json agents_marketplace non-null + codeHash",
+    "nft_bid_live": "marketplace placeBid verified",
+    "auto_trading": "LIA_LIVE_TRADING=1 + Guardian policy"
   },
   "read_docs": [
-    "docs/DAPP_FULL_AUDIT.md",
-    "docs/DAPP_COMPOSITION.md",
-    "docs/MEDIA_STORAGE.md",
-    "docs/MXPY_MINT_NFT.md",
-    "docs/USER_JOURNEYS.md"
+    "docs/VELLUM_BUILD_CYCLE_RUNBOOK.md",
+    "docs/DEPLOY_VIA_VELLUM.md",
+    "docs/SECRETS_AND_DEPLOY.md",
+    "docs/SC_DEPLOY_COMMANDS.md",
+    "docs/SUPERNOVA_EPOCH_2233.md",
+    "docs/VELLUM_ASSISTANT_PROMPT.md"
   ]
 }
