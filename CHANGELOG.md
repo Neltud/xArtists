@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.28.1](https://github.com/Neltud/xArtists/compare/v0.28.0...v0.28.1) (2026-09-05)
+
+
+### Documentation
+
+* Supernova epoch 2233 + exhaustive Vellum build-cycle runbook + demo banner ([3fa3a3e](https://github.com/Neltud/xArtists/commit/3fa3a3e07717ef430ebc854dfc24abf0218d074b))
+
 ## [0.28.0](https://github.com/Neltud/xArtists/compare/v0.27.0...v0.28.0) (2026-09-04)
 
 
