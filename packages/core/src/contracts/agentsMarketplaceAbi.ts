@@ -4,8 +4,7 @@
  */
 
 export const AGENTS_MARKETPLACE_ADDRESS =
-  (typeof import.meta !== 'undefined' &&
-    (import.meta as ImportMeta & { env?: Record<string, string> }).env?.VITE_AGENTS_MARKETPLACE_ADDRESS) ||
+  process.env.VITE_AGENTS_MARKETPLACE_ADDRESS ||
   '' // set after mxpy deploy
 
 export const AGENTS_MARKETPLACE_ABI = {
@@ -37,7 +36,7 @@ export const AGENTS_MARKETPLACE_ABI = {
       payable: false,
       readonly: true,
       inputs: [{ name: 'listing_id', type: 'u64' }],
-      outputs: [{ name: 'listing', type: 'Option<AgentListing>' }],
+      outputs: [{ name: 'listing', type: 'OptionalValue<AgentListing>' }],
     },
     listingCount: {
       name: 'listingCount',

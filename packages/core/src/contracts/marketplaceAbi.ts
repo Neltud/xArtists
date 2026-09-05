@@ -4,8 +4,7 @@
  */
 
 export const MARKETPLACE_ADDRESS =
-  (typeof import.meta !== 'undefined' &&
-    (import.meta as ImportMeta & { env?: Record<string, string> }).env?.VITE_MARKETPLACE_ADDRESS) ||
+  process.env.VITE_MARKETPLACE_ADDRESS ||
   'erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t';
 
 export const MARKETPLACE_ABI = {

@@ -62,7 +62,10 @@ def _touch_status() -> None:
 def mirror_files(names: Iterable[str] | None = None) -> dict:
     names = list(names or CRITICAL)
     _touch_status()
-    warp_sync = update_warps()
+    try:
+        warp_sync = update_warps()
+    except Exception as exc:
+        warp_sync = {"ok": False, "error": str(exc)}
     copied: list[str] = []
     missing: list[str] = []
     for name in names:

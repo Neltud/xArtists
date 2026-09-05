@@ -159,7 +159,7 @@ jobs:
             if [ -n "${VITE_AGENTS_MARKETPLACE_ADDRESS:-}" ]; then
               echo "- Agents env: \`VITE_AGENTS_MARKETPLACE_ADDRESS=${VITE_AGENTS_MARKETPLACE_ADDRESS}\`"
             fi
-            echo "- `data/contracts.json` has been updated by the deploy helper."
+            echo '- `data/contracts.json` has been updated by the deploy helper.'
             echo "- Re-run **Deploy xArtists Exclusive** so GitHub Pages rebuilds with the latest address data."
           } >> "$GITHUB_STEP_SUMMARY"
 
