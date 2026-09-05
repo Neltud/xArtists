@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.28.3](https://github.com/Neltud/xArtists/compare/v0.28.2...v0.28.3) (2026-09-05)
+
+
+### Documentation
+
+* **marketing:** draft X 2026-09-05 — $TRO / écosystème ([a457f2c](https://github.com/Neltud/xArtists/commit/a457f2cf412ac9425bb9dc05e1c550012def6e8d))
+
 ## [0.28.2](https://github.com/Neltud/xArtists/compare/v0.28.1...v0.28.2) (2026-09-05)
 
 
