@@ -7,6 +7,7 @@ export const LIA_WALLET =
 
 export const LINKS = {
   github: 'https://github.com/Neltud/xArtists',
+  discord: 'https://discord.gg/QkJgzeyWG',
   dapp: 'https://neltud.github.io/xArtists/',
   explorer: 'https://explorer.multiversx.com',
   explorerAccount: (addr: string) => `https://explorer.multiversx.com/accounts/${addr}`,

@@ -194,6 +194,14 @@ export default function App() {
                 Mentions légales
               </a>
               <a
+                href={LINKS.discord}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-indigo-300 transition-colors"
+              >
+                Discord
+              </a>
+              <a
                 href={LINKS.github}
                 target="_blank"
                 rel="noreferrer"
