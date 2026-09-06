@@ -1,20 +1,16 @@
 {
   "name": "xartists-discord-bot",
-  "version": "1.0.0",
-  "description": "Discord Bot for xArtists - LIA AI, Wallet Verify, NFT Trackers",
+  "version": "1.1.0",
+  "description": "xArtists Discord — autorole, wallet verify, LIA stubs",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
-    "discord.js": "^14.15.3",
-    "@multiversx/sdk-core": "^13.0.0",
-    "@multiversx/sdk-network-providers": "^13.0.0",
-    "dotenv": "^16.4.5",
-    "axios": "^1.7.2"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.4"
+    "discord.js": "^14.16.0",
+    "dotenv": "^16.4.5"
   }
 }
