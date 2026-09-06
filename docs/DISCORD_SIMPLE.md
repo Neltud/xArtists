@@ -1,9 +1,9 @@
 # Discord xArtists — intégration simple
 
 **Invite :** https://discord.gg/QkJgzeyWG  
-**DApp :** lien dans footer + accueil (`LINKS.discord`)
+**DApp :** lien footer + accueil (`LINKS.discord`)
 
-## Structure serveur (réelle)
+## Structure serveur
 
 | Catégorie | Salons |
 |-----------|--------|
@@ -15,16 +15,21 @@
 | Vocal | Vocal-Fr · Vocal-En |
 | Admin | `#admins` · `#sortants` · `#modérateur` |
 
-## Côté dApp (fait)
+## Côté dApp
 
-- Footer global → Discord  
-- Home → bouton + carte communauté  
-- Pas de bot embarqué dans le front
+- Footer + Home → invite Discord  
+- Pas de bot dans le front  
+- **Pas** d’URL webhook en `VITE_*`
 
-## Côté Discord (optionnel, manuel)
+## Webhook (ops)
 
-1. Message épinglé dans `#welcome` avec le lien dApp : https://neltud.github.io/xArtists/  
-2. `#rules` : paper-first, pas de conseil financier, wallets = user only  
-3. Rôles auto = plus tard si besoin (`docs/DISCORD_AUTO_ROLES.md`)
+Voir **[DISCORD_WEBHOOK.md](./DISCORD_WEBHOOK.md)**.
 
-Rien d’autre n’est requis pour l’intégration.
+1. Salon → Intégrations → Webhooks → copier l’URL  
+2. `export DISCORD_WEBHOOK_URL='…'`  
+3. `python scripts/discord_webhook_notify.py --text "test"`
+
+## Optionnel
+
+- Message épinglé `#welcome` avec https://neltud.github.io/xArtists/  
+- Rôles auto : `docs/DISCORD_AUTO_ROLES.md`
