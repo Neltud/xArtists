@@ -1,9 +1,11 @@
 /**
- * Home — haut de gamme, zéro redondance (pas de double CTA Galerie/Musée, pas de strips ops).
+ * Home — haut de gamme, zéro redondance.
+ * Discord = lien simple (communauté), pas de bot dans l’UI.
  */
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import PersonaWelcome from '../components/PersonaWelcome'
+import { LINKS } from '../config/links'
 
 const PILLARS = [
   {
@@ -74,6 +76,14 @@ export default function Dashboard() {
             <Link to="/agents" className="btn-secondary !px-6 !py-3">
               Voir les packs
             </Link>
+            <a
+              href={LINKS.discord}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-secondary !px-6 !py-3"
+            >
+              Discord
+            </a>
           </div>
         </div>
       </section>
@@ -96,6 +106,21 @@ export default function Dashboard() {
 
       {!persona && <PersonaWelcome />}
 
+      <a
+        href={LINKS.discord}
+        target="_blank"
+        rel="noreferrer"
+        className="block rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.06] px-5 py-4 transition-colors hover:border-indigo-400/35"
+      >
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-300/80">
+          Communauté
+        </p>
+        <p className="mt-1 text-[15px] font-semibold text-white">Rejoindre le Discord xArtists</p>
+        <p className="mt-1 text-[13px] text-zinc-500 leading-relaxed">
+          #welcome · #rules · #general-fr / #general-en · annonces & support
+        </p>
+      </a>
+
       <footer className="flex flex-wrap gap-x-5 gap-y-2 text-[12px] text-zinc-600">
         <Link to="/wallet" className="hover:text-zinc-300 transition-colors">
           Wallet
@@ -106,6 +131,14 @@ export default function Dashboard() {
         <Link to="/my-packs" className="hover:text-zinc-300 transition-colors">
           My Packs
         </Link>
+        <a
+          href={LINKS.discord}
+          target="_blank"
+          rel="noreferrer"
+          className="hover:text-indigo-300 transition-colors"
+        >
+          Discord
+        </a>
         <Link to="/legal" className="hover:text-zinc-300 transition-colors">
           Mentions légales
         </Link>
