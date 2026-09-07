@@ -5,11 +5,18 @@ export const DEMO_MODE = true
 export const DEMO_LABEL = 'DÉMO'
 
 export const DEMO_BULLETS = [
-  'Démonstration : exploration libre, wallet en lecture, packs en mode paper.',
-  'Galerie 3D unifiée (lieux + votre collection).',
-  'Packs Pulse · Yield · Sentinel — pas un fonds, pas de rendement promis.',
-  'Art Tours = culture, hors packs agents.',
-  'Paiements carte : Stripe / Paybox quand configurés côté serveur.',
+  'Exploration libre · wallet en lecture · packs en mode paper.',
+  'Galerie 3D + collection · tours culture séparés des packs.',
+  '3 packs seulement : Pulse · Yield · Sentinel — pas un fonds.',
+  'Trading LIA = board paper. Aucun mouvement de fonds auto.',
+] as const
+
+/** Parcours démo recommandé (ordre). */
+export const DEMO_PATH = [
+  { to: '/museum', label: 'Galerie', hint: 'Visite 3D' },
+  { to: '/agents', label: 'Packs', hint: '3 accès IA' },
+  { to: '/tours', label: 'Tours', hint: 'Carte art' },
+  { to: '/wallet', label: 'Wallet', hint: 'Connecter' },
 ] as const
 
 export const SOFT_LAUNCH_PATH = [

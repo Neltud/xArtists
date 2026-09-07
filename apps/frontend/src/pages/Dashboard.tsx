@@ -1,44 +1,32 @@
 /**
- * Home — haut de gamme, zéro redondance.
- * Discord = lien simple (communauté), pas de bot dans l’UI.
+ * Home démo — parcours clair, zéro jargon ops.
  */
 import { Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import PersonaWelcome from '../components/PersonaWelcome'
 import { LINKS } from '../config/links'
+import { DEMO_PATH } from '../config/demoMode'
 
 const PILLARS = [
   {
     to: '/museum',
     label: 'Galerie',
-    title: 'Visite immersif',
-    body: 'Salles 3D, collection wallet, musées-ville.',
+    title: 'Visite immersive',
+    body: 'Salles 3D, musées-ville, ta collection wallet.',
   },
   {
     to: '/agents',
     label: 'Packs',
     title: 'Pulse · Yield · Sentinel',
-    body: 'Accès agents — un parcours d’achat unique.',
+    body: 'Trois accès agents — un seul parcours d’achat.',
   },
   {
     to: '/tours',
     label: 'Tours',
-    title: 'Destinations art',
-    body: 'Carte culturelle — hors packs agents.',
+    title: 'Carte culturelle',
+    body: 'Destinations art — service culture, hors packs.',
   },
 ] as const
 
 export default function Dashboard() {
-  const [persona, setPersona] = useState<string | null>(null)
-
-  useEffect(() => {
-    try {
-      setPersona(localStorage.getItem('xartists_persona'))
-    } catch {
-      /* ignore */
-    }
-  }, [])
-
   return (
     <div className="animate-fade-in space-y-10 pb-14 max-w-4xl mx-auto">
       <section className="relative overflow-hidden rounded-[1.75rem] border border-white/[0.07] px-6 py-10 sm:px-12 sm:py-14">
@@ -59,15 +47,15 @@ export default function Dashboard() {
         />
         <div className="relative z-[1] max-w-xl space-y-6">
           <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
-            xArtists
+            xArtists · démo
           </p>
           <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white leading-[1.08]">
             L’art on-chain,{' '}
             <span className="gradient-text">sans le bruit</span>
           </h1>
           <p className="text-zinc-400 text-base leading-relaxed">
-            Galerie immersive, packs d’accès et tours culturels sur MultiversX. Démo paper — votre
-            wallet reste le vôtre.
+            Galerie, packs d’accès et tours culturels sur MultiversX. Mode paper — votre wallet reste
+            le vôtre.
           </p>
           <div className="flex flex-wrap gap-3 pt-1">
             <Link to="/museum" className="btn-primary !px-6 !py-3">
@@ -76,15 +64,25 @@ export default function Dashboard() {
             <Link to="/agents" className="btn-secondary !px-6 !py-3">
               Voir les packs
             </Link>
-            <a
-              href={LINKS.discord}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-secondary !px-6 !py-3"
-            >
-              Discord
-            </a>
           </div>
+        </div>
+      </section>
+
+      {/* Parcours démo en 4 étapes */}
+      <section aria-label="Parcours démo">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-600 mb-3">Parcours</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {DEMO_PATH.map((step, i) => (
+            <Link
+              key={step.to}
+              to={step.to}
+              className="rounded-xl border border-white/[0.07] bg-white/[0.02] px-3 py-3 hover:border-white/15 hover:bg-white/[0.04] transition-colors"
+            >
+              <p className="text-[10px] text-zinc-600 tabular-nums">{i + 1}</p>
+              <p className="text-[13px] font-semibold text-white mt-0.5">{step.label}</p>
+              <p className="text-[11px] text-zinc-500">{step.hint}</p>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -104,8 +102,6 @@ export default function Dashboard() {
         ))}
       </section>
 
-      {!persona && <PersonaWelcome />}
-
       <a
         href={LINKS.discord}
         target="_blank"
@@ -115,10 +111,8 @@ export default function Dashboard() {
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-300/80">
           Communauté
         </p>
-        <p className="mt-1 text-[15px] font-semibold text-white">Rejoindre le Discord xArtists</p>
-        <p className="mt-1 text-[13px] text-zinc-500 leading-relaxed">
-          #welcome · #rules · #general-fr / #general-en · annonces & support
-        </p>
+        <p className="mt-1 text-[15px] font-semibold text-white">Discord xArtists</p>
+        <p className="mt-1 text-[13px] text-zinc-500">Annonces · general FR/EN · support</p>
       </a>
 
       <footer className="flex flex-wrap gap-x-5 gap-y-2 text-[12px] text-zinc-600">
@@ -140,7 +134,7 @@ export default function Dashboard() {
           Discord
         </a>
         <Link to="/legal" className="hover:text-zinc-300 transition-colors">
-          Mentions légales
+          Légal
         </Link>
       </footer>
     </div>
