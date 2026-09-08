@@ -30,9 +30,9 @@ body {
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   background-image:
-    radial-gradient(ellipse 90% 55% at 15% -15%, rgba(139, 92, 246, 0.2), transparent 55%),
-    radial-gradient(ellipse 70% 45% at 95% 5%, rgba(34, 211, 238, 0.1), transparent 50%),
-    radial-gradient(ellipse 50% 35% at 50% 110%, rgba(251, 113, 133, 0.07), transparent 45%);
+    radial-gradient(ellipse 90% 55% at 15% -15%, rgba(139, 92, 246, 0.18), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 95% 5%, rgba(34, 211, 238, 0.08), transparent 50%),
+    radial-gradient(ellipse 50% 35% at 50% 110%, rgba(251, 113, 133, 0.05), transparent 45%);
   background-attachment: fixed;
 }
 
@@ -67,22 +67,22 @@ body {
   }
 
   .page-wrap {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 w-full;
+    @apply max-w-6xl mx-auto px-4 sm:px-6 w-full;
   }
 
   .card {
-    @apply relative rounded-2xl border border-white/[0.08] p-4 sm:p-5 shadow-card;
-    background: linear-gradient(145deg, rgba(18, 18, 28, 0.9), rgba(10, 10, 16, 0.85));
-    backdrop-filter: blur(12px);
+    @apply relative rounded-2xl border border-white/[0.07] p-4 sm:p-5 shadow-card;
+    background: linear-gradient(160deg, rgba(16, 16, 24, 0.92), rgba(8, 8, 14, 0.88));
+    backdrop-filter: blur(14px);
   }
 
   .card-hover {
     @apply card transition-all duration-300;
   }
   .card-hover:hover {
-    border-color: rgba(139, 92, 246, 0.35);
-    box-shadow: 0 12px 40px -16px rgba(139, 92, 246, 0.25);
-    transform: translateY(-2px);
+    border-color: rgba(139, 92, 246, 0.32);
+    box-shadow: 0 12px 40px -16px rgba(139, 92, 246, 0.22);
+    transform: translateY(-1px);
   }
 
   .glass {
@@ -110,7 +110,7 @@ body {
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-zinc-200 transition-all duration-200 border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/20;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-zinc-200 transition-all duration-200 border border-white/[0.09] bg-white/[0.03] hover:bg-white/[0.07] hover:border-white/18;
   }
 
   .btn-ghost {
