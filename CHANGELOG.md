@@ -1,5 +1,26 @@
 # Changelog — xArtists
 
+## [0.29.0](https://github.com/Neltud/xArtists/compare/v0.28.3...v0.29.0) (2026-09-08)
+
+
+### Features
+
+* Discord webhook setup guide + ops notifier (secret URL) ([cafbd83](https://github.com/Neltud/xArtists/commit/cafbd83a9edd20cdf72586fc8a0a298ff41cc3a7))
+* **discord:** auto-roles config + guildMemberAdd + setup guide ([f1e9479](https://github.com/Neltud/xArtists/commit/f1e947938aed97789982dd1e6de00f7b23794edc))
+* link official Discord in LINKS + footer ([cab4f9c](https://github.com/Neltud/xArtists/commit/cab4f9c96634967fa4e7fc4c2f5c9612a6f30a1f))
+* **museum:** 3rd-person avatar + camera follow; design tokens polish ([29b5d19](https://github.com/Neltud/xArtists/commit/29b5d1944e9568766fad22646a9066668f47b339))
+* **museum:** FPS locomotion — accel, friction, bob, collision radius (A1X-inspired) ([9d257f2](https://github.com/Neltud/xArtists/commit/9d257f28ab1ce27e6ecb3dc48edef0a704862f68))
+* simple Discord integration (home + footer) matching server channels ([ddd5774](https://github.com/Neltud/xArtists/commit/ddd5774a120bdc2647f93b0a2764439158cebbfc))
+
+
+### Documentation
+
+* **marketing:** draft X 2026-09-05 22h packs IA ([4b09ef7](https://github.com/Neltud/xArtists/commit/4b09ef7d105cc48b81bafc4850f15075968f09c6))
+* **marketing:** draft X 2026-09-06 — board paper LIA ([681df2d](https://github.com/Neltud/xArtists/commit/681df2dead8b100db3f0d1dd4d259adb96142f5b))
+* **marketing:** draft X 2026-09-07 — thème $TRO / écosystème ([e220fcd](https://github.com/Neltud/xArtists/commit/e220fcd1835e6bad5c7132b58f00bb2823638b08))
+* **marketing:** draft X 2026-09-07 16:11 CEST — intention ⌘K ([388d513](https://github.com/Neltud/xArtists/commit/388d5130043e20808f634298c134f78874f78ca4))
+* **marketing:** draft X 23:09 CEST — packs IA ([d73783f](https://github.com/Neltud/xArtists/commit/d73783f8e44d99e8c2d24e07727a5a087b09e68b))
+
 ## [0.28.3](https://github.com/Neltud/xArtists/compare/v0.28.2...v0.28.3) (2026-09-05)
 
 
