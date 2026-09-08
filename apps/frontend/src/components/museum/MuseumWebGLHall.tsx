@@ -1,10 +1,11 @@
 /**
- * Salle musée WebGL — locomotion FPS (accel/friction/bob), collision rayon, mobile pad.
- * Inspiré parcours jeu (A1X / AI Nexus feel) · éclairage + particules.
+ * Musée WebGL — 3e personne (avatar visible) + FPS optionnel.
+ * Locomotion accel/friction · collision · pad mobile · style jeu A1X.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
 import { createSurrealParticles, tickSurrealParticles, addSurrealLights } from '../../lib/museumSurrealFX'
+import { createPlayerAvatar, tickAvatarWalk } from '../../lib/museumAvatar'
 import { ArtworkDossier, type FrameItem } from './MuseumCorridor'
 import type { RoomBlueprint, WallSeg } from '../../lib/roomBlueprint'
 import { blueprintAreaM2 } from '../../lib/roomBlueprint'
@@ -20,12 +21,12 @@ const SPRINT = 6.4
 const MAX_ART = 24
 const TEX_CONCURRENT = 4
 const LOOK_SENS = 0.0019
-const PITCH_MAX = 1.2
+const PITCH_MAX = 1.15
 const WALL_INSET = 0.28
 const ACCEL = 22
 const FRICTION = 11
-const BOB_AMP = 0.04
-const BOB_FREQ = 8.5
+const CAM_DIST = 3.4
+const CAM_HEIGHT = 1.85
 
 type Theme = 'cyber' | 'stone' | 'gold' | 'white' | 'dark'
 
@@ -50,8 +51,10 @@ function wallGeom(w: WallSeg) {
 function bounds(bp: RoomBlueprint) {
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
   for (const w of bp.walls) {
-    minX = Math.min(minX, w.x1, w.x2); minY = Math.min(minY, w.y1, w.y2)
-    maxX = Math.max(maxX, w.x1, w.x2); maxY = Math.max(maxY, w.y1, w.y2)
+    minX = Math.min(minX, w.x1, w.x2)
+    minY = Math.min(minY, w.y1, w.y2)
+    maxX = Math.max(maxX, w.x1, w.x2)
+    maxY = Math.max(maxY, w.y1, w.y2)
   }
   return { minX, minY, maxX, maxY, cx: (minX + maxX) / 2, cy: (minY + maxY) / 2 }
 }
@@ -89,15 +92,27 @@ function Pad({ label, on }: { label: string; on: (v: boolean) => void }) {
 }
 
 export default function MuseumWebGLHall({
-  blueprint, frames, room = 'stone', allowBuy = true, emptyLabel = 'Aucune œuvre',
-}: { blueprint: RoomBlueprint; frames: FrameItem[]; room?: Theme; allowBuy?: boolean; emptyLabel?: string }) {
+  blueprint,
+  frames,
+  room = 'stone',
+  allowBuy = true,
+  emptyLabel = 'Aucune œuvre',
+}: {
+  blueprint: RoomBlueprint
+  frames: FrameItem[]
+  room?: Theme
+  allowBuy?: boolean
+  emptyLabel?: string
+}) {
   const mountRef = useRef<HTMLDivElement>(null)
   const keys = useRef<Record<string, boolean>>({})
   const hold = useRef<Record<string, boolean>>({})
   const nearestRef = useRef<FrameItem | null>(null)
+  const thirdRef = useRef(true)
   const [ready, setReady] = useState(false)
   const [hint, setHint] = useState(true)
   const [locked, setLocked] = useState(false)
+  const [third, setThird] = useState(true)
   const [nearTitle, setNearTitle] = useState('')
   const [inspect, setInspect] = useState<FrameItem | null>(null)
   const [buyMsg, setBuyMsg] = useState<string | null>(null)
@@ -110,24 +125,39 @@ export default function MuseumWebGLHall({
   const sculptures = useMemo(() => frames.filter(f => !f.image).slice(0, 6), [frames])
   const presence = useMemo(() => presenceSnapshot(blueprint.id || roomName), [blueprint.id, roomName])
 
-  const onBuy = useCallback(async (frame: FrameItem) => {
-    if (!connected) { requestOpenConnect(); return }
-    if (!marketLive) { setBuyMsg('Achat on-chain bientôt (SC)'); return }
-    setBuyMsg(`Intent: ${frame.title}`)
-  }, [connected, marketLive])
+  const onBuy = useCallback(
+    async (frame: FrameItem) => {
+      if (!connected) {
+        requestOpenConnect()
+        return
+      }
+      if (!marketLive) {
+        setBuyMsg('Achat on-chain bientôt (SC)')
+        return
+      }
+      setBuyMsg(`Intent: ${frame.title}`)
+    },
+    [connected, marketLive]
+  )
+
+  useEffect(() => {
+    thirdRef.current = third
+  }, [third])
 
   useEffect(() => {
     const mount = mountRef.current
     if (!mount) return
     let disposed = false
-    let vx = 0, vz = 0, bobPhase = 0
+    let vx = 0
+    let vz = 0
+    let walkPhase = 0
     let surrealPts: THREE.Points | null = null
     const b = bounds(blueprint)
     const wallH = blueprint.wallHeight || 3.8
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(pal.fog)
     scene.fog = new THREE.FogExp2(pal.fog, room === 'cyber' ? 0.026 : 0.016)
-    const camera = new THREE.PerspectiveCamera(72, 1, 0.05, 90)
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.08, 90)
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75))
     renderer.outputColorSpace = THREE.SRGBColorSpace
@@ -166,9 +196,13 @@ export default function MuseumWebGLHall({
     try {
       addSurrealLights(scene, b.cx, wallH, b.cy)
       surrealPts = createSurrealParticles(scene, b.cx, b.cy, wallH)
-    } catch { /* */ }
+    } catch {
+      /* */
+    }
 
-    // Paintings
+    const avatar = createPlayerAvatar(room === 'cyber' ? 0x22d3ee : 0x8b5cf6)
+    scene.add(avatar)
+
     const loader = new THREE.TextureLoader()
     let texQueue = 0
     const artAnchors: { pos: THREE.Vector3; frame: FrameItem }[] = []
@@ -182,38 +216,38 @@ export default function MuseumWebGLHall({
       const az = w.y1 + (w.y2 - w.y1) * t
       const nx = -Math.sin(g.angle)
       const nz = Math.cos(g.angle)
-      const px = ax + nx * 0.12
-      const pz = az + nz * 0.12
+      const apx = ax + nx * 0.12
+      const apz = az + nz * 0.12
       const frameMesh = new THREE.Mesh(
         new THREE.BoxGeometry(1.1, 1.3, 0.06),
-        new THREE.MeshStandardMaterial({ color: pal.frame, roughness: 0.5, metalness: 0.2, emissive: pal.emissive, emissiveIntensity: 0.15 })
+        new THREE.MeshStandardMaterial({
+          color: pal.frame,
+          roughness: 0.5,
+          metalness: 0.2,
+          emissive: pal.emissive,
+          emissiveIntensity: 0.15,
+        })
       )
-      frameMesh.position.set(px, 1.55, pz)
+      frameMesh.position.set(apx, 1.55, apz)
       frameMesh.rotation.y = -g.angle
       scene.add(frameMesh)
-      artAnchors.push({ pos: new THREE.Vector3(px, 1.55, pz), frame })
+      artAnchors.push({ pos: new THREE.Vector3(apx, 1.55, apz), frame })
       if (frame.image && texQueue < TEX_CONCURRENT * 3) {
         texQueue++
-        loader.load(
-          frame.image,
-          tex => {
-            if (disposed) return
-            tex.colorSpace = THREE.SRGBColorSpace
-            const art = new THREE.Mesh(
-              new THREE.PlaneGeometry(0.95, 1.1),
-              new THREE.MeshBasicMaterial({ map: tex })
-            )
-            art.position.set(px + nx * 0.04, 1.55, pz + nz * 0.04)
-            art.rotation.y = -g.angle
-            scene.add(art)
-          },
-          undefined,
-          () => { /* */ }
-        )
+        loader.load(frame.image, tex => {
+          if (disposed) return
+          tex.colorSpace = THREE.SRGBColorSpace
+          const art = new THREE.Mesh(
+            new THREE.PlaneGeometry(0.95, 1.1),
+            new THREE.MeshBasicMaterial({ map: tex })
+          )
+          art.position.set(apx + nx * 0.04, 1.55, apz + nz * 0.04)
+          art.rotation.y = -g.angle
+          scene.add(art)
+        })
       }
     })
 
-    // Simple sculptures
     sculptures.forEach((frame, i) => {
       const ang = (i / Math.max(1, sculptures.length)) * Math.PI * 2
       const sx = b.cx + Math.cos(ang) * 1.8
@@ -227,24 +261,29 @@ export default function MuseumWebGLHall({
       scene.add(pedestal)
       const form = new THREE.Mesh(
         new THREE.IcosahedronGeometry(0.35, 0),
-        new THREE.MeshStandardMaterial({ color: pal.emissive, roughness: 0.3, metalness: 0.5, emissive: pal.emissive, emissiveIntensity: 0.3 })
+        new THREE.MeshStandardMaterial({
+          color: pal.emissive,
+          roughness: 0.3,
+          metalness: 0.5,
+          emissive: pal.emissive,
+          emissiveIntensity: 0.3,
+        })
       )
       form.position.set(sx, 0.85, sz)
       scene.add(form)
       artAnchors.push({ pos: new THREE.Vector3(sx, 1.2, sz), frame })
     })
 
-    // Virtual visitors
-    const vMeshes: THREE.Group[] = []
     try {
       const wps = visitorWaypoints(blueprint)
       for (let i = 0; i < Math.min(presence.virtual, wps.length); i++) {
         const m = makeVisitorMesh(0x6688aa)
         m.position.set(wps[i].x, 0, wps[i].z)
         scene.add(m)
-        vMeshes.push(m)
       }
-    } catch { /* */ }
+    } catch {
+      /* */
+    }
 
     let px = b.cx
     let pz = b.cy
@@ -253,8 +292,9 @@ export default function MuseumWebGLHall({
       pz = b.minY + 1.5
     }
     let yaw = 0
-    let pitch = 0
-    camera.position.set(px, EYE, pz)
+    let pitch = 0.25
+    let facing = 0
+    avatar.position.set(px, 0, pz)
 
     const ro = new ResizeObserver(() => {
       const w = mount.clientWidth || 1
@@ -268,14 +308,14 @@ export default function MuseumWebGLHall({
 
     const kd = (e: KeyboardEvent) => {
       const k = e.key.toLowerCase()
-      if (['w', 'a', 's', 'd', 'shift', 'e'].includes(k)) {
+      if (['w', 'a', 's', 'd', 'shift', 'e', 'v'].includes(k)) {
         keys.current[k] = true
         if (k === 'e' && nearestRef.current) setInspect(nearestRef.current)
+        if (k === 'v') setThird(t => !t)
       }
     }
     const ku = (e: KeyboardEvent) => {
-      const k = e.key.toLowerCase()
-      keys.current[k] = false
+      keys.current[e.key.toLowerCase()] = false
     }
     window.addEventListener('keydown', kd)
     window.addEventListener('keyup', ku)
@@ -284,15 +324,13 @@ export default function MuseumWebGLHall({
     const onMove = (e: MouseEvent) => {
       if (!pointerLocked) return
       yaw -= e.movementX * LOOK_SENS
-      pitch = Math.max(-PITCH_MAX, Math.min(PITCH_MAX, pitch - e.movementY * LOOK_SENS))
+      pitch = Math.max(-0.15, Math.min(PITCH_MAX, pitch - e.movementY * LOOK_SENS))
     }
     const onLockChange = () => {
       pointerLocked = document.pointerLockElement === canvas
       setLocked(pointerLocked)
     }
-    canvas.addEventListener('click', () => {
-      canvas.requestPointerLock?.()
-    })
+    canvas.addEventListener('click', () => canvas.requestPointerLock?.())
     document.addEventListener('pointerlockchange', onLockChange)
     document.addEventListener('mousemove', onMove)
 
@@ -305,19 +343,36 @@ export default function MuseumWebGLHall({
       const dt = Math.min(clock.getDelta(), 0.05)
       try {
         if (surrealPts) tickSurrealParticles(surrealPts, clock.elapsedTime)
-      } catch { /* */ }
+      } catch {
+        /* */
+      }
 
-      // FPS locomotion: accel + friction + bob + radius collision (game feel)
       const sprint = keys.current.shift || hold.current['shift']
       const f = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw))
       const r = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw))
-      let ix = 0, iz = 0
-      if (keys.current.w || hold.current['w']) { ix += f.x; iz += f.z }
-      if (keys.current.s || hold.current['s']) { ix -= f.x; iz -= f.z }
-      if (keys.current.a || hold.current['a']) { ix -= r.x; iz -= r.z }
-      if (keys.current.d || hold.current['d']) { ix += r.x; iz += r.z }
+      let ix = 0
+      let iz = 0
+      if (keys.current.w || hold.current['w']) {
+        ix += f.x
+        iz += f.z
+      }
+      if (keys.current.s || hold.current['s']) {
+        ix -= f.x
+        iz -= f.z
+      }
+      if (keys.current.a || hold.current['a']) {
+        ix -= r.x
+        iz -= r.z
+      }
+      if (keys.current.d || hold.current['d']) {
+        ix += r.x
+        iz += r.z
+      }
       const im = Math.hypot(ix, iz)
-      if (im > 1e-6) { ix /= im; iz /= im }
+      if (im > 1e-6) {
+        ix /= im
+        iz /= im
+      }
       const maxSp = sprint ? SPRINT : WALK
       const targetVx = ix * maxSp
       const targetVz = iz * maxSp
@@ -331,7 +386,10 @@ export default function MuseumWebGLHall({
         vz *= damp
       }
       const sp = Math.hypot(vx, vz)
-      if (sp > maxSp) { vx = (vx / sp) * maxSp; vz = (vz / sp) * maxSp }
+      if (sp > maxSp) {
+        vx = (vx / sp) * maxSp
+        vz = (vz / sp) * maxSp
+      }
       const tryX = px + vx * dt
       const tryZ = pz + vz * dt
       const rad = WALL_INSET
@@ -341,27 +399,57 @@ export default function MuseumWebGLHall({
         pointInBlueprintFloor(blueprint, x - rad, z) &&
         pointInBlueprintFloor(blueprint, x, z + rad) &&
         pointInBlueprintFloor(blueprint, x, z - rad)
-      if (can(tryX, tryZ)) { px = tryX; pz = tryZ }
-      else if (can(tryX, pz)) { px = tryX; vz *= 0.2 }
-      else if (can(px, tryZ)) { pz = tryZ; vx *= 0.2 }
-      else { vx = 0; vz = 0 }
+      if (can(tryX, tryZ)) {
+        px = tryX
+        pz = tryZ
+      } else if (can(tryX, pz)) {
+        px = tryX
+        vz *= 0.2
+      } else if (can(px, tryZ)) {
+        pz = tryZ
+        vx *= 0.2
+      } else {
+        vx = 0
+        vz = 0
+      }
 
-      const moving = Math.hypot(vx, vz) > 0.4
-      if (moving) bobPhase += dt * BOB_FREQ * (sprint ? 1.35 : 1)
-      const bob = moving ? Math.sin(bobPhase) * BOB_AMP * (sprint ? 1.2 : 1) : 0
-      camera.position.set(px, EYE + bob, pz)
-      camera.rotation.order = 'YXZ'
-      camera.rotation.y = yaw
-      camera.rotation.x = pitch
-      camera.fov = sprint && moving ? 78 : 72
+      const moving = Math.hypot(vx, vz) > 0.35
+      if (moving) {
+        facing = Math.atan2(vx, vz)
+        walkPhase += dt * (sprint ? 12 : 9)
+      }
+      avatar.position.x = px
+      avatar.position.z = pz
+      avatar.rotation.y = facing
+      tickAvatarWalk(avatar, walkPhase, moving ? (sprint ? 1 : 0.7) : 0)
+      avatar.visible = thirdRef.current
+
+      if (thirdRef.current) {
+        const back = CAM_DIST + (sprint && moving ? 0.35 : 0)
+        const cx = px + Math.sin(yaw) * back
+        const cz = pz + Math.cos(yaw) * back
+        const cy = CAM_HEIGHT + pitch * 1.2
+        camera.position.set(cx, cy, cz)
+        camera.lookAt(px, EYE * 0.9, pz)
+        camera.fov = sprint && moving ? 62 : 58
+      } else {
+        camera.position.set(px, EYE, pz)
+        camera.rotation.order = 'YXZ'
+        camera.rotation.y = yaw
+        camera.rotation.x = pitch * 0.5 - 0.1
+        camera.fov = sprint && moving ? 78 : 72
+      }
       camera.updateProjectionMatrix()
 
-      // nearest artwork
       let best: FrameItem | null = null
-      let bestD = 2.8
+      let bestD = 3.2
+      const eye = new THREE.Vector3(px, EYE, pz)
       for (const a of artAnchors) {
-        const d = a.pos.distanceTo(camera.position)
-        if (d < bestD) { bestD = d; best = a.frame }
+        const d = a.pos.distanceTo(eye)
+        if (d < bestD) {
+          bestD = d
+          best = a.frame
+        }
       }
       nearestRef.current = best
       if (best) setNearTitle(best.title)
@@ -396,10 +484,10 @@ export default function MuseumWebGLHall({
     <div className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500">
         <span>
-          {roomName} · {area} m² · {paintings.length} toiles · {sculptures.length} sculptures
+          {roomName} · {area} m² · {paintings.length} toiles
         </span>
         <span className="text-[10px] text-zinc-400">
-          {presence.virtual} virtuels · {locked ? 'visée ON · FPS' : 'pad / WASD'}
+          {third ? '3e personne' : '1re personne'} · {locked ? 'visée ON' : 'pad / WASD'} · V bascule
         </span>
       </div>
       <div
@@ -409,7 +497,7 @@ export default function MuseumWebGLHall({
         <div ref={mountRef} className="absolute inset-0" />
         {!ready && (
           <div className="absolute inset-0 flex items-center justify-center text-sm text-zinc-500">
-            Chargement salle 3D…
+            Chargement avatar & salle…
           </div>
         )}
         {hint && ready && (
@@ -418,16 +506,18 @@ export default function MuseumWebGLHall({
             className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/55 backdrop-blur-[2px] text-center px-6"
             onClick={() => setHint(false)}
           >
-            <p className="text-lg font-semibold text-white">Entrer — mode jeu</p>
+            <p className="text-lg font-semibold text-white">Entrer — avatar 3e personne</p>
             <p className="text-[13px] text-zinc-400 mt-2 max-w-sm">
-              Clic = viser (FPS) · WASD marcher · Shift courir · E / Fiche · style A1X
+              WASD marcher · Shift courir · souris viser · V = 1re/3e · E fiche
             </p>
           </button>
         )}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-10">
-          <div className="w-1.5 h-1.5 rounded-full bg-white/50" />
-        </div>
-        <div className="absolute top-2 left-2 z-10 rounded-lg px-2.5 py-1.5 text-[10px] backdrop-blur border bg-black/65 border-white/10 text-zinc-300 max-w-[80%] truncate">
+        {!third && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-10">
+            <div className="w-1.5 h-1.5 rounded-full bg-white/50" />
+          </div>
+        )}
+        <div className="absolute top-2 left-2 z-10 rounded-lg px-2.5 py-1.5 text-[10px] backdrop-blur border bg-black/65 border-white/10 text-zinc-300 max-w-[70%] truncate">
           {nearTitle}
         </div>
         <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3 z-20">
@@ -439,11 +529,21 @@ export default function MuseumWebGLHall({
             <Pad label="↓" on={v => (hold.current['s'] = v)} />
             <Pad label="→" on={v => (hold.current['d'] = v)} />
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 justify-end">
             <button
               type="button"
               className="rounded-full border border-white/20 bg-black/50 text-white text-[10px] font-semibold px-3 py-2.5"
-              onPointerDown={e => { e.preventDefault(); hold.current['shift'] = true }}
+              onClick={() => setThird(t => !t)}
+            >
+              {third ? '1P' : '3P'}
+            </button>
+            <button
+              type="button"
+              className="rounded-full border border-white/20 bg-black/50 text-white text-[10px] font-semibold px-3 py-2.5"
+              onPointerDown={e => {
+                e.preventDefault()
+                hold.current['shift'] = true
+              }}
               onPointerUp={() => (hold.current['shift'] = false)}
               onPointerCancel={() => (hold.current['shift'] = false)}
             >
