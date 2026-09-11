@@ -1,155 +1,73 @@
 /**
- * Packs IA — UN SEUL LOT : Pulse · Yield · Sentinel.
- * Pas de catalogue EGLD parallèle (Signal / Artist Assist / Voyage = retirés).
- * v2026-09-05-merge
+ * Packs — 3 only, paper-first, no fund narrative.
  */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
-import {
-  AGENT_PACKS,
-  type AgentPackProfile,
-  type PackId,
-} from '../config/agentPacks'
-import { canBuyAgent } from '../config/scStatus'
-
-const ACCENT: Record<PackId, { ring: string; bar: string; soft: string }> = {
-  pulse: {
-    ring: 'border-emerald-500/35 hover:border-emerald-400/50',
-    bar: 'bg-emerald-400',
-    soft: 'from-emerald-500/10 to-transparent',
-  },
-  yield: {
-    ring: 'border-teal-500/35 hover:border-teal-400/50',
-    bar: 'bg-teal-400',
-    soft: 'from-teal-500/10 to-transparent',
-  },
-  sentinel: {
-    ring: 'border-sky-500/35 hover:border-sky-400/50',
-    bar: 'bg-sky-400',
-    soft: 'from-sky-500/10 to-transparent',
-  },
-}
-
-const RISK_LABEL: Record<AgentPackProfile['risk'], string> = {
-  medium: 'Profil actif',
-  lower: 'Profil modéré',
-  low: 'Profil prudent',
-}
+import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 
 const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
 const PACKS = AGENT_PACKS.filter(p => ONLY.includes(p.id)).slice(0, 3)
 
+const RING: Record<PackId, string> = {
+  pulse: 'border-emerald-500/30 hover:border-emerald-400/45',
+  yield: 'border-teal-500/30 hover:border-teal-400/45',
+  sentinel: 'border-sky-500/30 hover:border-sky-400/45',
+}
+
 export default function Agents() {
   const [selected, setSelected] = useState<PackId | null>(null)
-  const mintLive = canBuyAgent()
   const active = PACKS.find(p => p.id === selected) || null
 
   return (
-    <div className="animate-fade-in pb-14 max-w-5xl mx-auto">
-      <header className="mb-8 space-y-3">
+    <div className="animate-fade-in pb-14 max-w-3xl mx-auto space-y-8">
+      <header className="space-y-2">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
-          Packs IA · 3 seulement
+          Packs · paper
         </p>
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+        <h1 className="text-3xl font-semibold tracking-tight text-white">
           Pulse · Yield · Sentinel
         </h1>
-        <p className="text-zinc-400 text-[15px] leading-relaxed max-w-lg">
-          Un seul catalogue. NFT d’accès — pas un fonds, pas de rendement promis. Pas de pack voyage
-          ni « Artist Assist » séparé.
+        <p className="text-zinc-400 text-[14px] leading-relaxed max-w-md">
+          Trois accès. Pas un fonds. Mint on-chain plus tard.
         </p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+      <div className="grid sm:grid-cols-3 gap-3">
         {PACKS.map(p => {
-          const a = ACCENT[p.id]
-          const isOn = selected === p.id
+          const on = selected === p.id
           return (
-            <article
+            <button
               key={p.id}
-              className={`relative flex flex-col rounded-2xl border bg-gradient-to-b ${a.soft} bg-zinc-950/80 p-5 transition-colors ${a.ring} ${
-                isOn ? 'ring-1 ring-white/20' : ''
+              type="button"
+              onClick={() => setSelected(p.id)}
+              className={`text-left rounded-2xl border bg-zinc-950/70 p-4 transition-colors ${RING[p.id]} ${
+                on ? 'ring-1 ring-white/25' : ''
               }`}
             >
-              <div className={`absolute top-0 left-6 right-6 h-px ${a.bar} opacity-60`} />
-              <div className="flex items-baseline justify-between gap-2 mb-1">
-                <h2 className="text-xl font-semibold text-white tracking-tight">
-                  <span className="mr-1.5" aria-hidden>
-                    {p.icon}
-                  </span>
-                  {p.name}
-                </h2>
-                <span className="text-[10px] uppercase tracking-wider text-zinc-500">
-                  {RISK_LABEL[p.risk]}
-                </span>
-              </div>
-              <p className="text-[13px] text-zinc-400 mb-4">{p.tagline}</p>
-
-              <p className="text-3xl font-semibold text-white tabular-nums tracking-tight mb-5">
+              <p className="text-[15px] font-semibold text-white">{p.name}</p>
+              <p className="text-[12px] text-zinc-500 mt-1 line-clamp-2">{p.tagline}</p>
+              <p className="mt-3 text-xl font-semibold text-white tabular-nums">
                 {p.priceEur.list}
-                <span className="text-base font-normal text-zinc-500 ml-1">€</span>
+                <span className="text-sm font-normal text-zinc-500 ml-1">€</span>
               </p>
-
-              <ul className="space-y-1.5 mb-4 flex-1">
-                {p.entitlements.slice(0, 3).map(e => (
-                  <li key={e} className="text-[12px] text-zinc-300 flex gap-2">
-                    <span className="text-zinc-600">—</span>
-                    <span>{e}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSelected(p.id)
-                  requestAnimationFrame(() => {
-                    document
-                      .getElementById('pack-pay')
-                      ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-                  })
-                }}
-                className={`w-full rounded-xl py-2.5 text-sm font-medium transition-colors ${
-                  isOn
-                    ? 'bg-white text-zinc-900'
-                    : 'bg-white/10 text-white hover:bg-white/15'
-                }`}
-              >
-                {isOn ? 'Sélectionné' : 'Sélectionner'}
-              </button>
-            </article>
+            </button>
           )
         })}
       </div>
 
-      <section
-        id="pack-pay"
-        className="rounded-2xl border border-white/10 bg-zinc-950/60 p-5 sm:p-6"
-      >
-        <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
-          <div>
-            <h2 className="text-sm font-semibold text-white">Paiement</h2>
-            <p className="text-[12px] text-zinc-500 mt-0.5">
-              {active
-                ? `${active.name} · ${active.priceEur.list} € · Stripe / Paybox / paper`
-                : 'Choisissez un pack ci-dessus, puis payez ici.'}
-            </p>
-          </div>
-          {!mintLive && (
-            <span className="text-[10px] text-zinc-600 border border-white/10 rounded-full px-2 py-0.5">
-              Mint SC ultérieur
-            </span>
-          )}
-        </div>
+      <section className="rounded-2xl border border-white/10 bg-zinc-950/50 p-5">
+        <p className="text-[13px] text-zinc-400 mb-3">
+          {active
+            ? `${active.name} · ${active.priceEur.list} € · paper / Stripe si configuré`
+            : 'Sélectionne un pack'}
+        </p>
         <PackCheckout packId={selected} onClear={() => setSelected(null)} />
       </section>
 
-      <p className="mt-8 text-[12px] text-zinc-600">
-        Après achat :{' '}
-        <Link
-          to="/my-packs"
-          className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
-        >
+      <p className="text-[12px] text-zinc-600">
+        Possession :{' '}
+        <Link to="/my-packs" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
           My Packs
         </Link>
       </p>

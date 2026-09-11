@@ -1,7 +1,8 @@
 /**
- * Home — minimal, Supernova-era, zero noise.
+ * Home paper — minimal, Supernova, zero fund claims.
  */
 import { Link } from 'react-router-dom'
+import SoftStatus from '../components/SoftStatus'
 import { LINKS } from '../config/links'
 import { isSupernovaLive } from '../config/supernova'
 
@@ -15,8 +16,8 @@ export default function Dashboard() {
   const supernova = isSupernovaLive()
 
   return (
-    <div className="animate-fade-in space-y-12 pb-16 max-w-3xl mx-auto">
-      <section className="space-y-6 pt-4 sm:pt-8">
+    <div className="animate-fade-in space-y-10 pb-16 max-w-3xl mx-auto">
+      <section className="space-y-5 pt-4 sm:pt-8">
         <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
           xArtists{supernova ? ' · Supernova' : ''}
         </p>
@@ -25,7 +26,7 @@ export default function Dashboard() {
           <span className="gradient-text">simple</span>
         </h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-lg">
-          Galerie immersive et packs d’accès sur MultiversX. Démo paper — votre wallet reste le vôtre.
+          Galerie et packs d’accès sur MultiversX. Mode paper — aucune gestion de fonds pour toi.
         </p>
         <div className="flex flex-wrap gap-3">
           <Link to="/museum" className="btn-primary !px-6 !py-3">
@@ -36,6 +37,8 @@ export default function Dashboard() {
           </Link>
         </div>
       </section>
+
+      <SoftStatus />
 
       <section className="grid gap-2">
         {LINKS_MAIN.map(item => (
@@ -59,16 +62,11 @@ export default function Dashboard() {
         <Link to="/wallet" className="hover:text-zinc-300">
           Wallet
         </Link>
+        <Link to="/my-packs" className="hover:text-zinc-300">
+          My Packs
+        </Link>
         <a href={LINKS.discord} target="_blank" rel="noreferrer" className="hover:text-indigo-300">
           Discord
-        </a>
-        <a
-          href="https://supernova.multiversx.com/"
-          target="_blank"
-          rel="noreferrer"
-          className="hover:text-cyan-300"
-        >
-          Supernova
         </a>
         <Link to="/legal" className="hover:text-zinc-300">
           Légal
