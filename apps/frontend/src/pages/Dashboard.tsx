@@ -1,5 +1,5 @@
 /**
- * Home paper — minimal, Supernova, zero fund claims.
+ * Home v4 — fluid, minimal, soft 3D depth (orbs + motion).
  */
 import { Link } from 'react-router-dom'
 import SoftStatus from '../components/SoftStatus'
@@ -7,71 +7,112 @@ import { LINKS } from '../config/links'
 import { isSupernovaLive } from '../config/supernova'
 
 const LINKS_MAIN = [
-  { to: '/museum', title: 'Galerie', body: 'Salles 3D · avatar · collection' },
-  { to: '/agents', title: 'Packs', body: 'Pulse · Yield · Sentinel' },
-  { to: '/tours', title: 'Tours', body: 'Carte culturelle' },
+  {
+    to: '/museum',
+    title: 'Galerie',
+    body: 'Salles 3D · avatar · collection',
+    delay: '0ms',
+  },
+  {
+    to: '/agents',
+    title: 'Packs',
+    body: 'Pulse · Yield · Sentinel',
+    delay: '60ms',
+  },
+  {
+    to: '/tours',
+    title: 'Tours',
+    body: 'Carte & musées du monde',
+    delay: '120ms',
+  },
 ] as const
 
 export default function Dashboard() {
   const supernova = isSupernovaLive()
 
   return (
-    <div className="animate-fade-in space-y-10 pb-16 max-w-3xl mx-auto">
-      <section className="space-y-5 pt-4 sm:pt-8">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
+    <div className="animate-fade-in relative pb-20 max-w-2xl mx-auto">
+      {/* Soft depth orbs */}
+      <div
+        className="orb w-64 h-64 -top-8 -left-16 bg-violet-600/30"
+        aria-hidden
+      />
+      <div
+        className="orb w-48 h-48 top-32 -right-10 bg-cyan-500/20"
+        style={{ animationDelay: '2s' }}
+        aria-hidden
+      />
+
+      <section className="relative space-y-6 pt-6 sm:pt-12">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
           xArtists{supernova ? ' · Supernova' : ''}
         </p>
-        <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white leading-[1.08]">
-          Art on-chain,{' '}
-          <span className="gradient-text">simple</span>
+
+        <h1 className="display text-[2.75rem] sm:text-6xl text-white leading-[1.05]">
+          L’art,
+          <br />
+          <span className="gradient-text">en mouvement</span>
         </h1>
-        <p className="text-zinc-400 text-[15px] leading-relaxed max-w-lg">
-          Galerie et packs d’accès sur MultiversX. Mode paper — aucune gestion de fonds pour toi.
+
+        <p className="text-zinc-400 text-[15px] sm:text-base leading-relaxed max-w-md">
+          Galerie immersive et packs d’accès sur MultiversX. Démo paper — fluide, simple, sans bruit.
         </p>
-        <div className="flex flex-wrap gap-3">
-          <Link to="/museum" className="btn-primary !px-6 !py-3">
-            Galerie
+
+        <div className="flex flex-wrap gap-3 pt-1">
+          <Link to="/museum" className="btn-primary">
+            Entrer dans la galerie
           </Link>
-          <Link to="/agents" className="btn-secondary !px-6 !py-3">
-            Packs
+          <Link to="/agents" className="btn-secondary">
+            Voir les packs
           </Link>
         </div>
       </section>
 
-      <SoftStatus />
+      <div className="relative mt-10 space-y-3">
+        <SoftStatus />
 
-      <section className="grid gap-2">
-        {LINKS_MAIN.map(item => (
-          <Link
-            key={item.to}
-            to={item.to}
-            className="group flex items-center justify-between rounded-2xl border border-white/[0.07] bg-white/[0.02] px-5 py-4 transition-colors hover:border-white/15 hover:bg-white/[0.04]"
-          >
-            <div>
-              <p className="text-[15px] font-semibold text-white">{item.title}</p>
-              <p className="text-[13px] text-zinc-500 mt-0.5">{item.body}</p>
-            </div>
-            <span className="text-zinc-600 group-hover:text-zinc-400 text-lg" aria-hidden>
-              →
-            </span>
-          </Link>
-        ))}
-      </section>
+        <div className="grid gap-2.5 pt-2">
+          {LINKS_MAIN.map(item => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className="flow-row"
+              style={{ animation: `fadeIn 0.55s var(--ease-out) ${item.delay} both` }}
+            >
+              <div>
+                <p className="text-[15px] font-semibold text-white tracking-tight">{item.title}</p>
+                <p className="text-[13px] text-zinc-500 mt-0.5">{item.body}</p>
+              </div>
+              <span
+                className="text-zinc-600 text-lg transition-transform duration-300 group-hover:translate-x-1"
+                aria-hidden
+              >
+                →
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
 
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-zinc-600">
-        <Link to="/wallet" className="hover:text-zinc-300">
+      <footer className="relative mt-12 flex flex-wrap gap-x-5 gap-y-2 text-[12px] text-zinc-600">
+        <Link to="/wallet" className="hover:text-zinc-300 transition-colors">
           Wallet
         </Link>
-        <Link to="/my-packs" className="hover:text-zinc-300">
+        <Link to="/my-packs" className="hover:text-zinc-300 transition-colors">
           My Packs
         </Link>
-        <a href={LINKS.discord} target="_blank" rel="noreferrer" className="hover:text-indigo-300">
+        <a
+          href={LINKS.discord}
+          target="_blank"
+          rel="noreferrer"
+          className="hover:text-indigo-300 transition-colors"
+        >
           Discord
         </a>
-        <Link to="/legal" className="hover:text-zinc-300">
+        <Link to="/legal" className="hover:text-zinc-300 transition-colors">
           Légal
         </Link>
-      </div>
+      </footer>
     </div>
   )
 }

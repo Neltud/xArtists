@@ -1,6 +1,3 @@
-/**
- * Statut paper — transparent, sans promesse fonds.
- */
 import { Link } from 'react-router-dom'
 import { isSupernovaLive } from '../config/supernova'
 import { VIRTUAL_MUSEUMS } from '../lib/museumWorldCatalog'
@@ -10,9 +7,9 @@ export default function SoftStatus() {
   const n = VIRTUAL_MUSEUMS?.length ?? 0
 
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] px-4 py-3 text-[12px] text-zinc-500 space-y-1.5">
-      <p className="flex flex-wrap gap-x-2 gap-y-1">
-        <span className="text-amber-400/90">Paper</span>
+    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.025] px-4 py-3.5 text-[12px] text-zinc-500 backdrop-blur-sm">
+      <p className="flex flex-wrap gap-x-2 gap-y-1 items-center">
+        <span className="text-amber-400/90 font-medium">Paper</span>
         <span className="text-zinc-700">·</span>
         <span>SC off</span>
         <span className="text-zinc-700">·</span>
@@ -20,7 +17,7 @@ export default function SoftStatus() {
         {sn && (
           <>
             <span className="text-zinc-700">·</span>
-            <span className="text-cyan-500/80">Supernova</span>
+            <span className="text-cyan-400/85">Supernova</span>
           </>
         )}
         {n > 0 && (
@@ -30,16 +27,16 @@ export default function SoftStatus() {
           </>
         )}
       </p>
-      <p className="text-zinc-600">
-        <Link to="/museum" className="text-zinc-400 hover:text-white">
+      <p className="mt-1.5 text-zinc-600">
+        <Link to="/museum" className="text-zinc-400 hover:text-white transition-colors">
           Galerie
         </Link>
-        {' · '}
-        <Link to="/agents" className="text-zinc-400 hover:text-white">
+        <span className="mx-1.5 text-zinc-700">·</span>
+        <Link to="/agents" className="text-zinc-400 hover:text-white transition-colors">
           Packs
         </Link>
-        {' · '}
-        <Link to="/my-packs" className="text-zinc-400 hover:text-white">
+        <span className="mx-1.5 text-zinc-700">·</span>
+        <Link to="/my-packs" className="text-zinc-400 hover:text-white transition-colors">
           My Packs
         </Link>
       </p>
