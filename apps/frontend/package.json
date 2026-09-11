@@ -1,7 +1,7 @@
 {
   "name": "xartists-frontend",
   "private": true,
-  "version": "3.5.0",
+  "version": "3.5.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -29,5 +29,9 @@
     "tailwindcss": "^3.4.10",
     "typescript": "^5.5.4",
     "vite": "^5.4.2"
+  },
+  "xartistsNotes": {
+    "sdk": "sdk-dapp ^3 kept for paper demo CI; migrate to ^5.7 + sdk-core ^16 before live TX — see docs/SDK_STATUS_SUPERNOVA.md",
+    "supernova": "mainnet epoch 2233 live 2026-09-10"
   }
 }
