@@ -1,7 +1,7 @@
 {
   "name": "xartists-frontend",
   "private": true,
-  "version": "3.5.1",
+  "version": "3.6.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -31,7 +31,8 @@
     "vite": "^5.4.2"
   },
   "xartistsNotes": {
-    "sdk": "sdk-dapp ^3 kept for paper demo CI; migrate to ^5.7 + sdk-core ^16 before live TX — see docs/SDK_STATUS_SUPERNOVA.md",
-    "supernova": "mainnet epoch 2233 live 2026-09-10"
+    "demo": "3.6.0 paper live mainnet read-only",
+    "sdkBranch": "feat/sdk-dapp-v5 — see docs/SDK_DAPP_V5_BRANCH.md",
+    "vellum": "docs/VELLUM_NEXT_IMPROVEMENTS.md after CI green"
   }
 }
