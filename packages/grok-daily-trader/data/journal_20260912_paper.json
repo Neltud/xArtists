@@ -1,0 +1,15 @@
+{
+  "agent": "grok-daily-trader",
+  "ts": "2026-09-12T12:45:21Z",
+  "address": "erd12c7f9wll0dcn26ax9fwrgp3yuswchyh9xwz8zs29hl9crgpn96gsdqq5gl",
+  "mode": "paper",
+  "live_flag": false,
+  "egld": 0.35,
+  "min_reserve": 0.15,
+  "liquid_egld": 0.2,
+  "risk_budget_egld": 0.01,
+  "fund_tx": "f18e534dc39942b565153f7564420c74119fe84001a702f2114863f144ec94f0",
+  "signal": { "bias": "WAIT", "confidence": 0.5 },
+  "action": "idle_wait",
+  "message": "Paper cycle OK — no chain TX."
+}
