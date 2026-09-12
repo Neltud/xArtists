@@ -1,0 +1,35 @@
+{
+  "id": "grok-daily-trader",
+  "name": "Grok Daily Trader",
+  "version": "1.0.0",
+  "role": "Autonomous daily trading agent for xArtists on MultiversX",
+  "network": "mainnet",
+  "defaultMode": "paper",
+  "schedule": {
+    "cadence": "daily",
+    "suggestedUtc": "18:00",
+    "maxLiveTradesPerDay": 2
+  },
+  "universe": ["EGLD", "TRO-94c925", "ASH-a642d1"],
+  "exclude": ["dust", "NFT", "MetaESDT", "empty-pool"],
+  "risk": {
+    "minEgldReserve": 1.5,
+    "maxRiskBudgetPctOfLiquid": 5,
+    "maxSlippageBps": 150,
+    "minSignalConfidence": 0.65
+  },
+  "signals": {
+    "providers": ["lia_board", "gsn_elite_mvx", "gsn_alpha_macro"],
+    "idleOn": ["WAIT", "conf<0.55"]
+  },
+  "integrations": {
+    "gsn": "GreenSmoke Network — signal layer only",
+    "dapp": "https://neltud.github.io/xArtists/",
+    "docs": ["docs/LIA_COMPOUNDING_STRATEGIES.md", "docs/GREENSMOKE_NETWORK.md"]
+  },
+  "safety": {
+    "neverCommitPem": true,
+    "neverUseUserWallet": true,
+    "liaLiveTradingDefault": false
+  }
+}
