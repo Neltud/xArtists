@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.32.0](https://github.com/Neltud/xArtists/compare/v0.31.0...v0.32.0) (2026-09-12)
+
+
+### Features
+
+* **pulse-layer:** THE PULSE — ingestion, sentiment, signal bridge boilerplate ([eb9a82e](https://github.com/Neltud/xArtists/commit/eb9a82e28e1b3b8f2f0660c7493c7ea9f29470a1))
+
+
+### Documentation
+
+* **marketing:** draft X 2026-09-12 23:00 CEST — board paper LIA ([a9d7954](https://github.com/Neltud/xArtists/commit/a9d795452d3ea25325dc2731e2c847cfc95cfc1b))
+
 ## [0.31.0](https://github.com/Neltud/xArtists/compare/v0.30.0...v0.31.0) (2026-09-12)
 
 
