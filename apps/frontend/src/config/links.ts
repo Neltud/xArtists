@@ -3,9 +3,12 @@
  */
 
 import { GSN } from './greenSmoke'
+import { GROKYVERSX } from './grokyversx'
 
 export const LIA_WALLET =
   'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
+
+export const GROK_WALLET = GROKYVERSX.wallet
 
 export const LINKS = {
   github: 'https://github.com/Neltud/xArtists',
@@ -27,7 +30,6 @@ export const LINKS = {
   xoxnoBridge: 'https://xoxno.com/defi/bridge',
   xoxnoCollection: (c: string) => `https://xoxno.com/collection/${c}`,
   usdt0: 'https://usdt0.to',
-  /** @deprecated use greensmoke.* — kept for older imports */
   greensmokeAgents: GSN.urls.agents,
   greensmoke: GSN.urls.app,
   greensmokeDocs: GSN.urls.docs,
@@ -38,9 +40,10 @@ export const LINKS = {
   treasuryPolicy:
     'https://github.com/Neltud/xArtists/blob/main/docs/TREASURY_POLICY.md',
   supernovaHub: 'https://supernova.multiversx.com/',
+  liaExplorer: `https://explorer.multiversx.com/accounts/${LIA_WALLET}`,
+  grokyversxExplorer: `https://explorer.multiversx.com/accounts/${GROKYVERSX.wallet}`,
 } as const
 
-/** Menu principal — une entrée Galerie (pas /gallery + /museum). */
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/', label: 'Home', emoji: '◈' },
   { to: '/museum', label: 'Galerie', emoji: '🖼' },
@@ -54,7 +57,6 @@ export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/legal', label: 'Légal', emoji: '§' },
 ]
 
-/** Lab — hors parcours démo. */
 export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/staking', label: 'Staking', emoji: '◈' },
   { to: '/dao', label: 'DAO', emoji: '⬡' },

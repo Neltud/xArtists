@@ -1,30 +1,17 @@
 /**
- * Home v4 — fluid, minimal, soft 3D depth (orbs + motion).
+ * Home — fluid + LIA / GrokyversX agents.
  */
 import { Link } from 'react-router-dom'
 import SoftStatus from '../components/SoftStatus'
+import AgentWalletsStrip from '../components/AgentWalletsStrip'
 import { LINKS } from '../config/links'
 import { isSupernovaLive } from '../config/supernova'
 
 const LINKS_MAIN = [
-  {
-    to: '/museum',
-    title: 'Galerie',
-    body: 'Salles 3D · avatar · collection',
-    delay: '0ms',
-  },
-  {
-    to: '/agents',
-    title: 'Packs',
-    body: 'Pulse · Yield · Sentinel',
-    delay: '60ms',
-  },
-  {
-    to: '/tours',
-    title: 'Tours',
-    body: 'Carte & musées du monde',
-    delay: '120ms',
-  },
+  { to: '/museum', title: 'Galerie', body: 'Salles 3D · avatar · collection', delay: '0ms' },
+  { to: '/agents', title: 'Packs', body: 'Pulse · Yield · Sentinel', delay: '60ms' },
+  { to: '/tours', title: 'Tours', body: 'Carte & musées du monde', delay: '120ms' },
+  { to: '/trading', title: 'Trading', body: 'Board paper · GrokyversX live micro', delay: '180ms' },
 ] as const
 
 export default function Dashboard() {
@@ -32,11 +19,7 @@ export default function Dashboard() {
 
   return (
     <div className="animate-fade-in relative pb-20 max-w-2xl mx-auto">
-      {/* Soft depth orbs */}
-      <div
-        className="orb w-64 h-64 -top-8 -left-16 bg-violet-600/30"
-        aria-hidden
-      />
+      <div className="orb w-64 h-64 -top-8 -left-16 bg-violet-600/30" aria-hidden />
       <div
         className="orb w-48 h-48 top-32 -right-10 bg-cyan-500/20"
         style={{ animationDelay: '2s' }}
@@ -47,17 +30,14 @@ export default function Dashboard() {
         <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
           xArtists{supernova ? ' · Supernova' : ''}
         </p>
-
         <h1 className="display text-[2.75rem] sm:text-6xl text-white leading-[1.05]">
           L’art,
           <br />
           <span className="gradient-text">en mouvement</span>
         </h1>
-
         <p className="text-zinc-400 text-[15px] sm:text-base leading-relaxed max-w-md">
-          Galerie immersive et packs d’accès sur MultiversX. Démo paper — fluide, simple, sans bruit.
+          Galerie immersive, packs d’accès, agents LIA + GrokyversX sur MultiversX.
         </p>
-
         <div className="flex flex-wrap gap-3 pt-1">
           <Link to="/museum" className="btn-primary">
             Entrer dans la galerie
@@ -70,6 +50,7 @@ export default function Dashboard() {
 
       <div className="relative mt-10 space-y-3">
         <SoftStatus />
+        <AgentWalletsStrip />
 
         <div className="grid gap-2.5 pt-2">
           {LINKS_MAIN.map(item => (
@@ -83,10 +64,7 @@ export default function Dashboard() {
                 <p className="text-[15px] font-semibold text-white tracking-tight">{item.title}</p>
                 <p className="text-[13px] text-zinc-500 mt-0.5">{item.body}</p>
               </div>
-              <span
-                className="text-zinc-600 text-lg transition-transform duration-300 group-hover:translate-x-1"
-                aria-hidden
-              >
+              <span className="text-zinc-600 text-lg" aria-hidden>
                 →
               </span>
             </Link>
@@ -98,15 +76,13 @@ export default function Dashboard() {
         <Link to="/wallet" className="hover:text-zinc-300 transition-colors">
           Wallet
         </Link>
-        <Link to="/my-packs" className="hover:text-zinc-300 transition-colors">
-          My Packs
-        </Link>
-        <a
-          href={LINKS.discord}
-          target="_blank"
-          rel="noreferrer"
-          className="hover:text-indigo-300 transition-colors"
-        >
+        <a href={LINKS.liaExplorer} target="_blank" rel="noreferrer" className="hover:text-violet-300">
+          LIA
+        </a>
+        <a href={LINKS.grokyversxExplorer} target="_blank" rel="noreferrer" className="hover:text-cyan-300">
+          GrokyversX
+        </a>
+        <a href={LINKS.discord} target="_blank" rel="noreferrer" className="hover:text-indigo-300">
           Discord
         </a>
         <Link to="/legal" className="hover:text-zinc-300 transition-colors">
