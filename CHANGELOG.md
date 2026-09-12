@@ -1,5 +1,41 @@
 # Changelog — xArtists
 
+## [0.30.0](https://github.com/Neltud/xArtists/compare/v0.29.0...v0.30.0) (2026-09-12)
+
+
+### Features
+
+* GreenSmoke Network (GSN) future-ready config + brand adapter ([39d18f3](https://github.com/Neltud/xArtists/commit/39d18f38fe7ddce980ce9c31be7b57fd84e63a34))
+* Grok daily trading agent (paper-first) + MultiversX wallet ops guide ([d89e30d](https://github.com/Neltud/xArtists/commit/d89e30d28728c3086e9c3a3c5683860141810348))
+* **grok:** ESDT momentum buy/sell any token + trading columns (paper/mainnet-ready) ([f27aa52](https://github.com/Neltud/xArtists/commit/f27aa52c438d70e5ab10f5e187349e57cf5b274e))
+* **grok:** micro mainnet profile after 0.35 EGLD fund + paper test pass ([d5d4070](https://github.com/Neltud/xArtists/commit/d5d4070de46dea7ea098aa4d9edc7c42e323f225))
+* GrokyversX agent wallet alongside LIA — publish demo integration ([d2a1ffb](https://github.com/Neltud/xArtists/commit/d2a1ffb41543796c18107cd0f8a336c87ee7170c))
+* **GrokyversX:** Hatom protocol module — supply/borrow/booster gates + live mint attempt note ([b05ad7b](https://github.com/Neltud/xArtists/commit/b05ad7b0bc48c0ac0ebc398e39e0526f2edfeb9d))
+* **GrokyversX:** unified LIA strategies + external signals orchestrator ([ecf0f01](https://github.com/Neltud/xArtists/commit/ecf0f019cb98b55eb771fb1a20def709949ec38a))
+* **paper:** My Packs dual list clean + museum count on SoftStatus ([ff68937](https://github.com/Neltud/xArtists/commit/ff689371e318d7657424e9e721a371feeb6c10e3))
+* **paper:** simpler Agents + SoftStatus strip; roadmap sans fonds mainnet ([92d8d50](https://github.com/Neltud/xArtists/commit/92d8d507ba8dd577c9decc9a5349162139c709cf))
+* Supernova live banner + simpler demo UX; document SDK gap (dapp v3 vs v5.7) ([6cf9fec](https://github.com/Neltud/xArtists/commit/6cf9fecb8658b63a2baca055368d708d73fc3dae))
+
+
+### Documentation
+
+* LIA compounding strategies + Vellum RUN trade prompt (guarded) ([00defad](https://github.com/Neltud/xArtists/commit/00defad5e8a5682221794a999ea7960c7df25a1a))
+* **marketing:** draft X 18:07 CEST — board paper LIA ([6fcd6e9](https://github.com/Neltud/xArtists/commit/6fcd6e9195b65fa94a73ccb238e5f6aed33ec4e9))
+* **marketing:** draft X 2026-09-08 23:15 tours art ([a25cc41](https://github.com/Neltud/xArtists/commit/a25cc411d6d3be4340181ed491b5dcd4c1f4c264))
+* **marketing:** draft X 2026-09-09 — thème wallet MultiversX ([4df2a15](https://github.com/Neltud/xArtists/commit/4df2a159d8959435c453d36360dcf6c00e30285f))
+* **marketing:** draft X 2026-09-09 09h12 $TRO / écosystème ([5345a14](https://github.com/Neltud/xArtists/commit/5345a14730b0cbc2deac22158e879f20e8d52e6f))
+* **marketing:** draft X 2026-09-09 10:13 — thème intention ⌘K ([d80a3ff](https://github.com/Neltud/xArtists/commit/d80a3ff83d30213cb58066655b99dace9e50684c))
+* **marketing:** draft X 2026-09-09 11h packs IA ([a0392ea](https://github.com/Neltud/xArtists/commit/a0392ea5be9dd581ed6223741fcdd475a193b9cd))
+* **marketing:** draft X 2026-09-09 18:46 — tours art ([150b0aa](https://github.com/Neltud/xArtists/commit/150b0aafd63b7aaa50048a307b4526bd2c8d408d))
+* **marketing:** draft X 2026-09-09 23h wallet MultiversX ([581251e](https://github.com/Neltud/xArtists/commit/581251e8f392d2fe8fd304d752e25df53e87a94f))
+* **marketing:** draft X 2026-09-10 10h $TRO / écosystème ([2d7d96e](https://github.com/Neltud/xArtists/commit/2d7d96e484bb53638128f5749524d7a91e8570b9))
+* **marketing:** draft X 2026-09-10 11h16 intention ⌘K ([9a75a02](https://github.com/Neltud/xArtists/commit/9a75a025a60d7bf3937aa110ccc9bf706016f627))
+* **marketing:** draft X 2026-09-10 19h board paper LIA ([96dd4c8](https://github.com/Neltud/xArtists/commit/96dd4c8c967d8e369d3f8c716da5135168769bd7))
+* **marketing:** draft X 2026-09-11 — thème wallet MultiversX ([3a25ad4](https://github.com/Neltud/xArtists/commit/3a25ad4ec580bb76c6f1572ba6a53b6e9125d7a4))
+* **marketing:** draft X 2026-09-11 12h intention ⌘K ([90e9a6c](https://github.com/Neltud/xArtists/commit/90e9a6c36f1554066ee98ff968ae7209dc76fcdc))
+* **marketing:** draft X 2026-09-12 11h wallet MultiversX ([d8f6636](https://github.com/Neltud/xArtists/commit/d8f66360f75d8563ab29831a47f80e59565ce6e6))
+* **marketing:** X draft 19:15 CEST — tours art CULTURE ([6134fcf](https://github.com/Neltud/xArtists/commit/6134fcf2f23237025c28c0efc1d3fe6bb4d6e699))
+
 ## [0.29.0](https://github.com/Neltud/xArtists/compare/v0.28.3...v0.29.0) (2026-09-08)
 
 
