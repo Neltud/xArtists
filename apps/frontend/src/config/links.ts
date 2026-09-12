@@ -2,6 +2,8 @@
  * Canonical external links + nav (no duplicate routes).
  */
 
+import { GSN } from './greenSmoke'
+
 export const LIA_WALLET =
   'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
 
@@ -25,11 +27,17 @@ export const LINKS = {
   xoxnoBridge: 'https://xoxno.com/defi/bridge',
   xoxnoCollection: (c: string) => `https://xoxno.com/collection/${c}`,
   usdt0: 'https://usdt0.to',
-  greensmokeAgents: 'https://app.greensmoke.network/agents',
+  /** @deprecated use greensmoke.* — kept for older imports */
+  greensmokeAgents: GSN.urls.agents,
+  greensmoke: GSN.urls.app,
+  greensmokeDocs: GSN.urls.docs,
+  greensmokeRoadmap: GSN.urls.roadmap,
+  greensmokeX: GSN.urls.x,
   lightningFaucetBuild: 'https://lightningfaucet.com/build/',
   troToken: 'TRO-94c925',
   treasuryPolicy:
     'https://github.com/Neltud/xArtists/blob/main/docs/TREASURY_POLICY.md',
+  supernovaHub: 'https://supernova.multiversx.com/',
 } as const
 
 /** Menu principal — une entrée Galerie (pas /gallery + /museum). */
@@ -48,20 +56,8 @@ export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
 
 /** Lab — hors parcours démo. */
 export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
-  { to: '/studio', label: 'Studio', emoji: '🎨' },
-  { to: '/tro', label: '$TRO', emoji: '🪙' },
-  { to: '/portfolio', label: 'LIA Board', emoji: '📈' },
-  { to: '/dao', label: 'DAO', emoji: '🗳️' },
-  { to: '/entity', label: 'Lab · Entité', emoji: '🏛' },
-  { to: '/sim', label: 'Lab · Sim', emoji: '🧪' },
-  { to: '/sitemap', label: 'Plan', emoji: '🗺' },
-  { to: '/staking', label: 'Lab · Staking', emoji: '🔒' },
-  { to: '/hatom', label: 'Lab · Hatom', emoji: '🏦' },
-  { to: '/lp', label: 'Lab · LP', emoji: '💧' },
-  { to: '/tip', label: 'Tip', emoji: '💜' },
-  { to: '/soul-testnet', label: 'Lab · Soul', emoji: '🧪' },
-  { to: '/burnify', label: 'Lab · Burnify', emoji: '🔥' },
-  { to: '/ads', label: 'Lab · Ads', emoji: '📢' },
-  { to: '/editions', label: 'Lab · Editions', emoji: '📰' },
-  { to: '/agents/lightning', label: 'Lab · Lightning', emoji: '⚡' },
+  { to: '/staking', label: 'Staking', emoji: '◈' },
+  { to: '/dao', label: 'DAO', emoji: '⬡' },
+  { to: '/portfolio', label: 'Portfolio', emoji: '▤' },
+  { to: '/tro', label: '$TRO', emoji: '◎' },
 ]
