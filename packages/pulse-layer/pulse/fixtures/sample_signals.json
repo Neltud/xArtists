@@ -1,0 +1,20 @@
+[
+  {
+    "event": "HYPE_DETECTED",
+    "asset": "EGLD",
+    "sentiment": 0.82,
+    "velocity": "high",
+    "context": "Supernova upgrade narrative accelerating",
+    "ts": "2026-09-12T20:00:00Z",
+    "source": "pulse-layer"
+  },
+  {
+    "event": "SENTIMENT_SHIFT",
+    "asset": "HTM",
+    "sentiment": 0.31,
+    "velocity": "medium",
+    "context": "Hatom discussion constructive",
+    "ts": "2026-09-12T20:05:00Z",
+    "source": "pulse-layer"
+  }
+]
