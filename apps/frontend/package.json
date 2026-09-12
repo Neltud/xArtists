@@ -1,7 +1,7 @@
 {
   "name": "xartists-frontend",
   "private": true,
-  "version": "3.7.0",
+  "version": "3.9.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -31,7 +31,7 @@
     "vite": "^5.4.2"
   },
   "xartistsNotes": {
-    "design": "3.7.0 fluid glass motion",
-    "demo": "paper live mainnet read-only"
+    "demo": "3.9.0 GrokyversX live analysis",
+    "grokyversx": "erd12c7f9wll0dcn26ax9fwrgp3yuswchyh9xwz8zs29hl9crgpn96gsdqq5gl"
   }
 }

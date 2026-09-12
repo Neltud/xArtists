@@ -1,0 +1,27 @@
+{
+  "agent": "GrokyversX",
+  "ts": "2026-09-12T13:21:38Z",
+  "network": "mainnet",
+  "address": "erd12c7f9wll0dcn26ax9fwrgp3yuswchyh9xwz8zs29hl9crgpn96gsdqq5gl",
+  "mode": "paper",
+  "holdings": {
+    "EGLD": 0.22847441932,
+    "HTM-f51d55": 1.4865589193146482
+  },
+  "signal": { "bias": "BUY", "confidence": 0.86 },
+  "lending_rank": [
+    { "symbol": "USDC", "score": 4.7138, "mcap": 7694158.74 },
+    { "symbol": "wTAO", "score": 3.8628, "mcap": 1299002.58 },
+    { "symbol": "EGLD", "score": 3.6662, "mcap": 140300917.0 },
+    { "symbol": "WBTC", "score": 0.0, "mcap": 0 }
+  ],
+  "plan": {
+    "action": "stake_booster",
+    "token": "HTM-f51d55",
+    "amount": 1.4865589193146482,
+    "live_allowed": false,
+    "reason": "resolve booster SC before live stake"
+  },
+  "policy": "no_TRO_dca | lending_USDC_EGLD_wTAO_WBTC | HTM_booster_only | swap_min_1pct",
+  "demo": "https://neltud.github.io/xArtists/"
+}
