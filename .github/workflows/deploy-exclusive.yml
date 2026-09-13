@@ -1,67 +1,9 @@
-name: Deploy xArtists Exclusive
-
-# Manual only — auto-push uses "🚀 Deploy xArtists dApp to GitHub Pages"
-# (same concurrency group `pages` was cancelling the working SPA pipeline).
+# DEPRECATED — use static.yml only (P0 2026-09-13)
+name: "[deprecated] deploy-exclusive"
 on:
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages-exclusive-manual
-  cancel-in-progress: true
-
 jobs:
-  deploy:
+  notice:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          # no npm cache: apps/frontend has no package-lock.json
-
-      - name: Install & build frontend
-        working-directory: apps/frontend
-        run: |
-          if [ -f package-lock.json ]; then npm ci; else npm install; fi
-          npm run build || npx vite build
-
-      - name: Publish dist → docs
-        run: |
-          mkdir -p docs
-          rm -f docs/index.html
-          rm -rf docs/assets docs/icons 2>/dev/null || true
-          if [ -d apps/frontend/dist ]; then
-            cp -r apps/frontend/dist/* docs/
-            echo "Deployed React dist to docs/"
-          else
-            echo "ERROR: apps/frontend/dist missing"
-            exit 1
-          fi
-          touch docs/.nojekyll
-          cp -f docs/index.html docs/404.html
-          echo "force-$(date -u +%Y%m%d%H%M%S)" > docs/DEPLOY_STAMP.txt
-          ls -la docs/ | head -30
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - run: echo "Deprecated. Canonical: static.yml"

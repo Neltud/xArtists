@@ -1,16 +1,11 @@
-# DISABLED auto-deploy — use workflow "Deploy xArtists Exclusive" only
-name: Deploy GitHub Pages (disabled)
-
+# DEPRECATED — use static.yml only (P0 2026-09-13)
+name: "[deprecated] pages.yml"
 on:
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
-  noop:
+  notice:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "This workflow is disabled. Use Deploy xArtists Exclusive."
+      - run: |
+          echo "This workflow is deprecated. Canonical deploy: static.yml"
+          exit 0

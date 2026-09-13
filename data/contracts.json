@@ -1,8 +1,8 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-09-12T15:00:00Z",
-  "chain_note": "Mainnet Supernova. Demo UI paper. Product SCs still empty codeHash unless verified.",
+  "updated": "2026-09-13T06:00:00Z",
+  "chain_note": "Mainnet read OK. Product SCs: codeHash null = NOT_DEPLOYED. See docs/SOURCE_OF_TRUTH.md",
   "wallets": {
     "lia_ops": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "grokyversx": "erd12c7f9wll0dcn26ax9fwrgp3yuswchyh9xwz8zs29hl9crgpn96gsdqq5gl",
@@ -10,7 +10,7 @@
     "reserve": null,
     "reward": null,
     "ops": null,
-    "note": "LIA = board/ops. GrokyversX = autonomous micro-trader. Never use either as user Connect."
+    "note": "LIA = board/ops. GrokyversX = optional host trader. Never use as user Connect."
   },
   "contracts": {
     "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
@@ -22,10 +22,19 @@
     "tro_burn": null,
     "treasury_splitter": null
   },
+  "deploy_status": {
+    "nft_staking": "NOT_DEPLOYED",
+    "tro_governance": "NOT_DEPLOYED",
+    "marketplace": "NOT_DEPLOYED",
+    "nft_minter": "NOT_DEPLOYED",
+    "note": "API codeHash null as of 2026-09-13"
+  },
   "ui_status": {
     "verdict": "GO_DEMO",
     "lia_live_trading": false,
-    "grokyversx_micro_trading": true,
+    "grokyversx_micro_trading": false,
+    "contrarian_brain": false,
+    "gsn_live_feed": false,
     "pages": "https://neltud.github.io/xArtists/"
   }
 }
