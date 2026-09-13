@@ -1,9 +1,10 @@
 /**
- * Home — fluid + LIA / GrokyversX agents.
+ * Home — fluid + LIA / GrokyversX + THE PULSE demo.
  */
 import { Link } from 'react-router-dom'
 import SoftStatus from '../components/SoftStatus'
 import AgentWalletsStrip from '../components/AgentWalletsStrip'
+import PulseStrip from '../components/PulseStrip'
 import { LINKS } from '../config/links'
 import { isSupernovaLive } from '../config/supernova'
 
@@ -11,7 +12,7 @@ const LINKS_MAIN = [
   { to: '/museum', title: 'Galerie', body: 'Salles 3D · avatar · collection', delay: '0ms' },
   { to: '/agents', title: 'Packs', body: 'Pulse · Yield · Sentinel', delay: '60ms' },
   { to: '/tours', title: 'Tours', body: 'Carte & musées du monde', delay: '120ms' },
-  { to: '/trading', title: 'Trading', body: 'Board paper · GrokyversX live micro', delay: '180ms' },
+  { to: '/trading', title: 'Trading', body: 'Board paper · GrokyversX', delay: '180ms' },
 ] as const
 
 export default function Dashboard() {
@@ -36,7 +37,7 @@ export default function Dashboard() {
           <span className="gradient-text">en mouvement</span>
         </h1>
         <p className="text-zinc-400 text-[15px] sm:text-base leading-relaxed max-w-md">
-          Galerie immersive, packs d’accès, agents LIA + GrokyversX sur MultiversX.
+          Galerie immersive, packs, LIA + GrokyversX — et THE PULSE, le nerf social de l’Empire.
         </p>
         <div className="flex flex-wrap gap-3 pt-1">
           <Link to="/museum" className="btn-primary">
@@ -50,6 +51,7 @@ export default function Dashboard() {
 
       <div className="relative mt-10 space-y-3">
         <SoftStatus />
+        <PulseStrip />
         <AgentWalletsStrip />
 
         <div className="grid gap-2.5 pt-2">

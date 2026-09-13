@@ -1,21 +1,32 @@
-# THE PULSE — architecture
+# THE PULSE — architecture v2
 
 ```
-X API / mock  →  noise filter  →  sentiment (-1..1)  →  velocity
-                                              ↓
-                                    signal bus (memory + optional Redis)
-                                              ↓
-                         ┌────────────────────┼────────────────────┐
-                         ▼                    ▼                    ▼
-                   Strategist/LIA      GrokyversX orchestrator   WebXR visual map
+X / mock → noise → sentiment → category → velocity
+                         ↓
+              signal + ENVIRONMENT_UPDATE
+                         ↓
+         Redis optional · WS · Strategist · GrokyversX · Home PulseStrip
 ```
 
-Package: `packages/pulse-layer`
+## Categories
+`MARKET_HYPE` · `SOCIAL_CRASH` · `ART_TREND` · `WHALE_MOVE` · `NEUTRAL`
 
-## Redis (optional later)
+## Environment payload
+```json
+{
+  "type": "ENVIRONMENT_UPDATE",
+  "sentiment": 0.85,
+  "intensity": "high",
+  "color_target": "#ffaa00",
+  "vibe": "hype_event",
+  "category": "MARKET_HYPE",
+  "three": { "particleDensity": 0.9, "fogDensity": 0.2 }
+}
+```
 
-`REDIS_URL=redis://localhost:6379/0` — publish JSON to channel `pulse.signals`.
+## Demo
+Home `PulseStrip` cycles fixtures (GH Pages has no Python host).  
+Live: `uvicorn pulse.app:app --port 8787` + `X_BEARER_TOKEN`.
 
-## Frontend hook (museum / home)
-
-Subscribe `WS /v1/stream` → apply `visual.chaos`, `particleDensity`, etc. on R3F scene.
+## Demo URL
+https://neltud.github.io/xArtists/  · VERSION 3.9.1-pulse

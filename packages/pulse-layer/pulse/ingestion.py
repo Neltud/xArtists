@@ -7,30 +7,32 @@ from typing import Any, AsyncIterator
 
 import httpx
 
+from pulse.categories import categorize
 from pulse.config import settings
+from pulse.env_update import build_environment_update
 from pulse.noise import is_noise
 from pulse.sentiment import analyze_text, velocity_bucket
 from pulse.signals import make_signal, publish
 
 log = logging.getLogger("pulse.ingestion")
 
-# rolling sentiment for velocity
 _last_score: float = 0.0
 _window_hits: int = 0
 
 
 def detect_asset(text: str) -> str:
     u = text.upper()
-    for a in ("HTM", "TRO", "EGLD", "ETH", "BTC", "USDC", "WBTC", "WTAO"):
+    for a in ("HTM", "TRO", "EGLD", "ETH", "BTC", "USDC", "WBTC", "WTAO", "NFT"):
         if a in u or f"${a}" in u:
             return a
     if "MULTIVERS" in u:
         return "EGLD"
+    if "WEBXR" in u or "GALLERY" in u:
+        return "ART"
     return "MACRO"
 
 
 async def fetch_recent_search(client: httpx.AsyncClient, query: str) -> list[dict[str, Any]]:
-    """X API v2 recent search — requires bearer."""
     url = "https://api.twitter.com/2/tweets/search/recent"
     params = {
         "query": query,
@@ -46,16 +48,17 @@ async def fetch_recent_search(client: httpx.AsyncClient, query: str) -> list[dic
     if r.status_code != 200:
         log.warning("X API %s %s", r.status_code, r.text[:200])
         return []
-    data = r.json()
-    return list(data.get("data") or [])
+    return list((r.json()).get("data") or [])
 
 
 async def mock_stream() -> AsyncIterator[dict[str, Any]]:
     samples = [
-        "MultiversX Supernova feels smooth — $EGLD volume picking up",
-        "Hatom $HTM liquidity talk on timeline, cautious not hype",
+        "MultiversX Supernova feels smooth — $EGLD volume picking up moon energy",
+        "Hatom $HTM discussion constructive, builders shipping",
         "Another spam mint bot airdrop link http://x http://y http://z #####",
-        "xArtists gallery demo live, builders shipping",
+        "xArtists WebXR gallery demo live, generative art museum vibes",
+        "Whale moved size on chain — accumulation narrative",
+        "Exploit rumor circulating, market fear spike crash talk",
     ]
     i = 0
     while True:
@@ -74,6 +77,7 @@ async def process_raw_text(text: str, meta: dict | None = None) -> dict | None:
             sentiment=0.0,
             velocity="low",
             context="filtered",
+            category="NEUTRAL",
         )
         await publish(sig)
         return sig
@@ -83,20 +87,32 @@ async def process_raw_text(text: str, meta: dict | None = None) -> dict | None:
     _window_hits = min(_window_hits + 1, 20)
     vel = velocity_bucket(delta, _window_hits)
     _last_score = res.score
+    cat = categorize(text, res.score)
+    asset = detect_asset(text)
 
     event = "SENTIMENT_SHIFT"
     if vel == "high" and res.score >= 0.4:
         event = "HYPE_DETECTED"
-    elif abs(delta) < 0.05:
+    elif cat == "SOCIAL_CRASH":
+        event = "SOCIAL_CRASH"
+    elif abs(delta) < 0.05 and cat == "NEUTRAL":
         event = "HEARTBEAT"
 
+    env = build_environment_update(
+        sentiment=res.score,
+        velocity=vel,
+        category=cat,
+        asset=asset,
+        context=text,
+    )
     sig = make_signal(
         event=event,
-        asset=detect_asset(text),
+        asset=asset,
         sentiment=res.score,
         velocity=vel,
         context=text[:180],
-        extra={"label": res.label, "hits": res.tokens_hit},
+        category=cat,
+        extra={"label": res.label, "hits": res.tokens_hit, "environment": env},
     )
     await publish(sig)
     return sig
