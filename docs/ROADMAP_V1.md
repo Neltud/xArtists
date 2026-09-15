@@ -1,70 +1,35 @@
-# Roadmap v1 — security-first (MAJ 2026-09-15)
+# Roadmap v1 — security-first (MAJ 2026-09-15 soir)
 
-> **Statut produit : GO_DEMO**  
-> **SoT :** [`SOURCE_OF_TRUTH.md`](./SOURCE_OF_TRUTH.md) · `data/contracts.json`  
-> **Audit sécu :** [`SECURITY_AUDIT_EXHAUSTIVE_2026-09-15.md`](./SECURITY_AUDIT_EXHAUSTIVE_2026-09-15.md)
+> **GO_DEMO** · SoT [`SOURCE_OF_TRUTH.md`](./SOURCE_OF_TRUTH.md)  
+> Audit : [`SECURITY_AUDIT_EXHAUSTIVE_2026-09-15.md`](./SECURITY_AUDIT_EXHAUSTIVE_2026-09-15.md)  
+> P0 addendum : [`SECURITY_AUDIT_P0_ADDENDUM_2026-09-15.md`](./SECURITY_AUDIT_P0_ADDENDUM_2026-09-15.md)
 
-## Phase actuelle — GO_DEMO (sécurisé)
+## P0 — DONE / en place
 
-| Pilier | État |
-|--------|------|
-| UI paper + integrity gates | Actif |
-| SC product on-chain | NOT_DEPLOYED |
-| LIA live trading | OFF |
-| Supernova réseau | LIVE (epoch 2237+, 600 ms) |
-| sdk-dapp | v3 (migration v5 planifiée) |
-
-## Roadmap ordonnée (sécurité d’abord)
-
-### P0 — Ne pas casser la ligne de défense
-| # | Item | Owner |
+| # | Item | Preuve |
 |---|------|--------|
-| 0.1 | Maintenir DEMO_MODE / SC off banners | front |
-| 0.2 | `ops_sc_status.py` avant tout deploy | ops |
-| 0.3 | PEM hors git / hors Discord | ops |
-| 0.4 | Interdire deploy btc-bridge | ops |
-| 0.5 | Docs = GO_DEMO only | all |
+| 0.1 | DEMO_MODE | `demoMode.ts` = true · `ops_p0_verify.py` |
+| 0.2 | SC probe | `ops_sc_status.py` |
+| 0.3 | PEM discipline | docs ops · never git |
+| 0.4 | Block btc-bridge | `DO_NOT_DEPLOY.md` · deploy refuse |
+| 0.5 | GO_DEMO docs | SOURCE_OF_TRUTH · SoftStatus |
 
-### P1 — Fondations live (quand prêt)
-| # | Item | Dépendances |
-|---|------|-------------|
-| 1.1 | SC marketplace + agents deploy + verify | PEM, gas, checklist |
-| 1.2 | Update `contracts.json` post codeHash | 1.1 |
-| 1.3 | Guardian kill → executor wire | LIA |
-| 1.4 | Executor live QA (micro EGLD) | 1.3, mode.py |
-| 1.5 | sdk-dapp v5 branche + CI | front |
-| 1.6 | Retirer `xArtists-master/` | repo |
+```bash
+python3 scripts/ops_p0_verify.py   # must exit 0
+```
 
-### P2 — Produit & qualité
-| # | Item |
-|---|------|
-| 2.1 | E2E smoke réel (Playwright installé + CI) |
-| 2.2 | Pulse host + X bearer (pas auto-trade) |
-| 2.3 | Discord bot `/status` `/analyse` (token secret) |
-| 2.4 | Museum WebXR polish + allowlist assets |
-| 2.5 | npm audit job |
+## P1 — suivant
 
-### P3 — Expansion (après P1)
-| # | Item |
-|---|------|
-| 3.1 | NFT staking / TRO gov si wasm mature |
-| 3.2 | On-ramp fiat (hosted, webhook HMAC) |
-| 3.3 | GSN / Contrarian **seulement** si tests + wire réel |
-| 3.4 | Bridge BTC redesign or permanent kill |
+1. Wire `resolve_mode` into `nodes/universal_executor.py`  
+2. Remove/archive `xArtists-master/`  
+3. SC deploy+verify when funded (checklist)  
+4. Guardian kill → executor  
+5. sdk-dapp v5 branch  
 
-## Checklist « production complète » (bar projet)
+## P2 / P3
 
-- [ ] LIA ≥1 live trade/day gated — **non**  
-- [ ] Marketplace list+buy on-chain — **non**  
-- [ ] codeHash non-null + SOURCE_OF_TRUTH updated — **non**  
-- [ ] Guardian E2E kill — **non**  
-- [ ] External SC audit — **non**  
-- [ ] E2E CI green — **non**  
-- [ ] sdk-dapp v5 — **non**  
+E2E réel · Pulse host · Discord bot · staking only after wasm mature · no GSN live until wired  
 
-## Interdits roadmap
+## Production checklist
 
-- Libellés PRODUCTION_MAINNET sans codeHash  
-- LIA_LIVE=1 pour marketing  
-- Auto-trade depuis Pulse seul  
-- Deploy experimental bridge  
+Toujours **non cochée** tant que codeHash null + LIA_LIVE=0.
