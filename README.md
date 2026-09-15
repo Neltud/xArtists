@@ -5,12 +5,12 @@
 dApp (GitHub Pages): https://neltud.github.io/xArtists/  
 Repo: https://github.com/Neltud/xArtists  
 
-**Status (2026-08-30): private / pre-mainnet release**  
+**Status (2026-09-15): GO_DEMO · paper / pre-SC-deploy**  
 - Paper LIA by default (`LIA_LIVE_TRADING=0`)  
 - Marketplace, agents, staking, gov, minter SC: **not live** (empty / null `codeHash`) until deploy + verify  
 - UI fail-closed: no fake “live market” claims without on-chain code  
 - Reality Switch (paper vs live chrome) = **chemin**, pas un live allumé — [`docs/REALITY_SWITCH.md`](docs/REALITY_SWITCH.md)  
-- Supernova: Devnet 600 ms (J+8) · mainnet node upgrade **1 Sep (J-4)** · activation **10 Sep (J-13)**  
+- **Supernova mainnet LIVE** since 10 Sep 2026 (~18:06 UTC, epoch 2233) — 600 ms rounds. Probe: `refreshRate=600`, epoch 2237 (J+5).
 
 Recap + veille : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)
 
@@ -22,9 +22,9 @@ Recap + veille : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md
 |-------|------|
 | **Studio / Gallery** | Create & browse NFT collections |
 | **Marketplace** | List / Buy / Bid (after SC deploy + codeHash) |
-| **Agents** | Limited LIA sub-agent packs |
+| **Agents** | Limited LIA sub-agent packs (Pulse · Yield · Sentinel) |
 | **LIA** | Autonomous agent (Guardian → Brain → paper/live) |
-| **$TRO** | Utility token — max supply product 500 000 |
+| **$TRO** | Utility token — max supply product 500 000 |
 
 Not a retail investment fund. Tips ≠ investment.
 
@@ -42,7 +42,7 @@ export PYTHONPATH=. CHAIN=1 LIA_LIVE_TRADING=0
 # Front (build) — codeHash flags ONLY after verify
 # VITE_MARKETPLACE_CODEHASH_OK=1
 # VITE_AGENTS_CODEHASH_OK=1
-# Do NOT set VITE_SUPERNOVA=1 on Pages before 10 Sep 2026
+# Timing: auto from /stats.refreshRate (mainnet 600 ms). Force pre: VITE_SUPERNOVA=0
 ```
 
 Secrets (PEM, Pinata JWT, HMAC) stay in Vellum / ops vault — **never** in git.
@@ -92,8 +92,9 @@ Map: [`docs/VELLUM_WORKFLOW_MAP.md`](docs/VELLUM_WORKFLOW_MAP.md)
 
 | Doc | Purpose |
 |-----|--------|
-| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap dApp + veille (28 août 2026) |
-| [ENVIRONMENT_VARIABLES.md](docs/ENVIRONMENT_VARIABLES.md) | **Variables d’environnement** |
+| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap dApp + veille (15 sept 2026) |
+| [SOURCE_OF_TRUTH.md](docs/SOURCE_OF_TRUTH.md) | Status canonique |
+| [ENVIRONMENT_VARIABLES.md](docs/ENVIRONMENT_VARIABLES.md) | Variables d’environnement |
 | [BUILD_STEPS.md](docs/BUILD_STEPS.md) | Build front / LIA / SC |
 | [SC_DEPLOY_COMMANDS.md](docs/SC_DEPLOY_COMMANDS.md) | Commandes deploy SC |
 | [STATUS.md](docs/STATUS.md) | Capability matrix |

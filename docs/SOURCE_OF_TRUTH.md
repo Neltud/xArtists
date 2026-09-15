@@ -1,6 +1,6 @@
 # Source of truth — xArtists status
 
-**Updated:** 2026-09-13  
+**Updated:** 2026-09-15  
 **Rule:** Communication and roadmaps **must not** claim production/mainnet deploy unless this file + live probe agree.
 
 ## Canonical sources (in order)
@@ -15,12 +15,13 @@
 | Field | Value |
 |-------|--------|
 | **Status** | **GO_DEMO** |
-| **Network** | MultiversX mainnet (read) |
+| **Network** | MultiversX mainnet (read) · **Supernova 600 ms live** (since 10 Sep 2026, epoch 2233) |
 | **Product SCs** | **Not deployed** (`codeHash` null on reserved addresses) |
 | **LIA_LIVE_TRADING** | **false** (paper board) |
 | **Demo** | https://neltud.github.io/xArtists/ |
+| **Probe** | 2026-09-15 ~04:33 UTC · epoch 2237 · EGLD ~$4.15 · LIA Ops 0.093 EGLD / nonce 1468 |
 
-### Smart contracts (2026-09-13 probe)
+### Smart contracts (2026-09-15 probe)
 
 | Contract | Address (short) | codeHash | Status |
 |----------|-----------------|----------|--------|
@@ -41,6 +42,7 @@ Addresses may exist as empty accounts. **Empty ≠ deployed.**
 | **LIA executor** | Replace stubs with signed execution behind `LIA_LIVE_TRADING` |
 | **GrokyversX** | Host-side bot; PEM on operator; not “LIA production” |
 | **THE PULSE** | Social signals layer; demo strip on Home |
+| **Supernova** | **Done on-network.** Timing auto-detect + post-date default 600 ms |
 
 ## Features not active (do not advertise as live)
 

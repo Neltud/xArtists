@@ -1,8 +1,8 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-08-28T04:40:00Z",
-  "chain_note": "Mainnet only. Demo UI GO_DEMO. ALL product SCs empty (codeHash null) as of 28 Aug 2026 API probe.",
+  "updated": "2026-09-15T04:40:00Z",
+  "chain_note": "Mainnet only. Demo UI GO_DEMO. ALL product SCs empty (codeHash null) as of 15 Sep 2026 API probe. Supernova 600ms live.",
   "wallets": {
     "lia_ops": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "mission": null,
@@ -22,40 +22,51 @@
     "treasury_splitter": null
   },
   "verification": {
-    "probed_at": "2026-08-28T04:33:00Z",
+    "probed_at": "2026-09-15T04:33:00Z",
     "api": "https://api.multiversx.com/accounts/{address}",
     "marketplace_mainnet": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED — empty account"
+      "verdict": "NOT_DEPLOYED \u2014 empty account"
     },
     "nft_staking": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED — empty account"
+      "verdict": "NOT_DEPLOYED \u2014 empty account"
     },
     "tro_governance": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED — empty account"
+      "verdict": "NOT_DEPLOYED \u2014 empty account"
     },
     "nft_minter": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED — empty account"
+      "verdict": "NOT_DEPLOYED \u2014 empty account"
     },
-    "agents_marketplace": "null — never deployed",
-    "tro_burn": "null — tro-burn ready, not deployed",
-    "rwa_escrow_bridge": "null — dispute+verification ready, not deployed",
-    "treasury_splitter": "null — SC ready contracts/treasury-splitter, dest wallets null"
+    "agents_marketplace": "null \u2014 never deployed",
+    "tro_burn": "null \u2014 tro-burn ready, not deployed",
+    "rwa_escrow_bridge": "null \u2014 dispute+verification ready, not deployed",
+    "treasury_splitter": "null \u2014 SC ready contracts/treasury-splitter, dest wallets null",
+    "lia_ops": {
+      "balance_egld": 0.0928,
+      "nonce": 1468,
+      "note": "insufficient for deploy + micro-TX"
+    },
+    "network": {
+      "refreshRate": 600,
+      "epoch": 2237,
+      "supernova": true
+    }
   },
   "ui_status": {
     "verdict": "GO_DEMO",
     "lia_live_trading": false,
-    "pages": "https://neltud.github.io/xArtists/"
+    "pages": "https://neltud.github.io/xArtists/",
+    "supernova": true
   }
 }

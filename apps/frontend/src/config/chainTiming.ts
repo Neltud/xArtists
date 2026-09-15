@@ -9,7 +9,7 @@
  *   VITE_SUPERNOVA=0|false|off → force pre_supernova
  *   otherwise                  → auto from API `refreshRate` (probeChainTiming)
  *
- * Until the probe returns, defaults stay conservative (6s-era) so mainnet is not hammered.
+ * After 10 Sep 2026 18:06 UTC the pre-probe default is supernova (600ms). Probe still overrides. Force pre with VITE_SUPERNOVA=0.
  */
 
 export type ChainTimingMode = 'pre_supernova' | 'supernova'
@@ -53,7 +53,11 @@ export function applyStatsRefreshRate(refreshRateMs: number): ChainTimingMode {
 export function isSupernovaMode(): boolean {
   if (envForcePre()) return false
   if (envForceSupernova()) return true
-  return detectedMode === 'supernova'
+  if (detectedMode === 'supernova') return true
+  if (detectedMode === 'pre_supernova') return false
+  // Post 10 Sep 2026 18:06 UTC: mainnet is Supernova. Conservative 6s default
+  // only applies if the operator forces pre via VITE_SUPERNOVA=0.
+  return Date.now() >= Date.parse('2026-09-10T18:06:00.000Z')
 }
 
 export function chainTimingMode(): ChainTimingMode {

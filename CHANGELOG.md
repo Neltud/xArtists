@@ -4,7 +4,14 @@
 
 ### Documentation
 
-* **marketing:** draft X 2026-09-13 13:06 CEST — wallet MultiversX
+* **recap:** analyse dApp complète + veille 15 sept 2026 — Supernova live, GO_DEMO, probe codeHash null
+* **honesty:** README / SOURCE_OF_TRUTH / ROADMAP / STATUS — drop J-13 countdown
+
+### Fixes
+
+* **chainTiming:** default post-10-Sep is supernova (600 ms) until probe; `VITE_SUPERNOVA=0` still forces pre
+* **contracts.json:** probe 15 Sep (LIA Ops 0.093 EGLD / nonce 1468, epoch 2237)
+* **lia_board:** `approx_block_time_sec` 0.6 post-Supernova
 
 ## [0.31.0](https://github.com/Neltud/xArtists/compare/v0.30.0...v0.31.0) (2026-09-12)
 

@@ -63,7 +63,9 @@ export function detectedChainTiming(): ChainTimingMode | null {
 export function isSupernovaMode(): boolean {
   if (envForcePre()) return false
   if (envForceSupernova()) return true
-  return detectedMode === 'supernova'
+  if (detectedMode === 'supernova') return true
+  if (detectedMode === 'pre_supernova') return false
+  return Date.now() >= Date.parse('2026-09-10T18:06:00.000Z')
 }
 
 export function chainTimingMode(): ChainTimingMode {

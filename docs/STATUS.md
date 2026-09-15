@@ -1,11 +1,14 @@
-# Status — v3.4.3 UI polish
+# Status — 2026-09-15 GO_DEMO
 
 | Item | State |
 |------|--------|
-| Version | **3.4.3** |
+| Verdict | **GO_DEMO** (not PRODUCTION_MAINNET) |
 | Demo | https://neltud.github.io/xArtists/ |
-| Pages polished | Gallery · Studio · DAO · Portfolio (aurora glass heroes + zinc tokens) |
-| CI | static.yml → apps/frontend + legacy-peer-deps |
-| Tag | v3.4.3 |
+| Network | MultiversX mainnet **Supernova 600 ms** (epoch 2237, J+5) |
+| LIA | paper · `LIA_LIVE_TRADING=0` |
+| Product SCs | **codeHash null** — market / agents / stake / gov / minter |
+| $TRO | TRO-94c925 · 476 224 / 500 000 · 563 accounts · price API 0 |
+| LIA Ops | 0.093 EGLD · nonce 1468 — too tight for deploy |
+| Recap | [`ANALYSE_DAPP_COMPLETE.md`](./ANALYSE_DAPP_COMPLETE.md) |
 
 Hard refresh: Ctrl+Shift+R
