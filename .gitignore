@@ -6,13 +6,20 @@ package-lock.json
 # Build outputs
 dist/
 build/
+apps/frontend/dist/
 
-# Archives and old copies
+# Archives and old copies — P1.2 never re-commit nested zip extracts
 archive/
 xArtists-master/
+**/xArtists-master/
 
-# Env
+# Env / secrets
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*seed*
 
 # Logs
 *.log
@@ -23,6 +30,13 @@ xArtists-master/
 
 # OS
 .DS_Store
-Thumbs.db__pycache__/
+Thumbs.db
+
+# Python
+__pycache__/
 *.pyc
+.venv/
+venv/
+
+# Locks (optional local)
 apps/frontend/bun.lock
