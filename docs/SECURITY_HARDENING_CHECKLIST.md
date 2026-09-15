@@ -1,40 +1,26 @@
-# Checklist durcissement — à cocher avant fonds réels
+# Security hardening checklist (ops)
 
-## Secrets
+Complète [`SECURITY_AUDIT_EXHAUSTIVE_2026-09-15.md`](./SECURITY_AUDIT_EXHAUSTIVE_2026-09-15.md).
 
-- [ ] Aucun `.pem` dans git (`git ls-files '*.pem'`)
-- [ ] `LIA_WALLET_PEM` uniquement GH Actions + Vellum
-- [ ] Rotate PEM si exposé une fois
-- [ ] Deployer wallet ≠ cold treasury
+## Chaque release démo
 
-## Contrats
+- [ ] `python3 scripts/ops_sc_status.py` → NOT_DEPLOYED attendu ou DEPLOYED vérifié
+- [ ] SoftStatus GO_DEMO si non déployé
+- [ ] Aucun `VITE_LIA_LIVE_TRADING=1` sur Pages
+- [ ] grep PEM/seed absent du diff
 
-- [ ] Devnet deploy + blackbox list/buy/cancel/claimFees
-- [ ] Mainnet deploy → `python scripts/verify_marketplace_codehash.py` exit 0
-- [ ] `data/contracts.json` mis à jour **après** verify
-- [ ] UI Buy désactivé si `assertLiveContract` fail
-- [ ] Pause testée (owner)
-- [ ] Non-owner claimFees revert (test)
+## Avant premier SC mainnet
 
-## Front
+- [ ] `./scripts/preflight_deploy_mainnet.sh`
+- [ ] External review notes
+- [ ] Owner key process (2-step if available)
+- [ ] `post_deploy_verify` + update contracts.json
+- [ ] Re-run integrityGates against live codeHash
 
-- [ ] `DEMO_MODE=true` jusqu’au GO CEO
-- [ ] `integrityGates.assertUserFundMove` sur paths Buy/List
-- [ ] WalletConnect domain = Pages only
-- [ ] Pas de `dangerouslySetInnerHTML` sur input user
-- [ ] Amounts en string atomique / BigInt
+## Avant LIA_LIVE_TRADING=1
 
-## LIA
-
-- [ ] `LIA_LIVE_TRADING=0` default
-- [ ] Micro-proof avant live
-- [ ] Halt après N failures
-
-## Post Supernova (epoch 2233+)
-
-- [ ] Login WC + lecture compte
-- [ ] Timeouts TX revus (`docs/SUPERNOVA_TIMEOUTS.md`)
-
-## Audit externe
-
-- [ ] Cabinet indépendant avant TVL matériel
+- [ ] `mode_report('auto')` documenté
+- [ ] Guardian kill testé
+- [ ] Risk limits day/hour
+- [ ] Micro EGLD only
+- [ ] DEPLOYMENT_LOG entry
