@@ -1,30 +1,21 @@
-/** MultiversX Supernova — mainnet live depuis epoch 2233 (10 sept 2026). */
+/**
+ * Supernova mainnet markers for UI badges.
+ * Activation epoch 2233 (~10 Sep 2026). Probe stats.epoch for live check.
+ */
 
-export const SUPERNOVA = {
-  configRelease: 'v2.0.6.0+',
-  epoch: 2233,
-  epochAtUtc: '2026-09-10T17:45:00.000Z',
-  round: 32_157_661,
-  roundAtUtc: '2026-09-10T18:05:00.000Z',
-  /** Rounds ~600 ms post-activation */
-  roundMs: 600,
-  docs: 'https://github.com/multiversx/mx-chain-mainnet-config/releases/tag/v2.0.6.0',
-  hub: 'https://supernova.multiversx.com/',
-} as const
+/** Epoch at which Supernova activated on mainnet */
+export const SUPERNOVA_ACTIVATION_EPOCH = 2233
 
-export function isBeforeSupernova(now = Date.now()): boolean {
-  return now < Date.parse(SUPERNOVA.epochAtUtc)
+/** Target round duration ms post-Supernova */
+export const SUPERNOVA_ROUND_MS = 600
+
+/**
+ * UI helper — treat network as Supernova-era for banners.
+ * Static true after activation date; optional future: fetch /stats.epoch.
+ */
+export function isSupernovaLive(): boolean {
+  // Post 10 Sep 2026 mainnet — activation epoch 2233 is behind us (probe: 2237+)
+  return true
 }
 
-export function isSupernovaLive(now = Date.now()): boolean {
-  return !isBeforeSupernova(now)
-}
-
-/** Bandeau discret — post-activation = message stable. */
-export function supernovaBannerText(now = Date.now()): string | null {
-  if (isSupernovaLive(now)) {
-    return `Supernova · epoch ${SUPERNOVA.epoch}+ · ~600 ms rounds`
-  }
-  const hours = Math.max(0, (Date.parse(SUPERNOVA.epochAtUtc) - now) / 3_600_000)
-  return `Supernova epoch ${SUPERNOVA.epoch} · ~${hours.toFixed(0)}h`
-}
+export const SUPERNOVA_HUB = 'https://supernova.multiversx.com/'
