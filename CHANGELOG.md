@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.33.0](https://github.com/Neltud/xArtists/compare/v0.32.0...v0.33.0) (2026-09-17)
+
+
+### Features
+
+* **demo:** tour GO_DEMO /demo + recap 17 sept + fix supernovaBannerText ([fcef003](https://github.com/Neltud/xArtists/commit/fcef003ab3d23ed17110633db151ecd5cf708a40))
+
+
+### Documentation
+
+* recap dApp 17 sept + walkthrough /demo + route App ([efaa895](https://github.com/Neltud/xArtists/commit/efaa89583df86d5feac0469ef46829541a24d2a0))
+
 ## [Unreleased]
 
 ### Features
