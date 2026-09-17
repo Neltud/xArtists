@@ -5,14 +5,15 @@
 dApp (GitHub Pages): https://neltud.github.io/xArtists/  
 Repo: https://github.com/Neltud/xArtists  
 
-**Status (2026-09-15): GO_DEMO · paper / pre-SC-deploy**  
+**Status (2026-09-17): GO_DEMO · paper / pre-SC-deploy**  
 - Paper LIA by default (`LIA_LIVE_TRADING=0`)  
 - Marketplace, agents, staking, gov, minter SC: **not live** (empty / null `codeHash`) until deploy + verify  
 - UI fail-closed: no fake “live market” claims without on-chain code  
 - Reality Switch (paper vs live chrome) = **chemin**, pas un live allumé — [`docs/REALITY_SWITCH.md`](docs/REALITY_SWITCH.md)  
-- **Supernova mainnet LIVE** since 10 Sep 2026 (~18:06 UTC, epoch 2233) — 600 ms rounds. Probe: `refreshRate=600`, epoch 2237 (J+5).
+- **Supernova mainnet LIVE** since 10 Sep 2026 (~18:06 UTC, epoch 2233) — 600 ms rounds. Probe 17 Sep: `refreshRate=600`, epoch **2239** (J+6). EGLD **$3.85**. LIA Ops **0.093 EGLD / nonce 1468** (idle).
 
-Recap + veille : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)
+Recap + veille : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)  
+Walkthrough démo : [`docs/DEMO_WALKTHROUGH.md`](docs/DEMO_WALKTHROUGH.md)
 
 ---
 
@@ -92,7 +93,8 @@ Map: [`docs/VELLUM_WORKFLOW_MAP.md`](docs/VELLUM_WORKFLOW_MAP.md)
 
 | Doc | Purpose |
 |-----|--------|
-| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap dApp + veille (15 sept 2026) |
+| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap dApp + veille (17 sept 2026) |
+| [DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) | Parcours démo paper |
 | [SOURCE_OF_TRUTH.md](docs/SOURCE_OF_TRUTH.md) | Status canonique |
 | [ENVIRONMENT_VARIABLES.md](docs/ENVIRONMENT_VARIABLES.md) | Variables d’environnement |
 | [BUILD_STEPS.md](docs/BUILD_STEPS.md) | Build front / LIA / SC |

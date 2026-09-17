@@ -1,8 +1,8 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-09-15T04:40:00Z",
-  "chain_note": "Mainnet only. Demo UI GO_DEMO. ALL product SCs empty (codeHash null) as of 15 Sep 2026 API probe. Supernova 600ms live.",
+  "updated": "2026-09-17T04:40:00Z",
+  "chain_note": "Mainnet only. Demo UI GO_DEMO. ALL product SCs empty (codeHash null) as of 17 Sep 2026 API probe. Supernova 600ms live J+6.",
   "wallets": {
     "lia_ops": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "grokyversx": "erd12c7f9wll0dcn26ax9fwrgp3yuswchyh9xwz8zs29hl9crgpn96gsdqq5gl",
@@ -27,7 +27,7 @@
     "tro_governance": "NOT_DEPLOYED",
     "marketplace": "NOT_DEPLOYED",
     "nft_minter": "NOT_DEPLOYED",
-    "note": "API codeHash null as of 2026-09-13"
+    "note": "API codeHash null as of 2026-09-17"
   },
   "ui_status": {
     "verdict": "GO_DEMO",
@@ -39,45 +39,46 @@
     "supernova": true
   },
   "verification": {
-    "probed_at": "2026-09-15T04:33:00Z",
+    "probed_at": "2026-09-17T04:35:00Z",
     "api": "https://api.multiversx.com/accounts/{address}",
     "marketplace_mainnet": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED \u2014 empty account"
+      "verdict": "NOT_DEPLOYED — empty account"
     },
     "nft_staking": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED \u2014 empty account"
+      "verdict": "NOT_DEPLOYED — empty account"
     },
     "tro_governance": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED \u2014 empty account"
+      "verdict": "NOT_DEPLOYED — empty account"
     },
     "nft_minter": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED \u2014 empty account"
+      "verdict": "NOT_DEPLOYED — empty account"
     },
-    "agents_marketplace": "null \u2014 never deployed",
-    "tro_burn": "null \u2014 tro-burn ready, not deployed",
-    "rwa_escrow_bridge": "null \u2014 dispute+verification ready, not deployed",
-    "treasury_splitter": "null \u2014 SC ready contracts/treasury-splitter, dest wallets null",
+    "agents_marketplace": "null — never deployed",
+    "tro_burn": "null — tro-burn ready, not deployed",
+    "rwa_escrow_bridge": "null — dispute+verification ready, not deployed",
+    "treasury_splitter": "null — SC ready contracts/treasury-splitter, dest wallets null",
     "lia_ops": {
       "balance_egld": 0.0928,
       "nonce": 1468,
-      "note": "insufficient for deploy + micro-TX"
+      "note": "idle since 15 Sep — insufficient for deploy + micro-TX"
     },
     "network": {
       "refreshRate": 600,
-      "epoch": 2237,
-      "supernova": true
+      "epoch": 2239,
+      "supernova": true,
+      "egld_usd": 3.85
     }
   }
 }
