@@ -48,6 +48,7 @@ const SimulationLab = lazy(() => import('./pages/SimulationLab'))
 const EntityMap = lazy(() => import('./pages/EntityMap'))
 const SiteMapPage = lazy(() => import('./pages/SiteMapPage'))
 const TxShell = lazy(() => import('./providers/TxShell'))
+const DemoTourPage = lazy(() => import('./pages/DemoTourPage'))
 
 const TX_PATHS = new Set([
   '/marketplace',
@@ -151,6 +152,7 @@ export default function App() {
                 <Route path="/lp" element={<LPPoolsPage />} />
                 <Route path="/soul-testnet" element={<SoulTestnetPage />} />
                 <Route path="/ads" element={<AdsPage />} />
+                <Route path="/demo" element={<DemoTourPage />} />
                 <Route path="/editions" element={<Editions />} />
                 <Route
                   path="*"
@@ -178,6 +180,9 @@ export default function App() {
               </p>
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-zinc-500">
+              <a href="#/demo" className="hover:text-zinc-300 transition-colors">
+                Démo
+              </a>
               <a href="#/museum" className="hover:text-zinc-300 transition-colors">
                 Galerie
               </a>
