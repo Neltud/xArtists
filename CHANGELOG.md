@@ -1,5 +1,20 @@
 # Changelog — xArtists
 
+## [Unreleased]
+
+### Features
+
+* **demo:** route `/demo` — tour 8 étapes + gates honnêtes GO_DEMO
+* **demo:** banner paper pointe vers le tour ; DEMO_PATH + Board
+
+### Bug Fixes
+
+* **frontend:** export `supernovaBannerText` (DemoModeBanner compilable)
+
+### Documentation
+
+* **recap:** analyse dApp + veille 17 sept 2026 — epoch 2239, EGLD $3.85, SC toujours empty
+
 ## [0.32.0](https://github.com/Neltud/xArtists/compare/v0.31.0...v0.32.0) (2026-09-15)
 
 
@@ -23,19 +38,6 @@
 * **marketing:** draft X 22:15 CEST — packs IA (paper Pulse·Yield·Sentinel) ([923c9a0](https://github.com/Neltud/xArtists/commit/923c9a0d9143b5d4559635ad48998b389606b687))
 * **P0:** honest GO_DEMO status — contracts.json SoT; deprecate redundant Pages workflows; GSN/Contrarian not active ([f2d4cb1](https://github.com/Neltud/xArtists/commit/f2d4cb1007aeaadd4f41e239c8ca7b06b1cfa26d))
 * Supernova status update epoch 2237 · refreshRate 600ms (2026-09-15) ([9bf2ed7](https://github.com/Neltud/xArtists/commit/9bf2ed780e3e4623fb9812e7ffe7ee6f051aae20))
-
-## [Unreleased]
-
-### Documentation
-
-* **recap:** analyse dApp complète + veille 15 sept 2026 — Supernova live, GO_DEMO, probe codeHash null
-* **honesty:** README / SOURCE_OF_TRUTH / ROADMAP / STATUS — drop J-13 countdown
-
-### Fixes
-
-* **chainTiming:** default post-10-Sep is supernova (600 ms) until probe; `VITE_SUPERNOVA=0` still forces pre
-* **contracts.json:** probe 15 Sep (LIA Ops 0.093 EGLD / nonce 1468, epoch 2237)
-* **lia_board:** `approx_block_time_sec` 0.6 post-Supernova
 
 ## [0.31.0](https://github.com/Neltud/xArtists/compare/v0.30.0...v0.31.0) (2026-09-12)
 
