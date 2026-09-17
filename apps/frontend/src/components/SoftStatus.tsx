@@ -20,7 +20,7 @@ export default function SoftStatus() {
         {sn && (
           <>
             <span className="text-zinc-700">·</span>
-            <span className="text-cyan-400/85">Supernova</span>
+            <span className="text-cyan-400/85">Supernova J+6</span>
           </>
         )}
         {n > 0 && (
@@ -43,8 +43,8 @@ export default function SoftStatus() {
           My Packs
         </Link>
         <span className="mx-1.5 text-zinc-700">·</span>
-        <span className="text-zinc-600" title="data/contracts.json">
-          codeHash null
+        <span className="text-zinc-600" title="data/contracts.json probe 2026-09-17">
+          codeHash null · epoch 2239
         </span>
       </p>
     </div>

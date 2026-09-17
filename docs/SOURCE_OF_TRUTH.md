@@ -1,6 +1,6 @@
 # Source of truth — xArtists status
 
-**Updated:** 2026-09-15  
+**Updated:** 2026-09-17  
 **Rule:** Communication and roadmaps **must not** claim production/mainnet deploy unless this file + live probe agree.
 
 ## Canonical sources (in order)
@@ -19,9 +19,9 @@
 | **Product SCs** | **Not deployed** (`codeHash` null on reserved addresses) |
 | **LIA_LIVE_TRADING** | **false** (paper board) |
 | **Demo** | https://neltud.github.io/xArtists/ |
-| **Probe** | 2026-09-15 ~04:33 UTC · epoch 2237 · EGLD ~$4.15 · LIA Ops 0.093 EGLD / nonce 1468 |
+| **Probe** | 2026-09-17 ~04:35 UTC · epoch **2239** · EGLD **$3.85** · LIA Ops 0.093 EGLD / nonce 1468 |
 
-### Smart contracts (2026-09-15 probe)
+### Smart contracts (2026-09-17 probe)
 
 | Contract | Address (short) | codeHash | Status |
 |----------|-----------------|----------|--------|
@@ -42,7 +42,8 @@ Addresses may exist as empty accounts. **Empty ≠ deployed.**
 | **LIA executor** | Replace stubs with signed execution behind `LIA_LIVE_TRADING` |
 | **GrokyversX** | Host-side bot; PEM on operator; not “LIA production” |
 | **THE PULSE** | Social signals layer; demo strip on Home |
-| **Supernova** | **Done on-network.** Timing auto-detect + post-date default 600 ms |
+| **Supernova** | **Done on-network (J+6).** FixEpochChange epoch 2238 passed. Timing auto-detect 600 ms |
+| **Paper demo walkthrough** | Local session — never a live market |
 
 ## Features not active (do not advertise as live)
 

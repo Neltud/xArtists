@@ -1,5 +1,18 @@
 # Changelog — xArtists
 
+## [Unreleased]
+
+### Documentation
+
+* **recap:** analyse dApp complète + veille **17 sept 2026** — Supernova J+6 epoch 2239, GO_DEMO, probe codeHash null, EGLD $3.85
+* **demo:** walkthrough paper (galerie → réserve → packs → journal)
+* **honesty:** SOURCE_OF_TRUTH / STATUS / README / ROADMAP — FixEpochChange 2238 passé ; LIA Ops idle n1468
+
+### Fixes
+
+* **SoftStatus:** Supernova J+6 + epoch 2239 + codeHash null (probe 17 Sep)
+* **contracts.json:** probe 17 Sep (LIA Ops 0.093 EGLD / nonce 1468, epoch 2239, EGLD $3.85)
+
 ## [0.32.0](https://github.com/Neltud/xArtists/compare/v0.31.0...v0.32.0) (2026-09-15)
 
 
@@ -24,19 +37,6 @@
 * **P0:** honest GO_DEMO status — contracts.json SoT; deprecate redundant Pages workflows; GSN/Contrarian not active ([f2d4cb1](https://github.com/Neltud/xArtists/commit/f2d4cb1007aeaadd4f41e239c8ca7b06b1cfa26d))
 * Supernova status update epoch 2237 · refreshRate 600ms (2026-09-15) ([9bf2ed7](https://github.com/Neltud/xArtists/commit/9bf2ed780e3e4623fb9812e7ffe7ee6f051aae20))
 
-## [Unreleased]
-
-### Documentation
-
-* **recap:** analyse dApp complète + veille 15 sept 2026 — Supernova live, GO_DEMO, probe codeHash null
-* **honesty:** README / SOURCE_OF_TRUTH / ROADMAP / STATUS — drop J-13 countdown
-
-### Fixes
-
-* **chainTiming:** default post-10-Sep is supernova (600 ms) until probe; `VITE_SUPERNOVA=0` still forces pre
-* **contracts.json:** probe 15 Sep (LIA Ops 0.093 EGLD / nonce 1468, epoch 2237)
-* **lia_board:** `approx_block_time_sec` 0.6 post-Supernova
-
 ## [0.31.0](https://github.com/Neltud/xArtists/compare/v0.30.0...v0.31.0) (2026-09-12)
 
 
@@ -47,4 +47,4 @@
 
 ### Documentation
 
-* **marketing:** draft X 2026-09-12 20:05 CEST — packs IA ([eeb4ca9](https://github.com/Neltud/xArtists/commit/eeb4ca90df6dd6287510b79e30da5eb9bc04292d))
+* **marketing:** draft X 2026-09-12 20:05 CEST — packs IA ([eeb4ca9](https://github.com/Neltud/xArtists/commit/eeb4ca90df6dd6287510d9d43ab6d5f))
