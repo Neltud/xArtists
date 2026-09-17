@@ -19,3 +19,10 @@ export function isSupernovaLive(): boolean {
 }
 
 export const SUPERNOVA_HUB = 'https://supernova.multiversx.com/'
+
+/** Short banner copy for DemoModeBanner */
+export function supernovaBannerText(): string {
+  return isSupernovaLive()
+    ? `Supernova ${SUPERNOVA_ROUND_MS} ms · live`
+    : 'Pre-Supernova cadence'
+}

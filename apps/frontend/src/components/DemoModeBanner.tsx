@@ -20,8 +20,8 @@ export default function DemoModeBanner() {
           {sn && <span className={live ? 'text-cyan-400/80' : 'text-amber-500/70'}>{sn}</span>}
         </div>
         {DEMO_MODE && (
-          <Link to="/agents" className="text-zinc-500 hover:text-white transition-colors duration-300">
-            Packs →
+          <Link to="/demo" className="text-zinc-500 hover:text-white transition-colors duration-300">
+            Tour démo →
           </Link>
         )}
       </div>

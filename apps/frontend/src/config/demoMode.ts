@@ -13,10 +13,12 @@ export const DEMO_BULLETS = [
 
 /** Parcours démo recommandé (ordre). */
 export const DEMO_PATH = [
+  { to: '/demo', label: 'Tour', hint: 'Parcours' },
   { to: '/museum', label: 'Galerie', hint: 'Visite 3D' },
   { to: '/agents', label: 'Packs', hint: '3 accès IA' },
   { to: '/tours', label: 'Tours', hint: 'Carte art' },
   { to: '/wallet', label: 'Wallet', hint: 'Connecter' },
+  { to: '/trading', label: 'Board', hint: 'Paper LIA' },
 ] as const
 
 export const SOFT_LAUNCH_PATH = [
