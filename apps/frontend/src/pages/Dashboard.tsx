@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import SoftStatus from '../components/SoftStatus'
 import AgentWalletsStrip from '../components/AgentWalletsStrip'
 import PulseStrip from '../components/PulseStrip'
+import NetworkLiveStrip from '../components/NetworkLiveStrip'
 import { LINKS } from '../config/links'
 import { isSupernovaLive } from '../config/supernova'
 
@@ -46,11 +47,15 @@ export default function Dashboard() {
           <Link to="/agents" className="btn-secondary">
             Voir les packs
           </Link>
+          <Link to="/demo" className="btn-secondary">
+            Tour démo
+          </Link>
         </div>
       </section>
 
       <div className="relative mt-10 space-y-3">
         <SoftStatus />
+        <NetworkLiveStrip />
         <PulseStrip />
         <AgentWalletsStrip />
 

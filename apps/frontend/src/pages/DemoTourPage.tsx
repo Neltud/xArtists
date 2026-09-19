@@ -1,13 +1,21 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DEMO_BULLETS, DEMO_PATH } from '../config/demoMode'
 import { isSupernovaLive, SUPERNOVA_ROUND_MS, SUPERNOVA_HUB } from '../config/supernova'
+import {
+  FALLBACK_SNAPSHOT,
+  liaOpsFunded,
+  probeNetwork,
+  supernovaAgeEpochs,
+  type NetworkSnapshot,
+} from '../lib/networkProbe'
 
 const STEPS = [
   {
     n: '01',
     to: '/',
     title: 'Accueil',
-    body: 'Persona, Pulse strip, raccourcis. Chrome paper — pas un marché live.',
+    body: 'Persona, Pulse strip, probe mainnet live. Chrome paper — pas un marché live.',
   },
   {
     n: '02',
@@ -51,26 +59,59 @@ const STEPS = [
     title: 'Sim Lab',
     body: 'Trades simulés côté client. Pas de broadcast.',
   },
+  {
+    n: '09',
+    to: '/go-live',
+    title: 'GO_LIVE checklist',
+    body: 'Suite logique : dest wallets, PEM local, simulate → deploy → verify codeHash.',
+  },
 ] as const
 
-const GATES = [
-  { ok: false, label: 'Marketplace NFT codeHash', value: 'null — List/Buy/Bid OFF' },
-  { ok: false, label: 'Agents marketplace', value: 'non déployé' },
-  { ok: false, label: 'Staking / gov / minter', value: 'comptes empty' },
-  { ok: false, label: 'LIA live trading', value: 'OFF (paper)' },
-  { ok: true, label: 'Supernova mainnet', value: `${SUPERNOVA_ROUND_MS} ms live` },
-  { ok: true, label: 'Pages demo', value: 'GO_DEMO' },
-]
-
 export default function DemoTourPage() {
+  const [snap, setSnap] = useState<NetworkSnapshot>(FALLBACK_SNAPSHOT)
+
+  useEffect(() => {
+    let c = false
+    probeNetwork().then(s => {
+      if (!c) setSnap(s)
+    })
+    return () => {
+      c = true
+    }
+  }, [])
+
+  const funded = liaOpsFunded(snap.liaOps.balanceEgld)
+  const GATES = [
+    {
+      ok: !snap.sc.marketplace.codeEmpty,
+      label: 'Marketplace NFT codeHash',
+      value: snap.sc.marketplace.codeEmpty ? 'null — List/Buy/Bid OFF' : 'live',
+    },
+    { ok: false, label: 'Agents marketplace', value: 'non déployé' },
+    {
+      ok: !snap.sc.nftStaking.codeEmpty,
+      label: 'Staking / gov / minter',
+      value: snap.sc.nftStaking.codeEmpty ? 'comptes empty' : 'codeHash',
+    },
+    { ok: false, label: 'LIA live trading', value: 'OFF (paper)' },
+    {
+      ok: funded,
+      label: 'LIA Ops funded',
+      value: `${snap.liaOps.balanceEgld.toFixed(4)} EGLD · nonce ${snap.liaOps.nonce}`,
+    },
+    { ok: true, label: 'Supernova mainnet', value: `${SUPERNOVA_ROUND_MS} ms · epoch ${snap.epoch}` },
+    { ok: true, label: 'Pages demo', value: 'GO_DEMO' },
+  ]
+
   return (
     <div className="page-wrap py-10 space-y-10">
       <header className="space-y-3">
         <p className="text-[11px] uppercase tracking-[0.2em] text-cyan-400/80">Parcours démo</p>
         <h1 className="display text-3xl md:text-4xl text-white">GO_DEMO — tour complet</h1>
         <p className="text-sm text-zinc-400 max-w-2xl leading-relaxed">
-          xArtists sur MultiversX : galerie + packs paper + board LIA. Les smart contracts produit
-          n’ont pas de <code className="text-zinc-300">codeHash</code>. Rien ici n’allume le live.
+          xArtists sur MultiversX : galerie + packs paper + board LIA. Probe live epoch{' '}
+          {snap.epoch} (J+{supernovaAgeEpochs(snap.epoch)}). Les smart contracts produit n’ont pas de{' '}
+          <code className="text-zinc-300">codeHash</code>. Rien ici n’allume le live.
         </p>
         {isSupernovaLive() && (
           <a
@@ -85,7 +126,7 @@ export default function DemoTourPage() {
       </header>
 
       <ul className="grid gap-2 text-sm text-zinc-400">
-        {DEMO_BULLETS.map((b) => (
+        {DEMO_BULLETS.map(b => (
           <li key={b} className="flex gap-2">
             <span className="text-amber-400/80">▸</span>
             {b}
@@ -96,7 +137,7 @@ export default function DemoTourPage() {
       <section>
         <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Étapes (2–6 min)</h2>
         <ol className="grid md:grid-cols-2 gap-3">
-          {STEPS.map((s) => (
+          {STEPS.map(s => (
             <li key={s.n}>
               <Link
                 to={s.to}
@@ -117,7 +158,7 @@ export default function DemoTourPage() {
       <section>
         <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Raccourcis</h2>
         <div className="flex flex-wrap gap-2">
-          {DEMO_PATH.map((p) => (
+          {DEMO_PATH.map(p => (
             <Link
               key={p.to}
               to={p.to}
@@ -135,7 +176,7 @@ export default function DemoTourPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <tbody>
-              {GATES.map((g) => (
+              {GATES.map(g => (
                 <tr key={g.label} className="border-t border-white/5">
                   <td className="py-2 pr-3 text-zinc-400">{g.label}</td>
                   <td className={g.ok ? 'text-cyan-400' : 'text-amber-400/90'}>{g.value}</td>
@@ -148,7 +189,7 @@ export default function DemoTourPage() {
 
       <p className="text-[11px] text-zinc-600 leading-relaxed">
         Recap technique : docs/ANALYSE_DAPP_COMPLETE.md · SoT : data/contracts.json. Pas un conseil
-        en investissement. Tips ≠ investissement.
+        en investissement. Tips ≠ investissement. Probe {snap.ok ? 'live' : 'cache'} {snap.probedAt}.
       </p>
     </div>
   )

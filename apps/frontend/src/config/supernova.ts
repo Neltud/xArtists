@@ -11,10 +11,9 @@ export const SUPERNOVA_ROUND_MS = 600
 
 /**
  * UI helper — treat network as Supernova-era for banners.
- * Static true after activation date; optional future: fetch /stats.epoch.
+ * Static true after 10 Sep 2026; live epoch comes from /stats via networkProbe.
  */
 export function isSupernovaLive(): boolean {
-  // Post 10 Sep 2026 mainnet — activation epoch 2233 is behind us (probe: 2237+)
   return true
 }
 

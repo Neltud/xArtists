@@ -5,14 +5,15 @@
 dApp (GitHub Pages): https://neltud.github.io/xArtists/  
 Repo: https://github.com/Neltud/xArtists  
 
-**Status (2026-09-17): GO_DEMO · paper / pre-SC-deploy**  
+**Status (2026-09-19): GO_DEMO · paper / pre-SC-deploy**  
 - Paper LIA by default (`LIA_LIVE_TRADING=0`)  
 - Marketplace, agents, staking, gov, minter SC: **not live** (empty / null `codeHash`) until deploy + verify  
 - UI fail-closed: no fake “live market” claims without on-chain code  
 - Reality Switch (paper vs live chrome) = **chemin**, pas un live allumé — [`docs/REALITY_SWITCH.md`](docs/REALITY_SWITCH.md)  
-- **Supernova mainnet LIVE** since 10 Sep 2026 (~18:06 UTC, epoch 2233) — 600 ms rounds. Probe: `refreshRate=600`, epoch 2239 (J+7). Tour démo : `/#/demo`.
+- **Supernova mainnet LIVE** since 10 Sep 2026 (~18:06 UTC, epoch 2233) — 600 ms rounds. Probe: `refreshRate=600`, epoch **2241** (J+8). Tour démo : `/#/demo` · checklist : `/#/go-live`.  
+- **LIA Ops ~2.09 EGLD** (nonce 1468) — fund P0 done; PEM stays off git.
 
-Recap + veille (17 sept) : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)
+Recap + veille (19 sept) : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)
 
 ---
 
@@ -75,33 +76,24 @@ export CHAIN=1 FEE_BPS=300 LIA_LIVE_TRADING=0 PEM=/secure/mainnet.pem
 python scripts/verify_marketplace_codehash.py
 ```
 
+LIA Ops is funded (~2.09 EGLD as of 19 Sep 2026). Dest treasury wallets still **null**. PEM never in git.
+
 ---
 
 ## Vellum / LIA
 
-```bash
-export CHAIN=1 LIA_LIVE_TRADING=0 PYTHONPATH=. 
-python -m lia.vellum.production_run
-```
+See [`README_LIA.md`](README_LIA.md) and [`docs/AUTONOMOUS_LIA.md`](docs/AUTONOMOUS_LIA.md).
 
-Map: [`docs/VELLUM_WORKFLOW_MAP.md`](docs/VELLUM_WORKFLOW_MAP.md)
+## Docs
 
----
-
-## Docs index
-
-| Doc | Purpose |
-|-----|--------|
-| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap dApp + veille (17 sept 2026) |
+| Doc | Role |
+|-----|------|
+| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap + veille 19 sept |
 | [DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) | Parcours démo `/demo` |
-| [SOURCE_OF_TRUTH.md](docs/SOURCE_OF_TRUTH.md) | Status canonique |
-| [ENVIRONMENT_VARIABLES.md](docs/ENVIRONMENT_VARIABLES.md) | Variables d’environnement |
-| [BUILD_STEPS.md](docs/BUILD_STEPS.md) | Build front / LIA / SC |
-| [SC_DEPLOY_COMMANDS.md](docs/SC_DEPLOY_COMMANDS.md) | Commandes deploy SC |
-| [STATUS.md](docs/STATUS.md) | Capability matrix |
-| [VELLUM_WORKFLOW_MAP.md](docs/VELLUM_WORKFLOW_MAP.md) | Workflows Vellum |
-| [REALITY_SWITCH.md](docs/REALITY_SWITCH.md) | Paper vs live chrome (chemin, live OFF) |
-| [LIVE_EXECUTION_SPECS.md](docs/LIVE_EXECUTION_SPECS.md) | useMultiversX · AssetService · Guardian / Watcher |
-| [ROADMAP_TRUST_INFRA.md](docs/ROADMAP_TRUST_INFRA.md) | Sprint 1–3 connexion → agenticité → écosystème |
+| [GO_LIVE_DEPLOY.md](docs/GO_LIVE_DEPLOY.md) | Deploy SC |
+| [REALITY_SWITCH.md](docs/REALITY_SWITCH.md) | Paper → live chrome |
+| [ENVIRONMENT_VARIABLES.md](docs/ENVIRONMENT_VARIABLES.md) | Env |
 
-No PEM, JWT, or private keys in git — ever.
+## License
+
+MIT. No PEM, JWT, or private keys in git — ever.

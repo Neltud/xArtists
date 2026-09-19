@@ -19,6 +19,7 @@ export const DEMO_PATH = [
   { to: '/tours', label: 'Tours', hint: 'Carte art' },
   { to: '/wallet', label: 'Wallet', hint: 'Connecter' },
   { to: '/trading', label: 'Board', hint: 'Paper LIA' },
+  { to: '/go-live', label: 'GO_LIVE', hint: 'Checklist' },
 ] as const
 
 export const SOFT_LAUNCH_PATH = [
