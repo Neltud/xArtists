@@ -1,15 +1,16 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-09-15T04:40:00Z",
-  "chain_note": "Mainnet only. Demo UI GO_DEMO. ALL product SCs empty (codeHash null) as of 15 Sep 2026 API probe. Supernova 600ms live.",
+  "updated": "2026-09-19T04:35:00Z",
+  "chain_note": "Mainnet only. Demo UI GO_DEMO. ALL product SCs empty (codeHash null) as of 19 Sep 2026 API probe. Supernova 600ms live. LIA Ops funded (~2.09 EGLD) — deploy economically possible; PEM stays off git.",
   "wallets": {
     "lia_ops": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "grokyversx": "erd12c7f9wll0dcn26ax9fwrgp3yuswchyh9xwz8zs29hl9crgpn96gsdqq5gl",
     "mission": null,
     "reserve": null,
     "reward": null,
     "ops": null,
-    "note": "Create Mission + Reserve + Reward + Ops (EOA or multisig), publish here + TREASURY_POLICY. Never use LIA ops as user Connect."
+    "note": "LIA = board/ops. GrokyversX = optional host trader. Never use as user Connect."
   },
   "contracts": {
     "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
@@ -21,52 +22,66 @@
     "tro_burn": null,
     "treasury_splitter": null
   },
+  "deploy_status": {
+    "nft_staking": "NOT_DEPLOYED",
+    "tro_governance": "NOT_DEPLOYED",
+    "marketplace": "NOT_DEPLOYED",
+    "nft_minter": "NOT_DEPLOYED",
+    "note": "API codeHash null as of 2026-09-19"
+  },
+  "ui_status": {
+    "verdict": "GO_DEMO",
+    "lia_live_trading": false,
+    "grokyversx_micro_trading": false,
+    "contrarian_brain": false,
+    "gsn_live_feed": false,
+    "pages": "https://neltud.github.io/xArtists/",
+    "supernova": true
+  },
   "verification": {
-    "probed_at": "2026-09-15T04:33:00Z",
+    "probed_at": "2026-09-19T04:35:00Z",
     "api": "https://api.multiversx.com/accounts/{address}",
     "marketplace_mainnet": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED \u2014 empty account"
+      "verdict": "NOT_DEPLOYED — empty account"
     },
     "nft_staking": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED \u2014 empty account"
+      "verdict": "NOT_DEPLOYED — empty account"
     },
     "tro_governance": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED \u2014 empty account"
+      "verdict": "NOT_DEPLOYED — empty account"
     },
     "nft_minter": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED \u2014 empty account"
+      "verdict": "NOT_DEPLOYED — empty account"
     },
-    "agents_marketplace": "null \u2014 never deployed",
-    "tro_burn": "null \u2014 tro-burn ready, not deployed",
-    "rwa_escrow_bridge": "null \u2014 dispute+verification ready, not deployed",
-    "treasury_splitter": "null \u2014 SC ready contracts/treasury-splitter, dest wallets null",
+    "agents_marketplace": "null — never deployed",
+    "tro_burn": "null — tro-burn ready, not deployed",
+    "rwa_escrow_bridge": "null — dispute+verification ready, not deployed",
+    "treasury_splitter": "null — SC ready contracts/treasury-splitter, dest wallets null",
     "lia_ops": {
-      "balance_egld": 0.0928,
+      "balance_egld": 2.0928,
       "nonce": 1468,
-      "note": "insufficient for deploy + micro-TX"
+      "note": "FUNDED 19 Sep (~+2 EGLD vs 0.093 on 17 Sep). Deploy economically possible. PEM operator host only."
     },
     "network": {
       "refreshRate": 600,
-      "epoch": 2237,
-      "supernova": true
+      "epoch": 2241,
+      "supernova": true,
+      "egld_usd": 4.09,
+      "accounts": 9262882,
+      "transactions": 628518764,
+      "blocks": 133351539
     }
-  },
-  "ui_status": {
-    "verdict": "GO_DEMO",
-    "lia_live_trading": false,
-    "pages": "https://neltud.github.io/xArtists/",
-    "supernova": true
   }
 }

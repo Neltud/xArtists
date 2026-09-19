@@ -1,8 +1,8 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-09-17T04:47:00Z",
-  "chain_note": "Mainnet only. Demo UI GO_DEMO. ALL product SCs empty (codeHash null) as of 17 Sep 2026 API probe. Supernova 600ms live.",
+  "updated": "2026-09-19T04:35:00Z",
+  "chain_note": "Mainnet only. Demo UI GO_DEMO. ALL product SCs empty (codeHash null) as of 19 Sep 2026 API probe. Supernova 600ms live. LIA Ops funded (~2.09 EGLD) — deploy economically possible; PEM stays off git.",
   "wallets": {
     "lia_ops": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "grokyversx": "erd12c7f9wll0dcn26ax9fwrgp3yuswchyh9xwz8zs29hl9crgpn96gsdqq5gl",
@@ -27,7 +27,7 @@
     "tro_governance": "NOT_DEPLOYED",
     "marketplace": "NOT_DEPLOYED",
     "nft_minter": "NOT_DEPLOYED",
-    "note": "API codeHash null as of 2026-09-17"
+    "note": "API codeHash null as of 2026-09-19"
   },
   "ui_status": {
     "verdict": "GO_DEMO",
@@ -39,7 +39,7 @@
     "supernova": true
   },
   "verification": {
-    "probed_at": "2026-09-17T04:47:00Z",
+    "probed_at": "2026-09-19T04:35:00Z",
     "api": "https://api.multiversx.com/accounts/{address}",
     "marketplace_mainnet": {
       "codeHash": null,
@@ -70,14 +70,18 @@
     "rwa_escrow_bridge": "null — dispute+verification ready, not deployed",
     "treasury_splitter": "null — SC ready contracts/treasury-splitter, dest wallets null",
     "lia_ops": {
-      "balance_egld": 0.0928,
+      "balance_egld": 2.0928,
       "nonce": 1468,
-      "note": "insufficient for deploy + micro-TX"
+      "note": "FUNDED 19 Sep (~+2 EGLD vs 0.093 on 17 Sep). Deploy economically possible. PEM operator host only."
     },
     "network": {
       "refreshRate": 600,
-      "epoch": 2239,
-      "supernova": true
+      "epoch": 2241,
+      "supernova": true,
+      "egld_usd": 4.09,
+      "accounts": 9262882,
+      "transactions": 628518764,
+      "blocks": 133351539
     }
   }
 }

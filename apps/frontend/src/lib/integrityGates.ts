@@ -76,6 +76,24 @@ export function assertNotLiaOpsWallet(
   return { ok: true }
 }
 
+/** Treasury splitter must not be armed without dest wallets. */
+export function assertTreasuryDest(wallets: {
+  mission?: string | null
+  reserve?: string | null
+  reward?: string | null
+  ops?: string | null
+}): GateResult {
+  const dest = [wallets.mission, wallets.reserve, wallets.reward, wallets.ops]
+  if (dest.some(d => !d)) {
+    return {
+      ok: false,
+      code: 'TREASURY_DEST_NULL',
+      message: 'Wallets destination treasury encore null — splitter non armé.',
+    }
+  }
+  return { ok: true }
+}
+
 export async function probeAccountCodeHash(
   address: string,
   apiBase = 'https://api.multiversx.com'

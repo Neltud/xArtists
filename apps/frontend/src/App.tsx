@@ -49,6 +49,7 @@ const EntityMap = lazy(() => import('./pages/EntityMap'))
 const SiteMapPage = lazy(() => import('./pages/SiteMapPage'))
 const TxShell = lazy(() => import('./providers/TxShell'))
 const DemoTourPage = lazy(() => import('./pages/DemoTourPage'))
+const GoLivePage = lazy(() => import('./pages/GoLivePage'))
 
 const TX_PATHS = new Set([
   '/marketplace',
@@ -153,6 +154,8 @@ export default function App() {
                 <Route path="/soul-testnet" element={<SoulTestnetPage />} />
                 <Route path="/ads" element={<AdsPage />} />
                 <Route path="/demo" element={<DemoTourPage />} />
+                <Route path="/go-live" element={<GoLivePage />} />
+                <Route path="/golive" element={<Navigate to="/go-live" replace />} />
                 <Route path="/editions" element={<Editions />} />
                 <Route
                   path="*"
