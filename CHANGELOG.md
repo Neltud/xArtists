@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.34.0](https://github.com/Neltud/xArtists/compare/v0.33.0...v0.34.0) (2026-09-19)
+
+
+### Features
+
+* **demo:** live mainnet probe, GO_LIVE checklist, recap 19 sept ([93ea4ff](https://github.com/Neltud/xArtists/commit/93ea4ff40eab2fedb2d541111d644de5adbeef7d))
+
 ## [Unreleased]
 
 ### Features
