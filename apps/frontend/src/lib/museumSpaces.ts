@@ -44,6 +44,27 @@ export const MUSEUM_SPACES: MuseumSpace[] = [
   },
 ]
 
+/** Lignes d'hôte LIA par espace musée */
+export const LIA_HOST_LINES: Record<MuseumSpaceId, string[]> = {
+  catzligue: [
+    'Bienvenue dans la galerie publique — regarde, zoome, respire.',
+    'Chaque œuvre a une histoire. Clique pour l\'ouvrir.',
+    'xArtists · papier d\'abord, on-chain dès que les SC sont live.',
+  ],
+  mydee: [
+    'Connecte ton wallet pour voir tes NFT ici.',
+    'Tes pièces on-chain s\'affichent dans cet espace personnel.',
+  ],
+  world_tour: [
+    'Je te guide à travers les villes — choisis une destination sur la carte.',
+    'Musées, street art, salles 3D : le tour est vivant.',
+  ],
+  vr_core: [
+    'VR Core nécessite un LIA Pass — mint SC en attente.',
+    'Pas d\'immersion casque dans cette build. Corridor + guide = fondation v1.',
+  ],
+}
+
 export type TourStop = {
   id: string
   city: string
