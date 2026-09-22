@@ -1,5 +1,21 @@
 # Changelog — xArtists
 
+## [0.35.0](https://github.com/Neltud/xArtists/compare/v0.34.0...v0.35.0) (2026-09-22)
+
+
+### Features
+
+* **front:** P0 PageTransition + SoundDock ([2a4d169](https://github.com/Neltud/xArtists/commit/2a4d169fd3181c134d557a1ba740d1a97cdb9623))
+* **front:** P0 part1 — SalePage, transitions, SFX, action feed, rights core ([cc73302](https://github.com/Neltud/xArtists/commit/cc73302b978caa52759072ef6acc4bdccd85733c))
+* **front:** P0 rights lib, CopyrightBlock, OpsHud, JoyNotes, hooks ([b319c21](https://github.com/Neltud/xArtists/commit/b319c210427f4ff60e051b48bf63fcf00d8fe31d))
+* **front:** wire SalePage, PageTransition, SoundDock in App ([ec5ba31](https://github.com/Neltud/xArtists/commit/ec5ba313a0b615e29e622d1f55080fc5c63cd84e))
+
+
+### Bug Fixes
+
+* **ci:** Setup Node without package-lock cache (unblocks Pages deploy) ([b3b2b52](https://github.com/Neltud/xArtists/commit/b3b2b52a0e33a491969cd26b3b2445766a062b3b))
+* **front:** SalePage full content (replace PLACEHOLDER) ([fdd6619](https://github.com/Neltud/xArtists/commit/fdd6619d6a28b464c4c3e05fe14baabbaec7eb58))
+
 ## [0.34.0](https://github.com/Neltud/xArtists/compare/v0.33.0...v0.34.0) (2026-09-19)
 
 
