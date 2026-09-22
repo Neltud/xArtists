@@ -1,5 +1,14 @@
 # Changelog — xArtists
 
+## [0.35.1](https://github.com/Neltud/xArtists/compare/v0.35.0...v0.35.1) (2026-09-22)
+
+
+### Bug Fixes
+
+* **build:** export LIA_HOST_LINES for LiaHost (unblock Vite CI) ([89a78f7](https://github.com/Neltud/xArtists/commit/89a78f7e0856dc863653008040020049e2954efd))
+* **build:** stub MultiplayerScene without @react-three/fiber (unblock Vite CI) ([0772d30](https://github.com/Neltud/xArtists/commit/0772d303d3a2cad0ed9278a27f0045d2f4292a11))
+* **css:** [@import](https://github.com/import) fonts first + page-transition classes ([5696fb8](https://github.com/Neltud/xArtists/commit/5696fb835f688a752971eb7a8187315684129245))
+
 ## [0.35.0](https://github.com/Neltud/xArtists/compare/v0.34.0...v0.35.0) (2026-09-22)
 
 
