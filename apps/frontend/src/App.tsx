@@ -18,6 +18,8 @@ import AssetDrawer from './components/ui/AssetDrawer'
 import { OPEN_ASSETS_EVENT } from './lib/walletEvents'
 import { LINKS } from './config/links'
 import { DEMO_MODE } from './config/demoMode'
+import PageTransition from './components/PageTransition'
+import SoundDock from './components/SoundDock'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Marketplace = lazy(() => import('./pages/Marketplace'))
@@ -42,6 +44,7 @@ const ArtToursPage = lazy(() => import('./pages/ArtToursPage'))
 const LightningAgentPage = lazy(() => import('./pages/LightningAgentPage'))
 const BurnifyPage = lazy(() => import('./pages/BurnifyPage'))
 const ArtistStudio = lazy(() => import('./pages/ArtistStudio'))
+const SalePage = lazy(() => import('./pages/SalePage'))
 const AdsPage = lazy(() => import('./pages/AdsPage'))
 const Editions = lazy(() => import('./pages/Editions'))
 const SimulationLab = lazy(() => import('./pages/SimulationLab'))
@@ -62,6 +65,7 @@ const TX_PATHS = new Set([
   '/staking',
   '/tro',
   '/burnify',
+  '/sale',
 ])
 
 function StaleDataBanner({
@@ -117,58 +121,61 @@ export default function App() {
         <ErrorBoundary>
           <TxGate>
             <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/entity" element={<EntityMap />} />
-                <Route path="/org" element={<EntityMap />} />
-                <Route path="/sitemap" element={<SiteMapPage />} />
-                <Route path="/sim" element={<SimulationLab />} />
-                <Route path="/simulation" element={<SimulationLab />} />
-                <Route path="/marketplace" element={<Marketplace />} />
-                <Route path="/market" element={<MarketPage />} />
-                <Route path="/analyse" element={<Navigate to="/market" replace />} />
-                <Route path="/trading" element={<Trading />} />
-                <Route path="/studio" element={<ArtistStudio />} />
-                <Route path="/agents" element={<Agents />} />
-                <Route path="/my-packs" element={<MyPacks />} />
-                <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
-                <Route path="/tours" element={<ArtToursPage />} />
-                <Route path="/agents/voyage" element={<Navigate to="/tours" replace />} />
-                <Route path="/agents/lightning" element={<LightningAgentPage />} />
-                <Route path="/tro" element={<TroPage />} />
-                <Route path="/staking" element={<StakingPage />} />
-                <Route path="/burnify" element={<BurnifyPage />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/dao" element={<DAO />} />
-                <Route path="/gallery" element={<Navigate to="/museum" replace />} />
-                <Route path="/museum" element={<MuseumPage />} />
-                <Route path="/museum/lab" element={<MuseumLabPage />} />
-                <Route path="/musee" element={<Navigate to="/museum" replace />} />
-                <Route path="/collection" element={<Navigate to="/museum?tab=mine" replace />} />
-                <Route path="/legal" element={<LegalPage />} />
-                <Route path="/mentions-legales" element={<LegalPage />} />
-                <Route path="/tip" element={<Tip />} />
-                <Route path="/wallet" element={<Wallet />} />
-                <Route path="/hatom" element={<HatomPage />} />
-                <Route path="/lp" element={<LPPoolsPage />} />
-                <Route path="/soul-testnet" element={<SoulTestnetPage />} />
-                <Route path="/ads" element={<AdsPage />} />
-                <Route path="/demo" element={<DemoTourPage />} />
-                <Route path="/go-live" element={<GoLivePage />} />
-                <Route path="/golive" element={<Navigate to="/go-live" replace />} />
-                <Route path="/editions" element={<Editions />} />
-                <Route
-                  path="*"
-                  element={
-                    <div className="text-center py-24 space-y-3">
-                      <h2 className="display text-2xl">Page introuvable</h2>
-                      <a href="#/" className="text-cyan-400 text-sm hover:underline">
-                        Retour accueil →
-                      </a>
-                    </div>
-                  }
-                />
-              </Routes>
+              <PageTransition>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/entity" element={<EntityMap />} />
+                  <Route path="/org" element={<EntityMap />} />
+                  <Route path="/sitemap" element={<SiteMapPage />} />
+                  <Route path="/sim" element={<SimulationLab />} />
+                  <Route path="/simulation" element={<SimulationLab />} />
+                  <Route path="/marketplace" element={<Marketplace />} />
+                  <Route path="/market" element={<MarketPage />} />
+                  <Route path="/analyse" element={<Navigate to="/market" replace />} />
+                  <Route path="/trading" element={<Trading />} />
+                  <Route path="/studio" element={<ArtistStudio />} />
+                  <Route path="/sale" element={<SalePage />} />
+                  <Route path="/agents" element={<Agents />} />
+                  <Route path="/my-packs" element={<MyPacks />} />
+                  <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
+                  <Route path="/tours" element={<ArtToursPage />} />
+                  <Route path="/agents/voyage" element={<Navigate to="/tours" replace />} />
+                  <Route path="/agents/lightning" element={<LightningAgentPage />} />
+                  <Route path="/tro" element={<TroPage />} />
+                  <Route path="/staking" element={<StakingPage />} />
+                  <Route path="/burnify" element={<BurnifyPage />} />
+                  <Route path="/portfolio" element={<Portfolio />} />
+                  <Route path="/dao" element={<DAO />} />
+                  <Route path="/gallery" element={<Navigate to="/museum" replace />} />
+                  <Route path="/museum" element={<MuseumPage />} />
+                  <Route path="/museum/lab" element={<MuseumLabPage />} />
+                  <Route path="/musee" element={<Navigate to="/museum" replace />} />
+                  <Route path="/collection" element={<Navigate to="/museum?tab=mine" replace />} />
+                  <Route path="/legal" element={<LegalPage />} />
+                  <Route path="/mentions-legales" element={<LegalPage />} />
+                  <Route path="/tip" element={<Tip />} />
+                  <Route path="/wallet" element={<Wallet />} />
+                  <Route path="/hatom" element={<HatomPage />} />
+                  <Route path="/lp" element={<LPPoolsPage />} />
+                  <Route path="/soul-testnet" element={<SoulTestnetPage />} />
+                  <Route path="/ads" element={<AdsPage />} />
+                  <Route path="/demo" element={<DemoTourPage />} />
+                  <Route path="/go-live" element={<GoLivePage />} />
+                  <Route path="/golive" element={<Navigate to="/go-live" replace />} />
+                  <Route path="/editions" element={<Editions />} />
+                  <Route
+                    path="*"
+                    element={
+                      <div className="text-center py-24 space-y-3">
+                        <h2 className="display text-2xl">Page introuvable</h2>
+                        <a href="#/" className="text-cyan-400 text-sm hover:underline">
+                          Retour accueil →
+                        </a>
+                      </div>
+                    }
+                  />
+                </Routes>
+              </PageTransition>
             </Suspense>
           </TxGate>
         </ErrorBoundary>
@@ -183,6 +190,9 @@ export default function App() {
               </p>
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-zinc-500">
+              <a href="#/sale" className="hover:text-violet-300 transition-colors">
+                Sale
+              </a>
               <a href="#/demo" className="hover:text-zinc-300 transition-colors">
                 Démo
               </a>
@@ -230,6 +240,7 @@ export default function App() {
       {!DEMO_MODE && <IntentBar />}
       {!DEMO_MODE && <LiaMonitor />}
       {!DEMO_MODE && <SignalTicker />}
+      <SoundDock />
       <BottomNav />
       <RoutePrefetch />
       <AssetDrawer open={assetsOpen} onClose={() => setAssetsOpen(false)} />
