@@ -1,14 +1,15 @@
 # Dependencies
 node_modules/
 pnpm-lock.yaml
-package-lock.json
+# Root lock only — keep apps/frontend/package-lock.json for CI cache
+/package-lock.json
 
 # Build outputs
 dist/
 build/
 apps/frontend/dist/
 
-# Archives and old copies — P1.2 never re-commit nested zip extracts
+# Archives
 archive/
 xArtists-master/
 **/xArtists-master/
