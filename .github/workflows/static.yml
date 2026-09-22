@@ -34,12 +34,11 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # No npm cache until apps/frontend/package-lock.json is committed
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-          cache-dependency-path: apps/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
@@ -104,7 +103,6 @@ jobs:
             mkdir -p docs/data
             cp -R apps/frontend/dist/data/. docs/data/
           fi
-          # Blueprints 3D — requis pour salles musée en démo live
           if [ -d apps/frontend/dist/blueprints ]; then
             rm -rf docs/blueprints
             cp -R apps/frontend/dist/blueprints docs/blueprints
