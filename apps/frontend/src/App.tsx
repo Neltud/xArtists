@@ -13,6 +13,7 @@ import IntentBar from './components/IntentBar'
 import LiaMonitor from './components/LiaMonitor'
 import GuardianStatusBar from './components/shared/GuardianStatusBar'
 import RoutePrefetch from './components/RoutePrefetch'
+import ArtAtelierBackdrop from './components/ArtAtelierBackdrop'
 import { useMultiversX } from './hooks/useMultiversX'
 import AssetDrawer from './components/ui/AssetDrawer'
 import { OPEN_ASSETS_EVENT } from './lib/walletEvents'
@@ -112,12 +113,13 @@ export default function App() {
 
   return (
     <div className="app-shell pb-20 md:pb-8">
+      <ArtAtelierBackdrop />
       <DemoModeBanner />
       {!DEMO_MODE && <PrivateReleaseStrip />}
       {!DEMO_MODE && <GuardianStatusBar />}
       <Header />
       {!DEMO_MODE && <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />}
-      <main className="flex-1 page-wrap py-5 sm:py-8">
+      <main className="flex-1 page-wrap py-5 sm:py-8 relative z-10">
         <ErrorBoundary>
           <TxGate>
             <Suspense fallback={<PageLoader />}>
@@ -180,13 +182,13 @@ export default function App() {
           </TxGate>
         </ErrorBoundary>
       </main>
-      <footer className="border-t border-white/[0.06] mt-auto py-6 mb-16 md:mb-0">
+      <footer className="border-t border-white/[0.06] mt-auto py-6 mb-16 md:mb-0 relative z-10">
         <div className="page-wrap flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
               <p className="text-sm font-semibold text-white tracking-tight">xArtists</p>
               <p className="text-[11px] text-zinc-600 mt-1 max-w-xs leading-relaxed">
-                Galerie · packs · MultiversX — démo paper-first.
+                Galerie · packs · MultiversX — démo paper-first. Atelier N. Tuduri.
               </p>
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-zinc-500">
@@ -231,7 +233,7 @@ export default function App() {
           </div>
           <p className="text-[10px] text-zinc-600 leading-relaxed border-t border-white/[0.04] pt-3">
             Pas un conseil en investissement. Démonstration — pas de trading live par défaut. © 2026
-            xArtists.
+            xArtists · Œuvres NFTUDURI N. Tuduri.
           </p>
         </div>
       </footer>
