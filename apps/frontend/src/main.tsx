@@ -8,6 +8,7 @@ import { MxDappProvider } from './providers/MxDappProvider'
 import { registerSW } from './pwa/registerSW'
 import { probeChainTiming } from './config/chainTiming'
 import './index.css'
+import './atelier.css'
 
 registerSW()
 void probeChainTiming()
