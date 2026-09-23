@@ -19,7 +19,7 @@ const EYE = 1.65
 const WALK = 3.6
 const SPRINT = 6.4
 const MAX_ART = 24
-const TEX_CONCURRENT = 4
+const TEX_CONCURRENT = 8
 const LOOK_SENS = 0.0019
 const PITCH_MAX = 1.15
 const WALL_INSET = 0.28
@@ -204,6 +204,7 @@ export default function MuseumWebGLHall({
     scene.add(avatar)
 
     const loader = new THREE.TextureLoader()
+    loader.crossOrigin = 'anonymous'
     let texQueue = 0
     const artAnchors: { pos: THREE.Vector3; frame: FrameItem }[] = []
     const wallList = blueprint.walls.filter(w => Math.hypot(w.x2 - w.x1, w.y2 - w.y1) > 1.2)
@@ -352,112 +353,81 @@ export default function MuseumWebGLHall({
       const r = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw))
       let ix = 0
       let iz = 0
-      if (keys.current.w || hold.current['w']) {
+      if (keys.current.w || hold.current.w) {
         ix += f.x
         iz += f.z
       }
-      if (keys.current.s || hold.current['s']) {
+      if (keys.current.s || hold.current.s) {
         ix -= f.x
         iz -= f.z
       }
-      if (keys.current.a || hold.current['a']) {
+      if (keys.current.a || hold.current.a) {
         ix -= r.x
         iz -= r.z
       }
-      if (keys.current.d || hold.current['d']) {
+      if (keys.current.d || hold.current.d) {
         ix += r.x
         iz += r.z
       }
-      const im = Math.hypot(ix, iz)
-      if (im > 1e-6) {
-        ix /= im
-        iz /= im
+      const ilen = Math.hypot(ix, iz)
+      if (ilen > 0.001) {
+        ix /= ilen
+        iz /= ilen
+        facing = Math.atan2(ix, iz)
       }
-      const maxSp = sprint ? SPRINT : WALK
-      const targetVx = ix * maxSp
-      const targetVz = iz * maxSp
-      const a = ACCEL * dt
-      if (im > 1e-6) {
-        vx += (targetVx - vx) * Math.min(1, a / Math.max(maxSp, 0.1))
-        vz += (targetVz - vz) * Math.min(1, a / Math.max(maxSp, 0.1))
+      const speed = sprint ? SPRINT : WALK
+      if (ilen > 0.001) {
+        vx += ix * ACCEL * dt
+        vz += iz * ACCEL * dt
       } else {
-        const damp = Math.exp(-FRICTION * dt)
-        vx *= damp
-        vz *= damp
+        vx *= Math.max(0, 1 - FRICTION * dt)
+        vz *= Math.max(0, 1 - FRICTION * dt)
       }
-      const sp = Math.hypot(vx, vz)
-      if (sp > maxSp) {
-        vx = (vx / sp) * maxSp
-        vz = (vz / sp) * maxSp
+      const vlen = Math.hypot(vx, vz)
+      if (vlen > speed) {
+        vx = (vx / vlen) * speed
+        vz = (vz / vlen) * speed
       }
-      const tryX = px + vx * dt
-      const tryZ = pz + vz * dt
-      const rad = WALL_INSET
-      const can = (x: number, z: number) =>
-        pointInBlueprintFloor(blueprint, x, z) &&
-        pointInBlueprintFloor(blueprint, x + rad, z) &&
-        pointInBlueprintFloor(blueprint, x - rad, z) &&
-        pointInBlueprintFloor(blueprint, x, z + rad) &&
-        pointInBlueprintFloor(blueprint, x, z - rad)
-      if (can(tryX, tryZ)) {
-        px = tryX
-        pz = tryZ
-      } else if (can(tryX, pz)) {
-        px = tryX
-        vz *= 0.2
-      } else if (can(px, tryZ)) {
-        pz = tryZ
+      let nx = px + vx * dt
+      let nz = pz + vz * dt
+      if (pointInBlueprintFloor(blueprint, nx, nz)) {
+        px = nx
+        pz = nz
+      } else {
         vx *= 0.2
-      } else {
-        vx = 0
-        vz = 0
+        vz *= 0.2
       }
-
-      const moving = Math.hypot(vx, vz) > 0.35
-      if (moving) {
-        facing = Math.atan2(vx, vz)
-        walkPhase += dt * (sprint ? 12 : 9)
-      }
-      avatar.position.x = px
-      avatar.position.z = pz
+      avatar.position.set(px, 0, pz)
       avatar.rotation.y = facing
-      tickAvatarWalk(avatar, walkPhase, moving ? (sprint ? 1 : 0.7) : 0)
-      avatar.visible = thirdRef.current
+      walkPhase += vlen * dt * 4
+      tickAvatarWalk(avatar, walkPhase, vlen > 0.3)
+
+      let nearest: FrameItem | null = null
+      let best = 2.4
+      for (const a of artAnchors) {
+        const d = Math.hypot(a.pos.x - px, a.pos.z - pz)
+        if (d < best) {
+          best = d
+          nearest = a.frame
+        }
+      }
+      nearestRef.current = nearest
+      setNearTitle(nearest?.title || '')
 
       if (thirdRef.current) {
-        const back = CAM_DIST + (sprint && moving ? 0.35 : 0)
-        const cx = px + Math.sin(yaw) * back
-        const cz = pz + Math.cos(yaw) * back
-        const cy = CAM_HEIGHT + pitch * 1.2
-        camera.position.set(cx, cy, cz)
+        const cx = px + Math.sin(yaw) * CAM_DIST
+        const cz = pz + Math.cos(yaw) * CAM_DIST
+        camera.position.set(cx, CAM_HEIGHT + pitch * 0.4, cz)
         camera.lookAt(px, EYE * 0.9, pz)
-        camera.fov = sprint && moving ? 62 : 58
       } else {
         camera.position.set(px, EYE, pz)
         camera.rotation.order = 'YXZ'
         camera.rotation.y = yaw
-        camera.rotation.x = pitch * 0.5 - 0.1
-        camera.fov = sprint && moving ? 78 : 72
+        camera.rotation.x = pitch
       }
-      camera.updateProjectionMatrix()
-
-      let best: FrameItem | null = null
-      let bestD = 3.2
-      const eye = new THREE.Vector3(px, EYE, pz)
-      for (const a of artAnchors) {
-        const d = a.pos.distanceTo(eye)
-        if (d < bestD) {
-          bestD = d
-          best = a.frame
-        }
-      }
-      nearestRef.current = best
-      if (best) setNearTitle(best.title)
-      else setNearTitle('')
-
       renderer.render(scene, camera)
     }
-    raf = requestAnimationFrame(loop)
+    loop()
 
     return () => {
       disposed = true
@@ -468,108 +438,65 @@ export default function MuseumWebGLHall({
       document.removeEventListener('mousemove', onMove)
       ro.disconnect()
       renderer.dispose()
-      if (canvas.parentNode === mount) mount.removeChild(canvas)
+      if (canvas.parentNode) canvas.parentNode.removeChild(canvas)
     }
-  }, [blueprint, paintings, sculptures, room, pal, presence.virtual, roomName])
-
-  if (!frames.length) {
-    return (
-      <div className="rounded-2xl border border-white/10 bg-zinc-950 h-[min(70vh,520px)] flex items-center justify-center text-sm text-zinc-500">
-        {emptyLabel}
-      </div>
-    )
-  }
+  }, [blueprint, paintings, sculptures, pal, room, presence.virtual])
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500">
-        <span>
-          {roomName} · {area} m² · {paintings.length} toiles
-        </span>
-        <span className="text-[10px] text-zinc-400">
-          {third ? '3e personne' : '1re personne'} · {locked ? 'visée ON' : 'pad / WASD'} · V bascule
-        </span>
-      </div>
-      <div
-        className="relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl shadow-black/60"
-        style={{ height: 'min(78vh, 580px)' }}
-      >
-        <div ref={mountRef} className="absolute inset-0" />
-        {!ready && (
-          <div className="absolute inset-0 flex items-center justify-center text-sm text-zinc-500">
-            Chargement avatar & salle…
+    <div className="relative h-[min(70vh,520px)] bg-black select-none">
+      <div ref={mountRef} className="absolute inset-0" />
+      {!ready && (
+        <div className="absolute inset-0 flex items-center justify-center text-sm text-zinc-500 z-10">
+          Initialisation WebGL…
+        </div>
+      )}
+      {hint && ready && (
+        <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap gap-2 justify-between pointer-events-none">
+          <div className="rounded-xl bg-black/60 border border-white/10 px-3 py-2 text-[11px] text-zinc-300 pointer-events-auto">
+            {roomName} · {area} m² · {paintings.length} tableaux
+            {nearTitle ? ` · près de « ${nearTitle} » (E)` : ''}
           </div>
-        )}
-        {hint && ready && (
           <button
             type="button"
-            className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/55 backdrop-blur-[2px] text-center px-6"
+            className="rounded-lg bg-black/55 border border-white/15 px-2 py-1 text-[10px] text-zinc-400 pointer-events-auto"
             onClick={() => setHint(false)}
           >
-            <p className="text-lg font-semibold text-white">Entrer — avatar 3e personne</p>
-            <p className="text-[13px] text-zinc-400 mt-2 max-w-sm">
-              WASD marcher · Shift courir · souris viser · V = 1re/3e · E fiche
-            </p>
+            OK
           </button>
-        )}
-        {!third && (
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center z-10">
-            <div className="w-1.5 h-1.5 rounded-full bg-white/50" />
-          </div>
-        )}
-        <div className="absolute top-2 left-2 z-10 rounded-lg px-2.5 py-1.5 text-[10px] backdrop-blur border bg-black/65 border-white/10 text-zinc-300 max-w-[70%] truncate">
-          {nearTitle}
         </div>
-        <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3 z-20">
-          <div className="grid grid-cols-3 gap-1.5 w-[8.25rem]">
-            <span />
-            <Pad label="↑" on={v => (hold.current['w'] = v)} />
-            <span />
-            <Pad label="←" on={v => (hold.current['a'] = v)} />
-            <Pad label="↓" on={v => (hold.current['s'] = v)} />
-            <Pad label="→" on={v => (hold.current['d'] = v)} />
+      )}
+      <div className="absolute bottom-3 left-3 right-3 z-10 flex flex-wrap items-end justify-between gap-2">
+        <div className="flex gap-1.5">
+          <Pad label="W" on={v => (hold.current.w = v)} />
+          <div className="flex flex-col gap-1">
+            <Pad label="A" on={v => (hold.current.a = v)} />
+            <Pad label="S" on={v => (hold.current.s = v)} />
           </div>
-          <div className="flex flex-wrap gap-2 justify-end">
-            <button
-              type="button"
-              className="rounded-full border border-white/20 bg-black/50 text-white text-[10px] font-semibold px-3 py-2.5"
-              onClick={() => setThird(t => !t)}
-            >
-              {third ? '1P' : '3P'}
-            </button>
-            <button
-              type="button"
-              className="rounded-full border border-white/20 bg-black/50 text-white text-[10px] font-semibold px-3 py-2.5"
-              onPointerDown={e => {
-                e.preventDefault()
-                hold.current['shift'] = true
-              }}
-              onPointerUp={() => (hold.current['shift'] = false)}
-              onPointerCancel={() => (hold.current['shift'] = false)}
-            >
-              Run
-            </button>
-            <button
-              type="button"
-              className="rounded-full border border-cyan-400/40 bg-cyan-500/25 text-cyan-50 text-xs font-semibold px-4 py-2.5"
-              onClick={() => nearestRef.current && setInspect(nearestRef.current)}
-            >
-              Fiche
-            </button>
-          </div>
+          <Pad label="D" on={v => (hold.current.d = v)} />
+        </div>
+        <div className="flex gap-2 items-center">
+          <button
+            type="button"
+            className="rounded-xl border border-white/15 bg-black/55 px-3 py-2 text-[11px] text-white"
+            onClick={() => setThird(t => !t)}
+          >
+            {third ? '3e pers.' : 'FPS'}
+          </button>
+          <span className="text-[10px] text-zinc-500">{locked ? 'souris capturée' : 'clic pour viser'}</span>
         </div>
       </div>
-      {buyMsg && (
-        <p className="text-[11px] text-zinc-400 border border-white/10 rounded-lg px-2.5 py-1.5">{buyMsg}</p>
-      )}
       {inspect && (
         <ArtworkDossier
           frame={inspect}
-          allowBuy={allowBuy}
-          marketLive={marketLive}
-          onBuy={onBuy}
           onClose={() => setInspect(null)}
+          onBuy={allowBuy ? () => onBuy(inspect) : undefined}
+          buyMsg={buyMsg}
         />
+      )}
+      {!paintings.length && !sculptures.length && (
+        <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+          <p className="text-sm text-zinc-500 bg-black/50 px-4 py-2 rounded-xl">{emptyLabel}</p>
+        </div>
       )}
     </div>
   )
