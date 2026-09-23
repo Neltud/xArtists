@@ -1,5 +1,6 @@
 /**
- * Galerie — salles 3D jeu vidéo · tableaux accrochés aux murs.
+ * Galerie — salles 3D + grille œuvres toujours visible.
+ * Fallback NFTUDURI / TUDURI si catalogue vide.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -31,8 +32,13 @@ import { preloadImages } from '../lib/imagePreload'
 import { loadBlueprint } from '../lib/loadBlueprint'
 import { builtinBlueprintForMuseum } from '../lib/builtinBlueprints'
 import type { RoomBlueprint } from '../lib/roomBlueprint'
+import { TUDURI_WORKS } from '../config/tuduriAtelier'
 
 type Mode = 'explore' | 'mine' | 'map'
+
+const RAW_CATALOG =
+  'https://raw.githubusercontent.com/Neltud/xArtists/main/apps/frontend/public/data/xartists_collections.json'
+const PRIORITY_COLLECTIONS = ['NFTUDURI-2990b6', 'TRO-652d6d', 'XTR-e5072b', 'XAR-cee2e0']
 
 function preferImage(n: NFT): string | undefined {
   const thumb = n.media?.[0]?.thumbnailUrl as string | undefined
@@ -55,18 +61,42 @@ function framesFromNfts(nfts: NFT[]): FrameItem[] {
   }))
 }
 
+function tuduriFallbackFrames(): FrameItem[] {
+  return TUDURI_WORKS.map(w => ({
+    id: w.id,
+    title: w.name,
+    subtitle: `Atelier Tuduri · ${w.year}`,
+    collection: 'NFTUDURI-2990b6',
+    description: 'Huile 1/1 · NFTUDURI',
+    type: 'NonFungibleESDT',
+    image: w.url || w.thumb,
+    href: `https://explorer.multiversx.com/nfts/${w.id}`,
+  }))
+}
+
+function prioritizeNfts(nfts: NFT[]): NFT[] {
+  const rank = (c: string) => {
+    const i = PRIORITY_COLLECTIONS.indexOf(c)
+    return i >= 0 ? i : 100
+  }
+  return [...nfts].sort((a, b) => rank(a.collection) - rank(b.collection))
+}
+
 let catalogPromise: Promise<{ collections: CollectionData[]; nfts: NFT[] }> | null = null
 
 async function loadFullCatalog(): Promise<{ collections: CollectionData[]; nfts: NFT[] }> {
   if (catalogPromise) return catalogPromise
   catalogPromise = (async () => {
+    const base = import.meta.env.BASE_URL || '/'
     const urls = [
       DATA_URL,
-      `${import.meta.env.BASE_URL || '/'}data/xartists_collections.json`,
+      `${base}data/xartists_collections.json`,
+      '/xArtists/data/xartists_collections.json',
+      RAW_CATALOG,
     ]
     for (const u of urls) {
       try {
-        const r = await fetch(u, { cache: 'force-cache' })
+        const r = await fetch(u, { cache: 'no-store' })
         if (!r.ok) continue
         const j = (await r.json()) as CollectionsFile
         const cols = j.collections || []
@@ -78,7 +108,7 @@ async function loadFullCatalog(): Promise<{ collections: CollectionData[]; nfts:
             collection_name: n.collection_name || c.name,
           }))
         )
-        return { collections: cols, nfts }
+        if (nfts.length) return { collections: cols, nfts }
       } catch {
         /* next */
       }
@@ -93,6 +123,51 @@ const MODES: { id: Mode; label: string }[] = [
   { id: 'mine', label: 'Ma collection' },
   { id: 'map', label: 'Carte' },
 ]
+
+function ArtworkGrid({ frames, title }: { frames: FrameItem[]; title: string }) {
+  if (!frames.length) return null
+  return (
+    <section className="mt-6 space-y-3">
+      <div className="flex items-end justify-between gap-2">
+        <h2 className="text-sm font-semibold text-white">{title}</h2>
+        <p className="text-[11px] text-zinc-500">{frames.length} œuvres</p>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        {frames.slice(0, 24).map(f => (
+          <a
+            key={f.id}
+            href={f.href || '#'}
+            target="_blank"
+            rel="noreferrer"
+            className="group rounded-xl border border-white/10 bg-zinc-950/80 overflow-hidden hover:border-amber-500/30 transition-colors"
+          >
+            <div className="aspect-[4/5] bg-zinc-900 relative">
+              {f.image ? (
+                <img
+                  src={f.image}
+                  alt={f.title}
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                  onError={e => {
+                    ;(e.target as HTMLImageElement).style.opacity = '0.2'
+                  }}
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-zinc-600 text-xs">
+                  —
+                </div>
+              )}
+            </div>
+            <div className="p-2.5">
+              <p className="text-[12px] font-medium text-zinc-100 truncate">{f.title}</p>
+              <p className="text-[10px] text-zinc-500 truncate mt-0.5">{f.subtitle}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}
 
 export default function MuseumPage() {
   const [params] = useSearchParams()
@@ -177,17 +252,27 @@ export default function MuseumPage() {
   }, [museumId])
 
   const xartistsFrames = useMemo(() => {
-    const withImg = allNfts.filter(n => preferImage(n))
-    const list = (withImg.length ? withImg : allNfts).slice(0, 24)
-    return framesFromNfts(list)
+    const ranked = prioritizeNfts(allNfts)
+    const withImg = ranked.filter(n => preferImage(n))
+    const list = (withImg.length ? withImg : ranked).slice(0, 24)
+    const frames = framesFromNfts(list)
+    if (frames.filter(f => f.image).length >= 4) return frames
+    const seen = new Set(frames.map(f => f.id))
+    const extra = tuduriFallbackFrames().filter(f => !seen.has(f.id))
+    return [...frames, ...extra].slice(0, 24)
   }, [allNfts])
 
-  const visitFrames = museum.source === 'onchain' ? xartistsFrames : museum.works
+  const visitFrames =
+    museum.source === 'onchain'
+      ? xartistsFrames
+      : museum.works?.length
+        ? museum.works
+        : xartistsFrames
 
   useEffect(() => {
     preloadImages(
       visitFrames.map(f => f.image),
-      8
+      12
     )
   }, [museumId, visitFrames])
 
@@ -203,8 +288,7 @@ export default function MuseumPage() {
         </p>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Galerie</h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl">
-          Musées en 3D — tableaux accrochés aux murs. Marchez comme dans un jeu : viser, sprinter,
-          inspecter.
+          Musées en 3D — tableaux accrochés aux murs. NFTUDURI · TRO · collections MultiversX.
         </p>
       </header>
 
@@ -255,7 +339,7 @@ export default function MuseumPage() {
             <div>
               <p className="text-base font-medium text-white">{museum.name}</p>
               <p className="text-[12px] text-zinc-500">
-                {museum.tagline} · {blueprint.name} · visite 3D
+                {museum.tagline} · {blueprint.name} · {visitFrames.filter(f => f.image).length} œuvres
               </p>
             </div>
             <p className="text-[11px] text-zinc-600 hidden sm:block">
@@ -275,10 +359,15 @@ export default function MuseumPage() {
                 frames={visitFrames}
                 room={museum.room}
                 allowBuy={museum.source === 'onchain'}
-                emptyLabel="Aucune œuvre pour ce lieu pour l’instant."
+                emptyLabel="Chargement des œuvres…"
               />
             </div>
           )}
+
+          <ArtworkGrid
+            frames={visitFrames}
+            title={museumId === 'xartists' ? 'Collection accrochée (NFTUDURI & co.)' : `Œuvres — ${museum.name}`}
+          />
         </div>
       )}
 
@@ -297,24 +386,25 @@ export default function MuseumPage() {
           ) : account.loading && !myFrames.length ? (
             <p className="text-sm text-zinc-500">Lecture de la collection…</p>
           ) : (
-            <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
-              <MuseumHall
-                blueprint={mineBlueprint}
-                frames={myFrames}
-                room="dark"
-                allowBuy={false}
-                emptyLabel="Aucun NFT sur cette adresse."
-              />
-            </div>
+            <>
+              <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
+                <MuseumHall
+                  blueprint={mineBlueprint}
+                  frames={myFrames}
+                  room="dark"
+                  allowBuy={false}
+                  emptyLabel="Aucun NFT sur cette adresse."
+                />
+              </div>
+              <ArtworkGrid frames={myFrames} title="Ma collection" />
+            </>
           )}
         </div>
       )}
 
       {mode === 'map' && (
         <div className="space-y-3">
-          <p className="text-sm text-zinc-400">
-            Ville → salle 3D dans Explorer.
-          </p>
+          <p className="text-sm text-zinc-400">Ville → salle 3D dans Explorer.</p>
           <GuidedWorldTour />
           <p className="text-[11px] text-zinc-600">
             <Link
