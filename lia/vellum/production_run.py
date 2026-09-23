@@ -4,9 +4,10 @@ Vellum production entry — one command for operator.
   PYTHONPATH=. LIA_LIVE_TRADING=0 CHAIN=1 python -m lia.vellum.production_run
 
 Phases: chain_timing → gates → risk_manager → pipeline → commander → compounding
-        → signals → pretrade → brain → paper_leg → commander_refresh → mirror
-        → optional deploy_scs.
+        → signals → pretrade → brain → paper_leg → commander_refresh → mx8004_sprint
+        → mirror → optional deploy_scs.
 Never sets LIA_LIVE_TRADING=1. Deploy only if VELLUM_DEPLOY_SCS=1 + PEM.
+MX-8004 sprint is DRY_RUN=1 unless MX8004_LIVE=1 (not default).
 """
 from __future__ import annotations
 
@@ -132,6 +133,7 @@ def phase_commander_enrich() -> dict[str, Any]:
         ("lia_pretrade_gate.json", "pretrade"),
         ("lia_paper_legs.json", "paper_legs"),
         ("risk_manager_state.json", "risk_manager"),
+        ("mx8004_registration.json", "mx8004"),
     ):
         p = ROOT / "data" / name
         if p.is_file():
@@ -140,7 +142,6 @@ def phase_commander_enrich() -> dict[str, Any]:
             except Exception:
                 pass
 
-    # Reflect risk lock on guardian kill_state for Commander UI
     rm = orch.get("risk_manager") or {}
     if rm.get("locked"):
         g["allow"] = False
@@ -275,6 +276,17 @@ def phase_paper_leg(
         return {"ok": False, "soft": True, "module": "paper_leg", "error": str(e)}
 
 
+def phase_mx8004_sprint() -> dict[str, Any]:
+    """Always DRY_RUN unless MX8004_LIVE=1 (never default)."""
+    live = os.environ.get("MX8004_LIVE", "0") == "1"
+    try:
+        from lia.vellum.mx8004_sprint import run_mx8004_sprint
+
+        return run_mx8004_sprint(dry_run=not live)
+    except Exception as e:
+        return {"ok": False, "soft": True, "module": "mx8004_sprint", "error": str(e)}
+
+
 def phase_mirror() -> dict[str, Any]:
     from lia.vellum.publish_data_for_frontend import publish
 
@@ -286,7 +298,6 @@ def phase_deploy_scs() -> dict[str, Any]:
         return {"ok": True, "skipped": True, "reason": "VELLUM_DEPLOY_SCS!=1"}
     pem = os.environ.get("PEM") or os.environ.get("LIA_WALLET_PEM_PATH") or ""
     if not pem or not Path(pem).is_file():
-        # Also allow PEM text via deploy node
         if not (os.environ.get("LIA_WALLET_PEM") or "").startswith("-----"):
             return {"ok": False, "error": "PEM missing"}
     try:
@@ -324,11 +335,13 @@ def run() -> dict[str, Any]:
     report["phases"]["brain_cycle"] = brain
     report["phases"]["paper_leg"] = phase_paper_leg(brain, risk)
     report["phases"]["commander_refresh"] = phase_commander_enrich()
+    report["phases"]["mx8004_sprint"] = phase_mx8004_sprint()
     report["phases"]["mirror"] = phase_mirror()
     report["phases"]["deploy_scs"] = phase_deploy_scs()
 
     pipe = report["phases"].get("pipeline") or {}
     leg = report["phases"].get("paper_leg") or {}
+    mx = report["phases"].get("mx8004_sprint") or {}
     report["summary"] = {
         "pipeline_ok": bool(pipe.get("ok", pipe.get("summary", {}).get("ok"))),
         "guardian_allow": (pipe.get("summary") or {}).get("guardian_allow"),
@@ -345,6 +358,8 @@ def run() -> dict[str, Any]:
         "paper_leg_ok": bool(leg.get("ok")),
         "paper_leg_skipped": bool(leg.get("skipped")),
         "paper_leg_verify": leg.get("verification"),
+        "mx8004_ok": bool(mx.get("ok")),
+        "mx8004_registered": bool(mx.get("registered")),
         "mirror_copied": len((report["phases"].get("mirror") or {}).get("copied") or []),
         "deploy_skipped": bool((report["phases"].get("deploy_scs") or {}).get("skipped")),
         "allow_live_trading": bool(
