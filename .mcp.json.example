@@ -6,6 +6,13 @@
       "env": {
         "LIGHTNING_WALLET_API_KEY": "${LIGHTNING_WALLET_API_KEY}"
       }
+    },
+    "xartists": {
+      "command": "python3",
+      "args": ["packages/xartists-mcp/src/server.py"],
+      "env": {
+        "XARTISTS_ROOT": "${XARTISTS_ROOT}"
+      }
     }
   }
 }
