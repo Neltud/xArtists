@@ -1,5 +1,5 @@
 /**
- * Musée WebGL — 3e personne (avatar visible) + FPS optionnel.
+ * Musée WebGL — navigation 3e personne (avatar visible, caméra derrière).
  * Locomotion accel/friction · collision · pad mobile · style jeu A1X.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
@@ -25,8 +25,8 @@ const PITCH_MAX = 1.15
 const WALL_INSET = 0.28
 const ACCEL = 22
 const FRICTION = 11
-const CAM_DIST = 3.4
-const CAM_HEIGHT = 1.85
+const CAM_DIST = 4.2
+const CAM_HEIGHT = 2.35
 
 type Theme = 'cyber' | 'stone' | 'gold' | 'white' | 'dark'
 
@@ -141,7 +141,7 @@ export default function MuseumWebGLHall({
   )
 
   useEffect(() => {
-    thirdRef.current = third
+    thirdRef.current = true // navigation 3e personne verrouillée
   }, [third])
 
   useEffect(() => {
@@ -309,10 +309,9 @@ export default function MuseumWebGLHall({
 
     const kd = (e: KeyboardEvent) => {
       const k = e.key.toLowerCase()
-      if (['w', 'a', 's', 'd', 'shift', 'e', 'v'].includes(k)) {
+      if (['w', 'a', 's', 'd', 'shift', 'e'].includes(k)) {
         keys.current[k] = true
         if (k === 'e' && nearestRef.current) setInspect(nearestRef.current)
-        if (k === 'v') setThird(t => !t)
       }
     }
     const ku = (e: KeyboardEvent) => {
@@ -321,19 +320,39 @@ export default function MuseumWebGLHall({
     window.addEventListener('keydown', kd)
     window.addEventListener('keyup', ku)
 
-    let pointerLocked = false
-    const onMove = (e: MouseEvent) => {
-      if (!pointerLocked) return
-      yaw -= e.movementX * LOOK_SENS
-      pitch = Math.max(-0.15, Math.min(PITCH_MAX, pitch - e.movementY * LOOK_SENS))
+    // 3e personne: drag pour orbiter (pas besoin de pointer-lock)
+    let dragging = false
+    let lastX = 0
+    let lastY = 0
+    const onDown = (e: PointerEvent) => {
+      if (e.button !== 0 && e.pointerType === 'mouse') return
+      dragging = true
+      lastX = e.clientX
+      lastY = e.clientY
+      canvas.setPointerCapture?.(e.pointerId)
+      setLocked(true)
     }
+    const onUp = (e: PointerEvent) => {
+      dragging = false
+      setLocked(false)
+      try { canvas.releasePointerCapture?.(e.pointerId) } catch { /* */ }
+    }
+    const onMove = (e: PointerEvent) => {
+      if (!dragging) return
+      const dx = e.clientX - lastX
+      const dy = e.clientY - lastY
+      lastX = e.clientX
+      lastY = e.clientY
+      yaw -= dx * 0.005
+      pitch = Math.max(-0.05, Math.min(PITCH_MAX, pitch - dy * 0.004))
+    }
+    canvas.addEventListener('pointerdown', onDown)
+    canvas.addEventListener('pointerup', onUp)
+    canvas.addEventListener('pointercancel', onUp)
+    canvas.addEventListener('pointermove', onMove)
     const onLockChange = () => {
-      pointerLocked = document.pointerLockElement === canvas
-      setLocked(pointerLocked)
+      /* reserved */
     }
-    canvas.addEventListener('click', () => canvas.requestPointerLock?.())
-    document.addEventListener('pointerlockchange', onLockChange)
-    document.addEventListener('mousemove', onMove)
 
     setReady(true)
     const clock = new THREE.Clock()
@@ -397,10 +416,13 @@ export default function MuseumWebGLHall({
         vx *= 0.2
         vz *= 0.2
       }
+      if (vlen > 0.35) {
+        facing = Math.atan2(vx, vz)
+        walkPhase += dt * (sprint ? 12 : 9)
+      }
       avatar.position.set(px, 0, pz)
       avatar.rotation.y = facing
-      walkPhase += vlen * dt * 4
-      tickAvatarWalk(avatar, walkPhase, vlen > 0.3)
+      tickAvatarWalk(avatar, walkPhase, vlen > 0.3 ? (sprint ? 1 : 0.7) : 0)
 
       let nearest: FrameItem | null = null
       let best = 2.4
@@ -414,17 +436,19 @@ export default function MuseumWebGLHall({
       nearestRef.current = nearest
       setNearTitle(nearest?.title || '')
 
-      if (thirdRef.current) {
-        const cx = px + Math.sin(yaw) * CAM_DIST
-        const cz = pz + Math.cos(yaw) * CAM_DIST
-        camera.position.set(cx, CAM_HEIGHT + pitch * 0.4, cz)
-        camera.lookAt(px, EYE * 0.9, pz)
-      } else {
-        camera.position.set(px, EYE, pz)
-        camera.rotation.order = 'YXZ'
-        camera.rotation.y = yaw
-        camera.rotation.x = pitch
-      }
+      const moving = Math.hypot(vx, vz) > 0.35
+      // Toujours 3e personne — caméra derrière l'avatar
+      avatar.visible = true
+      const back = CAM_DIST + (sprint && moving ? 0.4 : 0)
+      // léger décalage épaule droite pour un rendu type jeu
+      const side = 0.55
+      const cx = px + Math.sin(yaw) * back + Math.cos(yaw) * side
+      const cz = pz + Math.cos(yaw) * back - Math.sin(yaw) * side
+      const cy = CAM_HEIGHT + pitch * 1.1
+      camera.position.set(cx, cy, cz)
+      camera.lookAt(px, EYE * 0.95, pz)
+      camera.fov = sprint && moving ? 60 : 55
+      camera.updateProjectionMatrix()
       renderer.render(scene, camera)
     }
     loop()
@@ -434,8 +458,10 @@ export default function MuseumWebGLHall({
       cancelAnimationFrame(raf)
       window.removeEventListener('keydown', kd)
       window.removeEventListener('keyup', ku)
-      document.removeEventListener('pointerlockchange', onLockChange)
-      document.removeEventListener('mousemove', onMove)
+      canvas.removeEventListener('pointerdown', onDown)
+      canvas.removeEventListener('pointerup', onUp)
+      canvas.removeEventListener('pointercancel', onUp)
+      canvas.removeEventListener('pointermove', onMove)
       ro.disconnect()
       renderer.dispose()
       if (canvas.parentNode) canvas.parentNode.removeChild(canvas)
@@ -453,7 +479,7 @@ export default function MuseumWebGLHall({
       {hint && ready && (
         <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap gap-2 justify-between pointer-events-none">
           <div className="rounded-xl bg-black/60 border border-white/10 px-3 py-2 text-[11px] text-zinc-300 pointer-events-auto">
-            {roomName} · {area} m² · {paintings.length} tableaux
+            {roomName} · {area} m² · {paintings.length} tableaux · avatar 3e pers.
             {nearTitle ? ` · près de « ${nearTitle} » (E)` : ''}
           </div>
           <button
@@ -475,14 +501,12 @@ export default function MuseumWebGLHall({
           <Pad label="D" on={v => (hold.current.d = v)} />
         </div>
         <div className="flex gap-2 items-center">
-          <button
-            type="button"
-            className="rounded-xl border border-white/15 bg-black/55 px-3 py-2 text-[11px] text-white"
-            onClick={() => setThird(t => !t)}
-          >
-            {third ? '3e pers.' : 'FPS'}
-          </button>
-          <span className="text-[10px] text-zinc-500">{locked ? 'souris capturée' : 'clic pour viser'}</span>
+          <span className="rounded-xl border border-violet-500/30 bg-violet-500/15 px-3 py-2 text-[11px] text-violet-200 font-medium">
+            3e personne
+          </span>
+          <span className="text-[10px] text-zinc-500">
+            {locked ? 'orbe souris' : 'glisser pour regarder · WASD marcher'}
+          </span>
         </div>
       </div>
       {inspect && (
