@@ -1,5 +1,14 @@
 # Changelog — xArtists
 
+## [0.37.0](https://github.com/Neltud/xArtists/compare/v0.36.0...v0.37.0) (2026-09-23)
+
+
+### Features
+
+* **slot:** nav Slot/Sim + PRIMORDIAL_SLOT docs ([0ae3699](https://github.com/Neltud/xArtists/commit/0ae3699249d2025e4297f19ce9e08667469e9c71))
+* **slot:** Primordial Slot live — scatter/RWA jackpot UI + /slot route + nav ([375782b](https://github.com/Neltud/xArtists/commit/375782b07cd9e1b6a28cac3fccdc9470297eb039))
+* **slot:** Primordial Slot paper UI + /slot route + mobile nav Slot/Sim ([7e552cf](https://github.com/Neltud/xArtists/commit/7e552cfa9cc5749ba012e4b51939c1a05ec89e51))
+
 ## [0.36.0](https://github.com/Neltud/xArtists/compare/v0.35.2...v0.36.0) (2026-09-23)
 
 
