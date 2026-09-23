@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.35.2](https://github.com/Neltud/xArtists/compare/v0.35.1...v0.35.2) (2026-09-23)
+
+
+### Documentation
+
+* Phase 4 / First 100 MX-8004 alignment + status 23 Sep (mainnet recovery hardfork) ([68fdbe2](https://github.com/Neltud/xArtists/commit/68fdbe25d45b14ff005237b678dee22876e0e4f9))
+
 ## [0.35.1](https://github.com/Neltud/xArtists/compare/v0.35.0...v0.35.1) (2026-09-22)
 
 
