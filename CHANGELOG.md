@@ -1,5 +1,18 @@
 # Changelog — xArtists
 
+## [0.38.0](https://github.com/Neltud/xArtists/compare/v0.37.0...v0.38.0) (2026-09-23)
+
+
+### Features
+
+* MCP config example + integration hooks + xartists-mcp README ([9da4c22](https://github.com/Neltud/xArtists/commit/9da4c220af1799ad305d6d9d66f38ff1f789cbe2))
+* **ui:** ArtAtelierBackdrop per-route themes + CrossAgentPanel + docs ([f9ac592](https://github.com/Neltud/xArtists/commit/f9ac59296829f708220491d165c9092d493d7e4d))
+* **ui:** atelier.css page washes + CrossAgentPanel ([40203cb](https://github.com/Neltud/xArtists/commit/40203cb3d71c9bb5ffb3da11bf021941f70cddf6))
+* **ui:** CrossAgentPanel for Grok↔LIA CrossScore + feedback ([061ca56](https://github.com/Neltud/xArtists/commit/061ca5637c5a9211a1cab225e474207d34a8e4b9))
+* **ui:** unique page themes + MCP bridge + CrossAgentPanel + GrokMcpIngest ([3403450](https://github.com/Neltud/xArtists/commit/34034504161677bba2efc15f5c777ff519540cec))
+* **vellum:** dapp_sync registry — pages, Guardian, strategies, TxShell vs LIA PEM ([9f764e2](https://github.com/Neltud/xArtists/commit/9f764e2a466f21ea5ce716e93da3c938c1e16a75))
+* **vellum:** lia.vellum.dapp_sync module — page registry + Guardian/sign matrix ([7dfde2e](https://github.com/Neltud/xArtists/commit/7dfde2e8ce65a4d1bd6efe63054c343b8511d95e))
+
 ## [0.37.0](https://github.com/Neltud/xArtists/compare/v0.36.0...v0.37.0) (2026-09-23)
 
 
