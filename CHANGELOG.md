@@ -1,5 +1,15 @@
 # Changelog — xArtists
 
+## [0.36.0](https://github.com/Neltud/xArtists/compare/v0.35.2...v0.36.0) (2026-09-23)
+
+
+### Features
+
+* **phase4:** readiness banner, MX-8004 register skeleton, moltbot map, Vellum sync instructions ([bbc5239](https://github.com/Neltud/xArtists/commit/bbc52395556fc5449fe67967714635f871809050))
+* production_run phase_mx8004_sprint (DRY_RUN=1 each sprint) ([a4bb879](https://github.com/Neltud/xArtists/commit/a4bb879342200ece53615592b4a4085db1bb5bbd))
+* **ui:** atelier backdrop + dynamic Phase 4 + production_run mx8004 phase ([a6f3578](https://github.com/Neltud/xArtists/commit/a6f357803f450fd77e2eab5d6920d4c7c588c78f))
+* Vellum MX-8004 sprint node, dynamic Phase 4 badge, atelier décor from NFTUDURI ([97f766d](https://github.com/Neltud/xArtists/commit/97f766d5de02719264960a189498b73ae348891d))
+
 ## [0.35.2](https://github.com/Neltud/xArtists/compare/v0.35.1...v0.35.2) (2026-09-23)
 
 
