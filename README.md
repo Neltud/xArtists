@@ -5,13 +5,15 @@
 dApp (GitHub Pages): https://neltud.github.io/xArtists/  
 Repo: https://github.com/Neltud/xArtists  
 
-**Status (2026-09-19): GO_DEMO · paper / pre-SC-deploy**  
+**Status (2026-09-23): GO_DEMO · paper / pre-SC-deploy · Phase 4 aware**  
 - Paper LIA by default (`LIA_LIVE_TRADING=0`)  
 - Marketplace, agents, staking, gov, minter SC: **not live** (empty / null `codeHash`) until deploy + verify  
 - UI fail-closed: no fake “live market” claims without on-chain code  
 - Reality Switch (paper vs live chrome) = **chemin**, pas un live allumé — [`docs/REALITY_SWITCH.md`](docs/REALITY_SWITCH.md)  
-- **Supernova mainnet LIVE** since 10 Sep 2026 (~18:06 UTC, epoch 2233) — 600 ms rounds. Probe: `refreshRate=600`, epoch **2241** (J+8). Tour démo : `/#/demo` · checklist : `/#/go-live`.  
-- **LIA Ops ~2.09 EGLD** (nonce 1468) — fund P0 done; PEM stays off git.
+- **Supernova mainnet LIVE** since 10 Sep 2026 (~18:06 UTC, epoch 2233) — 600 ms rounds.  
+- **Mainnet recovery hardfork** config **v2.1.3.0** (23 Sep 2026) — nodes must upgrade.  
+- **LIA Ops ~2.09 EGLD** (nonce 1468 as of 19 Sep) — fund P0 done; PEM stays off git.  
+- **Phase 4 / First 100** alignment plan : [`docs/MX8004_FIRST100_ALIGNMENT.md`](docs/MX8004_FIRST100_ALIGNMENT.md) (MX-8004 registration, 5 verified jobs, trust >90).
 
 Recap + veille (19 sept) : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)
 
@@ -89,6 +91,7 @@ See [`README_LIA.md`](README_LIA.md) and [`docs/AUTONOMOUS_LIA.md`](docs/AUTONOM
 | Doc | Role |
 |-----|------|
 | [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap + veille 19 sept |
+| [MX8004_FIRST100_ALIGNMENT.md](docs/MX8004_FIRST100_ALIGNMENT.md) | **Phase 4 / First 100** — LIA → MX-8004 |
 | [DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) | Parcours démo `/demo` |
 | [GO_LIVE_DEPLOY.md](docs/GO_LIVE_DEPLOY.md) | Deploy SC |
 | [REALITY_SWITCH.md](docs/REALITY_SWITCH.md) | Paper → live chrome |
