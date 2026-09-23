@@ -1,0 +1,82 @@
+/* Atelier Tuduri — oil palette + ambient NFT panels */
+:root {
+  --atelier-umber: #140c0a;
+  --atelier-ochre: #d4a054;
+  --atelier-vermillion: #c45c3e;
+  --atelier-teal: #2a6f73;
+  --atelier-rose: #c45d6c;
+  --atelier-ivory: #f3e6d4;
+}
+
+body {
+  background-color: #08060a;
+  background-image:
+    radial-gradient(ellipse 90% 60% at 8% -10%, rgba(196, 92, 62, 0.16), transparent 52%),
+    radial-gradient(ellipse 70% 45% at 100% 0%, rgba(42, 111, 115, 0.14), transparent 48%),
+    radial-gradient(ellipse 50% 35% at 50% 110%, rgba(212, 160, 84, 0.08), transparent 50%);
+}
+
+.atelier-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.atelier-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(8, 6, 10, 0.55) 0%, rgba(8, 6, 10, 0.82) 45%, #08060a 100%);
+}
+
+.atelier-strip {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  opacity: 0.22;
+  filter: saturate(1.15) contrast(1.08);
+}
+
+.atelier-panel {
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.08);
+}
+
+.atelier-panel--0 { filter: hue-rotate(-8deg); }
+.atelier-panel--1 { filter: hue-rotate(6deg); }
+.atelier-panel--2 { opacity: 0.85; }
+.atelier-panel--3 { filter: sepia(0.15); }
+
+.atelier-credit {
+  position: fixed;
+  right: 12px;
+  bottom: 72px;
+  z-index: 20;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243, 230, 212, 0.45);
+}
+.atelier-credit:hover {
+  color: var(--atelier-ochre);
+}
+
+.atelier-card {
+  background:
+    linear-gradient(165deg, rgba(28, 16, 14, 0.78), rgba(10, 10, 16, 0.88));
+  backdrop-filter: blur(18px);
+}
+
+.app-shell {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atelier-panel {
+    transform: none;
+  }
+}

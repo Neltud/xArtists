@@ -1,0 +1,8 @@
+{
+  "mode": "dry_run",
+  "chain": "1",
+  "identity_registry": "(set IDENTITY_REGISTRY_ADDRESS)",
+  "agent_name": "LIA v6 — xArtists",
+  "pem_available": false,
+  "note": "Written by scripts/register_mx8004_lia.py · live only after Mainnet Push"
+}
