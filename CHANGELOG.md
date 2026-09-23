@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.38.1](https://github.com/Neltud/xArtists/compare/v0.38.0...v0.38.1) (2026-09-23)
+
+
+### Bug Fixes
+
+* **museum:** display NFTUDURI works — multi-source catalog, priority collections, 2D grid always visible ([f1de7e1](https://github.com/Neltud/xArtists/commit/f1de7e1dc8541f98c3d5256641f15b404174b996))
+* **museum:** TextureLoader crossOrigin anonymous + TEX_CONCURRENT 8 ([d5edc76](https://github.com/Neltud/xArtists/commit/d5edc7610e46066d22873ef01ddc62067a3c13b4))
+
 ## [0.38.0](https://github.com/Neltud/xArtists/compare/v0.37.0...v0.38.0) (2026-09-23)
 
 
