@@ -1,6 +1,6 @@
-/* xArtists PWA — v6: global cache bust (museum 3e + all pages) */
-const SHELL = 'xartists-shell-v6'
-const DATA = 'xartists-data-v6'
+/* xArtists PWA — v7: force full shell rebuild (design 4.0.1) */
+const SHELL = 'xartists-shell-v7'
+const DATA = 'xartists-data-v7'
 const PRECACHE = ['/xArtists/manifest.webmanifest']
 
 self.addEventListener('install', (event) => {

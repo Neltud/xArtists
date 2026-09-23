@@ -2,7 +2,7 @@
 export function registerSW(): void {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return
 
-  const swUrl = `${import.meta.env.BASE_URL}service-worker.js?v=6`
+  const swUrl = `${import.meta.env.BASE_URL}service-worker.js?v=7`
 
   window.addEventListener('load', () => {
     navigator.serviceWorker

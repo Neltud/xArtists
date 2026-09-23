@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 /** Private / early-access honesty strip — no false production claims. */
 const SUPERNOVA_UTC = Date.UTC(2026, 8, 10) // 10 Sep 2026 activation
 const NODE_UPGRADE_UTC = Date.UTC(2026, 8, 1) // 1 Sep 2026 node upgrade
+export const APP_BUILD = '4.0.1-design'
 
 function daysUntil(utcMs: number): number {
   return Math.ceil((utcMs - Date.now()) / 86_400_000)
@@ -32,6 +33,10 @@ export default function PrivateReleaseStrip() {
       role="status"
     >
       <span className="font-semibold text-violet-100">Private release</span>
+      <span className="mx-1.5 text-violet-500">·</span>
+      <span className="rounded bg-violet-500/25 px-1.5 py-0.5 font-mono text-[10px] text-violet-100">
+        {APP_BUILD}
+      </span>
       <span className="mx-1.5 text-violet-500">·</span>
       Paper LIA · market on-chain seulement après codeHash · pas de promesse de performance
       {node && (
