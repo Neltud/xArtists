@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.38.2](https://github.com/Neltud/xArtists/compare/v0.38.1...v0.38.2) (2026-09-23)
+
+
+### Documentation
+
+* GrokyversX wallet custody doctrine — PEM ops-only, paper-first, creator controls funds with key ([a6fd041](https://github.com/Neltud/xArtists/commit/a6fd041f6e3fcf984437d2bee23b3ad21f7eec25))
+
 ## [0.38.1](https://github.com/Neltud/xArtists/compare/v0.38.0...v0.38.1) (2026-09-23)
 
 
