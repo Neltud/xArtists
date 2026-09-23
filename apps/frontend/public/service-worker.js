@@ -1,6 +1,6 @@
-/* xArtists PWA — v5: invalidate stale docs SPA caches */
-const SHELL = 'xartists-shell-v5'
-const DATA = 'xartists-data-v5'
+/* xArtists PWA — v6: global cache bust (museum 3e + all pages) */
+const SHELL = 'xartists-shell-v6'
+const DATA = 'xartists-data-v6'
 const PRECACHE = ['/xArtists/manifest.webmanifest']
 
 self.addEventListener('install', (event) => {
@@ -87,7 +87,7 @@ self.addEventListener('fetch', (event) => {
   }
   if (isHtmlNav(request, url)) {
     event.respondWith(
-      fetch(request)
+      fetch(request, { cache: 'no-store' })
         .then((res) => res)
         .catch(() => caches.match('/xArtists/index.html'))
     )
