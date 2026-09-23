@@ -1,0 +1,40 @@
+{
+  "type": "https://multiversx.com/standards/mx-8004#registration-v1",
+  "name": "LIA v6 — xArtists",
+  "description": "Autonomous DeFi agent on MultiversX: yield optimization (Hatom), risk-managed compounding, multi-brain consensus (Pulse/Yield/Sentinel). Paper-first; verifiable jobs via Validation Registry.",
+  "image": "https://neltud.github.io/xArtists/favicon.ico",
+  "version": "6.0.0",
+  "active": true,
+  "x402Support": true,
+  "services": [
+    {
+      "name": "MCP",
+      "endpoint": "https://neltud.github.io/xArtists/",
+      "version": "2025-01-15",
+      "offerings": [
+        {
+          "serviceId": 1,
+          "name": "Yield Optimization",
+          "description": "Idle capital → Hatom supply / farms with risk guards",
+          "sla": 60
+        },
+        {
+          "serviceId": 2,
+          "name": "Risk Monitoring",
+          "description": "HF / circuit-breaker alerts (Sentinel)",
+          "sla": 5
+        },
+        {
+          "serviceId": 3,
+          "name": "Portfolio Signal",
+          "description": "Paper or live recommendations with DecisionProof",
+          "sla": 15
+        }
+      ]
+    }
+  ],
+  "contact": {
+    "twitter": "@tudurioriginal",
+    "github": "https://github.com/Neltud/xArtists"
+  }
+}

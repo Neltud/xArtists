@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DEMO_BULLETS, DEMO_PATH } from '../config/demoMode'
 import { isSupernovaLive, SUPERNOVA_ROUND_MS, SUPERNOVA_HUB } from '../config/supernova'
+import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import {
   FALLBACK_SNAPSHOT,
   liaOpsFunded,
@@ -27,7 +28,7 @@ const STEPS = [
     n: '03',
     to: '/agents',
     title: 'Packs Pulse · Yield · Sentinel',
-    body: 'Catalogue paper. Achat on-chain bloqué tant que agents-marketplace n’a pas de codeHash.',
+    body: 'Catalogue paper. Achat on-chain bloqué tant que agents-marketplace n’a pas de codeHash. Phase 4 badge.',
   },
   {
     n: '04',
@@ -63,7 +64,7 @@ const STEPS = [
     n: '09',
     to: '/go-live',
     title: 'GO_LIVE checklist',
-    body: 'Suite logique : dest wallets, PEM local, simulate → deploy → verify codeHash.',
+    body: 'Suite logique : dest wallets, PEM local, simulate → deploy → verify codeHash → MX-8004 register.',
   },
 ] as const
 
@@ -100,7 +101,8 @@ export default function DemoTourPage() {
       value: `${snap.liaOps.balanceEgld.toFixed(4)} EGLD · nonce ${snap.liaOps.nonce}`,
     },
     { ok: true, label: 'Supernova mainnet', value: `${SUPERNOVA_ROUND_MS} ms · epoch ${snap.epoch}` },
-    { ok: true, label: 'Pages demo', value: 'GO_DEMO' },
+    { ok: false, label: 'MX-8004 Identity', value: 'not registered (Phase 4 pending)' },
+    { ok: true, label: 'Pages demo', value: 'GO_DEMO + Phase 4 section' },
   ]
 
   return (
@@ -124,6 +126,8 @@ export default function DemoTourPage() {
           </a>
         )}
       </header>
+
+      <Phase4ReadinessBanner variant="full" />
 
       <ul className="grid gap-2 text-sm text-zinc-400">
         {DEMO_BULLETS.map(b => (
@@ -188,8 +192,9 @@ export default function DemoTourPage() {
       </section>
 
       <p className="text-[11px] text-zinc-600 leading-relaxed">
-        Recap technique : docs/ANALYSE_DAPP_COMPLETE.md · SoT : data/contracts.json. Pas un conseil
-        en investissement. Tips ≠ investissement. Probe {snap.ok ? 'live' : 'cache'} {snap.probedAt}.
+        Recap technique : docs/ANALYSE_DAPP_COMPLETE.md · Phase 4 : docs/MX8004_FIRST100_ALIGNMENT.md ·
+        SoT : data/contracts.json. Pas un conseil en investissement. Tips ≠ investissement. Probe{' '}
+        {snap.ok ? 'live' : 'cache'} {snap.probedAt}.
       </p>
     </div>
   )

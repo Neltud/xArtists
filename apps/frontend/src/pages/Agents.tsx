@@ -1,9 +1,11 @@
 /**
  * Packs — 3 only, paper-first, no fund narrative.
+ * Phase 4 readiness badge (MX-8004 / First 100).
  */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
+import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 
 const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
@@ -29,9 +31,11 @@ export default function Agents() {
           Pulse · Yield · Sentinel
         </h1>
         <p className="text-zinc-400 text-[14px] leading-relaxed max-w-md">
-          Trois accès. Pas un fonds. Mint on-chain plus tard.
+          Trois accès. Pas un fonds. Mint on-chain plus tard. Alignés pour MX-8004 / First 100.
         </p>
       </header>
+
+      <Phase4ReadinessBanner variant="compact" />
 
       <div className="grid sm:grid-cols-3 gap-3">
         {PACKS.map(p => {
@@ -69,6 +73,10 @@ export default function Agents() {
         Possession :{' '}
         <Link to="/my-packs" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
           My Packs
+        </Link>
+        {' · '}
+        <Link to="/demo" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
+          Phase 4 detail
         </Link>
       </p>
     </div>
