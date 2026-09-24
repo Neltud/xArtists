@@ -1,12 +1,12 @@
 /**
- * Home — fluid + LIA / GrokyversX + THE PULSE demo.
+ * Home — fluid + LIA / GrokyversX + Phase 4 First 100.
  */
 import { Link } from 'react-router-dom'
 import SoftStatus from '../components/SoftStatus'
 import AgentWalletsStrip from '../components/AgentWalletsStrip'
 import PulseStrip from '../components/PulseStrip'
 import NetworkLiveStrip from '../components/NetworkLiveStrip'
-import { LINKS } from '../config/links'
+import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import { isSupernovaLive } from '../config/supernova'
 
 const LINKS_MAIN = [
@@ -14,7 +14,8 @@ const LINKS_MAIN = [
   { to: '/agents', title: 'Packs', body: 'Pulse · Yield · Sentinel', delay: '60ms' },
   { to: '/tours', title: 'Tours', body: 'Carte & musées du monde', delay: '120ms' },
   { to: '/trading', title: 'Trading', body: 'Board paper · GrokyversX', delay: '180ms' },
-  { to: '/slot', title: 'Slot', body: 'Primordial · paper bank TRO', delay: '220ms' },
+  { to: '/slot', title: 'Slot', body: '3×3 NFT · paper bank TRO', delay: '220ms' },
+  { to: '/go-live', title: 'GO_LIVE', body: 'Phase 4 · First 100 · checklists', delay: '260ms' },
 ] as const
 
 export default function Dashboard() {
@@ -39,14 +40,14 @@ export default function Dashboard() {
           <span className="gradient-text">en mouvement</span>
         </h1>
         <p className="text-zinc-400 text-[15px] sm:text-base leading-relaxed max-w-md">
-          Galerie immersive, packs, LIA + GrokyversX — et THE PULSE, le nerf social de l’Empire.
+          Galerie immersive, packs, LIA + GrokyversX — Phase 4 First 100 (1 EGLD bounty).
         </p>
         <div className="flex flex-wrap gap-3 pt-1">
           <Link to="/museum" className="btn-primary">
             Entrer dans la galerie
           </Link>
-          <Link to="/agents" className="btn-secondary">
-            Voir les packs
+          <Link to="/go-live" className="btn-secondary">
+            Phase 4 · GO_LIVE
           </Link>
           <Link to="/demo" className="btn-secondary">
             Tour démo
@@ -54,7 +55,11 @@ export default function Dashboard() {
         </div>
       </section>
 
-      <div className="relative mt-10 space-y-3">
+      <div className="relative mt-8">
+        <Phase4ReadinessBanner variant="full" />
+      </div>
+
+      <div className="relative mt-6 space-y-3">
         <SoftStatus />
         <NetworkLiveStrip />
         <PulseStrip />
@@ -79,24 +84,6 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
-
-      <footer className="relative mt-12 flex flex-wrap gap-x-5 gap-y-2 text-[12px] text-zinc-600">
-        <Link to="/wallet" className="hover:text-zinc-300 transition-colors">
-          Wallet
-        </Link>
-        <a href={LINKS.liaExplorer} target="_blank" rel="noreferrer" className="hover:text-violet-300">
-          LIA
-        </a>
-        <a href={LINKS.grokyversxExplorer} target="_blank" rel="noreferrer" className="hover:text-cyan-300">
-          GrokyversX
-        </a>
-        <a href={LINKS.discord} target="_blank" rel="noreferrer" className="hover:text-indigo-300">
-          Discord
-        </a>
-        <Link to="/legal" className="hover:text-zinc-300 transition-colors">
-          Légal
-        </Link>
-      </footer>
     </div>
   )
 }
