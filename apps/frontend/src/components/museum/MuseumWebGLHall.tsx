@@ -1,6 +1,5 @@
 /**
- * Musée WebGL — navigation 3e personne (avatar visible, caméra derrière).
- * Clic œuvre = approche + fiche crédits · CORS textures · style jeu A1X.
+ * Musée WebGL — 3e personne · textures proxy-first · fallback canvas · déplacement stable.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
@@ -19,7 +18,7 @@ const EYE = 1.65
 const WALK = 3.6
 const SPRINT = 6.4
 const MAX_ART = 24
-const TEX_CONCURRENT = 8
+const TEX_CONCURRENT = 20
 const PITCH_MAX = 1.15
 const ACCEL = 22
 const FRICTION = 11
@@ -106,11 +105,9 @@ export default function MuseumWebGLHall({
   const keys = useRef<Record<string, boolean>>({})
   const hold = useRef<Record<string, boolean>>({})
   const nearestRef = useRef<FrameItem | null>(null)
-  const thirdRef = useRef(true)
   const [ready, setReady] = useState(false)
   const [hint, setHint] = useState(true)
   const [locked, setLocked] = useState(false)
-  const [third, setThird] = useState(true)
   const [nearTitle, setNearTitle] = useState('')
   const [inspect, setInspect] = useState<FrameItem | null>(null)
   const { connected } = useWallet()
@@ -118,8 +115,14 @@ export default function MuseumWebGLHall({
   const pal = PALETTE[room] || PALETTE.stone
   const roomName = blueprint.rooms?.[0]?.name || blueprint.name
   const area = Math.round(blueprintAreaM2(blueprint))
-  const paintings = useMemo(() => frames.filter(f => f.image).slice(0, MAX_ART), [frames])
-  const sculptures = useMemo(() => frames.filter(f => !f.image).slice(0, 6), [frames])
+  const paintings = useMemo(
+    () => frames.filter(f => !!f.image && f.kind !== 'sculpture').slice(0, MAX_ART),
+    [frames],
+  )
+  const sculptures = useMemo(
+    () => frames.filter(f => f.kind === 'sculpture' || !f.image).slice(0, 8),
+    [frames],
+  )
   const presence = useMemo(() => presenceSnapshot(blueprint.id || roomName), [blueprint.id, roomName])
 
   const onBuy = useCallback(
@@ -130,12 +133,8 @@ export default function MuseumWebGLHall({
       }
       if (!marketLive) return
     },
-    [connected, marketLive]
+    [connected, marketLive],
   )
-
-  useEffect(() => {
-    thirdRef.current = true
-  }, [third])
 
   useEffect(() => {
     const mount = mountRef.current
@@ -145,6 +144,7 @@ export default function MuseumWebGLHall({
     let vz = 0
     let walkPhase = 0
     let surrealPts: THREE.Points | null = null
+    let lastNearTitle = ''
     const b = bounds(blueprint)
     const wallH = blueprint.wallHeight || 3.8
     const scene = new THREE.Scene()
@@ -198,86 +198,146 @@ export default function MuseumWebGLHall({
 
     const loader = new THREE.TextureLoader()
     loader.crossOrigin = 'anonymous'
-    let texQueue = 0
     const artAnchors: { pos: THREE.Vector3; frame: FrameItem }[] = []
     const wallList = blueprint.walls.filter(w => Math.hypot(w.x2 - w.x1, w.y2 - w.y1) > 1.2)
 
     function corsSafeUrls(raw: string): string[] {
-      const u = raw.trim()
+      const u = (raw || '').trim()
       if (!u) return []
-      const out: string[] = [u]
+      const out: string[] = []
       try {
-        const host = new URL(u).hostname
-        if (host.includes('multiversx.com') || host.includes('ipfs')) {
-          const bare = u.replace(/^https?:\/\//i, '')
-          out.push(`https://images.weserv.nl/?url=${encodeURIComponent(bare)}&w=640&output=jpg&q=85`)
-        }
+        const bare = u.replace(/^https?:\/\//i, '')
+        out.push(`https://images.weserv.nl/?url=${encodeURIComponent(bare)}&w=720&h=900&fit=cover&output=jpg&q=80`)
+        out.push(`https://wsrv.nl/?url=${encodeURIComponent(bare)}&w=720&h=900&fit=cover&output=jpg&q=80`)
+        out.push(u)
       } catch {
-        /* */
+        out.push(u)
       }
       return out
+    }
+
+    function canvasFallbackTex(title: string, sub?: string): THREE.Texture {
+      const c = document.createElement('canvas')
+      c.width = 512
+      c.height = 640
+      const ctx = c.getContext('2d')!
+      const g = ctx.createLinearGradient(0, 0, 0, 640)
+      g.addColorStop(0, '#3d342c')
+      g.addColorStop(1, '#1a1512')
+      ctx.fillStyle = g
+      ctx.fillRect(0, 0, 512, 640)
+      ctx.strokeStyle = 'rgba(201,162,39,0.55)'
+      ctx.lineWidth = 10
+      ctx.strokeRect(20, 20, 472, 600)
+      ctx.fillStyle = '#f0e6d8'
+      ctx.font = 'bold 26px system-ui,sans-serif'
+      const t = (title || 'Œuvre').slice(0, 42)
+      let y = 260
+      for (let i = 0; i < t.length; i += 16) {
+        ctx.fillText(t.slice(i, i + 16), 48, y)
+        y += 34
+      }
+      if (sub) {
+        ctx.fillStyle = '#b0a090'
+        ctx.font = '18px system-ui,sans-serif'
+        ctx.fillText(sub.slice(0, 30), 48, y + 20)
+      }
+      const tex = new THREE.CanvasTexture(c)
+      tex.colorSpace = THREE.SRGBColorSpace
+      return tex
     }
 
     function placeArtTexture(tex: THREE.Texture, apx: number, apz: number, nx: number, nz: number, angle: number) {
       if (disposed) return
       tex.colorSpace = THREE.SRGBColorSpace
+      tex.minFilter = THREE.LinearFilter
+      tex.magFilter = THREE.LinearFilter
       const art = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.95, 1.1),
-        new THREE.MeshBasicMaterial({ map: tex })
+        new THREE.PlaneGeometry(0.95, 1.15),
+        new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }),
       )
-      art.position.set(apx + nx * 0.04, 1.55, apz + nz * 0.04)
+      art.position.set(apx + nx * 0.05, 1.55, apz + nz * 0.05)
       art.rotation.y = -angle
       scene.add(art)
     }
 
-    function loadArtOnWall(urls: string[], apx: number, apz: number, nx: number, nz: number, angle: number) {
-      if (!urls.length) return
+    function loadArtOnWall(
+      urls: string[],
+      apx: number,
+      apz: number,
+      nx: number,
+      nz: number,
+      angle: number,
+      title?: string,
+      sub?: string,
+    ) {
+      const finish = (tex: THREE.Texture) => placeArtTexture(tex, apx, apz, nx, nz, angle)
       const tryAt = (idx: number) => {
-        if (disposed || idx >= urls.length) return
-        loader.load(urls[idx], tex => placeArtTexture(tex, apx, apz, nx, nz, angle), undefined, () => tryAt(idx + 1))
+        if (disposed) return
+        if (idx >= urls.length) {
+          finish(canvasFallbackTex(title || 'Œuvre', sub))
+          return
+        }
+        loader.load(urls[idx], tex => finish(tex), undefined, () => tryAt(idx + 1))
+      }
+      if (!urls.length) {
+        finish(canvasFallbackTex(title || 'Œuvre', sub))
+        return
       }
       tryAt(0)
     }
 
+    const nWalls = Math.max(1, wallList.length)
     paintings.forEach((frame, i) => {
-      const w = wallList[i % Math.max(1, wallList.length)]
+      const w = wallList[i % nWalls]
       if (!w) return
       const g = wallGeom(w)
-      const t = 0.2 + (i % 5) * 0.15
+      const onThis = Math.floor(i / nWalls)
+      const totalOn = Math.ceil(paintings.length / nWalls)
+      const t = 0.15 + ((onThis + 0.5) / Math.max(1, totalOn)) * 0.7
       const ax = w.x1 + (w.x2 - w.x1) * t
       const az = w.y1 + (w.y2 - w.y1) * t
       const nx = -Math.sin(g.angle)
       const nz = Math.cos(g.angle)
-      const apx = ax + nx * 0.12
-      const apz = az + nz * 0.12
+      const apx = ax + nx * 0.14
+      const apz = az + nz * 0.14
       const frameMesh = new THREE.Mesh(
-        new THREE.BoxGeometry(1.1, 1.3, 0.06),
+        new THREE.BoxGeometry(1.12, 1.35, 0.07),
         new THREE.MeshStandardMaterial({
           color: pal.frame,
           roughness: 0.5,
           metalness: 0.2,
           emissive: pal.emissive,
-          emissiveIntensity: 0.15,
-        })
+          emissiveIntensity: 0.12,
+        }),
       )
       frameMesh.position.set(apx, 1.55, apz)
       frameMesh.rotation.y = -g.angle
       scene.add(frameMesh)
       artAnchors.push({ pos: new THREE.Vector3(apx, 1.55, apz), frame })
-      if (frame.image && texQueue < TEX_CONCURRENT * 4) {
-        texQueue++
-        loadArtOnWall(corsSafeUrls(frame.image), apx, apz, nx, nz, g.angle)
-      }
+      loadArtOnWall(
+        corsSafeUrls(frame.image || ''),
+        apx,
+        apz,
+        nx,
+        nz,
+        g.angle,
+        frame.title,
+        frame.artist || frame.subtitle,
+      )
     })
 
     sculptures.forEach((frame, i) => {
       const ang = (i / Math.max(1, sculptures.length)) * Math.PI * 2
-      const sx = b.cx + Math.cos(ang) * 1.8
-      const sz = b.cy + Math.sin(ang) * 1.8
-      if (!pointInBlueprintFloor(blueprint, sx, sz)) return
+      let sx = b.cx + Math.cos(ang) * 1.6
+      let sz = b.cy + Math.sin(ang) * 1.6
+      if (!pointInBlueprintFloor(blueprint, sx, sz)) {
+        sx = b.cx
+        sz = b.cy
+      }
       const pedestal = new THREE.Mesh(
         new THREE.CylinderGeometry(0.35, 0.4, 0.5, 16),
-        new THREE.MeshStandardMaterial({ color: pal.trim, roughness: 0.4, metalness: 0.3 })
+        new THREE.MeshStandardMaterial({ color: pal.trim, roughness: 0.4, metalness: 0.3 }),
       )
       pedestal.position.set(sx, 0.25, sz)
       scene.add(pedestal)
@@ -289,10 +349,21 @@ export default function MuseumWebGLHall({
           metalness: 0.5,
           emissive: pal.emissive,
           emissiveIntensity: 0.3,
-        })
+        }),
       )
       form.position.set(sx, 0.85, sz)
       scene.add(form)
+      const plaqueAngle = Math.atan2(b.cx - sx, b.cy - sz)
+      loadArtOnWall(
+        corsSafeUrls(frame.image || ''),
+        sx + Math.sin(plaqueAngle) * 0.5,
+        sz + Math.cos(plaqueAngle) * 0.5,
+        Math.sin(plaqueAngle),
+        Math.cos(plaqueAngle),
+        -plaqueAngle,
+        frame.title,
+        frame.artist || frame.subtitle,
+      )
       artAnchors.push({ pos: new THREE.Vector3(sx, 1.2, sz), frame })
     })
 
@@ -369,21 +440,27 @@ export default function MuseumWebGLHall({
       }
       if (!wasDrag) {
         const target = nearestRef.current
-        const anchor = artAnchors.find(a => a.frame === target) || artAnchors[0]
+        const anchor = artAnchors.find(a => a.frame === target)
         if (anchor) {
           const dx = anchor.pos.x - px
           const dz = anchor.pos.z - pz
           const dist = Math.hypot(dx, dz) || 1
-          const stop = 1.35
-          if (dist > stop) {
-            const ratio = (dist - stop) / dist
-            px = px + dx * ratio
-            pz = pz + dz * ratio
-            avatar.position.set(px, 0, pz)
+          if (dist < 5.5) {
+            const stop = 1.5
+            if (dist > stop) {
+              const ratio = Math.min(0.5, (dist - stop) / dist)
+              const nx2 = px + dx * ratio
+              const nz2 = pz + dz * ratio
+              if (pointInBlueprintFloor(blueprint, nx2, nz2)) {
+                px = nx2
+                pz = nz2
+                avatar.position.set(px, 0, pz)
+              }
+            }
+            facing = Math.atan2(dx, dz)
+            avatar.rotation.y = facing
+            yaw = facing + Math.PI
           }
-          facing = Math.atan2(dx, dz)
-          avatar.rotation.y = facing
-          yaw = facing + Math.PI
           setInspect(anchor.frame)
         }
       }
@@ -457,14 +534,20 @@ export default function MuseumWebGLHall({
         vx = (vx / vlen) * speed
         vz = (vz / vlen) * speed
       }
-      let nx = px + vx * dt
-      let nz = pz + vz * dt
+      const nx = px + vx * dt
+      const nz = pz + vz * dt
       if (pointInBlueprintFloor(blueprint, nx, nz)) {
         px = nx
         pz = nz
+      } else if (pointInBlueprintFloor(blueprint, nx, pz)) {
+        px = nx
+        vx *= 0.5
+      } else if (pointInBlueprintFloor(blueprint, px, nz)) {
+        pz = nz
+        vz *= 0.5
       } else {
-        vx *= 0.2
-        vz *= 0.2
+        vx *= 0.15
+        vz *= 0.15
       }
       if (vlen > 0.35) {
         facing = Math.atan2(vx, vz)
@@ -484,7 +567,11 @@ export default function MuseumWebGLHall({
         }
       }
       nearestRef.current = nearest
-      setNearTitle(nearest?.title || '')
+      const nt = nearest?.title || ''
+      if (nt !== lastNearTitle) {
+        lastNearTitle = nt
+        setNearTitle(nt)
+      }
 
       const moving = Math.hypot(vx, vz) > 0.35
       avatar.visible = true
@@ -553,7 +640,7 @@ export default function MuseumWebGLHall({
             3e personne
           </span>
           <span className="text-[10px] text-zinc-500">
-            {locked ? 'orbe souris' : 'clic œuvre = fiche · glisser = regarder · WASD'}
+            {locked ? 'orbe souris' : 'clic = fiche · glisser = regarder · WASD'}
           </span>
         </div>
       </div>
