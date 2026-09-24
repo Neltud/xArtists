@@ -37,6 +37,7 @@ const GROUPS = [
     items: [
       { to: '/wallet', label: 'Wallet user', note: 'xPortal / WC' },
       { to: '/tip', label: 'Tip', note: 'Soutien treasury' },
+      { to: '/payments', label: 'Paiements paper', note: 'Intents locaux' },
       { to: '/ads', label: 'Ads / enchères', note: 'Slots pub paper' },
       { to: '/sale', label: 'Sale', note: 'Ventes' },
       { to: '/venues', label: 'Comptes lieux', note: 'Musée · artiste · société' },
