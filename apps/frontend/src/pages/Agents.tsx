@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
 import PackOpenTheater from '../components/PackOpenTheater'
 import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
+import AdSlot from '../components/AdSlot'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 
 const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
@@ -39,6 +40,8 @@ export default function Agents() {
       </header>
 
       <Phase4ReadinessBanner variant="compact" />
+
+      <AdSlot id="drop_feature" />
 
       <div className="grid sm:grid-cols-3 gap-3">
         {PACKS.map(p => {
