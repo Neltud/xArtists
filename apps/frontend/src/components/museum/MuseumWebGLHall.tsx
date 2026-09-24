@@ -1,6 +1,6 @@
 /**
  * Musée WebGL — navigation 3e personne (avatar visible, caméra derrière).
- * Locomotion accel/friction · collision · pad mobile · style jeu A1X.
+ * Clic œuvre = approche + fiche crédits · CORS textures · style jeu A1X.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
@@ -20,9 +20,7 @@ const WALK = 3.6
 const SPRINT = 6.4
 const MAX_ART = 24
 const TEX_CONCURRENT = 8
-const LOOK_SENS = 0.0019
 const PITCH_MAX = 1.15
-const WALL_INSET = 0.28
 const ACCEL = 22
 const FRICTION = 11
 const CAM_DIST = 4.2
@@ -115,7 +113,6 @@ export default function MuseumWebGLHall({
   const [third, setThird] = useState(true)
   const [nearTitle, setNearTitle] = useState('')
   const [inspect, setInspect] = useState<FrameItem | null>(null)
-  const [buyMsg, setBuyMsg] = useState<string | null>(null)
   const { connected } = useWallet()
   const marketLive = canListBuyNft()
   const pal = PALETTE[room] || PALETTE.stone
@@ -131,17 +128,13 @@ export default function MuseumWebGLHall({
         requestOpenConnect()
         return
       }
-      if (!marketLive) {
-        setBuyMsg('Achat on-chain bientôt (SC)')
-        return
-      }
-      setBuyMsg(`Intent: ${frame.title}`)
+      if (!marketLive) return
     },
     [connected, marketLive]
   )
 
   useEffect(() => {
-    thirdRef.current = true // navigation 3e personne verrouillée
+    thirdRef.current = true
   }, [third])
 
   useEffect(() => {
@@ -209,7 +202,6 @@ export default function MuseumWebGLHall({
     const artAnchors: { pos: THREE.Vector3; frame: FrameItem }[] = []
     const wallList = blueprint.walls.filter(w => Math.hypot(w.x2 - w.x1, w.y2 - w.y1) > 1.2)
 
-    /** media.multiversx.com often lacks CORS → WebGL textures fail. Proxy as fallback. */
     function corsSafeUrls(raw: string): string[] {
       const u = raw.trim()
       if (!u) return []
@@ -219,10 +211,9 @@ export default function MuseumWebGLHall({
         if (host.includes('multiversx.com') || host.includes('ipfs')) {
           const bare = u.replace(/^https?:\/\//i, '')
           out.push(`https://images.weserv.nl/?url=${encodeURIComponent(bare)}&w=640&output=jpg&q=85`)
-          out.push(`https://wsrv.nl/?url=${encodeURIComponent(bare)}&w=640&output=jpg&q=85`)
         }
       } catch {
-        /* keep original */
+        /* */
       }
       return out
     }
@@ -230,7 +221,6 @@ export default function MuseumWebGLHall({
     function placeArtTexture(tex: THREE.Texture, apx: number, apz: number, nx: number, nz: number, angle: number) {
       if (disposed) return
       tex.colorSpace = THREE.SRGBColorSpace
-      tex.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy?.() || 1)
       const art = new THREE.Mesh(
         new THREE.PlaneGeometry(0.95, 1.1),
         new THREE.MeshBasicMaterial({ map: tex })
@@ -244,12 +234,7 @@ export default function MuseumWebGLHall({
       if (!urls.length) return
       const tryAt = (idx: number) => {
         if (disposed || idx >= urls.length) return
-        loader.load(
-          urls[idx],
-          tex => placeArtTexture(tex, apx, apz, nx, nz, angle),
-          undefined,
-          () => tryAt(idx + 1)
-        )
+        loader.load(urls[idx], tex => placeArtTexture(tex, apx, apz, nx, nz, angle), undefined, () => tryAt(idx + 1))
       }
       tryAt(0)
     }
@@ -356,27 +341,59 @@ export default function MuseumWebGLHall({
     window.addEventListener('keydown', kd)
     window.addEventListener('keyup', ku)
 
-    // 3e personne: drag pour orbiter (pas besoin de pointer-lock)
     let dragging = false
+    let moved = false
     let lastX = 0
     let lastY = 0
+    let downX = 0
+    let downY = 0
     const onDown = (e: PointerEvent) => {
       if (e.button !== 0 && e.pointerType === 'mouse') return
       dragging = true
+      moved = false
       lastX = e.clientX
       lastY = e.clientY
+      downX = e.clientX
+      downY = e.clientY
       canvas.setPointerCapture?.(e.pointerId)
       setLocked(true)
     }
     const onUp = (e: PointerEvent) => {
+      const wasDrag = moved || Math.hypot(e.clientX - downX, e.clientY - downY) > 10
       dragging = false
       setLocked(false)
-      try { canvas.releasePointerCapture?.(e.pointerId) } catch { /* */ }
+      try {
+        canvas.releasePointerCapture?.(e.pointerId)
+      } catch {
+        /* */
+      }
+      if (!wasDrag) {
+        const target = nearestRef.current
+        const anchor = artAnchors.find(a => a.frame === target) || artAnchors[0]
+        if (anchor) {
+          const dx = anchor.pos.x - px
+          const dz = anchor.pos.z - pz
+          const dist = Math.hypot(dx, dz) || 1
+          const stop = 1.35
+          if (dist > stop) {
+            const ratio = (dist - stop) / dist
+            px = px + dx * ratio
+            pz = pz + dz * ratio
+            avatar.position.set(px, 0, pz)
+          }
+          facing = Math.atan2(dx, dz)
+          avatar.rotation.y = facing
+          yaw = facing + Math.PI
+          setInspect(anchor.frame)
+        }
+      }
+      moved = false
     }
     const onMove = (e: PointerEvent) => {
       if (!dragging) return
       const dx = e.clientX - lastX
       const dy = e.clientY - lastY
+      if (Math.hypot(e.clientX - downX, e.clientY - downY) > 8) moved = true
       lastX = e.clientX
       lastY = e.clientY
       yaw -= dx * 0.005
@@ -536,16 +553,17 @@ export default function MuseumWebGLHall({
             3e personne
           </span>
           <span className="text-[10px] text-zinc-500">
-            {locked ? 'orbe souris' : 'glisser pour regarder · WASD marcher'}
+            {locked ? 'orbe souris' : 'clic œuvre = fiche · glisser = regarder · WASD'}
           </span>
         </div>
       </div>
       {inspect && (
         <ArtworkDossier
           frame={inspect}
+          allowBuy={allowBuy}
+          marketLive={marketLive}
           onClose={() => setInspect(null)}
           onBuy={allowBuy ? () => onBuy(inspect) : undefined}
-          buyMsg={buyMsg}
         />
       )}
       {!paintings.length && !sculptures.length && (
