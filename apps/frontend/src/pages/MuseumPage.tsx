@@ -147,9 +147,18 @@ function ArtworkGrid({ frames, title }: { frames: FrameItem[]; title: string }) 
                   src={f.image}
                   alt={f.title}
                   loading="lazy"
+                  referrerPolicy="no-referrer"
+                  decoding="async"
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
                   onError={e => {
-                    ;(e.target as HTMLImageElement).style.opacity = '0.2'
+                    const el = e.target as HTMLImageElement
+                    const src = el.src || ''
+                    if (src && !src.includes('weserv.nl') && !src.includes('wsrv.nl')) {
+                      const bare = src.replace(/^https?:\/\//i, '')
+                      el.src = `https://images.weserv.nl/?url=${encodeURIComponent(bare)}&w=480&output=jpg&q=80`
+                      return
+                    }
+                    el.style.opacity = '0.25'
                   }}
                 />
               ) : (
