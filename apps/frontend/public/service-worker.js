@@ -1,6 +1,6 @@
-/* xArtists PWA — v7: force full shell rebuild (design 4.0.1) */
-const SHELL = 'xartists-shell-v7'
-const DATA = 'xartists-data-v7'
+/* xArtists PWA — v8: packs open theater + pulse museum + texture proxy */
+const SHELL = 'xartists-shell-v8'
+const DATA = 'xartists-data-v8'
 const PRECACHE = ['/xArtists/manifest.webmanifest']
 
 self.addEventListener('install', (event) => {
@@ -12,93 +12,32 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   const keep = new Set([SHELL, DATA])
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) => Promise.all(keys.filter((k) => !keep.has(k)).map((k) => caches.delete(k))))
-      .then(() => self.clients.claim())
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => !keep.has(k)).map((k) => caches.delete(k)))
+    ).then(() => self.clients.claim())
   )
 })
 
-function isDataPath(url) {
-  return url.pathname.includes('/xArtists/data/') || url.pathname.includes('/data/')
-}
-
-function isApi(url) {
-  return (
-    url.hostname.includes('multiversx.com') ||
-    url.hostname.includes('coingecko.com') ||
-    url.hostname.includes('api.')
-  )
-}
-
-function isAsset(url) {
-  return /\.(js|css|woff2?|svg|png|webp|ico)$/i.test(url.pathname)
-}
-
-function isHtmlNav(request, url) {
-  if (request.mode === 'navigate') return true
-  if (url.pathname.endsWith('.html')) return true
-  if (url.pathname === '/xArtists' || url.pathname === '/xArtists/') return true
-  if (url.pathname.startsWith('/xArtists/') && !isAsset(url) && !isDataPath(url)) return true
-  return false
-}
-
-function networkFirst(request, cacheName) {
-  return fetch(request)
-    .then((res) => {
-      if (res && res.ok) {
-        const copy = res.clone()
-        caches.open(cacheName).then((c) => c.put(request, copy))
-      }
-      return res
-    })
-    .catch(() => caches.match(request))
-}
-
-function cacheFirst(request, cacheName) {
-  return caches.match(request).then((cached) => {
-    if (cached) {
-      fetch(request)
-        .then((res) => {
-          if (res && res.ok) caches.open(cacheName).then((c) => c.put(request, res))
-        })
-        .catch(() => {})
-      return cached
-    }
-    return fetch(request).then((res) => {
-      if (res && res.ok) {
-        const copy = res.clone()
-        caches.open(cacheName).then((c) => c.put(request, copy))
-      }
-      return res
-    })
-  })
-}
-
 self.addEventListener('fetch', (event) => {
-  const { request } = event
-  if (request.method !== 'GET') return
-  const url = new URL(request.url)
-  if (url.origin !== self.location.origin) {
-    if (isApi(url)) {
-      event.respondWith(networkFirst(request, DATA))
-    }
-    return
-  }
-  if (isHtmlNav(request, url)) {
+  const url = new URL(event.request.url)
+  if (event.request.method !== 'GET') return
+  if (url.origin !== self.location.origin) return
+  if (url.pathname.endsWith('.html') || url.pathname.endsWith('.js') || url.pathname.endsWith('.css') || url.pathname.includes('/assets/')) {
     event.respondWith(
-      fetch(request, { cache: 'no-store' })
-        .then((res) => res)
-        .catch(() => caches.match('/xArtists/index.html'))
+      fetch(event.request).then((r) => {
+        const copy = r.clone()
+        caches.open(SHELL).then((c) => c.put(event.request, copy))
+        return r
+      }).catch(() => caches.match(event.request))
     )
     return
   }
-  if (isDataPath(url)) {
-    event.respondWith(networkFirst(request, DATA))
-    return
-  }
-  if (isAsset(url)) {
-    event.respondWith(cacheFirst(request, SHELL))
-    return
-  }
+  event.respondWith(
+    caches.open(DATA).then((cache) =>
+      cache.match(event.request).then((hit) => hit || fetch(event.request).then((r) => {
+        cache.put(event.request, r.clone())
+        return r
+      }))
+    )
+  )
 })

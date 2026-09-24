@@ -1,10 +1,11 @@
 /**
- * Packs — 3 only, paper-first, no fund narrative.
+ * Packs — 3 only, paper-first + ouverture théâtrale 3D/CSS.
  * Phase 4 readiness badge (MX-8004 / First 100).
  */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
+import PackOpenTheater from '../components/PackOpenTheater'
 import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 
@@ -19,19 +20,21 @@ const RING: Record<PackId, string> = {
 
 export default function Agents() {
   const [selected, setSelected] = useState<PackId | null>(null)
+  const [theater, setTheater] = useState<PackId | null>(null)
   const active = PACKS.find(p => p.id === selected) || null
+  const theaterPack = PACKS.find(p => p.id === theater) || null
 
   return (
     <div className="animate-fade-in pb-14 max-w-3xl mx-auto space-y-8">
       <header className="space-y-2">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
-          Packs · paper
+          Packs · paper · moteur économique
         </p>
         <h1 className="text-3xl font-semibold tracking-tight text-white">
           Pulse · Yield · Sentinel
         </h1>
         <p className="text-zinc-400 text-[14px] leading-relaxed max-w-md">
-          Trois accès. Pas un fonds. Mint on-chain plus tard. Alignés pour MX-8004 / First 100.
+          Trois accès. Ouverture scénique. Pas un fonds. Mint on-chain plus tard.
         </p>
       </header>
 
@@ -41,21 +44,31 @@ export default function Agents() {
         {PACKS.map(p => {
           const on = selected === p.id
           return (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => setSelected(p.id)}
-              className={`text-left rounded-2xl border bg-zinc-950/70 p-4 transition-colors ${RING[p.id]} ${
-                on ? 'ring-1 ring-white/25' : ''
-              }`}
-            >
-              <p className="text-[15px] font-semibold text-white">{p.name}</p>
-              <p className="text-[12px] text-zinc-500 mt-1 line-clamp-2">{p.tagline}</p>
-              <p className="mt-3 text-xl font-semibold text-white tabular-nums">
-                {p.priceEur.list}
-                <span className="text-sm font-normal text-zinc-500 ml-1">€</span>
-              </p>
-            </button>
+            <div key={p.id} className="space-y-2">
+              <button
+                type="button"
+                onClick={() => setSelected(p.id)}
+                className={`w-full text-left rounded-2xl border bg-zinc-950/70 p-4 transition-colors ${RING[p.id]} ${
+                  on ? 'ring-1 ring-white/25' : ''
+                }`}
+              >
+                <p className="text-[15px] font-semibold text-white">
+                  {p.icon} {p.name}
+                </p>
+                <p className="text-[12px] text-zinc-500 mt-1 line-clamp-2">{p.tagline}</p>
+                <p className="mt-3 text-xl font-semibold text-white tabular-nums">
+                  {p.priceEur.list}
+                  <span className="text-sm font-normal text-zinc-500 ml-1">€</span>
+                </p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setTheater(p.id)}
+                className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2 text-[12px] text-zinc-300 hover:bg-white/[0.08] hover:text-white"
+              >
+                ▶ Preview ouverture
+              </button>
+            </div>
           )
         })}
       </div>
@@ -75,10 +88,14 @@ export default function Agents() {
           My Packs
         </Link>
         {' · '}
-        <Link to="/demo" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
-          Phase 4 detail
+        <Link to="/museum" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
+          Musée Pulse
         </Link>
       </p>
+
+      {theaterPack && (
+        <PackOpenTheater pack={theaterPack} open={!!theater} onClose={() => setTheater(null)} />
+      )}
     </div>
   )
 }
