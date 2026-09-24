@@ -1,5 +1,14 @@
 # Changelog — xArtists
 
+## [0.39.1](https://github.com/Neltud/xArtists/compare/v0.39.0...v0.39.1) (2026-09-24)
+
+
+### Bug Fixes
+
+* **museum:** 2D grid image fallback via images.weserv.nl ([6f1619a](https://github.com/Neltud/xArtists/commit/6f1619aeb3f91b4174e68be7c7ac46b12632696c))
+* **museum:** load wall art via CORS proxy — media.multiversx lacks ACAO for WebGL textures ([ef33ebe](https://github.com/Neltud/xArtists/commit/ef33ebe4e297911222558976859af9c3459adc6f))
+* **museum:** restore WebGL hall + CORS proxy (images.weserv.nl) for MultiversX textures ([81f4e66](https://github.com/Neltud/xArtists/commit/81f4e66c585b52843f5583cfc77f5fc0eae32e28))
+
 ## [0.39.0](https://github.com/Neltud/xArtists/compare/v0.38.2...v0.39.0) (2026-09-24)
 
 
