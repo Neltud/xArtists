@@ -284,20 +284,62 @@ function toFrame(w: CatalogWork, base: string, museumLabel: string): FrameItem {
 }
 
 function proceduralSculptures(museumId: string, museumLabel: string): FrameItem[] {
+  const pool = [
+    {
+      remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP-16774-001.jpg',
+      title: 'Marble statue of a wounded warrior',
+      artist: 'Roman',
+      year: 'ca. 138–181 CE',
+    },
+    {
+      remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP-14287-001.jpg',
+      title: 'Marble statue of a kouros',
+      artist: 'Greek',
+      year: 'ca. 590–580 BCE',
+    },
+    {
+      remote: 'https://images.metmuseum.org/CRDImages/eg/web-large/DT202.jpg',
+      title: 'The Temple of Dendur',
+      artist: 'Egyptian',
+      year: '15 B.C.',
+    },
+  ]
+  const pick = pool[Math.abs(museumId.length) % pool.length]
+  const pick2 = pool[(museumId.length + 1) % pool.length]
   return [
     {
       id: `sculpt-${museumId}-0`,
+      title: pick.title,
+      artist: pick.artist,
+      date: pick.year,
+      kind: 'sculpture',
+      medium: 'physical',
+      technique: 'Sculpture · Met Open Access (PD)',
+      dimensions: 'Volume de salle',
+      onSale: false,
+      priceLabel: 'Collection — pas en vente',
+      collection: museumLabel,
+      description: `Sculpture libre de droits (Met). Présentée dans ${museumLabel}.`,
+      image: pick.remote,
+      license: 'Public domain (Met Open Access)',
+      provenance: museumLabel,
+      href: pick.remote,
+    },
+    {
+      id: `sculpt-${museumId}-1`,
       title: 'Figure debout (3D)',
       artist: 'Atelier xArtists',
       date: '2026',
       kind: 'sculpture',
       medium: 'digital',
-      technique: 'Mesh procédural',
+      technique: 'Mesh procédural + texture PD',
       dimensions: '≈ 1,6 m',
       onSale: false,
       priceLabel: 'Pas en vente',
       collection: museumLabel,
-      description: 'Sculpture procédurale — volume de salle.',
+      description: 'Volume procédural — texture libre de droits.',
+      image: pick2.remote,
+      license: 'Public domain (Met Open Access)',
     },
   ]
 }
@@ -418,7 +460,6 @@ export function getMuseum(id: string, list: VirtualMuseum[] = VIRTUAL_MUSEUMS) {
 
 export type VirtualMuseumId = string
 
-/** Liste exposée UI Galerie */
 export function listAllMuseums(): { id: string; name: string; city: string }[] {
   return buildMuseumNetwork('/').map(m => ({ id: m.id, name: m.name, city: m.city }))
 }
