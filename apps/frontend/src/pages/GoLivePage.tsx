@@ -22,14 +22,29 @@ export default function GoLivePage() {
     }
   }, [])
 
+  const indexerOk = snap.api.stats && snap.api.economics && snap.api.accounts
+  const fundedLive = liaOpsFunded(snap.liaOps.balanceEgld) && !snap.liaOps.stale
+
   const rows: Row[] = [
     { ok: true, label: 'Paper LIA default', value: 'LIA_LIVE_TRADING=0' },
     { ok: true, label: 'UI fail-closed', value: 'List/Buy/Bid gated' },
     {
-      ok: liaOpsFunded(snap.liaOps.balanceEgld),
-      label: 'LIA Ops funded',
-      value: `${snap.liaOps.balanceEgld.toFixed(4)} EGLD · nonce ${snap.liaOps.nonce}`,
-      next: 'PEM local only — never git',
+      ok: indexerOk,
+      label: 'Indexer API healthy',
+      value: indexerOk
+        ? 'stats + economics + accounts 200'
+        : `/stats ${snap.api.stats ? '200' : 'KO'} · /economics ${
+            snap.api.economics ? '200' : 'KO'
+          } · /accounts ${snap.api.accounts ? '200' : 'KO'}`,
+      next: 'Attendre v2.1.3.0 recovery indexer avant tout deploy',
+    },
+    {
+      ok: fundedLive,
+      label: 'LIA Ops funded (live)',
+      value: `${snap.liaOps.balanceEgld.toFixed(4)} EGLD · nonce ${snap.liaOps.nonce}${
+        snap.liaOps.stale ? ' · last-known 19 Sep' : ''
+      }`,
+      next: 'PEM local only — never git. Re-probe accounts before simulate.',
     },
     {
       ok: false,
@@ -38,9 +53,13 @@ export default function GoLivePage() {
       next: 'Remplir data/contracts.json wallets.*',
     },
     {
-      ok: !snap.sc.marketplace.codeEmpty,
+      ok: !snap.sc.marketplace.codeEmpty && !snap.scStale,
       label: 'Deploy marketplace',
-      value: snap.sc.marketplace.codeEmpty ? 'codeHash null' : 'live',
+      value: snap.scStale
+        ? 'unread — treat empty'
+        : snap.sc.marketplace.codeEmpty
+          ? 'codeHash null'
+          : 'live',
       next: './scripts/runbook_deploy.sh dry → deploy → verify',
     },
     {
@@ -54,6 +73,12 @@ export default function GoLivePage() {
       label: 'VITE_*_CODEHASH_OK',
       value: 'flags OFF until hash non-null',
     },
+    {
+      ok: false,
+      label: 'MX-8004 Identity',
+      value: 'manifest prêt · register_agent bloqué (indexer + SC)',
+      next: 'docs/MX8004_FIRST100_ALIGNMENT.md',
+    },
     { ok: true, label: 'Supernova 600 ms', value: `epoch ${snap.epoch}` },
   ]
 
@@ -64,6 +89,7 @@ export default function GoLivePage() {
         <h1 className="display text-3xl text-white">GO_LIVE checklist</h1>
         <p className="text-sm text-zinc-400 leading-relaxed">
           Chemin paper → live. Rien n’est allumé. PEM jamais dans le chat, git, ou logs Vellum.
+          Hardfork recovery v2.1.3.0 (23 Sep) : ne pas broadcaster tant que /accounts ne répond pas.
         </p>
       </header>
       <ul className="space-y-2">

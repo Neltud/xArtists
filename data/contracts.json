@@ -1,8 +1,8 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-09-19T04:35:00Z",
-  "chain_note": "Mainnet only. Demo UI GO_DEMO. ALL product SCs empty (codeHash null) as of 19 Sep 2026 API probe. Supernova 600ms live. LIA Ops funded (~2.09 EGLD) — deploy economically possible; PEM stays off git.",
+  "updated": "2026-09-24T04:32:00Z",
+  "chain_note": "Mainnet only. Demo UI GO_DEMO. Product SCs last-known empty (codeHash null, 19 Sep). 24 Sep indexer degraded (v2.1.3.0): /stats live epoch 2242, /accounts unread. Do not deploy until accounts API is live. PEM stays off git.",
   "wallets": {
     "lia_ops": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "grokyversx": "erd12c7f9wll0dcn26ax9fwrgp3yuswchyh9xwz8zs29hl9crgpn96gsdqq5gl",
@@ -20,14 +20,16 @@
     "agents_marketplace": null,
     "rwa_escrow_bridge": null,
     "tro_burn": null,
-    "treasury_splitter": null
+    "treasury_splitter": null,
+    "slot_primordial": null
   },
   "deploy_status": {
     "nft_staking": "NOT_DEPLOYED",
     "tro_governance": "NOT_DEPLOYED",
     "marketplace": "NOT_DEPLOYED",
     "nft_minter": "NOT_DEPLOYED",
-    "note": "API codeHash null as of 2026-09-19"
+    "slot_primordial": "NOT_DEPLOYED",
+    "note": "codeHash last verified null 2026-09-19; unread 2026-09-24 (accounts API down)"
   },
   "ui_status": {
     "verdict": "GO_DEMO",
@@ -36,52 +38,56 @@
     "contrarian_brain": false,
     "gsn_live_feed": false,
     "pages": "https://neltud.github.io/xArtists/",
-    "supernova": true
+    "supernova": true,
+    "indexer": "degraded"
   },
   "verification": {
-    "probed_at": "2026-09-19T04:35:00Z",
+    "probed_at": "2026-09-24T04:32:00Z",
     "api": "https://api.multiversx.com/accounts/{address}",
     "marketplace_mainnet": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED — empty account"
+      "verdict": "UNREAD 24 Sep — last-known NOT_DEPLOYED 19 Sep"
     },
     "nft_staking": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED — empty account"
+      "verdict": "UNREAD 24 Sep — last-known NOT_DEPLOYED 19 Sep"
     },
     "tro_governance": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED — empty account"
+      "verdict": "UNREAD 24 Sep — last-known NOT_DEPLOYED 19 Sep"
     },
     "nft_minter": {
       "codeHash": null,
       "code_empty": true,
       "balance": "0",
-      "verdict": "NOT_DEPLOYED — empty account"
+      "verdict": "UNREAD 24 Sep — last-known NOT_DEPLOYED 19 Sep"
     },
     "agents_marketplace": "null — never deployed",
     "tro_burn": "null — tro-burn ready, not deployed",
     "rwa_escrow_bridge": "null — dispute+verification ready, not deployed",
     "treasury_splitter": "null — SC ready contracts/treasury-splitter, dest wallets null",
+    "slot_primordial": "null — paper UI only",
     "lia_ops": {
       "balance_egld": 2.0928,
       "nonce": 1468,
-      "note": "FUNDED 19 Sep (~+2 EGLD vs 0.093 on 17 Sep). Deploy economically possible. PEM operator host only."
+      "stale": true,
+      "note": "Last live 19 Sep. Accounts API 404 on 24 Sep. Do not treat as live-verified for deploy."
     },
     "network": {
       "refreshRate": 600,
-      "epoch": 2241,
+      "epoch": 2242,
       "supernova": true,
-      "egld_usd": 4.09,
-      "accounts": 9262882,
-      "transactions": 628518764,
-      "blocks": 133351539
+      "egld_usd": 4.13,
+      "egld_usd_stale": true,
+      "accounts": 9262948,
+      "transactions": 628538339,
+      "blocks": 133427564
     }
   }
 }

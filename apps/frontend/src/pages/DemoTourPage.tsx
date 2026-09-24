@@ -16,7 +16,7 @@ const STEPS = [
     n: '01',
     to: '/',
     title: 'Accueil',
-    body: 'Persona, Pulse strip, probe mainnet live. Chrome paper — pas un marché live.',
+    body: 'Persona, Pulse strip, probe mainnet live (résilient). Chrome paper — pas un marché live.',
   },
   {
     n: '02',
@@ -56,15 +56,21 @@ const STEPS = [
   },
   {
     n: '08',
+    to: '/slot',
+    title: 'Primordial Slot',
+    body: 'Bank TRO paper · scatter · jackpot RWA 1/1 locké. Pas de SC slot.',
+  },
+  {
+    n: '09',
     to: '/simulation',
     title: 'Sim Lab',
     body: 'Trades simulés côté client. Pas de broadcast.',
   },
   {
-    n: '09',
+    n: '10',
     to: '/go-live',
     title: 'GO_LIVE checklist',
-    body: 'Suite logique : dest wallets, PEM local, simulate → deploy → verify codeHash → MX-8004 register.',
+    body: 'Indexer healthy → dest wallets → PEM local → simulate → deploy → verify codeHash → MX-8004.',
   },
 ] as const
 
@@ -84,25 +90,43 @@ export default function DemoTourPage() {
   const funded = liaOpsFunded(snap.liaOps.balanceEgld)
   const GATES = [
     {
-      ok: !snap.sc.marketplace.codeEmpty,
+      ok: snap.api.stats,
+      label: 'API /stats',
+      value: snap.api.stats
+        ? `epoch ${snap.epoch} · ${snap.refreshRate} ms`
+        : 'down — cache',
+    },
+    {
+      ok: snap.api.economics && snap.api.accounts,
+      label: 'API /economics + /accounts',
+      value: snap.degraded ? 'dégradé post v2.1.3.0 — last-known' : 'live',
+    },
+    {
+      ok: !snap.sc.marketplace.codeEmpty && !snap.scStale,
       label: 'Marketplace NFT codeHash',
-      value: snap.sc.marketplace.codeEmpty ? 'null — List/Buy/Bid OFF' : 'live',
+      value: snap.scStale
+        ? 'unread (accounts down) — treat empty'
+        : snap.sc.marketplace.codeEmpty
+          ? 'null — List/Buy/Bid OFF'
+          : 'live',
     },
     { ok: false, label: 'Agents marketplace', value: 'non déployé' },
     {
-      ok: !snap.sc.nftStaking.codeEmpty,
+      ok: !snap.sc.nftStaking.codeEmpty && !snap.scStale,
       label: 'Staking / gov / minter',
-      value: snap.sc.nftStaking.codeEmpty ? 'comptes empty' : 'codeHash',
+      value: snap.scStale ? 'unread' : snap.sc.nftStaking.codeEmpty ? 'comptes empty' : 'codeHash',
     },
     { ok: false, label: 'LIA live trading', value: 'OFF (paper)' },
     {
-      ok: funded,
+      ok: funded && !snap.liaOps.stale,
       label: 'LIA Ops funded',
-      value: `${snap.liaOps.balanceEgld.toFixed(4)} EGLD · nonce ${snap.liaOps.nonce}`,
+      value: `${snap.liaOps.balanceEgld.toFixed(4)} EGLD · nonce ${snap.liaOps.nonce}${
+        snap.liaOps.stale ? ' · stale' : ''
+      }`,
     },
     { ok: true, label: 'Supernova mainnet', value: `${SUPERNOVA_ROUND_MS} ms · epoch ${snap.epoch}` },
     { ok: false, label: 'MX-8004 Identity', value: 'not registered (Phase 4 pending)' },
-    { ok: true, label: 'Pages demo', value: 'GO_DEMO + Phase 4 section' },
+    { ok: true, label: 'Pages demo', value: 'GO_DEMO + Slot + Phase 4' },
   ]
 
   return (
@@ -111,9 +135,9 @@ export default function DemoTourPage() {
         <p className="text-[11px] uppercase tracking-[0.2em] text-cyan-400/80">Parcours démo</p>
         <h1 className="display text-3xl md:text-4xl text-white">GO_DEMO — tour complet</h1>
         <p className="text-sm text-zinc-400 max-w-2xl leading-relaxed">
-          xArtists sur MultiversX : galerie + packs paper + board LIA. Probe live epoch{' '}
+          xArtists sur MultiversX : galerie + packs paper + board LIA + slot. Probe epoch{' '}
           {snap.epoch} (J+{supernovaAgeEpochs(snap.epoch)}). Les smart contracts produit n’ont pas de{' '}
-          <code className="text-zinc-300">codeHash</code>. Rien ici n’allume le live.
+          <code className="text-zinc-300">codeHash</code> vérifiable. Rien ici n’allume le live.
         </p>
         {isSupernovaLive() && (
           <a
@@ -192,9 +216,9 @@ export default function DemoTourPage() {
       </section>
 
       <p className="text-[11px] text-zinc-600 leading-relaxed">
-        Recap technique : docs/ANALYSE_DAPP_COMPLETE.md · Phase 4 : docs/MX8004_FIRST100_ALIGNMENT.md ·
-        SoT : data/contracts.json. Pas un conseil en investissement. Tips ≠ investissement. Probe{' '}
-        {snap.ok ? 'live' : 'cache'} {snap.probedAt}.
+        Recap : docs/ANALYSE_DAPP_COMPLETE.md · Phase 4 : docs/MX8004_FIRST100_ALIGNMENT.md · SoT :
+        data/contracts.json. Pas un conseil en investissement. Tips ≠ investissement. Probe{' '}
+        {snap.ok ? (snap.degraded ? 'partial' : 'live') : 'cache'} {snap.probedAt}.
       </p>
     </div>
   )

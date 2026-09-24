@@ -1,6 +1,20 @@
 # Changelog — xArtists
 
+## [Unreleased]
+
+### Features
+
+* **probe:** resilient mainnet probe — `/stats` independent of `/economics` `/accounts` (post v2.1.3.0 indexer)
+* **slot:** Primordial Slot paper UI restored (was PLACEHOLDER) + `/slot` route in App
+* **demo:** 10-step tour (Slot + GO_LIVE) + API degraded gates
+* **go-live:** indexer-healthy gate before any SC deploy
+
+### Documentation
+
+* **recap:** analyse dApp + veille **24 sept 2026** — epoch 2242, indexer partiel, EGLD ~$4.13, LIA Ops last-known 2.09 EGLD, SC unread/empty
+
 ## [0.38.2](https://github.com/Neltud/xArtists/compare/v0.38.1...v0.38.2) (2026-09-23)
+
 
 
 ### Documentation

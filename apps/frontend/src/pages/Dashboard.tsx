@@ -14,6 +14,7 @@ const LINKS_MAIN = [
   { to: '/agents', title: 'Packs', body: 'Pulse · Yield · Sentinel', delay: '60ms' },
   { to: '/tours', title: 'Tours', body: 'Carte & musées du monde', delay: '120ms' },
   { to: '/trading', title: 'Trading', body: 'Board paper · GrokyversX', delay: '180ms' },
+  { to: '/slot', title: 'Slot', body: 'Primordial · paper bank TRO', delay: '220ms' },
 ] as const
 
 export default function Dashboard() {

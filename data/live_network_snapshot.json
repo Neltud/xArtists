@@ -1,24 +1,41 @@
 {
-  "updated": "2026-08-28T04:33:00Z",
+  "updated": "2026-09-24T04:32:00Z",
   "source": "api.multiversx.com",
   "network": "mainnet",
+  "api_health": {
+    "stats": 200,
+    "economics": 500,
+    "accounts": 404,
+    "tokens": 500,
+    "nfts_collections": 200,
+    "gateway": "internal_issue",
+    "note": "Partial indexer after recovery hardfork v2.1.3.0 (23 Sep 2026). Fail-closed."
+  },
   "economics": {
-    "egld_price_usd": 3.43,
-    "market_cap_usd": 105172176,
-    "staked": 14549997,
-    "apr": 0.087
+    "egld_price_usd": 4.13,
+    "egld_price_source": "books 24 Sep (OKX close) — /economics down; last live API 19 Sep was 4.09",
+    "market_cap_usd": 127000000,
+    "staked": 14356598,
+    "apr": 0.088205,
+    "stale": true
   },
   "stats": {
-    "refreshRate": 6000,
-    "epoch": 2219,
-    "accounts": 9248633,
-    "transactions": 623425278
+    "refreshRate": 600,
+    "epoch": 2242,
+    "roundsPassed": 37943,
+    "roundsPerEpoch": 144000,
+    "accounts": 9262948,
+    "transactions": 628538339,
+    "blocks": 133427564,
+    "shards": 3,
+    "stale": false
   },
   "lia_ops": {
     "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
-    "balance_egld": 0.0690655611237758,
-    "nonce": 1437,
-    "shard": 2
+    "balance_egld": 2.0928,
+    "nonce": 1468,
+    "stale": true,
+    "last_live": "2026-09-19T04:35:00Z"
   },
-  "notes": "Read-only live MultiversX mainnet — 28 Aug 2026. SC product codeHash all null. Not a live market."
+  "notes": "Read-only MultiversX mainnet — 24 Sep 2026. Do not deploy SC until /accounts returns JSON. Not a live market."
 }

@@ -34,7 +34,8 @@ Slot jobs (verified spins / claims) can feed MX-8004 trust later — not require
 ## Checklist
 
 1. [x] UI paper `/slot`
-2. [ ] Paytable freeze + legal copy
-3. [ ] SC draft + audit path
-4. [ ] Deploy mainnet + codeHash in contracts.json
-5. [ ] Wire claim buttons fail-open only when codeHash live
+2. [x] Route `/slot` wired in App + BottomNav (24 Sep — restored from PLACEHOLDER)
+3. [ ] Paytable freeze + legal copy
+4. [ ] SC draft + audit path
+5. [ ] Deploy mainnet + codeHash in contracts.json
+6. [ ] Wire claim buttons fail-open only when codeHash live

@@ -1,6 +1,8 @@
 /**
  * Live MultiversX mainnet probe — UI must not freeze epoch / LIA balance.
  * Fail-closed: missing fields → treat SC as empty.
+ * Resilient: /stats can succeed while /economics and /accounts are down
+ * (post-recovery indexer, 23–24 Sep 2026). Never all-or-nothing.
  */
 
 export const MVX_API = 'https://api.multiversx.com'
@@ -23,9 +25,18 @@ export type ScProbe = {
   balance: string
 }
 
+export type ProbeApiHealth = {
+  stats: boolean
+  economics: boolean
+  accounts: boolean
+  tokens: boolean
+}
+
 export type NetworkSnapshot = {
   probedAt: string
   ok: boolean
+  degraded: boolean
+  api: ProbeApiHealth
   epoch: number
   refreshRate: number
   roundsPerEpoch: number
@@ -38,15 +49,16 @@ export type NetworkSnapshot = {
   circulating: number
   staked: number
   apr: number
-  liaOps: { balanceEgld: number; nonce: number }
-  grokyversx: { balanceEgld: number; nonce: number }
+  liaOps: { balanceEgld: number; nonce: number; stale: boolean }
+  grokyversx: { balanceEgld: number; nonce: number; stale: boolean }
   sc: {
     marketplace: ScProbe
     nftStaking: ScProbe
     troGovernance: ScProbe
     nftMinter: ScProbe
   }
-  tro: { supply: number; accounts: number; transactions: number }
+  scStale: boolean
+  tro: { supply: number; accounts: number; transactions: number; stale: boolean }
 }
 
 export function atomicToEgld(atomic: string | number | undefined | null): number {
@@ -82,97 +94,123 @@ function asSc(address: string, j: AccountJson | null): ScProbe {
   return { address, codeHash, codeEmpty: isCodeEmpty(codeHash), balance: j?.balance ?? '0' }
 }
 
-async function getJson<T>(path: string): Promise<T> {
-  const r = await fetch(`${MVX_API}${path}`)
-  if (!r.ok) throw new Error(`${path} ${r.status}`)
-  return r.json() as Promise<T>
+async function getJsonSoft<T>(path: string): Promise<T | null> {
+  try {
+    const r = await fetch(`${MVX_API}${path}`)
+    if (!r.ok) return null
+    return (await r.json()) as T
+  } catch {
+    return null
+  }
 }
 
-/** Snapshot 19 Sep 2026 ~04:35 UTC */
+/** Snapshot 24 Sep 2026 ~04:32 UTC — stats live; econ/accounts last-known 19 Sep. */
 export const FALLBACK_SNAPSHOT: NetworkSnapshot = {
-  probedAt: '2026-09-19T04:35:00Z',
+  probedAt: '2026-09-24T04:32:00Z',
   ok: false,
-  epoch: 2241,
+  degraded: true,
+  api: { stats: false, economics: false, accounts: false, tokens: false },
+  epoch: 2242,
   refreshRate: 600,
   roundsPerEpoch: 144000,
-  roundsPassed: 63226,
-  accounts: 9262882,
-  transactions: 628518764,
-  blocks: 133351539,
-  egldPrice: 4.09,
-  marketCap: 126041252,
-  circulating: 30816932,
+  roundsPassed: 37943,
+  accounts: 9262948,
+  transactions: 628538339,
+  blocks: 133427564,
+  egldPrice: 4.13,
+  marketCap: 127000000,
+  circulating: 30820000,
   staked: 14356598,
   apr: 0.088205,
-  liaOps: { balanceEgld: 2.0928, nonce: 1468 },
-  grokyversx: { balanceEgld: 0, nonce: 8 },
+  liaOps: { balanceEgld: 2.0928, nonce: 1468, stale: true },
+  grokyversx: { balanceEgld: 0, nonce: 8, stale: true },
   sc: {
     marketplace: asSc(PROBE_ADDRESSES.marketplace, null),
     nftStaking: asSc(PROBE_ADDRESSES.nftStaking, null),
     troGovernance: asSc(PROBE_ADDRESSES.troGovernance, null),
     nftMinter: asSc(PROBE_ADDRESSES.nftMinter, null),
   },
-  tro: { supply: 476224, accounts: 562, transactions: 2788 },
+  scStale: true,
+  tro: { supply: 476224, accounts: 562, transactions: 2788, stale: true },
+}
+
+type StatsJson = {
+  epoch: number
+  refreshRate: number
+  roundsPerEpoch: number
+  roundsPassed: number
+  accounts: number
+  transactions: number
+  blocks: number
+}
+
+type EconJson = {
+  price: number
+  marketCap: number
+  circulatingSupply: number
+  staked: number
+  apr: number
 }
 
 export async function probeNetwork(): Promise<NetworkSnapshot> {
-  try {
-    const [stats, econ, lia, grok, market, stake, gov, minter, tro] = await Promise.all([
-      getJson<{
-        epoch: number
-        refreshRate: number
-        roundsPerEpoch: number
-        roundsPassed: number
-        accounts: number
-        transactions: number
-        blocks: number
-      }>('/stats'),
-      getJson<{
-        price: number
-        marketCap: number
-        circulatingSupply: number
-        staked: number
-        apr: number
-      }>('/economics'),
-      getJson<AccountJson>(`/accounts/${PROBE_ADDRESSES.liaOps}`),
-      getJson<AccountJson>(`/accounts/${PROBE_ADDRESSES.grokyversx}`),
-      getJson<AccountJson>(`/accounts/${PROBE_ADDRESSES.marketplace}`),
-      getJson<AccountJson>(`/accounts/${PROBE_ADDRESSES.nftStaking}`),
-      getJson<AccountJson>(`/accounts/${PROBE_ADDRESSES.troGovernance}`),
-      getJson<AccountJson>(`/accounts/${PROBE_ADDRESSES.nftMinter}`),
-      getJson<{ supply?: string; accounts?: number; transactions?: number }>('/tokens/TRO-94c925'),
-    ])
+  const [stats, econ, lia, grok, market, stake, gov, minter, tro] = await Promise.all([
+    getJsonSoft<StatsJson>('/stats'),
+    getJsonSoft<EconJson>('/economics'),
+    getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.liaOps}`),
+    getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.grokyversx}`),
+    getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.marketplace}`),
+    getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.nftStaking}`),
+    getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.troGovernance}`),
+    getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.nftMinter}`),
+    getJsonSoft<{ supply?: string; accounts?: number; transactions?: number }>('/tokens/TRO-94c925'),
+  ])
 
-    return {
-      probedAt: new Date().toISOString(),
-      ok: true,
-      epoch: stats.epoch,
-      refreshRate: stats.refreshRate,
-      roundsPerEpoch: stats.roundsPerEpoch,
-      roundsPassed: stats.roundsPassed,
-      accounts: stats.accounts,
-      transactions: stats.transactions,
-      blocks: stats.blocks,
-      egldPrice: econ.price,
-      marketCap: econ.marketCap,
-      circulating: econ.circulatingSupply,
-      staked: econ.staked,
-      apr: econ.apr,
-      liaOps: { balanceEgld: atomicToEgld(lia.balance), nonce: lia.nonce ?? 0 },
-      grokyversx: { balanceEgld: atomicToEgld(grok.balance), nonce: grok.nonce ?? 0 },
-      sc: {
-        marketplace: asSc(PROBE_ADDRESSES.marketplace, market),
-        nftStaking: asSc(PROBE_ADDRESSES.nftStaking, stake),
-        troGovernance: asSc(PROBE_ADDRESSES.troGovernance, gov),
-        nftMinter: asSc(PROBE_ADDRESSES.nftMinter, minter),
-      },
-      tro: {
-        supply: Number(tro.supply || 0),
-        accounts: tro.accounts ?? 0,
-        transactions: tro.transactions ?? 0,
-      },
-    }
-  } catch {
-    return { ...FALLBACK_SNAPSHOT, probedAt: new Date().toISOString(), ok: false }
+  const api: ProbeApiHealth = {
+    stats: !!stats,
+    economics: !!econ,
+    accounts: !!lia,
+    tokens: !!tro,
+  }
+
+  const scLive = !!(market && stake && gov && minter)
+
+  return {
+    probedAt: new Date().toISOString(),
+    ok: api.stats,
+    degraded: !api.economics || !api.accounts || !api.tokens,
+    api,
+    epoch: stats?.epoch ?? FALLBACK_SNAPSHOT.epoch,
+    refreshRate: stats?.refreshRate ?? FALLBACK_SNAPSHOT.refreshRate,
+    roundsPerEpoch: stats?.roundsPerEpoch ?? FALLBACK_SNAPSHOT.roundsPerEpoch,
+    roundsPassed: stats?.roundsPassed ?? FALLBACK_SNAPSHOT.roundsPassed,
+    accounts: stats?.accounts ?? FALLBACK_SNAPSHOT.accounts,
+    transactions: stats?.transactions ?? FALLBACK_SNAPSHOT.transactions,
+    blocks: stats?.blocks ?? FALLBACK_SNAPSHOT.blocks,
+    egldPrice: econ?.price ?? FALLBACK_SNAPSHOT.egldPrice,
+    marketCap: econ?.marketCap ?? FALLBACK_SNAPSHOT.marketCap,
+    circulating: econ?.circulatingSupply ?? FALLBACK_SNAPSHOT.circulating,
+    staked: econ?.staked ?? FALLBACK_SNAPSHOT.staked,
+    apr: econ?.apr ?? FALLBACK_SNAPSHOT.apr,
+    liaOps: lia
+      ? { balanceEgld: atomicToEgld(lia.balance), nonce: lia.nonce ?? 0, stale: false }
+      : { ...FALLBACK_SNAPSHOT.liaOps, stale: true },
+    grokyversx: grok
+      ? { balanceEgld: atomicToEgld(grok.balance), nonce: grok.nonce ?? 0, stale: false }
+      : { ...FALLBACK_SNAPSHOT.grokyversx, stale: true },
+    sc: {
+      marketplace: asSc(PROBE_ADDRESSES.marketplace, market),
+      nftStaking: asSc(PROBE_ADDRESSES.nftStaking, stake),
+      troGovernance: asSc(PROBE_ADDRESSES.troGovernance, gov),
+      nftMinter: asSc(PROBE_ADDRESSES.nftMinter, minter),
+    },
+    scStale: !scLive,
+    tro: tro
+      ? {
+          supply: Number(tro.supply || 0),
+          accounts: tro.accounts ?? 0,
+          transactions: tro.transactions ?? 0,
+          stale: false,
+        }
+      : { ...FALLBACK_SNAPSHOT.tro, stale: true },
   }
 }

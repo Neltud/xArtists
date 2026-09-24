@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { atomicToEgld, isCodeEmpty, liaOpsFunded, supernovaAgeEpochs } from './networkProbe'
+import {
+  atomicToEgld,
+  FALLBACK_SNAPSHOT,
+  isCodeEmpty,
+  liaOpsFunded,
+  supernovaAgeEpochs,
+} from './networkProbe'
 
 describe('atomicToEgld', () => {
   it('parses LIA Ops 19 sept 2026 balance', () => {
@@ -23,8 +29,18 @@ describe('gates', () => {
     expect(liaOpsFunded(0.093)).toBe(false)
     expect(liaOpsFunded(2.09)).toBe(true)
   })
-  it('supernova age from epoch 2241', () => {
-    expect(supernovaAgeEpochs(2241)).toBe(8)
+  it('supernova age from epoch 2242 is J+9', () => {
+    expect(supernovaAgeEpochs(2242)).toBe(9)
     expect(supernovaAgeEpochs(2233)).toBe(0)
+  })
+})
+
+describe('fallback snapshot 24 sept', () => {
+  it('is fail-closed and marks stale accounts', () => {
+    expect(FALLBACK_SNAPSHOT.sc.marketplace.codeEmpty).toBe(true)
+    expect(FALLBACK_SNAPSHOT.liaOps.stale).toBe(true)
+    expect(FALLBACK_SNAPSHOT.degraded).toBe(true)
+    expect(FALLBACK_SNAPSHOT.epoch).toBe(2242)
+    expect(FALLBACK_SNAPSHOT.refreshRate).toBe(600)
   })
 })
