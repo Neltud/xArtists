@@ -61,37 +61,22 @@ export default function MyPacks() {
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Compte</p>
         <h1 className="text-3xl font-semibold tracking-tight text-white">My Packs</h1>
         <p className="text-[13px] text-zinc-500">
-          On-chain = NFT détecté · Paper = intention locale. Achat uniquement sur{' '}
-          <Link to="/agents" className="text-zinc-300 hover:text-white underline-offset-2 hover:underline">
-            Packs
-          </Link>
-          .
+          On-chain = NFT détecté. Paper = intention locale sur cet appareil.
         </p>
-      </header>
-
-      {!connected && (
-        <div className="rounded-2xl border border-white/10 px-4 py-4 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-[13px] text-zinc-400">Connecte un wallet pour lire les NFT packs.</p>
-          <button type="button" onClick={() => requestOpenConnect()} className="btn-primary text-xs">
-            Connecter
+        {!connected && (
+          <button type="button" onClick={() => requestOpenConnect()} className="btn-secondary text-sm">
+            Connecter wallet
           </button>
-        </div>
-      )}
-
-      {(paid || cancelled || mintStatus) && (
-        <p className="text-[12px] text-zinc-400 rounded-xl border border-white/10 px-3 py-2">
-          {cancelled && 'Paiement annulé. '}
-          {mintStatus || (paid ? 'Retour checkout OK.' : '')}
-        </p>
-      )}
+        )}
+        {paid && <p className="text-xs text-emerald-400/90">Retour paiement OK{mintStatus ? ` · ${mintStatus}` : ''}</p>}
+        {cancelled && <p className="text-xs text-amber-200/90">Paiement annulé</p>}
+      </header>
 
       <section className="space-y-2">
         <h2 className="text-[11px] uppercase tracking-wider text-zinc-500">On-chain</h2>
-        {account.loading && connected ? (
-          <p className="text-[12px] text-zinc-600">Chargement…</p>
-        ) : chainHits.length === 0 ? (
+        {chainHits.length === 0 ? (
           <p className="text-[12px] text-zinc-600 rounded-xl border border-white/[0.06] px-3 py-3">
-            Aucun pack NFT sur cette adresse.
+            Aucun pack agent détecté dans le wallet.
           </p>
         ) : (
           <ul className="space-y-2">
@@ -99,12 +84,12 @@ export default function MyPacks() {
               const p = AGENT_PACKS.find(x => x.id === h.packId)
               return (
                 <li
-                  key={h.identifier || h.packId}
+                  key={h.identifier || String(h.packId)}
                   className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-3 flex justify-between gap-3"
                 >
-                  <div className="min-w-0">
+                  <div>
                     <p className="text-sm font-medium text-white">{p?.name || h.packId}</p>
-                    <p className="text-[11px] text-zinc-500 font-mono truncate">{h.identifier}</p>
+                    <p className="text-[11px] text-zinc-500 mono">{h.identifier}</p>
                   </div>
                   <span className="text-[10px] text-emerald-300 shrink-0">on-chain</span>
                 </li>
@@ -142,6 +127,16 @@ export default function MyPacks() {
           </ul>
         )}
       </section>
+
+      <p className="text-[12px] text-zinc-600">
+        <Link to="/payments" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
+          Historique paiements paper
+        </Link>
+        {' · '}
+        <Link to="/agents" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
+          Acheter un pack
+        </Link>
+      </p>
     </div>
   )
 }
