@@ -38,8 +38,8 @@ export default function AdsPage() {
       </header>
 
       <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-xs text-amber-100/90">
-        Paiement V1 = transfer EGLD manuel vers <strong>LIA Ops</strong> avec memo. SC enchères = V2. Max
-        1 pub active / slot.
+        Paiement V1 = transfer EGLD manuel vers <strong>LIA Ops</strong> avec memo. SC enchères = V2 ·
+        créative IPFS après validation. Max 1 pub active / slot.
       </div>
 
       <section className="card space-y-3">
@@ -62,7 +62,7 @@ export default function AdsPage() {
         <label className="block text-xs text-gray-500">
           Slot
           <select
-            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm"
+            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-sm text-white"
             value={slot}
             onChange={e => setSlot(e.target.value)}
           >
@@ -74,9 +74,9 @@ export default function AdsPage() {
           </select>
         </label>
         <label className="block text-xs text-gray-500">
-          Période (ex. 2026-w33)
+          Période (ex 2026-w33)
           <input
-            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm mono"
+            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-sm text-white"
             value={period}
             onChange={e => setPeriod(e.target.value)}
           />
@@ -84,45 +84,39 @@ export default function AdsPage() {
         <label className="block text-xs text-gray-500">
           Titre
           <input
-            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm"
+            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-sm text-white"
             value={title}
             onChange={e => setTitle(e.target.value)}
-            placeholder="Drop xArtists — mars"
+            placeholder="Drop automne"
           />
         </label>
         <label className="block text-xs text-gray-500">
-          Lien https
+          Lien (https)
           <input
-            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm"
+            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-sm text-white"
             value={href}
             onChange={e => setHref(e.target.value)}
             placeholder="https://…"
           />
         </label>
         <label className="block text-xs text-gray-500">
-          Image CID IPFS (optionnel)
+          CID IPFS (optionnel)
           <input
-            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm mono"
+            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-sm text-white mono"
             value={cid}
             onChange={e => setCid(e.target.value)}
-            placeholder="Qm…"
+            placeholder="bafy…"
           />
         </label>
         <label className="block text-xs text-gray-500">
-          Offre EGLD (min indicatif 0.5)
+          Offre EGLD
           <input
-            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm"
+            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-sm text-white"
             value={amount}
             onChange={e => setAmount(e.target.value)}
           />
         </label>
-
-        <div className="rounded-lg bg-[#0d0d14] border border-purple-500/30 p-3 text-xs space-y-2">
-          <p>
-            <span className="text-gray-500">Treasury (LIA Ops — Mission en attente d’adresses dédiées)</span>
-            <br />
-            <span className="mono text-purple-300 break-all">{LIA_WALLET}</span>
-          </p>
+        <div className="rounded-lg bg-[#111118] border border-[#2a2a3a] p-3 space-y-2 text-xs">
           <p className="flex flex-wrap items-center gap-2">
             <span className="text-gray-500">Memo obligatoire</span>
             <span className="mono text-emerald-400">{memo}</span>
@@ -150,6 +144,24 @@ export default function AdsPage() {
           Tip
         </Link>
       </p>
+
+      <section className="card space-y-3 border border-cyan-500/20">
+        <h2 className="font-semibold text-cyan-200/90">Ops · publier le gagnant (IPFS)</h2>
+        <ol className="text-xs text-zinc-400 space-y-2 list-decimal list-inside leading-relaxed">
+          <li>
+            Bidder paie EGLD + memo{' '}
+            <span className="font-mono text-zinc-300">ad-bid:slot:period</span>
+          </li>
+          <li>Upload créative → IPFS (CID) ou URL HTTPS stable</li>
+          <li>
+            Éditer <span className="font-mono">public/data/ads_active.json</span> (status active,
+            imageCid/imageUrl, href)
+          </li>
+          <li>Commit + Pages deploy — 1 créative max / slot</li>
+          <li>Label : publicité · pas un investissement</li>
+        </ol>
+        <p className="text-[11px] text-zinc-600">docs/OPS_ADS.md · sample = tunnel démo</p>
+      </section>
     </div>
   )
 }
