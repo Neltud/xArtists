@@ -1,6 +1,6 @@
 {
-  "updated": 1727197200,
-  "note": "Sample creative for tunnel validation · not an investment · replace via ops",
+  "updated": 1727200000,
+  "note": "Sample creatives for tunnel validation · not an investment",
   "slots": {
     "home_hero": {
       "slot": "home_hero",
@@ -17,6 +17,16 @@
       "title": "Pulse · Yield · Sentinel — preview ouverture",
       "imageUrl": "https://images.weserv.nl/?url=images.metmuseum.org%2FCRDImages%2Fep%2Fweb-large%2FDT1567.jpg&w=800&h=400&fit=cover&output=jpg&q=80",
       "href": "https://neltud.github.io/xArtists/#/agents",
+      "status": "active",
+      "advertiser": "xArtists Ops (sample)",
+      "startsAt": "2026-01-01T00:00:00Z",
+      "endsAt": "2027-12-31T23:59:59Z"
+    },
+    "market_sidebar": {
+      "slot": "market_sidebar",
+      "title": "Catalogue NFT · consultation paper",
+      "imageUrl": "https://images.weserv.nl/?url=images.metmuseum.org%2FCRDImages%2Fep%2Fweb-large%2FDP-14936-001.jpg&w=600&h=400&fit=cover&output=jpg&q=80",
+      "href": "https://neltud.github.io/xArtists/#/ads",
       "status": "active",
       "advertiser": "xArtists Ops (sample)",
       "startsAt": "2026-01-01T00:00:00Z",
