@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.39.0](https://github.com/Neltud/xArtists/compare/v0.38.2...v0.39.0) (2026-09-24)
+
+
+### Features
+
+* **probe,slot:** resilient mainnet probe + Primordial Slot + recap 24 Sep ([772cddb](https://github.com/Neltud/xArtists/commit/772cddb1e472493133463367b53e73d4fce9bf5a))
+
 ## [Unreleased]
 
 ### Features
