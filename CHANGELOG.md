@@ -1,5 +1,20 @@
 # Changelog — xArtists
 
+## [0.41.0](https://github.com/Neltud/xArtists/compare/v0.40.0...v0.41.0) (2026-09-24)
+
+
+### Features
+
+* **phase4:** enriched LIA manifest v6.1 + dynamic First 100 banner + Home checklist (B+C) ([fea1e92](https://github.com/Neltud/xArtists/commit/fea1e928254fb5231eb3832c392a6116b95866cc))
+* Venue accounts (museum/artist/company) + BottomNav Trade/Comptes + corsPreferred MuseumPage ([3eb1c9f](https://github.com/Neltud/xArtists/commit/3eb1c9f8ebac4ab882b06607bfaaf8528bb6e24c))
+* wire VenueAccount route in App.tsx ([c01b079](https://github.com/Neltud/xArtists/commit/c01b07937f03e7ab9655b89308a00ea28727d2c0))
+
+
+### Bug Fixes
+
+* **museum:** corsImage util + Met PD sculptures with remote photos ([15c6a8c](https://github.com/Neltud/xArtists/commit/15c6a8cf5a37a194f662fb043b27d726626de0ea))
+* **museum:** proceduralSculptures with Met Open Access PD images ([d066564](https://github.com/Neltud/xArtists/commit/d066564785df532c705d170c7dcd47e0fc7c2780))
+
 ## [0.40.0](https://github.com/Neltud/xArtists/compare/v0.39.1...v0.40.0) (2026-09-24)
 
 
