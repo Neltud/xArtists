@@ -54,6 +54,7 @@ const SiteMapPage = lazy(() => import('./pages/SiteMapPage'))
 const TxShell = lazy(() => import('./providers/TxShell'))
 const DemoTourPage = lazy(() => import('./pages/DemoTourPage'))
 const GoLivePage = lazy(() => import('./pages/GoLivePage'))
+const VenueAccountPage = lazy(() => import('./pages/VenueAccountPage'))
 const SlotPage = lazy(() => import('./pages/SlotPage'))
 
 const TX_PATHS = new Set([
@@ -70,190 +71,108 @@ const TX_PATHS = new Set([
   '/sale',
 ])
 
-function StaleDataBanner({
-  isStale,
-  lastUpdate,
-}: {
-  isStale: boolean
-  lastUpdate: Date | null
-}) {
+function StaleDataBanner({ isStale, lastUpdate }: { isStale: boolean; lastUpdate: Date | null }) {
   if (!isStale) return null
   return (
-    <div
-      className="bg-amber-500/10 border-b border-amber-500/25 px-4 py-2 text-center text-xs text-amber-100"
-      role="status"
-    >
-      Données potentiellement périmées —{' '}
-      {lastUpdate ? lastUpdate.toLocaleTimeString('fr-FR') : 'inconnue'}.{' '}
-      <button type="button" className="underline" onClick={() => window.location.reload()}>
-        Actualiser
-      </button>
+    <div className="bg-amber-500/10 border-b border-amber-500/20 px-3 py-1.5 text-center text-[11px] text-amber-200/90">
+      Données réseau partiellement hors-ligne
+      {lastUpdate ? ` · dernier OK ${lastUpdate.toLocaleTimeString()}` : ''}
     </div>
-  )
-}
-
-function TxGate({ children }: { children: React.ReactNode }) {
-  const { pathname } = useLocation()
-  const needsTx = TX_PATHS.has(pathname)
-  if (!needsTx) return <>{children}</>
-  return (
-    <Suspense fallback={<>{children}</>}>
-      <TxShell>{children}</TxShell>
-    </Suspense>
   )
 }
 
 export default function App() {
   const { isStale, lastUpdate } = useMultiversX()
+  const { pathname } = useLocation()
+  const needsTx = TX_PATHS.has(pathname)
   const [assetsOpen, setAssetsOpen] = useState(false)
+
   useEffect(() => {
-    const open = () => setAssetsOpen(true)
-    window.addEventListener(OPEN_ASSETS_EVENT, open)
-    return () => window.removeEventListener(OPEN_ASSETS_EVENT, open)
+    const onOpen = () => setAssetsOpen(true)
+    window.addEventListener(OPEN_ASSETS_EVENT, onOpen)
+    return () => window.removeEventListener(OPEN_ASSETS_EVENT, onOpen)
   }, [])
 
   return (
-    <div className="app-shell pb-20 md:pb-8">
+    <ErrorBoundary>
       <ArtAtelierBackdrop />
-      <DemoModeBanner />
-      {!DEMO_MODE && <PrivateReleaseStrip />}
-      {!DEMO_MODE && <GuardianStatusBar />}
-      <Header />
-      {!DEMO_MODE && <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />}
-      <main className="flex-1 page-wrap py-5 sm:py-8 relative z-10">
-        <ErrorBoundary>
-          <TxGate>
-            <Suspense fallback={<PageLoader />}>
-              <PageTransition>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/entity" element={<EntityMap />} />
-                  <Route path="/org" element={<EntityMap />} />
-                  <Route path="/sitemap" element={<SiteMapPage />} />
-                  <Route path="/sim" element={<SimulationLab />} />
-                  <Route path="/simulation" element={<SimulationLab />} />
-                  <Route path="/marketplace" element={<Marketplace />} />
-                  <Route path="/market" element={<MarketPage />} />
-                  <Route path="/analyse" element={<Navigate to="/market" replace />} />
-                  <Route path="/trading" element={<Trading />} />
-                  <Route path="/studio" element={<ArtistStudio />} />
-                  <Route path="/sale" element={<SalePage />} />
-                  <Route path="/agents" element={<Agents />} />
-                  <Route path="/my-packs" element={<MyPacks />} />
-                  <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
-                  <Route path="/tours" element={<ArtToursPage />} />
-                  <Route path="/agents/voyage" element={<Navigate to="/tours" replace />} />
-                  <Route path="/agents/lightning" element={<LightningAgentPage />} />
-                  <Route path="/tro" element={<TroPage />} />
-                  <Route path="/staking" element={<StakingPage />} />
-                  <Route path="/burnify" element={<BurnifyPage />} />
-                  <Route path="/portfolio" element={<Portfolio />} />
-                  <Route path="/dao" element={<DAO />} />
-                  <Route path="/gallery" element={<Navigate to="/museum" replace />} />
-                  <Route path="/museum" element={<MuseumPage />} />
-                  <Route path="/museum/lab" element={<MuseumLabPage />} />
-                  <Route path="/musee" element={<Navigate to="/museum" replace />} />
-                  <Route path="/collection" element={<Navigate to="/museum?tab=mine" replace />} />
-                  <Route path="/legal" element={<LegalPage />} />
-                  <Route path="/mentions-legales" element={<LegalPage />} />
-                  <Route path="/tip" element={<Tip />} />
-                  <Route path="/wallet" element={<Wallet />} />
-                  <Route path="/hatom" element={<HatomPage />} />
-                  <Route path="/lp" element={<LPPoolsPage />} />
-                  <Route path="/soul-testnet" element={<SoulTestnetPage />} />
-                  <Route path="/ads" element={<AdsPage />} />
-                  <Route path="/demo" element={<DemoTourPage />} />
-                  <Route path="/go-live" element={<GoLivePage />} />
-                  <Route path="/golive" element={<Navigate to="/go-live" replace />} />
-                  <Route path="/slot" element={<SlotPage />} />
-                  <Route path="/editions" element={<Editions />} />
-                  <Route
-                    path="*"
-                    element={
-                      <div className="text-center py-24 space-y-3">
-                        <h2 className="display text-2xl">Page introuvable</h2>
-                        <a href="#/" className="text-cyan-400 text-sm hover:underline">
-                          Retour accueil →
-                        </a>
-                      </div>
-                    }
-                  />
-                </Routes>
-              </PageTransition>
-            </Suspense>
-          </TxGate>
-        </ErrorBoundary>
-      </main>
-      <footer className="border-t border-white/[0.06] mt-auto py-6 mb-16 md:mb-0 relative z-10">
-        <div className="page-wrap flex flex-col gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold text-white tracking-tight">xArtists</p>
-              <p className="text-[11px] text-zinc-600 mt-1 max-w-xs leading-relaxed">
-                Galerie · packs · MultiversX — démo paper-first. Atelier N. Tuduri.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-zinc-500">
-              <a href="#/sale" className="hover:text-violet-300 transition-colors">
-                Sale
-              </a>
-              <a href="#/demo" className="hover:text-zinc-300 transition-colors">
-                Démo
-              </a>
-              <a href="#/slot" className="hover:text-zinc-300 transition-colors">
-                Slot
-              </a>
-              <a href="#/go-live" className="hover:text-zinc-300 transition-colors">
-                GO_LIVE
-              </a>
-              <a href="#/museum" className="hover:text-zinc-300 transition-colors">
-                Galerie
-              </a>
-              <a href="#/market" className="hover:text-zinc-300 transition-colors">
-                Analyse
-              </a>
-              <a href="#/agents" className="hover:text-zinc-300 transition-colors">
-                Packs
-              </a>
-              <a href="#/tours" className="hover:text-zinc-300 transition-colors">
-                Tours
-              </a>
-              <a href="#/legal" className="hover:text-zinc-300 transition-colors">
-                Mentions légales
-              </a>
-              <a
-                href={LINKS.discord}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-indigo-300 transition-colors"
-              >
-                Discord
-              </a>
-              <a
-                href={LINKS.github}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-zinc-300 transition-colors"
-              >
-                GitHub
-              </a>
-            </div>
-          </div>
-          <p className="text-[10px] text-zinc-600 leading-relaxed border-t border-white/[0.04] pt-3">
-            Pas un conseil en investissement. Démonstration — pas de trading live par défaut. © 2026
-            xArtists · Œuvres NFTUDURI N. Tuduri.
-          </p>
-        </div>
-      </footer>
-      <PwaInstallBanner />
-      <FirstVisitOnboarding />
-      {!DEMO_MODE && <IntentBar />}
-      {!DEMO_MODE && <LiaMonitor />}
-      {!DEMO_MODE && <SignalTicker />}
-      <SoundDock />
-      <BottomNav />
-      <RoutePrefetch />
-      <AssetDrawer open={assetsOpen} onClose={() => setAssetsOpen(false)} />
-    </div>
+      <div className="relative min-h-screen flex flex-col">
+        <Header />
+        <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />
+        {DEMO_MODE && <DemoModeBanner />}
+        <PrivateReleaseStrip />
+        <SignalTicker />
+        <GuardianStatusBar />
+        <main className="flex-1 px-3 sm:px-4 pt-2 pb-24 md:pb-8 max-w-5xl mx-auto w-full">
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/entity" element={<EntityMap />} />
+                <Route path="/org" element={<EntityMap />} />
+                <Route path="/sitemap" element={<SiteMapPage />} />
+                <Route path="/sim" element={<SimulationLab />} />
+                <Route path="/simulation" element={<SimulationLab />} />
+                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/market" element={<MarketPage />} />
+                <Route path="/analyse" element={<Navigate to="/market" replace />} />
+                <Route path="/trading" element={<Trading />} />
+                <Route path="/studio" element={<ArtistStudio />} />
+                <Route path="/sale" element={<SalePage />} />
+                <Route path="/agents" element={<Agents />} />
+                <Route path="/my-packs" element={<MyPacks />} />
+                <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
+                <Route path="/tours" element={<ArtToursPage />} />
+                <Route path="/agents/voyage" element={<Navigate to="/tours" replace />} />
+                <Route path="/agents/lightning" element={<LightningAgentPage />} />
+                <Route path="/tro" element={<TroPage />} />
+                <Route path="/staking" element={<StakingPage />} />
+                <Route path="/burnify" element={<BurnifyPage />} />
+                <Route path="/portfolio" element={<Portfolio />} />
+                <Route path="/dao" element={<DAO />} />
+                <Route path="/gallery" element={<Navigate to="/museum" replace />} />
+                <Route path="/museum" element={<MuseumPage />} />
+                <Route path="/museum/lab" element={<MuseumLabPage />} />
+                <Route path="/musee" element={<Navigate to="/museum" replace />} />
+                <Route path="/collection" element={<Navigate to="/museum?tab=mine" replace />} />
+                <Route path="/legal" element={<LegalPage />} />
+                <Route path="/mentions-legales" element={<LegalPage />} />
+                <Route path="/tip" element={<Tip />} />
+                <Route path="/wallet" element={<Wallet />} />
+                <Route path="/hatom" element={<HatomPage />} />
+                <Route path="/lp" element={<LPPoolsPage />} />
+                <Route path="/ads" element={<AdsPage />} />
+                <Route path="/editions" element={<Editions />} />
+                <Route path="/slot" element={<SlotPage />} />
+                <Route path="/demo" element={<DemoTourPage />} />
+                <Route path="/go-live" element={<GoLivePage />} />
+                <Route path="/venues" element={<VenueAccountPage />} />
+                <Route path="/accounts" element={<VenueAccountPage />} />
+                <Route path="/soul" element={<SoulTestnetPage />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </PageTransition>
+          </Suspense>
+        </main>
+        <BottomNav />
+        <IntentBar />
+        <LiaMonitor />
+        <PwaInstallBanner />
+        <FirstVisitOnboarding />
+        <RoutePrefetch />
+        <SoundDock />
+        {needsTx && (
+          <Suspense fallback={null}>
+            <TxShell />
+          </Suspense>
+        )}
+        <AssetDrawer open={assetsOpen} onClose={() => setAssetsOpen(false)} />
+        <footer className="hidden md:block text-center text-[10px] text-zinc-600 py-4">
+          <a href={LINKS.github} className="hover:text-zinc-400" target="_blank" rel="noreferrer">
+            GitHub
+          </a>
+        </footer>
+      </div>
+    </ErrorBoundary>
   )
 }
