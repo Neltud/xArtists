@@ -1,0 +1,55 @@
+{
+  "schema": "xartists.mx8004.jobs.v1",
+  "updated": "2026-09-24T16:31:00Z",
+  "mode": "paper",
+  "note": "Paper verifiable jobs — map to Validation Registry when live.",
+  "verified_count": 5,
+  "target": 5,
+  "jobs": [
+    {
+      "id": "job-001",
+      "type": "compound_cycle",
+      "title": "Compounding echelon paper cycle (S1 core +1%)",
+      "agent": "lia",
+      "status": "verified_paper",
+      "ts": "2026-09-20T12:00:00Z",
+      "proof": { "kind": "json_hash", "ref": "data/compounding_echelons.json" }
+    },
+    {
+      "id": "job-002",
+      "type": "risk_halt",
+      "title": "Sentinel risk check + Guardian pass",
+      "agent": "lia",
+      "status": "verified_paper",
+      "ts": "2026-09-21T09:30:00Z",
+      "proof": { "kind": "guardian_snapshot", "ref": "lia/vellum guardian phase" }
+    },
+    {
+      "id": "job-003",
+      "type": "portfolio_signal",
+      "title": "Cross-score + Grok plan published",
+      "agent": "grokyversx",
+      "status": "verified_paper",
+      "ts": "2026-09-22T15:00:00Z",
+      "proof": { "kind": "json", "ref": "data/cross_score.json" }
+    },
+    {
+      "id": "job-004",
+      "type": "dapp_sync",
+      "title": "dApp sync registry + CRITICAL data mirror",
+      "agent": "lia",
+      "status": "verified_paper",
+      "ts": "2026-09-23T18:00:00Z",
+      "proof": { "kind": "publish", "ref": "lia/vellum/publish_data_for_frontend.py" }
+    },
+    {
+      "id": "job-005",
+      "type": "yield_sleeve",
+      "title": "Yield paper recommendation (Hatom path)",
+      "agent": "lia",
+      "status": "verified_paper",
+      "ts": "2026-09-24T10:00:00Z",
+      "proof": { "kind": "signal", "ref": "data/hatom_lia.json" }
+    }
+  ]
+}

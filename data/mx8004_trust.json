@@ -1,0 +1,20 @@
+{
+  "schema": "xartists.mx8004.trust.v1",
+  "updated": "2026-09-24T16:31:00Z",
+  "mode": "paper",
+  "note": "Paper trust derived from verified jobs. Not Reputation Registry on-chain.",
+  "score": 72,
+  "target": 90,
+  "components": {
+    "verified_jobs": 40,
+    "job_diversity": 15,
+    "feedback_positive": 10,
+    "uptime_paper": 7,
+    "onchain_registration": 0
+  },
+  "path_to_90": [
+    "Complete MX-8004 Identity registration (+15)",
+    "External oracle attestations (+5)",
+    "Positive feedback on Validation Registry (+8)"
+  ]
+}
