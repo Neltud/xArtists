@@ -1,5 +1,25 @@
 # Changelog — xArtists
 
+## [0.42.0](https://github.com/Neltud/xArtists/compare/v0.41.0...v0.42.0) (2026-09-24)
+
+
+### Features
+
+* /payments paper history + AdSlot agents + ops ads IPFS + PackCheckout log ([8301dc0](https://github.com/Neltud/xArtists/commit/8301dc079059705151352aab78bf5966ffa81910))
+* /payments route + Museum AdSlot + PackCheckout log + Ads ops UI + SiteMap ([8c217a2](https://github.com/Neltud/xArtists/commit/8c217a2b06984213801436b01856a5886bb9ef02))
+* Ads ops IPFS UI + MyPacks/SiteMap /payments links ([8c4beb9](https://github.com/Neltud/xArtists/commit/8c4beb9d01cc0b592fe86f48ff489b404cd9eba7))
+* Ads ops UI + MyPacks payments link + Museum drop_feature AdSlot ([c3e3995](https://github.com/Neltud/xArtists/commit/c3e39952dac9038757778e3146d1fccc747440e7))
+* **ads:** ops IPFS publish section on /ads page ([838990a](https://github.com/Neltud/xArtists/commit/838990ae6999529e2fed56d5cd811a44f27db772))
+* **museum:** Pulse drives fog/light/particles + badge live ([937afcd](https://github.com/Neltud/xArtists/commit/937afcd1aee6467d22c19bad5ce8a797ebeed19c))
+* Pack open theater + Pulse→museum fog/light + pulse_state + SW v8 ([1d32e4a](https://github.com/Neltud/xArtists/commit/1d32e4a8ebc165dcd12894cd0b06c0349e3a5d89))
+* PackCheckout intent log + Ads ops section + MyPacks/SiteMap payments links ([3737023](https://github.com/Neltud/xArtists/commit/3737023a96c1723015399ca914eaad041ddca3e8))
+
+
+### Bug Fixes
+
+* **museum:** proxy-first Met PD images in toFrame + sculptures ([9b5fa29](https://github.com/Neltud/xArtists/commit/9b5fa2983040eac95311d98e3d84bbba3b9fbe1c))
+* **museum:** WebGL proxy-first textures + canvas fallback + movement ([5b1debb](https://github.com/Neltud/xArtists/commit/5b1debbd73510ee50da66c0ef936e69c5984476a))
+
 ## [0.41.0](https://github.com/Neltud/xArtists/compare/v0.40.0...v0.41.0) (2026-09-24)
 
 
