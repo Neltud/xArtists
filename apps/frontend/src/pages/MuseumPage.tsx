@@ -9,6 +9,7 @@ import {
   type FrameItem,
 } from '../components/museum/MuseumCorridor'
 import MuseumHall from '../components/museum/MuseumHall'
+import AdSlot from '../components/AdSlot'
 import GuidedWorldTour from '../components/museum/GuidedWorldTour'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
@@ -300,6 +301,8 @@ export default function MuseumPage() {
           Musées en 3D — tableaux accrochés aux murs. NFTUDURI · TRO · collections MultiversX.
         </p>
       </header>
+
+      <AdSlot id="drop_feature" className="mb-5" />
 
       <div className="flex flex-wrap gap-1.5 mb-5">
         {MODES.map(m => (
