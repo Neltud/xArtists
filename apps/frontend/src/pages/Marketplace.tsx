@@ -1,11 +1,12 @@
 /**
- * Marketplace — catalogue propre, sans pub ni jargon SC.
+ * Marketplace — catalogue propre. SC off. Ad slot sample.
  */
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import NFTDetailModal from '../components/NFTDetailModal'
 import MarketplaceActivity from '../components/MarketplaceActivity'
 import VirtualNftGrid from '../components/VirtualNftGrid'
+import AdSlot from '../components/AdSlot'
 import { canListBuyNft } from '../config/scStatus'
 import {
   type NFT,
@@ -161,6 +162,8 @@ export default function Marketplace() {
           {refreshing ? 'Actualisation…' : 'Actualiser'}
         </button>
       </header>
+
+      <AdSlot id="market_sidebar" />
 
       <MarketplaceActivity onPickListingId={id => setListingIdFromIndex(id)} />
 
