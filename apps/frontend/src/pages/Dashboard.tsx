@@ -1,5 +1,5 @@
 /**
- * Home — fluid + LIA / GrokyversX + Phase 4 First 100.
+ * Home — fluid + LIA / GrokyversX + Phase 4 First 100 + ad sample.
  */
 import { Link } from 'react-router-dom'
 import SoftStatus from '../components/SoftStatus'
@@ -7,6 +7,7 @@ import AgentWalletsStrip from '../components/AgentWalletsStrip'
 import PulseStrip from '../components/PulseStrip'
 import NetworkLiveStrip from '../components/NetworkLiveStrip'
 import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
+import AdSlot from '../components/AdSlot'
 import { isSupernovaLive } from '../config/supernova'
 
 const LINKS_MAIN = [
@@ -15,6 +16,7 @@ const LINKS_MAIN = [
   { to: '/tours', title: 'Tours', body: 'Carte & musées du monde', delay: '120ms' },
   { to: '/trading', title: 'Trading', body: 'Board paper · GrokyversX', delay: '180ms' },
   { to: '/slot', title: 'Slot', body: '3×3 NFT · paper bank TRO', delay: '220ms' },
+  { to: '/ads', title: 'Ads', body: 'Enchères pub · sample live', delay: '240ms' },
   { to: '/go-live', title: 'GO_LIVE', body: 'Phase 4 · First 100 · checklists', delay: '260ms' },
 ] as const
 
@@ -57,6 +59,10 @@ export default function Dashboard() {
 
       <div className="relative mt-8">
         <Phase4ReadinessBanner variant="full" />
+      </div>
+
+      <div className="relative mt-6">
+        <AdSlot id="home_hero" className="mb-2" />
       </div>
 
       <div className="relative mt-6 space-y-3">

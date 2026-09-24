@@ -5,10 +5,12 @@ const GROUPS = [
   {
     title: 'Découvrir',
     items: [
-      { to: '/gallery', label: 'Galerie', note: 'Art & éditions' },
+      { to: '/', label: 'Accueil', note: 'Dashboard' },
+      { to: '/museum', label: 'Galerie 3D', note: 'Musée · Pulse · avatar' },
       { to: '/tours', label: 'Tours artistiques', note: 'Culture — pas un pack IA' },
       { to: '/editions', label: 'Éditions', note: 'Collections' },
-      { to: '/marketplace', label: 'Marketplace', note: 'NFT · SC soon' },
+      { to: '/marketplace', label: 'Marketplace', note: 'NFT · SC off' },
+      { to: '/slot', label: 'Slot', note: '3×3 casino paper' },
     ],
   },
   {
@@ -17,6 +19,7 @@ const GROUPS = [
       { to: '/agents', label: 'Packs', note: 'Pulse · Yield · Sentinel' },
       { to: '/my-packs', label: 'My Packs', note: 'Accès achetés' },
       { to: '/agents/lightning', label: 'Lightning ops', note: 'MCP BTC doc' },
+      { to: '/agents/polylia', label: 'Polylia', note: 'Vue multi' },
     ],
   },
   {
@@ -26,22 +29,37 @@ const GROUPS = [
       { to: '/portfolio', label: 'Portfolio LIA', note: 'Book protocole' },
       { to: '/sim', label: 'Sim Lab', note: 'Simulations' },
       { to: '/entity', label: 'Entité', note: 'Succursales' },
+      { to: '/go-live', label: 'GO_LIVE', note: 'Checklist SC off' },
     ],
   },
   {
-    title: 'Wallet & token',
+    title: 'Wallet & économie',
     items: [
       { to: '/wallet', label: 'Wallet user', note: 'xPortal / WC' },
-      { to: '/tip', label: 'Tip', note: 'Pourboire' },
-      { to: '/staking', label: 'Staking', note: 'TRO refs' },
-      { to: '/tro', label: '$TRO', note: 'Token info' },
+      { to: '/tip', label: 'Tip', note: 'Soutien treasury' },
+      { to: '/ads', label: 'Ads / enchères', note: 'Slots pub paper' },
+      { to: '/sale', label: 'Sale', note: 'Ventes' },
+      { to: '/venues', label: 'Comptes lieux', note: 'Musée · artiste · société' },
     ],
   },
   {
-    title: 'DeFi refs',
+    title: 'Token & DeFi refs',
     items: [
+      { to: '/tro', label: '$TRO', note: 'Token info' },
+      { to: '/staking', label: 'Staking', note: 'Refs' },
+      { to: '/burnify', label: 'Burnify', note: 'Burn feed' },
       { to: '/lp', label: 'LP pools', note: 'xExchange refs' },
       { to: '/hatom', label: 'Hatom', note: 'Lien externe' },
+    ],
+  },
+  {
+    title: 'Gouvernance & légal',
+    items: [
+      { to: '/dao', label: 'DAO', note: 'Narrative · pas de vote SC' },
+      { to: '/legal', label: 'Légal', note: 'Mentions' },
+      { to: '/demo', label: 'Tour démo', note: 'Parcours' },
+      { to: '/sitemap', label: 'Plan du site', note: 'Cette page' },
+      { to: '/soul', label: 'Soul testnet', note: 'Lab' },
     ],
   },
 ] as const
@@ -53,7 +71,7 @@ export default function SiteMapPage() {
       <header>
         <h1 className="text-3xl font-black">Plan du site</h1>
         <p className="text-sm text-zinc-500 mt-1">
-          Tous les onglets · Agents ≠ Tours · LIA paper ≠ wallet user
+          Routes live · DEMO_MODE · SC marketplace/agents OFF · Agents ≠ Tours · LIA paper ≠ wallet user
         </p>
       </header>
 
@@ -80,8 +98,9 @@ export default function SiteMapPage() {
         ))}
       </div>
 
-      <p className="text-[11px] text-zinc-600">
-        Vellum = cerveau LIA (service payant). Ce site = corps produit GitHub Pages.
+      <p className="text-xs text-zinc-600 leading-relaxed">
+        Produit GitHub Pages. SC list/buy/mint désactivés tant que GO_LIVE / codeHash non validés.
+        Voir <Link to="/go-live" className="text-zinc-400 underline">/go-live</Link>.
       </p>
     </div>
   )

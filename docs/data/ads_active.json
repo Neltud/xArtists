@@ -1,5 +1,26 @@
 {
-  "updated": 0,
-  "slots": {},
-  "note": "Empty until ops publishes a winner"
+  "updated": 1727197200,
+  "note": "Sample creative for tunnel validation · not an investment · replace via ops",
+  "slots": {
+    "home_hero": {
+      "slot": "home_hero",
+      "title": "xArtists · Galerie 3D + Packs paper",
+      "imageUrl": "https://images.weserv.nl/?url=images.metmuseum.org%2FCRDImages%2Fep%2Fweb-large%2FDP-15089-001.jpg&w=1200&h=400&fit=cover&output=jpg&q=80",
+      "href": "https://neltud.github.io/xArtists/#/museum",
+      "status": "active",
+      "advertiser": "xArtists Ops (sample)",
+      "startsAt": "2026-01-01T00:00:00Z",
+      "endsAt": "2027-12-31T23:59:59Z"
+    },
+    "drop_feature": {
+      "slot": "drop_feature",
+      "title": "Pulse · Yield · Sentinel — preview ouverture",
+      "imageUrl": "https://images.weserv.nl/?url=images.metmuseum.org%2FCRDImages%2Fep%2Fweb-large%2FDT1567.jpg&w=800&h=400&fit=cover&output=jpg&q=80",
+      "href": "https://neltud.github.io/xArtists/#/agents",
+      "status": "active",
+      "advertiser": "xArtists Ops (sample)",
+      "startsAt": "2026-01-01T00:00:00Z",
+      "endsAt": "2027-12-31T23:59:59Z"
+    }
+  }
 }
