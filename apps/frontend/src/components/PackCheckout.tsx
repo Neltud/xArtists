@@ -23,7 +23,13 @@ const PACKS = AGENT_PACKS.filter(p => ONLY.includes(p.id)).slice(0, 3)
 
 function savePaperIntent(payload: Record<string, unknown>) {
   try {
-    localStorage.setItem('xartists_access_checkout_intent', JSON.stringify(payload))
+    const row = { ...payload, ts: Date.now() }
+    localStorage.setItem('xartists_access_checkout_intent', JSON.stringify(row))
+    const raw = localStorage.getItem('xartists_access_checkout_log')
+    const log = raw ? (JSON.parse(raw) as unknown[]) : []
+    const arr = Array.isArray(log) ? log : []
+    arr.push(row)
+    localStorage.setItem('xartists_access_checkout_log', JSON.stringify(arr.slice(-30)))
   } catch {
     /* ignore */
   }
@@ -78,168 +84,107 @@ export default function PackCheckout({
           ? 'Ouverture Paybox…'
           : 'Enregistrement paper…'
     )
-    try {
-      const mode = await startPackPayment({
-        method,
-        packId: pack.id,
-        buyerAddress: address,
-        amountEur: pack.priceEur.list,
-      })
-      if (mode === 'redirect') return
-      if (mode === 'payment_link') {
-        setMsg(
-          method === 'paybox'
-            ? `Paybox ouvert pour ${pack.name} (${pack.priceEur.list} €).`
-            : `Lien Stripe ouvert pour ${pack.name} (${pack.priceEur.list} €).`
-        )
-        setStatus('done')
-        savePaperIntent({
-          product: 'access_pack',
-          model: 'C',
-          provider: method,
-          pack_id: pack.id,
-          price_eur: pack.priceEur.list,
-          buyer_address: address,
-          paper_only: false,
-          pending_provider: true,
-          mint_sc_live: mintLive,
-          ts: new Date().toISOString(),
-        })
-        return
-      }
-      // paper
+    if (method === 'stripe' || method === 'paybox') {
       savePaperIntent({
-        product: 'access_pack',
-        model: 'C',
-        provider: 'paper',
-        pack_id: pack.id,
-        price_eur: pack.priceEur.list,
-        buyer_address: address,
-        paper_only: true,
-        mint_sc_live: mintLive,
-        ts: new Date().toISOString(),
+        packId: pack.id,
+        provider: method,
+        amount: pack.priceEur.list,
+        currency: 'EUR',
+        address,
+        paper_only: false,
       })
-      setMsg(
-        `Conditions OK — ${pack.name}. Mode paper : intention enregistrée (carte non configurée).`
-      )
-      setStatus('done')
-    } catch (e) {
-      setMsg(e instanceof Error ? e.message : 'Erreur checkout')
-      setStatus('idle')
+      try {
+        await startPackPayment(method, pack.id, address)
+      } catch (e) {
+        setMsg(String(e))
+        setStatus('idle')
+      }
+      return
     }
+    savePaperIntent({
+      packId: pack.id,
+      provider: 'paper',
+      amount: pack.priceEur.list,
+      currency: 'EUR',
+      address,
+      paper_only: true,
+      status: 'recorded',
+    })
+    setStatus('done')
+    setMsg(
+      `Conditions OK — ${pack.name}. Mode paper : intention enregistrée (carte non configurée).`
+    )
   }
 
-  const badge =
-    method === 'stripe'
-      ? stripeStatusHint() === 'off'
-        ? 'Paper'
-        : `Stripe · ${stripeStatusHint()}`
-      : method === 'paybox'
-        ? payboxStatusHint() === 'off'
-          ? 'Paper'
-          : `Paybox · ${payboxStatusHint()}`
-        : 'Paper'
-
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-bold text-white">Paiement</h2>
-        <span
-          className={`text-[10px] uppercase px-2 py-0.5 rounded-full border ${
-            method === 'paper'
-              ? 'border-amber-500/40 text-amber-200'
-              : 'border-emerald-500/40 text-emerald-300'
-          }`}
-        >
-          {badge}
-        </span>
-      </div>
-
-      {/* Méthode : Stripe · Paybox · Paper */}
-      <div className="flex flex-wrap gap-1.5">
-        {methods.map(m => (
-          <button
-            key={m}
-            type="button"
-            onClick={() => setMethod(m)}
-            className={`rounded-full px-3 py-1 text-[11px] font-medium border transition-colors ${
-              method === m
-                ? 'border-white/30 bg-white/10 text-white'
-                : 'border-white/10 text-zinc-500 hover:text-zinc-300'
-            }`}
-          >
-            {payMethodLabel(m)}
-          </button>
-        ))}
-      </div>
-
-      <p className="text-[11px] text-zinc-600 leading-relaxed">
-        {method === 'stripe' &&
-          'Carte via Stripe Checkout / Payment Link — clé secrète côté serveur uniquement.'}
-        {method === 'paybox' &&
-          'Carte FR via Paybox e-Transactions — signature serveur, redirection TPE.'}
-        {method === 'paper' &&
-          'Démo : aucune carte. Configure VITE_ACCESS_API_BASE ou Payment Links / Paybox URL.'}
-      </p>
-
-      {selected && pack ? (
-        <div className="rounded-xl border border-cyan-400/30 bg-cyan-500/5 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-bold text-white">
-              {pack.icon} {pack.name}
-            </p>
-            <p className="text-[11px] text-zinc-500">
-              {pack.priceEur.list} € · {payMethodLabel(method)}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
+    <div className="space-y-4">
+      {!selected && (
+        <div className="flex flex-wrap gap-2">
+          {PACKS.map(p => (
             <button
+              key={p.id}
               type="button"
-              className="btn-primary text-xs py-2 px-3"
-              onClick={() => startBuy(pack.id)}
+              onClick={() => startBuy(p.id)}
+              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-zinc-200 hover:bg-white/[0.08]"
             >
-              {method === 'paper' ? 'Enregistrer' : 'Payer'}
+              {p.icon} {p.name}
             </button>
+          ))}
+        </div>
+      )}
+
+      {selected && pack && (
+        <>
+          <div className="flex flex-wrap gap-2 items-center">
+            {methods.map(m => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMethod(m)}
+                className={`rounded-lg px-3 py-1.5 text-xs border ${
+                  method === m
+                    ? 'border-violet-400/40 bg-violet-500/15 text-violet-100'
+                    : 'border-white/10 text-zinc-500'
+                }`}
+              >
+                {payMethodLabel(m)}
+              </button>
+            ))}
             {onClear && (
-              <button type="button" className="btn-secondary text-xs py-2 px-3" onClick={onClear}>
-                Annuler
+              <button type="button" className="text-xs text-zinc-500 underline" onClick={onClear}>
+                Changer
               </button>
             )}
           </div>
-        </div>
-      ) : (
-        <p className="text-[12px] text-zinc-500">
-          Sélectionnez <strong className="text-zinc-400">Pulse</strong>,{' '}
-          <strong className="text-zinc-400">Yield</strong> ou{' '}
-          <strong className="text-zinc-400">Sentinel</strong> ci-dessus.
-        </p>
+          <p className="text-[11px] text-zinc-500">
+            {method === 'stripe' && stripeStatusHint()}
+            {method === 'paybox' && payboxStatusHint()}
+            {method === 'paper' &&
+              'Paper : aucune carte. Intention locale + historique /payments. Mint SC off.'}
+          </p>
+          {!mintLive && (
+            <p className="text-[11px] text-amber-200/80">
+              Agents marketplace SC OFF — checkout paper / intent uniquement.
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={() => startBuy(pack.id)}
+            className="w-full rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 py-2.5 text-sm font-medium text-white"
+          >
+            {method === 'paper' ? 'Enregistrer' : 'Payer'} {pack.name}
+          </button>
+          {msg && <p className="text-xs text-zinc-400">{msg}</p>}
+          {status === 'done' && (
+            <p className="text-xs text-emerald-400/90">
+              OK — voir <Link to="/payments" className="underline">/payments</Link> et{' '}
+              <Link to="/my-packs" className="underline">My Packs</Link>.
+            </p>
+          )}
+        </>
       )}
 
-      {msg && (
-        <p className="text-xs text-amber-100/90 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2">
-          {msg}
-        </p>
-      )}
-
-      {status === 'done' && (
-        <Link to="/my-packs" className="btn-secondary text-xs py-2 px-3 inline-block">
-          Voir My Packs →
-        </Link>
-      )}
-
-      {!connected && (
-        <p className="text-[11px] text-zinc-500">Connecte un wallet pour payer.</p>
-      )}
-
-      <AccessTermsModal
-        open={termsOpen}
-        packName={pack?.name || ''}
-        onClose={() => {
-          setTermsOpen(false)
-          setStatus('idle')
-        }}
-        onAccept={onAcceptTerms}
-      />
+      <AccessTermsModal open={termsOpen} onAccept={onAcceptTerms} onClose={() => setTermsOpen(false)} />
     </div>
   )
 }
