@@ -1,5 +1,5 @@
 /**
- * Musée WebGL — 3e personne · textures proxy-first · fallback canvas · déplacement stable.
+ * Musée WebGL — 3e personne · textures proxy-first · Pulse → fog/lumière · déplacement stable.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
@@ -13,6 +13,8 @@ import { canListBuyNft } from '../../config/scStatus'
 import { useWallet } from '../../context/WalletContext'
 import { requestOpenConnect } from '../../lib/walletEvents'
 import { presenceSnapshot, visitorWaypoints } from '../../lib/museumVisitors'
+import { pulseFromIndex, fetchPulseState, mapPulseToMuseum, type MuseumPulseParams } from '../../lib/pulseMuseum'
+import { PULSE_DEMO_CYCLE } from '../../lib/pulseDemo'
 
 const EYE = 1.65
 const WALK = 3.6
@@ -110,6 +112,8 @@ export default function MuseumWebGLHall({
   const [locked, setLocked] = useState(false)
   const [nearTitle, setNearTitle] = useState('')
   const [inspect, setInspect] = useState<FrameItem | null>(null)
+  const [pulseLabel, setPulseLabel] = useState('Pulse…')
+  const [pulseAccent, setPulseAccent] = useState('#a78bfa')
   const { connected } = useWallet()
   const marketLive = canListBuyNft()
   const pal = PALETTE[room] || PALETTE.stone
@@ -148,14 +152,18 @@ export default function MuseumWebGLHall({
     const b = bounds(blueprint)
     const wallH = blueprint.wallHeight || 3.8
     const scene = new THREE.Scene()
+    let pulseIdx = 0
+    let pulseParams: MuseumPulseParams = pulseFromIndex(0, room)
     scene.background = new THREE.Color(pal.fog)
-    scene.fog = new THREE.FogExp2(pal.fog, room === 'cyber' ? 0.026 : 0.016)
+    scene.fog = new THREE.FogExp2(pal.fog, pulseParams.fogDensity)
+    setPulseLabel(pulseParams.label)
+    setPulseAccent(pulseParams.accentHex)
     const camera = new THREE.PerspectiveCamera(60, 1, 0.08, 90)
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
     renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75))
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = room === 'white' ? 1.15 : room === 'dark' ? 0.85 : 1.05
+    renderer.toneMappingExposure = pulseParams.exposure
     mount.appendChild(renderer.domElement)
     const canvas = renderer.domElement
     canvas.style.cssText = 'display:block;width:100%;height:100%;touch-action:none'
@@ -182,7 +190,8 @@ export default function MuseumWebGLHall({
       scene.add(mesh)
     }
 
-    scene.add(new THREE.AmbientLight(0xffffff, room === 'dark' ? 0.25 : 0.45))
+    const ambientLight = new THREE.AmbientLight(0xffffff, pulseParams.ambient)
+    scene.add(ambientLight)
     const key = new THREE.DirectionalLight(0xfff5e6, 0.85)
     key.position.set(b.cx + 4, wallH - 0.5, b.cy - 3)
     scene.add(key)
@@ -482,6 +491,15 @@ export default function MuseumWebGLHall({
     canvas.addEventListener('pointermove', onMove)
 
     setReady(true)
+    void fetchPulseState().then(env => {
+      if (disposed || !env) return
+      pulseParams = mapPulseToMuseum(env, room)
+      if (scene.fog instanceof THREE.FogExp2) scene.fog.density = pulseParams.fogDensity
+      renderer.toneMappingExposure = pulseParams.exposure
+      ambientLight.intensity = pulseParams.ambient
+      setPulseLabel(pulseParams.label)
+      setPulseAccent(pulseParams.accentHex)
+    })
     const clock = new THREE.Clock()
     let raf = 0
     const loop = () => {
@@ -489,9 +507,21 @@ export default function MuseumWebGLHall({
       raf = requestAnimationFrame(loop)
       const dt = Math.min(clock.getDelta(), 0.05)
       try {
-        if (surrealPts) tickSurrealParticles(surrealPts, clock.elapsedTime)
+        if (surrealPts) tickSurrealParticles(surrealPts, clock.elapsedTime * (pulseParams.particleSpeed || 1))
       } catch {
         /* */
+      }
+      const nextIdx = Math.floor(clock.elapsedTime / 8) % PULSE_DEMO_CYCLE.length
+      if (nextIdx !== pulseIdx) {
+        pulseIdx = nextIdx
+        pulseParams = pulseFromIndex(pulseIdx, room)
+        if (scene.fog && scene.fog instanceof THREE.FogExp2) {
+          scene.fog.density = pulseParams.fogDensity
+        }
+        renderer.toneMappingExposure = pulseParams.exposure
+        ambientLight.intensity = pulseParams.ambient
+        setPulseLabel(pulseParams.label)
+        setPulseAccent(pulseParams.accentHex)
       }
 
       const sprint = keys.current.shift || hold.current['shift']
@@ -613,9 +643,18 @@ export default function MuseumWebGLHall({
       )}
       {hint && ready && (
         <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap gap-2 justify-between pointer-events-none">
-          <div className="rounded-xl bg-black/60 border border-white/10 px-3 py-2 text-[11px] text-zinc-300 pointer-events-auto">
-            {roomName} · {area} m² · {paintings.length} tableaux · avatar 3e pers.
-            {nearTitle ? ` · près de « ${nearTitle} » (E)` : ''}
+          <div className="rounded-xl bg-black/60 border border-white/10 px-3 py-2 text-[11px] text-zinc-300 pointer-events-auto space-y-1">
+            <div>
+              {roomName} · {area} m² · {paintings.length} tableaux · avatar 3e pers.
+              {nearTitle ? ` · près de « ${nearTitle} » (E)` : ''}
+            </div>
+            <div className="flex items-center gap-2 text-[10px] text-zinc-400">
+              <span
+                className="inline-block w-2 h-2 rounded-full"
+                style={{ background: pulseAccent, boxShadow: `0 0 8px ${pulseAccent}` }}
+              />
+              Pulse · {pulseLabel}
+            </div>
           </div>
           <button
             type="button"
