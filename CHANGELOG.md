@@ -1,5 +1,14 @@
 # Changelog — xArtists
 
+## [0.40.0](https://github.com/Neltud/xArtists/compare/v0.39.1...v0.40.0) (2026-09-24)
+
+
+### Features
+
+* **museum:** click artwork → approach + open credit dossier ([7ef6a08](https://github.com/Neltud/xArtists/commit/7ef6a08f173199d0737c4ee21d126c300686f6db))
+* **slot:** 3×3 casino grid with MultiversX NFT images (paper bank) ([219c93b](https://github.com/Neltud/xArtists/commit/219c93b35c8a561ad700da285cbebc0f87ed84b4))
+* **trading:** 10 colonnes compounding visibles + logique S1/S05/S2 détaillée ([a474ac9](https://github.com/Neltud/xArtists/commit/a474ac9dcb31975467ddc10ce569c27846bf6b40))
+
 ## [0.39.1](https://github.com/Neltud/xArtists/compare/v0.39.0...v0.39.1) (2026-09-24)
 
 
