@@ -47,6 +47,7 @@ const BurnifyPage = lazy(() => import('./pages/BurnifyPage'))
 const ArtistStudio = lazy(() => import('./pages/ArtistStudio'))
 const SalePage = lazy(() => import('./pages/SalePage'))
 const AdsPage = lazy(() => import('./pages/AdsPage'))
+const PaymentHistory = lazy(() => import('./pages/PaymentHistory'))
 const Editions = lazy(() => import('./pages/Editions'))
 const SimulationLab = lazy(() => import('./pages/SimulationLab'))
 const EntityMap = lazy(() => import('./pages/EntityMap'))
@@ -142,6 +143,7 @@ export default function App() {
                 <Route path="/hatom" element={<HatomPage />} />
                 <Route path="/lp" element={<LPPoolsPage />} />
                 <Route path="/ads" element={<AdsPage />} />
+                <Route path="/payments" element={<PaymentHistory />} />
                 <Route path="/editions" element={<Editions />} />
                 <Route path="/slot" element={<SlotPage />} />
                 <Route path="/demo" element={<DemoTourPage />} />
