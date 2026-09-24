@@ -1,6 +1,5 @@
 /**
- * Packs — 3 only, paper-first + ouverture théâtrale 3D/CSS.
- * Phase 4 readiness badge (MX-8004 / First 100).
+ * Packs — paper-first + ouverture auto après checkout.
  */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -35,7 +34,7 @@ export default function Agents() {
           Pulse · Yield · Sentinel
         </h1>
         <p className="text-zinc-400 text-[14px] leading-relaxed max-w-md">
-          Trois accès. Ouverture scénique. Pas un fonds. Mint on-chain plus tard.
+          Trois accès. Checkout paper → pack local + ouverture scénique. Pas un fonds.
         </p>
       </header>
 
@@ -79,16 +78,23 @@ export default function Agents() {
       <section className="rounded-2xl border border-white/10 bg-zinc-950/50 p-5">
         <p className="text-[13px] text-zinc-400 mb-3">
           {active
-            ? `${active.name} · ${active.priceEur.list} € · paper / Stripe si configuré`
+            ? `${active.name} · ${active.priceEur.list} € · paper`
             : 'Sélectionne un pack'}
         </p>
-        <PackCheckout packId={selected} onClear={() => setSelected(null)} />
+        <PackCheckout
+          packId={selected}
+          onClear={() => setSelected(null)}
+          onPaperDone={id => setTheater(id)}
+        />
       </section>
 
       <p className="text-[12px] text-zinc-600">
-        Possession :{' '}
         <Link to="/my-packs" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
           My Packs
+        </Link>
+        {' · '}
+        <Link to="/payments" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
+          Paiements
         </Link>
         {' · '}
         <Link to="/museum" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">

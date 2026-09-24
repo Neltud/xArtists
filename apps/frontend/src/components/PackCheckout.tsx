@@ -1,6 +1,6 @@
 /**
  * Checkout packs — Stripe + Paybox + paper.
- * Uniquement Pulse · Yield · Sentinel.
+ * Paper success = mark owned + optional theater callback.
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,6 +8,7 @@ import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 import { useWallet } from '../context/WalletContext'
 import AccessTermsModal from './AccessTermsModal'
 import { canBuyAgent } from '../config/scStatus'
+import { markPackOwned } from '../lib/nftPacks'
 import {
   availablePayMethods,
   defaultPayMethod,
@@ -38,15 +39,17 @@ function savePaperIntent(payload: Record<string, unknown>) {
 export default function PackCheckout({
   packId: forcedId = null,
   onClear,
+  onPaperDone,
 }: {
   packId?: PackId | null
   onClear?: () => void
+  onPaperDone?: (id: PackId) => void
 } = {}) {
   const { connected, address } = useWallet()
   const methods = availablePayMethods()
   const [method, setMethod] = useState<PayMethod>(() => defaultPayMethod())
   const [selected, setSelected] = useState<PackId | null>(
-    forcedId && ONLY.includes(forcedId) ? forcedId : null
+    forcedId && ONLY.includes(forcedId) ? forcedId : null,
   )
   useEffect(() => {
     if (forcedId && ONLY.includes(forcedId)) setSelected(forcedId)
@@ -77,14 +80,8 @@ export default function PackCheckout({
     setTermsOpen(false)
     if (!pack || !address) return
     setStatus('redirect')
-    setMsg(
-      method === 'stripe'
-        ? 'Ouverture Stripe…'
-        : method === 'paybox'
-          ? 'Ouverture Paybox…'
-          : 'Enregistrement paper…'
-    )
     if (method === 'stripe' || method === 'paybox') {
+      setMsg(method === 'stripe' ? 'Ouverture Stripe…' : 'Ouverture Paybox…')
       savePaperIntent({
         packId: pack.id,
         provider: method,
@@ -110,10 +107,10 @@ export default function PackCheckout({
       paper_only: true,
       status: 'recorded',
     })
+    markPackOwned(pack.id)
     setStatus('done')
-    setMsg(
-      `Conditions OK — ${pack.name}. Mode paper : intention enregistrée (carte non configurée).`
-    )
+    setMsg(`Paper · ${pack.name} enregistré sur cet appareil.`)
+    onPaperDone?.(pack.id)
   }
 
   return (
@@ -160,11 +157,11 @@ export default function PackCheckout({
             {method === 'stripe' && stripeStatusHint()}
             {method === 'paybox' && payboxStatusHint()}
             {method === 'paper' &&
-              'Paper : aucune carte. Intention locale + historique /payments. Mint SC off.'}
+              'Paper : intention locale + pack possédé device + ouverture. Mint SC off.'}
           </p>
           {!mintLive && (
             <p className="text-[11px] text-amber-200/80">
-              Agents marketplace SC OFF — checkout paper / intent uniquement.
+              Agents marketplace SC OFF — checkout paper uniquement.
             </p>
           )}
           <button
@@ -177,14 +174,26 @@ export default function PackCheckout({
           {msg && <p className="text-xs text-zinc-400">{msg}</p>}
           {status === 'done' && (
             <p className="text-xs text-emerald-400/90">
-              OK — voir <Link to="/payments" className="underline">/payments</Link> et{' '}
-              <Link to="/my-packs" className="underline">My Packs</Link>.
+              OK —{' '}
+              <Link to="/my-packs" className="underline">
+                My Packs
+              </Link>
+              {' · '}
+              <Link to="/payments" className="underline">
+                Paiements
+              </Link>
             </p>
           )}
         </>
       )}
 
-      <AccessTermsModal open={termsOpen} onAccept={onAcceptTerms} onClose={() => setTermsOpen(false)} />
+      <AccessTermsModal
+        open={termsOpen}
+        packName={pack?.name || 'Pack'}
+        priceEur={pack?.priceEur.list || 0}
+        onAccept={onAcceptTerms}
+        onCancel={() => setTermsOpen(false)}
+      />
     </div>
   )
 }
