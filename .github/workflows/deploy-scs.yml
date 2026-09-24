@@ -1,17 +1,19 @@
 name: Deploy Smart Contracts
 
 # Déploie nft-marketplace + agents-marketplace via mxpy
-# Secret requis: LIA_WALLET_PEM (contenu du .pem, jamais en git)
+# Secret requis: LIA_WALLET_PEM (contenu du .pem, jamais en git, jamais loggé)
+#
+# Mainnet (chain=1) BLOQUÉ sauf confirm_mainnet = DEPLOY_MAINNET (revue 2 personnes)
 #
 # Usage:
 #   Actions → Deploy Smart Contracts → Run workflow
-#   Inputs: chain (1|D|T), contract (all|nft-marketplace|agents-marketplace), fee_bps
+#   Default: D (devnet). Testnet: T. Mainnet: 1 + phrase de confirmation.
 
 on:
   workflow_dispatch:
     inputs:
       chain:
-        description: "Chain ID — 1=mainnet, D=devnet, T=testnet"
+        description: "Chain — D=devnet (défaut), T=testnet, 1=mainnet (gate)"
         required: true
         default: "D"
         type: choice
@@ -19,6 +21,11 @@ on:
           - "D"
           - "T"
           - "1"
+      confirm_mainnet:
+        description: "Mainnet only — taper exactement DEPLOY_MAINNET (sinon job échoue)"
+        required: false
+        default: ""
+        type: string
       contract:
         description: "Which contract(s) to deploy"
         required: true
@@ -59,6 +66,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Mainnet hard gate
+        run: |
+          set -euo pipefail
+          if [ "${LIA_CHAIN_ID}" = "1" ]; then
+            if [ "${{ github.event.inputs.confirm_mainnet }}" != "DEPLOY_MAINNET" ]; then
+              echo "❌ MAINNET BLOQUÉ"
+              echo "chain=1 exige confirm_mainnet=DEPLOY_MAINNET après revue (2 personnes)."
+              echo "Pas de deploy mainnet par erreur / click unique."
+              exit 1
+            fi
+            echo "⚠️ MAINNET confirmé explicitement — double-check code + fee_bps"
+          else
+            echo "✅ Chain ${LIA_CHAIN_ID} (pas mainnet)"
+          fi
 
       - name: Require PEM secret
         run: |
@@ -112,11 +134,9 @@ jobs:
         run: |
           set -euo pipefail
           python lia/vellum/deploy_scs_node.py | tee /tmp/deploy_out.json
-          # Fail job if ok=false
           python - <<'PY'
           import json, sys
           raw = open("/tmp/deploy_out.json").read()
-          # last JSON object in output
           start = raw.rfind("{")
           if start < 0:
               print("No JSON output"); sys.exit(1)

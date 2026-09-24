@@ -21,6 +21,7 @@ export default function HolderPulseTab({
   const status = holderStatus(nfts)
   const allowed = canEnterPulseRoom(status)
   const bp = builtinBlueprintForMuseum('xartists')
+  const paperOnly = status.any && status.onchain.length === 0
 
   if (!allowed) {
     return (
@@ -47,13 +48,20 @@ export default function HolderPulseTab({
 
   return (
     <div className="space-y-3">
-      <div className="rounded-xl border border-emerald-500/25 bg-emerald-950/20 px-3 py-2 text-[12px] text-emerald-100/90 flex flex-wrap gap-2 justify-between">
-        <span>
-          Holder {status.pulse ? 'Pulse' : status.packs.join(', ')}
-          {status.paper.length ? ' · paper device' : ''}
-          {status.onchain.length ? ' · on-chain' : ''}
-        </span>
-        <span className="text-emerald-200/70">salle cyber · UI only</span>
+      <div className="rounded-xl border border-emerald-500/25 bg-emerald-950/20 px-3 py-2 text-[12px] text-emerald-100/90 space-y-1">
+        <div className="flex flex-wrap gap-2 justify-between">
+          <span>
+            Holder {status.pulse ? 'Pulse' : status.packs.join(', ')}
+            {status.paper.length ? ' · paper device' : ''}
+            {status.onchain.length ? ' · on-chain' : ''}
+          </span>
+          <span className="text-emerald-200/70">salle cyber · UI only</span>
+        </div>
+        {paperOnly && (
+          <p className="text-[11px] text-amber-200/85">
+            Accès paper local — modifiable dans le navigateur. Ce n’est pas une autorisation on-chain.
+          </p>
+        )}
       </div>
       <div className="rounded-2xl overflow-hidden border border-cyan-500/20 shadow-2xl shadow-cyan-950/40">
         <MuseumHall
