@@ -1,5 +1,5 @@
 /**
- * Parcours connect live — Web Wallet (recommandé), xPortal, extension, lecture seule.
+ * Parcours connect live — Web Wallet, xPortal WC mainnet, extension, lecture seule.
  */
 import { useState } from 'react'
 import { useMxLogin } from '../hooks/useMxLogin'
@@ -14,9 +14,10 @@ export default function WalletConnectPanel() {
     canAttemptSign,
     disconnect,
     openWebWallet,
-    openXPortalDeepLink,
+    connectXPortal,
     tryExtension,
     connect,
+    wcProgress,
   } = useMxLogin()
   const [manual, setManual] = useState('')
   const [err, setErr] = useState('')
@@ -25,12 +26,10 @@ export default function WalletConnectPanel() {
     return (
       <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 space-y-3">
         <p className="text-sm font-semibold text-emerald-100">Wallet connecté</p>
-        <p className="font-mono text-xs text-zinc-300 break-all">{shortAddress}</p>
+        <p className="font-mono text-xs text-emerald-50/90 break-all">{shortAddress}</p>
         <p className="text-[11px] text-zinc-500">
-          Méthode : <strong className="text-zinc-300">{method}</strong>
-          {canAttemptSign
-            ? ' · signature possible (si provider TX branché)'
-            : ' · lecture seule (colle adresse) — pas de signature'}
+          {method}
+          {canAttemptSign ? ' · signature possible' : ' · lecture seule'}
         </p>
         <button type="button" className="btn-secondary text-xs" onClick={disconnect}>
           Déconnecter
@@ -44,8 +43,9 @@ export default function WalletConnectPanel() {
       <div>
         <p className="text-sm font-bold text-white">Connecter ton wallet MultiversX</p>
         <p className="text-[11px] text-zinc-500 mt-1">
-          Recommandé : <strong className="text-zinc-400">Web Wallet</strong> (retour automatique avec
-          adresse). Ce n’est <strong className="text-zinc-400">pas</strong> le wallet protocole LIA.
+          <strong className="text-zinc-400">Web Wallet</strong> ou{' '}
+          <strong className="text-zinc-400">xPortal mainnet</strong> (WalletConnect). Pas le wallet
+          protocole LIA.
         </p>
       </div>
 
@@ -53,8 +53,16 @@ export default function WalletConnectPanel() {
         <button type="button" className="btn-primary text-sm py-2.5" onClick={openWebWallet}>
           Web Wallet — connexion live
         </button>
-        <button type="button" className="btn-secondary text-sm py-2" onClick={openXPortalDeepLink}>
-          Ouvrir xPortal
+        <button
+          type="button"
+          className="btn-secondary text-sm py-2"
+          onClick={async () => {
+            setErr('')
+            const r = await connectXPortal()
+            if (!r.ok) setErr(('error' in r && r.error) || 'Échec xPortal')
+          }}
+        >
+          xPortal mainnet (WalletConnect)
         </button>
         <button
           type="button"
@@ -68,6 +76,10 @@ export default function WalletConnectPanel() {
           Extension DeFi Wallet
         </button>
       </div>
+
+      {wcProgress?.message && (
+        <p className="text-[11px] text-cyan-300/80">{wcProgress.message}</p>
+      )}
 
       <p className="text-[10px] text-zinc-600">
         WalletConnect project : {isWalletConnectConfigured() ? 'configuré' : 'manquant'} · domain
