@@ -1,13 +1,16 @@
 /**
- * Wallet — calme : soldes, tokens, NFT. Packs = page My Packs uniquement.
+ * Wallet user — soldes + daily points + lien trésorerie LIA (lecture).
  */
 import { Link } from 'react-router-dom'
 import InfoTip from '../components/InfoTip'
 import BridgeUsdtCard from '../components/BridgeUsdtCard'
+import DailyCheckIn from '../components/DailyCheckIn'
+import LiaTreasuryPanel from '../components/LiaTreasuryPanel'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount, type UserNft } from '../hooks/useUserAccount'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { LINKS } from '../config/links'
+import { matchEligiblePair } from '../config/lpPools'
 
 function nftThumb(n: UserNft): string | undefined {
   if (n.url && /^https?:\/\//i.test(n.url)) return n.url
@@ -35,7 +38,12 @@ export default function Wallet() {
         ? account.balanceEgld.toLocaleString('en-US', { maximumFractionDigits: 6 })
         : '—'
 
-  const tokens = (account.tokens || []).slice(0, 12)
+  const tokens = (account.tokens || []).slice(0, 24)
+  const lpTokens = tokens.filter(t => {
+    const id = String((t as { identifier?: string }).identifier || '')
+    const name = String((t as { name?: string }).name || '')
+    return matchEligiblePair(id, name)
+  })
 
   return (
     <div className="animate-fade-in space-y-6 pb-12 max-w-xl mx-auto">
@@ -53,117 +61,137 @@ export default function Wallet() {
         <h1 className="text-3xl font-semibold tracking-tight text-white">Wallet</h1>
       </header>
 
+      <DailyCheckIn />
+
       {!connected ? (
         <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/60 p-6 space-y-4">
           <p className="text-sm text-zinc-400 leading-relaxed">
-            Connectez Web Wallet, xPortal ou l’extension pour afficher soldes, tokens et NFT.
+            Connectez <strong className="text-zinc-300">Web Wallet</strong> (recommandé) ou tentez
+            xPortal. Les soldes, LP et NFT s’affichent ici.
           </p>
           <button type="button" className="btn-primary" onClick={() => requestOpenConnect()}>
             Connecter
           </button>
+          <p className="text-[11px] text-zinc-600">
+            Si xPortal échoue : Web Wallet fonctionne toujours sur GitHub Pages.
+          </p>
         </div>
       ) : (
         <div className="space-y-5">
-          <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/60 p-5 space-y-3">
-            <p className="font-mono text-[11px] text-zinc-500 break-all leading-relaxed">{address}</p>
-            <p className="text-[11px] text-zinc-600">
-              {shortAddress}
-              {method ? ` · ${method}` : ''}
-              {!canAttemptSign ? ' · lecture seule' : ''}
+          <div className="rounded-2xl border border-white/[0.08] bg-zinc-950/60 p-4 space-y-2">
+            <p className="text-[11px] text-zinc-500">
+              {method} · {canAttemptSign ? 'signature possible' : 'lecture seule'}
             </p>
-            {egldLabel != null && (
-              <p className="text-2xl font-semibold text-white tracking-tight pt-1">
-                {egldLabel}{' '}
-                <span className="text-sm font-normal text-zinc-500">EGLD</span>
-              </p>
-            )}
-            {account.loading && <p className="text-xs text-zinc-600">Mise à jour…</p>}
+            <p className="font-mono text-sm text-white break-all">{address}</p>
+            <p className="text-2xl font-semibold text-white tabular-nums">
+              {egldLabel ?? '…'}{' '}
+              <span className="text-base text-zinc-500 font-normal">EGLD</span>
+            </p>
           </div>
 
-          <BridgeUsdtCard compact />
-
-          <section className="space-y-2">
-            <h2 className="text-sm font-semibold text-white">Tokens</h2>
-            {account.loading && tokens.length === 0 ? (
-              <p className="text-xs text-zinc-600">Lecture…</p>
-            ) : tokens.length === 0 ? (
-              <p className="text-xs text-zinc-600 rounded-xl border border-white/5 px-3 py-3">
-                Aucun ESDT notable.
+          {lpTokens.length > 0 && (
+            <section className="rounded-2xl border border-cyan-500/20 bg-cyan-950/10 p-4 space-y-2">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-cyan-300/80">
+                LP éligibles DAO
               </p>
-            ) : (
-              <ul className="rounded-2xl border border-white/[0.07] divide-y divide-white/[0.05] overflow-hidden">
-                {tokens.map(t => (
-                  <li
-                    key={t.identifier}
-                    className="flex items-center justify-between gap-3 px-4 py-2.5 bg-white/[0.02]"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm text-white font-medium truncate">{t.ticker}</p>
-                      <p className="text-[10px] text-zinc-600 truncate">{t.name}</p>
-                    </div>
-                    <p className="text-sm tabular-nums text-zinc-300 shrink-0">{fmtBal(t.balance)}</p>
-                  </li>
-                ))}
+              <ul className="space-y-1 text-[12px]">
+                {lpTokens.map(t => {
+                  const id = String((t as { identifier?: string }).identifier || '')
+                  const bal = Number((t as { balance?: number }).balance ?? 0)
+                  const pair = matchEligiblePair(id, String((t as { name?: string }).name || ''))
+                  return (
+                    <li key={id} className="flex justify-between gap-2 text-zinc-300">
+                      <span>{pair?.label || id}</span>
+                      <span className="tabular-nums text-zinc-500">{fmtBal(bal)}</span>
+                    </li>
+                  )
+                })}
               </ul>
+              <Link to="/dao" className="text-[11px] text-cyan-300 hover:underline">
+                Voter en DAO →
+              </Link>
+            </section>
+          )}
+
+          <section className="rounded-2xl border border-white/[0.08] bg-zinc-950/40 p-4 space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+              Tokens
+            </p>
+            {account.loading && <p className="text-sm text-zinc-500">Chargement…</p>}
+            {!account.loading && tokens.length === 0 && (
+              <p className="text-sm text-zinc-600">Aucun ESDT</p>
             )}
+            <ul className="space-y-1.5 max-h-56 overflow-y-auto">
+              {tokens.map(t => {
+                const id = String((t as { identifier?: string }).identifier || '')
+                const name = String(
+                  (t as { ticker?: string }).ticker ||
+                    (t as { name?: string }).name ||
+                    id,
+                )
+                const bal = Number((t as { balance?: number }).balance ?? 0)
+                return (
+                  <li
+                    key={id}
+                    className="flex justify-between gap-2 text-[12px] border-t border-white/5 pt-1.5"
+                  >
+                    <span className="text-zinc-200 truncate">{name}</span>
+                    <span className="tabular-nums text-zinc-500 shrink-0">{fmtBal(bal)}</span>
+                  </li>
+                )
+              })}
+            </ul>
           </section>
 
-          <section className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-white">NFT</h2>
-              <Link
-                to="/museum?tab=mine"
-                className="text-[11px] text-zinc-500 hover:text-white transition-colors"
-              >
-                Galerie →
-              </Link>
-            </div>
-            {account.loading && !(account.nfts || []).length ? (
-              <p className="text-xs text-zinc-600">Lecture…</p>
-            ) : !(account.nfts || []).length ? (
-              <p className="text-xs text-zinc-600 rounded-xl border border-white/5 px-3 py-3">
-                Aucun NFT.
-              </p>
-            ) : (
-              <ul className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                {(account.nfts || []).slice(0, 16).map(n => (
-                  <li
-                    key={n.identifier}
-                    className="rounded-xl border border-white/[0.07] overflow-hidden bg-black/40 aspect-square"
+          <section className="rounded-2xl border border-white/[0.08] bg-zinc-950/40 p-4 space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+              NFT ({(account.nfts || []).length})
+            </p>
+            <div className="grid grid-cols-4 gap-1.5">
+              {(account.nfts || []).slice(0, 8).map((n, i) => {
+                const thumb = nftThumb(n)
+                return (
+                  <div
+                    key={(n as { identifier?: string }).identifier || i}
+                    className="aspect-square rounded-lg bg-zinc-900 border border-white/10 overflow-hidden"
                   >
-                    {nftThumb(n) ? (
-                      <img
-                        src={nftThumb(n)}
-                        alt={n.name || n.identifier}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                      />
+                    {thumb ? (
+                      <img src={thumb} alt="" className="w-full h-full object-cover" loading="lazy" />
                     ) : (
-                      <div className="h-full w-full flex items-center justify-center text-[10px] text-zinc-600 p-1 text-center">
-                        {n.name || n.identifier.slice(0, 10)}
+                      <div className="w-full h-full flex items-center justify-center text-[9px] text-zinc-600">
+                        NFT
                       </div>
                     )}
-                  </li>
-                ))}
-              </ul>
-            )}
+                  </div>
+                )
+              })}
+            </div>
           </section>
 
-          <p className="text-[12px] text-zinc-600 flex flex-wrap gap-x-4 gap-y-1">
-            <Link to="/my-packs" className="hover:text-zinc-300 transition-colors">
-              My Packs
-            </Link>
-            <a
-              href={address ? LINKS.explorerAccount(address) : LINKS.explorer}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-zinc-300 transition-colors"
-            >
-              Explorer
-            </a>
-          </p>
+          <BridgeUsdtCard />
         </div>
       )}
+
+      <LiaTreasuryPanel />
+
+      <p className="text-[11px] text-zinc-600">
+        <Link to="/dao" className="text-zinc-400 hover:text-white">
+          DAO
+        </Link>
+        {' · '}
+        <Link to="/tip" className="text-zinc-400 hover:text-white">
+          Tip LIA
+        </Link>
+        {' · '}
+        <a
+          href={LINKS.explorer}
+          className="text-zinc-400 hover:text-white"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Explorer
+        </a>
+      </p>
     </div>
   )
 }
