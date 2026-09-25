@@ -1,5 +1,18 @@
 # Changelog — xArtists
 
+## [0.44.0](https://github.com/Neltud/xArtists/compare/v0.43.0...v0.44.0) (2026-09-25)
+
+
+### Features
+
+* **slot:** paper gain split user 85% / LIA 15% + spin cost to LIA ([22c7e0d](https://github.com/Neltud/xArtists/commit/22c7e0d56eaa46ad8b5deb8c27a715f1b84e65d7))
+* **slot:** paper stakes in EGLD / USDC / USDT (no TRO) ([c43c6d3](https://github.com/Neltud/xArtists/commit/c43c6d32b4b2ccddf3a977af9fb8c7d09bb67307))
+
+
+### Bug Fixes
+
+* **pwa:** SW v9 network-first shell + purge old caches (live load) ([3ddcb3f](https://github.com/Neltud/xArtists/commit/3ddcb3f2dad169e74b0b2fb33d63a3052556b3e7))
+
 ## [0.43.0](https://github.com/Neltud/xArtists/compare/v0.42.0...v0.43.0) (2026-09-25)
 
 
