@@ -29,13 +29,10 @@ export default function Agents() {
   return (
     <div className="animate-fade-in pb-14 max-w-3xl mx-auto space-y-8">
       <header className="space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
-          Packs · produits limités · pas un fonds
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-white">
-          Pulse · Yield · Sentinel
-        </h1>
-        <p className="text-zinc-400 text-[14px] leading-relaxed max-w-md">
+        <p className="section-label">Packs · produits limités · pas un fonds</p>
+        <h1 className="section-title display">Pulse · Yield · Sentinel</h1>
+        <div className="atelier-title-rule" aria-hidden />
+        <p className="section-lead">
           Trois accès uniques. Checkout paper → pack local + ouverture scénique. Revente NFT possible
           sur le marketplace (produit, pas titre financier).
         </p>
@@ -77,7 +74,7 @@ export default function Agents() {
               <button
                 type="button"
                 onClick={() => setSelected(p.id)}
-                className={`w-full text-left rounded-2xl border bg-zinc-950/70 p-4 transition-colors card-play ${RING[p.id]} ${
+                className={`w-full text-left card card-play ${RING[p.id]} ${
                   on ? 'ring-1 ring-white/25' : ''
                 }`}
               >
@@ -102,7 +99,7 @@ export default function Agents() {
         })}
       </div>
 
-      <section className="rounded-2xl border border-white/10 bg-zinc-950/50 p-5">
+      <section className="card space-y-1">
         <p className="text-[13px] text-zinc-400 mb-3">
           {active ? `${active.name} · ${active.priceEur.list} € · paper` : 'Sélectionne un pack'}
         </p>

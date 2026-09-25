@@ -15,7 +15,7 @@ const LINKS_MAIN = [
   { to: '/agents', title: 'Packs', body: 'Pulse · Yield · Sentinel', delay: '60ms' },
   { to: '/tours', title: 'Tours', body: 'Carte & musées du monde', delay: '120ms' },
   { to: '/trading', title: 'Trading', body: 'Board paper · GrokyversX', delay: '180ms' },
-  { to: '/slot', title: 'Slot', body: '3×3 NFT · paper bank TRO', delay: '220ms' },
+  { to: '/slot', title: 'Slot', body: '3×3 NFT · paper bank', delay: '220ms' },
   { to: '/ads', title: 'Ads', body: 'Enchères pub · sample live', delay: '240ms' },
   { to: '/go-live', title: 'GO_LIVE', body: 'Phase 4 · First 100 · checklists', delay: '260ms' },
 ] as const
@@ -24,7 +24,7 @@ export default function Dashboard() {
   const supernova = isSupernovaLive()
 
   return (
-    <div className="animate-fade-in relative pb-20 max-w-2xl mx-auto">
+    <div className="animate-fade-in relative pb-8 max-w-2xl mx-auto">
       <div className="orb w-64 h-64 -top-8 -left-16 bg-violet-600/30" aria-hidden />
       <div
         className="orb w-48 h-48 top-32 -right-10 bg-cyan-500/20"
@@ -32,8 +32,8 @@ export default function Dashboard() {
         aria-hidden
       />
 
-      <section className="relative space-y-6 pt-6 sm:pt-12">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-zinc-500">
+      <section className="relative space-y-5 pt-6 sm:pt-10">
+        <p className="section-label">
           xArtists{supernova ? ' · Supernova' : ''}
         </p>
         <h1 className="display text-[2.75rem] sm:text-6xl text-white leading-[1.05]">
@@ -41,7 +41,8 @@ export default function Dashboard() {
           <br />
           <span className="gradient-text">en mouvement</span>
         </h1>
-        <p className="text-zinc-400 text-[15px] sm:text-base leading-relaxed max-w-md">
+        <div className="atelier-title-rule" aria-hidden />
+        <p className="section-lead">
           Galerie immersive, packs, LIA + GrokyversX — Phase 4 First 100 (1 EGLD bounty).
         </p>
         <div className="flex flex-wrap gap-3 pt-1">
@@ -71,12 +72,13 @@ export default function Dashboard() {
         <PulseStrip />
         <AgentWalletsStrip />
 
-        <div className="grid gap-2.5 pt-2">
+        <p className="section-label pt-4">Explorer</p>
+        <div className="grid gap-2.5">
           {LINKS_MAIN.map(item => (
             <Link
               key={item.to}
               to={item.to}
-              className="flow-row"
+              className="flow-row card-play"
               style={{ animation: `fadeIn 0.55s var(--ease-out) ${item.delay} both` }}
             >
               <div>
