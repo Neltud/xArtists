@@ -1,5 +1,5 @@
 /**
- * Board LIA — paper + 10 colonnes compounding visibles.
+ * Board LIA — paper MTM live prices + 10 colonnes compounding.
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,6 +8,7 @@ import LiaBoardPanel from '../components/LiaBoardPanel'
 import CompoundingPanel from '../components/CompoundingPanel'
 import AnnualYieldPanel from '../components/AnnualYieldPanel'
 import CrossAgentPanel from '../components/CrossAgentPanel'
+import PaperLiveDesk from '../components/PaperLiveDesk'
 import { useLIA } from '../hooks/useLIA'
 import TransactionOverlay, { lifecycleToPhase } from '../components/ui/TransactionOverlay'
 
@@ -55,34 +56,27 @@ export default function Trading() {
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Board</p>
         <h1 className="text-3xl font-semibold tracking-tight text-white">Trading</h1>
         <p className="text-sm text-zinc-400 inline-flex flex-wrap items-center gap-1 max-w-xl">
-          Simulation paper — 10 colonnes compounding · aucune exécution live dans cette démo
+          Paper MTM sur prix marché live · 10 colonnes compounding · pas d’exécution on-chain
           <InfoTip>
             <strong className="text-white block mb-1">Mode paper</strong>
             <span className="text-zinc-400">
-              Les commandes alimentent le board LIA en simulation. Live uniquement avec PEM ops +
-              Guardian + flag explicite.
+              Les prix sont réels (Binance / MultiversX). Les positions et le PnL sont simulés. Live
+              ops uniquement avec PEM + Guardian + flag explicite.
             </span>
           </InfoTip>
         </p>
       </header>
 
-      <section className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 space-y-3">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <div>
-            <h2 className="text-base font-semibold text-white">10 colonnes · compounding</h2>
-            <p className="text-[12px] text-zinc-400 mt-1 max-w-2xl leading-relaxed">
-              Chaque colonne = un échelon paper indépendant (paires distinctes). Capital simulé, pas
-              les fonds users.
-            </p>
-          </div>
-          <span className="rounded-full bg-violet-500/20 border border-violet-400/30 px-2.5 py-1 text-[10px] font-mono text-violet-200">
-            paper · S1 core
-          </span>
-        </div>
-        <div className="grid sm:grid-cols-3 gap-2 text-[11px]">
+      <PaperLiveDesk />
+
+      <section className="rounded-2xl border border-white/10 bg-zinc-950/40 p-4 space-y-3">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+          10 colonnes compounding (paper)
+        </p>
+        <div className="grid sm:grid-cols-2 gap-2 text-[12px]">
           <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
-            <p className="text-zinc-500 uppercase tracking-wider text-[9px]">S1 core (~70 %)</p>
-            <p className="text-zinc-200 mt-0.5 font-medium">TP +1 % · SL −0,5 %</p>
+            <p className="text-zinc-500 uppercase tracking-wider text-[9px]">Core (~70 %)</p>
+            <p className="text-zinc-200 mt-0.5 font-medium">TP ladder +1 % · compounding</p>
           </div>
           <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
             <p className="text-zinc-500 uppercase tracking-wider text-[9px]">S05 satellite (~15 %)</p>
