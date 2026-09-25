@@ -23,10 +23,12 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      external: (id) => id.includes('@multiversx/sdk-dapp'),
+      // Bundle wallet-connect-provider; sdk-dapp still dynamic-optional in MxDappProvider
+      // external: (id) => id.includes('@multiversx/sdk-dapp'),
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return
+          if (id.includes('@walletconnect') || id.includes('sdk-wallet-connect')) return 'wc'
           if (id.includes('@multiversx') && !id.includes('sdk-dapp')) return 'mx-sdk'
           if (id.includes('@tanstack')) return 'virtual'
           if (id.includes('react-router')) return 'router'
@@ -38,8 +40,5 @@ export default defineConfig({
   esbuild: {
     drop: process.env.NODE_ENV === 'production' || process.env.CI ? ['console', 'debugger'] : [],
     legalComments: 'none',
-  },
-  server: {
-    port: 3000,
   },
 })
