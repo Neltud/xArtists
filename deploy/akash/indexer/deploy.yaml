@@ -1,15 +1,14 @@
 ---
-# xArtists NFT / collections indexer worker on Akash Network
-# Deploy: https://console.akash.network  ·  or `provider-services tx deployment create`
-# Secrets: never bake PEM / API keys into the image — use env vars at deploy time.
+# xArtists NFT / collections indexer on Akash
+# 1) Build & push image (see README)
+# 2) Deploy this SDL in Akash Console (same flow as Hello World)
+# 3) Point VITE_CATALOG_API at the public ingress URL
 
 version: "2.0"
 
 services:
   xartists-indexer:
     image: ghcr.io/neltud/xartists-indexer:latest
-    # Fallback public image until custom image is published:
-    # image: node:20-alpine
     env:
       - NODE_ENV=production
       - PORT=8080
@@ -17,21 +16,11 @@ services:
       - COLLECTIONS=NFTUDURI-2990b6,TRO-652d6d,XTR-e5072b,XAR-cee2e0
       - POLL_INTERVAL_SEC=120
       - CORS_ORIGIN=https://neltud.github.io
-      # Optional: push snapshot to object storage / webhook
-      # - WEBHOOK_URL=
-      # - IPFS_API=
     expose:
       - port: 8080
         as: 80
         to:
           - global: true
-        accept:
-          - indexer.xartists.example
-    # If using node:20-alpine without custom image, override command:
-    # command:
-    #   - sh
-    #   - -c
-    #   - "npm i -g xartists-indexer@latest && xartists-indexer"
 
 profiles:
   compute:
@@ -42,7 +31,7 @@ profiles:
         memory:
           size: 512Mi
         storage:
-          size: 1Gi
+          size: 512Mi
   placement:
     akash:
       pricing:
