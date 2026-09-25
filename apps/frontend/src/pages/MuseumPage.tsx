@@ -1,6 +1,7 @@
 /**
  * Galerie — salles 3D + grille œuvres toujours visible.
  * Fallback NFTUDURI / TUDURI si catalogue vide.
+ * Catalogue : VITE_CATALOG_API (Akash) puis JSON GitHub.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -14,13 +15,7 @@ import HolderPulseTab from '../components/museum/HolderPulseTab'
 import GuidedWorldTour from '../components/museum/GuidedWorldTour'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
-import {
-  DATA_URL,
-  nftImageUrl,
-  type CollectionData,
-  type CollectionsFile,
-  type NFT,
-} from '../types/nft'
+import { nftImageUrl, type NFT } from '../types/nft'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { consumeTravelDestination } from '../lib/travelBridge'
 import {
@@ -35,11 +30,10 @@ import { loadBlueprint } from '../lib/loadBlueprint'
 import { builtinBlueprintForMuseum } from '../lib/builtinBlueprints'
 import type { RoomBlueprint } from '../lib/roomBlueprint'
 import { TUDURI_WORKS } from '../config/tuduriAtelier'
+import { loadFullCatalog } from '../lib/loadFullCatalog'
 
 type Mode = 'explore' | 'mine' | 'map' | 'pulse'
 
-const RAW_CATALOG =
-  'https://raw.githubusercontent.com/Neltud/xArtists/main/apps/frontend/public/data/xartists_collections.json'
 const PRIORITY_COLLECTIONS = ['NFTUDURI-2990b6', 'TRO-652d6d', 'XTR-e5072b', 'XAR-cee2e0']
 
 function preferImage(n: NFT): string | undefined {
@@ -84,42 +78,6 @@ function prioritizeNfts(nfts: NFT[]): NFT[] {
   return [...nfts].sort((a, b) => rank(a.collection) - rank(b.collection))
 }
 
-let catalogPromise: Promise<{ collections: CollectionData[]; nfts: NFT[] }> | null = null
-
-async function loadFullCatalog(): Promise<{ collections: CollectionData[]; nfts: NFT[] }> {
-  if (catalogPromise) return catalogPromise
-  catalogPromise = (async () => {
-    const base = import.meta.env.BASE_URL || '/'
-    const urls = [
-      DATA_URL,
-      `${base}data/xartists_collections.json`,
-      '/xArtists/data/xartists_collections.json',
-      RAW_CATALOG,
-    ]
-    for (const u of urls) {
-      try {
-        const r = await fetch(u, { cache: 'no-store' })
-        if (!r.ok) continue
-        const j = (await r.json()) as CollectionsFile
-        const cols = j.collections || []
-        if (!cols.length) continue
-        const nfts = cols.flatMap(c =>
-          (c.nfts || []).map(n => ({
-            ...n,
-            collection: n.collection || c.identifier,
-            collection_name: n.collection_name || c.name,
-          }))
-        )
-        if (nfts.length) return { collections: cols, nfts }
-      } catch {
-        /* next */
-      }
-    }
-    return { collections: [], nfts: [] }
-  })()
-  return catalogPromise
-}
-
 const MODES: { id: Mode; label: string }[] = [
   { id: 'explore', label: 'Explorer' },
   { id: 'mine', label: 'Ma collection' },
@@ -130,10 +88,13 @@ const MODES: { id: Mode; label: string }[] = [
 function ArtworkGrid({ frames, title }: { frames: FrameItem[]; title: string }) {
   if (!frames.length) return null
   return (
-    <section className="mt-6 space-y-3">
+    <section className="mt-8 space-y-3 animate-fade-in">
       <div className="flex items-end justify-between gap-2">
-        <h2 className="text-sm font-semibold text-white">{title}</h2>
-        <p className="text-[11px] text-zinc-500">{frames.length} œuvres</p>
+        <div>
+          <h2 className="text-sm font-semibold text-white tracking-tight">{title}</h2>
+          <div className="atelier-title-rule mt-1.5" aria-hidden />
+        </div>
+        <p className="text-[11px] text-zinc-500 tabular-nums">{frames.length} œuvres</p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {frames.slice(0, 24).map(f => (
@@ -142,9 +103,9 @@ function ArtworkGrid({ frames, title }: { frames: FrameItem[]; title: string }) 
             href={f.href || '#'}
             target="_blank"
             rel="noreferrer"
-            className="group rounded-xl border border-white/10 bg-zinc-950/80 overflow-hidden hover:border-amber-500/30 transition-colors"
+            className="group card-play rounded-xl border border-white/10 bg-zinc-950/85 overflow-hidden hover:border-violet-500/35 transition-colors shadow-lg shadow-black/20"
           >
-            <div className="aspect-[4/5] bg-zinc-900 relative">
+            <div className="aspect-gallery bg-zinc-900 relative">
               {f.image ? (
                 <img
                   src={f.image}
@@ -165,9 +126,7 @@ function ArtworkGrid({ frames, title }: { frames: FrameItem[]; title: string }) 
                   }}
                 />
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-zinc-600 text-xs">
-                  —
-                </div>
+                <div className="absolute inset-0 flex items-center justify-center text-zinc-600 text-xs">—</div>
               )}
             </div>
             <div className="p-2.5">
@@ -185,17 +144,17 @@ export default function MuseumPage() {
   const [params] = useSearchParams()
   const initial = params.get('tab')
   const [mode, setMode] = useState<Mode>(
-    initial === 'mine' || initial === 'map' || initial === 'pulse' ? initial : 'explore'
+    initial === 'mine' || initial === 'map' || initial === 'pulse' ? initial : 'explore',
   )
   const [museumId, setMuseumId] = useState('xartists')
   const [museums, setMuseums] = useState<VirtualMuseum[]>(() =>
-    buildMuseumNetwork(import.meta.env.BASE_URL || '/')
+    buildMuseumNetwork(import.meta.env.BASE_URL || '/'),
   )
   const [allNfts, setAllNfts] = useState<NFT[]>([])
   const [catalogLoading, setCatalogLoading] = useState(true)
   const [travelBanner, setTravelBanner] = useState<string | null>(null)
   const [blueprint, setBlueprint] = useState<RoomBlueprint>(() =>
-    builtinBlueprintForMuseum('xartists')
+    builtinBlueprintForMuseum('xartists'),
   )
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
@@ -229,7 +188,7 @@ export default function MuseumPage() {
     const hash = typeof window !== 'undefined' ? window.location.hash : ''
     const q = hash.includes('?') ? hash.split('?')[1] : ''
     const sp = new URLSearchParams(
-      q || (typeof window !== 'undefined' ? window.location.search : '')
+      q || (typeof window !== 'undefined' ? window.location.search : ''),
     )
     const cityQ = sp.get('city')
     const museumQ = sp.get('museum')
@@ -245,7 +204,7 @@ export default function MuseumPage() {
             : `Direction ${city}`
           : mid
             ? `Salle ${mid}`
-            : null
+            : null,
       )
       setMuseumId(mid || 'xartists')
       setMode('explore')
@@ -284,7 +243,7 @@ export default function MuseumPage() {
   useEffect(() => {
     preloadImages(
       visitFrames.map(f => f.image),
-      12
+      12,
     )
   }, [museumId, visitFrames])
 
@@ -295,11 +254,10 @@ export default function MuseumPage() {
   return (
     <div className="animate-fade-in pb-12 max-w-5xl mx-auto">
       <header className="mb-6 space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
-          xArtists
-        </p>
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Galerie</h1>
-        <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl">
+        <p className="section-label">xArtists</p>
+        <h1 className="section-title display">Galerie</h1>
+        <div className="atelier-title-rule" aria-hidden />
+        <p className="section-lead">
           Musées en 3D — tableaux accrochés aux murs. NFTUDURI · TRO · collections MultiversX.
         </p>
       </header>
@@ -356,9 +314,7 @@ export default function MuseumPage() {
                 {museum.tagline} · {blueprint.name} · {visitFrames.filter(f => f.image).length} œuvres
               </p>
             </div>
-            <p className="text-[11px] text-zinc-600 hidden sm:block">
-              Clic viser · WASD · E œuvre
-            </p>
+            <p className="text-[11px] text-zinc-600 hidden sm:block">Clic viser · WASD · E œuvre</p>
           </div>
 
           {showHallLoader ? (
@@ -380,7 +336,11 @@ export default function MuseumPage() {
 
           <ArtworkGrid
             frames={visitFrames}
-            title={museumId === 'xartists' ? 'Collection accrochée (NFTUDURI & co.)' : `Œuvres — ${museum.name}`}
+            title={
+              museumId === 'xartists'
+                ? 'Collection accrochée (NFTUDURI & co.)'
+                : `Œuvres — ${museum.name}`
+            }
           />
         </div>
       )}
@@ -417,11 +377,7 @@ export default function MuseumPage() {
       )}
 
       {mode === 'pulse' && (
-        <HolderPulseTab
-          nfts={account.nfts || []}
-          frames={visitFrames}
-          connected={connected}
-        />
+        <HolderPulseTab nfts={account.nfts || []} frames={visitFrames} connected={connected} />
       )}
 
       {mode === 'map' && (
