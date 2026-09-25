@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
-import { sdkDappConfig } from '../config/sdkDapp'
 import { LINKS, PRIMARY_NAV, SECONDARY_NAV } from '../config/links'
 import { OPEN_CONNECT_EVENT, requestOpenAssets } from '../lib/walletEvents'
 
@@ -52,10 +51,25 @@ export default function Header() {
     window.location.href = LINKS.walletLogin(getCallbackUrl())
   }
 
-  const openXPortalDeepLink = () => {
-    const deep = sdkDappConfig.customNetworkConfig.walletConnectDeepLink
-    window.open(deep, '_blank', 'noopener,noreferrer')
-    setConnectError('xPortal ouvert. Web Wallet recommandé pour les TX signées.')
+  const openXPortalDeepLink = async () => {
+    setConnectError('Connexion xPortal mainnet (WalletConnect)…')
+    try {
+      const { loginWithXPortalMainnet } = await import('../lib/xportalWc')
+      const res = await loginWithXPortalMainnet(p => {
+        if (p.message) setConnectError(p.message)
+      })
+      if (!res.ok) {
+        setConnectError(res.error + ' — Web Wallet reste disponible.')
+        return
+      }
+      const linked = connect(res.address, 'xportal')
+      if (!linked.ok) setConnectError(linked.error || 'Session refusée')
+      else setShowWalletModal(false)
+    } catch (e) {
+      setConnectError(
+        (e instanceof Error ? e.message : 'Erreur xPortal') + ' — utilise Web Wallet.',
+      )
+    }
   }
 
   const tryExtension = async () => {
@@ -225,11 +239,11 @@ export default function Header() {
             style={{ paddingBottom: 'calc(1.25rem + env(safe-area-inset-bottom, 0px))' }}
           >
             <p className="text-[10px] uppercase tracking-[0.2em] text-violet-400/80 mb-1">
-              MultiversX
+              MultiversX mainnet
             </p>
             <h2 className="display text-xl mb-2">Connecter le wallet</h2>
             <p className="text-xs text-zinc-500 mb-4 leading-relaxed">
-              Votre wallet — pas une adresse protocole.
+              Votre wallet — pas une adresse protocole LIA.
             </p>
 
             {[
@@ -241,9 +255,9 @@ export default function Header() {
               },
               {
                 title: 'xPortal',
-                sub: 'App mobile',
+                sub: 'WalletConnect mainnet',
                 icon: '📱',
-                onClick: openXPortalDeepLink,
+                onClick: () => void openXPortalDeepLink(),
               },
               {
                 title: 'Extension',
