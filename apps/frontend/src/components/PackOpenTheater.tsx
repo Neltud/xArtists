@@ -1,9 +1,10 @@
 /**
- * Ouverture pack — UX théâtrale (paper). CSS 3D, pas de Three obligatoire.
- * Moment d'excitation avant possession paper.
+ * Ouverture pack — shake → burst → reveal + Lottie check.
  */
 import { useEffect, useState } from 'react'
 import type { AgentPackProfile } from '../config/agentPacks'
+import LottieIcon from './LottieIcon'
+import { Link } from 'react-router-dom'
 
 type Phase = 'idle' | 'shake' | 'burst' | 'reveal' | 'done'
 
@@ -44,7 +45,12 @@ export default function PackOpenTheater({
         : 'rgba(56,189,248,0.55)'
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div
+      className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="pack-open-title"
+    >
       <div className="relative w-full max-w-sm">
         <div
           className={`mx-auto w-40 h-48 rounded-2xl border border-white/20 bg-gradient-to-b from-zinc-800 to-zinc-950 shadow-2xl flex items-center justify-center transition-all duration-500 ${
@@ -84,10 +90,17 @@ export default function PackOpenTheater({
 
         {(phase === 'reveal' || phase === 'done') && (
           <div className="mt-6 rounded-2xl border border-white/15 bg-zinc-950/95 p-5 space-y-3 animate-fade-in shadow-[0_0_40px_-10px_rgba(255,255,255,0.15)]">
-            <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Pack ouvert · paper</p>
-            <h2 className="text-xl font-semibold text-white">
-              {pack.icon} {pack.name}
-            </h2>
+            <div className="flex items-center gap-3">
+              <LottieIcon preset="check" loop={false} size={44} />
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+                  Pack ouvert · paper
+                </p>
+                <h2 id="pack-open-title" className="text-xl font-semibold text-white">
+                  {pack.icon} {pack.name}
+                </h2>
+              </div>
+            </div>
             <p className="text-sm text-zinc-400">{pack.tagline}</p>
             <ul className="space-y-1.5 pt-1">
               {pack.entitlements.map(e => (
@@ -98,15 +111,33 @@ export default function PackOpenTheater({
               ))}
             </ul>
             <p className="text-[11px] text-zinc-600 pt-1">
-              Mint on-chain plus tard · pas de mandat de gestion
+              Produit d’accès unique · mint on-chain plus tard · pas de mandat de gestion
             </p>
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-full mt-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 py-2.5 text-sm font-medium text-white"
-            >
-              Continuer
-            </button>
+            <div className="flex flex-col gap-2 pt-1">
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-full rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 py-2.5 text-sm font-medium text-white"
+              >
+                Continuer
+              </button>
+              {pack.id === 'pulse' && (
+                <Link
+                  to="/museum?tab=pulse"
+                  onClick={onClose}
+                  className="w-full text-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 py-2.5 text-sm text-emerald-200 hover:bg-emerald-500/15"
+                >
+                  Ouvrir salle Pulse
+                </Link>
+              )}
+              <Link
+                to="/my-packs"
+                onClick={onClose}
+                className="w-full text-center text-[12px] text-zinc-500 hover:text-zinc-300"
+              >
+                Voir My Packs
+              </Link>
+            </div>
           </div>
         )}
 

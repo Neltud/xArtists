@@ -1,6 +1,6 @@
 /**
  * Checkout packs — Stripe + Paybox + paper.
- * Paper success = mark owned + optional theater callback.
+ * Paper success = mark owned + theater callback + Lottie check.
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
@@ -9,6 +9,7 @@ import { useWallet } from '../context/WalletContext'
 import AccessTermsModal from './AccessTermsModal'
 import { canBuyAgent } from '../config/scStatus'
 import { markPackOwned } from '../lib/nftPacks'
+import LottieIcon from './LottieIcon'
 import {
   availablePayMethods,
   defaultPayMethod,
@@ -122,7 +123,7 @@ export default function PackCheckout({
               key={p.id}
               type="button"
               onClick={() => startBuy(p.id)}
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-zinc-200 hover:bg-white/[0.08]"
+              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-zinc-200 hover:bg-white/[0.08] card-play"
             >
               {p.icon} {p.name}
             </button>
@@ -157,42 +158,58 @@ export default function PackCheckout({
             {method === 'stripe' && stripeStatusHint()}
             {method === 'paybox' && payboxStatusHint()}
             {method === 'paper' &&
-              'Paper : intention locale + pack possédé device + ouverture. Mint SC off.'}
+              'Paper : intention locale + pack possédé device + ouverture. Mint SC off jusqu’à GO_LIVE.'}
           </p>
-          {!mintLive && (
-            <p className="text-[11px] text-amber-200/80">
-              Agents marketplace SC OFF — checkout paper uniquement.
-            </p>
-          )}
-          <button
-            type="button"
-            onClick={() => startBuy(pack.id)}
-            className="w-full rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 py-2.5 text-sm font-medium text-white"
-          >
-            {method === 'paper' ? 'Enregistrer' : 'Payer'} {pack.name}
-          </button>
-          {msg && <p className="text-xs text-zinc-400">{msg}</p>}
-          {status === 'done' && (
-            <p className="text-xs text-emerald-400/90">
-              OK —{' '}
-              <Link to="/my-packs" className="underline">
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="btn-primary text-sm"
+              disabled={status === 'redirect'}
+              onClick={() => {
+                if (!connected) {
+                  setMsg('Connecte ton wallet MultiversX (erd1…) avant checkout.')
+                  return
+                }
+                setTermsOpen(true)
+                setStatus('terms')
+              }}
+            >
+              {status === 'redirect' ? '…' : `Confirmer · ${pack.priceEur.list} €`}
+            </button>
+            {!mintLive && (
+              <span className="text-[11px] text-amber-200/80 self-center">SC mint OFF · paper OK</span>
+            )}
+          </div>
+        </>
+      )}
+
+      {status === 'done' && (
+        <div className="flex items-start gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-3">
+          <LottieIcon preset="check" loop={false} size={36} />
+          <div className="min-w-0">
+            <p className="text-sm text-emerald-100 font-medium">{msg || 'Pack enregistré'}</p>
+            <p className="text-[12px] text-emerald-200/70 mt-0.5">
+              Ouverture theater lancée ·{' '}
+              <Link to="/my-packs" className="underline underline-offset-2 hover:text-white">
                 My Packs
               </Link>
-              {' · '}
-              <Link to="/payments" className="underline">
-                Paiements
-              </Link>
             </p>
-          )}
-        </>
+          </div>
+        </div>
+      )}
+
+      {msg && status !== 'done' && (
+        <p className="text-[12px] text-amber-200/90">{msg}</p>
       )}
 
       <AccessTermsModal
         open={termsOpen}
-        packName={pack?.name || 'Pack'}
-        priceEur={pack?.priceEur.list || 0}
+        onClose={() => {
+          setTermsOpen(false)
+          setStatus('idle')
+        }}
         onAccept={onAcceptTerms}
-        onCancel={() => setTermsOpen(false)}
+        packName={pack?.name}
       />
     </div>
   )
