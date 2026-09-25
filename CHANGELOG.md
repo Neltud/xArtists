@@ -1,5 +1,19 @@
 # Changelog — xArtists
 
+## [0.45.0](https://github.com/Neltud/xArtists/compare/v0.44.0...v0.45.0) (2026-09-25)
+
+
+### Features
+
+* **trading:** live market prices + paper MTM desk (Binance/MVX) ([483e27e](https://github.com/Neltud/xArtists/commit/483e27ea41c86bb1a19264987ab43c43d12a53f1))
+* **trading:** mount PaperLiveDesk on /trading board ([075dd87](https://github.com/Neltud/xArtists/commit/075dd87d9e5c7c3c2307d7fde9040ebf9fc947e3))
+* xPortal WC mainnet login + public slot EGLD/USDC progressive 9/9 jackpot ([c3a7012](https://github.com/Neltud/xArtists/commit/c3a70127536a4641bb912d744a0c5c8bad3c1145))
+
+
+### Bug Fixes
+
+* **PaperLiveDesk:** entry prices via useEffect not useMemo ([16b3301](https://github.com/Neltud/xArtists/commit/16b33016d6dad5146cade4f4a2ad4f69216586bf))
+
 ## [0.44.0](https://github.com/Neltud/xArtists/compare/v0.43.0...v0.44.0) (2026-09-25)
 
 
