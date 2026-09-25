@@ -1,5 +1,34 @@
 # Changelog — xArtists
 
+## [0.48.0](https://github.com/Neltud/xArtists/compare/v0.47.0...v0.48.0) (2026-09-25)
+
+
+### Features
+
+* **Agents:** product disclaimer; deployer status funded 0.58 EGLD ([b28bbe4](https://github.com/Neltud/xArtists/commit/b28bbe436b5c1688cce5d11752b6d2458704ca41))
+* **deploy:** nft-staking + tro-staking targets; chain D/T/1; contracts map ([6622203](https://github.com/Neltud/xArtists/commit/662220338f958afa37160510e0408595ac5c7089))
+* **museum:** loadFullCatalog prefers VITE_CATALOG_API (Akash indexer) ([63d78ee](https://github.com/Neltud/xArtists/commit/63d78ee320b8b5a3a3dde833bfd06c8d199c5329))
+* **packs:** theater Lottie check + checkout success polish ([b443460](https://github.com/Neltud/xArtists/commit/b4434609b182e5fe8cd7fa4206d8cc23ddf0389e))
+* SC deployer public address + immutable nft/tro staking (renounce, no upgrade) ([5cbfaf5](https://github.com/Neltud/xArtists/commit/5cbfaf5710ec806596196afe348a80f4169ab31f))
+* theater after Stripe/Paybox return + Akash SDL indexer worker ([566ab1f](https://github.com/Neltud/xArtists/commit/566ab1f4139f02fc47dd102d4571a2163307b6c6))
+* **ui:** card micro-interactions + GPU contain (motion-fx.css) ([0301295](https://github.com/Neltud/xArtists/commit/030129590d407e4f28390331f06897abf0bf54b0))
+* **ui:** render perf + Lottie + card micro-interactions (3 arrows) ([3bc4a04](https://github.com/Neltud/xArtists/commit/3bc4a0467dc88fa31ab48b9007d747adbe064208))
+* **ui:** wire Lottie + card-interactive on Dashboard/Packs; CSS micro-FX + contain ([47fa0db](https://github.com/Neltud/xArtists/commit/47fa0db219c6c6e5e8f75c8769e7e44052aafbeb))
+* Vellum→MX-8008 intent bind + deploy-scs staking options + SC truth doc ([dfd6c55](https://github.com/Neltud/xArtists/commit/dfd6c55c5313902a1caf71ddcc8a1dccaa0a4bf3))
+* VITE_CATALOG_API hook + Akash indexer worker normalizes MVX catalog ([474476b](https://github.com/Neltud/xArtists/commit/474476b9e2ee75882619c0accc2855f2d2ec8057))
+
+
+### Bug Fixes
+
+* **museum:** prefer Akash VITE_CATALOG_API in loadFullCatalog URLs ([7ff45da](https://github.com/Neltud/xArtists/commit/7ff45dabfe1df87c426f0a801efaf669befd586d))
+* **tro-governance:** ArtPass stake stores nonce; packs legal disclaimer component ([bf65319](https://github.com/Neltud/xArtists/commit/bf65319e430a9663824da5aec3c97379b2790a06))
+
+
+### Documentation
+
+* **akash:** indexer lease live on hurricane — /health /catalog OK ([2c38a9c](https://github.com/Neltud/xArtists/commit/2c38a9c58a8d3184571ac64dcf934c6f5306f239))
+* **akash:** live Hello World lease + indexer Dockerfile path ([a017ec3](https://github.com/Neltud/xArtists/commit/a017ec30b13b94644f065c820e8913b407b5998d))
+
 ## [0.47.0](https://github.com/Neltud/xArtists/compare/v0.46.0...v0.47.0) (2026-09-25)
 
 
