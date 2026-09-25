@@ -1,5 +1,6 @@
 /**
  * Packs — paper-first + ouverture auto après checkout.
+ * Produits uniques limités — pas un investissement.
  */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -7,6 +8,7 @@ import PackCheckout from '../components/PackCheckout'
 import PackOpenTheater from '../components/PackOpenTheater'
 import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import AdSlot from '../components/AdSlot'
+import PackProductDisclaimer from '../components/PackProductDisclaimer'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 
 const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
@@ -28,13 +30,14 @@ export default function Agents() {
     <div className="animate-fade-in pb-14 max-w-3xl mx-auto space-y-8">
       <header className="space-y-2">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
-          Packs · paper · moteur économique
+          Packs · produits limités · pas un fonds
         </p>
         <h1 className="text-3xl font-semibold tracking-tight text-white">
           Pulse · Yield · Sentinel
         </h1>
         <p className="text-zinc-400 text-[14px] leading-relaxed max-w-md">
-          Trois accès. Checkout paper → pack local + ouverture scénique. Pas un fonds.
+          Trois accès uniques. Checkout paper → pack local + ouverture scénique. Revente NFT possible
+          sur le marketplace (produit, pas titre financier).
         </p>
         <p className="text-[12px] text-zinc-500">
           <Link
@@ -45,22 +48,24 @@ export default function Agents() {
           </Link>
           {' · '}
           <Link
-            to="/trading"
+            to="/marketplace"
             className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
           >
-            Trading board
+            Marketplace / revente
           </Link>
           {' · '}
           <Link
-            to="/go-live"
+            to="/dao"
             className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
           >
-            GO_LIVE
+            DAO vote
           </Link>
         </p>
       </header>
 
       <Phase4ReadinessBanner variant="compact" />
+
+      <PackProductDisclaimer />
 
       <AdSlot id="drop_feature" />
 
@@ -72,7 +77,7 @@ export default function Agents() {
               <button
                 type="button"
                 onClick={() => setSelected(p.id)}
-                className={`w-full text-left rounded-2xl border bg-zinc-950/70 p-4 transition-colors ${RING[p.id]} ${
+                className={`w-full text-left rounded-2xl border bg-zinc-950/70 p-4 transition-colors card-play ${RING[p.id]} ${
                   on ? 'ring-1 ring-white/25' : ''
                 }`}
               >
@@ -117,10 +122,10 @@ export default function Agents() {
         </Link>
         {' · '}
         <Link
-          to="/payments"
+          to="/marketplace"
           className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
         >
-          Paiements
+          Revendre un agent
         </Link>
         {' · '}
         <Link

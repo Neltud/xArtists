@@ -3,17 +3,23 @@
   "address": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g",
   "network": "mainnet",
   "chainId": "1",
-  "purpose": "One-shot deploy product SCs · then renounceOwnership",
-  "created": "2026-09-25",
-  "funding": {
-    "min_egld_recommended": 0.5,
-    "note": "Send only EGLD needed for deploy gas. PEM never in git."
-  },
-  "status": "awaiting_funds",
-  "contracts_planned": [
+  "balance_egld_probed": 0.58,
+  "probed_at": "2026-09-25T16:12:00Z",
+  "status": "funded_awaiting_secure_deploy",
+  "treasury_lia": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "deploy_order": [
     "nft-staking",
     "tro-staking",
+    "tro-governance",
     "nft-marketplace",
-    "agents-marketplace"
-  ]
+    "agents-marketplace",
+    "slot-casino"
+  ],
+  "post_deploy": [
+    "verify codeHash",
+    "transferOwnership marketplaces + slot → LIA",
+    "update data/contracts.json",
+    "renounce staking admin optional"
+  ],
+  "note": "PEM offline sandbox only — never git. No public mainnet announcement until audit checklist green."
 }
