@@ -1,117 +1,109 @@
-# Analyse DApp Complète xArtists — 24 septembre 2026
+# Analyse DApp Complète xArtists — 25 septembre 2026
 
 ## Résumé exécutif
 
-xArtists est une dApp **MultiversX mainnet** (lecture) : galerie NFT / phygital, marketplace fail-closed, $TRO (cap 500 000), DAO lecture, LIA v6 paper-first, Primordial Slot paper.
+xArtists est une dApp **MultiversX mainnet** (lecture) : galerie NFT / phygital, marketplace fail-closed, $TRO (cap 500 000), DAO lecture, LIA v6 paper-first.
 
 | | |
 |---|---|
 | **Live Pages** | https://neltud.github.io/xArtists/ |
 | **Tour démo** | https://neltud.github.io/xArtists/#/demo |
 | **GO_LIVE checklist** | https://neltud.github.io/xArtists/#/go-live |
-| **Slot paper** | https://neltud.github.io/xArtists/#/slot |
 | **Repo** | https://github.com/Neltud/xArtists |
 | **Posture** | **GO_DEMO** — pas un marché live |
 | **LIA** | `LIA_LIVE_TRADING=0` |
-| **SC produit** | **codeHash non vérifiable aujourd’hui** (accounts API down) — last-known **null** (19 Sep) |
-| **Supernova** | LIVE 10 sept 2026 · epoch 2233 · probe epoch **2242** · 600 ms **J+9** |
-| **LIA Ops** | last-known **~2.09 EGLD** (nonce 1468, 19 Sep) — accounts API **stale** |
-| **Indexer** | **partiel** post recovery hardfork **v2.1.3.0** (23 Sep) |
+| **SC produit** | **codeHash null** (vérifié live 25 Sep) |
+| **Indexer** | **healthy** — `/stats` `/economics` `/accounts` `/tokens` HTTP 200 |
+| **Supernova** | LIVE 10 sept 2026 · epoch 2233 · probe epoch **2242** · 600 ms · J+15 |
+| **LIA Ops** | **2.0928 EGLD** (nonce 1468) — P0 fund **fait**, live |
+| **EGLD** | **$4.38** · mcap $135.0M · staked 14 336 911 · APR 8.84% |
 
-Pas un fonds retail. Tips ≠ investissement. User Connect ≠ LIA Ops.
+Pas un fonds retail.
+Tips ≠ investissement.
+User Connect ≠ LIA Ops.
 
-## Verdict 24 sept
+## Verdict 25 sept
 
-Galerie / `/demo` / `/go-live` / `/slot` live UI. Market List/Buy/Bid OFF. Packs catalog paper. Staking/gov/minter empty (last-known). LIA paper. Treasury dest null. RWA escrow experimental. GSN/Contrarian non branchés. MX-8004 **not registered**.
+Galerie / `/demo` / `/go-live` / `/slot` live UI.
+Market List/Buy/Bid **OFF** (SC empty).
+Packs catalog paper.
+Staking/gov/minter **empty** (codeHash null, balance 0, nonce 0).
+LIA paper.
+Treasury dest null.
+RWA escrow experimental.
+GSN/Contrarian non branchés live.
 
-**Delta vs 19 sept :**
-- Epoch 2241 → **2242** (J+8 → J+9).
-- `/stats` toujours 200 (refreshRate 600, 133 427 564 blocks).
-- `/economics`, `/accounts`, `/tokens` → **500 / 404**. Gateway `internal_issue`.
-- Collections / NFTs **OK** (NFTUDURI-2990b6 lisible).
-- Probe UI **plus all-or-nothing** : stats live + last-known soldes, banner « dégradé ».
-- SlotPage n’était qu’un PLACEHOLDER malgré la nav — **UI paper réelle** restaurée + route `/slot`.
-- **Ne pas déployer de SC** tant que `/accounts` ne répond pas (impossible de vérifier codeHash).
+**Delta vs 24 sept :** indexer **rétabli**.
+`/economics` `/accounts` `/tokens` passent de 500/404 → **200**.
+LIA Ops reconfirmé **2.0928 EGLD** (plus stale).
+EGLD $4.13 (livre, stale) → **$4.38 live**.
+SC toujours empty — **aucune raison d’allumer** `VITE_*_CODEHASH_OK`.
 
-## Probe API ~04:32 UTC 24 sept
+Gate indexer (bloquante le 24) = **passée**.
+Gate codeHash = **échouée** (attendu).
+Deploy économiquement possible (gas). PEM hors git. Wasm non poussé.
 
-stats: refreshRate **600**, epoch **2242**, roundsPerEpoch 144000, roundsPassed **37943** (~26 % epoch), accounts 9 262 948, tx 628 538 339, blocks 133 427 564, shards 3.
+## Probe API ~04:44 UTC 25 sept
 
-economics: **500 Internal server error** — last-known 19 Sep EGLD **$4.09** ; books 24 Sep ~**$4.13** (OKX close). Non utilisé comme live.
+stats: refreshRate **600**, epoch **2242**, roundsPerEpoch 144000, roundsPassed **122465** (~85 % epoch), accounts 9 262 950, tx 628 538 419, blocks 133 427 581, shards 3.
 
-accounts LIA Ops `erd1p4zyy…0crn6`: **404 Account not found** (indexer) — last-known **2.093 EGLD**, nonce 1468.
-GrokyversX : unread — last-known 0 EGLD, nonce 8.
+economics: EGLD **$4.38**, mcap $135.0M, circ 30 820 962, staked 14 336 911, APR 8.84%.
 
-TRO-94c925: **500** — last-known supply 476 224 / 500 000, 562 comptes, 2788 tx.
+TRO-94c925: initial 500 000, burnt ~23 776, circ ~476 224, 562 comptes, 2788 tx, decimals 6, paused=false.
 
-SC marketplace/staking/gov/minter: **unread** — last-known codeHash null, balance 0. Fail-closed = empty.
+SC marketplace `…8354t` / staking `…xr8cl` / gov `…e0ca8` / minter `…nyztkn`: **codeHash null**, balance 0, nonce 0.
 
-NFTUDURI-2990b6: 12 œuvres lues (Meteorite, Artpocalypse Now, Serenity, Strange Cat, Co$miC Traveller, Father, Liberté, Antibes…).
+LIA Ops `erd1p4zyy…0crn6`: **2.0928 EGLD**, nonce 1468, shard 2.
+GrokyversX `erd12c7f9…5gl`: **0 EGLD**, nonce 8, shard 1.
 
-## Code 24 sept
+## Suites logiques (ordre)
 
-- `networkProbe` — fetch **soft** par endpoint ; stats/econ/accounts/tokens indépendants
-- `NetworkLiveStrip` — statut live / dégradé / cache + banner indexer
-- `/demo` — 10 étapes (Slot + GO_LIVE) + gates API
-- `/go-live` — gate « indexer healthy » **avant** deploy
-- `/slot` — Primordial Slot paper (bank TRO, scatter, jackpot RWA locké)
-- `App` route `/slot` (manquait malgré BottomNav)
-- contracts.json + snapshot 24 sept
-- recap + veille 24 sept
+1. **Rester fail-closed.** Demo + lecture chain. Pas de List/Buy/Bid.
+2. **Audit wasm + runbook** (`docs/SC_DEPLOY_COMMANDS.md`, `docs/RUNBOOK_DEPLOY_WEEK.md`) — timing Supernova (`get_block_round_time_millis`, pas `nonce * 6s`).
+3. **Deploy SC depuis PEM vault** (hors git) uniquement si : indexer healthy (**oui**), LIA funded (**oui**), wasm hash noté, dest treasury non-null **ou** splitter explicitement reporté.
+4. **Verify** `GET /accounts/{sc}` → `codeHash` non null → alors seulement flags `VITE_*_CODEHASH_OK`.
+5. **First 100 / MX-8004** : inscription possible côté API ; ne pas promettre yield on-chain tant que staking empty.
+6. **Paper LIA** jusqu’à Guardian + limites notional + kill-switch documentés.
+7. **Pas de Dependabot major** / pas de live trading / pas de Reality Switch « allumé ».
 
-Non touché: live trading, PEM, Dependabot majors, **deploy SC** (volontaire — PEM hors git **et** indexer down).
+## Veille technologique — 25 sept 2026
 
-## Veille technologique
+### Indexer recovery post v2.1.3.0
 
-### Recovery hardfork v2.1.3.0 (23 Sep 14:19 UTC)
-
-- Config [mx-chain-mainnet-config v2.1.3.0](https://github.com/multiversx/mx-chain-mainnet-config/releases/tag/v2.1.3.0).
-- Contexte 19–22 Sep : halt / repair d’état (atomicité VM). Shadow-fork puis recovery checkpoint. Nodes **doivent** être en v2.1.x.
-- 24 Sep : `/stats` proxy OK, **Elasticsearch / accounts / economics / tokens** encore cassés. Gateway `sending request error`.
-- Explorer HTML sert encore un bundle daté **19 Sep**.
-- **Conséquence xArtists :** aucune TX ops, aucun `runbook_deploy`, aucun flag `VITE_*_CODEHASH_OK` tant que `GET /accounts/{addr}` ne rend pas un JSON.
+- 23 Sep : recovery hardfork config [v2.1.3.0](https://github.com/multiversx/mx-chain-mainnet-config/releases/tag/v2.1.3.0) (atomicité VM / shadow-fork).
+- 24 Sep : `/stats` OK, Elasticsearch accounts/econ/tokens **down**.
+- **25 Sep 04:44 UTC** : les quatre endpoints publics répondent **200**. Compte LIA et TRO relisibles.
+- Conséquence xArtists : la checklist `/go-live` peut passer le cran indexer. Le cran SC reste rouge.
 
 ### Supernova
 
-- Live depuis 10 Sep 18:06 UTC, round 32 157 661, epoch 2233. 600 ms, 144 000 rounds/epoch.
-- Probe 24 Sep = **J+9**. Stabilité 600 ms **avant** ZK natif / I/O state. 400 ms évoqué, non calendré.
+- Live 10 Sep 18:06 UTC, round 32 157 661, epoch 2233.
+- 600 ms rounds, 144 000 rounds/epoch, epoch 24 h inchangée.
+- Probe 25 Sep = **J+15**, epoch 2242 presque finie.
+- Builders : timestamps typés (`multiversx-sc` ≥ 0.63), ne plus multiplier nonce × 6 s.
+- 400 ms évoqué, **non calendré**. ZK natif = après stabilité 600 ms.
 
-### EGLD
+### EGLD / DeFi context
 
-- 10 Sep (activation) wick ~$5.7 puis dump. 19 Sep ~$4.09. 23 Sep volatile $4.11–4.63. 24 Sep books ~**$4.13** (−~9 % vs 23 close selon sources).
-- Circ ~30.82M, mcap ~$127M. DEX mince. Paper d’abord.
+- Prix API **$4.38** (vs $4.09 le 19, ~$4.13 livre le 24).
+- Staked ~14.34M / circ ~30.82M.
+- xExchange top pools toujours thin-liq vs L1 majors — pas un signal pour allumer LIA live.
 
-### Agent economy / MX-8004
+### Infra / RPC
 
-- First 100 (1 EGLD) : Identity + 5 jobs + trust >90.
-- Manifest LIA prêt (`data/mx8004_lia_manifest.json`). **register_agent bloqué** : indexer + registries mainnet à confirmer **après** recovery.
-- sdk-dapp v5 = doc standard ; front encore v3 — **après** codeHash, pas pendant l’indexer down.
+- Public : `https://api.multiversx.com/` (utilisé pour ce probe).
+- Autres 2026 : Tatum, node101, NODIT, NOWNodes, SonarX — utiles en fallback probe, pas en source de vérité unique.
 
-### SC
+### Produit xArtists
 
-- typed time (`multiversx-sc >= 0.63.1`) obligatoire avant deploy 600 ms.
-- Slot SC : skeleton docs only. Paper RNG client.
+- Pages demo 10 steps + Slot paper + GO_LIVE gates = surface démo complète **sans** prétendre le marché live.
+- Secrets : aucun PEM/JWT dans git.
 
-## P0 — suite logique (ordre, 24 sept)
+## Code / vérité 25 sept
 
-0. **WAIT indexer** — `/accounts` + `/economics` + `/tokens` 200. Re-probe LIA Ops + codeHash.
-1. **Wallets treasury dest** (mission / reserve / reward / ops) — encore **null**
-2. **PEM opérateur** en coffre local — jamais chat / git / Vellum logs
-3. `./scripts/runbook_deploy.sh dry` puis **deploy market + agents** (seulement si LIA Ops live ≥ ~2 EGLD **et** accounts API live)
-4. `verify_marketplace_codehash.py` — flags Pages **seulement** si hash non null
-5. Treasury splitter
-6. Revue SC typed-time
-7. Paper stable **puis** micro live — jamais un saut
-8. MX-8004 `register_agent` **après** 0–4
+- `data/contracts.json` + copies `docs/data` + `apps/frontend/public/data` — snapshot live.
+- `networkProbe` — endpoints indépendants (stats/econ/accounts/tokens).
+- `scStatus.ts` — List/Buy seulement si address réelle **et** flag codeHash.
+- `KNOWN_EMPTY_MARKETPLACE` = placeholder `…8354t` — never send funds.
 
-*Neltud via Grok — 24 septembre 2026*
-
----
-
-## Archive 19 sept
-
-Probe epoch 2241, EGLD $4.09, LIA Ops 2.09 EGLD (P0 fund). SC empty. Voir git 0.34.0 / `93ea4ff`.
-
-## Archive 17 sept
-
-Probe epoch 2239, EGLD $3.85, LIA Ops 0.093 EGLD. `/demo` 8 étapes. Voir efaa895 / fcef003.
+Non touché volontairement : live trading, PEM, flags codeHash, deploy SC.
