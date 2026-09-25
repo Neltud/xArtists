@@ -1,15 +1,13 @@
 #![no_std]
 
-//! xArtists DAO Vote — voting power = registered LP weight + ArtPass SFT staked.
-//! Paper-compatible views; on-chain cast requires stake registration.
-//! Fees/tips not held here — treasury = LIA ops address set at init.
-//! No upgrade. Renounce optional.
+//! xArtists DAO Vote — power = LP weight (ops) + ArtPass SFT staked.
+//! Treasury = LIA. No upgrade.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
 const MAX_TITLE: usize = 128;
-const ART_PASS_WEIGHT: u64 = 10; // fixed weight units per SFT unit (nonce amount)
+const ART_PASS_WEIGHT: u64 = 10;
 
 #[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
 pub struct Proposal<M: ManagedTypeApi> {
@@ -22,7 +20,6 @@ pub struct Proposal<M: ManagedTypeApi> {
 
 #[multiversx_sc::contract]
 pub trait TroGovernance {
-    /// treasury = LIA ops (benefits / residual claims only if any EGLD sent)
     #[init]
     fn init(&self, treasury: ManagedAddress) {
         require!(!treasury.is_zero(), "treasury zero");
@@ -51,7 +48,6 @@ pub trait TroGovernance {
         self.owner().set(&ManagedAddress::zero());
     }
 
-    /// Register ArtPass SFT (amount >= 1) — locked until unregister
     #[payable("*")]
     #[endpoint(stakeArtPass)]
     fn stake_art_pass(&self) {
@@ -60,8 +56,24 @@ pub trait TroGovernance {
         require!(p.token_nonce > 0, "need SFT/NFT");
         require!(p.amount > 0, "zero");
         let caller = self.blockchain().get_caller();
-        // one collection slot simplified: accumulate amount per user
-        self.artpass_token().set(&p.token_identifier);
+
+        if !self.artpass_token().is_empty() {
+            require!(
+                self.artpass_token().get() == p.token_identifier,
+                "wrong collection"
+            );
+        } else {
+            self.artpass_token().set(&p.token_identifier);
+        }
+
+        // Single-active-nonce model per user (SFT amount on that nonce)
+        let prev_nonce = self.artpass_nonce(&caller).get();
+        if prev_nonce == 0 {
+            self.artpass_nonce(&caller).set(p.token_nonce);
+        } else {
+            require!(prev_nonce == p.token_nonce, "nonce mismatch");
+        }
+
         self.artpass_staked(&caller)
             .update(|a| *a += &p.amount);
     }
@@ -73,17 +85,20 @@ pub trait TroGovernance {
         let caller = self.blockchain().get_caller();
         let st = self.artpass_staked(&caller).get();
         require!(st >= amount, "insufficient");
-        self.artpass_staked(&caller).set(&(&st - &amount));
-        let token = self.artpass_token().get();
-        // return with nonce 0 invalid for NFT — store nonce in mapper
-        // Simplified: use last_nonce
         let nonce = self.artpass_nonce(&caller).get();
         require!(nonce > 0, "no nonce");
+        require!(!self.artpass_token().is_empty(), "no token");
+
+        let next = &st - &amount;
+        self.artpass_staked(&caller).set(&next);
+        if next == 0 {
+            self.artpass_nonce(&caller).set(0u64);
+        }
+
+        let token = self.artpass_token().get();
         self.send().direct_esdt(&caller, &token, nonce, &amount);
     }
 
-    /// LP weight: owner registers observed weight (oracle/ops) OR user self-declares with bond —
-    /// Production: use setLpWeight by owner after off-chain LP proof; users cannot inflate.
     #[endpoint(setLpWeight)]
     fn set_lp_weight(&self, user: ManagedAddress, weight: BigUint) {
         self.require_owner();
@@ -94,8 +109,7 @@ pub trait TroGovernance {
     fn get_voting_power(&self, user: ManagedAddress) -> BigUint {
         let lp = self.lp_weight(&user).get();
         let art = self.artpass_staked(&user).get();
-        let art_w = art * BigUint::from(ART_PASS_WEIGHT);
-        lp + art_w
+        lp + art * BigUint::from(ART_PASS_WEIGHT)
     }
 
     #[endpoint(createProposal)]
@@ -145,16 +159,16 @@ pub trait TroGovernance {
         require!(!self.proposals(proposal_id).is_empty(), "unknown");
         let mut p = self.proposals(proposal_id).get();
         require!(p.open, "closed");
+        let owner = self.owner().get();
+        let is_owner = !owner.is_zero() && self.blockchain().get_caller() == owner;
         require!(
-            self.blockchain().get_block_nonce() > p.end_block
-                || self.blockchain().get_caller() == self.owner().get(),
+            self.blockchain().get_block_nonce() > p.end_block || is_owner,
             "not ended"
         );
         p.open = false;
         self.proposals(proposal_id).set(&p);
     }
 
-    /// Any EGLD sent here can be pulled only to LIA treasury
     #[payable("EGLD")]
     #[endpoint(depositTreasury)]
     fn deposit_treasury(&self) {
@@ -163,7 +177,9 @@ pub trait TroGovernance {
 
     #[endpoint(sweepToLia)]
     fn sweep_to_lia(&self) {
-        let bal = self.blockchain().get_sc_balance(&EgldOrEsdtTokenIdentifier::egld(), 0);
+        let bal = self
+            .blockchain()
+            .get_sc_balance(&EgldOrEsdtTokenIdentifier::egld(), 0);
         require!(bal > 0, "empty");
         let t = self.treasury().get();
         self.send().direct_egld(&t, &bal);
