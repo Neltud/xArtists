@@ -1,27 +1,23 @@
 /**
- * Supernova mainnet markers for UI badges.
- * Activation epoch 2233 (~10 Sep 2026). Probe stats.epoch for live check.
+ * Supernova mainnet markers + live API helpers.
+ * Activation epoch 2233 · round ~600 ms (refreshRate from /stats).
  */
 
-/** Epoch at which Supernova activated on mainnet */
 export const SUPERNOVA_ACTIVATION_EPOCH = 2233
-
-/** Target round duration ms post-Supernova */
 export const SUPERNOVA_ROUND_MS = 600
+export const SUPERNOVA_HUB = 'https://supernova.multiversx.com/'
 
-/**
- * UI helper — treat network as Supernova-era for banners.
- * Static true after 10 Sep 2026; live epoch comes from /stats via networkProbe.
- */
+/** Static post-activation default; prefer useSupernovaStats for live. */
 export function isSupernovaLive(): boolean {
   return true
 }
 
-export const SUPERNOVA_HUB = 'https://supernova.multiversx.com/'
-
-/** Short banner copy for DemoModeBanner */
 export function supernovaBannerText(): string {
   return isSupernovaLive()
     ? `Supernova ${SUPERNOVA_ROUND_MS} ms · live`
     : 'Pre-Supernova cadence'
 }
+
+/** Docs: prepare SC timing for 600ms rounds */
+export const SUPERNOVA_SC_PREP_DOC =
+  'https://docs.multiversx.com/developers/best-practices/prepare-sc-supernova'

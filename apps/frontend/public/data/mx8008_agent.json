@@ -1,0 +1,17 @@
+{
+  "id": "mx-8008",
+  "name": "Agent MX-8008",
+  "codename": "Execution Sentinel",
+  "mode": "paper",
+  "role": "Guardian + settle mirror for Vellum legs; pairs with MX-8004 identity",
+  "parent": "mx-8004",
+  "capabilities": [
+    "watch_intents",
+    "guardian_caps",
+    "journal_settle",
+    "supernova_timing"
+  ],
+  "pem": "Vellum-owned only — never in git",
+  "status": "scaffolded",
+  "note": "Execution agent scaffold · live after GO_LIVE + Vellum workflow bind"
+}
