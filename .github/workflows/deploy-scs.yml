@@ -1,13 +1,8 @@
 name: Deploy Smart Contracts
 
-# Déploie nft-marketplace + agents-marketplace via mxpy
-# Secret requis: LIA_WALLET_PEM (contenu du .pem, jamais en git, jamais loggé)
-#
-# Mainnet (chain=1) BLOQUÉ sauf confirm_mainnet = DEPLOY_MAINNET (revue 2 personnes)
-#
-# Usage:
-#   Actions → Deploy Smart Contracts → Run workflow
-#   Default: D (devnet). Testnet: T. Mainnet: 1 + phrase de confirmation.
+# Déploie via mxpy + lia/vellum/deploy_scs_node.py
+# Secret: LIA_WALLET_PEM (jamais en git, jamais loggé)
+# Mainnet (chain=1) BLOQUÉ sauf confirm_mainnet = DEPLOY_MAINNET
 
 on:
   workflow_dispatch:
@@ -22,21 +17,25 @@ on:
           - "T"
           - "1"
       confirm_mainnet:
-        description: "Mainnet only — taper exactement DEPLOY_MAINNET (sinon job échoue)"
+        description: "Mainnet only — taper exactement DEPLOY_MAINNET"
         required: false
         default: ""
         type: string
       contract:
         description: "Which contract(s) to deploy"
         required: true
-        default: "all"
+        default: "nft-staking"
         type: choice
         options:
           - all
           - nft-marketplace
           - agents-marketplace
+          - nft-staking
+          - tro-staking
+          - slot-casino
+          - agent-stake-escrow
       fee_bps:
-        description: "Marketplace fee in basis points (300 = 3%)"
+        description: "Marketplace fee BPS (ignored for staking)"
         required: true
         default: "300"
         type: string
@@ -72,28 +71,15 @@ jobs:
           set -euo pipefail
           if [ "${LIA_CHAIN_ID}" = "1" ]; then
             if [ "${{ github.event.inputs.confirm_mainnet }}" != "DEPLOY_MAINNET" ]; then
-              echo "❌ MAINNET BLOQUÉ"
-              echo "chain=1 exige confirm_mainnet=DEPLOY_MAINNET après revue (2 personnes)."
-              echo "Pas de deploy mainnet par erreur / click unique."
+              echo "❌ MAINNET BLOQUÉ — confirm_mainnet=DEPLOY_MAINNET requis"
               exit 1
             fi
-            echo "⚠️ MAINNET confirmé explicitement — double-check code + fee_bps"
-          else
-            echo "✅ Chain ${LIA_CHAIN_ID} (pas mainnet)"
+            echo "⚠️ MAINNET confirmé — double-check code + fee_bps"
           fi
 
-      - name: Require PEM secret
+      - name: Resolve proxy
         run: |
-          if [ -z "${LIA_WALLET_PEM}" ]; then
-            echo "❌ Secret LIA_WALLET_PEM is not set."
-            echo "Settings → Secrets and variables → Actions → New repository secret"
-            echo "Name: LIA_WALLET_PEM  Value: full PEM file contents"
-            exit 1
-          fi
-          echo "✅ LIA_WALLET_PEM is present (value never printed)"
-
-      - name: Set proxy from chain
-        run: |
+          set -euo pipefail
           case "${LIA_CHAIN_ID}" in
             1) echo "LIA_MVX_PROXY=https://gateway.multiversx.com" >> "$GITHUB_ENV" ;;
             D) echo "LIA_MVX_PROXY=https://devnet-gateway.multiversx.com" >> "$GITHUB_ENV" ;;
@@ -133,6 +119,10 @@ jobs:
         id: deploy
         run: |
           set -euo pipefail
+          if [ -z "${LIA_WALLET_PEM:-}" ]; then
+            echo "❌ Secret LIA_WALLET_PEM manquant"
+            exit 1
+          fi
           python lia/vellum/deploy_scs_node.py | tee /tmp/deploy_out.json
           python - <<'PY'
           import json, sys
@@ -159,7 +149,7 @@ jobs:
         run: |
           git config user.name "xArtists Deploy Bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/contracts.json
+          git add data/contracts.json data/vellum_deploy_scs.json || true
           if git diff --staged --quiet; then
             echo "No address changes to commit"
           else
