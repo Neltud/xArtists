@@ -1,5 +1,26 @@
 # Changelog — xArtists
 
+## [0.43.0](https://github.com/Neltud/xArtists/compare/v0.42.0...v0.43.0) (2026-09-25)
+
+
+### Features
+
+* holder Pulse room access + security audit notes ([b14c011](https://github.com/Neltud/xArtists/commit/b14c011d95ff9f79404c92ab11b51a90129e3a81))
+* **market:** AdSlot market_sidebar under catalogue header ([750e6c1](https://github.com/Neltud/xArtists/commit/750e6c1d02d10003cefbdd6f5c6adbf99053bebc))
+* **museum:** HolderPulseTab component (Pulse room gate) ([017f6b8](https://github.com/Neltud/xArtists/commit/017f6b82ac48fa876bc24b4bf4531c36c73f51ef))
+* **museum:** wire Salle Pulse holder tab in Galerie ([1820276](https://github.com/Neltud/xArtists/commit/1820276169cf30816e144bb4ac3c885a44a831b3))
+* paper checkout owns pack + opens theater; AdSlot market; fix terms modal ([5aefff7](https://github.com/Neltud/xArtists/commit/5aefff731d1e6f6bc9b16323839bd5e5cc2c0b4e))
+
+
+### Bug Fixes
+
+* **museum:** restore Galerie + Salle Pulse holder tab ([976fd53](https://github.com/Neltud/xArtists/commit/976fd530174c6eabb87e892ec7ab22da6b0d089b))
+
+
+### Documentation
+
+* veille + analyse dApp 25 Sep — indexer recovered, SCs still empty ([46b747a](https://github.com/Neltud/xArtists/commit/46b747ad0cad86be986490fd8d73a9f631f8faad))
+
 ## [0.42.0](https://github.com/Neltud/xArtists/compare/v0.41.0...v0.42.0) (2026-09-24)
 
 
