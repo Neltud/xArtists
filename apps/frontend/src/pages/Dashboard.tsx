@@ -9,6 +9,7 @@ import NetworkLiveStrip from '../components/NetworkLiveStrip'
 import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import AdSlot from '../components/AdSlot'
 import { isSupernovaLive } from '../config/supernova'
+import LottieIcon from '../components/LottieIcon'
 
 const LINKS_MAIN = [
   { to: '/museum', title: 'Galerie', body: 'Salles 3D · avatar · collection', delay: '0ms' },
@@ -42,6 +43,9 @@ export default function Dashboard() {
           <span className="gradient-text">en mouvement</span>
         </h1>
         <div className="atelier-title-rule" aria-hidden />
+        <div className="flex items-center gap-3 pt-1">
+          <LottieIcon preset="spark" size={40} />
+        </div>
         <p className="section-lead">
           Galerie immersive, packs, LIA + GrokyversX — Phase 4 First 100 (1 EGLD bounty).
         </p>
@@ -78,7 +82,7 @@ export default function Dashboard() {
             <Link
               key={item.to}
               to={item.to}
-              className="flow-row card-play"
+              className="flow-row card-play card-interactive"
               style={{ animation: `fadeIn 0.55s var(--ease-out) ${item.delay} both` }}
             >
               <div>

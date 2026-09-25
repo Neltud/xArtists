@@ -10,6 +10,7 @@ import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import AdSlot from '../components/AdSlot'
 import PackProductDisclaimer from '../components/PackProductDisclaimer'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
+import LottieIcon from '../components/LottieIcon'
 
 const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
 const PACKS = AGENT_PACKS.filter(p => ONLY.includes(p.id)).slice(0, 3)
@@ -32,6 +33,7 @@ export default function Agents() {
         <p className="section-label">Packs · produits limités · pas un fonds</p>
         <h1 className="section-title display">Pulse · Yield · Sentinel</h1>
         <div className="atelier-title-rule" aria-hidden />
+        <LottieIcon preset="spark" size={36} />
         <p className="section-lead">
           Trois accès uniques. Checkout paper → pack local + ouverture scénique. Revente NFT possible
           sur le marketplace (produit, pas titre financier).
@@ -74,7 +76,7 @@ export default function Agents() {
               <button
                 type="button"
                 onClick={() => setSelected(p.id)}
-                className={`w-full text-left card card-play ${RING[p.id]} ${
+                className={`w-full text-left card card-play card-interactive ${RING[p.id]} ${
                   on ? 'ring-1 ring-white/25' : ''
                 }`}
               >
