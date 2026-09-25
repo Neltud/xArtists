@@ -1,11 +1,11 @@
 /**
- * Live connect helpers — Web Wallet (redirect), xPortal, extension, session.
+ * Live connect — Web Wallet (recommandé), xPortal WC mainnet, extension.
  */
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useWallet, LIA_WALLET, isValidErd } from '../context/WalletContext'
-import { DAPP_CALLBACK_BASE, XPORTAL_DEEP_LINKS, sdkDappConfig } from '../config/sdkDapp'
+import { DAPP_CALLBACK_BASE, sdkDappConfig } from '../config/sdkDapp'
+import { loginWithXPortalMainnet, type XPortalLoginProgress } from '../lib/xportalWc'
 
-/** Callback must land on Pages origin so ?address= is readable (search, not only hash). */
 export function buildWebWalletLoginUrl(): string {
   const callback = encodeURIComponent(`${DAPP_CALLBACK_BASE}/`)
   return `https://wallet.multiversx.com/hook/login?callbackUrl=${callback}`
@@ -13,18 +13,32 @@ export function buildWebWalletLoginUrl(): string {
 
 export function useMxLogin() {
   const wallet = useWallet()
+  const [wcProgress, setWcProgress] = useState<XPortalLoginProgress | null>(null)
 
   const openWebWallet = useCallback(() => {
     window.location.href = buildWebWalletLoginUrl()
   }, [])
 
-  const openXPortalDeepLink = useCallback(() => {
-    window.open(XPORTAL_DEEP_LINKS.storeAndOpen, '_blank', 'noopener,noreferrer')
-  }, [])
+  const connectXPortal = useCallback(async () => {
+    setWcProgress({ phase: 'init', message: 'Connexion xPortal mainnet…' })
+    const res = await loginWithXPortalMainnet(p => setWcProgress(p))
+    if (!res.ok) {
+      setWcProgress({ phase: 'error', message: res.error })
+      return res
+    }
+    const linked = wallet.connect(res.address, 'xportal')
+    if (!linked.ok) {
+      setWcProgress({ phase: 'error', message: linked.error })
+      return { ok: false as const, error: linked.error || 'Échec session' }
+    }
+    setWcProgress({ phase: 'done', message: res.address })
+    return { ok: true as const, address: res.address }
+  }, [wallet])
 
-  const openXPortalNative = useCallback(() => {
-    window.location.href = XPORTAL_DEEP_LINKS.nativeScheme
-  }, [])
+  /** @deprecated deep link seul — préfère connectXPortal */
+  const openXPortalDeepLink = useCallback(() => {
+    void connectXPortal()
+  }, [connectXPortal])
 
   const tryExtension = useCallback(async () => {
     const w = window as unknown as {
@@ -58,8 +72,9 @@ export function useMxLogin() {
       canAttemptSign: wallet.canAttemptSign,
       isLiaBlocked: wallet.address?.toLowerCase() === LIA_WALLET.toLowerCase(),
       wcProjectId: projectId,
+      wcProgress,
     }),
-    [wallet, projectId]
+    [wallet, projectId, wcProgress],
   )
 
   return {
@@ -68,7 +83,8 @@ export function useMxLogin() {
     disconnect: wallet.disconnect,
     openWebWallet,
     openXPortalDeepLink,
-    openXPortalNative,
+    connectXPortal,
     tryExtension,
+    clearWcProgress: () => setWcProgress(null),
   }
 }
