@@ -9,10 +9,10 @@
   --atelier-ivory: #f3e6d4;
 
   /* Overridden per route by ArtAtelierBackdrop */
-  --page-a: rgba(139, 92, 246, 0.22);
-  --page-b: rgba(34, 211, 238, 0.12);
-  --page-c: rgba(251, 113, 133, 0.08);
-  --page-glow: rgba(139, 92, 246, 0.35);
+  --page-a: rgba(139, 92, 246, 0.2);
+  --page-b: rgba(34, 211, 238, 0.1);
+  --page-c: rgba(251, 113, 133, 0.07);
+  --page-glow: rgba(139, 92, 246, 0.32);
   --page-accent: #8b5cf6;
 }
 
@@ -23,7 +23,7 @@ body {
     radial-gradient(ellipse 70% 45% at 100% 0%, var(--page-b), transparent 48%),
     radial-gradient(ellipse 50% 35% at 50% 110%, var(--page-c), transparent 50%);
   background-attachment: fixed;
-  transition: background-image 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background-image 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .atelier-backdrop {
@@ -32,6 +32,7 @@ body {
   z-index: 0;
   overflow: hidden;
   transition: opacity 0.45s ease;
+  pointer-events: none;
 }
 
 .atelier-page-wash {
@@ -41,8 +42,8 @@ body {
     radial-gradient(ellipse 80% 50% at 20% 30%, var(--page-a), transparent 60%),
     radial-gradient(ellipse 60% 40% at 85% 70%, var(--page-b), transparent 55%),
     radial-gradient(ellipse 40% 30% at 50% 100%, var(--page-c), transparent 50%);
-  opacity: 0.9;
-  transition: background 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0.92;
+  transition: background 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .atelier-veil {
@@ -50,153 +51,52 @@ body {
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(8, 6, 10, 0.5) 0%,
-    rgba(8, 6, 10, 0.78) 45%,
+    rgba(8, 6, 10, 0.45) 0%,
+    rgba(8, 6, 10, 0.8) 48%,
     #08060a 100%
   );
 }
 
 .atelier-strip {
   position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  opacity: 0.2;
-  filter: saturate(1.15) contrast(1.08);
-  transition: opacity 0.5s ease;
-}
-
-.atelier-panel {
-  background-size: cover;
-  background-position: center;
-  transform: scale(1.08);
-  transition: background-image 0.7s ease, filter 0.5s ease, opacity 0.5s ease;
-}
-
-.atelier-panel--0 {
-  filter: hue-rotate(-8deg);
-}
-.atelier-panel--1 {
-  filter: hue-rotate(6deg);
-}
-.atelier-panel--2 {
-  opacity: 0.85;
-}
-.atelier-panel--3 {
-  filter: sepia(0.15);
-}
-
-/* Soft floating orbs (page accent) */
-.atelier-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(56px);
-  pointer-events: none;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--page-glow),
+    transparent
+  );
   opacity: 0.45;
-  animation: atelierOrb 14s ease-in-out infinite alternate;
-}
-.atelier-orb--a {
-  width: min(42vw, 320px);
-  height: min(42vw, 320px);
-  top: -8%;
-  right: -6%;
-  background: var(--page-glow);
-}
-.atelier-orb--b {
-  width: min(36vw, 260px);
-  height: min(36vw, 260px);
-  bottom: 10%;
-  left: -8%;
-  background: var(--page-b);
-  animation-delay: -4s;
-  opacity: 0.35;
 }
 
-@keyframes atelierOrb {
-  from {
-    transform: translate(0, 0) scale(1);
-  }
-  to {
-    transform: translate(16px, -22px) scale(1.1);
-  }
+.atelier-strip--top {
+  top: 12%;
+}
+.atelier-strip--mid {
+  top: 48%;
+  opacity: 0.22;
 }
 
-.atelier-credit {
-  position: fixed;
-  right: 12px;
-  bottom: 72px;
-  z-index: 20;
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(243, 230, 212, 0.45);
-  transition: color 0.25s ease;
-}
-.atelier-credit:hover {
-  color: var(--page-accent, var(--atelier-ochre));
-}
-
-.atelier-card {
-  background: linear-gradient(165deg, rgba(28, 16, 14, 0.78), rgba(10, 10, 16, 0.88));
-  backdrop-filter: blur(18px);
-}
-
-.app-shell {
+/* Content sits above ambient layers */
+.atelier-content {
   position: relative;
   z-index: 1;
 }
 
-/* Page-specific strip opacity / vibe tweaks */
-.atelier-backdrop--museum .atelier-strip {
-  opacity: 0.28;
-  filter: saturate(1.25) contrast(1.1) sepia(0.12);
-}
-.atelier-backdrop--studio .atelier-strip {
-  opacity: 0.26;
-  filter: saturate(1.3) contrast(1.12);
-}
-.atelier-backdrop--trading .atelier-strip {
-  opacity: 0.14;
-}
-.atelier-backdrop--burnify .atelier-strip {
-  opacity: 0.18;
-  filter: saturate(1.4) hue-rotate(-12deg);
-}
-.atelier-backdrop--legal .atelier-strip {
-  opacity: 0.1;
-  filter: grayscale(0.35) contrast(0.95);
-}
-.atelier-backdrop--sale .atelier-strip {
-  opacity: 0.24;
-}
-.atelier-backdrop--demo .atelier-strip {
-  opacity: 0.16;
+/* Accent underline for page titles */
+.atelier-title-rule {
+  width: 3rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--page-accent), transparent);
+  margin-top: 0.6rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .atelier-panel {
-    transform: none;
-    transition: none;
-  }
-  .atelier-orb {
-    animation: none;
-  }
-  body {
-    transition: none;
-  }
-}
-
-@media (max-width: 640px) {
-  .atelier-strip {
-    opacity: 0.14;
-  }
-  .atelier-orb--a,
-  .atelier-orb--b {
-    opacity: 0.28;
-  }
-  .atelier-credit {
-    bottom: 88px;
-    font-size: 9px;
+  body,
+  .atelier-page-wash {
+    transition: none !important;
   }
 }
