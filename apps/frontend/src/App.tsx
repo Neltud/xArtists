@@ -22,6 +22,7 @@ import { DEMO_MODE } from './config/demoMode'
 import PageTransition from './components/PageTransition'
 import SoundDock from './components/SoundDock'
 import RouteErrorBoundary from './components/RouteErrorBoundary'
+import RouteSfx from './components/RouteSfx'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Marketplace = lazy(() => import('./pages/Marketplace'))
@@ -143,6 +144,7 @@ export default function App() {
         <PwaInstallBanner />
         <FirstVisitOnboarding />
         <RoutePrefetch />
+        <RouteSfx />
         <SoundDock />
         {needsTx && (
           <Suspense fallback={null}>
