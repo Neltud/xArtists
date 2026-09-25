@@ -1,14 +1,16 @@
 name: Deploy Smart Contracts
 
-# Déploie via mxpy + lia/vellum/deploy_scs_node.py
-# Secret: LIA_WALLET_PEM (jamais en git, jamais loggé)
-# Mainnet (chain=1) BLOQUÉ sauf confirm_mainnet = DEPLOY_MAINNET
+# Deploy via mxpy + lia/vellum/deploy_scs_node.py
+# Secret (pick ONE — no LIA key required):
+#   SC_DEPLOYER_PEM  preferred (ephemeral deployer)
+#   LIA_WALLET_PEM   legacy name, same role
+# Mainnet (chain=1) blocked unless confirm_mainnet = DEPLOY_MAINNET
 
 on:
   workflow_dispatch:
     inputs:
       chain:
-        description: "Chain — D=devnet (défaut), T=testnet, 1=mainnet (gate)"
+        description: "Chain — D=devnet (default), T=testnet, 1=mainnet (gate)"
         required: true
         default: "D"
         type: choice
@@ -17,7 +19,7 @@ on:
           - "T"
           - "1"
       confirm_mainnet:
-        description: "Mainnet only — taper exactement DEPLOY_MAINNET"
+        description: "Mainnet only — type exactly DEPLOY_MAINNET"
         required: false
         default: ""
         type: string
@@ -60,7 +62,8 @@ jobs:
       LIA_CHAIN_ID: ${{ github.event.inputs.chain }}
       FEE_BPS: ${{ github.event.inputs.fee_bps }}
       DEPLOY_CONTRACT: ${{ github.event.inputs.contract }}
-      LIA_WALLET_PEM: ${{ secrets.LIA_WALLET_PEM }}
+      # Prefer SC_DEPLOYER_PEM — LIA key NOT required
+      LIA_WALLET_PEM: ${{ secrets.SC_DEPLOYER_PEM || secrets.LIA_WALLET_PEM }}
 
     steps:
       - name: Checkout
@@ -87,6 +90,21 @@ jobs:
             *) echo "Unknown chain"; exit 1 ;;
           esac
           echo "Chain=${LIA_CHAIN_ID} Contract=${DEPLOY_CONTRACT} FeeBps=${FEE_BPS}"
+
+      - name: Check deploy PEM present
+        run: |
+          set -euo pipefail
+          if [ -z "${LIA_WALLET_PEM:-}" ]; then
+            echo "❌ Aucun secret deploy trouvé."
+            echo "Crée un Repository secret nommé exactement:"
+            echo "  SC_DEPLOYER_PEM"
+            echo "(ou LIA_WALLET_PEM en secours — ce n'est PAS le wallet LIA ops,"
+            echo " c'est juste le nom de variable du workflow.)"
+            echo "Settings → Secrets and variables → Actions → Repository secrets"
+            exit 1
+          fi
+          # length only — never print PEM
+          echo "✅ Deploy PEM secret present (chars=${#LIA_WALLET_PEM})"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -119,10 +137,6 @@ jobs:
         id: deploy
         run: |
           set -euo pipefail
-          if [ -z "${LIA_WALLET_PEM:-}" ]; then
-            echo "❌ Secret LIA_WALLET_PEM manquant"
-            exit 1
-          fi
           python lia/vellum/deploy_scs_node.py | tee /tmp/deploy_out.json
           python - <<'PY'
           import json, sys
