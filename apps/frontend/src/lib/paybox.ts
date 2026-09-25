@@ -1,21 +1,9 @@
 /**
  * Paybox / e-Transactions — carte FR (hosted redirect, secrets serveur uniquement).
- *
- * 1) POST {VITE_ACCESS_API_BASE}/v1/checkout/paybox → { url }
- * 2) Fallback GET VITE_PAYBOX_PAYMENT_URL?orderId&amount&…
  */
 
 import type { PackId } from '../config/agentPacks'
 import { getAccessApiBase, buildPackSuccessUrl, buildPackCancelUrl } from './stripe'
-
-export function getPayboxPaymentUrl(): string | undefined {
-  const u = (import.meta.env.VITE_PAYBOX_PAYMENT_URL as string | undefined)?.trim()
-  return u || undefined
-}
-
-export function isPayboxConfigured(): boolean {
-  return Boolean(getAccessApiBase() || getPayboxPaymentUrl())
-}
 
 export type PayboxSessionRequest = {
   pack_id: PackId
@@ -23,6 +11,15 @@ export type PayboxSessionRequest = {
   amount_cents: number
   success_url?: string
   cancel_url?: string
+}
+
+export function getPayboxPaymentUrl(): string | undefined {
+  const u = import.meta.env.VITE_PAYBOX_PAYMENT_URL as string | undefined
+  return u?.trim() || undefined
+}
+
+export function isPayboxConfigured(): boolean {
+  return Boolean(getAccessApiBase() || getPayboxPaymentUrl())
 }
 
 export async function createPayboxSession(
@@ -38,7 +35,7 @@ export async function createPayboxSession(
       ...body,
       provider: 'paybox',
       currency: 'eur',
-      success_url: body.success_url || buildPackSuccessUrl(),
+      success_url: body.success_url || buildPackSuccessUrl(body.pack_id),
       cancel_url: body.cancel_url || buildPackCancelUrl(),
     }),
   })
@@ -92,6 +89,7 @@ export async function startPayboxCardPayment(opts: {
         pack_id: opts.packId,
         buyer_address: opts.buyerAddress,
         amount_cents: amountCents,
+        success_url: buildPackSuccessUrl(opts.packId),
       })
       if (session.url) {
         window.location.href = session.url
@@ -106,7 +104,7 @@ export async function startPayboxCardPayment(opts: {
     const ok = openPayboxCheckout({
       orderId,
       amountCents,
-      returnUrl: buildPackSuccessUrl(),
+      returnUrl: buildPackSuccessUrl(opts.packId),
       packId: opts.packId,
       buyerAddress: opts.buyerAddress,
     })
