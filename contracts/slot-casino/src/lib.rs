@@ -1,37 +1,39 @@
 #![no_std]
 
-//! xArtists Slot Casino — MultiversX
+//! xArtists Slot Casino — MultiversX (Provably Fair)
 //!
-//! - Public spin in EGLD or whitelisted ESDT (e.g. USDC)
-//! - Progressive pot: share of each bet
-//! - Grand outcome pays entire progressive (+ optional bonus bps of bet)
-//! - Table wins (line / diag / pair) paid from contract balance
-//! - Owner: pause, config BPS, whitelist tokens, claim house surplus
+//! ## Provably fair flow
+//! 1. `lockSpinEgld` / `lockSpinEsdt(client_seed)` — bet escrowed, seed committed
+//! 2. Wait `resolve_delay_blocks` (≥1)
+//! 3. `resolveSpin(spin_id)` — anyone; roll = keccak256(entropy) % 10000
+//! 4. Events emit all inputs so anyone can recompute the roll
 //!
-//! Randomness: block nonce / round / timestamp / tx mix (not external VRF).
-//! Document for users. Pause + owner controls for mainnet ops.
+//! Entropy =
+//!   client_seed || spin_id_be8 || lock_block_be8 || resolve_block_be8 || block_random_seed
+//!
+//! Progressive + payouts applied only on resolve.
+//! Timeout → full refund (no progressive taken).
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
 const BPS_DENOM: u64 = 10_000;
-
-/// Max progressive contribution / house rake (safety)
 const MAX_BPS: u16 = 5_000;
+const MAX_CLIENT_SEED_LEN: usize = 64;
+const MAX_PENDING_PER_USER: u32 = 5;
+const DEFAULT_RESOLVE_DELAY: u64 = 2;
+const DEFAULT_TIMEOUT_BLOCKS: u64 = 100;
 
-/// Outcome weights over 10_000 draws
-/// Grand ~0.08%, line ~2%, diag ~2%, pair ~6%, rest lose
 const OUTCOME_GRAND_MAX: u16 = 8;
 const OUTCOME_LINE_MAX: u16 = 208;
 const OUTCOME_DIAG_MAX: u16 = 408;
 const OUTCOME_PAIR_MAX: u16 = 1_008;
 
-/// Multipliers in BPS of bet (10000 = 1x)
-const MULT_LINE_BPS: u32 = 80_000; // 8x
-const MULT_DIAG_BPS: u32 = 70_000; // 7x
-const MULT_PAIR_BPS: u32 = 12_000; // 1.2x
+const MULT_LINE_BPS: u32 = 80_000;
+const MULT_DIAG_BPS: u32 = 70_000;
+const MULT_PAIR_BPS: u32 = 12_000;
 
-#[derive(TopEncode, TopDecode, TypeAbi, PartialEq, Eq, Clone, Copy)]
+#[derive(TopEncode, TopDecode, TypeAbi, NestedEncode, NestedDecode, PartialEq, Eq, Clone, Copy)]
 pub enum SpinOutcome {
     Lose,
     Pair,
@@ -40,11 +42,20 @@ pub enum SpinOutcome {
     Grand,
 }
 
+#[derive(TopEncode, TopDecode, TypeAbi, NestedEncode, NestedDecode, Clone)]
+pub struct PendingSpin<M: ManagedTypeApi> {
+    pub player: ManagedAddress<M>,
+    pub is_egld: bool,
+    pub token: TokenIdentifier<M>,
+    pub bet: BigUint<M>,
+    pub client_seed: ManagedBuffer<M>,
+    pub lock_block: u64,
+    pub resolve_after: u64,
+    pub timeout_block: u64,
+}
+
 #[multiversx_sc::contract]
 pub trait SlotCasino {
-    /// progressive_contrib_bps: share of each bet → pot (e.g. 2500 = 25%)
-    /// house_rake_bps: share of *table* win retained by house (e.g. 1500 = 15%)
-    /// min_bet: minimum EGLD/ESDT amount (raw units)
     #[init]
     fn init(&self, progressive_contrib_bps: u16, house_rake_bps: u16, min_bet: BigUint) {
         require!(progressive_contrib_bps <= MAX_BPS, "progressive bps too high");
@@ -59,6 +70,8 @@ pub trait SlotCasino {
         self.progressive_contrib_bps().set(progressive_contrib_bps);
         self.house_rake_bps().set(house_rake_bps);
         self.min_bet().set(&min_bet);
+        self.resolve_delay_blocks().set(DEFAULT_RESOLVE_DELAY);
+        self.timeout_blocks().set(DEFAULT_TIMEOUT_BLOCKS);
 
         self.progressive_egld().set(BigUint::zero());
         self.spin_count().set(0u64);
@@ -112,23 +125,45 @@ pub trait SlotCasino {
         self.min_bet().set(&min_bet);
     }
 
-    /// Whitelist ESDT for spins (e.g. USDC). EGLD always allowed via spinEgld.
+    #[endpoint(setResolveDelayBlocks)]
+    fn set_resolve_delay_blocks(&self, delay: u64) {
+        self.require_owner();
+        require!(delay >= 1 && delay <= 20, "delay out of range");
+        self.resolve_delay_blocks().set(delay);
+    }
+
+    #[endpoint(setTimeoutBlocks)]
+    fn set_timeout_blocks(&self, blocks: u64) {
+        self.require_owner();
+        require!(blocks >= 10 && blocks <= 10_000, "timeout out of range");
+        self.timeout_blocks().set(blocks);
+    }
+
     #[endpoint(setPaymentTokenAllowed)]
     fn set_payment_token_allowed(&self, token: TokenIdentifier, allowed: bool) {
         self.require_owner();
         self.payment_token_allowed(&token).set(allowed);
     }
 
-    /// Seed or top-up progressive pot (EGLD).
     #[payable("EGLD")]
     #[endpoint(fundProgressiveEgld)]
     fn fund_progressive_egld(&self) {
         self.require_owner();
         let payment = self.call_value().egld_value().clone_value();
         require!(payment > 0, "zero payment");
-        self.progressive_egld()
-            .update(|p| *p += &payment);
+        self.progressive_egld().update(|p| *p += &payment);
         self.fund_progressive_event(&payment);
+    }
+
+    #[payable("*")]
+    #[endpoint(fundProgressiveEsdt)]
+    fn fund_progressive_esdt(&self) {
+        self.require_owner();
+        let payment = self.call_value().single_esdt();
+        require!(payment.token_nonce == 0, "only fungible");
+        require!(payment.amount > 0, "zero payment");
+        self.progressive_esdt(&payment.token_identifier)
+            .update(|p| *p += &payment.amount);
     }
 
     #[endpoint(transferOwnership)]
@@ -148,8 +183,6 @@ pub trait SlotCasino {
         self.pending_owner().clear();
     }
 
-    /// Withdraw house surplus: balance − progressive.
-    /// Never drains the progressive pot.
     #[endpoint(claimHouseEgld)]
     fn claim_house_egld(&self) {
         self.require_owner();
@@ -164,35 +197,236 @@ pub trait SlotCasino {
         self.claim_house_event(&owner, &claimable);
     }
 
-    // ─── Play: EGLD ──────────────────────────────────────────
-
-    #[payable("EGLD")]
-    #[endpoint(spinEgld)]
-    fn spin_egld(&self) {
-        self.require_not_paused();
-        let caller = self.blockchain().get_caller();
-        let bet = self.call_value().egld_value().clone_value();
-        let min_bet = self.min_bet().get();
-        require!(bet >= min_bet, "bet below minimum");
-
-        self.execute_spin_egld(&caller, &bet);
+    #[endpoint(claimHouseEsdt)]
+    fn claim_house_esdt(&self, token: TokenIdentifier) {
+        self.require_owner();
+        let progressive = self.progressive_esdt(&token).get();
+        let token_id = EgldOrEsdtTokenIdentifier::esdt(token.clone());
+        let balance = self.blockchain().get_sc_balance(&token_id, 0);
+        require!(balance > progressive, "nothing claimable");
+        let claimable = balance - &progressive;
+        let owner = self.owner().get();
+        self.send().direct_esdt(&owner, &token, 0, &claimable);
+        self.claim_house_esdt_event(&owner, &token, &claimable);
     }
 
-    fn execute_spin_egld(&self, player: &ManagedAddress, bet: &BigUint) {
-        let contrib_bps = self.progressive_contrib_bps().get() as u64;
-        let to_progressive = bet * contrib_bps / BPS_DENOM;
-        self.progressive_egld()
-            .update(|p| *p += &to_progressive);
+    // ─── Lock (commit client seed + escrow) ──────────────────
 
-        self.total_wagered_egld()
-            .update(|t| *t += bet);
-        let spin_id = self.spin_count().update(|c| {
+    #[payable("EGLD")]
+    #[endpoint(lockSpinEgld)]
+    fn lock_spin_egld(&self, client_seed: ManagedBuffer) {
+        self.require_not_paused();
+        self.require_valid_client_seed(&client_seed);
+        let caller = self.blockchain().get_caller();
+        let bet = self.call_value().egld_value().clone_value();
+        require!(bet >= self.min_bet().get(), "bet below minimum");
+        self.require_under_pending_cap(&caller);
+
+        let spin_id = self.next_spin_id();
+        let lock_block = self.blockchain().get_block_nonce();
+        let delay = self.resolve_delay_blocks().get();
+        let timeout = self.timeout_blocks().get();
+
+        let pending = PendingSpin {
+            player: caller.clone(),
+            is_egld: true,
+            token: TokenIdentifier::from("EGLD"),
+            bet: bet.clone(),
+            client_seed: client_seed.clone(),
+            lock_block,
+            resolve_after: lock_block + delay,
+            timeout_block: lock_block + timeout,
+        };
+        self.pending_spin(spin_id).set(&pending);
+        self.user_pending_count(&caller)
+            .update(|c| *c += 1);
+
+        self.spin_locked_event(spin_id, &caller, &bet, &client_seed, lock_block, true);
+    }
+
+    #[payable("*")]
+    #[endpoint(lockSpinEsdt)]
+    fn lock_spin_esdt(&self, client_seed: ManagedBuffer) {
+        self.require_not_paused();
+        self.require_valid_client_seed(&client_seed);
+        let caller = self.blockchain().get_caller();
+        let payment = self.call_value().single_esdt();
+        require!(payment.token_nonce == 0, "only fungible");
+        require!(
+            self.payment_token_allowed(&payment.token_identifier).get(),
+            "token not allowed"
+        );
+        require!(payment.amount >= self.min_bet().get(), "bet below minimum");
+        self.require_under_pending_cap(&caller);
+
+        let spin_id = self.next_spin_id();
+        let lock_block = self.blockchain().get_block_nonce();
+        let delay = self.resolve_delay_blocks().get();
+        let timeout = self.timeout_blocks().get();
+
+        let pending = PendingSpin {
+            player: caller.clone(),
+            is_egld: false,
+            token: payment.token_identifier.clone(),
+            bet: payment.amount.clone(),
+            client_seed: client_seed.clone(),
+            lock_block,
+            resolve_after: lock_block + delay,
+            timeout_block: lock_block + timeout,
+        };
+        self.pending_spin(spin_id).set(&pending);
+        self.user_pending_count(&caller)
+            .update(|c| *c += 1);
+
+        self.spin_locked_esdt_event(
+            spin_id,
+            &caller,
+            &payment.token_identifier,
+            &payment.amount,
+            &client_seed,
+            lock_block,
+        );
+    }
+
+    fn require_valid_client_seed(&self, seed: &ManagedBuffer) {
+        let len = seed.len();
+        require!(len > 0 && len <= MAX_CLIENT_SEED_LEN, "invalid client seed length");
+    }
+
+    fn require_under_pending_cap(&self, user: &ManagedAddress) {
+        let n = self.user_pending_count(user).get();
+        require!(n < MAX_PENDING_PER_USER, "too many pending spins");
+    }
+
+    fn next_spin_id(&self) -> u64 {
+        self.spin_count().update(|c| {
             *c += 1;
             *c
+        })
+    }
+
+    // ─── Resolve (provably fair) ─────────────────────────────
+
+    /// Anyone may resolve after delay — prevents players shopping for blocks.
+    #[endpoint(resolveSpin)]
+    fn resolve_spin(&self, spin_id: u64) {
+        self.require_not_paused();
+        require!(!self.pending_spin(spin_id).is_empty(), "unknown spin");
+        let pending = self.pending_spin(spin_id).get();
+        let block = self.blockchain().get_block_nonce();
+        require!(block >= pending.resolve_after, "too early");
+        require!(block <= pending.timeout_block, "timed out — use refundSpin");
+
+        // Effects: clear pending first (CEI)
+        self.pending_spin(spin_id).clear();
+        self.user_pending_count(&pending.player).update(|c| {
+            if *c > 0 {
+                *c -= 1;
+            }
         });
 
-        let roll = self.roll_u16();
+        let (roll, entropy_hash) = self.compute_roll(&pending, block);
         let outcome = self.outcome_from_roll(roll);
+
+        if pending.is_egld {
+            self.settle_egld(spin_id, &pending, outcome, roll, &entropy_hash, block);
+        } else {
+            self.settle_esdt(spin_id, &pending, outcome, roll, &entropy_hash, block);
+        }
+    }
+
+    /// Full refund after timeout (no progressive, no roll).
+    #[endpoint(refundSpin)]
+    fn refund_spin(&self, spin_id: u64) {
+        require!(!self.pending_spin(spin_id).is_empty(), "unknown spin");
+        let pending = self.pending_spin(spin_id).get();
+        let block = self.blockchain().get_block_nonce();
+        require!(block > pending.timeout_block, "not timed out");
+
+        self.pending_spin(spin_id).clear();
+        self.user_pending_count(&pending.player).update(|c| {
+            if *c > 0 {
+                *c -= 1;
+            }
+        });
+
+        if pending.is_egld {
+            self.send().direct_egld(&pending.player, &pending.bet);
+        } else {
+            self.send()
+                .direct_esdt(&pending.player, &pending.token, 0, &pending.bet);
+        }
+        self.spin_refund_event(spin_id, &pending.player, &pending.bet);
+    }
+
+    fn compute_roll(&self, pending: &PendingSpin<Self::Api>, resolve_block: u64) -> (u16, ManagedByteArray<Self::Api, 32>) {
+        let mut buf = ManagedBuffer::new();
+        buf.append(&pending.client_seed);
+        buf.append(&self.u64_to_be_buf(pending.lock_block));
+        buf.append(&self.u64_to_be_buf(resolve_block));
+        buf.append(&self.u64_to_be_buf(self.spin_count().get())); // global entropy
+
+        // Block random seed (48 bytes) — consensus entropy at resolve time
+        let seed = self.blockchain().get_block_random_seed();
+        buf.append_bytes(seed.as_managed_buffer().to_boxed_bytes().as_slice());
+
+        // Player address bytes
+        buf.append(pending.player.as_managed_buffer());
+
+        let hash = self.crypto().keccak256(&buf);
+        let roll = self.hash_to_roll(&hash);
+        (roll, hash)
+    }
+
+    fn u64_to_be_buf(&self, v: u64) -> ManagedBuffer {
+        let bytes = v.to_be_bytes();
+        ManagedBuffer::new_from_bytes(&bytes)
+    }
+
+    fn hash_to_roll(&self, hash: &ManagedByteArray<Self::Api, 32>) -> u16 {
+        // First 8 bytes → u64 BE → % 10000
+        let mb = hash.as_managed_buffer();
+        let mut bytes = [0u8; 8];
+        let _ = mb.load_slice(0, &mut bytes);
+        let n = u64::from_be_bytes(bytes);
+        (n % 10_000) as u16
+    }
+
+    fn outcome_from_roll(&self, roll: u16) -> SpinOutcome {
+        if roll < OUTCOME_GRAND_MAX {
+            SpinOutcome::Grand
+        } else if roll < OUTCOME_LINE_MAX {
+            SpinOutcome::Line3
+        } else if roll < OUTCOME_DIAG_MAX {
+            SpinOutcome::Diagonal
+        } else if roll < OUTCOME_PAIR_MAX {
+            SpinOutcome::Pair
+        } else {
+            SpinOutcome::Lose
+        }
+    }
+
+    fn table_payout(&self, bet: &BigUint, mult_bps: u32) -> BigUint {
+        let gross = bet * (mult_bps as u64) / BPS_DENOM;
+        let rake_bps = self.house_rake_bps().get() as u64;
+        let user_bps = BPS_DENOM - rake_bps;
+        gross * user_bps / BPS_DENOM
+    }
+
+    fn settle_egld(
+        &self,
+        spin_id: u64,
+        pending: &PendingSpin<Self::Api>,
+        outcome: SpinOutcome,
+        roll: u16,
+        entropy_hash: &ManagedByteArray<Self::Api, 32>,
+        resolve_block: u64,
+    ) {
+        let bet = &pending.bet;
+        let contrib_bps = self.progressive_contrib_bps().get() as u64;
+        let to_progressive = bet * contrib_bps / BPS_DENOM;
+        self.progressive_egld().update(|p| *p += &to_progressive);
+        self.total_wagered_egld().update(|t| *t += bet);
 
         let mut payout = BigUint::zero();
         let mut progressive_paid = BigUint::zero();
@@ -215,9 +449,7 @@ pub trait SlotCasino {
             SpinOutcome::Pair => {
                 payout = self.table_payout(bet, MULT_PAIR_BPS);
             }
-            SpinOutcome::Lose => {
-                payout = BigUint::zero();
-            }
+            SpinOutcome::Lose => {}
         }
 
         if payout > 0 {
@@ -239,66 +471,41 @@ pub trait SlotCasino {
                 }
             }
             if payout > 0 {
-                self.send().direct_egld(player, &payout);
+                self.send().direct_egld(&pending.player, &payout);
                 self.total_paid_egld().update(|t| *t += &payout);
             }
         }
 
-        self.spin_event(
+        self.spin_resolved_event(
             spin_id,
-            player,
+            &pending.player,
             bet,
             &payout,
             &to_progressive,
             &progressive_paid,
             outcome,
             roll,
+            entropy_hash,
+            pending.lock_block,
+            resolve_block,
         );
     }
 
-    fn table_payout(&self, bet: &BigUint, mult_bps: u32) -> BigUint {
-        let gross = bet * (mult_bps as u64) / BPS_DENOM;
-        let rake_bps = self.house_rake_bps().get() as u64;
-        let user_bps = BPS_DENOM - rake_bps;
-        gross * user_bps / BPS_DENOM
-    }
-
-    // ─── Play: ESDT (USDC etc.) ──────────────────────────────
-
-    #[payable("*")]
-    #[endpoint(spinEsdt)]
-    fn spin_esdt(&self) {
-        self.require_not_paused();
-        let caller = self.blockchain().get_caller();
-        let payment = self.call_value().single_esdt();
-        require!(payment.token_nonce == 0, "only fungible");
-        require!(
-            self.payment_token_allowed(&payment.token_identifier).get(),
-            "token not allowed"
-        );
-        let bet = payment.amount;
-        let min_bet = self.min_bet().get();
-        require!(bet >= min_bet, "bet below minimum");
-
-        self.execute_spin_esdt(&caller, &payment.token_identifier, &bet);
-    }
-
-    fn execute_spin_esdt(&self, player: &ManagedAddress, token: &TokenIdentifier, bet: &BigUint) {
+    fn settle_esdt(
+        &self,
+        spin_id: u64,
+        pending: &PendingSpin<Self::Api>,
+        outcome: SpinOutcome,
+        roll: u16,
+        entropy_hash: &ManagedByteArray<Self::Api, 32>,
+        resolve_block: u64,
+    ) {
+        let bet = &pending.bet;
+        let token = &pending.token;
         let contrib_bps = self.progressive_contrib_bps().get() as u64;
         let to_progressive = bet * contrib_bps / BPS_DENOM;
-
-        self.progressive_esdt(token)
-            .update(|p| *p += &to_progressive);
-
-        self.total_wagered_esdt(token)
-            .update(|t| *t += bet);
-        let spin_id = self.spin_count().update(|c| {
-            *c += 1;
-            *c
-        });
-
-        let roll = self.roll_u16();
-        let outcome = self.outcome_from_roll(roll);
+        self.progressive_esdt(token).update(|p| *p += &to_progressive);
+        self.total_wagered_esdt(token).update(|t| *t += bet);
 
         let mut payout = BigUint::zero();
         let mut progressive_paid = BigUint::zero();
@@ -342,14 +549,15 @@ pub trait SlotCasino {
                 }
             }
             if payout > 0 {
-                self.send().direct_esdt(player, token, 0, &payout);
+                self.send()
+                    .direct_esdt(&pending.player, token, 0, &payout);
                 self.total_paid_esdt(token).update(|t| *t += &payout);
             }
         }
 
-        self.spin_esdt_event(
+        self.spin_resolved_esdt_event(
             spin_id,
-            player,
+            &pending.player,
             token,
             bet,
             &payout,
@@ -357,64 +565,26 @@ pub trait SlotCasino {
             &progressive_paid,
             outcome,
             roll,
+            entropy_hash,
+            pending.lock_block,
+            resolve_block,
         );
     }
 
-    #[endpoint(claimHouseEsdt)]
-    fn claim_house_esdt(&self, token: TokenIdentifier) {
-        self.require_owner();
-        let progressive = self.progressive_esdt(&token).get();
-        let token_id = EgldOrEsdtTokenIdentifier::esdt(token.clone());
-        let balance = self.blockchain().get_sc_balance(&token_id, 0);
-        require!(balance > progressive, "nothing claimable");
-        let claimable = balance - &progressive;
-        let owner = self.owner().get();
-        self.send().direct_esdt(&owner, &token, 0, &claimable);
-        self.claim_house_esdt_event(&owner, &token, &claimable);
-    }
+    // ─── Views / verify ──────────────────────────────────────
 
-    #[payable("*")]
-    #[endpoint(fundProgressiveEsdt)]
-    fn fund_progressive_esdt(&self) {
-        self.require_owner();
-        let payment = self.call_value().single_esdt();
-        require!(payment.token_nonce == 0, "only fungible");
-        require!(payment.amount > 0, "zero payment");
-        self.progressive_esdt(&payment.token_identifier)
-            .update(|p| *p += &payment.amount);
-    }
-
-    // ─── RNG ─────────────────────────────────────────────────
-
-    fn roll_u16(&self) -> u16 {
-        let nonce = self.blockchain().get_block_nonce();
-        let round = self.blockchain().get_block_round();
-        let ts = self.blockchain().get_block_timestamp();
-        let spins = self.spin_count().get();
-        let mixed = nonce
-            .wrapping_mul(1_009)
-            .wrapping_add(round.wrapping_mul(73))
-            .wrapping_add(ts.wrapping_mul(17))
-            .wrapping_add(spins.wrapping_mul(31))
-            .wrapping_add(0xA5A5_u64);
-        (mixed % 10_000) as u16
-    }
-
-    fn outcome_from_roll(&self, roll: u16) -> SpinOutcome {
-        if roll < OUTCOME_GRAND_MAX {
-            SpinOutcome::Grand
-        } else if roll < OUTCOME_LINE_MAX {
-            SpinOutcome::Line3
-        } else if roll < OUTCOME_DIAG_MAX {
-            SpinOutcome::Diagonal
-        } else if roll < OUTCOME_PAIR_MAX {
-            SpinOutcome::Pair
+    /// Off-chain: recompute keccak and roll from published event fields + block seed.
+    #[view(getPendingSpin)]
+    fn get_pending_spin_view(
+        &self,
+        spin_id: u64,
+    ) -> OptionalValue<PendingSpin<Self::Api>> {
+        if self.pending_spin(spin_id).is_empty() {
+            OptionalValue::None
         } else {
-            SpinOutcome::Lose
+            OptionalValue::Some(self.pending_spin(spin_id).get())
         }
     }
-
-    // ─── Views ───────────────────────────────────────────────
 
     #[view(getProgressiveEgld)]
     #[storage_mapper("progressive_egld")]
@@ -444,6 +614,14 @@ pub trait SlotCasino {
     #[storage_mapper("house_rake_bps")]
     fn house_rake_bps(&self) -> SingleValueMapper<u16>;
 
+    #[view(getResolveDelayBlocks)]
+    #[storage_mapper("resolve_delay_blocks")]
+    fn resolve_delay_blocks(&self) -> SingleValueMapper<u64>;
+
+    #[view(getTimeoutBlocks)]
+    #[storage_mapper("timeout_blocks")]
+    fn timeout_blocks(&self) -> SingleValueMapper<u64>;
+
     #[view(isPaused)]
     #[storage_mapper("paused")]
     fn paused(&self) -> SingleValueMapper<bool>;
@@ -455,6 +633,13 @@ pub trait SlotCasino {
     #[view(isPaymentTokenAllowed)]
     #[storage_mapper("payment_token_allowed")]
     fn payment_token_allowed(&self, token: &TokenIdentifier) -> SingleValueMapper<bool>;
+
+    #[view(getUserPendingCount)]
+    #[storage_mapper("user_pending_count")]
+    fn user_pending_count(&self, user: &ManagedAddress) -> SingleValueMapper<u32>;
+
+    #[storage_mapper("pending_spin")]
+    fn pending_spin(&self, spin_id: u64) -> SingleValueMapper<PendingSpin<Self::Api>>;
 
     #[storage_mapper("pending_owner")]
     fn pending_owner(&self) -> SingleValueMapper<ManagedAddress>;
@@ -473,8 +658,30 @@ pub trait SlotCasino {
 
     // ─── Events ──────────────────────────────────────────────
 
-    #[event("spin")]
-    fn spin_event(
+    #[event("spinLocked")]
+    fn spin_locked_event(
+        &self,
+        #[indexed] spin_id: u64,
+        #[indexed] player: &ManagedAddress,
+        bet: &BigUint,
+        client_seed: &ManagedBuffer,
+        lock_block: u64,
+        is_egld: bool,
+    );
+
+    #[event("spinLockedEsdt")]
+    fn spin_locked_esdt_event(
+        &self,
+        #[indexed] spin_id: u64,
+        #[indexed] player: &ManagedAddress,
+        #[indexed] token: &TokenIdentifier,
+        bet: &BigUint,
+        client_seed: &ManagedBuffer,
+        lock_block: u64,
+    );
+
+    #[event("spinResolved")]
+    fn spin_resolved_event(
         &self,
         #[indexed] spin_id: u64,
         #[indexed] player: &ManagedAddress,
@@ -484,10 +691,13 @@ pub trait SlotCasino {
         progressive_paid: &BigUint,
         outcome: SpinOutcome,
         roll: u16,
+        entropy_hash: &ManagedByteArray<Self::Api, 32>,
+        lock_block: u64,
+        resolve_block: u64,
     );
 
-    #[event("spinEsdt")]
-    fn spin_esdt_event(
+    #[event("spinResolvedEsdt")]
+    fn spin_resolved_esdt_event(
         &self,
         #[indexed] spin_id: u64,
         #[indexed] player: &ManagedAddress,
@@ -498,6 +708,17 @@ pub trait SlotCasino {
         progressive_paid: &BigUint,
         outcome: SpinOutcome,
         roll: u16,
+        entropy_hash: &ManagedByteArray<Self::Api, 32>,
+        lock_block: u64,
+        resolve_block: u64,
+    );
+
+    #[event("spinRefund")]
+    fn spin_refund_event(
+        &self,
+        #[indexed] spin_id: u64,
+        #[indexed] player: &ManagedAddress,
+        bet: &BigUint,
     );
 
     #[event("fundProgressive")]

@@ -1,67 +1,38 @@
-# Slot Casino (MultiversX)
+# Slot Casino (MultiversX) — Provably Fair
 
-Smart contract **public** pour le slot 3×3 xArtists.
+Smart contract public pour le slot 3×3 xArtists.
+
+See **[PROVABLY_FAIR.md](./PROVABLY_FAIR.md)** for RNG verification.
+
+## Flow joueur
+
+1. `lockSpinEgld(client_seed)` ou `lockSpinEsdt(client_seed)` — mise en escrow
+2. Attendre `resolve_delay_blocks` (défaut **2**)
+3. `resolveSpin(spin_id)` — settlement + payout
+4. Ou `refundSpin(spin_id)` après timeout
 
 ## Économie
 
-| Paramètre | Défaut recommandé | Rôle |
-|-----------|-------------------|------|
-| `progressive_contrib_bps` | 2500 (25 %) | Part de chaque mise → cagnotte |
-| `house_rake_bps` | 1500 (15 %) | Rake sur gains table (ligne / diag / paire) |
-| `min_bet` | 5×10^16 (0.05 EGLD) ou 1×10^6 USDC | Mise minimum |
-
-### Outcomes (roll 0–9999)
-
-| Outcome | Plage | Payout |
-|---------|-------|--------|
-| **Grand** | 0–7 (~0.08 %) | Toute la cagnotte progressive + 5 % de la mise |
-| Line3 | 8–207 | 8× mise après rake |
-| Diagonal | 208–407 | 7× mise après rake |
-| Pair | 408–1007 | 1.2× mise après rake |
-| Lose | reste | 0 |
-
-Le **Grand** correspond au jackpot 9/9 côté front (mapping UX).
+| Paramètre | Défaut | Rôle |
+|-----------|--------|------|
+| `progressive_contrib_bps` | 2500 | 25 % mise → pot (au resolve) |
+| `house_rake_bps` | 1500 | 15 % rake gains table |
+| `min_bet` | 0.05 EGLD raw | Minimum |
+| `resolve_delay_blocks` | 2 | Anti same-block /
+| `timeout_blocks` | 100 | Refund si non résolu |
 
 ## Endpoints
 
-### Joueurs
-- `spinEgld()` payable EGLD
-- `spinEsdt()` payable ESDT whitelisté (USDC…)
+**Play:** `lockSpinEgld`, `lockSpinEsdt`, `resolveSpin`, `refundSpin`  
+**Owner:** pause, BPS, delay, timeout, whitelist token, fund/claim progressive house  
+**Views:** progressive, pending spin, counts
 
-### Owner
-- `setPaused`, `setProgressiveContribBps`, `setHouseRakeBps`, `setMinBet`
-- `setPaymentTokenAllowed(token, bool)`
-- `fundProgressiveEgld` / `fundProgressiveEsdt`
-- `claimHouseEgld` / `claimHouseEsdt` — ne touche **pas** à la cagnotte
-- ownership 2-step
+## Sécurité RNG
 
-### Views
-- `getProgressiveEgld`, `getProgressiveEsdt`, `getSpinCount`, `getGrandCount`, `getMinBet`, `isPaused`, …
-
-## Build
-
-```bash
-cd contracts/slot-casino
-# via mxpy / scripts/build_scs_isolated.sh quand branché
-```
-
-## Deploy (mainnet — gate humaine)
-
-1. Build WASM
-2. Deploy avec PEM **owner ops** (jamais en git)
-3. `setPaymentTokenAllowed` pour USDC mainnet
-4. `fundProgressiveEgld` seed initial
-5. Adresse → `data/contracts.json` + `VITE_SLOT_CASINO_ADDRESS`
-6. Front: activer spins on-chain seulement si codeHash vérifié
-
-## Sécurité
-
-- Pause + owner ACL + 2-step ownership
-- Progressive protégée des `claimHouse*`
-- Cap payout ≤ balance (et ≤ balance − progressive pour gains table)
-- RNG = `block_random_seed` + tx hash (pas un VRF oracle) — **documenter** aux joueurs
-- Audit externe recommandé avant TVL réelle
+- Commit client seed → delay → keccak(seed ∥ blocks ∥ random_seed ∥ player)
+- Resolve public (pas de block shopping joueur)
+- CEI, pause, progressive lock, pending cap, timeout refund
 
 ## Statut
 
-**Code source prêt · non déployé · SC flags front OFF jusqu’à GO_LIVE.**
+**Source ready · not deployed · front paper until GO_LIVE + address + codeHash.**
