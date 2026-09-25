@@ -13,9 +13,8 @@ function getCallbackUrl(): string {
   return `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '/') || '/xArtists/'}`
 }
 
-/** Barre desktop — cœur produit uniquement (pas de doublon Galerie). */
 const DESKTOP_NAV = PRIMARY_NAV.filter(n =>
-  ['/', '/museum', '/agents', '/tours', '/wallet', '/marketplace'].includes(n.to)
+  ['/', '/museum', '/agents', '/tours', '/wallet', '/marketplace'].includes(n.to),
 )
 
 export default function Header() {
@@ -173,14 +172,16 @@ export default function Header() {
 
         {menuOpen && (
           <div
-            className="lg:hidden fixed inset-0 top-14 sm:top-16 z-40 bg-black/70 backdrop-blur-sm"
+            className="lg:hidden fixed inset-0 top-14 sm:top-16 z-40 bg-black/70 backdrop-blur-sm flex flex-col"
             onClick={() => setMenuOpen(false)}
           >
             <div
-              className="border-b border-white/[0.08] max-h-[calc(100vh-3.5rem)] overflow-y-auto px-3 py-3 flex flex-col gap-0.5 shadow-2xl"
+              className="border-b border-white/[0.08] flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-3 flex flex-col gap-0.5 shadow-2xl"
               style={{
                 background: 'rgba(8,8,14,0.96)',
-                paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
+                maxHeight: 'calc(100dvh - 3.5rem - env(safe-area-inset-bottom, 0px) - 4rem)',
+                paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))',
+                WebkitOverflowScrolling: 'touch',
               }}
               onClick={e => e.stopPropagation()}
             >
@@ -243,7 +244,8 @@ export default function Header() {
             </p>
             <h2 className="display text-xl mb-2">Connecter le wallet</h2>
             <p className="text-xs text-zinc-500 mb-4 leading-relaxed">
-              Votre wallet — pas une adresse protocole LIA.
+              <strong className="text-zinc-300">Web Wallet recommandé</strong> sur GitHub Pages. xPortal
+              via WalletConnect si le module se charge.
             </p>
 
             {[
