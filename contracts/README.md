@@ -4,6 +4,7 @@
 |----------|------|--------|
 | **NFT Marketplace** | `contracts/nft-marketplace` | P0+P1 hardened — mainnet deploy ready |
 | **Agents Marketplace** | `contracts/agents-marketplace` | P0+P1 hardened — mainnet deploy ready |
+| **Slot Casino** | `contracts/slot-casino` | Source ready — progressive + EGLD/ESDT — **not deployed** |
 | **BTC Bridge** | `contracts/btc-bridge` | **EXPERIMENTAL — DO NOT deploy / no user funds** |
 | NFT Staking | `contracts/nft-staking` | Cargo only — incomplete |
 | TRO Staking | `contracts/tro-staking` | Cargo only — incomplete |
@@ -21,6 +22,24 @@ Devnet scripts are disabled.
 
 See `docs/MAINNET_DEPLOY_BLACKBOX.md`.
 
+## Slot Casino (new)
+
+Path: `contracts/slot-casino`
+
+- `spinEgld` / `spinEsdt` (token whitelist)
+- Progressive pot (contrib BPS), grand pays full pot
+- Table multipliers + house rake BPS
+- `claimHouse*` never drains progressive
+- Front remains paper until `VITE_SLOT_CASINO_ADDRESS` + codeHash OK
+
+Init example:
+
+```text
+progressive_contrib_bps = 2500
+house_rake_bps = 1500
+min_bet = 50000000000000000   # 0.05 EGLD
+```
+
 ## Deploy mainnet
 
 ```bash
@@ -32,6 +51,7 @@ chmod +x scripts/*.sh
 ./scripts/build_scs_isolated.sh
 ./scripts/deploy_mainnet.sh agents-marketplace   # first
 ./scripts/deploy_mainnet.sh nft-marketplace
+# slot-casino: build + mxpy deploy manually until script lists it
 # or both:
 ./scripts/deploy_mainnet.sh
 ```
@@ -50,6 +70,8 @@ After deploy:
 **Agents:** listAgentAction, buyAgentAction (payable EGLD), cancelListing, claimFees, setPaused, setFeeBps, transferOwnership, acceptOwnership + views.
 
 **NFT:** listNft (1 NFT), buyNft (EGLD), cancelListing, claimFees, setPaused, setFeeBps, ownership 2-step + views.
+
+**Slot:** spinEgld, spinEsdt, fundProgressive*, claimHouse*, setPaymentTokenAllowed, pause/config + views.
 
 ## BTC Bridge
 

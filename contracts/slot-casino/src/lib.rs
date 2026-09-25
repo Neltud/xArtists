@@ -8,8 +8,8 @@
 //! - Table wins (line / diag / pair) paid from contract balance
 //! - Owner: pause, config BPS, whitelist tokens, claim house surplus
 //!
-//! Randomness: block random seed (not VRF oracle). Fair-enough for casino UX;
-//! document for users. Pause + owner controls for mainnet ops.
+//! Randomness: block nonce / round / timestamp / tx mix (not external VRF).
+//! Document for users. Pause + owner controls for mainnet ops.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
@@ -19,7 +19,7 @@ const BPS_DENOM: u64 = 10_000;
 /// Max progressive contribution / house rake (safety)
 const MAX_BPS: u16 = 5_000;
 
-/// Outcome weights over 10_000 draws (tunable via storage later if needed)
+/// Outcome weights over 10_000 draws
 /// Grand ~0.08%, line ~2%, diag ~2%, pair ~6%, rest lose
 const OUTCOME_GRAND_MAX: u16 = 8;
 const OUTCOME_LINE_MAX: u16 = 208;
@@ -148,13 +148,15 @@ pub trait SlotCasino {
         self.pending_owner().clear();
     }
 
-    /// Withdraw house surplus: balance − progressive − locked reserve (0).
+    /// Withdraw house surplus: balance − progressive.
     /// Never drains the progressive pot.
     #[endpoint(claimHouseEgld)]
     fn claim_house_egld(&self) {
         self.require_owner();
         let progressive = self.progressive_egld().get();
-        let balance = self.blockchain().get_sc_balance(&EgldOrEsdtTokenIdentifier::egld(), 0);
+        let balance = self
+            .blockchain()
+            .get_sc_balance(&EgldOrEsdtTokenIdentifier::egld(), 0);
         require!(balance > progressive, "nothing claimable");
         let claimable = balance - &progressive;
         let owner = self.owner().get();
@@ -177,7 +179,6 @@ pub trait SlotCasino {
     }
 
     fn execute_spin_egld(&self, player: &ManagedAddress, bet: &BigUint) {
-        // Progressive contribution
         let contrib_bps = self.progressive_contrib_bps().get() as u64;
         let to_progressive = bet * contrib_bps / BPS_DENOM;
         self.progressive_egld()
@@ -199,7 +200,6 @@ pub trait SlotCasino {
         match outcome {
             SpinOutcome::Grand => {
                 let pot = self.progressive_egld().get();
-                // Entire progressive + small bonus 5% of bet
                 let bonus = bet * 500u64 / BPS_DENOM;
                 payout = &pot + &bonus;
                 progressive_paid = pot;
@@ -221,12 +221,12 @@ pub trait SlotCasino {
         }
 
         if payout > 0 {
-            // Solvency: cannot pay more than balance
-            let balance = self.blockchain().get_sc_balance(&EgldOrEsdtTokenIdentifier::egld(), 0);
+            let balance = self
+                .blockchain()
+                .get_sc_balance(&EgldOrEsdtTokenIdentifier::egld(), 0);
             if payout > balance {
-                payout = balance;
+                payout = balance.clone();
             }
-            // After grand, progressive already zero; for table wins keep progressive reserved
             if outcome != SpinOutcome::Grand {
                 let progressive = self.progressive_egld().get();
                 let max_pay = if balance > progressive {
@@ -256,7 +256,6 @@ pub trait SlotCasino {
         );
     }
 
-    /// Table win after house rake: mult_bps of bet, then user keeps (10000 - rake)/10000
     fn table_payout(&self, bet: &BigUint, mult_bps: u32) -> BigUint {
         let gross = bet * (mult_bps as u64) / BPS_DENOM;
         let rake_bps = self.house_rake_bps().get() as u64;
@@ -343,8 +342,7 @@ pub trait SlotCasino {
                 }
             }
             if payout > 0 {
-                self.send()
-                    .direct_esdt(player, token, 0, &payout);
+                self.send().direct_esdt(player, token, 0, &payout);
                 self.total_paid_esdt(token).update(|t| *t += &payout);
             }
         }
@@ -371,8 +369,7 @@ pub trait SlotCasino {
         require!(balance > progressive, "nothing claimable");
         let claimable = balance - &progressive;
         let owner = self.owner().get();
-        self.send()
-            .direct_esdt(&owner, &token, 0, &claimable);
+        self.send().direct_esdt(&owner, &token, 0, &claimable);
         self.claim_house_esdt_event(&owner, &token, &claimable);
     }
 
@@ -390,21 +387,16 @@ pub trait SlotCasino {
     // ─── RNG ─────────────────────────────────────────────────
 
     fn roll_u16(&self) -> u16 {
-        let seed = self.blockchain().get_block_random_seed();
-        // Mix first 4 bytes into u32 then mod 10000
-        let b0 = seed.get(0) as u32;
-        let b1 = seed.get(1) as u32;
-        let b2 = seed.get(2) as u32;
-        let b3 = seed.get(3) as u32;
-        let tx = self.blockchain().get_tx_hash();
-        let t0 = tx.get(0) as u32;
-        let mixed = b0
+        let nonce = self.blockchain().get_block_nonce();
+        let round = self.blockchain().get_block_round();
+        let ts = self.blockchain().get_block_timestamp();
+        let spins = self.spin_count().get();
+        let mixed = nonce
             .wrapping_mul(1_009)
-            .wrapping_add(b1.wrapping_mul(73))
-            .wrapping_add(b2.wrapping_mul(17))
-            .wrapping_add(b3)
-            .wrapping_add(t0.wrapping_mul(31))
-            .wrapping_add(self.spin_count().get() as u32);
+            .wrapping_add(round.wrapping_mul(73))
+            .wrapping_add(ts.wrapping_mul(17))
+            .wrapping_add(spins.wrapping_mul(31))
+            .wrapping_add(0xA5A5_u64);
         (mixed % 10_000) as u16
     }
 
