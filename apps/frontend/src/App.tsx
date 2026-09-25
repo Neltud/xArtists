@@ -78,14 +78,14 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen flex flex-col relative">
+      <div className="app-shell relative grain">
         <ArtAtelierBackdrop />
         <Header />
         <PrivateReleaseStrip />
         {DEMO_MODE && <DemoModeBanner />}
         <SignalTicker />
         <GuardianStatusBar />
-        <main className="flex-1 page-wrap py-4 sm:py-6 pb-24 md:pb-8">
+        <main className="page-main page-wrap atelier-content py-4 sm:py-6">
           <Suspense fallback={<PageLoader />}>
             <PageTransition>
               <RouteErrorBoundary>
@@ -152,7 +152,7 @@ export default function App() {
           </Suspense>
         )}
         <AssetDrawer open={assetsOpen} onClose={() => setAssetsOpen(false)} />
-        <footer className="hidden md:block text-center text-[10px] text-zinc-600 py-4">
+        <footer className="hidden md:block text-center text-[10px] text-zinc-600 py-4 atelier-content">
           <a href={LINKS.github} className="hover:text-zinc-400" target="_blank" rel="noreferrer">
             GitHub
           </a>
