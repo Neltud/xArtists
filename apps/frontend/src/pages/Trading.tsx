@@ -53,8 +53,9 @@ export default function Trading() {
       />
 
       <header className="space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Board</p>
-        <h1 className="text-3xl font-semibold tracking-tight text-white">Trading</h1>
+        <p className="section-label">Board</p>
+        <h1 className="section-title display">Trading</h1>
+        <div className="atelier-title-rule" aria-hidden />
         <p className="text-sm text-zinc-400 inline-flex flex-wrap items-center gap-1 max-w-xl">
           Paper MTM sur prix marché live · 10 colonnes compounding · pas d’exécution on-chain
           <InfoTip>
@@ -69,10 +70,8 @@ export default function Trading() {
 
       <PaperLiveDesk />
 
-      <section className="rounded-2xl border border-white/10 bg-zinc-950/40 p-4 space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-          10 colonnes compounding (paper)
-        </p>
+      <section className="card space-y-3">
+        <p className="section-label">10 colonnes compounding (paper)</p>
         <div className="grid sm:grid-cols-2 gap-2 text-[12px]">
           <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
             <p className="text-zinc-500 uppercase tracking-wider text-[9px]">Core (~70 %)</p>
@@ -99,13 +98,11 @@ export default function Trading() {
       <CompoundingPanel />
       <AnnualYieldPanel />
 
-      <div className="rounded-2xl border border-white/10 bg-zinc-950/50 p-4 space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-          Commande paper
-        </p>
+      <div className="card space-y-3">
+        <p className="section-label">Commande paper</p>
         <div className="flex gap-2">
           <input
-            className="flex-1 rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white placeholder:text-zinc-600"
+            className="input-field flex-1"
             placeholder="ex. momentum TRO paper"
             value={cmd}
             onChange={e => setCmd(e.target.value)}
