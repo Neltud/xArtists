@@ -1,16 +1,19 @@
 /**
- * Primordial Slot — grille 3×3 style casino, images NFT (paper bank).
- * Gains : 85 % user · 15 % LIA · coût spin → LIA. Claim SC fail-closed.
+ * Primordial Slot — grille 3×3 NFT casino.
+ * Stakes paper : EGLD · USDC · USDT (pas de TRO).
+ * 85 % user · 15 % LIA · spin → LIA. SC claim OFF.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  SLOT_SPIN_COST,
-  SLOT_START_BANK,
+  SLOT_ASSETS,
+  SLOT_ASSET_CONFIG,
   SLOT_USER_WIN_BPS,
   SLOT_LIA_WIN_RAKE_BPS,
   splitSlotWin,
   formatBps,
+  formatSlotAmount,
+  type SlotAsset,
   type SlotSplit,
 } from '../config/slotEconomy'
 
@@ -79,39 +82,55 @@ function pick(pool: CellImg[]): CellImg {
   return pool[Math.floor(Math.random() * pool.length)] || FALLBACK[0]
 }
 
-function payout(grid: CellImg[]): { tro: number; kind: string } {
+function payoutGross(grid: CellImg[], asset: SlotAsset): { gross: number; kind: string } {
+  const p = SLOT_ASSET_CONFIG[asset].payouts
   const mid = [grid[3], grid[4], grid[5]]
   if (mid[0].id === mid[1].id && mid[1].id === mid[2].id) {
-    return { tro: 80, kind: `Jackpot ligne · ${mid[0].title}` }
+    return { gross: p.jackpot, kind: `Jackpot ligne · ${mid[0].title}` }
   }
   if (
     mid[0].collection &&
     mid[0].collection === mid[1].collection &&
     mid[1].collection === mid[2].collection
   ) {
-    return { tro: 24, kind: `3× collection ${mid[0].collection}` }
+    return { gross: p.collection, kind: `3× collection ${mid[0].collection}` }
   }
   if (mid[0].id === mid[1].id || mid[1].id === mid[2].id || mid[0].id === mid[2].id) {
-    return { tro: 6, kind: 'Paire ligne centrale' }
+    return { gross: p.pair, kind: 'Paire ligne centrale' }
   }
   if (grid[0].id === grid[4].id && grid[4].id === grid[8].id) {
-    return { tro: 40, kind: 'Diagonale ↘' }
+    return { gross: p.diagonal, kind: 'Diagonale ↘' }
   }
   if (grid[2].id === grid[4].id && grid[4].id === grid[6].id) {
-    return { tro: 40, kind: 'Diagonale ↙' }
+    return { gross: p.diagonal, kind: 'Diagonale ↙' }
   }
-  return { tro: 0, kind: '—' }
+  return { gross: 0, kind: '—' }
 }
 
 export default function SlotPage() {
+  const [asset, setAsset] = useState<SlotAsset>('USDC')
+  const cfg = SLOT_ASSET_CONFIG[asset]
+
   const [pool, setPool] = useState<CellImg[]>(FALLBACK)
-  const [bank, setBank] = useState(SLOT_START_BANK)
+  const [bank, setBank] = useState(cfg.startBank)
   const [liaPaper, setLiaPaper] = useState(0)
   const [grid, setGrid] = useState<CellImg[]>(() => Array.from({ length: 9 }, () => pick(FALLBACK)))
   const [spinning, setSpinning] = useState(false)
   const [spins, setSpins] = useState(0)
   const [last, setLast] = useState<{ kind: string; split: SlotSplit } | null>(null)
   const [log, setLog] = useState<string[]>([])
+
+  /** Changer d’asset = reset bank paper (pas de conversion). */
+  const selectAsset = (a: SlotAsset) => {
+    if (spinning || a === asset) return
+    setAsset(a)
+    const c = SLOT_ASSET_CONFIG[a]
+    setBank(c.startBank)
+    setLiaPaper(0)
+    setSpins(0)
+    setLast(null)
+    setLog([])
+  }
 
   useEffect(() => {
     let c = false
@@ -156,14 +175,13 @@ export default function SlotPage() {
     }
   }, [])
 
-  const canSpin = !spinning && bank >= SLOT_SPIN_COST
+  const canSpin = !spinning && bank >= cfg.spinCost
 
   const spin = () => {
     if (!canSpin) return
     setSpinning(true)
-    // Coût spin → LIA (paper)
-    setBank(b => b - SLOT_SPIN_COST)
-    setLiaPaper(l => l + SLOT_SPIN_COST)
+    setBank(b => b - cfg.spinCost)
+    setLiaPaper(l => l + cfg.spinCost)
     let ticks = 0
     const id = window.setInterval(() => {
       setGrid(Array.from({ length: 9 }, () => pick(pool)))
@@ -171,63 +189,87 @@ export default function SlotPage() {
       if (ticks >= 14) {
         window.clearInterval(id)
         const final = Array.from({ length: 9 }, () => pick(pool))
-        const result = payout(final)
-        const split = splitSlotWin(result.tro)
+        const result = payoutGross(final, asset)
+        const split = splitSlotWin(result.gross, asset)
         setGrid(final)
         setLast({ kind: result.kind, split })
         setSpins(n => n + 1)
         if (split.userCredit > 0) setBank(b => b + split.userCredit)
         if (split.liaRake > 0) setLiaPaper(l => l + split.liaRake)
         const line =
-          result.tro > 0
-            ? `${result.kind} · brut ${split.grossWin} → user +${split.userCredit} · LIA +${split.liaRake}`
-            : `${result.kind} · 0 · spin → LIA +${SLOT_SPIN_COST}`
+          result.gross > 0
+            ? `${result.kind} · brut ${formatSlotAmount(split.grossWin, asset)} → user +${split.userCredit} · LIA +${split.liaRake}`
+            : `${result.kind} · 0 · spin → LIA +${formatSlotAmount(cfg.spinCost, asset)}`
         setLog(l => [line, ...l].slice(0, 10))
         setSpinning(false)
       }
     }, 60)
   }
 
-  const paytable = useMemo(
-    () => [
-      ['3 identiques (ligne centrale)', '+80 TRO brut'],
-      ['3× même collection (ligne)', '+24 TRO brut'],
-      ['Diagonale 3 identiques', '+40 TRO brut'],
-      ['Paire ligne centrale', '+6 TRO brut'],
+  const paytable = useMemo(() => {
+    const p = cfg.payouts
+    const u = asset
+    return [
+      ['3 identiques (ligne centrale)', `+${p.jackpot} ${u} brut`],
+      ['3× même collection (ligne)', `+${p.collection} ${u} brut`],
+      ['Diagonale 3 identiques', `+${p.diagonal} ${u} brut`],
+      ['Paire ligne centrale', `+${p.pair} ${u} brut`],
       [
         'Split gains',
         `user ${formatBps(SLOT_USER_WIN_BPS)} · LIA ${formatBps(SLOT_LIA_WIN_RAKE_BPS)}`,
       ],
-    ],
-    [],
-  )
+    ]
+  }, [asset, cfg.payouts])
 
   return (
     <div className="animate-fade-in space-y-6 pb-12 max-w-lg mx-auto">
       <header className="space-y-2">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-          Paper casino
+          Paper casino · EGLD · USDC · USDT
         </p>
         <h1 className="text-3xl font-semibold tracking-tight text-white">Slot 3×3 NFT</h1>
         <p className="text-sm text-zinc-400 leading-relaxed">
           Gains bruts : <strong className="text-zinc-300">{formatBps(SLOT_USER_WIN_BPS)} user</strong>{' '}
           · <strong className="text-zinc-300">{formatBps(SLOT_LIA_WIN_RAKE_BPS)} LIA</strong>. Coût spin →
-          LIA. Banque paper — pas de claim on-chain.
+          LIA. Pas de TRO · pas de claim on-chain.
         </p>
       </header>
+
+      <div className="flex flex-wrap gap-1.5">
+        {SLOT_ASSETS.map(a => (
+          <button
+            key={a}
+            type="button"
+            disabled={spinning}
+            onClick={() => selectAsset(a)}
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              asset === a
+                ? 'bg-white text-zinc-900'
+                : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-200'
+            }`}
+          >
+            {a}
+          </button>
+        ))}
+      </div>
 
       <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-b from-zinc-950 to-black p-4 space-y-4 shadow-2xl shadow-amber-900/10">
         <div className="flex flex-wrap items-baseline justify-between gap-2 text-[12px] text-zinc-500">
           <span>
             Bank user{' '}
-            <span className="text-amber-200 tabular-nums font-semibold">{bank}</span> TRO
+            <span className="text-amber-200 tabular-nums font-semibold">
+              {formatSlotAmount(bank, asset)}
+            </span>
           </span>
           <span>
             LIA paper{' '}
-            <span className="text-violet-300 tabular-nums font-semibold">{liaPaper}</span> TRO
+            <span className="text-violet-300 tabular-nums font-semibold">
+              {formatSlotAmount(liaPaper, asset)}
+            </span>
           </span>
           <span>
-            Spins <span className="tabular-nums text-zinc-300">{spins}</span> · coût {SLOT_SPIN_COST}
+            Spins <span className="tabular-nums text-zinc-300">{spins}</span> · coût{' '}
+            {formatSlotAmount(cfg.spinCost, asset)}
           </span>
         </div>
 
@@ -261,7 +303,7 @@ export default function SlotPage() {
             ))}
           </div>
           <p className="text-center text-[10px] text-amber-200/70 mt-2 tracking-wide">
-            Ligne payante · milieu · {ROWS}×{COLS}
+            Ligne payante · milieu · {ROWS}×{COLS} · {asset}
           </p>
         </div>
 
@@ -271,7 +313,11 @@ export default function SlotPage() {
           disabled={!canSpin}
           className="w-full rounded-xl bg-gradient-to-r from-amber-300 to-amber-200 text-zinc-950 py-3.5 text-sm font-bold disabled:opacity-40 active:scale-[0.99] transition"
         >
-          {spinning ? '🎰 Roule…' : bank < SLOT_SPIN_COST ? 'Bank vide' : 'SPIN'}
+          {spinning
+            ? '🎰 Roule…'
+            : bank < cfg.spinCost
+              ? 'Bank vide'
+              : `SPIN · ${formatSlotAmount(cfg.spinCost, asset)}`}
         </button>
 
         {last && (
@@ -281,14 +327,14 @@ export default function SlotPage() {
             </p>
             {last.split.grossWin > 0 ? (
               <p className="text-[11px] text-zinc-500">
-                Brut {last.split.grossWin} → user{' '}
+                Brut {formatSlotAmount(last.split.grossWin, asset)} → user{' '}
                 <span className="text-emerald-300">+{last.split.userCredit}</span> · LIA rake{' '}
                 <span className="text-violet-300">+{last.split.liaRake}</span> · spin LIA{' '}
                 <span className="text-violet-300">+{last.split.spinToLia}</span>
               </p>
             ) : (
               <p className="text-[11px] text-zinc-500">
-                Pas de gain · spin → LIA +{SLOT_SPIN_COST}
+                Pas de gain · spin → LIA +{formatSlotAmount(cfg.spinCost, asset)}
               </p>
             )}
           </div>
@@ -296,16 +342,21 @@ export default function SlotPage() {
       </div>
 
       <section className="rounded-xl border border-violet-500/20 bg-violet-950/15 px-3 py-3 text-[11px] text-zinc-400 leading-relaxed">
-        <p className="font-medium text-violet-200/90 mb-1">Répartition (paper)</p>
+        <p className="font-medium text-violet-200/90 mb-1">Répartition (paper · {asset})</p>
         <ul className="list-disc list-inside space-y-0.5">
-          <li>Chaque spin : {SLOT_SPIN_COST} TRO user → ledger LIA</li>
-          <li>Gain brut : {formatBps(SLOT_USER_WIN_BPS)} crédité user · {formatBps(SLOT_LIA_WIN_RAKE_BPS)} LIA</li>
+          <li>Chaque spin : {formatSlotAmount(cfg.spinCost, asset)} user → ledger LIA</li>
+          <li>
+            Gain brut : {formatBps(SLOT_USER_WIN_BPS)} user · {formatBps(SLOT_LIA_WIN_RAKE_BPS)} LIA
+          </li>
+          <li>Actifs : EGLD · USDC · USDT uniquement — pas de TRO</li>
           <li>Pas un investissement · pas de payout on-chain (SC OFF)</li>
         </ul>
       </section>
 
       <section>
-        <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Paytable paper</h2>
+        <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">
+          Paytable paper · {asset}
+        </h2>
         <ul className="space-y-1 text-[12px] text-zinc-400">
           {paytable.map(([k, v]) => (
             <li key={k} className="flex justify-between border-t border-white/5 py-2 gap-3">
@@ -328,14 +379,14 @@ export default function SlotPage() {
       )}
 
       <p className="text-[11px] text-zinc-600 leading-relaxed">
-        Images : catalogue xArtists via proxy CORS. Paper only.
+        Paper only · split LIA.
         {' · '}
         <Link to="/tip" className="text-zinc-400 hover:text-white">
           Treasury LIA
         </Link>
         {' · '}
-        <Link to="/museum" className="text-zinc-400 hover:text-white">
-          Musée
+        <Link to="/wallet" className="text-zinc-400 hover:text-white">
+          Wallet
         </Link>
       </p>
     </div>
