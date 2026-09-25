@@ -2,7 +2,7 @@
  * Desk paper mark-to-market — prix live Binance/MVX, positions simulées.
  * Aucune exécution on-chain.
  */
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRealTimePrices } from '../hooks/useRealTimePrices'
 import type { LiveQuote } from '../services/priceService'
 
@@ -12,9 +12,7 @@ type Leg = {
   id: string
   base: 'EGLD' | 'BTC' | 'ETH'
   side: 'long'
-  /** Quantité base */
   qty: number
-  /** Prix d’entrée USD au moment de l’ouverture (fixé au 1er tick) */
   entryUsd: number | null
 }
 
@@ -56,8 +54,7 @@ export default function PaperLiveDesk() {
   const { snapshot, loading, error, lastUpdate, flash, refresh } = useRealTimePrices(8_000)
   const [entries, setEntries] = useState<Record<string, number>>({})
 
-  // Fixe les prix d’entrée paper au premier tick valide
-  useMemo(() => {
+  useEffect(() => {
     if (!snapshot) return
     setEntries(prev => {
       const next = { ...prev }
