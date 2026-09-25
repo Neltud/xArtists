@@ -62,4 +62,7 @@ export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/dao', label: 'DAO', emoji: '⬡' },
   { to: '/portfolio', label: 'Portfolio', emoji: '▤' },
   { to: '/tro', label: '$TRO', emoji: '◎' },
+  { to: '/lia', label: 'LIA', emoji: '⚡' },
+  { to: '/slot', label: 'Slot', emoji: '🎰' },
+  { to: '/go-live', label: 'GO_LIVE', emoji: '🚀' },
 ]

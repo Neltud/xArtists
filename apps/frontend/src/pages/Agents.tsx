@@ -36,6 +36,28 @@ export default function Agents() {
         <p className="text-zinc-400 text-[14px] leading-relaxed max-w-md">
           Trois accès. Checkout paper → pack local + ouverture scénique. Pas un fonds.
         </p>
+        <p className="text-[12px] text-zinc-500">
+          <Link
+            to="/lia"
+            className="text-cyan-300/90 hover:text-cyan-200 underline-offset-2 hover:underline"
+          >
+            Performance LIA · Vellum execution
+          </Link>
+          {' · '}
+          <Link
+            to="/trading"
+            className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
+          >
+            Trading board
+          </Link>
+          {' · '}
+          <Link
+            to="/go-live"
+            className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
+          >
+            GO_LIVE
+          </Link>
+        </p>
       </header>
 
       <Phase4ReadinessBanner variant="compact" />
@@ -77,9 +99,7 @@ export default function Agents() {
 
       <section className="rounded-2xl border border-white/10 bg-zinc-950/50 p-5">
         <p className="text-[13px] text-zinc-400 mb-3">
-          {active
-            ? `${active.name} · ${active.priceEur.list} € · paper`
-            : 'Sélectionne un pack'}
+          {active ? `${active.name} · ${active.priceEur.list} € · paper` : 'Sélectionne un pack'}
         </p>
         <PackCheckout
           packId={selected}
@@ -89,15 +109,24 @@ export default function Agents() {
       </section>
 
       <p className="text-[12px] text-zinc-600">
-        <Link to="/my-packs" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
+        <Link
+          to="/my-packs"
+          className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
+        >
           My Packs
         </Link>
         {' · '}
-        <Link to="/payments" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
+        <Link
+          to="/payments"
+          className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
+        >
           Paiements
         </Link>
         {' · '}
-        <Link to="/museum" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
+        <Link
+          to="/museum"
+          className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
+        >
           Musée Pulse
         </Link>
       </p>
