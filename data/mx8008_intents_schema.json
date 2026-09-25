@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "agent": "mx-8008",
+  "codename": "Execution Sentinel",
+  "signer": "vellum_pem_only",
+  "parent_identity": "mx-8004",
+  "mode_default": "paper",
+  "intents": [
+    {
+      "type": "guardian_check",
+      "description": "Validate caps, pause, allowlist before any leg",
+      "inputs": ["intent_id", "leg", "notional_usd", "pair"],
+      "outputs": ["allowed", "reason", "caps_snapshot"]
+    },
+    {
+      "type": "propose_leg",
+      "description": "Grok/LIA proposes a trade leg; 8008 does not sign",
+      "inputs": ["pair", "side", "size", "tp_pct", "sl_pct", "source"],
+      "outputs": ["intent_id", "status"]
+    },
+    {
+      "type": "execute_leg",
+      "description": "Vellum signs with Vellum PEM only if guardian_check.allowed and live_flag",
+      "requires": ["guardian_check.allowed", "LIA_LIVE_TRADING=true", "mode!=paper"],
+      "outputs": ["tx_hash", "status"]
+    },
+    {
+      "type": "journal_settle",
+      "description": "Write paper or live journal entry after leg",
+      "inputs": ["intent_id", "tx_hash", "pnl_usd"],
+      "outputs": ["journal_id"]
+    },
+    {
+      "type": "sc_call",
+      "description": "Call deployed SC only if address has non-null codeHash",
+      "inputs": ["contract_key", "endpoint", "args", "value_egld"],
+      "outputs": ["tx_hash"],
+      "contracts_allowed": [
+        "nft_staking",
+        "tro_staking",
+        "agents_marketplace",
+        "marketplace",
+        "slot_casino"
+      ]
+    }
+  ],
+  "fail_closed": true,
+  "notes": "Never embed PEM. Empty SC addresses in contracts.json must not receive funds."
+}
