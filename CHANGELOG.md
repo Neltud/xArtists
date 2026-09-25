@@ -1,5 +1,29 @@
 # Changelog — xArtists
 
+## [0.46.0](https://github.com/Neltud/xArtists/compare/v0.45.0...v0.46.0) (2026-09-25)
+
+
+### Features
+
+* Agents→LIA links + secondary nav LIA/Slot/GO_LIVE ([b9db415](https://github.com/Neltud/xArtists/commit/b9db4156a14f0d8e6edee397e24d73f9b30aae77))
+* DAO LP+ArtPass vote weight, Wallet daily points + LIA treasury, mobile menu ([98d55c0](https://github.com/Neltud/xArtists/commit/98d55c0f145bb2dfb1d422b748f286fe0dbe693a))
+* **front:** /lia performance hub route + nav + Agents CTA + VERSION ([491888f](https://github.com/Neltud/xArtists/commit/491888f2e452978aba4b01451ba674a737c94efa))
+* route resilience, LIA/Vellum performance hub, mainnet prep agents ([77f1cdd](https://github.com/Neltud/xArtists/commit/77f1cdd514c6fcd1d76c31997ec67041002e1845))
+* **sc:** slot-casino MultiversX — progressive jackpot, EGLD/ESDT spin, 9/9 grand ([10a7a9a](https://github.com/Neltud/xArtists/commit/10a7a9a550c7f71032aeb3e49db05996f5b1db53))
+* **slot-casino:** provably fair lock/resolve RNG (keccak + client seed + delay) ([53af87c](https://github.com/Neltud/xArtists/commit/53af87c639118d007082169622e8e88d7b240aa4))
+* **slot:** public EGLD/USDC progressive pool + grand 9/9; fix package dev script ([d69d247](https://github.com/Neltud/xArtists/commit/d69d2472509436d4d48e9368a182d7cad6c3b236))
+* xPortal WC UX, mobile menu scroll, ads placeholder, daily points, DAO LP pools, LIA treasury panel ([8a8bb4e](https://github.com/Neltud/xArtists/commit/8a8bb4ec8472d143bc06d41f37f4da00b7445838))
+
+
+### Bug Fixes
+
+* AdSlot placeholder, xPortal QR URI, Header mobile scroll ([9a2c0cc](https://github.com/Neltud/xArtists/commit/9a2c0ccd1b90591fd5ade31d956bdadf4c7bc7b3))
+* **connect:** Header + panel xPortal WalletConnect mainnet ([486ce62](https://github.com/Neltud/xArtists/commit/486ce62e9bad5c40e834701ed1c15cb8aaaa4666))
+* **Header:** mobile menu scroll to last tab; vite: bundle WC provider ([4b6f58f](https://github.com/Neltud/xArtists/commit/4b6f58fefbb37680e8e458e43070b0e0433bf605))
+* **Header:** mobile menu scrollable to last nav item (safe-area + dvh) ([c7b5335](https://github.com/Neltud/xArtists/commit/c7b533596425532b74c17ac2394fe2864dbd723f))
+* **Header:** xPortal button uses WalletConnect mainnet login ([3c4aa54](https://github.com/Neltud/xArtists/commit/3c4aa54b6f6e5199886844969ca08c7c53aaeb25))
+* **slot-casino:** portable RNG + register in contracts README ([2c8b221](https://github.com/Neltud/xArtists/commit/2c8b22147123b143494957dbe98450772d112434))
+
 ## [0.45.0](https://github.com/Neltud/xArtists/compare/v0.44.0...v0.45.0) (2026-09-25)
 
 
