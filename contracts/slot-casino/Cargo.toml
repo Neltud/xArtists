@@ -1,0 +1,15 @@
+[package]
+name = "slot-casino"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+[dependencies]
+multiversx-sc = "0.50"
+
+[dev-dependencies]
+multiversx-sc-scenario = "0.50"
