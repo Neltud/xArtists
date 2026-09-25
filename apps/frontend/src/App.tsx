@@ -21,6 +21,7 @@ import { LINKS } from './config/links'
 import { DEMO_MODE } from './config/demoMode'
 import PageTransition from './components/PageTransition'
 import SoundDock from './components/SoundDock'
+import RouteErrorBoundary from './components/RouteErrorBoundary'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Marketplace = lazy(() => import('./pages/Marketplace'))
@@ -57,73 +58,50 @@ const DemoTourPage = lazy(() => import('./pages/DemoTourPage'))
 const GoLivePage = lazy(() => import('./pages/GoLivePage'))
 const VenueAccountPage = lazy(() => import('./pages/VenueAccountPage'))
 const SlotPage = lazy(() => import('./pages/SlotPage'))
-
-const TX_PATHS = new Set([
-  '/marketplace',
-  '/studio',
-  '/agents',
-  '/agents/polylia',
-  '/my-packs',
-  '/tip',
-  '/wallet',
-  '/staking',
-  '/tro',
-  '/burnify',
-  '/sale',
-])
-
-function StaleDataBanner({ isStale, lastUpdate }: { isStale: boolean; lastUpdate: Date | null }) {
-  if (!isStale) return null
-  return (
-    <div className="bg-amber-500/10 border-b border-amber-500/20 px-3 py-1.5 text-center text-[11px] text-amber-200/90">
-      Données réseau partiellement hors-ligne
-      {lastUpdate ? ` · dernier OK ${lastUpdate.toLocaleTimeString()}` : ''}
-    </div>
-  )
-}
+const LiaPerformancePage = lazy(() => import('./pages/LiaPerformancePage'))
 
 export default function App() {
-  const { isStale, lastUpdate } = useMultiversX()
-  const { pathname } = useLocation()
-  const needsTx = TX_PATHS.has(pathname)
+  const location = useLocation()
+  const { needsTx } = useMultiversX()
   const [assetsOpen, setAssetsOpen] = useState(false)
 
   useEffect(() => {
-    const onOpen = () => setAssetsOpen(true)
-    window.addEventListener(OPEN_ASSETS_EVENT, onOpen)
-    return () => window.removeEventListener(OPEN_ASSETS_EVENT, onOpen)
+    const open = () => setAssetsOpen(true)
+    window.addEventListener(OPEN_ASSETS_EVENT, open)
+    return () => window.removeEventListener(OPEN_ASSETS_EVENT, open)
   }, [])
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
 
   return (
     <ErrorBoundary>
-      <ArtAtelierBackdrop />
-      <div className="relative min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col relative">
+        <ArtAtelierBackdrop />
         <Header />
-        <StaleDataBanner isStale={isStale} lastUpdate={lastUpdate} />
-        {DEMO_MODE && <DemoModeBanner />}
         <PrivateReleaseStrip />
+        {DEMO_MODE && <DemoModeBanner />}
         <SignalTicker />
         <GuardianStatusBar />
-        <main className="flex-1 px-3 sm:px-4 pt-2 pb-24 md:pb-8 max-w-5xl mx-auto w-full">
+        <main className="flex-1 page-wrap py-4 sm:py-6 pb-24 md:pb-8">
           <Suspense fallback={<PageLoader />}>
             <PageTransition>
+              <RouteErrorBoundary>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
-                <Route path="/entity" element={<EntityMap />} />
-                <Route path="/org" element={<EntityMap />} />
-                <Route path="/sitemap" element={<SiteMapPage />} />
-                <Route path="/sim" element={<SimulationLab />} />
-                <Route path="/simulation" element={<SimulationLab />} />
-                <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/market" element={<MarketPage />} />
-                <Route path="/analyse" element={<Navigate to="/market" replace />} />
+                <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/trading" element={<Trading />} />
-                <Route path="/studio" element={<ArtistStudio />} />
-                <Route path="/sale" element={<SalePage />} />
                 <Route path="/agents" element={<Agents />} />
                 <Route path="/my-packs" element={<MyPacks />} />
-                <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
+                <Route path="/studio" element={<ArtistStudio />} />
+                <Route path="/sale" element={<SalePage />} />
+                <Route path="/simulation" element={<SimulationLab />} />
+                <Route path="/entities" element={<EntityMap />} />
+                <Route path="/sitemap" element={<SiteMapPage />} />
                 <Route path="/tours" element={<ArtToursPage />} />
+                <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
                 <Route path="/agents/voyage" element={<Navigate to="/tours" replace />} />
                 <Route path="/agents/lightning" element={<LightningAgentPage />} />
                 <Route path="/tro" element={<TroPage />} />
@@ -146,6 +124,8 @@ export default function App() {
                 <Route path="/payments" element={<PaymentHistory />} />
                 <Route path="/editions" element={<Editions />} />
                 <Route path="/slot" element={<SlotPage />} />
+                <Route path="/lia" element={<LiaPerformancePage />} />
+                <Route path="/performance" element={<LiaPerformancePage />} />
                 <Route path="/demo" element={<DemoTourPage />} />
                 <Route path="/go-live" element={<GoLivePage />} />
                 <Route path="/venues" element={<VenueAccountPage />} />
@@ -153,6 +133,7 @@ export default function App() {
                 <Route path="/soul" element={<SoulTestnetPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
+              </RouteErrorBoundary>
             </PageTransition>
           </Suspense>
         </main>
