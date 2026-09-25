@@ -1,5 +1,15 @@
 # Changelog — xArtists
 
+## [0.47.0](https://github.com/Neltud/xArtists/compare/v0.46.0...v0.47.0) (2026-09-25)
+
+
+### Features
+
+* **App:** RouteSfx on navigation (design SFX) ([ac2c093](https://github.com/Neltud/xArtists/commit/ac2c09342e97cb4a9849b210a7e891d088ca0e5d))
+* RouteSfx + Lia page Agent8008/Supernova; contracts README update ([bd43ba3](https://github.com/Neltud/xArtists/commit/bd43ba3279c13fb9de702c232d8887a79a887e04))
+* **sc:** nft-staking + tro-staking implementations; Agent8008 panel; route SFX ([c8d96fe](https://github.com/Neltud/xArtists/commit/c8d96fee1ab4d1844d25ec79f44df90c84f9cad5))
+* Supernova API live, nft/tro staking SC, MX-8008 agent, SFX route FX ([f328b30](https://github.com/Neltud/xArtists/commit/f328b30cba1c947b9bac0aeada6ba1c33d63d1fc))
+
 ## [0.46.0](https://github.com/Neltud/xArtists/compare/v0.45.0...v0.46.0) (2026-09-25)
 
 
