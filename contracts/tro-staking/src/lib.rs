@@ -1,7 +1,7 @@
 #![no_std]
 
-//! xArtists TRO Staking — lock TRO ESDT, track principal per user.
-//! No auto-yield on-chain (rewards off-chain / later distributor).
+//! xArtists TRO Staking — lock TRO ESDT. Immutable after renounceOwnership.
+//! No on-chain yield promise — principal only.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
@@ -18,22 +18,23 @@ pub trait TroStaking {
         self.total_staked().set(BigUint::zero());
     }
 
-    #[endpoint(upgrade)]
-    fn upgrade(&self) {
-        self.require_owner();
-    }
-
     fn require_owner(&self) {
-        require!(
-            self.blockchain().get_caller() == self.owner().get(),
-            "only owner"
-        );
+        let owner = self.owner().get();
+        require!(!owner.is_zero(), "renounced");
+        require!(self.blockchain().get_caller() == owner, "only owner");
     }
 
     #[endpoint(setPaused)]
     fn set_paused(&self, value: bool) {
         self.require_owner();
         self.paused().set(value);
+    }
+
+    #[endpoint(renounceOwnership)]
+    fn renounce_ownership(&self) {
+        self.require_owner();
+        self.owner().set(&ManagedAddress::zero());
+        self.renounced_event();
     }
 
     #[payable("*")]
@@ -97,4 +98,7 @@ pub trait TroStaking {
 
     #[event("unstake")]
     fn unstake_event(&self, #[indexed] user: &ManagedAddress, amount: &BigUint);
+
+    #[event("renounced")]
+    fn renounced_event(&self);
 }

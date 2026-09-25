@@ -1,0 +1,19 @@
+{
+  "label": "xArtists SC Deployer",
+  "address": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g",
+  "network": "mainnet",
+  "chainId": "1",
+  "purpose": "One-shot deploy product SCs · then renounceOwnership",
+  "created": "2026-09-25",
+  "funding": {
+    "min_egld_recommended": 0.5,
+    "note": "Send only EGLD needed for deploy gas. PEM never in git."
+  },
+  "status": "awaiting_funds",
+  "contracts_planned": [
+    "nft-staking",
+    "tro-staking",
+    "nft-marketplace",
+    "agents-marketplace"
+  ]
+}

@@ -1,7 +1,7 @@
 #![no_std]
 
-//! xArtists NFT Staking — lock NFT, accrue points (paper-compatible view).
-//! Pause + owner + CEI. Not a yield promise.
+//! xArtists NFT Staking — immutable after owner renounce.
+//! No upgrade endpoint. CEI · pause · optional collection allowlist.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
@@ -17,24 +17,20 @@ pub struct StakeEntry<M: ManagedTypeApi> {
 
 #[multiversx_sc::contract]
 pub trait NftStaking {
+    /// deployer becomes owner until renounceOwnership
     #[init]
     fn init(&self) {
         let caller = self.blockchain().get_caller();
         self.owner().set(&caller);
         self.paused().set(false);
         self.stake_count().set(0u64);
-    }
-
-    #[endpoint(upgrade)]
-    fn upgrade(&self) {
-        self.require_owner();
+        self.allowlist_enabled().set(false);
     }
 
     fn require_owner(&self) {
-        require!(
-            self.blockchain().get_caller() == self.owner().get(),
-            "only owner"
-        );
+        let owner = self.owner().get();
+        require!(!owner.is_zero(), "renounced");
+        require!(self.blockchain().get_caller() == owner, "only owner");
     }
 
     #[endpoint(setPaused)]
@@ -43,7 +39,26 @@ pub trait NftStaking {
         self.paused().set(value);
     }
 
-    /// Stake one NFT (ESDT NFT transfer).
+    #[endpoint(setAllowlistEnabled)]
+    fn set_allowlist_enabled(&self, value: bool) {
+        self.require_owner();
+        self.allowlist_enabled().set(value);
+    }
+
+    #[endpoint(setCollectionAllowed)]
+    fn set_collection_allowed(&self, token: TokenIdentifier, allowed: bool) {
+        self.require_owner();
+        self.collection_allowed(&token).set(allowed);
+    }
+
+    /// Irreversible — no further admin. Pause/allowlist frozen as-is.
+    #[endpoint(renounceOwnership)]
+    fn renounce_ownership(&self) {
+        self.require_owner();
+        self.owner().set(&ManagedAddress::zero());
+        self.renounced_event();
+    }
+
     #[payable("*")]
     #[endpoint(stakeNft)]
     fn stake_nft(&self) {
@@ -51,6 +66,13 @@ pub trait NftStaking {
         let payment = self.call_value().single_esdt();
         require!(payment.token_nonce > 0, "need NFT nonce");
         require!(payment.amount == 1u64, "amount must be 1");
+
+        if self.allowlist_enabled().get() {
+            require!(
+                self.collection_allowed(&payment.token_identifier).get(),
+                "collection not allowed"
+            );
+        }
 
         let caller = self.blockchain().get_caller();
         let id = self.stake_count().update(|c| {
@@ -91,7 +113,6 @@ pub trait NftStaking {
         self.unstake_event(stake_id, &caller);
     }
 
-    /// Points = blocks staked (view helper for front paper scoring).
     #[view(getStakePoints)]
     fn get_stake_points(&self, stake_id: u64) -> u64 {
         if self.stakes(stake_id).is_empty() {
@@ -125,6 +146,14 @@ pub trait NftStaking {
     #[storage_mapper("owner")]
     fn owner(&self) -> SingleValueMapper<ManagedAddress>;
 
+    #[view(isAllowlistEnabled)]
+    #[storage_mapper("allowlist_enabled")]
+    fn allowlist_enabled(&self) -> SingleValueMapper<bool>;
+
+    #[view(isCollectionAllowed)]
+    #[storage_mapper("collection_allowed")]
+    fn collection_allowed(&self, token: &TokenIdentifier) -> SingleValueMapper<bool>;
+
     #[storage_mapper("user_stake_ids")]
     fn user_stake_ids(&self, user: &ManagedAddress) -> UnorderedSetMapper<u64>;
 
@@ -139,4 +168,7 @@ pub trait NftStaking {
 
     #[event("unstake")]
     fn unstake_event(&self, #[indexed] stake_id: u64, #[indexed] owner: &ManagedAddress);
+
+    #[event("renounced")]
+    fn renounced_event(&self);
 }
