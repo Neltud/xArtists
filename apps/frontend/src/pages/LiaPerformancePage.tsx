@@ -1,10 +1,12 @@
 /**
  * LIA Performance & Agents — Vellum exécute (PEM Vellum), Grok propose.
- * Mainnet-ready narrative · paper until GO_LIVE.
+ * Supernova live + MX-8008.
  */
 import { Link } from 'react-router-dom'
 import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import PaperLiveDesk from '../components/PaperLiveDesk'
+import Agent8008Panel from '../components/Agent8008Panel'
+import SupernovaStatusBadge from '../components/SupernovaStatusBadge'
 import { AGENT_PACKS } from '../config/agentPacks'
 import { canBuyAgent, AGENTS_LIVE, MARKETPLACE_LIVE } from '../config/scStatus'
 
@@ -25,9 +27,9 @@ const PIPELINE = [
     body: 'Workflows + intents. PEM Vellum (hors git/chat) signe les legs autorisées.',
   },
   {
-    id: 'guardian',
-    title: 'Guardian',
-    body: 'Limites, pause, allowlists. Fail-closed si flag SC OFF.',
+    id: 'mx8008',
+    title: 'MX-8008 Sentinel',
+    body: 'Guardian caps + journal settle · cadence Supernova.',
   },
   {
     id: 'settle',
@@ -38,7 +40,7 @@ const PIPELINE = [
 
 const PERF = [
   { k: 'Latence signal → intent', v: '< 2 s', note: 'cible paper' },
-  { k: 'Legs / jour (cap)', v: 'configurable', note: 'Guardian' },
+  { k: 'Legs / jour (cap)', v: 'configurable', note: 'Guardian / 8008' },
   { k: 'Rake table / progressive', v: '15 % / 25 %', note: 'slot SC' },
   { k: 'Compounding', v: '10 colonnes', note: 'board trading' },
   { k: 'SC Agents', v: AGENTS_LIVE ? 'LIVE' : 'OFF', note: 'codeHash' },
@@ -51,20 +53,24 @@ export default function LiaPerformancePage() {
   return (
     <div className="animate-fade-in space-y-8 pb-14 max-w-3xl mx-auto">
       <header className="space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-          LIA · Agents · Mainnet prep
-        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
+            LIA · Agents · Mainnet prep
+          </p>
+          <SupernovaStatusBadge />
+        </div>
         <h1 className="text-3xl font-semibold tracking-tight text-white">
           Performance & exécution
         </h1>
         <p className="text-sm text-zinc-400 leading-relaxed max-w-xl">
           Tous les trades ops passent par <strong className="text-zinc-300">Vellum</strong> avec{' '}
-          <strong className="text-zinc-300">PEM Vellum</strong> (jamais exposée). Grok et le front
-          proposent ; Guardian filtre ; SC flags restent OFF jusqu’à GO_LIVE.
+          <strong className="text-zinc-300">PEM Vellum</strong>. MX-8004 identité · MX-8008 exécution
+          sentinel. Design FX + SFX (dock son).
         </p>
       </header>
 
       <Phase4ReadinessBanner />
+      <Agent8008Panel />
 
       <section className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 space-y-3">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-300/90">
@@ -108,7 +114,7 @@ export default function LiaPerformancePage() {
             <Link
               key={p.id}
               to="/agents"
-              className="rounded-xl border border-white/10 bg-black/40 px-3 py-3 hover:border-white/25 transition-colors"
+              className="rounded-xl border border-white/10 bg-black/40 px-3 py-3 hover:border-white/25 transition-colors card-play"
             >
               <p className="text-sm font-semibold text-white">
                 {p.icon} {p.name}
@@ -130,12 +136,12 @@ export default function LiaPerformancePage() {
       <PaperLiveDesk />
 
       <section className="rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[12px] text-zinc-400 space-y-2">
-        <p className="font-medium text-zinc-300">Règles PEM</p>
+        <p className="font-medium text-zinc-300">Règles PEM + Supernova</p>
         <ul className="list-disc list-inside space-y-1">
           <li>PEM Vellum / LIA / GrokyversX : hors git, hors chat, hors front</li>
-          <li>Vellum signe les txs d’ops autorisées uniquement</li>
-          <li>Wallet user (xPortal) : tips, slot, marketplace — pas le PEM protocole</li>
-          <li>Deploy mainnet : gate confirm_mainnet + revue humaine</li>
+          <li>Vellum signe les txs ops · MX-8008 journalise / garde</li>
+          <li>Cadence réseau : api.multiversx.com/stats (refreshRate)</li>
+          <li>SC timing : pas d’assumptions 6s hardcodées (docs Supernova)</li>
         </ul>
       </section>
 
@@ -152,8 +158,8 @@ export default function LiaPerformancePage() {
         <Link to="/slot" className="text-zinc-400 hover:text-white">
           Slot
         </Link>
-        <Link to="/sitemap" className="text-zinc-400 hover:text-white">
-          Sitemap
+        <Link to="/staking" className="text-zinc-400 hover:text-white">
+          Staking
         </Link>
       </p>
     </div>
