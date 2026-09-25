@@ -1,53 +1,93 @@
+/**
+ * Emplacement pub — créative active ou placeholder « Votre publicité ici · Enchères ».
+ */
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
-export type AdCreative = {
-  slot: string
+type AdCreative = {
+  slot?: string
   title?: string
   imageUrl?: string
   imageCid?: string
   href?: string
-  startsAt?: string
-  endsAt?: string
   status?: string
   advertiser?: string
+  startsAt?: string
+  endsAt?: string
 }
 
-type Props = {
-  id: 'home_hero' | 'market_sidebar' | 'studio_banner' | 'drop_feature'
+function isActive(c: AdCreative | undefined): boolean {
+  if (!c || c.status === 'inactive') return false
+  const now = Date.now()
+  if (c.startsAt && Date.parse(c.startsAt) > now) return false
+  if (c.endsAt && Date.parse(c.endsAt) < now) return false
+  return true
+}
+
+export default function AdSlot({
+  id,
+  className = '',
+}: {
+  id: string
   className?: string
-}
-
-function isActive(ad: AdCreative, now = Date.now()): boolean {
-  if (ad.status && ad.status !== 'active' && ad.status !== 'scheduled') return false
-  const start = ad.startsAt ? Date.parse(ad.startsAt) : 0
-  const end = ad.endsAt ? Date.parse(ad.endsAt) : Number.POSITIVE_INFINITY
-  if (Number.isFinite(start) && now < start) return false
-  if (Number.isFinite(end) && now > end) return false
-  return Boolean(ad.imageUrl || ad.title)
-}
-
-/**
- * Premium ad slot — max one creative per id from ads_active.json.
- * Always labeled as auction advertising (not investment).
- */
-export default function AdSlot({ id, className = '' }: Props) {
+}) {
   const [ad, setAd] = useState<AdCreative | null>(null)
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     let cancelled = false
-    const url = `${import.meta.env.BASE_URL}data/ads_active.json?t=${Date.now()}`
-    fetch(url, { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => {
-        if (cancelled || !j?.slots?.[id]) return
-        const creative = j.slots[id] as AdCreative
-        if (isActive(creative)) setAd(creative)
-      })
-      .catch(() => {})
+    const urls = [
+      `${import.meta.env.BASE_URL}data/ads_active.json`,
+      '/xArtists/data/ads_active.json',
+    ]
+    ;(async () => {
+      for (const u of urls) {
+        try {
+          const r = await fetch(u, { cache: 'no-store' })
+          if (!r.ok) continue
+          const j = await r.json()
+          const creative = j?.slots?.[id] as AdCreative | undefined
+          if (!cancelled && isActive(creative)) {
+            setAd(creative!)
+            setLoaded(true)
+            return
+          }
+        } catch {
+          /* next */
+        }
+      }
+      if (!cancelled) {
+        setAd(null)
+        setLoaded(true)
+      }
+    })()
     return () => {
       cancelled = true
     }
   }, [id])
+
+  // Placeholder — inventaire libre
+  if (loaded && !ad) {
+    return (
+      <aside
+        className={`rounded-xl border border-dashed border-amber-500/35 bg-amber-950/10 overflow-hidden ${className}`}
+        aria-label="Espace publicitaire disponible"
+        data-ad-slot={id}
+      >
+        <Link
+          to="/ads"
+          className="block px-4 py-5 text-center hover:bg-amber-500/5 transition-colors"
+        >
+          <p className="text-[10px] uppercase tracking-[0.2em] text-amber-200/70 mb-1">
+            Espace pub · {id}
+          </p>
+          <p className="text-base font-semibold text-amber-100">Votre publicité ici</p>
+          <p className="text-sm text-amber-200/80 mt-1">Enchères · réserver un slot</p>
+          <p className="text-[10px] text-zinc-600 mt-2">Paper bid · pas un investissement</p>
+        </Link>
+      </aside>
+    )
+  }
 
   if (!ad) return null
 
@@ -92,7 +132,7 @@ export default function AdSlot({ id, className = '' }: Props) {
           {inner}
         </a>
       ) : (
-        <div>{inner}</div>
+        <div className="p-1">{inner}</div>
       )}
     </aside>
   )

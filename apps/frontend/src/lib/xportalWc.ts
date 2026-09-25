@@ -1,5 +1,13 @@
 /**
  * xPortal / WalletConnect V2 — mainnet login.
+ *
+ * Pourquoi ça peut échouer :
+ * 1. Package WC non bundlé / peer manquant au build Pages
+ * 2. Domain non allowlisté sur WalletConnect Cloud
+ * 3. Popup bloquée / app xPortal absente
+ * 4. User refuse la session
+ *
+ * Fallback : Web Wallet (toujours fiable sur GH Pages).
  */
 import { XPORTAL_DEEP_LINKS, sdkDappConfig, WALLET_CONNECT_V2_RELAY_URL } from '../config/sdkDapp'
 
@@ -22,6 +30,17 @@ function openXPortalWithUri(uri: string) {
         `https://xportal.com/?wallet-connect=${encoded}`,
       )}`
     window.open(deep, '_blank', 'noopener,noreferrer')
+    // Native scheme attempt (mobile in-app browser)
+    try {
+      const a = document.createElement('a')
+      a.href = `xportal://wc?uri=${encoded}`
+      a.style.display = 'none'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+    } catch {
+      /* ignore */
+    }
   } catch {
     /* ignore */
   }
@@ -39,10 +58,14 @@ export async function loginWithXPortalMainnet(
 ): Promise<{ ok: true; address: string } | { ok: false; error: string }> {
   const projectId = sdkDappConfig.walletConnectV2ProjectId
   if (!projectId || projectId.length < 32) {
-    return { ok: false, error: 'WalletConnect projectId manquant (VITE_WALLETCONNECT_PROJECT_ID).' }
+    return {
+      ok: false,
+      error:
+        'WalletConnect projectId manquant. Utilise Web Wallet (recommandé sur GitHub Pages).',
+    }
   }
 
-  onProgress?.({ phase: 'init', message: 'Initialisation WalletConnect…' })
+  onProgress?.({ phase: 'init', message: 'Initialisation WalletConnect mainnet…' })
 
   try {
     const mod = await import('@multiversx/sdk-wallet-connect-provider')
@@ -60,7 +83,8 @@ export async function loginWithXPortalMainnet(
     if (!WalletConnectV2Provider) {
       return {
         ok: false,
-        error: 'Module WC indisponible au build. Utilise Web Wallet (recommandé).',
+        error:
+          'Module WalletConnect non chargé (build). Utilise Web Wallet — fiable sur neltud.github.io.',
       }
     }
 
@@ -81,11 +105,20 @@ export async function loginWithXPortalMainnet(
     const { uri, approval } = await provider.connect()
 
     if (uri) {
-      onProgress?.({ phase: 'uri', uri, message: 'Scanne ou ouvre xPortal pour approuver' })
+      onProgress?.({
+        phase: 'uri',
+        uri,
+        message:
+          'Ouvre xPortal et approuve. Si rien ne s’ouvre : Web Wallet recommandé.',
+      })
       openXPortalWithUri(uri)
     }
 
-    onProgress?.({ phase: 'waiting', uri, message: 'En attente d’approbation xPortal…' })
+    onProgress?.({
+      phase: 'waiting',
+      uri,
+      message: 'En attente d’approbation dans xPortal…',
+    })
     await approval()
 
     let address = ''
@@ -109,7 +142,7 @@ export async function loginWithXPortalMainnet(
     }
     return {
       ok: false,
-      error: `xPortal WC: ${msg}. Utilise Web Wallet pour mainnet.`,
+      error: `xPortal WC indisponible (${msg.slice(0, 80)}). Utilise Web Wallet.`,
     }
   }
 }
