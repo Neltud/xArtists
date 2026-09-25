@@ -1,11 +1,15 @@
 [package]
 name = "nft-staking"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"
 
 [dependencies]
-multiversx-sc = { version = "0.66", features = ["derive"] }
-multiversx-sc-modules = "0.66"
+multiversx-sc = "0.50"
 
 [dev-dependencies]
-multiversx-sc-scenario = "0.66"
+multiversx-sc-scenario = "0.50"
