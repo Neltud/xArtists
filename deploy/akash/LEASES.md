@@ -1,32 +1,37 @@
 # Akash leases — xArtists
 
-## Preuve de déploiement (2026-09-25)
+## Indexeur catalogue (2026-09-25) — LIVE
 
 | Champ | Valeur |
 |-------|--------|
-| Console | [console.akash.network](https://console.akash.network) |
-| Deployment | Hello World (onboarding) |
-| Provider | `provider.h6i-dedicated.eu-se-1.digitalfrontier.so` (eu-east / digital frontier) |
-| Resources | 0.5 vCPU · ~512 Mi RAM · ~512 Mi storage |
-| Image | `ghcr.io/akash-network/hello-akash-world:2.1.0` |
+| Service | `indexer` (node:20-alpine + worker.example.mjs) |
+| dseq | `1790359855895` |
+| Provider | `akash15tl6v6gd0nte0syyxnv57zmmspgju4c3xfmdhk` (hurricane) |
 | Status | **Running** 1/1 |
-| URL publique | http://rfqkb6agcle8n1o7206lpmkj0g.ingress.h6i-dedicated.eu-se-1.digitalfrontier.so |
+| URL | http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub |
+| Health | `GET /health` → ok, 4 collections, 90 NFTs |
+| Catalog | `GET /catalog` → JSON compatible dApp |
 
-Vérifié : HTTP **200** (Next.js Hello World).
+### Brancher la dApp (build Pages)
 
-## Prochaine étape — indexeur xArtists
+```
+VITE_CATALOG_API=http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
+```
 
-1. **Fermer ou laisser** le Hello World (coût faible ; utile comme canary).
-2. Nouveau deploy avec `deploy/akash/indexer/deploy.yaml` **après** publication de l’image :
-   - Build : `deploy/akash/indexer/Dockerfile`
-   - Tag : `ghcr.io/neltud/xartists-indexer:latest` (ou ton registry)
-3. Une fois le lease indexeur UP :
-   - `GET {url}/health`
-   - `GET {url}/catalog`
-   - dApp : `VITE_CATALOG_API=https://…` (HTTPS recommandé via provider / proxy)
+CORS autorisé pour `https://neltud.github.io`.
+
+## Canary Hello World (optionnel)
+
+| Champ | Valeur |
+|-------|--------|
+| dseq | `1790358856208` |
+| URL | http://rfqkb6agcle8n1o7206lpmkj0g.ingress.h6i-dedicated.eu-se-1.digitalfrontier.so |
+| Image | hello-akash-world |
+
+Peut rester ouvert comme canary ou être fermé pour économiser le crédit Console (`uact`).
 
 ## Sécurité
 
-- Aucune PEM dans les env Akash
-- CORS ciblé `neltud.github.io` sur l’indexeur
-- Hello World = démo uniquement, pas de données xArtists
+- **Aucune API key / PEM** dans ce fichier ni dans le repo
+- Clé Console : variable d’env locale `AKASH_API_KEY` uniquement
+- Indexeur = lecture API MultiversX publique uniquement
