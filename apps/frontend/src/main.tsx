@@ -9,6 +9,7 @@ import { registerSW } from './pwa/registerSW'
 import { probeChainTiming } from './config/chainTiming'
 import './index.css'
 import './atelier.css'
+import './motion-fx.css'
 
 registerSW()
 void probeChainTiming()

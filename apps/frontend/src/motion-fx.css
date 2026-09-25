@@ -1,0 +1,86 @@
+/* Micro-interactions + render containment — 3 arrows UX */
+
+.card-play {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  contain: layout style paint;
+  content-visibility: auto;
+  transition:
+    transform 0.28s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)),
+    box-shadow 0.28s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-color 0.28s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.card-play:active {
+  transform: scale(0.98);
+}
+
+.card-interactive {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  contain: layout style paint;
+  transition:
+    transform 0.32s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)),
+    box-shadow 0.32s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-color 0.28s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.card-interactive::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.07) 48%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.07) 52%,
+    transparent 60%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.65s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+  z-index: 2;
+}
+.card-interactive:hover {
+  transform: translateY(-3px);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 16px 40px -16px rgba(139, 92, 246, 0.35);
+}
+.card-interactive:hover::after {
+  transform: translateX(120%);
+}
+.card-interactive:active {
+  transform: translateY(-1px) scale(0.99);
+}
+.card-interactive:focus-visible {
+  outline: 2px solid rgba(139, 92, 246, 0.7);
+  outline-offset: 2px;
+}
+
+.flow-row {
+  contain: layout style;
+}
+
+.orb {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* List / gallery tiles — skip offscreen paint */
+.nft-grid-item,
+.card-play {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 180px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-interactive:hover,
+  .card-interactive:active,
+  .card-play:active {
+    transform: none;
+  }
+  .card-interactive::after {
+    display: none;
+  }
+}
