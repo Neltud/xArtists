@@ -34,7 +34,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # No npm cache until apps/frontend/package-lock.json is committed
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -68,6 +67,8 @@ jobs:
         run: npm run build
         env:
           NODE_OPTIONS: --max-old-space-size=4096
+          VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
+          VITE_APP_BUILD: "3.10.0"
 
       - name: Stamp build id
         run: |
