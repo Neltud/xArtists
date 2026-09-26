@@ -1,6 +1,6 @@
-/* xArtists PWA — v9: network-first HTML/JS/CSS, purge shell-v8 */
-const SHELL = 'xartists-shell-v9'
-const DATA = 'xartists-data-v9'
+/* xArtists PWA — v10: network-first HTML/JS/CSS, purge shell-v9 */
+const SHELL = 'xartists-shell-v10'
+const DATA = 'xartists-data-v10'
 const PRECACHE = ['/xArtists/manifest.webmanifest']
 
 self.addEventListener('install', (event) => {
@@ -33,39 +33,35 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return
 
   const path = url.pathname
-  const isShell =
-    path.endsWith('.html') ||
-    path.endsWith('/') ||
+  const isNav = req.mode === 'navigate' || path.endsWith('.html') || path === '/xArtists/' || path === '/xArtists'
+  const isAsset =
+    path.includes('/assets/') ||
     path.endsWith('.js') ||
     path.endsWith('.css') ||
-    path.includes('/assets/')
+    path.endsWith('.woff2')
 
-  // Network-first for app shell — avoid serving stale hashed bundles
-  if (isShell) {
+  if (isNav || isAsset) {
     event.respondWith(
       fetch(req)
-        .then((r) => {
-          if (r && r.ok) {
-            const copy = r.clone()
-            caches.open(SHELL).then((c) => c.put(req, copy)).catch(() => undefined)
-          }
-          return r
+        .then((res) => {
+          const copy = res.clone()
+          caches.open(SHELL).then((c) => c.put(req, copy)).catch(() => undefined)
+          return res
         })
-        .catch(() => caches.match(req))
+        .catch(() => caches.match(req).then((c) => c || caches.match('/xArtists/index.html')))
     )
     return
   }
 
-  event.respondWith(
-    caches.open(DATA).then((cache) =>
-      cache.match(req).then(
-        (hit) =>
-          hit ||
-          fetch(req).then((r) => {
-            if (r && r.ok) cache.put(req, r.clone()).catch(() => undefined)
-            return r
-          })
-      )
+  if (path.includes('/data/') || path.endsWith('.json')) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone()
+          caches.open(DATA).then((c) => c.put(req, copy)).catch(() => undefined)
+          return res
+        })
+        .catch(() => caches.match(req))
     )
-  )
+  }
 })
