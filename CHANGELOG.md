@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.48.2](https://github.com/Neltud/xArtists/compare/v0.48.1...v0.48.2) (2026-09-26)
+
+
+### Bug Fixes
+
+* **museum:** brighter halls + MVX media first for art textures ([6ae5294](https://github.com/Neltud/xArtists/commit/6ae5294d7ee6f60bfd9d458a9a6eb9401c1e2d65))
+* **ux:** ads no-duplicate + brighter museum + treasury dust filter + readable balances ([028500c](https://github.com/Neltud/xArtists/commit/028500c0d2af2e7d5d00d385033f81f0d10118cd))
+
 ## [0.48.1](https://github.com/Neltud/xArtists/compare/v0.48.0...v0.48.1) (2026-09-26)
 
 
