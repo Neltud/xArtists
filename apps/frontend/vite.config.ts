@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+const isSdkDapp = (id: string) =>
+  id === '@multiversx/sdk-dapp' || id.startsWith('@multiversx/sdk-dapp/')
+
 export default defineConfig({
   plugins: [react()],
   base: '/xArtists/',
@@ -14,7 +17,7 @@ export default defineConfig({
     cssCodeSplit: true,
     sourcemap: false,
     minify: 'esbuild',
-    reportCompressedSize: true,
+    reportCompressedSize: false,
     chunkSizeWarningLimit: 900,
     assetsInlineLimit: 4096,
     modulePreload: { polyfill: true },
@@ -23,8 +26,8 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      // Bundle wallet-connect-provider; sdk-dapp still dynamic-optional in MxDappProvider
-      // external: (id) => id.includes('@multiversx/sdk-dapp'),
+      // sdk-dapp package entry is incompatible with Vite 5 — dynamic import only at runtime
+      external: (id) => isSdkDapp(id),
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return
