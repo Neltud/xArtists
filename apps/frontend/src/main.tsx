@@ -11,14 +11,17 @@ import './index.css'
 import './atelier.css'
 import './motion-fx.css'
 
+/** Browser polyfill — some MultiversX / WC paths expect Node `process` */
+const g = globalThis as typeof globalThis & { process?: { env: Record<string, string> } }
+if (typeof g.process === 'undefined') {
+  g.process = { env: { NODE_ENV: 'production' } }
+} else if (!g.process.env) {
+  g.process.env = { NODE_ENV: 'production' }
+}
+
 registerSW()
 void probeChainTiming()
 
-/**
- * HashRouter — GitHub Pages SPA.
- * MxDappProvider wraps sdk-dapp when available (WC / extension).
- * WalletProvider keeps session + web-wallet redirect address.
- */
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HashRouter>

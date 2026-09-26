@@ -7,6 +7,14 @@ const isSdkDapp = (id: string) =>
 export default defineConfig({
   plugins: [react()],
   base: '/xArtists/',
+  // Node shims — fixes "process is not defined" on Trade / sdk deps in browser
+  define: {
+    'process.env': '{}',
+    'process.env.NODE_ENV': JSON.stringify(
+      process.env.NODE_ENV === 'production' || process.env.CI ? 'production' : 'development',
+    ),
+    global: 'globalThis',
+  },
   optimizeDeps: {
     exclude: ['@multiversx/sdk-dapp'],
   },
@@ -26,7 +34,6 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      // sdk-dapp package entry is incompatible with Vite 5 — dynamic import only at runtime
       external: (id) => isSdkDapp(id),
       output: {
         manualChunks(id) {
