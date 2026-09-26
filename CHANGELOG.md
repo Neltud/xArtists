@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.49.0](https://github.com/Neltud/xArtists/compare/v0.48.2...v0.49.0) (2026-09-26)
+
+
+### Features
+
+* **venues:** rental tiers UI + Wikimedia art URLs for virtual halls ([95b9ad1](https://github.com/Neltud/xArtists/commit/95b9ad1a3b1e927e7b5abc78a49b83af0c19b420))
+
+
+### Bug Fixes
+
+* **trade:** polyfill process + venue rental tiers + reliable museum images ([eecb19c](https://github.com/Neltud/xArtists/commit/eecb19c3c6e4df95fe64bc5c3f9bb0873af42766))
+
 ## [0.48.2](https://github.com/Neltud/xArtists/compare/v0.48.1...v0.48.2) (2026-09-26)
 
 
