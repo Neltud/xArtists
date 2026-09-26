@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.48.1](https://github.com/Neltud/xArtists/compare/v0.48.0...v0.48.1) (2026-09-26)
+
+
+### Bug Fixes
+
+* **build:** externalize broken @multiversx/sdk-dapp for Vite 5 — unblock Pages deploy 3.10.0 ([f78f610](https://github.com/Neltud/xArtists/commit/f78f6106ae3a9074ae25cad9e56ccba2f8e8ee5a))
+
 ## [0.48.0](https://github.com/Neltud/xArtists/compare/v0.47.0...v0.48.0) (2026-09-25)
 
 
