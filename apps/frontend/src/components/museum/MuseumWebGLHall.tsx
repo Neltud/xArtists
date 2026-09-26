@@ -1,5 +1,5 @@
 /**
- * Musée WebGL — 3e personne · textures proxy-first · Pulse → fog/lumière · déplacement stable.
+ * Musée WebGL — 3e personne · textures proxy-first · salles plus lumineuses.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
@@ -33,11 +33,11 @@ const PALETTE: Record<
   Theme,
   { wall: number; floor: number; ceil: number; fog: number; frame: number; emissive: number; trim: number }
 > = {
-  cyber: { wall: 0x141428, floor: 0x060610, ceil: 0x0a0a18, fog: 0x04040a, frame: 0x1e293b, emissive: 0x0e7490, trim: 0x22d3ee },
-  stone: { wall: 0x3d342c, floor: 0x1a1512, ceil: 0x2c241e, fog: 0x0e0c0a, frame: 0x5c4a38, emissive: 0x1c1408, trim: 0x8b7355 },
-  gold: { wall: 0x3a3018, floor: 0x16120a, ceil: 0x2a2214, fog: 0x0e0c08, frame: 0x6b5528, emissive: 0x2a1e08, trim: 0xc9a227 },
-  white: { wall: 0xe8e2d8, floor: 0xc4bdb0, ceil: 0xf4f0e8, fog: 0xb0a898, frame: 0xd4ccc0, emissive: 0x888070, trim: 0x9a9080 },
-  dark: { wall: 0x181410, floor: 0x080604, ceil: 0x100e0c, fog: 0x040302, frame: 0x2a2218, emissive: 0x100c08, trim: 0x44403c },
+  cyber: { wall: 0x1e2440, floor: 0x0c1020, ceil: 0x141a30, fog: 0x0a0e1c, frame: 0x334155, emissive: 0x22d3ee, trim: 0x67e8f9 },
+  stone: { wall: 0x4a4038, floor: 0x242018, ceil: 0x3a3228, fog: 0x1a1610, frame: 0x6b5a48, emissive: 0x3d2e18, trim: 0xc4a574 },
+  gold: { wall: 0x4a3c20, floor: 0x221c10, ceil: 0x3a2e18, fog: 0x18140c, frame: 0x7a6530, emissive: 0x4a3810, trim: 0xe0b84a },
+  white: { wall: 0xf0ebe3, floor: 0xd4cdc2, ceil: 0xfaf7f2, fog: 0xc8c0b4, frame: 0xe0d8cc, emissive: 0xa09888, trim: 0xb0a898 },
+  dark: { wall: 0x242018, floor: 0x12100c, ceil: 0x1a1814, fog: 0x0c0a08, frame: 0x3a3228, emissive: 0x1c1810, trim: 0x5a544c },
 }
 
 function wallGeom(w: WallSeg) {
@@ -192,7 +192,7 @@ export default function MuseumWebGLHall({
 
     const ambientLight = new THREE.AmbientLight(0xffffff, pulseParams.ambient)
     scene.add(ambientLight)
-    const key = new THREE.DirectionalLight(0xfff5e6, 0.85)
+    const key = new THREE.DirectionalLight(0xfff5e6, 1.15)
     key.position.set(b.cx + 4, wallH - 0.5, b.cy - 3)
     scene.add(key)
     try {
@@ -215,10 +215,11 @@ export default function MuseumWebGLHall({
       if (!u) return []
       const out: string[] = []
       try {
+        if (/media\.multiversx\.com|ipfs|nftstorage|gateway/i.test(u)) out.push(u)
         const bare = u.replace(/^https?:\/\//i, '')
-        out.push(`https://images.weserv.nl/?url=${encodeURIComponent(bare)}&w=720&h=900&fit=cover&output=jpg&q=80`)
-        out.push(`https://wsrv.nl/?url=${encodeURIComponent(bare)}&w=720&h=900&fit=cover&output=jpg&q=80`)
-        out.push(u)
+        out.push(`https://images.weserv.nl/?url=${encodeURIComponent(bare)}&w=720&h=900&fit=cover&output=jpg&q=82`)
+        out.push(`https://wsrv.nl/?url=${encodeURIComponent(bare)}&w=720&h=900&fit=cover&output=jpg&q=82`)
+        if (!out.includes(u)) out.push(u)
       } catch {
         out.push(u)
       }
@@ -231,14 +232,14 @@ export default function MuseumWebGLHall({
       c.height = 640
       const ctx = c.getContext('2d')!
       const g = ctx.createLinearGradient(0, 0, 0, 640)
-      g.addColorStop(0, '#3d342c')
-      g.addColorStop(1, '#1a1512')
+      g.addColorStop(0, '#5a4e42')
+      g.addColorStop(1, '#2a241c')
       ctx.fillStyle = g
       ctx.fillRect(0, 0, 512, 640)
-      ctx.strokeStyle = 'rgba(201,162,39,0.55)'
+      ctx.strokeStyle = 'rgba(232,196,96,0.7)'
       ctx.lineWidth = 10
       ctx.strokeRect(20, 20, 472, 600)
-      ctx.fillStyle = '#f0e6d8'
+      ctx.fillStyle = '#f8f0e4'
       ctx.font = 'bold 26px system-ui,sans-serif'
       const t = (title || 'Œuvre').slice(0, 42)
       let y = 260
@@ -247,7 +248,7 @@ export default function MuseumWebGLHall({
         y += 34
       }
       if (sub) {
-        ctx.fillStyle = '#b0a090'
+        ctx.fillStyle = '#c8b8a4'
         ctx.font = '18px system-ui,sans-serif'
         ctx.fillText(sub.slice(0, 30), 48, y + 20)
       }
@@ -317,7 +318,7 @@ export default function MuseumWebGLHall({
           roughness: 0.5,
           metalness: 0.2,
           emissive: pal.emissive,
-          emissiveIntensity: 0.12,
+          emissiveIntensity: 0.22,
         }),
       )
       frameMesh.position.set(apx, 1.55, apz)
@@ -357,7 +358,7 @@ export default function MuseumWebGLHall({
           roughness: 0.3,
           metalness: 0.5,
           emissive: pal.emissive,
-          emissiveIntensity: 0.3,
+          emissiveIntensity: 0.4,
         }),
       )
       form.position.set(sx, 0.85, sz)
@@ -545,75 +546,63 @@ export default function MuseumWebGLHall({
         ix += r.x
         iz += r.z
       }
-      const ilen = Math.hypot(ix, iz)
-      if (ilen > 0.001) {
-        ix /= ilen
-        iz /= ilen
+      const len = Math.hypot(ix, iz) || 1
+      const speed = sprint ? SPRINT : WALK
+      if (ix || iz) {
+        vx += (ix / len) * ACCEL * dt
+        vz += (iz / len) * ACCEL * dt
         facing = Math.atan2(ix, iz)
       }
-      const speed = sprint ? SPRINT : WALK
-      if (ilen > 0.001) {
-        vx += ix * ACCEL * dt
-        vz += iz * ACCEL * dt
-      } else {
-        vx *= Math.max(0, 1 - FRICTION * dt)
-        vz *= Math.max(0, 1 - FRICTION * dt)
-      }
+      vx *= Math.exp(-FRICTION * dt)
+      vz *= Math.exp(-FRICTION * dt)
+      const maxV = speed
       const vlen = Math.hypot(vx, vz)
-      if (vlen > speed) {
-        vx = (vx / vlen) * speed
-        vz = (vz / vlen) * speed
+      if (vlen > maxV) {
+        vx = (vx / vlen) * maxV
+        vz = (vz / vlen) * maxV
       }
       const nx = px + vx * dt
       const nz = pz + vz * dt
       if (pointInBlueprintFloor(blueprint, nx, nz)) {
         px = nx
         pz = nz
-      } else if (pointInBlueprintFloor(blueprint, nx, pz)) {
-        px = nx
-        vx *= 0.5
-      } else if (pointInBlueprintFloor(blueprint, px, nz)) {
-        pz = nz
-        vz *= 0.5
       } else {
-        vx *= 0.15
-        vz *= 0.15
-      }
-      if (vlen > 0.35) {
-        facing = Math.atan2(vx, vz)
-        walkPhase += dt * (sprint ? 12 : 9)
+        vx = 0
+        vz = 0
       }
       avatar.position.set(px, 0, pz)
       avatar.rotation.y = facing
-      tickAvatarWalk(avatar, walkPhase, vlen > 0.3 ? (sprint ? 1 : 0.7) : 0)
+      walkPhase += vlen * dt * 4
+      try {
+        tickAvatarWalk(avatar, walkPhase, vlen > 0.15)
+      } catch {
+        /* */
+      }
 
-      let nearest: FrameItem | null = null
-      let best = 2.4
+      let best: (typeof artAnchors)[0] | null = null
+      let bestD = 3.2
       for (const a of artAnchors) {
         const d = Math.hypot(a.pos.x - px, a.pos.z - pz)
-        if (d < best) {
-          best = d
-          nearest = a.frame
+        if (d < bestD) {
+          bestD = d
+          best = a
         }
       }
-      nearestRef.current = nearest
-      const nt = nearest?.title || ''
-      if (nt !== lastNearTitle) {
-        lastNearTitle = nt
-        setNearTitle(nt)
+      nearestRef.current = best?.frame || null
+      const t = best?.frame?.title || ''
+      if (t !== lastNearTitle) {
+        lastNearTitle = t
+        setNearTitle(t)
       }
 
-      const moving = Math.hypot(vx, vz) > 0.35
-      avatar.visible = true
-      const back = CAM_DIST + (sprint && moving ? 0.4 : 0)
-      const side = 0.55
-      const cx = px + Math.sin(yaw) * back + Math.cos(yaw) * side
-      const cz = pz + Math.cos(yaw) * back - Math.sin(yaw) * side
-      const cy = CAM_HEIGHT + pitch * 1.1
-      camera.position.set(cx, cy, cz)
-      camera.lookAt(px, EYE * 0.95, pz)
-      camera.fov = sprint && moving ? 60 : 55
-      camera.updateProjectionMatrix()
+      const lookY = Math.sin(pitch) * 2.2
+      const camBack = CAM_DIST
+      camera.position.set(
+        px + Math.sin(yaw) * camBack,
+        CAM_HEIGHT + lookY * 0.15,
+        pz + Math.cos(yaw) * camBack,
+      )
+      camera.lookAt(px, EYE * 0.9 + lookY * 0.2, pz)
       renderer.render(scene, camera)
     }
     loop()
@@ -629,73 +618,65 @@ export default function MuseumWebGLHall({
       canvas.removeEventListener('pointermove', onMove)
       ro.disconnect()
       renderer.dispose()
-      if (canvas.parentNode) canvas.parentNode.removeChild(canvas)
+      if (mount.contains(canvas)) mount.removeChild(canvas)
     }
-  }, [blueprint, paintings, sculptures, pal, room, presence.virtual])
+  }, [blueprint, paintings, sculptures, room, pal, presence.virtual, roomName])
 
   return (
-    <div className="relative h-[min(70vh,520px)] bg-black select-none">
+    <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-zinc-950 h-[min(70vh,520px)]">
       <div ref={mountRef} className="absolute inset-0" />
       {!ready && (
-        <div className="absolute inset-0 flex items-center justify-center text-sm text-zinc-500 z-10">
-          Initialisation WebGL…
+        <div className="absolute inset-0 flex items-center justify-center text-sm text-zinc-500 bg-zinc-950">
+          {emptyLabel}
         </div>
       )}
-      {hint && ready && (
-        <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap gap-2 justify-between pointer-events-none">
-          <div className="rounded-xl bg-black/60 border border-white/10 px-3 py-2 text-[11px] text-zinc-300 pointer-events-auto space-y-1">
-            <div>
-              {roomName} · {area} m² · {paintings.length} tableaux · avatar 3e pers.
-              {nearTitle ? ` · près de « ${nearTitle} » (E)` : ''}
-            </div>
-            <div className="flex items-center gap-2 text-[10px] text-zinc-400">
-              <span
-                className="inline-block w-2 h-2 rounded-full"
-                style={{ background: pulseAccent, boxShadow: `0 0 8px ${pulseAccent}` }}
-              />
-              Pulse · {pulseLabel}
-            </div>
-          </div>
+      <div className="absolute top-2 left-2 right-2 flex flex-wrap gap-2 pointer-events-none">
+        <span className="rounded-lg bg-black/55 border border-white/10 px-2 py-1 text-[11px] text-zinc-200">
+          Hall {roomName} · {area} m² · {paintings.length} tableaux · avatar 3e pers.
+        </span>
+        <span
+          className="rounded-lg bg-black/55 border border-white/10 px-2 py-1 text-[11px]"
+          style={{ color: pulseAccent }}
+        >
+          ● {pulseLabel}
+        </span>
+      </div>
+      {nearTitle && (
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-full bg-black/65 border border-white/15 px-3 py-1 text-[12px] text-white max-w-[90%] truncate">
+          {nearTitle}
+        </div>
+      )}
+      {hint && (
+        <div className="absolute bottom-3 left-3 right-3 sm:right-auto flex flex-wrap gap-2 items-center">
+          <p className="text-[11px] text-zinc-300 bg-black/55 border border-white/10 rounded-lg px-2 py-1">
+            Clic viser · WASD · E œuvre
+          </p>
           <button
             type="button"
-            className="rounded-lg bg-black/55 border border-white/15 px-2 py-1 text-[10px] text-zinc-400 pointer-events-auto"
+            className="text-[11px] text-zinc-400 underline pointer-events-auto"
             onClick={() => setHint(false)}
           >
             OK
           </button>
         </div>
       )}
-      <div className="absolute bottom-3 left-3 right-3 z-10 flex flex-wrap items-end justify-between gap-2">
-        <div className="flex gap-1.5">
+      <div className="absolute bottom-3 right-3 flex flex-col gap-1.5 sm:hidden pointer-events-auto">
+        <div className="flex gap-1.5 justify-center">
           <Pad label="W" on={v => (hold.current.w = v)} />
-          <div className="flex flex-col gap-1">
-            <Pad label="A" on={v => (hold.current.a = v)} />
-            <Pad label="S" on={v => (hold.current.s = v)} />
-          </div>
+        </div>
+        <div className="flex gap-1.5">
+          <Pad label="A" on={v => (hold.current.a = v)} />
+          <Pad label="S" on={v => (hold.current.s = v)} />
           <Pad label="D" on={v => (hold.current.d = v)} />
         </div>
-        <div className="flex gap-2 items-center">
-          <span className="rounded-xl border border-violet-500/30 bg-violet-500/15 px-3 py-2 text-[11px] text-violet-200 font-medium">
-            3e personne
-          </span>
-          <span className="text-[10px] text-zinc-500">
-            {locked ? 'orbe souris' : 'clic = fiche · glisser = regarder · WASD'}
-          </span>
-        </div>
       </div>
+      {locked && <span className="sr-only">Contrôle caméra actif</span>}
       {inspect && (
         <ArtworkDossier
           frame={inspect}
-          allowBuy={allowBuy}
-          marketLive={marketLive}
           onClose={() => setInspect(null)}
-          onBuy={allowBuy ? () => onBuy(inspect) : undefined}
+          onBuy={allowBuy ? onBuy : undefined}
         />
-      )}
-      {!paintings.length && !sculptures.length && (
-        <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-          <p className="text-sm text-zinc-500 bg-black/50 px-4 py-2 rounded-xl">{emptyLabel}</p>
-        </div>
       )}
     </div>
   )
