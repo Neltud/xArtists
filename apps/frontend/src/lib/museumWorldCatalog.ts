@@ -1,64 +1,91 @@
 /**
- * Lieux carte / guide → musées 3D + métadonnées.
+ * Réseau de musées virtuels — œuvres Met Open Access via un seul proxy weserv.
  */
-import type { FrameItem } from '../components/museum/MuseumCorridor'
 import { MET_WORKS } from '../data/metCatalog'
+import type { FrameItem } from '../components/museum/MuseumCorridor'
 
 export type VirtualMuseum = {
   id: string
   name: string
   city: string
-  country: string
+  country?: string
   tagline: string
-  source: 'onchain' | 'public_domain'
   room: 'cyber' | 'stone' | 'gold' | 'white' | 'dark'
-  works: FrameItem[]
+  source: 'onchain' | 'catalog'
+  aliases?: string[]
+  match?: string[]
+  works?: FrameItem[]
 }
 
-export type CatalogWork = {
+type CatalogWork = {
   id: string
   title: string
   artist: string
   year?: string
   museum?: string
-  file?: string
   remote?: string | null
+  file?: string
   medium?: string
   dimensions?: string
 }
 
-const PLACE_MUSEUMS: {
-  id: string
-  name: string
-  city: string
-  country: string
-  tagline: string
-  room: VirtualMuseum['room']
-  aliases: string[]
-  match: string[]
-}[] = [
-  { id: 'louvre', name: 'Musée du Louvre', city: 'Paris', country: 'France', tagline: 'Chefs-d’œuvre · Paris', room: 'stone', aliases: ['paris', 'louvre', 'marais'], match: ['rembrandt', 'raphael', 'lippi', 'mantegna', 'delacroix', 'courbet', 'david', 'holy', 'madonna'] },
-  { id: 'orsay', name: 'Musée d’Orsay', city: 'Paris', country: 'France', tagline: 'XIXe · impressionnisme', room: 'gold', aliases: ['orsay'], match: ['manet', 'degas', 'monet', 'renoir', 'pissarro', 'cezanne', 'gauguin', 'fantin', 'seurat', 'toulouse', 'van gogh'] },
-  { id: 'pompidou', name: 'Centre Pompidou', city: 'Paris', country: 'France', tagline: 'Art moderne & contemporain', room: 'white', aliases: ['pompidou', 'beaubourg'], match: ['picasso', 'matisse', 'kandinsky', 'miro', 'duchamp'] },
-  { id: 'palaisdetokyo', name: 'Palais de Tokyo', city: 'Paris', country: 'France', tagline: 'Art contemporain · Paris', room: 'cyber', aliases: ['palais de tokyo', 'tokyo'], match: ['contemporary', 'performance'] },
-  { id: 'nglondon', name: 'National Gallery', city: 'London', country: 'UK', tagline: 'Collection nationale · Londres', room: 'white', aliases: ['london', 'londres', 'national gallery'], match: ['turner', 'constable', 'holbein', 'van eyck', 'vermeer', 'hogarth'] },
-  { id: 'rijks', name: 'Rijksmuseum', city: 'Amsterdam', country: 'Pays-Bas', tagline: 'Âge d’or hollandais', room: 'dark', aliases: ['amsterdam', 'rijks', 'rijksmuseum'], match: ['rembrandt', 'vermeer', 'steen', 'claesz', 'van goyen', 'hals', 'ruysch'] },
-  { id: 'vangogh', name: 'Van Gogh Museum', city: 'Amsterdam', country: 'Pays-Bas', tagline: 'Vincent van Gogh', room: 'white', aliases: ['vangogh', 'van gogh museum'], match: ['van gogh', 'gogh'] },
-  { id: 'uffizi', name: 'Galerie des Offices', city: 'Florence', country: 'Italie', tagline: 'Renaissance florentine', room: 'white', aliases: ['florence', 'firenze', 'uffizi'], match: ['botticelli', 'lippi', 'cosimo'] },
-  { id: 'prado', name: 'Musée du Prado', city: 'Madrid', country: 'Espagne', tagline: 'Siècle d’or espagnol', room: 'stone', aliases: ['madrid', 'prado'], match: ['goya', 'velazquez', 'el greco', 'greco', 'murillo'] },
-  { id: 'met', name: 'The Met', city: 'New York', country: 'USA', tagline: 'Metropolitan · Open Access', room: 'gold', aliases: ['new york', 'newyork', 'nyc', 'met'], match: [] },
-  { id: 'hermitage', name: 'Musée de l’Ermitage', city: 'Saint Petersburg', country: 'Russie', tagline: 'Collection impériale', room: 'gold', aliases: ['petersburg', 'hermitage', 'moscow', 'moscou'], match: ['rembrandt', 'leonardo'] },
-  { id: 'gemaldegalerie', name: 'Gemäldegalerie', city: 'Berlin', country: 'Allemagne', tagline: 'Peinture européenne · Berlin', room: 'stone', aliases: ['berlin'], match: ['cranach', 'holbein'] },
-  { id: 'kunsthistorisches', name: 'Kunsthistorisches Museum', city: 'Vienna', country: 'Autriche', tagline: 'Collections impériales', room: 'gold', aliases: ['vienna', 'wien', 'vienne'], match: ['bruegel', 'rubens', 'titian'] },
-  { id: 'vatican', name: 'Musées du Vatican', city: 'Rome', country: 'Italie', tagline: 'Vatican · Rome', room: 'stone', aliases: ['rome', 'roma', 'vatican'], match: ['raphael', 'caravaggio'] },
-  { id: 'mrbab', name: 'Musées royaux des Beaux-Arts', city: 'Brussels', country: 'Belgique', tagline: 'Bruxelles', room: 'white', aliases: ['brussels', 'bruxelles'], match: ['rubens', 'bruegel'] },
-  { id: 'brera', name: 'Pinacoteca di Brera', city: 'Milan', country: 'Italie', tagline: 'Milan', room: 'white', aliases: ['milan', 'milano', 'brera'], match: ['mantegna', 'hayez'] },
-  { id: 'mauritshuis', name: 'Mauritshuis', city: 'The Hague', country: 'Pays-Bas', tagline: 'La Haye · Vermeer', room: 'gold', aliases: ['hague', 'la haye', 'den haag', 'mauritshuis'], match: ['vermeer', 'fabritius'] },
-  { id: 'tate', name: 'Tate Britain', city: 'London', country: 'UK', tagline: 'Art britannique', room: 'white', aliases: ['tate'], match: ['turner', 'millais', 'constable'] },
-  { id: 'accademia', name: 'Gallerie dell’Accademia', city: 'Venice', country: 'Italie', tagline: 'Venise', room: 'gold', aliases: ['venice', 'venise', 'venezia'], match: ['titian', 'canaletto', 'bellini'] },
-  { id: 'mnac', name: 'MNAC', city: 'Barcelona', country: 'Espagne', tagline: 'Barcelone', room: 'white', aliases: ['barcelona', 'barcelone'], match: ['picasso'] },
-  { id: 'gulbenkian', name: 'Fondation Gulbenkian', city: 'Lisbon', country: 'Portugal', tagline: 'Lisbonne', room: 'white', aliases: ['lisbon', 'lisbonne', 'lisboa'], match: ['renoir', 'monet', 'degas'] },
+const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
+  {
+    id: 'xartists',
+    name: 'Musée xArtists',
+    city: 'MultiversX',
+    tagline: 'Premier musée — NFT mainnet',
+    room: 'cyber',
+    aliases: ['xartists', 'home'],
+    match: ['nftuduri', 'tro', 'xtr'],
+  },
+  {
+    id: 'louvre',
+    name: 'Musée du Louvre',
+    city: 'Paris',
+    country: 'France',
+    tagline: 'Chefs-d’œuvre · Paris',
+    room: 'stone',
+    aliases: ['paris', 'louvre', 'marais'],
+    match: ['rembrandt', 'raphael', 'lippi', 'mantegna', 'delacroix', 'courbet', 'david', 'holy', 'madonna'],
+  },
+  {
+    id: 'orsay',
+    name: 'Musée d’Orsay',
+    city: 'Paris',
+    country: 'France',
+    tagline: 'XIXe · impressionnisme',
+    room: 'gold',
+    aliases: ['orsay'],
+    match: ['manet', 'degas', 'monet', 'renoir', 'pissarro', 'cezanne', 'gauguin', 'fantin', 'seurat', 'toulouse', 'van gogh'],
+  },
+  {
+    id: 'pompidou',
+    name: 'Centre Pompidou',
+    city: 'Paris',
+    country: 'France',
+    tagline: 'Art moderne & contemporain',
+    room: 'white',
+    aliases: ['pompidou', 'beaubourg'],
+    match: ['picasso', 'matisse', 'kandinsky', 'miro', 'duchamp'],
+  },
+  {
+    id: 'palaisdetokyo',
+    name: 'Palais de Tokyo',
+    city: 'Paris',
+    country: 'France',
+    tagline: 'Art contemporain · Paris',
+    room: 'cyber',
+    aliases: ['palais de tokyo', 'tokyo'],
+    match: ['contemporary', 'performance'],
+  },
 ]
+
+export const VIRTUAL_MUSEUMS: VirtualMuseum[] = PROFILES.map(p => ({
+  ...p,
+  source: p.id === 'xartists' ? 'onchain' : 'catalog',
+  works: [],
+}))
 
 function guessTechnique(title: string, artist: string): string {
   const t = `${title} ${artist}`.toLowerCase()
@@ -68,9 +95,14 @@ function guessTechnique(title: string, artist: string): string {
   return 'Huile sur toile (typique) · Met Open Access'
 }
 
-function proxyImg(raw: string): string {
-  const bare = raw.replace(/^https?:\/\//i, '')
-  return `https://images.weserv.nl/?url=${encodeURIComponent(bare)}&w=720&h=900&fit=cover&output=jpg&q=80`
+/** Un seul passage weserv — jamais re-wrapper une URL déjà proxifiée */
+export function proxyImg(raw: string): string {
+  const u = (raw || '').trim()
+  if (!u) return u
+  if (/images\.weserv\.nl|wsrv\.nl/i.test(u)) return u
+  if (/^\//.test(u) || u.startsWith(import.meta.env.BASE_URL || '/')) return u
+  const bare = u.replace(/^https?:\/\//i, '')
+  return `https://images.weserv.nl/?url=${encodeURIComponent(bare)}&w=720&h=900&fit=cover&output=jpg&q=82`
 }
 
 function toFrame(w: CatalogWork, base: string, museumLabel: string): FrameItem {
@@ -92,165 +124,105 @@ function toFrame(w: CatalogWork, base: string, museumLabel: string): FrameItem {
     medium: 'physical',
     technique: w.medium || guessTechnique(w.title, w.artist),
     dimensions: w.dimensions || 'Voir source Met',
-    onSale: false,
-    priceLabel: 'Collection — pas en vente',
-    license: 'Public domain (Met Open Access)',
-    provenance: museumLabel,
+    onSale: true,
+    priceLabel: 'Paper · intent BUY_NFT',
+    license: 'Met Open Access / PD',
     href: w.remote || local,
   }
 }
 
-function proceduralSculptures(museumId: string, museumLabel: string): FrameItem[] {
-  const pool = [
-    { remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP-16774-001.jpg', title: 'Marble statue of a wounded warrior', artist: 'Roman', year: 'ca. 138–181 CE' },
-    { remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP-14287-001.jpg', title: 'Marble statue of a kouros', artist: 'Greek', year: 'ca. 590–580 BCE' },
-    { remote: 'https://images.metmuseum.org/CRDImages/eg/web-large/DT202.jpg', title: 'The Temple of Dendur', artist: 'Egyptian', year: '15 B.C.' },
-  ]
-  const pick = pool[Math.abs(museumId.length) % pool.length]
-  const pick2 = pool[(museumId.length + 1) % pool.length]
-  return [
-    {
-      id: `sculpt-${museumId}-0`,
-      title: pick.title,
-      artist: pick.artist,
-      date: pick.year,
-      kind: 'sculpture',
-      medium: 'physical',
-      technique: 'Sculpture · Met Open Access (PD)',
-      dimensions: 'Volume de salle',
-      onSale: false,
-      priceLabel: 'Collection — pas en vente',
-      collection: museumLabel,
-      description: `Sculpture libre de droits (Met). Présentée dans ${museumLabel}.`,
-      image: proxyImg(pick.remote),
-      license: 'Public domain (Met Open Access)',
-      provenance: museumLabel,
-      href: pick.remote,
-    },
-    {
-      id: `sculpt-${museumId}-1`,
-      title: 'Figure debout (3D)',
-      artist: 'Atelier xArtists',
-      date: '2026',
-      kind: 'sculpture',
-      medium: 'digital',
-      technique: 'Mesh procédural + texture PD',
-      dimensions: '≈ 1,6 m',
-      onSale: false,
-      priceLabel: 'Pas en vente',
-      collection: museumLabel,
-      description: 'Volume procédural — texture libre de droits.',
-      image: proxyImg(pick2.remote),
-      license: 'Public domain (Met Open Access)',
-    },
-  ]
-}
+const EXTRA_SCULPT: { remote: string; title: string; artist: string; year: string }[] = [
+  {
+    remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP-16774-001.jpg',
+    title: 'Marble statue of a wounded warrior',
+    artist: 'Roman',
+    year: 'ca. 138–181 CE',
+  },
+  {
+    remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP-14287-001.jpg',
+    title: 'Marble statue of a kouros',
+    artist: 'Greek',
+    year: 'ca. 590–580 BCE',
+  },
+  {
+    remote: 'https://images.metmuseum.org/CRDImages/eg/web-large/DT202.jpg',
+    title: 'The Temple of Dendur',
+    artist: 'Egyptian',
+    year: '15 B.C.',
+  },
+]
 
-function normalize(s: string): string {
-  return s.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').replace(/[^a-z0-9]+/g, ' ').trim()
-}
-
-function workBlob(w: CatalogWork): string {
-  return normalize(`${w.title} ${w.artist}`)
+function proceduralSculptures(museumId: string, label: string): FrameItem[] {
+  return EXTRA_SCULPT.map((pick, i) => ({
+    id: `${museumId}-sculpt-${i}`,
+    title: pick.title,
+    subtitle: `${pick.artist} · ${pick.year}`,
+    artist: pick.artist,
+    date: pick.year,
+    collection: label,
+    image: proxyImg(pick.remote),
+    kind: 'sculpture' as const,
+    type: 'Sculpture',
+    medium: 'physical' as const,
+    onSale: true,
+    priceLabel: 'Paper · intent BUY_NFT',
+    href: pick.remote,
+  }))
 }
 
 function assignWorks(base: string): Map<string, FrameItem[]> {
-  const byId = new Map<string, FrameItem[]>()
-  for (const p of PLACE_MUSEUMS) byId.set(p.id, [])
   const works = (MET_WORKS as CatalogWork[]).filter(w => w.remote || w.file)
+  const assigned = new Map<string, FrameItem[]>()
   const used = new Set<string>()
-
-  for (const p of PLACE_MUSEUMS) {
-    const keys = p.match.filter(k => k.trim().length > 1)
-    if (!keys.length) continue
+  for (const p of PROFILES) {
+    if (p.id === 'xartists') continue
+    const list: FrameItem[] = []
     for (const w of works) {
       if (used.has(w.id)) continue
-      if (keys.some(k => workBlob(w).includes(normalize(k)))) {
-        byId.get(p.id)!.push(toFrame(w, base, p.name))
+      const blob = `${w.title} ${w.artist}`.toLowerCase()
+      if (p.match?.some(m => blob.includes(m))) {
+        list.push(toFrame(w, base, p.name))
         used.add(w.id)
       }
+      if (list.length >= 24) break
     }
+    assigned.set(p.id, list)
   }
-
   const rest = works.filter(w => !used.has(w.id))
-  const metList = byId.get('met')!
-  for (const w of rest) {
-    metList.push(toFrame(w, base, 'The Met'))
-    used.add(w.id)
-  }
-
-  const pool = metList.length ? metList : [...byId.values()].flat()
-  for (const p of PLACE_MUSEUMS) {
-    const arr = byId.get(p.id)!
-    if (arr.length < 2 && pool.length) {
-      let i = 0
-      while (arr.length < 3 && i < pool.length) {
-        const src = pool[(p.id.length * 3 + i) % pool.length]
-        arr.push({ ...src, id: `${src.id}-${p.id}-${i}`, collection: p.name, provenance: p.name })
-        i++
-      }
+  let ri = 0
+  for (const p of PROFILES) {
+    if (p.id === 'xartists') continue
+    const list = assigned.get(p.id) || []
+    while (list.length < 8 && ri < rest.length) {
+      const w = rest[ri++]
+      list.push(toFrame(w, base, p.name))
+      used.add(w.id)
     }
-    arr.push(...proceduralSculptures(p.id, p.name))
+    // sculpures PD pour chaque salle
+    list.push(...proceduralSculptures(p.id, p.name).slice(0, 2))
+    assigned.set(p.id, list)
   }
-  return byId
+  return assigned
 }
 
-export function buildMuseumNetwork(baseUrl = '/'): VirtualMuseum[] {
-  const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'
+export function buildMuseumNetwork(base: string): VirtualMuseum[] {
   const assigned = assignWorks(base)
-  const list: VirtualMuseum[] = [
-    {
-      id: 'xartists',
-      name: 'Musée xArtists',
-      city: 'MultiversX',
-      country: 'On-chain',
-      tagline: 'Premier musée — NFT mainnet',
-      source: 'onchain',
-      room: 'cyber',
-      works: proceduralSculptures('xartists', 'Musée xArtists'),
-    },
-  ]
-  for (const p of PLACE_MUSEUMS) {
-    list.push({
-      id: p.id,
-      name: p.name,
-      city: p.city,
-      country: p.country,
-      tagline: p.tagline,
-      source: 'public_domain',
-      room: p.room,
-      works: assigned.get(p.id) || [],
-    })
-  }
-  return list
+  return PROFILES.map(p => ({
+    ...p,
+    source: p.id === 'xartists' ? ('onchain' as const) : ('catalog' as const),
+    works:
+      p.id === 'xartists'
+        ? proceduralSculptures('xartists', 'Musée xArtists')
+        : assigned.get(p.id) || [],
+  }))
 }
 
-export async function loadMuseumNetwork(baseUrl: string): Promise<VirtualMuseum[]> {
-  return buildMuseumNetwork(baseUrl)
+export async function loadMuseumNetwork(base: string): Promise<VirtualMuseum[]> {
+  return buildMuseumNetwork(base)
 }
 
-export function museumIdForCity(city: string | undefined | null): string | null {
-  if (!city) return null
-  const n = normalize(city).replace(/\s/g, '')
-  if (n === 'paris') return 'louvre'
-  if (n === 'amsterdam') return 'rijks'
-  if (n === 'london' || n === 'londres') return 'nglondon'
-  for (const p of PLACE_MUSEUMS) {
-    if (normalize(p.city).replace(/\s/g, '') === n) return p.id
-    if (normalize(p.id).replace(/\s/g, '') === n) return p.id
-    if (p.aliases.some(a => normalize(a).replace(/\s/g, '') === n)) return p.id
-  }
-  return null
-}
-
-export const VIRTUAL_MUSEUMS: VirtualMuseum[] = buildMuseumNetwork('/')
-
-export function getMuseum(id: string, list: VirtualMuseum[] = VIRTUAL_MUSEUMS) {
-  return list.find(m => m.id === id)
-}
-
-export type VirtualMuseumId = string
-
-export function listAllMuseums(): { id: string; name: string; city: string }[] {
-  return buildMuseumNetwork('/').map(m => ({ id: m.id, name: m.name, city: m.city }))
+export function museumIdForCity(city: string): string | null {
+  const c = city.toLowerCase()
+  const hit = PROFILES.find(p => p.city.toLowerCase() === c || p.aliases?.some(a => c.includes(a)))
+  return hit?.id || null
 }
