@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.49.1](https://github.com/Neltud/xArtists/compare/v0.49.0...v0.49.1) (2026-09-26)
+
+
+### Bug Fixes
+
+* **museum:** no double-weserv textures + WebGL Acheter paper; treasury flows + agent 8008 ([71a49a9](https://github.com/Neltud/xArtists/commit/71a49a9e9955491865c2043f78423d8fb3a8a52a))
+* **museum:** prevent double-weserv + BUY_NFT paper from 3D dossier ([05a5742](https://github.com/Neltud/xArtists/commit/05a57428209e373ab13bb4d30eeb0ad1d849c9c8))
+
 ## [0.49.0](https://github.com/Neltud/xArtists/compare/v0.48.2...v0.49.0) (2026-09-26)
 
 
