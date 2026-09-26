@@ -1,5 +1,5 @@
 /**
- * Emplacement pub — créative active ou placeholder « Votre publicité ici · Enchères ».
+ * Emplacement pub — image d’abord, titre sans doublon, placeholder clair.
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -24,6 +24,15 @@ function isActive(c: AdCreative | undefined): boolean {
   return true
 }
 
+function resolveImg(ad: AdCreative): string {
+  if (ad.imageUrl) return ad.imageUrl
+  if (ad.imageCid) {
+    const cid = String(ad.imageCid).replace(/^ipfs:\/\//, '')
+    return `https://ipfs.io/ipfs/${cid}`
+  }
+  return ''
+}
+
 export default function AdSlot({
   id,
   className = '',
@@ -33,6 +42,7 @@ export default function AdSlot({
 }) {
   const [ad, setAd] = useState<AdCreative | null>(null)
   const [loaded, setLoaded] = useState(false)
+  const [imgOk, setImgOk] = useState(true)
 
   useEffect(() => {
     let cancelled = false
@@ -50,6 +60,7 @@ export default function AdSlot({
           if (!cancelled && isActive(creative)) {
             setAd(creative!)
             setLoaded(true)
+            setImgOk(true)
             return
           }
         } catch {
@@ -66,24 +77,23 @@ export default function AdSlot({
     }
   }, [id])
 
-  // Placeholder — inventaire libre
   if (loaded && !ad) {
     return (
       <aside
-        className={`rounded-xl border border-dashed border-amber-500/35 bg-amber-950/10 overflow-hidden ${className}`}
+        className={`rounded-2xl border border-dashed border-amber-400/40 bg-gradient-to-br from-amber-500/10 to-violet-500/5 overflow-hidden ${className}`}
         aria-label="Espace publicitaire disponible"
         data-ad-slot={id}
       >
         <Link
           to="/ads"
-          className="block px-4 py-5 text-center hover:bg-amber-500/5 transition-colors"
+          className="block px-4 py-5 text-center hover:bg-white/[0.03] transition-colors"
         >
-          <p className="text-[10px] uppercase tracking-[0.2em] text-amber-200/70 mb-1">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-amber-200/80 mb-1">
             Espace pub · {id}
           </p>
-          <p className="text-base font-semibold text-amber-100">Votre publicité ici</p>
-          <p className="text-sm text-amber-200/80 mt-1">Enchères · réserver un slot</p>
-          <p className="text-[10px] text-zinc-600 mt-2">Paper bid · pas un investissement</p>
+          <p className="text-base font-semibold text-amber-50">Votre publicité ici</p>
+          <p className="text-sm text-amber-100/80 mt-1">Enchères · réserver un slot</p>
+          <p className="text-[10px] text-zinc-500 mt-2">Paper bid · pas un investissement</p>
         </Link>
       </aside>
     )
@@ -91,34 +101,45 @@ export default function AdSlot({
 
   if (!ad) return null
 
-  const img =
-    ad.imageUrl ||
-    (ad.imageCid
-      ? `https://ipfs.io/ipfs/${String(ad.imageCid).replace(/^ipfs:\/\//, '')}`
-      : '')
+  const img = resolveImg(ad)
+  const showTitle = Boolean(ad.title) && (!img || !imgOk)
 
-  const inner = (
-    <>
-      {img ? (
-        <img
-          src={img}
-          alt={ad.title || 'Publicité xArtists'}
-          className="w-full h-auto rounded-lg object-cover max-h-40 sm:max-h-48"
-          loading="lazy"
-        />
-      ) : null}
-      {ad.title ? (
-        <p className="text-sm text-gray-200 mt-2 font-medium px-1">{ad.title}</p>
-      ) : null}
-      <p className="text-[10px] uppercase tracking-wide text-gray-500 mt-1 px-1">
+  const body = (
+    <div className="relative">
+      {img && imgOk ? (
+        <div className="relative aspect-[21/9] sm:aspect-[2.4/1] bg-zinc-900">
+          <img
+            src={img}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+            referrerPolicy="no-referrer"
+            onError={() => setImgOk(false)}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+          {ad.title && (
+            <p className="absolute bottom-2 left-3 right-3 text-sm font-semibold text-white drop-shadow-md line-clamp-2">
+              {ad.title}
+            </p>
+          )}
+        </div>
+      ) : (
+        <div className="px-4 py-5 bg-gradient-to-br from-violet-600/25 to-cyan-600/10">
+          {showTitle && (
+            <p className="text-sm font-semibold text-white">{ad.title}</p>
+          )}
+        </div>
+      )}
+      <p className="text-[10px] uppercase tracking-wide text-zinc-500 px-3 py-2 border-t border-white/5">
         Publicité · enchère xArtists · pas un investissement
       </p>
-    </>
+    </div>
   )
 
   return (
     <aside
-      className={`border border-[#2a2a3a] rounded-xl bg-[#12121a]/80 overflow-hidden ${className}`}
+      className={`rounded-2xl border border-white/12 bg-zinc-950/90 overflow-hidden shadow-lg shadow-black/30 ${className}`}
       aria-label="Publicité"
       data-ad-slot={id}
     >
@@ -129,10 +150,10 @@ export default function AdSlot({
           rel="noopener noreferrer sponsored"
           className="block hover:opacity-95 transition-opacity"
         >
-          {inner}
+          {body}
         </a>
       ) : (
-        <div className="p-1">{inner}</div>
+        body
       )}
     </aside>
   )

@@ -1,11 +1,11 @@
 {
-  "updated": 1727200000,
-  "note": "Sample creatives for tunnel validation · not an investment",
+  "updated": 1727350000,
+  "note": "Sample creatives · images Wikimedia CDN · not an investment",
   "slots": {
     "home_hero": {
       "slot": "home_hero",
       "title": "xArtists · Galerie 3D + Packs paper",
-      "imageUrl": "https://images.weserv.nl/?url=images.metmuseum.org%2FCRDImages%2Fep%2Fweb-large%2FDP-15089-001.jpg&w=1200&h=400&fit=cover&output=jpg&q=80",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1280px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
       "href": "https://neltud.github.io/xArtists/#/museum",
       "status": "active",
       "advertiser": "xArtists Ops (sample)",
@@ -15,7 +15,7 @@
     "drop_feature": {
       "slot": "drop_feature",
       "title": "Pulse · Yield · Sentinel — preview ouverture",
-      "imageUrl": "https://images.weserv.nl/?url=images.metmuseum.org%2FCRDImages%2Fep%2Fweb-large%2FDT1567.jpg&w=800&h=400&fit=cover&output=jpg&q=80",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/1280px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg",
       "href": "https://neltud.github.io/xArtists/#/agents",
       "status": "active",
       "advertiser": "xArtists Ops (sample)",
@@ -25,7 +25,7 @@
     "market_sidebar": {
       "slot": "market_sidebar",
       "title": "Catalogue NFT · consultation paper",
-      "imageUrl": "https://images.weserv.nl/?url=images.metmuseum.org%2FCRDImages%2Fep%2Fweb-large%2FDP-14936-001.jpg&w=600&h=400&fit=cover&output=jpg&q=80",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Paul_Cezanne%2C_Still_Life_with_a_Curtain.jpg/1024px-Paul_Cezanne%2C_Still_Life_with_a_Curtain.jpg",
       "href": "https://neltud.github.io/xArtists/#/ads",
       "status": "active",
       "advertiser": "xArtists Ops (sample)",
