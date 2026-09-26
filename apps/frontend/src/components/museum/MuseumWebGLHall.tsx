@@ -1,5 +1,5 @@
 /**
- * Musée WebGL — 3e personne · textures proxy-first · salles plus lumineuses.
+ * Musée WebGL — 3e personne · textures (pas de double-proxy) · Acheter paper.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
@@ -20,7 +20,6 @@ const EYE = 1.65
 const WALK = 3.6
 const SPRINT = 6.4
 const MAX_ART = 24
-const TEX_CONCURRENT = 20
 const PITCH_MAX = 1.15
 const ACCEL = 22
 const FRICTION = 11
@@ -124,7 +123,7 @@ export default function MuseumWebGLHall({
     [frames],
   )
   const sculptures = useMemo(
-    () => frames.filter(f => f.kind === 'sculpture' || !f.image).slice(0, 8),
+    () => frames.filter(f => f.kind === 'sculpture').slice(0, 8),
     [frames],
   )
   const presence = useMemo(() => presenceSnapshot(blueprint.id || roomName), [blueprint.id, roomName])
@@ -135,7 +134,21 @@ export default function MuseumWebGLHall({
         requestOpenConnect()
         return
       }
-      if (!marketLive) return
+      const raw = `acheter NFT ${frame.id} ${frame.title}`
+      window.dispatchEvent(
+        new CustomEvent('lia-intent', {
+          detail: {
+            lip: {
+              raw,
+              type: 'BUY_NFT',
+              asset_id: frame.id,
+              paper: !marketLive,
+              collection: frame.collection,
+              title: frame.title,
+            },
+          },
+        }),
+      )
     },
     [connected, marketLive],
   )
@@ -215,6 +228,10 @@ export default function MuseumWebGLHall({
       if (!u) return []
       const out: string[] = []
       try {
+        if (/images\.weserv\.nl|wsrv\.nl/i.test(u)) {
+          out.push(u)
+          return out
+        }
         if (/media\.multiversx\.com|ipfs|nftstorage|gateway/i.test(u)) out.push(u)
         const bare = u.replace(/^https?:\/\//i, '')
         out.push(`https://images.weserv.nl/?url=${encodeURIComponent(bare)}&w=720&h=900&fit=cover&output=jpg&q=82`)
@@ -516,9 +533,7 @@ export default function MuseumWebGLHall({
       if (nextIdx !== pulseIdx) {
         pulseIdx = nextIdx
         pulseParams = pulseFromIndex(pulseIdx, room)
-        if (scene.fog && scene.fog instanceof THREE.FogExp2) {
-          scene.fog.density = pulseParams.fogDensity
-        }
+        if (scene.fog && scene.fog instanceof THREE.FogExp2) scene.fog.density = pulseParams.fogDensity
         renderer.toneMappingExposure = pulseParams.exposure
         ambientLight.intensity = pulseParams.ambient
         setPulseLabel(pulseParams.label)
@@ -596,11 +611,10 @@ export default function MuseumWebGLHall({
       }
 
       const lookY = Math.sin(pitch) * 2.2
-      const camBack = CAM_DIST
       camera.position.set(
-        px + Math.sin(yaw) * camBack,
+        px + Math.sin(yaw) * CAM_DIST,
         CAM_HEIGHT + lookY * 0.15,
-        pz + Math.cos(yaw) * camBack,
+        pz + Math.cos(yaw) * CAM_DIST,
       )
       camera.lookAt(px, EYE * 0.9 + lookY * 0.2, pz)
       renderer.render(scene, camera)
@@ -634,10 +648,7 @@ export default function MuseumWebGLHall({
         <span className="rounded-lg bg-black/55 border border-white/10 px-2 py-1 text-[11px] text-zinc-200">
           Hall {roomName} · {area} m² · {paintings.length} tableaux · avatar 3e pers.
         </span>
-        <span
-          className="rounded-lg bg-black/55 border border-white/10 px-2 py-1 text-[11px]"
-          style={{ color: pulseAccent }}
-        >
+        <span className="rounded-lg bg-black/55 border border-white/10 px-2 py-1 text-[11px]" style={{ color: pulseAccent }}>
           ● {pulseLabel}
         </span>
       </div>
@@ -651,11 +662,7 @@ export default function MuseumWebGLHall({
           <p className="text-[11px] text-zinc-300 bg-black/55 border border-white/10 rounded-lg px-2 py-1">
             Clic viser · WASD · E œuvre
           </p>
-          <button
-            type="button"
-            className="text-[11px] text-zinc-400 underline pointer-events-auto"
-            onClick={() => setHint(false)}
-          >
+          <button type="button" className="text-[11px] text-zinc-400 underline pointer-events-auto" onClick={() => setHint(false)}>
             OK
           </button>
         </div>
@@ -670,12 +677,13 @@ export default function MuseumWebGLHall({
           <Pad label="D" on={v => (hold.current.d = v)} />
         </div>
       </div>
-      {locked && <span className="sr-only">Contrôle caméra actif</span>}
       {inspect && (
         <ArtworkDossier
           frame={inspect}
+          allowBuy={allowBuy}
+          marketLive={marketLive}
           onClose={() => setInspect(null)}
-          onBuy={allowBuy ? onBuy : undefined}
+          onBuy={allowBuy ? () => onBuy(inspect) : undefined}
         />
       )}
     </div>
