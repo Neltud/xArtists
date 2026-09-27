@@ -1,7 +1,7 @@
 /**
  * Galerie — salles 3D + grille œuvres toujours visible.
  * Fallback NFTUDURI / TUDURI si catalogue vide.
- * Catalogue : VITE_CATALOG_API (Akash) puis JSON GitHub.
+ * Catalogue : VITE_CATALOG_API (Akash) puis JSON GitHub + refresh quotidien Met.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -31,6 +31,7 @@ import { builtinBlueprintForMuseum } from '../lib/builtinBlueprints'
 import type { RoomBlueprint } from '../lib/roomBlueprint'
 import { TUDURI_WORKS } from '../config/tuduriAtelier'
 import { loadFullCatalog } from '../lib/loadFullCatalog'
+import { loadDailyMuseumCatalog, dailyWorksToFrames } from '../lib/loadDailyMuseumCatalog'
 
 type Mode = 'explore' | 'mine' | 'map' | 'pulse'
 
@@ -78,62 +79,27 @@ function prioritizeNfts(nfts: NFT[]): NFT[] {
   return [...nfts].sort((a, b) => rank(a.collection) - rank(b.collection))
 }
 
-const MODES: { id: Mode; label: string }[] = [
-  { id: 'explore', label: 'Explorer' },
-  { id: 'mine', label: 'Ma collection' },
-  { id: 'pulse', label: 'Salle Pulse' },
-  { id: 'map', label: 'Carte' },
-]
-
 function ArtworkGrid({ frames, title }: { frames: FrameItem[]; title: string }) {
   if (!frames.length) return null
   return (
-    <section className="mt-8 space-y-3 animate-fade-in">
-      <div className="flex items-end justify-between gap-2">
-        <div>
-          <h2 className="text-sm font-semibold text-white tracking-tight">{title}</h2>
-          <div className="atelier-title-rule mt-1.5" aria-hidden />
-        </div>
+    <section className="space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold text-white">{title}</h3>
         <p className="text-[11px] text-zinc-500 tabular-nums">{frames.length} œuvres</p>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {frames.slice(0, 24).map(f => (
-          <a
+          <div
             key={f.id}
-            href={f.href || '#'}
-            target="_blank"
-            rel="noreferrer"
-            className="group card-play rounded-xl border border-white/10 bg-zinc-950/85 overflow-hidden hover:border-violet-500/35 transition-colors shadow-lg shadow-black/20"
+            className="rounded-xl border border-white/10 bg-black/40 overflow-hidden"
           >
-            <div className="aspect-gallery bg-zinc-900 relative">
-              {f.image ? (
-                <img
-                  src={f.image}
-                  alt={f.title}
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                  decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                  onError={e => {
-                    const el = e.target as HTMLImageElement
-                    const src = el.src || ''
-                    if (src && !src.includes('weserv.nl') && !src.includes('wsrv.nl')) {
-                      const bare = src.replace(/^https?:\/\//i, '')
-                      el.src = `https://images.weserv.nl/?url=${encodeURIComponent(bare)}&w=480&output=jpg&q=80`
-                      return
-                    }
-                    el.style.opacity = '0.25'
-                  }}
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-zinc-600 text-xs">—</div>
-              )}
-            </div>
-            <div className="p-2.5">
-              <p className="text-[12px] font-medium text-zinc-100 truncate">{f.title}</p>
-              <p className="text-[10px] text-zinc-500 truncate mt-0.5">{f.subtitle}</p>
-            </div>
-          </a>
+            {f.image ? (
+              <img src={f.image} alt="" className="w-full aspect-[4/5] object-cover" loading="lazy" />
+            ) : (
+              <div className="aspect-[4/5] flex items-center justify-center text-zinc-600 text-xs">—</div>
+            )}
+            <p className="text-[11px] text-zinc-300 px-2 py-1.5 truncate">{f.title}</p>
+          </div>
         ))}
       </div>
     </section>
@@ -162,9 +128,29 @@ export default function MuseumPage() {
 
   useEffect(() => {
     let cxl = false
-    loadMuseumNetwork(import.meta.env.BASE_URL || '/').then(list => {
-      if (!cxl && list.length) setMuseums(list)
-    })
+    ;(async () => {
+      const list = await loadMuseumNetwork(import.meta.env.BASE_URL || '/')
+      if (cxl) return
+      if (list.length) setMuseums(list)
+      const daily = await loadDailyMuseumCatalog()
+      if (cxl || !daily?.works?.length) return
+      const frames = dailyWorksToFrames(daily.works)
+      setMuseums(prev =>
+        prev.map(m => {
+          if (m.id === 'xartists') return m
+          const existing = m.works || []
+          const ids = new Set(existing.map(w => w.id))
+          const extra = frames.filter(f => !ids.has(f.id))
+          if (!extra.length) return m
+          const sc = extra.filter(f => f.kind === 'sculpture')
+          const rest = extra.filter(f => f.kind !== 'sculpture')
+          return {
+            ...m,
+            works: [...sc, ...existing, ...rest].slice(0, 28),
+          }
+        }),
+      )
+    })()
     return () => {
       cxl = true
     }
@@ -248,152 +234,105 @@ export default function MuseumPage() {
   }, [museumId, visitFrames])
 
   const myFrames = useMemo(() => framesFromUserNfts(account.nfts || []), [account.nfts])
-  const showHallLoader = museum.source === 'onchain' && catalogLoading && !visitFrames.length
-  const mineBlueprint = useMemo(() => builtinBlueprintForMuseum('xartists'), [])
 
   return (
-    <div className="animate-fade-in pb-12 max-w-5xl mx-auto">
-      <header className="mb-6 space-y-3">
-        <p className="section-label">xArtists</p>
-        <h1 className="section-title display">Galerie</h1>
+    <div className="animate-fade-in space-y-4 pb-16 max-w-3xl mx-auto">
+      <header className="space-y-2 pt-2">
+        <p className="section-label">Galerie 3D</p>
+        <h1 className="section-title display">{museum?.name || 'Musée'}</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
-          Musées en 3D — tableaux accrochés aux murs. NFTUDURI · TRO · collections MultiversX.
+          {museum?.tagline || 'Salles immersives · catalogue quotidien Open Access'}
+          {catalogLoading ? ' · catalogue…' : ''}
         </p>
+        {travelBanner && (
+          <p className="text-[12px] text-cyan-200/90 bg-cyan-500/10 border border-cyan-500/20 rounded-xl px-3 py-2">
+            {travelBanner}
+          </p>
+        )}
       </header>
 
-      <AdSlot id="drop_feature" className="mb-5" />
-
-      <div className="flex flex-wrap gap-1.5 mb-5">
-        {MODES.map(m => (
+      <div className="flex flex-wrap gap-2">
+        {(['explore', 'map', 'mine', 'pulse'] as Mode[]).map(m => (
           <button
-            key={m.id}
+            key={m}
             type="button"
-            onClick={() => setMode(m.id)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              mode === m.id
-                ? 'bg-white text-zinc-900'
-                : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-200'
+            onClick={() => setMode(m)}
+            className={`rounded-full px-3 py-1.5 text-[12px] border ${
+              mode === m
+                ? 'border-violet-400/50 bg-violet-500/20 text-white'
+                : 'border-white/10 text-zinc-400'
             }`}
           >
-            {m.label}
+            {m}
           </button>
         ))}
       </div>
 
-      {travelBanner && (
-        <div className="mb-4 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-300">
-          {travelBanner}
-        </div>
-      )}
-
       {mode === 'explore' && (
-        <div className="space-y-4">
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x">
+        <>
+          <div className="flex flex-wrap gap-2">
             {museums.map(m => (
               <button
                 key={m.id}
                 type="button"
                 onClick={() => setMuseumId(m.id)}
-                className={`snap-start shrink-0 rounded-2xl border px-3.5 py-2.5 text-left min-w-[9rem] transition-colors ${
+                className={`rounded-xl px-3 py-1.5 text-[12px] border ${
                   museumId === m.id
-                    ? 'border-white/30 bg-white/10'
-                    : 'border-white/10 bg-black/30 hover:border-white/15'
+                    ? 'border-amber-400/40 bg-amber-500/10 text-amber-50'
+                    : 'border-white/10 text-zinc-400'
                 }`}
               >
-                <p className="text-[12px] font-semibold text-white truncate">{m.name}</p>
-                <p className="text-[10px] text-zinc-500 truncate mt-0.5">{m.city}</p>
+                {m.name}
               </button>
             ))}
           </div>
-
-          <div className="flex flex-wrap items-end justify-between gap-2">
-            <div>
-              <p className="text-base font-medium text-white">{museum.name}</p>
-              <p className="text-[12px] text-zinc-500">
-                {museum.tagline} · {blueprint.name} · {visitFrames.filter(f => f.image).length} œuvres
-              </p>
-            </div>
-            <p className="text-[11px] text-zinc-600 hidden sm:block">Clic viser · WASD · E œuvre</p>
-          </div>
-
-          {showHallLoader ? (
-            <div className="rounded-2xl border border-white/10 bg-zinc-950/80 h-[min(70vh,520px)] flex items-center justify-center">
-              <p className="text-sm text-zinc-500">Préparation de la salle…</p>
-            </div>
-          ) : (
-            <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
-              <MuseumHall
-                key={museumId}
-                blueprint={blueprint}
-                frames={visitFrames}
-                room={museum.room}
-                allowBuy={museum.source === 'onchain'}
-                emptyLabel="Chargement des œuvres…"
-              />
-            </div>
-          )}
-
-          <ArtworkGrid
+          <MuseumHall
+            blueprint={blueprint}
             frames={visitFrames}
-            title={
-              museumId === 'xartists'
-                ? 'Collection accrochée (NFTUDURI & co.)'
-                : `Œuvres — ${museum.name}`
-            }
+            room={museum?.room || 'stone'}
+            allowBuy
           />
-        </div>
+          <ArtworkGrid frames={visitFrames} title="Œuvres de la salle" />
+          <AdSlot id="drop_feature" />
+        </>
       )}
 
+      {mode === 'map' && <GuidedWorldTour />}
+
       {mode === 'mine' && (
-        <div className="space-y-4">
-          <p className="text-sm text-zinc-400 max-w-lg">
-            Vos NFT MultiversX accrochés dans le hall 3D xArtists.
-          </p>
+        <>
           {!connected ? (
-            <div className="rounded-2xl border border-white/10 bg-zinc-950/60 px-6 py-12 text-center space-y-4">
-              <p className="text-sm text-zinc-300">Connectez votre wallet pour voir votre collection.</p>
-              <button type="button" className="btn-primary" onClick={() => requestOpenConnect()}>
-                Connecter
-              </button>
-            </div>
-          ) : account.loading && !myFrames.length ? (
-            <p className="text-sm text-zinc-500">Lecture de la collection…</p>
+            <button type="button" className="btn-primary" onClick={requestOpenConnect}>
+              Connecter pour voir ma collection
+            </button>
           ) : (
             <>
-              <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50">
+              {myFrames.length > 0 && (
                 <MuseumHall
-                  blueprint={mineBlueprint}
+                  blueprint={blueprint}
                   frames={myFrames}
-                  room="dark"
+                  room="cyber"
                   allowBuy={false}
-                  emptyLabel="Aucun NFT sur cette adresse."
                 />
-              </div>
+              )}
               <ArtworkGrid frames={myFrames} title="Ma collection" />
             </>
           )}
-        </div>
+        </>
       )}
 
       {mode === 'pulse' && (
         <HolderPulseTab nfts={account.nfts || []} frames={visitFrames} connected={connected} />
       )}
 
-      {mode === 'map' && (
-        <div className="space-y-3">
-          <p className="text-sm text-zinc-400">Ville → salle 3D dans Explorer.</p>
-          <GuidedWorldTour />
-          <p className="text-[11px] text-zinc-600">
-            <Link
-              to="/tours"
-              className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
-            >
-              Carte monde détaillée
-            </Link>
-          </p>
-        </div>
-      )}
+      <p className="text-[11px] text-zinc-600">
+        <Link to="/venues" className="underline-offset-2 hover:underline">
+          Louer un mur
+        </Link>
+        {' · '}
+        Catalogue Met refresh quotidien (Open Access)
+      </p>
     </div>
   )
 }
