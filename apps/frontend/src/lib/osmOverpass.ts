@@ -1,6 +1,5 @@
 /**
- * OpenStreetMap / Overpass — POIs culturels (musées, galeries, centres d’art).
- * Usage fair : cache session, debounce, User-Agent xArtists, pas de flood.
+ * OpenStreetMap / Overpass — POIs culturels + cache configurable.
  * Données © OpenStreetMap contributors (ODbL).
  */
 
@@ -31,38 +30,107 @@ export type OsmBBox = {
   east: number
 }
 
+/** Config cache Overpass (lecture seule runtime) */
+export type OsmCacheConfig = {
+  /** Préfixe storage */
+  prefix: string
+  /** TTL sessionStorage (ms) */
+  sessionTtlMs: number
+  /** TTL localStorage (ms) — couche plus durable */
+  localTtlMs: number
+  /** Quantization degrés (0.05 ≈ 5.5 km) */
+  quantizeDeg: number
+  maxPois: number
+  minZoom: number
+  maxBboxAreaDeg2: number
+}
+
+const DEFAULT_CACHE: OsmCacheConfig = {
+  prefix: 'xartists_osm_poi_v2:',
+  sessionTtlMs: 30 * 60 * 1000,
+  localTtlMs: 24 * 60 * 60 * 1000,
+  quantizeDeg: 0.05,
+  maxPois: 80,
+  minZoom: 10,
+  maxBboxAreaDeg2: 4,
+}
+
+let cacheConfig: OsmCacheConfig = { ...DEFAULT_CACHE }
+
+/** Surcharge runtime (tests / settings) */
+export function configureOsmCache(partial: Partial<OsmCacheConfig>) {
+  cacheConfig = { ...cacheConfig, ...partial }
+}
+
+export function getOsmCacheConfig(): Readonly<OsmCacheConfig> {
+  return cacheConfig
+}
+
 const OVERPASS_ENDPOINTS = [
   'https://overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
 ]
 
-const CACHE_PREFIX = 'xartists_osm_poi_v1:'
-const MIN_ZOOM = 10
-const MAX_POIS = 80
-
 function cacheKey(b: OsmBBox): string {
-  // quantize ~0.05° to improve hit rate
-  const q = (n: number) => (Math.round(n * 20) / 20).toFixed(2)
-  return `${CACHE_PREFIX}${q(b.south)},${q(b.west)},${q(b.north)},${q(b.east)}`
+  const q = (n: number) => {
+    const step = cacheConfig.quantizeDeg
+    return (Math.round(n / step) * step).toFixed(3)
+  }
+  return `${cacheConfig.prefix}${q(b.south)},${q(b.west)},${q(b.north)},${q(b.east)}`
 }
 
-function readCache(key: string): OsmPoi[] | null {
+type CacheEntry = { ts: number; pois: OsmPoi[] }
+
+function readStore(store: Storage | undefined, key: string, ttl: number): OsmPoi[] | null {
+  if (!store) return null
   try {
-    const raw = sessionStorage.getItem(key)
+    const raw = store.getItem(key)
     if (!raw) return null
-    const j = JSON.parse(raw) as { ts: number; pois: OsmPoi[] }
-    if (Date.now() - j.ts > 1000 * 60 * 30) return null // 30 min
+    const j = JSON.parse(raw) as CacheEntry
+    if (Date.now() - j.ts > ttl) return null
     return j.pois
   } catch {
     return null
   }
 }
 
-function writeCache(key: string, pois: OsmPoi[]) {
+function writeStore(store: Storage | undefined, key: string, pois: OsmPoi[]) {
+  if (!store) return
   try {
-    sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), pois }))
+    store.setItem(key, JSON.stringify({ ts: Date.now(), pois } satisfies CacheEntry))
   } catch {
     /* quota */
+  }
+}
+
+function readCache(key: string): OsmPoi[] | null {
+  const session =
+    typeof sessionStorage !== 'undefined' ? sessionStorage : undefined
+  const local = typeof localStorage !== 'undefined' ? localStorage : undefined
+  return (
+    readStore(session, key, cacheConfig.sessionTtlMs) ||
+    readStore(local, key, cacheConfig.localTtlMs)
+  )
+}
+
+function writeCache(key: string, pois: OsmPoi[]) {
+  const session =
+    typeof sessionStorage !== 'undefined' ? sessionStorage : undefined
+  const local = typeof localStorage !== 'undefined' ? localStorage : undefined
+  writeStore(session, key, pois)
+  writeStore(local, key, pois)
+}
+
+/** Purge entrées xArtists OSM (session + local) */
+export function clearOsmCache() {
+  const stores = [sessionStorage, localStorage].filter(Boolean) as Storage[]
+  for (const store of stores) {
+    const keys: string[] = []
+    for (let i = 0; i < store.length; i++) {
+      const k = store.key(i)
+      if (k?.startsWith(cacheConfig.prefix) || k?.startsWith('xartists_osm_poi_')) keys.push(k)
+    }
+    keys.forEach(k => store.removeItem(k))
   }
 }
 
@@ -76,7 +144,6 @@ function kindFromTags(tags: Record<string, string>): OsmPoiKind {
 
 function buildQuery(b: OsmBBox): string {
   const { south, west, north, east } = b
-  // Timeout soft — Overpass [timeout:25]
   return `
 [out:json][timeout:25];
 (
@@ -85,7 +152,7 @@ function buildQuery(b: OsmBBox): string {
   nwr["amenity"="arts_centre"](${south},${west},${north},${east});
   nwr["amenity"="arts_center"](${south},${west},${north},${east});
 );
-out center tags 80;
+out center tags ${cacheConfig.maxPois};
 `.trim()
 }
 
@@ -103,10 +170,9 @@ function elementToPoi(el: {
   const lat = el.lat ?? el.center?.lat
   const lng = el.lon ?? el.center?.lon
   if (lat == null || lng == null) return null
-  const osmType = el.type as OsmPoi['osmType']
   return {
     id: `osm-${el.type}-${el.id}`,
-    osmType,
+    osmType: el.type as OsmPoi['osmType'],
     osmId: el.id,
     kind: kindFromTags(tags),
     name,
@@ -123,20 +189,19 @@ function elementToPoi(el: {
   }
 }
 
-/** Bbox area degrees² — refuse huge queries */
 function areaTooLarge(b: OsmBBox): boolean {
   const a = Math.abs(b.north - b.south) * Math.abs(b.east - b.west)
-  return a > 4 // ~2°×2° max
+  return a > cacheConfig.maxBboxAreaDeg2
 }
 
 export function osmMinZoom(): number {
-  return MIN_ZOOM
+  return cacheConfig.minZoom
 }
 
-/**
- * Récupère musées / galeries / arts centres dans une bbox (vue carte).
- */
-export async function fetchOsmCulturalPois(bbox: OsmBBox, signal?: AbortSignal): Promise<OsmPoi[]> {
+export async function fetchOsmCulturalPois(
+  bbox: OsmBBox,
+  signal?: AbortSignal,
+): Promise<OsmPoi[]> {
   if (areaTooLarge(bbox)) return []
 
   const key = cacheKey(bbox)
@@ -167,7 +232,7 @@ export async function fetchOsmCulturalPois(bbox: OsmBBox, signal?: AbortSignal):
       for (const el of j.elements || []) {
         const p = elementToPoi(el as Parameters<typeof elementToPoi>[0])
         if (p) pois.push(p)
-        if (pois.length >= MAX_POIS) break
+        if (pois.length >= cacheConfig.maxPois) break
       }
       writeCache(key, pois)
       return pois
@@ -211,7 +276,6 @@ export function osmPoiLabel(kind: OsmPoiKind): string {
   }
 }
 
-/** Lien fiche OpenStreetMap */
 export function osmBrowseUrl(poi: OsmPoi): string {
   return `https://www.openstreetmap.org/${poi.osmType}/${poi.osmId}`
 }
