@@ -1,11 +1,13 @@
 /**
  * Musée WebGL — 3e personne · textures (pas de double-proxy) · Acheter paper.
+ * Sculptures : photo → volume 3D (placeSculpturesInScene).
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
 import { createSurrealParticles, tickSurrealParticles, addSurrealLights } from '../../lib/museumSurrealFX'
 import { createPlayerAvatar, tickAvatarWalk } from '../../lib/museumAvatar'
 import { ArtworkDossier, type FrameItem } from './MuseumCorridor'
+import { placeSculpturesInScene } from '../../lib/placeSculptures'
 import type { RoomBlueprint, WallSeg } from '../../lib/roomBlueprint'
 import { blueprintAreaM2 } from '../../lib/roomBlueprint'
 import { pointInBlueprintFloor } from '../../lib/loadBlueprint'
@@ -354,44 +356,19 @@ export default function MuseumWebGLHall({
       )
     })
 
-    sculptures.forEach((frame, i) => {
-      const ang = (i / Math.max(1, sculptures.length)) * Math.PI * 2
-      let sx = b.cx + Math.cos(ang) * 1.6
-      let sz = b.cy + Math.sin(ang) * 1.6
-      if (!pointInBlueprintFloor(blueprint, sx, sz)) {
-        sx = b.cx
-        sz = b.cy
-      }
-      const pedestal = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.35, 0.4, 0.5, 16),
-        new THREE.MeshStandardMaterial({ color: pal.trim, roughness: 0.4, metalness: 0.3 }),
-      )
-      pedestal.position.set(sx, 0.25, sz)
-      scene.add(pedestal)
-      const form = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(0.35, 0),
-        new THREE.MeshStandardMaterial({
-          color: pal.emissive,
-          roughness: 0.3,
-          metalness: 0.5,
-          emissive: pal.emissive,
-          emissiveIntensity: 0.4,
-        }),
-      )
-      form.position.set(sx, 0.85, sz)
-      scene.add(form)
-      const plaqueAngle = Math.atan2(b.cx - sx, b.cy - sz)
-      loadArtOnWall(
-        corsSafeUrls(frame.image || ''),
-        sx + Math.sin(plaqueAngle) * 0.5,
-        sz + Math.cos(plaqueAngle) * 0.5,
-        Math.sin(plaqueAngle),
-        Math.cos(plaqueAngle),
-        -plaqueAngle,
-        frame.title,
-        frame.artist || frame.subtitle,
-      )
-      artAnchors.push({ pos: new THREE.Vector3(sx, 1.2, sz), frame })
+    placeSculpturesInScene({
+      sculptures,
+      scene,
+      loader,
+      corsSafeUrls,
+      loadArtOnWall,
+      artAnchors,
+      cx: b.cx,
+      cy: b.cy,
+      pedestalColor: pal.trim,
+      emissive: pal.emissive,
+      pointInFloor: (x, z) => pointInBlueprintFloor(blueprint, x, z),
+      disposed: () => disposed,
     })
 
     try {
@@ -539,84 +516,66 @@ export default function MuseumWebGLHall({
         setPulseLabel(pulseParams.label)
         setPulseAccent(pulseParams.accentHex)
       }
-
-      const sprint = keys.current.shift || hold.current['shift']
-      const f = new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw))
-      const r = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw))
+      const sprint = !!(keys.current.shift || hold.current.sprint)
+      const speed = sprint ? SPRINT : WALK
       let ix = 0
       let iz = 0
-      if (keys.current.w || hold.current.w) {
-        ix += f.x
-        iz += f.z
-      }
-      if (keys.current.s || hold.current.s) {
-        ix -= f.x
-        iz -= f.z
-      }
-      if (keys.current.a || hold.current.a) {
-        ix -= r.x
-        iz -= r.z
-      }
-      if (keys.current.d || hold.current.d) {
-        ix += r.x
-        iz += r.z
-      }
+      if (keys.current.w || hold.current.up) iz -= 1
+      if (keys.current.s || hold.current.down) iz += 1
+      if (keys.current.a || hold.current.left) ix -= 1
+      if (keys.current.d || hold.current.right) ix += 1
       const len = Math.hypot(ix, iz) || 1
-      const speed = sprint ? SPRINT : WALK
-      if (ix || iz) {
-        vx += (ix / len) * ACCEL * dt
-        vz += (iz / len) * ACCEL * dt
-        facing = Math.atan2(ix, iz)
-      }
-      vx *= Math.exp(-FRICTION * dt)
-      vz *= Math.exp(-FRICTION * dt)
-      const maxV = speed
-      const vlen = Math.hypot(vx, vz)
-      if (vlen > maxV) {
-        vx = (vx / vlen) * maxV
-        vz = (vz / vlen) * maxV
+      ix /= len
+      iz /= len
+      const cos = Math.cos(yaw)
+      const sin = Math.sin(yaw)
+      const wishX = ix * cos - iz * sin
+      const wishZ = ix * sin + iz * cos
+      const targetVx = wishX * speed
+      const targetVz = wishZ * speed
+      const moving = Math.hypot(ix, iz) > 0.01
+      if (moving) {
+        vx += (targetVx - vx) * Math.min(1, ACCEL * dt)
+        vz += (targetVz - vz) * Math.min(1, ACCEL * dt)
+        facing = Math.atan2(wishX, wishZ)
+      } else {
+        vx *= Math.max(0, 1 - FRICTION * dt)
+        vz *= Math.max(0, 1 - FRICTION * dt)
       }
       const nx = px + vx * dt
       const nz = pz + vz * dt
-      if (pointInBlueprintFloor(blueprint, nx, nz)) {
-        px = nx
-        pz = nz
-      } else {
-        vx = 0
-        vz = 0
-      }
+      if (pointInBlueprintFloor(blueprint, nx, pz)) px = nx
+      else vx = 0
+      if (pointInBlueprintFloor(blueprint, px, nz)) pz = nz
+      else vz = 0
       avatar.position.set(px, 0, pz)
       avatar.rotation.y = facing
-      walkPhase += vlen * dt * 4
-      try {
-        tickAvatarWalk(avatar, walkPhase, vlen > 0.15)
-      } catch {
-        /* */
-      }
-
-      let best: (typeof artAnchors)[0] | null = null
-      let bestD = 3.2
+      walkPhase = tickAvatarWalk(avatar, walkPhase, Math.hypot(vx, vz), dt)
+      let nearest: FrameItem | null = null
+      let best = 4.2
       for (const a of artAnchors) {
         const d = Math.hypot(a.pos.x - px, a.pos.z - pz)
-        if (d < bestD) {
-          bestD = d
-          best = a
+        if (d < best) {
+          best = d
+          nearest = a.frame
         }
       }
-      nearestRef.current = best?.frame || null
-      const t = best?.frame?.title || ''
-      if (t !== lastNearTitle) {
-        lastNearTitle = t
-        setNearTitle(t)
+      nearestRef.current = nearest
+      if (nearest && nearest.title !== lastNearTitle) {
+        lastNearTitle = nearest.title
+        setNearTitle(nearest.title)
+      } else if (!nearest && lastNearTitle) {
+        lastNearTitle = ''
+        setNearTitle('')
       }
-
-      const lookY = Math.sin(pitch) * 2.2
+      const camDist = CAM_DIST
+      const camY = CAM_HEIGHT + Math.sin(pitch) * 0.8
       camera.position.set(
-        px + Math.sin(yaw) * CAM_DIST,
-        CAM_HEIGHT + lookY * 0.15,
-        pz + Math.cos(yaw) * CAM_DIST,
+        px - Math.sin(yaw) * camDist * Math.cos(pitch),
+        camY,
+        pz - Math.cos(yaw) * camDist * Math.cos(pitch),
       )
-      camera.lookAt(px, EYE * 0.9 + lookY * 0.2, pz)
+      camera.lookAt(px, EYE * 0.9, pz)
       renderer.render(scene, camera)
     }
     loop()
@@ -637,53 +596,57 @@ export default function MuseumWebGLHall({
   }, [blueprint, paintings, sculptures, room, pal, presence.virtual, roomName])
 
   return (
-    <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-zinc-950 h-[min(70vh,520px)]">
+    <div className="relative w-full h-[min(72vh,640px)] rounded-2xl overflow-hidden border border-white/10 bg-black">
       <div ref={mountRef} className="absolute inset-0" />
       {!ready && (
-        <div className="absolute inset-0 flex items-center justify-center text-sm text-zinc-500 bg-zinc-950">
+        <div className="absolute inset-0 flex items-center justify-center text-zinc-500 text-sm">
           {emptyLabel}
         </div>
       )}
-      <div className="absolute top-2 left-2 right-2 flex flex-wrap gap-2 pointer-events-none">
-        <span className="rounded-lg bg-black/55 border border-white/10 px-2 py-1 text-[11px] text-zinc-200">
-          Hall {roomName} · {area} m² · {paintings.length} tableaux · avatar 3e pers.
+      <div className="absolute top-2 left-2 right-2 flex flex-wrap gap-2 items-center pointer-events-none">
+        <span className="text-[10px] uppercase tracking-wider text-white/70 bg-black/50 px-2 py-1 rounded-lg">
+          {roomName} · {area} m²
         </span>
-        <span className="rounded-lg bg-black/55 border border-white/10 px-2 py-1 text-[11px]" style={{ color: pulseAccent }}>
-          ● {pulseLabel}
+        <span
+          className="text-[10px] px-2 py-1 rounded-lg bg-black/50"
+          style={{ color: pulseAccent }}
+        >
+          {pulseLabel}
         </span>
+        {nearTitle && (
+          <span className="text-[11px] text-cyan-100/90 bg-black/55 px-2 py-1 rounded-lg">
+            E · {nearTitle}
+          </span>
+        )}
       </div>
-      {nearTitle && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-full bg-black/65 border border-white/15 px-3 py-1 text-[12px] text-white max-w-[90%] truncate">
-          {nearTitle}
-        </div>
-      )}
       {hint && (
-        <div className="absolute bottom-3 left-3 right-3 sm:right-auto flex flex-wrap gap-2 items-center">
-          <p className="text-[11px] text-zinc-300 bg-black/55 border border-white/10 rounded-lg px-2 py-1">
-            Clic viser · WASD · E œuvre
-          </p>
-          <button type="button" className="text-[11px] text-zinc-400 underline pointer-events-auto" onClick={() => setHint(false)}>
-            OK
-          </button>
-        </div>
+        <button
+          type="button"
+          className="absolute bottom-24 left-1/2 -translate-x-1/2 text-[11px] text-zinc-400 bg-black/60 px-3 py-1.5 rounded-full"
+          onClick={() => setHint(false)}
+        >
+          WASD · souris · E fiche · clic œuvre
+        </button>
       )}
-      <div className="absolute bottom-3 right-3 flex flex-col gap-1.5 sm:hidden pointer-events-auto">
+      <div className="absolute bottom-3 right-3 flex flex-col gap-1.5 md:hidden">
         <div className="flex gap-1.5 justify-center">
-          <Pad label="W" on={v => (hold.current.w = v)} />
+          <Pad label="↑" on={v => (hold.current.up = v)} />
         </div>
         <div className="flex gap-1.5">
-          <Pad label="A" on={v => (hold.current.a = v)} />
-          <Pad label="S" on={v => (hold.current.s = v)} />
-          <Pad label="D" on={v => (hold.current.d = v)} />
+          <Pad label="←" on={v => (hold.current.left = v)} />
+          <Pad label="↓" on={v => (hold.current.down = v)} />
+          <Pad label="→" on={v => (hold.current.right = v)} />
         </div>
+        <Pad label="⌁" on={v => (hold.current.sprint = v)} />
       </div>
+      {locked && <div className="absolute inset-0 pointer-events-none ring-1 ring-cyan-500/20" />}
       {inspect && (
         <ArtworkDossier
           frame={inspect}
           allowBuy={allowBuy}
           marketLive={marketLive}
+          onBuy={() => onBuy(inspect)}
           onClose={() => setInspect(null)}
-          onBuy={allowBuy ? () => onBuy(inspect) : undefined}
         />
       )}
     </div>
