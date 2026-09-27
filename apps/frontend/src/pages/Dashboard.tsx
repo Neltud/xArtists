@@ -1,5 +1,5 @@
 /**
- * Home — fluid + LIA / GrokyversX + Phase 4 First 100 + ad sample + actions utilisateur.
+ * Home — fluid + session wallet connecté + Phase 4 + actions.
  */
 import { Link } from 'react-router-dom'
 import SoftStatus from '../components/SoftStatus'
@@ -9,16 +9,17 @@ import NetworkLiveStrip from '../components/NetworkLiveStrip'
 import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import AdSlot from '../components/AdSlot'
 import UserActionsPanel from '../components/UserActionsPanel'
+import ConnectedSessionPanel from '../components/ConnectedSessionPanel'
 import { isSupernovaLive } from '../config/supernova'
 import LottieIcon from '../components/LottieIcon'
 
 const LINKS_MAIN = [
   { to: '/museum', title: 'Galerie', body: 'Salles 3D · avatar · collection', delay: '0ms' },
-  { to: '/agents', title: 'Packs', body: 'Pulse · Yield · Sentinel', delay: '60ms' },
+  { to: '/agents', title: 'Packs', body: 'Pulse · Yield · Sentinel · min 10 EGLD', delay: '60ms' },
   { to: '/tours', title: 'Tours', body: 'Carte OSM & musées du monde', delay: '120ms' },
   { to: '/trading', title: 'Trading', body: 'Board paper · GrokyversX', delay: '180ms' },
   { to: '/lia', title: 'LIA', body: '8008 · trésorerie · pipeline', delay: '200ms' },
-  { to: '/slot', title: 'Slot', body: '3×3 · paper EGLD/USDC', delay: '220ms' },
+  { to: '/slot', title: 'Slot', body: '3×3 · paper EGLD/USDC (dur)', delay: '220ms' },
   { to: '/ads', title: 'Ads', body: 'Enchères pub · sample live', delay: '240ms' },
   { to: '/go-live', title: 'GO_LIVE', body: 'Phase 4 · First 100 · checklists', delay: '260ms' },
 ] as const
@@ -63,6 +64,10 @@ export default function Dashboard() {
           </Link>
         </div>
       </section>
+
+      <div className="relative mt-6">
+        <ConnectedSessionPanel />
+      </div>
 
       <div className="relative mt-8">
         <Phase4ReadinessBanner variant="full" />
