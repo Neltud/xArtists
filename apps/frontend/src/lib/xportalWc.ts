@@ -1,12 +1,9 @@
 /**
  * xPortal / WalletConnect V2 — mainnet login.
- * Import statique du provider pour que Vite l’inclue dans le bundle Pages.
- * Fallback : Web Wallet.
+ * CJS interop robuste (Vite + GH Pages).
  */
 import { XPORTAL_DEEP_LINKS, sdkDappConfig, WALLET_CONNECT_V2_RELAY_URL } from '../config/sdkDapp'
-
-// CJS package — interop Vite
-import * as WcProviderMod from '@multiversx/sdk-wallet-connect-provider'
+import * as WcNs from '@multiversx/sdk-wallet-connect-provider'
 
 const MAINNET = '1'
 
@@ -31,14 +28,27 @@ type WcCtor = new (
 ) => XcProvider
 
 function resolveWalletConnectCtor(): WcCtor | null {
-  const m = WcProviderMod as unknown as {
-    WalletConnectV2Provider?: WcCtor
-    default?: { WalletConnectV2Provider?: WcCtor } | WcCtor
-  }
-  if (m.WalletConnectV2Provider) return m.WalletConnectV2Provider
-  if (m.default && typeof m.default === 'function') return m.default as WcCtor
-  if (m.default && typeof m.default === 'object' && m.default.WalletConnectV2Provider) {
-    return m.default.WalletConnectV2Provider
+  const roots: unknown[] = [WcNs, (WcNs as { default?: unknown }).default]
+  for (const root of roots) {
+    if (!root || typeof root !== 'object') continue
+    const r = root as Record<string, unknown>
+    const direct = r.WalletConnectV2Provider
+    if (typeof direct === 'function') return direct as WcCtor
+    // some bundlers nest default.default
+    const nested = r.default
+    if (nested && typeof nested === 'object') {
+      const n = (nested as Record<string, unknown>).WalletConnectV2Provider
+      if (typeof n === 'function') return n as WcCtor
+    }
+    if (typeof nested === 'function' && /WalletConnect/i.test(String(nested.name))) {
+      return nested as WcCtor
+    }
+    // scan values for constructor-looking export
+    for (const v of Object.values(r)) {
+      if (typeof v === 'function' && /WalletConnectV2/i.test(String((v as { name?: string }).name || v))) {
+        return v as WcCtor
+      }
+    }
   }
   return null
 }
@@ -91,7 +101,7 @@ export async function loginWithXPortalMainnet(
     return {
       ok: false,
       error:
-        'Module WalletConnect absent du bundle. Utilise Web Wallet — fiable sur neltud.github.io.',
+        'Module WalletConnect indisponible dans ce build. Utilise Web Wallet (recommandé).',
     }
   }
 
