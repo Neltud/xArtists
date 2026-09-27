@@ -35,8 +35,8 @@ export default function Agents() {
         <div className="atelier-title-rule" aria-hidden />
         <LottieIcon preset="spark" size={36} />
         <p className="section-lead">
-          Trois accès uniques. Checkout paper → pack local + ouverture scénique. Revente NFT possible
-          sur le marketplace (produit, pas titre financier).
+          Trois accès uniques. Floor <strong className="text-zinc-300">10 EGLD</strong>. Checkout paper →
+          pack local + ouverture scénique. Pas un titre financier.
         </p>
         <p className="text-[12px] text-zinc-500">
           <Link
@@ -62,11 +62,9 @@ export default function Agents() {
         </p>
       </header>
 
-      <Phase4ReadinessBanner variant="compact" />
-
       <PackProductDisclaimer />
-
-      <AdSlot id="drop_feature" />
+      <Phase4ReadinessBanner />
+      <AdSlot placement="agents_top" />
 
       <div className="grid sm:grid-cols-3 gap-3">
         {PACKS.map(p => {
@@ -85,9 +83,10 @@ export default function Agents() {
                 </p>
                 <p className="text-[12px] text-zinc-500 mt-1 line-clamp-2">{p.tagline}</p>
                 <p className="mt-3 text-xl font-semibold text-white tabular-nums">
-                  {p.priceEur.list}
-                  <span className="text-sm font-normal text-zinc-500 ml-1">€</span>
+                  {p.priceEgld?.list ?? p.priceEur.list}
+                  <span className="text-sm font-normal text-zinc-500 ml-1">EGLD</span>
                 </p>
+                <p className="text-[11px] text-zinc-600">≈ {p.priceEur.list} € · min 10 EGLD</p>
               </button>
               <button
                 type="button"
@@ -103,7 +102,9 @@ export default function Agents() {
 
       <section className="card space-y-1">
         <p className="text-[13px] text-zinc-400 mb-3">
-          {active ? `${active.name} · ${active.priceEur.list} € · paper` : 'Sélectionne un pack'}
+          {active
+            ? `${active.name} · ${active.priceEgld?.list ?? active.priceEur.list} EGLD · paper`
+            : 'Sélectionne un pack'}
         </p>
         <PackCheckout
           packId={selected}
