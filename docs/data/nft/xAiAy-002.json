@@ -1,0 +1,27 @@
+{
+  "name": "Agent 002",
+  "description": "Entitlement NFT Pack Yield (xArtists). Agent de rendement — lecture Hatom / LP / compound. Signaux moyens, pas d’APY annoncé. Pas un fonds, pas de mandat de gestion.",
+  "collection": "xArtists AI Agents — Yield",
+  "ticker": "xAiAy",
+  "nonce": 1,
+  "attributes": [
+    { "trait_type": "Pack", "value": "Yield" },
+    { "trait_type": "Agent", "value": "002" },
+    { "trait_type": "Artist", "value": "NT" },
+    { "trait_type": "Date", "value": "2027" },
+    { "trait_type": "Technique", "value": "IA generated" },
+    { "trait_type": "Class", "value": "Harvest Core" },
+    { "trait_type": "Rarity", "value": "Genesis" },
+    { "trait_type": "Signal intensity", "value": 2 },
+    { "trait_type": "Collection", "value": "xAiAy" }
+  ],
+  "properties": {
+    "artist": "NT",
+    "date": "2027",
+    "technique": "IA generated",
+    "pack": "yield",
+    "collection_ticker": "xAiAy",
+    "onSale": false
+  },
+  "external_url": "https://neltud.github.io/xArtists/#/my-packs"
+}

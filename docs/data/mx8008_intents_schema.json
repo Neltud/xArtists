@@ -1,0 +1,6 @@
+{
+  "version": "1.0.0",
+  "agent": "mx-8008",
+  "mode_default": "paper",
+  "fail_closed": true
+}
