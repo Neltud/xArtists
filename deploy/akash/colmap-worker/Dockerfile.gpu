@@ -1,0 +1,19 @@
+# Lab image target: CUDA runtime + COLMAP + Node API
+# docker build -f Dockerfile.gpu -t ghcr.io/neltud/xartists-colmap-worker:latest .
+FROM nvidia/cuda:12.2.0-runtime-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates curl \
+    nodejs npm \
+    && (apt-get install -y --no-install-recommends colmap || true) \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY package.json worker.mjs ./
+RUN npm install --omit=dev 2>/dev/null || true
+
+ENV PORT=8080
+ENV NVIDIA_VISIBLE_DEVICES=all
+EXPOSE 8080
+CMD ["node", "worker.mjs"]

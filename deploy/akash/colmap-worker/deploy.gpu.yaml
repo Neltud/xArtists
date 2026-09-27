@@ -1,0 +1,40 @@
+---
+# COLMAP lab worker — high CPU/RAM; enable GPU attributes when provider supports nvidia
+version: "2.0"
+
+services:
+  colmap:
+    image: ghcr.io/neltud/xartists-colmap-worker:latest
+    env:
+      - PORT=8080
+      - NODE_ENV=production
+      - MAX_JOBS=2
+      - SCALE_DEFAULT_CM=20
+    expose:
+      - port: 8080
+        as: 80
+        to:
+          - global: true
+
+profiles:
+  compute:
+    colmap:
+      resources:
+        cpu:
+          units: 4.0
+        memory:
+          size: 16Gi
+        storage:
+          size: 80Gi
+  placement:
+    dcloud:
+      pricing:
+        colmap:
+          denom: uakt
+          amount: 50000
+
+deployment:
+  colmap:
+    dcloud:
+      profile: colmap
+      count: 1
