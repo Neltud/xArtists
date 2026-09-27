@@ -1,28 +1,19 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import Header from './components/Header'
-import BottomNav from './components/BottomNav'
-import SignalTicker from './components/SignalTicker'
-import FirstVisitOnboarding from './components/FirstVisitOnboarding'
-import ErrorBoundary from './components/ErrorBoundary'
-import PageLoader from './components/PageLoader'
-import PwaInstallBanner from './components/PwaInstallBanner'
-import PrivateReleaseStrip from './components/PrivateReleaseStrip'
-import DemoModeBanner from './components/DemoModeBanner'
-import IntentBar from './components/IntentBar'
-import LiaMonitor from './components/LiaMonitor'
-import GuardianStatusBar from './components/shared/GuardianStatusBar'
+import MobileNav from './components/MobileNav'
+import Footer from './components/Footer'
+import BackgroundFX from './components/BackgroundFX'
+import AmbientSoundscape from './components/AmbientSoundscape'
+import { WalletProvider } from './context/WalletContext'
+import { ToastProvider } from './context/ToastContext'
+import { I18nProvider } from './context/I18nContext'
+import Toast from './components/Toast'
 import RoutePrefetch from './components/RoutePrefetch'
-import ArtAtelierBackdrop from './components/ArtAtelierBackdrop'
-import { useMultiversX } from './hooks/useMultiversX'
-import AssetDrawer from './components/ui/AssetDrawer'
-import { OPEN_ASSETS_EVENT } from './lib/walletEvents'
-import { LINKS } from './config/links'
-import { DEMO_MODE } from './config/demoMode'
-import PageTransition from './components/PageTransition'
-import SoundDock from './components/SoundDock'
+import ScrollToTop from './components/ScrollToTop'
 import RouteErrorBoundary from './components/RouteErrorBoundary'
 import RouteSfx from './components/RouteSfx'
+import { initAgent8008Bridge } from './lib/agent8008Bridge'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Marketplace = lazy(() => import('./pages/Marketplace'))
@@ -58,38 +49,26 @@ const TxShell = lazy(() => import('./providers/TxShell'))
 const DemoTourPage = lazy(() => import('./pages/DemoTourPage'))
 const GoLivePage = lazy(() => import('./pages/GoLivePage'))
 const VenueAccountPage = lazy(() => import('./pages/VenueAccountPage'))
+const DigitalTwinPage = lazy(() => import('./pages/DigitalTwinPage'))
 const SlotPage = lazy(() => import('./pages/SlotPage'))
 const LiaPerformancePage = lazy(() => import('./pages/LiaPerformancePage'))
 
-export default function App() {
+function AppShell() {
   const location = useLocation()
-  const { needsTx } = useMultiversX()
-  const [assetsOpen, setAssetsOpen] = useState(false)
-
+  const [ready, setReady] = useState(false)
   useEffect(() => {
-    const open = () => setAssetsOpen(true)
-    window.addEventListener(OPEN_ASSETS_EVENT, open)
-    return () => window.removeEventListener(OPEN_ASSETS_EVENT, open)
+    initAgent8008Bridge()
+    setReady(true)
   }, [])
-
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [location.pathname])
-
+  if (!ready) return null
   return (
-    <ErrorBoundary>
-      <div className="app-shell relative grain">
-        <ArtAtelierBackdrop />
-        <Header />
-        <PrivateReleaseStrip />
-        {DEMO_MODE && <DemoModeBanner />}
-        <SignalTicker />
-        <GuardianStatusBar />
-        <main className="page-main page-wrap atelier-content py-4 sm:py-6">
-          <Suspense fallback={<PageLoader />}>
-            <PageTransition>
-              <RouteErrorBoundary>
-              <Routes>
+    <div className="min-h-screen flex flex-col relative">
+      <BackgroundFX />
+      <Header />
+      <main className="flex-1 px-3 sm:px-4 pt-3 pb-24 md:pb-8 max-w-6xl w-full mx-auto">
+        <RouteErrorBoundary>
+          <Suspense fallback={<div className="text-zinc-500 text-sm py-12 text-center">Chargement…</div>}>
+            <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/market" element={<MarketPage />} />
                 <Route path="/marketplace" element={<Marketplace />} />
@@ -113,6 +92,8 @@ export default function App() {
                 <Route path="/gallery" element={<Navigate to="/museum" replace />} />
                 <Route path="/museum" element={<MuseumPage />} />
                 <Route path="/museum/lab" element={<MuseumLabPage />} />
+                <Route path="/digital-twin" element={<DigitalTwinPage />} />
+                <Route path="/sculpture-lab" element={<DigitalTwinPage />} />
                 <Route path="/musee" element={<Navigate to="/museum" replace />} />
                 <Route path="/collection" element={<Navigate to="/museum?tab=mine" replace />} />
                 <Route path="/legal" element={<LegalPage />} />
@@ -133,31 +114,32 @@ export default function App() {
                 <Route path="/accounts" element={<VenueAccountPage />} />
                 <Route path="/soul" element={<SoulTestnetPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-              </RouteErrorBoundary>
-            </PageTransition>
+            </Routes>
           </Suspense>
-        </main>
-        <BottomNav />
-        <IntentBar />
-        <LiaMonitor />
-        <PwaInstallBanner />
-        <FirstVisitOnboarding />
-        <RoutePrefetch />
-        <RouteSfx />
-        <SoundDock />
-        {needsTx && (
-          <Suspense fallback={null}>
-            <TxShell />
-          </Suspense>
-        )}
-        <AssetDrawer open={assetsOpen} onClose={() => setAssetsOpen(false)} />
-        <footer className="hidden md:block text-center text-[10px] text-zinc-600 py-4 atelier-content">
-          <a href={LINKS.github} className="hover:text-zinc-400" target="_blank" rel="noreferrer">
-            GitHub
-          </a>
-        </footer>
-      </div>
-    </ErrorBoundary>
+        </RouteErrorBoundary>
+      </main>
+      <Footer />
+      <MobileNav />
+      <Toast />
+      <RoutePrefetch />
+      <ScrollToTop />
+      <RouteSfx />
+      <AmbientSoundscape />
+      <Suspense fallback={null}>
+        <TxShell />
+      </Suspense>
+    </div>
+  )
+}
+
+export default function App() {
+  return (
+    <I18nProvider>
+      <ToastProvider>
+        <WalletProvider>
+          <AppShell />
+        </WalletProvider>
+      </ToastProvider>
+    </I18nProvider>
   )
 }
