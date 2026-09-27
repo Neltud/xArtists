@@ -1,9 +1,9 @@
 /**
- * Packs IA NFT — Pulse · Yield · Sentinel UNIQUEMENT.
- * Tours artistiques = service séparé (/tours) — PAS un pack agent.
+ * Packs IA NFT — Pulse · Yield · Sentinel.
+ * Prix floor : 10 EGLD (produit unique, pas promesse financière).
  */
 
-import { PACK_PRICE_EUR } from './multichain'
+import { PACK_PRICE_EGLD, PACK_PRICE_EUR } from './multichain'
 
 export type PackId = 'pulse' | 'yield' | 'sentinel'
 
@@ -13,6 +13,9 @@ export type AgentPackProfile = {
   tagline: string
   icon: string
   signalIntensity: 1 | 2 | 3
+  /** Prix principal produit (mainnet) */
+  priceEgld: { min: number; max: number; list: number }
+  /** Affichage fiat indicatif */
   priceEur: { min: number; max: number; list: number }
   strategies: string[]
   activity: string
@@ -31,7 +34,8 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     tagline: 'Le plus de signaux · micro-arb · momentum · board',
     icon: '⚡',
     signalIntensity: 3,
-    priceEur: { min: 12, max: PACK_PRICE_EUR.max, list: 18 },
+    priceEgld: { min: 10, max: PACK_PRICE_EGLD.max, list: 25 },
+    priceEur: { min: 45, max: PACK_PRICE_EUR.max, list: 110 },
     strategies: ['MICRO_ARB', 'MOMENTUM', 'MEAN_REVERSION'],
     activity: 'Plusieurs cycles / jour — densité de signaux maximale',
     entitlements: [
@@ -56,7 +60,8 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     tagline: 'Signaux moyens · Hatom · LP · compound',
     icon: '🌾',
     signalIntensity: 2,
-    priceEur: { min: 8, max: 20, list: 12 },
+    priceEgld: { min: 10, max: 30, list: 15 },
+    priceEur: { min: 45, max: 135, list: 68 },
     strategies: ['YIELD', 'COMPOUND'],
     activity: '1–7 actions / semaine — signaux yield / claim',
     entitlements: [
@@ -77,7 +82,8 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     tagline: 'Veille · alertes · risk sleeve',
     icon: '🛡️',
     signalIntensity: 1,
-    priceEur: { min: PACK_PRICE_EUR.min, max: 15, list: 8 },
+    priceEgld: { min: PACK_PRICE_EGLD.min, max: 20, list: 10 },
+    priceEur: { min: PACK_PRICE_EUR.min, max: 90, list: 45 },
     strategies: ['GUARD', 'ALERT'],
     activity: 'Alertes sparses — focus protection',
     entitlements: ['NFT pack Sentinel', 'Alertes board', 'Droit de part pool Sentinel'],
@@ -90,17 +96,19 @@ export const AGENT_PACKS: AgentPackProfile[] = [
 ]
 
 export const PACK_PRICING_POLICY = {
-  ranking: 'Pulse (18€) > Yield (12€) > Sentinel (8€)',
+  ranking: 'Pulse (25 EGLD) > Yield (15 EGLD) > Sentinel (10 EGLD)',
+  corridorEgld: { min: PACK_PRICE_EGLD.min, max: PACK_PRICE_EGLD.max },
   corridor: { min: PACK_PRICE_EUR.min, max: PACK_PRICE_EUR.max },
-  listEur: 18,
-  note: 'Catalogue lié à la densité de signaux. Tours artistiques = service séparé, pas un pack IA.',
+  listEgld: 25,
+  listEur: 110,
+  note: 'Floor 10 EGLD. Tours artistiques = service séparé. Pas une promesse de rendement.',
 }
 
 export const PACK_JOURNEY_STEPS = [
   {
     id: '1',
     title: 'Choisir un pack IA',
-    body: 'Pulse · Yield · Sentinel uniquement. Pas de travel agent.',
+    body: 'Pulse · Yield · Sentinel — min 10 EGLD. Pas de travel agent.',
   },
   {
     id: '2',

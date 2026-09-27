@@ -1,6 +1,6 @@
 /**
  * Slot public — EGLD | USDC, cagnotte progressive, grand jackpot 9/9.
- * Paper ledger (localStorage). Grand public. SC claim OFF.
+ * Paper ledger. Économie dure (pool large, collections distinctes, pair rare).
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -10,7 +10,6 @@ import {
   SLOT_ASSETS,
   SLOT_ASSET_CONFIG,
   SLOT_USER_WIN_BPS,
-  SLOT_LIA_WIN_RAKE_BPS,
   SLOT_PROGRESSIVE_CONTRIB_BPS,
   loadProgressive,
   saveProgressive,
@@ -24,48 +23,91 @@ import { dispatch8008 } from '../config/agent8008'
 
 type CellImg = { id: string; title: string; image: string; collection?: string }
 
+/** Chaque symbole = collection unique → plus de « Collection » quasi-auto */
 const FALLBACK: CellImg[] = [
   {
     id: 't1',
     title: 'Meteorite',
     image:
       'https://images.weserv.nl/?url=media.multiversx.com/nfts/thumbnail/NFTUDURI-2990b6-02792a97&w=256&output=jpg',
-    collection: 'NFTUDURI',
+    collection: 'A',
   },
   {
     id: 't2',
     title: 'Artpocalypse',
     image:
       'https://images.weserv.nl/?url=media.multiversx.com/nfts/thumbnail/NFTUDURI-2990b6-232735fa&w=256&output=jpg',
-    collection: 'NFTUDURI',
+    collection: 'B',
   },
   {
     id: 't3',
     title: 'Serenity',
     image:
       'https://images.weserv.nl/?url=media.multiversx.com/nfts/thumbnail/NFTUDURI-2990b6-aa98c0da&w=256&output=jpg',
-    collection: 'NFTUDURI',
+    collection: 'C',
   },
   {
     id: 't4',
     title: 'Traveller',
     image:
       'https://images.weserv.nl/?url=media.multiversx.com/nfts/thumbnail/NFTUDURI-2990b6-a9d35042&w=256&output=jpg',
-    collection: 'NFTUDURI',
+    collection: 'D',
   },
   {
     id: 't5',
     title: 'Strange Cat',
     image:
       'https://images.weserv.nl/?url=media.multiversx.com/nfts/thumbnail/NFTUDURI-2990b6-1f7cda62&w=256&output=jpg',
-    collection: 'NFTUDURI',
+    collection: 'E',
   },
   {
     id: 't6',
     title: 'Father',
     image:
       'https://images.weserv.nl/?url=media.multiversx.com/nfts/thumbnail/NFTUDURI-2990b6-c4e81865&w=256&output=jpg',
-    collection: 'NFTUDURI',
+    collection: 'F',
+  },
+  {
+    id: 't7',
+    title: 'Void',
+    image:
+      'https://images.weserv.nl/?url=media.multiversx.com/nfts/thumbnail/NFTUDURI-2990b6-02792a97&w=256&output=jpg&hue=40',
+    collection: 'G',
+  },
+  {
+    id: 't8',
+    title: 'Echo',
+    image:
+      'https://images.weserv.nl/?url=media.multiversx.com/nfts/thumbnail/NFTUDURI-2990b6-232735fa&w=256&output=jpg&hue=120',
+    collection: 'H',
+  },
+  {
+    id: 't9',
+    title: 'Bloom',
+    image:
+      'https://images.weserv.nl/?url=media.multiversx.com/nfts/thumbnail/NFTUDURI-2990b6-aa98c0da&w=256&output=jpg&hue=200',
+    collection: 'I',
+  },
+  {
+    id: 't10',
+    title: 'Cipher',
+    image:
+      'https://images.weserv.nl/?url=media.multiversx.com/nfts/thumbnail/NFTUDURI-2990b6-a9d35042&w=256&output=jpg&hue=280',
+    collection: 'J',
+  },
+  {
+    id: 't11',
+    title: 'Drift',
+    image:
+      'https://images.weserv.nl/?url=media.multiversx.com/nfts/thumbnail/NFTUDURI-2990b6-1f7cda62&w=256&output=jpg&hue=320',
+    collection: 'K',
+  },
+  {
+    id: 't12',
+    title: 'Nexus',
+    image:
+      'https://images.weserv.nl/?url=media.multiversx.com/nfts/thumbnail/NFTUDURI-2990b6-c4e81865&w=256&output=jpg&hue=60',
+    collection: 'L',
   },
 ]
 
@@ -84,7 +126,10 @@ function pick(pool: CellImg[]): CellImg {
   return pool[Math.floor(Math.random() * pool.length)] || FALLBACK[0]
 }
 
-/** Table gains (hors progressive). Grand = 9 mêmes symboles. */
+/**
+ * Wins stricts : pas de paire « n'importe où ».
+ * Collection = 3 collections identiques sur ligne centrale uniquement.
+ */
 function evaluateGrid(
   grid: CellImg[],
   asset: SlotAsset,
@@ -111,7 +156,8 @@ function evaluateGrid(
   if (cols.length === 3 && cols[0] === cols[1] && cols[1] === cols[2]) {
     return { tableGross: cfg.payouts.collection, isGrand: false, kind: 'Collection' }
   }
-  if (line[0].id === line[1].id || line[1].id === line[2].id || line[0].id === line[2].id) {
+  // Paire adjacente uniquement (positions 3-4 ou 4-5)
+  if (line[0].id === line[1].id || line[1].id === line[2].id) {
     return { tableGross: cfg.payouts.pair, isGrand: false, kind: 'Paire' }
   }
   return { tableGross: 0, isGrand: false, kind: '—' }
@@ -126,7 +172,6 @@ export default function SlotPage() {
   const [grid, setGrid] = useState<CellImg[]>(() => Array.from({ length: 9 }, () => FALLBACK[0]))
   const [spinning, setSpinning] = useState(false)
   const [spins, setSpins] = useState(0)
-  const [log, setLog] = useState<string[]>([])
   const [liaPaper, setLiaPaper] = useState(0)
   const [last, setLast] = useState<{ kind: string; split: SlotSplit } | null>(null)
   const [pool, setPool] = useState<CellImg[]>(FALLBACK)
@@ -152,17 +197,18 @@ export default function SlotPage() {
           collection?: string
         }>
         const mapped: CellImg[] = items
-          .slice(0, 24)
+          .slice(0, 36)
           .map((it, i) => ({
             id: it.identifier || `c${i}`,
             title: it.name || `NFT ${i}`,
             image: corsImg(it.url || ''),
-            collection: it.collection,
+            // forcer collection unique par item pour éviter wins faciles
+            collection: it.identifier || it.collection || `X${i}`,
           }))
           .filter(x => x.image)
         if (!c && mapped.length >= 4) setPool([...FALLBACK, ...mapped])
       } catch {
-        /* fallback pool */
+        /* fallback */
       }
     })()
     return () => {
@@ -197,51 +243,49 @@ export default function SlotPage() {
         saveProgressive(asset, progressiveAfter)
         setLiaPaper(l => l + split.spinToLia + split.liaRake)
         if (split.userCredit > 0) setBank(b => b + split.userCredit)
-        const line = ev.isGrand
-          ? `🏆 ${ev.kind} · cagnotte ${formatSlotAmount(split.progressivePaid, asset)} → user +${split.userCredit}`
-          : split.grossWin > 0
-            ? `${ev.kind} · +${split.userCredit} ${asset} · pot +${split.toProgressive}`
-            : `— · mise → pot +${split.toProgressive} · LIA +${split.spinToLia}`
-        setLog(l => [line, ...l].slice(0, 12))
-        dispatch8008('SLOT_SPIN', {
-          raw: `slot spin ${asset}`,
-          asset,
-          isGrand: ev.isGrand,
-          userCredit: split.userCredit,
-          toProgressive: split.toProgressive,
-          liaRake: split.liaRake + split.spinToLia,
-        })
+        try {
+          dispatch8008({
+            type: 'SLOT_SPIN',
+            asset,
+            kind: ev.kind,
+            userCredit: split.userCredit,
+            isGrand: split.isGrand,
+          })
+        } catch {
+          /* optional */
+        }
         setSpinning(false)
       }
-    }, 60)
+    }, 70)
   }
 
-  const paytable = useMemo(() => {
+  const table = useMemo(() => {
     const p = cfg.payouts
     return [
-      ['GRAND 9/9 mêmes symboles', `toute la cagnotte + ${p.grandBonus} ${asset}`],
-      ['3 identiques ligne centrale', `+${p.line3} ${asset} brut`],
-      ['Diagonale 3 identiques', `+${p.diagonal} ${asset} brut`],
-      ['3× collection (ligne)', `+${p.collection} ${asset} brut`],
-      ['Paire ligne', `+${p.pair} ${asset} brut`],
-      ['Mise → progressive', formatBps(SLOT_PROGRESSIVE_CONTRIB_BPS)],
-      ['Split gains table', `user ${formatBps(SLOT_USER_WIN_BPS)} · LIA ${formatBps(SLOT_LIA_WIN_RAKE_BPS)}`],
-    ]
+      ['GRAND 9/9', `cagnotte + ${p.grandBonus} ${asset}`],
+      ['Ligne 3', `${p.line3} ${asset}`],
+      ['Diagonale', `${p.diagonal} ${asset}`],
+      ['Collection (ligne)', `${p.collection} ${asset}`],
+      ['Paire adjacente', `${p.pair} ${asset}`],
+    ] as const
   }, [asset, cfg.payouts])
 
   return (
-    <div className="animate-fade-in space-y-6 pb-12 max-w-lg mx-auto">
-      <header className="space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-          Slot · paper mainnet-ready
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-white">Casino NFT 3×3</h1>
-        <p className="text-sm text-zinc-400 leading-relaxed">
-          Mise en <strong className="text-zinc-300">EGLD</strong> ou{" "}
-          <strong className="text-zinc-300">USDC</strong> · cagnotte progressive · grand jackpot 9/9.
-          Ledger paper local — SC claim OFF.
+    <div className="animate-fade-in max-w-lg mx-auto space-y-4 pb-16">
+      <header className="space-y-1">
+        <p className="section-label">Fun · paper</p>
+        <h1 className="section-title display text-2xl">Slot xArtists</h1>
+        <p className="text-[12px] text-zinc-500">
+          EGLD / USDC · cagnotte progressive · jackpot 9/9. Paper only — pas un investissement.
+          House edge volontaire (RTP bas).
         </p>
       </header>
+
+      {!connected && (
+        <button type="button" className="btn-secondary w-full text-sm" onClick={() => requestOpenConnect()}>
+          Connecter wallet (optionnel pour paper)
+        </button>
+      )}
 
       <div className="flex gap-2">
         {SLOT_ASSETS.map(a => (
@@ -250,10 +294,10 @@ export default function SlotPage() {
             type="button"
             disabled={spinning}
             onClick={() => setAsset(a)}
-            className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold transition ${
+            className={`flex-1 rounded-xl border px-3 py-2 text-sm ${
               asset === a
-                ? 'border-amber-400/50 bg-amber-500/15 text-amber-100'
-                : 'border-white/10 bg-black/30 text-zinc-400'
+                ? 'border-violet-400/50 bg-violet-500/15 text-white'
+                : 'border-white/10 text-zinc-400'
             }`}
           >
             {a}
@@ -261,98 +305,67 @@ export default function SlotPage() {
         ))}
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-zinc-950/60 p-4 space-y-3">
-        <div className="flex justify-between text-[12px] text-zinc-400">
-          <span>
-            Banque{" "}
-            <strong className="text-white tabular-nums">{formatSlotAmount(bank, asset)}</strong>
-          </span>
-          <span>
-            Cagnotte{" "}
-            <strong className="text-amber-200 tabular-nums">
-              {formatSlotAmount(progressive, asset)}
-            </strong>
-          </span>
-        </div>
-
-        <div className="grid grid-cols-3 gap-1.5">
-          {grid.map((cell, i) => (
-            <div
-              key={i}
-              className={`aspect-square rounded-lg border border-white/10 overflow-hidden bg-black/50 ${
-                spinning ? 'animate-pulse' : ''
-              }`}
-            >
-              <img
-                src={cell.image}
-                alt={cell.title}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          className="btn-primary w-full"
-          disabled={!canSpin}
-          onClick={spin}
-        >
-          {spinning
-            ? '…'
-            : `Spin · ${formatSlotAmount(cfg.spinCost, asset)}`}
-        </button>
-
-        {last && (
-          <p className="text-[12px] text-zinc-300">
-            Dernier: {last.kind}
-            {last.split.userCredit > 0 && (
-              <span className="text-emerald-300">
-                {' '}
-                +{formatSlotAmount(last.split.userCredit, asset)}
-              </span>
-            )}
-          </p>
-        )}
-
-        <p className="text-[11px] text-zinc-600">
-          Spins {spins} · LIA paper {formatSlotAmount(liaPaper, asset)}
-          {!connected && (
-            <>
-              {' · '}
-              <button type="button" className="text-zinc-400 underline" onClick={() => requestOpenConnect()}>
-                Connect
-              </button>
-            </>
-          )}
-        </p>
+      <div className="flex justify-between text-sm">
+        <span className="text-zinc-400">
+          Banque <strong className="text-white">{formatSlotAmount(bank, asset)}</strong>
+        </span>
+        <span className="text-amber-300/90">
+          Cagnotte {formatSlotAmount(progressive, asset)}
+        </span>
       </div>
 
-      <section className="rounded-xl border border-white/10 bg-black/30 p-3 space-y-1">
-        <p className="text-[10px] uppercase tracking-wider text-zinc-500">Paytable</p>
-        {paytable.map(([k, v]) => (
-          <div key={k} className="flex justify-between gap-2 text-[11px]">
-            <span className="text-zinc-400">{k}</span>
-            <span className="text-zinc-300 tabular-nums shrink-0">{v}</span>
+      <div className="grid grid-cols-3 gap-2">
+        {grid.map((cell, i) => (
+          <div
+            key={i}
+            className={`aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/50 ${
+              spinning ? 'animate-pulse' : ''
+            }`}
+          >
+            <img src={cell.image} alt={cell.title} className="w-full h-full object-cover" />
           </div>
         ))}
-      </section>
+      </div>
 
-      {log.length > 0 && (
-        <ul className="text-[11px] text-zinc-500 space-y-0.5">
-          {log.map((l, i) => (
-            <li key={i}>{l}</li>
-          ))}
-        </ul>
+      <button
+        type="button"
+        className="btn-primary w-full"
+        disabled={!canSpin}
+        onClick={spin}
+      >
+        {spinning ? '…' : `Spin · ${formatSlotAmount(cfg.spinCost, asset)}`}
+      </button>
+
+      {last && (
+        <p className="text-[12px] text-center text-zinc-300">
+          Dernier: <strong>{last.kind}</strong>{' '}
+          {last.split.userCredit > 0
+            ? `+${formatSlotAmount(last.split.userCredit, asset)}`
+            : '—'}
+        </p>
       )}
 
+      <p className="text-[11px] text-zinc-600 text-center">
+        Spins {spins} · LIA paper {formatSlotAmount(liaPaper, asset)} · user{' '}
+        {formatBps(SLOT_USER_WIN_BPS)} des wins · progressive{' '}
+        {formatBps(SLOT_PROGRESSIVE_CONTRIB_BPS)} des mises
+      </p>
+
+      <div className="card text-[11px] text-zinc-500 space-y-1">
+        <p className="text-zinc-400 font-medium">Table (paper)</p>
+        {table.map(([k, v]) => (
+          <div key={k} className="flex justify-between">
+            <span>{k}</span>
+            <span className="text-zinc-300">{v}</span>
+          </div>
+        ))}
+      </div>
+
       <p className="text-[11px] text-zinc-600">
-        <Link to="/lia" className="text-zinc-400 hover:underline">
-          LIA / 8008
-        </Link>
-        {' · '}
-        paper only · pas un investissement
+        <Link to="/market" className="text-cyan-400 hover:underline">
+          Marketplace
+        </Link>{' '}
+        · SC slot après audit
       </p>
     </div>
   )
