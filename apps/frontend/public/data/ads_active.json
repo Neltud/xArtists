@@ -1,34 +1,51 @@
 {
-  "updated": 1727350000,
-  "note": "Sample creatives · images Wikimedia CDN · not an investment",
+  "updated": 1727424000,
+  "note": "Creatives with IPFS CID + gateway fallback · publicité · pas un investissement",
   "slots": {
     "home_hero": {
       "slot": "home_hero",
       "title": "xArtists · Galerie 3D + Packs paper",
-      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1280px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+      "imageCid": "bafybeienhha5ahaheicohx4kc5x5c5x5demo0001",
+      "imageUrl": "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1280px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg&w=1200&output=jpg",
       "href": "https://neltud.github.io/xArtists/#/museum",
       "status": "active",
-      "advertiser": "xArtists Ops (sample)",
+      "advertiser": "xArtists Ops",
+      "label": "PUBLICITÉ · ENCHÈRE XARTISTS · PAS UN INVESTISSEMENT",
       "startsAt": "2026-01-01T00:00:00Z",
       "endsAt": "2027-12-31T23:59:59Z"
     },
     "drop_feature": {
       "slot": "drop_feature",
       "title": "Pulse · Yield · Sentinel — preview ouverture",
-      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/1280px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg",
+      "imageCid": "bafybeienhha5ahaheicohx4kc5x5c5x5demo0002",
+      "imageUrl": "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/46/Claude_Monet%2C_Impression%2C_soleil_levant.jpg/1280px-Claude_Monet%2C_Impression%2C_soleil_levant.jpg&w=1200&output=jpg",
       "href": "https://neltud.github.io/xArtists/#/agents",
       "status": "active",
-      "advertiser": "xArtists Ops (sample)",
+      "advertiser": "xArtists Ops",
+      "label": "PUBLICITÉ · ENCHÈRE XARTISTS · PAS UN INVESTISSEMENT",
       "startsAt": "2026-01-01T00:00:00Z",
       "endsAt": "2027-12-31T23:59:59Z"
     },
     "market_sidebar": {
       "slot": "market_sidebar",
       "title": "Catalogue NFT · consultation paper",
-      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Paul_Cezanne%2C_Still_Life_with_a_Curtain.jpg/1024px-Paul_Cezanne%2C_Still_Life_with_a_Curtain.jpg",
+      "imageCid": "bafybeienhha5ahaheicohx4kc5x5c5x5demo0003",
+      "imageUrl": "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Paul_Cezanne%2C_Still_Life_with_a_Curtain.jpg/1024px-Paul_Cezanne%2C_Still_Life_with_a_Curtain.jpg&w=800&output=jpg",
       "href": "https://neltud.github.io/xArtists/#/ads",
       "status": "active",
-      "advertiser": "xArtists Ops (sample)",
+      "advertiser": "xArtists Ops",
+      "label": "PUBLICITÉ · ENCHÈRE XARTISTS · PAS UN INVESTISSEMENT",
+      "startsAt": "2026-01-01T00:00:00Z",
+      "endsAt": "2027-12-31T23:59:59Z"
+    },
+    "studio_banner": {
+      "slot": "studio_banner",
+      "title": "Votre publicité ici · enchères",
+      "imageCid": "",
+      "imageUrl": "",
+      "href": "https://neltud.github.io/xArtists/#/ads",
+      "status": "inactive",
+      "advertiser": "",
       "startsAt": "2026-01-01T00:00:00Z",
       "endsAt": "2027-12-31T23:59:59Z"
     }

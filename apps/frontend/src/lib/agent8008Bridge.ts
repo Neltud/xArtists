@@ -1,6 +1,13 @@
 /**
  * Bridge navigateur : events `lia-intent` → journal local + webhook Vellum (optionnel).
- * PEM jamais ici — exécution réelle = Vellum / wallet user.
+ * PEM / Vellum API key JAMAIS ici — uniquement URL proxy (VITE_VELLUM_8008_WEBHOOK).
+ *
+ * Payload envoyé au webhook (compatible proxy → Vellum execute-workflow) :
+ * {
+ *   workflow_deployment_name: "xartists-8008-intents",
+ *   external_id: "…",
+ *   inputs: [{ name: "intent_type", value }, { name: "payload_json", value }, …]
+ * }
  */
 import { AGENT_8008, isAgent8008Intent, type Agent8008Intent } from '../config/agent8008'
 
@@ -37,10 +44,35 @@ export function get8008Journal(): IntentJournalEntry[] {
   return readJournal()
 }
 
-/** Webhook Vellum / MCP proxy — définir VITE_VELLUM_8008_WEBHOOK en build si dispo */
+/** Proxy URL only — never put Vellum API key in VITE_* */
 function vellumWebhookUrl(): string | null {
   const u = (import.meta.env.VITE_VELLUM_8008_WEBHOOK as string | undefined)?.trim()
   return u || null
+}
+
+/** Body for proxy that forwards to Vellum execute-workflow / execute-workflow-async */
+function buildVellumProxyBody(entry: IntentJournalEntry) {
+  return {
+    workflow_deployment_name: AGENT_8008.endpoints.vellumWorkflow,
+    external_id: `xa-8008-${entry.type}-${entry.ts}`,
+    inputs: [
+      { name: 'intent_type', type: 'STRING', value: entry.type },
+      { name: 'agent_id', type: 'STRING', value: entry.agent },
+      { name: 'paper', type: 'STRING', value: entry.paper ? 'true' : 'false' },
+      {
+        name: 'payload_json',
+        type: 'STRING',
+        value: JSON.stringify(entry.payload),
+      },
+      { name: 'ts', type: 'STRING', value: entry.ts },
+    ],
+    // Mirror raw for simple proxies
+    intent: entry.type,
+    agent: entry.agent,
+    paper: entry.paper,
+    payload: entry.payload,
+    ts: entry.ts,
+  }
 }
 
 async function forwardToVellum(entry: IntentJournalEntry): Promise<IntentJournalEntry> {
@@ -51,18 +83,16 @@ async function forwardToVellum(entry: IntentJournalEntry): Promise<IntentJournal
   try {
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        workflow: AGENT_8008.endpoints.vellumWorkflow,
-        agent: AGENT_8008.id,
-        intent: entry.type,
-        paper: entry.paper,
-        payload: entry.payload,
-        ts: entry.ts,
-      }),
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(buildVellumProxyBody(entry)),
     })
     if (!res.ok) {
-      return { ...entry, vellum: 'error', vellumDetail: `HTTP ${res.status}` }
+      const t = await res.text().catch(() => '')
+      return {
+        ...entry,
+        vellum: 'error',
+        vellumDetail: `HTTP ${res.status} ${t.slice(0, 60)}`,
+      }
     }
     return { ...entry, vellum: 'sent', vellumDetail: 'ok' }
   } catch (e) {
@@ -110,7 +140,6 @@ export async function handleLiaIntentDetail(detail: unknown): Promise<IntentJour
 
 let started = false
 
-/** Appeler une fois depuis main.tsx */
 export function startAgent8008Bridge() {
   if (typeof window === 'undefined' || started) return
   started = true
