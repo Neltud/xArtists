@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.56.1](https://github.com/Neltud/xArtists/compare/v0.56.0...v0.56.1) (2026-09-27)
+
+
+### Bug Fixes
+
+* chat intents (hi), xPortal deep-link, realistic tip prices, OSM default map, studio nav ([981ab7b](https://github.com/Neltud/xArtists/commit/981ab7b8d915e719f808bdeeced487ff69b37bbe))
+* **wc:** no xportal:// browser navigation; map OSM-only tiles (no Carto API key) ([4e7d544](https://github.com/Neltud/xArtists/commit/4e7d544c58ac0e2f4a52274d68e6a97f73ccab96))
+
 ## [0.56.0](https://github.com/Neltud/xArtists/compare/v0.55.0...v0.56.0) (2026-09-27)
 
 
