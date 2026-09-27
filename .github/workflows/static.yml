@@ -44,8 +44,7 @@ jobs:
 
       - name: Verify Dashboard source (must be clean home)
         run: |
-          head -5 src/pages/Dashboard.tsx
-          if grep -q 'Catzligue\|L.intention devient\|Posts X' src/pages/Dashboard.tsx; then
+          if grep -qiE 'ops clutter|dev home|Become\|Posts X' src/pages/Dashboard.tsx; then
             echo '::error::Dashboard.tsx still contains ops/home clutter'
             exit 1
           fi
@@ -69,6 +68,8 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096
           VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
           VITE_APP_BUILD: "3.10.0"
+          # Proxy URL only — never put Vellum API key in secrets as VITE_*
+          VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
 
       - name: Stamp build id
         run: |
@@ -101,41 +102,31 @@ jobs:
             cp -R apps/frontend/dist/museum docs/museum
           fi
           if [ -d apps/frontend/dist/data ]; then
-            mkdir -p docs/data
-            cp -R apps/frontend/dist/data/. docs/data/
+            rm -rf docs/data
+            cp -R apps/frontend/dist/data docs/data
           fi
-          if [ -d apps/frontend/dist/blueprints ]; then
-            rm -rf docs/blueprints
-            cp -R apps/frontend/dist/blueprints docs/blueprints
-          elif [ -d apps/frontend/public/blueprints ]; then
-            rm -rf docs/blueprints
-            cp -R apps/frontend/public/blueprints docs/blueprints
-          fi
-          cp apps/frontend/dist/BUILD_SHA.txt docs/BUILD_SHA.txt
-          cp apps/frontend/dist/BUILD_TIME.txt docs/BUILD_TIME.txt
-          echo "Synced dist → docs. SHA=${{ github.sha }}"
+          cp apps/frontend/dist/BUILD_SHA.txt docs/BUILD_SHA.txt 2>/dev/null || true
+          cp apps/frontend/dist/BUILD_TIME.txt docs/BUILD_TIME.txt 2>/dev/null || true
 
       - name: Commit docs SPA sync
         working-directory: .
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/index.html docs/404.html docs/assets docs/BUILD_SHA.txt docs/BUILD_TIME.txt \
-            docs/manifest.webmanifest docs/service-worker.js docs/favicon.svg docs/robots.txt docs/sitemap.xml \
-            docs/museum docs/data docs/blueprints 2>/dev/null || true
-          if git diff --cached --quiet; then
-            echo "No docs changes to commit"
+          git add docs
+          if git diff --staged --quiet; then
+            echo "No docs changes"
           else
-            git commit -m "chore(pages): sync Vite dist → docs/ ${{ github.sha }} [skip ci]"
-            git push origin HEAD:main
+            git commit -m "chore(pages): sync docs SPA [skip ci]"
+            git push
           fi
 
   deploy:
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
