@@ -1,76 +1,70 @@
 /**
  * LIA Performance & Agents — Vellum exécute (PEM Vellum), Grok propose.
- * Supernova live + MX-8008.
+ * Supernova live + MX-8008 + trésorerie lecture seule.
  */
 import { Link } from 'react-router-dom'
 import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
-import PaperLiveDesk from '../components/PaperLiveDesk'
 import Agent8008Panel from '../components/Agent8008Panel'
+import TreasuryFlowsPanel from '../components/TreasuryFlowsPanel'
 import SupernovaStatusBadge from '../components/SupernovaStatusBadge'
-import { AGENT_PACKS } from '../config/agentPacks'
-import { canBuyAgent, AGENTS_LIVE, MARKETPLACE_LIVE } from '../config/scStatus'
 
 const PIPELINE = [
   {
-    id: 'sense',
-    title: 'Sense',
-    body: 'Prix live, CrossScore, signaux Pulse / Yield / Sentinel.',
+    id: 'signal',
+    title: 'Signaux & CrossScore',
+    body: 'Paper desk · Supernova timing · pas d’ordre auto sans Guardian.',
   },
   {
-    id: 'grok',
-    title: 'Grok (brain)',
-    body: 'Propose plans, sizing, TP/SL — ne signe jamais les txs user.',
+    id: '8008',
+    title: 'Agent 8008',
+    body: 'lia-intent → journal + workflow Vellum xartists-8008-intents.',
   },
   {
     id: 'vellum',
-    title: 'Vellum (execution)',
-    body: 'Workflows + intents. PEM Vellum (hors git/chat) signe les legs autorisées.',
-  },
-  {
-    id: 'mx8008',
-    title: 'MX-8008 Sentinel',
-    body: 'Guardian caps + journal settle · cadence Supernova.',
+    title: 'Vellum exécute',
+    body: 'PEM Vellum uniquement · micro-tx après GO_LIVE.',
   },
   {
     id: 'settle',
-    title: 'Settle',
-    body: 'Journal paper → mainnet seulement après checklist GO_LIVE.',
+    title: 'Journal & settle',
+    body: 'Mirror paper · rewards holders selon treasuryFlows.',
   },
 ]
 
 const PERF = [
-  { k: 'Latence signal → intent', v: '< 2 s', note: 'cible paper' },
-  { k: 'Legs / jour (cap)', v: 'configurable', note: 'Guardian / 8008' },
-  { k: 'Rake table / progressive', v: '15 % / 25 %', note: 'slot SC' },
-  { k: 'Compounding', v: '10 colonnes', note: 'board trading' },
-  { k: 'SC Agents', v: AGENTS_LIVE ? 'LIVE' : 'OFF', note: 'codeHash' },
-  { k: 'SC Marketplace', v: MARKETPLACE_LIVE ? 'LIVE' : 'OFF', note: 'codeHash' },
+  { k: 'Mode', v: 'Paper', note: 'SC flags OFF' },
+  { k: 'Chain', v: 'Mainnet', note: 'lecture API publique' },
+  { k: 'Agent', v: '8008', note: 'bridge navigateur' },
+  { k: 'Treasury', v: 'Model', note: 'lecture seule' },
+]
+
+const packs = [
+  { id: 'pulse', name: 'Pulse', icon: '◈' },
+  { id: 'yield', name: 'Yield', icon: '🌾' },
+  { id: 'sentinel', name: 'Sentinel', icon: '🛡' },
 ]
 
 export default function LiaPerformancePage() {
-  const packs = AGENT_PACKS.filter(p => ['pulse', 'yield', 'sentinel'].includes(p.id))
-
   return (
-    <div className="animate-fade-in space-y-8 pb-14 max-w-3xl mx-auto">
+    <div className="animate-fade-in space-y-6 pb-16 max-w-2xl mx-auto">
       <header className="space-y-2">
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
             LIA · Agents · Mainnet prep
           </p>
           <SupernovaStatusBadge />
         </div>
-        <h1 className="text-3xl font-semibold tracking-tight text-white">
-          Performance & exécution
-        </h1>
+        <h1 className="text-3xl font-semibold tracking-tight text-white">Performance & exécution</h1>
         <p className="text-sm text-zinc-400 leading-relaxed max-w-xl">
-          Tous les trades ops passent par <strong className="text-zinc-300">Vellum</strong> avec{' '}
-          <strong className="text-zinc-300">PEM Vellum</strong>. MX-8004 identité · MX-8008 exécution
-          sentinel. Design FX + SFX (dock son).
+          Tous les trades ops passent par <strong className="text-zinc-300">Vellum</strong> avec{" "}
+          <strong className="text-zinc-300">PEM Vellum</strong>. MX-8008 route les intents. Design FX +
+          SFX (dock son).
         </p>
       </header>
 
       <Phase4ReadinessBanner />
       <Agent8008Panel />
+      <TreasuryFlowsPanel />
 
       <section className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 space-y-3">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-300/90">
@@ -94,10 +88,7 @@ export default function LiaPerformancePage() {
 
       <section className="grid sm:grid-cols-2 gap-2">
         {PERF.map(r => (
-          <div
-            key={r.k}
-            className="rounded-xl border border-white/10 bg-zinc-950/50 px-3 py-2.5"
-          >
+          <div key={r.k} className="rounded-xl border border-white/10 bg-zinc-950/50 px-3 py-2.5">
             <p className="text-[10px] uppercase tracking-wider text-zinc-500">{r.k}</p>
             <p className="text-lg font-semibold text-white tabular-nums">{r.v}</p>
             <p className="text-[11px] text-zinc-600">{r.note}</p>
@@ -106,9 +97,7 @@ export default function LiaPerformancePage() {
       </section>
 
       <section className="space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-          Agents packs
-        </p>
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">Agents packs</p>
         <div className="grid sm:grid-cols-3 gap-2">
           {packs.map(p => (
             <Link
@@ -119,47 +108,23 @@ export default function LiaPerformancePage() {
               <p className="text-sm font-semibold text-white">
                 {p.icon} {p.name}
               </p>
-              <p className="text-[11px] text-zinc-500 mt-1 line-clamp-2">{p.tagline}</p>
+              <p className="text-[11px] text-zinc-500 mt-0.5">Produit d’accès · pas un yield</p>
             </Link>
           ))}
         </div>
-        <p className="text-[11px] text-zinc-600">
-          Achat on-chain agents :{' '}
-          {canBuyAgent() ? (
-            <span className="text-emerald-400">ouvert</span>
-          ) : (
-            <span className="text-amber-300/90">paper / SC OFF</span>
-          )}
-        </p>
       </section>
 
-      <PaperLiveDesk />
-
-      <section className="rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-[12px] text-zinc-400 space-y-2">
-        <p className="font-medium text-zinc-300">Règles PEM + Supernova</p>
-        <ul className="list-disc list-inside space-y-1">
-          <li>PEM Vellum / LIA / GrokyversX : hors git, hors chat, hors front</li>
-          <li>Vellum signe les txs ops · MX-8008 journalise / garde</li>
-          <li>Cadence réseau : api.multiversx.com/stats (refreshRate)</li>
-          <li>SC timing : pas d’assumptions 6s hardcodées (docs Supernova)</li>
-        </ul>
-      </section>
-
-      <p className="text-[11px] text-zinc-600 flex flex-wrap gap-x-3 gap-y-1">
-        <Link to="/trading" className="text-zinc-400 hover:text-white">
-          Trading board
+      <p className="text-[11px] text-zinc-600">
+        <Link to="/slot" className="text-zinc-400 hover:underline">
+          Slot EGLD/USDC
         </Link>
-        <Link to="/agents" className="text-zinc-400 hover:text-white">
-          Packs
+        {' · '}
+        <Link to="/venues" className="text-zinc-400 hover:underline">
+          Location
         </Link>
-        <Link to="/go-live" className="text-zinc-400 hover:text-white">
-          GO_LIVE
-        </Link>
-        <Link to="/slot" className="text-zinc-400 hover:text-white">
-          Slot
-        </Link>
-        <Link to="/staking" className="text-zinc-400 hover:text-white">
-          Staking
+        {' · '}
+        <Link to="/trading" className="text-zinc-400 hover:underline">
+          Trade
         </Link>
       </p>
     </div>

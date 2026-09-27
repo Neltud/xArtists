@@ -3,7 +3,7 @@
  *
  * Pourquoi ça peut échouer :
  * 1. Package WC non bundlé / peer manquant au build Pages
- * 2. Domain non allowlisté sur WalletConnect Cloud
+ * 2. Domain non allowlisté sur WalletConnect Cloud (neltud.github.io)
  * 3. Popup bloquée / app xPortal absente
  * 4. User refuse la session
  *
@@ -29,8 +29,13 @@ function openXPortalWithUri(uri: string) {
       `https://maiar.page.link/?apn=com.elrond.maiar.wallet&isi=1519405832&ibi=com.elrond.maiar.wallet&link=${encodeURIComponent(
         `https://xportal.com/?wallet-connect=${encoded}`,
       )}`
-    window.open(deep, '_blank', 'noopener,noreferrer')
-    // Native scheme attempt (mobile in-app browser)
+    // Prefer same-tab on mobile for deep link reliability
+    const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent || '')
+    if (isMobile) {
+      window.location.href = deep
+    } else {
+      window.open(deep, '_blank', 'noopener,noreferrer')
+    }
     try {
       const a = document.createElement('a')
       a.href = `xportal://wc?uri=${encoded}`
@@ -53,6 +58,44 @@ type XcProvider = {
   address?: string
 }
 
+async function loadWalletConnectProvider(): Promise<
+  | (new (
+      callbacks: unknown,
+      chainId: string,
+      relayUrl: string,
+      projectId: string,
+    ) => XcProvider)
+  | null
+> {
+  const tries = [
+    () => import('@multiversx/sdk-wallet-connect-provider'),
+    () => import(/* @vite-ignore */ '@multiversx/sdk-wallet-connect-provider/out/walletConnectV2Provider'),
+  ]
+  for (const load of tries) {
+    try {
+      const mod = (await load()) as {
+        WalletConnectV2Provider?: new (
+          callbacks: unknown,
+          chainId: string,
+          relayUrl: string,
+          projectId: string,
+        ) => XcProvider
+        default?: { WalletConnectV2Provider?: new (
+          callbacks: unknown,
+          chainId: string,
+          relayUrl: string,
+          projectId: string,
+        ) => XcProvider }
+      }
+      const C = mod.WalletConnectV2Provider || mod.default?.WalletConnectV2Provider
+      if (C) return C
+    } catch {
+      /* next */
+    }
+  }
+  return null
+}
+
 export async function loginWithXPortalMainnet(
   onProgress?: (p: XPortalLoginProgress) => void,
 ): Promise<{ ok: true; address: string } | { ok: false; error: string }> {
@@ -68,18 +111,7 @@ export async function loginWithXPortalMainnet(
   onProgress?.({ phase: 'init', message: 'Initialisation WalletConnect mainnet…' })
 
   try {
-    const mod = await import('@multiversx/sdk-wallet-connect-provider')
-    const WalletConnectV2Provider = (
-      mod as {
-        WalletConnectV2Provider?: new (
-          callbacks: unknown,
-          chainId: string,
-          relayUrl: string,
-          projectId: string,
-        ) => XcProvider
-      }
-    ).WalletConnectV2Provider
-
+    const WalletConnectV2Provider = await loadWalletConnectProvider()
     if (!WalletConnectV2Provider) {
       return {
         ok: false,
@@ -114,7 +146,7 @@ export async function loginWithXPortalMainnet(
       openXPortalWithUri(uri)
     }
 
-    onProgress?.({
+    onProgress?({
       phase: 'waiting',
       uri,
       message: 'En attente d’approbation dans xPortal…',

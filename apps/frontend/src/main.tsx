@@ -7,6 +7,7 @@ import { MultiversXProvider } from './context/MultiversXContext'
 import { MxDappProvider } from './providers/MxDappProvider'
 import { registerSW } from './pwa/registerSW'
 import { probeChainTiming } from './config/chainTiming'
+import { startAgent8008Bridge } from './lib/agent8008Bridge'
 import './index.css'
 import './atelier.css'
 import './motion-fx.css'
@@ -21,6 +22,7 @@ if (typeof g.process === 'undefined') {
 
 registerSW()
 void probeChainTiming()
+startAgent8008Bridge()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
