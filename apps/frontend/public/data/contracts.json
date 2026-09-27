@@ -1,8 +1,8 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-09-25T04:44:00Z",
-  "chain_note": "Mainnet only. Demo UI GO_DEMO. Product SCs empty (codeHash null, live-verified 25 Sep). Indexer recovered: /stats /economics /accounts /tokens HTTP 200. PEM stays off git. Do not set VITE_*_CODEHASH_OK until wasm is deployed + verified.",
+  "updated": "2026-09-27T04:30:00Z",
+  "chain_note": "Mainnet only. Demo UI GO_DEMO. Product SCs empty (codeHash null, live-verified 27 Sep). Indexer healthy. Next action: treasury dest wallets. PEM stays off git. Do not set VITE_*_CODEHASH_OK until wasm is deployed + verified.",
   "wallets": {
     "lia_ops": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "grokyversx": "erd12c7f9wll0dcn26ax9fwrgp3yuswchyh9xwz8zs29hl9crgpn96gsdqq5gl",
@@ -10,7 +10,7 @@
     "reserve": null,
     "reward": null,
     "ops": null,
-    "note": "LIA = board/ops. GrokyversX = optional host trader. Never use as user Connect."
+    "note": "LIA = board/ops. GrokyversX = optional host trader. Never use as user Connect. Dest treasury still null \u2014 P0 before wasm."
   },
   "contracts": {
     "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
@@ -29,7 +29,7 @@
     "marketplace": "NOT_DEPLOYED",
     "nft_minter": "NOT_DEPLOYED",
     "slot_primordial": "NOT_DEPLOYED",
-    "note": "codeHash live-verified null 2026-09-25T04:44Z after indexer recovery"
+    "note": "codeHash live-verified null 2026-09-27T04:30Z. Indexer healthy. Dest treasury null."
   },
   "ui_status": {
     "verdict": "GO_DEMO",
@@ -38,6 +38,7 @@
     "demo": "https://neltud.github.io/xArtists/#/demo",
     "go_live": "https://neltud.github.io/xArtists/#/go-live",
     "supernova": true,
-    "indexer": "healthy"
+    "indexer": "healthy",
+    "next_action": "treasury_dest"
   }
 }

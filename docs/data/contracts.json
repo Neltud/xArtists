@@ -1,8 +1,44 @@
 {
   "network": "mainnet",
   "chainId": "1",
-  "updated": "2026-09-25T04:44:00Z",
-  "chain_note": "Mainnet only. Demo UI GO_DEMO. Product SCs empty (codeHash null, live-verified 25 Sep). Indexer recovered.",
-  "ui_status": {"verdict": "GO_DEMO", "indexer": "healthy", "supernova": true},
-  "note": "Canonical copy: data/contracts.json"
+  "updated": "2026-09-27T04:30:00Z",
+  "chain_note": "Mainnet only. Demo UI GO_DEMO. Product SCs empty (codeHash null, live-verified 27 Sep). Indexer healthy. Next action: treasury dest wallets. PEM stays off git. Do not set VITE_*_CODEHASH_OK until wasm is deployed + verified.",
+  "wallets": {
+    "lia_ops": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "grokyversx": "erd12c7f9wll0dcn26ax9fwrgp3yuswchyh9xwz8zs29hl9crgpn96gsdqq5gl",
+    "mission": null,
+    "reserve": null,
+    "reward": null,
+    "ops": null,
+    "note": "LIA = board/ops. GrokyversX = optional host trader. Never use as user Connect. Dest treasury still null \u2014 P0 before wasm."
+  },
+  "contracts": {
+    "nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
+    "tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
+    "marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+    "nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn",
+    "agents_marketplace": null,
+    "rwa_escrow_bridge": null,
+    "tro_burn": null,
+    "treasury_splitter": null,
+    "slot_primordial": null
+  },
+  "deploy_status": {
+    "nft_staking": "NOT_DEPLOYED",
+    "tro_governance": "NOT_DEPLOYED",
+    "marketplace": "NOT_DEPLOYED",
+    "nft_minter": "NOT_DEPLOYED",
+    "slot_primordial": "NOT_DEPLOYED",
+    "note": "codeHash live-verified null 2026-09-27T04:30Z. Indexer healthy. Dest treasury null."
+  },
+  "ui_status": {
+    "verdict": "GO_DEMO",
+    "lia_live_trading": false,
+    "pages": "https://neltud.github.io/xArtists/",
+    "demo": "https://neltud.github.io/xArtists/#/demo",
+    "go_live": "https://neltud.github.io/xArtists/#/go-live",
+    "supernova": true,
+    "indexer": "healthy",
+    "next_action": "treasury_dest"
+  }
 }

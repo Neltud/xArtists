@@ -5,18 +5,19 @@
 dApp (GitHub Pages): https://neltud.github.io/xArtists/  
 Repo: https://github.com/Neltud/xArtists  
 
-**Status (2026-09-25): GO_DEMO · paper / pre-SC-deploy · indexer rétabli**  
+**Status (2026-09-27): GO_DEMO · paper / pre-SC-deploy · cran P0 = dest treasury**  
 - Paper LIA by default (`LIA_LIVE_TRADING=0`)  
-- Marketplace, agents, staking, gov, minter SC: **not live** — `codeHash` **null** (live-verified 25 Sep 04:44 UTC)  
+- Marketplace, agents, staking, gov, minter SC: **not live** — `codeHash` **null** (live-verified 27 Sep)  
 - UI fail-closed: no fake “live market” claims without on-chain code  
 - Reality Switch (paper vs live chrome) = **chemin**, pas un live allumé — [`docs/REALITY_SWITCH.md`](docs/REALITY_SWITCH.md)  
-- **Supernova mainnet LIVE** since 10 Sep 2026 (epoch 2233) — 600 ms rounds · probe epoch **2242** (J+15, ~85 % epoch)  
-- **Indexer recovered** after v2.1.3.0: `/stats` `/economics` `/accounts` `/tokens` all **HTTP 200**  
-- **LIA Ops 2.0928 EGLD** live (nonce 1468) — deploy gas OK. PEM stays off git.  
+- **Supernova mainnet LIVE** since 10 Sep 2026 (epoch 2233) — 600 ms rounds · probe epoch **2245** (J+17, ~50 % epoch)  
+- **Indexer healthy**: `/stats` `/economics` `/accounts` `/tokens` all **HTTP 200**  
+- **LIA Ops 2.0928 EGLD** live (nonce **1468 idle**) — deploy gas OK. PEM stays off git.  
+- **Next action:** fill `wallets.mission|reserve|reward|ops` before any wasm.  
 - **Do not** set `VITE_*_CODEHASH_OK` until wasm is on-chain and hash-verified.  
 - **Phase 4 / First 100** : [`docs/MX8004_FIRST100_ALIGNMENT.md`](docs/MX8004_FIRST100_ALIGNMENT.md) — API gate unblocked; SC still empty.
 
-Recap + veille (25 sept) : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)  
+Recap + veille (27 sept) : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)  
 Demo : https://neltud.github.io/xArtists/#/demo · GO_LIVE : https://neltud.github.io/xArtists/#/go-live
 
 ---
@@ -73,7 +74,8 @@ Push `main` → GitHub Actions → Pages.
 
 ## Deploy SC (mainnet only)
 
-**Gate indexer (passée 25 Sep):** `GET https://api.multiversx.com/accounts/{addr}` returns JSON.
+**Gate indexer (passée 25 Sep, tenue 27 Sep):** `GET https://api.multiversx.com/accounts/{addr}` returns JSON.  
+**Gate dest treasury (ouverte):** `wallets.*` dest still **null** — **do not deploy** until filled.  
 **Gate codeHash (ouverte):** deploy + verify before any `VITE_*_CODEHASH_OK`.
 
 ```bash
@@ -84,7 +86,7 @@ export CHAIN=1 FEE_BPS=300 LIA_LIVE_TRADING=0 PEM=/secure/mainnet.pem
 python scripts/verify_marketplace_codehash.py
 ```
 
-LIA Ops live-funded **2.0928 EGLD** (nonce 1468, 25 Sep 2026). Dest treasury wallets still **null**. PEM never in git.
+LIA Ops live-funded **2.0928 EGLD** (nonce 1468 idle, 27 Sep 2026). Dest treasury wallets still **null**. PEM never in git.
 
 ---
 
@@ -96,7 +98,7 @@ See [`README_LIA.md`](README_LIA.md) and [`docs/AUTONOMOUS_LIA.md`](docs/AUTONOM
 
 | Doc | Role |
 |-----|------|
-| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap + veille **25 sept** |
+| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap + veille **27 sept** |
 | [MX8004_FIRST100_ALIGNMENT.md](docs/MX8004_FIRST100_ALIGNMENT.md) | Phase 4 / First 100 — LIA → MX-8004 |
 | [DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) | Parcours démo `/demo` |
 | [GO_LIVE_DEPLOY.md](docs/GO_LIVE_DEPLOY.md) | Deploy SC |
