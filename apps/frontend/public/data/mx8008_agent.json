@@ -3,15 +3,21 @@
   "name": "Agent MX-8008",
   "codename": "Execution Sentinel",
   "mode": "paper",
-  "role": "Guardian + settle mirror for Vellum legs; pairs with MX-8004 identity",
+  "role": "Route lia-intent → journal local + workflow Vellum xartists-8008-intents; pairs with MX-8004",
   "parent": "mx-8004",
   "capabilities": [
     "watch_intents",
+    "BUY_NFT",
+    "VENUE_RENTAL",
+    "STAKE_TRO_LP",
+    "VOTE_DAO",
+    "TIP_LIA",
+    "SLOT_SPIN",
+    "ADS_BID",
     "guardian_caps",
-    "journal_settle",
-    "supernova_timing"
+    "journal_settle"
   ],
   "pem": "Vellum-owned only — never in git",
-  "status": "scaffolded",
-  "note": "Execution agent scaffold · live after GO_LIVE + Vellum workflow bind"
+  "status": "bridge_live",
+  "note": "Browser bridge active · set VITE_VELLUM_8008_WEBHOOK for remote Vellum POST"
 }

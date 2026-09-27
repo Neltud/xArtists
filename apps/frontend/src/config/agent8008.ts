@@ -6,12 +6,14 @@
 export const AGENT_8008 = {
   id: '8008',
   name: 'Agent 8008',
+  codename: 'Execution Sentinel',
   role: 'router_intents',
   description:
     'Route les intents LIA (BUY_NFT, VENUE_RENTAL, STAKE, VOTE) vers workflows Vellum. Paper par défaut.',
   endpoints: {
-    /** MCP / Vellum workflow id — à binder en ops */
+    /** ID workflow Vellum — binder côté ops */
     vellumWorkflow: 'xartists-8008-intents',
+    /** Optionnel : VITE_VELLUM_8008_WEBHOOK au build */
     mcp: null as string | null,
   },
   intents: [
@@ -38,7 +40,7 @@ export function isAgent8008Intent(x: string): x is Agent8008Intent {
   return (AGENT_8008.intents as readonly string[]).includes(x)
 }
 
-/** Dispatch navigateur → écouté par LIA / overlay / Vellum bridge */
+/** Dispatch navigateur → bridge 8008 + overlay LIA */
 export function dispatch8008(intent: Agent8008Intent, payload: Record<string, unknown> = {}) {
   window.dispatchEvent(
     new CustomEvent('lia-intent', {
@@ -48,7 +50,7 @@ export function dispatch8008(intent: Agent8008Intent, payload: Record<string, un
           agent: AGENT_8008.id,
           paper: true,
           ...payload,
-          raw: payload.raw || `${intent} via 8008`,
+          raw: (payload.raw as string) || `${intent} via 8008`,
         },
       },
     }),
