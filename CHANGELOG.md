@@ -1,5 +1,31 @@
 # Changelog — xArtists
 
+## [0.50.0](https://github.com/Neltud/xArtists/compare/v0.49.0...v0.50.0) (2026-09-27)
+
+
+### Features
+
+* agent8008 Vellum bridge + treasury panel + venue-split SC draft + WC harden ([5d7e101](https://github.com/Neltud/xArtists/commit/5d7e1019c6e8772b742a481aa77a5f63384f0a39))
+* GO_LIVE 8008/venue rows + sitemap /lia + TIP/ADS intents to 8008 ([8da32a8](https://github.com/Neltud/xArtists/commit/8da32a856286867bec170e199a202d12e42633d3))
+* **home:** add LIA shortcut (8008 · treasury) to explorer links ([9325246](https://github.com/Neltud/xArtists/commit/9325246cc130e0f3b170c8cdd1ca17b0b71d1ac4))
+* **slot:** dispatch SLOT_SPIN to agent 8008 on each paper spin ([9e52a47](https://github.com/Neltud/xArtists/commit/9e52a478c9a70aac4053e58ff913496df1918fc3))
+* **tip:** dispatch TIP_LIA to agent 8008 after tip TX ([9792081](https://github.com/Neltud/xArtists/commit/9792081d03ffadaa5e3f4862f396d61546f2a2f1))
+* Vellum webhook wire + rewards/market SC drafts + ads IPFS creatives ([820c526](https://github.com/Neltud/xArtists/commit/820c52629858c7232c42e7ce8ad19322e682ff3d))
+* wire 8008 bridge in main + treasury on /lia + slot SLOT_SPIN intent ([92071ab](https://github.com/Neltud/xArtists/commit/92071abcd2539fa8f98d7f3b8a756063af7f995b))
+
+
+### Bug Fixes
+
+* **build:** restore getMuseum export — CI MapMuseumEnter ([df885ea](https://github.com/Neltud/xArtists/commit/df885ea9219229336b8ee0f093658b31e90b9291))
+* **museum:** no double-weserv textures + WebGL Acheter paper; treasury flows + agent 8008 ([71a49a9](https://github.com/Neltud/xArtists/commit/71a49a9e9955491865c2043f78423d8fb3a8a52a))
+* **museum:** prevent double-weserv + BUY_NFT paper from 3D dossier ([05a5742](https://github.com/Neltud/xArtists/commit/05a57428209e373ab13bb4d30eeb0ad1d849c9c8))
+* **museum:** replace 404 Dendur MET URL with working sculpture asset ([70f3181](https://github.com/Neltud/xArtists/commit/70f31813a36045353f530923b19a7fe4b501bb6d))
+* polyfill process in index.html before modules (mx-sdk WC crash) ([a523f57](https://github.com/Neltud/xArtists/commit/a523f57434bf01d40a62c6052ad79b18390bb863))
+* **wc:** robust CJS interop resolve for WalletConnectV2Provider ([5d3d078](https://github.com/Neltud/xArtists/commit/5d3d078bf09dd44d2f7698bc415257c82852d464))
+* **wc:** static import WalletConnectV2Provider for reliable Pages bundle ([8077116](https://github.com/Neltud/xArtists/commit/8077116e7d4814a0827577a02f9e199ee139b951))
+* **wc:** static import xportalWc — avoid 404 dynamic chunk on Pages ([64edc0d](https://github.com/Neltud/xArtists/commit/64edc0d64b7db3bfecea80cf51b17c898af3b70a))
+* **xportalWc:** optional call syntax onProgress?.() ([281cce3](https://github.com/Neltud/xArtists/commit/281cce35320484711d38d6a251ff07d8b091b129))
+
 ## [0.49.0](https://github.com/Neltud/xArtists/compare/v0.48.2...v0.49.0) (2026-09-26)
 
 
