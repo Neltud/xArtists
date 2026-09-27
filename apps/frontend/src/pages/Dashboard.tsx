@@ -16,6 +16,7 @@ const LINKS_MAIN = [
   { to: '/agents', title: 'Packs', body: 'Pulse · Yield · Sentinel', delay: '60ms' },
   { to: '/tours', title: 'Tours', body: 'Carte & musées du monde', delay: '120ms' },
   { to: '/trading', title: 'Trading', body: 'Board paper · GrokyversX', delay: '180ms' },
+  { to: '/lia', title: 'LIA', body: '8008 · trésorerie · pipeline', delay: '200ms' },
   { to: '/slot', title: 'Slot', body: '3×3 NFT · paper bank', delay: '220ms' },
   { to: '/ads', title: 'Ads', body: 'Enchères pub · sample live', delay: '240ms' },
   { to: '/go-live', title: 'GO_LIVE', body: 'Phase 4 · First 100 · checklists', delay: '260ms' },
