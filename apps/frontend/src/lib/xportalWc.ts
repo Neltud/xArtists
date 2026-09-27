@@ -1,6 +1,10 @@
 /**
  * xPortal / WalletConnect V2 — mainnet login.
  * CJS interop robuste (Vite + GH Pages).
+ *
+ * Important mobile: ne jamais naviguer le navigateur vers xportal://
+ * (Chrome → ERR_UNKNOWN_URL_SCHEME). Utiliser uniquement le universal link
+ * https://maiar.page.link / xportal.com ; Web Wallet en fallback.
  */
 import { XPORTAL_DEEP_LINKS, sdkDappConfig, WALLET_CONNECT_V2_RELAY_URL } from '../config/sdkDapp'
 import * as WcNs from '@multiversx/sdk-wallet-connect-provider'
@@ -34,7 +38,6 @@ function resolveWalletConnectCtor(): WcCtor | null {
     const r = root as Record<string, unknown>
     const direct = r.WalletConnectV2Provider
     if (typeof direct === 'function') return direct as WcCtor
-    // some bundlers nest default.default
     const nested = r.default
     if (nested && typeof nested === 'object') {
       const n = (nested as Record<string, unknown>).WalletConnectV2Provider
@@ -43,7 +46,6 @@ function resolveWalletConnectCtor(): WcCtor | null {
     if (typeof nested === 'function' && /WalletConnect/i.test(String(nested.name))) {
       return nested as WcCtor
     }
-    // scan values for constructor-looking export
     for (const v of Object.values(r)) {
       if (typeof v === 'function' && /WalletConnectV2/i.test(String((v as { name?: string }).name || v))) {
         return v as WcCtor
@@ -53,31 +55,35 @@ function resolveWalletConnectCtor(): WcCtor | null {
   return null
 }
 
+/** Universal link only — never set location to xportal:// in Chrome */
 function openXPortalWithUri(uri: string) {
   try {
-    const encoded = encodeURIComponent(uri)
     const deep =
       (typeof XPORTAL_DEEP_LINKS.walletConnectUri === 'function'
         ? XPORTAL_DEEP_LINKS.walletConnectUri(uri)
         : null) ||
       `https://maiar.page.link/?apn=com.elrond.maiar.wallet&isi=1519405832&ibi=com.elrond.maiar.wallet&link=${encodeURIComponent(
-        `https://xportal.com/?wallet-connect=${encoded}`,
+        `https://xportal.com/?wallet-connect=${encodeURIComponent(uri)}`,
       )}`
+
     const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent || '')
     if (isMobile) {
-      window.location.href = deep
+      // iframe avoids killing the dApp tab with ERR_UNKNOWN_URL_SCHEME
+      const iframe = document.createElement('iframe')
+      iframe.style.display = 'none'
+      iframe.src = deep
+      document.body.appendChild(iframe)
+      setTimeout(() => {
+        try {
+          document.body.removeChild(iframe)
+        } catch {
+          /* ignore */
+        }
+      }, 3000)
+      // Also try top-level universal link (opens app store / app)
+      window.open(deep, '_blank', 'noopener,noreferrer')
     } else {
       window.open(deep, '_blank', 'noopener,noreferrer')
-    }
-    try {
-      const a = document.createElement('a')
-      a.href = `xportal://wc?uri=${encoded}`
-      a.style.display = 'none'
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-    } catch {
-      /* ignore */
     }
   } catch {
     /* ignore */
@@ -129,7 +135,7 @@ export async function loginWithXPortalMainnet(
         phase: 'uri',
         uri,
         message:
-          'Ouvre xPortal et approuve. Si rien ne s’ouvre : Web Wallet recommandé.',
+          'Approuve dans xPortal (app). Si Chrome affiche une erreur : utilise Web Wallet.',
       })
       openXPortalWithUri(uri)
     }
