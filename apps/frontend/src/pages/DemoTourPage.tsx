@@ -5,6 +5,7 @@ import { isSupernovaLive, SUPERNOVA_ROUND_MS, SUPERNOVA_HUB } from '../config/su
 import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import {
   FALLBACK_SNAPSHOT,
+  computeNextAction,
   liaOpsFunded,
   probeNetwork,
   supernovaAgeEpochs,
@@ -70,24 +71,44 @@ const STEPS = [
     n: '10',
     to: '/go-live',
     title: 'GO_LIVE checklist',
-    body: 'Indexer healthy → dest wallets → PEM local → simulate → deploy → verify codeHash → MX-8004.',
+    body: 'Indexer healthy → dest wallets (P0) → PEM local → simulate → deploy → verify codeHash → MX-8004.',
   },
 ] as const
 
+const VISIT_KEY = 'xa-demo-visited'
+
 export default function DemoTourPage() {
   const [snap, setSnap] = useState<NetworkSnapshot>(FALLBACK_SNAPSHOT)
+  const [visited, setVisited] = useState<string[]>([])
 
   useEffect(() => {
     let c = false
     probeNetwork().then(s => {
       if (!c) setSnap(s)
     })
+    try {
+      const raw = localStorage.getItem(VISIT_KEY)
+      if (raw) setVisited(JSON.parse(raw) as string[])
+    } catch {
+      /* ignore */
+    }
     return () => {
       c = true
     }
   }, [])
 
+  const mark = (to: string) => {
+    const next = [...new Set([...visited, to])]
+    setVisited(next)
+    try {
+      localStorage.setItem(VISIT_KEY, JSON.stringify(next))
+    } catch {
+      /* ignore */
+    }
+  }
+
   const funded = liaOpsFunded(snap.liaOps.balanceEgld)
+  const nextAct = computeNextAction(snap)
   const GATES = [
     {
       ok: snap.api.stats,
@@ -99,7 +120,7 @@ export default function DemoTourPage() {
     {
       ok: snap.api.economics && snap.api.accounts,
       label: 'API /economics + /accounts',
-      value: snap.degraded ? 'dégradé post v2.1.3.0 — last-known' : 'live',
+      value: snap.degraded ? 'dégradé — last-known' : 'live',
     },
     {
       ok: !snap.sc.marketplace.codeEmpty && !snap.scStale,
@@ -121,10 +142,11 @@ export default function DemoTourPage() {
       ok: funded && !snap.liaOps.stale,
       label: 'LIA Ops funded',
       value: `${snap.liaOps.balanceEgld.toFixed(4)} EGLD · nonce ${snap.liaOps.nonce}${
-        snap.liaOps.stale ? ' · stale' : ''
+        snap.liaOps.stale ? ' · stale' : ' · idle'
       }`,
     },
     { ok: true, label: 'Supernova mainnet', value: `${SUPERNOVA_ROUND_MS} ms · epoch ${snap.epoch}` },
+    { ok: false, label: 'Treasury dest', value: 'mission/reserve/reward/ops = null' },
     { ok: false, label: 'MX-8004 Identity', value: 'not registered (Phase 4 pending)' },
     { ok: true, label: 'Pages demo', value: 'GO_DEMO + Slot + Phase 4' },
   ]
@@ -151,6 +173,17 @@ export default function DemoTourPage() {
         )}
       </header>
 
+      <div className="rounded-xl border border-amber-400/25 bg-amber-400/5 px-4 py-3">
+        <p className="text-[10px] uppercase tracking-widest text-amber-400/80">
+          Suite logique · {nextAct.severity}
+        </p>
+        <p className="mt-1 text-white">{nextAct.title}</p>
+        <p className="mt-1 text-[12px] text-zinc-400 leading-relaxed">{nextAct.detail}</p>
+        <Link to="/go-live" className="inline-block mt-2 text-[12px] text-cyan-400/80">
+          Ouvrir /go-live →
+        </Link>
+      </div>
+
       <Phase4ReadinessBanner variant="full" />
 
       <ul className="grid gap-2 text-sm text-zinc-400">
@@ -163,17 +196,22 @@ export default function DemoTourPage() {
       </ul>
 
       <section>
-        <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Étapes (2–6 min)</h2>
+        <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">
+          Étapes (2–6 min) · {visited.length}/{STEPS.length}
+        </h2>
         <ol className="grid md:grid-cols-2 gap-3">
           {STEPS.map(s => (
             <li key={s.n}>
               <Link
                 to={s.to}
+                onClick={() => mark(s.to)}
                 className="block rounded-xl border border-white/10 bg-white/[0.02] p-4 hover:border-cyan-400/30 transition-colors"
               >
                 <div className="flex items-baseline justify-between gap-2">
                   <span className="text-[10px] text-zinc-600 font-mono">{s.n}</span>
-                  <span className="text-[10px] text-cyan-500/80">{s.to}</span>
+                  <span className="text-[10px] text-cyan-500/80">
+                    {visited.includes(s.to) ? 'vu' : s.to}
+                  </span>
                 </div>
                 <h3 className="mt-1 text-white text-sm font-medium">{s.title}</h3>
                 <p className="mt-1 text-xs text-zinc-500 leading-relaxed">{s.body}</p>
@@ -216,7 +254,7 @@ export default function DemoTourPage() {
       </section>
 
       <p className="text-[11px] text-zinc-600 leading-relaxed">
-        Recap : docs/ANALYSE_DAPP_COMPLETE.md · Phase 4 : docs/MX8004_FIRST100_ALIGNMENT.md · SoT :
+        Recap 27 sept : docs/ANALYSE_DAPP_COMPLETE.md · Phase 4 : docs/MX8004_FIRST100_ALIGNMENT.md · SoT :
         data/contracts.json. Pas un conseil en investissement. Tips ≠ investissement. Probe{' '}
         {snap.ok ? (snap.degraded ? 'partial' : 'live') : 'cache'} {snap.probedAt}.
       </p>

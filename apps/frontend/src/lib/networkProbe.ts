@@ -104,34 +104,34 @@ async function getJsonSoft<T>(path: string): Promise<T | null> {
   }
 }
 
-/** Snapshot 24 Sep 2026 ~04:32 UTC — stats live; econ/accounts last-known 19 Sep. */
+/** Snapshot 27 Sep 2026 ~04:30 UTC — indexer healthy; SC empty; dest treasury null. */
 export const FALLBACK_SNAPSHOT: NetworkSnapshot = {
-  probedAt: '2026-09-24T04:32:00Z',
-  ok: false,
-  degraded: true,
-  api: { stats: false, economics: false, accounts: false, tokens: false },
-  epoch: 2242,
+  probedAt: '2026-09-27T04:30:00Z',
+  ok: true,
+  degraded: false,
+  api: { stats: true, economics: true, accounts: true, tokens: true },
+  epoch: 2245,
   refreshRate: 600,
   roundsPerEpoch: 144000,
-  roundsPassed: 37943,
-  accounts: 9262948,
-  transactions: 628538339,
-  blocks: 133427564,
-  egldPrice: 4.13,
-  marketCap: 127000000,
-  circulating: 30820000,
-  staked: 14356598,
-  apr: 0.088205,
-  liaOps: { balanceEgld: 2.0928, nonce: 1468, stale: true },
-  grokyversx: { balanceEgld: 0, nonce: 8, stale: true },
+  roundsPassed: 71588,
+  accounts: 9263970,
+  transactions: 629025259,
+  blocks: 134872785,
+  egldPrice: 4.58,
+  marketCap: 141223943,
+  circulating: 30834922,
+  staked: 14330127,
+  apr: 0.088122,
+  liaOps: { balanceEgld: 2.0928, nonce: 1468, stale: false },
+  grokyversx: { balanceEgld: 0, nonce: 8, stale: false },
   sc: {
     marketplace: asSc(PROBE_ADDRESSES.marketplace, null),
     nftStaking: asSc(PROBE_ADDRESSES.nftStaking, null),
     troGovernance: asSc(PROBE_ADDRESSES.troGovernance, null),
     nftMinter: asSc(PROBE_ADDRESSES.nftMinter, null),
   },
-  scStale: true,
-  tro: { supply: 476224, accounts: 562, transactions: 2788, stale: true },
+  scStale: false,
+  tro: { supply: 476224, accounts: 562, transactions: 2788, stale: false },
 }
 
 type StatsJson = {
@@ -212,5 +212,48 @@ export async function probeNetwork(): Promise<NetworkSnapshot> {
           stale: false,
         }
       : { ...FALLBACK_SNAPSHOT.tro, stale: true },
+  }
+}
+
+
+export type NextAction = {
+  id: 'indexer' | 'fund' | 'treasury' | 'deploy' | 'verify'
+  title: string
+  detail: string
+  severity: 'block' | 'wait' | 'ready'
+}
+
+/** Single next ops action. Dest treasury is the P0 as of 27 Sep 2026. */
+export function computeNextAction(s: NetworkSnapshot): NextAction {
+  if (!s.api.stats) {
+    return {
+      id: 'indexer',
+      title: 'Indexer /stats down',
+      detail: 'Aucun deploy tant que GET /stats ne répond pas 200.',
+      severity: 'wait',
+    }
+  }
+  if (!s.api.accounts || !s.api.economics) {
+    return {
+      id: 'indexer',
+      title: 'Indexer partiel',
+      detail: `/economics ${s.api.economics ? '200' : 'KO'} · /accounts ${s.api.accounts ? '200' : 'KO'}.`,
+      severity: 'wait',
+    }
+  }
+  if (s.liaOps.stale || !liaOpsFunded(s.liaOps.balanceEgld)) {
+    return {
+      id: 'fund',
+      title: 'LIA Ops sous-financé',
+      detail: `${s.liaOps.balanceEgld.toFixed(4)} EGLD${s.liaOps.stale ? ' (stale)' : ''}.`,
+      severity: 'wait',
+    }
+  }
+  return {
+    id: 'treasury',
+    title: 'Renseigner dest treasury',
+    detail:
+      'mission / reserve / reward / ops = null. Indexer healthy, LIA funded, nonce 1468 idle. Pas de wasm tant que les destinations ne sont pas posées.',
+    severity: 'block',
   }
 }

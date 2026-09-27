@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   FALLBACK_SNAPSHOT,
+  computeNextAction,
   liaOpsFunded,
   probeNetwork,
   type NetworkSnapshot,
@@ -24,6 +25,7 @@ export default function GoLivePage() {
 
   const indexerOk = snap.api.stats && snap.api.economics && snap.api.accounts
   const fundedLive = liaOpsFunded(snap.liaOps.balanceEgld) && !snap.liaOps.stale
+  const next = computeNextAction(snap)
 
   const rows: Row[] = [
     { ok: true, label: 'Paper LIA default', value: 'LIA_LIVE_TRADING=0' },
@@ -36,13 +38,13 @@ export default function GoLivePage() {
         : `/stats ${snap.api.stats ? '200' : 'KO'} · /economics ${
             snap.api.economics ? '200' : 'KO'
           } · /accounts ${snap.api.accounts ? '200' : 'KO'}`,
-      next: 'Attendre v2.1.3.0 recovery indexer avant tout deploy',
+      next: 'Attendre recovery indexer avant tout deploy',
     },
     {
       ok: fundedLive,
       label: 'LIA Ops funded (live)',
       value: `${snap.liaOps.balanceEgld.toFixed(4)} EGLD · nonce ${snap.liaOps.nonce}${
-        snap.liaOps.stale ? ' · last-known 19 Sep' : ''
+        snap.liaOps.stale ? ' · stale' : ' · idle ≥ 19 Sep'
       }`,
       next: 'PEM local only — never git. Re-probe accounts before simulate.',
     },
@@ -50,7 +52,7 @@ export default function GoLivePage() {
       ok: false,
       label: 'Treasury dest wallets',
       value: 'mission / reserve / reward / ops = null',
-      next: 'Remplir data/contracts.json wallets.*',
+      next: 'P0 — remplir data/contracts.json wallets.* avant wasm',
     },
     {
       ok: !snap.sc.marketplace.codeEmpty && !snap.scStale,
@@ -76,7 +78,7 @@ export default function GoLivePage() {
     {
       ok: false,
       label: 'MX-8004 Identity',
-      value: 'manifest prêt · register_agent bloqué (indexer + SC)',
+      value: 'manifest prêt · register_agent bloqué (SC empty)',
       next: 'docs/MX8004_FIRST100_ALIGNMENT.md',
     },
     { ok: true, label: 'Supernova 600 ms', value: `epoch ${snap.epoch}` },
@@ -89,9 +91,15 @@ export default function GoLivePage() {
         <h1 className="display text-3xl text-white">GO_LIVE checklist</h1>
         <p className="text-sm text-zinc-400 leading-relaxed">
           Chemin paper → live. Rien n’est allumé. PEM jamais dans le chat, git, ou logs Vellum.
-          Hardfork recovery v2.1.3.0 (23 Sep) : ne pas broadcaster tant que /accounts ne répond pas.
         </p>
       </header>
+
+      <div className="rounded-xl border border-amber-400/25 bg-amber-400/5 px-4 py-3">
+        <p className="text-[10px] uppercase tracking-widest text-amber-400/80">Prochaine action · {next.id}</p>
+        <p className="mt-1 text-white text-lg">{next.title}</p>
+        <p className="mt-1 text-[12px] text-zinc-400 leading-relaxed">{next.detail}</p>
+      </div>
+
       <ul className="space-y-2">
         {rows.map(r => (
           <li
@@ -112,7 +120,7 @@ export default function GoLivePage() {
         ))}
       </ul>
       <p className="text-[12px] text-zinc-500">
-        Recap : <Link to="/demo">/demo</Link> · docs/ANALYSE_DAPP_COMPLETE.md
+        Recap 27 sept : <Link to="/demo">/demo</Link> · docs/ANALYSE_DAPP_COMPLETE.md
       </p>
     </div>
   )
