@@ -1,0 +1,43 @@
+# Refresh Open Access museum catalog once per day (Met API — no PEM)
+name: Museum catalog daily
+
+on:
+  schedule:
+    # 06:00 UTC every day
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: museum-catalog-daily
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Fetch Met Open Access batch
+        run: node scripts/refresh-museum-catalog.mjs
+
+      - name: Commit catalog if changed
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/frontend/public/data/museum_catalog_daily.json
+          if git diff --staged --quiet; then
+            echo "No catalog changes"
+          else
+            git commit -m "chore(catalog): daily Met Open Access refresh [skip ci]"
+            git push
+          fi
