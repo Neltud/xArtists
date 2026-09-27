@@ -1,6 +1,6 @@
 /**
  * Photo → sculpture 3D approximative (navigateur).
- * Silhouette + volume + texture photo + dimensions.
+ * Silhouette + volume + texture photo + dimensions (+ vue latérale optionnelle).
  */
 import * as THREE from 'three'
 
@@ -268,6 +268,7 @@ export function loadPhotoSculpture(
     dims?: Partial<SculptureDims> | null
     dimensionsHint?: string | null
     pedestalColor?: number
+    sideUrls?: string[]
   },
 ): Promise<PhotoSculptureResult | null> {
   return new Promise(resolve => {
@@ -278,9 +279,46 @@ export function loadPhotoSculpture(
       }
       loader.load(
         urls[idx],
-        tex => {
+        async tex => {
           try {
-            resolve(createPhotoSculptureFromTexture(tex, options))
+            let opts = { ...options }
+            const sideUrls = options?.sideUrls
+            if (sideUrls?.length) {
+              await new Promise<void>(res => {
+                const trySide = (si: number) => {
+                  if (si >= sideUrls.length) {
+                    res()
+                    return
+                  }
+                  loader.load(
+                    sideUrls[si],
+                    sideTex => {
+                      const sw = (sideTex.image as { width?: number })?.width || 1
+                      const sh = (sideTex.image as { height?: number })?.height || 1
+                      const sideAspect = sw / sh
+                      const h = opts.dims?.heightM
+                      if (h && sideAspect > 0.05) {
+                        const depthM = Math.min(1.2, Math.max(0.08, h * sideAspect * 0.9))
+                        opts = {
+                          ...opts,
+                          dims: {
+                            ...opts.dims,
+                            depthM,
+                            circumferenceM:
+                              Math.PI * (((opts.dims?.widthM || depthM) + depthM) / 2),
+                          },
+                        }
+                      }
+                      res()
+                    },
+                    undefined,
+                    () => trySide(si + 1),
+                  )
+                }
+                trySide(0)
+              })
+            }
+            resolve(createPhotoSculptureFromTexture(tex, opts))
           } catch {
             tryAt(idx + 1)
           }
