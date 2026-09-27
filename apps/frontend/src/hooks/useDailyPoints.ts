@@ -1,15 +1,16 @@
 /**
- * Parcours points — 1 pt / connexion quotidienne · +3 pts série 7 jours.
- * localStorage only (paper).
+ * Parcours points — 1 pt / jour · +3 pts série 7 j.
+ * Scopé par adresse wallet si connecté (sinon guest).
  */
 import { useCallback, useEffect, useState } from 'react'
+import { useWallet } from '../context/WalletContext'
 
-const KEY = 'xartists_daily_points_v1'
+const KEY_PREFIX = 'xartists_daily_points_v2_'
 
 export type DailyPointsState = {
   totalPoints: number
   streak: number
-  lastClaimDay: string | null // YYYY-MM-DD UTC
+  lastClaimDay: string | null
   history: { day: string; pts: number; kind: 'daily' | 'streak7' }[]
 }
 
@@ -23,9 +24,14 @@ function daysBetween(a: string, b: string): number {
   return Math.round((db - da) / 86_400_000)
 }
 
-function load(): DailyPointsState {
+function storageKey(address: string | null): string {
+  const a = (address || 'guest').toLowerCase()
+  return KEY_PREFIX + a.slice(0, 16)
+}
+
+function load(address: string | null): DailyPointsState {
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = localStorage.getItem(storageKey(address))
     if (!raw) {
       return { totalPoints: 0, streak: 0, lastClaimDay: null, history: [] }
     }
@@ -35,27 +41,29 @@ function load(): DailyPointsState {
   }
 }
 
-function save(s: DailyPointsState) {
+function save(address: string | null, s: DailyPointsState) {
   try {
-    localStorage.setItem(KEY, JSON.stringify(s))
+    localStorage.setItem(storageKey(address), JSON.stringify(s))
   } catch {
     /* ignore */
   }
 }
 
 export function useDailyPoints() {
+  const { address, connected } = useWallet()
+  const scope = connected && address ? address : null
+
   const [state, setState] = useState<DailyPointsState>(() =>
     typeof window !== 'undefined'
-      ? load()
+      ? load(null)
       : { totalPoints: 0, streak: 0, lastClaimDay: null, history: [] },
   )
 
   useEffect(() => {
-    setState(load())
-  }, [])
+    setState(load(scope))
+  }, [scope])
 
-  const canClaimToday =
-    !state.lastClaimDay || state.lastClaimDay !== todayUtc()
+  const canClaimToday = !state.lastClaimDay || state.lastClaimDay !== todayUtc()
 
   const claim = useCallback(() => {
     const day = todayUtc()
@@ -83,10 +91,10 @@ export function useDailyPoints() {
         lastClaimDay: day,
         history: history.slice(-30),
       }
-      save(next)
+      save(scope, next)
       return next
     })
-  }, [])
+  }, [scope])
 
-  return { ...state, canClaimToday, claim }
+  return { ...state, canClaimToday, claim, scopedTo: scope }
 }
