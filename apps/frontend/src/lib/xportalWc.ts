@@ -1,15 +1,12 @@
 /**
  * xPortal / WalletConnect V2 — mainnet login.
- *
- * Pourquoi ça peut échouer :
- * 1. Package WC non bundlé / peer manquant au build Pages
- * 2. Domain non allowlisté sur WalletConnect Cloud (neltud.github.io)
- * 3. Popup bloquée / app xPortal absente
- * 4. User refuse la session
- *
- * Fallback : Web Wallet (toujours fiable sur GH Pages).
+ * Import statique du provider pour que Vite l’inclue dans le bundle Pages.
+ * Fallback : Web Wallet.
  */
 import { XPORTAL_DEEP_LINKS, sdkDappConfig, WALLET_CONNECT_V2_RELAY_URL } from '../config/sdkDapp'
+
+// CJS package — interop Vite
+import * as WcProviderMod from '@multiversx/sdk-wallet-connect-provider'
 
 const MAINNET = '1'
 
@@ -17,6 +14,33 @@ export type XPortalLoginProgress = {
   phase: 'init' | 'uri' | 'waiting' | 'done' | 'error'
   uri?: string
   message?: string
+}
+
+type XcProvider = {
+  init: () => Promise<boolean>
+  connect: () => Promise<{ uri?: string; approval: () => Promise<unknown> }>
+  getAddress?: () => Promise<string>
+  address?: string
+}
+
+type WcCtor = new (
+  callbacks: unknown,
+  chainId: string,
+  relayUrl: string,
+  projectId: string,
+) => XcProvider
+
+function resolveWalletConnectCtor(): WcCtor | null {
+  const m = WcProviderMod as unknown as {
+    WalletConnectV2Provider?: WcCtor
+    default?: { WalletConnectV2Provider?: WcCtor } | WcCtor
+  }
+  if (m.WalletConnectV2Provider) return m.WalletConnectV2Provider
+  if (m.default && typeof m.default === 'function') return m.default as WcCtor
+  if (m.default && typeof m.default === 'object' && m.default.WalletConnectV2Provider) {
+    return m.default.WalletConnectV2Provider
+  }
+  return null
 }
 
 function openXPortalWithUri(uri: string) {
@@ -50,56 +74,6 @@ function openXPortalWithUri(uri: string) {
   }
 }
 
-type XcProvider = {
-  init: () => Promise<boolean>
-  connect: () => Promise<{ uri?: string; approval: () => Promise<unknown> }>
-  getAddress?: () => Promise<string>
-  address?: string
-}
-
-async function loadWalletConnectProvider(): Promise<
-  | (new (
-      callbacks: unknown,
-      chainId: string,
-      relayUrl: string,
-      projectId: string,
-    ) => XcProvider)
-  | null
-> {
-  const tries = [
-    () => import('@multiversx/sdk-wallet-connect-provider'),
-    () =>
-      import(
-        /* @vite-ignore */ '@multiversx/sdk-wallet-connect-provider/out/walletConnectV2Provider'
-      ),
-  ]
-  for (const load of tries) {
-    try {
-      const mod = (await load()) as {
-        WalletConnectV2Provider?: new (
-          callbacks: unknown,
-          chainId: string,
-          relayUrl: string,
-          projectId: string,
-        ) => XcProvider
-        default?: {
-          WalletConnectV2Provider?: new (
-            callbacks: unknown,
-            chainId: string,
-            relayUrl: string,
-            projectId: string,
-          ) => XcProvider
-        }
-      }
-      const C = mod.WalletConnectV2Provider || mod.default?.WalletConnectV2Provider
-      if (C) return C
-    } catch {
-      /* next */
-    }
-  }
-  return null
-}
-
 export async function loginWithXPortalMainnet(
   onProgress?: (p: XPortalLoginProgress) => void,
 ): Promise<{ ok: true; address: string } | { ok: false; error: string }> {
@@ -112,18 +86,18 @@ export async function loginWithXPortalMainnet(
     }
   }
 
+  const WalletConnectV2Provider = resolveWalletConnectCtor()
+  if (!WalletConnectV2Provider) {
+    return {
+      ok: false,
+      error:
+        'Module WalletConnect absent du bundle. Utilise Web Wallet — fiable sur neltud.github.io.',
+    }
+  }
+
   onProgress?.({ phase: 'init', message: 'Initialisation WalletConnect mainnet…' })
 
   try {
-    const WalletConnectV2Provider = await loadWalletConnectProvider()
-    if (!WalletConnectV2Provider) {
-      return {
-        ok: false,
-        error:
-          'Module WalletConnect non chargé (build). Utilise Web Wallet — fiable sur neltud.github.io.',
-      }
-    }
-
     const callbacks = {
       onClientLogin: async () => undefined,
       onClientLogout: async () => undefined,
