@@ -8,6 +8,7 @@ import { useSendTransaction } from '../hooks/useSendTransaction'
 import { canSignOnChain, signBlockReason } from '../lib/txCapability'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { LINKS } from '../config/links'
+import { dispatch8008 } from '../config/agent8008'
 
 const MEMOS = [
   { id: 'tip:mission', label: 'Mission' },
@@ -17,12 +18,6 @@ const MEMOS = [
 
 function egldToAtomic(egld: number): string {
   return BigInt(Math.round(egld * 1e18)).toString()
-}
-
-function strToHex(s: string): string {
-  return Array.from(new TextEncoder().encode(s))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('')
 }
 
 export default function TipEgldTransfer() {
@@ -63,7 +58,6 @@ export default function TipEgldTransfer() {
     }
     setPending(true)
     try {
-      // MultiversX: data field = plain memo string (hex-encoded in some wallets — use ascii)
       const data = memo
       const res = await send(
         [
@@ -79,7 +73,7 @@ export default function TipEgldTransfer() {
           processingMessage: 'Envoi tip…',
           successMessage: 'Tip soumis',
           errorMessage: 'Tip échoué',
-        }
+        },
       )
       if (res.error) {
         setMsg(res.error)
@@ -87,6 +81,12 @@ export default function TipEgldTransfer() {
       }
       setLastTx(res.sessionId)
       setMsg('TX tip soumise — confirme dans le wallet. Pas un investissement.')
+      dispatch8008('TIP_LIA', {
+        raw: `tip ${n} EGLD ${memo}`,
+        amountEgld: n,
+        memo,
+        paper: false,
+      })
     } catch (e) {
       setMsg(e instanceof Error ? e.message : 'Erreur')
     } finally {
