@@ -1,9 +1,10 @@
 /**
  * Carte mondiale RÉELLE — Leaflet + OSM / relief / couleurs / satellite.
  * POI OpenStreetMap (Overpass) : musées, galeries, centres d'art.
- * Service culturel Tours (≠ pack IA).
+ * Match → salle virtuelle museumWorldCatalog.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   type ArtExhibition,
   fetchCityExhibitions,
@@ -18,6 +19,8 @@ import {
   osmPoiLabel,
   type OsmPoi,
 } from '../lib/osmOverpass'
+import { matchOsmToVirtualMuseum, museumTravelFromOsm } from '../lib/osmMuseumMatch'
+import { setTravelDestination } from '../lib/travelBridge'
 
 export type ArtLocation = {
   id: string
@@ -135,6 +138,7 @@ function loadLeaflet(): Promise<LeafletNS> {
 }
 
 export default function ArtWorldMap() {
+  const navigate = useNavigate()
   const [locations, setLocations] = useState<ArtLocation[]>([])
   const [selected, setSelected] = useState<ArtLocation | null>(null)
   const [expos, setExpos] = useState<ArtExhibition[]>([])
@@ -337,7 +341,6 @@ export default function ArtWorldMap() {
     }
   }, [filtered, mapReady]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // OpenStreetMap cultural POIs (Overpass) when zoomed in
   useEffect(() => {
     const L = LRef.current
     const map = mapRef.current
@@ -393,13 +396,25 @@ export default function ArtWorldMap() {
             const web = p.website
               ? `<br/><a href="${p.website}" target="_blank" rel="noreferrer">Site</a>`
               : ''
+            const match = matchOsmToVirtualMuseum(p)
+            const enter = match
+              ? `<br/><button type="button" class="xart-osm-enter" style="margin-top:6px;padding:4px 8px;border-radius:8px;border:1px solid #38bdf8;background:#0c4a6e;color:#e0f2fe;cursor:pointer;font-size:12px">Entrer · ${match.museum.name}</button>`
+              : ''
             m.bindPopup(
               `<strong>${p.name}</strong><br/><span style="opacity:.8">${osmPoiLabel(
                 p.kind,
               )}</span>${web}${wiki}<br/><a href="${osmBrowseUrl(
                 p,
-              )}" target="_blank" rel="noreferrer">OpenStreetMap</a>`,
+              )}" target="_blank" rel="noreferrer">OpenStreetMap</a>${enter}`,
             )
+            m.on('popupopen', () => {
+              const btn = document.querySelector('.xart-osm-enter') as HTMLButtonElement | null
+              if (!btn || !match) return
+              btn.onclick = () => {
+                setTravelDestination(museumTravelFromOsm(p, match))
+                navigate(`/museum?museum=${match.museumId}`)
+              }
+            })
             m.addTo(osmLayer)
           }
           setOsmStatus(pois.length ? `${pois.length} lieux OSM` : 'Aucun POI dans la vue')
@@ -429,7 +444,7 @@ export default function ArtWorldMap() {
       map.off('moveend', onMove)
       map.off('zoomend', onMove)
     }
-  }, [mapReady, osmEnabled])
+  }, [mapReady, osmEnabled, navigate])
 
   return (
     <div className="space-y-3">
@@ -538,24 +553,15 @@ export default function ArtWorldMap() {
           <div className="flex items-center gap-1.5">
             <span className="inline-block h-2.5 w-2.5 rounded-full bg-violet-400" /> Centre d'art
           </div>
-          {Object.entries(REGION_COLORS).map(([key, v]) => (
-            <div key={key} className="flex items-center gap-1.5">
-              <span
-                className="inline-block h-2.5 w-2.5 rounded-full shrink-0"
-                style={{ background: v.fill, boxShadow: `0 0 6px ${v.fill}` }}
-              />
-              <span>{v.label}</span>
-            </div>
-          ))}
         </div>
 
         <div className="absolute bottom-2 left-3 z-[400] pointer-events-none max-w-[75%]">
           <p className="text-[10px] text-zinc-300/90 bg-black/50 rounded-md px-2 py-1 backdrop-blur-sm">
+            {basemap === 'osm' && 'Tuiles OpenStreetMap'}
             {basemap === 'relief' && 'Relief OpenTopoMap'}
             {basemap === 'color' && 'CARTO Voyager'}
             {basemap === 'satellite' && 'Satellite Esri'}
             {basemap === 'dark' && 'Nuit CARTO'}
-            {basemap === 'osm' && 'Tuiles OpenStreetMap'}
             {osmStatus ? ` · ${osmStatus}` : ''}
             {' · '}© OSM contributors
           </p>
