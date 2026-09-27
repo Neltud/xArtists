@@ -1,5 +1,5 @@
 /**
- * Home — fluid + LIA / GrokyversX + Phase 4 First 100 + ad sample.
+ * Home — fluid + LIA / GrokyversX + Phase 4 First 100 + ad sample + actions utilisateur.
  */
 import { Link } from 'react-router-dom'
 import SoftStatus from '../components/SoftStatus'
@@ -8,16 +8,17 @@ import PulseStrip from '../components/PulseStrip'
 import NetworkLiveStrip from '../components/NetworkLiveStrip'
 import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import AdSlot from '../components/AdSlot'
+import UserActionsPanel from '../components/UserActionsPanel'
 import { isSupernovaLive } from '../config/supernova'
 import LottieIcon from '../components/LottieIcon'
 
 const LINKS_MAIN = [
   { to: '/museum', title: 'Galerie', body: 'Salles 3D · avatar · collection', delay: '0ms' },
   { to: '/agents', title: 'Packs', body: 'Pulse · Yield · Sentinel', delay: '60ms' },
-  { to: '/tours', title: 'Tours', body: 'Carte & musées du monde', delay: '120ms' },
+  { to: '/tours', title: 'Tours', body: 'Carte OSM & musées du monde', delay: '120ms' },
   { to: '/trading', title: 'Trading', body: 'Board paper · GrokyversX', delay: '180ms' },
   { to: '/lia', title: 'LIA', body: '8008 · trésorerie · pipeline', delay: '200ms' },
-  { to: '/slot', title: 'Slot', body: '3×3 NFT · paper bank', delay: '220ms' },
+  { to: '/slot', title: 'Slot', body: '3×3 · paper EGLD/USDC', delay: '220ms' },
   { to: '/ads', title: 'Ads', body: 'Enchères pub · sample live', delay: '240ms' },
   { to: '/go-live', title: 'GO_LIVE', body: 'Phase 4 · First 100 · checklists', delay: '260ms' },
 ] as const
@@ -48,17 +49,17 @@ export default function Dashboard() {
           <LottieIcon preset="spark" size={40} />
         </div>
         <p className="section-lead">
-          Galerie immersive, packs, LIA + GrokyversX — Phase 4 First 100 (1 EGLD bounty).
+          Galerie immersive, packs, LIA + GrokyversX — démo live paper · SC fail-closed.
         </p>
         <div className="flex flex-wrap gap-3 pt-1">
           <Link to="/museum" className="btn-primary">
             Entrer dans la galerie
           </Link>
-          <Link to="/go-live" className="btn-secondary">
-            Phase 4 · GO_LIVE
-          </Link>
           <Link to="/demo" className="btn-secondary">
             Tour démo
+          </Link>
+          <Link to="/wallet" className="btn-secondary">
+            Wallet
           </Link>
         </div>
       </section>
@@ -96,6 +97,9 @@ export default function Dashboard() {
             </Link>
           ))}
         </div>
+
+        <p className="section-label pt-6">Parcours actions</p>
+        <UserActionsPanel compact />
       </div>
     </div>
   )
