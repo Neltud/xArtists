@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.54.0](https://github.com/Neltud/xArtists/compare/v0.53.0...v0.54.0) (2026-09-27)
+
+
+### Features
+
+* daily Met catalog 16 works, museumRealism in WebGLHall, GPU COLMAP deploy, World Art Earth vision ([5004bb2](https://github.com/Neltud/xArtists/commit/5004bb22883d762b0e9f6b0e18b41021cd577a61))
+* **museum:** wire museumRealism mobile-safe + colmap worker health detects binary ([435304e](https://github.com/Neltud/xArtists/commit/435304e5e118b1afb3d4fe29766e5bb9c499c983))
+
 ## [0.53.0](https://github.com/Neltud/xArtists/compare/v0.52.0...v0.53.0) (2026-09-27)
 
 
