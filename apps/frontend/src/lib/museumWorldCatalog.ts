@@ -81,12 +81,6 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
   },
 ]
 
-export const VIRTUAL_MUSEUMS: VirtualMuseum[] = PROFILES.map(p => ({
-  ...p,
-  source: p.id === 'xartists' ? 'onchain' : 'catalog',
-  works: [],
-}))
-
 function guessTechnique(title: string, artist: string): string {
   const t = `${title} ${artist}`.toLowerCase()
   if (/bronze|marble|sculpture|bust/.test(t)) return 'Sculpture'
@@ -198,7 +192,6 @@ function assignWorks(base: string): Map<string, FrameItem[]> {
       list.push(toFrame(w, base, p.name))
       used.add(w.id)
     }
-    // sculpures PD pour chaque salle
     list.push(...proceduralSculptures(p.id, p.name).slice(0, 2))
     assigned.set(p.id, list)
   }
@@ -219,6 +212,20 @@ export function buildMuseumNetwork(base: string): VirtualMuseum[] {
 
 export async function loadMuseumNetwork(base: string): Promise<VirtualMuseum[]> {
   return buildMuseumNetwork(base)
+}
+
+/** Snapshot synchrone (carte / CTA) — œuvres chargées avec base défaut */
+export const VIRTUAL_MUSEUMS: VirtualMuseum[] = buildMuseumNetwork('/')
+
+/** Lookup musée par id (aliases inclus) */
+export function getMuseum(id: string | null | undefined): VirtualMuseum | undefined {
+  if (!id) return undefined
+  const key = id.toLowerCase().trim()
+  return (
+    VIRTUAL_MUSEUMS.find(m => m.id === key) ||
+    VIRTUAL_MUSEUMS.find(m => m.aliases?.some(a => a.toLowerCase() === key)) ||
+    VIRTUAL_MUSEUMS.find(m => m.name.toLowerCase().includes(key))
+  )
 }
 
 export function museumIdForCity(city: string): string | null {
