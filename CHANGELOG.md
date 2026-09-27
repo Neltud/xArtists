@@ -1,5 +1,18 @@
 # Changelog — xArtists
 
+## [0.52.0](https://github.com/Neltud/xArtists/compare/v0.51.0...v0.52.0) (2026-09-27)
+
+
+### Features
+
+* **museum:** auto dims, multi-view volume, degressive wall rental, glTF export, MET refresh ([f40676a](https://github.com/Neltud/xArtists/commit/f40676a9078e1e722852cf091c53d74aaf46b2f5))
+* **museum:** auto-measure fields + multi-view depth + glTF export button on sculpture dossier ([64bee94](https://github.com/Neltud/xArtists/commit/64bee945064658c4fcdf16b801c98b4dae829613))
+* **museum:** photo→3D sculptures in hall + dims catalog ([f9222f4](https://github.com/Neltud/xArtists/commit/f9222f452ca703b4b5d22bb902a6e0b027cebce7))
+* **museum:** placeSculptures helper + wire photo 3D volumes in WebGL hall ([1d3d9ad](https://github.com/Neltud/xArtists/commit/1d3d9add792113155c7586c7af31806a466625e6))
+* **museum:** wire placeSculpturesInScene into MuseumWebGLHall ([f31c65d](https://github.com/Neltud/xArtists/commit/f31c65db691cbc0b24900c5444caebadcf34dffc))
+* **sculpt:** multi-view sideUrls depth refinement in photoSculpture3d ([0cce7cf](https://github.com/Neltud/xArtists/commit/0cce7cfa311d7a354cd98186feac47800f4196ff))
+* **venues:** degressive wall rental grid by duration and wall count ([2a68010](https://github.com/Neltud/xArtists/commit/2a680102314936731d1c5f4fb59c31a3c1778260))
+
 ## [0.51.0](https://github.com/Neltud/xArtists/compare/v0.50.0...v0.51.0) (2026-09-27)
 
 
