@@ -19,14 +19,19 @@ export const LIA_MULTICHAIN = {
 } as const
 
 /**
- * Pack pricing — corridor global ; le list price dépend du profil (intensité signaux).
- * Plus de signaux / activité → pack plus cher.
+ * Pack pricing — minimum 10 EGLD (demande produit).
+ * EUR affiché ≈ indicative (EGLD * ~4.5).
  */
-export const PACK_PRICE_EUR = {
-  min: 5,
-  max: 25,
-  /** Fallback intent form / sub-agent générique */
+export const PACK_PRICE_EGLD = {
+  min: 10,
+  max: 50,
   list: 12,
+} as const
+
+export const PACK_PRICE_EUR = {
+  min: 45,
+  max: 220,
+  list: 55,
 } as const
 
 export const PHYSICAL_NFT_TRO_REWARD_MAX = 1

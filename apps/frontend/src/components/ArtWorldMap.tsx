@@ -1,25 +1,17 @@
 /**
- * Carte mondiale — plan horizontal (Leaflet) + OSM (sans clé API).
- * POI Overpass · match salles museumWorldCatalog.
- * Basemaps: OSM standard / relief OpenTopo — pas de Carto (évite API KEY REQUIRED).
+ * Carte mondiale — plan horizontal Leaflet + OSM (sans clé API).
+ * locations optionnel : défaut = hubs culturels mondiaux.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import {
-  type ArtExhibition,
-  fetchCityExhibitions,
-  loadExhibitionFeed,
-} from '../services/artExhibitions'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import MapMuseumEnter from './museum/MapMuseumEnter'
 import {
   fetchOsmCulturalPois,
-  osmBrowseUrl,
   osmMinZoom,
   osmPoiColor,
   osmPoiLabel,
   type OsmPoi,
 } from '../lib/osmOverpass'
-import { matchOsmToVirtualMuseum, museumTravelFromOsm } from '../lib/osmMuseumMatch'
+import { matchOsmToVirtualMuseum } from '../lib/osmMuseumMatch'
 import { setTravelDestination } from '../lib/travelBridge'
 
 export type ArtLocation = {
@@ -43,11 +35,29 @@ declare global {
   }
 }
 
-function statusBadge(status: string): string {
-  if (status === 'ongoing') return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-  if (status === 'upcoming') return 'bg-amber-500/20 text-amber-200 border-amber-500/40'
-  return 'bg-zinc-500/20 text-zinc-400 border-zinc-500/30'
-}
+/** Hubs art mondiaux — plan horizontal (pas de dépendance tours.json) */
+export const DEFAULT_ART_LOCATIONS: ArtLocation[] = [
+  { id: 'paris', city: 'Paris', country: 'France', lat: 48.86, lng: 2.34, focus: 'Louvre · Orsay · Pompidou', region: 'europe' },
+  { id: 'london', city: 'London', country: 'UK', lat: 51.51, lng: -0.13, focus: 'National Gallery · Tate', region: 'europe' },
+  { id: 'nyc', city: 'New York', country: 'USA', lat: 40.78, lng: -73.96, focus: 'Met · MoMA', region: 'americas' },
+  { id: 'tokyo', city: 'Tokyo', country: 'Japan', lat: 35.68, lng: 139.77, focus: 'Mori · National Museum', region: 'asia' },
+  { id: 'florence', city: 'Florence', country: 'Italy', lat: 43.77, lng: 11.26, focus: 'Uffizi', region: 'europe' },
+  { id: 'madrid', city: 'Madrid', country: 'Spain', lat: 40.41, lng: -3.69, focus: 'Prado · Reina Sofía', region: 'europe' },
+  { id: 'berlin', city: 'Berlin', country: 'Germany', lat: 52.52, lng: 13.4, focus: 'Museum Island', region: 'europe' },
+  { id: 'amsterdam', city: 'Amsterdam', country: 'Netherlands', lat: 52.36, lng: 4.88, focus: 'Rijksmuseum · Van Gogh', region: 'europe' },
+  { id: 'vienna', city: 'Vienna', country: 'Austria', lat: 48.2, lng: 16.37, focus: 'Kunsthistorisches', region: 'europe' },
+  { id: 'rome', city: 'Rome', country: 'Italy', lat: 41.9, lng: 12.49, focus: 'Vatican · Borghese', region: 'europe' },
+  { id: 'la', city: 'Los Angeles', country: 'USA', lat: 34.06, lng: -118.36, focus: 'Getty · LACMA', region: 'americas' },
+  { id: 'sao', city: 'São Paulo', country: 'Brazil', lat: -23.56, lng: -46.65, focus: 'MASP', region: 'americas' },
+  { id: 'seoul', city: 'Seoul', country: 'Korea', lat: 37.57, lng: 126.98, focus: 'MMCA', region: 'asia' },
+  { id: 'shanghai', city: 'Shanghai', country: 'China', lat: 31.23, lng: 121.47, focus: 'Power Station of Art', region: 'asia' },
+  { id: 'sydney', city: 'Sydney', country: 'Australia', lat: -33.87, lng: 151.21, focus: 'MCA · AGNSW', region: 'oceania' },
+  { id: 'cairo', city: 'Cairo', country: 'Egypt', lat: 30.04, lng: 31.24, focus: 'Egyptian Museum', region: 'africa' },
+  { id: 'lagos', city: 'Lagos', country: 'Nigeria', lat: 6.45, lng: 3.39, focus: 'Contemporary hubs', region: 'africa' },
+  { id: 'mumbai', city: 'Mumbai', country: 'India', lat: 18.93, lng: 72.83, focus: 'CSMVS', region: 'asia' },
+  { id: 'mexico', city: 'Mexico City', country: 'Mexico', lat: 19.43, lng: -99.13, focus: 'Anthropology · Tamayo', region: 'americas' },
+  { id: 'istanbul', city: 'Istanbul', country: 'Turkey', lat: 41.01, lng: 28.98, focus: 'Pera · Modern', region: 'europe' },
+]
 
 const REGION_COLORS: Record<string, { fill: string; stroke: string; label: string }> = {
   europe: { fill: '#38bdf8', stroke: '#7dd3fc', label: 'Europe' },
@@ -61,9 +71,8 @@ function regionStyle(region?: string) {
   return REGION_COLORS[region || ''] || { fill: '#e11d48', stroke: '#fecdd3', label: 'Autre' }
 }
 
-type BasemapId = 'osm' | 'relief' | 'satellite' | 'dark'
+type BasemapId = 'osm' | 'relief' | 'satellite'
 
-/** Tuiles sans API key (évite watermark « API KEY REQUIRED ») */
 const BASEMAPS: Record<
   BasemapId,
   { label: string; url: string; attribution: string; maxZoom: number; subdomains?: string }
@@ -71,42 +80,35 @@ const BASEMAPS: Record<
   osm: {
     label: 'Plan',
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    attribution: '&copy; OpenStreetMap',
     maxZoom: 19,
     subdomains: 'abc',
   },
   relief: {
     label: 'Relief',
     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-    attribution:
-      'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>, <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
+    attribution: 'OSM · OpenTopoMap',
     maxZoom: 17,
     subdomains: 'abc',
   },
   satellite: {
     label: 'Satellite',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attribution: 'Tiles &copy; Esri',
+    attribution: 'Esri',
     maxZoom: 18,
-  },
-  dark: {
-    label: 'Nuit',
-    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> · CARTO',
-    maxZoom: 19,
-    subdomains: 'abcd',
   },
 }
 
 async function ensureLeaflet(): Promise<LeafletNS> {
   if (window.L) return window.L
   await new Promise<void>((resolve, reject) => {
-    const link = document.createElement('link')
-    link.rel = 'stylesheet'
-    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-    document.head.appendChild(link)
+    if (!document.querySelector('link[data-leaflet]')) {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+      link.setAttribute('data-leaflet', '1')
+      document.head.appendChild(link)
+    }
     const s = document.createElement('script')
     s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
     s.onload = () => resolve()
@@ -116,7 +118,7 @@ async function ensureLeaflet(): Promise<LeafletNS> {
   return window.L!
 }
 
-export default function ArtWorldMap({ locations }: { locations: ArtLocation[] }) {
+export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] | null }) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapObj = useRef<LeafletNS>(null)
   const layerRef = useRef<LeafletNS>(null)
@@ -126,31 +128,33 @@ export default function ArtWorldMap({ locations }: { locations: ArtLocation[] })
   const [cityFilter, setCityFilter] = useState('')
   const [region, setRegion] = useState<string>('all')
   const [osmPois, setOsmPois] = useState<OsmPoi[]>([])
-  const [exFeed, setExFeed] = useState<ArtExhibition[]>([])
-  const navigate = useNavigate()
+
+  const baseList = useMemo(() => {
+    if (Array.isArray(locations) && locations.length > 0) return locations
+    return DEFAULT_ART_LOCATIONS
+  }, [locations])
 
   const filtered = useMemo(() => {
-    let list = locations
+    let list = baseList
     if (region !== 'all') list = list.filter(l => l.region === region)
     if (cityFilter.trim()) {
       const q = cityFilter.toLowerCase()
       list = list.filter(
         l =>
           l.city.toLowerCase().includes(q) ||
-          l.country.toLowerCase().includes(q) ||
-          l.focus.toLowerCase().includes(q),
+          (l.country || '').toLowerCase().includes(q) ||
+          (l.focus || '').toLowerCase().includes(q),
       )
     }
     return list
-  }, [locations, region, cityFilter])
+  }, [baseList, region, cityFilter])
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
         const L = await ensureLeaflet()
-        if (cancelled || !mapRef.current) return
-        if (mapObj.current) return
+        if (cancelled || !mapRef.current || mapObj.current) return
         const map = L.map(mapRef.current, {
           center: [20, 10],
           zoom: 2,
@@ -182,9 +186,7 @@ export default function ArtWorldMap({ locations }: { locations: ArtLocation[] })
     const L = window.L
     const map = mapObj.current
     const bm = BASEMAPS[basemap]
-    if (tileRef.current) {
-      map.removeLayer(tileRef.current)
-    }
+    if (tileRef.current) map.removeLayer(tileRef.current)
     const tile = L.tileLayer(bm.url, {
       attribution: bm.attribution,
       maxZoom: bm.maxZoom,
@@ -193,11 +195,6 @@ export default function ArtWorldMap({ locations }: { locations: ArtLocation[] })
     tileRef.current = tile
   }, [basemap, mapReady])
 
-  useEffect(() => {
-    loadExhibitionFeed().then(setExFeed).catch(() => setExFeed([]))
-  }, [])
-
-  // markers destinations
   useEffect(() => {
     if (!mapReady || !layerRef.current || !window.L) return
     const L = window.L
@@ -213,16 +210,36 @@ export default function ArtWorldMap({ locations }: { locations: ArtLocation[] })
         weight: 1.5,
       })
       m.bindPopup(
-        `<strong>${loc.city}</strong> · ${loc.country}<br/><span style="opacity:.7">${loc.focus}</span>`,
+        `<strong>${loc.city}</strong> · ${loc.country || ''}<br/><span style="opacity:.7">${loc.focus || ''}</span>`,
       )
       m.on('click', () => {
-        setTravelDestination({ city: loc.city, country: loc.country, lat: loc.lat, lng: loc.lng })
+        setTravelDestination({
+          city: loc.city,
+          country: loc.country,
+          lat: loc.lat,
+          lng: loc.lng,
+        })
       })
       m.addTo(layer)
     })
-  }, [filtered, mapReady])
+    osmPois.forEach(p => {
+      const color = osmPoiColor(p.kind)
+      const m = L.circleMarker([p.lat, p.lng], {
+        radius: 5,
+        color,
+        fillColor: color,
+        fillOpacity: 0.9,
+        weight: 1,
+      })
+      const match = matchOsmToVirtualMuseum(p)
+      const enter = match
+        ? `<br/><a href="#/museum?room=${encodeURIComponent(match.roomId)}">Entrer musée</a>`
+        : ''
+      m.bindPopup(`<strong>${p.name}</strong><br/>${osmPoiLabel(p.kind)}${enter}`)
+      m.addTo(layer)
+    })
+  }, [filtered, osmPois, mapReady])
 
-  // OSM POIs when zoomed
   useEffect(() => {
     if (!mapReady || !mapObj.current) return
     const map = mapObj.current
@@ -240,7 +257,7 @@ export default function ArtWorldMap({ locations }: { locations: ArtLocation[] })
           north: b.getNorth(),
           east: b.getEast(),
         })
-        setOsmPois(pois)
+        setOsmPois(Array.isArray(pois) ? pois : [])
       } catch {
         setOsmPois([])
       }
@@ -250,29 +267,6 @@ export default function ArtWorldMap({ locations }: { locations: ArtLocation[] })
       map.off('moveend', onMove)
     }
   }, [mapReady])
-
-  useEffect(() => {
-    if (!mapReady || !layerRef.current || !window.L) return
-    const L = window.L
-    const layer = layerRef.current
-    // re-add osm markers on top
-    osmPois.forEach(p => {
-      const color = osmPoiColor(p.kind)
-      const m = L.circleMarker([p.lat, p.lng], {
-        radius: 5,
-        color,
-        fillColor: color,
-        fillOpacity: 0.9,
-        weight: 1,
-      })
-      const match = matchOsmToVirtualMuseum(p)
-      const enter = match
-        ? `<br/><a href="#/museum?room=${encodeURIComponent(match.roomId)}">Entrer musée</a>`
-        : ''
-      m.bindPopup(`<strong>${p.name}</strong><br/>${osmPoiLabel(p.kind)}${enter}`)
-      m.addTo(layer)
-    })
-  }, [osmPois, mapReady])
 
   return (
     <div className="space-y-3">
@@ -321,7 +315,7 @@ export default function ArtWorldMap({ locations }: { locations: ArtLocation[] })
       />
 
       <p className="text-[10px] text-zinc-600">
-        Zoom ≥ {osmMinZoom} → POI OSM · popup Entrer musée si match catalogue · tuiles OSM sans clé API
+        Zoom ≥ {osmMinZoom} → POI OSM · Entrer musée si match · tuiles OSM sans clé
       </p>
       <MapMuseumEnter />
     </div>

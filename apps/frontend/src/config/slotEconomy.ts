@@ -1,7 +1,6 @@
 /**
- * Slot public mainnet-paper — EGLD · USDC uniquement.
- * Progressive: une part de chaque mise alimente le jackpot.
- * Grand jackpot 9/9 = toute la cagnotte progressive.
+ * Slot public mainnet-paper — EGLD · USDC.
+ * Économie dure : RTP bas, progressive élevée, gains table réduits.
  * SC claim OFF — paper ledger (localStorage).
  */
 
@@ -9,17 +8,16 @@ export type SlotAsset = 'EGLD' | 'USDC'
 
 export const SLOT_ASSETS: SlotAsset[] = ['EGLD', 'USDC']
 
-/** Part user des gains table (hors progressive) */
-export const SLOT_USER_WIN_BPS = 8500
-export const SLOT_LIA_WIN_RAKE_BPS = 1500
+/** Part user des gains table (hors progressive) — house edge fort */
+export const SLOT_USER_WIN_BPS = 7000
+export const SLOT_LIA_WIN_RAKE_BPS = 3000
 
-/** % de chaque mise qui va dans la cagnotte progressive */
-export const SLOT_PROGRESSIVE_CONTRIB_BPS = 2500 // 25 %
+/** % de chaque mise → cagnotte progressive */
+export const SLOT_PROGRESSIVE_CONTRIB_BPS = 3500 // 35 %
 
-/** Seed cagnotte au reset après grand jackpot */
 export const SLOT_PROGRESSIVE_SEED: Record<SlotAsset, number> = {
-  EGLD: 0.5,
-  USDC: 50,
+  EGLD: 1.0,
+  USDC: 100,
 }
 
 export type SlotAssetConfig = {
@@ -30,34 +28,37 @@ export type SlotAssetConfig = {
     collection: number
     pair: number
     diagonal: number
-    /** Bonus fixe en plus de la progressive sur 9/9 */
     grandBonus: number
   }
   decimals: number
 }
 
+/**
+ * Payouts < spinCost moyen pour la plupart des hits (pair/collection).
+ * Seuls line3 / diagonal / grand sont net positifs.
+ */
 export const SLOT_ASSET_CONFIG: Record<SlotAsset, SlotAssetConfig> = {
   EGLD: {
-    spinCost: 0.05,
-    startBank: 2,
+    spinCost: 0.1,
+    startBank: 1.5,
     payouts: {
-      line3: 0.4,
-      collection: 0.2,
-      pair: 0.06,
-      diagonal: 0.35,
-      grandBonus: 0.25,
+      line3: 0.35,
+      collection: 0.08,
+      pair: 0.03,
+      diagonal: 0.28,
+      grandBonus: 0.5,
     },
     decimals: 4,
   },
   USDC: {
-    spinCost: 1,
-    startBank: 100,
+    spinCost: 2,
+    startBank: 50,
     payouts: {
-      line3: 40,
-      collection: 20,
-      pair: 6,
-      diagonal: 35,
-      grandBonus: 25,
+      line3: 7,
+      collection: 1.5,
+      pair: 0.5,
+      diagonal: 5.5,
+      grandBonus: 10,
     },
     decimals: 2,
   },
@@ -88,7 +89,7 @@ export function formatBps(bps: number): string {
   return `${(bps / 100).toFixed(0)} %`
 }
 
-const PROG_KEY = 'xartists_slot_progressive_v2'
+const PROG_KEY = 'xartists_slot_progressive_v3'
 
 export function loadProgressive(asset: SlotAsset): number {
   try {
@@ -114,7 +115,6 @@ export function saveProgressive(asset: SlotAsset, amount: number): void {
   }
 }
 
-/** Répartition après spin : mise → progressive + LIA ; gains table ou grand 9/9. */
 export function settleSpin(opts: {
   asset: SlotAsset
   tableGross: number
