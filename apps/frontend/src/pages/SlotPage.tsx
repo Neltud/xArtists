@@ -20,6 +20,7 @@ import {
   type SlotAsset,
   type SlotSplit,
 } from '../config/slotEconomy'
+import { dispatch8008 } from '../config/agent8008'
 
 type CellImg = { id: string; title: string; image: string; collection?: string }
 
@@ -87,106 +88,81 @@ function pick(pool: CellImg[]): CellImg {
 function evaluateGrid(
   grid: CellImg[],
   asset: SlotAsset,
-): { tableGross: number; kind: string; isGrand: boolean } {
-  const p = SLOT_ASSET_CONFIG[asset].payouts
-  const allSame = grid.every(c => c.id === grid[0].id)
+): { tableGross: number; isGrand: boolean; kind: string } {
+  const cfg = SLOT_ASSET_CONFIG[asset]
+  const ids = grid.map(c => c.id)
+  const allSame = ids.every(id => id === ids[0])
   if (allSame) {
-    return {
-      tableGross: 0,
-      kind: `GRAND JACKPOT 9/9 · ${grid[0].title}`,
-      isGrand: true,
-    }
+    return { tableGross: cfg.payouts.grandBonus, isGrand: true, kind: 'GRAND 9/9' }
   }
-  const mid = [grid[3], grid[4], grid[5]]
-  if (mid[0].id === mid[1].id && mid[1].id === mid[2].id) {
-    return { tableGross: p.line3, kind: `Ligne · ${mid[0].title}`, isGrand: false }
+  const line = [grid[3], grid[4], grid[5]]
+  if (line[0].id === line[1].id && line[1].id === line[2].id) {
+    return { tableGross: cfg.payouts.line3, isGrand: false, kind: 'Ligne 3' }
   }
-  if (
-    mid[0].collection &&
-    mid[0].collection === mid[1].collection &&
-    mid[1].collection === mid[2].collection
-  ) {
-    return {
-      tableGross: p.collection,
-      kind: `3× collection ${mid[0].collection}`,
-      isGrand: false,
-    }
+  const d1 = [grid[0], grid[4], grid[8]]
+  const d2 = [grid[2], grid[4], grid[6]]
+  if (d1[0].id === d1[1].id && d1[1].id === d1[2].id) {
+    return { tableGross: cfg.payouts.diagonal, isGrand: false, kind: 'Diagonale' }
   }
-  if (mid[0].id === mid[1].id || mid[1].id === mid[2].id || mid[0].id === mid[2].id) {
-    return { tableGross: p.pair, kind: 'Paire ligne centrale', isGrand: false }
+  if (d2[0].id === d2[1].id && d2[1].id === d2[2].id) {
+    return { tableGross: cfg.payouts.diagonal, isGrand: false, kind: 'Diagonale' }
   }
-  if (grid[0].id === grid[4].id && grid[4].id === grid[8].id) {
-    return { tableGross: p.diagonal, kind: 'Diagonale ↘', isGrand: false }
+  const cols = line.map(c => c.collection).filter(Boolean)
+  if (cols.length === 3 && cols[0] === cols[1] && cols[1] === cols[2]) {
+    return { tableGross: cfg.payouts.collection, isGrand: false, kind: 'Collection' }
   }
-  if (grid[2].id === grid[4].id && grid[4].id === grid[6].id) {
-    return { tableGross: p.diagonal, kind: 'Diagonale ↙', isGrand: false }
+  if (line[0].id === line[1].id || line[1].id === line[2].id || line[0].id === line[2].id) {
+    return { tableGross: cfg.payouts.pair, isGrand: false, kind: 'Paire' }
   }
-  return { tableGross: 0, kind: '—', isGrand: false }
+  return { tableGross: 0, isGrand: false, kind: '—' }
 }
 
 export default function SlotPage() {
-  const { connected, shortAddress } = useWallet()
-  const [asset, setAsset] = useState<SlotAsset>('USDC')
+  const { connected } = useWallet()
+  const [asset, setAsset] = useState<SlotAsset>('EGLD')
   const cfg = SLOT_ASSET_CONFIG[asset]
-
-  const [pool, setPool] = useState<CellImg[]>(FALLBACK)
   const [bank, setBank] = useState(cfg.startBank)
-  const [liaPaper, setLiaPaper] = useState(0)
-  const [progressive, setProgressive] = useState(() => loadProgressive('USDC'))
-  const [grid, setGrid] = useState<CellImg[]>(() => Array.from({ length: 9 }, () => pick(FALLBACK)))
+  const [progressive, setProgressive] = useState(() => loadProgressive('EGLD'))
+  const [grid, setGrid] = useState<CellImg[]>(() => Array.from({ length: 9 }, () => FALLBACK[0]))
   const [spinning, setSpinning] = useState(false)
   const [spins, setSpins] = useState(0)
-  const [last, setLast] = useState<{ kind: string; split: SlotSplit } | null>(null)
   const [log, setLog] = useState<string[]>([])
+  const [liaPaper, setLiaPaper] = useState(0)
+  const [last, setLast] = useState<{ kind: string; split: SlotSplit } | null>(null)
+  const [pool, setPool] = useState<CellImg[]>(FALLBACK)
 
-  const selectAsset = (a: SlotAsset) => {
-    if (spinning || a === asset) return
-    setAsset(a)
-    const c = SLOT_ASSET_CONFIG[a]
-    setBank(c.startBank)
-    setLiaPaper(0)
-    setProgressive(loadProgressive(a))
-    setSpins(0)
-    setLast(null)
-    setLog([])
-  }
+  useEffect(() => {
+    setBank(SLOT_ASSET_CONFIG[asset].startBank)
+    setProgressive(loadProgressive(asset))
+  }, [asset])
 
   useEffect(() => {
     let c = false
     ;(async () => {
-      const urls = [
-        `${import.meta.env.BASE_URL}data/xartists_collections.json`,
-        '/xArtists/data/xartists_collections.json',
-      ]
-      for (const u of urls) {
-        try {
-          const r = await fetch(u, { cache: 'no-store' })
-          if (!r.ok) continue
-          const j = await r.json()
-          const cols = j.collections || []
-          const imgs: CellImg[] = []
-          for (const col of cols) {
-            for (const n of col.nfts || []) {
-              const thumb = n.media?.[0]?.thumbnailUrl || n.url || n.media?.[0]?.url
-              if (!thumb || !/^https?:/i.test(thumb)) continue
-              imgs.push({
-                id: n.identifier,
-                title: n.name || n.identifier,
-                image: corsImg(thumb),
-                collection: n.collection || col.identifier,
-              })
-              if (imgs.length >= 48) break
-            }
-            if (imgs.length >= 48) break
-          }
-          if (!c && imgs.length >= 6) {
-            setPool(imgs)
-            setGrid(Array.from({ length: 9 }, () => pick(imgs)))
-            return
-          }
-        } catch {
-          /* next */
-        }
+      try {
+        const r = await fetch(`${import.meta.env.BASE_URL}data/catalog_sample.json`, {
+          cache: 'no-store',
+        })
+        if (!r.ok) return
+        const j = await r.json()
+        const items = (j?.items || j || []) as Array<{
+          identifier?: string
+          name?: string
+          url?: string
+          collection?: string
+        }>
+        const mapped: CellImg[] = items
+          .slice(0, 24)
+          .map((it, i) => ({
+            id: it.identifier || `c${i}`,
+            title: it.name || `NFT ${i}`,
+            image: corsImg(it.url || ''),
+            collection: it.collection,
+          }))
+          .filter(x => x.image)
+        if (!c && mapped.length >= 4) setPool([...FALLBACK, ...mapped])
+      } catch {
+        /* fallback pool */
       }
     })()
     return () => {
@@ -227,6 +203,14 @@ export default function SlotPage() {
             ? `${ev.kind} · +${split.userCredit} ${asset} · pot +${split.toProgressive}`
             : `— · mise → pot +${split.toProgressive} · LIA +${split.spinToLia}`
         setLog(l => [line, ...l].slice(0, 12))
+        dispatch8008('SLOT_SPIN', {
+          raw: `slot spin ${asset}`,
+          asset,
+          isGrand: ev.isGrand,
+          userCredit: split.userCredit,
+          toProgressive: split.toProgressive,
+          liaRake: split.liaRake + split.spinToLia,
+        })
         setSpinning(false)
       }
     }, 60)
@@ -249,183 +233,126 @@ export default function SlotPage() {
     <div className="animate-fade-in space-y-6 pb-12 max-w-lg mx-auto">
       <header className="space-y-2">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
-          Casino public · mainnet paper
+          Slot · paper mainnet-ready
         </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-white">Slot 3×3</h1>
+        <h1 className="text-3xl font-semibold tracking-tight text-white">Casino NFT 3×3</h1>
         <p className="text-sm text-zinc-400 leading-relaxed">
-          Jouer en <strong className="text-zinc-300">EGLD</strong> ou{' '}
-          <strong className="text-zinc-300">USDC</strong>. Chaque mise alimente la cagnotte.
-          Grand jackpot = <strong className="text-amber-200/90">9 symboles identiques</strong>.
+          Mise en <strong className="text-zinc-300">EGLD</strong> ou{" "}
+          <strong className="text-zinc-300">USDC</strong> · cagnotte progressive · grand jackpot 9/9.
+          Ledger paper local — SC claim OFF.
         </p>
       </header>
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex gap-2">
         {SLOT_ASSETS.map(a => (
           <button
             key={a}
             type="button"
             disabled={spinning}
-            onClick={() => selectAsset(a)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+            onClick={() => setAsset(a)}
+            className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold transition ${
               asset === a
-                ? 'bg-white text-zinc-900'
-                : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-zinc-200'
+                ? 'border-amber-400/50 bg-amber-500/15 text-amber-100'
+                : 'border-white/10 bg-black/30 text-zinc-400'
             }`}
           >
             {a}
           </button>
         ))}
-        {connected ? (
-          <span className="ml-auto text-[11px] text-emerald-400/90 mono">{shortAddress}</span>
-        ) : (
-          <button
-            type="button"
-            onClick={() => requestOpenConnect()}
-            className="ml-auto text-[12px] text-cyan-300 underline-offset-2 hover:underline"
-          >
-            Connecter wallet
-          </button>
-        )}
       </div>
 
-      {/* Progressive pot */}
-      <div className="rounded-2xl border border-amber-400/30 bg-gradient-to-r from-amber-950/40 to-violet-950/30 px-4 py-3 text-center">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-amber-200/70">Cagnotte progressive</p>
-        <p className="text-2xl sm:text-3xl font-bold text-amber-100 tabular-nums mt-1">
-          {formatSlotAmount(progressive, asset)}
-        </p>
-        <p className="text-[11px] text-zinc-500 mt-1">
-          +{formatBps(SLOT_PROGRESSIVE_CONTRIB_BPS)} de chaque mise · payée sur 9/9
-        </p>
-      </div>
-
-      <div className="rounded-2xl border border-amber-500/20 bg-gradient-to-b from-zinc-950 to-black p-4 space-y-4 shadow-2xl shadow-amber-900/10">
-        <div className="flex flex-wrap items-baseline justify-between gap-2 text-[12px] text-zinc-500">
+      <div className="rounded-2xl border border-white/10 bg-zinc-950/60 p-4 space-y-3">
+        <div className="flex justify-between text-[12px] text-zinc-400">
           <span>
-            Bank{' '}
-            <span className="text-amber-200 tabular-nums font-semibold">
-              {formatSlotAmount(bank, asset)}
-            </span>
+            Banque{" "}
+            <strong className="text-white tabular-nums">{formatSlotAmount(bank, asset)}</strong>
           </span>
           <span>
-            LIA{' '}
-            <span className="text-violet-300 tabular-nums font-semibold">
-              {formatSlotAmount(liaPaper, asset)}
-            </span>
-          </span>
-          <span>
-            Spins <span className="tabular-nums text-zinc-300">{spins}</span>
+            Cagnotte{" "}
+            <strong className="text-amber-200 tabular-nums">
+              {formatSlotAmount(progressive, asset)}
+            </strong>
           </span>
         </div>
 
-        <div className="rounded-xl border-2 border-amber-500/30 bg-black/80 p-2">
-          <div className="grid grid-cols-3 gap-1.5">
-            {grid.map((cell, i) => (
-              <div
-                key={`${cell.id}-${i}-${spinning}`}
-                className={`relative aspect-square overflow-hidden rounded-lg border ${
-                  spinning ? 'border-amber-500/40 animate-pulse' : 'border-white/10'
-                } bg-zinc-900`}
-              >
-                <img
-                  src={cell.image}
-                  alt={cell.title}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity ${
-                    spinning ? 'opacity-70' : 'opacity-100'
-                  }`}
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                  onError={e => {
-                    ;(e.target as HTMLImageElement).style.opacity = '0.3'
-                  }}
-                />
-                {!spinning && (
-                  <span className="absolute bottom-0 inset-x-0 bg-black/70 text-[9px] text-zinc-300 truncate px-1 py-0.5">
-                    {cell.title}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-          <p className="text-center text-[10px] text-amber-200/70 mt-2 tracking-wide">
-            3×3 · grand jackpot = 9/9 identiques · {asset}
-          </p>
+        <div className="grid grid-cols-3 gap-1.5">
+          {grid.map((cell, i) => (
+            <div
+              key={i}
+              className={`aspect-square rounded-lg border border-white/10 overflow-hidden bg-black/50 ${
+                spinning ? 'animate-pulse' : ''
+              }`}
+            >
+              <img
+                src={cell.image}
+                alt={cell.title}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          ))}
         </div>
 
         <button
           type="button"
-          onClick={spin}
+          className="btn-primary w-full"
           disabled={!canSpin}
-          className="w-full rounded-xl bg-gradient-to-r from-amber-300 to-amber-200 text-zinc-950 py-3.5 text-sm font-bold disabled:opacity-40 active:scale-[0.99] transition"
+          onClick={spin}
         >
           {spinning
-            ? '🎰 Roule…'
-            : bank < cfg.spinCost
-              ? 'Bank vide'
-              : `SPIN · ${formatSlotAmount(cfg.spinCost, asset)}`}
+            ? '…'
+            : `Spin · ${formatSlotAmount(cfg.spinCost, asset)}`}
         </button>
 
         {last && (
-          <div className="text-[12px] text-center space-y-1">
-            <p className={last.split.isGrand ? 'text-amber-200 font-semibold' : 'text-zinc-400'}>
-              {last.kind}
-            </p>
-            {last.split.isGrand && (
-              <p className="text-emerald-300 text-sm font-medium">
-                Cagnotte versée · user +{last.split.userCredit} {asset}
-              </p>
+          <p className="text-[12px] text-zinc-300">
+            Dernier: {last.kind}
+            {last.split.userCredit > 0 && (
+              <span className="text-emerald-300">
+                {' '}
+                +{formatSlotAmount(last.split.userCredit, asset)}
+              </span>
             )}
-            {!last.split.isGrand && last.split.grossWin > 0 && (
-              <p className="text-[11px] text-zinc-500">
-                User +{last.split.userCredit} · pot +{last.split.toProgressive} · LIA +
-                {last.split.spinToLia + last.split.liaRake}
-              </p>
-            )}
-          </div>
+          </p>
         )}
+
+        <p className="text-[11px] text-zinc-600">
+          Spins {spins} · LIA paper {formatSlotAmount(liaPaper, asset)}
+          {!connected && (
+            <>
+              {' · '}
+              <button type="button" className="text-zinc-400 underline" onClick={() => requestOpenConnect()}>
+                Connect
+              </button>
+            </>
+          )}
+        </p>
       </div>
 
-      <section className="rounded-xl border border-violet-500/20 bg-violet-950/15 px-3 py-3 text-[11px] text-zinc-400 leading-relaxed">
-        <p className="font-medium text-violet-200/90 mb-1">Règles publiques</p>
-        <ul className="list-disc list-inside space-y-0.5">
-          <li>Ouvert à tous · choix EGLD ou USDC (paper)</li>
-          <li>{formatBps(SLOT_PROGRESSIVE_CONTRIB_BPS)} de chaque mise → cagnotte</li>
-          <li>9/9 symboles identiques → cagnotte entière (+ bonus) puis reset seed</li>
-          <li>Ledger local · payout on-chain SC plus tard</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Paytable · {asset}</h2>
-        <ul className="space-y-1 text-[12px] text-zinc-400">
-          {paytable.map(([k, v]) => (
-            <li key={k} className="flex justify-between border-t border-white/5 py-2 gap-3">
-              <span className="text-zinc-300">{k}</span>
-              <span className="font-mono text-amber-200/90 shrink-0 text-right">{v}</span>
-            </li>
-          ))}
-        </ul>
+      <section className="rounded-xl border border-white/10 bg-black/30 p-3 space-y-1">
+        <p className="text-[10px] uppercase tracking-wider text-zinc-500">Paytable</p>
+        {paytable.map(([k, v]) => (
+          <div key={k} className="flex justify-between gap-2 text-[11px]">
+            <span className="text-zinc-400">{k}</span>
+            <span className="text-zinc-300 tabular-nums shrink-0">{v}</span>
+          </div>
+        ))}
       </section>
 
       {log.length > 0 && (
-        <section>
-          <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-2">Journal</h2>
-          <ul className="space-y-1 text-[11px] font-mono text-zinc-500">
-            {log.map((l, i) => (
-              <li key={i}>{l}</li>
-            ))}
-          </ul>
-        </section>
+        <ul className="text-[11px] text-zinc-500 space-y-0.5">
+          {log.map((l, i) => (
+            <li key={i}>{l}</li>
+          ))}
+        </ul>
       )}
 
       <p className="text-[11px] text-zinc-600">
-        <Link to="/wallet" className="text-zinc-400 hover:text-white">
-          Wallet / xPortal
+        <Link to="/lia" className="text-zinc-400 hover:underline">
+          LIA / 8008
         </Link>
         {' · '}
-        <Link to="/trading" className="text-zinc-400 hover:text-white">
-          Trading live
-        </Link>
+        paper only · pas un investissement
       </p>
     </div>
   )
