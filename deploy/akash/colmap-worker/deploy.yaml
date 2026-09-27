@@ -1,0 +1,33 @@
+---
+version: "2.0"
+services:
+  colmap:
+    image: ghcr.io/neltud/xartists-colmap-worker:latest
+    expose:
+      - port: 8080
+        as: 80
+        to:
+          - global: true
+    env:
+      - PORT=8080
+profiles:
+  compute:
+    colmap:
+      resources:
+        cpu:
+          units: 2.0
+        memory:
+          size: 4Gi
+        storage:
+          size: 20Gi
+  placement:
+    dcloud:
+      pricing:
+        colmap:
+          denom: uakt
+          amount: 1000
+deployment:
+  colmap:
+    dcloud:
+      profile: colmap
+      count: 1

@@ -1,0 +1,6 @@
+{
+  "name": "xartists-colmap-worker",
+  "private": true,
+  "type": "module",
+  "dependencies": {}
+}
