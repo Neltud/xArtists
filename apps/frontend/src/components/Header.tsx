@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { LINKS, PRIMARY_NAV, SECONDARY_NAV } from '../config/links'
 import { OPEN_CONNECT_EVENT, requestOpenAssets } from '../lib/walletEvents'
+import { loginWithXPortalMainnet } from '../lib/xportalWc'
 
 function isValidErd(addr: string): boolean {
   return /^erd1[a-z0-9]{58}$/i.test(addr.trim())
@@ -53,7 +54,6 @@ export default function Header() {
   const openXPortalDeepLink = async () => {
     setConnectError('Connexion xPortal mainnet (WalletConnect)…')
     try {
-      const { loginWithXPortalMainnet } = await import('../lib/xportalWc')
       const res = await loginWithXPortalMainnet(p => {
         if (p.message) setConnectError(p.message)
       })
@@ -71,33 +71,31 @@ export default function Header() {
     }
   }
 
-  const tryExtension = async () => {
+  const openExtension = async () => {
     setConnectError('')
-    const w = window as unknown as {
-      elrondWallet?: { getAddress?: () => Promise<string> }
-      multiversxWallet?: { getAddress?: () => Promise<string> }
-    }
     try {
-      const provider = w.elrondWallet || w.multiversxWallet
-      if (provider?.getAddress) {
-        const addr = await provider.getAddress()
-        const res = connect(addr, 'defi_wallet')
-        if (!res.ok) setConnectError(res.error || 'Connexion échouée')
-        else setShowWalletModal(false)
+      const provider = (window as unknown as { elrondWallet?: { login: () => Promise<string> } })
+        .elrondWallet
+      if (!provider?.login) {
+        setConnectError('Extension MultiversX introuvable. Utilise Web Wallet.')
         return
       }
-      setConnectError('Extension MultiversX introuvable. Utilise Web Wallet.')
+      const addr = await provider.login()
+      const res = connect(String(addr).trim(), 'extension')
+      if (!res.ok) setConnectError(res.error || 'Connexion échouée')
+      else setShowWalletModal(false)
     } catch (e) {
       setConnectError(e instanceof Error ? e.message : 'Erreur extension')
     }
   }
 
-  const handleManual = () => {
+  const submitManual = () => {
+    setConnectError('')
     if (!isValidErd(manualAddr)) {
       setConnectError('Adresse erd1 invalide')
       return
     }
-    const res = connect(manualAddr.trim(), 'paste_readonly')
+    const res = connect(manualAddr.trim(), 'paste')
     if (!res.ok) setConnectError(res.error || 'Échec')
     else {
       setShowWalletModal(false)
@@ -107,43 +105,41 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-white/[0.06] glass">
-        <div className="page-wrap flex items-center justify-between gap-3 h-14 sm:h-16">
-          <NavLink to="/" className="flex items-center gap-2.5 shrink-0 group">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 text-sm font-black text-white shadow-glow">
+      <header className="sticky top-0 z-40 border-b border-white/5 bg-zinc-950/90 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-3 sm:px-4">
+          <NavLink to="/" className="flex items-center gap-2 shrink-0" aria-label="Accueil">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-sm font-bold text-white">
               xA
             </span>
-            <span className="display text-lg text-white group-hover:opacity-90 hidden sm:inline">
-              xArtists
-            </span>
+            <span className="hidden sm:inline text-sm font-semibold text-white">xArtists</span>
           </NavLink>
 
-          <nav className="hidden lg:flex items-center gap-0.5 flex-1 justify-center max-w-2xl overflow-x-auto">
-            {DESKTOP_NAV.map(({ to, label }) => (
+          <nav className="hidden md:flex items-center gap-1">
+            {DESKTOP_NAV.map(n => (
               <NavLink
-                key={to}
-                to={to}
-                end={to === '/'}
-                className={({ isActive }) => `nav-pill ${isActive ? 'nav-pill-active' : ''}`}
+                key={n.to}
+                to={n.to}
+                className={({ isActive }) =>
+                  `rounded-lg px-2.5 py-1.5 text-[12px] font-medium transition ${
+                    isActive ? 'bg-white/10 text-white' : 'text-zinc-400 hover:text-white'
+                  }`
+                }
               >
-                {label}
+                {n.label}
               </NavLink>
             ))}
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2">
             {connected ? (
               <button
                 type="button"
-                onClick={() => disconnect()}
-                className={`mono text-[11px] sm:text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${
-                  method === 'paste_readonly'
-                    ? 'border-amber-500/40 text-amber-300 hover:border-rose-500/40'
-                    : 'border-emerald-500/30 text-emerald-300 hover:border-rose-500/40'
-                }`}
-                title={`${address} · ${method || '—'}`}
+                onClick={() => requestOpenAssets()}
+                className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] text-zinc-200"
+                title={address}
               >
-                {method === 'paste_readonly' ? '👁' : '●'} {shortAddress}
+                {shortAddress}
+                {method ? ` · ${method}` : ''}
               </button>
             ) : (
               <button
@@ -152,73 +148,43 @@ export default function Header() {
                   setShowWalletModal(true)
                   setConnectError('')
                 }}
-                className="btn-primary text-xs sm:text-sm !py-1.5 !px-3"
+                className="rounded-full bg-gradient-to-r from-violet-600 to-indigo-500 px-4 py-1.5 text-[12px] font-semibold text-white shadow"
               >
                 Connect
               </button>
             )}
-
+            {connected && (
+              <button
+                type="button"
+                onClick={() => disconnect()}
+                className="hidden sm:inline text-[11px] text-zinc-500 hover:text-zinc-300"
+              >
+                Out
+              </button>
+            )}
             <button
               type="button"
-              className="lg:hidden p-2.5 rounded-xl text-zinc-300 hover:text-white hover:bg-white/10 min-h-[44px] min-w-[44px]"
+              className="md:hidden rounded-lg border border-white/10 p-2 text-white"
+              aria-label="Menu"
               onClick={() => setMenuOpen(o => !o)}
-              aria-label={menuOpen ? 'Fermer' : 'Menu'}
-              aria-expanded={menuOpen}
             >
-              <span className="text-xl">{menuOpen ? '✕' : '☰'}</span>
+              ☰
             </button>
           </div>
         </div>
 
         {menuOpen && (
-          <div
-            className="lg:hidden fixed inset-0 top-14 sm:top-16 z-40 bg-black/70 backdrop-blur-sm flex flex-col"
-            onClick={() => setMenuOpen(false)}
-          >
-            <div
-              className="border-b border-white/[0.08] flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-3 flex flex-col gap-0.5 shadow-2xl"
-              style={{
-                background: 'rgba(8,8,14,0.96)',
-                maxHeight: 'calc(100dvh - 3.5rem - env(safe-area-inset-bottom, 0px) - 4rem)',
-                paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))',
-                WebkitOverflowScrolling: 'touch',
-              }}
-              onClick={e => e.stopPropagation()}
-            >
-              {PRIMARY_NAV.map(({ to, label, emoji }) => (
+          <div className="md:hidden border-t border-white/5 bg-zinc-950 px-3 py-3 max-h-[70vh] overflow-y-auto">
+            <p className="text-[10px] uppercase tracking-wider text-zinc-600 mb-2">Navigation</p>
+            <div className="flex flex-col gap-1">
+              {[...PRIMARY_NAV, ...SECONDARY_NAV].map(n => (
                 <NavLink
-                  key={to}
-                  to={to}
-                  end={to === '/'}
+                  key={n.to + n.label}
+                  to={n.to}
                   onClick={() => setMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium ${
-                      isActive
-                        ? 'bg-violet-500/20 text-violet-200 border border-violet-400/20'
-                        : 'text-zinc-300 active:bg-white/5'
-                    }`
-                  }
+                  className="rounded-lg px-3 py-2 text-sm text-zinc-300 hover:bg-white/5"
                 >
-                  <span className="w-7 text-center opacity-80">{emoji || '·'}</span>
-                  {label}
-                </NavLink>
-              ))}
-              <p className="px-4 pt-3 pb-1 text-[10px] uppercase tracking-[0.2em] text-zinc-600">
-                Lab
-              </p>
-              {SECONDARY_NAV.map(({ to, label, emoji }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  onClick={() => setMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm ${
-                      isActive ? 'text-cyan-300' : 'text-zinc-500'
-                    }`
-                  }
-                >
-                  <span className="w-7 text-center">{emoji || '·'}</span>
-                  {label}
+                  {n.label}
                 </NavLink>
               ))}
             </div>
@@ -228,84 +194,57 @@ export default function Header() {
 
       {showWalletModal && (
         <div
-          className="fixed inset-0 bg-black/80 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm"
-          onClick={() => {
-            setShowWalletModal(false)
-            setConnectError('')
-          }}
+          className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center bg-black/75 p-3"
+          role="dialog"
+          aria-modal
+          onClick={() => setShowWalletModal(false)}
         >
           <div
-            className="card max-w-md w-full rounded-t-3xl sm:rounded-3xl animate-fade-in max-h-[90vh] overflow-y-auto !border-violet-500/20"
+            className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0c0c14] p-4 shadow-2xl space-y-3"
             onClick={e => e.stopPropagation()}
-            style={{ paddingBottom: 'calc(1.25rem + env(safe-area-inset-bottom, 0px))' }}
           >
-            <p className="text-[10px] uppercase tracking-[0.2em] text-violet-400/80 mb-1">
-              MultiversX mainnet
-            </p>
-            <h2 className="display text-xl mb-2">Connecter le wallet</h2>
-            <p className="text-xs text-zinc-500 mb-4 leading-relaxed">
-              <strong className="text-zinc-300">Web Wallet recommandé</strong> sur GitHub Pages. xPortal
-              via WalletConnect si le module se charge.
+            <p className="text-[11px] uppercase tracking-wider text-zinc-500">MultiversX mainnet</p>
+            <h2 className="display text-xl mb-1">Connecter le wallet</h2>
+            <p className="text-[12px] text-zinc-500 leading-relaxed">
+              Web Wallet recommandé sur GitHub Pages. xPortal via WalletConnect si le module se charge.
             </p>
 
-            {[
-              {
-                title: 'Web Wallet',
-                sub: 'wallet.multiversx.com — recommandé',
-                icon: '🌐',
-                onClick: openWebWallet,
-              },
-              {
-                title: 'xPortal',
-                sub: 'WalletConnect mainnet',
-                icon: '📱',
-                onClick: () => void openXPortalDeepLink(),
-              },
-              {
-                title: 'Extension',
-                sub: 'Navigateur',
-                icon: '🦊',
-                onClick: () => void tryExtension(),
-              },
-            ].map(opt => (
-              <button
-                key={opt.title}
-                type="button"
-                onClick={opt.onClick}
-                className="w-full flex items-center gap-4 p-4 rounded-2xl border border-white/10 bg-white/[0.03] hover:border-violet-500/40 hover:bg-violet-500/5 transition-all mb-2.5 min-h-[56px] text-left"
-              >
-                <span className="text-2xl">{opt.icon}</span>
-                <div>
-                  <div className="font-semibold text-white">{opt.title}</div>
-                  <div className="text-xs text-zinc-500">{opt.sub}</div>
-                </div>
-              </button>
-            ))}
+            <button type="button" className="btn-primary w-full text-left" onClick={openWebWallet}>
+              🌐 Web Wallet
+              <span className="block text-[11px] font-normal opacity-80">
+                wallet.multiversx.com — recommandé
+              </span>
+            </button>
+            <button type="button" className="btn-secondary w-full text-left" onClick={openXPortalDeepLink}>
+              📱 xPortal
+              <span className="block text-[11px] font-normal text-zinc-400">WalletConnect mainnet</span>
+            </button>
+            <button type="button" className="btn-secondary w-full text-left" onClick={openExtension}>
+              🦊 Extension
+              <span className="block text-[11px] font-normal text-zinc-400">Navigateur</span>
+            </button>
 
-            <div className="mt-3 pt-3 divider">
-              <p className="text-xs text-amber-400/90 mb-2">Ou coller erd1 — lecture seule</p>
+            <p className="text-[11px] text-zinc-600 pt-1">Ou coller erd1 — lecture seule</p>
+            <div className="flex gap-2">
               <input
-                className="input-field mono text-xs"
+                className="flex-1 rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white mono"
                 placeholder="erd1…"
                 value={manualAddr}
                 onChange={e => setManualAddr(e.target.value)}
               />
-              <button type="button" onClick={handleManual} className="btn-secondary w-full mt-2 text-sm">
+              <button type="button" className="btn-secondary text-xs" onClick={submitManual}>
                 Utiliser l’adresse
               </button>
             </div>
 
             {connectError && (
-              <p className="text-xs text-amber-400 mt-3 leading-relaxed">{connectError}</p>
+              <p className="text-[12px] text-amber-200/90 leading-relaxed">{connectError}</p>
             )}
 
             <button
               type="button"
-              onClick={() => {
-                setShowWalletModal(false)
-                setConnectError('')
-              }}
-              className="btn-ghost w-full mt-2 text-sm"
+              className="text-[12px] text-zinc-500 w-full text-center pt-1"
+              onClick={() => setShowWalletModal(false)}
             >
               Annuler
             </button>
