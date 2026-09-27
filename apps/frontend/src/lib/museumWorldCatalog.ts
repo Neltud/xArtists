@@ -1,5 +1,5 @@
 /**
- * Réseau de musées virtuels — œuvres Met Open Access via un seul proxy weserv.
+ * Réseau de musées virtuels — Met Open Access + slots « Your art here ».
  */
 import { MET_WORKS } from '../data/metCatalog'
 import type { FrameItem } from '../components/museum/MuseumCorridor'
@@ -76,8 +76,98 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     country: 'France',
     tagline: 'Art contemporain · Paris',
     room: 'cyber',
-    aliases: ['palais de tokyo', 'tokyo'],
+    aliases: ['palais de tokyo'],
     match: ['contemporary', 'performance'],
+  },
+  {
+    id: 'met',
+    name: 'The Met',
+    city: 'New York',
+    country: 'USA',
+    tagline: 'Open Access · encyclopedic',
+    room: 'stone',
+    aliases: ['met', 'metropolitan', 'nyc', 'new york'],
+    match: ['egyptian', 'greek', 'roman', 'asian', 'american'],
+  },
+  {
+    id: 'uffizi',
+    name: 'Galleria degli Uffizi',
+    city: 'Florence',
+    country: 'Italy',
+    tagline: 'Renaissance · Florence',
+    room: 'gold',
+    aliases: ['uffizi', 'florence', 'firenze'],
+    match: ['botticelli', 'leonardo', 'michelangelo', 'titian', 'caravaggio'],
+  },
+  {
+    id: 'prado',
+    name: 'Museo del Prado',
+    city: 'Madrid',
+    country: 'Spain',
+    tagline: 'Espagne · maîtres',
+    room: 'stone',
+    aliases: ['prado', 'madrid'],
+    match: ['velazquez', 'goya', 'el greco', 'rubens'],
+  },
+  {
+    id: 'tate',
+    name: 'Tate Modern',
+    city: 'London',
+    country: 'UK',
+    tagline: 'Moderne & contemporain',
+    room: 'white',
+    aliases: ['tate', 'london'],
+    match: ['turner', 'constable', 'british', 'modern'],
+  },
+  {
+    id: 'rijks',
+    name: 'Rijksmuseum',
+    city: 'Amsterdam',
+    country: 'Netherlands',
+    tagline: 'Âge d’or hollandais',
+    room: 'gold',
+    aliases: ['rijksmuseum', 'amsterdam'],
+    match: ['rembrandt', 'vermeer', 'dutch', 'hollands'],
+  },
+  {
+    id: 'moma',
+    name: 'MoMA',
+    city: 'New York',
+    country: 'USA',
+    tagline: 'Modern art',
+    room: 'white',
+    aliases: ['moma'],
+    match: ['warhol', 'pollock', 'rothko', 'modern'],
+  },
+  {
+    id: 'getty',
+    name: 'Getty Center',
+    city: 'Los Angeles',
+    country: 'USA',
+    tagline: 'Collection · LA',
+    room: 'stone',
+    aliases: ['getty', 'los angeles', 'la'],
+    match: ['european', 'photographs', 'manuscripts'],
+  },
+  {
+    id: 'tokyo_nm',
+    name: 'Tokyo National Museum',
+    city: 'Tokyo',
+    country: 'Japan',
+    tagline: 'Asie · patrimoine',
+    room: 'dark',
+    aliases: ['tokyo', 'japan'],
+    match: ['japan', 'japanese', 'asia', 'buddha'],
+  },
+  {
+    id: 'hermitage',
+    name: 'Hermitage',
+    city: 'Saint Petersburg',
+    country: 'Russia',
+    tagline: 'Collection impériale',
+    room: 'gold',
+    aliases: ['hermitage'],
+    match: ['russian', 'impressionist'],
   },
 ]
 
@@ -89,7 +179,6 @@ function guessTechnique(title: string, artist: string): string {
   return 'Huile sur toile (typique) · Met Open Access'
 }
 
-/** Un seul passage weserv — jamais re-wrapper une URL déjà proxifiée */
 export function proxyImg(u: string): string {
   if (!u) return u
   if (/images\.weserv\.nl|wsrv\.nl/i.test(u)) return u
@@ -124,6 +213,26 @@ function toFrame(w: CatalogWork, base: string, museumLabel: string): FrameItem {
   }
 }
 
+/** Emplacement commercial — « Your art here » */
+function yourArtHereSpots(museumId: string, label: string, n = 2): FrameItem[] {
+  return Array.from({ length: n }, (_, i) => ({
+    id: `${museumId}-yah-${i}`,
+    title: 'Your art here',
+    subtitle: 'Emplacement à louer · expo 30 j',
+    artist: 'xArtists venues',
+    collection: label,
+    description:
+      'Réservez ce mur pour votre œuvre (NFT ou photo). Paiement paper → venue-split après SC. Voir #/venues.',
+    type: 'Slot expo',
+    kind: 'painting' as const,
+    medium: 'digital' as const,
+    onSale: true,
+    priceLabel: 'Buy spot · paper',
+    href: '#/venues',
+    isAdSlot: true,
+  }))
+}
+
 const EXTRA_SCULPT: { remote: string; title: string; artist: string; year: string }[] = [
   {
     remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP-16774-001.jpg',
@@ -136,12 +245,6 @@ const EXTRA_SCULPT: { remote: string; title: string; artist: string; year: strin
     title: 'Marble statue of a kouros',
     artist: 'Greek',
     year: 'ca. 590–580 BCE',
-  },
-  {
-    remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP-16774-001.jpg',
-    title: 'Marble statue of a wounded warrior (detail)',
-    artist: 'Roman',
-    year: 'ca. 138–181 CE',
   },
 ]
 
@@ -178,7 +281,7 @@ function assignWorks(base: string): Map<string, FrameItem[]> {
         list.push(toFrame(w, base, p.name))
         used.add(w.id)
       }
-      if (list.length >= 24) break
+      if (list.length >= 20) break
     }
     assigned.set(p.id, list)
   }
@@ -187,12 +290,13 @@ function assignWorks(base: string): Map<string, FrameItem[]> {
   for (const p of PROFILES) {
     if (p.id === 'xartists') continue
     const list = assigned.get(p.id) || []
-    while (list.length < 8 && ri < rest.length) {
+    while (list.length < 10 && ri < rest.length) {
       const w = rest[ri++]
       list.push(toFrame(w, base, p.name))
       used.add(w.id)
     }
     list.push(...proceduralSculptures(p.id, p.name).slice(0, 2))
+    list.push(...yourArtHereSpots(p.id, p.name, 2))
     assigned.set(p.id, list)
   }
   return assigned
@@ -205,7 +309,10 @@ export function buildMuseumNetwork(base: string): VirtualMuseum[] {
     source: p.id === 'xartists' ? ('onchain' as const) : ('catalog' as const),
     works:
       p.id === 'xartists'
-        ? proceduralSculptures('xartists', 'Musée xArtists')
+        ? [
+            ...proceduralSculptures('xartists', 'Musée xArtists'),
+            ...yourArtHereSpots('xartists', 'Musée xArtists', 3),
+          ]
         : assigned.get(p.id) || [],
   }))
 }
@@ -214,10 +321,8 @@ export async function loadMuseumNetwork(base: string): Promise<VirtualMuseum[]> 
   return buildMuseumNetwork(base)
 }
 
-/** Snapshot synchrone (carte / CTA) — œuvres chargées avec base défaut */
 export const VIRTUAL_MUSEUMS: VirtualMuseum[] = buildMuseumNetwork('/')
 
-/** Lookup musée par id (aliases inclus) */
 export function getMuseum(id: string | null | undefined): VirtualMuseum | undefined {
   if (!id) return undefined
   const key = id.toLowerCase().trim()
@@ -230,6 +335,8 @@ export function getMuseum(id: string | null | undefined): VirtualMuseum | undefi
 
 export function museumIdForCity(city: string): string | null {
   const c = city.toLowerCase()
-  const hit = PROFILES.find(p => p.city.toLowerCase() === c || p.aliases?.some(a => c.includes(a)))
+  const hit = PROFILES.find(
+    p => p.city.toLowerCase() === c || p.aliases?.some(a => c.includes(a)),
+  )
   return hit?.id || null
 }
