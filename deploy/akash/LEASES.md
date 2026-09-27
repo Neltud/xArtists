@@ -1,37 +1,39 @@
 # Akash leases — xArtists
 
-## Indexeur catalogue (2026-09-25) — LIVE
+## Indexeur catalogue — LIVE
 
 | Champ | Valeur |
 |-------|--------|
-| Service | `indexer` (node:20-alpine + worker.example.mjs) |
+| Service | `indexer` |
 | dseq | `1790359855895` |
-| Provider | `akash15tl6v6gd0nte0syyxnv57zmmspgju4c3xfmdhk` (hurricane) |
+| Provider | hurricane (`akash15tl6v6gd0nte0syyxnv57zmmspgju4c3xfmdhk`) |
 | Status | **Running** 1/1 |
-| URL | http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub |
+| **URL HTTPS** | https://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub |
+| URL HTTP | http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub |
 | Health | `GET /health` → ok, 4 collections, 90 NFTs |
-| Catalog | `GET /catalog` → JSON compatible dApp |
+| Catalog | `GET /catalog` → JSON dApp |
 
-### Brancher la dApp (build Pages)
+### Brancher la dApp
+
+Déjà **par défaut** dans `apps/frontend/src/config/catalogApi.ts` (`DEFAULT_CATALOG_API`).
+
+Override optionnel (Pages secret) :
 
 ```
-VITE_CATALOG_API=http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
+VITE_CATALOG_API=https://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
 ```
 
-CORS autorisé pour `https://neltud.github.io`.
+CORS : `https://neltud.github.io`.
 
 ## Canary Hello World (optionnel)
 
 | Champ | Valeur |
 |-------|--------|
-| dseq | `1790358856208` |
 | URL | http://rfqkb6agcle8n1o7206lpmkj0g.ingress.h6i-dedicated.eu-se-1.digitalfrontier.so |
-| Image | hello-akash-world |
 
-Peut rester ouvert comme canary ou être fermé pour économiser le crédit Console (`uact`).
+Peut être **closed** dans Console pour économiser l’ACT.
 
 ## Sécurité
 
-- **Aucune API key / PEM** dans ce fichier ni dans le repo
-- Clé Console : variable d’env locale `AKASH_API_KEY` uniquement
-- Indexeur = lecture API MultiversX publique uniquement
+- Aucune PEM / clé wallet dans l’indexeur
+- Clé Console : locale uniquement, régénérer si exposée dans un chat
