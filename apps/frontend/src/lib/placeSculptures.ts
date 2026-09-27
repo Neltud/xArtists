@@ -1,10 +1,11 @@
 import * as THREE from 'three'
 import type { FrameItem } from '../components/museum/MuseumCorridor'
 import { loadPhotoSculpture, parseDimensions } from './photoSculpture3d'
+import { autoMeasureSculpture } from './autoSculptureMeasure'
 
 type CorsFn = (raw: string) => string[]
 
-/** Place des sculptures photo→3D au centre de la salle. */
+/** Place des sculptures photo→3D au centre de la salle + mesures auto. */
 export function placeSculpturesInScene(opts: {
   sculptures: FrameItem[]
   scene: THREE.Scene
@@ -53,18 +54,46 @@ export function placeSculpturesInScene(opts: {
     }
     const yaw = Math.atan2(cx - sx, cy - sz)
     const dimsPartial = parseDimensions(frame.dimensions)
+
+    // Mesures auto (metadata ou estimation aspect) avant chargement texture
+    const measure = autoMeasureSculpture({
+      dimensionsHint: frame.dimensions,
+      imageAspectWH: 0.55,
+    })
+    frame.heightCm = measure.heightCm
+    frame.widthCm = measure.widthCm
+    frame.depthCm = measure.depthCm
+    frame.circumferenceCm = measure.circumferenceCm
+    if (!frame.dimensions) frame.dimensions = measure.label
+
     void loadPhotoSculpture(corsSafeUrls(frame.image || ''), loader, {
-      dims: dimsPartial,
+      dims: dimsPartial.heightM
+        ? dimsPartial
+        : {
+            heightM: measure.heightCm / 100,
+            widthM: measure.widthCm / 100,
+            depthM: measure.depthCm / 100,
+            circumferenceM: measure.circumferenceCm / 100,
+          },
       dimensionsHint: frame.dimensions,
       pedestalColor,
+      sideUrls: frame.sideImage ? corsSafeUrls(frame.sideImage) : undefined,
     }).then(res => {
       if (disposed()) return
       if (res) {
         const { group, dims } = res
         group.position.set(sx, 0, sz)
         group.rotation.y = yaw
+        group.userData.frameId = frame.id
+        group.userData.exportTitle = frame.title
         scene.add(group)
-        if (!frame.dimensions) frame.dimensions = dims.label
+        frame.dimensions = dims.label
+        frame.heightCm = Math.round(dims.heightM * 100)
+        frame.widthCm = Math.round(dims.widthM * 100)
+        frame.depthCm = Math.round(dims.depthM * 100)
+        frame.circumferenceCm = Math.round(
+          (dims.circumferenceM || Math.PI * ((dims.widthM + dims.depthM) / 2)) * 100,
+        )
         artAnchors.push({
           pos: new THREE.Vector3(sx, 0.9 + dims.heightM * 0.5, sz),
           frame,
