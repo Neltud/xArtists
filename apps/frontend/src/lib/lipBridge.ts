@@ -69,7 +69,7 @@ function detectChain(raw: string): LipChain {
   if (/polygon|matic/.test(s)) return 'polygon'
   if (/\bbase\b/.test(s)) return 'base'
   if (/arbitrum/.test(s)) return 'arbitrum'
-  return 'ethereum'
+  return 'multiversx' // dApp default chain
 }
 
 export function parseToLip(raw: string): LipIntent {
@@ -78,38 +78,47 @@ export function parseToLip(raw: string): LipIntent {
   const decimals = decimalsForChain(chain)
   let intent_type: LipIntentType = 'UNKNOWN'
   let amountHuman = '0'
+  let confidence = 0.2
+  let reason = 'Intention non reconnue'
   let target_address: string | undefined
-  let confidence = 0.25
-  let reason = 'Intention non résolue'
 
-  if (/\b(solde|balance)\b/i.test(text)) {
+  // Greetings / small talk → INFO (chat usable)
+  if (/^(hi|hello|hey|bonjour|salut|coucou|yo|hola|ciao|good\s*(morning|evening)|bonsoir)\b/i.test(text) || text.length <= 3) {
+    intent_type = 'INFO'
+    confidence = 0.95
+    reason = 'Salutation — ouvrir aide / démo'
+  } else if (/\b(solde|balance|wallet|portefeuille)\b/i.test(text)) {
     intent_type = 'BALANCE'
     confidence = 0.9
     reason = 'Consultation solde'
-  } else if (/\b(swap|échanger)\b/i.test(text)) {
+  } else if (/\b(swap|échanger|exchange|trade|acheter|vendre)\b/i.test(text)) {
     intent_type = 'SWAP'
     confidence = 0.75
-    reason = 'Swap demandé'
+    reason = 'Swap / trade'
   } else if (/\b(stake|staking)\b/i.test(text)) {
     intent_type = 'STAKE'
     confidence = 0.8
-    reason = 'Stake demandé'
-  } else if (/\b(mint)\b/i.test(text)) {
+    reason = 'Staking'
+  } else if (/\b(mint|sculpter|sculpture|nft)\b/i.test(text)) {
     intent_type = 'MINT'
-    confidence = 0.8
+    confidence = 0.75
     reason = 'Mint créatif'
-  } else if (/\b(vol|flight|hôtel|hotel|réserv|tour|expo)\b/i.test(text)) {
+  } else if (/\b(list|vendre nft|marketplace)\b/i.test(text)) {
+    intent_type = 'LIST'
+    confidence = 0.75
+    reason = 'Listing marketplace'
+  } else if (/\b(vol|flight|hôtel|hotel|réserv|tour|expo|musée|musee|galerie)\b/i.test(text)) {
     intent_type = 'SEARCH'
-    confidence = 0.7
+    confidence = 0.8
     reason = 'Recherche travel / culture'
-  } else if (/\b(envoie|envoyer|send|transfer)\b/i.test(text)) {
+  } else if (/\b(envoie|envoyer|send|transfer|tip)\b/i.test(text)) {
     intent_type = 'TRANSFER'
     confidence = 0.7
     reason = 'Transfert'
-  } else if (/\b(info|aide|help)\b/i.test(text)) {
+  } else if (/\b(info|aide|help|comment|quoi|studio|pack|signal|dao|slot)\b/i.test(text)) {
     intent_type = 'INFO'
     confidence = 0.85
-    reason = 'Information'
+    reason = 'Information / navigation'
   }
 
   const amt = text.match(/(\d+(?:[.,]\d+)?)/)
@@ -197,7 +206,7 @@ export function resolveLip(raw: string): LipResolve {
       guardian,
       clarify:
         guardian.message ||
-        'Précisez action, montant, actif et chaîne (ex: « solde TRO » ou « tours paris »).',
+        'Précisez action (ex: « tours paris », « packs », « studio », « solde », « tip »).',
     }
   }
   return { ok: true, intent, guardian }
@@ -209,18 +218,20 @@ export function lipToRoute(intent: LipIntent): string | null {
     case 'BALANCE':
       return '/wallet'
     case 'SWAP':
-    case 'STAKE':
       return '/trading'
+    case 'STAKE':
+      return '/staking'
     case 'MINT':
+      return '/studio'
     case 'LIST':
-      return '/marketplace'
+      return '/market'
     case 'SEARCH':
     case 'RESERVE':
       return '/tours'
     case 'TRANSFER':
       return '/tip'
     case 'INFO':
-      return '/entity'
+      return '/demo'
     default:
       return null
   }
