@@ -1,7 +1,7 @@
 /**
- * Comptes officiels + location d’espace d’expo (tarifs notoriété · split revenus).
+ * Comptes officiels + location d’espace (grille dégressive lieu × durée × murs).
  */
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -9,7 +9,10 @@ import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import {
   VENUE_RENTAL_TIERS,
   VENUE_REVENUE_SPLIT,
+  DURATION_OPTIONS,
+  quoteVenueRental,
   splitVenuePayment,
+  type VenueTierId,
 } from '../config/venueRental'
 
 type Role = 'museum' | 'gallery' | 'artist' | 'company'
@@ -28,7 +31,21 @@ export default function VenueAccountPage() {
   const [city, setCity] = useState('')
   const [note, setNote] = useState('')
   const [done, setDone] = useState<string | null>(null)
-  const [rentalTier, setRentalTier] = useState('iconic')
+  const [rentalTier, setRentalTier] = useState<VenueTierId>('iconic')
+  const [months, setMonths] = useState(1)
+  const [walls, setWalls] = useState(1)
+
+  const tier = VENUE_RENTAL_TIERS.find(t => t.id === rentalTier) || VENUE_RENTAL_TIERS[0]
+  const quote = useMemo(
+    () =>
+      quoteVenueRental({
+        priceEurMonth: tier.priceEurMonth,
+        months,
+        walls,
+      }),
+    [tier.priceEurMonth, months, walls],
+  )
+  const split = useMemo(() => splitVenuePayment(quote.totalEur), [quote.totalEur])
 
   const submit = () => {
     if (!connected) {
@@ -69,12 +86,15 @@ export default function VenueAccountPage() {
   }
 
   const bookRental = () => {
-    const tier = VENUE_RENTAL_TIERS.find(t => t.id === rentalTier) || VENUE_RENTAL_TIERS[0]
-    const split = splitVenuePayment(tier.priceEurMonth)
     const payload = {
       type: 'VENUE_RENTAL',
       tier: tier.id,
-      priceEur: tier.priceEurMonth,
+      months,
+      walls,
+      priceEurMonth: tier.priceEurMonth,
+      totalEur: quote.totalEur,
+      perMonthEffective: quote.perMonthEffective,
+      savingsPct: quote.savingsPct,
       split,
       mode: 'paper',
       wallet: address || null,
@@ -88,15 +108,15 @@ export default function VenueAccountPage() {
     } catch {
       /* */
     }
-    setDone(`Location ${tier.label} · ${tier.priceEurMonth} € / mois · paper`)
+    setDone(
+      `Location ${tier.label} · ${walls} mur(s) · ${months} mois · ${quote.totalEur} € paper`,
+    )
     window.dispatchEvent(
       new CustomEvent('lia-intent', {
-        detail: { lip: { raw: `rent venue ${tier.id}`, ...payload } },
+        detail: { lip: { raw: `rent venue ${tier.id} ${months}m ${walls}w`, ...payload } },
       }),
     )
   }
-
-  const louvreSplit = splitVenuePayment(100)
 
   return (
     <div className="animate-fade-in space-y-6 pb-16 max-w-lg mx-auto">
@@ -105,69 +125,105 @@ export default function VenueAccountPage() {
         <h1 className="section-title display">Comptes & location</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
-          Musées, galeries, artistes — wallet MultiversX. Location d’espace selon notoriété. Paper
-          jusqu’au SC identity / marketplace.
+          Louez un mur (Louvre, Orsay…) avec grille dégressive selon durée et nombre de murs.
+          Paper jusqu’au SC venue-split.
         </p>
       </header>
 
       <Phase4ReadinessBanner variant="compact" />
 
-      <section className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 space-y-3">
-        <p className="text-[11px] uppercase tracking-[0.18em] text-violet-300/90">Location d’espace</p>
-        <h2 className="text-lg font-semibold text-white">Tarifs selon notoriété</h2>
-        <p className="text-[13px] text-zinc-400 leading-relaxed">
-          1 mur / mois. Split : institution, associations art numérique, LIA, holders (SC rewards).
+      <section className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 space-y-4">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-violet-300/90">
+          Location d’espace · grille dégressive
         </p>
-        <ul className="space-y-2">
-          {VENUE_RENTAL_TIERS.map(tier => (
-            <li key={tier.id}>
-              <button
-                type="button"
-                onClick={() => setRentalTier(tier.id)}
-                className={`w-full rounded-xl border px-3 py-2.5 flex justify-between gap-3 text-left transition ${
-                  rentalTier === tier.id
-                    ? 'border-violet-400/50 bg-violet-500/15'
-                    : 'border-white/10 bg-black/30 hover:border-white/20'
-                }`}
-              >
-                <div>
-                  <p className="text-sm font-medium text-white">{tier.label}</p>
-                  <p className="text-[11px] text-zinc-500">{tier.examples.join(' · ')}</p>
-                  <p className="text-[10px] text-zinc-600 mt-0.5">{tier.slotsHint}</p>
-                </div>
-                <p className="text-lg font-semibold text-amber-200 tabular-nums shrink-0">
-                  {tier.priceEurMonth} €
-                </p>
-              </button>
-            </li>
+        <h2 className="text-lg font-semibold text-white">Mur d’exposition</h2>
+
+        <div className="space-y-2">
+          {VENUE_RENTAL_TIERS.map(t => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setRentalTier(t.id)}
+              className={`w-full rounded-xl border px-3 py-2.5 text-left text-[12px] transition ${
+                rentalTier === t.id
+                  ? 'border-violet-400/50 bg-violet-500/15 text-white'
+                  : 'border-white/10 bg-black/30 text-zinc-400'
+              }`}
+            >
+              <span className="flex justify-between gap-2">
+                <span className="font-semibold">{t.label}</span>
+                <span className="text-amber-200/90">{t.priceEurMonth} €/mois</span>
+              </span>
+              <span className="text-[10px] text-zinc-500 block mt-0.5">
+                {t.examples.join(' · ')}
+              </span>
+            </button>
           ))}
-        </ul>
-        <div className="grid grid-cols-2 gap-2 text-[11px] text-zinc-400 pt-1">
-          <p>
-            Institution <span className="text-zinc-200">{VENUE_REVENUE_SPLIT.institution}%</span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block space-y-1">
+            <span className="text-[11px] text-zinc-500">Durée</span>
+            <select
+              className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
+              value={months}
+              onChange={e => setMonths(Number(e.target.value))}
+            >
+              {DURATION_OPTIONS.map(d => (
+                <option key={d.months} value={d.months}>
+                  {d.label}
+                  {d.multiplier < 1 ? ` (−${Math.round((1 - d.multiplier) * 100)}%)` : ''}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block space-y-1">
+            <span className="text-[11px] text-zinc-500">Murs</span>
+            <select
+              className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
+              value={walls}
+              onChange={e => setWalls(Number(e.target.value))}
+            >
+              {[1, 2, 3, 4].map(n => (
+                <option key={n} value={n}>
+                  {n} mur{n > 1 ? 's' : ''}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div className="rounded-xl border border-white/10 bg-black/40 p-3 text-[12px] space-y-1.5">
+          <p className="flex justify-between text-zinc-300">
+            <span>Total paper</span>
+            <span className="font-semibold text-white">{quote.totalEur} €</span>
           </p>
-          <p>
-            Associations <span className="text-zinc-200">{VENUE_REVENUE_SPLIT.associations}%</span>
+          <p className="flex justify-between text-zinc-500">
+            <span>Effectif / mois</span>
+            <span>{quote.perMonthEffective} €</span>
           </p>
-          <p>
-            LIA treasury <span className="text-zinc-200">{VENUE_REVENUE_SPLIT.liaTreasury}%</span>
+          {quote.savingsPct > 0 && (
+            <p className="text-emerald-400/90">Économie grille −{quote.savingsPct}%</p>
+          )}
+          <p className="text-[10px] text-zinc-600 pt-1 border-t border-white/5">
+            Split : institution {VENUE_REVENUE_SPLIT.institution}% · assoc.{' '}
+            {VENUE_REVENUE_SPLIT.associations}% · LIA {VENUE_REVENUE_SPLIT.liaTreasury}% · holders{' '}
+            {VENUE_REVENUE_SPLIT.holdersRewards}%
           </p>
-          <p>
-            Holders SC <span className="text-zinc-200">{VENUE_REVENUE_SPLIT.holdersRewards}%</span>
+          <p className="text-[10px] text-zinc-500">
+            → inst. {split.institution.toFixed(1)} € · assoc. {split.associations.toFixed(1)} € · LIA{' '}
+            {split.liaTreasury.toFixed(1)} € · holders {split.holdersRewards.toFixed(1)} €
           </p>
         </div>
-        <p className="text-[10px] text-zinc-600">
-          Ex. Louvre 100 € → institution {louvreSplit.institution.toFixed(0)} € · assoc.{" "}
-          {louvreSplit.associations.toFixed(0)} € · LIA {louvreSplit.liaTreasury.toFixed(0)} € ·
-          holders {louvreSplit.holdersRewards.toFixed(0)} €
-        </p>
+
         <button type="button" className="btn-primary w-full" onClick={bookRental}>
-          Réserver (paper) — {VENUE_RENTAL_TIERS.find(t => t.id === rentalTier)?.priceEurMonth} € / mois
+          Réserver (paper) · {quote.totalEur} €
         </button>
+        {done && <p className="text-[12px] text-emerald-300">{done}</p>}
       </section>
 
-      <div className="rounded-2xl border border-white/10 bg-zinc-950/50 p-4 space-y-4">
-        <p className="text-[11px] uppercase tracking-wider text-zinc-500">Type de compte</p>
+      <div className="card space-y-3">
+        <h2 className="text-sm font-semibold text-white">Compte officiel</h2>
         <div className="grid grid-cols-2 gap-2">
           {ROLES.map(r => (
             <button
@@ -220,7 +276,6 @@ export default function VenueAccountPage() {
         <button type="button" className="btn-primary w-full" onClick={submit}>
           {connected ? 'Enregistrer le compte' : 'Connecter & enregistrer'}
         </button>
-        {done && <p className="text-[12px] text-emerald-300">{done}</p>}
       </div>
 
       <p className="text-[11px] text-zinc-600">
