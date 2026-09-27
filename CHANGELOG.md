@@ -1,5 +1,20 @@
 # Changelog — xArtists
 
+## [0.53.0](https://github.com/Neltud/xArtists/compare/v0.52.0...v0.53.0) (2026-09-27)
+
+
+### Features
+
+* **digital-twin:** COLMAP lab pipeline schema, Akash worker draft, certified 1/1 mint paper path ([0ac926d](https://github.com/Neltud/xArtists/commit/0ac926ddc1afe49db21a946c8c46677da48602ab))
+* **museum:** daily Met catalog cron + multi-view photogrammetry + realistic lighting notes ([0375da2](https://github.com/Neltud/xArtists/commit/0375da20e1b5f58449eace735a00faca3724b5b0))
+* **museum:** merge daily Met catalog into virtual museum halls ([22b5b4f](https://github.com/Neltud/xArtists/commit/22b5b4f3bca60e3d4cf14d10fc9b7d4d77131917))
+* **routes:** /digital-twin and /sculpture-lab for certified 1/1 sculpture lab ([34f730e](https://github.com/Neltud/xArtists/commit/34f730e47d4bc2d405e3594c91b6cd0b56098144))
+
+
+### Bug Fixes
+
+* **routes:** add /digital-twin without breaking App shell ([c4bf66f](https://github.com/Neltud/xArtists/commit/c4bf66f9496cbee97e145674df620f038ecc74d4))
+
 ## [0.52.0](https://github.com/Neltud/xArtists/compare/v0.51.0...v0.52.0) (2026-09-27)
 
 
