@@ -213,7 +213,6 @@ function toFrame(w: CatalogWork, base: string, museumLabel: string): FrameItem {
   }
 }
 
-/** Emplacement commercial — « Your art here » */
 function yourArtHereSpots(museumId: string, label: string, n = 2): FrameItem[] {
   return Array.from({ length: n }, (_, i) => ({
     id: `${museumId}-yah-${i}`,
@@ -222,14 +221,13 @@ function yourArtHereSpots(museumId: string, label: string, n = 2): FrameItem[] {
     artist: 'xArtists venues',
     collection: label,
     description:
-      'Réservez ce mur pour votre œuvre (NFT ou photo). Paiement paper → venue-split après SC. Voir #/venues.',
+      'Réservez ce mur pour votre œuvre (NFT ou photo). Paiement paper → #/venues · venue-split après SC.',
     type: 'Slot expo',
     kind: 'painting' as const,
     medium: 'digital' as const,
     onSale: true,
     priceLabel: 'Buy spot · paper',
     href: '#/venues',
-    isAdSlot: true,
   }))
 }
 
