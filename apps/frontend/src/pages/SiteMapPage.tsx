@@ -10,7 +10,7 @@ const GROUPS = [
       { to: '/tours', label: 'Tours artistiques', note: 'Culture — pas un pack IA' },
       { to: '/editions', label: 'Éditions', note: 'Collections' },
       { to: '/marketplace', label: 'Marketplace', note: 'NFT · SC off' },
-      { to: '/slot', label: 'Slot', note: '3×3 casino paper' },
+      { to: '/slot', label: 'Slot', note: 'EGLD/USDC · jackpot paper' },
     ],
   },
   {
@@ -25,10 +25,11 @@ const GROUPS = [
   {
     title: 'LIA (protocole paper)',
     items: [
+      { to: '/lia', label: 'LIA Performance', note: '8008 · trésorerie · pipeline' },
       { to: '/trading', label: 'Trading board', note: 'Paper only' },
       { to: '/portfolio', label: 'Portfolio LIA', note: 'Book protocole' },
-      { to: '/sim', label: 'Sim Lab', note: 'Simulations' },
-      { to: '/entity', label: 'Entité', note: 'Succursales' },
+      { to: '/simulation', label: 'Sim Lab', note: 'Simulations' },
+      { to: '/entities', label: 'Entité', note: 'Succursales' },
       { to: '/go-live', label: 'GO_LIVE', note: 'Checklist SC off' },
     ],
   },
@@ -36,11 +37,11 @@ const GROUPS = [
     title: 'Wallet & économie',
     items: [
       { to: '/wallet', label: 'Wallet user', note: 'xPortal / WC' },
-      { to: '/tip', label: 'Tip', note: 'Soutien treasury' },
+      { to: '/tip', label: 'Tip', note: 'Soutien treasury · TIP_LIA' },
       { to: '/payments', label: 'Paiements paper', note: 'Intents locaux' },
-      { to: '/ads', label: 'Ads / enchères', note: 'Slots pub paper' },
+      { to: '/ads', label: 'Ads / enchères', note: 'ADS_BID · slots pub' },
       { to: '/sale', label: 'Sale', note: 'Ventes' },
-      { to: '/venues', label: 'Comptes lieux', note: 'Musée · artiste · société' },
+      { to: '/venues', label: 'Comptes & location', note: 'Tarifs notoriété · split' },
     ],
   },
   {
@@ -56,53 +57,44 @@ const GROUPS = [
   {
     title: 'Gouvernance & légal',
     items: [
-      { to: '/dao', label: 'DAO', note: 'Narrative · pas de vote SC' },
+      { to: '/dao', label: 'DAO', note: 'LP TRO + ArtPass (paper)' },
       { to: '/legal', label: 'Légal', note: 'Mentions' },
-      { to: '/demo', label: 'Tour démo', note: 'Parcours' },
       { to: '/sitemap', label: 'Plan du site', note: 'Cette page' },
-      { to: '/soul', label: 'Soul testnet', note: 'Lab' },
+      { to: '/demo', label: 'Demo tour', note: 'Parcours' },
     ],
   },
-] as const
+]
 
 export default function SiteMapPage() {
   return (
-    <div className="animate-fade-in space-y-6 pb-10">
-      <PageGuide page="entity" />
-      <header>
-        <h1 className="text-3xl font-black">Plan du site</h1>
-        <p className="text-sm text-zinc-500 mt-1">
-          Routes live · DEMO_MODE · SC marketplace/agents OFF · Agents ≠ Tours · LIA paper ≠ wallet user
-        </p>
+    <div className="animate-fade-in max-w-2xl mx-auto space-y-8 pb-16">
+      <PageGuide page="sitemap" />
+      <header className="space-y-2">
+        <p className="section-label">Navigation</p>
+        <h1 className="section-title display">Plan du site</h1>
+        <div className="atelier-title-rule" aria-hidden />
+        <p className="section-lead">Toutes les entrées utiles — paper-first · SC off jusqu’à GO_LIVE.</p>
       </header>
-
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {GROUPS.map(g => (
-          <section key={g.title} className="card">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-purple-300/90 mb-3">
-              {g.title}
-            </h2>
-            <ul className="space-y-2">
-              {g.items.map(it => (
-                <li key={it.to}>
-                  <Link
-                    to={it.to}
-                    className="flex justify-between gap-2 rounded-lg border border-white/5 px-3 py-2 hover:border-purple-400/40 transition-colors"
-                  >
-                    <span className="font-medium text-white text-sm">{it.label}</span>
-                    <span className="text-[10px] text-zinc-500 text-right">{it.note}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
-
-      <p className="text-xs text-zinc-600 leading-relaxed">
-        Produit GitHub Pages. SC list/buy/mint désactivés tant que GO_LIVE / codeHash non validés.
-        Voir <Link to="/go-live" className="text-zinc-400 underline">/go-live</Link>.
-      </p>
+      {GROUPS.map(g => (
+        <section key={g.title} className="space-y-2">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+            {g.title}
+          </h2>
+          <ul className="rounded-2xl border border-white/10 bg-zinc-950/40 divide-y divide-white/5">
+            {g.items.map(it => (
+              <li key={it.to}>
+                <Link
+                  to={it.to}
+                  className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors"
+                >
+                  <span className="text-sm text-white">{it.label}</span>
+                  <span className="text-[11px] text-zinc-500 text-right">{it.note}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
     </div>
   )
 }

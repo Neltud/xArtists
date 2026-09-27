@@ -6,6 +6,8 @@ import {
   probeNetwork,
   type NetworkSnapshot,
 } from '../lib/networkProbe'
+import { AGENT_8008 } from '../config/agent8008'
+import { BURN_POLICY } from '../config/treasuryFlows'
 
 type Row = { ok: boolean; label: string; value: string; next?: string }
 
@@ -24,6 +26,9 @@ export default function GoLivePage() {
 
   const indexerOk = snap.api.stats && snap.api.economics && snap.api.accounts
   const fundedLive = liaOpsFunded(snap.liaOps.balanceEgld) && !snap.liaOps.stale
+  const webhook =
+    typeof import.meta.env.VITE_VELLUM_8008_WEBHOOK === 'string' &&
+    import.meta.env.VITE_VELLUM_8008_WEBHOOK.length > 0
 
   const rows: Row[] = [
     { ok: true, label: 'Paper LIA default', value: 'LIA_LIVE_TRADING=0' },
@@ -36,15 +41,41 @@ export default function GoLivePage() {
         : `/stats ${snap.api.stats ? '200' : 'KO'} · /economics ${
             snap.api.economics ? '200' : 'KO'
           } · /accounts ${snap.api.accounts ? '200' : 'KO'}`,
-      next: 'Attendre v2.1.3.0 recovery indexer avant tout deploy',
+      next: 'Attendre recovery indexer avant tout deploy',
     },
     {
       ok: fundedLive,
       label: 'LIA Ops funded (live)',
       value: `${snap.liaOps.balanceEgld.toFixed(4)} EGLD · nonce ${snap.liaOps.nonce}${
-        snap.liaOps.stale ? ' · last-known 19 Sep' : ''
+        snap.liaOps.stale ? ' · last-known' : ''
       }`,
-      next: 'PEM local only — never git. Re-probe accounts before simulate.',
+      next: 'PEM local only — never git.',
+    },
+    {
+      ok: true,
+      label: 'Agent 8008 bridge',
+      value: webhook
+        ? `journal + webhook · workflow ${AGENT_8008.endpoints.vellumWorkflow}`
+        : `journal local · workflow ${AGENT_8008.endpoints.vellumWorkflow} (set VITE_VELLUM_8008_WEBHOOK)`,
+      next: 'Binder Vellum workflow xartists-8008-intents',
+    },
+    {
+      ok: true,
+      label: 'Treasury model (UI)',
+      value: `lecture seule · max TRO ${BURN_POLICY.maxSupply.toLocaleString('fr-FR')} · LP burn OFF`,
+      next: 'Voir /lia · docs/TREASURY_FLOWS.md',
+    },
+    {
+      ok: true,
+      label: 'Slot paper EGLD/USDC',
+      value: 'progressive + grand 9/9 · SLOT_SPIN → 8008',
+      next: 'SC slot seulement après audit',
+    },
+    {
+      ok: false,
+      label: 'SC venue-split',
+      value: 'draft contracts/venue_split · 40/20/25/15',
+      next: 'Audit → testnet → mainnet → codeHash',
     },
     {
       ok: false,
@@ -89,7 +120,6 @@ export default function GoLivePage() {
         <h1 className="display text-3xl text-white">GO_LIVE checklist</h1>
         <p className="text-sm text-zinc-400 leading-relaxed">
           Chemin paper → live. Rien n’est allumé. PEM jamais dans le chat, git, ou logs Vellum.
-          Hardfork recovery v2.1.3.0 (23 Sep) : ne pas broadcaster tant que /accounts ne répond pas.
         </p>
       </header>
       <ul className="space-y-2">
@@ -112,7 +142,21 @@ export default function GoLivePage() {
         ))}
       </ul>
       <p className="text-[12px] text-zinc-500">
-        Recap : <Link to="/demo">/demo</Link> · docs/ANALYSE_DAPP_COMPLETE.md
+        <Link to="/lia" className="text-cyan-300/90 hover:underline">
+          /lia
+        </Link>
+        {' · '}
+        <Link to="/venues" className="hover:underline">
+          /venues
+        </Link>
+        {' · '}
+        <Link to="/demo" className="hover:underline">
+          /demo
+        </Link>
+        {' · '}
+        <Link to="/sitemap" className="hover:underline">
+          sitemap
+        </Link>
       </p>
     </div>
   )

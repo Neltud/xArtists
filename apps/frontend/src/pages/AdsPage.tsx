@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { LIA_WALLET, LINKS } from '../config/links'
+import { dispatch8008 } from '../config/agent8008'
 
 const SLOTS = [
   { id: 'home_hero', label: 'Dashboard hero', format: '1200×400 · 7 jours' },
@@ -11,7 +12,7 @@ const SLOTS = [
 
 export default function AdsPage() {
   const [slot, setSlot] = useState<string>('home_hero')
-  const [period, setPeriod] = useState('2026-w33')
+  const [period, setPeriod] = useState('2026-w39')
   const [title, setTitle] = useState('')
   const [href, setHref] = useState('')
   const [amount, setAmount] = useState('1')
@@ -24,6 +25,16 @@ export default function AdsPage() {
     navigator.clipboard.writeText(memo).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
+      dispatch8008('ADS_BID', {
+        raw: memo,
+        slot,
+        period,
+        title: title || undefined,
+        href: href || undefined,
+        amountEgld: amount,
+        cid: cid || undefined,
+        paper: true,
+      })
     })
   }
 
@@ -33,13 +44,15 @@ export default function AdsPage() {
         <h1 className="text-2xl font-bold gradient-text">Espace pub · enchères</h1>
         <p className="text-sm text-gray-400 mt-2 leading-relaxed">
           Emplacements premium limités. Location d’espace pour drops et events culturels —{' '}
-          <strong className="text-gray-300">pas un investissement</strong>. Revenus → treasury (traçable).
+          <strong className="text-gray-300">pas un investissement</strong>. Revenus → treasury
+          (traçable).
         </p>
       </header>
 
       <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-xs text-amber-100/90">
         Paiement V1 = transfer EGLD manuel vers <strong>LIA Ops</strong> avec memo. SC enchères = V2 ·
-        créative IPFS après validation. Max 1 pub active / slot.
+        créative IPFS après validation. Max 1 pub active / slot. Intent{' '}
+        <span className="font-mono">ADS_BID</span> → agent 8008 (journal).
       </div>
 
       <section className="card space-y-3">
@@ -47,7 +60,15 @@ export default function AdsPage() {
         <ul className="text-sm text-gray-400 space-y-2">
           {SLOTS.map(s => (
             <li key={s.id} className="flex justify-between gap-4 border-b border-[#2a2a3a] pb-2">
-              <span className="text-gray-200">{s.label}</span>
+              <button
+                type="button"
+                onClick={() => setSlot(s.id)}
+                className={`text-left ${
+                  slot === s.id ? 'text-white font-medium' : 'text-gray-200'
+                }`}
+              >
+                {s.label}
+              </button>
               <span className="text-xs mono text-gray-500">{s.format}</span>
             </li>
           ))}
@@ -57,41 +78,27 @@ export default function AdsPage() {
       <section className="card space-y-4">
         <h2 className="font-semibold">Bid V1 (paiement manuel)</h2>
         <p className="text-xs text-gray-500">
-          1) Créatif IPFS · 2) EGLD + memo · 3) Ops valide → diffusion.
+          1) Créatif IPFS · 2) EGLD + memo · 3) Ops valide → diffusion
         </p>
         <label className="block text-xs text-gray-500">
-          Slot
-          <select
-            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-sm text-white"
-            value={slot}
-            onChange={e => setSlot(e.target.value)}
-          >
-            {SLOTS.map(s => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block text-xs text-gray-500">
-          Période (ex 2026-w33)
+          Période
           <input
-            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-sm text-white"
+            className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-sm text-white mono"
             value={period}
             onChange={e => setPeriod(e.target.value)}
           />
         </label>
         <label className="block text-xs text-gray-500">
-          Titre
+          Titre créative
           <input
             className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-sm text-white"
             value={title}
             onChange={e => setTitle(e.target.value)}
-            placeholder="Drop automne"
+            placeholder="Votre publicité ici"
           />
         </label>
         <label className="block text-xs text-gray-500">
-          Lien (https)
+          Lien
           <input
             className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-sm text-white"
             value={href}
@@ -121,7 +128,7 @@ export default function AdsPage() {
             <span className="text-gray-500">Memo obligatoire</span>
             <span className="mono text-emerald-400">{memo}</span>
             <button type="button" onClick={copyMemo} className="btn-secondary text-[10px] px-2 py-1">
-              {copied ? '✅' : 'Copier'}
+              {copied ? '✅ + intent 8008' : 'Copier + intent'}
             </button>
           </p>
           <p className="text-gray-500">
@@ -142,6 +149,10 @@ export default function AdsPage() {
         Après paiement : txHash + créatif → ops ·{' '}
         <Link to="/tip" className="text-purple-400 underline">
           Tip
+        </Link>
+        {' · '}
+        <Link to="/lia" className="text-purple-400 underline">
+          LIA 8008
         </Link>
       </p>
 
