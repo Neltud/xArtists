@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import InfoTip from '../components/InfoTip'
 import ArtWorldMap from '../components/ArtWorldMap'
+import MapboxArtMap from '../components/MapboxArtMap'
+import { isMapboxConfigured } from '../lib/mapboxLoader'
 import ErrorBoundary from '../components/ErrorBoundary'
 import CityMuseumDirectory from '../components/museum/CityMuseumDirectory'
 import { museumTravelHref } from '../lib/travelBridge'
@@ -26,40 +28,26 @@ export default function ArtToursPage() {
   useEffect(() => {
     let c = false
     ;(async () => {
-      try {
-        const urls = [
-          `${import.meta.env.BASE_URL || '/'}data/tours.json`,
-          `${import.meta.env.BASE_URL || '/'}data/art_tours.json`,
-        ]
-        for (const u of urls) {
-          const r = await fetch(u, { cache: 'force-cache' })
+      const urls = [
+        `${import.meta.env.BASE_URL || '/'}data/tours.json`,
+        `${import.meta.env.BASE_URL || '/'}data/art_tours.json`,
+      ]
+      for (const u of urls) {
+        try {
+          const r = await fetch(u)
           if (!r.ok) continue
           const j = await r.json()
           if (!c) setDoc(j)
-          break
+          return
+        } catch {
+          /* next */
         }
-      } catch {
-        /* ignore */
       }
     })()
     return () => {
       c = true
     }
   }, [])
-
-  const enterMuseum = (m: VirtualMuseum) => {
-    navigate(
-      museumTravelHref({
-        id: m.id,
-        city: m.city,
-        country: m.country,
-        focus: m.name,
-        space: 'world_tour',
-        source: 'tours',
-        museumId: m.id,
-      })
-    )
-  }
 
   const enterCity = (city: string) => {
     navigate(
@@ -68,54 +56,54 @@ export default function ArtToursPage() {
         city,
         space: 'world_tour',
         source: 'tours',
-      })
+      }),
+    )
+  }
+
+  const enterMuseum = (m: VirtualMuseum) => {
+    navigate(
+      museumTravelHref({
+        id: m.id,
+        city: m.city,
+        country: m.country,
+        focus: m.tagline,
+        space: 'world_tour',
+        source: 'tours',
+        museumId: m.id,
+      }),
     )
   }
 
   return (
-    <div className="animate-fade-in pb-12 max-w-5xl mx-auto space-y-8">
-      <header className="space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Culture</p>
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Tours artistiques</h1>
-        <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl inline-flex flex-wrap items-center gap-1">
-          Carte mondiale · musées 3D surréalistes · expos en temps réel
-          <InfoTip>
-            <strong className="text-white block mb-1">Service CULTURE</strong>
-            <span className="text-zinc-400">
-              Carte + musées (Louvre, Ermitage…). Séparé de Pulse · Yield · Sentinel.
-            </span>
-          </InfoTip>
+    <div className="animate-fade-in space-y-6 pb-16 max-w-3xl mx-auto">
+      <header className="space-y-2">
+        <p className="section-label">Culture · tours</p>
+        <h1 className="section-title display">Tours & carte mondiale</h1>
+        <div className="atelier-title-rule" aria-hidden />
+        <p className="section-lead">
+          OpenStreetMap · Overpass · match salles virtuelles
+          {isMapboxConfigured() ? ' · Mapbox GL' : ''}.{' '}
+          <InfoTip text="Service culturel — distinct des packs agents IA." />
         </p>
       </header>
-
-      <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-zinc-300">Entrer dans un musée 3D</h2>
-        <p className="text-[11px] text-zinc-600">
-          Plans inspirés des typologies réelles — atmosphère surréaliste WebGL.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {museums.slice(0, 20).map(m => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => enterMuseum(m)}
-              className="rounded-2xl border border-white/10 bg-gradient-to-br from-violet-500/10 to-rose-500/5 hover:border-rose-400/40 px-3 py-2 text-left min-w-[8.5rem] transition-colors"
-            >
-              <p className="text-[12px] font-semibold text-white truncate">{m.name}</p>
-              <p className="text-[10px] text-zinc-500">{m.city}</p>
-            </button>
-          ))}
-        </div>
-      </section>
 
       <section className="space-y-3">
         <h2 className="text-sm font-semibold text-zinc-300">Carte mondiale</h2>
         <p className="text-[11px] text-zinc-600">
-          Clic marqueur → expos · boutons <strong className="text-zinc-400">Musées 3D</strong> → visite
+          Zoom ≥ 10 → POI OSM · popup <strong className="text-zinc-400">Entrer · musée</strong> si match
+          catalogue
         </p>
         <ErrorBoundary>
           <ArtWorldMap />
         </ErrorBoundary>
+        {isMapboxConfigured() && (
+          <div className="space-y-1">
+            <p className="text-[11px] uppercase tracking-wider text-cyan-400/80">Mapbox GL</p>
+            <ErrorBoundary>
+              <MapboxArtMap />
+            </ErrorBoundary>
+          </div>
+        )}
         <CityMuseumDirectory />
       </section>
 
@@ -137,47 +125,32 @@ export default function ArtToursPage() {
         </section>
       )}
 
-      {doc && (
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="card space-y-2 text-sm text-zinc-300">
-            {doc.name && <p className="font-bold text-white">{doc.name}</p>}
-            {doc.list_eur_from != null && (
-              <p className="text-zinc-500 text-xs">À partir de {doc.list_eur_from} €</p>
-            )}
-            {Array.isArray(doc.scope_v1) && (
-              <ul className="list-disc pl-5 text-zinc-400 text-xs space-y-1">
-                {doc.scope_v1.map(s => (
-                  <li key={s}>{s}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-          {Array.isArray(doc.sample_tours) && doc.sample_tours.length > 0 && (
-            <div className="card space-y-2">
-              <p className="text-[10px] uppercase tracking-wider text-zinc-500">Parcours exemples</p>
-              <ul className="space-y-2">
-                {doc.sample_tours.map(t => (
-                  <li key={t.id} className="border-b border-white/[0.05] pb-2 last:border-0">
-                    <span className="text-white font-medium text-sm">{t.title}</span>
-                    {t.duration && (
-                      <span className="text-zinc-500 text-xs ml-2">{t.duration}</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+      <section className="space-y-2">
+        <h2 className="text-sm font-semibold text-zinc-300">Musées virtuels</h2>
+        <div className="grid sm:grid-cols-2 gap-2">
+          {museums.map(m => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => enterMuseum(m)}
+              className="rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-left hover:border-cyan-500/30"
+            >
+              <span className="text-sm font-medium text-white">{m.name}</span>
+              <span className="block text-[11px] text-zinc-500">
+                {m.city}
+                {m.country ? ` · ${m.country}` : ''}
+              </span>
+            </button>
+          ))}
         </div>
-      )}
+      </section>
 
       <p className="text-[11px] text-zinc-600">
-        <Link to="/museum" className="text-cyan-300/90 hover:underline">
+        <Link to="/museum" className="underline-offset-2 hover:underline">
           Galerie 3D
         </Link>
         {' · '}
-        <Link to="/agents" className="text-violet-300/90 hover:underline">
-          Packs Agents
-        </Link>
+        © OpenStreetMap contributors
       </p>
     </div>
   )
