@@ -5,6 +5,7 @@
  */
 import http from 'node:http'
 import { randomUUID } from 'node:crypto'
+import { execSync } from 'node:child_process'
 
 const PORT = Number(process.env.PORT || 8080)
 const jobs = new Map()
@@ -19,15 +20,27 @@ function json(res, code, body) {
   res.end(JSON.stringify(body))
 }
 
+function hasColmap() {
+  try {
+    execSync('colmap -h', { stdio: 'ignore', timeout: 3000 })
+    return true
+  } catch {
+    return false
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') return json(res, 204, {})
 
   if (req.method === 'GET' && req.url === '/health') {
+    const colmapBinary = hasColmap()
     return json(res, 200, {
       ok: true,
       service: 'xartists-colmap-worker',
-      colmapBinary: false,
-      note: 'Scaffold — install COLMAP in image for metric-certified',
+      colmapBinary,
+      note: colmapBinary
+        ? 'COLMAP detected — lab jobs can run metric pipeline'
+        : 'Scaffold — install COLMAP in image for metric-certified',
     })
   }
 
@@ -41,8 +54,9 @@ const server = http.createServer(async (req, res) => {
       return json(res, 400, { error: 'invalid json' })
     }
     const jobId = randomUUID()
+    const colmapBinary = hasColmap()
     const job = {
-      status: 'queued',
+      status: colmapBinary ? 'queued' : 'error',
       jobId,
       createdAt: new Date().toISOString(),
       request: {
@@ -51,21 +65,12 @@ const server = http.createServer(async (req, res) => {
         scaleBarCm: payload.scaleBarCm,
         imageCount: Array.isArray(payload.imageUrls) ? payload.imageUrls.length : 0,
       },
-      message:
-        'Queued paper — COLMAP binary not in image yet. Deploy GPU image to process.',
+      message: colmapBinary
+        ? 'Queued — COLMAP pipeline not fully wired (feature/match/mapper next)'
+        : 'COLMAP not installed in this image. Build Dockerfile.gpu with colmap package.',
     }
     jobs.set(jobId, job)
-    // Auto-error until binary present (honest API)
-    setTimeout(() => {
-      const j = jobs.get(jobId)
-      if (j) {
-        j.status = 'error'
-        j.message =
-          'COLMAP not installed in this scaffold image. Build lab image with colmap + openmvs.'
-        jobs.set(jobId, j)
-      }
-    }, 1000)
-    return json(res, 202, job)
+    return json(res, colmapBinary ? 202 : 503, job)
   }
 
   const m = req.url && req.url.match(/^\/jobs\/([\w-]+)$/)
@@ -79,5 +84,5 @@ const server = http.createServer(async (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`colmap-worker scaffold on :${PORT}`)
+  console.log(`colmap-worker on :${PORT} colmap=${hasColmap()}`)
 })
