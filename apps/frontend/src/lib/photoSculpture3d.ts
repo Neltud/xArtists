@@ -1,26 +1,20 @@
 /**
  * Photo → sculpture 3D approximative (navigateur).
- * Pas de photogrammétrie lourde : silhouette + volume + texture photo + dimensions.
+ * Silhouette + volume + texture photo + dimensions.
  */
 import * as THREE from 'three'
 
 export type SculptureDims = {
-  /** Hauteur hors socle (m) */
   heightM: number
-  /** Largeur max (m) */
   widthM: number
-  /** Profondeur max (m) */
   depthM: number
-  /** Circonférence approximative à la taille (m) */
   circumferenceM?: number
-  /** Libellé lisible */
   label: string
 }
 
 const ROWS = 48
 const COLS = 32
 
-/** Parse chaînes type "180 cm", "1.2 m × 40 cm", "H 210 cm" */
 export function parseDimensions(raw?: string | null): Partial<SculptureDims> {
   if (!raw || !raw.trim()) return {}
   const s = raw.toLowerCase().replace(/,/g, '.')
@@ -35,51 +29,31 @@ export function parseDimensions(raw?: string | null): Partial<SculptureDims> {
   const heightM = nums[0]
   const widthM = nums[1] ?? heightM * 0.35
   const depthM = nums[2] ?? widthM * 0.7
-  const circumferenceM =
-    nums[3] ??
-    (widthM > 0 ? Math.PI * ((widthM + depthM) / 2) : undefined)
+  const circumferenceM = nums[3] ?? Math.PI * ((widthM + depthM) / 2)
   return {
     heightM,
     widthM,
     depthM,
     circumferenceM,
-    label: formatDims({
-      heightM,
-      widthM,
-      depthM,
-      circumferenceM,
-      label: '',
-    }),
+    label: formatDims({ heightM, widthM, depthM, circumferenceM, label: '' }),
   }
 }
 
 export function formatDims(d: SculptureDims): string {
   const cm = (m: number) => `${Math.round(m * 100)} cm`
   let s = `H ${cm(d.heightM)} · L ${cm(d.widthM)} · P ${cm(d.depthM)}`
-  if (d.circumferenceM && d.circumferenceM > 0) {
-    s += ` · ⌀ ~${cm(d.circumferenceM)}`
-  }
+  if (d.circumferenceM && d.circumferenceM > 0) s += ` · ⌀ ~${cm(d.circumferenceM)}`
   return s
 }
 
-/** Estimation si aucune mesure fournie (bust / full / relief) */
-export function estimateDims(
-  aspectWH: number,
-  mode: 'bust' | 'full' | 'relief' = 'full',
-): SculptureDims {
+export function estimateDims(aspectWH: number, mode: 'bust' | 'full' | 'relief' = 'full'): SculptureDims {
   const aspect = aspectWH > 0.05 ? aspectWH : 0.55
   let heightM = mode === 'bust' ? 0.55 : mode === 'relief' ? 0.9 : 1.35
   let widthM = heightM * Math.min(1.1, Math.max(0.25, aspect))
   let depthM = mode === 'relief' ? widthM * 0.12 : widthM * 0.55
   if (mode === 'full' && heightM < 1) heightM = 1.2
   const circumferenceM = Math.PI * ((widthM + depthM) / 2)
-  const dims: SculptureDims = {
-    heightM,
-    widthM,
-    depthM,
-    circumferenceM,
-    label: '',
-  }
+  const dims: SculptureDims = { heightM, widthM, depthM, circumferenceM, label: '' }
   dims.label = formatDims(dims) + ' (estim.)'
   return dims
 }
@@ -90,9 +64,7 @@ function resolveDims(
   hint?: string | null,
 ): SculptureDims {
   const img = tex.image as { width?: number; height?: number } | undefined
-  const w = img?.width || 512
-  const h = img?.height || 768
-  const aspect = w / h
+  const aspect = (img?.width || 512) / (img?.height || 768)
   const parsed = parseDimensions(hint || undefined)
   const base = estimateDims(aspect, aspect > 0.85 ? 'bust' : 'full')
   const heightM = partial?.heightM ?? parsed.heightM ?? base.heightM
@@ -108,18 +80,11 @@ function resolveDims(
     label: '',
   }
   dims.label =
-    partial?.label ||
-    parsed.label ||
-    formatDims(dims) + (parsed.heightM ? '' : ' (estim.)')
+    partial?.label || parsed.label || formatDims(dims) + (parsed.heightM ? '' : ' (estim.)')
   return dims
 }
 
-/** Profil de largeur normalisé 0–1 par ligne (haut → bas) depuis luminance */
-function sampleSilhouetteProfile(
-  image: CanvasImageSource,
-  imgW: number,
-  imgH: number,
-): Float32Array {
+function sampleSilhouetteProfile(image: CanvasImageSource): Float32Array {
   const canvas = document.createElement('canvas')
   canvas.width = COLS
   canvas.height = ROWS
@@ -144,12 +109,8 @@ function sampleSilhouetteProfile(
     let rowSum = 0
     for (let x = 0; x < COLS; x++) {
       const i = (y * COLS + x) * 4
-      const r = px[i]
-      const g = px[i + 1]
-      const b = px[i + 2]
+      const lum = (0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2]) / 255
       const a = px[i + 3] / 255
-      const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-      // Fond sombre / transparent → hors silhouette
       const on = a > 0.15 && lum > 0.12 && lum < 0.92
       if (on) {
         left = Math.min(left, x)
@@ -157,13 +118,9 @@ function sampleSilhouetteProfile(
         rowSum++
       }
     }
-    if (rowSum < 2 || left >= right) {
-      profile[y] = y < ROWS * 0.15 ? 0.25 : 0.45
-    } else {
-      profile[y] = Math.min(1, Math.max(0.12, (right - left + 1) / COLS))
-    }
+    if (rowSum < 2 || left >= right) profile[y] = y < ROWS * 0.15 ? 0.25 : 0.45
+    else profile[y] = Math.min(1, Math.max(0.12, (right - left + 1) / COLS))
   }
-  // Lissage
   const smooth = new Float32Array(ROWS)
   for (let y = 0; y < ROWS; y++) {
     const a = profile[Math.max(0, y - 1)]
@@ -175,16 +132,13 @@ function sampleSilhouetteProfile(
 }
 
 function buildVolumeGeometry(profile: Float32Array, dims: SculptureDims): THREE.BufferGeometry {
-  // Stack of tapered boxes / lathe-like: radial segments from profile
   const radial = 12
   const positions: number[] = []
   const normals: number[] = []
   const uvs: number[] = []
   const indices: number[] = []
-
   for (let y = 0; y <= ROWS; y++) {
     const t = y / ROWS
-    // image top = sculpture top
     const p = profile[Math.min(ROWS - 1, y)] ?? 0.5
     const ry = dims.widthM * 0.5 * p
     const rz = dims.depthM * 0.5 * (0.65 + p * 0.35)
@@ -199,7 +153,6 @@ function buildVolumeGeometry(profile: Float32Array, dims: SculptureDims): THREE.
       uvs.push(i / radial, 1 - t)
     }
   }
-
   const ring = radial + 1
   for (let y = 0; y < ROWS; y++) {
     for (let i = 0; i < radial; i++) {
@@ -210,7 +163,6 @@ function buildVolumeGeometry(profile: Float32Array, dims: SculptureDims): THREE.
       indices.push(a, c, b, b, c, d)
     }
   }
-
   const geo = new THREE.BufferGeometry()
   geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
   geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3))
@@ -240,22 +192,14 @@ function makeDimPlaque(label: string): THREE.Mesh {
   lines.forEach((ln, i) => ctx.fillText(ln, 256, 82 + i * 26))
   const tex = new THREE.CanvasTexture(c)
   tex.colorSpace = THREE.SRGBColorSpace
-  const mesh = new THREE.Mesh(
+  return new THREE.Mesh(
     new THREE.PlaneGeometry(0.7, 0.18),
     new THREE.MeshBasicMaterial({ map: tex, transparent: true }),
   )
-  return mesh
 }
 
-export type PhotoSculptureResult = {
-  group: THREE.Group
-  dims: SculptureDims
-}
+export type PhotoSculptureResult = { group: THREE.Group; dims: SculptureDims }
 
-/**
- * Construit un groupe : socle + volume silhouette texturé + plaque dimensions.
- * `imageUrl` doit être CORS-safe (weserv).
- */
 export function createPhotoSculptureFromTexture(
   tex: THREE.Texture,
   options?: {
@@ -266,14 +210,9 @@ export function createPhotoSculptureFromTexture(
 ): PhotoSculptureResult {
   tex.colorSpace = THREE.SRGBColorSpace
   tex.needsUpdate = true
-
   const dims = resolveDims(tex, options?.dims, options?.dimensionsHint)
-  const img = tex.image as CanvasImageSource
-  const imgW = (tex.image as { width?: number })?.width || 512
-  const imgH = (tex.image as { height?: number })?.height || 768
-  const profile = sampleSilhouetteProfile(img, imgW, imgH)
+  const profile = sampleSilhouetteProfile(tex.image as CanvasImageSource)
   const geo = buildVolumeGeometry(profile, dims)
-
   const mat = new THREE.MeshStandardMaterial({
     map: tex,
     roughness: 0.45,
@@ -281,10 +220,6 @@ export function createPhotoSculptureFromTexture(
     side: THREE.DoubleSide,
   })
   const body = new THREE.Mesh(geo, mat)
-  body.castShadow = false
-  body.position.y = 0 // group positions world
-
-  // Face photo nette (lisibilité) devant le volume
   const faceH = dims.heightM
   const faceW = dims.widthM * 0.92
   const face = new THREE.Mesh(
@@ -296,11 +231,9 @@ export function createPhotoSculptureFromTexture(
       transparent: true,
       opacity: 0.92,
       side: THREE.DoubleSide,
-      depthWrite: true,
     }),
   )
   face.position.set(0, faceH / 2, dims.depthM * 0.52)
-
   const pedestalH = 0.42
   const pedestalR = Math.max(0.28, Math.max(dims.widthM, dims.depthM) * 0.55)
   const pedestal = new THREE.Mesh(
@@ -312,23 +245,19 @@ export function createPhotoSculptureFromTexture(
     }),
   )
   pedestal.position.y = pedestalH / 2
-
   const sculptureRoot = new THREE.Group()
   body.position.y = pedestalH
   face.position.y = pedestalH + faceH / 2
   sculptureRoot.add(pedestal)
   sculptureRoot.add(body)
   sculptureRoot.add(face)
-
   const plaque = makeDimPlaque(dims.label)
   plaque.position.set(0, 0.08, pedestalR + 0.02)
   sculptureRoot.add(plaque)
-
   const group = new THREE.Group()
   group.add(sculptureRoot)
   group.userData.sculptureDims = dims
   group.userData.isPhotoSculpture = true
-
   return { group, dims }
 }
 
