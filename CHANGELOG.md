@@ -1,5 +1,22 @@
 # Changelog — xArtists
 
+## [0.56.0](https://github.com/Neltud/xArtists/compare/v0.55.0...v0.56.0) (2026-09-27)
+
+
+### Features
+
+* default VITE_CATALOG_API to live Akash indexer (HTTPS hurricane) ([9744148](https://github.com/Neltud/xArtists/commit/9744148c4c2059c1d1dcbbbdedf3d3c3d480c1ea))
+* **map:** OpenStreetMap tiles + Overpass POIs (museums, galleries, arts centres) ([644760f](https://github.com/Neltud/xArtists/commit/644760f5df4c8b9e626082cb364551608b5862cd))
+* **map:** OSM basemap default + Overpass cultural POIs on ArtWorldMap ([9eef51c](https://github.com/Neltud/xArtists/commit/9eef51c7f6dde5156abd79bb4f287720e327c3fd))
+* **map:** OSM popup Entrer musée virtuel via matchOsmToVirtualMuseum ([e77decb](https://github.com/Neltud/xArtists/commit/e77decb49e90e46507e0b4fd34693368e6a88940))
+* **map:** OSM→museum match, Overpass cache config, Mapbox GL option, Akash OSM offline catalog ([c8300e3](https://github.com/Neltud/xArtists/commit/c8300e37ad5c595e0d6c9288234407c0464fa502))
+* **map:** wire OSM→museum enter + Mapbox section on Tours ([0e94fb4](https://github.com/Neltud/xArtists/commit/0e94fb49c67087055fe788e924eefecb88e5fd44))
+
+
+### Bug Fixes
+
+* **museum:** RESTORE full MuseumWebGLHall + museumRealism (critical) ([f91d3f4](https://github.com/Neltud/xArtists/commit/f91d3f4c812837a3f43300da79b4195c9910a7aa))
+
 ## [0.55.0](https://github.com/Neltud/xArtists/compare/v0.54.0...v0.55.0) (2026-09-27)
 
 
