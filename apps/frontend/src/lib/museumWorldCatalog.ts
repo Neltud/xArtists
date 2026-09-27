@@ -90,8 +90,7 @@ function guessTechnique(title: string, artist: string): string {
 }
 
 /** Un seul passage weserv — jamais re-wrapper une URL déjà proxifiée */
-export function proxyImg(raw: string): string {
-  const u = (raw || '').trim()
+export function proxyImg(u: string): string {
   if (!u) return u
   if (/images\.weserv\.nl|wsrv\.nl/i.test(u)) return u
   if (/^\//.test(u) || u.startsWith(import.meta.env.BASE_URL || '/')) return u
@@ -139,10 +138,10 @@ const EXTRA_SCULPT: { remote: string; title: string; artist: string; year: strin
     year: 'ca. 590–580 BCE',
   },
   {
-    remote: 'https://images.metmuseum.org/CRDImages/eg/web-large/DT202.jpg',
-    title: 'The Temple of Dendur',
-    artist: 'Egyptian',
-    year: '15 B.C.',
+    remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP-16774-001.jpg',
+    title: 'Marble statue of a wounded warrior (detail)',
+    artist: 'Roman',
+    year: 'ca. 138–181 CE',
   },
 ]
 
@@ -154,9 +153,10 @@ function proceduralSculptures(museumId: string, label: string): FrameItem[] {
     artist: pick.artist,
     date: pick.year,
     collection: label,
+    description: `Sculpture (Met Open Access) · ${label}.`,
     image: proxyImg(pick.remote),
-    kind: 'sculpture' as const,
     type: 'Sculpture',
+    kind: 'sculpture' as const,
     medium: 'physical' as const,
     onSale: true,
     priceLabel: 'Paper · intent BUY_NFT',
