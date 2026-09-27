@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.51.0](https://github.com/Neltud/xArtists/compare/v0.50.0...v0.51.0) (2026-09-27)
+
+
+### Features
+
+* **museum:** photo→3D sculpture meshes with dimensions (silhouette volume) ([0e74a92](https://github.com/Neltud/xArtists/commit/0e74a92cf03fdc637387777c5fb28153c88ef2a6))
+
 ## [0.50.0](https://github.com/Neltud/xArtists/compare/v0.49.0...v0.50.0) (2026-09-27)
 
 
