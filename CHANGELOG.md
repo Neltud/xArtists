@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.55.0](https://github.com/Neltud/xArtists/compare/v0.54.0...v0.55.0) (2026-09-27)
+
+
+### Features
+
+* **museum:** museumRealism mobile-safe lights (demo mobile / balanced desktop) ([5035e02](https://github.com/Neltud/xArtists/commit/5035e02b08c0eb32eddf071a189c9e8e142eabd7))
+
 ## [0.54.0](https://github.com/Neltud/xArtists/compare/v0.53.0...v0.54.0) (2026-09-27)
 
 
