@@ -4,6 +4,19 @@ services:
     ports:
       - "8080:80"
     restart: unless-stopped
+    environment:
+      - VITE_PULSE_API=http://pulse-api:8090
+    depends_on:
+      - pulse-api
     labels:
       - "app=xartists"
       - "component=frontend"
+
+  pulse-api:
+    build: ./services/pulse-api
+    ports:
+      - "8090:8090"
+    restart: unless-stopped
+    labels:
+      - "app=xartists"
+      - "component=pulse-api"

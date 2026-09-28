@@ -9,11 +9,9 @@ export const AGENT_8008 = {
   codename: 'Execution Sentinel',
   role: 'router_intents',
   description:
-    'Route les intents LIA (BUY_NFT, VENUE_RENTAL, STAKE, VOTE) vers workflows Vellum. Paper par défaut.',
+    'Route les intents LIA (BUY_NFT, VENUE_RENTAL, STAKE, VOTE, PULSE_HYPE) vers workflows Vellum. Paper par défaut.',
   endpoints: {
-    /** ID workflow Vellum — binder côté ops */
     vellumWorkflow: 'xartists-8008-intents',
-    /** Optionnel : VITE_VELLUM_8008_WEBHOOK au build */
     mcp: null as string | null,
   },
   intents: [
@@ -26,6 +24,7 @@ export const AGENT_8008 = {
     'TIP_LIA',
     'SLOT_SPIN',
     'ADS_BID',
+    'PULSE_HYPE',
   ] as const,
   risk: {
     mainnetTx: false,
@@ -40,7 +39,6 @@ export function isAgent8008Intent(x: string): x is Agent8008Intent {
   return (AGENT_8008.intents as readonly string[]).includes(x)
 }
 
-/** Dispatch navigateur → bridge 8008 + overlay LIA */
 export function dispatch8008(intent: Agent8008Intent, payload: Record<string, unknown> = {}) {
   window.dispatchEvent(
     new CustomEvent('lia-intent', {
