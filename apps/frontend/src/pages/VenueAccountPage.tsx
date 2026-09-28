@@ -1,5 +1,6 @@
 /**
  * Comptes officiels + location d’espace (grille dégressive lieu × durée × murs).
+ * On-chain rentPay only if VITE_VENUE_SC_ADDRESS + VITE_VENUE_CODEHASH_OK.
  */
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -14,6 +15,7 @@ import {
   splitVenuePayment,
   type VenueTierId,
 } from '../config/venueRental'
+import { useVenueRentTx } from '../hooks/useVenueRentTx'
 
 type Role = 'museum' | 'gallery' | 'artist' | 'company'
 
@@ -26,6 +28,8 @@ const ROLES: { id: Role; label: string; hint: string }[] = [
 
 export default function VenueAccountPage() {
   const { connected, address } = useWallet()
+  const { live: venueLive, pending: venuePending, error: venueErr, rentPay, venueAddress } =
+    useVenueRentTx()
   const [role, setRole] = useState<Role>('museum')
   const [name, setName] = useState('')
   const [city, setCity] = useState('')
@@ -85,7 +89,7 @@ export default function VenueAccountPage() {
     )
   }
 
-  const bookRental = () => {
+  const bookRental = async () => {
     const payload = {
       type: 'VENUE_RENTAL',
       tier: tier.id,
@@ -96,7 +100,7 @@ export default function VenueAccountPage() {
       perMonthEffective: quote.perMonthEffective,
       savingsPct: quote.savingsPct,
       split,
-      mode: 'paper',
+      mode: venueLive ? 'live-ready' : 'paper',
       wallet: address || null,
       ts: new Date().toISOString(),
     }
@@ -108,13 +112,18 @@ export default function VenueAccountPage() {
     } catch {
       /* */
     }
+    // EUR catalog = paper journal; on-chain micro EGLD via scripts/rentpay_micro_test.sh
+    await rentPay(tier.id, 0, {
+      totalEur: quote.totalEur,
+      months,
+      walls,
+      forcePaper: true,
+      ...payload,
+    })
     setDone(
-      `Location ${tier.label} · ${walls} mur(s) · ${months} mois · ${quote.totalEur} € paper`,
-    )
-    window.dispatchEvent(
-      new CustomEvent('lia-intent', {
-        detail: { lip: { raw: `rent venue ${tier.id} ${months}m ${walls}w`, ...payload } },
-      }),
+      `Location ${tier.label} · ${walls} mur(s) · ${months} mois · ${quote.totalEur} € · ${
+        venueLive ? 'SC registered (micro EGLD for on-chain test)' : 'paper fail-closed'
+      }`,
     )
   }
 
@@ -125,8 +134,10 @@ export default function VenueAccountPage() {
         <h1 className="section-title display">Comptes & location</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
-          Louez un mur (Louvre, Orsay…) avec grille dégressive selon durée et nombre de murs.
-          Paper jusqu’au SC venue-split.
+          Louez un mur (Louvre, Orsay…) avec grille dégressive selon durée et nombre de murs.{' '}
+          {venueLive
+            ? `SC live · ${venueAddress.slice(0, 14)}…`
+            : 'Paper fail-closed jusqu’à VITE_VENUE_CODEHASH_OK.'}
         </p>
       </header>
 
@@ -216,8 +227,22 @@ export default function VenueAccountPage() {
           </p>
         </div>
 
-        <button type="button" className="btn-primary w-full" onClick={bookRental}>
-          Réserver (paper) · {quote.totalEur} €
+        {venueErr && <p className="text-xs text-rose-400">{venueErr}</p>}
+        <p className="text-[10px] text-zinc-500">
+          {venueLive
+            ? `On-chain ready · ${venueAddress}`
+            : 'Fail-closed · VITE_VENUE_SC_ADDRESS + VITE_VENUE_CODEHASH_OK après verify'}
+        </p>
+        <button
+          type="button"
+          className="btn-primary w-full"
+          disabled={venuePending}
+          onClick={() => void bookRental()}
+        >
+          {venueLive
+            ? `Réserver · ${quote.totalEur} € (journal + SC registered)`
+            : `Réserver (paper) · ${quote.totalEur} €`}
+          {venuePending ? '…' : ''}
         </button>
         {done && <p className="text-[12px] text-emerald-300">{done}</p>}
       </section>
@@ -281,6 +306,10 @@ export default function VenueAccountPage() {
       <p className="text-[11px] text-zinc-600">
         <Link to="/museum" className="text-zinc-400 underline-offset-2 hover:underline">
           Retour galerie 3D
+        </Link>
+        {' · '}
+        <Link to="/go-live" className="text-zinc-400 underline-offset-2 hover:underline">
+          GO_LIVE
         </Link>
         {' · '}
         <Link to="/ads" className="text-zinc-400 underline-offset-2 hover:underline">
