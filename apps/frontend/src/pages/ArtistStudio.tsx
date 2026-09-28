@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { LINKS } from '../config/links'
 import AdSlot from '../components/AdSlot'
 import PageGuide from '../components/PageGuide'
+import StudioCreatorHub from '../components/StudioCreatorHub'
 import TxCapabilityBanner from '../components/TxCapabilityBanner'
 import ScStatusBanner from '../components/ScStatusBanner'
 import LiaVsUserBanner from '../components/LiaVsUserBanner'
@@ -61,7 +62,7 @@ export default function ArtistStudio() {
       },
       { ok: ytOk, label: 'YouTube optionnel = lien externe valide' },
     ],
-    [collectionName, ticker, title, fileName, mode, ipfsUri, ytOk]
+    [collectionName, ticker, title, fileName, mode, ipfsUri, ytOk],
   )
   const ready = checklist.every(c => c.ok)
 
@@ -80,7 +81,10 @@ export default function ArtistStudio() {
         { trait_type: 'storage', value: storage },
         { trait_type: 'royalties_pct', value: royalty },
         ...(mode === 'physical'
-          ? [{ trait_type: 'rwa_physical', value: true }, { trait_type: 'tro_reward_cap', value: 1 }]
+          ? [
+              { trait_type: 'rwa_physical', value: true },
+              { trait_type: 'tro_reward_cap', value: 1 },
+            ]
           : []),
       ].filter(a => a.value !== undefined && a.value !== ''),
       xartists: {
@@ -155,6 +159,7 @@ export default function ArtistStudio() {
   return (
     <div className="animate-fade-in max-w-3xl mx-auto pb-24 md:pb-8">
       <PageGuide page="studio" />
+      <StudioCreatorHub />
       <LiaVsUserBanner tone="user" />
 
       <header className="mb-4 space-y-2">
@@ -170,11 +175,14 @@ export default function ArtistStudio() {
           {' · '}wallet artiste (pas LIA ops)
         </p>
         <div className="flex flex-wrap gap-2 pt-1">
-          <Link to="/gallery" className="btn-secondary text-xs">
+          <Link to="/museum" className="btn-secondary text-xs">
             Galerie
           </Link>
           <Link to="/marketplace" className="btn-secondary text-xs">
             Marketplace
+          </Link>
+          <Link to="/tro" className="btn-secondary text-xs">
+            $TRO
           </Link>
         </div>
       </header>
@@ -237,11 +245,7 @@ export default function ArtistStudio() {
         ))}
       </div>
 
-      <div
-        className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden mb-4"
-        aria-hidden
-        data-studio-progress
-      >
+      <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden mb-4" aria-hidden>
         <div
           className="h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-400 transition-all duration-300"
           style={{ width: `${(step / 4) * 100}%` }}
@@ -326,7 +330,6 @@ export default function ArtistStudio() {
               </button>
             ))}
           </div>
-
           <p className="text-xs font-semibold text-gray-400 uppercase">Stockage</p>
           <div className="flex flex-wrap gap-2">
             {(
@@ -348,7 +351,6 @@ export default function ArtistStudio() {
               </button>
             ))}
           </div>
-
           <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-3 text-xs text-indigo-100/90 space-y-1">
             <p className="font-semibold">Pin auto Studio = proxy backend (P1)</p>
             <p>
@@ -356,17 +358,15 @@ export default function ArtistStudio() {
               <code className="text-[10px]">python -m lia.media.pinata_connect</code>
             </p>
           </div>
-
           <label className="block text-sm text-gray-400">
             URI IPFS / gateway (après pin ops)
             <input
               className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2.5 mono text-xs"
               value={ipfsUri}
               onChange={e => setIpfsUri(e.target.value)}
-              placeholder="ipfs://Qm… ou https://gateway.pinata.cloud/ipfs/…"
+              placeholder="ipfs://Qm… ou https://gateway…"
             />
           </label>
-
           <label className="block text-sm text-gray-400">
             Fichier (préparation locale — pin hors front)
             <input
@@ -377,13 +377,8 @@ export default function ArtistStudio() {
             />
           </label>
           {fileName && <p className="text-xs text-green-400">Fichier : {fileName}</p>}
-
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-100/90 space-y-2">
             <p className="font-semibold">YouTube ≠ stockage NFT</p>
-            <p>
-              Lien promo uniquement (<code>external_url</code>). Vente = marketplace + média
-              IPFS/Arweave.
-            </p>
             <label className="block text-gray-300">
               YouTube (optionnel)
               <input
@@ -395,14 +390,11 @@ export default function ArtistStudio() {
             </label>
             {!ytOk && <p className="text-red-400">URL YouTube invalide</p>}
           </div>
-
           {mode === 'physical' && (
             <p className="text-xs text-teal-200/90 border border-teal-500/30 rounded-lg p-3">
-              Phygital : NFT = certificat. Livraison physique hors chaîne. Rewards $TRO créateur ={' '}
-              <strong>1 TRO max</strong> / œuvre réelle (à la vente).
+              Phygital : NFT = certificat. Rewards $TRO créateur = <strong>1 TRO max</strong> / œuvre réelle.
             </p>
           )}
-
           <div className="flex gap-2">
             <button type="button" className="btn-secondary text-sm" onClick={() => setStep(1)}>
               ←
@@ -451,10 +443,9 @@ export default function ArtistStudio() {
               </li>
             ))}
           </ul>
-
           <div className="rounded-xl border border-[#2a2a3a] bg-[#0a0a0f] p-3">
             <div className="flex items-center justify-between gap-2 mb-2">
-              <p className="text-xs font-semibold text-zinc-400">Aperçu metadata JSON (mint)</p>
+              <p className="text-xs font-semibold text-zinc-400">Aperçu metadata JSON</p>
               <div className="flex gap-2">
                 <button type="button" className="btn-secondary text-[10px] py-1" onClick={copyMeta}>
                   {copied ? 'Copié' : 'Copier'}
@@ -466,7 +457,6 @@ export default function ArtistStudio() {
             </div>
             <pre className="text-[10px] mono text-zinc-500 overflow-x-auto max-h-40">{metadataJson}</pre>
           </div>
-
           <div className="flex gap-2">
             <button type="button" className="btn-secondary text-sm" onClick={() => setStep(2)}>
               ←
@@ -489,82 +479,36 @@ export default function ArtistStudio() {
           <div className="rounded-xl bg-[#111118] border border-[#2a2a3a] p-4 text-sm space-y-1">
             <p>
               {collectionName} {albumTitle && `· ${albumTitle}`} ·{' '}
-              <span className="mono">{ticker}</span>
+              <span className="mono">{ticker || '—'}</span>
             </p>
-            <p>
-              {title} · {media} · {mode} · {storage}
-            </p>
-            {ipfsUri && <p className="mono text-xs text-purple-300 break-all">{ipfsUri}</p>}
-            {youtubeUrl && <p className="text-xs text-gray-400">YouTube : {youtubeUrl}</p>}
-            <p>Royalties {royalty}%</p>
-            {address && (
-              <p className="text-xs text-zinc-500 mono break-all">
-                Creator wallet : {address}
-                {!canSign && ' (read-only — reconnecte pour mint)'}
-              </p>
-            )}
+            <p className="text-zinc-400">{title || 'Sans titre'}</p>
+            <p className="text-xs text-zinc-500">Gaz mint : {GAS_HINT.mint_nft} · list : {GAS_HINT.list_nft}</p>
           </div>
-
           {!marketLive && (
-            <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-100">
-              List on-chain xArtists Market = <strong>bloqué</strong> tant que SC marketplace non live
-              (codeHash). Après mint : XOXNO possible, ou attendre deploy.
-            </div>
+            <p className="text-xs text-amber-200/90 border border-amber-500/30 rounded-lg p-3">
+              Marketplace SC OFF — mint possible (ops) · list paper jusqu’à GO_LIVE.
+            </p>
           )}
-
           <div className="rounded-xl border border-[#2a2a3a] bg-[#0a0a0f] p-3">
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex justify-between mb-2">
               <p className="text-xs font-semibold text-zinc-400">Template mxpy (ops)</p>
               <button type="button" className="btn-secondary text-[10px] py-1" onClick={copyCmd}>
                 {cmdCopied ? 'Copié' : 'Copier'}
               </button>
             </div>
-            <pre className="text-[10px] mono text-zinc-500 overflow-x-auto whitespace-pre-wrap">
-              {mxpyTemplate}
-            </pre>
+            <pre className="text-[10px] mono text-zinc-500 overflow-x-auto">{mxpyTemplate}</pre>
           </div>
-
-          <ol className="text-sm text-gray-300 space-y-2 list-decimal list-inside border border-[#2a2a3a] rounded-xl p-4">
-            <li>Pin média + JSON metadata (ops Pinata — JWT hors front)</li>
-            <li>Connect wallet artiste (extension / Web Wallet — pas paste, pas LIA)</li>
-            <li>Issue collection + mint avec URI IPFS (mxpy / minter SC)</li>
-            <li>
-              List sur{' '}
-              <Link to="/marketplace" className="text-purple-300 underline">
-                Marketplace
-              </Link>{' '}
-              {marketLive ? '(SC live)' : '(après deploy)'} ou{' '}
-              <a href={LINKS.xoxno} target="_blank" rel="noreferrer" className="text-purple-300 underline">
-                XOXNO
-              </a>
-            </li>
-          </ol>
-
           <div className="flex flex-wrap gap-2">
-            <button type="button" className="btn-secondary text-sm" onClick={downloadMeta}>
-              Export metadata JSON
+            <button type="button" className="btn-secondary text-sm" onClick={() => setStep(3)}>
+              ←
             </button>
-            {!canSign && (
-              <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
-                🔗 Connect artiste
-              </button>
-            )}
-            <a href={LINKS.walletWeb} target="_blank" rel="noreferrer" className="btn-secondary text-sm">
-              Web Wallet
+            <Link to="/marketplace" className="btn-primary text-sm">
+              Marketplace
+            </Link>
+            <a href={LINKS.docs || '/go-live'} className="btn-secondary text-sm">
+              GO_LIVE
             </a>
-            <Link to="/marketplace" className="btn-secondary text-sm">
-              Sell on Market
-            </Link>
-            <Link to="/gallery" className="btn-secondary text-sm">
-              Galerie
-            </Link>
           </div>
-          <p className="text-xs text-gray-500">
-            Gaz mint {GAS_HINT.mint_nft} · list {GAS_HINT.list_nft}
-          </p>
-          <button type="button" className="btn-secondary text-sm" onClick={() => setStep(3)}>
-            ← Métadonnées
-          </button>
         </div>
       )}
     </div>
