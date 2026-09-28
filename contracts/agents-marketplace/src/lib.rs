@@ -3,7 +3,7 @@
 //! Agents Marketplace — list / buy / cancel agent actions (LIA + third-party)
 //! Fee tracked in accumulated_fees; owner claims via claimFees.
 //! Security: pause, CEI, upgrade gated by storage owner, 2-step ownership, agent_id len cap.
-//! Note: access control uses storage `owner` (not framework #[only_owner]) so transferOwnership works.
+//! Seller receives (10000 - fee_bps) / 10000 of price (default fee 300 → 97%).
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
@@ -33,7 +33,6 @@ pub trait AgentsMarketplace {
         self.pending_owner().clear();
     }
 
-    /// Upgrade callable only by storage owner (redeploy path still governed by chain owner policy)
     #[endpoint(upgrade)]
     fn upgrade(&self) {
         self.require_owner();
@@ -45,8 +44,6 @@ pub trait AgentsMarketplace {
             "only owner"
         );
     }
-
-    // ─── Admin ───────────────────────────────────────────────
 
     #[endpoint(setPaused)]
     fn set_paused(&self, value: bool) {
@@ -89,8 +86,6 @@ pub trait AgentsMarketplace {
         self.claim_event(&owner, &fees);
     }
 
-    // ─── Market ──────────────────────────────────────────────
-
     #[endpoint(listAgentAction)]
     fn list_agent_action(&self, agent_id: ManagedBuffer, price: BigUint) {
         require!(!self.paused().get(), "paused");
@@ -121,7 +116,7 @@ pub trait AgentsMarketplace {
         let mut listing = self.listings(listing_id).get();
         require!(listing.active, "listing inactive");
 
-        let payment = self.call_value().egld_value().clone_value();
+        let payment = self.call_value().egld().clone_value();
         require!(payment >= listing.price, "insufficient payment");
 
         let fee_bps = self.marketplace_fee_bps().get() as u64;
@@ -129,7 +124,6 @@ pub trait AgentsMarketplace {
         let to_seller = &listing.price - &fee;
         let buyer = self.blockchain().get_caller();
 
-        // CEI
         listing.active = false;
         self.listings(listing_id).set(listing.clone());
         if fee > 0 {
@@ -160,8 +154,6 @@ pub trait AgentsMarketplace {
         listing.active = false;
         self.listings(listing_id).set(listing);
     }
-
-    // ─── Views ───────────────────────────────────────────────
 
     #[view(getListing)]
     fn get_listing(&self, listing_id: u64) -> OptionalValue<AgentListing<Self::Api>> {
