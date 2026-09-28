@@ -13,9 +13,9 @@ multiversx-sc = "0.66.2"
 [dev-dependencies]
 multiversx-sc-scenario = "0.66.2"
 
+# wasm is a SEPARATE workspace root (see wasm/Cargo.toml) — do not list it here
 [workspace]
 members = [
     ".",
     "meta",
-    "wasm",
 ]
