@@ -2,6 +2,7 @@
 name = "venue-split"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 [lib]
 path = "src/lib.rs"
@@ -12,3 +13,7 @@ multiversx-sc = "0.66.2"
 
 [dev-dependencies]
 multiversx-sc-scenario = "0.66.2"
+
+# Own workspace — not part of repo root (nft/tro staking)
+[workspace]
+members = [".", "meta"]

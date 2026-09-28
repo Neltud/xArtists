@@ -90,8 +90,6 @@ jobs:
           set -euo pipefail
           if [ -z "${SC_DEPLOYER_PEM:-}" ]; then
             echo "❌ Secret SC_DEPLOYER_PEM manquant"
-            echo "Settings → Secrets → Actions → SC_DEPLOYER_PEM"
-            echo "Colle le contenu ENTIER du PEM deployer (BEGIN…END)."
             exit 1
           fi
           echo "✅ PEM present (chars=${#SC_DEPLOYER_PEM})"
@@ -135,7 +133,7 @@ jobs:
             contracts/venue_split/target/
             contracts/venue_split/meta/target/
             contracts/venue_split/output/
-          key: venue-split-sc66-${{ runner.os }}-${{ hashFiles('contracts/venue_split/Cargo.toml', 'contracts/venue_split/meta/Cargo.toml') }}
+          key: venue-split-sc66-v2-${{ runner.os }}-${{ hashFiles('contracts/venue_split/Cargo.toml', 'contracts/venue_split/meta/Cargo.toml') }}
 
       - name: Install sc-meta + build
         working-directory: contracts/venue_split
@@ -149,14 +147,15 @@ jobs:
             find . -type f | head -80
             exit 1
           fi
-          echo "WASM=$WASM" >> "$GITHUB_ENV"
+          # absolute path for deploy step
+          echo "WASM=${PWD}/${WASM#./}" >> "$GITHUB_ENV"
           echo "✅ wasm: $WASM ($(wc -c < "$WASM") bytes)"
 
       - name: Deploy
         id: deploy
         run: |
           set -euo pipefail
-          echo "Deploy chain=${CHAIN_ID} proxy=${PROXY}"
+          echo "Deploy chain=${CHAIN_ID} proxy=${PROXY} wasm=${WASM}"
           set +e
           LOG=$(mxpy contract deploy \
             --bytecode="${WASM}" \
@@ -186,5 +185,4 @@ jobs:
         run: |
           echo "1) Verify codeHash on explorer"
           echo "2) Micro rentPay dust"
-          echo "3) VITE_VENUE_SC_ADDRESS + VITE_VENUE_CODEHASH_OK only after match"
-          echo "DO NOT announce before verify."
+          echo "3) VITE_VENUE_SC_ADDRESS + CODEHASH_OK only after match"

@@ -3,6 +3,10 @@ members = [
     "contracts/nft-staking",
     "contracts/tro-staking",
 ]
+exclude = [
+    "contracts/venue_split",
+    "contracts/venue_split/meta",
+]
 resolver = "2"
 
 [workspace.package]
