@@ -1,5 +1,44 @@
 # Changelog — xArtists
 
+## [0.57.0](https://github.com/Neltud/xArtists/compare/v0.56.1...v0.57.0) (2026-09-28)
+
+
+### Features
+
+* **8008:** PULSE_HYPE on high sentiment pulse events ([1ebe4b6](https://github.com/Neltud/xArtists/commit/1ebe4b692d03ff2d2c9776523e233b454dc9089a))
+* ConnectedSessionPanel — live balance/NFTs + daily claim scoped to xPortal address ([55305f1](https://github.com/Neltud/xArtists/commit/55305f1a5204bbf9241ee17a57fb2321776fd257))
+* **Dashboard:** ConnectedSessionPanel for xPortal session ([978021f](https://github.com/Neltud/xArtists/commit/978021f214fde24ae0d7a2d0b9b0797b2352a564))
+* **museum:** more global venues + Your Art Here buy spots; Agents show EGLD floor 10 ([0a67564](https://github.com/Neltud/xArtists/commit/0a67564ea6c1823b14f4f01fb0994e403df913f3))
+* packs min 10 EGLD; slot harder (unique collections, no easy pair); more museums + Your Art Here ([b667756](https://github.com/Neltud/xArtists/commit/b66775687ba368168071683a5e0a8d0ab386f627))
+* **Phase1 vertical slice:** pulse-api FastAPI+WS, usePulse, museum single source, 8008 bridge, user dashboard rewards/packs ([d026f0d](https://github.com/Neltud/xArtists/commit/d026f0d88a701254c99282df32ebe3f296648f19))
+* PulseBoot global + wire main for vertical slice pulse ([1b06a14](https://github.com/Neltud/xArtists/commit/1b06a143094edaea0a550246fa3879c0d8d66d03))
+* pulseMuseum VITE_PULSE_API + Dashboard UserDashboardPanel ([2fefddb](https://github.com/Neltud/xArtists/commit/2fefddbf6be9c59955a06d4e0dbabb6db814edb8))
+* STUDIO_MINT_PAPER intent + paper mint E2E button; docker vellum proxy ([ea22e0d](https://github.com/Neltud/xArtists/commit/ea22e0dcf2522bb276fdcdab657d8b43dba3b398))
+* **studio:** mount StudioCreatorHub after PageGuide ([a49e2ae](https://github.com/Neltud/xArtists/commit/a49e2aeabcafdd3cb9bc9eee410c9d94eefa47f9))
+* **studio:** mount StudioPaperMintCard on step 4 ([951d914](https://github.com/Neltud/xArtists/commit/951d91469eb5c3f050b203f6420efa8579463153))
+* **studio:** StudioCreatorHub — session + rewards + links créateur ([d5d226f](https://github.com/Neltud/xArtists/commit/d5d226fa25a4fe4baec76b6da815a77f607402b2))
+* **studio:** StudioPaperMintCard + paper mint lib; wire STUDIO_MINT_PAPER E2E ([f35c638](https://github.com/Neltud/xArtists/commit/f35c638d851103cbf333aedbe0001c6c44d4eebf))
+* TRO tokenomics page complete, GO_LIVE checklist, Akash pulse-api SDL, studio/dashboard links ([7ad959b](https://github.com/Neltud/xArtists/commit/7ad959b4578733c8e98abef0a97aa2c9c0a8f278))
+* venue-split SC mx-sdk ready + testnet deploy script; studio paper mint E2E; Vellum 8008 proxy ([6727db2](https://github.com/Neltud/xArtists/commit/6727db278f47d3a6651dc352217c2ed75d2c3c8f))
+* **venues:** fail-closed status + rentPay paper via useVenueRentTx ([5415ae3](https://github.com/Neltud/xArtists/commit/5415ae32503fdb80a8f0bb1529de0254732347b4))
+* **venues:** wire fail-closed rentPay + status UI; amount 0 stays paper ([2b04987](https://github.com/Neltud/xArtists/commit/2b049871357e8ca3f04fdef571563188de3e3fcd))
+* **venue:** VITE_VENUE_SC_ADDRESS fail-closed + useVenueRentTx + audit/verify scripts ([9f0fbbd](https://github.com/Neltud/xArtists/commit/9f0fbbd62142f1f470d2841b886b05d5b9c44162))
+* **vertical-slice:** PulseStrip+museum single source, 8008 PULSE_HYPE, user dashboard, docker pulse-api ([0bb5147](https://github.com/Neltud/xArtists/commit/0bb5147b9ffcf3f3d674d89bafafa56700c18f09))
+
+
+### Bug Fixes
+
+* remove invalid isAdSlot; Agents display min 10 EGLD pack prices ([870f28c](https://github.com/Neltud/xArtists/commit/870f28c0efb35650197b10540f0ea3f9402294b7))
+* Tours map crash (locations optional); harder slot; packs min 10 EGLD; museum Your Art Here spots ([1b6082a](https://github.com/Neltud/xArtists/commit/1b6082ad129bc67ec11c5f164e6cc278b81fa2d7))
+* **venue-split:** sc 0.66 + meta crate + event arity for sc-meta CI build ([ec65414](https://github.com/Neltud/xArtists/commit/ec65414fb0a0bec11ed21305fca74be2c8e0a121))
+
+
+### Documentation
+
+* GO_LIVE — deployer funded 0.1 EGLD; awaiting 4 bucket addresses + wasm build ([563f65f](https://github.com/Neltud/xArtists/commit/563f65f0db4cb5c2f1f7827f8c96ae9bef85b461))
+* GO_LIVE status — audit §1 signed, mainnet blocked until fund+deploy+verify ([111e887](https://github.com/Neltud/xArtists/commit/111e8873ad38e150c31d59ebe3370cd9a2f94b16))
+* venue bucket addresses assigned (LIA + 3 new wallets); PEMs sandbox-only ([c39918e](https://github.com/Neltud/xArtists/commit/c39918e7660ded0502725d2acc065d57860f459a))
+
 ## [0.56.1](https://github.com/Neltud/xArtists/compare/v0.56.0...v0.56.1) (2026-09-27)
 
 
