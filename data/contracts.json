@@ -2,11 +2,11 @@
   "chain": "mainnet",
   "chain_id": "1",
   "updated": "2026-09-28",
-  "chain_note": "venue-split + nft-marketplace LIVE. agents pending. CODEHASH_OK only after explorer match.",
+  "chain_note": "venue-split + nft-marketplace + agents-marketplace LIVE. Staking/DAO next (0.66 migrate). CODEHASH_OK only after explorer match.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
-    "agents_marketplace": null,
+    "agents_marketplace": "erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg",
     "nft_staking": null,
     "tro_staking": null,
     "tro_governance": null
@@ -19,14 +19,14 @@
   "status": {
     "venue_split": "LIVE",
     "nft_marketplace": "LIVE",
-    "agents_marketplace": "PENDING_DEPLOY",
+    "agents_marketplace": "LIVE",
     "nft_staking": "NOT_DEPLOYED",
     "tro_staking": "NOT_DEPLOYED",
     "tro_governance": "NOT_DEPLOYED"
   },
   "notes": {
-    "nft_fee_bps": 300,
-    "seller_min_bps": 9000,
+    "marketplace_fee_bps": 300,
+    "seller_min_bps_nft": 9000,
     "deployer": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g"
   }
 }
