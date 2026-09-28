@@ -1,0 +1,31 @@
+---
+version: "2.0"
+
+services:
+  pulse-api:
+    image: ghcr.io/neltud/xartists-pulse-api:latest
+    env:
+      - PYTHONUNBUFFERED=1
+    expose:
+      - port: 8090
+        as: 80
+        to:
+          - global: true
+    # No PEM · read-only hype signals
+
+profiles:
+  - name: default
+    services:
+      - pulse-api
+
+deployment:
+  pulse-api:
+    default:
+      count: 1
+      resources:
+        cpu:
+          units: 0.25
+        memory:
+          size: 256Mi
+        storage:
+          size: 256Mi
