@@ -156,6 +156,7 @@ jobs:
           set -euo pipefail
           echo "Deploy chain=${CHAIN_ID} proxy=${PROXY} wasm=${WASM}"
           set +e
+          # mxpy 12: nonce auto-fetched if omitted (no --recall-nonce)
           LOG=$(mxpy contract deploy \
             --bytecode="${WASM}" \
             --pem="${RUNNER_TEMP}/deployer.pem" \
@@ -163,12 +164,12 @@ jobs:
             --proxy="${PROXY}" \
             --chain="${CHAIN_ID}" \
             --arguments \
-              "addr:${INSTITUTION_ADDR}" \
-              "addr:${ASSOCIATIONS_ADDR}" \
-              "addr:${LIA_TREASURY_ADDR}" \
-              "addr:${HOLDERS_POOL_ADDR}" \
+              "${INSTITUTION_ADDR}" \
+              "${ASSOCIATIONS_ADDR}" \
+              "${LIA_TREASURY_ADDR}" \
+              "${HOLDERS_POOL_ADDR}" \
             --send \
-            --recall-nonce 2>&1)
+            --wait-result 2>&1)
           RC=$?
           set -e
           echo "$LOG"
