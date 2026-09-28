@@ -1,5 +1,22 @@
 # Changelog — xArtists
 
+## [0.58.0](https://github.com/Neltud/xArtists/compare/v0.57.2...v0.58.0) (2026-09-28)
+
+
+### Features
+
+* wire venue SC address (no CODEHASH_OK) · marketplace wasm pack · unique museum works · avatar skins ([0aa21b8](https://github.com/Neltud/xArtists/commit/0aa21b8f407a9a05c403ae56d4fba178d6d77bd6))
+
+
+### Bug Fixes
+
+* **museum:** exclusive works per venue · unique sculptures · avatar skins (dragon/eagle/dragonfly) ([3d105a8](https://github.com/Neltud/xArtists/commit/3d105a8798c68381630708fcc67b9108221a1a9f))
+
+
+### Documentation
+
+* venue-split MAINNET live + SC audit matrix — no CODEHASH_OK yet ([55083e8](https://github.com/Neltud/xArtists/commit/55083e88ec723e21cf6dc134b0a646adfab6f803))
+
 ## [0.57.2](https://github.com/Neltud/xArtists/compare/v0.57.1...v0.57.2) (2026-09-28)
 
 
