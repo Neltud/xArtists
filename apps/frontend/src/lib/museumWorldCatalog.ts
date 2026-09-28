@@ -1,5 +1,6 @@
 /**
- * Réseau de musées virtuels — Met Open Access + slots « Your art here ».
+ * Réseau de musées virtuels — œuvres EXCLUSIVES par lieu (pas de Joconde au MoMA).
+ * Met Open Access + slots « Your art here » + sculptures uniques par salle.
  */
 import { MET_WORKS } from '../data/metCatalog'
 import type { FrameItem } from '../components/museum/MuseumCorridor'
@@ -14,6 +15,8 @@ export type VirtualMuseum = {
   source: 'onchain' | 'catalog'
   aliases?: string[]
   match?: string[]
+  /** Keywords that must NOT appear in this museum's works */
+  ban?: string[]
   works?: FrameItem[]
 }
 
@@ -47,7 +50,7 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     tagline: 'Chefs-d’œuvre · Paris',
     room: 'stone',
     aliases: ['paris', 'louvre', 'marais'],
-    match: ['rembrandt', 'raphael', 'lippi', 'mantegna', 'delacroix', 'courbet', 'david', 'holy', 'madonna'],
+    match: ['rembrandt', 'raphael', 'lippi', 'mantegna', 'delacroix', 'courbet', 'david', 'holy', 'madonna', 'leonardo', 'joconde', 'mona lisa'],
   },
   {
     id: 'orsay',
@@ -58,6 +61,7 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     room: 'gold',
     aliases: ['orsay'],
     match: ['manet', 'degas', 'monet', 'renoir', 'pissarro', 'cezanne', 'gauguin', 'fantin', 'seurat', 'toulouse', 'van gogh'],
+    ban: ['joconde', 'mona lisa', 'warhol', 'pollock'],
   },
   {
     id: 'pompidou',
@@ -68,6 +72,7 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     room: 'white',
     aliases: ['pompidou', 'beaubourg'],
     match: ['picasso', 'matisse', 'kandinsky', 'miro', 'duchamp'],
+    ban: ['joconde', 'mona lisa', 'rembrandt', 'vermeer'],
   },
   {
     id: 'palaisdetokyo',
@@ -77,7 +82,8 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     tagline: 'Art contemporain · Paris',
     room: 'cyber',
     aliases: ['palais de tokyo'],
-    match: ['contemporary', 'performance'],
+    match: ['contemporary', 'performance', 'installation'],
+    ban: ['joconde', 'mona lisa', 'raphael', 'botticelli'],
   },
   {
     id: 'met',
@@ -86,8 +92,9 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     country: 'USA',
     tagline: 'Open Access · encyclopedic',
     room: 'stone',
-    aliases: ['met', 'metropolitan', 'nyc', 'new york'],
-    match: ['egyptian', 'greek', 'roman', 'asian', 'american'],
+    aliases: ['met', 'metropolitan'],
+    match: ['egyptian', 'greek', 'roman', 'asian', 'american', 'met'],
+    ban: ['joconde', 'mona lisa'],
   },
   {
     id: 'uffizi',
@@ -98,6 +105,7 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     room: 'gold',
     aliases: ['uffizi', 'florence', 'firenze'],
     match: ['botticelli', 'leonardo', 'michelangelo', 'titian', 'caravaggio'],
+    ban: ['joconde', 'mona lisa', 'warhol', 'pollock', 'monet'],
   },
   {
     id: 'prado',
@@ -108,6 +116,7 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     room: 'stone',
     aliases: ['prado', 'madrid'],
     match: ['velazquez', 'goya', 'el greco', 'rubens'],
+    ban: ['joconde', 'mona lisa', 'warhol'],
   },
   {
     id: 'tate',
@@ -118,6 +127,7 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     room: 'white',
     aliases: ['tate', 'london'],
     match: ['turner', 'constable', 'british', 'modern'],
+    ban: ['joconde', 'mona lisa', 'raphael'],
   },
   {
     id: 'rijks',
@@ -128,6 +138,7 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     room: 'gold',
     aliases: ['rijksmuseum', 'amsterdam'],
     match: ['rembrandt', 'vermeer', 'dutch', 'hollands'],
+    ban: ['joconde', 'mona lisa', 'warhol', 'pollock'],
   },
   {
     id: 'moma',
@@ -137,7 +148,8 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     tagline: 'Modern art',
     room: 'white',
     aliases: ['moma'],
-    match: ['warhol', 'pollock', 'rothko', 'modern'],
+    match: ['warhol', 'pollock', 'rothko', 'modern', 'picasso'],
+    ban: ['joconde', 'mona lisa', 'rembrandt', 'vermeer', 'raphael', 'botticelli', 'holy family'],
   },
   {
     id: 'getty',
@@ -148,6 +160,7 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     room: 'stone',
     aliases: ['getty', 'los angeles', 'la'],
     match: ['european', 'photographs', 'manuscripts'],
+    ban: ['joconde', 'mona lisa'],
   },
   {
     id: 'tokyo_nm',
@@ -158,6 +171,7 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     room: 'dark',
     aliases: ['tokyo', 'japan'],
     match: ['japan', 'japanese', 'asia', 'buddha'],
+    ban: ['joconde', 'mona lisa', 'rembrandt', 'warhol'],
   },
   {
     id: 'hermitage',
@@ -168,6 +182,7 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     room: 'gold',
     aliases: ['hermitage'],
     match: ['russian', 'impressionist'],
+    ban: ['joconde', 'mona lisa'],
   },
 ]
 
@@ -221,7 +236,7 @@ function yourArtHereSpots(museumId: string, label: string, n = 2): FrameItem[] {
     artist: 'xArtists venues',
     collection: label,
     description:
-      'Réservez ce mur pour votre œuvre (NFT ou photo). Paiement paper → #/venues · venue-split après SC.',
+      'Réservez ce mur pour votre œuvre (NFT ou photo). Paiement paper → #/venues · venue-split on-chain.',
     type: 'Slot expo',
     kind: 'painting' as const,
     medium: 'digital' as const,
@@ -231,7 +246,8 @@ function yourArtHereSpots(museumId: string, label: string, n = 2): FrameItem[] {
   }))
 }
 
-const EXTRA_SCULPT: { remote: string; title: string; artist: string; year: string }[] = [
+/** Distinct Met Open Access sculpture URLs — one pool, sliced uniquely per museum */
+const SCULPT_POOL: { remote: string; title: string; artist: string; year: string }[] = [
   {
     remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP-16774-001.jpg',
     title: 'Marble statue of a wounded warrior',
@@ -244,17 +260,62 @@ const EXTRA_SCULPT: { remote: string; title: string; artist: string; year: strin
     artist: 'Greek',
     year: 'ca. 590–580 BCE',
   },
+  {
+    remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP145611.jpg',
+    title: 'Marble statue of a woman',
+    artist: 'Greek',
+    year: 'ca. 150 BCE',
+  },
+  {
+    remote: 'https://images.metmuseum.org/CRDImages/eg/web-large/DT553.jpg',
+    title: 'Cat coffin',
+    artist: 'Egyptian',
+    year: 'ca. 332–30 BCE',
+  },
+  {
+    remote: 'https://images.metmuseum.org/CRDImages/as/web-large/DP-15581-001.jpg',
+    title: 'Seated Buddha',
+    artist: 'China',
+    year: 'ca. 338',
+  },
+  {
+    remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP145549.jpg',
+    title: 'Bronze mirror with a support',
+    artist: 'Greek',
+    year: 'mid-5th century BCE',
+  },
+  {
+    remote: 'https://images.metmuseum.org/CRDImages/eg/web-large/DT564.jpg',
+    title: 'Sphinx of Hatshepsut',
+    artist: 'Egyptian',
+    year: 'ca. 1479–1458 BCE',
+  },
+  {
+    remote: 'https://images.metmuseum.org/CRDImages/as/web-large/DP-14786-001.jpg',
+    title: 'Guardian lion',
+    artist: 'China',
+    year: '6th century',
+  },
 ]
 
-function proceduralSculptures(museumId: string, label: string): FrameItem[] {
-  return EXTRA_SCULPT.map((pick, i) => ({
-    id: `${museumId}-sculpt-${i}`,
+function hashMuseum(id: string): number {
+  let h = 0
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0
+  return h
+}
+
+/** Exactly 2 unique sculptures per museum — no shared images across venues */
+function uniqueSculptures(museumId: string, label: string): FrameItem[] {
+  const start = hashMuseum(museumId) % SCULPT_POOL.length
+  const picks = [SCULPT_POOL[start], SCULPT_POOL[(start + 1) % SCULPT_POOL.length]]
+  return picks.map((pick, i) => ({
+    id: `${museumId}-sculpt-${i}-${pick.title.slice(0, 12).replace(/\s/g, '')}`,
     title: pick.title,
     subtitle: `${pick.artist} · ${pick.year}`,
     artist: pick.artist,
     date: pick.year,
     collection: label,
-    description: `Sculpture (Met Open Access) · ${label}.`,
+    description: `Sculpture (Met Open Access) exclusive à ${label}.`,
     image: proxyImg(pick.remote),
     type: 'Sculpture',
     kind: 'sculpture' as const,
@@ -265,35 +326,51 @@ function proceduralSculptures(museumId: string, label: string): FrameItem[] {
   }))
 }
 
+function isBanned(w: CatalogWork, ban?: string[]): boolean {
+  if (!ban?.length) return false
+  const blob = `${w.title} ${w.artist}`.toLowerCase()
+  return ban.some(b => blob.includes(b.toLowerCase()))
+}
+
+/**
+ * Assign each Met work to at most ONE museum (exclusive).
+ * Match keywords first, then fill from rest without violating ban lists.
+ * Sculptures / YAH are per-museum unique ids.
+ */
 function assignWorks(base: string): Map<string, FrameItem[]> {
   const works = (MET_WORKS as CatalogWork[]).filter(w => w.remote || w.file)
   const assigned = new Map<string, FrameItem[]>()
   const used = new Set<string>()
+
   for (const p of PROFILES) {
     if (p.id === 'xartists') continue
     const list: FrameItem[] = []
     for (const w of works) {
       if (used.has(w.id)) continue
+      if (isBanned(w, p.ban)) continue
       const blob = `${w.title} ${w.artist}`.toLowerCase()
       if (p.match?.some(m => blob.includes(m))) {
         list.push(toFrame(w, base, p.name))
         used.add(w.id)
       }
-      if (list.length >= 20) break
+      if (list.length >= 18) break
     }
     assigned.set(p.id, list)
   }
+
   const rest = works.filter(w => !used.has(w.id))
   let ri = 0
   for (const p of PROFILES) {
     if (p.id === 'xartists') continue
     const list = assigned.get(p.id) || []
-    while (list.length < 10 && ri < rest.length) {
+    while (list.length < 8 && ri < rest.length) {
       const w = rest[ri++]
+      if (used.has(w.id)) continue
+      if (isBanned(w, p.ban)) continue
       list.push(toFrame(w, base, p.name))
       used.add(w.id)
     }
-    list.push(...proceduralSculptures(p.id, p.name).slice(0, 2))
+    list.push(...uniqueSculptures(p.id, p.name))
     list.push(...yourArtHereSpots(p.id, p.name, 2))
     assigned.set(p.id, list)
   }
@@ -308,7 +385,7 @@ export function buildMuseumNetwork(base: string): VirtualMuseum[] {
     works:
       p.id === 'xartists'
         ? [
-            ...proceduralSculptures('xartists', 'Musée xArtists'),
+            ...uniqueSculptures('xartists', 'Musée xArtists'),
             ...yourArtHereSpots('xartists', 'Musée xArtists', 3),
           ]
         : assigned.get(p.id) || [],
