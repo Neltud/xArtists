@@ -109,11 +109,13 @@ export function useVenueRentTx() {
     [live, send],
   )
 
-  /** Prefer live if flag OK, else paper */
+  /** Prefer live if flag OK and amount > 0; else paper */
   const rentPay = useCallback(
     async (tierId: string, amountEgld: number, meta?: Record<string, unknown>) => {
-      if (live) return rentPayLive(tierId, amountEgld)
-      return rentPayPaper(tierId, amountEgld, meta)
+      if (!live || amountEgld <= 0 || meta?.forcePaper) {
+        return rentPayPaper(tierId, amountEgld, meta)
+      }
+      return rentPayLive(tierId, amountEgld)
     },
     [live, rentPayLive, rentPayPaper],
   )
