@@ -1,5 +1,18 @@
 # Changelog — xArtists
 
+## [0.57.1](https://github.com/Neltud/xArtists/compare/v0.57.0...v0.57.1) (2026-09-28)
+
+
+### Bug Fixes
+
+* **ci:** drop yanked zip via remove sc-scenario 0.50; harden Rust workflow ([7aae33a](https://github.com/Neltud/xArtists/commit/7aae33a532c6acbcb569c91117b58963992840a9))
+* **ci:** Rust job validates workspace only — SC wasm via sc-meta deploy workflows ([8e7295b](https://github.com/Neltud/xArtists/commit/8e7295b00be04b6e260ecaa843fc19dae21e972e))
+* **ci:** Rust workspace — drop missing tools/faucet and tools/tip members ([9305d30](https://github.com/Neltud/xArtists/commit/9305d307643c0099d87331ee18a10dbd7935cb98))
+* **venue-split:** isolate from root workspace so sc-meta build works in CI ([ae1f2e5](https://github.com/Neltud/xArtists/commit/ae1f2e569f3fe4b0ba914eb718b276129a6b47cf))
+* **venue-split:** parent workspace members=["."] for sc-meta isolation ([36d0f91](https://github.com/Neltud/xArtists/commit/36d0f914cf022ff368287d6c79ec62dc51ef8328))
+* **venue-split:** sc 0.66 call_value API (egld + single_esdt clone) ([88ba7d5](https://github.com/Neltud/xArtists/commit/88ba7d5cfc69a641f69303c6851fc835e53ce3d4))
+* **venue-split:** standard MX meta workspace (parent package only, meta own workspace) ([7808c83](https://github.com/Neltud/xArtists/commit/7808c8310d8331f77dc7e7f556a0910f34bc76ba))
+
 ## [0.57.0](https://github.com/Neltud/xArtists/compare/v0.56.1...v0.57.0) (2026-09-28)
 
 
