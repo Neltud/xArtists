@@ -9,7 +9,7 @@ export const AGENT_8008 = {
   codename: 'Execution Sentinel',
   role: 'router_intents',
   description:
-    'Route les intents LIA (BUY_NFT, VENUE_RENTAL, STAKE, VOTE, PULSE_HYPE) vers workflows Vellum. Paper par défaut.',
+    'Route les intents LIA (BUY_NFT, VENUE_RENTAL, STAKE, VOTE, PULSE_HYPE, STUDIO_MINT_PAPER) vers workflows Vellum. Paper par défaut.',
   endpoints: {
     vellumWorkflow: 'xartists-8008-intents',
     mcp: null as string | null,
@@ -18,6 +18,7 @@ export const AGENT_8008 = {
     'BUY_NFT',
     'VENUE_RENTAL',
     'VENUE_REGISTER',
+    'VENUE_RENT_PAY',
     'STAKE_TRO_LP',
     'UNSTAKE_TRO_LP',
     'VOTE_DAO',
@@ -25,6 +26,7 @@ export const AGENT_8008 = {
     'SLOT_SPIN',
     'ADS_BID',
     'PULSE_HYPE',
+    'STUDIO_MINT_PAPER',
   ] as const,
   risk: {
     mainnetTx: false,

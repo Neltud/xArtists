@@ -6,8 +6,10 @@ services:
     restart: unless-stopped
     environment:
       - VITE_PULSE_API=http://pulse-api:8090
+      - VITE_VELLUM_8008_WEBHOOK=http://vellum-8008-proxy:8091/vellum-8008
     depends_on:
       - pulse-api
+      - vellum-8008-proxy
     labels:
       - "app=xartists"
       - "component=frontend"
@@ -20,3 +22,16 @@ services:
     labels:
       - "app=xartists"
       - "component=pulse-api"
+
+  vellum-8008-proxy:
+    build: ./services/vellum-8008-proxy
+    ports:
+      - "8091:8091"
+    environment:
+      - VELLUM_API_KEY=${VELLUM_API_KEY:-}
+      - VELLUM_WORKFLOW_NAME=xartists-8008-intents
+      - ALLOW_ORIGINS=*
+    restart: unless-stopped
+    labels:
+      - "app=xartists"
+      - "component=vellum-8008-proxy"
