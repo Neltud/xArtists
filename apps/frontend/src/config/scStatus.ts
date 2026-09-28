@@ -7,6 +7,16 @@ const truthy = (v: string | undefined) =>
 export const KNOWN_EMPTY_MARKETPLACE =
   'erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t'
 
+/**
+ * venue-split mainnet (2026-09-28).
+ * Display / docs only — live TX still requires VITE_VENUE_CODEHASH_OK after rentPay dust.
+ * Explorer: https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y
+ */
+export const VENUE_SC_MAINNET =
+  'erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y'
+
+export const VENUE_SC_CODEHASH_MAINNET = 'SRrGio4iLmtQrb22JJhapwobNgavYsoQ52WmfT1owuY='
+
 export const LIA_PROTOCOL_WALLET = (
   import.meta.env.VITE_LIA_PROTOCOL_WALLET ||
   'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
@@ -18,9 +28,9 @@ export const MARKETPLACE_ADDRESS =
 export const AGENTS_MARKETPLACE_ADDRESS =
   (import.meta.env.VITE_AGENTS_MARKETPLACE_ADDRESS as string | undefined)?.trim() || ''
 
-/** Venue-split SC — set after deploy + verify; empty = paper only */
+/** Venue-split SC — env first, else known mainnet address for UI status (TX still gated by VENUE_LIVE) */
 export const VENUE_SC_ADDRESS =
-  (import.meta.env.VITE_VENUE_SC_ADDRESS as string | undefined)?.trim() || ''
+  (import.meta.env.VITE_VENUE_SC_ADDRESS as string | undefined)?.trim() || VENUE_SC_MAINNET
 
 export const MARKETPLACE_LIVE = truthy(import.meta.env.VITE_MARKETPLACE_CODEHASH_OK)
 export const AGENTS_LIVE = truthy(import.meta.env.VITE_AGENTS_CODEHASH_OK)
@@ -59,9 +69,7 @@ export function canRentVenueOnChain(): boolean {
 /** Prefer VITE address; never fall back to empty placeholder for TX */
 export function marketplaceReceiverOrThrow(): string {
   if (!canListBuyNft()) {
-    throw new Error(
-      'Marketplace SC not live (codeHash / empty). Deploy + VITE_MARKETPLACE_CODEHASH_OK=1.',
-    )
+    throw new Error('Marketplace SC not live (set VITE_MARKETPLACE_ADDRESS + CODEHASH_OK)')
   }
   return MARKETPLACE_ADDRESS
 }
@@ -69,8 +77,15 @@ export function marketplaceReceiverOrThrow(): string {
 export function venueReceiverOrThrow(): string {
   if (!canRentVenueOnChain()) {
     throw new Error(
-      'Venue-split SC not live. Deploy testnet/mainnet, verify codeHash, then VITE_VENUE_SC_ADDRESS + VITE_VENUE_CODEHASH_OK=1.',
+      'Venue-split not live — set VITE_VENUE_SC_ADDRESS + VITE_VENUE_CODEHASH_OK after rentPay dust',
     )
   }
   return VENUE_SC_ADDRESS
+}
+
+export function venueStatusLabel(): string {
+  if (canRentVenueOnChain()) return 'LIVE · rentPay on-chain'
+  if (isUsableScAddress(VENUE_SC_ADDRESS))
+    return 'Adresse connue · paper until CODEHASH_OK (rentPay dust first)'
+  return 'Paper only · no SC address'
 }

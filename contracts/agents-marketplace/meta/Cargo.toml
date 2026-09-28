@@ -1,0 +1,13 @@
+[package]
+name = "agents-marketplace-meta"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "agents-marketplace-meta"
+path = "src/main.rs"
+
+[dependencies]
+agents-marketplace = { path = ".." }
+multiversx-sc-meta-lib = { version = "=0.66.2", default-features = false }
