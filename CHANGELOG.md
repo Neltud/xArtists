@@ -1,5 +1,15 @@
 # Changelog — xArtists
 
+## [0.57.2](https://github.com/Neltud/xArtists/compare/v0.57.1...v0.57.2) (2026-09-28)
+
+
+### Bug Fixes
+
+* **ci:** mxpy deploy — drop --recall-nonce (auto nonce), add --wait-result ([692de44](https://github.com/Neltud/xArtists/commit/692de447bcd74b39388504696dc540f99bb0d8f1))
+* **venue-split:** add wasm adapter crate for sc-meta all build ([24f9f1e](https://github.com/Neltud/xArtists/commit/24f9f1e193c0e75963e87b7a37df1525f60e5164))
+* **venue-split:** match MX adder layout — workspace + rlib for meta AbiProvider ([4c04be4](https://github.com/Neltud/xArtists/commit/4c04be44bfd02ed9a2eda8a34d92992c24067508))
+* **venue-split:** wasm own workspace (MX official) — parent members only . + meta ([33ae655](https://github.com/Neltud/xArtists/commit/33ae655fe30fe4fbdb5f3a485c8a7876743d67e1))
+
 ## [0.57.1](https://github.com/Neltud/xArtists/compare/v0.57.0...v0.57.1) (2026-09-28)
 
 
