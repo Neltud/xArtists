@@ -6,6 +6,10 @@ members = [
 exclude = [
     "contracts/venue_split",
     "contracts/venue_split/meta",
+    "contracts/nft-marketplace",
+    "contracts/nft-marketplace/meta",
+    "contracts/agents-marketplace",
+    "contracts/agents-marketplace/meta",
 ]
 resolver = "2"
 
