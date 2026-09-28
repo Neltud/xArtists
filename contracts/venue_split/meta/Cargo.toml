@@ -1,0 +1,13 @@
+[package]
+name = "venue-split-meta"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "venue-split-meta"
+path = "src/main.rs"
+
+[dependencies]
+multiversx-sc-meta-lib = "=0.66.2"
+venue-split = { path = ".." }

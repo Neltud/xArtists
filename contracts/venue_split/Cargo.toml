@@ -8,7 +8,7 @@ path = "src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-multiversx-sc = "0.50"
+multiversx-sc = "0.66.2"
 
 [dev-dependencies]
-multiversx-sc-scenario = "0.50"
+multiversx-sc-scenario = "0.66.2"
