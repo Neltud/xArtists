@@ -15,7 +15,6 @@ export type MuseumPulseParams = {
   label: string
 }
 
-/** sentiment -1..1 → fog / light / particles — plafonds relevés pour voir les tableaux */
 export function mapPulseToMuseum(env: PulseEnvironment, room: string): MuseumPulseParams {
   const s = Math.max(-1, Math.min(1, env.sentiment))
   const baseFog = room === 'cyber' ? 0.014 : room === 'dark' ? 0.012 : 0.009
@@ -43,6 +42,18 @@ export function pulseFromIndex(i: number, room = 'stone'): MuseumPulseParams {
 }
 
 export async function fetchPulseState(): Promise<PulseEnvironment | null> {
+  try {
+    const api = (import.meta as { env?: { VITE_PULSE_API?: string } }).env?.VITE_PULSE_API
+    if (api) {
+      const r = await fetch(`${api.replace(/\/$/, '')}/pulse`, { cache: 'no-store' })
+      if (r.ok) {
+        const j = await r.json()
+        if (typeof j.sentiment === 'number') return j as PulseEnvironment
+      }
+    }
+  } catch {
+    /* fall through */
+  }
   try {
     const base = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL || '/'
     const url = `${base}data/pulse_state.json?t=${Date.now()}`

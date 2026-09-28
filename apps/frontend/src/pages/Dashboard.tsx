@@ -1,5 +1,5 @@
 /**
- * Home — fluid + session wallet connecté + Phase 4 + actions.
+ * Home — fluid + session wallet + user dashboard + Phase 4.
  */
 import { Link } from 'react-router-dom'
 import SoftStatus from '../components/SoftStatus'
@@ -10,6 +10,7 @@ import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import AdSlot from '../components/AdSlot'
 import UserActionsPanel from '../components/UserActionsPanel'
 import ConnectedSessionPanel from '../components/ConnectedSessionPanel'
+import UserDashboardPanel from '../components/UserDashboardPanel'
 import { isSupernovaLive } from '../config/supernova'
 import LottieIcon from '../components/LottieIcon'
 
@@ -65,8 +66,9 @@ export default function Dashboard() {
         </div>
       </section>
 
-      <div className="relative mt-6">
+      <div className="relative mt-6 space-y-3">
         <ConnectedSessionPanel />
+        <UserDashboardPanel />
       </div>
 
       <div className="relative mt-8">
