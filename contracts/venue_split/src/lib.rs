@@ -68,8 +68,8 @@ pub trait VenueSplit {
     #[endpoint(rentPay)]
     fn rent_pay(&self, tier_id: ManagedBuffer) {
         self.require_not_paused();
-        let payment = self.call_value().egld_value();
-        require!(*payment > 0u64, "zero payment");
+        let payment = self.call_value().egld().clone_value();
+        require!(payment > 0u64, "zero payment");
         self.distribute_egld(&payment, &tier_id);
     }
 
@@ -78,7 +78,8 @@ pub trait VenueSplit {
     #[endpoint(rentPayEsdt)]
     fn rent_pay_esdt(&self, tier_id: ManagedBuffer) {
         self.require_not_paused();
-        let (token_id, nonce, amount) = self.call_value().single_esdt().into_tuple();
+        let payment = self.call_value().single_esdt().clone();
+        let (token_id, nonce, amount) = payment.into_tuple();
         require!(amount > 0u64, "zero payment");
         require!(nonce == 0, "only fungible ESDT");
         self.distribute_esdt(&token_id, &amount, &tier_id);
@@ -132,7 +133,7 @@ pub trait VenueSplit {
         self.rent_paid_event(
             &self.blockchain().get_caller(),
             tier_id,
-            &token_id.as_managed_buffer().clone(),
+            token_id.as_managed_buffer(),
             amount,
         );
     }
