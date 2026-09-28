@@ -35,7 +35,6 @@ declare global {
   }
 }
 
-/** Hubs art mondiaux — plan horizontal (pas de dépendance tours.json) */
 export const DEFAULT_ART_LOCATIONS: ArtLocation[] = [
   { id: 'paris', city: 'Paris', country: 'France', lat: 48.86, lng: 2.34, focus: 'Louvre · Orsay · Pompidou', region: 'europe' },
   { id: 'london', city: 'London', country: 'UK', lat: 51.51, lng: -0.13, focus: 'National Gallery · Tate', region: 'europe' },
@@ -128,10 +127,11 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
   const [cityFilter, setCityFilter] = useState('')
   const [region, setRegion] = useState<string>('all')
   const [osmPois, setOsmPois] = useState<OsmPoi[]>([])
+  const [selectedCity, setSelectedCity] = useState<string>('')
 
   const baseList = useMemo(() => {
     if (Array.isArray(locations) && locations.length > 0) return locations
-    return DEFAULT_ART_LOCATIONS
+    return Array.isArray(DEFAULT_ART_LOCATIONS) ? DEFAULT_ART_LOCATIONS : []
   }, [locations])
 
   const filtered = useMemo(() => {
@@ -146,7 +146,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
           (l.focus || '').toLowerCase().includes(q),
       )
     }
-    return list
+    return Array.isArray(list) ? list : []
   }, [baseList, region, cityFilter])
 
   useEffect(() => {
@@ -154,43 +154,63 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
     ;(async () => {
       try {
         const L = await ensureLeaflet()
-        if (cancelled || !mapRef.current || mapObj.current) return
+        if (cancelled || !mapRef.current) return
+        if (mapObj.current) {
+          mapObj.current.remove()
+          mapObj.current = null
+        }
         const map = L.map(mapRef.current, {
           center: [20, 10],
           zoom: 2,
-          minZoom: 1,
+          minZoom: 2,
           maxZoom: 18,
           worldCopyJump: true,
         })
-        const bm = BASEMAPS.osm
+        const bm = BASEMAPS[basemap]
         const tile = L.tileLayer(bm.url, {
           attribution: bm.attribution,
           maxZoom: bm.maxZoom,
-          subdomains: bm.subdomains || 'abc',
+          subdomains: bm.subdomains,
         }).addTo(map)
         tileRef.current = tile
+        const layer = L.layerGroup().addTo(map)
+        layerRef.current = layer
         mapObj.current = map
-        layerRef.current = L.layerGroup().addTo(map)
         setMapReady(true)
-      } catch {
-        /* ignore */
+        setTimeout(() => map.invalidateSize(), 80)
+      } catch (e) {
+        console.error('[ArtWorldMap]', e)
+        setMapReady(false)
       }
     })()
     return () => {
       cancelled = true
+      if (mapObj.current) {
+        try {
+          mapObj.current.remove()
+        } catch {
+          /* */
+        }
+        mapObj.current = null
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    if (!mapReady || !mapObj.current || !window.L) return
+    if (!mapReady || !mapObj.current || !window.L || !tileRef.current) return
     const L = window.L
     const map = mapObj.current
     const bm = BASEMAPS[basemap]
-    if (tileRef.current) map.removeLayer(tileRef.current)
+    try {
+      map.removeLayer(tileRef.current)
+    } catch {
+      /* */
+    }
     const tile = L.tileLayer(bm.url, {
       attribution: bm.attribution,
       maxZoom: bm.maxZoom,
-      subdomains: bm.subdomains || 'abc',
+      subdomains: bm.subdomains,
     }).addTo(map)
     tileRef.current = tile
   }, [basemap, mapReady])
@@ -200,7 +220,8 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
     const L = window.L
     const layer = layerRef.current
     layer.clearLayers()
-    filtered.forEach(loc => {
+    ;(filtered || []).forEach(loc => {
+      if (loc.lat == null || loc.lng == null) return
       const style = regionStyle(loc.region)
       const m = L.circleMarker([loc.lat, loc.lng], {
         radius: 7,
@@ -213,6 +234,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
         `<strong>${loc.city}</strong> · ${loc.country || ''}<br/><span style="opacity:.7">${loc.focus || ''}</span>`,
       )
       m.on('click', () => {
+        setSelectedCity(loc.city)
         setTravelDestination({
           city: loc.city,
           country: loc.country,
@@ -222,7 +244,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
       })
       m.addTo(layer)
     })
-    osmPois.forEach(p => {
+    ;(osmPois || []).forEach(p => {
       const color = osmPoiColor(p.kind)
       const m = L.circleMarker([p.lat, p.lng], {
         radius: 5,
@@ -232,10 +254,11 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
         weight: 1,
       })
       const match = matchOsmToVirtualMuseum(p)
-      const enter = match
-        ? `<br/><a href="#/museum?room=${encodeURIComponent(match.roomId)}">Entrer musée</a>`
+      const mid = match?.museumId || match?.museum?.id
+      const enter = mid
+        ? `<br/><a href="#/museum?room=${encodeURIComponent(mid)}">Entrer · musée</a>`
         : ''
-      m.bindPopup(`<strong>${p.name}</strong><br/>${osmPoiLabel(p.kind)}${enter}`)
+      m.bindPopup(`<strong>${p.name || 'POI'}</strong><br/>${osmPoiLabel(p.kind)}${enter}`)
       m.addTo(layer)
     })
   }, [filtered, osmPois, mapReady])
@@ -289,7 +312,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
             </option>
           ))}
         </select>
-        <span className="text-zinc-500">{filtered.length} destinations · plan horizontal</span>
+        <span className="text-zinc-500">{filtered?.length ?? 0} destinations · plan horizontal</span>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
@@ -317,7 +340,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
       <p className="text-[10px] text-zinc-600">
         Zoom ≥ {osmMinZoom} → POI OSM · Entrer musée si match · tuiles OSM sans clé
       </p>
-      <MapMuseumEnter />
+      <MapMuseumEnter city={selectedCity || cityFilter || undefined} id="world_map" />
     </div>
   )
 }
