@@ -1,6 +1,5 @@
 /**
  * Playable museum avatars (3rd person) — human + creature skins.
- * Lightweight meshes — no external GLB for demo.
  */
 import * as THREE from 'three'
 
@@ -21,7 +20,7 @@ export function loadAvatarSkin(): AvatarSkinId {
     const v = localStorage.getItem(STORAGE_KEY) as AvatarSkinId | null
     if (v && AVATAR_SKINS.some(s => s.id === v)) return v
   } catch {
-    /* ignore */
+    /* */
   }
   return 'human'
 }
@@ -30,16 +29,24 @@ export function saveAvatarSkin(id: AvatarSkinId) {
   try {
     localStorage.setItem(STORAGE_KEY, id)
   } catch {
-    /* ignore */
+    /* */
   }
 }
 
+/** Accept skin id OR legacy accent number (human + that accent) */
 export function createPlayerAvatar(
-  skin: AvatarSkinId = 'human',
+  skinOrAccent: AvatarSkinId | number = 'human',
   accentOverride?: number,
 ): THREE.Group {
-  const meta = AVATAR_SKINS.find(s => s.id === skin) || AVATAR_SKINS[0]
-  const accent = accentOverride ?? meta.accent
+  let skin: AvatarSkinId = 'human'
+  let accent = AVATAR_SKINS[0].accent
+  if (typeof skinOrAccent === 'number') {
+    accent = skinOrAccent
+    skin = loadAvatarSkin()
+  } else {
+    skin = skinOrAccent
+    accent = accentOverride ?? AVATAR_SKINS.find(s => s.id === skin)?.accent ?? accent
+  }
   if (skin === 'dragon') return createDragon(accent)
   if (skin === 'eagle') return createEagle(accent)
   if (skin === 'dragonfly') return createDragonfly(accent)
@@ -50,26 +57,11 @@ export function createPlayerAvatar(
 function createHuman(accent: number): THREE.Group {
   const root = new THREE.Group()
   root.name = 'playerAvatar'
-  root.userData.skin = 'human'
-
-  const skin = new THREE.MeshStandardMaterial({
-    color: 0xc4a574,
-    roughness: 0.65,
-    metalness: 0.05,
-  })
+  const skin = new THREE.MeshStandardMaterial({ color: 0xc4a574, roughness: 0.65, metalness: 0.05 })
   const cloth = new THREE.MeshStandardMaterial({
-    color: accent,
-    roughness: 0.45,
-    metalness: 0.15,
-    emissive: accent,
-    emissiveIntensity: 0.12,
+    color: accent, roughness: 0.45, metalness: 0.15, emissive: accent, emissiveIntensity: 0.12,
   })
-  const dark = new THREE.MeshStandardMaterial({
-    color: 0x1e1b2e,
-    roughness: 0.7,
-    metalness: 0.1,
-  })
-
+  const dark = new THREE.MeshStandardMaterial({ color: 0x1e1b2e, roughness: 0.7, metalness: 0.1 })
   const legGeo = new THREE.CapsuleGeometry(0.11, 0.45, 4, 8)
   const legL = new THREE.Mesh(legGeo, dark)
   legL.position.set(-0.12, 0.35, 0)
@@ -78,11 +70,9 @@ function createHuman(accent: number): THREE.Group {
   legR.position.set(0.12, 0.35, 0)
   legR.name = 'legR'
   root.add(legL, legR)
-
   const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.4, 6, 10), cloth)
   torso.position.y = 1.05
   root.add(torso)
-
   const armGeo = new THREE.CapsuleGeometry(0.07, 0.38, 4, 8)
   const armL = new THREE.Mesh(armGeo, cloth)
   armL.position.set(-0.32, 1.05, 0)
@@ -91,19 +81,13 @@ function createHuman(accent: number): THREE.Group {
   armR.position.set(0.32, 1.05, 0)
   armR.name = 'armR'
   root.add(armL, armR)
-
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 14, 14), skin)
   head.position.y = 1.55
   root.add(head)
-
   const visor = new THREE.Mesh(
     new THREE.BoxGeometry(0.22, 0.06, 0.08),
     new THREE.MeshStandardMaterial({
-      color: 0x22d3ee,
-      emissive: 0x22d3ee,
-      emissiveIntensity: 0.5,
-      roughness: 0.2,
-      metalness: 0.6,
+      color: 0x22d3ee, emissive: 0x22d3ee, emissiveIntensity: 0.5, roughness: 0.2, metalness: 0.6,
     }),
   )
   visor.position.set(0, 1.56, 0.12)
@@ -114,13 +98,8 @@ function createHuman(accent: number): THREE.Group {
 function createDragon(accent: number): THREE.Group {
   const root = new THREE.Group()
   root.name = 'playerAvatar'
-  root.userData.skin = 'dragon'
   const mat = new THREE.MeshStandardMaterial({
-    color: accent,
-    roughness: 0.35,
-    metalness: 0.25,
-    emissive: accent,
-    emissiveIntensity: 0.2,
+    color: accent, roughness: 0.35, metalness: 0.25, emissive: accent, emissiveIntensity: 0.2,
   })
   const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.28, 0.55, 6, 10), mat)
   body.position.y = 0.85
@@ -151,13 +130,8 @@ function createDragon(accent: number): THREE.Group {
 function createEagle(accent: number): THREE.Group {
   const root = new THREE.Group()
   root.name = 'playerAvatar'
-  root.userData.skin = 'eagle'
   const mat = new THREE.MeshStandardMaterial({
-    color: accent,
-    roughness: 0.4,
-    metalness: 0.15,
-    emissive: accent,
-    emissiveIntensity: 0.15,
+    color: accent, roughness: 0.4, metalness: 0.15, emissive: accent, emissiveIntensity: 0.15,
   })
   const body = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 12), mat)
   body.scale.set(1, 0.85, 1.2)
@@ -193,15 +167,9 @@ function createEagle(accent: number): THREE.Group {
 function createDragonfly(accent: number): THREE.Group {
   const root = new THREE.Group()
   root.name = 'playerAvatar'
-  root.userData.skin = 'dragonfly'
   const mat = new THREE.MeshStandardMaterial({
-    color: accent,
-    roughness: 0.25,
-    metalness: 0.4,
-    emissive: accent,
-    emissiveIntensity: 0.35,
-    transparent: true,
-    opacity: 0.92,
+    color: accent, roughness: 0.25, metalness: 0.4, emissive: accent, emissiveIntensity: 0.35,
+    transparent: true, opacity: 0.92,
   })
   const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.08, 0.7, 4, 8), mat)
   body.rotation.z = Math.PI / 2
@@ -211,12 +179,8 @@ function createDragonfly(accent: number): THREE.Group {
   head.position.set(0.4, 0.9, 0)
   root.add(head)
   const wingMat = new THREE.MeshStandardMaterial({
-    color: 0xa5f3fc,
-    transparent: true,
-    opacity: 0.45,
-    side: THREE.DoubleSide,
-    emissive: 0x22d3ee,
-    emissiveIntensity: 0.2,
+    color: 0xa5f3fc, transparent: true, opacity: 0.45, side: THREE.DoubleSide,
+    emissive: 0x22d3ee, emissiveIntensity: 0.2,
   })
   const wingL = new THREE.Mesh(new THREE.PlaneGeometry(0.55, 0.22), wingMat)
   wingL.position.set(0, 1.05, 0.15)
@@ -238,12 +202,7 @@ function createDragonfly(accent: number): THREE.Group {
 function createFox(accent: number): THREE.Group {
   const root = new THREE.Group()
   root.name = 'playerAvatar'
-  root.userData.skin = 'fox'
-  const mat = new THREE.MeshStandardMaterial({
-    color: accent,
-    roughness: 0.55,
-    metalness: 0.08,
-  })
+  const mat = new THREE.MeshStandardMaterial({ color: accent, roughness: 0.55, metalness: 0.08 })
   const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, 0.4, 6, 8), mat)
   body.position.y = 0.75
   root.add(body)
@@ -276,16 +235,23 @@ function createFox(accent: number): THREE.Group {
   return root
 }
 
-/** Walk cycle — limb swing from speed 0..1 */
-export function tickAvatarWalk(avatar: THREE.Group, phase: number, intensity: number) {
+/** Walk cycle — returns updated phase for callers that chain the value */
+export function tickAvatarWalk(
+  avatar: THREE.Group,
+  phase: number,
+  intensity: number,
+  dt = 0.016,
+): number {
+  const next = phase + dt * (6 + intensity * 4)
   const legL = avatar.getObjectByName('legL')
   const legR = avatar.getObjectByName('legR')
   const armL = avatar.getObjectByName('armL')
   const armR = avatar.getObjectByName('armR')
-  const swing = Math.sin(phase) * 0.45 * intensity
+  const swing = Math.sin(next) * 0.45 * Math.min(1, intensity)
   if (legL) legL.rotation.x = swing
   if (legR) legR.rotation.x = -swing
   if (armL) armL.rotation.x = -swing * 0.8
   if (armR) armR.rotation.x = swing * 0.8
-  avatar.position.y = intensity > 0.05 ? Math.abs(Math.sin(phase * 2)) * 0.03 * intensity : 0
+  avatar.position.y = intensity > 0.05 ? Math.abs(Math.sin(next * 2)) * 0.03 * Math.min(1, intensity) : 0
+  return next
 }
