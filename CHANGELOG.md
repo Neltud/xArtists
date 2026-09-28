@@ -1,5 +1,35 @@
 # Changelog — xArtists
 
+## [0.59.0](https://github.com/Neltud/xArtists/compare/v0.58.0...v0.59.0) (2026-09-28)
+
+
+### Features
+
+* **museum:** avatar skins (dragon/eagle/dragonfly/fox) + picker UI ([438b88b](https://github.com/Neltud/xArtists/commit/438b88bb008040b4d810d89e52a17b16bf80ab7c))
+* **museum:** prepend iconic PD works (Joconde@Louvre, Night Watch@Rijks, …) ([70c9e53](https://github.com/Neltud/xArtists/commit/70c9e532fb0201c406e6409e1b339fb81ea25334))
+
+
+### Bug Fixes
+
+* agents-marketplace multiversx.json + deploy agents-only workflow; record nft SC ([6dc7c82](https://github.com/Neltud/xArtists/commit/6dc7c827f22035afd3c0c1cd3039d1627d8c5e43))
+* **agents-marketplace:** #[upgrade] + type_abi for 0.66 ([22cf5e8](https://github.com/Neltud/xArtists/commit/22cf5e87a838d311d07cc0681a1c8677a89b3344))
+* **agents-marketplace:** egld() for multiversx-sc 0.66 ([878628a](https://github.com/Neltud/xArtists/commit/878628a3bc36e542fb5d17859f78266ac56cc028))
+* **ci:** rentPay dust — fetch nonce for mxpy 9 ([8ce6996](https://github.com/Neltud/xArtists/commit/8ce699644d1ae8d9c787e16d3bc080b2f97af3b7))
+* **map:** museumId in OSM popup · null-safe filtered · iconic PD works per museum ([6b2c26f](https://github.com/Neltud/xArtists/commit/6b2c26f7270ff05d31fd7d9999a1bcde586fb3b0))
+* **museum:** exclusive Met assignment · no shared sculptures · ban joconde outside louvre ([37c49ee](https://github.com/Neltud/xArtists/commit/37c49ee3bede79c119a398ec96e6f98fa355c5ac))
+* **nft-marketplace:** clone token_identifier for 0.66 Ref ([11e1d46](https://github.com/Neltud/xArtists/commit/11e1d461b0858323c5f73cc1e3388016bcc32923))
+* **nft-marketplace:** withdrawBid/getBid/owner views for wasm adapter ([2c9032d](https://github.com/Neltud/xArtists/commit/2c9032d28664af32fbd7d25525f581596b43c859))
+* restore MuseumWebGLHall (full 3P hall + avatar skins picker) ([e354844](https://github.com/Neltud/xArtists/commit/e354844dc3c6996eb90b3a9aee501536e02613d3))
+* restore MuseumWebGLHall + avatar API backward-compat (skin | accent) ([21178b6](https://github.com/Neltud/xArtists/commit/21178b6c206535fbd6db328d1f2f626e89a74896))
+* **tours:** MapMuseumEnter props + map crash · iconic works per museum (Joconde Louvre) ([37db42d](https://github.com/Neltud/xArtists/commit/37db42d7c14bad44d3805a426e8b953d406411ed))
+
+
+### Documentation
+
+* agents-marketplace mainnet LIVE + contracts.json ([580cc70](https://github.com/Neltud/xArtists/commit/580cc70ba0e24ae4bf7cb840e807ce8b90cc9d42))
+* **marketplace:** audit draft aligned seller ≥90% + SFT unit list ([920efa4](https://github.com/Neltud/xArtists/commit/920efa446e0bafc8e66492343db508ab42643b0d))
+* **packs:** clarify NFT genesis + SFT series entitlement (not financial product) ([991f494](https://github.com/Neltud/xArtists/commit/991f494b7da2c43c9f637518a85a1b26e53a1c9b))
+
 ## [0.58.0](https://github.com/Neltud/xArtists/compare/v0.57.2...v0.58.0) (2026-09-28)
 
 
