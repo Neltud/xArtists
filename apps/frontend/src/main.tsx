@@ -8,6 +8,7 @@ import { MxDappProvider } from './providers/MxDappProvider'
 import { registerSW } from './pwa/registerSW'
 import { probeChainTiming } from './config/chainTiming'
 import { startAgent8008Bridge } from './lib/agent8008Bridge'
+import PulseBoot from './components/PulseBoot'
 import './index.css'
 import './atelier.css'
 import './motion-fx.css'
@@ -30,6 +31,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <MxDappProvider>
         <WalletProvider>
           <MultiversXProvider>
+            <PulseBoot />
             <App />
           </MultiversXProvider>
         </WalletProvider>
