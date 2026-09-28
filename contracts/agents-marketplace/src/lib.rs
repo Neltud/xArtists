@@ -1,9 +1,7 @@
 #![no_std]
 
-//! Agents Marketplace — list / buy / cancel agent actions (LIA + third-party)
-//! Fee tracked in accumulated_fees; owner claims via claimFees.
-//! Security: pause, CEI, upgrade gated by storage owner, 2-step ownership, agent_id len cap.
-//! Seller receives (10000 - fee_bps) / 10000 of price (default fee 300 → 97%).
+//! Agents Marketplace — list / buy / cancel agent actions
+//! fee_bps default 300 → seller 97 %.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
@@ -11,7 +9,8 @@ multiversx_sc::derive_imports!();
 const MAX_AGENT_ID_LEN: usize = 64;
 const MAX_FEE_BPS: u16 = 1000;
 
-#[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
+#[type_abi]
+#[derive(TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
 pub struct AgentListing<M: ManagedTypeApi> {
     pub seller: ManagedAddress<M>,
     pub agent_id: ManagedBuffer<M>,
@@ -33,7 +32,7 @@ pub trait AgentsMarketplace {
         self.pending_owner().clear();
     }
 
-    #[endpoint(upgrade)]
+    #[upgrade]
     fn upgrade(&self) {
         self.require_owner();
     }
