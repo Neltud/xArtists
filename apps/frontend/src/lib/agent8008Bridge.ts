@@ -1,13 +1,6 @@
 /**
  * Bridge navigateur : events `lia-intent` → journal local + webhook Vellum (optionnel).
  * PEM / Vellum API key JAMAIS ici — uniquement URL proxy (VITE_VELLUM_8008_WEBHOOK).
- *
- * Payload envoyé au webhook (compatible proxy → Vellum execute-workflow) :
- * {
- *   workflow_deployment_name: "xartists-8008-intents",
- *   external_id: "…",
- *   inputs: [{ name: "intent_type", value }, { name: "payload_json", value }, …]
- * }
  */
 import { AGENT_8008, isAgent8008Intent, type Agent8008Intent } from '../config/agent8008'
 
@@ -44,13 +37,11 @@ export function get8008Journal(): IntentJournalEntry[] {
   return readJournal()
 }
 
-/** Proxy URL only — never put Vellum API key in VITE_* */
 function vellumWebhookUrl(): string | null {
   const u = (import.meta.env.VITE_VELLUM_8008_WEBHOOK as string | undefined)?.trim()
   return u || null
 }
 
-/** Body for proxy that forwards to Vellum execute-workflow / execute-workflow-async */
 function buildVellumProxyBody(entry: IntentJournalEntry) {
   return {
     workflow_deployment_name: AGENT_8008.endpoints.vellumWorkflow,
@@ -59,14 +50,9 @@ function buildVellumProxyBody(entry: IntentJournalEntry) {
       { name: 'intent_type', type: 'STRING', value: entry.type },
       { name: 'agent_id', type: 'STRING', value: entry.agent },
       { name: 'paper', type: 'STRING', value: entry.paper ? 'true' : 'false' },
-      {
-        name: 'payload_json',
-        type: 'STRING',
-        value: JSON.stringify(entry.payload),
-      },
+      { name: 'payload_json', type: 'STRING', value: JSON.stringify(entry.payload) },
       { name: 'ts', type: 'STRING', value: entry.ts },
     ],
-    // Mirror raw for simple proxies
     intent: entry.type,
     agent: entry.agent,
     paper: entry.paper,
@@ -88,11 +74,7 @@ async function forwardToVellum(entry: IntentJournalEntry): Promise<IntentJournal
     })
     if (!res.ok) {
       const t = await res.text().catch(() => '')
-      return {
-        ...entry,
-        vellum: 'error',
-        vellumDetail: `HTTP ${res.status} ${t.slice(0, 60)}`,
-      }
+      return { ...entry, vellum: 'error', vellumDetail: `HTTP ${res.status} ${t.slice(0, 60)}` }
     }
     return { ...entry, vellum: 'sent', vellumDetail: 'ok' }
   } catch (e) {
@@ -124,16 +106,13 @@ export async function handleLiaIntentDetail(detail: unknown): Promise<IntentJour
     vellum: isAgent8008Intent(type) ? 'queued' : 'skipped',
     vellumDetail: isAgent8008Intent(type) ? undefined : 'type not in 8008 allowlist',
   }
-
   let final = entry
   if (isAgent8008Intent(type as Agent8008Intent)) {
     final = await forwardToVellum(entry)
   }
-
   const journal = readJournal()
   journal.unshift(final)
   writeJournal(journal)
-
   window.dispatchEvent(new CustomEvent('xartists:8008-journal', { detail: final }))
   return final
 }
@@ -146,5 +125,29 @@ export function startAgent8008Bridge() {
   window.addEventListener('lia-intent', (e: Event) => {
     const ce = e as CustomEvent
     void handleLiaIntentDetail(ce.detail)
+  })
+  let lastHypeTs = 0
+  window.addEventListener('xartists:pulse', (e: Event) => {
+    const d = (e as CustomEvent).detail as {
+      env?: { sentiment?: number; category?: string; vibe?: string; asset?: string }
+    }
+    const env = d?.env
+    if (!env || typeof env.sentiment !== 'number') return
+    if (env.sentiment < 0.55) return
+    const now = Date.now()
+    if (now - lastHypeTs < 60_000) return
+    lastHypeTs = now
+    void handleLiaIntentDetail({
+      lip: {
+        type: 'PULSE_HYPE',
+        agent: AGENT_8008.id,
+        paper: true,
+        sentiment: env.sentiment,
+        category: env.category,
+        vibe: env.vibe,
+        asset: env.asset,
+        raw: `PULSE_HYPE ${env.category} sent=${env.sentiment}`,
+      },
+    })
   })
 }
