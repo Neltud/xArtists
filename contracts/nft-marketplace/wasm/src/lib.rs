@@ -23,6 +23,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         getBid => get_bid
         getFeeBps => get_fee_bps
         getAccumulatedFees => get_accumulated_fees
+        getSellerShareBps => get_seller_share_bps
         getOwner => get_owner_view
         isPaused => is_paused
     )

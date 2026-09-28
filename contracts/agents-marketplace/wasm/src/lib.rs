@@ -20,7 +20,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         getFeeBps => get_fee_bps
         getAccumulatedFees => get_accumulated_fees
         getContractEgldBalance => get_contract_egld_balance
-        getOwner => get_owner
+        getOwner => get_owner_view
         getPendingOwner => get_pending_owner
         isPaused => is_paused
     )
