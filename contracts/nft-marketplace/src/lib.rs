@@ -11,13 +11,15 @@ const MAX_ROYALTY_BPS: u16 = 1000;
 const MAX_FEE_PLUS_ROYALTY_BPS: u16 = 1000;
 const BPS_DENOM: u64 = 10_000;
 
-#[derive(NestedEncode, NestedDecode, TopEncode, TopDecode, TypeAbi, Clone, Default)]
+#[type_abi]
+#[derive(NestedEncode, NestedDecode, TopEncode, TopDecode, Clone, Default)]
 pub struct Bid<M: ManagedTypeApi> {
     pub bidder: ManagedAddress<M>,
     pub amount: BigUint<M>,
 }
 
-#[derive(NestedEncode, NestedDecode, TopEncode, TopDecode, TypeAbi, Clone)]
+#[type_abi]
+#[derive(NestedEncode, NestedDecode, TopEncode, TopDecode, Clone)]
 pub struct Listing<M: ManagedTypeApi> {
     pub seller: ManagedAddress<M>,
     pub token_id: TokenIdentifier<M>,
@@ -115,7 +117,7 @@ pub trait NftMarketplace {
         self.listing_count().set(id);
         self.listings(id).set(Listing {
             seller: seller.clone(),
-            token_id: payment.token_identifier,
+            token_id: payment.token_identifier.clone(),
             nonce: payment.token_nonce,
             price,
             royalty_bps,
