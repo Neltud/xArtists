@@ -1,0 +1,208 @@
+name: Deploy venue-split
+
+# Build wasm + deploy venue-split SC.
+# Secret: SC_DEPLOYER_PEM (Repository secret)
+# Mainnet (chain=1) requires confirm_mainnet = DEPLOY_MAINNET
+# Does NOT set VITE_VENUE_CODEHASH_OK — verify explorer first.
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain:
+        description: "D=devnet (recommended first), 1=mainnet"
+        required: true
+        default: "D"
+        type: choice
+        options:
+          - "D"
+          - "1"
+      confirm_mainnet:
+        description: "Mainnet only — type exactly DEPLOY_MAINNET"
+        required: false
+        default: ""
+        type: string
+      institution_addr:
+        description: "Institution bucket (40%)"
+        required: true
+        default: "erd1hurlzgn2sq8sswdksv7ewtp6vs9umdakcpef5nfxkmt7mpxsyumsywtva6"
+        type: string
+      associations_addr:
+        description: "Associations bucket (20%)"
+        required: true
+        default: "erd1cwp2m53pnem5p35vsdc2mcry6779eawq9h4ty2a4nnsp8ewknrjs55yxcd"
+        type: string
+      lia_treasury_addr:
+        description: "LIA treasury (25%)"
+        required: true
+        default: "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6"
+        type: string
+      holders_pool_addr:
+        description: "Holders pool (15%)"
+        required: true
+        default: "erd1qpvy7z9jchrvxcu0c9z3w083am6n5j7nae8u0cvaanesa36a839qcgj5fz"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-venue-split-${{ github.event.inputs.chain }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CHAIN_ID: ${{ github.event.inputs.chain }}
+      INSTITUTION_ADDR: ${{ github.event.inputs.institution_addr }}
+      ASSOCIATIONS_ADDR: ${{ github.event.inputs.associations_addr }}
+      LIA_TREASURY_ADDR: ${{ github.event.inputs.lia_treasury_addr }}
+      HOLDERS_POOL_ADDR: ${{ github.event.inputs.holders_pool_addr }}
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Mainnet hard gate
+        run: |
+          set -euo pipefail
+          if [ "${CHAIN_ID}" = "1" ]; then
+            if [ "${{ github.event.inputs.confirm_mainnet }}" != "DEPLOY_MAINNET" ]; then
+              echo "❌ MAINNET BLOQUÉ — confirm_mainnet=DEPLOY_MAINNET requis"
+              exit 1
+            fi
+            echo "⚠️ MAINNET confirmé"
+          fi
+
+      - name: Resolve proxy
+        run: |
+          set -euo pipefail
+          if [ "${CHAIN_ID}" = "1" ]; then
+            echo "PROXY=https://gateway.multiversx.com" >> "$GITHUB_ENV"
+          else
+            echo "PROXY=https://devnet-gateway.multiversx.com" >> "$GITHUB_ENV"
+          fi
+
+      - name: Check SC_DEPLOYER_PEM
+        run: |
+          set -euo pipefail
+          if [ -z "${SC_DEPLOYER_PEM:-}" ]; then
+            echo "❌ Secret SC_DEPLOYER_PEM manquant"
+            echo "Settings → Secrets → Actions → SC_DEPLOYER_PEM"
+            exit 1
+          fi
+          echo "✅ PEM present (chars=${#SC_DEPLOYER_PEM})"
+
+      - name: Write PEM file
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          # normalize if secret is raw hex without headers
+          if ! grep -q "BEGIN" "${RUNNER_TEMP}/deployer.pem"; then
+            echo "⚠️ PEM without headers — wrapping"
+            HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
+            {
+              echo "-----BEGIN PRIVATE KEY for deployer-----"
+              echo "$HEX" | fold -w 64
+              echo "-----END PRIVATE KEY for deployer-----"
+            } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+
+      - name: Setup Python + mxpy
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install mxpy
+        run: |
+          pip install --upgrade pip
+          pip install multiversx-sdk-cli
+          mxpy --version
+
+      - name: Setup Rust (wasm)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/
+            ~/.cargo/git/
+            contracts/venue_split/target/
+          key: venue-split-${{ runner.os }}-${{ hashFiles('contracts/venue_split/Cargo.toml') }}
+
+      - name: Build venue-split
+        working-directory: contracts/venue_split
+        run: |
+          set -euo pipefail
+          mxpy contract build 2>&1 || {
+            echo "mxpy build failed — try sc-meta"
+            cargo install multiversx-sc-meta --locked --force || true
+            sc-meta all build || mxpy contract build
+          }
+          WASM=$(find . -name '*.wasm' | head -1)
+          if [ -z "$WASM" ]; then
+            echo "❌ no wasm produced"
+            find . -type f | head -50
+            exit 1
+          fi
+          echo "WASM=$WASM" >> "$GITHUB_ENV"
+          echo "✅ wasm: $WASM ($(wc -c < "$WASM") bytes)"
+
+      - name: Deploy
+        id: deploy
+        run: |
+          set -euo pipefail
+          echo "Deploy chain=${CHAIN_ID} proxy=${PROXY}"
+          echo "Buckets:"
+          echo "  inst ${INSTITUTION_ADDR}"
+          echo "  asso ${ASSOCIATIONS_ADDR}"
+          echo "  lia  ${LIA_TREASURY_ADDR}"
+          echo "  hold ${HOLDERS_POOL_ADDR}"
+          # mxpy outputs contract address in log
+          set +e
+          LOG=$(mxpy contract deploy \
+            --bytecode="${WASM}" \
+            --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=60000000 \
+            --proxy="${PROXY}" \
+            --chain="${CHAIN_ID}" \
+            --arguments \
+              "addr:${INSTITUTION_ADDR}" \
+              "addr:${ASSOCIATIONS_ADDR}" \
+              "addr:${LIA_TREASURY_ADDR}" \
+              "addr:${HOLDERS_POOL_ADDR}" \
+            --send \
+            --recall-nonce 2>&1)
+          RC=$?
+          set -e
+          echo "$LOG"
+          echo "$LOG" > "${RUNNER_TEMP}/deploy.log"
+          # extract erd1 contract address if present
+          ADDR=$(echo "$LOG" | grep -oE 'erd1[a-z0-9]{58}' | head -1 || true)
+          echo "contract_address=${ADDR}" >> "$GITHUB_OUTPUT"
+          if [ "$RC" -ne 0 ]; then
+            echo "❌ deploy failed rc=$RC"
+            exit $RC
+          fi
+          if [ -z "$ADDR" ]; then
+            echo "⚠️ deploy ok but address not parsed — check log"
+          else
+            echo "✅ SC address: $ADDR"
+          fi
+
+      - name: Next steps
+        run: |
+          echo "═══════════════════════════════════════"
+          echo "1) Verify:"
+          echo "   VENUE_SC_ADDRESS=${{ steps.deploy.outputs.contract_address }} CHAIN=mainnet ./scripts/verify_venue_codehash.sh"
+          echo "2) Micro rentPay dust"
+          echo "3) Only then: VITE_VENUE_SC_ADDRESS + VITE_VENUE_CODEHASH_OK=1"
+          echo "4) Public announcement"
+          echo "═══════════════════════════════════════"
+          echo "DO NOT set CODEHASH_OK without explorer match."
