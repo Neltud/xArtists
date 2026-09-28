@@ -1,6 +1,6 @@
 # GO_LIVE Status — venue-split & production
 
-**Updated:** 2026-09-28  
+**Updated:** 2026-09-28 17:12 CEST  
 **Rule:** paper fail-closed until codeHash verified on the **real** SC address.
 
 ---
@@ -10,16 +10,11 @@
 | Check | Status |
 |-------|--------|
 | Split bps = 10_000 (40/20/25/15) | ✅ signed |
-| No setSplit after init | ✅ signed |
-| No owner withdraw / sweep | ✅ signed |
-| Pause only blocks new rentPay | ✅ signed |
-| Dust → holders | ✅ signed |
-| Zero-address rejected at init | ✅ signed |
-| No PEM in repo / front | ✅ signed |
-| Upgrade = policy do-not-use post live | ⚠️ accepted residual |
+| No setSplit / no owner withdraw | ✅ signed |
+| Pause ≠ sweep · dust → holders | ✅ signed |
+| PEM hors repo / front | ✅ signed |
 
-**Sign-off §1:** **APPROVED for testnet deploy and for mainnet deploy only after steps 2–4 below are green.**  
-Source: `docs/AUDIT_VENUE_MAINNET.md` · code `contracts/venue_split/src/lib.rs`
+**§1:** APPROVED for deploy after buckets + wasm + fund.
 
 ---
 
@@ -27,73 +22,56 @@ Source: `docs/AUDIT_VENUE_MAINNET.md` · code `contracts/venue_split/src/lib.rs`
 
 | # | Step | Status |
 |---|------|--------|
-| 1 | Audit §1 sign-off | ✅ **DONE** |
-| 2 | Deploy mainnet (4 final bucket addresses) | ❌ **BLOCKED** — deployer balance 0 EGLD |
-| 3 | `verify_venue_codehash.sh CHAIN=mainnet` | ❌ waiting address |
+| 1 | Audit §1 sign-off | ✅ DONE |
+| 2 | Deploy mainnet (4 buckets) | 🟡 **FUNDED** · waiting **4 bucket addresses** + **wasm build** |
+| 3 | verify_venue_codehash CHAIN=mainnet | ❌ waiting SC address |
 | 4 | Micro rentPay dust | ❌ waiting SC |
 | 5 | Secrets Pages + rebuild | ❌ do **not** set CODEHASH_OK yet |
-| 6 | Public announcement | ❌ only after 2–5 |
+| 6 | Annonce publique | ❌ after 2→5 |
 
-### Deployer (ops)
+### Deployer
 
 | Field | Value |
 |-------|--------|
 | Address | `erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g` |
-| Mainnet balance (2026-09-28) | **0 EGLD** |
+| Mainnet balance | **0.1 EGLD** (confirmed 2026-09-28) |
 | Nonce | 3 |
-| PEM | sandbox / GH secret only — never front |
+| PEM ↔ address | matched |
 
-**Action required:** fund deployer with ≥ **0.05–0.15 EGLD** (deploy gas + dust rentPay), then run deploy with 4 bucket addresses.
-
-### Bucket addresses (fill before deploy)
+### Buckets (REQUIRED before deploy — immutable at init)
 
 ```text
-INSTITUTION_ADDR=
-ASSOCIATIONS_ADDR=
-LIA_TREASURY_ADDR=
-HOLDERS_POOL_ADDR=
+INSTITUTION_ADDR=   # musée / institution receive
+ASSOCIATIONS_ADDR=  # associations art
+LIA_TREASURY_ADDR=  # default candidate: erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
+HOLDERS_POOL_ADDR=  # rewards pool SC or escrow wallet
 ```
 
-### Front (current)
+**Do not deploy** with all four = LIA (breaks product economics permanently).
+
+### Front
 
 | Env | Value |
 |-----|--------|
 | `VITE_VENUE_SC_ADDRESS` | empty |
-| `VITE_VENUE_CODEHASH_OK` | unset / false |
+| `VITE_VENUE_CODEHASH_OK` | false |
 | Behaviour | **paper fail-closed** ✅ |
 
 ---
 
-## Do not
-
-- Set `VITE_VENUE_CODEHASH_OK=1` without explorer codeHash match  
-- Announce mainnet SC live while balance 0 / no address  
-- Commit PEM to git  
-- Use upgrade after GO_LIVE  
-
----
-
-## Resume sequence (when funded)
+## Next command (ops, when buckets filled)
 
 ```bash
 export SC_DEPLOYER_PEM=…
 export INSTITUTION_ADDR=erd1…
 export ASSOCIATIONS_ADDR=erd1…
-export LIA_TREASURY_ADDR=erd1…
+export LIA_TREASURY_ADDR=erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
 export HOLDERS_POOL_ADDR=erd1…
-# Prefer testnet first if not already verified:
-# CHAIN=D PROXY=https://devnet-gateway.multiversx.com ./scripts/deploy_venue_split_testnet.sh
-
-# Mainnet (only after §1 + buckets reviewed):
-mxpy contract build   # in contracts/venue_split
-mxpy contract deploy --bytecode=output/*.wasm --pem=$SC_DEPLOYER_PEM \
-  --gas-limit=60000000 --proxy=https://gateway.multiversx.com --chain=1 \
-  --arguments addr:$INSTITUTION_ADDR addr:$ASSOCIATIONS_ADDR \
-  addr:$LIA_TREASURY_ADDR addr:$HOLDERS_POOL_ADDR --send --recall-nonce
-
-export VENUE_SC_ADDRESS=<deployed>
+# build wasm (sc-meta / mxpy contract build)
+# then deploy mainnet chain=1
+# then:
+export VENUE_SC_ADDRESS=<new>
 export CHAIN=mainnet
 ./scripts/verify_venue_codehash.sh
-./scripts/rentpay_micro_test.sh   # PROXY mainnet + CHAIN=1
-# Then GH secrets + Pages rebuild + announcement
+./scripts/rentpay_micro_test.sh  # CHAIN=1 PROXY=mainnet gateway
 ```
