@@ -1,11 +1,11 @@
 {
   "type": "ENVIRONMENT_UPDATE",
-  "sentiment": 0.55,
+  "sentiment": 0.41,
   "intensity": "medium",
-  "color_target": "#22d3ee",
+  "color_target": "#a78bfa",
   "vibe": "art_glow",
   "category": "ART_TREND",
   "asset": "ART",
-  "context": "Musée vivant \u00b7 CrossScore paper \u00b7 xArtists",
-  "ts": "2026-09-24T19:30:00Z"
+  "context": "Static seed · Pages fallback",
+  "source": "static"
 }
