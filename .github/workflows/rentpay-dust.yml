@@ -37,35 +37,34 @@ jobs:
             echo "SC_DEPLOYER_PEM secret missing"
             exit 1
           fi
-          # secret may be raw PEM or base64
           if echo "$SC_DEPLOYER_PEM" | grep -q "BEGIN"; then
             printf '%s\n' "$SC_DEPLOYER_PEM" > deployer.pem
           else
             echo "$SC_DEPLOYER_PEM" | base64 -d > deployer.pem 2>/dev/null || printf '%s\n' "$SC_DEPLOYER_PEM" > deployer.pem
           fi
           chmod 600 deployer.pem
-          # never print pem
           echo "PEM written ($(wc -l < deployer.pem) lines)"
 
       - name: Call rentPay on mainnet
         env:
           SC: erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y
+          DEPLOYER: erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g
           AMOUNT: ${{ github.event.inputs.amount_egld }}
           TIER: ${{ github.event.inputs.tier_id }}
         run: |
           set -euo pipefail
-          echo "SC=$SC amount=${AMOUNT}EGLD tier=$TIER"
+          VALUE=$(python3 -c "print(int(float('${AMOUNT}') * 10**18))")
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          echo "SC=$SC amount=${AMOUNT}EGLD value=$VALUE nonce=$NONCE tier=$TIER"
           mxpy --version
-          # data: rentPay@hex(utf8 tier)
-          TIER_HEX=$(printf '%s' "$TIER" | xxd -p -c 256)
-          echo "tier_hex=$TIER_HEX"
           mxpy contract call "$SC" \
             --pem=deployer.pem \
             --proxy=https://gateway.multiversx.com \
             --chain=1 \
+            --nonce="$NONCE" \
             --function=rentPay \
             --arguments "str:${TIER}" \
-            --value="$(python3 -c "print(int(float('${AMOUNT}') * 10**18))")" \
+            --value="$VALUE" \
             --gas-limit=12000000 \
             --wait-result \
             --send
