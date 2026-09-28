@@ -1,6 +1,5 @@
 /**
  * Studio paper mint E2E — certificat local jusqu’à SC mint live.
- * Dispatch 8008 STUDIO_MINT_PAPER pour journal / Vellum.
  */
 import { dispatch8008 } from '../config/agent8008'
 
@@ -81,7 +80,7 @@ export function mintStudioPaper(input: {
   writeAll(all)
 
   try {
-    dispatch8008('STUDIO_MINT_PAPER' as never, {
+    dispatch8008('STUDIO_MINT_PAPER', {
       mint_id: id,
       ticker: entry.ticker,
       title: entry.title,
