@@ -13,7 +13,3 @@ multiversx-sc = "0.66.2"
 
 [dev-dependencies]
 multiversx-sc-scenario = "0.66.2"
-
-# Own workspace — not part of repo root (nft/tro staking)
-[workspace]
-members = [".", "meta"]

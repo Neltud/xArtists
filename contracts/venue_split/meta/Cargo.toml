@@ -11,3 +11,7 @@ path = "src/main.rs"
 [dependencies]
 multiversx-sc-meta-lib = "=0.66.2"
 venue-split = { path = ".." }
+
+# Isolate meta from repo root workspace
+[workspace]
+members = ["."]
