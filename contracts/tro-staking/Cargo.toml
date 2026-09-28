@@ -11,5 +11,4 @@ path = "src/lib.rs"
 [dependencies]
 multiversx-sc = "0.50"
 
-[dev-dependencies]
-multiversx-sc-scenario = "0.50"
+# sc-scenario 0.50 pulls multiversx-sc-meta → zip ^1.2 (all yanked on crates.io).

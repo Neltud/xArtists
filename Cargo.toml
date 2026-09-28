@@ -6,7 +6,6 @@ members = [
 resolver = "2"
 
 [workspace.package]
-name = "xartists"
 version = "0.6.0"
 edition = "2021"
 authors = ["Nelson Tuduri <nelson@xartists.com>"]

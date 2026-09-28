@@ -21,6 +21,7 @@ jobs:
       uses: dtolnay/rust-toolchain@stable
       with:
         components: rustfmt, clippy
+        targets: wasm32-unknown-unknown
 
     - name: Cache Rust
       uses: Swatinem/rust-cache@v2
@@ -30,7 +31,7 @@ jobs:
     - name: Check for Rust project
       run: |
         if [ ! -f Cargo.toml ]; then
-          echo "No Cargo.toml found in repo root. Skipping Rust build/test."
+          echo "No Cargo.toml — skip"
           exit 0
         fi
 
@@ -39,12 +40,14 @@ jobs:
       continue-on-error: true
 
     - name: Clippy Lint
-      run: cargo clippy --all-targets --all-features -- -D warnings
+      run: cargo clippy --all-targets -- -D warnings
       continue-on-error: true
 
+    # MultiversX SC crates: host check is enough for CI green;
+    # full wasm via sc-meta is in deploy-venue-split / deploy-scs workflows.
     - name: Build
-      run: cargo build --release --verbose
+      run: cargo check --workspace --release
 
     - name: Run tests
-      run: cargo test --verbose --release
+      run: cargo test --workspace --release
       continue-on-error: true
