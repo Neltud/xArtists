@@ -2,71 +2,69 @@
 
 **Règle** : pas de promesse de yield. Packs IA = produits d’entitlement (NFT/SFT), pas des parts de fonds.
 
-## 1. On-chain live
+## 1. Vente d’œuvre NFT / SFT — **vendeur ≥ 90 %**
 
-### Venue-split (mainnet)
+SC `nft-marketplace` : `fee_bps + royalty_bps ≤ 1000` (10 %).
 
-Adresse : `erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y`
+| Bénéficiaire | % typique | BPS | Qui |
+|--------------|-----------|-----|-----|
+| **Vendeur** | **≥ 90** | ≥ 9000 | Wallet qui liste (owner actuel) |
+| Royalties créateur | ≤ 7–10 | ≤ 1000 | `royalty_receiver` (artiste / collection) |
+| Frais protocole | ≤ 3–10 | ≤ 1000 | `accumulated_fees` → claim owner → LIA |
 
-| Bucket | BPS | % |
-|--------|-----|---|
-| Institution | 4000 | 40 |
-| Associations | 2000 | 20 |
-| LIA treasury | 2500 | 25 |
-| Holders pool | 1500 | 15 |
+### Exemple défaut (100 EGLD)
 
-Endpoint : `rentPay(tier_id)` payable EGLD (et ESDT si branché).
+| | EGLD | BPS |
+|--|------|-----|
+| Vendeur | **90** | 9000 |
+| Créateur (royalty) | 7 | 700 |
+| Protocole (fee) | 3 | 300 |
 
-## 2. Paper / post-GO_LIVE
+### SFT vs NFT
 
-| Source | LIA | Holders | Associations | Institution | Creator | Protocol | Burn |
-|--------|-----|---------|--------------|-------------|---------|----------|------|
-| Pack paper | 70 | 20 | 10 | — | — | — | — |
-| Ads bid | 60 | 25 | 15 | — | — | — | — |
-| Venue rental | 25 | 15 | 20 | 40 | — | — | — |
-| NFT marketplace | — | 5 | — | — | 70 | 20 | 5 |
-| Agents marketplace | 50 | 15 | 5 | — | — | 30 | — |
-| Slot rake | 55 | 30 | 15 | — | — | — | — |
-| Tip | 100 | — | — | — | — | — | — |
+Même chemin on-chain : list **1 unité** (NFT nonce unique ou 1 SFT).  
+Royalties :
 
-### Sous-répartition pool packs (holders issus pack_paper)
+1. **ESDT token royalties** (champ collection MultiversX) — informatif / wallets  
+2. **Listing `royalty_bps` + `royalty_receiver`** — **appliqué à chaque vente** dans le SC  
 
-| Pack | BPS | % du pool pack |
-|------|-----|----------------|
-| Pulse | 4000 | 40 |
-| Yield | 3500 | 35 |
-| Sentinel | 2500 | 25 |
+Pour un pack SFT (xAiAx / xAiAy / xAiAs) : royalty_receiver = créateur / LIA treasury selon mint policy ; vendeur secondaire garde ≥ 90 %.
 
-## 3. Packs IA = NFT / SFT d’entitlement
+### Redistribution du seul protocol fee (après `claimFees`)
 
-| Pack | Collection ticker | Token | Prix floor |
-|------|-------------------|-------|------------|
-| Pulse | `xAiAx` | NFT/SFT Agent 001+ | ≥ 10 EGLD |
-| Yield | `xAiAy` | NFT/SFT Agent 002+ | ≥ 10 EGLD |
-| Sentinel | `xAiAs` | NFT/SFT Agent 003+ | ≥ 10 EGLD |
+| Destination | % du fee |
+|-------------|----------|
+| LIA treasury | 70 |
+| Holders rewards | 20 |
+| Burn $TRO | 10 |
 
-- **NFT** : 1/1 unique (genesis agents).
-- **SFT** : série limitée par nonce (même métadonnée pack, supply plafonnée) — mint SC après GO_LIVE.
-- **Pas** un produit financier : pas de partage auto des trades LIA ; droit d’accès signaux + part **pool pack** si rewards_pool live.
+## 2. Agrégation des sources
 
-## 4. DEX / farms externes (xExchange · OneDex)
+| Source | On-chain | Split |
+|--------|----------|-------|
+| **Marketplace art** | post-deploy | Seller 90 · Royalty 7 · Fee 3 |
+| **Agents marketplace** | post-deploy | Seller 90 · Fee 10 |
+| **Venue rental** | **live** venue-split | Inst 40 · Asso 20 · LIA 25 · Holders 15 |
+| **Pack paper** | mint | LIA 70 · Holders 20 · Asso 10 |
+| **Ads bid** | paper/SC | LIA 60 · Holders 25 · Asso 15 |
+| **Slot rake** | post SC | LIA 55 · Holders 30 · Asso 15 |
+| **Tip** | transfer | LIA 100 |
+| **xExchange / OneDex** | externe | 0 % xArtists (wallet user) |
 
-| Item | Custody xArtists ? | Notes |
-|------|--------------------|-------|
-| LP TRO/* | Non | Wallet user |
-| APR farm | Non | Claim user |
-| Frais swap | Non | Restent sur le DEX |
-| Vote DAO | Oui (lecture) | Voting power = valeur LP TRO + ArtPass staked |
+Helpers front : `splitArtworkSale` · `aggregateFlows` · `splitProtocolFee` dans `treasuryFlows.ts`.
 
-xArtists **n’agrège pas** les rewards farm dans un SC tant que GO_LIVE rewards_pool n’est pas vérifié.
+### Sous-pool packs (part holders des ventes pack)
 
-## 5. Ordre activation flags
+Pulse 40 % · Yield 35 % · Sentinel 25 % (`PACK_POOL_SHARE_BPS`).
 
-1. `rentPay` dust OK  
-2. `VITE_VENUE_CODEHASH_OK=1` (match explorer)  
-3. Deploy nft-marketplace + agents-marketplace → verify codeHash  
-4. Mint pack NFT/SFT collections  
-5. rewards_pool branché holders / pack pools  
-6. Annonce publique  
+## 3. Venue-split (mainnet live)
 
-Source de vérité front : `apps/frontend/src/config/treasuryFlows.ts`.
+`erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y` — BPS immuables 4000/2000/2500/1500.
+
+## 4. Ordre flags
+
+1. rentPay dust  
+2. `VITE_VENUE_CODEHASH_OK`  
+3. Deploy marketplace (init `fee_bps=300`) → verify  
+4. Mint collections pack NFT/SFT  
+5. Annonce  

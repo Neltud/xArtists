@@ -2,12 +2,12 @@
  * Modèle de flux trésorerie xArtists / LIA / $TRO
  * Paper-first · SC only après audit + GO_LIVE · pas de promesse de yield.
  *
- * On-chain aujourd’hui : venue-split (rentPay).
- * Marketplaces / pack mint / rewards_pool : après deploy + codeHash verify.
- * DEX externes (xExchange / OneDex) : hors custody xArtists — APR utilisateur, pas de partage auto.
+ * RÈGLE MARCHÉ ART / SFT : le vendeur reçoit ≥ 90 % du prix de vente.
+ * fee_bps + royalty_bps ≤ 1000 (10 %). Voir contracts/nft-marketplace.
  */
 
 export type FlowBucket =
+  | 'seller'
   | 'lia_treasury'
   | 'institution'
   | 'associations'
@@ -31,8 +31,40 @@ export type RevenueSource =
   | 'farm_external'
 
 /**
- * Répartition cible par source (somme = 100 sauf lp/farm externes).
- * venue_rental = on-chain immutable (SC venue-split BPS).
+ * Marketplace art (NFT/SFT) — répartition du PRIX DE VENTE (100 %).
+ * Vendeur ≥ 90 %. Le reste (≤ 10 %) = fee protocole + royalties créateur.
+ *
+ * Défaut recommandé au list :
+ *   fee_bps = 300 (3 % protocol) · royalty_bps = 700 (7 % créateur)
+ *   → seller = 90 %
+ * Ou fee 500 + royalty 500 → seller 90 %.
+ */
+export const MARKETPLACE_SALE_SPLIT = {
+  /** Garantie SC : fee + royalty ≤ 1000 bps */
+  maxFeePlusRoyaltyBps: 1000,
+  minSellerBps: 9000,
+  /** Déploy init recommandé */
+  defaultFeeBps: 300,
+  /** Listing défaut si le token n’impose pas d’autre royalty ESDT */
+  defaultRoyaltyBps: 700,
+  /** Cap SC individuels */
+  maxFeeBps: 1000,
+  maxRoyaltyBps: 1000,
+} as const
+
+/**
+ * Sous-répartition du SEUL protocol fee (après claimFees),
+ * pas du prix total de l’œuvre.
+ */
+export const PROTOCOL_FEE_REDISTRIBUTION = {
+  lia_treasury: 70,
+  holders_rewards: 20,
+  burn_tro: 10,
+} as const
+
+/**
+ * Matrice agrégée — pour marketplace_sale les % sont sur le PRIX TOTAL
+ * (seller inclus). Pour les autres sources, pas de « seller ».
  */
 export const TREASURY_FLOW_MATRIX: Record<
   RevenueSource,
@@ -48,28 +80,26 @@ export const TREASURY_FLOW_MATRIX: Record<
     holders_rewards: 25,
     associations: 15,
   },
-  /** Mirror SC venue_split : 4000/2000/2500/1500 */
   venue_rental: {
     institution: 40,
     associations: 20,
     lia_treasury: 25,
     holders_rewards: 15,
   },
+  /**
+   * Vente œuvre NFT/SFT (secondaire ou listé).
+   * Exemple défaut 90 / 7 / 3 — ajustable tant que seller ≥ 90.
+   */
   marketplace_sale: {
-    creator_royalty: 70,
-    protocol_fee: 20,
-    burn_tro: 5,
-    holders_rewards: 5,
+    seller: 90,
+    creator_royalty: 7,
+    protocol_fee: 3,
   },
-  /** Fee marketplace agents (fee_bps ≤ 1000) → claimFees owner → ops redistribue */
   agents_marketplace: {
-    protocol_fee: 30,
-    lia_treasury: 50,
-    holders_rewards: 15,
-    associations: 5,
+    seller: 90,
+    protocol_fee: 10,
   },
   slot_casino: {
-    // Jackpot user d’abord (hors matrice) ; reste rake :
     lia_treasury: 55,
     holders_rewards: 30,
     associations: 15,
@@ -77,32 +107,20 @@ export const TREASURY_FLOW_MATRIX: Record<
   tip: {
     lia_treasury: 100,
   },
-  /** xExchange / OneDex — frais restent sur le DEX, pas dans un SC xArtists */
   lp_fees_external: {
     lia_treasury: 0,
   },
-  /** Farms OneDex / xExchange — rewards claimables par le wallet user */
   farm_external: {
     lia_treasury: 0,
   },
 }
 
-/**
- * Sous-répartition du bucket holders_rewards issu des ventes pack_paper.
- * Aligné agentPacks.shareOfPackPoolBps (Pulse 40 · Yield 35 · Sentinel 25).
- * Les holders de NFT/SFT pack de la série reçoivent via rewards_pool (post-GO_LIVE).
- */
 export const PACK_POOL_SHARE_BPS = {
   pulse: 4000,
   yield: 3500,
   sentinel: 2500,
 } as const
 
-/**
- * Burns TRO
- * - burn_direct : ESDT burn on-chain (irréversible)
- * - lp_burn : retirer LP puis burn tokens sous-jacents TRO (DAO only)
- */
 export const BURN_POLICY = {
   maxSupply: 500_000,
   preferred: 'burn_direct' as const,
@@ -111,7 +129,8 @@ export const BURN_POLICY = {
     requiresDao: true,
     note: 'LP burn retire de la liquidité — réservé gouvernance, jamais automatique dans le front.',
   },
-  marketplaceBurnBps: 500,
+  /** Part du protocol_fee convertie / brûlée en TRO (ops, post claim) */
+  marketplaceBurnBpsOfProtocolFee: 1000, // 10 % du fee protocole
   venueOptionalBurnBps: 0,
 } as const
 
@@ -127,7 +146,6 @@ export const HOLDERS_REWARD_ELIGIBILITY = {
     'TRO/WDAI',
   ],
   artPassStaked: true,
-  /** Pack NFT/SFT = entitlement produit, pas autorisation financière client-side */
   packNftEntitlement: true,
   paperHolderNotAuthorization: true,
   externalAprNote:
@@ -146,7 +164,34 @@ export function splitAmount(
   return out
 }
 
-/** Répartit la part holders d’une vente pack vers les 3 pools pack */
+/** Split prix œuvre : vendeur / royalty / fee (bps explicites) */
+export function splitArtworkSale(
+  price: number,
+  feeBps: number = MARKETPLACE_SALE_SPLIT.defaultFeeBps,
+  royaltyBps: number = MARKETPLACE_SALE_SPLIT.defaultRoyaltyBps,
+): { seller: number; royalty: number; protocolFee: number; sellerBps: number } {
+  const fee = Math.min(feeBps, MARKETPLACE_SALE_SPLIT.maxFeeBps)
+  const roy = Math.min(royaltyBps, MARKETPLACE_SALE_SPLIT.maxRoyaltyBps)
+  if (fee + roy > MARKETPLACE_SALE_SPLIT.maxFeePlusRoyaltyBps) {
+    throw new Error('fee+royalty exceed 10% — seller must receive >= 90%')
+  }
+  return {
+    seller: (price * (10_000 - fee - roy)) / 10_000,
+    royalty: (price * roy) / 10_000,
+    protocolFee: (price * fee) / 10_000,
+    sellerBps: 10_000 - fee - roy,
+  }
+}
+
+/** Redistribue le protocol fee accumulé (après claimFees) */
+export function splitProtocolFee(feeAmount: number): Record<string, number> {
+  const out: Record<string, number> = {}
+  for (const [k, pct] of Object.entries(PROTOCOL_FEE_REDISTRIBUTION)) {
+    out[k] = (feeAmount * pct) / 100
+  }
+  return out
+}
+
 export function splitPackHoldersShare(holdersAmount: number): {
   pulse: number
   yield: number
@@ -159,13 +204,28 @@ export function splitPackHoldersShare(holdersAmount: number): {
   }
 }
 
+/** Agrège plusieurs flux (ex. dashboard trésorerie lecture seule) */
+export function aggregateFlows(
+  entries: { source: RevenueSource; amount: number }[],
+): Record<string, number> {
+  const total: Record<string, number> = {}
+  for (const e of entries) {
+    const part = splitAmount(e.source, e.amount)
+    for (const [k, v] of Object.entries(part)) {
+      total[k] = (total[k] || 0) + v
+    }
+  }
+  return total
+}
+
 export const FLOW_LABELS: Record<FlowBucket, string> = {
+  seller: 'Vendeur (≥ 90 %)',
   lia_treasury: 'Trésorerie LIA',
   institution: 'Institution / musée',
   associations: 'Associations art',
   holders_rewards: 'Pool holders',
   burn_tro: 'Burn $TRO',
-  creator_royalty: 'Royalties créateur',
+  creator_royalty: 'Royalties créateur / collection',
   protocol_fee: 'Frais protocole',
   pack_pool_pulse: 'Pool pack Pulse',
   pack_pool_yield: 'Pool pack Yield',
@@ -176,7 +236,7 @@ export const SOURCE_LABELS: Record<RevenueSource, string> = {
   pack_paper: 'Vente pack IA (paper / mint)',
   ads_bid: 'Enchères pubs',
   venue_rental: 'Location mur musée (rentPay)',
-  marketplace_sale: 'Marketplace NFT art',
+  marketplace_sale: 'Marketplace NFT/SFT art',
   agents_marketplace: 'Marketplace agents IA',
   slot_casino: 'Slot (rake après jackpot)',
   tip: 'Tips',
