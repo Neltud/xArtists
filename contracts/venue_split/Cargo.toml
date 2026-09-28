@@ -13,3 +13,7 @@ multiversx-sc = "0.66.2"
 
 [dev-dependencies]
 multiversx-sc-scenario = "0.66.2"
+
+# Own workspace (excluded from repo root) so sc-meta can build
+[workspace]
+members = ["."]
