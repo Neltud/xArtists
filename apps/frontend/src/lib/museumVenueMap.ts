@@ -4,7 +4,6 @@
 import { museumIdForCity } from './museumWorldCatalog'
 
 const VENUE_TO_MUSEUM: Record<string, string> = {
-  // Paris
   louvre: 'louvre',
   'musee du louvre': 'louvre',
   'musée du louvre': 'louvre',
@@ -17,28 +16,25 @@ const VENUE_TO_MUSEUM: Record<string, string> = {
   'palais de tokyo': 'palaisdetokyo',
   'palais tokyo': 'palaisdetokyo',
   marais: 'louvre',
-  // London
   'national gallery': 'nglondon',
   tate: 'tate',
   'tate britain': 'tate',
-  // Amsterdam
   rijksmuseum: 'rijks',
   rijks: 'rijks',
   'van gogh museum': 'vangogh',
   'van gogh': 'vangogh',
-  // Others
   prado: 'prado',
   uffizi: 'uffizi',
   'the met': 'met',
   met: 'met',
   hermitage: 'hermitage',
   ermitage: 'hermitage',
-  mauritshuis: 'mauritshuis',
-  brera: 'brera',
-  vatican: 'vatican',
+  moma: 'moma',
+  'museum of modern art': 'moma',
 }
 
-function norm(s: string): string {
+function norm(s: string | null | undefined): string {
+  if (!s || typeof s !== 'string') return ''
   return s
     .toLowerCase()
     .normalize('NFD')
@@ -49,9 +45,9 @@ function norm(s: string): string {
     .replace(/\s+/g, ' ')
 }
 
-/** Résout un libellé venue ou ville → museumId */
 export function museumIdForVenue(venueOrCity: string, cityFallback?: string): string {
   const n = norm(venueOrCity)
+  if (!n) return 'xartists'
   if (VENUE_TO_MUSEUM[n]) return VENUE_TO_MUSEUM[n]
   for (const [k, id] of Object.entries(VENUE_TO_MUSEUM)) {
     if (n.includes(k) || k.includes(n)) return id
@@ -78,16 +74,20 @@ export const FEATURED_VENUES_BY_CITY: Record<
     { label: 'Rijksmuseum', museumId: 'rijks' },
     { label: 'Van Gogh Museum', museumId: 'vangogh' },
   ],
-  'new york': [{ label: 'The Met', museumId: 'met' }],
+  'new york': [
+    { label: 'The Met', museumId: 'met' },
+    { label: 'MoMA', museumId: 'moma' },
+  ],
   madrid: [{ label: 'Prado', museumId: 'prado' }],
   florence: [{ label: 'Uffizi', museumId: 'uffizi' }],
   'saint petersburg': [{ label: 'Ermitage', museumId: 'hermitage' }],
 }
 
-export function venuesForCity(city: string): { label: string; museumId: string }[] {
+export function venuesForCity(city: string | null | undefined): { label: string; museumId: string }[] {
   const n = norm(city).replace(/\s/g, '')
+  if (!n) return []
   for (const [k, list] of Object.entries(FEATURED_VENUES_BY_CITY)) {
-    if (norm(k).replace(/\s/g, '') === n) return list
+    if (norm(k).replace(/\s/g, '') === n) return list || []
   }
   return []
 }
