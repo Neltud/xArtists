@@ -1,37 +1,42 @@
-# SC venue-split (draft audit-ready)
+# SC venue-split
 
-**Statut :** draft · **pas de deploy mainnet** avant checklist GO_LIVE + revue externe.
+**Statut :** code mx-sdk ready · deploy **testnet** pour verify · mainnet seulement après audit + GO_LIVE.
 
-## Objectif
+## Split immuable (bps = 10_000)
 
-Recevoir un paiement de location d’espace d’exposition et le répartir de façon **immuable** :
+| Bucket | bps | % |
+|--------|-----|---|
+| Institution | 4000 | 40 |
+| Associations | 2000 | 20 |
+| LIA treasury | 2500 | 25 |
+| Holders pool | 1500 | 15 |
 
-| Bucket | % | Endpoint |
-|--------|---|----------|
-| Institution | 40 | adresse configurée au deploy |
-| Associations | 20 | adresse configurée |
-| LIA treasury | 25 | adresse LIA |
-| Holders rewards | 15 | pool rewards SC (ou adresse escrow) |
+## Endpoints
 
-## Règles de sécurité
+- `init(institution, associations, lia, holders_pool)`
+- `rentPay(tier_id)` payable EGLD
+- `rentPayEsdt(tier_id)` payable single ESDT
+- `setPaused(bool)` owner only
+- views: `getSplitBps`, `getBuckets`, `getPaused`, `getTotalEgldRouted`
 
-- Pas d’upgrade après deploy (code immuable).
-- Pas de PEM dans ce repo / front / Akash.
-- `owner` uniquement pour **pause d’urgence** optionnelle (ou zéro admin si purement immuable).
-- Montants en EGLD natif + ESDT (USDC) via endpoints séparés.
-- Reject si somme des bps ≠ 10_000.
+## Sécurité
 
-## Fichiers
+- Pas de `setSplit` après init
+- Pas de withdraw owner
+- Pause = bloque nouveaux paiements uniquement
+- PEM hors repo
 
-- `src/venue_split.rs` — logique MultiversX (cadre Rust / mx-sdk style).
+## Deploy testnet
 
-## Alignement front
+```bash
+./scripts/deploy_venue_split_testnet.sh
+```
 
-Voir `apps/frontend/src/config/venueRental.ts` et `treasuryFlows.ts` (`venue_rental`).
+Requires: `mxpy`, `SC_DEPLOYER_PEM`, addresses for 4 buckets.
 
-## GO_LIVE
+## Mainnet
 
-1. Audit
-2. Deploy testnet → verify
-3. Deploy mainnet → `VITE_*` seulement après codeHash OK
-4. Annonce publique
+1. Audit  
+2. Testnet verify codeHash  
+3. Deploy mainnet  
+4. Set `VITE_VENUE_CODEHASH_OK=true` only after explorer verify  
