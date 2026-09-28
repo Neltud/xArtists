@@ -1,0 +1,75 @@
+name: rentPay dust (venue-split)
+
+on:
+  workflow_dispatch:
+    inputs:
+      amount_egld:
+        description: 'EGLD amount (dust)'
+        required: true
+        default: '0.001'
+      tier_id:
+        description: 'tier_id string arg'
+        required: true
+        default: 'dust'
+
+jobs:
+  rentpay:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install mxpy
+        run: |
+          pip install --upgrade pip
+          pip install multiversx-sdk-cli==9.10.1
+
+      - name: Write PEM (secret)
+        env:
+          SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+        run: |
+          if [ -z "$SC_DEPLOYER_PEM" ]; then
+            echo "SC_DEPLOYER_PEM secret missing"
+            exit 1
+          fi
+          # secret may be raw PEM or base64
+          if echo "$SC_DEPLOYER_PEM" | grep -q "BEGIN"; then
+            printf '%s\n' "$SC_DEPLOYER_PEM" > deployer.pem
+          else
+            echo "$SC_DEPLOYER_PEM" | base64 -d > deployer.pem 2>/dev/null || printf '%s\n' "$SC_DEPLOYER_PEM" > deployer.pem
+          fi
+          chmod 600 deployer.pem
+          # never print pem
+          echo "PEM written ($(wc -l < deployer.pem) lines)"
+
+      - name: Call rentPay on mainnet
+        env:
+          SC: erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y
+          AMOUNT: ${{ github.event.inputs.amount_egld }}
+          TIER: ${{ github.event.inputs.tier_id }}
+        run: |
+          set -euo pipefail
+          echo "SC=$SC amount=${AMOUNT}EGLD tier=$TIER"
+          mxpy --version
+          # data: rentPay@hex(utf8 tier)
+          TIER_HEX=$(printf '%s' "$TIER" | xxd -p -c 256)
+          echo "tier_hex=$TIER_HEX"
+          mxpy contract call "$SC" \
+            --pem=deployer.pem \
+            --proxy=https://gateway.multiversx.com \
+            --chain=1 \
+            --function=rentPay \
+            --arguments "str:${TIER}" \
+            --value="$(python3 -c "print(int(float('${AMOUNT}') * 10**18))")" \
+            --gas-limit=12000000 \
+            --wait-result \
+            --send
+
+      - name: Cleanup PEM
+        if: always()
+        run: rm -f deployer.pem
