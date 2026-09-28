@@ -102,8 +102,8 @@ pub trait VenueSplit {
         self.rent_paid_event(
             &self.blockchain().get_caller(),
             tier_id,
-            amount,
             &ManagedBuffer::from("EGLD"),
+            amount,
         );
         self.total_egld_routed()
             .update(|v| *v += amount);
@@ -132,8 +132,8 @@ pub trait VenueSplit {
         self.rent_paid_event(
             &self.blockchain().get_caller(),
             tier_id,
-            amount,
             &token_id.as_managed_buffer().clone(),
+            amount,
         );
     }
 
@@ -149,7 +149,9 @@ pub trait VenueSplit {
     }
 
     #[view(getBuckets)]
-    fn get_buckets(&self) -> MultiValue4<ManagedAddress, ManagedAddress, ManagedAddress, ManagedAddress> {
+    fn get_buckets(
+        &self,
+    ) -> MultiValue4<ManagedAddress, ManagedAddress, ManagedAddress, ManagedAddress> {
         (
             self.institution().get(),
             self.associations().get(),
@@ -174,8 +176,8 @@ pub trait VenueSplit {
         &self,
         #[indexed] payer: &ManagedAddress,
         #[indexed] tier_id: &ManagedBuffer,
+        #[indexed] token: &ManagedBuffer,
         amount: &BigUint,
-        token: &ManagedBuffer,
     );
 
     #[storage_mapper("institution")]
