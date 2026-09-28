@@ -2,8 +2,6 @@
 members = [
     "contracts/nft-staking",
     "contracts/tro-staking",
-    "tools/faucet",
-    "tools/tip",
 ]
 resolver = "2"
 
