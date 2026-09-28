@@ -6,8 +6,6 @@ publish = false
 
 [lib]
 path = "src/lib.rs"
-# rlib required so meta can link AbiProvider; cdylib for wasm output
-crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 multiversx-sc = "0.66.2"
@@ -15,9 +13,9 @@ multiversx-sc = "0.66.2"
 [dev-dependencies]
 multiversx-sc-scenario = "0.66.2"
 
-# Local workspace (repo root excludes this path)
 [workspace]
 members = [
     ".",
     "meta",
+    "wasm",
 ]

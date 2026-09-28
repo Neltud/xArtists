@@ -1,0 +1,12 @@
+[package]
+name = "venue-split-wasm"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+venue-split = { path = ".." }
+multiversx-sc-wasm-adapter = "=0.66.2"
