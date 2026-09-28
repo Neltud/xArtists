@@ -2,18 +2,20 @@
 
 //! NFT / SFT Marketplace — list / buy / cancel
 //! **Seller receives ≥ 90 %** of list price (fee + royalty ≤ 1000 bps).
-//! Offer: NO endpoint (see docs/MARKETPLACE_BID_OFFER.md)
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
-/// Protocol fee ceiling (10 %).
 const MAX_FEE_BPS: u16 = 1000;
-/// Creator royalty ceiling (10 %).
 const MAX_ROYALTY_BPS: u16 = 1000;
-/// fee + royalty must stay ≤ this so seller receives ≥ 90 %.
 const MAX_FEE_PLUS_ROYALTY_BPS: u16 = 1000;
 const BPS_DENOM: u64 = 10_000;
+
+#[derive(NestedEncode, NestedDecode, TopEncode, TopDecode, TypeAbi, Clone, Default)]
+pub struct Bid<M: ManagedTypeApi> {
+    pub bidder: ManagedAddress<M>,
+    pub amount: BigUint<M>,
+}
 
 #[derive(NestedEncode, NestedDecode, TopEncode, TopDecode, TypeAbi, Clone)]
 pub struct Listing<M: ManagedTypeApi> {
@@ -28,7 +30,6 @@ pub struct Listing<M: ManagedTypeApi> {
 
 #[multiversx_sc::contract]
 pub trait NftMarketplace {
-    /// fee_bps = protocol take (recommended 300–500). Seller share = 10000 - fee - royalty.
     #[init]
     fn init(&self, fee_bps: u16) {
         require!(fee_bps <= MAX_FEE_BPS, "fee too high");
@@ -91,7 +92,6 @@ pub trait NftMarketplace {
         self.claim_event(&owner, &fees);
     }
 
-    /// Escrow 1 NFT or 1 SFT unit. royalty_bps + fee_bps ≤ 1000 → seller ≥ 90 %.
     #[payable("*")]
     #[endpoint(listNft)]
     fn list_nft(
@@ -109,7 +109,6 @@ pub trait NftMarketplace {
             "fee+royalty exceed 10% (seller must get >= 90%)"
         );
         let payment = self.call_value().single_esdt();
-        // NFT amount == 1; SFT may list 1 unit at a time (same path)
         require!(payment.amount == BigUint::from(1u32), "send 1 unit (NFT or SFT)");
         let seller = self.blockchain().get_caller();
         let id = self.listing_count().get() + 1;
@@ -182,7 +181,14 @@ pub trait NftMarketplace {
         require!(listing.active, "inactive");
         let payment = self.call_value().egld().clone_value();
         require!(payment > 0, "zero bid");
-        let prev = self.bids(listing_id).get();
+        let prev = if self.bids(listing_id).is_empty() {
+            Bid {
+                bidder: ManagedAddress::zero(),
+                amount: BigUint::zero(),
+            }
+        } else {
+            self.bids(listing_id).get()
+        };
         if !prev.bidder.is_zero() {
             require!(payment > prev.amount, "bid too low");
             self.send().direct_egld(&prev.bidder, &prev.amount);
@@ -205,6 +211,7 @@ pub trait NftMarketplace {
             listing.seller == self.blockchain().get_caller(),
             "only seller"
         );
+        require!(!self.bids(listing_id).is_empty(), "no bid");
         let bid = self.bids(listing_id).get();
         require!(!bid.bidder.is_zero(), "no bid");
         let price = bid.amount.clone();
@@ -245,7 +252,8 @@ pub trait NftMarketplace {
         let mut listing = self.listings(listing_id).get();
         require!(listing.active, "inactive");
         require!(
-            listing.seller == self.blockchain().get_caller() || self.blockchain().get_caller() == self.owner().get(),
+            listing.seller == self.blockchain().get_caller()
+                || self.blockchain().get_caller() == self.owner().get(),
             "only seller or owner"
         );
         self.refund_bid_if_any(listing_id);
@@ -258,6 +266,17 @@ pub trait NftMarketplace {
             &BigUint::from(1u32),
         );
         self.cancel_event(listing_id);
+    }
+
+    #[endpoint(withdrawBid)]
+    fn withdraw_bid(&self, listing_id: u64) {
+        require!(!self.bids(listing_id).is_empty(), "no bid");
+        let bid = self.bids(listing_id).get();
+        let caller = self.blockchain().get_caller();
+        require!(bid.bidder == caller, "only bidder");
+        require!(bid.amount > 0, "empty");
+        self.bids(listing_id).clear();
+        self.send().direct_egld(&caller, &bid.amount);
     }
 
     fn refund_bid_if_any(&self, listing_id: u64) {
@@ -281,6 +300,17 @@ pub trait NftMarketplace {
         self.listings(listing_id).get()
     }
 
+    #[view(getBid)]
+    fn get_bid(&self, listing_id: u64) -> Bid<Self::Api> {
+        if self.bids(listing_id).is_empty() {
+            return Bid {
+                bidder: ManagedAddress::zero(),
+                amount: BigUint::zero(),
+            };
+        }
+        self.bids(listing_id).get()
+    }
+
     #[view(getAccumulatedFees)]
     fn get_accumulated_fees(&self) -> BigUint {
         self.accumulated_fees().get()
@@ -294,6 +324,16 @@ pub trait NftMarketplace {
             "invalid royalty"
         );
         10_000u16 - fee - royalty_bps
+    }
+
+    #[view(getOwner)]
+    fn get_owner_view(&self) -> ManagedAddress {
+        self.owner().get()
+    }
+
+    #[view(isPaused)]
+    fn is_paused(&self) -> bool {
+        self.paused().get()
     }
 
     #[storage_mapper("owner")]
@@ -334,10 +374,4 @@ pub trait NftMarketplace {
 
     #[event("claim")]
     fn claim_event(&self, #[indexed] to: &ManagedAddress, amount: &BigUint);
-}
-
-#[derive(NestedEncode, NestedDecode, TopEncode, TopDecode, TypeAbi, Clone, Default)]
-pub struct Bid<M: ManagedTypeApi> {
-    pub bidder: ManagedAddress<M>,
-    pub amount: BigUint<M>,
 }
