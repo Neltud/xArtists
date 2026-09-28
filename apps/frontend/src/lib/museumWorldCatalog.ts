@@ -1,8 +1,9 @@
 /**
- * Réseau de musées virtuels — œuvres EXCLUSIVES par lieu (pas de Joconde au MoMA).
- * Met Open Access + slots « Your art here » + sculptures uniques par salle.
+ * Réseau de musées virtuels — œuvres EXCLUSIVES par lieu + iconiques PD.
+ * Met Open Access + Wikimedia iconiques (Joconde au Louvre, pas au MoMA).
  */
 import { MET_WORKS } from '../data/metCatalog'
+import { iconicForMuseum } from '../data/iconicWorks'
 import type { FrameItem } from '../components/museum/MuseumCorridor'
 
 export type VirtualMuseum = {
@@ -15,7 +16,6 @@ export type VirtualMuseum = {
   source: 'onchain' | 'catalog'
   aliases?: string[]
   match?: string[]
-  /** Keywords that must NOT appear in this museum's works */
   ban?: string[]
   works?: FrameItem[]
 }
@@ -50,7 +50,7 @@ const PROFILES: Omit<VirtualMuseum, 'works' | 'source'>[] = [
     tagline: 'Chefs-d’œuvre · Paris',
     room: 'stone',
     aliases: ['paris', 'louvre', 'marais'],
-    match: ['rembrandt', 'raphael', 'lippi', 'mantegna', 'delacroix', 'courbet', 'david', 'holy', 'madonna', 'leonardo', 'joconde', 'mona lisa'],
+    match: ['rembrandt', 'raphael', 'lippi', 'mantegna', 'delacroix', 'courbet', 'david', 'holy', 'madonna', 'leonardo'],
   },
   {
     id: 'orsay',
@@ -246,7 +246,6 @@ function yourArtHereSpots(museumId: string, label: string, n = 2): FrameItem[] {
   }))
 }
 
-/** Distinct Met Open Access sculpture URLs — one pool, sliced uniquely per museum */
 const SCULPT_POOL: { remote: string; title: string; artist: string; year: string }[] = [
   {
     remote: 'https://images.metmuseum.org/CRDImages/gr/web-large/DP-16774-001.jpg',
@@ -304,8 +303,8 @@ function hashMuseum(id: string): number {
   return h
 }
 
-/** Exactly 2 unique sculptures per museum — no shared images across venues */
 function uniqueSculptures(museumId: string, label: string): FrameItem[] {
+  if (!SCULPT_POOL.length) return []
   const start = hashMuseum(museumId) % SCULPT_POOL.length
   const picks = [SCULPT_POOL[start], SCULPT_POOL[(start + 1) % SCULPT_POOL.length]]
   return picks.map((pick, i) => ({
@@ -332,13 +331,10 @@ function isBanned(w: CatalogWork, ban?: string[]): boolean {
   return ban.some(b => blob.includes(b.toLowerCase()))
 }
 
-/**
- * Assign each Met work to at most ONE museum (exclusive).
- * Match keywords first, then fill from rest without violating ban lists.
- * Sculptures / YAH are per-museum unique ids.
- */
 function assignWorks(base: string): Map<string, FrameItem[]> {
-  const works = (MET_WORKS as CatalogWork[]).filter(w => w.remote || w.file)
+  const works = (Array.isArray(MET_WORKS) ? (MET_WORKS as CatalogWork[]) : []).filter(
+    w => w && (w.remote || w.file),
+  )
   const assigned = new Map<string, FrameItem[]>()
   const used = new Set<string>()
 
@@ -362,7 +358,7 @@ function assignWorks(base: string): Map<string, FrameItem[]> {
   let ri = 0
   for (const p of PROFILES) {
     if (p.id === 'xartists') continue
-    const list = assigned.get(p.id) || []
+    let list = assigned.get(p.id) || []
     while (list.length < 8 && ri < rest.length) {
       const w = rest[ri++]
       if (used.has(w.id)) continue
@@ -370,6 +366,23 @@ function assignWorks(base: string): Map<string, FrameItem[]> {
       list.push(toFrame(w, base, p.name))
       used.add(w.id)
     }
+    const iconic = iconicForMuseum(p.id).map(w => ({
+      id: w.id,
+      title: w.title,
+      subtitle: [w.artist, w.year].filter(Boolean).join(' · '),
+      artist: w.artist,
+      date: w.year,
+      collection: p.name,
+      description: `Présence iconique · ${p.name} (domaine public / Wikimedia).`,
+      image: proxyImg(w.remote),
+      type: w.kind === 'sculpture' ? 'Sculpture' : 'Peinture',
+      kind: (w.kind === 'sculpture' ? 'sculpture' : 'painting') as 'sculpture' | 'painting',
+      medium: 'physical' as const,
+      onSale: true,
+      priceLabel: 'Paper · intent BUY_NFT',
+      href: w.remote,
+    }))
+    list = [...iconic, ...list]
     list.push(...uniqueSculptures(p.id, p.name))
     list.push(...yourArtHereSpots(p.id, p.name, 2))
     assigned.set(p.id, list)
@@ -409,6 +422,7 @@ export function getMuseum(id: string | null | undefined): VirtualMuseum | undefi
 }
 
 export function museumIdForCity(city: string): string | null {
+  if (!city) return null
   const c = city.toLowerCase()
   const hit = PROFILES.find(
     p => p.city.toLowerCase() === c || p.aliases?.some(a => c.includes(a)),
