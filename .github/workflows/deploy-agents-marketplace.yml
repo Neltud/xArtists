@@ -1,0 +1,119 @@
+name: Deploy agents-marketplace
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain:
+        description: "D=devnet, 1=mainnet"
+        required: true
+        default: "1"
+        type: choice
+        options: ["D", "1"]
+      confirm_mainnet:
+        description: "Mainnet — type DEPLOY_MAINNET"
+        required: false
+        default: ""
+        type: string
+      fee_bps:
+        description: "Protocol fee bps"
+        required: true
+        default: "300"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CHAIN_ID: ${{ github.event.inputs.chain }}
+      FEE_BPS: ${{ github.event.inputs.fee_bps }}
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mainnet gate
+        run: |
+          if [ "${CHAIN_ID}" = "1" ] && [ "${{ github.event.inputs.confirm_mainnet }}" != "DEPLOY_MAINNET" ]; then
+            echo "MAINNET blocked"; exit 1
+          fi
+          if [ "${CHAIN_ID}" = "1" ]; then
+            echo "PROXY=https://gateway.multiversx.com" >> "$GITHUB_ENV"
+          else
+            echo "PROXY=https://devnet-gateway.multiversx.com" >> "$GITHUB_ENV"
+          fi
+
+      - name: Write PEM
+        run: |
+          set -euo pipefail
+          test -n "${SC_DEPLOYER_PEM:-}"
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli
+
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          targets: wasm32-unknown-unknown,wasm32v1-none
+
+      - name: Build agents wasm (sc-meta + fallback)
+        working-directory: contracts/agents-marketplace
+        run: |
+          set -euo pipefail
+          rustup target add wasm32v1-none
+          cargo install multiversx-sc-meta --locked --force || true
+          sc-meta all build || true
+          WASM=$(find . -name '*.wasm' | head -1 || true)
+          if [ -z "$WASM" ]; then
+            echo "sc-meta produced no wasm — building wasm crate directly"
+            cd wasm
+            cargo build --release --target wasm32v1-none
+            WASM=$(find target -name '*.wasm' | head -1)
+            cd ..
+          fi
+          if [ -z "$WASM" ]; then
+            # alternate target name
+            cd wasm
+            cargo build --release --target wasm32-unknown-unknown 2>/dev/null || true
+            WASM=$(find target -name '*.wasm' | head -1)
+            cd ..
+          fi
+          test -n "$WASM"
+          echo "AGENTS_WASM=${PWD}/${WASM#./}" >> "$GITHUB_ENV"
+          echo "wasm=$WASM size=$(wc -c < "$WASM")"
+
+      - name: Deploy
+        run: |
+          set -euo pipefail
+          DEPLOYER=erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          LOG=$(mxpy contract deploy \
+            --bytecode="${AGENTS_WASM}" \
+            --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=60000000 \
+            --proxy="${PROXY}" \
+            --chain="${CHAIN_ID}" \
+            --nonce="$NONCE" \
+            --arguments "${FEE_BPS}" \
+            --send \
+            --wait-result 2>&1) || true
+          echo "$LOG"
+          # Prefer SCDeploy-style address from log
+          ADDR=$(echo "$LOG" | grep -oE 'erd1qqqq[a-z0-9]{50,}' | head -1 || true)
+          echo "agents_sc=${ADDR}"
+          if [ -z "$ADDR" ]; then exit 1; fi
+          echo "AGENTS_SC=$ADDR" >> "$GITHUB_ENV"
+
+      - name: Cleanup
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"
