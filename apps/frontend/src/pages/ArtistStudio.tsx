@@ -4,6 +4,7 @@ import { LINKS } from '../config/links'
 import AdSlot from '../components/AdSlot'
 import PageGuide from '../components/PageGuide'
 import StudioCreatorHub from '../components/StudioCreatorHub'
+import StudioPaperMintCard from '../components/StudioPaperMintCard'
 import TxCapabilityBanner from '../components/TxCapabilityBanner'
 import ScStatusBanner from '../components/ScStatusBanner'
 import LiaVsUserBanner from '../components/LiaVsUserBanner'
@@ -51,7 +52,7 @@ export default function ArtistStudio() {
     () => [
       { ok: collectionName.trim().length >= 2, label: 'Nom de collection / album' },
       { ok: ticker.trim().length >= 3 && ticker.trim().length <= 10, label: 'Ticker 3–10' },
-      { ok: title.trim().length >= 1, label: 'Titre de l’œuvre' },
+      { ok: title.trim().length >= 1, label: "Titre de l'œuvre" },
       {
         ok:
           mode === 'physical' ||
@@ -115,7 +116,7 @@ export default function ArtistStudio() {
     return [
       '# Template ops — remplacer PEM / collection id après issue',
       `# Collection: ${collectionName || '…'} · ticker ${t}`,
-      `# Metadata JSON: exporter depuis Studio puis pin IPFS`,
+      '# Metadata JSON: exporter depuis Studio puis pin IPFS',
       '',
       'mxpy --verbose contract call $MINTER_SC \\',
       '  --pem=$PEM --gas-limit=20000000 --chain=1 --proxy=https://gateway.multiversx.com \\',
@@ -252,17 +253,6 @@ export default function ArtistStudio() {
         />
       </div>
 
-      <div className="mb-6 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] text-zinc-400 flex flex-wrap gap-x-4 gap-y-1">
-        <span>
-          Draft · <strong className="text-zinc-200">{collectionName || '—'}</strong>
-        </span>
-        <span className="mono truncate max-w-[220px]">
-          {ipfsUri ? (ipfsUri.length > 28 ? `${ipfsUri.slice(0, 28)}…` : ipfsUri) : 'média pending'}
-        </span>
-        <span>{mode === 'physical' ? 'RWA / physical' : 'digital'}</span>
-        <span>étape {step}/4</span>
-      </div>
-
       {step === 1 && (
         <div className="card space-y-4">
           <h2 className="font-bold">1 — Collection / album</h2>
@@ -293,7 +283,7 @@ export default function ArtistStudio() {
             />
           </label>
           <p className="text-xs text-gray-500">Gaz issue : {GAS_HINT.issue_collection}</p>
-          <button type="button" className="btn-primary text-sm w-full sm:w-auto" onClick={() => setStep(2)}>
+          <button type="button" className="btn-primary text-sm" onClick={() => setStep(2)}>
             Continuer →
           </button>
         </div>
@@ -301,14 +291,14 @@ export default function ArtistStudio() {
 
       {step === 2 && (
         <div className="card space-y-4">
-          <h2 className="font-bold">2 — Média & stockage permanent</h2>
+          <h2 className="font-bold">2 — Média & stockage</h2>
           <div className="flex flex-wrap gap-2">
             {(['image', 'video', 'audio'] as MediaKind[]).map(m => (
               <button
                 key={m}
                 type="button"
                 onClick={() => setMedia(m)}
-                className={`px-4 py-2.5 rounded-xl border text-sm capitalize min-h-[44px] ${
+                className={`px-4 py-2.5 rounded-xl border text-sm capitalize ${
                   media === m ? 'border-purple-500 bg-purple-500/15' : 'border-[#2a2a3a]'
                 }`}
               >
@@ -322,7 +312,7 @@ export default function ArtistStudio() {
                 key={m}
                 type="button"
                 onClick={() => setMode(m)}
-                className={`px-4 py-2.5 rounded-xl border text-sm min-h-[44px] ${
+                className={`px-4 py-2.5 rounded-xl border text-sm ${
                   mode === m ? 'border-teal-500 bg-teal-500/15' : 'border-[#2a2a3a]'
                 }`}
               >
@@ -330,71 +320,32 @@ export default function ArtistStudio() {
               </button>
             ))}
           </div>
-          <p className="text-xs font-semibold text-gray-400 uppercase">Stockage</p>
-          <div className="flex flex-wrap gap-2">
-            {(
-              [
-                { id: 'ipfs' as const, label: 'IPFS (Pinata)' },
-                { id: 'arweave' as const, label: 'Arweave' },
-                { id: 'url' as const, label: 'HTTPS déjà piné' },
-              ] as const
-            ).map(s => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => setStorage(s.id)}
-                className={`px-3 py-2 rounded-xl border text-xs min-h-[40px] ${
-                  storage === s.id ? 'border-indigo-500 bg-indigo-500/15' : 'border-[#2a2a3a]'
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
-          <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-3 text-xs text-indigo-100/90 space-y-1">
-            <p className="font-semibold">Pin auto Studio = proxy backend (P1)</p>
-            <p>
-              JWT Pinata <strong>jamais</strong> dans le navigateur. Ops :{' '}
-              <code className="text-[10px]">python -m lia.media.pinata_connect</code>
-            </p>
-          </div>
           <label className="block text-sm text-gray-400">
-            URI IPFS / gateway (après pin ops)
+            URI IPFS / gateway
             <input
               className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2.5 mono text-xs"
               value={ipfsUri}
               onChange={e => setIpfsUri(e.target.value)}
-              placeholder="ipfs://Qm… ou https://gateway…"
+              placeholder="ipfs://Qm…"
             />
           </label>
           <label className="block text-sm text-gray-400">
-            Fichier (préparation locale — pin hors front)
+            Fichier local (pin hors front)
             <input
               type="file"
-              accept={media === 'image' ? 'image/*' : media === 'video' ? 'video/*' : 'audio/*'}
               className="mt-1 block w-full text-xs"
               onChange={e => setFileName(e.target.files?.[0]?.name || '')}
             />
           </label>
           {fileName && <p className="text-xs text-green-400">Fichier : {fileName}</p>}
-          <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-100/90 space-y-2">
-            <p className="font-semibold">YouTube ≠ stockage NFT</p>
-            <label className="block text-gray-300">
-              YouTube (optionnel)
-              <input
-                className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 text-white"
-                value={youtubeUrl}
-                onChange={e => setYoutubeUrl(e.target.value)}
-                placeholder="https://www.youtube.com/watch?v=…"
-              />
-            </label>
-            {!ytOk && <p className="text-red-400">URL YouTube invalide</p>}
-          </div>
-          {mode === 'physical' && (
-            <p className="text-xs text-teal-200/90 border border-teal-500/30 rounded-lg p-3">
-              Phygital : NFT = certificat. Rewards $TRO créateur = <strong>1 TRO max</strong> / œuvre réelle.
-            </p>
-          )}
+          <label className="block text-sm text-gray-400">
+            YouTube (optionnel)
+            <input
+              className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2"
+              value={youtubeUrl}
+              onChange={e => setYoutubeUrl(e.target.value)}
+            />
+          </label>
           <div className="flex gap-2">
             <button type="button" className="btn-secondary text-sm" onClick={() => setStep(1)}>
               ←
@@ -444,8 +395,8 @@ export default function ArtistStudio() {
             ))}
           </ul>
           <div className="rounded-xl border border-[#2a2a3a] bg-[#0a0a0f] p-3">
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <p className="text-xs font-semibold text-zinc-400">Aperçu metadata JSON</p>
+            <div className="flex justify-between mb-2">
+              <p className="text-xs font-semibold text-zinc-400">Metadata JSON</p>
               <div className="flex gap-2">
                 <button type="button" className="btn-secondary text-[10px] py-1" onClick={copyMeta}>
                   {copied ? 'Copié' : 'Copier'}
@@ -474,42 +425,61 @@ export default function ArtistStudio() {
       )}
 
       {step === 4 && (
-        <div className="card space-y-4">
-          <h2 className="font-bold">4 — Mint & sell</h2>
-          <div className="rounded-xl bg-[#111118] border border-[#2a2a3a] p-4 text-sm space-y-1">
-            <p>
-              {collectionName} {albumTitle && `· ${albumTitle}`} ·{' '}
-              <span className="mono">{ticker || '—'}</span>
-            </p>
-            <p className="text-zinc-400">{title || 'Sans titre'}</p>
-            <p className="text-xs text-zinc-500">Gaz mint : {GAS_HINT.mint_nft} · list : {GAS_HINT.list_nft}</p>
-          </div>
-          {!marketLive && (
-            <p className="text-xs text-amber-200/90 border border-amber-500/30 rounded-lg p-3">
-              Marketplace SC OFF — mint possible (ops) · list paper jusqu’à GO_LIVE.
-            </p>
-          )}
-          <div className="rounded-xl border border-[#2a2a3a] bg-[#0a0a0f] p-3">
-            <div className="flex justify-between mb-2">
-              <p className="text-xs font-semibold text-zinc-400">Template mxpy (ops)</p>
-              <button type="button" className="btn-secondary text-[10px] py-1" onClick={copyCmd}>
-                {cmdCopied ? 'Copié' : 'Copier'}
-              </button>
+        <>
+          <StudioPaperMintCard
+            ready={ready}
+            collectionName={collectionName}
+            ticker={ticker}
+            title={title}
+            description={description}
+            media={media}
+            mode={mode}
+            storage={storage}
+            ipfsUri={ipfsUri}
+            youtubeUrl={youtubeUrl}
+            royalty={royalty}
+            metadataJson={metadataJson}
+            artistAddress={address || undefined}
+          />
+          <div className="card space-y-4">
+            <h2 className="font-bold">4 — Mint on-chain & sell</h2>
+            <div className="rounded-xl bg-[#111118] border border-[#2a2a3a] p-4 text-sm space-y-1">
+              <p>
+                {collectionName} {albumTitle && `· ${albumTitle}`} ·{' '}
+                <span className="mono">{ticker || '—'}</span>
+              </p>
+              <p className="text-zinc-400">{title || 'Sans titre'}</p>
+              <p className="text-xs text-zinc-500">
+                Gaz mint : {GAS_HINT.mint_nft} · list : {GAS_HINT.list_nft}
+              </p>
             </div>
-            <pre className="text-[10px] mono text-zinc-500 overflow-x-auto">{mxpyTemplate}</pre>
+            {!marketLive && (
+              <p className="text-xs text-amber-200/90 border border-amber-500/30 rounded-lg p-3">
+                Marketplace SC OFF — utilise d’abord Mint paper E2E. On-chain = ops mxpy après GO_LIVE.
+              </p>
+            )}
+            <div className="rounded-xl border border-[#2a2a3a] bg-[#0a0a0f] p-3">
+              <div className="flex justify-between mb-2">
+                <p className="text-xs font-semibold text-zinc-400">Template mxpy (ops)</p>
+                <button type="button" className="btn-secondary text-[10px] py-1" onClick={copyCmd}>
+                  {cmdCopied ? 'Copié' : 'Copier'}
+                </button>
+              </div>
+              <pre className="text-[10px] mono text-zinc-500 overflow-x-auto">{mxpyTemplate}</pre>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" className="btn-secondary text-sm" onClick={() => setStep(3)}>
+                ←
+              </button>
+              <Link to="/marketplace" className="btn-primary text-sm">
+                Marketplace
+              </Link>
+              <Link to="/go-live" className="btn-secondary text-sm">
+                GO_LIVE
+              </Link>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <button type="button" className="btn-secondary text-sm" onClick={() => setStep(3)}>
-              ←
-            </button>
-            <Link to="/marketplace" className="btn-primary text-sm">
-              Marketplace
-            </Link>
-            <a href={LINKS.docs || '/go-live'} className="btn-secondary text-sm">
-              GO_LIVE
-            </a>
-          </div>
-        </div>
+        </>
       )}
     </div>
   )
