@@ -1,4 +1,4 @@
-/** On-chain SC readiness — driven by build-time VITE_* after verify_marketplace_codehash */
+/** On-chain SC readiness — driven by build-time VITE_* after codeHash verify */
 
 const truthy = (v: string | undefined) =>
   v === '1' || v === 'true' || v === 'TRUE' || v === 'yes'
@@ -18,8 +18,14 @@ export const MARKETPLACE_ADDRESS =
 export const AGENTS_MARKETPLACE_ADDRESS =
   (import.meta.env.VITE_AGENTS_MARKETPLACE_ADDRESS as string | undefined)?.trim() || ''
 
+/** Venue-split SC — set after deploy + verify; empty = paper only */
+export const VENUE_SC_ADDRESS =
+  (import.meta.env.VITE_VENUE_SC_ADDRESS as string | undefined)?.trim() || ''
+
 export const MARKETPLACE_LIVE = truthy(import.meta.env.VITE_MARKETPLACE_CODEHASH_OK)
 export const AGENTS_LIVE = truthy(import.meta.env.VITE_AGENTS_CODEHASH_OK)
+/** True only after explorer verify codeHash on the deployed venue-split */
+export const VENUE_LIVE = truthy(import.meta.env.VITE_VENUE_CODEHASH_OK)
 
 export const AGENTS_FEE_BPS = Number(import.meta.env.VITE_AGENTS_FEE_BPS || 300)
 /** NFT market fee when live — env or product default 2.5% */
@@ -45,12 +51,26 @@ export function canBuyAgent(): boolean {
   return AGENTS_LIVE && isUsableScAddress(AGENTS_MARKETPLACE_ADDRESS)
 }
 
+/** rentPay on-chain only if address + VITE_VENUE_CODEHASH_OK */
+export function canRentVenueOnChain(): boolean {
+  return VENUE_LIVE && isUsableScAddress(VENUE_SC_ADDRESS)
+}
+
 /** Prefer VITE address; never fall back to empty placeholder for TX */
 export function marketplaceReceiverOrThrow(): string {
   if (!canListBuyNft()) {
     throw new Error(
-      'Marketplace SC not live (codeHash / empty). Deploy + VITE_MARKETPLACE_CODEHASH_OK=1.'
+      'Marketplace SC not live (codeHash / empty). Deploy + VITE_MARKETPLACE_CODEHASH_OK=1.',
     )
   }
   return MARKETPLACE_ADDRESS
+}
+
+export function venueReceiverOrThrow(): string {
+  if (!canRentVenueOnChain()) {
+    throw new Error(
+      'Venue-split SC not live. Deploy testnet/mainnet, verify codeHash, then VITE_VENUE_SC_ADDRESS + VITE_VENUE_CODEHASH_OK=1.',
+    )
+  }
+  return VENUE_SC_ADDRESS
 }
