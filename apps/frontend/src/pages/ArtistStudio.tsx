@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LINKS } from '../config/links'
 import AdSlot from '../components/AdSlot'
 import PageGuide from '../components/PageGuide'
 import StudioCreatorHub from '../components/StudioCreatorHub'
 import StudioPaperMintCard from '../components/StudioPaperMintCard'
+import StudioOnChainMintCard from '../components/StudioOnChainMintCard'
 import TxCapabilityBanner from '../components/TxCapabilityBanner'
 import ScStatusBanner from '../components/ScStatusBanner'
 import LiaVsUserBanner from '../components/LiaVsUserBanner'
@@ -17,9 +17,9 @@ type AssetMode = 'digital' | 'physical'
 type StorageChoice = 'ipfs' | 'arweave' | 'url'
 
 const GAS_HINT: Record<string, string> = {
-  issue_collection: '~0.05–0.15 EGLD (estim.)',
-  mint_nft: '~0.01–0.05 EGLD (estim.)',
-  list_nft: '~0.01–0.03 EGLD (estim.)',
+  issue_collection: '~0.05 EGLD issue + gas',
+  mint_nft: '~0.01–0.05 EGLD gas',
+  list_nft: '~0.01–0.03 EGLD gas',
 }
 
 export default function ArtistStudio() {
@@ -38,7 +38,6 @@ export default function ArtistStudio() {
   const [ipfsUri, setIpfsUri] = useState('')
   const [youtubeUrl, setYoutubeUrl] = useState('')
   const [copied, setCopied] = useState(false)
-  const [cmdCopied, setCmdCopied] = useState(false)
 
   const marketLive = canListBuyNft()
   const canSign = connected && method !== 'paste_readonly'
@@ -61,7 +60,7 @@ export default function ArtistStudio() {
           ipfsUri.startsWith('https://'),
         label: 'Média IPFS/URL ou fichier préparé',
       },
-      { ok: ytOk, label: 'YouTube optionnel = lien externe valide' },
+      { ok: ytOk, label: 'YouTube optionnel = lien valide' },
     ],
     [collectionName, ticker, title, fileName, mode, ipfsUri, ytOk],
   )
@@ -110,23 +109,6 @@ export default function ArtistStudio() {
     marketLive,
   ])
 
-  const mxpyTemplate = useMemo(() => {
-    const t = (ticker || 'XART').toUpperCase()
-    const uri = ipfsUri || 'ipfs://Qm_REPLACE'
-    return [
-      '# Template ops — remplacer PEM / collection id après issue',
-      `# Collection: ${collectionName || '…'} · ticker ${t}`,
-      '# Metadata JSON: exporter depuis Studio puis pin IPFS',
-      '',
-      'mxpy --verbose contract call $MINTER_SC \\',
-      '  --pem=$PEM --gas-limit=20000000 --chain=1 --proxy=https://gateway.multiversx.com \\',
-      `  --function=mintNft --arguments str:${t} str:${(title || 'Untitled').replace(/'/g, '')} str:${uri}`,
-      '',
-      '# List (après deploy marketplace + codeHash OK):',
-      '#  → dApp Market → Sell (wallet artiste, pas LIA ops)',
-    ].join('\n')
-  }, [ticker, collectionName, title, ipfsUri])
-
   const downloadMeta = () => {
     const blob = new Blob([metadataJson], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -147,16 +129,6 @@ export default function ArtistStudio() {
     }
   }
 
-  const copyCmd = async () => {
-    try {
-      await navigator.clipboard.writeText(mxpyTemplate)
-      setCmdCopied(true)
-      setTimeout(() => setCmdCopied(false), 2000)
-    } catch {
-      /* ignore */
-    }
-  }
-
   return (
     <div className="animate-fade-in max-w-3xl mx-auto pb-24 md:pb-8">
       <PageGuide page="studio" />
@@ -165,14 +137,13 @@ export default function ArtistStudio() {
 
       <header className="mb-4 space-y-2">
         <p className="text-[10px] uppercase tracking-[0.2em] text-violet-400/80 font-semibold">
-          Création · MultiversX
+          Création · MultiversX mainnet
         </p>
         <h1 className="text-3xl font-black">
-          🎨 Studio <span className="gradient-text">xArtists</span>
+          Studio <span className="gradient-text">xArtists</span>
         </h1>
         <p className="text-gray-500 text-sm">
-          Parcours artiste :{' '}
-          <strong className="text-gray-300">préparer → pin → mint → list / sell</strong>
+          <strong className="text-gray-300">préparer → pin → mint (paper ou on-chain) → list</strong>
           {' · '}wallet artiste (pas LIA ops)
         </p>
         <div className="flex flex-wrap gap-2 pt-1">
@@ -182,8 +153,8 @@ export default function ArtistStudio() {
           <Link to="/marketplace" className="btn-secondary text-xs">
             Marketplace
           </Link>
-          <Link to="/tro" className="btn-secondary text-xs">
-            $TRO
+          <Link to="/my-packs" className="btn-secondary text-xs">
+            My Packs
           </Link>
         </div>
       </header>
@@ -193,9 +164,9 @@ export default function ArtistStudio() {
 
       {!connected ? (
         <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-100 flex flex-wrap items-center justify-between gap-2">
-          <span>Connecte ton wallet artiste pour mint / list (pas LIA ops).</span>
+          <span>Connecte ton wallet artiste pour mint / list.</span>
           <button type="button" className="btn-primary text-xs" onClick={requestOpenConnect}>
-            🔗 Connect
+            Connect
           </button>
         </div>
       ) : (
@@ -274,7 +245,7 @@ export default function ArtistStudio() {
             />
           </label>
           <label className="block text-sm text-gray-400">
-            Ticker
+            Ticker (3–10)
             <input
               className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2.5 mono"
               value={ticker}
@@ -326,7 +297,7 @@ export default function ArtistStudio() {
               className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2.5 mono text-xs"
               value={ipfsUri}
               onChange={e => setIpfsUri(e.target.value)}
-              placeholder="ipfs://Qm…"
+              placeholder="ipfs://Qm… ou https://…"
             />
           </label>
           <label className="block text-sm text-gray-400">
@@ -426,6 +397,17 @@ export default function ArtistStudio() {
 
       {step === 4 && (
         <>
+          <StudioOnChainMintCard
+            ready={ready}
+            collectionName={collectionName}
+            ticker={ticker}
+            title={title}
+            description={description}
+            royalty={royalty}
+            ipfsUri={ipfsUri}
+            youtubeUrl={youtubeUrl}
+            metadataJson={metadataJson}
+          />
           <StudioPaperMintCard
             ready={ready}
             collectionName={collectionName}
@@ -441,32 +423,12 @@ export default function ArtistStudio() {
             metadataJson={metadataJson}
             artistAddress={address || undefined}
           />
-          <div className="card space-y-4">
-            <h2 className="font-bold">4 — Mint on-chain & sell</h2>
-            <div className="rounded-xl bg-[#111118] border border-[#2a2a3a] p-4 text-sm space-y-1">
-              <p>
-                {collectionName} {albumTitle && `· ${albumTitle}`} ·{' '}
-                <span className="mono">{ticker || '—'}</span>
-              </p>
-              <p className="text-zinc-400">{title || 'Sans titre'}</p>
-              <p className="text-xs text-zinc-500">
-                Gaz mint : {GAS_HINT.mint_nft} · list : {GAS_HINT.list_nft}
-              </p>
-            </div>
-            {!marketLive && (
-              <p className="text-xs text-amber-200/90 border border-amber-500/30 rounded-lg p-3">
-                Marketplace SC OFF — utilise d’abord Mint paper E2E. On-chain = ops mxpy après GO_LIVE.
-              </p>
-            )}
-            <div className="rounded-xl border border-[#2a2a3a] bg-[#0a0a0f] p-3">
-              <div className="flex justify-between mb-2">
-                <p className="text-xs font-semibold text-zinc-400">Template mxpy (ops)</p>
-                <button type="button" className="btn-secondary text-[10px] py-1" onClick={copyCmd}>
-                  {cmdCopied ? 'Copié' : 'Copier'}
-                </button>
-              </div>
-              <pre className="text-[10px] mono text-zinc-500 overflow-x-auto">{mxpyTemplate}</pre>
-            </div>
+          <div className="card space-y-3">
+            <h2 className="font-bold">Ensuite · list & sell</h2>
+            <p className="text-xs text-zinc-500">
+              Gaz mint : {GAS_HINT.mint_nft} · list : {GAS_HINT.list_nft}
+              {!marketLive && ' · Marketplace SC gated CODEHASH jusqu activation.'}
+            </p>
             <div className="flex flex-wrap gap-2">
               <button type="button" className="btn-secondary text-sm" onClick={() => setStep(3)}>
                 ←
@@ -474,8 +436,8 @@ export default function ArtistStudio() {
               <Link to="/marketplace" className="btn-primary text-sm">
                 Marketplace
               </Link>
-              <Link to="/go-live" className="btn-secondary text-sm">
-                GO_LIVE
+              <Link to="/museum" className="btn-secondary text-sm">
+                Galerie
               </Link>
             </div>
           </div>

@@ -47,12 +47,13 @@ export const LINKS = {
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/', label: 'Home', emoji: '◈' },
   { to: '/museum', label: 'Galerie', emoji: '🖼' },
+  { to: '/studio', label: 'Studio', emoji: '🎨' },
   { to: '/agents', label: 'Packs', emoji: '◎' },
-  { to: '/market', label: 'Analyse', emoji: '◐' },
   { to: '/my-packs', label: 'My Packs', emoji: '🎫' },
+  { to: '/marketplace', label: 'Marketplace', emoji: '▣' },
+  { to: '/market', label: 'Analyse', emoji: '◐' },
   { to: '/tours', label: 'Tours', emoji: '◉' },
   { to: '/wallet', label: 'Wallet', emoji: '◇' },
-  { to: '/marketplace', label: 'Marketplace', emoji: '▣' },
   { to: '/trading', label: 'Trading', emoji: '⚡' },
   { to: '/legal', label: 'Legal', emoji: '§' },
 ]
