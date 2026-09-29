@@ -6,15 +6,17 @@ export type WalletMethod =
   | 'xportal'
   | 'defi_wallet'
   | 'web_wallet'
+  | 'wallet_connect'
   | 'paste_readonly'
   | 'pem'
   | null
 
-/** Methods that can produce a user signature on mainnet (when sdk-dapp is wired). */
+/** Methods that can produce a user signature on mainnet. */
 const SIGNING_METHODS: ReadonlySet<string> = new Set([
   'xportal',
   'defi_wallet',
-  'web_wallet', // only after real WC / web-wallet login hook, not paste
+  'web_wallet',
+  'wallet_connect',
 ])
 
 export function hasSendTxInjected(): boolean {
@@ -23,25 +25,24 @@ export function hasSendTxInjected(): boolean {
 }
 
 /**
- * True only if session is not paste-readonly and bootstrap injected send.
- * Web-wallet callback from MultiversX still needs __xartistsSendTx for reliable sign.
+ * True if method can sign (xPortal / web wallet / WC).
+ * Bridge is injected on demand by bootstrapSendTx / useSendTransaction.
  */
 export function canSignOnChain(method: WalletMethod | string | null | undefined): boolean {
   if (!method || method === 'paste_readonly' || method === 'pem') return false
-  if (!SIGNING_METHODS.has(method)) return false
-  return hasSendTxInjected()
+  return SIGNING_METHODS.has(method)
 }
 
 export function signBlockReason(method: WalletMethod | string | null | undefined): string | null {
   if (!method) return 'Connecte xPortal, DeFi Wallet ou Web Wallet (pas coller erd1).'
   if (method === 'paste_readonly') {
-    return 'Session lecture seule (adresse collée) — impossible de signer List/Buy/Bid. Reconnecte via xPortal / extension / Web Wallet.'
+    return 'Session lecture seule (adresse collée) — impossible de signer. Reconnecte via xPortal / Web Wallet.'
   }
   if (method === 'pem') {
     return 'PEM interdit côté dApp user — réservé ops LIA / Vellum.'
   }
-  if (!hasSendTxInjected()) {
-    return 'sdk-dapp non branché (__xartistsSendTx manquant). Ouvre une page TX (Market) pour charger TxShell, ou configure WalletConnect.'
+  if (!SIGNING_METHODS.has(method)) {
+    return 'Méthode de connexion non signante.'
   }
   return null
 }

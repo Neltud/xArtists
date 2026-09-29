@@ -1,5 +1,6 @@
 import { useWallet, LIA_WALLET } from '../context/WalletContext'
-import { canSignOnChain, signBlockReason } from '../lib/txCapability'
+import { signBlockReason, hasSendTxInjected } from '../lib/txCapability'
+import { bootstrapSendTx } from '../providers/bootstrapSendTx'
 
 interface TransactionDisplayInfo {
   processingMessage?: string
@@ -12,7 +13,7 @@ interface SendTransactionResult {
   error: string | null
 }
 
-/** Send MultiversX TX — blocks paste_readonly, LIA ops, and missing sdk-dapp. */
+/** Send MultiversX TX — blocks paste_readonly, LIA ops. Uses __xartistsSendTx (wallet hook). */
 export const useSendTransaction = () => {
   const { connected, address, method } = useWallet()
 
@@ -28,21 +29,23 @@ export const useSendTransaction = () => {
       return {
         sessionId: null,
         error:
-          'Wallet protocole LIA interdit pour les TX user (List/Buy). Déconnecte et utilise ton wallet.',
+          'Wallet protocole LIA interdit pour les TX user. Déconnecte et utilise ton wallet.',
       }
+    }
+
+    if (!hasSendTxInjected()) {
+      bootstrapSendTx()
     }
 
     const block = signBlockReason(method)
-    if (block) {
+    if (block && method === 'paste_readonly') {
       return { sessionId: null, error: block }
     }
-
-    if (!canSignOnChain(method)) {
-      return {
-        sessionId: null,
-        error:
-          'Signature non disponible — xPortal / DeFi Wallet + TxShell (page Market), pas coller erd1.',
-      }
+    if (method === 'pem') {
+      return { sessionId: null, error: block || 'PEM interdit côté dApp user.' }
+    }
+    if (!method) {
+      return { sessionId: null, error: 'Connecte xPortal ou Web Wallet.' }
     }
 
     const w = window as unknown as {
@@ -50,6 +53,10 @@ export const useSendTransaction = () => {
         txs: unknown[],
         info?: TransactionDisplayInfo
       ) => Promise<{ sessionId?: string }>
+    }
+
+    if (typeof w.__xartistsSendTx !== 'function') {
+      bootstrapSendTx()
     }
 
     if (typeof w.__xartistsSendTx === 'function') {
@@ -62,10 +69,9 @@ export const useSendTransaction = () => {
       }
     }
 
-    console.info('[useSendTransaction]', { address, count: transactions.length, displayInfo })
     return {
       sessionId: null,
-      error: 'SDK dapp non branché — __xartistsSendTx manquant après TxShell.',
+      error: 'Bridge TX indisponible — recharge la page.',
     }
   }
 

@@ -1,21 +1,13 @@
 /**
- * TX shell + TransactionOverlay (Mission A).
- * - Optional MultiversX DappProvider is in MxDappProvider (Ledger-safe).
- * - This component provides the global TX status overlay driven by empireStore.
- * - Injects __xartistsSendTx bridge when sdk-dapp sendTransactions is available.
+ * TX shell + TransactionOverlay.
+ * Ensures __xartistsSendTx is injected (web-wallet hook + optional sdk-dapp).
  */
-import { useEffect, useCallback, type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import {
   useEmpireTx,
   empireTxClear,
-  empireTxStart,
-  empireTxSigning,
-  empireTxBroadcast,
-  empireTxSuccess,
-  empireTxError,
 } from '../store/empireStore'
-
-const EXPLORER = 'https://explorer.multiversx.com'
+import { bootstrapSendTx } from './bootstrapSendTx'
 
 function phaseColor(phase: string): string {
   switch (phase) {
@@ -40,9 +32,9 @@ function phaseLabel(phase: string): string {
     case 'signing':
       return 'Signature wallet…'
     case 'broadcast':
-      return 'Broadcast réseau…'
+      return 'Broadcast / wallet…'
     case 'success':
-      return 'Confirmé on-chain'
+      return 'Envoyé'
     case 'error':
       return 'Échec'
     default:
@@ -72,8 +64,13 @@ function TransactionOverlay() {
             {tx.error && (
               <p className="text-xs text-red-300 break-words">{tx.error}</p>
             )}
-            {tx.sessionId && tx.phase !== 'error' && (
+            {tx.sessionId && tx.phase !== 'error' && tx.sessionId !== 'wallet-hook' && (
               <p className="text-[11px] mono text-zinc-400 truncate">session: {tx.sessionId}</p>
+            )}
+            {tx.sessionId === 'wallet-hook' && (
+              <p className="text-xs text-amber-200">
+                Ouvre xPortal / Web Wallet pour signer, puis reviens sur la dApp.
+              </p>
             )}
             {tx.explorerUrl && (
               <a
@@ -105,62 +102,10 @@ function TransactionOverlay() {
   )
 }
 
-function useSendTxBridge() {
-  const tryInject = useCallback(async () => {
-    const w = window as unknown as {
-      __xartistsSendTx?: (
-        txs: unknown[],
-        info?: { processingMessage?: string; successMessage?: string; errorMessage?: string },
-      ) => Promise<{ sessionId?: string }>
-    }
-
-    if (typeof w.__xartistsSendTx === 'function') return
-
-    try {
-      const mod = await import('@multiversx/sdk-dapp/services/transactions/sendTransactions')
-      const sendTransactions = (mod as { sendTransactions?: Function }).sendTransactions
-      if (typeof sendTransactions !== 'function') return
-
-      w.__xartistsSendTx = async (txs, info) => {
-        const label = info?.processingMessage || 'Transaction MultiversX'
-        empireTxStart(label)
-        empireTxSigning()
-        try {
-          const result = await sendTransactions({
-            transactions: txs,
-            transactionsDisplayInfo: {
-              processingMessage: info?.processingMessage,
-              successMessage: info?.successMessage,
-              errorMessage: info?.errorMessage,
-            },
-          })
-          const sessionId =
-            (result as { sessionId?: string })?.sessionId ??
-            (typeof result === 'string' ? result : 'submitted')
-          empireTxBroadcast(sessionId)
-          const url = sessionId && sessionId !== 'submitted'
-            ? `${EXPLORER}/transactions/${sessionId}`
-            : null
-          empireTxSuccess(sessionId, url ?? undefined)
-          return { sessionId }
-        } catch (e: unknown) {
-          const msg = e instanceof Error ? e.message : 'send failed'
-          empireTxError(msg)
-          throw e
-        }
-      }
-    } catch {
-      /* sdk-dapp path unavailable */
-    }
-  }, [])
-
-  useEffect(() => {
-    void tryInject()
-  }, [tryInject])
-}
-
 export default function TxShell({ children }: { children: ReactNode }) {
-  useSendTxBridge()
+  useEffect(() => {
+    bootstrapSendTx()
+  }, [])
   return (
     <>
       {children}
