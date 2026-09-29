@@ -1,9 +1,9 @@
 /**
- * Inject window.__xartistsSendTx for user TX (stake / market / venue).
+ * Inject window.__xartistsSendTx for user TX (stake / market / studio mint).
  * Priority:
- *  1) Active xPortal WC session → sign in xPortal app (correct popup)
+ *  1) Active xPortal WC session → sign in xPortal app
  *  2) sdk-dapp sendTransactions if DappProvider session active
- *  3) Web Wallet hook URL — only as last resort / web_wallet method
+ *  3) Web Wallet hook URL — always OK for signable methods (xportal session lost, web_wallet)
  * Never holds PEM — user signs in their wallet app.
  */
 import {
@@ -67,10 +67,10 @@ function buildWalletHookUrl(tx: TxInput, callbackUrl: string): string {
 function defaultCallback(): string {
   try {
     const origin = (DAPP_CALLBACK_BASE || 'https://neltud.github.io/xArtists').replace(/\/$/, '')
-    const hash = window.location.hash || '#/staking'
+    const hash = window.location.hash || '#/studio'
     return `${origin}/${hash.startsWith('#') ? hash : '#' + hash}`
   } catch {
-    return 'https://neltud.github.io/xArtists/#/staking'
+    return 'https://neltud.github.io/xArtists/#/studio'
   }
 }
 
@@ -133,12 +133,22 @@ async function tryXPortalSignAndBroadcast(list: unknown[]): Promise<SendResult |
   return { sessionId: br.hash }
 }
 
+function openWebWalletHook(plain: TxInput): SendResult {
+  const callback = defaultCallback()
+  const hookUrl = buildWalletHookUrl(plain, callback)
+  empireTxBroadcast('wallet-hook')
+  try {
+    window.location.assign(hookUrl)
+  } catch {
+    window.open(hookUrl, '_blank', 'noopener,noreferrer')
+  }
+  empireTxSuccess('wallet-hook', undefined)
+  return { sessionId: 'wallet-hook' }
+}
+
 function injectSendTx() {
   const w = window as unknown as {
     __xartistsSendTx?: (txs: unknown[], info?: DisplayInfo) => Promise<SendResult>
-  }
-  if (typeof w.__xartistsSendTx === 'function') {
-    // re-bind always with latest closures
   }
 
   w.__xartistsSendTx = async (txs, info) => {
@@ -155,25 +165,27 @@ function injectSendTx() {
 
     const method = walletMethod()
 
-    // 1) xPortal WC session — correct popup in xPortal app
-    if (method === 'xportal' || getXPortalSession()) {
+    // Read-only / pem never sign
+    if (method === 'paste_readonly' || method === 'pem') {
+      const msg =
+        method === 'pem'
+          ? 'PEM interdit côté dApp user.'
+          : 'Lecture seule — Disconnect puis xPortal ou Web Wallet.'
+      empireTxError(msg)
+      throw new Error(msg)
+    }
+
+    // 1) Live xPortal WC session
+    if (getXPortalSession()) {
       try {
         const xp = await tryXPortalSignAndBroadcast(list)
         if (xp?.sessionId) return xp
       } catch (e) {
-        // already empireTxError'd
         throw e
-      }
-      // session missing → tell user to reconnect, do NOT silently open web wallet
-      if (method === 'xportal') {
-        const msg =
-          'Session xPortal perdue. Déconnecte → « xPortal mainnet (WalletConnect) » → resigne.'
-        empireTxError(msg)
-        throw new Error(msg)
       }
     }
 
-    // 2) sdk-dapp (extension / WC via DappProvider)
+    // 2) sdk-dapp
     const sdkRes = await trySdkDappSend(list, info)
     if (sdkRes?.sessionId) {
       empireTxBroadcast(sdkRes.sessionId)
@@ -185,14 +197,8 @@ function injectSendTx() {
       return sdkRes
     }
 
-    // 3) Web Wallet hook — only for web_wallet method (intentional)
-    if (method && method !== 'web_wallet' && method !== 'wallet_connect') {
-      const msg =
-        'Impossible de signer avec ce mode. Utilise xPortal (WalletConnect) ou Web Wallet.'
-      empireTxError(msg)
-      throw new Error(msg)
-    }
-
+    // 3) Web Wallet hook — xportal (session perdue), web_wallet, defi without sdk, null
+    //    Mobile xPortal users often land here after navigation; hook still signs in app.
     const plain = toPlainTx(list[0])
     if (!plain.receiver || !plain.receiver.startsWith('erd1')) {
       const msg = 'Receiver invalide'
@@ -200,17 +206,14 @@ function injectSendTx() {
       throw new Error(msg)
     }
 
-    const callback = defaultCallback()
-    const hookUrl = buildWalletHookUrl(plain, callback)
-
-    empireTxBroadcast('wallet-hook')
-    try {
-      window.location.assign(hookUrl)
-    } catch {
-      window.open(hookUrl, '_blank', 'noopener,noreferrer')
+    if (method === 'xportal' && !getXPortalSession()) {
+      // Soft notice then redirect — do not hard-fail Studio / stake
+      console.info(
+        '[xArtists] Session WC absente — fallback Web Wallet hook (même adresse).',
+      )
     }
-    empireTxSuccess('wallet-hook', undefined)
-    return { sessionId: 'wallet-hook' }
+
+    return openWebWalletHook(plain)
   }
 }
 
