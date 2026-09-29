@@ -150,7 +150,7 @@ pub trait TreasurySplitter {
             self.send().direct_egld(&self.ops().get(), &to_ops);
         }
 
-        self.split_event(&amount, &to_mission, &to_reserve, &to_reward, &to_ops);
+        self.split_event(&amount);
     }
 
     #[view(getTotalSplit)]
@@ -169,14 +169,7 @@ pub trait TreasurySplitter {
     }
 
     #[event("split")]
-    fn split_event(
-        &self,
-        amount: &BigUint,
-        mission: &BigUint,
-        reserve: &BigUint,
-        reward: &BigUint,
-        ops: &BigUint,
-    );
+    fn split_event(&self, amount: &BigUint);
 
     #[view]
     #[storage_mapper("owner")]
