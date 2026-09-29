@@ -1,0 +1,13 @@
+[package]
+name = "nft-staking-meta"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "nft-staking-meta"
+path = "src/main.rs"
+
+[dependencies]
+nft-staking = { path = ".." }
+multiversx-sc-meta-lib = { version = "=0.66.2", default-features = false }

@@ -1,0 +1,169 @@
+name: Deploy staking + governance
+
+# nft-staking → tro-staking → tro-governance (mainnet gated)
+# Secret: SC_DEPLOYER_PEM
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain:
+        description: "D=devnet, 1=mainnet"
+        required: true
+        default: "1"
+        type: choice
+        options: ["D", "1"]
+      confirm_mainnet:
+        description: "Mainnet — type DEPLOY_MAINNET"
+        required: false
+        default: ""
+        type: string
+      tro_token:
+        description: "TRO ESDT id"
+        required: true
+        default: "TRO-94c925"
+        type: string
+      lia_treasury:
+        description: "LIA treasury address"
+        required: true
+        default: "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-staking-${{ github.event.inputs.chain }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CHAIN_ID: ${{ github.event.inputs.chain }}
+      TRO_TOKEN: ${{ github.event.inputs.tro_token }}
+      LIA_TREASURY: ${{ github.event.inputs.lia_treasury }}
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      DEPLOYER: erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mainnet gate + proxy
+        run: |
+          set -euo pipefail
+          if [ "${CHAIN_ID}" = "1" ]; then
+            if [ "${{ github.event.inputs.confirm_mainnet }}" != "DEPLOY_MAINNET" ]; then
+              echo "MAINNET blocked"; exit 1
+            fi
+            echo "PROXY=https://gateway.multiversx.com" >> "$GITHUB_ENV"
+          else
+            echo "PROXY=https://devnet-gateway.multiversx.com" >> "$GITHUB_ENV"
+          fi
+
+      - name: Write PEM
+        run: |
+          set -euo pipefail
+          test -n "${SC_DEPLOYER_PEM:-}"
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli
+
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          targets: wasm32-unknown-unknown,wasm32v1-none
+
+      - name: Install sc-meta
+        run: |
+          rustup target add wasm32v1-none
+          cargo install multiversx-sc-meta --locked --force
+
+      - name: Build helper
+        run: |
+          cat > "${RUNNER_TEMP}/build_one.sh" <<'EOS'
+          #!/bin/bash
+          set -euo pipefail
+          DIR="$1"
+          cd "$DIR"
+          sc-meta all build || true
+          WASM=$(find . -name '*.wasm' | head -1 || true)
+          if [ -z "$WASM" ]; then
+            cd wasm
+            cargo build --release --target wasm32v1-none 2>/dev/null \
+              || cargo build --release --target wasm32-unknown-unknown
+            WASM=$(find target -name '*.wasm' | head -1)
+            cd ..
+            WASM="wasm/${WASM}"
+          fi
+          test -n "$WASM"
+          echo "${PWD}/${WASM#./}"
+          EOS
+          chmod +x "${RUNNER_TEMP}/build_one.sh"
+
+      - name: Build + deploy nft-staking
+        id: nft
+        run: |
+          set -euo pipefail
+          WASM=$("${RUNNER_TEMP}/build_one.sh" contracts/nft-staking)
+          echo "wasm=$WASM"
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          LOG=$(mxpy contract deploy --bytecode="$WASM" --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=60000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
+            --send --wait-result 2>&1) || true
+          echo "$LOG"
+          ADDR=$(echo "$LOG" | grep -oE 'erd1qqqq[a-z0-9]{50,}' | head -1 || true)
+          echo "nft_staking=${ADDR}" >> "$GITHUB_OUTPUT"
+          test -n "$ADDR"
+          echo "NFT_STAKING=$ADDR" >> "$GITHUB_ENV"
+
+      - name: Build + deploy tro-staking
+        id: tro
+        run: |
+          set -euo pipefail
+          WASM=$("${RUNNER_TEMP}/build_one.sh" contracts/tro-staking)
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          # TokenIdentifier arg as string
+          LOG=$(mxpy contract deploy --bytecode="$WASM" --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=60000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
+            --arguments "str:${TRO_TOKEN}" \
+            --send --wait-result 2>&1) || true
+          echo "$LOG"
+          ADDR=$(echo "$LOG" | grep -oE 'erd1qqqq[a-z0-9]{50,}' | head -1 || true)
+          echo "tro_staking=${ADDR}" >> "$GITHUB_OUTPUT"
+          test -n "$ADDR"
+          echo "TRO_STAKING=$ADDR" >> "$GITHUB_ENV"
+
+      - name: Build + deploy tro-governance
+        id: gov
+        run: |
+          set -euo pipefail
+          WASM=$("${RUNNER_TEMP}/build_one.sh" contracts/tro-governance)
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          LOG=$(mxpy contract deploy --bytecode="$WASM" --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=60000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
+            --arguments "${LIA_TREASURY}" \
+            --send --wait-result 2>&1) || true
+          echo "$LOG"
+          ADDR=$(echo "$LOG" | grep -oE 'erd1qqqq[a-z0-9]{50,}' | head -1 || true)
+          echo "tro_governance=${ADDR}" >> "$GITHUB_OUTPUT"
+          test -n "$ADDR"
+
+      - name: Summary
+        run: |
+          echo "### Staking deploy" >> "$GITHUB_STEP_SUMMARY"
+          echo "- nft-staking: ${NFT_STAKING}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- tro-staking: ${TRO_STAKING}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- tro-governance: ${{ steps.gov.outputs.tro_governance }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Next: verify codeHash · no CODEHASH_OK until match"
+
+      - name: Cleanup
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"

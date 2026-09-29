@@ -1,7 +1,7 @@
 #![no_std]
 
-//! xArtists DAO Vote — power = LP weight (ops) + ArtPass SFT staked.
-//! Treasury = LIA. No upgrade.
+//! xArtists DAO — voting power = LP weight (ops) + ArtPass SFT staked.
+//! Treasury = LIA. No upgrade path after renounce.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
@@ -9,7 +9,8 @@ multiversx_sc::derive_imports!();
 const MAX_TITLE: usize = 128;
 const ART_PASS_WEIGHT: u64 = 10;
 
-#[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
+#[type_abi]
+#[derive(TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
 pub struct Proposal<M: ManagedTypeApi> {
     pub title: ManagedBuffer<M>,
     pub yes: BigUint<M>,
@@ -66,7 +67,6 @@ pub trait TroGovernance {
             self.artpass_token().set(&p.token_identifier);
         }
 
-        // Single-active-nonce model per user (SFT amount on that nonce)
         let prev_nonce = self.artpass_nonce(&caller).get();
         if prev_nonce == 0 {
             self.artpass_nonce(&caller).set(p.token_nonce);
@@ -99,6 +99,7 @@ pub trait TroGovernance {
         self.send().direct_esdt(&caller, &token, nonce, &amount);
     }
 
+    /// Ops sets LP weight (off-chain valuation of eligible TRO LPs).
     #[endpoint(setLpWeight)]
     fn set_lp_weight(&self, user: ManagedAddress, weight: BigUint) {
         self.require_owner();
@@ -172,7 +173,7 @@ pub trait TroGovernance {
     #[payable("EGLD")]
     #[endpoint(depositTreasury)]
     fn deposit_treasury(&self) {
-        let _ = self.call_value().egld_value();
+        let _ = self.call_value().egld().clone_value();
     }
 
     #[endpoint(sweepToLia)]

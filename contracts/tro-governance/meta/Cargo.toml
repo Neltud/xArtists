@@ -1,0 +1,13 @@
+[package]
+name = "tro-governance-meta"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "tro-governance-meta"
+path = "src/main.rs"
+
+[dependencies]
+tro-governance = { path = ".." }
+multiversx-sc-meta-lib = { version = "=0.66.2", default-features = false }

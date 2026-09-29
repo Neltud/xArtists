@@ -1,0 +1,26 @@
+[package]
+name = "tro-governance-wasm"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+codegen-units = 1
+opt-level = "z"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = false
+
+[profile.dev]
+panic = "abort"
+
+[dependencies]
+tro-governance = { path = ".." }
+multiversx-sc-wasm-adapter = "=0.66.2"
+
+[workspace]
+members = ["."]

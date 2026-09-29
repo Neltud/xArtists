@@ -1,12 +1,13 @@
 #![no_std]
 
 //! xArtists NFT Staking — immutable after owner renounce.
-//! No upgrade endpoint. CEI · pause · optional collection allowlist.
+//! Points = blocks staked. CEI · pause · optional collection allowlist.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
-#[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
+#[type_abi]
+#[derive(TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
 pub struct StakeEntry<M: ManagedTypeApi> {
     pub owner: ManagedAddress<M>,
     pub token: TokenIdentifier<M>,
@@ -17,7 +18,6 @@ pub struct StakeEntry<M: ManagedTypeApi> {
 
 #[multiversx_sc::contract]
 pub trait NftStaking {
-    /// deployer becomes owner until renounceOwnership
     #[init]
     fn init(&self) {
         let caller = self.blockchain().get_caller();
@@ -51,7 +51,6 @@ pub trait NftStaking {
         self.collection_allowed(&token).set(allowed);
     }
 
-    /// Irreversible — no further admin. Pause/allowlist frozen as-is.
     #[endpoint(renounceOwnership)]
     fn renounce_ownership(&self) {
         self.require_owner();
@@ -87,7 +86,7 @@ pub trait NftStaking {
             stake_block: block,
             active: true,
         });
-        self.user_stake_ids(&caller).insert(id);
+        let _ = self.user_stake_ids(&caller).insert(id);
         self.stake_event(id, &caller, &payment.token_identifier, payment.token_nonce);
     }
 
@@ -102,7 +101,7 @@ pub trait NftStaking {
 
         entry.active = false;
         self.stakes(stake_id).set(&entry);
-        self.user_stake_ids(&caller).swap_remove(&stake_id);
+        let _ = self.user_stake_ids(&caller).swap_remove(&stake_id);
 
         self.send().direct_esdt(
             &caller,
@@ -150,7 +149,6 @@ pub trait NftStaking {
     #[storage_mapper("allowlist_enabled")]
     fn allowlist_enabled(&self) -> SingleValueMapper<bool>;
 
-    #[view(isCollectionAllowed)]
     #[storage_mapper("collection_allowed")]
     fn collection_allowed(&self, token: &TokenIdentifier) -> SingleValueMapper<bool>;
 
@@ -160,14 +158,14 @@ pub trait NftStaking {
     #[event("stake")]
     fn stake_event(
         &self,
-        #[indexed] stake_id: u64,
+        #[indexed] id: u64,
         #[indexed] owner: &ManagedAddress,
-        token: &TokenIdentifier,
+        #[indexed] token: &TokenIdentifier,
         nonce: u64,
     );
 
     #[event("unstake")]
-    fn unstake_event(&self, #[indexed] stake_id: u64, #[indexed] owner: &ManagedAddress);
+    fn unstake_event(&self, #[indexed] id: u64, #[indexed] owner: &ManagedAddress);
 
     #[event("renounced")]
     fn renounced_event(&self);

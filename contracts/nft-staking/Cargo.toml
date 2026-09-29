@@ -5,11 +5,13 @@ edition = "2021"
 publish = false
 
 [lib]
-crate-type = ["cdylib"]
 path = "src/lib.rs"
 
 [dependencies]
-multiversx-sc = "0.50"
+multiversx-sc = "0.66.2"
 
-# sc-scenario 0.50 pulls multiversx-sc-meta → zip ^1.2 (all yanked on crates.io).
-# Scenario tests: use sc-meta / dedicated CI, not host cargo test.
+[dev-dependencies]
+multiversx-sc-scenario = "0.66.2"
+
+[workspace]
+members = [".", "meta"]
