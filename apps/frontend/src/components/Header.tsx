@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
-import { LINKS, PRIMARY_NAV, SECONDARY_NAV } from '../config/links'
+import { LINKS, PRIMARY_NAV } from '../config/links'
 import { OPEN_CONNECT_EVENT, requestOpenAssets } from '../lib/walletEvents'
 import { loginWithXPortalMainnet } from '../lib/xportalWc'
+import SideNav from './SideNav'
 
 function isValidErd(addr: string): boolean {
   return /^erd1[a-z0-9]{58}$/i.test(addr.trim())
@@ -37,12 +38,12 @@ export default function Header() {
   }, [location.pathname])
 
   useEffect(() => {
-    if (menuOpen) document.body.style.overflow = 'hidden'
+    if (menuOpen || showWalletModal) document.body.style.overflow = 'hidden'
     else document.body.style.overflow = ''
     return () => {
       document.body.style.overflow = ''
     }
-  }, [menuOpen])
+  }, [menuOpen, showWalletModal])
 
   useEffect(() => {
     const open = () => {
@@ -144,12 +145,22 @@ export default function Header() {
     <>
       <header className="sticky top-0 z-40 border-b border-white/5 bg-zinc-950/90 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-3 sm:px-4">
-          <NavLink to="/" className="flex items-center gap-2 shrink-0" aria-label="Accueil">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-sm font-bold text-white">
-              xA
-            </span>
-            <span className="hidden sm:inline text-sm font-semibold text-white">xArtists</span>
-          </NavLink>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              className="rounded-lg border border-white/10 p-2 text-white hover:bg-white/5"
+              aria-label="Ouvrir le menu"
+              onClick={() => setMenuOpen(true)}
+            >
+              ☰
+            </button>
+            <NavLink to="/" className="flex items-center gap-2" aria-label="Accueil">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-sm font-bold text-white">
+                xA
+              </span>
+              <span className="hidden sm:inline text-sm font-semibold text-white">xArtists</span>
+            </NavLink>
+          </div>
 
           <nav className="hidden md:flex items-center gap-1">
             {DESKTOP_NAV.map(n => (
@@ -200,35 +211,11 @@ export default function Header() {
                 Out
               </button>
             )}
-            <button
-              type="button"
-              className="md:hidden rounded-lg border border-white/10 p-2 text-white"
-              aria-label="Menu"
-              onClick={() => setMenuOpen(o => !o)}
-            >
-              ☰
-            </button>
           </div>
         </div>
-
-        {menuOpen && (
-          <div className="md:hidden border-t border-white/5 bg-zinc-950 px-3 py-3 max-h-[70vh] overflow-y-auto">
-            <p className="text-[10px] uppercase tracking-wider text-zinc-600 mb-2">Navigation</p>
-            <div className="flex flex-col gap-1">
-              {[...PRIMARY_NAV, ...SECONDARY_NAV].map(n => (
-                <NavLink
-                  key={n.to + n.label}
-                  to={n.to}
-                  onClick={() => setMenuOpen(false)}
-                  className="rounded-lg px-3 py-2 text-sm text-zinc-300 hover:bg-white/5"
-                >
-                  {n.label}
-                </NavLink>
-              ))}
-            </div>
-          </div>
-        )}
       </header>
+
+      <SideNav open={menuOpen} onClose={() => setMenuOpen(false)} />
 
       {showWalletModal && (
         <div
