@@ -14,6 +14,7 @@ import LiaMonitor from './components/LiaMonitor'
 import GuardianStatusBar from './components/shared/GuardianStatusBar'
 import RoutePrefetch from './components/RoutePrefetch'
 import ArtAtelierBackdrop from './components/ArtAtelierBackdrop'
+import BrainMoodStrip from './components/BrainMoodStrip'
 import { useMultiversX } from './hooks/useMultiversX'
 import AssetDrawer from './components/ui/AssetDrawer'
 import { OPEN_ASSETS_EVENT } from './lib/walletEvents'
@@ -80,6 +81,7 @@ export default function App() {
         <PrivateReleaseStrip />
         <DemoModeBanner />
         <Header />
+        <BrainMoodStrip />
         <SignalTicker />
         <GuardianStatusBar />
         <IntentBar />
