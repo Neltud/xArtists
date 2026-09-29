@@ -1,5 +1,31 @@
 # Changelog — xArtists
 
+## [0.61.0](https://github.com/Neltud/xArtists/compare/v0.60.0...v0.61.0) (2026-09-29)
+
+
+### Features
+
+* **frontend:** Mission A — contracts codeHash + env + scStatus re-exports + TxShell wire ([d1b5559](https://github.com/Neltud/xArtists/commit/d1b5559a15b3f3bf5e847f6fc9131ab29c743021))
+* **frontend:** Mission A — empire store, LIVE SC addresses, TX overlay ([4e6b0e4](https://github.com/Neltud/xArtists/commit/4e6b0e4b04a6f3fcc314bc09306c7c9c61a5c6bc))
+* **frontend:** Mission A — empireStore + useTroStakeTx + TxShell overlay + scStatus LIVE gates ([5339370](https://github.com/Neltud/xArtists/commit/53393702764851715b10558e7d9e75bd3fccb9e5))
+* **frontend:** Mission A — lib/scStatus re-exports + TxShell in main + useTroStakeTx ([fa327e8](https://github.com/Neltud/xArtists/commit/fa327e8197e53add56060d30e2e056553de362c4))
+* **frontend:** Mission A — scStatus LIVE addresses + CODEHASH_OK gates (CRITICAL) ([64b1e81](https://github.com/Neltud/xArtists/commit/64b1e816d9aa790120b3b7b5f125941854527e49))
+* **frontend:** Mission A — TxShell TransactionOverlay + sdk-dapp bridge ([660849f](https://github.com/Neltud/xArtists/commit/660849fd6021f6b44c6f9a74f12737e3c1930312))
+* **frontend:** Mission A — useTroStakeTx hook ([12f27c7](https://github.com/Neltud/xArtists/commit/12f27c7a646b914dc4e3027ea4663ed14664a11a))
+* **frontend:** TroStakePanel component (CODEHASH_OK gated stake/unstake) ([f6bd3d3](https://github.com/Neltud/xArtists/commit/f6bd3d3afdf6f74e57a166e36ae60ddf602bfe96))
+* **frontend:** WalletContext → empireStore bind on connect/disconnect ([dda840a](https://github.com/Neltud/xArtists/commit/dda840a837605bf2fe345ef3a8f18a88c00ba57e))
+* **frontend:** wire TroStakePanel on StakingPage TRO tab ([6894c28](https://github.com/Neltud/xArtists/commit/6894c28bcedc741396d4b865bdcbedb7eb383e4c))
+
+
+### Bug Fixes
+
+* **frontend:** clean wallet hook callbackUrl builder ([f86c0b8](https://github.com/Neltud/xArtists/commit/f86c0b8cb0ade2eed8b0ee1e063fd686ea468d0b))
+* **frontend:** inject __xartistsSendTx via web-wallet hook (xPortal mobile stake) ([80aaad6](https://github.com/Neltud/xArtists/commit/80aaad6d8d192cadc23c43b98226ecb53ac0abc2))
+* **frontend:** TRO decimals = 6 (not 18) for stake atomic amount ([8730570](https://github.com/Neltud/xArtists/commit/87305701028d972680cbe3f9d90413d4dd7e9111))
+* **slot-casino:** 0.66 API — TokenIdentifier::from + simplify build_seed ([fbcb075](https://github.com/Neltud/xArtists/commit/fbcb07538432ed8c66f5edf732f2ec497952a0d3))
+* **tro-stake:** remove false-positive error grep; use mxpy contract call token-transfers ([8bae1ca](https://github.com/Neltud/xArtists/commit/8bae1cab23fa3efa8a99ab2b8d9f2c2bdfdb6e64))
+* **tro-stake:** use ESDTTransfer data encoding for reliable ESDT payment ([9dda29b](https://github.com/Neltud/xArtists/commit/9dda29be9f9b329168ccd42d8f0a0df5b8f372db))
+
 ## [0.60.0](https://github.com/Neltud/xArtists/compare/v0.59.0...v0.60.0) (2026-09-29)
 
 
