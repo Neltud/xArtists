@@ -1,24 +1,27 @@
 /**
- * Mentions légales · CGU démo · Confidentialité · Risques.
+ * Mentions legales · CGU demo · Confidentialite · Risques · Processus.
  */
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
 import { LINKS, LIA_WALLET } from '../config/links'
-import { LEGAL_ENTITY } from '../config/legalEntity'
+import { LEGAL_ENTITY, siretLabel } from '../config/legalEntity'
 
-type Tab = 'mentions' | 'cgu' | 'privacy' | 'risk'
+type Tab = 'mentions' | 'cgu' | 'privacy' | 'risk' | 'process'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'mentions', label: 'Mentions' },
   { id: 'cgu', label: 'Conditions' },
-  { id: 'privacy', label: 'Confidentialité' },
+  { id: 'privacy', label: 'Confidentialite' },
   { id: 'risk', label: 'Risques' },
+  { id: 'process', label: 'Processus' },
 ]
 
 export default function LegalPage() {
   const [tab, setTab] = useState<Tab>('mentions')
   const year = useMemo(() => new Date().getFullYear(), [])
+  const siret = siretLabel()
+  const siretMissing = LEGAL_ENTITY.siretStatus !== 'ok'
 
   return (
     <div className="animate-fade-in space-y-5 pb-12 max-w-2xl">
@@ -26,9 +29,16 @@ export default function LegalPage() {
 
       <header className="space-y-1">
         <p className="section-label text-zinc-400">Juridique</p>
-        <h1 className="page-title">Mentions légales</h1>
-        <p className="page-sub">Éditeur · démo paper · MultiversX</p>
+        <h1 className="page-title">Mentions legales</h1>
+        <p className="page-sub">Editeur · demo paper · MultiversX mainnet</p>
       </header>
+
+      {siretMissing && (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 px-3 py-2 text-[12px] text-amber-100/90">
+          SIRET editeur non renseigne dans la config. Les mentions resteront marquees « a
+          completer » jusqu a saisie du numero officiel (14 chiffres).
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-1.5">
         {TABS.map(t => (
@@ -50,35 +60,43 @@ export default function LegalPage() {
       <article className="card text-sm text-zinc-400 space-y-3 leading-relaxed">
         {tab === 'mentions' && (
           <>
-            <h2 className="text-base font-semibold text-white">Éditeur</h2>
+            <h2 className="text-base font-semibold text-white">Editeur du site</h2>
             <p>
-              <strong className="text-zinc-200">{LEGAL_ENTITY.productName}</strong> — projet édité
+              <strong className="text-zinc-200">{LEGAL_ENTITY.productName}</strong> — projet edite
               par <strong className="text-zinc-200">{LEGAL_ENTITY.publisherName}</strong>.
             </p>
             <p>
-              SIRET :{' '}
-              <span className="text-zinc-300 font-mono text-[13px]">{LEGAL_ENTITY.siret}</span>
+              Forme : <span className="text-zinc-300">{LEGAL_ENTITY.legalForm}</span>
             </p>
             <p>
-              Pays : {LEGAL_ENTITY.country}. Dépôt open source :{' '}
+              SIRET :{' '}
+              <span className={`font-mono text-[13px] ${siretMissing ? 'text-amber-300' : 'text-zinc-300'}`}>
+                {siret}
+              </span>
+            </p>
+            <p>
+              Pays : {LEGAL_ENTITY.country}. Siege : {LEGAL_ENTITY.addressLine}.
+            </p>
+            <p>
+              Depot open source :{' '}
               <a className="text-cyan-300/90 hover:underline" href={LINKS.github} target="_blank" rel="noreferrer">
                 Neltud/xArtists
               </a>
-              . Site démo :{' '}
+              . Site demo :{' '}
               <a className="text-cyan-300/90 hover:underline" href={LINKS.dapp} target="_blank" rel="noreferrer">
                 neltud.github.io/xArtists
               </a>
               .
             </p>
-            <p>
-              Soft launch / mode paper : mint agents et marketplace selon statut des smart contracts
-              (fail-closed si non vérifiés).
-            </p>
-            <h2 className="text-base font-semibold text-white pt-2">Hébergement</h2>
-            <p>Front statique GitHub Pages. Lectures de chaîne via API publiques MultiversX.</p>
+            <h2 className="text-base font-semibold text-white pt-2">Hebergement</h2>
+            <p>{LEGAL_ENTITY.hoster}. Lectures de chaine via API publiques MultiversX ({LEGAL_ENTITY.chain}).</p>
             <h2 className="text-base font-semibold text-white pt-2">Contact</h2>
             <p>
-              {LEGAL_ENTITY.contact}. Wallet protocole LIA (ops, ≠ wallet utilisateur) :{' '}
+              {LEGAL_ENTITY.contact}
+              {LEGAL_ENTITY.contactEmail ? ` · ${LEGAL_ENTITY.contactEmail}` : ''}.
+            </p>
+            <p>
+              Wallet protocole LIA (ops, ≠ wallet utilisateur) :{' '}
               <code className="text-[11px] text-zinc-500 break-all">{LIA_WALLET}</code>
             </p>
             <p className="text-[11px] text-zinc-600">
@@ -89,34 +107,65 @@ export default function LegalPage() {
 
         {tab === 'cgu' && (
           <>
-            <h2 className="text-base font-semibold text-white">Conditions (démo)</h2>
+            <h2 className="text-base font-semibold text-white">Conditions d utilisation (demo)</h2>
             <p>
-              Accès à la dApp = acceptation. Service « en l’état », démonstration et test produit.
+              L acces a la dApp vaut acceptation des presentes. Service fourni « en l etat », a des
+              fins de demonstration, test produit et exploration MultiversX.
             </p>
             <ul className="list-disc pl-5 space-y-1.5">
               <li>
-                <strong className="text-zinc-300">Packs</strong> Pulse · Yield · Sentinel uniquement
-                — pas un fonds ni une promesse de rendement.
+                <strong className="text-zinc-300">Packs</strong> Pulse · Yield · Sentinel — pas un
+                fonds, pas une promesse de rendement.
               </li>
               <li>
-                <strong className="text-zinc-300">Tours / Musée</strong> : culture, hors packs agents.
+                <strong className="text-zinc-300">Tours / Musee</strong> : contenu culturel, hors
+                packs agents.
               </li>
               <li>
-                <strong className="text-zinc-300">Trading LIA</strong> : paper par défaut sur la démo.
+                <strong className="text-zinc-300">Trading LIA</strong> : mode paper par defaut sur la
+                demo publique.
               </li>
-              <li>Signature TX = wallet utilisateur uniquement.</li>
+              <li>
+                Signature de transactions : uniquement via le wallet de l utilisateur (xPortal, Web
+                Wallet, extension). Aucune cle privee n est stockee par la dApp.
+              </li>
+              <li>
+                Smart contracts : activation UI fail-closed tant que le codeHash n est pas valide
+                (secrets CODEHASH_OK).
+              </li>
+              <li>
+                Interdiction d utiliser le wallet protocole LIA comme session utilisateur.
+              </li>
             </ul>
+            <p className="text-[12px] text-zinc-500">
+              Les regles on-chain des SC (frais, pause, ownership) prevalent sur l interface.
+            </p>
           </>
         )}
 
         {tab === 'privacy' && (
           <>
-            <h2 className="text-base font-semibold text-white">Confidentialité</h2>
+            <h2 className="text-base font-semibold text-white">Confidentialite</h2>
             <ul className="list-disc pl-5 space-y-1.5">
-              <li>Pas de compte e-mail obligatoire pour parcourir la démo.</li>
-              <li>Adresses wallet : usage local + API MultiversX publiques.</li>
-              <li>localStorage : préférences / intentions paper — effaçable navigateur.</li>
-              <li>Paiements carte : Stripe / Paybox si configurés — politiques des prestataires.</li>
+              <li>Pas de compte e-mail obligatoire pour parcourir la demo.</li>
+              <li>
+                Adresses wallet : affichage local (localStorage) + requetes vers les API publiques
+                MultiversX.
+              </li>
+              <li>
+                localStorage : preferences UI, session wallet, intentions paper — effacable dans le
+                navigateur (deconnexion / purge site).
+              </li>
+              <li>
+                WalletConnect / xPortal : traitement par les prestataires de wallet ; la dApp ne
+                recoit que l adresse apres approbation.
+              </li>
+              <li>
+                Paiements carte (si configures) : Stripe / Paybox — politiques des prestataires.
+              </li>
+              <li>
+                Pas de revente de listes d adresses. Donnees on-chain = publiques par nature.
+              </li>
             </ul>
           </>
         )}
@@ -126,10 +175,50 @@ export default function LegalPage() {
             <h2 className="text-base font-semibold text-white">Avertissements</h2>
             <ul className="list-disc pl-5 space-y-1.5">
               <li>Crypto / NFT : risque de perte en capital. Pas un conseil en investissement.</li>
-              <li>Boards paper ≠ performance de portefeuille.</li>
-              <li>Visites 3D : interprétation numérique, pas un jumeau BIM des musées physiques.</li>
-              <li>Vérifiez adresses et TX avant signature.</li>
+              <li>Boards paper ≠ performance reelle de portefeuille.</li>
+              <li>
+                Visites 3D : interpretation numerique, pas un jumeau BIM des musees physiques.
+              </li>
+              <li>Verifiez toujours adresses SC, montants et data TX avant signature.</li>
+              <li>
+                Slot / jeux (si deployes) : divertissement, age legal, pas un produit de jeu regule
+                hors cadre applicable.
+              </li>
+              <li>Bugs logiciels et congestions reseau possibles — fonds non garantis.</li>
             </ul>
+          </>
+        )}
+
+        {tab === 'process' && (
+          <>
+            <h2 className="text-base font-semibold text-white">Processus produit (resume)</h2>
+            <ol className="list-decimal pl-5 space-y-2">
+              <li>
+                <strong className="text-zinc-300">Connexion</strong> — Web Wallet, xPortal
+                (WalletConnect + QR desktop), ou extension. Coller erd1 = lecture seule.
+              </li>
+              <li>
+                <strong className="text-zinc-300">Gates CODEHASH</strong> — les boutons on-chain
+                (stake TRO, list/buy, rentPay…) n apparaissent LIVE qu apres secrets CI
+                VITE_*_CODEHASH_OK.
+              </li>
+              <li>
+                <strong className="text-zinc-300">Stake $TRO</strong> — ESDTTransfer vers
+                tro_staking ; decimales 6 (TRO-94c925). Signature wallet utilisateur.
+              </li>
+              <li>
+                <strong className="text-zinc-300">Marketplace / venue</strong> — TX via bridge
+                __xartistsSendTx (sdk-dapp ou hook Web Wallet).
+              </li>
+              <li>
+                <strong className="text-zinc-300">Deployements SC</strong> — GitHub Actions + PEM
+                ops uniquement (jamais dans le repo). Microtests dust avant activation front.
+              </li>
+              <li>
+                <strong className="text-zinc-300">Documentation detaillee</strong> — voir
+                docs/LEGAL_AND_PROCESSES.md et docs/CLICK_TX_MATRIX.md sur GitHub.
+              </li>
+            </ol>
           </>
         )}
       </article>
@@ -144,8 +233,17 @@ export default function LegalPage() {
         </Link>
         {' · '}
         <Link to="/museum" className="text-cyan-300/90 hover:underline">
-          Musée
+          Musee
         </Link>
+        {' · '}
+        <a
+          className="text-cyan-300/90 hover:underline"
+          href="https://github.com/Neltud/xArtists/blob/main/docs/LEGAL_AND_PROCESSES.md"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Doc process
+        </a>
       </p>
     </div>
   )
