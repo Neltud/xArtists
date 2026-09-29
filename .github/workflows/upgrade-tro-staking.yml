@@ -1,0 +1,79 @@
+name: Upgrade tro-staking (payable fix)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_mainnet:
+        description: "Type UPGRADE_MAINNET"
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CHAIN_ID: "1"
+      PROXY: https://gateway.multiversx.com
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      DEPLOYER: erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g
+      TRO_STAKING: erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf
+      TRO_TOKEN: TRO-94c925
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gate
+        run: |
+          if [ "${{ github.event.inputs.confirm_mainnet }}" != "UPGRADE_MAINNET" ]; then exit 1; fi
+      - name: PEM
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          targets: wasm32v1-none
+      - name: Build + upgrade
+        run: |
+          set -euo pipefail
+          rustup target add wasm32v1-none
+          cargo install multiversx-sc-meta --locked --force
+          cd contracts/tro-staking
+          sc-meta all build
+          WASM="${PWD}/output/tro-staking.wasm"
+          test -f "$WASM"
+          echo "wasm size=$(wc -c < "$WASM")"
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          echo "nonce=$NONCE upgrading $TRO_STAKING"
+          # upgrade keeps same address; init args may be re-passed depending on version
+          mxpy contract upgrade "$TRO_STAKING" \
+            --bytecode="$WASM" \
+            --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=60000000 \
+            --proxy="$PROXY" --chain="$CHAIN_ID" \
+            --nonce "$NONCE" \
+            --arguments "str:${TRO_TOKEN}" \
+            --send --wait-result
+      - name: Verify codeHash
+        run: |
+          python3 <<'PY'
+          import urllib.request, json, time
+          time.sleep(4)
+          addr="erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf"
+          d=json.loads(urllib.request.urlopen(f"https://api.multiversx.com/accounts/{addr}").read())
+          print("codeHash", d.get("codeHash"))
+          print("owner", d.get("ownerAddress"))
+          PY
+      - if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"

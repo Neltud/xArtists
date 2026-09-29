@@ -1,17 +1,19 @@
 /**
- * Parcours points — 1 pt / jour · +3 pts série 7 j.
- * Scopé par adresse wallet si connecté (sinon guest).
+ * Points quotidiens — claim on-chain (memo TX) + mirror localStorage.
+ * +1 pt / jour · +3 pts serie 7 j. Exige wallet signant.
  */
 import { useCallback, useEffect, useState } from 'react'
-import { useWallet } from '../context/WalletContext'
+import { useWallet, LIA_WALLET } from '../context/WalletContext'
+import { useSendTransaction } from './useSendTransaction'
 
-const KEY_PREFIX = 'xartists_daily_points_v2_'
+const KEY_PREFIX = 'xartists_daily_points_v3_'
 
 export type DailyPointsState = {
   totalPoints: number
   streak: number
   lastClaimDay: string | null
-  history: { day: string; pts: number; kind: 'daily' | 'streak7' }[]
+  history: { day: string; pts: number; kind: 'daily' | 'streak7'; tx?: string }[]
+  lastTxHash: string | null
 }
 
 function todayUtc(): string {
@@ -33,11 +35,11 @@ function load(address: string | null): DailyPointsState {
   try {
     const raw = localStorage.getItem(storageKey(address))
     if (!raw) {
-      return { totalPoints: 0, streak: 0, lastClaimDay: null, history: [] }
+      return { totalPoints: 0, streak: 0, lastClaimDay: null, history: [], lastTxHash: null }
     }
     return JSON.parse(raw) as DailyPointsState
   } catch {
-    return { totalPoints: 0, streak: 0, lastClaimDay: null, history: [] }
+    return { totalPoints: 0, streak: 0, lastClaimDay: null, history: [], lastTxHash: null }
   }
 }
 
@@ -49,52 +51,113 @@ function save(address: string | null, s: DailyPointsState) {
   }
 }
 
+/** Data field on-chain (memo) — visible explorer */
+function claimData(day: string): string {
+  return `xArtistsClaim@${day}`
+}
+
 export function useDailyPoints() {
-  const { address, connected } = useWallet()
+  const { address, connected, canAttemptSign, method } = useWallet()
+  const { send } = useSendTransaction()
   const scope = connected && address ? address : null
 
   const [state, setState] = useState<DailyPointsState>(() =>
     typeof window !== 'undefined'
       ? load(null)
-      : { totalPoints: 0, streak: 0, lastClaimDay: null, history: [] },
+      : { totalPoints: 0, streak: 0, lastClaimDay: null, history: [], lastTxHash: null },
   )
+  const [claiming, setClaiming] = useState(false)
+  const [claimError, setClaimError] = useState<string | null>(null)
 
   useEffect(() => {
     setState(load(scope))
   }, [scope])
 
-  const canClaimToday = !state.lastClaimDay || state.lastClaimDay !== todayUtc()
+  const canClaimToday =
+    !!scope &&
+    canAttemptSign &&
+    method !== 'paste_readonly' &&
+    (!state.lastClaimDay || state.lastClaimDay !== todayUtc())
 
-  const claim = useCallback(() => {
+  const claim = useCallback(async () => {
+    setClaimError(null)
+    if (!scope || !canAttemptSign) {
+      setClaimError('Connecte xPortal / Web Wallet pour claim on-chain.')
+      return
+    }
     const day = todayUtc()
-    setState(prev => {
-      if (prev.lastClaimDay === day) return prev
+    if (state.lastClaimDay === day) {
+      setClaimError('Deja reclame aujourd hui.')
+      return
+    }
 
-      let streak = 1
-      if (prev.lastClaimDay) {
-        const gap = daysBetween(prev.lastClaimDay, day)
-        if (gap === 1) streak = prev.streak + 1
-        else streak = 1
+    setClaiming(true)
+    try {
+      // Memo TX on-chain vers wallet protocole LIA (0 EGLD) — preuve publique du claim
+      const res = await send(
+        [
+          {
+            receiver: LIA_WALLET,
+            value: '0',
+            data: claimData(day),
+            gasLimit: 100_000,
+          },
+        ],
+        {
+          processingMessage: `Claim points ${day}`,
+          successMessage: 'Claim on-chain envoye',
+          errorMessage: 'Claim echoue',
+        },
+      )
+
+      if (res.error) {
+        setClaimError(res.error)
+        setClaiming(false)
+        return
       }
 
-      let add = 1
-      const history = [...prev.history, { day, pts: 1, kind: 'daily' as const }]
+      const txId = res.sessionId || 'submitted'
 
-      if (streak > 0 && streak % 7 === 0) {
-        add += 3
-        history.push({ day, pts: 3, kind: 'streak7' })
-      }
+      setState(prev => {
+        let streak = 1
+        if (prev.lastClaimDay) {
+          const gap = daysBetween(prev.lastClaimDay, day)
+          if (gap === 1) streak = prev.streak + 1
+          else streak = 1
+        }
 
-      const next: DailyPointsState = {
-        totalPoints: prev.totalPoints + add,
-        streak,
-        lastClaimDay: day,
-        history: history.slice(-30),
-      }
-      save(scope, next)
-      return next
-    })
-  }, [scope])
+        let add = 1
+        const history = [...prev.history, { day, pts: 1, kind: 'daily' as const, tx: txId }]
 
-  return { ...state, canClaimToday, claim, scopedTo: scope }
+        if (streak > 0 && streak % 7 === 0) {
+          add += 3
+          history.push({ day, pts: 3, kind: 'streak7', tx: txId })
+        }
+
+        const next: DailyPointsState = {
+          totalPoints: prev.totalPoints + add,
+          streak,
+          lastClaimDay: day,
+          history: history.slice(-30),
+          lastTxHash: txId,
+        }
+        save(scope, next)
+        return next
+      })
+    } catch (e) {
+      setClaimError(e instanceof Error ? e.message : 'Claim failed')
+    } finally {
+      setClaiming(false)
+    }
+  }, [scope, canAttemptSign, state.lastClaimDay, send])
+
+  return {
+    ...state,
+    canClaimToday,
+    claim,
+    claiming,
+    claimError,
+    scopedTo: scope,
+    needsWallet: !scope || !canAttemptSign,
+  }
 }
