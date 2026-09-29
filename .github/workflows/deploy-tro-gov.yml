@@ -1,0 +1,113 @@
+name: Deploy tro-staking + governance
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain:
+        description: "1=mainnet"
+        required: true
+        default: "1"
+        type: choice
+        options: ["1", "D"]
+      confirm_mainnet:
+        description: "Type DEPLOY_MAINNET"
+        required: false
+        default: ""
+        type: string
+      tro_token:
+        default: "TRO-94c925"
+        type: string
+      lia_treasury:
+        default: "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CHAIN_ID: ${{ github.event.inputs.chain }}
+      TRO_TOKEN: ${{ github.event.inputs.tro_token }}
+      LIA_TREASURY: ${{ github.event.inputs.lia_treasury }}
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      DEPLOYER: erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gate
+        run: |
+          if [ "${CHAIN_ID}" = "1" ] && [ "${{ github.event.inputs.confirm_mainnet }}" != "DEPLOY_MAINNET" ]; then
+            exit 1
+          fi
+          if [ "${CHAIN_ID}" = "1" ]; then
+            echo "PROXY=https://gateway.multiversx.com" >> "$GITHUB_ENV"
+          else
+            echo "PROXY=https://devnet-gateway.multiversx.com" >> "$GITHUB_ENV"
+          fi
+
+      - name: PEM
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli
+
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          targets: wasm32v1-none
+
+      - name: sc-meta
+        run: |
+          rustup target add wasm32v1-none
+          cargo install multiversx-sc-meta --locked --force
+
+      - name: Deploy tro-staking
+        id: tro
+        run: |
+          set -euo pipefail
+          cd contracts/tro-staking
+          sc-meta all build
+          WASM="${PWD}/output/tro-staking.wasm"
+          test -f "$WASM"
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          LOG=$(mxpy contract deploy --bytecode="$WASM" --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=60000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
+            --arguments "str:${TRO_TOKEN}" --send --wait-result 2>&1) || true
+          echo "$LOG"
+          ADDR=$(echo "$LOG" | grep -oE 'erd1qqqq[a-z0-9]{50,}' | head -1 || true)
+          echo "tro_staking=${ADDR}" >> "$GITHUB_OUTPUT"
+          test -n "$ADDR"
+          echo "TRO_STAKING=$ADDR" >> "$GITHUB_ENV"
+
+      - name: Deploy tro-governance
+        id: gov
+        run: |
+          set -euo pipefail
+          cd contracts/tro-governance
+          sc-meta all build
+          WASM="${PWD}/output/tro-governance.wasm"
+          test -f "$WASM"
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          LOG=$(mxpy contract deploy --bytecode="$WASM" --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=60000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
+            --arguments "${LIA_TREASURY}" --send --wait-result 2>&1) || true
+          echo "$LOG"
+          ADDR=$(echo "$LOG" | grep -oE 'erd1qqqq[a-z0-9]{50,}' | head -1 || true)
+          echo "tro_governance=${ADDR}" >> "$GITHUB_OUTPUT"
+          test -n "$ADDR"
+
+      - name: Cleanup
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"
