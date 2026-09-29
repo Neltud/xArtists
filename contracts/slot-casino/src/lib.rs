@@ -188,8 +188,6 @@ pub trait SlotCasino {
         self.claim_house_event(&owner, &claimable);
     }
 
-    // --- play ---
-
     #[payable("EGLD")]
     #[endpoint(spinEgld)]
     fn spin_egld(&self, client_seed: ManagedBuffer) {
@@ -205,7 +203,13 @@ pub trait SlotCasino {
         let payment = self.call_value().single_esdt();
         require!(payment.token_nonce == 0, "fungible only");
         require!(self.payment_token_allowed(&payment.token_identifier).get(), "token not allowed");
-        self.internal_spin(false, payment.token_identifier, payment.amount, client_seed);
+        // 0.66: Ref<EsdtTokenPayment> fields must be cloned (not Copy)
+        self.internal_spin(
+            false,
+            payment.token_identifier.clone(),
+            payment.amount.clone(),
+            client_seed,
+        );
     }
 
     fn internal_spin(
@@ -330,7 +334,6 @@ pub trait SlotCasino {
     fn build_seed(&self, pending: &PendingSpin<Self::Api>) -> ManagedBuffer {
         let mut buf = ManagedBuffer::new();
         buf.append(&pending.client_seed);
-        // provably-fair: client_seed + lock_block + current block nonce + round
         let lock_bytes = pending.lock_block.to_be_bytes();
         buf.append(&ManagedBuffer::new_from_bytes(&lock_bytes));
         let cur = self.blockchain().get_block_nonce().to_be_bytes();
@@ -367,11 +370,9 @@ pub trait SlotCasino {
             SpinOutcome::Pair => bet * MULT_PAIR_BPS / BPS_DENOM,
             SpinOutcome::Diagonal => bet * MULT_DIAG_BPS / BPS_DENOM,
             SpinOutcome::Line3 => bet * MULT_LINE_BPS / BPS_DENOM,
-            SpinOutcome::Grand => BigUint::zero(), // jackpot paid separately from progressive
+            SpinOutcome::Grand => BigUint::zero(),
         }
     }
-
-    // --- views ---
 
     #[view(getOwner)]
     fn get_owner(&self) -> ManagedAddress {
@@ -432,8 +433,6 @@ pub trait SlotCasino {
         }
     }
 
-    // --- storage ---
-
     #[storage_mapper("owner")]
     fn owner(&self) -> SingleValueMapper<ManagedAddress>;
 
@@ -484,8 +483,6 @@ pub trait SlotCasino {
 
     #[storage_mapper("userPendingCount")]
     fn user_pending_count(&self, user: &ManagedAddress) -> SingleValueMapper<u32>;
-
-    // --- events (1 data arg) ---
 
     #[event("spinLocked")]
     fn spin_locked_event(&self, #[indexed] spin_id: u64, #[indexed] player: &ManagedAddress, bet: &BigUint);
