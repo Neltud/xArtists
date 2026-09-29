@@ -5,6 +5,7 @@ import App from './App'
 import { WalletProvider } from './context/WalletContext'
 import { MultiversXProvider } from './context/MultiversXContext'
 import { MxDappProvider } from './providers/MxDappProvider'
+import TxShell from './providers/TxShell'
 import { registerSW } from './pwa/registerSW'
 import { probeChainTiming } from './config/chainTiming'
 import { startAgent8008Bridge } from './lib/agent8008Bridge'
@@ -31,8 +32,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <MxDappProvider>
         <WalletProvider>
           <MultiversXProvider>
-            <PulseBoot />
-            <App />
+            <TxShell>
+              <PulseBoot />
+              <App />
+            </TxShell>
           </MultiversXProvider>
         </WalletProvider>
       </MxDappProvider>
