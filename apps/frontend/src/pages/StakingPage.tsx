@@ -1,11 +1,12 @@
 /**
- * Staking - $TRO lock design + yield farming pools TRO/EGLD (hors DAO).
+ * Staking - $TRO lock + yield farming pools TRO/EGLD (hors DAO).
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
 import InfoTip from '../components/InfoTip'
 import LiaVsUserBanner from '../components/LiaVsUserBanner'
+import TokenIcon, { TokenPairIcons } from '../components/TokenIcon'
 import { HELP } from '../content/helpCopy'
 import { TRO_YIELD_POOLS, DEX_LABEL, TRO_TOKEN_ID } from '../config/troPools'
 import { fetchMexTroPairs, fetchPoolAccountTvl, matchLive, type PoolLive } from '../lib/troPoolStats'
@@ -46,20 +47,26 @@ export default function StakingPage() {
     <div className="animate-fade-in space-y-6">
       <header>
         <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2">
+          <TokenIcon token="TRO" size={28} />
           Staking & Yield
           <InfoTip k="liaVsUser" />
         </h1>
-        <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
-          Farming <strong className="text-zinc-200">TRO/EGLD</strong> sur DEX (xExchange, OneDex) +
-          design lock $TRO. Wallet <strong className="text-green-300">utilisateur</strong>. Pas de
-          vote DAO ici.
+        <p className="text-sm text-zinc-400 mt-1 max-w-2xl flex flex-wrap items-center gap-2">
+          Farming{' '}
+          <span className="inline-flex items-center gap-1 text-zinc-200 font-medium">
+            <TokenPairIcons a="TRO" b="EGLD" size={16} />
+            TRO/EGLD
+          </span>{' '}
+          sur DEX (xExchange, OneDex) + lock $TRO on-chain. Wallet{' '}
+          <strong className="text-green-300">utilisateur</strong>. Pas de vote DAO ici.
         </p>
       </header>
 
       <PageGuide page="staking" />
       <LiaVsUserBanner tone="user" />
 
-      <div className="rounded-xl border border-zinc-600/40 bg-zinc-900/40 px-4 py-3 text-xs text-zinc-300">
+      <div className="rounded-xl border border-zinc-600/40 bg-zinc-900/40 px-4 py-3 text-xs text-zinc-300 flex flex-wrap items-center gap-2">
+        <TokenIcon token="EGLD" size={16} />
         Yield LP = farms <strong>DEX externes</strong>. Stake $TRO on-chain = onglet TRO (gate{' '}
         <code className="text-[10px]">CODEHASH_OK</code>). Aucun faux claim.
       </div>
@@ -70,10 +77,12 @@ export default function StakingPage() {
             key={t}
             type="button"
             onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
               tab === t ? 'bg-violet-600/30 text-violet-200' : 'text-zinc-500 hover:text-white'
             }`}
           >
+            {t === 'TRO' && <TokenIcon token="TRO" size={14} />}
+            {t === 'NFT' && <TokenIcon token="NFT" size={14} />}
             {t}
           </button>
         ))}
@@ -82,7 +91,10 @@ export default function StakingPage() {
       {tab === 'Yield' && (
         <div className="space-y-4">
           <div className="card space-y-2">
-            <h2 className="font-semibold text-white">Farming TRO / EGLD</h2>
+            <h2 className="font-semibold text-white flex items-center gap-2">
+              <TokenPairIcons a="TRO" b="EGLD" size={20} />
+              Farming TRO / EGLD
+            </h2>
             <p className="text-sm text-zinc-400">
               Fournissez de la liquidite sur les pools listees — rewards = fees DEX (+ farms si
               actives cote exchange). Token {TRO_TOKEN_ID}.
@@ -106,11 +118,14 @@ export default function StakingPage() {
                   className="rounded-2xl border border-white/10 bg-zinc-950/60 p-4 space-y-3"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider text-zinc-500">
-                        {DEX_LABEL[p.dex]}
-                      </p>
-                      <h3 className="text-lg font-semibold text-white">{p.pair}</h3>
+                    <div className="flex items-start gap-2">
+                      <TokenPairIcons a="TRO" b="EGLD" size={22} />
+                      <div>
+                        <p className="text-[10px] uppercase tracking-wider text-zinc-500">
+                          {DEX_LABEL[p.dex]}
+                        </p>
+                        <h3 className="text-lg font-semibold text-white">{p.pair}</h3>
+                      </div>
                     </div>
                     {live?.state && (
                       <span className="text-[10px] rounded-full border border-white/10 px-2 py-0.5 text-zinc-400">
@@ -123,7 +138,9 @@ export default function StakingPage() {
                     <div>
                       <p className="text-[10px] text-zinc-600 uppercase">TVL est.</p>
                       <p className="font-semibold text-emerald-400 tabular-nums">
-                        {tvl != null ? `$${tvl.toLocaleString('en-US', { maximumFractionDigits: 0 })}` : '—'}
+                        {tvl != null
+                          ? `$${tvl.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+                          : '—'}
                       </p>
                     </div>
                     {live?.volume24h != null && (
@@ -135,7 +152,10 @@ export default function StakingPage() {
                     {p.lpTokenId && (
                       <div>
                         <p className="text-[10px] text-zinc-600 uppercase">LP</p>
-                        <p className="text-[11px] mono text-zinc-400">{p.lpTokenId}</p>
+                        <p className="text-[11px] mono text-zinc-400 flex items-center gap-1">
+                          <TokenIcon token="LP" size={12} />
+                          {p.lpTokenId}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -175,11 +195,17 @@ export default function StakingPage() {
               xexchange.com/farms
             </a>
             {' · '}
-            <Link to="/lp" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
+            <Link
+              to="/lp"
+              className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
+            >
               Liquidity & Farms
             </Link>
             {' · vote DAO : '}
-            <Link to="/dao" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
+            <Link
+              to="/dao"
+              className="text-zinc-400 hover:text-white underline-offset-2 hover:underline"
+            >
               /dao
             </Link>
           </p>
@@ -190,7 +216,10 @@ export default function StakingPage() {
 
       {tab === 'NFT' && (
         <div className="card space-y-4">
-          <h2 className="font-semibold">NFT staking</h2>
+          <h2 className="font-semibold flex items-center gap-2">
+            <TokenIcon token="NFT" size={22} />
+            NFT staking
+          </h2>
           <p className="text-sm text-zinc-400">
             Stake collections xArtists pour rewards / boost. Activation post-deploy SC.
           </p>
@@ -204,8 +233,8 @@ export default function StakingPage() {
         <div className="card space-y-3">
           <h2 className="font-semibold">Rewards report</h2>
           <p className="text-sm text-zinc-400">
-            Rapport paper Vellum → <code className="text-[10px]">data/rewards_report.json</code> quand le
-            workflow tourne. Yield LP = claim sur le DEX.
+            Rapport paper Vellum → <code className="text-[10px]">data/rewards_report.json</code> quand
+            le workflow tourne. Yield LP = claim sur le DEX.
           </p>
         </div>
       )}
@@ -213,8 +242,8 @@ export default function StakingPage() {
       {tab === 'Help' && (
         <div className="card text-sm text-zinc-400 space-y-2">
           <p>
-            <strong className="text-zinc-200">Yield ≠ DAO :</strong> farming LP sur DEX ; vote = holders
-            + LP power sur /dao.
+            <strong className="text-zinc-200">Yield ≠ DAO :</strong> farming LP sur DEX ; vote =
+            holders + LP power sur /dao.
           </p>
           <p>
             <strong className="text-zinc-200">Gas :</strong> garder de l'EGLD.
