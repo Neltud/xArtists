@@ -1,6 +1,5 @@
 /**
- * My Packs — on-chain vs paper.
- * Retour Stripe/Paybox (?paid=1&pack=…) → mark owned + ouverture theater.
+ * My Packs — on-chain vs paper + acces salles (1 pack = 1 salle).
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -10,6 +9,7 @@ import { timingDefaults } from '../config/chainTiming'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useUserAccount } from '../hooks/useUserAccount'
 import { matchOnChainPacks, loadOwnedPacks, markPackOwned } from '../lib/nftPacks'
+import { ROOM_META } from '../lib/holderAccess'
 import PackOpenTheater from '../components/PackOpenTheater'
 
 const API = (import.meta.env.VITE_ACCESS_API_BASE as string | undefined) || ''
@@ -20,7 +20,6 @@ function isPackId(v: string | null): v is PackId {
   return !!v && PACK_IDS.includes(v as PackId)
 }
 
-/** Dernière intention checkout (paper ou pré-redirect carte). */
 function readCheckoutIntentPack(): PackId | null {
   try {
     const raw = localStorage.getItem('xartists_access_checkout_intent')
@@ -47,33 +46,27 @@ export default function MyPacks() {
   const sessionId = params.get('session_id')
   const packParam = params.get('pack')
 
-  /** Retour paiement carte → pack local + theater une seule fois. */
   useEffect(() => {
     if (!paid) return
     const fromQuery = isPackId(packParam) ? packParam : null
     const fromIntent = readCheckoutIntentPack()
     const id = fromQuery || fromIntent
     if (!id) {
-      setMintStatus('Retour paiement — pack non identifié (intent locale absente).')
+      setMintStatus('Retour paiement — pack non identifie (intent locale absente).')
       return
     }
     markPackOwned(id)
     setPaperTick(t => t + 1)
     setTheaterPack(id)
-    setMintStatus(`Paiement reçu · ${id} enregistré (paper device).`)
-    // Nettoyer query pour éviter rejoue theater au refresh
+    setMintStatus(`Paiement recu · ${id} enregistre (paper device).`)
     const next = new URLSearchParams(params)
     next.delete('paid')
     next.delete('pack')
-    // garder session_id pour poll mint si présent
     setParams(next, { replace: true })
   }, [paid, packParam]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (!sessionId || !API) {
-      return
-    }
-    // poll seulement si on avait paid ou session encore en URL
+    if (!sessionId || !API) return
     let stop = false
     let n = 0
     const pollMs = timingDefaults().mintStatusPollMs
@@ -100,6 +93,7 @@ export default function MyPacks() {
 
   const chainIds = new Set(chainHits.map(h => h.packId as PackId))
   const theaterProfile = theaterPack ? AGENT_PACKS.find(p => p.id === theaterPack) : null
+  const ownedAll = Array.from(new Set([...paperPacks, ...chainHits.map(h => h.packId as PackId)]))
 
   return (
     <div className="animate-fade-in space-y-8 pb-12 max-w-xl mx-auto">
@@ -108,7 +102,7 @@ export default function MyPacks() {
         <h1 className="section-title display">My Packs</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
-          Packs agents détenus (on-chain ou paper local). Produits d’accès — pas un fonds.
+          Packs agents detenu (on-chain ou paper). Chaque pack ouvre sa salle + moniteur LIA.
         </p>
       </header>
 
@@ -120,7 +114,7 @@ export default function MyPacks() {
 
       {cancelled && (
         <p className="text-[13px] text-amber-200/90 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2">
-          Paiement annulé — aucun pack ajouté.
+          Paiement annule — aucun pack ajoute.
         </p>
       )}
 
@@ -130,11 +124,38 @@ export default function MyPacks() {
         </p>
       )}
 
+      {ownedAll.length > 0 && (
+        <section className="space-y-2">
+          <h2 className="section-label">Tes salles</h2>
+          <div className="grid gap-2">
+            {ownedAll.map(id => {
+              const meta = ROOM_META[id]
+              const p = AGENT_PACKS.find(x => x.id === id)
+              return (
+                <Link
+                  key={id}
+                  to={meta.path}
+                  className="rounded-xl border border-violet-500/25 bg-violet-500/[0.08] px-4 py-3 flex justify-between items-center hover:border-violet-400/40 transition"
+                >
+                  <div>
+                    <p className="text-sm font-medium text-white">
+                      {meta.emoji} {meta.title}
+                    </p>
+                    <p className="text-[11px] text-zinc-500">{p?.tagline}</p>
+                  </div>
+                  <span className="text-[11px] text-violet-200">Entrer →</span>
+                </Link>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
       <section className="space-y-2">
         <h2 className="section-label">On-chain</h2>
         {chainHits.length === 0 ? (
           <p className="text-[12px] text-zinc-600 rounded-xl border border-white/[0.06] px-3 py-3">
-            Aucun pack agent détecté dans le wallet.
+            Aucun pack agent detecte dans le wallet.
           </p>
         ) : (
           <ul className="space-y-2">
@@ -143,13 +164,18 @@ export default function MyPacks() {
               return (
                 <li
                   key={h.identifier || String(h.packId)}
-                  className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-3 flex justify-between gap-3"
+                  className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-3 flex justify-between gap-3 items-center"
                 >
                   <div>
                     <p className="text-sm font-medium text-white">{p?.name || h.packId}</p>
                     <p className="text-[11px] text-zinc-500 mono">{h.identifier}</p>
                   </div>
-                  <span className="text-[10px] text-emerald-300 shrink-0">on-chain</span>
+                  <Link
+                    to={ROOM_META[h.packId as PackId].path}
+                    className="text-[11px] text-emerald-300 hover:underline"
+                  >
+                    Salle
+                  </Link>
                 </li>
               )
             })}
@@ -178,13 +204,18 @@ export default function MyPacks() {
                       local{chainIds.has(id) ? ' · aussi on-chain' : ''}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    className="text-[11px] text-cyan-300 hover:text-cyan-200 underline-offset-2 hover:underline"
-                    onClick={() => setTheaterPack(id)}
-                  >
-                    Rouvrir
-                  </button>
+                  <div className="flex gap-2 shrink-0">
+                    <Link to={ROOM_META[id].path} className="text-[11px] text-violet-300 hover:underline">
+                      Salle
+                    </Link>
+                    <button
+                      type="button"
+                      className="text-[11px] text-cyan-300 hover:underline"
+                      onClick={() => setTheaterPack(id)}
+                    >
+                      Rouvrir
+                    </button>
+                  </div>
                 </li>
               )
             })}
@@ -199,6 +230,10 @@ export default function MyPacks() {
         {' · '}
         <Link to="/agents" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
           Acheter un pack
+        </Link>
+        {' · '}
+        <Link to="/trading" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
+          Trading desk
         </Link>
       </p>
 

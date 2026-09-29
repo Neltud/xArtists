@@ -1,8 +1,8 @@
 /**
- * Board LIA — paper MTM live prices + 10 colonnes compounding.
+ * Board LIA — paper MTM + desk pack (live-in avec Grok).
  */
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import InfoTip from '../components/InfoTip'
 import LiaBoardPanel from '../components/LiaBoardPanel'
 import CompoundingPanel from '../components/CompoundingPanel'
@@ -11,12 +11,21 @@ import CrossAgentPanel from '../components/CrossAgentPanel'
 import PaperLiveDesk from '../components/PaperLiveDesk'
 import { useLIA } from '../hooks/useLIA'
 import TransactionOverlay, { lifecycleToPhase } from '../components/ui/TransactionOverlay'
+import { AGENT_PACKS, type PackId } from '../config/agentPacks'
+import { ROOM_META } from '../lib/holderAccess'
+
+const PACK_IDS: PackId[] = ['pulse', 'yield', 'sentinel']
 
 export default function Trading() {
   const { lifecycle, lastResult, error, runNatural } = useLIA()
   const [overlayClosed, setOverlayClosed] = useState(false)
   const [cmd, setCmd] = useState('')
   const [busy, setBusy] = useState(false)
+  const [params] = useSearchParams()
+  const packParam = params.get('pack')
+  const desk = params.get('desk') === '1'
+  const packId = PACK_IDS.includes(packParam as PackId) ? (packParam as PackId) : null
+  const pack = packId ? AGENT_PACKS.find(p => p.id === packId) : null
 
   useEffect(() => {
     const onIntent = (e: Event) => {
@@ -26,6 +35,12 @@ export default function Trading() {
     window.addEventListener('lia-intent', onIntent)
     return () => window.removeEventListener('lia-intent', onIntent)
   }, [])
+
+  useEffect(() => {
+    if (pack && desk) {
+      setCmd(`paper ${pack.id} board · strategies ${pack.strategies.join(' ')}`)
+    }
+  }, [pack, desk])
 
   const run = async () => {
     if (!cmd.trim()) return
@@ -57,16 +72,32 @@ export default function Trading() {
         <h1 className="section-title display">Trading</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="text-sm text-zinc-400 inline-flex flex-wrap items-center gap-1 max-w-xl">
-          Paper MTM sur prix marché live · 10 colonnes compounding · pas d’exécution on-chain
+          Paper MTM · prix marche live · desk Grok / LIA — execution on-chain seulement si tu signes
           <InfoTip>
-            <strong className="text-white block mb-1">Mode paper</strong>
+            <strong className="text-white block mb-1">Mode paper + signature</strong>
             <span className="text-zinc-400">
-              Les prix sont réels (Binance / MultiversX). Les positions et le PnL sont simulés. Live
-              ops uniquement avec PEM + Guardian + flag explicite.
+              Positions paper par defaut. Les TX reelles passent par TxShell / xPortal — jamais de PEM
+              navigateur.
             </span>
           </InfoTip>
         </p>
       </header>
+
+      {pack && (
+        <div className="rounded-2xl border border-violet-500/30 bg-violet-950/25 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-violet-300/80 font-semibold">
+              Desk live-in · pack {pack.name}
+            </p>
+            <p className="text-[12px] text-zinc-400 mt-0.5">
+              {pack.icon} {pack.strategies.join(' · ')} · clone LIA paper
+            </p>
+          </div>
+          <Link to={ROOM_META[pack.id].path} className="btn-secondary text-xs">
+            Retour salle
+          </Link>
+        </div>
+      )}
 
       <PaperLiveDesk />
 
@@ -86,20 +117,13 @@ export default function Trading() {
             <p className="text-zinc-200 mt-0.5 font-medium">TP +2 % · SL −1 %</p>
           </div>
         </div>
-        <ul className="text-[11px] text-zinc-500 space-y-1 list-disc list-inside">
-          <li>Fees ~30 bps round-trip · gas ~0,04 $ / leg (hypothèses paper)</li>
-          <li>Sink profits simulé en USDC · cible trésorerie 1 M$ (roadmap, pas une promesse)</li>
-          <li>
-            Data : <code className="text-zinc-400">compounding_echelons.json</code>
-          </li>
-        </ul>
       </section>
 
       <CompoundingPanel />
       <AnnualYieldPanel />
 
       <div className="card space-y-3">
-        <p className="section-label">Commande paper</p>
+        <p className="section-label">Commande paper · Grok / LIA</p>
         <div className="flex gap-2">
           <input
             className="input-field flex-1"
@@ -123,16 +147,16 @@ export default function Trading() {
       <CrossAgentPanel />
 
       <p className="text-[11px] text-zinc-600 leading-relaxed">
+        <Link to="/my-packs" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
+          My Packs / salles
+        </Link>
+        {' · '}
         <Link to="/agents" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
           Packs agents
         </Link>
         {' · '}
-        <Link to="/slot" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
-          Slot 3×3
-        </Link>
-        {' · '}
         <Link to="/museum" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
-          Musée
+          Musee
         </Link>
       </p>
     </div>
