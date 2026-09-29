@@ -57,9 +57,9 @@ function buildWalletHookUrl(tx: TxInput, callbackUrl: string): string {
 
 function defaultCallback(): string {
   try {
-    const base = DAPP_CALLBACK_BASE || window.location.origin + (import.meta.env.BASE_URL || '/')
+    const origin = (DAPP_CALLBACK_BASE || 'https://neltud.github.io/xArtists').replace(/\/$/, '')
     const hash = window.location.hash || '#/staking'
-    return `${base.replace(/\/$/, '')}/${hash}`.replace(/([^:]\/)\/+ /g, '$1'.replace(' ', ''))
+    return `${origin}/${hash.startsWith('#') ? hash : '#' + hash}`
   } catch {
     return 'https://neltud.github.io/xArtists/#/staking'
   }
