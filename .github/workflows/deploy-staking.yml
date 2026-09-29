@@ -86,34 +86,15 @@ jobs:
           rustup target add wasm32v1-none
           cargo install multiversx-sc-meta --locked --force
 
-      - name: Build helper
-        run: |
-          cat > "${RUNNER_TEMP}/build_one.sh" <<'EOS'
-          #!/bin/bash
-          set -euo pipefail
-          DIR="$1"
-          cd "$DIR"
-          sc-meta all build || true
-          WASM=$(find . -name '*.wasm' | head -1 || true)
-          if [ -z "$WASM" ]; then
-            cd wasm
-            cargo build --release --target wasm32v1-none 2>/dev/null \
-              || cargo build --release --target wasm32-unknown-unknown
-            WASM=$(find target -name '*.wasm' | head -1)
-            cd ..
-            WASM="wasm/${WASM}"
-          fi
-          test -n "$WASM"
-          echo "${PWD}/${WASM#./}"
-          EOS
-          chmod +x "${RUNNER_TEMP}/build_one.sh"
-
       - name: Build + deploy nft-staking
         id: nft
         run: |
           set -euo pipefail
-          WASM=$("${RUNNER_TEMP}/build_one.sh" contracts/nft-staking)
-          echo "wasm=$WASM"
+          cd contracts/nft-staking
+          sc-meta all build
+          WASM="${PWD}/output/nft-staking.wasm"
+          test -f "$WASM"
+          echo "wasm=$WASM ($(wc -c < "$WASM") bytes)"
           NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
           LOG=$(mxpy contract deploy --bytecode="$WASM" --pem="${RUNNER_TEMP}/deployer.pem" \
             --gas-limit=60000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
@@ -128,9 +109,12 @@ jobs:
         id: tro
         run: |
           set -euo pipefail
-          WASM=$("${RUNNER_TEMP}/build_one.sh" contracts/tro-staking)
+          cd contracts/tro-staking
+          sc-meta all build
+          WASM="${PWD}/output/tro-staking.wasm"
+          test -f "$WASM"
+          echo "wasm=$WASM ($(wc -c < "$WASM") bytes)"
           NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
-          # TokenIdentifier arg as string
           LOG=$(mxpy contract deploy --bytecode="$WASM" --pem="${RUNNER_TEMP}/deployer.pem" \
             --gas-limit=60000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
             --arguments "str:${TRO_TOKEN}" \
@@ -145,7 +129,11 @@ jobs:
         id: gov
         run: |
           set -euo pipefail
-          WASM=$("${RUNNER_TEMP}/build_one.sh" contracts/tro-governance)
+          cd contracts/tro-governance
+          sc-meta all build
+          WASM="${PWD}/output/tro-governance.wasm"
+          test -f "$WASM"
+          echo "wasm=$WASM ($(wc -c < "$WASM") bytes)"
           NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
           LOG=$(mxpy contract deploy --bytecode="$WASM" --pem="${RUNNER_TEMP}/deployer.pem" \
             --gas-limit=60000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
