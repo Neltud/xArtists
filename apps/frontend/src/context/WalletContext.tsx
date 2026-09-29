@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { setEmpireWallet } from '../store/empireStore'
 
 const STORAGE_KEY = 'xartists_wallet'
 /** Protocol LIA wallet — never as connected user */
@@ -87,6 +88,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (!fromUrl) return
     if (fromUrl.address.toLowerCase() === LIA_WALLET.toLowerCase()) return
     setState({ connected: true, address: fromUrl.address, method: fromUrl.method })
+    setEmpireWallet({ connected: true, address: fromUrl.address, method: fromUrl.method })
     cleanUrlParams()
   }, [])
 
@@ -109,11 +111,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       return { ok: false, error: 'Wallet protocole LIA interdit comme wallet utilisateur.' }
     }
     setState({ connected: true, address: addr, method })
+    setEmpireWallet({ connected: true, address: addr, method })
     return { ok: true }
   }
 
   const disconnect = () => {
     setState({ connected: false, address: '', method: null })
+    setEmpireWallet({ connected: false, address: null, method: null })
     try {
       localStorage.removeItem(STORAGE_KEY)
     } catch {
