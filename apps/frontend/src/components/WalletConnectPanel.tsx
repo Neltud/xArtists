@@ -1,10 +1,11 @@
 /**
- * Parcours connect live — Web Wallet, xPortal WC mainnet, extension, lecture seule.
+ * Connect live — Web Wallet, xPortal WC + QR desktop, extension, lecture seule.
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMxLogin } from '../hooks/useMxLogin'
 import { isValidErd } from '../context/WalletContext'
 import { isWalletConnectConfigured } from '../config/sdkDapp'
+import { clearXPortalSession } from '../lib/xportalWc'
 
 export default function WalletConnectPanel() {
   const {
@@ -21,6 +22,24 @@ export default function WalletConnectPanel() {
   } = useMxLogin()
   const [manual, setManual] = useState('')
   const [err, setErr] = useState('')
+  const [wcUri, setWcUri] = useState<string | null>(null)
+
+  useEffect(() => {
+    const onUri = (e: Event) => {
+      const d = (e as CustomEvent).detail as { uri?: string }
+      if (d?.uri) setWcUri(d.uri)
+    }
+    window.addEventListener('xartists-wc-uri', onUri)
+    return () => window.removeEventListener('xartists-wc-uri', onUri)
+  }, [])
+
+  useEffect(() => {
+    if (wcProgress?.uri) setWcUri(wcProgress.uri)
+    if (wcProgress?.phase === 'done' || wcProgress?.phase === 'error') {
+      // keep QR until done; clear on done
+      if (wcProgress.phase === 'done') setWcUri(null)
+    }
+  }, [wcProgress])
 
   if (connected) {
     return (
@@ -31,38 +50,60 @@ export default function WalletConnectPanel() {
           {method}
           {canAttemptSign ? ' · signature possible' : ' · lecture seule'}
         </p>
-        <button type="button" className="btn-secondary text-xs" onClick={disconnect}>
+        {method === 'xportal' && (
+          <p className="text-[11px] text-cyan-200/90">
+            Session xPortal active — les TX s’ouvrent dans l’app (pas le Web Wallet).
+          </p>
+        )}
+        {method === 'paste_readonly' && (
+          <p className="text-[11px] text-amber-200">
+            Lecture seule — pour signer, reconnecte via xPortal ou Web Wallet.
+          </p>
+        )}
+        <button
+          type="button"
+          className="btn-secondary text-xs"
+          onClick={() => {
+            clearXPortalSession()
+            disconnect()
+            setWcUri(null)
+          }}
+        >
           Déconnecter
         </button>
       </div>
     )
   }
 
+  const qrImg = wcUri
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(wcUri)}`
+    : null
+
   return (
     <div className="rounded-2xl border border-cyan-500/25 bg-[#0e0e16] p-4 space-y-3">
       <div>
         <p className="text-sm font-bold text-white">Connecter ton wallet MultiversX</p>
         <p className="text-[11px] text-zinc-500 mt-1">
-          <strong className="text-zinc-400">Web Wallet</strong> ou{' '}
-          <strong className="text-zinc-400">xPortal mainnet</strong> (WalletConnect). Pas le wallet
-          protocole LIA.
+          <strong className="text-zinc-400">xPortal</strong> (QR / app) ou{' '}
+          <strong className="text-zinc-400">Web Wallet</strong>. Pas le wallet protocole LIA.
         </p>
       </div>
 
       <div className="grid gap-2">
-        <button type="button" className="btn-primary text-sm py-2.5" onClick={openWebWallet}>
-          Web Wallet — connexion live
-        </button>
         <button
           type="button"
-          className="btn-secondary text-sm py-2"
+          className="btn-primary text-sm py-2.5"
           onClick={async () => {
             setErr('')
+            setWcUri(null)
             const r = await connectXPortal()
             if (!r.ok) setErr(('error' in r && r.error) || 'Échec xPortal')
           }}
         >
-          xPortal mainnet (WalletConnect)
+          xPortal mainnet (QR / WalletConnect)
+        </button>
+        <button type="button" className="btn-secondary text-sm py-2" onClick={openWebWallet}>
+          Web Wallet — navigateur
         </button>
         <button
           type="button"
@@ -77,13 +118,23 @@ export default function WalletConnectPanel() {
         </button>
       </div>
 
+      {qrImg && (
+        <div className="flex flex-col items-center gap-2 py-3 rounded-xl border border-cyan-500/20 bg-black/40">
+          <p className="text-[11px] text-cyan-200">Scanne avec xPortal → WalletConnect</p>
+          <img src={qrImg} alt="QR WalletConnect xPortal" width={180} height={180} className="rounded-lg bg-white p-2" />
+          <p className="text-[10px] text-zinc-500 text-center px-2">
+            Desktop : caméra xPortal. Mobile : l’app s’ouvre via lien universel.
+          </p>
+        </div>
+      )}
+
       {wcProgress?.message && (
         <p className="text-[11px] text-cyan-300/80">{wcProgress.message}</p>
       )}
 
       <p className="text-[10px] text-zinc-600">
         WalletConnect project : {isWalletConnectConfigured() ? 'configuré' : 'manquant'} · domain
-        Pages allowlist
+        Pages allowlist (neltud.github.io)
       </p>
 
       <div className="border-t border-white/10 pt-3 space-y-2">

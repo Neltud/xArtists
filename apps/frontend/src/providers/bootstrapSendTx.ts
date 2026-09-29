@@ -1,12 +1,24 @@
 /**
  * Inject window.__xartistsSendTx for user TX (stake / market / venue).
  * Priority:
- *  1) sdk-dapp sendTransactions if DappProvider session is active
- *  2) MultiversX Web Wallet / xPortal hook URL (works on mobile GH Pages)
+ *  1) Active xPortal WC session → sign in xPortal app (correct popup)
+ *  2) sdk-dapp sendTransactions if DappProvider session active
+ *  3) Web Wallet hook URL — only as last resort / web_wallet method
  * Never holds PEM — user signs in their wallet app.
  */
-import { empireTxStart, empireTxSigning, empireTxBroadcast, empireTxSuccess, empireTxError } from '../store/empireStore'
+import {
+  empireTxStart,
+  empireTxSigning,
+  empireTxBroadcast,
+  empireTxSuccess,
+  empireTxError,
+} from '../store/empireStore'
 import { DAPP_CALLBACK_BASE } from '../config/sdkDapp'
+import {
+  getXPortalSession,
+  signWithXPortalSession,
+  broadcastSignedTx,
+} from '../lib/xportalWc'
 
 const EXPLORER = 'https://explorer.multiversx.com'
 const WALLET_HOOK = 'https://wallet.multiversx.com/hook/transaction'
@@ -42,15 +54,12 @@ function toPlainTx(t: unknown): TxInput {
   }
 }
 
-/** Build MultiversX web-wallet / xPortal transaction hook URL */
 function buildWalletHookUrl(tx: TxInput, callbackUrl: string): string {
   const params = new URLSearchParams()
   params.set('receiver', tx.receiver || '')
   params.set('value', tx.value || '0')
   params.set('gasLimit', String(tx.gasLimit ?? 12_000_000))
-  if (tx.data) {
-    params.set('data', tx.data)
-  }
+  if (tx.data) params.set('data', tx.data)
   params.set('callbackUrl', callbackUrl)
   return `${WALLET_HOOK}?${params.toString()}`
 }
@@ -62,6 +71,17 @@ function defaultCallback(): string {
     return `${origin}/${hash.startsWith('#') ? hash : '#' + hash}`
   } catch {
     return 'https://neltud.github.io/xArtists/#/staking'
+  }
+}
+
+function walletMethod(): string | null {
+  try {
+    const raw = localStorage.getItem('xartists_wallet')
+    if (!raw) return null
+    const p = JSON.parse(raw) as { method?: string }
+    return p.method || null
+  } catch {
+    return null
   }
 }
 
@@ -90,11 +110,36 @@ async function trySdkDappSend(
   }
 }
 
+async function tryXPortalSignAndBroadcast(list: unknown[]): Promise<SendResult | null> {
+  if (!getXPortalSession()) return null
+  const plains = list.map(toPlainTx)
+  if (!plains[0]?.receiver?.startsWith('erd1')) return null
+
+  const signed = await signWithXPortalSession(plains)
+  if (!signed.ok) {
+    empireTxError(signed.error)
+    throw new Error(signed.error)
+  }
+
+  empireTxBroadcast('xportal-wc')
+  const first = signed.signed[0]
+  const br = await broadcastSignedTx(first)
+  if (br.error || !br.hash) {
+    const msg = br.error || 'Broadcast échoué'
+    empireTxError(msg)
+    throw new Error(msg)
+  }
+  empireTxSuccess(br.hash, `${EXPLORER}/transactions/${br.hash}`)
+  return { sessionId: br.hash }
+}
+
 function injectSendTx() {
   const w = window as unknown as {
     __xartistsSendTx?: (txs: unknown[], info?: DisplayInfo) => Promise<SendResult>
   }
-  if (typeof w.__xartistsSendTx === 'function') return
+  if (typeof w.__xartistsSendTx === 'function') {
+    // re-bind always with latest closures
+  }
 
   w.__xartistsSendTx = async (txs, info) => {
     const label = info?.processingMessage || 'Transaction MultiversX'
@@ -108,6 +153,27 @@ function injectSendTx() {
       throw new Error(msg)
     }
 
+    const method = walletMethod()
+
+    // 1) xPortal WC session — correct popup in xPortal app
+    if (method === 'xportal' || getXPortalSession()) {
+      try {
+        const xp = await tryXPortalSignAndBroadcast(list)
+        if (xp?.sessionId) return xp
+      } catch (e) {
+        // already empireTxError'd
+        throw e
+      }
+      // session missing → tell user to reconnect, do NOT silently open web wallet
+      if (method === 'xportal') {
+        const msg =
+          'Session xPortal perdue. Déconnecte → « xPortal mainnet (WalletConnect) » → resigne.'
+        empireTxError(msg)
+        throw new Error(msg)
+      }
+    }
+
+    // 2) sdk-dapp (extension / WC via DappProvider)
     const sdkRes = await trySdkDappSend(list, info)
     if (sdkRes?.sessionId) {
       empireTxBroadcast(sdkRes.sessionId)
@@ -117,6 +183,14 @@ function injectSendTx() {
           : undefined
       empireTxSuccess(sdkRes.sessionId, url)
       return sdkRes
+    }
+
+    // 3) Web Wallet hook — only for web_wallet method (intentional)
+    if (method && method !== 'web_wallet' && method !== 'wallet_connect') {
+      const msg =
+        'Impossible de signer avec ce mode. Utilise xPortal (WalletConnect) ou Web Wallet.'
+      empireTxError(msg)
+      throw new Error(msg)
     }
 
     const plain = toPlainTx(list[0])
@@ -140,7 +214,6 @@ function injectSendTx() {
   }
 }
 
-/** Call once at app boot (MxDappProvider + TxShell). */
 export function bootstrapSendTx(): void {
   if (typeof window === 'undefined') return
   try {
