@@ -1,6 +1,7 @@
 /**
  * TRO stake / unstake — hard-blocked while canStakeTro() is false.
  * Receiver always from live address — never placeholder.
+ * TRO-94c925 has 6 decimals on MultiversX mainnet.
  */
 import { useCallback, useState } from 'react'
 import { useSendTransaction } from './useSendTransaction'
@@ -15,6 +16,9 @@ import {
   empireTxClear,
 } from '../store/empireStore'
 
+/** TRO-94c925 decimals (api.multiversx.com/tokens/TRO-94c925) */
+const TRO_DECIMALS = 6
+
 function strToHex(s: string): string {
   return Array.from(new TextEncoder().encode(s))
     .map((b) => b.toString(16).padStart(2, '0'))
@@ -26,9 +30,9 @@ function numToHex(n: number | bigint): string {
   return h.length % 2 === 0 ? h : `0${h}`
 }
 
-/** TRO has 18 decimals on MultiversX */
 function troToAtomic(amount: number): bigint {
-  return BigInt(Math.round(amount * 1e18))
+  const factor = 10 ** TRO_DECIMALS
+  return BigInt(Math.round(amount * factor))
 }
 
 const BLOCKED =
@@ -61,6 +65,7 @@ export function useTroStakeTx() {
       try {
         const receiver = troStakingReceiverOrThrow()
         const atomic = troToAtomic(amountTro)
+        // ESDTTransfer@token@amount@stake
         const data = [
           'ESDTTransfer',
           strToHex(TRO_TOKEN_ID),
@@ -120,6 +125,7 @@ export function useTroStakeTx() {
       try {
         const receiver = troStakingReceiverOrThrow()
         const atomic = troToAtomic(amountTro)
+        // unstake@amount
         const data = ['unstake', numToHex(atomic)].join('@')
 
         const tx = {
