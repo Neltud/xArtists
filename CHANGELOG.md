@@ -1,5 +1,18 @@
 # Changelog — xArtists
 
+## [0.64.0](https://github.com/Neltud/xArtists/compare/v0.63.0...v0.64.0) (2026-09-29)
+
+
+### Features
+
+* **staking:** getStaked balance + unstake UX (instant SC, policy bond note) ([bc15558](https://github.com/Neltud/xArtists/commit/bc1555845ad47de272ee4f6c47a1ef580b7b0e3e))
+
+
+### Bug Fixes
+
+* **marketplace:** listings_index → LIVE SC codehash_ok=true + indexer reads addresses.nft_marketplace ([21084a5](https://github.com/Neltud/xArtists/commit/21084a58b1447f7de521c28d1b6f0c9b86d14238))
+* **tx:** xPortal session lost → Web Wallet hook fallback (Studio mint) ([bed8cbb](https://github.com/Neltud/xArtists/commit/bed8cbb268c21d4a4c68f860d30c6040f5f24b9a))
+
 ## [0.63.0](https://github.com/Neltud/xArtists/compare/v0.62.0...v0.63.0) (2026-09-29)
 
 
