@@ -1,24 +1,19 @@
 /**
  * Identite editeur — mentions legales (France).
- * SIRET : renseigner le numero officiel 14 chiffres des disponible.
- * Ne jamais inventer un SIRET.
+ * SIRET officiel renseigne 2026-09-29.
  */
 export const LEGAL_ENTITY = {
   productName: 'xArtists',
   publisherName: 'Nelson Tuduri',
-  /** Forme : entrepreneur individuel / a preciser avec le SIRET */
-  legalForm: 'A preciser (EI / SARL / autre)',
-  /**
-   * SIRET officiel (14 chiffres) — MANQUANT tant que non fourni par l'editeur.
-   * Affiche "A completer" sur /legal tant que siretStatus !== 'ok'.
-   */
-  siret: '',
-  siretStatus: 'missing' as 'missing' | 'ok',
-  siretDisplay: 'A completer — numero SIRET editeur',
-  siren: '',
+  legalForm: 'Entrepreneur individuel (a confirmer)',
+  /** SIRET 14 chiffres — valide Luhn */
+  siret: '82418276000028',
+  siretStatus: 'ok' as 'missing' | 'ok',
+  siretDisplay: '824 182 760 00028',
+  siren: '824182760',
   vatNumber: '',
   country: 'France',
-  addressLine: 'Adresse du siege — a completer',
+  addressLine: 'France — siege a completer si besoin',
   github: 'https://github.com/Neltud/xArtists',
   dapp: 'https://neltud.github.io/xArtists/',
   contact: 'Issues GitHub · Neltud/xArtists',
@@ -29,7 +24,7 @@ export const LEGAL_ENTITY = {
 
 export function siretLabel(): string {
   if (LEGAL_ENTITY.siretStatus === 'ok' && LEGAL_ENTITY.siret.length === 14) {
-    return LEGAL_ENTITY.siret
+    return LEGAL_ENTITY.siretDisplay || LEGAL_ENTITY.siret
   }
   return LEGAL_ENTITY.siretDisplay
 }

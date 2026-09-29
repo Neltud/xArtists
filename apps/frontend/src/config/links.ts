@@ -52,9 +52,9 @@ export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/my-packs', label: 'My Packs', emoji: '🎫' },
   { to: '/tours', label: 'Tours', emoji: '◉' },
   { to: '/wallet', label: 'Wallet', emoji: '◇' },
-  { to: '/marketplace', label: 'Market', emoji: '▣' },
+  { to: '/marketplace', label: 'Marketplace', emoji: '▣' },
   { to: '/trading', label: 'Trading', emoji: '⚡' },
-  { to: '/legal', label: 'Légal', emoji: '§' },
+  { to: '/legal', label: 'Legal', emoji: '§' },
 ]
 
 export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
