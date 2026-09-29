@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { LINKS, PRIMARY_NAV } from '../config/links'
 import { OPEN_CONNECT_EVENT, requestOpenAssets } from '../lib/walletEvents'
-import { loginWithXPortalMainnet } from '../lib/xportalWc'
+import { loginWithXPortalMainnet, clearXPortalSession } from '../lib/xportalWc'
 import SideNav from './SideNav'
 
 function isValidErd(addr: string): boolean {
@@ -61,6 +61,15 @@ export default function Header() {
     setWcUri(null)
     setWcWaiting(false)
     setConnectError('')
+  }
+
+  const doDisconnect = () => {
+    clearXPortalSession()
+    disconnect()
+    setWcUri(null)
+    setWcWaiting(false)
+    setConnectError('')
+    setShowWalletModal(false)
   }
 
   const openWebWallet = () => {
@@ -178,17 +187,29 @@ export default function Header() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {connected ? (
-              <button
-                type="button"
-                onClick={() => requestOpenAssets()}
-                className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] text-zinc-200"
-                title={address}
-              >
-                {shortAddress}
-                {method ? ` · ${method}` : ''}
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => requestOpenAssets()}
+                  className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 sm:px-3 py-1.5 text-[11px] text-emerald-100 max-w-[9rem] sm:max-w-none truncate"
+                  title={address || ''}
+                >
+                  {shortAddress}
+                  {method ? (
+                    <span className="hidden sm:inline text-emerald-200/60"> · {method}</span>
+                  ) : null}
+                </button>
+                <button
+                  type="button"
+                  onClick={doDisconnect}
+                  className="rounded-full border border-rose-500/40 bg-rose-500/10 px-2.5 sm:px-3 py-1.5 text-[11px] font-semibold text-rose-200 hover:bg-rose-500/20 hover:border-rose-400/60 transition"
+                  title="Deconnecter le wallet (session xPortal incluse)"
+                >
+                  Disconnect
+                </button>
+              </>
             ) : (
               <button
                 type="button"
@@ -200,15 +221,6 @@ export default function Header() {
                 className="rounded-full bg-gradient-to-r from-violet-600 to-indigo-500 px-4 py-1.5 text-[12px] font-semibold text-white shadow"
               >
                 Connect
-              </button>
-            )}
-            {connected && (
-              <button
-                type="button"
-                onClick={() => disconnect()}
-                className="hidden sm:inline text-[11px] text-zinc-500 hover:text-zinc-300"
-              >
-                Out
               </button>
             )}
           </div>
@@ -231,7 +243,7 @@ export default function Header() {
             <p className="text-[11px] uppercase tracking-wider text-zinc-500">MultiversX mainnet</p>
             <h2 className="display text-xl mb-1">Connecter le wallet</h2>
             <p className="text-[12px] text-zinc-500 leading-relaxed">
-              Web Wallet recommande. xPortal : QR sur ecran (desktop) ou app mobile.
+              xPortal (QR) ou Web Wallet. Pour signer : pas de mode lecture seule.
             </p>
 
             {wcUri && (
@@ -247,8 +259,7 @@ export default function Header() {
                   className="mx-auto rounded-lg bg-white p-2"
                 />
                 <p className="text-[11px] text-zinc-400 leading-relaxed">
-                  Ouvre xPortal → Scan QR (ou WalletConnect) sur ton telephone.
-                  Laisse cette fenetre ouverte jusqu a l approbation.
+                  Ouvre xPortal → Scan QR. Laisse cette fenetre ouverte.
                 </p>
                 <button type="button" className="btn-secondary text-xs w-full" onClick={copyUri}>
                   Copier l URI WalletConnect
@@ -263,21 +274,21 @@ export default function Header() {
 
             {!wcUri && (
               <>
-                <button type="button" className="btn-primary w-full text-left" onClick={openWebWallet}>
-                  Web Wallet
-                  <span className="block text-[11px] font-normal opacity-80">
-                    wallet.multiversx.com — recommande
-                  </span>
-                </button>
                 <button
                   type="button"
-                  className="btn-secondary w-full text-left"
+                  className="btn-primary w-full text-left"
                   onClick={openXPortalDeepLink}
                   disabled={wcWaiting}
                 >
                   xPortal
+                  <span className="block text-[11px] font-normal opacity-80">
+                    QR + WalletConnect — signature dans l app
+                  </span>
+                </button>
+                <button type="button" className="btn-secondary w-full text-left" onClick={openWebWallet}>
+                  Web Wallet
                   <span className="block text-[11px] font-normal text-zinc-400">
-                    QR code + WalletConnect mainnet
+                    wallet.multiversx.com
                   </span>
                 </button>
                 <button type="button" className="btn-secondary w-full text-left" onClick={openExtension}>
@@ -294,7 +305,7 @@ export default function Header() {
                     onChange={e => setManualAddr(e.target.value)}
                   />
                   <button type="button" className="btn-secondary text-xs" onClick={submitManual}>
-                    Utiliser l adresse
+                    Utiliser
                   </button>
                 </div>
               </>

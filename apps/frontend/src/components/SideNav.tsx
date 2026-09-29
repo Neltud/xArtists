@@ -1,8 +1,11 @@
 /**
- * Menu lateral gauche → droite : toutes les pages.
+ * Menu lateral gauche → droite : toutes les pages + Disconnect.
  */
 import { NavLink } from 'react-router-dom'
 import { PRIMARY_NAV, SECONDARY_NAV } from '../config/links'
+import { useWallet } from '../context/WalletContext'
+import { clearXPortalSession } from '../lib/xportalWc'
+import { requestOpenConnect } from '../lib/walletEvents'
 
 const EXTRA = [
   { to: '/venues', label: 'Comptes / Venues', emoji: '◎' },
@@ -22,6 +25,8 @@ export default function SideNav({
   open: boolean
   onClose: () => void
 }) {
+  const { connected, shortAddress, method, disconnect } = useWallet()
+
   if (!open) return null
 
   const sections = [
@@ -29,6 +34,12 @@ export default function SideNav({
     { title: 'Protocol', items: SECONDARY_NAV },
     { title: 'Plus', items: EXTRA },
   ]
+
+  const doDisconnect = () => {
+    clearXPortalSession()
+    disconnect()
+    onClose()
+  }
 
   return (
     <div className="fixed inset-0 z-[85] flex" role="dialog" aria-modal aria-label="Menu navigation">
@@ -52,6 +63,35 @@ export default function SideNav({
           <button type="button" className="btn-secondary text-xs py-1 px-2" onClick={onClose}>
             ✕
           </button>
+        </div>
+
+        {/* Wallet strip */}
+        <div className="px-3 py-3 border-b border-white/5 space-y-2">
+          {connected ? (
+            <>
+              <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Wallet</p>
+              <p className="text-[12px] mono text-emerald-200 truncate">{shortAddress}</p>
+              <p className="text-[10px] text-zinc-600">{method || '—'}</p>
+              <button
+                type="button"
+                onClick={doDisconnect}
+                className="w-full rounded-xl border border-rose-500/40 bg-rose-500/10 py-2.5 text-sm font-semibold text-rose-100 hover:bg-rose-500/20 transition"
+              >
+                Disconnect wallet
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                onClose()
+                requestOpenConnect()
+              }}
+              className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-indigo-500 py-2.5 text-sm font-semibold text-white"
+            >
+              Connect wallet
+            </button>
+          )}
         </div>
 
         <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-4">

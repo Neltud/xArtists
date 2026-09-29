@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { setEmpireWallet } from '../store/empireStore'
+import { clearXPortalSession } from '../lib/xportalWc'
 
 const STORAGE_KEY = 'xartists_wallet'
 /** Protocol LIA wallet — never as connected user */
@@ -26,22 +27,15 @@ export function isValidErd(addr: string): boolean {
   return /^erd1[a-z0-9]{58}$/i.test(addr.trim())
 }
 
-/** Web-wallet / WC redirect: query before hash, or address in hash */
 function addressFromUrl(): { address: string; method: WalletState['method'] } | null {
   if (typeof window === 'undefined') return null
   const q = new URLSearchParams(window.location.search)
-  const candidates = [
-    q.get('address'),
-    q.get('addr'),
-    q.get('loginAddress'),
-    q.get('loginToken'),
-  ]
+  const candidates = [q.get('address'), q.get('addr'), q.get('loginAddress'), q.get('loginToken')]
   for (const c of candidates) {
     if (c && isValidErd(c)) {
       return { address: c.trim(), method: 'web_wallet' }
     }
   }
-  // HashRouter: sometimes ?address= lands as #/?address=
   const hash = window.location.hash || ''
   const hq = hash.includes('?') ? hash.slice(hash.indexOf('?') + 1) : ''
   if (hq) {
@@ -58,7 +52,7 @@ function cleanUrlParams() {
   try {
     const url = new URL(window.location.href)
     ;['address', 'addr', 'loginAddress', 'signature', 'loginToken'].forEach(k =>
-      url.searchParams.delete(k)
+      url.searchParams.delete(k),
     )
     window.history.replaceState({}, '', url.pathname + url.search + url.hash)
   } catch {
@@ -116,6 +110,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }
 
   const disconnect = () => {
+    clearXPortalSession()
     setState({ connected: false, address: '', method: null })
     setEmpireWallet({ connected: false, address: null, method: null })
     try {
