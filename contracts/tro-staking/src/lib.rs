@@ -1,6 +1,7 @@
 #![no_std]
 
 //! xArtists TRO Staking — lock TRO ESDT. Principal only (no on-chain yield).
+//! Deployed bytecode MUST include #[upgrade] so future upgrades work.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
@@ -15,6 +16,10 @@ pub trait TroStaking {
         self.tro_token().set(&tro_token);
         self.total_staked().set(BigUint::zero());
     }
+
+    /// Required for mxpy contract upgrade — first deploy had none → upgrade TX fail.
+    #[upgrade]
+    fn upgrade(&self) {}
 
     fn require_owner(&self) {
         let owner = self.owner().get();

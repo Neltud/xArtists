@@ -19,6 +19,9 @@ export const AGENTS_MARKETPLACE_MAINNET =
   'erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg'
 export const NFT_STAKING_MAINNET =
   'erd1qqqqqqqqqqqqqpgq9ensu3f3p9yx4a583swu0raq8zzeve7tvhxq4fgtgu'
+/** LEGACY (no #[upgrade], stake may non-payable) — replaced after redeploy workflow */
+export const TRO_STAKING_MAINNET_LEGACY =
+  'erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf'
 export const TRO_STAKING_MAINNET =
   'erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf'
 export const TRO_GOVERNANCE_MAINNET =
@@ -27,6 +30,9 @@ export const AGENT_STAKE_ESCROW_MAINNET =
   'erd1qqqqqqqqqqqqqpgqzyvwldu6jq8w6ry6s856dl0uy7g0v37vvhxqndvzr3'
 export const TREASURY_SPLITTER_MAINNET =
   'erd1qqqqqqqqqqqqqpgq245sma97w0j9ga9jdgxu36zs0v8g0y6evhxq2nkezv'
+export const SLOT_CASINO_MAINNET =
+  'erd1qqqqqqqqqqqqqpgquf3cuv2zsfsahy7ypvter3qcep4ptthsvhxqs4g34f'
+export const SLOT_CASINO_CODEHASH_MAINNET = 'UZ0nX6dWsSgkVqjnFnR5zPNPk1UrNtR5SsrYf96VJCs='
 
 export const TRO_TOKEN_ID = 'TRO-94c925'
 
@@ -65,7 +71,7 @@ export const TREASURY_SPLITTER_ADDRESS =
   TREASURY_SPLITTER_MAINNET
 
 export const SLOT_CASINO_ADDRESS =
-  (import.meta.env.VITE_SLOT_CASINO_ADDRESS as string | undefined)?.trim() || ''
+  (import.meta.env.VITE_SLOT_CASINO_ADDRESS as string | undefined)?.trim() || SLOT_CASINO_MAINNET
 
 export const MARKETPLACE_LIVE = truthy(import.meta.env.VITE_MARKETPLACE_CODEHASH_OK)
 export const AGENTS_LIVE = truthy(import.meta.env.VITE_AGENTS_CODEHASH_OK)
@@ -150,6 +156,13 @@ export function troStakingReceiverOrThrow(): string {
   return TRO_STAKING_ADDRESS
 }
 
+export function slotReceiverOrThrow(): string {
+  if (!canSpinSlot()) {
+    throw new Error('Slot SC not live (set VITE_SLOT_CASINO_ADDRESS + VITE_SLOT_CASINO_CODEHASH_OK)')
+  }
+  return SLOT_CASINO_ADDRESS
+}
+
 export function daoReceiverOrThrow(): string {
   if (!canVoteDao()) {
     throw new Error('DAO SC not live (set VITE_TRO_GOVERNANCE_ADDRESS + CODEHASH_OK)')
@@ -168,6 +181,13 @@ export function troStakingStatusLabel(): string {
   if (canStakeTro()) return 'LIVE · stake/unstake on-chain'
   if (isUsableScAddress(TRO_STAKING_ADDRESS))
     return 'Adresse connue · gated until VITE_TRO_STAKING_CODEHASH_OK'
+  return 'Paper only · no SC address'
+}
+
+export function slotStatusLabel(): string {
+  if (canSpinSlot()) return 'LIVE · spinEgld on-chain'
+  if (isUsableScAddress(SLOT_CASINO_ADDRESS))
+    return 'Adresse connue · gated until VITE_SLOT_CASINO_CODEHASH_OK + fund progressive'
   return 'Paper only · no SC address'
 }
 
@@ -243,7 +263,7 @@ export function getAllScSnapshots(): ScSnapshot[] {
       key: 'slot_casino',
       address: SLOT_CASINO_ADDRESS,
       live: canSpinSlot(),
-      label: SLOT_CASINO_ADDRESS ? 'gated CODEHASH_OK' : 'NOT_DEPLOYED',
+      label: slotStatusLabel(),
     },
   ]
 }

@@ -13,7 +13,7 @@ export const LEGAL_ENTITY = {
   siren: '824182760',
   vatNumber: '',
   country: 'France',
-  addressLine: 'France — siege a completer si besoin',
+  addressLine: 'FRANCE',
   github: 'https://github.com/Neltud/xArtists',
   dapp: 'https://neltud.github.io/xArtists/',
   contact: 'Issues GitHub · Neltud/xArtists',

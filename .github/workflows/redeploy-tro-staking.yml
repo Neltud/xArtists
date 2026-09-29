@@ -1,0 +1,159 @@
+name: Redeploy tro-staking (new address)
+# Old SC has no #[upgrade] endpoint → cannot upgrade. Deploy NEW + update addresses.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_mainnet:
+        description: "Type REDEPLOY_MAINNET"
+        default: ""
+        type: string
+      run_stake_dust:
+        description: "1 = microtest stake 1 TRO after deploy"
+        default: "1"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  redeploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      CHAIN_ID: "1"
+      PROXY: https://gateway.multiversx.com
+      API: https://api.multiversx.com
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      DEPLOYER: erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g
+      TRO_TOKEN: TRO-94c925
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gate
+        run: |
+          if [ "${{ github.event.inputs.confirm_mainnet }}" != "REDEPLOY_MAINNET" ]; then
+            echo "Type REDEPLOY_MAINNET"
+            exit 1
+          fi
+
+      - name: PEM
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli
+
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          targets: wasm32v1-none
+
+      - name: Build + deploy NEW tro-staking
+        id: deploy
+        run: |
+          set -euo pipefail
+          rustup target add wasm32v1-none
+          cargo install multiversx-sc-meta --locked --force
+          cd contracts/tro-staking
+          sc-meta all build
+          WASM="${PWD}/output/tro-staking.wasm"
+          test -f "$WASM"
+          echo "wasm_bytes=$(wc -c < "$WASM")"
+          NONCE=$(curl -s "$API/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          echo "nonce=$NONCE"
+          LOG=$(mxpy contract deploy --bytecode="$WASM" --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=60000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
+            --arguments "str:${TRO_TOKEN}" --send --wait-result 2>&1) || true
+          echo "$LOG"
+          # Prefer SCDeploy event address via API (mxpy grep often wrong)
+          sleep 3
+          ADDR=$(python3 <<'PY'
+          import urllib.request, json, re, sys
+          dep="erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g"
+          items=json.loads(urllib.request.urlopen(f"https://api.multiversx.com/accounts/{dep}/transactions?size=5&order=desc",timeout=20).read())
+          if isinstance(items, dict): items=items.get("transactions") or []
+          for t in items:
+            if (t.get("function") or "") != "scDeploy": continue
+            if t.get("status") != "success": continue
+            h=t.get("txHash") or t.get("hash")
+            d=json.loads(urllib.request.urlopen(f"https://api.multiversx.com/transactions/{h}?withResults=true",timeout=20).read())
+            for e in (d.get("logs") or {}).get("events") or []:
+              if e.get("identifier")=="SCDeploy" and e.get("address", "").startswith("erd1qqqq"):
+                print(e["address"])
+                sys.exit(0)
+          print("")
+          PY
+          )
+          if [ -z "$ADDR" ]; then
+            ADDR=$(echo "$LOG" | grep -oE 'erd1qqqq[a-z0-9]{50,}' | head -1 || true)
+          fi
+          echo "TRO_STAKING_NEW=$ADDR"
+          test -n "$ADDR"
+          echo "address=$ADDR" >> "$GITHUB_OUTPUT"
+          sleep 4
+          CH=$(curl -s "$API/accounts/$ADDR" | python3 -c "import sys,json; print(json.load(sys.stdin).get('codeHash',''))")
+          echo "codeHash=$CH"
+          echo "codehash=$CH" >> "$GITHUB_OUTPUT"
+          # verify getTroToken
+          python3 <<PY
+          import urllib.request, json, base64
+          addr="$ADDR"
+          body=json.dumps({"scAddress":addr,"funcName":"getTroToken","args":[]}).encode()
+          req=urllib.request.Request("https://api.multiversx.com/vm-values/query",data=body,headers={"Content-Type":"application/json"})
+          d=json.loads(urllib.request.urlopen(req,timeout=15).read())
+          raw=((d.get("data") or {}).get("data") or {}).get("returnData") or []
+          tok=base64.b64decode(raw[0]).decode() if raw and raw[0] else ""
+          print("getTroToken", tok)
+          assert tok=="TRO-94c925", tok
+          PY
+
+      - name: Microtest stake 1 TRO (optional)
+        if: github.event.inputs.run_stake_dust == '1'
+        run: |
+          set -euo pipefail
+          ADDR="${{ steps.deploy.outputs.address }}"
+          test -n "$ADDR"
+          NONCE=$(curl -s "$API/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          # 1 TRO = 1e6 atomic (6 decimals)
+          mxpy contract call "$ADDR" \
+            --function="ESDTTransfer" \
+            --arguments "str:TRO-94c925" "1000000" "str:stake" \
+            --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=12000000 \
+            --proxy="$PROXY" --chain="$CHAIN_ID" \
+            --nonce "$NONCE" \
+            --send --wait-result || true
+          sleep 4
+          python3 <<PY
+          import urllib.request, json, base64
+          addr="$ADDR"
+          body=json.dumps({"scAddress":addr,"funcName":"getTotalStaked","args":[]}).encode()
+          req=urllib.request.Request("https://api.multiversx.com/vm-values/query",data=body,headers={"Content-Type":"application/json"})
+          d=json.loads(urllib.request.urlopen(req,timeout=15).read())
+          raw=((d.get("data") or {}).get("data") or {}).get("returnData") or []
+          n=int.from_bytes(base64.b64decode(raw[0]), "big") if raw and raw[0] else 0
+          print("getTotalStaked", n)
+          if n < 1_000_000:
+            print("WARN stake microtest may have failed — check explorer")
+          else:
+            print("STAKE_OK")
+          PY
+
+      - name: Print next steps
+        run: |
+          echo "=== NEXT ==="
+          echo "New TRO_STAKING=${{ steps.deploy.outputs.address }}"
+          echo "codeHash=${{ steps.deploy.outputs.codehash }}"
+          echo "1. Update contracts.json + scStatus TRO_STAKING_MAINNET"
+          echo "2. Keep VITE_TRO_STAKING_CODEHASH_OK=1 (same secret name)"
+
+      - if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"
