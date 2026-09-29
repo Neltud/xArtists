@@ -1,0 +1,13 @@
+[package]
+name = "slot-casino-meta"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[[bin]]
+name = "slot-casino-meta"
+path = "src/main.rs"
+
+[dependencies]
+slot-casino = { path = ".." }
+multiversx-sc-meta-lib = { version = "=0.66.2", default-features = false }

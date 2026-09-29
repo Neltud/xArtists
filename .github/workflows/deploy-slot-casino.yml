@@ -1,0 +1,80 @@
+name: Deploy slot-casino
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_mainnet:
+        description: "DEPLOY_MAINNET"
+        default: ""
+        type: string
+      progressive_bps:
+        description: "Progressive contrib bps"
+        default: "500"
+        type: string
+      rake_bps:
+        description: "House rake bps"
+        default: "300"
+        type: string
+      min_bet:
+        description: "Min bet atomic EGLD (0.001 = 1000000000000000)"
+        default: "1000000000000000"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CHAIN_ID: "1"
+      PROXY: https://gateway.multiversx.com
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      DEPLOYER: erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g
+      PROGRESSIVE_BPS: ${{ github.event.inputs.progressive_bps }}
+      RAKE_BPS: ${{ github.event.inputs.rake_bps }}
+      MIN_BET: ${{ github.event.inputs.min_bet }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gate
+        run: |
+          if [ "${{ github.event.inputs.confirm_mainnet }}" != "DEPLOY_MAINNET" ]; then exit 1; fi
+      - name: PEM
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          targets: wasm32v1-none
+      - name: Build + deploy
+        run: |
+          set -euo pipefail
+          rustup target add wasm32v1-none
+          cargo install multiversx-sc-meta --locked --force
+          cd contracts/slot-casino
+          sc-meta all build
+          WASM="${PWD}/output/slot-casino.wasm"
+          test -f "$WASM"
+          echo "wasm size=$(wc -c < "$WASM")"
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          LOG=$(mxpy contract deploy --bytecode="$WASM" --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=80000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
+            --arguments "${PROGRESSIVE_BPS}" "${RAKE_BPS}" "${MIN_BET}" \
+            --send --wait-result 2>&1) || true
+          echo "$LOG"
+          ADDR=$(echo "$LOG" | grep -oE 'erd1qqqq[a-z0-9]{50,}' | head -1 || true)
+          test -n "$ADDR"
+          echo "SLOT_SC=$ADDR"
+      - if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"
