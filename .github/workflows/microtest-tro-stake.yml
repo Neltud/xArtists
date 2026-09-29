@@ -45,30 +45,45 @@ jobs:
             HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
             { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
           fi
-      - name: stake TRO dust via ESDTTransfer
+      - name: stake TRO dust
         run: |
           set -euo pipefail
           NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
           echo "nonce=$NONCE amount=$AMOUNT"
-          # ESDTTransfer@token_hex@amount_hex@function_hex
-          TOKEN_HEX=$(printf '%s' "$TRO_TOKEN" | xxd -p -c 256)
-          AMT_HEX=$(python3 -c "print(hex(int('${AMOUNT}'))[2:])")
-          FUNC_HEX=$(printf 'stake' | xxd -p -c 256)
-          DATA="ESDTTransfer@${TOKEN_HEX}@${AMT_HEX}@${FUNC_HEX}"
-          echo "data=$DATA"
-          mxpy tx new \
+          # Try modern token-transfers first; fallback ESDTTransfer data
+          set +e
+          OUT=$(mxpy contract call "$TRO_STAKING" \
             --pem="${RUNNER_TEMP}/deployer.pem" \
-            --receiver "$TRO_STAKING" \
-            --data "$DATA" \
-            --gas-limit 12000000 \
+            --function stake \
+            --token-transfers "${TRO_TOKEN}@${AMOUNT}" \
+            --gas-limit 15000000 \
             --proxy "$PROXY" --chain "$CHAIN_ID" \
             --nonce "$NONCE" \
-            --send --wait-result 2>&1 | tee /tmp/stake.log
-          grep -qiE 'error|failed|invalid|rejected' /tmp/stake.log && exit 1 || true
+            --send --wait-result 2>&1)
+          RC=$?
+          echo "$OUT"
+          if [ $RC -ne 0 ]; then
+            echo "token-transfers failed rc=$RC — retry ESDTTransfer data"
+            NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+            TOKEN_HEX=$(printf '%s' "$TRO_TOKEN" | xxd -p -c 256)
+            AMT_HEX=$(python3 -c "print(format(int('${AMOUNT}'),'x'))")
+            FUNC_HEX=$(printf 'stake' | xxd -p -c 256)
+            DATA="ESDTTransfer@${TOKEN_HEX}@${AMT_HEX}@${FUNC_HEX}"
+            mxpy tx new \
+              --pem="${RUNNER_TEMP}/deployer.pem" \
+              --receiver "$TRO_STAKING" \
+              --data "$DATA" \
+              --gas-limit 15000000 \
+              --proxy "$PROXY" --chain "$CHAIN_ID" \
+              --nonce "$NONCE" \
+              --send --wait-result
+          fi
+          set -e
       - name: Verify getTotalStaked
         run: |
           python3 <<'PY'
-          import urllib.request, json, base64
+          import urllib.request, json, base64, time
+          time.sleep(3)
           ADDR="erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf"
           body=json.dumps({"scAddress":ADDR,"funcName":"getTotalStaked","args":[]}).encode()
           req=urllib.request.Request("https://api.multiversx.com/vm-values/query", data=body, headers={"Content-Type":"application/json"})
@@ -80,7 +95,7 @@ jobs:
           print("totalStaked_atomic", total)
           print("totalStaked_TRO", total / 1e6)
           if total < 1:
-              raise SystemExit("stake not recorded")
+              raise SystemExit("stake not recorded on-chain")
           PY
       - if: always()
         run: rm -f "${RUNNER_TEMP}/deployer.pem"
