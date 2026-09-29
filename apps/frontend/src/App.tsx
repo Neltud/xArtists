@@ -18,7 +18,6 @@ import { useMultiversX } from './hooks/useMultiversX'
 import AssetDrawer from './components/ui/AssetDrawer'
 import { OPEN_ASSETS_EVENT } from './lib/walletEvents'
 import { LINKS } from './config/links'
-import { DEMO_MODE } from './config/demoMode'
 import PageTransition from './components/PageTransition'
 import SoundDock from './components/SoundDock'
 import RouteErrorBoundary from './components/RouteErrorBoundary'
@@ -39,6 +38,7 @@ const HatomPage = lazy(() => import('./pages/HatomPage'))
 const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
 const Agents = lazy(() => import('./pages/Agents'))
 const MyPacks = lazy(() => import('./pages/MyPacks'))
+const HolderRoomPage = lazy(() => import('./pages/HolderRoomPage'))
 const TroPage = lazy(() => import('./pages/TroPage'))
 const StakingPage = lazy(() => import('./pages/StakingPage'))
 const SoulTestnetPage = lazy(() => import('./pages/SoulTestnetPage'))
@@ -95,6 +95,7 @@ export default function App() {
                 <Route path="/trading" element={<Trading />} />
                 <Route path="/agents" element={<Agents />} />
                 <Route path="/my-packs" element={<MyPacks />} />
+                <Route path="/room/:packId" element={<HolderRoomPage />} />
                 <Route path="/studio" element={<ArtistStudio />} />
                 <Route path="/sale" element={<SalePage />} />
                 <Route path="/simulation" element={<SimulationLab />} />

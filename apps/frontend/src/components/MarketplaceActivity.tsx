@@ -6,7 +6,7 @@ import {
   type IndexedListingHint,
   type CatalogListing,
 } from '../lib/listingsIndex'
-import { MARKETPLACE_ADDRESS } from '../../../../packages/core/src/contracts/marketplaceAbi'
+import { MARKETPLACE_ADDRESS, canListBuyNft } from '../config/scStatus'
 
 type Props = {
   onPickListingId?: (id: number) => void
@@ -24,8 +24,8 @@ export default function MarketplaceActivity({ onPickListingId }: Props) {
   } | null>(null)
 
   useEffect(() => {
-    fetchMarketplaceActivity().then(setRows)
-    verifyScOnExplorer().then(r =>
+    fetchMarketplaceActivity(MARKETPLACE_ADDRESS).then(setRows)
+    verifyScOnExplorer(MARKETPLACE_ADDRESS).then(r =>
       setSc({
         ok: !!r.ok,
         explorer: (r as { explorer?: string }).explorer,
@@ -45,8 +45,15 @@ export default function MarketplaceActivity({ onPickListingId }: Props) {
 
   return (
     <div className="card mb-6">
-      <h2 className="text-sm font-bold mb-2">SC Marketplace · activité + index</h2>
-      <p className="text-[10px] mono text-gray-500 mb-2 break-all">{MARKETPLACE_ADDRESS}</p>
+      <h2 className="text-sm font-bold mb-2">SC Marketplace · activite + index</h2>
+      <p className="text-[10px] mono text-gray-500 mb-1 break-all">{MARKETPLACE_ADDRESS}</p>
+      <p className="text-[10px] mb-2">
+        {canListBuyNft() ? (
+          <span className="text-emerald-300">List/Buy LIVE (CODEHASH_OK)</span>
+        ) : (
+          <span className="text-amber-300">List/Buy gated — set VITE_MARKETPLACE_CODEHASH_OK</span>
+        )}
+      </p>
       {sc && (
         <div className="text-xs mb-3 space-y-1">
           {sc.ok ? (
@@ -64,28 +71,24 @@ export default function MarketplaceActivity({ onPickListingId }: Props) {
                   codeHash: {String(sc.codeHash).slice(0, 24)}…
                 </p>
               ) : (
-                <p className="text-[10px] text-red-300/90">codeHash absent — compte vide / non déployé</p>
+                <p className="text-[10px] text-red-300/90">codeHash absent — compte vide / non deploye</p>
               )}
-              <p className="text-[10px] text-amber-200/80">
-                P0: <code>python scripts/verify_marketplace_codehash.py</code> · index:{' '}
-                <code>python scripts/index_marketplace_listings.py</code>
-              </p>
             </>
           ) : (
-            <span className="text-amber-400">SC non vérifié: {sc.error}</span>
+            <span className="text-amber-400">SC non verifie: {sc.error}</span>
           )}
         </div>
       )}
 
       {indexOk === false && (
         <p className="text-[10px] text-amber-300/90 mb-2">
-          listings_index.json : codehash_ok=false — pas de listings catalogués
+          listings_index.json : codehash_ok=false — pas de listings catalogues
         </p>
       )}
 
       {catalog.length > 0 && (
         <div className="mb-3">
-          <p className="text-[10px] uppercase text-gray-500 mb-1">Index publié ({catalog.length})</p>
+          <p className="text-[10px] uppercase text-gray-500 mb-1">Index publie ({catalog.length})</p>
           <ul className="space-y-1 max-h-32 overflow-y-auto text-xs">
             {catalog.map(l => (
               <li key={l.listing_id} className="flex justify-between gap-2">
@@ -106,7 +109,7 @@ export default function MarketplaceActivity({ onPickListingId }: Props) {
       )}
 
       {rows.length === 0 ? (
-        <p className="text-xs text-gray-500">Aucune tx récente — listing ID reste manuel si besoin.</p>
+        <p className="text-xs text-gray-500">Aucune tx recente — listing ID reste manuel si besoin.</p>
       ) : (
         <ul className="space-y-1 max-h-48 overflow-y-auto text-xs">
           {rows.slice(0, 15).map(r => (

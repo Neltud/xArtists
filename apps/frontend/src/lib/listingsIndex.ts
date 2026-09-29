@@ -1,10 +1,9 @@
 /**
  * Marketplace activity + listing id index (P1).
- * Static JSON: data/listings_index.json (Vellum / indexer).
- * Live fallback: recent SC txs on explorer API.
+ * Uses LIVE SC address from scStatus (not empty placeholder).
  */
 
-import { MARKETPLACE_ADDRESS } from '../../../../packages/core/src/contracts/marketplaceAbi'
+import { MARKETPLACE_ADDRESS } from '../config/scStatus'
 
 const API = 'https://api.multiversx.com'
 const RAW_INDEX =
@@ -69,7 +68,6 @@ function parseListingIdFromData(data?: string): number | null {
   return null
 }
 
-/** Published index (empty until deploy + indexer). */
 export async function fetchListingsIndex(): Promise<ListingsIndexFile | null> {
   try {
     const res = await fetch(`${RAW_INDEX}?t=${Date.now()}`, { cache: 'no-store' })
