@@ -45,40 +45,42 @@ jobs:
             HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
             { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
           fi
-      - name: stake 1 TRO dust
+      - name: stake TRO dust via ESDTTransfer
         run: |
           set -euo pipefail
           NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
-          mxpy contract call "$TRO_STAKING" \
+          echo "nonce=$NONCE amount=$AMOUNT"
+          # ESDTTransfer@token_hex@amount_hex@function_hex
+          TOKEN_HEX=$(printf '%s' "$TRO_TOKEN" | xxd -p -c 256)
+          AMT_HEX=$(python3 -c "print(hex(int('${AMOUNT}'))[2:])")
+          FUNC_HEX=$(printf 'stake' | xxd -p -c 256)
+          DATA="ESDTTransfer@${TOKEN_HEX}@${AMT_HEX}@${FUNC_HEX}"
+          echo "data=$DATA"
+          mxpy tx new \
             --pem="${RUNNER_TEMP}/deployer.pem" \
-            --function stake \
-            --token-transfers "${TRO_TOKEN}@${AMOUNT}" \
+            --receiver "$TRO_STAKING" \
+            --data "$DATA" \
             --gas-limit 12000000 \
             --proxy "$PROXY" --chain "$CHAIN_ID" \
             --nonce "$NONCE" \
-            --send --wait-result
-      - name: Verify getStaked + getTotalStaked
+            --send --wait-result 2>&1 | tee /tmp/stake.log
+          grep -qiE 'error|failed|invalid|rejected' /tmp/stake.log && exit 1 || true
+      - name: Verify getTotalStaked
         run: |
           python3 <<'PY'
           import urllib.request, json, base64
           ADDR="erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf"
-          DEPLOYER_HEX = bytes.fromhex(
-              # bech32 decode skipped — query total only
-              ""
-          )
-          def q(fn, args=None):
-              body=json.dumps({"scAddress":ADDR,"funcName":fn,"args":args or []}).encode()
-              req=urllib.request.Request("https://api.multiversx.com/vm-values/query", data=body, headers={"Content-Type":"application/json"})
-              with urllib.request.urlopen(req) as r:
-                  d=json.load(r)
-              rd=(d.get("data") or {}).get("data") or {}
-              raw=rd.get("returnData") or []
-              if not raw or not raw[0]:
-                  return 0
-              return int.from_bytes(base64.b64decode(raw[0]), "big")
-          total = q("getTotalStaked")
+          body=json.dumps({"scAddress":ADDR,"funcName":"getTotalStaked","args":[]}).encode()
+          req=urllib.request.Request("https://api.multiversx.com/vm-values/query", data=body, headers={"Content-Type":"application/json"})
+          with urllib.request.urlopen(req) as r:
+              d=json.load(r)
+          rd=(d.get("data") or {}).get("data") or {}
+          raw=rd.get("returnData") or []
+          total = int.from_bytes(base64.b64decode(raw[0]), "big") if raw and raw[0] else 0
           print("totalStaked_atomic", total)
           print("totalStaked_TRO", total / 1e6)
+          if total < 1:
+              raise SystemExit("stake not recorded")
           PY
       - if: always()
         run: rm -f "${RUNNER_TEMP}/deployer.pem"
