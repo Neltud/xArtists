@@ -195,7 +195,7 @@ pub trait SlotCasino {
     fn spin_egld(&self, client_seed: ManagedBuffer) {
         self.require_not_paused();
         let payment = self.call_value().egld().clone_value();
-        self.internal_spin(true, TokenIdentifier::egld(), payment, client_seed);
+        self.internal_spin(true, TokenIdentifier::from(""), payment, client_seed);
     }
 
     #[payable("*")]
@@ -330,18 +330,20 @@ pub trait SlotCasino {
     fn build_seed(&self, pending: &PendingSpin<Self::Api>) -> ManagedBuffer {
         let mut buf = ManagedBuffer::new();
         buf.append(&pending.client_seed);
-        let block_hash = self.blockchain().get_block_random_seed();
-        buf.append_bytes(block_hash.as_managed_buffer().as_slice());
+        // provably-fair: client_seed + lock_block + current block nonce + round
         let lock_bytes = pending.lock_block.to_be_bytes();
-        buf.append_bytes(&lock_bytes);
+        buf.append(&ManagedBuffer::new_from_bytes(&lock_bytes));
+        let cur = self.blockchain().get_block_nonce().to_be_bytes();
+        buf.append(&ManagedBuffer::new_from_bytes(&cur));
+        let prev = self.blockchain().get_block_round().to_be_bytes();
+        buf.append(&ManagedBuffer::new_from_bytes(&prev));
         buf
     }
 
     fn roll_from_seed(&self, seed: &ManagedBuffer) -> u16 {
         let hash = self.crypto().keccak256(seed);
-        let bytes = hash.as_managed_buffer();
         let mut arr = [0u8; 2];
-        let _ = bytes.load_slice(0, &mut arr);
+        let _ = hash.as_managed_buffer().load_slice(0, &mut arr);
         u16::from_be_bytes(arr)
     }
 
