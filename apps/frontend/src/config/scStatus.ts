@@ -19,11 +19,13 @@ export const AGENTS_MARKETPLACE_MAINNET =
   'erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg'
 export const NFT_STAKING_MAINNET =
   'erd1qqqqqqqqqqqqqpgq9ensu3f3p9yx4a583swu0raq8zzeve7tvhxq4fgtgu'
-/** LEGACY (no #[upgrade], stake may non-payable) — replaced after redeploy workflow */
+/** Legacy SC without #[upgrade] — abandoned after redeploy 2026-09-29 */
 export const TRO_STAKING_MAINNET_LEGACY =
   'erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf'
+/** NEW tro-staking — redeploy + stake dust 1 TRO OK (totalStaked=1e6) */
 export const TRO_STAKING_MAINNET =
-  'erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf'
+  'erd1qqqqqqqqqqqqqpgqes0a2kryurmt34g7nu4kx9n4ftj77dl5vhxqpe3xf3'
+export const TRO_STAKING_CODEHASH_MAINNET = 'Jf5ZhzAGu58ez0njdWoZAnRxP7YevYSX9dpO8pGq7SA='
 export const TRO_GOVERNANCE_MAINNET =
   'erd1qqqqqqqqqqqqqpgqe6xrgq2y53q8d0lsact2dppzvg42t4wcvhxq9e9euy'
 export const AGENT_STAKE_ESCROW_MAINNET =
@@ -178,7 +180,7 @@ export function venueStatusLabel(): string {
 }
 
 export function troStakingStatusLabel(): string {
-  if (canStakeTro()) return 'LIVE · stake/unstake on-chain'
+  if (canStakeTro()) return 'LIVE · stake/unstake on-chain (redeploy OK)'
   if (isUsableScAddress(TRO_STAKING_ADDRESS))
     return 'Adresse connue · gated until VITE_TRO_STAKING_CODEHASH_OK'
   return 'Paper only · no SC address'
