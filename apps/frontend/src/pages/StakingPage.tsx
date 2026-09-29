@@ -1,5 +1,5 @@
 /**
- * Staking — $TRO lock design + yield farming pools TRO/EGLD (hors DAO).
+ * Staking - $TRO lock design + yield farming pools TRO/EGLD (hors DAO).
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -10,6 +10,7 @@ import { HELP } from '../content/helpCopy'
 import { TRO_YIELD_POOLS, DEX_LABEL, TRO_TOKEN_ID } from '../config/troPools'
 import { fetchMexTroPairs, fetchPoolAccountTvl, matchLive, type PoolLive } from '../lib/troPoolStats'
 import { getEgldPrice } from '../services/priceService'
+import TroStakePanel from '../components/TroStakePanel'
 
 const TABS = ['Yield', 'TRO', 'NFT', 'Rewards', 'Help'] as const
 
@@ -45,7 +46,7 @@ export default function StakingPage() {
     <div className="animate-fade-in space-y-6">
       <header>
         <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2">
-          Staking &amp; Yield
+          Staking & Yield
           <InfoTip k="liaVsUser" />
         </h1>
         <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
@@ -58,9 +59,9 @@ export default function StakingPage() {
       <PageGuide page="staking" />
       <LiaVsUserBanner tone="user" />
 
-      <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-xs text-amber-100/90">
-        Yield = liquidité / farms <strong>DEX externes</strong>. Stake SC xArtists désactivé tant que
-        codeHash non vérifié. Aucun faux claim on-chain.
+      <div className="rounded-xl border border-zinc-600/40 bg-zinc-900/40 px-4 py-3 text-xs text-zinc-300">
+        Yield LP = farms <strong>DEX externes</strong>. Stake $TRO on-chain = onglet TRO (gate{' '}
+        <code className="text-[10px]">CODEHASH_OK</code>). Aucun faux claim.
       </div>
 
       <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
@@ -83,8 +84,8 @@ export default function StakingPage() {
           <div className="card space-y-2">
             <h2 className="font-semibold text-white">Farming TRO / EGLD</h2>
             <p className="text-sm text-zinc-400">
-              Fournissez de la liquidité sur les pools listées — rewards = fees DEX (+ farms si
-              activés côté exchange). Token {TRO_TOKEN_ID}.
+              Fournissez de la liquidite sur les pools listees — rewards = fees DEX (+ farms si
+              actives cote exchange). Token {TRO_TOKEN_ID}.
             </p>
           </div>
 
@@ -175,7 +176,7 @@ export default function StakingPage() {
             </a>
             {' · '}
             <Link to="/lp" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
-              Liquidity &amp; Farms
+              Liquidity & Farms
             </Link>
             {' · vote DAO : '}
             <Link to="/dao" className="text-zinc-400 hover:text-white underline-offset-2 hover:underline">
@@ -185,25 +186,7 @@ export default function StakingPage() {
         </div>
       )}
 
-      {tab === 'TRO' && (
-        <div className="card space-y-4">
-          <h2 className="font-semibold">$TRO staking (design SC)</h2>
-          <ul className="text-sm text-zinc-400 space-y-2">
-            <li>
-              <strong className="text-zinc-200">Flexible</strong> — unstake anytime
-            </li>
-            <li>
-              <strong className="text-zinc-200">Bonded 30 / 90 j</strong> — APR policy
-            </li>
-            <li>
-              <strong className="text-zinc-200">Vote-locked</strong> — pouvoir DAO (séparé du yield LP)
-            </li>
-          </ul>
-          <button type="button" disabled className="btn-secondary text-sm opacity-50 cursor-not-allowed">
-            Stake $TRO — SC bientôt
-          </button>
-        </div>
-      )}
+      {tab === 'TRO' && <TroStakePanel />}
 
       {tab === 'NFT' && (
         <div className="card space-y-4">
@@ -234,7 +217,7 @@ export default function StakingPage() {
             + LP power sur /dao.
           </p>
           <p>
-            <strong className="text-zinc-200">Gas :</strong> garder de l’EGLD.
+            <strong className="text-zinc-200">Gas :</strong> garder de l'EGLD.
           </p>
           <p>
             <strong className="text-zinc-200">Risque :</strong> IL + rewards non garantis.
