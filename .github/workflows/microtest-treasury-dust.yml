@@ -39,18 +39,21 @@ jobs:
             HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
             { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
           fi
-      - name: receiveAndSplit 0.001 EGLD
+      - name: receiveAndSplit 0.001 EGLD (atomic)
         run: |
           set -euo pipefail
           NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          echo "nonce=$NONCE"
+          # mxpy expects atomic units (1e18) as integer string for --value in recent CLI
           mxpy contract call "$TREASURY" \
             --pem="${RUNNER_TEMP}/deployer.pem" \
             --function receiveAndSplit \
-            --value 0.001 \
-            --gas-limit 15000000 \
+            --value 1000000000000000 \
+            --gas-limit 20000000 \
             --proxy "$PROXY" --chain "$CHAIN_ID" \
             --nonce "$NONCE" \
-            --send --wait-result
+            --send --wait-result 2>&1 | tee /tmp/call.log
+          grep -qiE 'error|failed|invalid' /tmp/call.log && exit 1 || true
       - name: Verify getTotalSplit
         run: |
           python3 <<'PY'
@@ -62,8 +65,11 @@ jobs:
             d=json.load(r)
           rd=(d.get("data") or {}).get("data") or {}
           raw=base64.b64decode((rd.get("returnData") or [""])[0] or "")
-          print("totalSplit_atomic", int.from_bytes(raw,"big") if raw else 0)
-          print("totalSplit_EGLD", (int.from_bytes(raw,"big") if raw else 0)/1e18)
+          total = int.from_bytes(raw,"big") if raw else 0
+          print("totalSplit_atomic", total)
+          print("totalSplit_EGLD", total/1e18)
+          if total < 1000000000000000:
+            raise SystemExit("split not recorded")
           PY
       - if: always()
         run: rm -f "${RUNNER_TEMP}/deployer.pem"
