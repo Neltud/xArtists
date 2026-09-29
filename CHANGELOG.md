@@ -1,5 +1,33 @@
 # Changelog — xArtists
 
+## [0.62.0](https://github.com/Neltud/xArtists/compare/v0.61.0...v0.62.0) (2026-09-29)
+
+
+### Features
+
+* 3 holder rooms (1 NFT pack = 1 salle + monitor LIA) + fix marketplace empty addr ([6e556e0](https://github.com/Neltud/xArtists/commit/6e556e0de5abb625250d7de578a39382ec58d170))
+* brain stream (Grok/LIA mood) → body ambiance + empire SC event feedback ([9a27f2b](https://github.com/Neltud/xArtists/commit/9a27f2b106046a5894a5d200207a04b34c5dc2b4))
+* **Dashboard:** ChainObjectCanvas mainnet objects + links staking/my-packs ([66c8724](https://github.com/Neltud/xArtists/commit/66c87246e1727b6d467f385b29295dc102ef342d))
+* **frontend:** xPortal WalletConnect QR popup for desktop scan ([45b8469](https://github.com/Neltud/xArtists/commit/45b8469d974f393c7b456366242c4d90f9c2f048))
+* **Header:** SideNav slide-from-left on all viewports (full page list) ([54cafba](https://github.com/Neltud/xArtists/commit/54cafba03940b4ea463350f62d1092ce4b0eed4c))
+* **legal:** deepen mentions, CGU, privacy, risk + process tab; SIRET banner ([2885726](https://github.com/Neltud/xArtists/commit/2885726403107f859013caf8b119f2e2c5ab4055))
+* **mainnet:** chain mirror RPC→store→visual + click-object→xPortal path ([00acd19](https://github.com/Neltud/xArtists/commit/00acd19f49f56dbcd3d355721dade9a8509f5294))
+* **MyPacks+Trading:** entrer salle + desk pack Grok live-in ([92bff26](https://github.com/Neltud/xArtists/commit/92bff264d605eda5972c05367a9e9c38718b4a4d))
+* route /room/:packId + MyPacks enter room + Trading desk pack + market addr fix ([08526e1](https://github.com/Neltud/xArtists/commit/08526e115ced47d6f9fe341e8d32a8064a55b930))
+* SideNav always + daily points on-chain claim TX + upgrade-tro-staking workflow ([557f593](https://github.com/Neltud/xArtists/commit/557f59324dd788e6e9a08d2136d6e80158b5c481))
+* SIRET 82418276000028 + SideNav slide menu + Market→Marketplace ([1a13ff8](https://github.com/Neltud/xArtists/commit/1a13ff83ed9fe76f2d40714b38d60f7f5ba7192a))
+* **ui:** TokenIcon TRO/EGLD/USDC mini-logos + Staking header polish ([7437563](https://github.com/Neltud/xArtists/commit/7437563cefc091115d039a6c05da7a2714962ef7))
+* wire brain mood into backdrop + App strip + CSS vars ([cd745c4](https://github.com/Neltud/xArtists/commit/cd745c49668305846b989e8e87dc8e0bd1143eda))
+* xPortal QR desktop + mentions legales + doc process (SIRET a completer) ([0a3b828](https://github.com/Neltud/xArtists/commit/0a3b8287409506d3b62fe0ebd30e69e36c5081e3))
+
+
+### Bug Fixes
+
+* Disconnect wallet visible + clear WC session; legal EI confirme ([ac67f61](https://github.com/Neltud/xArtists/commit/ac67f618815809290152f80249c76c47768033ab))
+* **slot-casino:** clone ESDT payment fields for 0.66 Ref (E0507) ([f00d61f](https://github.com/Neltud/xArtists/commit/f00d61f2df87238ae1957a72c84c193f912689fd))
+* tro-staking add #[upgrade] + redeploy workflow; wire slot_casino address in scStatus ([17bd990](https://github.com/Neltud/xArtists/commit/17bd990495aa2c646957f0ee6ba1a6db77806b12))
+* **xPortal:** keep WC session + sign TX in-app (no wrong web-wallet popup) ([a90071c](https://github.com/Neltud/xArtists/commit/a90071cbc3813a9b5aa9977227e21fcafd672778))
+
 ## [0.61.0](https://github.com/Neltud/xArtists/compare/v0.60.0...v0.61.0) (2026-09-29)
 
 
