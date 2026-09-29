@@ -1,0 +1,68 @@
+name: Deploy treasury-splitter
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_mainnet:
+        description: "DEPLOY_MAINNET"
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CHAIN_ID: "1"
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      DEPLOYER: erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g
+      MISSION: erd1hurlzgn2sq8sswdksv7ewtp6vs9umdakcpef5nfxkmt7mpxsyumsywtva6
+      RESERVE: erd1cwp2m53pnem5p35vsdc2mcry6779eawq9h4ty2a4nnsp8ewknrjs55yxcd
+      REWARD: erd1qpvy7z9jchrvxcu0c9z3w083am6n5j7nae8u0cvaanesa36a839qcgj5fz
+      OPS: erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
+      PROXY: https://gateway.multiversx.com
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gate
+        run: |
+          if [ "${{ github.event.inputs.confirm_mainnet }}" != "DEPLOY_MAINNET" ]; then exit 1; fi
+      - name: PEM
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          targets: wasm32v1-none
+      - name: Build+deploy
+        run: |
+          set -euo pipefail
+          rustup target add wasm32v1-none
+          cargo install multiversx-sc-meta --locked --force
+          cd contracts/treasury-splitter
+          sc-meta all build
+          WASM="${PWD}/output/treasury-splitter.wasm"
+          test -f "$WASM"
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          LOG=$(mxpy contract deploy --bytecode="$WASM" --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=60000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
+            --arguments "${MISSION}" "${RESERVE}" "${REWARD}" "${OPS}" 4000 3000 2000 1000 \
+            --send --wait-result 2>&1) || true
+          echo "$LOG"
+          ADDR=$(echo "$LOG" | grep -oE 'erd1qqqq[a-z0-9]{50,}' | head -1 || true)
+          test -n "$ADDR"
+          echo "TREASURY=$ADDR"
+      - if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"
