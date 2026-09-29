@@ -1,5 +1,33 @@
 # Changelog — xArtists
 
+## [0.60.0](https://github.com/Neltud/xArtists/compare/v0.59.0...v0.60.0) (2026-09-29)
+
+
+### Features
+
+* **sc:** migrate agent-stake-escrow + treasury-splitter 0.66; DAO microtest + deploy wave3 ([29f0826](https://github.com/Neltud/xArtists/commit/29f0826f82e182a074cf92f673afdf4b50c0e448))
+* **sc:** migrate nft-staking, tro-staking, tro-governance to 0.66 + deploy workflow ([c842406](https://github.com/Neltud/xArtists/commit/c84240620e1e8f8e880bb42f88ddc3cb4139e082))
+* **slot-casino:** 0.66 source as b64 parts + deploy workflow ([db859b0](https://github.com/Neltud/xArtists/commit/db859b04aa3490e7558df88d1e14e2d41d7e54f2))
+* **slot-casino:** full 0.66 source (slim events, egld API) ([632fa5f](https://github.com/Neltud/xArtists/commit/632fa5fede8be729ed9737c36c26075255584be9))
+* **slot-casino:** migrate to multiversx-sc 0.66 + wasm adapter + deploy workflows ([62b2ce1](https://github.com/Neltud/xArtists/commit/62b2ce19ff986d25ee4825028f3c770ff4611ec7))
+* **slot-casino:** replace PLACEHOLDER with 0.66 provably-fair core (progressive 500 / rake 300 / min_bet) ([e75e777](https://github.com/Neltud/xArtists/commit/e75e777a6b24778cc785bec7505d92ef3d25b0c6))
+
+
+### Bug Fixes
+
+* **ci:** staking deploy — isolate wasm path from sc-meta logs ([67a288a](https://github.com/Neltud/xArtists/commit/67a288a4cd53e21cca706c0d018c39af5aea31df))
+* **slot-casino:** align wasm endpoints with spinEgld/spinEsdt + view fn names ([9e858d2](https://github.com/Neltud/xArtists/commit/9e858d2485fffe48b4364b98e89574669a054a5d))
+* **treasury-dust:** use atomic EGLD value 1000000000000000 for mxpy ([03e3031](https://github.com/Neltud/xArtists/commit/03e3031a6ba9fb5c96ea411b0aad4f930244c783))
+* **treasury-splitter:** event only 1 data arg (0.66) ([031f4f6](https://github.com/Neltud/xArtists/commit/031f4f64268bfd807f7308d08bd8ed6ee91ded6c))
+* **tro-staking:** drop TokenIdentifier empty check (0.66 API) ([452bd1a](https://github.com/Neltud/xArtists/commit/452bd1a1807ddbbd6c9cbac0a19be1d376836c04))
+* **tro-staking:** TokenIdentifier len check for 0.66 ([8393a26](https://github.com/Neltud/xArtists/commit/8393a261aff0a7081d8ae0b84ac21ee5471cd5bb))
+
+
+### Documentation
+
+* tro-staking + tro-governance MAINNET LIVE addresses ([9d960a0](https://github.com/Neltud/xArtists/commit/9d960a0bedc42f63e2f4d1a28b2f015db43c249e))
+* wave3 escrow+treasury LIVE; DAO microtest OK ([d02b7d4](https://github.com/Neltud/xArtists/commit/d02b7d46426388becca490b0c6c6a9b7c3123eff))
+
 ## [0.59.0](https://github.com/Neltud/xArtists/compare/v0.58.0...v0.59.0) (2026-09-28)
 
 
