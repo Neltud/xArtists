@@ -2,7 +2,7 @@
   "chain": "mainnet",
   "chain_id": "1",
   "updated": "2026-09-29",
-  "chain_note": "Core + staking + DAO + escrow + treasury LIVE. slot-casino next. CODEHASH_OK only after explorer match.",
+  "chain_note": "Core + staking + DAO + escrow + treasury LIVE on mainnet. codeHash verified via api.multiversx.com 2026-09-29. slot-casino NOT_DEPLOYED. Frontend CODEHASH_OK only via VITE_* secrets after ops confirm.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -15,6 +15,12 @@
     "slot_casino": null
   },
   "codeHash": {
+    "venue_split": "SRrGio4iLmtQrb22JJhapwobNgavYsoQ52WmfT1owuY=",
+    "nft_marketplace": "8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=",
+    "agents_marketplace": "tDIcnNMbDG5E7tpb7NTeJDnT6JxKs7faN7hyCALFUWs=",
+    "nft_staking": "hXcRjpclnq0jsonSIemM17+tszcWpPjWKtCPUfnMuME=",
+    "tro_staking": "Kz0+zcj7w/3RuOl5m6dumxA9dhFOideb7jGKTam2VVA=",
+    "tro_governance": "+9aNhboFyQuvteDzjkiQHdRTlXAtFyijK+iXV74UOsQ=",
     "agent_stake_escrow": "Hs3AClbYzDpyZ6f/UjB9gBekiYKApXGxcVWy3mmlSnE=",
     "treasury_splitter": "9pB9+UN372QxE77Nj8TUjWn6+Q6qtOPhmmXgUdLnpk8="
   },
@@ -33,6 +39,9 @@
     "dao_microtest": "setLpWeight + createProposal OK, proposalCount=1",
     "treasury_bps": "4000/3000/2000/1000 mission/reserve/reward/ops",
     "tro_token": "TRO-94c925",
-    "deployer": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g"
+    "deployer": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g",
+    "codehash_source": "api.multiversx.com/accounts/{addr} codeHash field",
+    "codehash_verified_at": "2026-09-29T15:30:00Z",
+    "frontend_gate": "VITE_*_CODEHASH_OK must be set in GH Pages secrets — never hardcode 1 in repo"
   }
 }
