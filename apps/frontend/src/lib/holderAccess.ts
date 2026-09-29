@@ -1,6 +1,7 @@
 /**
- * Accès salle holder — paper packs (device) + NFT on-chain.
- * Pas un droit on-chain tant que SC mint est OFF.
+ * Acces salle holder — paper packs (device) + NFT on-chain.
+ * 1 pack = 1 salle (Pulse / Yield / Sentinel). Pas de cross-access.
+ * SC mint OFF jusqu a GO_LIVE — paper device compte pour l acces UI.
  */
 import { loadOwnedPacks, matchOnChainPacks, type PackId } from './nftPacks'
 
@@ -31,7 +32,46 @@ export function holderStatus(
   }
 }
 
-/** Salle Pulse : pack Pulse paper ou on-chain. */
+/** Une salle par NFT pack — pas de passe-partout. */
+export function canEnterRoom(status: HolderStatus, packId: PackId): boolean {
+  return status.packs.includes(packId)
+}
+
 export function canEnterPulseRoom(status: HolderStatus): boolean {
-  return status.pulse || status.any
+  return canEnterRoom(status, 'pulse')
+}
+
+export function canEnterYieldRoom(status: HolderStatus): boolean {
+  return canEnterRoom(status, 'yield')
+}
+
+export function canEnterSentinelRoom(status: HolderStatus): boolean {
+  return canEnterRoom(status, 'sentinel')
+}
+
+export const ROOM_META: Record<
+  PackId,
+  { path: string; title: string; emoji: string; accent: string; museeLabel: string }
+> = {
+  pulse: {
+    path: '/room/pulse',
+    title: 'Salle Pulse',
+    emoji: '⚡',
+    accent: 'from-emerald-500/20 to-cyan-500/10',
+    museeLabel: 'Musee Pulse',
+  },
+  yield: {
+    path: '/room/yield',
+    title: 'Salle Yield',
+    emoji: '🌾',
+    accent: 'from-teal-500/20 to-emerald-500/10',
+    museeLabel: 'Musee Yield',
+  },
+  sentinel: {
+    path: '/room/sentinel',
+    title: 'Salle Sentinel',
+    emoji: '🛡️',
+    accent: 'from-sky-500/20 to-indigo-500/10',
+    museeLabel: 'Musee Sentinel',
+  },
 }

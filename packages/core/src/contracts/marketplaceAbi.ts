@@ -1,13 +1,20 @@
 /**
- * NFT Marketplace ABI — list/buy/cancel + placeBid (after SC redeploy).
- * Address from VITE_MARKETPLACE_ADDRESS or contracts.json marketplace.
+ * NFT Marketplace ABI — list/buy/cancel + placeBid.
+ * Default = LIVE mainnet SC (not the empty placeholder …8354t).
  */
+
+export const MARKETPLACE_ADDRESS_LIVE =
+  'erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm'
+
+/** @deprecated empty placeholder — never send funds */
+export const MARKETPLACE_ADDRESS_EMPTY =
+  'erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t'
 
 export const MARKETPLACE_ADDRESS =
   (typeof import.meta !== 'undefined' &&
     (import.meta as any).env?.VITE_MARKETPLACE_ADDRESS) ||
-  process.env.VITE_MARKETPLACE_ADDRESS ||
-  'erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t'
+  (typeof process !== 'undefined' && process.env?.VITE_MARKETPLACE_ADDRESS) ||
+  MARKETPLACE_ADDRESS_LIVE
 
 export const MARKETPLACE_ABI = {
   name: 'XArtistsNftMarketplace',
