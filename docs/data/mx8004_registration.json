@@ -1,0 +1,21 @@
+{
+  "mode": "paper",
+  "agent_nonce": null,
+  "tx_hash": null,
+  "identity_registry": null,
+  "pem_available": false,
+  "updated": "2026-09-29",
+  "note": "Paper only until MultiversX Identity Registry mainnet + ops PEM. UI stays Not registered yet — honest.",
+  "agents": {
+    "lia": {
+      "mode": "paper",
+      "name": "LIA",
+      "agent_nonce": null,
+      "role": "ops / terminal"
+    },
+    "grokyversx": {
+      "mode": "paper",
+      "role": "propose / alignment"
+    }
+  }
+}

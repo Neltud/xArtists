@@ -1,0 +1,38 @@
+{
+  "mode": "paper",
+  "verified_count": 5,
+  "target": 5,
+  "updated": "2026-09-29",
+  "jobs": [
+    {
+      "id": "j1",
+      "title": "Compounding echelon paper cycle (S1 core +1%)",
+      "status": "verified",
+      "type": "paper"
+    },
+    {
+      "id": "j2",
+      "title": "Sentinel risk check + Guardian pass",
+      "status": "verified",
+      "type": "paper"
+    },
+    {
+      "id": "j3",
+      "title": "Cross-score + Grok plan published",
+      "status": "verified",
+      "type": "paper"
+    },
+    {
+      "id": "j4",
+      "title": "dApp sync registry + CRITICAL data mirror",
+      "status": "verified",
+      "type": "paper"
+    },
+    {
+      "id": "j5",
+      "title": "Yield paper recommendation (Hatom path)",
+      "status": "verified",
+      "type": "paper"
+    }
+  ]
+}
