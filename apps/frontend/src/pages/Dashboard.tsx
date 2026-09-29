@@ -1,5 +1,5 @@
 /**
- * Home — fluid + session wallet + user dashboard + Phase 4.
+ * Home — session + mainnet objects (RPC→store→visual) + Phase 4.
  */
 import { Link } from 'react-router-dom'
 import SoftStatus from '../components/SoftStatus'
@@ -11,18 +11,20 @@ import AdSlot from '../components/AdSlot'
 import UserActionsPanel from '../components/UserActionsPanel'
 import ConnectedSessionPanel from '../components/ConnectedSessionPanel'
 import UserDashboardPanel from '../components/UserDashboardPanel'
+import ChainObjectCanvas from '../components/ChainObjectCanvas'
 import { isSupernovaLive } from '../config/supernova'
 import LottieIcon from '../components/LottieIcon'
 
 const LINKS_MAIN = [
-  { to: '/museum', title: 'Galerie', body: 'Salles 3D · avatar · collection', delay: '0ms' },
-  { to: '/agents', title: 'Packs', body: 'Pulse · Yield · Sentinel · min 10 EGLD', delay: '60ms' },
-  { to: '/tours', title: 'Tours', body: 'Carte OSM & musées du monde', delay: '120ms' },
-  { to: '/trading', title: 'Trading', body: 'Board paper · GrokyversX', delay: '180ms' },
-  { to: '/lia', title: 'LIA', body: '8008 · trésorerie · pipeline', delay: '200ms' },
-  { to: '/slot', title: 'Slot', body: '3×3 · paper EGLD/USDC (dur)', delay: '220ms' },
-  { to: '/ads', title: 'Ads', body: 'Enchères pub · sample live', delay: '240ms' },
-  { to: '/go-live', title: 'GO_LIVE', body: 'Phase 4 · First 100 · checklists', delay: '260ms' },
+  { to: '/staking', title: 'Staking TRO', body: 'Stake live mainnet · xPortal', delay: '0ms' },
+  { to: '/my-packs', title: 'My Packs / Salles', body: '1 pack = 1 salle + moniteur LIA', delay: '40ms' },
+  { to: '/museum', title: 'Galerie', body: 'Salles 3D · avatar · collection', delay: '60ms' },
+  { to: '/agents', title: 'Packs', body: 'Pulse · Yield · Sentinel · min 10 EGLD', delay: '80ms' },
+  { to: '/trading', title: 'Trading', body: 'Board paper · desk Grok / LIA', delay: '120ms' },
+  { to: '/market', title: 'Market', body: 'NFT marketplace SC live', delay: '140ms' },
+  { to: '/lia', title: 'LIA', body: '8008 · tresorerie · pipeline', delay: '180ms' },
+  { to: '/slot', title: 'Slot', body: '3x3 · paper puis SC', delay: '200ms' },
+  { to: '/go-live', title: 'GO_LIVE', body: 'Phase 4 · checklists', delay: '240ms' },
 ] as const
 
 export default function Dashboard() {
@@ -39,10 +41,10 @@ export default function Dashboard() {
 
       <section className="relative space-y-5 pt-6 sm:pt-10">
         <p className="section-label">
-          xArtists{supernova ? ' · Supernova' : ''}
+          xArtists{supernova ? ' · Supernova' : ''} · mainnet
         </p>
         <h1 className="display text-[2.75rem] sm:text-6xl text-white leading-[1.05]">
-          L’art,
+          L'art,
           <br />
           <span className="gradient-text">en mouvement</span>
         </h1>
@@ -51,14 +53,14 @@ export default function Dashboard() {
           <LottieIcon preset="spark" size={40} />
         </div>
         <p className="section-lead">
-          Galerie immersive, packs, LIA + GrokyversX — démo live paper · SC fail-closed.
+          Galerie, packs, LIA — SC mainnet live · signature xPortal · fail-closed CODEHASH.
         </p>
         <div className="flex flex-wrap gap-3 pt-1">
-          <Link to="/museum" className="btn-primary">
-            Entrer dans la galerie
+          <Link to="/staking" className="btn-primary">
+            Stake TRO
           </Link>
-          <Link to="/demo" className="btn-secondary">
-            Tour démo
+          <Link to="/my-packs" className="btn-secondary">
+            Mes salles
           </Link>
           <Link to="/wallet" className="btn-secondary">
             Wallet
@@ -71,7 +73,11 @@ export default function Dashboard() {
         <UserDashboardPanel />
       </div>
 
-      <div className="relative mt-8">
+      <div className="relative mt-6">
+        <ChainObjectCanvas />
+      </div>
+
+      <div className="relative mt-6">
         <Phase4ReadinessBanner variant="full" />
       </div>
 
