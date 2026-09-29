@@ -9,7 +9,7 @@ multiversx_sc::derive_imports!();
 pub trait TroStaking {
     #[init]
     fn init(&self, tro_token: TokenIdentifier) {
-        require!(!tro_token.is_egld() && !tro_token.is_empty(), "empty token");
+        require!(tro_token.len() > 0, "empty token");
         let caller = self.blockchain().get_caller();
         self.owner().set(&caller);
         self.paused().set(false);
