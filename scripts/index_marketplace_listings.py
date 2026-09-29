@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-P1 Indexer — build data/listings_index.json from marketplace SC txs (mainnet API).
+P1 Indexer — build data/listings_index.json from marketplace SC (mainnet API).
 
 Usage:
   python scripts/index_marketplace_listings.py
   python scripts/index_marketplace_listings.py erd1qq...   # override SC address
 
-Safe on empty SC: writes empty listings + codehash_ok=false.
-Does not require PEM. Commit/push result for GH Pages / Vellum mirror.
+Reads addresses.nft_marketplace from data/contracts.json or apps/frontend/public/data/contracts.json.
 """
 from __future__ import annotations
 
@@ -20,15 +19,42 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 API = "https://api.multiversx.com"
 OUT = ROOT / "data" / "listings_index.json"
-CONTRACTS = ROOT / "data" / "contracts.json"
+OUT_PUBLIC = ROOT / "apps" / "frontend" / "public" / "data" / "listings_index.json"
+CONTRACT_CANDIDATES = [
+    ROOT / "data" / "contracts.json",
+    ROOT / "apps" / "frontend" / "public" / "data" / "contracts.json",
+]
 
-# Historical empty placeholder — never treat as live
 KNOWN_EMPTY = "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t"
 
 
 def get_json(url: str):
     with urllib.request.urlopen(url, timeout=45) as r:
         return json.loads(r.read().decode())
+
+
+def resolve_marketplace_address() -> str | None:
+    if len(sys.argv) > 1 and sys.argv[1].startswith("erd1"):
+        return sys.argv[1]
+    for path in CONTRACT_CANDIDATES:
+        if not path.exists():
+            continue
+        try:
+            c = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        addrs = c.get("addresses") or {}
+        # modern schema
+        for key in ("nft_marketplace", "marketplace"):
+            v = addrs.get(key)
+            if isinstance(v, str) and v.startswith("erd1"):
+                return v
+        # legacy schema
+        contracts = c.get("contracts") or {}
+        v = contracts.get("marketplace") or contracts.get("nft_marketplace")
+        if isinstance(v, str) and v.startswith("erd1"):
+            return v
+    return None
 
 
 def hex_to_utf8(h: str) -> str:
@@ -58,15 +84,9 @@ def parse_listing_id(data: str | None) -> int | None:
 
 
 def main() -> int:
-    addr = None
-    if CONTRACTS.exists():
-        c = json.loads(CONTRACTS.read_text(encoding="utf-8"))
-        addr = (c.get("contracts") or {}).get("marketplace")
-    if len(sys.argv) > 1 and sys.argv[1].startswith("erd1"):
-        addr = sys.argv[1]
-
+    addr = resolve_marketplace_address()
     if not addr:
-        print("No marketplace address")
+        print("No marketplace address in contracts.json")
         return 1
 
     codehash_ok = False
@@ -76,8 +96,9 @@ def main() -> int:
         code_hash = acc.get("codeHash") or None
         if code_hash and code_hash not in ("", "0" * 64):
             codehash_ok = True
-        if addr.lower() == KNOWN_EMPTY.lower() and not codehash_ok:
+        if addr.lower() == KNOWN_EMPTY.lower():
             codehash_ok = False
+            code_hash = None
     except Exception as e:
         print("account fetch failed", e)
 
@@ -109,7 +130,6 @@ def main() -> int:
                         "timestamp": t.get("timestamp"),
                     }
                 )
-                # Best-effort catalog: listNft events only for active hints
                 if lid is not None and fn in ("listNft", "list") and lid not in seen_ids:
                     seen_ids.add(lid)
                     listings.append(
@@ -136,7 +156,7 @@ def main() -> int:
         "codehash_ok": codehash_ok,
         "codeHash": code_hash,
         "note": (
-            "Live index"
+            "Live SC · listings fill after listNft TXs"
             if codehash_ok
             else "Empty until deploy + codeHash. Do not send user funds to known-empty address."
         ),
@@ -152,8 +172,14 @@ def main() -> int:
             "tx_list": "optional hash",
         },
     }
-    OUT.write_text(json.dumps(out, indent=2), encoding="utf-8")
+    text = json.dumps(out, indent=2)
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(text + "\n", encoding="utf-8")
+    if OUT_PUBLIC.parent.exists() or True:
+        OUT_PUBLIC.parent.mkdir(parents=True, exist_ok=True)
+        OUT_PUBLIC.write_text(text + "\n", encoding="utf-8")
     print("wrote", OUT)
+    print("wrote", OUT_PUBLIC)
     print("codehash_ok=", codehash_ok, "listings=", len(listings), "activity=", len(activity))
     return 0 if codehash_ok or addr else 2
 
