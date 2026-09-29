@@ -1,5 +1,18 @@
 # Changelog — xArtists
 
+## [0.63.0](https://github.com/Neltud/xArtists/compare/v0.62.0...v0.63.0) (2026-09-29)
+
+
+### Features
+
+* **studio:** user mint on-chain path + Studio in nav + issue/create NFT TX ([664dda4](https://github.com/Neltud/xArtists/commit/664dda441a335411c029a661e78a0dbfbf1d9de0))
+* **studio:** wire on-chain mint card + Studio in PRIMARY_NAV ([0b836a3](https://github.com/Neltud/xArtists/commit/0b836a37585a65292a82bb2fb6c566bb44095033))
+
+
+### Bug Fixes
+
+* **ci:** Rust workspace — SC crates are independent workspaces (no nested roots) ([16fc6dd](https://github.com/Neltud/xArtists/commit/16fc6dd1dd2edfbdf92374b777ac6e24ad3b0183))
+
 ## [0.62.0](https://github.com/Neltud/xArtists/compare/v0.61.0...v0.62.0) (2026-09-29)
 
 
