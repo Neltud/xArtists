@@ -14,6 +14,10 @@ function getCallbackUrl(): string {
   return `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '/') || '/xArtists/'}`
 }
 
+function qrUrl(data: string, size = 220): string {
+  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=8&data=${encodeURIComponent(data)}`
+}
+
 const DESKTOP_NAV = PRIMARY_NAV.filter(n =>
   ['/', '/museum', '/agents', '/tours', '/wallet', '/marketplace'].includes(n.to),
 )
@@ -23,6 +27,8 @@ export default function Header() {
   const [showWalletModal, setShowWalletModal] = useState(false)
   const [manualAddr, setManualAddr] = useState('')
   const [connectError, setConnectError] = useState('')
+  const [wcUri, setWcUri] = useState<string | null>(null)
+  const [wcWaiting, setWcWaiting] = useState(false)
   const { connected, shortAddress, connect, disconnect, address, method } = useWallet()
   const location = useLocation()
 
@@ -42,29 +48,50 @@ export default function Header() {
     const open = () => {
       setShowWalletModal(true)
       setConnectError('')
+      setWcUri(null)
+      setWcWaiting(false)
     }
     window.addEventListener(OPEN_CONNECT_EVENT, open)
     return () => window.removeEventListener(OPEN_CONNECT_EVENT, open)
   }, [])
+
+  const closeModal = () => {
+    setShowWalletModal(false)
+    setWcUri(null)
+    setWcWaiting(false)
+    setConnectError('')
+  }
 
   const openWebWallet = () => {
     window.location.href = LINKS.walletLogin(getCallbackUrl())
   }
 
   const openXPortalDeepLink = async () => {
-    setConnectError('Connexion xPortal mainnet (WalletConnect)…')
+    setConnectError('')
+    setWcUri(null)
+    setWcWaiting(true)
+    setConnectError('Connexion xPortal — scanne le QR ou ouvre l app…')
     try {
       const res = await loginWithXPortalMainnet(p => {
+        if (p.uri) setWcUri(p.uri)
         if (p.message) setConnectError(p.message)
+        if (p.phase === 'waiting') setWcWaiting(true)
+        if (p.phase === 'done' || p.phase === 'error') setWcWaiting(false)
       })
       if (!res.ok) {
+        setWcWaiting(false)
         setConnectError(res.error + ' — Web Wallet reste disponible.')
         return
       }
       const linked = connect(res.address, 'xportal')
-      if (!linked.ok) setConnectError(linked.error || 'Session refusée')
-      else setShowWalletModal(false)
+      if (!linked.ok) {
+        setConnectError(linked.error || 'Session refusee')
+        setWcWaiting(false)
+      } else {
+        closeModal()
+      }
     } catch (e) {
+      setWcWaiting(false)
       setConnectError(
         (e instanceof Error ? e.message : 'Erreur xPortal') + ' — utilise Web Wallet.',
       )
@@ -81,9 +108,9 @@ export default function Header() {
         return
       }
       const addr = await provider.login()
-      const res = connect(String(addr).trim(), 'extension')
-      if (!res.ok) setConnectError(res.error || 'Connexion échouée')
-      else setShowWalletModal(false)
+      const res = connect(String(addr).trim(), 'defi_wallet')
+      if (!res.ok) setConnectError(res.error || 'Connexion echouee')
+      else closeModal()
     } catch (e) {
       setConnectError(e instanceof Error ? e.message : 'Erreur extension')
     }
@@ -95,11 +122,21 @@ export default function Header() {
       setConnectError('Adresse erd1 invalide')
       return
     }
-    const res = connect(manualAddr.trim(), 'paste')
-    if (!res.ok) setConnectError(res.error || 'Échec')
+    const res = connect(manualAddr.trim(), 'paste_readonly')
+    if (!res.ok) setConnectError(res.error || 'Echec')
     else {
-      setShowWalletModal(false)
+      closeModal()
       setManualAddr('')
+    }
+  }
+
+  const copyUri = async () => {
+    if (!wcUri) return
+    try {
+      await navigator.clipboard.writeText(wcUri)
+      setConnectError('URI WalletConnect copiee — colle dans xPortal si besoin.')
+    } catch {
+      setConnectError('Copie impossible — scanne le QR.')
     }
   }
 
@@ -147,6 +184,7 @@ export default function Header() {
                 onClick={() => {
                   setShowWalletModal(true)
                   setConnectError('')
+                  setWcUri(null)
                 }}
                 className="rounded-full bg-gradient-to-r from-violet-600 to-indigo-500 px-4 py-1.5 text-[12px] font-semibold text-white shadow"
               >
@@ -197,45 +235,83 @@ export default function Header() {
           className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center bg-black/75 p-3"
           role="dialog"
           aria-modal
-          onClick={() => setShowWalletModal(false)}
+          onClick={closeModal}
         >
           <div
-            className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0c0c14] p-4 shadow-2xl space-y-3"
+            className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0c0c14] p-4 shadow-2xl space-y-3 max-h-[90vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
             <p className="text-[11px] uppercase tracking-wider text-zinc-500">MultiversX mainnet</p>
             <h2 className="display text-xl mb-1">Connecter le wallet</h2>
             <p className="text-[12px] text-zinc-500 leading-relaxed">
-              Web Wallet recommandé sur GitHub Pages. xPortal via WalletConnect si le module se charge.
+              Web Wallet recommande. xPortal : QR sur ecran (desktop) ou app mobile.
             </p>
 
-            <button type="button" className="btn-primary w-full text-left" onClick={openWebWallet}>
-              🌐 Web Wallet
-              <span className="block text-[11px] font-normal opacity-80">
-                wallet.multiversx.com — recommandé
-              </span>
-            </button>
-            <button type="button" className="btn-secondary w-full text-left" onClick={openXPortalDeepLink}>
-              📱 xPortal
-              <span className="block text-[11px] font-normal text-zinc-400">WalletConnect mainnet</span>
-            </button>
-            <button type="button" className="btn-secondary w-full text-left" onClick={openExtension}>
-              🦊 Extension
-              <span className="block text-[11px] font-normal text-zinc-400">Navigateur</span>
-            </button>
+            {wcUri && (
+              <div className="rounded-xl border border-violet-500/30 bg-violet-950/30 p-4 space-y-3 text-center">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-200">
+                  Scanne avec xPortal
+                </p>
+                <img
+                  src={qrUrl(wcUri)}
+                  alt="QR WalletConnect xPortal"
+                  width={220}
+                  height={220}
+                  className="mx-auto rounded-lg bg-white p-2"
+                />
+                <p className="text-[11px] text-zinc-400 leading-relaxed">
+                  Ouvre xPortal → Scan QR (ou WalletConnect) sur ton telephone.
+                  Laisse cette fenetre ouverte jusqu a l approbation.
+                </p>
+                <button type="button" className="btn-secondary text-xs w-full" onClick={copyUri}>
+                  Copier l URI WalletConnect
+                </button>
+                {wcWaiting && (
+                  <p className="text-[11px] text-amber-200/90 animate-pulse">
+                    En attente d approbation dans xPortal…
+                  </p>
+                )}
+              </div>
+            )}
 
-            <p className="text-[11px] text-zinc-600 pt-1">Ou coller erd1 — lecture seule</p>
-            <div className="flex gap-2">
-              <input
-                className="flex-1 rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white mono"
-                placeholder="erd1…"
-                value={manualAddr}
-                onChange={e => setManualAddr(e.target.value)}
-              />
-              <button type="button" className="btn-secondary text-xs" onClick={submitManual}>
-                Utiliser l’adresse
-              </button>
-            </div>
+            {!wcUri && (
+              <>
+                <button type="button" className="btn-primary w-full text-left" onClick={openWebWallet}>
+                  Web Wallet
+                  <span className="block text-[11px] font-normal opacity-80">
+                    wallet.multiversx.com — recommande
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary w-full text-left"
+                  onClick={openXPortalDeepLink}
+                  disabled={wcWaiting}
+                >
+                  xPortal
+                  <span className="block text-[11px] font-normal text-zinc-400">
+                    QR code + WalletConnect mainnet
+                  </span>
+                </button>
+                <button type="button" className="btn-secondary w-full text-left" onClick={openExtension}>
+                  Extension
+                  <span className="block text-[11px] font-normal text-zinc-400">Navigateur</span>
+                </button>
+
+                <p className="text-[11px] text-zinc-600 pt-1">Ou coller erd1 — lecture seule</p>
+                <div className="flex gap-2">
+                  <input
+                    className="flex-1 rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white mono"
+                    placeholder="erd1…"
+                    value={manualAddr}
+                    onChange={e => setManualAddr(e.target.value)}
+                  />
+                  <button type="button" className="btn-secondary text-xs" onClick={submitManual}>
+                    Utiliser l adresse
+                  </button>
+                </div>
+              </>
+            )}
 
             {connectError && (
               <p className="text-[12px] text-amber-200/90 leading-relaxed">{connectError}</p>
@@ -244,7 +320,7 @@ export default function Header() {
             <button
               type="button"
               className="text-[12px] text-zinc-500 w-full text-center pt-1"
-              onClick={() => setShowWalletModal(false)}
+              onClick={closeModal}
             >
               Annuler
             </button>
