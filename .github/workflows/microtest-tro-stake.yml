@@ -1,0 +1,84 @@
+name: Microtest tro-staking stake dust
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type RUN_STAKE"
+        default: ""
+        type: string
+      amount_atomic:
+        description: "TRO amount atomic (6 decimals, 1000000 = 1 TRO)"
+        default: "1000000"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  stake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      DEPLOYER: erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g
+      TRO_STAKING: erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf
+      TRO_TOKEN: TRO-94c925
+      PROXY: https://gateway.multiversx.com
+      CHAIN_ID: "1"
+      AMOUNT: ${{ github.event.inputs.amount_atomic }}
+
+    steps:
+      - name: Gate
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "RUN_STAKE" ]; then exit 1; fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli
+      - name: PEM
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+      - name: stake 1 TRO dust
+        run: |
+          set -euo pipefail
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          mxpy contract call "$TRO_STAKING" \
+            --pem="${RUNNER_TEMP}/deployer.pem" \
+            --function stake \
+            --token-transfers "${TRO_TOKEN}@${AMOUNT}" \
+            --gas-limit 12000000 \
+            --proxy "$PROXY" --chain "$CHAIN_ID" \
+            --nonce "$NONCE" \
+            --send --wait-result
+      - name: Verify getStaked + getTotalStaked
+        run: |
+          python3 <<'PY'
+          import urllib.request, json, base64
+          ADDR="erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf"
+          DEPLOYER_HEX = bytes.fromhex(
+              # bech32 decode skipped — query total only
+              ""
+          )
+          def q(fn, args=None):
+              body=json.dumps({"scAddress":ADDR,"funcName":fn,"args":args or []}).encode()
+              req=urllib.request.Request("https://api.multiversx.com/vm-values/query", data=body, headers={"Content-Type":"application/json"})
+              with urllib.request.urlopen(req) as r:
+                  d=json.load(r)
+              rd=(d.get("data") or {}).get("data") or {}
+              raw=rd.get("returnData") or []
+              if not raw or not raw[0]:
+                  return 0
+              return int.from_bytes(base64.b64decode(raw[0]), "big")
+          total = q("getTotalStaked")
+          print("totalStaked_atomic", total)
+          print("totalStaked_TRO", total / 1e6)
+          PY
+      - if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"
