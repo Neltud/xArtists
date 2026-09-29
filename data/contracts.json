@@ -2,22 +2,21 @@
   "chain": "mainnet",
   "chain_id": "1",
   "updated": "2026-09-29",
-  "chain_note": "venue + marketplaces + nft-staking + tro-staking + tro-governance LIVE. CODEHASH_OK only after explorer match.",
+  "chain_note": "Core + staking + DAO + escrow + treasury LIVE. slot-casino next. CODEHASH_OK only after explorer match.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
     "agents_marketplace": "erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg",
     "nft_staking": "erd1qqqqqqqqqqqqqpgq9ensu3f3p9yx4a583swu0raq8zzeve7tvhxq4fgtgu",
     "tro_staking": "erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf",
-    "tro_governance": "erd1qqqqqqqqqqqqqpgqe6xrgq2y53q8d0lsact2dppzvg42t4wcvhxq9e9euy"
+    "tro_governance": "erd1qqqqqqqqqqqqqpgqe6xrgq2y53q8d0lsact2dppzvg42t4wcvhxq9e9euy",
+    "agent_stake_escrow": "erd1qqqqqqqqqqqqqpgqzyvwldu6jq8w6ry6s856dl0uy7g0v37vvhxqndvzr3",
+    "treasury_splitter": "erd1qqqqqqqqqqqqqpgq245sma97w0j9ga9jdgxu36zs0v8g0y6evhxq2nkezv",
+    "slot_casino": null
   },
   "codeHash": {
-    "venue_split": "SRrGio4iLmtQrb22JJhapwobNgavYsoQ52WmfT1owuY=",
-    "nft_marketplace": "8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=",
-    "agents_marketplace": "tDIcnNMbDG5E7tpb7NTeJDnT6JxKs7faN7hyCALFUWs=",
-    "nft_staking": "hXcRjpclnq0jsonSIemM17+tszcWpPjWKtCPUfnMuME=",
-    "tro_staking": "Kz0+zcj7w/3RuOl5m6dumxA9dhFOideb7jGKTam2VVA=",
-    "tro_governance": "+9aNhboFyQuvteDzjkiQHdRTlXAtFyijK+iXV74UOsQ="
+    "agent_stake_escrow": "Hs3AClbYzDpyZ6f/UjB9gBekiYKApXGxcVWy3mmlSnE=",
+    "treasury_splitter": "9pB9+UN372QxE77Nj8TUjWn6+Q6qtOPhmmXgUdLnpk8="
   },
   "status": {
     "venue_split": "LIVE",
@@ -25,12 +24,15 @@
     "agents_marketplace": "LIVE",
     "nft_staking": "LIVE",
     "tro_staking": "LIVE",
-    "tro_governance": "LIVE"
+    "tro_governance": "LIVE",
+    "agent_stake_escrow": "LIVE",
+    "treasury_splitter": "LIVE",
+    "slot_casino": "NOT_DEPLOYED"
   },
   "notes": {
-    "marketplace_fee_bps": 300,
+    "dao_microtest": "setLpWeight + createProposal OK, proposalCount=1",
+    "treasury_bps": "4000/3000/2000/1000 mission/reserve/reward/ops",
     "tro_token": "TRO-94c925",
-    "lia_treasury": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "deployer": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g"
   }
 }
