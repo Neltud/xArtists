@@ -2,27 +2,29 @@
   "chain": "mainnet",
   "chain_id": "1",
   "updated": "2026-09-29",
-  "chain_note": "Core + staking + DAO + escrow + treasury LIVE on mainnet. codeHash verified via api.multiversx.com 2026-09-29. slot-casino NOT_DEPLOYED. Frontend CODEHASH_OK only via VITE_* secrets after ops confirm.",
+  "chain_note": "tro_staking REDEPLOYED 2026-09-29 (stake dust 1 TRO OK). slot_casino LIVE. CODEHASH_OK only via VITE_* secrets.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
     "agents_marketplace": "erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg",
     "nft_staking": "erd1qqqqqqqqqqqqqpgq9ensu3f3p9yx4a583swu0raq8zzeve7tvhxq4fgtgu",
-    "tro_staking": "erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf",
+    "tro_staking": "erd1qqqqqqqqqqqqqpgqes0a2kryurmt34g7nu4kx9n4ftj77dl5vhxqpe3xf3",
+    "tro_staking_legacy": "erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf",
     "tro_governance": "erd1qqqqqqqqqqqqqpgqe6xrgq2y53q8d0lsact2dppzvg42t4wcvhxq9e9euy",
     "agent_stake_escrow": "erd1qqqqqqqqqqqqqpgqzyvwldu6jq8w6ry6s856dl0uy7g0v37vvhxqndvzr3",
     "treasury_splitter": "erd1qqqqqqqqqqqqqpgq245sma97w0j9ga9jdgxu36zs0v8g0y6evhxq2nkezv",
-    "slot_casino": null
+    "slot_casino": "erd1qqqqqqqqqqqqqpgquf3cuv2zsfsahy7ypvter3qcep4ptthsvhxqs4g34f"
   },
   "codeHash": {
     "venue_split": "SRrGio4iLmtQrb22JJhapwobNgavYsoQ52WmfT1owuY=",
     "nft_marketplace": "8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=",
     "agents_marketplace": "tDIcnNMbDG5E7tpb7NTeJDnT6JxKs7faN7hyCALFUWs=",
     "nft_staking": "hXcRjpclnq0jsonSIemM17+tszcWpPjWKtCPUfnMuME=",
-    "tro_staking": "Kz0+zcj7w/3RuOl5m6dumxA9dhFOideb7jGKTam2VVA=",
+    "tro_staking": "Jf5ZhzAGu58ez0njdWoZAnRxP7YevYSX9dpO8pGq7SA=",
     "tro_governance": "+9aNhboFyQuvteDzjkiQHdRTlXAtFyijK+iXV74UOsQ=",
     "agent_stake_escrow": "Hs3AClbYzDpyZ6f/UjB9gBekiYKApXGxcVWy3mmlSnE=",
-    "treasury_splitter": "9pB9+UN372QxE77Nj8TUjWn6+Q6qtOPhmmXgUdLnpk8="
+    "treasury_splitter": "9pB9+UN372QxE77Nj8TUjWn6+Q6qtOPhmmXgUdLnpk8=",
+    "slot_casino": "UZ0nX6dWsSgkVqjnFnR5zPNPk1UrNtR5SsrYf96VJCs="
   },
   "status": {
     "venue_split": "LIVE",
@@ -33,15 +35,15 @@
     "tro_governance": "LIVE",
     "agent_stake_escrow": "LIVE",
     "treasury_splitter": "LIVE",
-    "slot_casino": "NOT_DEPLOYED"
+    "slot_casino": "LIVE"
   },
   "notes": {
-    "dao_microtest": "setLpWeight + createProposal OK, proposalCount=1",
-    "treasury_bps": "4000/3000/2000/1000 mission/reserve/reward/ops",
+    "tro_redeploy_tx": "c995b1c249ef50409a2d6b649678b6861134e330fe430a4e2dee56ec298ad7f9",
+    "tro_stake_dust_tx": "8f5458bb5ee513b796a82631",
+    "tro_total_staked_atomic": 1000000,
+    "slot_deploy_tx": "6f169984add779183d8bdcaa2e96e35643ef86778f5c47f95bb456455574c101",
     "tro_token": "TRO-94c925",
     "deployer": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g",
-    "codehash_source": "api.multiversx.com/accounts/{addr} codeHash field",
-    "codehash_verified_at": "2026-09-29T15:30:00Z",
-    "frontend_gate": "VITE_*_CODEHASH_OK must be set in GH Pages secrets — never hardcode 1 in repo"
+    "frontend_gate": "VITE_*_CODEHASH_OK in GH Pages secrets only — never hardcode 1 in repo"
   }
 }
