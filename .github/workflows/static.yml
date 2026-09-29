@@ -44,7 +44,7 @@ jobs:
 
       - name: Verify Dashboard source (must be clean home)
         run: |
-          if grep -qiE 'ops clutter|dev home|Become\|Posts X' src/pages/Dashboard.tsx; then
+          if grep -qiE 'ops clutter|dev home|Become\\|Posts X' src/pages/Dashboard.tsx; then
             echo '::error::Dashboard.tsx still contains ops/home clutter'
             exit 1
           fi
@@ -70,6 +70,21 @@ jobs:
           VITE_APP_BUILD: "3.10.0"
           # Proxy URL only — never put Vellum API key in secrets as VITE_*
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
+          # CODEHASH gates — set in Settings → Secrets → Actions (value 1 only after explorer verify + dust)
+          # Empty / unset = fail-closed (TX disabled in scStatus)
+          VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
+          VITE_MARKETPLACE_CODEHASH_OK: ${{ secrets.VITE_MARKETPLACE_CODEHASH_OK }}
+          VITE_VENUE_CODEHASH_OK: ${{ secrets.VITE_VENUE_CODEHASH_OK }}
+          VITE_AGENTS_CODEHASH_OK: ${{ secrets.VITE_AGENTS_CODEHASH_OK }}
+          VITE_NFT_STAKING_CODEHASH_OK: ${{ secrets.VITE_NFT_STAKING_CODEHASH_OK }}
+          VITE_TRO_GOVERNANCE_CODEHASH_OK: ${{ secrets.VITE_TRO_GOVERNANCE_CODEHASH_OK }}
+          VITE_AGENT_ESCROW_CODEHASH_OK: ${{ secrets.VITE_AGENT_ESCROW_CODEHASH_OK }}
+          VITE_TREASURY_CODEHASH_OK: ${{ secrets.VITE_TREASURY_CODEHASH_OK }}
+          VITE_SLOT_CASINO_CODEHASH_OK: ${{ secrets.VITE_SLOT_CASINO_CODEHASH_OK }}
+          # SC addresses (optional overrides; scStatus has mainnet fallbacks)
+          VITE_TRO_STAKING_ADDRESS: ${{ secrets.VITE_TRO_STAKING_ADDRESS }}
+          VITE_MARKETPLACE_ADDRESS: ${{ secrets.VITE_MARKETPLACE_ADDRESS }}
+          VITE_VENUE_SC_ADDRESS: ${{ secrets.VITE_VENUE_SC_ADDRESS }}
 
       - name: Stamp build id
         run: |
