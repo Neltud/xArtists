@@ -1,15 +1,30 @@
+# Root virtual workspace — MultiversX SC crates each define their OWN [workspace]
+# (members = [".", "meta"]). They must NOT be listed as members here or cargo fails with:
+#   error: multiple workspace roots found in the same workspace
+#
+# Full wasm builds: Actions deploy-* workflows (sc-meta), not host cargo check.
+
 [workspace]
-members = [
-    "contracts/nft-staking",
-    "contracts/tro-staking",
-]
+members = []
 exclude = [
+    "contracts/nft-staking",
+    "contracts/nft-staking/meta",
+    "contracts/tro-staking",
+    "contracts/tro-staking/meta",
     "contracts/venue_split",
     "contracts/venue_split/meta",
     "contracts/nft-marketplace",
     "contracts/nft-marketplace/meta",
     "contracts/agents-marketplace",
     "contracts/agents-marketplace/meta",
+    "contracts/slot-casino",
+    "contracts/slot-casino/meta",
+    "contracts/treasury-splitter",
+    "contracts/treasury-splitter/meta",
+    "contracts/tro-governance",
+    "contracts/tro-governance/meta",
+    "contracts/agent-stake-escrow",
+    "contracts/agent-stake-escrow/meta",
 ]
 resolver = "2"
 

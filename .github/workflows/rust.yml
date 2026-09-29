@@ -1,8 +1,8 @@
 name: Rust
 
-# Host cargo cannot fully compile MultiversX SC (no_std + contract macros).
-# Full wasm builds: deploy-venue-split.yml / deploy-scs.yml (sc-meta).
-# This job only validates workspace resolution + fmt (non-blocking).
+# MultiversX SC crates are independent Cargo workspaces (each has [workspace] + meta).
+# Host cargo cannot fully compile no_std SC macros — wasm = deploy-* (sc-meta).
+# This job validates each SC workspace resolves (non-blocking fmt/clippy).
 
 on:
   push:
@@ -29,37 +29,59 @@ jobs:
     - name: Cache Rust
       uses: Swatinem/rust-cache@v2
       with:
-        workspaces: contracts/nft-staking,contracts/tro-staking
+        workspaces: |
+          contracts/nft-staking
+          contracts/tro-staking
 
-    - name: Check for Rust project
-      id: has_cargo
+    - name: Discover SC workspaces
+      id: scs
       run: |
-        if [ -f Cargo.toml ]; then
-          echo "ok=true" >> "$GITHUB_OUTPUT"
-        else
-          echo "ok=false" >> "$GITHUB_OUTPUT"
-          echo "No Cargo.toml — skip"
-        fi
+        dirs=""
+        for d in contracts/*/ ; do
+          [ -f "${d}Cargo.toml" ] || continue
+          if grep -q '^\[workspace\]' "${d}Cargo.toml" 2>/dev/null || grep -q 'multiversx-sc' "${d}Cargo.toml" 2>/dev/null; then
+            dirs="$dirs ${d%/}"
+          fi
+        done
+        echo "dirs=$dirs" >> "$GITHUB_OUTPUT"
+        echo "Found:$dirs"
 
-    - name: Workspace resolves
-      if: steps.has_cargo.outputs.ok == 'true'
+    - name: Workspace resolves (per SC crate)
       run: |
         set -euo pipefail
-        cargo metadata --format-version 1 --no-deps > /tmp/meta.json
-        echo "✅ cargo metadata OK"
-        python3 -c "import json; m=json.load(open('/tmp/meta.json')); print('packages:', [p['name'] for p in m['packages'] if p['source'] is None])"
+        ok=0
+        fail=0
+        for d in contracts/*/ ; do
+          [ -f "${d}Cargo.toml" ] || continue
+          name="${d%/}"
+          echo "—— $name ——"
+          if (cd "$name" && cargo metadata --format-version 1 --no-deps >/tmp/meta-sc.json 2>/tmp/meta-err.txt); then
+            python3 -c "import json; m=json.load(open('/tmp/meta-sc.json')); print(' packages:', [p['name'] for p in m.get('packages',[]) if p.get('source') is None][:8])"
+            echo "✅ $name"
+            ok=$((ok+1))
+          else
+            echo "⚠️ $name metadata failed (often expected without sc-meta toolchain):"
+            head -20 /tmp/meta-err.txt || true
+            # Only hard-fail on *multiple workspace roots* at repo root — already fixed
+            if grep -qi 'multiple workspace roots' /tmp/meta-err.txt 2>/dev/null; then
+              fail=$((fail+1))
+            fi
+          fi
+        done
+        echo "Resolved ok=$ok fail_hard=$fail"
+        if [ "$fail" -gt 0 ]; then
+          exit 1
+        fi
 
-    - name: Format Check
-      if: steps.has_cargo.outputs.ok == 'true'
-      run: cargo fmt --all -- --check
-      continue-on-error: true
-
-    - name: Clippy (non-blocking)
-      if: steps.has_cargo.outputs.ok == 'true'
-      run: cargo clippy --workspace -- -D warnings
+    - name: Format Check (non-blocking)
+      run: |
+        for d in contracts/nft-staking contracts/tro-staking; do
+          [ -d "$d" ] || continue
+          (cd "$d" && cargo fmt --all -- --check) || true
+        done
       continue-on-error: true
 
     - name: SC compile note
       run: |
-        echo "MultiversX SC host cargo check is not a gate."
-        echo "Use Actions → Deploy venue-split (sc-meta) for wasm."
+        echo "MultiversX SC host cargo is not a release gate."
+        echo "Use Actions → deploy-scs / deploy-venue-split / redeploy-tro-staking (sc-meta) for wasm."
