@@ -7,10 +7,11 @@ publish = false
 [lib]
 path = "src/lib.rs"
 
-[dependencies.multiversx-sc]
-version = "0.54.0"
+[dependencies]
+multiversx-sc = "0.66.2"
 
-[dev-dependencies.multiversx-sc-scenario]
-version = "0.54.0"
+[dev-dependencies]
+multiversx-sc-scenario = "0.66.2"
 
 [workspace]
+members = [".", "meta"]

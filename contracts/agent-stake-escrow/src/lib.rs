@@ -1,21 +1,14 @@
 #![no_std]
 
 //! Agent stake escrow — user locks EGLD as starting funds for a purchased agent.
-//! Isolated from LIA protocol book. Owner withdraws principal+equity accounting off-chain mirror.
-//!
-//! Endpoints:
-//!   openStake(agent_id) payable EGLD
-//!   closeStake(stake_id) — returns locked EGLD to owner
-//!   setAgentLive(stake_id, bool) — flag only; does not move funds
-//!
-//! Security: CEI, pause, owner admin, agent_id length cap.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
 const MAX_AGENT_ID_LEN: usize = 64;
 
-#[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
+#[type_abi]
+#[derive(TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
 pub struct StakeInfo<M: ManagedTypeApi> {
     pub owner: ManagedAddress<M>,
     pub agent_id: ManagedBuffer<M>,
@@ -34,7 +27,7 @@ pub trait AgentStakeEscrow {
         self.owner().set(&caller);
     }
 
-    #[endpoint(upgrade)]
+    #[upgrade]
     fn upgrade(&self) {
         self.require_owner();
     }
@@ -60,7 +53,7 @@ pub trait AgentStakeEscrow {
             agent_id.len() > 0 && agent_id.len() <= MAX_AGENT_ID_LEN,
             "invalid agent_id"
         );
-        let payment = self.call_value().egld_value().clone_value();
+        let payment = self.call_value().egld().clone_value();
         require!(payment > 0, "zero payment");
 
         let owner = self.blockchain().get_caller();
@@ -96,7 +89,6 @@ pub trait AgentStakeEscrow {
         require!(s.owner == caller, "only owner");
 
         let amount = s.principal.clone();
-        // CEI
         s.active = false;
         s.agent_live = false;
         s.principal = BigUint::zero();

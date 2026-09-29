@@ -1,8 +1,6 @@
 #![no_std]
 
 //! xArtists Treasury Splitter — 40/30/20/10 Mission/Reserve/Reward/Ops.
-//! receiveAndSplit(EGLD) atomic. setSplitBps sum=10000 owner (multisig/DAO).
-//! Dust → ops. Pause + 2-step ownership.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
@@ -23,7 +21,10 @@ pub trait TreasurySplitter {
         reward_bps: u16,
         ops_bps: u16,
     ) {
-        require!(!mission.is_zero() && !reserve.is_zero() && !reward.is_zero() && !ops.is_zero(), "zero dest");
+        require!(
+            !mission.is_zero() && !reserve.is_zero() && !reward.is_zero() && !ops.is_zero(),
+            "zero dest"
+        );
         require!(
             (mission_bps as u32) + (reserve_bps as u32) + (reward_bps as u32) + (ops_bps as u32)
                 == BPS_DENOM as u32,
@@ -46,11 +47,16 @@ pub trait TreasurySplitter {
         self.total_split().set(BigUint::zero());
     }
 
-    #[endpoint(upgrade)]
-    fn upgrade(&self) { self.require_owner(); }
+    #[upgrade]
+    fn upgrade(&self) {
+        self.require_owner();
+    }
 
     fn require_owner(&self) {
-        require!(self.blockchain().get_caller() == self.owner().get(), "only owner");
+        require!(
+            self.blockchain().get_caller() == self.owner().get(),
+            "only owner"
+        );
     }
 
     #[endpoint(setPaused)]
@@ -99,7 +105,10 @@ pub trait TreasurySplitter {
         ops: ManagedAddress,
     ) {
         self.require_owner();
-        require!(!mission.is_zero() && !reserve.is_zero() && !reward.is_zero() && !ops.is_zero(), "zero dest");
+        require!(
+            !mission.is_zero() && !reserve.is_zero() && !reward.is_zero() && !ops.is_zero(),
+            "zero dest"
+        );
         self.mission().set(&mission);
         self.reserve().set(&reserve);
         self.reward().set(&reward);
@@ -110,7 +119,7 @@ pub trait TreasurySplitter {
     #[endpoint(receiveAndSplit)]
     fn receive_and_split(&self) {
         require!(!self.paused().get(), "paused");
-        let payment = self.call_value().egld_value().clone_value();
+        let payment = self.call_value().egld().clone_value();
         require!(payment > 0, "zero payment");
         self.split_internal(payment);
     }
@@ -128,25 +137,46 @@ pub trait TreasurySplitter {
         let prev = self.total_split().get();
         self.total_split().set(&(prev + &amount));
 
-        if to_mission > 0 { self.send().direct_egld(&self.mission().get(), &to_mission); }
-        if to_reserve > 0 { self.send().direct_egld(&self.reserve().get(), &to_reserve); }
-        if to_reward > 0 { self.send().direct_egld(&self.reward().get(), &to_reward); }
-        if to_ops > 0 { self.send().direct_egld(&self.ops().get(), &to_ops); }
+        if to_mission > 0 {
+            self.send().direct_egld(&self.mission().get(), &to_mission);
+        }
+        if to_reserve > 0 {
+            self.send().direct_egld(&self.reserve().get(), &to_reserve);
+        }
+        if to_reward > 0 {
+            self.send().direct_egld(&self.reward().get(), &to_reward);
+        }
+        if to_ops > 0 {
+            self.send().direct_egld(&self.ops().get(), &to_ops);
+        }
 
         self.split_event(&amount, &to_mission, &to_reserve, &to_reward, &to_ops);
     }
 
     #[view(getTotalSplit)]
-    fn get_total_split(&self) -> BigUint { self.total_split().get() }
+    fn get_total_split(&self) -> BigUint {
+        self.total_split().get()
+    }
 
     #[view(getOwner)]
-    fn get_owner(&self) -> ManagedAddress { self.owner().get() }
+    fn get_owner(&self) -> ManagedAddress {
+        self.owner().get()
+    }
 
     #[view(isPaused)]
-    fn is_paused(&self) -> bool { self.paused().get() }
+    fn is_paused(&self) -> bool {
+        self.paused().get()
+    }
 
     #[event("split")]
-    fn split_event(&self, amount: &BigUint, mission: &BigUint, reserve: &BigUint, reward: &BigUint, ops: &BigUint);
+    fn split_event(
+        &self,
+        amount: &BigUint,
+        mission: &BigUint,
+        reserve: &BigUint,
+        reward: &BigUint,
+        ops: &BigUint,
+    );
 
     #[view]
     #[storage_mapper("owner")]

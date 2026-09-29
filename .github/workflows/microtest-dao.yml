@@ -1,0 +1,96 @@
+name: Microtest DAO
+
+# Owner-only smoke: setLpWeight + createProposal on tro-governance
+# Secret: SC_DEPLOYER_PEM
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type RUN_MICROTEST"
+        required: true
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  microtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      DEPLOYER: erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g
+      GOV: erd1qqqqqqqqqqqqqpgqe6xrgq2y53q8d0lsact2dppzvg42t4wcvhxq9e9euy
+      PROXY: https://gateway.multiversx.com
+      CHAIN_ID: "1"
+
+    steps:
+      - name: Gate
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "RUN_MICROTEST" ]; then
+            echo "blocked"; exit 1
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli
+
+      - name: PEM
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+
+      - name: setLpWeight deployer=100
+        run: |
+          set -euo pipefail
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          mxpy contract call "$GOV" \
+            --pem="${RUNNER_TEMP}/deployer.pem" \
+            --function setLpWeight \
+            --arguments "${DEPLOYER}" 100 \
+            --gas-limit 12000000 \
+            --proxy "$PROXY" --chain "$CHAIN_ID" \
+            --nonce "$NONCE" \
+            --send --wait-result
+
+      - name: createProposal smoke
+        run: |
+          set -euo pipefail
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          mxpy contract call "$GOV" \
+            --pem="${RUNNER_TEMP}/deployer.pem" \
+            --function createProposal \
+            --arguments "str:smoke-microtest" 500 \
+            --gas-limit 15000000 \
+            --proxy "$PROXY" --chain "$CHAIN_ID" \
+            --nonce "$NONCE" \
+            --send --wait-result
+
+      - name: Verify views
+        run: |
+          python3 <<'PY'
+          import urllib.request, json, base64
+          GOV="erd1qqqqqqqqqqqqqpgqe6xrgq2y53q8d0lsact2dppzvg42t4wcvhxq9e9euy"
+          DEP="erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g"
+          def q(func, args=None):
+              body=json.dumps({"scAddress":GOV,"funcName":func,"args":args or []}).encode()
+              req=urllib.request.Request("https://api.multiversx.com/vm-values/query", data=body, headers={"Content-Type":"application/json"})
+              with urllib.request.urlopen(req) as r:
+                  d=json.load(r)
+              rd=(d.get("data") or {}).get("data") or {}
+              print(func, rd.get("returnCode"), rd.get("returnData"))
+          q("getProposalCount")
+          q("getLpWeight")  # may need arg
+          PY
+
+      - name: Cleanup
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"
