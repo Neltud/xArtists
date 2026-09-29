@@ -21,24 +21,21 @@ multiversx_sc_wasm_adapter::endpoints! {
         acceptOwnership => accept_ownership
         claimHouseEgld => claim_house_egld
         claimHouseEsdt => claim_house_esdt
-        lockSpinEgld => lock_spin_egld
-        lockSpinEsdt => lock_spin_esdt
+        spinEgld => spin_egld
+        spinEsdt => spin_esdt
         resolveSpin => resolve_spin
         refundSpin => refund_spin
-        getPendingSpin => get_pending_spin_view
-        getProgressiveEgld => progressive_egld
-        getProgressiveEsdt => progressive_esdt
-        getSpinCount => spin_count
-        getGrandCount => grand_count
-        getMinBet => min_bet
-        getProgressiveContribBps => progressive_contrib_bps
-        getHouseRakeBps => house_rake_bps
-        getResolveDelayBlocks => resolve_delay_blocks
-        getTimeoutBlocks => timeout_blocks
-        isPaused => paused
-        getOwner => owner
-        isPaymentTokenAllowed => payment_token_allowed
-        getUserPendingCount => user_pending_count
+        getPendingSpin => get_pending_spin
+        getProgressiveEgld => get_progressive_egld
+        getSpinCount => get_spin_count
+        getGrandCount => get_grand_count
+        getMinBet => get_min_bet
+        getProgressiveContribBps => get_progressive_contrib_bps
+        getHouseRakeBps => get_house_rake_bps
+        getTotalWageredEgld => get_total_wagered_egld
+        getTotalPaidEgld => get_total_paid_egld
+        isPaused => is_paused
+        getOwner => get_owner
     )
 }
 
