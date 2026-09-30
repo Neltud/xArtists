@@ -1,5 +1,5 @@
 /**
- * Empire store — wallet, SC flags, TX overlay, Agent IA access (Command Center gate).
+ * Empire store — wallet, SC flags, TX overlay, Agent IA access, mode lock, TX watchdog.
  * Pattern: useSyncExternalStore (no Zustand).
  */
 import { useSyncExternalStore } from 'react'
@@ -36,15 +36,20 @@ export type EmpireWallet = {
   troBalance: string | null
 }
 
-/** Zone audio / immersion — Museum public vs Command Center holder */
 export type EmpireZone = 'museum' | 'command' | 'transition'
 
 export type AgentAccessState = {
-  /** True if ≥1 Agent IA pack (on-chain or paper device) */
   hasAgentAccess: boolean
   packs: Array<'pulse' | 'yield' | 'sentinel'>
   source: 'chain' | 'paper' | 'none'
   updatedAt: number | null
+}
+
+/** Audit: lock UI during paper↔live transitions or mid-TX */
+export type ModeLock = {
+  locked: boolean
+  reason: string | null
+  until: number | null
 }
 
 export type EmpireState = {
@@ -65,6 +70,7 @@ export type EmpireState = {
   agentAccess: AgentAccessState
   zone: EmpireZone
   audioVolume: number
+  modeLock: ModeLock
   troTokenId: string
   addresses: {
     troStaking: string
@@ -73,6 +79,8 @@ export type EmpireState = {
     dao: string
   }
 }
+
+const TX_WATCHDOG_MS = 45_000
 
 const initialTx: EmpireTx = {
   phase: 'idle',
@@ -114,6 +122,7 @@ const initial: EmpireState = {
   agentAccess: { ...initialAgent },
   zone: 'museum',
   audioVolume: 1,
+  modeLock: { locked: false, reason: null, until: null },
   troTokenId: TRO_TOKEN_ID,
   addresses: {
     troStaking: TRO_STAKING_ADDRESS,
@@ -125,9 +134,36 @@ const initial: EmpireState = {
 
 let state: EmpireState = { ...initial, scs: getAllScSnapshots() }
 const listeners = new Set<() => void>()
+let watchdogTimer: ReturnType<typeof setTimeout> | null = null
 
 function emit() {
   listeners.forEach(l => l())
+}
+
+function clearWatchdog() {
+  if (watchdogTimer != null) {
+    clearTimeout(watchdogTimer)
+    watchdogTimer = null
+  }
+}
+
+function armWatchdog() {
+  clearWatchdog()
+  watchdogTimer = setTimeout(() => {
+    const p = state.tx.phase
+    if (p === 'preparing' || p === 'signing' || p === 'broadcast') {
+      state = {
+        ...state,
+        tx: {
+          ...state.tx,
+          phase: 'error',
+          error:
+            'Timeout 45s — aucune confirmation réseau. Réessaie ou vérifie xPortal / Explorer.',
+        },
+      }
+      emit()
+    }
+  }, TX_WATCHDOG_MS)
 }
 
 export function getEmpireState(): EmpireState {
@@ -195,7 +231,47 @@ export function setEmpireAudioVolume(v: number): void {
   emit()
 }
 
+/** Lock mode switches during TX or explicit paper↔live transition */
+export function setModeLock(locked: boolean, reason?: string, ms = 8_000): void {
+  const until = locked ? Date.now() + ms : null
+  state = {
+    ...state,
+    modeLock: {
+      locked,
+      reason: locked ? reason || 'Transition en cours' : null,
+      until,
+    },
+  }
+  emit()
+  if (locked && until) {
+    setTimeout(() => {
+      if (state.modeLock.until && Date.now() >= state.modeLock.until) {
+        state = {
+          ...state,
+          modeLock: { locked: false, reason: null, until: null },
+        }
+        emit()
+      }
+    }, ms + 50)
+  }
+}
+
+export function isModeLocked(): boolean {
+  if (!state.modeLock.locked) return false
+  if (state.modeLock.until && Date.now() > state.modeLock.until) {
+    state = {
+      ...state,
+      modeLock: { locked: false, reason: null, until: null },
+    }
+    return false
+  }
+  return true
+}
+
 export function empireTxStart(label: string): void {
+  if (isModeLocked() && state.tx.phase !== 'idle') {
+    /* still allow start if lock expired mid-way */
+  }
   state = {
     ...state,
     tx: {
@@ -208,12 +284,14 @@ export function empireTxStart(label: string): void {
     },
   }
   emit()
+  armWatchdog()
 }
 
 export function empireTxSigning(): void {
   if (state.tx.phase === 'idle') return
   state = { ...state, tx: { ...state.tx, phase: 'signing' } }
   emit()
+  armWatchdog()
 }
 
 export function empireTxBroadcast(sessionId?: string): void {
@@ -226,9 +304,11 @@ export function empireTxBroadcast(sessionId?: string): void {
     },
   }
   emit()
+  armWatchdog()
 }
 
 export function empireTxSuccess(sessionId?: string, explorerUrl?: string): void {
+  clearWatchdog()
   state = {
     ...state,
     tx: {
@@ -242,6 +322,7 @@ export function empireTxSuccess(sessionId?: string, explorerUrl?: string): void 
 }
 
 export function empireTxError(error: string): void {
+  clearWatchdog()
   state = {
     ...state,
     tx: { ...state.tx, phase: 'error', error },
@@ -250,6 +331,7 @@ export function empireTxError(error: string): void {
 }
 
 export function empireTxClear(): void {
+  clearWatchdog()
   state = { ...state, tx: { ...initialTx } }
   emit()
 }
@@ -287,5 +369,13 @@ export function useAgentAccess(): AgentAccessState {
     subscribeEmpire,
     () => getEmpireState().agentAccess,
     () => getEmpireState().agentAccess,
+  )
+}
+
+export function useModeLock(): ModeLock {
+  return useSyncExternalStore(
+    subscribeEmpire,
+    () => getEmpireState().modeLock,
+    () => getEmpireState().modeLock,
   )
 }
