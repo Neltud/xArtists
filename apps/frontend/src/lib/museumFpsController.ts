@@ -1,5 +1,6 @@
 /**
  * Shared FPS locomotion constants — museum halls.
+ * collisionRadius ~0.18 → approach walls to ~20cm (not 1m gap).
  */
 export const MUSEUM_FPS = {
   eyeHeight: 1.65,
@@ -9,9 +10,9 @@ export const MUSEUM_FPS = {
   friction: 11,
   lookSens: 0.0019,
   pitchMax: 1.2,
-  collisionRadius: 0.34,
-  /** Min third-person cam distance when against wall */
-  camMinDist: 0.55,
+  /** Player capsule vs walls — keep small so avatar can near art frames */
+  collisionRadius: 0.18,
+  camMinDist: 0.45,
   camMaxDist: 4.2,
   bobAmp: 0.04,
   bobFreq: 8.5,
@@ -19,7 +20,6 @@ export const MUSEUM_FPS = {
   fovSprint: 78,
 } as const
 
-/** Map keyboard / numpad → wish WASD flags (diagonals supported). */
 export function applyNavKey(
   keys: Record<string, boolean>,
   e: KeyboardEvent,
@@ -28,13 +28,11 @@ export function applyNavKey(
   const code = e.code
   const key = e.key
 
-  // Arrows — preventDefault handled by caller when hall focused
   if (key === 'ArrowUp' || code === 'Numpad8') keys.w = down
   if (key === 'ArrowDown' || code === 'Numpad2') keys.s = down
   if (key === 'ArrowLeft' || code === 'Numpad4') keys.a = down
   if (key === 'ArrowRight' || code === 'Numpad6') keys.d = down
 
-  // Numpad diagonals
   if (code === 'Numpad7') {
     keys.w = down
     keys.a = down
@@ -51,11 +49,8 @@ export function applyNavKey(
     keys.s = down
     keys.d = down
   }
-  if (code === 'Numpad5') {
-    // stop
-    if (down) {
-      keys.w = keys.a = keys.s = keys.d = false
-    }
+  if (code === 'Numpad5' && down) {
+    keys.w = keys.a = keys.s = keys.d = false
   }
 }
 
