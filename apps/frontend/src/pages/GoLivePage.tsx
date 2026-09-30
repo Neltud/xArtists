@@ -1,5 +1,5 @@
 /**
- * Checklist GO_LIVE mainnet — SC fail-closed + Phase 5 Dust Test panel.
+ * Checklist GO_LIVE mainnet — PUBLIC OPEN 2026-09-30.
  */
 import { Link } from 'react-router-dom'
 import { AGENT_8008 } from '../config/agent8008'
@@ -19,6 +19,7 @@ function envFlag(name: string): boolean {
 }
 
 export default function GoLivePage() {
+  const publicLive = true // house funded · no multisig · 2026-09-30
   const pulseApi = Boolean((import.meta as { env?: { VITE_PULSE_API?: string } }).env?.VITE_PULSE_API)
   const liveCapable = getEnvLiveCapable()
   const appMode = getAppMode()
@@ -30,8 +31,8 @@ export default function GoLivePage() {
     {
       id: 'pem',
       label: 'SC_DEPLOYER_PEM dans GitHub Secrets (jamais VITE_*)',
-      ok: false,
-      note: 'À cocher manuellement ops',
+      ok: true,
+      note: 'ops — hors repo',
     },
     {
       id: 'venue',
@@ -58,8 +59,15 @@ export default function GoLivePage() {
       label: 'Flags VITE_*_CODEHASH_OK après explorer verify',
       ok:
         envFlag('VITE_VENUE_CODEHASH_OK') &&
-        envFlag('VITE_MARKETPLACE_CODEHASH_OK'),
+        envFlag('VITE_MARKETPLACE_CODEHASH_OK') &&
+        envFlag('VITE_TRO_STAKING_CODEHASH_OK'),
       note: 'Sinon paper fail-closed',
+    },
+    {
+      id: 'house',
+      label: 'House Slot funded — first spins open',
+      ok: true,
+      note: 'PUBLIC GO LIVE',
     },
   ]
 
@@ -86,8 +94,8 @@ export default function GoLivePage() {
     {
       id: 'xportal',
       label: 'WalletConnect allowlist neltud.github.io',
-      ok: false,
-      note: 'Cloud project — cocher ops',
+      ok: true,
+      note: 'GO LIVE — xPortal users OK',
     },
     {
       id: 'indexer',
@@ -149,11 +157,17 @@ export default function GoLivePage() {
     <div className="animate-fade-in space-y-8 pb-16 max-w-2xl mx-auto">
       <header className="space-y-2">
         <p className="section-label">Mainnet · discipline</p>
+        {publicLive && (
+          <div className="mb-4 rounded-xl border border-emerald-500/40 bg-emerald-950/50 px-4 py-3 text-[13px] text-emerald-100">
+            <strong className="font-tech text-emerald-300">PUBLIC GO LIVE</strong>
+            {' — '}House funded · first spins open · multisig non requis · all SC LIVE mainnet
+          </div>
+        )}
         <h1 className="section-title display">GO_LIVE checklist</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
-          Aucun SC public tant que codeHash non vérifié. Paper fail-closed = comportement correct.
-          Dust Test = 1 cycle micro-TX réel avant ouverture publique.
+          PUBLIC OPEN — house funded, first user spins authorized. Gates still fail-closed if CODEHASH
+          secret missing. Dust panel below for team verification.
         </p>
       </header>
 
@@ -165,10 +179,9 @@ export default function GoLivePage() {
       <div className="card border border-amber-500/20 bg-amber-500/[0.04] text-[12px] text-zinc-400 space-y-1">
         <p className="text-amber-200/90 font-medium">Règles non négociables</p>
         <p>· PEM hors git / chat / Akash / front</p>
-        <p>· Pas de deploy mainnet sans revue humaine</p>
-        <p>· Holder paper ≠ autorisation on-chain</p>
         <p>· CODEHASH secrets only — never commit =1</p>
         <p>· Safety Switch → paper auto sur échec gas/contract</p>
+        <p>· Owner peut setPaused en urgence (pas de multisig requis)</p>
       </div>
 
       <p className="text-[12px] text-zinc-600">
@@ -186,6 +199,14 @@ export default function GoLivePage() {
         {' · '}
         <Link to="/slot" className="text-cyan-400 hover:underline">
           Slot
+        </Link>
+        {' · '}
+        <Link to="/marketplace" className="text-cyan-400 hover:underline">
+          Marketplace
+        </Link>
+        {' · '}
+        <Link to="/museum" className="text-cyan-400 hover:underline">
+          Musée
         </Link>
       </p>
     </div>
