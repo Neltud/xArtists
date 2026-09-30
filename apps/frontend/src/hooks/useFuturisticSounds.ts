@@ -1,7 +1,21 @@
 /**
- * Sons futuristes interactifs — Web Audio, mute par défaut (localStorage).
+ * Sons futuristes — Web Audio, mute par défaut (localStorage).
+ * Slot: spin / reel / win / jackpot / bonus.
  */
-type SoundId = 'navigate' | 'click' | 'success' | 'buy' | 'sell' | 'whoosh' | 'notify' | 'error'
+type SoundId =
+  | 'navigate'
+  | 'click'
+  | 'success'
+  | 'buy'
+  | 'sell'
+  | 'whoosh'
+  | 'notify'
+  | 'error'
+  | 'slot_spin'
+  | 'slot_reel'
+  | 'slot_win'
+  | 'slot_jackpot'
+  | 'slot_bonus'
 
 const STORAGE_KEY = 'xartists-sfx-muted'
 
@@ -118,6 +132,29 @@ export function playUiSound(id: SoundId) {
       break
     case 'error':
       tone(200, 0.15, 'sawtooth', 0.03)
+      break
+    case 'slot_spin':
+      sweep(200, 600, 0.18, 0.05)
+      tone(400, 0.05, 'square', 0.02, 0.02)
+      break
+    case 'slot_reel':
+      tone(180 + Math.random() * 120, 0.035, 'square', 0.018)
+      break
+    case 'slot_win':
+      tone(523, 0.07, 'sine', 0.055)
+      tone(659, 0.09, 'sine', 0.05, 0.06)
+      tone(784, 0.12, 'triangle', 0.045, 0.12)
+      break
+    case 'slot_jackpot':
+      for (let i = 0; i < 6; i++) {
+        tone(400 + i * 80, 0.1, 'sine', 0.05, i * 0.07)
+      }
+      sweep(200, 1200, 0.45, 0.06)
+      break
+    case 'slot_bonus':
+      tone(880, 0.08, 'triangle', 0.05)
+      tone(1100, 0.1, 'sine', 0.045, 0.08)
+      tone(1320, 0.14, 'sine', 0.04, 0.16)
       break
     default:
       break
