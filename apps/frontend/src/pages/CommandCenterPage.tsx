@@ -8,6 +8,7 @@ import AgentIA_Guard from '../components/AgentIA_Guard'
 import CommandWall from '../command-center/CommandWall'
 import DashboardSource from '../command-center/DashboardSource'
 import AgentRoster from '../command-center/AgentRoster'
+import DataTunnelTransition from '../command-center/DataTunnelTransition'
 import { useAgentAccess, setEmpireZone, empireTxStart } from '../store/empireStore'
 import { usePulse } from '../hooks/usePulse'
 import { useWallet } from '../context/WalletContext'
@@ -29,6 +30,7 @@ function CommandCenterInner() {
   const { env, source, connected: pulseWs } = usePulse()
   const { connected } = useWallet()
   const [room, setRoom] = useState<Room>('hub')
+  const [tunnel, setTunnel] = useState(true)
   const sentiment = typeof env?.sentiment === 'number' ? env.sentiment : 0
   const mode = getAppMode()
 
@@ -53,6 +55,7 @@ function CommandCenterInner() {
 
   return (
     <div className="animate-fade-in space-y-6 pb-16 max-w-4xl mx-auto">
+      <DataTunnelTransition active={tunnel} onDone={() => setTunnel(false)} />
       <header className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-400/80 font-semibold">
@@ -70,10 +73,12 @@ function CommandCenterInner() {
         <p className="text-sm text-zinc-400">
           Accès <span className="text-cyan-200">{access.source}</span> ·{' '}
           {access.packs.length
-            ? access.packs.map(id => {
-                const p = AGENT_PACKS.find(x => x.id === id)
-                return p ? `${p.icon} ${p.name}` : id
-              }).join(' · ')
+            ? access.packs
+                .map(id => {
+                  const p = AGENT_PACKS.find(x => x.id === id)
+                  return p ? `${p.icon} ${p.name}` : id
+                })
+                .join(' · ')
             : 'aucun pack'}
         </p>
       </header>
@@ -111,7 +116,11 @@ function CommandCenterInner() {
 
       {room === 'hub' && (
         <div className="space-y-6">
-          <CommandWall sentiment={sentiment} />
+          <CommandWall
+            sentiment={sentiment}
+            volatility={Math.min(1, Math.abs(sentiment) + 0.25)}
+            interactive
+          />
           <DashboardSource sentiment={sentiment} className="mx-auto" />
           <AgentRoster />
         </div>
@@ -132,7 +141,7 @@ function CommandCenterInner() {
           <div className="card space-y-3 border-amber-500/20">
             <h2 className="font-bold text-amber-100">Yield Room · Direct Execution</h2>
             <p className="text-sm text-zinc-400">
-              Data → action : stake TRO on-chain via TxShell / xPortal.
+              Data → action : stake TRO on-chain via TxShell / xPortal. Clic mur = nœuds interactifs.
             </p>
             <div className="flex flex-wrap gap-2">
               <button
@@ -150,7 +159,7 @@ function CommandCenterInner() {
                 Hatom lecture
               </Link>
             </div>
-            <CommandWall sentiment={Math.max(0, sentiment)} />
+            <CommandWall sentiment={Math.max(0, sentiment)} volatility={0.35} interactive />
           </div>
         </AgentIA_Guard>
       )}
@@ -207,7 +216,11 @@ function RoomCard({
       <p className="text-xs mono text-zinc-500">
         sentiment {sentiment.toFixed(2)} · {bullish ? 'gold/fluid' : 'red/chaotic'}
       </p>
-      <CommandWall sentiment={sentiment} />
+      <CommandWall
+        sentiment={sentiment}
+        volatility={Math.min(1, Math.abs(sentiment) + 0.2)}
+        interactive
+      />
     </div>
   )
 }
