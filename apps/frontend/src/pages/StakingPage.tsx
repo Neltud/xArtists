@@ -67,8 +67,8 @@ export default function StakingPage() {
 
       <div className="rounded-xl border border-zinc-600/40 bg-zinc-900/40 px-4 py-3 text-xs text-zinc-300 flex flex-wrap items-center gap-2">
         <TokenIcon token="EGLD" size={16} />
-        Yield LP = farms <strong>DEX externes</strong>. Stake $TRO on-chain = onglet TRO (gate{' '}
-        <code className="text-[10px]">CODEHASH_OK</code>). Aucun faux claim.
+        Yield LP = farms <strong>DEX externes</strong>. Stake $TRO on-chain = onglet TRO. Aucun
+        faux claim de rendement.
       </div>
 
       <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
@@ -221,7 +221,7 @@ export default function StakingPage() {
             NFT staking
           </h2>
           <p className="text-sm text-zinc-400">
-            Stake collections xArtists pour rewards / boost. Activation post-deploy SC.
+            Stake collections xArtists pour rewards / boost. Activation progressive.
           </p>
           <Link to="/museum" className="btn-secondary text-sm inline-block">
             Voir la galerie →
@@ -233,8 +233,7 @@ export default function StakingPage() {
         <div className="card space-y-3">
           <h2 className="font-semibold">Rewards report</h2>
           <p className="text-sm text-zinc-400">
-            Rapport paper Vellum → <code className="text-[10px]">data/rewards_report.json</code> quand
-            le workflow tourne. Yield LP = claim sur le DEX.
+            Rapport de simulation disponible côté ops. Yield LP = claim sur le DEX.
           </p>
         </div>
       )}
