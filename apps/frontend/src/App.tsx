@@ -32,6 +32,7 @@ import RouteSfx from './components/RouteSfx'
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const MuseumPage = lazy(() => import('./pages/MuseumPage'))
 const MarketplacePage = lazy(() => import('./pages/MarketplacePage'))
+const MarketAnalyticsPage = lazy(() => import('./pages/MarketAnalyticsPage'))
 const StakingPage = lazy(() => import('./pages/StakingPage'))
 const SlotPage = lazy(() => import('./pages/SlotPage'))
 const AgentsPage = lazy(() => import('./pages/AgentsPage'))
@@ -87,7 +88,7 @@ export default function App() {
               <PageTransition key={location.pathname}>
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
-                  <Route path="/market" element={<Navigate to="/marketplace" replace />} />
+                  <Route path="/market" element={<MarketAnalyticsPage />} />
                   <Route path="/marketplace" element={<MarketplacePage />} />
                   <Route path="/trading" element={<TradingPage />} />
                   <Route path="/agents" element={<AgentsPage />} />
