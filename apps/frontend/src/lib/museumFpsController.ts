@@ -1,23 +1,22 @@
 /**
- * Shared FPS locomotion constants — museum halls.
- * collisionRadius ~0.18 → approach walls to ~20cm (not 1m gap).
+ * FPS constants — museum halls.
+ * collisionRadius 0.32 + wall segments = no walking through walls.
  */
 export const MUSEUM_FPS = {
   eyeHeight: 1.65,
-  walkSpeed: 3.6,
-  sprintSpeed: 6.4,
-  accel: 22,
-  friction: 11,
+  walkSpeed: 3.4,
+  sprintSpeed: 5.8,
+  accel: 20,
+  friction: 12,
   lookSens: 0.0019,
-  pitchMax: 1.2,
-  /** Player capsule vs walls — keep small so avatar can near art frames */
-  collisionRadius: 0.18,
-  camMinDist: 0.45,
-  camMaxDist: 4.2,
-  bobAmp: 0.04,
-  bobFreq: 8.5,
-  fovWalk: 72,
-  fovSprint: 78,
+  pitchMax: 1.15,
+  collisionRadius: 0.32,
+  camMinDist: 0.5,
+  camMaxDist: 3.8,
+  bobAmp: 0.035,
+  bobFreq: 8,
+  fovWalk: 70,
+  fovSprint: 76,
 } as const
 
 export function applyNavKey(

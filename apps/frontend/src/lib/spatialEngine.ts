@@ -1,8 +1,16 @@
 /**
- * Spatial engine — kinematics, slide collision, camera wall clamp.
+ * Spatial engine — kinematics, wall-segment collision, camera clamp.
  */
 
 export type Vec2 = { x: number; z: number }
+
+export type WallSeg2 = {
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+  thickness?: number
+}
 
 export function integrateWishVelocity(
   vx: number,
@@ -28,6 +36,50 @@ export function integrateWishVelocity(
   return { vx: vx * damp, vz: vz * damp }
 }
 
+/** Distance point → segment (plan XZ, y = z) */
+export function distPointToSegment(
+  px: number,
+  pz: number,
+  x1: number,
+  z1: number,
+  x2: number,
+  z2: number,
+): number {
+  const dx = x2 - x1
+  const dz = z2 - z1
+  const len2 = dx * dx + dz * dz
+  if (len2 < 1e-12) return Math.hypot(px - x1, pz - z1)
+  let t = ((px - x1) * dx + (pz - z1) * dz) / len2
+  t = Math.max(0, Math.min(1, t))
+  return Math.hypot(px - (x1 + t * dx), pz - (z1 + t * dz))
+}
+
+/** True if point is too close to any wall segment */
+export function hitsWallSegment(
+  x: number,
+  z: number,
+  walls: WallSeg2[],
+  radius: number,
+): boolean {
+  for (const w of walls) {
+    const half = (w.thickness ?? 0.2) * 0.5 + radius
+    if (distPointToSegment(x, z, w.x1, w.y1, w.x2, w.y2) < half) return true
+  }
+  return false
+}
+
+export function makeWalkableChecker(
+  walls: WallSeg2[],
+  floorOk: (x: number, z: number) => boolean,
+  radius: number,
+): (x: number, z: number) => boolean {
+  return (x, z) => {
+    if (!floorOk(x, z)) return false
+    if (hitsWallSegment(x, z, walls, radius)) return false
+    return true
+  }
+}
+
 function discWalkable(
   x: number,
   z: number,
@@ -35,10 +87,16 @@ function discWalkable(
   radius: number,
 ): boolean {
   if (!isWalkable(x, z)) return false
-  const steps = 8
+  const steps = 12
   for (let i = 0; i < steps; i++) {
     const a = (i / steps) * Math.PI * 2
     if (!isWalkable(x + Math.cos(a) * radius, z + Math.sin(a) * radius)) return false
+  }
+  // mid-ring
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2
+    const r = radius * 0.55
+    if (!isWalkable(x + Math.cos(a) * r, z + Math.sin(a) * r)) return false
   }
   return true
 }
@@ -50,7 +108,7 @@ export function trySlideMove(
   vz: number,
   dt: number,
   isWalkable: (x: number, z: number) => boolean,
-  radius = 0.28,
+  radius = 0.32,
 ): { x: number; z: number; vx: number; vz: number } {
   let x = px
   let z = pz
@@ -60,35 +118,33 @@ export function trySlideMove(
   const dx = vx * dt
   const dz = vz * dt
 
-  if (Math.abs(dx) > 1e-8) {
-    const nx = x + dx
-    if (discWalkable(nx, z, isWalkable, radius)) {
-      x = nx
-    } else {
-      ovx = 0
-      const step = Math.sign(dx) * Math.min(Math.abs(dx), radius * 0.35)
-      if (discWalkable(x + step, z, isWalkable, radius * 0.85)) x += step
-    }
-  }
+  // sub-step to reduce tunneling through thin walls
+  const steps = Math.max(1, Math.min(4, Math.ceil(Math.hypot(dx, dz) / (radius * 0.4))))
+  const sdx = dx / steps
+  const sdz = dz / steps
 
-  if (Math.abs(dz) > 1e-8) {
-    const nz = z + dz
-    if (discWalkable(x, nz, isWalkable, radius)) {
-      z = nz
-    } else {
-      ovz = 0
-      const step = Math.sign(dz) * Math.min(Math.abs(dz), radius * 0.35)
-      if (discWalkable(x, z + step, isWalkable, radius * 0.85)) z += step
+  for (let s = 0; s < steps; s++) {
+    if (Math.abs(sdx) > 1e-9) {
+      const nx = x + sdx
+      if (discWalkable(nx, z, isWalkable, radius)) {
+        x = nx
+      } else {
+        ovx = 0
+      }
+    }
+    if (Math.abs(sdz) > 1e-9) {
+      const nz = z + sdz
+      if (discWalkable(x, nz, isWalkable, radius)) {
+        z = nz
+      } else {
+        ovz = 0
+      }
     }
   }
 
   return { x, z, vx: ovx, vz: ovz }
 }
 
-/**
- * Third-person camera distance: never leave the walkable floor (no see-through walls).
- * Pulls cam in when path to ideal camera position crosses a wall.
- */
 export function clampCameraDistance(
   px: number,
   pz: number,
@@ -103,10 +159,9 @@ export function clampCameraDistance(
     const d = minDist + ((maxDist - minDist) * i) / 12
     const cx = px - Math.sin(yaw) * d * cosP
     const cz = pz - Math.cos(yaw) * d * cosP
-    // sample corridor from player to camera
     let clear = true
-    for (let s = 1; s <= 6; s++) {
-      const t = s / 6
+    for (let s = 1; s <= 8; s++) {
+      const t = s / 8
       const sx = px + (cx - px) * t
       const sz = pz + (cz - pz) * t
       if (!isWalkable(sx, sz)) {
@@ -117,23 +172,4 @@ export function clampCameraDistance(
     if (clear) return d
   }
   return minDist
-}
-
-export function rayBlocked(
-  originX: number,
-  originZ: number,
-  dirX: number,
-  dirZ: number,
-  maxDist: number,
-  isWalkable: (x: number, z: number) => boolean,
-  samples = 6,
-): boolean {
-  const len = Math.hypot(dirX, dirZ) || 1
-  const dx = dirX / len
-  const dz = dirZ / len
-  for (let i = 1; i <= samples; i++) {
-    const t = (i / samples) * maxDist
-    if (!isWalkable(originX + dx * t, originZ + dz * t)) return true
-  }
-  return false
 }
