@@ -1,6 +1,6 @@
 /**
  * LIA Command Terminal — discreet hacker HUD (Phase 6.3).
- * Pulses with atmosphere; paper comments without API.
+ * Listens xartists:lia-line for Slot jackpot / sensory events.
  */
 import { useEffect, useRef, useState } from 'react'
 import type { ShaderUniformsTarget } from '../lib/semanticCompiler'
@@ -37,6 +37,18 @@ export default function LiaCommandTerminal({
     if (!phrase) return
     setLines(prev => [...prev.slice(-12), `> ${phrase}`])
   }, [phrase])
+
+  useEffect(() => {
+    const onLine = (e: Event) => {
+      const p = (e as CustomEvent).detail?.phrase
+      if (typeof p === 'string' && p.trim()) {
+        setLines(prev => [...prev.slice(-12), `> ${p}`])
+        setOpen(true)
+      }
+    }
+    window.addEventListener('xartists:lia-line', onLine)
+    return () => window.removeEventListener('xartists:lia-line', onLine)
+  }, [])
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
