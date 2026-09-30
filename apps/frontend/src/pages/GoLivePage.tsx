@@ -1,9 +1,11 @@
 /**
- * Checklist GO_LIVE mainnet — SC fail-closed jusqu’à verify.
+ * Checklist GO_LIVE mainnet — SC fail-closed + Phase 5 Dust Test panel.
  */
 import { Link } from 'react-router-dom'
 import { AGENT_8008 } from '../config/agent8008'
 import { PACK_PRICE_EGLD } from '../config/multichain'
+import DustTestPanel from '../components/DustTestPanel'
+import { getEnvLiveCapable, getAppMode } from '../lib/appMode'
 
 type Item = { id: string; label: string; ok: boolean; note?: string; href?: string }
 
@@ -18,6 +20,8 @@ function envFlag(name: string): boolean {
 
 export default function GoLivePage() {
   const pulseApi = Boolean((import.meta as { env?: { VITE_PULSE_API?: string } }).env?.VITE_PULSE_API)
+  const liveCapable = getEnvLiveCapable()
+  const appMode = getAppMode()
   const vellum = Boolean(
     (import.meta as { env?: { VITE_VELLUM_8008_WEBHOOK?: string } }).env?.VITE_VELLUM_8008_WEBHOOK,
   )
@@ -40,13 +44,18 @@ export default function GoLivePage() {
       ok: envFlag('VITE_MARKETPLACE_CODEHASH_OK'),
     },
     {
+      id: 'tro',
+      label: 'SC tro_staking + CODEHASH',
+      ok: envFlag('VITE_TRO_STAKING_CODEHASH_OK'),
+    },
+    {
       id: 'slot',
-      label: 'SC slot deploy + verify (optionnel phase 1)',
-      ok: envFlag('VITE_SLOT_CODEHASH_OK'),
+      label: 'SC slot deploy + verify',
+      ok: envFlag('VITE_SLOT_CODEHASH_OK') || envFlag('VITE_SLOT_CASINO_CODEHASH_OK'),
     },
     {
       id: 'flags',
-      label: 'Flags VITE_*_CODEHASH_OK = true après explorer verify',
+      label: 'Flags VITE_*_CODEHASH_OK après explorer verify',
       ok:
         envFlag('VITE_VENUE_CODEHASH_OK') &&
         envFlag('VITE_MARKETPLACE_CODEHASH_OK'),
@@ -55,6 +64,12 @@ export default function GoLivePage() {
   ]
 
   const infra: Item[] = [
+    {
+      id: 'live',
+      label: 'VITE_LIVE_MODE=1 ou VITE_APP_MODE=live (build)',
+      ok: liveCapable,
+      note: `runtime: ${appMode}`,
+    },
     {
       id: 'pulse',
       label: 'pulse-api live + VITE_PULSE_API',
@@ -72,7 +87,7 @@ export default function GoLivePage() {
       id: 'xportal',
       label: 'WalletConnect allowlist neltud.github.io',
       ok: false,
-      note: 'Cloud project e07ac8e2… — cocher ops',
+      note: 'Cloud project — cocher ops',
     },
     {
       id: 'indexer',
@@ -84,64 +99,65 @@ export default function GoLivePage() {
   const product: Item[] = [
     {
       id: 'packs',
-      label: `Packs floor ≥ ${PACK_PRICE_EGLD.min} EGLD`,
+      label: `Packs Agent IA (${PACK_PRICE_EGLD} EGLD paper)`,
       ok: true,
-      href: '/agents',
-    },
-    {
-      id: 'studio',
-      label: 'Studio créateur accessible',
-      ok: true,
-      href: '/studio',
-    },
-    {
-      id: 'tro',
-      label: '$TRO tokenomics page',
-      ok: true,
-      href: '/tro',
+      href: '/#/agents',
     },
     {
       id: '8008',
-      label: `Agent ${AGENT_8008.id} intents paper`,
+      label: `MX-8008 ${AGENT_8008.id}`,
       ok: true,
-      href: '/lia',
+      href: '/#/identity',
+    },
+    {
+      id: 'dust',
+      label: 'Dust loop: stake → slot → treasury split',
+      ok: envFlag('VITE_TRO_STAKING_CODEHASH_OK'),
+      note: '1 TX user réelle = validation',
+      href: '/#/staking',
     },
   ]
 
-  const render = (title: string, items: Item[]) => (
-    <section className="card space-y-2">
-      <h2 className="text-sm font-semibold text-white">{title}</h2>
-      <ul className="space-y-2">
-        {items.map(it => (
-          <li key={it.id} className="flex gap-2 items-start text-[13px]">
-            <span className={it.ok ? 'text-emerald-400' : 'text-amber-400'}>{it.ok ? '✓' : '○'}</span>
-            <div className="min-w-0">
-              {it.href ? (
-                <Link to={it.href} className="text-zinc-200 hover:text-white hover:underline">
-                  {it.label}
-                </Link>
-              ) : (
-                <span className="text-zinc-200">{it.label}</span>
-              )}
-              {it.note && <p className="text-[11px] text-zinc-500">{it.note}</p>}
-            </div>
-          </li>
-        ))}
-      </ul>
-    </section>
-  )
+  function render(title: string, items: Item[]) {
+    return (
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-zinc-200">{title}</h2>
+        <ul className="space-y-2">
+          {items.map(it => (
+            <li
+              key={it.id}
+              className="flex flex-wrap items-start gap-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-[13px]"
+            >
+              <span className={it.ok ? 'text-emerald-400' : 'text-zinc-500'}>{it.ok ? '✓' : '○'}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-zinc-200">{it.label}</p>
+                {it.note && <p className="text-[11px] text-zinc-500">{it.note}</p>}
+                {it.href && (
+                  <Link to={it.href.replace('/#', '')} className="text-[11px] text-cyan-400 hover:underline">
+                    ouvrir
+                  </Link>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
 
   return (
-    <div className="animate-fade-in max-w-2xl mx-auto space-y-6 pb-16">
+    <div className="animate-fade-in space-y-8 pb-16 max-w-2xl mx-auto">
       <header className="space-y-2">
         <p className="section-label">Mainnet · discipline</p>
         <h1 className="section-title display">GO_LIVE checklist</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
           Aucun SC public tant que codeHash non vérifié. Paper fail-closed = comportement correct.
+          Dust Test = 1 cycle micro-TX réel avant ouverture publique.
         </p>
       </header>
 
+      <DustTestPanel />
       {render('Smart contracts', scItems)}
       {render('Infra & secrets', infra)}
       {render('Produit', product)}
@@ -151,7 +167,8 @@ export default function GoLivePage() {
         <p>· PEM hors git / chat / Akash / front</p>
         <p>· Pas de deploy mainnet sans revue humaine</p>
         <p>· Holder paper ≠ autorisation on-chain</p>
-        <p>· Voir docs/SECRETS_MAINNET.md</p>
+        <p>· CODEHASH secrets only — never commit =1</p>
+        <p>· Safety Switch → paper auto sur échec gas/contract</p>
       </div>
 
       <p className="text-[12px] text-zinc-600">
@@ -163,12 +180,12 @@ export default function GoLivePage() {
           Studio
         </Link>
         {' · '}
-        <Link to="/tro" className="text-cyan-400 hover:underline">
-          $TRO
+        <Link to="/staking" className="text-cyan-400 hover:underline">
+          Staking
         </Link>
         {' · '}
-        <Link to="/" className="text-cyan-400 hover:underline">
-          Dashboard
+        <Link to="/slot" className="text-cyan-400 hover:underline">
+          Slot
         </Link>
       </p>
     </div>
