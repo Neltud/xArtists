@@ -21,6 +21,8 @@ import { OPEN_ASSETS_EVENT } from './lib/walletEvents'
 import { LINKS } from './config/links'
 import PageTransition from './components/PageTransition'
 import SoundDock from './components/SoundDock'
+import BackgroundMusicPlayer from './components/BackgroundMusicPlayer'
+import ZoneRouteSync from './components/ZoneRouteSync'
 import RouteErrorBoundary from './components/RouteErrorBoundary'
 import RouteSfx from './components/RouteSfx'
 
@@ -87,6 +89,7 @@ export default function App() {
         <GuardianStatusBar />
         <IntentBar />
         <LiaMonitor />
+        <ZoneRouteSync />
         <main className="flex-1 px-3 sm:px-4 pt-2 pb-24 md:pb-8 max-w-6xl w-full mx-auto relative z-10">
           <RouteErrorBoundary>
             <PageTransition>
@@ -150,6 +153,7 @@ export default function App() {
         <FirstVisitOnboarding />
         <RoutePrefetch />
         <RouteSfx />
+        <BackgroundMusicPlayer />
         <SoundDock />
         {needsTx && (
           <Suspense fallback={null}>
