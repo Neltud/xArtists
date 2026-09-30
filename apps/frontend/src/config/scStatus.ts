@@ -1,6 +1,6 @@
 /** On-chain SC readiness - driven by build-time VITE_* after codeHash verify.
- *  Addresses fall back to data/contracts.json mainnet LIVE set (2026-09-29).
- *  TX always fail-closed until corresponding VITE_*_CODEHASH_OK=1.
+ *  Addresses fall back to data/contracts.json mainnet LIVE set.
+ *  TX fail-closed until corresponding VITE_*_CODEHASH_OK=1 (Pages secrets).
  */
 
 const truthy = (v: string | undefined) =>
@@ -19,10 +19,8 @@ export const AGENTS_MARKETPLACE_MAINNET =
   'erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg'
 export const NFT_STAKING_MAINNET =
   'erd1qqqqqqqqqqqqqpgq9ensu3f3p9yx4a583swu0raq8zzeve7tvhxq4fgtgu'
-/** Legacy SC without #[upgrade] — abandoned after redeploy 2026-09-29 */
 export const TRO_STAKING_MAINNET_LEGACY =
   'erd1qqqqqqqqqqqqqpgqqpc9064q0t33dasd23k2hm36fu5gqp7mvhxq9xvpwf'
-/** NEW tro-staking — redeploy + stake dust 1 TRO OK (totalStaked=1e6) */
 export const TRO_STAKING_MAINNET =
   'erd1qqqqqqqqqqqqqpgqes0a2kryurmt34g7nu4kx9n4ftj77dl5vhxqpe3xf3'
 export const TRO_STAKING_CODEHASH_MAINNET = 'Jf5ZhzAGu58ez0njdWoZAnRxP7YevYSX9dpO8pGq7SA='
@@ -136,77 +134,57 @@ export function canSpinSlot(): boolean {
 }
 
 export function marketplaceReceiverOrThrow(): string {
-  if (!canListBuyNft()) {
-    throw new Error('Marketplace SC not live (set VITE_MARKETPLACE_ADDRESS + CODEHASH_OK)')
-  }
+  if (!canListBuyNft()) throw new Error('Marketplace not ready')
   return MARKETPLACE_ADDRESS
 }
 
 export function agentsMarketplaceReceiverOrThrow(): string {
-  if (!canBuyAgent()) {
-    throw new Error(
-      'Agents marketplace not live — set VITE_AGENTS_MARKETPLACE_ADDRESS + VITE_AGENTS_CODEHASH_OK',
-    )
-  }
+  if (!canBuyAgent()) throw new Error('Agents marketplace not ready')
   return AGENTS_MARKETPLACE_ADDRESS
 }
 
 export function treasuryReceiverOrThrow(): string {
-  if (!canUseTreasury()) {
-    throw new Error('Treasury splitter not live — VITE_TREASURY_CODEHASH_OK required')
-  }
+  if (!canUseTreasury()) throw new Error('Treasury not ready')
   return TREASURY_SPLITTER_ADDRESS
 }
 
 export function venueReceiverOrThrow(): string {
-  if (!canRentVenueOnChain()) {
-    throw new Error(
-      'Venue-split not live - set VITE_VENUE_SC_ADDRESS + VITE_VENUE_CODEHASH_OK after rentPay dust',
-    )
-  }
+  if (!canRentVenueOnChain()) throw new Error('Venue not ready')
   return VENUE_SC_ADDRESS
 }
 
 export function troStakingReceiverOrThrow(): string {
-  if (!canStakeTro()) {
-    throw new Error('TRO staking SC not live (set VITE_TRO_STAKING_ADDRESS + CODEHASH_OK)')
-  }
+  if (!canStakeTro()) throw new Error('TRO staking not ready')
   return TRO_STAKING_ADDRESS
 }
 
 export function slotReceiverOrThrow(): string {
-  if (!canSpinSlot()) {
-    throw new Error('Slot SC not live (set VITE_SLOT_CASINO_ADDRESS + VITE_SLOT_CASINO_CODEHASH_OK)')
-  }
+  if (!canSpinSlot()) throw new Error('Slot not ready')
   return SLOT_CASINO_ADDRESS
 }
 
 export function daoReceiverOrThrow(): string {
-  if (!canVoteDao()) {
-    throw new Error('DAO SC not live (set VITE_TRO_GOVERNANCE_ADDRESS + CODEHASH_OK)')
-  }
+  if (!canVoteDao()) throw new Error('DAO not ready')
   return TRO_GOVERNANCE_ADDRESS
 }
 
+/** User-facing labels — no CODEHASH jargon */
 export function venueStatusLabel(): string {
-  if (canRentVenueOnChain()) return 'LIVE · rentPay on-chain'
-  if (isUsableScAddress(VENUE_SC_ADDRESS))
-    return 'Adresse connue · paper until CODEHASH_OK (rentPay dust first)'
-  return 'Paper only · no SC address'
+  if (canRentVenueOnChain()) return 'Ouvert'
+  if (isUsableScAddress(VENUE_SC_ADDRESS)) return 'Bientôt disponible · simulation active'
+  return 'Simulation'
 }
 
 export function troStakingStatusLabel(): string {
-  if (canStakeTro()) return 'LIVE · stake/unstake on-chain (redeploy OK)'
-  if (isUsableScAddress(TRO_STAKING_ADDRESS))
-    return 'Adresse connue · gated until VITE_TRO_STAKING_CODEHASH_OK'
-  return 'Paper only · no SC address'
+  if (canStakeTro()) return 'Ouvert · stake on-chain'
+  if (isUsableScAddress(TRO_STAKING_ADDRESS)) return 'Bientôt disponible · simulation active'
+  return 'Simulation'
 }
 
 export function slotStatusLabel(): string {
-  if (canSpinSlot()) return 'LIVE · spinEgld on-chain'
-  if (isUsableScAddress(SLOT_CASINO_ADDRESS))
-    return 'Adresse connue · gated until VITE_SLOT_CASINO_CODEHASH_OK + fund progressive'
-  return 'Paper only · no SC address'
+  if (canSpinSlot()) return 'Ouvert · spin on-chain'
+  if (isUsableScAddress(SLOT_CASINO_ADDRESS)) return 'Bientôt disponible · simulation active'
+  return 'Simulation'
 }
 
 export type ScKey =
@@ -239,19 +217,19 @@ export function getAllScSnapshots(): ScSnapshot[] {
       key: 'nft_marketplace',
       address: MARKETPLACE_ADDRESS,
       live: canListBuyNft(),
-      label: canListBuyNft() ? 'LIVE' : 'gated CODEHASH_OK',
+      label: canListBuyNft() ? 'Ouvert' : 'Bientôt',
     },
     {
       key: 'agents_marketplace',
       address: AGENTS_MARKETPLACE_ADDRESS,
       live: canBuyAgent(),
-      label: canBuyAgent() ? 'LIVE' : 'gated CODEHASH_OK',
+      label: canBuyAgent() ? 'Ouvert' : 'Bientôt',
     },
     {
       key: 'nft_staking',
       address: NFT_STAKING_ADDRESS,
       live: canStakeNft(),
-      label: canStakeNft() ? 'LIVE' : 'gated CODEHASH_OK',
+      label: canStakeNft() ? 'Ouvert' : 'Bientôt',
     },
     {
       key: 'tro_staking',
@@ -263,19 +241,19 @@ export function getAllScSnapshots(): ScSnapshot[] {
       key: 'tro_governance',
       address: TRO_GOVERNANCE_ADDRESS,
       live: canVoteDao(),
-      label: canVoteDao() ? 'LIVE' : 'gated CODEHASH_OK',
+      label: canVoteDao() ? 'Ouvert' : 'Bientôt',
     },
     {
       key: 'agent_stake_escrow',
       address: AGENT_STAKE_ESCROW_ADDRESS,
       live: canUseAgentEscrow(),
-      label: canUseAgentEscrow() ? 'LIVE' : 'gated CODEHASH_OK',
+      label: canUseAgentEscrow() ? 'Ouvert' : 'Bientôt',
     },
     {
       key: 'treasury_splitter',
       address: TREASURY_SPLITTER_ADDRESS,
       live: canUseTreasury(),
-      label: canUseTreasury() ? 'LIVE' : 'gated CODEHASH_OK',
+      label: canUseTreasury() ? 'Ouvert' : 'Bientôt',
     },
     {
       key: 'slot_casino',
