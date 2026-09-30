@@ -1,58 +1,18 @@
 import { Link } from 'react-router-dom'
 
-/** Private / early-access honesty strip — no false production claims. */
-const SUPERNOVA_UTC = Date.UTC(2026, 8, 10) // 10 Sep 2026 activation
-const NODE_UPGRADE_UTC = Date.UTC(2026, 8, 1) // 1 Sep 2026 node upgrade
-export const APP_BUILD = '4.0.1-design'
-
-function daysUntil(utcMs: number): number {
-  return Math.ceil((utcMs - Date.now()) / 86_400_000)
-}
-
-function supernovaLabel(): string {
-  const days = daysUntil(SUPERNOVA_UTC)
-  if (days > 1) return `Supernova activation ${days} j`
-  if (days === 1) return 'Supernova activation demain'
-  if (days === 0) return 'Supernova activation aujourd’hui'
-  return 'Supernova mainnet'
-}
-
-function nodeUpgradeLabel(): string | null {
-  const days = daysUntil(NODE_UPGRADE_UTC)
-  if (days > 1) return `upgrade nodes ${days} j`
-  if (days === 1) return 'upgrade nodes demain'
-  if (days === 0) return 'upgrade nodes aujourd’hui'
-  return null
-}
-
+/**
+ * Bandeau discret — ton produit, sans jargon technique.
+ */
 export default function PrivateReleaseStrip() {
-  const node = nodeUpgradeLabel()
   return (
-    <div
-      className="border-b border-violet-500/20 bg-violet-950/30 px-3 py-1.5 text-center text-[11px] text-violet-200/90"
-      role="status"
-    >
-      <span className="font-semibold text-violet-100">Private release</span>
-      <span className="mx-1.5 text-violet-500">·</span>
-      <span className="rounded bg-violet-500/25 px-1.5 py-0.5 font-mono text-[10px] text-violet-100">
-        {APP_BUILD}
-      </span>
-      <span className="mx-1.5 text-violet-500">·</span>
-      Paper LIA · market on-chain seulement après codeHash · pas de promesse de performance
-      {node && (
-        <>
-          <span className="mx-1.5 text-violet-500">·</span>
-          <span className="text-violet-300/80">{node}</span>
-        </>
-      )}
-      <span className="mx-1.5 text-violet-500">·</span>
-      <span className="text-violet-300/80">{supernovaLabel()}</span>
-      <span className="mx-1.5 text-violet-500">·</span>
-      <Link to="/marketplace" className="underline text-violet-100/90 hover:text-white">
-        Market
+    <div className="w-full border-b border-violet-500/20 bg-violet-950/40 px-3 py-1.5 text-center text-[11px] text-violet-200/90">
+      Exploration LIA · on-chain progressif · pas de promesse de performance
+      <span className="mx-2 text-violet-600">·</span>
+      <Link to="/legal" className="underline text-violet-100/90 hover:text-white">
+        Mentions
       </Link>
       <span className="mx-1 text-violet-600">/</span>
-      <Link to="/portfolio" className="underline text-violet-100/90 hover:text-white">
+      <Link to="/lia" className="underline text-violet-100/90 hover:text-white">
         LIA
       </Link>
       <span className="mx-1 text-violet-600">/</span>
