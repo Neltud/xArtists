@@ -1,6 +1,4 @@
-/**
- * Liens externes + navigation dApp (ordre logique publication).
- */
+/** Liens + nav dApp (ordre publication hub). */
 
 export const LINKS = {
   github: 'https://github.com/Neltud/xArtists',
@@ -13,7 +11,6 @@ export const LINKS = {
     `https://wallet.multiversx.com/hook/login?callbackUrl=${encodeURIComponent(callback)}`,
 }
 
-/** Menu principal — parcours utilisateur */
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/', label: 'Home', emoji: '◈' },
   { to: '/museum', label: 'Musée', emoji: '🖼' },
@@ -25,7 +22,6 @@ export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/wallet', label: 'Wallet', emoji: '◇' },
 ]
 
-/** Secondaire — protocole & ops */
 export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/studio', label: 'Studio', emoji: '🎨' },
   { to: '/command-center', label: 'Command', emoji: '⌘' },

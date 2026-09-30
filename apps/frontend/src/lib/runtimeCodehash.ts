@@ -72,7 +72,6 @@ function envLiveMode(): boolean {
   }
 }
 
-/** App boot + Slot mount */
 export async function refreshRuntimeCodehashes(): Promise<Cache> {
   const cache = readCache()
   if (envLiveMode()) {
@@ -82,13 +81,8 @@ export async function refreshRuntimeCodehashes(): Promise<Cache> {
     cache.venue = true
   }
 
-  const jobs: { key: UnlockKey; addr: string; expected: string; needBalance?: boolean }[] = [
-    {
-      key: 'slot',
-      addr: SLOT_CASINO_ADDRESS,
-      expected: SLOT_CASINO_CODEHASH_MAINNET,
-      needBalance: true,
-    },
+  const jobs: { key: UnlockKey; addr: string; expected: string }[] = [
+    { key: 'slot', addr: SLOT_CASINO_ADDRESS, expected: SLOT_CASINO_CODEHASH_MAINNET },
     {
       key: 'marketplace',
       addr: MARKETPLACE_ADDRESS,
@@ -106,9 +100,7 @@ export async function refreshRuntimeCodehashes(): Promise<Cache> {
       if (j.key === 'slot') {
         const bal = Number(acc.balance || 0) / 1e18
         cache.slotBalance = bal
-        // SMART-UNLOCK: codeHash match + house funded
-        if (okHash && bal >= 0.01) cache.slot = true
-        else if (okHash) cache.slot = true // still allow if hash OK (payouts limited)
+        if (okHash) cache.slot = true
       } else if (okHash) {
         cache[j.key] = true
       }
@@ -122,7 +114,7 @@ export async function refreshRuntimeCodehashes(): Promise<Cache> {
     /* */
   }
   if (cache.slot) {
-    console.info('[xArtists] SMART-UNLOCK slot REAL — codeHash + balance OK')
+    console.info('[xArtists] SMART-UNLOCK slot REAL — codeHash OK · bal', cache.slotBalance)
   }
   return cache
 }
