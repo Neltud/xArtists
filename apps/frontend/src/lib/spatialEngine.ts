@@ -1,13 +1,9 @@
 /**
- * Spatial engine — frame-independent kinematics + slide collision (AABB samples).
- * Used by museum WebGL hall. Does not alter museum room generation.
+ * Spatial engine — kinematics, slide collision, camera wall clamp.
  */
 
 export type Vec2 = { x: number; z: number }
 
-/**
- * Integrate wish velocity with accel / friction (delta-time safe).
- */
 export function integrateWishVelocity(
   vx: number,
   vz: number,
@@ -32,9 +28,6 @@ export function integrateWishVelocity(
   return { vx: vx * damp, vz: vz * damp }
 }
 
-/**
- * Sample walkable disc around (x,z). isWalkable = true if position allowed.
- */
 function discWalkable(
   x: number,
   z: number,
@@ -50,10 +43,6 @@ function discWalkable(
   return true
 }
 
-/**
- * Try move with axis separation + corner slide (no clipping into walls).
- * isWalkable: floor / blueprint test (true = free).
- */
 export function trySlideMove(
   px: number,
   pz: number,
@@ -71,20 +60,17 @@ export function trySlideMove(
   const dx = vx * dt
   const dz = vz * dt
 
-  // X axis
   if (Math.abs(dx) > 1e-8) {
     const nx = x + dx
     if (discWalkable(nx, z, isWalkable, radius)) {
       x = nx
     } else {
       ovx = 0
-      // micro slide along wall
       const step = Math.sign(dx) * Math.min(Math.abs(dx), radius * 0.35)
       if (discWalkable(x + step, z, isWalkable, radius * 0.85)) x += step
     }
   }
 
-  // Z axis
   if (Math.abs(dz) > 1e-8) {
     const nz = z + dz
     if (discWalkable(x, nz, isWalkable, radius)) {
@@ -99,7 +85,40 @@ export function trySlideMove(
   return { x, z, vx: ovx, vz: ovz }
 }
 
-/** Optional forward ray: true if obstacle within maxDist */
+/**
+ * Third-person camera distance: never leave the walkable floor (no see-through walls).
+ * Pulls cam in when path to ideal camera position crosses a wall.
+ */
+export function clampCameraDistance(
+  px: number,
+  pz: number,
+  yaw: number,
+  pitch: number,
+  maxDist: number,
+  isWalkable: (x: number, z: number) => boolean,
+  minDist = 0.55,
+): number {
+  const cosP = Math.cos(pitch)
+  for (let i = 12; i >= 1; i--) {
+    const d = minDist + ((maxDist - minDist) * i) / 12
+    const cx = px - Math.sin(yaw) * d * cosP
+    const cz = pz - Math.cos(yaw) * d * cosP
+    // sample corridor from player to camera
+    let clear = true
+    for (let s = 1; s <= 6; s++) {
+      const t = s / 6
+      const sx = px + (cx - px) * t
+      const sz = pz + (cz - pz) * t
+      if (!isWalkable(sx, sz)) {
+        clear = false
+        break
+      }
+    }
+    if (clear) return d
+  }
+  return minDist
+}
+
 export function rayBlocked(
   originX: number,
   originZ: number,
