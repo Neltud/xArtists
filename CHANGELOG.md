@@ -1,5 +1,20 @@
 # Changelog — xArtists
 
+## [0.68.0](https://github.com/Neltud/xArtists/compare/v0.67.0...v0.68.0) (2026-09-30)
+
+
+### Features
+
+* **phase2.5:** Orbitron title-glow CSS + Command Center typography ([bef35a1](https://github.com/Neltud/xArtists/commit/bef35a1426b2fa2113b2e6d0bda52c915a08ba3c))
+* **phase2.5:** slide collision, pointer lock, arrows, NavReticle in MuseumWebGLHall ([1195912](https://github.com/Neltud/xArtists/commit/1195912db28462dd29a6ad05909ccfa788974ae5))
+* **phase2.5:** spatial engine (slide collision, kinematics) + NavReticle + Orbitron glow typography ([6569924](https://github.com/Neltud/xArtists/commit/65699242bd5bcde89b57080ab8cdab7b9dadf987))
+
+
+### Bug Fixes
+
+* **museum:** restore MuseumWebGLHall + phase2.5 spatial (slide, pointer lock, reticle) ([aade90f](https://github.com/Neltud/xArtists/commit/aade90f16bbc5c5409ea02687833699d1a821582))
+* React [#185](https://github.com/Neltud/xArtists/issues/185) infinite loop — stable getSnapshot in BackgroundMusicPlayer + setEmpireZone no-op if unchanged ([3f5a022](https://github.com/Neltud/xArtists/commit/3f5a022ed924e300d83b46929f508d7be462cf82))
+
 ## [0.67.0](https://github.com/Neltud/xArtists/compare/v0.66.0...v0.67.0) (2026-09-30)
 
 
