@@ -1,7 +1,6 @@
 /**
- * Empire store — single source of truth for wallet pulse, SC addresses, TX overlay.
- * Pattern: useSyncExternalStore (same as riskStore; no Zustand dep required).
- * Mission A: wire LIVE contracts.json addresses + TransactionOverlay state.
+ * Empire store — wallet, SC flags, TX overlay, Agent IA access (Command Center gate).
+ * Pattern: useSyncExternalStore (no Zustand).
  */
 import { useSyncExternalStore } from 'react'
 import {
@@ -37,6 +36,17 @@ export type EmpireWallet = {
   troBalance: string | null
 }
 
+/** Zone audio / immersion — Museum public vs Command Center holder */
+export type EmpireZone = 'museum' | 'command' | 'transition'
+
+export type AgentAccessState = {
+  /** True if ≥1 Agent IA pack (on-chain or paper device) */
+  hasAgentAccess: boolean
+  packs: Array<'pulse' | 'yield' | 'sentinel'>
+  source: 'chain' | 'paper' | 'none'
+  updatedAt: number | null
+}
+
 export type EmpireState = {
   scs: ScSnapshot[]
   wallet: EmpireWallet
@@ -52,6 +62,9 @@ export type EmpireState = {
     canRentVenue: boolean
     canVoteDao: boolean
   }
+  agentAccess: AgentAccessState
+  zone: EmpireZone
+  audioVolume: number
   troTokenId: string
   addresses: {
     troStaking: string
@@ -68,6 +81,13 @@ const initialTx: EmpireTx = {
   explorerUrl: null,
   error: null,
   startedAt: null,
+}
+
+const initialAgent: AgentAccessState = {
+  hasAgentAccess: false,
+  packs: [],
+  source: 'none',
+  updatedAt: null,
 }
 
 const initial: EmpireState = {
@@ -91,6 +111,9 @@ const initial: EmpireState = {
     canRentVenue: canRentVenueOnChain(),
     canVoteDao: canVoteDao(),
   },
+  agentAccess: { ...initialAgent },
+  zone: 'museum',
+  audioVolume: 1,
   troTokenId: TRO_TOKEN_ID,
   addresses: {
     troStaking: TRO_STAKING_ADDRESS,
@@ -104,7 +127,7 @@ let state: EmpireState = { ...initial, scs: getAllScSnapshots() }
 const listeners = new Set<() => void>()
 
 function emit() {
-  listeners.forEach((l) => l())
+  listeners.forEach(l => l())
 }
 
 export function getEmpireState(): EmpireState {
@@ -146,6 +169,29 @@ export function setEmpireWallet(w: Partial<EmpireWallet>): void {
 
 export function setEmpirePulse(p: Partial<EmpireState['pulse']>): void {
   state = { ...state, pulse: { ...state.pulse, ...p } }
+  emit()
+}
+
+export function setAgentAccess(a: Partial<AgentAccessState>): void {
+  state = {
+    ...state,
+    agentAccess: {
+      ...state.agentAccess,
+      ...a,
+      updatedAt: Date.now(),
+    },
+  }
+  emit()
+}
+
+export function setEmpireZone(zone: EmpireZone): void {
+  const audioVolume = zone === 'command' ? 0.2 : zone === 'transition' ? 0.5 : 1
+  state = { ...state, zone, audioVolume }
+  emit()
+}
+
+export function setEmpireAudioVolume(v: number): void {
+  state = { ...state, audioVolume: Math.max(0, Math.min(1, v)) }
   emit()
 }
 
@@ -233,5 +279,13 @@ export function useEmpireFlags() {
     subscribeEmpire,
     () => getEmpireState().flags,
     () => getEmpireState().flags,
+  )
+}
+
+export function useAgentAccess(): AgentAccessState {
+  return useSyncExternalStore(
+    subscribeEmpire,
+    () => getEmpireState().agentAccess,
+    () => getEmpireState().agentAccess,
   )
 }

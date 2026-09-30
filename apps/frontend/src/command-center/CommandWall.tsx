@@ -1,0 +1,108 @@
+/**
+ * CommandWall — flat parallelepiped mesh with emissive canvas texture.
+ * Pure three.js (no R3F dep). Mount only when hasAgentAccess.
+ */
+import { useEffect, useRef } from 'react'
+import * as THREE from 'three'
+import ProjectionBridge from './ProjectionBridge'
+
+type Props = {
+  sentiment?: number
+  className?: string
+}
+
+export default function CommandWall({ sentiment = 0, className = '' }: Props) {
+  const hostRef = useRef<HTMLDivElement>(null)
+  const meshMatRef = useRef<THREE.MeshStandardMaterial | null>(null)
+
+  useEffect(() => {
+    const host = hostRef.current
+    if (!host) return
+
+    const w = host.clientWidth || 640
+    const h = Math.max(280, Math.floor(w * 0.45))
+
+    const scene = new THREE.Scene()
+    scene.background = new THREE.Color(0x05050a)
+
+    const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100)
+    camera.position.set(0, 0.2, 2.4)
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    renderer.setSize(w, h)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    host.appendChild(renderer.domElement)
+
+    const light = new THREE.AmbientLight(0xffffff, 0.55)
+    scene.add(light)
+    const pt = new THREE.PointLight(0x22d3ee, 1.2, 12)
+    pt.position.set(1, 2, 3)
+    scene.add(pt)
+
+    const geo = new THREE.BoxGeometry(2.2, 1.2, 0.08)
+    const mat = new THREE.MeshStandardMaterial({
+      color: 0x0a0a12,
+      emissive: 0x0e7490,
+      emissiveIntensity: 0.35,
+      metalness: 0.4,
+      roughness: 0.35,
+    })
+    meshMatRef.current = mat
+    const wall = new THREE.Mesh(geo, mat)
+    scene.add(wall)
+
+    // side slabs
+    const side = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 1.4, 0.6),
+      new THREE.MeshStandardMaterial({ color: 0x111118, metalness: 0.6, roughness: 0.3 }),
+    )
+    side.position.set(-1.2, 0, -0.2)
+    scene.add(side)
+    const side2 = side.clone()
+    side2.position.x = 1.2
+    scene.add(side2)
+
+    let raf = 0
+    const animate = () => {
+      raf = requestAnimationFrame(animate)
+      wall.rotation.y = Math.sin(Date.now() / 4000) * 0.08
+      renderer.render(scene, camera)
+    }
+    animate()
+
+    const onResize = () => {
+      const nw = host.clientWidth || 640
+      const nh = Math.max(280, Math.floor(nw * 0.45))
+      camera.aspect = nw / nh
+      camera.updateProjectionMatrix()
+      renderer.setSize(nw, nh)
+    }
+    window.addEventListener('resize', onResize)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', onResize)
+      geo.dispose()
+      mat.dispose()
+      renderer.dispose()
+      if (renderer.domElement.parentNode === host) host.removeChild(renderer.domElement)
+      meshMatRef.current = null
+    }
+  }, [])
+
+  const onTexture = (tex: THREE.CanvasTexture) => {
+    const mat = meshMatRef.current
+    if (!mat) return
+    mat.map = tex
+    mat.emissiveMap = tex
+    mat.emissiveIntensity = 0.55
+    mat.needsUpdate = true
+  }
+
+  return (
+    <div className={`relative w-full overflow-hidden rounded-2xl border border-cyan-500/20 ${className}`}>
+      <div ref={hostRef} className="w-full min-h-[280px]" />
+      <ProjectionBridge sentiment={sentiment} onTexture={onTexture} />
+    </div>
+  )
+}
