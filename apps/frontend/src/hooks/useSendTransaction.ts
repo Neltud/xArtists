@@ -1,6 +1,9 @@
 import { useWallet, LIA_WALLET } from '../context/WalletContext'
 import { signBlockReason, hasSendTxInjected } from '../lib/txCapability'
 import { bootstrapSendTx } from '../providers/bootstrapSendTx'
+import { logTxFailure, shouldForcePaper } from '../lib/txLog'
+import { forcePaperMode } from '../lib/appMode'
+import { empireTxError } from '../store/empireStore'
 
 interface TransactionDisplayInfo {
   processingMessage?: string
@@ -13,24 +16,34 @@ interface SendTransactionResult {
   error: string | null
 }
 
-/** Send MultiversX TX — blocks paste_readonly, LIA ops. Uses __xartistsSendTx (wallet hook). */
+function handleFail(action: string, msg: string, sessionId?: string | null): SendTransactionResult {
+  const entry = logTxFailure(action, msg, sessionId)
+  empireTxError(msg)
+  if (shouldForcePaper(entry.kind, msg)) {
+    forcePaperMode(`${entry.kind}: ${msg.slice(0, 120)}`)
+  }
+  return { sessionId: null, error: msg }
+}
+
+/** Send MultiversX TX — Phase 5: log failures + Safety Switch → paper on hard errors. */
 export const useSendTransaction = () => {
   const { connected, address, method } = useWallet()
 
   const send = async (
     transactions: unknown[],
-    displayInfo?: TransactionDisplayInfo
+    displayInfo?: TransactionDisplayInfo,
   ): Promise<SendTransactionResult> => {
+    const action = displayInfo?.processingMessage || 'tx'
+
     if (!connected) {
-      throw new Error('Wallet non connecté')
+      return handleFail(action, 'Wallet non connecté')
     }
 
     if (address && address.toLowerCase() === LIA_WALLET.toLowerCase()) {
-      return {
-        sessionId: null,
-        error:
-          'Wallet protocole LIA interdit pour les TX user. Déconnecte et utilise ton wallet.',
-      }
+      return handleFail(
+        action,
+        'Wallet protocole LIA interdit pour les TX user. Déconnecte et utilise ton wallet.',
+      )
     }
 
     if (!hasSendTxInjected()) {
@@ -39,19 +52,19 @@ export const useSendTransaction = () => {
 
     const block = signBlockReason(method)
     if (block && method === 'paste_readonly') {
-      return { sessionId: null, error: block }
+      return handleFail(action, block)
     }
     if (method === 'pem') {
-      return { sessionId: null, error: block || 'PEM interdit côté dApp user.' }
+      return handleFail(action, block || 'PEM interdit côté dApp user.')
     }
     if (!method) {
-      return { sessionId: null, error: 'Connecte xPortal ou Web Wallet.' }
+      return handleFail(action, 'Connecte xPortal ou Web Wallet.')
     }
 
     const w = window as unknown as {
       __xartistsSendTx?: (
         txs: unknown[],
-        info?: TransactionDisplayInfo
+        info?: TransactionDisplayInfo,
       ) => Promise<{ sessionId?: string }>
     }
 
@@ -65,14 +78,11 @@ export const useSendTransaction = () => {
         return { sessionId: res?.sessionId ?? 'submitted', error: null }
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : 'send failed'
-        return { sessionId: null, error: msg }
+        return handleFail(action, msg)
       }
     }
 
-    return {
-      sessionId: null,
-      error: 'Bridge TX indisponible — recharge la page.',
-    }
+    return handleFail(action, 'Bridge TX indisponible — recharge la page.')
   }
 
   return { send }
