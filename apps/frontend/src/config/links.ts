@@ -50,6 +50,7 @@ export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/studio', label: 'Studio', emoji: '🎨' },
   { to: '/agents', label: 'Packs', emoji: '◎' },
   { to: '/my-packs', label: 'My Packs', emoji: '🎫' },
+  { to: '/command-center', label: 'Command', emoji: '⌘' },
   { to: '/marketplace', label: 'Marketplace', emoji: '▣' },
   { to: '/market', label: 'Analyse', emoji: '◐' },
   { to: '/tours', label: 'Tours', emoji: '◉' },
