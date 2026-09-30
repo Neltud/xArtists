@@ -1,10 +1,11 @@
 /**
- * Marketplace — catalogue propre. SC off. Ad slot sample.
+ * Marketplace — catalogue + mes NFT (list on-chain).
  */
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import NFTDetailModal from '../components/NFTDetailModal'
 import MarketplaceActivity from '../components/MarketplaceActivity'
+import MyOwnedNftsPanel from '../components/MyOwnedNftsPanel'
 import VirtualNftGrid from '../components/VirtualNftGrid'
 import AdSlot from '../components/AdSlot'
 import { canListBuyNft } from '../config/scStatus'
@@ -128,7 +129,7 @@ export default function Marketplace() {
         n =>
           n.name?.toLowerCase().includes(q) ||
           n.collection_name?.toLowerCase().includes(q) ||
-          n.collection?.toLowerCase().includes(q)
+          n.collection?.toLowerCase().includes(q),
       )
     }
     const sorted = [...list]
@@ -151,7 +152,8 @@ export default function Marketplace() {
           Marketplace
         </h1>
         <p className="text-sm text-zinc-400 max-w-md leading-relaxed">
-          Catalogue d’œuvres. {!marketLive && 'Consultation pour l’instant — achats bientôt.'}
+          Catalogue + list depuis ton wallet.{' '}
+          {!marketLive && 'List/Buy gated CODEHASH.'}
         </p>
         <button
           type="button"
@@ -164,6 +166,8 @@ export default function Marketplace() {
       </header>
 
       <AdSlot id="market_sidebar" />
+
+      <MyOwnedNftsPanel />
 
       <MarketplaceActivity onPickListingId={id => setListingIdFromIndex(id)} />
 
@@ -237,6 +241,10 @@ export default function Marketplace() {
         {' · '}
         <Link to="/wallet" className="hover:text-zinc-300 transition-colors">
           Wallet
+        </Link>
+        {' · '}
+        <Link to="/studio" className="hover:text-zinc-300 transition-colors">
+          Studio
         </Link>
       </p>
     </div>
