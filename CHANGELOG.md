@@ -1,5 +1,14 @@
 # Changelog — xArtists
 
+## [0.65.0](https://github.com/Neltud/xArtists/compare/v0.64.0...v0.65.0) (2026-09-30)
+
+
+### Features
+
+* **anchor:** EmpireBalanceSync — wallet balances into empireStore (vertical slice perception) ([14bee73](https://github.com/Neltud/xArtists/commit/14bee73b8a9b586b2c02419d9d991a2ca80efcba))
+* **market+3d:** list from owned NFTs + fix ESDTNFTTransfer receiver + ownership glow map ([38c2cca](https://github.com/Neltud/xArtists/commit/38c2ccad1bdd3d96974cdba29caeff5f6d797216))
+* **marketplace:** mount MyOwnedNftsPanel (list from wallet) ([ccdc9ba](https://github.com/Neltud/xArtists/commit/ccdc9bafa76d78081342bb225723d0958f65f25b))
+
 ## [0.64.0](https://github.com/Neltud/xArtists/compare/v0.63.0...v0.64.0) (2026-09-29)
 
 
