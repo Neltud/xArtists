@@ -2,10 +2,10 @@ import { NavLink } from 'react-router-dom'
 
 const ITEMS = [
   { to: '/', label: 'Home', icon: '◈', end: true },
-  { to: '/museum', label: 'Galerie', icon: '🖼', end: false },
-  { to: '/trading', label: 'Trade', icon: '◇', end: false },
-  { to: '/venues', label: 'Comptes', icon: '◎', end: false },
-  { to: '/agents', label: 'Packs', icon: '✦', end: false },
+  { to: '/museum', label: 'Musée', icon: '🖼', end: false },
+  { to: '/marketplace', label: 'Market', icon: '◇', end: false },
+  { to: '/slot', label: 'Slot', icon: '✦', end: false },
+  { to: '/agents', label: 'Packs', icon: '◎', end: false },
 ] as const
 
 export default function BottomNav() {
