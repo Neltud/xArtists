@@ -30,7 +30,7 @@ export default function LegalPage() {
       <header className="space-y-1">
         <p className="section-label text-zinc-400">Juridique</p>
         <h1 className="page-title">Mentions legales</h1>
-        <p className="page-sub">Editeur · demo paper · MultiversX mainnet</p>
+        <p className="page-sub">Editeur · demo · MultiversX mainnet</p>
       </header>
 
       {siretMissing && (
@@ -115,30 +115,30 @@ export default function LegalPage() {
             <ul className="list-disc pl-5 space-y-1.5">
               <li>
                 <strong className="text-zinc-300">Packs</strong> Pulse · Yield · Sentinel — pas un
-                fonds, pas une promesse de rendement.
+                fond d'investissement, pas une promesse de rendement.
               </li>
               <li>
                 <strong className="text-zinc-300">Tours / Musee</strong> : contenu culturel, hors
                 packs agents.
               </li>
               <li>
-                <strong className="text-zinc-300">Trading LIA</strong> : mode paper par defaut sur la
-                demo publique.
+                <strong className="text-zinc-300">Trading LIA</strong> : mode simulation par defaut
+                sur la demo publique.
               </li>
               <li>
                 Signature de transactions : uniquement via le wallet de l utilisateur (xPortal, Web
                 Wallet, extension). Aucune cle privee n est stockee par la dApp.
               </li>
               <li>
-                Smart contracts : activation UI fail-closed tant que le codeHash n est pas valide
-                (secrets CODEHASH_OK).
+                Certaines actions on-chain s'activent progressivement apres verification des
+                contrats ; en attendant, un mode simulation reste disponible.
               </li>
               <li>
                 Interdiction d utiliser le wallet protocole LIA comme session utilisateur.
               </li>
             </ul>
             <p className="text-[12px] text-zinc-500">
-              Les regles on-chain des SC (frais, pause, ownership) prevalent sur l interface.
+              Les regles on-chain des contrats (frais, pause) prevalent sur l interface.
             </p>
           </>
         )}
@@ -153,8 +153,8 @@ export default function LegalPage() {
                 MultiversX.
               </li>
               <li>
-                localStorage : preferences UI, session wallet, intentions paper — effacable dans le
-                navigateur (deconnexion / purge site).
+                localStorage : preferences UI, session wallet — effacable dans le navigateur
+                (deconnexion / purge site).
               </li>
               <li>
                 WalletConnect / xPortal : traitement par les prestataires de wallet ; la dApp ne
@@ -175,16 +175,16 @@ export default function LegalPage() {
             <h2 className="text-base font-semibold text-white">Avertissements</h2>
             <ul className="list-disc pl-5 space-y-1.5">
               <li>Crypto / NFT : risque de perte en capital. Pas un conseil en investissement.</li>
-              <li>Boards paper ≠ performance reelle de portefeuille.</li>
+              <li>Simulation ≠ performance reelle de portefeuille.</li>
               <li>
                 Visites 3D : interpretation numerique, pas un jumeau BIM des musees physiques.
               </li>
-              <li>Verifiez toujours adresses SC, montants et data TX avant signature.</li>
+              <li>Verifiez toujours adresses, montants et details avant signature.</li>
               <li>
-                Slot / jeux (si deployes) : divertissement, age legal, pas un produit de jeu regule
+                Slot / jeux (si actifs) : divertissement, age legal, pas un produit de jeu regule
                 hors cadre applicable.
               </li>
-              <li>Bugs logiciels et congestions reseau possibles — fonds non garantis.</li>
+              <li>Bugs logiciels et congestions reseau possibles — montants non garantis.</li>
             </ul>
           </>
         )}
@@ -195,28 +195,23 @@ export default function LegalPage() {
             <ol className="list-decimal pl-5 space-y-2">
               <li>
                 <strong className="text-zinc-300">Connexion</strong> — Web Wallet, xPortal
-                (WalletConnect + QR desktop), ou extension. Coller erd1 = lecture seule.
+                (QR desktop), ou extension. Coller une adresse = lecture seule.
               </li>
               <li>
-                <strong className="text-zinc-300">Gates CODEHASH</strong> — les boutons on-chain
-                (stake TRO, list/buy, rentPay…) n apparaissent LIVE qu apres secrets CI
-                VITE_*_CODEHASH_OK.
+                <strong className="text-zinc-300">Activation progressive</strong> — stake, marche
+                et salles s'ouvrent au fur et a mesure des verifications contrats.
               </li>
               <li>
-                <strong className="text-zinc-300">Stake $TRO</strong> — ESDTTransfer vers
-                tro_staking ; decimales 6 (TRO-94c925). Signature wallet utilisateur.
+                <strong className="text-zinc-300">Stake $TRO</strong> — transfert signe dans votre
+                wallet. Aucune cle stockee par la dApp.
               </li>
               <li>
-                <strong className="text-zinc-300">Marketplace / venue</strong> — TX via bridge
-                __xartistsSendTx (sdk-dapp ou hook Web Wallet).
+                <strong className="text-zinc-300">Marketplace / salles</strong> — chaque action
+                on-chain demande une signature explicite dans votre portefeuille.
               </li>
               <li>
-                <strong className="text-zinc-300">Deployements SC</strong> — GitHub Actions + PEM
-                ops uniquement (jamais dans le repo). Microtests dust avant activation front.
-              </li>
-              <li>
-                <strong className="text-zinc-300">Documentation detaillee</strong> — voir
-                docs/LEGAL_AND_PROCESSES.md et docs/CLICK_TX_MATRIX.md sur GitHub.
+                <strong className="text-zinc-300">Documentation</strong> — details techniques sur le
+                depot GitHub (dossier docs/), hors interface grand public.
               </li>
             </ol>
           </>
@@ -235,15 +230,6 @@ export default function LegalPage() {
         <Link to="/museum" className="text-cyan-300/90 hover:underline">
           Musee
         </Link>
-        {' · '}
-        <a
-          className="text-cyan-300/90 hover:underline"
-          href="https://github.com/Neltud/xArtists/blob/main/docs/LEGAL_AND_PROCESSES.md"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Doc process
-        </a>
       </p>
     </div>
   )
