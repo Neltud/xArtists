@@ -1,6 +1,7 @@
 /**
- * Slot xArtists — paper ledger + bet sizes + buy-bonus + SFX/effects.
- * SC on-chain gated (CODEHASH) — UI reste jouable en paper.
+ * Slot xArtists — dual mode:
+ *  - Paper: local ledger, bet sizes, buy-bonus, SFX (always)
+ *  - On-chain: spinEgld + resolveSpin when canSpinSlot() (CODEHASH)
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -27,8 +28,11 @@ import {
 import { dispatch8008 } from '../config/agent8008'
 import { playUiSound, unlockAudio } from '../hooks/useFuturisticSounds'
 import { canSpinSlot, SLOT_CASINO_ADDRESS } from '../config/scStatus'
+import { useSlotTx } from '../hooks/useSlotTx'
+import { LINKS } from '../config/links'
 
 type CellImg = { id: string; title: string; image: string; collection?: string }
+type PlayMode = 'paper' | 'chain'
 
 const FALLBACK: CellImg[] = [
   {
@@ -144,8 +148,19 @@ function evaluateGrid(
 }
 
 export default function SlotPage() {
-  const { connected } = useWallet()
+  const { connected, canAttemptSign } = useWallet()
   const scLive = canSpinSlot()
+  const {
+    spinEgld,
+    resolveSpin,
+    pending: txPending,
+    error: txError,
+    lastTx,
+    lastSeed,
+    slotAddress,
+  } = useSlotTx()
+
+  const [mode, setMode] = useState<PlayMode>('paper')
   const [asset, setAsset] = useState<SlotAsset>('EGLD')
   const cfg = SLOT_ASSET_CONFIG[asset]
   const [betMult, setBetMult] = useState<SlotBetMult>(1)
@@ -160,10 +175,17 @@ export default function SlotPage() {
   const [bonusLeft, setBonusLeft] = useState(0)
   const [flash, setFlash] = useState<'win' | 'jackpot' | 'bonus' | null>(null)
   const [shake, setShake] = useState(false)
+  const [chainMsg, setChainMsg] = useState<string | null>(null)
+  const [resolveId, setResolveId] = useState('')
 
   const cost = spinCostFor(asset, betMult)
   const bonusCost = bonusCostFor(asset, betMult)
   const inBonus = bonusLeft > 0
+  const chainMode = mode === 'chain'
+
+  useEffect(() => {
+    if (!scLive && mode === 'chain') setMode('paper')
+  }, [scLive, mode])
 
   useEffect(() => {
     setBank(SLOT_ASSET_CONFIG[asset].startBank)
@@ -206,18 +228,21 @@ export default function SlotPage() {
     }
   }, [])
 
-  const canSpin = !spinning && (inBonus || bank >= cost)
-  const canBuyBonus = !spinning && !inBonus && bank >= bonusCost
+  const canSpinPaper = !spinning && (inBonus || bank >= cost)
+  const canSpinChain =
+    scLive &&
+    connected &&
+    canAttemptSign &&
+    asset === 'EGLD' &&
+    !txPending &&
+    !spinning
+  const canBuyBonus = !spinning && !inBonus && !chainMode && bank >= bonusCost
 
-  const runSpin = (free: boolean) => {
-    if (spinning) return
-    if (!free && bank < cost) return
-    unlockAudio()
-    playUiSound('slot_spin')
+  const animateReels = (onDone: (final: CellImg[]) => void) => {
     setSpinning(true)
     setFlash(null)
-    if (!free) setBank(b => b - cost)
-
+    unlockAudio()
+    playUiSound('slot_spin')
     let ticks = 0
     const id = window.setInterval(() => {
       setGrid(Array.from({ length: 9 }, () => pick(pool)))
@@ -226,57 +251,103 @@ export default function SlotPage() {
       if (ticks >= 16) {
         window.clearInterval(id)
         const final = Array.from({ length: 9 }, () => pick(pool))
-        const ev = evaluateGrid(final, asset)
-        const { split, progressiveAfter } = settleSpin({
-          asset,
-          tableGross: ev.tableGross,
-          isGrand: ev.isGrand,
-          progressiveBefore: progressive,
-          betMult,
-          inBonus: free,
-        })
         setGrid(final)
-        setLast({ kind: ev.kind, split })
-        setSpins(n => n + 1)
-        setProgressive(progressiveAfter)
-        saveProgressive(asset, progressiveAfter)
-        setLiaPaper(l => l + split.spinToLia + split.liaRake)
-        if (split.userCredit > 0) setBank(b => b + split.userCredit)
-
-        if (split.isGrand) {
-          playUiSound('slot_jackpot')
-          setFlash('jackpot')
-          setShake(true)
-          setTimeout(() => setShake(false), 600)
-        } else if (split.userCredit > 0) {
-          playUiSound('slot_win')
-          setFlash('win')
-        }
-
-        if (free) setBonusLeft(n => Math.max(0, n - 1))
-
-        try {
-          dispatch8008({
-            type: 'SLOT_SPIN',
-            asset,
-            kind: ev.kind,
-            userCredit: split.userCredit,
-            isGrand: split.isGrand,
-            betMult,
-            inBonus: free,
-          })
-        } catch {
-          /* optional */
-        }
+        onDone(final)
         setSpinning(false)
-        setTimeout(() => setFlash(null), 1200)
       }
     }, 65)
   }
 
-  const spin = () => {
-    if (!canSpin) return
-    runSpin(inBonus)
+  const finishPaper = (final: CellImg[], free: boolean) => {
+    const ev = evaluateGrid(final, asset)
+    const { split, progressiveAfter } = settleSpin({
+      asset,
+      tableGross: ev.tableGross,
+      isGrand: ev.isGrand,
+      progressiveBefore: progressive,
+      betMult,
+      inBonus: free,
+    })
+    setLast({ kind: ev.kind, split })
+    setSpins(n => n + 1)
+    setProgressive(progressiveAfter)
+    saveProgressive(asset, progressiveAfter)
+    setLiaPaper(l => l + split.spinToLia + split.liaRake)
+    if (split.userCredit > 0) setBank(b => b + split.userCredit)
+    if (split.isGrand) {
+      playUiSound('slot_jackpot')
+      setFlash('jackpot')
+      setShake(true)
+      setTimeout(() => setShake(false), 600)
+    } else if (split.userCredit > 0) {
+      playUiSound('slot_win')
+      setFlash('win')
+    }
+    if (free) setBonusLeft(n => Math.max(0, n - 1))
+    try {
+      dispatch8008({
+        type: 'SLOT_SPIN',
+        asset,
+        kind: ev.kind,
+        userCredit: split.userCredit,
+        isGrand: split.isGrand,
+        betMult,
+        inBonus: free,
+        mode: 'paper',
+      })
+    } catch {
+      /* */
+    }
+    setTimeout(() => setFlash(null), 1200)
+  }
+
+  const spinPaper = () => {
+    if (!canSpinPaper) return
+    const free = inBonus
+    if (!free) setBank(b => b - cost)
+    animateReels(final => finishPaper(final, free))
+  }
+
+  const spinChain = async () => {
+    if (!canSpinChain) return
+    setChainMsg(null)
+    if (!connected) {
+      requestOpenConnect()
+      return
+    }
+    try {
+      // Visual spin while TX signs
+      animateReels(() => {
+        /* outcome on-chain after resolve — visual is entertainment */
+      })
+      await spinEgld(cost)
+      setChainMsg(
+        'Spin locked on-chain. Attends ~2 blocs puis resolveSpin (spin_id explorer).',
+      )
+      playUiSound('success')
+      setSpins(n => n + 1)
+    } catch (e) {
+      setChainMsg(e instanceof Error ? e.message : 'TX failed')
+      playUiSound('error')
+      setSpinning(false)
+    }
+  }
+
+  const onResolve = async () => {
+    const id = parseInt(resolveId, 10)
+    if (!Number.isFinite(id) || id < 1) {
+      setChainMsg('spin_id invalide')
+      return
+    }
+    setChainMsg(null)
+    try {
+      await resolveSpin(id)
+      setChainMsg(`resolveSpin #${id} soumis`)
+      playUiSound('slot_win')
+    } catch (e) {
+      setChainMsg(e instanceof Error ? e.message : 'Resolve failed')
+      playUiSound('error')
+    }
   }
 
   const buyBonus = () => {
@@ -298,7 +369,7 @@ export default function SlotPage() {
       ['Diagonale', `${p.diagonal * m} ${asset}`],
       ['Collection', `${p.collection * m} ${asset}`],
       ['Paire', `${p.pair * m} ${asset}`],
-      ['Bonus', `${SLOT_BONUS.freeSpins} free · ×${SLOT_BONUS.winMult} wins`],
+      ['Bonus paper', `${SLOT_BONUS.freeSpins} free · ×${SLOT_BONUS.winMult}`],
     ] as const
   }, [asset, cfg.payouts, betMult])
 
@@ -325,19 +396,48 @@ export default function SlotPage() {
       )}
 
       <header className="space-y-1">
-        <p className="section-label">Fun · paper{scLive ? ' · SC gated' : ''}</p>
+        <p className="section-label">Slot · dual mode</p>
         <h1 className="section-title display text-2xl">Slot xArtists</h1>
         <p className="text-[12px] text-zinc-500">
-          Mise · buy-bonus · SFX. Paper ledger — pas un investissement. House edge volontaire.
+          Paper toujours dispo. On-chain = spinEgld + resolve (provably fair) si CODEHASH.
         </p>
         <p className="text-[10px] mono text-zinc-600 truncate">
-          SC {SLOT_CASINO_ADDRESS.slice(0, 22)}… {scLive ? 'CODEHASH ok' : 'spin on-chain OFF'}
+          SC {SLOT_CASINO_ADDRESS.slice(0, 22)}…{' '}
+          {scLive ? 'CODEHASH ok' : 'gated'}
         </p>
       </header>
 
-      {!connected && (
-        <button type="button" className="btn-secondary w-full text-sm" onClick={() => requestOpenConnect()}>
-          Connecter wallet (optionnel paper)
+      {/* Mode switch */}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setMode('paper')}
+          className={`flex-1 rounded-xl border py-2 text-sm ${
+            mode === 'paper'
+              ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-100'
+              : 'border-white/10 text-zinc-400'
+          }`}
+        >
+          Paper
+        </button>
+        <button
+          type="button"
+          disabled={!scLive}
+          onClick={() => scLive && setMode('chain')}
+          className={`flex-1 rounded-xl border py-2 text-sm ${
+            mode === 'chain'
+              ? 'border-amber-400/40 bg-amber-500/15 text-amber-100'
+              : 'border-white/10 text-zinc-400 disabled:opacity-40'
+          }`}
+          title={scLive ? 'spinEgld live' : 'VITE_SLOT_CASINO_CODEHASH_OK=1 requis'}
+        >
+          On-chain {scLive ? '' : '🔒'}
+        </button>
+      </div>
+
+      {!connected && chainMode && (
+        <button type="button" className="btn-secondary w-full text-sm" onClick={requestOpenConnect}>
+          Connecter wallet pour spin on-chain
         </button>
       )}
 
@@ -346,7 +446,7 @@ export default function SlotPage() {
           <button
             key={a}
             type="button"
-            disabled={spinning || inBonus}
+            disabled={spinning || inBonus || (chainMode && a !== 'EGLD')}
             onClick={() => {
               playUiSound('click')
               setAsset(a)
@@ -358,11 +458,11 @@ export default function SlotPage() {
             }`}
           >
             {a}
+            {chainMode && a !== 'EGLD' ? ' (paper)' : ''}
           </button>
         ))}
       </div>
 
-      {/* Bet size */}
       <div className="space-y-1.5">
         <p className="text-[10px] uppercase tracking-wider text-zinc-500">Taille de mise</p>
         <div className="flex gap-2">
@@ -390,18 +490,20 @@ export default function SlotPage() {
         </div>
       </div>
 
-      <div className="flex justify-between text-sm">
-        <span className="text-zinc-400">
-          Banque <strong className="text-white">{formatSlotAmount(bank, asset)}</strong>
-        </span>
-        <span className="text-amber-300/90">
-          Cagnotte {formatSlotAmount(progressive, asset)}
-        </span>
-      </div>
+      {!chainMode && (
+        <div className="flex justify-between text-sm">
+          <span className="text-zinc-400">
+            Banque <strong className="text-white">{formatSlotAmount(bank, asset)}</strong>
+          </span>
+          <span className="text-amber-300/90">
+            Cagnotte {formatSlotAmount(progressive, asset)}
+          </span>
+        </div>
+      )}
 
-      {inBonus && (
+      {inBonus && !chainMode && (
         <div className="rounded-xl border border-violet-400/40 bg-violet-500/15 px-3 py-2 text-center text-sm text-violet-100">
-          BONUS · {bonusLeft} free spin{bonusLeft > 1 ? 's' : ''} · wins ×{SLOT_BONUS.winMult}
+          BONUS · {bonusLeft} free · wins ×{SLOT_BONUS.winMult}
         </div>
       )}
 
@@ -414,7 +516,7 @@ export default function SlotPage() {
           <div
             key={i}
             className={`aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/50 ${
-              spinning ? 'opacity-80 blur-[1px] scale-[0.98]' : ''
+              spinning ? 'opacity-80 blur-[1px]' : ''
             } transition-all duration-75`}
           >
             <img src={cell.image} alt={cell.title} className="w-full h-full object-cover" />
@@ -422,42 +524,105 @@ export default function SlotPage() {
         ))}
       </div>
 
-      <button type="button" className="btn-primary w-full" disabled={!canSpin} onClick={spin}>
-        {spinning
-          ? '…'
-          : inBonus
-            ? `Free spin · ${bonusLeft} left`
-            : `Spin · ${formatSlotAmount(cost, asset)}`}
-      </button>
+      {chainMode ? (
+        <>
+          <button
+            type="button"
+            className="btn-primary w-full"
+            disabled={!canSpinChain}
+            onClick={() => void spinChain()}
+          >
+            {txPending || spinning
+              ? '…'
+              : `spinEgld · ${formatSlotAmount(cost, 'EGLD')}`}
+          </button>
+          <div className="flex gap-2 items-end">
+            <label className="flex-1 text-[10px] text-zinc-500">
+              spin_id (après lock)
+              <input
+                value={resolveId}
+                onChange={e => setResolveId(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-sm text-white"
+                placeholder="1"
+              />
+            </label>
+            <button
+              type="button"
+              className="btn-secondary text-sm"
+              disabled={txPending || !scLive}
+              onClick={() => void onResolve()}
+            >
+              resolveSpin
+            </button>
+          </div>
+          {(chainMsg || txError) && (
+            <p className={`text-xs ${txError ? 'text-rose-300' : 'text-emerald-300'}`}>
+              {chainMsg || txError}
+            </p>
+          )}
+          {lastSeed && (
+            <p className="text-[10px] mono text-zinc-600 break-all">client_seed {lastSeed}</p>
+          )}
+          {lastTx && (
+            <a
+              className="text-xs text-cyan-300 underline"
+              href={`${LINKS.explorer}/transactions/${lastTx}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Explorer TX
+            </a>
+          )}
+          <p className="text-[10px] text-zinc-600 leading-relaxed">
+            Flux SC : spinEgld (lock) → attendre delay blocs → resolveSpin(spin_id). House doit avoir
+            été fundée (fundProgressiveEgld). Adresse {slotAddress.slice(0, 18)}…
+          </p>
+        </>
+      ) : (
+        <>
+          <button
+            type="button"
+            className="btn-primary w-full"
+            disabled={!canSpinPaper}
+            onClick={spinPaper}
+          >
+            {spinning
+              ? '…'
+              : inBonus
+                ? `Free spin · ${bonusLeft} left`
+                : `Spin · ${formatSlotAmount(cost, asset)}`}
+          </button>
+          <button
+            type="button"
+            className="w-full rounded-xl border border-violet-400/40 bg-violet-500/10 py-2.5 text-sm font-semibold text-violet-100 disabled:opacity-40"
+            disabled={!canBuyBonus}
+            onClick={buyBonus}
+          >
+            Buy Bonus · {formatSlotAmount(bonusCost, asset)} · {SLOT_BONUS.freeSpins} spins ×
+            {SLOT_BONUS.winMult}
+          </button>
+        </>
+      )}
 
-      <button
-        type="button"
-        className="w-full rounded-xl border border-violet-400/40 bg-violet-500/10 py-2.5 text-sm font-semibold text-violet-100 disabled:opacity-40"
-        disabled={!canBuyBonus}
-        onClick={buyBonus}
-      >
-        Buy Bonus · {formatSlotAmount(bonusCost, asset)} · {SLOT_BONUS.freeSpins} spins ×
-        {SLOT_BONUS.winMult}
-      </button>
-
-      {last && (
+      {last && !chainMode && (
         <p className="text-[12px] text-center text-zinc-300">
           Dernier: <strong>{last.kind}</strong>{' '}
           {last.split.userCredit > 0
             ? `+${formatSlotAmount(last.split.userCredit, asset)}`
             : '—'}
-          {last.split.inBonus ? ' · bonus' : ''} · ×{last.split.betMult}
         </p>
       )}
 
-      <p className="text-[11px] text-zinc-600 text-center">
-        Spins {spins} · LIA paper {formatSlotAmount(liaPaper, asset)} · user{' '}
-        {formatBps(SLOT_USER_WIN_BPS)} wins · progressive{' '}
-        {formatBps(SLOT_PROGRESSIVE_CONTRIB_BPS)} mises
-      </p>
+      {!chainMode && (
+        <p className="text-[11px] text-zinc-600 text-center">
+          Spins {spins} · LIA paper {formatSlotAmount(liaPaper, asset)} · user{' '}
+          {formatBps(SLOT_USER_WIN_BPS)} · progressive{' '}
+          {formatBps(SLOT_PROGRESSIVE_CONTRIB_BPS)}
+        </p>
+      )}
 
       <div className="card text-[11px] text-zinc-500 space-y-1">
-        <p className="text-zinc-400 font-medium">Table (× mise)</p>
+        <p className="text-zinc-400 font-medium">Table paper (× mise)</p>
         {table.map(([k, v]) => (
           <div key={k} className="flex justify-between gap-2">
             <span>{k}</span>
@@ -470,7 +635,7 @@ export default function SlotPage() {
         <Link to="/marketplace" className="text-cyan-400 hover:underline">
           Marketplace
         </Link>{' '}
-        · Active SFX via dock 🔊 · SC spin après fund + secret CODEHASH
+        · SFX dock 🔊 · ops: fund SC + secret CODEHASH pour on-chain
       </p>
     </div>
   )
