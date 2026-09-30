@@ -1,5 +1,21 @@
 # Changelog — xArtists
 
+## [0.66.0](https://github.com/Neltud/xArtists/compare/v0.65.0...v0.66.0) (2026-09-30)
+
+
+### Features
+
+* **command-center:** agent metrics dashboard + mural projection + agent cards (V6) ([6d99205](https://github.com/Neltud/xArtists/commit/6d9920550d7d8dc1169165f42a7fa6305e9fca33))
+* **command-center:** AgentIA_Guard + hasAgentAccess empireStore + rooms + projection prototype (extension only) ([9357976](https://github.com/Neltud/xArtists/commit/9357976b38fb73a13f0737826bfd6a418df41adf))
+* **command-center:** wire /command-center route + AgentAccessSync boot ([f93bd14](https://github.com/Neltud/xArtists/commit/f93bd148f991ba2bed3221d6dcadbfc647780efa))
+* **slot:** bet sizes, buy-bonus, SFX/effects; truth status LIVE vs paper ([3b905c5](https://github.com/Neltud/xArtists/commit/3b905c5581a59e2a6cd179a037a8c2e692a64c83))
+* **slot:** Phase1 SC bridge — useSlotTx spinEgld/resolveSpin + dual paper/on-chain mode ([0d1bf61](https://github.com/Neltud/xArtists/commit/0d1bf613d2f991d9253f6ad9651d9bc192320308))
+
+
+### Bug Fixes
+
+* **slot:** use slotReceiverOrThrow (scStatus export name) ([539906e](https://github.com/Neltud/xArtists/commit/539906e9997e9b835a5c62a2e44bc3bbdd062d57))
+
 ## [0.65.0](https://github.com/Neltud/xArtists/compare/v0.64.0...v0.65.0) (2026-09-30)
 
 
