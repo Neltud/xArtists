@@ -1,8 +1,8 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-09-29",
-  "chain_note": "tro_staking REDEPLOYED 2026-09-29 (stake dust 1 TRO OK). slot_casino LIVE. CODEHASH_OK only via VITE_* secrets.",
+  "updated": "2026-09-30",
+  "chain_note": "PUBLIC GO LIVE 2026-09-30. House funded. No multisig required. All SC LIVE. CODEHASH via Pages secrets only.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -38,6 +38,10 @@
     "slot_casino": "LIVE"
   },
   "notes": {
+    "public_go_live": "2026-09-30",
+    "multisig": "not_required",
+    "house_funded": true,
+    "first_spin_users": true,
     "tro_redeploy_tx": "c995b1c249ef50409a2d6b649678b6861134e330fe430a4e2dee56ec298ad7f9",
     "tro_stake_dust_tx": "8f5458bb5ee513b796a82631",
     "tro_total_staked_atomic": 1000000,
