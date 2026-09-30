@@ -7,6 +7,7 @@ import { MultiversXProvider } from './context/MultiversXContext'
 import { MxDappProvider } from './providers/MxDappProvider'
 import TxShell from './providers/TxShell'
 import EmpireBalanceSync from './components/EmpireBalanceSync'
+import AgentAccessSync from './components/AgentAccessSync'
 import { registerSW } from './pwa/registerSW'
 import { probeChainTiming } from './config/chainTiming'
 import { startAgent8008Bridge } from './lib/agent8008Bridge'
@@ -15,7 +16,6 @@ import './index.css'
 import './atelier.css'
 import './motion-fx.css'
 
-/** Browser polyfill — some MultiversX / WC paths expect Node `process` */
 const g = globalThis as typeof globalThis & { process?: { env: Record<string, string> } }
 if (typeof g.process === 'undefined') {
   g.process = { env: { NODE_ENV: 'production' } }
@@ -35,6 +35,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <MultiversXProvider>
             <TxShell>
               <EmpireBalanceSync />
+              <AgentAccessSync />
               <PulseBoot />
               <App />
             </TxShell>

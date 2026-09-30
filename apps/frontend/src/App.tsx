@@ -62,6 +62,7 @@ const VenueAccountPage = lazy(() => import('./pages/VenueAccountPage'))
 const DigitalTwinPage = lazy(() => import('./pages/DigitalTwinPage'))
 const SlotPage = lazy(() => import('./pages/SlotPage'))
 const LiaPerformancePage = lazy(() => import('./pages/LiaPerformancePage'))
+const CommandCenterPage = lazy(() => import('./pages/CommandCenterPage'))
 
 export default function App() {
   const location = useLocation()
@@ -98,6 +99,8 @@ export default function App() {
                 <Route path="/agents" element={<Agents />} />
                 <Route path="/my-packs" element={<MyPacks />} />
                 <Route path="/room/:packId" element={<HolderRoomPage />} />
+                <Route path="/command-center" element={<CommandCenterPage />} />
+                <Route path="/command" element={<Navigate to="/command-center" replace />} />
                 <Route path="/studio" element={<ArtistStudio />} />
                 <Route path="/sale" element={<SalePage />} />
                 <Route path="/simulation" element={<SimulationLab />} />
