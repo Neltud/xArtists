@@ -6,6 +6,7 @@ import { WalletProvider } from './context/WalletContext'
 import { MultiversXProvider } from './context/MultiversXContext'
 import { MxDappProvider } from './providers/MxDappProvider'
 import TxShell from './providers/TxShell'
+import EmpireBalanceSync from './components/EmpireBalanceSync'
 import { registerSW } from './pwa/registerSW'
 import { probeChainTiming } from './config/chainTiming'
 import { startAgent8008Bridge } from './lib/agent8008Bridge'
@@ -33,6 +34,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <WalletProvider>
           <MultiversXProvider>
             <TxShell>
+              <EmpireBalanceSync />
               <PulseBoot />
               <App />
             </TxShell>
