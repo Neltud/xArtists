@@ -1,7 +1,6 @@
 /**
  * Galerie — salles 3D + grille œuvres toujours visible.
- * Fallback NFTUDURI / TUDURI si catalogue vide.
- * Catalogue : VITE_CATALOG_API (Akash) puis JSON GitHub + refresh quotidien Met.
+ * Capacité : max 4 œuvres/mur · 24 public · pack room 4×4.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -14,6 +13,7 @@ import AdSlot from '../components/AdSlot'
 import HolderPulseTab from '../components/museum/HolderPulseTab'
 import GuidedWorldTour from '../components/museum/GuidedWorldTour'
 import { useWallet } from '../context/WalletContext'
+import { MUSEUM_CAPACITY, formatWallOccupancy } from '../lib/museumCapacity'
 import { useUserAccount } from '../hooks/useUserAccount'
 import { nftImageUrl, type NFT } from '../types/nft'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -79,16 +79,28 @@ function prioritizeNfts(nfts: NFT[]): NFT[] {
   return [...nfts].sort((a, b) => rank(a.collection) - rank(b.collection))
 }
 
-function ArtworkGrid({ frames, title }: { frames: FrameItem[]; title: string }) {
+function ArtworkGrid({
+  frames,
+  title,
+  wallCount,
+}: {
+  frames: FrameItem[]
+  title: string
+  wallCount?: number
+}) {
   if (!frames.length) return null
+  const cap =
+    wallCount != null && wallCount > 0
+      ? formatWallOccupancy(frames.length, wallCount)
+      : `${frames.length} œuvre${frames.length > 1 ? 's' : ''} · max ${MUSEUM_CAPACITY.maxArtworksPublic}`
   return (
     <section className="space-y-2">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-semibold text-white">{title}</h3>
-        <p className="text-[11px] text-zinc-500 tabular-nums">{frames.length} œuvres</p>
+        <p className="text-[11px] text-zinc-500 tabular-nums">{cap}</p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {frames.slice(0, 24).map(f => (
+        {frames.slice(0, MUSEUM_CAPACITY.maxArtworksPublic).map(f => (
           <div
             key={f.id}
             className="rounded-xl border border-white/10 bg-black/40 overflow-hidden"
@@ -125,6 +137,7 @@ export default function MuseumPage() {
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const museum = museums.find(m => m.id === museumId) || museums[0] || VIRTUAL_MUSEUMS[0]
+  const wallCount = blueprint?.walls?.length ?? 0
 
   useEffect(() => {
     let cxl = false
@@ -211,12 +224,12 @@ export default function MuseumPage() {
   const xartistsFrames = useMemo(() => {
     const ranked = prioritizeNfts(allNfts)
     const withImg = ranked.filter(n => preferImage(n))
-    const list = (withImg.length ? withImg : ranked).slice(0, 24)
+    const list = (withImg.length ? withImg : ranked).slice(0, MUSEUM_CAPACITY.maxArtworksPublic)
     const frames = framesFromNfts(list)
     if (frames.filter(f => f.image).length >= 4) return frames
     const seen = new Set(frames.map(f => f.id))
     const extra = tuduriFallbackFrames().filter(f => !seen.has(f.id))
-    return [...frames, ...extra].slice(0, 24)
+    return [...frames, ...extra].slice(0, MUSEUM_CAPACITY.maxArtworksPublic)
   }, [allNfts])
 
   const visitFrames =
@@ -245,6 +258,13 @@ export default function MuseumPage() {
           {museum?.tagline || 'Salles immersives · catalogue quotidien Open Access'}
           {catalogLoading ? ' · catalogue…' : ''}
         </p>
+        {wallCount > 0 && (
+          <p className="text-[11px] text-zinc-500">
+            Capacité salle : {wallCount} murs · jusqu'à {MUSEUM_CAPACITY.maxArtworksPerWall}{' '}
+            œuvres/mur ({wallCount * MUSEUM_CAPACITY.maxArtworksPerWall} slots) · affichage max{' '}
+            {MUSEUM_CAPACITY.maxArtworksPublic}
+          </p>
+        )}
         {travelBanner && (
           <p className="text-[12px] text-cyan-200/90 bg-cyan-500/10 border border-cyan-500/20 rounded-xl px-3 py-2">
             {travelBanner}
@@ -293,7 +313,7 @@ export default function MuseumPage() {
             room={museum?.room || 'stone'}
             allowBuy
           />
-          <ArtworkGrid frames={visitFrames} title="Œuvres de la salle" />
+          <ArtworkGrid frames={visitFrames} title="Œuvres de la salle" wallCount={wallCount} />
           <AdSlot id="drop_feature" />
         </>
       )}
@@ -316,7 +336,7 @@ export default function MuseumPage() {
                   allowBuy={false}
                 />
               )}
-              <ArtworkGrid frames={myFrames} title="Ma collection" />
+              <ArtworkGrid frames={myFrames} title="Ma collection" wallCount={wallCount} />
             </>
           )}
         </>
@@ -330,6 +350,9 @@ export default function MuseumPage() {
         <Link to="/venues" className="underline-offset-2 hover:underline">
           Louer un mur
         </Link>
+        {' · '}
+        Pack IA = 1 salle privée ({MUSEUM_CAPACITY.wallsPerPackRoom} murs ×{' '}
+        {MUSEUM_CAPACITY.maxArtworksPerWall} œuvres)
         {' · '}
         Catalogue Met refresh quotidien (Open Access)
       </p>
