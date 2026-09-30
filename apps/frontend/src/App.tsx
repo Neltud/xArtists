@@ -23,6 +23,7 @@ import PageTransition from './components/PageTransition'
 import SoundDock from './components/SoundDock'
 import BackgroundMusicPlayer from './components/BackgroundMusicPlayer'
 import ZoneRouteSync from './components/ZoneRouteSync'
+import TransactionOverlay from './components/TransactionOverlay'
 import RouteErrorBoundary from './components/RouteErrorBoundary'
 import RouteSfx from './components/RouteSfx'
 
@@ -155,6 +156,7 @@ export default function App() {
         <RouteSfx />
         <BackgroundMusicPlayer />
         <SoundDock />
+        <TransactionOverlay />
         {needsTx && (
           <Suspense fallback={null}>
             <TxShell />

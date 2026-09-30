@@ -1,20 +1,20 @@
 /**
  * CommandWall — interactive 3D wall.
- * - Sentiment → emissive / light / rotation speed (Atmospheric Feedback)
- * - Raycaster click → Direct Execution (stake / open overlay)
+ * - Raycaster Direct Execution → empireTxStart + routes
+ * - PulseAtmosphere ShaderMaterial (uSentiment / uVolatility)
+ * - Emissive / light atmospheric feedback
  * Museum untouched.
  */
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import ProjectionBridge from './ProjectionBridge'
+import { createPulseAtmosphereMesh } from './PulseAtmosphere'
 import { empireTxStart } from '../store/empireStore'
 
 type Props = {
   sentiment?: number
-  /** 0–1 optional volatility for glitch intensity */
   volatility?: number
   className?: string
-  /** Enable raycaster click targets */
   interactive?: boolean
 }
 
@@ -77,7 +77,9 @@ export default function CommandWall({
     scene.add(wall)
     wallRef.current = wall
 
-    // Interactive nodes (left stake / right market)
+    const atmo = createPulseAtmosphereMesh()
+    scene.add(atmo.mesh)
+
     const nodeGeo = new THREE.BoxGeometry(0.35, 0.35, 0.12)
     const stakeMat = new THREE.MeshStandardMaterial({
       color: 0x0a1a12,
@@ -151,12 +153,18 @@ export default function CommandWall({
     renderer.domElement.addEventListener('pointerdown', onPointer)
 
     let raf = 0
+    const t0 = performance.now()
     const animate = () => {
       raf = requestAnimationFrame(animate)
       const s = sentRef.current
       const v = volRef.current
       const bullish = s >= 0
-      // Atmospheric Feedback
+      const t = (performance.now() - t0) / 1000
+
+      atmo.uniforms.uTime.value = t
+      atmo.uniforms.uSentiment.value = s
+      atmo.uniforms.uVolatility.value = v
+
       if (meshMatRef.current) {
         meshMatRef.current.emissive.setHex(bullish ? 0x0e7490 : 0x7f1d1d)
         meshMatRef.current.emissiveIntensity = 0.35 + Math.abs(s) * 0.45 + v * 0.2
@@ -170,11 +178,11 @@ export default function CommandWall({
       }
       const speed = bullish ? 5000 - Math.abs(s) * 1500 : 2200 - v * 800
       if (wallRef.current) {
-        wallRef.current.rotation.y = Math.sin(Date.now() / Math.max(speed, 800)) * (0.06 + v * 0.08)
-        // micro glitch on high vol
+        wallRef.current.rotation.y =
+          Math.sin(Date.now() / Math.max(speed, 800)) * (0.06 + v * 0.08)
         if (v > 0.6 && Math.random() > 0.92) {
           wallRef.current.position.x = (Math.random() - 0.5) * 0.02
-        } else if (wallRef.current) {
+        } else {
           wallRef.current.position.x *= 0.8
         }
       }
@@ -202,6 +210,7 @@ export default function CommandWall({
       nodeGeo.dispose()
       stakeMat.dispose()
       marketMat.dispose()
+      atmo.dispose()
       renderer.dispose()
       if (renderer.domElement.parentNode === host) host.removeChild(renderer.domElement)
       meshMatRef.current = null
@@ -220,12 +229,15 @@ export default function CommandWall({
   }
 
   return (
-    <div className={`relative w-full overflow-hidden rounded-2xl border border-cyan-500/20 ${className}`}>
+    <div
+      className={`relative w-full overflow-hidden rounded-2xl border border-cyan-500/20 ${className}`}
+    >
       <div ref={hostRef} className="w-full min-h-[280px]" />
       <ProjectionBridge sentiment={sentiment} onTexture={onTexture} />
       {interactive && (
         <p className="absolute bottom-2 left-3 right-3 text-[9px] text-zinc-500 pointer-events-none">
-          Clic nœud vert = Stake · violet = Market · mur = Pulse · sentiment {sentiment.toFixed(2)}
+          Clic nœud vert = Stake · violet = Market · mur = Pulse · sentiment{' '}
+          {sentiment.toFixed(2)}
         </p>
       )}
     </div>

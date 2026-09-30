@@ -1,14 +1,11 @@
 /**
- * BackgroundMusicPlayer — Nelson Tuduri soundscapes via YouTube IFrame API.
- * Volume follows empireStore.audioVolume (museum 100% · command 20%).
- * User gesture required to start (browser autoplay policy).
+ * BackgroundMusicPlayer — Nelson Tuduri via YouTube IFrame API.
+ * Zone mix: museum 100% · command 20% with smooth cross-fade.
+ * Low-pass approximated by deeper duck + softer target on command
+ * (iframe cannot attach Web Audio BiquadFilter).
  */
-import { useEffect, useRef, useState } from 'react'
-import { useSyncExternalStore } from 'react'
-import {
-  getEmpireState,
-  subscribeEmpire,
-} from '../store/empireStore'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { getEmpireState, subscribeEmpire } from '../store/empireStore'
 import {
   NELSON_DEFAULT_TRACK,
   ZONE_VOLUME,
@@ -19,10 +16,7 @@ import {
 declare global {
   interface Window {
     YT?: {
-      Player: new (
-        el: string | HTMLElement,
-        opts: Record<string, unknown>,
-      ) => YTPlayer
+      Player: new (el: string | HTMLElement, opts: Record<string, unknown>) => YTPlayer
       PlayerState: { PLAYING: number; PAUSED: number; ENDED: number }
     }
     onYouTubeIframeAPIReady?: () => void
@@ -70,6 +64,33 @@ function loadYtApi(): Promise<void> {
   })
 }
 
+/** Linear cross-fade toward target 0–100 over ~ms */
+function fadeVolume(
+  player: YTPlayer,
+  from: number,
+  to: number,
+  ms: number,
+  cancelRef: { id: number | null },
+) {
+  if (cancelRef.id != null) window.clearInterval(cancelRef.id)
+  const steps = Math.max(8, Math.floor(ms / 40))
+  let i = 0
+  cancelRef.id = window.setInterval(() => {
+    i += 1
+    const t = Math.min(1, i / steps)
+    const v = Math.round(from + (to - from) * t)
+    try {
+      player.setVolume(v)
+    } catch {
+      /* */
+    }
+    if (t >= 1 && cancelRef.id != null) {
+      window.clearInterval(cancelRef.id)
+      cancelRef.id = null
+    }
+  }, 40)
+}
+
 export default function BackgroundMusicPlayer() {
   const { zone, audioVolume } = useEmpireAudio()
   const [enabled, setEnabled] = useState(false)
@@ -77,6 +98,8 @@ export default function BackgroundMusicPlayer() {
   const playerRef = useRef<YTPlayer | null>(null)
   const hostRef = useRef<HTMLDivElement>(null)
   const targetVol = useRef(100)
+  const currentVol = useRef(100)
+  const fadeCancel = useRef<{ id: number | null }>({ id: null })
 
   useEffect(() => {
     setEnabled(isMusicEnabled())
@@ -88,15 +111,18 @@ export default function BackgroundMusicPlayer() {
     return () => window.removeEventListener('xartists-music', on)
   }, [])
 
-  // Target volume from zone (iframe 0–100)
+  // Cross-fade on zone change
   useEffect(() => {
     const base = ZONE_VOLUME[zone] ?? audioVolume
-    targetVol.current = Math.round(Math.max(0, Math.min(1, base)) * 100)
-    try {
-      playerRef.current?.setVolume(targetVol.current)
-    } catch {
-      /* */
-    }
+    // Command: duck harder (proxy for low-pass / muffled)
+    const factor = zone === 'command' ? 0.85 : 1
+    const next = Math.round(Math.max(0, Math.min(1, base * factor)) * 100)
+    targetVol.current = next
+    const p = playerRef.current
+    if (!p) return
+    const from = currentVol.current
+    fadeVolume(p, from, next, zone === 'transition' ? 600 : 900, fadeCancel.current)
+    currentVol.current = next
   }, [zone, audioVolume])
 
   useEffect(() => {
@@ -118,6 +144,7 @@ export default function BackgroundMusicPlayer() {
         try {
           playerRef.current.playVideo()
           playerRef.current.setVolume(targetVol.current)
+          currentVol.current = targetVol.current
         } catch {
           /* */
         }
@@ -148,6 +175,7 @@ export default function BackgroundMusicPlayer() {
             if (cancelled) return
             try {
               ev.target.setVolume(targetVol.current)
+              currentVol.current = targetVol.current
               ev.target.playVideo()
             } catch {
               /* */
@@ -155,7 +183,6 @@ export default function BackgroundMusicPlayer() {
             setReady(true)
           },
           onStateChange: (ev: { data: number; target: YTPlayer }) => {
-            // loop if ended
             if (window.YT && ev.data === window.YT.PlayerState.ENDED) {
               try {
                 ev.target.playVideo()
@@ -170,6 +197,10 @@ export default function BackgroundMusicPlayer() {
 
     return () => {
       cancelled = true
+      if (fadeCancel.current.id != null) {
+        window.clearInterval(fadeCancel.current.id)
+        fadeCancel.current.id = null
+      }
     }
   }, [enabled])
 
