@@ -1,7 +1,6 @@
 /**
  * BackgroundMusicPlayer — Nelson Tuduri via YouTube IFrame API.
- * Zone mix: museum 100% · command 20% with smooth cross-fade.
- * CRITICAL: useSyncExternalStore getSnapshot must return stable refs (React #185).
+ * Mute until user enables (autoplay policy). CTA pulse when off.
  */
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { getEmpireState, subscribeEmpire } from '../store/empireStore'
@@ -25,28 +24,20 @@ declare global {
 type YTPlayer = {
   playVideo: () => void
   pauseVideo: () => void
-  setVolume: (v: number) => void
+  setVolume: (n: number) => void
   getVolume: () => number
-  destroy: () => void
-  getPlayerState: () => number
+  destroy?: () => void
 }
 
-type AudioSnap = { zone: string; audioVolume: number }
-
-/** Cache last snapshot so Object.is stays stable when values unchanged */
-let cachedSnap: AudioSnap = { zone: 'museum', audioVolume: 1 }
-
-function getAudioSnapshot(): AudioSnap {
-  const s = getEmpireState()
-  if (s.zone === cachedSnap.zone && s.audioVolume === cachedSnap.audioVolume) {
-    return cachedSnap
-  }
-  cachedSnap = { zone: s.zone, audioVolume: s.audioVolume }
-  return cachedSnap
-}
-
-function useEmpireAudio(): AudioSnap {
-  return useSyncExternalStore(subscribeEmpire, getAudioSnapshot, getAudioSnapshot)
+function useEmpireAudio() {
+  return useSyncExternalStore(
+    subscribeEmpire,
+    () => {
+      const s = getEmpireState()
+      return { zone: s.zone, audioVolume: s.audioVolume }
+    },
+    () => ({ zone: 'museum' as const, audioVolume: 1 }),
+  )
 }
 
 function loadYtApi(): Promise<void> {
@@ -57,7 +48,11 @@ function loadYtApi(): Promise<void> {
     }
     const prev = window.onYouTubeIframeAPIReady
     window.onYouTubeIframeAPIReady = () => {
-      prev?.()
+      try {
+        prev?.()
+      } catch {
+        /* */
+      }
       resolve()
     }
     if (!document.querySelector('script[data-xartists-yt]')) {
@@ -161,8 +156,8 @@ export default function BackgroundMusicPlayer() {
       hostRef.current.appendChild(el)
 
       playerRef.current = new window.YT.Player(el, {
-        height: '0',
-        width: '0',
+        height: '1',
+        width: '1',
         videoId: NELSON_DEFAULT_TRACK.youtubeId,
         playerVars: {
           autoplay: 1,
@@ -172,6 +167,7 @@ export default function BackgroundMusicPlayer() {
           modestbranding: 1,
           playsinline: 1,
           rel: 0,
+          origin: typeof window !== 'undefined' ? window.location.origin : undefined,
         },
         events: {
           onReady: (ev: { target: YTPlayer }) => {
@@ -215,15 +211,19 @@ export default function BackgroundMusicPlayer() {
 
   return (
     <>
-      <div ref={hostRef} className="sr-only" aria-hidden />
+      <div ref={hostRef} className="fixed opacity-0 pointer-events-none w-px h-px overflow-hidden" aria-hidden />
       <button
         type="button"
         onClick={toggle}
-        className="fixed bottom-[4.5rem] md:bottom-10 right-[4.75rem] z-50 rounded-full border border-white/15 bg-black/70 backdrop-blur-md px-3 py-2 text-[11px] font-medium text-zinc-300 shadow-lg hover:border-violet-400/40 hover:text-white transition-all"
-        title={enabled ? 'Couper musique Nelson' : 'Musique Nelson Tuduri'}
+        className={`fixed bottom-[4.5rem] md:bottom-10 right-[4.75rem] z-50 rounded-full border backdrop-blur-md px-3 py-2 text-[11px] font-medium shadow-lg transition-all ${
+          enabled
+            ? 'border-violet-400/40 bg-violet-950/70 text-white'
+            : 'border-amber-400/50 bg-amber-950/80 text-amber-100 animate-pulse'
+        }`}
+        title={enabled ? 'Couper musique Nelson' : 'Activer musique Nelson Tuduri'}
         aria-pressed={enabled}
       >
-        {enabled ? (ready ? '🎵 Music on' : '🎵 …') : '🎵 Music off'}
+        {enabled ? (ready ? '🎵 Musique' : '🎵 …') : '🎵 Activer musique'}
         <span className="hidden sm:inline text-zinc-500 ml-1">
           · {zone === 'command' ? '20%' : zone === 'transition' ? '50%' : '100%'}
         </span>
