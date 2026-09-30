@@ -1,8 +1,7 @@
 /**
  * BackgroundMusicPlayer — Nelson Tuduri via YouTube IFrame API.
  * Zone mix: museum 100% · command 20% with smooth cross-fade.
- * Low-pass approximated by deeper duck + softer target on command
- * (iframe cannot attach Web Audio BiquadFilter).
+ * CRITICAL: useSyncExternalStore getSnapshot must return stable refs (React #185).
  */
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { getEmpireState, subscribeEmpire } from '../store/empireStore'
@@ -32,15 +31,22 @@ type YTPlayer = {
   getPlayerState: () => number
 }
 
-function useEmpireAudio() {
-  return useSyncExternalStore(
-    subscribeEmpire,
-    () => {
-      const s = getEmpireState()
-      return { zone: s.zone, audioVolume: s.audioVolume }
-    },
-    () => ({ zone: 'museum' as const, audioVolume: 1 }),
-  )
+type AudioSnap = { zone: string; audioVolume: number }
+
+/** Cache last snapshot so Object.is stays stable when values unchanged */
+let cachedSnap: AudioSnap = { zone: 'museum', audioVolume: 1 }
+
+function getAudioSnapshot(): AudioSnap {
+  const s = getEmpireState()
+  if (s.zone === cachedSnap.zone && s.audioVolume === cachedSnap.audioVolume) {
+    return cachedSnap
+  }
+  cachedSnap = { zone: s.zone, audioVolume: s.audioVolume }
+  return cachedSnap
+}
+
+function useEmpireAudio(): AudioSnap {
+  return useSyncExternalStore(subscribeEmpire, getAudioSnapshot, getAudioSnapshot)
 }
 
 function loadYtApi(): Promise<void> {
@@ -64,7 +70,6 @@ function loadYtApi(): Promise<void> {
   })
 }
 
-/** Linear cross-fade toward target 0–100 over ~ms */
 function fadeVolume(
   player: YTPlayer,
   from: number,
@@ -111,10 +116,8 @@ export default function BackgroundMusicPlayer() {
     return () => window.removeEventListener('xartists-music', on)
   }, [])
 
-  // Cross-fade on zone change
   useEffect(() => {
-    const base = ZONE_VOLUME[zone] ?? audioVolume
-    // Command: duck harder (proxy for low-pass / muffled)
+    const base = ZONE_VOLUME[zone as keyof typeof ZONE_VOLUME] ?? audioVolume
     const factor = zone === 'command' ? 0.85 : 1
     const next = Math.round(Math.max(0, Math.min(1, base * factor)) * 100)
     targetVol.current = next

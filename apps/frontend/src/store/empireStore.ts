@@ -1,6 +1,7 @@
 /**
  * Empire store — wallet, SC flags, TX overlay, Agent IA access, mode lock, TX watchdog.
  * Pattern: useSyncExternalStore (no Zustand).
+ * getSnapshot must return referentially stable values (React #185).
  */
 import { useSyncExternalStore } from 'react'
 import {
@@ -45,7 +46,6 @@ export type AgentAccessState = {
   updatedAt: number | null
 }
 
-/** Audit: lock UI during paper↔live transitions or mid-TX */
 export type ModeLock = {
   locked: boolean
   reason: string | null
@@ -98,6 +98,8 @@ const initialAgent: AgentAccessState = {
   updatedAt: null,
 }
 
+const initialModeLock: ModeLock = { locked: false, reason: null, until: null }
+
 const initial: EmpireState = {
   scs: getAllScSnapshots(),
   wallet: {
@@ -122,7 +124,7 @@ const initial: EmpireState = {
   agentAccess: { ...initialAgent },
   zone: 'museum',
   audioVolume: 1,
-  modeLock: { locked: false, reason: null, until: null },
+  modeLock: { ...initialModeLock },
   troTokenId: TRO_TOKEN_ID,
   addresses: {
     troStaking: TRO_STAKING_ADDRESS,
@@ -220,18 +222,21 @@ export function setAgentAccess(a: Partial<AgentAccessState>): void {
   emit()
 }
 
+/** No-op if zone + volume already match (prevents emit storms / React #185) */
 export function setEmpireZone(zone: EmpireZone): void {
   const audioVolume = zone === 'command' ? 0.2 : zone === 'transition' ? 0.5 : 1
+  if (state.zone === zone && state.audioVolume === audioVolume) return
   state = { ...state, zone, audioVolume }
   emit()
 }
 
 export function setEmpireAudioVolume(v: number): void {
-  state = { ...state, audioVolume: Math.max(0, Math.min(1, v)) }
+  const next = Math.max(0, Math.min(1, v))
+  if (state.audioVolume === next) return
+  state = { ...state, audioVolume: next }
   emit()
 }
 
-/** Lock mode switches during TX or explicit paper↔live transition */
 export function setModeLock(locked: boolean, reason?: string, ms = 8_000): void {
   const until = locked ? Date.now() + ms : null
   state = {
@@ -248,7 +253,7 @@ export function setModeLock(locked: boolean, reason?: string, ms = 8_000): void 
       if (state.modeLock.until && Date.now() >= state.modeLock.until) {
         state = {
           ...state,
-          modeLock: { locked: false, reason: null, until: null },
+          modeLock: { ...initialModeLock },
         }
         emit()
       }
@@ -261,17 +266,15 @@ export function isModeLocked(): boolean {
   if (state.modeLock.until && Date.now() > state.modeLock.until) {
     state = {
       ...state,
-      modeLock: { locked: false, reason: null, until: null },
+      modeLock: { ...initialModeLock },
     }
+    // no emit during potential render path — next read is unlocked
     return false
   }
   return true
 }
 
 export function empireTxStart(label: string): void {
-  if (isModeLocked() && state.tx.phase !== 'idle') {
-    /* still allow start if lock expired mid-way */
-  }
   state = {
     ...state,
     tx: {
