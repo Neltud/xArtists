@@ -1,6 +1,6 @@
 /**
- * List / Buy / Bid / Accept / Withdraw / Cancel — marketplace SC.
- * ESDTNFTTransfer: TX receiver = USER (holder), SC address is in data destination.
+ * List / Buy / Bid — marketplace SC.
+ * ESDTNFTTransfer: TX receiver = USER (holder).
  */
 import { useCallback, useState } from 'react'
 import { useSendTransaction } from './useSendTransaction'
@@ -9,6 +9,7 @@ import {
   isMarketplaceLive,
   marketplaceReceiverOrThrow,
   KNOWN_EMPTY_MARKETPLACE,
+  MARKETPLACE_ADDRESS,
 } from '../lib/scStatus'
 
 export interface ListNftParams {
@@ -44,7 +45,6 @@ function numToHex(n: number | bigint): string {
   return h.length % 2 === 0 ? h : `0${h}`
 }
 
-/** Bech32 erd1 → 32-byte hex for SC args (address in ESDTNFTTransfer data) */
 function bech32ToHex(addr: string): string | null {
   const CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'
   const lower = addr.toLowerCase()
@@ -76,7 +76,7 @@ function bech32ToHex(addr: string): string | null {
 }
 
 const BLOCKED =
-  'Marketplace SC not live (codeHash). Deploy + VITE_MARKETPLACE_CODEHASH_OK=1 before List/Buy.'
+  'Marketplace en ouverture — actualise la page (vérif on-chain) puis réessaie.'
 
 export function useMarketplaceTx() {
   const [pending, setPending] = useState(false)
@@ -95,25 +95,10 @@ export function useMarketplaceTx() {
         setError(BLOCKED)
         throw new Error(BLOCKED)
       }
-      let sc: string
-      try {
-        sc = marketplaceReceiverOrThrow()
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : BLOCKED
-        setError(msg)
-        throw new Error(msg)
-      }
-      if (sc.toLowerCase() === KNOWN_EMPTY_MARKETPLACE.toLowerCase()) {
-        setError(BLOCKED)
-        throw new Error(BLOCKED)
-      }
-      const payload = { ...(tx as Record<string, unknown>) }
-      // Default receiver = SC unless already set (list uses user)
-      if (!payload.receiver) payload.receiver = sc
       setPending(true)
       setError(null)
       try {
-        const res = await send([payload], {
+        const res = await send([tx], {
           processingMessage: labels.processing,
           successMessage: labels.success,
           errorMessage: labels.fail,
@@ -122,10 +107,10 @@ export function useMarketplaceTx() {
           setError(res.error)
           throw new Error(res.error)
         }
-        setLastTx(res.sessionId)
+        if (res.sessionId) setLastTx(res.sessionId)
         return res
-      } catch (e: unknown) {
-        const msg = e instanceof Error ? e.message : labels.fail
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : BLOCKED
         setError(msg)
         throw e
       } finally {
@@ -151,7 +136,6 @@ export function useMarketplaceTx() {
         setError(msg)
         throw new Error(msg)
       }
-      // ESDTNFTTransfer@token@nonce@qty@scHex@listNft@price@royaltyBps
       const dataParts = [
         'ESDTNFTTransfer',
         strToHex(p.tokenId),
@@ -166,7 +150,6 @@ export function useMarketplaceTx() {
         const rh = bech32ToHex(p.royaltyReceiver)
         if (rh) dataParts.push(rh)
       }
-      // Critical: TX receiver = NFT holder (user), not SC
       return run(
         {
           receiver: address,
@@ -175,23 +158,29 @@ export function useMarketplaceTx() {
           data: dataParts.join('@'),
           chainID: '1',
         },
-        { processing: 'Listing…', success: 'Listed', fail: 'List failed' },
+        {
+          processing: 'Listing NFT…',
+          success: 'Listing envoyé',
+          fail: 'Listing échoué',
+        },
       )
     },
-    [run, address],
+    [address, run],
   )
 
   const buyNft = useCallback(
-    async (p: BuyNftParams) =>
-      run(
+    async (p: BuyNftParams) => {
+      return run(
         {
+          receiver: marketplaceReceiverOrThrow(),
           value: egldToAtomic(p.priceEgld),
-          gasLimit: 18_000_000,
+          gasLimit: 20_000_000,
           data: `buyNft@${numToHex(p.listingId)}`,
           chainID: '1',
         },
-        { processing: 'Buying…', success: 'Purchased', fail: 'Buy failed' },
-      ),
+        { processing: 'Achat…', success: 'Achat envoyé', fail: 'Achat échoué' },
+      )
+    },
     [run],
   )
 
@@ -199,12 +188,13 @@ export function useMarketplaceTx() {
     async (p: PlaceBidParams) =>
       run(
         {
+          receiver: marketplaceReceiverOrThrow(),
           value: egldToAtomic(p.amountEgld),
-          gasLimit: 12_000_000,
+          gasLimit: 15_000_000,
           data: `placeBid@${numToHex(p.listingId)}`,
           chainID: '1',
         },
-        { processing: 'Bidding…', success: 'Bid placed', fail: 'Bid failed' },
+        { processing: 'Enchère…', success: 'Enchère envoyée', fail: 'Enchère échouée' },
       ),
     [run],
   )
@@ -213,12 +203,13 @@ export function useMarketplaceTx() {
     async (listingId: number) =>
       run(
         {
+          receiver: marketplaceReceiverOrThrow(),
           value: '0',
-          gasLimit: 18_000_000,
+          gasLimit: 15_000_000,
           data: `acceptBid@${numToHex(listingId)}`,
           chainID: '1',
         },
-        { processing: 'Accepting bid…', success: 'Bid accepted', fail: 'Accept failed' },
+        { processing: 'Accept…', success: 'OK', fail: 'Échec' },
       ),
     [run],
   )
@@ -227,12 +218,13 @@ export function useMarketplaceTx() {
     async (listingId: number) =>
       run(
         {
+          receiver: marketplaceReceiverOrThrow(),
           value: '0',
-          gasLimit: 10_000_000,
+          gasLimit: 12_000_000,
           data: `withdrawBid@${numToHex(listingId)}`,
           chainID: '1',
         },
-        { processing: 'Withdrawing…', success: 'Bid withdrawn', fail: 'Withdraw failed' },
+        { processing: 'Retrait…', success: 'OK', fail: 'Échec' },
       ),
     [run],
   )
@@ -241,22 +233,16 @@ export function useMarketplaceTx() {
     async (listingId: number) =>
       run(
         {
+          receiver: marketplaceReceiverOrThrow(),
           value: '0',
           gasLimit: 12_000_000,
           data: `cancelListing@${numToHex(listingId)}`,
           chainID: '1',
         },
-        { processing: 'Cancelling…', success: 'Cancelled', fail: 'Cancel failed' },
+        { processing: 'Annulation…', success: 'OK', fail: 'Échec' },
       ),
     [run],
   )
-
-  let marketplaceAddress = ''
-  try {
-    if (live) marketplaceAddress = marketplaceReceiverOrThrow()
-  } catch {
-    marketplaceAddress = ''
-  }
 
   return {
     listNft,
@@ -268,9 +254,10 @@ export function useMarketplaceTx() {
     pending,
     error,
     lastTx,
-    marketplaceAddress,
+    marketplaceAddress: MARKETPLACE_ADDRESS,
     marketplaceLive: live,
     offerSupported: false as const,
     bidSupported: live,
+    knownEmpty: KNOWN_EMPTY_MARKETPLACE,
   }
 }
