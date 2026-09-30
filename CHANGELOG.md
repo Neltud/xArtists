@@ -1,5 +1,26 @@
 # Changelog — xArtists
 
+## [0.67.0](https://github.com/Neltud/xArtists/compare/v0.66.0...v0.67.0) (2026-09-30)
+
+
+### Features
+
+* **phase2:** Slot FUN/REAL intentional switch + CommandWall raycaster/sentiment + data-tunnel transition ([ee2b46e](https://github.com/Neltud/xArtists/commit/ee2b46e79182c532c55d0db7dd830693fd31edec))
+* **phase2:** wire DataTunnel + interactive CommandWall on CommandCenterPage ([4a5f227](https://github.com/Neltud/xArtists/commit/4a5f2278d89476bbfe0027396f01f6b32595ef6d))
+* **phase3:** BackgroundMusicPlayer Nelson + zone volume mix (museum 100% / command 20%) ([ee3dd25](https://github.com/Neltud/xArtists/commit/ee3dd251aad8d6006331c9e9b1e51b09a9d6f11b))
+* **phase4:** Agent pack mint paper/on-chain gates + revenue splitter panel + Phase4ReadinessBanner ([0d77b1c](https://github.com/Neltud/xArtists/commit/0d77b1cb7ffa5ce26a1b59905c0c1545e4a00ac1))
+* **phase4:** wire RevenueSplitterPanel on Agents + clean useAgentPackTx imports ([4b58876](https://github.com/Neltud/xArtists/commit/4b58876becc3644906e024be94986ecf68e0bce7))
+* **prod:** TX watchdog 45s, mode lock, agent pack TX via useSendTransaction, slot house emergency gate ([06bce7d](https://github.com/Neltud/xArtists/commit/06bce7d6496eb34cdff7524e393019ffe3a21109))
+* **sensory:** TransactionOverlay + Pulse ShaderMaterial + music cross-fade (Phase 2/3 complete) ([1dc167f](https://github.com/Neltud/xArtists/commit/1dc167ff064132e6d1e5a0d64b0bff78d7d409a8))
+* **slot:** house emergency stop + refresh balance from API before REAL spin ([53f7e08](https://github.com/Neltud/xArtists/commit/53f7e0873ddb1973154ddd6cb80bb4263c571695))
+* **slot:** intentional MODE FUN / MODE REAL switch + real-money confirm gate ([e817dec](https://github.com/Neltud/xArtists/commit/e817dec5c7131e273557c4afa6522b7887bd1ca8))
+
+
+### Bug Fixes
+
+* **slot:** restore SlotPage + house emergency guard (post accidental overwrite) ([974237e](https://github.com/Neltud/xArtists/commit/974237eda8640f325a8a894706b5bb4f5622c4d0))
+* **slot:** restore SlotPage after accidental overwrite + FUN/REAL intentional switch ([bd65dce](https://github.com/Neltud/xArtists/commit/bd65dce03df051dd4953d28db89193400dd441c3))
+
 ## [0.66.0](https://github.com/Neltud/xArtists/compare/v0.65.0...v0.66.0) (2026-09-30)
 
 
