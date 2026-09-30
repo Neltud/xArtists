@@ -1,10 +1,10 @@
 /**
  * List / Buy / Bid / Accept / Withdraw / Cancel — marketplace SC.
- * Hard-blocked while isMarketplaceLive() is false.
- * Receiver always from VITE live address — never empty placeholder.
+ * ESDTNFTTransfer: TX receiver = USER (holder), SC address is in data destination.
  */
 import { useCallback, useState } from 'react'
 import { useSendTransaction } from './useSendTransaction'
+import { useWallet } from '../context/WalletContext'
 import {
   isMarketplaceLive,
   marketplaceReceiverOrThrow,
@@ -44,6 +44,37 @@ function numToHex(n: number | bigint): string {
   return h.length % 2 === 0 ? h : `0${h}`
 }
 
+/** Bech32 erd1 → 32-byte hex for SC args (address in ESDTNFTTransfer data) */
+function bech32ToHex(addr: string): string | null {
+  const CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l'
+  const lower = addr.toLowerCase()
+  if (!lower.startsWith('erd1')) return null
+  const data = lower.slice(4)
+  const values: number[] = []
+  for (const c of data) {
+    const v = CHARSET.indexOf(c)
+    if (v < 0) return null
+    values.push(v)
+  }
+  const bits = values.slice(0, -6)
+  let acc = 0
+  let bitsN = 0
+  const out: number[] = []
+  for (const v of bits) {
+    acc = (acc << 5) | v
+    bitsN += 5
+    if (bitsN >= 8) {
+      bitsN -= 8
+      out.push((acc >> bitsN) & 0xff)
+    }
+  }
+  if (out.length < 32) return null
+  return out
+    .slice(0, 32)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
 const BLOCKED =
   'Marketplace SC not live (codeHash). Deploy + VITE_MARKETPLACE_CODEHASH_OK=1 before List/Buy.'
 
@@ -52,27 +83,33 @@ export function useMarketplaceTx() {
   const [error, setError] = useState<string | null>(null)
   const [lastTx, setLastTx] = useState<string | null>(null)
   const { send } = useSendTransaction()
+  const { address } = useWallet()
   const live = isMarketplaceLive()
 
   const run = useCallback(
-    async (tx: object, labels: { processing: string; success: string; fail: string }) => {
+    async (
+      tx: object,
+      labels: { processing: string; success: string; fail: string },
+    ) => {
       if (!live) {
         setError(BLOCKED)
         throw new Error(BLOCKED)
       }
-      let receiver: string
+      let sc: string
       try {
-        receiver = marketplaceReceiverOrThrow()
+        sc = marketplaceReceiverOrThrow()
       } catch (e) {
         const msg = e instanceof Error ? e.message : BLOCKED
         setError(msg)
         throw new Error(msg)
       }
-      if (receiver.toLowerCase() === KNOWN_EMPTY_MARKETPLACE.toLowerCase()) {
+      if (sc.toLowerCase() === KNOWN_EMPTY_MARKETPLACE.toLowerCase()) {
         setError(BLOCKED)
         throw new Error(BLOCKED)
       }
-      const payload = { ...(tx as Record<string, unknown>), receiver }
+      const payload = { ...(tx as Record<string, unknown>) }
+      // Default receiver = SC unless already set (list uses user)
+      if (!payload.receiver) payload.receiver = sc
       setPending(true)
       setError(null)
       try {
@@ -95,36 +132,53 @@ export function useMarketplaceTx() {
         setPending(false)
       }
     },
-    [send, live]
+    [send, live],
   )
 
   const listNft = useCallback(
     async (p: ListNftParams) => {
+      if (!address?.startsWith('erd1')) {
+        const msg = 'Connecte ton wallet pour lister'
+        setError(msg)
+        throw new Error(msg)
+      }
       const royaltyBps = p.royaltyBps ?? 500
       const priceAtomic = egldToAtomic(p.priceEgld)
       const sc = marketplaceReceiverOrThrow()
+      const scHex = bech32ToHex(sc)
+      if (!scHex) {
+        const msg = 'Adresse marketplace invalide'
+        setError(msg)
+        throw new Error(msg)
+      }
+      // ESDTNFTTransfer@token@nonce@qty@scHex@listNft@price@royaltyBps
       const dataParts = [
         'ESDTNFTTransfer',
         strToHex(p.tokenId),
         numToHex(p.nonce),
         numToHex(1),
-        strToHex(sc),
+        scHex,
         strToHex('listNft'),
         numToHex(BigInt(priceAtomic)),
         numToHex(royaltyBps),
       ]
-      if (p.royaltyReceiver) dataParts.push(strToHex(p.royaltyReceiver))
+      if (p.royaltyReceiver) {
+        const rh = bech32ToHex(p.royaltyReceiver)
+        if (rh) dataParts.push(rh)
+      }
+      // Critical: TX receiver = NFT holder (user), not SC
       return run(
         {
+          receiver: address,
           value: '0',
           gasLimit: 25_000_000,
           data: dataParts.join('@'),
           chainID: '1',
         },
-        { processing: 'Listing…', success: 'Listed', fail: 'List failed' }
+        { processing: 'Listing…', success: 'Listed', fail: 'List failed' },
       )
     },
-    [run]
+    [run, address],
   )
 
   const buyNft = useCallback(
@@ -136,9 +190,9 @@ export function useMarketplaceTx() {
           data: `buyNft@${numToHex(p.listingId)}`,
           chainID: '1',
         },
-        { processing: 'Buying…', success: 'Purchased', fail: 'Buy failed' }
+        { processing: 'Buying…', success: 'Purchased', fail: 'Buy failed' },
       ),
-    [run]
+    [run],
   )
 
   const placeBid = useCallback(
@@ -150,9 +204,9 @@ export function useMarketplaceTx() {
           data: `placeBid@${numToHex(p.listingId)}`,
           chainID: '1',
         },
-        { processing: 'Bidding…', success: 'Bid placed', fail: 'Bid failed' }
+        { processing: 'Bidding…', success: 'Bid placed', fail: 'Bid failed' },
       ),
-    [run]
+    [run],
   )
 
   const acceptBid = useCallback(
@@ -164,9 +218,9 @@ export function useMarketplaceTx() {
           data: `acceptBid@${numToHex(listingId)}`,
           chainID: '1',
         },
-        { processing: 'Accepting bid…', success: 'Bid accepted', fail: 'Accept failed' }
+        { processing: 'Accepting bid…', success: 'Bid accepted', fail: 'Accept failed' },
       ),
-    [run]
+    [run],
   )
 
   const withdrawBid = useCallback(
@@ -178,9 +232,9 @@ export function useMarketplaceTx() {
           data: `withdrawBid@${numToHex(listingId)}`,
           chainID: '1',
         },
-        { processing: 'Withdrawing…', success: 'Bid withdrawn', fail: 'Withdraw failed' }
+        { processing: 'Withdrawing…', success: 'Bid withdrawn', fail: 'Withdraw failed' },
       ),
-    [run]
+    [run],
   )
 
   const cancelListing = useCallback(
@@ -192,9 +246,9 @@ export function useMarketplaceTx() {
           data: `cancelListing@${numToHex(listingId)}`,
           chainID: '1',
         },
-        { processing: 'Cancelling…', success: 'Cancelled', fail: 'Cancel failed' }
+        { processing: 'Cancelling…', success: 'Cancelled', fail: 'Cancel failed' },
       ),
-    [run]
+    [run],
   )
 
   let marketplaceAddress = ''
