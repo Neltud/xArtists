@@ -1,5 +1,30 @@
 # Changelog — xArtists
 
+## [0.70.0](https://github.com/Neltud/xArtists/compare/v0.69.0...v0.70.0) (2026-09-30)
+
+
+### Features
+
+* **5.5:** mount SystemMaintenanceBanner + TransactionMonitor without dropping routes ([7049bdc](https://github.com/Neltud/xArtists/commit/7049bdcf447d0bb629d99b2b9d7df5e8e50f2341))
+* **5.5:** TransactionMonitor, pause banner, grandSwitch, secret scan ([d0a0eb7](https://github.com/Neltud/xArtists/commit/d0a0eb7472d4c46e537a5ee78f057daab1cbf9ea))
+* **5.5:** wire SystemMaintenance + TransactionMonitor in App; Dust panel Grand Switch ([a55e7a2](https://github.com/Neltud/xArtists/commit/a55e7a2f0002e334b4d86986890bfc7908a47d34))
+* PUBLIC GO LIVE banner on /go-live — house funded, spins open ([fb32f37](https://github.com/Neltud/xArtists/commit/fb32f37e9e0cda03420dd6f982d3fef8c7b11287))
+
+
+### Bug Fixes
+
+* **legal:** pas un fond d'investissement; process sans jargon CODEHASH ([d618635](https://github.com/Neltud/xArtists/commit/d6186351d5875b48cd3dde0882353d72cccb3a86))
+* restore full App.tsx (48 routes) + Phase 5.5 monitors ([94e29ce](https://github.com/Neltud/xArtists/commit/94e29ce9e075922690398cf98b78ec6f3d1414de))
+* **staking:** remove CODEHASH_OK from public copy ([83de391](https://github.com/Neltud/xArtists/commit/83de391b8c910144972b15614e4e1628ea8c8e88))
+* **ux:** fond d'investissement; soft labels (no CODEHASH jargon); closer wall walk; war-room note ([beb6bc1](https://github.com/Neltud/xArtists/commit/beb6bc1cb0bf49d39e0874f269e5983d6847ca71))
+* **ux:** labels Ouvert / Bientôt instead of CODEHASH jargon ([f050d19](https://github.com/Neltud/xArtists/commit/f050d1963f4389fffa220366409b8f201930d2b7))
+* **ux:** soft public labels; legal fond d'investissement; less jargon on Slot/Staking/strip ([720a65f](https://github.com/Neltud/xArtists/commit/720a65fb7f9d67561fe6b8e975a21fc88cba0b17))
+
+
+### Documentation
+
+* Final Pre-Flight audit report (SC MVX + front + deploy sequence) ([a1e2c51](https://github.com/Neltud/xArtists/commit/a1e2c51b1af854500462764f7580889e64962ca8))
+
 ## [0.69.0](https://github.com/Neltud/xArtists/compare/v0.68.0...v0.69.0) (2026-09-30)
 
 
