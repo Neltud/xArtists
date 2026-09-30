@@ -7,7 +7,7 @@ import { useCallback, useState } from 'react'
 import { useSendTransaction } from './useSendTransaction'
 import {
   canSpinSlot,
-  slotCasinoReceiverOrThrow,
+  slotReceiverOrThrow,
   SLOT_CASINO_ADDRESS,
 } from '../config/scStatus'
 
@@ -56,7 +56,7 @@ export function useSlotTx() {
       }
       let receiver: string
       try {
-        receiver = slotCasinoReceiverOrThrow()
+        receiver = slotReceiverOrThrow()
       } catch (e) {
         const msg = e instanceof Error ? e.message : BLOCKED
         setError(msg)
@@ -87,10 +87,6 @@ export function useSlotTx() {
     [send, live],
   )
 
-  /**
-   * spinEgld — payable EGLD + client_seed (hex string in data).
-   * Creates pending spin; user must later resolveSpin(spinId).
-   */
   const spinEgld = useCallback(
     async (betEgld: number, clientSeed?: string) => {
       if (!(betEgld > 0)) {
