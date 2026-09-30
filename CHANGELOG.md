@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.72.0](https://github.com/Neltud/xArtists/compare/v0.71.0...v0.72.0) (2026-09-30)
+
+
+### Features
+
+* richer human avatar; SlotSmartUnlock banner forces REAL open ([4501c62](https://github.com/Neltud/xArtists/commit/4501c62ca21d3f2de48d4f44206cf33adc03a7a0))
+
+
+### Bug Fixes
+
+* restore smart-unlock v2 + logical PRIMARY_NAV (post pages sync) ([9b41001](https://github.com/Neltud/xArtists/commit/9b41001203eb89610faf3ed5130429ffac1241c7))
+
 ## [0.71.0](https://github.com/Neltud/xArtists/compare/v0.70.0...v0.71.0) (2026-09-30)
 
 
