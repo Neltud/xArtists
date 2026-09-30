@@ -1,9 +1,14 @@
-/** Listen empire TX errors → txLog (no silent failures) */
+/** Listen empire TX errors + boot runtime CODEHASH verify */
 import { useEffect } from 'react'
 import { subscribeEmpire, getEmpireState } from '../store/empireStore'
 import { logTxFailure } from '../lib/txLog'
+import { refreshRuntimeCodehashes } from '../lib/runtimeCodehash'
 
 export default function TransactionMonitor() {
+  useEffect(() => {
+    void refreshRuntimeCodehashes()
+  }, [])
+
   useEffect(() => {
     let lastError: string | null = null
     const unsub = subscribeEmpire(() => {
