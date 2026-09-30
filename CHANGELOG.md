@@ -1,5 +1,31 @@
 # Changelog — xArtists
 
+## [0.71.0](https://github.com/Neltud/xArtists/compare/v0.70.0...v0.71.0) (2026-09-30)
+
+
+### Features
+
+* **museum:** œuvres/murs capacity UI; soft Dashboard; MyPacks capacity copy ([1013f15](https://github.com/Neltud/xArtists/commit/1013f15c13730b80acda1683e48436fae4700a5e))
+* **museum:** show wall occupancy (œuvres / slots par mur) ([b090be5](https://github.com/Neltud/xArtists/commit/b090be5172852a623b7a277d386af7fbe6db44e7))
+* **slot:** house seed gate — REAL blocked if SC balance 0; SEED protocol doc ([d007424](https://github.com/Neltud/xArtists/commit/d0074247b39af8437afcfe7637dd89400e457df0))
+
+
+### Bug Fixes
+
+* /market analytics vs /marketplace NFT list-buy routes ([5a713df](https://github.com/Neltud/xArtists/commit/5a713df397382e0e6ea0f855297a7dd176c8688d))
+* **A-Z:** real NFT Marketplace page; BottomNav; Market analytics alias; audit gaps doc ([215e7c7](https://github.com/Neltud/xArtists/commit/215e7c71e4874e4bc23b84477164aaa8a8512cc8))
+* bootstrap runtime CODEHASH on app load via TransactionMonitor ([f963817](https://github.com/Neltud/xArtists/commit/f9638172af6d8f381d4abad0277c685d411cee74))
+* **museum:** restore HallImpl with wall collision + art lights + music gesture ([efd7d80](https://github.com/Neltud/xArtists/commit/efd7d8074e7134c9688a5637e29dedc4a3dba52b))
+* **museum:** segment wall collision, larger lit art frames, music on first gesture ([00ebd7b](https://github.com/Neltud/xArtists/commit/00ebd7b77e423c0c42ad8c3e8045d25247c3e335))
+* **museum:** wall-segment collision (no clip); richer art frames; music unlock on gesture ([aedcb64](https://github.com/Neltud/xArtists/commit/aedcb64c6214da49d5ea1d0a9baa25a7153dff27))
+* **museum:** wire wall-segment walkable + art quality + music CTA ([0a70621](https://github.com/Neltud/xArtists/commit/0a7062135f88f2f931781705a4087cf43ef4433e))
+* restore missing page modules + museum capacity (œuvres/murs) + soft Dashboard ([b110b44](https://github.com/Neltud/xArtists/commit/b110b444a818c5f9ecc382bca63859374184c537))
+* restore MuseumWebGLHall + wall collision + art + music gesture ([be26a01](https://github.com/Neltud/xArtists/commit/be26a01e7b1aa3124fb0e3ad81a343cb3717fc76))
+* runtime codehash unlock slots/market; PackRoomHolo; soft labels ([aebdd43](https://github.com/Neltud/xArtists/commit/aebdd43f936d21653b4665f5b4d1ef56b49a43c3))
+* runtime explorer CODEHASH unlock; soft gates; My Packs holo room walls ([9f6cd5f](https://github.com/Neltud/xArtists/commit/9f6cd5f7909121c80534bf7e4613a503eb94171c))
+* RuntimeCodehashBootstrap + soft market message; PackRoomHolo on MyPacks ([d22927b](https://github.com/Neltud/xArtists/commit/d22927b59f8ca2932fd223542dae75f1be81f2d0))
+* **scStatus:** unlock canSpin/list via runtime explorer CODEHASH ([3212aea](https://github.com/Neltud/xArtists/commit/3212aead883b048d9a1b85917bbd087601337a2a))
+
 ## [0.70.0](https://github.com/Neltud/xArtists/compare/v0.69.0...v0.70.0) (2026-09-30)
 
 
