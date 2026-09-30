@@ -142,6 +142,22 @@ export function marketplaceReceiverOrThrow(): string {
   return MARKETPLACE_ADDRESS
 }
 
+export function agentsMarketplaceReceiverOrThrow(): string {
+  if (!canBuyAgent()) {
+    throw new Error(
+      'Agents marketplace not live — set VITE_AGENTS_MARKETPLACE_ADDRESS + VITE_AGENTS_CODEHASH_OK',
+    )
+  }
+  return AGENTS_MARKETPLACE_ADDRESS
+}
+
+export function treasuryReceiverOrThrow(): string {
+  if (!canUseTreasury()) {
+    throw new Error('Treasury splitter not live — VITE_TREASURY_CODEHASH_OK required')
+  }
+  return TREASURY_SPLITTER_ADDRESS
+}
+
 export function venueReceiverOrThrow(): string {
   if (!canRentVenueOnChain()) {
     throw new Error(
