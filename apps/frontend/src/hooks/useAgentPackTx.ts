@@ -1,7 +1,7 @@
 /**
  * Agent pack mint TX — paper always; on-chain when canBuyAgent().
- * Without verified ABI, on-chain path is a documented EGLD payment + data tag
- * (ops must confirm endpoint name against agents_marketplace bytecode).
+ * Without verified ABI, on-chain path is provisional buyPack@tag.
+ * Verify SC endpoint before VITE_AGENTS_CODEHASH_OK for public users.
  */
 import { useCallback, useState } from 'react'
 import {
@@ -14,7 +14,6 @@ import { markPackOwned, buildMintMetadata } from '../lib/nftPacks'
 import { empireTxStart, empireTxError, empireTxSuccess } from '../store/empireStore'
 import { projectSale } from '../config/revenueSplitter'
 
-// Optional bootstrap — same pattern as useSlotTx when TxShell is mounted
 type BootstrapFn = (opts: {
   receiver: string
   value: string
@@ -30,17 +29,11 @@ export function registerAgentPackTxBootstrap(fn: BootstrapFn | null) {
 }
 
 function packIdHex(id: PackId): string {
-  // short tag for SC data (ops may map to enum)
-  const map: Record<PackId, string> = {
-    pulse: '01',
-    yield: '02',
-    sentinel: '03',
-  }
+  const map: Record<PackId, string> = { pulse: '01', yield: '02', sentinel: '03' }
   return map[id]
 }
 
 function egldToAtomic(egld: number): string {
-  // 1 EGLD = 1e18
   const atomic = BigInt(Math.round(egld * 1e6)) * 10n ** 12n
   return atomic.toString()
 }
@@ -62,13 +55,7 @@ export function useAgentPackTx() {
       const raw = localStorage.getItem('xartists_pack_sale_log')
       const log = raw ? (JSON.parse(raw) as unknown[]) : []
       const arr = Array.isArray(log) ? log : []
-      arr.push({
-        mode: 'paper',
-        packId: id,
-        meta,
-        sale,
-        ts: Date.now(),
-      })
+      arr.push({ mode: 'paper', packId: id, meta, sale, ts: Date.now() })
       localStorage.setItem('xartists_pack_sale_log', JSON.stringify(arr.slice(-40)))
     } catch {
       /* */
@@ -88,13 +75,11 @@ export function useAgentPackTx() {
     if (!pack) throw new Error('Pack inconnu')
     const price = pack.priceEgld.list
     const receiver = agentsMarketplaceReceiverOrThrow()
-    // Provisional endpoint tag — verify against SC ABI before public mainnet push
     const data = `buyPack@${packIdHex(id)}`
     const value = egldToAtomic(price)
 
     if (!bootstrapSendTx) {
-      const msg =
-        'TxShell bootstrap absent — connect wallet + TxShell, ou utilise mint paper'
+      const msg = 'TxShell bootstrap absent — connect wallet + TxShell, or use paper mint'
       setError(msg)
       throw new Error(msg)
     }
@@ -110,7 +95,6 @@ export function useAgentPackTx() {
         label: `buyPack ${id}`,
       })
       if (typeof tx === 'string') setLastTx(tx)
-      // Optimistic paper ownership until indexer confirms NFT
       markPackOwned(id)
       setLastPaper(id)
       empireTxSuccess(typeof tx === 'string' ? tx : undefined)
@@ -135,12 +119,4 @@ export function useAgentPackTx() {
     agentsLive: canBuyAgent(),
     agentsAddress: AGENTS_MARKETPLACE_ADDRESS,
   }
-}
-
-/** Safe receiver helper — scStatus may not export yet */
-function agentsMarketplaceReceiverOrThrow(): string {
-  if (!canBuyAgent()) {
-    throw new Error('Agents marketplace not live')
-  }
-  return AGENTS_MARKETPLACE_ADDRESS
 }

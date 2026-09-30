@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
 import PackOpenTheater from '../components/PackOpenTheater'
 import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
+import RevenueSplitterPanel from '../components/RevenueSplitterPanel'
 import AdSlot from '../components/AdSlot'
 import PackProductDisclaimer from '../components/PackProductDisclaimer'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
@@ -64,6 +65,7 @@ export default function Agents() {
 
       <PackProductDisclaimer />
       <Phase4ReadinessBanner />
+      <RevenueSplitterPanel packId={selected} />
       <AdSlot placement="agents_top" />
 
       <div className="grid sm:grid-cols-3 gap-3">
