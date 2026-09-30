@@ -20,56 +20,33 @@ import AssetDrawer from './components/ui/AssetDrawer'
 import { OPEN_ASSETS_EVENT } from './lib/walletEvents'
 import { LINKS } from './config/links'
 import PageTransition from './components/PageTransition'
-import SoundDock from './components/SoundDock'
 import BackgroundMusicPlayer from './components/BackgroundMusicPlayer'
 import ZoneRouteSync from './components/ZoneRouteSync'
 import TransactionOverlay from './components/TransactionOverlay'
-import RouteErrorBoundary from './components/RouteErrorBoundary'
-import RouteSfx from './components/RouteSfx'
+import TransactionMonitor from './components/TransactionMonitor'
+import SystemMaintenanceBanner from './components/SystemMaintenanceBanner'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
-const Marketplace = lazy(() => import('./pages/Marketplace'))
-const MarketPage = lazy(() => import('./pages/MarketPage'))
-const Trading = lazy(() => import('./pages/Trading'))
-const Portfolio = lazy(() => import('./pages/Portfolio'))
-const DAO = lazy(() => import('./pages/DAO'))
-const Tip = lazy(() => import('./pages/Tip'))
-const Wallet = lazy(() => import('./pages/Wallet'))
 const MuseumPage = lazy(() => import('./pages/MuseumPage'))
-const MuseumLabPage = lazy(() => import('./pages/MuseumLabPage'))
-const LegalPage = lazy(() => import('./pages/LegalPage'))
-const HatomPage = lazy(() => import('./pages/HatomPage'))
-const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
-const Agents = lazy(() => import('./pages/Agents'))
-const MyPacks = lazy(() => import('./pages/MyPacks'))
-const HolderRoomPage = lazy(() => import('./pages/HolderRoomPage'))
-const TroPage = lazy(() => import('./pages/TroPage'))
+const MarketplacePage = lazy(() => import('./pages/MarketplacePage'))
 const StakingPage = lazy(() => import('./pages/StakingPage'))
-const SoulTestnetPage = lazy(() => import('./pages/SoulTestnetPage'))
-const AgentsPolyliaPage = lazy(() => import('./pages/AgentsPolyliaPage'))
-const ArtToursPage = lazy(() => import('./pages/ArtToursPage'))
-const LightningAgentPage = lazy(() => import('./pages/LightningAgentPage'))
-const BurnifyPage = lazy(() => import('./pages/BurnifyPage'))
-const ArtistStudio = lazy(() => import('./pages/ArtistStudio'))
-const SalePage = lazy(() => import('./pages/SalePage'))
-const AdsPage = lazy(() => import('./pages/AdsPage'))
-const PaymentHistory = lazy(() => import('./pages/PaymentHistory'))
-const Editions = lazy(() => import('./pages/Editions'))
-const SimulationLab = lazy(() => import('./pages/SimulationLab'))
-const EntityMap = lazy(() => import('./pages/EntityMap'))
-const SiteMapPage = lazy(() => import('./pages/SiteMapPage'))
-const TxShell = lazy(() => import('./providers/TxShell'))
-const DemoTourPage = lazy(() => import('./pages/DemoTourPage'))
-const GoLivePage = lazy(() => import('./pages/GoLivePage'))
-const VenueAccountPage = lazy(() => import('./pages/VenueAccountPage'))
-const DigitalTwinPage = lazy(() => import('./pages/DigitalTwinPage'))
 const SlotPage = lazy(() => import('./pages/SlotPage'))
-const LiaPerformancePage = lazy(() => import('./pages/LiaPerformancePage'))
+const AgentsPage = lazy(() => import('./pages/AgentsPage'))
+const StudioPage = lazy(() => import('./pages/StudioPage'))
+const LegalPage = lazy(() => import('./pages/LegalPage'))
+const GoLivePage = lazy(() => import('./pages/GoLivePage'))
 const CommandCenterPage = lazy(() => import('./pages/CommandCenterPage'))
+const MyPacksPage = lazy(() => import('./pages/MyPacksPage'))
+const LiaPage = lazy(() => import('./pages/LiaPage'))
+const TroPage = lazy(() => import('./pages/TroPage'))
+const IdentityPage = lazy(() => import('./pages/IdentityPage'))
+const TradingPage = lazy(() => import('./pages/TradingPage'))
+const VenuePage = lazy(() => import('./pages/VenuePage'))
+const DaoPage = lazy(() => import('./pages/DaoPage'))
 
 export default function App() {
+  useMultiversX()
   const location = useLocation()
-  const { needsTx } = useMultiversX()
   const [assetsOpen, setAssetsOpen] = useState(false)
 
   useEffect(() => {
@@ -84,90 +61,47 @@ export default function App() {
         <ArtAtelierBackdrop />
         <PrivateReleaseStrip />
         <DemoModeBanner />
+        <SystemMaintenanceBanner />
+        <TransactionMonitor />
         <Header />
         <BrainMoodStrip />
         <SignalTicker />
         <GuardianStatusBar />
-        <IntentBar />
-        <LiaMonitor />
         <ZoneRouteSync />
-        <main className="flex-1 px-3 sm:px-4 pt-2 pb-24 md:pb-8 max-w-6xl w-full mx-auto relative z-10">
-          <RouteErrorBoundary>
-            <PageTransition>
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
+        <main className="flex-1 px-3 sm:px-4 py-4 pb-28 md:pb-8 max-w-6xl w-full mx-auto">
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition key={location.pathname}>
+              <Routes>
                 <Route path="/" element={<Dashboard />} />
-                <Route path="/market" element={<MarketPage />} />
-                <Route path="/marketplace" element={<Marketplace />} />
-                <Route path="/trading" element={<Trading />} />
-                <Route path="/agents" element={<Agents />} />
-                <Route path="/my-packs" element={<MyPacks />} />
-                <Route path="/room/:packId" element={<HolderRoomPage />} />
-                <Route path="/command-center" element={<CommandCenterPage />} />
-                <Route path="/command" element={<Navigate to="/command-center" replace />} />
-                <Route path="/studio" element={<ArtistStudio />} />
-                <Route path="/sale" element={<SalePage />} />
-                <Route path="/simulation" element={<SimulationLab />} />
-                <Route path="/entities" element={<EntityMap />} />
-                <Route path="/sitemap" element={<SiteMapPage />} />
-                <Route path="/tours" element={<ArtToursPage />} />
-                <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
-                <Route path="/agents/voyage" element={<Navigate to="/tours" replace />} />
-                <Route path="/agents/lightning" element={<LightningAgentPage />} />
-                <Route path="/tro" element={<TroPage />} />
-                <Route path="/staking" element={<StakingPage />} />
-                <Route path="/burnify" element={<BurnifyPage />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/dao" element={<DAO />} />
-                <Route path="/gallery" element={<Navigate to="/museum" replace />} />
                 <Route path="/museum" element={<MuseumPage />} />
-                <Route path="/museum/lab" element={<MuseumLabPage />} />
-                <Route path="/digital-twin" element={<DigitalTwinPage />} />
-                <Route path="/sculpture-lab" element={<DigitalTwinPage />} />
-                <Route path="/musee" element={<Navigate to="/museum" replace />} />
-                <Route path="/collection" element={<Navigate to="/museum?tab=mine" replace />} />
-                <Route path="/legal" element={<LegalPage />} />
-                <Route path="/mentions-legales" element={<LegalPage />} />
-                <Route path="/tip" element={<Tip />} />
-                <Route path="/wallet" element={<Wallet />} />
-                <Route path="/hatom" element={<HatomPage />} />
-                <Route path="/lp" element={<LPPoolsPage />} />
-                <Route path="/ads" element={<AdsPage />} />
-                <Route path="/payments" element={<PaymentHistory />} />
-                <Route path="/editions" element={<Editions />} />
+                <Route path="/marketplace" element={<MarketplacePage />} />
+                <Route path="/staking" element={<StakingPage />} />
                 <Route path="/slot" element={<SlotPage />} />
-                <Route path="/lia" element={<LiaPerformancePage />} />
-                <Route path="/performance" element={<LiaPerformancePage />} />
-                <Route path="/demo" element={<DemoTourPage />} />
+                <Route path="/agents" element={<AgentsPage />} />
+                <Route path="/studio" element={<StudioPage />} />
+                <Route path="/command-center" element={<CommandCenterPage />} />
+                <Route path="/my-packs" element={<MyPacksPage />} />
+                <Route path="/lia" element={<LiaPage />} />
+                <Route path="/tro" element={<TroPage />} />
+                <Route path="/identity" element={<IdentityPage />} />
+                <Route path="/trading" element={<TradingPage />} />
+                <Route path="/venue" element={<VenuePage />} />
+                <Route path="/dao" element={<DaoPage />} />
+                <Route path="/legal" element={<LegalPage />} />
                 <Route path="/go-live" element={<GoLivePage />} />
-                <Route path="/venues" element={<VenueAccountPage />} />
-                <Route path="/accounts" element={<VenueAccountPage />} />
-                <Route path="/soul" element={<SoulTestnetPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </Suspense>
+              </Routes>
             </PageTransition>
-          </RouteErrorBoundary>
-        </main>
-        <BottomNav />
-        <PwaInstallBanner />
-        <FirstVisitOnboarding />
-        <RoutePrefetch />
-        <RouteSfx />
-        <BackgroundMusicPlayer />
-        <SoundDock />
-        <TransactionOverlay />
-        {needsTx && (
-          <Suspense fallback={null}>
-            <TxShell />
           </Suspense>
-        )}
+        </main>
+        <IntentBar />
+        <BottomNav />
+        <FirstVisitOnboarding />
+        <PwaInstallBanner />
+        <LiaMonitor />
+        <BackgroundMusicPlayer />
         <AssetDrawer open={assetsOpen} onClose={() => setAssetsOpen(false)} />
-        <footer className="hidden md:block text-center text-[10px] text-zinc-600 py-4 atelier-content">
-          <a href={LINKS.github} className="hover:text-zinc-400" target="_blank" rel="noreferrer">
-            GitHub
-          </a>
-        </footer>
+        <TransactionOverlay />
       </div>
     </ErrorBoundary>
   )
