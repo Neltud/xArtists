@@ -1,19 +1,40 @@
 /**
- * CommandWall — flat parallelepiped mesh with emissive canvas texture.
- * Pure three.js (no R3F dep). Mount only when hasAgentAccess.
+ * CommandWall — interactive 3D wall.
+ * - Sentiment → emissive / light / rotation speed (Atmospheric Feedback)
+ * - Raycaster click → Direct Execution (stake / open overlay)
+ * Museum untouched.
  */
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import ProjectionBridge from './ProjectionBridge'
+import { empireTxStart } from '../store/empireStore'
 
 type Props = {
   sentiment?: number
+  /** 0–1 optional volatility for glitch intensity */
+  volatility?: number
   className?: string
+  /** Enable raycaster click targets */
+  interactive?: boolean
 }
 
-export default function CommandWall({ sentiment = 0, className = '' }: Props) {
+type HitAction = 'STAKE' | 'MARKET' | 'PULSE'
+
+export default function CommandWall({
+  sentiment = 0,
+  volatility = 0.3,
+  className = '',
+  interactive = true,
+}: Props) {
   const hostRef = useRef<HTMLDivElement>(null)
   const meshMatRef = useRef<THREE.MeshStandardMaterial | null>(null)
+  const lightRef = useRef<THREE.PointLight | null>(null)
+  const ambRef = useRef<THREE.AmbientLight | null>(null)
+  const wallRef = useRef<THREE.Mesh | null>(null)
+  const sentRef = useRef(sentiment)
+  const volRef = useRef(volatility)
+  sentRef.current = sentiment
+  volRef.current = volatility
 
   useEffect(() => {
     const host = hostRef.current
@@ -33,25 +54,55 @@ export default function CommandWall({ sentiment = 0, className = '' }: Props) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     host.appendChild(renderer.domElement)
 
-    const light = new THREE.AmbientLight(0xffffff, 0.55)
-    scene.add(light)
-    const pt = new THREE.PointLight(0x22d3ee, 1.2, 12)
+    const amb = new THREE.AmbientLight(0xffffff, 0.45)
+    scene.add(amb)
+    ambRef.current = amb
+
+    const pt = new THREE.PointLight(0x22d3ee, 1.1, 14)
     pt.position.set(1, 2, 3)
     scene.add(pt)
+    lightRef.current = pt
 
     const geo = new THREE.BoxGeometry(2.2, 1.2, 0.08)
     const mat = new THREE.MeshStandardMaterial({
       color: 0x0a0a12,
       emissive: 0x0e7490,
-      emissiveIntensity: 0.35,
-      metalness: 0.4,
-      roughness: 0.35,
+      emissiveIntensity: 0.4,
+      metalness: 0.45,
+      roughness: 0.32,
     })
     meshMatRef.current = mat
     const wall = new THREE.Mesh(geo, mat)
+    wall.userData.action = 'PULSE' as HitAction
     scene.add(wall)
+    wallRef.current = wall
 
-    // side slabs
+    // Interactive nodes (left stake / right market)
+    const nodeGeo = new THREE.BoxGeometry(0.35, 0.35, 0.12)
+    const stakeMat = new THREE.MeshStandardMaterial({
+      color: 0x0a1a12,
+      emissive: 0x34d399,
+      emissiveIntensity: 0.55,
+      metalness: 0.5,
+      roughness: 0.3,
+    })
+    const stakeNode = new THREE.Mesh(nodeGeo, stakeMat)
+    stakeNode.position.set(-0.7, -0.15, 0.12)
+    stakeNode.userData.action = 'STAKE' as HitAction
+    scene.add(stakeNode)
+
+    const marketMat = new THREE.MeshStandardMaterial({
+      color: 0x120a1a,
+      emissive: 0xa78bfa,
+      emissiveIntensity: 0.5,
+      metalness: 0.5,
+      roughness: 0.3,
+    })
+    const marketNode = new THREE.Mesh(nodeGeo, marketMat)
+    marketNode.position.set(0.7, -0.15, 0.12)
+    marketNode.userData.action = 'MARKET' as HitAction
+    scene.add(marketNode)
+
     const side = new THREE.Mesh(
       new THREE.BoxGeometry(0.12, 1.4, 0.6),
       new THREE.MeshStandardMaterial({ color: 0x111118, metalness: 0.6, roughness: 0.3 }),
@@ -62,10 +113,73 @@ export default function CommandWall({ sentiment = 0, className = '' }: Props) {
     side2.position.x = 1.2
     scene.add(side2)
 
+    const raycaster = new THREE.Raycaster()
+    const pointer = new THREE.Vector2()
+    const targets = [wall, stakeNode, marketNode]
+
+    const flash = (mesh: THREE.Mesh) => {
+      const m = mesh.material as THREE.MeshStandardMaterial
+      const prev = m.emissiveIntensity
+      m.emissiveIntensity = 1.4
+      setTimeout(() => {
+        m.emissiveIntensity = prev
+      }, 180)
+    }
+
+    const onPointer = (ev: PointerEvent) => {
+      if (!interactive) return
+      const rect = renderer.domElement.getBoundingClientRect()
+      pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1
+      pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1
+      raycaster.setFromCamera(pointer, camera)
+      const hits = raycaster.intersectObjects(targets, false)
+      if (!hits.length) return
+      const obj = hits[0].object as THREE.Mesh
+      flash(obj)
+      const action = (obj.userData.action || 'PULSE') as HitAction
+      if (action === 'STAKE') {
+        empireTxStart('CommandWall → Stake TRO')
+        window.location.hash = '#/staking'
+      } else if (action === 'MARKET') {
+        empireTxStart('CommandWall → Marketplace')
+        window.location.hash = '#/marketplace'
+      } else {
+        empireTxStart('CommandWall → Pulse inspect')
+      }
+    }
+    renderer.domElement.style.cursor = interactive ? 'pointer' : 'default'
+    renderer.domElement.addEventListener('pointerdown', onPointer)
+
     let raf = 0
     const animate = () => {
       raf = requestAnimationFrame(animate)
-      wall.rotation.y = Math.sin(Date.now() / 4000) * 0.08
+      const s = sentRef.current
+      const v = volRef.current
+      const bullish = s >= 0
+      // Atmospheric Feedback
+      if (meshMatRef.current) {
+        meshMatRef.current.emissive.setHex(bullish ? 0x0e7490 : 0x7f1d1d)
+        meshMatRef.current.emissiveIntensity = 0.35 + Math.abs(s) * 0.45 + v * 0.2
+      }
+      if (lightRef.current) {
+        lightRef.current.color.setHex(bullish ? 0x22d3ee : 0xf43f5e)
+        lightRef.current.intensity = 0.9 + Math.abs(s) * 0.8 + v * 0.5
+      }
+      if (ambRef.current) {
+        ambRef.current.intensity = 0.35 + Math.max(0, s) * 0.25
+      }
+      const speed = bullish ? 5000 - Math.abs(s) * 1500 : 2200 - v * 800
+      if (wallRef.current) {
+        wallRef.current.rotation.y = Math.sin(Date.now() / Math.max(speed, 800)) * (0.06 + v * 0.08)
+        // micro glitch on high vol
+        if (v > 0.6 && Math.random() > 0.92) {
+          wallRef.current.position.x = (Math.random() - 0.5) * 0.02
+        } else if (wallRef.current) {
+          wallRef.current.position.x *= 0.8
+        }
+      }
+      stakeNode.rotation.y += 0.01
+      marketNode.rotation.y -= 0.01
       renderer.render(scene, camera)
     }
     animate()
@@ -82,20 +196,26 @@ export default function CommandWall({ sentiment = 0, className = '' }: Props) {
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', onResize)
+      renderer.domElement.removeEventListener('pointerdown', onPointer)
       geo.dispose()
       mat.dispose()
+      nodeGeo.dispose()
+      stakeMat.dispose()
+      marketMat.dispose()
       renderer.dispose()
       if (renderer.domElement.parentNode === host) host.removeChild(renderer.domElement)
       meshMatRef.current = null
+      wallRef.current = null
+      lightRef.current = null
+      ambRef.current = null
     }
-  }, [])
+  }, [interactive])
 
   const onTexture = (tex: THREE.CanvasTexture) => {
     const mat = meshMatRef.current
     if (!mat) return
     mat.map = tex
     mat.emissiveMap = tex
-    mat.emissiveIntensity = 0.55
     mat.needsUpdate = true
   }
 
@@ -103,6 +223,11 @@ export default function CommandWall({ sentiment = 0, className = '' }: Props) {
     <div className={`relative w-full overflow-hidden rounded-2xl border border-cyan-500/20 ${className}`}>
       <div ref={hostRef} className="w-full min-h-[280px]" />
       <ProjectionBridge sentiment={sentiment} onTexture={onTexture} />
+      {interactive && (
+        <p className="absolute bottom-2 left-3 right-3 text-[9px] text-zinc-500 pointer-events-none">
+          Clic nœud vert = Stake · violet = Market · mur = Pulse · sentiment {sentiment.toFixed(2)}
+        </p>
+      )}
     </div>
   )
 }
