@@ -1,13 +1,15 @@
 /**
- * Slot house emergency stop — front-end gate if progressive/house too low.
- * Audit §3: houseBalance < jackpotThreshold → block REAL spins.
+ * Slot house gate — REAL spins only if SC balance confirmed on-chain.
+ * Seed: native EGLD transfer to Slot SC (and optional fundProgressiveEgld).
  */
 
 import { SLOT_ASSET_CONFIG, type SlotAsset } from '../config/slotEconomy'
 
 const STORAGE_KEY = 'xartists_slot_house_egld'
 
-/** Cached house balance in EGLD (owner/ops can set after fund) */
+/** Minimum EGLD on SC to open REAL (dust genesis). Below → simulation only. */
+export const MIN_HOUSE_OPEN_EGLD = 0.5
+
 export function getCachedHouseEgld(): number | null {
   try {
     const v = localStorage.getItem(STORAGE_KEY)
@@ -27,10 +29,10 @@ export function setCachedHouseEgld(egld: number): void {
   }
 }
 
-/** Max table grand for asset at max mult — conservative jackpot threshold */
+/** Conservative reserve for max table grand */
 export function jackpotThresholdEgld(asset: SlotAsset = 'EGLD'): number {
   const cfg = SLOT_ASSET_CONFIG[asset]
-  return cfg.payouts.grandBonus * 10 // max mult × grand
+  return cfg.payouts.grandBonus * 10
 }
 
 export type HouseGuardResult = {
@@ -38,44 +40,59 @@ export type HouseGuardResult = {
   reason?: string
   house: number | null
   threshold: number
+  fullHouse: boolean
 }
 
 /**
- * If house unknown → allow paper only messaging; if known and low → stop REAL.
- * Ops should call setCachedHouseEgld after funding SC.
+ * REAL spin only if house balance known and >= MIN_HOUSE_OPEN_EGLD.
+ * Unknown / 0 → simulation (fail-closed seed).
  */
 export function canSpinRealAgainstHouse(asset: SlotAsset = 'EGLD'): HouseGuardResult {
   const threshold = jackpotThresholdEgld(asset)
   const house = getCachedHouseEgld()
+
   if (house == null) {
     return {
-      ok: true,
-      reason: 'House balance non renseignée — ops: setCachedHouseEgld après fund',
+      ok: false,
+      reason: 'Caisse non confirmée — en attente du financement on-chain',
       house: null,
       threshold,
+      fullHouse: false,
     }
   }
-  if (house < threshold) {
+
+  if (house < MIN_HOUSE_OPEN_EGLD) {
     return {
       ok: false,
-      reason: `Emergency stop: house ${house} EGLD < seuil jackpot ${threshold}`,
+      reason: `Caisse insuffisante (${house.toFixed(3)} EGLD) — seed min ${MIN_HOUSE_OPEN_EGLD} EGLD`,
       house,
       threshold,
+      fullHouse: false,
     }
   }
-  return { ok: true, house, threshold }
+
+  const fullHouse = house >= threshold
+  return {
+    ok: true,
+    house,
+    threshold,
+    fullHouse,
+    reason: fullHouse
+      ? undefined
+      : `Caisse OK pour spins dust · réserve jackpot cible ${threshold} EGLD`,
+  }
 }
 
-/** Fetch SC EGLD balance from MultiversX API (best-effort) */
+/** Fetch SC EGLD balance from MultiversX API */
 export async function refreshHouseFromApi(scAddress: string): Promise<number | null> {
+  if (!scAddress || !scAddress.startsWith('erd1')) return null
   try {
-    const r = await fetch(
-      `https://api.multiversx.com/accounts/${scAddress}?fields=balance`,
-      { cache: 'no-store' },
-    )
+    const r = await fetch(`https://api.multiversx.com/accounts/${scAddress}`, {
+      cache: 'no-store',
+    })
     if (!r.ok) return null
     const j = (await r.json()) as { balance?: string }
-    if (!j.balance) return null
+    if (j.balance == null) return null
     const atomic = BigInt(j.balance)
     const egld = Number(atomic) / 1e18
     setCachedHouseEgld(egld)
