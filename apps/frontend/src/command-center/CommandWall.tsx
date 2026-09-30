@@ -1,9 +1,5 @@
 /**
- * CommandWall — interactive 3D wall.
- * - Raycaster Direct Execution → empireTxStart + routes
- * - PulseAtmosphere ShaderMaterial (uSentiment / uVolatility)
- * - Emissive / light atmospheric feedback
- * Museum untouched.
+ * CommandWall — interactive 3D wall + Semantic Compiler uniforms.
  */
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
@@ -14,6 +10,8 @@ import { empireTxStart } from '../store/empireStore'
 type Props = {
   sentiment?: number
   volatility?: number
+  pulseSpeed?: number
+  colorRgb?: [number, number, number]
   className?: string
   interactive?: boolean
 }
@@ -23,6 +21,8 @@ type HitAction = 'STAKE' | 'MARKET' | 'PULSE'
 export default function CommandWall({
   sentiment = 0,
   volatility = 0.3,
+  pulseSpeed = 1,
+  colorRgb,
   className = '',
   interactive = true,
 }: Props) {
@@ -33,8 +33,12 @@ export default function CommandWall({
   const wallRef = useRef<THREE.Mesh | null>(null)
   const sentRef = useRef(sentiment)
   const volRef = useRef(volatility)
+  const spdRef = useRef(pulseSpeed)
+  const colRef = useRef<[number, number, number] | null>(colorRgb || null)
   sentRef.current = sentiment
   volRef.current = volatility
+  spdRef.current = pulseSpeed
+  colRef.current = colorRgb || null
 
   useEffect(() => {
     const host = hostRef.current
@@ -164,6 +168,13 @@ export default function CommandWall({
       atmo.uniforms.uTime.value = t
       atmo.uniforms.uSentiment.value = s
       atmo.uniforms.uVolatility.value = v
+      if ('uPulseSpeed' in atmo.uniforms) {
+        ;(atmo.uniforms as { uPulseSpeed: { value: number } }).uPulseSpeed.value = spdRef.current
+      }
+      if ('uColor' in atmo.uniforms && colRef.current) {
+        const c = colRef.current
+        ;(atmo.uniforms as { uColor: { value: THREE.Vector3 } }).uColor.value.set(c[0], c[1], c[2])
+      }
 
       if (meshMatRef.current) {
         meshMatRef.current.emissive.setHex(bullish ? 0x0e7490 : 0x7f1d1d)
