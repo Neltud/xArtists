@@ -1,5 +1,29 @@
 # Changelog — xArtists
 
+## [0.69.0](https://github.com/Neltud/xArtists/compare/v0.68.0...v0.69.0) (2026-09-30)
+
+
+### Features
+
+* **museum:** Pikachu/Eevee avatars; hall nav numpad+arrows no-scroll; camera wall clamp ([4c07e73](https://github.com/Neltud/xArtists/commit/4c07e7350c1abc2209111edc31fde8faa5ad40ad))
+* **phase5:** Dust Test — live mode, safety switch to paper, TX failure log + dust checklist ([758c21c](https://github.com/Neltud/xArtists/commit/758c21c9ba1ab6d4494cf7121a0d14323ad9ca69))
+* **phase5:** DustTestPanel on GO_LIVE + live mode checklist ([da3c5fa](https://github.com/Neltud/xArtists/commit/da3c5fa20d1bbd34930e714fb8eb28b365cb1018))
+* **phase5:** Slot Casino Royale — holo terminal, provably fair UI, sensory duck + LIA jackpot ([148f059](https://github.com/Neltud/xArtists/commit/148f059e08c06699fc9d10ad0915138b54d62280))
+* **phase5:** Slot Casino Royale — holo, provably fair, sensory, safety switch ([df7f0a4](https://github.com/Neltud/xArtists/commit/df7f0a4da3c17ee5eb3969e6a826db03c4560602))
+* **phase5:** Slot sensory + fair panel + holo; LIA listens jackpot lines ([705440d](https://github.com/Neltud/xArtists/commit/705440d022147b1770c1edb1599519bcc061e800))
+* **phase5:** wire TX log + safety switch in useSendTransaction; Dust panel on Slot ([d250412](https://github.com/Neltud/xArtists/commit/d250412694c516becf5b09b38d9e3c91de86505d))
+* **phase6:** CommandCenter LIA interpreter + terminal HUD ([2b545cb](https://github.com/Neltud/xArtists/commit/2b545cbe39c606eadb485cf1dd815d84e50515dd))
+* **phase6:** Neural Bridge — Semantic Compiler, Shadow Engine, LIA terminal + smooth lerp uniforms ([7f312cc](https://github.com/Neltud/xArtists/commit/7f312cc12e7dd71d9bac1548027491f18f97cca5))
+* **phase6:** wire Semantic Compiler + LIA terminal into Command Center / CommandWall ([0d49edd](https://github.com/Neltud/xArtists/commit/0d49edd02f47c4eb03e99377d32dc9c8d1e28d0d))
+* Pikachu avatar + camera wall clamp + numpad/arrows (no page scroll) + GoLive hardening checklist ([1138aa8](https://github.com/Neltud/xArtists/commit/1138aa8bff746594efedda6ecbd36cfc85370c95))
+
+
+### Bug Fixes
+
+* **museum:** camera wall clamp + numpad/arrows navigation without page scroll ([c709630](https://github.com/Neltud/xArtists/commit/c709630ee8c629d1fbf79ff73734c42ea43fd9ce))
+* restore museumAvatar with Pikachu + Eevee skins ([3779f78](https://github.com/Neltud/xArtists/commit/3779f782eea59ed9a0b8de1ceee183442fad15c3))
+* restore SlotPage Casino Royale (full module after bad overwrite) ([e0dff98](https://github.com/Neltud/xArtists/commit/e0dff98b505c4b4b915278a8fbc33e2a691d4ead))
+
 ## [0.68.0](https://github.com/Neltud/xArtists/compare/v0.67.0...v0.68.0) (2026-09-30)
 
 
