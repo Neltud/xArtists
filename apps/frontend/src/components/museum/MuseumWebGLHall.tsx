@@ -1,6 +1,5 @@
 /**
- * Musée WebGL — 3e personne · spatial engine phase 2.5.
- * Restored full module after bad overwrite.
+ * Musée WebGL — 3e personne · spatial clamp · numpad/arrows · avatars.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
@@ -25,8 +24,8 @@ import { presenceSnapshot, visitorWaypoints } from '../../lib/museumVisitors'
 import { pulseFromIndex, fetchPulseState, mapPulseToMuseum, type MuseumPulseParams } from '../../lib/pulseMuseum'
 import { PULSE_DEMO_CYCLE } from '../../lib/pulseDemo'
 import { applyMuseumRealism, addMuseumLights } from '../../lib/museumRealism'
-import { trySlideMove, integrateWishVelocity } from '../../lib/spatialEngine'
-import { MUSEUM_FPS } from '../../lib/museumFpsController'
+import { trySlideMove, integrateWishVelocity, clampCameraDistance } from '../../lib/spatialEngine'
+import { MUSEUM_FPS, applyNavKey, isNavKey } from '../../lib/museumFpsController'
 import NavReticle from './NavReticle'
 
 const EYE = 1.65
@@ -256,9 +255,7 @@ export default function MuseumWebGLHall({
         }
         if (/media\.multiversx\.com|ipfs|nftstorage|gateway/i.test(u)) out.push(u)
         const bare = u.replace(/^https?:\/\//i, '')
-        out.push(
-          `https://images.weserv.nl/?url=${encodeURIComponent(bare)}&w=720&h=900&fit=cover&output=jpg&q=82`,
-        )
+        out.push(`https://images.weserv.nl/?url=${encodeURIComponent(bare)}&w=720&h=900&fit=cover&output=jpg&q=82`)
         out.push(`https://wsrv.nl/?url=${encodeURIComponent(bare)}&w=720&h=900&fit=cover&output=jpg&q=82`)
         if (!out.includes(u)) out.push(u)
       } catch {
@@ -433,25 +430,34 @@ export default function MuseumWebGLHall({
     renderer.setSize(mount.clientWidth || 640, mount.clientHeight || 400, false)
 
     const kd = (e: KeyboardEvent) => {
+      if (isNavKey(e)) {
+        e.preventDefault()
+        applyNavKey(keys.current, e, true)
+      }
       const k = e.key.toLowerCase()
       if (['w', 'a', 's', 'd', 'shift', 'e'].includes(k)) {
         keys.current[k] = true
         if (k === 'e' && nearestRef.current) setInspect(nearestRef.current)
       }
-      if (e.key === 'ArrowUp') keys.current.w = true
-      if (e.key === 'ArrowDown') keys.current.s = true
-      if (e.key === 'ArrowLeft') keys.current.a = true
-      if (e.key === 'ArrowRight') keys.current.d = true
+      if (e.key === 'Shift' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+        keys.current.shift = true
+      }
     }
     const ku = (e: KeyboardEvent) => {
-      keys.current[e.key.toLowerCase()] = false
-      if (e.key === 'ArrowUp') keys.current.w = false
-      if (e.key === 'ArrowDown') keys.current.s = false
-      if (e.key === 'ArrowLeft') keys.current.a = false
-      if (e.key === 'ArrowRight') keys.current.d = false
+      if (isNavKey(e)) {
+        e.preventDefault()
+        applyNavKey(keys.current, e, false)
+      }
+      const k = e.key.toLowerCase()
+      if (['w', 'a', 's', 'd', 'shift', 'e'].includes(k)) {
+        keys.current[k] = false
+      }
+      if (e.key === 'Shift' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') {
+        keys.current.shift = false
+      }
     }
-    window.addEventListener('keydown', kd)
-    window.addEventListener('keyup', ku)
+    window.addEventListener('keydown', kd, { passive: false })
+    window.addEventListener('keyup', ku, { passive: false })
 
     let dragging = false
     let moved = false
@@ -624,10 +630,19 @@ export default function MuseumWebGLHall({
         lastNearTitle = ''
         setNearTitle('')
       }
+      const camDist = clampCameraDistance(
+        px,
+        pz,
+        yaw,
+        pitch,
+        MUSEUM_FPS.camMaxDist || CAM_DIST,
+        (x, z) => pointInBlueprintFloor(blueprint, x, z),
+        MUSEUM_FPS.camMinDist || 0.55,
+      )
       camera.position.set(
-        px - Math.sin(yaw) * CAM_DIST * Math.cos(pitch),
-        CAM_HEIGHT + Math.sin(pitch) * 0.8,
-        pz - Math.cos(yaw) * CAM_DIST * Math.cos(pitch),
+        px - Math.sin(yaw) * camDist * Math.cos(pitch),
+        CAM_HEIGHT + Math.sin(pitch) * 0.55 * (camDist / CAM_DIST),
+        pz - Math.cos(yaw) * camDist * Math.cos(pitch),
       )
       camera.lookAt(px, EYE * 0.9, pz)
       renderer.render(scene, camera)
@@ -694,7 +709,7 @@ export default function MuseumWebGLHall({
           className="absolute bottom-24 left-1/2 -translate-x-1/2 text-[11px] text-zinc-400 bg-black/60 px-3 py-1.5 rounded-full"
           onClick={() => setHint(false)}
         >
-          WASD/flèches · souris · double-clic lock · E fiche
+          WASD · flèches · pavé 8/4/6/2 + diag · souris · E fiche
         </button>
       )}
       <div className="absolute bottom-3 right-3 flex flex-col gap-1.5 md:hidden">
