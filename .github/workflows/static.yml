@@ -11,6 +11,7 @@ on:
       - "docs/**/*.md"
       - "**.md"
       - "docs/marketing/**"
+      - "docs/BUILD_ERROR.txt"
   workflow_dispatch:
 
 permissions:
@@ -63,15 +64,17 @@ jobs:
           echo 'Agents OK'
 
       - name: Build
-        run: npm run build
+        id: vite_build
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build-out.txt
+          echo "EXIT:${PIPESTATUS[0]}" | tee -a build-out.txt
         env:
-          NODE_OPTIONS: --max-old-space-size=4096
+          NODE_OPTIONS: --max-old-space-size-4096
           VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
           VITE_APP_BUILD: "3.10.0"
-          # Proxy URL only — never put Vellum API key in secrets as VITE_*
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
-          # CODEHASH gates — set in Settings → Secrets → Actions (value 1 only after explorer verify + dust)
-          # Empty / unset = fail-closed (TX disabled in scStatus)
           VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
           VITE_MARKETPLACE_CODEHASH_OK: ${{ secrets.VITE_MARKETPLACE_CODEHASH_OK }}
           VITE_VENUE_CODEHASH_OK: ${{ secrets.VITE_VENUE_CODEHASH_OK }}
@@ -81,10 +84,33 @@ jobs:
           VITE_AGENT_ESCROW_CODEHASH_OK: ${{ secrets.VITE_AGENT_ESCROW_CODEHASH_OK }}
           VITE_TREASURY_CODEHASH_OK: ${{ secrets.VITE_TREASURY_CODEHASH_OK }}
           VITE_SLOT_CASINO_CODEHASH_OK: ${{ secrets.VITE_SLOT_CASINO_CODEHASH_OK }}
-          # SC addresses (optional overrides; scStatus has mainnet fallbacks)
           VITE_TRO_STAKING_ADDRESS: ${{ secrets.VITE_TRO_STAKING_ADDRESS }}
           VITE_MARKETPLACE_ADDRESS: ${{ secrets.VITE_MARKETPLACE_ADDRESS }}
           VITE_VENUE_SC_ADDRESS: ${{ secrets.VITE_VENUE_SC_ADDRESS }}
+
+      - name: Capture build error log
+        if: steps.vite_build.outcome == 'failure'
+        working-directory: .
+        run: |
+          mkdir -p docs
+          {
+            echo "# Vite build failed @ ${{ github.sha }}"
+            echo "time: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            tail -n 120 apps/frontend/build-out.txt || echo '(no build-out.txt)'
+          } > docs/BUILD_ERROR.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/BUILD_ERROR.txt
+          git commit -m "chore: capture vite BUILD_ERROR [skip ci]" || true
+          git push || true
+
+      - name: Fail if build failed
+        if: steps.vite_build.outcome == 'failure'
+        run: |
+          echo '::error::Vite build failed — see docs/BUILD_ERROR.txt'
+          tail -n 40 build-out.txt || true
+          exit 1
 
       - name: Stamp build id
         run: |
@@ -122,6 +148,7 @@ jobs:
           fi
           cp apps/frontend/dist/BUILD_SHA.txt docs/BUILD_SHA.txt 2>/dev/null || true
           cp apps/frontend/dist/BUILD_TIME.txt docs/BUILD_TIME.txt 2>/dev/null || true
+          rm -f docs/BUILD_ERROR.txt
 
       - name: Commit docs SPA sync
         working-directory: .
