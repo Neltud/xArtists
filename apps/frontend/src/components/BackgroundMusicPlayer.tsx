@@ -1,9 +1,9 @@
 /**
  * BackgroundMusicPlayer — Nelson Tuduri via YouTube IFrame API.
- * Mute until user enables (autoplay policy). CTA pulse when off.
+ * CRITICAL: getSnapshot must return referentially stable values (React #185).
  */
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import { getEmpireState, subscribeEmpire } from '../store/empireStore'
+import { getEmpireState, subscribeEmpire, type EmpireZone } from '../store/empireStore'
 import {
   NELSON_DEFAULT_TRACK,
   ZONE_VOLUME,
@@ -29,15 +29,26 @@ type YTPlayer = {
   destroy?: () => void
 }
 
-function useEmpireAudio() {
-  return useSyncExternalStore(
-    subscribeEmpire,
-    () => {
-      const s = getEmpireState()
-      return { zone: s.zone, audioVolume: s.audioVolume }
-    },
-    () => ({ zone: 'museum' as const, audioVolume: 1 }),
-  )
+type AudioSnap = { zone: EmpireZone; audioVolume: number }
+
+/** Cached snapshot — same reference while zone/volume unchanged */
+let _audioSnap: AudioSnap = { zone: 'museum', audioVolume: 1 }
+
+function getAudioSnapshot(): AudioSnap {
+  const s = getEmpireState()
+  if (_audioSnap.zone === s.zone && _audioSnap.audioVolume === s.audioVolume) {
+    return _audioSnap
+  }
+  _audioSnap = { zone: s.zone, audioVolume: s.audioVolume }
+  return _audioSnap
+}
+
+function getServerAudioSnapshot(): AudioSnap {
+  return _audioSnap
+}
+
+function useEmpireAudio(): AudioSnap {
+  return useSyncExternalStore(subscribeEmpire, getAudioSnapshot, getServerAudioSnapshot)
 }
 
 function loadYtApi(): Promise<void> {
@@ -167,7 +178,6 @@ export default function BackgroundMusicPlayer() {
           modestbranding: 1,
           playsinline: 1,
           rel: 0,
-          origin: typeof window !== 'undefined' ? window.location.origin : undefined,
         },
         events: {
           onReady: (ev: { target: YTPlayer }) => {
@@ -211,7 +221,11 @@ export default function BackgroundMusicPlayer() {
 
   return (
     <>
-      <div ref={hostRef} className="fixed opacity-0 pointer-events-none w-px h-px overflow-hidden" aria-hidden />
+      <div
+        ref={hostRef}
+        className="fixed opacity-0 pointer-events-none w-px h-px overflow-hidden"
+        aria-hidden
+      />
       <button
         type="button"
         onClick={toggle}
