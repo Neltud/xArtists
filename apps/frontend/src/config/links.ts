@@ -1,5 +1,9 @@
 /** Liens + nav dApp (ordre publication hub). */
 
+/** Wallet ops LIA (trésorerie / politique placement) */
+export const LIA_WALLET =
+  'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
+
 export const LINKS = {
   github: 'https://github.com/Neltud/xArtists',
   explorer: 'https://explorer.multiversx.com',
