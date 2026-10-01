@@ -1,5 +1,5 @@
 /**
- * Marketplace — grille NFT progressive + list on-chain.
+ * Marketplace — grille NFT progressive + list on-chain (3-arg ABI).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -8,15 +8,8 @@ import { useUserAccount } from '../hooks/useUserAccount'
 import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
 import { canListBuyNft } from '../config/scStatus'
 import { requestOpenConnect } from '../lib/walletEvents'
-
-type ListingRow = {
-  listing_id?: number
-  token?: string
-  nonce?: number
-  price?: string
-  seller?: string
-  active?: boolean
-}
+import { useToast } from '../components/ui/Toast'
+import type { ListingRow } from '../types/marketplace'
 
 const PAGE = 12
 
@@ -40,7 +33,8 @@ export default function MarketplacePage() {
   )
   const live = canListBuyNft()
   const { listNft, buyNft, pending, error, lastTx } = useMarketplaceTx()
-  const [params, setParams] = useSearchParams()
+  const { push } = useToast()
+  const [params] = useSearchParams()
   const preselect = params.get('list')
 
   const [selected, setSelected] = useState<string | null>(preselect)
@@ -86,12 +80,15 @@ export default function MarketplacePage() {
       return
     }
     if (method === 'paste_readonly') {
-      setMsg('Lecture seule — reconnecte via xPortal pour signer.')
+      const t = 'Lecture seule — reconnecte via xPortal pour signer.'
+      setMsg(t)
+      push(t, 'err')
       return
     }
     const nft = allNfts.find(n => n.identifier === selected)
     if (!nft?.identifier) {
       setMsg('NFT introuvable')
+      push('NFT introuvable', 'err')
       return
     }
     const parts = selected.split('-')
@@ -100,16 +97,21 @@ export default function MarketplacePage() {
     const priceEgld = Number(price)
     if (!tokenId || !(priceEgld > 0)) {
       setMsg('Prix ou collection invalide')
+      push('Prix invalide', 'err')
       return
     }
     setMsg(null)
     try {
       await listNft({ tokenId, nonce, priceEgld })
-      setMsg('Listing envoyé — confirme dans xPortal')
+      const t = 'Listing envoyé — confirme dans xPortal'
+      setMsg(t)
+      push(t, 'ok')
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : 'Échec listing')
+      const t = e instanceof Error ? e.message : 'Échec listing'
+      setMsg(t)
+      push(t, 'err')
     }
-  }, [selected, connected, method, allNfts, price, listNft])
+  }, [selected, connected, method, allNfts, price, listNft, push])
 
   return (
     <div className="animate-fade-in space-y-6 pb-16 max-w-2xl mx-auto">
@@ -134,7 +136,7 @@ export default function MarketplacePage() {
         <h2 className="text-sm font-semibold text-white">Annonces</h2>
         {listings.length === 0 ? (
           <p className="text-[13px] text-zinc-500">
-            Aucune annonce active. Après un premier listing signé, l’index se remplira.
+            Aucune annonce active. Après un listing réussi, l’index se remplira.
           </p>
         ) : (
           <ul className="space-y-2">
@@ -158,12 +160,15 @@ export default function MarketplacePage() {
                         priceEgld: Number(l.price || 0) / 1e18 || 0.1,
                       })
                       setMsg('Achat envoyé')
+                      push('Achat envoyé', 'ok')
                     } catch (e) {
-                      setMsg(e instanceof Error ? e.message : 'Échec')
+                      const t = e instanceof Error ? e.message : 'Échec'
+                      setMsg(t)
+                      push(t, 'err')
                     }
                   }}
                 >
-                  Buy
+                  {pending ? 'Signature…' : 'Buy'}
                 </button>
               </li>
             ))}
