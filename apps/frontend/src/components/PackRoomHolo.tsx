@@ -1,75 +1,95 @@
 /**
- * Salle pack — projection « holo » dashboard sur les murs (CSS 3D).
+ * Salle holder futuriste — 3 murs + moniteur clone (CSS 3D, léger).
  */
 import { useMemo } from 'react'
 import type { PackId } from '../config/agentPacks'
 import { AGENT_PACKS } from '../config/agentPacks'
-import { MUSEUM_CAPACITY } from '../lib/museumCapacity'
 
 const METRICS: Record<PackId, { label: string; value: string }[]> = {
   pulse: [
-    { label: 'Signaux / 24h', value: '12' },
-    { label: 'Intensité', value: '●●●' },
-    { label: 'Mode', value: 'Paper' },
-    { label: 'Pool bps', value: '4000' },
+    { label: 'Signaux', value: 'haute densité' },
+    { label: 'Mode', value: 'paper' },
+    { label: 'Clone', value: 'LIA Pulse' },
   ],
   yield: [
-    { label: 'Claims / sem.', value: '2–4' },
-    { label: 'Intensité', value: '●●○' },
-    { label: 'Mode', value: 'Paper' },
-    { label: 'Pool bps', value: '3500' },
+    { label: 'Sleeve', value: 'Hatom / LP' },
+    { label: 'Mode', value: 'paper' },
+    { label: 'Clone', value: 'LIA Yield' },
   ],
   sentinel: [
-    { label: 'Alertes', value: 'Veille' },
-    { label: 'Intensité', value: '●○○' },
-    { label: 'Mode', value: 'Paper' },
-    { label: 'Pool bps', value: '2500' },
+    { label: 'Veille', value: 'risk on' },
+    { label: 'Mode', value: 'paper' },
+    { label: 'Clone', value: 'LIA Sentinel' },
   ],
+}
+
+const GLOW: Record<PackId, string> = {
+  pulse: 'rgba(52,211,153,0.45)',
+  yield: 'rgba(45,212,191,0.45)',
+  sentinel: 'rgba(56,189,248,0.5)',
 }
 
 export default function PackRoomHolo({ packId }: { packId: PackId }) {
   const pack = AGENT_PACKS.find(p => p.id === packId)
   const metrics = METRICS[packId] || METRICS.pulse
-  const walls = useMemo(() => [0, 1, 2, 3], [])
+  const glow = GLOW[packId] || GLOW.pulse
+  const walls = useMemo(() => ['Nord', 'Est', 'Ouest'], [])
 
   return (
-    <div className="relative w-full h-[min(52vh,420px)] rounded-2xl overflow-hidden border border-cyan-500/20 bg-[#060a12]">
-      {/* floor grid */}
+    <div className="relative w-full h-[min(56vh,460px)] rounded-2xl overflow-hidden border border-white/10 bg-[#05060d]">
       <div
-        className="absolute inset-0 opacity-40"
+        className="absolute inset-0 opacity-50"
         style={{
-          backgroundImage:
-            'linear-gradient(rgba(34,211,238,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.08) 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-          transform: 'perspective(600px) rotateX(62deg) translateY(40%)',
-          transformOrigin: 'center top',
+          background: `radial-gradient(ellipse at 50% 80%, ${glow}, transparent 55%)`,
         }}
       />
-      {/* 4 wall panels */}
-      <div className="absolute inset-4 grid grid-cols-2 gap-3">
-        {walls.map(i => (
+      <div
+        className="absolute inset-x-0 bottom-0 h-[55%] opacity-30"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+          transform: 'perspective(700px) rotateX(68deg)',
+          transformOrigin: 'center bottom',
+        }}
+      />
+
+      <div className="absolute inset-3 flex items-stretch gap-2" style={{ perspective: '900px' }}>
+        {walls.map((w, i) => (
           <div
-            key={i}
-            className="relative rounded-xl border border-cyan-400/25 bg-gradient-to-br from-cyan-950/40 to-black/60 p-3 shadow-[0_0_24px_-8px_rgba(34,211,238,0.45)] overflow-hidden"
+            key={w}
+            className="flex-1 rounded-xl border border-white/10 bg-black/35 backdrop-blur-sm p-3 flex flex-col"
+            style={{
+              transform: i === 0 ? 'rotateY(18deg)' : i === 2 ? 'rotateY(-18deg)' : 'translateZ(12px)',
+            }}
           >
-            <div className="absolute inset-0 opacity-30 bg-[radial-gradient(ellipse_at_top,rgba(34,211,238,0.25),transparent_60%)]" />
-            <p className="relative text-[10px] uppercase tracking-widest text-cyan-300/80">
-              Mur {i + 1} · holo
-            </p>
-            <p className="relative text-sm font-semibold text-white mt-1">
-              {metrics[i]?.label || 'Panel'}
-            </p>
-            <p className="relative text-2xl tabular-nums text-cyan-100 mt-2 font-mono">
-              {metrics[i]?.value || '—'}
-            </p>
-            <p className="relative text-[10px] text-zinc-500 mt-auto pt-4">
-              jusqu&apos;à {MUSEUM_CAPACITY.maxArtworksPerWall} œuvres
-            </p>
+            <p className="text-[10px] uppercase tracking-widest text-zinc-500">Mur {w}</p>
+            <p className="text-sm text-white mt-1">{pack?.name || packId} · 4 slots</p>
+            <div className="mt-3 grid grid-cols-2 gap-1.5 flex-1">
+              {[0, 1, 2, 3].map(s => (
+                <div
+                  key={s}
+                  className="rounded-lg border border-white/10 bg-white/[0.04] min-h-[3.2rem] flex items-center justify-center text-[10px] text-zinc-600"
+                >
+                  œuvre {s + 1}
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
-      <div className="absolute bottom-2 left-0 right-0 text-center text-[11px] text-cyan-200/70">
-        {pack?.name || packId} · moniteur LIA · simulation
+
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-3 w-[min(92%,20rem)] rounded-xl border border-white/15 bg-black/60 px-3 py-2 backdrop-blur">
+        <p className="text-[11px] text-cyan-200/90">
+          {pack?.icon} Moniteur {pack?.name} — clone rewards paper
+        </p>
+        <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1">
+          {metrics.map(m => (
+            <span key={m.label} className="text-[10px] text-zinc-400">
+              {m.label}: <span className="text-zinc-200">{m.value}</span>
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   )

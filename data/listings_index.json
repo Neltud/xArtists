@@ -1,20 +1,34 @@
 {
   "version": 1,
   "network": "mainnet",
-  "updated": "2026-09-29T18:32:17Z",
+  "updated": "2026-10-01T19:18:00Z",
   "marketplace_address": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
   "codehash_ok": true,
   "codeHash": "8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=",
-  "note": "Live SC · 0 on-chain listings yet (empty until first listNft TX). Wallet NFT chips on /marketplace are API catalog, not SC listings.",
-  "listings": [],
-  "activity": [],
-  "schema": {
-    "listing_id": "u64 on-chain",
-    "token_id": "COLLECTION-xxxxxx",
-    "nonce": "u64",
-    "price_egld": "string decimal",
-    "seller": "erd1…",
-    "active": "bool",
-    "tx_list": "optional hash"
-  }
+  "note": "First listNft Success 7e4182db…cb26cc1 · listing_id 1",
+  "listings": [
+    {
+      "listing_id": 1,
+      "token": "ASFT-a6273a",
+      "token_id": "ASFT-a6273a",
+      "identifier": "ASFT-a6273a-01",
+      "nonce": 1,
+      "name": "BlackArtPass",
+      "price": "250000000000000000",
+      "price_egld": "0.25",
+      "seller": "erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l",
+      "active": true,
+      "tx_list": "7e4182db6c3b9f97406b591f887462981a887a830ee4442fdfbef61e3cb26cc1",
+      "thumb": "https://media.multiversx.com/nfts/thumbnail/ASFT-a6273a-10b6cb04",
+      "url": "https://media.multiversx.com/nfts/asset/QmTHS7wWXdTrLWbJUNoZy3u88ENX3K9rLY71G2LaagUg6Q"
+    }
+  ],
+  "activity": [
+    {
+      "txHash": "7e4182db6c3b9f97406b591f887462981a887a830ee4442fdfbef61e3cb26cc1",
+      "function": "listNft",
+      "listingIdHint": 1,
+      "sender": "erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l"
+    }
+  ]
 }

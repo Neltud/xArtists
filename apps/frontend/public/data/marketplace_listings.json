@@ -1,15 +1,8 @@
 {
-  "version": 1,
-  "network": "mainnet",
-  "updated": "2026-10-01T19:18:00Z",
-  "marketplace_address": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
-  "codehash_ok": true,
   "listings": [
     {
       "listing_id": 1,
       "token": "ASFT-a6273a",
-      "token_id": "ASFT-a6273a",
-      "identifier": "ASFT-a6273a-01",
       "nonce": 1,
       "name": "BlackArtPass",
       "price": "250000000000000000",
