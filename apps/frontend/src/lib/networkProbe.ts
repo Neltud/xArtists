@@ -1,21 +1,31 @@
 /**
  * Live MultiversX mainnet probe — UI must not freeze epoch / LIA balance.
  * Fail-closed: missing fields → treat SC as empty.
- * Resilient: /stats can succeed while /economics and /accounts are down
- * (post-recovery indexer, 23–24 Sep 2026). Never all-or-nothing.
+ * Addresses: live product SCs (2026-09-29 deploy), not the legacy empty placeholders.
  */
+
+import {
+  GROKYVERSX_WALLET,
+  LIA_OPS,
+  MAINNET_ADDRESSES,
+  TRO_TOKEN_ID_DEFAULT,
+} from '../config/contracts'
 
 export const MVX_API = 'https://api.multiversx.com'
 
 export const SUPERNOVA_ACTIVATION_EPOCH = 2233
 
 export const PROBE_ADDRESSES = {
-  liaOps: 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6',
-  grokyversx: 'erd12c7f9wll0dcn26ax9fwrgp3yuswchyh9xwz8zs29hl9crgpn96gsdqq5gl',
-  marketplace: 'erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t',
-  nftStaking: 'erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl',
-  troGovernance: 'erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8',
-  nftMinter: 'erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn',
+  liaOps: LIA_OPS,
+  grokyversx: GROKYVERSX_WALLET,
+  marketplace: MAINNET_ADDRESSES.nft_marketplace,
+  agents: MAINNET_ADDRESSES.agents_marketplace,
+  nftStaking: MAINNET_ADDRESSES.nft_staking,
+  troStaking: MAINNET_ADDRESSES.tro_staking,
+  troGovernance: MAINNET_ADDRESSES.tro_governance,
+  venue: MAINNET_ADDRESSES.venue_split,
+  slot: MAINNET_ADDRESSES.slot_casino,
+  treasury: MAINNET_ADDRESSES.treasury_splitter,
 } as const
 
 export type ScProbe = {
@@ -53,9 +63,13 @@ export type NetworkSnapshot = {
   grokyversx: { balanceEgld: number; nonce: number; stale: boolean }
   sc: {
     marketplace: ScProbe
+    agents: ScProbe
     nftStaking: ScProbe
+    troStaking: ScProbe
     troGovernance: ScProbe
-    nftMinter: ScProbe
+    venue: ScProbe
+    slot: ScProbe
+    treasury: ScProbe
   }
   scStale: boolean
   tro: { supply: number; accounts: number; transactions: number; stale: boolean }
@@ -104,34 +118,38 @@ async function getJsonSoft<T>(path: string): Promise<T | null> {
   }
 }
 
-/** Snapshot 24 Sep 2026 ~04:32 UTC — stats live; econ/accounts last-known 19 Sep. */
+/** Last-known fallback — 2026-10-01 probe. Never used as "live" chrome. */
 export const FALLBACK_SNAPSHOT: NetworkSnapshot = {
-  probedAt: '2026-09-24T04:32:00Z',
+  probedAt: '2026-10-01T15:00:00Z',
   ok: false,
   degraded: true,
   api: { stats: false, economics: false, accounts: false, tokens: false },
-  epoch: 2242,
+  epoch: 2249,
   refreshRate: 600,
   roundsPerEpoch: 144000,
-  roundsPassed: 37943,
-  accounts: 9262948,
-  transactions: 628538339,
-  blocks: 133427564,
-  egldPrice: 4.13,
-  marketCap: 127000000,
-  circulating: 30820000,
-  staked: 14356598,
-  apr: 0.088205,
-  liaOps: { balanceEgld: 2.0928, nonce: 1468, stale: true },
+  roundsPassed: 134625,
+  accounts: 9265958,
+  transactions: 629788386,
+  blocks: 137415894,
+  egldPrice: 4.45,
+  marketCap: 137340452,
+  circulating: 30863023,
+  staked: 14320896,
+  apr: 0.088503,
+  liaOps: { balanceEgld: 2.0932, nonce: 1468, stale: true },
   grokyversx: { balanceEgld: 0, nonce: 8, stale: true },
   sc: {
     marketplace: asSc(PROBE_ADDRESSES.marketplace, null),
+    agents: asSc(PROBE_ADDRESSES.agents, null),
     nftStaking: asSc(PROBE_ADDRESSES.nftStaking, null),
+    troStaking: asSc(PROBE_ADDRESSES.troStaking, null),
     troGovernance: asSc(PROBE_ADDRESSES.troGovernance, null),
-    nftMinter: asSc(PROBE_ADDRESSES.nftMinter, null),
+    venue: asSc(PROBE_ADDRESSES.venue, null),
+    slot: asSc(PROBE_ADDRESSES.slot, null),
+    treasury: asSc(PROBE_ADDRESSES.treasury, null),
   },
   scStale: true,
-  tro: { supply: 476224, accounts: 562, transactions: 2788, stale: true },
+  tro: { supply: 476224, accounts: 565, transactions: 2797, stale: true },
 }
 
 type StatsJson = {
@@ -153,17 +171,24 @@ type EconJson = {
 }
 
 export async function probeNetwork(): Promise<NetworkSnapshot> {
-  const [stats, econ, lia, grok, market, stake, gov, minter, tro] = await Promise.all([
-    getJsonSoft<StatsJson>('/stats'),
-    getJsonSoft<EconJson>('/economics'),
-    getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.liaOps}`),
-    getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.grokyversx}`),
-    getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.marketplace}`),
-    getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.nftStaking}`),
-    getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.troGovernance}`),
-    getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.nftMinter}`),
-    getJsonSoft<{ supply?: string; accounts?: number; transactions?: number }>('/tokens/TRO-94c925'),
-  ])
+  const [stats, econ, lia, grok, market, agents, stake, troStake, gov, venue, slot, treasury, tro] =
+    await Promise.all([
+      getJsonSoft<StatsJson>('/stats'),
+      getJsonSoft<EconJson>('/economics'),
+      getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.liaOps}`),
+      getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.grokyversx}`),
+      getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.marketplace}`),
+      getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.agents}`),
+      getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.nftStaking}`),
+      getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.troStaking}`),
+      getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.troGovernance}`),
+      getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.venue}`),
+      getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.slot}`),
+      getJsonSoft<AccountJson>(`/accounts/${PROBE_ADDRESSES.treasury}`),
+      getJsonSoft<{ supply?: string; accounts?: number; transactions?: number }>(
+        `/tokens/${TRO_TOKEN_ID_DEFAULT}`,
+      ),
+    ])
 
   const api: ProbeApiHealth = {
     stats: !!stats,
@@ -172,7 +197,7 @@ export async function probeNetwork(): Promise<NetworkSnapshot> {
     tokens: !!tro,
   }
 
-  const scLive = !!(market && stake && gov && minter)
+  const scLive = !!(market && agents && stake && slot)
 
   return {
     probedAt: new Date().toISOString(),
@@ -199,9 +224,13 @@ export async function probeNetwork(): Promise<NetworkSnapshot> {
       : { ...FALLBACK_SNAPSHOT.grokyversx, stale: true },
     sc: {
       marketplace: asSc(PROBE_ADDRESSES.marketplace, market),
+      agents: asSc(PROBE_ADDRESSES.agents, agents),
       nftStaking: asSc(PROBE_ADDRESSES.nftStaking, stake),
+      troStaking: asSc(PROBE_ADDRESSES.troStaking, troStake),
       troGovernance: asSc(PROBE_ADDRESSES.troGovernance, gov),
-      nftMinter: asSc(PROBE_ADDRESSES.nftMinter, minter),
+      venue: asSc(PROBE_ADDRESSES.venue, venue),
+      slot: asSc(PROBE_ADDRESSES.slot, slot),
+      treasury: asSc(PROBE_ADDRESSES.treasury, treasury),
     },
     scStale: !scLive,
     tro: tro

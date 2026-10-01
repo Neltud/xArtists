@@ -34,8 +34,8 @@ export default function NetworkLiveStrip() {
       </div>
       {snap.degraded && (
         <p className="text-[11px] text-amber-200/80 leading-relaxed">
-          Indexer partiel post hardfork v2.1.3.0 — /stats OK, /economics et /accounts KO. Soldes LIA
-          et codeHash = last-known. Pas de deploy tant que accounts ne répondent pas.
+          Probe partiel — un endpoint API n’a pas répondu. Soldes et contrats = last-known. Pas de
+          TX tant que /accounts est KO.
         </p>
       )}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[12px]">
@@ -61,8 +61,16 @@ export default function NetworkLiveStrip() {
         </div>
         <div>
           <p className="text-zinc-600">Market SC</p>
-          <p className="text-amber-400/90">
-            {snap.scStale ? 'unread' : snap.sc.marketplace.codeEmpty ? 'empty' : 'codeHash'}
+          <p
+            className={
+              snap.scStale
+                ? 'text-zinc-500'
+                : snap.sc.marketplace.codeEmpty
+                  ? 'text-amber-400/90'
+                  : 'text-emerald-400/90'
+            }
+          >
+            {snap.scStale ? 'unread' : snap.sc.marketplace.codeEmpty ? 'empty' : 'ouvert'}
           </p>
         </div>
       </div>

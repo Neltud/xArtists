@@ -1,8 +1,8 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-09-30",
-  "chain_note": "PUBLIC GO LIVE 2026-09-30. House funded. No multisig required. All SC LIVE. CODEHASH via Pages secrets only.",
+  "updated": "2026-10-01",
+  "chain_note": "All product SCs codeHash-verified live 2026-10-01. Slot house 0.5 EGLD. LIA trading remains paper. Do not use LEGACY_EMPTY placeholders.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -21,6 +21,7 @@
     "agents_marketplace": "tDIcnNMbDG5E7tpb7NTeJDnT6JxKs7faN7hyCALFUWs=",
     "nft_staking": "hXcRjpclnq0jsonSIemM17+tszcWpPjWKtCPUfnMuME=",
     "tro_staking": "Jf5ZhzAGu58ez0njdWoZAnRxP7YevYSX9dpO8pGq7SA=",
+    "tro_staking_legacy": "Kz0+zcj7w/3RuOl5m6dumxA9dhFOideb7jGKTam2VVA=",
     "tro_governance": "+9aNhboFyQuvteDzjkiQHdRTlXAtFyijK+iXV74UOsQ=",
     "agent_stake_escrow": "Hs3AClbYzDpyZ6f/UjB9gBekiYKApXGxcVWy3mmlSnE=",
     "treasury_splitter": "9pB9+UN372QxE77Nj8TUjWn6+Q6qtOPhmmXgUdLnpk8=",
@@ -37,17 +38,14 @@
     "treasury_splitter": "LIVE",
     "slot_casino": "LIVE"
   },
-  "notes": {
-    "public_go_live": "2026-09-30",
-    "multisig": "not_required",
-    "house_funded": true,
-    "first_spin_users": true,
-    "tro_redeploy_tx": "c995b1c249ef50409a2d6b649678b6861134e330fe430a4e2dee56ec298ad7f9",
-    "tro_stake_dust_tx": "8f5458bb5ee513b796a82631",
-    "tro_total_staked_atomic": 1000000,
-    "slot_deploy_tx": "6f169984add779183d8bdcaa2e96e35643ef86778f5c47f95bb456455574c101",
-    "tro_token": "TRO-94c925",
-    "deployer": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g",
-    "frontend_gate": "VITE_*_CODEHASH_OK in GH Pages secrets only — never hardcode 1 in repo"
+  "balances_egld_probe": {
+    "slot_casino": 0.5,
+    "others": 0
+  },
+  "never_fund": {
+    "legacy_marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+    "legacy_nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
+    "legacy_tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
+    "legacy_nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn"
   }
 }

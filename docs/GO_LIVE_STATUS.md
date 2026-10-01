@@ -1,29 +1,25 @@
-# GO_LIVE Status — venue-split & production
+# GO_LIVE Status — 1 octobre 2026
 
-Updated: 2026-09-28
-
-## venue-split mainnet
+Tous les SC produit sont **LIVE** (codeHash explorer). LIA trading reste paper.
 
 | Step | Status |
 |------|--------|
-| 1 Deploy mainnet (4 buckets) | ✅ LIVE |
-| 2 Address | `erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y` |
-| 3 codeHash on-chain | `SRrGio4iLmtQrb22JJhapwobNgavYsoQ52WmfT1owuY=` |
-| 4 Micro rentPay dust | ⏳ **à faire** (xPortal → SC) |
-| 5 Pages `VITE_VENUE_SC_ADDRESS` | ✅ branched in front / env example |
-| 6 `VITE_VENUE_CODEHASH_OK` | ❌ **interdit** jusqu’après step 4 |
-| 7 Annonce publique | ❌ après 4–6 |
+| 1 Deploy mainnet (venue / market / agents / staking / slot / treasury / gov / escrow) | ✅ LIVE |
+| 2 Adresses | `data/contracts.json` |
+| 3 codeHash on-chain | ✅ 10/10 non-null (probe 1 oct) |
+| 4 Slot house | ✅ 0.5 EGLD |
+| 5 Runtime explorer unlock (sans secret Pages) | ✅ `runtimeCodehash` v3 |
+| 6 `VITE_*_CODEHASH_OK` commité | ❌ interdit — runtime suffit |
+| 7 Dust user TX (stake / list / spin REAL) | ⏳ **à faire** — preuve produit |
+| 8 `LIA_LIVE_TRADING=1` | ❌ paper |
+| 9 MX-8004 First 100 | ⏳ inscription LIA |
+| 10 Treasury dest wallets | ⏳ ops (PR #87) |
 
-Explorer: https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y
+Explorer slot: https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgquf3cuv2zsfsahy7ypvter3qcep4ptthsvhxqs4g34f
 
 ## Front policy
 
-- Address known → UI shows status “paper until CODEHASH_OK”
-- `canRentVenueOnChain()` = address + CODEHASH_OK only
-- Paper fail-closed remains default for money path
-
-## Next SC
-
-1. nft-marketplace wasm pack (0.66) → CI deploy
-2. agents-marketplace same
-3. Never set marketplace CODEHASH_OK without verify
+- Address known + explorer hash match → UI **Ouvert**
+- `can*()` = address utilisable **et** (env flag **ou** runtime match)
+- LIA ops wallet ≠ user wallet
+- Safety switch → paper sur échec TX

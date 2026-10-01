@@ -1,8 +1,8 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-09-29",
-  "chain_note": "tro_staking REDEPLOYED 2026-09-29 (stake dust 1 TRO OK). slot_casino LIVE.",
+  "updated": "2026-10-01",
+  "chain_note": "All product SCs codeHash-verified live 2026-10-01. Slot house 0.5 EGLD. LIA trading remains paper. Do not use LEGACY_EMPTY placeholders.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -16,11 +16,36 @@
     "slot_casino": "erd1qqqqqqqqqqqqqpgquf3cuv2zsfsahy7ypvter3qcep4ptthsvhxqs4g34f"
   },
   "codeHash": {
+    "venue_split": "SRrGio4iLmtQrb22JJhapwobNgavYsoQ52WmfT1owuY=",
+    "nft_marketplace": "8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=",
+    "agents_marketplace": "tDIcnNMbDG5E7tpb7NTeJDnT6JxKs7faN7hyCALFUWs=",
+    "nft_staking": "hXcRjpclnq0jsonSIemM17+tszcWpPjWKtCPUfnMuME=",
     "tro_staking": "Jf5ZhzAGu58ez0njdWoZAnRxP7YevYSX9dpO8pGq7SA=",
+    "tro_staking_legacy": "Kz0+zcj7w/3RuOl5m6dumxA9dhFOideb7jGKTam2VVA=",
+    "tro_governance": "+9aNhboFyQuvteDzjkiQHdRTlXAtFyijK+iXV74UOsQ=",
+    "agent_stake_escrow": "Hs3AClbYzDpyZ6f/UjB9gBekiYKApXGxcVWy3mmlSnE=",
+    "treasury_splitter": "9pB9+UN372QxE77Nj8TUjWn6+Q6qtOPhmmXgUdLnpk8=",
     "slot_casino": "UZ0nX6dWsSgkVqjnFnR5zPNPk1UrNtR5SsrYf96VJCs="
   },
   "status": {
+    "venue_split": "LIVE",
+    "nft_marketplace": "LIVE",
+    "agents_marketplace": "LIVE",
+    "nft_staking": "LIVE",
     "tro_staking": "LIVE",
+    "tro_governance": "LIVE",
+    "agent_stake_escrow": "LIVE",
+    "treasury_splitter": "LIVE",
     "slot_casino": "LIVE"
+  },
+  "balances_egld_probe": {
+    "slot_casino": 0.5,
+    "others": 0
+  },
+  "never_fund": {
+    "legacy_marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
+    "legacy_nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
+    "legacy_tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
+    "legacy_nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn"
   }
 }

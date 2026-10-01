@@ -5,6 +5,7 @@ import { isSupernovaLive, SUPERNOVA_ROUND_MS, SUPERNOVA_HUB } from '../config/su
 import Phase4ReadinessBanner from '../components/Phase4ReadinessBanner'
 import {
   FALLBACK_SNAPSHOT,
+  atomicToEgld,
   liaOpsFunded,
   probeNetwork,
   supernovaAgeEpochs,
@@ -16,19 +17,19 @@ const STEPS = [
     n: '01',
     to: '/',
     title: 'Accueil',
-    body: 'Persona, Pulse strip, probe mainnet live (résilient). Chrome paper — pas un marché live.',
+    body: 'Persona, Pulse strip, probe mainnet live. Chrome honnête — LIA paper, SC produit live.',
   },
   {
     n: '02',
     to: '/museum',
     title: 'Galerie',
-    body: 'Collections on-chain lues via API NFT (NFTUDURI, TRO SFT, MAS…). Visite, pas mint.',
+    body: 'Collections on-chain lues via API NFT (NFTUDURI, TRO SFT, MAS…). Visite, mint Studio à part.',
   },
   {
     n: '03',
     to: '/agents',
     title: 'Packs Pulse · Yield · Sentinel',
-    body: 'Catalogue paper. Achat on-chain bloqué tant que agents-marketplace n’a pas de codeHash. Phase 4 badge.',
+    body: 'Trois packs. Achat on-chain si contrat agents vérifié (runtime explorer).',
   },
   {
     n: '04',
@@ -50,27 +51,27 @@ const STEPS = [
   },
   {
     n: '07',
-    to: '/market',
-    title: 'Analyse',
-    body: 'Lecture stats / paires. List / Buy / Bid marketplace fail-closed (SC empty).',
+    to: '/marketplace',
+    title: 'Marketplace',
+    body: 'List / Buy / Bid après match codeHash explorer. Ancien compte empty ignoré.',
   },
   {
     n: '08',
     to: '/slot',
     title: 'Primordial Slot',
-    body: 'Bank TRO paper · scatter · jackpot RWA 1/1 locké. Pas de SC slot.',
+    body: 'SC live · house funded. MODE FUN / MODE REAL. Jackpot RWA locké.',
   },
   {
     n: '09',
-    to: '/simulation',
-    title: 'Sim Lab',
-    body: 'Trades simulés côté client. Pas de broadcast.',
+    to: '/staking',
+    title: 'Staking $TRO',
+    body: 'Contrat redeployé 29 sept. Dust stake OK. Unstake on-chain.',
   },
   {
     n: '10',
     to: '/go-live',
     title: 'GO_LIVE checklist',
-    body: 'Indexer healthy → dest wallets → PEM local → simulate → deploy → verify codeHash → MX-8004.',
+    body: 'SC vérifiés · house Slot · LIA paper · 1 TX user = validation produit.',
   },
 ] as const
 
@@ -103,18 +104,29 @@ export default function DemoTourPage() {
     },
     {
       ok: !snap.sc.marketplace.codeEmpty && !snap.scStale,
-      label: 'Marketplace NFT codeHash',
+      label: 'Marketplace NFT',
       value: snap.scStale
-        ? 'unread (accounts down) — treat empty'
+        ? 'unread (accounts down)'
         : snap.sc.marketplace.codeEmpty
-          ? 'null — List/Buy/Bid OFF'
-          : 'live',
+          ? 'contrat vide — List/Buy OFF'
+          : 'vérifié on-chain',
     },
-    { ok: false, label: 'Agents marketplace', value: 'non déployé' },
     {
-      ok: !snap.sc.nftStaking.codeEmpty && !snap.scStale,
-      label: 'Staking / gov / minter',
-      value: snap.scStale ? 'unread' : snap.sc.nftStaking.codeEmpty ? 'comptes empty' : 'codeHash',
+      ok: !snap.sc.agents.codeEmpty && !snap.scStale,
+      label: 'Agents marketplace',
+      value: snap.sc.agents.codeEmpty ? 'non déployé' : 'vérifié on-chain',
+    },
+    {
+      ok: !snap.sc.nftStaking.codeEmpty && !snap.sc.troStaking.codeEmpty && !snap.scStale,
+      label: 'Staking NFT + TRO',
+      value: snap.scStale ? 'unread' : snap.sc.troStaking.codeEmpty ? 'empty' : 'vérifié on-chain',
+    },
+    {
+      ok: !snap.sc.slot.codeEmpty && !snap.scStale,
+      label: 'Slot casino',
+      value: snap.sc.slot.codeEmpty
+        ? 'empty'
+        : `vérifié · ${atomicToEgld(snap.sc.slot.balance).toFixed(2)} EGLD house`,
     },
     { ok: false, label: 'LIA live trading', value: 'OFF (paper)' },
     {
@@ -126,18 +138,18 @@ export default function DemoTourPage() {
     },
     { ok: true, label: 'Supernova mainnet', value: `${SUPERNOVA_ROUND_MS} ms · epoch ${snap.epoch}` },
     { ok: false, label: 'MX-8004 Identity', value: 'not registered (Phase 4 pending)' },
-    { ok: true, label: 'Pages demo', value: 'GO_DEMO + Slot + Phase 4' },
+    { ok: true, label: 'Pages', value: 'GO_LIVE SC · LIA paper · Slot house' },
   ]
 
   return (
     <div className="page-wrap py-10 space-y-10">
       <header className="space-y-3">
         <p className="text-[11px] uppercase tracking-[0.2em] text-cyan-400/80">Parcours démo</p>
-        <h1 className="display text-3xl md:text-4xl text-white">GO_DEMO — tour complet</h1>
+        <h1 className="display text-3xl md:text-4xl text-white">GO_LIVE — tour complet</h1>
         <p className="text-sm text-zinc-400 max-w-2xl leading-relaxed">
-          xArtists sur MultiversX : galerie + packs paper + board LIA + slot. Probe epoch{' '}
-          {snap.epoch} (J+{supernovaAgeEpochs(snap.epoch)}). Les smart contracts produit n’ont pas de{' '}
-          <code className="text-zinc-300">codeHash</code> vérifiable. Rien ici n’allume le live.
+          xArtists sur MultiversX : galerie + packs + board LIA paper + slot. Probe epoch{' '}
+          {snap.epoch} (J+{supernovaAgeEpochs(snap.epoch)}). Les smart contracts produit ont un
+          codeHash vérifiable. Le trading LIA reste paper. Pas un fonds d’investissement.
         </p>
         {isSupernovaLive() && (
           <a
