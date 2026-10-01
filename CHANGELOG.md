@@ -1,5 +1,40 @@
 # Changelog — xArtists
 
+## [0.73.0](https://github.com/Neltud/xArtists/compare/v0.72.1...v0.73.0) (2026-10-01)
+
+
+### Features
+
+* admin whitelist config + restore xPortal on TX monitor boot ([233b578](https://github.com/Neltud/xArtists/commit/233b5782b2645a2f37d69193ca35cfd2191ab357))
+* complete Wallet, Venue, Identity, DAO, Desk, LIA, Studio mint loop ([07abad6](https://github.com/Neltud/xArtists/commit/07abad6e4952c144c18f905492b4767a8ba0f826))
+* sign transport direct (&lt;600ms to sheet) + route aliases + zone music casino ([78af053](https://github.com/Neltud/xArtists/commit/78af0532e1e9626e492cc058789d764c56af9a90))
+* **ui:** mount ToastProvider + design tokens ([0b384db](https://github.com/Neltud/xArtists/commit/0b384dbeb453ecc4da4d3ac0e40101b7c1a691a0))
+
+
+### Bug Fixes
+
+* agentsMarketplaceReceiverOrThrow + document admin/herotag mint path ([1b5d57d](https://github.com/Neltud/xArtists/commit/1b5d57d42d908b8383de6c874620d4eacf6b0b34))
+* **build:** export LIA_WALLET from links — unblock Vite + React[#185](https://github.com/Neltud/xArtists/issues/185) deploy ([67b92ab](https://github.com/Neltud/xArtists/commit/67b92abd0efa3a05a8466b962da1f1cc54b8aa45))
+* **ci:** NODE_OPTIONS max-old-space-size=4096 (was typo dash) ([54dac5a](https://github.com/Neltud/xArtists/commit/54dac5a313319ccd116290e34a6f05cd5670f47d))
+* DaoPage use canVoteDao (build-safe) ([7b3707c](https://github.com/Neltud/xArtists/commit/7b3707cb6eb3f0b1186025f77900d2449c8837b2))
+* force disconnect if xPortal session dead; Header honesty; e2e smoke resilient ([c4498b5](https://github.com/Neltud/xArtists/commit/c4498b5c57bdc4f3259c6f9007844fc2e865a595))
+* framesFromUserNfts skip NFT without identifier (phase8 id crash) ([3fcd4dd](https://github.com/Neltud/xArtists/commit/3fcd4dd2b9b07ee0425801b2c5519a49af61878f))
+* **live:** probe real SC addresses + runtime unlock all product contracts ([d7556a9](https://github.com/Neltud/xArtists/commit/d7556a9fb29ae2d9e21cd871d2d11753a4431e77))
+* **marketplace:** listNft requires price + royalty_bps + royalty_receiver ([0170e2f](https://github.com/Neltud/xArtists/commit/0170e2fba7cc245270557c49c2c05f37a6782485))
+* mount AgentAccessSync + admin whitelist bypass; harden market asset keys ([3ed4fbb](https://github.com/Neltud/xArtists/commit/3ed4fbb54f1e41c37afb9021c653a7e555fd4b8f))
+* **phase8:** harden .id reads (museum/market) + Studio list flow from owned NFTs ([5842213](https://github.com/Neltud/xArtists/commit/5842213e49066f8d54c68dd6af5f38cf4b819415))
+* Portfolio balanceEgld field + media thumb typing ([4891129](https://github.com/Neltud/xArtists/commit/48911294bf5f76b2e54ab5e68d6f81e5b95cb82d))
+* **react#185:** music player zero store deps + stable empireStore snapshots ([8d662cb](https://github.com/Neltud/xArtists/commit/8d662cba08d696de2419cccea96cbd183a83a30c))
+* **react#185:** remove useSyncExternalStore from music player — useState+subscribe only ([d30e557](https://github.com/Neltud/xArtists/commit/d30e5572aee9c64bce4bdaa33154d38c0b1b46c7))
+* restore links.ts walletLogin + gallery nav ([6626b69](https://github.com/Neltud/xArtists/commit/6626b69625bb75725053651ec9eb6d95b81c44a7))
+* **ux:** Agents crash-safe, NFT grid progressive, strip tech UI, honest xPortal session ([24c5ec4](https://github.com/Neltud/xArtists/commit/24c5ec4a067abdebb8579f3915356d8082670dc6))
+* **xportal:** multi-TX session restore + ensure before each sign; guard pack.id ([ddd6aa0](https://github.com/Neltud/xArtists/commit/ddd6aa03231f6f46357fe52c87fce26be95bc212))
+
+
+### Refactoring
+
+* architecture barrels + toast UX; listNft ABI already 3-args ([bff2981](https://github.com/Neltud/xArtists/commit/bff2981bca00e4be5f49301b48b05c99584aa133))
+
 ## [0.72.1](https://github.com/Neltud/xArtists/compare/v0.72.0...v0.72.1) (2026-10-01)
 
 
