@@ -1,13 +1,11 @@
 /**
- * BackgroundMusicPlayer — Nelson Tuduri via YouTube IFrame API.
- * React #185 fix: NO useSyncExternalStore (unstable object snapshots).
- * Subscribe + useState with referential equality guard only.
+ * BackgroundMusicPlayer — Nelson Tuduri (YouTube).
+ * React #185: zero useSyncExternalStore, zero empire store subscriptions.
+ * Zone volume is fixed; user toggles only.
  */
 import { useEffect, useRef, useState } from 'react'
-import { getEmpireState, subscribeEmpire, type EmpireZone } from '../store/empireStore'
 import {
   NELSON_DEFAULT_TRACK,
-  ZONE_VOLUME,
   isMusicEnabled,
   setMusicEnabled,
 } from '../config/nelsonAudio'
@@ -26,30 +24,7 @@ type YTPlayer = {
   playVideo: () => void
   pauseVideo: () => void
   setVolume: (n: number) => void
-  getVolume: () => number
   destroy?: () => void
-}
-
-type AudioSnap = { zone: EmpireZone; audioVolume: number }
-
-function useEmpireAudio(): AudioSnap {
-  const [snap, setSnap] = useState<AudioSnap>(() => {
-    const s = getEmpireState()
-    return { zone: s.zone, audioVolume: s.audioVolume }
-  })
-
-  useEffect(() => {
-    return subscribeEmpire(() => {
-      const s = getEmpireState()
-      setSnap(prev =>
-        prev.zone === s.zone && prev.audioVolume === s.audioVolume
-          ? prev
-          : { zone: s.zone, audioVolume: s.audioVolume },
-      )
-    })
-  }, [])
-
-  return snap
 }
 
 function loadYtApi(): Promise<void> {
@@ -77,41 +52,11 @@ function loadYtApi(): Promise<void> {
   })
 }
 
-function fadeVolume(
-  player: YTPlayer,
-  from: number,
-  to: number,
-  ms: number,
-  cancelRef: { id: number | null },
-) {
-  if (cancelRef.id != null) window.clearInterval(cancelRef.id)
-  const steps = Math.max(8, Math.floor(ms / 40))
-  let i = 0
-  cancelRef.id = window.setInterval(() => {
-    i += 1
-    const t = Math.min(1, i / steps)
-    const v = Math.round(from + (to - from) * t)
-    try {
-      player.setVolume(v)
-    } catch {
-      /* */
-    }
-    if (t >= 1 && cancelRef.id != null) {
-      window.clearInterval(cancelRef.id)
-      cancelRef.id = null
-    }
-  }, 40)
-}
-
 export default function BackgroundMusicPlayer() {
-  const { zone, audioVolume } = useEmpireAudio()
   const [enabled, setEnabled] = useState(false)
   const [ready, setReady] = useState(false)
   const playerRef = useRef<YTPlayer | null>(null)
   const hostRef = useRef<HTMLDivElement>(null)
-  const targetVol = useRef(100)
-  const currentVol = useRef(100)
-  const fadeCancel = useRef<{ id: number | null }>({ id: null })
 
   useEffect(() => {
     setEnabled(isMusicEnabled())
@@ -122,18 +67,6 @@ export default function BackgroundMusicPlayer() {
     window.addEventListener('xartists-music', on)
     return () => window.removeEventListener('xartists-music', on)
   }, [])
-
-  useEffect(() => {
-    const base = ZONE_VOLUME[zone as keyof typeof ZONE_VOLUME] ?? audioVolume
-    const factor = zone === 'command' ? 0.85 : 1
-    const next = Math.round(Math.max(0, Math.min(1, base * factor)) * 100)
-    targetVol.current = next
-    const p = playerRef.current
-    if (!p) return
-    const from = currentVol.current
-    fadeVolume(p, from, next, zone === 'transition' ? 600 : 900, fadeCancel.current)
-    currentVol.current = next
-  }, [zone, audioVolume])
 
   useEffect(() => {
     if (!enabled) {
@@ -153,8 +86,7 @@ export default function BackgroundMusicPlayer() {
       if (playerRef.current) {
         try {
           playerRef.current.playVideo()
-          playerRef.current.setVolume(targetVol.current)
-          currentVol.current = targetVol.current
+          playerRef.current.setVolume(70)
         } catch {
           /* */
         }
@@ -184,8 +116,7 @@ export default function BackgroundMusicPlayer() {
           onReady: (ev: { target: YTPlayer }) => {
             if (cancelled) return
             try {
-              ev.target.setVolume(targetVol.current)
-              currentVol.current = targetVol.current
+              ev.target.setVolume(70)
               ev.target.playVideo()
             } catch {
               /* */
@@ -207,10 +138,6 @@ export default function BackgroundMusicPlayer() {
 
     return () => {
       cancelled = true
-      if (fadeCancel.current.id != null) {
-        window.clearInterval(fadeCancel.current.id)
-        fadeCancel.current.id = null
-      }
     }
   }, [enabled])
 
@@ -235,13 +162,10 @@ export default function BackgroundMusicPlayer() {
             ? 'border-violet-400/40 bg-violet-950/70 text-white'
             : 'border-amber-400/50 bg-amber-950/80 text-amber-100 animate-pulse'
         }`}
-        title={enabled ? 'Couper musique Nelson' : 'Activer musique Nelson Tuduri'}
+        title={enabled ? 'Couper musique' : 'Activer musique Nelson Tuduri'}
         aria-pressed={enabled}
       >
         {enabled ? (ready ? '🎵 Musique' : '🎵 …') : '🎵 Activer musique'}
-        <span className="hidden sm:inline text-zinc-500 ml-1">
-          · {zone === 'command' ? '20%' : zone === 'transition' ? '50%' : '100%'}
-        </span>
       </button>
     </>
   )
