@@ -1,13 +1,13 @@
 /**
  * AgentIA_Guard — Command Center access wrapper.
- * Access if hasAgentAccess (Pulse | Yield | Sentinel pack NFT or paper).
- * Does NOT modify Museum routes.
+ * Access if hasAgentAccess (admin · pack NFT · paper) or requirePack room.
  */
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useAgentAccess } from '../store/empireStore'
 import { useWallet } from '../context/WalletContext'
 import { requestOpenConnect } from '../lib/walletEvents'
+import { isAdminAddress } from '../config/accessControl'
 
 type Props = {
   children: ReactNode
@@ -16,15 +16,17 @@ type Props = {
 }
 
 export default function AgentIA_Guard({ children, requirePack }: Props) {
-  const { connected } = useWallet()
+  const { connected, address } = useWallet()
   const access = useAgentAccess()
 
+  const admin = isAdminAddress(address)
   const ok =
-    access.hasAgentAccess &&
-    (!requirePack || access.packs.includes(requirePack))
+    admin ||
+    (access.hasAgentAccess && (!requirePack || access.packs.includes(requirePack)))
 
   if (ok) return <>{children}</>
 
+  // Expected for non-holders — not a bug (Phase 7)
   return (
     <div className="min-h-[50vh] flex items-center justify-center p-4">
       <div className="w-full max-w-md rounded-2xl border border-cyan-500/25 bg-[#0a0a12] p-6 space-y-4 shadow-[0_0_40px_rgba(34,211,238,0.12)]">

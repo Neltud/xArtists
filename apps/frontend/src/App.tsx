@@ -25,6 +25,7 @@ import BackgroundMusicPlayer from './components/BackgroundMusicPlayer'
 import ZoneRouteSync from './components/ZoneRouteSync'
 import TransactionOverlay from './components/TransactionOverlay'
 import TransactionMonitor from './components/TransactionMonitor'
+import AgentAccessSync from './components/AgentAccessSync'
 import SystemMaintenanceBanner from './components/SystemMaintenanceBanner'
 import RouteErrorBoundary from './components/RouteErrorBoundary'
 import RouteSfx from './components/RouteSfx'
@@ -76,6 +77,7 @@ export default function App() {
         <DemoModeBanner />
         <SystemMaintenanceBanner />
         <TransactionMonitor />
+        <AgentAccessSync />
         <Header />
         <BrainMoodStrip />
         <SignalTicker />

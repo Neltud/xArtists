@@ -1,7 +1,6 @@
 /**
  * Gatekeeper sync — owns hasAgentAccess in empireStore.
- * Source: on-chain NFTs (matchOnChainPacks) + paper device packs.
- * Extension only — does not touch Museum pages.
+ * Source: admin whitelist · on-chain NFTs · paper device packs.
  */
 import { useEffect } from 'react'
 import { useWallet } from '../context/WalletContext'
@@ -13,6 +12,9 @@ import {
 } from '../lib/nftPacks'
 import { setAgentAccess } from '../store/empireStore'
 import type { PackId } from '../config/agentPacks'
+import { isAdminAddress } from '../config/accessControl'
+
+const ALL_PACKS: Array<'pulse' | 'yield' | 'sentinel'> = ['pulse', 'yield', 'sentinel']
 
 export default function AgentAccessSync() {
   const { connected, address } = useWallet()
@@ -24,7 +26,17 @@ export default function AgentAccessSync() {
       return
     }
 
-    const chainHits = matchOnChainPacks(account.nfts)
+    // Phase 7 — CEO / admin = full IA + all rooms
+    if (isAdminAddress(address)) {
+      setAgentAccess({
+        hasAgentAccess: true,
+        packs: ALL_PACKS,
+        source: 'chain',
+      })
+      return
+    }
+
+    const chainHits = matchOnChainPacks(account.nfts || [])
     const chainPacks = ownedPackIdsFromChain(chainHits) as PackId[]
     const paper = loadOwnedPacks()
 
