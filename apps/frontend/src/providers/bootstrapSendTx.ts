@@ -1,10 +1,9 @@
 /**
  * Inject window.__xartistsSendTx for user TX (stake / market / studio mint).
  * Priority:
- *  1) Active xPortal WC session → sign in xPortal app
+ *  1) Active xPortal WC session (ensure/restore) → sign in xPortal
  *  2) sdk-dapp sendTransactions if DappProvider session active
- *  3) Web Wallet hook URL — always OK for signable methods (xportal session lost, web_wallet)
- * Never holds PEM — user signs in their wallet app.
+ *  3) Web Wallet hook URL
  */
 import {
   empireTxStart,
@@ -16,6 +15,7 @@ import {
 import { DAPP_CALLBACK_BASE } from '../config/sdkDapp'
 import {
   getXPortalSession,
+  ensureXPortalSession,
   signWithXPortalSession,
   broadcastSignedTx,
 } from '../lib/xportalWc'
@@ -111,7 +111,12 @@ async function trySdkDappSend(
 }
 
 async function tryXPortalSignAndBroadcast(list: unknown[]): Promise<SendResult | null> {
+  // Multi-TX: restore WC session if mobile killed the tab JS
+  if (!getXPortalSession()) {
+    await ensureXPortalSession()
+  }
   if (!getXPortalSession()) return null
+
   const plains = list.map(toPlainTx)
   if (!plains[0]?.receiver?.startsWith('erd1')) return null
 
@@ -165,7 +170,6 @@ function injectSendTx() {
 
     const method = walletMethod()
 
-    // Read-only / pem never sign
     if (method === 'paste_readonly' || method === 'pem') {
       const msg =
         method === 'pem'
@@ -175,13 +179,14 @@ function injectSendTx() {
       throw new Error(msg)
     }
 
-    // 1) Live xPortal WC session
-    if (getXPortalSession()) {
+    // 1) xPortal WC (with multi-TX restore)
+    if (method === 'xportal' || getXPortalSession() || method === null) {
       try {
         const xp = await tryXPortalSignAndBroadcast(list)
         if (xp?.sessionId) return xp
       } catch (e) {
-        throw e
+        // Only rethrow if user was on xportal — otherwise fall through
+        if (method === 'xportal' || getXPortalSession()) throw e
       }
     }
 
@@ -197,8 +202,7 @@ function injectSendTx() {
       return sdkRes
     }
 
-    // 3) Web Wallet hook — xportal (session perdue), web_wallet, defi without sdk, null
-    //    Mobile xPortal users often land here after navigation; hook still signs in app.
+    // 3) Web Wallet hook
     const plain = toPlainTx(list[0])
     if (!plain.receiver || !plain.receiver.startsWith('erd1')) {
       const msg = 'Receiver invalide'
@@ -207,7 +211,6 @@ function injectSendTx() {
     }
 
     if (method === 'xportal' && !getXPortalSession()) {
-      // Soft notice then redirect — do not hard-fail Studio / stake
       console.info(
         '[xArtists] Session WC absente — fallback Web Wallet hook (même adresse).',
       )
