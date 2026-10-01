@@ -98,6 +98,12 @@ export function marketplaceReceiverOrThrow(): string {
   return MARKETPLACE_ADDRESS
 }
 
+/** Agents pack mint SC — mainnet address when gate open */
+export function agentsMarketplaceReceiverOrThrow(): string {
+  if (!canBuyAgent()) throw new Error('Agents marketplace not ready — paper only')
+  return AGENTS_MARKETPLACE_ADDRESS
+}
+
 export function venueReceiverOrThrow(): string {
   if (!canRentVenueOnChain()) throw new Error('Venue not ready')
   return VENUE_SC_ADDRESS
@@ -136,6 +142,12 @@ export function venueStatusLabel(): string {
 export function troStakingStatusLabel(): string {
   if (canStakeTro()) return 'Ouvert'
   return 'Bientôt disponible'
+}
+
+export function agentsStatusLabel(): string {
+  if (canBuyAgent()) return 'Ouvert · mint on-chain'
+  if (isUsableScAddress(AGENTS_MARKETPLACE_ADDRESS)) return 'SC déployé · gate CODEHASH / paper'
+  return 'Paper only'
 }
 
 export function getAllScSnapshots() {
