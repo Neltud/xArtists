@@ -8,11 +8,13 @@ import { MxDappProvider } from './providers/MxDappProvider'
 import TxShell from './providers/TxShell'
 import EmpireBalanceSync from './components/EmpireBalanceSync'
 import AgentAccessSync from './components/AgentAccessSync'
+import { ToastProvider } from './components/ui/Toast'
 import { registerSW } from './pwa/registerSW'
 import { probeChainTiming } from './config/chainTiming'
 import { startAgent8008Bridge } from './lib/agent8008Bridge'
 import PulseBoot from './components/PulseBoot'
 import './index.css'
+import './styles/tokens.css'
 import './atelier.css'
 import './motion-fx.css'
 
@@ -33,12 +35,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <MxDappProvider>
         <WalletProvider>
           <MultiversXProvider>
-            <TxShell>
-              <EmpireBalanceSync />
-              <AgentAccessSync />
-              <PulseBoot />
-              <App />
-            </TxShell>
+            <ToastProvider>
+              <TxShell>
+                <EmpireBalanceSync />
+                <AgentAccessSync />
+                <PulseBoot />
+                <App />
+              </TxShell>
+            </ToastProvider>
           </MultiversXProvider>
         </WalletProvider>
       </MxDappProvider>
