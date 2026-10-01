@@ -1,18 +1,10 @@
-/** Liens + nav dApp (ordre publication hub). */
-
-/** Wallet ops LIA (trésorerie / politique placement) */
-export const LIA_WALLET =
-  'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
+/** Public links + nav order (product first). */
 
 export const LINKS = {
   github: 'https://github.com/Neltud/xArtists',
-  explorer: 'https://explorer.multiversx.com',
-  walletWeb: 'https://wallet.multiversx.com',
-  xportal: 'https://xportal.com',
-  docs: 'https://github.com/Neltud/xArtists/tree/main/docs',
   githubPages: 'https://neltud.github.io/xArtists/',
-  walletLogin: (callback: string) =>
-    `https://wallet.multiversx.com/hook/login?callbackUrl=${encodeURIComponent(callback)}`,
+  explorer: 'https://explorer.multiversx.com',
+  xportal: 'https://xportal.com',
 }
 
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
@@ -20,7 +12,7 @@ export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/museum', label: 'Musée', emoji: '🖼' },
   { to: '/marketplace', label: 'Marketplace', emoji: '▣' },
   { to: '/agents', label: 'Packs IA', emoji: '◎' },
-  { to: '/my-packs', label: 'Mes salles', emoji: '🎫' },
+  { to: '/my-packs', label: 'Mes salles', emoji: '🎛' },
   { to: '/slot', label: 'Slot', emoji: '🎰' },
   { to: '/staking', label: 'Staking', emoji: '◈' },
   { to: '/wallet', label: 'Wallet', emoji: '◇' },
@@ -36,6 +28,7 @@ export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/market', label: 'Analyse', emoji: '◐' },
   { to: '/dao', label: 'DAO', emoji: '⬡' },
   { to: '/venues', label: 'Venues', emoji: '◎' },
+  { to: '/gallery', label: 'Galerie', emoji: '▣' },
   { to: '/go-live', label: 'Go Live', emoji: '🚀' },
   { to: '/legal', label: 'Legal', emoji: '§' },
   { to: '/identity', label: 'Identity', emoji: '🪪' },
@@ -48,3 +41,6 @@ export function getCallbackUrl(): string {
     return LINKS.githubPages
   }
 }
+
+export const LIA_WALLET =
+  'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
