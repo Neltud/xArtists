@@ -71,7 +71,7 @@ jobs:
           npm run build 2>&1 | tee build-out.txt
           echo "EXIT:${PIPESTATUS[0]}" | tee -a build-out.txt
         env:
-          NODE_OPTIONS: --max-old-space-size-4096
+          NODE_OPTIONS: --max-old-space-size=4096
           VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
           VITE_APP_BUILD: "3.10.0"
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
