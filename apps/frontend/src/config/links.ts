@@ -1,10 +1,18 @@
-/** Public links + nav order (product first). */
+/** Liens + nav dApp (ordre publication hub). */
+
+/** Wallet ops LIA (trésorerie / politique placement) */
+export const LIA_WALLET =
+  'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
 
 export const LINKS = {
   github: 'https://github.com/Neltud/xArtists',
-  githubPages: 'https://neltud.github.io/xArtists/',
   explorer: 'https://explorer.multiversx.com',
+  walletWeb: 'https://wallet.multiversx.com',
   xportal: 'https://xportal.com',
+  docs: 'https://github.com/Neltud/xArtists/tree/main/docs',
+  githubPages: 'https://neltud.github.io/xArtists/',
+  walletLogin: (callback: string) =>
+    `https://wallet.multiversx.com/hook/login?callbackUrl=${encodeURIComponent(callback)}`,
 }
 
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
@@ -41,6 +49,3 @@ export function getCallbackUrl(): string {
     return LINKS.githubPages
   }
 }
-
-export const LIA_WALLET =
-  'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
