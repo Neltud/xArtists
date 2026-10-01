@@ -1,45 +1,62 @@
 /**
- * NFT Marketplace — list / buy (SC) + catalogue listings_index.
- * Analyse F&G reste sur /market.
+ * Marketplace — list / buy NFT on-chain.
+ * Phase 8: list flow + index refresh after TX.
  */
 import { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
-import { requestOpenConnect } from '../lib/walletEvents'
 import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
 import { canListBuyNft, MARKETPLACE_ADDRESS } from '../config/scStatus'
-import { nftImageUrl, type NFT } from '../types/nft'
+import { requestOpenConnect } from '../lib/walletEvents'
 
 type ListingRow = {
   listing_id?: number
-  token_id?: string
+  token?: string
   nonce?: number
-  price_egld?: string
+  price?: string
   seller?: string
   active?: boolean
 }
 
 export default function MarketplacePage() {
-  const live = canListBuyNft()
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
-  const nfts = (account.nfts || []) as NFT[]
+  const nfts = (account.nfts || []).filter(n => n?.identifier)
+  const live = canListBuyNft()
   const { listNft, buyNft, pending, error, lastTx } = useMarketplaceTx()
-  const [listings, setListings] = useState<ListingRow[]>([])
-  const [price, setPrice] = useState('1')
-  const [selected, setSelected] = useState<string | null>(null)
+  const [params, setParams] = useSearchParams()
+  const preselect = params.get('list')
+
+  const [selected, setSelected] = useState<string | null>(preselect)
+  const [price, setPrice] = useState('0.1')
   const [msg, setMsg] = useState<string | null>(null)
+  const [listings, setListings] = useState<ListingRow[]>([])
+
+  useEffect(() => {
+    if (preselect && preselect !== selected) setSelected(preselect)
+  }, [preselect]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     let c = false
     ;(async () => {
       try {
         const base = import.meta.env.BASE_URL || '/'
-        const r = await fetch(`${base}data/listings_index.json`, { cache: 'no-store' })
-        if (!r.ok) return
-        const j = (await r.json()) as { listings?: ListingRow[] }
-        if (!c) setListings((j.listings || []).filter(x => x.active !== false))
+        const urls = [
+          `${base}data/marketplace_listings.json`,
+          '/xArtists/data/marketplace_listings.json',
+        ]
+        for (const u of urls) {
+          try {
+            const r = await fetch(u, { cache: 'no-store' })
+            if (!r.ok) continue
+            const j = (await r.json()) as { listings?: ListingRow[] }
+            if (!c) setListings((j.listings || []).filter(x => x && x.active !== false))
+            return
+          } catch {
+            /* next */
+          }
+        }
       } catch {
         /* */
       }
@@ -55,10 +72,17 @@ export default function MarketplacePage() {
       return
     }
     const nft = nfts.find(n => n.identifier === selected)
-    if (!nft) return
+    if (!nft?.identifier) {
+      setMsg('NFT introuvable dans le wallet')
+      return
+    }
     const parts = selected.split('-')
     const nonce = Number(nft.nonce ?? parts[parts.length - 1] ?? 0)
     const tokenId = nft.collection || parts.slice(0, -1).join('-')
+    if (!tokenId || !Number.isFinite(nonce)) {
+      setMsg('Collection / nonce invalides')
+      return
+    }
     const priceEgld = Number(price)
     if (!(priceEgld > 0)) {
       setMsg('Prix invalide')
@@ -67,11 +91,18 @@ export default function MarketplacePage() {
     setMsg(null)
     try {
       await listNft({ tokenId, nonce, priceEgld })
-      setMsg('Listing envoyé — signature wallet')
+      setMsg('Listing envoyé — confirme dans xPortal')
+      try {
+        params.delete('list')
+        setParams(params, { replace: true })
+      } catch {
+        /* */
+      }
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : 'Échec listing')
+      const m = e instanceof Error ? e.message : 'Échec listing'
+      setMsg(m)
     }
-  }, [selected, connected, nfts, price, listNft])
+  }, [selected, connected, nfts, price, listNft, params, setParams])
 
   return (
     <div className="animate-fade-in space-y-6 pb-16 max-w-2xl mx-auto">
@@ -80,11 +111,11 @@ export default function MarketplacePage() {
         <h1 className="section-title display text-2xl">Marketplace</h1>
         <p className="text-sm text-zinc-400">
           {live
-            ? 'On-chain ouvert — list & buy via votre wallet'
+            ? 'On-chain ouvert — list & buy via ton wallet'
             : 'Simulation — ouverture progressive des ventes on-chain'}
         </p>
         <p className="text-[11px] text-zinc-600 truncate">
-          SC {MARKETPLACE_ADDRESS.slice(0, 18)}…
+          SC {MARKETPLACE_ADDRESS?.slice(0, 18) || '—'}…
         </p>
       </header>
 
@@ -112,26 +143,28 @@ export default function MarketplacePage() {
             {listings.map((l, i) => (
               <li
                 key={l.listing_id ?? i}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 px-3 py-2 text-[13px]"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 px-3 py-2"
               >
-                <span className="text-zinc-300">
-                  {l.token_id}-{l.nonce} · {l.price_egld} EGLD
+                <span className="text-[12px] text-zinc-300 mono truncate">
+                  #{l.listing_id ?? i} · {l.token}-{l.nonce}
                 </span>
-                {live && (
-                  <button
-                    type="button"
-                    className="btn-secondary text-xs"
-                    disabled={pending}
-                    onClick={() =>
-                      void buyNft({
-                        listingId: Number(l.listing_id),
-                        priceEgld: Number(l.price_egld),
-                      })
+                <button
+                  type="button"
+                  className="btn-secondary text-xs"
+                  disabled={pending || !live}
+                  onClick={async () => {
+                    if (l.listing_id == null) return
+                    const p = Number(l.price || 0) / 1e18
+                    try {
+                      await buyNft({ listingId: l.listing_id, priceEgld: p || 0.1 })
+                      setMsg('Achat envoyé — confirme dans xPortal')
+                    } catch (e) {
+                      setMsg(e instanceof Error ? e.message : 'Échec buy')
                     }
-                  >
-                    Acheter
-                  </button>
-                )}
+                  }}
+                >
+                  Buy
+                </button>
               </li>
             ))}
           </ul>
@@ -141,53 +174,54 @@ export default function MarketplacePage() {
       <section className="card space-y-3">
         <h2 className="text-sm font-semibold text-white">Mettre en vente</h2>
         {!connected ? (
-          <button type="button" className="btn-primary text-sm" onClick={() => requestOpenConnect()}>
+          <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
             Connecter wallet
           </button>
         ) : nfts.length === 0 ? (
-          <p className="text-[13px] text-zinc-500">Aucun NFT détecté sur cette adresse.</p>
+          <p className="text-[13px] text-zinc-500">
+            Aucun NFT dans le wallet.{' '}
+            <Link to="/studio" className="text-cyan-400 underline">
+              Studio
+            </Link>
+          </p>
         ) : (
           <>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-48 overflow-y-auto">
-              {nfts.slice(0, 24).map(n => {
-                const id = n.identifier
-                const img = nftImageUrl(n)
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setSelected(id)}
-                    className={`rounded-lg border overflow-hidden text-left ${
-                      selected === id ? 'border-violet-400' : 'border-white/10'
-                    }`}
-                  >
-                    {img ? (
-                      <img src={img} alt="" className="w-full aspect-square object-cover" />
-                    ) : (
-                      <div className="aspect-square bg-zinc-900" />
-                    )}
-                    <p className="text-[9px] truncate px-1 py-0.5 text-zinc-400">{n.name || id}</p>
-                  </button>
-                )
-              })}
-            </div>
-            <label className="block text-[12px] text-zinc-400">
-              Prix EGLD
+            <select
+              className="w-full rounded-xl border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-200"
+              value={selected || ''}
+              onChange={e => setSelected(e.target.value || null)}
+            >
+              <option value="">Choisir un NFT…</option>
+              {nfts.map(n => (
+                <option key={n.identifier} value={n.identifier}>
+                  {n.name || n.identifier}
+                </option>
+              ))}
+            </select>
+            <div className="flex flex-wrap gap-2 items-center">
+              <label className="text-[12px] text-zinc-500">Prix EGLD</label>
               <input
-                className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-white"
+                type="number"
+                min="0.001"
+                step="0.01"
                 value={price}
                 onChange={e => setPrice(e.target.value)}
-                inputMode="decimal"
+                className="w-28 rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white"
               />
-            </label>
-            <button
-              type="button"
-              className="btn-primary text-sm"
-              disabled={pending || !selected || !live}
-              onClick={() => void onList()}
-            >
-              {live ? (pending ? 'Signature…' : 'Lister on-chain') : 'Bientôt disponible'}
-            </button>
+              <button
+                type="button"
+                className="btn-primary text-sm"
+                disabled={pending || !selected || !live}
+                onClick={() => void onList()}
+              >
+                {pending ? 'Signature…' : 'List NFT'}
+              </button>
+            </div>
+            {!live && (
+              <p className="text-[11px] text-amber-200/80">
+                Marketplace SC pas encore LIVE (codehash / secret).
+              </p>
+            )}
           </>
         )}
         {(msg || error) && (
@@ -195,12 +229,12 @@ export default function MarketplacePage() {
         )}
         {lastTx && (
           <a
-            className="text-[11px] text-cyan-400 hover:underline break-all"
             href={`https://explorer.multiversx.com/transactions/${lastTx}`}
             target="_blank"
             rel="noreferrer"
+            className="text-[11px] text-cyan-400 underline"
           >
-            TX {lastTx.slice(0, 16)}…
+            Voir TX →
           </a>
         )}
       </section>
