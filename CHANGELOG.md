@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.72.1](https://github.com/Neltud/xArtists/compare/v0.72.0...v0.72.1) (2026-10-01)
+
+
+### Bug Fixes
+
+* **react#185:** stable audio getSnapshot cache — stop max update depth ([a113a17](https://github.com/Neltud/xArtists/commit/a113a176b1b6ff972ede2cace94a07454ff9b08d))
+
 ## [0.72.0](https://github.com/Neltud/xArtists/compare/v0.71.0...v0.72.0) (2026-09-30)
 
 
