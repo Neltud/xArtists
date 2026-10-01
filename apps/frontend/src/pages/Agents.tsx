@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
 import PackOpenTheater from '../components/PackOpenTheater'
 import PackProductDisclaimer from '../components/PackProductDisclaimer'
+import FeeTransparency from '../components/ui/FeeTransparency'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 
 const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
@@ -22,19 +23,13 @@ export default function Agents() {
       <header className="space-y-2">
         <p className="section-label">Packs · produits limités</p>
         <h1 className="section-title display">Pulse · Yield · Sentinel</h1>
-        <p className="section-lead">
-          Trois salles. Floor 10 EGLD. Pas un fond d’investissement.
-        </p>
+        <p className="section-lead">Trois salles. Floor 10 EGLD. Pas un fond d’investissement.</p>
       </header>
       <PackProductDisclaimer />
+      <FeeTransparency kind="packs" />
       <div className="grid sm:grid-cols-3 gap-3">
         {PACKS.map(p => (
-          <button
-            key={p.id}
-            type="button"
-            onClick={() => setSelected(p.id)}
-            className="card text-left card-play"
-          >
+          <button key={p.id} type="button" onClick={() => setSelected(p.id)} className="card text-left card-play">
             <p className="text-[15px] font-semibold text-white">
               {p.icon} {p.name}
             </p>
@@ -54,9 +49,7 @@ export default function Agents() {
           </Link>
         </section>
       )}
-      {theaterPack && (
-        <PackOpenTheater pack={theaterPack} open onClose={() => setTheater(null)} />
-      )}
+      {theaterPack && <PackOpenTheater pack={theaterPack} open onClose={() => setTheater(null)} />}
     </div>
   )
 }
