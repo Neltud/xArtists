@@ -1,8 +1,9 @@
 /**
  * BackgroundMusicPlayer — Nelson Tuduri via YouTube IFrame API.
- * CRITICAL: getSnapshot must return referentially stable values (React #185).
+ * React #185 fix: NO useSyncExternalStore (unstable object snapshots).
+ * Subscribe + useState with referential equality guard only.
  */
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getEmpireState, subscribeEmpire, type EmpireZone } from '../store/empireStore'
 import {
   NELSON_DEFAULT_TRACK,
@@ -31,24 +32,24 @@ type YTPlayer = {
 
 type AudioSnap = { zone: EmpireZone; audioVolume: number }
 
-/** Cached snapshot — same reference while zone/volume unchanged */
-let _audioSnap: AudioSnap = { zone: 'museum', audioVolume: 1 }
-
-function getAudioSnapshot(): AudioSnap {
-  const s = getEmpireState()
-  if (_audioSnap.zone === s.zone && _audioSnap.audioVolume === s.audioVolume) {
-    return _audioSnap
-  }
-  _audioSnap = { zone: s.zone, audioVolume: s.audioVolume }
-  return _audioSnap
-}
-
-function getServerAudioSnapshot(): AudioSnap {
-  return _audioSnap
-}
-
 function useEmpireAudio(): AudioSnap {
-  return useSyncExternalStore(subscribeEmpire, getAudioSnapshot, getServerAudioSnapshot)
+  const [snap, setSnap] = useState<AudioSnap>(() => {
+    const s = getEmpireState()
+    return { zone: s.zone, audioVolume: s.audioVolume }
+  })
+
+  useEffect(() => {
+    return subscribeEmpire(() => {
+      const s = getEmpireState()
+      setSnap(prev =>
+        prev.zone === s.zone && prev.audioVolume === s.audioVolume
+          ? prev
+          : { zone: s.zone, audioVolume: s.audioVolume },
+      )
+    })
+  }, [])
+
+  return snap
 }
 
 function loadYtApi(): Promise<void> {
