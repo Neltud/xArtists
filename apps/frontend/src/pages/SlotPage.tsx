@@ -19,6 +19,9 @@ import { canSpinSlot, SLOT_CASINO_ADDRESS } from '../config/scStatus'
 import { useSlotTx } from '../hooks/useSlotTx'
 import { canSpinRealAgainstHouse, refreshHouseFromApi } from '../lib/slotHouseGuard'
 import SlotModeSwitch, { type SlotPlayMode } from '../components/slot/SlotModeSwitch'
+import PotsStrip from '../components/slot/PotsStrip'
+import FeeTransparency from '../components/ui/FeeTransparency'
+import { useToast } from '../components/ui/Toast'
 import { LINKS } from '../config/links'
 
 type Cell = { id: string; label: string; tone: string }
@@ -53,6 +56,7 @@ function evaluate(grid: Cell[], asset: SlotAsset) {
 export default function SlotPage() {
   const { connected, canAttemptSign } = useWallet()
   const scLive = canSpinSlot()
+  const { push } = useToast()
   useEffect(() => {
     if (scLive && SLOT_CASINO_ADDRESS) void refreshHouseFromApi(SLOT_CASINO_ADDRESS)
   }, [scLive])
@@ -130,10 +134,18 @@ export default function SlotPage() {
       <header className="space-y-1">
         <p className="section-label">Casino</p>
         <h1 className="section-title display text-2xl">Slot</h1>
-        <p className="text-sm text-zinc-400">
-          Fun = simulation. Réel = mise EGLD. Maison on-chain actuelle : 0,5 EGLD.
-        </p>
+        <p className="text-sm text-zinc-400">Fun = crédits virtuels. Réel = EGLD on-chain.</p>
       </header>
+
+      <PotsStrip
+        virtualEgld={progressive.EGLD || 0}
+        onTapVirtual={() =>
+          push(
+            'Ces crédits sont virtuels et destinés au jeu. Les gains réels passent par la caisse on-chain.',
+            'info',
+          )
+        }
+      />
 
       <SlotModeSwitch
         mode={mode}
@@ -194,17 +206,10 @@ export default function SlotPage() {
         </button>
       )}
 
-      <p className="text-[12px] text-zinc-500">
-        Banque paper {formatSlotAmount(bank, asset)} · Cagnotte écran{' '}
-        {formatSlotAmount(progressive[asset] || 0, asset)} (locale, pas la maison on-chain)
-      </p>
+      <p className="text-[12px] text-zinc-500">Banque paper {formatSlotAmount(bank, asset)}</p>
+      <FeeTransparency kind="slot-paper" />
       {lastTx && (
-        <a
-          className="text-xs text-cyan-400 underline"
-          href={`${LINKS.explorer}/transactions/${lastTx}`}
-          target="_blank"
-          rel="noreferrer"
-        >
+        <a className="text-xs text-cyan-400 underline" href={`${LINKS.explorer}/transactions/${lastTx}`} target="_blank" rel="noreferrer">
           Dernière TX →
         </a>
       )}
