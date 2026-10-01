@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { setEmpireWallet } from '../store/empireStore'
-import { clearXPortalSession } from '../lib/xportalWc'
+import { clearXPortalSession, ensureXPortalSession, getXPortalSession } from '../lib/xportalWc'
 
 const STORAGE_KEY = 'xartists_wallet'
 /** Protocol LIA wallet — never as connected user */
@@ -9,8 +9,10 @@ export const LIA_WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0l
 export interface WalletState {
   connected: boolean
   address: string
-  /** paste_readonly never signs TX */
+  /** paste_readonly never signs TX; xportal needs live WC session for sign */
   method: 'xportal' | 'defi_wallet' | 'web_wallet' | 'wallet_connect' | 'paste_readonly' | 'pem' | null
+  /** True only when WC session is verified for xportal method */
+  sessionLive?: boolean
 }
 
 interface WalletContextValue extends WalletState {
@@ -67,36 +69,76 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       if (raw) {
         const parsed = JSON.parse(raw) as WalletState
         if (parsed.address?.toLowerCase() === LIA_WALLET.toLowerCase()) {
-          return { connected: false, address: '', method: null }
+          return { connected: false, address: '', method: null, sessionLive: false }
         }
-        return parsed
+        // Soft restore — sessionLive verified async for xportal
+        return {
+          connected: !!parsed.address,
+          address: parsed.address || '',
+          method: parsed.method || null,
+          sessionLive: false,
+        }
       }
     } catch {
       /* ignore */
     }
-    return { connected: false, address: '', method: null }
+    return { connected: false, address: '', method: null, sessionLive: false }
   })
 
   useEffect(() => {
     const fromUrl = addressFromUrl()
     if (!fromUrl) return
     if (fromUrl.address.toLowerCase() === LIA_WALLET.toLowerCase()) return
-    setState({ connected: true, address: fromUrl.address, method: fromUrl.method })
+    setState({
+      connected: true,
+      address: fromUrl.address,
+      method: fromUrl.method,
+      sessionLive: false,
+    })
     setEmpireWallet({ connected: true, address: fromUrl.address, method: fromUrl.method })
     cleanUrlParams()
   }, [])
 
+  // Verify xPortal WC session after restore — do not fake "signing ready"
+  useEffect(() => {
+    if (!state.connected || state.method !== 'xportal' || !state.address) return
+    let cancelled = false
+    ;(async () => {
+      const ok = getXPortalSession() != null || (await ensureXPortalSession())
+      if (cancelled) return
+      if (ok) {
+        const sess = getXPortalSession()
+        const match =
+          !sess || sess.address.toLowerCase() === state.address.toLowerCase()
+        setState(s => ({ ...s, sessionLive: match && ok }))
+      } else {
+        // Keep address visible but mark session dead — user must reconnect xPortal to sign
+        setState(s => ({ ...s, sessionLive: false }))
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [state.connected, state.method, state.address])
+
   useEffect(() => {
     try {
       if (state.connected && state.address) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            connected: state.connected,
+            address: state.address,
+            method: state.method,
+          }),
+        )
       } else {
         localStorage.removeItem(STORAGE_KEY)
       }
     } catch {
       /* ignore */
     }
-  }, [state])
+  }, [state.connected, state.address, state.method])
 
   const connect = (address: string, method: WalletState['method']) => {
     const addr = address.trim()
@@ -104,14 +146,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (addr.toLowerCase() === LIA_WALLET.toLowerCase()) {
       return { ok: false, error: 'Wallet protocole LIA interdit comme wallet utilisateur.' }
     }
-    setState({ connected: true, address: addr, method })
+    const sessionLive = method === 'xportal' ? getXPortalSession() != null : method !== 'paste_readonly'
+    setState({ connected: true, address: addr, method, sessionLive })
     setEmpireWallet({ connected: true, address: addr, method })
     return { ok: true }
   }
 
   const disconnect = () => {
     clearXPortalSession()
-    setState({ connected: false, address: '', method: null })
+    setState({ connected: false, address: '', method: null, sessionLive: false })
     setEmpireWallet({ connected: false, address: null, method: null })
     try {
       localStorage.removeItem(STORAGE_KEY)
@@ -129,7 +172,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     state.connected &&
     !isLiaAddress &&
     state.method !== 'paste_readonly' &&
-    state.method !== null
+    state.method !== null &&
+    (state.method !== 'xportal' || state.sessionLive === true)
 
   return (
     <WalletContext.Provider
