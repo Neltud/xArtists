@@ -1,0 +1,4 @@
+# Vite build failed @ b27cd8d6a0635fecc22cbe2ef285d07fd9ad0929
+time: 2026-10-01T16:50:13Z
+
+node: --max-old-space-size-4096 is not allowed in NODE_OPTIONS
