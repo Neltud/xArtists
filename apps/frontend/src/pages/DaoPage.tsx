@@ -1,11 +1,11 @@
-/** DAO — statut gouvernance + lien staking. Votes LP en ouverture. */
+/** DAO — statut gouvernance + lien staking. */
 import { Link } from 'react-router-dom'
-import { isDaoLive, TRO_GOVERNANCE_ADDRESS } from '../config/scStatus'
+import { canVoteDao } from '../config/scStatus'
 import { useWallet } from '../context/WalletContext'
 import { requestOpenConnect } from '../lib/walletEvents'
 
 export default function DaoPage() {
-  const live = isDaoLive()
+  const live = canVoteDao()
   const { connected } = useWallet()
 
   return (
@@ -14,7 +14,7 @@ export default function DaoPage() {
         <p className="section-label">Gouvernance</p>
         <h1 className="section-title display text-2xl">DAO</h1>
         <p className="text-sm text-zinc-400">
-          Votes holders / LP. Pas un fonds. Activation progressive des propositions.
+          Votes holders / LP. Pas un fond d’investissement. Activation progressive.
         </p>
       </header>
 
