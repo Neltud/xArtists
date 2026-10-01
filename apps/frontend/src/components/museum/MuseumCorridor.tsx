@@ -42,24 +42,30 @@ function thumb(n: UserNft): string | undefined {
   return undefined
 }
 
-export function framesFromUserNfts(nfts: UserNft[]): FrameItem[] {
-  return nfts.slice(0, 48).map(n => ({
-    id: n.identifier,
-    title: n.name || n.identifier,
-    subtitle: n.collection,
-    collection: n.collection,
-    image: thumb(n),
-    href: `https://explorer.multiversx.com/nfts/${n.identifier}`,
-    artist: 'Créateur on-chain',
-    medium: 'digital',
-    kind: 'nft',
-    technique: 'NFT MultiversX',
-    onSale: false,
-    license: 'On-chain ownership',
-  }))
+/** Phase 8 — never emit frame without stable id */
+export function framesFromUserNfts(nfts: UserNft[] | null | undefined): FrameItem[] {
+  if (!Array.isArray(nfts)) return []
+  return nfts
+    .filter(n => n && n.identifier)
+    .slice(0, 48)
+    .map(n => ({
+      id: String(n.identifier),
+      title: n.name || n.identifier || 'NFT',
+      subtitle: n.collection,
+      collection: n.collection,
+      image: thumb(n),
+      href: `https://explorer.multiversx.com/nfts/${n.identifier}`,
+      artist: 'Créateur on-chain',
+      medium: 'digital' as const,
+      kind: 'nft' as const,
+      technique: 'NFT MultiversX',
+      onSale: false,
+      license: 'On-chain ownership',
+    }))
 }
 
 function dispatchBuyIntent(frame: FrameItem) {
+  if (!frame?.id) return
   const raw = `acheter NFT ${frame.id} ${frame.title}`
   window.dispatchEvent(
     new CustomEvent('lia-intent', {
@@ -73,7 +79,7 @@ function dispatchBuyIntent(frame: FrameItem) {
           title: frame.title,
         },
       },
-    })
+    }),
   )
 }
 
@@ -91,6 +97,7 @@ export function ArtworkDossier({
   onBuy?: () => void
   onClose: () => void
 }) {
+  if (!frame?.id) return null
   const medium =
     frame.medium === 'digital'
       ? 'Œuvre numérique'
@@ -194,7 +201,10 @@ export default function MuseumCorridor({
   const [focus, setFocus] = useState(0)
   const [inspect, setInspect] = useState(false)
   const [buyMsg, setBuyMsg] = useState<string | null>(null)
-  const list = useMemo(() => frames, [frames])
+  const list = useMemo(
+    () => (Array.isArray(frames) ? frames.filter(f => f?.id) : []),
+    [frames],
+  )
   const f = list[Math.min(focus, Math.max(0, list.length - 1))] || null
   const marketLive = canListBuyNft()
   const { connected } = useWallet()
@@ -216,7 +226,7 @@ export default function MuseumCorridor({
     setBuyMsg(
       marketLive
         ? 'Intention BUY_NFT → Guardian. Signature requise.'
-        : 'Intention paper — SC market non live.'
+        : 'Intention paper — SC market non live.',
     )
   }
 
