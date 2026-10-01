@@ -39,13 +39,13 @@ export default function PortfolioPage() {
             {method === 'paste_readonly' && (
               <p className="text-[11px] text-amber-200/90">Lecture seule — pas de signature.</p>
             )}
-            {method === 'xportal' && (
-              <p className="text-[11px] text-zinc-500">xPortal · reconnecte si une TX échoue</p>
+            {method === 'xportal' && !account.loading && (
+              <p className="text-[11px] text-zinc-500">xPortal · reconnecte si une signature échoue</p>
             )}
             <p className="text-zinc-300">
               EGLD{' '}
               <strong className="text-white tabular-nums">
-                {account.loading ? '…' : fmtBal(account.egld ?? 0, 4)}
+                {account.loading ? '…' : fmtBal(account.balanceEgld ?? 0, 4)}
               </strong>
             </p>
           </div>
@@ -63,9 +63,7 @@ export default function PortfolioPage() {
                   className="flex justify-between gap-2 text-[13px] border-b border-white/[0.04] py-1.5"
                 >
                   <span className="text-zinc-300 truncate">{t.ticker || t.identifier}</span>
-                  <span className="tabular-nums text-white shrink-0">
-                    {fmtBal(t.balance, 4)}
-                  </span>
+                  <span className="tabular-nums text-white shrink-0">{fmtBal(t.balance, 4)}</span>
                 </li>
               ))}
             </ul>
@@ -73,16 +71,11 @@ export default function PortfolioPage() {
 
           <div className="card space-y-3">
             <h2 className="text-sm font-semibold text-white">NFT ({nfts.length})</h2>
-            <p className="text-[12px] text-zinc-500">
-              Les packs IA ouvrent une salle dédiée.
-            </p>
+            <p className="text-[12px] text-zinc-500">Les packs IA ouvrent une salle dédiée.</p>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {nfts.slice(0, nftVisible).map(n => {
-                const thumb =
-                  n.url ||
-                  n.media?.[0]?.thumbnailUrl ||
-                  n.media?.[0]?.url ||
-                  undefined
+                const media0 = n.media?.[0] as { thumbnailUrl?: string; url?: string } | undefined
+                const thumb = n.url || media0?.thumbnailUrl || media0?.url || undefined
                 return (
                   <div
                     key={n.identifier}
