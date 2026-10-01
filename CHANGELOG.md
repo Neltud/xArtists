@@ -1,5 +1,21 @@
 # Changelog — xArtists
 
+## [0.74.0](https://github.com/Neltud/xArtists/compare/v0.73.0...v0.74.0) (2026-10-01)
+
+
+### Features
+
+* Frameit marketplace + first listing index + pack rooms 3D ([fec8df3](https://github.com/Neltud/xArtists/commit/fec8df3763f467255f6962e6a77e250b896ee7e1))
+* pack fee split visible on /agents ([2f05757](https://github.com/Neltud/xArtists/commit/2f0575719214bc9047508d2039cce1c140fe1121))
+* paper vs on-chain pots + fee transparency (v2.2) ([6093f2c](https://github.com/Neltud/xArtists/commit/6093f2c0851e0fd90daa4dd5636cb8b3eb2578cf))
+* wire pots + fees on Slot, Market, Packs ([22a856c](https://github.com/Neltud/xArtists/commit/22a856c5e57224c4e899d50a08e548c21643c0d5))
+
+
+### Bug Fixes
+
+* Agents id crash, slot symbols no tech, single TX toast, 3 pack rooms ([52a3a61](https://github.com/Neltud/xArtists/commit/52a3a611c56559ced18bc7062412f0c8d4e1e1f4))
+* SlotPage types vs SlotModeSwitch + settleSpin ([9a457e9](https://github.com/Neltud/xArtists/commit/9a457e93a39c30ced1dd31cc904b3a1132461381))
+
 ## [0.73.0](https://github.com/Neltud/xArtists/compare/v0.72.1...v0.73.0) (2026-10-01)
 
 
