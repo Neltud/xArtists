@@ -9,9 +9,8 @@ export const LIA_WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0l
 export interface WalletState {
   connected: boolean
   address: string
-  /** paste_readonly never signs TX; xportal needs live WC session for sign */
   method: 'xportal' | 'defi_wallet' | 'web_wallet' | 'wallet_connect' | 'paste_readonly' | 'pem' | null
-  /** True only when WC session is verified for xportal method */
+  /** WC session verified (xportal only) */
   sessionLive?: boolean
 }
 
@@ -62,21 +61,41 @@ function cleanUrlParams() {
   }
 }
 
+function clearStorage() {
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+  } catch {
+    /* */
+  }
+}
+
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<WalletState>(() => {
+    // Never soft-restore xportal as "connected" without live WC — start empty, verify async
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) {
         const parsed = JSON.parse(raw) as WalletState
         if (parsed.address?.toLowerCase() === LIA_WALLET.toLowerCase()) {
+          clearStorage()
           return { connected: false, address: '', method: null, sessionLive: false }
         }
-        // Soft restore — sessionLive verified async for xportal
-        return {
-          connected: !!parsed.address,
-          address: parsed.address || '',
-          method: parsed.method || null,
-          sessionLive: false,
+        // paste / web / defi can restore address; xportal waits for session check
+        if (parsed.method === 'xportal') {
+          return {
+            connected: false,
+            address: '',
+            method: null,
+            sessionLive: false,
+          }
+        }
+        if (parsed.address && parsed.method && parsed.method !== 'pem') {
+          return {
+            connected: true,
+            address: parsed.address,
+            method: parsed.method,
+            sessionLive: parsed.method !== 'paste_readonly',
+          }
         }
       }
     } catch {
@@ -93,52 +112,83 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       connected: true,
       address: fromUrl.address,
       method: fromUrl.method,
-      sessionLive: false,
+      sessionLive: true,
     })
     setEmpireWallet({ connected: true, address: fromUrl.address, method: fromUrl.method })
     cleanUrlParams()
   }, [])
 
-  // Verify xPortal WC session after restore — do not fake "signing ready"
+  // Boot: try restore xPortal ONLY if WC session still alive
   useEffect(() => {
-    if (!state.connected || state.method !== 'xportal' || !state.address) return
     let cancelled = false
     ;(async () => {
-      const ok = getXPortalSession() != null || (await ensureXPortalSession())
-      if (cancelled) return
-      if (ok) {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY)
+        if (!raw) return
+        const parsed = JSON.parse(raw) as WalletState
+        if (parsed.method !== 'xportal' || !parsed.address) return
+        if (parsed.address.toLowerCase() === LIA_WALLET.toLowerCase()) {
+          clearStorage()
+          return
+        }
+        const ok = await ensureXPortalSession()
+        if (cancelled) return
         const sess = getXPortalSession()
-        const match =
-          !sess || sess.address.toLowerCase() === state.address.toLowerCase()
-        setState(s => ({ ...s, sessionLive: match && ok }))
-      } else {
-        // Keep address visible but mark session dead — user must reconnect xPortal to sign
-        setState(s => ({ ...s, sessionLive: false }))
+        if (
+          ok &&
+          sess &&
+          sess.address.toLowerCase() === parsed.address.toLowerCase()
+        ) {
+          setState({
+            connected: true,
+            address: sess.address,
+            method: 'xportal',
+            sessionLive: true,
+          })
+          setEmpireWallet({ connected: true, address: sess.address, method: 'xportal' })
+        } else {
+          // Dead session → full disconnect (no fake connected UI)
+          clearXPortalSession()
+          clearStorage()
+          setState({ connected: false, address: '', method: null, sessionLive: false })
+          setEmpireWallet({ connected: false, address: null, method: null })
+        }
+      } catch {
+        if (!cancelled) {
+          clearXPortalSession()
+          clearStorage()
+          setState({ connected: false, address: '', method: null, sessionLive: false })
+        }
       }
     })()
     return () => {
       cancelled = true
     }
-  }, [state.connected, state.method, state.address])
+  }, [])
 
   useEffect(() => {
     try {
-      if (state.connected && state.address) {
+      if (state.connected && state.address && state.method) {
+        // Only persist xportal when session is live
+        if (state.method === 'xportal' && !state.sessionLive) {
+          clearStorage()
+          return
+        }
         localStorage.setItem(
           STORAGE_KEY,
           JSON.stringify({
-            connected: state.connected,
+            connected: true,
             address: state.address,
             method: state.method,
           }),
         )
-      } else {
-        localStorage.removeItem(STORAGE_KEY)
+      } else if (!state.connected) {
+        clearStorage()
       }
     } catch {
       /* ignore */
     }
-  }, [state.connected, state.address, state.method])
+  }, [state.connected, state.address, state.method, state.sessionLive])
 
   const connect = (address: string, method: WalletState['method']) => {
     const addr = address.trim()
@@ -146,7 +196,16 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (addr.toLowerCase() === LIA_WALLET.toLowerCase()) {
       return { ok: false, error: 'Wallet protocole LIA interdit comme wallet utilisateur.' }
     }
-    const sessionLive = method === 'xportal' ? getXPortalSession() != null : method !== 'paste_readonly'
+    if (method === 'xportal' && !getXPortalSession()) {
+      return {
+        ok: false,
+        error: 'Session xPortal absente — scanne le QR / ouvre l’app puis réessaie.',
+      }
+    }
+    const sessionLive =
+      method === 'xportal'
+        ? getXPortalSession() != null
+        : method !== 'paste_readonly' && method !== null
     setState({ connected: true, address: addr, method, sessionLive })
     setEmpireWallet({ connected: true, address: addr, method })
     return { ok: true }
@@ -154,13 +213,9 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const disconnect = () => {
     clearXPortalSession()
+    clearStorage()
     setState({ connected: false, address: '', method: null, sessionLive: false })
     setEmpireWallet({ connected: false, address: null, method: null })
-    try {
-      localStorage.removeItem(STORAGE_KEY)
-    } catch {
-      /* ignore */
-    }
   }
 
   const shortAddress = state.address
