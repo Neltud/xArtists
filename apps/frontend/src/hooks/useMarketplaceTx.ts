@@ -1,5 +1,6 @@
 /**
  * List / Buy / Bid — marketplace SC.
+ * listNft ABI: price (BigUint), royalty_bps (u16), royalty_receiver (Address).
  * ESDTNFTTransfer: TX receiver = USER (holder).
  */
 import { useCallback, useState } from 'react'
@@ -127,15 +128,18 @@ export function useMarketplaceTx() {
         setError(msg)
         throw new Error(msg)
       }
-      const royaltyBps = p.royaltyBps ?? 500
+      // SC: fee + royalty <= 1000 bps. Default 5% royalty to seller.
+      const royaltyBps = Math.min(Math.max(p.royaltyBps ?? 500, 0), 750)
       const priceAtomic = egldToAtomic(p.priceEgld)
       const sc = marketplaceReceiverOrThrow()
       const scHex = bech32ToHex(sc)
-      if (!scHex) {
-        const msg = 'Adresse marketplace invalide'
+      const recvHex = bech32ToHex(p.royaltyReceiver || address)
+      if (!scHex || !recvHex) {
+        const msg = 'Adresse marketplace / royalty invalide'
         setError(msg)
         throw new Error(msg)
       }
+      // ABI listNft(price, royalty_bps, royalty_receiver) — 3 args required
       const dataParts = [
         'ESDTNFTTransfer',
         strToHex(p.tokenId),
@@ -145,16 +149,13 @@ export function useMarketplaceTx() {
         strToHex('listNft'),
         numToHex(BigInt(priceAtomic)),
         numToHex(royaltyBps),
+        recvHex,
       ]
-      if (p.royaltyReceiver) {
-        const rh = bech32ToHex(p.royaltyReceiver)
-        if (rh) dataParts.push(rh)
-      }
       return run(
         {
           receiver: address,
           value: '0',
-          gasLimit: 25_000_000,
+          gasLimit: 30_000_000,
           data: dataParts.join('@'),
           chainID: '1',
         },
