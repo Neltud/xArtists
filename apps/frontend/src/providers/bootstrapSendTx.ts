@@ -1,9 +1,9 @@
 /**
- * Inject window.__xartistsSendTx for user TX (stake / market / studio mint).
- * Priority:
- *  1) Active xPortal WC session (ensure/restore) → sign in xPortal
- *  2) sdk-dapp sendTransactions if DappProvider session active
- *  3) Web Wallet hook URL
+ * Inject window.__xartistsSendTx
+ * Priority (mode direct):
+ *  1) ensure WC session // nonce path via xportalWc
+ *  2) sdk-dapp if present
+ *  3) Web Wallet hook
  */
 import {
   empireTxStart,
@@ -19,6 +19,7 @@ import {
   signWithXPortalSession,
   broadcastSignedTx,
 } from '../lib/xportalWc'
+import { getSignMode, markPipeline, DIRECT_SHEET_BUDGET_MS } from '../lib/signTransport'
 
 const EXPLORER = 'https://explorer.multiversx.com'
 const WALLET_HOOK = 'https://wallet.multiversx.com/hook/transaction'
@@ -111,7 +112,7 @@ async function trySdkDappSend(
 }
 
 async function tryXPortalSignAndBroadcast(list: unknown[]): Promise<SendResult | null> {
-  // Multi-TX: restore WC session if mobile killed the tab JS
+  const t0 = markPipeline('ensure_session')
   if (!getXPortalSession()) {
     await ensureXPortalSession()
   }
@@ -120,6 +121,7 @@ async function tryXPortalSignAndBroadcast(list: unknown[]): Promise<SendResult |
   const plains = list.map(toPlainTx)
   if (!plains[0]?.receiver?.startsWith('erd1')) return null
 
+  markPipeline('sheet', t0)
   const signed = await signWithXPortalSession(plains)
   if (!signed.ok) {
     empireTxError(signed.error)
@@ -127,6 +129,7 @@ async function tryXPortalSignAndBroadcast(list: unknown[]): Promise<SendResult |
   }
 
   empireTxBroadcast('xportal-wc')
+  markPipeline('broadcast', t0)
   const first = signed.signed[0]
   const br = await broadcastSignedTx(first)
   if (br.error || !br.hash) {
@@ -135,6 +138,7 @@ async function tryXPortalSignAndBroadcast(list: unknown[]): Promise<SendResult |
     throw new Error(msg)
   }
   empireTxSuccess(br.hash, `${EXPLORER}/transactions/${br.hash}`)
+  markPipeline('done', t0)
   return { sessionId: br.hash }
 }
 
@@ -169,6 +173,7 @@ function injectSendTx() {
     }
 
     const method = walletMethod()
+    const mode = getSignMode()
 
     if (method === 'paste_readonly' || method === 'pem') {
       const msg =
@@ -179,30 +184,39 @@ function injectSendTx() {
       throw new Error(msg)
     }
 
-    // 1) xPortal WC (with multi-TX restore)
-    if (method === 'xportal' || getXPortalSession() || method === null) {
+    // Prefer WC when direct/wc or already have session
+    const preferWc =
+      mode === 'direct' || mode === 'wc' || method === 'xportal' || !!getXPortalSession()
+
+    if (preferWc && mode !== 'hook') {
       try {
-        const xp = await tryXPortalSignAndBroadcast(list)
+        // Budget: race ensure with soft timeout so UI stays snappy
+        const xpPromise = tryXPortalSignAndBroadcast(list)
+        const timeout = new Promise<null>(resolve =>
+          setTimeout(() => resolve(null), DIRECT_SHEET_BUDGET_MS * 8),
+        )
+        const xp = await Promise.race([xpPromise, timeout.then(() => xpPromise)])
         if (xp?.sessionId) return xp
       } catch (e) {
-        // Only rethrow if user was on xportal — otherwise fall through
-        if (method === 'xportal' || getXPortalSession()) throw e
+        if (method === 'xportal' || mode === 'wc') throw e
+        // direct → fall through to sdk / hook
+        console.warn('[sign] WC path failed, fallback', e)
       }
     }
 
-    // 2) sdk-dapp
-    const sdkRes = await trySdkDappSend(list, info)
-    if (sdkRes?.sessionId) {
-      empireTxBroadcast(sdkRes.sessionId)
-      const url =
-        sdkRes.sessionId !== 'submitted'
-          ? `${EXPLORER}/transactions/${sdkRes.sessionId}`
-          : undefined
-      empireTxSuccess(sdkRes.sessionId, url)
-      return sdkRes
+    if (mode !== 'hook') {
+      const sdkRes = await trySdkDappSend(list, info)
+      if (sdkRes?.sessionId) {
+        empireTxBroadcast(sdkRes.sessionId)
+        const url =
+          sdkRes.sessionId !== 'submitted'
+            ? `${EXPLORER}/transactions/${sdkRes.sessionId}`
+            : undefined
+        empireTxSuccess(sdkRes.sessionId, url)
+        return sdkRes
+      }
     }
 
-    // 3) Web Wallet hook
     const plain = toPlainTx(list[0])
     if (!plain.receiver || !plain.receiver.startsWith('erd1')) {
       const msg = 'Receiver invalide'
@@ -211,9 +225,7 @@ function injectSendTx() {
     }
 
     if (method === 'xportal' && !getXPortalSession()) {
-      console.info(
-        '[xArtists] Session WC absente — fallback Web Wallet hook (même adresse).',
-      )
+      console.info('[xArtists] Session WC absente — fallback Web Wallet hook.')
     }
 
     return openWebWalletHook(plain)

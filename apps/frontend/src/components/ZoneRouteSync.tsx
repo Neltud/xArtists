@@ -1,36 +1,47 @@
 /**
- * Maps route → empire zone for audio mix (museum vs command).
- * setEmpireZone is a no-op if zone unchanged (no emit storm).
+ * Map route → empire zone (music volume + ambiance).
+ * /slot → casino volume (not full command mute).
  */
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { setEmpireZone, type EmpireZone } from '../store/empireStore'
 
 function zoneFromPath(path: string): EmpireZone {
-  if (path.startsWith('/command') || path.startsWith('/room/')) return 'command'
-  if (path.startsWith('/museum') || path === '/' || path.startsWith('/gallery')) return 'museum'
-  if (path.startsWith('/my-packs') || path.startsWith('/trading')) return 'command'
-  return 'museum'
-}
-
-function currentPath(pathname: string): string {
-  const hash = typeof window !== 'undefined' ? window.location.hash.replace(/^#/, '') : ''
-  return hash.startsWith('/') ? hash : pathname || '/'
+  const p = path.replace(/\/$/, '') || '/'
+  if (p.startsWith('/command') || p.startsWith('/trading') || p.startsWith('/my-packs')) {
+    return 'command'
+  }
+  if (p.startsWith('/slot') || p.startsWith('/casino')) {
+    // treat as museum-adjacent with casino volume via audioVolume override
+    return 'museum'
+  }
+  if (p === '/' || p.startsWith('/museum') || p.startsWith('/gallery')) {
+    return 'museum'
+  }
+  return 'transition'
 }
 
 export default function ZoneRouteSync() {
   const { pathname } = useLocation()
 
   useEffect(() => {
-    setEmpireZone(zoneFromPath(currentPath(pathname)))
-  }, [pathname])
+    const path = pathname || (typeof window !== 'undefined' ? window.location.hash.replace(/^#/, '') : '/')
+    const clean = path.split('?')[0] || '/'
+    const zone = zoneFromPath(clean)
+    setEmpireZone(zone)
 
-  useEffect(() => {
-    const onHash = () => setEmpireZone(zoneFromPath(currentPath('/')))
-    window.addEventListener('hashchange', onHash)
-    onHash()
-    return () => window.removeEventListener('hashchange', onHash)
-  }, [])
+    // Soft casino duck for slot SFX clarity
+    if (clean.startsWith('/slot') || clean.startsWith('/casino')) {
+      try {
+        const { setEmpireAudioVolume } = require('../store/empireStore') as {
+          setEmpireAudioVolume: (v: number) => void
+        }
+        setEmpireAudioVolume(0.55)
+      } catch {
+        /* */
+      }
+    }
+  }, [pathname])
 
   return null
 }
