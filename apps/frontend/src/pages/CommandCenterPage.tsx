@@ -1,6 +1,5 @@
 /**
- * Command Center V6 — Neural Bridge (Semantic Compiler + LIA terminal).
- * Museum routes untouched.
+ * Command Center — holo wall + agent NFT + stake clone + i18n.
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -9,13 +8,17 @@ import CommandWall from '../command-center/CommandWall'
 import DashboardSource from '../command-center/DashboardSource'
 import AgentRoster from '../command-center/AgentRoster'
 import DataTunnelTransition from '../command-center/DataTunnelTransition'
+import ClickGuide from '../command-center/ClickGuide'
+import AgentNftOrb from '../command-center/AgentNftOrb'
+import AgentNftStakePanel, { isAgentNftStaked } from '../components/AgentNftStakePanel'
 import { useAgentAccess, setEmpireZone, empireTxStart } from '../store/empireStore'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
 import LiaCommandTerminal from '../components/LiaCommandTerminal'
 import { useWallet } from '../context/WalletContext'
 import { getAppMode } from '../lib/appMode'
-import { AGENT_PACKS } from '../config/agentPacks'
+import { AGENT_PACKS, type PackId } from '../config/agentPacks'
+import { useI18n } from '../i18n/I18nContext'
 
 type Room = 'hub' | 'pulse' | 'yield' | 'sentinel'
 
@@ -28,18 +31,21 @@ export default function CommandCenterPage() {
 }
 
 function CommandCenterInner() {
+  const { t } = useI18n()
   const access = useAgentAccess()
   const { env, source, connected: pulseWs } = usePulse()
   const { connected } = useWallet()
   const [room, setRoom] = useState<Room>('hub')
   const [tunnel, setTunnel] = useState(true)
+  const [tick, setTick] = useState(0)
   const sentiment = typeof env?.sentiment === 'number' ? env.sentiment : 0
   const lia = useLIAInterpreter(env)
   const mode = getAppMode()
+  const packs = (access.packs || []).filter(Boolean) as PackId[]
 
   useEffect(() => {
-    const t = window.setTimeout(() => lia.requestComment('command-center enter'), 1200)
-    return () => window.clearTimeout(t)
+    const tmr = window.setTimeout(() => lia.requestComment('command-center enter'), 1200)
+    return () => window.clearTimeout(tmr)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -68,7 +74,7 @@ function CommandCenterInner() {
       <header className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-400/80 font-semibold font-tech">
-            Zone 2 · Command Center
+            Zone 2 · {t('cc.title')}
           </p>
           <span className="text-[9px] rounded-full border border-white/15 px-2 py-0.5 text-zinc-400">
             mode {mode}
@@ -81,31 +87,30 @@ function CommandCenterInner() {
             LIA {lia.source} · {(lia.confidence * 100).toFixed(0)}%
           </span>
         </div>
-        <h1 className="text-3xl font-bold text-white tracking-tight font-tech title-glow">Holder Ops</h1>
-        <p className="text-sm text-zinc-400">
-          Accès <span className="text-cyan-200">{access.source}</span> ·{' '}
-          {access.packs.length
-            ? access.packs
+        <h1 className="text-3xl font-bold text-white tracking-tight font-tech title-glow">{t('cc.title')}</h1>
+        <p className="text-sm text-zinc-400">{t('cc.subtitle')}</p>
+        <p className="text-sm text-zinc-500">
+          {packs.length
+            ? packs
                 .map(id => {
                   const p = AGENT_PACKS.find(x => x.id === id)
                   return p ? `${p.icon} ${p.name}` : id
                 })
                 .join(' · ')
-            : 'aucun pack'}
+            : t('cc.no.pack')}
         </p>
-        <p className="text-[11px] text-zinc-500">{lia.uniforms.label}</p>
       </header>
 
       <div className="flex flex-wrap gap-2">
         {(
           [
-            ['hub', 'Hub'],
-            ['pulse', 'Pulse'],
-            ['yield', 'Yield'],
-            ['sentinel', 'Sentinel'],
+            ['hub', t('cc.hub')],
+            ['pulse', t('cc.pulse')],
+            ['yield', t('cc.yield')],
+            ['sentinel', t('cc.sentinel')],
           ] as const
         ).map(([id, label]) => {
-          const locked = id !== 'hub' && !access.packs.includes(id)
+          const locked = id !== 'hub' && !packs.includes(id as PackId)
           return (
             <button
               key={id}
@@ -121,7 +126,7 @@ function CommandCenterInner() {
               }`}
             >
               {label}
-              {locked ? ' 🔒' : ''}
+              {locked ? ` · ${t('cc.locked')}` : ''}
             </button>
           )
         })}
@@ -135,50 +140,61 @@ function CommandCenterInner() {
             pulseSpeed={lia.uniforms.uPulseSpeed}
             colorRgb={lia.uniforms.uColor}
           />
+          <ClickGuide />
+          {packs[0] && (
+            <AgentNftOrb
+              packId={packs[0]}
+              staked={isAgentNftStaked(packs[0])}
+              onSelect={() => setTick(x => x + 1)}
+            />
+          )}
+          <AgentNftStakePanel key={tick} packIds={packs} />
           <DashboardSource />
           <AgentRoster />
           <div className="card flex flex-wrap gap-2">
             <button type="button" className="btn-secondary text-sm" onClick={onYieldAction}>
-              Stake TRO
+              {t('nav.staking')} $TRO
             </button>
             <Link to="/marketplace" className="btn-secondary text-sm">
-              Marketplace
+              {t('nav.market')}
             </Link>
             <button
               type="button"
               className="btn-secondary text-sm"
-              onClick={() => lia.requestComment(`agent pack ${access.packs.join(',')}`)}
+              onClick={() => lia.requestComment(`agent pack ${packs.join(',')}`)}
             >
-              Brief LIA packs
+              Brief LIA
             </button>
           </div>
         </div>
       )}
 
-      {room === 'pulse' && (
-        <RoomCard
-          title="Pulse room"
-          body="Signaux haute fréquence · micro-arb · board."
-          sentiment={lia.uniforms.uSentiment}
-        />
-      )}
-      {room === 'yield' && (
-        <RoomCard
-          title="Yield room"
-          body="Hatom / LP sleeve · claims."
-          sentiment={Math.max(0, lia.uniforms.uSentiment * 0.6)}
-        />
-      )}
-      {room === 'sentinel' && (
-        <RoomCard
-          title="Sentinel room"
-          body="Veille · alertes · risk."
-          sentiment={Math.min(0, lia.uniforms.uSentiment)}
-        />
+      {room !== 'hub' && packs.includes(room as PackId) && (
+        <div className="space-y-4">
+          <AgentNftOrb packId={room as PackId} staked={isAgentNftStaked(room as PackId)} />
+          <RoomCard
+            title={`${t(`cc.${room}` as 'cc.pulse')} room`}
+            body={
+              room === 'pulse'
+                ? 'HF signals · micro-arb · board'
+                : room === 'yield'
+                  ? 'Hatom / LP sleeve · claims'
+                  : 'Watch · alerts · risk'
+            }
+            sentiment={
+              room === 'yield'
+                ? Math.max(0, lia.uniforms.uSentiment * 0.6)
+                : room === 'sentinel'
+                  ? Math.min(0, lia.uniforms.uSentiment)
+                  : lia.uniforms.uSentiment
+            }
+          />
+          <AgentNftStakePanel packIds={[room as PackId]} />
+        </div>
       )}
 
       {!connected && (
-        <p className="text-xs text-amber-200/90">Connecte le wallet pour les TX on-chain depuis le mur.</p>
+        <p className="text-xs text-amber-200/90">{t('common.connect')} — TX on-chain.</p>
       )}
 
       <LiaCommandTerminal
@@ -198,11 +214,7 @@ function CommandCenterInner() {
         </Link>
         {' · '}
         <Link to="/agents" className="hover:text-zinc-400">
-          Agents
-        </Link>
-        {' · '}
-        <Link to="/marketplace" className="hover:text-zinc-400">
-          Marketplace
+          {t('nav.packs')}
         </Link>
       </p>
     </div>
@@ -227,9 +239,6 @@ function RoomCard({
     >
       <h2 className="font-bold text-white">{title}</h2>
       <p className="text-sm text-zinc-400">{body}</p>
-      <p className="text-xs mono text-zinc-500">
-        sentiment {sentiment.toFixed(2)} · {bullish ? 'gold/fluid' : 'red/chaotic'}
-      </p>
       <CommandWall sentiment={sentiment} volatility={Math.min(1, Math.abs(sentiment) + 0.25)} interactive={false} />
     </div>
   )
