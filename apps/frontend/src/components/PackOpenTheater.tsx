@@ -1,5 +1,5 @@
 /**
- * Ouverture pack — shake → burst → reveal + Lottie check.
+ * Ouverture pack — safe si pack absent.
  */
 import { useEffect, useState } from 'react'
 import type { AgentPackProfile } from '../config/agentPacks'
@@ -10,17 +10,17 @@ type Phase = 'idle' | 'shake' | 'burst' | 'reveal' | 'done'
 
 export default function PackOpenTheater({
   pack,
-  open,
+  open = false,
   onClose,
 }: {
-  pack: AgentPackProfile
-  open: boolean
-  onClose: () => void
+  pack?: AgentPackProfile | null
+  open?: boolean
+  onClose?: () => void
 }) {
   const [phase, setPhase] = useState<Phase>('idle')
 
   useEffect(() => {
-    if (!open) {
+    if (!open || !pack?.id) {
       setPhase('idle')
       return
     }
@@ -33,9 +33,9 @@ export default function PackOpenTheater({
       clearTimeout(t2)
       clearTimeout(t3)
     }
-  }, [open, pack.id])
+  }, [open, pack?.id])
 
-  if (!open) return null
+  if (!open || !pack?.id) return null
 
   const glow =
     pack.id === 'pulse'
@@ -43,6 +43,8 @@ export default function PackOpenTheater({
       : pack.id === 'yield'
         ? 'rgba(45,212,191,0.55)'
         : 'rgba(56,189,248,0.55)'
+
+  const close = () => onClose?.()
 
   return (
     <div
@@ -93,9 +95,7 @@ export default function PackOpenTheater({
             <div className="flex items-center gap-3">
               <LottieIcon preset="check" loop={false} size={44} />
               <div>
-                <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">
-                  Pack ouvert · paper
-                </p>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Pack ouvert · paper</p>
                 <h2 id="pack-open-title" className="text-xl font-semibold text-white">
                   {pack.icon} {pack.name}
                 </h2>
@@ -103,36 +103,24 @@ export default function PackOpenTheater({
             </div>
             <p className="text-sm text-zinc-400">{pack.tagline}</p>
             <ul className="space-y-1.5 pt-1">
-              {pack.entitlements.map(e => (
+              {(pack.entitlements || []).map(e => (
                 <li key={e} className="text-[13px] text-zinc-300 flex gap-2">
                   <span className="text-emerald-400">✓</span>
                   <span>{e}</span>
                 </li>
               ))}
             </ul>
-            <p className="text-[11px] text-zinc-600 pt-1">
-              Produit d’accès unique · mint on-chain plus tard · pas de mandat de gestion
-            </p>
             <div className="flex flex-col gap-2 pt-1">
               <button
                 type="button"
-                onClick={onClose}
+                onClick={close}
                 className="w-full rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 py-2.5 text-sm font-medium text-white"
               >
                 Continuer
               </button>
-              {pack.id === 'pulse' && (
-                <Link
-                  to="/museum?tab=pulse"
-                  onClick={onClose}
-                  className="w-full text-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 py-2.5 text-sm text-emerald-200 hover:bg-emerald-500/15"
-                >
-                  Ouvrir salle Pulse
-                </Link>
-              )}
               <Link
                 to="/my-packs"
-                onClick={onClose}
+                onClick={close}
                 className="w-full text-center text-[12px] text-zinc-500 hover:text-zinc-300"
               >
                 Voir My Packs

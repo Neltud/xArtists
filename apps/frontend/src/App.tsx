@@ -12,7 +12,6 @@ import DemoModeBanner from './components/DemoModeBanner'
 import IntentBar from './components/IntentBar'
 import LiaMonitor from './components/LiaMonitor'
 import GuardianStatusBar from './components/shared/GuardianStatusBar'
-import RoutePrefetch from './components/RoutePrefetch'
 import ArtAtelierBackdrop from './components/ArtAtelierBackdrop'
 import BrainMoodStrip from './components/BrainMoodStrip'
 import { useMultiversX } from './hooks/useMultiversX'
@@ -51,6 +50,21 @@ const DaoPage = lazy(() => import('./pages/DaoPage'))
 const GalleryPage = lazy(() => import('./pages/GalleryPage'))
 const WalletPage = lazy(() => import('./pages/WalletPage'))
 const PortfolioPage = lazy(() => import('./pages/PortfolioPage'))
+const SiteMapPage = lazy(() => import('./pages/SiteMapPage'))
+const SalePage = lazy(() => import('./pages/SalePage'))
+const DemoTourPage = lazy(() => import('./pages/DemoTourPage'))
+const ArtToursPage = lazy(() => import('./pages/ArtToursPage'))
+const Editions = lazy(() => import('./pages/Editions'))
+const TipPage = lazy(() => import('./pages/TipPage'))
+const PaymentHistory = lazy(() => import('./pages/PaymentHistory'))
+const AdsPage = lazy(() => import('./pages/AdsPage'))
+const SimulationLab = lazy(() => import('./pages/SimulationLab'))
+const EntityMap = lazy(() => import('./pages/EntityMap'))
+const BurnifyPage = lazy(() => import('./pages/BurnifyPage'))
+const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
+const HatomPage = lazy(() => import('./pages/HatomPage'))
+const LightningAgentPage = lazy(() => import('./pages/LightningAgentPage'))
+const AgentsPolyliaPage = lazy(() => import('./pages/AgentsPolyliaPage'))
 const TxShell = lazy(() => import('./providers/TxShell'))
 
 export default function App() {
@@ -92,11 +106,17 @@ export default function App() {
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/market" element={<MarketAnalyticsPage />} />
                   <Route path="/marketplace" element={<MarketplacePage />} />
+                  <Route path="/market-place" element={<Navigate to="/marketplace" replace />} />
                   <Route path="/trading" element={<TradingPage />} />
                   <Route path="/agents" element={<AgentsPage />} />
+                  <Route path="/packs" element={<Navigate to="/agents" replace />} />
+                  <Route path="/agents/lightning" element={<LightningAgentPage />} />
+                  <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
                   <Route path="/my-packs" element={<MyPacksPage />} />
+                  <Route path="/salles" element={<Navigate to="/my-packs" replace />} />
                   <Route path="/command-center" element={<CommandCenterPage />} />
                   <Route path="/command" element={<Navigate to="/command-center" replace />} />
+                  <Route path="/cc" element={<Navigate to="/command-center" replace />} />
                   <Route path="/studio" element={<StudioPage />} />
                   <Route path="/tro" element={<TroPage />} />
                   <Route path="/staking" element={<StakingPage />} />
@@ -112,6 +132,19 @@ export default function App() {
                   <Route path="/go-live" element={<GoLivePage />} />
                   <Route path="/venues" element={<VenuePage />} />
                   <Route path="/identity" element={<IdentityPage />} />
+                  <Route path="/sitemap" element={<SiteMapPage />} />
+                  <Route path="/sale" element={<SalePage />} />
+                  <Route path="/demo" element={<DemoTourPage />} />
+                  <Route path="/tours" element={<ArtToursPage />} />
+                  <Route path="/editions" element={<Editions />} />
+                  <Route path="/tip" element={<TipPage />} />
+                  <Route path="/payments" element={<PaymentHistory />} />
+                  <Route path="/ads" element={<AdsPage />} />
+                  <Route path="/simulation" element={<SimulationLab />} />
+                  <Route path="/entities" element={<EntityMap />} />
+                  <Route path="/burnify" element={<BurnifyPage />} />
+                  <Route path="/lp" element={<LPPoolsPage />} />
+                  <Route path="/hatom" element={<HatomPage />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </PageTransition>
