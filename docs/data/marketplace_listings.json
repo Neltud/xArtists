@@ -1,17 +1,3 @@
 {
-  "listings": [
-    {
-      "listing_id": 1,
-      "token": "ASFT-a6273a",
-      "nonce": 1,
-      "name": "BlackArtPass",
-      "price": "250000000000000000",
-      "price_egld": "0.25",
-      "seller": "erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l",
-      "active": true,
-      "tx_list": "7e4182db6c3b9f97406b591f887462981a887a830ee4442fdfbef61e3cb26cc1",
-      "thumb": "https://media.multiversx.com/nfts/thumbnail/ASFT-a6273a-10b6cb04",
-      "url": "https://media.multiversx.com/nfts/asset/QmTHS7wWXdTrLWbJUNoZy3u88ENX3K9rLY71G2LaagUg6Q"
-    }
-  ]
+  "listings": []
 }
