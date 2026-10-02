@@ -1,8 +1,8 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-10-01",
-  "chain_note": "All product SCs codeHash-verified live 2026-10-01. Slot house 0.5 EGLD. LIA trading remains paper. Do not use LEGACY_EMPTY placeholders.",
+  "updated": "2026-10-02",
+  "chain_note": "All product SCs codeHash-verified live 2026-10-02. First sale 0.25 EGLD (ASFT-a6273a-01, epoch 2250). Slot house 0.5 EGLD. Market fee 0.0075. LIA trading remains paper. Do not use LEGACY_EMPTY placeholders.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -40,7 +40,14 @@
   },
   "balances_egld_probe": {
     "slot_casino": 0.5,
+    "nft_marketplace": 0.0075,
     "others": 0
+  },
+  "proofs_epoch_2250": {
+    "buyNft_egld": 0.25,
+    "collection": "ASFT-a6273a-01",
+    "listings_now": 0,
+    "spinEgld_real": "fail"
   },
   "never_fund": {
     "legacy_marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
