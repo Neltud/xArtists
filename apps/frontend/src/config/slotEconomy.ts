@@ -1,31 +1,23 @@
 /**
- * Slot public mainnet-paper — EGLD · USDC.
- * Bet sizes + buy-bonus (paper). SC claim OFF until CODEHASH + fund.
+ * Slot public — EGLD · USDC. Paper progressive + bet mults.
  */
 
 export type SlotAsset = 'EGLD' | 'USDC'
 
 export const SLOT_ASSETS: SlotAsset[] = ['EGLD', 'USDC']
 
-/** Multipliers on base spinCost */
 export const SLOT_BET_MULTS = [1, 2, 5, 10] as const
 export type SlotBetMult = (typeof SLOT_BET_MULTS)[number]
 
-/** Buy bonus: pay N× spin for free spins with win multiplier */
 export const SLOT_BONUS = {
-  /** Cost = spinCost * costMult * betMult */
   costMult: 50,
   freeSpins: 8,
-  /** Table wins × this during bonus (progressive still normal) */
   winMult: 2,
 } as const
 
-/** Part user des gains table (hors progressive) — house edge fort */
 export const SLOT_USER_WIN_BPS = 7000
 export const SLOT_LIA_WIN_RAKE_BPS = 3000
-
-/** % de chaque mise → cagnotte progressive */
-export const SLOT_PROGRESSIVE_CONTRIB_BPS = 3500 // 35 %
+export const SLOT_PROGRESSIVE_CONTRIB_BPS = 3500
 
 export const SLOT_PROGRESSIVE_SEED: Record<SlotAsset, number> = {
   EGLD: 1.0,
@@ -90,9 +82,14 @@ function roundAsset(n: number, decimals: number): number {
   return Math.round(n * f) / f
 }
 
+function cfgOf(asset: SlotAsset): SlotAssetConfig {
+  return SLOT_ASSET_CONFIG[asset] || SLOT_ASSET_CONFIG.EGLD
+}
+
 export function formatSlotAmount(n: number, asset: SlotAsset): string {
-  const d = SLOT_ASSET_CONFIG[asset].decimals
-  return `${n.toFixed(d)} ${asset}`
+  const d = cfgOf(asset).decimals
+  const v = Number.isFinite(n) ? n : 0
+  return `${v.toFixed(d)} ${asset}`
 }
 
 export function formatBps(bps: number): string {
@@ -100,16 +97,13 @@ export function formatBps(bps: number): string {
 }
 
 export function spinCostFor(asset: SlotAsset, betMult: number): number {
-  const d = SLOT_ASSET_CONFIG[asset].decimals
-  return roundAsset(SLOT_ASSET_CONFIG[asset].spinCost * betMult, d)
+  const cfg = cfgOf(asset)
+  return roundAsset(cfg.spinCost * betMult, cfg.decimals)
 }
 
 export function bonusCostFor(asset: SlotAsset, betMult: number): number {
-  const d = SLOT_ASSET_CONFIG[asset].decimals
-  return roundAsset(
-    SLOT_ASSET_CONFIG[asset].spinCost * SLOT_BONUS.costMult * betMult,
-    d,
-  )
+  const cfg = cfgOf(asset)
+  return roundAsset(cfg.spinCost * SLOT_BONUS.costMult * betMult, cfg.decimals)
 }
 
 const PROG_KEY = 'xartists_slot_progressive_v3'
@@ -117,13 +111,13 @@ const PROG_KEY = 'xartists_slot_progressive_v3'
 export function loadProgressive(asset: SlotAsset): number {
   try {
     const raw = localStorage.getItem(PROG_KEY)
-    if (!raw) return SLOT_PROGRESSIVE_SEED[asset]
+    if (!raw) return SLOT_PROGRESSIVE_SEED[asset] ?? 0
     const j = JSON.parse(raw) as Record<string, number>
     const v = Number(j[asset])
-    if (!Number.isFinite(v) || v < 0) return SLOT_PROGRESSIVE_SEED[asset]
+    if (!Number.isFinite(v) || v < 0) return SLOT_PROGRESSIVE_SEED[asset] ?? 0
     return v
   } catch {
-    return SLOT_PROGRESSIVE_SEED[asset]
+    return SLOT_PROGRESSIVE_SEED[asset] ?? 0
   }
 }
 
@@ -146,17 +140,16 @@ export function settleSpin(opts: {
   betMult?: number
   inBonus?: boolean
 }): { split: SlotSplit; progressiveAfter: number } {
-  const cfg = SLOT_ASSET_CONFIG[opts.asset]
+  const cfg = cfgOf(opts.asset)
   const d = cfg.decimals
   const betMult = opts.betMult ?? 1
   const inBonus = !!opts.inBonus
   const spin = spinCostFor(opts.asset, betMult)
-  // Free bonus spins: still feed progressive as if 1× base for fairness
   const progBase = inBonus ? cfg.spinCost * betMult : spin
   const toProgressive = roundAsset((progBase * SLOT_PROGRESSIVE_CONTRIB_BPS) / 10_000, d)
   const spinToLia = inBonus ? 0 : roundAsset(spin - toProgressive, d)
 
-  let progressive = roundAsset(opts.progressiveBefore + toProgressive, d)
+  let progressive = roundAsset((opts.progressiveBefore || 0) + toProgressive, d)
   let progressivePaid = 0
   let table = opts.tableGross * betMult
   if (inBonus) table = roundAsset(table * SLOT_BONUS.winMult, d)
@@ -164,8 +157,11 @@ export function settleSpin(opts: {
 
   if (opts.isGrand) {
     progressivePaid = progressive
-    grossWin = roundAsset(progressive + cfg.payouts.grandBonus * betMult * (inBonus ? SLOT_BONUS.winMult : 1), d)
-    progressive = SLOT_PROGRESSIVE_SEED[opts.asset]
+    grossWin = roundAsset(
+      progressive + cfg.payouts.grandBonus * betMult * (inBonus ? SLOT_BONUS.winMult : 1),
+      d,
+    )
+    progressive = SLOT_PROGRESSIVE_SEED[opts.asset] ?? 0
   }
 
   const userCredit = roundAsset((grossWin * SLOT_USER_WIN_BPS) / 10_000, d)

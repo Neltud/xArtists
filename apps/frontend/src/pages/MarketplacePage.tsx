@@ -93,12 +93,12 @@ export default function MarketplacePage() {
       return
     }
     if (method === 'paste_readonly') {
-      push('Lecture seule \u2014 xPortal requis', 'err')
+      push('Lecture seule — xPortal requis', 'err')
       return
     }
     const priceEgld = Number(price)
     if (!(priceEgld > 0) || selected.size === 0) {
-      push('S\u00e9lectionne au moins un NFT et un prix', 'err')
+      push('Sélectionne au moins un NFT et un prix', 'err')
       return
     }
     let ok = 0
@@ -133,8 +133,8 @@ export default function MarketplacePage() {
     }
     reload()
     const t = fail
-      ? `${ok} list\u00e9(s), ${fail} stopp\u00e9 \u2014 signe chaque TX (session xPortal)`
-      : `${ok} listing(s) envoy\u00e9s`
+      ? `${ok} listé(s), ${fail} stoppé — signe chaque TX (session xPortal)`
+      : `${ok} listing(s) envoyés`
     setMsg(t)
     push(t, fail ? 'err' : 'ok')
   }, [connected, method, price, selected, allNfts, listNft, push, address, reload])
@@ -142,10 +142,10 @@ export default function MarketplacePage() {
   return (
     <div className="animate-fade-in space-y-8 pb-16 max-w-3xl mx-auto">
       <header className="space-y-2">
-        <p className="section-label">March\u00e9 NFT \u00b7 mainnet</p>
+        <p className="section-label">Marché NFT · mainnet</p>
         <h1 className="section-title display text-2xl">Marketplace</h1>
         <p className="text-sm text-zinc-400">
-          Vitrine on-chain. Multi-list = une signature par pi\u00e8ce (session xPortal conserv\u00e9e).
+          Vitrine on-chain. Multi-list = une signature par pièce (session xPortal conservée).
         </p>
       </header>
 
@@ -161,7 +161,7 @@ export default function MarketplacePage() {
         </div>
         {filtered.length === 0 ? (
           <p className="text-[13px] text-zinc-500 card">
-            Aucun listing actif \u2014 liste depuis ton inventaire ci-dessous.
+            Aucun listing actif — liste depuis ton inventaire ci-dessous.
           </p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -192,13 +192,13 @@ export default function MarketplacePage() {
                           const res = await buyNft({ listingId: l.listing_id, priceEgld: p })
                           markListingSold(l.listing_id, res?.sessionId || undefined)
                           reload()
-                          push('Achat envoy\u00e9 \u2014 vitrine mise \u00e0 jour', 'ok')
+                          push('Achat envoyé — vitrine mise à jour', 'ok')
                         } catch (e) {
-                          push(e instanceof Error ? e.message : '\u00c9chec', 'err')
+                          push(e instanceof Error ? e.message : 'Échec', 'err')
                         }
                       }}
                     >
-                      {pending ? 'Signature\u2026' : 'Buy'}
+                      {pending ? 'Signature…' : 'Buy'}
                     </button>
                   </div>
                 </article>
@@ -215,7 +215,7 @@ export default function MarketplacePage() {
             Connecter wallet
           </button>
         ) : account.loading ? (
-          <p className="text-[13px] text-zinc-500">Chargement inventaire\u2026</p>
+          <p className="text-[13px] text-zinc-500">Chargement inventaire…</p>
         ) : (
           <>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
@@ -248,7 +248,7 @@ export default function MarketplacePage() {
               </button>
             )}
             <div className="flex flex-wrap gap-2 items-center">
-              <span className="text-[12px] text-zinc-500">{selected.size} s\u00e9lectionn\u00e9(s)</span>
+              <span className="text-[12px] text-zinc-500">{selected.size} sélectionné(s)</span>
               <input
                 type="number"
                 min="0.001"
@@ -263,14 +263,14 @@ export default function MarketplacePage() {
                 disabled={pending || !live || selected.size === 0}
                 onClick={() => void onListMany()}
               >
-                {pending ? 'Signature\u2026' : `List ${selected.size || ''}`}
+                {pending ? 'Signature…' : `List ${selected.size || ''}`}
               </button>
             </div>
           </>
         )}
         {(msg || error) && <p className="text-[12px] text-amber-200/90">{msg || error}</p>}
         <Link to="/studio" className="text-[12px] text-cyan-400 underline">
-          Studio \u2192
+          Studio →
         </Link>
       </section>
     </div>
