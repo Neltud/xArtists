@@ -1,8 +1,9 @@
-/** Wallet — session honesty + soldes + actions. */
+/** Wallet — session, soldes, raccourcis cœur. */
 import { Link } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
 import { requestOpenConnect } from '../lib/walletEvents'
+import { clearXPortalSession } from '../lib/xportalWc'
 import { useToast } from '../components/ui/Toast'
 
 function fmt(n: number): string {
@@ -22,11 +23,12 @@ export default function WalletPage() {
       <header className="space-y-1">
         <p className="section-label">Portefeuille</p>
         <h1 className="section-title display text-2xl">Wallet</h1>
+        <p className="text-sm text-zinc-400">Session MultiversX · signature xPortal pour les TX.</p>
       </header>
 
       {!connected ? (
         <div className="card space-y-3">
-          <p className="text-sm text-zinc-400">Aucune session. xPortal pour signer les TX.</p>
+          <p className="text-sm text-zinc-400">Aucune session active.</p>
           <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
             Connecter xPortal
           </button>
@@ -39,19 +41,20 @@ export default function WalletPage() {
             <p className="text-[12px] text-zinc-500">
               {method === 'xportal'
                 ? sessionLive
-                  ? 'xPortal · session live'
-                  : 'xPortal · session à restaurer'
+                  ? 'xPortal · prêt à signer'
+                  : 'xPortal · reconnecte si signature refuse'
                 : method === 'paste_readonly'
                   ? 'Lecture seule — pas de signature'
                   : method || 'wallet'}
             </p>
             {!canAttemptSign && (
-              <p className="text-[12px] text-amber-200/90">Reconnecte xPortal pour signer.</p>
+              <p className="text-[12px] text-amber-200/90">Reconnecte xPortal pour signer les TX.</p>
             )}
             <button
               type="button"
               className="btn-secondary text-sm"
               onClick={() => {
+                clearXPortalSession()
                 disconnect()
                 push('Déconnecté', 'info')
               }}
@@ -60,25 +63,28 @@ export default function WalletPage() {
             </button>
           </div>
 
-          <div className="card space-y-2 text-sm">
-            <p className="text-zinc-400">
-              EGLD{' '}
-              <strong className="text-white tabular-nums">
+          <div className="card space-y-3 text-sm">
+            <div className="flex justify-between items-baseline">
+              <span className="text-zinc-500">EGLD</span>
+              <strong className="text-white tabular-nums text-lg">
                 {account.loading ? '…' : fmt(account.balanceEgld)}
               </strong>
-            </p>
+            </div>
             <p className="text-zinc-500 text-[12px]">
-              Tokens {account.tokens.length} · NFT {account.nfts.length}
+              Tokens {account.tokens?.length ?? 0} · NFT {account.nfts?.length ?? 0}
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
-              <Link to="/portfolio" className="btn-primary text-sm">
-                Portfolio
-              </Link>
-              <Link to="/marketplace" className="btn-secondary text-sm">
+              <Link to="/marketplace" className="btn-primary text-sm">
                 Marketplace
               </Link>
               <Link to="/staking" className="btn-secondary text-sm">
                 Staking
+              </Link>
+              <Link to="/slot" className="btn-secondary text-sm">
+                Slot
+              </Link>
+              <Link to="/portfolio" className="btn-secondary text-sm">
+                Portfolio
               </Link>
             </div>
           </div>
