@@ -1,9 +1,6 @@
 /**
  * Inject window.__xartistsSendTx
- * Priority (mode direct):
- *  1) ensure WC session // nonce path via xportalWc
- *  2) sdk-dapp if present
- *  3) Web Wallet hook
+ * Multi-TX: sign batch + broadcast EACH signed tx (nonce chain).
  */
 import {
   empireTxStart,
@@ -130,16 +127,29 @@ async function tryXPortalSignAndBroadcast(list: unknown[]): Promise<SendResult |
 
   empireTxBroadcast('xportal-wc')
   markPipeline('broadcast', t0)
-  const first = signed.signed[0]
-  const br = await broadcastSignedTx(first)
-  if (br.error || !br.hash) {
-    const msg = br.error || 'Broadcast échoué'
-    empireTxError(msg)
-    throw new Error(msg)
+
+  // Multi-TX: broadcast every signed tx in order
+  let lastHash = ''
+  for (let i = 0; i < signed.signed.length; i++) {
+    const br = await broadcastSignedTx(signed.signed[i])
+    if (br.error || !br.hash) {
+      const msg =
+        signed.signed.length > 1
+          ? `TX ${i + 1}/${signed.signed.length}: ${br.error || 'broadcast \u00e9chou\u00e9'}`
+          : br.error || 'Broadcast \u00e9chou\u00e9'
+      empireTxError(msg)
+      throw new Error(msg)
+    }
+    lastHash = br.hash
+    // small gap so gateway accepts sequential nonces
+    if (i < signed.signed.length - 1) {
+      await new Promise(r => setTimeout(r, 400))
+    }
   }
-  empireTxSuccess(br.hash, `${EXPLORER}/transactions/${br.hash}`)
+
+  empireTxSuccess(lastHash, `${EXPLORER}/transactions/${lastHash}`)
   markPipeline('done', t0)
-  return { sessionId: br.hash }
+  return { sessionId: lastHash }
 }
 
 function openWebWalletHook(plain: TxInput): SendResult {
@@ -178,19 +188,17 @@ function injectSendTx() {
     if (method === 'paste_readonly' || method === 'pem') {
       const msg =
         method === 'pem'
-          ? 'PEM interdit côté dApp user.'
-          : 'Lecture seule — Disconnect puis xPortal ou Web Wallet.'
+          ? 'PEM interdit c\u00f4t\u00e9 dApp user.'
+          : 'Lecture seule \u2014 Disconnect puis xPortal ou Web Wallet.'
       empireTxError(msg)
       throw new Error(msg)
     }
 
-    // Prefer WC when direct/wc or already have session
     const preferWc =
       mode === 'direct' || mode === 'wc' || method === 'xportal' || !!getXPortalSession()
 
     if (preferWc && mode !== 'hook') {
       try {
-        // Budget: race ensure with soft timeout so UI stays snappy
         const xpPromise = tryXPortalSignAndBroadcast(list)
         const timeout = new Promise<null>(resolve =>
           setTimeout(() => resolve(null), DIRECT_SHEET_BUDGET_MS * 8),
@@ -199,7 +207,6 @@ function injectSendTx() {
         if (xp?.sessionId) return xp
       } catch (e) {
         if (method === 'xportal' || mode === 'wc') throw e
-        // direct → fall through to sdk / hook
         console.warn('[sign] WC path failed, fallback', e)
       }
     }
@@ -222,10 +229,6 @@ function injectSendTx() {
       const msg = 'Receiver invalide'
       empireTxError(msg)
       throw new Error(msg)
-    }
-
-    if (method === 'xportal' && !getXPortalSession()) {
-      console.info('[xArtists] Session WC absente — fallback Web Wallet hook.')
     }
 
     return openWebWalletHook(plain)
