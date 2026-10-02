@@ -1,4 +1,4 @@
-/** Slot — FUN paper / REAL on-chain. */
+/** Slot — Fun paper (stable). Réel off jusqu’à upgrade SC. */
 import { useEffect, useState } from 'react'
 import { useWallet } from '../context/WalletContext'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -61,7 +61,7 @@ export default function SlotPage() {
   useEffect(() => {
     if (scLive && SLOT_CASINO_ADDRESS) void refreshHouseFromApi(SLOT_CASINO_ADDRESS)
   }, [scLive])
-  const { spinEgld, pending: txPending, lastTx } = useSlotTx()
+  const { spinEgld, pending: txPending, lastTx, slotSpinBroken } = useSlotTx()
   const houseGuard = canSpinRealAgainstHouse('EGLD')
 
   const [mode, setMode] = useState<SlotPlayMode>('paper')
@@ -70,7 +70,6 @@ export default function SlotPage() {
   const cfg = SLOT_ASSET_CONFIG[asset] || SLOT_ASSET_CONFIG.EGLD
   const [betMult, setBetMult] = useState<SlotBetMult>(1)
   const [bank, setBank] = useState(() => cfg.startBank)
-  /** progressive pot per asset — loadProgressive(asset) returns number */
   const [progEgld, setProgEgld] = useState(() => loadProgressive('EGLD'))
   const [progUsdc, setProgUsdc] = useState(() => loadProgressive('USDC'))
   const progressiveOf = (a: SlotAsset) => (a === 'USDC' ? progUsdc : progEgld)
@@ -83,12 +82,19 @@ export default function SlotPage() {
   const [grid, setGrid] = useState<Cell[]>(() => Array.from({ length: 9 }, pick))
   const [spinning, setSpinning] = useState(false)
   const [flash, setFlash] = useState<string | null>(null)
-  const chainMode = mode === 'chain'
+  const chainMode = mode === 'chain' && !slotSpinBroken
 
   const cost = spinCostFor(asset, betMult)
   const canPaper = !spinning && bank >= cost
   const canReal =
-    scLive && connected && canAttemptSign && asset === 'EGLD' && houseGuard.ok && !txPending && confirmedReal
+    !slotSpinBroken &&
+    scLive &&
+    connected &&
+    canAttemptSign &&
+    asset === 'EGLD' &&
+    houseGuard.ok &&
+    !txPending &&
+    confirmedReal
 
   const finishPaper = (final: Cell[]) => {
     const ev = evaluate(final, asset)
@@ -130,11 +136,14 @@ export default function SlotPage() {
       requestOpenConnect()
       return
     }
-    if (!canReal) return
+    if (!canReal) {
+      push(slotSpinBroken ? 'Mode réel indisponible — upgrade SC' : 'Conditions non réunies', 'err')
+      return
+    }
     try {
       await spinEgld(cost)
-    } catch {
-      /* hook */
+    } catch (e) {
+      push(e instanceof Error ? e.message : 'Échec', 'err')
     }
   }
 
@@ -143,22 +152,19 @@ export default function SlotPage() {
       <header className="space-y-1">
         <p className="section-label">Casino</p>
         <h1 className="section-title display text-2xl">Slot</h1>
-        <p className="text-sm text-zinc-400">Fun = crédits virtuels. Réel = EGLD on-chain.</p>
+        <p className="text-sm text-zinc-400">Fun = crédits virtuels. Réel = bientôt (SC en correction).</p>
       </header>
 
       <PotsStrip
         virtualEgld={progEgld}
         onTapVirtual={() =>
-          push(
-            'Ces crédits sont virtuels et destinés au jeu. Les gains réels passent par la caisse on-chain.',
-            'info',
-          )
+          push('Crédits virtuels Fun — non retirables. La caisse on-chain est séparée.', 'info')
         }
       />
 
       <SlotModeSwitch
         mode={mode}
-        onChange={setMode}
+        onChange={m => setMode(slotSpinBroken && m === 'chain' ? 'paper' : m)}
         confirmedReal={confirmedReal}
         onConfirmReal={setConfirmedReal}
       />

@@ -1,7 +1,10 @@
-/** FUN vs RÉEL — wording public, pas de jargon. */
+/** FUN vs RÉEL — réel désactivé tant que spinEgld bytecode bug (ESDT expected). */
 import { canSpinSlot } from '../../config/scStatus'
 
 export type SlotPlayMode = 'paper' | 'chain'
+
+/** Probe mainnet: spin EGLD path broken until SC upgrade */
+const REAL_SPIN_READY = false
 
 type Props = {
   mode: SlotPlayMode
@@ -11,7 +14,7 @@ type Props = {
 }
 
 export default function SlotModeSwitch({ mode, onChange, confirmedReal, onConfirmReal }: Props) {
-  const scLive = canSpinSlot()
+  const scLive = canSpinSlot() && REAL_SPIN_READY
 
   return (
     <div className="space-y-3">
@@ -44,17 +47,25 @@ export default function SlotModeSwitch({ mode, onChange, confirmedReal, onConfir
           }`}
         >
           <p className="text-sm font-bold text-amber-100">Réel</p>
-          <p className="text-[11px] text-zinc-400 mt-1">EGLD depuis ton wallet · caisse on-chain</p>
+          <p className="text-[11px] text-zinc-400 mt-1">
+            {scLive ? 'EGLD on-chain' : 'Bientôt · upgrade SC'}
+          </p>
         </button>
       </div>
-      {mode === 'chain' && !confirmedReal && (
+      {!REAL_SPIN_READY && (
+        <p className="text-[11px] text-amber-200/85 rounded-xl border border-amber-500/20 bg-amber-500/5 px-3 py-2">
+          Mode réel en pause : le contrat slot renvoie une erreur de paiement EGLD. Joue en{' '}
+          <strong>Fun</strong> en attendant la mise à jour on-chain.
+        </p>
+      )}
+      {mode === 'chain' && !confirmedReal && scLive && (
         <label className="flex items-start gap-2 text-[12px] text-zinc-400">
           <input
             type="checkbox"
             checked={confirmedReal}
             onChange={e => onConfirmReal(e.target.checked)}
           />
-          Je comprends que les mises réelles partent au contrat et que la cagnotte écran n’est pas retirable.
+          Je comprends que les mises réelles partent au contrat.
         </label>
       )}
     </div>

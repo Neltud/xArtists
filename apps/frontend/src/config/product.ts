@@ -1,6 +1,4 @@
-/**
- * Product map — single truth for nav + honesty badges.
- */
+/** Product map — honesty badges for mainnet capacity. */
 
 export type ProductTier = 'core' | 'secondary' | 'lab'
 
@@ -51,7 +49,7 @@ export const CORE_MODULES: ProductModule[] = [
     emoji: '🎨',
     tier: 'core',
     status: 'gated',
-    blurb: 'Mint / list vers marketplace',
+    blurb: 'Issue · mint · list',
   },
   {
     id: 'staking',
@@ -59,8 +57,8 @@ export const CORE_MODULES: ProductModule[] = [
     label: 'Staking $TRO',
     emoji: '◈',
     tier: 'core',
-    status: 'gated',
-    blurb: 'SC tro_staking déployé',
+    status: 'live',
+    blurb: 'stake / unstake TRO prouvés',
     sc: 'tro_staking',
   },
   {
@@ -69,8 +67,8 @@ export const CORE_MODULES: ProductModule[] = [
     label: 'Slot',
     emoji: '🎰',
     tier: 'core',
-    status: 'gated',
-    blurb: 'SC slot + house 0.5 EGLD',
+    status: 'paper',
+    blurb: 'Fun OK · réel après upgrade SC',
     sc: 'slot_casino',
   },
   {
@@ -80,7 +78,7 @@ export const CORE_MODULES: ProductModule[] = [
     emoji: '◎',
     tier: 'core',
     status: 'paper',
-    blurb: 'SC agents déployé · mint users à prouver',
+    blurb: 'Paper · buyAgentAction si listing',
     sc: 'agents_marketplace',
   },
   {
@@ -90,7 +88,7 @@ export const CORE_MODULES: ProductModule[] = [
     emoji: '◇',
     tier: 'core',
     status: 'ui',
-    blurb: 'Session xPortal / assets',
+    blurb: 'Session xPortal',
   },
 ]
 
@@ -102,7 +100,7 @@ export const SECONDARY_MODULES: ProductModule[] = [
     emoji: '🎛',
     tier: 'secondary',
     status: 'paper',
-    blurb: 'UX holder · paper rooms',
+    blurb: 'Salles holder paper',
   },
   {
     id: 'command',
@@ -111,7 +109,7 @@ export const SECONDARY_MODULES: ProductModule[] = [
     emoji: '⌘',
     tier: 'secondary',
     status: 'paper',
-    blurb: 'Aura / pulse · pas trading live',
+    blurb: 'Moniteur pack',
   },
   {
     id: 'tro',
@@ -128,8 +126,8 @@ export const SECONDARY_MODULES: ProductModule[] = [
     label: 'Venues',
     emoji: '◎',
     tier: 'secondary',
-    status: 'gated',
-    blurb: 'SC venue-split',
+    status: 'live',
+    blurb: 'rentPay prouvé',
     sc: 'venue_split',
   },
   {
@@ -139,7 +137,7 @@ export const SECONDARY_MODULES: ProductModule[] = [
     emoji: '⬡',
     tier: 'secondary',
     status: 'gated',
-    blurb: 'SC governance',
+    blurb: 'createProposal / vote',
     sc: 'tro_governance',
   },
   {
@@ -167,7 +165,7 @@ export const SECONDARY_MODULES: ProductModule[] = [
     emoji: '🚀',
     tier: 'secondary',
     status: 'ui',
-    blurb: 'Checklist mainnet honnête',
+    blurb: 'Checklist mainnet',
   },
   {
     id: 'sitemap',
