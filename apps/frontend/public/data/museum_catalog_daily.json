@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-10-01T12:01:42.460Z",
+  "generatedAt": "2026-10-02T11:33:30.063Z",
   "source": "collectionapi.metmuseum.org",
   "note": "Public domain only · daily refresh · not an investment",
-  "count": 25,
+  "count": 26,
   "works": [
     {
       "id": "met-436532",
@@ -18,7 +18,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:33.614Z"
+      "updatedAt": "2026-10-02T11:33:20.343Z"
     },
     {
       "id": "met-437402",
@@ -34,7 +34,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:34.595Z"
+      "updatedAt": "2026-10-02T11:33:20.733Z"
     },
     {
       "id": "met-436121",
@@ -50,7 +50,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:35.197Z"
+      "updatedAt": "2026-10-02T11:33:21.305Z"
     },
     {
       "id": "met-437658",
@@ -66,7 +66,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:35.771Z"
+      "updatedAt": "2026-10-02T11:33:21.797Z"
     },
     {
       "id": "met-436105",
@@ -82,7 +82,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:36.806Z"
+      "updatedAt": "2026-10-02T11:33:22.479Z"
     },
     {
       "id": "met-437812",
@@ -98,7 +98,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:37.066Z"
+      "updatedAt": "2026-10-02T11:33:22.778Z"
     },
     {
       "id": "met-437749",
@@ -114,7 +114,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:37.433Z"
+      "updatedAt": "2026-10-02T11:33:23.050Z"
     },
     {
       "id": "met-436896",
@@ -130,7 +130,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:37.994Z"
+      "updatedAt": "2026-10-02T11:33:23.480Z"
     },
     {
       "id": "met-435904",
@@ -146,7 +146,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:38.196Z"
+      "updatedAt": "2026-10-02T11:33:23.755Z"
     },
     {
       "id": "met-437368",
@@ -162,7 +162,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:38.420Z"
+      "updatedAt": "2026-10-02T11:33:24.019Z"
     },
     {
       "id": "met-437283",
@@ -178,7 +178,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:38.780Z"
+      "updatedAt": "2026-10-02T11:33:24.386Z"
     },
     {
       "id": "met-437995",
@@ -194,7 +194,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:38.957Z"
+      "updatedAt": "2026-10-02T11:33:24.643Z"
     },
     {
       "id": "met-437792",
@@ -210,7 +210,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:39.202Z"
+      "updatedAt": "2026-10-02T11:33:24.960Z"
     },
     {
       "id": "met-544439",
@@ -226,7 +226,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:39.383Z"
+      "updatedAt": "2026-10-02T11:33:25.496Z"
     },
     {
       "id": "met-544448",
@@ -242,7 +242,7 @@
       "kind": "sculpture",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:39.579Z"
+      "updatedAt": "2026-10-02T11:33:25.726Z"
     },
     {
       "id": "met-247414",
@@ -258,7 +258,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:39.830Z"
+      "updatedAt": "2026-10-02T11:33:25.957Z"
     },
     {
       "id": "met-256583",
@@ -274,7 +274,7 @@
       "kind": "sculpture",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:40.181Z"
+      "updatedAt": "2026-10-02T11:33:26.409Z"
     },
     {
       "id": "met-546502",
@@ -290,7 +290,7 @@
       "kind": "sculpture",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:40.390Z"
+      "updatedAt": "2026-10-02T11:33:26.630Z"
     },
     {
       "id": "met-547802",
@@ -306,103 +306,119 @@
       "kind": "sculpture",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:40.686Z"
+      "updatedAt": "2026-10-02T11:33:26.865Z"
     },
     {
-      "id": "met-437403",
-      "metId": 437403,
-      "title": "Christ and the Woman of Samaria",
-      "artist": "Rembrandt",
-      "year": "",
-      "medium": "Oil on wood",
-      "dimensions": "63.5 x 48.9 cm",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP145935.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP145935.jpg",
-      "department": "European Paintings",
-      "kind": "painting",
-      "license": "Met Open Access / Public Domain",
-      "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:40.946Z"
-    },
-    {
-      "id": "met-436123",
-      "metId": 436123,
-      "title": "The Ballet from \"Robert le Diable\"",
-      "artist": "Edgar Degas",
-      "year": "1871",
-      "medium": "Oil on canvas",
-      "dimensions": "66 x 54.3 cm",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1911.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DT1911.jpg",
-      "department": "European Paintings",
-      "kind": "painting",
-      "license": "Met Open Access / Public Domain",
-      "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:41.275Z"
-    },
-    {
-      "id": "met-436109",
-      "metId": 436109,
-      "title": "Benjamin Franklin (1706–1790), after a Painting by Greuze of 1777",
-      "artist": "Charles Paul Jérôme de Bréa",
-      "year": "1777",
-      "medium": "Ivory",
-      "dimensions": "Oval, 3 3/8 x 2 3/4 in. (85 x 68 mm)",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/ep68.222.9.R.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/ep68.222.9.R.jpg",
-      "department": "European Paintings",
-      "kind": "painting",
-      "license": "Met Open Access / Public Domain",
-      "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:41.571Z"
-    },
-    {
-      "id": "met-437817",
-      "metId": 437817,
-      "title": "Group Portrait: A Wedding Celebration",
-      "artist": "Gillis van Tilborgh",
-      "year": "",
-      "medium": "Oil on canvas",
-      "dimensions": "115.6 x 160.7 cm",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/EP602.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/EP602.jpg",
-      "department": "European Paintings",
-      "kind": "painting",
-      "license": "Met Open Access / Public Domain",
-      "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:41.788Z"
-    },
-    {
-      "id": "met-437755",
-      "metId": 437755,
-      "title": "In the Studio",
-      "artist": "Alfred Stevens",
+      "id": "met-436533",
+      "metId": 436533,
+      "title": "Shoes",
+      "artist": "Vincent van Gogh",
       "year": "1888",
       "medium": "Oil on canvas",
-      "dimensions": "106.7 x 135.9 cm",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DT8475.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DT8475.jpg",
+      "dimensions": "45.7 × 55.2 cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1947.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DT1947.jpg",
       "department": "European Paintings",
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:41.975Z"
+      "updatedAt": "2026-10-02T11:33:27.193Z"
     },
     {
-      "id": "met-435905",
-      "metId": 435905,
-      "title": "The Ford",
-      "artist": "Claude Lorrain (Claude Gellée)",
-      "year": "possibly 1636",
+      "id": "met-437404",
+      "metId": 437404,
+      "title": "Head of Christ",
+      "artist": "Rembrandt",
+      "year": "",
       "medium": "Oil on canvas",
-      "dimensions": "74.3 x 101 cm",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP123844.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP123844.jpg",
+      "dimensions": "42.5 x 34.3 cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP145916.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP145916.jpg",
       "department": "European Paintings",
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-10-01T12:01:42.198Z"
+      "updatedAt": "2026-10-02T11:33:27.478Z"
+    },
+    {
+      "id": "met-436124",
+      "metId": 436124,
+      "title": "The Artist's Cousin, Probably Mrs. William Bell (Mathilde Musson, 1841–1878)",
+      "artist": "Edgar Degas",
+      "year": "1873",
+      "medium": "Pastel on green wove paper, now darkened to brown",
+      "dimensions": "47.3 x 38.4 cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP338363.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP338363.jpg",
+      "department": "European Paintings",
+      "kind": "painting",
+      "license": "Met Open Access / Public Domain",
+      "source": "met-api",
+      "updatedAt": "2026-10-02T11:33:27.746Z"
+    },
+    {
+      "id": "met-437662",
+      "metId": 437662,
+      "title": "William Archer Shee (1810–1899), the Artist's Son",
+      "artist": "Sir Martin Archer Shee",
+      "year": "ca. 1820",
+      "medium": "Oil on canvas",
+      "dimensions": "76.2 x 62.9 cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP169500.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP169500.jpg",
+      "department": "European Paintings",
+      "kind": "painting",
+      "license": "Met Open Access / Public Domain",
+      "source": "met-api",
+      "updatedAt": "2026-10-02T11:33:28.113Z"
+    },
+    {
+      "id": "met-436110",
+      "metId": 436110,
+      "title": "Marie-Thérèse-Charlotte (1778–1851), Daughter of Louis XVI",
+      "artist": "Jacques Joseph de Gault",
+      "year": "1795",
+      "medium": "Ivory",
+      "dimensions": "Diameter 2 3/8 in. (60 mm)",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP327715.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP327715.jpg",
+      "department": "European Paintings",
+      "kind": "painting",
+      "license": "Met Open Access / Public Domain",
+      "source": "met-api",
+      "updatedAt": "2026-10-02T11:33:28.337Z"
+    },
+    {
+      "id": "met-436897",
+      "metId": 436897,
+      "title": "Saint Lawrence Enthroned with Saints and Donors",
+      "artist": "Fra Filippo Lippi",
+      "year": "1440s",
+      "medium": "Tempera on wood, gold ground",
+      "dimensions": "121.3 x 115.6 cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-17016-001.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP-17016-001.jpg",
+      "department": "European Paintings",
+      "kind": "painting",
+      "license": "Met Open Access / Public Domain",
+      "source": "met-api",
+      "updatedAt": "2026-10-02T11:33:29.686Z"
+    },
+    {
+      "id": "met-435906",
+      "metId": 435906,
+      "title": "Pastoral Landscape: The Roman Campagna",
+      "artist": "Claude Lorrain (Claude Gellée)",
+      "year": "ca. 1639",
+      "medium": "Oil on canvas",
+      "dimensions": "101.6 x 135.9 cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-17628-001.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP-17628-001.jpg",
+      "department": "European Paintings",
+      "kind": "painting",
+      "license": "Met Open Access / Public Domain",
+      "source": "met-api",
+      "updatedAt": "2026-10-02T11:33:29.943Z"
     }
   ]
 }
