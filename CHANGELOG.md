@@ -1,5 +1,21 @@
 # Changelog — xArtists
 
+## [0.75.0](https://github.com/Neltud/xArtists/compare/v0.74.0...v0.75.0) (2026-10-02)
+
+
+### Features
+
+* CC agent orb, click guide, NFT stake panel + wire i18n ([974a5ba](https://github.com/Neltud/xArtists/commit/974a5ba9024c01f2ec0df697ae5044d5447e7794))
+* i18n 7 langues + Command Center holo/NFT stake deepen ([3e612aa](https://github.com/Neltud/xArtists/commit/3e612aabe160de7848406a8b211e4d170892bf2e))
+* i18n dictionaries + context + lang switcher ([906fe32](https://github.com/Neltud/xArtists/commit/906fe32b71277717ec5411ec7bcd2013f2bae34f))
+* wire I18nProvider + LangSwitcher + 8008 stake intents ([c11ec06](https://github.com/Neltud/xArtists/commit/c11ec067008257cbbd8b55303e93eabad54d1582))
+
+
+### Bug Fixes
+
+* add LINKS.explorerAccount helper (pages crash) ([55ef169](https://github.com/Neltud/xArtists/commit/55ef1691a2a47d37dbaeef3d41dd061c51e2d10d))
+* MyPacks PackOpenTheater crash + register missing routes ([33ec075](https://github.com/Neltud/xArtists/commit/33ec075c28ef8fb36a841f18b9bb08a51ad20ac3))
+
 ## [0.74.0](https://github.com/Neltud/xArtists/compare/v0.73.0...v0.74.0) (2026-10-01)
 
 
