@@ -1,4 +1,4 @@
-/** Slot — FUN paper / REAL on-chain. Symboles locaux. */
+/** Slot — FUN paper / REAL on-chain. */
 import { useEffect, useState } from 'react'
 import { useWallet } from '../context/WalletContext'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -41,14 +41,15 @@ function pick(): Cell {
 
 function evaluate(grid: Cell[], asset: SlotAsset) {
   const cfg = SLOT_ASSET_CONFIG[asset]
+  if (!cfg) return { tableGross: 0, isGrand: false, kind: '—' }
   const ids = grid.map(c => c.id)
   if (ids.every(id => id === ids[0])) return { tableGross: cfg.payouts.grandBonus, isGrand: true, kind: 'Jackpot' }
   const line = [grid[3], grid[4], grid[5]]
-  if (line[0].id === line[1].id && line[1].id === line[2].id)
+  if (line[0]?.id === line[1]?.id && line[1]?.id === line[2]?.id)
     return { tableGross: cfg.payouts.line3, isGrand: false, kind: 'Ligne' }
-  if (grid[0].id === grid[4].id && grid[4].id === grid[8].id)
+  if (grid[0]?.id === grid[4]?.id && grid[4]?.id === grid[8]?.id)
     return { tableGross: cfg.payouts.diagonal, isGrand: false, kind: 'Diagonale' }
-  if (line[0].id === line[1].id || line[1].id === line[2].id)
+  if (line[0]?.id === line[1]?.id || line[1]?.id === line[2]?.id)
     return { tableGross: cfg.payouts.pair, isGrand: false, kind: 'Paire' }
   return { tableGross: 0, isGrand: false, kind: '—' }
 }
@@ -66,10 +67,19 @@ export default function SlotPage() {
   const [mode, setMode] = useState<SlotPlayMode>('paper')
   const [confirmedReal, setConfirmedReal] = useState(false)
   const [asset, setAsset] = useState<SlotAsset>('EGLD')
-  const cfg = SLOT_ASSET_CONFIG[asset]
+  const cfg = SLOT_ASSET_CONFIG[asset] || SLOT_ASSET_CONFIG.EGLD
   const [betMult, setBetMult] = useState<SlotBetMult>(1)
-  const [bank, setBank] = useState(cfg.startBank)
-  const [progressive, setProgressive] = useState(() => loadProgressive())
+  const [bank, setBank] = useState(() => cfg.startBank)
+  /** progressive pot per asset — loadProgressive(asset) returns number */
+  const [progEgld, setProgEgld] = useState(() => loadProgressive('EGLD'))
+  const [progUsdc, setProgUsdc] = useState(() => loadProgressive('USDC'))
+  const progressiveOf = (a: SlotAsset) => (a === 'USDC' ? progUsdc : progEgld)
+  const setProgressiveOf = (a: SlotAsset, v: number) => {
+    if (a === 'USDC') setProgUsdc(v)
+    else setProgEgld(v)
+    saveProgressive(a, v)
+  }
+
   const [grid, setGrid] = useState<Cell[]>(() => Array.from({ length: 9 }, pick))
   const [spinning, setSpinning] = useState(false)
   const [flash, setFlash] = useState<string | null>(null)
@@ -82,17 +92,16 @@ export default function SlotPage() {
 
   const finishPaper = (final: Cell[]) => {
     const ev = evaluate(final, asset)
+    const before = progressiveOf(asset)
     const { split, progressiveAfter } = settleSpin({
       asset,
       tableGross: ev.tableGross,
       isGrand: ev.isGrand,
-      progressiveBefore: progressive[asset] || 0,
+      progressiveBefore: before,
       betMult,
     })
     setBank(b => Math.max(0, b - cost + split.userCredit))
-    const next = { ...progressive, [asset]: progressiveAfter }
-    saveProgressive(next)
-    setProgressive(next)
+    setProgressiveOf(asset, progressiveAfter)
     setFlash(ev.kind === '—' ? 'Rien' : ev.kind)
     setSpinning(false)
   }
@@ -138,7 +147,7 @@ export default function SlotPage() {
       </header>
 
       <PotsStrip
-        virtualEgld={progressive.EGLD || 0}
+        virtualEgld={progEgld}
         onTapVirtual={() =>
           push(
             'Ces crédits sont virtuels et destinés au jeu. Les gains réels passent par la caisse on-chain.',

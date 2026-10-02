@@ -56,13 +56,13 @@ export default function Dashboard() {
         <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-violet-500/20 blur-3xl" />
         <div className="relative max-w-xl space-y-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-300/85">
-            xArtists \u00b7 MultiversX mainnet
+            xArtists · MultiversX mainnet
           </p>
           <h1 className="font-tech text-3xl font-bold tracking-tight text-white title-glow sm:text-4xl">
-            NFT \u00b7 $TRO \u00b7 Packs
+            NFT · $TRO · Packs
           </h1>
           <p className="text-sm leading-relaxed text-zinc-400">
-            Badge LIVE = codeHash explorer + activit\u00e9 SC. PAPER = UI seulement. Pas un fond
+            Badge LIVE = codeHash explorer + activité SC. PAPER = UI seulement. Pas un fond
             d&apos;investissement.
           </p>
           <div className="flex flex-wrap gap-2">
@@ -83,8 +83,8 @@ export default function Dashboard() {
 
       <section className="space-y-3">
         <div className="flex items-end justify-between gap-2">
-          <p className="section-label">Produit c\u0153ur</p>
-          <p className="text-[10px] text-zinc-600">LIVE \u2190 preuve explorer</p>
+          <p className="section-label">Produit cœur</p>
+          <p className="text-[10px] text-zinc-600">LIVE ← preuve explorer</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           {core.map(m => {

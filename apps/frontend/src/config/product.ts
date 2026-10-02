@@ -1,7 +1,5 @@
 /**
  * Product map — single truth for nav + honesty badges.
- * LIVE = SC deployed + gate can*() typically true when secrets/runtime OK.
- * PAPER = UI only or gated until proof TX.
  */
 
 export type ProductTier = 'core' | 'secondary' | 'lab'
@@ -12,37 +10,35 @@ export type ProductModule = {
   label: string
   emoji: string
   tier: ProductTier
-  /** Honest status for UI */
   status: 'live' | 'gated' | 'paper' | 'ui'
   blurb: string
   sc?: string
 }
 
-/** Core product — what we stand behind publicly */
 export const CORE_MODULES: ProductModule[] = [
   {
     id: 'home',
     path: '/',
     label: 'Home',
-    emoji: '\u25c8',
+    emoji: '◈',
     tier: 'core',
     status: 'ui',
-    blurb: 'Entr\u00e9e produit',
+    blurb: 'Entrée produit',
   },
   {
     id: 'museum',
     path: '/museum',
-    label: 'Mus\u00e9e',
-    emoji: '\ud83d\uddbc',
+    label: 'Musée',
+    emoji: '🖼',
     tier: 'core',
     status: 'ui',
-    blurb: 'Galerie 3D \u00b7 pas un SC',
+    blurb: 'Galerie 3D · pas un SC',
   },
   {
     id: 'marketplace',
     path: '/marketplace',
     label: 'Marketplace',
-    emoji: '\u25a3',
+    emoji: '▣',
     tier: 'core',
     status: 'live',
     blurb: 'listNft / buyNft mainnet',
@@ -52,7 +48,7 @@ export const CORE_MODULES: ProductModule[] = [
     id: 'studio',
     path: '/studio',
     label: 'Studio',
-    emoji: '\ud83c\udfa8',
+    emoji: '🎨',
     tier: 'core',
     status: 'gated',
     blurb: 'Mint / list vers marketplace',
@@ -61,17 +57,17 @@ export const CORE_MODULES: ProductModule[] = [
     id: 'staking',
     path: '/staking',
     label: 'Staking $TRO',
-    emoji: '\u25c8',
+    emoji: '◈',
     tier: 'core',
     status: 'gated',
-    blurb: 'SC tro_staking d\u00e9ploy\u00e9',
+    blurb: 'SC tro_staking déployé',
     sc: 'tro_staking',
   },
   {
     id: 'slot',
     path: '/slot',
     label: 'Slot',
-    emoji: '\ud83c\udfb0',
+    emoji: '🎰',
     tier: 'core',
     status: 'gated',
     blurb: 'SC slot + house 0.5 EGLD',
@@ -81,17 +77,17 @@ export const CORE_MODULES: ProductModule[] = [
     id: 'agents',
     path: '/agents',
     label: 'Packs IA',
-    emoji: '\u25ce',
+    emoji: '◎',
     tier: 'core',
     status: 'paper',
-    blurb: 'SC agents d\u00e9ploy\u00e9 \u00b7 mint users \u00e0 prouver',
+    blurb: 'SC agents déployé · mint users à prouver',
     sc: 'agents_marketplace',
   },
   {
     id: 'wallet',
     path: '/wallet',
     label: 'Wallet',
-    emoji: '\u25c7',
+    emoji: '◇',
     tier: 'core',
     status: 'ui',
     blurb: 'Session xPortal / assets',
@@ -103,25 +99,25 @@ export const SECONDARY_MODULES: ProductModule[] = [
     id: 'my-packs',
     path: '/my-packs',
     label: 'Mes salles',
-    emoji: '\ud83c\udf9b',
+    emoji: '🎛',
     tier: 'secondary',
     status: 'paper',
-    blurb: 'UX holder \u00b7 paper rooms',
+    blurb: 'UX holder · paper rooms',
   },
   {
     id: 'command',
     path: '/command-center',
     label: 'Command',
-    emoji: '\u2318',
+    emoji: '⌘',
     tier: 'secondary',
     status: 'paper',
-    blurb: 'Aura / pulse \u00b7 pas trading live',
+    blurb: 'Aura / pulse · pas trading live',
   },
   {
     id: 'tro',
     path: '/tro',
     label: '$TRO',
-    emoji: '\u25ce',
+    emoji: '◎',
     tier: 'secondary',
     status: 'ui',
     blurb: 'Token TRO-94c925',
@@ -130,7 +126,7 @@ export const SECONDARY_MODULES: ProductModule[] = [
     id: 'venues',
     path: '/venues',
     label: 'Venues',
-    emoji: '\u25ce',
+    emoji: '◎',
     tier: 'secondary',
     status: 'gated',
     blurb: 'SC venue-split',
@@ -140,7 +136,7 @@ export const SECONDARY_MODULES: ProductModule[] = [
     id: 'dao',
     path: '/dao',
     label: 'DAO',
-    emoji: '\u2b21',
+    emoji: '⬡',
     tier: 'secondary',
     status: 'gated',
     blurb: 'SC governance',
@@ -150,7 +146,7 @@ export const SECONDARY_MODULES: ProductModule[] = [
     id: 'portfolio',
     path: '/portfolio',
     label: 'Portfolio',
-    emoji: '\u25a4',
+    emoji: '▤',
     tier: 'secondary',
     status: 'ui',
     blurb: 'Vue assets',
@@ -159,32 +155,31 @@ export const SECONDARY_MODULES: ProductModule[] = [
     id: 'legal',
     path: '/legal',
     label: 'Legal',
-    emoji: '\u00a7',
+    emoji: '§',
     tier: 'secondary',
     status: 'ui',
-    blurb: 'Mentions \u00b7 pas un fond',
+    blurb: 'Mentions · pas un fond',
   },
   {
     id: 'status',
     path: '/go-live',
     label: 'Status SC',
-    emoji: '\ud83d\ude80',
+    emoji: '🚀',
     tier: 'secondary',
     status: 'ui',
-    blurb: 'Checklist mainnet honn\u00eate',
+    blurb: 'Checklist mainnet honnête',
   },
   {
     id: 'sitemap',
     path: '/sitemap',
     label: 'Plan',
-    emoji: '\u2630',
+    emoji: '☰',
     tier: 'secondary',
     status: 'ui',
     blurb: 'Toutes les routes',
   },
 ]
 
-/** Lab routes kept in router but not sold as product */
 export const LAB_PATHS = [
   '/simulation',
   '/entities',
