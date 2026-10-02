@@ -9,6 +9,7 @@ import TxShell from './providers/TxShell'
 import EmpireBalanceSync from './components/EmpireBalanceSync'
 import AgentAccessSync from './components/AgentAccessSync'
 import { ToastProvider } from './components/ui/Toast'
+import { I18nProvider } from './i18n/I18nContext'
 import { registerSW } from './pwa/registerSW'
 import { probeChainTiming } from './config/chainTiming'
 import { startAgent8008Bridge } from './lib/agent8008Bridge'
@@ -32,20 +33,22 @@ startAgent8008Bridge()
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HashRouter>
-      <MxDappProvider>
-        <WalletProvider>
-          <MultiversXProvider>
-            <ToastProvider>
-              <TxShell>
-                <EmpireBalanceSync />
-                <AgentAccessSync />
-                <PulseBoot />
-                <App />
-              </TxShell>
-            </ToastProvider>
-          </MultiversXProvider>
-        </WalletProvider>
-      </MxDappProvider>
+      <I18nProvider>
+        <MxDappProvider>
+          <WalletProvider>
+            <MultiversXProvider>
+              <ToastProvider>
+                <TxShell>
+                  <EmpireBalanceSync />
+                  <AgentAccessSync />
+                  <PulseBoot />
+                  <App />
+                </TxShell>
+              </ToastProvider>
+            </MultiversXProvider>
+          </WalletProvider>
+        </MxDappProvider>
+      </I18nProvider>
     </HashRouter>
   </React.StrictMode>,
 )

@@ -1,6 +1,5 @@
 /**
  * Agent 8008 — intents Vellum / ops (paper → micro-tx quand SC ON).
- * Pas de PEM dans le front. Signatures : wallet user ou Vellum own PEM hors dApp.
  */
 
 export const AGENT_8008 = {
@@ -8,8 +7,7 @@ export const AGENT_8008 = {
   name: 'Agent 8008',
   codename: 'Execution Sentinel',
   role: 'router_intents',
-  description:
-    'Route les intents LIA (BUY_NFT, VENUE_RENTAL, STAKE, VOTE, PULSE_HYPE, STUDIO_MINT_PAPER) vers workflows Vellum. Paper par défaut.',
+  description: 'Route les intents LIA vers workflows. Paper par défaut.',
   endpoints: {
     vellumWorkflow: 'xartists-8008-intents',
     mcp: null as string | null,
@@ -27,6 +25,9 @@ export const AGENT_8008 = {
     'ADS_BID',
     'PULSE_HYPE',
     'STUDIO_MINT_PAPER',
+    'AGENT_NFT_STAKE',
+    'AGENT_NFT_UNSTAKE',
+    'AGENT_CLONE_CLAIM',
   ] as const,
   risk: {
     mainnetTx: false,
