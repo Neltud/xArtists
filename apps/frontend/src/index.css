@@ -1,97 +1,73 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;500&family=Orbitron:wght@500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
-  --atelier-bg: #07070c;
-  --atelier-panel: rgba(12, 12, 20, 0.72);
-  --atelier-border: rgba(255, 255, 255, 0.08);
-  --atelier-cyan: #22d3ee;
-  --atelier-violet: #8b5cf6;
+/* Slide-in menu (SideNav) */
+@keyframes xartists-slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
-html,
-body,
-#root {
-  min-height: 100%;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  font-family: 'DM Sans', system-ui, sans-serif;
-  background: var(--atelier-bg);
-  color: #e4e4e7;
-  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  background: #05050a;
+  color: #f4f4f5;
 }
 
+#root {
+  min-height: 100vh;
+}
+
+/* Utility classes used across pages */
 @layer components {
   .card {
-    @apply rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-4;
-  }
-  .card-play {
-    @apply transition-transform duration-200 hover:-translate-y-0.5;
-  }
-  .card-interactive {
-    @apply cursor-pointer hover:border-white/20;
-  }
-  .section-label {
-    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500;
-  }
-  .section-title {
-    font-family: 'Syne', system-ui, sans-serif;
-    @apply text-2xl sm:text-3xl font-extrabold tracking-tight text-white;
-  }
-  .section-lead {
-    @apply text-sm text-zinc-400 leading-relaxed max-w-2xl;
+    @apply rounded-2xl border border-white/10 bg-white/[0.03] p-4;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white;
-    @apply rounded-xl bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-500 hover:to-cyan-500;
-    @apply disabled:opacity-40 disabled:pointer-events-none transition;
+    @apply rounded-xl bg-gradient-to-r from-violet-600 to-indigo-500 px-4 py-2 font-semibold text-white shadow disabled:opacity-50;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-zinc-200;
-    @apply rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 transition;
-    @apply disabled:opacity-40 disabled:pointer-events-none;
-  }
-  .badge {
-    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border;
-  }
-  .display {
-    font-family: 'Syne', system-ui, sans-serif;
-    @apply font-extrabold tracking-tight;
+    @apply rounded-xl border border-white/15 bg-white/5 px-3 py-1.5 text-zinc-200 hover:bg-white/10 disabled:opacity-50;
   }
   .mono {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
-  .atelier-title-rule {
-    @apply h-px w-16 bg-gradient-to-r from-cyan-400/80 to-transparent;
+  .font-tech {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: 0.02em;
   }
-  .atelier-content {
-    @apply relative z-10;
+  .title-glow {
+    text-shadow: 0 0 24px rgba(34, 211, 238, 0.25);
   }
-  .nav-pill {
-    @apply rounded-full px-3 py-1.5 text-[12px] font-medium text-zinc-400 transition-colors;
+  .display {
+    @apply font-semibold tracking-tight text-white;
   }
-  .nav-pill-active {
-    @apply text-white bg-white/10;
+  .animate-fade-in {
+    animation: xartists-fade-in 0.35s ease-out;
+  }
+  .glass {
+    @apply bg-[#0a0a12]/90 backdrop-blur-md;
   }
 }
 
-/* Phase 2.5 — Cyber-Tech typography */
-.font-tech {
-  font-family: 'Orbitron', 'Syne', system-ui, sans-serif;
-  letter-spacing: 0.04em;
-}
-.title-glow {
-  text-shadow:
-    0 0 12px rgba(34, 211, 238, 0.35),
-    0 0 28px rgba(139, 92, 246, 0.2);
-}
-.section-title.display,
-.font-tech.title-glow {
-  font-family: 'Orbitron', 'Syne', system-ui, sans-serif;
+@keyframes xartists-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

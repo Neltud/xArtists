@@ -1,9 +1,11 @@
-/** Top bar — wallet honesty + lang switcher. */
+/**
+ * Top bar — menu always available + wallet honesty + lang.
+ */
 import { useState, useEffect } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { loginWithXPortalMainnet } from '../lib/xportalWc'
-import { requestOpenAssets } from '../lib/walletEvents'
+import { requestOpenAssets, OPEN_CONNECT_EVENT } from '../lib/walletEvents'
 import SideNav from './SideNav'
 import LangSwitcher from './LangSwitcher'
 import { useI18n } from '../i18n/I18nContext'
@@ -27,6 +29,17 @@ export default function Header() {
     { to: '/slot', label: t('nav.slot') },
     { to: '/agents', label: t('nav.packs') },
   ]
+
+  // SideNav / others → open connect modal
+  useEffect(() => {
+    const openConnect = () => {
+      setShowWalletModal(true)
+      setConnectError('')
+      setWcUri(null)
+    }
+    window.addEventListener(OPEN_CONNECT_EVENT, openConnect)
+    return () => window.removeEventListener(OPEN_CONNECT_EVENT, openConnect)
+  }, [])
 
   useEffect(() => {
     const onUri = (e: Event) => {
@@ -79,7 +92,7 @@ export default function Header() {
     try {
       const w = window as unknown as { elrondWallet?: { getAddress?: () => Promise<string> } }
       if (!w.elrondWallet?.getAddress) {
-        setConnectError('Extension missing')
+        setConnectError('Extension MultiversX introuvable')
         setBusy(false)
         return
       }
@@ -120,13 +133,17 @@ export default function Header() {
       <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0a0a12]/0.92] backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-3 h-14 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
+            {/* Menu visible mobile + desktop */}
             <button
               type="button"
-              className="md:hidden rounded-lg border border-white/10 p-2 text-zinc-300"
+              className="rounded-lg border border-white/15 bg-white/5 p-2 text-zinc-200 hover:bg-white/10 hover:text-white"
               onClick={() => setMenuOpen(true)}
               aria-label="Menu"
+              title="Menu"
             >
-              ☰
+              <span className="block text-lg leading-none" aria-hidden>
+                ☰
+              </span>
             </button>
             <Link to="/" className="flex items-center gap-2 min-w-0">
               <span className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center text-[11px] font-bold text-white">
@@ -135,7 +152,8 @@ export default function Header() {
               <span className="hidden sm:inline text-sm font-semibold text-white truncate">xArtists</span>
             </Link>
           </div>
-          <nav className="hidden md:flex items-center gap-1 text-[12px]">
+
+          <nav className="hidden lg:flex items-center gap-1 text-[12px]">
             {NAV.map(n => (
               <NavLink
                 key={n.to}
@@ -148,6 +166,7 @@ export default function Header() {
               </NavLink>
             ))}
           </nav>
+
           <div className="flex items-center gap-1.5 sm:gap-2">
             <LangSwitcher />
             {showAsConnected ? (
@@ -184,13 +203,18 @@ export default function Header() {
           </div>
         </div>
       </header>
+
       <SideNav open={menuOpen} onClose={() => setMenuOpen(false)} />
+
       {showWalletModal && (
         <div
           className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/80 p-3"
           onClick={() => !busy && setShowWalletModal(false)}
         >
-          <div className="w-full max-w-md rounded-2xl border border-white/15 bg-[#0c0c14] p-5 space-y-4" onClick={e => e.stopPropagation()}>
+          <div
+            className="w-full max-w-md rounded-2xl border border-white/15 bg-[#0c0c14] p-5 space-y-4"
+            onClick={e => e.stopPropagation()}
+          >
             <h2 className="display text-xl">{t('common.connect')}</h2>
             {wcUri && (
               <div className="space-y-2 rounded-xl border border-violet-500/20 p-3">
@@ -222,7 +246,11 @@ export default function Header() {
               Read-only
             </button>
             {connectError && <p className="text-[12px] text-amber-200/90">{connectError}</p>}
-            <button type="button" className="text-[12px] text-zinc-500 w-full" onClick={() => !busy && setShowWalletModal(false)}>
+            <button
+              type="button"
+              className="text-[12px] text-zinc-500 w-full"
+              onClick={() => !busy && setShowWalletModal(false)}
+            >
               ×
             </button>
           </div>
