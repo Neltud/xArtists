@@ -1,5 +1,5 @@
 /**
- * Marketplace Frameit-style — vitrine listings + vente multi-NFT (TX séquentielles).
+ * Marketplace — vitrine + multi-list + post-buy index overlay.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -10,6 +10,11 @@ import { canListBuyNft } from '../config/scStatus'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useToast } from '../components/ui/Toast'
 import type { ListingRow } from '../types/marketplace'
+import {
+  fetchMarketplaceListings,
+  markListingSold,
+  rememberLocalListing,
+} from '../lib/marketplaceIndex'
 
 const PAGE = 16
 
@@ -29,28 +34,6 @@ function nftThumb(n: {
   if (m?.thumbnailUrl && /^https?:\/\//i.test(m.thumbnailUrl)) return m.thumbnailUrl
   if (m?.url && /^https?:\/\//i.test(m.url)) return m.url
   return undefined
-}
-
-async function loadListings(): Promise<ListingRow[]> {
-  const base = import.meta.env.BASE_URL || '/'
-  const urls = [
-    `${base}data/marketplace_listings.json`,
-    `${base}data/listings_index.json`,
-    '/xArtists/data/marketplace_listings.json',
-    '/xArtists/data/listings_index.json',
-  ]
-  for (const u of urls) {
-    try {
-      const r = await fetch(u, { cache: 'no-store' })
-      if (!r.ok) continue
-      const j = (await r.json()) as { listings?: ListingRow[] }
-      const rows = (j.listings || []).filter(x => x && x.active !== false)
-      if (rows.length) return rows
-    } catch {
-      /* next */
-    }
-  }
-  return []
 }
 
 export default function MarketplacePage() {
@@ -73,19 +56,17 @@ export default function MarketplacePage() {
   const [visible, setVisible] = useState(PAGE)
   const [msg, setMsg] = useState<string | null>(null)
 
+  const reload = useCallback(() => {
+    fetchMarketplaceListings().then(setListings)
+  }, [])
+
   useEffect(() => {
     if (preselect) setSelected(new Set([preselect]))
   }, [preselect])
 
   useEffect(() => {
-    let c = false
-    loadListings().then(rows => {
-      if (!c) setListings(rows)
-    })
-    return () => {
-      c = true
-    }
-  }, [lastTx])
+    reload()
+  }, [reload, lastTx])
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase()
@@ -112,12 +93,12 @@ export default function MarketplacePage() {
       return
     }
     if (method === 'paste_readonly') {
-      push('Lecture seule — xPortal requis', 'err')
+      push('Lecture seule \u2014 xPortal requis', 'err')
       return
     }
     const priceEgld = Number(price)
     if (!(priceEgld > 0) || selected.size === 0) {
-      push('Sélectionne au moins un NFT et un prix', 'err')
+      push('S\u00e9lectionne au moins un NFT et un prix', 'err')
       return
     }
     let ok = 0
@@ -133,24 +114,38 @@ export default function MarketplacePage() {
       const tokenId = nft.collection || parts.slice(0, -1).join('-')
       try {
         await listNft({ tokenId, nonce, priceEgld })
+        rememberLocalListing({
+          listing_id: Date.now() % 100000,
+          identifier: id,
+          token: tokenId,
+          nonce,
+          name: String(nft.name || id),
+          price_egld: String(priceEgld),
+          price: String(Math.round(priceEgld * 1e18)),
+          active: true,
+          seller: address || undefined,
+        })
         ok += 1
       } catch {
         fail += 1
         break
       }
     }
-    const t = fail ? `${ok} listé(s), ${fail} stoppé — signe chaque TX` : `${ok} listing(s) envoyés`
+    reload()
+    const t = fail
+      ? `${ok} list\u00e9(s), ${fail} stopp\u00e9 \u2014 signe chaque TX (session xPortal)`
+      : `${ok} listing(s) envoy\u00e9s`
     setMsg(t)
     push(t, fail ? 'err' : 'ok')
-  }, [connected, method, price, selected, allNfts, listNft, push])
+  }, [connected, method, price, selected, allNfts, listNft, push, address, reload])
 
   return (
     <div className="animate-fade-in space-y-8 pb-16 max-w-3xl mx-auto">
       <header className="space-y-2">
-        <p className="section-label">Marché NFT · mainnet</p>
+        <p className="section-label">March\u00e9 NFT \u00b7 mainnet</p>
         <h1 className="section-title display text-2xl">Marketplace</h1>
         <p className="text-sm text-zinc-400">
-          Vitrine on-chain. Achète une œuvre ou mets plusieurs NFT en vente (une signature par pièce).
+          Vitrine on-chain. Multi-list = une signature par pi\u00e8ce (session xPortal conserv\u00e9e).
         </p>
       </header>
 
@@ -160,12 +155,14 @@ export default function MarketplacePage() {
           <input
             value={q}
             onChange={e => setQ(e.target.value)}
-            placeholder="Filtrer nom / collection"
-            className="w-44 rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-[12px] text-white"
+            placeholder="Filtrer"
+            className="w-40 rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-[12px] text-white"
           />
         </div>
         {filtered.length === 0 ? (
-          <p className="text-[13px] text-zinc-500 card">Catalogue en chargement — hard refresh si vide.</p>
+          <p className="text-[13px] text-zinc-500 card">
+            Aucun listing actif \u2014 liste depuis ton inventaire ci-dessous.
+          </p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {filtered.map((l, i) => {
@@ -183,7 +180,6 @@ export default function MarketplacePage() {
                   )}
                   <div className="p-2.5 space-y-1.5">
                     <p className="text-[13px] text-white truncate">{l.name || l.identifier || l.token}</p>
-                    <p className="text-[11px] text-zinc-500 truncate">{l.token}-{l.nonce}</p>
                     <p className="text-sm text-cyan-200 tabular-nums">{p} EGLD</p>
                     <button
                       type="button"
@@ -193,14 +189,16 @@ export default function MarketplacePage() {
                         if (!connected) return requestOpenConnect()
                         if (l.listing_id == null) return
                         try {
-                          await buyNft({ listingId: l.listing_id, priceEgld: p })
-                          push('Achat envoyé — signe dans xPortal', 'ok')
+                          const res = await buyNft({ listingId: l.listing_id, priceEgld: p })
+                          markListingSold(l.listing_id, res?.sessionId || undefined)
+                          reload()
+                          push('Achat envoy\u00e9 \u2014 vitrine mise \u00e0 jour', 'ok')
                         } catch (e) {
-                          push(e instanceof Error ? e.message : 'Échec', 'err')
+                          push(e instanceof Error ? e.message : '\u00c9chec', 'err')
                         }
                       }}
                     >
-                      {pending ? 'Signature…' : 'Buy'}
+                      {pending ? 'Signature\u2026' : 'Buy'}
                     </button>
                   </div>
                 </article>
@@ -211,16 +209,13 @@ export default function MarketplacePage() {
       </section>
 
       <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">Vendre — multi sélection</h2>
-        <p className="text-[12px] text-zinc-500">
-          Coche plusieurs NFT, un prix commun. MultiversX = une TX list par pièce (comme Frameit).
-        </p>
+        <h2 className="text-sm font-semibold text-white">Vendre</h2>
         {!connected ? (
           <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
             Connecter wallet
           </button>
         ) : account.loading ? (
-          <p className="text-[13px] text-zinc-500">Chargement inventaire…</p>
+          <p className="text-[13px] text-zinc-500">Chargement inventaire\u2026</p>
         ) : (
           <>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
@@ -253,7 +248,7 @@ export default function MarketplacePage() {
               </button>
             )}
             <div className="flex flex-wrap gap-2 items-center">
-              <span className="text-[12px] text-zinc-500">{selected.size} sélectionné(s)</span>
+              <span className="text-[12px] text-zinc-500">{selected.size} s\u00e9lectionn\u00e9(s)</span>
               <input
                 type="number"
                 min="0.001"
@@ -268,14 +263,14 @@ export default function MarketplacePage() {
                 disabled={pending || !live || selected.size === 0}
                 onClick={() => void onListMany()}
               >
-                {pending ? 'Signature…' : `List ${selected.size || ''}`}
+                {pending ? 'Signature\u2026' : `List ${selected.size || ''}`}
               </button>
             </div>
           </>
         )}
         {(msg || error) && <p className="text-[12px] text-amber-200/90">{msg || error}</p>}
         <Link to="/studio" className="text-[12px] text-cyan-400 underline">
-          Studio →
+          Studio \u2192
         </Link>
       </section>
     </div>

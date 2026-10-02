@@ -1,6 +1,7 @@
 /**
- * Home produit — core modules + honnêteté SC.
+ * Home — badges LIVE seulement si codeHash + preuve explorer.
  */
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -10,28 +11,42 @@ import {
   SECONDARY_MODULES,
   STATUS_CLASS,
   STATUS_LABEL,
+  type ProductModule,
 } from '../config/product'
-import {
-  canListBuyNft,
-  canSpinSlot,
-  canStakeTro,
-  canBuyAgent,
-  canRentVenueOnChain,
-} from '../config/scStatus'
+import { isLiveProven, refreshExplorerProofs, type ProofKey } from '../lib/explorerProof'
 import { MAINNET_ADDRESSES } from '../config/contracts'
 
-function resolveLive(id: string, fallback: string): string {
-  if (id === 'marketplace' && canListBuyNft()) return 'live'
-  if (id === 'slot' && canSpinSlot()) return 'live'
-  if (id === 'staking' && canStakeTro()) return 'live'
-  if (id === 'agents' && canBuyAgent()) return 'live'
-  if (id === 'venues' && canRentVenueOnChain()) return 'live'
-  return fallback
+function mapProof(id: string): ProofKey | null {
+  if (id === 'marketplace') return 'marketplace'
+  if (id === 'slot') return 'slot'
+  if (id === 'staking') return 'tro_staking'
+  if (id === 'agents') return 'agents'
+  return null
+}
+
+function badgeStatus(m: ProductModule): ProductModule['status'] {
+  const pk = mapProof(m.id)
+  if (!pk) return m.status
+  if (isLiveProven(pk)) return 'live'
+  if (m.status === 'live') return 'gated'
+  return m.status
 }
 
 export default function Dashboard() {
   const { connected } = useWallet()
   const { t } = useI18n()
+  const [, setTick] = useState(0)
+
+  useEffect(() => {
+    void refreshExplorerProofs().then(() => setTick(x => x + 1))
+    const on = () => setTick(x => x + 1)
+    window.addEventListener('xartists-proof', on)
+    window.addEventListener('xartists-codehash', on)
+    return () => {
+      window.removeEventListener('xartists-proof', on)
+      window.removeEventListener('xartists-codehash', on)
+    }
+  }, [])
 
   const core = CORE_MODULES.filter(m => m.id !== 'home')
 
@@ -41,14 +56,14 @@ export default function Dashboard() {
         <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-violet-500/20 blur-3xl" />
         <div className="relative max-w-xl space-y-4">
           <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-300/85">
-            xArtists · MultiversX mainnet
+            xArtists \u00b7 MultiversX mainnet
           </p>
           <h1 className="font-tech text-3xl font-bold tracking-tight text-white title-glow sm:text-4xl">
-            NFT · $TRO · Packs
+            NFT \u00b7 $TRO \u00b7 Packs
           </h1>
           <p className="text-sm leading-relaxed text-zinc-400">
-            Marketplace on-chain prouvée. Staking, slot et packs selon gates SC.
-            Pas un fond d&apos;investissement. Pas de promesse de rendement.
+            Badge LIVE = codeHash explorer + activit\u00e9 SC. PAPER = UI seulement. Pas un fond
+            d&apos;investissement.
           </p>
           <div className="flex flex-wrap gap-2">
             {!connected && (
@@ -59,9 +74,6 @@ export default function Dashboard() {
             <Link to="/marketplace" className="btn-secondary">
               Marketplace
             </Link>
-            <Link to="/staking" className="btn-secondary">
-              Staking
-            </Link>
             <Link to="/go-live" className="btn-secondary">
               Status SC
             </Link>
@@ -71,12 +83,12 @@ export default function Dashboard() {
 
       <section className="space-y-3">
         <div className="flex items-end justify-between gap-2">
-          <p className="section-label">Produit cœur</p>
-          <p className="text-[10px] text-zinc-600">LIVE = TX possible · PAPER = UI</p>
+          <p className="section-label">Produit c\u0153ur</p>
+          <p className="text-[10px] text-zinc-600">LIVE \u2190 preuve explorer</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           {core.map(m => {
-            const st = resolveLive(m.id, m.status) as keyof typeof STATUS_LABEL
+            const st = badgeStatus(m)
             return (
               <Link
                 key={m.id}
@@ -117,11 +129,10 @@ export default function Dashboard() {
       </section>
 
       <section className="rounded-2xl border border-white/10 bg-black/30 p-4 text-[11px] text-zinc-500 space-y-1">
-        <p className="font-medium text-zinc-300">SC mainnet (adresses)</p>
+        <p className="font-medium text-zinc-300">SC mainnet</p>
         <p className="mono truncate">market {MAINNET_ADDRESSES.nft_marketplace}</p>
         <p className="mono truncate">stake {MAINNET_ADDRESSES.tro_staking}</p>
         <p className="mono truncate">slot {MAINNET_ADDRESSES.slot_casino}</p>
-        <p className="mono truncate">agents {MAINNET_ADDRESSES.agents_marketplace}</p>
       </section>
     </div>
   )
