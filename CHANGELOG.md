@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.76.1](https://github.com/Neltud/xArtists/compare/v0.76.0...v0.76.1) (2026-10-02)
+
+
+### Bug Fixes
+
+* **nav:** always show menu + open-connect listener (desktop shell) ([8debe66](https://github.com/Neltud/xArtists/commit/8debe669febef3977053543b465257544658724b))
+* restore full index.css + SideNav slide keyframes ([212cd52](https://github.com/Neltud/xArtists/commit/212cd52596eb08b7f526732ca20cb65a4921e517))
+
 ## [0.76.0](https://github.com/Neltud/xArtists/compare/v0.75.0...v0.76.0) (2026-10-02)
 
 
