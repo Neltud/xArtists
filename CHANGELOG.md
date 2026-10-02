@@ -1,5 +1,21 @@
 # Changelog — xArtists
 
+## [0.77.1](https://github.com/Neltud/xArtists/compare/v0.77.0...v0.77.1) (2026-10-02)
+
+
+### Bug Fixes
+
+* Marketplace UTF-8 text + safer Slot format helpers ([8d93045](https://github.com/Neltud/xArtists/commit/8d93045db6b81fbc1161f4d528968b73d5ec9280))
+* SlotPage progressive API + Dashboard/product UTF-8 (no literal \\u) ([5b55648](https://github.com/Neltud/xArtists/commit/5b55648e28f83fbea4c812d534b5170d2f2c5622))
+* **xportal:** session heartbeat + visibility restore + softer logout ([c7d562b](https://github.com/Neltud/xArtists/commit/c7d562bbfffe2fb9f025dc1e47e92b079dc069f0))
+
+
+### Documentation
+
+* ANALYSE_DAPP_COMPLETE 2 Oct — first sale, veille CEX 6-11, suites logiques ([70cb397](https://github.com/Neltud/xArtists/commit/70cb397ae8c616e19562bbee7b810c6997bb0c8f))
+* README + walkthrough + contracts.json probe 2 Oct (first sale, house, fee) ([f9fd807](https://github.com/Neltud/xArtists/commit/f9fd807dc53f8f9382c44d7ec441a038c9d66f08))
+* recap 2 Oct GO_LIVE SC — first sale 0.25 EGLD, unstale STATUS, LIA paper ([2f7aa06](https://github.com/Neltud/xArtists/commit/2f7aa06ac6083f8140b1f26b153fb3f8e6a28c99))
+
 ## [0.77.0](https://github.com/Neltud/xArtists/compare/v0.76.1...v0.77.0) (2026-10-02)
 
 
