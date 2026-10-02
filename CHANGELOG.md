@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.76.0](https://github.com/Neltud/xArtists/compare/v0.75.0...v0.76.0) (2026-10-02)
+
+
+### Features
+
+* **ambient:** aura 4 modes + tape paper + wall noise + terminal collapsed ([835c6b1](https://github.com/Neltud/xArtists/commit/835c6b1642891a8c13381df276abb336702d043d))
+* **ambient:** wire orb/wall/tape/toasts + CSS aura + terminal collapsed ([9c29951](https://github.com/Neltud/xArtists/commit/9c29951ba2ff8fff665be497c19cc86489f266e4))
+
 ## [0.75.0](https://github.com/Neltud/xArtists/compare/v0.74.0...v0.75.0) (2026-10-02)
 
 
