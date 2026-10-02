@@ -1,7 +1,9 @@
 /**
- * Slot casino SC — spinEgld / resolveSpin / refundSpin.
- * Hard-gated by canSpinSlot() (VITE_SLOT_CASINO_CODEHASH_OK=1).
- * Provably fair: client_seed → lock → resolve after delay blocks.
+ * Slot SC — deployed bytecode endpoints include: spinEgld, spinEsdt, resolveSpin, refundSpin,
+ * fundProgressiveEgld, claimHouseEgld…
+ *
+ * Mainnet probe 2026-10-03: spinEgld@seed + EGLD value → "ESDT expected" (payment path bug).
+ * Until SC upgrade, real spins stay blocked with honest error; paper mode remains UI.
  */
 import { useCallback, useState } from 'react'
 import { useSendTransaction } from './useSendTransaction'
@@ -34,8 +36,12 @@ function randomClientSeed(): string {
     .join('')
 }
 
+/** Deployed spinEgld rejects pure EGLD with ESDT expected — do not expose as working. */
+export const SLOT_SPIN_EGLD_BROKEN =
+  'Slot on-chain: spinEgld renvoie « ESDT expected » (bug bytecode). Upgrade SC requis. Utilise le mode Fun (paper).'
+
 const BLOCKED =
-  'Slot SC gated — set VITE_SLOT_CASINO_CODEHASH_OK=1 + fund progressive before on-chain spin.'
+  'Slot SC non ouvert — paper / simulation uniquement pour l’instant.'
 
 export function useSlotTx() {
   const [pending, setPending] = useState(false)
@@ -54,9 +60,8 @@ export function useSlotTx() {
         setError(BLOCKED)
         throw new Error(BLOCKED)
       }
-      let receiver: string
       try {
-        receiver = slotReceiverOrThrow()
+        slotReceiverOrThrow()
       } catch (e) {
         const msg = e instanceof Error ? e.message : BLOCKED
         setError(msg)
@@ -65,7 +70,7 @@ export function useSlotTx() {
       setPending(true)
       setError(null)
       try {
-        const res = await send([{ ...(tx as object), receiver }], {
+        const res = await send([{ ...(tx as object), receiver: slotReceiverOrThrow() }], {
           processingMessage: labels.processing,
           successMessage: labels.success,
           errorMessage: labels.fail,
@@ -88,12 +93,18 @@ export function useSlotTx() {
   )
 
   const spinEgld = useCallback(
+    async (_betEgld: number, _clientSeed?: string) => {
+      // Honest block — avoids burning user gas on known-broken path
+      setError(SLOT_SPIN_EGLD_BROKEN)
+      throw new Error(SLOT_SPIN_EGLD_BROKEN)
+    },
+    [],
+  )
+
+  /** Experimental — only after SC upgrade verified */
+  const spinEgldRaw = useCallback(
     async (betEgld: number, clientSeed?: string) => {
-      if (!(betEgld > 0)) {
-        const msg = 'Mise invalide'
-        setError(msg)
-        throw new Error(msg)
-      }
+      if (!(betEgld > 0)) throw new Error('Mise invalide')
       const seed = (clientSeed || randomClientSeed()).slice(0, 64)
       setLastSeed(seed)
       return run(
@@ -105,7 +116,7 @@ export function useSlotTx() {
         },
         {
           processing: 'Spin on-chain…',
-          success: 'Spin locked — resolve après delay',
+          success: 'Spin soumis',
           fail: 'Spin SC failed',
         },
       )
@@ -122,11 +133,7 @@ export function useSlotTx() {
           data: `resolveSpin@${numToHex(spinId)}`,
           chainID: '1',
         },
-        {
-          processing: 'Resolve spin…',
-          success: 'Resolved',
-          fail: 'Resolve failed',
-        },
+        { processing: 'Resolve…', success: 'Resolved', fail: 'Resolve failed' },
       ),
     [run],
   )
@@ -140,17 +147,14 @@ export function useSlotTx() {
           data: `refundSpin@${numToHex(spinId)}`,
           chainID: '1',
         },
-        {
-          processing: 'Refund…',
-          success: 'Refunded',
-          fail: 'Refund failed',
-        },
+        { processing: 'Refund…', success: 'Refunded', fail: 'Refund failed' },
       ),
     [run],
   )
 
   return {
     spinEgld,
+    spinEgldRaw,
     resolveSpin,
     refundSpin,
     pending,
@@ -158,6 +162,7 @@ export function useSlotTx() {
     lastTx,
     lastSeed,
     slotLive: live,
+    slotSpinBroken: true as const,
     slotAddress: live ? SLOT_CASINO_ADDRESS : '',
   }
 }
