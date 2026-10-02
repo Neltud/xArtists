@@ -1,5 +1,22 @@
 # Changelog — xArtists
 
+## [0.77.0](https://github.com/Neltud/xArtists/compare/v0.76.1...v0.77.0) (2026-10-02)
+
+
+### Features
+
+* marketplace sold overlay + Dashboard LIVE from explorer proof ([2c03a52](https://github.com/Neltud/xArtists/commit/2c03a528957610a7f8d0ae756dbe68820a50dba8))
+
+
+### Bug Fixes
+
+* multi-TX broadcast all + marketplace sold overlay + LIVE from explorer proof ([438cc4a](https://github.com/Neltud/xArtists/commit/438cc4aa4239d8bd96bc76e1377cd6d2a761905c))
+
+
+### Refactoring
+
+* **product:** core dApp surface aligned to mainnet SC reality ([13509a3](https://github.com/Neltud/xArtists/commit/13509a337be54843b5ce5369a96b5b3e6aa22677))
+
 ## [0.76.1](https://github.com/Neltud/xArtists/compare/v0.76.0...v0.76.1) (2026-10-02)
 
 
