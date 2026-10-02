@@ -13,6 +13,12 @@ export const LINKS = {
   githubPages: 'https://neltud.github.io/xArtists/',
   walletLogin: (callback: string) =>
     `https://wallet.multiversx.com/hook/login?callbackUrl=${encodeURIComponent(callback)}`,
+  explorerAccount: (addr: string) =>
+    `https://explorer.multiversx.com/accounts/${encodeURIComponent(addr)}`,
+  explorerTx: (hash: string) =>
+    `https://explorer.multiversx.com/transactions/${encodeURIComponent(hash)}`,
+  explorerToken: (id: string) =>
+    `https://explorer.multiversx.com/tokens/${encodeURIComponent(id)}`,
 }
 
 export const PRIMARY_NAV: { to: string; label: string; emoji: string }[] = [
@@ -37,6 +43,7 @@ export const SECONDARY_NAV: { to: string; label: string; emoji: string }[] = [
   { to: '/dao', label: 'DAO', emoji: '⬡' },
   { to: '/venues', label: 'Venues', emoji: '◎' },
   { to: '/gallery', label: 'Galerie', emoji: '▣' },
+  { to: '/sitemap', label: 'Plan du site', emoji: '☰' },
   { to: '/go-live', label: 'Go Live', emoji: '🚀' },
   { to: '/legal', label: 'Legal', emoji: '§' },
   { to: '/identity', label: 'Identity', emoji: '🪪' },
