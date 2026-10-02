@@ -1,4 +1,4 @@
-/* Micro-interactions + render containment — 3 arrows UX */
+/* Micro-interactions + ambient aura */
 
 .card-play {
   position: relative;
@@ -67,11 +67,86 @@
   transform: translateZ(0);
 }
 
-/* List / gallery tiles — skip offscreen paint */
 .nft-grid-item,
 .card-play {
   content-visibility: auto;
   contain-intrinsic-size: auto 180px;
+}
+
+/* ---- Ambient aura (AgentNftOrb) ---- */
+@keyframes xartists-aura-bull-kf {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.08);
+    filter: brightness(1.25);
+  }
+}
+@keyframes xartists-aura-bear-kf {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    filter: brightness(1);
+  }
+  25% {
+    transform: translate(-1px, 1px) scale(0.96);
+  }
+  50% {
+    transform: translate(1px, -1px) scale(0.97);
+    filter: brightness(0.85);
+  }
+  75% {
+    transform: translate(-1px, 0) scale(0.96);
+  }
+}
+@keyframes xartists-aura-reward-kf {
+  0% {
+    transform: scale(1);
+    filter: brightness(1) drop-shadow(0 0 0 transparent);
+  }
+  35% {
+    transform: scale(1.18);
+    filter: brightness(1.55) drop-shadow(0 0 12px rgba(251, 191, 36, 0.9));
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+@keyframes xartists-aura-stable-kf {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 0.92;
+  }
+}
+@keyframes xartists-holo-scan {
+  0% {
+    transform: translateY(-120%);
+  }
+  100% {
+    transform: translateY(320%);
+  }
+}
+
+.xartists-aura-bull {
+  animation: xartists-aura-bull-kf 2.6s ease-in-out infinite;
+}
+.xartists-aura-bear {
+  animation: xartists-aura-bear-kf 0.55s ease-in-out infinite;
+}
+.xartists-aura-reward {
+  animation: xartists-aura-reward-kf 1.1s ease-out 2;
+}
+.xartists-aura-stable {
+  animation: xartists-aura-stable-kf 3.8s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -82,5 +157,11 @@
   }
   .card-interactive::after {
     display: none;
+  }
+  .xartists-aura-bull,
+  .xartists-aura-bear,
+  .xartists-aura-reward,
+  .xartists-aura-stable {
+    animation: none;
   }
 }

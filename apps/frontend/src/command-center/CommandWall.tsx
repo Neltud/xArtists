@@ -1,5 +1,5 @@
 /**
- * CommandWall — interactive 3D wall + Semantic Compiler uniforms.
+ * CommandWall — interactive 3D wall + volatility noise / ambient intensity.
  */
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
@@ -163,42 +163,65 @@ export default function CommandWall({
       const s = sentRef.current
       const v = volRef.current
       const bullish = s >= 0
+      const highVol = v > 0.55
       const t = (performance.now() - t0) / 1000
 
       atmo.uniforms.uTime.value = t
       atmo.uniforms.uSentiment.value = s
       atmo.uniforms.uVolatility.value = v
       if ('uPulseSpeed' in atmo.uniforms) {
-        ;(atmo.uniforms as { uPulseSpeed: { value: number } }).uPulseSpeed.value = spdRef.current
+        ;(atmo.uniforms as { uPulseSpeed: { value: number } }).uPulseSpeed.value =
+          spdRef.current * (1 + (highVol ? 0.35 : 0))
       }
       if ('uColor' in atmo.uniforms && colRef.current) {
         const c = colRef.current
-        ;(atmo.uniforms as { uColor: { value: THREE.Vector3 } }).uColor.value.set(c[0], c[1], c[2])
+        // High vol → mix toward electric violet
+        if (highVol) {
+          ;(atmo.uniforms as { uColor: { value: THREE.Vector3 } }).uColor.value.set(
+            c[0] * 0.55 + 0.45,
+            c[1] * 0.4 + 0.15,
+            c[2] * 0.55 + 0.55,
+          )
+        } else {
+          ;(atmo.uniforms as { uColor: { value: THREE.Vector3 } }).uColor.value.set(c[0], c[1], c[2])
+        }
       }
 
       if (meshMatRef.current) {
-        meshMatRef.current.emissive.setHex(bullish ? 0x0e7490 : 0x7f1d1d)
-        meshMatRef.current.emissiveIntensity = 0.35 + Math.abs(s) * 0.45 + v * 0.2
+        if (highVol) {
+          meshMatRef.current.emissive.setHex(0x5b21b6)
+          meshMatRef.current.emissiveIntensity = 0.55 + v * 0.55
+        } else {
+          meshMatRef.current.emissive.setHex(bullish ? 0x0e7490 : 0x7f1d1d)
+          meshMatRef.current.emissiveIntensity = 0.35 + Math.abs(s) * 0.45 + v * 0.2
+        }
       }
       if (lightRef.current) {
-        lightRef.current.color.setHex(bullish ? 0x22d3ee : 0xf43f5e)
-        lightRef.current.intensity = 0.9 + Math.abs(s) * 0.8 + v * 0.5
+        lightRef.current.color.setHex(highVol ? 0xa78bfa : bullish ? 0x22d3ee : 0xf43f5e)
+        lightRef.current.intensity = 0.9 + Math.abs(s) * 0.8 + v * 0.7
       }
       if (ambRef.current) {
-        ambRef.current.intensity = 0.35 + Math.max(0, s) * 0.25
+        // Low liquidity proxy = low |sentiment| + low vol → dim
+        const lowEnergy = Math.abs(s) < 0.15 && v < 0.35
+        ambRef.current.intensity = lowEnergy ? 0.22 : 0.35 + Math.max(0, s) * 0.25 + (highVol ? 0.15 : 0)
       }
       const speed = bullish ? 5000 - Math.abs(s) * 1500 : 2200 - v * 800
       if (wallRef.current) {
-        wallRef.current.rotation.y =
-          Math.sin(Date.now() / Math.max(speed, 800)) * (0.06 + v * 0.08)
-        if (v > 0.6 && Math.random() > 0.92) {
-          wallRef.current.position.x = (Math.random() - 0.5) * 0.02
+        const amp = 0.06 + v * 0.12
+        wallRef.current.rotation.y = Math.sin(Date.now() / Math.max(speed, 600)) * amp
+        // Noise / micro-shake when high volatility
+        if (highVol) {
+          wallRef.current.position.x = (Math.random() - 0.5) * 0.04 * v
+          wallRef.current.position.y = (Math.random() - 0.5) * 0.02 * v
+        } else if (v > 0.4 && Math.random() > 0.9) {
+          wallRef.current.position.x = (Math.random() - 0.5) * 0.015
         } else {
-          wallRef.current.position.x *= 0.8
+          wallRef.current.position.x *= 0.85
+          wallRef.current.position.y *= 0.85
         }
       }
-      stakeNode.rotation.y += 0.01
-      marketNode.rotation.y -= 0.01
+      stakeNode.rotation.y += 0.01 + v * 0.01
+      marketNode.rotation.y -= 0.01 + v * 0.01
       renderer.render(scene, camera)
     }
     animate()
@@ -247,8 +270,7 @@ export default function CommandWall({
       <ProjectionBridge sentiment={sentiment} onTexture={onTexture} />
       {interactive && (
         <p className="absolute bottom-2 left-3 right-3 text-[9px] text-zinc-500 pointer-events-none">
-          Clic nœud vert = Stake · violet = Market · mur = Pulse · sentiment{' '}
-          {sentiment.toFixed(2)}
+          vert = Stake · violet = Market · mur = Pulse · vol {volatility.toFixed(2)}
         </p>
       )}
     </div>
