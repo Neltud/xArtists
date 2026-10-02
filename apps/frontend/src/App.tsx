@@ -1,33 +1,21 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
-import SignalTicker from './components/SignalTicker'
-import FirstVisitOnboarding from './components/FirstVisitOnboarding'
 import ErrorBoundary from './components/ErrorBoundary'
 import PageLoader from './components/PageLoader'
-import PwaInstallBanner from './components/PwaInstallBanner'
-import PrivateReleaseStrip from './components/PrivateReleaseStrip'
-import DemoModeBanner from './components/DemoModeBanner'
-import IntentBar from './components/IntentBar'
-import LiaMonitor from './components/LiaMonitor'
-import GuardianStatusBar from './components/shared/GuardianStatusBar'
+import RouteErrorBoundary from './components/RouteErrorBoundary'
+import PageTransition from './components/PageTransition'
 import ArtAtelierBackdrop from './components/ArtAtelierBackdrop'
-import BrainMoodStrip from './components/BrainMoodStrip'
-import { useMultiversX } from './hooks/useMultiversX'
+import FirstVisitOnboarding from './components/FirstVisitOnboarding'
+import PwaInstallBanner from './components/PwaInstallBanner'
 import AssetDrawer from './components/ui/AssetDrawer'
 import { OPEN_ASSETS_EVENT } from './lib/walletEvents'
 import { LINKS } from './config/links'
-import PageTransition from './components/PageTransition'
-import SoundDock from './components/SoundDock'
-import BackgroundMusicPlayer from './components/BackgroundMusicPlayer'
 import ZoneRouteSync from './components/ZoneRouteSync'
-import TransactionOverlay from './components/TransactionOverlay'
-import TransactionMonitor from './components/TransactionMonitor'
-import AgentAccessSync from './components/AgentAccessSync'
-import SystemMaintenanceBanner from './components/SystemMaintenanceBanner'
-import RouteErrorBoundary from './components/RouteErrorBoundary'
 import RouteSfx from './components/RouteSfx'
+import AgentAccessSync from './components/AgentAccessSync'
+import BackgroundMusicPlayer from './components/BackgroundMusicPlayer'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const MuseumPage = lazy(() => import('./pages/MuseumPage'))
@@ -65,13 +53,10 @@ const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
 const HatomPage = lazy(() => import('./pages/HatomPage'))
 const LightningAgentPage = lazy(() => import('./pages/LightningAgentPage'))
 const AgentsPolyliaPage = lazy(() => import('./pages/AgentsPolyliaPage'))
-const TxShell = lazy(() => import('./providers/TxShell'))
 
 export default function App() {
-  useMultiversX()
   const location = useLocation()
   const [assetsOpen, setAssetsOpen] = useState(false)
-  const [needsTx, setNeedsTx] = useState(false)
 
   useEffect(() => {
     const open = () => setAssetsOpen(true)
@@ -79,26 +64,16 @@ export default function App() {
     return () => window.removeEventListener(OPEN_ASSETS_EVENT, open)
   }, [])
 
-  useEffect(() => {
-    setNeedsTx(true)
-  }, [])
-
   return (
     <ErrorBoundary>
-      <div className="min-h-screen flex flex-col relative">
+      <div className="relative flex min-h-screen flex-col">
         <ArtAtelierBackdrop />
-        <PrivateReleaseStrip />
-        <DemoModeBanner />
-        <SystemMaintenanceBanner />
-        <TransactionMonitor />
         <AgentAccessSync />
         <Header />
-        <BrainMoodStrip />
-        <SignalTicker />
-        <GuardianStatusBar />
         <ZoneRouteSync />
         <RouteSfx />
-        <main className="flex-1 px-3 sm:px-4 py-4 pb-28 md:pb-8 max-w-6xl w-full mx-auto atelier-content">
+
+        <main className="atelier-content mx-auto w-full max-w-6xl flex-1 px-3 py-5 pb-28 sm:px-4 md:pb-10">
           <Suspense fallback={<PageLoader />}>
             <RouteErrorBoundary>
               <PageTransition key={location.pathname}>
@@ -151,24 +126,19 @@ export default function App() {
             </RouteErrorBoundary>
           </Suspense>
         </main>
-        <IntentBar />
+
         <BottomNav />
         <FirstVisitOnboarding />
         <PwaInstallBanner />
-        <LiaMonitor />
         <BackgroundMusicPlayer />
-        <SoundDock />
-        <TransactionOverlay />
-        {needsTx && (
-          <Suspense fallback={null}>
-            <TxShell />
-          </Suspense>
-        )}
         <AssetDrawer open={assetsOpen} onClose={() => setAssetsOpen(false)} />
-        <footer className="hidden md:block text-center text-[10px] text-zinc-600 py-4 atelier-content">
+
+        <footer className="hidden border-t border-white/5 py-4 text-center text-[10px] text-zinc-600 md:block">
           <a href={LINKS.github} className="hover:text-zinc-400" target="_blank" rel="noreferrer">
             GitHub
           </a>
+          {' · '}
+          MultiversX mainnet
         </footer>
       </div>
     </ErrorBoundary>
