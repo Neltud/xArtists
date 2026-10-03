@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.78.1](https://github.com/Neltud/xArtists/compare/v0.78.0...v0.78.1) (2026-10-03)
+
+
+### Bug Fixes
+
+* CC tunnel infinite load; slot NFT symbols + music; expand i18n ([25e7674](https://github.com/Neltud/xArtists/commit/25e767423fd9c6c8bb4e8e1b604aefaea2be5b0d))
+
 ## [0.78.0](https://github.com/Neltud/xArtists/compare/v0.77.1...v0.78.0) (2026-10-03)
 
 
