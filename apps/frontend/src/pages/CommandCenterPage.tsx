@@ -1,5 +1,5 @@
 /**
- * Command Center — ambient + rooms (no infinite tunnel).
+ * Command Center — ambient + rooms + LIA Shadow panel (paper).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -11,6 +11,7 @@ import DataTunnelTransition from '../command-center/DataTunnelTransition'
 import ClickGuide from '../command-center/ClickGuide'
 import AgentNftOrb from '../command-center/AgentNftOrb'
 import MarketTape from '../command-center/MarketTape'
+import LiaShadowPanel from '../command-center/LiaShadowPanel'
 import AgentNftStakePanel, { isAgentNftStaked } from '../components/AgentNftStakePanel'
 import { useAgentAccess, setEmpireZone, empireTxStart } from '../store/empireStore'
 import { usePulse } from '../hooks/usePulse'
@@ -169,6 +170,7 @@ function CommandCenterInner() {
             />
           )}
           <AgentNftStakePanel key={tick} packIds={packs} />
+          <LiaShadowPanel />
           <DashboardSource />
           <AgentRoster />
           <div className="card flex flex-wrap gap-2">
