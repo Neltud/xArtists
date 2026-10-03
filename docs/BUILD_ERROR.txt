@@ -1,5 +1,5 @@
-# Vite build failed @ 3290bb29b3b5dfca2b3340aa0f561eed266cc77f
-time: 2026-10-03T04:24:40Z
+# Vite build failed @ 5d8e8b4cf79372e41c45847de6d431b308854f79
+time: 2026-10-03T04:27:00Z
 
 
 > xartists-frontend@3.10.0 build
@@ -7,9 +7,9 @@ time: 2026-10-03T04:24:40Z
 
 [36mvite v5.4.21 [32mbuilding for production...[36m[39m
 transforming...
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/decryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/encryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/pubkeyEncryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/decryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/pubkeyDecryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/randomness.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-bls-wasm/bls.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
@@ -21,7 +21,7 @@ transforming...
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/scrypt.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/utils.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [32m✓[39m 2218 modules transformed.
-[31mx[39m Build failed in 6.26s
+[31mx[39m Build failed in 4.47s
 [31merror during build:
 [31msrc/pages/GoLivePage.tsx (22:2): "canUseVenue" is not exported by "src/config/scStatus.ts", imported by "src/pages/GoLivePage.tsx".[31m
 file: [36m/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/GoLivePage.tsx:22:2[31m
