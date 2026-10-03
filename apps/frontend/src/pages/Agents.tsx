@@ -1,4 +1,4 @@
-/** Packs — paper checkout clair · SC mint quand preuve explorer. */
+/** Packs IA — libellés clairs, sans « paper ». */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
@@ -8,7 +8,7 @@ import FeeTransparency from '../components/ui/FeeTransparency'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 import { canBuyAgent } from '../config/scStatus'
 import { isLiveProven } from '../lib/explorerProof'
-import { MAINNET_ADDRESSES } from '../config/contracts'
+import { useI18n } from '../i18n/I18nContext'
 
 const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
 const PACKS = (AGENT_PACKS || []).filter(
@@ -16,6 +16,7 @@ const PACKS = (AGENT_PACKS || []).filter(
 )
 
 export default function Agents() {
+  const { t } = useI18n()
   const [selected, setSelected] = useState<PackId | null>(null)
   const [theater, setTheater] = useState<PackId | null>(null)
   const active = PACKS.find(p => p && p.id === selected) || null
@@ -25,7 +26,7 @@ export default function Agents() {
   return (
     <div className="animate-fade-in pb-14 max-w-3xl mx-auto space-y-8">
       <header className="space-y-2">
-        <p className="section-label">Packs · produits limités</p>
+        <p className="section-label">Packs</p>
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="section-title display">Pulse · Yield · Sentinel</h1>
           <span
@@ -35,16 +36,16 @@ export default function Agents() {
                 : 'border-amber-500/35 text-amber-200 bg-amber-500/10'
             }`}
           >
-            {mintLive ? 'LIVE' : 'PAPER'}
+            {mintLive ? 'LIVE' : 'BIENTÔT'}
           </span>
         </div>
         <p className="section-lead">
-          Trois salles. Floor 10 EGLD. Pas un fond d&apos;investissement.
+          Trois salles. Floor 10 EGLD. {t('packs.disclaimer')}
         </p>
         {!mintLive && (
-          <p className="text-[12px] text-amber-200/85 rounded-xl border border-amber-500/20 bg-amber-500/5 px-3 py-2">
-            Mint on-chain pas encore prouvé sur explorer. Checkout paper / fiat OK — aucun SC mint
-            user jusqu&apos;à 1 TX réussie.
+          <p className="text-[12px] text-zinc-400 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+            Le mint on-chain arrive ensuite. Tu peux déjà explorer les salles après activation sur cet
+            appareil, ou suivre le Marketplace pour les NFT agents listés.
           </p>
         )}
       </header>
@@ -58,7 +59,7 @@ export default function Agents() {
             key={p.id}
             type="button"
             onClick={() => setSelected(p.id)}
-            className="card text-left card-play"
+            className="card text-left card-play transition active:scale-[0.98] hover:border-violet-400/30"
           >
             <p className="text-[15px] font-semibold text-white">
               {p.icon} {p.name}
@@ -74,18 +75,27 @@ export default function Agents() {
           <h2 className="text-sm font-semibold text-white">
             {active.icon} {active.name}
           </h2>
-          <PackCheckout packId={active.id} onPaperDone={id => setTheater(id)} onClear={() => setSelected(null)} />
+          <PackCheckout
+            packId={active.id}
+            onPaperDone={id => setTheater(id)}
+            onClear={() => setSelected(null)}
+          />
           <Link to="/my-packs" className="text-[12px] text-cyan-400 underline">
-            Ouvrir la salle →
+            Ouvrir mes salles →
           </Link>
         </section>
       )}
 
       {theaterPack && <PackOpenTheater pack={theaterPack} open onClose={() => setTheater(null)} />}
 
-      <p className="text-[10px] text-zinc-600 mono break-all">
-        SC agents {MAINNET_ADDRESSES.agents_marketplace}
-      </p>
+      <div className="flex flex-wrap gap-3 text-[12px]">
+        <Link to="/marketplace" className="text-cyan-400 hover:underline">
+          Marketplace NFT →
+        </Link>
+        <Link to="/command-center" className="text-zinc-400 hover:underline">
+          Command Center →
+        </Link>
+      </div>
     </div>
   )
 }
