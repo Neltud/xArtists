@@ -1,5 +1,5 @@
 /**
- * Home — badges LIVE seulement si codeHash + preuve explorer.
+ * Home — badges LIVE si preuve explorer ; sinon BIENTÔT / OUVERT.
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -28,7 +28,8 @@ function badgeStatus(m: ProductModule): ProductModule['status'] {
   const pk = mapProof(m.id)
   if (!pk) return m.status
   if (isLiveProven(pk)) return 'live'
-  if (m.status === 'live') return 'gated'
+  // SC déclaré live mais pas encore de preuve TX → BIENTÔT (pas de jargon interne)
+  if (m.status === 'live') return 'soon'
   return m.status
 }
 
@@ -62,20 +63,20 @@ export default function Dashboard() {
             NFT · $TRO · Packs
           </h1>
           <p className="text-sm leading-relaxed text-zinc-400">
-            Badge LIVE = codeHash explorer + activité SC. PAPER = UI seulement. Pas un fond
-            d&apos;investissement.
+            LIVE = utilisable on-chain. BIENTÔT = en cours d&apos;ouverture. OUVERT = interface prête.
+            Pas un fond d&apos;investissement.
           </p>
           <div className="flex flex-wrap gap-2">
             {!connected && (
-              <button type="button" className="btn-primary" onClick={() => requestOpenConnect()}>
+              <button type="button" className="btn-primary active:scale-[0.98]" onClick={() => requestOpenConnect()}>
                 {t('common.connect')}
               </button>
             )}
-            <Link to="/marketplace" className="btn-secondary">
+            <Link to="/marketplace" className="btn-secondary active:scale-[0.98]">
               Marketplace
             </Link>
-            <Link to="/go-live" className="btn-secondary">
-              Status SC
+            <Link to="/museum" className="btn-secondary active:scale-[0.98]">
+              Musée
             </Link>
           </div>
         </div>
@@ -84,7 +85,7 @@ export default function Dashboard() {
       <section className="space-y-3">
         <div className="flex items-end justify-between gap-2">
           <p className="section-label">Produit cœur</p>
-          <p className="text-[10px] text-zinc-600">LIVE ← preuve explorer</p>
+          <p className="text-[10px] text-zinc-600">Clique une carte pour ouvrir</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           {core.map(m => {
@@ -93,7 +94,7 @@ export default function Dashboard() {
               <Link
                 key={m.id}
                 to={m.path}
-                className="group rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-violet-400/30"
+                className="group rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:border-violet-400/30 active:scale-[0.99]"
               >
                 <div className="flex items-start justify-between gap-2">
                   <h2 className="text-sm font-semibold text-white">
@@ -102,7 +103,9 @@ export default function Dashboard() {
                     </span>
                     {m.label}
                   </h2>
-                  <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-semibold ${STATUS_CLASS[st]}`}>
+                  <span
+                    className={`shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-semibold ${STATUS_CLASS[st]}`}
+                  >
                     {STATUS_LABEL[st]}
                   </span>
                 </div>
@@ -114,13 +117,13 @@ export default function Dashboard() {
       </section>
 
       <section className="space-y-3">
-        <p className="section-label">Secondaire</p>
+        <p className="section-label">Aussi</p>
         <div className="flex flex-wrap gap-2">
           {SECONDARY_MODULES.map(m => (
             <Link
               key={m.id}
               to={m.path}
-              className="rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[12px] text-zinc-300 hover:border-white/20 hover:text-white"
+              className="rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[12px] text-zinc-300 transition hover:border-white/20 hover:text-white active:scale-95"
             >
               {m.emoji} {m.label}
             </Link>
@@ -129,7 +132,7 @@ export default function Dashboard() {
       </section>
 
       <section className="rounded-2xl border border-white/10 bg-black/30 p-4 text-[11px] text-zinc-500 space-y-1">
-        <p className="font-medium text-zinc-300">SC mainnet</p>
+        <p className="font-medium text-zinc-300">Contrats mainnet</p>
         <p className="mono truncate">market {MAINNET_ADDRESSES.nft_marketplace}</p>
         <p className="mono truncate">stake {MAINNET_ADDRESSES.tro_staking}</p>
         <p className="mono truncate">slot {MAINNET_ADDRESSES.slot_casino}</p>
