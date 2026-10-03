@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.78.0](https://github.com/Neltud/xArtists/compare/v0.77.1...v0.78.0) (2026-10-03)
+
+
+### Features
+
+* MoonPay on-ramp (EGLD) — Wallet + payments + optional URL sign API ([08832fc](https://github.com/Neltud/xArtists/commit/08832fc2a1712083adc988e33f12073f96ac1d31))
+
+
+### Bug Fixes
+
+* **sc:** align agents buyAgentAction + slot ESDT bug gate + solutions doc ([0421922](https://github.com/Neltud/xArtists/commit/0421922ff1a6c7262bf89b2e054d78104501ea9c))
+
 ## [0.77.1](https://github.com/Neltud/xArtists/compare/v0.77.0...v0.77.1) (2026-10-02)
 
 
