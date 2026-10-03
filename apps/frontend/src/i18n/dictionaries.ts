@@ -1,5 +1,41 @@
 import type { Dict, Lang } from './types'
 
+const slotFr = {
+  'slot.title': 'Slot Atelier',
+  'slot.lead': 'Fun = crédits virtuels. Réel bientôt (SC).',
+  'slot.music': 'Musique',
+  'slot.spin': 'Tourner',
+  'slot.bank': 'Banque',
+  'slot.miss': 'Rien',
+  'slot.pot.hint': 'Crédits virtuels Fun — non retirables.',
+  'slot.real.paused': 'Mode réel en pause — upgrade SC',
+  'slot.real.blocked': 'Conditions non réunies',
+  'wallet.title': 'Wallet',
+  'wallet.session': 'Session',
+  'common.error': 'Erreur',
+  'common.buy': 'Acheter',
+  'market.title': 'Marketplace',
+  'staking.title': 'Staking & Yield',
+}
+
+const slotEn = {
+  'slot.title': 'Atelier Slot',
+  'slot.lead': 'Fun = virtual credits. Real soon (SC).',
+  'slot.music': 'Music',
+  'slot.spin': 'Spin',
+  'slot.bank': 'Bank',
+  'slot.miss': 'Miss',
+  'slot.pot.hint': 'Fun virtual credits — not withdrawable.',
+  'slot.real.paused': 'Real mode paused — SC upgrade',
+  'slot.real.blocked': 'Requirements not met',
+  'wallet.title': 'Wallet',
+  'wallet.session': 'Session',
+  'common.error': 'Error',
+  'common.buy': 'Buy',
+  'market.title': 'Marketplace',
+  'staking.title': 'Staking & Yield',
+}
+
 const fr: Dict = {
   'nav.home': 'Accueil',
   'nav.museum': 'Musée',
@@ -32,6 +68,7 @@ const fr: Dict = {
   'common.disconnect': 'Déconnecter',
   'common.loading': 'Chargement…',
   'lang.label': 'Langue',
+  ...slotFr,
 }
 
 const en: Dict = {
@@ -66,6 +103,7 @@ const en: Dict = {
   'common.disconnect': 'Disconnect',
   'common.loading': 'Loading…',
   'lang.label': 'Language',
+  ...slotEn,
 }
 
 const es: Dict = {
@@ -100,6 +138,21 @@ const es: Dict = {
   'common.disconnect': 'Desconectar',
   'common.loading': 'Cargando…',
   'lang.label': 'Idioma',
+  'slot.title': 'Slot Atelier',
+  'slot.lead': 'Fun = créditos virtuales. Real pronto (SC).',
+  'slot.music': 'Música',
+  'slot.spin': 'Girar',
+  'slot.bank': 'Banco',
+  'slot.miss': 'Nada',
+  'slot.pot.hint': 'Créditos Fun — no retirables.',
+  'slot.real.paused': 'Modo real en pausa — upgrade SC',
+  'slot.real.blocked': 'Condiciones no cumplidas',
+  'wallet.title': 'Cartera',
+  'wallet.session': 'Sesión',
+  'common.error': 'Error',
+  'common.buy': 'Comprar',
+  'market.title': 'Marketplace',
+  'staking.title': 'Staking & Yield',
 }
 
 const ru: Dict = {
@@ -134,6 +187,21 @@ const ru: Dict = {
   'common.disconnect': 'Отключить',
   'common.loading': 'Загрузка…',
   'lang.label': 'Язык',
+  'slot.title': 'Слот',
+  'slot.lead': 'Fun = виртуальные кредиты. Реал скоро (SC).',
+  'slot.music': 'Музыка',
+  'slot.spin': 'Крутить',
+  'slot.bank': 'Банк',
+  'slot.miss': 'Мимо',
+  'slot.pot.hint': 'Виртуальные кредиты — не выводятся.',
+  'slot.real.paused': 'Реальный режим на паузе — upgrade SC',
+  'slot.real.blocked': 'Условия не выполнены',
+  'wallet.title': 'Кошелёк',
+  'wallet.session': 'Сессия',
+  'common.error': 'Ошибка',
+  'common.buy': 'Купить',
+  'market.title': 'Marketplace',
+  'staking.title': 'Staking & Yield',
 }
 
 const uk: Dict = {
@@ -168,6 +236,21 @@ const uk: Dict = {
   'common.disconnect': 'Відключити',
   'common.loading': 'Завантаження…',
   'lang.label': 'Мова',
+  'slot.title': 'Слот',
+  'slot.lead': 'Fun = віртуальні кредити. Реал скоро (SC).',
+  'slot.music': 'Музика',
+  'slot.spin': 'Крутити',
+  'slot.bank': 'Банк',
+  'slot.miss': 'Промах',
+  'slot.pot.hint': 'Віртуальні кредити — не виводяться.',
+  'slot.real.paused': 'Реальний режим на паузі — upgrade SC',
+  'slot.real.blocked': 'Умови не виконані',
+  'wallet.title': 'Гаманець',
+  'wallet.session': 'Сесія',
+  'common.error': 'Помилка',
+  'common.buy': 'Купити',
+  'market.title': 'Marketplace',
+  'staking.title': 'Staking & Yield',
 }
 
 const zh: Dict = {
@@ -202,6 +285,21 @@ const zh: Dict = {
   'common.disconnect': '断开',
   'common.loading': '加载中…',
   'lang.label': '语言',
+  'slot.title': '老虎机',
+  'slot.lead': '娱乐 = 虚拟积分。真实模式即将推出（SC）。',
+  'slot.music': '音乐',
+  'slot.spin': '旋转',
+  'slot.bank': '余额',
+  'slot.miss': '未中',
+  'slot.pot.hint': '娱乐积分 — 不可提取。',
+  'slot.real.paused': '真实模式暂停 — 需升级 SC',
+  'slot.real.blocked': '条件未满足',
+  'wallet.title': '钱包',
+  'wallet.session': '会话',
+  'common.error': '错误',
+  'common.buy': '购买',
+  'market.title': '市场',
+  'staking.title': '质押与收益',
 }
 
 const ar: Dict = {
@@ -231,11 +329,26 @@ const ar: Dict = {
   'cc.claim': 'Claim (paper)',
   'cc.claim.note': 'مكافآت اختيارية · بدون وعد بعائد',
   'cc.no.pack': 'لا حزمة — Pulse / Yield / Sentinel',
-  'packs.disclaimer': 'منتج رقمي محدود · ليس صندًا',
+  'packs.disclaimer': 'منتج رقمي محدود · ليس صندوقًا',
   'common.connect': 'اتصال',
   'common.disconnect': 'قطع',
   'common.loading': 'جارٍ التحميل…',
   'lang.label': 'اللغة',
+  'slot.title': 'سلوت',
+  'slot.lead': 'مرح = أرصدة افتراضية. الحقيقي قريبًا (SC).',
+  'slot.music': 'موسيقى',
+  'slot.spin': 'تدوير',
+  'slot.bank': 'الرصيد',
+  'slot.miss': 'لا شيء',
+  'slot.pot.hint': 'أرصدة المرح — غير قابلة للسحب.',
+  'slot.real.paused': 'الوضع الحقيقي متوقف — ترقية SC',
+  'slot.real.blocked': 'الشروط غير مستوفاة',
+  'wallet.title': 'المحفظة',
+  'wallet.session': 'الجلسة',
+  'common.error': 'خطأ',
+  'common.buy': 'شراء',
+  'market.title': 'السوق',
+  'staking.title': 'Staking & Yield',
 }
 
 export const DICTS: Record<Lang, Dict> = { fr, en, es, ru, uk, zh, ar }
