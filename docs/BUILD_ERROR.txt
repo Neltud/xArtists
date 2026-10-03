@@ -1,5 +1,5 @@
-# Vite build failed @ a3d6b2b6a2bd5f2d7aabc529063717833e3bccab
-time: 2026-10-03T14:39:49Z
+# Vite build failed @ 708adc770ae9979bf5815932dd56897cf3019771
+time: 2026-10-03T14:40:54Z
 
 
 > xartists-frontend@3.10.0 build
@@ -20,8 +20,8 @@ transforming...
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/scryptSync.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/scrypt.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/utils.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[32m✓[39m 2217 modules transformed.
-[31mx[39m Build failed in 5.35s
+[32m✓[39m 2224 modules transformed.
+[31mx[39m Build failed in 4.64s
 [31merror during build:
 [31msrc/pages/GoLivePage.tsx (22:2): "canUseVenue" is not exported by "src/config/scStatus.ts", imported by "src/pages/GoLivePage.tsx".[31m
 file: [36m/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/GoLivePage.tsx:22:2[31m
