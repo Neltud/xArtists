@@ -1,5 +1,5 @@
 /**
- * Louer un mur (rentPay) puis choisir jusqu'à N NFT pour ce mur → musée 3D.
+ * Louer un mur (rentPay live ou réservation locale) puis accrocher jusqu'à N NFT.
  */
 import { useCallback, useMemo, useState } from 'react'
 import { useWallet } from '../../context/WalletContext'
@@ -62,7 +62,7 @@ export default function VenueWallAssign({ onChanged }: { onChanged?: () => void 
       } else {
         rentPayPaper(wallId, price)
         markWallOwned(wallId, { mode: 'paper', amountEgld: price })
-        push(`Mur ${wallLabel(wallId)} réservé (paper) — assigne tes NFT`, 'info')
+        push(`Mur ${wallLabel(wallId)} réservé localement (0 EGLD) — assigne tes NFT`, 'info')
       }
       refresh()
     } catch (e) {
@@ -72,13 +72,10 @@ export default function VenueWallAssign({ onChanged }: { onChanged?: () => void 
 
   const onToggle = (id: string) => {
     if (!wallOwned) {
-      push('Loue ce mur d’abord (rentPay)', 'err')
+      push('Réserve ou loue ce mur d’abord', 'err')
       return
     }
-    const next = toggleNftOnWall(wallId, id)
-    if (next.length >= max && !next.includes(id) && getWallSlots(wallId).length >= max) {
-      push(`Max ${max} œuvres / mur`, 'err')
-    }
+    toggleNftOnWall(wallId, id)
     refresh()
   }
 
@@ -90,8 +87,7 @@ export default function VenueWallAssign({ onChanged }: { onChanged?: () => void 
         </p>
         <h2 className="text-lg font-semibold text-white">Louer un mur & accrocher des NFT</h2>
         <p className="text-[13px] text-zinc-400">
-          1. rentPay sur un <code className="text-[11px] text-zinc-300">wallId</code> · 2. choisir jusqu’à{' '}
-          {max} NFT · 3. ils passent en tête dans le hall 3D.
+          1. Loue (EGLD) ou réserve localement · 2. jusqu’à {max} NFT · 3. priorité dans le hall 3D.
         </p>
       </header>
 
@@ -103,7 +99,7 @@ export default function VenueWallAssign({ onChanged }: { onChanged?: () => void 
               key={w.wallId}
               type="button"
               onClick={() => setWallId(w.wallId)}
-              className={`rounded-full px-3 py-1.5 text-[12px] border ${
+              className={`rounded-full px-3 py-1.5 text-[12px] border active:scale-[0.98] ${
                 wallId === w.wallId
                   ? 'border-cyan-400/50 bg-cyan-500/15 text-white'
                   : 'border-white/10 text-zinc-400'
@@ -125,25 +121,33 @@ export default function VenueWallAssign({ onChanged }: { onChanged?: () => void 
         <p className="mt-1">
           Statut :{' '}
           {wallOwned ? (
-            <span className="text-emerald-300">loué ({owned.find(o => o.wallId === wallId)?.mode})</span>
+            <span className="text-emerald-300">
+              {owned.find(o => o.wallId === wallId)?.mode === 'live' ? 'loué on-chain' : 'réservé local'}
+            </span>
           ) : (
             <span className="text-amber-200">libre</span>
           )}{' '}
           · slots {slots.length}/{max}
         </p>
         {!live && (
-          <p className="text-amber-200/80 mt-1">SC venue gated → réservation paper possible.</p>
+          <p className="text-amber-200/80 mt-1">
+            SC venue non ouvert au public → réservation locale possible (pas un paiement).
+          </p>
         )}
       </div>
 
       {!wallOwned ? (
         <button
           type="button"
-          className="btn-primary text-sm"
+          className="btn-primary text-sm active:scale-[0.98]"
           disabled={pending}
           onClick={() => void onRent()}
         >
-          {pending ? '…' : `Louer · ${catalog?.priceEgld ?? 0.001} EGLD`}
+          {pending
+            ? '…'
+            : live
+              ? `Louer · ${catalog?.priceEgld ?? 0.001} EGLD`
+              : 'Réserver sans paiement (local)'}
         </button>
       ) : (
         <p className="text-[12px] text-emerald-200/90">Mur actif — coche les NFT à exposer.</p>
@@ -178,7 +182,7 @@ export default function VenueWallAssign({ onChanged }: { onChanged?: () => void 
                   type="button"
                   disabled={!wallOwned}
                   onClick={() => onToggle(id)}
-                  className={`w-full text-left rounded-xl border p-1.5 disabled:opacity-40 ${
+                  className={`w-full text-left rounded-xl border p-1.5 disabled:opacity-40 active:scale-[0.98] ${
                     on ? 'border-cyan-400/50 bg-cyan-500/10' : 'border-white/10'
                   }`}
                 >
