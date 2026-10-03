@@ -1,92 +1,128 @@
 /**
- * MoonPay hosted on-ramp helpers.
- * Apple Pay / Google Pay: paymentMethod=apple_pay | google_pay
- * Do not embed widget in sandboxed iframe for wallet pays — use window.open.
- * @see https://dev.moonpay.com/widget/on-ramp/customization/parameters
+ * MoonPay on-ramp — buy EGLD with card / Apple Pay.
+ * Public key only in front. walletAddress signature via backend if configured.
+ *
+ * Secrets (GitHub Actions / Pages — never commit):
+ *   VITE_MOONPAY_API_KEY=pk_live_… or pk_test_…
+ * Optional server: VITE_ACCESS_API_BASE + POST /moonpay/sign { url }
  */
 
-export type MoonpayPaymentMethod =
-  | 'apple_pay'
-  | 'google_pay'
-  | 'credit_debit_card'
-  | 'sepa_bank_transfer'
+const BUY_BASE_PROD = 'https://buy.moonpay.com'
+const BUY_BASE_SANDBOX = 'https://buy-sandbox.moonpay.com'
 
-export type BuildMoonpayUrlOpts = {
-  walletAddress: string
+export function getMoonPayApiKey(): string {
+  const k = (import.meta.env.VITE_MOONPAY_API_KEY as string | undefined)?.trim() || ''
+  return k
+}
+
+export function isMoonPayConfigured(): boolean {
+  const k = getMoonPayApiKey()
+  return k.startsWith('pk_') && k.length > 20
+}
+
+export function isMoonPaySandbox(): boolean {
+  return getMoonPayApiKey().startsWith('pk_test')
+}
+
+export type MoonPayBuyParams = {
+  /** erd1… destination — requires URL signature when set */
+  walletAddress?: string
+  /** Fiat amount prefill e.g. 50 */
+  baseCurrencyAmount?: number
+  baseCurrencyCode?: 'eur' | 'usd' | 'gbp'
+  /** default egld */
   currencyCode?: string
-  paymentMethod?: MoonpayPaymentMethod
-  baseCurrencyAmount?: string | number
-  baseCurrencyCode?: string
+  email?: string
   redirectURL?: string
   colorCode?: string
 }
 
-const DEFAULT_WALLET =
-  'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
-
-export function getMoonpayPublicKey(): string | undefined {
-  const k = import.meta.env.VITE_MOONPAY_PUBLIC_KEY as string | undefined
-  return k?.trim() || undefined
-}
-
-export function isMoonpayLive(): boolean {
-  return Boolean(getMoonpayPublicKey())
-}
-
-export function buildMoonpayBuyUrl(opts: BuildMoonpayUrlOpts): string {
-  const publicKey = getMoonpayPublicKey() || 'pk_test_123'
-  const live = Boolean(getMoonpayPublicKey())
-  const base = live ? 'https://buy.moonpay.com' : 'https://buy-staging.moonpay.com'
-
-  let currencyCode = (opts.currencyCode || 'EGLD').replace(/^\$/, '').toUpperCase()
-  if (currencyCode === 'TRO') currencyCode = 'EGLD'
-
-  const walletAddress = opts.walletAddress?.startsWith('erd1')
-    ? opts.walletAddress
-    : DEFAULT_WALLET
-
-  const params = new URLSearchParams({
-    apiKey: publicKey,
-    currencyCode,
-    walletAddress,
-    theme: 'dark',
-    colorCode: (opts.colorCode || '7c3aed').replace('#', ''),
-  })
-
-  if (opts.paymentMethod) {
-    params.set('paymentMethod', opts.paymentMethod)
+function buildUnsignedUrl(p: MoonPayBuyParams): string {
+  const apiKey = getMoonPayApiKey()
+  const base = isMoonPaySandbox() ? BUY_BASE_SANDBOX : BUY_BASE_PROD
+  const q = new URLSearchParams()
+  q.set('apiKey', apiKey)
+  q.set('currencyCode', (p.currencyCode || 'egld').toLowerCase())
+  q.set('baseCurrencyCode', (p.baseCurrencyCode || 'eur').toLowerCase())
+  if (p.baseCurrencyAmount != null && p.baseCurrencyAmount > 0) {
+    q.set('baseCurrencyAmount', String(p.baseCurrencyAmount))
   }
-  if (opts.baseCurrencyAmount != null && opts.baseCurrencyAmount !== '') {
-    params.set('baseCurrencyAmount', String(opts.baseCurrencyAmount))
-    params.set('baseCurrencyCode', (opts.baseCurrencyCode || 'usd').toLowerCase())
+  if (p.walletAddress?.startsWith('erd1')) {
+    q.set('walletAddress', p.walletAddress.trim())
   }
-  if (opts.redirectURL) {
-    params.set('redirectURL', opts.redirectURL)
+  if (p.email) q.set('email', p.email)
+  if (p.redirectURL) q.set('redirectURL', p.redirectURL)
+  // xArtists dark theme accent
+  q.set('colorCode', (p.colorCode || '8b5cf6').replace('#', ''))
+  q.set('theme', 'dark')
+  q.set('language', 'fr')
+  return `${base}?${q.toString()}`
+}
+
+/** Optional HMAC signature from Access API (secret key server-side). */
+async function signUrlIfPossible(url: string): Promise<string> {
+  const api = (import.meta.env.VITE_ACCESS_API_BASE as string | undefined)?.replace(/\/$/, '')
+  if (!api) return url
+  try {
+    const r = await fetch(`${api}/moonpay/sign`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    })
+    if (!r.ok) return url
+    const j = (await r.json()) as { signature?: string; url?: string }
+    if (j.url && typeof j.url === 'string') return j.url
+    if (j.signature) {
+      const u = new URL(url)
+      u.searchParams.set('signature', j.signature)
+      return u.toString()
+    }
+  } catch {
+    /* open unsigned — user pastes address in MoonPay */
+  }
+  return url
+}
+
+/**
+ * Opens MoonPay buy widget in a new tab.
+ * Without backend sign, walletAddress is omitted so MoonPay does not require signature.
+ */
+export async function openMoonPayBuy(params: MoonPayBuyParams = {}): Promise<{ ok: boolean; error?: string }> {
+  if (!isMoonPayConfigured()) {
+    return {
+      ok: false,
+      error: 'MoonPay non configuré — ajoute VITE_MOONPAY_API_KEY (pk_test_… / pk_live_…) dans les secrets Pages.',
+    }
   }
 
-  return `${base}/?${params.toString()}`
+  // Without sign endpoint, strip wallet to avoid MoonPay signature rejection
+  const api = (import.meta.env.VITE_ACCESS_API_BASE as string | undefined)?.replace(/\/$/, '')
+  const p: MoonPayBuyParams = { ...params }
+  if (!api && p.walletAddress) {
+    // Prefer signed wallet when API present; else open without lock-in address
+    // User can still paste erd1 in the widget.
+    delete p.walletAddress
+  }
+
+  let url = buildUnsignedUrl(p)
+  if (params.walletAddress && api) {
+    url = buildUnsignedUrl({ ...params })
+    url = await signUrlIfPossible(url)
+  }
+
+  try {
+    const w = window.open(url, '_blank', 'noopener,noreferrer')
+    if (!w) {
+      // popup blocked — navigate same tab
+      window.location.assign(url)
+    }
+    return { ok: true }
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : 'Ouverture MoonPay échouée' }
+  }
 }
 
-export function openMoonpayBuy(opts: BuildMoonpayUrlOpts): void {
-  window.open(buildMoonpayBuyUrl(opts), '_blank', 'noopener,noreferrer')
+export function moonpayStatusHint(): string {
+  if (!isMoonPayConfigured()) return 'off'
+  return isMoonPaySandbox() ? 'sandbox' : 'live'
 }
-
-/** Safari / iOS-ish hint only. */
-export function maySupportApplePay(): boolean {
-  if (typeof window === 'undefined') return false
-  const ua = navigator.userAgent || ''
-  const isAppleDevice = /iPhone|iPad|iPod|Macintosh/.test(ua)
-  const isSafari =
-    /Safari/.test(ua) && !/Chrome|Chromium|Edg|Firefox|Android/.test(ua)
-  return isAppleDevice && (isSafari || /iPhone|iPad|iPod/.test(ua))
-}
-
-/** Chrome / Android hint for Google Pay. */
-export function maySupportGooglePay(): boolean {
-  if (typeof window === 'undefined') return false
-  const ua = navigator.userAgent || ''
-  if (/iPhone|iPad|iPod/.test(ua) && !/CriOS/.test(ua)) return false
-  return /Chrome|Chromium|Edg|SamsungBrowser|Android/.test(ua)
-}
-
-export { DEFAULT_WALLET as MOONPAY_DEFAULT_WALLET }

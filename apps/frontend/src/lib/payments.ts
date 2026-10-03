@@ -1,6 +1,6 @@
 /**
- * Orchestrateur checkout packs — Stripe (1) + Paybox (3).
- * Secrets jamais en front.
+ * Orchestrateur checkout packs — Stripe + Paybox + paper.
+ * MoonPay = on-ramp EGLD (voir lib/moonpay.ts), pas un moyen de payer le pack fiat direct.
  */
 
 import type { PackId } from '../config/agentPacks'
@@ -15,6 +15,7 @@ import {
   isPayboxConfigured,
   getPayboxPaymentUrl,
 } from './paybox'
+import { isMoonPayConfigured, moonpayStatusHint, openMoonPayBuy } from './moonpay'
 
 export type PayMethod = 'stripe' | 'paybox' | 'paper'
 
@@ -79,3 +80,21 @@ export function payboxStatusHint(): string {
   if (getPayboxPaymentUrl()) return 'URL'
   return 'off'
 }
+
+/** Recharge EGLD puis user paie on-chain (stake, market, etc.). */
+export async function startMoonPayEgld(opts: {
+  buyerAddress?: string
+  amountEur?: number
+}): Promise<{ ok: boolean; error?: string }> {
+  if (!isMoonPayConfigured()) {
+    return { ok: false, error: 'MoonPay off — VITE_MOONPAY_API_KEY' }
+  }
+  return openMoonPayBuy({
+    walletAddress: opts.buyerAddress,
+    baseCurrencyAmount: opts.amountEur ?? 50,
+    baseCurrencyCode: 'eur',
+    currencyCode: 'egld',
+  })
+}
+
+export { isMoonPayConfigured, moonpayStatusHint }
