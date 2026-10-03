@@ -1,5 +1,20 @@
 # Changelog — xArtists
 
+## [0.79.0](https://github.com/Neltud/xArtists/compare/v0.78.1...v0.79.0) (2026-10-03)
+
+
+### Features
+
+* **go-live:** embed full RCE strip ([3290bb2](https://github.com/Neltud/xArtists/commit/3290bb29b3b5dfca2b3340aa0f561eed266cc77f))
+* **museum:** tab venue + merge wall slots into MuseumHall frames ([d4e0307](https://github.com/Neltud/xArtists/commit/d4e030760c3e9d27b7751c3f1c64088b0528b78c))
+* **museum:** venue wallId slots + assign NFT UI after rentPay ([60b3d35](https://github.com/Neltud/xArtists/commit/60b3d350a5026620d7f2d2a81f85504ab59ced70))
+* RCE strip (Home + GoLive) + purge local ownership presented as purchase ([810f887](https://github.com/Neltud/xArtists/commit/810f887e5ab4bb328084c0c68af793e4697e653f))
+
+
+### Bug Fixes
+
+* **home:** badge soon/live only — no paper/gated labels ([1459d13](https://github.com/Neltud/xArtists/commit/1459d13ba8673f231d5b3beca57672f277510b06))
+
 ## [0.78.1](https://github.com/Neltud/xArtists/compare/v0.78.0...v0.78.1) (2026-10-03)
 
 
