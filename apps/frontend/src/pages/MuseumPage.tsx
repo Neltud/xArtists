@@ -1,5 +1,5 @@
 /**
- * Galerie — salles 3D + grille œuvres toujours visible.
+ * Galerie — salles 3D + grille · venue wallId → slots NFT.
  * Capacité : max 4 œuvres/mur · 24 public · pack room 4×4.
  */
 import { useEffect, useMemo, useState } from 'react'
@@ -12,6 +12,7 @@ import MuseumHall from '../components/museum/MuseumHall'
 import AdSlot from '../components/AdSlot'
 import HolderPulseTab from '../components/museum/HolderPulseTab'
 import GuidedWorldTour from '../components/museum/GuidedWorldTour'
+import VenueWallAssign from '../components/museum/VenueWallAssign'
 import { useWallet } from '../context/WalletContext'
 import { MUSEUM_CAPACITY, formatWallOccupancy } from '../lib/museumCapacity'
 import { useUserAccount } from '../hooks/useUserAccount'
@@ -32,8 +33,9 @@ import type { RoomBlueprint } from '../lib/roomBlueprint'
 import { TUDURI_WORKS } from '../config/tuduriAtelier'
 import { loadFullCatalog } from '../lib/loadFullCatalog'
 import { loadDailyMuseumCatalog, dailyWorksToFrames } from '../lib/loadDailyMuseumCatalog'
+import { mergeVenueFrames } from '../lib/venueWallSlots'
 
-type Mode = 'explore' | 'mine' | 'map' | 'pulse'
+type Mode = 'explore' | 'mine' | 'map' | 'pulse' | 'venue'
 
 const PRIORITY_COLLECTIONS = ['NFTUDURI-2990b6', 'TRO-652d6d', 'XTR-e5072b', 'XAR-cee2e0']
 
@@ -100,18 +102,21 @@ function ArtworkGrid({
         <p className="text-[11px] text-zinc-500 tabular-nums">{cap}</p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {frames.slice(0, MUSEUM_CAPACITY.maxArtworksPublic).map(f => (
-          <div
+        {frames.map(f => (
+          <a
             key={f.id}
-            className="rounded-xl border border-white/10 bg-black/40 overflow-hidden"
+            href={f.href || '#'}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-xl border border-white/10 overflow-hidden bg-black/30"
           >
             {f.image ? (
-              <img src={f.image} alt="" className="w-full aspect-[4/5] object-cover" loading="lazy" />
+              <img src={f.image} alt="" className="w-full aspect-square object-cover" loading="lazy" />
             ) : (
-              <div className="aspect-[4/5] flex items-center justify-center text-zinc-600 text-xs">—</div>
+              <div className="w-full aspect-square bg-zinc-900" />
             )}
-            <p className="text-[11px] text-zinc-300 px-2 py-1.5 truncate">{f.title}</p>
-          </div>
+            <p className="text-[11px] text-zinc-300 truncate px-2 py-1">{f.title}</p>
+          </a>
         ))}
       </div>
     </section>
@@ -120,22 +125,19 @@ function ArtworkGrid({
 
 export default function MuseumPage() {
   const [params] = useSearchParams()
-  const initial = params.get('tab')
-  const [mode, setMode] = useState<Mode>(
-    initial === 'mine' || initial === 'map' || initial === 'pulse' ? initial : 'explore',
-  )
+  const { connected, address } = useWallet()
+  const account = useUserAccount(connected ? address : null)
+  const [mode, setMode] = useState<Mode>('explore')
+  const [venueRevision, setVenueRevision] = useState(0)
   const [museumId, setMuseumId] = useState('xartists')
-  const [museums, setMuseums] = useState<VirtualMuseum[]>(() =>
-    buildMuseumNetwork(import.meta.env.BASE_URL || '/'),
+  const [museums, setMuseums] = useState<VirtualMuseum[]>(() => VIRTUAL_MUSEUMS)
+  const [blueprint, setBlueprint] = useState<RoomBlueprint>(() =>
+    builtinBlueprintForMuseum('xartists'),
   )
   const [allNfts, setAllNfts] = useState<NFT[]>([])
   const [catalogLoading, setCatalogLoading] = useState(true)
   const [travelBanner, setTravelBanner] = useState<string | null>(null)
-  const [blueprint, setBlueprint] = useState<RoomBlueprint>(() =>
-    builtinBlueprintForMuseum('xartists'),
-  )
-  const { connected, address } = useWallet()
-  const account = useUserAccount(connected ? address : null)
+
   const museum = museums.find(m => m.id === museumId) || museums[0] || VIRTUAL_MUSEUMS[0]
   const wallCount = blueprint?.walls?.length ?? 0
 
@@ -150,13 +152,10 @@ export default function MuseumPage() {
       const frames = dailyWorksToFrames(daily.works)
       setMuseums(prev =>
         prev.map(m => {
-          if (m.id === 'xartists') return m
-          const existing = m.works || []
-          const ids = new Set(existing.map(w => w.id))
-          const extra = frames.filter(f => !ids.has(f.id))
-          if (!extra.length) return m
-          const sc = extra.filter(f => f.kind === 'sculpture')
-          const rest = extra.filter(f => f.kind !== 'sculpture')
+          if (m.id !== 'xartists') return m
+          const sc = (m.works || []).filter(f => f.kind === 'sculpture')
+          const existing = frames
+          const rest = (m.works || []).filter(f => f.kind !== 'sculpture')
           return {
             ...m,
             works: [...sc, ...existing, ...rest].slice(0, 28),
@@ -189,8 +188,8 @@ export default function MuseumPage() {
     const sp = new URLSearchParams(
       q || (typeof window !== 'undefined' ? window.location.search : ''),
     )
-    const cityQ = sp.get('city')
-    const museumQ = sp.get('museum')
+    const cityQ = sp.get('city') || params.get('city')
+    const museumQ = sp.get('museum') || params.get('museum')
     const travel = consumeTravelDestination()
     const city = travel?.city || cityQ || ''
     const mid =
@@ -208,7 +207,7 @@ export default function MuseumPage() {
       setMuseumId(mid || 'xartists')
       setMode('explore')
     }
-  }, [])
+  }, [params])
 
   useEffect(() => {
     setBlueprint(builtinBlueprintForMuseum(museumId))
@@ -233,9 +232,9 @@ export default function MuseumPage() {
   }, [allNfts])
 
   const visitFrames =
-    museum.source === 'onchain'
+    museum?.source === 'onchain'
       ? xartistsFrames
-      : museum.works?.length
+      : museum?.works?.length
         ? museum.works
         : xartistsFrames
 
@@ -247,6 +246,13 @@ export default function MuseumPage() {
   }, [museumId, visitFrames])
 
   const myFrames = useMemo(() => framesFromUserNfts(account.nfts || []), [account.nfts])
+
+  const hallFrames = useMemo(
+    () => mergeVenueFrames(visitFrames, myFrames),
+    // venueRevision forces re-merge after assign
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [visitFrames, myFrames, venueRevision],
+  )
 
   return (
     <div className="animate-fade-in space-y-4 pb-16 max-w-3xl mx-auto">
@@ -260,7 +266,7 @@ export default function MuseumPage() {
         </p>
         {wallCount > 0 && (
           <p className="text-[11px] text-zinc-500">
-            Capacité salle : {wallCount} murs · jusqu'à {MUSEUM_CAPACITY.maxArtworksPerWall}{' '}
+            Capacité salle : {wallCount} murs · jusqu&apos;à {MUSEUM_CAPACITY.maxArtworksPerWall}{' '}
             œuvres/mur ({wallCount * MUSEUM_CAPACITY.maxArtworksPerWall} slots) · affichage max{' '}
             {MUSEUM_CAPACITY.maxArtworksPublic}
           </p>
@@ -273,7 +279,7 @@ export default function MuseumPage() {
       </header>
 
       <div className="flex flex-wrap gap-2">
-        {(['explore', 'map', 'mine', 'pulse'] as Mode[]).map(m => (
+        {(['explore', 'venue', 'map', 'mine', 'pulse'] as Mode[]).map(m => (
           <button
             key={m}
             type="button"
@@ -309,12 +315,26 @@ export default function MuseumPage() {
           </div>
           <MuseumHall
             blueprint={blueprint}
-            frames={visitFrames}
+            frames={hallFrames}
             room={museum?.room || 'stone'}
             allowBuy
           />
-          <ArtworkGrid frames={visitFrames} title="Œuvres de la salle" wallCount={wallCount} />
+          <ArtworkGrid frames={hallFrames} title="Œuvres de la salle" wallCount={wallCount} />
           <AdSlot id="drop_feature" />
+        </>
+      )}
+
+      {mode === 'venue' && (
+        <>
+          <VenueWallAssign onChanged={() => setVenueRevision(v => v + 1)} />
+          <MuseumHall
+            blueprint={blueprint}
+            frames={hallFrames}
+            room={museum?.room || 'cyber'}
+            allowBuy={false}
+            emptyLabel="Assigne des NFT à un mur loué"
+          />
+          <ArtworkGrid frames={hallFrames} title="Vue mur / venue" wallCount={wallCount} />
         </>
       )}
 
@@ -343,13 +363,17 @@ export default function MuseumPage() {
       )}
 
       {mode === 'pulse' && (
-        <HolderPulseTab nfts={account.nfts || []} frames={visitFrames} connected={connected} />
+        <HolderPulseTab nfts={account.nfts || []} frames={hallFrames} connected={connected} />
       )}
 
       <p className="text-[11px] text-zinc-600">
-        <Link to="/venues" className="underline-offset-2 hover:underline">
-          Louer un mur
-        </Link>
+        <button
+          type="button"
+          className="underline-offset-2 hover:underline"
+          onClick={() => setMode('venue')}
+        >
+          Louer un mur / assigner NFT
+        </button>
         {' · '}
         Pack IA = 1 salle privée ({MUSEUM_CAPACITY.wallsPerPackRoom} murs ×{' '}
         {MUSEUM_CAPACITY.maxArtworksPerWall} œuvres)
