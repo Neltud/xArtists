@@ -1,5 +1,5 @@
 /**
- * Home — badges LIVE si preuve explorer ; sinon BIENTÔT / OUVERT.
+ * Home — badges LIVE si preuve explorer ; RCE strip capital réel.
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -15,6 +15,7 @@ import {
 } from '../config/product'
 import { isLiveProven, refreshExplorerProofs, type ProofKey } from '../lib/explorerProof'
 import { MAINNET_ADDRESSES } from '../config/contracts'
+import RceStrip from '../components/RceStrip'
 
 function mapProof(id: string): ProofKey | null {
   if (id === 'marketplace') return 'marketplace'
@@ -28,7 +29,6 @@ function badgeStatus(m: ProductModule): ProductModule['status'] {
   const pk = mapProof(m.id)
   if (!pk) return m.status
   if (isLiveProven(pk)) return 'live'
-  // SC déclaré live mais pas encore de preuve TX → BIENTÔT (pas de jargon interne)
   if (m.status === 'live') return 'soon'
   return m.status
 }
@@ -81,6 +81,8 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
+
+      <RceStrip compact />
 
       <section className="space-y-3">
         <div className="flex items-end justify-between gap-2">
