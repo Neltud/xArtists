@@ -1,5 +1,5 @@
-/** Slot — Fun paper (stable). Réel off jusqu’à upgrade SC. */
-import { useEffect, useState } from 'react'
+/** Slot premium Fun — symboles style NFT, musique on/off, FX. */
+import { useEffect, useRef, useState } from 'react'
 import { useWallet } from '../context/WalletContext'
 import { requestOpenConnect } from '../lib/walletEvents'
 import {
@@ -23,16 +23,18 @@ import PotsStrip from '../components/slot/PotsStrip'
 import FeeTransparency from '../components/ui/FeeTransparency'
 import { useToast } from '../components/ui/Toast'
 import { LINKS } from '../config/links'
+import { useI18n } from '../i18n/I18nContext'
 
-type Cell = { id: string; label: string; tone: string }
+type Cell = { id: string; label: string; tone: string; emoji: string }
 
+/** Visuels « carte NFT » (emoji + gradient) — montée en gamme sans assets externes */
 const SYMBOLS: Cell[] = [
-  { id: 'star', label: '✦', tone: 'from-violet-600 to-fuchsia-500' },
-  { id: 'orb', label: '◉', tone: 'from-cyan-600 to-sky-400' },
-  { id: 'gem', label: '◈', tone: 'from-emerald-600 to-teal-400' },
-  { id: 'sun', label: '◇', tone: 'from-amber-500 to-orange-400' },
-  { id: 'moon', label: '☽', tone: 'from-indigo-600 to-blue-400' },
-  { id: 'bolt', label: '⚡', tone: 'from-yellow-400 to-amber-600' },
+  { id: 'pulse', label: 'Pulse', emoji: '⚡', tone: 'from-violet-700 via-fuchsia-600 to-pink-500' },
+  { id: 'yield', label: 'Yield', emoji: '🌾', tone: 'from-teal-700 via-emerald-500 to-lime-400' },
+  { id: 'sentinel', label: 'Guard', emoji: '🛡', tone: 'from-sky-800 via-blue-500 to-cyan-400' },
+  { id: 'tro', label: 'TRO', emoji: '◎', tone: 'from-amber-600 via-yellow-500 to-orange-400' },
+  { id: 'art', label: 'Art', emoji: '🖼', tone: 'from-indigo-700 via-violet-500 to-purple-400' },
+  { id: 'star', label: 'Star', emoji: '✦', tone: 'from-rose-600 via-pink-500 to-fuchsia-400' },
 ]
 
 function pick(): Cell {
@@ -55,6 +57,7 @@ function evaluate(grid: Cell[], asset: SlotAsset) {
 }
 
 export default function SlotPage() {
+  const { t } = useI18n()
   const { connected, canAttemptSign } = useWallet()
   const scLive = canSpinSlot()
   const { push } = useToast()
@@ -82,7 +85,10 @@ export default function SlotPage() {
   const [grid, setGrid] = useState<Cell[]>(() => Array.from({ length: 9 }, pick))
   const [spinning, setSpinning] = useState(false)
   const [flash, setFlash] = useState<string | null>(null)
+  const [winPulse, setWinPulse] = useState(false)
+  const [musicOn, setMusicOn] = useState(true)
   const chainMode = mode === 'chain' && !slotSpinBroken
+  const spinRef = useRef(0)
 
   const cost = spinCostFor(asset, betMult)
   const canPaper = !spinning && bank >= cost
@@ -96,6 +102,12 @@ export default function SlotPage() {
     !txPending &&
     confirmedReal
 
+  const sfx = (name: 'slot_spin' | 'ui_tap' | 'slot_win') => {
+    if (!musicOn) return
+    unlockAudio()
+    playUiSound(name)
+  }
+
   const finishPaper = (final: Cell[]) => {
     const ev = evaluate(final, asset)
     const before = progressiveOf(asset)
@@ -108,7 +120,12 @@ export default function SlotPage() {
     })
     setBank(b => Math.max(0, b - cost + split.userCredit))
     setProgressiveOf(asset, progressiveAfter)
-    setFlash(ev.kind === '—' ? 'Rien' : ev.kind)
+    setFlash(ev.kind === '—' ? t('slot.miss') : ev.kind)
+    if (ev.tableGross > 0) {
+      setWinPulse(true)
+      sfx('slot_win')
+      window.setTimeout(() => setWinPulse(false), 900)
+    }
     setSpinning(false)
   }
 
@@ -116,19 +133,19 @@ export default function SlotPage() {
     if (!canPaper) return
     setSpinning(true)
     setFlash(null)
-    unlockAudio()
-    playUiSound('slot_spin')
+    sfx('slot_spin')
+    spinRef.current += 1
     let n = 0
     const id = window.setInterval(() => {
       setGrid(Array.from({ length: 9 }, pick))
       n += 1
-      if (n >= 10) {
+      if (n >= 12) {
         clearInterval(id)
         const final = Array.from({ length: 9 }, pick)
         setGrid(final)
         finishPaper(final)
       }
-    }, 80)
+    }, 70)
   }
 
   const spinReal = async () => {
@@ -137,29 +154,45 @@ export default function SlotPage() {
       return
     }
     if (!canReal) {
-      push(slotSpinBroken ? 'Mode réel indisponible — upgrade SC' : 'Conditions non réunies', 'err')
+      push(slotSpinBroken ? t('slot.real.paused') : t('slot.real.blocked'), 'err')
       return
     }
     try {
       await spinEgld(cost)
     } catch (e) {
-      push(e instanceof Error ? e.message : 'Échec', 'err')
+      push(e instanceof Error ? e.message : t('common.error'), 'err')
     }
   }
 
   return (
-    <div className="animate-fade-in space-y-5 max-w-lg mx-auto pb-16">
+    <div className="animate-fade-in space-y-5 max-w-lg mx-auto pb-20">
       <header className="space-y-1">
-        <p className="section-label">Casino</p>
-        <h1 className="section-title display text-2xl">Slot</h1>
-        <p className="text-sm text-zinc-400">Fun = crédits virtuels. Réel = bientôt (SC en correction).</p>
+        <p className="section-label">{t('nav.slot')}</p>
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="section-title display text-2xl">{t('slot.title')}</h1>
+          <button
+            type="button"
+            onClick={() => {
+              setMusicOn(m => !m)
+              sfx('ui_tap')
+            }}
+            className={`rounded-full px-3 py-1.5 text-[12px] border flex items-center gap-1.5 ${
+              musicOn
+                ? 'border-violet-400/40 bg-violet-500/20 text-violet-100'
+                : 'border-white/10 text-zinc-500'
+            }`}
+            aria-pressed={musicOn}
+          >
+            <span aria-hidden>{musicOn ? '♪' : 'MUTE'}</span>
+            {t('slot.music')}
+          </button>
+        </div>
+        <p className="text-sm text-zinc-400">{t('slot.lead')}</p>
       </header>
 
       <PotsStrip
         virtualEgld={progEgld}
-        onTapVirtual={() =>
-          push('Crédits virtuels Fun — non retirables. La caisse on-chain est séparée.', 'info')
-        }
+        onTapVirtual={() => push(t('slot.pot.hint'), 'info')}
       />
 
       <SlotModeSwitch
@@ -185,18 +218,26 @@ export default function SlotPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div
+        className={`grid grid-cols-3 gap-2.5 rounded-3xl p-2 border border-white/10 bg-black/40 ${
+          winPulse ? 'ring-2 ring-amber-400/60 shadow-[0_0_40px_rgba(251,191,36,0.25)]' : ''
+        } ${spinning ? 'animate-pulse' : ''}`}
+      >
         {grid.map((c, i) => (
           <div
-            key={i}
-            className={`aspect-square rounded-2xl bg-gradient-to-br ${c.tone} flex items-center justify-center text-3xl text-white`}
+            key={`${spinRef.current}-${i}`}
+            className={`aspect-square rounded-2xl bg-gradient-to-br ${c.tone} flex flex-col items-center justify-center text-white shadow-lg border border-white/10 relative overflow-hidden`}
           >
-            {c.label}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.25),transparent_55%)]" />
+            <span className="relative text-3xl drop-shadow-md">{c.emoji}</span>
+            <span className="relative text-[9px] font-semibold tracking-wide opacity-90 mt-0.5">{c.label}</span>
           </div>
         ))}
       </div>
 
-      {flash && <p className="text-center text-sm text-zinc-300">{flash}</p>}
+      {flash && (
+        <p className="text-center text-sm font-medium text-zinc-200 tracking-wide">{flash}</p>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {SLOT_BET_MULTS.map(m => (
@@ -213,19 +254,19 @@ export default function SlotPage() {
 
       {chainMode ? (
         <button type="button" className="btn-primary w-full" disabled={!canReal} onClick={() => void spinReal()}>
-          {txPending ? 'Signature…' : `Tourner · ${formatSlotAmount(cost, 'EGLD')}`}
+          {txPending ? '…' : `${t('slot.spin')} · ${formatSlotAmount(cost, 'EGLD')}`}
         </button>
       ) : (
         <button type="button" className="btn-primary w-full" disabled={!canPaper} onClick={spinPaper}>
-          {spinning ? '…' : `Tourner · ${formatSlotAmount(cost, asset)}`}
+          {spinning ? '…' : `${t('slot.spin')} · ${formatSlotAmount(cost, asset)}`}
         </button>
       )}
 
-      <p className="text-[12px] text-zinc-500">Banque paper {formatSlotAmount(bank, asset)}</p>
+      <p className="text-[12px] text-zinc-500">{t('slot.bank')} {formatSlotAmount(bank, asset)}</p>
       <FeeTransparency kind="slot-paper" />
       {lastTx && (
         <a className="text-xs text-cyan-400 underline" href={`${LINKS.explorer}/transactions/${lastTx}`} target="_blank" rel="noreferrer">
-          Dernière TX →
+          TX →
         </a>
       )}
     </div>

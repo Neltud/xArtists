@@ -1,7 +1,7 @@
 /**
- * Command Center — ambient intelligence (aura + tape + wall noise).
+ * Command Center — ambient + rooms (no infinite tunnel).
  */
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AgentIA_Guard from '../components/AgentIA_Guard'
 import CommandWall from '../command-center/CommandWall'
@@ -18,7 +18,7 @@ import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
 import LiaCommandTerminal from '../components/LiaCommandTerminal'
 import { useWallet } from '../context/WalletContext'
 import { getAppMode } from '../lib/appMode'
-import { AGENT_PACKS, type PackId } from '../config/agentPacks'
+import { type PackId } from '../config/agentPacks'
 import { useI18n } from '../i18n/I18nContext'
 import { toAmbientSnapshot, shortTrendToast, type AuraMode } from '../lib/ambientAura'
 import { useToast } from '../components/ui/Toast'
@@ -48,12 +48,13 @@ function CommandCenterInner() {
   const packs = (access.packs || []).filter(Boolean) as PackId[]
   const lastMode = useRef<AuraMode | null>(null)
 
+  const endTunnel = useCallback(() => setTunnel(false), [])
+
   const ambient = useMemo(
     () => toAmbientSnapshot(lia.uniforms, lia.confidence, rewardFlash),
     [lia.uniforms, lia.confidence, rewardFlash],
   )
 
-  // Short toast on trend / aura shift (no long text)
   useEffect(() => {
     if (lastMode.current === null) {
       lastMode.current = ambient.mode
@@ -94,8 +95,8 @@ function CommandCenterInner() {
   }
 
   return (
-    <div className="animate-fade-in space-y-6 pb-28 max-w-4xl mx-auto">
-      <DataTunnelTransition active={tunnel} onDone={() => setTunnel(false)} />
+    <div className="animate-fade-in space-y-6 pb-28 max-w-4xl mx-auto relative">
+      <DataTunnelTransition active={tunnel} onDone={endTunnel} />
       <header className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-400/80 font-semibold font-tech">
@@ -260,11 +261,7 @@ function RoomCard({
     >
       <h2 className="font-bold text-white">{title}</h2>
       <p className="text-sm text-zinc-400">{body}</p>
-      <CommandWall
-        sentiment={sentiment}
-        volatility={volatility}
-        interactive={false}
-      />
+      <CommandWall sentiment={sentiment} volatility={volatility} interactive={false} />
     </div>
   )
 }
