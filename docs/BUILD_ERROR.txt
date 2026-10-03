@@ -1,0 +1,44 @@
+# Vite build failed @ 08832fc2a1712083adc988e33f12073f96ac1d31
+time: 2026-10-03T03:14:36Z
+
+
+> xartists-frontend@3.10.0 build
+> vite build
+
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/decryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/pubkeyEncryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/pubkeyDecryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/encryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/randomness.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-bls-wasm/bls.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "path" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-bls-wasm/bls.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "path" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-bls-wasm/bls_c.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "fs" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-bls-wasm/bls_c.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "stream" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/cipher-base/index.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/scryptSync.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/scrypt.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/utils.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[32m✓[39m 2213 modules transformed.
+[31mx[39m Build failed in 6.89s
+[31merror during build:
+[31msrc/components/MoonpayButton.tsx (6:2): "MOONPAY_DEFAULT_WALLET" is not exported by "src/lib/moonpay.ts", imported by "src/components/MoonpayButton.tsx".[31m
+file: [36m/home/runner/work/xArtists/xArtists/apps/frontend/src/components/MoonpayButton.tsx:6:2[31m
+[33m
+4:   type MoonpayPaymentMethod,
+5:   isMoonpayLive,
+6:   MOONPAY_DEFAULT_WALLET,
+     ^
+7: } from '../lib/moonpay'
+[31m
+    at getRollupError (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/parseAst.js:319:41)
+    at error (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/parseAst.js:315:42)
+    at Module.error (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:17804:16)
+    at Module.traceVariable (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:18238:29)
+    at ModuleScope.findVariable (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:15826:39)
+    at ReturnValueScope.findVariable (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5963:38)
+    at Identifier.bind (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5727:40)
+    at AssignmentPattern.bind (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:3045:23)
+    at Property.bind (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:3045:23)
+    at ObjectPattern.bind (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:3041:28)[39m
