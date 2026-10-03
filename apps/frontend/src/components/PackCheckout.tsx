@@ -1,5 +1,7 @@
 /**
- * Checkout packs — Stripe / Paybox si configurés ; sinon activation locale (sans mot « paper »).
+ * Checkout packs —
+ * - Stripe / Paybox = paiement réel (si configuré)
+ * - Sinon = APERÇU appareil uniquement (JAMAIS présenté comme achat)
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
@@ -24,8 +26,10 @@ const PACKS = AGENT_PACKS.filter(p => ONLY.includes(p.id)).slice(0, 3)
 
 function saveIntent(payload: Record<string, unknown>) {
   try {
-    const row = { ...payload, ts: Date.now() }
-    localStorage.setItem('xartists_access_checkout_intent', JSON.stringify(row))
+    localStorage.setItem(
+      'xartists_access_checkout_intent',
+      JSON.stringify({ ...payload, ts: Date.now() }),
+    )
   } catch {
     /* */
   }
@@ -42,6 +46,7 @@ export default function PackCheckout({
 } = {}) {
   const { connected, address } = useWallet()
   const methods = availablePayMethods()
+  const hasPaidRail = methods.some(m => m === 'stripe' || m === 'paybox')
   const [method, setMethod] = useState<PayMethod>(() => defaultPayMethod())
   const [selected, setSelected] = useState<PackId | null>(
     forcedId && ONLY.includes(forcedId) ? forcedId : null,
@@ -54,28 +59,27 @@ export default function PackCheckout({
   const [termsOpen, setTermsOpen] = useState(false)
   const [status, setStatus] = useState<'idle' | 'terms' | 'redirect' | 'done'>('idle')
   const [msg, setMsg] = useState('')
+  const [previewOnly, setPreviewOnly] = useState(false)
 
   const pack = PACKS.find(p => p.id === selected)
   const mintLive = canBuyAgent()
+  const isLocalPath = method === 'paper' || !hasPaidRail
 
   const startBuy = (id: PackId) => {
     if (!ONLY.includes(id)) return
-    if (!connected || !address?.startsWith('erd1')) {
-      setMsg('Connecte ton wallet MultiversX (erd1…) avant de continuer.')
-      setSelected(id)
-      return
-    }
     setSelected(id)
-    setTermsOpen(true)
-    setStatus('terms')
     setMsg('')
+    setPreviewOnly(false)
+    setStatus('idle')
   }
 
   const onAcceptTerms = async () => {
     setTermsOpen(false)
     if (!pack || !address) return
-    setStatus('redirect')
-    if (method === 'stripe' || method === 'paybox') {
+
+    // --- Paiement réel uniquement Stripe / Paybox ---
+    if ((method === 'stripe' || method === 'paybox') && hasPaidRail) {
+      setStatus('redirect')
       setMsg(method === 'stripe' ? 'Ouverture Stripe…' : 'Ouverture Paybox…')
       saveIntent({
         packId: pack.id,
@@ -83,6 +87,7 @@ export default function PackCheckout({
         amount: pack.priceEur.list,
         currency: 'EUR',
         address,
+        kind: 'paid_checkout',
       })
       try {
         await startPackPayment({
@@ -97,18 +102,23 @@ export default function PackCheckout({
       }
       return
     }
-    // Activation locale (accès salles sur cet appareil) — mint SC séparé
+
+    // --- Aperçu local : PAS un achat ---
+    if (!previewOnly) {
+      setMsg('Choisis « Activer aperçu » — ce n’est pas un achat ni un NFT.')
+      setStatus('idle')
+      return
+    }
     saveIntent({
       packId: pack.id,
-      provider: 'local',
-      amount: pack.priceEur.list,
-      currency: 'EUR',
+      provider: 'device_preview',
       address,
-      status: 'device_access',
+      kind: 'preview_not_purchase',
+      purchased: false,
     })
     markPackOwned(pack.id)
     setStatus('done')
-    setMsg(`${pack.name} activé sur cet appareil.`)
+    setMsg(`Aperçu « ${pack.name} » activé sur cet appareil uniquement — aucun paiement, aucun NFT mint.`)
     onPaperDone?.(pack.id)
   }
 
@@ -121,7 +131,7 @@ export default function PackCheckout({
               key={p.id}
               type="button"
               onClick={() => startBuy(p.id)}
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-zinc-200 hover:bg-white/[0.08] card-play active:scale-[0.98]"
+              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-zinc-200 hover:bg-white/[0.08] active:scale-[0.98]"
             >
               {p.icon} {p.name}
             </button>
@@ -131,64 +141,101 @@ export default function PackCheckout({
 
       {selected && pack && (
         <>
-          <div className="flex flex-wrap gap-2 items-center">
-            {methods.map(m => (
+          {hasPaidRail && (
+            <div className="flex flex-wrap gap-2 items-center">
+              {methods
+                .filter(m => m !== 'paper')
+                .map(m => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => {
+                      setMethod(m)
+                      setPreviewOnly(false)
+                    }}
+                    className={`rounded-lg px-3 py-1.5 text-xs border transition active:scale-[0.98] ${
+                      method === m && !previewOnly
+                        ? 'border-violet-400/40 bg-violet-500/15 text-violet-100'
+                        : 'border-white/10 text-zinc-500'
+                    }`}
+                  >
+                    {payMethodLabel(m)}
+                  </button>
+                ))}
+              {onClear && (
+                <button type="button" className="text-xs text-zinc-500 underline" onClick={onClear}>
+                  Changer
+                </button>
+              )}
+            </div>
+          )}
+
+          {hasPaidRail && method !== 'paper' && !previewOnly && (
+            <>
+              <p className="text-[11px] text-zinc-500">
+                {method === 'stripe' && stripeStatusHint()}
+                {method === 'paybox' && payboxStatusHint()}
+              </p>
               <button
-                key={m}
                 type="button"
-                onClick={() => setMethod(m)}
-                className={`rounded-lg px-3 py-1.5 text-xs border transition active:scale-[0.98] ${
-                  method === m
-                    ? 'border-violet-400/40 bg-violet-500/15 text-violet-100'
-                    : 'border-white/10 text-zinc-500'
-                }`}
+                className="btn-primary text-sm active:scale-[0.98]"
+                disabled={status === 'redirect' || !connected}
+                onClick={() => {
+                  if (!connected || !address?.startsWith('erd1')) {
+                    setMsg('Connecte un wallet erd1 avant un paiement réel.')
+                    return
+                  }
+                  setPreviewOnly(false)
+                  setTermsOpen(true)
+                  setStatus('terms')
+                }}
               >
-                {m === 'paper' ? 'Accès appareil' : payMethodLabel(m)}
+                {status === 'redirect' ? '…' : `Payer ${pack.priceEur.list} €`}
               </button>
-            ))}
-            {onClear && (
-              <button type="button" className="text-xs text-zinc-500 underline" onClick={onClear}>
-                Changer
-              </button>
-            )}
-          </div>
-          <p className="text-[11px] text-zinc-500">
-            {method === 'stripe' && stripeStatusHint()}
-            {method === 'paybox' && payboxStatusHint()}
-            {method === 'paper' &&
-              'Active la salle sur cet appareil. Le mint NFT on-chain suivra quand le contrat sera ouvert.'}
-          </p>
-          <div className="flex flex-wrap gap-2">
+            </>
+          )}
+
+          <div className="rounded-xl border border-amber-500/25 bg-amber-500/[0.06] px-3 py-3 space-y-2">
+            <p className="text-[12px] text-amber-100/95 font-medium">
+              Aperçu salles (cet appareil)
+            </p>
+            <p className="text-[11px] text-zinc-400 leading-relaxed">
+              Débloque l’UI des salles Pulse / Yield / Sentinel ici seulement. Ce n’est{' '}
+              <strong className="text-zinc-200">pas un achat</strong>, pas un transfert EGLD, pas un
+              mint NFT. Un nettoyage du navigateur efface cet aperçu.
+            </p>
             <button
               type="button"
-              className="btn-primary text-sm active:scale-[0.98]"
-              disabled={status === 'redirect'}
+              className="btn-secondary text-sm active:scale-[0.98]"
               onClick={() => {
-                if (!connected) {
-                  setMsg('Connecte ton wallet MultiversX (erd1…) avant de continuer.')
+                if (!connected || !address?.startsWith('erd1')) {
+                  setMsg('Connecte ton wallet pour lier l’aperçu à une adresse (toujours sans paiement).')
                   return
                 }
+                setMethod('paper')
+                setPreviewOnly(true)
                 setTermsOpen(true)
                 setStatus('terms')
               }}
             >
-              {status === 'redirect' ? '…' : `Continuer · ${pack.priceEur.list} €`}
+              Activer aperçu — 0 € · sans NFT
             </button>
-            {!mintLive && (
-              <span className="text-[11px] text-zinc-500 self-center">Mint SC bientôt</span>
-            )}
           </div>
+
+          {!mintLive && (
+            <p className="text-[11px] text-zinc-500">Mint NFT pack on-chain : bientôt.</p>
+          )}
         </>
       )}
 
       {status === 'done' && (
-        <div className="flex items-start gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/10 px-3 py-3">
+        <div className="flex items-start gap-3 rounded-xl border border-cyan-500/25 bg-cyan-500/10 px-3 py-3">
           <LottieIcon preset="check" loop={false} size={36} />
           <div className="min-w-0">
-            <p className="text-sm text-emerald-100 font-medium">{msg || 'Pack activé'}</p>
-            <p className="text-[12px] text-emerald-200/70 mt-0.5">
+            <p className="text-sm text-cyan-50 font-medium">{msg}</p>
+            <p className="text-[12px] text-cyan-100/70 mt-0.5">
               <Link to="/my-packs" className="underline underline-offset-2 hover:text-white">
-                Mes salles
+                Mes salles (aperçu)
               </Link>
             </p>
           </div>
@@ -202,6 +249,7 @@ export default function PackCheckout({
         onClose={() => {
           setTermsOpen(false)
           setStatus('idle')
+          setPreviewOnly(false)
         }}
         onAccept={onAcceptTerms}
         packName={pack?.name}
