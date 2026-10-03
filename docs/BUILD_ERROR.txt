@@ -1,5 +1,5 @@
-# Vite build failed @ afb92273b1dbf84488ccfa85ac4cc76603b0e2ad
-time: 2026-10-03T03:47:33Z
+# Vite build failed @ 60b3d350a5026620d7f2d2a81f85504ab59ced70
+time: 2026-10-03T03:56:06Z
 
 
 > xartists-frontend@3.10.0 build
@@ -8,8 +8,8 @@ time: 2026-10-03T03:47:33Z
 [36mvite v5.4.21 [32mbuilding for production...[36m[39m
 transforming...
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/encryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/pubkeyEncryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/decryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/pubkeyEncryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/pubkeyDecryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/randomness.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-bls-wasm/bls.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
@@ -17,11 +17,11 @@ transforming...
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "path" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-bls-wasm/bls_c.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "fs" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-bls-wasm/bls_c.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "stream" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/cipher-base/index.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/scrypt.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/scryptSync.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/scrypt.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/utils.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
 [32m✓[39m 2213 modules transformed.
-[31mx[39m Build failed in 6.53s
+[31mx[39m Build failed in 5.08s
 [31merror during build:
 [31msrc/components/MoonpayButton.tsx (6:2): "MOONPAY_DEFAULT_WALLET" is not exported by "src/lib/moonpay.ts", imported by "src/components/MoonpayButton.tsx".[31m
 file: [36m/home/runner/work/xArtists/xArtists/apps/frontend/src/components/MoonpayButton.tsx:6:2[31m
