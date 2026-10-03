@@ -1,5 +1,14 @@
 # Changelog — xArtists
 
+## [0.80.0](https://github.com/Neltud/xArtists/compare/v0.79.0...v0.80.0) (2026-10-03)
+
+
+### Features
+
+* **cc:** mount LiaShadowPanel in Command Center hub ([708adc7](https://github.com/Neltud/xArtists/commit/708adc770ae9979bf5815932dd56897cf3019771))
+* **lia:** paper decision cycle + strategy switcher + shadow ledger (no live TX) ([85ab4f4](https://github.com/Neltud/xArtists/commit/85ab4f475404c62c6fc89a2d12263bf3cf6067c7))
+* **lia:** Shadow panel CC + STVP tracker + price tick → matrix (paper only) ([a3d6b2b](https://github.com/Neltud/xArtists/commit/a3d6b2b6a2bd5f2d7aabc529063717833e3bccab))
+
 ## [0.79.0](https://github.com/Neltud/xArtists/compare/v0.78.1...v0.79.0) (2026-10-03)
 
 
