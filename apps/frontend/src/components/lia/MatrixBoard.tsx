@@ -1,10 +1,4 @@
-/**
- * Board léger — matrice 10 colonnes (perception LIA).
- * Paper / pédagogique : pas un signal d’ordre live.
- *
- * Colonnes : TIMEFRAME · PRICE · VOL · LIQ · RCE · SENT · TREND · DIST · CONF · STATE
- * RCE = Real Capital Engaged (capital réel engagé, ici proxy EGLD/USD protocole)
- */
+/** Matrice 10 colonnes — paper display, enfants React toujours string. */
 import { useEffect, useState } from 'react'
 import { matrixFromPulse, runDecisionCycle } from '../../lia/decisionCycle'
 import { fetchEgldPrice } from '../../lia/priceTick'
@@ -26,11 +20,12 @@ const COLS: { key: keyof Matrix10 | 'assetId'; label: string; tip: string }[] = 
 ]
 
 function cell(m: Matrix10, key: (typeof COLS)[0]['key']): string {
+  if (key === 'assetId') return asText(m.assetId)
   const v = m[key as keyof Matrix10]
   if (typeof v === 'number') {
-    if (key === 'price' || key === 'rce') return v >= 1000 ? v.toFixed(0) : v.toFixed(2)
-    if (v <= 1 && v >= 0 && key !== 'price') return v.toFixed(2)
-    return String(v)
+    if (key === 'price' || key === 'rce') return asText(v.toFixed(v >= 100 ? 2 : 4))
+    if (v <= 1 && v >= 0) return asText((v * 100).toFixed(0) + '%')
+    return asText(v.toFixed(2))
   }
   return asText(v)
 }
@@ -40,10 +35,13 @@ export default function MatrixBoard() {
   const [err, setErr] = useState<string | null>(null)
 
   useEffect(() => {
-    let c = false
+    let cancelled = false
     ;(async () => {
       try {
-        const [px, prof] = await Promise.all([fetchEgldPrice(true), fetchProtocolProfile()])
+        const [px, profile] = await Promise.all([
+          fetchEgldPrice(true),
+          fetchProtocolProfile().catch(() => null),
+        ])
         const assets = [
           { id: 'EGLD', sentiment: 0.1, vol: 0.35 },
           { id: 'TRO', sentiment: 0.05, vol: 0.55 },
@@ -52,75 +50,68 @@ export default function MatrixBoard() {
         const built = assets.map(a => {
           const matrix = matrixFromPulse({
             assetId: a.id,
-            price: a.id === 'EGLD' ? px.priceUsd : a.id === 'BTC' ? px.priceUsd * 15 : 0.0001,
+            price: a.id === 'EGLD' ? px.priceUsd : px.priceUsd * (a.id === 'TRO' ? 0.001 : 20),
             sentiment: a.sentiment,
             volatility: a.vol,
             confidence: 0.55,
-            rce: prof.egldUsd || 0,
+            rce: profile?.egldUsd || 0,
           })
           const cycle = runDecisionCycle(matrix, { executeShadow: false })
-          return { matrix, strategy: cycle.strategy, reason: cycle.reason }
+          return {
+            matrix,
+            strategy: asText(cycle.strategy),
+            reason: asText(cycle.reason),
+          }
         })
-        if (!c) setRows(built)
+        if (!cancelled) setRows(built)
       } catch (e) {
-        if (!c) setErr(e instanceof Error ? e.message : 'matrix unavailable')
+        if (!cancelled) setErr(asText(e, 'Matrice indisponible'))
       }
     })()
     return () => {
-      c = true
+      cancelled = true
     }
   }, [])
 
   return (
-    <section className="rounded-2xl border border-cyan-500/15 bg-cyan-500/[0.03] p-4 space-y-3">
-      <div className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.18em] text-cyan-300/90 font-semibold">
-            Matrice 10 colonnes · paper
-          </p>
-          <p className="text-[12px] text-zinc-500 mt-0.5 max-w-xl">
-            Perception LIA (lecture seule). Pas un ordre automatique. RCE = Real Capital Engaged.
-          </p>
-        </div>
+    <section className="card space-y-3 overflow-x-auto">
+      <div>
+        <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-400 font-semibold">
+          Matrice 10 colonnes
+        </p>
+        <p className="text-[12px] text-zinc-500 mt-0.5 max-w-xl">
+          Vue recherche (simulée) — pas un conseil d’investissement.
+        </p>
       </div>
       {err && <p className="text-[12px] text-amber-200">{asText(err)}</p>}
-      <div className="overflow-x-auto">
-        <table className="w-full text-[11px] min-w-[640px]">
-          <thead>
-            <tr className="text-zinc-500 border-b border-white/10">
-              <th className="text-left py-2 pr-2">Actif</th>
-              {COLS.map(col => (
-                <th key={col.key} className="text-right py-2 px-1" title={col.tip}>
-                  {col.label}
-                </th>
-              ))}
-              <th className="text-left py-2 pl-2">Strat paper</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(r => (
-              <tr key={r.matrix.assetId} className="border-b border-white/5 text-zinc-300">
-                <td className="py-2 pr-2 font-semibold text-white">{asText(r.matrix.assetId)}</td>
-                {COLS.map(col => (
-                  <td key={col.key} className="text-right py-2 px-1 mono tabular-nums">
-                    {cell(r.matrix, col.key)}
-                  </td>
-                ))}
-                <td className="py-2 pl-2 text-cyan-200/90" title={asText(r.reason)}>
-                  {asText(r.strategy).replace(/^STRAT_/, '')}
-                </td>
-              </tr>
+      <table className="w-full text-[11px] min-w-[640px]">
+        <thead>
+          <tr className="text-zinc-500 border-b border-white/10">
+            <th className="text-left py-2 px-1">Actif</th>
+            {COLS.map(col => (
+              <th key={col.key} className="text-right py-2 px-1" title={col.tip}>
+                {col.label}
+              </th>
             ))}
-            {rows.length === 0 && !err && (
-              <tr>
-                <td colSpan={12} className="py-6 text-center text-zinc-500">
-                  Chargement matrice…
+            <th className="text-right py-2 px-1">Strat</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(r => (
+            <tr key={asText(r.matrix.assetId)} className="border-b border-white/5">
+              <td className="py-2 px-1 font-semibold text-white">{asText(r.matrix.assetId)}</td>
+              {COLS.map(col => (
+                <td key={col.key} className="text-right py-2 px-1 mono text-zinc-300">
+                  {cell(r.matrix, col.key)}
                 </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              ))}
+              <td className="text-right py-2 px-1 text-cyan-200/90 truncate max-w-[8rem]" title={r.reason}>
+                {asText(r.strategy).replace(/^STRAT_/, '')}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </section>
   )
 }

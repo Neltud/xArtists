@@ -60,7 +60,7 @@ export async function loadRce(force = false): Promise<RceSnapshot> {
     for (const t of TRACK) {
       const address = addr(t.key)
       if (!address) {
-        lines.push({ id: t.id, label: t.label, address: '', egld: null, error: 'no addr' })
+        lines.push({ id: t.id, label: t.label, address: '', egld: null, error: 'adresse absente' })
         continue
       }
       try {
@@ -68,12 +68,13 @@ export async function loadRce(force = false): Promise<RceSnapshot> {
         lines.push({ id: t.id, label: t.label, address, egld })
         if (t.id === 'slot') setCachedHouseEgld(egld)
       } catch (e) {
+        const msg = e instanceof Error ? e.message : 'erreur lecture'
         lines.push({
           id: t.id,
           label: t.label,
           address,
           egld: t.id === 'slot' ? getCachedHouseEgld() : null,
-          error: e instanceof Error ? e.message : 'err',
+          error: typeof msg === 'string' ? msg : 'erreur',
         })
       }
     }
