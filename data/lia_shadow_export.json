@@ -1,0 +1,13 @@
+{
+  "schema": "lia_shadow_export/v1",
+  "ts": "2026-10-04T12:16:34Z",
+  "paper": true,
+  "fills": 25,
+  "shadow_pnl_usd": 0.5999,
+  "win_rate": 0.44,
+  "equity_now_usd": 1000.5999,
+  "day_index": 1,
+  "sprint_status": "running",
+  "source": "shadow_sprint",
+  "note": "Server shadow export — zero real capital"
+}
