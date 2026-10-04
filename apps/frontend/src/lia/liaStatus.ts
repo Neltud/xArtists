@@ -23,6 +23,13 @@ export type LiaStatusV1 = {
     vellum_ok?: boolean
     guardian_allow?: boolean
   }
+  /** Derived server-side or client — bull/bear/stable/reward */
+  aura?: {
+    mode?: string
+    trend?: string
+    confidence?: number | null
+    source?: string
+  }
   shadow?: {
     fills?: number
     shadow_pnl_usd?: number
@@ -50,10 +57,45 @@ function bases(): string[] {
   return list
 }
 
-/**
- * Prefer static aggregator; optional live API if VITE_LIA_API is set.
- * Professional path: JSON on Pages today → same shape on FastAPI tomorrow.
- */
+/** Map aggregator fields → aura mode (no WebSocket; poll-driven). */
+export function auraFromStatus(st: LiaStatusV1 | null | undefined): {
+  mode: string
+  trend: string
+  confidence: number | null
+  source: string
+} {
+  if (st?.aura?.mode) {
+    return {
+      mode: String(st.aura.mode),
+      trend: String(st.aura.trend || 'flat'),
+      confidence: st.aura.confidence ?? st.mindset?.confidence ?? null,
+      source: String(st.aura.source || 'aggregator'),
+    }
+  }
+  const pnl = st?.shadow?.shadow_pnl_usd
+  const conf = st?.mindset?.confidence
+  let mode = 'stable'
+  let trend = 'flat'
+  if (typeof pnl === 'number') {
+    if (pnl > 0.5) {
+      mode = 'bull'
+      trend = 'up'
+    } else if (pnl < -0.5) {
+      mode = 'bear'
+      trend = 'down'
+    }
+  }
+  if (st?.shadow?.fills && st.shadow.fills > 0 && Math.abs(Number(pnl) || 0) < 0.05) {
+    mode = 'reward'
+  }
+  return {
+    mode,
+    trend,
+    confidence: conf ?? null,
+    source: 'client_derive',
+  }
+}
+
 export async function fetchLiaStatus(): Promise<LiaStatusV1 | null> {
   const apiBase = (() => {
     try {
@@ -79,13 +121,12 @@ export async function fetchLiaStatus(): Promise<LiaStatusV1 | null> {
 
   for (const base of bases()) {
     try {
-      const url = `${base.replace(/\/?$/, '/')}lia_status.json?t=${Date.now()}`
-      const r = await fetch(url, { cache: 'no-store' })
+      const r = await fetch(`${base}lia_status.json`, { cache: 'no-store' })
       if (!r.ok) continue
       const j = (await r.json()) as LiaStatusV1
       if (j && typeof j === 'object') return j
     } catch {
-      /* */
+      /* try next */
     }
   }
   return null

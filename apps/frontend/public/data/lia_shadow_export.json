@@ -1,0 +1,8 @@
+{
+  "schema": "lia_shadow_export/v1",
+  "paper": true,
+  "note": "Server-side shadow snapshot written by publish_lia_status — not live capital",
+  "fills": 0,
+  "shadow_pnl_usd": 0,
+  "source": "bootstrap"
+}
