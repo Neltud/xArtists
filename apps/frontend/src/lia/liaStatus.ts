@@ -1,0 +1,92 @@
+/**
+ * Aggregator client — data/lia_status.json (Vellum / Pages).
+ * Same contract as future GET /api/lia/status.
+ */
+
+export type LiaStatusV1 = {
+  schema?: string
+  ts?: string
+  paper?: boolean
+  LIA_LIVE_TRADING?: number
+  onchain?: {
+    address?: string
+    egld?: number | null
+    egld_usd?: number | null
+    tokens?: { identifier?: string; ticker?: string; balance?: number }[]
+    tx_count?: number | null
+    error?: string | null
+  }
+  mindset?: {
+    strategy?: string | null
+    confidence?: number | null
+    vellum_ts?: string | null
+    vellum_ok?: boolean
+    guardian_allow?: boolean
+  }
+  shadow?: {
+    fills?: number
+    shadow_pnl_usd?: number
+    win_rate?: number | null
+    last_shadow?: {
+      id?: string
+      side?: string
+      asset?: string
+      pnl_usd?: number
+      ts?: string
+    }[]
+    source?: string
+  }
+  links?: { explorer?: string; hub?: string }
+  note?: string
+}
+
+function bases(): string[] {
+  const list: string[] = []
+  if (typeof window !== 'undefined') {
+    list.push(`${window.location.origin}${import.meta.env.BASE_URL || '/'}data/`)
+  }
+  list.push('https://neltud.github.io/xArtists/data/')
+  list.push('/data/')
+  return list
+}
+
+/**
+ * Prefer static aggregator; optional live API if VITE_LIA_API is set.
+ * Professional path: JSON on Pages today → same shape on FastAPI tomorrow.
+ */
+export async function fetchLiaStatus(): Promise<LiaStatusV1 | null> {
+  const apiBase = (() => {
+    try {
+      return String(
+        (import.meta as { env?: { VITE_LIA_API?: string } }).env?.VITE_LIA_API || '',
+      ).replace(/\/$/, '')
+    } catch {
+      return ''
+    }
+  })()
+
+  if (apiBase) {
+    try {
+      const r = await fetch(`${apiBase}/api/lia/status`, { cache: 'no-store' })
+      if (r.ok) {
+        const j = (await r.json()) as LiaStatusV1
+        if (j && typeof j === 'object') return j
+      }
+    } catch {
+      /* fall through to static */
+    }
+  }
+
+  for (const base of bases()) {
+    try {
+      const url = `${base.replace(/\/?$/, '/')}lia_status.json?t=${Date.now()}`
+      const r = await fetch(url, { cache: 'no-store' })
+      if (!r.ok) continue
+      const j = (await r.json()) as LiaStatusV1
+      if (j && typeof j === 'object') return j
+    } catch {
+      /* */
+    }
+  }
+  return null
+}

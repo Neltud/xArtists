@@ -1,0 +1,33 @@
+{
+  "schema": "lia_status/v1",
+  "ts": "2026-10-04T00:00:00Z",
+  "paper": true,
+  "LIA_LIVE_TRADING": 0,
+  "onchain": {
+    "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "egld": null,
+    "egld_usd": null,
+    "tokens": [],
+    "tx_count": null,
+    "error": "placeholder — run publish_lia_status"
+  },
+  "mindset": {
+    "strategy": null,
+    "confidence": null,
+    "vellum_ts": null,
+    "vellum_ok": null,
+    "guardian_allow": null
+  },
+  "shadow": {
+    "fills": 0,
+    "shadow_pnl_usd": 0,
+    "win_rate": null,
+    "last_shadow": [],
+    "source": "empty"
+  },
+  "links": {
+    "explorer": "https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "hub": "https://neltud.github.io/xArtists/#/lia"
+  },
+  "note": "Placeholder until Vellum runs publish_lia_status"
+}
