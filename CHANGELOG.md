@@ -1,5 +1,20 @@
 # Changelog — xArtists
 
+## [0.84.0](https://github.com/Neltud/xArtists/compare/v0.83.0...v0.84.0) (2026-10-04)
+
+
+### Features
+
+* **lia:** IntentFeedTerminal + marketAura mood on hub (MOD-V1.2) ([34142c3](https://github.com/Neltud/xArtists/commit/34142c3a77cd6f3361bdf576516fb17d60a28e31))
+* **lia:** MarketMetricsCharts on hub (macro/crypto/shadow) ([cac700f](https://github.com/Neltud/xArtists/commit/cac700f21c0a85d1a9fc835b09e477b596644c36))
+* **mod-v1.2:** IntentFeed terminal, formatRCE, market→aura bridge, ESDT proof hardening ([765b2e8](https://github.com/Neltud/xArtists/commit/765b2e8bff3610cd748f0ba080901b163cfcf212))
+* **mod-v1.2:** wire IntentFeedTerminal + marketAura on /lia; formatRCE on go-live ([aa12427](https://github.com/Neltud/xArtists/commit/aa12427839ed52f31534d4c1f9704bbdcb5816d1))
+
+
+### Bug Fixes
+
+* GoLive RCE [#31](https://github.com/Neltud/xArtists/issues/31) PACK_PRICE; CommandWall Pulse no TX watchdog; market signals + metrics charts ([a3f0964](https://github.com/Neltud/xArtists/commit/a3f0964402ad5f49be5b08bec9f940914c87cfb7))
+
 ## [0.83.0](https://github.com/Neltud/xArtists/compare/v0.82.0...v0.83.0) (2026-10-04)
 
 
