@@ -1,8 +1,10 @@
 {
-  "version": 1,
-  "updated": "2026-08-08T15:25:00Z",
+  "version": 2,
+  "updated": "2026-10-04T08:00:00Z",
   "entry": "python -m lia.vellum.pipeline",
   "alias": "python -m lia.vellum.next_run",
+  "production": "python -m lia.vellum.production_run",
+  "healthcheck": "python -m scripts.vellum_healthcheck",
   "live_default": 0,
   "order": [
     "bootstrap",
@@ -11,6 +13,7 @@
     "board",
     "social",
     "agent",
+    "desk_fuse",
     "mode",
     "guardian",
     "trading_stack",
@@ -20,13 +23,37 @@
     "executor_health",
     "status"
   ],
+  "modules_required": {
+    "pipeline": "lia.vellum.pipeline",
+    "next_run": "lia.vellum.next_run",
+    "production_run": "lia.vellum.production_run",
+    "publish": "lia.vellum.publish_data_for_frontend"
+  },
+  "modules_soft": {
+    "oracles": "lia.oracles.publish",
+    "gas": "lia.gas.publish",
+    "board": "lia.board.publish",
+    "social": "lia.signals.social_intel",
+    "agent": "lia.agents.mvx_agent",
+    "desk": "lia.circuit.desk_debate",
+    "modes": "lia.circuit.trading_modes",
+    "guardian_hook": "lia.vellum.guardian_hook",
+    "trading_stack": "lia.circuit.trading_stack",
+    "live_cycle": "lia.vellum.live_cycle",
+    "hatom": "lia.venues.hatom",
+    "executor": "lia.executor.universal"
+  },
+  "modules_known_gaps": [
+    "Some soft imports may be absent; pipeline continues with step ok=false",
+    "lia.circuit / lia.board / lia.risk packages partially present — run healthcheck"
+  ],
   "layers": {
-    "perception": ["lia.oracles", "lia.venues.onchain_feeds", "lia.board", "lia.signals", "lia.gas"],
-    "cognition": ["lia.agents.mvx_agent", "lia.circuit.strategies", "lia.circuit.trading_modes", "lia.claude_agent"],
-    "guardian": ["lia.guardian.spiral", "lia.risk.leverage_policy", "lia.risk.slippage", "lia.risk.profit_lock"],
-    "execution_plan": ["lia.circuit.trading_stack", "lia.risk.secure_tp", "lia.risk.dynamic_trail", "lia.circuit.cross_chain_arb"],
-    "yield": ["lia.defi", "lia.venues.hatom"],
-    "publish": ["lia.vellum.publish_data_for_frontend", "lia.board.publish", "lia.oracles.publish"]
+    "perception": ["lia.oracles", "lia.signals", "lia.gas"],
+    "cognition": ["lia.agents.mvx_agent", "lia.claude_agent", "lia.circuit.trading_modes"],
+    "guardian": ["lia.guardian", "lia.vellum.guardian_hook"],
+    "execution_plan": ["lia.circuit.trading_stack", "lia.vellum.live_cycle"],
+    "publish": ["lia.vellum.publish_data_for_frontend"],
+    "browser_shadow": ["apps/frontend/src/lia"]
   },
   "modes_priority": [
     "DEFENSE",
@@ -41,6 +68,7 @@
   "gates": {
     "LIA_LIVE_TRADING": 0,
     "guardian_before_brain": true,
-    "mainnet_only": true
+    "mainnet_only": true,
+    "soft_step_failures": true
   }
 }

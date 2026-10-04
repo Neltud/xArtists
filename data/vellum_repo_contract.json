@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "updated": "2026-10-04",
+  "repo": "https://github.com/Neltud/xArtists",
+  "branch": "main",
+  "pythonpath": ".",
+  "chain_id": "1",
+  "live_default": 0,
+  "entrypoints": {
+    "healthcheck": "python -m scripts.vellum_healthcheck",
+    "next_run": "python -m lia.vellum.next_run",
+    "pipeline": "python -m lia.vellum.pipeline",
+    "production_run": "python -m lia.vellum.production_run",
+    "publish_frontend": "python -m lia.vellum.publish_data_for_frontend"
+  },
+  "env_required": {
+    "PYTHONPATH": ".",
+    "CHAIN": "1",
+    "LIA_LIVE_TRADING": "0"
+  },
+  "env_forbidden_in_git": [
+    "PEM",
+    "MNEMONIC",
+    "PINATA",
+    "LIA_OPS_KEY",
+    "VELLUM_API_KEY"
+  ],
+  "publish_targets": [
+    "data/",
+    "docs/data/",
+    "apps/frontend/public/data/"
+  ],
+  "frontend_public_base": "https://neltud.github.io/xArtists/data/",
+  "browser_shadow": {
+    "path": "apps/frontend/src/lia/",
+    "ui": "Command Center → LIA Shadow",
+    "executes_tx": false
+  },
+  "docs": [
+    "docs/VELLUM_INTEGRATION.md",
+    "docs/CLAUDE_API_CONTRACT.md",
+    "docs/LIA_SHADOW_AND_STRATEGY.md",
+    "docs/ENVIRONMENT_VARIABLES.md"
+  ]
+}
