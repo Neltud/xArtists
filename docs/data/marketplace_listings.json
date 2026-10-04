@@ -1,3 +1,21 @@
 {
-  "listings": []
+  "updated": "2026-10-04",
+  "note": "Seed index — live page merges on-chain SC NFTs + local sold overlay",
+  "listings": [
+    {
+      "listing_id": 1,
+      "identifier": "ASFT-a6273a-01",
+      "token": "ASFT-a6273a",
+      "nonce": 1,
+      "name": "BlackArtPass",
+      "price_egld": "0.25",
+      "active": true,
+      "tx_list": "500c2b1f160c009e"
+    }
+  ],
+  "proven_buy": {
+    "tx": "57b7b5e2e9102b7a715c9e08a602afd070b1861098b7d4baf4ab5edab801806e",
+    "listing_id": 1,
+    "price_egld": 0.25
+  }
 }
