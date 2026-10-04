@@ -26,15 +26,16 @@ export const CORE_MODULES: ProductModule[] = [
 ]
 
 export const SECONDARY_MODULES: ProductModule[] = [
+  { id: 'lia', path: '/lia', label: 'LIA Hub', emoji: '◉', tier: 'secondary', status: 'ui', blurb: 'Profil protocole · mindset · shadow' },
   { id: 'my-packs', path: '/my-packs', label: 'Mes salles', emoji: '🎛', tier: 'secondary', status: 'ui', blurb: 'Salles pack' },
   { id: 'command', path: '/command-center', label: 'Command', emoji: '⌘', tier: 'secondary', status: 'ui', blurb: 'Centre ops' },
   { id: 'venues', path: '/venues', label: 'Venues', emoji: '◎', tier: 'secondary', status: 'live', blurb: 'Louer un mur', sc: 'venue_split' },
+  { id: 'lp', path: '/lp', label: 'LP pools', emoji: '💧', tier: 'secondary', status: 'ui', blurb: 'TRO xExchange · OneDex' },
   { id: 'tro', path: '/tro', label: '$TRO', emoji: '◎', tier: 'secondary', status: 'ui', blurb: 'Token TRO' },
   { id: 'dao', path: '/dao', label: 'DAO', emoji: '⬡', tier: 'secondary', status: 'soon', blurb: 'Gouvernance', sc: 'tro_governance' },
-  { id: 'portfolio', path: '/portfolio', label: 'Portfolio', emoji: '▤', tier: 'secondary', status: 'ui', blurb: 'Assets' },
+  { id: 'portfolio', path: '/portfolio', label: 'Portfolio', emoji: '▤', tier: 'secondary', status: 'ui', blurb: 'Assets user' },
   { id: 'legal', path: '/legal', label: 'Legal', emoji: '§', tier: 'secondary', status: 'ui', blurb: 'Mentions' },
-  { id: 'status', path: '/go-live', label: 'Status', emoji: '🚀', tier: 'secondary', status: 'ui', blurb: 'État SC' },
-  { id: 'sitemap', path: '/sitemap', label: 'Plan', emoji: '☰', tier: 'secondary', status: 'ui', blurb: 'Toutes les pages' },
+  { id: 'status', path: '/go-live', label: 'Statut', emoji: '✓', tier: 'secondary', status: 'ui', blurb: 'RCE · checklist' },
 ]
 
 export const STATUS_LABEL: Record<ProductModule['status'], string> = {
