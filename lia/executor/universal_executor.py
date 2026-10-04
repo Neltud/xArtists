@@ -9,9 +9,9 @@ Env:
   LIA_MVX_API=https://api.multiversx.com
   LIA_MVX_PROXY=https://gateway.multiversx.com
 
-Asset policy:
-  Accumulate EGLD / WBTC / USDC only.
-  TRO recovered → redistribute (pool / stake / rewards / burn).
+Asset policy (Beta):
+  Allowlist via lia.beta.allowlist — EGLD / USDC / TRO only.
+  Accumulate EGLD / USDC; TRO → redistribute when policy present.
 """
 from __future__ import annotations
 
@@ -148,9 +148,15 @@ class UniversalExecutor:
         data_hex: str,
         gas_limit: int = 30_000_000,
     ) -> ExecResult:
-        # Enforce: never route output into holding TRO as accumulation
-        if token_out.upper().startswith("TRO") and token_in.upper() not in ("TRO", "TRO-94C925"):
-            # Selling into TRO is OK if immediately redistributed; log intent
+        # Beta allowlist — both sides must be permitted (closed set)
+        try:
+            from lia.beta.allowlist import assert_token_allowed
+
+            for t in (token_in, token_out):
+                g = assert_token_allowed(t)
+                if not g.ok:
+                    return ExecResult(False, None, "blocked", g.reason)
+        except ImportError:
             pass
         return self.sign_and_send(
             receiver=router,
@@ -175,11 +181,9 @@ class UniversalExecutor:
         intents = build_tro_redistribution_txs(amount_atomic)
         results: list[ExecResult] = []
         for intent in intents:
-            # ESDTTransfer@token@nonce@amount  (fungible nonce 0)
             token = intent["token"]
             amount = intent["amount"]
             to = intent["to"]
-            # data format MultiversX: ESDTTransfer@hex(token)@hex(amount)
             token_hex = token.encode().hex()
             amount_hex = format(amount, "x")
             data = f"ESDTTransfer@{token_hex}@{amount_hex}"
@@ -197,7 +201,7 @@ class UniversalExecutor:
             "breaker_open": not self.breaker.allow(),
             "api": API,
             "proxy": PROXY,
-            "policy": "accumulate EGLD/WBTC/USDC; redistribute TRO",
+            "policy": "beta allowlist EGLD/USDC/TRO; accumulate EGLD/USDC; redistribute TRO",
         }
 
 
