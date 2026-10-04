@@ -1,51 +1,51 @@
 /**
  * LIA Hub — aggregator · shadow · intent feed · aura (paper).
+ * M1.2: poll 15s + aura from lia_status (no WebSocket / no <2s claim).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LIA_WALLET, LINKS } from '../config/links'
-import { fetchProtocolProfile, type ProtocolProfile } from '../lia/protocolProfile'
-import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumBridge'
+import { usePulse } from '../context/PulseContext'
+import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
+import { toAmbientSnapshot } from '../lia/ambient'
 import { matrixFromPulse, runDecisionCycle } from '../lia/decisionCycle'
+import { fetchEgldPrice } from '../lia/priceTick'
+import { fetchProtocolProfile, type ProtocolProfile } from '../lia/protocolProfile'
 import { loadShadowBalances, loadShadowLog, type ShadowFill } from '../lia/shadowLedger'
 import { persistShadowExport } from '../lia/shadowExport'
 import { loadIntentFeed, type FeedItem } from '../lia/intentFeed'
-import { fetchEgldPrice } from '../lia/priceTick'
-import { fetchRecentTx, type ExplorerTx } from '../lia/explorerTx'
+import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumStatus'
 import { fetchLiaHubStatus, type LiaHubStatus } from '../lia/hubStatus'
-import { fetchLiaStatus, type LiaStatusV1 } from '../lia/liaStatus'
-import ShadowEquityChart from '../components/lia/ShadowEquityChart'
-import IntentFeed from '../components/lia/IntentFeed'
+import { fetchLiaStatus, auraFromStatus, type LiaStatusV1 } from '../lia/liaStatus'
+import { asText } from '../lib/safeRender'
 import AuraBadge from '../components/lia/AuraBadge'
-import { usePulse } from '../hooks/usePulse'
-import { toAmbientSnapshot } from '../lib/ambientAura'
-import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
-import RceStrip from '../components/RceStrip'
 import MatrixBoard from '../components/lia/MatrixBoard'
+import RceStrip from '../components/RceStrip'
 
-function fmt(n: number | null | undefined, d = 4): string {
-  if (n == null || !Number.isFinite(n)) return '—'
-  if (Math.abs(n) >= 1000) return n.toLocaleString('fr-FR', { maximumFractionDigits: 2 })
-  return n.toLocaleString('fr-FR', { maximumFractionDigits: d })
+const API = 'https://api.multiversx.com'
+const LIA_WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
+
+type ExplorerTx = {
+  txHash?: string
+  function?: string
+  status?: string
+  value?: string
 }
 
-function fmtUsd(n: number | null | undefined): string {
-  if (n == null || !Number.isFinite(n)) return '—'
-  return `$${n.toLocaleString('en-US', { maximumFractionDigits: 2 })}`
-}
-
-function shortAddr(a: string): string {
-  if (!a || a.length < 16) return a || '—'
-  return `${a.slice(0, 8)}…${a.slice(-6)}`
-}
-
-function shortHash(h: string): string {
-  if (!h || h.length < 12) return h || '—'
-  return `${h.slice(0, 8)}…${h.slice(-6)}`
+async function fetchRecentTx(size = 8): Promise<ExplorerTx[]> {
+  try {
+    const r = await fetch(`${API}/accounts/${LIA_WALLET}/transactions?size=${size}&order=desc`, {
+      cache: 'no-store',
+    })
+    if (!r.ok) return []
+    const j = await r.json()
+    return Array.isArray(j) ? j : []
+  } catch {
+    return []
+  }
 }
 
 export default function LiaPage() {
-  const { env, source } = usePulse()
+  const { env } = usePulse()
   const lia = useLIAInterpreter(env)
   const ambient = useMemo(
     () => toAmbientSnapshot(lia.uniforms, lia.confidence, false),
@@ -96,7 +96,6 @@ export default function LiaPage() {
         confidence: lia.confidence ?? 0.5,
         rce: p.egldUsd || 0,
       })
-      // executeShadow true on manual refresh → friction fills + intent feed
       const cycle = runDecisionCycle(m, { executeShadow: true })
       setTick({
         strategy: cycle.strategy,
@@ -114,238 +113,124 @@ export default function LiaPage() {
 
   useEffect(() => {
     void refresh()
-    const id = window.setInterval(() => void refresh(), 60_000)
+    // M1.2 — short poll; not a WebSocket; no <2s guarantee
+    const id = window.setInterval(() => void refresh(), 15_000)
     return () => window.clearInterval(id)
   }, [refresh])
 
+  const fromAgg = auraFromStatus(agg)
+  const auraMode = tick?.aura || fromAgg.mode || ambient.mode
+
   const statusLabel =
     vellum?.live === true
-      ? 'Vellum live flag on (ops)'
+      ? 'Vellum live flag'
       : agg
         ? 'Aggregator lia_status'
-        : vellum
-          ? 'Pipeline paper publié'
-          : 'Shadow navigateur + pulse'
-
-  const stratLabel = tick?.strategy || agg?.mindset?.strategy || hub?.strategy || '—'
-  const pnl = agg?.shadow?.shadow_pnl_usd ?? hub?.shadow_pnl_usd
-  const fills = agg?.shadow?.fills ?? hub?.fills
-  const winRate = agg?.shadow?.win_rate ?? hub?.win_rate
-  const auraMode = tick?.aura || ambient.mode
+        : hub
+          ? 'Hub status'
+          : 'Local pulse'
 
   return (
-    <div className="animate-fade-in space-y-6 max-w-4xl mx-auto pb-20">
+    <div className="animate-fade-in space-y-6 max-w-3xl mx-auto pb-16">
       <header className="space-y-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="section-label">Intelligence</p>
-          <span className="rounded-full border border-cyan-500/30 px-2 py-0.5 text-[10px] text-cyan-200">
-            HUB PUBLIC
-          </span>
-          <AuraBadge mode={String(auraMode)} trend={ambient.trend} />
+        <p className="section-label">LIA Hub</p>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="section-title display text-2xl">Intelligence</h1>
+          <AuraBadge mode={String(auraMode)} trend={fromAgg.trend || ambient.trend} />
         </div>
-        <h1 className="section-title display text-3xl">LIA</h1>
-        <p className="text-sm text-zinc-400 max-w-2xl">
-          Agent de recherche on-chain (Model C). Solde protocole, mindset paper, preuve shadow —{' '}
-          <strong className="text-zinc-300">pas un fond d’investissement</strong>.
+        <p className="text-sm text-zinc-400">
+          Profil protocole · mindset · shadow (preuve simulée). Poll 15s — pas un flux &lt;2s sans bus.
         </p>
+        <RceStrip compact />
       </header>
 
-      <div className="flex flex-wrap gap-2">
-        <button type="button" className="btn-secondary text-sm" onClick={() => void refresh()} disabled={loading}>
-          {loading ? '…' : 'Actualiser'}
-        </button>
-        <a
-          className="btn-primary text-sm"
-          href={LINKS.explorerAccount(LIA_WALLET)}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Explorer wallet LIA
-        </a>
-        <Link to="/command-center" className="btn-secondary text-sm">
-          Command Center
-        </Link>
-        <Link to="/lp" className="btn-secondary text-sm">
-          Pools / LP
-        </Link>
-        <Link to="/market" className="btn-secondary text-sm">
-          Marché
-        </Link>
+      <div className="grid sm:grid-cols-3 gap-3 text-sm">
+        <div className="card">
+          <p className="text-[10px] uppercase text-zinc-500">Source</p>
+          <p className="font-semibold text-white">{asText(statusLabel)}</p>
+        </div>
+        <div className="card">
+          <p className="text-[10px] uppercase text-zinc-500">Aura</p>
+          <p className="font-semibold text-white">{asText(auraMode)}</p>
+          <p className="text-[10px] text-zinc-500">{asText(fromAgg.source)}</p>
+        </div>
+        <div className="card">
+          <p className="text-[10px] uppercase text-zinc-500">Shadow PnL</p>
+          <p className="font-semibold tabular-nums">
+            {agg?.shadow?.shadow_pnl_usd != null
+              ? asText(agg.shadow.shadow_pnl_usd)
+              : '—'{" '}USD
+          </p>
+        </div>
       </div>
-
-      <RceStrip compact />
-
-      <div className="grid lg:grid-cols-3 gap-4">
-        <section className="card space-y-3 lg:col-span-1 border-purple-500/20">
-          <p className="text-[10px] uppercase tracking-[0.18em] text-purple-300/90 font-semibold">
-            A · Profil protocole
-          </p>
-          <p className="text-xs mono text-zinc-500 break-all">{shortAddr(LIA_WALLET)}</p>
-          {profile?.error && <p className="text-[12px] text-amber-200">{profile.error}</p>}
-          <div className="rounded-xl bg-black/30 border border-white/10 p-3">
-            <p className="text-[10px] text-zinc-500 uppercase">EGLD</p>
-            <p className="text-2xl font-bold text-white tabular-nums">
-              {fmt(agg?.onchain?.egld ?? profile?.egld, 4)}
-            </p>
-            <p className="text-[12px] text-zinc-500">
-              {fmtUsd(agg?.onchain?.egld_usd ?? profile?.egldUsd)}
-            </p>
-          </div>
-          <div className="space-y-1.5 max-h-40 overflow-y-auto">
-            {(profile?.tokens || []).length === 0 && (
-              <p className="text-[12px] text-zinc-500">Aucun token ou chargement…</p>
-            )}
-            {(profile?.tokens || []).map(t => (
-              <div
-                key={t.identifier}
-                className="flex justify-between gap-2 text-[12px] border-b border-white/5 py-1"
-              >
-                <span className="text-zinc-300 truncate">{t.ticker}</span>
-                <span className="mono text-zinc-400 tabular-nums">{fmt(t.balance, 2)}</span>
-              </div>
-            ))}
-          </div>
-          <Link to="/lp" className="text-[12px] text-cyan-400 underline">
-            Pools & LP protocole →
-          </Link>
-        </section>
-
-        <section className="card space-y-3 lg:col-span-1 border-cyan-500/20">
-          <p className="text-[10px] uppercase tracking-[0.18em] text-cyan-400/90 font-semibold">
-            B · Mindset
-          </p>
-          <div className="rounded-xl bg-black/30 border border-white/10 p-3 space-y-1">
-            <p className="text-[10px] text-zinc-500 uppercase">Stratégie (paper)</p>
-            <p className="text-lg font-semibold text-white">{stratLabel}</p>
-            <p className="text-[12px] text-zinc-500">{tick?.reason || '—'}</p>
-          </div>
-          <div className="grid grid-cols-2 gap-2 text-[12px]">
-            <div className="rounded-xl bg-black/30 p-2 border border-white/5">
-              <p className="text-zinc-500">Confiance</p>
-              <p className="font-semibold text-white tabular-nums">
-                {((lia.confidence ?? agg?.mindset?.confidence ?? hub?.confidence ?? 0) * 100).toFixed(0)}%
-              </p>
-            </div>
-            <div className="rounded-xl bg-black/30 p-2 border border-white/5">
-              <p className="text-zinc-500">Intent</p>
-              <p className="font-semibold text-cyan-200">{tick?.action || 'HOLD'}</p>
-            </div>
-            <div className="rounded-xl bg-black/30 p-2 border border-white/5">
-              <p className="text-zinc-500">Aura</p>
-              <p className="font-semibold text-white">{String(auraMode)}</p>
-            </div>
-            <div className="rounded-xl bg-black/30 p-2 border border-white/5">
-              <p className="text-zinc-500">Pulse</p>
-              <p className="font-semibold text-zinc-300">{source}</p>
-            </div>
-          </div>
-          {vellum && (
-            <div className="rounded-xl border border-white/10 px-3 py-2 text-[11px] text-zinc-400">
-              <p className="text-zinc-500">Vellum last run</p>
-              <p className="text-zinc-200">
-                {vellum.ts || '—'} · {vellum.summary?.mode || '—'} ·{' '}
-                {vellum.summary?.ok === false ? 'steps failed' : 'ok'}
-              </p>
-            </div>
-          )}
-          <p className="text-[11px] text-zinc-500">Statut : {statusLabel}</p>
-        </section>
-
-        <section className="card space-y-3 lg:col-span-1 border-emerald-500/15">
-          <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-300/90 font-semibold">
-            C · Preuve shadow
-          </p>
-          <p className="text-[12px] text-zinc-500">
-            Friction : gas 0.0008 EGLD + slippage liquidité (paper).
-          </p>
-          {(hub || agg?.shadow) && (
-            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[12px]">
-              <p className="text-zinc-500">Status agrégé</p>
-              <p className="text-zinc-200">
-                PnL {fmtUsd(pnl)} · fills {fills ?? '—'} · win{' '}
-                {winRate != null ? `${(winRate * 100).toFixed(0)}%` : '—'}
-              </p>
-              {(agg?.ts || hub?.ts) && (
-                <p className="text-[10px] text-zinc-600 mt-0.5">{agg?.ts || hub?.ts}</p>
-              )}
-            </div>
-          )}
-          <ShadowEquityChart fills={shadowLog} startEquity={110} />
-          <div className="grid grid-cols-3 gap-2 text-[12px]">
-            <div className="rounded-xl bg-black/30 p-2">
-              <p className="text-zinc-500">EGLD virt.</p>
-              <p className="font-semibold tabular-nums">{fmt(shadowBal.EGLD, 3)}</p>
-            </div>
-            <div className="rounded-xl bg-black/30 p-2">
-              <p className="text-zinc-500">USDC virt.</p>
-              <p className="font-semibold tabular-nums">{fmt(shadowBal.USDC, 1)}</p>
-            </div>
-            <div className="rounded-xl bg-black/30 p-2">
-              <p className="text-zinc-500">Log</p>
-              <p className="font-semibold tabular-nums">{shadowLog.length}</p>
-            </div>
-          </div>
-          <Link to="/command-center" className="text-[12px] text-cyan-400 underline">
-            War room →
-          </Link>
-        </section>
-      </div>
-
-      <IntentFeed items={feed} />
 
       <MatrixBoard />
 
-      <section className="card space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-400 font-semibold">
-            Dernières TX · wallet LIA
-          </p>
-          <a
-            href={LINKS.explorerAccount(LIA_WALLET)}
-            className="text-[12px] text-cyan-400 underline"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Tout voir sur l’explorer
-          </a>
-        </div>
-        {txs.length === 0 ? (
-          <p className="text-sm text-zinc-500">Aucune TX chargée.</p>
+      <section className="card space-y-2">
+        <h2 className="text-sm font-semibold text-white">Intent feed (paper)</h2>
+        {feed.length === 0 ? (
+          <p className="text-[13px] text-zinc-500">Aucun intent local — refresh pour en générer.</p>
         ) : (
-          <ul className="divide-y divide-white/5 text-[12px]">
-            {txs.map(tx => (
-              <li key={tx.hash} className="py-2 flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <a
-                    href={LINKS.explorerTx(tx.hash)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mono text-cyan-300/90 hover:underline"
-                  >
-                    {shortHash(tx.hash)}
-                  </a>
-                  <p className="text-zinc-500">
-                    {tx.function || 'transfer'} · {tx.status}
-                    {tx.timestamp
-                      ? ` · ${new Date(tx.timestamp * 1000).toLocaleString()}`
-                      : ''}
-                  </p>
-                </div>
-                <span className="mono text-zinc-300 tabular-nums">{fmt(tx.valueEgld, 4)} EGLD</span>
+          <ul className="space-y-1 text-[12px] text-zinc-300">
+            {feed.slice(0, 12).map((f, i) => (
+              <li key={i} className="border-b border-white/5 py-1 flex justify-between gap-2">
+                <span>{asText(f.action)} · {asText(f.asset)}</span>
+                <span className="text-zinc-500">{asText(f.ts)}</span>
               </li>
             ))}
           </ul>
         )}
       </section>
 
-      <section className="card text-sm text-zinc-400 space-y-2">
-        <p className="font-semibold text-zinc-200">Cadre honnête</p>
-        <ul className="text-[13px] space-y-1 list-disc pl-4">
-          <li>Paper only — feed d’intents + aura ne signent rien.</li>
-          <li>Shadow local avec friction (gas + slippage) ; export navigateur à chaque refresh.</li>
-          <li>Micro-preuve live = PEM Vellum + runbook Beta (humain).</li>
-        </ul>
+      <section className="card space-y-2">
+        <h2 className="text-sm font-semibold text-white">Shadow local</h2>
+        <p className="text-[12px] text-zinc-500">
+          Soldes virtuels · friction — export aussi côté serveur (`lia_shadow_export.json`).
+        </p>
+        <p className="text-[12px] mono text-zinc-400">
+          fills {asText(shadowLog.length)} · bal keys {asText(Object.keys(shadowBal || {}).length)}
+        </p>
       </section>
+
+      <section className="card space-y-2">
+        <h2 className="text-sm font-semibold text-white">TX explorer (wallet LIA)</h2>
+        {txs.length === 0 ? (
+          <p className="text-[13px] text-zinc-500">Aucune TX récente.</p>
+        ) : (
+          <ul className="text-[11px] space-y-1">
+            {txs.map(t => (
+              <li key={asText(t.txHash)}>
+                <a
+                  className="text-cyan-400 underline"
+                  href={`https://explorer.multiversx.com/transactions/${t.txHash}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {asText(t.function || t.txHash?.slice(0, 12))}
+                </a>{' '}
+                <span className="text-zinc-500">{asText(t.status)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <div className="flex flex-wrap gap-2">
+        <button type="button" className="btn-primary text-sm" onClick={() => void refresh()} disabled={loading}>
+          {loading ? '…' : 'Actualiser'}
+        </button>
+        <Link to="/lp" className="btn-secondary text-sm">
+          Pools TRO
+        </Link>
+        <Link to="/market" className="btn-secondary text-sm">
+          Marché
+        </Link>
+      </div>
+
+      <ul className="text-[11px] text-zinc-600 space-y-1">
+        <li>Paper only — feed d’intents + aura ne signent rien.</li>
+        <li>LIA_LIVE_TRADING reste 0 jusqu’à Shadow 7j + micro-preuves.</li>
+      </ul>
     </div>
   )
 }
