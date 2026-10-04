@@ -1,5 +1,5 @@
 /**
- * Marketplace — vitrine + multi-list + post-buy index overlay.
+ * Marketplace — vitrine on-chain + multi-list + post-buy overlay.
  * All dynamic children forced to string (React #31 guard).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -8,6 +8,7 @@ import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
 import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
 import { canListBuyNft } from '../config/scStatus'
+import { MARKETPLACE_ADDRESS } from '../lib/scStatus'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useToast } from '../components/ui/Toast'
 import type { ListingRow } from '../types/marketplace'
@@ -16,6 +17,7 @@ import {
   markListingSold,
   rememberLocalListing,
 } from '../lib/marketplaceIndex'
+import { fetchMarketPayable, type MarketPayableStatus } from '../lib/marketPayable'
 import { asText } from '../lib/safeRender'
 
 const PAGE = 16
@@ -38,11 +40,15 @@ function nftThumb(n: {
   return undefined
 }
 
-/** Drop non-scalar fields that crash React if rendered. */
 function sanitizeListing(raw: ListingRow): ListingRow | null {
   if (!raw || typeof raw !== 'object') return null
   const name = typeof raw.name === 'string' ? raw.name : undefined
-  const token = typeof raw.token === 'string' ? raw.token : typeof raw.token_id === 'string' ? raw.token_id : undefined
+  const token =
+    typeof raw.token === 'string'
+      ? raw.token
+      : typeof raw.token_id === 'string'
+        ? raw.token_id
+        : undefined
   const identifier = typeof raw.identifier === 'string' ? raw.identifier : undefined
   const listing_id =
     typeof raw.listing_id === 'number'
@@ -87,6 +93,7 @@ export default function MarketplacePage() {
   const [price, setPrice] = useState('0.25')
   const [visible, setVisible] = useState(PAGE)
   const [msg, setMsg] = useState<string | null>(null)
+  const [payableSt, setPayableSt] = useState<MarketPayableStatus | null>(null)
 
   const reload = useCallback(() => {
     fetchMarketplaceListings()
@@ -104,6 +111,14 @@ export default function MarketplacePage() {
   useEffect(() => {
     reload()
   }, [reload, lastTx])
+
+  useEffect(() => {
+    const addr =
+      typeof MARKETPLACE_ADDRESS === 'string' && MARKETPLACE_ADDRESS.startsWith('erd1')
+        ? MARKETPLACE_ADDRESS
+        : 'erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm'
+    void fetchMarketPayable(addr).then(setPayableSt)
+  }, [])
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase()
@@ -177,8 +192,15 @@ export default function MarketplacePage() {
         <p className="section-label">Marché NFT · mainnet</p>
         <h1 className="section-title display text-2xl">Marketplace</h1>
         <p className="text-sm text-zinc-400">
-          Vitrine on-chain. Multi-list = une signature par pièce (session xPortal conservée).
+          Index on-chain (NFT sur le SC) + inventaire wallet. Multi-list = une signature par pièce.
         </p>
+        {payableSt?.isPayable === false && (
+          <p className="text-[12px] text-amber-200/90 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2">
+            SC market : isPayable=false — de nouveaux buy EGLD peuvent échouer jusqu'à upgrade
+            payable. Un achat a déjà été prouvé on-chain ; la vitrine liste quand même les pièces
+            escrow.
+          </p>
+        )}
         {!live && (
           <p className="text-[12px] text-amber-200/90">
             List / buy en ouverture — vérif codehash / actualise après deploy.
@@ -189,22 +211,28 @@ export default function MarketplacePage() {
       <section className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-sm font-semibold text-white">En vitrine ({filtered.length})</h2>
-          <input
-            value={q}
-            onChange={e => setQ(e.target.value)}
-            placeholder="Filtrer"
-            className="w-40 rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-[12px] text-white"
-          />
+          <div className="flex items-center gap-2">
+            <button type="button" className="btn-secondary text-xs" onClick={() => reload()}>
+              Actualiser
+            </button>
+            <input
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              placeholder="Filtrer"
+              className="w-40 rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-[12px] text-white"
+            />
+          </div>
         </div>
         {filtered.length === 0 ? (
           <p className="text-[13px] text-zinc-500 card">
-            Aucun listing actif — liste depuis ton inventaire ci-dessous.
+            Aucun listing actif détecté — liste depuis ton inventaire ci-dessous.
           </p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {filtered.map((l, i) => {
               const p = priceEgldOf(l)
-              const img = typeof l.thumb === 'string' ? l.thumb : typeof l.url === 'string' ? l.url : undefined
+              const img =
+                typeof l.thumb === 'string' ? l.thumb : typeof l.url === 'string' ? l.url : undefined
               const title = asText(l.name || l.identifier || l.token, 'NFT')
               return (
                 <article
@@ -212,12 +240,20 @@ export default function MarketplacePage() {
                   className="rounded-2xl border border-white/10 bg-white/[0.03] overflow-hidden"
                 >
                   {img ? (
-                    <img src={img} alt="" className="w-full aspect-square object-cover bg-zinc-900" loading="lazy" />
+                    <img
+                      src={img}
+                      alt=""
+                      className="w-full aspect-square object-cover bg-zinc-900"
+                      loading="lazy"
+                    />
                   ) : (
                     <div className="w-full aspect-square bg-zinc-900" />
                   )}
                   <div className="p-2.5 space-y-1.5">
                     <p className="text-[13px] text-white truncate">{title}</p>
+                    <p className="text-[10px] text-zinc-500">
+                      id {l.listing_id != null ? asText(l.listing_id) : '—'}
+                    </p>
                     <p className="text-sm text-cyan-200 tabular-nums">{asText(p)} EGLD</p>
                     <button
                       type="button"
@@ -227,10 +263,13 @@ export default function MarketplacePage() {
                         if (!connected) return requestOpenConnect()
                         if (l.listing_id == null) return
                         try {
-                          const res = await buyNft({ listingId: Number(l.listing_id), priceEgld: p })
+                          const res = await buyNft({
+                            listingId: Number(l.listing_id),
+                            priceEgld: p,
+                          })
                           markListingSold(Number(l.listing_id), res?.sessionId || undefined)
                           reload()
-                          push('Achat envoyé — vitrine mise à jour', 'ok')
+                          push('Achat envoyé — retiré de la vitrine locale', 'ok')
                         } catch (e) {
                           push(e instanceof Error ? e.message : asText(e, 'Échec'), 'err')
                         }
@@ -247,13 +286,24 @@ export default function MarketplacePage() {
       </section>
 
       <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">Vendre</h2>
+        <h2 className="text-sm font-semibold text-white">Mon inventaire — mettre en vente</h2>
+        <p className="text-[12px] text-zinc-500">
+          Sélectionne une ou plusieurs pièces, prix unique, puis List (1 TX xPortal par NFT).
+        </p>
         {!connected ? (
           <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
             Connecter wallet
           </button>
         ) : account.loading ? (
           <p className="text-[13px] text-zinc-500">Chargement inventaire…</p>
+        ) : allNfts.length === 0 ? (
+          <p className="text-[13px] text-zinc-500">
+            Aucun NFT dans ce wallet — mint au{' '}
+            <Link to="/studio" className="text-cyan-400 underline">
+              Studio
+            </Link>
+            .
+          </p>
         ) : (
           <>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
@@ -288,7 +338,11 @@ export default function MarketplacePage() {
               })}
             </div>
             {visible < allNfts.length && (
-              <button type="button" className="btn-secondary text-xs" onClick={() => setVisible(v => v + PAGE)}>
+              <button
+                type="button"
+                className="btn-secondary text-xs"
+                onClick={() => setVisible(v => v + PAGE)}
+              >
                 Voir plus
               </button>
             )}
@@ -317,7 +371,7 @@ export default function MarketplacePage() {
           <p className="text-[12px] text-amber-200/90 break-words">{msgText || errText}</p>
         )}
         <Link to="/studio" className="text-[12px] text-cyan-400 underline">
-          Studio →
+          Studio → mint
         </Link>
       </section>
     </div>
