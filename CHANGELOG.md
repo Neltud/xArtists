@@ -1,5 +1,29 @@
 # Changelog — xArtists
 
+## [0.81.0](https://github.com/Neltud/xArtists/compare/v0.80.1...v0.81.0) (2026-10-04)
+
+
+### Features
+
+* **deployer:** signals + micro_exec (sign/send) — paper decision path to dust TX ([0c65536](https://github.com/Neltud/xArtists/commit/0c65536ce1c3e844181007042b3692e962723adb))
+* **lia-hub:** consume lia_status aggregator (Task 1 client) ([63d3cb3](https://github.com/Neltud/xArtists/commit/63d3cb35023b547cc0e17ef51caeec29a9bea98e))
+* **lia-hub:** IntentFeed + AuraBadge + shadow export (Task 2/3 UI) ([333c053](https://github.com/Neltud/xArtists/commit/333c053ca7c19333365ecbdd989ad24f38f96881))
+* **lia-hub:** RCE strip + MatrixBoard on public hub ([ed2bdf3](https://github.com/Neltud/xArtists/commit/ed2bdf349d9b241b1df829c4e9326f268e548ef9))
+* **lia:** Task1 aggregator — lia_status.json (Vellum) + front client; FastAPI contract doc ([a042145](https://github.com/Neltud/xArtists/commit/a0421459b64219d982d40ac072a9dc5dd03d902f))
+* **lia:** Task2 shadow friction+export · Task3 intent feed+aura paper ([5d7a477](https://github.com/Neltud/xArtists/commit/5d7a477a1a94032fbed4ae50e962b77bb50b6171))
+* **lia:** wire intent feed in decisionCycle + friction in aggregator + hub UI Task2/3 ([be238a9](https://github.com/Neltud/xArtists/commit/be238a9a349d441f512bd1773ef8f2b6ca1b4e4a))
+* **market:** on-chain listing index from API + sold/inventory overlay ([7b03228](https://github.com/Neltud/xArtists/commit/7b032285702eaa26958d19b2fc45d9fcb4b9f2fa))
+* **marketplace:** on-chain index UI + inventaire + banner isPayable ([4d4473d](https://github.com/Neltud/xArtists/commit/4d4473db4c7b3e5e0c659b75097ae5542228d44b))
+* MatrixBoard on /market + /lia, RCE strip on hub, market nav entry ([7392de7](https://github.com/Neltud/xArtists/commit/7392de7f66b1e47a4e93cf6bc05a65bc7c1fe4a3))
+* public/private nav, matrix board, RCE on LIA hub, React[#31](https://github.com/Neltud/xArtists/issues/31) harden, Vellum hub status cadence ([d23ce11](https://github.com/Neltud/xArtists/commit/d23ce11732a46e921f49e0c014e99e216a7eb5b6))
+
+
+### Bug Fixes
+
+* **executor:** Beta allowlist gate on execute_swap ([42cea30](https://github.com/Neltud/xArtists/commit/42cea304e969c898b756e915124d87553c29ab33))
+* **market:** pad buyNft listing hex; document proven buy + isPayable upgrade needed ([be6cbce](https://github.com/Neltud/xArtists/commit/be6cbce1193fde9cd567f3ee832a036dd97870bc))
+* **marketplace:** React[#31](https://github.com/Neltud/xArtists/issues/31) — never render {min,max,list} objects; stringify errors & listing fields ([d18a5ec](https://github.com/Neltud/xArtists/commit/d18a5ec64634efc2baf0b7d6fb864883b52b6031))
+
 ## [0.80.1](https://github.com/Neltud/xArtists/compare/v0.80.0...v0.80.1) (2026-10-04)
 
 
