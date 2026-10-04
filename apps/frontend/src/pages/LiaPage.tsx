@@ -20,6 +20,7 @@ import { asText } from '../lib/safeRender'
 import AuraBadge from '../components/lia/AuraBadge'
 import MatrixBoard from '../components/lia/MatrixBoard'
 import ShadowPerformance from '../components/lia/ShadowPerformance'
+import MarketMetricsCharts from '../components/lia/MarketMetricsCharts'
 import RceStrip from '../components/RceStrip'
 
 const API = 'https://api.multiversx.com'
@@ -142,7 +143,7 @@ export default function LiaPage() {
           <AuraBadge mode={String(auraMode)} trend={fromAgg.trend || ambient.trend} />
         </div>
         <p className="text-sm text-zinc-400">
-          Shadow Sprint 7j · aura · intents. Poll 15s — paper only, zero capital réel.
+          Shadow Sprint 7j · aura · métriques marché. Poll 15s — paper only.
         </p>
         <RceStrip compact />
       </header>
@@ -164,6 +165,8 @@ export default function LiaPage() {
       </div>
 
       <ShadowPerformance />
+
+      <MarketMetricsCharts />
 
       <MatrixBoard />
 
@@ -218,7 +221,10 @@ export default function LiaPage() {
           {loading ? '…' : 'Actualiser'}
         </button>
         <Link to="/lp" className="btn-secondary text-sm">
-          Pools TRO
+          Pools
+        </Link>
+        <Link to="/go-live" className="btn-secondary text-sm">
+          RCE / Go-live
         </Link>
         <Link to="/market" className="btn-secondary text-sm">
           Marché
@@ -227,7 +233,7 @@ export default function LiaPage() {
 
       <ul className="text-[11px] text-zinc-600 space-y-1">
         <li>Paper only — feed d’intents + aura ne signent rien.</li>
-        <li>Shadow Sprint jour 1/7 démarré — LIA_LIVE_TRADING=0.</li>
+        <li>Shadow Sprint — LIA_LIVE_TRADING=0 (MOD-V1.1).</li>
       </ul>
     </div>
   )
