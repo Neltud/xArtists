@@ -69,6 +69,11 @@ export function canRentVenueOnChain(): boolean {
   return (VENUE_LIVE || runtimeCodehashOk('venue')) && isUsableScAddress(VENUE_SC_ADDRESS)
 }
 
+/** Alias used by GO_LIVE checklist. Same gate as canRentVenueOnChain. */
+export function canUseVenue(): boolean {
+  return canRentVenueOnChain()
+}
+
 export function canStakeTro(): boolean {
   return (TRO_STAKING_LIVE || runtimeCodehashOk('tro_staking')) && isUsableScAddress(TRO_STAKING_ADDRESS)
 }

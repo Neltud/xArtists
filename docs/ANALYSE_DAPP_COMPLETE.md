@@ -1,4 +1,25 @@
-# Analyse DApp complète xArtists — 2 octobre 2026
+# Analyse DApp complète xArtists — 4 octobre 2026
+
+## Mise à jour 4 oct (veille + correctif go-live)
+
+Le site Pages https://neltud.github.io/xArtists/ sert encore le dernier build Vite réussi. Le push du 3 oct (`708adc7`, panneau LIA Shadow) a cassé le build Pages : `canUseVenue` importé par `GoLivePage.tsx` n'était pas exporté par `scStatus.ts` (le gate existait sous `canRentVenueOnChain`). Correctif : alias `canUseVenue` + rappel honnête sur `/go-live` (spin REAL fermé).
+
+| Sujet | État au 4 oct |
+|---|---|
+| Front | Build cassé au 3 oct, correctif poussé pour relancer `static.yml` |
+| Spin REAL | Toujours fermé (`REAL_SPIN_READY = false`). FUN = chemin démo |
+| LIA | Paper. `LIA_LIVE_TRADING` reste à 0 |
+| Marketplace | SC live + 1 vente ASFT prouvée. Carnet NFTUDURI 1/1 pas « ouvert » |
+| Treasury | Fee 0,0075 EGLD non routée tant que la dest treasury n'est pas figée |
+| MX-8004 | Inscription LIA soulbound = suite, pas un yield |
+| Chaîne | Mainnet repris après pause du 19–24 sept (exploit VM atomicité, upgrade recovery). Supernova actif (600 ms depuis le 10 sept, epoch 2233). Pont ETH rouvert le 25 sept. Chaque exchange finit ses checks — pas un signal pour lever les caps |
+| Fenêtre exchanges interne | 6–11 oct encore devant. Observer seulement |
+
+Suites dans l'ordre : (1) rebuild Pages vert, (2) diagnostic `spinEgld` avant tout REAL, (3) prochain listing 1/1 avec les 3 args ABI, (4) dest treasury avant de router le fee, (5) MX-8004, (6) ne pas merger les majors Dependabot pendant la fenêtre live.
+
+---
+
+# Analyse DApp — archive 2 octobre 2026
 
 ## Résumé exécutif
 

@@ -147,6 +147,18 @@ export default function GoLivePage() {
 
       <DustTestPanel />
 
+      <section className="card space-y-2">
+        <h2 className="text-sm font-semibold text-white">Spin réel</h2>
+        <p className="text-[12px] text-zinc-400">
+          House financée. Le spin FUN reste le chemin public. Le spin REAL reste fermé
+          tant que le fail spinEgld 0,1 EGLD n'est pas diagnostiqué et rejoué en micro-preuve.
+          Ce n'est pas un casino ouvert.
+        </p>
+        <p className="text-[11px] text-zinc-500">
+          Listing 1/1 : price + royalty_bps + royalty_receiver. Pas de promesse de yield.
+        </p>
+      </section>
+
       <p className="text-[11px] text-zinc-600">
         Agent 8008 : {AGENT_8008?.id || '—'} ·{' '}
         <Link to="/" className="text-cyan-400 underline">
