@@ -13,9 +13,8 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
-
-LIA_WALLET = "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6"
 API = "https://api.multiversx.com"
+LIA_WALLET = "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6"
 
 
 def _ts() -> str:
@@ -72,7 +71,8 @@ def fetch_onchain() -> dict[str, Any]:
                 out["tokens"].append(
                     {
                         "identifier": t.get("identifier"),
-                        "ticker": t.get("ticker") or str(t.get("identifier") or "").split("-")[0],
+                        "ticker": t.get("ticker")
+                        or str(t.get("identifier") or "").split("-")[0],
                         "balance": round(bal, 6),
                     }
                 )
@@ -98,40 +98,28 @@ def shadow_summary(egld_usd: float = 20.0) -> dict[str, Any]:
 
     wins = 0
     pnl = 0.0
-    pnl_fric = 0.0
     last5: list[dict[str, Any]] = []
     for leg in enriched:
-        try:
-            pv = float(
-                leg.get("pnl_usd") if leg.get("pnl_usd") is not None else leg.get("pnl") or 0
-            )
-        except (TypeError, ValueError):
-            pv = 0.0
-        pnl += pv
-        try:
-            pf = float(leg.get("pnl_usd_friction") if leg.get("pnl_usd_friction") is not None else pv)
-        except (TypeError, ValueError):
-            pf = pv
-        pnl_fric += pf
-        if pv > 0:
+        if not isinstance(leg, dict):
+            continue
+        p = float(leg.get("pnl_usd") or leg.get("pnl") or 0)
+        pnl += p
+        if p > 0:
             wins += 1
-    for leg in enriched[-5:]:
         last5.append(
             {
-                "id": leg.get("id") or leg.get("trade_id"),
-                "side": leg.get("side") or leg.get("action"),
-                "asset": leg.get("asset") or leg.get("pair") or leg.get("token"),
-                "pnl_usd": leg.get("pnl_usd", leg.get("pnl")),
-                "pnl_usd_friction": leg.get("pnl_usd_friction"),
-                "slippage_pct": leg.get("slippage_pct"),
-                "ts": leg.get("ts") or leg.get("at"),
+                "id": leg.get("id"),
+                "side": leg.get("side"),
+                "asset": leg.get("asset"),
+                "pnl_usd": round(p, 4),
+                "ts": leg.get("ts"),
             }
         )
+    last5 = last5[-5:]
     n = len(enriched)
     return {
         "fills": n,
         "shadow_pnl_usd": round(pnl, 4),
-        "shadow_pnl_usd_friction": round(pnl_fric, 4),
         "win_rate": round(wins / n, 4) if n else None,
         "last_shadow": last5,
         "source": "lia_paper_legs.json+friction" if n else "empty",
@@ -169,6 +157,20 @@ def build() -> dict[str, Any]:
     egld_usd = float(onchain.pop("_egld_usd_num", 20.0) or 20.0)
     shadow = shadow_summary(egld_usd=egld_usd)
     mind = mindset()
+    pnl = float(shadow.get("shadow_pnl_usd") or 0)
+    aura_mode, aura_trend = "stable", "flat"
+    if pnl > 0.5:
+        aura_mode, aura_trend = "bull", "up"
+    elif pnl < -0.5:
+        aura_mode, aura_trend = "bear", "down"
+    elif int(shadow.get("fills") or 0) > 0:
+        aura_mode = "reward"
+    aura = {
+        "mode": aura_mode,
+        "trend": aura_trend,
+        "confidence": mind.get("confidence"),
+        "source": "publish_lia_status",
+    }
     return {
         "schema": "lia_status/v1",
         "ts": _ts(),
@@ -177,6 +179,7 @@ def build() -> dict[str, Any]:
         "onchain": onchain,
         "mindset": mind,
         "shadow": shadow,
+        "aura": aura,
         "links": {
             "explorer": f"https://explorer.multiversx.com/accounts/{LIA_WALLET}",
             "hub": "https://neltud.github.io/xArtists/#/lia",
@@ -201,6 +204,33 @@ def publish() -> dict[str, Any]:
             written.append(str(dest))
         except OSError:
             pass
+    # M2 — light server shadow export (file, not full SQL)
+    try:
+        export = {
+            "schema": "lia_shadow_export/v1",
+            "ts": payload.get("ts"),
+            "paper": True,
+            "fills": (payload.get("shadow") or {}).get("fills"),
+            "shadow_pnl_usd": (payload.get("shadow") or {}).get("shadow_pnl_usd"),
+            "win_rate": (payload.get("shadow") or {}).get("win_rate"),
+            "last_shadow": (payload.get("shadow") or {}).get("last_shadow"),
+            "friction_model": (payload.get("shadow") or {}).get("friction_model"),
+            "source": (payload.get("shadow") or {}).get("source"),
+            "note": "Server shadow export — zero real capital",
+        }
+        for dest in [
+            DATA / "lia_shadow_export.json",
+            ROOT / "apps" / "frontend" / "public" / "data" / "lia_shadow_export.json",
+            ROOT / "docs" / "data" / "lia_shadow_export.json",
+        ]:
+            try:
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                dest.write_text(json.dumps(export, indent=2), encoding="utf-8")
+                written.append(str(dest))
+            except OSError:
+                pass
+    except Exception:
+        pass
     payload["written"] = written
     return payload
 
