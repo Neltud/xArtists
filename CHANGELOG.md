@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.81.1](https://github.com/Neltud/xArtists/compare/v0.81.0...v0.81.1) (2026-10-04)
+
+
+### Bug Fixes
+
+* **lp+rce:** all TRO pools fallback + React[#31](https://github.com/Neltud/xArtists/issues/31) harden asText on RCE/LP ([9bd61f7](https://github.com/Neltud/xArtists/commit/9bd61f73252fe45c14bb788a480ee622c194f0ec))
+* **lp:** correct TRO pool addresses + always merge all 4 pools in LP page ([1e6a379](https://github.com/Neltud/xArtists/commit/1e6a3790c9dad9469d46f565df726195f0612fd4))
+
 ## [0.81.0](https://github.com/Neltud/xArtists/compare/v0.80.1...v0.81.0) (2026-10-04)
 
 
