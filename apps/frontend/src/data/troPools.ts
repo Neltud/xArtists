@@ -1,7 +1,4 @@
-/**
- * All known TRO liquidity venues (mainnet).
- * Used as fallback if public/data/config.json is stale or incomplete.
- */
+/** All known TRO liquidity venues (mainnet). Fallback if config.json incomplete. */
 export type TroPoolDef = {
   dex: string
   pair: string
@@ -16,32 +13,17 @@ export type TroPoolDef = {
   add_liquidity_url?: string
 }
 
-/** Canonical list — keep in sync with config.json pools */
-export const TRO_POOLS: TroPoolDef[] = [
-  {
-    dex: 'xExchange',
-    pair: 'TRO / WEGLD',
-    address: 'erd1qqqqqqqqqqqqqpgqje2z5s6z8zqzqzqzqzqzqzqzqzqzqzqzqzqzqzqzq', // placeholder replaced below
-    lpToken: 'TROWEGLD-891183',
-    baseId: 'TRO-94c925',
-    quoteId: 'WEGLD-bd4d79',
-    mexPairPath: 'TRO-94c925/WEGLD-bd4d79',
-    swap_url: 'https://xexchange.com/trade?firstToken=TRO-94c925&secondToken=WEGLD-bd4d79',
-    add_liquidity_url: 'https://xexchange.com/pools',
-    dexscreener: 'https://dexscreener.com/multiversx/tro-wegld',
-  },
-]
-
-// Real addresses from production config (verified)
 export const TRO_POOLS_MAINNET: TroPoolDef[] = [
   {
     dex: 'xExchange',
     pair: 'TRO / WEGLD',
-    address: 'erd1qqqqqqqqqqqqqpgqj6h4q8zqzqzqzqzqzqzqzqzqzqzqzqzqzqzqzqzqzq', // will fix from API
+    address: 'erd1qqqqqqqqqqqqqpgqmmvfh4anzayxwn3cfe23uw6lguu8synr2jpsu3l0am',
     lpToken: 'TROWEGLD-891183',
     baseId: 'TRO-94c925',
     quoteId: 'WEGLD-bd4d79',
     mexPairPath: 'TRO-94c925/WEGLD-bd4d79',
+    dexscreener:
+      'https://dexscreener.com/multiversx/erd1qqqqqqqqqqqqqpgqmmvfh4anzayxwn3cfe23uw6lguu8synr2jpsu3l0am',
     swap_url:
       'https://xexchange.com/trade?firstToken=TRO-94c925&secondToken=WEGLD-bd4d79',
     add_liquidity_url: 'https://xexchange.com/pools',
@@ -54,6 +36,8 @@ export const TRO_POOLS_MAINNET: TroPoolDef[] = [
     baseId: 'TRO-94c925',
     quoteId: 'WEGLD-bd4d79',
     sharedRouter: true,
+    dexscreener:
+      'https://dexscreener.com/multiversx/erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc-trowegld-ca2874',
     swap_url: 'https://onedex.app',
     add_liquidity_url: 'https://onedex.app',
   },
@@ -81,3 +65,17 @@ export const TRO_POOLS_MAINNET: TroPoolDef[] = [
     add_liquidity_url: 'https://onedex.app',
   },
 ]
+
+/** Merge config pools with canonical list (by lpToken or pair). */
+export function mergeTroPools(fromConfig: TroPoolDef[] | undefined | null): TroPoolDef[] {
+  const byKey = new Map<string, TroPoolDef>()
+  for (const p of TRO_POOLS_MAINNET) {
+    byKey.set(p.lpToken || p.pair, p)
+  }
+  for (const p of fromConfig || []) {
+    if (!p?.pair) continue
+    const k = p.lpToken || p.pair
+    byKey.set(k, { ...byKey.get(k), ...p })
+  }
+  return [...byKey.values()]
+}
