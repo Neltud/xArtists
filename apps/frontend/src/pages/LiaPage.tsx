@@ -1,6 +1,6 @@
 /**
- * LIA Hub — aggregator · shadow sprint · intent feed · aura (paper).
- * M1.2: poll 15s + aura from lia_status (no WebSocket / no <2s claim).
+ * LIA Hub — Shadow Sprint visualization (MOD-V1.2).
+ * Poll 15s · SHADOW labels · LIA_LIVE_TRADING=0.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -16,11 +16,13 @@ import { loadIntentFeed, type FeedItem } from '../lia/intentFeed'
 import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumStatus'
 import { fetchLiaHubStatus, type LiaHubStatus } from '../lia/hubStatus'
 import { fetchLiaStatus, auraFromStatus, type LiaStatusV1 } from '../lia/liaStatus'
+import { fetchMarketAura } from '../lia/marketAura'
 import { asText } from '../lib/safeRender'
 import AuraBadge from '../components/lia/AuraBadge'
 import MatrixBoard from '../components/lia/MatrixBoard'
 import ShadowPerformance from '../components/lia/ShadowPerformance'
 import MarketMetricsCharts from '../components/lia/MarketMetricsCharts'
+import IntentFeedTerminal from '../components/lia/IntentFeedTerminal'
 import RceStrip from '../components/RceStrip'
 
 const API = 'https://api.multiversx.com'
@@ -54,13 +56,10 @@ export default function LiaPage() {
     [lia.uniforms, lia.confidence],
   )
 
-  const [profile, setProfile] = useState<ProtocolProfile | null>(null)
   const [vellum, setVellum] = useState<VellumLastRun | null>(null)
   const [hub, setHub] = useState<LiaHubStatus | null>(null)
   const [agg, setAgg] = useState<LiaStatusV1 | null>(null)
   const [txs, setTxs] = useState<ExplorerTx[]>([])
-  const [shadowBal, setShadowBal] = useState(() => loadShadowBalances())
-  const [shadowLog, setShadowLog] = useState<ShadowFill[]>(() => loadShadowLog(24))
   const [feed, setFeed] = useState<FeedItem[]>(() => loadIntentFeed(20))
   const [tick, setTick] = useState<{
     strategy: string
@@ -69,6 +68,7 @@ export default function LiaPage() {
     aura: string
   } | null>(null)
   const [loading, setLoading] = useState(true)
+  const [mAura, setMAura] = useState<string>('stable')
 
   const refresh = useCallback(async () => {
     setLoading(true)
@@ -81,13 +81,16 @@ export default function LiaPage() {
         fetchLiaHubStatus(),
         fetchLiaStatus(),
       ])
-      setProfile(p)
       setVellum(v)
       setTxs(txList)
       setHub(hubSt)
       setAgg(st)
-      setShadowBal(loadShadowBalances())
-      setShadowLog(loadShadowLog(24))
+      try {
+        const ma = await fetchMarketAura()
+        setMAura(ma.mood)
+      } catch {
+        /* offline */
+      }
       persistShadowExport(px.priceUsd || 0)
 
       const m = matrixFromPulse({
@@ -106,8 +109,6 @@ export default function LiaPage() {
         aura: cycle.aura,
       })
       setFeed(loadIntentFeed(20))
-      setShadowBal(loadShadowBalances())
-      setShadowLog(loadShadowLog(24))
     } finally {
       setLoading(false)
     }
@@ -120,7 +121,7 @@ export default function LiaPage() {
   }, [refresh])
 
   const fromAgg = auraFromStatus(agg)
-  const auraMode = tick?.aura || fromAgg.mode || ambient.mode
+  const auraMode = tick?.aura || fromAgg.mode || mAura || ambient.mode
 
   const statusLabel =
     vellum?.live === true
@@ -143,7 +144,7 @@ export default function LiaPage() {
           <AuraBadge mode={String(auraMode)} trend={fromAgg.trend || ambient.trend} />
         </div>
         <p className="text-sm text-zinc-400">
-          Shadow Sprint 7j · aura · métriques marché. Poll 15s — paper only.
+          SHADOW / SIMULATED · sprint 7j · aura liée au marché · poll 15s
         </p>
         <RceStrip compact />
       </header>
@@ -156,37 +157,23 @@ export default function LiaPage() {
         <div className="card">
           <p className="text-[10px] uppercase text-zinc-500">Aura</p>
           <p className="font-semibold text-white">{asText(auraMode)}</p>
-          <p className="text-[10px] text-zinc-500">{asText(fromAgg.source)}</p>
+          <p className="text-[10px] text-zinc-500">
+            {asText(fromAgg.source)} · market {asText(mAura)}
+          </p>
         </div>
         <div className="card">
-          <p className="text-[10px] uppercase text-zinc-500">Agg Shadow PnL</p>
+          <p className="text-[10px] uppercase text-zinc-500">Shadow PnL</p>
           <p className="font-semibold tabular-nums">{shadowPnlText}</p>
         </div>
       </div>
 
       <ShadowPerformance />
 
+      <IntentFeedTerminal />
+
       <MarketMetricsCharts />
 
       <MatrixBoard />
-
-      <section className="card space-y-2">
-        <h2 className="text-sm font-semibold text-white">Intent feed (paper)</h2>
-        {feed.length === 0 ? (
-          <p className="text-[13px] text-zinc-500">Aucun intent local — refresh pour en générer.</p>
-        ) : (
-          <ul className="space-y-1 text-[12px] text-zinc-300">
-            {feed.slice(0, 12).map((f, i) => (
-              <li key={i} className="border-b border-white/5 py-1 flex justify-between gap-2">
-                <span>
-                  {asText(f.action)} · {asText(f.asset)}
-                </span>
-                <span className="text-zinc-500">{asText(f.ts)}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
 
       <section className="card space-y-2">
         <h2 className="text-sm font-semibold text-white">TX explorer (wallet LIA)</h2>
@@ -232,8 +219,8 @@ export default function LiaPage() {
       </div>
 
       <ul className="text-[11px] text-zinc-600 space-y-1">
-        <li>Paper only — feed d’intents + aura ne signent rien.</li>
-        <li>Shadow Sprint — LIA_LIVE_TRADING=0 (MOD-V1.1).</li>
+        <li>Tout performance LIA = SHADOW / SIMULATED — pas d'alpha live.</li>
+        <li>LIA_LIVE_TRADING=0 (MOD-V1.2).</li>
       </ul>
     </div>
   )
