@@ -1,0 +1,85 @@
+{
+  "wallet_lia": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "btc_tip": "bc1qrsmtgwlqvd66vkpng26yf8c8s07df332ac052z",
+  "egld_tip": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+  "tro_token": "TRO-94c925",
+  "tro_name": "TUDURIORIGINAL",
+  "tro_supply": 476223,
+  "tro_circulating": 476223,
+  "tro_decimals": 6,
+  "gofundme": "https://www.gofundme.com/f/xartists-lia-v6",
+  "pools": [
+    {
+      "dex": "xExchange",
+      "pair": "TRO / WEGLD",
+      "address": "erd1qqqqqqqqqqqqqpgqmmvfh4anzayxwn3cfe23uw6lguu8synr2jpsu3l0am",
+      "lpToken": "TROWEGLD-891183",
+      "baseId": "TRO-94c925",
+      "quoteId": "WEGLD-bd4d79",
+      "mexPairPath": "TRO-94c925/WEGLD-bd4d79",
+      "dexscreener": "https://dexscreener.com/multiversx/erd1qqqqqqqqqqqqqpgqmmvfh4anzayxwn3cfe23uw6lguu8synr2jpsu3l0am",
+      "swap_url": "https://xexchange.com/trade?firstToken=TRO-94c925&secondToken=WEGLD-bd4d79",
+      "add_liquidity_url": "https://xexchange.com/pools"
+    },
+    {
+      "dex": "OneDex",
+      "pair": "TRO / EGLD",
+      "address": "erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc",
+      "lpToken": "TROWEGLD-ca2874",
+      "baseId": "TRO-94c925",
+      "quoteId": "WEGLD-bd4d79",
+      "sharedRouter": true,
+      "dexscreener": "https://dexscreener.com/multiversx/erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc-trowegld-ca2874",
+      "swap_url": "https://onedex.app",
+      "add_liquidity_url": "https://onedex.app"
+    },
+    {
+      "dex": "xExchange",
+      "pair": "TRO / USDC",
+      "address": "erd1qqqqqqqqqqqqqpgq9gcl9uldfrymtmj8vtkctrkmjdazw3nj2jpsd3nv2e",
+      "lpToken": "TROUSDC-2a60c7",
+      "baseId": "USDC-c76f1f",
+      "quoteId": "TRO-94c925",
+      "mexPairPath": "USDC-c76f1f/TRO-94c925",
+      "swap_url": "https://xexchange.com/trade?firstToken=TRO-94c925&secondToken=USDC-c76f1f",
+      "add_liquidity_url": "https://xexchange.com/pools"
+    },
+    {
+      "dex": "OneDex",
+      "pair": "TRO / XOXNO",
+      "address": "erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc",
+      "lpToken": "TROXOXNO-500f78",
+      "baseId": "TRO-94c925",
+      "quoteId": "XOXNO-c1293a",
+      "sharedRouter": true,
+      "swap_url": "https://onedex.app",
+      "add_liquidity_url": "https://onedex.app"
+    }
+  ],
+  "commissions": {
+    "marketplace_seller_fee_pct": 2.5,
+    "marketplace_buyer_fee_pct": 0.5,
+    "secondary_royalty_pct": 5.0,
+    "rwa_escrow_fee_pct": 2.0,
+    "lia_performance_fee_pct": 15.0,
+    "listing_fee_egld": 0.01,
+    "tro_burn_bps": 100,
+    "tro_burn_note": "100 bps = 1% of sale value in TRO burned on each buyNft — NOT yet on-chain",
+    "block_if_escrow": true,
+    "payment_tokens": ["EGLD", "WEGLD-bd4d79", "USDC-c76f1f", "TRO-94c925"]
+  },
+  "fiat": {
+    "primary": "moonpay",
+    "secondary": "xmoney",
+    "moonpay_url": "https://www.moonpay.com/buy",
+    "note": "User buys EGLD/USDC then completes NFT purchase on-chain"
+  },
+  "apis": {
+    "multiversx": "https://api.multiversx.com",
+    "tro_token": "https://api.multiversx.com/tokens/TRO-94c925",
+    "lia_account": "https://api.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
+    "lia_tokens": "https://api.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6/tokens",
+    "mex_pairs": "https://api.multiversx.com/mex/pairs"
+  },
+  "updated": "2026-10-04"
+}
