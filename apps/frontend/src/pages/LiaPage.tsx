@@ -1,5 +1,5 @@
 /**
- * LIA Hub public — profile · mindset · shadow proof · TX · equity curve.
+ * LIA Hub public — profile · mindset · shadow proof · TX · equity curve · RCE.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -15,6 +15,8 @@ import ShadowEquityChart from '../components/lia/ShadowEquityChart'
 import { usePulse } from '../hooks/usePulse'
 import { toAmbientSnapshot } from '../lib/ambientAura'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
+import RceStrip from '../components/RceStrip'
+import MatrixBoard from '../components/lia/MatrixBoard'
 
 function fmt(n: number | null | undefined, d = 4): string {
   if (n == null || !Number.isFinite(n)) return '—'
@@ -146,7 +148,13 @@ export default function LiaPage() {
         <Link to="/lp" className="btn-secondary text-sm">
           Pools / LP
         </Link>
+        <Link to="/market" className="btn-secondary text-sm">
+          Marché
+        </Link>
       </div>
+
+      {/* RCE = Real Capital Engaged : EGLD dans les smart contracts produit */}
+      <RceStrip compact />
 
       <div className="grid lg:grid-cols-3 gap-4">
         <section className="card space-y-3 lg:col-span-1 border-purple-500/20">
@@ -196,7 +204,6 @@ export default function LiaPage() {
               </p>
             </div>
             <div className="rounded-xl bg-black/30 p-2 border border-white/5">
-              <p className="text-zinc-500">Intent</p>
               <p className="font-semibold text-cyan-200">{tick?.action || 'HOLD'}</p>
             </div>
             <div className="rounded-xl bg-black/30 p-2 border border-white/5">
@@ -258,7 +265,8 @@ export default function LiaPage() {
         </section>
       </div>
 
-      {/* Explorer TX */}
+      <MatrixBoard />
+
       <section className="card space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-400 font-semibold">
@@ -306,8 +314,8 @@ export default function LiaPage() {
         <p className="font-semibold text-zinc-200">Cadre honnête</p>
         <ul className="text-[13px] space-y-1 list-disc pl-4">
           <li>Wallet protocole public — historique complet sur l’explorer.</li>
-          <li>Courbe equity = reconstruction locale des fills shadow (toy mark).</li>
-          <li>lia_hub_status.json = métriques paper poussées par Vellum si publiées.</li>
+          <li>RCE = Real Capital Engaged (bandeau ci-dessus) — pas le paper.</li>
+          <li>Courbe equity = reconstruction locale des fills shadow.</li>
           <li>Aucune TX signée depuis ce hub.</li>
         </ul>
       </section>
