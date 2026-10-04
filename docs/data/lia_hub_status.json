@@ -1,0 +1,16 @@
+{
+  "ts": "2026-10-04T00:00:00Z",
+  "paper": true,
+  "LIA_LIVE_TRADING": 0,
+  "shadow_pnl_usd": 0,
+  "shadow_equity_usd": null,
+  "win_rate": null,
+  "fills": 0,
+  "strategy": null,
+  "confidence": null,
+  "note": "Placeholder until Vellum runs publish_lia_hub_status",
+  "source": {
+    "vellum_last_run": false,
+    "lia_paper_legs": false
+  }
+}
