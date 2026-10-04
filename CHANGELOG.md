@@ -1,5 +1,31 @@
 # Changelog — xArtists
 
+## [0.80.0](https://github.com/Neltud/xArtists/compare/v0.79.0...v0.80.0) (2026-10-04)
+
+
+### Features
+
+* **cc:** LiaShadowPanel shows Vellum last_run when published ([84b9246](https://github.com/Neltud/xArtists/commit/84b92469bfb1630d88aa8f33d9a56148ce485f68))
+* **cc:** mount LiaShadowPanel in Command Center hub ([708adc7](https://github.com/Neltud/xArtists/commit/708adc770ae9979bf5815932dd56897cf3019771))
+* **lia-hub:** wire equity chart, explorer TX, hub_status into /lia ([dd02729](https://github.com/Neltud/xArtists/commit/dd02729d43d6920d0b992dfc1f099ef5f4eac98a))
+* **lia:** equity curve canvas + explorer TX feed + Vellum lia_hub_status publish ([68d5ffd](https://github.com/Neltud/xArtists/commit/68d5ffd2bbc336a93af442a1f4f882daa098736a))
+* **lia:** paper decision cycle + strategy switcher + shadow ledger (no live TX) ([85ab4f4](https://github.com/Neltud/xArtists/commit/85ab4f475404c62c6fc89a2d12263bf3cf6067c7))
+* **lia:** public LIA Hub — on-chain profile, mindset, shadow proof (Model C) ([33d2599](https://github.com/Neltud/xArtists/commit/33d25999e82e181194ff8a44131c39f65f5bcad1))
+* **lia:** Shadow panel CC + STVP tracker + price tick → matrix (paper only) ([a3d6b2b](https://github.com/Neltud/xArtists/commit/a3d6b2b6a2bd5f2d7aabc529063717833e3bccab))
+* **vellum:** integration contract, honest pipeline map, healthcheck (paper-first) ([1b603f9](https://github.com/Neltud/xArtists/commit/1b603f9b1c707fee4cb4ebcbac731e280ed07c58))
+
+
+### Bug Fixes
+
+* **go-live:** export canUseVenue so Pages build can ship ([65b8825](https://github.com/Neltud/xArtists/commit/65b8825fe248dfac5fe18b72922a3ebbbd1489f8))
+* **lp:** multi-pools TRO xExchange+OneDex, live TVL, safe render ([f01c156](https://github.com/Neltud/xArtists/commit/f01c15699ed1957b1ed633f1635ad11a7ffb1122))
+* **onramp:** export MoonPay aliases required by the Vite graph ([aad679c](https://github.com/Neltud/xArtists/commit/aad679c96dfe6e6554eb6a061b7c006c4b05d412))
+
+
+### Documentation
+
+* honest README_LIA + CC reads vellum_last_run when published ([5e0c5b8](https://github.com/Neltud/xArtists/commit/5e0c5b8a8d1fb99471d1959ae32ef524691da151))
+
 ## [0.79.0](https://github.com/Neltud/xArtists/compare/v0.78.1...v0.79.0) (2026-10-03)
 
 
