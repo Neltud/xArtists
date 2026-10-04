@@ -1,5 +1,6 @@
 /**
  * Marketplace — vitrine + multi-list + post-buy index overlay.
+ * All dynamic children forced to string (React #31 guard).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -15,6 +16,7 @@ import {
   markListingSold,
   rememberLocalListing,
 } from '../lib/marketplaceIndex'
+import { asText } from '../lib/safeRender'
 
 const PAGE = 16
 
@@ -22,7 +24,7 @@ function priceEgldOf(l: ListingRow): number {
   if (l.price_egld && Number(l.price_egld) > 0) return Number(l.price_egld)
   const raw = Number(l.price || 0)
   if (raw > 1e12) return raw / 1e18
-  return raw
+  return Number.isFinite(raw) ? raw : 0
 }
 
 function nftThumb(n: {
@@ -36,11 +38,41 @@ function nftThumb(n: {
   return undefined
 }
 
+/** Drop non-scalar fields that crash React if rendered. */
+function sanitizeListing(raw: ListingRow): ListingRow | null {
+  if (!raw || typeof raw !== 'object') return null
+  const name = typeof raw.name === 'string' ? raw.name : undefined
+  const token = typeof raw.token === 'string' ? raw.token : typeof raw.token_id === 'string' ? raw.token_id : undefined
+  const identifier = typeof raw.identifier === 'string' ? raw.identifier : undefined
+  const listing_id =
+    typeof raw.listing_id === 'number'
+      ? raw.listing_id
+      : typeof raw.listing_id === 'string'
+        ? Number(raw.listing_id)
+        : undefined
+  const price = raw.price != null ? String(raw.price) : undefined
+  const price_egld = raw.price_egld != null ? String(raw.price_egld) : undefined
+  const thumb = typeof raw.thumb === 'string' ? raw.thumb : undefined
+  const url = typeof raw.url === 'string' ? raw.url : undefined
+  return {
+    ...raw,
+    name,
+    token,
+    identifier,
+    listing_id: Number.isFinite(listing_id as number) ? (listing_id as number) : undefined,
+    price,
+    price_egld,
+    thumb,
+    url,
+    seller: typeof raw.seller === 'string' ? raw.seller : undefined,
+  }
+}
+
 export default function MarketplacePage() {
   const { connected, address, method } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const allNfts = useMemo(
-    () => (account.nfts || []).filter(n => n?.identifier),
+    () => (account.nfts || []).filter(n => n?.identifier && typeof n.identifier === 'string'),
     [account.nfts],
   )
   const live = canListBuyNft()
@@ -57,7 +89,12 @@ export default function MarketplacePage() {
   const [msg, setMsg] = useState<string | null>(null)
 
   const reload = useCallback(() => {
-    fetchMarketplaceListings().then(setListings)
+    fetchMarketplaceListings()
+      .then(rows => {
+        const clean = rows.map(sanitizeListing).filter(Boolean) as ListingRow[]
+        setListings(clean)
+      })
+      .catch(() => setListings([]))
   }, [])
 
   useEffect(() => {
@@ -72,7 +109,7 @@ export default function MarketplacePage() {
     const s = q.trim().toLowerCase()
     if (!s) return listings
     return listings.filter(l =>
-      `${l.name || ''} ${l.token || ''} ${l.identifier || ''}`.toLowerCase().includes(s),
+      `${asText(l.name)} ${asText(l.token)} ${asText(l.identifier)}`.toLowerCase().includes(s),
     )
   }, [listings, q])
 
@@ -88,56 +125,51 @@ export default function MarketplacePage() {
   }
 
   const onListMany = useCallback(async () => {
-    if (!connected) {
-      requestOpenConnect()
-      return
-    }
-    if (method === 'paste_readonly') {
-      push('Lecture seule — xPortal requis', 'err')
-      return
-    }
+    if (!connected) return requestOpenConnect()
     const priceEgld = Number(price)
     if (!(priceEgld > 0) || selected.size === 0) {
-      push('Sélectionne au moins un NFT et un prix', 'err')
+      setMsg('Prix > 0 et au moins un NFT')
       return
     }
     let ok = 0
     let fail = 0
     for (const id of selected) {
-      const nft = allNfts.find(n => n.identifier === id)
-      if (!nft?.identifier) {
-        fail += 1
+      const n = allNfts.find(x => x.identifier === id)
+      if (!n) {
+        fail++
         continue
       }
-      const parts = id.split('-')
-      const nonce = Number(nft.nonce ?? parts[parts.length - 1] ?? 0)
-      const tokenId = nft.collection || parts.slice(0, -1).join('-')
+      const tokenId = n.collection || id.split('-').slice(0, -1).join('-')
+      const nonce = n.nonce
       try {
         await listNft({ tokenId, nonce, priceEgld })
         rememberLocalListing({
           listing_id: Date.now() % 100000,
-          identifier: id,
           token: tokenId,
-          nonce,
-          name: String(nft.name || id),
+          identifier: id,
+          name: typeof n.name === 'string' ? n.name : id,
           price_egld: String(priceEgld),
           price: String(Math.round(priceEgld * 1e18)),
-          active: true,
           seller: address || undefined,
+          active: true,
+          thumb: nftThumb(n),
         })
-        ok += 1
+        ok++
       } catch {
-        fail += 1
+        fail++
         break
       }
     }
+    setMsg(
+      fail
+        ? `${ok} listé(s), ${fail} stoppé — signe chaque TX (session xPortal)`
+        : `${ok} listing(s) envoyés`,
+    )
     reload()
-    const t = fail
-      ? `${ok} listé(s), ${fail} stoppé — signe chaque TX (session xPortal)`
-      : `${ok} listing(s) envoyés`
-    setMsg(t)
-    push(t, fail ? 'err' : 'ok')
-  }, [connected, method, price, selected, allNfts, listNft, push, address, reload])
+  }, [connected, method, price, selected, allNfts, listNft, address, reload])
+
+  const errText = error != null ? asText(error) : null
+  const msgText = msg != null ? asText(msg) : null
 
   return (
     <div className="animate-fade-in space-y-8 pb-16 max-w-3xl mx-auto">
@@ -147,6 +179,11 @@ export default function MarketplacePage() {
         <p className="text-sm text-zinc-400">
           Vitrine on-chain. Multi-list = une signature par pièce (session xPortal conservée).
         </p>
+        {!live && (
+          <p className="text-[12px] text-amber-200/90">
+            List / buy en ouverture — vérif codehash / actualise après deploy.
+          </p>
+        )}
       </header>
 
       <section className="space-y-3">
@@ -167,10 +204,11 @@ export default function MarketplacePage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {filtered.map((l, i) => {
               const p = priceEgldOf(l)
-              const img = l.thumb || l.url
+              const img = typeof l.thumb === 'string' ? l.thumb : typeof l.url === 'string' ? l.url : undefined
+              const title = asText(l.name || l.identifier || l.token, 'NFT')
               return (
                 <article
-                  key={l.listing_id ?? i}
+                  key={String(l.listing_id ?? l.identifier ?? i)}
                   className="rounded-2xl border border-white/10 bg-white/[0.03] overflow-hidden"
                 >
                   {img ? (
@@ -179,8 +217,8 @@ export default function MarketplacePage() {
                     <div className="w-full aspect-square bg-zinc-900" />
                   )}
                   <div className="p-2.5 space-y-1.5">
-                    <p className="text-[13px] text-white truncate">{l.name || l.identifier || l.token}</p>
-                    <p className="text-sm text-cyan-200 tabular-nums">{p} EGLD</p>
+                    <p className="text-[13px] text-white truncate">{title}</p>
+                    <p className="text-sm text-cyan-200 tabular-nums">{asText(p)} EGLD</p>
                     <button
                       type="button"
                       className="btn-primary text-xs w-full"
@@ -189,12 +227,12 @@ export default function MarketplacePage() {
                         if (!connected) return requestOpenConnect()
                         if (l.listing_id == null) return
                         try {
-                          const res = await buyNft({ listingId: l.listing_id, priceEgld: p })
-                          markListingSold(l.listing_id, res?.sessionId || undefined)
+                          const res = await buyNft({ listingId: Number(l.listing_id), priceEgld: p })
+                          markListingSold(Number(l.listing_id), res?.sessionId || undefined)
                           reload()
                           push('Achat envoyé — vitrine mise à jour', 'ok')
                         } catch (e) {
-                          push(e instanceof Error ? e.message : 'Échec', 'err')
+                          push(e instanceof Error ? e.message : asText(e, 'Échec'), 'err')
                         }
                       }}
                     >
@@ -220,7 +258,7 @@ export default function MarketplacePage() {
           <>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {shownInv.map(n => {
-                const id = n.identifier as string
+                const id = String(n.identifier)
                 const on = selected.has(id)
                 const thumb = nftThumb(n)
                 return (
@@ -233,11 +271,18 @@ export default function MarketplacePage() {
                     }`}
                   >
                     {thumb ? (
-                      <img src={thumb} alt="" loading="lazy" className="w-full aspect-square object-cover rounded-lg bg-zinc-900" />
+                      <img
+                        src={thumb}
+                        alt=""
+                        loading="lazy"
+                        className="w-full aspect-square object-cover rounded-lg bg-zinc-900"
+                      />
                     ) : (
                       <div className="w-full aspect-square rounded-lg bg-zinc-900" />
                     )}
-                    <p className="text-[10px] text-zinc-300 truncate mt-1">{n.name || id}</p>
+                    <p className="text-[10px] text-zinc-300 truncate mt-1">
+                      {asText(n.name || id)}
+                    </p>
                   </button>
                 )
               })}
@@ -251,8 +296,8 @@ export default function MarketplacePage() {
               <span className="text-[12px] text-zinc-500">{selected.size} sélectionné(s)</span>
               <input
                 type="number"
-                min="0.001"
-                step="0.01"
+                min={0.001}
+                step={0.01}
                 value={price}
                 onChange={e => setPrice(e.target.value)}
                 className="w-28 rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white"
@@ -268,7 +313,9 @@ export default function MarketplacePage() {
             </div>
           </>
         )}
-        {(msg || error) && <p className="text-[12px] text-amber-200/90">{msg || error}</p>}
+        {(msgText || errText) && (
+          <p className="text-[12px] text-amber-200/90 break-words">{msgText || errText}</p>
+        )}
         <Link to="/studio" className="text-[12px] text-cyan-400 underline">
           Studio →
         </Link>
