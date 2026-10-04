@@ -1,5 +1,5 @@
 /**
- * LIA Hub — aggregator · shadow · intent feed · aura (paper).
+ * LIA Hub — aggregator · shadow sprint · intent feed · aura (paper).
  * M1.2: poll 15s + aura from lia_status (no WebSocket / no <2s claim).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -19,6 +19,7 @@ import { fetchLiaStatus, auraFromStatus, type LiaStatusV1 } from '../lia/liaStat
 import { asText } from '../lib/safeRender'
 import AuraBadge from '../components/lia/AuraBadge'
 import MatrixBoard from '../components/lia/MatrixBoard'
+import ShadowPerformance from '../components/lia/ShadowPerformance'
 import RceStrip from '../components/RceStrip'
 
 const API = 'https://api.multiversx.com'
@@ -113,7 +114,6 @@ export default function LiaPage() {
 
   useEffect(() => {
     void refresh()
-    // M1.2 — short poll; not a WebSocket; no <2s guarantee
     const id = window.setInterval(() => void refresh(), 15_000)
     return () => window.clearInterval(id)
   }, [refresh])
@@ -142,7 +142,7 @@ export default function LiaPage() {
           <AuraBadge mode={String(auraMode)} trend={fromAgg.trend || ambient.trend} />
         </div>
         <p className="text-sm text-zinc-400">
-          Profil protocole · mindset · shadow (preuve simulée). Poll 15s — pas un flux <2s sans bus.
+          Shadow Sprint 7j · aura · intents. Poll 15s — paper only, zero capital réel.
         </p>
         <RceStrip compact />
       </header>
@@ -158,10 +158,12 @@ export default function LiaPage() {
           <p className="text-[10px] text-zinc-500">{asText(fromAgg.source)}</p>
         </div>
         <div className="card">
-          <p className="text-[10px] uppercase text-zinc-500">Shadow PnL</p>
+          <p className="text-[10px] uppercase text-zinc-500">Agg Shadow PnL</p>
           <p className="font-semibold tabular-nums">{shadowPnlText}</p>
         </div>
       </div>
+
+      <ShadowPerformance />
 
       <MatrixBoard />
 
@@ -181,16 +183,6 @@ export default function LiaPage() {
             ))}
           </ul>
         )}
-      </section>
-
-      <section className="card space-y-2">
-        <h2 className="text-sm font-semibold text-white">Shadow local</h2>
-        <p className="text-[12px] text-zinc-500">
-          Soldes virtuels · friction — export aussi côté serveur (`lia_shadow_export.json`).
-        </p>
-        <p className="text-[12px] mono text-zinc-400">
-          fills {asText(shadowLog.length)} · bal keys {asText(Object.keys(shadowBal || {}).length)}
-        </p>
       </section>
 
       <section className="card space-y-2">
@@ -235,7 +227,7 @@ export default function LiaPage() {
 
       <ul className="text-[11px] text-zinc-600 space-y-1">
         <li>Paper only — feed d’intents + aura ne signent rien.</li>
-        <li>LIA_LIVE_TRADING reste 0 jusqu’à Shadow 7j + micro-preuves.</li>
+        <li>Shadow Sprint jour 1/7 démarré — LIA_LIVE_TRADING=0.</li>
       </ul>
     </div>
   )
