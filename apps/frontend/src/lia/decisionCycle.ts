@@ -6,6 +6,7 @@ import type { Intent, Matrix10, StrategyId } from './types'
 import { STRATEGY_AURA } from './types'
 import { intentActionFor, selectStrategy } from './strategySwitcher'
 import { applyShadowIntent, type ShadowFill } from './shadowLedger'
+import { pushIntentFeed } from './intentFeed'
 
 export type CycleResult = {
   matrix: Matrix10
@@ -56,7 +57,9 @@ export function runDecisionCycle(matrix: Matrix10, opts?: { executeShadow?: bool
   const { strategy, reason } = selectStrategy(matrix)
   const action = intentActionFor(strategy, matrix)
   const amount =
-    action === 'HOLD' || action === 'FLATTEN' ? 0 : Math.max(0.01, Math.min(0.5, matrix.price > 0 ? 0.1 : 0.1))
+    action === 'HOLD' || action === 'FLATTEN'
+      ? 0
+      : Math.max(0.01, Math.min(0.5, matrix.price > 0 ? 0.1 : 0.1))
 
   const block = riskValidate(matrix, amount)
   const intent: Intent = {
@@ -95,13 +98,21 @@ export function runDecisionCycle(matrix: Matrix10, opts?: { executeShadow?: bool
     })
   }
 
+  const aura = STRATEGY_AURA[strategy]
+  // Task 3 — always log paper intent to feed
+  try {
+    pushIntentFeed(intent, aura)
+  } catch {
+    /* */
+  }
+
   return {
     matrix,
     strategy,
     reason: intent.reason,
     intent,
     fill,
-    aura: STRATEGY_AURA[strategy],
+    aura,
     blocked: block || undefined,
   }
 }

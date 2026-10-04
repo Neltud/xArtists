@@ -1,13 +1,5 @@
 """
-Aggregator — single public snapshot for LIA Hub (Task 1).
-
-Builds data/lia_status.json:
-  - on-chain balances (MultiversX API, LIA wallet)
-  - strategy / confidence (from vellum_last_run + paper artifacts)
-  - last shadow legs (lia_paper_legs.json)
-  - cumulative shadow PnL
-
-No PEM. No live trading. Safe for GitHub Pages mirror.
+Aggregator — single public snapshot for LIA Hub (Task 1 + Task 2 friction).
 
   PYTHONPATH=. python -m lia.vellum.publish_lia_status
 """
@@ -60,11 +52,13 @@ def fetch_onchain() -> dict[str, Any]:
         egld = int(acc.get("balance") or 0) / 1e18
         out["egld"] = round(egld, 6)
         out["tx_count"] = acc.get("txCount")
+        egld_usd = None
         try:
             econ = _get_json(f"{API}/economics")
             price = float(econ.get("price") or 0)
             if price > 0:
-                out["egld_usd"] = round(egld * price, 4)
+                egld_usd = round(egld * price, 4)
+                out["egld_usd"] = egld_usd
         except Exception:
             pass
         toks = _get_json(f"{API}/accounts/{LIA_WALLET}/tokens?size=20")
@@ -82,47 +76,69 @@ def fetch_onchain() -> dict[str, Any]:
                         "balance": round(bal, 6),
                     }
                 )
+        out["_egld_usd_num"] = egld_usd or 20.0
     except Exception as e:
         out["error"] = str(e)
+        out["_egld_usd_num"] = 20.0
     return out
 
 
-def shadow_summary() -> dict[str, Any]:
+def shadow_summary(egld_usd: float = 20.0) -> dict[str, Any]:
     paper = _read("lia_paper_legs.json") or {}
     legs = paper.get("legs") if isinstance(paper, dict) else None
     if not isinstance(legs, list):
         legs = []
+
+    try:
+        from lia.shadow.friction import enrich_legs
+
+        enriched = enrich_legs(legs, egld_usd=egld_usd)
+    except Exception:
+        enriched = [dict(x) for x in legs if isinstance(x, dict)]
+
     wins = 0
     pnl = 0.0
+    pnl_fric = 0.0
     last5: list[dict[str, Any]] = []
-    for leg in legs:
-        if not isinstance(leg, dict):
-            continue
+    for leg in enriched:
         try:
-            pv = float(leg.get("pnl_usd") if leg.get("pnl_usd") is not None else leg.get("pnl") or 0)
+            pv = float(
+                leg.get("pnl_usd") if leg.get("pnl_usd") is not None else leg.get("pnl") or 0
+            )
         except (TypeError, ValueError):
             pv = 0.0
         pnl += pv
+        try:
+            pf = float(leg.get("pnl_usd_friction") if leg.get("pnl_usd_friction") is not None else pv)
+        except (TypeError, ValueError):
+            pf = pv
+        pnl_fric += pf
         if pv > 0:
             wins += 1
-    for leg in legs[-5:]:
-        if isinstance(leg, dict):
-            last5.append(
-                {
-                    "id": leg.get("id") or leg.get("trade_id"),
-                    "side": leg.get("side") or leg.get("action"),
-                    "asset": leg.get("asset") or leg.get("pair") or leg.get("token"),
-                    "pnl_usd": leg.get("pnl_usd", leg.get("pnl")),
-                    "ts": leg.get("ts") or leg.get("at"),
-                }
-            )
-    n = len(legs)
+    for leg in enriched[-5:]:
+        last5.append(
+            {
+                "id": leg.get("id") or leg.get("trade_id"),
+                "side": leg.get("side") or leg.get("action"),
+                "asset": leg.get("asset") or leg.get("pair") or leg.get("token"),
+                "pnl_usd": leg.get("pnl_usd", leg.get("pnl")),
+                "pnl_usd_friction": leg.get("pnl_usd_friction"),
+                "slippage_pct": leg.get("slippage_pct"),
+                "ts": leg.get("ts") or leg.get("at"),
+            }
+        )
+    n = len(enriched)
     return {
         "fills": n,
         "shadow_pnl_usd": round(pnl, 4),
+        "shadow_pnl_usd_friction": round(pnl_fric, 4),
         "win_rate": round(wins / n, 4) if n else None,
         "last_shadow": last5,
-        "source": "lia_paper_legs.json" if n else "empty",
+        "source": "lia_paper_legs.json+friction" if n else "empty",
+        "friction_model": {
+            "gas_egld_per_fill": 0.0008,
+            "slippage": "liquidity_impact_0.05pct_to_2.5pct",
+        },
     }
 
 
@@ -150,7 +166,8 @@ def mindset() -> dict[str, Any]:
 
 def build() -> dict[str, Any]:
     onchain = fetch_onchain()
-    shadow = shadow_summary()
+    egld_usd = float(onchain.pop("_egld_usd_num", 20.0) or 20.0)
+    shadow = shadow_summary(egld_usd=egld_usd)
     mind = mindset()
     return {
         "schema": "lia_status/v1",
@@ -164,7 +181,7 @@ def build() -> dict[str, Any]:
             "explorer": f"https://explorer.multiversx.com/accounts/{LIA_WALLET}",
             "hub": "https://neltud.github.io/xArtists/#/lia",
         },
-        "note": "Aggregated snapshot for public hub — not live trading performance",
+        "note": "Aggregated snapshot — paper/shadow with friction; not live trading",
     }
 
 
