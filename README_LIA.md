@@ -1,98 +1,56 @@
-# xArtists - LIA v6 Live Dashboard
+# LIA — agent body (repo) + Vellum brain
 
-> **Agent IA autonome de trading DeFi sur MultiversX Mainnet**
-> Derniere mise a jour : `2026-06-20` | Version : **LIA v6 PRODUCTION**
+**Updated:** 2026-10-04  
+**Default:** `LIA_LIVE_TRADING=0` · mainnet only · paper until micro-proofs
 
----
+## Architecture
 
-## Architecture Full Stack
-
-```
-Vellum Workflows (LIA v6)
-    |
-    v
-GitHubReporter node
-    |
-    v
-data/ JSON files (GitHub)
-    |
-    v
-docs/index.html (GitHub Pages)
-    |
-    v
-https://neltud.github.io/xArtists
+```text
+Vellum (orchestrator / secrets)
+    │  git pull main · PYTHONPATH=.
+    ▼
+lia.vellum.next_run / production_run   ← paper cycle
+    │
+    ▼
+data/*.json  ──mirror──►  apps/frontend/public/data/
+    │
+    ▼
+GitHub Pages  https://neltud.github.io/xArtists/
 ```
 
-## Portfolio LIA v6
+Browser shadow (no TX): Command Center → **LIA Shadow** · `apps/frontend/src/lia/`
 
-| Metrique | Valeur |
-|---|---|
-| **Portfolio total** | Live (mis a jour chaque heure) |
-| EGLD price | Live depuis MultiversX API |
-| Fear & Greed | Live depuis alternative.me |
-| BalanceGuard | OK |
-| Hatom HF | > 1.8 |
+## Vellum access (do this first)
 
-## Strategies Trading
+Full contract: **[docs/VELLUM_INTEGRATION.md](docs/VELLUM_INTEGRATION.md)**
 
-| Strategie | TP | SL | Statut |
-|---|---|---|---|
-| TP1 Scalping | +1% | -0.5% | ACTIVE |
-| TP3 Swing Court | +3% | -1.5% | ACTIVE |
-| TP5 Swing Moyen | +5% | -2.5% | ACTIVE |
-| LIA Brain WBTC | +15% | -8% | ACTIVE |
-| LIA Brain wTAO | +20% | -10% | ACTIVE |
-| LIA Brain EGLD | +25% | -12% | ACTIVE |
-| Contrarian | +0.5% | -1% | 4% budget |
-
-## xArtists Ecosystem
-
-| Metrique | Valeur |
-|---|---|
-| Collections mainnet | 11 |
-| NFT Staking contract | ACTIVE |
-| TRO Governance contract | ACTIVE |
-| TRO token | TRO-94c925 |
-
-### Collections (11)
-`AGR-9bd53e` `ALISTOR-a646bc` `ASFT-a6273a` `BGG-2b627c` `HP47X2-b71543`
-`MAS-5189b6` `NFTUDURI-2990b6` `XTR-e5072b` `XAUS-d9cf1f` `XAR-cee2e0` `TRO-652d6d`
-
-## Smart Contracts Mainnet
-
-| Contrat | Adresse |
-|---|---|
-| NFT Staking | `erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl` |
-| TRO Governance | `erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8` |
-| Marketplace | `erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t` |
-| NFT Minter | `erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn` |
-
-## Battle of Nodes - MultiversX Supernova
-
-```
-Score    : 40/100
-Rang     : TOP 50%
-Reseau   : Mainnet
-Features : Finality <1s | Adaptive Sharding | AI Integration
+```bash
+git clone --depth 1 https://github.com/Neltud/xArtists.git && cd xArtists
+export PYTHONPATH=. CHAIN=1 LIA_LIVE_TRADING=0
+python -m scripts.vellum_healthcheck
+python -m lia.vellum.next_run
+python -m lia.vellum.publish_data_for_frontend
 ```
 
-## A propos de LIA v6
+Machine maps:
 
-**LIA** (Liquidity Intelligence Agent) est un agent IA autonome de trading DeFi sur MultiversX.
-Developpe par **@tudurioriginal** - artiste et fondateur de xArtists.
+- [`data/vellum_repo_contract.json`](data/vellum_repo_contract.json)
+- [`data/vellum_pipeline_map.json`](data/vellum_pipeline_map.json)
 
-- **Objectif :** $3 -> $1,000,000 via compounding DeFi
-- **Strategies :** TP1/TP3/TP5 scalping + LIABrain + Contrarian + Yield 40%
-- **DEX :** xExchange, AshSwap, XOXNO
-- **DeFi :** Hatom (lending), xExchange farms (MEX rewards)
-- **Wallet :** `erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6`
-- **Platform :** Vellum Workflows
+## Entry points
 
-## Liens
+| Command | Role |
+|---------|------|
+| `python -m scripts.vellum_healthcheck` | Soft-import report |
+| `python -m lia.vellum.next_run` | One paper pipeline cycle |
+| `python -m lia.vellum.production_run` | Cycle + gates |
+| `python -m lia.vellum.publish_data_for_frontend` | Mirror JSON to Pages path |
 
-- [dApp GitHub Pages](https://neltud.github.io/xArtists)
-- [Explorer MultiversX](https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6)
-- [Twitter @tudurioriginal](https://twitter.com/tudurioriginal)
+## Non-goals
 
----
-*Donnees generees automatiquement par LIA v6 - Vellum Workflows*
+- PEM / mnemonic in git  
+- Auto-enable `LIA_LIVE_TRADING=1`  
+- Treat paper fills as on-chain ownership  
+
+Advisor contracts: [docs/CLAUDE_API_CONTRACT.md](docs/CLAUDE_API_CONTRACT.md)  
+Shadow STVP: [docs/LIA_SHADOW_AND_STRATEGY.md](docs/LIA_SHADOW_AND_STRATEGY.md)
