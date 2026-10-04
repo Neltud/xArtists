@@ -1,5 +1,5 @@
-# Vite build failed @ 59dfb3a7e0fe9f52bd77249cd47fab1edb3849dd
-time: 2026-10-04T12:12:28Z
+# Vite build failed @ d030237116b35a6fb8a54af2997a2d0abf034873
+time: 2026-10-04T12:13:57Z
 
 
 > xartists-frontend@3.10.0 build
@@ -7,20 +7,20 @@ time: 2026-10-04T12:12:28Z
 
 [36mvite v5.4.21 [32mbuilding for production...[36m[39m
 transforming...
-[32m✓[39m 48 modules transformed.
-[31mx[39m Build failed in 995ms
+[32m✓[39m 66 modules transformed.
+[31mx[39m Build failed in 2.05s
 [31merror during build:
 [31m[vite:esbuild] Transform failed with 1 error:
-/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/LiaPage.tsx:162:21: ERROR: Expected "}" but found "{"[31m
-file: [36m/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/LiaPage.tsx:162:21[31m
+/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/LiaPage.tsx:145:93: ERROR: Expected identifier but found "2"[31m
+file: [36m/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/LiaPage.tsx:145:93[31m
 [33m
-[33mExpected "}" but found "{"[33m
-160|              {agg?.shadow?.shadow_pnl_usd != null
-161|                ? asText(agg.shadow.shadow_pnl_usd)
-162|                : '—'{" '}USD
-   |                       ^
-163|            </p>
-164|          </div>
+[33mExpected identifier but found "2"[33m
+143|          </div>
+144|          <p className="text-sm text-zinc-400">
+145|            Profil protocole · mindset · shadow (preuve simulée). Poll 15s — pas un flux <2s sans bus.
+   |                                                                                               ^
+146|          </p>
+147|          <RceStrip compact />
 [31m
     at failureErrorWithLog (/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/esbuild/lib/main.js:1472:15)
     at /home/runner/work/xArtists/xArtists/apps/frontend/node_modules/esbuild/lib/main.js:755:50
