@@ -27,6 +27,7 @@ export const CORE_MODULES: ProductModule[] = [
 
 export const SECONDARY_MODULES: ProductModule[] = [
   { id: 'lia', path: '/lia', label: 'LIA Hub', emoji: '◉', tier: 'secondary', status: 'ui', blurb: 'Profil protocole · mindset · shadow' },
+  { id: 'market', path: '/market', label: 'Marché', emoji: '📊', tier: 'secondary', status: 'ui', blurb: 'F&G · matrice 10 col · paper' },
   { id: 'my-packs', path: '/my-packs', label: 'Mes salles', emoji: '🎛', tier: 'secondary', status: 'ui', blurb: 'Salles pack' },
   { id: 'command', path: '/command-center', label: 'Command', emoji: '⌘', tier: 'secondary', status: 'ui', blurb: 'Centre ops' },
   { id: 'venues', path: '/venues', label: 'Venues', emoji: '◎', tier: 'secondary', status: 'live', blurb: 'Louer un mur', sc: 'venue_split' },
