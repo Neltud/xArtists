@@ -1,5 +1,5 @@
-# Vite build failed @ b8c9653ef6cac4f91d57a33d71b3c55ddd1877ad
-time: 2026-10-04T12:11:16Z
+# Vite build failed @ 59dfb3a7e0fe9f52bd77249cd47fab1edb3849dd
+time: 2026-10-04T12:12:28Z
 
 
 > xartists-frontend@3.10.0 build
@@ -7,39 +7,28 @@ time: 2026-10-04T12:11:16Z
 
 [36mvite v5.4.21 [32mbuilding for production...[36m[39m
 transforming...
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/encryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/decryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/pubkeyEncryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/pubkeyDecryptor.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-core/out/wallet/crypto/randomness.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-bls-wasm/bls.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "path" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-bls-wasm/bls.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "path" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-bls-wasm/bls_c.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "fs" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/@multiversx/sdk-bls-wasm/bls_c.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "stream" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/cipher-base/index.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/scryptSync.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/scrypt.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[1m[33m[plugin:vite:resolve][39m[22m [33m[plugin vite:resolve] Module "crypto" has been externalized for browser compatibility, imported by "/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/scryptsy/lib/utils.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
-[32m✓[39m 2239 modules transformed.
-[31mx[39m Build failed in 6.21s
+[32m✓[39m 48 modules transformed.
+[31mx[39m Build failed in 995ms
 [31merror during build:
-[31msrc/pages/Dashboard.tsx (12:2): "STATUS_CLASS" is not exported by "src/config/product.ts", imported by "src/pages/Dashboard.tsx".[31m
-file: [36m/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/Dashboard.tsx:12:2[31m
+[31m[vite:esbuild] Transform failed with 1 error:
+/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/LiaPage.tsx:162:21: ERROR: Expected "}" but found "{"[31m
+file: [36m/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/LiaPage.tsx:162:21[31m
 [33m
-10:   CORE_MODULES,
-11:   SECONDARY_MODULES,
-12:   STATUS_CLASS,
-      ^
-13:   STATUS_LABEL,
-14:   type ProductModule,
+[33mExpected "}" but found "{"[33m
+160|              {agg?.shadow?.shadow_pnl_usd != null
+161|                ? asText(agg.shadow.shadow_pnl_usd)
+162|                : '—'{" '}USD
+   |                       ^
+163|            </p>
+164|          </div>
 [31m
-    at getRollupError (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/parseAst.js:319:41)
-    at error (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/parseAst.js:315:42)
-    at Module.error (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:17804:16)
-    at Module.traceVariable (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:18238:29)
-    at ModuleScope.findVariable (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:15826:39)
-    at FunctionScope.findVariable (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5963:38)
-    at FunctionBodyScope.findVariable (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5963:38)
-    at ReturnValueScope.findVariable (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5963:38)
-    at FunctionBodyScope.findVariable (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5963:38)
-    at Identifier.bind (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5727:40)[39m
+    at failureErrorWithLog (/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/esbuild/lib/main.js:1472:15)
+    at /home/runner/work/xArtists/xArtists/apps/frontend/node_modules/esbuild/lib/main.js:755:50
+    at responseCallbacks.<computed> (/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/esbuild/lib/main.js:622:9)
+    at handleIncomingPacket (/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/esbuild/lib/main.js:677:12)
+    at Socket.readFromStdout (/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/esbuild/lib/main.js:600:7)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23)[39m
