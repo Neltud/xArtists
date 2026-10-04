@@ -126,3 +126,29 @@ export function moonpayStatusHint(): string {
   if (!isMoonPayConfigured()) return 'off'
   return isMoonPaySandbox() ? 'sandbox' : 'live'
 }
+
+/** Compat exports for on-ramp UI (camelCase callers). */
+export const MOONPAY_DEFAULT_WALLET = ''
+export type MoonpayPaymentMethod =
+  | 'apple_pay'
+  | 'google_pay'
+  | 'credit_debit_card'
+  | 'sepa_bank_transfer'
+export const isMoonpayLive = isMoonPayConfigured
+export const openMoonpayBuy = openMoonPayBuy
+
+export function maySupportApplePay(): boolean {
+  if (typeof window === 'undefined') return false
+  const w = window as Window & { ApplePaySession?: { canMakePayments?: () => boolean } }
+  try {
+    return !!w.ApplePaySession?.canMakePayments?.()
+  } catch {
+    return false
+  }
+}
+
+export function maySupportGooglePay(): boolean {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent || ''
+  return /Android|Chrome/i.test(ua) && !/iPhone|iPad/i.test(ua)
+}
