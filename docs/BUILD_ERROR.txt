@@ -1,5 +1,5 @@
-# Vite build failed @ ccdc66a51071c447c6cb61a243f62231d7590a1b
-time: 2026-10-04T12:18:25Z
+# Vite build failed @ 65cc338af126aee69727016919d12a869c144725
+time: 2026-10-04T12:20:04Z
 
 
 > xartists-frontend@3.10.0 build
@@ -7,28 +7,12 @@ time: 2026-10-04T12:18:25Z
 
 [36mvite v5.4.21 [32mbuilding for production...[36m[39m
 transforming...
-[32m✓[39m 72 modules transformed.
-[31mx[39m Build failed in 1.97s
+[32m✓[39m 145 modules transformed.
+[31mx[39m Build failed in 2.30s
 [31merror during build:
-[31m[vite:esbuild] Transform failed with 1 error:
-/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/LiaPage.tsx:145:93: ERROR: Expected identifier but found "2"[31m
-file: [36m/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/LiaPage.tsx:145:93[31m
-[33m
-[33mExpected identifier but found "2"[33m
-143|          </div>
-144|          <p className="text-sm text-zinc-400">
-145|            Profil protocole · mindset · shadow (preuve simulée). Poll 15s — pas un flux <2s sans bus.
-   |                                                                                               ^
-146|          </p>
-147|          <RceStrip compact />
-[31m
-    at failureErrorWithLog (/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/esbuild/lib/main.js:1472:15)
-    at /home/runner/work/xArtists/xArtists/apps/frontend/node_modules/esbuild/lib/main.js:755:50
-    at responseCallbacks.<computed> (/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/esbuild/lib/main.js:622:9)
-    at handleIncomingPacket (/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/esbuild/lib/main.js:677:12)
-    at Socket.readFromStdout (/home/runner/work/xArtists/xArtists/apps/frontend/node_modules/esbuild/lib/main.js:600:7)
-    at Socket.emit (node:events:524:28)
-    at addChunk (node:internal/streams/readable:561:12)
-    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
-    at Readable.push (node:internal/streams/readable:392:5)
-    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23)[39m
+[31mCould not resolve "../context/PulseContext" from "src/pages/LiaPage.tsx"[31m
+file: [36m/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/LiaPage.tsx[31m
+    at getRollupError (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/parseAst.js:319:41)
+    at error (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/parseAst.js:315:42)
+    at ModuleLoader.handleInvalidResolvedId (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:22597:24)
+    at file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/node-entry.js:22557:26[39m
