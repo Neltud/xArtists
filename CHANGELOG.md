@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.82.0](https://github.com/Neltud/xArtists/compare/v0.81.1...v0.82.0) (2026-10-04)
+
+
+### Features
+
+* **quality:** Studio polish + MyPacks 3 salles clarity + market payable upgrade runbook ([022cdea](https://github.com/Neltud/xArtists/commit/022cdeabd7a259003c1a58d91093e005349a7f6a))
+
 ## [0.81.1](https://github.com/Neltud/xArtists/compare/v0.81.0...v0.81.1) (2026-10-04)
 
 
