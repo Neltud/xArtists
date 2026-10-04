@@ -1,6 +1,6 @@
 """
 Mirror critical LIA JSON into docs/data + apps/frontend/public/data.
-Also refreshes lia_hub_status.json (paper metrics for public hub).
+Also refreshes lia_hub_status.json + lia_status.json (aggregator).
 """
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ CRITICAL = [
     "lia_v6_status.json",
     "vellum_last_run.json",
     "lia_hub_status.json",
+    "lia_status.json",
     "board.json",
     "oracle_snapshot.json",
     "gas_report.json",
@@ -94,6 +95,12 @@ def publish() -> dict:
         from lia.vellum.publish_lia_hub_status import publish as hub_pub
 
         hub_pub()
+    except Exception:
+        pass
+    try:
+        from lia.vellum.publish_lia_status import publish as status_pub
+
+        status_pub()
     except Exception:
         pass
     return mirror_files()
