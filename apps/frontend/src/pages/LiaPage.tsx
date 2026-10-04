@@ -1,5 +1,5 @@
 /**
- * LIA Hub public — profile · mindset · shadow · TX · RCE · aggregator.
+ * LIA Hub — aggregator · shadow · intent feed · aura (paper).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,11 +8,15 @@ import { fetchProtocolProfile, type ProtocolProfile } from '../lia/protocolProfi
 import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumBridge'
 import { matrixFromPulse, runDecisionCycle } from '../lia/decisionCycle'
 import { loadShadowBalances, loadShadowLog, type ShadowFill } from '../lia/shadowLedger'
+import { persistShadowExport } from '../lia/shadowExport'
+import { loadIntentFeed, type FeedItem } from '../lia/intentFeed'
 import { fetchEgldPrice } from '../lia/priceTick'
 import { fetchRecentTx, type ExplorerTx } from '../lia/explorerTx'
 import { fetchLiaHubStatus, type LiaHubStatus } from '../lia/hubStatus'
 import { fetchLiaStatus, type LiaStatusV1 } from '../lia/liaStatus'
 import ShadowEquityChart from '../components/lia/ShadowEquityChart'
+import IntentFeed from '../components/lia/IntentFeed'
+import AuraBadge from '../components/lia/AuraBadge'
 import { usePulse } from '../hooks/usePulse'
 import { toAmbientSnapshot } from '../lib/ambientAura'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
@@ -55,6 +59,7 @@ export default function LiaPage() {
   const [txs, setTxs] = useState<ExplorerTx[]>([])
   const [shadowBal, setShadowBal] = useState(() => loadShadowBalances())
   const [shadowLog, setShadowLog] = useState<ShadowFill[]>(() => loadShadowLog(24))
+  const [feed, setFeed] = useState<FeedItem[]>(() => loadIntentFeed(20))
   const [tick, setTick] = useState<{
     strategy: string
     reason: string
@@ -81,6 +86,7 @@ export default function LiaPage() {
       setAgg(st)
       setShadowBal(loadShadowBalances())
       setShadowLog(loadShadowLog(24))
+      persistShadowExport(px.priceUsd || 0)
 
       const m = matrixFromPulse({
         assetId: 'EGLD',
@@ -90,13 +96,17 @@ export default function LiaPage() {
         confidence: lia.confidence ?? 0.5,
         rce: p.egldUsd || 0,
       })
-      const cycle = runDecisionCycle(m, { executeShadow: false })
+      // executeShadow true on manual refresh → friction fills + intent feed
+      const cycle = runDecisionCycle(m, { executeShadow: true })
       setTick({
         strategy: cycle.strategy,
         reason: cycle.reason,
         action: cycle.intent.action,
         aura: cycle.aura,
       })
+      setFeed(loadIntentFeed(20))
+      setShadowBal(loadShadowBalances())
+      setShadowLog(loadShadowLog(24))
     } finally {
       setLoading(false)
     }
@@ -121,6 +131,7 @@ export default function LiaPage() {
   const pnl = agg?.shadow?.shadow_pnl_usd ?? hub?.shadow_pnl_usd
   const fills = agg?.shadow?.fills ?? hub?.fills
   const winRate = agg?.shadow?.win_rate ?? hub?.win_rate
+  const auraMode = tick?.aura || ambient.mode
 
   return (
     <div className="animate-fade-in space-y-6 max-w-4xl mx-auto pb-20">
@@ -130,9 +141,7 @@ export default function LiaPage() {
           <span className="rounded-full border border-cyan-500/30 px-2 py-0.5 text-[10px] text-cyan-200">
             HUB PUBLIC
           </span>
-          <span className="rounded-full border border-white/15 px-2 py-0.5 text-[10px] text-zinc-400">
-            {ambient.mode} · {ambient.trend}
-          </span>
+          <AuraBadge mode={String(auraMode)} trend={ambient.trend} />
         </div>
         <h1 className="section-title display text-3xl">LIA</h1>
         <p className="text-sm text-zinc-400 max-w-2xl">
@@ -223,7 +232,7 @@ export default function LiaPage() {
             </div>
             <div className="rounded-xl bg-black/30 p-2 border border-white/5">
               <p className="text-zinc-500">Aura</p>
-              <p className="font-semibold text-white">{tick?.aura || ambient.mode}</p>
+              <p className="font-semibold text-white">{String(auraMode)}</p>
             </div>
             <div className="rounded-xl bg-black/30 p-2 border border-white/5">
               <p className="text-zinc-500">Pulse</p>
@@ -246,12 +255,14 @@ export default function LiaPage() {
           <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-300/90 font-semibold">
             C · Preuve shadow
           </p>
-          <p className="text-[12px] text-zinc-500">Simulé uniquement — recherche, pas un rendement promis.</p>
+          <p className="text-[12px] text-zinc-500">
+            Friction : gas 0.0008 EGLD + slippage liquidité (paper).
+          </p>
           {(hub || agg?.shadow) && (
             <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[12px]">
-              <p className="text-zinc-500">Status agrégé (Vellum / JSON)</p>
+              <p className="text-zinc-500">Status agrégé</p>
               <p className="text-zinc-200">
-                PnL shadow {fmtUsd(pnl)} · fills {fills ?? '—'} · win rate{' '}
+                PnL {fmtUsd(pnl)} · fills {fills ?? '—'} · win{' '}
                 {winRate != null ? `${(winRate * 100).toFixed(0)}%` : '—'}
               </p>
               {(agg?.ts || hub?.ts) && (
@@ -279,6 +290,8 @@ export default function LiaPage() {
           </Link>
         </section>
       </div>
+
+      <IntentFeed items={feed} />
 
       <MatrixBoard />
 
@@ -328,10 +341,9 @@ export default function LiaPage() {
       <section className="card text-sm text-zinc-400 space-y-2">
         <p className="font-semibold text-zinc-200">Cadre honnête</p>
         <ul className="text-[13px] space-y-1 list-disc pl-4">
-          <li>Wallet protocole public — historique complet sur l’explorer.</li>
-          <li>RCE = Real Capital Engaged — pas le paper.</li>
-          <li>Agrégateur lia_status.json (Vellum) — même contrat qu’un futur /api/lia/status.</li>
-          <li>Aucune TX signée depuis ce hub.</li>
+          <li>Paper only — feed d’intents + aura ne signent rien.</li>
+          <li>Shadow local avec friction (gas + slippage) ; export navigateur à chaque refresh.</li>
+          <li>Micro-preuve live = PEM Vellum + runbook Beta (humain).</li>
         </ul>
       </section>
     </div>
