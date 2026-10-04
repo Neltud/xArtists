@@ -1,7 +1,5 @@
 /**
- * LIA Hub public — Model C research agent face.
- * On-chain profile + mindset (pulse/vellum/shadow) + shadow proof.
- * No guaranteed yield. No auto TX.
+ * LIA Hub public — profile · mindset · shadow proof · TX · equity curve.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -11,6 +9,9 @@ import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumBridge'
 import { matrixFromPulse, runDecisionCycle } from '../lia/decisionCycle'
 import { loadShadowBalances, loadShadowLog, type ShadowFill } from '../lia/shadowLedger'
 import { fetchEgldPrice } from '../lia/priceTick'
+import { fetchRecentTx, type ExplorerTx } from '../lia/explorerTx'
+import { fetchLiaHubStatus, type LiaHubStatus } from '../lia/hubStatus'
+import ShadowEquityChart from '../components/lia/ShadowEquityChart'
 import { usePulse } from '../hooks/usePulse'
 import { toAmbientSnapshot } from '../lib/ambientAura'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
@@ -31,6 +32,11 @@ function shortAddr(a: string): string {
   return `${a.slice(0, 8)}…${a.slice(-6)}`
 }
 
+function shortHash(h: string): string {
+  if (!h || h.length < 12) return h || '—'
+  return `${h.slice(0, 8)}…${h.slice(-6)}`
+}
+
 export default function LiaPage() {
   const { env, source } = usePulse()
   const lia = useLIAInterpreter(env)
@@ -41,8 +47,10 @@ export default function LiaPage() {
 
   const [profile, setProfile] = useState<ProtocolProfile | null>(null)
   const [vellum, setVellum] = useState<VellumLastRun | null>(null)
+  const [hub, setHub] = useState<LiaHubStatus | null>(null)
+  const [txs, setTxs] = useState<ExplorerTx[]>([])
   const [shadowBal, setShadowBal] = useState(() => loadShadowBalances())
-  const [shadowLog, setShadowLog] = useState<ShadowFill[]>(() => loadShadowLog(8))
+  const [shadowLog, setShadowLog] = useState<ShadowFill[]>(() => loadShadowLog(24))
   const [tick, setTick] = useState<{
     strategy: string
     reason: string
@@ -54,15 +62,19 @@ export default function LiaPage() {
   const refresh = useCallback(async () => {
     setLoading(true)
     try {
-      const [p, v, px] = await Promise.all([
+      const [p, v, px, txList, hubSt] = await Promise.all([
         fetchProtocolProfile(),
         fetchVellumLastRun(),
         fetchEgldPrice(true),
+        fetchRecentTx(8),
+        fetchLiaHubStatus(),
       ])
       setProfile(p)
       setVellum(v)
+      setTxs(txList)
+      setHub(hubSt)
       setShadowBal(loadShadowBalances())
-      setShadowLog(loadShadowLog(8))
+      setShadowLog(loadShadowLog(24))
 
       const m = matrixFromPulse({
         assetId: 'EGLD',
@@ -90,12 +102,6 @@ export default function LiaPage() {
     return () => window.clearInterval(id)
   }, [refresh])
 
-  const shadowEquityHint = useMemo(() => {
-    // rough: EGLD virtual * last known + USDC (TRO not priced here)
-    return shadowBal.USDC + shadowBal.EGLD // EGLD units not USD — show raw in UI
-  }, [shadowBal])
-
-  const wins = shadowLog.filter(f => f.side === 'BUY' || f.side === 'SELL').length
   const statusLabel =
     vellum?.live === true
       ? 'Vellum live flag on (ops)'
@@ -117,9 +123,8 @@ export default function LiaPage() {
         </div>
         <h1 className="section-title display text-3xl">LIA</h1>
         <p className="text-sm text-zinc-400 max-w-2xl">
-          Agent de recherche on-chain (Model C). Solde protocole public, mindset paper, preuve
-          shadow — <strong className="text-zinc-300">pas un fond d’investissement</strong>, pas de
-          rendement garanti.
+          Agent de recherche on-chain (Model C). Solde protocole, mindset paper, preuve shadow —{' '}
+          <strong className="text-zinc-300">pas un fond d’investissement</strong>.
         </p>
       </header>
 
@@ -144,21 +149,18 @@ export default function LiaPage() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
-        {/* MODULE A — Protocol profile */}
         <section className="card space-y-3 lg:col-span-1 border-purple-500/20">
           <p className="text-[10px] uppercase tracking-[0.18em] text-purple-300/90 font-semibold">
             A · Profil protocole
           </p>
           <p className="text-xs mono text-zinc-500 break-all">{shortAddr(LIA_WALLET)}</p>
-          {profile?.error && (
-            <p className="text-[12px] text-amber-200">{profile.error}</p>
-          )}
+          {profile?.error && <p className="text-[12px] text-amber-200">{profile.error}</p>}
           <div className="rounded-xl bg-black/30 border border-white/10 p-3">
             <p className="text-[10px] text-zinc-500 uppercase">EGLD</p>
             <p className="text-2xl font-bold text-white tabular-nums">{fmt(profile?.egld, 4)}</p>
             <p className="text-[12px] text-zinc-500">{fmtUsd(profile?.egldUsd)}</p>
           </div>
-          <div className="space-y-1.5 max-h-48 overflow-y-auto">
+          <div className="space-y-1.5 max-h-40 overflow-y-auto">
             {(profile?.tokens || []).length === 0 && (
               <p className="text-[12px] text-zinc-500">Aucun token ou chargement…</p>
             )}
@@ -172,29 +174,25 @@ export default function LiaPage() {
               </div>
             ))}
           </div>
-          <p className="text-[11px] text-zinc-600">
-            TX count : {profile?.txCount ?? '—'} · données API MultiversX
-          </p>
           <Link to="/lp" className="text-[12px] text-cyan-400 underline">
-            Voir pools & LP protocole →
+            Pools & LP protocole →
           </Link>
         </section>
 
-        {/* MODULE B — Mindset */}
         <section className="card space-y-3 lg:col-span-1 border-cyan-500/20">
           <p className="text-[10px] uppercase tracking-[0.18em] text-cyan-400/90 font-semibold">
             B · Mindset
           </p>
           <div className="rounded-xl bg-black/30 border border-white/10 p-3 space-y-1">
-            <p className="text-[10px] text-zinc-500 uppercase">Stratégie (paper tick)</p>
-            <p className="text-lg font-semibold text-white">{tick?.strategy || '—'}</p>
-            <p className="text-[12px] text-zinc-500">{tick?.reason || 'En attente de tick'}</p>
+            <p className="text-[10px] text-zinc-500 uppercase">Stratégie (paper)</p>
+            <p className="text-lg font-semibold text-white">{tick?.strategy || hub?.strategy || '—'}</p>
+            <p className="text-[12px] text-zinc-500">{tick?.reason || '—'}</p>
           </div>
           <div className="grid grid-cols-2 gap-2 text-[12px]">
             <div className="rounded-xl bg-black/30 p-2 border border-white/5">
               <p className="text-zinc-500">Confiance</p>
               <p className="font-semibold text-white tabular-nums">
-                {((lia.confidence ?? 0) * 100).toFixed(0)}%
+                {((lia.confidence ?? hub?.confidence ?? 0) * 100).toFixed(0)}%
               </p>
             </div>
             <div className="rounded-xl bg-black/30 p-2 border border-white/5">
@@ -214,80 +212,104 @@ export default function LiaPage() {
             <div className="rounded-xl border border-white/10 px-3 py-2 text-[11px] text-zinc-400">
               <p className="text-zinc-500">Vellum last run</p>
               <p className="text-zinc-200">
-                {vellum.ts || '—'} · mode {vellum.summary?.mode || '—'} ·{' '}
+                {vellum.ts || '—'} · {vellum.summary?.mode || '—'} ·{' '}
                 {vellum.summary?.ok === false ? 'steps failed' : 'ok'}
               </p>
             </div>
           )}
           <p className="text-[11px] text-zinc-500">Statut : {statusLabel}</p>
-          <p className="text-[11px] text-zinc-600 leading-relaxed">
-            {lia.phrase || 'Scan marché · aucun ordre automatique depuis ce hub.'}
-          </p>
         </section>
 
-        {/* MODULE C — Shadow proof */}
         <section className="card space-y-3 lg:col-span-1 border-emerald-500/15">
           <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-300/90 font-semibold">
             C · Preuve shadow
           </p>
-          <p className="text-[12px] text-zinc-500 leading-relaxed">
-            Performance basée sur le trading <strong className="text-zinc-400">simulé</strong>{' '}
-            (navigateur / pipeline paper) — recherche uniquement.
+          <p className="text-[12px] text-zinc-500">
+            Simulé uniquement — recherche, pas un rendement promis.
           </p>
-          <div className="grid grid-cols-2 gap-2 text-[12px]">
+          {hub && (
+            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[12px]">
+              <p className="text-zinc-500">Hub status (Vellum)</p>
+              <p className="text-zinc-200">
+                PnL shadow {fmtUsd(hub.shadow_pnl_usd)} · fills {hub.fills ?? '—'} · win rate{' '}
+                {hub.win_rate != null ? `${(hub.win_rate * 100).toFixed(0)}%` : '—'}
+              </p>
+              {hub.ts && <p className="text-[10px] text-zinc-600 mt-0.5">{hub.ts}</p>}
+            </div>
+          )}
+          <ShadowEquityChart fills={shadowLog} startEquity={110} />
+          <div className="grid grid-cols-3 gap-2 text-[12px]">
             <div className="rounded-xl bg-black/30 p-2">
-              <p className="text-zinc-500">EGLD virtuel</p>
-              <p className="font-semibold tabular-nums">{fmt(shadowBal.EGLD, 4)}</p>
+              <p className="text-zinc-500">EGLD virt.</p>
+              <p className="font-semibold tabular-nums">{fmt(shadowBal.EGLD, 3)}</p>
             </div>
             <div className="rounded-xl bg-black/30 p-2">
-              <p className="text-zinc-500">USDC virtuel</p>
-              <p className="font-semibold tabular-nums">{fmt(shadowBal.USDC, 2)}</p>
+              <p className="text-zinc-500">USDC virt.</p>
+              <p className="font-semibold tabular-nums">{fmt(shadowBal.USDC, 1)}</p>
             </div>
             <div className="rounded-xl bg-black/30 p-2">
-              <p className="text-zinc-500">TRO virtuel</p>
-              <p className="font-semibold tabular-nums">{fmt(shadowBal.TRO, 0)}</p>
-            </div>
-            <div className="rounded-xl bg-black/30 p-2">
-              <p className="text-zinc-500">Fills log</p>
+              <p className="text-zinc-500">Log</p>
               <p className="font-semibold tabular-nums">{shadowLog.length}</p>
             </div>
           </div>
-          <ul className="max-h-36 overflow-y-auto space-y-1 text-[11px] mono text-zinc-500">
-            {shadowLog.length === 0 && <li>Aucun fill local — ouvre Command → Tick.</li>}
-            {[...shadowLog].reverse().map(f => (
-              <li key={f.id}>
-                {new Date(f.at).toLocaleString()} · {f.strategy} · {f.side} {fmt(f.amount, 3)}
-              </li>
-            ))}
-          </ul>
-          <p className="text-[10px] text-zinc-600">
-            Événements shadow (session) : {wins} · equity brute local ≈ {fmt(shadowEquityHint, 2)}
-          </p>
           <Link to="/command-center" className="text-[12px] text-cyan-400 underline">
-            War room shadow →
+            War room →
           </Link>
         </section>
       </div>
 
+      {/* Explorer TX */}
+      <section className="card space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-400 font-semibold">
+            Dernières TX · wallet LIA
+          </p>
+          <a
+            href={LINKS.explorerAccount(LIA_WALLET)}
+            className="text-[12px] text-cyan-400 underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Tout voir sur l’explorer
+          </a>
+        </div>
+        {txs.length === 0 ? (
+          <p className="text-sm text-zinc-500">Aucune TX chargée.</p>
+        ) : (
+          <ul className="divide-y divide-white/5 text-[12px]">
+            {txs.map(tx => (
+              <li key={tx.hash} className="py-2 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <a
+                    href={LINKS.explorerTx(tx.hash)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mono text-cyan-300/90 hover:underline"
+                  >
+                    {shortHash(tx.hash)}
+                  </a>
+                  <p className="text-zinc-500">
+                    {tx.function || 'transfer'} · {tx.status}
+                    {tx.timestamp
+                      ? ` · ${new Date(tx.timestamp * 1000).toLocaleString()}`
+                      : ''}
+                  </p>
+                </div>
+                <span className="mono text-zinc-300 tabular-nums">{fmt(tx.valueEgld, 4)} EGLD</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       <section className="card text-sm text-zinc-400 space-y-2">
         <p className="font-semibold text-zinc-200">Cadre honnête</p>
         <ul className="text-[13px] space-y-1 list-disc pl-4">
-          <li>Wallet protocole public — historique TX complet sur l’explorer.</li>
-          <li>Décisions affichées = paper / shadow tant que LIA_LIVE_TRADING = 0.</li>
-          <li>Tu signes toi-même toute TX réelle (xPortal) — ce hub n’envoie rien.</li>
-          <li>Packs Pulse · Yield · Sentinel = accès produit / salles, pas un dépôt géré.</li>
+          <li>Wallet protocole public — historique complet sur l’explorer.</li>
+          <li>Courbe equity = reconstruction locale des fills shadow (toy mark).</li>
+          <li>lia_hub_status.json = métriques paper poussées par Vellum si publiées.</li>
+          <li>Aucune TX signée depuis ce hub.</li>
         </ul>
-        <div className="flex flex-wrap gap-2 pt-2">
-          <Link to="/agents" className="btn-secondary text-sm">
-            Packs
-          </Link>
-          <Link to="/trading" className="btn-secondary text-sm">
-            Desk
-          </Link>
-          <Link to="/go-live" className="btn-secondary text-sm">
-            Statut go-live
-          </Link>
-        </div>
       </section>
     </div>
   )
