@@ -1,0 +1,18 @@
+{
+  "updated": "2026-10-04T16:30:00Z",
+  "paper": true,
+  "lines": [
+    "MACRO · DXY / yields watch — risk appetite soft",
+    "CRYPTO · BTC dominance range · alts beta elevated",
+    "MVX · EGLD liquidity thin on majors — size with friction",
+    "VOL · realized vs implied spread — shadow uses 0.05–2.5% slip",
+    "SENTIMENT · fused GSN + Polymarket + free feeds (advisory only)",
+    "SHADOW · day sprint running · LIA_LIVE_TRADING=0",
+    "NO ALPHA CLAIM · paper fills include gas + slippage"
+  ],
+  "fused": {
+    "decision": "WAIT",
+    "confidence": 0.52,
+    "source": "macro+crypto+mvx_liquidity"
+  }
+}

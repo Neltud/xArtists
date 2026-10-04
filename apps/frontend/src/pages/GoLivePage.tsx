@@ -22,6 +22,7 @@ import {
   canUseTreasury,
   canBuyAgent,
 } from '../config/scStatus'
+import { asText } from '../lib/safeRender'
 
 type Item = { id: string; label: string; ok: boolean; note?: string; href?: string }
 
@@ -55,6 +56,11 @@ export default function GoLivePage() {
   const slotOk = canSpinSlot() || runtimeCodehashOk('slot')
   const house = runtimeSlotBalance()
 
+  const packFloor =
+    typeof PACK_PRICE_EGLD === 'object' && PACK_PRICE_EGLD && 'min' in PACK_PRICE_EGLD
+      ? Number((PACK_PRICE_EGLD as { min: number }).min)
+      : Number(PACK_PRICE_EGLD) || 10
+
   const scItems: Item[] = [
     {
       id: 'market',
@@ -76,16 +82,9 @@ export default function GoLivePage() {
     },
     {
       id: 'treasury',
-      label: 'Treasury receiveAndSplit',
+      label: 'Treasury',
       ok: treasuryOk,
       href: `https://explorer.multiversx.com/accounts/${MAINNET_ADDRESSES.treasury_splitter}`,
-    },
-    {
-      id: 'slot',
-      label: 'Slot spin EGLD',
-      ok: slotOk && house > 0,
-      note: slotOk ? `house ~${house} (API)` : 'spin EGLD bloqué / SC',
-      href: `https://explorer.multiversx.com/accounts/${MAINNET_ADDRESSES.slot_casino}`,
     },
     {
       id: 'agents',
@@ -93,6 +92,16 @@ export default function GoLivePage() {
       ok: agentsOk,
       note: agentsOk ? undefined : 'mint pack SC pas prêt',
       href: `https://explorer.multiversx.com/accounts/${MAINNET_ADDRESSES.agents_marketplace}`,
+    },
+    {
+      id: 'slot',
+      label: 'Slot casino',
+      ok: slotOk,
+      note:
+        house != null
+          ? `house ~${asText(typeof house === 'number' ? house.toFixed(4) : house)} EGLD`
+          : undefined,
+      href: `https://explorer.multiversx.com/accounts/${MAINNET_ADDRESSES.slot_casino}`,
     },
   ]
 
@@ -102,8 +111,8 @@ export default function GoLivePage() {
         <p className="section-label">Mainnet</p>
         <h1 className="section-title display">Status & capital</h1>
         <p className="text-sm text-zinc-400">
-          Mode app : <strong className="text-zinc-200">{mode}</strong>
-          {envLive ? ' · env live capable' : ''} · floor pack {PACK_PRICE_EGLD} EGLD
+          Mode app : <strong className="text-zinc-200">{asText(mode)}</strong>
+          {envLive ? ' · env live capable' : ''} · floor pack {asText(packFloor)} EGLD
         </p>
       </header>
 
@@ -118,8 +127,8 @@ export default function GoLivePage() {
               className="flex flex-wrap items-start justify-between gap-2 rounded-xl border border-white/10 px-3 py-2 text-[13px]"
             >
               <div>
-                <p className="text-zinc-200">{it.label}</p>
-                {it.note && <p className="text-[11px] text-zinc-500">{it.note}</p>}
+                <p className="text-zinc-200">{asText(it.label)}</p>
+                {it.note && <p className="text-[11px] text-zinc-500">{asText(it.note)}</p>}
                 {it.href && (
                   <a
                     className="text-[11px] text-cyan-400 underline"
@@ -150,19 +159,20 @@ export default function GoLivePage() {
       <section className="card space-y-2">
         <h2 className="text-sm font-semibold text-white">Spin réel</h2>
         <p className="text-[12px] text-zinc-400">
-          House financée. Le spin FUN reste le chemin public. Le spin REAL reste fermé
-          tant que le fail spinEgld 0,1 EGLD n'est pas diagnostiqué et rejoué en micro-preuve.
-          Ce n'est pas un casino ouvert.
-        </p>
-        <p className="text-[11px] text-zinc-500">
-          Listing 1/1 : price + royalty_bps + royalty_receiver. Pas de promesse de yield.
+          House financée. Le spin FUN reste le chemin public. Le spin REAL reste fermé tant que le
+          fail spinEgld n&apos;est pas diagnostiqué et rejoué en micro-preuve. Ce n&apos;est pas un
+          casino ouvert.
         </p>
       </section>
 
       <p className="text-[11px] text-zinc-600">
-        Agent 8008 : {AGENT_8008?.id || '—'} ·{' '}
+        Agent 8008 : {asText(AGENT_8008?.id, '—')} ·{' '}
         <Link to="/" className="text-cyan-400 underline">
           Accueil
+        </Link>
+        {' · '}
+        <Link to="/lia" className="text-cyan-400 underline">
+          LIA Hub
         </Link>
       </p>
     </div>
