@@ -1,5 +1,22 @@
 # Changelog — xArtists
 
+## [0.83.0](https://github.com/Neltud/xArtists/compare/v0.82.0...v0.83.0) (2026-10-04)
+
+
+### Features
+
+* **lia+ops:** poll 15s aura from aggregator; shadow export file; micro-proof placeBid payable ([b8c9653](https://github.com/Neltud/xArtists/commit/b8c9653ef6cac4f91d57a33d71b3c55ddd1877ad))
+* **lia:** 15s poll + auraFromStatus; publish aura + lia_shadow_export ([59dfb3a](https://github.com/Neltud/xArtists/commit/59dfb3a7e0fe9f52bd77249cd47fab1edb3849dd))
+* **shadow:** 7-day sprint runner + equity export + ESDT micro-proof prep ([2b6e2da](https://github.com/Neltud/xArtists/commit/2b6e2dac17514e90459e2af41dd3b89ce55efa27))
+* **shadow:** publish day-1 sprint JSON + wire ShadowPerformance on /lia ([1786fe0](https://github.com/Neltud/xArtists/commit/1786fe00708a9af4de46bdddd0c6d23c989f3c37))
+* **shadow:** seed day-1 sprint data + ShadowPerformance hub UI ([ccdc66a](https://github.com/Neltud/xArtists/commit/ccdc66a51071c447c6cb61a243f62231d7590a1b))
+* **vellum:** aura in lia_status + write lia_shadow_export.json (M2 light) ([d030237](https://github.com/Neltud/xArtists/commit/d030237116b35a6fb8a54af2997a2d0abf034873))
+
+
+### Bug Fixes
+
+* **lia:** valid JSX for Shadow PnL line ([950fdd0](https://github.com/Neltud/xArtists/commit/950fdd03645260dc7f8880e09f5999ac76f4e308))
+
 ## [0.82.0](https://github.com/Neltud/xArtists/compare/v0.81.1...v0.82.0) (2026-10-04)
 
 
