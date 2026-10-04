@@ -1,5 +1,6 @@
 /**
- * Menu — Principal (cœur) + Compte + Infos. Labs hors menu pour éviter la confusion.
+ * Menu — Public (intelligence) vs Compte vs On-chain vs Infos.
+ * UMPS §3 : deux univers (public Model C / privé ops).
  */
 import { NavLink } from 'react-router-dom'
 import { PRIMARY_NAV, SECONDARY_NAV } from '../config/links'
@@ -8,7 +9,10 @@ import { clearXPortalSession } from '../lib/xportalWc'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useI18n } from '../i18n/I18nContext'
 
+/** Compte = session utilisateur + ops personnelles */
 const ACCOUNT = ['/wallet', '/portfolio', '/my-packs', '/command-center']
+/** Public = preuve d’intelligence & marchés (Model C) */
+const PUBLIC = ['/lia', '/market', '/lp', '/museum', '/marketplace', '/agents']
 const INFO = ['/legal', '/go-live', '/sitemap']
 
 export default function SideNav({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -17,21 +21,44 @@ export default function SideNav({ open, onClose }: { open: boolean; onClose: () 
 
   if (!open) return null
 
-  const main = PRIMARY_NAV.filter(i => !ACCOUNT.includes(i.to))
-  const account = [
-    ...PRIMARY_NAV.filter(i => ACCOUNT.includes(i.to)),
-    ...SECONDARY_NAV.filter(i => ACCOUNT.includes(i.to)),
-  ]
-  const more = SECONDARY_NAV.filter(i => !ACCOUNT.includes(i.to) && INFO.includes(i.to))
+  const all = [...PRIMARY_NAV, ...SECONDARY_NAV]
+  const byPath = (paths: string[]) => {
+    const set = new Set(paths)
+    const out: typeof all = []
+    for (const p of paths) {
+      const hit = all.find(i => i.to === p)
+      if (hit && !out.some(x => x.to === hit.to)) out.push(hit)
+    }
+    // also any primary not listed elsewhere
+    for (const i of all) {
+      if (set.has(i.to) && !out.some(x => x.to === i.to)) out.push(i)
+    }
+    return out
+  }
+
+  const publicItems = byPath(PUBLIC)
+  // Principal cœur hors public dupliqué
+  const main = PRIMARY_NAV.filter(i => !ACCOUNT.includes(i.to) && !PUBLIC.includes(i.to))
+  const account = byPath(ACCOUNT)
+  const more = SECONDARY_NAV.filter(i => INFO.includes(i.to))
   const protocol = SECONDARY_NAV.filter(
-    i => !ACCOUNT.includes(i.to) && !INFO.includes(i.to),
+    i => !ACCOUNT.includes(i.to) && !INFO.includes(i.to) && !PUBLIC.includes(i.to),
   )
 
   const sections = [
-    { title: 'Principal', items: main },
-    { title: 'Compte', items: account },
-    { title: 'On-chain', items: protocol },
-    { title: 'Infos', items: more },
+    {
+      title: 'Public · intelligence',
+      items: publicItems,
+      hint: 'Hub LIA, marchés, pools — transparent, paper-first',
+    },
+    { title: 'Principal', items: main, hint: '' },
+    {
+      title: 'Compte',
+      items: account,
+      hint: 'Wallet, portfolio, salles, command center',
+    },
+    { title: 'On-chain', items: protocol, hint: '' },
+    { title: 'Infos', items: more, hint: 'RCE = Real Capital Engaged (EGLD dans les SC)' },
   ].filter(s => s.items.length > 0)
 
   return (
@@ -60,7 +87,9 @@ export default function SideNav({ open, onClose }: { open: boolean; onClose: () 
             <>
               <p className="text-[10px] uppercase tracking-wider text-zinc-500">Wallet</p>
               <p className="mono text-[12px] text-emerald-300/90">{shortAddress || '…'}</p>
-              <p className="text-[10px] text-zinc-600">{method === 'xportal' ? 'xPortal' : method || 'session'}</p>
+              <p className="text-[10px] text-zinc-600">
+                {method === 'xportal' ? 'xPortal' : method || 'session'}
+              </p>
               <button
                 type="button"
                 className="btn-secondary w-full text-xs active:scale-95"
@@ -90,28 +119,30 @@ export default function SideNav({ open, onClose }: { open: boolean; onClose: () 
         <nav className="flex-1 space-y-4 overflow-y-auto px-2 py-3">
           {sections.map(sec => (
             <div key={sec.title}>
-              <p className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+              <p className="mb-0.5 px-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
                 {sec.title}
               </p>
+              {sec.hint ? (
+                <p className="mb-1.5 px-2 text-[10px] text-zinc-600 leading-snug">{sec.hint}</p>
+              ) : (
+                <div className="mb-1" />
+              )}
               <ul className="space-y-0.5">
                 {sec.items.map(item => (
                   <li key={item.to}>
                     <NavLink
                       to={item.to}
-                      end={item.to === '/'}
                       onClick={onClose}
                       className={({ isActive }) =>
-                        `flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-[13px] transition active:scale-[0.98] ${
+                        `flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition active:scale-[0.98] ${
                           isActive
-                            ? 'border-violet-400/35 bg-violet-500/20 text-white'
-                            : 'border-transparent text-zinc-400 hover:bg-white/5 hover:text-zinc-100'
+                            ? 'bg-violet-500/20 text-white'
+                            : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-100'
                         }`
                       }
                     >
-                      <span className="w-5 text-center text-base leading-none" aria-hidden>
-                        {item.emoji}
-                      </span>
-                      {item.label}
+                      <span aria-hidden>{item.emoji}</span>
+                      <span>{item.label}</span>
                     </NavLink>
                   </li>
                 ))}
@@ -119,10 +150,6 @@ export default function SideNav({ open, onClose }: { open: boolean; onClose: () 
             </div>
           ))}
         </nav>
-
-        <p className="border-t border-white/5 px-4 py-3 text-[10px] text-zinc-600">
-          Mainnet MultiversX · pas un fond d&apos;investissement
-        </p>
       </aside>
     </div>
   )
