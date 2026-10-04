@@ -1,5 +1,5 @@
 /**
- * LIA Hub public — profile · mindset · shadow proof · TX · equity curve · RCE.
+ * LIA Hub public — profile · mindset · shadow · TX · RCE · aggregator.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -11,6 +11,7 @@ import { loadShadowBalances, loadShadowLog, type ShadowFill } from '../lia/shado
 import { fetchEgldPrice } from '../lia/priceTick'
 import { fetchRecentTx, type ExplorerTx } from '../lia/explorerTx'
 import { fetchLiaHubStatus, type LiaHubStatus } from '../lia/hubStatus'
+import { fetchLiaStatus, type LiaStatusV1 } from '../lia/liaStatus'
 import ShadowEquityChart from '../components/lia/ShadowEquityChart'
 import { usePulse } from '../hooks/usePulse'
 import { toAmbientSnapshot } from '../lib/ambientAura'
@@ -50,6 +51,7 @@ export default function LiaPage() {
   const [profile, setProfile] = useState<ProtocolProfile | null>(null)
   const [vellum, setVellum] = useState<VellumLastRun | null>(null)
   const [hub, setHub] = useState<LiaHubStatus | null>(null)
+  const [agg, setAgg] = useState<LiaStatusV1 | null>(null)
   const [txs, setTxs] = useState<ExplorerTx[]>([])
   const [shadowBal, setShadowBal] = useState(() => loadShadowBalances())
   const [shadowLog, setShadowLog] = useState<ShadowFill[]>(() => loadShadowLog(24))
@@ -64,17 +66,19 @@ export default function LiaPage() {
   const refresh = useCallback(async () => {
     setLoading(true)
     try {
-      const [p, v, px, txList, hubSt] = await Promise.all([
+      const [p, v, px, txList, hubSt, st] = await Promise.all([
         fetchProtocolProfile(),
         fetchVellumLastRun(),
         fetchEgldPrice(true),
         fetchRecentTx(8),
         fetchLiaHubStatus(),
+        fetchLiaStatus(),
       ])
       setProfile(p)
       setVellum(v)
       setTxs(txList)
       setHub(hubSt)
+      setAgg(st)
       setShadowBal(loadShadowBalances())
       setShadowLog(loadShadowLog(24))
 
@@ -107,9 +111,16 @@ export default function LiaPage() {
   const statusLabel =
     vellum?.live === true
       ? 'Vellum live flag on (ops)'
-      : vellum
-        ? 'Pipeline paper publié'
-        : 'Shadow navigateur + pulse'
+      : agg
+        ? 'Aggregator lia_status'
+        : vellum
+          ? 'Pipeline paper publié'
+          : 'Shadow navigateur + pulse'
+
+  const stratLabel = tick?.strategy || agg?.mindset?.strategy || hub?.strategy || '—'
+  const pnl = agg?.shadow?.shadow_pnl_usd ?? hub?.shadow_pnl_usd
+  const fills = agg?.shadow?.fills ?? hub?.fills
+  const winRate = agg?.shadow?.win_rate ?? hub?.win_rate
 
   return (
     <div className="animate-fade-in space-y-6 max-w-4xl mx-auto pb-20">
@@ -153,7 +164,6 @@ export default function LiaPage() {
         </Link>
       </div>
 
-      {/* RCE = Real Capital Engaged : EGLD dans les smart contracts produit */}
       <RceStrip compact />
 
       <div className="grid lg:grid-cols-3 gap-4">
@@ -165,8 +175,12 @@ export default function LiaPage() {
           {profile?.error && <p className="text-[12px] text-amber-200">{profile.error}</p>}
           <div className="rounded-xl bg-black/30 border border-white/10 p-3">
             <p className="text-[10px] text-zinc-500 uppercase">EGLD</p>
-            <p className="text-2xl font-bold text-white tabular-nums">{fmt(profile?.egld, 4)}</p>
-            <p className="text-[12px] text-zinc-500">{fmtUsd(profile?.egldUsd)}</p>
+            <p className="text-2xl font-bold text-white tabular-nums">
+              {fmt(agg?.onchain?.egld ?? profile?.egld, 4)}
+            </p>
+            <p className="text-[12px] text-zinc-500">
+              {fmtUsd(agg?.onchain?.egld_usd ?? profile?.egldUsd)}
+            </p>
           </div>
           <div className="space-y-1.5 max-h-40 overflow-y-auto">
             {(profile?.tokens || []).length === 0 && (
@@ -193,17 +207,18 @@ export default function LiaPage() {
           </p>
           <div className="rounded-xl bg-black/30 border border-white/10 p-3 space-y-1">
             <p className="text-[10px] text-zinc-500 uppercase">Stratégie (paper)</p>
-            <p className="text-lg font-semibold text-white">{tick?.strategy || hub?.strategy || '—'}</p>
+            <p className="text-lg font-semibold text-white">{stratLabel}</p>
             <p className="text-[12px] text-zinc-500">{tick?.reason || '—'}</p>
           </div>
           <div className="grid grid-cols-2 gap-2 text-[12px]">
             <div className="rounded-xl bg-black/30 p-2 border border-white/5">
               <p className="text-zinc-500">Confiance</p>
               <p className="font-semibold text-white tabular-nums">
-                {((lia.confidence ?? hub?.confidence ?? 0) * 100).toFixed(0)}%
+                {((lia.confidence ?? agg?.mindset?.confidence ?? hub?.confidence ?? 0) * 100).toFixed(0)}%
               </p>
             </div>
             <div className="rounded-xl bg-black/30 p-2 border border-white/5">
+              <p className="text-zinc-500">Intent</p>
               <p className="font-semibold text-cyan-200">{tick?.action || 'HOLD'}</p>
             </div>
             <div className="rounded-xl bg-black/30 p-2 border border-white/5">
@@ -231,17 +246,17 @@ export default function LiaPage() {
           <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-300/90 font-semibold">
             C · Preuve shadow
           </p>
-          <p className="text-[12px] text-zinc-500">
-            Simulé uniquement — recherche, pas un rendement promis.
-          </p>
-          {hub && (
+          <p className="text-[12px] text-zinc-500">Simulé uniquement — recherche, pas un rendement promis.</p>
+          {(hub || agg?.shadow) && (
             <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-[12px]">
-              <p className="text-zinc-500">Hub status (Vellum)</p>
+              <p className="text-zinc-500">Status agrégé (Vellum / JSON)</p>
               <p className="text-zinc-200">
-                PnL shadow {fmtUsd(hub.shadow_pnl_usd)} · fills {hub.fills ?? '—'} · win rate{' '}
-                {hub.win_rate != null ? `${(hub.win_rate * 100).toFixed(0)}%` : '—'}
+                PnL shadow {fmtUsd(pnl)} · fills {fills ?? '—'} · win rate{' '}
+                {winRate != null ? `${(winRate * 100).toFixed(0)}%` : '—'}
               </p>
-              {hub.ts && <p className="text-[10px] text-zinc-600 mt-0.5">{hub.ts}</p>}
+              {(agg?.ts || hub?.ts) && (
+                <p className="text-[10px] text-zinc-600 mt-0.5">{agg?.ts || hub?.ts}</p>
+              )}
             </div>
           )}
           <ShadowEquityChart fills={shadowLog} startEquity={110} />
@@ -314,8 +329,8 @@ export default function LiaPage() {
         <p className="font-semibold text-zinc-200">Cadre honnête</p>
         <ul className="text-[13px] space-y-1 list-disc pl-4">
           <li>Wallet protocole public — historique complet sur l’explorer.</li>
-          <li>RCE = Real Capital Engaged (bandeau ci-dessus) — pas le paper.</li>
-          <li>Courbe equity = reconstruction locale des fills shadow.</li>
+          <li>RCE = Real Capital Engaged — pas le paper.</li>
+          <li>Agrégateur lia_status.json (Vellum) — même contrat qu’un futur /api/lia/status.</li>
           <li>Aucune TX signée depuis ce hub.</li>
         </ul>
       </section>
