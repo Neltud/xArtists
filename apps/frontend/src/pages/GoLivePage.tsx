@@ -22,7 +22,7 @@ import {
   canUseTreasury,
   canBuyAgent,
 } from '../config/scStatus'
-import { asText } from '../lib/safeRender'
+import { asText, formatRCE } from '../lib/safeRender'
 
 type Item = { id: string; label: string; ok: boolean; note?: string; href?: string }
 
@@ -55,11 +55,6 @@ export default function GoLivePage() {
   const agentsOk = canBuyAgent() || gate('VITE_AGENTS_CODEHASH_OK', 'agents')
   const slotOk = canSpinSlot() || runtimeCodehashOk('slot')
   const house = runtimeSlotBalance()
-
-  const packFloor =
-    typeof PACK_PRICE_EGLD === 'object' && PACK_PRICE_EGLD && 'min' in PACK_PRICE_EGLD
-      ? Number((PACK_PRICE_EGLD as { min: number }).min)
-      : Number(PACK_PRICE_EGLD) || 10
 
   const scItems: Item[] = [
     {
@@ -112,7 +107,7 @@ export default function GoLivePage() {
         <h1 className="section-title display">Status & capital</h1>
         <p className="text-sm text-zinc-400">
           Mode app : <strong className="text-zinc-200">{asText(mode)}</strong>
-          {envLive ? ' · env live capable' : ''} · floor pack {asText(packFloor)} EGLD
+          {envLive ? ' · env live capable' : ''} · floor pack {formatRCE(PACK_PRICE_EGLD)}
         </p>
       </header>
 
