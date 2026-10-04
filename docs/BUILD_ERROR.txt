@@ -1,5 +1,5 @@
-# Vite build failed @ d030237116b35a6fb8a54af2997a2d0abf034873
-time: 2026-10-04T12:13:57Z
+# Vite build failed @ 2b6e2dac17514e90459e2af41dd3b89ce55efa27
+time: 2026-10-04T12:17:08Z
 
 
 > xartists-frontend@3.10.0 build
@@ -7,8 +7,8 @@ time: 2026-10-04T12:13:57Z
 
 [36mvite v5.4.21 [32mbuilding for production...[36m[39m
 transforming...
-[32m✓[39m 66 modules transformed.
-[31mx[39m Build failed in 2.05s
+[32m✓[39m 81 modules transformed.
+[31mx[39m Build failed in 888ms
 [31merror during build:
 [31m[vite:esbuild] Transform failed with 1 error:
 /home/runner/work/xArtists/xArtists/apps/frontend/src/pages/LiaPage.tsx:145:93: ERROR: Expected identifier but found "2"[31m
