@@ -130,6 +130,9 @@ export default function LiaPage() {
           ? 'Hub status'
           : 'Local pulse'
 
+  const shadowPnlText =
+    agg?.shadow?.shadow_pnl_usd != null ? `${asText(agg.shadow.shadow_pnl_usd)} USD` : '—'
+
   return (
     <div className="animate-fade-in space-y-6 max-w-3xl mx-auto pb-16">
       <header className="space-y-2">
@@ -139,7 +142,7 @@ export default function LiaPage() {
           <AuraBadge mode={String(auraMode)} trend={fromAgg.trend || ambient.trend} />
         </div>
         <p className="text-sm text-zinc-400">
-          Profil protocole · mindset · shadow (preuve simulée). Poll 15s — pas un flux &lt;2s sans bus.
+          Profil protocole · mindset · shadow (preuve simulée). Poll 15s — pas un flux <2s sans bus.
         </p>
         <RceStrip compact />
       </header>
@@ -156,11 +159,7 @@ export default function LiaPage() {
         </div>
         <div className="card">
           <p className="text-[10px] uppercase text-zinc-500">Shadow PnL</p>
-          <p className="font-semibold tabular-nums">
-            {agg?.shadow?.shadow_pnl_usd != null
-              ? asText(agg.shadow.shadow_pnl_usd)
-              : '—'{" '}USD
-          </p>
+          <p className="font-semibold tabular-nums">{shadowPnlText}</p>
         </div>
       </div>
 
@@ -174,7 +173,9 @@ export default function LiaPage() {
           <ul className="space-y-1 text-[12px] text-zinc-300">
             {feed.slice(0, 12).map((f, i) => (
               <li key={i} className="border-b border-white/5 py-1 flex justify-between gap-2">
-                <span>{asText(f.action)} · {asText(f.asset)}</span>
+                <span>
+                  {asText(f.action)} · {asText(f.asset)}
+                </span>
                 <span className="text-zinc-500">{asText(f.ts)}</span>
               </li>
             ))}
@@ -216,7 +217,12 @@ export default function LiaPage() {
       </section>
 
       <div className="flex flex-wrap gap-2">
-        <button type="button" className="btn-primary text-sm" onClick={() => void refresh()} disabled={loading}>
+        <button
+          type="button"
+          className="btn-primary text-sm"
+          onClick={() => void refresh()}
+          disabled={loading}
+        >
           {loading ? '…' : 'Actualiser'}
         </button>
         <Link to="/lp" className="btn-secondary text-sm">
