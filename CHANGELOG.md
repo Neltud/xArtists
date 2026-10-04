@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.80.1](https://github.com/Neltud/xArtists/compare/v0.80.0...v0.80.1) (2026-10-04)
+
+
+### Bug Fixes
+
+* RCE label clarity + LiaPage safe children + /lia in secondary nav ([f11aa6c](https://github.com/Neltud/xArtists/commit/f11aa6cfcd7c621ed643a1d2fa196ff414e11c72))
+
 ## [0.80.0](https://github.com/Neltud/xArtists/compare/v0.79.0...v0.80.0) (2026-10-04)
 
 
