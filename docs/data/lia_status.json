@@ -1,12 +1,12 @@
 {
   "schema": "lia_status/v1",
-  "ts": "2026-10-04T11:13:58Z",
+  "ts": "2026-10-05T06:10:00Z",
   "paper": true,
   "LIA_LIVE_TRADING": 0,
   "onchain": {
     "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "egld": 1.603532,
-    "egld_usd": 7.3602,
+    "egld_usd": 7.28,
     "tokens": [
       {"identifier": "USDC-c76f1f", "ticker": "USDC", "balance": 15.463632},
       {"identifier": "TRO-94c925", "ticker": "TRO", "balance": 10000.0}
@@ -16,8 +16,8 @@
   },
   "mindset": {
     "strategy": "paper_hold",
-    "confidence": 0.55,
-    "vellum_ts": "2026-10-04T11:13:58Z",
+    "confidence": 0.52,
+    "vellum_ts": "2026-10-05T06:10:00Z",
     "vellum_ok": true,
     "guardian_allow": false,
     "LIA_LIVE_TRADING": 0
@@ -37,13 +37,21 @@
       "action": "HOLD",
       "asset": "EGLD",
       "aura": "stable",
-      "reason": "no reliable 24h delta; TRO 24h volume ~0; reserve above 0.05 EGLD",
-      "broadcast": false
+      "reason": "EGLD 24h about -0.87% (CoinGecko); no edge vs gas 0.0008 EGLD; TRO 24h volume ~0.16 USD, slippage too high for a shadow buy/sell",
+      "broadcast": false,
+      "notional_usd": 0,
+      "gas_egld": 0.0008
     }
+  },
+  "aura": {
+    "mode": "stable",
+    "trend": "flat",
+    "confidence": 0.52,
+    "source": "paper_cycle_2026-10-05"
   },
   "links": {
     "explorer": "https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "hub": "https://neltud.github.io/xArtists/#/lia"
   },
-  "note": "Aggregated snapshot — paper/shadow only; not live trading. EGLD price 4.59 USD (api.multiversx.com/economics)."
+  "note": "Aggregated snapshot \u2014 paper/shadow only; not live trading. EGLD price 4.54 USD (api.multiversx.com/economics)."
 }
