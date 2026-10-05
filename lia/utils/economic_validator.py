@@ -1,5 +1,6 @@
 """
 RWA economic integrity: minted TRO − burned TRO == circulating ledger.
+Idempotent mint/burn per work_id (CRITICAL patch).
 
   PYTHONPATH=. python -m lia.utils.economic_validator
 """
@@ -31,6 +32,8 @@ def _load_ledger() -> dict[str, Any]:
         "total_burned": 0.0,
         "circulating": 0.0,
         "events_n": 0,
+        "minted_work_ids": [],
+        "burned_work_ids": [],
         "updated": None,
         "paper": True,
     }
@@ -38,6 +41,8 @@ def _load_ledger() -> dict[str, Any]:
 
 def _save_ledger(d: dict[str, Any]) -> None:
     DATA.mkdir(parents=True, exist_ok=True)
+    d.setdefault("minted_work_ids", [])
+    d.setdefault("burned_work_ids", [])
     d["updated"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     d["circulating"] = round(float(d.get("total_minted") or 0) - float(d.get("total_burned") or 0), 6)
     LEDGER.write_text(json.dumps(d, indent=2), encoding="utf-8")
@@ -54,13 +59,25 @@ def _save_ledger(d: dict[str, Any]) -> None:
 
 def record_mint(*, work_id: str, artist: str = "", cost_usd: float = 0.0) -> dict[str, Any]:
     led = _load_ledger()
+    wid = str(work_id or "").strip()
+    minted_ids = list(led.get("minted_work_ids") or [])
+    if wid and wid in minted_ids:
+        return {
+            "ok": False,
+            "reason": "already_minted",
+            "work_id": wid,
+            "ledger": led,
+        }
     led["total_minted"] = float(led.get("total_minted") or 0) + TRO_PER_MINT
     led["events_n"] = int(led.get("events_n") or 0) + 1
+    if wid:
+        minted_ids.append(wid)
+        led["minted_work_ids"] = minted_ids
     _save_ledger(led)
     ev = {
         "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "type": "MINT_TRO_REWARD",
-        "work_id": work_id,
+        "work_id": wid,
         "artist": artist,
         "tro": TRO_PER_MINT,
         "cost_usd": cost_usd,
@@ -74,18 +91,31 @@ def record_mint(*, work_id: str, artist: str = "", cost_usd: float = 0.0) -> dic
         audit("rwa_mint_tro", **ev)
     except Exception:
         pass
-    return {"event": ev, "ledger": _load_ledger()}
+    return {"ok": True, "event": ev, "ledger": _load_ledger()}
 
 
 def record_burn(*, work_id: str, reason: str = "settlement_shipped") -> dict[str, Any]:
     led = _load_ledger()
+    wid = str(work_id or "").strip()
+    burned_ids = list(led.get("burned_work_ids") or [])
+    if wid and wid in burned_ids:
+        return {
+            "ok": False,
+            "reason": "already_burned",
+            "work_id": wid,
+            "ledger": led,
+            "note": "Idempotent: second burn rejected",
+        }
     led["total_burned"] = float(led.get("total_burned") or 0) + TRO_PER_BURN
     led["events_n"] = int(led.get("events_n") or 0) + 1
+    if wid:
+        burned_ids.append(wid)
+        led["burned_work_ids"] = burned_ids
     _save_ledger(led)
     ev = {
         "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "type": "BURN_TRO_SETTLEMENT",
-        "work_id": work_id,
+        "work_id": wid,
         "tro": TRO_PER_BURN,
         "reason": reason,
         "paper": True,
@@ -99,7 +129,7 @@ def record_burn(*, work_id: str, reason: str = "settlement_shipped") -> dict[str
         audit("rwa_burn_tro", **ev)
     except Exception:
         pass
-    return {"event": ev, "ledger": _load_ledger()}
+    return {"ok": True, "event": ev, "ledger": _load_ledger()}
 
 
 def validate() -> dict[str, Any]:
@@ -118,8 +148,10 @@ def validate() -> dict[str, Any]:
         "circulating": c,
         "expected_circulating": expected,
         "supply_burn_ratio": round(ratio, 6) if ratio is not None else None,
+        "minted_work_ids_n": len(led.get("minted_work_ids") or []),
+        "burned_work_ids_n": len(led.get("burned_work_ids") or []),
         "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "note": "Paper ledger until on-chain TRO mint/burn wired",
+        "note": "Paper ledger until on-chain TRO mint/burn wired; burn/mint idempotent per work_id",
     }
     (DATA / "economic_integrity.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
     for dest in (

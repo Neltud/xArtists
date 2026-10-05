@@ -1,9 +1,8 @@
 """
-Hardened autonomous dust execution — dynamic slip, retry, lifecycle telemetry.
+Hardened autonomous dust execution — dynamic slip, retry, lifecycle, CRITICAL gates.
 
   LIA_LIVE_TRADING=1 LIA_AUTONOMOUS_DUST=1 LIA_PEM_PATH=... \\
     PYTHONPATH=. python -m lia.guardian.execution_engine --run
-  PYTHONPATH=. python -m lia.guardian.execution_engine --run-swap  # WEGLD→USDC with retry
 """
 from __future__ import annotations
 
@@ -29,6 +28,8 @@ USDC = "USDC-c76f1f"
 MAX_RETRIES = 3
 GAS_PRICE_DEFAULT = 1_000_000_000
 GAS_PRICE_MAX = 2_000_000_000
+# CRITICAL: daily gas budget (EGLD)
+MAX_GAS_SPEND_EGLD_DAY = 0.02
 
 
 def _env_live() -> bool:
@@ -44,7 +45,6 @@ def _feed(event: str, **kw: Any) -> None:
     row = {"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "event": event, **kw}
     with FEED.open("a", encoding="utf-8") as f:
         f.write(json.dumps(row) + "\n")
-    # rolling telemetry snapshot for UI poll
     lines = FEED.read_text(encoding="utf-8").splitlines()[-40:] if FEED.is_file() else []
     events = []
     for line in lines:
@@ -71,7 +71,7 @@ def _feed(event: str, **kw: Any) -> None:
 
 
 def _api_get(path: str) -> Any:
-    req = urllib.request.Request(f"{API}{path}", headers={"User-Agent": "xArtists-exec/2.0"})
+    req = urllib.request.Request(f"{API}{path}", headers={"User-Agent": "xArtists-exec/2.1"})
     with urllib.request.urlopen(req, timeout=15) as r:
         return json.loads(r.read().decode())
 
@@ -88,10 +88,8 @@ def _get_egld_usd() -> float:
 
 
 def _gas_price() -> int:
-    """Network gas price oracle — MultiversX often fixed; still clamp."""
     try:
         cfg = _api_get("/network/config")
-        # various shapes
         gp = cfg.get("gasPrice") or (cfg.get("config") or {}).get("erd_min_gas_price")
         if gp is not None:
             return min(GAS_PRICE_MAX, max(GAS_PRICE_DEFAULT, int(gp)))
@@ -101,7 +99,6 @@ def _gas_price() -> int:
 
 
 def dynamic_slippage_bps(*, base_bps: int = 100) -> int:
-    """0.5%–5% from realized slip + mild vol proxy."""
     bps = base_bps
     path = ROOT / "data" / "performance_delta.json"
     try:
@@ -112,11 +109,10 @@ def dynamic_slippage_bps(*, base_bps: int = 100) -> int:
                 bps = max(bps, int(float(slip) * 10_000) + 50)
     except Exception:
         pass
-    # hour-based mild vol
     h = time.gmtime().tm_hour
-    if h in (14, 15, 16, 20, 21):  # busier UTC windows
+    if h in (14, 15, 16, 20, 21):
         bps = int(bps * 1.25)
-    return int(min(500, max(50, bps)))  # 0.5% .. 5%
+    return int(min(500, max(50, bps)))
 
 
 def await_tx(tx_hash: str, *, timeout_s: int = 90) -> dict[str, Any]:
@@ -128,7 +124,7 @@ def await_tx(tx_hash: str, *, timeout_s: int = 90) -> dict[str, Any]:
             st = str(last.get("status") or "")
             if st == "success":
                 return {"lifecycle": "CONFIRMED", "tx": last}
-            if st == "fail" or st == "invalid":
+            if st in ("fail", "invalid"):
                 msg = ""
                 for op in last.get("operations") or []:
                     if op.get("action") == "signalError":
@@ -145,12 +141,16 @@ def await_tx(tx_hash: str, *, timeout_s: int = 90) -> dict[str, Any]:
     return {"lifecycle": "PENDING_TIMEOUT", "tx": last}
 
 
+def _estimate_gas_cost_egld(gas_limit: int, gas_price: int) -> float:
+    return (gas_limit * gas_price) / 1e18
+
+
 def _broadcast(tx_dict: dict[str, Any]) -> dict[str, Any]:
     body = json.dumps(tx_dict).encode()
     req = urllib.request.Request(
         f"{API}/transactions",
         data=body,
-        headers={"Content-Type": "application/json", "User-Agent": "xArtists-exec/2.0"},
+        headers={"Content-Type": "application/json", "User-Agent": "xArtists-exec/2.1"},
         method="POST",
     )
     with urllib.request.urlopen(req, timeout=30) as r:
@@ -170,6 +170,7 @@ def sign_and_send(
 ) -> dict[str, Any]:
     from multiversx_sdk import Address, Transaction, TransactionComputer
 
+    from lia.guardian.calldata_guard import inspect_tx_data
     from lia.guardian.hot_wallet_manager import load_signer
     from lia.guardian.risk_enforcer import enforce, record_trade_result
 
@@ -181,6 +182,22 @@ def sign_and_send(
             "broadcast": False,
         }
 
+    # CRITICAL: inspect calldata before anything
+    guard = inspect_tx_data(data)
+    if not guard.get("ok"):
+        _feed("CALLDATA_BLOCK", reason=guard.get("reason"), label=label, guard=guard)
+        return {
+            "ok": False,
+            "lifecycle": "BLOCKED",
+            "reason": guard.get("reason"),
+            "guard": guard,
+        }
+
+    token_for_risk = "EGLD"
+    toks = guard.get("tokens") or []
+    if toks:
+        token_for_risk = str(toks[0])
+
     signer, sender = load_signer()
     acc = _get_account(sender)
     wallet_egld = int(acc.get("balance") or 0) / 1e18
@@ -188,25 +205,37 @@ def sign_and_send(
     egld_usd = _get_egld_usd()
     equity = wallet_egld * egld_usd
 
+    gp = gas_price or _gas_price()
+    gas_cost_egld = _estimate_gas_cost_egld(gas_limit, gp)
+    gas_cost_usd = gas_cost_egld * egld_usd
+
     verdict = enforce(
         asset_type="TOKEN",
-        token_id="EGLD",
+        token_id=token_for_risk,
         amount_egld=amount_egld,
         amount_usd=amount_usd,
         gas_limit=gas_limit,
         wallet_egld=wallet_egld,
         equity_usd=equity,
+        projected_gas_egld=gas_cost_egld,
     )
     if not verdict.ok:
         _feed("RISK_BLOCK", reason=verdict.reason, label=label, checks=verdict.checks)
         return {"ok": False, "lifecycle": "BLOCKED", "reason": verdict.reason, "checks": verdict.checks}
 
-    gp = gas_price or _gas_price()
     if gp > GAS_PRICE_MAX:
         _feed("GAS_WAIT", gas_price=gp)
         return {"ok": False, "lifecycle": "FAILED_GAS", "reason": "gas_price_above_threshold", "gas_price": gp}
 
-    _feed("INTENT", label=label, amount_egld=amount_egld, receiver=receiver, gas_limit=gas_limit)
+    _feed(
+        "INTENT",
+        label=label,
+        amount_egld=amount_egld,
+        receiver=receiver,
+        gas_limit=gas_limit,
+        gas_cost_egld=round(gas_cost_egld, 8),
+        token=token_for_risk,
+    )
 
     tx = Transaction(
         nonce=nonce,
@@ -239,6 +268,8 @@ def sign_and_send(
     try:
         resp = _broadcast(payload)
     except Exception as e:
+        # CRITICAL: account gas risk even on broadcast fail (may or may not consume)
+        record_trade_result(loss_usd=0.0, gas_egld=0.0)
         _feed("BROADCAST_ERROR", label=label, error=str(e))
         return {"ok": False, "lifecycle": "FAILED", "reason": f"broadcast_error:{e}"}
 
@@ -248,13 +279,28 @@ def sign_and_send(
     lifecycle = life.get("lifecycle")
     _feed(lifecycle, label=label, tx_hash=tx_hash, message=life.get("message"))
 
+    # CRITICAL: real gas used if available
+    tx_obj = life.get("tx") or {}
+    gas_used = int(tx_obj.get("gasUsed") or gas_limit)
+    actual_gas_egld = _estimate_gas_cost_egld(gas_used, gp)
+    actual_gas_usd = actual_gas_egld * egld_usd
+
     ok = lifecycle == "CONFIRMED"
-    if ok:
-        record_trade_result(loss_usd=0.0)
+    # Failures still cost gas — count as loss
+    loss_usd = 0.0 if ok else actual_gas_usd
+    record_trade_result(loss_usd=loss_usd, gas_egld=actual_gas_egld)
+
     try:
         from lia.utils.audit_log import audit
 
-        audit("exec_tx", label=label, tx_hash=tx_hash, lifecycle=lifecycle)
+        audit(
+            "exec_tx",
+            label=label,
+            tx_hash=tx_hash,
+            lifecycle=lifecycle,
+            gas_egld=actual_gas_egld,
+            loss_usd=loss_usd,
+        )
     except Exception:
         pass
 
@@ -266,6 +312,8 @@ def sign_and_send(
         "sender": sender,
         "label": label,
         "message": life.get("message"),
+        "gas_egld": actual_gas_egld,
+        "loss_usd": loss_usd,
         "response": resp,
     }
 
@@ -277,7 +325,6 @@ def execute_with_retry(
     amount_usd: float,
     label: str,
 ) -> dict[str, Any]:
-    """build_step(attempt) -> dict receiver,value,data,gas_limit; attempt 0..MAX_RETRIES-1"""
     attempts = []
     for attempt in range(MAX_RETRIES):
         step = build_step(attempt)
@@ -296,11 +343,8 @@ def execute_with_retry(
         if out.get("ok"):
             return {"ok": True, "attempts": attempts, "final": out}
         life = out.get("lifecycle")
-        if life in ("BLOCKED", "FAILED_GAS") and attempt == 0 and life == "BLOCKED":
-            break  # risk — do not spam
-        if life not in ("FAILED_SLIPPAGE", "FAILED", "PENDING_TIMEOUT"):
-            if life == "BLOCKED":
-                break
+        if life == "BLOCKED":
+            break
         time.sleep(3 + attempt * 2)
     _feed("EXECUTION_ERROR", label=label, attempts=len(attempts))
     return {"ok": False, "lifecycle": "EXECUTION_ERROR", "attempts": attempts}
@@ -334,7 +378,7 @@ def run_swap_dust(amount_egld: float = 0.001) -> dict[str, Any]:
     egld_usd = _get_egld_usd()
 
     def build(attempt: int) -> dict[str, Any]:
-        bps = dynamic_slippage_bps(base_bps=100 + attempt * 100)  # widen each retry
+        bps = dynamic_slippage_bps(base_bps=100 + attempt * 100)
         expected = amount_egld * egld_usd
         min_usdc = expected * (1.0 - bps / 10_000.0)
         min_out = max(1, int(min_usdc * 1e6))
@@ -390,7 +434,7 @@ def run_dust_cycle(*, full_swap: bool = False) -> dict[str, Any]:
             "strategy": strategy,
             "action": action,
             "wrap": wrap,
-            "note": "wrap done; --run-swap for WEGLD→USDC with dynamic slip retries",
+            "note": "wrap done; --run-swap for WEGLD→USDC",
         }
 
     time.sleep(6)
@@ -402,7 +446,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--run", action="store_true")
     ap.add_argument("--run-swap", action="store_true")
-    ap.add_argument("--full", action="store_true", help="wrap then swap")
+    ap.add_argument("--full", action="store_true")
     args = ap.parse_args()
     if args.run_swap:
         print(json.dumps(run_swap_dust(0.001), indent=2))
