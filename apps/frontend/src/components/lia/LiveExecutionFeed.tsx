@@ -1,5 +1,5 @@
-/** Poll execution telemetry — intent → broadcast → confirmed/failed. */
-import { useEffect, useState } from 'react'
+/** Poll execution telemetry — engine state + event feed. */
+import { useEffect, useMemo, useState } from 'react'
 import { asText } from '../../lib/safeRender'
 
 type Ev = {
@@ -12,6 +12,22 @@ type Ev = {
   tx_hash?: string
   message?: string
   amount_egld?: number
+}
+
+function deriveStatus(events: Ev[]): string {
+  const last = events[0]
+  if (!last) return 'Idle'
+  const e = String(last.event || '')
+  if (e === 'BROADCAST' || e === 'PENDING' || e === 'RETRYING' || e === 'ATTEMPT') {
+    return 'Trading (in progress)'
+  }
+  if (e === 'EXECUTION_ERROR' || e === 'FAILED' || e === 'FAILED_SLIPPAGE' || e === 'FAILED_GAS') {
+    return 'Error'
+  }
+  if (e === 'RISK_BLOCK' || e === 'BLOCKED') return 'Blocked (risk)'
+  if (e === 'CONFIRMED') return 'Idle (last confirmed)'
+  if (e === 'DECISION') return 'Deciding'
+  return `Idle · ${e}`
 }
 
 export default function LiveExecutionFeed() {
@@ -53,11 +69,26 @@ export default function LiveExecutionFeed() {
     }
   }, [])
 
+  const status = useMemo(() => deriveStatus(events), [events])
+
   return (
     <section className="rounded-xl border border-orange-500/20 bg-orange-500/[0.04] p-3 space-y-3">
-      <p className="text-[10px] uppercase tracking-wider text-orange-200/90 font-semibold">
-        Live execution
-      </p>
+      <div className="flex flex-wrap justify-between gap-2 items-center">
+        <p className="text-[10px] uppercase tracking-wider text-orange-200/90 font-semibold">
+          Live execution
+        </p>
+        <span
+          className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${
+            status.startsWith('Error')
+              ? 'border-rose-500/40 text-rose-300'
+              : status.startsWith('Trading')
+                ? 'border-amber-500/40 text-amber-300 animate-pulse'
+                : 'border-white/10 text-zinc-400'
+          }`}
+        >
+          {status}
+        </span>
+      </div>
       {risk && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
           <div className="rounded-lg bg-black/30 p-2">

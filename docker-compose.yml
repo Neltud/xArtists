@@ -1,4 +1,4 @@
-# xArtists local stack — one command
+# xArtists stack — Safe/Shadow by default
 # docker compose up --build
 services:
   frontend:
@@ -7,26 +7,49 @@ services:
     volumes:
       - ./apps/frontend:/app
       - frontend_node_modules:/app/node_modules
+      - lia_data:/app/public/data
     command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
     ports:
       - "5173:5173"
     environment:
       - VITE_BASE=/
+    restart: unless-stopped
 
   data-tick:
     image: python:3.11-slim
     working_dir: /repo
     volumes:
       - .:/repo
+      - lia_data:/repo/data
+      - lia_logs:/repo/logs
     command: >
       sh -c "pip install -q pyyaml &&
       while true; do
         PYTHONPATH=. python -m lia.genesis.tick || true;
-        PYTHONPATH=. python -m lia.guardian.yield_distributor --cycle || true;
-        sleep 180;
+        PYTHONPATH=. python -m lia.genesis.integration_pulse || true;
+        PYTHONPATH=. python -m lia.utils.reconciliation_audit || true;
+        sleep 600;
       done"
     environment:
       - LIA_LIVE_TRADING=0
+      - LIA_AUTONOMOUS_DUST=0
+    restart: unless-stopped
+
+  # Optional: autonomous dust worker (disabled by default — set flags + PEM mount)
+  # exec-engine:
+  #   image: python:3.11-slim
+  #   working_dir: /repo
+  #   volumes:
+  #     - .:/repo
+  #     - ${LIA_PEM_PATH}:/secrets/agent.pem:ro
+  #     - lia_data:/repo/data
+  #   environment:
+  #     - LIA_LIVE_TRADING=0
+  #     - LIA_AUTONOMOUS_DUST=0
+  #     - LIA_PEM_PATH=/secrets/agent.pem
+  #   restart: "no"
 
 volumes:
   frontend_node_modules:
+  lia_data:
+  lia_logs:
