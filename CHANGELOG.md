@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.87.0](https://github.com/Neltud/xArtists/compare/v0.86.0...v0.87.0) (2026-10-05)
+
+
+### Features
+
+* **P3.5:** HolderTerminal shows active strategy + switch reason ([09b7c94](https://github.com/Neltud/xArtists/commit/09b7c94164296e3883562f93cc68eb7993f47d97))
+* **P3.5:** orchestrator in sprint, HolderTerminal active strategy, ESDT precision ([f595e11](https://github.com/Neltud/xArtists/commit/f595e11990ca86fe008027a79abe7eb2df4da27d))
+* **P3.5:** shadow sprint decide uses strategy orchestrator hysteresis ([c9c1458](https://github.com/Neltud/xArtists/commit/c9c14586a098ad916800cb2ad23258620f77da90))
+* **P3.5:** strategy orchestrator hysteresis, precision normalizer, backtest engine ([ada2e79](https://github.com/Neltud/xArtists/commit/ada2e790e4b663dca762080768c13eed4457c0e9))
+* **P4:** HolderTerminal Shadow/Live display toggle + lia_live_status public ([9b536cd](https://github.com/Neltud/xArtists/commit/9b536cd09d62ec3ff948aab9f9d684485af7adb1))
+* **P4:** onchain monitor, strike deployer preflight, post-trade analysis, live status bridge ([e7c29b5](https://github.com/Neltud/xArtists/commit/e7c29b5c6e2156902409feb79be43a72e08cef0c))
+
 ## [0.86.0](https://github.com/Neltud/xArtists/compare/v0.85.0...v0.86.0) (2026-10-05)
 
 
