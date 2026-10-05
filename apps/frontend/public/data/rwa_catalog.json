@@ -1,0 +1,64 @@
+{
+  "schema": "rwa_catalog/v1",
+  "updated": "2026-10-05T14:11:58Z",
+  "paper": true,
+  "items": [
+    {
+      "id": "rwa_001",
+      "title": "Neon Atelier Study",
+      "artist": "Atelier Neltud",
+      "style": "digital-physical",
+      "condition": "good",
+      "provenance": "gallery",
+      "medium": "mixed",
+      "year": 2025,
+      "certificate_hash": "740cd2f05a7f031ec08f62a4b3ba39d30e6abb30e1771d535254abc1f2536706",
+      "valuation": {
+        "work_id": "rwa_001",
+        "score": 82.82,
+        "price_proxy_usd": 841.62,
+        "sentiment": -0.0864,
+        "momentum": 0.1082,
+        "disclaimer": "Illustrative AI proxy — not a formal appraisal"
+      },
+      "shipment_status": "in_vault",
+      "listed": false
+    },
+    {
+      "id": "rwa_002",
+      "title": "Shard Memory #3",
+      "artist": "Lia Collective",
+      "style": "abstract",
+      "condition": "mint",
+      "provenance": "private",
+      "year": 2024,
+      "certificate_hash": "a1b2",
+      "valuation": {
+        "score": 84.57,
+        "price_proxy_usd": 856.36,
+        "momentum": 0.12,
+        "disclaimer": "Illustrative AI proxy — not a formal appraisal"
+      },
+      "shipment_status": "in_vault",
+      "listed": false
+    },
+    {
+      "id": "rwa_003",
+      "title": "Empire Wall Fragment",
+      "artist": "xArtists Studio",
+      "style": "mixed-media",
+      "condition": "good",
+      "provenance": "gallery",
+      "year": 2026,
+      "valuation": {
+        "score": 73.22,
+        "price_proxy_usd": 708.91,
+        "momentum": 0.05,
+        "disclaimer": "Illustrative AI proxy — not a formal appraisal"
+      },
+      "shipment_status": "in_vault",
+      "listed": false
+    }
+  ],
+  "note": "AI valuation proxy — not legal appraisal; mint is HITL"
+}
