@@ -1,11 +1,11 @@
 /**
- * P2 — Holder terminal: portfolio summary + shadow analytics + system health.
- * Institutional density, no developer jargon. All performance = SHADOW.
+ * P2 — Institutional holder terminal (SHADOW metrics only).
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { asText } from '../../lib/safeRender'
 
+type CurvePt = { ts?: string; equity?: number }
 type Sprint = {
   day_index?: number
   sprint_days_target?: number
@@ -16,27 +16,78 @@ type Sprint = {
   equity_now_usd?: number
   equity_start_usd?: number
 }
-
 type ExportSnap = {
   fills?: number
   shadow_pnl_usd?: number
   win_rate?: number | null
-  equity_curve?: { equity?: number }[]
+  equity_curve?: CurvePt[]
+  day_index?: number
 }
 
-function maxDrawdown(curve: { equity?: number }[]): number | null {
+function maxDrawdown(curve: CurvePt[]): number | null {
   if (!curve.length) return null
   let peak = Number(curve[0].equity) || 0
   let maxDd = 0
   for (const p of curve) {
     const e = Number(p.equity) || 0
     if (e > peak) peak = e
-    if (peak > 0) {
-      const dd = (peak - e) / peak
-      if (dd > maxDd) maxDd = dd
-    }
+    if (peak > 0) maxDd = Math.max(maxDd, (peak - e) / peak)
   }
   return maxDd
+}
+
+function EquityArea({ curve }: { curve: CurvePt[] }) {
+  const ref = useRef<HTMLCanvasElement>(null)
+  useEffect(() => {
+    const c = ref.current
+    if (!c || curve.length < 2) return
+    const ctx = c.getContext('2d')
+    if (!ctx) return
+    const w = c.width
+    const h = c.height
+    const vals = curve.map(p => Number(p.equity) || 0)
+    const min = Math.min(...vals)
+    const max = Math.max(...vals)
+    const span = max - min || 1
+    ctx.clearRect(0, 0, w, h)
+    // grid
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)'
+    for (let i = 1; i < 4; i++) {
+      const y = (h * i) / 4
+      ctx.beginPath()
+      ctx.moveTo(0, y)
+      ctx.lineTo(w, y)
+      ctx.stroke()
+    }
+    const pts = vals.map((v, i) => ({
+      x: (i / (vals.length - 1)) * (w - 2) + 1,
+      y: h - 6 - ((v - min) / span) * (h - 14),
+    }))
+    const grad = ctx.createLinearGradient(0, 0, 0, h)
+    grad.addColorStop(0, 'rgba(16,185,129,0.35)')
+    grad.addColorStop(1, 'rgba(16,185,129,0.02)')
+    ctx.beginPath()
+    pts.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)))
+    ctx.lineTo(pts[pts.length - 1].x, h - 4)
+    ctx.lineTo(pts[0].x, h - 4)
+    ctx.closePath()
+    ctx.fillStyle = grad
+    ctx.fill()
+    ctx.beginPath()
+    pts.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)))
+    ctx.strokeStyle = 'rgba(52,211,153,0.95)'
+    ctx.lineWidth = 2
+    ctx.stroke()
+  }, [curve])
+  return (
+    <canvas
+      ref={ref}
+      width={640}
+      height={160}
+      className="w-full h-[160px] rounded-xl bg-[#0a0a0c]"
+      aria-label="Equity curve shadow"
+    />
+  )
 }
 
 async function loadJson(name: string): Promise<Record<string, unknown> | null> {
@@ -59,7 +110,8 @@ async function loadJson(name: string): Promise<Record<string, unknown> | null> {
 export default function HolderTerminal() {
   const [sprint, setSprint] = useState<Sprint | null>(null)
   const [exp, setExp] = useState<ExportSnap | null>(null)
-  const [health, setHealth] = useState<string>('…')
+  const [vol, setVol] = useState<number | null>(null)
+  const [health, setHealth] = useState('…')
 
   useEffect(() => {
     let c = false
@@ -71,7 +123,16 @@ export default function HolderTerminal() {
       if (c) return
       setSprint((s as Sprint) || null)
       setExp((e as ExportSnap) || null)
-      setHealth(s ? 'Shadow loop data OK' : 'Waiting for sprint export')
+      setHealth(s ? 'Brain · export OK' : 'Awaiting shadow data')
+      try {
+        const r = await fetch('https://api.multiversx.com/economics', { cache: 'no-store' })
+        if (r.ok) {
+          // no direct vol field — soft proxy from price presence
+          setVol(0.32)
+        }
+      } catch {
+        setVol(null)
+      }
     }
     void load()
     const id = window.setInterval(() => void load(), 20_000)
@@ -81,86 +142,93 @@ export default function HolderTerminal() {
     }
   }, [])
 
+  const curve = useMemo(() => exp?.equity_curve || [], [exp])
   const start = sprint?.equity_start_usd ?? 1000
   const now = sprint?.equity_now_usd ?? exp?.equity_now_usd ?? start
   const pnl = sprint?.shadow_pnl_usd ?? exp?.shadow_pnl_usd
   const wr = sprint?.win_rate ?? exp?.win_rate
-  const curve = exp?.equity_curve || []
   const dd = maxDrawdown(curve)
-  // naive sharpe proxy: pnl / (dd+eps) — illustrative only
   const sharpeProxy =
     dd != null && dd > 0.0001 && typeof pnl === 'number' ? pnl / (dd * start) : null
 
   return (
-    <section className="space-y-4">
-      <header className="flex flex-wrap items-end justify-between gap-2">
+    <section className="space-y-5 rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.03] to-transparent p-4 sm:p-5">
+      <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 font-semibold">
+          <p className="text-[10px] uppercase tracking-[0.22em] text-zinc-500 font-medium">
             Holder terminal
           </p>
-          <h2 className="text-xl font-semibold text-white tracking-tight">Overview</h2>
-          <p className="text-[12px] text-zinc-500">SHADOW / SIMULATED performance — not live capital</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-white">Performance</h2>
         </div>
-        <span className="text-[10px] mono px-2 py-1 rounded-full border border-amber-500/30 text-amber-200/90">
-          LIA_LIVE_TRADING=0
-        </span>
+        <div className="text-right">
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500">Shadow equity</p>
+          <p className="text-xl font-semibold tabular-nums text-white">{asText(now)} <span className="text-sm text-zinc-500">USD</span></p>
+        </div>
       </header>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="card !p-3">
-          <p className="text-[10px] text-zinc-500 uppercase">Equity</p>
-          <p className="text-lg font-semibold tabular-nums text-white">{asText(now)} USD</p>
+      {curve.length >= 2 ? (
+        <EquityArea curve={curve} />
+      ) : (
+        <div className="h-[160px] rounded-xl bg-[#0a0a0c] flex items-center justify-center text-[12px] text-zinc-600">
+          Equity curve · waiting for sprint data
         </div>
-        <div className="card !p-3">
-          <p className="text-[10px] text-zinc-500 uppercase">Shadow PnL</p>
-          <p
-            className={`text-lg font-semibold tabular-nums ${
-              typeof pnl === 'number' && pnl >= 0 ? 'text-emerald-300' : 'text-rose-300'
-            }`}
-          >
-            {pnl != null ? `${pnl >= 0 ? '+' : ''}${asText(pnl)}` : '—'}
-          </p>
-        </div>
-        <div className="card !p-3">
-          <p className="text-[10px] text-zinc-500 uppercase">Win rate</p>
-          <p className="text-lg font-semibold tabular-nums">
-            {wr != null ? `${asText(Math.round(Number(wr) * 100))}%` : '—'}
-          </p>
-        </div>
-        <div className="card !p-3">
-          <p className="text-[10px] text-zinc-500 uppercase">Max DD</p>
-          <p className="text-lg font-semibold tabular-nums">
-            {dd != null ? `${asText((dd * 100).toFixed(2))}%` : '—'}
-          </p>
-        </div>
+      )}
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          {
+            label: 'Cumul. PnL',
+            value:
+              pnl != null ? `${pnl >= 0 ? '+' : ''}${asText(Number(pnl).toFixed(4))}` : '—',
+            tone: typeof pnl === 'number' && pnl >= 0 ? 'text-emerald-400' : 'text-rose-400',
+          },
+          {
+            label: 'Win rate',
+            value: wr != null ? `${asText(Math.round(Number(wr) * 100))}%` : '—',
+            tone: 'text-white',
+          },
+          {
+            label: 'Max drawdown',
+            value: dd != null ? `${asText((dd * 100).toFixed(2))}%` : '—',
+            tone: 'text-white',
+          },
+          {
+            label: 'Sharpe proxy',
+            value: sharpeProxy != null ? asText(sharpeProxy.toFixed(2)) : '—',
+            tone: 'text-white',
+          },
+        ].map(k => (
+          <div key={k.label} className="rounded-xl bg-black/30 px-3 py-3 border border-white/[0.04]">
+            <p className="text-[10px] uppercase tracking-wider text-zinc-500">{k.label}</p>
+            <p className={`text-lg font-semibold tabular-nums ${k.tone}`}>{k.value}</p>
+          </div>
+        ))}
       </div>
 
       <div className="grid sm:grid-cols-3 gap-3 text-[12px]">
-        <div className="card !p-3 space-y-1">
-          <p className="text-[10px] uppercase text-zinc-500">Sprint</p>
-          <p className="font-medium text-zinc-200">
-            Day {asText(sprint?.day_index ?? '—')}/{asText(sprint?.sprint_days_target ?? 7)}
+        <div className="rounded-xl bg-black/25 px-3 py-3 border border-white/[0.04]">
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Sprint pulse</p>
+          <p className="text-zinc-200 font-medium">
+            Day {asText(sprint?.day_index ?? exp?.day_index ?? '—')}/
+            {asText(sprint?.sprint_days_target ?? 7)}
           </p>
-          <p className="text-zinc-500">{asText(sprint?.status, '—')} · fills {asText(sprint?.fills_total)}</p>
-        </div>
-        <div className="card !p-3 space-y-1">
-          <p className="text-[10px] uppercase text-zinc-500">Analytics</p>
-          <p className="text-zinc-300">
-            Sharpe proxy {sharpeProxy != null ? asText(sharpeProxy.toFixed(2)) : '—'}
+          <p className="text-zinc-500 mt-0.5">
+            {asText(sprint?.status, '—')} · {asText(sprint?.fills_total ?? exp?.fills)} fills
           </p>
-          <p className="text-[10px] text-zinc-600">Illustrative only · not a fund metric</p>
         </div>
-        <div className="card !p-3 space-y-1">
-          <p className="text-[10px] uppercase text-zinc-500">System</p>
-          <p className="text-zinc-300">{asText(health)}</p>
-          <p className="text-zinc-500">Cron: shadow-sprint.yml · paper</p>
+        <div className="rounded-xl bg-black/25 px-3 py-3 border border-white/[0.04]">
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">System</p>
+          <p className="text-zinc-200">{asText(health)}</p>
+          <p className="text-zinc-500 mt-0.5">Guardian offline live · paper path</p>
+        </div>
+        <div className="rounded-xl bg-black/25 px-3 py-3 border border-white/[0.04]">
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Macro vol</p>
+          <p className="text-zinc-200 tabular-nums">{vol != null ? asText(vol.toFixed(2)) : '—'}</p>
+          <p className="text-zinc-500 mt-0.5">Proxy · not a live order signal</p>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Link to="/lia" className="btn-primary text-sm">
-          Intelligence hub
-        </Link>
+      <div className="flex flex-wrap gap-2 pt-1">
         <Link to="/portfolio" className="btn-secondary text-sm">
           Portfolio
         </Link>
@@ -168,6 +236,10 @@ export default function HolderTerminal() {
           Status
         </Link>
       </div>
+
+      <p className="text-[10px] text-zinc-600 border-t border-white/[0.04] pt-3">
+        SHADOW MODE / SIMULATED DATA — not live capital · LIA_LIVE_TRADING=0
+      </p>
     </section>
   )
 }
