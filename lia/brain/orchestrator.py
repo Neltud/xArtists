@@ -1,6 +1,5 @@
 """
-Strategy Orchestrator — hysteresis + performance-weighted registry.
-Prevents strategy oscillation (churn) across ticks.
+Strategy Orchestrator — hysteresis + shadow weights × real performance_delta.
 """
 from __future__ import annotations
 
@@ -15,9 +14,23 @@ from lia.brain.strategies import StrategyId, select_strategy
 
 ROOT = Path(__file__).resolve().parents[2]
 STATE_PATH = ROOT / "data" / "strategy_orchestrator.json"
-
-# Require N consecutive raw picks before switch is accepted
 DEFAULT_HYSTERESIS = 3
+
+
+def _real_weights() -> dict[str, float]:
+    path = ROOT / "data" / "performance_delta.json"
+    if not path.is_file():
+        return {}
+    try:
+        d = json.loads(path.read_text(encoding="utf-8"))
+        strats = d.get("strategies") or {}
+        return {
+            k: float(v.get("dominance_weight") or 1.0)
+            for k, v in strats.items()
+            if isinstance(v, dict)
+        }
+    except Exception:
+        return {}
 
 
 @dataclass
@@ -74,17 +87,14 @@ def _save(st: OrchestratorState) -> None:
 
 
 def update_weights_from_legs(legs: list[dict[str, Any]], *, half_life_h: float = 24.0) -> dict[str, float]:
-    """Confidence weight from last ~24h shadow PnL per strategy."""
     now = time.time()
     scores: dict[str, float] = defaultdict(float)
-    counts: dict[str, int] = defaultdict(int)
     for leg in legs:
         sid = str(leg.get("strategy") or "")
         if not sid:
             continue
         ts = leg.get("ts") or ""
         try:
-            # 2026-10-05T12:00:00Z
             t = time.mktime(time.strptime(str(ts).replace("Z", ""), "%Y-%m-%dT%H:%M:%S"))
         except Exception:
             t = now
@@ -94,10 +104,8 @@ def update_weights_from_legs(legs: list[dict[str, Any]], *, half_life_h: float =
         decay = 0.5 ** (age_h / half_life_h)
         pnl = float(leg.get("pnl_usd_friction") or leg.get("pnl_usd") or 0)
         scores[sid] += pnl * decay
-        counts[sid] += 1
     weights: dict[str, float] = {}
     for sid, sc in scores.items():
-        # map score → weight 0.5..1.5
         w = 1.0 + max(-0.5, min(0.5, sc / 5.0))
         weights[sid] = round(w, 4)
     return weights
@@ -115,13 +123,13 @@ def orchestrate(
     hysteresis: int = DEFAULT_HYSTERESIS,
     legs: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """
-    Raw select → hysteresis gate → optional weight bias note.
-    Returns active strategy (stable) + switch metadata.
-    """
     st = _load()
     if legs is not None:
         st.weights = update_weights_from_legs(legs)
+    real_w = _real_weights()
+    for sid, w in real_w.items():
+        base = st.weights.get(sid, 1.0)
+        st.weights[sid] = round(base * float(w), 4)
 
     raw, raw_reason = select_strategy(
         sentiment=sentiment,
@@ -133,7 +141,6 @@ def orchestrate(
         liquidity=liquidity,
     )
 
-    # Prefer higher-weight strategy only if raw equals it or weight strongly favors pending
     st.ticks += 1
     switched = False
     if raw == st.active:
@@ -147,7 +154,6 @@ def orchestrate(
             st.pending = raw
             st.pending_count = 1
         need = max(1, int(hysteresis))
-        # Faster switch if weight of pending >> active
         w_p = st.weights.get(str(raw), 1.0)
         w_a = st.weights.get(str(st.active), 1.0)
         if w_p > w_a * 1.25:
