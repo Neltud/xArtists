@@ -50,7 +50,6 @@ export default function HistoryPage() {
           intent: `${p.size_egld ?? '—'} EGLD ${p.pair || ''}`,
           status: String(p.status || '—'),
           hash: p.tx_hash ? String(p.tx_hash) : undefined,
-          slip: undefined,
         })
       }
       const txs =
@@ -64,8 +63,7 @@ export default function HistoryPage() {
           hash: t.txHash ? String(t.txHash) : undefined,
         })
       }
-      const strat = (delta as { strategies?: Record<string, { avg_slippage?: number }> } | null)
-        ?.strategies
+      const strat = (delta as { strategies?: Record<string, { avg_slippage?: number }> } | null)?.strategies
       if (strat) {
         for (const [k, v] of Object.entries(strat)) {
           out.push({
@@ -89,7 +87,7 @@ export default function HistoryPage() {
       <header>
         <p className="section-label">Audit</p>
         <h1 className="section-title display text-2xl">History</h1>
-        <p className="text-sm text-zinc-400">Strike proposals · on-chain TX · slippage delta</p>
+        <p className="text-sm text-zinc-400">Strike · on-chain · slippage</p>
       </header>
       <div className="overflow-x-auto rounded-xl border border-white/10">
         <table className="w-full text-left text-[11px]">
@@ -125,13 +123,6 @@ export default function HistoryPage() {
                 </td>
               </tr>
             ))}
-            {!rows.length && (
-              <tr>
-                <td colSpan={5} className="p-4 text-zinc-600 text-center">
-                  No history yet
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
