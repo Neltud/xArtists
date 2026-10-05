@@ -1,0 +1,49 @@
+# Beta Strike Protocol — Rules of Engagement (ROE)
+# Phase 3 pre-flight. Does NOT enable live trading by itself.
+# LIA_LIVE_TRADING must still be set explicitly in the secret environment.
+
+schema: beta_strike/v1
+paper_default: true
+
+capital:
+  # Max EGLD the agent wallet may put at risk in Beta (ops hard limit)
+  max_capital_exposure_egld: 0.05
+  # Per-trade ceiling
+  max_trade_size_egld: 0.005
+  max_trade_size_usd: 15
+  # Daily notional
+  max_daily_notional_usd: 40
+  max_trades_per_day: 3
+
+risk:
+  # If shadow or live equity drops by this fraction from peak → kill
+  max_drawdown_stop: 0.12
+  # Minimum decision confidence to allow live execution
+  min_confidence_level: 0.62
+  # Reserve for gas — never spend below
+  min_wallet_egld_reserve: 0.05
+
+allowlist:
+  tokens:
+    - EGLD
+    - WEGLD-bd4d79
+    - USDC-c76f1f
+    - TRO-94c925
+
+dex:
+  wegld_sc: erd1qqqqqqqqqqqqqpgqhe8t5jewej70zupmh44jurgn29psua5l2jps3ntjj3
+  xexchange_router: erd1qqqqqqqqqqqqqpgqq66xk9gfr4esuhem3jru86wg5hvp33a62jps2fy57p
+  # WEGLD/USDC pair (from router getPair)
+  wegld_usdc_pair: erd1qqqqqqqqqqqqqpgqeel2kumf0r8ffyhth7pqdujjat9nx0862jpsg2pqaq
+  default_slippage_bps: 100
+
+kill_switch:
+  # Executor must refuse broadcast when any of these is true
+  require_lia_live_trading_flag: true
+  abort_on_system_error: true
+  abort_on_breaker_open: true
+  abort_on_drawdown_breach: true
+
+notes:
+  - Micro-proofs (transfer, ESDT, swap) do not imply Beta is open.
+  - Human-in-the-loop for first N live trades.
