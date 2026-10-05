@@ -1,80 +1,73 @@
-# Operational Manual — xArtists / LIA (CEO guide)
+# Operational Manual — xArtists / LIA
 
-Non-technical runbook. **You** control capital. The machine proposes.
+You control capital. The machine proposes.
 
 ## Defaults
 
 | Setting | Value |
 |---------|--------|
-| `LIA_LIVE_TRADING` | **0** (off) |
-| Mode UI | Shadow |
-| NFT trading by LIA | **Blocked** |
+| `LIA_LIVE_TRADING` | **0** |
+| UI mode | Shadow |
+| LIA + NFT | **Blocked** |
 
 ---
 
-## How to approve a trade
+## Signature process (xPortal / Vellum)
 
-1. Run proposal pipeline:
+1. Generate proposal
    ```bash
    PYTHONPATH=. python -m lia.genesis.decision_chain --cycles 1
+   PYTHONPATH=. python -m lia.guardian.signature_bridge --from-decision
    ```
-2. Open dApp → LIA / Cockpit → **Proposed actions** (status `ready_to_sign`).
-3. Review amount, pair, reason, gas.
-4. Only if you accept risk:
+2. Open dApp → Signature bridge (or `data/signature_packages.json`)
+3. **Copy calldata** / full step (receiver, value, data, gasLimit)
+4. Sign & send in **xPortal** or Vellum executor
+5. Close the loop
    ```bash
-   LIA_LIVE_TRADING=1 PYTHONPATH=. python -m lia.guardian.strike_deployer --execute-proposal <id>
+   PYTHONPATH=. python -m lia.guardian.signature_bridge --match <txHash>
    ```
-5. Sign TX with deployer / executor (ops).
-6. Mark done:
-   ```bash
-   PYTHONPATH=. python -m lia.guardian.strike_deployer --mark-executed <id> <txHash>
-   ```
-
-**Sign & broadcast stays locked** on the public site while live flag is 0.
+6. Optional UI: “I signed — wait for on-chain” (spinner until package shows executed)
 
 ---
 
-## How to trigger a Kill-Switch
+## First Blood (first real dust session)
+
+1. `python -m lia.genesis.integration_test` → **PASS**
+2. Preflight strike deployer
+3. Signature process above (0.001–0.005 EGLD)
+4. Explorer success → `--match`
+5. Leave live flag at **0** after session
+
+Proven foundation TX: wrap `b843b2cc…` · swap `c45847d4…` · TRO `1b56321b…`
+
+---
+
+## Emergency Kill-Switch
 
 ```bash
 PYTHONPATH=. python -c "from lia.guardian.kill_switch import get_kill_switch; get_kill_switch().trigger('ops_manual')"
 ```
 
-Effects: freezes live path, writes `data/kill_switch.json`, forces trading flag off.
-
-Clear (ops only):
+Clear:
 ```bash
 PYTHONPATH=. python -c "from lia.guardian.kill_switch import get_kill_switch; get_kill_switch().clear('ops_ack_clear')"
 ```
 
-Automatic: EGLD drop ≥ **8%** in **15 min** → Black Swan lock.
+Auto: EGLD −8% / 15 min → BLACK_SWAN.
 
 ---
 
-## How to read Economic Pulse
+## Economic Pulse
 
-| Gauge | Meaning |
+| Field | Meaning |
 |-------|---------|
-| **Minted** | TRO credited on RWA mint events (ledger) |
-| **Burned** | TRO on sold+shipped settlement |
-| **Circulating** | Minted − Burned |
-| **Burn/mint %** | Deflation pressure |
-
-Paper until on-chain TRO transfer + burn TX are marked.
+| Minted | TRO on RWA mint ledger |
+| Burned | TRO on sold+shipped |
+| Circulating | Minted − Burned |
 
 ---
 
-## 5-step protocol — first live trade
-
-1. `PYTHONPATH=. python -m lia.genesis.integration_test` → must **PASS**
-2. Preflight: `python -m lia.guardian.strike_deployer --preflight-only`
-3. Decision chain dust proposal → human review
-4. `LIA_LIVE_TRADING=1` **only for that session** + sign one dust TX
-5. Explorer hash → `post_trade` / `mark-executed` → set live back to **0**
-
----
-
-## Daily pulse (optional)
+## Daily (optional)
 
 ```bash
 PYTHONPATH=. python -m lia.genesis.tick
@@ -86,5 +79,3 @@ PYTHONPATH=. python -m lia.guardian.yield_distributor --cycle
 ```bash
 docker compose up --build
 ```
-
-Frontend :5173 · data-tick refreshes monitor/sprint/kill-switch every 2 min · live always 0 in compose.
