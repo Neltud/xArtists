@@ -1,5 +1,5 @@
-# Vite build failed @ c9c14586a098ad916800cb2ad23258620f77da90
-time: 2026-10-05T13:31:38Z
+# Vite build failed @ e7c29b5c6e2156902409feb79be43a72e08cef0c
+time: 2026-10-05T13:34:51Z
 
 
 > xartists-frontend@3.10.0 build
@@ -7,10 +7,10 @@ time: 2026-10-05T13:31:38Z
 
 [36mvite v5.4.21 [32mbuilding for production...[36m[39m
 transforming...
-[32m✓[39m 148 modules transformed.
-[31mx[39m Build failed in 2.32s
+[32m✓[39m 129 modules transformed.
+[31mx[39m Build failed in 2.29s
 [31merror during build:
-[31mCould not resolve "../lia/ambient" from "src/pages/LiaPage.tsx"[31m
+[31mCould not resolve "../context/PulseContext" from "src/pages/LiaPage.tsx"[31m
 file: [36m/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/LiaPage.tsx[31m
     at getRollupError (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/parseAst.js:319:41)
     at error (file:///home/runner/work/xArtists/xArtists/apps/frontend/node_modules/rollup/dist/es/shared/parseAst.js:315:42)
