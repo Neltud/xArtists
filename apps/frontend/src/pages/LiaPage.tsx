@@ -1,5 +1,5 @@
 /**
- * LIA Hub — Shadow Sprint visualization (MOD-V1.2).
+ * LIA Hub — Shadow Sprint + Holder terminal (P1/P2).
  * Poll 15s · SHADOW labels · LIA_LIVE_TRADING=0.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -9,8 +9,7 @@ import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
 import { toAmbientSnapshot } from '../lia/ambient'
 import { matrixFromPulse, runDecisionCycle } from '../lia/decisionCycle'
 import { fetchEgldPrice } from '../lia/priceTick'
-import { fetchProtocolProfile, type ProtocolProfile } from '../lia/protocolProfile'
-import { loadShadowBalances, loadShadowLog, type ShadowFill } from '../lia/shadowLedger'
+import { fetchProtocolProfile } from '../lia/protocolProfile'
 import { persistShadowExport } from '../lia/shadowExport'
 import { loadIntentFeed, type FeedItem } from '../lia/intentFeed'
 import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumStatus'
@@ -23,6 +22,7 @@ import MatrixBoard from '../components/lia/MatrixBoard'
 import ShadowPerformance from '../components/lia/ShadowPerformance'
 import MarketMetricsCharts from '../components/lia/MarketMetricsCharts'
 import IntentFeedTerminal from '../components/lia/IntentFeedTerminal'
+import HolderTerminal from '../components/lia/HolderTerminal'
 import RceStrip from '../components/RceStrip'
 
 const API = 'https://api.multiversx.com'
@@ -60,7 +60,6 @@ export default function LiaPage() {
   const [hub, setHub] = useState<LiaHubStatus | null>(null)
   const [agg, setAgg] = useState<LiaStatusV1 | null>(null)
   const [txs, setTxs] = useState<ExplorerTx[]>([])
-  const [feed, setFeed] = useState<FeedItem[]>(() => loadIntentFeed(20))
   const [tick, setTick] = useState<{
     strategy: string
     reason: string
@@ -108,7 +107,6 @@ export default function LiaPage() {
         action: cycle.intent.action,
         aura: cycle.aura,
       })
-      setFeed(loadIntentFeed(20))
     } finally {
       setLoading(false)
     }
@@ -144,7 +142,7 @@ export default function LiaPage() {
           <AuraBadge mode={String(auraMode)} trend={fromAgg.trend || ambient.trend} />
         </div>
         <p className="text-sm text-zinc-400">
-          SHADOW / SIMULATED · sprint 7j · aura liée au marché · poll 15s
+          SHADOW / SIMULATED · holder terminal · poll 15s
         </p>
         <RceStrip compact />
       </header>
@@ -166,6 +164,8 @@ export default function LiaPage() {
           <p className="font-semibold tabular-nums">{shadowPnlText}</p>
         </div>
       </div>
+
+      <HolderTerminal />
 
       <ShadowPerformance />
 
@@ -207,20 +207,17 @@ export default function LiaPage() {
         >
           {loading ? '…' : 'Actualiser'}
         </button>
-        <Link to="/lp" className="btn-secondary text-sm">
-          Pools
+        <Link to="/portfolio" className="btn-secondary text-sm">
+          Portfolio
         </Link>
         <Link to="/go-live" className="btn-secondary text-sm">
-          RCE / Go-live
-        </Link>
-        <Link to="/market" className="btn-secondary text-sm">
-          Marché
+          Status
         </Link>
       </div>
 
       <ul className="text-[11px] text-zinc-600 space-y-1">
         <li>Tout performance LIA = SHADOW / SIMULATED — pas d'alpha live.</li>
-        <li>LIA_LIVE_TRADING=0 (MOD-V1.2).</li>
+        <li>LIA_LIVE_TRADING=0.</li>
       </ul>
     </div>
   )
