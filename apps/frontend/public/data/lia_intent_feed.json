@@ -1,0 +1,20 @@
+{
+  "schema": "lia_intent_feed/v1",
+  "paper": true,
+  "updated": "2026-10-05T12:46:35Z",
+  "items": [
+    {
+      "id": "daf8be66-dd8",
+      "strategy": "SPRINT_L1",
+      "action": "BUY",
+      "assetId": "USDC",
+      "amount": 36.71,
+      "confidence": 0.5428,
+      "reason": "sent=0.002 vol=0.328 L1",
+      "aura": "bull",
+      "paper": true,
+      "at": 1791204395557,
+      "source": "lia.shadow.sprint"
+    }
+  ]
+}
