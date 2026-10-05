@@ -1,5 +1,19 @@
 # Changelog — xArtists
 
+## [0.85.0](https://github.com/Neltud/xArtists/compare/v0.84.0...v0.85.0) (2026-10-05)
+
+
+### Features
+
+* **P0:** shadow sprint cron + lia/calldata constructors (ESDT + swap scaffold) ([aa5a4cb](https://github.com/Neltud/xArtists/commit/aa5a4cbde87a2e432a259198531baef51d4578be))
+* **P1-P2:** intent feed server load, swap dry-run with min_out, HolderTerminal ([acddc74](https://github.com/Neltud/xArtists/commit/acddc74a6c672d8c16832396fc1f774ceef7b9d8))
+* **P1:** server intent schema + progress on P0 attack order ([e1fe934](https://github.com/Neltud/xArtists/commit/e1fe9348d4f59a944f68646506bfbe13a0943f54))
+* **P1:** sprint tick writes unified lia_intent_feed.json ([2d36280](https://github.com/Neltud/xArtists/commit/2d362805f1578ff67cbd2799629b23a1e13209b9))
+* **P2:** ESDT TRO micro-proof live + institutional HolderTerminal + intent color coding ([c842f36](https://github.com/Neltud/xArtists/commit/c842f362fbed440db053cd0294e59b251f3b5039))
+* **P2:** HolderTerminal on /lia + public lia_intent_feed sample ([30aa990](https://github.com/Neltud/xArtists/commit/30aa9903af2c39214311903a5c1725b1c2b2648e))
+* **P2:** HolderTerminal on LIA hub ([0ca04c7](https://github.com/Neltud/xArtists/commit/0ca04c7ed165ab2913927c55e9859929d1020226))
+* **P3:** WEGLD→USDC swap micro-proof + beta_strike protocol + calldata fix ([7a80d98](https://github.com/Neltud/xArtists/commit/7a80d98727b15cbe6872558d586e7d6617f8cd3a))
+
 ## [0.84.0](https://github.com/Neltud/xArtists/compare/v0.83.0...v0.84.0) (2026-10-04)
 
 
