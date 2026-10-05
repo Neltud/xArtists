@@ -1,51 +1,11 @@
-from lia.guardian.math_core import (
-    death_spiral_detected,
-    kelly_fraction,
-    parametric_var,
-    position_size_usd,
-    spiral_score,
-)
-from lia.guardian.preflight import (
-    KillReason,
-    KillState,
-    KillSwitch,
-    PortfolioSnapshot,
-    PreFlightConfig,
-    PreFlightResult,
-    PreFlightValidator,
-    ProposedOrder,
-)
-from lia.guardian.spiral import (
-    GuardianVerdict,
-    PolicyLimits,
-    guardian_gate,
-    sol_perps_allowed,
-)
-from lia.guardian.kill_reset import (
-    KillResetCircuit,
-    ResetResult,
-    apply_reset_to_kill_switch,
-)
+"""Guardian — Beta Strike enforcement + kill-switch."""
+from lia.guardian.beta_strike import BetaStrikeConfig, load_beta_strike, preflight_trade
+from lia.guardian.kill_switch import KillSwitch, get_kill_switch
 
 __all__ = [
-    "death_spiral_detected",
-    "kelly_fraction",
-    "parametric_var",
-    "position_size_usd",
-    "spiral_score",
-    "KillReason",
-    "KillState",
+    "BetaStrikeConfig",
+    "load_beta_strike",
+    "preflight_trade",
     "KillSwitch",
-    "PortfolioSnapshot",
-    "PreFlightConfig",
-    "PreFlightResult",
-    "PreFlightValidator",
-    "ProposedOrder",
-    "GuardianVerdict",
-    "PolicyLimits",
-    "guardian_gate",
-    "sol_perps_allowed",
-    "KillResetCircuit",
-    "ResetResult",
-    "apply_reset_to_kill_switch",
+    "get_kill_switch",
 ]
