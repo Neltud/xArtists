@@ -1,5 +1,5 @@
-# Vite build failed @ 0ca04c7ed165ab2913927c55e9859929d1020226
-time: 2026-10-05T12:49:25Z
+# Vite build failed @ c842f362fbed440db053cd0294e59b251f3b5039
+time: 2026-10-05T12:55:15Z
 
 
 > xartists-frontend@3.10.0 build
@@ -7,8 +7,8 @@ time: 2026-10-05T12:49:25Z
 
 [36mvite v5.4.21 [32mbuilding for production...[36m[39m
 transforming...
-[32m✓[39m 155 modules transformed.
-[31mx[39m Build failed in 2.49s
+[32m✓[39m 122 modules transformed.
+[31mx[39m Build failed in 2.32s
 [31merror during build:
 [31mCould not resolve "../context/PulseContext" from "src/pages/LiaPage.tsx"[31m
 file: [36m/home/runner/work/xArtists/xArtists/apps/frontend/src/pages/LiaPage.tsx[31m
