@@ -1,6 +1,5 @@
 /**
- * Intent Feed — cyberpunk terminal of SHADOW / SIMULATED decisions (MOD-V1.2).
- * Never implies live execution.
+ * Intent Feed — SHADOW / SIMULATED only (P1 unified server + local).
  */
 import { useEffect, useMemo, useState } from 'react'
 import { loadIntentFeed, type FeedItem } from '../../lia/intentFeed'
@@ -11,6 +10,45 @@ type ShadowLine = {
   text: string
   at: number
   side?: string
+}
+
+async function loadServerIntentFeed(): Promise<ShadowLine[]> {
+  const bases = [
+    `${import.meta.env.BASE_URL || '/'}data/`,
+    'https://neltud.github.io/xArtists/data/',
+  ]
+  for (const b of bases) {
+    try {
+      const r = await fetch(`${b}lia_intent_feed.json`, { cache: 'no-store' })
+      if (!r.ok) continue
+      const j = await r.json()
+      const items = Array.isArray(j.items) ? j.items : Array.isArray(j) ? j : []
+      return items.map(
+        (
+          x: {
+            id?: string
+            action?: string
+            assetId?: string
+            amount?: number
+            confidence?: number
+            at?: number
+            reason?: string
+          },
+          i: number,
+        ) => ({
+          id: String(x.id || i),
+          side: x.action,
+          at: typeof x.at === 'number' ? x.at : Date.now() - i * 1000,
+          text: `[SIMULATED] ${String(x.action || 'HOLD')} ${String(x.assetId || '?')} @ size ${
+            x.amount != null ? Number(x.amount).toFixed(2) : '—'
+          } | Conf: ${x.confidence != null ? Number(x.confidence).toFixed(2) : '—'} · SHADOW`,
+        }),
+      )
+    } catch {
+      /* */
+    }
+  }
+  return []
 }
 
 async function loadShadowLines(): Promise<ShadowLine[]> {
@@ -63,8 +101,10 @@ export default function IntentFeedTerminal() {
     let cancelled = false
     const tick = async () => {
       const local = loadIntentFeed(24).map(formatLocal)
-      const remote = await loadShadowLines()
-      const merged = [...remote, ...local].sort((a, b) => a.at - b.at).slice(-36)
+      const [server, remote] = await Promise.all([loadServerIntentFeed(), loadShadowLines()])
+      const merged = [...server, ...remote, ...local]
+        .sort((a, b) => a.at - b.at)
+        .slice(-48)
       if (!cancelled) setLines(merged)
     }
     void tick()
@@ -88,28 +128,28 @@ export default function IntentFeedTerminal() {
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-400/90">
           Intent Feed · SHADOW
         </p>
-        <span className="text-[10px] text-emerald-600 mono">SIMULATED ONLY</span>
+        <span className="text-[10px] text-emerald-600 mono">[SIMULATED] ONLY</span>
       </div>
-      <div className="relative h-28 overflow-hidden font-mono text-[11px] leading-relaxed">
+      <div className="relative h-32 overflow-hidden font-mono text-[11px] leading-relaxed">
         <div
-          className="absolute whitespace-nowrap text-emerald-300/90 px-3 py-2"
+          className="absolute whitespace-nowrap text-emerald-300/70 px-3 py-1 opacity-40"
           style={{ animation: 'intent-ticker 48s linear infinite' }}
         >
           {scrollText}&nbsp;&nbsp;&nbsp;{scrollText}
         </div>
-        <ul className="absolute inset-0 overflow-y-auto px-3 py-2 space-y-1 text-emerald-200/80 bg-gradient-to-b from-black/20 to-black/80">
+        <ul className="absolute inset-0 overflow-y-auto px-3 py-2 space-y-1 text-emerald-200/90 bg-gradient-to-b from-black/40 to-black/90">
           {lines
             .slice()
             .reverse()
-            .slice(0, 12)
+            .slice(0, 14)
             .map(l => (
-              <li key={l.id + l.at} className="border-b border-emerald-500/10 pb-0.5">
+              <li key={l.id + String(l.at)} className="border-b border-emerald-500/10 pb-0.5">
                 <span className="text-emerald-600">{'>'}</span> {asText(l.text)}
               </li>
             ))}
           {!lines.length && (
             <li className="text-emerald-700">
-              <span className="text-emerald-600">{'>'}</span> no shadow intents yet — refresh hub
+              <span className="text-emerald-600">{'>'}</span> no shadow intents yet — run sprint tick
             </li>
           )}
         </ul>
