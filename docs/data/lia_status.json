@@ -1,57 +1,120 @@
 {
   "schema": "lia_status/v1",
-  "ts": "2026-10-05T06:10:00Z",
+  "ts": "2026-10-05T21:25:04Z",
   "paper": true,
   "LIA_LIVE_TRADING": 0,
   "onchain": {
     "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
-    "egld": 1.603532,
-    "egld_usd": 7.28,
+    "egld": 1.603782,
+    "egld_usd": 7.4576,
     "tokens": [
-      {"identifier": "USDC-c76f1f", "ticker": "USDC", "balance": 15.463632},
-      {"identifier": "TRO-94c925", "ticker": "TRO", "balance": 10000.0}
+      {
+        "identifier": "ASH-a642d1",
+        "ticker": "ASH",
+        "balance": 544.35637
+      },
+      {
+        "identifier": "HTM-f51d55",
+        "ticker": "HTM",
+        "balance": 0.0
+      },
+      {
+        "identifier": "HWBTC-49ca31",
+        "ticker": "HWBTC",
+        "balance": 0.0
+      },
+      {
+        "identifier": "LPROARTRO-f1212f",
+        "ticker": "LPROARTRO-f1212f",
+        "balance": 0.040862
+      },
+      {
+        "identifier": "MEX-455c57",
+        "ticker": "MEX",
+        "balance": 5.5e-05
+      },
+      {
+        "identifier": "TRO-94c925",
+        "ticker": "TRO",
+        "balance": 10000.0
+      },
+      {
+        "identifier": "TROMEX-ad38a1",
+        "ticker": "TROMEX-ad38a1",
+        "balance": 0.0
+      },
+      {
+        "identifier": "TROUSDC-2a60c7",
+        "ticker": "TROUSDC",
+        "balance": 0.0
+      },
+      {
+        "identifier": "TROUSDT-67d574",
+        "ticker": "TROUSDT-67d574",
+        "balance": 0.0
+      },
+      {
+        "identifier": "TROWEGLD-891183",
+        "ticker": "TROWEGLD",
+        "balance": 0.0
+      },
+      {
+        "identifier": "TROWEGLD-ca2874",
+        "ticker": "TROWEGLD-ca2874",
+        "balance": 1.421311
+      },
+      {
+        "identifier": "TROXOXNO-500f78",
+        "ticker": "TROXOXNO-500f78",
+        "balance": 0.00016
+      }
     ],
-    "tx_count": 1473,
+    "tx_count": null,
     "error": null
   },
   "mindset": {
-    "strategy": "paper_hold",
-    "confidence": 0.52,
-    "vellum_ts": "2026-10-05T06:10:00Z",
+    "strategy": "YIELD",
+    "confidence": null,
+    "vellum_ts": "2026-08-09T15:16:00Z",
     "vellum_ok": true,
-    "guardian_allow": false,
+    "guardian_allow": null,
     "LIA_LIVE_TRADING": 0
   },
   "shadow": {
-    "fills": 0,
-    "shadow_pnl_usd": 0,
-    "shadow_pnl_usd_friction": 0,
-    "win_rate": null,
-    "last_shadow": [],
-    "source": "paper_cycle_hold",
+    "fills": 2,
+    "shadow_pnl_usd": 0.1098,
+    "win_rate": 0.5,
+    "last_shadow": [
+      {
+        "id": null,
+        "side": null,
+        "asset": null,
+        "pnl_usd": 0.0,
+        "ts": "2026-08-26T16:30:00Z"
+      },
+      {
+        "id": "23bd42f5-15f",
+        "side": "BUY",
+        "asset": "TRO",
+        "pnl_usd": 0.1098,
+        "ts": "2026-10-05T21:25:03Z"
+      }
+    ],
+    "source": "lia_paper_legs.json+friction",
     "friction_model": {
       "gas_egld_per_fill": 0.0008,
       "slippage": "liquidity_impact_0.05pct_to_2.5pct"
-    },
-    "intent": {
-      "action": "HOLD",
-      "asset": "EGLD",
-      "aura": "stable",
-      "reason": "EGLD 24h about -0.87% (CoinGecko); no edge vs gas 0.0008 EGLD; TRO 24h volume ~0.16 USD, slippage too high for a shadow buy/sell",
-      "broadcast": false,
-      "notional_usd": 0,
-      "gas_egld": 0.0008
     }
   },
   "aura": {
-    "mode": "stable",
+    "mode": "reward",
     "trend": "flat",
-    "confidence": 0.52,
-    "source": "paper_cycle_2026-10-05"
+    "confidence": null,
+    "source": "publish_lia_status"
   },
   "links": {
     "explorer": "https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "hub": "https://neltud.github.io/xArtists/#/lia"
   },
-  "note": "Aggregated snapshot \u2014 paper/shadow only; not live trading. EGLD price 4.54 USD (api.multiversx.com/economics)."
+  "note": "Aggregated snapshot \u2014 paper/shadow with friction; not live trading"
 }
