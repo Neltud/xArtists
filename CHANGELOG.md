@@ -1,5 +1,41 @@
 # Changelog — xArtists
 
+## [0.88.0](https://github.com/Neltud/xArtists/compare/v0.87.0...v0.88.0) (2026-10-05)
+
+
+### Features
+
+* **P10 harden:** dynamic slip+retry lifecycle, velocity/drawdown fortress, execution telemetry ([b83768e](https://github.com/Neltud/xArtists/commit/b83768e81181e385cc9f6582e56f456d3f87fc1a))
+* **P10-hard:** dynamic slippage, retry lifecycle, velocity+drawdown fortress, exec telemetry ([25ad344](https://github.com/Neltud/xArtists/commit/25ad3443247fbd896b325cac248e37b7953cb59e))
+* **P10:** risk_enforcer + hot_wallet (PEM path only) + autonomous dust execution engine ([5261fc5](https://github.com/Neltud/xArtists/commit/5261fc52fd0c0c86e5c5400566b4f60e3b5dc1a2))
+* **P11:** reconciliation audit, wealth UI expand, engine status, docker volumes + tick wiring ([7447359](https://github.com/Neltud/xArtists/commit/7447359da83ed0ab1ba9939c815df79143880893))
+* **P4.5:** App routes /history /admin ([2c56c38](https://github.com/Neltud/xArtists/commit/2c56c3871fdc845e25de6020169ed360e522b99e))
+* **P4.5:** pending UI, history, slippage-adaptive sizing, audit log, docker-compose ([7ea4087](https://github.com/Neltud/xArtists/commit/7ea40873d65f14dc44b7cd5e5b36da8d61cea504))
+* **P4.5:** wire /history /admin routes + PendingActions on HolderTerminal ([cc8a4c0](https://github.com/Neltud/xArtists/commit/cc8a4c0cc230425ff796191d7442843df94097e4))
+* **P4:** force HITL strike, black-swan kill-switch, performance_delta, orch real weights ([13d0536](https://github.com/Neltud/xArtists/commit/13d0536002072e40aee0aa49d2014bb8a1e87ffc))
+* **P4:** HITL strike proposals, performance_delta, black-swan kill-switch, orchestrator real weights ([6b1e2ee](https://github.com/Neltud/xArtists/commit/6b1e2ee0b9dc86e739796b70fd4d74952ddbf0f5))
+* **P4:** orchestrator applies performance_delta real dominance weights ([bcbc7e7](https://github.com/Neltud/xArtists/commit/bcbc7e797607afc601c121fbd5ef6045fcf2800d))
+* **P5.5:** economic ledger public + EconomicPulse component ([a247660](https://github.com/Neltud/xArtists/commit/a247660261dbd6d75aca0d9c57c1111ad07322a3))
+* **P5.5:** mint-burn TRO loop, no-NFT agent rule, economic validator + ledger ([861c58d](https://github.com/Neltud/xArtists/commit/861c58db826139c2a434b56190102b97769e85fe))
+* **P5:** ART_MOMENTUM strategy, RWA catalog page + seed data ([a23fa2d](https://github.com/Neltud/xArtists/commit/a23fa2db031438b7e92f61e292ef2b6326c8b1db))
+* **P5:** RWA evaluator, minter plan, fulfillment, ART_MOMENTUM, catalog UI ([df280d4](https://github.com/Neltud/xArtists/commit/df280d429cc87512edb87d36769d10d9c409922e))
+* **P5:** STRAT_ART_MOMENTUM + publish rwa_catalog.json ([930be78](https://github.com/Neltud/xArtists/commit/930be7883aec1d377d2a69124723fd2cd3d644ad))
+* **P6.5:** decision-chain stress test 5 cycles, ready-to-sign proposals, decision_chain.log ([946483e](https://github.com/Neltud/xArtists/commit/946483e387f5a2e36e03e1274e6ee40e804a4549))
+* **P6:** genesis unified tick, TRO transfer/burn calldata plans HITL, Cockpit tabs ([6d38957](https://github.com/Neltud/xArtists/commit/6d38957684418c6662a843398b95f6a745287e81))
+* **P7:** agent pack performance tracker, yield cycle, compliance, PortfolioWealth UI ([3f9de88](https://github.com/Neltud/xArtists/commit/3f9de8839f52c127343f479822c112f341b25d2e))
+* **P9:** signature packages, watch-wallet, onchain match helper, First Blood protocol ([fb4cd43](https://github.com/Neltud/xArtists/commit/fb4cd439998e79b35e701c7c593c1ffc1a6e2ca7))
+
+
+### Bug Fixes
+
+* **CRITICAL:** idempotent burn, calldata NFT gate, gas/PnL loss accounting ([999f1f0](https://github.com/Neltud/xArtists/commit/999f1f07c124e05dc8602c7aa5573a310b052dd2))
+* **P6.5:** action_for + publish 5-cycle stress results (5 ready_to_sign, broadcast=false) ([ae6186e](https://github.com/Neltud/xArtists/commit/ae6186ef9942aa82ac1ff510059340e8222535ef))
+
+
+### Documentation
+
+* **P8:** golden thread PASS, operational manual, gap analysis, integration runner ([36952ed](https://github.com/Neltud/xArtists/commit/36952ed75dce707df6e7c07d4cb8dffe44e4eb25))
+
 ## [0.87.0](https://github.com/Neltud/xArtists/compare/v0.86.0...v0.87.0) (2026-10-05)
 
 
