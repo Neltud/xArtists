@@ -1,0 +1,17 @@
+{
+  "schema": "lia_live_status/v1",
+  "updated": "2026-10-05T13:34:12Z",
+  "LIA_LIVE_TRADING": 0,
+  "mode_default": "shadow",
+  "egld_usd": 4.57,
+  "equity_proxy_usd": 1.0919,
+  "deployer": {
+    "address": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g",
+    "egld": 0.238014575,
+    "tokens": {
+      "TRO-94c925": 477.0,
+      "USDC-c76f1f": 0.00418
+    }
+  },
+  "note": "On-chain snapshot only — UI Live mode is display; trading still gated"
+}

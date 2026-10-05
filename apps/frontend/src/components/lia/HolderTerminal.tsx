@@ -1,5 +1,6 @@
 /**
- * P3.5 Holder terminal — SHADOW metrics, Beta risk, active strategy (orchestrator).
+ * P4 Holder terminal — Shadow (default) + Live on-chain display toggle.
+ * Live = balances/TX display only. Does not enable LIA_LIVE_TRADING.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -23,11 +24,19 @@ type ExportSnap = {
   equity_curve?: CurvePt[]
   day_index?: number
 }
+type LiveSnap = {
+  equity_proxy_usd?: number
+  egld_usd?: number
+  deployer?: {
+    egld?: number
+    tokens?: Record<string, number>
+    txs?: { txHash?: string; status?: string; function?: string; explorer?: string }[]
+  }
+}
 
 const BETA_LIMITS = {
   maxTradeUsd: 15,
   maxDailyUsd: 40,
-  maxExposureEgld: 0.05,
   maxDd: 0.12,
   minConf: 0.62,
 }
@@ -58,14 +67,6 @@ function EquityArea({ curve }: { curve: CurvePt[] }) {
     const max = Math.max(...vals)
     const span = max - min || 1
     ctx.clearRect(0, 0, w, h)
-    ctx.strokeStyle = 'rgba(255,255,255,0.04)'
-    for (let i = 1; i < 4; i++) {
-      const y = (h * i) / 4
-      ctx.beginPath()
-      ctx.moveTo(0, y)
-      ctx.lineTo(w, y)
-      ctx.stroke()
-    }
     const pts = vals.map((v, i) => ({
       x: (i / (vals.length - 1)) * (w - 2) + 1,
       y: h - 6 - ((v - min) / span) * (h - 14),
@@ -87,13 +88,7 @@ function EquityArea({ curve }: { curve: CurvePt[] }) {
     ctx.stroke()
   }, [curve])
   return (
-    <canvas
-      ref={ref}
-      width={640}
-      height={160}
-      className="w-full h-[160px] rounded-xl bg-[#0a0a0c]"
-      aria-label="Equity curve shadow"
-    />
+    <canvas ref={ref} width={640} height={160} className="w-full h-[160px] rounded-xl bg-[#0a0a0c]" />
   )
 }
 
@@ -115,32 +110,31 @@ async function loadJson(name: string): Promise<Record<string, unknown> | null> {
 }
 
 export default function HolderTerminal() {
+  const [mode, setMode] = useState<'shadow' | 'live'>('shadow')
   const [sprint, setSprint] = useState<Sprint | null>(null)
   const [exp, setExp] = useState<ExportSnap | null>(null)
+  const [live, setLive] = useState<LiveSnap | null>(null)
   const [health, setHealth] = useState('…')
-  const [stratCount, setStratCount] = useState(13)
-  const [activeStrat, setActiveStrat] = useState<string>('—')
+  const [activeStrat, setActiveStrat] = useState('—')
   const [switchReason, setSwitchReason] = useState('')
 
   useEffect(() => {
     let c = false
     const load = async () => {
-      const [s, e, cat, orch] = await Promise.all([
+      const [s, e, orch, lv] = await Promise.all([
         loadJson('lia_shadow_sprint.json'),
         loadJson('lia_shadow_export.json'),
-        loadJson('strategies_catalog.json'),
         loadJson('strategy_orchestrator.json'),
+        loadJson('lia_live_status.json'),
       ])
       if (c) return
       setSprint((s as Sprint) || null)
       setExp((e as ExportSnap) || null)
+      setLive((lv as LiveSnap) || null)
       setHealth(s ? 'Brain · export OK' : 'Awaiting shadow data')
-      const items = (cat as { items?: unknown[] } | null)?.items
-      if (Array.isArray(items)) setStratCount(items.length)
       const o = orch as { active?: string; switch_reason?: string; last_reason?: string } | null
       if (o?.active) setActiveStrat(String(o.active))
-      if (o?.switch_reason) setSwitchReason(String(o.switch_reason))
-      else if (o?.last_reason) setSwitchReason(String(o.last_reason))
+      setSwitchReason(String(o?.switch_reason || o?.last_reason || ''))
     }
     void load()
     const id = window.setInterval(() => void load(), 20_000)
@@ -152,17 +146,21 @@ export default function HolderTerminal() {
 
   const curve = useMemo(() => exp?.equity_curve || [], [exp])
   const start = sprint?.equity_start_usd ?? 1000
-  const now = sprint?.equity_now_usd ?? exp?.equity_now_usd ?? start
+  const shadowEquity = sprint?.equity_now_usd ?? exp?.equity_now_usd ?? start
   const pnl = sprint?.shadow_pnl_usd ?? exp?.shadow_pnl_usd
   const wr = sprint?.win_rate ?? exp?.win_rate
   const dd = maxDrawdown(curve)
-  const sharpeProxy =
-    dd != null && dd > 0.0001 && typeof pnl === 'number' ? pnl / (dd * start) : null
-  const exposureUsd =
-    typeof now === 'number' ? Math.min(BETA_LIMITS.maxTradeUsd, Math.abs(Number(pnl) || 0)) : 0
+  const isLive = mode === 'live'
+  const displayEquity = isLive ? live?.equity_proxy_usd : shadowEquity
 
   return (
-    <section className="space-y-5 rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.03] to-transparent p-4 sm:p-5">
+    <section
+      className={`space-y-5 rounded-2xl border p-4 sm:p-5 ${
+        isLive
+          ? 'border-rose-500/40 bg-gradient-to-b from-rose-500/[0.07] to-transparent shadow-[0_0_40px_rgba(244,63,94,0.12)]'
+          : 'border-white/[0.06] bg-gradient-to-b from-white/[0.03] to-transparent'
+      }`}
+    >
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[10px] uppercase tracking-[0.22em] text-zinc-500 font-medium">
@@ -170,120 +168,140 @@ export default function HolderTerminal() {
           </p>
           <h2 className="text-2xl font-semibold tracking-tight text-white">Performance</h2>
         </div>
-        <div className="text-right">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-500">Shadow equity</p>
-          <p className="text-xl font-semibold tabular-nums text-white">
-            {asText(now)} <span className="text-sm text-zinc-500">USD</span>
-          </p>
+        <div className="flex items-center gap-2">
+          <div className="flex rounded-full border border-white/10 p-0.5 text-[10px] font-bold uppercase">
+            <button
+              type="button"
+              className={`px-3 py-1 rounded-full ${
+                !isLive ? 'bg-emerald-500/20 text-emerald-300' : 'text-zinc-500'
+              }`}
+              onClick={() => setMode('shadow')}
+            >
+              Shadow
+            </button>
+            <button
+              type="button"
+              className={`px-3 py-1 rounded-full ${
+                isLive ? 'bg-rose-500/25 text-rose-300' : 'text-zinc-500'
+              }`}
+              onClick={() => setMode('live')}
+            >
+              Live
+            </button>
+          </div>
+          {isLive && (
+            <span className="text-[10px] font-bold tracking-widest text-rose-400 animate-pulse">
+              ● LIVE
+            </span>
+          )}
         </div>
       </header>
 
-      {curve.length >= 2 ? (
-        <EquityArea curve={curve} />
-      ) : (
-        <div className="h-[160px] rounded-xl bg-[#0a0a0c] flex items-center justify-center text-[12px] text-zinc-600">
-          Equity curve · waiting for sprint data
+      <div className="text-right">
+        <p className="text-[10px] uppercase tracking-wider text-zinc-500">
+          {isLive ? 'On-chain equity proxy' : 'Shadow equity'}
+        </p>
+        <p className="text-xl font-semibold tabular-nums text-white">
+          {asText(displayEquity)} <span className="text-sm text-zinc-500">USD</span>
+        </p>
+      </div>
+
+      {!isLive &&
+        (curve.length >= 2 ? (
+          <EquityArea curve={curve} />
+        ) : (
+          <div className="h-[120px] rounded-xl bg-[#0a0a0c] flex items-center justify-center text-[12px] text-zinc-600">
+            Equity curve · shadow sprint
+          </div>
+        ))}
+
+      {isLive && (
+        <div className="rounded-xl border border-rose-500/20 bg-black/40 p-3 space-y-2">
+          <p className="text-[10px] uppercase text-rose-300/80 font-semibold">Real balances</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[12px]">
+            <div>
+              <p className="text-zinc-500">EGLD</p>
+              <p className="tabular-nums text-white">{asText(live?.deployer?.egld)}</p>
+            </div>
+            <div>
+              <p className="text-zinc-500">USDC</p>
+              <p className="tabular-nums text-white">
+                {asText(live?.deployer?.tokens?.['USDC-c76f1f'])}
+              </p>
+            </div>
+            <div>
+              <p className="text-zinc-500">TRO</p>
+              <p className="tabular-nums text-white">
+                {asText(live?.deployer?.tokens?.['TRO-94c925'])}
+              </p>
+            </div>
+            <div>
+              <p className="text-zinc-500">EGLD USD</p>
+              <p className="tabular-nums text-white">{asText(live?.egld_usd)}</p>
+            </div>
+          </div>
+          <p className="text-[10px] text-zinc-500">Display only · trading remains gated (LIA_LIVE_TRADING=0)</p>
+          <ul className="text-[11px] space-y-1 max-h-28 overflow-y-auto">
+            {(live?.deployer?.txs || []).slice(0, 5).map(t => (
+              <li key={asText(t.txHash)} className="flex gap-2">
+                <span className="text-rose-400 font-mono shrink-0">[LIVE]</span>
+                <a
+                  className="text-cyan-400 underline truncate"
+                  href={t.explorer || `https://explorer.multiversx.com/transactions/${t.txHash}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {asText(t.function || t.txHash?.slice(0, 10))}
+                </a>
+                <span className="text-zinc-500">{asText(t.status)}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {[
-          {
-            label: 'Cumul. PnL',
-            value:
-              pnl != null ? `${Number(pnl) >= 0 ? '+' : ''}${asText(Number(pnl).toFixed(4))}` : '—',
-            tone: typeof pnl === 'number' && pnl >= 0 ? 'text-emerald-400' : 'text-rose-400',
-          },
-          {
-            label: 'Win rate',
-            value: wr != null ? `${asText(Math.round(Number(wr) * 100))}%` : '—',
-            tone: 'text-white',
-          },
-          {
-            label: 'Max drawdown',
-            value: dd != null ? `${asText((dd * 100).toFixed(2))}%` : '—',
-            tone: 'text-white',
-          },
-          {
-            label: 'Sharpe proxy',
-            value: sharpeProxy != null ? asText(sharpeProxy.toFixed(2)) : '—',
-            tone: 'text-white',
-          },
-        ].map(k => (
-          <div key={k.label} className="rounded-xl bg-black/30 px-3 py-3 border border-white/[0.04]">
-            <p className="text-[10px] uppercase tracking-wider text-zinc-500">{k.label}</p>
-            <p className={`text-lg font-semibold tabular-nums ${k.tone}`}>{k.value}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-3 space-y-2">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[10px] uppercase tracking-wider text-amber-200/80 font-semibold">
-            Risk vs Beta Strike limits
-          </p>
-          <span className="text-[10px] px-2 py-0.5 rounded-full border border-zinc-600 text-zinc-400">
-            BETA MODE LOCKED
-          </span>
+      {!isLive && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            {
+              label: 'Cumul. PnL',
+              value:
+                pnl != null ? `${Number(pnl) >= 0 ? '+' : ''}${asText(Number(pnl).toFixed(4))}` : '—',
+              tone: typeof pnl === 'number' && pnl >= 0 ? 'text-emerald-400' : 'text-rose-400',
+            },
+            {
+              label: 'Win rate',
+              value: wr != null ? `${asText(Math.round(Number(wr) * 100))}%` : '—',
+              tone: 'text-white',
+            },
+            {
+              label: 'Max DD',
+              value: dd != null ? `${asText((dd * 100).toFixed(2))}%` : '—',
+              tone: 'text-white',
+            },
+            {
+              label: 'Beta max trade',
+              value: `$${BETA_LIMITS.maxTradeUsd}`,
+              tone: 'text-white',
+            },
+          ].map(k => (
+            <div key={k.label} className="rounded-xl bg-black/30 px-3 py-3 border border-white/[0.04]">
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500">{k.label}</p>
+              <p className={`text-lg font-semibold tabular-nums ${k.tone}`}>{k.value}</p>
+            </div>
+          ))}
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
-          <div>
-            <p className="text-zinc-500">Max trade</p>
-            <p className="tabular-nums text-zinc-200">${BETA_LIMITS.maxTradeUsd}</p>
-          </div>
-          <div>
-            <p className="text-zinc-500">Max daily</p>
-            <p className="tabular-nums text-zinc-200">${BETA_LIMITS.maxDailyUsd}</p>
-          </div>
-          <div>
-            <p className="text-zinc-500">DD stop</p>
-            <p className="tabular-nums text-zinc-200">{BETA_LIMITS.maxDd * 100}%</p>
-          </div>
-          <div>
-            <p className="text-zinc-500">Min conf</p>
-            <p className="tabular-nums text-zinc-200">{BETA_LIMITS.minConf}</p>
-          </div>
-        </div>
-        <p className="text-[10px] text-zinc-500">
-          Shadow exposure proxy {asText(exposureUsd.toFixed(2))} USD · strategies {stratCount} · live
-          path requires ops unlock
-        </p>
-      </div>
+      )}
 
       <div className="rounded-xl border border-cyan-500/15 bg-cyan-500/[0.03] p-3 space-y-1">
         <p className="text-[10px] uppercase tracking-wider text-cyan-200/70 font-semibold">
           Active strategy
         </p>
         <p className="text-sm font-medium text-white mono">{asText(activeStrat)}</p>
-        <p className="text-[11px] text-zinc-500 leading-snug">
-          {asText(switchReason || 'Hysteresis stable · waiting for dominance')}
-        </p>
+        <p className="text-[11px] text-zinc-500">{asText(switchReason || 'Hysteresis stable')}</p>
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-3 text-[12px]">
-        <div className="rounded-xl bg-black/25 px-3 py-3 border border-white/[0.04]">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Sprint pulse</p>
-          <p className="text-zinc-200 font-medium">
-            Day {asText(sprint?.day_index ?? exp?.day_index ?? '—')}/
-            {asText(sprint?.sprint_days_target ?? 7)}
-          </p>
-          <p className="text-zinc-500 mt-0.5">
-            {asText(sprint?.status, '—')} · {asText(sprint?.fills_total ?? exp?.fills)} fills
-          </p>
-        </div>
-        <div className="rounded-xl bg-black/25 px-3 py-3 border border-white/[0.04]">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">System</p>
-          <p className="text-zinc-200">{asText(health)}</p>
-          <p className="text-zinc-500 mt-0.5">Guardian preflight · paper path</p>
-        </div>
-        <div className="rounded-xl bg-black/25 px-3 py-3 border border-white/[0.04]">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Catalog</p>
-          <p className="text-zinc-200">{stratCount} strategies</p>
-          <p className="text-zinc-500 mt-0.5">Brain registry · paper default</p>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-2 pt-1">
+      <div className="flex flex-wrap gap-2">
         <Link to="/portfolio" className="btn-secondary text-sm">
           Portfolio
         </Link>
@@ -293,7 +311,9 @@ export default function HolderTerminal() {
       </div>
 
       <p className="text-[10px] text-zinc-600 border-t border-white/[0.04] pt-3">
-        SHADOW MODE / SIMULATED DATA — not live capital · LIA_LIVE_TRADING=0 · Beta toggle locked
+        {isLive
+          ? 'LIVE DISPLAY — balances & TX from chain · execution still gated · switch to Shadow anytime'
+          : 'SHADOW MODE / SIMULATED DATA · LIA_LIVE_TRADING=0 · Beta toggle locked'}
       </p>
     </section>
   )
