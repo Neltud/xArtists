@@ -1,0 +1,12 @@
+{
+  "schema": "integration_test/v1",
+  "GOLDEN_THREAD": "PASS",
+  "rwa_avg": 80.09,
+  "proposal": { "status": "ready_to_sign", "broadcast": false },
+  "nft_block": { "ok": false, "action": "ABORT_TRADE" },
+  "token_allow": { "ok": true },
+  "live_env": "0",
+  "compliance": true,
+  "burn_loop": { "integrity_ok": true, "minted": 1.0, "burned": 1.0 },
+  "note": "Shadow integration — no TX broadcast"
+}
