@@ -1,5 +1,5 @@
 """
-7-Day Shadow Sprint — SCAN → DECIDE (brain strategies) → SIMULATE → LOG.
+7-Day Shadow Sprint — SCAN → DECIDE (orchestrator) → SIMULATE → LOG.
 Zero real capital. LIA_LIVE_TRADING=0.
 """
 from __future__ import annotations
@@ -94,6 +94,14 @@ def scan_market() -> dict[str, Any]:
     return out
 
 
+def load_legs() -> list[dict[str, Any]]:
+    raw = _read("lia_paper_legs.json") or {}
+    legs = raw.get("legs") if isinstance(raw, dict) else None
+    if not isinstance(legs, list):
+        return []
+    return [x for x in legs if isinstance(x, dict)]
+
+
 def decide(scan: dict[str, Any]) -> dict[str, Any]:
     sent = float(scan.get("sentiment") or 0)
     vol = float(scan.get("volatility") or 0.35)
@@ -102,11 +110,13 @@ def decide(scan: dict[str, Any]) -> dict[str, Any]:
     strategy, strat_reason = "STRAT_YIELD_OPTIMIZER", "fallback"
     action = "HOLD"
     size_usd = 10.0
+    switch_reason = ""
     try:
-        from lia.brain.strategies import action_for, select_strategy
+        from lia.brain.orchestrator import orchestrate
+        from lia.brain.strategies import action_for
         from lia.brain.position_sizing import size_position
 
-        strategy, strat_reason = select_strategy(
+        orch = orchestrate(
             sentiment=(sent + 1) / 2,
             volatility=vol,
             trend=trend,
@@ -114,8 +124,12 @@ def decide(scan: dict[str, Any]) -> dict[str, Any]:
             confidence=conf,
             asset_state="Liquid",
             liquidity=max(0.1, 1.0 - vol),
+            legs=load_legs(),
         )
-        action = action_for(strategy, trend=trend, distance=sent)
+        strategy = str(orch.get("active") or "STRAT_YIELD_OPTIMIZER")
+        strat_reason = str(orch.get("reason") or "")
+        switch_reason = str(orch.get("switch_reason") or "")
+        action = action_for(strategy, trend=trend, distance=sent)  # type: ignore
         if action in ("STAKE", "COMPOUND"):
             action = "BUY"
         if action == "FLATTEN":
@@ -148,6 +162,7 @@ def decide(scan: dict[str, Any]) -> dict[str, Any]:
         "level": level,
         "size_usd": size_usd,
         "strategy": strategy,
+        "switch_reason": switch_reason,
         "reason": f"{strat_reason}|sent={sent:.3f}|vol={vol:.3f}|{strategy}",
     }
 
@@ -196,14 +211,6 @@ def simulate(decision: dict[str, Any], scan: dict[str, Any], *, ts: str | None =
         },
     }
     return apply_friction_to_leg(leg, egld_usd=float(scan.get("egld_usd") or 20))
-
-
-def load_legs() -> list[dict[str, Any]]:
-    raw = _read("lia_paper_legs.json") or {}
-    legs = raw.get("legs") if isinstance(raw, dict) else None
-    if not isinstance(legs, list):
-        return []
-    return [x for x in legs if isinstance(x, dict)]
 
 
 def append_leg(leg: dict[str, Any], *, max_keep: int = 500) -> list[dict[str, Any]]:
