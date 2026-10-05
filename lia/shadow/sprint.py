@@ -1,15 +1,6 @@
 """
-7-Day Shadow Sprint — SCAN → DECIDE → SIMULATE (friction) → LOG.
-
-Zero real capital. Writes:
-  data/lia_paper_legs.json
-  data/lia_shadow_export.json
-  data/lia_shadow_sprint.json
-  data/lia_intent_feed.json  (P1 unified intent)
-
-  PYTHONPATH=. python -m lia.shadow.sprint
-  PYTHONPATH=. python -m lia.shadow.sprint --seed-24h
-  PYTHONPATH=. python -m lia.shadow.sprint --status
+7-Day Shadow Sprint — SCAN → DECIDE (brain strategies) → SIMULATE → LOG.
+Zero real capital. LIA_LIVE_TRADING=0.
 """
 from __future__ import annotations
 
@@ -107,23 +98,57 @@ def decide(scan: dict[str, Any]) -> dict[str, Any]:
     sent = float(scan.get("sentiment") or 0)
     vol = float(scan.get("volatility") or 0.35)
     conf = max(0.35, min(0.85, 0.55 + sent * 0.8 - (vol - 0.3) * 0.3))
-    if sent > 0.08 and vol < 0.45:
-        action, level = "BUY", 2
-    elif sent < -0.08:
-        action, level = "SELL", 2
-    elif vol > 0.5:
-        action, level = "HOLD", 1
-    else:
-        action, level = random.choice(["HOLD", "BUY", "HOLD"]), 1
+    trend = "UP" if sent > 0.08 else "DOWN" if sent < -0.08 else "SIDEWAYS"
+    strategy, strat_reason = "STRAT_YIELD_OPTIMIZER", "fallback"
+    action = "HOLD"
+    size_usd = 10.0
+    try:
+        from lia.brain.strategies import action_for, select_strategy
+        from lia.brain.position_sizing import size_position
+
+        strategy, strat_reason = select_strategy(
+            sentiment=(sent + 1) / 2,
+            volatility=vol,
+            trend=trend,
+            distance=abs(sent),
+            confidence=conf,
+            asset_state="Liquid",
+            liquidity=max(0.1, 1.0 - vol),
+        )
+        action = action_for(strategy, trend=trend, distance=sent)
+        if action in ("STAKE", "COMPOUND"):
+            action = "BUY"
+        if action == "FLATTEN":
+            action = "SELL"
+        if action == "MICRO_PROOF":
+            action = "HOLD"
+        sz = size_position(equity_usd=1000.0, confidence=conf, volatility=vol, max_usd=15.0)
+        size_usd = float(sz.size_usd)
+        try:
+            from lia.guardian.beta_strike import preflight_trade
+
+            pf = preflight_trade(confidence=conf, size_usd=size_usd, token="EGLD", live_trading=False)
+            size_usd = pf.size_usd
+        except Exception:
+            pass
+    except Exception:
+        if sent > 0.08 and vol < 0.45:
+            action = "BUY"
+        elif sent < -0.08:
+            action = "SELL"
+        else:
+            action = random.choice(["HOLD", "BUY", "HOLD"])
+        size_usd = round(15 + conf * 40, 2)
     asset = random.choice(ASSETS) if action != "HOLD" else "EGLD"
-    size_usd = round(15 + conf * 40, 2)
+    level = 2 if conf >= 0.6 else 1
     return {
         "action": action,
         "asset": asset,
         "confidence": round(conf, 4),
         "level": level,
         "size_usd": size_usd,
-        "reason": f"sent={sent:.3f} vol={vol:.3f} L{level}",
+        "strategy": strategy,
+        "reason": f"{strat_reason}|sent={sent:.3f}|vol={vol:.3f}|{strategy}",
     }
 
 
@@ -145,6 +170,7 @@ def simulate(decision: dict[str, Any], scan: dict[str, Any], *, ts: str | None =
         "asset": decision["asset"],
         "amount": decision["size_usd"],
         "size": decision["size_usd"],
+        "strategy": decision.get("strategy"),
         "liquidity": max(0.1, 1.0 - float(scan.get("volatility") or 0.35)),
         "pnl_usd": round(raw_pnl, 6),
         "gate": {
@@ -153,6 +179,7 @@ def simulate(decision: dict[str, Any], scan: dict[str, Any], *, ts: str | None =
             "size_usd": decision["size_usd"],
             "source": "shadow_sprint",
             "level": decision["level"],
+            "strategy": decision.get("strategy"),
             "allow_size": True,
         },
         "decision_proof": {
@@ -274,6 +301,7 @@ def export_shadow(legs: list[dict[str, Any]], meta: dict[str, Any]) -> dict[str,
                 "id": x.get("id"),
                 "side": x.get("side"),
                 "asset": x.get("asset"),
+                "strategy": x.get("strategy"),
                 "pnl_usd": x.get("pnl_usd_friction") or x.get("pnl_usd"),
                 "ts": x.get("ts"),
             }

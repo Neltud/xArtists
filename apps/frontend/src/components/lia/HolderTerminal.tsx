@@ -1,5 +1,5 @@
 /**
- * P2 — Institutional holder terminal (SHADOW metrics only).
+ * P3 Holder terminal — institutional SHADOW metrics + Beta risk panel (locked).
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -22,6 +22,14 @@ type ExportSnap = {
   win_rate?: number | null
   equity_curve?: CurvePt[]
   day_index?: number
+}
+
+const BETA_LIMITS = {
+  maxTradeUsd: 15,
+  maxDailyUsd: 40,
+  maxExposureEgld: 0.05,
+  maxDd: 0.12,
+  minConf: 0.62,
 }
 
 function maxDrawdown(curve: CurvePt[]): number | null {
@@ -50,7 +58,6 @@ function EquityArea({ curve }: { curve: CurvePt[] }) {
     const max = Math.max(...vals)
     const span = max - min || 1
     ctx.clearRect(0, 0, w, h)
-    // grid
     ctx.strokeStyle = 'rgba(255,255,255,0.04)'
     for (let i = 1; i < 4; i++) {
       const y = (h * i) / 4
@@ -110,29 +117,23 @@ async function loadJson(name: string): Promise<Record<string, unknown> | null> {
 export default function HolderTerminal() {
   const [sprint, setSprint] = useState<Sprint | null>(null)
   const [exp, setExp] = useState<ExportSnap | null>(null)
-  const [vol, setVol] = useState<number | null>(null)
   const [health, setHealth] = useState('…')
+  const [stratCount, setStratCount] = useState(13)
 
   useEffect(() => {
     let c = false
     const load = async () => {
-      const [s, e] = await Promise.all([
+      const [s, e, cat] = await Promise.all([
         loadJson('lia_shadow_sprint.json'),
         loadJson('lia_shadow_export.json'),
+        loadJson('strategies_catalog.json'),
       ])
       if (c) return
       setSprint((s as Sprint) || null)
       setExp((e as ExportSnap) || null)
       setHealth(s ? 'Brain · export OK' : 'Awaiting shadow data')
-      try {
-        const r = await fetch('https://api.multiversx.com/economics', { cache: 'no-store' })
-        if (r.ok) {
-          // no direct vol field — soft proxy from price presence
-          setVol(0.32)
-        }
-      } catch {
-        setVol(null)
-      }
+      const items = (cat as { items?: unknown[] } | null)?.items
+      if (Array.isArray(items)) setStratCount(items.length)
     }
     void load()
     const id = window.setInterval(() => void load(), 20_000)
@@ -150,6 +151,7 @@ export default function HolderTerminal() {
   const dd = maxDrawdown(curve)
   const sharpeProxy =
     dd != null && dd > 0.0001 && typeof pnl === 'number' ? pnl / (dd * start) : null
+  const exposureUsd = typeof now === 'number' ? Math.min(BETA_LIMITS.maxTradeUsd, Math.abs(Number(pnl) || 0)) : 0
 
   return (
     <section className="space-y-5 rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.03] to-transparent p-4 sm:p-5">
@@ -162,7 +164,9 @@ export default function HolderTerminal() {
         </div>
         <div className="text-right">
           <p className="text-[10px] uppercase tracking-wider text-zinc-500">Shadow equity</p>
-          <p className="text-xl font-semibold tabular-nums text-white">{asText(now)} <span className="text-sm text-zinc-500">USD</span></p>
+          <p className="text-xl font-semibold tabular-nums text-white">
+            {asText(now)} <span className="text-sm text-zinc-500">USD</span>
+          </p>
         </div>
       </header>
 
@@ -179,7 +183,7 @@ export default function HolderTerminal() {
           {
             label: 'Cumul. PnL',
             value:
-              pnl != null ? `${pnl >= 0 ? '+' : ''}${asText(Number(pnl).toFixed(4))}` : '—',
+              pnl != null ? `${Number(pnl) >= 0 ? '+' : ''}${asText(Number(pnl).toFixed(4))}` : '—',
             tone: typeof pnl === 'number' && pnl >= 0 ? 'text-emerald-400' : 'text-rose-400',
           },
           {
@@ -205,6 +209,39 @@ export default function HolderTerminal() {
         ))}
       </div>
 
+      <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-3 space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-[10px] uppercase tracking-wider text-amber-200/80 font-semibold">
+            Risk vs Beta Strike limits
+          </p>
+          <span className="text-[10px] px-2 py-0.5 rounded-full border border-zinc-600 text-zinc-400">
+            BETA MODE LOCKED
+          </span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+          <div>
+            <p className="text-zinc-500">Max trade</p>
+            <p className="tabular-nums text-zinc-200">${BETA_LIMITS.maxTradeUsd}</p>
+          </div>
+          <div>
+            <p className="text-zinc-500">Max daily</p>
+            <p className="tabular-nums text-zinc-200">${BETA_LIMITS.maxDailyUsd}</p>
+          </div>
+          <div>
+            <p className="text-zinc-500">DD stop</p>
+            <p className="tabular-nums text-zinc-200">{BETA_LIMITS.maxDd * 100}%</p>
+          </div>
+          <div>
+            <p className="text-zinc-500">Min conf</p>
+            <p className="tabular-nums text-zinc-200">{BETA_LIMITS.minConf}</p>
+          </div>
+        </div>
+        <p className="text-[10px] text-zinc-500">
+          Shadow exposure proxy {asText(exposureUsd.toFixed(2))} USD · strategies loaded {stratCount} ·
+          live path requires ops unlock
+        </p>
+      </div>
+
       <div className="grid sm:grid-cols-3 gap-3 text-[12px]">
         <div className="rounded-xl bg-black/25 px-3 py-3 border border-white/[0.04]">
           <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Sprint pulse</p>
@@ -219,12 +256,12 @@ export default function HolderTerminal() {
         <div className="rounded-xl bg-black/25 px-3 py-3 border border-white/[0.04]">
           <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">System</p>
           <p className="text-zinc-200">{asText(health)}</p>
-          <p className="text-zinc-500 mt-0.5">Guardian offline live · paper path</p>
+          <p className="text-zinc-500 mt-0.5">Guardian preflight · paper path</p>
         </div>
         <div className="rounded-xl bg-black/25 px-3 py-3 border border-white/[0.04]">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Macro vol</p>
-          <p className="text-zinc-200 tabular-nums">{vol != null ? asText(vol.toFixed(2)) : '—'}</p>
-          <p className="text-zinc-500 mt-0.5">Proxy · not a live order signal</p>
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Catalog</p>
+          <p className="text-zinc-200">{stratCount} strategies</p>
+          <p className="text-zinc-500 mt-0.5">Brain registry · paper default</p>
         </div>
       </div>
 
@@ -238,7 +275,7 @@ export default function HolderTerminal() {
       </div>
 
       <p className="text-[10px] text-zinc-600 border-t border-white/[0.04] pt-3">
-        SHADOW MODE / SIMULATED DATA — not live capital · LIA_LIVE_TRADING=0
+        SHADOW MODE / SIMULATED DATA — not live capital · LIA_LIVE_TRADING=0 · Beta toggle locked
       </p>
     </section>
   )
