@@ -1,0 +1,32 @@
+{
+  "schema": "pack_performance/v1",
+  "updated": "2026-10-05T14:50:42Z",
+  "protocol_trading_pnl_usd": 2.3,
+  "packs": [
+    {
+      "pack_id": "pack_alpha",
+      "name": "Alpha Managed",
+      "strategy_bias": "STRAT_YIELD_OPTIMIZER",
+      "realized_trading_usd": 1.15,
+      "rwa_appreciation_usd": 34.162,
+      "net_profit_usd": 35.312,
+      "equity_usd": 135.312,
+      "inception_equity_usd": 100.0,
+      "source": "shadow_ledger",
+      "disclaimer": "Attributed performance from shadow/RWA proxies until on-chain sub-accounts"
+    },
+    {
+      "pack_id": "pack_lia",
+      "name": "LIA Core",
+      "strategy_bias": "STRAT_ART_MOMENTUM",
+      "realized_trading_usd": 1.15,
+      "rwa_appreciation_usd": 56.527,
+      "net_profit_usd": 57.677,
+      "equity_usd": 157.677,
+      "inception_equity_usd": 100.0,
+      "source": "shadow_ledger",
+      "disclaimer": "Attributed performance from shadow/RWA proxies until on-chain sub-accounts"
+    }
+  ],
+  "note": "No points — equity & profit only. Shadow until chain attribution."
+}

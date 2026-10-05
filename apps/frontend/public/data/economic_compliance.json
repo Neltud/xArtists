@@ -1,0 +1,8 @@
+{
+  "schema": "economic_compliance/v1",
+  "ok": true,
+  "user_net_profit_sum": 92.989,
+  "ceiling_usd": 92.989001,
+  "ghost_profit": false,
+  "note": "Rejects value created from thin air"
+}

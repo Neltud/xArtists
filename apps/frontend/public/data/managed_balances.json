@@ -1,0 +1,8 @@
+{
+  "schema": "managed_balances/v1",
+  "updated": "2026-10-05T14:50:42Z",
+  "accounts": {
+    "pack_alpha": { "balance_usd": 135.312, "lifetime_credited": 35.135 },
+    "pack_lia": { "balance_usd": 157.677, "lifetime_credited": 57.389 }
+  }
+}
