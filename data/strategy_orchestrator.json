@@ -1,0 +1,10 @@
+{
+  "active": "STRAT_YIELD_OPTIMIZER",
+  "pending": null,
+  "pending_count": 0,
+  "last_reason": "init",
+  "switch_reason": "",
+  "ticks": 0,
+  "weights": {},
+  "updated": "2026-10-05T15:20:00Z"
+}

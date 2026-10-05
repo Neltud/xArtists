@@ -1,5 +1,7 @@
-"""ESDT / plain transfer data builders."""
+"""ESDT / plain transfer data builders — uses precision normalizer."""
 from __future__ import annotations
+
+from lia.utils.precision import normalize_for_token
 
 
 def _token_hex(token_id: str) -> str:
@@ -14,13 +16,15 @@ def _amount_hex(amount_atomic: int) -> str:
 
 
 def build_esdt_transfer(token_id: str, amount_atomic: int) -> str:
-    """
-    ESDTTransfer@token@amount — TX receiver = destination wallet/SC.
-    amount_atomic is the raw integer (e.g. 1e18 = 1 token with 18 decimals).
-    """
+    """ESDTTransfer@token@amount — TX receiver = destination."""
     return f"ESDTTransfer@{_token_hex(token_id)}@{_amount_hex(amount_atomic)}"
 
 
+def build_esdt_transfer_human(token_id: str, amount: float) -> str:
+    """Human amount → atomic via token decimals, then ESDTTransfer."""
+    atomic = normalize_for_token(amount, token_id)
+    return build_esdt_transfer(token_id, atomic)
+
+
 def build_egld_transfer_data() -> str:
-    """Empty data for native EGLD transfer (value field carries amount)."""
     return ""
