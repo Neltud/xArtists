@@ -1,5 +1,5 @@
 """
-Digital fortress — size, NFT, velocity, cumulative drawdown, daily halt.
+Digital fortress — size, NFT, velocity, cumulative drawdown.
 """
 from __future__ import annotations
 
@@ -13,11 +13,11 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 STATE = ROOT / "data" / "risk_enforcer_state.json"
 
-# Tier 1 Dust (scaling tiers documented in docs/SCALING_TIERS.md)
+# Tier 1 dust defaults
 MAX_TRADE_EGLD = 0.01
 MAX_TRADE_USD = 15.0
 MAX_DAILY_LOSS_USD = 25.0
-MAX_DRAWDOWN_PCT = 0.12  # 12% of equity session
+MAX_DRAWDOWN_PCT = 0.12  # 12% of equity
 MAX_GAS = 40_000_000
 MIN_RESERVE_EGLD = 0.05
 MAX_TX_PER_HOUR = 8
@@ -41,20 +41,20 @@ def _load_state() -> dict[str, Any]:
             pass
     return {
         "daily_loss_usd": 0.0,
-        "session_equity_usd": 100.0,
         "realized_loss_usd": 0.0,
         "day": "",
         "halt": False,
         "trades_today": 0,
         "tx_timestamps": [],
-        "halt_reason": "",
+        "equity_peak_usd": 0.0,
+        "equity_now_usd": 0.0,
     }
 
 
 def _save_state(st: dict[str, Any]) -> None:
     STATE.parent.mkdir(parents=True, exist_ok=True)
     STATE.write_text(json.dumps(st, indent=2), encoding="utf-8")
-    # UI mirror
+    # mirror for UI
     for dest in (
         ROOT / "apps" / "frontend" / "public" / "data" / "risk_enforcer_state.json",
         ROOT / "docs" / "data" / "risk_enforcer_state.json",
@@ -71,30 +71,41 @@ def _roll_day(st: dict[str, Any]) -> dict[str, Any]:
     if st.get("day") != day:
         st = {
             "daily_loss_usd": 0.0,
-            "session_equity_usd": float(st.get("session_equity_usd") or 100.0),
-            "realized_loss_usd": 0.0,
+            "realized_loss_usd": float(st.get("realized_loss_usd") or 0),
             "day": day,
-            "halt": False,
+            "halt": bool(st.get("halt")),
+            "halt_reason": st.get("halt_reason"),
             "trades_today": 0,
             "tx_timestamps": [],
-            "halt_reason": "",
+            "equity_peak_usd": float(st.get("equity_peak_usd") or 0),
+            "equity_now_usd": float(st.get("equity_now_usd") or 0),
         }
         _save_state(st)
     return st
 
 
-def _velocity_ok(st: dict[str, Any]) -> tuple[bool, str]:
-    now = time.time()
-    ts = [float(t) for t in (st.get("tx_timestamps") or []) if now - float(t) < 86400]
-    st["tx_timestamps"] = ts
-    hour = [t for t in ts if now - t < 3600]
-    if len(hour) >= MAX_TX_PER_HOUR:
-        return False, f"velocity_hour>={MAX_TX_PER_HOUR}"
-    if len(ts) >= MAX_TX_PER_DAY:
-        return False, f"velocity_day>={MAX_TX_PER_DAY}"
-    if ts and (now - max(ts)) < MIN_SECONDS_BETWEEN_TX:
-        return False, f"velocity_spacing<{MIN_SECONDS_BETWEEN_TX}s"
-    return True, "ok"
+def update_equity(equity_usd: float) -> dict[str, Any]:
+    st = _roll_day(_load_state())
+    eq = float(equity_usd)
+    st["equity_now_usd"] = eq
+    peak = float(st.get("equity_peak_usd") or 0)
+    if eq > peak:
+        st["equity_peak_usd"] = eq
+        peak = eq
+    dd = 0.0 if peak <= 0 else max(0.0, (peak - eq) / peak)
+    st["drawdown_pct"] = round(dd, 6)
+    if dd >= MAX_DRAWDOWN_PCT:
+        st["halt"] = True
+        st["halt_reason"] = f"drawdown_{dd:.2%}>={MAX_DRAWDOWN_PCT:.0%}"
+        os.environ["LIA_AUTONOMOUS_DUST"] = "0"
+        try:
+            from lia.guardian.kill_switch import get_kill_switch
+
+            get_kill_switch().trigger(st["halt_reason"], event_type="DRAWDOWN_HALT")
+        except Exception:
+            pass
+    _save_state(st)
+    return st
 
 
 def enforce(
@@ -105,9 +116,13 @@ def enforce(
     amount_usd: float = 0.0,
     gas_limit: int = 0,
     wallet_egld: float | None = None,
+    equity_usd: float | None = None,
 ) -> RiskVerdict:
     checks: dict[str, Any] = {}
     st = _roll_day(_load_state())
+
+    if equity_usd is not None:
+        st = update_equity(equity_usd)
 
     if st.get("halt"):
         return RiskVerdict(False, f"EMERGENCY_HALT:{st.get('halt_reason')}", {"state": st})
@@ -126,7 +141,8 @@ def enforce(
         return RiskVerdict(False, "NO_NFT_RULE", checks)
 
     tid = (token_id or "EGLD").upper()
-    if tid not in {x.upper() for x in ALLOWED_TOKENS} and tid != "EGLD":
+    allowed = {x.upper() for x in ALLOWED_TOKENS}
+    if tid not in allowed and tid != "EGLD":
         return RiskVerdict(False, f"token_not_allowlisted:{token_id}", checks)
 
     if amount_egld > MAX_TRADE_EGLD + 1e-12:
@@ -139,67 +155,47 @@ def enforce(
     if wallet_egld is not None and wallet_egld < amount_egld + MIN_RESERVE_EGLD:
         return RiskVerdict(False, "insufficient_reserve", checks)
 
-    vok, vreason = _velocity_ok(st)
-    checks["velocity"] = vreason
-    if not vok:
-        return RiskVerdict(False, vreason, checks)
-
-    equity = float(st.get("session_equity_usd") or 100.0)
-    realized = float(st.get("realized_loss_usd") or 0.0)
-    daily = float(st.get("daily_loss_usd") or 0.0)
-    dd = (realized / equity) if equity > 0 else 0.0
-    checks["drawdown_pct"] = round(dd, 4)
-    checks["daily_loss_usd"] = daily
-
-    if daily >= MAX_DAILY_LOSS_USD:
+    if float(st.get("daily_loss_usd") or 0) >= MAX_DAILY_LOSS_USD:
         st["halt"] = True
-        st["halt_reason"] = "DAILY_LOSS"
+        st["halt_reason"] = "DAILY_LOSS_HALT"
+        os.environ["LIA_AUTONOMOUS_DUST"] = "0"
         _save_state(st)
-        _disable_autonomous()
         return RiskVerdict(False, "DAILY_LOSS_HALT", checks)
 
-    if dd >= MAX_DRAWDOWN_PCT:
-        st["halt"] = True
-        st["halt_reason"] = "CUMULATIVE_DRAWDOWN"
-        _save_state(st)
-        _disable_autonomous()
-        return RiskVerdict(False, "DRAWDOWN_HALT", checks)
+    # Velocity
+    now = time.time()
+    ts = [float(t) for t in (st.get("tx_timestamps") or []) if now - float(t) < 86400]
+    hour = [t for t in ts if now - t < 3600]
+    checks["tx_last_hour"] = len(hour)
+    checks["tx_today"] = len(ts)
+    if len(hour) >= MAX_TX_PER_HOUR:
+        return RiskVerdict(False, "VELOCITY_HOUR", checks)
+    if len(ts) >= MAX_TX_PER_DAY:
+        return RiskVerdict(False, "VELOCITY_DAY", checks)
+    if ts and (now - max(ts)) < MIN_SECONDS_BETWEEN_TX:
+        return RiskVerdict(False, f"VELOCITY_COOLDOWN_{MIN_SECONDS_BETWEEN_TX}s", checks)
 
+    dd = float(st.get("drawdown_pct") or 0)
+    checks["drawdown_pct"] = dd
     checks["max_trade_egld"] = MAX_TRADE_EGLD
     checks["trades_today"] = st.get("trades_today")
     return RiskVerdict(True, "PASS", checks)
 
 
-def _disable_autonomous() -> None:
-    os.environ["LIA_AUTONOMOUS_DUST"] = "0"
-    try:
-        from lia.guardian.kill_switch import get_kill_switch
-
-        get_kill_switch().trigger("risk_drawdown_or_daily_loss")
-    except Exception:
-        pass
-
-
-def record_trade_result(*, loss_usd: float = 0.0, equity_usd: float | None = None) -> None:
+def record_trade_result(*, loss_usd: float = 0.0) -> None:
     st = _roll_day(_load_state())
+    now = time.time()
+    ts = [float(t) for t in (st.get("tx_timestamps") or []) if now - float(t) < 86400]
+    ts.append(now)
+    st["tx_timestamps"] = ts[-50:]
     st["trades_today"] = int(st.get("trades_today") or 0) + 1
-    ts = list(st.get("tx_timestamps") or [])
-    ts.append(time.time())
-    st["tx_timestamps"] = ts[-100:]
-    if equity_usd is not None:
-        st["session_equity_usd"] = float(equity_usd)
     if loss_usd > 0:
         st["daily_loss_usd"] = float(st.get("daily_loss_usd") or 0) + loss_usd
         st["realized_loss_usd"] = float(st.get("realized_loss_usd") or 0) + loss_usd
-    equity = float(st.get("session_equity_usd") or 100.0)
     if float(st["daily_loss_usd"]) >= MAX_DAILY_LOSS_USD:
         st["halt"] = True
-        st["halt_reason"] = "DAILY_LOSS"
-        _disable_autonomous()
-    elif equity > 0 and float(st.get("realized_loss_usd") or 0) / equity >= MAX_DRAWDOWN_PCT:
-        st["halt"] = True
-        st["halt_reason"] = "CUMULATIVE_DRAWDOWN"
-        _disable_autonomous()
+        st["halt_reason"] = "DAILY_LOSS_HALT"
+        os.environ["LIA_AUTONOMOUS_DUST"] = "0"
     _save_state(st)
 
 
@@ -207,5 +203,8 @@ def emergency_halt(reason: str = "ops") -> None:
     st = _roll_day(_load_state())
     st["halt"] = True
     st["halt_reason"] = reason
+    os.environ["LIA_AUTONOMOUS_DUST"] = "0"
     _save_state(st)
-    _disable_autonomous()
+    from lia.guardian.kill_switch import get_kill_switch
+
+    get_kill_switch().trigger(f"risk_halt:{reason}")

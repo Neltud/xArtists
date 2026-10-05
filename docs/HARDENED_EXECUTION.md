@@ -1,21 +1,32 @@
-# Hardened execution (post-dust)
+# Hardened execution (Phase 10)
 
-## Fixes vs first autonomous run
+## Lifecycle
+`INTENT → BROADCAST → CONFIRMED | FAILED_SLIPPAGE | FAILED_GAS | RETRYING → EXECUTION_ERROR`
 
-| Issue | Mitigation |
-|-------|------------|
-| Slippage exceeded | Dynamic bps 0.5–2% + widen +100 bps / retry |
-| Silent fail | Lifecycle await: CONFIRMED / FAILED_SLIPPAGE / FAILED_GAS |
-| Spam | ≤8 TX/h, ≤24/day, ≥45s spacing |
-| Drawdown | 12% session equity → halt + disable autonomous |
+## Dynamic slippage
+`dynamic_slippage_bps()` from `performance_delta` + time-of-day, **50–500 bps**, widens each retry.
 
-## Run
+## Retries
+Max **3** attempts; then `EXECUTION_ERROR` in feed/audit.
+
+## Fortress
+| Control | Limit |
+|---------|--------|
+| Max trade | 0.01 EGLD / $15 |
+| Velocity | 8/h, 24/day, 45s cooldown |
+| Daily loss | $25 → halt + `LIA_AUTONOMOUS_DUST=0` |
+| Drawdown | 12% peak equity → halt |
+| NFT | ABORT |
+
+## Telemetry
+`data/execution_telemetry.json` polled by `LiveExecutionFeed` (no WS required on Pages).
+
+## Scaling tiers
+1. **Dust** — max 0.01 EGLD (current)
+2. **Standard** — max 10% wallet (config change + ops)
+3. **Institutional** — every trade HITL approval
 
 ```bash
-export LIA_PEM_PATH=/path/to/pem   # hors git
-export LIA_LIVE_TRADING=1
-export LIA_AUTONOMOUS_DUST=1
-PYTHONPATH=. python -m lia.guardian.execution_engine --run
+LIA_LIVE_TRADING=1 LIA_AUTONOMOUS_DUST=1 LIA_PEM_PATH=... \\
+  PYTHONPATH=. python -m lia.guardian.execution_engine --run --full
 ```
-
-Telemetry: `data/execution_feed.jsonl` + UI `ExecutionFeed`.
