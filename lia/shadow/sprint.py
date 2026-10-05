@@ -4,9 +4,10 @@
 Zero real capital. Writes:
   data/lia_paper_legs.json
   data/lia_shadow_export.json
-  data/lia_shadow_sprint.json  (sprint meta + equity curve)
+  data/lia_shadow_sprint.json
+  data/lia_intent_feed.json  (P1 unified intent)
 
-  PYTHONPATH=. python -m lia.shadow.sprint          # one tick
+  PYTHONPATH=. python -m lia.shadow.sprint
   PYTHONPATH=. python -m lia.shadow.sprint --seed-24h
   PYTHONPATH=. python -m lia.shadow.sprint --status
 """
@@ -41,11 +42,11 @@ def _ts(dt: datetime | None = None) -> str:
 
 
 def _read(name: str) -> Any:
-    p = DATA / name
-    if not p.is_file():
+    path = DATA / name
+    if not path.is_file():
         return None
     try:
-        return json.loads(p.read_text(encoding="utf-8"))
+        return json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return None
 
@@ -54,7 +55,6 @@ def _write(name: str, obj: Any) -> Path:
     DATA.mkdir(parents=True, exist_ok=True)
     path = DATA / name
     path.write_text(json.dumps(obj, indent=2), encoding="utf-8")
-    # mirror to frontend public when present
     for dest in (
         ROOT / "apps" / "frontend" / "public" / "data" / name,
         ROOT / "docs" / "data" / name,
@@ -68,7 +68,6 @@ def _write(name: str, obj: Any) -> Path:
 
 
 def scan_market() -> dict[str, Any]:
-    """Real-ish market snapshot (public APIs only)."""
     out: dict[str, Any] = {
         "egld_usd": 20.0,
         "tro_usd": 0.0,
@@ -95,11 +94,9 @@ def scan_market() -> dict[str, Any]:
         )
         with urllib.request.urlopen(req, timeout=12) as r:
             tok = json.loads(r.read().decode())
-            # price often absent; derive soft proxy
             out["tro_usd"] = float(tok.get("price") or 0) or out["egld_usd"] * 0.00015
     except Exception:
         out["tro_usd"] = out["egld_usd"] * 0.00015
-    # synthetic sentiment / vol from time-of-day + noise (transparent)
     h = _utc().hour + _utc().minute / 60.0
     out["sentiment"] = round(math.sin(h / 24 * math.pi * 2) * 0.15 + random.uniform(-0.05, 0.05), 4)
     out["volatility"] = round(0.28 + abs(out["sentiment"]) * 0.4 + random.uniform(0, 0.08), 4)
@@ -107,11 +104,9 @@ def scan_market() -> dict[str, Any]:
 
 
 def decide(scan: dict[str, Any]) -> dict[str, Any]:
-    """Level 1–3 style paper decision (deterministic-ish)."""
     sent = float(scan.get("sentiment") or 0)
     vol = float(scan.get("volatility") or 0.35)
     conf = max(0.35, min(0.85, 0.55 + sent * 0.8 - (vol - 0.3) * 0.3))
-
     if sent > 0.08 and vol < 0.45:
         action, level = "BUY", 2
     elif sent < -0.08:
@@ -120,9 +115,8 @@ def decide(scan: dict[str, Any]) -> dict[str, Any]:
         action, level = "HOLD", 1
     else:
         action, level = random.choice(["HOLD", "BUY", "HOLD"]), 1
-
     asset = random.choice(ASSETS) if action != "HOLD" else "EGLD"
-    size_usd = round(15 + conf * 40, 2)  # Beta-ish notional paper
+    size_usd = round(15 + conf * 40, 2)
     return {
         "action": action,
         "asset": asset,
@@ -134,17 +128,14 @@ def decide(scan: dict[str, Any]) -> dict[str, Any]:
 
 
 def simulate(decision: dict[str, Any], scan: dict[str, Any], *, ts: str | None = None) -> dict[str, Any]:
-    """Paper leg + friction (slippage + gas)."""
     action = decision["action"]
-    # synthetic edge: slight positive drift on BUY in mild bull, cost on high vol
     edge = float(decision["confidence"]) * 0.4 - float(scan.get("volatility") or 0.35) * 0.5
     if action == "HOLD":
-        raw_pnl = -0.02  # opportunity / tracking
+        raw_pnl = -0.02
     elif action == "BUY":
         raw_pnl = edge * decision["size_usd"] * 0.02 + random.uniform(-0.15, 0.25)
     else:
         raw_pnl = (-edge) * decision["size_usd"] * 0.015 + random.uniform(-0.2, 0.15)
-
     leg: dict[str, Any] = {
         "id": str(uuid.uuid4())[:12],
         "ts": ts or _ts(),
@@ -218,11 +209,8 @@ def sprint_meta(legs: list[dict[str, Any]]) -> dict[str, Any]:
     meta = _read("lia_shadow_sprint.json") or {}
     if not isinstance(meta, dict):
         meta = {}
-    start = meta.get("started_at")
-    if not start:
-        start = _ts()
-    # count legs in last 24h / since start
-    now = _utc()
+    start = meta.get("started_at") or _ts()
+
     def parse_ts(s: str | None) -> datetime | None:
         if not s:
             return None
@@ -233,6 +221,7 @@ def sprint_meta(legs: list[dict[str, Any]]) -> dict[str, Any]:
         except Exception:
             return None
 
+    now = _utc()
     start_dt = parse_ts(str(start)) or now
     day_idx = max(0, (now - start_dt).days) + 1
     last24 = []
@@ -240,15 +229,11 @@ def sprint_meta(legs: list[dict[str, Any]]) -> dict[str, Any]:
         dt = parse_ts(str(leg.get("ts")))
         if dt and (now - dt) <= timedelta(hours=24):
             last24.append(leg)
-
     wins = sum(
-        1
-        for leg in legs
-        if float(leg.get("pnl_usd_friction") or leg.get("pnl_usd") or 0) > 0
+        1 for leg in legs if float(leg.get("pnl_usd_friction") or leg.get("pnl_usd") or 0) > 0
     )
     pnl = sum(float(leg.get("pnl_usd_friction") or leg.get("pnl_usd") or 0) for leg in legs)
     curve = equity_curve(legs)
-
     out = {
         "schema": "lia_shadow_sprint/v1",
         "paper": True,
@@ -262,7 +247,7 @@ def sprint_meta(legs: list[dict[str, Any]]) -> dict[str, Any]:
         "fills_24h": len(last24),
         "shadow_pnl_usd": round(pnl, 4),
         "win_rate": round(wins / len(legs), 4) if legs else None,
-        "equity_curve": curve[-120:],  # cap for UI
+        "equity_curve": curve[-120:],
         "equity_start_usd": 1000.0,
         "equity_now_usd": curve[-1]["equity"] if curve else 1000.0,
         "note": "Simulated trading only — friction applied; not financial advice",
@@ -312,6 +297,12 @@ def run_tick() -> dict[str, Any]:
     legs = append_leg(leg)
     meta = sprint_meta(legs)
     export = export_shadow(legs, meta)
+    try:
+        from lia.intent.server_intent import intent_from_sprint_decision, write_intent_snapshot
+
+        write_intent_snapshot(intent_from_sprint_decision(decision, leg_id=str(leg.get("id"))))
+    except Exception:
+        pass
     return {
         "tick": {"scan": scan, "decision": decision, "leg_id": leg.get("id")},
         "meta": {
@@ -325,14 +316,11 @@ def run_tick() -> dict[str, Any]:
 
 
 def seed_24h(n: int = 24) -> dict[str, Any]:
-    """Backfill ~1 leg/hour for first-day review log."""
     now = _utc()
     legs = load_legs()
-    # keep only non-seed-sprint legs optionally — append synthetic
     for i in range(n):
         dt = now - timedelta(hours=n - i)
         scan = scan_market()
-        # vary sentiment along the day
         scan["sentiment"] = round(math.sin(i / n * math.pi * 2) * 0.12, 4)
         scan["volatility"] = round(0.3 + (i % 5) * 0.03, 4)
         decision = decide(scan)
@@ -345,7 +333,12 @@ def seed_24h(n: int = 24) -> dict[str, Any]:
     )
     meta = sprint_meta(legs)
     export = export_shadow(legs, meta)
-    return {"seeded": n, "fills": len(legs), "pnl": meta.get("shadow_pnl_usd"), "export": export.get("schema")}
+    return {
+        "seeded": n,
+        "fills": len(legs),
+        "pnl": meta.get("shadow_pnl_usd"),
+        "export": export.get("schema"),
+    }
 
 
 def status() -> dict[str, Any]:
@@ -363,7 +356,7 @@ def status() -> dict[str, Any]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="LIA 7-day shadow sprint")
-    ap.add_argument("--seed-24h", action="store_true", help="Backfill 24 hourly paper legs")
+    ap.add_argument("--seed-24h", action="store_true")
     ap.add_argument("--status", action="store_true")
     args = ap.parse_args()
     if args.status:
