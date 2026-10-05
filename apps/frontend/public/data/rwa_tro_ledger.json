@@ -1,0 +1,9 @@
+{
+  "schema": "rwa_tro_ledger/v1",
+  "total_minted": 1.0,
+  "total_burned": 1.0,
+  "circulating": 0.0,
+  "events_n": 2,
+  "updated": "2026-10-05T14:23:10Z",
+  "paper": true
+}

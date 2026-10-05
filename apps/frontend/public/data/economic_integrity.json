@@ -1,0 +1,11 @@
+{
+  "schema": "economic_validator/v1",
+  "ok": true,
+  "total_minted": 1.0,
+  "total_burned": 1.0,
+  "circulating": 0.0,
+  "expected_circulating": 0.0,
+  "supply_burn_ratio": 1.0,
+  "ts": "2026-10-05T14:23:10Z",
+  "note": "Paper ledger until on-chain TRO mint/burn wired"
+}
