@@ -1,7 +1,4 @@
-"""
-Post-trade analysis — intended vs executed → performance_delta.json
-Feeds StrategyOrchestrator real-weight penalties.
-"""
+"""Post-trade → performance_delta.json for orchestrator real weights."""
 from __future__ import annotations
 
 import json
@@ -30,14 +27,9 @@ def analyze(
     slip = None
     if intended_out and intended_out > 0:
         slip = (intended_out - executed_out) / intended_out
-    amount_delta = None
-    if intended_in and intended_in > 0:
-        # fraction of input not reflected if needed later
-        amount_delta = executed_out / intended_in if intended_in else None
     price_slip = None
     if intended_price and executed_price and intended_price > 0:
         price_slip = (intended_price - executed_price) / intended_price
-
     row = {
         "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "token_in": token_in,
@@ -49,7 +41,6 @@ def analyze(
         "executed_price": executed_price,
         "slippage": round(slip, 6) if slip is not None else None,
         "price_slippage": round(price_slip, 6) if price_slip is not None else None,
-        "amount_ratio": round(amount_delta, 6) if amount_delta is not None else None,
         "tx_hash": tx_hash,
         "strategy": strategy or "UNKNOWN",
         "paper": tx_hash is None,
@@ -76,29 +67,22 @@ def _read_log(limit: int = 200) -> list[dict[str, Any]]:
 
 def rebuild_delta() -> dict[str, Any]:
     rows = _read_log()
-    by_strat: dict[str, list[dict[str, Any]]] = {}
+    by_strat: dict[str, list] = {}
     for r in rows:
-        sid = str(r.get("strategy") or "UNKNOWN")
-        by_strat.setdefault(sid, []).append(r)
-
+        by_strat.setdefault(str(r.get("strategy") or "UNKNOWN"), []).append(r)
     strategies: dict[str, Any] = {}
     for sid, items in by_strat.items():
         real = [x for x in items if x.get("real")]
         slips = [x["slippage"] for x in real if x.get("slippage") is not None]
         avg_slip = sum(slips) / len(slips) if slips else None
-        # penalty weight 0.5..1.0 — high slip → lower weight
-        if avg_slip is None:
-            weight = 1.0
-        else:
-            weight = max(0.5, min(1.0, 1.0 - float(avg_slip) * 5.0))
+        weight = 1.0 if avg_slip is None else max(0.5, min(1.0, 1.0 - float(avg_slip) * 5.0))
         strategies[sid] = {
             "n_real": len(real),
             "n_total": len(items),
             "avg_slippage": round(avg_slip, 6) if avg_slip is not None else None,
             "dominance_weight": round(weight, 4),
-            "last_tx": (real[-1].get("tx_hash") if real else None),
+            "last_tx": real[-1].get("tx_hash") if real else None,
         }
-
     all_real = [x for x in rows if x.get("real")]
     all_slips = [x["slippage"] for x in all_real if x.get("slippage") is not None]
     delta = {
@@ -122,12 +106,7 @@ def rebuild_delta() -> dict[str, Any]:
     return delta
 
 
-def summary(limit: int = 50) -> dict[str, Any]:
-    return rebuild_delta()
-
-
 def main() -> None:
-    # Seed known dust swap if log empty
     if not LOG_PATH.is_file() or LOG_PATH.stat().st_size < 10:
         analyze(
             intended_out=0.004479,

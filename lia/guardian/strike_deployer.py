@@ -1,17 +1,4 @@
-"""
-Human-in-the-loop Strike Deployer.
-
-Workflow:
-  1. Brain intent → proposal file
-  2. Human reviews proposal
-  3. --execute-proposal <id> only if LIA_LIVE_TRADING=1
-
-Never auto-broadcasts a batch of 5 without per-proposal confirm.
-
-  PYTHONPATH=. python -m lia.guardian.strike_deployer --propose
-  PYTHONPATH=. python -m lia.guardian.strike_deployer --list
-  LIA_LIVE_TRADING=1 PYTHONPATH=. python -m lia.guardian.strike_deployer --execute-proposal PROP_ID
-"""
+"""Human-in-the-loop Strike Deployer — no auto-broadcast."""
 from __future__ import annotations
 
 import argparse
@@ -52,7 +39,6 @@ def preflight_check() -> Preflight:
 
     live = os.environ.get("LIA_LIVE_TRADING", "0").strip() in ("1", "true", "TRUE")
     checks["LIA_LIVE_TRADING"] = live
-
     cfg = load_beta_strike()
     acc = fetch_account(DEPLOYER)
     checks["deployer"] = acc
@@ -61,7 +47,6 @@ def preflight_check() -> Preflight:
         return Preflight(False, checks, "deployer_unreachable")
     if egld < cfg.min_wallet_egld_reserve:
         return Preflight(False, checks, f"egld_below_reserve_{cfg.min_wallet_egld_reserve}")
-
     try:
         import urllib.request
 
@@ -69,9 +54,7 @@ def preflight_check() -> Preflight:
         checks["api_ok"] = True
     except Exception as e:
         return Preflight(False, checks, f"api:{e}")
-
     checks["max_trade_egld"] = cfg.max_trade_size_egld
-    checks["slippage_bps"] = cfg.default_slippage_bps
     return Preflight(True, checks, "preflight_ok")
 
 
@@ -79,8 +62,7 @@ def _load_proposals() -> list[dict[str, Any]]:
     if not PROPOSALS.is_file():
         return []
     try:
-        d = json.loads(PROPOSALS.read_text(encoding="utf-8"))
-        return list(d.get("proposals") or [])
+        return list(json.loads(PROPOSALS.read_text(encoding="utf-8")).get("proposals") or [])
     except Exception:
         return []
 
@@ -88,13 +70,15 @@ def _load_proposals() -> list[dict[str, Any]]:
 def _save_proposals(items: list[dict[str, Any]]) -> None:
     DATA.mkdir(parents=True, exist_ok=True)
     PROPOSALS.write_text(
-        json.dumps({"updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "proposals": items}, indent=2),
+        json.dumps(
+            {"updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "proposals": items},
+            indent=2,
+        ),
         encoding="utf-8",
     )
 
 
 def propose_dust_sequence(*, n: int = 5) -> list[dict[str, Any]]:
-    """Create n dust-level proposals (not broadcast)."""
     from lia.guardian.beta_strike import load_beta_strike
 
     cfg = load_beta_strike()
@@ -108,10 +92,7 @@ def propose_dust_sequence(*, n: int = 5) -> list[dict[str, Any]]:
             "status": "pending_human",
             "action": "MICRO_SWAP_OR_TRANSFER",
             "size_egld": min(0.001, cfg.max_trade_size_egld),
-            "size_usd_cap": cfg.max_trade_size_usd,
-            "min_confidence": cfg.min_confidence_level,
             "pair": "EGLD→USDC",
-            "calldata_plan": "lia.calldata.swap.dust_egld_to_usdc_plan",
             "created": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "tx_hash": None,
             "note": "Await human --execute-proposal",
@@ -123,32 +104,19 @@ def propose_dust_sequence(*, n: int = 5) -> list[dict[str, Any]]:
 
 
 def execute_proposal(prop_id: str) -> dict[str, Any]:
-    """
-    Human-confirmed execute path.
-    Requires LIA_LIVE_TRADING=1. This build logs intent and does NOT auto-sign
-    unless UniversalExecutor is wired with PEM by ops — returns proposal status.
-    """
     live = os.environ.get("LIA_LIVE_TRADING", "0").strip() in ("1", "true", "TRUE")
     pf = preflight_check()
     if not live:
         return {"ok": False, "reason": "LIA_LIVE_TRADING_not_1", "preflight": asdict(pf)}
     if not pf.ok:
         return {"ok": False, "reason": pf.reason, "preflight": asdict(pf)}
-
     items = _load_proposals()
     prop = next((x for x in items if x.get("id") == prop_id), None)
     if not prop:
         return {"ok": False, "reason": "proposal_not_found"}
-    if prop.get("status") not in ("pending_human", "approved"):
-        return {"ok": False, "reason": f"bad_status:{prop.get('status')}"}
-
-    # Mark approved — actual broadcast is ops+executor (documented)
     prop["status"] = "human_confirmed_await_executor"
     prop["confirmed_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    prop["note"] = (
-        "Human confirmed. Run UniversalExecutor with dust plan manually; "
-        "then set status executed + tx_hash via --mark-executed."
-    )
+    prop["note"] = "Human confirmed — run executor then --mark-executed"
     _save_proposals(items)
     return {"ok": True, "proposal": prop, "preflight": asdict(pf)}
 
@@ -160,9 +128,7 @@ def mark_executed(prop_id: str, tx_hash: str) -> dict[str, Any]:
         return {"ok": False, "reason": "proposal_not_found"}
     prop["status"] = "executed"
     prop["tx_hash"] = tx_hash
-    prop["executed_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     _save_proposals(items)
-    # Feed learning loop
     try:
         from lia.brain.post_trade import analyze
 
@@ -189,7 +155,6 @@ def main() -> None:
     ap.add_argument("--mark-executed", nargs=2, metavar=("PROP_ID", "TX_HASH"))
     ap.add_argument("--preflight-only", action="store_true")
     args = ap.parse_args()
-
     if args.preflight_only:
         print(json.dumps(asdict(preflight_check()), indent=2))
         return
@@ -205,14 +170,12 @@ def main() -> None:
     if args.mark_executed:
         print(json.dumps(mark_executed(args.mark_executed[0], args.mark_executed[1]), indent=2))
         return
-
-    # default: preflight + status
     print(
         json.dumps(
             {
                 "preflight": asdict(preflight_check()),
                 "proposals": len(_load_proposals()),
-                "note": "Use --propose then --execute-proposal <id> with LIA_LIVE_TRADING=1",
+                "note": "--propose then --execute-proposal with LIA_LIVE_TRADING=1",
             },
             indent=2,
         )

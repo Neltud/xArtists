@@ -1,0 +1,16 @@
+{
+  "schema": "performance_delta/v1",
+  "updated": "2026-10-05T13:44:51Z",
+  "n_real": 1,
+  "avg_slippage_global": 0.066756,
+  "strategies": {
+    "STRAT_MICRO_PROOF": {
+      "n_real": 1,
+      "n_total": 1,
+      "avg_slippage": 0.066756,
+      "dominance_weight": 0.6662,
+      "last_tx": "c45847d433089839357edff157251b54c554abeacd548600f3b2ea09b5e25bd7"
+    }
+  },
+  "note": "Orchestrator multiplies shadow weights by dominance_weight"
+}

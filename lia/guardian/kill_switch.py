@@ -1,6 +1,4 @@
-"""
-Hard-lock kill-switch + Black Swan (flash-crash) detector.
-"""
+"""Hard-lock kill-switch + Black Swan flash-crash detector."""
 from __future__ import annotations
 
 import json
@@ -15,10 +13,8 @@ ROOT = Path(__file__).resolve().parents[2]
 STATE = ROOT / "data" / "kill_switch.json"
 PRICE_HIST = ROOT / "data" / "egld_price_ticks.json"
 API = "https://api.multiversx.com"
-
-# Flash crash: drop > threshold within window
-FLASH_DROP_PCT = 0.08  # 8%
-FLASH_WINDOW_SEC = 15 * 60  # 15 minutes
+FLASH_DROP_PCT = 0.08
+FLASH_WINDOW_SEC = 15 * 60
 
 
 @dataclass
@@ -126,9 +122,6 @@ def check_flash_crash(
     drop_pct: float = FLASH_DROP_PCT,
     window_sec: int = FLASH_WINDOW_SEC,
 ) -> dict[str, Any]:
-    """
-    Record price tick; if drop from peak in window exceeds threshold → Black Swan lock.
-    """
     now = time.time()
     px = _fetch_egld_usd()
     ticks: list[dict[str, Any]] = []
@@ -141,18 +134,12 @@ def check_flash_crash(
             ticks = []
     if px is not None:
         ticks.append({"t": now, "px": px})
-    # keep 2h
     ticks = [x for x in ticks if now - float(x.get("t") or 0) < 7200][-200:]
     PRICE_HIST.parent.mkdir(parents=True, exist_ok=True)
     PRICE_HIST.write_text(json.dumps(ticks), encoding="utf-8")
 
     window = [x for x in ticks if now - float(x.get("t") or 0) <= window_sec]
-    result: dict[str, Any] = {
-        "px": px,
-        "window_n": len(window),
-        "triggered": False,
-        "drop_pct": None,
-    }
+    result: dict[str, Any] = {"px": px, "window_n": len(window), "triggered": False, "drop_pct": None}
     if len(window) < 2 or px is None:
         return result
     peak = max(float(x["px"]) for x in window)
