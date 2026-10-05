@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.86.0](https://github.com/Neltud/xArtists/compare/v0.85.0...v0.86.0) (2026-10-05)
+
+
+### Features
+
+* **P3:** guardian beta enforcement, strategy registry, position sizing, terminal risk panel ([a8cd24a](https://github.com/Neltud/xArtists/commit/a8cd24a3a301a9fe594cfafa42c431ca3f981fbf))
+* **P3:** sprint uses brain strategies+sizing; holder risk vs beta limits ([52fa190](https://github.com/Neltud/xArtists/commit/52fa1907b2c78ef64ac7b177c0e9e280048d8ea2))
+
 ## [0.85.0](https://github.com/Neltud/xArtists/compare/v0.84.0...v0.85.0) (2026-10-05)
 
 
