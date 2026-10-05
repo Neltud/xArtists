@@ -1,0 +1,50 @@
+{
+  "updated": "2026-10-05T13:52:00Z",
+  "note": "Slots 1-3 executed; 4-5 pending_human for UI",
+  "proposals": [
+    {
+      "id": "prop_9f96056d95",
+      "slot": 1,
+      "status": "executed",
+      "action": "ESDT TRO dust",
+      "size_egld": 0.001,
+      "tx_hash": "1b56321b6b3cf942b82b8b434378bfe320309b6a45330b5d54f8e477e722444f"
+    },
+    {
+      "id": "prop_42f6441638",
+      "slot": 2,
+      "status": "executed",
+      "action": "wrapEgld",
+      "size_egld": 0.001,
+      "tx_hash": "b843b2cc76d081a87499746ff01cf245344886411c855b8302f1a874ea707538"
+    },
+    {
+      "id": "prop_f7223792b2",
+      "slot": 3,
+      "status": "executed",
+      "action": "WEGLD→USDC",
+      "size_egld": 0.001,
+      "tx_hash": "c45847d433089839357edff157251b54c554abeacd548600f3b2ea09b5e25bd7"
+    },
+    {
+      "id": "prop_3c80ce1c74",
+      "slot": 4,
+      "status": "pending_human",
+      "action": "MICRO_SWAP_OR_TRANSFER",
+      "size_egld": 0.001,
+      "pair": "EGLD→USDC",
+      "tx_hash": null,
+      "note": "Await human"
+    },
+    {
+      "id": "prop_f348cd178d",
+      "slot": 5,
+      "status": "pending_human",
+      "action": "MICRO_SWAP_OR_TRANSFER",
+      "size_egld": 0.001,
+      "pair": "EGLD→USDC",
+      "tx_hash": null,
+      "note": "Await human"
+    }
+  ]
+}
