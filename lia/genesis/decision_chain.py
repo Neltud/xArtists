@@ -1,10 +1,6 @@
 """
 Decision-chain stress test — autonomous THOUGHT, blocked ACTION.
 
-Chain per cycle:
-  BRAIN → SIZING → CALLDATA → PREFLIGHT → PROPOSAL (broadcast=false)
-
-  PYTHONPATH=. python -m lia.genesis.decision_chain
   PYTHONPATH=. python -m lia.genesis.decision_chain --cycles 5
 """
 from __future__ import annotations
@@ -47,8 +43,8 @@ def _load_shadow() -> dict[str, float]:
 
 def _save_shadow(p: dict[str, float]) -> None:
     DATA.mkdir(parents=True, exist_ok=True)
-    p["updated"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # type: ignore
-    SHADOW.write_text(json.dumps(p, indent=2), encoding="utf-8")
+    payload = {**p, "updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+    SHADOW.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
 def _egld_usd() -> float:
@@ -69,10 +65,9 @@ def run_cycle(cycle: int, *, shadow: dict[str, float]) -> dict[str, Any]:
     pid = f"dprop_{uuid.uuid4().hex[:10]}"
     chain: list[str] = []
 
-    # --- 1 BRAIN ---
     from lia.brain.agent_constraints import assert_tradable_asset
     from lia.brain.orchestrator import orchestrate
-    from lia.brain.strategies import default_action
+    from lia.brain.strategies import action_for
 
     rwa_avg = 50.0
     try:
@@ -95,7 +90,7 @@ def run_cycle(cycle: int, *, shadow: dict[str, float]) -> dict[str, Any]:
         liquidity=0.55,
     )
     strategy = str(orch.get("active") or "STRAT_YIELD_OPTIMIZER")
-    action = default_action(strategy)  # type: ignore
+    action = action_for(strategy)  # type: ignore
     guard = assert_tradable_asset(target_asset_type="TOKEN")
     reason = f"{orch.get('reason')}|rwa_avg={rwa_avg:.1f}|sent={sent:.2f}"
     _log("DECISION_MADE", cycle=cycle, strategy=strategy, action=action, reason=reason, pid=pid)
@@ -115,7 +110,6 @@ def run_cycle(cycle: int, *, shadow: dict[str, float]) -> dict[str, Any]:
         _log("SKIP", cycle=cycle, pid=pid, reason=prop["reason"])
         return prop
 
-    # --- 2 SIZING ---
     from lia.brain.position_sizing import size_position
 
     sz = size_position(
@@ -126,41 +120,29 @@ def run_cycle(cycle: int, *, shadow: dict[str, float]) -> dict[str, Any]:
         strategy=strategy,
     )
     egld_px = _egld_usd()
-    size_usd = min(sz.size_usd, 5.0)  # stress cap
+    size_usd = min(sz.size_usd, 5.0)
     amount_egld = round(size_usd / egld_px, 6) if egld_px else 0.001
     amount_egld = max(0.001, min(0.005, amount_egld))
-    _log(
-        "SIZING_CALCULATED",
-        cycle=cycle,
-        pid=pid,
-        size_usd=size_usd,
-        amount_egld=amount_egld,
-        method=sz.method,
-        note=sz.note,
-    )
+    _log("SIZING_CALCULATED", cycle=cycle, pid=pid, size_usd=size_usd, amount_egld=amount_egld, method=sz.method)
     chain.append("SIZING_CALCULATED")
 
-    # --- 3 CALLDATA ---
     from lia.calldata.swap import dust_egld_to_usdc_plan
 
     plan = dust_egld_to_usdc_plan(amount_egld=amount_egld, egld_usd=egld_px)
     steps = plan.get("steps") or []
-    # Ready-to-sign objects (same fields a broadcaster would use)
-    txs = []
-    for st in steps:
-        txs.append(
-            {
-                "receiver": st.get("receiver"),
-                "value": st.get("value"),
-                "data": st.get("data"),
-                "gasLimit": st.get("gas_limit"),
-                "label": st.get("label"),
-            }
-        )
+    txs = [
+        {
+            "receiver": st.get("receiver"),
+            "value": st.get("value"),
+            "data": st.get("data"),
+            "gasLimit": st.get("gas_limit"),
+            "label": st.get("label"),
+        }
+        for st in steps
+    ]
     _log("PAYLOAD_GENERATED", cycle=cycle, pid=pid, steps=len(txs), slippage_bps=plan.get("slippage_guard_bps"))
     chain.append("PAYLOAD_GENERATED")
 
-    # --- 4 PREFLIGHT ---
     preflight: dict[str, Any] = {"ok": True, "checks": {}}
     try:
         from lia.guardian.kill_switch import get_kill_switch
@@ -186,17 +168,17 @@ def run_cycle(cycle: int, *, shadow: dict[str, float]) -> dict[str, Any]:
     _log(step_name, cycle=cycle, pid=pid, preflight=preflight)
     chain.append(step_name)
 
-    # --- 5 PROPOSAL ---
-    expected_usdc = float(plan.get("min_usdc") or 0) / (1.0 - float(plan.get("slippage_guard_bps") or 100) / 10000.0)
+    expected_usdc = float(plan.get("min_usdc") or 0) / max(
+        1e-9, (1.0 - float(plan.get("slippage_guard_bps") or 100) / 10000.0)
+    )
     min_usdc = float(plan.get("min_usdc") or 0)
     slip_sim = {
         "expected_usdc": round(expected_usdc, 6),
         "min_out_usdc": round(min_usdc, 6),
         "guard_bps": plan.get("slippage_guard_bps"),
-        "impact_note": "min_out uses historical slip guard; not full orderbook depth",
+        "impact_note": "min_out uses historical slip guard",
     }
 
-    # Virtual impact on shadow (feel before sign)
     if preflight.get("ok") and action == "BUY":
         shadow["egld"] = max(0.0, float(shadow["egld"]) - amount_egld)
         shadow["usdc"] = float(shadow["usdc"]) + min_usdc
@@ -248,7 +230,7 @@ def run_stress(*, cycles: int = 5) -> dict[str, Any]:
         "ready_to_sign": ready,
         "blocked": blocked,
         "skipped": skipped,
-        "success": ready + skipped + blocked == cycles,  # all cycles completed pipeline
+        "success": ready + skipped + blocked == cycles,
         "broadcast": False,
         "proposals": proposals,
         "shadow_after": shadow,

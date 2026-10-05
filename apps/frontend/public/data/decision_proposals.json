@@ -1,0 +1,62 @@
+{
+  "schema": "decision_chain_stress/v1",
+  "cycles": 5,
+  "ready_to_sign": 5,
+  "blocked": 0,
+  "skipped": 0,
+  "success": true,
+  "broadcast": false,
+  "note": "Machine proposes. Human decides. No TX sent.",
+  "proposals": [
+    {
+      "cycle": 1,
+      "status": "ready_to_sign",
+      "action_type": "SWAP",
+      "pair": "EGLD→USDC",
+      "strategy": "STRAT_YIELD_OPTIMIZER",
+      "amount_egld": 0.005,
+      "sign_enabled": false,
+      "broadcast": false
+    },
+    {
+      "cycle": 2,
+      "status": "ready_to_sign",
+      "action_type": "SWAP",
+      "pair": "EGLD→USDC",
+      "strategy": "STRAT_YIELD_OPTIMIZER",
+      "amount_egld": 0.005,
+      "sign_enabled": false,
+      "broadcast": false
+    },
+    {
+      "cycle": 3,
+      "status": "ready_to_sign",
+      "action_type": "SWAP",
+      "pair": "EGLD→USDC",
+      "strategy": "STRAT_YIELD_OPTIMIZER",
+      "amount_egld": 0.005,
+      "sign_enabled": false,
+      "broadcast": false
+    },
+    {
+      "cycle": 4,
+      "status": "ready_to_sign",
+      "action_type": "SWAP",
+      "pair": "EGLD→USDC",
+      "strategy": "STRAT_YIELD_OPTIMIZER",
+      "amount_egld": 0.005,
+      "sign_enabled": false,
+      "broadcast": false
+    },
+    {
+      "cycle": 5,
+      "status": "ready_to_sign",
+      "action_type": "SWAP",
+      "pair": "EGLD→USDC",
+      "strategy": "STRAT_YIELD_OPTIMIZER",
+      "amount_egld": 0.005,
+      "sign_enabled": false,
+      "broadcast": false
+    }
+  ]
+}
