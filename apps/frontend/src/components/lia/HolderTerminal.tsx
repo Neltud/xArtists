@@ -1,5 +1,5 @@
 /**
- * P3 Holder terminal — institutional SHADOW metrics + Beta risk panel (locked).
+ * P3.5 Holder terminal — SHADOW metrics, Beta risk, active strategy (orchestrator).
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -119,14 +119,17 @@ export default function HolderTerminal() {
   const [exp, setExp] = useState<ExportSnap | null>(null)
   const [health, setHealth] = useState('…')
   const [stratCount, setStratCount] = useState(13)
+  const [activeStrat, setActiveStrat] = useState<string>('—')
+  const [switchReason, setSwitchReason] = useState('')
 
   useEffect(() => {
     let c = false
     const load = async () => {
-      const [s, e, cat] = await Promise.all([
+      const [s, e, cat, orch] = await Promise.all([
         loadJson('lia_shadow_sprint.json'),
         loadJson('lia_shadow_export.json'),
         loadJson('strategies_catalog.json'),
+        loadJson('strategy_orchestrator.json'),
       ])
       if (c) return
       setSprint((s as Sprint) || null)
@@ -134,6 +137,10 @@ export default function HolderTerminal() {
       setHealth(s ? 'Brain · export OK' : 'Awaiting shadow data')
       const items = (cat as { items?: unknown[] } | null)?.items
       if (Array.isArray(items)) setStratCount(items.length)
+      const o = orch as { active?: string; switch_reason?: string; last_reason?: string } | null
+      if (o?.active) setActiveStrat(String(o.active))
+      if (o?.switch_reason) setSwitchReason(String(o.switch_reason))
+      else if (o?.last_reason) setSwitchReason(String(o.last_reason))
     }
     void load()
     const id = window.setInterval(() => void load(), 20_000)
@@ -151,7 +158,8 @@ export default function HolderTerminal() {
   const dd = maxDrawdown(curve)
   const sharpeProxy =
     dd != null && dd > 0.0001 && typeof pnl === 'number' ? pnl / (dd * start) : null
-  const exposureUsd = typeof now === 'number' ? Math.min(BETA_LIMITS.maxTradeUsd, Math.abs(Number(pnl) || 0)) : 0
+  const exposureUsd =
+    typeof now === 'number' ? Math.min(BETA_LIMITS.maxTradeUsd, Math.abs(Number(pnl) || 0)) : 0
 
   return (
     <section className="space-y-5 rounded-2xl border border-white/[0.06] bg-gradient-to-b from-white/[0.03] to-transparent p-4 sm:p-5">
@@ -237,8 +245,18 @@ export default function HolderTerminal() {
           </div>
         </div>
         <p className="text-[10px] text-zinc-500">
-          Shadow exposure proxy {asText(exposureUsd.toFixed(2))} USD · strategies loaded {stratCount} ·
-          live path requires ops unlock
+          Shadow exposure proxy {asText(exposureUsd.toFixed(2))} USD · strategies {stratCount} · live
+          path requires ops unlock
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-cyan-500/15 bg-cyan-500/[0.03] p-3 space-y-1">
+        <p className="text-[10px] uppercase tracking-wider text-cyan-200/70 font-semibold">
+          Active strategy
+        </p>
+        <p className="text-sm font-medium text-white mono">{asText(activeStrat)}</p>
+        <p className="text-[11px] text-zinc-500 leading-snug">
+          {asText(switchReason || 'Hysteresis stable · waiting for dominance')}
         </p>
       </div>
 
