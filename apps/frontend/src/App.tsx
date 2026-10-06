@@ -30,6 +30,7 @@ const GoLivePage = lazy(() => import('./pages/GoLivePage'))
 const CommandCenterPage = lazy(() => import('./pages/CommandCenterPage'))
 const MyPacksPage = lazy(() => import('./pages/MyPacksPage'))
 const LiaPage = lazy(() => import('./pages/LiaPage'))
+const TcaClassroom = lazy(() => import('./pages/TcaClassroom'))
 const TroPage = lazy(() => import('./pages/TroPage'))
 const IdentityPage = lazy(() => import('./pages/IdentityPage'))
 const TradingPage = lazy(() => import('./pages/TradingPage'))
@@ -104,6 +105,8 @@ export default function App() {
                   <Route path="/portfolio" element={<PortfolioPage />} />
                   <Route path="/slot" element={<SlotPage />} />
                   <Route path="/lia" element={<LiaPage />} />
+                  <Route path="/tca" element={<TcaClassroom />} />
+                  <Route path="/classroom" element={<TcaClassroom />} />
                   <Route path="/go-live" element={<GoLivePage />} />
                   <Route path="/venues" element={<VenuePage />} />
                   <Route path="/identity" element={<IdentityPage />} />
