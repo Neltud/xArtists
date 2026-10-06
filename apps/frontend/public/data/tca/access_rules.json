@@ -1,0 +1,19 @@
+{
+  "schema": "tca_access_rules/v1",
+  "primary_gate": "pack_pulse",
+  "rules": [
+    {
+      "id": "pulse_one_year",
+      "pack_ids": ["pulse", "pack_pulse", "PULSE"],
+      "access": "full",
+      "duration_days": 365,
+      "features": ["classroom", "qa_rag", "hd", "agenda"]
+    },
+    {
+      "id": "observer",
+      "access": "lobby",
+      "features": ["sample_lesson"]
+    }
+  ],
+  "optional_subs": { "enabled": false }
+}
