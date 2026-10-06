@@ -1,5 +1,29 @@
 # Changelog — xArtists
 
+## [0.89.0](https://github.com/Neltud/xArtists/compare/v0.88.0...v0.89.0) (2026-10-06)
+
+
+### Features
+
+* **TCA RAG:** knowledge index, cognitive loop stub, thinking Q&A, dynamic cues ([8137d8b](https://github.com/Neltud/xArtists/commit/8137d8ba8cb3c4a1157383aab75f1fcdae880c21))
+* **TCA T1:** cinematic classroom page, typed beat cues, /tca route + nav ([cf5b90b](https://github.com/Neltud/xArtists/commit/cf5b90bf6b548e17352cfab4176d674749921c20))
+* **TCA T2:** classroom projection, dim lights, TTS, agenda HUD, improved avatar controller ([9256682](https://github.com/Neltud/xArtists/commit/9256682a29156a6346bb1a72e13979eace09cd02))
+* **TCA T2:** multi-professor agenda, projection/dim cues, classroom TTS+lights+canvas zoom ([5e5c7b3](https://github.com/Neltud/xArtists/commit/5e5c7b3362ac7deb2daac5b9720949a8037a4a3e))
+* **TCA T3:** holographic soul profiles, emotion/gaze cues, prosody + micro-life ([42577b0](https://github.com/Neltud/xArtists/commit/42577b00aedde72fc4a712cf17f841d61f5d341a))
+* **TCA:** graft hologram material, prosody, micro-life, EMOTION cues into TcaClassroom ([0a3a77b](https://github.com/Neltud/xArtists/commit/0a3a77bbb94f7bb2bf4af9815c986a6534abdb8a))
+* **TCA:** hologram ShaderMaterial helper + prosody util for classroom ([3c2973e](https://github.com/Neltud/xArtists/commit/3c2973e5cfb4b5305fab0d550e17aaf1f416e47d))
+* **TCA:** lip-sync visemes + voice engine synced to TTS words ([710577e](https://github.com/Neltud/xArtists/commit/710577e3fb17725a9da3d11016397b017ecd2207))
+* **TCA:** MentorAskBar + wire notes for RAG ask loop ([ce06b95](https://github.com/Neltud/xArtists/commit/ce06b957a4797754c494d2ca111308e8ca3fdec5))
+* **TCA:** product nav TCA Class + week-1 cues + sessions_today ([a8ee279](https://github.com/Neltud/xArtists/commit/a8ee2794e4cff85efb9a34f6d36b46123f5347e0))
+* **TCA:** register /tca and /classroom routes ([38933cb](https://github.com/Neltud/xArtists/commit/38933cb5fc76b19409de955f1a95967eaca81219))
+* **TCA:** sync voice TTS with viseme lip-sync on professor mouth ([9522607](https://github.com/Neltud/xArtists/commit/9522607ed69470d71daf52f44f5a12b590819f06))
+* **TCA:** virtual classroom architecture — scheduler, curriculum, avatar stubs + Leonardo month-1 ([9902400](https://github.com/Neltud/xArtists/commit/9902400a9fdd6229e005b014754d7c65e79f9546))
+
+
+### Documentation
+
+* **TCA:** voice + lip-sync integration guide ([e096ac4](https://github.com/Neltud/xArtists/commit/e096ac4d2335712aa68c7914757d8ab72f4d5646))
+
 ## [0.88.0](https://github.com/Neltud/xArtists/compare/v0.87.0...v0.88.0) (2026-10-05)
 
 
