@@ -1,4 +1,4 @@
-/** Sprint 1.1 — server verify-access client. No FULL from localStorage in PROD. */
+/** Sprint 1.1 / 1.1b — verify-access + optional SIWX sign before FULL. */
 import type { TcaAccessResult } from './tcaAccess'
 
 const TOKEN_KEY = 'xartists_tca_access_jwt'
@@ -10,12 +10,11 @@ export type VerifyAccessResponse = {
   reason: string
   expiryDate: string | null
   source?: string
-  identifier?: string | null
   token?: string | null
-  expiresIn?: number | null
   sampleLessonId?: string
   packId?: string
   error?: string
+  siwx?: string
 }
 
 function apiBase(): string {
@@ -36,12 +35,41 @@ export function storeAccessToken(token: string | null | undefined) {
   }
 }
 
-export function readAccessToken(): string | null {
+async function fetchChallenge(address: string): Promise<{
+  message: string
+  nonce: string
+  require_siwx?: boolean
+} | null> {
+  const base = apiBase()
+  if (!base) return null
   try {
-    return sessionStorage.getItem(TOKEN_KEY)
+    const r = await fetch(`${base}/v1/access/challenge`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address }),
+    })
+    if (!r.ok) return null
+    return (await r.json()) as { message: string; nonce: string; require_siwx?: boolean }
   } catch {
     return null
   }
+}
+
+/** Best-effort wallet message sign (xPortal / extension). Returns hex sig or null. */
+export async function trySignAccessMessage(message: string): Promise<string | null> {
+  try {
+    const w = window as unknown as {
+      elrondWallet?: { signMessage?: (m: string) => Promise<{ signature?: string }> }
+      multiversxWallet?: { signMessage?: (m: Uint8Array) => Promise<string> }
+    }
+    if (w.elrondWallet?.signMessage) {
+      const out = await w.elrondWallet.signMessage(message)
+      return out?.signature || null
+    }
+  } catch {
+    /* user rejected or unavailable */
+  }
+  return null
 }
 
 export async function verifyAccessRemote(
@@ -74,27 +102,36 @@ export async function verifyAccessRemote(
   const base = apiBase()
   if (!base) {
     storeAccessToken(null)
-    return {
-      access: { ...fallbackSample, reason: 'no_access_api_base' },
-      raw: null,
-      fromServer: false,
-    }
+    return { access: { ...fallbackSample, reason: 'no_access_api_base' }, raw: null, fromServer: false }
+  }
+
+  let signature: string | null = null
+  let message = ''
+  let nonce = ''
+  const ch = await fetchChallenge(address)
+  if (ch?.message) {
+    message = ch.message
+    nonce = ch.nonce
+    signature = await trySignAccessMessage(message)
   }
 
   try {
+    const body: Record<string, string> = { address }
+    if (signature && message) {
+      body.signature = signature
+      body.message = message
+      if (nonce) body.nonce = nonce
+    }
     const r = await fetch(`${base}/v1/verify-access`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ address }),
+      body: JSON.stringify(body),
     })
     const data = (await r.json()) as VerifyAccessResponse
     if (!r.ok || !data.ok) {
       storeAccessToken(null)
       return {
-        access: {
-          ...fallbackSample,
-          reason: data.reason || data.error || 'verify_http_error',
-        },
+        access: { ...fallbackSample, reason: data.reason || data.error || 'verify_http_error' },
         raw: data,
         fromServer: true,
       }
@@ -121,10 +158,6 @@ export async function verifyAccessRemote(
     }
   } catch {
     storeAccessToken(null)
-    return {
-      access: { ...fallbackSample, reason: 'verify_network_error' },
-      raw: null,
-      fromServer: false,
-    }
+    return { access: { ...fallbackSample, reason: 'verify_network_error' }, raw: null, fromServer: false }
   }
 }
