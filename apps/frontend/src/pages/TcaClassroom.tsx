@@ -1,12 +1,13 @@
 /**
- * TCA Classroom T2 — projection board, dim lights, TTS, multi-professor agenda.
- * GLB ready when /models/tca/{id}.glb exists; procedural professor until then.
- * No trading / ledger side-effects.
+ * TCA Classroom — T2/T3 graft:
+ * hologram material · prosody TTS · micro-movement · EMOTION cues
+ * No trading side-effects.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { applyProsody, createHologramMaterial } from '../components/tca/hologramMaterial'
 
 type Cue = {
   timestamp: number
@@ -22,12 +23,35 @@ type CuePack = {
   cues?: Cue[]
 }
 
+type SpeechStyle = {
+  pitch?: number
+  speed_multiplier?: number
+  pause_frequency?: number
+  pitch_variation?: number
+}
+
+type HoloSettings = {
+  glow_color?: string
+  flicker_rate?: number
+  scanline_opacity?: number
+  opacity_pulse?: number
+  base_opacity?: number
+}
+
 type Professor = {
   id: string
   display_name?: string
   epoch?: string
   perspective?: string
   room?: { board?: string; ambient?: number }
+  personality?: {
+    tone?: string
+    speech_style?: SpeechStyle
+    gesture_style?: { intensity?: number; frequency?: number }
+    look_style?: { eye_contact_intensity?: number; head_tilt_angle?: number }
+    color_palette?: { primary_glow?: string; secondary_accent?: string }
+  }
+  hologram_settings?: HoloSettings
 }
 
 type AgendaMonth = {
@@ -53,37 +77,63 @@ async function loadJson<T>(name: string): Promise<T | null> {
   return null
 }
 
-function speak(text: string, lang = 'en') {
+function emotionSpeechMod(
+  base: SpeechStyle | undefined,
+  emotion: string,
+): { pitch: number; rate: number } {
+  let pitch = base?.pitch ?? 1
+  let rate = base?.speed_multiplier ?? 1
+  if (emotion === 'dramatic') {
+    pitch *= 0.94
+    rate *= 0.92
+  } else if (emotion === 'curious') {
+    pitch *= 1.06
+    rate *= 1.02
+  } else if (emotion === 'authoritative') {
+    pitch *= 0.97
+    rate *= 0.88
+  } else if (emotion === 'thinking') {
+    rate *= 0.85
+  }
+  return { pitch, rate }
+}
+
+function speakWithSoul(
+  text: string,
+  lang: string,
+  speech: SpeechStyle | undefined,
+  emotion: string,
+) {
   try {
     window.speechSynthesis?.cancel()
     const u = new SpeechSynthesisUtterance(text)
-    u.lang = lang.startsWith('it') ? 'it-IT' : lang.startsWith('fr') ? 'fr-FR' : lang.startsWith('ru') ? 'ru-RU' : lang.startsWith('nl') ? 'nl-NL' : 'en-GB'
-    u.rate = 0.92
+    u.lang = lang.startsWith('it')
+      ? 'it-IT'
+      : lang.startsWith('fr')
+        ? 'fr-FR'
+        : lang.startsWith('ru')
+          ? 'ru-RU'
+          : lang.startsWith('nl')
+            ? 'nl-NL'
+            : 'en-GB'
+    const mod = emotionSpeechMod(speech, emotion)
+    applyProsody(u, { pitch: mod.pitch, rate: mod.rate })
     window.speechSynthesis?.speak(u)
   } catch {
     /* */
   }
 }
 
-function makeProceduralProfessor(): THREE.Group {
+function makeProceduralProfessor(holo: THREE.ShaderMaterial): THREE.Group {
   const g = new THREE.Group()
   g.name = 'professor'
-  const robe = new THREE.Mesh(
-    new THREE.CapsuleGeometry(0.38, 1.15, 6, 12),
-    new THREE.MeshStandardMaterial({ color: 0x5c4a32, roughness: 0.75 }),
-  )
+  const robe = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 1.15, 6, 12), holo)
   robe.position.y = 1.05
-  robe.castShadow = true
-  const head = new THREE.Mesh(
-    new THREE.SphereGeometry(0.3, 20, 20),
-    new THREE.MeshStandardMaterial({ color: 0xc9a882, roughness: 0.55 }),
-  )
+  robe.castShadow = false
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 20, 20), holo.clone())
   head.position.y = 2.0
   head.name = 'head'
-  const jaw = new THREE.Mesh(
-    new THREE.BoxGeometry(0.18, 0.06, 0.12),
-    new THREE.MeshStandardMaterial({ color: 0xb08968 }),
-  )
+  const jaw = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.06, 0.12), holo.clone())
   jaw.position.set(0, 1.82, 0.22)
   jaw.name = 'jaw'
   g.add(robe, head, jaw)
@@ -98,7 +148,6 @@ function makeProjectionTexture(title: string): THREE.CanvasTexture {
   const ctx = c.getContext('2d')!
   ctx.fillStyle = '#0a0a0a'
   ctx.fillRect(0, 0, c.width, c.height)
-  // soft vignette art plate
   const grd = ctx.createRadialGradient(512, 560, 80, 512, 600, 520)
   grd.addColorStop(0, '#c4a574')
   grd.addColorStop(0.45, '#6b5344')
@@ -111,8 +160,7 @@ function makeProjectionTexture(title: string): THREE.CanvasTexture {
   ctx.fillStyle = '#f5e6c8'
   ctx.font = '600 42px Georgia, serif'
   ctx.textAlign = 'center'
-  const lines = title.length > 42 ? [title.slice(0, 40) + '…'] : [title]
-  ctx.fillText(lines[0], 512, 160)
+  ctx.fillText(title.length > 42 ? title.slice(0, 40) + '…' : title, 512, 160)
   ctx.font = '28px Georgia, serif'
   ctx.fillStyle = '#b8a990'
   ctx.fillText('TCA · projected study plate', 512, 1180)
@@ -133,10 +181,17 @@ export default function TcaClassroom() {
   const keyRef = useRef<THREE.DirectionalLight | null>(null)
   const boardMatRef = useRef<THREE.MeshStandardMaterial | null>(null)
   const jawRef = useRef<THREE.Object3D | null>(null)
+  const professorRef = useRef<THREE.Object3D | null>(null)
+  const holoMatsRef = useRef<THREE.ShaderMaterial[]>([])
   const mixerRef = useRef<THREE.AnimationMixer | null>(null)
   const actionsRef = useRef<Record<string, THREE.AnimationAction>>({})
   const targetAmbient = useRef(0.4)
   const projectOn = useRef(false)
+  const emotionRef = useRef('calm')
+  const gestureAmpRef = useRef(1)
+  const gazeModeRef = useRef('user_camera')
+  const speechStyleRef = useRef<SpeechStyle | undefined>(undefined)
+  const headTiltRef = useRef(0.08)
 
   const [pack, setPack] = useState<CuePack | null>(null)
   const [professors, setProfessors] = useState<Professor[]>([])
@@ -147,11 +202,19 @@ export default function TcaClassroom() {
   const [subtitle, setSubtitle] = useState('')
   const [status, setStatus] = useState<'IDLE' | 'PLAYING' | 'PROJECTING' | 'ENDED'>('IDLE')
   const [analysisNote, setAnalysisNote] = useState('')
+  const [emotionLabel, setEmotionLabel] = useState('calm')
 
   const prof = useMemo(
     () => professors.find(p => p.id === professorId) || professors[0],
     [professors, professorId],
   )
+
+  useEffect(() => {
+    speechStyleRef.current = prof?.personality?.speech_style
+    headTiltRef.current = prof?.personality?.look_style?.head_tilt_angle ?? 0.08
+    const gi = prof?.personality?.gesture_style?.intensity ?? 0.55
+    gestureAmpRef.current = 0.6 + gi
+  }, [prof])
 
   useEffect(() => {
     let c = false
@@ -170,25 +233,75 @@ export default function TcaClassroom() {
         if (cues.professor_id) setProfessorId(cues.professor_id)
       } else {
         const offline: CuePack = {
-          title: 'Sfumato — first projection',
+          title: 'Sfumato — holographic mentor',
           professor_id: 'leonardo',
-          total_duration_s: 55,
+          total_duration_s: 58,
           cues: [
+            { timestamp: 0, type: 'EMOTION', payload: { emotion: 'calm' } },
+            { timestamp: 0, type: 'GAZE_TARGET', payload: { target: 'user_camera' } },
+            { timestamp: 0, type: 'MICRO_MOVEMENT', payload: { breathing: true, blink: true } },
             { timestamp: 0, type: 'TEXT', payload: { text: 'Welcome to my atelier.' } },
+            { timestamp: 0, type: 'AUDIO', payload: { text: 'Welcome to my atelier.' } },
             { timestamp: 0, type: 'ANIMATION', payload: { animation_name: 'Idle' } },
             { timestamp: 5, type: 'CAMERA', payload: { camera_pos: { x: -0.2, y: 1.75, z: 2.4 }, look_at: [-0.6, 1.9, -1] } },
-            { timestamp: 6, type: 'TEXT', payload: { text: 'Tonight we study sfumato — smoke between light and form.' } },
-            { timestamp: 6, type: 'AUDIO', payload: { text: 'Tonight we study sfumato — smoke between light and form.' } },
+            { timestamp: 6, type: 'EMOTION', payload: { emotion: 'curious' } },
+            {
+              timestamp: 6,
+              type: 'TEXT',
+              payload: { text: 'Tonight we study sfumato — smoke between light and form.' },
+            },
+            {
+              timestamp: 6,
+              type: 'AUDIO',
+              payload: { text: 'Tonight we study sfumato — smoke between light and form.' },
+            },
             { timestamp: 6, type: 'ANIMATION', payload: { animation_name: 'Explain' } },
             { timestamp: 12, type: 'LIGHTS', payload: { ambient: 0.12, dim: true } },
-            { timestamp: 13, type: 'PROJECT', payload: { on: true, title: 'Sfumato study plate', analysis: 'Process · Renaissance optics · soft edge' } },
-            { timestamp: 14, type: 'CAMERA', payload: { camera_pos: { x: 0.9, y: 1.55, z: 2.0 }, look_at: [1.15, 1.55, -3.5] } },
-            { timestamp: 28, type: 'TEXT', payload: { text: 'Notice: no hard contour — value does the drawing.' } },
-            { timestamp: 28, type: 'AUDIO', payload: { text: 'Notice: no hard contour — value does the drawing.' } },
+            {
+              timestamp: 13,
+              type: 'PROJECT',
+              payload: {
+                on: true,
+                title: 'Sfumato study plate',
+                analysis: 'Process · Renaissance optics · soft edge',
+              },
+            },
+            { timestamp: 13, type: 'GAZE_TARGET', payload: { target: 'board' } },
+            { timestamp: 14, type: 'EMOTION', payload: { emotion: 'thinking' } },
+            {
+              timestamp: 14,
+              type: 'CAMERA',
+              payload: { camera_pos: { x: 0.9, y: 1.55, z: 2.0 }, look_at: [1.15, 1.55, -3.5] },
+            },
+            {
+              timestamp: 28,
+              type: 'TEXT',
+              payload: { text: 'Notice: no hard contour — value does the drawing.' },
+            },
+            {
+              timestamp: 28,
+              type: 'AUDIO',
+              payload: { text: 'Notice: no hard contour — value does the drawing.' },
+            },
             { timestamp: 42, type: 'PROJECT', payload: { on: false } },
             { timestamp: 43, type: 'LIGHTS', payload: { ambient: 0.4, dim: false } },
-            { timestamp: 45, type: 'TEXT', payload: { text: 'Practice without a hard line. Class dismissed.' } },
-            { timestamp: 45, type: 'CAMERA', payload: { camera_pos: { x: 0, y: 1.7, z: 4.2 }, look_at: [0, 1.3, -1] } },
+            { timestamp: 43, type: 'GAZE_TARGET', payload: { target: 'user_camera' } },
+            { timestamp: 44, type: 'EMOTION', payload: { emotion: 'calm' } },
+            {
+              timestamp: 45,
+              type: 'TEXT',
+              payload: { text: 'Practice without a hard line. Class dismissed.' },
+            },
+            {
+              timestamp: 45,
+              type: 'AUDIO',
+              payload: { text: 'Practice without a hard line. Class dismissed.' },
+            },
+            {
+              timestamp: 45,
+              type: 'CAMERA',
+              payload: { camera_pos: { x: 0, y: 1.7, z: 4.2 }, look_at: [0, 1.3, -1] },
+            },
           ],
         }
         setPack(offline)
@@ -204,6 +317,16 @@ export default function TcaClassroom() {
     const el = mountRef.current
     if (!el) return
 
+    const holoParams: HoloSettings = {
+      ...(prof?.hologram_settings || {}),
+      glow_color:
+        prof?.hologram_settings?.glow_color ||
+        prof?.personality?.color_palette?.primary_glow ||
+        '#e0c097',
+    }
+    const holoMat = createHologramMaterial(holoParams)
+    holoMatsRef.current = [holoMat]
+
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(0x0a0806)
     scene.fog = new THREE.FogExp2(0x0a0806, 0.06)
@@ -218,7 +341,6 @@ export default function TcaClassroom() {
     renderer.outputColorSpace = THREE.SRGBColorSpace
     el.appendChild(renderer.domElement)
 
-    // Room
     const floor = new THREE.Mesh(
       new THREE.PlaneGeometry(16, 16),
       new THREE.MeshStandardMaterial({ color: 0x1c1610, roughness: 0.9 }),
@@ -232,7 +354,6 @@ export default function TcaClassroom() {
     back.position.set(0, 3.2, -4.2)
     scene.add(back)
 
-    // Projection board
     const boardColor = prof?.room?.board === 'dark' ? 0x0e0e0e : 0xf2efe6
     const boardMat = new THREE.MeshStandardMaterial({
       color: boardColor,
@@ -247,7 +368,6 @@ export default function TcaClassroom() {
     board.name = 'board'
     scene.add(board)
 
-    // Lights
     const ambient = new THREE.AmbientLight(0x3d342c, prof?.room?.ambient ?? 0.4)
     ambientRef.current = ambient
     targetAmbient.current = prof?.room?.ambient ?? 0.4
@@ -261,7 +381,12 @@ export default function TcaClassroom() {
     fill.position.set(-2.5, 2.2, 1)
     scene.add(fill)
 
-    // Dust
+    // soft hologram rim light from palette
+    const glowHex = holoParams.glow_color || '#e0c097'
+    const rim = new THREE.PointLight(new THREE.Color(glowHex), 0.55, 10)
+    rim.position.set(-0.7, 2.2, 0.2)
+    scene.add(rim)
+
     const n = 350
     const pos = new Float32Array(n * 3)
     for (let i = 0; i < n; i++) {
@@ -277,25 +402,31 @@ export default function TcaClassroom() {
     )
     scene.add(dust)
 
-    // Professor: try GLB then procedural
-    let professorRoot: THREE.Object3D = makeProceduralProfessor()
+    let professorRoot: THREE.Object3D = makeProceduralProfessor(holoMat)
+    professorRef.current = professorRoot
     scene.add(professorRoot)
     jawRef.current = professorRoot.getObjectByName('jaw') || null
 
     const loader = new GLTFLoader()
-    const glbUrl = `${MODEL_BASE}${professorId}.glb`
     loader.load(
-      glbUrl,
+      `${MODEL_BASE}${professorId}.glb`,
       gltf => {
         scene.remove(professorRoot)
         professorRoot = gltf.scene
         professorRoot.position.set(-0.7, 0, -1.0)
+        const mats: THREE.ShaderMaterial[] = []
         professorRoot.traverse(o => {
-          if ((o as THREE.Mesh).isMesh) {
-            o.castShadow = true
+          const mesh = o as THREE.Mesh
+          if (mesh.isMesh) {
+            const hm = createHologramMaterial(holoParams)
+            mats.push(hm)
+            mesh.material = hm
+            mesh.castShadow = false
           }
         })
+        holoMatsRef.current = mats.length ? mats : [holoMat]
         scene.add(professorRoot)
+        professorRef.current = professorRoot
         if (gltf.animations?.length) {
           const mixer = new THREE.AnimationMixer(professorRoot)
           mixerRef.current = mixer
@@ -310,7 +441,7 @@ export default function TcaClassroom() {
       },
       undefined,
       () => {
-        /* keep procedural */
+        /* procedural hologram kept */
       },
     )
 
@@ -324,70 +455,31 @@ export default function TcaClassroom() {
 
     const clock = new THREE.Clock()
     let raf = 0
-    const tick = () => {
-      raf = requestAnimationFrame(tick)
-      const dt = clock.getDelta()
-      mixerRef.current?.update(dt)
-
-      // dust
-      const attr = dust.geometry.attributes.position as THREE.BufferAttribute
-      for (let i = 0; i < attr.count; i++) {
-        let y = attr.getY(i) + 0.0018
-        if (y > 4.5) y = 0
-        attr.setY(i, y)
-        attr.setX(i, attr.getX(i) + mx * 0.00025)
-      }
-      attr.needsUpdate = true
-
-      // ambient lerp (dim for projection)
-      if (ambientRef.current) {
-        ambientRef.current.intensity += (targetAmbient.current - ambientRef.current.intensity) * 0.04
-      }
-      if (keyRef.current) {
-        const want = projectOn.current ? 0.35 : 1.25
-        keyRef.current.intensity += (want - keyRef.current.intensity) * 0.04
-      }
-
-      // lip approx
-      if (jawRef.current && window.speechSynthesis?.speaking) {
-        jawRef.current.position.y = 1.82 + Math.sin(performance.now() * 0.03) * 0.012
-      }
-
-      // camera smooth
-      camera.position.lerp(camPosRef.current, 0.035)
-      const look = camLookRef.current.clone()
-      look.x += mx * 0.04
-      look.y -= my * 0.025
-      camera.lookAt(look)
-
-      if (playingRef.current) {
-        clockRef.current += dt
-        setT(clockRef.current)
-        for (const cue of cuesRef.current) {
-          const key = `${cue.timestamp}|${cue.type}|${String(cue.payload.text || cue.payload.animation_name || cue.payload.on || '')}`
-          if (clockRef.current >= cue.timestamp && !appliedRef.current.has(key)) {
-            appliedRef.current.add(key)
-            applyCue(cue)
-          }
-        }
-        const dur = pack?.total_duration_s || 55
-        if (clockRef.current >= dur) {
-          playingRef.current = false
-          setPlaying(false)
-          setStatus('ENDED')
-          window.speechSynthesis?.cancel()
-        }
-      }
-
-      renderer.render(scene, camera)
-    }
 
     const applyCue = (cue: Cue) => {
       if (cue.type === 'TEXT') {
         setSubtitle(String(cue.payload.text || ''))
       }
       if (cue.type === 'AUDIO') {
-        speak(String(cue.payload.text || ''), String(cue.payload.locale || 'en'))
+        speakWithSoul(
+          String(cue.payload.text || ''),
+          String(cue.payload.locale || 'en'),
+          speechStyleRef.current,
+          emotionRef.current,
+        )
+      }
+      if (cue.type === 'EMOTION') {
+        const em = String(cue.payload.emotion || 'calm')
+        emotionRef.current = em
+        setEmotionLabel(em)
+        const base = prof?.personality?.gesture_style?.intensity ?? 0.55
+        if (em === 'dramatic' || em === 'authoritative') gestureAmpRef.current = 0.9 + base
+        else if (em === 'curious') gestureAmpRef.current = 0.75 + base * 0.5
+        else if (em === 'thinking') gestureAmpRef.current = 0.35 + base * 0.3
+        else gestureAmpRef.current = 0.55 + base * 0.4
+      }
+      if (cue.type === 'GAZE_TARGET') {
+        gazeModeRef.current = String(cue.payload.target || 'user_camera')
       }
       if (cue.type === 'CAMERA') {
         const p = cue.payload.camera_pos as { x: number; y: number; z: number } | undefined
@@ -402,6 +494,7 @@ export default function TcaClassroom() {
           Object.values(acts).forEach(a => a.fadeOut(0.25))
           const next = acts[name] || acts.Idle || Object.values(acts)[0]
           next?.reset().fadeIn(0.25).play()
+          next && (next.setEffectiveWeight(gestureAmpRef.current))
         }
       }
       if (cue.type === 'LIGHTS') {
@@ -415,8 +508,7 @@ export default function TcaClassroom() {
         if (boardMatRef.current) {
           if (on) {
             const title = String(cue.payload.title || pack?.title || 'Study')
-            const tex = makeProjectionTexture(title)
-            boardMatRef.current.map = tex
+            boardMatRef.current.map = makeProjectionTexture(title)
             boardMatRef.current.emissive = new THREE.Color(0x222218)
             boardMatRef.current.emissiveIntensity = 0.35
             boardMatRef.current.needsUpdate = true
@@ -432,6 +524,86 @@ export default function TcaClassroom() {
       }
     }
 
+    const tick = () => {
+      raf = requestAnimationFrame(tick)
+      const dt = clock.getDelta()
+      const elapsed = clock.elapsedTime
+      mixerRef.current?.update(dt)
+
+      // hologram time uniforms
+      for (const m of holoMatsRef.current) {
+        if (m.uniforms?.uTime) m.uniforms.uTime.value = elapsed
+      }
+
+      // dust
+      const attr = dust.geometry.attributes.position as THREE.BufferAttribute
+      for (let i = 0; i < attr.count; i++) {
+        let y = attr.getY(i) + 0.0018
+        if (y > 4.5) y = 0
+        attr.setY(i, y)
+        attr.setX(i, attr.getX(i) + mx * 0.00025)
+      }
+      attr.needsUpdate = true
+
+      if (ambientRef.current) {
+        ambientRef.current.intensity += (targetAmbient.current - ambientRef.current.intensity) * 0.04
+      }
+      if (keyRef.current) {
+        const want = projectOn.current ? 0.35 : 1.25
+        keyRef.current.intensity += (want - keyRef.current.intensity) * 0.04
+      }
+
+      // --- micro-movement always (alive ghost) ---
+      const root = professorRef.current
+      if (root) {
+        const amp = gestureAmpRef.current
+        const breath = Math.sin(elapsed * 1.4) * 0.012 * amp
+        root.position.y = breath
+        const tilt = headTiltRef.current
+        root.rotation.y = Math.sin(elapsed * 0.35) * 0.06 * amp
+        root.rotation.z = Math.sin(elapsed * 0.5) * tilt * 0.5
+        // gaze bias
+        if (gazeModeRef.current === 'board') {
+          root.rotation.y += 0.25
+        } else if (gazeModeRef.current === 'art_object') {
+          root.rotation.y += 0.15
+        } else if (gazeModeRef.current === 'abstract_point') {
+          root.rotation.y += Math.sin(elapsed * 0.2) * 0.2
+        }
+      }
+      if (jawRef.current && window.speechSynthesis?.speaking) {
+        jawRef.current.position.y = 1.82 + Math.sin(elapsed * 28) * 0.014
+      }
+
+      camera.position.lerp(camPosRef.current, 0.035)
+      const look = camLookRef.current.clone()
+      look.x += mx * 0.04
+      look.y -= my * 0.025
+      camera.lookAt(look)
+
+      if (playingRef.current) {
+        clockRef.current += dt
+        setT(clockRef.current)
+        for (const cue of cuesRef.current) {
+          const key = `${cue.timestamp}|${cue.type}|${String(
+            cue.payload.text || cue.payload.emotion || cue.payload.animation_name || cue.payload.on || '',
+          )}`
+          if (clockRef.current >= cue.timestamp && !appliedRef.current.has(key)) {
+            appliedRef.current.add(key)
+            applyCue(cue)
+          }
+        }
+        const dur = pack?.total_duration_s || 58
+        if (clockRef.current >= dur) {
+          playingRef.current = false
+          setPlaying(false)
+          setStatus('ENDED')
+          window.speechSynthesis?.cancel()
+        }
+      }
+
+      renderer.render(scene, camera)
+    }
     tick()
 
     const onResize = () => {
@@ -453,7 +625,7 @@ export default function TcaClassroom() {
       if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [professorId])
+  }, [professorId, prof])
 
   const start = useCallback(() => {
     clockRef.current = 0
@@ -464,6 +636,8 @@ export default function TcaClassroom() {
     setSubtitle('')
     setAnalysisNote('')
     projectOn.current = false
+    emotionRef.current = 'calm'
+    setEmotionLabel('calm')
     targetAmbient.current = prof?.room?.ambient ?? 0.4
   }, [prof])
 
@@ -473,7 +647,7 @@ export default function TcaClassroom() {
     window.speechSynthesis?.cancel()
   }, [])
 
-  const remaining = Math.max(0, Math.floor((pack?.total_duration_s || 55) - t))
+  const remaining = Math.max(0, Math.floor((pack?.total_duration_s || 58) - t))
   const month = agenda.find(m => m.professor_id === professorId)
 
   return (
@@ -483,7 +657,9 @@ export default function TcaClassroom() {
       <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-3 md:p-5">
         <header className="pointer-events-auto flex flex-wrap items-start justify-between gap-2">
           <div className="rounded-2xl border border-white/10 bg-black/45 backdrop-blur-md px-4 py-3 max-w-md">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-amber-200/80">TCA · Cinematic class</p>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-amber-200/80">
+              TCA · Holographic mentor
+            </p>
             <h1 className="text-base md:text-lg font-semibold">{pack?.title || 'Masterclass'}</h1>
             <p className="text-[11px] text-zinc-400 mt-0.5">
               {prof?.display_name || professorId}
@@ -505,6 +681,7 @@ export default function TcaClassroom() {
             >
               {status}
             </span>
+            <span className="text-[10px] text-zinc-500 uppercase tracking-wider">{emotionLabel}</span>
             <select
               className="pointer-events-auto rounded-lg border border-white/15 bg-black/60 text-[11px] px-2 py-1"
               value={professorId}
@@ -522,7 +699,6 @@ export default function TcaClassroom() {
           </div>
         </header>
 
-        {/* Agenda rail */}
         {month && (
           <div className="pointer-events-auto absolute left-3 top-1/2 -translate-y-1/2 hidden lg:block w-44">
             <div className="rounded-xl border border-white/10 bg-black/40 backdrop-blur-md p-3 space-y-2">
