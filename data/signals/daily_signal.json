@@ -1,0 +1,14 @@
+{
+  "schema": "xartists_daily_signal/v1",
+  "generated_at": "2026-10-06T08:00:00+00:00",
+  "date": "2026-10-06",
+  "regime": "neutral",
+  "confidence": 0.45,
+  "headline": "Observation macro — pas un conseil d'investissement",
+  "summary": "Signal éditorial du mécénat. Aucune exécution automatique. Guardian reste le seul chemin d'ordre.",
+  "macro": { "usd_liquidity": "watch", "risk_appetite": "mixed", "notes": ["Placeholder honnête."] },
+  "crypto": { "egld": "neutral", "tro": "observe", "notes": ["Pas de promesse de rendement."] },
+  "patronage": { "rebalance_hint": "hold", "pulse_focus": "education_over_leverage" },
+  "disclaimer": "Contenu informatif. Pas un conseil financier. Aucune TX déclenchée par ce fichier.",
+  "source": "signals-worker"
+}

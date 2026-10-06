@@ -1,0 +1,11 @@
+{
+  "schema": "xartists_daily_signal/v1",
+  "generated_at": "2026-10-06T08:00:00+00:00",
+  "date": "2026-10-06",
+  "regime": "neutral",
+  "confidence": 0.45,
+  "headline": "Observation macro — pas un conseil d'investissement",
+  "summary": "Signal éditorial du mécénat. Aucune exécution automatique.",
+  "disclaimer": "Pas un conseil financier.",
+  "source": "signals-worker"
+}
