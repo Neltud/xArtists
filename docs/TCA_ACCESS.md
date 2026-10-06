@@ -1,27 +1,33 @@
-# TCA access model
+# TCA access — Pack Pulse gatekeeper
 
-## Primary gate (product truth)
+## Hierarchy
 
-| Path | Access |
-|------|--------|
-| **Pack Pulse** (holder) | Full TCA classroom + Q&A for **12 months** from pack activation / mint timestamp |
-| Observer (no pack) | Public lobby / sample lesson only — no unlimited Q&A |
-| Optional future: Student/Scholar fiat sub | Additive, not required if Pulse is held |
+| Status | Condition | Experience |
+|--------|-----------|------------|
+| **FULL** | Active Pulse (`now < activatedAt + 365d`) | Classroom + unlimited RAG Q&A + HD |
+| **SAMPLE** | No pack or expired | One sample lesson (`sample_01`) |
+| **NONE** | Explicit lobby-only | Gallery / Pulse info |
 
-MoonPay / EUR subs remain optional commercial extras.  
-**Pack Pulse is the native on-chain path** aligned with xArtists packs.
+## Air-gap
 
-## How the gate works (air-gap)
+```
+Wallet / index  →  resolveTcaAccess(packIds, activatedAt)
+                         ↓
+                    UI grant only
+                         ✗
+              never mint / never ledger write from TCA
+```
 
-1. Front reads wallet NFTs / pack ownership (explorer or index).  
-2. If Pulse pack present and `now < activated_at + 365d` → `access_level = pack_holder`.  
-3. TCA never writes the ledger; it only **reads** ownership + expiry.  
-4. Expiry UX: soft banner « renew / extend via pack » — no silent lock mid-lesson if possible.
+Mint / buy Pulse = **Genesis / Agents / MoonPay** paths only.
 
-## Config
+## API
 
-See `data/tca/access_rules.json`.
+```ts
+import { resolveTcaAccess, resolveTcaAccessForWallet } from '../lib/tcaAccess'
 
-## Honesty
+const access = resolveTcaAccess(['pulse_pack_v1'], { activatedAtMs: Date.now() })
+// access.status === 'FULL' | 'SAMPLE' | 'NONE'
+// access.hasAccess, access.expiryDate, access.sampleLessonId
+```
 
-Until pack mint is live on mainnet for Pulse, gate may use allowlist / paper flag for the deployer wallet only.
+Wire `packIds` from NFT inventory when Pulse collection is live on mainnet.

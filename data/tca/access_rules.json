@@ -1,27 +1,27 @@
 {
   "schema": "tca_access_rules/v1",
-  "primary_gate": "pack_pulse",
+  "primary_gate": "pulse_pack_v1",
+  "pack_id": "pulse_pack_v1",
+  "duration_days": 365,
+  "sample_lesson_id": "sample_01",
   "rules": [
     {
-      "id": "pulse_one_year",
-      "pack_ids": ["pulse", "pack_pulse", "PULSE"],
-      "access": "full",
-      "duration_days": 365,
-      "features": ["classroom", "qa_rag", "hd", "agenda"],
-      "note": "Holding Pack Pulse unlocks TCA for one year from activation"
+      "status": "FULL",
+      "condition": "active_pulse_pack",
+      "features": ["classroom", "qa_rag", "hd", "agenda", "unlimited_qa"]
     },
     {
-      "id": "observer",
-      "pack_ids": [],
-      "access": "lobby",
-      "duration_days": null,
+      "status": "SAMPLE",
+      "condition": "no_pack_or_expired",
       "features": ["sample_lesson"],
-      "note": "No pack — public sample only"
+      "sample_lesson_id": "sample_01"
+    },
+    {
+      "status": "NONE",
+      "condition": "explicit_lobby_only",
+      "features": ["gallery_info"]
     }
   ],
-  "optional_subs": {
-    "enabled": false,
-    "note": "Fiat monthly/annual optional later; Pulse remains primary"
-  },
-  "air_gap": "TCA reads ownership only; no ledger writes"
+  "pack_id_aliases": ["pulse", "pack_pulse", "PULSE", "pulse-pack", "pulse_pack_v1"],
+  "air_gap": "TCA reads ownership only; mint/purchase via Genesis or MoonPay — never from TCA"
 }

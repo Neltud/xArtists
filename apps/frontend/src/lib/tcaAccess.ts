@@ -1,60 +1,123 @@
 /**
- * TCA access — Pack Pulse = full classroom for 365 days.
- * Read-only; never writes ledger.
+ * TCA Pulse Pack gatekeeper — FULL | SAMPLE | NONE
+ * Air-gap: read-only ownership; never mints or writes ledger.
  */
 
-export type TcaAccessLevel = 'lobby' | 'full'
+export type TcaAccessStatus = 'FULL' | 'SAMPLE' | 'NONE'
 
 export type TcaAccessResult = {
-  level: TcaAccessLevel
+  hasAccess: boolean
+  status: TcaAccessStatus
   reason: string
-  expiresAt?: string | null
+  expiryDate: string | null
   features: string[]
+  sampleLessonId: string
+  packId: string
 }
 
-const PULSE_IDS = new Set(['pulse', 'pack_pulse', 'PULSE', 'pulse-pack'])
+const PULSE_ALIASES = new Set([
+  'pulse',
+  'pack_pulse',
+  'pulse_pack',
+  'pulse_pack_v1',
+  'pulse-pack',
+  'PULSE',
+])
+
+const MS_DAY = 24 * 60 * 60 * 1000
+const DURATION_DAYS = 365
+const SAMPLE_LESSON_ID = 'sample_01'
+const PACK_ID = 'pulse_pack_v1'
+
+function isPulseId(id: string): boolean {
+  const x = id.trim()
+  if (PULSE_ALIASES.has(x) || PULSE_ALIASES.has(x.toLowerCase())) return true
+  return x.toLowerCase().includes('pulse')
+}
 
 /**
- * @param packIds — collection/ticker ids the wallet holds
- * @param activatedAtMs — mint or activation time of the Pulse pack (ms); if omitted, treat as active if held
+ * Resolve access from pack holdings (from index / NFT inventory — not from TCA writes).
  */
 export function resolveTcaAccess(
   packIds: string[],
-  opts?: { activatedAtMs?: number; nowMs?: number },
+  opts?: { activatedAtMs?: number | null; nowMs?: number; forceLobby?: boolean },
 ): TcaAccessResult {
   const now = opts?.nowMs ?? Date.now()
-  const held = packIds.some(id => PULSE_IDS.has(id) || id.toLowerCase().includes('pulse'))
-  if (!held) {
+  const base = {
+    sampleLessonId: SAMPLE_LESSON_ID,
+    packId: PACK_ID,
+  }
+
+  if (opts?.forceLobby) {
     return {
-      level: 'lobby',
-      reason: 'no_pulse_pack',
-      features: ['sample_lesson'],
-      expiresAt: null,
+      ...base,
+      hasAccess: false,
+      status: 'NONE',
+      reason: 'lobby_only',
+      expiryDate: null,
+      features: ['gallery_info'],
     }
   }
+
+  const held = (packIds || []).some(isPulseId)
+  if (!held) {
+    return {
+      ...base,
+      hasAccess: false,
+      status: 'SAMPLE',
+      reason: 'no_pulse_pack',
+      expiryDate: null,
+      features: ['sample_lesson'],
+    }
+  }
+
   const activated = opts?.activatedAtMs
-  if (activated != null) {
-    const expires = activated + 365 * 24 * 60 * 60 * 1000
+  if (activated != null && activated > 0) {
+    const expires = activated + DURATION_DAYS * MS_DAY
     if (now > expires) {
       return {
-        level: 'lobby',
+        ...base,
+        hasAccess: false,
+        status: 'SAMPLE',
         reason: 'pulse_expired',
+        expiryDate: new Date(expires).toISOString(),
         features: ['sample_lesson'],
-        expiresAt: new Date(expires).toISOString(),
       }
     }
     return {
-      level: 'full',
+      ...base,
+      hasAccess: true,
+      status: 'FULL',
       reason: 'pulse_active',
-      features: ['classroom', 'qa_rag', 'hd', 'agenda'],
-      expiresAt: new Date(expires).toISOString(),
+      expiryDate: new Date(expires).toISOString(),
+      features: ['classroom', 'qa_rag', 'hd', 'agenda', 'unlimited_qa'],
     }
   }
-  // Held but no activation timestamp yet — grant full (ops can tighten later)
+
+  // Held, activation timestamp not yet indexed → treat as FULL (tighten when mint index ready)
   return {
-    level: 'full',
+    ...base,
+    hasAccess: true,
+    status: 'FULL',
     reason: 'pulse_held',
-    features: ['classroom', 'qa_rag', 'hd', 'agenda'],
-    expiresAt: null,
+    expiryDate: null,
+    features: ['classroom', 'qa_rag', 'hd', 'agenda', 'unlimited_qa'],
   }
+}
+
+/**
+ * Async helper: given a wallet bech32, resolve packs from public index when available.
+ * Currently uses optional prefetched packIds; chain query is plugged by callers (WalletContext).
+ * Never triggers mint.
+ */
+export async function resolveTcaAccessForWallet(
+  _walletAddress: string | null | undefined,
+  prefetched?: { packIds?: string[]; activatedAtMs?: number | null },
+): Promise<TcaAccessResult> {
+  if (!_walletAddress) {
+    return resolveTcaAccess([], { forceLobby: false })
+  }
+  return resolveTcaAccess(prefetched?.packIds || [], {
+    activatedAtMs: prefetched?.activatedAtMs,
+  })
 }

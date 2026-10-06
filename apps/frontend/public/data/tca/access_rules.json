@@ -1,19 +1,8 @@
 {
   "schema": "tca_access_rules/v1",
-  "primary_gate": "pack_pulse",
-  "rules": [
-    {
-      "id": "pulse_one_year",
-      "pack_ids": ["pulse", "pack_pulse", "PULSE"],
-      "access": "full",
-      "duration_days": 365,
-      "features": ["classroom", "qa_rag", "hd", "agenda"]
-    },
-    {
-      "id": "observer",
-      "access": "lobby",
-      "features": ["sample_lesson"]
-    }
-  ],
-  "optional_subs": { "enabled": false }
+  "primary_gate": "pulse_pack_v1",
+  "pack_id": "pulse_pack_v1",
+  "duration_days": 365,
+  "sample_lesson_id": "sample_01",
+  "pack_id_aliases": ["pulse", "pack_pulse", "PULSE", "pulse-pack", "pulse_pack_v1"]
 }
