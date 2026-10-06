@@ -1,5 +1,5 @@
 /**
- * Command Center — ambient + rooms + LIA Shadow panel (paper).
+ * Command Center — ambient + rooms + LIA Shadow panel (paper) + daily signal.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -17,6 +17,7 @@ import { useAgentAccess, setEmpireZone, empireTxStart } from '../store/empireSto
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
 import LiaCommandTerminal from '../components/LiaCommandTerminal'
+import DailySignalWidget from '../components/DailySignalWidget'
 import { useWallet } from '../context/WalletContext'
 import { getAppMode } from '../lib/appMode'
 import { type PackId } from '../config/agentPacks'
@@ -117,6 +118,8 @@ function CommandCenterInner() {
         <h1 className="text-3xl font-bold text-white tracking-tight font-tech title-glow">{t('cc.title')}</h1>
         <p className="text-sm text-zinc-400">{t('cc.subtitle')}</p>
       </header>
+
+      <DailySignalWidget compact />
 
       <div className="flex flex-wrap gap-2">
         {(
