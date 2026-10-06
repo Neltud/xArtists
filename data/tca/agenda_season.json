@@ -1,0 +1,55 @@
+{
+  "schema": "tca_agenda/v1",
+  "title": "TCA Season 1 — Masters of Light & Form",
+  "timezone": "Europe/Paris",
+  "slots": [
+    {"id": "slot_a", "start_h": 18, "end_h": 20},
+    {"id": "slot_b", "start_h": 20, "end_h": 22}
+  ],
+  "months": [
+    {
+      "id": "m1",
+      "title": "Leonardo — Science of Seeing",
+      "professor_id": "leonardo",
+      "weeks": [
+        {"week": 1, "theme": "Sfumato", "focus": "Atmospheric edge", "lesson_id": "leo_w1_sfumato", "analysis": ["process", "optics", "renaissance_context"]},
+        {"week": 2, "theme": "Anatomy of the portrait", "focus": "Bone before beauty", "lesson_id": "leo_w2_anatomy", "analysis": ["anatomy", "structure"]},
+        {"week": 3, "theme": "Golden ratio", "focus": "Quiet geometry", "lesson_id": "leo_w3_geometry", "analysis": ["composition", "math"]},
+        {"week": 4, "theme": "Chiaroscuro of the soul", "focus": "Light as judgment", "lesson_id": "leo_w4_chiaroscuro", "analysis": ["light", "psychology"]}
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "Rembrandt — Faces of Conscience",
+      "professor_id": "rembrandt",
+      "weeks": [
+        {"week": 1, "theme": "The dark room", "focus": "Single source light", "lesson_id": "rem_w1_dark", "analysis": ["chiaroscuro", "dutch_context"]},
+        {"week": 2, "theme": "Self as laboratory", "focus": "Self-portrait series", "lesson_id": "rem_w2_self", "analysis": ["process", "aging", "identity"]},
+        {"week": 3, "theme": "Group drama", "focus": "Night Watch dynamics", "lesson_id": "rem_w3_group", "analysis": ["composition", "civic_history"]},
+        {"week": 4, "theme": "Late freedom", "focus": "Broken stroke, full truth", "lesson_id": "rem_w4_late", "analysis": ["technique", "modernity"]}
+      ]
+    },
+    {
+      "id": "m3",
+      "title": "Repin — History in the Flesh",
+      "professor_id": "repin",
+      "weeks": [
+        {"week": 1, "theme": "Barge haulers", "focus": "Labor and dignity", "lesson_id": "rep_w1_burlaki", "analysis": ["social", "realism"]},
+        {"week": 2, "theme": "Reply of the Zaporozhians", "focus": "Crowd psychology", "lesson_id": "rep_w2_zapor", "analysis": ["narrative", "gesture"]},
+        {"week": 3, "theme": "Ivan and his son", "focus": "Tragedy of power", "lesson_id": "rep_w3_ivan", "analysis": ["history", "emotion"]},
+        {"week": 4, "theme": "Portrait of the age", "focus": "Intelligentsia faces", "lesson_id": "rep_w4_portrait", "analysis": ["portraiture", "epoch"]}
+      ]
+    },
+    {
+      "id": "m4",
+      "title": "Turner — Weather as Subject",
+      "professor_id": "turner",
+      "weeks": [
+        {"week": 1, "theme": "Steam and speed", "focus": "Rain, Steam and Speed", "lesson_id": "tur_w1_steam", "analysis": ["modernity", "atmosphere"]},
+        {"week": 2, "theme": "Sea and sublime", "focus": "Shipwreck light", "lesson_id": "tur_w2_sea", "analysis": ["romanticism", "nature"]},
+        {"week": 3, "theme": "Dissolve the form", "focus": "Late watercolours", "lesson_id": "tur_w3_dissolve", "analysis": ["process", "abstraction"]},
+        {"week": 4, "theme": "Parliament fire", "focus": "Event as colour", "lesson_id": "tur_w4_fire", "analysis": ["history", "colour"]}
+      ]
+    }
+  ]
+}

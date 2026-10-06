@@ -4,12 +4,51 @@
     {
       "id": "leonardo",
       "display_name": "Leonardo da Vinci",
+      "epoch": "High Renaissance · Italy",
+      "years": "1452–1519",
       "style": "polymath_observer",
+      "perspective": "Science of seeing — anatomy, atmosphere, proportion",
       "glb": "/models/tca/leonardo.glb",
-      "voice_id": "leonardo_en",
+      "voice_lang": "it",
       "locales": ["en", "fr", "it"],
-      "animations": ["Idle", "Explain", "PointRight", "TurnLeft", "Think"],
-      "bio_short": "Painter, engineer, anatomist — teaches seeing before painting."
+      "room": {"board": "warm_white", "ambient": 0.4},
+      "animations": ["Idle", "Explain", "PointRight", "TurnLeft", "Think"]
+    },
+    {
+      "id": "rembrandt",
+      "display_name": "Rembrandt van Rijn",
+      "epoch": "Dutch Golden Age",
+      "years": "1606–1669",
+      "style": "chiaroscuro_psychologist",
+      "perspective": "Inner light — face as moral landscape",
+      "glb": "/models/tca/rembrandt.glb",
+      "voice_lang": "nl",
+      "locales": ["en", "fr", "nl"],
+      "room": {"board": "dark", "ambient": 0.25}
+    },
+    {
+      "id": "repin",
+      "display_name": "Ilya Repin",
+      "epoch": "Russian Realism",
+      "years": "1844–1930",
+      "style": "social_narrator",
+      "perspective": "History and labor written in gesture and crowd",
+      "glb": "/models/tca/repin.glb",
+      "voice_lang": "ru",
+      "locales": ["en", "fr", "ru"],
+      "room": {"board": "warm_white", "ambient": 0.35}
+    },
+    {
+      "id": "turner",
+      "display_name": "J.M.W. Turner",
+      "epoch": "Romanticism · Britain",
+      "years": "1775–1851",
+      "style": "atmospheric_modern",
+      "perspective": "Light dissolves form — weather as subject",
+      "glb": "/models/tca/turner.glb",
+      "voice_lang": "en-GB",
+      "locales": ["en", "fr"],
+      "room": {"board": "dark", "ambient": 0.3}
     }
   ]
 }

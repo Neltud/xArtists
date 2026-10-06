@@ -1,11 +1,9 @@
 {
   "schema": "tca_professors/v1",
   "professors": [
-    {
-      "id": "leonardo",
-      "display_name": "Leonardo da Vinci",
-      "glb": "/models/tca/leonardo.glb",
-      "locales": ["en", "fr", "it"]
-    }
+    {"id": "leonardo", "display_name": "Leonardo da Vinci", "epoch": "High Renaissance · Italy", "perspective": "Science of seeing", "room": {"board": "warm_white", "ambient": 0.4}},
+    {"id": "rembrandt", "display_name": "Rembrandt van Rijn", "epoch": "Dutch Golden Age", "perspective": "Inner light", "room": {"board": "dark", "ambient": 0.25}},
+    {"id": "repin", "display_name": "Ilya Repin", "epoch": "Russian Realism", "perspective": "History in gesture", "room": {"board": "warm_white", "ambient": 0.35}},
+    {"id": "turner", "display_name": "J.M.W. Turner", "epoch": "Romanticism · Britain", "perspective": "Weather as subject", "room": {"board": "dark", "ambient": 0.3}}
   ]
 }
