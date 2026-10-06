@@ -1,0 +1,13 @@
+{
+  "schema": "tca_knowledge_index/v1",
+  "chunks": [
+    {"id": "sfumato_01", "concept": "sfumato", "professors": ["leonardo"]},
+    {"id": "sfumato_02", "concept": "sfumato", "professors": ["leonardo"]},
+    {"id": "anatomy_01", "concept": "portrait anatomy", "professors": ["leonardo"]},
+    {"id": "chiaroscuro_01", "concept": "chiaroscuro", "professors": ["rembrandt", "leonardo"]},
+    {"id": "crowd_01", "concept": "narrative crowd", "professors": ["repin"]},
+    {"id": "atmosphere_01", "concept": "atmospheric dissolve", "professors": ["turner"]},
+    {"id": "composition_01", "concept": "golden ratio", "professors": ["leonardo"]}
+  ],
+  "note": "Full texts live in data/tca/knowledge/chunks.jsonl for the RAG engine"
+}
