@@ -26,6 +26,15 @@ export const CORE_MODULES: ProductModule[] = [
     blurb: 'Galerie 3D · murs venue',
   },
   {
+    id: 'tca',
+    path: '/tca',
+    label: 'TCA Class',
+    emoji: '🎓',
+    tier: 'core',
+    status: 'ui',
+    blurb: 'Masterclass 3D',
+  },
+  {
     id: 'marketplace',
     path: '/marketplace',
     label: 'Marketplace',

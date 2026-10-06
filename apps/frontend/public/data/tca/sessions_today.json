@@ -1,0 +1,12 @@
+{
+  "schema": "tca_sessions_today/v1",
+  "timezone": "Europe/Paris",
+  "slots": [
+    {"id": "slot_a", "start_h": 18, "end_h": 20, "label": "Evening Masterclass A"},
+    {"id": "slot_b", "start_h": 20, "end_h": 22, "label": "Evening Masterclass B"}
+  ],
+  "access_default": "public",
+  "default_lesson": "leo_w1_sfumato",
+  "default_professor": "leonardo",
+  "event": "CLASS_STANDBY"
+}
