@@ -1,0 +1,141 @@
+{
+  "schema": "tca_curriculum/v1",
+  "id": "curriculum_leonardo_m1",
+  "title": "Leonardo Masterclass — Month 1",
+  "professor_id": "leonardo",
+  "theme": "Seeing like Leonardo",
+  "weeks": [
+    {
+      "week": 1,
+      "title": "The Science of Sfumato",
+      "lessons": [
+        {
+          "id": "leo_w1_sfumato",
+          "title": "Sfumato: smoke between light and dark",
+          "level": "beginner",
+          "professor_id": "leonardo",
+          "rwa_ids": [],
+          "intro": "Sfumato is not blur. It is atmosphere — the air between the eye and the form.",
+          "outro": "Practice: edge one silhouette without a hard line.",
+          "knowledge_refs": ["treatise_painting_sfumato"],
+          "sections": [
+            {
+              "id": "sf_1",
+              "title": "Definition",
+              "duration_s": 50,
+              "narration": "Sfumato softens transitions so the eye cannot say where shadow begins.",
+              "gesture_id": "open_hands",
+              "camera_target": "professor",
+              "knowledge_ref": "treatise_painting_sfumato"
+            },
+            {
+              "id": "sf_2",
+              "title": "Observation drill",
+              "duration_s": 60,
+              "narration": "Look at the cheek of a portrait: find three values, not two.",
+              "gesture_id": "point_canvas",
+              "camera_target": "canvas",
+              "knowledge_ref": "treatise_painting_sfumato"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "title": "Anatomical Precision in Portraiture",
+      "lessons": [
+        {
+          "id": "leo_w2_anatomy",
+          "title": "Bone before beauty",
+          "level": "beginner",
+          "professor_id": "leonardo",
+          "intro": "The face is architecture. Muscles follow bone; expression follows muscle.",
+          "outro": "Sketch the skull under every likeness you admire.",
+          "sections": [
+            {
+              "id": "an_1",
+              "title": "Planes of the head",
+              "duration_s": 55,
+              "narration": "Block the head as planes — forehead, cheek, jaw — before detail.",
+              "gesture_id": "think",
+              "camera_target": "professor"
+            },
+            {
+              "id": "an_2",
+              "title": "Eye socket truth",
+              "duration_s": 50,
+              "narration": "The eye sits in shadow of the brow. Ignore that and the portrait floats.",
+              "gesture_id": "look_painting",
+              "camera_target": "canvas"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "title": "Geometry of Composition — Golden Ratio",
+      "lessons": [
+        {
+          "id": "leo_w3_geometry",
+          "title": "Proportion as quiet structure",
+          "level": "intermediate",
+          "professor_id": "leonardo",
+          "intro": "Geometry is not decoration. It is the path the eye walks.",
+          "outro": "Place one focal point on a harmonic division — then justify it.",
+          "sections": [
+            {
+              "id": "ge_1",
+              "title": "Divisions",
+              "duration_s": 50,
+              "narration": "Divide the rectangle once. Ask whether the subject earns that line.",
+              "gesture_id": "point_canvas",
+              "camera_target": "canvas"
+            },
+            {
+              "id": "ge_2",
+              "title": "Spiral attention",
+              "duration_s": 45,
+              "narration": "A soft spiral of values can guide attention better than a hard arrow.",
+              "gesture_id": "open_hands",
+              "camera_target": "stage"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "title": "Light, Shadow, and the Soul of the Subject",
+      "lessons": [
+        {
+          "id": "leo_w4_chiaroscuro",
+          "title": "Light that reveals character",
+          "level": "intermediate",
+          "professor_id": "leonardo",
+          "intro": "Light is not illumination only — it is judgment of what matters.",
+          "outro": "Dim one light source. See which truth remains.",
+          "sections": [
+            {
+              "id": "ch_1",
+              "title": "Single source",
+              "duration_s": 55,
+              "narration": "One dominant light creates hierarchy. Two equal lights create noise.",
+              "gesture_id": "think",
+              "camera_target": "professor"
+            },
+            {
+              "id": "ch_2",
+              "title": "Shadow as form",
+              "duration_s": 55,
+              "narration": "Shadow holds volume. Flatten shadow and the soul leaves the face.",
+              "gesture_id": "look_painting",
+              "camera_target": "canvas"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "tca_professors/v1",
+  "professors": [
+    {
+      "id": "leonardo",
+      "display_name": "Leonardo da Vinci",
+      "style": "polymath_observer",
+      "glb": "/models/tca/leonardo.glb",
+      "voice_id": "leonardo_en",
+      "locales": ["en", "fr", "it"],
+      "animations": ["Idle", "Explain", "PointRight", "TurnLeft", "Think"],
+      "bio_short": "Painter, engineer, anatomist — teaches seeing before painting."
+    }
+  ]
+}

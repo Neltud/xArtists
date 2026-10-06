@@ -1,0 +1,11 @@
+{
+  "schema": "tca_professors/v1",
+  "professors": [
+    {
+      "id": "leonardo",
+      "display_name": "Leonardo da Vinci",
+      "glb": "/models/tca/leonardo.glb",
+      "locales": ["en", "fr", "it"]
+    }
+  ]
+}

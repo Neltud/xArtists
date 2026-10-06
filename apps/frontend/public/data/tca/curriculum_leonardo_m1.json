@@ -1,0 +1,12 @@
+{
+  "schema": "tca_curriculum/v1",
+  "id": "curriculum_leonardo_m1",
+  "title": "Leonardo Masterclass — Month 1",
+  "professor_id": "leonardo",
+  "theme": "Seeing like Leonardo",
+  "weeks": [
+    {"week": 1, "title": "The Science of Sfumato", "lessons": [{"id": "leo_w1_sfumato", "title": "Sfumato: smoke between light and dark", "level": "beginner"}]},
+    {"week": 2, "title": "Anatomical Precision in Portraiture", "lessons": [{"id": "leo_w2_anatomy", "title": "Bone before beauty", "level": "beginner"}]},
+    {"week": 3, "title": "Geometry of Composition — Golden Ratio", "lessons": [{"id": "leo_w3_geometry", "title": "Proportion as quiet structure", "level": "intermediate"}]},
+    {"week": 4, "title": "Light, Shadow, and the Soul of the Subject", "lessons": [{"id": "leo_w4_chiaroscuro", "title": "Light that reveals character", "level": "intermediate"}]}]
+}
