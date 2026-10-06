@@ -1,5 +1,6 @@
-/** Sprint 1.1 / 1.1b — verify-access + optional SIWX sign before FULL. */
+/** Sprint 1.1 / 1.1b — verify-access + SIWX via xPortal signAccessMessage. */
 import type { TcaAccessResult } from './tcaAccess'
+import { signAccessMessage } from './signAccessMessage'
 
 const TOKEN_KEY = 'xartists_tca_access_jwt'
 
@@ -55,20 +56,9 @@ async function fetchChallenge(address: string): Promise<{
   }
 }
 
-/** Best-effort wallet message sign (xPortal / extension). Returns hex sig or null. */
-export async function trySignAccessMessage(message: string): Promise<string | null> {
-  try {
-    const w = window as unknown as {
-      elrondWallet?: { signMessage?: (m: string) => Promise<{ signature?: string }> }
-      multiversxWallet?: { signMessage?: (m: Uint8Array) => Promise<string> }
-    }
-    if (w.elrondWallet?.signMessage) {
-      const out = await w.elrondWallet.signMessage(message)
-      return out?.signature || null
-    }
-  } catch {
-    /* user rejected or unavailable */
-  }
+async function trySignAccessMessage(message: string): Promise<string | null> {
+  const viaPortal = await signAccessMessage(message)
+  if (viaPortal.ok) return viaPortal.signature
   return null
 }
 
