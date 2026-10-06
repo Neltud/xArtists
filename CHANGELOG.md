@@ -1,5 +1,32 @@
 # Changelog — xArtists
 
+## [0.90.0](https://github.com/Neltud/xArtists/compare/v0.89.0...v0.90.0) (2026-10-06)
+
+
+### Features
+
+* **1.1b+2:** SIWX challenge/sign verify + daily signals oracle pipeline ([e55ccf1](https://github.com/Neltud/xArtists/commit/e55ccf1e34e0150d9278541d87957ba00473baf0))
+* **access-api:** mount POST /v1/verify-access + introspect ([049e6c8](https://github.com/Neltud/xArtists/commit/049e6c8f2a39755d2a066e3bc094ed07e29732e4))
+* **access-api:** SIWX challenge + daily signals endpoint ([15f2751](https://github.com/Neltud/xArtists/commit/15f27516f17b0eed2eee0a0be6e4d3fb29de11c6))
+* **access-api:** Sprint 1.1 verify-access JWT + MVX pulse check ([918ca26](https://github.com/Neltud/xArtists/commit/918ca26498d14cd18e38289d00445172af128699))
+* **CC:** DailySignalWidget in hub; SIWX via xPortal signAccessMessage ([c7f9533](https://github.com/Neltud/xArtists/commit/c7f9533cf881a0123e8187c241b75c6ba66dce40))
+* **CC:** embed DailySignalWidget in command hub HUD ([0273a24](https://github.com/Neltud/xArtists/commit/0273a24dda0e449f9fae5b177a478f3a1deb3cdf))
+* **front:** SIWX challenge client + DailySignalWidget ([8bbafee](https://github.com/Neltud/xArtists/commit/8bbafee93ca19258992177ef54a35a2d962ba675))
+* **front:** tcaVerifyClient zero-trust verify-access ([5eec482](https://github.com/Neltud/xArtists/commit/5eec48201640f4c515555e01fadd035fc0c9f5df))
+* signAccessMessage for SIWX via xPortal WC ([77fa73b](https://github.com/Neltud/xArtists/commit/77fa73baf39ed22ad363adb6abe9e2e06f6b0551))
+* **TCA:** gate UX FULL hologram / SAMPLE YouTube ATC / NONE lobby + wallet ([8b91ce6](https://github.com/Neltud/xArtists/commit/8b91ce600e7f046db9b55513a15755a75978e428))
+* **TCA:** Pulse gatekeeper FULL|SAMPLE|NONE aligned to access control spec ([8d8f3ff](https://github.com/Neltud/xArtists/commit/8d8f3ff4295d83ab69e82c3a9cbbedae53058be5))
+* **TCA:** route /tca through Pulse gate (SAMPLE YouTube vs FULL hologram) ([c0da0c6](https://github.com/Neltud/xArtists/commit/c0da0c6aac35bb3a51a068160f43f39cbd0bfae5))
+* **TCA:** SAMPLE=YouTube preview, FULL=hologram+RAG gated by Pulse ([c5dfba4](https://github.com/Neltud/xArtists/commit/c5dfba420bb302c1f06328f33792b865197b6113))
+* **TCA:** TcaGatePage zero-trust server path ([0045d54](https://github.com/Neltud/xArtists/commit/0045d54bcaf5152865ac113fbbed2484ad80e908))
+
+
+### Documentation
+
+* Chantier 3 live persistent + orphan cleanup plan ([562087d](https://github.com/Neltud/xArtists/commit/562087dc4f9308ba15a0a663220f09d3d3b5c329))
+* Civilization Engine blueprint — pillars, air-gap, patronage vocabulary, honest backlog ([f365174](https://github.com/Neltud/xArtists/commit/f365174bbd4ea54a1d1263e528bd7962047dc613))
+* exhaustive dApp audit 2026-10-06 — routes, air-gap, zero-trust gap, SC map ([83e953d](https://github.com/Neltud/xArtists/commit/83e953ddc3101bc42084ee02429905367346ba4a))
+
 ## [0.89.0](https://github.com/Neltud/xArtists/compare/v0.88.0...v0.89.0) (2026-10-06)
 
 
