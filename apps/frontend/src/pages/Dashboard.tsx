@@ -1,74 +1,67 @@
 /**
- * Home — badges LIVE si preuve explorer ; RCE strip capital réel.
+ * Home — product core + unified ATC/TCA entry (Chantier 3).
  */
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useWallet } from '../context/WalletContext'
-import { requestOpenConnect } from '../lib/walletEvents'
-import { useI18n } from '../i18n/I18nContext'
-import {
-  CORE_MODULES,
-  SECONDARY_MODULES,
-  STATUS_CLASS,
-  STATUS_LABEL,
-  type ProductModule,
-} from '../config/product'
-import { isLiveProven, refreshExplorerProofs, type ProofKey } from '../lib/explorerProof'
 import { MAINNET_ADDRESSES } from '../config/contracts'
+import { CORE_MODULES, SECONDARY_MODULES, type ModuleDef } from '../config/modules'
+import { requestOpenConnect } from '../lib/walletEvents'
+import { useWallet } from '../context/WalletContext'
+import { useI18n } from '../i18n/I18nContext'
 import RceStrip from '../components/RceStrip'
+import { scStatus } from '../config/scStatus'
 
-function mapProof(id: string): ProofKey | null {
-  if (id === 'marketplace') return 'marketplace'
-  if (id === 'slot') return 'slot'
-  if (id === 'staking') return 'tro_staking'
-  if (id === 'agents') return 'agents'
-  return null
+const STATUS_LABEL: Record<string, string> = {
+  live: 'LIVE',
+  soon: 'BIENTÔT',
+  open: 'OUVERT',
+  paper: 'INFO',
 }
 
-function badgeStatus(m: ProductModule): ProductModule['status'] {
-  const pk = mapProof(m.id)
-  if (!pk) return m.status
-  if (isLiveProven(pk)) return 'live'
-  if (m.status === 'live') return 'soon'
-  return m.status
+const STATUS_CLASS: Record<string, string> = {
+  live: 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10',
+  soon: 'border-amber-500/40 text-amber-200 bg-amber-500/10',
+  open: 'border-sky-500/40 text-sky-200 bg-sky-500/10',
+  paper: 'border-white/15 text-zinc-400 bg-white/5',
+}
+
+function badgeStatus(m: ModuleDef): string {
+  if (m.status) return m.status
+  const id = m.id
+  if (id === 'marketplace') return scStatus.nft_marketplace?.live ? 'live' : 'soon'
+  if (id === 'staking') return scStatus.tro_staking?.live ? 'live' : 'soon'
+  if (id === 'slot') return scStatus.slot_casino?.live ? 'live' : 'soon'
+  if (id === 'agents') return 'open'
+  return 'open'
 }
 
 export default function Dashboard() {
-  const { connected } = useWallet()
   const { t } = useI18n()
-  const [, setTick] = useState(0)
-
-  useEffect(() => {
-    void refreshExplorerProofs().then(() => setTick(x => x + 1))
-    const on = () => setTick(x => x + 1)
-    window.addEventListener('xartists-proof', on)
-    window.addEventListener('xartists-codehash', on)
-    return () => {
-      window.removeEventListener('xartists-proof', on)
-      window.removeEventListener('xartists-codehash', on)
-    }
-  }, [])
-
-  const core = CORE_MODULES.filter(m => m.id !== 'home')
+  const { connected } = useWallet()
+  const core = CORE_MODULES
 
   return (
-    <div className="animate-fade-in space-y-10 pb-20">
-      <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-violet-950/50 via-[#0a0a12] to-cyan-950/40 p-6 sm:p-8">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-violet-500/20 blur-3xl" />
-        <div className="relative max-w-xl space-y-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-300/85">
+    <div className="animate-fade-in space-y-8 pb-10">
+      <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-violet-950/40 via-black/60 to-black p-6 sm:p-8">
+        <div className="relative z-[1] space-y-4 max-w-xl">
+          <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300/80 font-semibold">
             xArtists · MultiversX mainnet
           </p>
           <h1 className="font-tech text-3xl font-bold tracking-tight text-white title-glow sm:text-4xl">
-            NFT · $TRO · Packs
+            NFT · $TRO · Packs · TCA
           </h1>
           <p className="text-sm leading-relaxed text-zinc-400">
-            LIVE = utilisable on-chain. BIENTÔT = en cours d&apos;ouverture. OUVERT = interface prête.
-            Pas un fond d&apos;investissement.
+            ATC public (aperçu) → Pack Pulse → classroom holographique. LIVE = on-chain. Pas un fond
+            d&apos;investissement.
           </p>
           <div className="flex flex-wrap gap-2">
+            <Link
+              to="/tca"
+              className="btn-primary active:scale-[0.98]"
+            >
+              Entrer ATC / TCA
+            </Link>
             {!connected && (
-              <button type="button" className="btn-primary active:scale-[0.98]" onClick={() => requestOpenConnect()}>
+              <button type="button" className="btn-secondary active:scale-[0.98]" onClick={() => requestOpenConnect()}>
                 {t('common.connect')}
               </button>
             )}
@@ -79,6 +72,9 @@ export default function Dashboard() {
               Musée
             </Link>
           </div>
+          <p className="text-[11px] text-zinc-500">
+            Sans wallet : lobby / sample YouTube. Avec Pack Pulse vérifié : hologramme + RAG.
+          </p>
         </div>
       </section>
 
