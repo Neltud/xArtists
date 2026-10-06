@@ -1,20 +1,21 @@
 /**
- * Access API stub — Stripe Checkout + Paybox session scaffold.
- * Deploy: node services/access-api/src/server.mjs
- * Replace TODOs with real Stripe / Paybox HMAC before prod.
+ * Access API — Stripe/Paybox stubs + Sprint 1.1 verify-access (JWT).
+ * node services/access-api/src/server.mjs
  */
 import http from 'node:http'
 import { URL } from 'node:url'
+import { resolveAccessLevel, issueAccessToken, verifyJwt } from './verifyAccess.mjs'
 
 const PORT = Number(process.env.PORT || 8787)
 const CORS = process.env.CORS_ORIGIN || '*'
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || ''
+const JWT_SECRET = process.env.JWT_SECRET || ''
 
 function json(res, code, body) {
   res.writeHead(code, {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': CORS,
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
   })
   res.end(JSON.stringify(body))
@@ -32,35 +33,22 @@ async function readBody(req) {
   }
 }
 
-/** Stripe Checkout Session — requires stripe package + STRIPE_SECRET_KEY in real deploy */
 async function stripeSession(body) {
   if (!STRIPE_KEY) {
-    return {
-      ok: false,
-      status: 501,
-      body: {
-        error: 'STRIPE_SECRET_KEY not set — set env or use Payment Links on the front',
-      },
-    }
+    return { ok: false, status: 501, body: { error: 'STRIPE_SECRET_KEY not set' } }
   }
-  // Production: use stripe.checkout.sessions.create
-  // Here we return a clear TODO so ops know the wire is ready.
   return {
     ok: false,
     status: 501,
     body: {
       error: 'Install stripe SDK and implement sessions.create',
-      received: {
-        pack_id: body.pack_id,
-        buyer_address: body.buyer_address,
-      },
+      received: { pack_id: body.pack_id, buyer_address: body.buyer_address },
     },
   }
 }
 
 function payboxSession(body) {
   const orderId = `xa-${body.pack_id || 'pack'}-${Date.now().toString(36)}`
-  // Production: HMAC sign PBX_* params, return preprod-tpeweb.paybox.com URL
   const preprod =
     process.env.PAYBOX_ENV === 'prod'
       ? 'https://tpeweb.paybox.com/cgi/MYchoix_pagepaiement.cgi'
@@ -71,8 +59,6 @@ function payboxSession(body) {
     body: {
       order_id: orderId,
       url: null,
-      message:
-        'Sign PBX params with PAYBOX_HMAC_KEY then set url to Paybox CGI. Stub only.',
       stub: true,
       hint_cgi: preprod,
       amount_cents: body.amount_cents,
@@ -92,7 +78,56 @@ const server = http.createServer(async (req, res) => {
   const path = u.pathname.replace(/\/$/, '') || '/'
 
   if (req.method === 'GET' && path === '/health') {
-    json(res, 200, { ok: true, stripe: Boolean(STRIPE_KEY), service: 'access-api' })
+    json(res, 200, {
+      ok: true,
+      stripe: Boolean(STRIPE_KEY),
+      jwt: Boolean(JWT_SECRET && JWT_SECRET.length >= 16),
+      pulse_collection: Boolean(process.env.PULSE_COLLECTION || process.env.PULSE_COLLECTIONS),
+      service: 'access-api',
+    })
+    return
+  }
+
+  if (req.method === 'POST' && path === '/v1/verify-access') {
+    const body = await readBody(req)
+    const address = (body.address || body.wallet || '').trim()
+    const access = await resolveAccessLevel(address || null)
+    const issued = issueAccessToken(access, address || null, JWT_SECRET)
+    if (issued.error && access.status === 'FULL') {
+      json(res, 503, {
+        ok: false,
+        error: issued.error,
+        status: 'SAMPLE',
+        hasAccess: false,
+        reason: 'jwt_secret_not_configured',
+      })
+      return
+    }
+    json(res, 200, {
+      ok: true,
+      status: access.status,
+      hasAccess: access.hasAccess,
+      reason: access.reason,
+      expiryDate: access.expiryDate,
+      source: access.source,
+      identifier: access.identifier || null,
+      token: issued.token,
+      expiresIn: issued.expiresIn || null,
+      sampleLessonId: 'sample_01',
+      packId: 'pulse_pack_v1',
+    })
+    return
+  }
+
+  if (req.method === 'GET' && path === '/v1/access/introspect') {
+    const auth = req.headers.authorization || ''
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : u.searchParams.get('token') || ''
+    const payload = verifyJwt(token, JWT_SECRET)
+    if (!payload) {
+      json(res, 401, { ok: false, error: 'invalid_or_expired_token' })
+      return
+    }
+    json(res, 200, { ok: true, payload })
     return
   }
 
@@ -120,7 +155,7 @@ const server = http.createServer(async (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`access-api listening on :${PORT}`)
-  console.log('POST /v1/checkout/session  (Stripe)')
-  console.log('POST /v1/checkout/paybox   (Paybox)')
+  console.log(`access-api on :${PORT}`)
+  console.log('POST /v1/verify-access')
+  console.log('GET  /v1/access/introspect')
 })
