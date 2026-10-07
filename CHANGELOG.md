@@ -1,5 +1,19 @@
 # Changelog — xArtists
 
+## [0.91.0](https://github.com/Neltud/xArtists/compare/v0.90.0...v0.91.0) (2026-10-07)
+
+
+### Features
+
+* **CC+Home:** trading-signal nodes (not stake/market) + 3D menu hall on Dashboard ([190e2b4](https://github.com/Neltud/xArtists/commit/190e2b46d8498fef03b7c95c800758b48d1dadd3))
+* i18n signal node labels + Dashboard 3D menu hall as museum entry ([6ea0548](https://github.com/Neltud/xArtists/commit/6ea05484a4b8fddb474169e10294aed82f784c84))
+
+
+### Bug Fixes
+
+* **CC:** ClickGuide hard labels for momentum/flow signals ([f2016a0](https://github.com/Neltud/xArtists/commit/f2016a0649525e2d68f66af6695eb8c0454bdc0d))
+* **front:** restore Agents/MyPacks/Tip + PulseContext so Pages go live ([74fd9e6](https://github.com/Neltud/xArtists/commit/74fd9e6da92a070108ad89d3a80877aedf89b24f))
+
 ## [0.90.0](https://github.com/Neltud/xArtists/compare/v0.89.0...v0.90.0) (2026-10-06)
 
 
