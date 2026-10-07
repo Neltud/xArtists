@@ -1,4 +1,4 @@
-/** Zone ambience — loop, fade, autoplay-safe, mp3/b64 resolve, silent fail. */
+/** Zone ambience — mp3 → b64 → procedural drone. */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import {
@@ -9,6 +9,7 @@ import {
   resolveTrackSrc,
   type ZoneId,
 } from '../config/nelsonAudio'
+import { startProceduralDrone, type DroneHandle } from '../lib/proceduralAmbience'
 
 function fadeTo(audio: HTMLAudioElement, target: number, ms: number, onDone?: () => void) {
   const start = audio.volume
@@ -34,6 +35,7 @@ export function useGalleryAudio() {
   const [zone, setZone] = useState<ZoneId>('gallery')
   const [ready, setReady] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const droneRef = useRef<DroneHandle | null>(null)
   const unlockedRef = useRef(false)
   const fadeCancel = useRef<(() => void) | null>(null)
 
@@ -69,6 +71,8 @@ export function useGalleryAudio() {
     audioRef.current = a
     return () => {
       fadeCancel.current?.()
+      droneRef.current?.stop()
+      droneRef.current = null
       try {
         a.pause()
         a.removeAttribute('src')
@@ -80,50 +84,63 @@ export function useGalleryAudio() {
     }
   }, [])
 
+  const stopAll = () => {
+    fadeCancel.current?.()
+    droneRef.current?.stop()
+    droneRef.current = null
+    const a = audioRef.current
+    if (a) {
+      try {
+        a.pause()
+      } catch {
+        /* */
+      }
+    }
+  }
+
   const applyZone = useCallback(async (z: ZoneId, play: boolean) => {
     const a = audioRef.current
     if (!a) return
     const track = ZONE_TRACKS[z]
-    const src = await resolveTrackSrc(track)
-    if (!src) {
+
+    if (!play) {
+      stopAll()
       setReady(false)
       return
     }
 
-    const startPlay = () => {
+    const src = await resolveTrackSrc(track)
+
+    if (src) {
+      droneRef.current?.stop()
+      droneRef.current = null
       try {
         a.src = src
         a.load()
         a.volume = 0
-        if (play && unlockedRef.current) {
-          a.play()
-            .then(() => {
-              setReady(true)
-              fadeCancel.current?.()
-              fadeCancel.current = fadeTo(a, track.volume, 900)
-            })
-            .catch(() => setReady(false))
+        if (unlockedRef.current) {
+          await a.play()
+          setReady(true)
+          fadeCancel.current?.()
+          fadeCancel.current = fadeTo(a, track.volume, 900)
         }
       } catch {
         setReady(false)
       }
+      return
     }
 
+    // Procedural fallback so user always hears *something* after enabling Musique
     try {
-      if (a.src && !a.paused) {
-        fadeCancel.current?.()
-        fadeCancel.current = fadeTo(a, 0, 400, () => {
-          try {
-            a.pause()
-          } catch {
-            /* */
-          }
-          startPlay()
-        })
-      } else startPlay()
+      a.pause()
     } catch {
-      setReady(false)
+      /* */
     }
+    droneRef.current?.stop()
+    if (unlockedRef.current) {
+      droneRef.current = startProceduralDrone(z)
+      setReady(true)
+    } else setReady(false)
   }, [])
 
   useEffect(() => {
@@ -137,18 +154,10 @@ export function useGalleryAudio() {
     setMusicEnabled(next)
     setEnabled(next)
     unlockedRef.current = true
-    const a = audioRef.current
-    if (!a) return
     if (next) void applyZone(zoneFromPath(location.pathname), true)
     else {
-      fadeCancel.current?.()
-      fadeCancel.current = fadeTo(a, 0, 350, () => {
-        try {
-          a.pause()
-        } catch {
-          /* */
-        }
-      })
+      stopAll()
+      setReady(false)
     }
   }, [enabled, applyZone, location.pathname])
 
