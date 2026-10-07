@@ -1,32 +1,16 @@
-/** TCA gate — Sprint 1.1: FULL only via server JWT (or dev demo flag). */
+/** TCA gate — FULL via server JWT; SAMPLE = Sfumato masterclass + volatile RAG. */
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { resolveTcaAccess, type TcaAccessResult } from '../lib/tcaAccess'
 import { demoPacksAllowed, verifyAccessRemote } from '../lib/tcaVerifyClient'
 import { PulseAccessBanner } from '../components/tca/PulseAccessBanner'
-import { YouTubeEmbed } from '../components/tca/YouTubeEmbed'
+import SfumatoChapterPlayer from '../components/tca/SfumatoChapterPlayer'
+import { MentorAskBar } from '../components/tca/MentorAskBar'
 import PageLoader from '../components/PageLoader'
+import GlassLoader from '../components/GlassLoader'
 import { useWallet } from '../context/WalletContext'
 
 const TcaClassroom = lazy(() => import('./TcaClassroom'))
-const DATA = `${import.meta.env.BASE_URL || '/'}data/tca/`
-
-type SampleLesson = { id: string; title?: string; youtubeId?: string; cta?: string }
-
-async function loadSample(): Promise<SampleLesson> {
-  try {
-    const r = await fetch(`${DATA}sample_lesson.json`, { cache: 'no-store' })
-    if (r.ok) return (await r.json()) as SampleLesson
-  } catch {
-    /* */
-  }
-  return {
-    id: 'sample_01',
-    title: 'Apercu sfumato',
-    youtubeId: 'BqQhD2qH8vE',
-    cta: 'Pack Pulse 12 mois',
-  }
-}
 
 function readDemoPackIdsDevOnly(): string[] {
   if (!demoPacksAllowed()) return []
@@ -42,30 +26,30 @@ function readDemoPackIdsDevOnly(): string[] {
 export default function TcaGatePage() {
   const { address, connected } = useWallet()
   const [access, setAccess] = useState<TcaAccessResult | null>(null)
-  const [sample, setSample] = useState<SampleLesson | null>(null)
   const [loading, setLoading] = useState(true)
   const [serverNote, setServerNote] = useState('')
+  const [seekSec, setSeekSec] = useState<number | null>(null)
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       setLoading(true)
-      const lesson = await loadSample()
-      if (cancelled) return
-      setSample(lesson)
-
       const demoPacks = readDemoPackIdsDevOnly()
       if (demoPacks.length > 0) {
-        setAccess(resolveTcaAccess(demoPacks))
-        setServerNote('dev demo packs (off in PROD)')
-        setLoading(false)
+        if (!cancelled) {
+          setAccess(resolveTcaAccess(demoPacks))
+          setServerNote('dev demo packs (off in PROD)')
+          setLoading(false)
+        }
         return
       }
 
       if (!connected || !address) {
-        setAccess(resolveTcaAccess([], { forceLobby: true }))
-        setServerNote('')
-        setLoading(false)
+        if (!cancelled) {
+          setAccess(resolveTcaAccess([], { forceLobby: true }))
+          setServerNote('')
+          setLoading(false)
+        }
         return
       }
 
@@ -83,11 +67,7 @@ export default function TcaGatePage() {
   }, [address, connected])
 
   if (loading || !access) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center text-sm text-zinc-500">
-        Verification d acces...
-      </div>
-    )
+    return <GlassLoader label="Vérification d'accès…" />
   }
 
   if (access.status === 'FULL') {
@@ -112,13 +92,23 @@ export default function TcaGatePage() {
         <PulseAccessBanner access={access} mode="SAMPLE" />
         {serverNote ? <p className="text-[10px] text-zinc-600">{serverNote}</p> : null}
         <div className="inline-flex w-fit rounded-full border border-amber-500/30 bg-amber-950/40 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-200/90">
-          Mode echantillon (ATC)
+          Mode échantillon (ATC) · Sfumato
         </div>
-        <h1 className="text-xl font-semibold text-amber-50">{sample?.title || 'Lecon apercu'}</h1>
-        <YouTubeEmbed videoId={sample?.youtubeId || ''} title={sample?.title} />
+        <h1 className="text-xl font-semibold text-amber-50">Leonardo · le Sfumato</h1>
+        <SfumatoChapterPlayer
+          seekSec={seekSec}
+          onSeekConsumed={() => setSeekSec(null)}
+        />
+        <MentorAskBar
+          professorId="leonardo"
+          onCues={() => undefined}
+          onSeek={sec => setSeekSec(sec)}
+        />
         <div className="rounded-2xl border border-white/10 bg-black/40 p-5 space-y-3">
           <h3 className="text-base font-medium text-amber-100">Mode immersif (TCA)</h3>
-          <p className="text-[13px] text-zinc-400">Hologramme 3D + RAG — Pack Pulse 12 mois.</p>
+          <p className="text-[13px] text-zinc-400">
+            Hologramme 3D + RAG illimité — Pack Pulse 12 mois.
+          </p>
           <Link
             to="/agents"
             className="inline-flex rounded-full border border-amber-500/40 bg-amber-950/50 px-5 py-2.5 text-[13px] font-semibold text-amber-100"
