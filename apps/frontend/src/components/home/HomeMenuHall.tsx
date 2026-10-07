@@ -1,6 +1,6 @@
 /**
- * Accueil = salle 3D : le menu est exposé comme des œuvres.
- * Clique un panneau → navigation (parcours type musée).
+ * Accueil = salle 3D : menu exposé comme des œuvres.
+ * Clic → camera lerp vers le panneau, puis navigation (corridor).
  */
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
@@ -18,6 +18,23 @@ const EXHIBITS: Exhibit[] = [
   { id: 'stake', label: 'Staking', sub: '$TRO on-chain', href: '#/staking', color: 0x4ade80 },
 ]
 
+function disposeObject(obj: THREE.Object3D) {
+  obj.traverse(child => {
+    const m = child as THREE.Mesh
+    if (m.geometry) m.geometry.dispose()
+    const mat = m.material
+    if (mat) {
+      const list = Array.isArray(mat) ? mat : [mat]
+      for (const material of list) {
+        if ((material as THREE.MeshStandardMaterial).map) {
+          ;(material as THREE.MeshStandardMaterial).map?.dispose()
+        }
+        material.dispose()
+      }
+    }
+  })
+}
+
 export default function HomeMenuHall() {
   const hostRef = useRef<HTMLDivElement>(null)
 
@@ -33,7 +50,8 @@ export default function HomeMenuHall() {
     scene.fog = new THREE.Fog(0x08060c, 6, 16)
 
     const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 40)
-    camera.position.set(0, 1.4, 5.2)
+    const camHome = new THREE.Vector3(0, 1.4, 5.2)
+    camera.position.copy(camHome)
 
     const renderer = new THREE.WebGLRenderer({ antialias: true })
     renderer.setSize(w, h)
@@ -48,7 +66,6 @@ export default function HomeMenuHall() {
     rim.position.set(-2, 2, 1)
     scene.add(rim)
 
-    // Floor
     const floor = new THREE.Mesh(
       new THREE.PlaneGeometry(14, 10),
       new THREE.MeshStandardMaterial({ color: 0x121018, metalness: 0.3, roughness: 0.85 }),
@@ -56,7 +73,6 @@ export default function HomeMenuHall() {
     floor.rotation.x = -Math.PI / 2
     scene.add(floor)
 
-    // Back wall
     const back = new THREE.Mesh(
       new THREE.PlaneGeometry(14, 5),
       new THREE.MeshStandardMaterial({ color: 0x0e0c14, metalness: 0.2, roughness: 0.9 }),
@@ -73,7 +89,6 @@ export default function HomeMenuHall() {
       const ctx = canvas.getContext('2d')!
       ctx.fillStyle = '#0a0a12'
       ctx.fillRect(0, 0, 512, 640)
-      // frame
       ctx.strokeStyle = `#${ex.color.toString(16).padStart(6, '0')}`
       ctx.lineWidth = 12
       ctx.strokeRect(16, 16, 480, 608)
@@ -101,7 +116,6 @@ export default function HomeMenuHall() {
         metalness: 0.15,
       })
       const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1.15, 1.45), mat)
-      // arc along room
       const ang = (i / (n - 1) - 0.5) * 1.35
       mesh.position.set(Math.sin(ang) * 3.2, 1.35, -2.2 + Math.cos(ang) * 0.8)
       mesh.lookAt(0, 1.2, 4)
@@ -110,7 +124,6 @@ export default function HomeMenuHall() {
       scene.add(mesh)
       panels.push(mesh)
 
-      // pedestal
       const ped = new THREE.Mesh(
         new THREE.BoxGeometry(0.5, 0.08, 0.35),
         new THREE.MeshStandardMaterial({ color: 0x1c1917 }),
@@ -119,25 +132,39 @@ export default function HomeMenuHall() {
       scene.add(ped)
     })
 
-    // soft path lights
     for (let i = 0; i < 5; i++) {
       const pl = new THREE.PointLight(0xc4b5fd, 0.35, 4)
       pl.position.set((i - 2) * 1.4, 0.3, 1.5)
       scene.add(pl)
     }
 
+    // Camera lerp state (corridor)
+    let lerpActive = false
+    let lerpT = 0
+    const lerpFrom = new THREE.Vector3()
+    const lerpTo = new THREE.Vector3()
+    let pendingHref: string | null = null
+
     const raycaster = new THREE.Raycaster()
     const pointer = new THREE.Vector2()
 
     const onPointer = (ev: PointerEvent) => {
+      if (lerpActive) return
       const rect = renderer.domElement.getBoundingClientRect()
       pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1
       pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1
       raycaster.setFromCamera(pointer, camera)
       const hits = raycaster.intersectObjects(panels, false)
       if (!hits.length) return
-      const href = hits[0].object.userData.href as string
-      if (href) window.location.hash = href
+      const mesh = hits[0].object as THREE.Mesh
+      const href = mesh.userData.href as string
+      if (!href) return
+      // Lerp camera toward panel (corridor feel)
+      lerpFrom.copy(camera.position)
+      lerpTo.copy(mesh.position).add(new THREE.Vector3(0, 0.1, 1.6))
+      lerpT = 0
+      lerpActive = true
+      pendingHref = href
     }
     renderer.domElement.style.cursor = 'pointer'
     renderer.domElement.addEventListener('pointerdown', onPointer)
@@ -147,11 +174,28 @@ export default function HomeMenuHall() {
     const animate = () => {
       raf = requestAnimationFrame(animate)
       const t = (performance.now() - t0) / 1000
-      camera.position.x = Math.sin(t * 0.15) * 0.25
-      camera.lookAt(0, 1.2, -1)
-      panels.forEach((p, i) => {
-        p.position.y = 1.35 + Math.sin(t * 0.8 + i * 0.4) * 0.04
-      })
+
+      if (lerpActive) {
+        lerpT = Math.min(1, lerpT + 0.035)
+        const e = 1 - Math.pow(1 - lerpT, 3) // ease-out cubic
+        camera.position.lerpVectors(lerpFrom, lerpTo, e)
+        camera.lookAt(lerpTo.x, 1.35, lerpTo.z - 1.2)
+        if (lerpT >= 1 && pendingHref) {
+          const href = pendingHref
+          pendingHref = null
+          lerpActive = false
+          window.location.hash = href
+        }
+      } else {
+        camera.position.x = camHome.x + Math.sin(t * 0.15) * 0.25
+        camera.position.y = camHome.y
+        camera.position.z = camHome.z
+        camera.lookAt(0, 1.2, -1)
+        panels.forEach((p, i) => {
+          p.position.y = 1.35 + Math.sin(t * 0.8 + i * 0.4) * 0.04
+        })
+      }
+
       renderer.render(scene, camera)
     }
     animate()
@@ -169,6 +213,7 @@ export default function HomeMenuHall() {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', onResize)
       renderer.domElement.removeEventListener('pointerdown', onPointer)
+      disposeObject(scene)
       renderer.dispose()
       if (host.contains(renderer.domElement)) host.removeChild(renderer.domElement)
     }
@@ -178,7 +223,7 @@ export default function HomeMenuHall() {
     <div className="relative w-full overflow-hidden rounded-3xl border border-white/10 bg-black">
       <div ref={hostRef} className="w-full" />
       <p className="absolute bottom-3 left-3 right-3 text-center text-[11px] text-zinc-400 pointer-events-none">
-        Salle d&apos;accueil · clique une œuvre-menu pour entrer dans la pièce
+        Salle d&apos;accueil · clique une œuvre — la caméra avance, puis la porte s&apos;ouvre
       </p>
     </div>
   )
