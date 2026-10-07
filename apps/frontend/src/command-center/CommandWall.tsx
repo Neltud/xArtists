@@ -1,6 +1,6 @@
 /**
  * Command wall 3D — real signal nodes (momentum / flow / pulse).
- * NOT stake/marketplace shortcuts. Pulse inspect = local UI only.
+ * FIX: createPulseAtmosphereMesh() returns { mesh, uniforms, dispose } — never atmo.position.
  */
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
@@ -50,8 +50,7 @@ export default function CommandWall({
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     host.appendChild(renderer.domElement)
 
-    const amb = new THREE.AmbientLight(0xffffff, 0.45)
-    scene.add(amb)
+    scene.add(new THREE.AmbientLight(0xffffff, 0.45))
     const dir = new THREE.DirectionalLight(0xaaccff, 0.85)
     dir.position.set(2, 3, 4)
     scene.add(dir)
@@ -68,45 +67,56 @@ export default function CommandWall({
     wall.userData.action = 'PULSE' satisfies HitAction
     scene.add(wall)
 
-    const atmo = createPulseAtmosphereMesh()
-    atmo.position.z = 0.06
-    scene.add(atmo)
+    // CRITICAL FIX: pack is { mesh, uniforms, dispose }
+    const atmoPack = createPulseAtmosphereMesh()
+    const atmoMesh = atmoPack.mesh
+    if (atmoMesh?.position) atmoMesh.position.z = 0.06
+    scene.add(atmoMesh)
+    const atmoUniforms = atmoPack.uniforms
 
-    // Indicator bars (momentum series left, flow/vol series right)
     const barGroup = new THREE.Group()
     const bars: THREE.Mesh[] = []
     for (let i = 0; i < 10; i++) {
       const bh = 0.15 + Math.random() * 0.55
       const geo = new THREE.BoxGeometry(0.12, bh, 0.06)
       const mat = new THREE.MeshStandardMaterial({
-        color: i < 5 ? 0x22c55e : 0x7c3aed,
+        color: i < 5 ? 0x22c55e : 0xa855f7,
         emissive: i < 5 ? 0x14532d : 0x4c1d95,
         emissiveIntensity: 0.35,
-        transparent: true,
-        opacity: 0.9,
+        metalness: 0.3,
+        roughness: 0.45,
       })
       const m = new THREE.Mesh(geo, mat)
       m.position.set(-1.05 + i * 0.22, -0.55 + bh / 2, 0.1)
-      barGroup.add(m)
       bars.push(m)
+      barGroup.add(m)
     }
     scene.add(barGroup)
 
-    const nodeGeo = new THREE.BoxGeometry(0.3, 0.3, 0.12)
-    const momMat = new THREE.MeshStandardMaterial({
-      color: 0x22c55e,
-      emissive: 0x14532d,
-      emissiveIntensity: 0.55,
-    })
-    const flowMat = new THREE.MeshStandardMaterial({
-      color: 0xa855f7,
-      emissive: 0x4c1d95,
-      emissiveIntensity: 0.55,
-    })
-    const momNode = new THREE.Mesh(nodeGeo, momMat)
+    const nodeGeo = new THREE.SphereGeometry(0.11, 20, 20)
+    const momNode = new THREE.Mesh(
+      nodeGeo,
+      new THREE.MeshStandardMaterial({
+        color: 0x22c55e,
+        emissive: 0x16a34a,
+        emissiveIntensity: 0.7,
+        metalness: 0.4,
+        roughness: 0.3,
+      }),
+    )
     momNode.position.set(-0.9, -0.32, 0.14)
     momNode.userData.action = 'MOMENTUM' satisfies HitAction
-    const flowNode = new THREE.Mesh(nodeGeo, flowMat)
+
+    const flowNode = new THREE.Mesh(
+      nodeGeo.clone(),
+      new THREE.MeshStandardMaterial({
+        color: 0xa855f7,
+        emissive: 0x7c3aed,
+        emissiveIntensity: 0.7,
+        metalness: 0.4,
+        roughness: 0.3,
+      }),
+    )
     flowNode.position.set(0.9, -0.32, 0.14)
     flowNode.userData.action = 'FLOW' satisfies HitAction
     scene.add(momNode, flowNode)
@@ -126,11 +136,12 @@ export default function CommandWall({
 
     const flash = (mesh: THREE.Mesh) => {
       const m = mesh.material as THREE.MeshStandardMaterial
+      if (!m || m.emissiveIntensity == null) return
       const prev = m.emissiveIntensity
       m.emissiveIntensity = 1.5
-      setTimeout(() => {
+      window.setTimeout(() => {
         m.emissiveIntensity = prev
-      }, 200)
+      }, 220)
     }
 
     const onPointer = (ev: PointerEvent) => {
@@ -141,17 +152,15 @@ export default function CommandWall({
       raycaster.setFromCamera(pointer, camera)
       const hits = raycaster.intersectObjects(targets, false)
       if (!hits.length) return
-      const obj = hits[0].object as THREE.Mesh
-      flash(obj)
-      const action = (obj.userData.action || 'PULSE') as HitAction
+      const mesh = hits[0].object as THREE.Mesh
+      flash(mesh)
+      const action = mesh.userData.action as HitAction
       if (action === 'MOMENTUM') {
-        // Momentum / trend signal → LIA hub (paper signals, curves)
-        window.location.hash = '#/lia'
+        window.dispatchEvent(new CustomEvent('xartists:cc-signal', { detail: { kind: 'momentum' } }))
       } else if (action === 'FLOW') {
-        // Volume / flow / multi-asset tape → trading desk
-        window.location.hash = '#/trading'
+        window.dispatchEvent(new CustomEvent('xartists:cc-signal', { detail: { kind: 'flow' } }))
       } else {
-        flash(wall)
+        window.dispatchEvent(new CustomEvent('xartists:cc-signal', { detail: { kind: 'pulse' } }))
       }
     }
     renderer.domElement.style.cursor = interactive ? 'pointer' : 'default'
@@ -161,45 +170,41 @@ export default function CommandWall({
     const t0 = performance.now()
     const animate = () => {
       raf = requestAnimationFrame(animate)
+      const t = (performance.now() - t0) / 1000
       const s = sentRef.current
       const v = volRef.current
-      const highVol = v > 0.55
-      const t = (performance.now() - t0) / 1000
 
-      atmo.uniforms.uTime.value = t
-      atmo.uniforms.uSentiment.value = s
-      atmo.uniforms.uVolatility.value = v
-      if ('uPulseSpeed' in atmo.uniforms) {
-        ;(atmo.uniforms as { uPulseSpeed: { value: number } }).uPulseSpeed.value =
-          spdRef.current * (1 + (highVol ? 0.35 : 0))
-      }
-      if ('uColor' in atmo.uniforms && colRef.current) {
-        const c = colRef.current
-        if (highVol) {
-          ;(atmo.uniforms as { uColor: { value: THREE.Vector3 } }).uColor.value.set(
-            c[0] * 0.55 + 0.45,
-            c[1] * 0.4 + 0.15,
-            c[2] * 0.55 + 0.55,
-          )
-        } else {
-          ;(atmo.uniforms as { uColor: { value: THREE.Vector3 } }).uColor.value.set(c[0], c[1], c[2])
+      if (atmoUniforms) {
+        atmoUniforms.uTime.value = t
+        atmoUniforms.uSentiment.value = s
+        atmoUniforms.uVolatility.value = v
+        if ('uPulseSpeed' in atmoUniforms) {
+          ;(atmoUniforms as { uPulseSpeed: { value: number } }).uPulseSpeed.value =
+            spdRef.current || 1
+        }
+        if ('uColor' in atmoUniforms && colRef.current) {
+          const c = colRef.current
+          try {
+            ;(atmoUniforms as { uColor: { value: THREE.Vector3 } }).uColor.value.set(
+              c[0],
+              c[1],
+              c[2],
+            )
+          } catch {
+            /* */
+          }
         }
       }
-      wallMat.emissiveIntensity = 0.35 + Math.abs(s) * 0.45 + v * 0.2
-      amb.intensity = 0.35 + Math.max(0, s) * 0.25 + (highVol ? 0.15 : 0)
-      wall.rotation.y = Math.sin(Date.now() / Math.max(600, 1200 - v * 800)) * (0.02 + Math.abs(s) * 0.03)
 
-      // Animate bars from live sentiment / vol
       bars.forEach((b, i) => {
-        const base = 0.12 + ((Math.sin(t * 1.4 + i * 0.55) + 1) / 2) * (0.25 + v * 0.5)
-        const bias = i < 5 ? Math.max(0, s) * 0.35 : Math.max(0, -s) * 0.25 + v * 0.2
-        const h = Math.min(0.85, base + bias)
-        b.scale.y = h / 0.4
+        const base = 0.2 + Math.abs(Math.sin(t * (1.2 + i * 0.15) + i)) * (0.4 + v * 0.5)
+        const h = base * (0.7 + (s + 1) * 0.2)
+        b.scale.y = Math.max(0.15, h)
         b.position.y = -0.55 + (h * b.scale.y) / 2
       })
 
-      momNode.rotation.y = t * 0.6
-      flowNode.rotation.y = -t * 0.55
+      momNode.position.y = -0.32 + Math.sin(t * 2.1) * 0.04
+      flowNode.position.y = -0.32 + Math.sin(t * 2.4 + 1) * 0.04
 
       renderer.render(scene, camera)
     }
@@ -218,30 +223,15 @@ export default function CommandWall({
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', onResize)
       renderer.domElement.removeEventListener('pointerdown', onPointer)
+      try {
+        atmoPack.dispose()
+      } catch {
+        /* */
+      }
       renderer.dispose()
       if (host.contains(renderer.domElement)) host.removeChild(renderer.domElement)
     }
   }, [interactive])
 
-  const bullPct = Math.round(50 + Math.max(-40, Math.min(40, sentiment * 50)))
-
-  return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-white/10 bg-black/40">
-      <div className="absolute top-2 left-3 z-10 flex flex-wrap gap-2 pointer-events-none">
-        <span className="text-[9px] uppercase tracking-wider text-cyan-300/90 font-tech">
-          LIVE · COMMAND CENTER
-        </span>
-        <span className="text-[9px] rounded-full border border-white/15 px-2 py-0.5 text-zinc-300">
-          {sentiment >= 0 ? 'BULLISH' : 'BEARISH'} {bullPct}%
-        </span>
-        <span className="text-[9px] rounded-full border border-violet-500/30 px-2 py-0.5 text-violet-200/90">
-          vol {(volatility * 100).toFixed(0)}%
-        </span>
-      </div>
-      <div ref={hostRef} className="w-full min-h-[300px]" />
-      <p className="absolute bottom-2 left-3 right-3 text-[10px] text-zinc-500 pointer-events-none">
-        vert = momentum / tendance · violet = flux / volatilité · mur = Pulse sentiment (inspect local)
-      </p>
-    </div>
-  )
+  return <div ref={hostRef} className="w-full min-h-[300px] rounded-2xl overflow-hidden" />
 }
