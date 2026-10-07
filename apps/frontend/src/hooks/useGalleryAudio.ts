@@ -1,6 +1,6 @@
 /**
- * Gallery / zone ambience — HTML5 Audio, loop, fade in/out, autoplay-safe.
- * First user gesture unlocks playback (browser policy).
+ * Zone ambience — loop, fade, autoplay-safe.
+ * Missing MP3 → silent fail (no throw, no 3D block).
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -23,12 +23,13 @@ function fadeTo(
   let raf = 0
   const step = (now: number) => {
     const p = Math.min(1, (now - t0) / ms)
-    audio.volume = start + (target - start) * p
-    if (p < 1) {
-      raf = requestAnimationFrame(step)
-    } else {
-      onDone?.()
+    try {
+      audio.volume = Math.max(0, Math.min(1, start + (target - start) * p))
+    } catch {
+      /* */
     }
+    if (p < 1) raf = requestAnimationFrame(step)
+    else onDone?.()
   }
   raf = requestAnimationFrame(step)
   return () => cancelAnimationFrame(raf)
@@ -42,6 +43,7 @@ export function useGalleryAudio() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const unlockedRef = useRef(false)
   const fadeCancel = useRef<(() => void) | null>(null)
+  const failedSrc = useRef<Set<string>>(new Set())
 
   useEffect(() => {
     setEnabled(isMusicEnabled())
@@ -53,14 +55,11 @@ export function useGalleryAudio() {
     return () => window.removeEventListener('xartists-music', on)
   }, [])
 
-  // Unlock on first interaction anywhere
   useEffect(() => {
     const unlock = () => {
       unlockedRef.current = true
       const a = audioRef.current
-      if (a && isMusicEnabled()) {
-        a.play().catch(() => {})
-      }
+      if (a && isMusicEnabled()) a.play().catch(() => {})
     }
     window.addEventListener('pointerdown', unlock, { once: true })
     window.addEventListener('keydown', unlock, { once: true })
@@ -70,31 +69,49 @@ export function useGalleryAudio() {
     }
   }, [])
 
-  // Create single audio element
   useEffect(() => {
     const a = new Audio()
     a.loop = true
-    a.preload = 'auto'
+    a.preload = 'metadata'
     a.crossOrigin = 'anonymous'
+    // Silent error handlers — never throw into React
+    a.onerror = () => {
+      try {
+        failedSrc.current.add(a.currentSrc || a.src)
+      } catch {
+        /* */
+      }
+      setReady(false)
+    }
     audioRef.current = a
     return () => {
       fadeCancel.current?.()
-      a.pause()
-      a.src = ''
+      try {
+        a.pause()
+        a.removeAttribute('src')
+        a.load()
+      } catch {
+        /* */
+      }
       audioRef.current = null
     }
   }, [])
 
-  const applyZone = useCallback(
-    (z: ZoneId, play: boolean) => {
-      const a = audioRef.current
-      if (!a) return
-      const track = ZONE_TRACKS[z]
-      const nextSrc = track.src
-      const targetVol = track.volume
+  const applyZone = useCallback((z: ZoneId, play: boolean) => {
+    const a = audioRef.current
+    if (!a) return
+    const track = ZONE_TRACKS[z]
+    const nextSrc = track.src
 
-      const switchSrc = () => {
-        if (!a.src.endsWith(nextSrc.replace(/^.*\//, '')) && a.src !== nextSrc) {
+    if (failedSrc.current.has(nextSrc)) {
+      setReady(false)
+      return
+    }
+
+    const switchSrc = () => {
+      try {
+        const already = a.src && (a.src === nextSrc || a.src.endsWith(nextSrc.replace(/^.*\//, '')))
+        if (!already) {
           a.src = nextSrc
           a.load()
         }
@@ -104,24 +121,35 @@ export function useGalleryAudio() {
             .then(() => {
               setReady(true)
               fadeCancel.current?.()
-              fadeCancel.current = fadeTo(a, targetVol, 900)
+              fadeCancel.current = fadeTo(a, track.volume, 900)
             })
-            .catch(() => setReady(false))
+            .catch(() => {
+              setReady(false)
+            })
         }
+      } catch {
+        setReady(false)
       }
+    }
 
+    try {
       if (a.src && !a.paused) {
         fadeCancel.current?.()
         fadeCancel.current = fadeTo(a, 0, 400, () => {
-          a.pause()
+          try {
+            a.pause()
+          } catch {
+            /* */
+          }
           switchSrc()
         })
       } else {
         switchSrc()
       }
-    },
-    [],
-  )
+    } catch {
+      setReady(false)
+    }
+  }, [])
 
   useEffect(() => {
     const z = zoneFromPath(location.pathname)
@@ -140,7 +168,13 @@ export function useGalleryAudio() {
       applyZone(zoneFromPath(location.pathname), true)
     } else {
       fadeCancel.current?.()
-      fadeCancel.current = fadeTo(a, 0, 350, () => a.pause())
+      fadeCancel.current = fadeTo(a, 0, 350, () => {
+        try {
+          a.pause()
+        } catch {
+          /* */
+        }
+      })
     }
   }, [enabled, applyZone, location.pathname])
 

@@ -1,9 +1,6 @@
 /**
  * Zone ambience — HTML5 MP3 (no YouTube).
- * Mars → accueil/gallery | Elixir → command/LIA | Persic → musée
- *
- * Place full tracks in public/audio/ (see docs/AUDIO_AMBIENCE.md).
- * Optional overrides: VITE_AUDIO_GALLERY_URL, VITE_AUDIO_COMMAND_URL, VITE_AUDIO_MUSEUM_URL
+ * Mars → accueil | Elixir → command/LIA | Persic → musée + TCA
  */
 
 export type ZoneId = 'gallery' | 'command' | 'museum' | 'default'
@@ -11,7 +8,6 @@ export type ZoneId = 'gallery' | 'command' | 'museum' | 'default'
 export type ZoneTrack = {
   zone: ZoneId
   label: string
-  /** path relative to site base, or absolute URL */
   src: string
   volume: number
 }
@@ -47,7 +43,7 @@ export const ZONE_TRACKS: Record<ZoneId, ZoneTrack> = {
   },
   museum: {
     zone: 'museum',
-    label: 'Persic · Musée',
+    label: 'Persic · Musée / TCA',
     src: envUrl('VITE_AUDIO_MUSEUM_URL') || `${base()}audio/persic_museum.mp3`,
     volume: 0.5,
   },
@@ -63,10 +59,25 @@ export const ZONE_TRACKS: Record<ZoneId, ZoneTrack> = {
 export function zoneFromPath(pathname: string): ZoneId {
   const p = (pathname || '/').replace(/\/+$/, '') || '/'
   if (p === '/' || p === '') return 'gallery'
-  if (p.includes('command') || p.includes('lia') || p.includes('trading')) return 'command'
-  if (p.includes('museum') || p.includes('gallery') || p.includes('venue') || p.includes('tours'))
+  if (
+    p.includes('command') ||
+    p.includes('lia') ||
+    p.includes('trading') ||
+    p.includes('cc')
+  )
+    return 'command'
+  // Musée + TCA + salles = Persic
+  if (
+    p.includes('museum') ||
+    p.includes('gallery') ||
+    p.includes('venue') ||
+    p.includes('tours') ||
+    p.includes('tca') ||
+    p.includes('classroom') ||
+    p.includes('my-packs') ||
+    p.includes('salles')
+  )
     return 'museum'
-  if (p.includes('tca') || p.includes('classroom')) return 'gallery'
   return 'default'
 }
 
@@ -89,7 +100,7 @@ export function setMusicEnabled(on: boolean): void {
   window.dispatchEvent(new CustomEvent('xartists-music', { detail: { enabled: on } }))
 }
 
-/** @deprecated YouTube removed — kept for type compat */
+/** @deprecated YouTube removed */
 export type NelsonTrack = { id: string; label: string; youtubeId: string; category?: string }
 export const NELSON_DEFAULT_TRACK: NelsonTrack = {
   id: 'mp3',
