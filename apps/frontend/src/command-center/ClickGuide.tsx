@@ -1,11 +1,11 @@
-/** Explications graphiques des clics mur 3D. */
+/** Explications des nœuds 3D — signaux trading, pas Stake/Market. */
 import { useI18n } from '../i18n/I18nContext'
 
 export default function ClickGuide() {
   const { t } = useI18n()
   const rows = [
-    { color: 'bg-emerald-400', key: 'cc.click.stake' },
-    { color: 'bg-violet-400', key: 'cc.click.market' },
+    { color: 'bg-emerald-400', key: 'cc.click.stake' }, // key kept for i18n map → momentum
+    { color: 'bg-violet-400', key: 'cc.click.market' }, // → flow
     { color: 'bg-cyan-400', key: 'cc.click.wall' },
     { color: 'bg-amber-300', key: 'cc.click.agent' },
   ]
