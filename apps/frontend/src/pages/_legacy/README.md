@@ -1,10 +1,14 @@
-# Legacy pages (Chantier 3)
+# Legacy / orphan pages
 
-Orphan cleanup on 2026-10-06 deleted files that **canonical routes still re-exported**.
-**Restored 2026-10-07** (required for Pages build + App.tsx):
+Files listed here were **not** routed from `App.tsx`.
+Removed from `src/pages/` to shrink the active surface. Recover via git history.
 
-- `Agents.tsx` (route `/agents` via AgentsPage)
-- `MyPacks.tsx` (route `/my-packs` via MyPacksPage)
-- `Tip.tsx` (route `/tip` via TipPage)
+## Sprint consolidation (2026-10-07)
 
-Do **not** delete these three without rewriting the `*Page.tsx` re-exports and the `static.yml` Agents grep.
+Deleted orphans (if present):
+Agents.tsx, ArtistStudio.tsx, DAO.tsx, DigitalTwinPage.tsx, ExplainCards.tsx,
+HistoryPage.tsx, HolderRoomPage.tsx, LandingHero.tsx, LiaPerformancePage.tsx,
+MarketPage.tsx, MuseumLabPage.tsx, MyPacks.tsx, Portfolio.tsx, RwaCatalogPage.tsx,
+SoulTestnetPage.tsx, Tip.tsx, VenueAccountPage.tsx, VoyageAgentPage.tsx
+
+Canonical: AgentsPage, DaoPage, MarketplacePage, MyPacksPage, PortfolioPage, TipPage, etc.
