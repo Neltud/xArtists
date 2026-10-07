@@ -1,0 +1,14 @@
+{
+  "schema": "xartists_masterclass/v1",
+  "id": "da_vinci_sfumato",
+  "title": "Leonardo da Vinci & le Sfumato",
+  "professor_id": "leonardo",
+  "youtube_id": "BqQhD2qH8vE",
+  "chapters": [
+    { "id": "intro", "title": "Qu'est-ce que le sfumato ?", "start_sec": 0, "end_sec": 90 },
+    { "id": "joconde", "title": "La Joconde", "start_sec": 90, "end_sec": 240 },
+    { "id": "sainte_anne", "title": "Sainte Anne", "start_sec": 240, "end_sec": 420 },
+    { "id": "technique", "title": "Glaçis & couches", "start_sec": 420, "end_sec": 560 },
+    { "id": "heritage", "title": "Héritage", "start_sec": 560, "end_sec": 720 }
+  ]
+}
