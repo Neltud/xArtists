@@ -1,0 +1,110 @@
+{
+  "schema": "xartists_masterclass/v1",
+  "id": "da_vinci_sfumato",
+  "title": "Leonardo da Vinci & le Sfumato",
+  "professor_id": "leonardo",
+  "language": "fr",
+  "youtube_id": "BqQhD2qH8vE",
+  "duration_sec": 720,
+  "chapters": [
+    {
+      "id": "intro",
+      "title": "Qu'est-ce que le sfumato ?",
+      "start_sec": 0,
+      "end_sec": 90,
+      "summary": "Le sfumato est la technique de dégradés imperceptibles entre ombre et lumière, sans traits nets."
+    },
+    {
+      "id": "joconde",
+      "title": "La Joconde — sourire et voile",
+      "start_sec": 90,
+      "end_sec": 240,
+      "summary": "Sur la Joconde, le sfumato fond les commissures des lèvres et les coins des yeux pour un sourire ambigu."
+    },
+    {
+      "id": "sainte_anne",
+      "title": "Sainte Anne, la Vierge et l'Enfant",
+      "start_sec": 240,
+      "end_sec": 420,
+      "summary": "Dans la Sainte Anne, les contours des montagnes et des drapés s'évaporent dans l'atmosphère."
+    },
+    {
+      "id": "technique",
+      "title": "Procédé : couches et glaçis",
+      "start_sec": 420,
+      "end_sec": 560,
+      "summary": "Leonardo superpose des glacis très minces d'huile pour brouiller la frontière ombre/lumière."
+    },
+    {
+      "id": "heritage",
+      "title": "Héritage et regard moderne",
+      "start_sec": 560,
+      "end_sec": 720,
+      "summary": "Le sfumato influence encore la photographie soft-focus et le rendu 3D PBR contemporain."
+    }
+  ],
+  "segments": [
+    {
+      "t": 12,
+      "text": "Le mot sfumato vient de l'italien sfumare : s'évaporer comme la fumée.",
+      "tags": ["sfumato", "etymologie"]
+    },
+    {
+      "t": 45,
+      "text": "Contrairement au contour sec, le sfumato refuse la ligne ferme : tout est transition.",
+      "tags": ["sfumato", "contour"]
+    },
+    {
+      "t": 105,
+      "text": "Regardez la Joconde : le sourire n'est ni dessiné ni effacé ; il flotte entre les deux.",
+      "tags": ["joconde", "monna lisa", "sourire"]
+    },
+    {
+      "t": 148,
+      "text": "Les coins des yeux de Monna Lisa sont modelés par des ombres très légères, presque imperceptibles.",
+      "tags": ["joconde", "yeux", "ombre"]
+    },
+    {
+      "t": 200,
+      "text": "Le voile transparent sur la chevelure amplifie l'effet de profondeur atmosphérique.",
+      "tags": ["joconde", "voile", "atmosphere"]
+    },
+    {
+      "t": 265,
+      "text": "Dans la Sainte Anne, le paysage lombard disparaît progressivement dans la brume bleutée.",
+      "tags": ["sainte anne", "paysage", "brume"]
+    },
+    {
+      "t": 310,
+      "text": "Les trois figures — Anne, Marie, l'Enfant — partagent un même continuum de chair et de lumière.",
+      "tags": ["sainte anne", "composition"]
+    },
+    {
+      "t": 380,
+      "text": "Notez comment le bras de Marie n'a pas de bord net : il se fond dans le drapé.",
+      "tags": ["sainte anne", "drape", "sfumato"]
+    },
+    {
+      "t": 450,
+      "text": "Leonardo utilisait des huiles diluées, parfois plus de trente couches, pour obtenir cette fumée optique.",
+      "tags": ["technique", "glacis", "huile"]
+    },
+    {
+      "t": 510,
+      "text": "Le pinceau ne trace pas : il caresse, il estompe, il laisse l'œil du spectateur terminer la forme.",
+      "tags": ["technique", "pinceau"]
+    },
+    {
+      "t": 600,
+      "text": "Aujourd'hui, le soft focus photographique et certains shaders 3D réinventent le même principe.",
+      "tags": ["heritage", "photographie", "3d"]
+    }
+  ],
+  "demo_embeddings": [
+    { "id": "emb_sfumato", "terms": ["sfumato", "fumée", "dégradé", "estompe", "transition"] },
+    { "id": "emb_joconde", "terms": ["joconde", "monna lisa", "sourire", "yeux", "voile"] },
+    { "id": "emb_anne", "terms": ["sainte anne", "vierge", "enfant", "paysage", "brume"] },
+    { "id": "emb_tech", "terms": ["glacis", "huile", "couches", "pinceau", "technique"] }
+  ],
+  "disclaimer": "Transcription de démonstration pédagogique — pas un enregistrement commercial."
+}
