@@ -1,0 +1,22 @@
+{
+  "schema": "xartists_masterclass/v1",
+  "id": "da_vinci_sfumato",
+  "title": "Leonardo da Vinci & le Sfumato",
+  "professor_id": "leonardo",
+  "youtube_id": "BqQhD2qH8vE",
+  "duration_sec": 720,
+  "chapters": [
+    { "id": "intro", "title": "Qu'est-ce que le sfumato ?", "start_sec": 0, "end_sec": 90, "summary": "Dégradés imperceptibles ombre/lumière." },
+    { "id": "joconde", "title": "La Joconde — sourire et voile", "start_sec": 90, "end_sec": 240, "summary": "Sourire ambigu par sfumato aux commissures." },
+    { "id": "sainte_anne", "title": "Sainte Anne", "start_sec": 240, "end_sec": 420, "summary": "Paysage et drapés fondus dans l'atmosphère." },
+    { "id": "technique", "title": "Glaçis et couches", "start_sec": 420, "end_sec": 560, "summary": "Huiles diluées, dizaines de couches." },
+    { "id": "heritage", "title": "Héritage", "start_sec": 560, "end_sec": 720, "summary": "Soft-focus et shaders 3D." }
+  ],
+  "segments": [
+    { "t": 12, "text": "Sfumato vient de sfumare : s'évaporer comme la fumée.", "tags": ["sfumato", "etymologie"] },
+    { "t": 105, "text": "Sur la Joconde, le sourire flotte entre dessin et effacement.", "tags": ["joconde", "sourire"] },
+    { "t": 148, "text": "Les coins des yeux de Monna Lisa sont modelés par des ombres très légères.", "tags": ["joconde", "yeux"] },
+    { "t": 265, "text": "Dans la Sainte Anne, le paysage lombard disparaît dans la brume bleutée.", "tags": ["sainte anne", "paysage"] },
+    { "t": 450, "text": "Leonardo utilisait des huiles diluées, parfois plus de trente couches.", "tags": ["technique", "glacis"] }
+  ]
+}

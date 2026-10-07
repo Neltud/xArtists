@@ -1,5 +1,5 @@
 /**
- * Access API — verify-access JWT, SIWX challenge, daily signals, checkout stubs.
+ * Access API — SIWX (default ON), JWT, prices cache, RAG, signals.
  */
 import http from 'node:http'
 import { URL } from 'node:url'
@@ -13,11 +13,12 @@ import {
   verifyErdSignature,
   requireSiwx,
 } from './siwx.mjs'
+import { queryMasterclassRag } from './ragQuery.mjs'
+import { getPrices } from './pricesCache.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PORT = Number(process.env.PORT || 8787)
 const CORS = process.env.CORS_ORIGIN || '*'
-const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || ''
 const JWT_SECRET = process.env.JWT_SECRET || ''
 
 function json(res, code, body) {
@@ -43,23 +44,26 @@ async function readBody(req) {
 }
 
 function loadDailySignal() {
-  const candidates = [
+  for (const p of [
     path.resolve(__dirname, '../../../data/signals/daily_signal.json'),
     path.resolve(__dirname, '../../data/signals/daily_signal.json'),
-    process.env.DAILY_SIGNAL_PATH,
-  ].filter(Boolean)
-  for (const p of candidates) {
+  ]) {
     try {
       if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, 'utf8'))
     } catch {
       /* */
     }
   }
+  return { schema: 'xartists_daily_signal/v1', headline: 'Signal non généré', disclaimer: 'Pas un conseil financier.' }
+}
+
+function sampleDeny(reason, extra = {}) {
   return {
-    schema: 'xartists_daily_signal/v1',
-    headline: 'Signal non généré',
-    summary: 'Lancer signals-worker/generate_daily_signal.py',
-    disclaimer: 'Pas un conseil financier.',
+    ok: false,
+    status: 'SAMPLE',
+    hasAccess: false,
+    reason,
+    ...extra,
   }
 }
 
@@ -77,17 +81,16 @@ const server = http.createServer(async (req, res) => {
       ok: true,
       jwt: Boolean(JWT_SECRET && JWT_SECRET.length >= 16),
       require_siwx: requireSiwx(),
-      pulse_collection: Boolean(process.env.PULSE_COLLECTION),
+      rag: true,
+      prices: true,
       service: 'access-api',
     })
     return
   }
 
-  // SIWX challenge
   if (req.method === 'POST' && pth === '/v1/access/challenge') {
     const body = await readBody(req)
-    const address = (body.address || '').trim()
-    const ch = createChallenge(address || null)
+    const ch = createChallenge((body.address || '').trim() || null)
     json(res, 200, { ok: true, ...ch, require_siwx: requireSiwx() })
     return
   }
@@ -99,43 +102,27 @@ const server = http.createServer(async (req, res) => {
     const message = body.message || ''
     const nonce = body.nonce || ''
 
+    // STRICT SIWX (default): unsigned → SAMPLE, never crash
     if (requireSiwx()) {
       if (!address || !signature || !message) {
-        json(res, 401, {
-          ok: false,
-          status: 'SAMPLE',
-          hasAccess: false,
-          reason: 'siwx_required',
-          error: 'signature + message required',
-        })
+        json(res, 401, sampleDeny('siwx_required', { error: 'signature + message required' }))
         return
       }
       if (nonce && !consumeNonce(nonce, address)) {
-        json(res, 401, {
-          ok: false,
-          status: 'SAMPLE',
-          hasAccess: false,
-          reason: 'siwx_nonce_invalid',
-        })
+        json(res, 401, sampleDeny('siwx_nonce_invalid'))
         return
       }
       if (!verifyErdSignature(address, message, signature)) {
-        json(res, 401, {
-          ok: false,
-          status: 'SAMPLE',
-          hasAccess: false,
-          reason: 'siwx_bad_signature',
-        })
+        json(res, 401, sampleDeny('siwx_bad_signature'))
         return
       }
     } else if (signature && message && address) {
-      // Optional verify when provided
       if (nonce && !consumeNonce(nonce, address)) {
-        json(res, 401, { ok: false, status: 'SAMPLE', hasAccess: false, reason: 'siwx_nonce_invalid' })
+        json(res, 401, sampleDeny('siwx_nonce_invalid'))
         return
       }
       if (!verifyErdSignature(address, message, signature)) {
-        json(res, 401, { ok: false, status: 'SAMPLE', hasAccess: false, reason: 'siwx_bad_signature' })
+        json(res, 401, sampleDeny('siwx_bad_signature'))
         return
       }
     }
@@ -143,13 +130,7 @@ const server = http.createServer(async (req, res) => {
     const access = await resolveAccessLevel(address || null)
     const issued = issueAccessToken(access, address || null, JWT_SECRET)
     if (issued.error && access.status === 'FULL') {
-      json(res, 503, {
-        ok: false,
-        error: issued.error,
-        status: 'SAMPLE',
-        hasAccess: false,
-        reason: 'jwt_secret_not_configured',
-      })
+      json(res, 503, sampleDeny('jwt_secret_not_configured', { error: issued.error }))
       return
     }
     json(res, 200, {
@@ -186,18 +167,30 @@ const server = http.createServer(async (req, res) => {
     return
   }
 
-  if (req.method === 'POST' && pth === '/v1/checkout/session') {
-    const body = await readBody(req)
-    if (!STRIPE_KEY) {
-      json(res, 501, { error: 'STRIPE_SECRET_KEY not set' })
-      return
+  if (req.method === 'GET' && pth === '/v1/prices') {
+    try {
+      const prices = await getPrices()
+      json(res, 200, prices)
+    } catch (e) {
+      json(res, 502, { ok: false, error: e?.message || 'prices_failed' })
     }
-    json(res, 501, { error: 'stripe SDK TODO', pack_id: body.pack_id })
     return
   }
 
-  if (req.method === 'POST' && pth === '/v1/checkout/paybox') {
-    json(res, 200, { stub: true, order_id: `xa-${Date.now().toString(36)}` })
+  if (req.method === 'POST' && pth === '/v1/rag/query') {
+    const body = await readBody(req)
+    const out = queryMasterclassRag(body)
+    json(res, out.ok ? 200 : 400, out)
+    return
+  }
+
+  if (req.method === 'GET' && pth === '/v1/masterclass/da_vinci_sfumato') {
+    try {
+      const p = path.resolve(__dirname, '../../../data/masterclasses/da_vinci_sfumato.json')
+      json(res, 200, { ok: true, masterclass: JSON.parse(fs.readFileSync(p, 'utf8')) })
+    } catch {
+      json(res, 404, { ok: false, error: 'masterclass_not_found' })
+    }
     return
   }
 
@@ -205,5 +198,5 @@ const server = http.createServer(async (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`access-api :${PORT} siwx=${requireSiwx()}`)
+  console.log(`access-api :${PORT} siwx=${requireSiwx()} (default ON) prices+rag`)
 })
