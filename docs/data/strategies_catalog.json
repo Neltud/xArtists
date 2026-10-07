@@ -1,0 +1,19 @@
+{
+  "schema": "strategies_catalog/v1",
+  "paper_default": true,
+  "items": [
+    {"id": "STRAT_TREND_FOLLOW", "family": "trend", "label": "Trend follow"},
+    {"id": "STRAT_MOMENTUM_BREAKOUT", "family": "trend", "label": "Momentum breakout"},
+    {"id": "STRAT_MEAN_REVERSION", "family": "mean", "label": "Mean reversion"},
+    {"id": "STRAT_SENTIMENT_DIV", "family": "mean", "label": "Sentiment divergence"},
+    {"id": "STRAT_DELTA_NEUTRAL", "family": "hedge", "label": "Delta neutral"},
+    {"id": "STRAT_SENTINEL", "family": "hedge", "label": "Sentinel"},
+    {"id": "STRAT_COMPOUND_MAX", "family": "yield", "label": "Compound max"},
+    {"id": "STRAT_YIELD_OPTIMIZER", "family": "yield", "label": "Yield optimizer"},
+    {"id": "STRAT_VOLATILITY_EXT", "family": "yield", "label": "Vol extraction"},
+    {"id": "STRAT_ARB_MARKET", "family": "meta", "label": "Market arb"},
+    {"id": "STRAT_CORRELATION_ARB", "family": "meta", "label": "Correlation arb"},
+    {"id": "STRAT_LIQUIDITY_SNIPER", "family": "meta", "label": "Liquidity sniper"},
+    {"id": "STRAT_MICRO_PROOF", "family": "meta", "label": "Micro proof (ops)"}
+  ]
+}

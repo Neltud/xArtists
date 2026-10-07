@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "schema": "tca_cues/v1",
+  "lesson_id": "leo_w1_sfumato",
+  "title": "Sfumato: smoke between light and dark",
+  "professor_id": "leonardo",
+  "locale": "en",
+  "total_duration_s": 132.0,
+  "cues": [
+    {"timestamp": 0.0, "type": "TEXT", "payload": {"text": "Sfumato is not blur. It is atmosphere — the air between the eye and the form.", "locale": "en"}},
+    {"timestamp": 0.0, "type": "ANIMATION", "payload": {"animation_name": "Explain"}},
+    {"timestamp": 0.0, "type": "CAMERA", "payload": {"target_obj": "wide", "camera_pos": {"x": 0.0, "y": 2.0, "z": 5.5}, "look_at": [0, 1.2, 0]}},
+    {"timestamp": 0.0, "type": "AUDIO", "payload": {"text": "Sfumato is not blur. It is atmosphere — the air between the eye and the form.", "locale": "en", "audio_file": null, "voice_id": "professor_default"}},
+    {"timestamp": 0.0, "type": "EFFECT", "payload": {"name": "dust_soft", "intensity": 0.4}},
+    {"timestamp": 12.0, "type": "TEXT", "payload": {"text": "Sfumato softens transitions so the eye cannot say where shadow begins.", "locale": "en"}},
+    {"timestamp": 12.0, "type": "ANIMATION", "payload": {"animation_name": "Explain"}},
+    {"timestamp": 12.0, "type": "CAMERA", "payload": {"target_obj": "professor", "camera_pos": {"x": 0.0, "y": 1.6, "z": 3.2}, "look_at": [0, 1.4, 0]}},
+    {"timestamp": 62.0, "type": "TEXT", "payload": {"text": "Look at the cheek of a portrait: find three values, not two.", "locale": "en"}},
+    {"timestamp": 62.0, "type": "ANIMATION", "payload": {"animation_name": "PointRight"}},
+    {"timestamp": 62.0, "type": "CAMERA", "payload": {"target_obj": "canvas", "camera_pos": {"x": -1.2, "y": 1.5, "z": 2.4}, "look_at": [0.8, 1.3, -0.5]}},
+    {"timestamp": 122.0, "type": "TEXT", "payload": {"text": "Practice: edge one silhouette without a hard line.", "locale": "en"}},
+    {"timestamp": 122.0, "type": "ANIMATION", "payload": {"animation_name": "Idle"}},
+    {"timestamp": 122.0, "type": "CAMERA", "payload": {"target_obj": "professor", "camera_pos": {"x": 0.0, "y": 1.6, "z": 3.2}, "look_at": [0, 1.4, 0]}}
+  ],
+  "note": "Silent observer — no ledger writes"
+}

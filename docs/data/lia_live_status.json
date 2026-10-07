@@ -1,0 +1,37 @@
+{
+  "schema": "lia_live_status/v1",
+  "updated": "2026-10-05T13:34:12Z",
+  "LIA_LIVE_TRADING": 0,
+  "mode_default": "shadow",
+  "egld_usd": 4.57,
+  "equity_proxy_usd": 1.0919,
+  "deployer": {
+    "address": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g",
+    "egld": 0.238014575,
+    "tokens": {
+      "TRO-94c925": 477.0,
+      "USDC-c76f1f": 0.00418
+    },
+    "txs": [
+      {
+        "txHash": "c45847d433089839357edff157251b54c554abeacd548600f3b2ea09b5e25bd7",
+        "status": "success",
+        "function": "swapTokensFixedInput",
+        "explorer": "https://explorer.multiversx.com/transactions/c45847d433089839357edff157251b54c554abeacd548600f3b2ea09b5e25bd7"
+      },
+      {
+        "txHash": "b843b2cc76d081a87499746ff01cf245344886411c855b8302f1a874ea707538",
+        "status": "success",
+        "function": "wrapEgld",
+        "explorer": "https://explorer.multiversx.com/transactions/b843b2cc76d081a87499746ff01cf245344886411c855b8302f1a874ea707538"
+      },
+      {
+        "txHash": "1b56321b6b3cf942b82b8b434378bfe320309b6a45330b5d54f8e477e722444f",
+        "status": "success",
+        "function": "ESDTTransfer",
+        "explorer": "https://explorer.multiversx.com/transactions/1b56321b6b3cf942b82b8b434378bfe320309b6a45330b5d54f8e477e722444f"
+      }
+    ]
+  },
+  "note": "On-chain snapshot only — UI Live mode is display; trading still gated"
+}

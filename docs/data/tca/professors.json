@@ -1,0 +1,65 @@
+{
+  "schema": "tca_professors/v2",
+  "professors": [
+    {
+      "id": "leonardo",
+      "display_name": "Leonardo da Vinci",
+      "epoch": "High Renaissance · Italy",
+      "perspective": "Science of seeing",
+      "room": {"board": "warm_white", "ambient": 0.4},
+      "personality": {
+        "tone": "analytical_and_curious",
+        "speech_style": {"pitch": 1.02, "speed_multiplier": 0.9, "pause_frequency": 0.7, "pitch_variation": 0.15},
+        "gesture_style": {"intensity": 0.55, "frequency": 0.5},
+        "look_style": {"eye_contact_intensity": 0.85, "head_tilt_angle": 0.08},
+        "color_palette": {"primary_glow": "#e0c097", "secondary_accent": "#8f7a5a"}
+      },
+      "hologram_settings": {"flicker_rate": 0.02, "glow_color": "#e0c097", "scanline_opacity": 0.12, "opacity_pulse": 0.05, "base_opacity": 0.82}
+    },
+    {
+      "id": "rembrandt",
+      "display_name": "Rembrandt van Rijn",
+      "epoch": "Dutch Golden Age",
+      "perspective": "Inner light",
+      "room": {"board": "dark", "ambient": 0.22},
+      "personality": {
+        "tone": "soulful_and_grave",
+        "speech_style": {"pitch": 0.88, "speed_multiplier": 0.78, "pause_frequency": 0.9, "pitch_variation": 0.08},
+        "gesture_style": {"intensity": 0.35, "frequency": 0.3},
+        "look_style": {"eye_contact_intensity": 0.7, "head_tilt_angle": 0.12},
+        "color_palette": {"primary_glow": "#c49a6c", "secondary_accent": "#3d2a1a"}
+      },
+      "hologram_settings": {"flicker_rate": 0.015, "glow_color": "#c49a6c", "scanline_opacity": 0.18, "opacity_pulse": 0.04, "base_opacity": 0.75}
+    },
+    {
+      "id": "repin",
+      "display_name": "Ilya Repin",
+      "epoch": "Russian Realism",
+      "perspective": "History in gesture",
+      "room": {"board": "warm_white", "ambient": 0.35},
+      "personality": {
+        "tone": "epic_narrator",
+        "speech_style": {"pitch": 0.95, "speed_multiplier": 0.95, "pause_frequency": 0.55, "pitch_variation": 0.2},
+        "gesture_style": {"intensity": 0.85, "frequency": 0.75},
+        "look_style": {"eye_contact_intensity": 0.6, "head_tilt_angle": 0.15},
+        "color_palette": {"primary_glow": "#d4b896", "secondary_accent": "#6b3a2a"}
+      },
+      "hologram_settings": {"flicker_rate": 0.025, "glow_color": "#d4b896", "scanline_opacity": 0.1, "opacity_pulse": 0.06, "base_opacity": 0.85}
+    },
+    {
+      "id": "turner",
+      "display_name": "J.M.W. Turner",
+      "epoch": "Romanticism · Britain",
+      "perspective": "Weather as subject",
+      "room": {"board": "dark", "ambient": 0.32},
+      "personality": {
+        "tone": "elemental_and_restless",
+        "speech_style": {"pitch": 1.08, "speed_multiplier": 1.08, "pause_frequency": 0.35, "pitch_variation": 0.25},
+        "gesture_style": {"intensity": 0.9, "frequency": 0.85},
+        "look_style": {"eye_contact_intensity": 0.45, "head_tilt_angle": 0.18},
+        "color_palette": {"primary_glow": "#ffd9a0", "secondary_accent": "#ff8c42"}
+      },
+      "hologram_settings": {"flicker_rate": 0.04, "glow_color": "#ffd9a0", "scanline_opacity": 0.14, "opacity_pulse": 0.08, "base_opacity": 0.78}
+    }
+  ]
+}

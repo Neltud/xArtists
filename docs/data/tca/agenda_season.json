@@ -1,0 +1,34 @@
+{
+  "schema": "tca_agenda/v1",
+  "title": "TCA Season 1 — Masters of Light & Form",
+  "months": [
+    {"id": "m1", "title": "Leonardo — Science of Seeing", "professor_id": "leonardo",
+      "weeks": [
+        {"week": 1, "theme": "Sfumato", "lesson_id": "leo_w1_sfumato"},
+        {"week": 2, "theme": "Anatomy of the portrait", "lesson_id": "leo_w2_anatomy"},
+        {"week": 3, "theme": "Golden ratio", "lesson_id": "leo_w3_geometry"},
+        {"week": 4, "theme": "Chiaroscuro of the soul", "lesson_id": "leo_w4_chiaroscuro"}
+      ]},
+    {"id": "m2", "title": "Rembrandt — Faces of Conscience", "professor_id": "rembrandt",
+      "weeks": [
+        {"week": 1, "theme": "The dark room", "lesson_id": "rem_w1_dark"},
+        {"week": 2, "theme": "Self as laboratory", "lesson_id": "rem_w2_self"},
+        {"week": 3, "theme": "Group drama", "lesson_id": "rem_w3_group"},
+        {"week": 4, "theme": "Late freedom", "lesson_id": "rem_w4_late"}
+      ]},
+    {"id": "m3", "title": "Repin — History in the Flesh", "professor_id": "repin",
+      "weeks": [
+        {"week": 1, "theme": "Barge haulers", "lesson_id": "rep_w1_burlaki"},
+        {"week": 2, "theme": "Reply of the Zaporozhians", "lesson_id": "rep_w2_zapor"},
+        {"week": 3, "theme": "Ivan and his son", "lesson_id": "rep_w3_ivan"},
+        {"week": 4, "theme": "Portrait of the age", "lesson_id": "rep_w4_portrait"}
+      ]},
+    {"id": "m4", "title": "Turner — Weather as Subject", "professor_id": "turner",
+      "weeks": [
+        {"week": 1, "theme": "Steam and speed", "lesson_id": "tur_w1_steam"},
+        {"week": 2, "theme": "Sea and sublime", "lesson_id": "tur_w2_sea"},
+        {"week": 3, "theme": "Dissolve the form", "lesson_id": "tur_w3_dissolve"},
+        {"week": 4, "theme": "Parliament fire", "lesson_id": "tur_w4_fire"}
+      ]}
+  ]
+}
