@@ -25,7 +25,9 @@ const STATUS_CLASS: Record<string, string> = {
 }
 
 function badgeStatus(m: ModuleDef): string {
-  if (m.status) return m.status
+  if (m.status === 'live') return 'live'
+  if (m.status === 'soon') return 'soon'
+  if (m.status === 'ui') return 'open'
   const id = m.id
   if (id === 'marketplace') return scStatus.nft_marketplace?.live ? 'live' : 'soon'
   if (id === 'staking') return scStatus.tro_staking?.live ? 'live' : 'soon'

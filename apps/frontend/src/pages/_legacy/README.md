@@ -1,40 +1,10 @@
 # Legacy pages (Chantier 3)
 
-These routes were **not** registered in `App.tsx`. Removed from `src/pages/` to shrink the active surface.
+Orphan cleanup on 2026-10-06 deleted files that **canonical routes still re-exported**.
+**Restored 2026-10-07** (required for Pages build + App.tsx):
 
-Recover from git history if needed:
+- `Agents.tsx` (route `/agents` via AgentsPage)
+- `MyPacks.tsx` (route `/my-packs` via MyPacksPage)
+- `Tip.tsx` (route `/tip` via TipPage)
 
-```bash
-git log --all -- apps/frontend/src/pages/ArtistStudio.tsx
-git show HEAD~N:apps/frontend/src/pages/ArtistStudio.tsx
-```
-
-## Archived (2026-10-06)
-
-- AdminPage.tsx
-- Agents.tsx
-- ArtistStudio.tsx
-- BitcoinLayer2.tsx
-- BridgeFeesDashboard.tsx
-- DAO.tsx
-- DigitalTwinPage.tsx
-- ExplainCards.tsx
-- Gallery.tsx
-- HistoryPage.tsx
-- HolderRoomPage.tsx
-- LandingHero.tsx
-- LiaPerformancePage.tsx
-- MarketPage.tsx
-- Marketplace.tsx
-- MuseumLabPage.tsx
-- MyPacks.tsx
-- Portfolio.tsx
-- RwaCatalogPage.tsx
-- SoulTestnetPage.tsx
-- Tip.tsx
-- Trading.tsx
-- VenueAccountPage.tsx
-- VoyageAgentPage.tsx
-- Wallet.tsx
-
-Canonical pages remain the ones imported by `App.tsx` (e.g. MarketplacePage, MyPacksPage, WalletPage).
+Do **not** delete these three without rewriting the `*Page.tsx` re-exports and the `static.yml` Agents grep.

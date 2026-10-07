@@ -167,3 +167,13 @@ export function getAllScSnapshots() {
     { id: 'treasury', address: TREASURY_SPLITTER_ADDRESS, live: canUseTreasury() },
   ]
 }
+
+/** Snapshot for Dashboard badges (evaluated at call / import time). */
+export const scStatus = {
+  nft_marketplace: { live: canListBuyNft() },
+  tro_staking: { live: canStakeTro() },
+  slot_casino: { live: canSpinSlot() },
+  agents_marketplace: { live: canBuyAgent() },
+  venue_split: { live: canRentVenueOnChain() },
+  treasury: { live: canUseTreasury() },
+}

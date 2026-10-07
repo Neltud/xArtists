@@ -54,8 +54,9 @@ export default function SlotModeSwitch({ mode, onChange, confirmedReal, onConfir
       </div>
       {!REAL_SPIN_READY && (
         <p className="text-[11px] text-zinc-400 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-          Le mode réel ouvrira dès que le contrat slot accepte les mises EGLD. En attendant, joue en{' '}
-          <strong className="text-zinc-200">Fun</strong>.
+          Le mode réel est fermé : les derniers <code className="text-zinc-300">spinEgld</code> on-chain
+          ont échoué (<em>wrong number of arguments</em> / <em>ESDT expected</em>, house 0,5 EGLD intacte).
+          En attendant, joue en <strong className="text-zinc-200">Fun</strong>.
         </p>
       )}
       {mode === 'chain' && !confirmedReal && scLive && (

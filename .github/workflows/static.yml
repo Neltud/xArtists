@@ -53,15 +53,17 @@ jobs:
 
       - name: Verify Agents = 3 packs only
         run: |
-          if ! grep -q 'Pulse · Yield · Sentinel' src/pages/Agents.tsx; then
-            echo '::error::Agents.tsx must advertise exactly 3 packs'
+          AGENTS_FILE=src/pages/Agents.tsx
+          if [ ! -f "$AGENTS_FILE" ]; then AGENTS_FILE=src/pages/AgentsPage.tsx; fi
+          if ! grep -q 'Pulse · Yield · Sentinel' "$AGENTS_FILE"; then
+            echo "::error::$AGENTS_FILE must advertise exactly 3 packs"
             exit 1
           fi
-          if grep -qiE 'voyage|travel agent|agent art|NftPacksGallery' src/pages/Agents.tsx; then
-            echo '::error::Agents.tsx must not list travel/art agents'
+          if grep -qiE 'voyage|travel agent|agent art|NftPacksGallery' "$AGENTS_FILE"; then
+            echo "::error::$AGENTS_FILE must not list travel/art agents"
             exit 1
           fi
-          echo 'Agents OK'
+          echo "Agents OK ($AGENTS_FILE)"
 
       - name: Build
         id: vite_build
