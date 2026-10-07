@@ -1,5 +1,6 @@
 /**
- * Home — product core + unified ATC/TCA entry (Chantier 3).
+ * Accueil — salle 3D (menu exposé) + CTA ATC/TCA + modules.
+ * Navigation type musée : clique une œuvre-menu pour entrer.
  */
 import { Link } from 'react-router-dom'
 import { MAINNET_ADDRESSES } from '../config/contracts'
@@ -8,6 +9,7 @@ import { requestOpenConnect } from '../lib/walletEvents'
 import { useWallet } from '../context/WalletContext'
 import { useI18n } from '../i18n/I18nContext'
 import RceStrip from '../components/RceStrip'
+import HomeMenuHall from '../components/home/HomeMenuHall'
 import { scStatus } from '../config/scStatus'
 
 const STATUS_LABEL: Record<string, string> = {
@@ -42,51 +44,38 @@ export default function Dashboard() {
   const core = CORE_MODULES
 
   return (
-    <div className="animate-fade-in space-y-8 pb-10">
-      <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-violet-950/40 via-black/60 to-black p-6 sm:p-8">
-        <div className="relative z-[1] space-y-4 max-w-xl">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300/80 font-semibold">
-            xArtists · MultiversX mainnet
-          </p>
-          <h1 className="font-tech text-3xl font-bold tracking-tight text-white title-glow sm:text-4xl">
-            NFT · $TRO · Packs · TCA
-          </h1>
-          <p className="text-sm leading-relaxed text-zinc-400">
-            ATC public (aperçu) → Pack Pulse → classroom holographique. LIVE = on-chain. Pas un fond
-            d&apos;investissement.
-          </p>
+    <div className="animate-fade-in space-y-6 pb-10">
+      <section className="space-y-3">
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300/80 font-semibold">
+              xArtists · salle d&apos;accueil
+            </p>
+            <h1 className="font-tech text-2xl font-bold tracking-tight text-white title-glow sm:text-3xl">
+              Entre dans les pièces
+            </h1>
+            <p className="mt-1 text-sm text-zinc-400">
+              Comme au musée : chaque panneau est une porte. Clique pour changer de salle.
+            </p>
+          </div>
           <div className="flex flex-wrap gap-2">
-            <Link
-              to="/tca"
-              className="btn-primary active:scale-[0.98]"
-            >
-              Entrer ATC / TCA
+            <Link to="/tca" className="btn-primary text-sm active:scale-[0.98]">
+              ATC / TCA
             </Link>
             {!connected && (
-              <button type="button" className="btn-secondary active:scale-[0.98]" onClick={() => requestOpenConnect()}>
+              <button type="button" className="btn-secondary text-sm" onClick={() => requestOpenConnect()}>
                 {t('common.connect')}
               </button>
             )}
-            <Link to="/marketplace" className="btn-secondary active:scale-[0.98]">
-              Marketplace
-            </Link>
-            <Link to="/museum" className="btn-secondary active:scale-[0.98]">
-              Musée
-            </Link>
           </div>
-          <p className="text-[11px] text-zinc-500">
-            Sans wallet : lobby / sample YouTube. Avec Pack Pulse vérifié : hologramme + RAG.
-          </p>
         </div>
+        <HomeMenuHall />
       </section>
 
       <RceStrip compact />
 
       <section className="space-y-3">
-        <div className="flex items-end justify-between gap-2">
-          <p className="section-label">Produit cœur</p>
-          <p className="text-[10px] text-zinc-600">Clique une carte pour ouvrir</p>
-        </div>
+        <p className="section-label">Plan du musée (liste)</p>
         <div className="grid gap-3 sm:grid-cols-2">
           {core.map(m => {
             const st = badgeStatus(m)
