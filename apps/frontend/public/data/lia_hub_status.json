@@ -1,5 +1,5 @@
 {
-  "ts": "2026-10-04T00:00:00Z",
+  "ts": "2026-10-07T15:40:00Z",
   "paper": true,
   "LIA_LIVE_TRADING": 0,
   "shadow_pnl_usd": 0,
@@ -8,7 +8,7 @@
   "fills": 0,
   "strategy": null,
   "confidence": null,
-  "note": "Placeholder until Vellum runs publish_lia_hub_status",
+  "note": "Published main 2026-10-07. Await Vellum next_run + publish_data_for_frontend. See docs/VELLUM_LIA_LIVE_HANDOFF_2026-10-07.md",
   "source": {
     "vellum_last_run": false,
     "lia_paper_legs": false
