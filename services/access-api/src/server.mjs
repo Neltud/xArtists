@@ -1,5 +1,5 @@
 /**
- * Access API — verify-access JWT, SIWX challenge, daily signals, checkout stubs.
+ * Access API — JWT access, SIWX, daily signals, RAG masterclass, checkout stubs.
  */
 import http from 'node:http'
 import { URL } from 'node:url'
@@ -13,6 +13,7 @@ import {
   verifyErdSignature,
   requireSiwx,
 } from './siwx.mjs'
+import { queryMasterclassRag } from './ragQuery.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PORT = Number(process.env.PORT || 8787)
@@ -78,12 +79,12 @@ const server = http.createServer(async (req, res) => {
       jwt: Boolean(JWT_SECRET && JWT_SECRET.length >= 16),
       require_siwx: requireSiwx(),
       pulse_collection: Boolean(process.env.PULSE_COLLECTION),
+      rag: true,
       service: 'access-api',
     })
     return
   }
 
-  // SIWX challenge
   if (req.method === 'POST' && pth === '/v1/access/challenge') {
     const body = await readBody(req)
     const address = (body.address || '').trim()
@@ -129,7 +130,6 @@ const server = http.createServer(async (req, res) => {
         return
       }
     } else if (signature && message && address) {
-      // Optional verify when provided
       if (nonce && !consumeNonce(nonce, address)) {
         json(res, 401, { ok: false, status: 'SAMPLE', hasAccess: false, reason: 'siwx_nonce_invalid' })
         return
@@ -186,6 +186,25 @@ const server = http.createServer(async (req, res) => {
     return
   }
 
+  // Volatile RAG — masterclass Sfumato demo
+  if (req.method === 'POST' && pth === '/v1/rag/query') {
+    const body = await readBody(req)
+    const out = queryMasterclassRag(body)
+    json(res, out.ok ? 200 : 400, out)
+    return
+  }
+
+  if (req.method === 'GET' && pth === '/v1/masterclass/da_vinci_sfumato') {
+    try {
+      const p = path.resolve(__dirname, '../../../data/masterclasses/da_vinci_sfumato.json')
+      const raw = fs.readFileSync(p, 'utf8')
+      json(res, 200, { ok: true, masterclass: JSON.parse(raw) })
+    } catch {
+      json(res, 404, { ok: false, error: 'masterclass_not_found' })
+    }
+    return
+  }
+
   if (req.method === 'POST' && pth === '/v1/checkout/session') {
     const body = await readBody(req)
     if (!STRIPE_KEY) {
@@ -205,5 +224,5 @@ const server = http.createServer(async (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`access-api :${PORT} siwx=${requireSiwx()}`)
+  console.log(`access-api :${PORT} siwx=${requireSiwx()} rag=on`)
 })
