@@ -1,10 +1,10 @@
 /**
- * Sprint 1.1b — SIWX challenge + Ed25519 verify (MultiversX erd1).
- * Optional: set REQUIRE_SIWX=1 to reject unsigned verify-access.
+ * SIWX challenge + Ed25519 verify (MultiversX erd1).
+ * DEFAULT: REQUIRE_SIWX enabled (set REQUIRE_SIWX=0 to disable).
  */
 import crypto from 'node:crypto'
 
-const nonces = new Map() // nonce -> { address?, exp }
+const nonces = new Map()
 const NONCE_TTL_MS = 5 * 60 * 1000
 
 function b32Decode(str) {
@@ -35,14 +35,12 @@ function convertBits(data, from, to, pad) {
   return ret
 }
 
-/** erd1… → 32-byte public key */
 export function erdToPubkey(address) {
   const s = String(address).trim()
   if (!s.startsWith('erd1')) throw new Error('not erd1')
   const hrpEnd = s.indexOf('1')
   const dataPart = s.slice(hrpEnd + 1)
   const decoded = b32Decode(dataPart)
-  // drop 6 checksum chars
   const values = decoded.slice(0, decoded.length - 6)
   const bytes = convertBits(values, 5, 8, false)
   if (bytes.length < 32) throw new Error('short pubkey')
@@ -54,7 +52,6 @@ export function createChallenge(address) {
   const issued = new Date().toISOString()
   const exp = Date.now() + NONCE_TTL_MS
   nonces.set(nonce, { address: address || null, exp })
-  // purge old
   for (const [k, v] of nonces) {
     if (v.exp < Date.now()) nonces.delete(k)
   }
@@ -81,10 +78,6 @@ export function consumeNonce(nonce, address) {
   return true
 }
 
-/**
- * Verify MultiversX wallet signature over message bytes.
- * signature: hex string (128 hex chars = 64 bytes) or base64.
- */
 export function verifyErdSignature(address, message, signature) {
   try {
     const pub = erdToPubkey(address)
@@ -97,7 +90,6 @@ export function verifyErdSignature(address, message, signature) {
     }
     if (sigBuf.length !== 64) return false
     const msgBuf = Buffer.from(String(message), 'utf8')
-    // Node Ed25519 verify (raw key)
     return crypto.verify(
       null,
       msgBuf,
@@ -118,6 +110,11 @@ export function verifyErdSignature(address, message, signature) {
   }
 }
 
+/** Default ON. Set REQUIRE_SIWX=0 or false to disable for local dev. */
 export function requireSiwx() {
-  return process.env.REQUIRE_SIWX === '1' || process.env.REQUIRE_SIWX === 'true'
+  const v = process.env.REQUIRE_SIWX
+  if (v === '0' || v === 'false' || v === 'off') return false
+  // default strict
+  if (v === undefined || v === '') return true
+  return v === '1' || v === 'true' || v === 'on'
 }
