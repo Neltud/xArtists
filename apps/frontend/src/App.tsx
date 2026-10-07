@@ -2,20 +2,20 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import BottomNav from './components/BottomNav'
-import ErrorBoundary from './components/ErrorBoundary'
 import PageLoader from './components/PageLoader'
-import RouteErrorBoundary from './components/RouteErrorBoundary'
 import PageTransition from './components/PageTransition'
+import RouteErrorBoundary from './components/RouteErrorBoundary'
+import ErrorBoundary from './components/ErrorBoundary'
 import ArtAtelierBackdrop from './components/ArtAtelierBackdrop'
+import AgentAccessSync from './components/AgentAccessSync'
 import FirstVisitOnboarding from './components/FirstVisitOnboarding'
 import PwaInstallBanner from './components/PwaInstallBanner'
-import AssetDrawer from './components/ui/AssetDrawer'
-import { OPEN_ASSETS_EVENT } from './lib/walletEvents'
-import { LINKS } from './config/links'
+import BackgroundMusicPlayer from './components/BackgroundMusicPlayer'
+import AssetDrawer from './components/AssetDrawer'
 import ZoneRouteSync from './components/ZoneRouteSync'
 import RouteSfx from './components/RouteSfx'
-import AgentAccessSync from './components/AgentAccessSync'
-import BackgroundMusicPlayer from './components/BackgroundMusicPlayer'
+import FallbackRoom from './components/FallbackRoom'
+import { LINKS } from './config/links'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const MuseumPage = lazy(() => import('./pages/MuseumPage'))
@@ -60,9 +60,9 @@ export default function App() {
   const [assetsOpen, setAssetsOpen] = useState(false)
 
   useEffect(() => {
-    const open = () => setAssetsOpen(true)
-    window.addEventListener(OPEN_ASSETS_EVENT, open)
-    return () => window.removeEventListener(OPEN_ASSETS_EVENT, open)
+    const onOpen = () => setAssetsOpen(true)
+    window.addEventListener('xartists:open-assets', onOpen)
+    return () => window.removeEventListener('xartists:open-assets', onOpen)
   }, [])
 
   return (
@@ -123,7 +123,7 @@ export default function App() {
                   <Route path="/burnify" element={<BurnifyPage />} />
                   <Route path="/lp" element={<LPPoolsPage />} />
                   <Route path="/hatom" element={<HatomPage />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
+                  <Route path="*" element={<FallbackRoom />} />
                 </Routes>
               </PageTransition>
             </RouteErrorBoundary>
