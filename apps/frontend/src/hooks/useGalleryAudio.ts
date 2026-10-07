@@ -1,4 +1,4 @@
-/** Zone ambience — loop, fade, autoplay-safe, silent fail + embedded fallback. */
+/** Zone ambience — loop, fade, autoplay-safe, mp3/b64 resolve, silent fail. */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import {
@@ -6,6 +6,7 @@ import {
   setMusicEnabled,
   zoneFromPath,
   ZONE_TRACKS,
+  resolveTrackSrc,
   type ZoneId,
 } from '../config/nelsonAudio'
 
@@ -35,7 +36,6 @@ export function useGalleryAudio() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const unlockedRef = useRef(false)
   const fadeCancel = useRef<(() => void) | null>(null)
-  const usedFallback = useRef(false)
 
   useEffect(() => {
     setEnabled(isMusicEnabled())
@@ -65,26 +65,7 @@ export function useGalleryAudio() {
     const a = new Audio()
     a.loop = true
     a.preload = 'auto'
-    a.onerror = () => {
-      if (!usedFallback.current) {
-        usedFallback.current = true
-        const z = zoneFromPath(location.pathname)
-        const fb = ZONE_TRACKS[z].fallback
-        if (fb) {
-          try {
-            a.src = fb
-            a.load()
-            if (isMusicEnabled() && unlockedRef.current) {
-              a.play()
-                .then(() => setReady(true))
-                .catch(() => setReady(false))
-            }
-          } catch {
-            setReady(false)
-          }
-        } else setReady(false)
-      } else setReady(false)
-    }
+    a.onerror = () => setReady(false)
     audioRef.current = a
     return () => {
       fadeCancel.current?.()
@@ -97,15 +78,19 @@ export function useGalleryAudio() {
       }
       audioRef.current = null
     }
-  }, [location.pathname])
+  }, [])
 
-  const applyZone = useCallback((z: ZoneId, play: boolean) => {
+  const applyZone = useCallback(async (z: ZoneId, play: boolean) => {
     const a = audioRef.current
     if (!a) return
     const track = ZONE_TRACKS[z]
-    usedFallback.current = false
+    const src = await resolveTrackSrc(track)
+    if (!src) {
+      setReady(false)
+      return
+    }
 
-    const startPlay = (src: string) => {
+    const startPlay = () => {
       try {
         a.src = src
         a.load()
@@ -117,13 +102,7 @@ export function useGalleryAudio() {
               fadeCancel.current?.()
               fadeCancel.current = fadeTo(a, track.volume, 900)
             })
-            .catch(() => {
-              // try fallback
-              if (!usedFallback.current && track.fallback) {
-                usedFallback.current = true
-                startPlay(track.fallback)
-              } else setReady(false)
-            })
+            .catch(() => setReady(false))
         }
       } catch {
         setReady(false)
@@ -139,11 +118,9 @@ export function useGalleryAudio() {
           } catch {
             /* */
           }
-          startPlay(track.src)
+          startPlay()
         })
-      } else {
-        startPlay(track.src)
-      }
+      } else startPlay()
     } catch {
       setReady(false)
     }
@@ -152,7 +129,7 @@ export function useGalleryAudio() {
   useEffect(() => {
     const z = zoneFromPath(location.pathname)
     setZone(z)
-    applyZone(z, enabled)
+    void applyZone(z, enabled)
   }, [location.pathname, enabled, applyZone])
 
   const toggle = useCallback(() => {
@@ -162,7 +139,7 @@ export function useGalleryAudio() {
     unlockedRef.current = true
     const a = audioRef.current
     if (!a) return
-    if (next) applyZone(zoneFromPath(location.pathname), true)
+    if (next) void applyZone(zoneFromPath(location.pathname), true)
     else {
       fadeCancel.current?.()
       fadeCancel.current = fadeTo(a, 0, 350, () => {

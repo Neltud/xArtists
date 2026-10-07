@@ -1,20 +1,15 @@
 /**
- * Zone ambience — HTML5 MP3 (no YouTube).
- * Prefer public/audio/*.mp3 ; else embedded 25s loops.
+ * Zone ambience — HTML5 (no YouTube).
+ * 1) public/audio/*.mp3  2) public/audio/*.b64 → data URL  3) silent
  */
-import { EMBED_MARS } from '../assets/audio/embed_mars'
-import { EMBED_ELIXIR } from '../assets/audio/embed_elixir'
-import { EMBED_PERSIC } from '../assets/audio/embed_persic'
 
 export type ZoneId = 'gallery' | 'command' | 'museum' | 'default'
 
 export type ZoneTrack = {
   zone: ZoneId
   label: string
-  /** primary path (site) */
   src: string
-  /** data-url fallback if primary 404 */
-  fallback: string
+  b64Path: string
   volume: number
 }
 
@@ -39,28 +34,28 @@ export const ZONE_TRACKS: Record<ZoneId, ZoneTrack> = {
     zone: 'gallery',
     label: 'Mars · Accueil',
     src: envUrl('VITE_AUDIO_GALLERY_URL') || `${base()}audio/mars_gallery.mp3`,
-    fallback: EMBED_MARS,
+    b64Path: `${base()}audio/mars_gallery.b64`,
     volume: 0.55,
   },
   command: {
     zone: 'command',
     label: 'Elixir · Command / LIA',
     src: envUrl('VITE_AUDIO_COMMAND_URL') || `${base()}audio/elixir_command.mp3`,
-    fallback: EMBED_ELIXIR,
+    b64Path: `${base()}audio/elixir_command.b64`,
     volume: 0.45,
   },
   museum: {
     zone: 'museum',
     label: 'Persic · Musée / TCA',
     src: envUrl('VITE_AUDIO_MUSEUM_URL') || `${base()}audio/persic_museum.mp3`,
-    fallback: EMBED_PERSIC,
+    b64Path: `${base()}audio/persic_museum.b64`,
     volume: 0.5,
   },
   default: {
     zone: 'default',
     label: 'Mars · Ambiance',
     src: envUrl('VITE_AUDIO_GALLERY_URL') || `${base()}audio/mars_gallery.mp3`,
-    fallback: EMBED_MARS,
+    b64Path: `${base()}audio/mars_gallery.b64`,
     volume: 0.4,
   },
 }
@@ -103,7 +98,28 @@ export function setMusicEnabled(on: boolean): void {
   window.dispatchEvent(new CustomEvent('xartists-music', { detail: { enabled: on } }))
 }
 
-/** @deprecated YouTube removed */
+/** Resolve playable src: mp3 → b64 data-url → null */
+export async function resolveTrackSrc(track: ZoneTrack): Promise<string | null> {
+  try {
+    const r = await fetch(track.src, { method: 'HEAD', cache: 'no-store' })
+    if (r.ok) return track.src
+  } catch {
+    /* */
+  }
+  try {
+    const r = await fetch(track.b64Path, { cache: 'force-cache' })
+    if (r.ok) {
+      const b64 = (await r.text()).trim()
+      if (b64.length > 100 && !b64.startsWith('PLACEHOLDER')) {
+        return `data:audio/mpeg;base64,${b64}`
+      }
+    }
+  } catch {
+    /* */
+  }
+  return null
+}
+
 export type NelsonTrack = { id: string; label: string; youtubeId: string; category?: string }
 export const NELSON_DEFAULT_TRACK: NelsonTrack = {
   id: 'mp3',
