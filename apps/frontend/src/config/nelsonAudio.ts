@@ -1,51 +1,74 @@
 /**
- * Nelson Tuduri + zone audio.
- * Ambient = YouTube (léger, pas de gros MP3 dans le repo).
- * SFX slot = Web Audio (useFuturisticSounds) — zéro fichier.
+ * Zone ambience — HTML5 MP3 (no YouTube).
+ * Mars → accueil/gallery | Elixir → command/LIA | Persic → musée
  *
- * MP3 optionnel plus tard :
- *  - public/audio/*.mp3 dans le repo (GitHub Pages, < ~3 Mo recommandé)
- *  - ou CDN / Akash static URL via VITE_CASINO_MP3_URL
+ * Place full tracks in public/audio/ (see docs/AUDIO_AMBIENCE.md).
+ * Optional overrides: VITE_AUDIO_GALLERY_URL, VITE_AUDIO_COMMAND_URL, VITE_AUDIO_MUSEUM_URL
  */
 
-export type NelsonTrack = {
-  id: string
+export type ZoneId = 'gallery' | 'command' | 'museum' | 'default'
+
+export type ZoneTrack = {
+  zone: ZoneId
   label: string
-  youtubeId: string
-  category?: 'ambient' | 'casino'
+  /** path relative to site base, or absolute URL */
+  src: string
+  volume: number
 }
 
-const envId = (() => {
+function base() {
   try {
-    return String(
-      (import.meta as { env?: { VITE_NELSON_YOUTUBE_ID?: string } }).env?.VITE_NELSON_YOUTUBE_ID ||
-        '',
-    ).trim()
+    return String((import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL || '/').replace(/\/?$/, '/')
+  } catch {
+    return '/'
+  }
+}
+
+function envUrl(key: string): string {
+  try {
+    return String((import.meta as { env?: Record<string, string> }).env?.[key] || '').trim()
   } catch {
     return ''
   }
-})()
+}
 
-/** lofi / ambient art — replace via VITE_NELSON_YOUTUBE_ID */
-export const NELSON_TRACKS: NelsonTrack[] = [
-  {
-    id: 'main',
-    label: 'Nelson Tuduri · ambiance',
-    youtubeId: envId || 'jfKfPfyJRdk',
-    category: 'ambient',
+export const ZONE_TRACKS: Record<ZoneId, ZoneTrack> = {
+  gallery: {
+    zone: 'gallery',
+    label: 'Mars · Accueil',
+    src: envUrl('VITE_AUDIO_GALLERY_URL') || `${base()}audio/mars_gallery.mp3`,
+    volume: 0.55,
   },
-]
+  command: {
+    zone: 'command',
+    label: 'Elixir · Command / LIA',
+    src: envUrl('VITE_AUDIO_COMMAND_URL') || `${base()}audio/elixir_command.mp3`,
+    volume: 0.45,
+  },
+  museum: {
+    zone: 'museum',
+    label: 'Persic · Musée',
+    src: envUrl('VITE_AUDIO_MUSEUM_URL') || `${base()}audio/persic_museum.mp3`,
+    volume: 0.5,
+  },
+  default: {
+    zone: 'default',
+    label: 'Mars · Ambiance',
+    src: envUrl('VITE_AUDIO_GALLERY_URL') || `${base()}audio/mars_gallery.mp3`,
+    volume: 0.4,
+  },
+}
 
-export const NELSON_DEFAULT_TRACK = NELSON_TRACKS[0]
-
-/** Zone target volumes (0–1) */
-export const ZONE_VOLUME = {
-  museum: 1,
-  command: 0.2,
-  transition: 0.5,
-  /** Slot page — légèrement plus bas pour laisser place aux SFX */
-  casino: 0.55,
-} as const
+/** Map pathname → zone */
+export function zoneFromPath(pathname: string): ZoneId {
+  const p = (pathname || '/').replace(/\/+$/, '') || '/'
+  if (p === '/' || p === '') return 'gallery'
+  if (p.includes('command') || p.includes('lia') || p.includes('trading')) return 'command'
+  if (p.includes('museum') || p.includes('gallery') || p.includes('venue') || p.includes('tours'))
+    return 'museum'
+  if (p.includes('tca') || p.includes('classroom')) return 'gallery'
+  return 'default'
+}
 
 export const MUSIC_STORAGE_KEY = 'xartists-music-enabled'
 
@@ -65,3 +88,14 @@ export function setMusicEnabled(on: boolean): void {
   }
   window.dispatchEvent(new CustomEvent('xartists-music', { detail: { enabled: on } }))
 }
+
+/** @deprecated YouTube removed — kept for type compat */
+export type NelsonTrack = { id: string; label: string; youtubeId: string; category?: string }
+export const NELSON_DEFAULT_TRACK: NelsonTrack = {
+  id: 'mp3',
+  label: 'Zone ambience',
+  youtubeId: '',
+  category: 'ambient',
+}
+export const NELSON_TRACKS: NelsonTrack[] = [NELSON_DEFAULT_TRACK]
+export const ZONE_VOLUME = { museum: 1, command: 0.2, transition: 0.5, casino: 0.55 } as const
