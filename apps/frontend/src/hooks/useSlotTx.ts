@@ -2,8 +2,11 @@
  * Slot SC — deployed bytecode endpoints include: spinEgld, spinEsdt, resolveSpin, refundSpin,
  * fundProgressiveEgld, claimHouseEgld…
  *
- * Mainnet probe 2026-10-03: spinEgld@seed + EGLD value → "ESDT expected" (payment path bug).
- * Until SC upgrade, real spins stay blocked with honest error; paper mode remains UI.
+ * Mainnet probe 2026-10-08: account isPayable=false (CodeMetadata).
+ * EGLD value is rejected before the endpoint runs ("ESDT expected" /
+ * "sending value to non payable contract"). Source is #[payable("EGLD")]
+ * but the deployed account was not upgraded with --metadata-payable.
+ * House 0.5 EGLD stays put. Do not expose spinEgld as working.
  */
 import { useCallback, useState } from 'react'
 import { useSendTransaction } from './useSendTransaction'
@@ -38,7 +41,7 @@ function randomClientSeed(): string {
 
 /** Deployed spinEgld rejects pure EGLD with ESDT expected — do not expose as working. */
 export const SLOT_SPIN_EGLD_BROKEN =
-  'Slot on-chain: spinEgld renvoie « ESDT expected » (bug bytecode). Upgrade SC requis. Utilise le mode Fun (paper).'
+  'Slot fermé : le compte on-chain n’est pas payable (isPayable=false). Un EGLD vers spinEgld est rejeté. Upgrade --metadata-payable requis. Mode Fun uniquement.'
 
 const BLOCKED =
   'Slot SC non ouvert — paper / simulation uniquement pour l’instant.'

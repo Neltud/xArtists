@@ -5,20 +5,21 @@
 dApp (GitHub Pages): https://neltud.github.io/xArtists/  
 Repo: https://github.com/Neltud/xArtists  
 
-**Status (2026-10-07): GO_LIVE SC · LIA paper · house Slot 0.5 EGLD · market 0.0175 EGLD · Pages hotfix**
-- All product smart contracts have **non-null `codeHash`** (live-verified 2 Oct, **re-probed 7 Oct 2026**)
-- Runtime explorer match unlocks List / Buy / Stake / Spin **without** committing `VITE_*_CODEHASH_OK`
-- **First sale proved** — `buyNft` 0.25 EGLD (ASFT-a6273a-01, epoch 2250). **placeBid 0.01** (epoch 2252). ASFT-01 still escrowed. Fee+bid = **0.0175 EGLD** on SC. Retry `buyNft` **inactive**
-- Paper LIA by default (`LIA_LIVE_TRADING=0`) — no auto fund movement. LIA Ops **1.604 EGLD** (nonce 1473)
-- Slot casino **LIVE** — house **0.5 EGLD**. `spinEgld` REAL **fail** (`wrong number of arguments` / `ESDT expected`)
-- TRO stake **3 TRO** on SC (stake+unstake 1 TRO proved)
-- **Supernova mainnet LIVE** since 10 Sep 2026 (epoch 2233) — 600 ms rounds · probe epoch **2255** (J+27)
-- Indexer healthy: `/stats` `/economics` `/accounts` `/tokens` HTTP 200
-- **Pages hotfix 7 Oct** — restore Agents/MyPacks/Tip + PulseContext so GitHub Pages builds again
-- Legacy empty placeholders (`…8354t` etc.) must **never** receive funds
+**Status (2026-10-08): GO_LIVE SC · LIA paper · slot non payable · listing #2 actif**
+- Product SCs: codeHash **inchangés**, re-sondés **8 oct 2026**, epoch **2256**, refreshRate 600
+- Market `isPayable=true`. Listing **#1 inactif** (vente 0,25 epoch 2250). Listing **#2 actif** ASFT-a6273a-01 à **0,25 EGLD**, bid **0,01** encore locké. Le front ne devine plus l’id 1
+- Market balance **0,0175 EGLD** = fees **0,0075** + bid **0,01**. Fee **300 bps**
+- Slot house **0,5000 EGLD**, `isPayable=false`, min bet **0,001**, spin count 0. REAL fermé. Upgrade metadata du **même** contrat, pas un nouveau deploy
+- TRO stake **3 TRO**. LIA Ops **1,6038 EGLD**, nonce **1473**, trading **paper**
+- EGLD **$4,09** · mcap ~$126,4M · staked 14,25M · APR ~8,89%
+- $TRO circ **476 224** · 563 comptes · ~$0,000090
+- NFTUDURI **152** / **41** holders
+- Treasury dest **null** — ne pas router les frais
+- `ci-cd.yml` (wipe docs + deploy vide) **désactivé**. Go-live = `static.yml`
+- Legacy empty placeholders must **never** receive funds
 - Not a retail investment fund. Tips ≠ investment. User Connect ≠ LIA Ops.
 
-Recap + veille (7 oct) : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)  
+Recap + veille (8 oct) : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)  
 Demo : https://neltud.github.io/xArtists/#/demo · GO_LIVE : https://neltud.github.io/xArtists/#/go-live
 
 ---
@@ -28,11 +29,11 @@ Demo : https://neltud.github.io/xArtists/#/demo · GO_LIVE : https://neltud.gith
 | Layer | Role |
 |-------|------|
 | **Studio / Gallery** | Create & browse NFT collections (NFTUDURI live via API, 152) |
-| **Marketplace** | List / Buy / Bid (SC live · 1 ASFT sale 0.25 + placeBid 0.01 · ASFT-01 escrowed) |
+| **Marketplace** | List / Buy / Bid — listing #2 actif 0,25 EGLD (ne plus acheter l’id #1) |
 | **Agents** | Limited LIA sub-agent packs (Pulse · Yield · Sentinel) |
 | **LIA** | Autonomous agent (Guardian → Brain → paper until micro-proofs) |
 | **$TRO** | Utility token — max supply product 500 000 · circ ~476 224 · API ~$0.000093 |
-| **Slot** | Primordial Slot — house funded, REAL gated after last fail |
+| **Slot** | Primordial Slot — house 0,5 EGLD, REAL fermé (`isPayable=false`) |
 
 Not a retail investment fund. Tips ≠ investment.
 
@@ -95,7 +96,8 @@ See [`README_LIA.md`](README_LIA.md) and [`docs/AUTONOMOUS_LIA.md`](docs/AUTONOM
 
 | Doc | Role |
 |-----|------|
-| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap + veille **7 oct** |
+| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap + veille **8 oct** |
+| [SLOT_PAYABLE_UPGRADE.md](docs/SLOT_PAYABLE_UPGRADE.md) | Pourquoi le spin EGLD est rejeté |
 | [MX8004_FIRST100_ALIGNMENT.md](docs/MX8004_FIRST100_ALIGNMENT.md) | Phase 4 / First 100 — LIA → MX-8004 |
 | [DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) | Parcours démo `/demo` |
 | [GO_LIVE_DEPLOY.md](docs/GO_LIVE_DEPLOY.md) | Deploy SC |

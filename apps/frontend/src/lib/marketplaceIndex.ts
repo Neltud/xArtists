@@ -4,6 +4,7 @@
  */
 import type { ListingRow } from '../types/marketplace'
 import { MARKETPLACE_ADDRESS } from './scStatus'
+import { fetchOnChainMarketListings, type OnChainListing } from './marketChain'
 
 const SOLD_KEY = 'xartists_listings_sold_v1'
 const EXTRA_KEY = 'xartists_listings_extra_v1'
@@ -164,15 +165,32 @@ async function fetchOnChainListings(market: string): Promise<ListingRow[]> {
         collection?: string
       }[]
       if (Array.isArray(nfts) && nfts.length) {
-        // If SC holds NFTs, surface them. Listing id: if single, often 1 after re-list.
+        let chainListings: OnChainListing[] = []
+        try {
+          chainListings = await fetchOnChainMarketListings(market)
+        } catch {
+          chainListings = []
+        }
         const activeRows: ListingRow[] = []
         nfts.forEach((n, i) => {
           if (!n.identifier || n.balance === '0') return
           const fromTx = [...byId.values()].find(
             r => r.identifier === n.identifier || r.token === n.collection,
           )
-          const listingId = fromTx?.listing_id ?? (nfts.length === 1 ? 1 : i + 1)
-          if (soldIds.has(listingId)) return
+          const token =
+            n.collection || n.identifier.split('-').slice(0, -1).join('-')
+          const nonce = Number(n.nonce || 0)
+          const match =
+            chainListings.find(l => l.active && l.token === token && l.nonce === nonce) ||
+            chainListings.find(l => l.active && n.identifier!.startsWith(`${l.token}-`))
+          // Never guess listing 1 after a sale: id 1 is inactive, the relist is a later id.
+          let listingId = match?.id
+          if (listingId == null) {
+            const guess = fromTx?.listing_id ?? (nfts.length === 1 ? 1 : i + 1)
+            if (!soldIds.has(guess)) listingId = guess
+          }
+          if (listingId == null) return
+          if (!match && soldIds.has(listingId)) return
           const thumb =
             n.url ||
             n.media?.[0]?.thumbnailUrl ||
@@ -181,12 +199,12 @@ async function fetchOnChainListings(market: string): Promise<ListingRow[]> {
           activeRows.push({
             listing_id: listingId,
             identifier: n.identifier,
-            token: n.collection || n.identifier?.split('-').slice(0, -1).join('-'),
+            token,
             token_id: n.collection,
             nonce: n.nonce,
             name: n.name || n.identifier,
-            price: fromTx?.price,
-            price_egld: fromTx?.price_egld || '0.25',
+            price: match?.priceAtomic || fromTx?.price,
+            price_egld: match?.priceEgld || fromTx?.price_egld || '0.25',
             seller: fromTx?.seller,
             active: true,
             tx_list: fromTx?.tx_list,

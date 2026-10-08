@@ -1,0 +1,72 @@
+# Manual only. Upgrades the LIVE slot address in place.
+# Does not run on push. Confirm string required. Does not move the house by itself.
+name: Upgrade slot payable
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type UPGRADE_SLOT_PAYABLE"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CHAIN_ID: "1"
+      PROXY: https://gateway.multiversx.com
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      SLOT: erd1qqqqqqqqqqqqqpgquf3cuv2zsfsahy7ypvter3qcep4ptthsvhxqs4g34f
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gate
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "UPGRADE_SLOT_PAYABLE" ]; then
+            echo "refused"
+            exit 1
+          fi
+      - name: PEM
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d '\n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli
+      - uses: dtolnay/rust-toolchain@1.98.0
+        with:
+          targets: wasm32v1-none
+      - name: Build + upgrade same address
+        run: |
+          set -euo pipefail
+          rustup target add wasm32v1-none
+          cargo install multiversx-sc-meta --locked --force
+          cd contracts/slot-casino
+          sc-meta all build
+          WASM="${PWD}/output/slot-casino.wasm"
+          test -f "$WASM"
+          NONCE=$(curl -s "https://api.multiversx.com/accounts/erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          mxpy contract upgrade "$SLOT" \
+            --bytecode="$WASM" \
+            --metadata-payable \
+            --metadata-upgradeable \
+            --metadata-readable \
+            --pem="${RUNNER_TEMP}/deployer.pem" \
+            --gas-limit=120000000 \
+            --proxy="$PROXY" \
+            --chain="$CHAIN_ID" \
+            --nonce="$NONCE" \
+            --send --wait-result
+          curl -s "https://api.multiversx.com/accounts/${SLOT}" | python3 -c "import sys,json; a=json.load(sys.stdin); print('isPayable', a.get('isPayable'), 'egld', int(a.get('balance') or 0)/1e18, 'hash', a.get('codeHash'))"
+      - if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"

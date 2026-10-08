@@ -1,185 +1,166 @@
-# Analyse DApp complète xArtists — 7 octobre 2026
+# Analyse DApp complète xArtists — 8 octobre 2026
 
 ## Verdict
 
-xArtists est une dApp **MultiversX mainnet**. SC produit **9/9 LIVE** (codeHash inchangés).  
-**GitHub Pages était rouge** depuis le 6 oct (0.90.0) : cleanup orphan a cassé `Agents.tsx` / `MyPacks.tsx` / `Tip.tsx` + imports LIA manquants. **Correctif poussé aujourd’hui** pour relancer `static.yml`.
+xArtists est une dApp **MultiversX mainnet**, pas un fonds. Tips ≠ investissement. Wallet utilisateur ≠ LIA Ops. `LIA_LIVE_TRADING=0`.
 
-Pas un fonds retail. Tips ≠ investissement. User Connect ≠ LIA Ops.  
-`LIA_LIVE_TRADING=0`. Spin REAL fermé. Treasury dest **null**.
+Les 9 contrats produit sont toujours **LIVE** (codeHash inchangés vs 1–7 oct). Deux vérités on-chain changent le produit aujourd’hui :
+
+1. **Marketplace** — le Buy de la vitrine visait le **listing #1**, déjà vendu (`active=false`). Le NFT encore en escrow est le **listing #2**, actif, **0,25 EGLD**, avec un **bid 0,01** locké. C’est pour ça que le retry `buyNft` renvoyait `inactive`.
+2. **Slot** — la house **0,5 EGLD** est bien là, mais le **compte n’est pas payable** (`isPayable=false`). Un spin EGLD est rejeté par le protocole avant le tirage. Le mode Fun reste le seul chemin public.
 
 | | |
 |---|---|
-| **Live Pages** | https://neltud.github.io/xArtists/ |
-| **Tour** | https://neltud.github.io/xArtists/#/demo |
+| **Live** | https://neltud.github.io/xArtists/ |
 | **GO_LIVE** | https://neltud.github.io/xArtists/#/go-live |
 | **Repo** | https://github.com/Neltud/xArtists |
-| **Release** | **0.90.0** (6 oct) + hotfix Pages **7 oct** |
-| **Posture** | **GO_LIVE SC** — LIA **paper** |
-| **Indexer** | healthy · epoch **2255** · refreshRate **600** |
-| **Supernova** | LIVE 10 sept 2026 · epoch 2233 · probe **J+27** |
-| **EGLD** | **$4.14** · mcap $127.9M · staked 14.24M · APR 8.90% |
-| **LIA Ops** | **1.604 EGLD** · nonce **1473** |
-| **Slot house** | **0.5000 EGLD** |
-| **Market SC** | **0.0175 EGLD** (0.0075 fee + 0.01 bid) |
+| **Posture** | **GO_LIVE SC** — LIA **paper** — spin REAL **fermé** |
+| **Indexer** | healthy · epoch **2256** · refreshRate **600** |
+| **Supernova** | LIVE 10 sept 2026 · epoch 2233 · probe **J+28** |
+| **EGLD** | **$4,09** · mcap ~$126,4M · staked 14,25M · APR ~8,89 % |
+| **LIA Ops** | **1,6038 EGLD** · nonce **1473** |
+| **Slot** | **0,5000 EGLD** · `isPayable=false` · min bet 0,001 |
+| **Market** | **0,0175 EGLD** · payable · fees 0,0075 + bid 0,01 |
 
 ---
 
-## Probe API — 7 oct 2026 ~04:30 UTC
+## Probe API — 8 oct 2026 ~04:35 UTC
 
-stats: refreshRate **600**, epoch **2255**, roundsPerEpoch 144000, roundsPassed **71819** (~50 %), accounts 9 267 930, tx 630 744 240, blocks 140 602 575, shards 3.
+`/stats` : epoch **2256**, roundsPassed **71857** / 144000 (~50 %), refreshRate **600**, accounts **9 268 296**, tx **630 929 367**, blocks **141 177 176**, shards **3**.
 
-economics: EGLD **$4.14**, mcap $127.9M, circ 30 905 326, staked 14 243 938, APR 8.90%.
+`/economics` : prix **4,09**, mcap **126 431 622**, circ **30 912 377**, staked **14 245 135**, APR **0,0889**.
 
-TRO-94c925: circ **476 224**, burnt ~23 776, **563** comptes, **2808** tx, decimals 6, paused=false, **prix API ~$0.000093**, mcap ~$44.50.
+TRO-94c925 : circ **476 224**, **563** comptes, **2808** tx, decimals 6, paused=false, prix ~**$0,000090**, mcap ~**$42,85**.
 
-NFTUDURI-2990b6: **152** NFTs, **41** holders.
+NFTUDURI-2990b6 : **152** NFTs, **41** holders, transférable.
 
-LIA Ops `erd1p4zyy…0crn6`: **1.6038 EGLD**, nonce 1473, shard 2. Positions LP (TROWEGLD, TROUSDC, TROMEX, …) + 10 000 TRO + dust ASH/MEX/USDC. TX récentes : `ESDTTransfer`, `addLiquidity`, `userStake` — **manuel**, pas un flag live-trading.
+LIA Ops `erd1p4zyy…0crn6` : **1,603782 EGLD**, nonce 1473, pas de code (wallet). Positions LP inchangées (TROWEGLD, TROUSDC, TROMEX, 10 000 TRO, dust ASH/MEX). Pas un flag live-trading.
 
-Deployer `erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g` : list / bid / upgrade market.
+### Smart contracts
 
-### Smart contracts (codeHash inchangés vs 1–2 oct)
-
-| SC | Suffixe | codeHash | EGLD 7 oct |
+| SC | EGLD | Payable | Note 8 oct |
 |---|---|---|---|
-| venue-split | `…2vje2y` | `SRrGio4i…T1owuY=` | 0 |
-| nft-marketplace | `…q8txmm` | `8TTszCmN…sZBgFc=` | **0.0175** |
-| agents-marketplace | `…gdqwsg` | `tDIcnNMb…CALFUWs=` | 0 |
-| nft-staking | `…q4fgtgu` | `hXcRjpcl…fnMuME=` | 0 |
-| tro-staking | `…qpe3xf3` | `Jf5ZhzAG…pGq7SA=` | 0 (+ **3 TRO**) |
-| tro-governance | `…q9e9euy` | `+9aNhboF…74UOsQ=` | 0 |
-| agent-stake-escrow | `…qndvzr3` | `Hs3AClbY…mlSnE=` | 0 |
-| treasury-splitter | `…q2nkezv` | `9pB9+UN3…Lnpk8=` | 0 |
-| slot-casino | `…qs4g34f` | `UZ0nX6dW…6VJCs=` | **0.5** |
+| nft-marketplace `…q8txmm` | **0,0175** | **oui** | listing #2 actif |
+| slot-casino `…qs4g34f` | **0,5000** | **non** | spin EGLD impossible |
+| tro-staking `…qpe3xf3` | 0 | non | **3 TRO** (3 000 000 atomic) |
+| venue, agents, nft-stake, gov, escrow, treasury | 0 | non | codeHash inchangés |
 
-**Ne jamais financer** les placeholders legacy empty (`…8354t`, `…xr8cl`, `…e0ca8`, `…nyztkn`).
+codeHash marché `8TTszCmN…sZBgFc=` · slot `UZ0nX6dW…6VJCs=`. **Ne jamais financer** les placeholders legacy empty.
 
-### Preuves TX
+### Marketplace — décodage `getListing`
 
-| fn | status | epoch | note |
-|---|---|---|---|
-| `buyNft` 0,25 EGLD ASFT-01 | success | 2250 | 1re vente |
-| `listNft` | success | 2251 | relist |
-| `upgradeContract` market | success | 2252 | codeHash **inchangé** |
-| `buyNft` 0,25 retry | **fail** | 2252 | `inactive` |
-| `placeBid` 0,01 EGLD | success | 2252 | bid on-chain |
-| `spinEgld` 0,001–0,1 | **fail** | 2250–2251 | `wrong number of arguments` / `ESDT expected` |
-| `stake` / `unstake` 1 TRO | success | 2248 / 2250 | dust → **3 TRO** on SC |
+| id | token | prix | active | bid |
+|---|---|---|---|---|
+| 1 | ASFT-a6273a nonce 1 | 0,25 EGLD | **non** | 0 |
+| 2 | ASFT-a6273a nonce 1 | 0,25 EGLD | **oui** | **0,01 EGLD** |
+| 3+ | storage vide | | | |
 
-Marketplace escrow **ASFT-a6273a-01** (BlackArtPass) encore sur le SC. Ce n’est **pas** un 1/1 NFTUDURI.
+`getAccumulatedFees` = **0,0075 EGLD**. `getFeeBps` = **300**. `isPaused` = false. Royalty listing = **500 bps**. Le NFT `ASFT-a6273a-01` (BlackArtPass) est toujours sur le SC. Ce n’est pas un 1/1 NFTUDURI.
+
+Le front (`marketplaceIndex`) prenait `listing_id = 1` dès qu’un seul NFT était en escrow, puis le masquait s’il voyait le buy réussi de l’id 1. Résultat : soit Buy mort (`inactive`), soit carte absente. **Correctif** : lire `getListing` et n’attacher que l’id **actif** (ici 2) avec le prix on-chain.
+
+### Slot — cause réelle
+
+Les erreurs historiques `wrong number of arguments` / `ESDT expected` collent à un compte **non payable** : la valeur EGLD n’entre pas. Le source a déjà `#[payable("EGLD")] spinEgld(client_seed)`. Le bit CodeMetadata n’a jamais été posé au deploy (`deploy-slot-casino.yml` n’envoyait pas `--metadata-payable`, et ce workflow **crée une nouvelle adresse**).
+
+`getMinBet` = 0,001 EGLD. `getSpinCount` = 0.
+
+**Ne pas** ouvrir le spin REAL. **Ne pas** redeploy (la house resterait sur l’ancienne adresse). Upgrade du même contrat : [`SLOT_PAYABLE_UPGRADE.md`](SLOT_PAYABLE_UPGRADE.md). Workflow manuel `upgrade-slot-payable.yml`, confirmation `UPGRADE_SLOT_PAYABLE`. Pas lancé depuis cette mise à jour.
 
 ---
 
-## Build Pages — ce qui était cassé (6 oct) et le correctif (7 oct)
+## Ce qui a été poussé (8 oct)
 
-`static.yml` run 1535 (release 0.90.0) **failure** avant même Vite :
+- Résolution du listing actif avant Buy (plus de guess id 1).
+- Page GO_LIVE : payable market/slot + listings décodés.
+- Message slot honnête (`isPayable=false`). Fun inchangé.
+- `ci-cd.yml` **retiré du push** : il faisait `rm -rf docs/*` puis déployait ce dossier vide sur gh-pages, en concurrence avec `static.yml`.
+- Futurs deploys slot : flags `--metadata-payable --metadata-upgradeable --metadata-readable`.
+- `data/contracts.json` + copie front : probe 8 oct.
 
-1. Chantier 3 a **supprimé** `Agents.tsx` / `MyPacks.tsx` / `Tip.tsx` comme « orphelins ».
-2. Les pages canoniques `AgentsPage` / `MyPacksPage` / `TipPage` **réexportaient** encore ces fichiers.
-3. CI `Verify Agents = 3 packs only` grep `Agents.tsx` → exit 1.
-4. Vite (commit SIWX) : `Could not resolve "../context/PulseContext"` depuis `LiaPage.tsx`.
-5. Autres imports morts : `lia/ambient`, `lia/vellumStatus`, `config/modules`.
-
-**Correctif 7 oct (ce push)**
-
-- Restaure `Agents.tsx` · `MyPacks.tsx` · `Tip.tsx` (routes App).
-- Shims `PulseContext` · `lia/ambient` · `lia/vellumStatus` · `config/modules`.
-- `scStatus` snapshot pour le Dashboard.
-- `LINKS.treasuryPolicy`.
-- CI Agents plus résilient.
-- Demo TCA packs **déjà off en PROD** (`demoPacksAllowed`).
-
-`LIA_LIVE_TRADING` **non** allumé. `VITE_*_CODEHASH_OK` **non** committé. Spin REAL **non** ouvert.
+Non touché : `LIA_LIVE_TRADING`, PEM, flags `VITE_*_CODEHASH_OK`, destinations treasury, Dependabot majors, upgrade slot effectif.
 
 ---
 
 ## Live vs paper
 
-| Surface | État 7 oct |
+| Surface | État 8 oct |
 |---|---|
-| Front Pages | hotfix — rebuild `static.yml` |
-| Marketplace List/Buy | SC live · 1 vente ASFT 0,25 · bid 0,01 · ASFT-01 escrowed · buy retry inactive |
-| Packs Pulse · Yield · Sentinel | SC agents live · checkout paper / mint « bientôt » |
-| Slot | house 0,5 · FUN ouvert · REAL fermé (ABI) |
-| Staking TRO | LIVE · **3 TRO** on SC |
-| NFT staking / gov / escrow / treasury / venue | codeHash live, balance 0 |
-| LIA trading | **paper** (`LIA_LIVE_TRADING=0`) |
-| LIA ops | LP + stake manuels depuis le wallet ops |
-| TCA / ATC | SAMPLE YouTube · FULL = JWT serveur **ou** packs on-chain · demo localStorage **off en PROD** |
-| MX-8004 Identity | First 100 **pas inscrit** |
-| Treasury dest | **null** (PR #87) |
-| GSN / Contrarian | non branchés live |
+| Pages | `static.yml` est le pipeline. Dernier build Pages vert (commit shadow 8 oct 00:05 UTC) ; ce push relance le front |
+| Marketplace | SC payable · Buy doit viser **#2** · #1 inactif · ASFT escrowed · bid 0,01 à rembourser si cancel/buy |
+| Packs agents | SC live · checkout pas un mint ouvert |
+| Slot | house 0,5 · Fun ouvert · REAL fermé (compte non payable) |
+| Staking TRO | LIVE · 3 TRO |
+| NFT stake / gov / escrow / treasury / venue | code live, balance 0 |
+| LIA | **paper** |
+| Treasury dest | **null** (PR #87 toujours ouverte) |
+| MX-8004 First 100 | pas inscrit |
 
 ---
 
-## Suites logiques (ordre — 7 oct)
+## Suites logiques (ordre — 8 oct)
 
-1. **Pages vert** — ce push. Vérifier `static.yml` success puis hard-refresh.
-2. **Ne pas ouvrir spin REAL** tant que l’ABI `spinEgld` n’accepte pas une mise EGLD (erreurs : *wrong number of arguments* / *ESDT expected*). House 0,5 = plafond.
-3. **Marketplace** : bid 0,01 live + listing ASFT inactive au buy. Soit relist propre (3 args ABI : `price`, `royalty_bps`, `royalty_receiver`), soit cancel + 1/1 NFTUDURI. Vérifier indexer avant tout discours « marché ouvert ».
-4. **Treasury dest (PR #87) avant** de router 0,0175 EGLD.
-5. **MX-8004 / First 100** : inscrire LIA soulbound. Pas un yield.
-6. **Ne pas** committer `VITE_*_CODEHASH_OK=1`.
-7. **Ne pas** `LIA_LIVE_TRADING=1` tant que Guardian + caps + kill-switch + 1 micro-trade LIA documentés. LP manuel ≠ live trading.
-8. **Exchanges** : fenêtre interne 6–11 oct **en cours**. Observer. **Pas** un signal pour lever les caps.
-9. **Dependabot majors** (PRs #4–#8, #28–#32) : ne pas merger vite/eslint/vitest pendant la fenêtre live.
-10. **Access zero-trust** : `services/access-api` SIWX existe ; brancher `VITE_ACCESS_API_BASE` en prod **après** Pages vert. Sans ça le gate FULL reste client-side (fail-soft SAMPLE).
-
----
-
-## Veille technologique — 7 oct 2026
-
-### Incident VM 19–24 sept + recovery (rappel)
-
-- 19 sept : anomalie. 20 sept : pause, exploit atomicité VM.
-- Hardfork recovery **v2.1.3.0** + **v2.1.5.0**. Comptes attaquant gelés.
-- 24–25 sept : mainnet + pont ETH rouverts. Indexer rétabli.
-- 28 sept : record 21 798 TPS (Chainspect).
-- 30 sept–5 oct : dépôts/retraits **Binance US, Kraken, Bitget** rouverts (MultiversX weekly 5 oct).
-- Mainnet **v2.1.7.0** : durcissement VM supplémentaire.
-- Fenêtre CEX interne **6–11 oct** encore ouverte. Upbit review ~19–23 oct. **Ne pas lever les caps xArtists.**
-
-### Supernova
-
-- Live 10 Sep ~18:06 UTC, round 32 157 661, epoch 2233.
-- 600 ms rounds, 144 000 rounds/epoch, epoch 24 h.
-- Probe 7 oct = **J+27**, epoch **2255** (~50 %).
-- Builders : timestamps typés (`multiversx-sc` ≥ 0.63).
-- 400 ms / ZK natif = **non calendrés**.
-
-### EGLD / DeFi
-
-- Prix API **$4.14** (vs $4.40 le 2 oct, $4.45 le 1er). Mcap **$127.9M**.
-- Staked ~14.24M / circ ~30.91M. APR 8.90%.
-- xExchange TVL ~$4.6M (weekly 5 oct) — thin-liq. Pas un signal LIA live.
-- $TRO : prix API **non nul** (~$0.000093, mcap ~$44) mais **illiquide**. 563 comptes.
-
-### Agents / MX-8004
-
-- ERC-8004 : 537k+ identités (fin sept).
-- MX-8004 First 100 xArtists = inscription LIA, **pas faite**.
-- Stack agentic MVX : UCP, ACP/AP2, x402, MCP, Relayed v3.
-
-### Infra / RPC
-
-- Public : `https://api.multiversx.com/` (ce probe, HTTP 200).
-- Fallbacks : Tatum, node101, NODIT, NOWNodes, SonarX — probe only.
-
-### Produit xArtists (code 7 oct)
-
-- 0.77 → 0.90 depuis le 2 oct : HolderTerminal, shadow sprint, TCA classroom, SIWX/verify-access, DailySignalWidget, Chantier 3.
-- Pages **cassé 6 oct**, **corrigé 7 oct**.
-- Secrets : aucun PEM/JWT dans git.
+1. **Laisser `static.yml` vert** après ce push, hard-refresh la vitrine, vérifier que BlackArtPass porte l’id **2** avant tout Buy.
+2. **Ne pas acheter l’id 1.** Un Buy #2 est un vrai paiement **0,25 EGLD** (+ le bid 0,01 est remboursé au bidder par le SC). Décision humaine, pas un script.
+3. **Treasury dest (PR #87)** avant de claim les 0,0075 EGLD de fees. `claimFees` envoie à l’owner, pas au splitter.
+4. **Slot** : upgrade metadata du contrat existant, puis micro-spin **0,001** EGLD. Seulement après `isPayable: true`. Jusque-là Fun.
+5. **MX-8004 / First 100** : inscrire LIA. Ce n’est pas du yield.
+6. **OOX SDK** (5 oct, v0.1) : buy/list/bid sur le carnet OOX depuis une dApp, tx non signées `@multiversx/sdk-core`. Piste liquidité NFT **après** que le listing maison #2 soit propre. Pas intégré dans ce push (pas de dépendance non vérifiée).
+7. **Ne pas** `LIA_LIVE_TRADING=1`. LP manuel ≠ trading live. Fenêtre CEX interne 6–11 oct : observer, ne pas lever les caps. Upbit encore en revue (~19–23 oct).
+8. **Ne pas merger** les PRs Dependabot majors (vite 8, eslint 10, vitest 4, actions checkout 6) pendant que Pages est le chemin live.
+9. **Ne pas** committer `VITE_*_CODEHASH_OK=1`.
 
 ---
 
-## Code / vérité 7 oct
+## Veille technologique — 8 oct 2026
 
-- `data/contracts.json` + `apps/frontend/public/data/contracts.json` — SoT adresses + codeHash (reconfirmé 7 oct).
-- `runtimeCodehash.ts` — match explorer, cache session v3.
-- `scStatus.ts` — `can*` = env flag **ou** runtime match.
-- Legacy empty = `never_fund`.
-- STATUS.md / ANALYSE **réécrits** (plus de 2 oct / 0.77.0).
+### Réseau
 
-Non touché volontairement : live trading LIA, PEM, flags CODEHASH committées, dest treasury, REAL slot public, Dependabot majors.
+- Supernova mainnet depuis le **10 sept 2026** (epoch 2233, rounds 600 ms, epoch ~24 h). Probe = **J+28**, epoch **2256**.
+- 400 ms et ZK natif : **pas calendrés**.
+- Indexer public `https://api.multiversx.com` : HTTP 200 sur stats, economics, accounts, tokens, collections, `/query`.
+- Docs officielles (juillet 2026) : Staking V5 live depuis le 2 déc 2025 ; émission EGLD en tail inflation (plancher 2–5 %) après le vote Economic Evolution. Supernova : audit externe passé, chiffres Battle of Nodes (mars 2026) jusqu’à 120k TPS en test — la prod observée ici reste **600 ms**.
+
+### Prix / liquidité
+
+- EGLD **$4,09** (4,14 le 7 oct, 4,40 le 2 oct). Mcap ~**$126M**. Staked ~14,25M / circ ~30,91M.
+- xExchange reste thin. Pas un signal pour allumer LIA.
+- $TRO : prix API non nul mais **illiquide** (563 comptes, mcap ~$43).
+
+### Marché NFT MultiversX
+
+- **OOX SDK** annoncé le **5 oct 2026** (OOX.art / OnionXLabs). Scope v0.1 : buy, bulk buy, bid, list, change price, cancel, end auction. Même carnet que oox.art. Wallet-agnostic.
+- XOXNO garde `@xoxno/sdk-js` (auth native 24 h). Déjà le réflexe historique du repo pour les liens externes.
+- Préorders OOX (collection Octos) annoncées fin sept — hors périmètre xArtists.
+
+### Tooling MVX (repos touchés cette semaine)
+
+- `mx-api-service`, `mx-chain-proxy-go`, `mx-chain-go`, explorer : poussés autour du **7 oct**.
+- `mx-sdk-dapp-form` 5.0.x (août–sept) : build Vite, composants UI partagés. Le front xArtists reste sur `@multiversx/sdk-dapp` ^3 et Vite 5. **Ne pas sauter Vite 8** via Dependabot maintenant.
+- `mx-sdk-dapp-swap` a bougé le 6 oct. Pas branché ici.
+
+### Agents
+
+- MX-8004 côté xArtists = inscription soulbound LIA (First 100), **toujours pas faite**.
+- Stack agentique MVX citée dans la doc interne (UCP, ACP/AP2, x402, MCP, Relayed v3) : veille, pas un chantier de ce push.
+
+### Incident VM (rappel, pas un nouvel event)
+
+- 19–25 sept 2026 : pause, exploit atomicité, hardfork recovery, pont ETH rouvert.
+- 28 sept : pic TPS public. 30 sept–5 oct : dépôts CEX rouverts (Binance US, Kraken, Bitget).
+- Fenêtre interne exchanges **6–11 oct** encore la consigne ops : ne pas lever les caps xArtists.
+
+### Hygiène repo
+
+- 14 « issues » ouvertes = **PRs**, pas des bugs tracker : #87 treasury dest, #60/#46 recaps, Dependabot #3–#8 et #28–#32.
+- Dernier commit humain avant celui-ci : fix CommandWall `atmo.mesh` (7 oct). Ensuite ticks shadow `[skip ci]`.
+- Pages : pipeline `static.yml` vert. L’ancien `ci-cd.yml` était un risque de **wipe** du site ; il ne part plus sur `push`.
+
+---
+
+## Sécurité
+
+- Aucun PEM, JWT, webhook secret dans ce diff.
+- Aucune TX signée, aucun upgrade SC exécuté.
+- Buy #2 n’est pas déclenché automatiquement.
+- Spin REAL reste un throw avant `send`.

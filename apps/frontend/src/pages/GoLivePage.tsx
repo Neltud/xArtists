@@ -23,6 +23,8 @@ import {
   canBuyAgent,
 } from '../config/scStatus'
 import { asText, formatRCE } from '../lib/safeRender'
+import { fetchMarketPayable } from '../lib/marketPayable'
+import { fetchOnChainMarketListings, type OnChainListing } from '../lib/marketChain'
 
 type Item = { id: string; label: string; ok: boolean; note?: string; href?: string }
 
@@ -41,11 +43,21 @@ function gate(envName: string, key: Parameters<typeof runtimeCodehashOk>[0]): bo
 
 export default function GoLivePage() {
   const [, setTick] = useState(0)
+  const [listings, setListings] = useState<OnChainListing[]>([])
+  const [slotPayable, setSlotPayable] = useState<boolean | null>(null)
+  const [marketPayable, setMarketPayable] = useState<boolean | null>(null)
   const mode = getAppMode()
   const envLive = getEnvLiveCapable()
 
   useEffect(() => {
     void refreshRuntimeCodehashes().then(() => setTick(x => x + 1))
+    const market = MAINNET_ADDRESSES.nft_marketplace
+    const slot = MAINNET_ADDRESSES.slot_casino
+    if (market) {
+      void fetchOnChainMarketListings(market).then(setListings).catch(() => setListings([]))
+      void fetchMarketPayable(market).then(s => setMarketPayable(s.isPayable))
+    }
+    if (slot) void fetchMarketPayable(slot).then(s => setSlotPayable(s.isPayable))
   }, [])
 
   const marketOk = canListBuyNft() || gate('VITE_MARKETPLACE_CODEHASH_OK', 'marketplace')
@@ -93,9 +105,11 @@ export default function GoLivePage() {
       label: 'Slot casino',
       ok: slotOk,
       note:
-        house != null
-          ? `house ~${asText(typeof house === 'number' ? house.toFixed(4) : house)} EGLD`
-          : undefined,
+        slotPayable === false
+          ? 'isPayable=false — EGLD rejeté, spin REAL fermé'
+          : house != null
+            ? `house ~${asText(typeof house === 'number' ? house.toFixed(4) : house)} EGLD`
+            : undefined,
       href: `https://explorer.multiversx.com/accounts/${MAINNET_ADDRESSES.slot_casino}`,
     },
   ]
@@ -152,14 +166,38 @@ export default function GoLivePage() {
       <DustTestPanel />
 
       <section className="card space-y-2">
-        <h2 className="text-sm font-semibold text-white">Spin réel</h2>
+        <h2 className="text-sm font-semibold text-white">Preuves live</h2>
         <p className="text-[12px] text-zinc-400">
-          House financée. Le spin FUN reste le chemin public. Le spin REAL reste fermé tant que le
-          fail spinEgld n&apos;est pas diagnostiqué et rejoué en micro-preuve. Ce n&apos;est pas un
-          casino ouvert.
+          Market payable :{' '}
+          <strong className="text-zinc-200">
+            {marketPayable == null ? '…' : marketPayable ? 'oui' : 'non'}
+          </strong>
+          . Slot payable :{' '}
+          <strong className="text-zinc-200">
+            {slotPayable == null ? '…' : slotPayable ? 'oui' : 'non'}
+          </strong>
+          . Treasury dest toujours null — ne pas router les frais.
         </p>
+        {listings.length > 0 && (
+          <ul className="space-y-1 text-[12px] text-zinc-300">
+            {listings.map(l => (
+              <li key={l.id}>
+                Listing #{l.id} {l.token}-{String(l.nonce).padStart(2, '0')} · {l.priceEgld} EGLD ·{' '}
+                {l.active ? 'actif' : 'inactif'}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
+      <section className="card space-y-2">
+        <h2 className="text-sm font-semibold text-white">Spin réel</h2>
+        <p className="text-[12px] text-zinc-400">
+          House 0,5 EGLD. Le compte slot n’est pas payable : un spin EGLD est rejeté par le
+          protocole. Fun reste le chemin public. Upgrade du même contrat avec metadata-payable
+          seulement — pas un nouveau deploy.
+        </p>
+      </section>
       <p className="text-[11px] text-zinc-600">
         Agent 8008 : {asText(AGENT_8008?.id, '—')} ·{' '}
         <Link to="/" className="text-cyan-400 underline">

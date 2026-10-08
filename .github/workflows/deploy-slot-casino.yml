@@ -70,6 +70,7 @@ jobs:
           NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
           LOG=$(mxpy contract deploy --bytecode="$WASM" --pem="${RUNNER_TEMP}/deployer.pem" \
             --gas-limit=80000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
+            --metadata-payable --metadata-upgradeable --metadata-readable \
             --arguments "${PROGRESSIVE_BPS}" "${RAKE_BPS}" "${MIN_BET}" \
             --send --wait-result 2>&1) || true
           echo "$LOG"

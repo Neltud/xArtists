@@ -1,8 +1,8 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-10-07",
-  "chain_note": "Product SCs codeHash still match 1–2 Oct map (re-probed 7 Oct 2026). Market 0.0175 EGLD = 0.0075 first-sale fee + 0.01 placeBid. ASFT-a6273a-01 still escrowed. Slot house 0.5 EGLD. spinEgld REAL fail (wrong number of arguments / ESDT expected). LIA trading remains paper. Do not use LEGACY_EMPTY placeholders.",
+  "updated": "2026-10-08",
+  "chain_note": "Product SCs codeHash unchanged (re-probed 8 Oct 2026, epoch 2256). Market isPayable=true, 0.0175 EGLD = 0.0075 fees + 0.01 bid on listing #2 (active, ASFT-a6273a-01 @ 0.25). Listing #1 inactive \u2014 UI must not buy id 1. Slot house 0.5 EGLD but isPayable=false so spinEgld EGLD is rejected. LIA trading remains paper. Treasury dest null. Do not use LEGACY_EMPTY placeholders.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -42,15 +42,22 @@
     "slot_casino": 0.5,
     "nft_marketplace": 0.0175,
     "others": 0,
-    "probed": "2026-10-07"
+    "probed": "2026-10-08",
+    "slot_isPayable": false,
+    "market_isPayable": true,
+    "market_fees_egld": 0.0075,
+    "lia_ops_egld": 1.603782,
+    "tro_stake_atomic": "3000000"
   },
   "proofs": {
     "buyNft_egld_epoch_2250": 0.25,
     "collection": "ASFT-a6273a-01",
-    "listings_now": 1,
-    "placeBid_egld_epoch_2252": 0.01,
-    "buyNft_retry_epoch_2252": "fail:inactive",
-    "spinEgld_real": "fail:wrong number of arguments / ESDT expected"
+    "listing_1": "inactive",
+    "listing_2": "active 0.25 EGLD",
+    "placeBid_listing_2_egld": 0.01,
+    "buyNft_retry_wrong_id": "fail:inactive",
+    "spinEgld_real": "blocked: account isPayable=false",
+    "slot_min_bet_egld": 0.001
   },
   "never_fund": {
     "legacy_marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",

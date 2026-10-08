@@ -1,48 +1,17 @@
-name: CI/CD xArtists LIA v6
+# DISABLED 2026-10-08.
+# This job deleted docs/* then deployed that empty folder with JamesIves
+# (gh-pages), racing the canonical Pages pipeline in static.yml.
+# Do not re-enable the wipe. Frontend go-live = static.yml only.
+name: "[disabled] CI/CD xArtists LIA v6"
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: read
 
 jobs:
-  build-and-deploy:
+  notice:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'npm'
-          cache-dependency-path: apps/frontend/package-lock.json
-
-      - name: Clean docs folder
-        run: |
-          rm -rf docs/*
-          mkdir -p docs
-          echo "docs cleaned at $(date)"
-
-      - name: Install dependencies
-        run: cd apps/frontend && npm ci
-
-      - name: Build Frontend (React)
-        run: cd apps/frontend && npm run build
-
-      - name: Add .nojekyll
-        run: echo "" > docs/.nojekyll
-
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages
-          folder: docs
-          clean: true
+      - run: echo "Disabled. Canonical deploy is .github/workflows/static.yml"
