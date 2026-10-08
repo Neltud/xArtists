@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.91.1](https://github.com/Neltud/xArtists/compare/v0.91.0...v0.91.1) (2026-10-08)
+
+
+### Bug Fixes
+
+* **market+slot:** buy the active listing, keep spin closed ([e3c232c](https://github.com/Neltud/xArtists/commit/e3c232c8e5042149aa318d4b6ec58b5eb3e0de12))
+
 ## [0.91.0](https://github.com/Neltud/xArtists/compare/v0.90.0...v0.91.0) (2026-10-07)
 
 
