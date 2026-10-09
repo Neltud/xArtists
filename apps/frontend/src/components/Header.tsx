@@ -1,25 +1,19 @@
 /**
- * Header produit — menu toujours accessible, wallet clair, i18n.
+ * Header produit — menu, wallet, i18n. Connexion via LoginModal.
  */
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
-import { loginWithXPortalMainnet } from '../lib/xportalWc'
-import { OPEN_CONNECT_EVENT, requestOpenAssets } from '../lib/walletEvents'
+import { requestOpenConnect, requestOpenAssets } from '../lib/walletEvents'
 import { useI18n } from '../i18n/I18nContext'
 import LangSwitcher from './LangSwitcher'
 import SideNav from './SideNav'
+import LoginModal from './LoginModal'
 
 export default function Header() {
   const { t } = useI18n()
-  const { connected, shortAddress, connect, disconnect, address, method, sessionLive } = useWallet()
-
+  const { connected, shortAddress, disconnect, address, method, sessionLive } = useWallet()
   const [menuOpen, setMenuOpen] = useState(false)
-  const [walletOpen, setWalletOpen] = useState(false)
-  const [error, setError] = useState('')
-  const [wcUri, setWcUri] = useState<string | null>(null)
-  const [manual, setManual] = useState('')
-  const [busy, setBusy] = useState(false)
 
   const live = connected && (method !== 'xportal' || sessionLive === true)
 
@@ -30,90 +24,6 @@ export default function Header() {
     { to: '/agents', label: t('nav.packs') },
     { to: '/slot', label: t('nav.slot') },
   ]
-
-  useEffect(() => {
-    const open = () => {
-      setWalletOpen(true)
-      setError('')
-      setWcUri(null)
-    }
-    window.addEventListener(OPEN_CONNECT_EVENT, open)
-    return () => window.removeEventListener(OPEN_CONNECT_EVENT, open)
-  }, [])
-
-  useEffect(() => {
-    const onUri = (e: Event) => {
-      const u = (e as CustomEvent).detail?.uri
-      if (typeof u === 'string') setWcUri(u)
-    }
-    window.addEventListener('xartists-wc-uri', onUri)
-    return () => window.removeEventListener('xartists-wc-uri', onUri)
-  }, [])
-
-  const closeWallet = () => {
-    if (busy) return
-    setWalletOpen(false)
-    setError('')
-    setWcUri(null)
-  }
-
-  const runXPortal = async () => {
-    setBusy(true)
-    setError('xPortal…')
-    setWcUri(null)
-    try {
-      const res = await loginWithXPortalMainnet(p => {
-        if (p.uri) setWcUri(p.uri)
-        if (p.message) setError(p.message)
-      })
-      if (!res.ok) {
-        setError(res.error)
-        return
-      }
-      const linked = connect(res.address, 'xportal')
-      if (!linked.ok) {
-        setError(linked.error || 'Session refusée')
-        return
-      }
-      setWalletOpen(false)
-      setError('')
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erreur xPortal')
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const runExtension = async () => {
-    setBusy(true)
-    setError('')
-    try {
-      const w = window as unknown as { elrondWallet?: { getAddress?: () => Promise<string> } }
-      if (!w.elrondWallet?.getAddress) {
-        setError('Extension MultiversX introuvable')
-        return
-      }
-      const addr = await w.elrondWallet.getAddress()
-      const r = connect(String(addr).trim(), 'defi_wallet')
-      if (!r.ok) setError(r.error || 'Échec')
-      else setWalletOpen(false)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erreur')
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const runPaste = () => {
-    setError('')
-    if (!/^erd1[a-z0-9]{58}$/i.test(manual.trim())) {
-      setError('Adresse erd1 invalide')
-      return
-    }
-    const r = connect(manual.trim(), 'paste_readonly')
-    if (!r.ok) setError(r.error || 'Échec')
-    else setWalletOpen(false)
-  }
 
   return (
     <>
@@ -180,11 +90,7 @@ export default function Header() {
             ) : (
               <button
                 type="button"
-                onClick={() => {
-                  setWalletOpen(true)
-                  setError('')
-                  setWcUri(null)
-                }}
+                onClick={() => requestOpenConnect()}
                 className="rounded-full bg-gradient-to-r from-violet-600 to-cyan-600 px-4 py-1.5 text-[12px] font-semibold text-white shadow-lg shadow-violet-900/30"
               >
                 {t('common.connect')}
@@ -195,66 +101,7 @@ export default function Header() {
       </header>
 
       <SideNav open={menuOpen} onClose={() => setMenuOpen(false)} />
-
-      {walletOpen && (
-        <div
-          className="fixed inset-0 z-[80] flex items-end justify-center bg-black/75 p-3 backdrop-blur-sm sm:items-center"
-          onClick={closeWallet}
-          role="presentation"
-        >
-          <div
-            className="w-full max-w-md space-y-4 rounded-2xl border border-white/12 bg-[#0c0c14] p-5 shadow-2xl"
-            onClick={e => e.stopPropagation()}
-            role="dialog"
-            aria-modal
-            aria-label={t('common.connect')}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-lg font-semibold text-white">{t('common.connect')}</h2>
-                <p className="mt-1 text-[12px] text-zinc-500">
-                  xPortal recommandé pour signer sur mainnet.
-                </p>
-              </div>
-              <button type="button" className="btn-secondary px-2 py-1 text-xs" onClick={closeWallet}>
-                ×
-              </button>
-            </div>
-
-            {wcUri && (
-              <div className="space-y-2 rounded-xl border border-violet-500/25 bg-violet-500/5 p-3">
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(wcUri)}`}
-                  alt="QR WalletConnect"
-                  width={200}
-                  height={200}
-                  className="mx-auto rounded-lg bg-white p-2"
-                />
-              </div>
-            )}
-
-            <button type="button" className="btn-primary w-full" disabled={busy} onClick={() => void runXPortal()}>
-              {busy ? 'En attente…' : 'xPortal mainnet'}
-            </button>
-            <button type="button" className="btn-secondary w-full" disabled={busy} onClick={() => void runExtension()}>
-              Extension DeFi Wallet
-            </button>
-            <div className="space-y-2 border-t border-white/10 pt-3">
-              <p className="text-[11px] text-zinc-600">Lecture seule — coller erd1</p>
-              <input
-                value={manual}
-                onChange={e => setManual(e.target.value)}
-                placeholder="erd1…"
-                className="mono w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-violet-400/40"
-              />
-              <button type="button" className="btn-secondary w-full text-xs" onClick={runPaste}>
-                Lecture seule
-              </button>
-            </div>
-            {error && <p className="text-[12px] leading-relaxed text-amber-200/90">{error}</p>}
-          </div>
-        </div>
-      )}
+      <LoginModal />
     </>
   )
 }
