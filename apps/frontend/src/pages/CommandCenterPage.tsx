@@ -1,5 +1,6 @@
 /**
- * Command Center — holo wall + live multi-asset tape + rooms + shadow.
+ * Command Center — gated by pack tier:
+ * Pulse = full hub · Yield/Sentinel = room only + limited panels.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -21,7 +22,7 @@ import LiaCommandTerminal from '../components/LiaCommandTerminal'
 import DailySignalWidget from '../components/DailySignalWidget'
 import { useWallet } from '../context/WalletContext'
 import { getAppMode } from '../lib/appMode'
-import { type PackId } from '../config/agentPacks'
+import { type PackId, mergePackFeatures } from '../config/agentPacks'
 import { useI18n } from '../i18n/I18nContext'
 import { toAmbientSnapshot, shortTrendToast, type AuraMode } from '../lib/ambientAura'
 import { useToast } from '../components/ui/Toast'
@@ -49,6 +50,7 @@ function CommandCenterInner() {
   const lia = useLIAInterpreter(env)
   const mode = getAppMode()
   const packs = (access.packs || []).filter(Boolean) as PackId[]
+  const features = useMemo(() => mergePackFeatures(packs), [packs])
   const lastMode = useRef<AuraMode | null>(null)
 
   const endTunnel = useCallback(() => setTunnel(false), [])
@@ -97,6 +99,12 @@ function CommandCenterInner() {
     window.location.hash = '#/staking'
   }
 
+  const tierNote = features.commandHub
+    ? 'Pack Pulse (complet) — hub + tape + LIA shadow'
+    : packs.length
+      ? `Tier limité (${packs.join(', ')}) — salle dédiée · upgrade Pulse pour le hub full`
+      : 'Aperçu SAMPLE — connecte un pack'
+
   return (
     <div className="animate-fade-in space-y-6 pb-28 max-w-4xl mx-auto relative">
       <DataTunnelTransition active={tunnel} onDone={endTunnel} />
@@ -113,12 +121,28 @@ function CommandCenterInner() {
           <span className="text-[9px] rounded-full border border-cyan-500/30 px-2 py-0.5 text-cyan-200/90 font-tech">
             {ambient.mode} · {ambient.trend}
           </span>
+          {features.commandHub ? (
+            <span className="text-[9px] rounded-full border border-emerald-500/40 px-2 py-0.5 text-emerald-300">
+              FULL
+            </span>
+          ) : (
+            <span className="text-[9px] rounded-full border border-amber-500/35 px-2 py-0.5 text-amber-200">
+              LIMITED
+            </span>
+          )}
         </div>
         <h1 className="text-3xl font-bold text-white tracking-tight font-tech title-glow">{t('cc.title')}</h1>
         <p className="text-sm text-zinc-400">{t('cc.subtitle')}</p>
+        <p className="text-[11px] text-zinc-500">{tierNote}</p>
       </header>
 
-      <LiveAssetTape />
+      {(features.liveTapeFull || !packs.length) && <LiveAssetTape />}
+      {!features.liveTapeFull && packs.length > 0 && (
+        <p className="text-[11px] text-zinc-500 rounded-xl border border-white/10 px-3 py-2">
+          Live tape multi-actifs réservée au pack <strong className="text-zinc-300">Pulse</strong>.
+        </p>
+      )}
+
       <DailySignalWidget compact />
 
       <div className="flex flex-wrap gap-2">
@@ -159,6 +183,7 @@ function CommandCenterInner() {
             volatility={lia.uniforms.uVolatility}
             pulseSpeed={lia.uniforms.uPulseSpeed}
             colorRgb={lia.uniforms.uColor}
+            interactive={features.commandHub || !packs.length}
           />
           <div className="grid sm:grid-cols-2 gap-3">
             <ClickGuide />
@@ -172,27 +197,45 @@ function CommandCenterInner() {
               onSelect={() => setTick(x => x + 1)}
             />
           )}
-          <AgentNftStakePanel key={tick} packIds={packs} />
-          <LiaShadowPanel />
-          <DashboardSource />
-          <AgentRoster />
+          {features.agentStake && <AgentNftStakePanel key={tick} packIds={packs} />}
+          {(features.liaFull || !packs.length) && <LiaShadowPanel />}
+          {features.commandHub && (
+            <>
+              <DashboardSource />
+              <AgentRoster />
+            </>
+          )}
           <div className="card flex flex-wrap gap-2">
-            <button type="button" className="btn-secondary text-sm" onClick={onYieldAction}>
-              {t('nav.staking')} $TRO
-            </button>
+            {features.defiSleeve && (
+              <button type="button" className="btn-secondary text-sm" onClick={onYieldAction}>
+                {t('nav.staking')} $TRO
+              </button>
+            )}
             <Link to="/marketplace" className="btn-secondary text-sm">
               {t('nav.market')}
             </Link>
-            <Link to="/lia" className="btn-secondary text-sm">
-              LIA Hub
-            </Link>
+            {(features.liaFull || !packs.length) && (
+              <Link to="/lia" className="btn-secondary text-sm">
+                LIA Hub
+              </Link>
+            )}
+            {features.tca && (
+              <Link to="/tca" className="btn-secondary text-sm">
+                TCA
+              </Link>
+            )}
+            {!features.commandHub && packs.length > 0 && (
+              <Link to="/agents" className="btn-primary text-sm">
+                Upgrade Pulse →
+              </Link>
+            )}
           </div>
         </div>
       )}
 
       {room !== 'hub' && packs.includes(room as PackId) && (
         <div className="space-y-4">
-          <LiveAssetTape compact />
+          {room === 'pulse' && features.liveTapeFull && <LiveAssetTape compact />}
           <AgentNftOrb
             packId={room as PackId}
             staked={isAgentNftStaked(room as PackId)}
@@ -202,10 +245,10 @@ function CommandCenterInner() {
             title={`${t(`cc.${room}` as 'cc.pulse')} room`}
             body={
               room === 'pulse'
-                ? 'HF signals · micro-arb'
+                ? 'FULL · HF signals · micro-arb · board'
                 : room === 'yield'
-                  ? 'LP sleeve · claims'
-                  : 'Watch · risk'
+                  ? 'LIMITÉ · LP sleeve · claims · pas de trading HF'
+                  : 'LIMITÉ · watch · risk alerts'
             }
             sentiment={
               room === 'yield'
