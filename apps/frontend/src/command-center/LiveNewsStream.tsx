@@ -1,6 +1,6 @@
 /**
  * Live news — live_news.json + EGLD economics + Reddit r/MultiversX (client).
- * Paper / éducatif — pas un conseil financier.
+ * Badge ● LIVE animé. Paper / éducatif.
  */
 import { useEffect, useState } from 'react'
 
@@ -84,7 +84,6 @@ async function loadStatic(base: string): Promise<NewsItem[]> {
 
 async function fetchLiveClient(): Promise<NewsItem[]> {
   const out: NewsItem[] = []
-
   try {
     const r = await fetch('https://api.multiversx.com/economics', { cache: 'no-store' })
     if (r.ok) {
@@ -103,8 +102,6 @@ async function fetchLiveClient(): Promise<NewsItem[]> {
   } catch {
     /* */
   }
-
-  // Reddit JSON — souvent accessible sans clé (peut échouer CORS selon navigateur)
   try {
     const r = await fetch('https://www.reddit.com/r/MultiversX/new.json?limit=8', {
       cache: 'no-store',
@@ -128,7 +125,6 @@ async function fetchLiveClient(): Promise<NewsItem[]> {
   } catch {
     /* CORS */
   }
-
   return out
 }
 
@@ -154,7 +150,6 @@ export default function LiveNewsStream({ compact }: { compact?: boolean }) {
   useEffect(() => {
     let c = false
     const base = import.meta.env.BASE_URL || '/'
-
     const run = async () => {
       const staticItems = await loadStatic(base)
       const clientItems = await fetchLiveClient()
@@ -165,7 +160,6 @@ export default function LiveNewsStream({ compact }: { compact?: boolean }) {
         setLive(clientItems.length > 0)
       }
     }
-
     void run()
     const id = window.setInterval(() => void run(), 5 * 60_000)
     return () => {
@@ -189,13 +183,11 @@ export default function LiveNewsStream({ compact }: { compact?: boolean }) {
     <div className={`glass-hud overflow-hidden ${compact ? 'h-36' : 'h-52'}`}>
       <div className="flex items-center justify-between px-3 pt-2 pb-1 border-b border-cyan-500/15">
         <p className="text-[10px] font-tech uppercase tracking-[0.2em] text-cyan-300/90">
-          Live news · MVX / Crypto
+          News · MVX / Crypto
         </p>
-        <span className="flex items-center gap-1.5">
-          <span className="text-[9px] text-zinc-500">{live ? 'live' : 'cache'}</span>
-          <span
-            className={`h-1.5 w-1.5 rounded-full ${live ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-500'}`}
-          />
+        <span className={`badge-live ${live ? 'badge-live-on' : 'badge-live-off'}`}>
+          <span className="badge-live-dot" aria-hidden />
+          LIVE
         </span>
       </div>
       <div className="relative h-[calc(100%-28px)] overflow-hidden">

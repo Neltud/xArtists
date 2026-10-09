@@ -1,1 +1,1 @@
-force-rebuild-2026-10-10-playlist-player-sc-yt
+force-rebuild-2026-10-10-ui-polish-live-badge-nav

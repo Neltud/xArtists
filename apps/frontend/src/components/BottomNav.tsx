@@ -13,7 +13,7 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.07] bg-[#07070c]/92 backdrop-blur-xl md:hidden"
+      className="hud-bottom-nav fixed inset-x-0 bottom-0 z-50 md:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       aria-label="Navigation principale"
     >
@@ -24,14 +24,15 @@ export default function BottomNav() {
             to={to}
             end={end}
             className={({ isActive }) =>
-              `flex flex-col items-center gap-0.5 rounded-2xl py-2 text-[10px] font-medium transition active:scale-95 ${
-                isActive
-                  ? 'bg-violet-500/15 text-violet-100 shadow-[0_0_20px_-6px_rgba(139,92,246,0.45)]'
-                  : 'text-zinc-500 active:bg-white/5'
+              `hud-nav-item flex flex-col items-center gap-0.5 rounded-2xl py-2 text-[10px] font-medium transition active:scale-95 ${
+                isActive ? 'hud-nav-item-active' : 'text-zinc-500 active:bg-white/5'
               }`
             }
           >
-            <span className="text-base leading-none" aria-hidden>
+            <span
+              className="hud-nav-icon text-base leading-none flex h-8 w-8 items-center justify-center rounded-xl"
+              aria-hidden
+            >
               {icon}
             </span>
             <span className="truncate">{label}</span>

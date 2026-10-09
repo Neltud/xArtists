@@ -1,6 +1,5 @@
 /**
- * Live multi-asset price tape — BTC, ETH, SOL, TAO, EGLD, GOLD, EUR/USD.
- * CoinGecko + MVX economics. Poll 60s. Display only — not advice.
+ * Live multi-asset tape — labels HTML vectoriels (pas canvas).
  */
 import { useEffect, useState } from 'react'
 import { asText } from '../lib/safeRender'
@@ -53,9 +52,8 @@ async function loadQuotes(): Promise<AssetQuote[]> {
       }
     }
   } catch {
-    /* offline */
+    /* */
   }
-  // EUR via frankfurter
   try {
     const r = await fetch('https://api.frankfurter.app/latest?from=EUR&to=USD', { cache: 'no-store' })
     if (r.ok) {
@@ -69,7 +67,6 @@ async function loadQuotes(): Promise<AssetQuote[]> {
   } catch {
     /* */
   }
-  // EGLD backup from MVX
   if (out.find(x => x.id === 'egld')?.usd == null) {
     try {
       const r = await fetch('https://api.multiversx.com/economics', { cache: 'no-store' })
@@ -119,32 +116,39 @@ export default function LiveAssetTape({ compact }: { compact?: boolean }) {
 
   return (
     <div
-      className={`rounded-2xl border border-cyan-500/20 bg-gradient-to-r from-cyan-950/40 via-black/50 to-violet-950/40 overflow-hidden ${
+      className={`data-overlay-tape rounded-2xl border border-cyan-500/25 bg-gradient-to-r from-cyan-950/40 via-black/50 to-violet-950/40 overflow-hidden ${
         compact ? 'py-1.5' : 'py-2'
       }`}
+      style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
     >
       <div className="flex items-center gap-2 px-3 pb-1">
-        <span className="text-[9px] uppercase tracking-[0.2em] text-cyan-300/90 font-semibold">
+        <span className="text-[9px] uppercase tracking-[0.2em] text-cyan-300/90 font-semibold font-tech">
           Live tape
         </span>
-        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        <span className="badge-live badge-live-on">
+          <span className="badge-live-dot" />
+          LIVE
+        </span>
         {ts && (
-          <span className="text-[9px] text-zinc-600">
-            {new Date(ts).toLocaleTimeString()}
-          </span>
+          <span className="text-[9px] text-zinc-600 mono">{new Date(ts).toLocaleTimeString()}</span>
         )}
       </div>
-      <div className="flex gap-3 overflow-x-auto px-3 pb-1 scrollbar-thin">
+      <div className="flex gap-3 overflow-x-auto px-3 pb-1">
         {rows.map(a => {
           const ch = a.change24h
           const up = ch != null && ch >= 0
           return (
             <div
               key={a.id}
-              className="shrink-0 min-w-[88px] rounded-xl border border-white/10 bg-black/40 px-2.5 py-1.5"
+              className="shrink-0 min-w-[92px] rounded-xl border border-white/12 bg-black/45 px-2.5 py-1.5"
             >
-              <p className="text-[10px] font-semibold text-zinc-400">{a.symbol}</p>
-              <p className="text-[13px] font-bold tabular-nums text-white">{fmt(a.usd, a.symbol)}</p>
+              <p className="text-[10px] font-semibold tracking-wide text-zinc-400">{a.symbol}</p>
+              <p
+                className="text-[14px] font-bold tabular-nums text-white antialiased"
+                style={{ textRendering: 'geometricPrecision' }}
+              >
+                {fmt(a.usd, a.symbol)}
+              </p>
               {ch != null && (
                 <p className={`text-[10px] tabular-nums ${up ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {up ? '+' : ''}
