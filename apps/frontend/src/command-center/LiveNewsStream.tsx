@@ -1,5 +1,5 @@
 /**
- * Live news stream — charge live_news.json + refresh client CryptoCompare / EGLD.
+ * Live news — live_news.json + EGLD economics + Reddit r/MultiversX (client).
  * Paper / éducatif — pas un conseil financier.
  */
 import { useEffect, useState } from 'react'
@@ -29,8 +29,9 @@ const FALLBACK: NewsItem[] = [
   {
     id: 'fb-3',
     timestamp: '08:30',
-    source: 'xPortal',
-    title: 'Sessions wallet mobile stabilisées (multi-TX)',
+    source: 'MultiversX',
+    title: 'Universal Agentic Commerce Stack — agents on-chain',
+    link: 'https://multiversx.com/blog',
   },
   {
     id: 'fb-4',
@@ -54,7 +55,7 @@ function normalizeList(raw: unknown): NewsItem[] {
   return arr
     .map((x, i) => {
       const o = x as Record<string, unknown>
-      const title = String(o.title || o.text || o.body || '').trim()
+      const title = String(o.title || o.text || '').trim()
       if (!title) return null
       return {
         id: String(o.id || `n-${i}`),
@@ -75,7 +76,7 @@ async function loadStatic(base: string): Promise<NewsItem[]> {
       const list = normalizeList(await r.json())
       if (list.length) return list
     } catch {
-      /* next */
+      /* */
     }
   }
   return []
@@ -103,27 +104,29 @@ async function fetchLiveClient(): Promise<NewsItem[]> {
     /* */
   }
 
+  // Reddit JSON — souvent accessible sans clé (peut échouer CORS selon navigateur)
   try {
-    const r = await fetch(
-      'https://min-api.cryptocompare.com/data/v2/news/?lang=EN&categories=Blockchain,Technology',
-      { cache: 'no-store' },
-    )
+    const r = await fetch('https://www.reddit.com/r/MultiversX/new.json?limit=8', {
+      cache: 'no-store',
+    })
     if (r.ok) {
       const j = await r.json()
-      const data = Array.isArray(j.Data) ? j.Data : []
-      for (const n of data.slice(0, 10)) {
-        const ts = n.published_on ? new Date(n.published_on * 1000) : new Date()
+      for (const c of j?.data?.children || []) {
+        const d = c.data || {}
+        const ts = d.created_utc ? new Date(d.created_utc * 1000) : new Date()
         out.push({
-          id: `cc-${n.id}`,
+          id: `rd-${d.id}`,
           timestamp: hhmm(ts),
-          source: String(n.source || 'Crypto').slice(0, 14),
-          title: String(n.title || '').slice(0, 140),
-          link: n.url ? String(n.url) : undefined,
+          source: 'r/MVX',
+          title: String(d.title || '').slice(0, 140),
+          link: d.url?.startsWith('http')
+            ? d.url
+            : `https://reddit.com${d.permalink || ''}`,
         })
       }
     }
   } catch {
-    /* CORS / réseau */
+    /* CORS */
   }
 
   return out
@@ -159,7 +162,7 @@ export default function LiveNewsStream({ compact }: { compact?: boolean }) {
       const merged = mergeNews(clientItems, staticItems, FALLBACK)
       if (merged.length) {
         setItems(merged)
-        setLive(clientItems.length > 0 || staticItems.length > 0)
+        setLive(clientItems.length > 0)
       }
     }
 

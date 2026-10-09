@@ -1,17 +1,9 @@
 #!/usr/bin/env node
 /**
- * News worker — agrège flux publics → apps/frontend/public/data/live_news.json
+ * News worker — sources gratuites sans clé CryptoCompare.
+ * → apps/frontend/public/data/live_news.json
  *
- * Sources (gratuites, sans clé obligatoire) :
- * - CryptoCompare News API
- * - MultiversX economics (ligne EGLD)
- * - Seed MultiversX blog headlines (fallback si CORS/RSS bloqué en CI)
- *
- * Usage:
  *   node services/news-worker/fetch_news.mjs
- *   npm run news:fetch  (si script package.json)
- *
- * CI: peut tourner en cron GitHub Actions pour republier le JSON.
  */
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -55,43 +47,9 @@ function hhmm(d = new Date()) {
   return d.toISOString().slice(11, 16)
 }
 
-function srcFromDomain(url) {
+async function fetchEgld() {
   try {
-    const h = new URL(url).hostname.replace(/^www\./, '')
-    if (h.includes('multiversx')) return 'MultiversX'
-    if (h.includes('cointelegraph')) return 'CoinTelegraph'
-    if (h.includes('coindesk')) return 'CoinDesk'
-    if (h.includes('decrypt')) return 'Decrypt'
-    return h.split('.')[0].slice(0, 14)
-  } catch {
-    return 'Crypto'
-  }
-}
-
-async function fetchCryptoCompare(limit = 12) {
-  const url =
-    'https://min-api.cryptocompare.com/data/v2/news/?lang=EN&categories=Blockchain,Technology,Trading'
-  const r = await fetch(url, { headers: { Accept: 'application/json' } })
-  if (!r.ok) throw new Error(`CryptoCompare ${r.status}`)
-  const j = await r.json()
-  const data = Array.isArray(j.Data) ? j.Data : []
-  return data.slice(0, limit).map((n, i) => {
-    const ts = n.published_on ? new Date(n.published_on * 1000) : new Date()
-    return {
-      id: `cc-${n.id || i}`,
-      timestamp: hhmm(ts),
-      source: srcFromDomain(n.source_info?.name ? `https://${n.source_info.name}` : n.url || '') || n.source || 'Crypto',
-      title: String(n.title || '').slice(0, 140),
-      link: String(n.url || n.guid || '').slice(0, 300),
-    }
-  })
-}
-
-async function fetchEgldLine() {
-  try {
-    const r = await fetch('https://api.multiversx.com/economics', {
-      headers: { Accept: 'application/json' },
-    })
+    const r = await fetch('https://api.multiversx.com/economics')
     if (!r.ok) return null
     const j = await r.json()
     const price = Number(j.price)
@@ -108,29 +66,87 @@ async function fetchEgldLine() {
   }
 }
 
+async function fetchReddit(sub = 'MultiversX', limit = 10) {
+  const url = `https://www.reddit.com/r/${sub}/new.json?limit=${limit}`
+  const r = await fetch(url, {
+    headers: { 'User-Agent': 'xArtists-news-worker/1.0' },
+  })
+  if (!r.ok) throw new Error(`reddit ${r.status}`)
+  const j = await r.json()
+  const children = j?.data?.children || []
+  return children.map((c, i) => {
+    const d = c.data || {}
+    const ts = d.created_utc ? new Date(d.created_utc * 1000) : new Date()
+    return {
+      id: `rd-${d.id || i}`,
+      timestamp: hhmm(ts),
+      source: `r/${sub}`.slice(0, 14),
+      title: String(d.title || '').slice(0, 140),
+      link: d.url?.startsWith('http') ? d.url : `https://reddit.com${d.permalink || ''}`,
+    }
+  })
+}
+
+async function fetchRss2Json(rssUrl, sourceLabel, limit = 8) {
+  const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`
+  const r = await fetch(url)
+  if (!r.ok) throw new Error(`rss2json ${r.status}`)
+  const j = await r.json()
+  if (j.status !== 'ok' || !Array.isArray(j.items)) return []
+  return j.items.slice(0, limit).map((n, i) => {
+    const ts = n.pubDate ? new Date(n.pubDate) : new Date()
+    return {
+      id: `rss-${sourceLabel}-${i}-${ts.getTime()}`,
+      timestamp: hhmm(ts),
+      source: sourceLabel.slice(0, 14),
+      title: String(n.title || '').slice(0, 140),
+      link: String(n.link || n.guid || '').slice(0, 300),
+    }
+  })
+}
+
 async function main() {
   const items = []
-  const egld = await fetchEgldLine()
+  const egld = await fetchEgld()
   if (egld) items.push(egld)
 
   try {
-    const cc = await fetchCryptoCompare(14)
-    items.push(...cc)
+    items.push(...(await fetchReddit('MultiversX', 12)))
   } catch (e) {
-    console.warn('[news-worker] CryptoCompare fail:', e.message)
+    console.warn('[news] reddit', e.message)
   }
 
-  // Toujours enrichir avec seed MVX si peu de résultats
-  if (items.length < 6) {
-    items.push(...MVX_SEED)
-  } else {
-    items.splice(1, 0, ...MVX_SEED.slice(0, 3))
+  try {
+    items.push(
+      ...(await fetchRss2Json(
+        'https://cointelegraph.com/rss',
+        'CoinTelegraph',
+        6,
+      )),
+    )
+  } catch (e) {
+    console.warn('[news] cointelegraph rss', e.message)
   }
 
-  // Dédup titres
+  try {
+    items.push(
+      ...(await fetchRss2Json(
+        'https://www.coindesk.com/arc/outboundfeeds/rss/',
+        'CoinDesk',
+        4,
+      )),
+    )
+  } catch (e) {
+    console.warn('[news] coindesk rss', e.message)
+  }
+
+  if (items.length < 6) items.push(...MVX_SEED)
+  else items.splice(1, 0, ...MVX_SEED.slice(0, 2))
+
   const seen = new Set()
   const unique = []
   for (const it of items) {
+    if (!it.title) continue
     const k = it.title.toLowerCase().slice(0, 48)
     if (seen.has(k)) continue
     seen.add(k)
@@ -140,13 +156,13 @@ async function main() {
   const payload = {
     version: 2,
     updatedAt: new Date().toISOString(),
-    note: 'Généré par services/news-worker/fetch_news.mjs — paper / éducatif, pas un conseil.',
-    items: unique.slice(0, 24),
+    note: 'services/news-worker — paper/éducatif, pas un conseil financier.',
+    items: unique.slice(0, 28),
   }
 
   mkdirSync(dirname(OUT), { recursive: true })
   writeFileSync(OUT, JSON.stringify(payload, null, 2) + '\n', 'utf8')
-  console.log(`[news-worker] wrote ${payload.items.length} items → ${OUT}`)
+  console.log(`[news-worker] ${payload.items.length} items → ${OUT}`)
 }
 
 main().catch(e => {

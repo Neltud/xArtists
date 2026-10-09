@@ -1,18 +1,21 @@
 # Live News — Command Center
 
-## Objectif
+## Sources (sans clé CryptoCompare)
 
-Alimenter `LiveNewsStream` (`#/command-center`) avec des titres **réels** (MultiversX + crypto), pas uniquement du seed fictif.
+| Source | Où |
+|--------|-----|
+| MultiversX economics (prix EGLD) | API publique |
+| Reddit `r/MultiversX` | JSON public (worker + client si CORS OK) |
+| CoinTelegraph / CoinDesk RSS | via rss2json (worker Node) |
+| Seed blog MultiversX | fallback |
 
 ## Fichiers
 
-| Path | Rôle |
-|------|------|
-| `services/news-worker/fetch_news.mjs` | Worker Node : CryptoCompare + EGLD economics → JSON |
-| `apps/frontend/public/data/live_news.json` | Snapshot publié (Pages) |
-| `apps/frontend/src/command-center/LiveNewsStream.tsx` | UI : static JSON + refresh client 5 min |
+- `services/news-worker/fetch_news.mjs`
+- `apps/frontend/public/data/live_news.json`
+- `LiveNewsStream.tsx` — UI scroll + liens
 
-## Format `live_news.json`
+## Format
 
 ```json
 {
@@ -30,24 +33,13 @@ Alimenter `LiveNewsStream` (`#/command-center`) avec des titres **réels** (Mult
 }
 ```
 
-## Rafraîchir le snapshot (ops / CI)
+## Ops
 
 ```bash
 node services/news-worker/fetch_news.mjs
-# commit + push apps/frontend/public/data/live_news.json
+git add apps/frontend/public/data/live_news.json && git commit -m "chore: refresh live_news"
 ```
 
-Option GitHub Actions : cron `0 */6 * * *` qui run le worker et commit le JSON.
+Cron Actions recommandé : toutes les 6 h.
 
-## Runtime navigateur
-
-1. Charge `data/live_news.json` (puis `mvx_news.json`)
-2. En parallèle : **CryptoCompare** news API + **MultiversX economics** (EGLD)
-3. Merge + dédup · badge `live` / `cache`
-4. Liens cliquables · disclaimer paper dans le footer légal
-
-## Limites
-
-- Pas un conseil financier
-- CORS / rate-limit possibles sur CryptoCompare
-- Seed MultiversX blog si l’API échoue
+Disclaimer : paper / éducatif — pas un conseil financier.
