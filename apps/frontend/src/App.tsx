@@ -16,6 +16,7 @@ import ZoneRouteSync from './components/ZoneRouteSync'
 import RouteSfx from './components/RouteSfx'
 import AgentAccessSync from './components/AgentAccessSync'
 import BackgroundMusicPlayer from './components/BackgroundMusicPlayer'
+import WebglPauseBridge from './components/WebglPauseBridge'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const MuseumPage = lazy(() => import('./pages/MuseumPage'))
@@ -70,6 +71,7 @@ export default function App() {
       <div className="relative flex min-h-screen flex-col">
         <ArtAtelierBackdrop />
         <AgentAccessSync />
+        <WebglPauseBridge />
         <Header />
         <ZoneRouteSync />
         <RouteSfx />
