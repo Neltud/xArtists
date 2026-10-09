@@ -1,1 +1,1 @@
-force-rebuild-2026-10-09-checkout-fiat-crypto
+force-rebuild-2026-10-09-login-footer-legal-guest-fiat

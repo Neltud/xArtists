@@ -10,8 +10,8 @@ import ArtAtelierBackdrop from './components/ArtAtelierBackdrop'
 import FirstVisitOnboarding from './components/FirstVisitOnboarding'
 import PwaInstallBanner from './components/PwaInstallBanner'
 import AssetDrawer from './components/ui/AssetDrawer'
+import FooterLegal from './components/FooterLegal'
 import { OPEN_ASSETS_EVENT } from './lib/walletEvents'
-import { LINKS } from './config/links'
 import ZoneRouteSync from './components/ZoneRouteSync'
 import RouteSfx from './components/RouteSfx'
 import AgentAccessSync from './components/AgentAccessSync'
@@ -100,6 +100,7 @@ export default function App() {
                   <Route path="/gallery" element={<GalleryPage />} />
                   <Route path="/museum" element={<MuseumPage />} />
                   <Route path="/legal" element={<LegalPage />} />
+                  <Route path="/legal/terms" element={<LegalPage />} />
                   <Route path="/mentions-legales" element={<Navigate to="/legal" replace />} />
                   <Route path="/wallet" element={<WalletPage />} />
                   <Route path="/portfolio" element={<PortfolioPage />} />
@@ -130,19 +131,12 @@ export default function App() {
           </Suspense>
         </main>
 
+        <FooterLegal />
         <BottomNav />
         <FirstVisitOnboarding />
         <PwaInstallBanner />
         <BackgroundMusicPlayer />
         <AssetDrawer open={assetsOpen} onClose={() => setAssetsOpen(false)} />
-
-        <footer className="hidden border-t border-white/5 py-4 text-center text-[10px] text-zinc-600 md:block">
-          <a href={LINKS.github} className="hover:text-zinc-400" target="_blank" rel="noreferrer">
-            GitHub
-          </a>
-          {' · '}
-          MultiversX mainnet
-        </footer>
       </div>
     </ErrorBoundary>
   )

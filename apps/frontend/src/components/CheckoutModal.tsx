@@ -1,10 +1,6 @@
 /**
- * Checkout packs — deux rails clairs :
- * 1) Crypto direct (EGLD / $TRO) via xPortal
- * 2) Fiat on-ramp (carte / SEPA EUR-RON) → gateway régulé (Stripe / Paybox / FC)
- *    puis mint pack on-chain après webhook (ops Access API)
- *
- * LIA n’est PAS dans ce flux : agent analytique + paper uniquement.
+ * Checkout packs — Crypto (wallet) | Fiat (wallet ou guest receive id).
+ * LIA hors flux (analytique / paper uniquement).
  */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -21,6 +17,7 @@ import {
   type PayMethod,
 } from '../lib/payments'
 import AccessTermsModal from './AccessTermsModal'
+import { generateGuestReceiveId, loadGuestReceiveId, saveGuestReceiveId } from './LoginModal'
 
 export type CheckoutRail = 'crypto' | 'fiat' | null
 
@@ -28,9 +25,7 @@ type Props = {
   open: boolean
   packId: PackId
   onClose: () => void
-  /** Called when fiat redirect starts or crypto TX is initiated */
   onStarted?: (rail: 'crypto' | 'fiat') => void
-  /** Device preview only — never claim purchase */
   onPreview?: (id: PackId) => void
 }
 
@@ -53,45 +48,55 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
   const [termsOpen, setTermsOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
+  const [guestId, setGuestId] = useState<string | null>(() => loadGuestReceiveId())
   const methods = availablePayMethods().filter(m => m !== 'paper')
   const hasFiat = methods.length > 0
   const mintLive = canBuyAgent()
+  const hasErd1 = connected && !!address?.startsWith('erd1')
 
   if (!open || !pack) return null
 
-  const needWallet = () => {
-    if (!connected || !address?.startsWith('erd1')) {
-      setMsg('Connecte xPortal (erd1) pour continuer.')
-      requestOpenConnect()
-      return false
+  const ensureGuestId = () => {
+    let id = guestId || loadGuestReceiveId()
+    if (!id) {
+      id = generateGuestReceiveId()
+      saveGuestReceiveId(id, { packId: pack.id, purpose: 'fiat_pack_pending' })
+      setGuestId(id)
     }
-    return true
+    return id
   }
 
   const launchFiat = async () => {
-    if (!needWallet() || !address) return
     if (!hasFiat) {
       setMsg('Rail fiat non configuré (Stripe / Paybox / Access API).')
       return
     }
     const method = methods.includes(fiatMethod) ? fiatMethod : methods[0]
+    const buyer = hasErd1 ? address! : ensureGuestId()
     setBusy(true)
-    setMsg(method === 'stripe' ? 'Redirection Stripe…' : 'Redirection Paybox / e-Transactions…')
+    setMsg(
+      hasErd1
+        ? method === 'stripe'
+          ? 'Redirection Stripe…'
+          : 'Redirection Paybox / e-Transactions…'
+        : `Paiement lié à l’ID ${buyer} — claim erd1 après confirmation…`,
+    )
     saveIntent({
       packId: pack.id,
       provider: method,
       amount: pack.priceEur.list,
       currency: 'EUR',
-      address,
+      address: hasErd1 ? address : undefined,
+      guestReceiveId: hasErd1 ? undefined : buyer,
       kind: 'fiat_checkout',
       rail: 'fiat',
-      note: 'Mint on-chain après webhook Access API — pas LIA broker',
+      note: 'Mint après webhook — pas LIA broker',
     })
     try {
       await startPackPayment({
         method,
         packId: pack.id,
-        buyerAddress: address,
+        buyerAddress: hasErd1 ? address! : `guest:${buyer}`,
         amountEur: pack.priceEur.list,
       })
       onStarted?.('fiat')
@@ -103,7 +108,11 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
   }
 
   const launchCrypto = async () => {
-    if (!needWallet() || !address) return
+    if (!hasErd1) {
+      setMsg('Le rail crypto exige xPortal / erd1.')
+      requestOpenConnect()
+      return
+    }
     setBusy(true)
     saveIntent({
       packId: pack.id,
@@ -115,14 +124,12 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
     })
     if (!mintLive) {
       setMsg(
-        `Mint pack on-chain bientôt. Prix catalogue : ${pack.priceEgld.list} EGLD. Tu peux charger de l’EGLD via MoonPay puis revenir.`,
+        `Mint pack on-chain bientôt. Prix : ${pack.priceEgld.list} EGLD. MoonPay possible pour recharger.`,
       )
       setBusy(false)
       onStarted?.('crypto')
       return
     }
-    // SC live : ouvrir marketplace agents / tx builder (route dédiée)
-    setMsg('Ouverture du flux mint on-chain…')
     window.location.hash = `#/agents?mint=${pack.id}`
     onStarted?.('crypto')
     setBusy(false)
@@ -167,11 +174,10 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
 
         <p className="text-[11px] text-zinc-500 leading-relaxed border border-white/10 rounded-xl px-3 py-2">
           Produit d’accès numérique limité — <strong className="text-zinc-300">pas un fond</strong>{' '}
-          d’investissement. LIA reste un agent <strong className="text-zinc-300">analytique / paper</strong>{' '}
-          : aucun mandat de gestion ni compte titres broker dans cette dApp.
+          d’investissement. LIA = <strong className="text-zinc-300">analytique / paper</strong> uniquement.
+          Fiat = prestataires tiers régulés.
         </p>
 
-        {/* Rail selection */}
         <div className="space-y-2">
           <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-tech">Choisir le rail</p>
 
@@ -189,9 +195,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
           >
             <p className="text-sm font-semibold text-white">1 · Crypto direct</p>
             <p className="text-[12px] text-zinc-400 mt-1">
-              Payer en <strong className="text-zinc-200">EGLD</strong> (ou $TRO si pair dispo) via{' '}
-              <strong className="text-zinc-200">xPortal</strong>. Mint NFT pack on-chain quand le SC
-              agents est LIVE.
+              EGLD via <strong className="text-zinc-200">xPortal</strong> (wallet requis).
             </p>
             <p className="text-[11px] text-cyan-300/90 mt-1.5 mono">
               {pack.priceEgld.list} EGLD · mint {mintLive ? 'ouvert' : 'bientôt'}
@@ -203,6 +207,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
             onClick={() => {
               setRail('fiat')
               setMsg('')
+              if (!hasErd1) ensureGuestId()
             }}
             className={`w-full text-left rounded-2xl border p-3 transition active:scale-[0.99] ${
               rail === 'fiat'
@@ -212,12 +217,13 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
           >
             <p className="text-sm font-semibold text-white">2 · Fiat / FC rail</p>
             <p className="text-[12px] text-zinc-400 mt-1">
-              Carte ou virement <strong className="text-zinc-200">SEPA (EUR / RON)</strong> via gateway
-              régulé (Stripe, Paybox, ou partenaire FC / broker). Après confirmation webhook → mint
-              pack MultiversX sur ton erd1.
+              Carte / SEPA via gateway régulé. Sans wallet :{' '}
+              <strong className="text-zinc-200">ID réception temporaire</strong> → mint après claim
+              erd1.
             </p>
             <p className="text-[11px] text-violet-300/90 mt-1.5">
-              {pack.priceEur.list} € · {hasFiat ? 'gateway dispo' : 'config secrets / Access API'}
+              {pack.priceEur.list} € · {hasFiat ? 'gateway dispo' : 'config ops'}
+              {!hasErd1 && guestId ? ` · guest ${guestId.slice(0, 18)}…` : ''}
             </p>
           </button>
         </div>
@@ -241,13 +247,21 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
           </div>
         )}
 
-        {rail === 'crypto' && isMoonPayConfigured() && (
+        {rail === 'fiat' && !hasErd1 && (
+          <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 px-3 py-2 text-[11px] text-amber-100/90 space-y-1">
+            <p>Pas de wallet connecté — un ID temporaire sera attaché au paiement.</p>
+            <button type="button" className="underline text-cyan-300" onClick={() => requestOpenConnect()}>
+              Ou connecter xPortal / accès simplifié
+            </button>
+          </div>
+        )}
+
+        {rail === 'crypto' && isMoonPayConfigured() && hasErd1 && (
           <button
             type="button"
-            className="w-full text-left text-[12px] text-zinc-400 underline-offset-2 hover:text-zinc-200"
+            className="w-full text-left text-[12px] text-zinc-400 hover:text-zinc-200"
             disabled={busy}
             onClick={async () => {
-              if (!needWallet()) return
               setBusy(true)
               const r = await startMoonPayEgld({
                 buyerAddress: address || undefined,
@@ -255,10 +269,10 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
               })
               setBusy(false)
               if (!r.ok) setMsg(r.error || 'MoonPay indisponible')
-              else setMsg('MoonPay ouvert — recharge EGLD puis reviens pour le mint.')
+              else setMsg('MoonPay ouvert — recharge EGLD puis reviens.')
             }}
           >
-            Besoin d’EGLD ? On-ramp MoonPay (carte → EGLD) ↗
+            Besoin d’EGLD ? MoonPay ↗
           </button>
         )}
 
@@ -266,11 +280,8 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
           <button
             type="button"
             className="btn-primary w-full text-sm"
-            disabled={busy}
-            onClick={() => {
-              if (!needWallet()) return
-              setTermsOpen(true)
-            }}
+            disabled={busy || (rail === 'crypto' && !hasErd1)}
+            onClick={() => setTermsOpen(true)}
           >
             {busy
               ? '…'
@@ -287,20 +298,22 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
               type="button"
               className="text-amber-200/90 underline"
               onClick={() => {
-                if (!needWallet()) return
+                if (!hasErd1) {
+                  setMsg('Connecte un wallet pour lier l’aperçu.')
+                  requestOpenConnect()
+                  return
+                }
                 onPreview?.(pack.id)
                 onClose()
               }}
             >
-              aperçu appareil (0 € · pas un achat · pas de NFT)
+              aperçu appareil (0 € · pas un achat)
             </button>
           </p>
           <p className="text-[10px] text-zinc-600">
             <Link to="/legal" className="underline hover:text-zinc-400" onClick={onClose}>
               Mentions légales
             </Link>
-            {' · '}
-            Webhook mint = ops Access API — hors LIA trading.
           </p>
         </div>
 
