@@ -1,4 +1,4 @@
-/** Packs IA — libellés clairs, sans « paper ». */
+/** Packs IA — Pulse complet vs Yield/Sentinel limités. */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
@@ -40,14 +40,9 @@ export default function Agents() {
           </span>
         </div>
         <p className="section-lead">
-          Trois salles. Floor 10 EGLD. {t('packs.disclaimer')}
+          <strong className="text-emerald-300/90">Pulse = pack complet</strong>. Yield et Sentinel sont{' '}
+          <strong className="text-zinc-300">limités</strong> (DeFi / guard). Floor 10 EGLD. {t('packs.disclaimer')}
         </p>
-        {!mintLive && (
-          <p className="text-[12px] text-zinc-400 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-            Le mint on-chain arrive ensuite. Tu peux déjà explorer les salles après activation sur cet
-            appareil, ou suivre le Marketplace pour les NFT agents listés.
-          </p>
-        )}
       </header>
 
       <PackProductDisclaimer />
@@ -59,22 +54,73 @@ export default function Agents() {
             key={p.id}
             type="button"
             onClick={() => setSelected(p.id)}
-            className="card text-left card-play transition active:scale-[0.98] hover:border-violet-400/30"
+            className={`card text-left card-play transition active:scale-[0.98] hover:border-violet-400/30 border ${
+              p.borderClass || 'border-white/10'
+            } ${selected === p.id ? 'ring-1 ring-violet-400/40' : ''}`}
           >
-            <p className="text-[15px] font-semibold text-white">
-              {p.icon} {p.name}
+            <div className="flex items-center justify-between gap-1">
+              <p className="text-[15px] font-semibold text-white">
+                {p.icon} {p.name}
+              </p>
+              <span
+                className={`text-[9px] font-bold uppercase tracking-wide rounded-full px-1.5 py-0.5 border ${
+                  p.tier === 'full'
+                    ? 'border-emerald-400/50 text-emerald-300 bg-emerald-500/15'
+                    : 'border-white/15 text-zinc-400 bg-white/5'
+                }`}
+              >
+                {p.tierLabel}
+              </span>
+            </div>
+            <p className="text-[12px] text-zinc-400 mt-1.5 leading-snug">{p.tagline}</p>
+            <p className="mt-3 text-xl text-white tabular-nums">{p.priceEgld?.list ?? 10} EGLD</p>
+            <p className="text-[10px] text-zinc-500 mt-1">
+              Signaux ×{p.signalIntensity} · {p.features.actionsPerWeek}
             </p>
-            <p className="text-[12px] text-zinc-500 mt-1 line-clamp-2">{p.tagline}</p>
-            <p className="mt-3 text-xl text-white">{p.priceEgld?.list ?? 10} EGLD</p>
           </button>
         ))}
       </div>
 
       {active && (
-        <section className="card space-y-3">
-          <h2 className="text-sm font-semibold text-white">
-            {active.icon} {active.name}
-          </h2>
+        <section className={`card space-y-4 border ${active.borderClass}`}>
+          <div>
+            <h2 className="text-sm font-semibold text-white">
+              {active.icon} {active.name}{' '}
+              <span className="text-[10px] text-zinc-400 font-normal">{active.tierLabel}</span>
+            </h2>
+            <p className="text-[13px] text-zinc-400 mt-1">{active.activity}</p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-3 text-[12px]">
+            <div>
+              <p className="text-[10px] uppercase text-zinc-500 mb-1">Inclus</p>
+              <ul className="space-y-1 text-zinc-300">
+                {active.entitlements.map(e => (
+                  <li key={e}>✓ {e}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase text-zinc-500 mb-1">Non inclus / limites</p>
+              <ul className="space-y-1 text-zinc-500">
+                {[...active.notIncluded, ...(active.limits || [])].map(e => (
+                  <li key={e}>— {e}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            {active.strategies.map(s => (
+              <span
+                key={s}
+                className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] mono text-zinc-400"
+              >
+                {s}
+              </span>
+            ))}
+          </div>
+
           <PackCheckout
             packId={active.id}
             onPaperDone={id => setTheater(id)}
@@ -88,12 +134,24 @@ export default function Agents() {
 
       {theaterPack && <PackOpenTheater pack={theaterPack} open onClose={() => setTheater(null)} />}
 
+      <div className="rounded-xl border border-white/10 bg-white/[0.02] px-3 py-3 text-[11px] text-zinc-500 space-y-1">
+        <p className="font-medium text-zinc-400">Rappel flux</p>
+        <p>1. Choisir pack → 2. Wallet erd1 → 3. Payer ou aperçu appareil → 4. Salle / CC selon tier</p>
+        <p>Pulse débloque hub CC + TCA + LIA full. Yield / Sentinel = salle dédiée seulement.</p>
+      </div>
+
       <div className="flex flex-wrap gap-3 text-[12px]">
         <Link to="/marketplace" className="text-cyan-400 hover:underline">
           Marketplace NFT →
         </Link>
         <Link to="/command-center" className="text-zinc-400 hover:underline">
           Command Center →
+        </Link>
+        <Link to="/tca" className="text-zinc-400 hover:underline">
+          TCA (Pulse) →
+        </Link>
+        <Link to="/lia" className="text-zinc-400 hover:underline">
+          LIA Hub →
         </Link>
       </div>
     </div>
