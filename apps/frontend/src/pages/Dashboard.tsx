@@ -1,6 +1,5 @@
 /**
- * Accueil — salle 3D (menu exposé) + CTA ATC/TCA + modules.
- * Navigation type musée : clique une œuvre-menu pour entrer.
+ * Accueil — salle 3D menu · pas de CTA ATC/TCA gris.
  */
 import { Link } from 'react-router-dom'
 import { MAINNET_ADDRESSES } from '../config/contracts'
@@ -49,24 +48,22 @@ export default function Dashboard() {
         <div className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <p className="text-[10px] uppercase tracking-[0.22em] text-violet-300/80 font-semibold">
-              xArtists · salle d&apos;accueil
+              {t('home.kicker')}
             </p>
             <h1 className="font-tech text-2xl font-bold tracking-tight text-white title-glow sm:text-3xl">
-              Entre dans les pièces
+              {t('home.title')}
             </h1>
-            <p className="mt-1 text-sm text-zinc-400">
-              Comme au musée : chaque panneau est une porte. Clique pour changer de salle.
-            </p>
+            <p className="mt-1 text-sm text-zinc-400">{t('home.lead')}</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link to="/tca" className="btn-primary text-sm active:scale-[0.98]">
-              ATC / TCA
-            </Link>
             {!connected && (
-              <button type="button" className="btn-secondary text-sm" onClick={() => requestOpenConnect()}>
+              <button type="button" className="btn-primary text-sm" onClick={() => requestOpenConnect()}>
                 {t('common.connect')}
               </button>
             )}
+            <Link to="/command-center" className="btn-secondary text-sm">
+              {t('nav.command')}
+            </Link>
           </div>
         </div>
         <HomeMenuHall />
@@ -75,7 +72,7 @@ export default function Dashboard() {
       <RceStrip compact />
 
       <section className="space-y-3">
-        <p className="section-label">Plan du musée (liste)</p>
+        <p className="section-label">{t('home.plan')}</p>
         <div className="grid gap-3 sm:grid-cols-2">
           {core.map(m => {
             const st = badgeStatus(m)
@@ -106,9 +103,9 @@ export default function Dashboard() {
       </section>
 
       <section className="space-y-3">
-        <p className="section-label">Aussi</p>
+        <p className="section-label">{t('home.also')}</p>
         <div className="flex flex-wrap gap-2">
-          {SECONDARY_MODULES.map(m => (
+          {SECONDARY_MODULES.filter(m => m.id !== 'tca' && m.path !== '/tca').map(m => (
             <Link
               key={m.id}
               to={m.path}
@@ -121,7 +118,7 @@ export default function Dashboard() {
       </section>
 
       <section className="rounded-2xl border border-white/10 bg-black/30 p-4 text-[11px] text-zinc-500 space-y-1">
-        <p className="font-medium text-zinc-300">Contrats mainnet</p>
+        <p className="font-medium text-zinc-300">{t('home.contracts')}</p>
         <p className="mono truncate">market {MAINNET_ADDRESSES.nft_marketplace}</p>
         <p className="mono truncate">stake {MAINNET_ADDRESSES.tro_staking}</p>
         <p className="mono truncate">slot {MAINNET_ADDRESSES.slot_casino}</p>
