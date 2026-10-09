@@ -1,1 +1,1 @@
-force-rebuild-2026-10-10-ui-polish-live-badge-nav
+force-rebuild-2026-10-10-csp-security-hardening

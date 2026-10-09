@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 /**
- * News worker — sources gratuites sans clé CryptoCompare.
+ * News worker — sources publiques · textes assainis (pas de HTML/script).
  * → apps/frontend/public/data/live_news.json
  *
  *   node services/news-worker/fetch_news.mjs
+ *
+ * Aucun secret / token dans ce script ni dans le JSON de sortie.
  */
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -11,6 +13,42 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const OUT = join(__dirname, '../../apps/frontend/public/data/live_news.json')
+
+/** Strip tags, control chars, truncate — anti XSS dans le JSON statique */
+function sanitizeText(input, max = 160) {
+  let s = String(input ?? '')
+  s = s.replace(/<[^>]*>/g, '')
+  s = s.replace(/[\u0000-\u001F\u007F]/g, ' ')
+  s = s.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&amp;/gi, '&')
+  s = s.replace(/&quot;/gi, '"').replace(/&#39;/gi, "'")
+  s = s.replace(/javascript\s*:/gi, '')
+  s = s.replace(/on\w+\s*=/gi, '')
+  s = s.replace(/\s+/g, ' ').trim()
+  if (s.length > max) s = s.slice(0, max - 1) + '…'
+  return s
+}
+
+function sanitizeUrl(input) {
+  const s = String(input ?? '').trim()
+  if (!s) return undefined
+  try {
+    const u = new URL(s)
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return undefined
+    return u.toString().slice(0, 400)
+  } catch {
+    return undefined
+  }
+}
+
+function sanitizeItem(raw) {
+  return {
+    id: sanitizeText(raw.id || 'item', 64).replace(/\s/g, '-'),
+    timestamp: sanitizeText(raw.timestamp || '', 8),
+    source: sanitizeText(raw.source || 'News', 16),
+    title: sanitizeText(raw.title || '', 160),
+    ...(sanitizeUrl(raw.link) ? { link: sanitizeUrl(raw.link) } : {}),
+  }
+}
 
 const MVX_SEED = [
   {
@@ -41,7 +79,7 @@ const MVX_SEED = [
     title: 'Warps v3 — standard dApp & UX',
     link: 'https://multiversx.com/blog',
   },
-]
+].map(sanitizeItem)
 
 function hhmm(d = new Date()) {
   return d.toISOString().slice(11, 16)
@@ -54,13 +92,13 @@ async function fetchEgld() {
     const j = await r.json()
     const price = Number(j.price)
     if (!Number.isFinite(price)) return null
-    return {
+    return sanitizeItem({
       id: `egld-${Date.now()}`,
       timestamp: hhmm(),
       source: 'EGLD',
       title: `Cotation publique · $${price.toFixed(2)} (API MultiversX economics)`,
       link: 'https://explorer.multiversx.com',
-    }
+    })
   } catch {
     return null
   }
@@ -77,13 +115,16 @@ async function fetchReddit(sub = 'MultiversX', limit = 10) {
   return children.map((c, i) => {
     const d = c.data || {}
     const ts = d.created_utc ? new Date(d.created_utc * 1000) : new Date()
-    return {
+    const link = d.url?.startsWith('http')
+      ? d.url
+      : `https://reddit.com${d.permalink || ''}`
+    return sanitizeItem({
       id: `rd-${d.id || i}`,
       timestamp: hhmm(ts),
-      source: `r/${sub}`.slice(0, 14),
-      title: String(d.title || '').slice(0, 140),
-      link: d.url?.startsWith('http') ? d.url : `https://reddit.com${d.permalink || ''}`,
-    }
+      source: `r/${sub}`,
+      title: d.title || '',
+      link,
+    })
   })
 }
 
@@ -95,13 +136,13 @@ async function fetchRss2Json(rssUrl, sourceLabel, limit = 8) {
   if (j.status !== 'ok' || !Array.isArray(j.items)) return []
   return j.items.slice(0, limit).map((n, i) => {
     const ts = n.pubDate ? new Date(n.pubDate) : new Date()
-    return {
+    return sanitizeItem({
       id: `rss-${sourceLabel}-${i}-${ts.getTime()}`,
       timestamp: hhmm(ts),
-      source: sourceLabel.slice(0, 14),
-      title: String(n.title || '').slice(0, 140),
-      link: String(n.link || n.guid || '').slice(0, 300),
-    }
+      source: sourceLabel,
+      title: n.title || '',
+      link: n.link || n.guid || '',
+    })
   })
 }
 
@@ -118,11 +159,7 @@ async function main() {
 
   try {
     items.push(
-      ...(await fetchRss2Json(
-        'https://cointelegraph.com/rss',
-        'CoinTelegraph',
-        6,
-      )),
+      ...(await fetchRss2Json('https://cointelegraph.com/rss', 'CoinTelegraph', 6)),
     )
   } catch (e) {
     console.warn('[news] cointelegraph rss', e.message)
@@ -156,7 +193,7 @@ async function main() {
   const payload = {
     version: 2,
     updatedAt: new Date().toISOString(),
-    note: 'services/news-worker — paper/éducatif, pas un conseil financier.',
+    note: 'services/news-worker — paper/éducatif, pas un conseil. Textes sanitizés.',
     items: unique.slice(0, 28),
   }
 
