@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-09T21:55:00.000Z",
-  "note": "Seed live — rafraîchir via node services/news-worker/fetch_news.mjs",
+  "updatedAt": "2026-10-09T22:45:00.000Z",
+  "note": "merge resilient — min 10 items; paper only.",
   "items": [
     {
       "id": "egld-seed",
-      "timestamp": "21:55",
+      "timestamp": "22:45",
       "source": "EGLD",
       "title": "Cotation publique via API MultiversX economics",
       "link": "https://explorer.multiversx.com"
@@ -58,6 +58,30 @@
       "source": "xPortal",
       "title": "Sessions wallet mobile stabilisées (multi-TX)",
       "link": "https://xportal.com"
+    },
+    {
+      "id": "news-net",
+      "timestamp": "07:55",
+      "source": "Network",
+      "title": "Finalité intra-shard ~600ms — rail agent-ready"
+    },
+    {
+      "id": "news-build",
+      "timestamp": "05:18",
+      "source": "Builders",
+      "title": "Sovereign chains & dApp hub en expansion"
+    },
+    {
+      "id": "news-stake",
+      "timestamp": "04:02",
+      "source": "Staking",
+      "title": "Validators 3200+ — recompute local, no screenshot trust"
+    },
+    {
+      "id": "news-xartists",
+      "timestamp": "02:50",
+      "source": "xArtists",
+      "title": "Command Center cyber deck · signaux paper LIA"
     }
   ]
 }
