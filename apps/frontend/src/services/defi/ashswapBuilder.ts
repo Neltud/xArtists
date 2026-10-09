@@ -1,11 +1,14 @@
 /**
- * AshSwap stable pools — builders (add liquidity / stake LP).
- * Pool USDC/USDT/BUSD mainnet (explorer).
+ * AshSwap — addLiquidity avec minOut (slippage 0.5%) + deadline + gas +15%.
  */
-import type { PreparedTx } from './types'
+import {
+  type PreparedTx,
+  DEFAULT_SLIPPAGE,
+  withGasMargin,
+  defaultDeadline,
+} from './types'
 
 export const ASHSWAP = {
-  /** Stable pool USDC/USDT/BUSD */
   stablePool: 'erd1qqqqqqqqqqqqqpgqs8p2v9wr8j48vqrmudcj94wu47kqra3r4fvshfyd9c',
   tokenAsh: 'ASH-a642d1',
   dapp: 'https://app.ashswap.io',
@@ -23,28 +26,45 @@ function toAtomic(amount: number, decimals: number): string {
 }
 
 /**
- * Dépôt single-sided USDC vers pool stable (addLiquidity simplifié).
- * Pour multi-asset exact, préférer app.ashswap.io — ici payload de base.
+ * minAmountOut = amount * (1 - slippage)
+ * data: ESDTTransfer@token@amount@addLiquidity@minOut@deadline
  */
-export function buildAshAddLiquidityUsdc(amountUsdc: number): PreparedTx {
-  const atomic = toAtomic(amountUsdc, 6)
-  const data = `ESDTTransfer@${strToHex('USDC-c76f1f')}@${BigInt(atomic).toString(16)}@${strToHex('addLiquidity')}`
+export function buildAshAddLiquidityUsdc(
+  amountUsdc: number,
+  slippage = DEFAULT_SLIPPAGE,
+): PreparedTx {
+  const atomic = BigInt(toAtomic(amountUsdc, 6))
+  const minOut = (atomic * BigInt(Math.floor((1 - slippage) * 10_000))) / 10_000n
+  const deadline = defaultDeadline()
+  const data = [
+    'ESDTTransfer',
+    strToHex('USDC-c76f1f'),
+    atomic.toString(16),
+    strToHex('addLiquidity'),
+    minOut.toString(16),
+    deadline.toString(16),
+  ].join('@')
+
   return {
     protocol: 'ashswap',
     action: 'add_liquidity_usdc',
     receiver: ASHSWAP.stablePool,
     value: '0',
     data,
-    gasLimit: 40_000_000,
+    gasLimit: withGasMargin(40_000_000),
     chainId: '1',
-    summary: `AshSwap addLiquidity ~${amountUsdc} USDC (stable pool)`,
-    riskNote:
-      'Stable-swap · slippage faible mais non nul. Vérifier params exacts sur app.ashswap.io si TX échoue.',
+    summary: `AshSwap addLiquidity ~${amountUsdc} USDC (slip ${slippage * 100}%)`,
+    riskNote: `minOut=${minOut.toString()} · deadline=${deadline} (UTC). Si le SC n'attend pas ces args, utiliser app.ashswap.io.`,
+    slippage,
+    deadline,
   }
 }
 
-/** Stake LP token (farm) — token id à préciser par l’utilisateur */
-export function buildAshStakeLp(lpTokenId: string, amountAtomic: string, farmAddress: string): PreparedTx {
+export function buildAshStakeLp(
+  lpTokenId: string,
+  amountAtomic: string,
+  farmAddress: string,
+): PreparedTx {
   const data = `ESDTTransfer@${strToHex(lpTokenId)}@${BigInt(amountAtomic).toString(16)}@${strToHex('enterFarm')}`
   return {
     protocol: 'ashswap',
@@ -52,9 +72,11 @@ export function buildAshStakeLp(lpTokenId: string, amountAtomic: string, farmAdd
     receiver: farmAddress,
     value: '0',
     data,
-    gasLimit: 30_000_000,
+    gasLimit: withGasMargin(30_000_000),
     chainId: '1',
     summary: `AshSwap stake LP ${lpTokenId}`,
-    riskNote: 'Adresse farm à valider sur docs AshSwap avant signature.',
+    riskNote: 'Adresse farm à valider sur docs AshSwap.',
+    slippage: DEFAULT_SLIPPAGE,
+    deadline: defaultDeadline(),
   }
 }

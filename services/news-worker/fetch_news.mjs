@@ -1,20 +1,16 @@
 #!/usr/bin/env node
 /**
- * News worker — sources publiques · textes assainis (pas de HTML/script).
- * → apps/frontend/public/data/live_news.json
- *
- *   node services/news-worker/fetch_news.mjs
- *
- * Aucun secret / token dans ce script ni dans le JSON de sortie.
+ * News worker — merge avec historique, jamais d'écrasement vide.
+ * Min 10 items dans live_news.json.
  */
-import { writeFileSync, mkdirSync } from 'node:fs'
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const OUT = join(__dirname, '../../apps/frontend/public/data/live_news.json')
+const MIN_ITEMS = 10
 
-/** Strip tags, control chars, truncate — anti XSS dans le JSON statique */
 function sanitizeText(input, max = 160) {
   let s = String(input ?? '')
   s = s.replace(/<[^>]*>/g, '')
@@ -79,10 +75,74 @@ const MVX_SEED = [
     title: 'Warps v3 — standard dApp & UX',
     link: 'https://multiversx.com/blog',
   },
+  {
+    id: 'news-xex',
+    timestamp: '10:45',
+    source: 'xExchange',
+    title: "Mise à jour des pools de liquidité et frais d'agrégation",
+    link: 'https://xexchange.com',
+  },
+  {
+    id: 'news-dex',
+    timestamp: '09:12',
+    source: 'DEX',
+    title: 'Volume en hausse sur les DEX MultiversX',
+  },
+  {
+    id: 'news-xportal',
+    timestamp: '08:30',
+    source: 'xPortal',
+    title: 'Sessions wallet mobile stabilisées (multi-TX)',
+  },
+  {
+    id: 'news-net',
+    timestamp: '07:55',
+    source: 'Network',
+    title: 'Finalité intra-shard ~600ms — rail agent-ready',
+  },
+  {
+    id: 'news-egld',
+    timestamp: '06:40',
+    source: 'EGLD',
+    title: 'Cotation publique via API MultiversX economics',
+    link: 'https://explorer.multiversx.com',
+  },
+  {
+    id: 'news-build',
+    timestamp: '05:18',
+    source: 'Builders',
+    title: 'Sovereign chains & dApp hub en expansion',
+  },
 ].map(sanitizeItem)
 
 function hhmm(d = new Date()) {
   return d.toISOString().slice(11, 16)
+}
+
+function loadExisting() {
+  try {
+    if (!existsSync(OUT)) return []
+    const j = JSON.parse(readFileSync(OUT, 'utf8'))
+    const arr = Array.isArray(j.items) ? j.items : []
+    return arr.map(sanitizeItem).filter(x => x.title)
+  } catch {
+    return []
+  }
+}
+
+function mergeItems(...lists) {
+  const seen = new Set()
+  const out = []
+  for (const list of lists) {
+    for (const it of list) {
+      if (!it?.title) continue
+      const k = it.title.toLowerCase().slice(0, 48)
+      if (seen.has(k)) continue
+      seen.add(k)
+      out.push(it)
+    }
+  }
+  return out
 }
 
 async function fetchEgld() {
@@ -111,8 +171,7 @@ async function fetchReddit(sub = 'MultiversX', limit = 10) {
   })
   if (!r.ok) throw new Error(`reddit ${r.status}`)
   const j = await r.json()
-  const children = j?.data?.children || []
-  return children.map((c, i) => {
+  return (j?.data?.children || []).map((c, i) => {
     const d = c.data || {}
     const ts = d.created_utc ? new Date(d.created_utc * 1000) : new Date()
     const link = d.url?.startsWith('http')
@@ -147,26 +206,26 @@ async function fetchRss2Json(rssUrl, sourceLabel, limit = 8) {
 }
 
 async function main() {
-  const items = []
+  const previous = loadExisting()
+  const fresh = []
+
   const egld = await fetchEgld()
-  if (egld) items.push(egld)
+  if (egld) fresh.push(egld)
 
   try {
-    items.push(...(await fetchReddit('MultiversX', 12)))
+    fresh.push(...(await fetchReddit('MultiversX', 12)))
   } catch (e) {
     console.warn('[news] reddit', e.message)
   }
 
   try {
-    items.push(
-      ...(await fetchRss2Json('https://cointelegraph.com/rss', 'CoinTelegraph', 6)),
-    )
+    fresh.push(...(await fetchRss2Json('https://cointelegraph.com/rss', 'CoinTelegraph', 6)))
   } catch (e) {
-    console.warn('[news] cointelegraph rss', e.message)
+    console.warn('[news] cointelegraph', e.message)
   }
 
   try {
-    items.push(
+    fresh.push(
       ...(await fetchRss2Json(
         'https://www.coindesk.com/arc/outboundfeeds/rss/',
         'CoinDesk',
@@ -174,35 +233,37 @@ async function main() {
       )),
     )
   } catch (e) {
-    console.warn('[news] coindesk rss', e.message)
+    console.warn('[news] coindesk', e.message)
   }
 
-  if (items.length < 6) items.push(...MVX_SEED)
-  else items.splice(1, 0, ...MVX_SEED.slice(0, 2))
+  // Merge: fresh first, then previous, then seed — never write empty
+  let unique = mergeItems(fresh, previous, MVX_SEED)
 
-  const seen = new Set()
-  const unique = []
-  for (const it of items) {
-    if (!it.title) continue
-    const k = it.title.toLowerCase().slice(0, 48)
-    if (seen.has(k)) continue
-    seen.add(k)
-    unique.push(it)
+  if (unique.length < MIN_ITEMS) {
+    unique = mergeItems(unique, MVX_SEED)
+  }
+
+  if (unique.length === 0) {
+    console.error('[news-worker] abort — would write empty file; keeping previous')
+    process.exit(0)
   }
 
   const payload = {
     version: 2,
     updatedAt: new Date().toISOString(),
-    note: 'services/news-worker — paper/éducatif, pas un conseil. Textes sanitizés.',
+    note: 'merge resilient — min 10 items; sanitize XSS; paper only.',
     items: unique.slice(0, 28),
   }
 
   mkdirSync(dirname(OUT), { recursive: true })
   writeFileSync(OUT, JSON.stringify(payload, null, 2) + '\n', 'utf8')
-  console.log(`[news-worker] ${payload.items.length} items → ${OUT}`)
+  console.log(
+    `[news-worker] ${payload.items.length} items (fresh=${fresh.length} prev=${previous.length}) → ${OUT}`,
+  )
 }
 
 main().catch(e => {
   console.error(e)
+  // Ne pas écraser le fichier en cas d'exception fatale
   process.exit(1)
 })

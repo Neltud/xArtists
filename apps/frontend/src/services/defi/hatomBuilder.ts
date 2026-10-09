@@ -1,8 +1,14 @@
 /**
- * Hatom Lending — builders TX MultiversX (mainnet addresses docs.hatom.com).
- * mint / redeem / borrow / repay — validation manuelle xPortal.
+ * Hatom Lending — builders TX + gas +15% · slippage/deadline métadata.
  */
-import { type PreparedTx, HF_MIN_SAFE, computeHealthFactor } from './types'
+import {
+  type PreparedTx,
+  HF_MIN_SAFE,
+  DEFAULT_SLIPPAGE,
+  computeHealthFactor,
+  withGasMargin,
+  defaultDeadline,
+} from './types'
 
 export const HATOM = {
   controller: 'erd1qqqqqqqqqqqqqpgqxp28qpnv7rfcmk6qrgxgw5uf2fnp84ar78ssqdk6hr',
@@ -40,45 +46,43 @@ function strToHex(s: string): string {
     .join('')
 }
 
-/** Supply EGLD → mint HEGLD (payable mint) */
+function meta(slippage = DEFAULT_SLIPPAGE) {
+  return { slippage, deadline: defaultDeadline() }
+}
+
 export function buildHatomSupplyEgld(amountEgld: number): PreparedTx {
-  const value = toAtomic(amountEgld, 18)
   return {
     protocol: 'hatom',
     action: 'supply_egld',
     receiver: HATOM.markets.EGLD.address,
-    value,
+    value: toAtomic(amountEgld, 18),
     data: 'mint',
-    gasLimit: 20_000_000,
+    gasLimit: withGasMargin(20_000_000),
     chainId: '1',
     summary: `Hatom supply ${amountEgld} EGLD → HEGLD`,
-    riskNote: `Health Factor min recommandé ${HF_MIN_SAFE} si emprunt actif.`,
+    riskNote: `HF min ${HF_MIN_SAFE} si emprunt. Slippage meta ${DEFAULT_SLIPPAGE * 100}%.`,
+    ...meta(),
   }
 }
 
-/** Supply ESDT (USDC/USDT) via ESDTTransfer@token@amount@mint */
-export function buildHatomSupplyEsdt(
-  market: 'USDC' | 'USDT',
-  amount: number,
-): PreparedTx {
+export function buildHatomSupplyEsdt(market: 'USDC' | 'USDT', amount: number): PreparedTx {
   const m = HATOM.markets[market]
-  const token = m.token
   const atomic = toAtomic(amount, m.decimals)
-  const data = `ESDTTransfer@${strToHex(token)}@${BigInt(atomic).toString(16)}@${strToHex('mint')}`
+  const data = `ESDTTransfer@${strToHex(m.token)}@${BigInt(atomic).toString(16)}@${strToHex('mint')}`
   return {
     protocol: 'hatom',
     action: `supply_${market.toLowerCase()}`,
     receiver: m.address,
     value: '0',
     data,
-    gasLimit: 25_000_000,
+    gasLimit: withGasMargin(25_000_000),
     chainId: '1',
     summary: `Hatom supply ${amount} ${market} → ${m.hToken}`,
-    riskNote: `Vérifier solde ${token} avant signature xPortal.`,
+    riskNote: `Solde ${m.token} · slippage ${DEFAULT_SLIPPAGE * 100}%.`,
+    ...meta(),
   }
 }
 
-/** Withdraw / redeem underlying from hToken (redeem) */
 export function buildHatomWithdraw(
   market: 'EGLD' | 'USDC' | 'USDT',
   hTokenAmount: number,
@@ -93,13 +97,13 @@ export function buildHatomWithdraw(
     receiver: m.address,
     value: '0',
     data,
-    gasLimit: 25_000_000,
+    gasLimit: withGasMargin(25_000_000),
     chainId: '1',
     summary: `Hatom withdraw ${hTokenAmount} ${m.hToken}`,
+    ...meta(),
   }
 }
 
-/** Borrow underlying (borrow@amount) — requires collateral */
 export function buildHatomBorrow(
   market: 'EGLD' | 'USDC' | 'USDT',
   amount: number,
@@ -109,13 +113,13 @@ export function buildHatomBorrow(
   const decimals = market === 'EGLD' ? 18 : m.decimals
   const atomic = toAtomic(amount, decimals)
   const data = `borrow@${BigInt(atomic).toString(16)}`
-  let riskNote = `Emprunt risqué — HF min ${HF_MIN_SAFE}.`
+  let riskNote = `Emprunt — HF min ${HF_MIN_SAFE}.`
   if (position) {
     const hfAfter = computeHealthFactor({
       collateralUsd: position.collateralUsd,
       borrowUsd: position.borrowUsd + amount * (market === 'EGLD' ? 4 : 1),
     })
-    riskNote = `HF estimé après ≈ ${hfAfter >= 999 ? '∞' : hfAfter.toFixed(2)} (indicatif).`
+    riskNote = `HF estimé après ≈ ${hfAfter >= 999 ? '∞' : hfAfter.toFixed(2)}.`
   }
   return {
     protocol: 'hatom',
@@ -123,18 +127,15 @@ export function buildHatomBorrow(
     receiver: m.address,
     value: '0',
     data,
-    gasLimit: 30_000_000,
+    gasLimit: withGasMargin(30_000_000),
     chainId: '1',
     summary: `Hatom borrow ${amount} ${market}`,
     riskNote,
+    ...meta(),
   }
 }
 
-/** Repay ESDT debt */
-export function buildHatomRepay(
-  market: 'USDC' | 'USDT',
-  amount: number,
-): PreparedTx {
+export function buildHatomRepay(market: 'USDC' | 'USDT', amount: number): PreparedTx {
   const m = HATOM.markets[market]
   const atomic = toAtomic(amount, m.decimals)
   const data = `ESDTTransfer@${strToHex(m.token)}@${BigInt(atomic).toString(16)}@${strToHex('repayBorrow')}`
@@ -144,9 +145,10 @@ export function buildHatomRepay(
     receiver: m.address,
     value: '0',
     data,
-    gasLimit: 25_000_000,
+    gasLimit: withGasMargin(25_000_000),
     chainId: '1',
     summary: `Hatom repay ${amount} ${market}`,
+    ...meta(),
   }
 }
 
