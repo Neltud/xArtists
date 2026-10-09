@@ -1,39 +1,19 @@
 /**
- * Checkout packs —
- * - Stripe / Paybox = paiement réel (si configuré)
- * - Sinon = APERÇU appareil uniquement (JAMAIS présenté comme achat)
+ * Checkout packs — ouvre CheckoutModal (crypto | fiat FC rail).
+ * Aperçu appareil = jamais présenté comme achat.
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 import { useWallet } from '../context/WalletContext'
-import AccessTermsModal from './AccessTermsModal'
+import CheckoutModal from './CheckoutModal'
 import { canBuyAgent } from '../config/scStatus'
 import { markPackOwned } from '../lib/nftPacks'
 import LottieIcon from './LottieIcon'
-import {
-  availablePayMethods,
-  defaultPayMethod,
-  payMethodLabel,
-  startPackPayment,
-  stripeStatusHint,
-  payboxStatusHint,
-  type PayMethod,
-} from '../lib/payments'
+import { availablePayMethods } from '../lib/payments'
 
 const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
 const PACKS = AGENT_PACKS.filter(p => ONLY.includes(p.id)).slice(0, 3)
-
-function saveIntent(payload: Record<string, unknown>) {
-  try {
-    localStorage.setItem(
-      'xartists_access_checkout_intent',
-      JSON.stringify({ ...payload, ts: Date.now() }),
-    )
-  } catch {
-    /* */
-  }
-}
 
 export default function PackCheckout({
   packId: forcedId = null,
@@ -47,79 +27,45 @@ export default function PackCheckout({
   const { connected, address } = useWallet()
   const methods = availablePayMethods()
   const hasPaidRail = methods.some(m => m === 'stripe' || m === 'paybox')
-  const [method, setMethod] = useState<PayMethod>(() => defaultPayMethod())
   const [selected, setSelected] = useState<PackId | null>(
     forcedId && ONLY.includes(forcedId) ? forcedId : null,
   )
+  const [modalOpen, setModalOpen] = useState(false)
+  const [status, setStatus] = useState<'idle' | 'done'>('idle')
+  const [msg, setMsg] = useState('')
+
   useEffect(() => {
     if (forcedId && ONLY.includes(forcedId)) setSelected(forcedId)
     else if (forcedId === null) setSelected(null)
   }, [forcedId])
 
-  const [termsOpen, setTermsOpen] = useState(false)
-  const [status, setStatus] = useState<'idle' | 'terms' | 'redirect' | 'done'>('idle')
-  const [msg, setMsg] = useState('')
-  const [previewOnly, setPreviewOnly] = useState(false)
-
   const pack = PACKS.find(p => p.id === selected)
   const mintLive = canBuyAgent()
-  const isLocalPath = method === 'paper' || !hasPaidRail
 
-  const startBuy = (id: PackId) => {
-    if (!ONLY.includes(id)) return
-    setSelected(id)
-    setMsg('')
-    setPreviewOnly(false)
-    setStatus('idle')
-  }
-
-  const onAcceptTerms = async () => {
-    setTermsOpen(false)
-    if (!pack || !address) return
-
-    // --- Paiement réel uniquement Stripe / Paybox ---
-    if ((method === 'stripe' || method === 'paybox') && hasPaidRail) {
-      setStatus('redirect')
-      setMsg(method === 'stripe' ? 'Ouverture Stripe…' : 'Ouverture Paybox…')
-      saveIntent({
-        packId: pack.id,
-        provider: method,
-        amount: pack.priceEur.list,
-        currency: 'EUR',
-        address,
-        kind: 'paid_checkout',
-      })
-      try {
-        await startPackPayment({
-          method,
-          packId: pack.id,
-          buyerAddress: address,
-          amountEur: pack.priceEur.list,
-        })
-      } catch (e) {
-        setMsg(String(e))
-        setStatus('idle')
-      }
+  const onPreview = (id: PackId) => {
+    if (!address?.startsWith('erd1')) {
+      setMsg('Connecte ton wallet pour lier l’aperçu (sans paiement).')
       return
     }
-
-    // --- Aperçu local : PAS un achat ---
-    if (!previewOnly) {
-      setMsg('Choisis « Activer aperçu » — ce n’est pas un achat ni un NFT.')
-      setStatus('idle')
-      return
+    try {
+      localStorage.setItem(
+        'xartists_access_checkout_intent',
+        JSON.stringify({
+          packId: id,
+          provider: 'device_preview',
+          address,
+          kind: 'preview_not_purchase',
+          purchased: false,
+          ts: Date.now(),
+        }),
+      )
+    } catch {
+      /* */
     }
-    saveIntent({
-      packId: pack.id,
-      provider: 'device_preview',
-      address,
-      kind: 'preview_not_purchase',
-      purchased: false,
-    })
-    markPackOwned(pack.id)
+    markPackOwned(id)
     setStatus('done')
-    setMsg(`Aperçu « ${pack.name} » activé sur cet appareil uniquement — aucun paiement, aucun NFT mint.`)
-    onPaperDone?.(pack.id)
+    setMsg(`Aperçu « ${id} » sur cet appareil — pas un achat, pas de NFT mint.`)
+    onPaperDone?.(id)
   }
 
   return (
@@ -130,7 +76,7 @@ export default function PackCheckout({
             <button
               key={p.id}
               type="button"
-              onClick={() => startBuy(p.id)}
+              onClick={() => setSelected(p.id)}
               className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-zinc-200 hover:bg-white/[0.08] active:scale-[0.98]"
             >
               {p.icon} {p.name}
@@ -141,90 +87,40 @@ export default function PackCheckout({
 
       {selected && pack && (
         <>
-          {hasPaidRail && (
-            <div className="flex flex-wrap gap-2 items-center">
-              {methods
-                .filter(m => m !== 'paper')
-                .map(m => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => {
-                      setMethod(m)
-                      setPreviewOnly(false)
-                    }}
-                    className={`rounded-lg px-3 py-1.5 text-xs border transition active:scale-[0.98] ${
-                      method === m && !previewOnly
-                        ? 'border-violet-400/40 bg-violet-500/15 text-violet-100'
-                        : 'border-white/10 text-zinc-500'
-                    }`}
-                  >
-                    {payMethodLabel(m)}
-                  </button>
-                ))}
-              {onClear && (
-                <button type="button" className="text-xs text-zinc-500 underline" onClick={onClear}>
-                  Changer
-                </button>
-              )}
-            </div>
-          )}
-
-          {hasPaidRail && method !== 'paper' && !previewOnly && (
-            <>
-              <p className="text-[11px] text-zinc-500">
-                {method === 'stripe' && stripeStatusHint()}
-                {method === 'paybox' && payboxStatusHint()}
-              </p>
-              <button
-                type="button"
-                className="btn-primary text-sm active:scale-[0.98]"
-                disabled={status === 'redirect' || !connected}
-                onClick={() => {
-                  if (!connected || !address?.startsWith('erd1')) {
-                    setMsg('Connecte un wallet erd1 avant un paiement réel.')
-                    return
-                  }
-                  setPreviewOnly(false)
-                  setTermsOpen(true)
-                  setStatus('terms')
-                }}
-              >
-                {status === 'redirect' ? '…' : `Payer ${pack.priceEur.list} €`}
-              </button>
-            </>
-          )}
-
-          <div className="rounded-xl border border-amber-500/25 bg-amber-500/[0.06] px-3 py-3 space-y-2">
-            <p className="text-[12px] text-amber-100/95 font-medium">
-              Aperçu salles (cet appareil)
-            </p>
-            <p className="text-[11px] text-zinc-400 leading-relaxed">
-              Débloque l’UI des salles Pulse / Yield / Sentinel ici seulement. Ce n’est{' '}
-              <strong className="text-zinc-200">pas un achat</strong>, pas un transfert EGLD, pas un
-              mint NFT. Un nettoyage du navigateur efface cet aperçu.
-            </p>
+          <div className="flex flex-wrap gap-2 items-center">
             <button
               type="button"
-              className="btn-secondary text-sm active:scale-[0.98]"
-              onClick={() => {
-                if (!connected || !address?.startsWith('erd1')) {
-                  setMsg('Connecte ton wallet pour lier l’aperçu à une adresse (toujours sans paiement).')
-                  return
-                }
-                setMethod('paper')
-                setPreviewOnly(true)
-                setTermsOpen(true)
-                setStatus('terms')
-              }}
+              className="btn-primary text-sm active:scale-[0.98]"
+              onClick={() => setModalOpen(true)}
             >
-              Activer aperçu — 0 € · sans NFT
+              Acheter / Checkout
             </button>
+            {onClear && (
+              <button type="button" className="text-xs text-zinc-500 underline" onClick={onClear}>
+                Changer
+              </button>
+            )}
           </div>
 
-          {!mintLive && (
-            <p className="text-[11px] text-zinc-500">Mint NFT pack on-chain : bientôt.</p>
-          )}
+          <div className="grid sm:grid-cols-2 gap-2 text-[11px]">
+            <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/[0.06] px-3 py-2">
+              <p className="font-medium text-cyan-100/90">Crypto</p>
+              <p className="text-zinc-400 mt-0.5">
+                {pack.priceEgld.list} EGLD · xPortal{mintLive ? ' · mint LIVE' : ' · mint bientôt'}
+              </p>
+            </div>
+            <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] px-3 py-2">
+              <p className="font-medium text-violet-100/90">Fiat / FC</p>
+              <p className="text-zinc-400 mt-0.5">
+                {pack.priceEur.list} € · carte / SEPA{hasPaidRail ? ' · gateway on' : ' · config ops'}
+              </p>
+            </div>
+          </div>
+
+          <p className="text-[11px] text-zinc-500">
+            LIA = analyse & paper trading uniquement — pas de compte titres ni broker dans le
+            checkout.
+          </p>
         </>
       )}
 
@@ -244,16 +140,19 @@ export default function PackCheckout({
 
       {msg && status !== 'done' && <p className="text-[12px] text-amber-200/90">{msg}</p>}
 
-      <AccessTermsModal
-        open={termsOpen}
-        onClose={() => {
-          setTermsOpen(false)
-          setStatus('idle')
-          setPreviewOnly(false)
-        }}
-        onAccept={onAcceptTerms}
-        packName={pack?.name}
-      />
+      {selected && (
+        <CheckoutModal
+          open={modalOpen}
+          packId={selected}
+          onClose={() => setModalOpen(false)}
+          onPreview={onPreview}
+          onStarted={() => setModalOpen(false)}
+        />
+      )}
+
+      {!connected && selected && (
+        <p className="text-[11px] text-zinc-500">Connecte xPortal pour crypto ou fiat.</p>
+      )}
     </div>
   )
 }
