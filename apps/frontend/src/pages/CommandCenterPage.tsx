@@ -1,5 +1,5 @@
 /**
- * Command Center — holo 360 data room + pack-gated panels.
+ * L'INTELLECT · Command Center — cyber HUD + holo + news stream.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -12,6 +12,7 @@ import ClickGuide from '../command-center/ClickGuide'
 import AgentNftOrb from '../command-center/AgentNftOrb'
 import MarketTape from '../command-center/MarketTape'
 import LiaShadowPanel from '../command-center/LiaShadowPanel'
+import LiveNewsStream from '../command-center/LiveNewsStream'
 import AgentNftStakePanel, { isAgentNftStaked } from '../components/AgentNftStakePanel'
 import LiveAssetTape from '../components/LiveAssetTape'
 import HoloDataRoom from '../components/HoloDataRoom'
@@ -99,46 +100,48 @@ function CommandCenterInner() {
     window.location.hash = '#/staking'
   }
 
-  const tierNote = features.commandHub
-    ? 'Pack Pulse (complet) — hub holo 360 + tape + LIA'
-    : packs.length
-      ? `Tier limité (${packs.join(', ')}) — salle dédiée · Pulse = full hub`
-      : 'Aperçu SAMPLE — holo 360 ouvert'
+  const bullPct = (50 + Math.max(-40, Math.min(40, (lia.uniforms.uSentiment || 0) * 50))).toFixed(1)
+  const volPct = ((lia.uniforms.uVolatility || 0.35) * 100).toFixed(1)
+  const bullish = (lia.uniforms.uSentiment || 0) >= 0
 
   return (
-    <div className="animate-fade-in space-y-6 pb-28 max-w-4xl mx-auto relative">
+    <div className="animate-fade-in space-y-5 pb-28 max-w-4xl mx-auto relative">
       <DataTunnelTransition active={tunnel} onDone={endTunnel} />
-      <header className="space-y-2">
+
+      <header className="glass-hud p-4 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-400/80 font-semibold font-tech">
-            Zone 2 · {t('cc.title')}
+          <p className="text-[10px] uppercase tracking-[0.28em] text-cyan-300/90 font-tech">
+            L&apos;INTELLECT · COMMAND CENTER
           </p>
-          <span className="text-[9px] rounded-full border border-white/15 px-2 py-0.5 text-zinc-400">{mode}</span>
-          <span className="text-[9px] rounded-full border border-white/15 px-2 py-0.5 text-zinc-400">
+          <span className="pill-hud">{mode}</span>
+          <span className="pill-hud">
             {source}
             {pulseWs ? ' · live' : ''}
           </span>
-          <span className="text-[9px] rounded-full border border-cyan-500/30 px-2 py-0.5 text-cyan-200/90 font-tech">
-            {ambient.mode} · {ambient.trend}
+          <span className={`pill-hud ${bullish ? 'pill-bull' : 'pill-bear'}`}>
+            {bullish ? 'BULLISH' : 'BEARISH'} {bullPct}%
           </span>
+          <span className="pill-hud pill-vol">VOL {volPct}%</span>
           {features.commandHub ? (
-            <span className="text-[9px] rounded-full border border-emerald-500/40 px-2 py-0.5 text-emerald-300">
-              FULL
-            </span>
+            <span className="pill-hud pill-bull">FULL</span>
           ) : (
-            <span className="text-[9px] rounded-full border border-amber-500/35 px-2 py-0.5 text-amber-200">
-              LIMITED
-            </span>
+            <span className="pill-hud">LIMITED</span>
           )}
         </div>
-        <h1 className="text-3xl font-bold text-white tracking-tight font-tech title-glow">{t('cc.title')}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white font-tech title-glow tracking-wide">
+          Analyse Cognitive On-Chain &amp; signaux Live
+        </h1>
         <p className="text-sm text-zinc-400">{t('cc.subtitle')}</p>
-        <p className="text-[11px] text-zinc-500">{tierNote}</p>
       </header>
 
       {(features.liveTapeFull || !packs.length) && <LiveAssetTape />}
 
-      <DailySignalWidget compact />
+      <div className="grid lg:grid-cols-3 gap-3">
+        <div className="lg:col-span-2 space-y-3">
+          <DailySignalWidget compact />
+        </div>
+        <LiveNewsStream compact />
+      </div>
 
       <div className="flex flex-wrap gap-2">
         {(
@@ -156,12 +159,12 @@ function CommandCenterInner() {
               type="button"
               disabled={locked}
               onClick={() => setRoom(id)}
-              className={`rounded-full px-3 py-1.5 text-[12px] border transition ${
+              className={`rounded-full px-3 py-1.5 text-[12px] border font-tech transition ${
                 room === id
-                  ? 'border-cyan-400/50 bg-cyan-500/15 text-white'
+                  ? 'border-cyan-400/50 bg-cyan-500/15 text-white shadow-[0_0_12px_rgba(34,211,238,0.25)]'
                   : locked
                     ? 'border-white/5 text-zinc-600 opacity-50'
-                    : 'border-white/10 text-zinc-400 hover:text-white'
+                    : 'border-white/10 text-zinc-400 hover:text-white glass-hud'
               }`}
             >
               {label}
@@ -173,12 +176,6 @@ function CommandCenterInner() {
 
       {room === 'hub' && (
         <div className="space-y-4">
-          <HoloDataRoom
-            mode="hub"
-            sentiment={lia.uniforms.uSentiment}
-            volatility={lia.uniforms.uVolatility}
-            height={500}
-          />
           <CommandWall
             sentiment={lia.uniforms.uSentiment}
             volatility={lia.uniforms.uVolatility}
@@ -186,10 +183,21 @@ function CommandCenterInner() {
             colorRgb={lia.uniforms.uColor}
             interactive={features.commandHub || !packs.length}
           />
+          <HoloDataRoom
+            mode="hub"
+            sentiment={lia.uniforms.uSentiment}
+            volatility={lia.uniforms.uVolatility}
+            height={420}
+          />
           <div className="grid sm:grid-cols-2 gap-3">
-            <ClickGuide />
-            <MarketTape snap={ambient} />
+            <div className="glass-hud p-3">
+              <ClickGuide />
+            </div>
+            <div className="glass-hud p-3">
+              <MarketTape snap={ambient} />
+            </div>
           </div>
+          <LiveNewsStream />
           {packs[0] && (
             <AgentNftOrb
               packId={packs[0]}
@@ -199,14 +207,18 @@ function CommandCenterInner() {
             />
           )}
           {features.agentStake && <AgentNftStakePanel key={tick} packIds={packs} />}
-          {(features.liaFull || !packs.length) && <LiaShadowPanel />}
+          {(features.liaFull || !packs.length) && (
+            <div className="glass-hud p-3">
+              <LiaShadowPanel />
+            </div>
+          )}
           {(features.commandHub || !packs.length) && (
             <>
               <DashboardSource />
               <AgentRoster />
             </>
           )}
-          <div className="card flex flex-wrap gap-2">
+          <div className="glass-hud p-3 flex flex-wrap gap-2">
             {features.defiSleeve && (
               <button type="button" className="btn-secondary text-sm" onClick={onYieldAction}>
                 {t('nav.staking')} $TRO
@@ -235,34 +247,16 @@ function CommandCenterInner() {
       {room !== 'hub' && packs.includes(room as PackId) && (
         <div className="space-y-4">
           {room === 'pulse' && features.liveTapeFull && <LiveAssetTape compact />}
-          <HoloDataRoom
-            mode={room as PackId}
+          <CommandWall
             sentiment={lia.uniforms.uSentiment}
             volatility={lia.uniforms.uVolatility}
-            height={460}
+            interactive={false}
           />
+          <HoloDataRoom mode={room as PackId} height={400} />
           <AgentNftOrb
             packId={room as PackId}
             staked={isAgentNftStaked(room as PackId)}
             aura={ambient.mode}
-          />
-          <RoomCard
-            title={`${t(`cc.${room}` as 'cc.pulse')} room`}
-            body={
-              room === 'pulse'
-                ? 'FULL · HF signals · micro-arb · board'
-                : room === 'yield'
-                  ? 'LIMITÉ · LP sleeve · claims'
-                  : 'LIMITÉ · risk alerts'
-            }
-            sentiment={
-              room === 'yield'
-                ? Math.max(0, lia.uniforms.uSentiment * 0.6)
-                : room === 'sentinel'
-                  ? Math.min(0, lia.uniforms.uSentiment)
-                  : lia.uniforms.uSentiment
-            }
-            volatility={lia.uniforms.uVolatility}
           />
           <MarketTape snap={ambient} />
           <AgentNftStakePanel packIds={[room as PackId]} />
@@ -294,31 +288,6 @@ function CommandCenterInner() {
           {t('nav.packs')}
         </Link>
       </p>
-    </div>
-  )
-}
-
-function RoomCard({
-  title,
-  body,
-  sentiment,
-  volatility,
-}: {
-  title: string
-  body: string
-  sentiment: number
-  volatility: number
-}) {
-  const bullish = sentiment >= 0
-  return (
-    <div
-      className={`card space-y-3 ${
-        bullish ? 'border-amber-500/25 bg-amber-500/5' : 'border-rose-500/25 bg-rose-500/5'
-      }`}
-    >
-      <h2 className="font-bold text-white">{title}</h2>
-      <p className="text-sm text-zinc-400">{body}</p>
-      <CommandWall sentiment={sentiment} volatility={volatility} interactive={false} />
     </div>
   )
 }

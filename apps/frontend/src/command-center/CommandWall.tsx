@@ -1,11 +1,10 @@
 /**
- * Command wall 3D — momentum / flow / pulse nodes.
- * Fix: createPulseAtmosphereMesh() → { mesh, uniforms, dispose }
- * Accepts color or colorRgb prop.
+ * Cyber Command Wall — perspective grid, scanlines, particles, neon volumetric bars.
  */
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { createPulseAtmosphereMesh } from './PulseAtmosphere'
+import LivePriceRail from './LivePriceRail'
 
 type HitAction = 'MOMENTUM' | 'FLOW' | 'PULSE'
 
@@ -15,7 +14,6 @@ type Props = {
   interactive?: boolean
   pulseSpeed?: number
   color?: [number, number, number]
-  /** alias used by CommandCenterPage */
   colorRgb?: [number, number, number]
 }
 
@@ -27,7 +25,7 @@ export default function CommandWall({
   color,
   colorRgb,
 }: Props) {
-  const resolved = color ?? colorRgb ?? ([0.2, 0.7, 0.9] as [number, number, number])
+  const resolved = color ?? colorRgb ?? ([0.15, 0.85, 0.95] as [number, number, number])
   const hostRef = useRef<HTMLDivElement>(null)
   const sentRef = useRef(sentiment)
   const volRef = useRef(volatility)
@@ -44,13 +42,15 @@ export default function CommandWall({
 
     let renderer: THREE.WebGLRenderer
     try {
-      const w = host.clientWidth || 320
-      const h = Math.max(300, Math.floor(w * 0.5))
+      const w = host.clientWidth || 360
+      const h = Math.max(340, Math.floor(w * 0.55))
 
       const scene = new THREE.Scene()
-      scene.background = new THREE.Color(0x05050a)
-      const camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100)
-      camera.position.set(0, 0.4, 3.35)
+      scene.background = new THREE.Color(0x03050c)
+      scene.fog = new THREE.FogExp2(0x03050c, 0.045)
+
+      const camera = new THREE.PerspectiveCamera(48, w / h, 0.1, 100)
+      camera.position.set(0, 0.55, 3.6)
 
       renderer = new THREE.WebGLRenderer({
         antialias: true,
@@ -60,65 +60,117 @@ export default function CommandWall({
       })
       renderer.setSize(w, h)
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+      host.innerHTML = ''
       host.appendChild(renderer.domElement)
 
-      const amb = new THREE.AmbientLight(0xffffff, 0.45)
+      const amb = new THREE.AmbientLight(0x88aacc, 0.35)
       scene.add(amb)
-      const dir = new THREE.DirectionalLight(0xaaccff, 0.85)
-      dir.position.set(2, 3, 4)
+      const dir = new THREE.DirectionalLight(0xaaffff, 0.9)
+      dir.position.set(2, 4, 5)
       scene.add(dir)
+      const neon = new THREE.PointLight(0x22d3ee, 1.8, 12)
+      neon.position.set(-1.5, 1.2, 2)
+      scene.add(neon)
+      const neon2 = new THREE.PointLight(0xa855f7, 1.2, 10)
+      neon2.position.set(1.8, 0.8, 1.5)
+      scene.add(neon2)
 
-      const wallGeo = new THREE.BoxGeometry(2.5, 1.4, 0.08)
-      const wallMat = new THREE.MeshStandardMaterial({
-        color: 0x12121a,
-        metalness: 0.45,
-        roughness: 0.4,
-        emissive: 0x112233,
-        emissiveIntensity: 0.35,
+      // Perspective floor grid
+      const grid = new THREE.GridHelper(10, 40, 0x22d3ee, 0x0a2030)
+      grid.position.y = -0.85
+      scene.add(grid)
+
+      // Back wall plate
+      const wallGeo = new THREE.BoxGeometry(3.2, 1.7, 0.06)
+      const wallMat = new THREE.MeshPhongMaterial({
+        color: 0x0a1018,
+        emissive: 0x0a3040,
+        emissiveIntensity: 0.4,
+        shininess: 80,
+        transparent: true,
+        opacity: 0.92,
       })
       const wall = new THREE.Mesh(wallGeo, wallMat)
+      wall.position.z = -0.2
       wall.userData.action = 'PULSE' satisfies HitAction
       scene.add(wall)
 
+      // Scanline plane (subtle)
+      const scanGeo = new THREE.PlaneGeometry(3.1, 1.6)
+      const scanMat = new THREE.MeshBasicMaterial({
+        color: 0x22d3ee,
+        transparent: true,
+        opacity: 0.04,
+        depthWrite: false,
+      })
+      const scan = new THREE.Mesh(scanGeo, scanMat)
+      scan.position.z = -0.16
+      scene.add(scan)
+
       const atmo = createPulseAtmosphereMesh()
-      atmo.mesh.position.z = 0.06
+      atmo.mesh.position.z = 0.02
       scene.add(atmo.mesh)
 
+      // Volumetric neon bars (Phong + emissive)
       const barGroup = new THREE.Group()
       const bars: THREE.Mesh[] = []
-      for (let i = 0; i < 10; i++) {
-        const bh = 0.15 + Math.random() * 0.55
-        const geo = new THREE.BoxGeometry(0.12, bh, 0.06)
-        const mat = new THREE.MeshStandardMaterial({
-          color: i < 5 ? 0x22c55e : 0x7c3aed,
-          emissive: i < 5 ? 0x14532d : 0x4c1d95,
-          emissiveIntensity: 0.35,
+      for (let i = 0; i < 12; i++) {
+        const bh = 0.2 + Math.random() * 0.5
+        const geo = new THREE.BoxGeometry(0.14, bh, 0.14)
+        const isGreen = i < 6
+        const mat = new THREE.MeshPhongMaterial({
+          color: isGreen ? 0x22c55e : 0xa855f7,
+          emissive: isGreen ? 0x16a34a : 0x7c3aed,
+          emissiveIntensity: 0.75,
           transparent: true,
-          opacity: 0.9,
+          opacity: 0.85,
+          shininess: 120,
         })
         const m = new THREE.Mesh(geo, mat)
-        m.position.set(-1.05 + i * 0.22, -0.55 + bh / 2, 0.1)
+        m.position.set(-1.25 + i * 0.22, -0.7 + bh / 2, 0.15)
         barGroup.add(m)
         bars.push(m)
       }
       scene.add(barGroup)
 
-      const nodeGeo = new THREE.BoxGeometry(0.3, 0.3, 0.12)
-      const momMat = new THREE.MeshStandardMaterial({
+      // Particles
+      const pCount = 120
+      const pGeo = new THREE.BufferGeometry()
+      const pPos = new Float32Array(pCount * 3)
+      for (let i = 0; i < pCount; i++) {
+        pPos[i * 3] = (Math.random() - 0.5) * 4
+        pPos[i * 3 + 1] = (Math.random() - 0.5) * 2
+        pPos[i * 3 + 2] = Math.random() * 2 - 0.5
+      }
+      pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3))
+      const pMat = new THREE.PointsMaterial({
+        color: 0x67e8f9,
+        size: 0.03,
+        transparent: true,
+        opacity: 0.7,
+        depthWrite: false,
+      })
+      const points = new THREE.Points(pGeo, pMat)
+      scene.add(points)
+
+      const nodeGeo = new THREE.BoxGeometry(0.28, 0.28, 0.14)
+      const momMat = new THREE.MeshPhongMaterial({
         color: 0x22c55e,
         emissive: 0x14532d,
-        emissiveIntensity: 0.55,
+        emissiveIntensity: 0.85,
+        shininess: 100,
       })
-      const flowMat = new THREE.MeshStandardMaterial({
+      const flowMat = new THREE.MeshPhongMaterial({
         color: 0xa855f7,
         emissive: 0x4c1d95,
-        emissiveIntensity: 0.55,
+        emissiveIntensity: 0.85,
+        shininess: 100,
       })
       const momNode = new THREE.Mesh(nodeGeo, momMat)
-      momNode.position.set(-0.9, -0.32, 0.14)
+      momNode.position.set(-1.15, -0.25, 0.35)
       momNode.userData.action = 'MOMENTUM' satisfies HitAction
       const flowNode = new THREE.Mesh(nodeGeo, flowMat)
-      flowNode.position.set(0.9, -0.32, 0.14)
+      flowNode.position.set(1.15, -0.25, 0.35)
       flowNode.userData.action = 'FLOW' satisfies HitAction
       scene.add(momNode, flowNode)
 
@@ -127,12 +179,12 @@ export default function CommandWall({
       const targets = [wall, momNode, flowNode]
 
       const flash = (mesh: THREE.Mesh) => {
-        const m = mesh.material as THREE.MeshStandardMaterial
+        const m = mesh.material as THREE.MeshPhongMaterial
         const prev = m.emissiveIntensity
-        m.emissiveIntensity = 1.5
+        m.emissiveIntensity = 1.8
         setTimeout(() => {
           m.emissiveIntensity = prev
-        }, 200)
+        }, 180)
       }
 
       const onPointer = (ev: PointerEvent) => {
@@ -148,7 +200,6 @@ export default function CommandWall({
         const action = (obj.userData.action || 'PULSE') as HitAction
         if (action === 'MOMENTUM') window.location.hash = '#/lia'
         else if (action === 'FLOW') window.location.hash = '#/trading'
-        else flash(wall)
       }
       renderer.domElement.style.cursor = interactive ? 'pointer' : 'default'
       renderer.domElement.addEventListener('pointerdown', onPointer)
@@ -165,32 +216,44 @@ export default function CommandWall({
         atmo.uniforms.uTime.value = t
         atmo.uniforms.uSentiment.value = s
         atmo.uniforms.uVolatility.value = v
-        atmo.uniforms.uPulseSpeed.value = spdRef.current * (1 + (highVol ? 0.35 : 0))
+        atmo.uniforms.uPulseSpeed.value = spdRef.current * (1 + (highVol ? 0.4 : 0))
         const c = colRef.current
-        if (highVol) atmo.uniforms.uColor.value.set(c[0] * 0.55 + 0.45, c[1] * 0.4 + 0.15, c[2] * 0.55 + 0.55)
+        if (highVol) atmo.uniforms.uColor.value.set(c[0] * 0.5 + 0.4, c[1] * 0.35 + 0.2, c[2] * 0.5 + 0.5)
         else atmo.uniforms.uColor.value.set(c[0], c[1], c[2])
 
-        wallMat.emissiveIntensity = 0.35 + Math.abs(s) * 0.45 + v * 0.2
-        amb.intensity = 0.35 + Math.max(0, s) * 0.25 + (highVol ? 0.15 : 0)
-        wall.rotation.y = Math.sin(Date.now() / Math.max(600, 1200 - v * 800)) * (0.02 + Math.abs(s) * 0.03)
+        wallMat.emissiveIntensity = 0.35 + Math.abs(s) * 0.5 + v * 0.25
+        scan.position.y = Math.sin(t * 1.2) * 0.15
+        scanMat.opacity = 0.03 + Math.abs(Math.sin(t * 2)) * 0.05
 
         bars.forEach((b, i) => {
-          const base = 0.12 + ((Math.sin(t * 1.4 + i * 0.55) + 1) / 2) * (0.25 + v * 0.5)
-          const bias = i < 5 ? Math.max(0, s) * 0.35 : Math.max(0, -s) * 0.25 + v * 0.2
-          const bh = Math.min(0.85, base + bias)
-          b.scale.y = bh / 0.4
-          b.position.y = -0.55 + (bh * b.scale.y) / 2
+          const base = 0.15 + ((Math.sin(t * 1.6 + i * 0.5) + 1) / 2) * (0.3 + v * 0.55)
+          const bias = i < 6 ? Math.max(0, s) * 0.4 : Math.max(0, -s) * 0.3 + v * 0.25
+          const bh = Math.min(1.0, base + bias)
+          b.scale.y = Math.max(0.15, bh / 0.35)
+          b.position.y = -0.7 + (0.35 * b.scale.y) / 2
+          const mat = b.material as THREE.MeshPhongMaterial
+          mat.emissiveIntensity = 0.55 + Math.sin(t * 3 + i) * 0.25
         })
 
-        momNode.rotation.y = t * 0.6
-        flowNode.rotation.y = -t * 0.55
+        const pos = pGeo.getAttribute('position') as THREE.BufferAttribute
+        for (let i = 0; i < pCount; i++) {
+          let y = pos.getY(i) + 0.004 + (i % 5) * 0.0005
+          if (y > 1.2) y = -1.1
+          pos.setY(i, y)
+        }
+        pos.needsUpdate = true
+
+        momNode.rotation.y = t * 0.7
+        flowNode.rotation.y = -t * 0.65
+        grid.position.z = ((t * 0.15) % 0.5) - 0.25
+
         renderer.render(scene, camera)
       }
       animate()
 
       const onResize = () => {
-        const nw = host.clientWidth || 320
-        const nh = Math.max(300, Math.floor(nw * 0.5))
+        const nw = host.clientWidth || 360
+        const nh = Math.max(340, Math.floor(nw * 0.55))
         camera.aspect = nw / nh
         camera.updateProjectionMatrix()
         renderer.setSize(nw, nh)
@@ -204,9 +267,13 @@ export default function CommandWall({
         atmo.dispose()
         wallGeo.dispose()
         wallMat.dispose()
+        scanGeo.dispose()
+        scanMat.dispose()
         nodeGeo.dispose()
         momMat.dispose()
         flowMat.dispose()
+        pGeo.dispose()
+        pMat.dispose()
         bars.forEach(b => {
           b.geometry.dispose()
           ;(b.material as THREE.Material).dispose()
@@ -220,22 +287,28 @@ export default function CommandWall({
     }
   }, [interactive])
 
-  const bullPct = Math.round(50 + Math.max(-40, Math.min(40, sentiment * 50)))
+  const bullPct = (50 + Math.max(-40, Math.min(40, sentiment * 50))).toFixed(1)
+  const volPct = (volatility * 100).toFixed(1)
+  const bullish = sentiment >= 0
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-white/10 bg-black/40">
+    <div className="relative w-full rounded-2xl overflow-hidden border border-cyan-500/20 bg-[#03050c] shadow-[0_0_40px_rgba(34,211,238,0.12)]">
       <div className="absolute top-2 left-3 z-10 flex flex-wrap gap-2 pointer-events-none">
-        <span className="text-[9px] uppercase tracking-wider text-cyan-300/90 font-tech">LIVE · COMMAND CENTER</span>
-        <span className="text-[9px] rounded-full border border-white/15 px-2 py-0.5 text-zinc-300">
-          {sentiment >= 0 ? 'BULLISH' : 'BEARISH'} {bullPct}%
+        <span className="text-[9px] uppercase tracking-[0.18em] text-cyan-300/95 font-tech">
+          LIVE · CYBER DECK
         </span>
-        <span className="text-[9px] rounded-full border border-violet-500/30 px-2 py-0.5 text-violet-200/90">
-          vol {(volatility * 100).toFixed(0)}%
+        <span
+          className={`pill-hud ${bullish ? 'pill-bull' : 'pill-bear'}`}
+        >
+          {bullish ? 'BULLISH' : 'BEARISH'} {bullPct}%
         </span>
+        <span className="pill-hud pill-vol">VOL {volPct}%</span>
       </div>
-      <div ref={hostRef} className="w-full min-h-[300px]" />
-      <p className="absolute bottom-2 left-3 right-3 text-[10px] text-zinc-500 pointer-events-none">
-        vert = momentum · violet = flux · mur = Pulse
+      <LivePriceRail />
+      <div ref={hostRef} className="w-full min-h-[340px]" />
+      <div className="pointer-events-none absolute inset-0 scanlines opacity-[0.12]" />
+      <p className="absolute bottom-2 left-3 right-24 text-[10px] text-zinc-500 pointer-events-none font-tech">
+        NEON BARS · GRID · PARTICLES · vert momentum · violet flow
       </p>
     </div>
   )

@@ -85,21 +85,74 @@ body {
   .animate-fade-in {
     animation: xartists-fade-in 0.35s ease-out;
   }
+
+  /* Cyber HUD glass */
+  .glass-hud {
+    border-radius: 1rem;
+    border: 1px solid rgba(34, 211, 238, 0.12);
+    background: rgba(8, 12, 24, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .pill-hud {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.45);
+    padding: 0.15rem 0.55rem;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #d4d4d8;
+    font-family: 'Orbitron', 'Syne', system-ui, sans-serif;
+  }
+  .pill-bull {
+    border-color: rgba(52, 211, 153, 0.45);
+    color: #6ee7b7;
+    box-shadow: 0 0 12px rgba(52, 211, 153, 0.25);
+    background: rgba(6, 78, 59, 0.35);
+  }
+  .pill-bear {
+    border-color: rgba(244, 63, 94, 0.45);
+    color: #fda4af;
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.2);
+    background: rgba(76, 5, 25, 0.35);
+  }
+  .pill-vol {
+    border-color: rgba(167, 139, 250, 0.4);
+    color: #ddd6fe;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+    background: rgba(46, 16, 101, 0.35);
+  }
 }
 
-/* Phase 2.5 — Cyber-Tech typography */
 .font-tech {
   font-family: 'Orbitron', 'Syne', system-ui, sans-serif;
   letter-spacing: 0.04em;
 }
 .title-glow {
   text-shadow:
-    0 0 12px rgba(34, 211, 238, 0.35),
-    0 0 28px rgba(139, 92, 246, 0.2);
+    0 0 12px rgba(34, 211, 238, 0.4),
+    0 0 28px rgba(139, 92, 246, 0.25);
 }
 .section-title.display,
 .font-tech.title-glow {
   font-family: 'Orbitron', 'Syne', system-ui, sans-serif;
+}
+
+/* CRT scanlines overlay */
+.scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  pointer-events: none;
 }
 
 @keyframes xartists-fade-in {
@@ -113,7 +166,6 @@ body {
   }
 }
 
-/* SideNav drawer */
 @keyframes xartists-slide-in-left {
   from {
     transform: translateX(-100%);

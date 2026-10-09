@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "note": "Optional live feed — replace via ops. Fallback hardcoded in LiveNewsStream.",
+  "items": [
+    { "t": "10:45", "src": "xExchange", "text": "Agrégation des frais activée sur les pools majeurs" },
+    { "t": "09:12", "src": "DEX", "text": "Volume en hausse sur les DEX MultiversX" },
+    { "t": "08:30", "src": "xPortal", "text": "Sessions wallet mobile stabilisées (multi-TX)" },
+    { "t": "07:55", "src": "Network", "text": "Finalité intra-shard ~600ms — rail agent-ready" },
+    { "t": "06:40", "src": "EGLD", "text": "Cotation publique relue via economics API" },
+    { "t": "05:18", "src": "Builders", "text": "Sovereign chains & dApp hub en expansion" },
+    { "t": "04:02", "src": "Staking", "text": "Validators 3200+ — recompute local" },
+    { "t": "02:50", "src": "xArtists", "text": "Command Center cyber deck · signaux paper LIA" }
+  ]
+}
