@@ -1,5 +1,5 @@
 /**
- * L'INTELLECT · Command Center — cyber HUD + holo + news stream.
+ * L'INTELLECT · Command Center — cyber HUD + holo + news + DeFi Hub.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -16,6 +16,7 @@ import LiveNewsStream from '../command-center/LiveNewsStream'
 import AgentNftStakePanel, { isAgentNftStaked } from '../components/AgentNftStakePanel'
 import LiveAssetTape from '../components/LiveAssetTape'
 import HoloDataRoom from '../components/HoloDataRoom'
+import DeFiCommandPanel from '../components/defi/DeFiCommandPanel'
 import { useAgentAccess, setEmpireZone, empireTxStart } from '../store/empireStore'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
@@ -189,6 +190,7 @@ function CommandCenterInner() {
             volatility={lia.uniforms.uVolatility}
             height={420}
           />
+          <DeFiCommandPanel />
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="glass-hud p-3">
               <ClickGuide />
@@ -230,6 +232,9 @@ function CommandCenterInner() {
             <Link to="/lia" className="btn-secondary text-sm">
               LIA Hub
             </Link>
+            <Link to="/hatom" className="btn-secondary text-sm">
+              Hatom
+            </Link>
             {features.tca && (
               <Link to="/tca" className="btn-secondary text-sm">
                 TCA
@@ -253,6 +258,7 @@ function CommandCenterInner() {
             interactive={false}
           />
           <HoloDataRoom mode={room as PackId} height={400} />
+          {room === 'yield' && <DeFiCommandPanel />}
           <AgentNftOrb
             packId={room as PackId}
             staked={isAgentNftStaked(room as PackId)}
