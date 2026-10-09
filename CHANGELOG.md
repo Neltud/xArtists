@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.92.0](https://github.com/Neltud/xArtists/compare/v0.91.2...v0.92.0) (2026-10-09)
+
+
+### Features
+
+* **cc:** embed HoloDataRoom 360 in hub + pack rooms ([81cf2ee](https://github.com/Neltud/xArtists/commit/81cf2eef08e6f3757365bb0cb268b96594956ba3))
+* **cc:** gate LiveAssetTape + hub depth by pack tier (Pulse full) ([687b246](https://github.com/Neltud/xArtists/commit/687b246776dd2b1e5c3e1fcb99cbe5d3df336391))
+* **holo:** 360° data room — charts tables axes live metrics pack/CC ([088f8ca](https://github.com/Neltud/xArtists/commit/088f8ca5da80d04a548433d88f858c171e011ce6))
+* **packs:** Pulse = full suite; Yield/Sentinel limited tiers + access matrix + Agents UI ([bcc4f1e](https://github.com/Neltud/xArtists/commit/bcc4f1ee246dc362c2825851758d7608bbe46080))
+* **ux:** 360 home hall illustrated panels + Studio collections select + live multi-asset tape + holo CC ([5a8f9d7](https://github.com/Neltud/xArtists/commit/5a8f9d74265e15093cc0e835ce684590b4b7f873))
+* wire LiveAssetTape into Command Center + LIA hub ([3230da9](https://github.com/Neltud/xArtists/commit/3230da915ea5da0500bd61a5618511267e75b495))
+
 ## [0.91.2](https://github.com/Neltud/xArtists/compare/v0.91.1...v0.91.2) (2026-10-09)
 
 
