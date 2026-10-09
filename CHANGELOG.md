@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.93.0](https://github.com/Neltud/xArtists/compare/v0.92.0...v0.93.0) (2026-10-09)
+
+
+### Features
+
+* **cc:** cyber HUD — volumetric neon bars, live EGLD/TRO ticker, LiveNewsStream, glass pills ([30d15f3](https://github.com/Neltud/xArtists/commit/30d15f39b2e8e69236ae3779b6841c071e08e92f))
+
 ## [0.92.0](https://github.com/Neltud/xArtists/compare/v0.91.2...v0.92.0) (2026-10-09)
 
 
