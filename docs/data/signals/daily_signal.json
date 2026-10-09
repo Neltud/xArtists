@@ -1,11 +1,29 @@
 {
   "schema": "xartists_daily_signal/v1",
-  "generated_at": "2026-10-06T08:00:00+00:00",
-  "date": "2026-10-06",
+  "generated_at": "2026-10-08T15:15:12.115903+00:00",
+  "date": "2026-10-08",
   "regime": "neutral",
   "confidence": 0.45,
   "headline": "Observation macro — pas un conseil d'investissement",
-  "summary": "Signal éditorial du mécénat. Aucune exécution automatique.",
-  "disclaimer": "Pas un conseil financier.",
+  "summary": "Signal éditorial du mécénat : volatilité surveillée, liquidité à préserver. Aucune exécution automatique. Le Machine (Guardian) reste le seul chemin d'ordre.",
+  "macro": {
+    "usd_liquidity": "watch",
+    "risk_appetite": "mixed",
+    "notes": [
+      "Données à enrichir via API prix ops — placeholder honnête."
+    ]
+  },
+  "crypto": {
+    "egld": "neutral",
+    "tro": "observe",
+    "notes": [
+      "Pas de promesse de rendement."
+    ]
+  },
+  "patronage": {
+    "rebalance_hint": "hold",
+    "pulse_focus": "education_over_leverage"
+  },
+  "disclaimer": "Contenu informatif / éducatif. Pas un conseil financier. Aucune TX n'est déclenchée par ce fichier.",
   "source": "signals-worker"
 }
