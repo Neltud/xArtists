@@ -1,0 +1,47 @@
+name: News cron · live_news.json
+
+on:
+  schedule:
+    # Every 3 hours (UTC)
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: news-cron
+  cancel-in-progress: true
+
+jobs:
+  fetch-news:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch & write live_news.json
+        run: node services/news-worker/fetch_news.mjs
+
+      - name: Commit & push if changed
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/frontend/public/data/live_news.json
+          if git diff --staged --quiet; then
+            echo "No news changes — skip commit"
+            exit 0
+          fi
+          git commit -m "chore(news): refresh live_news.json [skip ci]"
+          git push origin HEAD:main
