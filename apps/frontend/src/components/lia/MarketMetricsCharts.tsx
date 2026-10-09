@@ -1,14 +1,17 @@
 /**
- * Market metrics diagrams — macro / crypto / MVX (not NFT- or TRO-centric).
- * Data from public APIs + shadow export; paper labels honest.
+ * Market metrics — multi-asset live (BTC ETH SOL TAO EGLD GOLD) + shadow bars.
  */
 import { useEffect, useRef, useState } from 'react'
 import { asText } from '../../lib/safeRender'
+import LiveAssetTape from '../LiveAssetTape'
 
 type Metrics = {
   egldUsd: number | null
   btcUsd: number | null
   ethUsd: number | null
+  solUsd: number | null
+  taoUsd: number | null
+  goldUsd: number | null
   shadowPnl: number | null
   winRate: number | null
   fills: number | null
@@ -35,19 +38,19 @@ function BarChart({
     const w = c.width
     const h = c.height
     ctx.clearRect(0, 0, w, h)
-    const max = Math.max(...values.map(Math.abs), 1)
+    const max = Math.max(...values.map(Math.abs), 1e-9)
     const bw = (w - 16) / values.length
     values.forEach((v, i) => {
-      const bh = (Math.abs(v) / max) * (h - 24)
+      const bh = (Math.abs(v) / max) * (h - 28)
       const x = 8 + i * bw
       const y = v >= 0 ? h / 2 - bh : h / 2
       ctx.fillStyle = v >= 0 ? color : '#f43f5e'
-      ctx.globalAlpha = 0.85
-      ctx.fillRect(x + 2, y, bw - 4, Math.max(2, bh))
+      ctx.globalAlpha = 0.9
+      ctx.fillRect(x + 2, y, Math.max(4, bw - 4), Math.max(2, bh))
       ctx.globalAlpha = 1
-      ctx.fillStyle = '#71717a'
-      ctx.font = '9px sans-serif'
-      ctx.fillText(labels[i] || '', x + 2, h - 4)
+      ctx.fillStyle = '#a1a1aa'
+      ctx.font = '10px sans-serif'
+      ctx.fillText(labels[i] || '', x + 2, h - 6)
     })
     ctx.strokeStyle = 'rgba(255,255,255,0.12)'
     ctx.beginPath()
@@ -58,7 +61,12 @@ function BarChart({
   return (
     <div>
       <p className="text-[10px] uppercase text-zinc-500 mb-1">{label}</p>
-      <canvas ref={ref} width={280} height={100} className="w-full h-[100px] rounded-lg bg-black/30 border border-white/10" />
+      <canvas
+        ref={ref}
+        width={320}
+        height={120}
+        className="w-full h-[120px] rounded-lg bg-black/40 border border-cyan-500/15"
+      />
     </div>
   )
 }
@@ -68,6 +76,9 @@ export default function MarketMetricsCharts() {
     egldUsd: null,
     btcUsd: null,
     ethUsd: null,
+    solUsd: null,
+    taoUsd: null,
+    goldUsd: null,
     shadowPnl: null,
     winRate: null,
     fills: null,
@@ -80,27 +91,36 @@ export default function MarketMetricsCharts() {
       let egldUsd: number | null = null
       let btcUsd: number | null = null
       let ethUsd: number | null = null
-      try {
-        const r = await fetch('https://api.multiversx.com/economics', { cache: 'no-store' })
-        if (r.ok) {
-          const j = await r.json()
-          egldUsd = Number(j.price) || null
-        }
-      } catch {
-        /* */
-      }
+      let solUsd: number | null = null
+      let taoUsd: number | null = null
+      let goldUsd: number | null = null
       try {
         const r = await fetch(
-          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd',
+          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,bittensor,elrond-erd-2,pax-gold&vs_currencies=usd',
           { cache: 'no-store' },
         )
         if (r.ok) {
           const j = await r.json()
           btcUsd = Number(j.bitcoin?.usd) || null
           ethUsd = Number(j.ethereum?.usd) || null
+          solUsd = Number(j.solana?.usd) || null
+          taoUsd = Number(j.bittensor?.usd) || null
+          egldUsd = Number(j['elrond-erd-2']?.usd) || null
+          goldUsd = Number(j['pax-gold']?.usd) || null
         }
       } catch {
         /* */
+      }
+      if (egldUsd == null) {
+        try {
+          const r = await fetch('https://api.multiversx.com/economics', { cache: 'no-store' })
+          if (r.ok) {
+            const j = await r.json()
+            egldUsd = Number(j.price) || null
+          }
+        } catch {
+          /* */
+        }
       }
       let shadowPnl: number | null = null
       let winRate: number | null = null
@@ -119,50 +139,67 @@ export default function MarketMetricsCharts() {
       } catch {
         /* */
       }
-      if (!c) setM({ egldUsd, btcUsd, ethUsd, shadowPnl, winRate, fills, dayIndex })
+      if (!c)
+        setM({
+          egldUsd,
+          btcUsd,
+          ethUsd,
+          solUsd,
+          taoUsd,
+          goldUsd,
+          shadowPnl,
+          winRate,
+          fills,
+          dayIndex,
+        })
     })()
     return () => {
       c = true
     }
   }, [])
 
-  const priceBars = [m.btcUsd || 0, m.ethUsd || 0, (m.egldUsd || 0) * 500].map(v => v / 1000)
-  // normalize rough scale for display only
+  // log-ish display scale so majors fit on one chart
+  const priceBars = [
+    Math.log10((m.btcUsd || 1) + 1),
+    Math.log10((m.ethUsd || 1) + 1),
+    Math.log10((m.solUsd || 1) + 1),
+    Math.log10((m.taoUsd || 1) + 1),
+    Math.log10((m.egldUsd || 1) + 1),
+    Math.log10((m.goldUsd || 1) + 1),
+  ]
 
   return (
-    <section className="card space-y-4">
+    <section className="card space-y-4 border-cyan-500/20 bg-gradient-to-b from-cyan-950/20 to-transparent">
       <div>
-        <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold">
-          Market metrics
+        <p className="text-[10px] uppercase tracking-wider text-cyan-300/80 font-semibold">
+          Market · live
         </p>
-        <p className="text-[12px] text-zinc-500">
-          Macro / majors / EGLD + shadow sprint — pas de signaux NFT dédiés.
-        </p>
+        <p className="text-[12px] text-zinc-500">BTC · ETH · SOL · TAO · EGLD · GOLD — poll public APIs</p>
       </div>
-      <div className="grid grid-cols-3 gap-2 text-[12px]">
-        <div>
-          <p className="text-zinc-500">BTC</p>
-          <p className="font-semibold tabular-nums">
-            {m.btcUsd != null ? `$${asText(Math.round(m.btcUsd))}` : '—'}
-          </p>
-        </div>
-        <div>
-          <p className="text-zinc-500">ETH</p>
-          <p className="font-semibold tabular-nums">
-            {m.ethUsd != null ? `$${asText(Math.round(m.ethUsd))}` : '—'}
-          </p>
-        </div>
-        <div>
-          <p className="text-zinc-500">EGLD</p>
-          <p className="font-semibold tabular-nums">
-            {m.egldUsd != null ? `$${asText(m.egldUsd.toFixed(2))}` : '—'}
-          </p>
-        </div>
+      <LiveAssetTape compact />
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-[11px]">
+        {(
+          [
+            ['BTC', m.btcUsd],
+            ['ETH', m.ethUsd],
+            ['SOL', m.solUsd],
+            ['TAO', m.taoUsd],
+            ['EGLD', m.egldUsd],
+            ['GOLD', m.goldUsd],
+          ] as const
+        ).map(([lab, v]) => (
+          <div key={lab} className="rounded-lg border border-white/10 bg-black/30 px-2 py-1.5">
+            <p className="text-zinc-500">{lab}</p>
+            <p className="font-semibold tabular-nums text-white">
+              {v != null ? (v >= 100 ? `$${Math.round(v)}` : `$${v.toFixed(2)}`) : '—'}
+            </p>
+          </div>
+        ))}
       </div>
       <BarChart
-        label="Relative scale (display only)"
+        label="Log scale (display)"
         values={priceBars}
-        labels={['BTC', 'ETH', 'EGLD×']}
+        labels={['BTC', 'ETH', 'SOL', 'TAO', 'EGLD', 'XAU']}
         color="#a78bfa"
       />
       <div className="grid grid-cols-3 gap-2 text-[12px]">
@@ -183,13 +220,7 @@ export default function MarketMetricsCharts() {
           </p>
         </div>
       </div>
-      <BarChart
-        label="Shadow fills vs win% (scaled)"
-        values={[m.fills || 0, (m.winRate || 0) * 100, Math.abs(m.shadowPnl || 0) * 10]}
-        labels={['fills', 'win%', '|pnl|']}
-        color="#34d399"
-      />
-      <p className="text-[10px] text-zinc-600">Paper · friction on · not investment advice</p>
+      <p className="text-[10px] text-zinc-600">Paper · not investment advice</p>
     </section>
   )
 }
