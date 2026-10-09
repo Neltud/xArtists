@@ -1,5 +1,25 @@
 # Changelog — xArtists
 
+## [0.94.0](https://github.com/Neltud/xArtists/compare/v0.93.0...v0.94.0) (2026-10-09)
+
+
+### Features
+
+* **audio:** PlaylistPlayerModal SoundCloud/YouTube — HUD music, bg play when modal closed ([f0c00dd](https://github.com/Neltud/xArtists/commit/f0c00dde2ef837b3d79e5c812b39cf4cdf113fc9))
+* **checkout:** dual rail Crypto (EGLD/TRO) + Fiat FC/Stripe/SEPA modal · LIA isolated from broker ([2425c68](https://github.com/Neltud/xArtists/commit/2425c6814ed22ed1b81803e183239765854a1ae2))
+* **defi:** Hatom / AshSwap / Soul builders + DeFiCommandPanel in Command Center ([e433ad1](https://github.com/Neltud/xArtists/commit/e433ad1d209906174d049fadad402e08f8f0c23e))
+* **legal+auth:** LoginModal simplified + guest fiat receive id · FooterLegal MiCA-style · terms sections ([9f7dbde](https://github.com/Neltud/xArtists/commit/9f7dbde9feb27c06769eb047919d8fcb6e0c72a1))
+* **news:** live news worker + live_news.json + LiveNewsStream multi-source fetch ([cdcde87](https://github.com/Neltud/xArtists/commit/cdcde87d0f505eb12296bf35ef89af73a22cd660))
+* wire WebglPauseBridge in App · modal pause battery ([93aded7](https://github.com/Neltud/xArtists/commit/93aded7cc7478e160cd142077f372d60ffca15e2))
+
+
+### Bug Fixes
+
+* **auth:** Header uses LoginModal (classic + simplified) — single connect path ([f88de4b](https://github.com/Neltud/xArtists/commit/f88de4be9b0ffb88ed3e8a61cbba492edc15d083))
+* defi slippage+deadline+gas15% · WebGL pause on modal · news merge fallback ([2d33e78](https://github.com/Neltud/xArtists/commit/2d33e7838f55b3c8a26cf1c4053f20a3b741ebd1))
+* **holo:** brighter lighting, camera lerp zoom on panel, fullscreen inspect modal, larger labels ([e4e3f30](https://github.com/Neltud/xArtists/commit/e4e3f308388aeb9963468935ec351e08905ff780))
+* **news:** free sources — MVX economics + Reddit r/MultiversX + RSS2JSON (no CryptoCompare key) ([cba23c8](https://github.com/Neltud/xArtists/commit/cba23c8dbe7e3a4ed71072424c1aa8ebf4df8b0d))
+
 ## [0.93.0](https://github.com/Neltud/xArtists/compare/v0.92.0...v0.93.0) (2026-10-09)
 
 
