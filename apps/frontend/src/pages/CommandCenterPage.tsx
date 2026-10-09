@@ -1,5 +1,5 @@
 /**
- * Command Center — ambient + rooms + LIA Shadow panel (paper) + daily signal.
+ * Command Center — holo wall + live multi-asset tape + rooms + shadow.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -13,6 +13,7 @@ import AgentNftOrb from '../command-center/AgentNftOrb'
 import MarketTape from '../command-center/MarketTape'
 import LiaShadowPanel from '../command-center/LiaShadowPanel'
 import AgentNftStakePanel, { isAgentNftStaked } from '../components/AgentNftStakePanel'
+import LiveAssetTape from '../components/LiveAssetTape'
 import { useAgentAccess, setEmpireZone, empireTxStart } from '../store/empireStore'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
@@ -104,9 +105,7 @@ function CommandCenterInner() {
           <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-400/80 font-semibold font-tech">
             Zone 2 · {t('cc.title')}
           </p>
-          <span className="text-[9px] rounded-full border border-white/15 px-2 py-0.5 text-zinc-400">
-            {mode}
-          </span>
+          <span className="text-[9px] rounded-full border border-white/15 px-2 py-0.5 text-zinc-400">{mode}</span>
           <span className="text-[9px] rounded-full border border-white/15 px-2 py-0.5 text-zinc-400">
             {source}
             {pulseWs ? ' · live' : ''}
@@ -119,6 +118,7 @@ function CommandCenterInner() {
         <p className="text-sm text-zinc-400">{t('cc.subtitle')}</p>
       </header>
 
+      <LiveAssetTape />
       <DailySignalWidget compact />
 
       <div className="flex flex-wrap gap-2">
@@ -183,12 +183,16 @@ function CommandCenterInner() {
             <Link to="/marketplace" className="btn-secondary text-sm">
               {t('nav.market')}
             </Link>
+            <Link to="/lia" className="btn-secondary text-sm">
+              LIA Hub
+            </Link>
           </div>
         </div>
       )}
 
       {room !== 'hub' && packs.includes(room as PackId) && (
         <div className="space-y-4">
+          <LiveAssetTape compact />
           <AgentNftOrb
             packId={room as PackId}
             staked={isAgentNftStaked(room as PackId)}

@@ -1,6 +1,5 @@
 /**
- * LIA Hub — Shadow Sprint + Holder terminal (P1/P2).
- * Poll 15s · SHADOW labels · LIA_LIVE_TRADING=0.
+ * LIA Hub — live multi-asset + Shadow + Holder terminal.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -11,7 +10,6 @@ import { matrixFromPulse, runDecisionCycle } from '../lia/decisionCycle'
 import { fetchEgldPrice } from '../lia/priceTick'
 import { fetchProtocolProfile } from '../lia/protocolProfile'
 import { persistShadowExport } from '../lia/shadowExport'
-import { loadIntentFeed, type FeedItem } from '../lia/intentFeed'
 import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumStatus'
 import { fetchLiaHubStatus, type LiaHubStatus } from '../lia/hubStatus'
 import { fetchLiaStatus, auraFromStatus, type LiaStatusV1 } from '../lia/liaStatus'
@@ -23,6 +21,7 @@ import ShadowPerformance from '../components/lia/ShadowPerformance'
 import MarketMetricsCharts from '../components/lia/MarketMetricsCharts'
 import IntentFeedTerminal from '../components/lia/IntentFeedTerminal'
 import HolderTerminal from '../components/lia/HolderTerminal'
+import LiveAssetTape from '../components/LiveAssetTape'
 import RceStrip from '../components/RceStrip'
 
 const API = 'https://api.multiversx.com'
@@ -141,38 +140,34 @@ export default function LiaPage() {
           <h1 className="section-title display text-2xl">Intelligence</h1>
           <AuraBadge mode={String(auraMode)} trend={fromAgg.trend || ambient.trend} />
         </div>
-        <p className="text-sm text-zinc-400">
-          SHADOW / SIMULATED · holder terminal · poll 15s
-        </p>
+        <p className="text-sm text-zinc-400">SHADOW / SIMULATED · live tape · poll 15s</p>
         <RceStrip compact />
       </header>
 
+      <LiveAssetTape />
+
       <div className="grid sm:grid-cols-3 gap-3 text-sm">
-        <div className="card">
+        <div className="card border-cyan-500/20">
           <p className="text-[10px] uppercase text-zinc-500">Source</p>
           <p className="font-semibold text-white">{asText(statusLabel)}</p>
         </div>
-        <div className="card">
+        <div className="card border-cyan-500/20">
           <p className="text-[10px] uppercase text-zinc-500">Aura</p>
           <p className="font-semibold text-white">{asText(auraMode)}</p>
           <p className="text-[10px] text-zinc-500">
             {asText(fromAgg.source)} · market {asText(mAura)}
           </p>
         </div>
-        <div className="card">
+        <div className="card border-cyan-500/20">
           <p className="text-[10px] uppercase text-zinc-500">Shadow PnL</p>
           <p className="font-semibold tabular-nums">{shadowPnlText}</p>
         </div>
       </div>
 
       <HolderTerminal />
-
       <ShadowPerformance />
-
       <IntentFeedTerminal />
-
       <MarketMetricsCharts />
-
       <MatrixBoard />
 
       <section className="card space-y-2">
@@ -207,17 +202,17 @@ export default function LiaPage() {
         >
           {loading ? '…' : 'Actualiser'}
         </button>
+        <Link to="/command-center" className="btn-secondary text-sm">
+          Command Center
+        </Link>
         <Link to="/portfolio" className="btn-secondary text-sm">
           Portfolio
-        </Link>
-        <Link to="/go-live" className="btn-secondary text-sm">
-          Status
         </Link>
       </div>
 
       <ul className="text-[11px] text-zinc-600 space-y-1">
-        <li>Tout performance LIA = SHADOW / SIMULATED — pas d'alpha live.</li>
-        <li>LIA_LIVE_TRADING=0.</li>
+        <li>Performance LIA = SHADOW / SIMULATED — pas d&apos;alpha live.</li>
+        <li>LIA_LIVE_TRADING=0 · prix tape = sources publiques.</li>
       </ul>
     </div>
   )
