@@ -1,0 +1,63 @@
+{
+  "version": 2,
+  "updatedAt": "2026-10-09T21:55:00.000Z",
+  "note": "Seed live — rafraîchir via node services/news-worker/fetch_news.mjs",
+  "items": [
+    {
+      "id": "egld-seed",
+      "timestamp": "21:55",
+      "source": "EGLD",
+      "title": "Cotation publique via API MultiversX economics",
+      "link": "https://explorer.multiversx.com"
+    },
+    {
+      "id": "mvx-agent-stack",
+      "timestamp": "10:00",
+      "source": "MultiversX",
+      "title": "Universal Agentic Commerce Stack — paiements agents on-chain",
+      "link": "https://multiversx.com/blog"
+    },
+    {
+      "id": "mvx-openclaw",
+      "timestamp": "09:30",
+      "source": "MultiversX",
+      "title": "Max (OpenClaw) agent live sur MultiversX",
+      "link": "https://multiversx.com/blog"
+    },
+    {
+      "id": "mvx-ap2",
+      "timestamp": "09:00",
+      "source": "MultiversX",
+      "title": "Intégration Google AP2 & commerce agentique",
+      "link": "https://multiversx.com/blog"
+    },
+    {
+      "id": "mvx-warps",
+      "timestamp": "08:30",
+      "source": "MultiversX",
+      "title": "Warps v3 — standard dApp & UX",
+      "link": "https://multiversx.com/blog"
+    },
+    {
+      "id": "news-xex",
+      "timestamp": "10:45",
+      "source": "xExchange",
+      "title": "Mise à jour des pools de liquidité et frais d'agrégation",
+      "link": "https://xexchange.com"
+    },
+    {
+      "id": "news-dex",
+      "timestamp": "09:12",
+      "source": "DEX",
+      "title": "Volume en hausse sur les DEX MultiversX",
+      "link": "https://explorer.multiversx.com"
+    },
+    {
+      "id": "news-xportal",
+      "timestamp": "08:30",
+      "source": "xPortal",
+      "title": "Sessions wallet mobile stabilisées (multi-TX)",
+      "link": "https://xportal.com"
+    }
+  ]
+}
