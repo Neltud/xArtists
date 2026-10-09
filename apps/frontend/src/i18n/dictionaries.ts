@@ -1,5 +1,104 @@
 import type { Dict, Lang } from './types'
 
+/** Shared extra keys applied on top of each locale base */
+const homeFr = {
+  'home.kicker': "xArtists · salle d'accueil",
+  'home.title': 'Entre dans les pièces',
+  'home.lead': 'Comme au musée : chaque panneau est une porte. Clique pour changer de salle.',
+  'home.plan': 'Plan du musée (liste)',
+  'home.also': 'Aussi',
+  'home.contracts': 'Contrats mainnet',
+  'home.hall.hint': 'Glisse pour tourner · clique une porte illustrée',
+  'nav.lia': 'LIA',
+  'nav.studio': 'Studio',
+  'lia.title': 'LIA Hub',
+  'lia.subtitle': 'Signaux paper · tape live · shadow',
+}
+
+const homeEn = {
+  'home.kicker': 'xArtists · entrance hall',
+  'home.title': 'Enter the rooms',
+  'home.lead': 'Like a museum: each panel is a door. Click to change room.',
+  'home.plan': 'Museum map (list)',
+  'home.also': 'Also',
+  'home.contracts': 'Mainnet contracts',
+  'home.hall.hint': 'Drag to turn · click an illustrated door',
+  'nav.lia': 'LIA',
+  'nav.studio': 'Studio',
+  'lia.title': 'LIA Hub',
+  'lia.subtitle': 'Paper signals · live tape · shadow',
+}
+
+const homeEs = {
+  'home.kicker': 'xArtists · sala de entrada',
+  'home.title': 'Entra en las salas',
+  'home.lead': 'Como un museo: cada panel es una puerta. Clic para cambiar de sala.',
+  'home.plan': 'Plano del museo (lista)',
+  'home.also': 'También',
+  'home.contracts': 'Contratos mainnet',
+  'home.hall.hint': 'Arrastra para girar · clic en una puerta',
+  'nav.lia': 'LIA',
+  'nav.studio': 'Studio',
+  'lia.title': 'LIA Hub',
+  'lia.subtitle': 'Señales paper · cinta en vivo · shadow',
+}
+
+const homeRu = {
+  'home.kicker': 'xArtists · входной зал',
+  'home.title': 'Войдите в залы',
+  'home.lead': 'Как в музее: каждая панель — дверь. Нажмите, чтобы сменить зал.',
+  'home.plan': 'План музея (список)',
+  'home.also': 'Также',
+  'home.contracts': 'Контракты mainnet',
+  'home.hall.hint': 'Тяните, чтобы повернуть · клик по двери',
+  'nav.lia': 'LIA',
+  'nav.studio': 'Studio',
+  'lia.title': 'LIA Hub',
+  'lia.subtitle': 'Paper-сигналы · live tape · shadow',
+}
+
+const homeUk = {
+  'home.kicker': 'xArtists · вхідна зала',
+  'home.title': 'Увійдіть до зал',
+  'home.lead': 'Як у музеї: кожна панель — двері. Натисніть, щоб змінити залу.',
+  'home.plan': 'План музею (список)',
+  'home.also': 'Також',
+  'home.contracts': 'Контракти mainnet',
+  'home.hall.hint': 'Тягніть, щоб повернути · клік по дверях',
+  'nav.lia': 'LIA',
+  'nav.studio': 'Studio',
+  'lia.title': 'LIA Hub',
+  'lia.subtitle': 'Paper-сигнали · live tape · shadow',
+}
+
+const homeZh = {
+  'home.kicker': 'xArtists · 入口大厅',
+  'home.title': '进入房间',
+  'home.lead': '像博物馆：每个面板都是一扇门。点击切换房间。',
+  'home.plan': '博物馆平面图（列表）',
+  'home.also': '更多',
+  'home.contracts': '主网合约',
+  'home.hall.hint': '拖动旋转 · 点击插图门',
+  'nav.lia': 'LIA',
+  'nav.studio': '工作室工作室',
+  'lia.title': 'LIA 中心',
+  'lia.subtitle': '纸面信号 · 实时行情 · shadow',
+}
+
+const homeAr = {
+  'home.kicker': 'xArtists · قاعة المدخل',
+  'home.title': 'ادخل القاعات',
+  'home.lead': 'مثل المتحف: كل لوحة باب. انقر لتغيير القاعة.',
+  'home.plan': 'خريطة المتحف (قائمة)',
+  'home.also': 'أيضاً',
+  'home.contracts': 'عقود الشبكة الرئيسية',
+  'home.hall.hint': 'اسحب للدوران · انقر على باب مرسوم',
+  'nav.lia': 'LIA',
+  'nav.studio': 'الاستوديو',
+  'lia.title': 'مركز LIA',
+  'lia.subtitle': 'إشارات ورقية · شريط حي · shadow',
+}
+
 const slotFr = {
   'slot.title': 'Slot Atelier',
   'slot.lead': 'Fun = crédits virtuels. Réel bientôt (SC).',
@@ -52,6 +151,7 @@ const fr: Dict = {
   'common.loading': 'Chargement…',
   'lang.label': 'Langue',
   ...slotFr,
+  ...homeFr,
 }
 
 const en: Dict = {
@@ -102,6 +202,7 @@ const en: Dict = {
   'common.buy': 'Buy',
   'market.title': 'Marketplace',
   'staking.title': 'Staking & Yield',
+  ...homeEn,
 }
 
 const es: Dict = {
@@ -152,6 +253,7 @@ const es: Dict = {
   'common.buy': 'Comprar',
   'market.title': 'Marketplace',
   'staking.title': 'Staking & Yield',
+  ...homeEs,
 }
 
 const ru: Dict = {
@@ -202,6 +304,7 @@ const ru: Dict = {
   'common.buy': 'Купить',
   'market.title': 'Marketplace',
   'staking.title': 'Staking & Yield',
+  ...homeRu,
 }
 
 const uk: Dict = {
@@ -252,6 +355,7 @@ const uk: Dict = {
   'common.buy': 'Купити',
   'market.title': 'Marketplace',
   'staking.title': 'Staking & Yield',
+  ...homeUk,
 }
 
 const zh: Dict = {
@@ -301,6 +405,7 @@ const zh: Dict = {
   'common.buy': '购买',
   'market.title': '市场',
   'staking.title': '质押与收益',
+  ...homeZh,
 }
 
 const ar: Dict = {
@@ -351,6 +456,7 @@ const ar: Dict = {
   'common.buy': 'شراء',
   'market.title': 'السوق',
   'staking.title': 'Staking & Yield',
+  ...homeAr,
 }
 
 export const DICTS: Record<Lang, Dict> = { fr, en, es, ru, uk, zh, ar }
