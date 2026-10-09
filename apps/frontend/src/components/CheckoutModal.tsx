@@ -1,8 +1,8 @@
 /**
  * Checkout packs — Crypto (wallet) | Fiat (wallet ou guest receive id).
- * LIA hors flux (analytique / paper uniquement).
+ * data-xartists-modal="1" → pause WebGL.
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getPack, type PackId } from '../config/agentPacks'
 import { useWallet } from '../context/WalletContext'
@@ -18,6 +18,7 @@ import {
 } from '../lib/payments'
 import AccessTermsModal from './AccessTermsModal'
 import { generateGuestReceiveId, loadGuestReceiveId, saveGuestReceiveId } from './LoginModal'
+import { useWebglPauseWhen } from '../hooks/useWebglPause'
 
 export type CheckoutRail = 'crypto' | 'fiat' | null
 
@@ -53,6 +54,16 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
   const hasFiat = methods.length > 0
   const mintLive = canBuyAgent()
   const hasErd1 = connected && !!address?.startsWith('erd1')
+
+  useWebglPauseWhen(open)
+
+  useEffect(() => {
+    if (!open) {
+      setRail(null)
+      setMsg('')
+      setBusy(false)
+    }
+  }, [open])
 
   if (!open || !pack) return null
 
@@ -144,14 +155,15 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm p-3"
+      data-xartists-modal="1"
+      className="xa-modal-overlay fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm"
       role="dialog"
       aria-modal
       aria-labelledby="checkout-title"
       onClick={onClose}
     >
       <div
-        className="glass-hud w-full max-w-md max-h-[92vh] overflow-y-auto p-4 space-y-4 shadow-[0_0_40px_rgba(139,92,246,0.2)]"
+        className="xa-modal-panel glass-hud w-full max-w-md max-h-[92vh] overflow-y-auto space-y-4 shadow-[0_0_40px_rgba(139,92,246,0.2)]"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-2">
@@ -163,7 +175,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
               {pack.icon} {pack.name}{' '}
               <span className="text-[11px] font-normal text-zinc-500">{pack.tierLabel}</span>
             </h2>
-            <p className="text-[12px] text-zinc-400 mt-0.5">
+            <p className="text-[12px] text-zinc-400 mt-0.5 mono tabular-nums">
               {pack.priceEgld.list} EGLD · ≈ {pack.priceEur.list} €
             </p>
           </div>
@@ -197,7 +209,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
             <p className="text-[12px] text-zinc-400 mt-1">
               EGLD via <strong className="text-zinc-200">xPortal</strong> (wallet requis).
             </p>
-            <p className="text-[11px] text-cyan-300/90 mt-1.5 mono">
+            <p className="text-[11px] text-cyan-300/90 mt-1.5 mono tabular-nums">
               {pack.priceEgld.list} EGLD · mint {mintLive ? 'ouvert' : 'bientôt'}
             </p>
           </button>
@@ -221,7 +233,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
               <strong className="text-zinc-200">ID réception temporaire</strong> → mint après claim
               erd1.
             </p>
-            <p className="text-[11px] text-violet-300/90 mt-1.5">
+            <p className="text-[11px] text-violet-300/90 mt-1.5 mono tabular-nums">
               {pack.priceEur.list} € · {hasFiat ? 'gateway dispo' : 'config ops'}
               {!hasErd1 && guestId ? ` · guest ${guestId.slice(0, 18)}…` : ''}
             </p>

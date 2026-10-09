@@ -1,5 +1,5 @@
 /**
- * Live multi-asset tape — labels HTML vectoriels (pas canvas).
+ * Live multi-asset tape — mono tabular-nums.
  */
 import { useEffect, useState } from 'react'
 import { asText } from '../lib/safeRender'
@@ -130,7 +130,9 @@ export default function LiveAssetTape({ compact }: { compact?: boolean }) {
           LIVE
         </span>
         {ts && (
-          <span className="text-[9px] text-zinc-600 mono">{new Date(ts).toLocaleTimeString()}</span>
+          <span className="text-[9px] text-zinc-600 mono tabular-nums">
+            {new Date(ts).toLocaleTimeString()}
+          </span>
         )}
       </div>
       <div className="flex gap-3 overflow-x-auto px-3 pb-1">
@@ -143,14 +145,13 @@ export default function LiveAssetTape({ compact }: { compact?: boolean }) {
               className="shrink-0 min-w-[92px] rounded-xl border border-white/12 bg-black/45 px-2.5 py-1.5"
             >
               <p className="text-[10px] font-semibold tracking-wide text-zinc-400">{a.symbol}</p>
-              <p
-                className="text-[14px] font-bold tabular-nums text-white antialiased"
-                style={{ textRendering: 'geometricPrecision' }}
-              >
+              <p className="text-[14px] font-bold mono tabular-nums text-white antialiased">
                 {fmt(a.usd, a.symbol)}
               </p>
               {ch != null && (
-                <p className={`text-[10px] tabular-nums ${up ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <p
+                  className={`text-[10px] mono tabular-nums ${up ? 'text-emerald-400' : 'text-rose-400'}`}
+                >
                   {up ? '+' : ''}
                   {asText(ch.toFixed(1))}%
                 </p>

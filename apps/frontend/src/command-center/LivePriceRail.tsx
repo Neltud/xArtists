@@ -1,5 +1,5 @@
 /**
- * Overlay HTML 2D — prix EGLD / $TRO vectoriels au-dessus du canvas 3D.
+ * Overlay HTML 2D — prix EGLD / $TRO · mono tabular-nums.
  */
 import { useEffect, useState } from 'react'
 
@@ -75,7 +75,8 @@ export default function LivePriceRail() {
 
   return (
     <div className="data-overlay-rail absolute right-2 top-10 bottom-8 z-10 w-[7.75rem] pointer-events-none">
-      <div className="h-full rounded-xl border border-cyan-400/30 bg-black/55 px-2.5 py-2.5 flex flex-col gap-2.5 shadow-[0_0_20px_rgba(34,211,238,0.12)]"
+      <div
+        className="h-full rounded-xl border border-cyan-400/30 bg-black/55 px-2.5 py-2.5 flex flex-col gap-2.5 shadow-[0_0_20px_rgba(34,211,238,0.12)]"
         style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
       >
         <div className="flex items-center gap-1.5">
@@ -87,10 +88,7 @@ export default function LivePriceRail() {
         {rows.map(r => (
           <div key={r.k} className="border-b border-white/10 pb-2 last:border-0">
             <p className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400">{r.k}</p>
-            <p
-              className={`text-[13px] font-bold tabular-nums font-tech leading-tight antialiased ${r.accent}`}
-              style={{ textRendering: 'geometricPrecision' }}
-            >
+            <p className={`text-[13px] font-bold mono tabular-nums leading-tight antialiased ${r.accent}`}>
               {r.v}
             </p>
           </div>

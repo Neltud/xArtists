@@ -1,5 +1,5 @@
 /**
- * DeFi Hub — Hatom / AshSwap / Soul · préparer TX → signature xPortal manuelle.
+ * DeFi Hub — Hatom / AshSwap / Soul · feedback Copié !
  */
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -63,6 +63,7 @@ export default function DeFiCommandPanel() {
   const [prepared, setPrepared] = useState<PreparedTx | null>(null)
   const [collateralUsd, setCollateralUsd] = useState('100')
   const [borrowUsd, setBorrowUsd] = useState('0')
+  const [copied, setCopied] = useState(false)
 
   const hf = useMemo(
     () =>
@@ -94,26 +95,30 @@ export default function DeFiCommandPanel() {
     if (proto === 'ashswap' && kind === 'add_lp') tx = buildAshAddLiquidityUsdc(n)
     if (proto === 'soul') tx = buildSoulPlaceholder('supply')
     setPrepared(tx)
+    setCopied(false)
   }
 
   const copyData = async () => {
-    if (!prepared?.data) return
+    if (!prepared) return
+    const payload = JSON.stringify(
+      {
+        receiver: prepared.receiver,
+        value: prepared.value,
+        data: prepared.data,
+        gasLimit: prepared.gasLimit,
+        chainId: prepared.chainId,
+        slippage: prepared.slippage,
+        deadline: prepared.deadline,
+      },
+      null,
+      2,
+    )
     try {
-      await navigator.clipboard.writeText(
-        JSON.stringify(
-          {
-            receiver: prepared.receiver,
-            value: prepared.value,
-            data: prepared.data,
-            gasLimit: prepared.gasLimit,
-            chainId: prepared.chainId,
-          },
-          null,
-          2,
-        ),
-      )
+      await navigator.clipboard.writeText(payload)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
     } catch {
-      /* */
+      setCopied(false)
     }
   }
 
@@ -145,6 +150,7 @@ export default function DeFiCommandPanel() {
             onClick={() => {
               setProto(c.id)
               setPrepared(null)
+              setCopied(false)
             }}
             className={`text-left rounded-xl border p-3 transition ${
               proto === c.id
@@ -165,7 +171,7 @@ export default function DeFiCommandPanel() {
           <label className="space-y-1">
             <span className="text-zinc-500">Collateral USD (estim.)</span>
             <input
-              className="w-full rounded-lg bg-black/50 border border-white/10 px-2 py-1.5"
+              className="w-full rounded-lg bg-black/50 border border-white/10 px-2 py-1.5 mono tabular-nums"
               value={collateralUsd}
               onChange={e => setCollateralUsd(e.target.value)}
             />
@@ -173,7 +179,7 @@ export default function DeFiCommandPanel() {
           <label className="space-y-1">
             <span className="text-zinc-500">Borrow USD (estim.)</span>
             <input
-              className="w-full rounded-lg bg-black/50 border border-white/10 px-2 py-1.5"
+              className="w-full rounded-lg bg-black/50 border border-white/10 px-2 py-1.5 mono tabular-nums"
               value={borrowUsd}
               onChange={e => setBorrowUsd(e.target.value)}
             />
@@ -181,7 +187,7 @@ export default function DeFiCommandPanel() {
           <div className="flex flex-col justify-end">
             <span className="text-zinc-500">Health Factor</span>
             <span
-              className={`font-tech text-sm ${
+              className={`font-tech mono tabular-nums text-sm ${
                 hfUi.tone === 'safe'
                   ? 'text-emerald-400'
                   : hfUi.tone === 'warn'
@@ -201,7 +207,7 @@ export default function DeFiCommandPanel() {
         <label className="space-y-1 text-[11px]">
           <span className="text-zinc-500">Montant</span>
           <input
-            className="w-28 rounded-lg bg-black/50 border border-white/10 px-2 py-1.5 text-sm"
+            className="w-28 rounded-lg bg-black/50 border border-white/10 px-2 py-1.5 text-sm mono tabular-nums"
             value={amount}
             onChange={e => setAmount(e.target.value)}
           />
@@ -248,18 +254,19 @@ export default function DeFiCommandPanel() {
           {prepared.riskNote && <p className="text-amber-200/80">{prepared.riskNote}</p>}
           {prepared.receiver ? (
             <>
-              <p className="mono text-zinc-500 break-all">→ {prepared.receiver}</p>
+              <p className="mono tabular-nums text-zinc-500 break-all">→ {prepared.receiver}</p>
               <p className="mono text-zinc-400 break-all">data: {prepared.data.slice(0, 80)}…</p>
-              <p className="text-zinc-500">
+              <p className="mono tabular-nums text-zinc-500">
                 value={prepared.value} · gas={prepared.gasLimit}
+                {prepared.slippage != null ? ` · slip=${(prepared.slippage * 100).toFixed(1)}%` : ''}
                 {connected && address ? ` · from ${address.slice(0, 8)}…` : ' · connecte xPortal'}
               </p>
-              <div className="flex flex-wrap gap-2 pt-1">
-                <button type="button" className="btn-secondary text-xs" onClick={copyData}>
-                  Copier payload JSON
+              <div className="flex flex-wrap gap-2 pt-1 items-center">
+                <button type="button" className="btn-secondary text-xs min-w-[7rem]" onClick={copyData}>
+                  {copied ? '✓ Copié !' : 'Copier payload JSON'}
                 </button>
-                <span className="text-zinc-600 self-center">
-                  Colle dans xPortal / sdk-dapp signTransactions (prochaine itération: send auto)
+                <span className="text-zinc-600">
+                  Colle dans xPortal / sdk-dapp signTransactions
                 </span>
               </div>
             </>
