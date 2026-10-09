@@ -1,51 +1,74 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "collection": "xArtists Agent Packs",
   "ticker_hint": "XAPACK-pending",
   "chain": "multiversx",
-  "note": "NFT access packs — mint SC pending. Tours art is NOT a pack.",
+  "note": "Pulse = FULL suite. Yield/Sentinel = limited tiers. Tours art is NOT a pack.",
   "series": [
     {
       "id": "pulse",
       "name": "Pulse",
-      "tier": "A",
+      "tier": "full",
+      "tier_label": "COMPLET",
       "max_supply": 333,
-      "price_eur": 18,
+      "price_egld": 25,
+      "price_eur": 110,
+      "features": [
+        "command_hub",
+        "tca",
+        "lia_full",
+        "live_tape_full",
+        "trading_signals",
+        "defi_sleeve",
+        "risk_alerts",
+        "room_3d"
+      ],
       "attributes": [
         { "trait_type": "Series", "value": "Pulse" },
+        { "trait_type": "Tier", "value": "Full" },
         { "trait_type": "Signal", "value": "High" },
-        { "trait_type": "Strategies", "value": "MICRO_ARB,MOMENTUM,MEAN_REVERSION" }
+        { "trait_type": "Strategies", "value": "MICRO_ARB,MOMENTUM,MEAN_REVERSION,BOARD_TICK" }
       ],
       "image": "ipfs://pending/pulse.png",
-      "description": "NFT pack Pulse — access slot + board signals. Not investment advice."
+      "description": "Pack complet — CC hub, TCA, LIA, multi-actifs, signaux HF. Not investment advice."
     },
     {
       "id": "yield",
       "name": "Yield",
-      "tier": "B",
+      "tier": "limited_defi",
+      "tier_label": "LIMITÉ · DEFI",
       "max_supply": 500,
-      "price_eur": 12,
+      "price_egld": 15,
+      "price_eur": 68,
+      "features": ["room_3d", "command_room_yield", "defi_sleeve", "agent_stake"],
+      "limits": ["no_tca", "no_trading_hf", "no_lia_full", "no_command_hub"],
       "attributes": [
         { "trait_type": "Series", "value": "Yield" },
+        { "trait_type": "Tier", "value": "Limited DeFi" },
         { "trait_type": "Signal", "value": "Medium" },
-        { "trait_type": "Strategies", "value": "YIELD,COMPOUND" }
+        { "trait_type": "Strategies", "value": "YIELD,COMPOUND,LP_REBALANCE,HATOM_VIEW" }
       ],
       "image": "ipfs://pending/yield.png",
-      "description": "NFT pack Yield — DeFi sleeve view. No APY guarantee."
+      "description": "Pack limité DeFi — LP/Hatom/compound. Pas de trading HF ni TCA."
     },
     {
       "id": "sentinel",
       "name": "Sentinel",
-      "tier": "C",
+      "tier": "limited_guard",
+      "tier_label": "LIMITÉ · GUARD",
       "max_supply": 777,
-      "price_eur": 8,
+      "price_egld": 10,
+      "price_eur": 45,
+      "features": ["room_3d", "command_room_sentinel", "risk_alerts", "agent_stake"],
+      "limits": ["no_tca", "no_trading_hf", "no_lia_full", "no_command_hub", "no_defi_active"],
       "attributes": [
         { "trait_type": "Series", "value": "Sentinel" },
+        { "trait_type": "Tier", "value": "Limited Guard" },
         { "trait_type": "Signal", "value": "Guard" },
-        { "trait_type": "Strategies", "value": "GUARD,ALERT" }
+        { "trait_type": "Strategies", "value": "GUARD,ALERT,DRAWDOWN_WATCH,BOARD_ALERT" }
       ],
       "image": "ipfs://pending/sentinel.png",
-      "description": "NFT pack Sentinel — alerts & risk sleeve."
+      "description": "Pack limité guard — alertes risk. Pas d'exécution agressive."
     }
   ],
   "mint": {
