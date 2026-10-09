@@ -1,6 +1,5 @@
 /**
- * Command Center — gated by pack tier:
- * Pulse = full hub · Yield/Sentinel = room only + limited panels.
+ * Command Center — holo 360 data room + pack-gated panels.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -15,6 +14,7 @@ import MarketTape from '../command-center/MarketTape'
 import LiaShadowPanel from '../command-center/LiaShadowPanel'
 import AgentNftStakePanel, { isAgentNftStaked } from '../components/AgentNftStakePanel'
 import LiveAssetTape from '../components/LiveAssetTape'
+import HoloDataRoom from '../components/HoloDataRoom'
 import { useAgentAccess, setEmpireZone, empireTxStart } from '../store/empireStore'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
@@ -100,10 +100,10 @@ function CommandCenterInner() {
   }
 
   const tierNote = features.commandHub
-    ? 'Pack Pulse (complet) — hub + tape + LIA shadow'
+    ? 'Pack Pulse (complet) — hub holo 360 + tape + LIA'
     : packs.length
-      ? `Tier limité (${packs.join(', ')}) — salle dédiée · upgrade Pulse pour le hub full`
-      : 'Aperçu SAMPLE — connecte un pack'
+      ? `Tier limité (${packs.join(', ')}) — salle dédiée · Pulse = full hub`
+      : 'Aperçu SAMPLE — holo 360 ouvert'
 
   return (
     <div className="animate-fade-in space-y-6 pb-28 max-w-4xl mx-auto relative">
@@ -137,11 +137,6 @@ function CommandCenterInner() {
       </header>
 
       {(features.liveTapeFull || !packs.length) && <LiveAssetTape />}
-      {!features.liveTapeFull && packs.length > 0 && (
-        <p className="text-[11px] text-zinc-500 rounded-xl border border-white/10 px-3 py-2">
-          Live tape multi-actifs réservée au pack <strong className="text-zinc-300">Pulse</strong>.
-        </p>
-      )}
 
       <DailySignalWidget compact />
 
@@ -178,6 +173,12 @@ function CommandCenterInner() {
 
       {room === 'hub' && (
         <div className="space-y-4">
+          <HoloDataRoom
+            mode="hub"
+            sentiment={lia.uniforms.uSentiment}
+            volatility={lia.uniforms.uVolatility}
+            height={500}
+          />
           <CommandWall
             sentiment={lia.uniforms.uSentiment}
             volatility={lia.uniforms.uVolatility}
@@ -199,7 +200,7 @@ function CommandCenterInner() {
           )}
           {features.agentStake && <AgentNftStakePanel key={tick} packIds={packs} />}
           {(features.liaFull || !packs.length) && <LiaShadowPanel />}
-          {features.commandHub && (
+          {(features.commandHub || !packs.length) && (
             <>
               <DashboardSource />
               <AgentRoster />
@@ -214,11 +215,9 @@ function CommandCenterInner() {
             <Link to="/marketplace" className="btn-secondary text-sm">
               {t('nav.market')}
             </Link>
-            {(features.liaFull || !packs.length) && (
-              <Link to="/lia" className="btn-secondary text-sm">
-                LIA Hub
-              </Link>
-            )}
+            <Link to="/lia" className="btn-secondary text-sm">
+              LIA Hub
+            </Link>
             {features.tca && (
               <Link to="/tca" className="btn-secondary text-sm">
                 TCA
@@ -236,6 +235,12 @@ function CommandCenterInner() {
       {room !== 'hub' && packs.includes(room as PackId) && (
         <div className="space-y-4">
           {room === 'pulse' && features.liveTapeFull && <LiveAssetTape compact />}
+          <HoloDataRoom
+            mode={room as PackId}
+            sentiment={lia.uniforms.uSentiment}
+            volatility={lia.uniforms.uVolatility}
+            height={460}
+          />
           <AgentNftOrb
             packId={room as PackId}
             staked={isAgentNftStaked(room as PackId)}
@@ -247,8 +252,8 @@ function CommandCenterInner() {
               room === 'pulse'
                 ? 'FULL · HF signals · micro-arb · board'
                 : room === 'yield'
-                  ? 'LIMITÉ · LP sleeve · claims · pas de trading HF'
-                  : 'LIMITÉ · watch · risk alerts'
+                  ? 'LIMITÉ · LP sleeve · claims'
+                  : 'LIMITÉ · risk alerts'
             }
             sentiment={
               room === 'yield'
