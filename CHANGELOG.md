@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.91.2](https://github.com/Neltud/xArtists/compare/v0.91.1...v0.91.2) (2026-10-09)
+
+
+### Bug Fixes
+
+* **main:** WebGL home monument + CC props + SAMPLE preview + redeploy Pages ([adbffec](https://github.com/Neltud/xArtists/commit/adbffecf99235382d3dac64b356952aa151bb7c1))
+
 ## [0.91.1](https://github.com/Neltud/xArtists/compare/v0.91.0...v0.91.1) (2026-10-08)
 
 
