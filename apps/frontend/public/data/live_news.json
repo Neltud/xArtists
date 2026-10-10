@@ -1,42 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-10T04:29:27.834Z",
+  "updatedAt": "2026-10-10T11:57:44.431Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1791606567341",
-      "timestamp": "04:29",
+      "id": "egld-1791633463934",
+      "timestamp": "11:57",
       "source": "EGLD",
-      "title": "Cotation publique · $4.03 (API MultiversX economics)",
+      "title": "Cotation publique · $3.97 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1791578357000",
+      "id": "rss-CoinTelegraph-0-1791621666000",
+      "timestamp": "08:41",
+      "source": "CoinTelegraph",
+      "title": "Tech chief says EU can fend off rogue AI risk: Report",
+      "link": "https://cointelegraph.com/news/tech-chief-says-eu-can-fend-off-rogue-ai-risk-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791616243000",
+      "timestamp": "07:10",
+      "source": "CoinTelegraph",
+      "title": "Sam Altman-backed Bitcoin life insurer, Meanwhile, raises more funds",
+      "link": "https://cointelegraph.com/news/sam-altman-backed-bitcoin-life-insurer-meanwhile-raises-more-funds?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1791578357000",
       "timestamp": "20:39",
       "source": "CoinTelegraph",
       "title": "US plans to seize $1B in crypto linked to Iran this week: Scott Bessent",
       "link": "https://cointelegraph.com/news/scott-bessent-us-seize-crypto-iran-sanctions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1791576842000",
+      "id": "rss-CoinTelegraph-3-1791576842000",
       "timestamp": "20:14",
       "source": "CoinTelegraph",
       "title": "New York permanently bars Celsius founder Mashinsky in $35M fraud settlement",
       "link": "https://cointelegraph.com/news/celsius-founder-alex-mashinsky-permanently-banned-from-crypto-industry-in-ny-settlement?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1791572643000",
+      "id": "rss-CoinTelegraph-4-1791572643000",
       "timestamp": "19:04",
       "source": "CoinTelegraph",
       "title": "THORChain exec accuses Tether of temporarily freezing USDT vaults",
       "link": "https://cointelegraph.com/news/thorchain-tether-freezing-usdt-addresses?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1791570611000",
+      "id": "rss-CoinTelegraph-5-1791570611000",
       "timestamp": "18:30",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1791610980000",
+      "timestamp": "05:43",
+      "source": "CoinDesk",
+      "title": "Bitcoin's volatility has plunged, but extreme price swings are more frequent than in 2018",
+      "link": "https://www.coindesk.com/markets/2026/10/09/bitcoin-s-volatility-has-plunged-but-extreme-price-swings-are-more-frequent-than-in-2018"
+    },
+    {
+      "id": "rss-CoinDesk-1-1791607475000",
+      "timestamp": "04:44",
+      "source": "CoinDesk",
+      "title": "Robinhood Chain slowdown spreads from fees to trading as transactions fall more than 40%",
+      "link": "https://www.coindesk.com/markets/2026/10/10/robinhood-chain-slowdown-spreads-from-fees-to-trading-as-transactions-fall-more-than-40"
+    },
+    {
+      "id": "rss-CoinDesk-2-1791606007000",
+      "timestamp": "04:20",
+      "source": "CoinDesk",
+      "title": "XRP Ledger patched decade-old bug that could create billions of dollars in XRP from nothing",
+      "link": "https://www.coindesk.com/tech/2026/10/10/xrp-ledger-patched-decade-old-bug-that-could-create-billions-of-dollars-in-xrp-from-nothing"
+    },
+    {
+      "id": "rss-CoinDesk-3-1791601200000",
+      "timestamp": "03:00",
+      "source": "CoinDesk",
+      "title": "Visa survey says nearly half of APAC consumers open to using stablecoins by 2031",
+      "link": "https://www.coindesk.com/business/2026/10/05/1-2-billion-apac-consumers-could-adopt-stablecoins-by-2031-according-to-visa"
+    },
+    {
+      "id": "egld-1791606567341",
+      "timestamp": "04:29",
+      "source": "EGLD",
+      "title": "Cotation publique · $4.03 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-4-1791566467000",
@@ -147,18 +196,6 @@
       "timestamp": "05:18",
       "source": "Builders",
       "title": "Sovereign chains & dApp hub en expansion"
-    },
-    {
-      "id": "news-stake",
-      "timestamp": "04:02",
-      "source": "Staking",
-      "title": "Validators 3200+ — recompute local, no screenshot trust"
-    },
-    {
-      "id": "news-xartists",
-      "timestamp": "02:50",
-      "source": "xArtists",
-      "title": "Command Center cyber deck · signaux paper LIA"
     }
   ]
 }
