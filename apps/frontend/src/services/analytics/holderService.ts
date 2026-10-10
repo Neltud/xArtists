@@ -3,6 +3,14 @@
  * API MultiversX publique — lecture seule, paper-safe.
  */
 const API = 'https://api.multiversx.com'
+
+/** MultiversX bech32 — erd1 + 58 chars [a-z0-9] */
+export const ERD_ADDRESS_RE = /^erd1[a-z0-9]{58}$/
+
+export function isValidErdAddress(addr: string | undefined | null): addr is string {
+  return typeof addr === 'string' && ERD_ADDRESS_RE.test(addr)
+}
+
 const TRO_IDS = ['TRO-94c925', 'TRO-3bc587'] as const
 
 /** Collections NFT xArtists connues (à enrichir via env / config). */
@@ -75,6 +83,7 @@ async function cached<T>(key: string, fn: () => Promise<T>): Promise<T> {
 }
 
 function classifyAddress(address: string): { kind: HolderKind; label?: string } {
+  if (!isValidErdAddress(address)) return { kind: 'unknown', label: 'invalid' }
   const known = KNOWN_SC[address]
   if (known) return known
   if (/^erd1qqqqqqqqqqqqq/.test(address)) {
@@ -128,7 +137,7 @@ export async function fetchTroHolders(opts?: {
       if (r.ok) {
         const list = (await r.json()) as Array<{ address?: string; balance?: string }>
         accounts = (Array.isArray(list) ? list : [])
-          .filter(a => a.address && a.balance)
+          .filter(a => a.address && isValidErdAddress(a.address) && a.balance)
           .map(a => ({ address: a.address!, balance: String(a.balance) }))
       }
     } catch {
@@ -172,7 +181,7 @@ export async function fetchNftLeaderboard(
         if (!r.ok) continue
         const list = (await r.json()) as Array<{ address?: string; balance?: string | number }>
         ;(Array.isArray(list) ? list : []).forEach((a, i) => {
-          if (!a.address) return
+          if (!a.address || !isValidErdAddress(a.address)) return
           const count = Number(a.balance) || 0
           if (count <= 0) return
           rows.push({

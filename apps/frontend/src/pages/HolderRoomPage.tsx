@@ -1,7 +1,7 @@
 /**
- * Salle holder — holo 360 data + moniteur agent dense.
+ * Salle holder — holo 360 data + moniteur agent dense + onglets écosystème $TRO.
  */
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
@@ -12,8 +12,11 @@ import PackAgentMonitor from '../components/PackAgentMonitor'
 import PackRoomHolo from '../components/PackRoomHolo'
 import TroHolderBoard from '../components/analytics/TroHolderBoard'
 import TroLiquidityPanel from '../components/defi/TroLiquidityPanel'
+import DeFiCommandPanel from '../components/defi/DeFiCommandPanel'
 
 const VALID: PackId[] = ['pulse', 'yield', 'sentinel']
+
+type EcoTab = 'defi' | 'liquidity' | 'holders'
 
 function isPackId(v: string | undefined): v is PackId {
   return !!v && VALID.includes(v as PackId)
@@ -25,6 +28,7 @@ export default function HolderRoomPage() {
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const status = useMemo(() => holderStatus(account.nfts), [account.nfts, account.refreshedAt])
+  const [ecoTab, setEcoTab] = useState<EcoTab>(packId === 'yield' ? 'liquidity' : 'holders')
 
   if (!packId) return <Navigate to="/my-packs" replace />
 
@@ -64,6 +68,12 @@ export default function HolderRoomPage() {
     )
   }
 
+  const tabs: { id: EcoTab; label: string }[] = [
+    { id: 'defi', label: 'Hub DeFi' },
+    { id: 'liquidity', label: 'Liquidité $TRO' },
+    { id: 'holders', label: 'Leaderboard Holders' },
+  ]
+
   return (
     <div className="animate-fade-in space-y-5 pb-20 max-w-3xl mx-auto">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -82,10 +92,28 @@ export default function HolderRoomPage() {
       </div>
 
       <PackRoomHolo packId={packId} />
-
       <PackAgentMonitor packId={packId} />
-      {packId === 'yield' && <TroLiquidityPanel />}
-      <TroHolderBoard />
+
+      <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
+        {tabs.map(t => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setEcoTab(t.id)}
+            className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
+              ecoTab === t.id
+                ? 'bg-cyan-600/25 text-cyan-100 border border-cyan-400/30'
+                : 'text-zinc-500 hover:text-white border border-transparent'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {ecoTab === 'defi' && <DeFiCommandPanel hideTroLiquidity />}
+      {ecoTab === 'liquidity' && <TroLiquidityPanel />}
+      {ecoTab === 'holders' && <TroHolderBoard />}
 
       <section className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 space-y-3">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-300/90">
