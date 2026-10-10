@@ -17,6 +17,7 @@ import AgentNftStakePanel, { isAgentNftStaked } from '../components/AgentNftStak
 import LiveAssetTape from '../components/LiveAssetTape'
 import HoloDataRoom from '../components/HoloDataRoom'
 import DeFiCommandPanel from '../components/defi/DeFiCommandPanel'
+import TroHolderBoard from '../components/analytics/TroHolderBoard'
 import { useAgentAccess, setEmpireZone, empireTxStart } from '../store/empireStore'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
@@ -112,7 +113,7 @@ function CommandCenterInner() {
       <header className="glass-hud p-4 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-[10px] uppercase tracking-[0.28em] text-cyan-300/90 font-tech">
-            L&apos;INTELLECT · COMMAND CENTER
+            L'INTELLECT · COMMAND CENTER
           </p>
           <span className="pill-hud">{mode}</span>
           <span className="pill-hud">
@@ -130,7 +131,7 @@ function CommandCenterInner() {
           )}
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold text-white font-tech title-glow tracking-wide">
-          Analyse Cognitive On-Chain &amp; signaux Live
+          Analyse Cognitive On-Chain & signaux Live
         </h1>
         <p className="text-sm text-zinc-400">{t('cc.subtitle')}</p>
       </header>
@@ -191,6 +192,7 @@ function CommandCenterInner() {
             height={420}
           />
           <DeFiCommandPanel />
+          <TroHolderBoard />
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="glass-hud p-3">
               <ClickGuide />
@@ -259,6 +261,7 @@ function CommandCenterInner() {
           />
           <HoloDataRoom mode={room as PackId} height={400} />
           {room === 'yield' && <DeFiCommandPanel />}
+          {room === 'yield' && <TroHolderBoard />}
           <AgentNftOrb
             packId={room as PackId}
             staked={isAgentNftStaked(room as PackId)}
