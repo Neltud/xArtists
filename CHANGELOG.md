@@ -1,5 +1,29 @@
 # Changelog — xArtists
 
+## [0.95.0](https://github.com/Neltud/xArtists/compare/v0.94.0...v0.95.0) (2026-10-10)
+
+
+### Features
+
+* **analytics+ui:** holderService, TroLiquidityPanel, TroHolderBoard, PhysicalNftCertifier ([f8d2ea9](https://github.com/Neltud/xArtists/commit/f8d2ea956f803a9c25a2599144ac831b669def83))
+* **defi:** troLiquidityService — xExchange + OneDex TVL/APR aggregator ([78f18dc](https://github.com/Neltud/xArtists/commit/78f18dc03cb30492f0215b535d9af1df19441ac5))
+* **ecosystem:** $TRO liquidity aggregator, holder index, phygital CoA/CoP ([3856f87](https://github.com/Neltud/xArtists/commit/3856f8721134fc3a73d33c8864dd312737e23c18))
+* **phygital:** PhysicalNftCertifier — CoA/CoP paper + LIA reeval intents ([17f0c7d](https://github.com/Neltud/xArtists/commit/17f0c7d659376c534543123adc52cfc5541d5bb7))
+* **ui:** embed TroLiquidityPanel in DeFiCommandPanel ([1246f7f](https://github.com/Neltud/xArtists/commit/1246f7f653c5cc7c52c35b3b550b7e7ed11ac092))
+* **ui:** TroHolderBoard — top users, SC vaults, NFT leaderboard ([656f14f](https://github.com/Neltud/xArtists/commit/656f14fcd9a7ae4e4eb793bbbaa02f12063577e5))
+* **ui:** TroHolderBoard on Command Center hub + yield rooms ([b275d83](https://github.com/Neltud/xArtists/commit/b275d8358603a3297086ab61f2b837d112b3ffe7))
+* **ui:** wire PhysicalNftCertifier into DigitalTwinPage ([d799f8c](https://github.com/Neltud/xArtists/commit/d799f8c2572d9df618d6b1493e948e677121d93e))
+* **ui:** wire PhysicalNftCertifier on RWA + TroHolderBoard/TroLiquidity on HolderRoom ([249f442](https://github.com/Neltud/xArtists/commit/249f442a08f963da48fe1f0af3350d07e8ebd63a))
+* **ui:** wire TroHolderBoard into MarketAnalyticsPage ([89f0f7e](https://github.com/Neltud/xArtists/commit/89f0f7eaa9c952d43694fe6ce4583ed937145e10))
+* **ui:** wire TroLiquidityPanel on Staking + TroHolderBoard on CommandCenter ([dd47e4f](https://github.com/Neltud/xArtists/commit/dd47e4fbc91bd790707654e0870fa4ad3bef2d8a))
+
+
+### Bug Fixes
+
+* **holo:** ambient 1.5 · mobile FOV 38 · black neon panels · emissive 0.85 ([682c802](https://github.com/Neltud/xArtists/commit/682c8027bd7f0f385e7894a7fafa12a19d270e8a))
+* **holo:** restore HoloDataRoom — ambient 1.5, mobile FOV 38, black neon panels ([26e815f](https://github.com/Neltud/xArtists/commit/26e815fabf67c028618777658123006f5e5da00b))
+* **ui:** $TRO USD label + HoloDataRoom brighter lights, mobile zoom, black neon panels ([9bc7a8a](https://github.com/Neltud/xArtists/commit/9bc7a8aeab45df6da7d094f88595df9534af0875))
+
 ## [0.94.0](https://github.com/Neltud/xArtists/compare/v0.93.0...v0.94.0) (2026-10-09)
 
 
