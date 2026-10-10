@@ -10,6 +10,7 @@ import {
   type DigitalTwinCertificate,
 } from '../lib/digitalTwinCertificate'
 import { submitColmapJob, listPaperJobs } from '../lib/colmapJobClient'
+import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
 
 export default function DigitalTwinPage() {
   const [title, setTitle] = useState('')
@@ -200,6 +201,11 @@ export default function DigitalTwinPage() {
           Location mur
         </Link>
       </p>
+
+      <section className="space-y-2 pt-4 border-t border-white/10">
+        <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Phygital · œuvre physique</p>
+        <PhysicalNftCertifier />
+      </section>
     </div>
   )
 }
