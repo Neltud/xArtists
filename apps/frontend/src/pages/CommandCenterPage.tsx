@@ -166,13 +166,7 @@ function CommandCenterInner() {
               onClick={() => {
                 if (locked) {
                   const roomLabel =
-                    id === 'pulse'
-                      ? 'Pulse'
-                      : id === 'yield'
-                        ? 'Yield'
-                        : id === 'sentinel'
-                          ? 'Sentinel'
-                          : id
+                    id === 'pulse' ? 'Pulse' : id === 'yield' ? 'Yield' : id === 'sentinel' ? 'Sentinel' : id
                   setGuestRoomMsg(
                     packs.length === 0
                       ? `Mode Guest — la salle ${roomLabel} est verrouillée. Connecte xPortal ou obtiens le pack ${roomLabel} (Agents) pour déverrouiller.`
@@ -233,9 +227,9 @@ function CommandCenterInner() {
           <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
             {(
               [
-                ['defi', 'Hub DeFi'],
-                ['liquidity', 'Liquidité $TRO'],
-                ['holders', 'Leaderboard Holders'],
+                ['defi', '📊 Dashboard Hub'],
+                ['liquidity', '💧 Liquidité $TRO'],
+                ['holders', '🏆 Top Holders'],
               ] as const
             ).map(([id, label]) => (
               <button
@@ -327,9 +321,9 @@ function CommandCenterInner() {
               <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
                 {(
                   [
-                    ['defi', 'Hub DeFi'],
-                    ['liquidity', 'Liquidité $TRO'],
-                    ['holders', 'Leaderboard Holders'],
+                    ['defi', '📊 Dashboard Hub'],
+                    ['liquidity', '💧 Liquidité $TRO'],
+                    ['holders', '🏆 Top Holders'],
                   ] as const
                 ).map(([id, label]) => (
                   <button
