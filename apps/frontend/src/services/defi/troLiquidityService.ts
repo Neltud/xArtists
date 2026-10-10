@@ -13,7 +13,14 @@ import {
 import { fetchMexTroPairs, fetchPoolAccountTvl, matchLive, type PoolLive } from '../../lib/troPoolStats'
 
 const API = 'https://api.multiversx.com'
-const TTL_MS = 45_000
+const TTL_MS = 60_000
+
+/** MultiversX bech32 — erd1 + 58 chars [a-z0-9] */
+export const ERD_ADDRESS_RE = /^erd1[a-z0-9]{58}$/
+
+export function isValidErdAddress(addr: string | undefined | null): addr is string {
+  return typeof addr === 'string' && ERD_ADDRESS_RE.test(addr)
+}
 
 export type TroFarmMetric = {
   poolId: string
@@ -141,7 +148,7 @@ export async function fetchTroLiquiditySnapshot(): Promise<TroLiquiditySnapshot>
       let state = live?.state || 'unknown'
       let source = live ? 'api.multiversx.com/mex/pairs' : 'static+account'
 
-      if (tvlUsd == null && pool.address && egldUsd) {
+      if (tvlUsd == null && isValidErdAddress(pool.address) && egldUsd) {
         const approx = await fetchPoolAccountTvl(pool.address, egldUsd)
         if (approx != null) {
           tvlUsd = approx
@@ -158,12 +165,13 @@ export async function fetchTroLiquiditySnapshot(): Promise<TroLiquiditySnapshot>
         notes.push(`${pool.id}: OneDex — APR via UI dApp uniquement`)
       }
 
+      const safeAddr = isValidErdAddress(pool.address) ? pool.address : ''
       farms.push({
         poolId: pool.id,
         dex: pool.dex,
         pair: pool.pair,
         role: pool.role,
-        address: pool.address,
+        address: safeAddr,
         lpTokenId: pool.lpTokenId || live?.lpTokenId,
         swapUrl: pool.swapUrl,
         dexscreener: pool.dexscreener,
