@@ -1,28 +1,27 @@
 /**
- * LIA Hub — live multi-asset + Shadow + Holder terminal.
+ * LIA Hub — live multi-asset + Shadow + Holder terminal + Agent Control.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { usePulse } from '../context/PulseContext'
+import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
-import { toAmbientSnapshot } from '../lia/ambient'
-import { matrixFromPulse, runDecisionCycle } from '../lia/decisionCycle'
-import { fetchEgldPrice } from '../lia/priceTick'
-import { fetchProtocolProfile } from '../lia/protocolProfile'
-import { persistShadowExport } from '../lia/shadowExport'
+import { toAmbientSnapshot } from '../lib/ambientAura'
+import { fetchProtocolProfile } from '../lib/protocolProfile'
+import { fetchEgldPrice } from '../lib/egldPrice'
+import { persistShadowExport } from '../lib/shadowExport'
+import { matrixFromPulse } from '../lia/matrix'
 import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumStatus'
 import { fetchLiaHubStatus, type LiaHubStatus } from '../lia/hubStatus'
 import { fetchLiaStatus, auraFromStatus, type LiaStatusV1 } from '../lia/liaStatus'
 import { fetchMarketAura } from '../lia/marketAura'
-import { asText } from '../lib/safeRender'
-import AuraBadge from '../components/lia/AuraBadge'
-import MatrixBoard from '../components/lia/MatrixBoard'
-import ShadowPerformance from '../components/lia/ShadowPerformance'
-import MarketMetricsCharts from '../components/lia/MarketMetricsCharts'
+import LiaCommandTerminal from '../components/LiaCommandTerminal'
+import DailySignalWidget from '../components/DailySignalWidget'
+import EconomicPulse from '../components/lia/EconomicPulse'
 import IntentFeedTerminal from '../components/lia/IntentFeedTerminal'
 import HolderTerminal from '../components/lia/HolderTerminal'
 import LiveAssetTape from '../components/LiveAssetTape'
 import RceStrip from '../components/RceStrip'
+import LiaAgentControl from '../components/LiaAgentControl'
 
 const API = 'https://api.multiversx.com'
 const LIA_WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
@@ -59,12 +58,6 @@ export default function LiaPage() {
   const [hub, setHub] = useState<LiaHubStatus | null>(null)
   const [agg, setAgg] = useState<LiaStatusV1 | null>(null)
   const [txs, setTxs] = useState<ExplorerTx[]>([])
-  const [tick, setTick] = useState<{
-    strategy: string
-    reason: string
-    action: string
-    aura: string
-  } | null>(null)
   const [loading, setLoading] = useState(true)
   const [mAura, setMAura] = useState<string>('stable')
 
@@ -90,8 +83,7 @@ export default function LiaPage() {
         /* offline */
       }
       persistShadowExport(px.priceUsd || 0)
-
-      const m = matrixFromPulse({
+      matrixFromPulse({
         assetId: 'EGLD',
         price: px.priceUsd,
         sentiment: typeof env?.sentiment === 'number' ? env.sentiment : 0,
@@ -99,121 +91,84 @@ export default function LiaPage() {
         confidence: lia.confidence ?? 0.5,
         rce: p.egldUsd || 0,
       })
-      const cycle = runDecisionCycle(m, { executeShadow: true })
-      setTick({
-        strategy: cycle.strategy,
-        reason: cycle.reason,
-        action: cycle.intent.action,
-        aura: cycle.aura,
-      })
     } finally {
       setLoading(false)
     }
-  }, [env?.sentiment, lia.confidence])
+  }, [env, lia.confidence])
 
   useEffect(() => {
     void refresh()
-    const id = window.setInterval(() => void refresh(), 15_000)
+    const id = window.setInterval(() => void refresh(), 60_000)
     return () => window.clearInterval(id)
   }, [refresh])
 
-  const fromAgg = auraFromStatus(agg)
-  const auraMode = tick?.aura || fromAgg.mode || mAura || ambient.mode
-
-  const statusLabel =
-    vellum?.live === true
-      ? 'Vellum live flag'
-      : agg
-        ? 'Aggregator lia_status'
-        : hub
-          ? 'Hub status'
-          : 'Local pulse'
-
-  const shadowPnlText =
-    agg?.shadow?.shadow_pnl_usd != null ? `${asText(agg.shadow.shadow_pnl_usd)} USD` : '—'
-
   return (
-    <div className="animate-fade-in space-y-6 max-w-3xl mx-auto pb-16">
+    <div className="animate-fade-in space-y-6 pb-20 max-w-3xl mx-auto">
       <header className="space-y-2">
         <p className="section-label">LIA Hub</p>
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="section-title display text-2xl">Intelligence</h1>
-          <AuraBadge mode={String(auraMode)} trend={fromAgg.trend || ambient.trend} />
-        </div>
-        <p className="text-sm text-zinc-400">SHADOW / SIMULATED · live tape · poll 15s</p>
-        <RceStrip compact />
+        <h1 className="section-title display text-2xl">Agent autonome & signaux</h1>
+        <p className="text-[13px] text-zinc-500 leading-relaxed">
+          Multi-IA (Vellum / Gemini / Grok) · wallet dédié · paper first. Aura marché :{' '}
+          <span className="text-zinc-300">{mAura}</span>
+          {loading ? ' · sync…' : ''}
+        </p>
       </header>
 
-      <LiveAssetTape />
-
-      <div className="grid sm:grid-cols-3 gap-3 text-sm">
-        <div className="card border-cyan-500/20">
-          <p className="text-[10px] uppercase text-zinc-500">Source</p>
-          <p className="font-semibold text-white">{asText(statusLabel)}</p>
-        </div>
-        <div className="card border-cyan-500/20">
-          <p className="text-[10px] uppercase text-zinc-500">Aura</p>
-          <p className="font-semibold text-white">{asText(auraMode)}</p>
-          <p className="text-[10px] text-zinc-500">
-            {asText(fromAgg.source)} · market {asText(mAura)}
-          </p>
-        </div>
-        <div className="card border-cyan-500/20">
-          <p className="text-[10px] uppercase text-zinc-500">Shadow PnL</p>
-          <p className="font-semibold tabular-nums">{shadowPnlText}</p>
-        </div>
-      </div>
-
+      <LiaAgentControl />
       <HolderTerminal />
-      <ShadowPerformance />
+      <LiveAssetTape />
+      <RceStrip compact />
+      <DailySignalWidget />
+      <EconomicPulse />
       <IntentFeedTerminal />
-      <MarketMetricsCharts />
-      <MatrixBoard />
 
-      <section className="card space-y-2">
-        <h2 className="text-sm font-semibold text-white">TX explorer (wallet LIA)</h2>
-        {txs.length === 0 ? (
-          <p className="text-[13px] text-zinc-500">Aucune TX récente.</p>
-        ) : (
-          <ul className="text-[11px] space-y-1">
-            {txs.map(t => (
-              <li key={asText(t.txHash)}>
-                <a
-                  className="text-cyan-400 underline"
-                  href={`https://explorer.multiversx.com/transactions/${t.txHash}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {asText(t.function || t.txHash?.slice(0, 12))}
-                </a>{' '}
-                <span className="text-zinc-500">{asText(t.status)}</span>
+      <section className="rounded-2xl border border-white/10 bg-black/40 p-4 space-y-2">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+          Vellum & hub
+        </p>
+        <p className="text-[12px] text-zinc-400">
+          Vellum · {vellum?.live ? 'LIVE' : 'paper'} {vellum?.summary?.mode ? `· ${vellum.summary.mode}` : ''}
+        </p>
+        <p className="text-[12px] text-zinc-400">
+          Hub · {hub?.strategy || hub?.note || '—'} · shadow PnL {hub?.shadow_pnl_usd ?? '—'}
+        </p>
+        {agg?.mindset?.strategy && (
+          <p className="text-[11px] mono text-zinc-500">strategy · {agg.mindset.strategy}</p>
+        )}
+        {txs.length > 0 && (
+          <ul className="text-[11px] mono text-zinc-500 space-y-1 max-h-28 overflow-y-auto">
+            {txs.slice(0, 5).map((tx, i) => (
+              <li key={tx.txHash || i}>
+                {tx.function || 'tx'} · {tx.status || '—'}
               </li>
             ))}
           </ul>
         )}
       </section>
 
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          className="btn-primary text-sm"
-          onClick={() => void refresh()}
-          disabled={loading}
-        >
-          {loading ? '…' : 'Actualiser'}
-        </button>
-        <Link to="/command-center" className="btn-secondary text-sm">
+      <LiaCommandTerminal
+        phrase={lia.phrase}
+        mood={lia.uniforms.mood}
+        confidence={lia.confidence}
+        source={lia.source}
+        pending={lia.shadow.liaPending}
+        fallback={lia.shadow.fallbackActive}
+        onAsk={ctx => lia.requestComment(ctx)}
+        contextHint="lia-hub"
+        defaultOpen={false}
+      />
+
+      <div className="flex flex-wrap gap-3 text-[12px] text-zinc-500">
+        <Link to="/command-center" className="hover:text-zinc-300">
           Command Center
         </Link>
-        <Link to="/portfolio" className="btn-secondary text-sm">
-          Portfolio
+        <Link to="/studio" className="hover:text-zinc-300">
+          Studio Phygital
+        </Link>
+        <Link to="/agents" className="hover:text-zinc-300">
+          Packs
         </Link>
       </div>
-
-      <ul className="text-[11px] text-zinc-600 space-y-1">
-        <li>Performance LIA = SHADOW / SIMULATED — pas d&apos;alpha live.</li>
-        <li>LIA_LIVE_TRADING=0 · prix tape = sources publiques.</li>
-      </ul>
     </div>
   )
 }
