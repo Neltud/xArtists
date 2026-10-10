@@ -12,6 +12,7 @@ import { TRO_YIELD_POOLS, DEX_LABEL, TRO_TOKEN_ID } from '../config/troPools'
 import { fetchMexTroPairs, fetchPoolAccountTvl, matchLive, type PoolLive } from '../lib/troPoolStats'
 import { getEgldPrice } from '../services/priceService'
 import TroStakePanel from '../components/TroStakePanel'
+import TroLiquidityPanel from '../components/defi/TroLiquidityPanel'
 
 const TABS = ['Yield', 'TRO', 'NFT', 'Rewards', 'Help'] as const
 
@@ -90,6 +91,7 @@ export default function StakingPage() {
 
       {tab === 'Yield' && (
         <div className="space-y-4">
+          <TroLiquidityPanel />
           <div className="card space-y-2">
             <h2 className="font-semibold text-white flex items-center gap-2">
               <TokenPairIcons a="TRO" b="EGLD" size={20} />
