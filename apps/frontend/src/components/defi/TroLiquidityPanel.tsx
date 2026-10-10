@@ -14,6 +14,7 @@ export default function TroLiquidityPanel() {
   const [snap, setSnap] = useState<TroLiquiditySnapshot | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
     let cancel = false
@@ -36,26 +37,51 @@ export default function TroLiquidityPanel() {
         if (!cancel) setSnap(s)
       })
     }, 60_000)
+    const tick = window.setInterval(() => setNow(Date.now()), 15_000)
     return () => {
       cancel = true
       window.clearInterval(id)
+      window.clearInterval(tick)
     }
   }, [])
 
+  const STALE_MS = 300_000
+  const fetchedMs = snap?.fetchedAt ? Date.parse(snap.fetchedAt) : NaN
+  const ageMs = Number.isFinite(fetchedMs) ? now - fetchedMs : Number.POSITIVE_INFINITY
+  const isStale = !snap || ageMs > STALE_MS
+
   return (
     <div className="rounded-2xl border border-amber-400/20 bg-black/40 p-4 space-y-3">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-amber-300/80 font-tech">
             Farming $TRO
           </p>
           <h3 className="text-sm font-semibold text-white">xExchange · OneDex</h3>
         </div>
-        {snap?.troUsd != null && (
-          <span className="text-[11px] mono tabular-nums text-violet-200">
-            $TRO ${snap.troUsd < 0.01 ? snap.troUsd.toFixed(6) : snap.troUsd.toFixed(4)}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {snap?.troUsd != null && (
+            <span className="text-[11px] mono tabular-nums text-violet-200">
+              $TRO Spot $
+              {snap.troUsd < 0.01 ? snap.troUsd.toFixed(6) : snap.troUsd.toFixed(4)}
+            </span>
+          )}
+          {snap &&
+            (isStale ? (
+              <span
+                className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 text-amber-200 text-[9px] py-0.5 px-1.5 font-tech uppercase"
+                title={`Dernière MAJ il y a ${Math.round(ageMs / 1000)}s`}
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden />
+                STALE
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-500/15 text-emerald-200 text-[9px] py-0.5 px-1.5 font-tech uppercase">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
+                LIVE
+              </span>
+            ))}
+        </div>
       </div>
 
       {loading && !snap && <p className="text-[12px] text-zinc-500">Chargement pools…</p>}
@@ -65,7 +91,8 @@ export default function TroLiquidityPanel() {
         <>
           <div className="flex flex-wrap gap-3 text-[11px]">
             <span className="text-zinc-400">
-              TVL Σ <strong className="text-zinc-100 mono tabular-nums">{formatTvl(snap.totalTvlUsd)}</strong>
+              TVL Σ{' '}
+              <strong className="text-zinc-100 mono tabular-nums">{formatTvl(snap.totalTvlUsd)}</strong>
             </span>
             {snap.egldUsd != null && (
               <span className="text-zinc-500 mono">EGLD ${snap.egldUsd.toFixed(2)}</span>
@@ -110,7 +137,9 @@ export default function TroLiquidityPanel() {
           </ul>
 
           {snap.notes.length > 0 && (
-            <p className="text-[10px] text-zinc-600 leading-relaxed">{snap.notes.slice(0, 3).join(' · ')}</p>
+            <p className="text-[10px] text-zinc-600 leading-relaxed">
+              {snap.notes.slice(0, 3).join(' · ')}
+            </p>
           )}
         </>
       )}
