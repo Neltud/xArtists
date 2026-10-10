@@ -1,13 +1,15 @@
 /**
- * Overlay HTML 2D — prix EGLD / $TRO · mono tabular-nums.
+ * Overlay HTML 2D — EGLD USD · $TRO USD (prix unitaire) · ratio TRO/EGLD explicite.
+ * Ne plus afficher « 0.517 EGLD » comme prix unitaire trompeur.
  */
 import { useEffect, useState } from 'react'
 
-const TRO_ID = 'TRO-3bc587'
+/** Identifiants $TRO connus (API MultiversX) */
+const TRO_IDS = ['TRO-94c925', 'TRO-3bc587']
 
 export default function LivePriceRail() {
-  const [egld, setEgld] = useState<number | null>(null)
-  const [troEgld, setTroEgld] = useState<number | null>(null)
+  const [egldUsd, setEgldUsd] = useState<number | null>(null)
+  const [troUsd, setTroUsd] = useState<number | null>(null)
   const [ts, setTs] = useState('')
 
   useEffect(() => {
@@ -37,21 +39,26 @@ export default function LivePriceRail() {
           /* */
         }
       }
-      let ratio: number | null = null
-      try {
-        const r = await fetch(`https://api.multiversx.com/tokens/${TRO_ID}`, { cache: 'no-store' })
-        if (r.ok) {
+
+      let tro: number | null = null
+      for (const id of TRO_IDS) {
+        try {
+          const r = await fetch(`https://api.multiversx.com/tokens/${id}`, { cache: 'no-store' })
+          if (!r.ok) continue
           const j = await r.json()
           const price = Number(j.price)
-          if (e && price > 0) ratio = price / e
+          if (Number.isFinite(price) && price > 0) {
+            tro = price
+            break
+          }
+        } catch {
+          /* next id */
         }
-      } catch {
-        /* */
       }
-      if (ratio == null) ratio = 0.517
+
       if (!c) {
-        setEgld(e)
-        setTroEgld(ratio)
+        setEgldUsd(e)
+        setTroUsd(tro)
         setTs(new Date().toISOString().slice(11, 19))
       }
     }
@@ -63,20 +70,42 @@ export default function LivePriceRail() {
     }
   }, [])
 
+  const ratio =
+    egldUsd != null && troUsd != null && egldUsd > 0 ? troUsd / egldUsd : null
+
+  const fmtTroUsd = (v: number | null) => {
+    if (v == null) return '…'
+    if (v < 0.01) return `$${v.toFixed(6)}`
+    if (v < 1) return `$${v.toFixed(4)}`
+    return `$${v.toFixed(2)}`
+  }
+
   const rows = [
-    { k: 'EGLD', v: egld != null ? `$${egld.toFixed(2)}` : '…', accent: 'text-cyan-200' },
+    {
+      k: 'EGLD',
+      sub: 'USD',
+      v: egldUsd != null ? `$${egldUsd.toFixed(2)}` : '…',
+      accent: 'text-cyan-200',
+    },
     {
       k: '$TRO',
-      v: troEgld != null ? `${troEgld.toFixed(3)} EGLD` : '…',
+      sub: 'prix USD',
+      v: fmtTroUsd(troUsd),
       accent: 'text-violet-200',
     },
-    { k: 'UTC', v: ts || '—', accent: 'text-zinc-300' },
+    {
+      k: 'TRO/EGLD',
+      sub: 'ratio',
+      v: ratio != null ? ratio.toExponential(2) : '—',
+      accent: 'text-amber-100/90',
+    },
+    { k: 'UTC', sub: '', v: ts || '—', accent: 'text-zinc-300' },
   ]
 
   return (
-    <div className="data-overlay-rail absolute right-2 top-10 bottom-8 z-10 w-[7.75rem] pointer-events-none">
+    <div className="data-overlay-rail absolute right-2 top-10 bottom-8 z-10 w-[8.25rem] pointer-events-none">
       <div
-        className="h-full rounded-xl border border-cyan-400/30 bg-black/55 px-2.5 py-2.5 flex flex-col gap-2.5 shadow-[0_0_20px_rgba(34,211,238,0.12)]"
+        className="h-full rounded-xl border border-cyan-400/30 bg-black/55 px-2.5 py-2.5 flex flex-col gap-2 shadow-[0_0_20px_rgba(34,211,238,0.12)]"
         style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
       >
         <div className="flex items-center gap-1.5">
@@ -86,14 +115,21 @@ export default function LivePriceRail() {
           </span>
         </div>
         {rows.map(r => (
-          <div key={r.k} className="border-b border-white/10 pb-2 last:border-0">
-            <p className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400">{r.k}</p>
-            <p className={`text-[13px] font-bold mono tabular-nums leading-tight antialiased ${r.accent}`}>
+          <div key={r.k} className="border-b border-white/10 pb-1.5 last:border-0">
+            <p className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400">
+              {r.k}
+              {r.sub ? (
+                <span className="text-zinc-600 font-normal normal-case"> · {r.sub}</span>
+              ) : null}
+            </p>
+            <p className={`text-[12px] font-bold mono tabular-nums leading-tight antialiased ${r.accent}`}>
               {r.v}
             </p>
           </div>
         ))}
-        <p className="text-[8px] text-zinc-600 mt-auto">API publiques</p>
+        <p className="text-[8px] text-zinc-600 mt-auto leading-tight">
+          API publiques · pas un conseil
+        </p>
       </div>
     </div>
   )
