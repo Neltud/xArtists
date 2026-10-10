@@ -1,5 +1,14 @@
 # Changelog — xArtists
 
+## [0.95.2](https://github.com/Neltud/xArtists/compare/v0.95.1...v0.95.2) (2026-10-10)
+
+
+### Bug Fixes
+
+* **env+ui:** NFT/$TRO fallbacks, audio bottom 80px, tape ticker, guest lock msgs ([70971ba](https://github.com/Neltud/xArtists/commit/70971ba05bb2a074348b2c1c2c5fc0357199227e))
+* **ui:** audio FAB bottom 80px, guest room unlock msgs, env NFT collections ([ede16ca](https://github.com/Neltud/xArtists/commit/ede16ca3bd848a5635b1da0b327e859534a29e3b))
+* **ux:** guest room unlock feedback on Pulse/Yield/Sentinel clicks ([90df34a](https://github.com/Neltud/xArtists/commit/90df34a9ad4ea56ce8a4962ba1d524093e70851a))
+
 ## [0.95.1](https://github.com/Neltud/xArtists/compare/v0.95.0...v0.95.1) (2026-10-10)
 
 
