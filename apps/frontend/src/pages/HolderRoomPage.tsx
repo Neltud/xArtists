@@ -10,6 +10,8 @@ import { holderStatus, canEnterRoom, ROOM_META } from '../lib/holderAccess'
 import { requestOpenConnect } from '../lib/walletEvents'
 import PackAgentMonitor from '../components/PackAgentMonitor'
 import PackRoomHolo from '../components/PackRoomHolo'
+import TroHolderBoard from '../components/analytics/TroHolderBoard'
+import TroLiquidityPanel from '../components/defi/TroLiquidityPanel'
 
 const VALID: PackId[] = ['pulse', 'yield', 'sentinel']
 
@@ -82,6 +84,8 @@ export default function HolderRoomPage() {
       <PackRoomHolo packId={packId} />
 
       <PackAgentMonitor packId={packId} />
+      {packId === 'yield' && <TroLiquidityPanel />}
+      <TroHolderBoard />
 
       <section className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 space-y-3">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-violet-300/90">

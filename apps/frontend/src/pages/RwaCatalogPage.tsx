@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { asText } from '../lib/safeRender'
+import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
 
 type Item = {
   id?: string
@@ -115,6 +116,11 @@ export default function RwaCatalogPage() {
           <p className="text-zinc-500 text-sm col-span-2">Catalog empty — run rwa_evaluator --reassess</p>
         )}
       </div>
+
+      <section className="space-y-2 border-t border-white/10 pt-6">
+        <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Certification phygital</p>
+        <PhysicalNftCertifier />
+      </section>
 
       <p className="text-[10px] text-zinc-600 border-t border-white/5 pt-3">
         Paper valuations · physical logistics simulated · LIA_LIVE_TRADING=0
