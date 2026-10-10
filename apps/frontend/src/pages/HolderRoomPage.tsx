@@ -1,39 +1,29 @@
 /**
- * Salle holder — holo 360 data + moniteur agent dense + onglets écosystème $TRO.
+ * Salle holder (Pulse / Yield / Sentinel) — accès pack + onglets DeFi.
  */
 import { useMemo, useState } from 'react'
-import { Link, Navigate, useParams } from 'react-router-dom'
-import { useWallet } from '../context/WalletContext'
-import { useUserAccount } from '../hooks/useUserAccount'
+import { Link, useParams } from 'react-router-dom'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
-import { holderStatus, canEnterRoom, ROOM_META } from '../lib/holderAccess'
+import { useWallet } from '../context/WalletContext'
 import { requestOpenConnect } from '../lib/walletEvents'
-import PackAgentMonitor from '../components/PackAgentMonitor'
+import { holderStatus, canEnterRoom, ROOM_META } from '../lib/holderAccess'
 import PackRoomHolo from '../components/PackRoomHolo'
-import TroHolderBoard from '../components/analytics/TroHolderBoard'
-import TroLiquidityPanel from '../components/defi/TroLiquidityPanel'
+import PackAgentMonitor from '../components/PackAgentMonitor'
 import DeFiCommandPanel from '../components/defi/DeFiCommandPanel'
-
-const VALID: PackId[] = ['pulse', 'yield', 'sentinel']
+import TroLiquidityPanel from '../components/defi/TroLiquidityPanel'
+import TroHolderBoard from '../components/analytics/TroHolderBoard'
 
 type EcoTab = 'defi' | 'liquidity' | 'holders'
 
-function isPackId(v: string | undefined): v is PackId {
-  return !!v && VALID.includes(v as PackId)
-}
-
 export default function HolderRoomPage() {
   const { packId: raw } = useParams<{ packId: string }>()
-  const packId = isPackId(raw) ? raw : null
-  const { connected, address } = useWallet()
-  const account = useUserAccount(connected ? address : null)
-  const status = useMemo(() => holderStatus(account.nfts), [account.nfts, account.refreshedAt])
-  const [ecoTab, setEcoTab] = useState<EcoTab>(packId === 'yield' ? 'liquidity' : 'holders')
-
-  if (!packId) return <Navigate to="/my-packs" replace />
-
+  const packId = (raw === 'pulse' || raw === 'yield' || raw === 'sentinel' ? raw : 'pulse') as PackId
+  const { connected, nfts } = useWallet()
+  const status = useMemo(() => holderStatus(nfts || []), [nfts])
+  const pack = AGENT_PACKS.find(p => p.id === packId) || AGENT_PACKS[0]
   const meta = ROOM_META[packId]
-  const pack = AGENT_PACKS.find(p => p.id === packId)!
+  const [ecoTab, setEcoTab] = useState<EcoTab>('defi')
+
   const allowed = canEnterRoom(status, packId)
   const source = status.onchain.includes(packId)
     ? 'on-chain'
@@ -69,9 +59,9 @@ export default function HolderRoomPage() {
   }
 
   const tabs: { id: EcoTab; label: string }[] = [
-    { id: 'defi', label: 'Hub DeFi' },
-    { id: 'liquidity', label: 'Liquidité $TRO' },
-    { id: 'holders', label: 'Leaderboard Holders' },
+    { id: 'defi', label: '📊 Dashboard Hub' },
+    { id: 'liquidity', label: '💧 Liquidité $TRO' },
+    { id: 'holders', label: '🏆 Top Holders' },
   ]
 
   return (
