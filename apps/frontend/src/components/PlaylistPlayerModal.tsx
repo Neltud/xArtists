@@ -1,6 +1,7 @@
 /**
  * Lecteur playlist externe (SoundCloud / YouTube).
  * Modal glass — fermer la modal garde la lecture en arrière-plan (iframe masquée).
+ * FAB ancré bottom: 80px pour rester au-dessus de la BottomBar sans masquer News / LIA.
  */
 import { useEffect, useState } from 'react'
 import {
@@ -85,20 +86,17 @@ export default function PlaylistPlayerModal() {
                     type="button"
                     className="btn-secondary text-[11px] px-2 py-1"
                     onClick={() => setModalOpen(false)}
-                    title="Fermer — la musique continue"
                   >
-                    ✕
+                    Fermer
                   </button>
                 </div>
               </div>
               <div className="relative bg-black aspect-video w-full">
                 <iframe
-                  key={embedSrc}
-                  title="xArtists playlist"
-                  src={embedSrc}
+                  title="playlist"
+                  src={muted ? embedSrc.replace('auto_play=true', 'auto_play=false') : embedSrc}
                   className="absolute inset-0 w-full h-full border-0"
-                  allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-                  allowFullScreen
+                  allow="autoplay; encrypted-media"
                   loading="lazy"
                 />
                 {muted && (
@@ -108,8 +106,7 @@ export default function PlaylistPlayerModal() {
                 )}
               </div>
               <p className="px-4 py-2 text-[10px] text-zinc-500">
-                Fermer la fenêtre conserve la lecture. Fournisseur tiers ({cfg.provider}) — pas de
-                fichier MP3 hébergé.
+                Lecture externe · fermer garde le son en fond si activé
               </p>
               <div className="px-4 pb-4 flex gap-2">
                 <button type="button" className="btn-secondary flex-1 text-sm" onClick={togglePlay}>
@@ -126,8 +123,7 @@ export default function PlaylistPlayerModal() {
             </div>
           ) : (
             <iframe
-              key={embedSrc}
-              title="xArtists playlist bg"
+              title="playlist-bg"
               src={embedSrc}
               className="w-[320px] h-[180px] border-0"
               allow="autoplay; encrypted-media"
@@ -136,12 +132,12 @@ export default function PlaylistPlayerModal() {
         </div>
       )}
 
-      {/* HUD FAB */}
-      <div className="fixed bottom-[4.5rem] md:bottom-10 right-[4.75rem] z-50 flex flex-col gap-2 items-end">
+      {/* FAB — bottom: 80px (bottom-20) au-dessus BottomBar, hors zone News / LIA */}
+      <div className="fixed bottom-20 md:bottom-20 right-4 z-50 flex flex-col gap-2 items-end">
         {enabled && (
           <button
             type="button"
-            onClick={() => openPlaylistModal()}
+            onClick={() => setModalOpen(true)}
             className="rounded-full border border-violet-400/35 bg-violet-950/80 backdrop-blur-md px-3 py-1.5 text-[10px] font-medium text-violet-100 shadow-lg"
           >
             Ouvrir player
@@ -152,11 +148,10 @@ export default function PlaylistPlayerModal() {
           onClick={togglePlay}
           className={`rounded-full border backdrop-blur-md px-3 py-2 text-[11px] font-medium shadow-lg transition-all ${
             enabled
-              ? 'border-violet-400/40 bg-violet-950/70 text-white'
-              : 'border-amber-400/50 bg-amber-950/80 text-amber-100'
+              ? 'border-violet-400/40 bg-violet-600/30 text-violet-50'
+              : 'border-white/15 bg-black/70 text-zinc-200 hover:border-violet-400/30'
           }`}
           title={enabled ? 'Musique on — clic pour stop' : 'Activer musique'}
-          aria-pressed={enabled}
         >
           {enabled ? '🎵 Musique' : '🎵 Activer'}
         </button>
