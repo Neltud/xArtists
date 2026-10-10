@@ -1,7 +1,7 @@
 /**
  * Lecteur playlist externe (SoundCloud / YouTube).
  * Modal glass — fermer la modal garde la lecture en arrière-plan (iframe masquée).
- * FAB ancré bottom: 80px pour rester au-dessus de la BottomBar sans masquer News / LIA.
+ * FAB ancré bottom: 96px (bottom-24) au-dessus BottomBar, hors zone News / LIA.
  */
 import { useEffect, useState } from 'react'
 import {
@@ -48,7 +48,6 @@ export default function PlaylistPlayerModal() {
 
   return (
     <>
-      {/* Iframe persistante — visible dans modal, sinon 1px hors écran pour bg audio */}
       {enabled && embedSrc && (
         <div
           className={
@@ -132,8 +131,7 @@ export default function PlaylistPlayerModal() {
         </div>
       )}
 
-      {/* FAB — bottom: 80px (bottom-20) au-dessus BottomBar, hors zone News / LIA */}
-      <div className="fixed bottom-20 md:bottom-20 right-4 z-50 flex flex-col gap-2 items-end">
+      <div className="fixed bottom-24 md:bottom-24 right-3 z-40 flex flex-col gap-2 items-end pointer-events-auto">
         {enabled && (
           <button
             type="button"
