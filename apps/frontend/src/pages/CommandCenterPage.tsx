@@ -18,6 +18,7 @@ import LiveAssetTape from '../components/LiveAssetTape'
 import HoloDataRoom from '../components/HoloDataRoom'
 import DeFiCommandPanel from '../components/defi/DeFiCommandPanel'
 import TroHolderBoard from '../components/analytics/TroHolderBoard'
+import TroLiquidityPanel from '../components/defi/TroLiquidityPanel'
 import { useAgentAccess, setEmpireZone, empireTxStart } from '../store/empireStore'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
@@ -31,6 +32,7 @@ import { toAmbientSnapshot, shortTrendToast, type AuraMode } from '../lib/ambien
 import { useToast } from '../components/ui/Toast'
 
 type Room = 'hub' | 'pulse' | 'yield' | 'sentinel'
+type EcoTab = 'defi' | 'liquidity' | 'holders'
 
 export default function CommandCenterPage() {
   return (
@@ -47,6 +49,7 @@ function CommandCenterInner() {
   const { env, source, connected: pulseWs } = usePulse()
   const { connected } = useWallet()
   const [room, setRoom] = useState<Room>('hub')
+  const [ecoTab, setEcoTab] = useState<EcoTab>('defi')
   const [tunnel, setTunnel] = useState(true)
   const [tick, setTick] = useState(0)
   const [rewardFlash, setRewardFlash] = useState(false)
@@ -191,8 +194,31 @@ function CommandCenterInner() {
             volatility={lia.uniforms.uVolatility}
             height={420}
           />
-          <DeFiCommandPanel />
-          <TroHolderBoard />
+          <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
+            {(
+              [
+                ['defi', 'Hub DeFi'],
+                ['liquidity', 'Liquidité $TRO'],
+                ['holders', 'Leaderboard Holders'],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setEcoTab(id)}
+                className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
+                  ecoTab === id
+                    ? 'bg-cyan-600/25 text-cyan-100 border border-cyan-400/30'
+                    : 'text-zinc-500 hover:text-white border border-transparent'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {ecoTab === 'defi' && <DeFiCommandPanel hideTroLiquidity />}
+          {ecoTab === 'liquidity' && <TroLiquidityPanel />}
+          {ecoTab === 'holders' && <TroHolderBoard />}
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="glass-hud p-3">
               <ClickGuide />
@@ -260,8 +286,35 @@ function CommandCenterInner() {
             interactive={false}
           />
           <HoloDataRoom mode={room as PackId} height={400} />
-          {room === 'yield' && <DeFiCommandPanel />}
-          {room === 'yield' && <TroHolderBoard />}
+          {room === 'yield' && (
+            <>
+              <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
+                {(
+                  [
+                    ['defi', 'Hub DeFi'],
+                    ['liquidity', 'Liquidité $TRO'],
+                    ['holders', 'Leaderboard Holders'],
+                  ] as const
+                ).map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setEcoTab(id)}
+                    className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
+                      ecoTab === id
+                        ? 'bg-cyan-600/25 text-cyan-100 border border-cyan-400/30'
+                        : 'text-zinc-500 hover:text-white border border-transparent'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {ecoTab === 'defi' && <DeFiCommandPanel hideTroLiquidity />}
+              {ecoTab === 'liquidity' && <TroLiquidityPanel />}
+              {ecoTab === 'holders' && <TroHolderBoard />}
+            </>
+          )}
           <AgentNftOrb
             packId={room as PackId}
             staked={isAgentNftStaked(room as PackId)}
