@@ -34,24 +34,47 @@ const EMPTY: FormState = {
   notes: '',
 }
 
-function sha256Preview(file: File): Promise<string> {
-  return new Promise(resolve => {
-    const reader = new FileReader()
-    reader.onload = async () => {
-      try {
-        const buf = reader.result as ArrayBuffer
-        const hash = await crypto.subtle.digest('SHA-256', buf)
-        const hex = Array.from(new Uint8Array(hash))
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('')
-        resolve(hex)
-      } catch {
-        resolve(`pending-${file.name}-${file.size}`)
-      }
+/** Compress image (max edge 1024, JPEG 0.72) before SHA — avoids UI freeze on large photos. */
+async function compressImageForHash(file: File): Promise<Blob> {
+  if (!file.type.startsWith('image/')) {
+    return file.slice(0, Math.min(file.size, 512_000))
+  }
+  try {
+    const bitmap = await createImageBitmap(file)
+    const maxEdge = 1024
+    const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height))
+    const w = Math.max(1, Math.round(bitmap.width * scale))
+    const h = Math.max(1, Math.round(bitmap.height * scale))
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      bitmap.close()
+      return file.slice(0, Math.min(file.size, 512_000))
     }
-    reader.onerror = () => resolve(`pending-${file.name}`)
-    reader.readAsArrayBuffer(file.slice(0, Math.min(file.size, 2_000_000)))
-  })
+    ctx.drawImage(bitmap, 0, 0, w, h)
+    bitmap.close()
+    const blob = await new Promise<Blob | null>(res =>
+      canvas.toBlob(b => res(b), 'image/jpeg', 0.72),
+    )
+    return blob || file.slice(0, Math.min(file.size, 512_000))
+  } catch {
+    return file.slice(0, Math.min(file.size, 512_000))
+  }
+}
+
+async function sha256Preview(file: File): Promise<string> {
+  try {
+    const compressed = await compressImageForHash(file)
+    const buf = await compressed.arrayBuffer()
+    const hash = await crypto.subtle.digest('SHA-256', buf)
+    return Array.from(new Uint8Array(hash))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')
+  } catch {
+    return `pending-${file.name}-${file.size}`
+  }
 }
 
 function parseDimsCm(raw: string): { h: number; w: number; d: number } {
@@ -127,10 +150,13 @@ export default function PhysicalNftCertifier() {
   const [cert, setCert] = useState<PhysicalCertificate | null>(null)
   const [kind, setKind] = useState<CertKind>('CoA')
   const [copied, setCopied] = useState(false)
+  /** SHA figé une fois le certificat émis — immuable jusqu'au reset */
+  const [lockedPhotoSha, setLockedPhotoSha] = useState<string | null>(null)
 
   const onFile = useCallback((f: File | null) => {
     setFile(f)
     setCert(null)
+    setLockedPhotoSha(null)
     if (preview) URL.revokeObjectURL(preview)
     setPreview(f ? URL.createObjectURL(f) : null)
   }, [preview])
@@ -145,7 +171,12 @@ export default function PhysicalNftCertifier() {
     setBusy(true)
     try {
       const dims = parseDimsCm(form.dimensions)
-      const photoSha = file ? await sha256Preview(file) : 'no-photo'
+      const photoSha =
+        lockedPhotoSha ||
+        (file ? await sha256Preview(file) : 'no-photo')
+      if (!lockedPhotoSha && photoSha && photoSha !== 'no-photo') {
+        setLockedPhotoSha(photoSha)
+      }
       const twin = createBrowserApproxCertificate({
         title: form.title.trim(),
         artist: form.artist.trim(),
@@ -332,13 +363,38 @@ export default function PhysicalNftCertifier() {
             <button type="button" className="btn-secondary text-xs" onClick={requestPaperMint}>
               Intent mint paper 1/1
             </button>
+            <a
+              href="https://xportal.com"
+              target="_blank"
+              rel="noreferrer"
+              className="btn-primary text-xs inline-flex items-center"
+            >
+              Ouvrir xPortal ↗
+            </a>
+            <a
+              href="#/command-center"
+              className="btn-secondary text-xs inline-flex items-center"
+            >
+              Holder Board →
+            </a>
+            <a
+              href="#/market"
+              className="btn-secondary text-xs inline-flex items-center"
+            >
+              Analytics holders →
+            </a>
           </div>
+          {lockedPhotoSha && (
+            <p className="text-[10px] mono text-zinc-500">
+              SHA-256 figé · {lockedPhotoSha.slice(0, 16)}…{lockedPhotoSha.slice(-8)}
+            </p>
+          )}
         </div>
       )}
 
       <p className="text-[10px] text-zinc-600 leading-relaxed">
         Paper only — aucun mint SC automatique. Grade browser-approx tant que pipeline labo COLMAP non
-        branché. SHA-256 photo = empreinte locale (2 Mo max lus).
+        branché. SHA-256 = empreinte JPEG compressé (max 1024px) — immuable après génération.
       </p>
     </div>
   )
