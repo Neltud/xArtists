@@ -1,5 +1,18 @@
 # Changelog — xArtists
 
+## [0.95.1](https://github.com/Neltud/xArtists/compare/v0.95.0...v0.95.1) (2026-10-10)
+
+
+### Bug Fixes
+
+* **phygital:** compress image before SHA, immutable hash, xPortal/Holder actions ([d98bbf6](https://github.com/Neltud/xArtists/commit/d98bbf630cd4865bf753bb0cce04b89dcda17f3b))
+* **pricing:** $TRO Spot vs Ratio labels + LIVE/STALE badge (5 min) ([245a6f3](https://github.com/Neltud/xArtists/commit/245a6f3750efe478a454f925f2543c29a00f2506))
+* **pricing:** TroLiquidityPanel $TRO Spot label + LIVE/STALE (5 min) ([5e40e24](https://github.com/Neltud/xArtists/commit/5e40e2438074c36a82bada27f6d5f6e182bd2fd0))
+* **security+ux:** erd1 filter holders + eco tabs on HolderRoom ([dd61811](https://github.com/Neltud/xArtists/commit/dd618116c4f5cb5f555122905ada9593555fa9e9))
+* **security:** erd1 address regex + 60s TTL cache on TRO liquidity/holders ([d7a7fbf](https://github.com/Neltud/xArtists/commit/d7a7fbf31fc0ee452784a44bdd3cc2b8e61346c3))
+* **ui:** DeFiCommandPanel hideTroLiquidity prop for tabbed layouts ([9375456](https://github.com/Neltud/xArtists/commit/937545628e1f16e064f5ef86d6b41866366ae7c4))
+* **ui:** eco tabs Hub DeFi / Liquidité $TRO / Holders on Command Center ([d12ed22](https://github.com/Neltud/xArtists/commit/d12ed22f456a6bfc7d5e58f7e99849316a09083d))
+
 ## [0.95.0](https://github.com/Neltud/xArtists/compare/v0.94.0...v0.95.0) (2026-10-10)
 
 
