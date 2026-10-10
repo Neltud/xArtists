@@ -11,17 +11,54 @@ export function isValidErdAddress(addr: string | undefined | null): addr is stri
   return typeof addr === 'string' && ERD_ADDRESS_RE.test(addr)
 }
 
-const TRO_IDS = ['TRO-94c925', 'TRO-3bc587'] as const
+/**
+ * Collections NFT xArtists réelles (public/data/xartists_collections.index.json).
+ * VITE_XARTISTS_NFT_COLLECTIONS override ; fallback jamais vide / jamais *000000.
+ */
+const DEFAULT_NFT_COLLECTIONS = [
+  'XAR-cee2e0',
+  'AGR-9bd53e',
+  'ALISTOR-a646bc',
+  'ASFT-a6273a',
+  'BGG-2b627c',
+  'HP47X2-b71543',
+  'MAS-5189b6',
+  'NFTUDURI-2990b6',
+  'XTR-e5072b',
+  'XAUS-d9cf1f',
+  'TRO-652d6d',
+] as const
 
-/** Collections NFT xArtists connues (à enrichir via env / config). */
-const XARTISTS_COLLECTIONS = (
-  (typeof import.meta !== 'undefined' &&
-    (import.meta as ImportMeta & { env?: Record<string, string> }).env?.VITE_XARTISTS_NFT_COLLECTIONS) ||
-  'XARTISTS-000000,XAPACK-000000'
-)
-  .split(',')
-  .map(s => s.trim())
-  .filter(Boolean)
+function resolveNftCollections(): string[] {
+  const fromEnv =
+    typeof import.meta !== 'undefined'
+      ? (import.meta as ImportMeta & { env?: Record<string, string> }).env
+          ?.VITE_XARTISTS_NFT_COLLECTIONS
+      : undefined
+  const parsed = (fromEnv || '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(s => s && !s.includes('000000'))
+  return parsed.length > 0 ? parsed : [...DEFAULT_NFT_COLLECTIONS]
+}
+
+const XARTISTS_COLLECTIONS = resolveNftCollections()
+
+/** Token $TRO principal + legacy (env override). */
+const DEFAULT_TRO_IDS = ['TRO-94c925', 'TRO-3bc587'] as const
+
+function resolveTroIds(): string[] {
+  const fromEnv =
+    typeof import.meta !== 'undefined'
+      ? (import.meta as ImportMeta & { env?: Record<string, string> }).env?.VITE_TRO_TOKEN_ID
+      : undefined
+  if (fromEnv && /^TRO-[a-z0-9]+$/i.test(fromEnv.trim())) {
+    return [fromEnv.trim(), ...DEFAULT_TRO_IDS.filter(id => id !== fromEnv.trim())]
+  }
+  return [...DEFAULT_TRO_IDS]
+}
+
+const TRO_IDS = resolveTroIds()
 
 export type HolderKind = 'user' | 'sc-vault' | 'sc-pool' | 'exchange' | 'unknown'
 
@@ -206,7 +243,18 @@ export async function fetchHolderIndex(opts?: {
   tokenId?: string
 }): Promise<HolderIndexSnapshot> {
   const notes: string[] = []
-  const { holders, tokenId, totalSupply, accountsCount } = await fetchTroHolders(opts)
+  let holdersResult = await fetchTroHolders(opts)
+  if (holdersResult.holders.length === 0 && !opts?.tokenId) {
+    for (const alt of TRO_IDS.slice(1)) {
+      const altRes = await fetchTroHolders({ ...opts, tokenId: alt })
+      if (altRes.holders.length > 0) {
+        holdersResult = altRes
+        notes.push(`Token fallback ${alt}`)
+        break
+      }
+    }
+  }
+  const { holders, tokenId, totalSupply, accountsCount } = holdersResult
 
   const vaults = holders.filter(h => h.kind === 'sc-vault' || h.kind === 'sc-pool')
   const topUsers = holders
@@ -217,7 +265,7 @@ export async function fetchHolderIndex(opts?: {
   try {
     nftLeaderboard = await fetchNftLeaderboard()
     if (nftLeaderboard.length === 0) {
-      notes.push('Collections NFT xArtists non configurées ou vides (VITE_XARTISTS_NFT_COLLECTIONS)')
+      notes.push('NFT leaderboard vide (API / collections sans holders publics)')
     }
   } catch {
     notes.push('NFT leaderboard indisponible')
