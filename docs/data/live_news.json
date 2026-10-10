@@ -1,14 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-09T22:45:00.000Z",
-  "note": "merge resilient — min 10 items; paper only.",
+  "updatedAt": "2026-10-10T04:29:27.834Z",
+  "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1791606567341",
+      "timestamp": "04:29",
+      "source": "EGLD",
+      "title": "Cotation publique · $4.03 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1791578357000",
+      "timestamp": "20:39",
+      "source": "CoinTelegraph",
+      "title": "US plans to seize $1B in crypto linked to Iran this week: Scott Bessent",
+      "link": "https://cointelegraph.com/news/scott-bessent-us-seize-crypto-iran-sanctions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791576842000",
+      "timestamp": "20:14",
+      "source": "CoinTelegraph",
+      "title": "New York permanently bars Celsius founder Mashinsky in $35M fraud settlement",
+      "link": "https://cointelegraph.com/news/celsius-founder-alex-mashinsky-permanently-banned-from-crypto-industry-in-ny-settlement?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1791572643000",
+      "timestamp": "19:04",
+      "source": "CoinTelegraph",
+      "title": "THORChain exec accuses Tether of temporarily freezing USDT vaults",
+      "link": "https://cointelegraph.com/news/thorchain-tether-freezing-usdt-addresses?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1791570611000",
+      "timestamp": "18:30",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1791566467000",
+      "timestamp": "17:21",
+      "source": "CoinTelegraph",
+      "title": "HSBC, Ant Digital test AI-agent payments using tokenized deposits",
+      "link": "https://cointelegraph.com/news/hsbc-ant-digital-test-ai-agent-payments-using-tokenized-deposits?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1791565367000",
+      "timestamp": "17:02",
+      "source": "CoinTelegraph",
+      "title": "Ledger investigates fund losses linked to Southeast Asian reseller, warns users",
+      "link": "https://cointelegraph.com/news/ledger-investigates-fund-losses-linked-to-southeast-asian-reseller-warns-users?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1791580914000",
+      "timestamp": "21:21",
+      "source": "CoinDesk",
+      "title": "U.S. CFTC moves to fold event contracts into swaps regulations as legal fight rages",
+      "link": "https://www.coindesk.com/policy/2026/10/09/u-s-cftc-moves-to-fold-event-contracts-into-swaps-regulations-as-legal-fight-rages"
+    },
+    {
+      "id": "rss-CoinDesk-1-1791569460000",
+      "timestamp": "18:11",
+      "source": "CoinDesk",
+      "title": "Robinhood Chain considers technology that gives paying traders priority",
+      "link": "https://www.coindesk.com/business/2026/10/09/robinhood-chain-considers-technology-that-gives-paying-traders-priority"
+    },
+    {
+      "id": "rss-CoinDesk-2-1791557723000",
+      "timestamp": "14:55",
+      "source": "CoinDesk",
+      "title": "New York AG secures up to $35 million and lifetime crypto ban from Celsius’ Alex Mashinsky",
+      "link": "https://www.coindesk.com/policy/2026/10/09/new-york-ag-secures-up-to-usd35-million-and-lifetime-crypto-ban-from-celsius-alex-mashinsky"
+    },
+    {
+      "id": "rss-CoinDesk-3-1791557247000",
+      "timestamp": "14:47",
+      "source": "CoinDesk",
+      "title": "Ledger investigates potential wallet tampering after reports of $86 million in crypto stolen",
+      "link": "https://www.coindesk.com/business/2026/10/09/ledger-investigates-potential-wallet-tampering-after-reports-of-usd86-million-in-crypto-stolen"
+    },
     {
       "id": "egld-seed",
       "timestamp": "22:45",
       "source": "EGLD",
       "title": "Cotation publique via API MultiversX economics",
-      "link": "https://explorer.multiversx.com"
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "mvx-agent-stack",
@@ -43,21 +120,21 @@
       "timestamp": "10:45",
       "source": "xExchange",
       "title": "Mise à jour des pools de liquidité et frais d'agrégation",
-      "link": "https://xexchange.com"
+      "link": "https://xexchange.com/"
     },
     {
       "id": "news-dex",
       "timestamp": "09:12",
       "source": "DEX",
       "title": "Volume en hausse sur les DEX MultiversX",
-      "link": "https://explorer.multiversx.com"
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "news-xportal",
       "timestamp": "08:30",
       "source": "xPortal",
       "title": "Sessions wallet mobile stabilisées (multi-TX)",
-      "link": "https://xportal.com"
+      "link": "https://xportal.com/"
     },
     {
       "id": "news-net",
