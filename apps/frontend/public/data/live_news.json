@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-10T11:57:44.431Z",
+  "updatedAt": "2026-10-10T17:13:05.550Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1791652385079",
+      "timestamp": "17:13",
+      "source": "EGLD",
+      "title": "Cotation publique · $4.02 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1791635400000",
+      "timestamp": "12:30",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791633134000",
+      "timestamp": "11:52",
+      "source": "CoinTelegraph",
+      "title": "Justin Sun says Tron’s post-quantum cryptography has gone live on testnet",
+      "link": "https://cointelegraph.com/news/justin-sun-says-trons-post-quantum-cryptography-has-gone-live-on-testnet?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1791621666000",
+      "timestamp": "08:41",
+      "source": "CoinTelegraph",
+      "title": "Tech chief says EU can fend off rogue AI risk: Report",
+      "link": "https://cointelegraph.com/news/tech-chief-says-eu-can-fend-off-rogue-ai-risk-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1791616243000",
+      "timestamp": "07:10",
+      "source": "CoinTelegraph",
+      "title": "Sam Altman-backed Bitcoin life insurer, Meanwhile, raises more funds",
+      "link": "https://cointelegraph.com/news/sam-altman-backed-bitcoin-life-insurer-meanwhile-raises-more-funds?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1791578357000",
+      "timestamp": "20:39",
+      "source": "CoinTelegraph",
+      "title": "US plans to seize $1B in crypto linked to Iran this week: Scott Bessent",
+      "link": "https://cointelegraph.com/news/scott-bessent-us-seize-crypto-iran-sanctions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1791576842000",
+      "timestamp": "20:14",
+      "source": "CoinTelegraph",
+      "title": "New York permanently bars Celsius founder Mashinsky in $35M fraud settlement",
+      "link": "https://cointelegraph.com/news/celsius-founder-alex-mashinsky-permanently-banned-from-crypto-industry-in-ny-settlement?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1791633600000",
+      "timestamp": "12:00",
+      "source": "CoinDesk",
+      "title": "One year after 10/10 flash crash, bitcoin and ether liquidity have rebuilt, but altcoins still face risks",
+      "link": "https://www.coindesk.com/markets/2026/10/10/one-year-after-10-10-bitcoin-and-ether-liquidity-have-rebuilt-but-other-altcoins-still-face-risks"
+    },
+    {
+      "id": "rss-CoinDesk-1-1791633600000",
+      "timestamp": "12:00",
+      "source": "CoinDesk",
+      "title": "Tokenized commodities look beyond gold as lending and oil open new markets",
+      "link": "https://www.coindesk.com/business/2026/10/05/tokenized-commodities-look-beyond-gold-as-lending-and-oil-open-new-markets"
+    },
+    {
+      "id": "rss-CoinDesk-2-1791630000000",
+      "timestamp": "11:00",
+      "source": "CoinDesk",
+      "title": "Bitcoin's $19 billion wake-up call: One-year after flash crash, has crypto learned anything?",
+      "link": "https://www.coindesk.com/markets/2026/10/10/bitcoin-s-usd19-billion-wake-up-call-one-year-later-has-crypto-learned-anything"
+    },
+    {
+      "id": "rss-CoinDesk-3-1791610980000",
+      "timestamp": "05:43",
+      "source": "CoinDesk",
+      "title": "Bitcoin's volatility has plunged, but extreme price swings are more frequent than in 2018",
+      "link": "https://www.coindesk.com/markets/2026/10/09/bitcoin-s-volatility-has-plunged-but-extreme-price-swings-are-more-frequent-than-in-2018"
+    },
     {
       "id": "egld-1791633463934",
       "timestamp": "11:57",
@@ -11,53 +88,11 @@
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1791621666000",
-      "timestamp": "08:41",
-      "source": "CoinTelegraph",
-      "title": "Tech chief says EU can fend off rogue AI risk: Report",
-      "link": "https://cointelegraph.com/news/tech-chief-says-eu-can-fend-off-rogue-ai-risk-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1791616243000",
-      "timestamp": "07:10",
-      "source": "CoinTelegraph",
-      "title": "Sam Altman-backed Bitcoin life insurer, Meanwhile, raises more funds",
-      "link": "https://cointelegraph.com/news/sam-altman-backed-bitcoin-life-insurer-meanwhile-raises-more-funds?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1791578357000",
-      "timestamp": "20:39",
-      "source": "CoinTelegraph",
-      "title": "US plans to seize $1B in crypto linked to Iran this week: Scott Bessent",
-      "link": "https://cointelegraph.com/news/scott-bessent-us-seize-crypto-iran-sanctions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1791576842000",
-      "timestamp": "20:14",
-      "source": "CoinTelegraph",
-      "title": "New York permanently bars Celsius founder Mashinsky in $35M fraud settlement",
-      "link": "https://cointelegraph.com/news/celsius-founder-alex-mashinsky-permanently-banned-from-crypto-industry-in-ny-settlement?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "id": "rss-CoinTelegraph-4-1791572643000",
       "timestamp": "19:04",
       "source": "CoinTelegraph",
       "title": "THORChain exec accuses Tether of temporarily freezing USDT vaults",
       "link": "https://cointelegraph.com/news/thorchain-tether-freezing-usdt-addresses?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791570611000",
-      "timestamp": "18:30",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1791610980000",
-      "timestamp": "05:43",
-      "source": "CoinDesk",
-      "title": "Bitcoin's volatility has plunged, but extreme price swings are more frequent than in 2018",
-      "link": "https://www.coindesk.com/markets/2026/10/09/bitcoin-s-volatility-has-plunged-but-extreme-price-swings-are-more-frequent-than-in-2018"
     },
     {
       "id": "rss-CoinDesk-1-1791607475000",
@@ -163,39 +198,6 @@
       "source": "MultiversX",
       "title": "Warps v3 — standard dApp & UX",
       "link": "https://multiversx.com/blog"
-    },
-    {
-      "id": "news-xex",
-      "timestamp": "10:45",
-      "source": "xExchange",
-      "title": "Mise à jour des pools de liquidité et frais d'agrégation",
-      "link": "https://xexchange.com/"
-    },
-    {
-      "id": "news-dex",
-      "timestamp": "09:12",
-      "source": "DEX",
-      "title": "Volume en hausse sur les DEX MultiversX",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "news-xportal",
-      "timestamp": "08:30",
-      "source": "xPortal",
-      "title": "Sessions wallet mobile stabilisées (multi-TX)",
-      "link": "https://xportal.com/"
-    },
-    {
-      "id": "news-net",
-      "timestamp": "07:55",
-      "source": "Network",
-      "title": "Finalité intra-shard ~600ms — rail agent-ready"
-    },
-    {
-      "id": "news-build",
-      "timestamp": "05:18",
-      "source": "Builders",
-      "title": "Sovereign chains & dApp hub en expansion"
     }
   ]
 }
