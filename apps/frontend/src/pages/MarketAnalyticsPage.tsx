@@ -4,13 +4,15 @@
  */
 import MarketPage from './MarketPage'
 import MatrixBoard from '../components/lia/MatrixBoard'
+import TroHolderBoard from '../components/analytics/TroHolderBoard'
 
 export default function MarketAnalyticsPage() {
   return (
     <div className="space-y-6 pb-16">
       <MarketPage />
-      <div className="max-w-4xl mx-auto px-0 sm:px-0">
+      <div className="max-w-4xl mx-auto px-0 sm:px-0 space-y-6">
         <MatrixBoard />
+        <TroHolderBoard />
       </div>
     </div>
   )
