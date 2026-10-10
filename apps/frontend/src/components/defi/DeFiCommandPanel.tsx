@@ -57,7 +57,7 @@ const CARDS: {
   },
 ]
 
-export default function DeFiCommandPanel() {
+export default function DeFiCommandPanel({ hideTroLiquidity = false }: { hideTroLiquidity?: boolean } = {}) {
   const { address, connected } = useWallet()
   const [proto, setProto] = useState<Proto>('hatom')
   const [amount, setAmount] = useState('0.1')
@@ -125,7 +125,7 @@ export default function DeFiCommandPanel() {
 
   return (
     <div className="glass-hud p-4 space-y-4">
-      <TroLiquidityPanel />
+      {!hideTroLiquidity && <TroLiquidityPanel />}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
