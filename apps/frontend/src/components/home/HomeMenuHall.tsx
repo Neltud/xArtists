@@ -1,10 +1,11 @@
 /**
- * Accueil 360° — galerie néon cyberpunk (cadres émissifs, dôme, faisceaux, float).
- * Mobile-safe: pixelRatio ≤ 1.5, géométries légères, fallback grille HTML.
+ * Accueil 360° — galerie néon cyberpunk + résilience WebGL (context loss).
+ * Mobile-safe: pixelRatio ≤ 1.25, pause onglet caché, fallback grille HTML.
  */
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as THREE from 'three'
+import { isWebGLAvailable } from '../../lib/webglSupport'
 
 type Exhibit = {
   id: string
@@ -146,16 +147,6 @@ function paintPanel(ex: Exhibit, index: number): THREE.CanvasTexture {
   ctx.shadowColor = outer; ctx.shadowBlur = 36; ctx.strokeStyle = outer; ctx.lineWidth = 18; ctx.strokeRect(28, 28, 840, 1064)
   ctx.shadowBlur = 18; ctx.strokeStyle = hex; ctx.lineWidth = 8; ctx.strokeRect(48, 48, 800, 1024)
   ctx.shadowBlur = 0; ctx.strokeStyle = 'rgba(255,255,255,0.22)'; ctx.lineWidth = 2; ctx.strokeRect(64, 64, 768, 992)
-  ctx.strokeStyle = outer; ctx.lineWidth = 3
-  const c = 72, L = 36
-  ;[[c, c], [896 - c, c], [c, 1120 - c], [896 - c, 1120 - c]].forEach(([x, y], qi) => {
-    ctx.beginPath()
-    if (qi === 0) { ctx.moveTo(x, y + L); ctx.lineTo(x, y); ctx.lineTo(x + L, y) }
-    else if (qi === 1) { ctx.moveTo(x - L, y); ctx.lineTo(x, y); ctx.lineTo(x, y + L) }
-    else if (qi === 2) { ctx.moveTo(x, y - L); ctx.lineTo(x, y); ctx.lineTo(x + L, y) }
-    else { ctx.moveTo(x - L, y); ctx.lineTo(x, y); ctx.lineTo(x, y - L) }
-    ctx.stroke()
-  })
   paintArtwork(ctx, ex, index * 1.7 + 0.3)
   ctx.fillStyle = '#fafafa'; ctx.font = 'bold 78px system-ui,Segoe UI,sans-serif'; ctx.textAlign = 'center'
   ctx.shadowColor = hex; ctx.shadowBlur = 12; ctx.fillText(ex.label, 448, 620); ctx.shadowBlur = 0
@@ -183,175 +174,380 @@ function FallbackGrid() {
 
 export default function HomeMenuHall() {
   const hostRef = useRef<HTMLDivElement>(null)
-  const [failed, setFailed] = useState(false)
+  const [failed, setFailed] = useState(() => !isWebGLAvailable())
+  const [contextLost, setContextLost] = useState(false)
+  const [sceneKey, setSceneKey] = useState(0)
+
+  const retryScene = useCallback(() => {
+    setFailed(false)
+    setContextLost(false)
+    setSceneKey(k => k + 1)
+  }, [])
 
   useEffect(() => {
     const host = hostRef.current
     if (!host || failed) return
+    if (!isWebGLAvailable()) {
+      setFailed(true)
+      return
+    }
+
     let renderer: THREE.WebGLRenderer | null = null
     let raf = 0
+    let disposed = false
+    let paused = false
     const disposables: { dispose: () => void }[] = []
+
+    const onCtxLost = (e: Event) => {
+      e.preventDefault()
+      paused = true
+      if (raf) cancelAnimationFrame(raf)
+      raf = 0
+      setContextLost(true)
+      console.warn('[HomeMenuHall] webglcontextlost')
+    }
+    const onCtxRestored = () => {
+      console.info('[HomeMenuHall] webglcontextrestored → reinit')
+      setContextLost(false)
+      setSceneKey(k => k + 1)
+    }
+    const onVisibility = () => {
+      paused = document.hidden
+      if (!paused && !disposed && !raf) {
+        ;(window as unknown as { __hmhKick?: () => void }).__hmhKick?.()
+      }
+    }
+
     try {
       const isMobile = (host.clientWidth || 400) < 640
       const w = Math.max(300, host.clientWidth || 400)
       const h = Math.max(isMobile ? 440 : 500, Math.min(isMobile ? 560 : 740, Math.floor(w * (isMobile ? 1.05 : 1.1))))
+
       const scene = new THREE.Scene()
       scene.background = new THREE.Color(0x000000)
       scene.fog = new THREE.FogExp2(0x05020c, 0.022)
+
       const camRadius = isMobile ? 3.6 : 4.2
       const camera = new THREE.PerspectiveCamera(55, w / h, 0.1, 90)
       camera.position.set(0, 1.8, camRadius)
       camera.lookAt(0, 1.4, 0)
-      renderer = new THREE.WebGLRenderer({ antialias: !isMobile, powerPreference: 'default', failIfMajorPerformanceCaveat: false, alpha: false })
+
+      renderer = new THREE.WebGLRenderer({
+        antialias: !isMobile,
+        powerPreference: 'default',
+        failIfMajorPerformanceCaveat: false,
+        alpha: false,
+      })
       renderer.setSize(w, h)
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.35 : 1.75))
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 1.75))
       renderer.toneMapping = THREE.ACESFilmicToneMapping
       renderer.toneMappingExposure = 1.15
-      host.innerHTML = ''; host.appendChild(renderer.domElement)
+      host.innerHTML = ''
+      host.appendChild(renderer.domElement)
+
+      const canvas = renderer.domElement
+      canvas.addEventListener('webglcontextlost', onCtxLost, false)
+      canvas.addEventListener('webglcontextrestored', onCtxRestored, false)
+      document.addEventListener('visibilitychange', onVisibility)
+
       scene.add(new THREE.AmbientLight(0xb0a8d0, 0.55))
-      const key = new THREE.DirectionalLight(0xffe8ff, 0.85); key.position.set(3, 10, 2); scene.add(key)
+      const key = new THREE.DirectionalLight(0xffe8ff, 0.85)
+      key.position.set(3, 10, 2)
+      scene.add(key)
       const spot = new THREE.SpotLight(0x00f3ff, 2.8, 32, Math.PI / 4.5, 0.4, 1.1)
-      spot.position.set(0, 7.5, 0); spot.target.position.set(0, 0, 0); scene.add(spot); scene.add(spot.target)
+      spot.position.set(0, 7.5, 0)
+      spot.target.position.set(0, 0, 0)
+      scene.add(spot)
+      scene.add(spot.target)
       scene.add(new THREE.PointLight(0xff007f, 2.0, 18).translateX(-5).translateY(3.2))
       scene.add(new THREE.PointLight(0x00f3ff, 1.8, 18).translateX(5).translateY(2.8))
       scene.add(new THREE.PointLight(0xffd700, 1.4, 16).translateY(5).translateZ(-2))
       scene.add(new THREE.PointLight(0xa855f7, 1.6, 20).translateY(2))
+
       const floorGeo = new THREE.CircleGeometry(10, isMobile ? 32 : 48)
-      const floorMat = new THREE.MeshStandardMaterial({ color: 0x050508, metalness: 0.8, roughness: 0.2, emissive: new THREE.Color(0x0c0820), emissiveIntensity: 0.45 })
-      const floor = new THREE.Mesh(floorGeo, floorMat); floor.rotation.x = -Math.PI / 2; scene.add(floor); disposables.push(floorGeo, floorMat)
+      const floorMat = new THREE.MeshStandardMaterial({
+        color: 0x050508,
+        metalness: 0.8,
+        roughness: 0.2,
+        emissive: new THREE.Color(0x0c0820),
+        emissiveIntensity: 0.45,
+      })
+      const floor = new THREE.Mesh(floorGeo, floorMat)
+      floor.rotation.x = -Math.PI / 2
+      scene.add(floor)
+      disposables.push(floorGeo, floorMat)
+
       const grid = new THREE.GridHelper(18, isMobile ? 24 : 36, 0xa855f7, 0x1a0a30)
       grid.position.y = 0.015
       const gridMat = grid.material as THREE.LineBasicMaterial | THREE.LineBasicMaterial[]
       if (Array.isArray(gridMat)) gridMat.forEach(m => { m.transparent = true; m.opacity = 0.85 })
       else { gridMat.transparent = true; gridMat.opacity = 0.85 }
       scene.add(grid)
+
       const floorRingGeo = new THREE.TorusGeometry(5.4, 0.025, 6, isMobile ? 48 : 64)
       const floorRingMat = new THREE.MeshBasicMaterial({ color: 0x00f3ff, transparent: true, opacity: 0.7 })
-      const floorRing = new THREE.Mesh(floorRingGeo, floorRingMat); floorRing.rotation.x = Math.PI / 2; floorRing.position.y = 0.04; scene.add(floorRing)
+      const floorRing = new THREE.Mesh(floorRingGeo, floorRingMat)
+      floorRing.rotation.x = Math.PI / 2
+      floorRing.position.y = 0.04
+      scene.add(floorRing)
       disposables.push(floorRingGeo, floorRingMat)
+
       const domeGeo = new THREE.SphereGeometry(11, isMobile ? 16 : 24, isMobile ? 10 : 14, 0, Math.PI * 2, 0, Math.PI * 0.5)
       const domeMat = new THREE.MeshBasicMaterial({ color: 0xa855f7, wireframe: true, transparent: true, opacity: 0.42 })
-      const dome = new THREE.Mesh(domeGeo, domeMat); dome.position.y = 0.05; scene.add(dome); disposables.push(domeGeo, domeMat)
+      const dome = new THREE.Mesh(domeGeo, domeMat)
+      dome.position.y = 0.05
+      scene.add(dome)
+      disposables.push(domeGeo, domeMat)
+
       const outerDomeGeo = new THREE.SphereGeometry(11.4, isMobile ? 12 : 18, isMobile ? 8 : 10, 0, Math.PI * 2, 0, Math.PI * 0.48)
       const outerDomeMat = new THREE.MeshBasicMaterial({ color: 0x00f3ff, wireframe: true, transparent: true, opacity: 0.22 })
-      const outerDome = new THREE.Mesh(outerDomeGeo, outerDomeMat); outerDome.position.y = 0.08; scene.add(outerDome); disposables.push(outerDomeGeo, outerDomeMat)
+      const outerDome = new THREE.Mesh(outerDomeGeo, outerDomeMat)
+      outerDome.position.y = 0.08
+      scene.add(outerDome)
+      disposables.push(outerDomeGeo, outerDomeMat)
+
       const ringGeo = new THREE.TorusGeometry(6.4, 0.04, 8, isMobile ? 48 : 64)
       const ringMat = new THREE.MeshBasicMaterial({ color: 0xc084fc })
-      const ring = new THREE.Mesh(ringGeo, ringMat); ring.rotation.x = Math.PI / 2; ring.position.y = 4.2; scene.add(ring); disposables.push(ringGeo, ringMat)
-      const panels: THREE.Mesh[] = []; const beams: THREE.Mesh[] = []; const particles: THREE.Points[] = []
-      const n = EXHIBITS.length; const radius = 5.0
+      const ring = new THREE.Mesh(ringGeo, ringMat)
+      ring.rotation.x = Math.PI / 2
+      ring.position.y = 4.2
+      scene.add(ring)
+      disposables.push(ringGeo, ringMat)
+
+      const panels: THREE.Mesh[] = []
+      const beams: THREE.Mesh[] = []
+      const particles: THREE.Points[] = []
+      const n = EXHIBITS.length
+      const radius = 5.0
+
       EXHIBITS.forEach((ex, i) => {
         const tex = paintPanel(ex, i)
-        const mat = new THREE.MeshStandardMaterial({ map: tex, emissive: new THREE.Color(ex.neon), emissiveIntensity: 1.25, roughness: 0.18, metalness: 0.5, transparent: true, opacity: 0.97 })
+        const mat = new THREE.MeshStandardMaterial({
+          map: tex,
+          emissive: new THREE.Color(ex.neon),
+          emissiveIntensity: 1.25,
+          roughness: 0.18,
+          metalness: 0.5,
+          transparent: true,
+          opacity: 0.97,
+        })
         const geo = new THREE.PlaneGeometry(2.15, 2.7)
         const mesh = new THREE.Mesh(geo, mat)
         const ang = (i / n) * Math.PI * 2 - Math.PI / 2
-        const px = Math.cos(ang) * radius; const pz = Math.sin(ang) * radius
-        mesh.position.set(px, 1.55, pz); mesh.lookAt(0, 1.55, 0)
-        mesh.userData.path = ex.path; mesh.userData.baseY = 1.55; mesh.userData.ang = ang
-        scene.add(mesh); panels.push(mesh); disposables.push(geo, mat, tex)
-        const pl = new THREE.PointLight(ex.neon, 1.85, 8); pl.position.set(px * 0.7, 1.9, pz * 0.7); scene.add(pl)
+        const px = Math.cos(ang) * radius
+        const pz = Math.sin(ang) * radius
+        mesh.position.set(px, 1.55, pz)
+        mesh.lookAt(0, 1.55, 0)
+        mesh.userData.path = ex.path
+        mesh.userData.baseY = 1.55
+        scene.add(mesh)
+        panels.push(mesh)
+        disposables.push(geo, mat, tex)
+
+        const pl = new THREE.PointLight(ex.neon, 1.85, 8)
+        pl.position.set(px * 0.7, 1.9, pz * 0.7)
+        scene.add(pl)
+
         const beamGeo = new THREE.ConeGeometry(0.7, 1.85, isMobile ? 10 : 16, 1, true)
-        const beamMat = new THREE.MeshBasicMaterial({ color: ex.neon, transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending })
-        const beam = new THREE.Mesh(beamGeo, beamMat); beam.position.set(px, 0.9, pz); beam.rotation.x = Math.PI
-        scene.add(beam); beams.push(beam); disposables.push(beamGeo, beamMat)
+        const beamMat = new THREE.MeshBasicMaterial({
+          color: ex.neon,
+          transparent: true,
+          opacity: 0.28,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        })
+        const beam = new THREE.Mesh(beamGeo, beamMat)
+        beam.position.set(px, 0.9, pz)
+        beam.rotation.x = Math.PI
+        scene.add(beam)
+        beams.push(beam)
+        disposables.push(beamGeo, beamMat)
+
         if (!isMobile || i % 2 === 0) {
-          const count = isMobile ? 18 : 36
+          const count = isMobile ? 14 : 28
           const positions = new Float32Array(count * 3)
           for (let p = 0; p < count; p++) {
             positions[p * 3] = (Math.random() - 0.5) * 0.85
             positions[p * 3 + 1] = Math.random() * 1.8
             positions[p * 3 + 2] = (Math.random() - 0.5) * 0.85
           }
-          const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-          const pMat = new THREE.PointsMaterial({ color: ex.neon, size: isMobile ? 0.045 : 0.065, transparent: true, opacity: 0.9, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true })
-          const pts = new THREE.Points(pGeo, pMat); pts.position.set(px, 0.2, pz); scene.add(pts); particles.push(pts); disposables.push(pGeo, pMat)
+          const pGeo = new THREE.BufferGeometry()
+          pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+          const pMat = new THREE.PointsMaterial({
+            color: ex.neon,
+            size: isMobile ? 0.04 : 0.06,
+            transparent: true,
+            opacity: 0.85,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            sizeAttenuation: true,
+          })
+          const pts = new THREE.Points(pGeo, pMat)
+          pts.position.set(px, 0.2, pz)
+          scene.add(pts)
+          particles.push(pts)
+          disposables.push(pGeo, pMat)
         }
       })
-      const raycaster = new THREE.Raycaster(); const pointer = new THREE.Vector2()
-      let dragging = false; let lastX = 0; let yaw = 0; let targetYaw = 0
-      const onDown = (ev: PointerEvent) => { dragging = true; lastX = ev.clientX; if (renderer) renderer.domElement.style.cursor = 'grabbing' }
+
+      const raycaster = new THREE.Raycaster()
+      const pointer = new THREE.Vector2()
+      let dragging = false
+      let lastX = 0
+      let yaw = 0
+      let targetYaw = 0
+
+      const onDown = (ev: PointerEvent) => {
+        dragging = true
+        lastX = ev.clientX
+        if (renderer) renderer.domElement.style.cursor = 'grabbing'
+      }
       const onUp = (ev: PointerEvent) => {
         if (!dragging || !renderer) return
-        const dx = Math.abs(ev.clientX - lastX); dragging = false; renderer.domElement.style.cursor = 'grab'
+        const dx = Math.abs(ev.clientX - lastX)
+        dragging = false
+        renderer.domElement.style.cursor = 'grab'
         if (dx > 8) return
         const rect = renderer.domElement.getBoundingClientRect()
         pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1
         pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1
         raycaster.setFromCamera(pointer, camera)
         const hits = raycaster.intersectObjects(panels, false)
-        if (hits.length) { const path = hits[0].object.userData.path as string; if (path) window.location.hash = `#${path}` }
+        if (hits.length) {
+          const path = hits[0].object.userData.path as string
+          if (path) window.location.hash = `#${path}`
+        }
       }
-      const onMove = (ev: PointerEvent) => { if (!dragging) return; targetYaw -= (ev.clientX - lastX) * 0.005; lastX = ev.clientX }
-      renderer.domElement.style.cursor = 'grab'; renderer.domElement.style.touchAction = 'none'
-      renderer.domElement.addEventListener('pointerdown', onDown)
-      renderer.domElement.addEventListener('pointerup', onUp)
-      renderer.domElement.addEventListener('pointerleave', () => { dragging = false; if (renderer) renderer.domElement.style.cursor = 'grab' })
-      renderer.domElement.addEventListener('pointermove', onMove)
+      const onMove = (ev: PointerEvent) => {
+        if (!dragging) return
+        targetYaw -= (ev.clientX - lastX) * 0.005
+        lastX = ev.clientX
+      }
+
+      canvas.style.cursor = 'grab'
+      canvas.style.touchAction = 'none'
+      canvas.addEventListener('pointerdown', onDown)
+      canvas.addEventListener('pointerup', onUp)
+      canvas.addEventListener('pointerleave', () => {
+        dragging = false
+        if (renderer) renderer.domElement.style.cursor = 'grab'
+      })
+      canvas.addEventListener('pointermove', onMove)
+
       const t0 = performance.now()
       const animate = () => {
-        raf = requestAnimationFrame(animate); if (!renderer) return
-        const t = (performance.now() - t0) / 1000
-        if (!dragging) targetYaw += 0.00085
-        yaw += (targetYaw - yaw) * 0.08
-        camera.position.x = Math.sin(yaw) * camRadius
-        camera.position.z = Math.cos(yaw) * camRadius
-        camera.position.y = 1.8 + Math.sin(t * 0.35) * 0.04
-        camera.lookAt(0, 1.35, 0)
-        panels.forEach((p, i) => {
-          p.position.y = (p.userData.baseY as number) + Math.sin(t * 0.9 + i * 0.5) * 0.1
-          const m = p.material as THREE.MeshStandardMaterial
-          m.emissiveIntensity = 0.95 + Math.sin(t * 1.4 + i) * 0.35
-        })
-        beams.forEach((b, i) => {
-          const mat = b.material as THREE.MeshBasicMaterial
-          mat.opacity = 0.22 + Math.sin(t * 1.8 + i * 0.7) * 0.12
-          b.scale.y = 1 + Math.sin(t * 1.3 + i) * 0.12
-          b.scale.x = 1 + Math.sin(t * 1.1 + i * 0.5) * 0.06; b.scale.z = b.scale.x
-        })
-        particles.forEach((pts, i) => {
-          const pos = pts.geometry.attributes.position as THREE.BufferAttribute
-          for (let p = 0; p < pos.count; p++) {
-            let y = pos.getY(p) + 0.012 + (i % 3) * 0.003
-            if (y > 2.0) y = 0
-            pos.setY(p, y)
-            pos.setX(p, pos.getX(p) + Math.sin(t + p + i) * 0.0008)
-            pos.setZ(p, pos.getZ(p) + Math.cos(t * 0.9 + p) * 0.0008)
-          }
-          pos.needsUpdate = true
-        })
-        ring.rotation.z = t * 0.15; dome.rotation.y = t * 0.03; outerDome.rotation.y = -t * 0.02; floorRing.rotation.z = -t * 0.08
-        renderer.render(scene, camera)
+        if (disposed || !renderer || paused) {
+          raf = 0
+          return
+        }
+        raf = requestAnimationFrame(animate)
+        try {
+          const t = (performance.now() - t0) / 1000
+          if (!dragging) targetYaw += 0.00085
+          yaw += (targetYaw - yaw) * 0.08
+          camera.position.x = Math.sin(yaw) * camRadius
+          camera.position.z = Math.cos(yaw) * camRadius
+          camera.position.y = 1.8 + Math.sin(t * 0.35) * 0.04
+          camera.lookAt(0, 1.35, 0)
+          panels.forEach((p, i) => {
+            p.position.y = (p.userData.baseY as number) + Math.sin(t * 0.9 + i * 0.5) * 0.1
+            const m = p.material as THREE.MeshStandardMaterial
+            m.emissiveIntensity = 0.95 + Math.sin(t * 1.4 + i) * 0.35
+          })
+          beams.forEach((b, i) => {
+            const mat = b.material as THREE.MeshBasicMaterial
+            mat.opacity = 0.22 + Math.sin(t * 1.8 + i * 0.7) * 0.12
+            b.scale.y = 1 + Math.sin(t * 1.3 + i) * 0.12
+            b.scale.x = 1 + Math.sin(t * 1.1 + i * 0.5) * 0.06
+            b.scale.z = b.scale.x
+          })
+          particles.forEach((pts, i) => {
+            const pos = pts.geometry.attributes.position as THREE.BufferAttribute
+            for (let p = 0; p < pos.count; p++) {
+              let y = pos.getY(p) + 0.012 + (i % 3) * 0.003
+              if (y > 2.0) y = 0
+              pos.setY(p, y)
+              pos.setX(p, pos.getX(p) + Math.sin(t + p + i) * 0.0008)
+              pos.setZ(p, pos.getZ(p) + Math.cos(t * 0.9 + p) * 0.0008)
+            }
+            pos.needsUpdate = true
+          })
+          ring.rotation.z = t * 0.15
+          dome.rotation.y = t * 0.03
+          outerDome.rotation.y = -t * 0.02
+          floorRing.rotation.z = -t * 0.08
+          renderer.render(scene, camera)
+        } catch (err) {
+          console.warn('[HomeMenuHall] render error', err)
+          paused = true
+          setContextLost(true)
+        }
       }
+      const kickAnimate = () => {
+        if (disposed || !renderer || paused) return
+        if (!raf) animate()
+      }
+      ;(window as unknown as { __hmhKick?: () => void }).__hmhKick = kickAnimate
       animate()
+
       const onResize = () => {
-        if (!renderer || !host) return
+        if (!renderer || !host || disposed) return
         const mobile = (host.clientWidth || 400) < 640
         const nw = Math.max(300, host.clientWidth || 400)
         const nh = Math.max(mobile ? 440 : 500, Math.min(mobile ? 560 : 740, Math.floor(nw * (mobile ? 1.05 : 1.1))))
-        camera.aspect = nw / nh; camera.updateProjectionMatrix(); renderer.setSize(nw, nh)
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.35 : 1.75))
+        camera.aspect = nw / nh
+        camera.updateProjectionMatrix()
+        renderer.setSize(nw, nh)
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.25 : 1.75))
       }
       window.addEventListener('resize', onResize)
+
       return () => {
-        cancelAnimationFrame(raf); window.removeEventListener('resize', onResize)
+        disposed = true
+        paused = true
+        cancelAnimationFrame(raf)
+        delete (window as unknown as { __hmhKick?: () => void }).__hmhKick
+        window.removeEventListener('resize', onResize)
+        document.removeEventListener('visibilitychange', onVisibility)
         if (renderer) {
-          renderer.domElement.removeEventListener('pointerdown', onDown)
-          renderer.domElement.removeEventListener('pointerup', onUp)
-          renderer.domElement.removeEventListener('pointermove', onMove)
+          const el = renderer.domElement
+          el.removeEventListener('webglcontextlost', onCtxLost)
+          el.removeEventListener('webglcontextrestored', onCtxRestored)
+          el.removeEventListener('pointerdown', onDown)
+          el.removeEventListener('pointerup', onUp)
+          el.removeEventListener('pointermove', onMove)
           renderer.dispose()
-          if (host.contains(renderer.domElement)) host.removeChild(renderer.domElement)
+          if (host.contains(el)) host.removeChild(el)
         }
-        disposables.forEach(d => { try { d.dispose() } catch { /* */ } })
+        disposables.forEach(d => {
+          try {
+            d.dispose()
+          } catch {
+            /* */
+          }
+        })
       }
     } catch (e) {
-      console.warn('[HomeMenuHall] WebGL fail', e); setFailed(true); return () => cancelAnimationFrame(raf)
+      console.warn('[HomeMenuHall] WebGL fail', e)
+      setFailed(true)
+      return () => {
+        cancelAnimationFrame(raf)
+      }
     }
-  }, [failed])
+  }, [failed, sceneKey])
 
   if (failed) {
     return (
       <div className="relative w-full overflow-hidden rounded-3xl border border-cyan-400/20 bg-black/90">
+        <div className="px-4 pt-4 pb-2 flex flex-wrap items-center justify-between gap-2">
+          <p className="text-[12px] text-amber-200/90">
+            WebGL indisponible sur cet appareil — menu accessible ci-dessous.
+          </p>
+          <button type="button" className="btn-secondary text-[11px] px-2 py-1" onClick={retryScene}>
+            Réessayer 3D
+          </button>
+        </div>
         <FallbackGrid />
       </div>
     )
@@ -360,6 +556,19 @@ export default function HomeMenuHall() {
   return (
     <div className="relative w-full overflow-hidden rounded-3xl border border-fuchsia-500/20 bg-black shadow-[0_0_80px_rgba(0,243,255,0.12),0_0_120px_rgba(168,85,247,0.1)]">
       <div ref={hostRef} className="w-full min-h-[440px] sm:min-h-[500px]" />
+      {contextLost && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black/75 backdrop-blur-sm p-4">
+          <p className="text-sm text-amber-100 text-center max-w-sm">
+            Contexte GPU perdu (mémoire / onglet en arrière-plan). La scène peut être relancée.
+          </p>
+          <button type="button" className="btn-primary text-sm" onClick={retryScene}>
+            Relancer la galerie 3D
+          </button>
+          <button type="button" className="btn-secondary text-xs" onClick={() => setFailed(true)}>
+            Afficher le menu simple
+          </button>
+        </div>
+      )}
       <p className="absolute bottom-3 left-3 right-3 text-center text-[11px] text-cyan-100/70 pointer-events-none font-tech tracking-wide">
         Glisse pour tourner · clique une porte holographique
       </p>
