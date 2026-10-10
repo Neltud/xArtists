@@ -19,6 +19,7 @@ import {
   type PreparedTx,
 } from '../../services/defi'
 import { useWallet } from '../../context/WalletContext'
+import TroLiquidityPanel from './TroLiquidityPanel'
 
 type Proto = 'hatom' | 'ashswap' | 'soul'
 
@@ -124,6 +125,8 @@ export default function DeFiCommandPanel() {
 
   return (
     <div className="glass-hud p-4 space-y-4">
+      <TroLiquidityPanel />
+
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-[10px] font-tech uppercase tracking-[0.2em] text-cyan-300/90">
