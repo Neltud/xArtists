@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
+import OnRampModule from '../components/OnRampModule'
 import PackOpenTheater from '../components/PackOpenTheater'
 import PackProductDisclaimer from '../components/PackProductDisclaimer'
 import FeeTransparency from '../components/ui/FeeTransparency'
@@ -45,6 +46,7 @@ export default function Agents() {
         </p>
       </header>
 
+      <OnRampModule className="mb-4" />
       <PackProductDisclaimer />
       <FeeTransparency kind="packs" />
 
