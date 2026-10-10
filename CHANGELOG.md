@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.96.0](https://github.com/Neltud/xArtists/compare/v0.95.2...v0.96.0) (2026-10-10)
+
+
+### Features
+
+* **home:** cyberpunk neon 3D hall — emissive frames, dome, beams, float ([19775e5](https://github.com/Neltud/xArtists/commit/19775e5ccdb45a78392bff72aa4d35e13c521d10))
+
 ## [0.95.2](https://github.com/Neltud/xArtists/compare/v0.95.1...v0.95.2) (2026-10-10)
 
 
