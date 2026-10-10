@@ -1,5 +1,25 @@
 # Changelog — xArtists
 
+## [0.98.0](https://github.com/Neltud/xArtists/compare/v0.97.0...v0.98.0) (2026-10-10)
+
+
+### Features
+
+* **lia:** embed LiaAgentControl on LIA Hub page ([e632236](https://github.com/Neltud/xArtists/commit/e63223644f3f9ffdc2a0d24a2f9cf53b5df67bcd))
+* OnRampModule EUR (MoonPay) + LiaAgentControl multi-IA dashboard ([16c04c4](https://github.com/Neltud/xArtists/commit/16c04c41fcd0baed8b355df8bd0bfcd5ddf5f60d))
+* **rwa:** HD photo validation — 2MB/8MP/contrast + capture environment ([5327f5c](https://github.com/Neltud/xArtists/commit/5327f5c52225f162e6f6ec55e7baee017600a06e))
+* **ui:** wire OnRamp on Agents + LiaAgentControl on LiaPage ([8a96b1c](https://github.com/Neltud/xArtists/commit/8a96b1c2e97b35903fed14ddc988e4347e286436))
+* **ux:** market tabs anti-scroll · HD photo validation · eco tab labels ([cbd11d7](https://github.com/Neltud/xArtists/commit/cbd11d7417ada25df39f1f4bf4eb8175f17263bb))
+
+
+### Bug Fixes
+
+* **ui:** audio FAB bottom-24 z-40 — clear News/LIA overlap ([4ec2f0e](https://github.com/Neltud/xArtists/commit/4ec2f0eda69fbf5ade5bff62e008a29ff250ea04))
+* **webgl:** contextlost/restored, sceneKey reinit, visibility pause, retry UI ([c21bc16](https://github.com/Neltud/xArtists/commit/c21bc161d114fe68c429f8219aae7a4ba4e754f9))
+* **webgl:** HoloDataRoom contextlost/restored + retry overlay ([96b5be4](https://github.com/Neltud/xArtists/commit/96b5be464cd7455a14e2f414605f028959118590))
+* **webgl:** restore HoloDataRoom + contextlost/restored retry ([0d00c66](https://github.com/Neltud/xArtists/commit/0d00c66decf6d75b4244c67020d48c0e24eb77fe))
+* **webgl:** restore HoloDataRoom from 26e815 + context loss handlers ([2e82778](https://github.com/Neltud/xArtists/commit/2e827784b2d7f1db09a9f98bab7430b3f9be7d03))
+
 ## [0.97.0](https://github.com/Neltud/xArtists/compare/v0.96.0...v0.97.0) (2026-10-10)
 
 
