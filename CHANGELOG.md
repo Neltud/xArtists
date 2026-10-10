@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.97.0](https://github.com/Neltud/xArtists/compare/v0.96.0...v0.97.0) (2026-10-10)
+
+
+### Features
+
+* **home:** richer artworks, bright holo beams, reflective floor, FOV 55 orbit cam ([934132c](https://github.com/Neltud/xArtists/commit/934132c8e114663e8078d624c095bc9e025d33eb))
+
+
+### Bug Fixes
+
+* **home:** restore + enhance neon hall (artworks, beams, FOV 55, reflective floor) ([6291b2b](https://github.com/Neltud/xArtists/commit/6291b2b8d9ff81868a05d42a877ef5b110f63399))
+
 ## [0.96.0](https://github.com/Neltud/xArtists/compare/v0.95.2...v0.96.0) (2026-10-10)
 
 
