@@ -50,6 +50,7 @@ function CommandCenterInner() {
   const { connected } = useWallet()
   const [room, setRoom] = useState<Room>('hub')
   const [ecoTab, setEcoTab] = useState<EcoTab>('defi')
+  const [guestRoomMsg, setGuestRoomMsg] = useState<string | null>(null)
   const [tunnel, setTunnel] = useState(true)
   const [tick, setTick] = useState(0)
   const [rewardFlash, setRewardFlash] = useState(false)
@@ -116,7 +117,7 @@ function CommandCenterInner() {
       <header className="glass-hud p-4 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-[10px] uppercase tracking-[0.28em] text-cyan-300/90 font-tech">
-            L'INTELLECT · COMMAND CENTER
+            L&apos;INTELLECT · COMMAND CENTER
           </p>
           <span className="pill-hud">{mode}</span>
           <span className="pill-hud">
@@ -134,7 +135,7 @@ function CommandCenterInner() {
           )}
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold text-white font-tech title-glow tracking-wide">
-          Analyse Cognitive On-Chain & signaux Live
+          Analyse Cognitive On-Chain &amp; signaux Live
         </h1>
         <p className="text-sm text-zinc-400">{t('cc.subtitle')}</p>
       </header>
@@ -162,13 +163,32 @@ function CommandCenterInner() {
             <button
               key={id}
               type="button"
-              disabled={locked}
-              onClick={() => setRoom(id)}
+              onClick={() => {
+                if (locked) {
+                  const roomLabel =
+                    id === 'pulse'
+                      ? 'Pulse'
+                      : id === 'yield'
+                        ? 'Yield'
+                        : id === 'sentinel'
+                          ? 'Sentinel'
+                          : id
+                  setGuestRoomMsg(
+                    packs.length === 0
+                      ? `Mode Guest — la salle ${roomLabel} est verrouillée. Connecte xPortal ou obtiens le pack ${roomLabel} (Agents) pour déverrouiller.`
+                      : `Salle ${roomLabel} verrouillée — ton pack actuel ne l'inclut pas. Upgrade via Agents.`,
+                  )
+                  window.setTimeout(() => setGuestRoomMsg(null), 6000)
+                  return
+                }
+                setGuestRoomMsg(null)
+                setRoom(id)
+              }}
               className={`rounded-full px-3 py-1.5 text-[12px] border font-tech transition ${
                 room === id
                   ? 'border-cyan-400/50 bg-cyan-500/15 text-white shadow-[0_0_12px_rgba(34,211,238,0.25)]'
                   : locked
-                    ? 'border-white/5 text-zinc-600 opacity-50'
+                    ? 'border-amber-400/25 text-amber-200/70 hover:border-amber-400/40'
                     : 'border-white/10 text-zinc-400 hover:text-white glass-hud'
               }`}
             >
@@ -178,6 +198,22 @@ function CommandCenterInner() {
           )
         })}
       </div>
+      {guestRoomMsg && (
+        <div
+          className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-[12px] text-amber-100 leading-relaxed"
+          role="status"
+        >
+          {guestRoomMsg}
+          <div className="mt-2 flex flex-wrap gap-2">
+            <a href="#/agents" className="btn-primary text-[11px] px-2 py-1">
+              Voir les packs →
+            </a>
+            <a href="#/my-packs" className="btn-secondary text-[11px] px-2 py-1">
+              My Packs
+            </a>
+          </div>
+        </div>
+      )}
 
       {room === 'hub' && (
         <div className="space-y-4">
