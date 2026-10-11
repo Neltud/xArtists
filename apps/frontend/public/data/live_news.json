@@ -1,56 +1,56 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-11T04:12:20.288Z",
+  "updatedAt": "2026-10-11T12:10:00.680Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1791691939860",
-      "timestamp": "04:12",
+      "id": "egld-1791720600181",
+      "timestamp": "12:10",
       "source": "EGLD",
-      "title": "Cotation publique · $3.90 (API MultiversX economics)",
+      "title": "Cotation publique · $3.91 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1791635400000",
+      "id": "rss-CoinTelegraph-0-1791714164000",
+      "timestamp": "10:22",
+      "source": "CoinTelegraph",
+      "title": "Coldcard says it’s investigating how phishing link appeared on its X account",
+      "link": "https://cointelegraph.com/news/coldcard-says-its-investigating-how-phishing-link-appeared-on-its-x-account?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791709311000",
+      "timestamp": "09:01",
+      "source": "CoinTelegraph",
+      "title": "Ledger confirms unauthorized hardware implant; losses may exceed $86M",
+      "link": "https://cointelegraph.com/news/ledger-confirms-unauthorized-hardware-implant-losses-may-exceed-86m?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1791704691000",
+      "timestamp": "07:44",
+      "source": "CoinTelegraph",
+      "title": "CFTC proposals aimed at separating prediction markets from casino gambling",
+      "link": "https://cointelegraph.com/news/cftc-proposals-aimed-at-separating-prediction-markets-from-casino-gambling?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1791635400000",
       "timestamp": "12:30",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1791633134000",
+      "id": "rss-CoinTelegraph-4-1791633134000",
       "timestamp": "11:52",
       "source": "CoinTelegraph",
       "title": "Justin Sun says Tron’s post-quantum cryptography has gone live on testnet",
       "link": "https://cointelegraph.com/news/justin-sun-says-trons-post-quantum-cryptography-has-gone-live-on-testnet?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1791621666000",
+      "id": "rss-CoinTelegraph-5-1791621666000",
       "timestamp": "08:41",
       "source": "CoinTelegraph",
       "title": "Tech chief says EU can fend off rogue AI risk: Report",
       "link": "https://cointelegraph.com/news/tech-chief-says-eu-can-fend-off-rogue-ai-risk-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1791616243000",
-      "timestamp": "07:10",
-      "source": "CoinTelegraph",
-      "title": "Sam Altman-backed Bitcoin life insurer, Meanwhile, raises more funds",
-      "link": "https://cointelegraph.com/news/sam-altman-backed-bitcoin-life-insurer-meanwhile-raises-more-funds?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1791578357000",
-      "timestamp": "20:39",
-      "source": "CoinTelegraph",
-      "title": "US plans to seize $1B in crypto linked to Iran this week: Scott Bessent",
-      "link": "https://cointelegraph.com/news/scott-bessent-us-seize-crypto-iran-sanctions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791576842000",
-      "timestamp": "20:14",
-      "source": "CoinTelegraph",
-      "title": "New York permanently bars Celsius founder Mashinsky in $35M fraud settlement",
-      "link": "https://cointelegraph.com/news/celsius-founder-alex-mashinsky-permanently-banned-from-crypto-industry-in-ny-settlement?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-0-1791633600000",
@@ -79,6 +79,34 @@
       "source": "CoinDesk",
       "title": "Bitcoin's volatility has plunged, but extreme price swings are more frequent than in 2018",
       "link": "https://www.coindesk.com/markets/2026/10/09/bitcoin-s-volatility-has-plunged-but-extreme-price-swings-are-more-frequent-than-in-2018"
+    },
+    {
+      "id": "egld-1791691939860",
+      "timestamp": "04:12",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.90 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1791616243000",
+      "timestamp": "07:10",
+      "source": "CoinTelegraph",
+      "title": "Sam Altman-backed Bitcoin life insurer, Meanwhile, raises more funds",
+      "link": "https://cointelegraph.com/news/sam-altman-backed-bitcoin-life-insurer-meanwhile-raises-more-funds?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1791578357000",
+      "timestamp": "20:39",
+      "source": "CoinTelegraph",
+      "title": "US plans to seize $1B in crypto linked to Iran this week: Scott Bessent",
+      "link": "https://cointelegraph.com/news/scott-bessent-us-seize-crypto-iran-sanctions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1791576842000",
+      "timestamp": "20:14",
+      "source": "CoinTelegraph",
+      "title": "New York permanently bars Celsius founder Mashinsky in $35M fraud settlement",
+      "link": "https://cointelegraph.com/news/celsius-founder-alex-mashinsky-permanently-banned-from-crypto-industry-in-ny-settlement?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "egld-1791666727850",
@@ -170,34 +198,6 @@
       "source": "CoinDesk",
       "title": "New York AG secures up to $35 million and lifetime crypto ban from Celsius’ Alex Mashinsky",
       "link": "https://www.coindesk.com/policy/2026/10/09/new-york-ag-secures-up-to-usd35-million-and-lifetime-crypto-ban-from-celsius-alex-mashinsky"
-    },
-    {
-      "id": "rss-CoinDesk-3-1791557247000",
-      "timestamp": "14:47",
-      "source": "CoinDesk",
-      "title": "Ledger investigates potential wallet tampering after reports of $86 million in crypto stolen",
-      "link": "https://www.coindesk.com/business/2026/10/09/ledger-investigates-potential-wallet-tampering-after-reports-of-usd86-million-in-crypto-stolen"
-    },
-    {
-      "id": "egld-seed",
-      "timestamp": "22:45",
-      "source": "EGLD",
-      "title": "Cotation publique via API MultiversX economics",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "mvx-agent-stack",
-      "timestamp": "10:00",
-      "source": "MultiversX",
-      "title": "Universal Agentic Commerce Stack — paiements agents on-chain",
-      "link": "https://multiversx.com/blog"
-    },
-    {
-      "id": "mvx-openclaw",
-      "timestamp": "09:30",
-      "source": "MultiversX",
-      "title": "Max (OpenClaw) agent live sur MultiversX",
-      "link": "https://multiversx.com/blog"
     }
   ]
 }
