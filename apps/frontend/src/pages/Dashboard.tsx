@@ -1,13 +1,13 @@
 /**
- * Accueil — salle 3D menu · pas de CTA ATC/TCA gris.
+ * Accueil — salle 3D menu · RCE · info mainnet SC.
  */
 import { Link } from 'react-router-dom'
-import { MAINNET_ADDRESSES } from '../config/contracts'
-import { CORE_MODULES, SECONDARY_MODULES, type ModuleDef } from '../config/modules'
+import { CORE_MODULES, type ModuleDef } from '../config/modules'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useWallet } from '../context/WalletContext'
 import { useI18n } from '../i18n/I18nContext'
 import RceStrip from '../components/RceStrip'
+import ChainInfoBanner from '../components/ChainInfoBanner'
 import HomeMenuHall from '../components/home/HomeMenuHall'
 import { scStatus } from '../config/scStatus'
 
@@ -71,6 +71,8 @@ export default function Dashboard() {
 
       <RceStrip compact />
 
+      <ChainInfoBanner />
+
       <section className="space-y-3">
         <p className="section-label">{t('home.plan')}</p>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -102,27 +104,20 @@ export default function Dashboard() {
         </div>
       </section>
 
-      <section className="space-y-3">
-        <p className="section-label">{t('home.also')}</p>
-        <div className="flex flex-wrap gap-2">
-          {SECONDARY_MODULES.filter(m => m.id !== 'tca' && m.path !== '/tca').map(m => (
-            <Link
-              key={m.id}
-              to={m.path}
-              className="rounded-full border border-white/10 bg-black/30 px-3 py-1.5 text-[12px] text-zinc-300 transition hover:border-white/20 hover:text-white active:scale-95"
-            >
-              {m.emoji} {m.label}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="rounded-2xl border border-white/10 bg-black/30 p-4 text-[11px] text-zinc-500 space-y-1">
-        <p className="font-medium text-zinc-300">{t('home.contracts')}</p>
-        <p className="mono truncate">market {MAINNET_ADDRESSES.nft_marketplace}</p>
-        <p className="mono truncate">stake {MAINNET_ADDRESSES.tro_staking}</p>
-        <p className="mono truncate">slot {MAINNET_ADDRESSES.slot_casino}</p>
-      </section>
+      <div className="flex flex-wrap gap-3 text-[12px] text-zinc-500">
+        <Link to="/go-live" className="hover:text-zinc-300">
+          GO_LIVE checklist
+        </Link>
+        <Link to="/agents" className="hover:text-zinc-300">
+          Packs IA
+        </Link>
+        <Link to="/lia" className="hover:text-zinc-300">
+          LIA Hub
+        </Link>
+        <Link to="/studio" className="hover:text-zinc-300">
+          Studio Phygital
+        </Link>
+      </div>
     </div>
   )
 }

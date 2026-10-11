@@ -47,6 +47,11 @@ export default function Agents() {
       </header>
 
       <OnRampModule className="mb-4" />
+      <p className="text-[11px] text-zinc-500 leading-relaxed rounded-xl border border-white/8 bg-black/30 px-3 py-2">
+        <strong className="text-zinc-400">Mainnet :</strong> achat pack = signature xPortal. On-Ramp
+        Euro (MoonPay) si <code className="text-[9px]">VITE_MOONPAY_API_KEY</code> est configurée. Floor
+        packs ~10 EGLD. Yield/Sentinel = salles limitées ; Pulse = hub complet.
+      </p>
       <PackProductDisclaimer />
       <FeeTransparency kind="packs" />
 
