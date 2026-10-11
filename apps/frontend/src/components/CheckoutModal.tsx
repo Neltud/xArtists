@@ -1,6 +1,6 @@
 /**
  * Checkout packs — Crypto (wallet) | Fiat (wallet ou guest receive id).
- * data-xartists-modal="1" → pause WebGL. B2B glass + Finance Computer.
+ * data-xartists-modal="1" → pause WebGL.
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -17,7 +17,6 @@ import {
   type PayMethod,
 } from '../lib/payments'
 import AccessTermsModal from './AccessTermsModal'
-import FinanceComputerBadge from './FinanceComputerBadge'
 import { generateGuestReceiveId, loadGuestReceiveId, saveGuestReceiveId } from './LoginModal'
 import { useWebglPauseWhen } from '../hooks/useWebglPause'
 
@@ -176,7 +175,6 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
               {pack.icon} {pack.name}{' '}
               <span className="text-[11px] font-normal text-zinc-500">{pack.tierLabel}</span>
             </h2>
-            <FinanceComputerBadge className="mt-2" compact />
             <p className="text-[12px] text-zinc-400 mt-0.5 mono tabular-nums">
               {pack.priceEgld.list} EGLD · ≈ {pack.priceEur.list} €
             </p>
@@ -234,7 +232,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
                 : 'border-white/10 bg-black/30 hover:border-white/20'
             }`}
           >
-            <p className="text-sm font-semibold text-white">2 · Fiat / FC rail</p>
+            <p className="text-sm font-semibold text-white">2 · Fiat / carte</p>
             <p className="text-[12px] text-zinc-400 mt-1">
               Carte / SEPA via gateway régulé. Sans wallet :{' '}
               <strong className="text-zinc-200">ID réception temporaire</strong> → mint après claim

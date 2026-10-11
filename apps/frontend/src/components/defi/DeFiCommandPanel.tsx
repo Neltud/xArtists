@@ -1,10 +1,8 @@
 /**
- * DeFi Hub — Hatom / AshSwap / Soul · feedback Copié !
- * Badge B2B Finance Computer API.
+ * DeFi Hub — Hatom / AshSwap / Soul · rails non-custodial xPortal.
  */
-import { useMemo, useState, useCallback } from 'react'
+import { useMemo, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import FinanceComputerBadge from '../FinanceComputerBadge'
 import TroLiquidityPanel from './TroLiquidityPanel'
 import { useWallet } from '../../context/WalletContext'
 import { requestOpenConnect } from '../../lib/walletEvents'
@@ -13,7 +11,6 @@ import { useToast } from '../ui/Toast'
 export default function DeFiCommandPanel({ hideTroLiquidity = false }: { hideTroLiquidity?: boolean } = {}) {
   const { connected } = useWallet()
   const { push } = useToast()
-  const [copied, setCopied] = useState<string | null>(null)
 
   const cards = useMemo(
     () => [
@@ -35,7 +32,7 @@ export default function DeFiCommandPanel({ hideTroLiquidity = false }: { hideTro
         id: 'soul',
         title: 'Liquidité $TRO',
         blurb: 'Farms xExchange / OneDex — métriques live.',
-        apyHint: 'APR / TVL Finance Computer + API MX',
+        apyHint: 'APR / TVL xExchange · OneDex',
         to: '/staking',
       },
     ],
@@ -64,7 +61,6 @@ export default function DeFiCommandPanel({ hideTroLiquidity = false }: { hideTro
             DeFi Command
           </p>
           <h2 className="text-lg font-bold text-white">Hatom · AshSwap · Soul</h2>
-          <FinanceComputerBadge className="mt-1.5" />
         </div>
         <Link to="/hatom" className="btn-secondary text-xs">
           Ouvrir Hatom →
@@ -73,7 +69,7 @@ export default function DeFiCommandPanel({ hideTroLiquidity = false }: { hideTro
 
       <p className="text-[11px] text-zinc-500">
         Signature <strong className="text-zinc-300">xPortal</strong> (non-custodial). Pas un conseil
-        financier. Liquidité & pricing assistés par Finance Computer / APIs MultiversX.
+        financier. Liquidité & pricing via APIs MultiversX (xExchange / OneDex).
       </p>
 
       <div className="grid sm:grid-cols-3 gap-2">
@@ -95,10 +91,6 @@ export default function DeFiCommandPanel({ hideTroLiquidity = false }: { hideTro
         <div className="pt-2 border-t border-white/10 space-y-2">
           <TroLiquidityPanel />
         </div>
-      )}
-
-      {copied && (
-        <p className="text-[11px] text-emerald-300/90">Copié : {copied}</p>
       )}
     </div>
   )

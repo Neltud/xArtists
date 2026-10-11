@@ -1,9 +1,7 @@
 /**
  * Panneau farming $TRO — métriques xExchange + OneDex (lecture seule).
- * Badge B2B Finance Computer API.
  */
 import { useEffect, useState } from 'react'
-import FinanceComputerBadge from '../FinanceComputerBadge'
 import {
   fetchTroLiquiditySnapshot,
   formatApr,
@@ -56,12 +54,9 @@ export default function TroLiquidityPanel() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2 justify-between">
-        <div>
-          <p className="text-[10px] font-tech uppercase tracking-wider text-violet-300/90">
-            Farming & Liquidité $TRO
-          </p>
-          <FinanceComputerBadge className="mt-1.5" compact />
-        </div>
+        <p className="text-[10px] font-tech uppercase tracking-wider text-violet-300/90">
+          Farming & Liquidité $TRO
+        </p>
         <div className="flex flex-wrap items-center gap-2">
           {snap?.troUsd != null && (
             <span className="text-[11px] mono tabular-nums text-violet-200">
@@ -119,7 +114,7 @@ export default function TroLiquidityPanel() {
       )}
 
       <p className="text-[10px] text-zinc-600">
-        Lecture seule — exécution via xPortal. Données Finance Computer / MultiversX.
+        Lecture seule — exécution via xPortal. Données MultiversX (API publique).
       </p>
     </div>
   )
