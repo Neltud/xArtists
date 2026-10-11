@@ -1,7 +1,9 @@
 /**
  * Panneau farming $TRO — métriques xExchange + OneDex (lecture seule).
+ * Powered by Finance Computer API + MultiversX public endpoints.
  */
 import { useEffect, useState } from 'react'
+import FinanceComputerBadge from '../FinanceComputerBadge'
 import {
   fetchTroLiquiditySnapshot,
   formatApr,
@@ -9,6 +11,8 @@ import {
   DEX_LABEL,
   type TroLiquiditySnapshot,
 } from '../../services/defi/troLiquidityService'
+
+const STALE_MS = 300_000
 
 export default function TroLiquidityPanel() {
   const [snap, setSnap] = useState<TroLiquiditySnapshot | null>(null)
@@ -45,21 +49,19 @@ export default function TroLiquidityPanel() {
     }
   }, [])
 
-  const STALE_MS = 300_000
-  const fetchedMs = snap?.fetchedAt ? Date.parse(snap.fetchedAt) : NaN
-  const ageMs = Number.isFinite(fetchedMs) ? now - fetchedMs : Number.POSITIVE_INFINITY
-  const isStale = !snap || ageMs > STALE_MS
+  const ageMs = snap?.fetchedAt ? now - snap.fetchedAt : null
+  const isStale = ageMs == null || ageMs > STALE_MS
 
   return (
-    <div className="rounded-2xl border border-amber-400/20 bg-black/40 p-4 space-y-3">
-      <div className="flex items-center justify-between gap-2 flex-wrap">
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-2 justify-between">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-amber-300/80 font-tech">
-            Farming $TRO
+          <p className="text-[10px] font-tech uppercase tracking-wider text-violet-300/90">
+            Farming & Liquidité $TRO
           </p>
-          <h3 className="text-sm font-semibold text-white">xExchange · OneDex</h3>
+          <FinanceComputerBadge className="mt-1.5" compact />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {snap?.troUsd != null && (
             <span className="text-[11px] mono tabular-nums text-violet-200">
               $TRO Spot $
@@ -70,7 +72,7 @@ export default function TroLiquidityPanel() {
             (isStale ? (
               <span
                 className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 text-amber-200 text-[9px] py-0.5 px-1.5 font-tech uppercase"
-                title={`Dernière MAJ il y a ${Math.round(ageMs / 1000)}s`}
+                title={`Dernière MAJ il y a ${Math.round((ageMs || 0) / 1000)}s`}
               >
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden />
                 STALE
@@ -84,68 +86,44 @@ export default function TroLiquidityPanel() {
         </div>
       </div>
 
-      {loading && !snap && <p className="text-[12px] text-zinc-500">Chargement pools…</p>}
-      {err && <p className="text-[12px] text-amber-300/90">{err}</p>}
+      {loading && !snap && (
+        <p className="text-[12px] text-zinc-500">Chargement des pools…</p>
+      )}
+      {err && <p className="text-[12px] text-amber-200/90">{err}</p>}
 
       {snap && (
-        <>
-          <div className="flex flex-wrap gap-3 text-[11px]">
-            <span className="text-zinc-400">
-              TVL Σ{' '}
-              <strong className="text-zinc-100 mono tabular-nums">{formatTvl(snap.totalTvlUsd)}</strong>
-            </span>
-            {snap.egldUsd != null && (
-              <span className="text-zinc-500 mono">EGLD ${snap.egldUsd.toFixed(2)}</span>
-            )}
-            <span className="text-zinc-600 mono">{snap.fetchedAt.slice(11, 19)} UTC</span>
-          </div>
-
-          <ul className="space-y-2">
-            {snap.farms.map(f => (
-              <li
-                key={f.poolId}
-                className="rounded-xl border border-white/8 bg-white/[0.02] px-3 py-2.5 flex flex-wrap items-center gap-x-4 gap-y-1"
-              >
-                <div className="min-w-[7rem]">
-                  <p className="text-[12px] font-medium text-zinc-100">{f.pair}</p>
-                  <p className="text-[10px] text-zinc-500">
-                    {DEX_LABEL[f.dex]} · {f.role}
-                  </p>
-                </div>
-                <div className="text-[11px] mono tabular-nums">
-                  <p className="text-zinc-400">TVL</p>
-                  <p className="text-zinc-200">{formatTvl(f.tvlUsd)}</p>
-                </div>
-                <div className="text-[11px] mono tabular-nums">
-                  <p className="text-zinc-400">Vol 24h</p>
-                  <p className="text-zinc-200">{formatTvl(f.volume24h)}</p>
-                </div>
-                <div className="text-[11px] mono tabular-nums">
-                  <p className="text-zinc-400">APR</p>
-                  <p className="text-amber-100/90">{formatApr(f.aprPct)}</p>
-                </div>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {snap.pools.map(p => (
+            <div
+              key={`${p.dex}-${p.pair}`}
+              className="rounded-xl border border-white/10 bg-black/35 px-3 py-2.5 space-y-1"
+            >
+              <p className="text-[12px] font-medium text-white">
+                {DEX_LABEL[p.dex] || p.dex} · {p.pair}
+              </p>
+              <p className="text-[11px] text-zinc-400">
+                APR {formatApr(p.apr)} · TVL {formatTvl(p.tvlUsd)}
+              </p>
+              {p.url && (
                 <a
-                  href={f.swapUrl}
+                  href={p.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="ml-auto text-[11px] text-cyan-300/90 hover:text-cyan-200"
+                  className="text-[10px] text-cyan-400 hover:underline"
                 >
-                  Swap →
+                  Ouvrir pool →
                 </a>
-              </li>
-            ))}
-          </ul>
-
-          {snap.notes.length > 0 && (
-            <p className="text-[10px] text-zinc-600 leading-relaxed">
-              {snap.notes.slice(0, 3).join(' · ')}
-            </p>
+              )}
+            </div>
+          ))}
+          {snap.pools.length === 0 && (
+            <p className="text-[12px] text-zinc-500 col-span-full">Aucun pool $TRO indexé.</p>
           )}
-        </>
+        </div>
       )}
 
       <p className="text-[10px] text-zinc-600">
-        Lecture API publique · pas un conseil · APR OneDex via dApp officielle
+        Lecture seule — exécution via xPortal. Données Finance Computer / MultiversX.
       </p>
     </div>
   )
