@@ -1,6 +1,7 @@
 /**
  * Checkout packs — ouvre CheckoutModal (crypto | fiat FC rail).
  * Aperçu appareil = jamais présenté comme achat.
+ * Guest : message explicite de déverrouillage des salles.
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
@@ -11,9 +12,16 @@ import { canBuyAgent } from '../config/scStatus'
 import { markPackOwned } from '../lib/nftPacks'
 import LottieIcon from './LottieIcon'
 import { availablePayMethods } from '../lib/payments'
+import { requestOpenConnect } from '../lib/walletEvents'
 
 const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
 const PACKS = AGENT_PACKS.filter(p => ONLY.includes(p.id)).slice(0, 3)
+
+const ROOM_HINT: Partial<Record<PackId, string>> = {
+  pulse: 'Salle Pulse — signaux & flux live',
+  yield: 'Salle Yield — farming & liquidité $TRO',
+  sentinel: 'Salle Sentinel — alertes & garde-fous',
+}
 
 export default function PackCheckout({
   packId: forcedId = null,
@@ -41,10 +49,13 @@ export default function PackCheckout({
 
   const pack = PACKS.find(p => p.id === selected)
   const mintLive = canBuyAgent()
+  const isGuest = !connected || !address?.startsWith('erd1')
 
   const onPreview = (id: PackId) => {
-    if (!address?.startsWith('erd1')) {
-      setMsg('Connecte ton wallet pour lier l’aperçu (sans paiement).')
+    if (isGuest) {
+      setMsg(
+        'Mode invité : connecte xPortal pour lier l’aperçu à ton adresse (sans paiement). Les salles Pulse / Yield / Sentinel restent verrouillées on-chain tant qu’aucun pack n’est acquis.',
+      )
       return
     }
     try {
@@ -64,8 +75,21 @@ export default function PackCheckout({
     }
     markPackOwned(id)
     setStatus('done')
-    setMsg(`Aperçu « ${id} » sur cet appareil — pas un achat, pas de NFT mint.`)
+    setMsg(
+      `Aperçu « ${id} » sur cet appareil — pas un achat, pas de NFT mint. Salle associée : ${ROOM_HINT[id] || id}.`,
+    )
     onPaperDone?.(id)
+  }
+
+  const onSelectPack = (id: PackId) => {
+    setSelected(id)
+    setMsg('')
+    setStatus('idle')
+    if (isGuest) {
+      setMsg(
+        `Invité — la salle « ${ROOM_HINT[id] || id} » nécessite un pack (crypto / fiat) ou un aperçu lié au wallet. Clique « Connecter xPortal » pour continuer.`,
+      )
+    }
   }
 
   return (
@@ -76,7 +100,7 @@ export default function PackCheckout({
             <button
               key={p.id}
               type="button"
-              onClick={() => setSelected(p.id)}
+              onClick={() => onSelectPack(p.id)}
               className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-zinc-200 hover:bg-white/[0.08] active:scale-[0.98]"
             >
               {p.icon} {p.name}
@@ -87,11 +111,44 @@ export default function PackCheckout({
 
       {selected && pack && (
         <>
+          <div className="rounded-xl border border-white/10 bg-black/30 px-3 py-2">
+            <p className="text-[12px] text-zinc-300 font-medium">
+              {pack.icon} {pack.name}
+            </p>
+            <p className="text-[11px] text-zinc-500 mt-0.5">{ROOM_HINT[pack.id]}</p>
+          </div>
+
+          {isGuest && (
+            <div className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-3 py-2.5 space-y-2">
+              <p className="text-[12px] text-amber-100/95 leading-relaxed">
+                <span className="font-semibold">Mode invité</span> — les salles Pulse, Yield et
+                Sentinel sont verrouillées tant qu’aucun pack n’est acheté (ou aperçu lié au
+                wallet). Connecte xPortal pour débloquer le checkout crypto / fiat.
+              </p>
+              <button
+                type="button"
+                className="btn-primary text-sm"
+                onClick={() => requestOpenConnect()}
+              >
+                Connecter xPortal
+              </button>
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-2 items-center">
             <button
               type="button"
               className="btn-primary text-sm active:scale-[0.98]"
-              onClick={() => setModalOpen(true)}
+              onClick={() => {
+                if (isGuest) {
+                  setMsg(
+                    'Connecte xPortal avant le checkout — sinon la salle reste verrouillée on-chain.',
+                  )
+                  requestOpenConnect()
+                  return
+                }
+                setModalOpen(true)
+              }}
             >
               Acheter / Checkout
             </button>
@@ -138,7 +195,9 @@ export default function PackCheckout({
         </div>
       )}
 
-      {msg && status !== 'done' && <p className="text-[12px] text-amber-200/90">{msg}</p>}
+      {msg && status !== 'done' && (
+        <p className="text-[12px] text-amber-200/90 leading-relaxed">{msg}</p>
+      )}
 
       {selected && (
         <CheckoutModal
@@ -148,10 +207,6 @@ export default function PackCheckout({
           onPreview={onPreview}
           onStarted={() => setModalOpen(false)}
         />
-      )}
-
-      {!connected && selected && (
-        <p className="text-[11px] text-zinc-500">Connecte xPortal pour crypto ou fiat.</p>
       )}
     </div>
   )
