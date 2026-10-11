@@ -1,8 +1,9 @@
 /**
  * L'INTELLECT · Command Center — cyber HUD + holo + news + DeFi Hub.
+ * Deep-link ?room=pulse|yield|sentinel|hub · messages guest explicites.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import AgentIA_Guard from '../components/AgentIA_Guard'
 import CommandWall from '../command-center/CommandWall'
 import DashboardSource from '../command-center/DashboardSource'
@@ -30,9 +31,25 @@ import { type PackId, mergePackFeatures } from '../config/agentPacks'
 import { useI18n } from '../i18n/I18nContext'
 import { toAmbientSnapshot, shortTrendToast, type AuraMode } from '../lib/ambientAura'
 import { useToast } from '../components/ui/Toast'
+import { requestOpenConnect } from '../lib/walletEvents'
 
 type Room = 'hub' | 'pulse' | 'yield' | 'sentinel'
 type EcoTab = 'defi' | 'liquidity' | 'holders'
+
+const ROOM_IDS: Room[] = ['hub', 'pulse', 'yield', 'sentinel']
+
+function parseRoom(v: string | null): Room | null {
+  if (!v) return null
+  const x = v.toLowerCase().trim()
+  return ROOM_IDS.includes(x as Room) ? (x as Room) : null
+}
+
+function roomLabel(id: Room): string {
+  if (id === 'pulse') return 'Pulse'
+  if (id === 'yield') return 'Yield'
+  if (id === 'sentinel') return 'Sentinel'
+  return 'Hub'
+}
 
 export default function CommandCenterPage() {
   return (
@@ -45,11 +62,14 @@ export default function CommandCenterPage() {
 function CommandCenterInner() {
   const { t } = useI18n()
   const { push } = useToast()
+  const [searchParams, setSearchParams] = useSearchParams()
   const access = useAgentAccess()
   const { env, source, connected: pulseWs } = usePulse()
   const { connected } = useWallet()
-  const [room, setRoom] = useState<Room>('hub')
-  const [ecoTab, setEcoTab] = useState<EcoTab>('defi')
+  const [room, setRoom] = useState<Room>(() => parseRoom(searchParams.get('room')) || 'hub')
+  const [ecoTab, setEcoTab] = useState<EcoTab>(() =>
+    parseRoom(searchParams.get('room')) === 'yield' ? 'liquidity' : 'defi',
+  )
   const [guestRoomMsg, setGuestRoomMsg] = useState<string | null>(null)
   const [tunnel, setTunnel] = useState(true)
   const [tick, setTick] = useState(0)
@@ -59,6 +79,7 @@ function CommandCenterInner() {
   const packs = (access.packs || []).filter(Boolean) as PackId[]
   const features = useMemo(() => mergePackFeatures(packs), [packs])
   const lastMode = useRef<AuraMode | null>(null)
+  const roomSynced = useRef(false)
 
   const endTunnel = useCallback(() => setTunnel(false), [])
 
@@ -66,6 +87,62 @@ function CommandCenterInner() {
     () => toAmbientSnapshot(lia.uniforms, lia.confidence, rewardFlash),
     [lia.uniforms, lia.confidence, rewardFlash],
   )
+
+  const tryEnterRoom = useCallback(
+    (id: Room, opts?: { fromUrl?: boolean }) => {
+      const locked = id !== 'hub' && !packs.includes(id as PackId)
+      if (locked) {
+        const label = roomLabel(id)
+        setGuestRoomMsg(
+          packs.length === 0
+            ? `Mode Guest — la salle ${label} est verrouillée. Connecte xPortal ou obtiens le pack ${label} (Agents) pour déverrouiller.`
+            : `Salle ${label} verrouillée — ton pack actuel ne l'inclut pas. Upgrade via Agents.`,
+        )
+        window.setTimeout(() => setGuestRoomMsg(null), 8000)
+        if (opts?.fromUrl) {
+          setRoom('hub')
+          setSearchParams(
+            prev => {
+              const n = new URLSearchParams(prev)
+              n.delete('room')
+              return n
+            },
+            { replace: true },
+          )
+        }
+        return false
+      }
+      setGuestRoomMsg(null)
+      setRoom(id)
+      if (id === 'yield') setEcoTab('liquidity')
+      setSearchParams(
+        prev => {
+          const cur = prev.get('room')
+          if (id === 'hub' && !cur) return prev
+          if (id !== 'hub' && cur === id) return prev
+          const n = new URLSearchParams(prev)
+          if (id === 'hub') n.delete('room')
+          else n.set('room', id)
+          return n
+        },
+        { replace: true },
+      )
+      return true
+    },
+    [packs, setSearchParams],
+  )
+
+  useEffect(() => {
+    const q = parseRoom(searchParams.get('room'))
+    if (!q) {
+      roomSynced.current = true
+      return
+    }
+    if (!roomSynced.current || q !== room) {
+      roomSynced.current = true
+      tryEnterRoom(q, { fromUrl: true })
+    }
+  }, [searchParams, tryEnterRoom]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (lastMode.current === null) {
@@ -95,11 +172,13 @@ function CommandCenterInner() {
   useEffect(() => {
     const onRoom = (e: Event) => {
       const r = (e as CustomEvent).detail?.room as Room | undefined
-      if (r === 'pulse' || r === 'yield' || r === 'sentinel' || r === 'hub') setRoom(r)
+      if (r === 'pulse' || r === 'yield' || r === 'sentinel' || r === 'hub') {
+        tryEnterRoom(r)
+      }
     }
     window.addEventListener('xartists:cc-room', onRoom)
     return () => window.removeEventListener('xartists:cc-room', onRoom)
-  }, [])
+  }, [tryEnterRoom])
 
   const onYieldAction = () => {
     empireTxStart('Command → Stake TRO')
@@ -110,6 +189,36 @@ function CommandCenterInner() {
   const volPct = ((lia.uniforms.uVolatility || 0.35) * 100).toFixed(1)
   const bullish = (lia.uniforms.uSentiment || 0) >= 0
 
+  const ecoTabs = (
+    <>
+      <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
+        {(
+          [
+            ['defi', '📊 Dashboard Hub'],
+            ['liquidity', '💧 Liquidité $TRO'],
+            ['holders', '🏆 Top Holders'],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setEcoTab(id)}
+            className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
+              ecoTab === id
+                ? 'bg-cyan-600/25 text-cyan-100 border border-cyan-400/30'
+                : 'text-zinc-500 hover:text-white border border-transparent'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {ecoTab === 'defi' && <DeFiCommandPanel hideTroLiquidity />}
+      {ecoTab === 'liquidity' && <TroLiquidityPanel />}
+      {ecoTab === 'holders' && <TroHolderBoard />}
+    </>
+  )
+
   return (
     <div className="animate-fade-in space-y-5 pb-28 max-w-4xl mx-auto relative">
       <DataTunnelTransition active={tunnel} onDone={endTunnel} />
@@ -117,7 +226,7 @@ function CommandCenterInner() {
       <header className="glass-hud p-4 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-[10px] uppercase tracking-[0.28em] text-cyan-300/90 font-tech">
-            L&apos;INTELLECT · COMMAND CENTER
+            L'INTELLECT · COMMAND CENTER
           </p>
           <span className="pill-hud">{mode}</span>
           <span className="pill-hud">
@@ -133,9 +242,14 @@ function CommandCenterInner() {
           ) : (
             <span className="pill-hud">LIMITED</span>
           )}
+          {room !== 'hub' && (
+            <span className="pill-hud border border-cyan-400/30 text-cyan-100">
+              ROOM · {roomLabel(room).toUpperCase()}
+            </span>
+          )}
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold text-white font-tech title-glow tracking-wide">
-          Analyse Cognitive On-Chain &amp; signaux Live
+          Analyse Cognitive On-Chain & signaux Live
         </h1>
         <p className="text-sm text-zinc-400">{t('cc.subtitle')}</p>
       </header>
@@ -163,21 +277,7 @@ function CommandCenterInner() {
             <button
               key={id}
               type="button"
-              onClick={() => {
-                if (locked) {
-                  const roomLabel =
-                    id === 'pulse' ? 'Pulse' : id === 'yield' ? 'Yield' : id === 'sentinel' ? 'Sentinel' : id
-                  setGuestRoomMsg(
-                    packs.length === 0
-                      ? `Mode Guest — la salle ${roomLabel} est verrouillée. Connecte xPortal ou obtiens le pack ${roomLabel} (Agents) pour déverrouiller.`
-                      : `Salle ${roomLabel} verrouillée — ton pack actuel ne l'inclut pas. Upgrade via Agents.`,
-                  )
-                  window.setTimeout(() => setGuestRoomMsg(null), 6000)
-                  return
-                }
-                setGuestRoomMsg(null)
-                setRoom(id)
-              }}
+              onClick={() => tryEnterRoom(id)}
               className={`rounded-full px-3 py-1.5 text-[12px] border font-tech transition ${
                 room === id
                   ? 'border-cyan-400/50 bg-cyan-500/15 text-white shadow-[0_0_12px_rgba(34,211,238,0.25)]'
@@ -192,19 +292,29 @@ function CommandCenterInner() {
           )
         })}
       </div>
+
       {guestRoomMsg && (
         <div
-          className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-[12px] text-amber-100 leading-relaxed"
+          className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-3 py-2.5 text-[12px] text-amber-100 leading-relaxed space-y-2"
           role="status"
         >
-          {guestRoomMsg}
-          <div className="mt-2 flex flex-wrap gap-2">
-            <a href="#/agents" className="btn-primary text-[11px] px-2 py-1">
+          <p>{guestRoomMsg}</p>
+          <div className="flex flex-wrap gap-2">
+            {!connected && (
+              <button
+                type="button"
+                className="btn-primary text-[11px] px-2 py-1"
+                onClick={() => requestOpenConnect()}
+              >
+                Connecter xPortal
+              </button>
+            )}
+            <Link to="/agents" className="btn-primary text-[11px] px-2 py-1">
               Voir les packs →
-            </a>
-            <a href="#/my-packs" className="btn-secondary text-[11px] px-2 py-1">
+            </Link>
+            <Link to="/my-packs" className="btn-secondary text-[11px] px-2 py-1">
               My Packs
-            </a>
+            </Link>
           </div>
         </div>
       )}
@@ -224,31 +334,7 @@ function CommandCenterInner() {
             volatility={lia.uniforms.uVolatility}
             height={420}
           />
-          <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
-            {(
-              [
-                ['defi', '📊 Dashboard Hub'],
-                ['liquidity', '💧 Liquidité $TRO'],
-                ['holders', '🏆 Top Holders'],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setEcoTab(id)}
-                className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
-                  ecoTab === id
-                    ? 'bg-cyan-600/25 text-cyan-100 border border-cyan-400/30'
-                    : 'text-zinc-500 hover:text-white border border-transparent'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          {ecoTab === 'defi' && <DeFiCommandPanel hideTroLiquidity />}
-          {ecoTab === 'liquidity' && <TroLiquidityPanel />}
-          {ecoTab === 'holders' && <TroHolderBoard />}
+          {ecoTabs}
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="glass-hud p-3">
               <ClickGuide />
@@ -309,6 +395,18 @@ function CommandCenterInner() {
 
       {room !== 'hub' && packs.includes(room as PackId) && (
         <div className="space-y-4">
+          <div className="rounded-xl border border-cyan-400/20 bg-cyan-500/[0.06] px-3 py-2 flex flex-wrap items-center gap-2">
+            <p className="text-[12px] text-cyan-100/90 font-medium">
+              Salle {roomLabel(room)} · pack actif
+            </p>
+            <button
+              type="button"
+              className="text-[11px] text-zinc-400 underline ml-auto"
+              onClick={() => tryEnterRoom('hub')}
+            >
+              ← Retour Hub
+            </button>
+          </div>
           {room === 'pulse' && features.liveTapeFull && <LiveAssetTape compact />}
           <CommandWall
             sentiment={lia.uniforms.uSentiment}
@@ -316,35 +414,7 @@ function CommandCenterInner() {
             interactive={false}
           />
           <HoloDataRoom mode={room as PackId} height={400} />
-          {room === 'yield' && (
-            <>
-              <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
-                {(
-                  [
-                    ['defi', '📊 Dashboard Hub'],
-                    ['liquidity', '💧 Liquidité $TRO'],
-                    ['holders', '🏆 Top Holders'],
-                  ] as const
-                ).map(([id, label]) => (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setEcoTab(id)}
-                    className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
-                      ecoTab === id
-                        ? 'bg-cyan-600/25 text-cyan-100 border border-cyan-400/30'
-                        : 'text-zinc-500 hover:text-white border border-transparent'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-              {ecoTab === 'defi' && <DeFiCommandPanel hideTroLiquidity />}
-              {ecoTab === 'liquidity' && <TroLiquidityPanel />}
-              {ecoTab === 'holders' && <TroHolderBoard />}
-            </>
-          )}
+          {room === 'yield' && ecoTabs}
           <AgentNftOrb
             packId={room as PackId}
             staked={isAgentNftStaked(room as PackId)}
@@ -356,7 +426,12 @@ function CommandCenterInner() {
       )}
 
       {!connected && (
-        <p className="text-xs text-amber-200/90">{t('common.connect')} — TX on-chain.</p>
+        <p className="text-xs text-amber-200/90">
+          {t('common.connect')} — TX on-chain.{' '}
+          <button type="button" className="underline" onClick={() => requestOpenConnect()}>
+            xPortal
+          </button>
+        </p>
       )}
 
       <LiaCommandTerminal
