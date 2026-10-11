@@ -1,7 +1,9 @@
 /**
  * Panneau farming $TRO — métriques xExchange + OneDex (lecture seule).
+ * Mode Pitch : bloc démo TVL / $TRO (PITCH_DEMO).
  */
 import { useEffect, useState } from 'react'
+import { isPitchMode, PITCH_DEMO, PITCH_EVENT } from '../../lib/pitchMode'
 import {
   fetchTroLiquiditySnapshot,
   formatApr,
@@ -13,10 +15,17 @@ import { DEX_LABEL } from '../../config/troPools'
 const STALE_MS = 300_000
 
 export default function TroLiquidityPanel() {
+  const [pitch, setPitch] = useState(() => isPitchMode())
   const [snap, setSnap] = useState<TroLiquiditySnapshot | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [now, setNow] = useState(() => Date.now())
+
+  useEffect(() => {
+    const on = () => setPitch(isPitchMode())
+    window.addEventListener(PITCH_EVENT, on)
+    return () => window.removeEventListener(PITCH_EVENT, on)
+  }, [])
 
   useEffect(() => {
     let cancel = false
@@ -79,7 +88,19 @@ export default function TroLiquidityPanel() {
         </div>
       </div>
 
-      {loading && !snap && <p className="text-[12px] text-zinc-500">Chargement des pools…</p>}
+      {pitch && (
+        <div className="rounded-xl border border-amber-400/25 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-100/90 space-y-1">
+          <p className="font-semibold text-[12px]">Mode Pitch · liquidité démo</p>
+          <p>
+            TVL indicatif · ${'{'}PITCH_DEMO.tvlUsd.toLocaleString(){'}'} · $TRO ${'{'}PITCH_DEMO.troUsd{'}'}
+          </p>
+          <p className="text-[10px] text-amber-200/70">{PITCH_DEMO.note}</p>
+        </div>
+      )}
+
+      {loading && !snap && !pitch && (
+        <p className="text-[12px] text-zinc-500">Chargement des pools…</p>
+      )}
       {err && <p className="text-[12px] text-amber-200/90">{err}</p>}
 
       {snap && (

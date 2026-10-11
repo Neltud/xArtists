@@ -1,17 +1,14 @@
 /**
- * Legal-honest Terms of Access — blocks checkout until accepted.
- * Model C: access pass only · paper trading · not a fund.
+ * Access terms — pack purchase disclaimer (paper trading).
  */
-
 type Props = {
   open: boolean
-  packName: string
-  priceEur: number
+  packLabel: string
   onAccept: () => void
   onCancel: () => void
 }
 
-export default function AccessTermsModal({ open, packName, priceEur, onAccept, onCancel }: Props) {
+export default function AccessTermsModal({ open, packLabel, onAccept, onCancel }: Props) {
   if (!open) return null
 
   return (
@@ -21,39 +18,33 @@ export default function AccessTermsModal({ open, packName, priceEur, onAccept, o
       aria-modal="true"
       aria-labelledby="access-terms-title"
     >
-      <div className="w-full max-w-md rounded-2xl border border-amber-500/40 bg-[#12121a] p-5 shadow-xl">
+      <div className="w-full max-w-md rounded-2xl border border-purple-500/30 bg-black/85 backdrop-blur-md p-5 shadow-2xl">
         <h2 id="access-terms-title" className="text-lg font-bold text-amber-100">
-          Terms of Access
+          Access terms
         </h2>
         <p className="text-sm text-zinc-300 mt-3 leading-relaxed">
           You are purchasing an <strong className="text-white">access pass</strong> for{' '}
-          <strong className="text-white">
-            {packName} ({priceEur} €)
-          </strong>
-          . A membership NFT will be minted to your wallet after payment.
+          <strong className="text-white">{packLabel}</strong>.
         </p>
         <ul className="mt-3 text-xs text-zinc-400 space-y-2 list-disc list-inside">
           <li>
             Trades shown are <strong className="text-amber-200/90">simulated (paper trading)</strong>{' '}
-            based on LIA signals.
+            unless GO_LIVE is enabled on-chain.
           </li>
           <li>
             <strong className="text-amber-200/90">No real funds</strong> are traded for this pack at
-            this stage (Model C).
+            this stage of the product.
           </li>
-          <li>This is <strong>not</strong> an investment product and not a managed fund.</li>
-          <li>No guarantee of profit. Past paper results ≠ future results.</li>
         </ul>
         <p className="text-[11px] text-zinc-500 mt-3">
-          FR — Vous achetez un pass d’accès (NFT). Les performances affichées sont simulées. Aucun
-          fonds n’est tradé pour votre compte à ce stade.
+          By continuing you acknowledge these terms.
         </p>
         <div className="mt-5 flex flex-col-reverse sm:flex-row gap-2 sm:justify-end">
-          <button type="button" onClick={onCancel} className="btn-secondary text-sm">
+          <button type="button" onClick={onCancel} className="btn-secondary text-sm min-h-[44px] min-w-[44px]">
             Cancel
           </button>
-          <button type="button" onClick={onAccept} className="btn-primary text-sm">
-            I understand — continue to payment
+          <button type="button" onClick={onAccept} className="btn-primary text-sm min-h-[44px]">
+            Accept & continue
           </button>
         </div>
       </div>

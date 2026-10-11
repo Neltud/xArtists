@@ -1,7 +1,16 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { isPitchMode, PITCH_GALLERY, PITCH_EVENT } from '../lib/pitchMode'
 import { RWA_ASSET_TYPES, RWA_USER_JOURNEY } from '../config/rwaAssets'
 
 export default function RwaAssetsStrip() {
+  const [pitch, setPitch] = useState(() => isPitchMode())
+  useEffect(() => {
+    const on = () => setPitch(isPitchMode())
+    window.addEventListener(PITCH_EVENT, on)
+    return () => window.removeEventListener(PITCH_EVENT, on)
+  }, [])
+
   return (
     <section
       className="rounded-2xl border border-amber-500/25 bg-black/40 backdrop-blur-md p-4 sm:p-5 mb-6 shadow-[0_0_40px_rgba(245,158,11,0.06)]"
@@ -29,6 +38,26 @@ export default function RwaAssetsStrip() {
           </Link>
         </div>
       </div>
+
+      {pitch && (
+        <div className="mb-4 rounded-xl border border-amber-400/30 bg-amber-500/10 px-3.5 py-3">
+          <p className="text-[10px] font-tech uppercase tracking-wider text-amber-300/90 mb-1">
+            Mode Pitch
+          </p>
+          <p className="text-sm font-semibold text-amber-50">{PITCH_GALLERY.name}</p>
+          <p className="text-[11px] text-amber-100/80 mt-1 leading-relaxed">{PITCH_GALLERY.blurb}</p>
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            {PITCH_GALLERY.highlights.map(h => (
+              <span
+                key={h}
+                className="text-[10px] rounded-full border border-amber-400/25 px-2 py-0.5 text-amber-100/90"
+              >
+                {h}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid sm:grid-cols-2 gap-2.5 mb-4">
         {RWA_ASSET_TYPES.map(t => (
