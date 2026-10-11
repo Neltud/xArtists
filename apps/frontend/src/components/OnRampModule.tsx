@@ -110,7 +110,7 @@ export default function OnRampModule({ compact = false, defaultEur = 50, classNa
 
   return (
     <div
-      className={`rounded-2xl border border-emerald-400/20 bg-emerald-950/20 p-4 space-y-3 ${className}`}
+      className={`rounded-2xl border border-emerald-400/25 bg-black/50 backdrop-blur-md p-4 space-y-3 shadow-[0_0_40px_rgba(16,185,129,0.08)] ${className}`}
     >
       <div className="flex items-start justify-between gap-2">
         <div>
@@ -180,14 +180,14 @@ export default function OnRampModule({ compact = false, defaultEur = 50, classNa
 
       {target === 'TRO' && (
         <p className="text-[11px] text-amber-200/85 leading-relaxed">
-          $TRO n'est pas listé en fiat direct. Achete EGLD puis swap sur xExchange / OneDex.
+          $TRO n&apos;est pas listé en fiat direct. Achete EGLD puis swap sur xExchange / OneDex.
         </p>
       )}
 
       {!connected ? (
         <div className="space-y-2">
           <p className="text-[11px] text-zinc-400">
-            Mode Guest — simulateur actif. Connecte xPortal pour l'achat sécurisé.
+            Mode invité — estimation seule. Connecte xPortal pour l’achat Euro → crypto (MoonPay).
           </p>
           <button type="button" className="btn-primary w-full text-sm" onClick={() => requestOpenConnect()}>
             Connecter xPortal pour acheter
