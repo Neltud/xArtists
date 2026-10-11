@@ -4,6 +4,7 @@ import { HashRouter } from 'react-router-dom'
 import App from './App'
 import { WalletProvider } from './context/WalletContext'
 import { MultiversXProvider } from './context/MultiversXContext'
+import { PitchModeProvider } from './context/PitchModeContext'
 import { MxDappProvider } from './providers/MxDappProvider'
 import TxShell from './providers/TxShell'
 import EmpireBalanceSync from './components/EmpireBalanceSync'
@@ -37,14 +38,16 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <MxDappProvider>
           <WalletProvider>
             <MultiversXProvider>
-              <ToastProvider>
-                <TxShell>
-                  <EmpireBalanceSync />
-                  <AgentAccessSync />
-                  <PulseBoot />
-                  <App />
-                </TxShell>
-              </ToastProvider>
+              <PitchModeProvider>
+                <ToastProvider>
+                  <TxShell>
+                    <EmpireBalanceSync />
+                    <AgentAccessSync />
+                    <PulseBoot />
+                    <App />
+                  </TxShell>
+                </ToastProvider>
+              </PitchModeProvider>
             </MultiversXProvider>
           </WalletProvider>
         </MxDappProvider>
