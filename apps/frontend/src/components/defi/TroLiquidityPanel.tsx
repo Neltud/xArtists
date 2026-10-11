@@ -60,6 +60,12 @@ export default function TroLiquidityPanel() {
   const ageMs = Number.isFinite(fetchedMs) ? now - fetchedMs : null
   const isStale = ageMs == null || ageMs > STALE_MS
 
+  const pitchLine =
+    'TVL indicatif · $' +
+    PITCH_DEMO.tvlUsd.toLocaleString() +
+    ' · $TRO ' +
+    String(PITCH_DEMO.troUsd)
+
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2 justify-between">
@@ -91,10 +97,7 @@ export default function TroLiquidityPanel() {
       {pitch && (
         <div className="rounded-xl border border-amber-400/25 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-100/90 space-y-1">
           <p className="font-semibold text-[12px]">Mode Pitch · liquidité démo</p>
-          <p>
-            TVL indicatif · ${PITCH_DEMO.tvlUsd.toLocaleString()} · $TRO{' '}
-            {PITCH_DEMO.troUsd}
-          </p>
+          <p>{pitchLine}</p>
           <p className="text-[10px] text-amber-200/70">{PITCH_DEMO.note}</p>
         </div>
       )}
