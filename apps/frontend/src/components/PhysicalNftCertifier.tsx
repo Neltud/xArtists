@@ -3,6 +3,7 @@
  * Qualité photo: ≥2 Mo, ≥8 MP, contraste σ≥18 ; capture native environment.
  */
 import { useCallback, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { createBrowserApproxCertificate } from '../lib/digitalTwin/browserApprox'
 import { dispatchMintSculpture1of1 } from '../lib/digitalTwin/mintIntent'
 
@@ -33,7 +34,6 @@ function parseDimsCm(raw: string): { h: number; w: number; d: number } {
   return { h: nums[0] || 30, w: nums[1] || 20, d: nums[2] || 5 }
 }
 
-/** Compress image (max edge 1024, JPEG 0.72) before SHA — avoids UI freeze on large photos. */
 async function compressImageForHash(file: File): Promise<Blob> {
   if (!file.type.startsWith('image/')) {
     return file.slice(0, Math.min(file.size, 512_000))
@@ -61,16 +61,14 @@ async function compressImageForHash(file: File): Promise<Blob> {
   }
 }
 
-/** Seuils qualité HD pour phygital (anti-compression messagerie / flou). */
-const MIN_FILE_BYTES = 2 * 1024 * 1024 // 2 Mo
-const MIN_MEGAPIXELS = 8 // 8 MP
-const MIN_CONTRAST_STD = 18 // écart-type luminance (0–255)
+const MIN_FILE_BYTES = 2 * 1024 * 1024
+const MIN_MEGAPIXELS = 8
+const MIN_CONTRAST_STD = 18
 
 export type PhotoQualityResult =
   | { ok: true; width: number; height: number; mp: number; contrastStd: number }
   | { ok: false; reason: string }
 
-/** Charge image + calcule variance de contraste (sous-échantillon canvas). */
 async function validateHighQualityPhoto(file: File): Promise<PhotoQualityResult> {
   if (!file.type.startsWith('image/')) {
     return { ok: false, reason: 'Fichier non image' }
@@ -85,7 +83,7 @@ async function validateHighQualityPhoto(file: File): Promise<PhotoQualityResult>
   try {
     bitmap = await createImageBitmap(file)
   } catch {
-    return { ok: false, reason: 'Impossible de lire l\'image' }
+    return { ok: false, reason: "Impossible de lire l'image" }
   }
   const width = bitmap.width
   const height = bitmap.height
@@ -165,7 +163,7 @@ type PhysicalCertificate = {
 function buildCoA(p: PhysicalCertificate): string {
   return [
     '═══════════════════════════════════════',
-    '  CERTIFICAT D\'AUTHENTICITÉ (CoA)',
+    "  CERTIFICAT D'AUTHENTICITÉ (CoA)",
     '  xArtists · Phygital Paper',
     '═══════════════════════════════════════',
     `ID : ${p.id}`,
@@ -329,10 +327,10 @@ export default function PhysicalNftCertifier() {
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/40 p-4 space-y-4 max-w-xl">
+    <div className="rounded-2xl border border-fuchsia-500/25 bg-black/45 backdrop-blur-md p-4 space-y-4 shadow-[0_0_40px_rgba(217,70,239,0.08)] max-w-xl">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-400/80 font-tech">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-fuchsia-300/90 font-tech">
             Phygital · Paper
           </p>
           <h2 className="text-lg font-semibold text-white">Certification NFT physique</h2>
@@ -453,9 +451,20 @@ export default function PhysicalNftCertifier() {
             <button type="button" className="btn-secondary text-xs" onClick={requestPaperMint}>
               Intent mint paper 1/1
             </button>
-            <a href="https://xportal.com" target="_blank" rel="noreferrer" className="btn-primary text-xs inline-flex items-center">
+            <a
+              href="https://xportal.com"
+              target="_blank"
+              rel="noreferrer"
+              className="btn-primary text-xs inline-flex items-center"
+            >
               Ouvrir xPortal ↗
             </a>
+            <Link to="/my-packs" className="btn-secondary text-xs">
+              My Packs
+            </Link>
+            <Link to="/command-center" className="btn-secondary text-xs">
+              Command Center
+            </Link>
           </div>
           {lockedPhotoSha && (
             <p className="text-[10px] mono text-zinc-500">
