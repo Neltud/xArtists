@@ -1,9 +1,11 @@
 /**
  * Overlay HTML 2D — EGLD USD · $TRO Spot USD · Ratio réserve (1 EGLD = X $TRO).
  * Badge LIVE → STALE si lastUpdated > 300s.
+ * Mode Pitch : PITCH_DEMO (pas de branding tiers).
  * Cache localStorage pour survivre aux 429 / timeouts.
  */
 import { useEffect, useState } from 'react'
+import { isPitchMode, PITCH_DEMO, PITCH_EVENT } from '../lib/pitchMode'
 
 const TRO_IDS = ['TRO-94c925', 'TRO-3bc587']
 const STALE_MS = 300_000
@@ -50,90 +52,74 @@ function fmtRatio(n: number): string {
 
 export default function LivePriceRail() {
   const boot = readCache()
+  const [pitch, setPitch] = useState(() => isPitchMode())
   const [egldUsd, setEgldUsd] = useState<number | null>(boot?.egld ?? null)
   const [troUsd, setTroUsd] = useState<number | null>(boot?.tro ?? null)
-  const [lastUpdatedTimestamp, setLastUpdatedTimestamp] = useState<number | null>(boot?.ts ?? null)
+  const [lastUpdatedTimestamp, setLastUpdated] = useState<number | null>(boot?.ts ?? null)
   const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
-    let c = false
+    const on = () => setPitch(isPitchMode())
+    window.addEventListener(PITCH_EVENT, on)
+    return () => window.removeEventListener(PITCH_EVENT, on)
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    const tick = () => setNow(Date.now())
+    const id = window.setInterval(tick, 15_000)
+
     const run = async () => {
       let e: number | null = null
+      let tro: number | null = null
       try {
         const r = await fetch('https://api.multiversx.com/economics', { cache: 'no-store' })
-        if (r.status === 429) throw new Error('429')
         if (r.ok) {
           const j = await r.json()
-          const p = Number(j.price)
-          if (Number.isFinite(p) && p > 0) e = p
+          const price = Number(j.price)
+          if (Number.isFinite(price) && price > 0) e = price
         }
       } catch {
         /* */
       }
-      if (e == null) {
+      for (const id of TRO_IDS) {
         try {
-          const r = await fetch(
-            'https://api.coingecko.com/api/v3/simple/price?ids=elrond-erd-2,multiversx&vs_currencies=usd',
-            { cache: 'no-store' },
-          )
+          const r = await fetch(`https://api.multiversx.com/tokens/${id}`, { cache: 'no-store' })
           if (r.ok) {
             const j = await r.json()
-            e =
-              Number(j['elrond-erd-2']?.usd) ||
-              Number(j.multiversx?.usd) ||
-              null
-            if (e != null && !(e > 0)) e = null
+            const price = Number(j.price)
+            if (Number.isFinite(price) && price > 0) {
+              tro = price
+              break
+            }
           }
         } catch {
           /* */
         }
       }
-
-      let tro: number | null = null
-      for (const id of TRO_IDS) {
-        try {
-          const r = await fetch(`https://api.multiversx.com/tokens/${id}`, { cache: 'no-store' })
-          if (r.status === 429) break
-          if (!r.ok) continue
-          const j = await r.json()
-          const price = Number(j.price)
-          if (Number.isFinite(price) && price > 0) {
-            tro = price
-            break
-          }
-        } catch {
-          /* next */
-        }
-      }
-
-      if (c) return
-
+      if (cancelled) return
       if (e == null && tro == null) {
         const cached = readCache()
         if (cached) {
           setEgldUsd(cached.egld)
           setTroUsd(cached.tro)
-          setLastUpdatedTimestamp(cached.ts)
+          setLastUpdated(cached.ts)
         }
-        setNow(Date.now())
         return
       }
-
       const nextE = e ?? readCache()?.egld ?? null
       const nextT = tro ?? readCache()?.tro ?? null
       setEgldUsd(nextE)
       setTroUsd(nextT)
+      setLastUpdated(Date.now())
       writeCache(nextE, nextT)
-      setLastUpdatedTimestamp(Date.now())
-      setNow(Date.now())
     }
     void run()
-    const id = window.setInterval(() => void run(), 30_000)
-    const tick = window.setInterval(() => setNow(Date.now()), 15_000)
+    const poll = window.setInterval(() => void run(), 60_000)
     return () => {
-      c = true
+      cancelled = true
       window.clearInterval(id)
-      window.clearInterval(tick)
+      window.clearInterval(poll)
     }
   }, [])
 
@@ -141,8 +127,12 @@ export default function LivePriceRail() {
   const isStale = ageMs == null || ageMs > STALE_MS
   const isLive = !isStale
 
+  const displayEgld = pitch ? PITCH_DEMO.egldUsd : egldUsd
+  const displayTro = pitch ? PITCH_DEMO.troUsd : troUsd
   const troPerEgld =
-    egldUsd != null && troUsd != null && troUsd > 0 ? egldUsd / troUsd : null
+    displayEgld != null && displayTro != null && displayTro > 0
+      ? displayEgld / displayTro
+      : null
 
   const utcLabel =
     lastUpdatedTimestamp != null
@@ -153,13 +143,13 @@ export default function LivePriceRail() {
     {
       k: 'EGLD',
       sub: 'USD',
-      v: egldUsd != null && Number.isFinite(egldUsd) ? `$${egldUsd.toFixed(2)}` : '…',
+      v: displayEgld != null && Number.isFinite(displayEgld) ? `$${displayEgld.toFixed(2)}` : '…',
       accent: 'text-cyan-200',
     },
     {
       k: '$TRO Spot',
       sub: 'USD / token',
-      v: fmtTroSpot(troUsd),
+      v: fmtTroSpot(displayTro),
       accent: 'text-violet-200',
     },
     {
@@ -170,9 +160,9 @@ export default function LivePriceRail() {
     },
     {
       k: 'UTC',
-      sub: isStale ? 'stale' : 'updated',
-      v: utcLabel,
-      accent: isStale ? 'text-amber-300/90' : 'text-zinc-300',
+      sub: pitch ? 'pitch' : isStale ? 'stale' : 'updated',
+      v: pitch ? 'DEMO' : utcLabel,
+      accent: pitch ? 'text-amber-200' : isStale ? 'text-amber-300/90' : 'text-zinc-300',
     },
   ]
 
@@ -183,7 +173,11 @@ export default function LivePriceRail() {
         style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
       >
         <div className="flex items-center gap-1.5">
-          {isLive ? (
+          {pitch ? (
+            <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 text-amber-100 text-[8px] py-0.5 px-1.5 font-tech uppercase">
+              PITCH
+            </span>
+          ) : isLive ? (
             <span className="badge-live badge-live-on text-[8px] py-0.5 px-1.5">
               <span className="badge-live-dot" />
               LIVE
@@ -194,32 +188,20 @@ export default function LivePriceRail() {
               title={
                 lastUpdatedTimestamp == null
                   ? 'Aucun fetch réussi'
-                  : `Dernière MAJ il y a ${Math.round((ageMs || 0) / 1000)}s (>${STALE_MS / 1000}s)`
+                  : `Dernière MAJ il y a ${Math.round((ageMs || 0) / 1000)}s`
               }
             >
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden />
               STALE
             </span>
           )}
         </div>
-        {rows.map(r => (
-          <div key={r.k} className="border-b border-white/10 pb-1.5 last:border-0">
-            <p className="text-[9px] font-semibold uppercase tracking-wide text-zinc-400">
-              {r.k}
-              {r.sub ? (
-                <span className="text-zinc-600 font-normal normal-case"> · {r.sub}</span>
-              ) : null}
-            </p>
-            <p
-              className={`text-[12px] font-bold mono tabular-nums leading-tight antialiased ${r.accent}`}
-            >
-              {r.v}
-            </p>
+        {rows.map(row => (
+          <div key={row.k} className="border-t border-white/5 pt-1.5 first:border-0 first:pt-0">
+            <p className="text-[9px] uppercase tracking-wider text-zinc-500 leading-none">{row.k}</p>
+            <p className={`text-[11px] font-semibold tabular-nums ${row.accent}`}>{row.v}</p>
+            <p className="text-[8px] text-zinc-600">{row.sub}</p>
           </div>
         ))}
-        <p className="text-[8px] text-zinc-600 mt-auto leading-tight">
-          Spot ≠ ratio · API publiques · cache 5 min
-        </p>
       </div>
     </div>
   )
