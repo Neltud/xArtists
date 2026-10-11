@@ -1,5 +1,6 @@
 /**
  * My Packs — on-chain vs paper + salles holo (1 ambiance / pack).
+ * Guest : message explicite de salles verrouillées (Pulse / Yield / Sentinel).
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -15,6 +16,12 @@ import PackRoomHolo from '../components/PackRoomHolo'
 const API = (import.meta.env.VITE_ACCESS_API_BASE as string | undefined) || ''
 
 const PACK_IDS: PackId[] = ['pulse', 'yield', 'sentinel']
+
+const ROOM_BLURB: Record<string, string> = {
+  pulse: 'Signaux & flux live',
+  yield: 'Farming & liquidité $TRO',
+  sentinel: 'Alertes & garde-fous',
+}
 
 function isPackId(v: string | null): v is PackId {
   return !!v && PACK_IDS.includes(v as PackId)
@@ -55,7 +62,7 @@ export default function MyPacks() {
     markPackOwned(id)
     setPaperPacks(loadOwnedPacks())
     setActiveRoom(id)
-    setMintStatus(`Pack ${id} ajouté (paper).`)
+    setMintStatus(`Pack ${id} ajouté (aperçu / paper sur cet appareil).`)
     try {
       localStorage.removeItem('xartists_access_checkout_intent')
     } catch {
@@ -95,6 +102,7 @@ export default function MyPacks() {
   ) as PackId[]
 
   const room = activeRoom && ownedAll.includes(activeRoom) ? activeRoom : ownedAll[0] || null
+  const lockedIds = PACK_IDS.filter(id => !ownedAll.includes(id))
 
   return (
     <div className="animate-fade-in space-y-8 pb-12 max-w-xl mx-auto">
@@ -108,9 +116,16 @@ export default function MyPacks() {
       </header>
 
       {!connected && (
-        <button type="button" className="btn-primary" onClick={() => requestOpenConnect()}>
-          Connecter wallet
-        </button>
+        <div className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 space-y-2">
+          <p className="text-[13px] text-amber-100/95 leading-relaxed">
+            <span className="font-semibold">Mode invité</span> — les salles Pulse, Yield et Sentinel
+            sont verrouillées tant qu’aucun pack n’est lié à un wallet (achat crypto / fiat ou
+            aperçu appareil).
+          </p>
+          <button type="button" className="btn-primary text-sm" onClick={() => requestOpenConnect()}>
+            Connecter xPortal
+          </button>
+        </div>
       )}
 
       {cancelled && (
@@ -126,10 +141,32 @@ export default function MyPacks() {
       )}
 
       {ownedAll.length === 0 ? (
-        <div className="card space-y-3 text-sm text-zinc-400">
-          <p>Aucune salle pour l’instant.</p>
+        <div className="card space-y-4 text-sm text-zinc-400">
+          <p>Aucune salle déverrouillée pour l’instant.</p>
+          <div className="grid gap-2">
+            {PACK_IDS.map(id => {
+              const p = AGENT_PACKS.find(x => x?.id === id)
+              return (
+                <div
+                  key={id}
+                  className="rounded-xl border border-white/10 bg-black/30 px-3 py-2.5 flex items-center justify-between gap-2"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[13px] text-zinc-200 font-medium">
+                      {p?.icon} {p?.name || id}{' '}
+                      <span className="text-[10px] uppercase tracking-wide text-amber-300/80">
+                        verrouillée
+                      </span>
+                    </p>
+                    <p className="text-[11px] text-zinc-500">{ROOM_BLURB[id]}</p>
+                  </div>
+                  <span className="text-[10px] text-zinc-600 shrink-0">🔒</span>
+                </div>
+              )
+            })}
+          </div>
           <Link to="/agents" className="btn-primary text-sm inline-block">
-            Voir les packs
+            Voir les packs / déverrouiller
           </Link>
         </div>
       ) : (
@@ -159,6 +196,7 @@ export default function MyPacks() {
             {ownedAll.map(id => {
               const p = AGENT_PACKS.find(x => x?.id === id)
               const meta = ROOM_META[id]
+              const onChain = chainHits.some(h => h.packId === id)
               return (
                 <Link
                   key={id}
@@ -168,6 +206,9 @@ export default function MyPacks() {
                   <div>
                     <p className="text-sm font-medium text-white">
                       {p?.icon} {p?.name || id}
+                      <span className="ml-2 text-[10px] font-normal text-zinc-500">
+                        {onChain ? 'on-chain' : 'aperçu local'}
+                      </span>
                     </p>
                     <p className="text-[11px] text-zinc-500">{p?.tagline || meta?.title}</p>
                   </div>
@@ -176,6 +217,30 @@ export default function MyPacks() {
               )
             })}
           </div>
+
+          {lockedIds.length > 0 && (
+            <div className="space-y-2 pt-2">
+              <h3 className="text-[11px] uppercase tracking-wide text-zinc-600">Encore verrouillées</h3>
+              <div className="grid gap-1.5">
+                {lockedIds.map(id => {
+                  const p = AGENT_PACKS.find(x => x?.id === id)
+                  return (
+                    <div
+                      key={id}
+                      className="rounded-lg border border-white/[0.06] px-3 py-2 flex justify-between items-center text-[12px] text-zinc-500"
+                    >
+                      <span>
+                        {p?.icon} {p?.name || id} · {ROOM_BLURB[id]}
+                      </span>
+                      <Link to="/agents" className="text-cyan-400/90 text-[11px] underline">
+                        Débloquer
+                      </Link>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </section>
       )}
 
@@ -183,7 +248,8 @@ export default function MyPacks() {
         <h2 className="section-label">On-chain</h2>
         {chainHits.length === 0 ? (
           <p className="text-[12px] text-zinc-600 rounded-xl border border-white/[0.06] px-3 py-3">
-            Aucun pack agent détecté dans le wallet.
+            Aucun pack agent détecté dans le wallet
+            {connected ? '' : ' — connecte xPortal pour scanner'}.
           </p>
         ) : (
           <ul className="space-y-2">
