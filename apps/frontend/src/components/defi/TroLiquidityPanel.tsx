@@ -92,7 +92,8 @@ export default function TroLiquidityPanel() {
         <div className="rounded-xl border border-amber-400/25 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-100/90 space-y-1">
           <p className="font-semibold text-[12px]">Mode Pitch · liquidité démo</p>
           <p>
-            TVL indicatif · ${PITCH_DEMO.tvlUsd.toLocaleString()} · $TRO {PITCH_DEMO.troUsd}
+            TVL indicatif · ${PITCH_DEMO.tvlUsd.toLocaleString()} · $TRO{' '}
+            {PITCH_DEMO.troUsd}
           </p>
           <p className="text-[10px] text-amber-200/70">{PITCH_DEMO.note}</p>
         </div>
