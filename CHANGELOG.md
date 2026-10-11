@@ -1,5 +1,25 @@
 # Changelog — xArtists
 
+## [0.99.0](https://github.com/Neltud/xArtists/compare/v0.98.0...v0.99.0) (2026-10-11)
+
+
+### Features
+
+* **ui:** ChainInfoBanner mainnet status + clearer LIA/Agents/deployer notes ([98e0ee6](https://github.com/Neltud/xArtists/commit/98e0ee6376f2228412b24a3d1a2e3e501b00cc28))
+* **ui:** wire ChainInfoBanner on home + Agents/LIA operational notes ([d6d1b6a](https://github.com/Neltud/xArtists/commit/d6d1b6a03c31600a991b523c2e6a86090db1b2af))
+
+
+### Bug Fixes
+
+* **live:** restore Pages build and stop buying listing [#1](https://github.com/Neltud/xArtists/issues/1) ([4167904](https://github.com/Neltud/xArtists/commit/41679044c2d12684c77a1759cdcc19a40d031ec8))
+* **museum:** raycast artworkId on click instead of nearest-only inspect ([25a176b](https://github.com/Neltud/xArtists/commit/25a176bbce8ec97afe3fe506bef1855177f25f49))
+* **museum:** restore MuseumWebGLHallImpl + raycast artworkId on click ([d1a7483](https://github.com/Neltud/xArtists/commit/d1a7483c00e40ebb9e3df30e406f426726ae48e9))
+
+
+### Documentation
+
+* **lia:** paper-first + xPortal-only on-chain note on LIA Hub ([0ad7a50](https://github.com/Neltud/xArtists/commit/0ad7a501ba7787c1cbfdb413f1e73f8732a7eb44))
+
 ## [0.98.0](https://github.com/Neltud/xArtists/compare/v0.97.0...v0.98.0) (2026-10-10)
 
 
