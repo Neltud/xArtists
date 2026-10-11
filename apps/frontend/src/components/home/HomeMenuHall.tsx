@@ -1,7 +1,7 @@
 /**
  * Accueil 360° — galerie néon cyberpunk + résilience WebGL (context loss).
  * Mobile-safe: pixelRatio ≤ 1.25, pause onglet caché, fallback grille HTML.
- * Portes canvas néon + faisceaux holographiques + dôme filaire.
+ * Portes canvas néon + faisceaux holographiques + stardust + dôme filaire.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -28,7 +28,6 @@ const EXHIBITS: Exhibit[] = [
   { id: 'studio', label: 'Studio', sub: 'Phygital NFT', path: '/studio', color: 0xff007f, neon: 0xf472b6 },
 ]
 
-/** Texture canvas — cadre néon + label + CTA */
 function paintPanel(ex: Exhibit, index: number): THREE.CanvasTexture {
   const canvas = document.createElement('canvas')
   canvas.width = 512
@@ -286,6 +285,7 @@ function HomeMenuHallCanvas({ onFatal }: { onFatal: () => void }) {
 
       const panels: THREE.Mesh[] = []
       const beams: THREE.Mesh[] = []
+      const stardust: THREE.Points[] = []
       const n = EXHIBITS.length
       const radius = 5.0
 
@@ -332,6 +332,32 @@ function HomeMenuHallCanvas({ onFatal }: { onFatal: () => void }) {
         scene.add(beam)
         beams.push(beam)
         disposables.push(beamGeo, beamMat)
+
+        if (!isMobile || i % 2 === 0) {
+          const count = isMobile ? 12 : 22
+          const positions = new Float32Array(count * 3)
+          for (let p = 0; p < count; p++) {
+            positions[p * 3] = (Math.random() - 0.5) * 0.8
+            positions[p * 3 + 1] = Math.random() * 1.6
+            positions[p * 3 + 2] = (Math.random() - 0.5) * 0.8
+          }
+          const pGeo = new THREE.BufferGeometry()
+          pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+          const pMat = new THREE.PointsMaterial({
+            color: ex.neon,
+            size: isMobile ? 0.035 : 0.055,
+            transparent: true,
+            opacity: 0.8,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            sizeAttenuation: true,
+          })
+          const pts = new THREE.Points(pGeo, pMat)
+          pts.position.set(px, 0.15, pz)
+          scene.add(pts)
+          stardust.push(pts)
+          disposables.push(pGeo, pMat)
+        }
       })
 
       const raycaster = new THREE.Raycaster()
@@ -402,6 +428,19 @@ function HomeMenuHallCanvas({ onFatal }: { onFatal: () => void }) {
           beams.forEach((b, i) => {
             const m = b.material as THREE.MeshBasicMaterial
             m.opacity = 0.18 + Math.sin(t * 1.6 + i) * 0.1
+          })
+          stardust.forEach((pts, i) => {
+            const pos = pts.geometry.attributes.position as THREE.BufferAttribute
+            for (let p = 0; p < pos.count; p++) {
+              let y = pos.getY(p) + 0.01 + (i % 3) * 0.002
+              if (y > 1.9) y = 0
+              pos.setY(p, y)
+              pos.setX(p, pos.getX(p) + Math.sin(t + p * 0.3 + i) * 0.0006)
+              pos.setZ(p, pos.getZ(p) + Math.cos(t * 0.8 + p) * 0.0006)
+            }
+            pos.needsUpdate = true
+            const pm = pts.material as THREE.PointsMaterial
+            pm.opacity = 0.55 + Math.sin(t * 2 + i) * 0.25
           })
           dome.rotation.y = t * 0.04
           renderer.render(scene, camera)
