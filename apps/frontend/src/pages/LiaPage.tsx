@@ -6,13 +6,13 @@ import { Link } from 'react-router-dom'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
 import { toAmbientSnapshot } from '../lib/ambientAura'
-import { fetchProtocolProfile } from '../lia/protocolProfile'
-import { fetchEgldPrice } from '../lia/priceTick'
-import { persistShadowExport } from '../lia/shadowExport'
-import { matrixFromPulse } from '../lia/decisionCycle'
-import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumBridge'
+import { fetchProtocolProfile } from '../lib/protocolProfile'
+import { fetchEgldPrice } from '../lib/egldPrice'
+import { persistShadowExport } from '../lib/shadowExport'
+import { matrixFromPulse } from '../lia/matrix'
+import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumStatus'
 import { fetchLiaHubStatus, type LiaHubStatus } from '../lia/hubStatus'
-import { fetchLiaStatus, auraFromStatus, type LiaStatusV1 } from '../lia/liaStatus'
+import { fetchLiaStatus, type LiaStatusV1 } from '../lia/liaStatus'
 import { fetchMarketAura } from '../lia/marketAura'
 import LiaCommandTerminal from '../components/LiaCommandTerminal'
 import DailySignalWidget from '../components/DailySignalWidget'
@@ -108,9 +108,14 @@ export default function LiaPage() {
         <p className="section-label">LIA Hub</p>
         <h1 className="section-title display text-2xl">Agent autonome & signaux</h1>
         <p className="text-[13px] text-zinc-500 leading-relaxed">
-          Multi-IA (Vellum / Gemini / Grok) · wallet dédié · paper first. Aura marché :{' '}
+          Multi-IA (Gemini / Grok · Vellum optionnel) · wallet agent en lecture ·{' '}
+          <strong className="text-amber-200/90">paper first</strong>. Aura :{' '}
           <span className="text-zinc-300">{mAura}</span>
           {loading ? ' · sync…' : ''}
+        </p>
+        <p className="text-[11px] text-zinc-600">
+          Aucune TX agent autonome : les actions on-chain passent par{' '}
+          <strong className="text-zinc-400">xPortal</strong>.
         </p>
       </header>
 
@@ -127,7 +132,8 @@ export default function LiaPage() {
           Vellum & hub
         </p>
         <p className="text-[12px] text-zinc-400">
-          Vellum · {vellum?.live ? 'LIVE' : 'paper'} {vellum?.summary?.mode ? `· ${vellum.summary.mode}` : ''}
+          Vellum · {vellum?.live ? 'LIVE' : 'paper'}{' '}
+          {vellum?.summary?.mode ? `· ${vellum.summary.mode}` : ''}
         </p>
         <p className="text-[12px] text-zinc-400">
           Hub · {hub?.strategy || hub?.note || '—'} · shadow PnL {hub?.shadow_pnl_usd ?? '—'}
