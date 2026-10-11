@@ -1,11 +1,13 @@
 /**
- * Header produit — menu, wallet, i18n. Connexion via LoginModal.
+ * Header produit — menu, wallet, i18n, Mode Pitch B2B.
+ * Connexion via LoginModal. Pas de branding partenaire tiers.
  */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { requestOpenConnect, requestOpenAssets } from '../lib/walletEvents'
 import { useI18n } from '../i18n/I18nContext'
+import { isPitchMode, setPitchMode, syncPitchModeClass } from '../lib/pitchMode'
 import LangSwitcher from './LangSwitcher'
 import SideNav from './SideNav'
 import LoginModal from './LoginModal'
@@ -14,6 +16,11 @@ export default function Header() {
   const { t } = useI18n()
   const { connected, shortAddress, disconnect, address, method, sessionLive } = useWallet()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [pitch, setPitch] = useState(() => isPitchMode())
+
+  useEffect(() => {
+    syncPitchModeClass()
+  }, [])
 
   const live = connected && (method !== 'xportal' || sessionLive === true)
 
@@ -24,6 +31,12 @@ export default function Header() {
     { to: '/agents', label: t('nav.packs') },
     { to: '/slot', label: t('nav.slot') },
   ]
+
+  const togglePitch = () => {
+    const next = !pitch
+    setPitchMode(next)
+    setPitch(next)
+  }
 
   return (
     <>
@@ -68,6 +81,19 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
+            <button
+              type="button"
+              onClick={togglePitch}
+              title={pitch ? 'Désactiver le mode pitch' : 'Activer le mode pitch (démo B2B)'}
+              className={`hidden sm:inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-semibold transition ${
+                pitch
+                  ? 'border-amber-400/45 bg-amber-500/15 text-amber-100'
+                  : 'border-white/12 bg-white/[0.04] text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              <span aria-hidden>🎬</span>
+              <span>Mode Pitch</span>
+            </button>
             <LangSwitcher />
             {live ? (
               <>
@@ -98,6 +124,11 @@ export default function Header() {
             )}
           </div>
         </div>
+        {pitch && (
+          <div className="border-t border-amber-400/20 bg-amber-500/10 px-3 py-1 text-center text-[10px] text-amber-100/90">
+            Mode Pitch actif — logs techniques masqués · métriques démo
+          </div>
+        )}
       </header>
 
       <SideNav open={menuOpen} onClose={() => setMenuOpen(false)} />
