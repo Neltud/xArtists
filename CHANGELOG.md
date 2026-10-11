@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.101.0](https://github.com/Neltud/xArtists/compare/v0.100.0...v0.101.0) (2026-10-11)
+
+
+### Features
+
+* **3d:** richer dome, dual neon lights, floor halo, ambient stars ([52c3a9f](https://github.com/Neltud/xArtists/commit/52c3a9fa085903fe4a42fe26d5897f63ab64628a))
+
 ## [0.100.0](https://github.com/Neltud/xArtists/compare/v0.99.0...v0.100.0) (2026-10-11)
 
 
