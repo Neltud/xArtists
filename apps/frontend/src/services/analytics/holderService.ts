@@ -1,6 +1,7 @@
 /**
  * Indexation holders $TRO + ranking NFT collections xArtists.
  * API MultiversX publique — lecture seule, paper-safe.
+ * Cache mémoire 60s + localStorage 300s (429 / timeout).
  */
 const API = 'https://api.multiversx.com'
 
@@ -11,10 +12,6 @@ export function isValidErdAddress(addr: string | undefined | null): addr is stri
   return typeof addr === 'string' && ERD_ADDRESS_RE.test(addr)
 }
 
-/**
- * Collections NFT xArtists réelles (public/data/xartists_collections.index.json).
- * VITE_XARTISTS_NFT_COLLECTIONS override ; fallback jamais vide / jamais *000000.
- */
 const DEFAULT_NFT_COLLECTIONS = [
   'XAR-cee2e0',
   'AGR-9bd53e',
@@ -44,7 +41,6 @@ function resolveNftCollections(): string[] {
 
 const XARTISTS_COLLECTIONS = resolveNftCollections()
 
-/** Token $TRO principal + legacy (env override). */
 const DEFAULT_TRO_IDS = ['TRO-94c925', 'TRO-3bc587'] as const
 
 function resolveTroIds(): string[] {
@@ -69,7 +65,6 @@ export type TroHolder = {
   kind: HolderKind
   rank: number
   sharePct: number
-  /** Label court si SC connu */
   label?: string
 }
 
@@ -109,14 +104,50 @@ const KNOWN_SC: Record<string, { kind: HolderKind; label: string }> = {
 }
 
 const TTL_MS = 60_000
+const LS_TTL_MS = 300_000
+const LS_PREFIX = 'xartists_holder_cache_v1:'
 const mem = new Map<string, { at: number; data: unknown }>()
+
+function readLs<T>(key: string): T | null {
+  try {
+    const raw = localStorage.getItem(LS_PREFIX + key)
+    if (!raw) return null
+    const j = JSON.parse(raw) as { at: number; data: T }
+    if (!j || typeof j.at !== 'number') return null
+    if (Date.now() - j.at > LS_TTL_MS) return null
+    return j.data
+  } catch {
+    return null
+  }
+}
+
+function writeLs(key: string, data: unknown) {
+  try {
+    localStorage.setItem(LS_PREFIX + key, JSON.stringify({ at: Date.now(), data }))
+  } catch {
+    /* */
+  }
+}
 
 async function cached<T>(key: string, fn: () => Promise<T>): Promise<T> {
   const hit = mem.get(key)
   if (hit && Date.now() - hit.at < TTL_MS) return hit.data as T
-  const data = await fn()
-  mem.set(key, { at: Date.now(), data })
-  return data
+  try {
+    const data = await fn()
+    mem.set(key, { at: Date.now(), data })
+    writeLs(key, data)
+    return data
+  } catch (e) {
+    const status = (e as { status?: number })?.status
+    if (status === 429 || String(e).includes('429') || String(e).includes('timeout')) {
+      const ls = readLs<T>(key)
+      if (ls != null) return ls
+      if (hit) return hit.data as T
+    }
+    const ls = readLs<T>(key)
+    if (ls != null) return ls
+    throw e
+  }
 }
 
 function classifyAddress(address: string): { kind: HolderKind; label?: string } {
@@ -138,7 +169,12 @@ function toHumanBalance(raw: string, decimals = 18): number {
 export async function fetchTroHolders(opts?: {
   size?: number
   tokenId?: string
-}): Promise<{ holders: TroHolder[]; tokenId: string; totalSupply: number | null; accountsCount: number | null }> {
+}): Promise<{
+  holders: TroHolder[]
+  tokenId: string
+  totalSupply: number | null
+  accountsCount: number | null
+}> {
   const tokenId = opts?.tokenId || TRO_IDS[0]
   const size = Math.min(100, Math.max(10, opts?.size ?? 50))
 
@@ -150,6 +186,11 @@ export async function fetchTroHolders(opts?: {
 
     try {
       const metaR = await fetch(`${API}/tokens/${tokenId}`, { cache: 'no-store' })
+      if (metaR.status === 429) {
+        const err = new Error('rate_limited') as Error & { status: number }
+        err.status = 429
+        throw err
+      }
       if (metaR.ok) {
         const meta = (await metaR.json()) as {
           supply?: string
@@ -162,8 +203,8 @@ export async function fetchTroHolders(opts?: {
         if (supplyRaw) totalSupply = toHumanBalance(String(supplyRaw), decimals)
         if (typeof meta.accounts === 'number') accountsCount = meta.accounts
       }
-    } catch {
-      /* continue */
+    } catch (e) {
+      if ((e as { status?: number })?.status === 429) throw e
     }
 
     try {
@@ -171,14 +212,19 @@ export async function fetchTroHolders(opts?: {
         `${API}/tokens/${tokenId}/accounts?size=${size}&from=0`,
         { cache: 'no-store' },
       )
+      if (r.status === 429) {
+        const err = new Error('rate_limited') as Error & { status: number }
+        err.status = 429
+        throw err
+      }
       if (r.ok) {
         const list = (await r.json()) as Array<{ address?: string; balance?: string }>
         accounts = (Array.isArray(list) ? list : [])
           .filter(a => a.address && isValidErdAddress(a.address) && a.balance)
           .map(a => ({ address: a.address!, balance: String(a.balance) }))
       }
-    } catch {
-      /* empty */
+    } catch (e) {
+      if ((e as { status?: number })?.status === 429) throw e
     }
 
     const sumBal = accounts.reduce((s, a) => s + toHumanBalance(a.balance, decimals), 0)
@@ -215,6 +261,11 @@ export async function fetchNftLeaderboard(
           `${API}/collections/${collection}/accounts?size=${size}&from=0`,
           { cache: 'no-store' },
         )
+        if (r.status === 429) {
+          const err = new Error('rate_limited') as Error & { status: number }
+          err.status = 429
+          throw err
+        }
         if (!r.ok) continue
         const list = (await r.json()) as Array<{ address?: string; balance?: string | number }>
         ;(Array.isArray(list) ? list : []).forEach((a, i) => {
@@ -229,8 +280,8 @@ export async function fetchNftLeaderboard(
             rank: i + 1,
           })
         })
-      } catch {
-        /* skip collection */
+      } catch (e) {
+        if ((e as { status?: number })?.status === 429) throw e
       }
     }
     rows.sort((a, b) => b.count - a.count)
@@ -257,9 +308,7 @@ export async function fetchHolderIndex(opts?: {
   const { holders, tokenId, totalSupply, accountsCount } = holdersResult
 
   const vaults = holders.filter(h => h.kind === 'sc-vault' || h.kind === 'sc-pool')
-  const topUsers = holders
-    .filter(h => h.kind === 'user')
-    .map((h, i) => ({ ...h, rank: i + 1 }))
+  const topUsers = holders.filter(h => h.kind === 'user').map((h, i) => ({ ...h, rank: i + 1 }))
 
   let nftLeaderboard: NftHolderRow[] = []
   try {
