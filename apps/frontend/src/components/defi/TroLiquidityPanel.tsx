@@ -1,6 +1,6 @@
 /**
  * Panneau farming $TRO — métriques xExchange + OneDex (lecture seule).
- * Powered by Finance Computer API + MultiversX public endpoints.
+ * Badge B2B Finance Computer API.
  */
 import { useEffect, useState } from 'react'
 import FinanceComputerBadge from '../FinanceComputerBadge'
@@ -8,9 +8,9 @@ import {
   fetchTroLiquiditySnapshot,
   formatApr,
   formatTvl,
-  DEX_LABEL,
   type TroLiquiditySnapshot,
 } from '../../services/defi/troLiquidityService'
+import { DEX_LABEL } from '../../config/troPools'
 
 const STALE_MS = 300_000
 
@@ -49,7 +49,8 @@ export default function TroLiquidityPanel() {
     }
   }, [])
 
-  const ageMs = snap?.fetchedAt ? now - snap.fetchedAt : null
+  const fetchedMs = snap?.fetchedAt ? Date.parse(snap.fetchedAt) : NaN
+  const ageMs = Number.isFinite(fetchedMs) ? now - fetchedMs : null
   const isStale = ageMs == null || ageMs > STALE_MS
 
   return (
@@ -70,10 +71,7 @@ export default function TroLiquidityPanel() {
           )}
           {snap &&
             (isStale ? (
-              <span
-                className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 text-amber-200 text-[9px] py-0.5 px-1.5 font-tech uppercase"
-                title={`Dernière MAJ il y a ${Math.round((ageMs || 0) / 1000)}s`}
-              >
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 text-amber-200 text-[9px] py-0.5 px-1.5 font-tech uppercase">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden />
                 STALE
               </span>
@@ -86,27 +84,25 @@ export default function TroLiquidityPanel() {
         </div>
       </div>
 
-      {loading && !snap && (
-        <p className="text-[12px] text-zinc-500">Chargement des pools…</p>
-      )}
+      {loading && !snap && <p className="text-[12px] text-zinc-500">Chargement des pools…</p>}
       {err && <p className="text-[12px] text-amber-200/90">{err}</p>}
 
       {snap && (
         <div className="grid gap-2 sm:grid-cols-2">
-          {snap.pools.map(p => (
+          {snap.farms.map(f => (
             <div
-              key={`${p.dex}-${p.pair}`}
+              key={f.poolId}
               className="rounded-xl border border-white/10 bg-black/35 px-3 py-2.5 space-y-1"
             >
               <p className="text-[12px] font-medium text-white">
-                {DEX_LABEL[p.dex] || p.dex} · {p.pair}
+                {DEX_LABEL[f.dex] || f.dex} · {f.pair}
               </p>
               <p className="text-[11px] text-zinc-400">
-                APR {formatApr(p.apr)} · TVL {formatTvl(p.tvlUsd)}
+                APR {formatApr(f.aprPct)} · TVL {formatTvl(f.tvlUsd)}
               </p>
-              {p.url && (
+              {f.swapUrl && (
                 <a
-                  href={p.url}
+                  href={f.swapUrl}
                   target="_blank"
                   rel="noreferrer"
                   className="text-[10px] text-cyan-400 hover:underline"
@@ -116,7 +112,7 @@ export default function TroLiquidityPanel() {
               )}
             </div>
           ))}
-          {snap.pools.length === 0 && (
+          {snap.farms.length === 0 && (
             <p className="text-[12px] text-zinc-500 col-span-full">Aucun pool $TRO indexé.</p>
           )}
         </div>
