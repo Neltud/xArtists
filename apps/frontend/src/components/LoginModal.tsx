@@ -39,10 +39,8 @@ export function loadGuestReceiveId(): string | null {
 }
 
 type Props = {
-  /** controlled optional — if omitted, self-manages via OPEN_CONNECT_EVENT */
   open?: boolean
   onClose?: () => void
-  /** after successful connect */
   onConnected?: (address: string) => void
 }
 
@@ -152,7 +150,6 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
   }
 
   const runSimpleWebWallet = () => {
-    // Non-custodial: user creates/unlocks wallet on official MVX web wallet
     window.open(WEB_WALLET, '_blank', 'noopener,noreferrer')
     setError(
       'Web Wallet ouvert. Crée ou déverrouille un compte, copie erd1, colle-la ci-dessous (ou reviens avec xPortal).',
@@ -175,7 +172,7 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
       role="presentation"
     >
       <div
-        className="glass-hud w-full max-w-md space-y-4 p-5 shadow-2xl"
+        className="w-full max-w-md space-y-4 rounded-2xl border border-purple-500/30 bg-black/85 backdrop-blur-md p-5 shadow-2xl"
         onClick={e => e.stopPropagation()}
         role="dialog"
         aria-modal
@@ -188,7 +185,7 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
               Non-custodial — aucune clé privée stockée par xArtists.
             </p>
           </div>
-          <button type="button" className="btn-secondary px-2 py-1 text-xs" onClick={close}>
+          <button type="button" className="modal-close-btn" onClick={close} aria-label="Fermer">
             ×
           </button>
         </div>
@@ -268,8 +265,8 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
               Identifiant temporaire (fiat sans erd1 encore)
             </button>
             <p className="text-[10px] text-zinc-600">
-              L’ID temporaire lie le paiement FC/Stripe au futur mint — tu devras revendiquer avec un
-              erd1 (claim). Pas un compte titres. Pas LIA broker.
+              L’ID temporaire lie le paiement au futur mint — tu devras revendiquer avec un erd1
+              (claim). Pas un compte titres.
             </p>
           </div>
         )}
