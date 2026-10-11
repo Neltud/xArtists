@@ -2,5 +2,7 @@
   "label": "xArtists SC Deployer",
   "address": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g",
   "network": "mainnet",
-  "status": "awaiting_funds"
+  "status": "ops_wallet_recover_via_owner",
+  "note": "Public address only. Signing keys must not live in agent chat. Recover funds via owner-controlled xPortal if PEM is held offline. Product TX: end-user xPortal.",
+  "updated": "2026-10-11"
 }
