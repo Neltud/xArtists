@@ -27,6 +27,7 @@ describe('gates', () => {
   })
   it('LIA ops funded threshold', () => {
     expect(liaOpsFunded(0.093)).toBe(false)
+    expect(liaOpsFunded(1.603782)).toBe(true)
     expect(liaOpsFunded(2.09)).toBe(true)
   })
   it('supernova age from epoch 2242 is J+9', () => {
@@ -35,12 +36,13 @@ describe('gates', () => {
   })
 })
 
-describe('fallback snapshot 24 sept', () => {
+describe('fallback snapshot 11 oct', () => {
   it('is fail-closed and marks stale accounts', () => {
     expect(FALLBACK_SNAPSHOT.sc.marketplace.codeEmpty).toBe(true)
     expect(FALLBACK_SNAPSHOT.liaOps.stale).toBe(true)
+    expect(FALLBACK_SNAPSHOT.liaOps.balanceEgld).toBeCloseTo(1.603782)
     expect(FALLBACK_SNAPSHOT.degraded).toBe(true)
-    expect(FALLBACK_SNAPSHOT.epoch).toBe(2242)
+    expect(FALLBACK_SNAPSHOT.epoch).toBe(2259)
     expect(FALLBACK_SNAPSHOT.refreshRate).toBe(600)
   })
 })

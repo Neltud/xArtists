@@ -184,6 +184,7 @@ export default function GoLivePage() {
               <li key={l.id}>
                 Listing #{l.id} {l.token}-{String(l.nonce).padStart(2, '0')} · {l.priceEgld} EGLD ·{' '}
                 {l.active ? 'actif' : 'inactif'}
+                {l.bidEgld ? ` · bid ${l.bidEgld} EGLD locké` : ''}
               </li>
             ))}
           </ul>

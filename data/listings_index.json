@@ -1,10 +1,10 @@
 {
   "version": 1,
   "network": "mainnet",
-  "updated": "2026-10-02T14:35:00Z",
+  "updated": "2026-10-11T04:40:00Z",
   "marketplace_address": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
   "codehash_ok": true,
-  "note": "Listing #1 sold via buyNft 57b7b5e2…",
+  "note": "Listing #1 sold via buyNft 57b7b5e2\u2026. Listing #2 active 0.25 EGLD, bid 0.01 locked.",
   "listings": [
     {
       "listing_id": 1,
@@ -17,6 +17,20 @@
       "sold": true,
       "tx_list": "7e4182db6c3b9f97406b591f887462981a887a830ee4442fdfbef61e3cb26cc1",
       "tx_buy": "57b7b5e2e9102b7a715c9e08a602afd070b1861098b7d4baf4ab5edab801806e"
+    },
+    {
+      "listing_id": 2,
+      "identifier": "ASFT-a6273a-01",
+      "nonce": 1,
+      "name": "BlackArtPass",
+      "price_egld": "0.25",
+      "seller": "erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l",
+      "active": true,
+      "sold": false,
+      "tx_list": "7e4182db6c3b9f97406b591f887462981a887a830ee4442fdfbef61e3cb26cc1",
+      "price": "250000000000000000",
+      "bid_egld": "0.01",
+      "token": "ASFT-a6273a"
     }
   ]
 }

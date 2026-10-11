@@ -1,8 +1,8 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-10-08",
-  "chain_note": "Product SCs codeHash unchanged (re-probed 8 Oct 2026, epoch 2256). Market isPayable=true, 0.0175 EGLD = 0.0075 fees + 0.01 bid on listing #2 (active, ASFT-a6273a-01 @ 0.25). Listing #1 inactive \u2014 UI must not buy id 1. Slot house 0.5 EGLD but isPayable=false so spinEgld EGLD is rejected. LIA trading remains paper. Treasury dest null. Do not use LEGACY_EMPTY placeholders.",
+  "updated": "2026-10-11",
+  "chain_note": "Product SCs codeHash unchanged (re-probed 11 Oct 2026, epoch 2259, refreshRate 600). Market isPayable=true, 0.0175 EGLD = 0.0075 fees + 0.01 bid on listing #2 (active, ASFT-a6273a-01 @ 0.25). Listing #1 inactive \u2014 UI must not buy id 1. Slot house 0.5 EGLD but isPayable=false so spinEgld is rejected. LIA ops 1.603782 EGLD nonce 1473, trading paper. EGLD $3.91. Treasury dest null. Do not use LEGACY_EMPTY placeholders.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -42,12 +42,14 @@
     "slot_casino": 0.5,
     "nft_marketplace": 0.0175,
     "others": 0,
-    "probed": "2026-10-08",
+    "probed": "2026-10-11",
     "slot_isPayable": false,
     "market_isPayable": true,
     "market_fees_egld": 0.0075,
     "lia_ops_egld": 1.603782,
-    "tro_stake_atomic": "3000000"
+    "tro_stake_atomic": "3000000",
+    "epoch": 2259,
+    "egld_usd": 3.91
   },
   "proofs": {
     "buyNft_egld_epoch_2250": 0.25,

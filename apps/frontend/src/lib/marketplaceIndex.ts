@@ -172,7 +172,7 @@ async function fetchOnChainListings(market: string): Promise<ListingRow[]> {
           chainListings = []
         }
         const activeRows: ListingRow[] = []
-        nfts.forEach((n, i) => {
+        nfts.forEach(n => {
           if (!n.identifier || n.balance === '0') return
           const fromTx = [...byId.values()].find(
             r => r.identifier === n.identifier || r.token === n.collection,
@@ -183,14 +183,11 @@ async function fetchOnChainListings(market: string): Promise<ListingRow[]> {
           const match =
             chainListings.find(l => l.active && l.token === token && l.nonce === nonce) ||
             chainListings.find(l => l.active && n.identifier!.startsWith(`${l.token}-`))
-          // Never guess listing 1 after a sale: id 1 is inactive, the relist is a later id.
-          let listingId = match?.id
-          if (listingId == null) {
-            const guess = fromTx?.listing_id ?? (nfts.length === 1 ? 1 : i + 1)
-            if (!soldIds.has(guess)) listingId = guess
-          }
-          if (listingId == null) return
-          if (!match && soldIds.has(listingId)) return
+          // Buy only with an id that getListing marks active. Never invent id 1:
+          // listing #1 is the sold row; the escrowed NFT is a later id.
+          if (!match) return
+          const listingId = match.id
+          if (soldIds.has(listingId)) return
           const thumb =
             n.url ||
             n.media?.[0]?.thumbnailUrl ||
@@ -203,8 +200,9 @@ async function fetchOnChainListings(market: string): Promise<ListingRow[]> {
             token_id: n.collection,
             nonce: n.nonce,
             name: n.name || n.identifier,
-            price: match?.priceAtomic || fromTx?.price,
-            price_egld: match?.priceEgld || fromTx?.price_egld || '0.25',
+            price: match.priceAtomic || fromTx?.price,
+            price_egld: match.priceEgld || fromTx?.price_egld || '0.25',
+            bid_egld: match.bidEgld,
             seller: fromTx?.seller,
             active: true,
             tx_list: fromTx?.tx_list,
@@ -219,11 +217,8 @@ async function fetchOnChainListings(market: string): Promise<ListingRow[]> {
     /* */
   }
 
-  // fallback: tx-derived rows not marked sold
-  const rows = [...byId.entries()]
-    .filter(([id]) => !soldIds.has(id))
-    .map(([id, r]) => ({ ...r, listing_id: r.listing_id ?? id }))
-  return rows
+  // Tx order is not a listing id. Without getListing, do not offer Buy.
+  return []
 }
 
 async function fetchStaticListings(): Promise<ListingRow[]> {

@@ -255,6 +255,11 @@ export default function MarketplacePage() {
                       id {l.listing_id != null ? asText(l.listing_id) : '—'}
                     </p>
                     <p className="text-sm text-cyan-200 tabular-nums">{asText(p)} EGLD</p>
+                    {l.bid_egld && Number(l.bid_egld) > 0 && (
+                      <p className="text-[10px] leading-snug text-amber-200/90">
+                        Bid locké {asText(l.bid_egld)} EGLD — le contrat rembourse le bidder si Buy
+                      </p>
+                    )}
                     <button
                       type="button"
                       className="btn-primary text-xs w-full"

@@ -12,6 +12,9 @@ export type OnChainListing = {
   priceEgld: string
   royaltyBps: number
   active: boolean
+  /** Locked bid, if getBid returns a non-zero amount. */
+  bidAtomic?: string
+  bidEgld?: string
 }
 
 function readU32(b: Uint8Array, i: number): number {
@@ -73,6 +76,25 @@ export function decodeListing(id: number, b64payload: string): OnChainListing | 
   }
 }
 
+/** getBid payload: 32-byte bidder + BigUint (u32 length + bytes). Zero amount = no bid. */
+export function decodeBid(b64payload: string): { bidAtomic: string; bidEgld: string } | null {
+  try {
+    const b = b64(b64payload)
+    if (b.length < 36) return null
+    const pl = readU32(b, 32)
+    if (pl === 0 || pl > 32 || 36 + pl > b.length) return null
+    const amount = readBig(b, 36, pl)
+    if (amount === 0n) return null
+    const egld = Number(amount) / 1e18
+    return {
+      bidAtomic: amount.toString(),
+      bidEgld: Number.isFinite(egld) ? String(egld) : '0',
+    }
+  } catch {
+    return null
+  }
+}
+
 async function querySc(address: string, funcName: string, args: string[]): Promise<string | null> {
   const r = await fetch(`${API}/query`, {
     method: 'POST',
@@ -100,6 +122,14 @@ export async function fetchOnChainMarketListings(
     if (!payload) break
     const row = decodeListing(id, payload)
     if (!row) break
+    if (row.active) {
+      const bidPayload = await querySc(address, 'getBid', [arg])
+      const bid = bidPayload ? decodeBid(bidPayload) : null
+      if (bid) {
+        row.bidAtomic = bid.bidAtomic
+        row.bidEgld = bid.bidEgld
+      }
+    }
     out.push(row)
   }
   return out

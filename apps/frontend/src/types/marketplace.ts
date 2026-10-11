@@ -7,6 +7,8 @@ export type ListingRow = {
   name?: string
   price?: string
   price_egld?: string
+  /** Non-zero locked bid on this listing (human EGLD). */
+  bid_egld?: string
   seller?: string
   active?: boolean
   tx_list?: string
