@@ -42,3 +42,10 @@ export const PITCH_DEMO = {
   sentiment: 0.12,
   note: 'Données démo pitch — non live',
 } as const
+
+/** Profil galerie d'exemple pour démo B2B (UI only). */
+export const PITCH_GALLERY = {
+  name: 'Galerie Partenaire — Collection RWA',
+  blurb: 'Sélection phygital & œuvres tokenisées — parcours escrow Phase 2.',
+  highlights: ['CoA / CoP paper', 'Metadata on-chain', 'Market art'],
+} as const

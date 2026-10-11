@@ -126,7 +126,7 @@ export default function Header() {
         </div>
         {pitch && (
           <div className="border-t border-amber-400/20 bg-amber-500/10 px-3 py-1 text-center text-[10px] text-amber-100/90">
-            Mode Pitch actif — logs techniques masqués · métriques démo
+            Mode Pitch · Galerie Partenaire — Collection RWA · logs techniques masqués
           </div>
         )}
       </header>
