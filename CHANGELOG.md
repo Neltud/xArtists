@@ -1,5 +1,56 @@
 # Changelog — xArtists
 
+## [0.100.0](https://github.com/Neltud/xArtists/compare/v0.99.0...v0.100.0) (2026-10-11)
+
+
+### Features
+
+* **3d:** HomeMenuHall loader text + data-xartists-3d canvas attr ([1339765](https://github.com/Neltud/xArtists/commit/1339765a68edd910d2bc015e185eeb7a86756fe2))
+* **3d:** restore full HomeMenuHall neon hall + institutional loader ([0337015](https://github.com/Neltud/xArtists/commit/03370158e68df5fed9d2767f9b21b8317b999e24))
+* **b2b:** CheckoutModal glass purple + 44px close + FC badge ([5212fcc](https://github.com/Neltud/xArtists/commit/5212fccdb5dcaa56e445b439e58e9e94ac3c6c92))
+* **b2b:** Finance Computer API badge component ([efbae05](https://github.com/Neltud/xArtists/commit/efbae059d183d97b8120649e5e3fe7fa331eb90a))
+* **b2b:** Finance Computer badge on DeFi command panel ([8b856d6](https://github.com/Neltud/xArtists/commit/8b856d6b3bc18ca2239f932ceb4b61f04d4a0743))
+* **b2b:** Finance Computer badge on TroLiquidityPanel ([cb67c8b](https://github.com/Neltud/xArtists/commit/cb67c8bfab8f725c48b18fbbd97bf9178e9937b0))
+* **cc:** deep-link ?room=, tryEnterRoom, guest CTA xPortal, room banner ([168f0e5](https://github.com/Neltud/xArtists/commit/168f0e592c717b26b514ff267198f84b2601861c))
+* **demo:** pitch gallery profile, museum dispose+loader, home 3D tag ([1c18ec3](https://github.com/Neltud/xArtists/commit/1c18ec333c811414618cbaffcc59e5e7d30de90c))
+* **demo:** pitch metrics rail/liquidity, RWA partner card, modal touch close ([a8ff965](https://github.com/Neltud/xArtists/commit/a8ff965d77cfc6ed1adeec1eddb0ef3c0fa72361))
+* **demo:** TroLiquidity pitch block, RWA gallery card, Login/Access glass+44px ([1eea0b3](https://github.com/Neltud/xArtists/commit/1eea0b36c1bff2378dce6c3aca01a98f5ef98e83))
+* **home:** glass loader while 3D hall boots (sceneReady) ([c3fa259](https://github.com/Neltud/xArtists/commit/c3fa259df4139bb52271b602cc82d7d190b9550c))
+* **home:** neon panel textures, holo beams, wireframe dome ([99b5a38](https://github.com/Neltud/xArtists/commit/99b5a387272123065a1e455478024bcddcb671ae))
+* **home:** stardust particles under holographic door beams ([fd7d5a8](https://github.com/Neltud/xArtists/commit/fd7d5a83b3fbe14f86190be08a55cdab21ed2a21))
+* **packs:** explicit guest lock UX for Pulse/Yield/Sentinel rooms ([b5341be](https://github.com/Neltud/xArtists/commit/b5341bef8d5d299ad3f1b2350eba3c43d29d4cb7))
+* **packs:** MyPacks guest lock cards + on-chain vs aperçu labels ([a61532f](https://github.com/Neltud/xArtists/commit/a61532f27da3b651a38f4d3c5187ab7f7d6281a8))
+* **phygital:** glass shell + CTAs My Packs / Command after CoA ([47d515a](https://github.com/Neltud/xArtists/commit/47d515af0f3b4198d82b2f81fae05d633cde4e40))
+* **rwa:** polish RWA strip cards, badges, Studio CTA ([0f95c0a](https://github.com/Neltud/xArtists/commit/0f95c0ac7a74fac741454fe9b43103ef02d61b27))
+* **studio:** wire PhysicalNftCertifier (phygital CoA/CoP section) ([bf42ab3](https://github.com/Neltud/xArtists/commit/bf42ab3786cc65e2a3100af0aa3c8610eb8aa2b4))
+* **ui:** LoginModal glass panel + 44px close ([f1941d4](https://github.com/Neltud/xArtists/commit/f1941d4ebbdef4ea915b85de6c4df0807af04c3b))
+* **ui:** Mode Pitch toggle, modal glass CSS, webgl-paused touch isolation ([0e7a40e](https://github.com/Neltud/xArtists/commit/0e7a40e20b48ab76a639ce0e7a8c606970793756))
+* **ui:** unified modal glass, 44px close util, pitch/webgl body classes ([55e4644](https://github.com/Neltud/xArtists/commit/55e46448a9dfae81ade577dfe87370e9818ac901))
+* **ux:** LivePriceRail LS cache + HomeMenuHall glass loader while scene boots ([a4eaed0](https://github.com/Neltud/xArtists/commit/a4eaed0e5d3444a52c6125f0683721e305c40e47))
+* **ux:** OnRamp glass polish + Physical certifier CTAs My Packs / Command ([9a106c0](https://github.com/Neltud/xArtists/commit/9a106c0156415812b84e092d9fb77ed5a60f53d8))
+
+
+### Bug Fixes
+
+* **3d:** restore HomeMenuHall + loader + canvas attr ([4fa9766](https://github.com/Neltud/xArtists/commit/4fa9766f77cb2f36b820f17d37d8c84c33898e03))
+* **checkout:** restore modal + B2B glass, 44px close, FC badge ([7a35669](https://github.com/Neltud/xArtists/commit/7a35669a1ba27a06fa30943ac95465bb5dc7aa4d))
+* **defi:** correct Pitch demo JSX in TroLiquidityPanel ([18f2c15](https://github.com/Neltud/xArtists/commit/18f2c1501c3e3b8057fd4e8a0df49faccb14a642))
+* **defi:** Pitch demo line uses valid JSX expressions ([cee1179](https://github.com/Neltud/xArtists/commit/cee11798d1a67b446b5996ff0971982f3cb32c9b))
+* **defi:** Pitch TVL line without invalid template literal ([45d5667](https://github.com/Neltud/xArtists/commit/45d5667ca9e7236a8da23be54c97e82e7cc17cf8))
+* **defi:** restore DeFiCommandPanel full source + FC badge ([7dad3c4](https://github.com/Neltud/xArtists/commit/7dad3c42920b75263d0ddd706fb7201e276fc31f))
+* **defi:** restore full DeFiCommandPanel + Finance Computer badge ([dee8e8e](https://github.com/Neltud/xArtists/commit/dee8e8e8681060cab770fdfa97602b068ca867eb))
+* **defi:** restore TroLiquidityPanel + FC badge (farms API shape) ([3c4afd9](https://github.com/Neltud/xArtists/commit/3c4afd966894268520b9bb6fbebf31801e07c4cf))
+* **holders:** localStorage cache TTL 300s + 429 handling ([b2b9513](https://github.com/Neltud/xArtists/commit/b2b9513fff692a84be274820caaf39d90e88e3f4))
+* **home:** restore full HomeMenuHall from a4eaed0 ([27b1d73](https://github.com/Neltud/xArtists/commit/27b1d733af4f5dc763ab3681ed4288215f51b93a))
+* **home:** restore HomeMenuHall + sceneReady glass loader ([3d06c6e](https://github.com/Neltud/xArtists/commit/3d06c6e0a4d620b3b3aa6d9c02f79c0beb1f9092))
+* **home:** restore HomeMenuHall neon hall (recover from truncated push) ([49313e5](https://github.com/Neltud/xArtists/commit/49313e598add78e3846b4a77df55c7599ed6a348))
+* **museum:** isolate canvas touch when dossier open + glass 3D loader ([1c2fe13](https://github.com/Neltud/xArtists/commit/1c2fe13ac727e75e24e2f338b1b57c169b8dc0e9))
+* **museum:** restore full WebGL hall + dispose + loader ([a8d7683](https://github.com/Neltud/xArtists/commit/a8d7683f3ea57999387c6c52f9c4fb9cdf9761a9))
+* **museum:** restore hall + modal touch isolation + glass loader ([5c79251](https://github.com/Neltud/xArtists/commit/5c792518c4693682b5bcced4f234ab3729b32054))
+* **museum:** VRAM dispose on unmount, 3D loader text, canvas data attr ([0fc66b9](https://github.com/Neltud/xArtists/commit/0fc66b9fe1744c202fee01ef3a4b74ee160c739e))
+* **price:** localStorage cache TTL 300s on 429/timeout ([64f7bf4](https://github.com/Neltud/xArtists/commit/64f7bf4733eef1a696fdc64b7b66980336f0f936))
+* **ux:** modal vs canvas touch isolation, price/holder LS cache 300s, 3D glass loader ([1e52a0a](https://github.com/Neltud/xArtists/commit/1e52a0a702ba9a787539725300772a84b8e6b544))
+
 ## [0.99.0](https://github.com/Neltud/xArtists/compare/v0.98.0...v0.99.0) (2026-10-11)
 
 
