@@ -1,4 +1,4 @@
-/** Creator Studio — existing collections menu + issue + mint + list. */
+/** Creator Studio — collections + mint + list + certification phygital. */
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
@@ -7,6 +7,7 @@ import { useStudioMintTx } from '../hooks/useStudioMintTx'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { canListBuyNft, canBuyAgent } from '../config/scStatus'
 import PackCheckout from '../components/PackCheckout'
+import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
 import { useToast } from '../components/ui/Toast'
 import { asText } from '../lib/safeRender'
 import { saveStudioCollection } from '../lib/studioOnChainMint'
@@ -25,7 +26,6 @@ export default function StudioPage() {
   const mint = useStudioMintTx()
   const { push } = useToast()
 
-  /** Unique collections already owned by the wallet */
   const ownedCollections = useMemo(() => {
     const map = new Map<string, { id: string; count: number; sampleName: string }>()
     for (const n of nfts) {
@@ -116,7 +116,6 @@ export default function StudioPage() {
         </p>
       </header>
 
-      {/* Existing collections — scrolling menu */}
       <section className="card space-y-3">
         <h2 className="text-sm font-semibold text-white">
           Mes collections ({ownedCollections.length})
@@ -202,7 +201,8 @@ export default function StudioPage() {
           </button>
         </div>
         <p className="text-[11px] text-zinc-600">
-          Après issue : récupère le token id sur l’explorer (TICKER-xxxxxx), colle-le ci-dessus, puis rôle + mint.
+          Après issue : récupère le token id sur l’explorer (TICKER-xxxxxx), colle-le ci-dessus, puis rôle +
+          mint.
         </p>
       </section>
 
@@ -272,6 +272,15 @@ export default function StudioPage() {
             Mes salles
           </Link>
         </div>
+      </section>
+
+      <section className="card space-y-3 border border-fuchsia-500/20 bg-fuchsia-500/[0.04]">
+        <h2 className="text-sm font-semibold text-white">Certification Phygital</h2>
+        <p className="text-[12px] text-zinc-500 leading-relaxed">
+          Photo HD → hash SHA-256 local → certificats CoA / CoP. Réévaluation future via intention LIA
+          <code className="text-[9px] text-zinc-400"> PHYGITAL_REEVAL</code>.
+        </p>
+        <PhysicalNftCertifier />
       </section>
 
       <section className="card space-y-3">
