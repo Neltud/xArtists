@@ -1,21 +1,58 @@
 /**
  * Overlay HTML 2D — EGLD USD · $TRO Spot USD · Ratio réserve (1 EGLD = X $TRO).
- * Jamais « $TRO 0.51 EGLD » comme prix unitaire trompeur.
  * Badge LIVE → STALE si lastUpdated > 300s.
+ * Cache localStorage pour survivre aux 429 / timeouts.
  */
 import { useEffect, useState } from 'react'
 
-/** Identifiants $TRO connus (API MultiversX) */
 const TRO_IDS = ['TRO-94c925', 'TRO-3bc587']
-
-/** Données considérées STALE après 5 minutes sans fetch réussi */
 const STALE_MS = 300_000
+const CACHE_KEY = 'xartists_live_price_rail_v1'
+
+type PriceCache = { egld: number | null; tro: number | null; ts: number }
+
+function readCache(): PriceCache | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY)
+    if (!raw) return null
+    const j = JSON.parse(raw) as PriceCache
+    if (!j || typeof j.ts !== 'number') return null
+    return j
+  } catch {
+    return null
+  }
+}
+
+function writeCache(egld: number | null, tro: number | null) {
+  try {
+    if (egld == null && tro == null) return
+    localStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({ egld, tro, ts: Date.now() } satisfies PriceCache),
+    )
+  } catch {
+    /* */
+  }
+}
+
+function fmtTroSpot(n: number | null): string {
+  if (n == null || !Number.isFinite(n)) return '…'
+  if (n >= 1) return `$${n.toFixed(3)}`
+  if (n >= 0.01) return `$${n.toFixed(4)}`
+  return `$${n.toFixed(6)}`
+}
+
+function fmtRatio(n: number): string {
+  if (n >= 1000) return n.toFixed(0)
+  if (n >= 10) return n.toFixed(1)
+  return n.toFixed(2)
+}
 
 export default function LivePriceRail() {
-  const [egldUsd, setEgldUsd] = useState<number | null>(null)
-  const [troUsd, setTroUsd] = useState<number | null>(null)
-  /** Epoch ms du dernier fetch réussi (au moins un prix) */
-  const [lastUpdatedTimestamp, setLastUpdatedTimestamp] = useState<number | null>(null)
+  const boot = readCache()
+  const [egldUsd, setEgldUsd] = useState<number | null>(boot?.egld ?? null)
+  const [troUsd, setTroUsd] = useState<number | null>(boot?.tro ?? null)
+  const [lastUpdatedTimestamp, setLastUpdatedTimestamp] = useState<number | null>(boot?.ts ?? null)
   const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
@@ -24,9 +61,11 @@ export default function LivePriceRail() {
       let e: number | null = null
       try {
         const r = await fetch('https://api.multiversx.com/economics', { cache: 'no-store' })
+        if (r.status === 429) throw new Error('429')
         if (r.ok) {
           const j = await r.json()
-          e = Number(j.price) || null
+          const p = Number(j.price)
+          if (Number.isFinite(p) && p > 0) e = p
         }
       } catch {
         /* */
@@ -34,12 +73,16 @@ export default function LivePriceRail() {
       if (e == null) {
         try {
           const r = await fetch(
-            'https://api.coingecko.com/api/v3/simple/price?ids=elrond-erd-2&vs_currencies=usd',
+            'https://api.coingecko.com/api/v3/simple/price?ids=elrond-erd-2,multiversx&vs_currencies=usd',
             { cache: 'no-store' },
           )
           if (r.ok) {
             const j = await r.json()
-            e = Number(j['elrond-erd-2']?.usd) || null
+            e =
+              Number(j['elrond-erd-2']?.usd) ||
+              Number(j.multiversx?.usd) ||
+              null
+            if (e != null && !(e > 0)) e = null
           }
         } catch {
           /* */
@@ -50,6 +93,7 @@ export default function LivePriceRail() {
       for (const id of TRO_IDS) {
         try {
           const r = await fetch(`https://api.multiversx.com/tokens/${id}`, { cache: 'no-store' })
+          if (r.status === 429) break
           if (!r.ok) continue
           const j = await r.json()
           const price = Number(j.price)
@@ -58,18 +102,30 @@ export default function LivePriceRail() {
             break
           }
         } catch {
-          /* next id */
+          /* next */
         }
       }
 
-      if (!c) {
-        setEgldUsd(e)
-        setTroUsd(tro)
-        if (e != null || tro != null) {
-          setLastUpdatedTimestamp(Date.now())
+      if (c) return
+
+      if (e == null && tro == null) {
+        const cached = readCache()
+        if (cached) {
+          setEgldUsd(cached.egld)
+          setTroUsd(cached.tro)
+          setLastUpdatedTimestamp(cached.ts)
         }
         setNow(Date.now())
+        return
       }
+
+      const nextE = e ?? readCache()?.egld ?? null
+      const nextT = tro ?? readCache()?.tro ?? null
+      setEgldUsd(nextE)
+      setTroUsd(nextT)
+      writeCache(nextE, nextT)
+      setLastUpdatedTimestamp(Date.now())
+      setNow(Date.now())
     }
     void run()
     const id = window.setInterval(() => void run(), 30_000)
@@ -81,29 +137,12 @@ export default function LivePriceRail() {
     }
   }, [])
 
-  const ageMs =
-    lastUpdatedTimestamp != null ? now - lastUpdatedTimestamp : Number.POSITIVE_INFINITY
-  const isStale = lastUpdatedTimestamp == null || ageMs > STALE_MS
-  const isLive = lastUpdatedTimestamp != null && !isStale
+  const ageMs = lastUpdatedTimestamp != null ? now - lastUpdatedTimestamp : null
+  const isStale = ageMs == null || ageMs > STALE_MS
+  const isLive = !isStale
 
-  /** Ratio réserve : combien de $TRO pour 1 EGLD (pas un prix unitaire $TRO) */
   const troPerEgld =
     egldUsd != null && troUsd != null && troUsd > 0 ? egldUsd / troUsd : null
-
-  const fmtTroSpot = (v: number | null) => {
-    if (v == null) return '…'
-    if (v < 0.01) return `$${v.toFixed(6)}`
-    if (v < 1) return `$${v.toFixed(4)}`
-    return `$${v.toFixed(2)}`
-  }
-
-  const fmtRatio = (v: number | null) => {
-    if (v == null) return '—'
-    if (v >= 1000) return v.toLocaleString('en-US', { maximumFractionDigits: 0 })
-    if (v >= 10) return v.toFixed(2)
-    if (v >= 1) return v.toFixed(3)
-    return v.toExponential(2)
-  }
 
   const utcLabel =
     lastUpdatedTimestamp != null
@@ -113,8 +152,8 @@ export default function LivePriceRail() {
   const rows = [
     {
       k: 'EGLD',
-      sub: 'Spot USD',
-      v: egldUsd != null ? `$${egldUsd.toFixed(2)}` : '…',
+      sub: 'USD',
+      v: egldUsd != null && Number.isFinite(egldUsd) ? `$${egldUsd.toFixed(2)}` : '…',
       accent: 'text-cyan-200',
     },
     {
@@ -155,7 +194,7 @@ export default function LivePriceRail() {
               title={
                 lastUpdatedTimestamp == null
                   ? 'Aucun fetch réussi'
-                  : `Dernière MAJ il y a ${Math.round(ageMs / 1000)}s (>${STALE_MS / 1000}s)`
+                  : `Dernière MAJ il y a ${Math.round((ageMs || 0) / 1000)}s (>${STALE_MS / 1000}s)`
               }
             >
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden />
@@ -179,7 +218,7 @@ export default function LivePriceRail() {
           </div>
         ))}
         <p className="text-[8px] text-zinc-600 mt-auto leading-tight">
-          Spot ≠ ratio · API publiques · pas un conseil
+          Spot ≠ ratio · API publiques · cache 5 min
         </p>
       </div>
     </div>
