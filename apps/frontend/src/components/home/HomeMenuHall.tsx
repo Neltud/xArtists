@@ -1,6 +1,7 @@
 /**
  * Accueil 360° — galerie néon cyberpunk + résilience WebGL (context loss).
  * Mobile-safe: pixelRatio ≤ 1.25, pause onglet caché, fallback grille HTML.
+ * Portes canvas néon + faisceaux holographiques + dôme filaire.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -14,19 +15,105 @@ type Exhibit = {
   path: string
   color: number
   neon: number
-  glyph: 'museum' | 'market' | 'slot' | 'packs' | 'command' | 'lia' | 'stake' | 'studio'
 }
 
 const EXHIBITS: Exhibit[] = [
-  { id: 'museum', label: 'Musée', sub: 'Galerie 3D', path: '/museum', color: 0xffd700, neon: 0xffd700, glyph: 'museum' },
-  { id: 'market', label: 'Marché', sub: 'NFT · RWA', path: '/marketplace', color: 0x00f3ff, neon: 0x00f3ff, glyph: 'market' },
-  { id: 'slot', label: 'Slot', sub: 'EGLD', path: '/slot', color: 0xff007f, neon: 0xff007f, glyph: 'slot' },
-  { id: 'packs', label: 'Packs', sub: 'Pulse complet', path: '/agents', color: 0x00f3ff, neon: 0x22d3ee, glyph: 'packs' },
-  { id: 'cc', label: 'Command', sub: 'Hub holo', path: '/command-center', color: 0xa855f7, neon: 0xc084fc, glyph: 'command' },
-  { id: 'lia', label: 'LIA', sub: 'Signaux IA', path: '/lia', color: 0x00f3ff, neon: 0x60a5fa, glyph: 'lia' },
-  { id: 'stake', label: 'Staking', sub: '$TRO', path: '/staking', color: 0xffd700, neon: 0x4ade80, glyph: 'stake' },
-  { id: 'studio', label: 'Studio', sub: 'Phygital NFT', path: '/studio', color: 0xff007f, neon: 0xf472b6, glyph: 'studio' },
+  { id: 'museum', label: 'Musée', sub: 'Galerie 3D', path: '/museum', color: 0xffd700, neon: 0xffd700 },
+  { id: 'market', label: 'Marché', sub: 'NFT · RWA', path: '/marketplace', color: 0x00f3ff, neon: 0x00f3ff },
+  { id: 'slot', label: 'Slot', sub: 'EGLD', path: '/slot', color: 0xff007f, neon: 0xff007f },
+  { id: 'packs', label: 'Packs', sub: 'Pulse complet', path: '/agents', color: 0x00f3ff, neon: 0x22d3ee },
+  { id: 'cc', label: 'Command', sub: 'Hub holo', path: '/command-center', color: 0xa855f7, neon: 0xc084fc },
+  { id: 'lia', label: 'LIA', sub: 'Signaux IA', path: '/lia', color: 0x00f3ff, neon: 0x60a5fa },
+  { id: 'stake', label: 'Staking', sub: '$TRO', path: '/staking', color: 0xffd700, neon: 0x4ade80 },
+  { id: 'studio', label: 'Studio', sub: 'Phygital NFT', path: '/studio', color: 0xff007f, neon: 0xf472b6 },
 ]
+
+/** Texture canvas — cadre néon + label + CTA */
+function paintPanel(ex: Exhibit, index: number): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas')
+  canvas.width = 512
+  canvas.height = 640
+  const ctx = canvas.getContext('2d')!
+  const hex = `#${ex.neon.toString(16).padStart(6, '0')}`
+  const frames = ['#ffd700', '#00f3ff', '#ff007f', '#c084fc']
+  const outer = frames[index % frames.length]
+
+  const g = ctx.createLinearGradient(0, 0, 0, 640)
+  g.addColorStop(0, '#0c0818')
+  g.addColorStop(0.5, '#06040e')
+  g.addColorStop(1, '#020208')
+  ctx.fillStyle = g
+  ctx.fillRect(0, 0, 512, 640)
+
+  const cx = 256
+  const cy = 220
+  for (let o = 0; o < 5; o++) {
+    const ox = cx + Math.cos(index + o * 1.2) * (30 + o * 14)
+    const oy = cy + Math.sin(index * 0.7 + o) * (22 + o * 10)
+    const or = 70 - o * 10
+    const og = ctx.createRadialGradient(ox, oy, 2, ox, oy, or)
+    og.addColorStop(0, hex + 'cc')
+    og.addColorStop(0.5, hex + '44')
+    og.addColorStop(1, 'transparent')
+    ctx.fillStyle = og
+    ctx.beginPath()
+    ctx.arc(ox, oy, or, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  ctx.save()
+  ctx.globalCompositeOperation = 'lighter'
+  for (let k = 0; k < 5; k++) {
+    ctx.strokeStyle = hex
+    ctx.lineWidth = 2 + k * 0.5
+    ctx.globalAlpha = 0.25 + k * 0.06
+    ctx.beginPath()
+    const base = cy + Math.sin(index + k) * 16
+    ctx.moveTo(60, base)
+    for (let x = 60; x <= 452; x += 12) {
+      ctx.lineTo(x, base + Math.sin(x * 0.02 + index + k) * (20 + k * 5))
+    }
+    ctx.stroke()
+  }
+  ctx.restore()
+
+  ctx.shadowColor = outer
+  ctx.shadowBlur = 22
+  ctx.strokeStyle = outer
+  ctx.lineWidth = 10
+  ctx.strokeRect(18, 18, 476, 604)
+  ctx.shadowBlur = 10
+  ctx.strokeStyle = hex
+  ctx.lineWidth = 4
+  ctx.strokeRect(32, 32, 448, 576)
+  ctx.shadowBlur = 0
+
+  ctx.fillStyle = '#fafafa'
+  ctx.font = 'bold 42px system-ui,sans-serif'
+  ctx.textAlign = 'center'
+  ctx.shadowColor = hex
+  ctx.shadowBlur = 8
+  ctx.fillText(ex.label, 256, 400)
+  ctx.shadowBlur = 0
+  ctx.fillStyle = '#a1a1aa'
+  ctx.font = '22px system-ui'
+  ctx.fillText(ex.sub, 256, 438)
+
+  ctx.fillStyle = hex + '33'
+  ctx.beginPath()
+  ctx.roundRect(140, 480, 232, 48, 24)
+  ctx.fill()
+  ctx.strokeStyle = hex
+  ctx.lineWidth = 2
+  ctx.stroke()
+  ctx.fillStyle = '#fff'
+  ctx.font = 'bold 18px system-ui'
+  ctx.fillText('ENTRER  →', 256, 510)
+
+  const tex = new THREE.CanvasTexture(canvas)
+  tex.colorSpace = THREE.SRGBColorSpace
+  tex.anisotropy = 4
+  return tex
+}
 
 function FallbackGrid() {
   return (
@@ -108,7 +195,10 @@ function HomeMenuHallCanvas({ onFatal }: { onFatal: () => void }) {
     try {
       const isMobile = (host.clientWidth || 400) < 640
       const w = Math.max(300, host.clientWidth || 400)
-      const h = Math.max(isMobile ? 440 : 500, Math.min(isMobile ? 560 : 740, Math.floor(w * (isMobile ? 1.05 : 1.1))))
+      const h = Math.max(
+        isMobile ? 440 : 500,
+        Math.min(isMobile ? 560 : 740, Math.floor(w * (isMobile ? 1.05 : 1.1))),
+      )
 
       const scene = new THREE.Scene()
       scene.background = new THREE.Color(0x000000)
@@ -168,20 +258,47 @@ function HomeMenuHallCanvas({ onFatal }: { onFatal: () => void }) {
       grid.position.y = 0.015
       const gridMat = grid.material as THREE.LineBasicMaterial | THREE.LineBasicMaterial[]
       if (Array.isArray(gridMat)) gridMat.forEach(m => { m.transparent = true; m.opacity = 0.85 })
-      else { gridMat.transparent = true; gridMat.opacity = 0.85 }
+      else {
+        gridMat.transparent = true
+        gridMat.opacity = 0.85
+      }
       scene.add(grid)
 
+      const domeGeo = new THREE.SphereGeometry(
+        11,
+        isMobile ? 16 : 24,
+        isMobile ? 10 : 14,
+        0,
+        Math.PI * 2,
+        0,
+        Math.PI * 0.5,
+      )
+      const domeMat = new THREE.MeshBasicMaterial({
+        color: 0xa855f7,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.38,
+      })
+      const dome = new THREE.Mesh(domeGeo, domeMat)
+      dome.position.y = 0.05
+      scene.add(dome)
+      disposables.push(domeGeo, domeMat)
+
       const panels: THREE.Mesh[] = []
+      const beams: THREE.Mesh[] = []
       const n = EXHIBITS.length
       const radius = 5.0
 
       EXHIBITS.forEach((ex, i) => {
+        const tex = paintPanel(ex, i)
         const mat = new THREE.MeshStandardMaterial({
-          color: 0x111118,
+          map: tex,
           emissive: new THREE.Color(ex.neon),
-          emissiveIntensity: 1.15,
-          roughness: 0.22,
-          metalness: 0.55,
+          emissiveIntensity: 0.55,
+          roughness: 0.2,
+          metalness: 0.45,
+          transparent: true,
+          opacity: 0.97,
         })
         const geo = new THREE.PlaneGeometry(2.15, 2.7)
         const mesh = new THREE.Mesh(geo, mat)
@@ -192,38 +309,29 @@ function HomeMenuHallCanvas({ onFatal }: { onFatal: () => void }) {
         mesh.lookAt(0, 1.55, 0)
         mesh.userData.path = ex.path
         mesh.userData.baseY = 1.55
-        mesh.userData.label = ex.label
         scene.add(mesh)
         panels.push(mesh)
-        disposables.push(geo, mat)
+        disposables.push(geo, mat, tex)
 
-        const pl = new THREE.PointLight(ex.neon, 1.6, 8)
-        pl.position.set(px * 0.7, 1.9, pz * 0.7)
+        const pl = new THREE.PointLight(ex.neon, 1.5, 8)
+        pl.position.set(px * 0.72, 1.9, pz * 0.72)
         scene.add(pl)
 
-        // label sprite
-        const c = document.createElement('canvas')
-        c.width = 512
-        c.height = 128
-        const ctx = c.getContext('2d')!
-        ctx.fillStyle = 'rgba(0,0,0,0.55)'
-        ctx.roundRect(40, 24, 432, 80, 16)
-        ctx.fill()
-        ctx.strokeStyle = `#${ex.neon.toString(16).padStart(6, '0')}`
-        ctx.lineWidth = 3
-        ctx.stroke()
-        ctx.fillStyle = '#fff'
-        ctx.font = 'bold 36px system-ui'
-        ctx.textAlign = 'center'
-        ctx.fillText(ex.label, 256, 74)
-        const tex = new THREE.CanvasTexture(c)
-        tex.colorSpace = THREE.SRGBColorSpace
-        const sm = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false })
-        const sprite = new THREE.Sprite(sm)
-        sprite.position.set(px, 3.1, pz)
-        sprite.scale.set(1.8, 0.45, 1)
-        scene.add(sprite)
-        disposables.push(tex, sm)
+        const beamGeo = new THREE.ConeGeometry(0.65, 1.7, isMobile ? 10 : 14, 1, true)
+        const beamMat = new THREE.MeshBasicMaterial({
+          color: ex.neon,
+          transparent: true,
+          opacity: 0.26,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        })
+        const beam = new THREE.Mesh(beamGeo, beamMat)
+        beam.position.set(px, 0.85, pz)
+        beam.rotation.x = Math.PI
+        scene.add(beam)
+        beams.push(beam)
+        disposables.push(beamGeo, beamMat)
       })
 
       const raycaster = new THREE.Raycaster()
@@ -291,6 +399,11 @@ function HomeMenuHallCanvas({ onFatal }: { onFatal: () => void }) {
           panels.forEach((p, i) => {
             p.position.y = (p.userData.baseY as number) + Math.sin(t * 0.9 + i * 0.5) * 0.1
           })
+          beams.forEach((b, i) => {
+            const m = b.material as THREE.MeshBasicMaterial
+            m.opacity = 0.18 + Math.sin(t * 1.6 + i) * 0.1
+          })
+          dome.rotation.y = t * 0.04
           renderer.render(scene, camera)
         } catch {
           /* frame skip */
@@ -336,7 +449,9 @@ function HomeMenuHallCanvas({ onFatal }: { onFatal: () => void }) {
       {!sceneReady && !contextLost && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/50 backdrop-blur-md border border-white/5">
           <div className="h-9 w-9 rounded-full border-2 border-fuchsia-400/30 border-t-cyan-300 animate-spin" />
-          <p className="text-[12px] text-cyan-100/85 font-medium tracking-wide">Chargement de la galerie 3D…</p>
+          <p className="text-[12px] text-cyan-100/85 font-medium tracking-wide">
+            Chargement de la galerie 3D…
+          </p>
         </div>
       )}
       {contextLost && (
