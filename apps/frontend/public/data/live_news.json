@@ -1,42 +1,42 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-11T12:10:00.680Z",
+  "updatedAt": "2026-10-11T19:21:14.558Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1791720600181",
-      "timestamp": "12:10",
+      "id": "egld-1791746473954",
+      "timestamp": "19:21",
       "source": "EGLD",
-      "title": "Cotation publique · $3.91 (API MultiversX economics)",
+      "title": "Cotation publique · $3.98 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1791714164000",
-      "timestamp": "10:22",
+      "id": "rss-CoinTelegraph-0-1791722700000",
+      "timestamp": "12:45",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791714720000",
+      "timestamp": "10:32",
       "source": "CoinTelegraph",
       "title": "Coldcard says it’s investigating how phishing link appeared on its X account",
       "link": "https://cointelegraph.com/news/coldcard-says-its-investigating-how-phishing-link-appeared-on-its-x-account?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1791709311000",
-      "timestamp": "09:01",
+      "id": "rss-CoinTelegraph-2-1791709500000",
+      "timestamp": "09:05",
       "source": "CoinTelegraph",
-      "title": "Ledger confirms unauthorized hardware implant; losses may exceed $86M",
+      "title": "Ledger confirms unauthorized hardware implant, says losses may exceed $86M",
       "link": "https://cointelegraph.com/news/ledger-confirms-unauthorized-hardware-implant-losses-may-exceed-86m?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1791704691000",
-      "timestamp": "07:44",
+      "id": "rss-CoinTelegraph-3-1791705000000",
+      "timestamp": "07:50",
       "source": "CoinTelegraph",
       "title": "CFTC proposals aimed at separating prediction markets from casino gambling",
       "link": "https://cointelegraph.com/news/cftc-proposals-aimed-at-separating-prediction-markets-from-casino-gambling?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1791635400000",
-      "timestamp": "12:30",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-4-1791633134000",
@@ -46,18 +46,53 @@
       "link": "https://cointelegraph.com/news/justin-sun-says-trons-post-quantum-cryptography-has-gone-live-on-testnet?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-5-1791621666000",
-      "timestamp": "08:41",
+      "id": "rss-CoinTelegraph-5-1791621900000",
+      "timestamp": "08:45",
       "source": "CoinTelegraph",
       "title": "Tech chief says EU can fend off rogue AI risk: Report",
       "link": "https://cointelegraph.com/news/tech-chief-says-eu-can-fend-off-rogue-ai-risk-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinDesk-0-1791633600000",
+      "id": "rss-CoinDesk-0-1791734400000",
+      "timestamp": "16:00",
+      "source": "CoinDesk",
+      "title": "Clarity's failure could speed crypto innovation while shielding incumbents",
+      "link": "https://www.coindesk.com/policy/2026/10/11/clarity-s-failure-could-speed-crypto-innovation-while-shielding-incumbents"
+    },
+    {
+      "id": "rss-CoinDesk-1-1791733247000",
+      "timestamp": "15:40",
+      "source": "CoinDesk",
+      "title": "President Trump declares 'energy ceasefire' between Russia and Ukraine",
+      "link": "https://www.coindesk.com/markets/2026/10/11/president-trump-declares-energy-ceasefire-between-russia-and-ukraine"
+    },
+    {
+      "id": "rss-CoinDesk-2-1791723600000",
+      "timestamp": "13:00",
+      "source": "CoinDesk",
+      "title": "IMF finds demand for tokenized stocks, says the market is still volatile, illiquid",
+      "link": "https://www.coindesk.com/business/2026/10/11/imf-finds-demand-for-tokenized-stocks-says-the-market-is-still-volatile-illiquid"
+    },
+    {
+      "id": "rss-CoinDesk-3-1791633600000",
       "timestamp": "12:00",
       "source": "CoinDesk",
       "title": "One year after 10/10 flash crash, bitcoin and ether liquidity have rebuilt, but altcoins still face risks",
       "link": "https://www.coindesk.com/markets/2026/10/10/one-year-after-10-10-bitcoin-and-ether-liquidity-have-rebuilt-but-other-altcoins-still-face-risks"
+    },
+    {
+      "id": "egld-1791720600181",
+      "timestamp": "12:10",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.91 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791709311000",
+      "timestamp": "09:01",
+      "source": "CoinTelegraph",
+      "title": "Ledger confirms unauthorized hardware implant; losses may exceed $86M",
+      "link": "https://cointelegraph.com/news/ledger-confirms-unauthorized-hardware-implant-losses-may-exceed-86m?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-1-1791633600000",
@@ -163,41 +198,6 @@
       "source": "EGLD",
       "title": "Cotation publique · $4.03 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1791566467000",
-      "timestamp": "17:21",
-      "source": "CoinTelegraph",
-      "title": "HSBC, Ant Digital test AI-agent payments using tokenized deposits",
-      "link": "https://cointelegraph.com/news/hsbc-ant-digital-test-ai-agent-payments-using-tokenized-deposits?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791565367000",
-      "timestamp": "17:02",
-      "source": "CoinTelegraph",
-      "title": "Ledger investigates fund losses linked to Southeast Asian reseller, warns users",
-      "link": "https://cointelegraph.com/news/ledger-investigates-fund-losses-linked-to-southeast-asian-reseller-warns-users?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1791580914000",
-      "timestamp": "21:21",
-      "source": "CoinDesk",
-      "title": "U.S. CFTC moves to fold event contracts into swaps regulations as legal fight rages",
-      "link": "https://www.coindesk.com/policy/2026/10/09/u-s-cftc-moves-to-fold-event-contracts-into-swaps-regulations-as-legal-fight-rages"
-    },
-    {
-      "id": "rss-CoinDesk-1-1791569460000",
-      "timestamp": "18:11",
-      "source": "CoinDesk",
-      "title": "Robinhood Chain considers technology that gives paying traders priority",
-      "link": "https://www.coindesk.com/business/2026/10/09/robinhood-chain-considers-technology-that-gives-paying-traders-priority"
-    },
-    {
-      "id": "rss-CoinDesk-2-1791557723000",
-      "timestamp": "14:55",
-      "source": "CoinDesk",
-      "title": "New York AG secures up to $35 million and lifetime crypto ban from Celsius’ Alex Mashinsky",
-      "link": "https://www.coindesk.com/policy/2026/10/09/new-york-ag-secures-up-to-usd35-million-and-lifetime-crypto-ban-from-celsius-alex-mashinsky"
     }
   ]
 }
