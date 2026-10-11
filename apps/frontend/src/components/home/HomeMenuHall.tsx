@@ -1,7 +1,6 @@
 /**
  * Accueil 360° — galerie néon cyberpunk + résilience WebGL (context loss).
- * Mobile-safe: pixelRatio ≤ 1.25, pause onglet caché, fallback grille HTML.
- * Portes canvas texture, faisceaux holographiques + stardust + dôme filaire.
+ * Dôme double, lumières pulsées, halo sol, stardust + étoiles ambiantes.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
@@ -109,7 +108,7 @@ export default function HomeMenuHall() {
     try {
       const scene = new THREE.Scene()
       scene.background = new THREE.Color(0x050508)
-      scene.fog = new THREE.FogExp2(0x08081a, 0.038)
+      scene.fog = new THREE.FogExp2(0x060612, 0.032)
 
       const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100)
       camera.position.set(0, 1.8, 4.2)
@@ -123,7 +122,7 @@ export default function HomeMenuHall() {
       renderer.setPixelRatio(Math.min(devicePixelRatio, 1.25))
       renderer.outputColorSpace = THREE.SRGBColorSpace
       renderer.toneMapping = THREE.ACESFilmicToneMapping
-      renderer.toneMappingExposure = 1.1
+      renderer.toneMappingExposure = 1.25
       renderer.domElement.setAttribute('data-xartists-3d', '1')
       renderer.domElement.style.cssText = 'display:block;width:100%;height:100%;touch-action:none'
       host.appendChild(renderer.domElement)
@@ -133,44 +132,110 @@ export default function HomeMenuHall() {
         return o
       }
 
-      scene.add(new THREE.AmbientLight(0x9bb0ff, 0.4))
-      const key = new THREE.DirectionalLight(0xffffff, 0.9)
-      key.position.set(3, 8, 5)
+      // —— Ambiance néon ——
+      scene.add(new THREE.AmbientLight(0xa5b4fc, 0.32))
+      const key = new THREE.DirectionalLight(0xf0f9ff, 1.05)
+      key.position.set(2.5, 9, 4)
       scene.add(key)
-      const rim = new THREE.PointLight(0xa78bfa, 1.2, 20)
-      rim.position.set(-4, 3, 2)
+      const fill = new THREE.DirectionalLight(0x22d3ee, 0.35)
+      fill.position.set(-5, 4, -2)
+      scene.add(fill)
+      const rim = new THREE.PointLight(0xc084fc, 1.6, 28)
+      rim.position.set(-3.5, 3.2, 2.5)
       scene.add(rim)
+      const rim2 = new THREE.PointLight(0x22d3ee, 1.1, 22)
+      rim2.position.set(4, 2.8, 1.5)
+      scene.add(rim2)
+      const ceilingGlow = new THREE.PointLight(0xa78bfa, 0.85, 35)
+      ceilingGlow.position.set(0, 8, -2)
+      scene.add(ceilingGlow)
 
       const floorMat = track(
         new THREE.MeshStandardMaterial({
-          color: 0x080810,
-          roughness: 0.2,
-          metalness: 0.85,
+          color: 0x06060e,
+          roughness: 0.12,
+          metalness: 0.92,
         }),
       )
-      const floor = new THREE.Mesh(track(new THREE.PlaneGeometry(28, 28)), floorMat)
+      const floor = new THREE.Mesh(track(new THREE.PlaneGeometry(32, 32)), floorMat)
       floor.rotation.x = -Math.PI / 2
       scene.add(floor)
 
-      const grid = track(new THREE.GridHelper(28, 56, 0x7c3aed, 0x1e1b4b))
+      const floorHalo = new THREE.Mesh(
+        track(new THREE.CircleGeometry(3.2, 48)),
+        track(
+          new THREE.MeshBasicMaterial({
+            color: 0x7c3aed,
+            transparent: true,
+            opacity: 0.12,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+          }),
+        ),
+      )
+      floorHalo.rotation.x = -Math.PI / 2
+      floorHalo.position.y = 0.02
+      scene.add(floorHalo)
+
+      const grid = track(new THREE.GridHelper(32, 64, 0xa78bfa, 0x1e1b4b))
       const gm = grid.material as THREE.Material
       gm.transparent = true
-      gm.opacity = 0.5
+      gm.opacity = 0.55
       scene.add(grid)
 
       const dome = new THREE.Mesh(
-        track(new THREE.SphereGeometry(20, 36, 18, 0, Math.PI * 2, 0, Math.PI / 2)),
+        track(new THREE.SphereGeometry(22, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2)),
         track(
           new THREE.MeshBasicMaterial({
-            color: 0x6d28d9,
+            color: 0x7c3aed,
             wireframe: true,
             transparent: true,
-            opacity: 0.2,
+            opacity: 0.28,
           }),
         ),
       )
       dome.position.y = 0.02
       scene.add(dome)
+
+      const domeInner = new THREE.Mesh(
+        track(new THREE.SphereGeometry(19.5, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2)),
+        track(
+          new THREE.MeshBasicMaterial({
+            color: 0x22d3ee,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.1,
+          }),
+        ),
+      )
+      domeInner.position.y = 0.04
+      scene.add(domeInner)
+
+      const starCount = devicePixelRatio > 1.4 ? 60 : 120
+      const starPos = new Float32Array(starCount * 3)
+      for (let s = 0; s < starCount; s++) {
+        const a = Math.random() * Math.PI * 2
+        const r = 6 + Math.random() * 12
+        starPos[s * 3] = Math.cos(a) * r
+        starPos[s * 3 + 1] = 2 + Math.random() * 10
+        starPos[s * 3 + 2] = Math.sin(a) * r - 2
+      }
+      const starGeo = track(new THREE.BufferGeometry())
+      starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3))
+      const stars = new THREE.Points(
+        starGeo,
+        track(
+          new THREE.PointsMaterial({
+            color: 0xe0e7ff,
+            size: 0.045,
+            transparent: true,
+            opacity: 0.55,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+          }),
+        ),
+      )
+      scene.add(stars)
 
       const doorGroup = new THREE.Group()
       scene.add(doorGroup)
@@ -188,7 +253,7 @@ export default function HomeMenuHall() {
               roughness: 0.35,
               metalness: 0.25,
               emissive: d.color,
-              emissiveIntensity: 0.35,
+              emissiveIntensity: 0.45,
             }),
           ),
         )
@@ -204,7 +269,7 @@ export default function HomeMenuHall() {
             new THREE.MeshStandardMaterial({
               color: 0x0c0c14,
               emissive: d.color,
-              emissiveIntensity: 1.2,
+              emissiveIntensity: 1.35,
               roughness: 0.3,
               metalness: 0.6,
             }),
@@ -221,7 +286,7 @@ export default function HomeMenuHall() {
             new THREE.MeshBasicMaterial({
               color: d.color,
               transparent: true,
-              opacity: 0.2,
+              opacity: 0.32,
               depthWrite: false,
               blending: THREE.AdditiveBlending,
               side: THREE.DoubleSide,
@@ -258,7 +323,7 @@ export default function HomeMenuHall() {
         doorGroup.add(pts)
         stardust.push(pts)
 
-        const pl = new THREE.PointLight(d.color, 0.55, 6, 2)
+        const pl = new THREE.PointLight(d.color, 0.95, 8, 1.8)
         pl.position.set(x, 1.6, -0.4)
         scene.add(pl)
       })
@@ -359,15 +424,22 @@ export default function HomeMenuHall() {
           stardust.forEach((pts, i) => {
             const pos = pts.geometry.getAttribute('position') as THREE.BufferAttribute
             for (let p = 0; p < pos.count; p++) {
-              let y = pos.getY(p) + 0.008 + i * 0.001
+              let y = pos.getY(p) + 0.01 + i * 0.0015
               if (y > 1.4) y = 0
               pos.setY(p, y)
             }
             pos.needsUpdate = true
             const pm = pts.material as THREE.PointsMaterial
-            pm.opacity = 0.55 + Math.sin(t * 2 + i) * 0.25
+            pm.opacity = 0.5 + Math.sin(t * 2.2 + i) * 0.3
           })
-          dome.rotation.y = t * 0.04
+          dome.rotation.y = t * 0.05
+          domeInner.rotation.y = -t * 0.03
+          stars.rotation.y = t * 0.015
+          ;(floorHalo.material as THREE.MeshBasicMaterial).opacity =
+            0.08 + Math.sin(t * 1.4) * 0.06
+          rim.intensity = 1.4 + Math.sin(t * 1.1) * 0.35
+          rim2.intensity = 0.95 + Math.cos(t * 1.3) * 0.3
+          ceilingGlow.intensity = 0.7 + Math.sin(t * 0.8) * 0.25
           renderer!.render(scene, camera)
         } catch {
           /* frame skip */
