@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-10T21:12:08.228Z",
+  "updatedAt": "2026-10-11T04:12:20.288Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1791666727850",
-      "timestamp": "21:12",
+      "id": "egld-1791691939860",
+      "timestamp": "04:12",
       "source": "EGLD",
-      "title": "Cotation publique · $4.05 (API MultiversX economics)",
+      "title": "Cotation publique · $3.90 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -79,6 +79,13 @@
       "source": "CoinDesk",
       "title": "Bitcoin's volatility has plunged, but extreme price swings are more frequent than in 2018",
       "link": "https://www.coindesk.com/markets/2026/10/09/bitcoin-s-volatility-has-plunged-but-extreme-price-swings-are-more-frequent-than-in-2018"
+    },
+    {
+      "id": "egld-1791666727850",
+      "timestamp": "21:12",
+      "source": "EGLD",
+      "title": "Cotation publique · $4.05 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "egld-1791652385079",
@@ -190,13 +197,6 @@
       "timestamp": "09:30",
       "source": "MultiversX",
       "title": "Max (OpenClaw) agent live sur MultiversX",
-      "link": "https://multiversx.com/blog"
-    },
-    {
-      "id": "mvx-ap2",
-      "timestamp": "09:00",
-      "source": "MultiversX",
-      "title": "Intégration Google AP2 & commerce agentique",
       "link": "https://multiversx.com/blog"
     }
   ]
