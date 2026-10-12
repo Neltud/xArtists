@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import { createBrowserApproxCertificate } from '../lib/digitalTwin/browserApprox'
 import { dispatchMintSculpture1of1 } from '../lib/digitalTwin/mintIntent'
 import { PhysicalNftCertifierPrintButton } from './PhysicalNftCertifierPrintButton'
+import { CertifierHeader, CertifierFooterHint } from './PhysicalNftCertifierLabels'
 
 type CertKind = 'CoA' | 'CoP'
 
@@ -331,15 +332,7 @@ export default function PhysicalNftCertifier() {
   return (
     <div className="rounded-2xl border border-fuchsia-500/25 bg-black/45 backdrop-blur-md p-4 space-y-4 shadow-[0_0_40px_rgba(217,70,239,0.08)] max-w-xl">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-fuchsia-300/90 font-tech">
-            Phygital · Paper
-          </p>
-          <h2 className="text-lg font-semibold text-white">Certification NFT physique</h2>
-          <p className="text-[12px] text-zinc-400 mt-1 leading-relaxed">
-            CoA (authenticité) & CoP (propriété) — photo HD native (≥2 Mo · 8 MP). Mint on-chain après GO_LIVE.
-          </p>
-        </div>
+        <CertifierHeader />
       </div>
 
       <div className="flex gap-2">
@@ -445,7 +438,7 @@ export default function PhysicalNftCertifier() {
           </pre>
           <div className="flex flex-wrap gap-2">
             <button type="button" className="btn-secondary text-xs" onClick={() => void copyDoc()}>
-              {copied ? '✓ Copié !' : 'Copier certificat'}
+              {copied ? '✓ Copié !' : 'Copier le certificat'}
             </button>
             <PhysicalNftCertifierPrintButton
               kind={cert.kind}
@@ -479,16 +472,13 @@ export default function PhysicalNftCertifier() {
           </div>
           {lockedPhotoSha && (
             <p className="text-[10px] mono text-zinc-500">
-              SHA-256 figé · {lockedPhotoSha.slice(0, 16)}…{lockedPhotoSha.slice(-8)}
+              Empreinte SHA-256 · {lockedPhotoSha.slice(0, 16)}…{lockedPhotoSha.slice(-8)}
             </p>
           )}
         </div>
       )}
 
-      <p className="text-[10px] text-zinc-600 leading-relaxed">
-        Paper only — aucun mint SC automatique. Photo HD obligatoire pour LIA PHYGITAL_REEVAL si une image est jointe.
-        SHA-256 = empreinte JPEG compressé (max 1024px) — immuable après génération.
-      </p>
+      <CertifierFooterHint />
     </div>
   )
 }
