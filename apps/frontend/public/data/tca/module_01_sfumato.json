@@ -2,50 +2,67 @@
   "schema": "tca_module/v1",
   "id": "module_01_sfumato",
   "module_number": 1,
-  "title": "Module 1 — The Science of Sfumato",
-  "subtitle": "Smoke between light and dark",
+  "title": "Module 1 — La science du sfumato",
+  "title_en": "Module 1 — The science of sfumato",
+  "subtitle": "La fumée entre lumière et ombre",
+  "subtitle_en": "Smoke between light and dark",
   "professor_id": "leonardo",
   "level": "beginner",
   "estimated_minutes": 25,
   "youtubeId": "BqQhD2qH8vE",
   "lesson_id": "sample_01",
   "learning_objectives": [
+    "Définir le sfumato sans le confondre avec un simple flou",
+    "Identifier au moins trois valeurs sur un bord doux",
+    "Pratiquer une silhouette sans contour dur"
+  ],
+  "learning_objectives_en": [
     "Define sfumato without confusing it with simple blur",
-    "Identify at least three value steps on a soft edge",
-    "Practice one silhouette without a hard contour line"
+    "Identify at least three values on a soft edge",
+    "Practice one silhouette without a hard contour"
   ],
   "sections": [
     {
       "id": "watch",
-      "title": "Watch",
+      "title": "Regarder",
+      "title_en": "Watch",
       "type": "video",
-      "body": "Watch the preview lecture. Note where the edge dissolves into atmosphere instead of stopping with a line."
+      "body": "Regardez la leçon. Notez où le bord se dissout dans l’atmosphère au lieu de s’arrêter sur un trait.",
+      "body_en": "Watch the preview lecture. Note where the edge dissolves into atmosphere instead of stopping with a line."
     },
     {
       "id": "theory",
-      "title": "Theory",
+      "title": "Théorie",
+      "title_en": "Theory",
       "type": "text",
-      "body": "Sfumato is graduated absence of hard contour so form emerges from air. Value transitions do the drawing. On a cheek, seek three values rather than a binary light/dark split — the middle value carries the sfumato."
+      "body": "Le sfumato est l’absence graduée de contour dur pour que la forme émerge de l’air. Les transitions de valeurs dessinent. Sur une joue, cherchez trois valeurs plutôt qu’un couple clair/sombre — la valeur médiane porte le sfumato.",
+      "body_en": "Sfumato is graduated absence of hard contour so form emerges from air. Value transitions do the drawing. On a cheek, seek three values rather than a binary light/dark split — the middle value carries the sfumato."
     },
     {
       "id": "practice",
-      "title": "Studio practice",
+      "title": "Atelier",
+      "title_en": "Studio practice",
       "type": "exercise",
-      "body": "Pick a simple silhouette (sphere, cheek, or cloud). Block light, middle, dark. Soften only the transition zone — leave structure under the softness."
+      "body": "Choisissez une silhouette simple (sphère, joue ou nuage). Bloquez clair, moyen, sombre. Adoucissez seulement la zone de transition — gardez la structure sous la douceur.",
+      "body_en": "Pick a simple silhouette (sphere, cheek, or cloud). Block light, middle, dark. Soften only the transition zone — leave structure under the softness."
     },
     {
       "id": "reflect",
-      "title": "Reflect",
+      "title": "Réfléchir",
+      "title_en": "Reflect",
       "type": "prompt",
-      "body": "Where did you still draw a hard line out of habit? What would three values change there?"
+      "body": "Où avez-vous encore tracé un trait dur par habitude\u00a0? Que changeraient trois valeurs à cet endroit\u00a0?",
+      "body_en": "Where did you still draw a hard line out of habit? What would three values change there?"
     }
   ],
   "key_terms": [
-    { "term": "sfumato", "def": "Soft transitions where contour dissolves into air" },
-    { "term": "value", "def": "Relative lightness or darkness of a plane" },
-    { "term": "contour", "def": "Edge that separates form from ground" }
+    { "term": "sfumato", "def": "Transitions douces où le contour se dissout dans l’air", "def_en": "Soft transitions where contour dissolves into air" },
+    { "term": "valeur", "def": "Clarté ou obscurité relative d’un plan", "def_en": "Relative lightness or darkness of a plane" },
+    { "term": "contour", "def": "Bord qui sépare la forme du fond", "def_en": "Edge that separates form from ground" }
   ],
-  "rag_topics": ["sfumato", "value", "edge", "atmosphere", "portrait planes"],
-  "unlock_next": "Pack Pulse unlocks the full holographic classroom + mentor RAG",
-  "cta_full": "Enter 3D classroom (Pulse)"
+  "rag_topics": ["sfumato", "valeur", "bord", "atmosphère", "plans du portrait"],
+  "unlock_next": "Le Pack Pulse débloque la salle holographique complète et le mentor RAG.",
+  "unlock_next_en": "Pulse Pack unlocks the full holographic classroom and RAG mentor.",
+  "cta_full": "Entrer dans la salle 3D (Pulse)",
+  "cta_full_en": "Enter 3D classroom (Pulse)"
 }
