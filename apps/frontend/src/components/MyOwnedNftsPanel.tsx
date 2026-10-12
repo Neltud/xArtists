@@ -1,6 +1,6 @@
 /**
- * Mes NFT (wallet) → clic « Mettre en vente » → ListNftSheet.
- * Miniatures via ImageWithFallback (pas de carré blanc).
+ * Mes NFT (wallet) → « Mettre en vente » → ListNftSheet.
+ * Miniatures via ImageWithFallback (pas de carré blanc si média offline).
  */
 import { useMemo, useState } from 'react'
 import { useWallet } from '../context/WalletContext'
@@ -32,63 +32,84 @@ export default function MyOwnedNftsPanel() {
   }
 
   return (
-    <div className="card space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h2 className="font-semibold">Mes NFT</h2>
-          <p className="text-[12px] text-zinc-500">
-            Jusqu’à 48 actifs affichés · mise en vente {live ? 'SC live' : 'gates'}
-          </p>
+    <>
+      <div className="card space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="font-semibold">Mes NFT · mise en vente</h2>
+            <p className="text-[11px] text-zinc-500">
+              {account.loading
+                ? 'Chargement…'
+                : `${account.nftCount ?? items.length} actif(s) · affichage max. 48`}
+            </p>
+          </div>
         </div>
+
+        {account.loading && items.length === 0 ? (
+          <p className="text-sm text-zinc-500">Chargement des NFT…</p>
+        ) : items.length === 0 ? (
+          <p className="text-sm text-zinc-500">Aucun NFT détecté sur ce wallet.</p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {items.map(n => {
+              const img = n.url || n.media?.[0]?.url
+              const nonce =
+                typeof n.nonce === 'number'
+                  ? n.nonce
+                  : Number(String(n.identifier || '').split('-').pop()) || 0
+              return (
+                <div
+                  key={n.identifier}
+                  className={`rounded-xl border border-white/10 overflow-hidden bg-black/40 ${OWNED_GLOW}`}
+                >
+                  <div className="aspect-square bg-zinc-950">
+                    <ImageWithFallback
+                      src={img}
+                      alt={n.name || n.identifier || 'NFT'}
+                      className="h-full w-full object-cover"
+                      wrapperClassName="h-full w-full"
+                    />
+                  </div>
+                  <div className="p-2 space-y-1.5">
+                    <p className="text-xs font-semibold text-white truncate">
+                      {n.name || n.identifier}
+                    </p>
+                    <p className="text-[9px] mono text-zinc-500 truncate">{n.collection}</p>
+                    <button
+                      type="button"
+                      className="btn-primary w-full text-[11px] py-1.5 min-h-[36px]"
+                      disabled={!live}
+                      onClick={() =>
+                        setListTarget({
+                          collection: n.collection || '',
+                          nonce,
+                          name: n.name || n.identifier,
+                          identifier: n.identifier,
+                          imageUrl: img,
+                        })
+                      }
+                    >
+                      Mettre en vente
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {!live && (
+          <p className="text-[11px] text-amber-200">
+            Listing gated — marketplace SC / codehash Pages.
+          </p>
+        )}
       </div>
 
-      {account.loading ? (
-        <p className="text-sm text-zinc-500">Chargement des NFT…</p>
-      ) : items.length === 0 ? (
-        <p className="text-sm text-zinc-500">Aucun NFT détecté sur ce wallet.</p>
-      ) : (
-        <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {items.map(n => {
-            const img = n.url || n.media?.[0]?.url
-            return (
-              <li
-                key={n.identifier}
-                className={`rounded-xl border border-white/10 overflow-hidden bg-black/40 ${OWNED_GLOW}`}
-              >
-                <div className="aspect-square bg-zinc-950">
-                  <ImageWithFallback
-                    src={img}
-                    alt={n.name || n.identifier || 'NFT'}
-                    className="h-full w-full object-cover"
-                    wrapperClassName="h-full w-full"
-                  />
-                </div>
-                <div className="p-2 space-y-1">
-                  <p className="text-[11px] font-medium text-zinc-200 truncate">{n.name || n.identifier}</p>
-                  <button
-                    type="button"
-                    className="btn-secondary text-[10px] w-full min-h-[36px]"
-                    onClick={() =>
-                      setListTarget({
-                        identifier: n.identifier,
-                        name: n.name,
-                        imageUrl: img,
-                        collection: n.collection,
-                      })
-                    }
-                  >
-                    Mettre en vente
-                  </button>
-                </div>
-              </li>
-            )
-          })}
-        </ul>
-      )}
-
-      {listTarget ? (
-        <ListNftSheet target={listTarget} onClose={() => setListTarget(null)} />
-      ) : null}
-    </div>
+      <ListNftSheet
+        target={listTarget}
+        onClose={() => setListTarget(null)}
+        onListed={() => account.refresh()}
+      />
+    </>
   )
 }
