@@ -1,11 +1,13 @@
 /**
  * Phygital certifier — upload HD + métadonnées → CoA / CoP + intent LIA.
  * Qualité photo: ≥2 Mo, ≥8 MP, contraste σ≥18 ; capture native environment.
+ * Export A4 print/PDF via PhysicalNftCertifierPrintButton.
  */
 import { useCallback, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { createBrowserApproxCertificate } from '../lib/digitalTwin/browserApprox'
 import { dispatchMintSculpture1of1 } from '../lib/digitalTwin/mintIntent'
+import { PhysicalNftCertifierPrintButton } from './PhysicalNftCertifierPrintButton'
 
 type CertKind = 'CoA' | 'CoP'
 
@@ -445,6 +447,15 @@ export default function PhysicalNftCertifier() {
             <button type="button" className="btn-secondary text-xs" onClick={() => void copyDoc()}>
               {copied ? '✓ Copié !' : 'Copier certificat'}
             </button>
+            <PhysicalNftCertifierPrintButton
+              kind={cert.kind}
+              id={cert.id}
+              title={cert.form.title}
+              sha={lockedPhotoSha || cert.photoSha256 || ''}
+              mp={photoOkMeta?.mp}
+              sigma={photoOkMeta?.contrastStd}
+              preview={preview}
+            />
             <button type="button" className="btn-secondary text-xs" onClick={requestLiaReeval}>
               Demander réévaluation LIA
             </button>
