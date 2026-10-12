@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-11T19:21:14.558Z",
+  "updatedAt": "2026-10-12T00:14:29.309Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1791764068735",
+      "timestamp": "00:14",
+      "source": "EGLD",
+      "title": "Cotation publique · $4.02 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1791738660000",
+      "timestamp": "17:11",
+      "source": "CoinTelegraph",
+      "title": "Saylor teases Strategy Bitcoin buying after ending September with STRC buybacks",
+      "link": "https://cointelegraph.com/news/saylors-teases-strategy-bitcoin-buying-after-ending-september-with-strc-buybacks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791723540000",
+      "timestamp": "12:59",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1791715200000",
+      "timestamp": "10:40",
+      "source": "CoinTelegraph",
+      "title": "Coldcard says it’s investigating how phishing link appeared on its X account",
+      "link": "https://cointelegraph.com/news/coldcard-says-its-investigating-how-phishing-link-appeared-on-its-x-account?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1791709500000",
+      "timestamp": "09:05",
+      "source": "CoinTelegraph",
+      "title": "Ledger confirms unauthorized hardware implant, says losses may exceed $86M",
+      "link": "https://cointelegraph.com/news/ledger-confirms-unauthorized-hardware-implant-losses-may-exceed-86m?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1791705000000",
+      "timestamp": "07:50",
+      "source": "CoinTelegraph",
+      "title": "CFTC proposals aimed at separating prediction markets from casino gambling",
+      "link": "https://cointelegraph.com/news/cftc-proposals-aimed-at-separating-prediction-markets-from-casino-gambling?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1791633134000",
+      "timestamp": "11:52",
+      "source": "CoinTelegraph",
+      "title": "Justin Sun says Tron’s post-quantum cryptography has gone live on testnet",
+      "link": "https://cointelegraph.com/news/justin-sun-says-trons-post-quantum-cryptography-has-gone-live-on-testnet?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1791743400000",
+      "timestamp": "18:30",
+      "source": "CoinDesk",
+      "title": "Everyone wants SCOTUS to take up prediction markets: State of Crypto",
+      "link": "https://www.coindesk.com/policy/2026/10/11/everyone-wants-scotus-to-take-up-prediction-markets-state-of-crypto"
+    },
+    {
+      "id": "rss-CoinDesk-1-1791734400000",
+      "timestamp": "16:00",
+      "source": "CoinDesk",
+      "title": "Clarity's failure could speed crypto innovation while shielding incumbents",
+      "link": "https://www.coindesk.com/policy/2026/10/11/clarity-s-failure-could-speed-crypto-innovation-while-shielding-incumbents"
+    },
+    {
+      "id": "rss-CoinDesk-2-1791733247000",
+      "timestamp": "15:40",
+      "source": "CoinDesk",
+      "title": "President Trump declares 'energy ceasefire' between Russia and Ukraine",
+      "link": "https://www.coindesk.com/markets/2026/10/11/president-trump-declares-energy-ceasefire-between-russia-and-ukraine"
+    },
+    {
+      "id": "rss-CoinDesk-3-1791723600000",
+      "timestamp": "13:00",
+      "source": "CoinDesk",
+      "title": "IMF finds demand for tokenized stocks, says the market is still volatile, illiquid",
+      "link": "https://www.coindesk.com/business/2026/10/11/imf-finds-demand-for-tokenized-stocks-says-the-market-is-still-volatile-illiquid"
+    },
     {
       "id": "egld-1791746473954",
       "timestamp": "19:21",
@@ -11,67 +88,11 @@
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1791722700000",
-      "timestamp": "12:45",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1791714720000",
-      "timestamp": "10:32",
-      "source": "CoinTelegraph",
-      "title": "Coldcard says it’s investigating how phishing link appeared on its X account",
-      "link": "https://cointelegraph.com/news/coldcard-says-its-investigating-how-phishing-link-appeared-on-its-x-account?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1791709500000",
-      "timestamp": "09:05",
-      "source": "CoinTelegraph",
-      "title": "Ledger confirms unauthorized hardware implant, says losses may exceed $86M",
-      "link": "https://cointelegraph.com/news/ledger-confirms-unauthorized-hardware-implant-losses-may-exceed-86m?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1791705000000",
-      "timestamp": "07:50",
-      "source": "CoinTelegraph",
-      "title": "CFTC proposals aimed at separating prediction markets from casino gambling",
-      "link": "https://cointelegraph.com/news/cftc-proposals-aimed-at-separating-prediction-markets-from-casino-gambling?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1791633134000",
-      "timestamp": "11:52",
-      "source": "CoinTelegraph",
-      "title": "Justin Sun says Tron’s post-quantum cryptography has gone live on testnet",
-      "link": "https://cointelegraph.com/news/justin-sun-says-trons-post-quantum-cryptography-has-gone-live-on-testnet?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "id": "rss-CoinTelegraph-5-1791621900000",
       "timestamp": "08:45",
       "source": "CoinTelegraph",
       "title": "Tech chief says EU can fend off rogue AI risk: Report",
       "link": "https://cointelegraph.com/news/tech-chief-says-eu-can-fend-off-rogue-ai-risk-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1791734400000",
-      "timestamp": "16:00",
-      "source": "CoinDesk",
-      "title": "Clarity's failure could speed crypto innovation while shielding incumbents",
-      "link": "https://www.coindesk.com/policy/2026/10/11/clarity-s-failure-could-speed-crypto-innovation-while-shielding-incumbents"
-    },
-    {
-      "id": "rss-CoinDesk-1-1791733247000",
-      "timestamp": "15:40",
-      "source": "CoinDesk",
-      "title": "President Trump declares 'energy ceasefire' between Russia and Ukraine",
-      "link": "https://www.coindesk.com/markets/2026/10/11/president-trump-declares-energy-ceasefire-between-russia-and-ukraine"
-    },
-    {
-      "id": "rss-CoinDesk-2-1791723600000",
-      "timestamp": "13:00",
-      "source": "CoinDesk",
-      "title": "IMF finds demand for tokenized stocks, says the market is still volatile, illiquid",
-      "link": "https://www.coindesk.com/business/2026/10/11/imf-finds-demand-for-tokenized-stocks-says-the-market-is-still-volatile-illiquid"
     },
     {
       "id": "rss-CoinDesk-3-1791633600000",
@@ -151,13 +172,6 @@
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "egld-1791652385079",
-      "timestamp": "17:13",
-      "source": "EGLD",
-      "title": "Cotation publique · $4.02 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
       "id": "egld-1791633463934",
       "timestamp": "11:57",
       "source": "EGLD",
@@ -184,20 +198,6 @@
       "source": "CoinDesk",
       "title": "XRP Ledger patched decade-old bug that could create billions of dollars in XRP from nothing",
       "link": "https://www.coindesk.com/tech/2026/10/10/xrp-ledger-patched-decade-old-bug-that-could-create-billions-of-dollars-in-xrp-from-nothing"
-    },
-    {
-      "id": "rss-CoinDesk-3-1791601200000",
-      "timestamp": "03:00",
-      "source": "CoinDesk",
-      "title": "Visa survey says nearly half of APAC consumers open to using stablecoins by 2031",
-      "link": "https://www.coindesk.com/business/2026/10/05/1-2-billion-apac-consumers-could-adopt-stablecoins-by-2031-according-to-visa"
-    },
-    {
-      "id": "egld-1791606567341",
-      "timestamp": "04:29",
-      "source": "EGLD",
-      "title": "Cotation publique · $4.03 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     }
   ]
 }
