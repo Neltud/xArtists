@@ -1,0 +1,10 @@
+{
+  "schema": "tca_module/v1",
+  "id": "module_01_sfumato",
+  "module_number": 1,
+  "title": "Module 1 — The Science of Sfumato",
+  "subtitle": "Smoke between light and dark",
+  "professor_id": "leonardo",
+  "youtubeId": "BqQhD2qH8vE",
+  "lesson_id": "sample_01"
+}

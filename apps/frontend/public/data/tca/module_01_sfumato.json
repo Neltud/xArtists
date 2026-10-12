@@ -1,0 +1,51 @@
+{
+  "schema": "tca_module/v1",
+  "id": "module_01_sfumato",
+  "module_number": 1,
+  "title": "Module 1 — The Science of Sfumato",
+  "subtitle": "Smoke between light and dark",
+  "professor_id": "leonardo",
+  "level": "beginner",
+  "estimated_minutes": 25,
+  "youtubeId": "BqQhD2qH8vE",
+  "lesson_id": "sample_01",
+  "learning_objectives": [
+    "Define sfumato without confusing it with simple blur",
+    "Identify at least three value steps on a soft edge",
+    "Practice one silhouette without a hard contour line"
+  ],
+  "sections": [
+    {
+      "id": "watch",
+      "title": "Watch",
+      "type": "video",
+      "body": "Watch the preview lecture. Note where the edge dissolves into atmosphere instead of stopping with a line."
+    },
+    {
+      "id": "theory",
+      "title": "Theory",
+      "type": "text",
+      "body": "Sfumato is graduated absence of hard contour so form emerges from air. Value transitions do the drawing. On a cheek, seek three values rather than a binary light/dark split — the middle value carries the sfumato."
+    },
+    {
+      "id": "practice",
+      "title": "Studio practice",
+      "type": "exercise",
+      "body": "Pick a simple silhouette (sphere, cheek, or cloud). Block light, middle, dark. Soften only the transition zone — leave structure under the softness."
+    },
+    {
+      "id": "reflect",
+      "title": "Reflect",
+      "type": "prompt",
+      "body": "Where did you still draw a hard line out of habit? What would three values change there?"
+    }
+  ],
+  "key_terms": [
+    { "term": "sfumato", "def": "Soft transitions where contour dissolves into air" },
+    { "term": "value", "def": "Relative lightness or darkness of a plane" },
+    { "term": "contour", "def": "Edge that separates form from ground" }
+  ],
+  "rag_topics": ["sfumato", "value", "edge", "atmosphere", "portrait planes"],
+  "unlock_next": "Pack Pulse unlocks the full holographic classroom + mentor RAG",
+  "cta_full": "Enter 3D classroom (Pulse)"
+}
