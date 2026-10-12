@@ -1,7 +1,6 @@
 /**
- * L'INTELLECT · Command Center — cyber HUD + holo + news + DeFi Hub.
- * Deep-link ?room=pulse|yield|sentinel|hub · messages guest explicites.
- * Intent journal paper → signature utilisateur xPortal (non-custodial).
+ * L'INTELLECT · Command Center — cyber HUD + intents paper → xPortal.
+ * Paper-first · non-custodial · LIA_LIVE_TRADING=0.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -16,22 +15,14 @@ import MarketTape from '../command-center/MarketTape'
 import LiaShadowPanel from '../command-center/LiaShadowPanel'
 import IntentXPortalPanel from '../command-center/IntentXPortalPanel'
 import LiveNewsStream from '../command-center/LiveNewsStream'
-import AgentNftStakePanel, { isAgentNftStaked } from '../components/AgentNftStakePanel'
 import LiveAssetTape from '../components/LiveAssetTape'
-import HoloDataRoom from '../components/HoloDataRoom'
-import DeFiCommandPanel from '../components/DeFiCommandPanel'
-import TroLiquidityPanel from '../components/TroLiquidityPanel'
-import TroHolderBoard from '../components/TroHolderBoard'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
 import { holderStatus } from '../lib/holderAccess'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
 import { setEmpireZone } from '../store/empireStore'
-import type { PackId } from '../config/agentPacks'
-import { mergePackFeatures } from '../config/agentPacks'
 import { useI18n } from '../i18n/I18nContext'
-import { toAmbientSnapshot, shortTrendToast, type AuraMode } from '../lib/ambientAura'
 import { useToast } from '../components/ui/Toast'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { LIA_BADGE } from '../config/liaConfig'
@@ -72,7 +63,7 @@ function CommandCenterInner() {
   const [room, setRoom] = useState<Room>(roomParam || 'hub')
   const [eco, setEco] = useState<EcoTab>('defi')
   const { env } = usePulse()
-  const lia = useLIAInterpreter(env)
+  useLIAInterpreter(env)
   const { push } = useToast()
   const tunnelRef = useRef(false)
 
@@ -185,13 +176,21 @@ function CommandCenterInner() {
             </button>
           ))}
         </div>
-        {eco === 'defi' && <DeFiCommandPanel />}
-        {eco === 'liquidity' && <TroLiquidityPanel />}
-        {eco === 'holders' && <TroHolderBoard />}
+        {eco === 'defi' && (
+          <p className="text-[12px] text-zinc-500">
+            DeFi hub — <Link className="text-cyan-300" to="/staking">/staking</Link>
+          </p>
+        )}
+        {eco === 'liquidity' && (
+          <p className="text-[12px] text-zinc-500">
+            Liquidité $TRO — <Link className="text-cyan-300" to="/marketplace">/marketplace</Link>
+          </p>
+        )}
+        {eco === 'holders' && (
+          <p className="text-[12px] text-zinc-500">Holders — analytics / market</p>
+        )}
       </section>
 
-      <HoloDataRoom />
-      <AgentNftStakePanel />
       <ClickGuide />
       <DataTunnelTransition active={tunnelRef.current} />
 
