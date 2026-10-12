@@ -1,10 +1,12 @@
 /**
  * Client-side TCA knowledge retrieve (mirrors lia/tca/rag_engine extractive path).
- * Used until a hosted RAG endpoint exists. No wallet / trading calls.
+ * Sprint 1: optional video_id / lesson_id scope for ATC continuity.
  */
 
 export type KnowledgeChunk = {
   id: string
+  video_id?: string
+  lesson_id?: string
   concept?: string
   technique?: string
   visual_ref?: string
@@ -97,7 +99,6 @@ function retrieve(query: string, professorId: string, chunks: KnowledgeChunk[]):
   }
   scored.sort((a, b) => b.s - a.s)
   if (!scored.length) {
-    // retry without professor filter
     return retrieve(query, '', chunks).slice(0, 3)
   }
   return scored.slice(0, 3).map(x => x.c)
@@ -107,8 +108,18 @@ export function askMentor(
   query: string,
   professorId: string,
   chunks: KnowledgeChunk[] = FALLBACK_CHUNKS,
+  opts?: { video_id?: string; lesson_id?: string },
 ): { answer: string; cite?: string; emotion: string; visual_ref?: string; cues: RagCue[] } {
-  const hit = retrieve(query, professorId, chunks)
+  let pool = chunks
+  if (opts?.video_id || opts?.lesson_id) {
+    const scoped = chunks.filter(
+      c =>
+        (opts.video_id && c.video_id === opts.video_id) ||
+        (opts.lesson_id && c.lesson_id === opts.lesson_id),
+    )
+    if (scoped.length) pool = scoped
+  }
+  const hit = retrieve(query, professorId, pool)
   const thinking_s = 1.6 + Math.random() * 0.6
   if (!hit.length) {
     const answer =
