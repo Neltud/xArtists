@@ -1,10 +1,13 @@
 {
   "id": "sample_01",
   "module_id": "module_01_sfumato",
-  "title": "Module 1 — What is sfumato?",
+  "title": "Module 1 — Qu’est-ce que le sfumato\u00a0?",
+  "title_en": "Module 1 — What is sfumato?",
   "professor_id": "leonardo",
   "youtubeId": "BqQhD2qH8vE",
-  "duration_label": "~8 min video + practice",
-  "cta": "Unlock full holographic classroom with Pack Pulse (12 months)",
-  "topics": ["sfumato", "value", "soft edge"]
+  "duration_label": "~8 min vidéo + atelier",
+  "duration_label_en": "~8 min video + practice",
+  "cta": "Débloquer la salle holographique avec le Pack Pulse (12 mois)",
+  "cta_en": "Unlock the holographic classroom with the Pulse Pack (12 months)",
+  "topics": ["sfumato", "valeur", "bord doux"]
 }
