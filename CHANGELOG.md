@@ -1,5 +1,20 @@
 # Changelog — xArtists
 
+## [0.102.0](https://github.com/Neltud/xArtists/compare/v0.101.0...v0.102.0) (2026-10-12)
+
+
+### Features
+
+* **phygital:** A4 print/PDF export for PhysicalNftCertifier ([88004f8](https://github.com/Neltud/xArtists/commit/88004f83213edf61a2d9d1700ce368b7bc8495c9))
+* **phygital:** wire Imprimer/PDF A4 button on certificate ([72356fd](https://github.com/Neltud/xArtists/commit/72356fdb276e9bf6e1279e46638ed9674a149627))
+* **prod:** DaoGovernance, DeFiBuilder stake/claim UI, cert A4 print/PDF, modal polish (no FC badge) ([d479c93](https://github.com/Neltud/xArtists/commit/d479c93440430ecd74b759237821834562d30d74))
+* **sprint1:** access-api /api/verify-access alias, access cache, video-scoped RAG ([393273f](https://github.com/Neltud/xArtists/commit/393273f13db785d2951c209e4962622df9a45fe5))
+* **sprint1:** zero-trust access JWT client, ATC transcript pipeline, immersive error boundaries ([c88f0a4](https://github.com/Neltud/xArtists/commit/c88f0a4473b31d2134b6e147c6a05d24e3a0e6c9))
+* **tca:** classroom ImmersiveErrorBoundary + MentorAskBar + context badge ([ba081c5](https://github.com/Neltud/xArtists/commit/ba081c542b558935b239e0ef5f8e2d6ce8020c3f))
+* **tca:** Module 1 Sfumato video course + gate/classroom wiring ([3cfd493](https://github.com/Neltud/xArtists/commit/3cfd493a1003e21b3853f2ddc8f65c22460e8a60))
+* **tca:** SAMPLE path uses Module 1 + ImmersiveErrorBoundary on classroom ([7290090](https://github.com/Neltud/xArtists/commit/72900904cfc36ac3c7cf79274e9368f29a997865))
+* **tca:** video_id / lesson_id scoped RAG retrieve ([92d1093](https://github.com/Neltud/xArtists/commit/92d10934e38cf81f5965d2c4ec1d0129f6c7d01d))
+
 ## [0.101.0](https://github.com/Neltud/xArtists/compare/v0.100.0...v0.101.0) (2026-10-11)
 
 
