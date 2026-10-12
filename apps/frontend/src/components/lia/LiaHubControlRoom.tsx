@@ -1,6 +1,6 @@
 /**
- * LIA Hub — salle de contrôle 3D · 3 écrans holo Pack Sponsors (PULSE / YIELD / SENTINEL).
- * CanvasTexture animées + dispose strict au unmount.
+ * LIA Hub — salle de contrôle 3D · 3 écrans holo Pack Sponsors.
+ * CanvasTexture plafonnées à 30 FPS · résolution mobile réduite · dispose strict.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
@@ -20,6 +20,8 @@ const SCREEN_META: {
   { id: 'yield', title: 'YIELD', color: '#2dd4bf', accent: 0x2dd4bf },
   { id: 'sentinel', title: 'SENTINEL', color: '#a78bfa', accent: 0xa78bfa },
 ]
+
+const TEX_INTERVAL_MS = 1000 / 30
 
 function drawPulse(ctx: CanvasRenderingContext2D, w: number, h: number, t: number) {
   ctx.fillStyle = '#05050a'
@@ -48,7 +50,6 @@ function drawPulse(ctx: CanvasRenderingContext2D, w: number, h: number, t: numbe
 function drawYield(ctx: CanvasRenderingContext2D, w: number, h: number, t: number) {
   ctx.fillStyle = '#05050a'
   ctx.fillRect(0, 0, w, h)
-  // concentric liquidity rings
   const cx = w * 0.28
   const cy = h * 0.55
   for (let i = 1; i <= 5; i++) {
@@ -57,7 +58,6 @@ function drawYield(ctx: CanvasRenderingContext2D, w: number, h: number, t: numbe
     ctx.arc(cx, cy, 18 + i * 14 + Math.sin(t + i) * 3, 0, Math.PI * 2)
     ctx.stroke()
   }
-  // candle-like bars
   const baseX = w * 0.52
   for (let i = 0; i < 12; i++) {
     const bh = 20 + Math.abs(Math.sin(t * 1.5 + i * 0.4)) * 60
@@ -75,18 +75,14 @@ function drawYield(ctx: CanvasRenderingContext2D, w: number, h: number, t: numbe
 function drawSentinel(ctx: CanvasRenderingContext2D, w: number, h: number, t: number) {
   ctx.fillStyle = '#05050a'
   ctx.fillRect(0, 0, w, h)
-  // hash rain
   ctx.font = '11px ui-monospace, monospace'
   for (let row = 0; row < 10; row++) {
     const offset = Math.floor(t * 8 + row * 3) % 16
     let hex = ''
-    for (let i = 0; i < 16; i++) {
-      hex += '0123456789abcdef'[(i + offset + row) % 16]
-    }
+    for (let i = 0; i < 16; i++) hex += '0123456789abcdef'[(i + offset + row) % 16]
     ctx.fillStyle = `rgba(167,139,250,${0.35 + (row % 3) * 0.15})`
     ctx.fillText(hex, 12, 40 + row * 16)
   }
-  // radar
   const cx = w * 0.78
   const cy = h * 0.55
   ctx.strokeStyle = 'rgba(167,139,250,0.5)'
@@ -147,8 +143,15 @@ export default function LiaHubControlRoom() {
     camera.lookAt(0, 1.2, 0)
 
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' })
-      renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5))
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: false,
+        powerPreference: 'high-performance',
+      })
+      const isMobile =
+        typeof window !== 'undefined' &&
+        (window.innerWidth < 768 || window.devicePixelRatio <= 1.5)
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 1.5))
       renderer.setSize(host.clientWidth || 640, host.clientHeight || 400, false)
       renderer.domElement.style.cssText = 'display:block;width:100%;height:100%;touch-action:none'
       host.appendChild(renderer.domElement)
@@ -162,13 +165,10 @@ export default function LiaHubControlRoom() {
       rim.position.set(-2, 2, -1)
       scene.add(rim)
 
-      // floor grid
       const grid = new THREE.GridHelper(14, 28, 0x4c1d95, 0x1e1b4b)
-      grid.position.y = 0
       scene.add(grid)
       setProgress(40)
 
-      // back wall
       const wallMat = new THREE.MeshStandardMaterial({
         color: 0x0f0a1a,
         metalness: 0.4,
@@ -187,8 +187,8 @@ export default function LiaHubControlRoom() {
 
       SCREEN_META.forEach((meta, i) => {
         const canvas = document.createElement('canvas')
-        canvas.width = 512
-        canvas.height = 320
+        canvas.width = isMobile ? 320 : 512
+        canvas.height = isMobile ? 200 : 320
         canvases.push(canvas)
         const tex = new THREE.CanvasTexture(canvas)
         tex.colorSpace = THREE.SRGBColorSpace
@@ -203,7 +203,6 @@ export default function LiaHubControlRoom() {
         })
         disposables.push(mat)
         const geom = new THREE.PlaneGeometry(2.4, 1.5, 16, 8)
-        // slight curve via vertex z
         const pos = geom.attributes.position
         for (let vi = 0; vi < pos.count; vi++) {
           const x = pos.getX(vi)
@@ -213,13 +212,11 @@ export default function LiaHubControlRoom() {
         geom.computeVertexNormals()
         disposables.push(geom)
         const mesh = new THREE.Mesh(geom, mat)
-        const x = (i - 1) * 2.7
-        mesh.position.set(x, 1.55, -1.5)
+        mesh.position.set((i - 1) * 2.7, 1.55, -1.5)
         mesh.userData.packId = meta.id
         scene.add(mesh)
         meshes.push(mesh)
 
-        // neon frame
         const frame = new THREE.LineSegments(
           new THREE.EdgesGeometry(new THREE.PlaneGeometry(2.5, 1.6)),
           new THREE.LineBasicMaterial({ color: meta.accent }),
@@ -228,11 +225,7 @@ export default function LiaHubControlRoom() {
         frame.position.z += 0.02
         scene.add(frame)
         disposables.push(frame.geometry)
-        if (Array.isArray((frame.material as THREE.Material).dispose)) {
-          /* */
-        } else {
-          disposables.push(frame.material as THREE.Material)
-        }
+        disposables.push(frame.material as THREE.Material)
       })
 
       setProgress(70)
@@ -240,6 +233,7 @@ export default function LiaHubControlRoom() {
       const clock = new THREE.Clock()
       let camTarget = new THREE.Vector3(0, 1.2, 0)
       let camPos = camera.position.clone()
+      let lastTex = 0
 
       const onPointer = (ev: PointerEvent) => {
         if (!renderer || disposed) return
@@ -270,17 +264,19 @@ export default function LiaHubControlRoom() {
       const animate = () => {
         if (disposed || !renderer) return
         raf = requestAnimationFrame(animate)
+        const now = performance.now()
         const t = clock.getElapsedTime()
-        canvases.forEach((c, i) => {
-          const ctx = c.getContext('2d')
-          if (!ctx) return
-          DRAWERS[SCREEN_META[i].id](ctx, c.width, c.height, t)
-          textures[i].needsUpdate = true
-        })
-        // ease camera
+        if (now - lastTex >= TEX_INTERVAL_MS) {
+          lastTex = now
+          canvases.forEach((c, i) => {
+            const ctx = c.getContext('2d')
+            if (!ctx) return
+            DRAWERS[SCREEN_META[i].id](ctx, c.width, c.height, t)
+            textures[i].needsUpdate = true
+          })
+        }
         camera.position.lerp(camPos, 0.04)
-        const look = new THREE.Vector3().copy(camTarget)
-        camera.lookAt(look)
+        camera.lookAt(camTarget)
         try {
           renderer.render(scene, camera)
         } catch {
