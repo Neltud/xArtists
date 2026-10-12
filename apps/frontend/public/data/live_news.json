@@ -1,56 +1,56 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-12T00:14:29.309Z",
+  "updatedAt": "2026-10-12T10:16:29.671Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1791764068735",
-      "timestamp": "00:14",
+      "id": "egld-1791800189132",
+      "timestamp": "10:16",
       "source": "EGLD",
-      "title": "Cotation publique · $4.02 (API MultiversX economics)",
+      "title": "Cotation publique · $3.91 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1791738660000",
+      "id": "rss-CoinTelegraph-0-1791768089000",
+      "timestamp": "01:21",
+      "source": "CoinTelegraph",
+      "title": "XRP Ledger defends emergency patch for unlimited XRP bug",
+      "link": "https://cointelegraph.com/news/xrp-ledger-defends-emergency-patch-for-unlimited-xrp-bug?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791759473000",
+      "timestamp": "22:57",
+      "source": "CoinTelegraph",
+      "title": "Ledger attack spreads to EU, AI finds ’18 trillion XRP’ bug: Hodler’s Digest",
+      "link": "https://cointelegraph.com/magazine/ledger-attack-spreads-to-eu-ai-finds-18-trillion-xrp-bug-hodlers-digest?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1791738660000",
       "timestamp": "17:11",
       "source": "CoinTelegraph",
       "title": "Saylor teases Strategy Bitcoin buying after ending September with STRC buybacks",
       "link": "https://cointelegraph.com/news/saylors-teases-strategy-bitcoin-buying-after-ending-september-with-strc-buybacks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1791723540000",
+      "id": "rss-CoinTelegraph-3-1791723540000",
       "timestamp": "12:59",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1791715200000",
+      "id": "rss-CoinTelegraph-4-1791715200000",
       "timestamp": "10:40",
       "source": "CoinTelegraph",
       "title": "Coldcard says it’s investigating how phishing link appeared on its X account",
       "link": "https://cointelegraph.com/news/coldcard-says-its-investigating-how-phishing-link-appeared-on-its-x-account?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1791709500000",
+      "id": "rss-CoinTelegraph-5-1791709500000",
       "timestamp": "09:05",
       "source": "CoinTelegraph",
       "title": "Ledger confirms unauthorized hardware implant, says losses may exceed $86M",
       "link": "https://cointelegraph.com/news/ledger-confirms-unauthorized-hardware-implant-losses-may-exceed-86m?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1791705000000",
-      "timestamp": "07:50",
-      "source": "CoinTelegraph",
-      "title": "CFTC proposals aimed at separating prediction markets from casino gambling",
-      "link": "https://cointelegraph.com/news/cftc-proposals-aimed-at-separating-prediction-markets-from-casino-gambling?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791633134000",
-      "timestamp": "11:52",
-      "source": "CoinTelegraph",
-      "title": "Justin Sun says Tron’s post-quantum cryptography has gone live on testnet",
-      "link": "https://cointelegraph.com/news/justin-sun-says-trons-post-quantum-cryptography-has-gone-live-on-testnet?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-0-1791743400000",
@@ -81,6 +81,27 @@
       "link": "https://www.coindesk.com/business/2026/10/11/imf-finds-demand-for-tokenized-stocks-says-the-market-is-still-volatile-illiquid"
     },
     {
+      "id": "egld-1791764068735",
+      "timestamp": "00:14",
+      "source": "EGLD",
+      "title": "Cotation publique · $4.02 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1791705000000",
+      "timestamp": "07:50",
+      "source": "CoinTelegraph",
+      "title": "CFTC proposals aimed at separating prediction markets from casino gambling",
+      "link": "https://cointelegraph.com/news/cftc-proposals-aimed-at-separating-prediction-markets-from-casino-gambling?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1791633134000",
+      "timestamp": "11:52",
+      "source": "CoinTelegraph",
+      "title": "Justin Sun says Tron’s post-quantum cryptography has gone live on testnet",
+      "link": "https://cointelegraph.com/news/justin-sun-says-trons-post-quantum-cryptography-has-gone-live-on-testnet?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
       "id": "egld-1791746473954",
       "timestamp": "19:21",
       "source": "EGLD",
@@ -100,13 +121,6 @@
       "source": "CoinDesk",
       "title": "One year after 10/10 flash crash, bitcoin and ether liquidity have rebuilt, but altcoins still face risks",
       "link": "https://www.coindesk.com/markets/2026/10/10/one-year-after-10-10-bitcoin-and-ether-liquidity-have-rebuilt-but-other-altcoins-still-face-risks"
-    },
-    {
-      "id": "egld-1791720600181",
-      "timestamp": "12:10",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.91 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-1-1791709311000",
@@ -184,20 +198,6 @@
       "source": "CoinTelegraph",
       "title": "THORChain exec accuses Tether of temporarily freezing USDT vaults",
       "link": "https://cointelegraph.com/news/thorchain-tether-freezing-usdt-addresses?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-1-1791607475000",
-      "timestamp": "04:44",
-      "source": "CoinDesk",
-      "title": "Robinhood Chain slowdown spreads from fees to trading as transactions fall more than 40%",
-      "link": "https://www.coindesk.com/markets/2026/10/10/robinhood-chain-slowdown-spreads-from-fees-to-trading-as-transactions-fall-more-than-40"
-    },
-    {
-      "id": "rss-CoinDesk-2-1791606007000",
-      "timestamp": "04:20",
-      "source": "CoinDesk",
-      "title": "XRP Ledger patched decade-old bug that could create billions of dollars in XRP from nothing",
-      "link": "https://www.coindesk.com/tech/2026/10/10/xrp-ledger-patched-decade-old-bug-that-could-create-billions-of-dollars-in-xrp-from-nothing"
     }
   ]
 }
