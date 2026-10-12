@@ -1,7 +1,8 @@
 /**
- * LIA Hub — live multi-asset + Shadow + Holder terminal + Agent Control.
+ * LIA Hub — live multi-asset + Shadow + Holder terminal + Agent Control + Control Room 3D.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import LiaHubControlRoomLazy from '../components/lia/LiaHubControlRoomLazy'
 import { Link } from 'react-router-dom'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
@@ -102,6 +103,8 @@ export default function LiaPage() {
     return () => window.clearInterval(id)
   }, [refresh])
 
+  void ambient
+
   return (
     <div className="animate-fade-in space-y-6 pb-20 max-w-3xl mx-auto">
       <header className="space-y-2">
@@ -118,6 +121,8 @@ export default function LiaPage() {
           <strong className="text-zinc-400">xPortal</strong>.
         </p>
       </header>
+
+      <LiaHubControlRoomLazy />
 
       <LiaAgentControl />
       <HolderTerminal />
