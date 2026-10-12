@@ -1,17 +1,18 @@
+/**
+ * Dictionnaires FR/EN (+ autres) — core + audit + LIA Hub.
+ */
 import type { Dict, Lang } from './types'
+import { CORE } from './dictionariesCore'
 import { auditFr, auditEn } from './auditKeys'
-
-/** Re-export pattern: load full locale tables then overlay audit keys. */
-import { DICTS as CORE } from './dictionariesCore'
+import { liaHubFr, liaHubEn } from './liaHubKeys'
 
 function withAudit(lang: Lang, base: Dict): Dict {
-  if (lang === 'fr') return { ...base, ...auditFr }
-  if (lang === 'en') return { ...base, ...auditEn }
-  // Other langs fall back to FR audit strings for new keys via t() chain
-  return { ...base, ...auditFr }
+  const audit = lang === 'en' ? auditEn : auditFr
+  const lia = lang === 'en' ? liaHubEn : liaHubFr
+  return { ...base, ...audit, ...lia }
 }
 
-export const DICTS: Record<Lang, Dict> = {
+export const dictionaries: Record<Lang, Dict> = {
   fr: withAudit('fr', CORE.fr),
   en: withAudit('en', CORE.en),
   es: withAudit('es', CORE.es),
@@ -19,4 +20,8 @@ export const DICTS: Record<Lang, Dict> = {
   uk: withAudit('uk', CORE.uk),
   zh: withAudit('zh', CORE.zh),
   ar: withAudit('ar', CORE.ar),
+}
+
+export function getDict(lang: Lang): Dict {
+  return dictionaries[lang] || dictionaries.fr
 }
