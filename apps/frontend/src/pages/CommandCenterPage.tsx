@@ -1,6 +1,7 @@
 /**
  * L'INTELLECT · Command Center — cyber HUD + holo + news + DeFi Hub.
  * Deep-link ?room=pulse|yield|sentinel|hub · messages guest explicites.
+ * Intent journal paper → signature utilisateur xPortal (non-custodial).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -13,25 +14,27 @@ import ClickGuide from '../command-center/ClickGuide'
 import AgentNftOrb from '../command-center/AgentNftOrb'
 import MarketTape from '../command-center/MarketTape'
 import LiaShadowPanel from '../command-center/LiaShadowPanel'
+import IntentXPortalPanel from '../command-center/IntentXPortalPanel'
 import LiveNewsStream from '../command-center/LiveNewsStream'
 import AgentNftStakePanel, { isAgentNftStaked } from '../components/AgentNftStakePanel'
 import LiveAssetTape from '../components/LiveAssetTape'
 import HoloDataRoom from '../components/HoloDataRoom'
-import DeFiCommandPanel from '../components/defi/DeFiCommandPanel'
-import TroHolderBoard from '../components/analytics/TroHolderBoard'
-import TroLiquidityPanel from '../components/defi/TroLiquidityPanel'
-import { useAgentAccess, setEmpireZone, empireTxStart } from '../store/empireStore'
+import DeFiCommandPanel from '../components/DeFiCommandPanel'
+import TroLiquidityPanel from '../components/TroLiquidityPanel'
+import TroHolderBoard from '../components/TroHolderBoard'
+import { useWallet } from '../context/WalletContext'
+import { useUserAccount } from '../hooks/useUserAccount'
+import { holderStatus } from '../lib/holderAccess'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
-import LiaCommandTerminal from '../components/LiaCommandTerminal'
-import DailySignalWidget from '../components/DailySignalWidget'
-import { useWallet } from '../context/WalletContext'
-import { getAppMode } from '../lib/appMode'
-import { type PackId, mergePackFeatures } from '../config/agentPacks'
+import { setEmpireZone } from '../store/empireStore'
+import type { PackId } from '../config/agentPacks'
+import { mergePackFeatures } from '../config/agentPacks'
 import { useI18n } from '../i18n/I18nContext'
 import { toAmbientSnapshot, shortTrendToast, type AuraMode } from '../lib/ambientAura'
 import { useToast } from '../components/ui/Toast'
 import { requestOpenConnect } from '../lib/walletEvents'
+import { LIA_BADGE } from '../config/liaConfig'
 
 type Room = 'hub' | 'pulse' | 'yield' | 'sentinel'
 type EcoTab = 'defi' | 'liquidity' | 'holders'
@@ -61,108 +64,17 @@ export default function CommandCenterPage() {
 
 function CommandCenterInner() {
   const { t } = useI18n()
-  const { push } = useToast()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const access = useAgentAccess()
-  const { env, source, connected: pulseWs } = usePulse()
-  const { connected } = useWallet()
-  const [room, setRoom] = useState<Room>(() => parseRoom(searchParams.get('room')) || 'hub')
-  const [ecoTab, setEcoTab] = useState<EcoTab>(() =>
-    parseRoom(searchParams.get('room')) === 'yield' ? 'liquidity' : 'defi',
-  )
-  const [guestRoomMsg, setGuestRoomMsg] = useState<string | null>(null)
-  const [tunnel, setTunnel] = useState(true)
-  const [tick, setTick] = useState(0)
-  const [rewardFlash, setRewardFlash] = useState(false)
+  const { connected, address } = useWallet()
+  const account = useUserAccount(connected ? address : null)
+  const status = useMemo(() => holderStatus(account.nfts || []), [account.nfts])
+  const [params, setParams] = useSearchParams()
+  const roomParam = parseRoom(params.get('room'))
+  const [room, setRoom] = useState<Room>(roomParam || 'hub')
+  const [eco, setEco] = useState<EcoTab>('defi')
+  const { env } = usePulse()
   const lia = useLIAInterpreter(env)
-  const mode = getAppMode()
-  const packs = (access.packs || []).filter(Boolean) as PackId[]
-  const features = useMemo(() => mergePackFeatures(packs), [packs])
-  const lastMode = useRef<AuraMode | null>(null)
-  const roomSynced = useRef(false)
-
-  const endTunnel = useCallback(() => setTunnel(false), [])
-
-  const ambient = useMemo(
-    () => toAmbientSnapshot(lia.uniforms, lia.confidence, rewardFlash),
-    [lia.uniforms, lia.confidence, rewardFlash],
-  )
-
-  const tryEnterRoom = useCallback(
-    (id: Room, opts?: { fromUrl?: boolean }) => {
-      const locked = id !== 'hub' && !packs.includes(id as PackId)
-      if (locked) {
-        const label = roomLabel(id)
-        setGuestRoomMsg(
-          packs.length === 0
-            ? `Mode Guest — la salle ${label} est verrouillée. Connecte xPortal ou obtiens le pack ${label} (Agents) pour déverrouiller.`
-            : `Salle ${label} verrouillée — ton pack actuel ne l'inclut pas. Upgrade via Agents.`,
-        )
-        window.setTimeout(() => setGuestRoomMsg(null), 8000)
-        if (opts?.fromUrl) {
-          setRoom('hub')
-          setSearchParams(
-            prev => {
-              const n = new URLSearchParams(prev)
-              n.delete('room')
-              return n
-            },
-            { replace: true },
-          )
-        }
-        return false
-      }
-      setGuestRoomMsg(null)
-      setRoom(id)
-      if (id === 'yield') setEcoTab('liquidity')
-      setSearchParams(
-        prev => {
-          const cur = prev.get('room')
-          if (id === 'hub' && !cur) return prev
-          if (id !== 'hub' && cur === id) return prev
-          const n = new URLSearchParams(prev)
-          if (id === 'hub') n.delete('room')
-          else n.set('room', id)
-          return n
-        },
-        { replace: true },
-      )
-      return true
-    },
-    [packs, setSearchParams],
-  )
-
-  useEffect(() => {
-    const q = parseRoom(searchParams.get('room'))
-    if (!q) {
-      roomSynced.current = true
-      return
-    }
-    if (!roomSynced.current || q !== room) {
-      roomSynced.current = true
-      tryEnterRoom(q, { fromUrl: true })
-    }
-  }, [searchParams, tryEnterRoom]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (lastMode.current === null) {
-      lastMode.current = ambient.mode
-      return
-    }
-    if (lastMode.current !== ambient.mode) {
-      lastMode.current = ambient.mode
-      push(shortTrendToast(ambient.mode, packs[0] || 'Agent'), 'info')
-    }
-  }, [ambient.mode, packs, push])
-
-  useEffect(() => {
-    const onClaim = () => {
-      setRewardFlash(true)
-      window.setTimeout(() => setRewardFlash(false), 2200)
-    }
-    window.addEventListener('lia-intent', onClaim)
-    return () => window.removeEventListener('lia-intent', onClaim)
-  }, [])
+  const { push } = useToast()
+  const tunnelRef = useRef(false)
 
   useEffect(() => {
     setEmpireZone('command')
@@ -170,291 +82,130 @@ function CommandCenterInner() {
   }, [])
 
   useEffect(() => {
-    const onRoom = (e: Event) => {
-      const r = (e as CustomEvent).detail?.room as Room | undefined
-      if (r === 'pulse' || r === 'yield' || r === 'sentinel' || r === 'hub') {
-        tryEnterRoom(r)
-      }
-    }
-    window.addEventListener('xartists:cc-room', onRoom)
-    return () => window.removeEventListener('xartists:cc-room', onRoom)
-  }, [tryEnterRoom])
+    if (roomParam && roomParam !== room) setRoom(roomParam)
+  }, [roomParam, room])
 
-  const onYieldAction = () => {
-    empireTxStart('Command → Stake TRO')
-    window.location.hash = '#/staking'
+  const goRoom = useCallback(
+    (r: Room) => {
+      setRoom(r)
+      setParams(p => {
+        const n = new URLSearchParams(p)
+        if (r === 'hub') n.delete('room')
+        else n.set('room', r)
+        return n
+      })
+    },
+    [setParams],
+  )
+
+  const locked = (r: Room) => {
+    if (r === 'hub') return false
+    if (!connected) return true
+    if (r === 'pulse') return !status.pulse && !status.isFull
+    if (r === 'yield') return !status.yield && !status.isFull
+    if (r === 'sentinel') return !status.sentinel && !status.isFull
+    return false
   }
 
-  const bullPct = (50 + Math.max(-40, Math.min(40, (lia.uniforms.uSentiment || 0) * 50))).toFixed(1)
-  const volPct = ((lia.uniforms.uVolatility || 0.35) * 100).toFixed(1)
-  const bullish = (lia.uniforms.uSentiment || 0) >= 0
+  const onRoomClick = (r: Room) => {
+    if (locked(r)) {
+      const label = roomLabel(r)
+      push(
+        connected
+          ? `Pack ${label} requis (ou Pulse full). Voir Agents.`
+          : `Mode Guest — salle ${label} verrouillée. Connecte xPortal ou obtiens le pack ${label}.`,
+      )
+      return
+    }
+    goRoom(r)
+  }
 
-  const ecoTabs = (
-    <>
-      <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] w-fit flex-wrap">
-        {(
-          [
-            ['defi', '📊 Dashboard Hub'],
-            ['liquidity', '💧 Liquidité $TRO'],
-            ['holders', '🏆 Top Holders'],
-          ] as const
-        ).map(([id, label]) => (
+  return (
+    <div className="animate-fade-in space-y-4 pb-24 max-w-5xl mx-auto">
+      <header className="space-y-2">
+        <p className="section-label">{t('cc.title') || 'Command Center'}</p>
+        <h1 className="section-title display text-2xl">L’Intellect · cockpit</h1>
+        <p className="text-[11px] text-emerald-200/90 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 inline-block max-w-full">
+          {LIA_BADGE}
+        </p>
+        <p className="text-[12px] text-zinc-500">
+          Simulation & assistant de trade · paper-first · signature utilisateur uniquement.
+        </p>
+      </header>
+
+      <div className="flex flex-wrap gap-1 p-1 rounded-xl bg-black/40 border border-white/10 w-fit">
+        {ROOM_IDS.map(r => (
           <button
-            key={id}
+            key={r}
             type="button"
-            onClick={() => setEcoTab(id)}
-            className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${
-              ecoTab === id
-                ? 'bg-cyan-600/25 text-cyan-100 border border-cyan-400/30'
-                : 'text-zinc-500 hover:text-white border border-transparent'
+            onClick={() => onRoomClick(r)}
+            className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold min-h-[36px] ${
+              room === r
+                ? 'bg-violet-600/40 text-violet-100'
+                : locked(r)
+                  ? 'text-zinc-600'
+                  : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            {label}
+            {roomLabel(r)}
+            {locked(r) ? ' 🔒' : ''}
           </button>
         ))}
       </div>
-      {ecoTab === 'defi' && <DeFiCommandPanel hideTroLiquidity />}
-      {ecoTab === 'liquidity' && <TroLiquidityPanel />}
-      {ecoTab === 'holders' && <TroHolderBoard />}
-    </>
-  )
-
-  return (
-    <div className="animate-fade-in space-y-5 pb-28 max-w-4xl mx-auto relative">
-      <DataTunnelTransition active={tunnel} onDone={endTunnel} />
-
-      <header className="glass-hud p-4 space-y-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="text-[10px] uppercase tracking-[0.28em] text-cyan-300/90 font-tech">
-            L'INTELLECT · COMMAND CENTER
-          </p>
-          <span className="pill-hud">{mode}</span>
-          <span className="pill-hud">
-            {source}
-            {pulseWs ? ' · live' : ''}
-          </span>
-          <span className={`pill-hud ${bullish ? 'pill-bull' : 'pill-bear'}`}>
-            {bullish ? 'BULLISH' : 'BEARISH'} {bullPct}%
-          </span>
-          <span className="pill-hud pill-vol">VOL {volPct}%</span>
-          {features.commandHub ? (
-            <span className="pill-hud pill-bull">FULL</span>
-          ) : (
-            <span className="pill-hud">LIMITED</span>
-          )}
-          {room !== 'hub' && (
-            <span className="pill-hud border border-cyan-400/30 text-cyan-100">
-              ROOM · {roomLabel(room).toUpperCase()}
-            </span>
-          )}
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white font-tech title-glow tracking-wide">
-          Analyse Cognitive On-Chain & signaux Live
-        </h1>
-        <p className="text-sm text-zinc-400">{t('cc.subtitle')}</p>
-      </header>
-
-      {(features.liveTapeFull || !packs.length) && <LiveAssetTape />}
-
-      <div className="grid lg:grid-cols-3 gap-3">
-        <div className="lg:col-span-2 space-y-3">
-          <DailySignalWidget compact />
-        </div>
-        <LiveNewsStream compact />
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {(
-          [
-            ['hub', t('cc.hub')],
-            ['pulse', t('cc.pulse')],
-            ['yield', t('cc.yield')],
-            ['sentinel', t('cc.sentinel')],
-          ] as const
-        ).map(([id, label]) => {
-          const locked = id !== 'hub' && !packs.includes(id as PackId)
-          return (
-            <button
-              key={id}
-              type="button"
-              onClick={() => tryEnterRoom(id)}
-              className={`rounded-full px-3 py-1.5 text-[12px] border font-tech transition ${
-                room === id
-                  ? 'border-cyan-400/50 bg-cyan-500/15 text-white shadow-[0_0_12px_rgba(34,211,238,0.25)]'
-                  : locked
-                    ? 'border-amber-400/25 text-amber-200/70 hover:border-amber-400/40'
-                    : 'border-white/10 text-zinc-400 hover:text-white glass-hud'
-              }`}
-            >
-              {label}
-              {locked ? ` · ${t('cc.locked')}` : ''}
-            </button>
-          )
-        })}
-      </div>
-
-      {guestRoomMsg && (
-        <div
-          className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-3 py-2.5 text-[12px] text-amber-100 leading-relaxed space-y-2"
-          role="status"
-        >
-          <p>{guestRoomMsg}</p>
-          <div className="flex flex-wrap gap-2">
-            {!connected && (
-              <button
-                type="button"
-                className="btn-primary text-[11px] px-2 py-1"
-                onClick={() => requestOpenConnect()}
-              >
-                Connecter xPortal
-              </button>
-            )}
-            <Link to="/agents" className="btn-primary text-[11px] px-2 py-1">
-              Voir les packs →
-            </Link>
-            <Link to="/my-packs" className="btn-secondary text-[11px] px-2 py-1">
-              My Packs
-            </Link>
-          </div>
-        </div>
-      )}
-
-      {room === 'hub' && (
-        <div className="space-y-4">
-          <CommandWall
-            sentiment={lia.uniforms.uSentiment}
-            volatility={lia.uniforms.uVolatility}
-            pulseSpeed={lia.uniforms.uPulseSpeed}
-            colorRgb={lia.uniforms.uColor}
-            interactive={features.commandHub || !packs.length}
-          />
-          <HoloDataRoom
-            mode="hub"
-            sentiment={lia.uniforms.uSentiment}
-            volatility={lia.uniforms.uVolatility}
-            height={420}
-          />
-          {ecoTabs}
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div className="glass-hud p-3">
-              <ClickGuide />
-            </div>
-            <div className="glass-hud p-3">
-              <MarketTape snap={ambient} />
-            </div>
-          </div>
-          <LiveNewsStream />
-          {packs[0] && (
-            <AgentNftOrb
-              packId={packs[0]}
-              staked={isAgentNftStaked(packs[0])}
-              aura={ambient.mode}
-              onSelect={() => setTick(x => x + 1)}
-            />
-          )}
-          {features.agentStake && <AgentNftStakePanel key={tick} packIds={packs} />}
-          {(features.liaFull || !packs.length) && (
-            <div className="glass-hud p-3">
-              <LiaShadowPanel />
-            </div>
-          )}
-          {(features.commandHub || !packs.length) && (
-            <>
-              <DashboardSource />
-              <AgentRoster />
-            </>
-          )}
-          <div className="glass-hud p-3 flex flex-wrap gap-2">
-            {features.defiSleeve && (
-              <button type="button" className="btn-secondary text-sm" onClick={onYieldAction}>
-                {t('nav.staking')} $TRO
-              </button>
-            )}
-            <Link to="/marketplace" className="btn-secondary text-sm">
-              {t('nav.market')}
-            </Link>
-            <Link to="/lia" className="btn-secondary text-sm">
-              LIA Hub
-            </Link>
-            <Link to="/hatom" className="btn-secondary text-sm">
-              Hatom
-            </Link>
-            {features.tca && (
-              <Link to="/tca" className="btn-secondary text-sm">
-                TCA
-              </Link>
-            )}
-            {!features.commandHub && packs.length > 0 && (
-              <Link to="/agents" className="btn-primary text-sm">
-                Upgrade Pulse →
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
-
-      {room !== 'hub' && packs.includes(room as PackId) && (
-        <div className="space-y-4">
-          <div className="rounded-xl border border-cyan-400/20 bg-cyan-500/[0.06] px-3 py-2 flex flex-wrap items-center gap-2">
-            <p className="text-[12px] text-cyan-100/90 font-medium">
-              Salle {roomLabel(room)} · pack actif
-            </p>
-            <button
-              type="button"
-              className="text-[11px] text-zinc-400 underline ml-auto"
-              onClick={() => tryEnterRoom('hub')}
-            >
-              ← Retour Hub
-            </button>
-          </div>
-          {room === 'pulse' && features.liveTapeFull && <LiveAssetTape compact />}
-          <CommandWall
-            sentiment={lia.uniforms.uSentiment}
-            volatility={lia.uniforms.uVolatility}
-            interactive={false}
-          />
-          <HoloDataRoom mode={room as PackId} height={400} />
-          {room === 'yield' && ecoTabs}
-          <AgentNftOrb
-            packId={room as PackId}
-            staked={isAgentNftStaked(room as PackId)}
-            aura={ambient.mode}
-          />
-          <MarketTape snap={ambient} />
-          <AgentNftStakePanel packIds={[room as PackId]} />
-        </div>
-      )}
 
       {!connected && (
-        <p className="text-xs text-amber-200/90">
-          {t('common.connect')} — TX on-chain.{' '}
-          <button type="button" className="underline" onClick={() => requestOpenConnect()}>
-            xPortal
-          </button>
-        </p>
+        <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
+          Connecter xPortal
+        </button>
       )}
 
-      <LiaCommandTerminal
-        phrase={lia.phrase}
-        mood={lia.uniforms.mood}
-        confidence={lia.confidence}
-        source={lia.source}
-        pending={lia.shadow.liaPending}
-        fallback={lia.shadow.fallbackActive}
-        onAsk={ctx => lia.requestComment(ctx)}
-        contextHint={room === 'hub' ? 'command-center' : `room:${room}`}
-        defaultOpen={false}
-      />
+      <MarketTape />
+      <LiveAssetTape />
+      <CommandWall />
+      <DashboardSource />
+      <AgentRoster />
+      <AgentNftOrb />
+      <LiveNewsStream />
 
-      <p className="text-[11px] text-zinc-600">
-        <Link to="/my-packs" className="hover:text-zinc-400">
-          My Packs
+      <LiaShadowPanel />
+      <IntentXPortalPanel />
+
+      <section className="space-y-2">
+        <div className="flex gap-1 p-1 rounded-xl bg-black/40 border border-white/10 w-fit flex-wrap">
+          {(['defi', 'liquidity', 'holders'] as EcoTab[]).map(tab => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setEco(tab)}
+              className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold min-h-[36px] ${
+                eco === tab ? 'bg-cyan-600/30 text-cyan-100' : 'text-zinc-400'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        {eco === 'defi' && <DeFiCommandPanel />}
+        {eco === 'liquidity' && <TroLiquidityPanel />}
+        {eco === 'holders' && <TroHolderBoard />}
+      </section>
+
+      <HoloDataRoom />
+      <AgentNftStakePanel />
+      <ClickGuide />
+      <DataTunnelTransition active={tunnelRef.current} />
+
+      <div className="flex flex-wrap gap-3 text-[12px] text-zinc-500">
+        <Link to="/lia" className="hover:text-zinc-300">
+          LIA Hub
         </Link>
-        {' · '}
-        <Link to="/agents" className="hover:text-zinc-400">
-          {t('nav.packs')}
+        <Link to="/agents" className="hover:text-zinc-300">
+          Packs
         </Link>
-      </p>
+        <Link to="/" className="hover:text-zinc-300">
+          Accueil
+        </Link>
+      </div>
     </div>
   )
 }
