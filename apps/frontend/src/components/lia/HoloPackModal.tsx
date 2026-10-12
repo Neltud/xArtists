@@ -1,7 +1,7 @@
 /** Modale B2B pack sponsor — Silver / Gold / Platinum. */
 import { Link } from 'react-router-dom'
 import type { PackId } from '../../config/agentPacks'
-import { PACKS } from '../../config/agentPacks'
+import { AGENT_PACKS } from '../../config/agentPacks'
 
 const TIERS = [
   {
@@ -28,7 +28,7 @@ type Props = {
 
 export function HoloPackModal({ packId, onClose }: Props) {
   if (!packId) return null
-  const pack = PACKS.find(p => p.id === packId)
+  const pack = AGENT_PACKS.find(p => p.id === packId)
   if (!pack) return null
 
   return (
