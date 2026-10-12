@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom'
 import { resolveTcaAccess, type TcaAccessResult } from '../lib/tcaAccess'
 import { demoPacksAllowed, verifyAccessRemote } from '../lib/tcaVerifyClient'
 import { PulseAccessBanner } from '../components/tca/PulseAccessBanner'
-import { YouTubeEmbed } from '../components/tca/YouTubeEmbed'
+import { TcaModuleOne } from '../components/tca/TcaModuleOne'
+import { ImmersiveErrorBoundary } from '../components/ImmersiveErrorBoundary'
+import { saveTcaContext } from '../lib/tcaVideoContext'
 import PageLoader from '../components/PageLoader'
 import { useWallet } from '../context/WalletContext'
 
@@ -22,7 +24,7 @@ async function loadSample(): Promise<SampleLesson> {
   }
   return {
     id: 'sample_01',
-    title: 'Apercu sfumato',
+    title: 'Module 1 — What is sfumato?',
     youtubeId: 'BqQhD2qH8vE',
     cta: 'Pack Pulse 12 mois',
   }
@@ -100,32 +102,29 @@ export default function TcaGatePage() {
           {serverNote ? <p className="text-[9px] text-zinc-600">{serverNote}</p> : null}
         </div>
         <Suspense fallback={<PageLoader />}>
-          <TcaClassroom />
+          <ImmersiveErrorBoundary area="classroom">
+            <TcaClassroom />
+          </ImmersiveErrorBoundary>
         </Suspense>
       </div>
     )
   }
 
   if (access.status === 'SAMPLE') {
+    if (sample?.youtubeId) {
+      saveTcaContext({
+        video_id: sample.youtubeId,
+        lesson_id: sample.id || 'sample_01',
+        topic: sample.title,
+      })
+    }
     return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-4 py-8 text-white">
-        <PulseAccessBanner access={access} mode="SAMPLE" />
-        {serverNote ? <p className="text-[10px] text-zinc-600">{serverNote}</p> : null}
-        <div className="inline-flex w-fit rounded-full border border-amber-500/30 bg-amber-950/40 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-200/90">
-          Mode echantillon (ATC)
+      <div className="min-h-screen bg-black">
+        <div className="mx-auto max-w-3xl px-4 pt-6">
+          <PulseAccessBanner access={access} mode="SAMPLE" />
+          {serverNote ? <p className="mt-1 text-[10px] text-zinc-600">{serverNote}</p> : null}
         </div>
-        <h1 className="text-xl font-semibold text-amber-50">{sample?.title || 'Lecon apercu'}</h1>
-        <YouTubeEmbed videoId={sample?.youtubeId || ''} title={sample?.title} />
-        <div className="rounded-2xl border border-white/10 bg-black/40 p-5 space-y-3">
-          <h3 className="text-base font-medium text-amber-100">Mode immersif (TCA)</h3>
-          <p className="text-[13px] text-zinc-400">Hologramme 3D + RAG — Pack Pulse 12 mois.</p>
-          <Link
-            to="/agents"
-            className="inline-flex rounded-full border border-amber-500/40 bg-amber-950/50 px-5 py-2.5 text-[13px] font-semibold text-amber-100"
-          >
-            Obtenir le Pack Pulse
-          </Link>
-        </div>
+        <TcaModuleOne mode="SAMPLE" />
       </div>
     )
   }
