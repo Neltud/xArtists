@@ -1,4 +1,4 @@
-/** Sprint 1.1 zero-trust Pulse access — MultiversX read-only + HS256 JWT. */
+/** Sprint 1.1 zero-trust Pulse access — MultiversX read-only + HS256 JWT + memory cache. */
 import crypto from 'node:crypto'
 
 const MS_DAY = 24 * 60 * 60 * 1000
@@ -64,8 +64,8 @@ export async function fetchPulseFromChain(address) {
     const nfts = await res.json()
     if (!Array.isArray(nfts)) return { held: false, reason: 'indexer_bad_shape', source: 'chain' }
     const match = nfts.find(n => {
-      const col = String(n.collection || n.ticker || '')
-      return tickers.some(t => col === t || col.startsWith(t))
+      const col = String(n.collection || n.ticker || '').toUpperCase()
+      return tickers.some(t => col === t.toUpperCase() || String(n.identifier || '').toUpperCase().startsWith(t.toUpperCase() + '-'))
     })
     if (!match) return { held: false, reason: 'no_pulse_nft', source: 'chain' }
     let activatedAtMs = null
@@ -82,60 +82,72 @@ export async function fetchPulseFromChain(address) {
   }
 }
 
+/** In-memory cache address → access (TTL 45s) for <200ms repeat hits. */
+const accessCache = new Map()
+const CACHE_TTL_MS = Number(process.env.ACCESS_CACHE_TTL_MS || 45000)
+
 export async function resolveAccessLevel(address) {
   const now = Date.now()
   if (!address || !isErd(address)) {
     return { status: 'NONE', hasAccess: false, reason: 'no_wallet', expiryDate: null, source: 'none' }
   }
   const addr = address.trim()
+  const cached = accessCache.get(addr.toLowerCase())
+  if (cached && Date.now() - cached.at < CACHE_TTL_MS) return cached.value
+
+  const put = value => {
+    accessCache.set(addr.toLowerCase(), { at: Date.now(), value })
+    return value
+  }
+
   if (parseAllowlist().has(addr.toLowerCase())) {
-    return {
+    return put({
       status: 'FULL',
       hasAccess: true,
       reason: 'allowlist',
       expiryDate: new Date(now + DURATION_DAYS * MS_DAY).toISOString(),
       source: 'allowlist',
-    }
+    })
   }
   const chain = await fetchPulseFromChain(addr)
   if (!chain.held) {
-    return {
+    return put({
       status: 'SAMPLE',
       hasAccess: false,
       reason: chain.reason || 'no_pulse_pack',
       expiryDate: null,
       source: chain.source || 'chain',
-    }
+    })
   }
   if (chain.activatedAtMs != null) {
     const expiresMs = chain.activatedAtMs + DURATION_DAYS * MS_DAY
     if (now > expiresMs) {
-      return {
+      return put({
         status: 'SAMPLE',
         hasAccess: false,
         reason: 'pulse_expired',
         expiryDate: new Date(expiresMs).toISOString(),
         source: 'chain',
         identifier: chain.identifier,
-      }
+      })
     }
-    return {
+    return put({
       status: 'FULL',
       hasAccess: true,
       reason: 'pulse_active',
       expiryDate: new Date(expiresMs).toISOString(),
       source: 'chain',
       identifier: chain.identifier,
-    }
+    })
   }
-  return {
+  return put({
     status: 'FULL',
     hasAccess: true,
     reason: 'pulse_held',
     expiryDate: new Date(now + DURATION_DAYS * MS_DAY).toISOString(),
     source: 'chain',
     identifier: chain.identifier,
-  }
+  })
 }
 
 export function issueAccessToken(access, address, secret) {
@@ -146,6 +158,7 @@ export function issueAccessToken(access, address, secret) {
   const payload = {
     sub: address || null,
     level: access.status,
+    access_level: access.status,
     reason: access.reason,
     iat: nowSec,
     exp: nowSec + JWT_TTL_SEC,

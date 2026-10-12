@@ -1,33 +1,30 @@
 /**
  * Access API — verify-access JWT, SIWX challenge, daily signals, checkout stubs.
+ * Sprint 1: POST /v1/verify-access and alias /api/verify-access
  */
 import http from 'node:http'
-import { URL } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { resolveAccessLevel, issueAccessToken, verifyJwt } from './verifyAccess.mjs'
-import {
-  createChallenge,
-  consumeNonce,
-  verifyErdSignature,
-  requireSiwx,
-} from './siwx.mjs'
+import { createChallenge, consumeNonce, verifyErdSignature, requireSiwx } from './siwx.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PORT = Number(process.env.PORT || 8787)
-const CORS = process.env.CORS_ORIGIN || '*'
+const JWT_SECRET = process.env.ACCESS_JWT_SECRET || process.env.JWT_SECRET || ''
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || ''
-const JWT_SECRET = process.env.JWT_SECRET || ''
+const CORS = process.env.CORS_ORIGIN || '*'
 
 function json(res, code, body) {
+  const data = body === undefined ? '' : JSON.stringify(body)
   res.writeHead(code, {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json; charset=utf-8',
     'Access-Control-Allow-Origin': CORS,
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Cache-Control': 'no-store',
   })
-  res.end(JSON.stringify(body))
+  res.end(data)
 }
 
 async function readBody(req) {
@@ -83,7 +80,6 @@ const server = http.createServer(async (req, res) => {
     return
   }
 
-  // SIWX challenge
   if (req.method === 'POST' && pth === '/v1/access/challenge') {
     const body = await readBody(req)
     const address = (body.address || '').trim()
@@ -92,7 +88,7 @@ const server = http.createServer(async (req, res) => {
     return
   }
 
-  if (req.method === 'POST' && pth === '/v1/verify-access') {
+  if (req.method === 'POST' && (pth === '/v1/verify-access' || pth === '/api/verify-access')) {
     const body = await readBody(req)
     const address = (body.address || body.wallet || '').trim()
     const signature = body.signature || body.sig || ''
@@ -129,7 +125,6 @@ const server = http.createServer(async (req, res) => {
         return
       }
     } else if (signature && message && address) {
-      // Optional verify when provided
       if (nonce && !consumeNonce(nonce, address)) {
         json(res, 401, { ok: false, status: 'SAMPLE', hasAccess: false, reason: 'siwx_nonce_invalid' })
         return
@@ -155,6 +150,7 @@ const server = http.createServer(async (req, res) => {
     json(res, 200, {
       ok: true,
       status: access.status,
+      access_level: access.status,
       hasAccess: access.hasAccess,
       reason: access.reason,
       expiryDate: access.expiryDate,
