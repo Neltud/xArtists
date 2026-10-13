@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.104.0](https://github.com/Neltud/xArtists/compare/v0.103.0...v0.104.0) (2026-10-13)
+
+
+### Features
+
+* **lia-hub:** distinct pack visuals, real pool data integration and hud graph axes ([8a51c6f](https://github.com/Neltud/xArtists/commit/8a51c6fa14108be45f1db9d35a129507f85e0c09))
+* **lia-hub:** wire distinct holo renderers + live pool into control room ([84b15c3](https://github.com/Neltud/xArtists/commit/84b15c350797da29f322cc810bea3cc461df96de))
+* **lia:** add nft strategy programmer and update treasury reward disclaimers ([59c115e](https://github.com/Neltud/xArtists/commit/59c115eac185a49d3982ab15861cef55534438db))
+* **lia:** invert pulse to gold, fix 600ms block axes and add blue ribbon signals ([8fcf7e7](https://github.com/Neltud/xArtists/commit/8fcf7e7ae0ca32038153256dce6189bb75f9cfc2))
+* **lia:** PULSE GOLD / YIELD SILVER tiers + LiaSignalPanel on Command Center ([136d949](https://github.com/Neltud/xArtists/commit/136d94932713332dff51b73c2cecb1bd198cf89d))
+* **lia:** wire strategy programmer + economic disclosure on CC and pack modal ([b78d164](https://github.com/Neltud/xArtists/commit/b78d1648865b8dbc3e049f7ba0b69d9338f0c396))
+
 ## [0.103.0](https://github.com/Neltud/xArtists/compare/v0.102.0...v0.103.0) (2026-10-13)
 
 
