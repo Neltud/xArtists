@@ -1,5 +1,5 @@
 /**
- * Modale holo pack — NFT gate vers Command Center (?room=pack).
+ * Modale holo pack — NFT gate Command Center + disclosure économique.
  */
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
@@ -10,6 +10,7 @@ import { useUserAccount } from '../../hooks/useUserAccount'
 import { holderStatus } from '../../lib/holderAccess'
 import { requestOpenConnect } from '../../lib/walletEvents'
 import { useI18n } from '../../i18n/I18nContext'
+import EconomicDisclosure from './EconomicDisclosure'
 
 type Props = {
   packId: PackId | null
@@ -61,7 +62,7 @@ export function HoloPackModal({ packId, onClose }: Props) {
             <h2 className="text-xl font-semibold text-white">
               {ownsThis ? (
                 <>
-                  {pack.icon} {pack.name}
+                  {pack.icon} {pack.name} · {pack.tierLabel}
                 </>
               ) : (
                 t('pack.gate.title')
@@ -84,6 +85,7 @@ export function HoloPackModal({ packId, onClose }: Props) {
               {t('pack.gate.locked').replace('{pack}', packName)}
             </p>
             <p className="text-[12px] text-zinc-500">{pack.tagline}</p>
+            <EconomicDisclosure />
             {!connected && (
               <p className="text-[12px] text-amber-200/90">{t('pack.gate.connectFirst')}</p>
             )}
@@ -118,6 +120,7 @@ export function HoloPackModal({ packId, onClose }: Props) {
             <p className="text-[13px] text-emerald-200/90 leading-relaxed">
               {t('pack.gate.unlocked').replace('{pack}', packName)}
             </p>
+            <EconomicDisclosure />
             <ul className="text-[12px] text-zinc-400 space-y-1 list-disc list-inside">
               {(pack.entitlements || []).slice(0, 4).map(e => (
                 <li key={e}>{e}</li>

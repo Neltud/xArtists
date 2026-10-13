@@ -1,6 +1,5 @@
 /**
- * L'INTELLECT · Command Center — cyber HUD + intents paper → xPortal.
- * Paper-first · non-custodial · LIA_LIVE_TRADING=0 · Blue Ribbon signals.
+ * Command Center — strategy programmer NFT + intents paper → xPortal.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -15,6 +14,8 @@ import MarketTape from '../command-center/MarketTape'
 import LiaShadowPanel from '../command-center/LiaShadowPanel'
 import IntentXPortalPanel from '../command-center/IntentXPortalPanel'
 import LiaSignalPanel from '../components/lia/LiaSignalPanel'
+import AgentStrategyConfigPanel from '../components/lia/AgentStrategyConfig'
+import EconomicDisclosure from '../components/lia/EconomicDisclosure'
 import LiveNewsStream from '../command-center/LiveNewsStream'
 import LiveAssetTape from '../components/LiveAssetTape'
 import { useWallet } from '../context/WalletContext'
@@ -123,6 +124,7 @@ function CommandCenterInner() {
         <p className="text-[12px] text-zinc-500">
           Simulation & assistant de trade · paper-first · signature utilisateur uniquement.
         </p>
+        <EconomicDisclosure compact />
       </header>
 
       <div className="flex flex-wrap gap-1 p-1 rounded-xl bg-black/40 border border-white/10 w-fit">
@@ -160,6 +162,7 @@ function CommandCenterInner() {
       <LiveNewsStream />
 
       <LiaShadowPanel />
+      <AgentStrategyConfigPanel />
       <LiaSignalPanel />
       <IntentXPortalPanel />
 
