@@ -7,7 +7,7 @@ export default function BottomNav() {
     { to: '/', label: t('nav.home'), icon: '◈', end: true },
     { to: '/museum', label: t('nav.museum'), icon: '🖼', end: false },
     { to: '/marketplace', label: t('nav.market'), icon: '◇', end: false },
-    { to: '/lia', label: t('nav.lia') || 'LIA', icon: '◎', end: false },
+    { to: '/lia', label: t('nav.lia'), icon: '◎', end: false },
     { to: '/agents', label: t('nav.packs'), icon: '✦', end: false },
   ] as const
 
@@ -15,7 +15,7 @@ export default function BottomNav() {
     <nav
       className="hud-bottom-nav fixed inset-x-0 bottom-0 z-50 md:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
-      aria-label="Navigation principale"
+      aria-label={t('nav.home')}
     >
       <div className="grid grid-cols-5 gap-0.5 px-1.5 pb-1 pt-1.5">
         {items.map(({ to, label, icon, end }) => (
@@ -24,7 +24,7 @@ export default function BottomNav() {
             to={to}
             end={end}
             className={({ isActive }) =>
-              `hud-nav-item flex flex-col items-center gap-0.5 rounded-2xl py-2 text-[10px] font-medium transition active:scale-95 ${
+              `hud-nav-item flex min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-2xl py-2 text-[10px] font-medium transition active:scale-95 ${
                 isActive ? 'hud-nav-item-active' : 'text-zinc-500 active:bg-white/5'
               }`
             }
@@ -35,7 +35,7 @@ export default function BottomNav() {
             >
               {icon}
             </span>
-            <span className="truncate">{label}</span>
+            <span className="truncate max-w-full px-0.5">{label}</span>
           </NavLink>
         ))}
       </div>
