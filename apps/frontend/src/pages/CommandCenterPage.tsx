@@ -1,6 +1,6 @@
 /**
  * L'INTELLECT · Command Center — cyber HUD + intents paper → xPortal.
- * Paper-first · non-custodial · LIA_LIVE_TRADING=0.
+ * Paper-first · non-custodial · LIA_LIVE_TRADING=0 · Blue Ribbon signals.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -14,6 +14,7 @@ import AgentNftOrb from '../command-center/AgentNftOrb'
 import MarketTape from '../command-center/MarketTape'
 import LiaShadowPanel from '../command-center/LiaShadowPanel'
 import IntentXPortalPanel from '../command-center/IntentXPortalPanel'
+import LiaSignalPanel from '../components/lia/LiaSignalPanel'
 import LiveNewsStream from '../command-center/LiveNewsStream'
 import LiveAssetTape from '../components/LiveAssetTape'
 import { useWallet } from '../context/WalletContext'
@@ -39,9 +40,9 @@ function parseRoom(v: string | null): Room | null {
 }
 
 function roomLabel(id: Room): string {
-  if (id === 'pulse') return 'Pulse'
-  if (id === 'yield') return 'Yield'
-  if (id === 'sentinel') return 'Sentinel'
+  if (id === 'pulse') return 'Pulse · GOLD'
+  if (id === 'yield') return 'Yield · SILVER'
+  if (id === 'sentinel') return 'Sentinel · PLATINUM'
   return 'Hub'
 }
 
@@ -103,8 +104,8 @@ function CommandCenterInner() {
       const label = roomLabel(r)
       push(
         connected
-          ? `Pack ${label} requis (ou Pulse full). Voir Agents.`
-          : `Mode Guest — salle ${label} verrouillée. Connecte xPortal ou obtiens le pack ${label}.`,
+          ? `Pack ${label} requis (ou Pulse GOLD full). Voir Agents.`
+          : `Mode Guest — salle ${label} verrouillée. Connecte xPortal ou obtiens le pack.`,
       )
       return
     }
@@ -159,6 +160,7 @@ function CommandCenterInner() {
       <LiveNewsStream />
 
       <LiaShadowPanel />
+      <LiaSignalPanel />
       <IntentXPortalPanel />
 
       <section className="space-y-2">

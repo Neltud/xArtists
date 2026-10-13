@@ -1,8 +1,8 @@
 /**
- * Packs IA NFT — différenciation forte :
- * - Pulse  = PACK COMPLET (full suite)
- * - Yield  = limité DeFi / LP / claim
- * - Sentinel = limité veille / alertes / risk
+ * Packs IA NFT — hiérarchie B2B :
+ * - Pulse  = GOLD (full suite, HF signals)
+ * - Yield  = SILVER (DeFi / LP / claim)
+ * - Sentinel = PLATINUM (veille / RWA / zero-trust)
  */
 
 import { PACK_PRICE_EGLD, PACK_PRICE_EUR } from './multichain'
@@ -11,53 +11,18 @@ export type PackId = 'pulse' | 'yield' | 'sentinel'
 
 /** Feature flags par pack — source de vérité UI + gates */
 export type PackFeatures = {
-  /** Salle 3D dédiée (1 pack = 1 salle) */
   room: boolean
-  /** Command Center hub interactif (mur holo, tape, signaux) */
   commandHub: boolean
-  /** Salle CC nommée (pulse / yield / sentinel) */
   commandRoom: boolean
-  /** TCA / classroom (1 an conceptuel avec Pulse) */
   tca: boolean
-  /** LIA hub panels complets (shadow, matrix, intents) */
   liaFull: boolean
-  /** Live multi-asset tape (BTC ETH SOL TAO EGLD GOLD EUR) */
   liveTapeFull: boolean
-  /** Signaux trading HF (momentum / micro-arb) */
   tradingSignals: boolean
-  /** Vues Hatom / LP / compound (lecture) */
   defiSleeve: boolean
-  /** Alertes risk / drawdown */
   riskAlerts: boolean
-  /** Stake NFT agent / claim clone (quand SC) */
   agentStake: boolean
-  /** Intensité signal 1–3 */
   signalIntensity: 1 | 2 | 3
-  /** Actions / semaine (ordre de grandeur UX) */
   actionsPerWeek: string
-}
-
-export type AgentPackProfile = {
-  id: PackId
-  name: string
-  tagline: string
-  tier: 'full' | 'limited_defi' | 'limited_guard'
-  tierLabel: string
-  icon: string
-  signalIntensity: 1 | 2 | 3
-  priceEgld: { min: number; max: number; list: number }
-  priceEur: { min: number; max: number; list: number }
-  strategies: string[]
-  activity: string
-  entitlements: string[]
-  notIncluded: string[]
-  limits: string[]
-  features: PackFeatures
-  shareOfPackPoolBps: number
-  risk: 'medium' | 'lower' | 'low'
-  color: string
-  borderClass: string
-  domain?: string
 }
 
 const PULSE_FEATURES: PackFeatures = {
@@ -77,7 +42,7 @@ const PULSE_FEATURES: PackFeatures = {
 
 const YIELD_FEATURES: PackFeatures = {
   room: true,
-  commandHub: false,
+  commandHub: true,
   commandRoom: true,
   tca: false,
   liaFull: false,
@@ -87,12 +52,12 @@ const YIELD_FEATURES: PackFeatures = {
   riskAlerts: false,
   agentStake: true,
   signalIntensity: 2,
-  actionsPerWeek: '1–7 / semaine',
+  actionsPerWeek: 'cycles DeFi réguliers',
 }
 
 const SENTINEL_FEATURES: PackFeatures = {
   room: true,
-  commandHub: false,
+  commandHub: true,
   commandRoom: true,
   tca: false,
   liaFull: false,
@@ -105,13 +70,34 @@ const SENTINEL_FEATURES: PackFeatures = {
   actionsPerWeek: 'alertes sparses',
 }
 
+export type AgentPackProfile = {
+  id: PackId
+  name: string
+  tagline: string
+  tier: 'full' | 'limited_defi' | 'limited_guard'
+  tierLabel: string
+  icon: string
+  signalIntensity: 1 | 2 | 3
+  priceEgld: { min: number; max: number; list: number }
+  priceEur: { min: number; max: number; list: number }
+  strategies: string[]
+  activity: string
+  entitlements: string[]
+  features: PackFeatures
+  color?: string
+  borderClass?: string
+  domain?: string
+  risk?: string
+  bps?: number
+}
+
 export const AGENT_PACKS: AgentPackProfile[] = [
   {
     id: 'pulse',
     name: 'Pulse',
-    tagline: 'Pack complet — signaux HF · CC · TCA · LIA · multi-actifs',
+    tagline: 'Pack GOLD — signaux HF · CC · TCA · LIA · multi-actifs',
     tier: 'full',
-    tierLabel: 'COMPLET',
+    tierLabel: 'GOLD',
     icon: '⚡',
     signalIntensity: 3,
     priceEgld: { min: 10, max: PACK_PRICE_EGLD.max, list: 25 },
@@ -120,125 +106,74 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     activity: 'Plusieurs cycles / jour — densité de signaux maximale',
     entitlements: [
       'NFT pack Pulse (badge + salle 3D)',
-      'Command Center hub + salle Pulse',
-      'TCA / classroom (accès produit)',
-      'LIA hub complet (shadow, matrix, intents)',
-      'Live tape BTC ETH SOL TAO EGLD GOLD EUR',
-      'Signaux trading HF (paper jusqu’à gates live)',
-      'Vues DeFi + risk inclus',
-      'Droit de part pool Pulse',
+      'Command Center full + salles Pulse/Yield/Sentinel',
+      'TCA classroom (1 an conceptuel)',
+      'LIA hub panels + live tape multi-actifs',
+      'Signaux trading HF (paper → xPortal)',
     ],
-    notIncluded: [
-      'Contrôle wallet LIA protocole',
-      'Garantie de rendement',
-      'Mandat de gestion',
-      'Travel / booking',
-    ],
-    limits: ['Full suite — pas de plafond de modules UI pack'],
     features: PULSE_FEATURES,
-    shareOfPackPoolBps: 4000,
-    risk: 'medium',
-    color: 'text-emerald-400',
-    borderClass: 'border-emerald-400/40',
-    domain: 'trading',
+    color: 'text-amber-300',
+    borderClass: 'border-amber-400/40',
+    domain: 'signals',
+    risk: 'active',
+    bps: 5000,
   },
   {
     id: 'yield',
     name: 'Yield',
-    tagline: 'Limité DeFi — LP · Hatom · compound · pas de trading HF',
+    tagline: 'Pack SILVER — DeFi / LP / claim · sleeve rendement',
     tier: 'limited_defi',
-    tierLabel: 'LIMITÉ · DEFI',
-    icon: '🌾',
+    tierLabel: 'SILVER',
+    icon: '📈',
     signalIntensity: 2,
-    priceEgld: { min: 10, max: 30, list: 15 },
-    priceEur: { min: 45, max: 135, list: 68 },
-    strategies: ['YIELD', 'COMPOUND', 'LP_REBALANCE', 'HATOM_VIEW'],
-    activity: '1–7 actions / semaine — yield / claim uniquement',
+    priceEgld: { min: PACK_PRICE_EGLD.min, max: 22, list: 15 },
+    priceEur: { min: PACK_PRICE_EUR.min, max: 100, list: 65 },
+    strategies: ['YIELD_OPT', 'LP_WATCH', 'COMPOUND_READ'],
+    activity: 'Cycles DeFi réguliers — focus pool & staking',
     entitlements: [
       'NFT pack Yield + salle 3D Yield',
-      'Salle Command « Yield » uniquement',
-      'Vue lecture Hatom / LP sleeve',
-      'Signaux yield / compound (pas micro-arb)',
-      'Droit de part pool Yield',
-    ],
-    notIncluded: [
-      'Trading HF / momentum / micro-arb',
-      'TCA classroom',
-      'LIA hub complet',
-      'Live tape multi-actifs full',
-      'APY annoncé',
-      'Mandat de gestion',
-    ],
-    limits: [
-      'Pas de hub CC interactif (mur holo full)',
-      'Pas de TCA',
-      'Pas de stratégies MICRO_ARB / MOMENTUM',
-      'Tape prix limitée (stable / DeFi focus)',
+      'Salle Command « Yield »',
+      'Vues Hatom / LP / compound (lecture)',
+      'Stake NFT agent / claim (quand SC)',
     ],
     features: YIELD_FEATURES,
-    shareOfPackPoolBps: 3500,
-    risk: 'lower',
-    color: 'text-teal-400',
-    borderClass: 'border-teal-400/35',
+    color: 'text-slate-300',
+    borderClass: 'border-slate-400/35',
     domain: 'defi',
+    risk: 'lower',
+    bps: 3500,
   },
   {
     id: 'sentinel',
     name: 'Sentinel',
-    tagline: 'Limité veille — alertes · risk sleeve · pas d’exécution agressive',
+    tagline: 'Pack PLATINUM — veille · RWA · zero-trust · risk sleeve',
     tier: 'limited_guard',
-    tierLabel: 'LIMITÉ · GUARD',
+    tierLabel: 'PLATINUM',
     icon: '🛡️',
     signalIntensity: 1,
     priceEgld: { min: PACK_PRICE_EGLD.min, max: 20, list: 10 },
     priceEur: { min: PACK_PRICE_EUR.min, max: 90, list: 45 },
     strategies: ['GUARD', 'ALERT', 'DRAWDOWN_WATCH', 'BOARD_ALERT'],
-    activity: 'Alertes sparses — focus protection',
+    activity: 'Alertes sparses — focus protection & conformité',
     entitlements: [
       'NFT pack Sentinel + salle 3D Sentinel',
       'Salle Command « Sentinel » uniquement',
       'Alertes risk / drawdown board',
-      'Droit de part pool Sentinel',
-    ],
-    notIncluded: [
-      'Exécution trading agressive',
-      'TCA classroom',
-      'LIA hub complet',
-      'Live tape multi-actifs full',
-      'Stratégies yield / LP actives',
-      'Mandat de gestion',
-    ],
-    limits: [
-      'Pas de hub CC interactif full',
-      'Pas de TCA',
-      'Pas de MICRO_ARB / YIELD actif',
-      'Signal intensity minimale',
+      'Certification RWA / zero-trust gates',
     ],
     features: SENTINEL_FEATURES,
-    shareOfPackPoolBps: 2500,
-    risk: 'low',
-    color: 'text-sky-400',
-    borderClass: 'border-sky-400/35',
-    domain: 'risk',
+    color: 'text-violet-300',
+    borderClass: 'border-violet-400/40',
+    domain: 'security',
+    risk: 'guard',
+    bps: 2500,
   },
 ]
 
-export function getPack(id: PackId): AgentPackProfile | undefined {
-  return AGENT_PACKS.find(p => p.id === id)
-}
-
-export function isFullPack(id: PackId): boolean {
+export function isFullPack(id: PackId | string): boolean {
   return id === 'pulse'
 }
 
-export function packHasFeature(id: PackId, feature: keyof PackFeatures): boolean {
-  const p = getPack(id)
-  if (!p) return false
-  const v = p.features[feature]
-  return typeof v === 'boolean' ? v : Boolean(v)
-}
-
-/** Agrège les features de plusieurs packs détenus (Pulse domine). */
 export function mergePackFeatures(packs: PackId[]): PackFeatures {
   const base: PackFeatures = {
     room: false,
@@ -254,9 +189,11 @@ export function mergePackFeatures(packs: PackId[]): PackFeatures {
     signalIntensity: 1,
     actionsPerWeek: '—',
   }
-  for (const id of packs) {
-    const f = getPack(id)?.features
-    if (!f) continue
+  const order: PackId[] = ['sentinel', 'yield', 'pulse']
+  for (const id of order) {
+    if (!packs.includes(id)) continue
+    const f =
+      id === 'pulse' ? PULSE_FEATURES : id === 'yield' ? YIELD_FEATURES : SENTINEL_FEATURES
     base.room = base.room || f.room
     base.commandHub = base.commandHub || f.commandHub
     base.commandRoom = base.commandRoom || f.commandRoom
@@ -274,42 +211,3 @@ export function mergePackFeatures(packs: PackId[]): PackFeatures {
   else if (packs.includes('sentinel')) base.actionsPerWeek = SENTINEL_FEATURES.actionsPerWeek
   return base
 }
-
-export const PACK_PRICING_POLICY = {
-  ranking: 'Pulse COMPLET (25 EGLD) > Yield limité (15) > Sentinel limité (10)',
-  corridorEgld: { min: PACK_PRICE_EGLD.min, max: PACK_PRICE_EGLD.max },
-  corridor: { min: PACK_PRICE_EUR.min, max: PACK_PRICE_EUR.max },
-  listEgld: 25,
-  listEur: 110,
-  note: 'Floor 10 EGLD. Pulse = full suite. Yield/Sentinel = modules bridés. Pas une promesse de rendement.',
-}
-
-export const PACK_JOURNEY_STEPS = [
-  {
-    id: '1',
-    title: 'Choisir un pack IA',
-    body: 'Pulse (complet) · Yield (DeFi limité) · Sentinel (guard limité).',
-  },
-  {
-    id: '2',
-    title: 'Connecter le wallet',
-    body: 'erd1 utilisateur — jamais le wallet ops LIA.',
-  },
-  {
-    id: '3',
-    title: 'Checkout / mint NFT',
-    body: 'Fiat ou on-chain selon SC. Aperçu appareil ≠ achat.',
-  },
-]
-
-export const FUNDING_MODELS = {
-  C_no_user_capital: {
-    id: 'C',
-    when: "Aucun capital utilisateur n'est confié à LIA pour exécution trading. Packs = accès signal + droit de pool uniquement.",
-  },
-} as const
-
-export const GSN_POLICY = {
-  description:
-    'Gas Station Network optionnel pour micro-tx (mint / claim) — utilisateur peut payer gas ou sponsor limité.',
-} as const
