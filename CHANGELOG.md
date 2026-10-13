@@ -1,5 +1,36 @@
 # Changelog — xArtists
 
+## [0.105.0](https://github.com/Neltud/xArtists/compare/v0.104.0...v0.105.0) (2026-10-13)
+
+
+### Features
+
+* **i18n:** add German (de) to supported languages ([02be0fe](https://github.com/Neltud/xArtists/commit/02be0fe1a12b452084eef31efa1dd30480a34468))
+* **i18n:** Dashboard dome badge + touch-safe buttons ([c12aecc](https://github.com/Neltud/xArtists/commit/c12aeccbd68ec2976811448357865992a5225499))
+* **i18n:** dome loading label via t(); dispose path already strict ([aa16cf7](https://github.com/Neltud/xArtists/commit/aa16cf700f4f9b53af39a22db46ff106e29ab767))
+* **i18n:** expand core dicts — home HUD, network, CCA strategy, DE locale ([3f8c5db](https://github.com/Neltud/xArtists/commit/3f8c5db8ef1bc8489f848e98912bce355d1c0ac4))
+* **i18n:** HomeHudCards — zero hardcoded strings, min touch targets ([6493e28](https://github.com/Neltud/xArtists/commit/6493e28a6a319d8724b7e98b9879c098930d6378))
+* **i18n:** robust fallback chain lang → en → fr + detect de ([c719fe7](https://github.com/Neltud/xArtists/commit/c719fe7aa5be2526a8d19f58f502b439f76557c7))
+* **i18n:** wire German locale into dictionary merge ([02f720f](https://github.com/Neltud/xArtists/commit/02f720f7a58755026f06933cbc67bfa06bdc5506))
+
+
+### Bug Fixes
+
+* **ui:** BottomNav min 44px touch targets + i18n aria ([cd6cfc1](https://github.com/Neltud/xArtists/commit/cd6cfc1cc3209202dee5ff06a1909c172c42b494))
+* **ui:** LangSwitcher min 44px touch height ([a27a1f5](https://github.com/Neltud/xArtists/commit/a27a1f5533f2205de799001362760e6cdb73786b))
+* **ui:** make home 360 dome fullscreen and clean hud ([1c74ad5](https://github.com/Neltud/xArtists/commit/1c74ad56cd65cb89dc75a785e8f38b527df1c5bc))
+* **ui:** soften home dome floor grid for pure immersive 360 ([e6bb48c](https://github.com/Neltud/xArtists/commit/e6bb48c870267f2a7a6bbd574cbb1e6dcb9c1c27))
+
+
+### Refactoring
+
+* **clean:** remove deploy-slot-casino workflow — moved to xArtists-Slot ([25ccf7d](https://github.com/Neltud/xArtists/commit/25ccf7dc3f9af4af20051c80898024a03734c7e9))
+* **clean:** remove slot/PotsStrip — extracted to xArtists-Slot ([b5b0727](https://github.com/Neltud/xArtists/commit/b5b07273a1d337ed100f0ccfd19258ba13e8cee6))
+* **clean:** remove slot/SlotModeSwitch — extracted to xArtists-Slot ([e2a16a1](https://github.com/Neltud/xArtists/commit/e2a16a109bb92134b96319e40e80fb5bbcbddfbc))
+* **clean:** remove SlotPage — extracted to Neltud/xArtists-Slot ([49428ed](https://github.com/Neltud/xArtists/commit/49428ed5333a8d9d68ba61b7475e78b48c5bd0a8))
+* **clean:** remove SlotSmartUnlock — extracted to xArtists-Slot ([e899fef](https://github.com/Neltud/xArtists/commit/e899feff3025ce25f33c00023337bb48196d7a5c))
+* **clean:** remove upgrade-slot-payable workflow — moved to xArtists-Slot ([f5f4bf4](https://github.com/Neltud/xArtists/commit/f5f4bf47eb5e1b7354e07fa82700c728d1b37093))
+
 ## [0.104.0](https://github.com/Neltud/xArtists/compare/v0.103.0...v0.104.0) (2026-10-13)
 
 
