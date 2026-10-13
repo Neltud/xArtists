@@ -5,12 +5,14 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
+import { useI18n } from '../../i18n/I18nContext'
 
 const TEX_FPS = 1000 / 24 // fond léger
 
 export default function HomeDomeBackground() {
   const mountRef = useRef<HTMLDivElement>(null)
   const [ready, setReady] = useState(false)
+  const { t } = useI18n()
 
   useEffect(() => {
     const host = mountRef.current
@@ -40,7 +42,6 @@ export default function HomeDomeBackground() {
       renderer.domElement.style.cssText = 'display:block;width:100%;height:100%;pointer-events:none'
       host.appendChild(renderer.domElement)
 
-      // Hemisphere / sky dome (inverted sphere)
       const domeGeo = new THREE.SphereGeometry(40, isMobile ? 32 : 48, isMobile ? 24 : 32)
       const domeCanvas = document.createElement('canvas')
       domeCanvas.width = isMobile ? 512 : 1024
@@ -54,14 +55,12 @@ export default function HomeDomeBackground() {
       grad.addColorStop(1, '#020617')
       dctx.fillStyle = grad
       dctx.fillRect(0, 0, domeCanvas.width, domeCanvas.height)
-      // stars
       for (let i = 0; i < (isMobile ? 80 : 180); i++) {
         const x = Math.random() * domeCanvas.width
         const y = Math.random() * domeCanvas.height * 0.7
         dctx.fillStyle = `rgba(255,255,255,${0.25 + Math.random() * 0.7})`
         dctx.fillRect(x, y, Math.random() > 0.9 ? 2 : 1, Math.random() > 0.9 ? 2 : 1)
       }
-      // nebula blobs
       for (let i = 0; i < 5; i++) {
         const x = Math.random() * domeCanvas.width
         const y = Math.random() * domeCanvas.height * 0.5
@@ -85,7 +84,6 @@ export default function HomeDomeBackground() {
       const dome = new THREE.Mesh(domeGeo, domeMat)
       scene.add(dome)
 
-      // Wireframe inner ring (cyber)
       const ringGeo = new THREE.SphereGeometry(38.5, 24, 16)
       const ringMat = new THREE.MeshBasicMaterial({
         color: 0x7c3aed,
@@ -99,7 +97,6 @@ export default function HomeDomeBackground() {
       const ring = new THREE.Mesh(ringGeo, ringMat)
       scene.add(ring)
 
-      // Sol miroir ultra-discret (plus de grille plate visible)
       const floorMat = new THREE.MeshBasicMaterial({
         color: 0x0a0618,
         transparent: true,
@@ -107,7 +104,9 @@ export default function HomeDomeBackground() {
         depthWrite: false,
       })
       disposables.push(floorMat)
-      const floor = new THREE.Mesh(new THREE.CircleGeometry(18, 48), floorMat)
+      const floorGeo = new THREE.CircleGeometry(18, 48)
+      disposables.push(floorGeo)
+      const floor = new THREE.Mesh(floorGeo, floorMat)
       floor.rotation.x = -Math.PI / 2
       floor.position.y = -1.15
       scene.add(floor)
@@ -120,7 +119,6 @@ export default function HomeDomeBackground() {
         raf = requestAnimationFrame(animate)
         const t = clock.getElapsedTime()
         const now = performance.now()
-        // soft orbital yaw
         camera.position.x = Math.sin(t * 0.06) * 0.35
         camera.position.z = Math.cos(t * 0.06) * 0.35
         camera.position.y = 1.15 + Math.sin(t * 0.12) * 0.05
@@ -195,7 +193,7 @@ export default function HomeDomeBackground() {
       {!ready && (
         <div className="absolute inset-0 flex items-center justify-center bg-[#05050c]">
           <p className="text-[11px] uppercase tracking-[0.2em] text-violet-300/60">
-            Dôme 360°…
+            {t('home.dome.loading')}
           </p>
         </div>
       )}
