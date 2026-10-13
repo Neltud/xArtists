@@ -1,6 +1,7 @@
 /**
  * Dôme 360° WebGL — fond fixed inset-0, rotation orbitale douce, dispose strict.
  * Pas d’écran noir : fond CSS + loader discret jusqu’à sceneReady.
+ * Sol ultra-discret (miroir sombre) pour ne pas casser l’immersion plein écran.
  */
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
@@ -98,12 +99,18 @@ export default function HomeDomeBackground() {
       const ring = new THREE.Mesh(ringGeo, ringMat)
       scene.add(ring)
 
-      // Floor grid hint
-      const grid = new THREE.GridHelper(30, 40, 0x4c1d95, 0x1e1b4b)
-      grid.position.y = -1.2
-      ;(grid.material as THREE.Material).transparent = true
-      ;(grid.material as THREE.Material).opacity = 0.35
-      scene.add(grid)
+      // Sol miroir ultra-discret (plus de grille plate visible)
+      const floorMat = new THREE.MeshBasicMaterial({
+        color: 0x0a0618,
+        transparent: true,
+        opacity: 0.55,
+        depthWrite: false,
+      })
+      disposables.push(floorMat)
+      const floor = new THREE.Mesh(new THREE.CircleGeometry(18, 48), floorMat)
+      floor.rotation.x = -Math.PI / 2
+      floor.position.y = -1.15
+      scene.add(floor)
 
       const clock = new THREE.Clock()
       let last = 0
