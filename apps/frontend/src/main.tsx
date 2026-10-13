@@ -8,27 +8,11 @@ import { MxDappProvider } from './providers/MxDappProvider'
 import TxShell from './providers/TxShell'
 import EmpireBalanceSync from './components/EmpireBalanceSync'
 import AgentAccessSync from './components/AgentAccessSync'
-import { ToastProvider } from './components/ui/Toast'
-import { I18nProvider } from './i18n/I18nContext'
-import { registerSW } from './pwa/registerSW'
-import { probeChainTiming } from './config/chainTiming'
-import { startAgent8008Bridge } from './lib/agent8008Bridge'
 import PulseBoot from './components/PulseBoot'
+import { ToastProvider } from './components/ui/Toast'
+import NetworkToastBridge from './components/NetworkToastBridge'
+import { I18nProvider } from './i18n/I18nContext'
 import './index.css'
-import './styles/tokens.css'
-import './atelier.css'
-import './motion-fx.css'
-
-const g = globalThis as typeof globalThis & { process?: { env: Record<string, string> } }
-if (typeof g.process === 'undefined') {
-  g.process = { env: { NODE_ENV: 'production' } }
-} else if (!g.process.env) {
-  g.process.env = { NODE_ENV: 'production' }
-}
-
-registerSW()
-void probeChainTiming()
-startAgent8008Bridge()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -38,6 +22,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <WalletProvider>
             <MultiversXProvider>
               <ToastProvider>
+                <NetworkToastBridge />
                 <TxShell>
                   <EmpireBalanceSync />
                   <AgentAccessSync />

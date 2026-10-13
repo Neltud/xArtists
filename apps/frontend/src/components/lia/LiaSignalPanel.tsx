@@ -1,5 +1,5 @@
 /**
- * Signaux LIA paper — marché · intent · examiner & signer xPortal.
+ * Signaux LIA paper — marché · intent · examiner & signer xPortal (i18n).
  */
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,8 +8,10 @@ import { loadJournal, markAwaitingSignature, buildUserSignPayload } from '../../
 import { LIA_BADGE, LIA_LIVE_TRADING } from '../../config/liaConfig'
 import { useWallet } from '../../context/WalletContext'
 import { requestOpenConnect } from '../../lib/walletEvents'
+import { useI18n } from '../../i18n/I18nContext'
 
 export default function LiaSignalPanel() {
+  const { t } = useI18n()
   const { connected } = useWallet()
   const [toast, setToast] = useState<string | null>(null)
   const latest = useMemo(() => loadJournal(1)[0] || null, [])
@@ -73,12 +75,6 @@ export default function LiaSignalPanel() {
         <li className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
           <span className="text-[10px] uppercase text-zinc-500">2 · LIA Intent</span>
           <p className="mt-0.5 mono text-cyan-100/90">{intentLabel}</p>
-          {latest && (
-            <p className="text-[11px] text-zinc-500 mt-1">
-              PnL th. {latest.theoreticalPnlUsd >= 0 ? '+' : ''}
-              {latest.theoreticalPnlUsd.toFixed(3)} $
-            </p>
-          )}
         </li>
         <li className="rounded-xl border border-white/10 bg-black/40 px-3 py-2 space-y-2">
           <span className="text-[10px] uppercase text-zinc-500">3 · Execution trigger</span>
@@ -87,7 +83,7 @@ export default function LiaSignalPanel() {
             className="btn-primary text-xs min-h-[44px] w-full sm:w-auto"
             onClick={onExamine}
           >
-            ⚡ Examiner & Signer xPortal
+            {t('cc.sign')}
           </button>
         </li>
       </ol>
