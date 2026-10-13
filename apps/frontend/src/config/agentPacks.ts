@@ -211,3 +211,7 @@ export function mergePackFeatures(packs: PackId[]): PackFeatures {
   else if (packs.includes('sentinel')) base.actionsPerWeek = SENTINEL_FEATURES.actionsPerWeek
   return base
 }
+
+export function getPack(id: PackId | string): AgentPackProfile | undefined {
+  return AGENT_PACKS.find(p => p.id === id)
+}
