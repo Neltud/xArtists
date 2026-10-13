@@ -1,5 +1,5 @@
 /**
- * Entrée unique salle 3D : WebGL (Three.js) si dispo, sinon CSS 3D.
+ * Entrée unique salle 3D : WebGL plein écran si dispo, sinon CSS 3D.
  */
 import { lazy, Suspense, useMemo } from 'react'
 import type { FrameItem } from './MuseumCorridor'
@@ -41,7 +41,7 @@ export default function MuseumHall({
   return (
     <Suspense
       fallback={
-        <div className="rounded-2xl border border-white/10 bg-zinc-950 h-[min(70vh,520px)] flex items-center justify-center text-sm text-zinc-500">
+        <div className="fixed inset-0 z-[25] h-full w-full flex items-center justify-center bg-black text-sm text-zinc-500">
           Chargement moteur WebGL…
         </div>
       }
