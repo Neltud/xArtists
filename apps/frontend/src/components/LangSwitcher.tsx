@@ -10,7 +10,7 @@ export default function LangSwitcher({ compact = true }: { compact?: boolean }) 
       <select
         value={lang}
         onChange={e => setLang(e.target.value as typeof lang)}
-        className="rounded-lg border border-white/10 bg-black/40 px-1.5 py-1 text-[11px] text-zinc-200 max-w-[7.5rem]"
+        className="min-h-[44px] rounded-lg border border-white/10 bg-black/40 px-2 py-1.5 text-[11px] text-zinc-200 max-w-[8rem]"
         aria-label={t('lang.label')}
       >
         {LANGS.map(l => (
