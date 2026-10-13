@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-13T10:07:45.915Z",
+  "updatedAt": "2026-10-13T18:55:08.075Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1791917707401",
+      "timestamp": "18:55",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.75 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1791907075000",
+      "timestamp": "15:57",
+      "source": "CoinTelegraph",
+      "title": "Strive reports $208M in warrant exercises as Bitcoin holdings jump 11%",
+      "link": "https://cointelegraph.com/news/strive-bitcoin-holdings-32773-btc-warrant-exercises?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791905252000",
+      "timestamp": "15:27",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin keeps up pressure on $84K as US stocks skirt Korea tech sell-off",
+      "link": "https://cointelegraph.com/markets/bitcoin-keeps-up-pressure-on-84k-as-us-stocks-sidestep-korea-tech-sell-off?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1791899709000",
+      "timestamp": "13:55",
+      "source": "CoinTelegraph",
+      "title": "Anthropic warns ‘AI worms’ may autonomously spread across devices like a virus",
+      "link": "https://cointelegraph.com/news/anthropic-ai-worms-autonomously-spread-devices-virus?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1791898200000",
+      "timestamp": "13:30",
+      "source": "CoinTelegraph",
+      "title": "Is Bitcoin kidding itself about the Lightning Network?",
+      "link": "https://cointelegraph.com/magazine/is-bitcoin-kidding-itself-about-the-lightning-network?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1791898002000",
+      "timestamp": "13:26",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1791897437000",
+      "timestamp": "13:17",
+      "source": "CoinTelegraph",
+      "title": "Digital cash offers ‘cash-like privacy,’ but bank data breaches threaten users: BIS",
+      "link": "https://cointelegraph.com/news/bis-digital-cash-privacy-bank-data-breaches?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1791906729000",
+      "timestamp": "15:52",
+      "source": "CoinDesk",
+      "title": "Crypto exchange MNX takes on OKX, BitGet offering pre-IPO futures for AI giants",
+      "link": "https://www.coindesk.com/business/2026/10/13/new-crypto-exchange-takes-on-okx-bitget-with-unique-way-to-trade-ai-giants"
+    },
+    {
+      "id": "rss-CoinDesk-1-1791905092000",
+      "timestamp": "15:24",
+      "source": "CoinDesk",
+      "title": "UK crypto trader says almost $800,000 lost in knife attack as wrench attacks proliferate",
+      "link": "https://www.coindesk.com/policy/2026/10/13/why-self-custody-and-hardware-wallets-cannot-prevent-physical-crypto-extortion"
+    },
+    {
+      "id": "rss-CoinDesk-2-1791892684000",
+      "timestamp": "11:58",
+      "source": "CoinDesk",
+      "title": "South Korea blocks 27 crypto exchanges, including Bitmart and Kucoin",
+      "link": "https://www.coindesk.com/policy/2026/10/13/south-korea-blocks-27-crypto-exchanges-including-bitmart-and-kucoin"
+    },
+    {
+      "id": "rss-CoinDesk-3-1791892564000",
+      "timestamp": "11:56",
+      "source": "CoinDesk",
+      "title": "Federated Hermes joins Wall Street's tokenization push with plans for first onchain fund shares",
+      "link": "https://www.coindesk.com/business/2026/10/13/federated-hermes-joins-wall-street-s-tokenization-push-with-plans-for-first-onchain-fund-shares"
+    },
     {
       "id": "egld-1791886065584",
       "timestamp": "10:07",
@@ -37,13 +114,6 @@
       "source": "CoinTelegraph",
       "title": "FTX’s crypto mining venture is now used to advance AI",
       "link": "https://cointelegraph.com/news/ftx-crypto-mining-ai-data-center?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1791833173000",
-      "timestamp": "19:26",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-5-1791831349000",
@@ -128,76 +198,6 @@
       "source": "CoinTelegraph",
       "title": "XRP treasury Evernorth’s shares rise 5% at Nasdaq opening print",
       "link": "https://cointelegraph.com/news/xrp-treasury-evernorth-rise-nasdaq-opening?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1791814020000",
-      "timestamp": "14:07",
-      "source": "CoinTelegraph",
-      "title": "Ledger implant tests Bitcoin ETFs as safer custodial solutions than hardware wallets",
-      "link": "https://cointelegraph.com/news/ledger-implant-bitcoin-etfs-hardware-wallets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1791808311000",
-      "timestamp": "12:31",
-      "source": "CoinTelegraph",
-      "title": "Strategy adds 250 Bitcoin as holdings reach 848,250 BTC",
-      "link": "https://cointelegraph.com/news/michael-saylor-strategy-250-btc-buy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791805318000",
-      "timestamp": "11:41",
-      "source": "CoinTelegraph",
-      "title": "Australia proposes leverage caps for crypto-settled derivatives",
-      "link": "https://cointelegraph.com/news/australia-asic-crypto-settled-cfd-protections?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "egld-1791800189132",
-      "timestamp": "10:16",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.91 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1791768089000",
-      "timestamp": "01:21",
-      "source": "CoinTelegraph",
-      "title": "XRP Ledger defends emergency patch for unlimited XRP bug",
-      "link": "https://cointelegraph.com/news/xrp-ledger-defends-emergency-patch-for-unlimited-xrp-bug?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1791759473000",
-      "timestamp": "22:57",
-      "source": "CoinTelegraph",
-      "title": "Ledger attack spreads to EU, AI finds ’18 trillion XRP’ bug: Hodler’s Digest",
-      "link": "https://cointelegraph.com/magazine/ledger-attack-spreads-to-eu-ai-finds-18-trillion-xrp-bug-hodlers-digest?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1791738660000",
-      "timestamp": "17:11",
-      "source": "CoinTelegraph",
-      "title": "Saylor teases Strategy Bitcoin buying after ending September with STRC buybacks",
-      "link": "https://cointelegraph.com/news/saylors-teases-strategy-bitcoin-buying-after-ending-september-with-strc-buybacks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1791715200000",
-      "timestamp": "10:40",
-      "source": "CoinTelegraph",
-      "title": "Coldcard says it’s investigating how phishing link appeared on its X account",
-      "link": "https://cointelegraph.com/news/coldcard-says-its-investigating-how-phishing-link-appeared-on-its-x-account?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791709500000",
-      "timestamp": "09:05",
-      "source": "CoinTelegraph",
-      "title": "Ledger confirms unauthorized hardware implant, says losses may exceed $86M",
-      "link": "https://cointelegraph.com/news/ledger-confirms-unauthorized-hardware-implant-losses-may-exceed-86m?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1791743400000",
-      "timestamp": "18:30",
-      "source": "CoinDesk",
-      "title": "Everyone wants SCOTUS to take up prediction markets: State of Crypto",
-      "link": "https://www.coindesk.com/policy/2026/10/11/everyone-wants-scotus-to-take-up-prediction-markets-state-of-crypto"
     }
   ]
 }
