@@ -49,6 +49,13 @@ type LiveSnap = {
   lia_ops?: { balance_egld?: number; nonce?: number; address?: string }
 }
 
+function formatUsdCompact(n: number): string {
+  if (!Number.isFinite(n)) return '—'
+  if (n >= 1e9) return `$${(n / 1e9).toFixed(2)}B`
+  if (n >= 1e6) return `$${(n / 1e6).toFixed(1)}M`
+  return `$${n.toFixed(0)}`
+}
+
 function statusStyle(s: string) {
   if (s.includes('paper') || s.includes('demo')) return 'border-cyan-500/40 text-cyan-200 bg-cyan-500/10'
   if (s.includes('sc_pending') || s === 'partial') return 'border-amber-500/40 text-amber-200 bg-amber-500/10'
@@ -193,7 +200,7 @@ export default function EntityMap() {
           <p className="text-[10px] uppercase text-zinc-500">Market cap MVX</p>
           <p className="text-xl font-bold mono mt-1">
             {live?.economics?.market_cap_usd != null
-              ? `$${(Number(live.economics.market_cap_usd) / 1e9).toFixed(2)}B`
+              ? formatUsdCompact(Number(live.economics.market_cap_usd))
               : '—'}
           </p>
         </div>

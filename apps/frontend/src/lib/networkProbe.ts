@@ -120,22 +120,22 @@ async function getJsonSoft<T>(path: string): Promise<T | null> {
 
 /** Last-known fallback — 2026-10-11 probe. Never used as "live" chrome. */
 export const FALLBACK_SNAPSHOT: NetworkSnapshot = {
-  probedAt: '2026-10-11T04:40:00Z',
+  probedAt: '2026-10-13T04:35:00Z',
   ok: false,
   degraded: true,
   api: { stats: false, economics: false, accounts: false, tokens: false },
-  epoch: 2259,
+  epoch: 2261,
   refreshRate: 600,
   roundsPerEpoch: 144000,
-  roundsPassed: 71834,
-  accounts: 9269202,
-  transactions: 631473300,
-  blocks: 142881345,
-  egldPrice: 3.91,
-  marketCap: 120949500,
-  circulating: 30933376,
-  staked: 14256665,
-  apr: 0.088716,
+  roundsPassed: 71969,
+  accounts: 9270309,
+  transactions: 631924166,
+  blocks: 144025632,
+  egldPrice: 3.77,
+  marketCap: 116671887,
+  circulating: 30947450,
+  staked: 14261112,
+  apr: 0.088704,
   liaOps: { balanceEgld: 1.603782, nonce: 1473, stale: true },
   grokyversx: { balanceEgld: 0, nonce: 8, stale: true },
   sc: {
@@ -149,7 +149,7 @@ export const FALLBACK_SNAPSHOT: NetworkSnapshot = {
     treasury: asSc(PROBE_ADDRESSES.treasury, null),
   },
   scStale: true,
-  tro: { supply: 476224, accounts: 563, transactions: 2808, stale: true },
+  tro: { supply: 476224, accounts: 562, transactions: 2810, stale: true },
 }
 
 type StatsJson = {

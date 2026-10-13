@@ -1,12 +1,11 @@
 /**
- * Journal d’intents paper + action « Exécuter via xPortal » (signature utilisateur).
+ * Journal d’intents paper. Aucun broadcast : le hash collé est vérifié on-chain.
  */
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { LIA_BADGE, LIA_GUARDS, LIA_LIVE_TRADING } from '../config/liaConfig'
 import {
   attachUserTxHash,
-  buildUserSignPayload,
   explorerTxUrl,
   loadJournal,
   markAwaitingSignature,
@@ -14,6 +13,7 @@ import {
 } from '../lia/intentJournal'
 import { useWallet } from '../context/WalletContext'
 import { requestOpenConnect } from '../lib/walletEvents'
+import { verifyUserSignedTx } from '../lia/verifyUserTx'
 
 const STATUS_LABEL: Record<JournalEntry['status'], string> = {
   paper: 'Paper',
@@ -24,9 +24,10 @@ const STATUS_LABEL: Record<JournalEntry['status'], string> = {
 }
 
 export default function IntentXPortalPanel() {
-  const { connected } = useWallet()
+  const { connected, address } = useWallet()
   const [rows, setRows] = useState<JournalEntry[]>([])
   const [hashDraft, setHashDraft] = useState<Record<string, string>>({})
+  const [busyId, setBusyId] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
   const refresh = useCallback(() => {
@@ -39,36 +40,35 @@ export default function IntentXPortalPanel() {
     return () => window.clearInterval(id)
   }, [refresh])
 
-  const onExecute = (entry: JournalEntry) => {
-    if (!connected) {
-      requestOpenConnect()
-      setToast('Connecte xPortal pour signer toi-même la TX.')
-      return
-    }
-    const payload = buildUserSignPayload(entry)
+  const onPrepare = (entry: JournalEntry) => {
     markAwaitingSignature(entry.id)
     window.dispatchEvent(
       new CustomEvent('lia-user-intent', {
-        detail: { intentId: entry.id, payload },
+        detail: { intentId: entry.id, mode: 'paper_track_only' },
       }),
     )
-    try {
-      sessionStorage.setItem('xartists_pending_lia_intent', JSON.stringify({ id: entry.id, payload }))
-    } catch {
-      /* */
-    }
-    setToast('Intent prêt — signe dans xPortal. Colle le TxHash ci-dessous une fois confirmé.')
+    setToast(
+      'Suivi ouvert. Aucune transaction n’est construite ici : LIA n’a pas de clé. Signe toi-même dans xPortal, puis colle le hash — il est vérifié (succès + ton adresse).',
+    )
     refresh()
   }
 
-  const onAttachHash = (id: string) => {
+  const onAttachHash = async (id: string) => {
     const h = (hashDraft[id] || '').trim()
-    if (h.length < 16) {
-      setToast('TxHash invalide')
+    if (!connected || !address) {
+      requestOpenConnect()
+      setToast('Connecte ton wallet. Un hash n’est lié que s’il part de cette adresse.')
       return
     }
-    attachUserTxHash(id, h, true)
-    setToast('TxHash enregistré (exécution utilisateur).')
+    setBusyId(id)
+    const verdict = await verifyUserSignedTx(h, address)
+    setBusyId(null)
+    if (!verdict.ok) {
+      setToast(verdict.reason)
+      return
+    }
+    attachUserTxHash(id, verdict.hash, true)
+    setToast('Tx confirmée sur l’API MultiversX. Signature utilisateur — pas un trade agent.')
     refresh()
   }
 
@@ -88,8 +88,8 @@ export default function IntentXPortalPanel() {
 
       <p className="text-[11px] text-zinc-500 leading-relaxed">
         LIA_LIVE_TRADING={String(LIA_LIVE_TRADING ? 1 : 0)} · caps paper {LIA_GUARDS.maxUsdPerTrade}$/trade ·{' '}
-        {LIA_GUARDS.maxUsdPerDay}$/jour · allowlist {LIA_GUARDS.allowlist.join(', ')}. Simulation & assistant de
-        trade — aucune clé agent.
+        {LIA_GUARDS.maxUsdPerDay}$/jour · allowlist {LIA_GUARDS.allowlist.join(', ')}. Le bouton ne broadcast
+        rien : il ouvre le suivi. Un hash n’est « exécuté » qu’après preuve API.
       </p>
 
       {toast && (
@@ -137,36 +137,35 @@ export default function IntentXPortalPanel() {
                   Tx {e.txHash.slice(0, 10)}…{e.txHash.slice(-8)} ↗ Explorer
                 </a>
               ) : (
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <button
-                    type="button"
-                    className="btn-primary text-xs min-h-[40px]"
-                    onClick={() => onExecute(e)}
-                  >
-                    ⚡ Exécuter via xPortal
-                  </button>
-                  {(e.status === 'awaiting_signature' || e.status === 'pending') && (
-                    <div className="flex flex-1 gap-1 min-w-0">
-                      <input
-                        className="flex-1 rounded-lg border border-white/10 bg-black/50 px-2 py-1.5 text-[11px] text-white mono min-h-[40px]"
-                        placeholder="Coller TxHash…"
-                        value={hashDraft[e.id] || ''}
-                        onChange={ev =>
-                          setHashDraft(d => ({
-                            ...d,
-                            [e.id]: ev.target.value,
-                          }))
-                        }
-                      />
-                      <button
-                        type="button"
-                        className="btn-secondary text-xs min-h-[40px] shrink-0"
-                        onClick={() => onAttachHash(e.id)}
-                      >
-                        Lier
-                      </button>
-                    </div>
-                  )}
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                    <button
+                      type="button"
+                      className="btn-secondary text-xs min-h-[40px]"
+                      onClick={() => onPrepare(e)}
+                    >
+                      Suivi signature
+                    </button>
+                    <input
+                      className="flex-1 rounded-lg border border-white/10 bg-black/50 px-2 py-1.5 text-[11px] text-white mono min-h-[40px]"
+                      placeholder="TxHash signé par toi (64 hex)"
+                      value={hashDraft[e.id] || ''}
+                      onChange={ev =>
+                        setHashDraft(d => ({
+                          ...d,
+                          [e.id]: ev.target.value,
+                        }))
+                      }
+                    />
+                    <button
+                      type="button"
+                      className="btn-primary text-xs min-h-[40px] shrink-0"
+                      disabled={busyId === e.id}
+                      onClick={() => void onAttachHash(e.id)}
+                    >
+                      {busyId === e.id ? 'Vérif…' : 'Vérifier'}
+                    </button>
+                  </div>
                 </div>
               )}
             </li>

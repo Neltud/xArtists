@@ -5,21 +5,22 @@
 dApp (GitHub Pages): https://neltud.github.io/xArtists/  
 Repo: https://github.com/Neltud/xArtists  
 
-**Status (2026-10-11): GO_LIVE SC · LIA paper · slot non payable · listing #2 actif**
-- Product SCs: codeHash **inchangés**, re-sondés **11 oct 2026**, epoch **2259**, refreshRate 600
+**Status (2026-10-13): GO_LIVE SC · LIA paper · slot non payable · listing #2 actif**
+- Product SCs: codeHash **inchangés**, re-sondés **13 oct 2026**, epoch **2261**, refreshRate 600
 - Market `isPayable=true`. Listing **#1 inactif**. Listing **#2 actif** ASFT-a6273a-01 à **0,25 EGLD**, bid **0,01** encore locké. Le Buy n’invente plus l’id 1
 - Market balance **0,0175 EGLD** = fees **0,0075** + bid **0,01**. Fee **300 bps**
 - Slot house **0,5000 EGLD**, `isPayable=false`, min bet **0,001**, spin count 0. REAL fermé. Upgrade metadata du **même** contrat, pas un nouveau deploy
 - TRO stake **3 TRO**. LIA Ops **1,6038 EGLD**, nonce **1473**, trading **paper**
-- EGLD **$3,91** · mcap ~$120,9M · staked 14,26M · APR ~8,87%
-- $TRO circ **476 224** · 563 comptes · ~$0,000088
+- EGLD **$3,77** API · mcap ~$116,7M · circ 30,95M · staked 14,26M · APR ~8,87%
+- $TRO circ **476 224** · **562** comptes · ~$0,000084 · mcap ~$40
 - NFTUDURI **152** / **41** holders
 - Treasury dest **null** — ne pas router les frais
-- `ci-cd.yml` (wipe docs + deploy vide) **désactivé**. Go-live = `static.yml` — il était **rouge** depuis le 10 oct 13:04 (imports LIA cassés). Réparé le 11 oct.
+- Intent xPortal : un hash collé n’est « exécuté » qu’après preuve API (succès + wallet connecté). Pas de broadcast agent
+- `ci-cd.yml` (wipe docs + deploy vide) **désactivé**. Go-live = `static.yml`
 - Legacy empty placeholders must **never** receive funds
 - Not a retail investment fund. Tips ≠ investment. User Connect ≠ LIA Ops.
 
-Recap + veille (11 oct) : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)  
+Recap + veille (13 oct) : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)  
 Demo : https://neltud.github.io/xArtists/#/demo · GO_LIVE : https://neltud.github.io/xArtists/#/go-live
 
 ---
@@ -32,7 +33,7 @@ Demo : https://neltud.github.io/xArtists/#/demo · GO_LIVE : https://neltud.gith
 | **Marketplace** | List / Buy / Bid — listing #2 actif 0,25 EGLD (ne plus acheter l’id #1) |
 | **Agents** | Limited LIA sub-agent packs (Pulse · Yield · Sentinel) |
 | **LIA** | Autonomous agent (Guardian → Brain → paper until micro-proofs) |
-| **$TRO** | Utility token — max supply product 500 000 · circ ~476 224 · API ~$0.000093 |
+| **$TRO** | Utility token — max supply product 500 000 · circ ~476 224 · API ~$0.000084 |
 | **Slot** | Primordial Slot — house 0,5 EGLD, REAL fermé (`isPayable=false`) |
 
 Not a retail investment fund. Tips ≠ investment.
@@ -96,7 +97,7 @@ See [`README_LIA.md`](README_LIA.md) and [`docs/AUTONOMOUS_LIA.md`](docs/AUTONOM
 
 | Doc | Role |
 |-----|------|
-| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap + veille **11 oct** |
+| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap + veille **13 oct** |
 | [SLOT_PAYABLE_UPGRADE.md](docs/SLOT_PAYABLE_UPGRADE.md) | Pourquoi le spin EGLD est rejeté |
 | [MX8004_FIRST100_ALIGNMENT.md](docs/MX8004_FIRST100_ALIGNMENT.md) | Phase 4 / First 100 — LIA → MX-8004 |
 | [DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) | Parcours démo `/demo` |

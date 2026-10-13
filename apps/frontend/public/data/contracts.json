@@ -1,8 +1,8 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-10-11",
-  "chain_note": "Product SCs codeHash unchanged (re-probed 11 Oct 2026, epoch 2259, refreshRate 600). Market isPayable=true, 0.0175 EGLD = 0.0075 fees + 0.01 bid on listing #2 (active, ASFT-a6273a-01 @ 0.25). Listing #1 inactive \u2014 UI must not buy id 1. Slot house 0.5 EGLD but isPayable=false so spinEgld is rejected. LIA ops 1.603782 EGLD nonce 1473, trading paper. EGLD $3.91. Treasury dest null. Do not use LEGACY_EMPTY placeholders.",
+  "updated": "2026-10-13",
+  "chain_note": "Product SCs codeHash unchanged (re-probed 13 Oct 2026, epoch 2261, refreshRate 600). Market isPayable=true, 0.0175 EGLD = 0.0075 fees + 0.01 bid on listing #2 (active, ASFT-a6273a-01 @ 0.25). Listing #1 inactive — UI must not buy id 1. Slot house 0.5 EGLD but isPayable=false so spinEgld is rejected. LIA ops 1.603782 EGLD nonce 1473, trading paper. EGLD $3.77 API. Treasury dest null. Do not use LEGACY_EMPTY placeholders.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -42,14 +42,14 @@
     "slot_casino": 0.5,
     "nft_marketplace": 0.0175,
     "others": 0,
-    "probed": "2026-10-11",
+    "probed": "2026-10-13",
     "slot_isPayable": false,
     "market_isPayable": true,
     "market_fees_egld": 0.0075,
     "lia_ops_egld": 1.603782,
     "tro_stake_atomic": "3000000",
-    "epoch": 2259,
-    "egld_usd": 3.91
+    "epoch": 2261,
+    "egld_usd": 3.77
   },
   "proofs": {
     "buyNft_egld_epoch_2250": 0.25,
@@ -66,5 +66,26 @@
     "legacy_nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
     "legacy_tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
     "legacy_nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn"
+  },
+  "network": "mainnet",
+  "chainId": "1",
+  "contracts": {
+    "marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
+    "agents_marketplace": "erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg",
+    "nft_staking": "erd1qqqqqqqqqqqqqpgq9ensu3f3p9yx4a583swu0raq8zzeve7tvhxq4fgtgu",
+    "tro_governance": "erd1qqqqqqqqqqqqqpgqe6xrgq2y53q8d0lsact2dppzvg42t4wcvhxq9e9euy",
+    "tro_staking": "erd1qqqqqqqqqqqqqpgqes0a2kryurmt34g7nu4kx9n4ftj77dl5vhxqpe3xf3",
+    "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
+    "treasury_splitter": "erd1qqqqqqqqqqqqqpgq245sma97w0j9ga9jdgxu36zs0v8g0y6evhxq2nkezv",
+    "slot_casino": "erd1qqqqqqqqqqqqqpgquf3cuv2zsfsahy7ypvter3qcep4ptthsvhxqs4g34f",
+    "agent_stake_escrow": "erd1qqqqqqqqqqqqqpgqzyvwldu6jq8w6ry6s856dl0uy7g0v37vvhxqndvzr3"
+  },
+  "verification": {
+    "marketplace_mainnet": {
+      "codeHash": "8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=",
+      "code_empty": false,
+      "verdict": "LIVE payable · listing #2 active 0.25 EGLD · #1 inactive"
+    },
+    "agents_marketplace": "LIVE codeHash set · balance 0 · not an open mint"
   }
 }
