@@ -1,12 +1,14 @@
 /**
- * LIA Hub — salle de contrôle 3D · 3 écrans holo Pack Sponsors.
- * CanvasTexture plafonnées à 30 FPS · résolution mobile réduite · dispose strict.
+ * LIA Hub — salle de contrôle 3D · 3 écrans holo distincts (PULSE/YIELD/SENTINEL).
+ * 30 FPS · pool $TRO réelle injectée sur YIELD · dispose strict.
  */
 import { useCallback, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import type { PackId } from '../../config/agentPacks'
 import { ProgressUnpackLoader } from './ProgressUnpackLoader'
 import { HoloPackModal } from './HoloPackModal'
+import { drawPulseScreen, drawYieldScreen, drawSentinelScreen } from './holoRenderers'
+import { fetchTroEgldPool, type TroEgldPoolSnapshot } from '../../services/poolService'
 
 type ScreenKind = PackId
 
@@ -17,98 +19,21 @@ const SCREEN_META: {
   accent: number
 }[] = [
   { id: 'pulse', title: 'PULSE', color: '#34d399', accent: 0x34d399 },
-  { id: 'yield', title: 'YIELD', color: '#2dd4bf', accent: 0x2dd4bf },
+  { id: 'yield', title: 'YIELD', color: '#fbbf24', accent: 0xfbbf24 },
   { id: 'sentinel', title: 'SENTINEL', color: '#a78bfa', accent: 0xa78bfa },
 ]
 
 const TEX_INTERVAL_MS = 1000 / 30
 
-function drawPulse(ctx: CanvasRenderingContext2D, w: number, h: number, t: number) {
-  ctx.fillStyle = '#05050a'
-  ctx.fillRect(0, 0, w, h)
-  ctx.strokeStyle = 'rgba(52,211,153,0.85)'
-  ctx.lineWidth = 2
-  ctx.beginPath()
-  for (let x = 0; x < w; x++) {
-    const y =
-      h * 0.5 +
-      Math.sin(x * 0.04 + t * 3) * 28 +
-      Math.sin(x * 0.11 + t * 5) * 12
-    if (x === 0) ctx.moveTo(x, y)
-    else ctx.lineTo(x, y)
-  }
-  ctx.stroke()
-  ctx.fillStyle = '#6ee7b7'
-  ctx.font = '600 18px ui-monospace, monospace'
-  ctx.fillText('PULSE · waveform', 16, 28)
-  ctx.fillStyle = '#a7f3d0'
-  ctx.font = '13px ui-monospace, monospace'
-  ctx.fillText(`req/s  ${(80 + Math.sin(t * 2) * 30).toFixed(0)}`, 16, 52)
-  ctx.fillText(`latency  ${(12 + Math.abs(Math.sin(t)) * 8).toFixed(1)} ms`, 16, 72)
-}
+const poolRef: { current: TroEgldPoolSnapshot | null } = { current: null }
 
-function drawYield(ctx: CanvasRenderingContext2D, w: number, h: number, t: number) {
-  ctx.fillStyle = '#05050a'
-  ctx.fillRect(0, 0, w, h)
-  const cx = w * 0.28
-  const cy = h * 0.55
-  for (let i = 1; i <= 5; i++) {
-    ctx.strokeStyle = `rgba(45,212,191,${0.15 + i * 0.08})`
-    ctx.beginPath()
-    ctx.arc(cx, cy, 18 + i * 14 + Math.sin(t + i) * 3, 0, Math.PI * 2)
-    ctx.stroke()
-  }
-  const baseX = w * 0.52
-  for (let i = 0; i < 12; i++) {
-    const bh = 20 + Math.abs(Math.sin(t * 1.5 + i * 0.4)) * 60
-    ctx.fillStyle = i % 2 === 0 ? '#2dd4bf' : '#5eead4'
-    ctx.fillRect(baseX + i * 14, h * 0.75 - bh, 10, bh)
-  }
-  ctx.fillStyle = '#99f6e4'
-  ctx.font = '600 18px ui-monospace, monospace'
-  ctx.fillText('YIELD · $TRO sleeve', 16, 28)
-  ctx.font = '13px ui-monospace, monospace'
-  ctx.fillText(`TVL  ${(110 + Math.sin(t) * 8).toFixed(1)}k`, 16, 52)
-  ctx.fillText(`APR est.  ${(6 + Math.sin(t * 0.7) * 1.2).toFixed(1)}%`, 16, 72)
-}
-
-function drawSentinel(ctx: CanvasRenderingContext2D, w: number, h: number, t: number) {
-  ctx.fillStyle = '#05050a'
-  ctx.fillRect(0, 0, w, h)
-  ctx.font = '11px ui-monospace, monospace'
-  for (let row = 0; row < 10; row++) {
-    const offset = Math.floor(t * 8 + row * 3) % 16
-    let hex = ''
-    for (let i = 0; i < 16; i++) hex += '0123456789abcdef'[(i + offset + row) % 16]
-    ctx.fillStyle = `rgba(167,139,250,${0.35 + (row % 3) * 0.15})`
-    ctx.fillText(hex, 12, 40 + row * 16)
-  }
-  const cx = w * 0.78
-  const cy = h * 0.55
-  ctx.strokeStyle = 'rgba(167,139,250,0.5)'
-  for (let r = 20; r <= 60; r += 20) {
-    ctx.beginPath()
-    ctx.arc(cx, cy, r, 0, Math.PI * 2)
-    ctx.stroke()
-  }
-  const ang = t * 2
-  ctx.strokeStyle = '#c4b5fd'
-  ctx.beginPath()
-  ctx.moveTo(cx, cy)
-  ctx.lineTo(cx + Math.cos(ang) * 60, cy + Math.sin(ang) * 60)
-  ctx.stroke()
-  ctx.fillStyle = '#ddd6fe'
-  ctx.font = '600 16px ui-monospace, monospace'
-  ctx.fillText('SENTINEL · zero-trust', 16, 24)
-  ctx.font = '12px ui-monospace, monospace'
-  ctx.fillText('JWT · pulse pack gate', 16, h - 28)
-  ctx.fillText('SHA-256 stream · OK', 16, h - 12)
-}
-
-const DRAWERS: Record<ScreenKind, typeof drawPulse> = {
-  pulse: drawPulse,
-  yield: drawYield,
-  sentinel: drawSentinel,
+const DRAWERS: Record<
+  ScreenKind,
+  (ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => void
+> = {
+  pulse: drawPulseScreen,
+  yield: (ctx, w, h, t) => drawYieldScreen(ctx, w, h, t, poolRef.current),
+  sentinel: drawSentinelScreen,
 }
 
 export default function LiaHubControlRoom() {
@@ -127,6 +52,15 @@ export default function LiaHubControlRoom() {
     if (!host) return
 
     let disposed = false
+    void fetchTroEgldPool().then(s => {
+      if (!disposed) poolRef.current = s
+    })
+    const poolTimer = window.setInterval(() => {
+      void fetchTroEgldPool().then(s => {
+        if (!disposed) poolRef.current = s
+      })
+    }, 60_000)
+
     let raf = 0
     let renderer: THREE.WebGLRenderer | null = null
     const disposables: { dispose: () => void }[] = []
@@ -153,7 +87,8 @@ export default function LiaHubControlRoom() {
         (window.innerWidth < 768 || window.devicePixelRatio <= 1.5)
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 1.5))
       renderer.setSize(host.clientWidth || 640, host.clientHeight || 400, false)
-      renderer.domElement.style.cssText = 'display:block;width:100%;height:100%;touch-action:none'
+      renderer.domElement.style.cssText =
+        'display:block;width:100%;height:100%;touch-action:none'
       host.appendChild(renderer.domElement)
       setProgress(25)
 
@@ -299,6 +234,7 @@ export default function LiaHubControlRoom() {
 
       return () => {
         disposed = true
+        window.clearInterval(poolTimer)
         cancelAnimationFrame(raf)
         ro.disconnect()
         renderer?.domElement.removeEventListener('pointermove', onPointer)
@@ -340,6 +276,7 @@ export default function LiaHubControlRoom() {
       setReady(true)
       return () => {
         disposed = true
+        window.clearInterval(poolTimer)
       }
     }
   }, [focusScreen])
@@ -348,7 +285,9 @@ export default function LiaHubControlRoom() {
     <div className="relative w-full overflow-hidden rounded-2xl border border-purple-500/30 bg-black/80 shadow-2xl">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-300/80">LIA Hub · Control Room</p>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-300/80">
+            LIA Hub · Control Room
+          </p>
           <p className="text-[12px] text-zinc-400">{hint}</p>
         </div>
         <div className="flex gap-1">

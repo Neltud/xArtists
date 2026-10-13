@@ -1,6 +1,5 @@
 /**
- * Modale holo pack — NFT gate vers Command Center.
- * Pas d’export PDF : entrée réservée holders Pack Agent.
+ * Modale holo pack — NFT gate vers Command Center (?room=pack).
  */
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
@@ -28,10 +27,7 @@ export function HoloPackModal({ packId, onClose }: Props) {
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
 
-  const status = useMemo(
-    () => holderStatus(account.nfts || []),
-    [account.nfts],
-  )
+  const status = useMemo(() => holderStatus(account.nfts || []), [account.nfts])
 
   if (!packId) return null
   const pack = AGENT_PACKS.find(p => p.id === packId)
@@ -44,6 +40,7 @@ export function HoloPackModal({ packId, onClose }: Props) {
     (packId === 'sentinel' && status.sentinel)
 
   const packName = PACK_LABEL[packId]
+  const ccTo = `/command-center?room=${packId}`
 
   return (
     <div
@@ -87,15 +84,12 @@ export function HoloPackModal({ packId, onClose }: Props) {
               {t('pack.gate.locked').replace('{pack}', packName)}
             </p>
             <p className="text-[12px] text-zinc-500">{pack.tagline}</p>
-
             {!connected && (
               <p className="text-[12px] text-amber-200/90">{t('pack.gate.connectFirst')}</p>
             )}
-
             {connected && account.loading && (
               <p className="text-[12px] text-zinc-500">{t('pack.gate.checking')}</p>
             )}
-
             <div className="flex flex-col gap-2 pt-1">
               <Link
                 to="/agents"
@@ -131,7 +125,7 @@ export function HoloPackModal({ packId, onClose }: Props) {
             </ul>
             <div className="flex flex-col gap-2 pt-1">
               <Link
-                to="/command-center"
+                to={ccTo}
                 className="btn-primary text-sm min-h-[44px] inline-flex items-center justify-center gap-2"
                 onClick={onClose}
               >
