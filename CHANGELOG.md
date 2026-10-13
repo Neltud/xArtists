@@ -1,5 +1,41 @@
 # Changelog — xArtists
 
+## [0.103.0](https://github.com/Neltud/xArtists/compare/v0.102.0...v0.103.0) (2026-10-13)
+
+
+### Features
+
+* **3d:** implement Lia Hub control room with 3 holo data screens ([b068585](https://github.com/Neltud/xArtists/commit/b06858559409377ecc0b13fe0594ecb3c212a752))
+* **lia-hub:** add PDF export, 30fps canvas throttle and complete i18n ([22238a9](https://github.com/Neltud/xArtists/commit/22238a9d8fc979e7be83becf1de6ac616a6cee22))
+* **lia:** mount LiaHubControlRoom on LiaPage ([5fee32f](https://github.com/Neltud/xArtists/commit/5fee32f666c94421d18e25967b5553ee30e8db0b))
+* **lia:** solidify paper pipeline and non-custodial xportal intent flow ([81575c8](https://github.com/Neltud/xArtists/commit/81575c803910e468f2f5660e0eab772440317060))
+* **lia:** wire control room on LiaPage; fix AGENT_PACKS import ([9489e58](https://github.com/Neltud/xArtists/commit/9489e5884d8b8be77ec63935f86b23e09f78e873))
+* **lia:** wire IntentXPortalPanel into Command Center ([4c23f4f](https://github.com/Neltud/xArtists/commit/4c23f4f4603b119686efa3d9b932ed86e2d476c0))
+* **ui:** merge 360 dome webgl background with futuristic b2b hud ([246cbd3](https://github.com/Neltud/xArtists/commit/246cbd3d1b6dcea8eccfde0617df7f3e35a35688))
+
+
+### Bug Fixes
+
+* **cc:** restore full CommandCenter and wire IntentXPortalPanel ([9038ff3](https://github.com/Neltud/xArtists/commit/9038ff3dc2d9b56aff4f341a063604a42da588b6))
+* **cc:** stable CommandCenter with IntentXPortalPanel (paper non-custodial) ([5ddbf22](https://github.com/Neltud/xArtists/commit/5ddbf22f03800813bcae8043402232e3df2a19f8))
+* **i18n:** dictionaries merge DICTS + liaHub + audit keys ([07390e7](https://github.com/Neltud/xArtists/commit/07390e705865184aad310827d834506d67995e38))
+* **lia-hub:** replace pdf download with nft-gated command center access ([0225b47](https://github.com/Neltud/xArtists/commit/0225b4737f7bef8345e6f4feecd3ccc5ae44d11e))
+* **live:** verify user tx hashes and refresh 13 Oct mainnet probe ([e2070fb](https://github.com/Neltud/xArtists/commit/e2070fb45afc7e732db26b61aa11e34a829e544a))
+* **ui:** certifier header/footer via i18n labels ([bb1d133](https://github.com/Neltud/xArtists/commit/bb1d13386ea9264310fb3001d2a1925d299f08e8))
+* **ui:** dictionariesCore full locales + restore DaoGovernance i18n ([a34c95f](https://github.com/Neltud/xArtists/commit/a34c95f9a1849b4155f09a9b7523ceb30c88936d))
+* **ui:** global audit for texts, images, and translations ([e1a1189](https://github.com/Neltud/xArtists/commit/e1a11895564203d0fc2701cb8fc357e3c5b26ae8))
+* **ui:** i18n for DeFiBuilder, DaoPage, TcaModuleOne ([752ff58](https://github.com/Neltud/xArtists/commit/752ff587866cc49d34e8359d5296dd51b8c49d29))
+* **ui:** ImageWithFallback on owned NFTs + detail modal; 44px close ([915aab5](https://github.com/Neltud/xArtists/commit/915aab5d6388cd567a0517decd8aeddf4e7f964b))
+* **ui:** owned NFT panel — ImageWithFallback + ListTarget.nonce + FR ([16e1edf](https://github.com/Neltud/xArtists/commit/16e1edfaca9b71bc883d5232ba04672a5e961338))
+* **ui:** restore dictionaries.ts with audit key merge ([462b8e4](https://github.com/Neltud/xArtists/commit/462b8e4be079dcd6c75ad7d978c6f292c32456b6))
+* **ui:** TCA Module1 i18n FR/EN, NftThumb fallback, cert labels i18n ([22721a9](https://github.com/Neltud/xArtists/commit/22721a913f01d9a4f69c8a6e8579e895ddc573ac))
+* **ui:** wire i18n audit keys into dictionaries, DAO, DeFi, TCA ([3d37250](https://github.com/Neltud/xArtists/commit/3d3725001cdbe343e7fffd9b991ee33ad647dc3f))
+
+
+### Performance
+
+* **lia-hub:** 30fps texture throttle + mobile canvas; harden sponsor PDF ([021b2a6](https://github.com/Neltud/xArtists/commit/021b2a696f1649fc69f699173bb87e6a4c6ee7d2))
+
 ## [0.102.0](https://github.com/Neltud/xArtists/compare/v0.101.0...v0.102.0) (2026-10-12)
 
 
