@@ -23,7 +23,6 @@ const MuseumPage = lazy(() => import('./pages/MuseumPage'))
 const MarketplacePage = lazy(() => import('./pages/MarketplacePage'))
 const MarketAnalyticsPage = lazy(() => import('./pages/MarketAnalyticsPage'))
 const StakingPage = lazy(() => import('./pages/StakingPage'))
-const SlotPage = lazy(() => import('./pages/SlotPage'))
 const AgentsPage = lazy(() => import('./pages/AgentsPage'))
 const StudioPage = lazy(() => import('./pages/StudioPage'))
 const LegalPage = lazy(() => import('./pages/LegalPage'))
@@ -106,7 +105,6 @@ export default function App() {
                   <Route path="/mentions-legales" element={<Navigate to="/legal" replace />} />
                   <Route path="/wallet" element={<WalletPage />} />
                   <Route path="/portfolio" element={<PortfolioPage />} />
-                  <Route path="/slot" element={<SlotPage />} />
                   <Route path="/lia" element={<LiaPage />} />
                   <Route path="/tca" element={<TcaGatePage />} />
                   <Route path="/classroom" element={<TcaGatePage />} />
