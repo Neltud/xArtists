@@ -1,37 +1,39 @@
-/** 3 cartes HUD — contraste fort + repères géométriques sur dôme */
+/** 3 cartes HUD — i18n + contraste fort + repères géométriques sur dôme */
 import { Link } from 'react-router-dom'
+import { useI18n } from '../../i18n/I18nContext'
 
-const CARDS = [
+const CARD_META = [
   {
     to: '/museum',
     emoji: '🏛️',
-    title: 'Galerie & Dôme 3D',
-    blurb: 'Entrée directe dans la scène d’exposition WebGL.',
+    titleKey: 'home.card.gallery.title',
+    blurbKey: 'home.card.gallery.blurb',
     accent: 'border-amber-500/50 hover:border-amber-400/70',
     glow: 'shadow-[0_0_24px_rgba(251,191,36,0.12)]',
   },
   {
     to: '/lia',
     emoji: '🤖',
-    title: 'LIA Hub (Command Center)',
-    blurb: 'Salle de contrôle réservée aux holders de Packs Agent NFT.',
+    titleKey: 'home.card.lia.title',
+    blurbKey: 'home.card.lia.blurb',
     accent: 'border-cyan-500/50 hover:border-cyan-400/70',
     glow: 'shadow-[0_0_24px_rgba(34,211,238,0.12)]',
   },
   {
     to: '/tca',
     emoji: '🎓',
-    title: 'TCA Academy',
-    blurb: 'Module 1 Sfumato & certification Zero-Trust.',
+    titleKey: 'home.card.tca.title',
+    blurbKey: 'home.card.tca.blurb',
     accent: 'border-violet-500/50 hover:border-violet-400/70',
     glow: 'shadow-[0_0_24px_rgba(167,139,250,0.12)]',
   },
 ] as const
 
 export default function HomeHudCards() {
+  const { t } = useI18n()
+
   return (
     <div className="relative w-full max-w-3xl">
-      {/* Repères HUD */}
       <div
         className="pointer-events-none absolute -inset-3 rounded-3xl border border-purple-500/20"
         aria-hidden
@@ -46,12 +48,12 @@ export default function HomeHudCards() {
       />
 
       <div className="grid gap-3 sm:grid-cols-3 animate-[fadeIn_0.6s_ease-out]">
-        {CARDS.map((c, i) => (
+        {CARD_META.map((c, i) => (
           <Link
             key={c.to}
             to={c.to}
             style={{ animationDelay: `${120 + i * 90}ms` }}
-            className={`group relative rounded-2xl border bg-black/75 backdrop-blur-xl p-4 shadow-2xl transition active:scale-[0.98] ${c.accent} ${c.glow}`}
+            className={`group relative min-h-[44px] rounded-2xl border bg-black/75 backdrop-blur-xl p-4 shadow-2xl transition active:scale-[0.98] ${c.accent} ${c.glow}`}
           >
             <span
               className="pointer-events-none absolute left-2 top-2 h-2 w-2 border-l border-t border-white/30"
@@ -65,9 +67,9 @@ export default function HomeHudCards() {
               {c.emoji}
             </p>
             <h2 className="text-sm font-semibold text-white group-hover:text-violet-100">
-              {c.title}
+              {t(c.titleKey)}
             </h2>
-            <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-300">{c.blurb}</p>
+            <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-300">{t(c.blurbKey)}</p>
           </Link>
         ))}
       </div>
