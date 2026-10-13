@@ -1,56 +1,56 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-12T20:56:33.192Z",
+  "updatedAt": "2026-10-13T02:28:25.561Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1791838592776",
-      "timestamp": "20:56",
+      "id": "egld-1791858505022",
+      "timestamp": "02:28",
       "source": "EGLD",
-      "title": "Cotation publique · $3.80 (API MultiversX economics)",
+      "title": "Cotation publique · $3.68 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1791822621000",
-      "timestamp": "16:30",
+      "id": "rss-CoinTelegraph-0-1791839486000",
+      "timestamp": "21:11",
       "source": "CoinTelegraph",
-      "title": "Bitcoin drops 2.2% as Ukraine, Iran strikes send oil toward one-month high",
-      "link": "https://cointelegraph.com/markets/bitcoin-drops-22-as-ukraine-iran-strikes-send-oil-toward-one-month-high?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "title": "FTX’s crypto mining venture is now used to advance AI",
+      "link": "https://cointelegraph.com/news/ftx-crypto-mining-ai-data-center?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1791814729000",
-      "timestamp": "14:18",
-      "source": "CoinTelegraph",
-      "title": "XRP treasury Evernorth’s shares rise 5% at Nasdaq opening print",
-      "link": "https://cointelegraph.com/news/xrp-treasury-evernorth-rise-nasdaq-opening?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1791814020000",
-      "timestamp": "14:07",
-      "source": "CoinTelegraph",
-      "title": "Ledger implant tests Bitcoin ETFs as safer custodial solutions than hardware wallets",
-      "link": "https://cointelegraph.com/news/ledger-implant-bitcoin-etfs-hardware-wallets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1791809211000",
-      "timestamp": "12:46",
+      "id": "rss-CoinTelegraph-1-1791833173000",
+      "timestamp": "19:26",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-4-1791808311000",
-      "timestamp": "12:31",
+      "id": "rss-CoinTelegraph-2-1791831349000",
+      "timestamp": "18:55",
       "source": "CoinTelegraph",
-      "title": "Strategy adds 250 Bitcoin as holdings reach 848,250 BTC",
-      "link": "https://cointelegraph.com/news/michael-saylor-strategy-250-btc-buy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "title": "Crypto PACs report $2.7M spending blitz on House races as midterms loom",
+      "link": "https://cointelegraph.com/news/crypto-pac-spending-house-races-2026-midterms?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-5-1791805318000",
-      "timestamp": "11:41",
+      "id": "rss-CoinTelegraph-3-1791830294000",
+      "timestamp": "18:38",
       "source": "CoinTelegraph",
-      "title": "Australia proposes leverage caps for crypto-settled derivatives",
-      "link": "https://cointelegraph.com/news/australia-asic-crypto-settled-cfd-protections?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "title": "US accounting overhaul could make stablecoins more attractive to corporations: Tempo",
+      "link": "https://cointelegraph.com/news/fasb-stablecoin-accounting-rules-corporate-adoption?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1791823865000",
+      "timestamp": "16:51",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin miners face widening AI financing costs as lenders scrutinize deals",
+      "link": "https://cointelegraph.com/news/bitcoin-miners-ai-financing-costs-debt-funding-gap?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1791822621000",
+      "timestamp": "16:30",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin drops 2.2% as Ukraine, Iran strikes send oil toward one-month high",
+      "link": "https://cointelegraph.com/markets/bitcoin-drops-22-as-ukraine-iran-strikes-send-oil-toward-one-month-high?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-0-1791821883000",
@@ -79,6 +79,41 @@
       "source": "CoinDesk",
       "title": "Standard Chartered offers RLUSD custody in Dubai and plans LMAX collateral link",
       "link": "https://www.coindesk.com/business/2026/10/12/standard-chartered-offers-rlusd-custody-in-dubai-and-plans-lmax-collateral-link"
+    },
+    {
+      "id": "egld-1791838592776",
+      "timestamp": "20:56",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.80 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791814729000",
+      "timestamp": "14:18",
+      "source": "CoinTelegraph",
+      "title": "XRP treasury Evernorth’s shares rise 5% at Nasdaq opening print",
+      "link": "https://cointelegraph.com/news/xrp-treasury-evernorth-rise-nasdaq-opening?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1791814020000",
+      "timestamp": "14:07",
+      "source": "CoinTelegraph",
+      "title": "Ledger implant tests Bitcoin ETFs as safer custodial solutions than hardware wallets",
+      "link": "https://cointelegraph.com/news/ledger-implant-bitcoin-etfs-hardware-wallets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1791808311000",
+      "timestamp": "12:31",
+      "source": "CoinTelegraph",
+      "title": "Strategy adds 250 Bitcoin as holdings reach 848,250 BTC",
+      "link": "https://cointelegraph.com/news/michael-saylor-strategy-250-btc-buy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1791805318000",
+      "timestamp": "11:41",
+      "source": "CoinTelegraph",
+      "title": "Australia proposes leverage caps for crypto-settled derivatives",
+      "link": "https://cointelegraph.com/news/australia-asic-crypto-settled-cfd-protections?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "egld-1791800189132",
@@ -163,41 +198,6 @@
       "source": "CoinTelegraph",
       "title": "CFTC proposals aimed at separating prediction markets from casino gambling",
       "link": "https://cointelegraph.com/news/cftc-proposals-aimed-at-separating-prediction-markets-from-casino-gambling?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791633134000",
-      "timestamp": "11:52",
-      "source": "CoinTelegraph",
-      "title": "Justin Sun says Tron’s post-quantum cryptography has gone live on testnet",
-      "link": "https://cointelegraph.com/news/justin-sun-says-trons-post-quantum-cryptography-has-gone-live-on-testnet?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "egld-1791746473954",
-      "timestamp": "19:21",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.98 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791621900000",
-      "timestamp": "08:45",
-      "source": "CoinTelegraph",
-      "title": "Tech chief says EU can fend off rogue AI risk: Report",
-      "link": "https://cointelegraph.com/news/tech-chief-says-eu-can-fend-off-rogue-ai-risk-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1791633600000",
-      "timestamp": "12:00",
-      "source": "CoinDesk",
-      "title": "One year after 10/10 flash crash, bitcoin and ether liquidity have rebuilt, but altcoins still face risks",
-      "link": "https://www.coindesk.com/markets/2026/10/10/one-year-after-10-10-bitcoin-and-ether-liquidity-have-rebuilt-but-other-altcoins-still-face-risks"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1791709311000",
-      "timestamp": "09:01",
-      "source": "CoinTelegraph",
-      "title": "Ledger confirms unauthorized hardware implant; losses may exceed $86M",
-      "link": "https://cointelegraph.com/news/ledger-confirms-unauthorized-hardware-implant-losses-may-exceed-86m?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
