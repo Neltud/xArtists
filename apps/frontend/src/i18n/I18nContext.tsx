@@ -15,28 +15,40 @@ const STORAGE = 'xartists_lang'
 type Api = {
   lang: Lang
   setLang: (l: Lang) => void
-  t: (key: string) => string
+  t: (key: string, vars?: Record<string, string | number>) => string
   dir: 'ltr' | 'rtl'
 }
 
 const Ctx = createContext<Api | null>(null)
 
+function isLang(v: string | null): v is Lang {
+  return !!v && v in DICTS
+}
+
 function detect(): Lang {
   try {
-    const saved = localStorage.getItem(STORAGE) as Lang | null
-    if (saved && DICTS[saved]) return saved
+    const saved = localStorage.getItem(STORAGE)
+    if (isLang(saved)) return saved
   } catch {
     /* */
   }
   const nav = (typeof navigator !== 'undefined' ? navigator.language : 'fr').toLowerCase()
   if (nav.startsWith('fr')) return 'fr'
   if (nav.startsWith('es')) return 'es'
+  if (nav.startsWith('de')) return 'de'
   if (nav.startsWith('ru')) return 'ru'
   if (nav.startsWith('uk')) return 'uk'
   if (nav.startsWith('zh')) return 'zh'
   if (nav.startsWith('ar')) return 'ar'
   if (nav.startsWith('en')) return 'en'
   return 'fr'
+}
+
+function interpolate(s: string, vars?: Record<string, string | number>): string {
+  if (!vars) return s
+  return s.replace(/\{(\w+)\}/g, (_, k: string) =>
+    vars[k] != null ? String(vars[k]) : `{${k}}`,
+  )
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
@@ -59,9 +71,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }, [lang, dir])
 
   const t = useCallback(
-    (key: string) => {
+    (key: string, vars?: Record<string, string | number>) => {
       const d = DICTS[lang] || DICTS.fr
-      return d[key] || DICTS.en[key] || DICTS.fr[key] || key
+      // Fallback: current lang → English → French → raw key
+      const raw = d[key] || DICTS.en[key] || DICTS.fr[key] || key
+      return interpolate(raw, vars)
     },
     [lang],
   )
@@ -77,7 +91,8 @@ export function useI18n(): Api {
     return {
       lang: 'fr',
       setLang: () => undefined,
-      t: (k: string) => DICTS.fr[k] || k,
+      t: (k: string, vars?: Record<string, string | number>) =>
+        interpolate(DICTS.fr[k] || DICTS.en[k] || k, vars),
       dir: 'ltr',
     }
   }
