@@ -1,24 +1,23 @@
 /**
- * Dictionnaires multi-langues — core + audit + LIA Hub.
- * Fallback runtime: lang → en → fr (see I18nContext).
+ * Dictionnaires FR/EN (+ autres) — core + audit + LIA Hub + net/strategy.
  */
 import type { Dict, Lang } from './types'
 import { DICTS as CORE_DICTS } from './dictionariesCore'
 import { auditFr, auditEn } from './auditKeys'
 import { liaHubFr, liaHubEn } from './liaHubKeys'
+import { netStrategyFr, netStrategyEn } from './netAndStrategyKeys'
 
 function withExtras(lang: Lang, base: Dict): Dict {
-  // Audit + LIA Hub: native FR/EN; other langs inherit EN (then FR via t())
-  const audit = lang === 'fr' ? auditFr : auditEn
-  const lia = lang === 'fr' ? liaHubFr : liaHubEn
-  return { ...base, ...audit, ...lia }
+  const audit = lang === 'en' ? auditEn : auditFr
+  const lia = lang === 'en' ? liaHubEn : liaHubFr
+  const net = lang === 'en' ? netStrategyEn : netStrategyFr
+  return { ...base, ...audit, ...lia, ...net }
 }
 
 export const dictionaries: Record<Lang, Dict> = {
   fr: withExtras('fr', CORE_DICTS.fr),
   en: withExtras('en', CORE_DICTS.en),
   es: withExtras('es', CORE_DICTS.es),
-  de: withExtras('de', CORE_DICTS.de),
   ru: withExtras('ru', CORE_DICTS.ru),
   uk: withExtras('uk', CORE_DICTS.uk),
   zh: withExtras('zh', CORE_DICTS.zh),

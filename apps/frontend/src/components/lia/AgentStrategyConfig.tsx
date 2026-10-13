@@ -1,12 +1,10 @@
 /**
- * Programmation régime trading NFT Agent — Command Center.
- * Persistance localStorage par tokenId · option hint signature xPortal.
+ * Programmation régime NFT Agent + modale de confirmation i18n.
  */
 import { useEffect, useMemo, useState } from 'react'
 import {
   defaultStrategy,
   getStrategy,
-  REGIME_META,
   saveStrategy,
   type AgentRegime,
   type AgentStrategyConfig,
@@ -16,6 +14,7 @@ import { useUserAccount } from '../../hooks/useUserAccount'
 import { holderStatus } from '../../lib/holderAccess'
 import { requestOpenConnect } from '../../lib/walletEvents'
 import { LIA_LIVE_TRADING } from '../../config/liaConfig'
+import { useI18n } from '../../i18n/I18nContext'
 
 const REGIMES: AgentRegime[] = ['soft', 'balanced', 'aggressive']
 
@@ -32,19 +31,16 @@ function pickAgentToken(
 }
 
 export default function AgentStrategyConfigPanel() {
+  const { t } = useI18n()
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const status = useMemo(() => holderStatus(account.nfts || []), [account.nfts])
   const hasPack = status.any
 
-  const tokenId = useMemo(
-    () => pickAgentToken(account.nfts || []),
-    [account.nfts],
-  )
+  const tokenId = useMemo(() => pickAgentToken(account.nfts || []), [account.nfts])
 
-  const [cfg, setCfg] = useState<AgentStrategyConfig>(() =>
-    defaultStrategy('local-paper-agent'),
-  )
+  const [cfg, setCfg] = useState<AgentStrategyConfig>(() => defaultStrategy('local-paper-agent'))
+  const [confirmOpen, setConfirmOpen] = useState(false)
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
@@ -52,11 +48,27 @@ export default function AgentStrategyConfigPanel() {
     setCfg(existing || defaultStrategy(tokenId, status.packs[0]))
   }, [tokenId, status.packs])
 
-  const onSave = () => {
+  const regimeLabel = (r: AgentRegime) => {
+    if (r === 'soft') return t('cc.strategy.soft')
+    if (r === 'aggressive') return t('cc.strategy.aggressive')
+    return t('cc.strategy.balanced')
+  }
+  const regimeBlurb = (r: AgentRegime) => {
+    if (r === 'soft') return t('cc.strategy.soft.blurb')
+    if (r === 'aggressive') return t('cc.strategy.aggressive.blurb')
+    return t('cc.strategy.balanced.blurb')
+  }
+  const regimeEmoji = (r: AgentRegime) => (r === 'soft' ? '🛡️' : r === 'aggressive' ? '⚡' : '⚖️')
+
+  const requestSave = () => {
     if (!connected) {
       requestOpenConnect()
       return
     }
+    setConfirmOpen(true)
+  }
+
+  const confirmSave = () => {
     const next = saveStrategy({
       ...cfg,
       tokenId,
@@ -64,6 +76,7 @@ export default function AgentStrategyConfigPanel() {
       userSigHint: connected ? `xportal:${address?.slice(0, 10)}` : undefined,
     })
     setCfg(next)
+    setConfirmOpen(false)
     setSaved(true)
     window.setTimeout(() => setSaved(false), 2000)
   }
@@ -72,30 +85,22 @@ export default function AgentStrategyConfigPanel() {
     <section className="rounded-2xl border border-amber-500/30 bg-black/50 backdrop-blur-md p-4 space-y-4 shadow-2xl">
       <div>
         <p className="text-[10px] uppercase tracking-[0.18em] text-amber-200/90 font-tech">
-          NFT Agent · Strategy Programmer
+          {t('cc.strategy.kicker')}
         </p>
-        <h3 className="text-sm font-semibold text-white">Régime de trading (paper)</h3>
+        <h3 className="text-sm font-semibold text-white">{t('cc.strategy.title')}</h3>
         <p className="text-[11px] text-zinc-500 mt-1 leading-relaxed">
-          Configuration liée au token{' '}
+          {t('cc.strategy.token')}{' '}
           <span className="mono text-zinc-400">{tokenId.slice(0, 18)}…</span>
-          {' · '}LIVE_TRADING={LIA_LIVE_TRADING ? 1 : 0}. Aucune exécution autonome.
+          {' · '}LIVE_TRADING={LIA_LIVE_TRADING ? 1 : 0}
         </p>
       </div>
 
-      {!connected && (
-        <p className="text-[12px] text-amber-100/90">
-          Connecte xPortal pour lier la config à ton wallet / NFT.
-        </p>
-      )}
       {connected && !hasPack && (
-        <p className="text-[12px] text-zinc-500">
-          Aucun Pack Agent détecté — tu peux quand même pré-régler en paper local.
-        </p>
+        <p className="text-[12px] text-zinc-500">Aucun Pack Agent détecté — pré-réglage paper local.</p>
       )}
 
       <div className="grid gap-2 sm:grid-cols-3">
         {REGIMES.map(r => {
-          const meta = REGIME_META[r]
           const on = cfg.regime === r
           return (
             <button
@@ -109,9 +114,9 @@ export default function AgentStrategyConfigPanel() {
               }`}
             >
               <p className="text-[12px] font-semibold">
-                {meta.emoji} {meta.label}
+                {regimeEmoji(r)} {regimeLabel(r)}
               </p>
-              <p className="text-[10px] mt-1 opacity-80 leading-snug">{meta.blurb}</p>
+              <p className="text-[10px] mt-1 opacity-80 leading-snug">{regimeBlurb(r)}</p>
             </button>
           )
         })}
@@ -119,23 +124,21 @@ export default function AgentStrategyConfigPanel() {
 
       <label className="block space-y-1.5">
         <span className="text-[11px] text-zinc-400">
-          Cadence d’arbitrage (signaux / h) · {cfg.cadencePerHour}
+          {t('cc.strategy.cadence')} · {cfg.cadencePerHour}
         </span>
         <input
           type="range"
           min={1}
           max={12}
           value={cfg.cadencePerHour}
-          onChange={e =>
-            setCfg(c => ({ ...c, cadencePerHour: Number(e.target.value) }))
-          }
+          onChange={e => setCfg(c => ({ ...c, cadencePerHour: Number(e.target.value) }))}
           className="w-full accent-amber-400"
         />
       </label>
 
       <label className="block space-y-1.5">
         <span className="text-[11px] text-zinc-400">
-          Seuil Blue Ribbon (conviction min) · {(cfg.blueRibbonThreshold * 100).toFixed(0)}%
+          {t('cc.strategy.ribbon')} · {(cfg.blueRibbonThreshold * 100).toFixed(0)}%
         </span>
         <input
           type="range"
@@ -143,10 +146,7 @@ export default function AgentStrategyConfigPanel() {
           max={90}
           value={Math.round(cfg.blueRibbonThreshold * 100)}
           onChange={e =>
-            setCfg(c => ({
-              ...c,
-              blueRibbonThreshold: Number(e.target.value) / 100,
-            }))
+            setCfg(c => ({ ...c, blueRibbonThreshold: Number(e.target.value) / 100 }))
           }
           className="w-full accent-cyan-400"
         />
@@ -155,26 +155,53 @@ export default function AgentStrategyConfigPanel() {
       <button
         type="button"
         className="btn-primary text-sm min-h-[44px] w-full sm:w-auto"
-        onClick={onSave}
+        onClick={requestSave}
       >
-        {saved ? '✓ Config enregistrée' : 'Enregistrer (local + hint xPortal)'}
+        {saved ? `✓ ${t('cc.strategy.saved')}` : t('cc.strategy.save')}
       </button>
 
       <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2 space-y-1.5 text-[11px] text-zinc-400 leading-relaxed">
-        <p>
-          <strong className="text-zinc-300">Aucun dépôt requis.</strong> Acquisition unique du Pack
-          NFT — aucun dépôt de trésorerie de votre part.
-        </p>
-        <p>
-          <strong className="text-zinc-300">Financement LIA.</strong> Une fraction du mint alimente
-          le fonds d’arbitrage de LIA.
-        </p>
-        <p>
-          <strong className="text-zinc-300">Rewards discrétionnaires.</strong> Distribution calculée
-          selon le PnL global de LIA et pondérée par le nombre de Packs actifs dans votre wallet —
-          non garantie.
-        </p>
+        <p>{t('cc.econ.noDeposit')}</p>
+        <p>{t('cc.econ.treasury')}</p>
+        <p>{t('cc.econ.rewards')}</p>
       </div>
+
+      {confirmOpen && (
+        <div
+          className="fixed inset-0 z-[85] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
+          role="dialog"
+          aria-modal
+          onClick={() => setConfirmOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl border border-purple-500/30 bg-black/90 shadow-2xl p-5 space-y-4"
+            onClick={e => e.stopPropagation()}
+          >
+            <h4 className="text-base font-semibold text-white">{t('cc.strategy.confirm.title')}</h4>
+            <p className="text-[13px] text-zinc-400 leading-relaxed">{t('cc.strategy.confirm.body')}</p>
+            <p className="text-[12px] text-amber-100/90">
+              {regimeEmoji(cfg.regime)} {regimeLabel(cfg.regime)} · {cfg.cadencePerHour}/h · ribbon{' '}
+              {(cfg.blueRibbonThreshold * 100).toFixed(0)}%
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                type="button"
+                className="btn-primary text-sm min-h-[44px] flex-1"
+                onClick={confirmSave}
+              >
+                {t('cc.strategy.confirm.ok')}
+              </button>
+              <button
+                type="button"
+                className="btn-secondary text-sm min-h-[44px] flex-1"
+                onClick={() => setConfirmOpen(false)}
+              >
+                {t('cc.strategy.confirm.cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

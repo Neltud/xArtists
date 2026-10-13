@@ -1,0 +1,106 @@
+/** Clés réseau, stratégie agent, musée — FR espaces insécables. */
+import type { Dict } from './types'
+
+export const netStrategyFr: Dict = {
+  'net.rateLimit':
+    'Limite API MultiversX (429). Affichage depuis le cache local.',
+  'net.offline': 'Réseau indisponible. Données en cache ou indisponibles.',
+  'net.timeout': 'Délai dépassé sur l’API publique. Nouvelle tentative plus tard.',
+  'net.okCache': 'Données restaurées depuis le cache local.',
+
+  'cc.strategy.title': 'Régime de trading (paper)',
+  'cc.strategy.kicker': 'NFT Agent · Strategy Programmer',
+  'cc.strategy.token': 'Configuration liée au token',
+  'cc.strategy.soft': 'Prudent / Soft',
+  'cc.strategy.balanced': 'Équilibré',
+  'cc.strategy.aggressive': 'Agressif',
+  'cc.strategy.soft.blurb':
+    'Seuils élevés · peu de signaux · focus capital préservé (paper).',
+  'cc.strategy.balanced.blurb': 'Cadence moyenne · Blue Ribbon modéré.',
+  'cc.strategy.aggressive.blurb':
+    'Plus de ticks · seuil ribbon bas · densitée de signaux (paper).',
+  'cc.strategy.cadence': 'Cadence d’arbitrage (signaux / h)',
+  'cc.strategy.ribbon': 'Seuil Blue Ribbon (conviction min)',
+  'cc.strategy.save': 'Enregistrer la configuration',
+  'cc.strategy.confirm.title': 'Confirmer le régime agent',
+  'cc.strategy.confirm.body':
+    'Enregistrer ce régime pour le NFT sélectionné\u00a0? Paper uniquement — aucune TX autonome.',
+  'cc.strategy.confirm.ok': 'Confirmer',
+  'cc.strategy.confirm.cancel': 'Annuler',
+  'cc.strategy.saved': 'Configuration enregistrée',
+  'cc.sign': '⚡ Examiner & Signer xPortal',
+  'cc.econ.noDeposit':
+    'Aucun dépôt requis. Acquisition unique du Pack NFT — aucun dépôt de trésorerie de votre part.',
+  'cc.econ.treasury':
+    'Financement LIA. Une fraction du mint alimente le fonds d’arbitrage de LIA.',
+  'cc.econ.rewards':
+    'Rewards discrétionnaires. Selon le PnL global de LIA et le nombre de Packs actifs — non garantis.',
+
+  'museum.wasd': 'WASD · flèches pour se déplacer',
+  'museum.touch': 'Glisser pour regarder · joystick pour avancer',
+  'museum.buy': '🛒 Acheter maintenant',
+  'museum.bid': '🏷️ Faire une offre (Bid)',
+  'museum.cert': '📜 Voir certificat A4 / On-Chain',
+  'museum.sell': '🔄 Mettre en vente',
+  'museum.forSale': 'En vente',
+  'museum.owned': 'Occupé',
+  'museum.certified': 'Certifié SHA-256',
+  'museum.selectArtwork': 'Sélectionne une œuvre pour inspecter',
+
+  'pack.tier.gold': 'GOLD',
+  'pack.tier.silver': 'SILVER',
+  'pack.tier.platinum': 'PLATINUM',
+  'lia.screen.pulse': 'PULSE · GOLD',
+  'lia.screen.yield': 'YIELD · SILVER',
+  'lia.screen.sentinel': 'SENTINEL · PLATINUM',
+}
+
+export const netStrategyEn: Dict = {
+  'net.rateLimit': 'MultiversX API rate limit (429). Showing local cache.',
+  'net.offline': 'Network unavailable. Cached or missing data.',
+  'net.timeout': 'Public API timeout. Try again later.',
+  'net.okCache': 'Restored data from local cache.',
+
+  'cc.strategy.title': 'Trading regime (paper)',
+  'cc.strategy.kicker': 'NFT Agent · Strategy Programmer',
+  'cc.strategy.token': 'Config linked to token',
+  'cc.strategy.soft': 'Prudent / Soft',
+  'cc.strategy.balanced': 'Balanced',
+  'cc.strategy.aggressive': 'Aggressive',
+  'cc.strategy.soft.blurb': 'High thresholds · few signals · capital-first (paper).',
+  'cc.strategy.balanced.blurb': 'Medium cadence · moderate Blue Ribbon.',
+  'cc.strategy.aggressive.blurb': 'More ticks · lower ribbon threshold (paper).',
+  'cc.strategy.cadence': 'Arbitrage cadence (signals / h)',
+  'cc.strategy.ribbon': 'Blue Ribbon threshold (min conviction)',
+  'cc.strategy.save': 'Save configuration',
+  'cc.strategy.confirm.title': 'Confirm agent regime',
+  'cc.strategy.confirm.body':
+    'Save this regime for the selected NFT? Paper only — no autonomous txs.',
+  'cc.strategy.confirm.ok': 'Confirm',
+  'cc.strategy.confirm.cancel': 'Cancel',
+  'cc.strategy.saved': 'Configuration saved',
+  'cc.sign': '⚡ Review & Sign in xPortal',
+  'cc.econ.noDeposit':
+    'No deposit required. One-time Pack NFT purchase — no treasury deposit from you.',
+  'cc.econ.treasury': 'LIA funding. A fraction of mint feeds the LIA arbitrage fund.',
+  'cc.econ.rewards':
+    'Discretionary rewards. Based on LIA global PnL and active Packs — not guaranteed.',
+
+  'museum.wasd': 'WASD · arrows to move',
+  'museum.touch': 'Drag to look · joystick to move',
+  'museum.buy': '🛒 Buy now',
+  'museum.bid': '🏷️ Place a bid',
+  'museum.cert': '📜 View A4 / on-chain certificate',
+  'museum.sell': '🔄 List for sale',
+  'museum.forSale': 'For sale',
+  'museum.owned': 'Owned',
+  'museum.certified': 'SHA-256 certified',
+  'museum.selectArtwork': 'Select an artwork to inspect',
+
+  'pack.tier.gold': 'GOLD',
+  'pack.tier.silver': 'SILVER',
+  'pack.tier.platinum': 'PLATINUM',
+  'lia.screen.pulse': 'PULSE · GOLD',
+  'lia.screen.yield': 'YIELD · SILVER',
+  'lia.screen.sentinel': 'SENTINEL · PLATINUM',
+}

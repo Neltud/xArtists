@@ -1,9 +1,15 @@
 /**
  * Lecture pools $TRO / EGLD — xExchange + API MultiversX.
- * Cache localStorage TTL 300s · fallback gracieux sur 429.
+ * Cache localStorage TTL 300s · toast 429/offline via networkNotify.
  */
 import { TRO_TOKEN_ID } from '../config/troPools'
 import { fetchMexTroPairs, fetchPoolAccountTvl, type PoolLive } from '../lib/troPoolStats'
+import {
+  fetchWithNetNotify,
+  isOfflineError,
+  isRateLimitError,
+  notifyNetwork,
+} from '../lib/networkNotify'
 
 const CACHE_KEY = 'xartists_pool_tro_egld_v1'
 const TTL_MS = 300_000
@@ -31,7 +37,11 @@ function readCache(): TroEgldPoolSnapshot | null {
     const j = JSON.parse(raw) as CacheBlob
     if (!j?.data) return null
     const age = Date.now() - (j.at || 0)
-    return { ...j.data, stale: age > TTL_MS, source: age > TTL_MS ? 'cache' : j.data.source }
+    return {
+      ...j.data,
+      stale: age > TTL_MS,
+      source: age > TTL_MS ? 'cache' : j.data.source,
+    }
   } catch {
     return null
   }
@@ -47,16 +57,21 @@ function writeCache(data: TroEgldPoolSnapshot) {
 
 async function fetchEgldUsd(): Promise<number | null> {
   try {
-    const r = await fetch('https://api.multiversx.com/economics', { cache: 'no-store' })
-    if (!r.ok) return null
+    const r = await fetchWithNetNotify('https://api.multiversx.com/economics', {
+      cache: 'no-store',
+    })
+    if (!r.ok) {
+      if (r.status === 429) notifyNetwork('rateLimit')
+      return null
+    }
     const j = (await r.json()) as { price?: number }
     return typeof j.price === 'number' ? j.price : null
-  } catch {
+  } catch (e) {
+    if (isOfflineError(e)) notifyNetwork('offline')
     return null
   }
 }
 
-/** Snapshot agrégé TRO/EGLD pour écran YIELD holo. */
 export async function fetchTroEgldPool(): Promise<TroEgldPoolSnapshot> {
   const cached = readCache()
   try {
@@ -71,13 +86,10 @@ export async function fetchTroEgldPool(): Promise<TroEgldPoolSnapshot> {
       tvl = await fetchPoolAccountTvl(best.address)
     }
 
-    // Ratio approximatif via economics + tvl heuristic (pas un oracle de trading)
     const priceTroUsd =
       tvl != null && tvl > 0 ? Math.min(tvl / 1e6, 5) : cached?.priceTroUsd ?? null
     const priceTroInEgld =
-      priceTroUsd != null && egldUsd
-        ? priceTroUsd / egldUsd
-        : cached?.priceTroInEgld ?? null
+      priceTroUsd != null && egldUsd ? priceTroUsd / egldUsd : cached?.priceTroInEgld ?? null
 
     const snap: TroEgldPoolSnapshot = {
       pair: 'TRO/EGLD',
@@ -95,8 +107,10 @@ export async function fetchTroEgldPool(): Promise<TroEgldPoolSnapshot> {
     writeCache(snap)
     return snap
   } catch (e) {
-    const status = (e as { status?: number })?.status
+    if (isRateLimitError(e)) notifyNetwork('rateLimit')
+    else if (isOfflineError(e)) notifyNetwork('offline')
     if (cached) {
+      notifyNetwork('okCache')
       return { ...cached, stale: true, source: 'cache' }
     }
     return {
