@@ -1,5 +1,22 @@
 # Changelog — xArtists
 
+## [0.106.0](https://github.com/Neltud/xArtists/compare/v0.105.0...v0.106.0) (2026-10-13)
+
+
+### Features
+
+* **i18n:** 100% UI translation coverage, network toasts and strict webgl memory cleanup ([fa20970](https://github.com/Neltud/xArtists/commit/fa20970730fd882c269b51dd43da192f77ac6166))
+* **i18n:** NetworkToastBridge + strategy confirm modal wired ([c0c01b7](https://github.com/Neltud/xArtists/commit/c0c01b7bd5548bfa1dee9e134d6c6d668b33f993))
+* **museum:** fullscreen 3d layout, smooth camera zoom and rwa buy/bid/sell dock ([c1d1a9b](https://github.com/Neltud/xArtists/commit/c1d1a9bb79c296e22a57f491d031a88bae559c62))
+* **museum:** fullscreen 3d layout, smooth camera zoom and rwa buy/bid/sell dock ([35f4f0e](https://github.com/Neltud/xArtists/commit/35f4f0efd2896327fd0bdffe20e438ce1db13643))
+* **museum:** fullscreen impl joystick focus lerp and RWA details modal ([9cef3b7](https://github.com/Neltud/xArtists/commit/9cef3b78a9bd76cbe0e8deee26e2c7e22bc62d1d))
+* **museum:** wire fullscreen hall, joystick, ArtworkDetailsModal dock ([6f708d0](https://github.com/Neltud/xArtists/commit/6f708d0ea1d7a2fb4095193aaea36ae0a9dda2c3))
+
+
+### Bug Fixes
+
+* **museum:** restore hall - re-export Live + ship Live fullscreen body ([9bc06aa](https://github.com/Neltud/xArtists/commit/9bc06aa26e62d48ebfd5335e73b2a41c5b178d7d))
+
 ## [0.105.0](https://github.com/Neltud/xArtists/compare/v0.104.0...v0.105.0) (2026-10-13)
 
 
