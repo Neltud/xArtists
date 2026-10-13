@@ -38,7 +38,7 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
   const needWallet = (fn: () => void) => {
     if (!connected) {
       requestOpenConnect()
-      setMsg('Connecte xPortal pour continuer.')
+      setMsg(t('museum.connectWallet'))
       return
     }
     fn()
@@ -53,7 +53,7 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
             detail: { id: frame.id, title: frame.title, paper: !live },
           }),
         )
-        setMsg(live ? 'Intent achat → signature xPortal' : 'Marketplace non live — intent paper')
+        setMsg(live ? t('museum.buyIntentLive') : t('museum.buyIntentPaper'))
       }
     })
 
@@ -64,7 +64,7 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
           detail: { id: frame.id, amount: bidAmt, paper: true },
         }),
       )
-      setMsg(`Offre ${bidAmt || '—'} enregistrée (paper / xPortal)`)
+      setMsg(t('museum.bidRecorded').replace('{amt}', bidAmt || '—'))
       setBidOpen(false)
     })
 
@@ -75,7 +75,7 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
           detail: { id: frame.id, price: sellPrice, paper: !live },
         }),
       )
-      setMsg(`Mise en vente ${sellPrice || '—'} (paper jusqu’au SC live)`)
+      setMsg(t('museum.sellRecorded').replace('{price}', sellPrice || '—'))
       setSellOpen(false)
     })
 
@@ -182,7 +182,7 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
             <div className="flex gap-2">
               <input
                 className="flex-1 rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-sm text-white min-h-[44px]"
-                placeholder="Offre EGLD / $TRO"
+                placeholder={t('museum.bidPlaceholder')}
                 value={bidAmt}
                 onChange={e => setBidAmt(e.target.value)}
               />
@@ -196,7 +196,7 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
             <div className="flex gap-2">
               <input
                 className="flex-1 rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-sm text-white min-h-[44px]"
-                placeholder="Prix vente"
+                placeholder={t('museum.sellPlaceholder')}
                 value={sellPrice}
                 onChange={e => setSellPrice(e.target.value)}
               />
@@ -207,9 +207,7 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
           )}
 
           {!live && (
-            <p className="text-[10px] text-amber-200/80">
-              Marketplace SC gated — intents paper jusqu’au codehash live.
-            </p>
+            <p className="text-[10px] text-amber-200/80">{t('museum.scGated')}</p>
           )}
         </div>
       </div>
