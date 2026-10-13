@@ -7,8 +7,8 @@ export default function BottomNav() {
     { to: '/', label: t('nav.home'), icon: '◈', end: true },
     { to: '/museum', label: t('nav.museum'), icon: '🖼', end: false },
     { to: '/marketplace', label: t('nav.market'), icon: '◇', end: false },
-    { to: '/slot', label: t('nav.slot'), icon: '✦', end: false },
-    { to: '/agents', label: t('nav.packs'), icon: '◎', end: false },
+    { to: '/lia', label: t('nav.lia') || 'LIA', icon: '◎', end: false },
+    { to: '/agents', label: t('nav.packs'), icon: '✦', end: false },
   ] as const
 
   return (
