@@ -1,42 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-14T00:09:36.712Z",
+  "updatedAt": "2026-10-14T08:25:08.727Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1791936576151",
-      "timestamp": "00:09",
+      "id": "egld-1791966308307",
+      "timestamp": "08:25",
       "source": "EGLD",
-      "title": "Cotation publique · $3.75 (API MultiversX economics)",
+      "title": "Cotation publique · $3.79 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1791920886000",
+      "id": "rss-CoinTelegraph-0-1791944396000",
+      "timestamp": "02:19",
+      "source": "CoinTelegraph",
+      "title": "Bitwise’s Hougan says Q3 charts point to ‘crypto spring’",
+      "link": "https://cointelegraph.com/markets/bitwises-hougan-says-q3-charts-point-to-crypto-spring?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791934099000",
+      "timestamp": "23:28",
+      "source": "CoinTelegraph",
+      "title": "Ledger asks resellers to halt sales in Southeast Asia and Hong Kong",
+      "link": "https://cointelegraph.com/news/ledger-asks-resellers-to-halt-sales-in-southeast-asia-and-hong-kong?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1791920886000",
       "timestamp": "19:48",
       "source": "CoinTelegraph",
       "title": "Most tokenized stock trading on Solana, BNB Chain occurs outside US market hours",
       "link": "https://cointelegraph.com/news/tokenized-stocks-after-hours-trading-solana-bnb-chain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1791920037000",
+      "id": "rss-CoinTelegraph-3-1791920037000",
       "timestamp": "19:33",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1791918424000",
+      "id": "rss-CoinTelegraph-4-1791918424000",
       "timestamp": "19:07",
       "source": "CoinTelegraph",
       "title": "Trezor reduces resellers as a ‘preventative step’ amid Ledger tampering reports",
       "link": "https://cointelegraph.com/news/trezor-preventative-steps-wallet-tampering-reports?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1791910285000",
+      "id": "rss-CoinTelegraph-5-1791910285000",
       "timestamp": "16:51",
       "source": "CoinTelegraph",
       "title": "How the SEC’s lack of leadership could facilitate crypto rulemaking",
       "link": "https://cointelegraph.com/news/sec-leadership-facilitate-crypto-rulemaking?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1791951076000",
+      "timestamp": "04:11",
+      "source": "CoinDesk",
+      "title": "Solana sets Oct. 21 for Alpenglow upgrade targeting 150-millisecond finality",
+      "link": "https://www.coindesk.com/tech/2026/10/14/solana-sets-oct-21-for-alpenglow-upgrade-targeting-150-millisecond-finality"
+    },
+    {
+      "id": "rss-CoinDesk-1-1791949854000",
+      "timestamp": "03:50",
+      "source": "CoinDesk",
+      "title": "Bitcoin climbs toward $84,000 after Fed’s Williams sees no rate hikes in 2027",
+      "link": "https://www.coindesk.com/markets/2026/10/14/bitcoin-climbs-toward-usd84-000-after-fed-s-williams-sees-no-rate-hikes-in-2027"
+    },
+    {
+      "id": "rss-CoinDesk-2-1791939600000",
+      "timestamp": "01:00",
+      "source": "CoinDesk",
+      "title": "Largest Philippines crypto exchange, Coins.ph, said to face central bank regulatory action",
+      "link": "https://www.coindesk.com/policy/2026/10/13/largest-philippines-crypto-exchange-coins-ph-said-to-face-central-bank-regulatory-action"
+    },
+    {
+      "id": "rss-CoinDesk-3-1791933785000",
+      "timestamp": "23:23",
+      "source": "CoinDesk",
+      "title": "Strive raising $500 million to buy additional bitcoin with new preferred share class",
+      "link": "https://www.coindesk.com/markets/2026/10/13/strive-to-ipo-second-preferred-share-class-as-it-looks-to-further-build-bitcoin-treasury"
+    },
+    {
+      "id": "egld-1791936576151",
+      "timestamp": "00:09",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.75 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-4-1791907075000",
@@ -149,55 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Crypto PACs report $2.7M spending blitz on House races as midterms loom",
       "link": "https://cointelegraph.com/news/crypto-pac-spending-house-races-2026-midterms?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1791865100000",
-      "timestamp": "04:18",
-      "source": "CoinDesk",
-      "title": "Bitcoin rebounds above $83,000 as it decouples from tumbling Korean stocks and Nasdaq futures",
-      "link": "https://www.coindesk.com/markets/2026/10/13/bitcoin-rebounds-above-usd83-000-as-it-decouples-from-tumbling-korean-stocks-and-nasdaq-futures"
-    },
-    {
-      "id": "rss-CoinDesk-1-1791821883000",
-      "timestamp": "16:18",
-      "source": "CoinDesk",
-      "title": "Palantir's Europe head warns the region is 'missing the boat' on AI just as it did with the internet",
-      "link": "https://www.coindesk.com/policy/2026/10/12/palantir-executive-warns-europe-is-missing-the-boat-on-ai-just-like-it-did-with-the-internet"
-    },
-    {
-      "id": "rss-CoinDesk-2-1791818829000",
-      "timestamp": "15:27",
-      "source": "CoinDesk",
-      "title": "Tom Lee sees $2 trillion wealth transfer fueling crypto demand as Bitmine buys more ether",
-      "link": "https://www.coindesk.com/business/2026/10/12/tom-lee-sees-usd2-trillion-wealth-transfer-fueling-crypto-demand-as-bitmine-buys-more-ether"
-    },
-    {
-      "id": "rss-CoinDesk-3-1791817200000",
-      "timestamp": "15:00",
-      "source": "CoinDesk",
-      "title": "Tokenized catastrophe bonds target the disaster-insurance gap",
-      "link": "https://www.coindesk.com/business/2026/10/12/tokenized-catastrophe-bonds-target-the-disaster-insurance-gap"
-    },
-    {
-      "id": "egld-1791858505022",
-      "timestamp": "02:28",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.68 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1791830294000",
-      "timestamp": "18:38",
-      "source": "CoinTelegraph",
-      "title": "US accounting overhaul could make stablecoins more attractive to corporations: Tempo",
-      "link": "https://cointelegraph.com/news/fasb-stablecoin-accounting-rules-corporate-adoption?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1791823865000",
-      "timestamp": "16:51",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin miners face widening AI financing costs as lenders scrutinize deals",
-      "link": "https://cointelegraph.com/news/bitcoin-miners-ai-financing-costs-debt-funding-gap?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
