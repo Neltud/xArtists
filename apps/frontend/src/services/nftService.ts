@@ -23,7 +23,7 @@ export type MxNft = {
   tags?: string[]
 }
 
-/** Tickers collection packs (env override + defaults xAiAx / xAiAy / xAiAs). */
+/** Tickers collection packs (env override + mainnet XAIPLS / XAIYLD / XAISNT). */
 export function packCollectionTickers(): string[] {
   const fromEnv = (() => {
     try {
@@ -46,12 +46,23 @@ export function packCollectionTickers(): string[] {
 
 export function tickerToPackId(ticker: string): AgentPackId | null {
   const t = ticker.toUpperCase()
-  if (t === PACK_COLLECTIONS.pulse.ticker.toUpperCase() || t.includes('PULSE') || t === 'XAIAX')
+  if (
+    t === PACK_COLLECTIONS.pulse.ticker.toUpperCase() ||
+    t.startsWith('XAIPLS') ||
+    t.includes('PULSE') ||
+    t === 'XAIAX'
+  )
     return 'pulse'
-  if (t === PACK_COLLECTIONS.yield.ticker.toUpperCase() || t.includes('YIELD') || t === 'XAIAY')
+  if (
+    t === PACK_COLLECTIONS.yield.ticker.toUpperCase() ||
+    t.startsWith('XAIYLD') ||
+    t.includes('YIELD') ||
+    t === 'XAIAY'
+  )
     return 'yield'
   if (
     t === PACK_COLLECTIONS.sentinel.ticker.toUpperCase() ||
+    t.startsWith('XAISNT') ||
     t.includes('SENTINEL') ||
     t === 'XAIAS'
   )

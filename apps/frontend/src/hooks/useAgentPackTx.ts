@@ -2,6 +2,7 @@
  * Agent packs — on-chain buy → 1 ESDT NFT in buyer wallet.
  * Endpoints: buyPack@<enum> | buyAgentAction@listing (VITE_AGENT_PACK_LISTINGS).
  * Post-success: transactionMonitor + waitForPackNft.
+ * Paper mint: DEV only (audit S-02).
  */
 import { useCallback, useState } from 'react'
 import { useSendTransaction } from './useSendTransaction'
@@ -68,8 +69,12 @@ export function useAgentPackTx() {
   const { address } = useWallet()
 
   const mintPaper = useCallback((id: PackId) => {
+    if (!import.meta.env.DEV) {
+      setError('Paper mint désactivé en production — utilisez buyPack on-chain')
+      throw new Error('Paper mint disabled outside DEV (audit S-02)')
+    }
     setError(null)
-    setModeLock(true, 'Paper mint', 1500)
+    setModeLock(true, 'Paper mint (DEV)', 1500)
     markPackOwned(id)
     setLastPaper(id)
     const meta = buildMintMetadata(id)
@@ -155,7 +160,7 @@ export function useAgentPackTx() {
         const sid = await buyAgentListing(listingId, price)
         if (address) {
           void waitForPackNft(address, id).then(hit => {
-            if (hit) markPackOwned(id)
+            if (hit && import.meta.env.DEV) markPackOwned(id)
           })
         }
         return { mode: 'listing' as const, sessionId: sid, packId: id }
@@ -163,9 +168,9 @@ export function useAgentPackTx() {
 
       if (!canBuyAgent()) {
         const msg =
-          'SC agents non live — mint paper local. Active VITE_AGENTS_CODEHASH_OK + listing ou buyPack on-chain.'
+          'SC agents non live. Active VITE_AGENTS_CODEHASH_OK + buyPack on-chain. Paper mint = DEV only.'
         setError(msg)
-        mintPaper(id)
+        if (import.meta.env.DEV) mintPaper(id)
         throw new Error(msg)
       }
 
@@ -208,14 +213,14 @@ export function useAgentPackTx() {
             transactionMonitor.subscribe(tx => {
               if (tx.hash === sid && tx.status === 'success' && address) {
                 void waitForPackNft(address, id, { timeoutMs: 120_000 }).then(hit => {
-                  if (hit) markPackOwned(id)
+                  if (hit && import.meta.env.DEV) markPackOwned(id)
                 })
               }
             })
           }
         }
         empireTxSuccess(sid || undefined)
-        markPackOwned(id)
+        if (import.meta.env.DEV) markPackOwned(id)
         return { mode: 'buyPack' as const, sessionId: sid, packId: id, data }
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'buyPack failed'
