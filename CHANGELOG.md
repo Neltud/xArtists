@@ -1,5 +1,27 @@
 # Changelog — xArtists
 
+## [0.107.0](https://github.com/Neltud/xArtists/compare/v0.106.1...v0.107.0) (2026-10-14)
+
+
+### Features
+
+* **i18n:** checkout and legal dictionary keys FR EN DE ES ZH ([17b5f48](https://github.com/Neltud/xArtists/commit/17b5f4839763b5e9f02d3b4fa914472b44e57d1d))
+* **i18n:** CheckoutModal full t() coverage for fiat and crypto rails ([c4a1b6d](https://github.com/Neltud/xArtists/commit/c4a1b6d074effdf82ff9c7269f1b398605477ccb))
+* **i18n:** complete checkout and legal page translation coverage ([40edf09](https://github.com/Neltud/xArtists/commit/40edf09a50c804eb6705e91f05cc97fe647f5ce7))
+* **i18n:** LegalPage full t() coverage ([6af9a4c](https://github.com/Neltud/xArtists/commit/6af9a4c68e73047c981aa66d313874221f8bcba1))
+* **i18n:** PackCheckout full t() coverage FR/EN/DE/ES/ZH ([d67705a](https://github.com/Neltud/xArtists/commit/d67705a0bf94ec3ff5231d16746df90b78325291))
+
+
+### Bug Fixes
+
+* **access:** admin whitelist auto-grants 3 agent packs locally ([d2215b9](https://github.com/Neltud/xArtists/commit/d2215b9707ba1189559f92595f9d695c86c39e29))
+* **cc:** pass wallet address to holderStatus for admin pack access ([115b32a](https://github.com/Neltud/xArtists/commit/115b32a61b38102105a724daa105d7818faee2a9))
+* **legal:** restore LegalPage, remove FC wording keep Fiat tiers ([32037bc](https://github.com/Neltud/xArtists/commit/32037bc1a9acec2282348e064d492541ea241a48))
+* **ui:** brighter bottom-nav CSS, Legal without FC wording ([df397ce](https://github.com/Neltud/xArtists/commit/df397cec5b33f0e6f816e18b47798d33313531a4))
+* **ui:** brighter home HUD cards, admin address in holder rooms, nav CSS polish ([20e2d71](https://github.com/Neltud/xArtists/commit/20e2d716c8f9d1eca7b9fdfa2e2315ef013d87f1))
+* **ui:** drop FC labels keep Fiat rail, admin grants 3 agent packs, brighter nav/home ([e49102f](https://github.com/Neltud/xArtists/commit/e49102fff2ead75f39a6915dc46d417710758d59))
+* **ui:** drop FC labels keep Fiat, brighter bottom nav and home cards, wire admin packs to MyPacks/rooms ([11194ed](https://github.com/Neltud/xArtists/commit/11194ed465266f867d6f0b1c173e7a3d5923dce9))
+
 ## [0.106.1](https://github.com/Neltud/xArtists/compare/v0.106.0...v0.106.1) (2026-10-14)
 
 
