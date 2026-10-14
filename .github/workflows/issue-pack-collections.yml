@@ -75,17 +75,11 @@ jobs:
       - name: Resolve deployer + balance check
         run: |
           set -euo pipefail
-          python3 << 'PY'
-          import os
-          from multiversx_sdk import UserPEM
-          pem = UserPEM.from_file(os.environ["RUNNER_TEMP"] + "/deployer.pem")
-          addr = pem.public_key.to_address().to_bech32()
-          print(f"DEPLOYER={addr}")
-          with open(os.environ["GITHUB_ENV"], "a") as f:
-              f.write(f"DEPLOYER={addr}\n")
-          PY
+          DEPLOYER=$(python3 -c "import os; from pathlib import Path; from multiversx_sdk import UserPEM; print(UserPEM.from_file(Path(os.environ['RUNNER_TEMP'])/'deployer.pem').public_key.to_address().to_bech32())")
+          echo "DEPLOYER=$DEPLOYER"
+          echo "DEPLOYER=$DEPLOYER" >> "$GITHUB_ENV"
           BAL=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('balance','0'))")
-          echo "balance_atomic=$BAL"
+          echo "balance_atomic=$BAL deployer=$DEPLOYER"
           python3 -c "b=int('${BAL}'); assert b>=150_000_000_000_000_000, f'need >=0.15 EGLD for 3 issues, have {b/1e18}'"
 
       - name: Issue 3 NFT collections
@@ -237,6 +231,7 @@ jobs:
       - name: Persist collection ids
         run: |
           set -euo pipefail
+          mkdir -p contracts/agents-marketplace
           cat > contracts/agents-marketplace/PACK_COLLECTIONS_LIVE.md << EOF
           # Live pack collections (mainnet)
 
