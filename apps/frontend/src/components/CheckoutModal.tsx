@@ -1,5 +1,5 @@
 /**
- * Checkout packs — Crypto (wallet) | Fiat (wallet ou guest receive id).
+ * Checkout packs — Crypto | Fiat. Full i18n via useI18n.
  * data-xartists-modal="1" → pause WebGL.
  */
 import { useEffect, useState } from 'react'
@@ -19,6 +19,7 @@ import {
 import AccessTermsModal from './AccessTermsModal'
 import { generateGuestReceiveId, loadGuestReceiveId, saveGuestReceiveId } from './LoginModal'
 import { useWebglPauseWhen } from '../hooks/useWebglPause'
+import { useI18n } from '../i18n/I18nContext'
 
 export type CheckoutRail = 'crypto' | 'fiat' | null
 
@@ -42,6 +43,7 @@ function saveIntent(payload: Record<string, unknown>) {
 }
 
 export default function CheckoutModal({ open, packId, onClose, onStarted, onPreview }: Props) {
+  const { t } = useI18n()
   const pack = getPack(packId)
   const { connected, address } = useWallet()
   const [rail, setRail] = useState<CheckoutRail>(null)
@@ -79,7 +81,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
 
   const launchFiat = async () => {
     if (!hasFiat) {
-      setMsg('Rail fiat non configuré (Stripe / Paybox / Access API).')
+      setMsg(t('checkout.msg.fiatNotConfigured'))
       return
     }
     const method = methods.includes(fiatMethod) ? fiatMethod : methods[0]
@@ -88,9 +90,9 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
     setMsg(
       hasErd1
         ? method === 'stripe'
-          ? 'Redirection Stripe…'
-          : 'Redirection Paybox / e-Transactions…'
-        : `Paiement lié à l’ID ${buyer} — claim erd1 après confirmation…`,
+          ? t('checkout.msg.redirectStripe')
+          : t('checkout.msg.redirectPaybox')
+        : t('checkout.msg.guestPay', { id: buyer }),
     )
     saveIntent({
       packId: pack.id,
@@ -101,7 +103,6 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       guestReceiveId: hasErd1 ? undefined : buyer,
       kind: 'fiat_checkout',
       rail: 'fiat',
-      note: 'Mint après webhook — pas LIA broker',
     })
     try {
       await startPackPayment({
@@ -120,7 +121,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
 
   const launchCrypto = async () => {
     if (!hasErd1) {
-      setMsg('Le rail crypto exige xPortal / erd1.')
+      setMsg(t('checkout.msg.cryptoNeedsWallet'))
       requestOpenConnect()
       return
     }
@@ -134,9 +135,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       rail: 'crypto',
     })
     if (!mintLive) {
-      setMsg(
-        `Mint pack on-chain bientôt. Prix : ${pack.priceEgld.list} EGLD. MoonPay possible pour recharger.`,
-      )
+      setMsg(t('checkout.msg.mintSoon', { amount: pack.priceEgld.list }))
       setBusy(false)
       onStarted?.('crypto')
       return
@@ -169,20 +168,20 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
         <div className="flex items-start justify-between gap-2">
           <div>
             <p className="text-[10px] font-tech uppercase tracking-widest text-violet-300/90">
-              Checkout pack
+              {t('checkout.title')}
             </p>
             <h2 id="checkout-title" className="text-lg font-bold text-white">
               {pack.icon} {pack.name}{' '}
               <span className="text-[11px] font-normal text-zinc-500">{pack.tierLabel}</span>
             </h2>
             <p className="text-[12px] text-zinc-400 mt-0.5 mono tabular-nums">
-              {pack.priceEgld.list} EGLD · ≈ {pack.priceEur.list} €
+              {t('checkout.priceLine', { egld: pack.priceEgld.list, eur: pack.priceEur.list })}
             </p>
           </div>
           <button
             type="button"
             className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl border border-white/15 bg-white/5 text-zinc-200 hover:bg-white/10 text-lg leading-none"
-            aria-label="Fermer"
+            aria-label={t('checkout.close')}
             onClick={onClose}
           >
             ✕
@@ -190,13 +189,13 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
         </div>
 
         <p className="text-[11px] text-zinc-500 leading-relaxed border border-white/10 rounded-xl px-3 py-2">
-          Produit d’accès numérique limité — <strong className="text-zinc-300">pas un fond</strong>{' '}
-          d’investissement. LIA = <strong className="text-zinc-300">analytique / paper</strong> uniquement.
-          Fiat = prestataires tiers régulés.
+          {t('checkout.disclaimer')}
         </p>
 
         <div className="space-y-2">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-tech">Choisir le rail</p>
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-tech">
+            {t('checkout.chooseRail')}
+          </p>
 
           <button
             type="button"
@@ -210,12 +209,11 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
                 : 'border-white/10 bg-black/30 hover:border-white/20'
             }`}
           >
-            <p className="text-sm font-semibold text-white">1 · Crypto direct</p>
-            <p className="text-[12px] text-zinc-400 mt-1">
-              EGLD via <strong className="text-zinc-200">xPortal</strong> (wallet requis).
-            </p>
-            <p className="text-[11px] text-cyan-300/90 mt-1.5 mono tabular-nums">
-              {pack.priceEgld.list} EGLD · mint {mintLive ? 'ouvert' : 'bientôt'}
+            <p className="text-sm font-semibold text-white">{t('checkout.rail.web3')}</p>
+            <p className="text-[11px] text-zinc-400 mt-0.5">{t('checkout.rail.crypto.desc')}</p>
+            <p className="text-[11px] text-cyan-300/90 mt-1 mono">
+              {pack.priceEgld.list} EGLD ·{' '}
+              {mintLive ? t('checkout.rail.crypto.mintOpen') : t('checkout.rail.crypto.mintSoon')}
             </p>
           </button>
 
@@ -224,7 +222,6 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
             onClick={() => {
               setRail('fiat')
               setMsg('')
-              if (!hasErd1) ensureGuestId()
             }}
             className={`w-full text-left rounded-2xl border p-3 transition active:scale-[0.99] ${
               rail === 'fiat'
@@ -232,15 +229,11 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
                 : 'border-white/10 bg-black/30 hover:border-white/20'
             }`}
           >
-            <p className="text-sm font-semibold text-white">2 · Fiat / carte</p>
-            <p className="text-[12px] text-zinc-400 mt-1">
-              Carte / SEPA via gateway régulé. Sans wallet :{' '}
-              <strong className="text-zinc-200">ID réception temporaire</strong> → mint après claim
-              erd1.
-            </p>
-            <p className="text-[11px] text-violet-300/90 mt-1.5 mono tabular-nums">
-              {pack.priceEur.list} € · {hasFiat ? 'gateway dispo' : 'config ops'}
-              {!hasErd1 && guestId ? ` · guest ${guestId.slice(0, 18)}…` : ''}
+            <p className="text-sm font-semibold text-white">{t('checkout.rail.card')}</p>
+            <p className="text-[11px] text-zinc-400 mt-0.5">{t('checkout.rail.fiat.desc')}</p>
+            <p className="text-[11px] text-violet-300/90 mt-1 mono">
+              {pack.priceEur.list} € ·{' '}
+              {hasFiat ? t('checkout.rail.fiat.ready') : t('checkout.rail.fiat.soon')}
             </p>
           </button>
         </div>
@@ -252,23 +245,33 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
                 key={m}
                 type="button"
                 onClick={() => setFiatMethod(m)}
-                className={`rounded-full px-3 py-1 text-[11px] border ${
+                className={`rounded-full border px-3 py-1.5 text-[11px] font-medium ${
                   fiatMethod === m
-                    ? 'border-violet-400/40 bg-violet-500/15 text-violet-100'
-                    : 'border-white/10 text-zinc-500'
+                    ? 'border-violet-400/50 bg-violet-500/20 text-white'
+                    : 'border-white/10 text-zinc-400'
                 }`}
               >
-                {m === 'stripe' ? 'Stripe (carte)' : 'Paybox / SEPA'}
+                {m === 'stripe' ? t('checkout.method.stripe') : t('checkout.method.paybox')}
               </button>
             ))}
           </div>
         )}
 
         {rail === 'fiat' && !hasErd1 && (
-          <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 px-3 py-2 text-[11px] text-amber-100/90 space-y-1">
-            <p>Pas de wallet connecté — un ID temporaire sera attaché au paiement.</p>
-            <button type="button" className="underline text-cyan-300" onClick={() => requestOpenConnect()}>
-              Ou connecter xPortal / accès simplifié
+          <p className="text-[11px] text-zinc-500 leading-relaxed">{t('checkout.guestHint')}</p>
+        )}
+
+        {rail === 'crypto' && !hasErd1 && (
+          <div className="space-y-2">
+            <button type="button" className="btn-primary w-full text-sm" onClick={() => requestOpenConnect()}>
+              {t('common.connect')}
+            </button>
+            <button
+              type="button"
+              className="w-full text-center text-[12px] underline text-cyan-300"
+              onClick={() => requestOpenConnect()}
+            >
+              {t('checkout.connectXportal')}
             </button>
           </div>
         )}
@@ -285,11 +288,11 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
                 amountEur: Math.max(20, pack.priceEur.list),
               })
               setBusy(false)
-              if (!r.ok) setMsg(r.error || 'MoonPay indisponible')
-              else setMsg('MoonPay ouvert — recharge EGLD puis reviens.')
+              if (!r.ok) setMsg(r.error || t('checkout.msg.moonpayFail'))
+              else setMsg(t('checkout.msg.moonpayOk'))
             }}
           >
-            Besoin d’EGLD ? MoonPay ↗
+            {t('checkout.needEgld')}
           </button>
         )}
 
@@ -303,20 +306,20 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
             {busy
               ? '…'
               : rail === 'fiat'
-                ? `Continuer · ${pack.priceEur.list} € fiat`
-                : `Continuer · ${pack.priceEgld.list} EGLD`}
+                ? t('checkout.continueFiat', { amount: pack.priceEur.list })
+                : t('checkout.continueCrypto', { amount: pack.priceEgld.list })}
           </button>
         )}
 
         <div className="border-t border-white/10 pt-3 space-y-2">
           <p className="text-[11px] text-zinc-500">
-            Ou{' '}
+            {t('checkout.or')}{' '}
             <button
               type="button"
               className="text-amber-200/90 underline"
               onClick={() => {
                 if (!hasErd1) {
-                  setMsg('Connecte un wallet pour lier l’aperçu.')
+                  setMsg(t('checkout.msg.previewNeedWallet'))
                   requestOpenConnect()
                   return
                 }
@@ -324,12 +327,12 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
                 onClose()
               }}
             >
-              aperçu appareil (0 € · pas un achat)
+              {t('checkout.preview')}
             </button>
           </p>
           <p className="text-[10px] text-zinc-600">
             <Link to="/legal" className="underline hover:text-zinc-400" onClick={onClose}>
-              Mentions légales
+              {t('checkout.legalLink')}
             </Link>
           </p>
         </div>
