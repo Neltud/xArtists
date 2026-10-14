@@ -1,0 +1,134 @@
+name: Configure pack collections (roles + setPackCollection)
+
+# Use after collections already issued. SC_DEPLOYER_PEM only.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_mainnet:
+        description: "Type CONFIGURE_MAINNET"
+        required: true
+        default: ""
+        type: string
+      sc_address:
+        default: "erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg"
+        type: string
+      col_pulse:
+        default: "XAIPLS-2cf72b"
+        type: string
+      col_yield:
+        default: "XAIYLD-987e24"
+        type: string
+      col_sentinel:
+        default: "XAISNT-3d8a6b"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      SC_ADDRESS: ${{ github.event.inputs.sc_address }}
+      COL_PULSE: ${{ github.event.inputs.col_pulse }}
+      COL_YIELD: ${{ github.event.inputs.col_yield }}
+      COL_SENTINEL: ${{ github.event.inputs.col_sentinel }}
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      PROXY: https://gateway.multiversx.com
+      API: https://api.multiversx.com
+      CHAIN: "1"
+      ESDT_SYSTEM: erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzllls8a5w6u
+
+    steps:
+      - name: Gate
+        run: |
+          test "${{ github.event.inputs.confirm_mainnet }}" = "CONFIGURE_MAINNET"
+
+      - name: Write PEM
+        run: |
+          set -euo pipefail
+          test -n "${SC_DEPLOYER_PEM:-}"
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d ' \n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli multiversx-sdk
+
+      - name: Resolve deployer
+        run: |
+          DEPLOYER=$(python3 -c "import os; from pathlib import Path; from multiversx_sdk import UserPEM; print(UserPEM.from_file(Path(os.environ['RUNNER_TEMP'])/'deployer.pem').public_key.to_address().to_bech32())")
+          echo "DEPLOYER=$DEPLOYER" >> "$GITHUB_ENV"
+          echo "deployer=$DEPLOYER cols=$COL_PULSE $COL_YIELD $COL_SENTINEL"
+
+      - name: Grant ESDTRoleNFTCreate
+        run: |
+          set -euo pipefail
+          grant_role() {
+            local COL="$1"
+            local COL_HEX SC_HEX ROLE_HEX DATA NONCE LOG
+            COL_HEX=$(printf '%s' "$COL" | xxd -p -c 256)
+            SC_HEX=$(python3 -c "from multiversx_sdk import Address; print(Address.new_from_bech32('${SC_ADDRESS}').to_hex())")
+            ROLE_HEX=$(printf '%s' "ESDTRoleNFTCreate" | xxd -p -c 256)
+            DATA="setSpecialRole@${COL_HEX}@${SC_HEX}@${ROLE_HEX}"
+            NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+            echo "setSpecialRole $COL → SC nonce=$NONCE"
+            LOG=$(mxpy tx new \
+              --receiver="${ESDT_SYSTEM}" \
+              --gas-limit=60000000 \
+              --pem="${RUNNER_TEMP}/deployer.pem" \
+              --proxy="${PROXY}" --chain="${CHAIN}" \
+              --nonce="${NONCE}" \
+              --data="${DATA}" \
+              --send --wait-result 2>&1) || true
+            echo "$LOG" | sed 's/PRIVATE KEY.*//' | tail -20
+            sleep 6
+          }
+          grant_role "${COL_PULSE}"
+          grant_role "${COL_YIELD}"
+          grant_role "${COL_SENTINEL}"
+
+      - name: setPackCollection
+        run: |
+          set -euo pipefail
+          set_col() {
+            local PT="$1" COL="$2"
+            NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+            echo "setPackCollection $PT → $COL nonce=$NONCE"
+            mxpy contract call "${SC_ADDRESS}" \
+              --function=setPackCollection \
+              --arguments "0x${PT}" "str:${COL}" \
+              --pem="${RUNNER_TEMP}/deployer.pem" \
+              --proxy="${PROXY}" --chain="${CHAIN}" \
+              --nonce="${NONCE}" \
+              --gas-limit=12000000 --send --wait-result || true
+            sleep 5
+          }
+          set_col 01 "${COL_PULSE}"
+          set_col 02 "${COL_YIELD}"
+          set_col 03 "${COL_SENTINEL}"
+
+      - name: Verify
+        run: |
+          python3 <<'PY'
+          import json, urllib.request, base64, os
+          API, SC = "https://api.multiversx.com", os.environ["SC_ADDRESS"]
+          for pt, label in [("01","pulse"),("02","yield"),("03","sentinel")]:
+              body=json.dumps({"scAddress":SC,"funcName":"getPackCollection","args":[pt]}).encode()
+              req=urllib.request.Request(API+"/vm-values/query",data=body,headers={"Content-Type":"application/json"})
+              d=json.load(urllib.request.urlopen(req))
+              x=(d.get("data") or {}).get("data") or {}
+              rd=x.get("returnData") or []
+              dec=[base64.b64decode(r).decode("utf-8","replace") for r in rd if r]
+              print(label, x.get("returnCode"), dec)
+          PY
+
+      - name: Cleanup
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"
