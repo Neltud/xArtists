@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-14T14:21:09.186Z",
+  "updatedAt": "2026-10-14T19:10:59.993Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792005059546",
+      "timestamp": "19:10",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.62 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1791995191000",
+      "timestamp": "16:26",
+      "source": "CoinTelegraph",
+      "title": "Standard Chartered pushes $2T stablecoin forecast to 2030 as transaction volumes grow",
+      "link": "https://cointelegraph.com/news/standard-chartered-stablecoin-forecast-2030-market-growth?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791987675000",
+      "timestamp": "14:21",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin price dips below $82K as high oil prices spike US CPI inflation",
+      "link": "https://cointelegraph.com/markets/bitcoin-price-dips-yields-surge-as-high-oil-prices-spike-us-cpi-inflation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1791985016000",
+      "timestamp": "13:36",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1791984600000",
+      "timestamp": "13:30",
+      "source": "CoinTelegraph",
+      "title": "‘Bunker mode’ won’t protect your crypto, critics say",
+      "link": "https://cointelegraph.com/magazine/bunker-mode-wont-protect-your-crypto-critics-say?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1791982800000",
+      "timestamp": "13:00",
+      "source": "CoinTelegraph",
+      "title": "Canada crypto remittances to Asian countries surge 141% to $2.36B: Chainalysis",
+      "link": "https://cointelegraph.com/news/canada-crypto-remittances-asia-surge-chainalysis?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1791982421000",
+      "timestamp": "12:53",
+      "source": "CoinTelegraph",
+      "title": "Qivalis wins Dutch e-money license for euro stablecoin",
+      "link": "https://cointelegraph.com/news/qivalis-authorization-dutch-central-bank-euro-stablecoin?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1791995693000",
+      "timestamp": "16:34",
+      "source": "CoinDesk",
+      "title": "Kalshi CEO says state-led oversight of U.S. prediction markets would push them out",
+      "link": "https://www.coindesk.com/policy/2026/10/14/kalshi-ceo-says-state-led-oversight-of-u-s-prediction-markets-would-push-them-out"
+    },
+    {
+      "id": "rss-CoinDesk-1-1791992136000",
+      "timestamp": "15:35",
+      "source": "CoinDesk",
+      "title": "AI agents make 138 million crypto payments as U.S. dominates spending on AI models",
+      "link": "https://www.coindesk.com/business/2026/10/14/ai-agents-make-138-million-crypto-payments-as-u-s-dominates-spending-on-ai-models"
+    },
+    {
+      "id": "rss-CoinDesk-2-1791990315000",
+      "timestamp": "15:05",
+      "source": "CoinDesk",
+      "title": "Crypto Long & Short: Why gold and bitcoin belong in the same portfolio",
+      "link": "https://www.coindesk.com/coindesk-indices/2026/10/14/crypto-long-and-short-why-gold-and-bitcoin-belong-in-the-same-portfolio"
+    },
+    {
+      "id": "rss-CoinDesk-3-1791989372000",
+      "timestamp": "14:49",
+      "source": "CoinDesk",
+      "title": "EasyA hits $1.1 billion valuation, targets 2027 public listing and tokenized shares",
+      "link": "https://www.coindesk.com/business/2026/10/14/easya-hits-usd1-1-billion-valuation-targets-2027-public-listing-and-tokenized-shares"
+    },
     {
       "id": "egld-1791987668799",
       "timestamp": "14:21",
@@ -37,13 +114,6 @@
       "source": "CoinTelegraph",
       "title": "Standard Chartered expands Bitcoin and Ether trading to professional investors in UAE",
       "link": "https://cointelegraph.com/news/standard-chartered-bitcoin-ether-trading-professional-investors-uae?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1791956152000",
-      "timestamp": "05:35",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-5-1791955934000",
@@ -128,76 +198,6 @@
       "source": "CoinDesk",
       "title": "Solana sets Oct. 21 for Alpenglow upgrade targeting 150-millisecond finality",
       "link": "https://www.coindesk.com/tech/2026/10/14/solana-sets-oct-21-for-alpenglow-upgrade-targeting-150-millisecond-finality"
-    },
-    {
-      "id": "rss-CoinDesk-1-1791949854000",
-      "timestamp": "03:50",
-      "source": "CoinDesk",
-      "title": "Bitcoin climbs toward $84,000 after Fed’s Williams sees no rate hikes in 2027",
-      "link": "https://www.coindesk.com/markets/2026/10/14/bitcoin-climbs-toward-usd84-000-after-fed-s-williams-sees-no-rate-hikes-in-2027"
-    },
-    {
-      "id": "rss-CoinDesk-2-1791939600000",
-      "timestamp": "01:00",
-      "source": "CoinDesk",
-      "title": "Largest Philippines crypto exchange, Coins.ph, said to face central bank regulatory action",
-      "link": "https://www.coindesk.com/policy/2026/10/13/largest-philippines-crypto-exchange-coins-ph-said-to-face-central-bank-regulatory-action"
-    },
-    {
-      "id": "rss-CoinDesk-3-1791933785000",
-      "timestamp": "23:23",
-      "source": "CoinDesk",
-      "title": "Strive raising $500 million to buy additional bitcoin with new preferred share class",
-      "link": "https://www.coindesk.com/markets/2026/10/13/strive-to-ipo-second-preferred-share-class-as-it-looks-to-further-build-bitcoin-treasury"
-    },
-    {
-      "id": "egld-1791936576151",
-      "timestamp": "00:09",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.75 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1791907075000",
-      "timestamp": "15:57",
-      "source": "CoinTelegraph",
-      "title": "Strive reports $208M in warrant exercises as Bitcoin holdings jump 11%",
-      "link": "https://cointelegraph.com/news/strive-bitcoin-holdings-32773-btc-warrant-exercises?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791905252000",
-      "timestamp": "15:27",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin keeps up pressure on $84K as US stocks skirt Korea tech sell-off",
-      "link": "https://cointelegraph.com/markets/bitcoin-keeps-up-pressure-on-84k-as-us-stocks-sidestep-korea-tech-sell-off?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1791928320000",
-      "timestamp": "21:52",
-      "source": "CoinDesk",
-      "title": "BNY, Citadel Securities test tokenized U.S. Treasuries to speed up Wall Street financing",
-      "link": "https://www.coindesk.com/business/2026/10/13/bny-citadel-securities-test-tokenized-u-s-treasuries-to-speed-up-wall-street-financing"
-    },
-    {
-      "id": "rss-CoinDesk-1-1791906729000",
-      "timestamp": "15:52",
-      "source": "CoinDesk",
-      "title": "Crypto exchange MNX takes on OKX, Bitget offering pre-IPO futures for AI giants",
-      "link": "https://www.coindesk.com/business/2026/10/13/new-crypto-exchange-takes-on-okx-bitget-with-unique-way-to-trade-ai-giants"
-    },
-    {
-      "id": "rss-CoinDesk-2-1791905092000",
-      "timestamp": "15:24",
-      "source": "CoinDesk",
-      "title": "UK crypto trader says almost $800,000 lost in knife assault as wrench attacks proliferate",
-      "link": "https://www.coindesk.com/policy/2026/10/13/why-self-custody-and-hardware-wallets-cannot-prevent-physical-crypto-extortion"
-    },
-    {
-      "id": "rss-CoinDesk-3-1791892684000",
-      "timestamp": "11:58",
-      "source": "CoinDesk",
-      "title": "South Korea blocks 27 crypto exchanges, including Bitmart and Kucoin",
-      "link": "https://www.coindesk.com/policy/2026/10/13/south-korea-blocks-27-crypto-exchanges-including-bitmart-and-kucoin"
     }
   ]
 }
