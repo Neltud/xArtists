@@ -1,2 +1,2 @@
-/** Musée WebGL — réexport Live (fullscreen + dock RWA). */
+/** Musée WebGL — corps Three.js (pas le repli CSS). */
 export { default } from './MuseumWebGLHallLive'

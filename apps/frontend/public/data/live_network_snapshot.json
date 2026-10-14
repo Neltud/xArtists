@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-13T04:35:00Z",
+  "updated": "2026-10-14T04:35:00Z",
   "source": "api.multiversx.com",
   "network": "mainnet",
   "api_health": {
@@ -7,25 +7,25 @@
     "economics": 200,
     "accounts": 200,
     "tokens": 200,
-    "note": "Probe 13 Oct 2026. Supernova refreshRate 600. Not a live trading flag."
+    "note": "Probe 14 Oct 2026. Supernova refreshRate 600. Not a live trading flag."
   },
   "economics": {
-    "egld_price_usd": 3.77,
+    "egld_price_usd": 3.76,
     "egld_price_source": "api.multiversx.com/economics",
-    "market_cap_usd": 116671887,
-    "circulating": 30947450,
-    "staked": 14261112,
-    "apr": 0.088704,
+    "market_cap_usd": 116388882,
+    "circulating": 30954490,
+    "staked": 14266945,
+    "apr": 0.088683,
     "stale": false
   },
   "stats": {
     "refreshRate": 600,
-    "epoch": 2261,
-    "roundsPassed": 71969,
+    "epoch": 2262,
+    "roundsPassed": 71793,
     "roundsPerEpoch": 144000,
-    "accounts": 9270309,
-    "transactions": 631924166,
-    "blocks": 144025632,
+    "accounts": 9270672,
+    "transactions": 632150911,
+    "blocks": 144598421,
     "shards": 3,
     "stale": false
   },
@@ -34,7 +34,7 @@
     "balance_egld": 1.603782,
     "nonce": 1473,
     "stale": false,
-    "last_live": "2026-10-13T04:35:00Z"
+    "last_live": "2026-10-14T04:35:00Z"
   },
   "notes": "Read-only. LIA_LIVE_TRADING=0. Slot isPayable=false. Listing #2 only. Do not fund legacy placeholders."
 }
