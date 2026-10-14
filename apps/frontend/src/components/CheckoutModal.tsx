@@ -1,5 +1,5 @@
 /**
- * Checkout packs — Crypto | Fiat. Full i18n via useI18n.
+ * Checkout packs — Crypto | Fiat. Full i18n. On-chain buyPack → 1 ESDT NFT.
  * data-xartists-modal="1" → pause WebGL.
  */
 import { useEffect, useState } from 'react'
@@ -20,6 +20,7 @@ import AccessTermsModal from './AccessTermsModal'
 import { generateGuestReceiveId, loadGuestReceiveId, saveGuestReceiveId } from './LoginModal'
 import { useWebglPauseWhen } from '../hooks/useWebglPause'
 import { useI18n } from '../i18n/I18nContext'
+import { useAgentPackTx } from '../hooks/useAgentPackTx'
 
 export type CheckoutRail = 'crypto' | 'fiat' | null
 
@@ -55,6 +56,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
   const methods = availablePayMethods().filter(m => m !== 'paper')
   const hasFiat = methods.length > 0
   const mintLive = canBuyAgent()
+  const { buyPack, pending: packTxPending } = useAgentPackTx()
   const hasErd1 = connected && !!address?.startsWith('erd1')
 
   useWebglPauseWhen(open)
@@ -103,6 +105,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       guestReceiveId: hasErd1 ? undefined : buyer,
       kind: 'fiat_checkout',
       rail: 'fiat',
+      rule: '1_pack_1_esdt_nft_via_relayer',
     })
     try {
       await startPackPayment({
@@ -133,17 +136,22 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       address,
       kind: 'crypto_checkout',
       rail: 'crypto',
+      rule: '1_pack_1_esdt_nft',
     })
-    if (!mintLive) {
-      setMsg(t('checkout.msg.mintSoon', { amount: pack.priceEgld.list }))
-      setBusy(false)
+    try {
+      const result = await buyPack(pack.id)
+      setMsg(
+        result.sessionId
+          ? `TX ${String(result.sessionId).slice(0, 12)}… — NFT ${pack.id} à la confirmation bloc`
+          : t('checkout.msg.mintSoon', { amount: pack.priceEgld.list }),
+      )
       onStarted?.('crypto')
-      return
+      setTimeout(() => onClose(), 1800)
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : String(e))
+    } finally {
+      setBusy(false)
     }
-    window.location.hash = `#/agents?mint=${pack.id}`
-    onStarted?.('crypto')
-    setBusy(false)
-    onClose()
   }
 
   const onAcceptTerms = async () => {
@@ -300,10 +308,10 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
           <button
             type="button"
             className="btn-primary w-full text-sm"
-            disabled={busy || (rail === 'crypto' && !hasErd1)}
+            disabled={busy || packTxPending || (rail === 'crypto' && !hasErd1)}
             onClick={() => setTermsOpen(true)}
           >
-            {busy
+            {busy || packTxPending
               ? '…'
               : rail === 'fiat'
                 ? t('checkout.continueFiat', { amount: pack.priceEur.list })
