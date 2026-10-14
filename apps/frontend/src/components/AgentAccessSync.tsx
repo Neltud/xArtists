@@ -1,16 +1,12 @@
 /**
  * Gatekeeper sync — owns hasAgentAccess in empireStore.
- * Source: admin whitelist · on-chain NFTs · paper device packs.
+ * Source of truth: admin whitelist OR on-chain agent-pack NFTs only.
+ * localStorage paper packs do NOT grant access (audit S-02).
  */
 import { useEffect } from 'react'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
-import {
-  matchOnChainPacks,
-  ownedPackIdsFromChain,
-  loadOwnedPacks,
-  markPackOwned,
-} from '../lib/nftPacks'
+import { matchOnChainPacks, ownedPackIdsFromChain } from '../lib/nftPacks'
 import { setAgentAccess } from '../store/empireStore'
 import type { PackId } from '../config/agentPacks'
 import { isAdminAddress } from '../config/accessControl'
@@ -27,10 +23,8 @@ export default function AgentAccessSync() {
       return
     }
 
-    // Phase 7 — CEO / admin = full IA + all rooms
+    // Admin whitelist — full suite (ops / CEO). No localStorage write.
     if (isAdminAddress(address)) {
-      // Test / CEO : possession locale des 3 packs pour UI salles + My Packs
-      for (const pid of ALL_PACKS) markPackOwned(pid)
       setAgentAccess({
         hasAgentAccess: true,
         packs: ALL_PACKS,
@@ -41,18 +35,11 @@ export default function AgentAccessSync() {
 
     const chainHits = matchOnChainPacks(account.nfts || [])
     const chainPacks = ownedPackIdsFromChain(chainHits) as PackId[]
-    const paper = loadOwnedPacks()
-
-    const merged = [...new Set([...chainPacks, ...paper])] as Array<
-      'pulse' | 'yield' | 'sentinel'
-    >
-    const has = merged.length > 0
-    const source = chainPacks.length > 0 ? 'chain' : paper.length > 0 ? 'paper' : 'none'
 
     setAgentAccess({
-      hasAgentAccess: has,
-      packs: merged,
-      source,
+      hasAgentAccess: chainPacks.length > 0,
+      packs: chainPacks as Array<'pulse' | 'yield' | 'sentinel'>,
+      source: chainPacks.length > 0 ? 'chain' : 'none',
     })
   }, [connected, address, account.nfts, account.refreshedAt])
 

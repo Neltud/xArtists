@@ -1,12 +1,14 @@
 /**
- * Accès holder — paper + on-chain.
+ * Accès holder — on-chain only (audit S-02).
  * 1 pack = 1 salle. Pulse = full suite features (voir agentPacks.mergePackFeatures).
+ * localStorage paper packs never grant rights.
  */
-import { loadOwnedPacks, matchOnChainPacks, type PackId } from './nftPacks'
+import { matchOnChainPacks, type PackId } from './nftPacks'
 import { mergePackFeatures, type PackFeatures, isFullPack } from '../config/agentPacks'
 import { isAdminAddress } from '../config/accessControl'
 
 export type HolderStatus = {
+  /** Always empty in production — kept for type compat */
   paper: PackId[]
   onchain: PackId[]
   packs: PackId[]
@@ -14,7 +16,6 @@ export type HolderStatus = {
   yield: boolean
   sentinel: boolean
   any: boolean
-  /** Features agrégées (Pulse débloque le max) */
   features: PackFeatures
   isFull: boolean
 }
@@ -23,11 +24,11 @@ export function holderStatus(
   nfts: Array<{ identifier: string; collection?: string; name?: string }> = [],
   address?: string | null,
 ): HolderStatus {
-  // Admin / whitelist test : possession des 3 packs Agent
+  // Admin / whitelist test : full suite
   if (isAdminAddress(address)) {
     const packs: PackId[] = ['pulse', 'yield', 'sentinel']
     return {
-      paper: packs,
+      paper: [],
       onchain: packs,
       packs,
       pulse: true,
@@ -38,11 +39,13 @@ export function holderStatus(
       isFull: true,
     }
   }
-  const paper = loadOwnedPacks()
-  const onchain = matchOnChainPacks(nfts).map(h => h.packId as PackId)
-  const packs = Array.from(new Set([...paper, ...onchain])) as PackId[]
+
+  const onchain = [
+    ...new Set(matchOnChainPacks(nfts).map(h => h.packId as PackId)),
+  ] as PackId[]
+  const packs = onchain
   return {
-    paper,
+    paper: [],
     onchain,
     packs,
     pulse: packs.includes('pulse'),
