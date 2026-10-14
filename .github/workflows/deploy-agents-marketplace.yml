@@ -137,19 +137,21 @@ jobs:
           echo "Upgrading ${CONTRACT_ADDRESS}"
           OWNER=$(curl -sS "${API}/accounts/${CONTRACT_ADDRESS}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('ownerAddress',''))")
           echo "onchain_owner=$OWNER"
+          NONCE=$(curl -sS "${API}/accounts/${OWNER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          echo "deployer_nonce=$NONCE"
           LOG=$(mxpy contract upgrade "${CONTRACT_ADDRESS}" \
             --bytecode="${AGENTS_WASM}" \
             --pem="${RUNNER_TEMP}/deployer.pem" \
             --gas-limit=60000000 \
             --proxy="${PROXY}" \
             --chain="${CHAIN_ID}" \
-            --recall-nonce \
+            --nonce="$NONCE" \
             --send \
             --wait-result 2>&1) || true
           echo "$LOG" | sed 's/PRIVATE KEY.*//' | sed 's/pem.*//'
           HASH=$(echo "$LOG" | grep -oE '[a-f0-9]{64}' | head -1 || true)
           echo "tx_hash=${HASH:-none}"
-          if echo "$LOG" | grep -qiE 'error|failed|insufficient|not owner|only owner'; then
+          if echo "$LOG" | grep -qiE 'failed|insufficient funds|not owner|only owner|unrecognized arguments|transaction failed'; then
             echo "Upgrade may have failed — inspect log above"
             exit 1
           fi
@@ -163,13 +165,14 @@ jobs:
         if: env.MODE == 'deploy'
         run: |
           set -euo pipefail
+          NONCE=$(curl -sS "https://api.multiversx.com/accounts/erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
           LOG=$(mxpy contract deploy \
             --bytecode="${AGENTS_WASM}" \
             --pem="${RUNNER_TEMP}/deployer.pem" \
             --gas-limit=60000000 \
             --proxy="${PROXY}" \
             --chain="${CHAIN_ID}" \
-            --recall-nonce \
+            --nonce="$NONCE" \
             --arguments "${FEE_BPS}" \
             --send \
             --wait-result 2>&1) || true
@@ -192,7 +195,7 @@ jobs:
               --arguments "0x${pt}" "str:${col}" \
               --pem="${RUNNER_TEMP}/deployer.pem" \
               --proxy="${PROXY}" --chain="${CHAIN_ID}" \
-              --gas-limit=12000000 --recall-nonce --send --wait-result || true
+              --gas-limit=12000000 --send --wait-result || true
           }
           call_set 01 "${COL_PULSE}"
           call_set 02 "${COL_YIELD}"
