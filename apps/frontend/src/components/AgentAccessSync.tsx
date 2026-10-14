@@ -9,6 +9,7 @@ import {
   matchOnChainPacks,
   ownedPackIdsFromChain,
   loadOwnedPacks,
+  markPackOwned,
 } from '../lib/nftPacks'
 import { setAgentAccess } from '../store/empireStore'
 import type { PackId } from '../config/agentPacks'
@@ -28,6 +29,8 @@ export default function AgentAccessSync() {
 
     // Phase 7 — CEO / admin = full IA + all rooms
     if (isAdminAddress(address)) {
+      // Test / CEO : possession locale des 3 packs pour UI salles + My Packs
+      for (const pid of ALL_PACKS) markPackOwned(pid)
       setAgentAccess({
         hasAgentAccess: true,
         packs: ALL_PACKS,
