@@ -1,8 +1,8 @@
 /**
  * Metadata d’entitlement packs IA — 3 collections distinctes.
- * Pulse  → xAiAx · Agent 001 (NFT genesis) + SFT séries limitées
- * Yield  → xAiAy · Agent 002
- * Sentinel → xAiAs · Agent 003
+ * Pulse  → XAIPLS-2cf72b (mainnet)
+ * Yield  → XAIYLD-987e24 (mainnet)
+ * Sentinel → XAISNT-3d8a6b (mainnet)
  *
  * NFT = 1/1 unique · SFT = Meta-ESDT supply plafonnée par nonce.
  * Produit d’accès (signaux / badge / part pool pack) — PAS un fonds, PAS d’APY promis.
@@ -30,23 +30,29 @@ export type PackNftMeta = {
   tokenMode?: 'nft' | 'sft'
 }
 
-/** Une collection par pack (tickers provisoires jusqu’au mint) */
+/** Collections mainnet live (issue 2026-10-14). Override: VITE_AGENT_PACK_COLLECTIONS */
+export const DEFAULT_PACK_COLLECTIONS = {
+  PULSE: 'XAIPLS-2cf72b',
+  YIELD: 'XAIYLD-987e24',
+  SENTINEL: 'XAISNT-3d8a6b',
+} as const
+
 export const PACK_COLLECTIONS = {
   pulse: {
-    ticker: 'xAiAx',
-    name: 'xAiAx',
+    ticker: DEFAULT_PACK_COLLECTIONS.PULSE,
+    name: 'XAIPLS',
     fullName: 'xArtists AI Agents — Pulse',
     packId: 'pulse' as PackId,
   },
   yield: {
-    ticker: 'xAiAy',
-    name: 'xAiAy',
+    ticker: DEFAULT_PACK_COLLECTIONS.YIELD,
+    name: 'XAIYLD',
     fullName: 'xArtists AI Agents — Yield',
     packId: 'yield' as PackId,
   },
   sentinel: {
-    ticker: 'xAiAs',
-    name: 'xAiAs',
+    ticker: DEFAULT_PACK_COLLECTIONS.SENTINEL,
+    name: 'XAISNT',
     fullName: 'xArtists AI Agents — Sentinel',
     packId: 'sentinel' as PackId,
   },
@@ -83,20 +89,35 @@ export const AGENT_001: PackNftMeta = {
   attributes: [
     { trait_type: 'Pack', value: 'Pulse' },
     { trait_type: 'Agent', value: '001' },
-    { trait_type: 'Artist', value: ARTIST },
-    { trait_type: 'Date', value: DATE },
-    { trait_type: 'Technique', value: TECHNIQUE },
-    { trait_type: 'Class', value: 'Crystal Sentinel' },
-    { trait_type: 'Rarity', value: 'Genesis' },
-    { trait_type: 'Token', value: 'NFT' },
-    { trait_type: 'Signal intensity', value: 3 },
-    { trait_type: 'Collection', value: 'xAiAx' },
+    { trait_type: 'Mode', value: 'NFT' },
+    { trait_type: 'Risk', value: 'High-Frequency' },
   ],
-  mediaHint: 'media/xAiAx-001.mp4',
+  mediaHint: 'media/xAiAx-pulse.mp4',
   royaltiesBps: ROYALTIES,
 }
 
-/** NFT #002 — Pack Yield */
+/** SFT série limitée — Pack Pulse */
+export const AGENT_001_SFT: PackNftMeta = {
+  collection: PACK_COLLECTIONS.pulse.ticker,
+  collectionName: PACK_COLLECTIONS.pulse.fullName,
+  tokenName: 'Agent 001 Series',
+  nonceHint: 2,
+  title: 'Agent 001 Series',
+  artist: ARTIST,
+  date: DATE,
+  technique: TECHNIQUE,
+  description: 'SFT série limitée Pack Pulse — même entitlement d’accès, supply plafonnée.',
+  packId: 'pulse',
+  tokenMode: 'sft',
+  attributes: [
+    { trait_type: 'Pack', value: 'Pulse' },
+    { trait_type: 'Agent', value: '001' },
+    { trait_type: 'Mode', value: 'SFT' },
+  ],
+  mediaHint: 'media/xAiAx-pulse.mp4',
+  royaltiesBps: ROYALTIES,
+}
+
 export const AGENT_002: PackNftMeta = {
   collection: PACK_COLLECTIONS.yield.ticker,
   collectionName: PACK_COLLECTIONS.yield.fullName,
@@ -107,26 +128,19 @@ export const AGENT_002: PackNftMeta = {
   date: DATE,
   technique: TECHNIQUE,
   description:
-    'Entitlement NFT Pack Yield (xArtists). Agent de rendement — lecture Hatom / LP / compound. Signaux moyens, pas d’APY annoncé. Pas un fonds, pas de mandat de gestion.',
+    'Entitlement NFT Pack Yield (xArtists). Accès DeFi limité — LP · Hatom · compound. Pas un fonds, pas d’APY promis.',
   packId: 'yield',
   tokenMode: 'nft',
   attributes: [
     { trait_type: 'Pack', value: 'Yield' },
     { trait_type: 'Agent', value: '002' },
-    { trait_type: 'Artist', value: ARTIST },
-    { trait_type: 'Date', value: DATE },
-    { trait_type: 'Technique', value: TECHNIQUE },
-    { trait_type: 'Class', value: 'Harvest Core' },
-    { trait_type: 'Rarity', value: 'Genesis' },
-    { trait_type: 'Token', value: 'NFT' },
-    { trait_type: 'Signal intensity', value: 2 },
-    { trait_type: 'Collection', value: 'xAiAy' },
+    { trait_type: 'Mode', value: 'NFT' },
+    { trait_type: 'Risk', value: 'DeFi' },
   ],
-  mediaHint: 'media/xAiAy-002.mp4',
+  mediaHint: 'media/xAiAy-yield.mp4',
   royaltiesBps: ROYALTIES,
 }
 
-/** NFT #003 — Pack Sentinel */
 export const AGENT_003: PackNftMeta = {
   collection: PACK_COLLECTIONS.sentinel.ticker,
   collectionName: PACK_COLLECTIONS.sentinel.fullName,
@@ -137,114 +151,25 @@ export const AGENT_003: PackNftMeta = {
   date: DATE,
   technique: TECHNIQUE,
   description:
-    'Entitlement NFT Pack Sentinel (xArtists). Agent de veille — alertes risk · sleeve protection. Signaux sparses. Pas un fonds, pas d’exécution trading agressive.',
+    'Entitlement NFT Pack Sentinel (xArtists). Alertes & garde-fous. Pas un fonds, pas de rendement promis.',
   packId: 'sentinel',
   tokenMode: 'nft',
   attributes: [
     { trait_type: 'Pack', value: 'Sentinel' },
     { trait_type: 'Agent', value: '003' },
-    { trait_type: 'Artist', value: ARTIST },
-    { trait_type: 'Date', value: DATE },
-    { trait_type: 'Technique', value: TECHNIQUE },
-    { trait_type: 'Class', value: 'Aegis Watch' },
-    { trait_type: 'Rarity', value: 'Genesis' },
-    { trait_type: 'Token', value: 'NFT' },
-    { trait_type: 'Signal intensity', value: 1 },
-    { trait_type: 'Collection', value: 'xAiAs' },
+    { trait_type: 'Mode', value: 'NFT' },
+    { trait_type: 'Risk', value: 'Guard' },
   ],
-  mediaHint: 'media/xAiAs-003.mp4',
+  mediaHint: 'media/xAiAs-sentinel.mp4',
   royaltiesBps: ROYALTIES,
 }
 
-export const GENESIS_AGENTS: Record<PackId, PackNftMeta> = {
+export const PACK_NFT_BY_ID: Record<PackId, PackNftMeta> = {
   pulse: AGENT_001,
   yield: AGENT_002,
   sentinel: AGENT_003,
 }
 
-export const ALL_GENESIS_AGENTS: PackNftMeta[] = [AGENT_001, AGENT_002, AGENT_003]
-
-/** Gabarit SFT / nonces suivants (supply limitée par pack) */
-export const PACK_AGENT_TEMPLATE: Record<
-  PackId,
-  Omit<PackNftMeta, 'nonceHint' | 'tokenName' | 'title'>
-> = {
-  pulse: {
-    collection: PACK_COLLECTIONS.pulse.ticker,
-    collectionName: PACK_COLLECTIONS.pulse.fullName,
-    artist: ARTIST,
-    date: DATE,
-    technique: TECHNIQUE,
-    description: 'Entitlement Pulse SFT — signaux dense · micro-arb · momentum. Pas un produit financier.',
-    packId: 'pulse',
-    tokenMode: 'sft',
-    attributes: [
-      { trait_type: 'Pack', value: 'Pulse' },
-      { trait_type: 'Artist', value: ARTIST },
-      { trait_type: 'Technique', value: TECHNIQUE },
-      { trait_type: 'Token', value: 'SFT' },
-      { trait_type: 'Signal intensity', value: 3 },
-    ],
-    mediaHint: 'media/xAiAx-pulse.mp4',
-    royaltiesBps: ROYALTIES,
-  },
-  yield: {
-    collection: PACK_COLLECTIONS.yield.ticker,
-    collectionName: PACK_COLLECTIONS.yield.fullName,
-    artist: ARTIST,
-    date: DATE,
-    technique: TECHNIQUE,
-    description: 'Entitlement Yield SFT — Hatom / LP sleeve lecture. Pas d’APY promis.',
-    packId: 'yield',
-    tokenMode: 'sft',
-    attributes: [
-      { trait_type: 'Pack', value: 'Yield' },
-      { trait_type: 'Artist', value: ARTIST },
-      { trait_type: 'Technique', value: TECHNIQUE },
-      { trait_type: 'Token', value: 'SFT' },
-      { trait_type: 'Signal intensity', value: 2 },
-    ],
-    mediaHint: 'media/xAiAy-yield.mp4',
-    royaltiesBps: ROYALTIES,
-  },
-  sentinel: {
-    collection: PACK_COLLECTIONS.sentinel.ticker,
-    collectionName: PACK_COLLECTIONS.sentinel.fullName,
-    artist: ARTIST,
-    date: DATE,
-    technique: TECHNIQUE,
-    description: 'Entitlement Sentinel SFT — veille · alertes risk.',
-    packId: 'sentinel',
-    tokenMode: 'sft',
-    attributes: [
-      { trait_type: 'Pack', value: 'Sentinel' },
-      { trait_type: 'Artist', value: ARTIST },
-      { trait_type: 'Technique', value: TECHNIQUE },
-      { trait_type: 'Token', value: 'SFT' },
-      { trait_type: 'Signal intensity', value: 1 },
-    ],
-    mediaHint: 'media/xAiAs-sentinel.mp4',
-    royaltiesBps: ROYALTIES,
-  },
-}
-
-/** JSON off-chain MultiversX (IPFS) */
-export function toMultiversXMetadataJson(m: PackNftMeta) {
-  return {
-    name: m.tokenName,
-    description: m.description,
-    collection: m.collectionName,
-    attributes: m.attributes,
-    external_url: 'https://neltud.github.io/xArtists/#/my-packs',
-    animation_url: m.mediaHint,
-    properties: {
-      artist: m.artist,
-      date: m.date,
-      technique: m.technique,
-      pack: m.packId,
-      collection_ticker: m.collection,
-      token_mode: m.tokenMode || 'nft',
-      onSale: false,
-    },
-  }
+export function packMetaForId(id: PackId): PackNftMeta {
+  return PACK_NFT_BY_ID[id]
 }
