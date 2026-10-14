@@ -7,6 +7,7 @@ import MuseumHall from './MuseumHall'
 import type { FrameItem } from './MuseumCorridor'
 import { builtinBlueprintForMuseum } from '../../lib/builtinBlueprints'
 import { holderStatus, canEnterPulseRoom } from '../../lib/holderAccess'
+import { useWallet } from '../../context/WalletContext'
 import { requestOpenConnect } from '../../lib/walletEvents'
 
 export default function HolderPulseTab({
@@ -18,7 +19,8 @@ export default function HolderPulseTab({
   frames: FrameItem[]
   connected: boolean
 }) {
-  const status = holderStatus(nfts)
+  const { address } = useWallet()
+  const status = holderStatus(nfts, address)
   const allowed = canEnterPulseRoom(status)
   const bp = builtinBlueprintForMuseum('xartists')
   const paperOnly = status.any && status.onchain.length === 0

@@ -53,7 +53,7 @@ export default function HomeHudCards() {
             key={c.to}
             to={c.to}
             style={{ animationDelay: `${120 + i * 90}ms` }}
-            className={`group relative min-h-[44px] rounded-2xl border bg-black/75 backdrop-blur-xl p-4 shadow-2xl transition active:scale-[0.98] ${c.accent} ${c.glow}`}
+            className={`group relative min-h-[44px] rounded-2xl border bg-gradient-to-br from-violet-950/80 via-black/70 to-cyan-950/40 backdrop-blur-xl p-4 shadow-2xl transition active:scale-[0.98] hover:brightness-110 ${c.accent} ${c.glow}`}
           >
             <span
               className="pointer-events-none absolute left-2 top-2 h-2 w-2 border-l border-t border-white/30"
@@ -69,7 +69,7 @@ export default function HomeHudCards() {
             <h2 className="text-sm font-semibold text-white group-hover:text-violet-100">
               {t(c.titleKey)}
             </h2>
-            <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-300">{t(c.blurbKey)}</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-zinc-200">{t(c.blurbKey)}</p>
           </Link>
         ))}
       </div>
