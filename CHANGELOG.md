@@ -1,5 +1,18 @@
 # Changelog — xArtists
 
+## [0.106.1](https://github.com/Neltud/xArtists/compare/v0.106.0...v0.106.1) (2026-10-14)
+
+
+### Bug Fixes
+
+* **museum:** camera lerp without inspect dep, immersion exit + i18n HUD ([35b4865](https://github.com/Neltud/xArtists/commit/35b4865ecb36a74aa8149960b74afc5e9760c004))
+* **museum:** EMERGENCY restore CSS fallback (undo accidental placeholder) ([d8ec1b1](https://github.com/Neltud/xArtists/commit/d8ec1b122ddc9c4eec03c720055ca94b4b98678b))
+* **museum:** EMERGENCY restore Live body (undo PLACEHOLDER) ([d1aef25](https://github.com/Neltud/xArtists/commit/d1aef25fe69e857440a5bf5ed32c988e43f7cc92))
+* **museum:** restore polished live webgl body and trigger ci rebuild ([1a69a1e](https://github.com/Neltud/xArtists/commit/1a69a1e7e7e82eb43574e4b18987eb7863fd7ce6))
+* **museum:** restore WebGL hall and refresh 14 Oct mainnet probe ([c056262](https://github.com/Neltud/xArtists/commit/c0562620d4448a289424b705959a1ade36bcc0c5))
+* **museum:** stable camera lerp deps, full i18n on RWA dock and immersion UI ([528eeb7](https://github.com/Neltud/xArtists/commit/528eeb7a99add87711a3b3af63b3b5b138a8ffd0))
+* **packs:** export getPack for CheckoutModal build ([ff7acd0](https://github.com/Neltud/xArtists/commit/ff7acd0bf9d037c1e09930bc50c5fbf825817c07))
+
 ## [0.106.0](https://github.com/Neltud/xArtists/compare/v0.105.0...v0.106.0) (2026-10-13)
 
 
