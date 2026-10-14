@@ -59,7 +59,7 @@ function CommandCenterInner() {
   const { t } = useI18n()
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
-  const status = useMemo(() => holderStatus(account.nfts || []), [account.nfts])
+  const status = useMemo(() => holderStatus(account.nfts || [], address), [account.nfts, address])
   const [params, setParams] = useSearchParams()
   const roomParam = parseRoom(params.get('room'))
   const [room, setRoom] = useState<Room>(roomParam || 'hub')
