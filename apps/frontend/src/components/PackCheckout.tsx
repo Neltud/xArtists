@@ -1,5 +1,5 @@
 /**
- * Checkout packs — ouvre CheckoutModal (crypto | fiat FC rail).
+ * Checkout packs — ouvre CheckoutModal (crypto | fiat).
  * Aperçu appareil = jamais présenté comme achat.
  * Guest : message explicite de déverrouillage des salles.
  */
@@ -87,7 +87,7 @@ export default function PackCheckout({
     setStatus('idle')
     if (isGuest) {
       setMsg(
-        `Invité — la salle « ${ROOM_HINT[id] || id} » nécessite un pack (crypto / fiat) ou un aperçu lié au wallet. Clique « Connecter xPortal » pour continuer.`,
+        `Invité — la salle « ${ROOM_HINT[id] || id} » nécessite un pack (crypto ou fiat) ou un aperçu lié au wallet. Clique « Connecter xPortal » pour continuer.`,
       )
     }
   }
@@ -101,44 +101,24 @@ export default function PackCheckout({
               key={p.id}
               type="button"
               onClick={() => onSelectPack(p.id)}
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-zinc-200 hover:bg-white/[0.08] active:scale-[0.98]"
+              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left text-sm hover:border-violet-400/40"
             >
-              {p.icon} {p.name}
+              <span className="font-semibold text-white">{p.icon} {p.name}</span>
+              <span className="block text-[11px] text-zinc-500">{p.priceEgld.list} EGLD</span>
             </button>
           ))}
         </div>
       )}
 
-      {selected && pack && (
+      {selected && pack && status !== 'done' && (
         <>
-          <div className="rounded-xl border border-white/10 bg-black/30 px-3 py-2">
-            <p className="text-[12px] text-zinc-300 font-medium">
-              {pack.icon} {pack.name}
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-sm text-zinc-300">
+              Pack sélectionné : <strong className="text-white">{pack.name}</strong>
             </p>
-            <p className="text-[11px] text-zinc-500 mt-0.5">{ROOM_HINT[pack.id]}</p>
-          </div>
-
-          {isGuest && (
-            <div className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-3 py-2.5 space-y-2">
-              <p className="text-[12px] text-amber-100/95 leading-relaxed">
-                <span className="font-semibold">Mode invité</span> — les salles Pulse, Yield et
-                Sentinel sont verrouillées tant qu’aucun pack n’est acheté (ou aperçu lié au
-                wallet). Connecte xPortal pour débloquer le checkout crypto / fiat.
-              </p>
-              <button
-                type="button"
-                className="btn-primary text-sm"
-                onClick={() => requestOpenConnect()}
-              >
-                Connecter xPortal
-              </button>
-            </div>
-          )}
-
-          <div className="flex flex-wrap gap-2 items-center">
             <button
               type="button"
-              className="btn-primary text-sm active:scale-[0.98]"
+              className="btn-primary text-sm"
               onClick={() => {
                 if (isGuest) {
                   setMsg(
@@ -167,9 +147,9 @@ export default function PackCheckout({
               </p>
             </div>
             <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] px-3 py-2">
-              <p className="font-medium text-violet-100/90">Fiat / FC</p>
+              <p className="font-medium text-violet-100/90">Fiat</p>
               <p className="text-zinc-400 mt-0.5">
-                {pack.priceEur.list} € · carte / SEPA{hasPaidRail ? ' · gateway on' : ' · config ops'}
+                {pack.priceEur.list} € · carte / SEPA{hasPaidRail ? ' · gateway on' : ' · bientôt'}
               </p>
             </div>
           </div>

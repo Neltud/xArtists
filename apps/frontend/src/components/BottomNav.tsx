@@ -24,8 +24,8 @@ export default function BottomNav() {
             to={to}
             end={end}
             className={({ isActive }) =>
-              `hud-nav-item flex min-h-[44px] flex-col items-center justify-center gap-0.5 rounded-2xl py-2 text-[10px] font-medium transition active:scale-95 ${
-                isActive ? 'hud-nav-item-active' : 'text-zinc-500 active:bg-white/5'
+              `hud-nav-item flex min-h-[48px] flex-col items-center justify-center gap-0.5 rounded-2xl py-2 text-[11px] font-semibold tracking-wide transition active:scale-95 ${
+                isActive ? 'hud-nav-item-active' : 'active:bg-white/5'
               }`
             }
           >
