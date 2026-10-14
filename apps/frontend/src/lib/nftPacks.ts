@@ -1,6 +1,7 @@
 /**
- * NFT Pack series — metadata + local ownership (paper until SC mint).
+ * NFT Pack series — metadata + optional DEV-only local cache.
  * On-chain matching via PACK_COLLECTIONS + VITE_AGENT_PACK_COLLECTIONS + name heuristics.
+ * Access rights: never from localStorage (audit S-02).
  */
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 import { PACK_COLLECTIONS } from '../config/packNftMetadata'
@@ -23,9 +24,15 @@ export type NftPacksFile = {
   mint: { sc_status: string; royalties_bps: number; payment: string[] }
 }
 
+/**
+ * localStorage mirror only — NEVER grant access rights from this.
+ * Access = on-chain NFTs (matchOnChainPacks) or admin whitelist.
+ */
 const LOCAL_OWN = 'xartists_nft_pack_owned'
 
+/** @deprecated Demo/UX cache only. Do not use for hasAgentAccess / gates. */
 export function loadOwnedPacks(): PackId[] {
+  if (!import.meta.env.DEV) return []
   try {
     const raw = localStorage.getItem(LOCAL_OWN)
     if (!raw) return []
@@ -38,10 +45,16 @@ export function loadOwnedPacks(): PackId[] {
   }
 }
 
+/** Cache post-mint success in DEV only. Production rights = chain. */
 export function markPackOwned(id: PackId) {
-  const cur = new Set(loadOwnedPacks())
-  cur.add(id)
-  localStorage.setItem(LOCAL_OWN, JSON.stringify({ packs: [...cur], ts: Date.now() }))
+  if (!import.meta.env.DEV) return
+  try {
+    const cur = new Set(loadOwnedPacks())
+    cur.add(id)
+    localStorage.setItem(LOCAL_OWN, JSON.stringify({ packs: [...cur], ts: Date.now() }))
+  } catch {
+    /* */
+  }
 }
 
 /** Build mint metadata JSON for a series (SC / IPFS later). */
@@ -80,7 +93,7 @@ export async function fetchNftPacksCatalog(): Promise<NftPacksFile | null> {
   return null
 }
 
-/** Collection tickers for agent packs (defaults xAiAx / xAiAy / xAiAs). */
+/** Collection tickers for agent packs (mainnet XAIPLS / XAIYLD / XAISNT + env). */
 export function agentPackCollectionIds(): string[] {
   const defaults = [
     PACK_COLLECTIONS.pulse.ticker,
@@ -113,8 +126,8 @@ export type OnChainPackHit = {
 
 /**
  * Map user NFTs → agent packs (Pulse / Yield / Sentinel).
- * 1) Direct ticker map xAiAx/xAiAy/xAiAs
- * 2) Collection ID + name heuristics
+ * 1) Exact / prefix map XAIPLS-* · XAIYLD-* · XAISNT-* (mainnet)
+ * 2) Env VITE_AGENT_PACK_COLLECTIONS + name heuristics
  */
 export function matchOnChainPacks(
   nfts: Array<{
@@ -136,9 +149,12 @@ export function matchOnChainPacks(
     const id = (n.identifier || '').toLowerCase()
     let packId: PackId | null = null
 
-    if (col === PACK_COLLECTIONS.pulse.ticker.toUpperCase()) packId = 'pulse'
-    else if (col === PACK_COLLECTIONS.yield.ticker.toUpperCase()) packId = 'yield'
-    else if (col === PACK_COLLECTIONS.sentinel.ticker.toUpperCase()) packId = 'sentinel'
+    const pulseT = PACK_COLLECTIONS.pulse.ticker.toUpperCase()
+    const yieldT = PACK_COLLECTIONS.yield.ticker.toUpperCase()
+    const sentT = PACK_COLLECTIONS.sentinel.ticker.toUpperCase()
+    if (col === pulseT || col.startsWith('XAIPLS')) packId = 'pulse'
+    else if (col === yieldT || col.startsWith('XAIYLD')) packId = 'yield'
+    else if (col === sentT || col.startsWith('XAISNT')) packId = 'sentinel'
 
     if (!packId && cols.size && cols.has(col)) {
       for (const [pid, hints] of Object.entries(PACK_NAME_HINTS) as [PackId, string[]][]) {
@@ -147,7 +163,11 @@ export function matchOnChainPacks(
           break
         }
       }
-      if (!packId) packId = 'pulse'
+      if (!packId) {
+        if (col.includes('PLS') || col.includes('PULSE')) packId = 'pulse'
+        else if (col.includes('YLD') || col.includes('YIELD')) packId = 'yield'
+        else if (col.includes('SNT') || col.includes('SENTINEL')) packId = 'sentinel'
+      }
     } else if (!packId) {
       for (const [pid, hints] of Object.entries(PACK_NAME_HINTS) as [PackId, string[]][]) {
         if (hints.some(h => name.includes(h))) {
