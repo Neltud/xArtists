@@ -4,6 +4,7 @@
  */
 import { loadOwnedPacks, matchOnChainPacks, type PackId } from './nftPacks'
 import { mergePackFeatures, type PackFeatures, isFullPack } from '../config/agentPacks'
+import { isAdminAddress } from '../config/accessControl'
 
 export type HolderStatus = {
   paper: PackId[]
@@ -20,7 +21,23 @@ export type HolderStatus = {
 
 export function holderStatus(
   nfts: Array<{ identifier: string; collection?: string; name?: string }> = [],
+  address?: string | null,
 ): HolderStatus {
+  // Admin / whitelist test : possession des 3 packs Agent
+  if (isAdminAddress(address)) {
+    const packs: PackId[] = ['pulse', 'yield', 'sentinel']
+    return {
+      paper: packs,
+      onchain: packs,
+      packs,
+      pulse: true,
+      yield: true,
+      sentinel: true,
+      any: true,
+      features: mergePackFeatures(packs),
+      isFull: true,
+    }
+  }
   const paper = loadOwnedPacks()
   const onchain = matchOnChainPacks(nfts).map(h => h.packId as PackId)
   const packs = Array.from(new Set([...paper, ...onchain])) as PackId[]
@@ -89,8 +106,8 @@ export const ROOM_META: Record<
     path: '/room/sentinel',
     title: 'Salle Sentinel',
     emoji: '🛡️',
-    accent: 'from-sky-500/20 to-indigo-500/10',
+    accent: 'from-violet-500/20 to-indigo-500/10',
     museeLabel: 'Musée Sentinel',
-    blurb: 'Limité guard — alertes · risk sleeve',
+    blurb: 'Alertes & garde-fous',
   },
 }
