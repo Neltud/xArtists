@@ -1,8 +1,9 @@
 /**
  * NFT Pack series — metadata + local ownership (paper until SC mint).
- * On-chain matching via VITE_AGENT_PACK_COLLECTIONS + name heuristics.
+ * On-chain matching via PACK_COLLECTIONS + VITE_AGENT_PACK_COLLECTIONS + name heuristics.
  */
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
+import { PACK_COLLECTIONS } from '../config/packNftMetadata'
 
 export type NftPackSeries = {
   id: PackId
@@ -30,7 +31,7 @@ export function loadOwnedPacks(): PackId[] {
     if (!raw) return []
     const j = JSON.parse(raw) as { packs?: string[] }
     return (j.packs || []).filter((p): p is PackId =>
-      ['pulse', 'yield', 'sentinel'].includes(p)
+      ['pulse', 'yield', 'sentinel'].includes(p),
     )
   } catch {
     return []
@@ -79,16 +80,19 @@ export async function fetchNftPacksCatalog(): Promise<NftPacksFile | null> {
   return null
 }
 
-/** Optional env: comma-separated MultiversX collection tickers for agent packs. */
+/** Collection tickers for agent packs (defaults xAiAx / xAiAy / xAiAs). */
 export function agentPackCollectionIds(): string[] {
+  const defaults = [
+    PACK_COLLECTIONS.pulse.ticker,
+    PACK_COLLECTIONS.yield.ticker,
+    PACK_COLLECTIONS.sentinel.ticker,
+  ]
   try {
     const raw = (import.meta.env.VITE_AGENT_PACK_COLLECTIONS as string | undefined) || ''
-    return raw
-      .split(',')
-      .map(s => s.trim())
-      .filter(Boolean)
+    const fromEnv = raw.split(',').map(s => s.trim()).filter(Boolean)
+    return [...new Set([...fromEnv, ...defaults])]
   } catch {
-    return []
+    return defaults
   }
 }
 
@@ -109,8 +113,8 @@ export type OnChainPackHit = {
 
 /**
  * Map user NFTs → agent packs (Pulse / Yield / Sentinel).
- * 1) Collection ID match via VITE_AGENT_PACK_COLLECTIONS
- * 2) Name heuristics (until SC mint publishes ticker)
+ * 1) Direct ticker map xAiAx/xAiAy/xAiAs
+ * 2) Collection ID + name heuristics
  */
 export function matchOnChainPacks(
   nfts: Array<{
@@ -120,7 +124,7 @@ export function matchOnChainPacks(
     nonce?: number
     url?: string
     media?: { url?: string }[]
-  }>
+  }>,
 ): OnChainPackHit[] {
   const cols = new Set(agentPackCollectionIds().map(c => c.toUpperCase()))
   const hits: OnChainPackHit[] = []
@@ -132,7 +136,11 @@ export function matchOnChainPacks(
     const id = (n.identifier || '').toLowerCase()
     let packId: PackId | null = null
 
-    if (cols.size && cols.has(col)) {
+    if (col === PACK_COLLECTIONS.pulse.ticker.toUpperCase()) packId = 'pulse'
+    else if (col === PACK_COLLECTIONS.yield.ticker.toUpperCase()) packId = 'yield'
+    else if (col === PACK_COLLECTIONS.sentinel.ticker.toUpperCase()) packId = 'sentinel'
+
+    if (!packId && cols.size && cols.has(col)) {
       for (const [pid, hints] of Object.entries(PACK_NAME_HINTS) as [PackId, string[]][]) {
         if (hints.some(h => name.includes(h) || id.includes(h))) {
           packId = pid
@@ -140,7 +148,7 @@ export function matchOnChainPacks(
         }
       }
       if (!packId) packId = 'pulse'
-    } else {
+    } else if (!packId) {
       for (const [pid, hints] of Object.entries(PACK_NAME_HINTS) as [PackId, string[]][]) {
         if (hints.some(h => name.includes(h))) {
           packId = pid
