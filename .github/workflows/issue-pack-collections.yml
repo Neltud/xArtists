@@ -1,0 +1,264 @@
+name: Issue pack NFT collections + setPackCollection
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain:
+        description: "1=mainnet D=devnet"
+        required: true
+        default: "1"
+        type: choice
+        options: ["1", "D"]
+      confirm_mainnet:
+        description: "Mainnet — type ISSUE_MAINNET"
+        required: false
+        default: ""
+        type: string
+      sc_address:
+        description: "agents-marketplace SC"
+        required: true
+        default: "erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg"
+        type: string
+      run_buy_pack_test:
+        description: "After config, send buyPack@01 (1 EGLD) from deployer"
+        required: true
+        default: "false"
+        type: choice
+        options: ["true", "false"]
+
+permissions:
+  contents: write
+
+jobs:
+  issue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CHAIN_ID: ${{ github.event.inputs.chain }}
+      SC_ADDRESS: ${{ github.event.inputs.sc_address }}
+      RUN_BUY: ${{ github.event.inputs.run_buy_pack_test }}
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      ESDT_SYSTEM: erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzllls8a5w6u
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gates
+        run: |
+          if [ "${CHAIN_ID}" = "1" ] && [ "${{ github.event.inputs.confirm_mainnet }}" != "ISSUE_MAINNET" ]; then
+            echo "MAINNET blocked"; exit 1
+          fi
+          if [ "${CHAIN_ID}" = "1" ]; then
+            echo "PROXY=https://gateway.multiversx.com" >> "$GITHUB_ENV"
+            echo "API=https://api.multiversx.com" >> "$GITHUB_ENV"
+          else
+            echo "PROXY=https://devnet-gateway.multiversx.com" >> "$GITHUB_ENV"
+            echo "API=https://devnet-api.multiversx.com" >> "$GITHUB_ENV"
+          fi
+
+      - name: Write PEM
+        run: |
+          set -euo pipefail
+          test -n "${SC_DEPLOYER_PEM:-}"
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d ' \n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli multiversx-sdk
+
+      - name: Resolve deployer + balance check
+        run: |
+          set -euo pipefail
+          python3 << 'PY'
+          import os
+          from multiversx_sdk import UserPEM
+          pem = UserPEM.from_file(os.environ["RUNNER_TEMP"] + "/deployer.pem")
+          addr = pem.public_key.to_address().to_bech32()
+          print(f"DEPLOYER={addr}")
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write(f"DEPLOYER={addr}\n")
+          PY
+          BAL=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('balance','0'))")
+          echo "balance_atomic=$BAL"
+          python3 -c "b=int('${BAL}'); assert b>=150_000_000_000_000_000, f'need >=0.15 EGLD for 3 issues, have {b/1e18}'"
+
+      - name: Issue 3 NFT collections
+        run: |
+          set -euo pipefail
+          ISSUE_VALUE=50000000000000000
+          issue_one() {
+            local NAME="$1" TICKER="$2"
+            local NAME_HEX TICKER_HEX DATA NONCE LOG TX COL
+            NAME_HEX=$(printf '%s' "$NAME" | xxd -p -c 256)
+            TICKER_HEX=$(printf '%s' "$TICKER" | xxd -p -c 256)
+            DATA="issueNonFungible@${NAME_HEX}@${TICKER_HEX}@63616e4164645370656369616c526f6c6573@74727565"
+            NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+            echo "Issuing $TICKER name=$NAME nonce=$NONCE"
+            LOG=$(mxpy tx new \
+              --receiver="${ESDT_SYSTEM}" \
+              --value="${ISSUE_VALUE}" \
+              --gas-limit=60000000 \
+              --pem="${RUNNER_TEMP}/deployer.pem" \
+              --proxy="${PROXY}" \
+              --chain="${CHAIN_ID}" \
+              --nonce="${NONCE}" \
+              --data="${DATA}" \
+              --send \
+              --wait-result 2>&1) || true
+            echo "$LOG" | sed 's/PRIVATE KEY.*//' | tail -30
+            TX=$(echo "$LOG" | grep -oE '[a-f0-9]{64}' | head -1 || true)
+            echo "issue_tx_$TICKER=$TX"
+            sleep 10
+            COL=$(curl -sS "${API}/accounts/${DEPLOYER}/roles/collections?size=50" | python3 -c "
+          import sys,json
+          tick='${TICKER}'.upper()
+          d=json.load(sys.stdin)
+          items=d if isinstance(d,list) else []
+          hits=[x.get('collection','') for x in items if (x.get('collection') or '').upper().startswith(tick)]
+          print(hits[0] if hits else '')
+          ")
+            if [ -z "$COL" ]; then
+              COL=$(curl -sS "${API}/collections?search=${TICKER}&size=10" | python3 -c "
+          import sys,json
+          tick='${TICKER}'.upper()
+          dep='${DEPLOYER}'.lower()
+          d=json.load(sys.stdin)
+          items=d if isinstance(d,list) else []
+          for x in items:
+            c=(x.get('collection') or '')
+            if c.upper().startswith(tick) and (x.get('owner') or '').lower()==dep:
+              print(c); break
+          ")
+            fi
+            if [ -z "$COL" ] && [ -n "$TX" ]; then
+              COL=$(curl -sS "${API}/transactions/${TX}?withOperations=true" | python3 -c "
+          import sys,json
+          tick='${TICKER}'.upper()
+          d=json.load(sys.stdin)
+          for op in d.get('operations') or []:
+            c=op.get('collection') or ''
+            if c.upper().startswith(tick):
+              print(c); break
+          " | head -1)
+            fi
+            echo "collection_$TICKER=$COL"
+            printf '%s' "$COL"
+          }
+
+          PULSE=$(issue_one "xArtistsPulse" "XAIPLS")
+          YIELD=$(issue_one "xArtistsYield" "XAIYLD")
+          SENT=$(issue_one "xArtistsSentinel" "XAISNT")
+          echo "COL_PULSE=$PULSE" >> "$GITHUB_ENV"
+          echo "COL_YIELD=$YIELD" >> "$GITHUB_ENV"
+          echo "COL_SENTINEL=$SENT" >> "$GITHUB_ENV"
+          echo "pulse=$PULSE yield=$YIELD sentinel=$SENT"
+          test -n "$PULSE" && test -n "$YIELD" && test -n "$SENT"
+
+      - name: Grant ESDTRoleNFTCreate to SC
+        run: |
+          set -euo pipefail
+          grant_role() {
+            local COL="$1"
+            local COL_HEX SC_HEX ROLE_HEX DATA NONCE LOG
+            COL_HEX=$(printf '%s' "$COL" | xxd -p -c 256)
+            SC_HEX=$(python3 -c "from multiversx_sdk import Address; print(Address.new_from_bech32('${SC_ADDRESS}').to_hex())")
+            ROLE_HEX=$(printf '%s' "ESDTRoleNFTCreate" | xxd -p -c 256)
+            DATA="setSpecialRole@${COL_HEX}@${SC_HEX}@${ROLE_HEX}"
+            NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+            echo "setSpecialRole $COL → SC nonce=$NONCE"
+            LOG=$(mxpy tx new \
+              --receiver="${ESDT_SYSTEM}" \
+              --gas-limit=60000000 \
+              --pem="${RUNNER_TEMP}/deployer.pem" \
+              --proxy="${PROXY}" \
+              --chain="${CHAIN_ID}" \
+              --nonce="${NONCE}" \
+              --data="${DATA}" \
+              --send \
+              --wait-result 2>&1) || true
+            echo "$LOG" | sed 's/PRIVATE KEY.*//' | tail -15
+            sleep 6
+          }
+          grant_role "${COL_PULSE}"
+          grant_role "${COL_YIELD}"
+          grant_role "${COL_SENTINEL}"
+
+      - name: setPackCollection on agents-marketplace
+        run: |
+          set -euo pipefail
+          set_col() {
+            local PT="$1" COL="$2"
+            NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+            echo "setPackCollection $PT → $COL nonce=$NONCE"
+            mxpy contract call "${SC_ADDRESS}" \
+              --function=setPackCollection \
+              --arguments "0x${PT}" "str:${COL}" \
+              --pem="${RUNNER_TEMP}/deployer.pem" \
+              --proxy="${PROXY}" --chain="${CHAIN_ID}" \
+              --nonce="${NONCE}" \
+              --gas-limit=12000000 --send --wait-result || true
+            sleep 5
+          }
+          set_col 01 "${COL_PULSE}"
+          set_col 02 "${COL_YIELD}"
+          set_col 03 "${COL_SENTINEL}"
+          for pt in 01 02 03; do
+            curl -sS -X POST "${API}/vm-values/query" -H 'Content-Type: application/json' \
+              -d "{\"scAddress\":\"${SC_ADDRESS}\",\"funcName\":\"getPackCollection\",\"args\":[\"${pt}\"]}" \
+              | python3 -c "import sys,json,base64; d=json.load(sys.stdin); x=d.get('data',{}).get('data',{}); rd=x.get('returnData') or []; print('${pt}', [base64.b64decode(r).decode('utf-8','replace') for r in rd])"
+          done
+
+      - name: Test buyPack Pulse (optional)
+        if: env.RUN_BUY == 'true'
+        run: |
+          set -euo pipefail
+          NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          BAL=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(int(json.load(sys.stdin).get('balance',0)))")
+          if [ "$BAL" -lt 1000000000000000000 ]; then
+            echo "Skip buyPack — need 1 EGLD, have $BAL"
+            exit 0
+          fi
+          LOG=$(mxpy contract call "${SC_ADDRESS}" \
+            --function=buyPack \
+            --arguments 0x01 \
+            --value=1000000000000000000 \
+            --pem="${RUNNER_TEMP}/deployer.pem" \
+            --proxy="${PROXY}" --chain="${CHAIN_ID}" \
+            --nonce="${NONCE}" \
+            --gas-limit=30000000 --send --wait-result 2>&1) || true
+          echo "$LOG" | sed 's/PRIVATE KEY.*//' | tail -25
+
+      - name: Persist collection ids
+        run: |
+          set -euo pipefail
+          cat > contracts/agents-marketplace/PACK_COLLECTIONS_LIVE.md << EOF
+          # Live pack collections (mainnet)
+
+          | Pack | Collection ID |
+          |------|---------------|
+          | Pulse (01) | \`${COL_PULSE}\` |
+          | Yield (02) | \`${COL_YIELD}\` |
+          | Sentinel (03) | \`${COL_SENTINEL}\` |
+
+          SC: \`${SC_ADDRESS}\`
+
+          \`\`\`
+          VITE_AGENTS_CODEHASH_OK=true
+          VITE_AGENT_PACK_COLLECTIONS=${COL_PULSE},${COL_YIELD},${COL_SENTINEL}
+          \`\`\`
+          EOF
+          git config user.name "xArtists-ci"
+          git config user.email "ci@users.noreply.github.com"
+          git add contracts/agents-marketplace/PACK_COLLECTIONS_LIVE.md
+          git diff --staged --quiet || git commit -m "chore(sc): live pack collection ids after issue"
+          git push origin HEAD:main || echo "push skipped"
+
+      - name: Cleanup
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"
