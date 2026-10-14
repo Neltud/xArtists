@@ -1,7 +1,7 @@
 /**
- * Agent packs — paper default.
- * On-chain agents SC endpoints (bytecode): listAgentAction · buyAgentAction · claimFees.
- * NOT buyPack/mint (those do not exist on deployed code).
+ * Agent packs — on-chain buy → 1 ESDT NFT in buyer wallet.
+ * Endpoints: buyPack@<enum> | buyAgentAction@listing (VITE_AGENT_PACK_LISTINGS).
+ * Post-success: transactionMonitor + waitForPackNft.
  */
 import { useCallback, useState } from 'react'
 import { useSendTransaction } from './useSendTransaction'
@@ -19,6 +19,9 @@ import {
   setModeLock,
 } from '../store/empireStore'
 import { projectSale } from '../config/revenueSplitter'
+import { transactionMonitor } from '../services/transactionMonitor'
+import { waitForPackNft } from '../services/nftService'
+import { useWallet } from '../context/WalletContext'
 
 function egldToAtomic(egld: number): string {
   return BigInt(Math.round(egld * 1e18)).toString()
@@ -29,12 +32,40 @@ function numToHex(n: number | bigint): string {
   return h.length % 2 === 0 ? h : `0${h}`
 }
 
+const PACK_ENUM: Record<PackId, number> = { pulse: 1, yield: 2, sentinel: 3 }
+
+function packListingIds(): Partial<Record<PackId, number>> {
+  try {
+    const raw = (import.meta.env.VITE_AGENT_PACK_LISTINGS as string | undefined) || ''
+    const out: Partial<Record<PackId, number>> = {}
+    for (const part of raw.split(',')) {
+      const [k, v] = part.split(':').map(s => s.trim())
+      if (k === 'pulse' || k === 'yield' || k === 'sentinel') {
+        const n = Number(v)
+        if (Number.isFinite(n) && n >= 0) out[k] = n
+      }
+    }
+    return out
+  } catch {
+    return {}
+  }
+}
+
+function buyPackEndpoint(): string {
+  try {
+    return (import.meta.env.VITE_AGENT_PACK_BUY_ENDPOINT as string | undefined)?.trim() || 'buyPack'
+  } catch {
+    return 'buyPack'
+  }
+}
+
 export function useAgentPackTx() {
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lastTx, setLastTx] = useState<string | null>(null)
   const [lastPaper, setLastPaper] = useState<PackId | null>(null)
   const { send } = useSendTransaction()
+  const { address } = useWallet()
 
   const mintPaper = useCallback((id: PackId) => {
     setError(null)
@@ -56,7 +87,6 @@ export function useAgentPackTx() {
     return { packId: id, meta, sale }
   }, [])
 
-  /** Buy an agent listing by on-chain listing id (buyAgentAction). */
   const buyAgentListing = useCallback(
     async (listingId: number, priceEgld: number) => {
       setError(null)
@@ -65,9 +95,7 @@ export function useAgentPackTx() {
         setError(msg)
         throw new Error(msg)
       }
-      if (!(listingId >= 0) || !(priceEgld > 0)) {
-        throw new Error('listing / prix invalide')
-      }
+      if (!(listingId >= 0) || !(priceEgld > 0)) throw new Error('listing / prix invalide')
       const receiver = agentsMarketplaceReceiverOrThrow()
       setPending(true)
       empireTxStart(`Buy agent #${listingId}`)
@@ -78,13 +106,13 @@ export function useAgentPackTx() {
               receiver,
               value: egldToAtomic(priceEgld),
               data: `buyAgentAction@${numToHex(listingId)}`,
-              gasLimit: 15_000_000,
+              gasLimit: 25_000_000,
               chainID: '1',
             },
           ],
           {
-            processingMessage: 'Achat agent…',
-            successMessage: 'Achat soumis',
+            processingMessage: 'Achat agent NFT…',
+            successMessage: 'Achat soumis — attente confirmation',
             errorMessage: 'Achat échoué',
           },
         )
@@ -93,7 +121,12 @@ export function useAgentPackTx() {
           empireTxError(res.error)
           throw new Error(res.error)
         }
-        if (res.sessionId) setLastTx(res.sessionId)
+        if (res.sessionId) {
+          setLastTx(res.sessionId)
+          if (res.sessionId.length >= 16 && !res.sessionId.startsWith('session')) {
+            transactionMonitor.watch(res.sessionId, { network: 'mainnet' })
+          }
+        }
         empireTxSuccess(res.sessionId || undefined)
         return res.sessionId
       } catch (e) {
@@ -108,27 +141,100 @@ export function useAgentPackTx() {
     [send],
   )
 
-  /**
-   * Pack product mint — no on-chain mint endpoint on deployed agents SC.
-   * Falls back to paper; when a listing exists use buyAgentListing.
-   */
-  const mintOnChain = useCallback(
+  /** 1 Pack Acheté = 1 NFT ESDT dans le wallet. */
+  const buyPack = useCallback(
     async (id: PackId) => {
       setError(null)
-      const msg =
-        'Le SC agents déployé n’a pas buyPack/mint — uniquement listAgentAction / buyAgentAction. Pack = paper jusqu’à listing NFT ou upgrade minter.'
-      setError(msg)
-      empireTxError(msg)
-      // still allow paper ownership for UX
-      mintPaper(id)
-      throw new Error(msg)
+      const pack = AGENT_PACKS.find(p => p.id === id)
+      if (!pack) throw new Error('Pack inconnu')
+      const price = pack.priceEgld.list
+      const listings = packListingIds()
+      const listingId = listings[id]
+
+      if (listingId != null && canBuyAgent()) {
+        const sid = await buyAgentListing(listingId, price)
+        if (address) {
+          void waitForPackNft(address, id).then(hit => {
+            if (hit) markPackOwned(id)
+          })
+        }
+        return { mode: 'listing' as const, sessionId: sid, packId: id }
+      }
+
+      if (!canBuyAgent()) {
+        const msg =
+          'SC agents non live — mint paper local. Active VITE_AGENTS_CODEHASH_OK + listing ou buyPack on-chain.'
+        setError(msg)
+        mintPaper(id)
+        throw new Error(msg)
+      }
+
+      const receiver = agentsMarketplaceReceiverOrThrow()
+      const endpoint = buyPackEndpoint()
+      const data =
+        endpoint === 'buyAgentAction' && listingId != null
+          ? `buyAgentAction@${numToHex(listingId)}`
+          : `buyPack@${numToHex(PACK_ENUM[id])}`
+
+      setPending(true)
+      empireTxStart(`buyPack ${id}`)
+      try {
+        const res = await send(
+          [
+            {
+              receiver,
+              value: egldToAtomic(price),
+              data,
+              gasLimit: 30_000_000,
+              chainID: '1',
+            },
+          ],
+          {
+            processingMessage: `Mint pack ${id}…`,
+            successMessage: 'TX soumise — NFT à la confirmation',
+            errorMessage: 'Mint pack échoué',
+          },
+        )
+        if (res.error) {
+          setError(res.error)
+          empireTxError(res.error)
+          throw new Error(res.error)
+        }
+        const sid = res.sessionId
+        if (sid) {
+          setLastTx(sid)
+          if (sid.length >= 16 && !sid.startsWith('session')) {
+            transactionMonitor.watch(sid, { network: 'mainnet', intentId: `pack:${id}` })
+            transactionMonitor.subscribe(tx => {
+              if (tx.hash === sid && tx.status === 'success' && address) {
+                void waitForPackNft(address, id, { timeoutMs: 120_000 }).then(hit => {
+                  if (hit) markPackOwned(id)
+                })
+              }
+            })
+          }
+        }
+        empireTxSuccess(sid || undefined)
+        markPackOwned(id)
+        return { mode: 'buyPack' as const, sessionId: sid, packId: id, data }
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : 'buyPack failed'
+        setError(msg)
+        empireTxError(msg)
+        throw e
+      } finally {
+        setPending(false)
+      }
     },
-    [mintPaper],
+    [send, buyAgentListing, mintPaper, address],
   )
+
+  const mintOnChain = useCallback(async (id: PackId) => buyPack(id), [buyPack])
 
   return {
     mintPaper,
     mintOnChain,
+    buyPack,
     buyAgentListing,
     pending,
     error,
