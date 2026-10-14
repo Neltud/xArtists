@@ -1,13 +1,23 @@
 #![no_std]
 
-//! Agents Marketplace — list / buy / cancel agent actions
-//! fee_bps default 300 → seller 97 %.
+//! Agents Marketplace — list / buy / cancel + buyPack (1 pack = 1 ESDT NFT).
+//! fee_bps default 300. buyPack: payable EGLD → esdt_nft_create + direct to caller.
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
 const MAX_AGENT_ID_LEN: usize = 64;
 const MAX_FEE_BPS: u16 = 1000;
+const NFT_AMOUNT: u64 = 1;
+const ROYALTIES_BPS: u64 = 500;
+
+#[type_abi]
+#[derive(TopEncode, TopDecode, NestedEncode, NestedDecode, Clone, Copy, PartialEq)]
+pub enum PackType {
+    Pulse = 1,
+    Yield = 2,
+    Sentinel = 3,
+}
 
 #[type_abi]
 #[derive(TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
@@ -30,11 +40,29 @@ pub trait AgentsMarketplace {
         let caller = self.blockchain().get_caller();
         self.owner().set(&caller);
         self.pending_owner().clear();
+        let one_egld = BigUint::from(1_000_000_000_000_000_000u64);
+        self.pack_price(PackType::Pulse as u8).set(&one_egld);
+        self.pack_price(PackType::Yield as u8)
+            .set(&(one_egld.clone() * 2u64));
+        self.pack_price(PackType::Sentinel as u8)
+            .set(&(one_egld * 3u64));
     }
 
     #[upgrade]
     fn upgrade(&self) {
         self.require_owner();
+        let one_egld = BigUint::from(1_000_000_000_000_000_000u64);
+        if self.pack_price(PackType::Pulse as u8).is_empty() {
+            self.pack_price(PackType::Pulse as u8).set(&one_egld);
+        }
+        if self.pack_price(PackType::Yield as u8).is_empty() {
+            self.pack_price(PackType::Yield as u8)
+                .set(&(one_egld.clone() * 2u64));
+        }
+        if self.pack_price(PackType::Sentinel as u8).is_empty() {
+            self.pack_price(PackType::Sentinel as u8)
+                .set(&(one_egld * 3u64));
+        }
     }
 
     fn require_owner(&self) {
@@ -42,6 +70,53 @@ pub trait AgentsMarketplace {
             self.blockchain().get_caller() == self.owner().get(),
             "only owner"
         );
+    }
+
+    fn require_not_paused(&self) {
+        require!(!self.paused().get(), "paused");
+    }
+
+    fn pack_type_from_u8(&self, v: u8) -> PackType {
+        match v {
+            1 => PackType::Pulse,
+            2 => PackType::Yield,
+            3 => PackType::Sentinel,
+            _ => sc_panic!("invalid pack type"),
+        }
+    }
+
+    fn pack_name(&self, pack: PackType) -> ManagedBuffer {
+        match pack {
+            PackType::Pulse => ManagedBuffer::from(&b"Agent Pack Pulse"[..]),
+            PackType::Yield => ManagedBuffer::from(&b"Agent Pack Yield"[..]),
+            PackType::Sentinel => ManagedBuffer::from(&b"Agent Pack Sentinel"[..]),
+        }
+    }
+
+    fn pack_attributes(&self, pack: PackType) -> ManagedBuffer {
+        match pack {
+            PackType::Pulse => ManagedBuffer::from(&b"series:Pulse;tier:Gold;product:access"[..]),
+            PackType::Yield => ManagedBuffer::from(&b"series:Yield;tier:Silver;product:access"[..]),
+            PackType::Sentinel => {
+                ManagedBuffer::from(&b"series:Sentinel;tier:Platinum;product:access"[..])
+            },
+        }
+    }
+
+    #[endpoint(setPackCollection)]
+    fn set_pack_collection(&self, pack_type: u8, token_id: TokenIdentifier) {
+        self.require_owner();
+        let _ = self.pack_type_from_u8(pack_type);
+        require!(token_id.is_valid_esdt_identifier(), "invalid token id");
+        self.pack_collection(pack_type).set(&token_id);
+    }
+
+    #[endpoint(setPackPrice)]
+    fn set_pack_price(&self, pack_type: u8, price_egld_atomic: BigUint) {
+        self.require_owner();
+        let _ = self.pack_type_from_u8(pack_type);
+        require!(price_egld_atomic > 0, "price must be > 0");
+        self.pack_price(pack_type).set(&price_egld_atomic);
     }
 
     #[endpoint(setPaused)]
@@ -85,9 +160,61 @@ pub trait AgentsMarketplace {
         self.claim_event(&owner, &fees);
     }
 
+    /// 1 pack payment = 1 ESDT NFT to caller. pack_type: 1=Pulse, 2=Yield, 3=Sentinel.
+    #[payable("EGLD")]
+    #[endpoint(buyPack)]
+    fn buy_pack(&self, pack_type: u8) {
+        self.require_not_paused();
+        let pack = self.pack_type_from_u8(pack_type);
+
+        require!(
+            !self.pack_collection(pack_type).is_empty(),
+            "pack collection not configured"
+        );
+        require!(
+            !self.pack_price(pack_type).is_empty(),
+            "pack price not configured"
+        );
+
+        let price = self.pack_price(pack_type).get();
+        let payment = self.call_value().egld().clone_value();
+        require!(payment >= price, "insufficient payment");
+
+        let buyer = self.blockchain().get_caller();
+        let token_id = self.pack_collection(pack_type).get();
+
+        let name = self.pack_name(pack);
+        let attributes = self.pack_attributes(pack);
+        let royalties = BigUint::from(ROYALTIES_BPS);
+        let hash = ManagedBuffer::new();
+        let uris = ManagedVec::<Self::Api, ManagedBuffer>::new();
+
+        let nonce = self.send().esdt_nft_create(
+            &token_id,
+            &BigUint::from(NFT_AMOUNT),
+            &name,
+            &royalties,
+            &hash,
+            &attributes,
+            &uris,
+        );
+
+        self.send()
+            .direct_esdt(&buyer, &token_id, nonce, &BigUint::from(NFT_AMOUNT));
+
+        self.accumulated_fees().update(|f| *f += &price);
+
+        let excess = &payment - &price;
+        if excess > 0 {
+            self.send().direct_egld(&buyer, &excess);
+        }
+
+        self.pack_purchased_event(&buyer, pack_type, nonce, &token_id);
+    }
+
     #[endpoint(listAgentAction)]
     fn list_agent_action(&self, agent_id: ManagedBuffer, price: BigUint) {
-        require!(!self.paused().get(), "paused");
+        self.require_not_paused();
         require!(price > 0, "price must be > 0");
         require!(
             agent_id.len() > 0 && agent_id.len() <= MAX_AGENT_ID_LEN,
@@ -109,7 +236,7 @@ pub trait AgentsMarketplace {
     #[payable("EGLD")]
     #[endpoint(buyAgentAction)]
     fn buy_agent_action(&self, listing_id: u64) {
-        require!(!self.paused().get(), "paused");
+        self.require_not_paused();
         require!(!self.listings(listing_id).is_empty(), "listing not found");
 
         let mut listing = self.listings(listing_id).get();
@@ -198,6 +325,24 @@ pub trait AgentsMarketplace {
         self.paused().get()
     }
 
+    #[view(getPackCollection)]
+    fn get_pack_collection(&self, pack_type: u8) -> OptionalValue<TokenIdentifier> {
+        if self.pack_collection(pack_type).is_empty() {
+            OptionalValue::None
+        } else {
+            OptionalValue::Some(self.pack_collection(pack_type).get())
+        }
+    }
+
+    #[view(getPackPrice)]
+    fn get_pack_price(&self, pack_type: u8) -> OptionalValue<BigUint> {
+        if self.pack_price(pack_type).is_empty() {
+            OptionalValue::None
+        } else {
+            OptionalValue::Some(self.pack_price(pack_type).get())
+        }
+    }
+
     #[event("list")]
     fn list_event(&self, #[indexed] id: u64, #[indexed] seller: &ManagedAddress);
 
@@ -206,6 +351,15 @@ pub trait AgentsMarketplace {
 
     #[event("claim")]
     fn claim_event(&self, #[indexed] owner: &ManagedAddress, amount: &BigUint);
+
+    #[event("packPurchased")]
+    fn pack_purchased_event(
+        &self,
+        #[indexed] buyer: &ManagedAddress,
+        #[indexed] pack_type: u8,
+        #[indexed] nft_nonce: u64,
+        token_id: &TokenIdentifier,
+    );
 
     #[view]
     #[storage_mapper("feeBps")]
@@ -232,4 +386,10 @@ pub trait AgentsMarketplace {
     #[view]
     #[storage_mapper("accumulatedFees")]
     fn accumulated_fees(&self) -> SingleValueMapper<BigUint>;
+
+    #[storage_mapper("packCollection")]
+    fn pack_collection(&self, pack_type: u8) -> SingleValueMapper<TokenIdentifier>;
+
+    #[storage_mapper("packPrice")]
+    fn pack_price(&self, pack_type: u8) -> SingleValueMapper<BigUint>;
 }
