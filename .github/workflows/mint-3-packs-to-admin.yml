@@ -1,0 +1,208 @@
+name: Mint 3 packs + transfer to admin
+
+# Micro-price mint of Pulse/Yield/Sentinel via deployer PEM, transfer NFTs to admin, restore prices.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_mainnet:
+        description: "Type MINT_TO_ADMIN_MAINNET"
+        required: true
+        type: string
+      admin_address:
+        default: "erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l"
+        type: string
+      sc_address:
+        default: "erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg"
+        type: string
+      micro_price:
+        description: "Temp price atomic (0.001 EGLD)"
+        default: "1000000000000000"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  mint-transfer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      SC: ${{ github.event.inputs.sc_address }}
+      ADMIN: ${{ github.event.inputs.admin_address }}
+      MICRO: ${{ github.event.inputs.micro_price }}
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      PROXY: https://gateway.multiversx.com
+      API: https://api.multiversx.com
+      CHAIN: "1"
+
+    steps:
+      - name: Gate
+        run: test "${{ github.event.inputs.confirm_mainnet }}" = "MINT_TO_ADMIN_MAINNET"
+
+      - name: Write PEM
+        run: |
+          set -euo pipefail
+          test -n "${SC_DEPLOYER_PEM:-}"
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d ' \n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli multiversx-sdk
+
+      - name: Resolve deployer + balance check
+        run: |
+          set -euo pipefail
+          DEPLOYER=$(python3 -c "import os; from pathlib import Path; from multiversx_sdk import UserPEM; print(UserPEM.from_file(Path(os.environ['RUNNER_TEMP'])/'deployer.pem').public_key.to_address().to_bech32())")
+          echo "DEPLOYER=$DEPLOYER" >> "$GITHUB_ENV"
+          BAL=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('balance','0'))")
+          echo "balance=$BAL deployer=$DEPLOYER admin=$ADMIN"
+          # need 3*micro + ~0.02 gas margin
+          python3 -c "b=int('${BAL}'); need=3*int('${MICRO}')+20_000_000_000_000_000; assert b>=need, f'need {need/1e18} EGLD have {b/1e18}'"
+
+      - name: A — setPackPrice all → micro
+        run: |
+          set -euo pipefail
+          for PT in 01 02 03; do
+            NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+            echo "setPackPrice $PT → ${MICRO} nonce=$NONCE"
+            mxpy contract call "${SC}" \
+              --function=setPackPrice \
+              --arguments "0x${PT}" "${MICRO}" \
+              --pem="${RUNNER_TEMP}/deployer.pem" \
+              --proxy="${PROXY}" --chain="${CHAIN}" \
+              --nonce="${NONCE}" --gas-limit=12000000 --send --wait-result
+            sleep 4
+          done
+
+      - name: B — buyPack 01 02 03
+        run: |
+          set -euo pipefail
+          for PT in 01 02 03; do
+            NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+            echo "buyPack $PT value=${MICRO} nonce=$NONCE"
+            LOG=$(mxpy contract call "${SC}" \
+              --function=buyPack \
+              --arguments "0x${PT}" \
+              --value="${MICRO}" \
+              --pem="${RUNNER_TEMP}/deployer.pem" \
+              --proxy="${PROXY}" --chain="${CHAIN}" \
+              --nonce="${NONCE}" --gas-limit=30000000 --send --wait-result 2>&1) || true
+            echo "$LOG" | sed 's/PRIVATE KEY.*//' | tail -15
+            HASH=$(echo "$LOG" | grep -oE '[a-f0-9]{64}' | head -1 || true)
+            echo "buy_${PT}_tx=$HASH"
+            sleep 8
+          done
+
+      - name: B2 — transfer all pack NFTs to admin
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json, urllib.request, os, subprocess, time
+          API = os.environ["API"]
+          DEP = os.environ["DEPLOYER"]
+          ADMIN = os.environ["ADMIN"]
+          PEM = os.environ["RUNNER_TEMP"] + "/deployer.pem"
+          PROXY = os.environ["PROXY"]
+          CHAIN = os.environ["CHAIN"]
+          cols = ("XAIPLS-2cf72b", "XAIYLD-987e24", "XAISNT-3d8a6b")
+          nfts = json.load(urllib.request.urlopen(f"{API}/accounts/{DEP}/nfts?size=50"))
+          items = [n for n in (nfts if isinstance(nfts, list) else []) if (n.get("collection") or "") in cols]
+          print(f"Found {len(items)} pack NFTs on deployer to transfer")
+          if not items:
+              raise SystemExit("No pack NFTs on deployer")
+
+          from multiversx_sdk import Address
+          admin_hex = Address.new_from_bech32(ADMIN).to_hex()
+
+          for n in items:
+              ident = n["identifier"]  # e.g. XAIPLS-2cf72b-01
+              col = n["collection"]
+              nonce = int(n.get("nonce") or 0)
+              # data: ESDTNFTTransfer@token@nonce@qty@receiver
+              token_hex = col.encode().hex()
+              nonce_hex = format(nonce, "x") or "0"
+              if len(nonce_hex) % 2:
+                  nonce_hex = "0" + nonce_hex
+              qty_hex = "01"
+              data = f"ESDTNFTTransfer@{token_hex}@{nonce_hex}@{qty_hex}@{admin_hex}"
+              # nonce
+              acc = json.load(urllib.request.urlopen(f"{API}/accounts/{DEP}"))
+              tx_nonce = acc.get("nonce", 0)
+              print(f"Transfer {ident} → admin nonce={tx_nonce}")
+              cmd = [
+                  "mxpy", "tx", "new",
+                  f"--receiver={DEP}",
+                  f"--pem={PEM}",
+                  "--gas-limit=1000000",
+                  f"--proxy={PROXY}",
+                  f"--chain={CHAIN}",
+                  f"--nonce={tx_nonce}",
+                  f"--data={data}",
+                  "--send",
+                  "--wait-result",
+              ]
+              r = subprocess.run(cmd, capture_output=True, text=True)
+              out = (r.stdout or "") + (r.stderr or "")
+              # scrub secrets
+              lines = [ln for ln in out.splitlines() if "PRIVATE" not in ln.upper()]
+              print("\n".join(lines[-20:]))
+              if r.returncode != 0:
+                  print(f"WARN transfer exit {r.returncode} for {ident}")
+              time.sleep(6)
+          PY
+
+      - name: C — restore official prices
+        if: always()
+        run: |
+          set -euo pipefail
+          # 1 / 2 / 3 EGLD
+          restore() {
+            local PT="$1" PRICE="$2"
+            NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+            echo "restore setPackPrice $PT → $PRICE nonce=$NONCE"
+            mxpy contract call "${SC}" \
+              --function=setPackPrice \
+              --arguments "0x${PT}" "${PRICE}" \
+              --pem="${RUNNER_TEMP}/deployer.pem" \
+              --proxy="${PROXY}" --chain="${CHAIN}" \
+              --nonce="${NONCE}" --gas-limit=12000000 --send --wait-result || true
+            sleep 4
+          }
+          restore 01 1000000000000000000
+          restore 02 2000000000000000000
+          restore 03 3000000000000000000
+
+      - name: Verify admin NFTs + prices
+        run: |
+          python3 <<'PY'
+          import json, urllib.request, base64, os
+          API = "https://api.multiversx.com"
+          ADMIN = os.environ["ADMIN"]
+          SC = os.environ["SC"]
+          cols = {"XAIPLS-2cf72b", "XAIYLD-987e24", "XAISNT-3d8a6b"}
+          nfts = json.load(urllib.request.urlopen(f"{API}/accounts/{ADMIN}/nfts?size=50"))
+          hits = [n for n in (nfts if isinstance(nfts, list) else []) if (n.get("collection") or "") in cols]
+          print("Admin pack NFTs:", len(hits))
+          for n in hits:
+              print(" ", n.get("identifier"), n.get("name"))
+          for pt, label in [("01", "Pulse"), ("02", "Yield"), ("03", "Sentinel")]:
+              body = json.dumps({"scAddress": SC, "funcName": "getPackPrice", "args": [pt]}).encode()
+              req = urllib.request.Request(API + "/vm-values/query", data=body, headers={"Content-Type": "application/json"})
+              d = json.load(urllib.request.urlopen(req))
+              rd = ((d.get("data") or {}).get("data") or {}).get("returnData") or []
+              if rd and rd[0]:
+                  p = int.from_bytes(base64.b64decode(rd[0]), "big")
+                  print(f"{label} price EGLD = {p/1e18}")
+          if len(hits) < 3:
+              raise SystemExit(f"Expected >=3 pack NFTs on admin, got {len(hits)}")
+          PY
+
+      - name: Cleanup
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"
