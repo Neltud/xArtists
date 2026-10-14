@@ -1,28 +1,84 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-13T18:55:08.075Z",
+  "updatedAt": "2026-10-14T00:09:36.712Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1791917707401",
-      "timestamp": "18:55",
+      "id": "egld-1791936576151",
+      "timestamp": "00:09",
       "source": "EGLD",
       "title": "Cotation publique · $3.75 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1791907075000",
+      "id": "rss-CoinTelegraph-0-1791920886000",
+      "timestamp": "19:48",
+      "source": "CoinTelegraph",
+      "title": "Most tokenized stock trading on Solana, BNB Chain occurs outside US market hours",
+      "link": "https://cointelegraph.com/news/tokenized-stocks-after-hours-trading-solana-bnb-chain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1791920037000",
+      "timestamp": "19:33",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1791918424000",
+      "timestamp": "19:07",
+      "source": "CoinTelegraph",
+      "title": "Trezor reduces resellers as a ‘preventative step’ amid Ledger tampering reports",
+      "link": "https://cointelegraph.com/news/trezor-preventative-steps-wallet-tampering-reports?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1791910285000",
+      "timestamp": "16:51",
+      "source": "CoinTelegraph",
+      "title": "How the SEC’s lack of leadership could facilitate crypto rulemaking",
+      "link": "https://cointelegraph.com/news/sec-leadership-facilitate-crypto-rulemaking?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1791907075000",
       "timestamp": "15:57",
       "source": "CoinTelegraph",
       "title": "Strive reports $208M in warrant exercises as Bitcoin holdings jump 11%",
       "link": "https://cointelegraph.com/news/strive-bitcoin-holdings-32773-btc-warrant-exercises?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1791905252000",
+      "id": "rss-CoinTelegraph-5-1791905252000",
       "timestamp": "15:27",
       "source": "CoinTelegraph",
       "title": "Bitcoin keeps up pressure on $84K as US stocks skirt Korea tech sell-off",
       "link": "https://cointelegraph.com/markets/bitcoin-keeps-up-pressure-on-84k-as-us-stocks-sidestep-korea-tech-sell-off?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1791928320000",
+      "timestamp": "21:52",
+      "source": "CoinDesk",
+      "title": "BNY, Citadel Securities test tokenized U.S. Treasuries to speed up Wall Street financing",
+      "link": "https://www.coindesk.com/business/2026/10/13/bny-citadel-securities-test-tokenized-u-s-treasuries-to-speed-up-wall-street-financing"
+    },
+    {
+      "id": "rss-CoinDesk-1-1791906729000",
+      "timestamp": "15:52",
+      "source": "CoinDesk",
+      "title": "Crypto exchange MNX takes on OKX, Bitget offering pre-IPO futures for AI giants",
+      "link": "https://www.coindesk.com/business/2026/10/13/new-crypto-exchange-takes-on-okx-bitget-with-unique-way-to-trade-ai-giants"
+    },
+    {
+      "id": "rss-CoinDesk-2-1791905092000",
+      "timestamp": "15:24",
+      "source": "CoinDesk",
+      "title": "UK crypto trader says almost $800,000 lost in knife assault as wrench attacks proliferate",
+      "link": "https://www.coindesk.com/policy/2026/10/13/why-self-custody-and-hardware-wallets-cannot-prevent-physical-crypto-extortion"
+    },
+    {
+      "id": "rss-CoinDesk-3-1791892684000",
+      "timestamp": "11:58",
+      "source": "CoinDesk",
+      "title": "South Korea blocks 27 crypto exchanges, including Bitmart and Kucoin",
+      "link": "https://www.coindesk.com/policy/2026/10/13/south-korea-blocks-27-crypto-exchanges-including-bitmart-and-kucoin"
     },
     {
       "id": "rss-CoinTelegraph-2-1791899709000",
@@ -39,39 +95,11 @@
       "link": "https://cointelegraph.com/magazine/is-bitcoin-kidding-itself-about-the-lightning-network?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-4-1791898002000",
-      "timestamp": "13:26",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "id": "rss-CoinTelegraph-5-1791897437000",
       "timestamp": "13:17",
       "source": "CoinTelegraph",
       "title": "Digital cash offers ‘cash-like privacy,’ but bank data breaches threaten users: BIS",
       "link": "https://cointelegraph.com/news/bis-digital-cash-privacy-bank-data-breaches?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1791906729000",
-      "timestamp": "15:52",
-      "source": "CoinDesk",
-      "title": "Crypto exchange MNX takes on OKX, BitGet offering pre-IPO futures for AI giants",
-      "link": "https://www.coindesk.com/business/2026/10/13/new-crypto-exchange-takes-on-okx-bitget-with-unique-way-to-trade-ai-giants"
-    },
-    {
-      "id": "rss-CoinDesk-1-1791905092000",
-      "timestamp": "15:24",
-      "source": "CoinDesk",
-      "title": "UK crypto trader says almost $800,000 lost in knife attack as wrench attacks proliferate",
-      "link": "https://www.coindesk.com/policy/2026/10/13/why-self-custody-and-hardware-wallets-cannot-prevent-physical-crypto-extortion"
-    },
-    {
-      "id": "rss-CoinDesk-2-1791892684000",
-      "timestamp": "11:58",
-      "source": "CoinDesk",
-      "title": "South Korea blocks 27 crypto exchanges, including Bitmart and Kucoin",
-      "link": "https://www.coindesk.com/policy/2026/10/13/south-korea-blocks-27-crypto-exchanges-including-bitmart-and-kucoin"
     },
     {
       "id": "rss-CoinDesk-3-1791892564000",
@@ -170,34 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Bitcoin miners face widening AI financing costs as lenders scrutinize deals",
       "link": "https://cointelegraph.com/news/bitcoin-miners-ai-financing-costs-debt-funding-gap?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791822621000",
-      "timestamp": "16:30",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin drops 2.2% as Ukraine, Iran strikes send oil toward one-month high",
-      "link": "https://cointelegraph.com/markets/bitcoin-drops-22-as-ukraine-iran-strikes-send-oil-toward-one-month-high?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1791806949000",
-      "timestamp": "12:09",
-      "source": "CoinDesk",
-      "title": "Standard Chartered offers RLUSD custody in Dubai and plans LMAX collateral link",
-      "link": "https://www.coindesk.com/business/2026/10/12/standard-chartered-offers-rlusd-custody-in-dubai-and-plans-lmax-collateral-link"
-    },
-    {
-      "id": "egld-1791838592776",
-      "timestamp": "20:56",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.80 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1791814729000",
-      "timestamp": "14:18",
-      "source": "CoinTelegraph",
-      "title": "XRP treasury Evernorth’s shares rise 5% at Nasdaq opening print",
-      "link": "https://cointelegraph.com/news/xrp-treasury-evernorth-rise-nasdaq-opening?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
