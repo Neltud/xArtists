@@ -1,0 +1,139 @@
+name: Mint test buyPack Pulse
+
+# Deployer has ~0.04 EGLD: temporarily set Pulse price to 0.01 EGLD, buyPack, restore 1 EGLD.
+# NFT lands on deployer (caller). Admin can still buy at full price via xPortal.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_mainnet:
+        description: "Type MINT_TEST_MAINNET"
+        required: true
+        type: string
+      sc_address:
+        default: "erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg"
+        type: string
+      test_price_atomic:
+        description: "Temp Pulse price (atomic). Default 0.01 EGLD"
+        default: "10000000000000000"
+        type: string
+      restore_price_atomic:
+        description: "Restore Pulse price (1 EGLD)"
+        default: "1000000000000000000"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  mint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SC: ${{ github.event.inputs.sc_address }}
+      TEST_PRICE: ${{ github.event.inputs.test_price_atomic }}
+      RESTORE_PRICE: ${{ github.event.inputs.restore_price_atomic }}
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      PROXY: https://gateway.multiversx.com
+      API: https://api.multiversx.com
+      CHAIN: "1"
+
+    steps:
+      - name: Gate
+        run: test "${{ github.event.inputs.confirm_mainnet }}" = "MINT_TEST_MAINNET"
+
+      - name: Write PEM
+        run: |
+          set -euo pipefail
+          test -n "${SC_DEPLOYER_PEM:-}"
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d ' \n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli multiversx-sdk
+
+      - name: Resolve deployer + balance
+        run: |
+          set -euo pipefail
+          DEPLOYER=$(python3 -c "import os; from pathlib import Path; from multiversx_sdk import UserPEM; print(UserPEM.from_file(Path(os.environ['RUNNER_TEMP'])/'deployer.pem').public_key.to_address().to_bech32())")
+          echo "DEPLOYER=$DEPLOYER" >> "$GITHUB_ENV"
+          BAL=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('balance','0'))")
+          echo "balance=$BAL deployer=$DEPLOYER"
+          python3 -c "b=int('${BAL}'); assert b>=${TEST_PRICE}+5_000_000_000_000_000, f'need test price + gas, have {b/1e18}'"
+
+      - name: setPackPrice Pulse → test price
+        run: |
+          set -euo pipefail
+          NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          echo "setPackPrice 01 → ${TEST_PRICE} nonce=$NONCE"
+          mxpy contract call "${SC}" \
+            --function=setPackPrice \
+            --arguments 0x01 "${TEST_PRICE}" \
+            --pem="${RUNNER_TEMP}/deployer.pem" \
+            --proxy="${PROXY}" --chain="${CHAIN}" \
+            --nonce="${NONCE}" --gas-limit=12000000 --send --wait-result
+          sleep 4
+
+      - name: buyPack@01 (test price)
+        run: |
+          set -euo pipefail
+          NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          echo "buyPack 01 value=${TEST_PRICE} nonce=$NONCE"
+          LOG=$(mxpy contract call "${SC}" \
+            --function=buyPack \
+            --arguments 0x01 \
+            --value="${TEST_PRICE}" \
+            --pem="${RUNNER_TEMP}/deployer.pem" \
+            --proxy="${PROXY}" --chain="${CHAIN}" \
+            --nonce="${NONCE}" --gas-limit=30000000 --send --wait-result 2>&1) || true
+          echo "$LOG" | sed 's/PRIVATE KEY.*//' | tail -40
+          HASH=$(echo "$LOG" | grep -oE '[a-f0-9]{64}' | head -1 || true)
+          echo "BUY_TX=$HASH" >> "$GITHUB_ENV"
+          echo "buy_tx=$HASH"
+          sleep 8
+
+      - name: Restore setPackPrice Pulse → 1 EGLD
+        if: always()
+        run: |
+          set -euo pipefail
+          NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          mxpy contract call "${SC}" \
+            --function=setPackPrice \
+            --arguments 0x01 "${RESTORE_PRICE}" \
+            --pem="${RUNNER_TEMP}/deployer.pem" \
+            --proxy="${PROXY}" --chain="${CHAIN}" \
+            --nonce="${NONCE}" --gas-limit=12000000 --send --wait-result || true
+          sleep 3
+
+      - name: Verify NFT on deployer + price restored
+        run: |
+          python3 <<'PY'
+          import json, urllib.request, base64, os
+          API="https://api.multiversx.com"
+          dep=os.environ["DEPLOYER"]
+          sc=os.environ["SC"]
+          nfts=json.load(urllib.request.urlopen(f"{API}/accounts/{dep}/nfts?size=20"))
+          hits=[n for n in (nfts if isinstance(nfts,list) else []) if (n.get("collection") or "").startswith("XAIPLS")]
+          print("XAIPLS nfts on deployer:", len(hits))
+          for n in hits:
+              print(" ", n.get("identifier"), n.get("name"), n.get("attributes"))
+          body=json.dumps({"scAddress":sc,"funcName":"getPackPrice","args":["01"]}).encode()
+          req=urllib.request.Request(API+"/vm-values/query",data=body,headers={"Content-Type":"application/json"})
+          d=json.load(urllib.request.urlopen(req))
+          rd=((d.get("data") or {}).get("data") or {}).get("returnData") or []
+          if rd and rd[0]:
+              price=int.from_bytes(base64.b64decode(rd[0]),"big")
+              print("Pulse price restored atomic:", price, "EGLD", price/1e18)
+          print("buy_tx", os.environ.get("BUY_TX",""))
+          if not hits:
+              raise SystemExit("No XAIPLS NFT found on deployer after buyPack")
+          PY
+
+      - name: Cleanup
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"
