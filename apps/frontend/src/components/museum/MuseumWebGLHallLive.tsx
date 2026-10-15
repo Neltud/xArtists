@@ -1,5 +1,6 @@
 /**
  * Musee WebGL Live — placeArt textures, click-to-enlarge modal, drag look, joystick.
+ * Lighting: Ambient 0.8 + Key 1.45 + Fill 0.55 + Rim point.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
@@ -35,6 +36,12 @@ const PITCH_MAX = MUSEUM_FPS.pitchMax
 const CAM_DIST = MUSEUM_FPS.camMaxDist
 const CAM_HEIGHT = 2.2
 
+/** Hall lighting (v0.110) */
+const AMBIENT_INTENSITY = 0.8
+const KEY_INTENSITY = 1.45
+const FILL_INTENSITY = 0.55
+const RIM_INTENSITY = 0.55
+
 type Theme = 'cyber' | 'stone' | 'gold' | 'white' | 'dark'
 
 const PALETTE: Record<
@@ -56,7 +63,10 @@ function wallGeom(w: WallSeg) {
 }
 
 function bounds(bp: RoomBlueprint) {
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+  let minX = Infinity,
+    minY = Infinity,
+    maxX = -Infinity,
+    maxY = -Infinity
   for (const w of bp.walls) {
     minX = Math.min(minX, w.x1, w.x2)
     minY = Math.min(minY, w.y1, w.y2)
@@ -225,14 +235,14 @@ export default function MuseumWebGLHallLive({
       scene.add(mesh)
     }
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.58))
-    const key = new THREE.DirectionalLight(0xfff5e6, 1.3)
+    scene.add(new THREE.AmbientLight(0xffffff, AMBIENT_INTENSITY))
+    const key = new THREE.DirectionalLight(0xfff5e6, KEY_INTENSITY)
     key.position.set(b.cx + 3, wallH - 0.4, b.cy - 2)
     scene.add(key)
-    const fill = new THREE.DirectionalLight(0xb8c5ff, 0.4)
+    const fill = new THREE.DirectionalLight(0xb8c5ff, FILL_INTENSITY)
     fill.position.set(b.cx - 4, wallH * 0.6, b.cy + 3)
     scene.add(fill)
-    const rim = new THREE.PointLight(0xffd9a0, 0.5, 20)
+    const rim = new THREE.PointLight(0xffd9a0, RIM_INTENSITY, 20)
     rim.position.set(b.cx, wallH - 0.5, b.cy)
     scene.add(rim)
 
@@ -322,7 +332,11 @@ export default function MuseumWebGLHallLive({
 
     const isWalkable = makeWalkableChecker(
       blueprint.walls.map(w => ({
-        x1: w.x1, y1: w.y1, x2: w.x2, y2: w.y2, thickness: w.thickness || 0.26,
+        x1: w.x1,
+        y1: w.y1,
+        x2: w.x2,
+        y2: w.y2,
+        thickness: w.thickness || 0.26,
       })),
       (x, z) => pointInBlueprintFloor(blueprint, x, z),
       MUSEUM_FPS.collisionRadius,
@@ -446,7 +460,15 @@ export default function MuseumWebGLHallLive({
       const wishZ = ix * sin + iz * cos
       const moving = Math.hypot(ix, iz) > 0.01
       const integ = integrateWishVelocity(
-        vx, vz, wishX, wishZ, speed, dt, moving, MUSEUM_FPS.accel, MUSEUM_FPS.friction,
+        vx,
+        vz,
+        wishX,
+        wishZ,
+        speed,
+        dt,
+        moving,
+        MUSEUM_FPS.accel,
+        MUSEUM_FPS.friction,
       )
       vx = integ.vx
       vz = integ.vz
@@ -564,7 +586,7 @@ export default function MuseumWebGLHallLive({
       )}
       {nearTitle ? (
         <div className="pointer-events-none absolute bottom-28 left-1/2 z-20 -translate-x-1/2 rounded-full border border-white/15 bg-black/70 px-4 py-1.5 text-[12px] text-zinc-100 backdrop-blur-md">
-          {nearTitle} · taper / cliquer pour agrandir
+          {nearTitle} · {t('museum.tapToEnlarge') || 'tap to enlarge'}
         </div>
       ) : null}
       <NavReticle />
