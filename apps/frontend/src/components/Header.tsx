@@ -28,7 +28,7 @@ export default function Header() {
   const topNav = [
     { to: '/', label: t('nav.home'), end: true },
     { to: '/agents', label: t('nav.packs') },
-    { to: '/marketplace', label: t('nav.market') },
+    { to: '/market', label: t('nav.market') },
     { to: '/museum', label: t('nav.museum') },
   ]
 
@@ -88,49 +88,34 @@ export default function Header() {
               className={`hidden sm:inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-semibold transition ${
                 pitch
                   ? 'border-amber-400/45 bg-amber-500/15 text-amber-100'
-                  : 'border-white/12 bg-white/[0.04] text-zinc-400 hover:text-zinc-200'
+                  : 'border-white/12 text-zinc-400 hover:border-white/20'
               }`}
             >
-              <span aria-hidden>🎬</span>
-              <span>Mode Pitch</span>
+              Pitch
             </button>
             <LangSwitcher />
-            {live ? (
+            {connected ? (
               <>
                 <button
                   type="button"
-                  title={address || ''}
                   onClick={() => requestOpenAssets()}
-                  className="max-w-[8.5rem] truncate rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-[11px] font-medium text-emerald-100 sm:max-w-none"
+                  className="hidden sm:inline-flex max-w-[9rem] truncate rounded-full border border-white/12 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-zinc-200"
+                  title={address || ''}
                 >
-                  {shortAddress}
+                  {live ? '\u25cf' : '\u25cb'} {shortAddress}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => disconnect()}
-                  className="rounded-full border border-rose-400/35 bg-rose-500/10 px-3 py-1.5 text-[11px] font-semibold text-rose-100 hover:bg-rose-500/20"
-                >
-                  {t('common.disconnect')}
+                <button type="button" onClick={() => void disconnect()} className="btn-secondary text-[11px] min-h-[36px] px-2">
+                  {t('nav.disconnect') || 'Out'}
                 </button>
               </>
             ) : (
-              <button
-                type="button"
-                onClick={() => requestOpenConnect()}
-                className="rounded-full bg-gradient-to-r from-violet-600 to-cyan-600 px-4 py-1.5 text-[12px] font-semibold text-white shadow-lg shadow-violet-900/30"
-              >
-                {t('common.connect')}
+              <button type="button" onClick={requestOpenConnect} className="btn-primary text-[11px] min-h-[36px] px-3">
+                {t('nav.wallet')}
               </button>
             )}
           </div>
         </div>
-        {pitch && (
-          <div className="border-t border-amber-400/20 bg-amber-500/10 px-3 py-1 text-center text-[10px] text-amber-100/90">
-            Mode Pitch · Galerie Partenaire — Collection RWA · logs techniques masqués
-          </div>
-        )}
       </header>
-
       <SideNav open={menuOpen} onClose={() => setMenuOpen(false)} />
       <LoginModal />
     </>
