@@ -1,14 +1,84 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-15T03:21:53.694Z",
+  "updatedAt": "2026-10-15T10:54:54.408Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792034513122",
-      "timestamp": "03:21",
+      "id": "egld-1792061694103",
+      "timestamp": "10:54",
       "source": "EGLD",
       "title": "Cotation publique · $3.50 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1792057687000",
+      "timestamp": "09:48",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin dips to $80.1K as KOSPI closes at its lowest since April",
+      "link": "https://cointelegraph.com/markets/bitcoin-dips-korea-kospi-lowest-close-since-april?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792056980000",
+      "timestamp": "09:36",
+      "source": "CoinTelegraph",
+      "title": "Thailand crypto ETFs may see slow start despite new rules: CoinShares",
+      "link": "https://cointelegraph.com/news/thailand-crypto-etfs-slow-start-new-rules-coinshares?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792055668000",
+      "timestamp": "09:14",
+      "source": "CoinTelegraph",
+      "title": "Babylon advances native Bitcoin lending proposal on Aave V4",
+      "link": "https://cointelegraph.com/news/babylon-native-bitcoin-collateral-aave-v4-proposal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1792049023000",
+      "timestamp": "07:23",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin ETFs shed $261M as XRP funds buck weekly outflow trend",
+      "link": "https://cointelegraph.com/markets/bitcoin-etf-outflow-btc-below-82k?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1792043541000",
+      "timestamp": "05:52",
+      "source": "CoinTelegraph",
+      "title": "South Korea plans cybersecurity overhaul after attacks hit banks, crypto firms",
+      "link": "https://cointelegraph.com/news/south-korea-cybersecurity-overhaul-crypto-exchanges?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1792043357000",
+      "timestamp": "05:49",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1792058017000",
+      "timestamp": "09:53",
+      "source": "CoinDesk",
+      "title": "Australia’s financial watchdog seeks stiffer rules for crypto exchanges ahead of licensing deadline",
+      "link": "https://www.coindesk.com/policy/2026/10/15/australia-s-financial-watchdog-seeks-stiffer-rules-for-crypto-exchanges-ahead-of-licensing-deadline"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792056057000",
+      "timestamp": "09:20",
+      "source": "CoinDesk",
+      "title": "Hex founder Richard Heart arrested in Istanbul, Turkish media report",
+      "link": "https://www.coindesk.com/policy/2026/10/15/hex-founder-richard-heart-arrested-in-istanbul-turkish-media-report"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792045078000",
+      "timestamp": "06:17",
+      "source": "CoinDesk",
+      "title": "BlackRock's Fink names a U.S. recession trigger, sounds alarm over $40 trillion national debt",
+      "link": "https://www.coindesk.com/markets/2026/10/15/blackrock-s-larry-fink-names-a-u-s-recession-trigger-and-its-tied-to-ai"
+    },
+    {
+      "id": "rss-CoinDesk-3-1792038315000",
+      "timestamp": "04:25",
+      "source": "CoinDesk",
+      "title": "Nearly $1 billion in crypto bets liquidated as bitcoin, ether and XRP slide",
+      "link": "https://www.coindesk.com/markets/2026/10/15/nearly-usd1-billion-in-crypto-bets-liquidated-as-bitcoin-ether-and-xrp-slide"
     },
     {
       "id": "egld-1792021365801",
@@ -23,13 +93,6 @@
       "source": "CoinTelegraph",
       "title": "Organizations join forces to fight Illinois crypto tax, after 6-month pause",
       "link": "https://cointelegraph.com/news/cci-ba-fight-illinois-crypto-tax-pause?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1792005204000",
-      "timestamp": "19:13",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-2-1792004632000",
@@ -135,69 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Sam Bankman-Fried’s lawyer lays out ex-FTX CEO’s Supreme Court case",
       "link": "https://cointelegraph.com/news/ftx-sam-bankman-fried-lawyer-supreme-court-appeal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1791973553000",
-      "timestamp": "10:25",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin will become ‘less volatile’ and larger than gold: ‘The Bitcoin Standard’ author",
-      "link": "https://cointelegraph.com/news/bitcoin-less-volatile-larger-gold-bitcoin-standard-author?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1791972423000",
-      "timestamp": "10:07",
-      "source": "CoinTelegraph",
-      "title": "Standard Chartered expands Bitcoin and Ether trading to professional investors in UAE",
-      "link": "https://cointelegraph.com/news/standard-chartered-bitcoin-ether-trading-professional-investors-uae?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791955934000",
-      "timestamp": "05:32",
-      "source": "CoinTelegraph",
-      "title": "Starknet introduces wallet privacy feature for DeFi activity",
-      "link": "https://cointelegraph.com/news/starknet-introduces-wallet-privacy-feature-for-defi-activity?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1791974327000",
-      "timestamp": "10:38",
-      "source": "CoinDesk",
-      "title": "S&P 500 options are the hottest bet on this Hyperliquid exchange",
-      "link": "https://www.coindesk.com/markets/2026/10/14/s-and-p-500-options-are-the-hottest-bet-on-this-hyperliquid-exchange"
-    },
-    {
-      "id": "rss-CoinDesk-1-1791971153000",
-      "timestamp": "09:45",
-      "source": "CoinDesk",
-      "title": "Live updates: Bitcoin tumbles from near $84,000 ahead of U.S. inflation data",
-      "link": "https://www.coindesk.com/business/2026/10/14/live-updates-bitcoin-tumbles-from-near-usd84-000-ahead-of-u-s-inflation-data"
-    },
-    {
-      "id": "rss-CoinDesk-2-1791967691000",
-      "timestamp": "08:48",
-      "source": "CoinDesk",
-      "title": "Proposed French tax on regulated stablecoins could drive crypto traders offshore",
-      "link": "https://www.coindesk.com/policy/2026/10/14/proposed-french-tax-on-regulated-stablecoins-could-drive-crypto-traders-offshore"
-    },
-    {
-      "id": "rss-CoinDesk-3-1791965407000",
-      "timestamp": "08:10",
-      "source": "CoinDesk",
-      "title": "Standard Chartered unlocks direct bitcoin and ether trading for affluent UAE clients",
-      "link": "https://www.coindesk.com/business/2026/10/14/standard-chartered-unlocks-direct-bitcoin-and-ether-trading-for-affluent-uae-clients"
-    },
-    {
-      "id": "egld-1791966308307",
-      "timestamp": "08:25",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.79 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1791944396000",
-      "timestamp": "02:19",
-      "source": "CoinTelegraph",
-      "title": "Bitwise’s Hougan says Q3 charts point to ‘crypto spring’",
-      "link": "https://cointelegraph.com/markets/bitwises-hougan-says-q3-charts-point-to-crypto-spring?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
