@@ -1,7 +1,7 @@
 {
   "name": "xartists-frontend",
   "private": true,
-  "version": "3.10.0",
+  "version": "0.109.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -33,7 +33,7 @@
     "vite": "^5.4.2"
   },
   "xartistsNotes": {
-    "demo": "3.10.0 design refresh + catalog API + SW v10",
+    "demo": "0.109.1 purge Slot nav + home packs 10/5/2.5 + cache bust",
     "grokyversx": "erd12c7f9wll0dcn26ax9fwrgp3yuswchyh9xwz8zs29hl9crgpn96gsdqq5gl"
   }
 }

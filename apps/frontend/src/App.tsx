@@ -124,6 +124,9 @@ export default function App() {
                   <Route path="/burnify" element={<BurnifyPage />} />
                   <Route path="/lp" element={<LPPoolsPage />} />
                   <Route path="/hatom" element={<HatomPage />} />
+                  {/* Slot/Casino extrait → xArtists-Slot — redirige vers Accueil */}
+                  <Route path="/slot" element={<Navigate to="/" replace />} />
+                  <Route path="/slot/*" element={<Navigate to="/" replace />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </PageTransition>
