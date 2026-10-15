@@ -1,6 +1,6 @@
 /**
  * Market tape — flux paper discret (pas de promesse de profit).
- * Empty state: ticker animé + métriques ambiantes en cache (pas "waiting pulse…" figé).
+ * snap optionnel : jamais de crash sur .mode si props absentes.
  */
 import { useEffect, useState } from 'react'
 import { paperTapeLine, type AmbientSnapshot, type TapeLine } from '../lib/ambientAura'
@@ -12,7 +12,17 @@ const LOADING_TICKS = [
   'lia shadow…',
 ]
 
-export default function MarketTape({ snap }: { snap: AmbientSnapshot }) {
+const FALLBACK_SNAP: AmbientSnapshot = {
+  mode: 'stable',
+  trend: 'STABLE',
+  volatility: 0.3,
+  confidence: 0.5,
+  label: 'stable',
+  paper: true,
+}
+
+export default function MarketTape({ snap }: { snap?: AmbientSnapshot | null }) {
+  const safe = snap ?? FALLBACK_SNAP
   const [lines, setLines] = useState<TapeLine[]>([])
   const [seq, setSeq] = useState(0)
   const [tickIdx, setTickIdx] = useState(0)
@@ -21,13 +31,13 @@ export default function MarketTape({ snap }: { snap: AmbientSnapshot }) {
     const id = window.setInterval(() => {
       setSeq(s => {
         const n = s + 1
-        const row = paperTapeLine(snap, n)
+        const row = paperTapeLine(safe, n)
         setLines(prev => [row, ...prev].slice(0, 8))
         return n
       })
     }, 4200)
     return () => window.clearInterval(id)
-  }, [snap])
+  }, [safe])
 
   useEffect(() => {
     if (lines.length > 0) return
@@ -36,10 +46,10 @@ export default function MarketTape({ snap }: { snap: AmbientSnapshot }) {
   }, [lines.length])
 
   const cacheHint = [
-    snap.mode ? `mode ${snap.mode}` : null,
-    snap.trend ? `trend ${snap.trend}` : null,
-    Number.isFinite(snap.volatility) ? `vol ${(snap.volatility * 100).toFixed(0)}%` : null,
-    Number.isFinite(snap.confidence) ? `conf ${(snap.confidence * 100).toFixed(0)}%` : null,
+    safe.mode ? `mode ${safe.mode}` : null,
+    safe.trend ? `trend ${safe.trend}` : null,
+    Number.isFinite(safe.volatility) ? `vol ${(safe.volatility * 100).toFixed(0)}%` : null,
+    Number.isFinite(safe.confidence) ? `conf ${(safe.confidence * 100).toFixed(0)}%` : null,
   ]
     .filter(Boolean)
     .join(' · ')
