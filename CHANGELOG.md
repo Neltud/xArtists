@@ -60,4 +60,4 @@
 
 * **ci:** mxpy upgrade uses --nonce (not --recall-nonce) for agents-marketplace ([23c64e2](https://github.com/Neltud/xArtists/commit/23c64e2c09a146774f2dfc82245d57e6ee70cfa3))
 
-<!-- Historical entries retained in git history; truncated for push size. Full log: previous CHANGELOG revisions. -->
+> **Note:** Full historical CHANGELOG (≤0.107.x) is preserved in git at commit `1584669` / blob `04579e23`. To restore the long form: `git show 1584669:CHANGELOG.md`. The v0.109.0 section above is authoritative for this release.
