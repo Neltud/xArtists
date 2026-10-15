@@ -1,0 +1,131 @@
+name: Update pack prices (setPackPrice)
+
+# Manual re-evaluation of Pulse / Yield / Sentinel prices on agents-marketplace.
+# Funds flow to SC owner → can be directed to LIA Vellum trading wallet.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_mainnet:
+        description: "Type SET_PACK_PRICES_MAINNET"
+        required: true
+        type: string
+      sc_address:
+        description: "agents-marketplace SC"
+        default: "erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg"
+        type: string
+      price_pulse_egld:
+        description: "Pulse (0x01) price in EGLD (e.g. 1 or 1.5)"
+        default: "1"
+        type: string
+      price_yield_egld:
+        description: "Yield (0x02) price in EGLD"
+        default: "2"
+        type: string
+      price_sentinel_egld:
+        description: "Sentinel (0x03) price in EGLD"
+        default: "3"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  set-prices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SC: ${{ github.event.inputs.sc_address }}
+      SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      PROXY: https://gateway.multiversx.com
+      API: https://api.multiversx.com
+      CHAIN: "1"
+
+    steps:
+      - name: Gate
+        run: test "${{ github.event.inputs.confirm_mainnet }}" = "SET_PACK_PRICES_MAINNET"
+
+      - name: Write PEM
+        run: |
+          set -euo pipefail
+          test -n "${SC_DEPLOYER_PEM:-}"
+          umask 077
+          printf '%s\n' "$SC_DEPLOYER_PEM" > "${RUNNER_TEMP}/deployer.pem"
+          if ! grep -q BEGIN "${RUNNER_TEMP}/deployer.pem"; then
+            HEX=$(tr -d ' \n' < "${RUNNER_TEMP}/deployer.pem")
+            { echo "-----BEGIN PRIVATE KEY for deployer-----"; echo "$HEX" | fold -w 64; echo "-----END PRIVATE KEY for deployer-----"; } > "${RUNNER_TEMP}/deployer.pem"
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install multiversx-sdk-cli multiversx-sdk
+
+      - name: Convert EGLD → atomic & setPackPrice
+        run: |
+          set -euo pipefail
+          python3 << 'PY'
+          import os, subprocess, time, json, urllib.request
+
+          def egld_to_atomic(s: str) -> str:
+              # support "1", "1.5", "0.001"
+              from decimal import Decimal
+              d = Decimal(s.strip())
+              atomic = int(d * Decimal(10**18))
+              if atomic <= 0:
+                  raise SystemExit(f"price must be > 0, got {s}")
+              return str(atomic)
+
+          prices = {
+              "01": egld_to_atomic(os.environ["PRICE_PULSE"]),
+              "02": egld_to_atomic(os.environ["PRICE_YIELD"]),
+              "03": egld_to_atomic(os.environ["PRICE_SENTINEL"]),
+          }
+          sc = os.environ["SC"]
+          pem = os.path.join(os.environ["RUNNER_TEMP"], "deployer.pem")
+          proxy = os.environ["PROXY"]
+          api = os.environ["API"]
+          chain = os.environ["CHAIN"]
+
+          def get_nonce(addr: str) -> int:
+              with urllib.request.urlopen(f"{api}/accounts/{addr}") as r:
+                  return int(json.load(r).get("nonce", 0))
+
+          # resolve deployer address
+          from pathlib import Path
+          from multiversx_sdk import UserPEM
+          deployer = UserPEM.from_file(Path(pem)).public_key.to_address().to_bech32()
+          print(f"deployer={deployer} sc={sc}")
+
+          for pt, atomic in prices.items():
+              nonce = get_nonce(deployer)
+              print(f"setPackPrice 0x{pt} → {atomic} (nonce={nonce})")
+              cmd = [
+                  "mxpy", "contract", "call", sc,
+                  "--function=setPackPrice",
+                  "--arguments", f"0x{pt}", atomic,
+                  "--pem", pem,
+                  "--proxy", proxy, "--chain", chain,
+                  "--nonce", str(nonce),
+                  "--gas-limit", "12000000",
+                  "--send", "--wait-result",
+              ]
+              subprocess.run(cmd, check=True)
+              time.sleep(4)
+
+          print("All three pack prices updated.")
+          PY
+        env:
+          PRICE_PULSE: ${{ github.event.inputs.price_pulse_egld }}
+          PRICE_YIELD: ${{ github.event.inputs.price_yield_egld }}
+          PRICE_SENTINEL: ${{ github.event.inputs.price_sentinel_egld }}
+
+      - name: Summary
+        run: |
+          echo "| Pack | Enum | New price (EGLD) |"
+          echo "|------|------|------------------|"
+          echo "| Pulse | 0x01 | ${{ github.event.inputs.price_pulse_egld }} |"
+          echo "| Yield | 0x02 | ${{ github.event.inputs.price_yield_egld }} |"
+          echo "| Sentinel | 0x03 | ${{ github.event.inputs.price_sentinel_egld }} |"
+          echo ""
+          echo "SC: ${{ github.event.inputs.sc_address }}"
+          echo "Explorer: https://explorer.multiversx.com/accounts/${{ github.event.inputs.sc_address }}"

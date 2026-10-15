@@ -1,0 +1,118 @@
+name: RAG Ingestion (ATC → TCA)
+
+# Extract chunks from knowledge/rag/** and optionally POST to Vellum/LIA webhook.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "knowledge/rag/**"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Skip webhook (local validation only)"
+        required: false
+        default: "false"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RAG_INGEST_WEBHOOK_URL: ${{ secrets.RAG_INGEST_WEBHOOK_URL }}
+      DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Extract chunks from atc_transcripts
+        id: extract
+        run: |
+          set -euo pipefail
+          python3 << 'PY'
+          import json, re, pathlib, os, hashlib
+          root = pathlib.Path("knowledge/rag/atc_transcripts")
+          out_dir = pathlib.Path("knowledge/rag/lia_curation")
+          out_dir.mkdir(parents=True, exist_ok=True)
+          chunks = []
+          for md in sorted(root.glob("*.md")):
+              text = md.read_text(encoding="utf-8")
+              title = ""
+              m = re.search(r"^#\s+(.+)$", text, re.M)
+              if m:
+                  title = m.group(1).strip()
+              tags = []
+              tm = re.search(r"\*\*Tags\s*:\*\*\s*(.+)", text, re.I)
+              if tm:
+                  tags = [t.strip() for t in re.split(r"[,;]", tm.group(1)) if t.strip()]
+              concept = ""
+              cm = re.search(r"##\s+Concept\s*\n+(.+?)(?=\n##|\Z)", text, re.S | re.I)
+              if cm:
+                  concept = re.sub(r"\s+", " ", cm.group(1)).strip()[:800]
+              technique = ""
+              tec = re.search(r"##\s+Technique\s*\n+(.+?)(?=\n##|\Z)", text, re.S | re.I)
+              if tec:
+                  technique = re.sub(r"\s+", " ", tec.group(1)).strip()[:800]
+              body = re.sub(r"\s+", " ", text)[:1200]
+              cid = hashlib.sha256(f"{md.name}:{title}".encode()).hexdigest()[:16]
+              ch = {
+                  "id": cid,
+                  "source": str(md.as_posix()),
+                  "title": title,
+                  "concept": concept,
+                  "technique": technique,
+                  "text": body,
+                  "tags": tags,
+                  "professors": ["leonardo"] if "leonardo" in text.lower() else ["any"],
+                  "epoch": "renaissance" if "renaissance" in text.lower() else "",
+              }
+              chunks.append(ch)
+              print(f"chunk {cid} ← {md.name} tags={tags}")
+          out_path = out_dir / "ingested_chunks.jsonl"
+          with out_path.open("w", encoding="utf-8") as f:
+              for c in chunks:
+                  f.write(json.dumps(c, ensure_ascii=False) + "\n")
+          print(f"wrote {len(chunks)} chunks → {out_path}")
+          # also emit summary for job output
+          summary = {"count": len(chunks), "ids": [c["id"] for c in chunks]}
+          pathlib.Path("rag_summary.json").write_text(json.dumps(summary), encoding="utf-8")
+          PY
+
+      - name: Upload curation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lia-curation-chunks
+          path: knowledge/rag/lia_curation/
+          retention-days: 14
+
+      - name: POST to Vellum / LIA webhook (optional)
+        if: env.RAG_INGEST_WEBHOOK_URL != '' && env.DRY_RUN != 'true'
+        run: |
+          set -euo pipefail
+          if [ ! -f knowledge/rag/lia_curation/ingested_chunks.jsonl ]; then
+            echo "no chunks file — skip"
+            exit 0
+          fi
+          # Send as NDJSON body; consumer is expected to be LIA Engine / Vellum ingest endpoint
+          curl -sS -X POST "${RAG_INGEST_WEBHOOK_URL}" \
+            -H "Content-Type: application/x-ndjson" \
+            -H "X-Source: xArtists-rag-ingestion" \
+            -H "X-Repo: ${{ github.repository }}" \
+            -H "X-Sha: ${{ github.sha }}" \
+            --data-binary @knowledge/rag/lia_curation/ingested_chunks.jsonl \
+            -w "\nHTTP %{http_code}\n" || echo "webhook failed (non-fatal)"
+
+      - name: Summary
+        run: |
+          if [ -f rag_summary.json ]; then
+            cat rag_summary.json
+          else
+            echo '{"count":0}'
+          fi
