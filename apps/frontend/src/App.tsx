@@ -60,9 +60,9 @@ export default function App() {
   const [assetsOpen, setAssetsOpen] = useState(false)
 
   useEffect(() => {
-    const open = () => setAssetsOpen(true)
-    window.addEventListener(OPEN_ASSETS_EVENT, open)
-    return () => window.removeEventListener(OPEN_ASSETS_EVENT, open)
+    const onOpen = () => setAssetsOpen(true)
+    window.addEventListener(OPEN_ASSETS_EVENT, onOpen)
+    return () => window.removeEventListener(OPEN_ASSETS_EVENT, onOpen)
   }, [])
 
   return (
@@ -81,9 +81,10 @@ export default function App() {
               <PageTransition key={location.pathname}>
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
-                  <Route path="/market" element={<MarketAnalyticsPage />} />
-                  <Route path="/marketplace" element={<MarketplacePage />} />
-                  <Route path="/market-place" element={<Navigate to="/marketplace" replace />} />
+                  <Route path="/market" element={<MarketplacePage />} />
+                  <Route path="/marketplace" element={<Navigate to="/market" replace />} />
+                  <Route path="/market-place" element={<Navigate to="/market" replace />} />
+                  <Route path="/market/analytics" element={<MarketAnalyticsPage />} />
                   <Route path="/trading" element={<TradingPage />} />
                   <Route path="/agents" element={<AgentsPage />} />
                   <Route path="/packs" element={<Navigate to="/agents" replace />} />
@@ -124,7 +125,7 @@ export default function App() {
                   <Route path="/burnify" element={<BurnifyPage />} />
                   <Route path="/lp" element={<LPPoolsPage />} />
                   <Route path="/hatom" element={<HatomPage />} />
-                  {/* Slot/Casino extrait → xArtists-Slot — redirige vers Accueil */}
+                  <Route path="/hub" element={<Navigate to="/" replace />} />
                   <Route path="/slot" element={<Navigate to="/" replace />} />
                   <Route path="/slot/*" element={<Navigate to="/" replace />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
