@@ -1,5 +1,26 @@
 # Changelog — xArtists
 
+## [0.110.0](https://github.com/Neltud/xArtists/compare/v0.109.0...v0.110.0) (2026-10-15)
+
+
+### Features
+
+* **home+cc:** portal hall HomeMenuHall + ambientSnap on MarketTape ([c551fb6](https://github.com/Neltud/xArtists/commit/c551fb60156d9e5691f77103b507613a4d19bc2e))
+* **museum:** Agrandir image fullscreen in artwork modal + RWA details ([3479ff0](https://github.com/Neltud/xArtists/commit/3479ff015a372afda1eef94b8a5901ae46ae07bd))
+* **museum:** AmbientLight 0.8 + stronger key/fill (v0.110) ([e90df0d](https://github.com/Neltud/xArtists/commit/e90df0d6619ab7272175f1131b8d22b4cbd7933f))
+* **museum:** raycast click to enlarge, drag look, texture fallbacks, free walk ([b4d0de2](https://github.com/Neltud/xArtists/commit/b4d0de2f36bf99e0f24d6ffbcd40715761439b47))
+* **v0.110.0:** canonical 4 hubs — /market marketplace, hub redirects, dual RWA/digital tabs ([093de09](https://github.com/Neltud/xArtists/commit/093de09e0a9576a2495dc06c99591132417b0dbe))
+* **v0.110:** App 4 hubs routing + dual marketplace RWA/digital + nav /market ([f7b547e](https://github.com/Neltud/xArtists/commit/f7b547edd15e8a21124171a2b818920c509b3d0f))
+* **v0.110:** App.tsx canonical /market + /hub redirect + analytics ([fef7558](https://github.com/Neltud/xArtists/commit/fef75586cecd011752fdd187d6ecbd9bef8847ed))
+* **v0.110:** Header /market hub + Marketplace dual tabs RWA|Digital ([22d784a](https://github.com/Neltud/xArtists/commit/22d784ad762b2c8676c66bc9d5d0faf91c2e4e1f))
+* **v0.110:** HomeMenuHall portals Musee/Packs/Market/Command ([bc1a709](https://github.com/Neltud/xArtists/commit/bc1a709fdcd65c3de44dbfdd549489ba35646984))
+
+
+### Bug Fixes
+
+* **cc:** MarketTape optional snap — kill mode crash; wire ambientSnap ([fa50908](https://github.com/Neltud/xArtists/commit/fa50908c38129d96630ec769f3bddd390d5f381a))
+* **cc:** pass ambientSnap to MarketTape (mode crash root fix) ([19996ba](https://github.com/Neltud/xArtists/commit/19996babaee03dcc9df0e6105a8d5fa663b28dd2))
+
 ## [0.109.0](https://github.com/Neltud/xArtists/compare/v0.108.2...v0.109.0) (2026-10-15)
 
 
