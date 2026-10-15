@@ -1,5 +1,6 @@
 /**
  * Marketplace — vitrine on-chain + multi-list + post-buy overlay.
+ * Secondary market: Frameit Indexing + RWA Physical Art (v0.109.0).
  * All dynamic children forced to string (React #31 guard).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -19,6 +20,7 @@ import {
 } from '../lib/marketplaceIndex'
 import { fetchMarketPayable, type MarketPayableStatus } from '../lib/marketPayable'
 import { asText } from '../lib/safeRender'
+import FrameitMarketPanel from '../components/market/FrameitMarketPanel'
 
 const PAGE = 16
 
@@ -193,6 +195,7 @@ export default function MarketplacePage() {
         <h1 className="section-title display text-2xl">Marketplace</h1>
         <p className="text-sm text-zinc-400">
           Index on-chain (NFT sur le SC) + inventaire wallet. Multi-list = une signature par pièce.
+          Secondary : Frameit / Xoxno + RWA Physical Art.
         </p>
         {payableSt?.isPayable === false && (
           <p className="text-[12px] text-amber-200/90 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2">
@@ -207,6 +210,9 @@ export default function MarketplacePage() {
           </p>
         )}
       </header>
+
+      {/* v0.109.0 — Frameit Indexing + RWA Physical Art */}
+      <FrameitMarketPanel />
 
       <section className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
