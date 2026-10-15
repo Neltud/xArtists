@@ -1,6 +1,6 @@
 # ACTIVE_CONTEXT — xArtists (live system state)
 
-**Last updated:** 2026-10-14  
+**Last updated:** 2026-10-15  
 **Branch:** `main`  
 **Owner / Ops:** Grok (local Dev/Ops) · Gemini Flash (Lead Architect / Audit) · LIA (Vellum Trading & Curation)
 
@@ -19,11 +19,16 @@
 
 | Pack | Enum | Collection | Official price |
 |------|------|------------|----------------|
-| Pulse | `0x01` | `XAIPLS-2cf72b` | 1 EGLD |
-| Yield | `0x02` | `XAIYLD-987e24` | 2 EGLD |
-| Sentinel | `0x03` | `XAISNT-3d8a6b` | 3 EGLD |
+| Pulse | `0x01` | `XAIPLS-2cf72b` | **10.0 EGLD** |
+| Yield | `0x02` | `XAIYLD-987e24` | **5.0 EGLD** |
+| Sentinel | `0x03` | `XAISNT-3d8a6b` | **2.5 EGLD** |
 
 `buyPack` mints 1 NFT to `msg.sender`. Roles `ESDTRoleNFTCreate` granted on SC.
+
+**Price update (2026-10-15):** CI run [#38687973735](https://github.com/Neltud/xArtists/actions/runs/38687973735) — `setPackPrice` nonces 108/109/110.  
+Last TX (Sentinel): [`8ea9d491cbde85b4c04e70172ebb7d517e80314477028fb36fa95d189ee6ae14`](https://explorer.multiversx.com/transactions/8ea9d491cbde85b4c04e70172ebb7d517e80314477028fb36fa95d189ee6ae14).
+
+Recettes `buyPack` → owner SC → financement du wallet de trading LLM **Vellum / LIA**.
 
 See: `contracts/agents-marketplace/MAINNET_STATUS.md`
 
@@ -66,7 +71,8 @@ Frontend gates: `nftPacks.ts`, `holderAccess.ts`, `AgentAccessSync.tsx`, `useAge
 
 - Workflow: `.github/workflows/update-pack-prices.yml` (manual `workflow_dispatch`)
 - Function: `setPackPrice` args `0x01|0x02|0x03` + atomic EGLD amount
-- Purpose: adjust pack prices to fund LIA Vellum trading wallet without redeploy
+- **Current official prices:** Pulse **10** / Yield **5** / Sentinel **2.5** EGLD (updated 2026-10-15)
+- Purpose: fund LIA Vellum trading wallet without redeploy
 
 ---
 
