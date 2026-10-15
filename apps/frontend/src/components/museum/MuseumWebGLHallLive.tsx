@@ -1,6 +1,5 @@
 /**
- * Musee WebGL Live — fullscreen, joystick, focus lerp.
- * placeArt wall hangings + boosted lights + webglPause / frustum / context-loss.
+ * Musee WebGL Live — placeArt textures, click-to-enlarge modal, drag look, joystick.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
@@ -9,7 +8,6 @@ import {
   createPlayerAvatar,
   tickAvatarWalk,
   loadAvatarSkin,
-  saveAvatarSkin,
   AVATAR_SKINS,
   type AvatarSkinId,
 } from '../../lib/museumAvatar'
@@ -17,7 +15,6 @@ import { type FrameItem } from './MuseumCorridor'
 import ArtworkDetailsModal from './ArtworkDetailsModal'
 import VirtualJoystick from './VirtualJoystick'
 import type { RoomBlueprint, WallSeg } from '../../lib/roomBlueprint'
-import { blueprintAreaM2 } from '../../lib/roomBlueprint'
 import { pointInBlueprintFloor } from '../../lib/loadBlueprint'
 import { canListBuyNft } from '../../config/scStatus'
 import { useWallet } from '../../context/WalletContext'
@@ -25,11 +22,9 @@ import { requestOpenConnect } from '../../lib/walletEvents'
 import {
   trySlideMove,
   integrateWishVelocity,
-  clampCameraDistance,
   makeWalkableChecker,
 } from '../../lib/spatialEngine'
 import { MUSEUM_FPS, applyNavKey, isNavKey } from '../../lib/museumFpsController'
-import { isMusicEnabled, setMusicEnabled } from '../../config/nelsonAudio'
 import NavReticle from './NavReticle'
 
 const EYE = 1.65
@@ -71,12 +66,30 @@ function bounds(bp: RoomBlueprint) {
   return { minX, minY, maxX, maxY, cx: (minX + maxX) / 2, cy: (minY + maxY) / 2 }
 }
 
+function titlePlaceholder(title: string): THREE.CanvasTexture {
+  const c = document.createElement('canvas')
+  c.width = 256
+  c.height = 320
+  const ctx = c.getContext('2d')!
+  ctx.fillStyle = '#1a1620'
+  ctx.fillRect(0, 0, 256, 320)
+  ctx.strokeStyle = '#a78bfa'
+  ctx.lineWidth = 4
+  ctx.strokeRect(8, 8, 240, 304)
+  ctx.fillStyle = '#e4e4e7'
+  ctx.font = 'bold 16px system-ui'
+  ctx.textAlign = 'center'
+  ctx.fillText((title || 'Oeuvre').slice(0, 22), 128, 160)
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  return tex
+}
+
 export default function MuseumWebGLHallLive({
   blueprint,
   frames,
   room = 'stone',
   allowBuy = true,
-  emptyLabel = 'Aucune oeuvre',
 }: {
   blueprint: RoomBlueprint
   frames: FrameItem[]
@@ -88,16 +101,12 @@ export default function MuseumWebGLHallLive({
   const keys = useRef<Record<string, boolean>>({})
   const hold = useRef({ up: false, down: false, left: false, right: false })
   const nearestRef = useRef<FrameItem | null>(null)
-  const focusPos = useRef<THREE.Vector3 | null>(null)
   const [ready, setReady] = useState(false)
-  const [hint, setHint] = useState(true)
   const [nearTitle, setNearTitle] = useState('')
-  const [avatarSkin, setAvatarSkin] = useState<AvatarSkinId>(() => loadAvatarSkin())
+  const [avatarSkin] = useState<AvatarSkinId>(() => loadAvatarSkin())
   const [inspect, setInspect] = useState<FrameItem | null>(null)
   const [isCoarse, setIsCoarse] = useState(false)
   const [open, setOpen] = useState(true)
-  const inspectRef = useRef<FrameItem | null>(null)
-  inspectRef.current = inspect
   const { t } = useI18n()
   const { connected } = useWallet()
   const marketLive = canListBuyNft()
@@ -171,7 +180,7 @@ export default function MuseumWebGLHallLive({
     renderer.toneMappingExposure = 1.12
     mount.appendChild(renderer.domElement)
     const canvas = renderer.domElement
-    canvas.style.cssText = 'display:block;width:100%;height:100%;touch-action:none'
+    canvas.style.cssText = 'display:block;width:100%;height:100%;touch-action:none;pointer-events:auto'
 
     const onVisibility = () => {
       webglPaused = document.visibilityState !== 'visible'
@@ -236,7 +245,6 @@ export default function MuseumWebGLHallLive({
     loader.crossOrigin = 'anonymous'
     const artAnchors: { pos: THREE.Vector3; frame: FrameItem }[] = []
     const pickMeshes: THREE.Object3D[] = []
-    const frameById = new Map<string, FrameItem>()
     const wallList = blueprint.walls.filter(w => Math.hypot(w.x2 - w.x1, w.y2 - w.y1) > 1.2)
 
     function placeArt(
@@ -262,7 +270,6 @@ export default function MuseumWebGLHallLive({
       )
       art.position.set(apx + nx * 0.08, 1.65, apz + nz * 0.08)
       art.rotation.y = -angle
-      art.userData.artworkId = frame.id
       art.userData.frame = frame
       art.frustumCulled = true
       scene.add(art)
@@ -295,16 +302,21 @@ export default function MuseumWebGLHallLive({
       )
       frameMesh.position.set(apx, 1.65, apz)
       frameMesh.rotation.y = -g.angle
-      frameMesh.userData.artworkId = frame.id
       frameMesh.userData.frame = frame
       frameMesh.frustumCulled = true
       scene.add(frameMesh)
       pickMeshes.push(frameMesh)
-      frameById.set(frame.id, frame)
       artAnchors.push({ pos: new THREE.Vector3(apx, 1.65, apz), frame })
       const url = frame.image || ''
       if (url) {
-        loader.load(url, tex => placeArt(tex, apx, apz, nx, nz, g.angle, frame), undefined, () => {})
+        loader.load(
+          url,
+          tex => placeArt(tex, apx, apz, nx, nz, g.angle, frame),
+          undefined,
+          () => placeArt(titlePlaceholder(frame.title || 'Art'), apx, apz, nx, nz, g.angle, frame),
+        )
+      } else {
+        placeArt(titlePlaceholder(frame.title || 'Art'), apx, apz, nx, nz, g.angle, frame)
       }
     })
 
@@ -355,6 +367,59 @@ export default function MuseumWebGLHallLive({
     }
     window.addEventListener('keydown', kd, { passive: false })
     window.addEventListener('keyup', ku, { passive: false })
+
+    const raycaster = new THREE.Raycaster()
+    const pointer = new THREE.Vector2()
+    let dragYaw = false
+    let lastX = 0
+    let lastY = 0
+    let moved = false
+
+    const onPointerDown = (e: PointerEvent) => {
+      dragYaw = true
+      moved = false
+      lastX = e.clientX
+      lastY = e.clientY
+      try {
+        canvas.setPointerCapture(e.pointerId)
+      } catch {
+        /* */
+      }
+    }
+    const onPointerMove = (e: PointerEvent) => {
+      if (!dragYaw) return
+      const dx = e.clientX - lastX
+      const dy = e.clientY - lastY
+      if (Math.abs(dx) + Math.abs(dy) > 4) moved = true
+      lastX = e.clientX
+      lastY = e.clientY
+      yaw -= dx * 0.005
+      pitch = Math.max(-PITCH_MAX, Math.min(PITCH_MAX, pitch - dy * 0.003))
+    }
+    const onPointerUp = (e: PointerEvent) => {
+      dragYaw = false
+      try {
+        canvas.releasePointerCapture(e.pointerId)
+      } catch {
+        /* */
+      }
+      if (moved) return
+      const rect = canvas.getBoundingClientRect()
+      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1
+      pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1
+      raycaster.setFromCamera(pointer, camera)
+      const hits = raycaster.intersectObjects(pickMeshes, false)
+      if (hits.length > 0) {
+        const f = hits[0].object.userData.frame as FrameItem | undefined
+        if (f) setInspect(f)
+      } else if (nearestRef.current) {
+        setInspect(nearestRef.current)
+      }
+    }
+    canvas.addEventListener('pointerdown', onPointerDown)
+    canvas.addEventListener('pointermove', onPointerMove)
+    canvas.addEventListener('pointerup', onPointerUp)
+    canvas.addEventListener('pointercancel', onPointerUp)
 
     setReady(true)
     const clock = new THREE.Clock()
@@ -431,6 +496,10 @@ export default function MuseumWebGLHallLive({
       canvas.removeEventListener('webglcontextlost', onContextLost)
       window.removeEventListener('keydown', kd)
       window.removeEventListener('keyup', ku)
+      canvas.removeEventListener('pointerdown', onPointerDown)
+      canvas.removeEventListener('pointermove', onPointerMove)
+      canvas.removeEventListener('pointerup', onPointerUp)
+      canvas.removeEventListener('pointercancel', onPointerUp)
       ro.disconnect()
       try {
         scene.traverse(obj => {
@@ -468,7 +537,7 @@ export default function MuseumWebGLHallLive({
 
   return (
     <div className="fixed inset-0 z-[25] w-full h-full overflow-hidden bg-black">
-      <div ref={mountRef} className="absolute inset-0" style={{ pointerEvents: inspect ? 'none' : 'auto' }} />
+      <div ref={mountRef} className="absolute inset-0" style={{ pointerEvents: 'auto' }} />
       {!ready && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/90">
           <p className="text-[12px] text-cyan-100/80">{t('museum.loading')}</p>
@@ -489,13 +558,15 @@ export default function MuseumWebGLHallLive({
       {inspect && (
         <ArtworkDetailsModal
           frame={inspect}
-          onClose={() => {
-            setInspect(null)
-            focusPos.current = null
-          }}
+          onClose={() => setInspect(null)}
           onBuy={allowBuy ? () => void onBuy(inspect) : undefined}
         />
       )}
+      {nearTitle ? (
+        <div className="pointer-events-none absolute bottom-28 left-1/2 z-20 -translate-x-1/2 rounded-full border border-white/15 bg-black/70 px-4 py-1.5 text-[12px] text-zinc-100 backdrop-blur-md">
+          {nearTitle} · taper / cliquer pour agrandir
+        </div>
+      ) : null}
       <NavReticle />
     </div>
   )
