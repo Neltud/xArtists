@@ -1,61 +1,33 @@
-/** Packs IA — Pulse complet vs Yield/Sentinel limités. */
+/** Packs Agents — Pulse / Yield / Sentinel + cockpit signaux LIA. */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
-import OnRampModule from '../components/OnRampModule'
 import PackOpenTheater from '../components/PackOpenTheater'
-import PackProductDisclaimer from '../components/PackProductDisclaimer'
-import FeeTransparency from '../components/ui/FeeTransparency'
+import Pack3DCockpit from '../components/packs/Pack3DCockpit'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
-import { canBuyAgent } from '../config/scStatus'
-import { isLiveProven } from '../lib/explorerProof'
-import { useI18n } from '../i18n/I18nContext'
 
-const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
-const PACKS = (AGENT_PACKS || []).filter(
-  (p): p is (typeof AGENT_PACKS)[number] => !!p && ONLY.includes(p.id as PackId),
-)
+const PACKS = AGENT_PACKS
 
 export default function Agents() {
-  const { t } = useI18n()
   const [selected, setSelected] = useState<PackId | null>(null)
   const [theater, setTheater] = useState<PackId | null>(null)
   const active = PACKS.find(p => p && p.id === selected) || null
   const theaterPack = PACKS.find(p => p && p.id === theater) || null
-  const mintLive = canBuyAgent() && isLiveProven('agents')
 
   return (
-    <div className="animate-fade-in pb-14 max-w-3xl mx-auto space-y-8">
+    <div className="animate-fade-in space-y-6 pb-20 max-w-3xl mx-auto">
       <header className="space-y-2">
         <p className="section-label">Packs</p>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-end justify-between gap-2">
           <h1 className="section-title display">Pulse · Yield · Sentinel</h1>
-          <span
-            className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
-              mintLive
-                ? 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10'
-                : 'border-amber-500/35 text-amber-200 bg-amber-500/10'
-            }`}
-          >
-            {mintLive ? 'LIVE' : 'BIENTÔT'}
-          </span>
         </div>
         <p className="section-lead">
-          <strong className="text-emerald-300/90">Pulse = pack complet</strong>. Yield et Sentinel sont{' '}
-          <strong className="text-zinc-300">limités</strong> (DeFi / guard). Floor 10 EGLD. {t('packs.disclaimer')}
+          Entitlements d&apos;accès (signaux / salles) — pas un fonds, pas d&apos;APY promis. Prix
+          officiels on-chain : 10 / 5 / 2.5 EGLD.
         </p>
       </header>
 
-      <OnRampModule className="mb-4" />
-      <p className="text-[11px] text-zinc-500 leading-relaxed rounded-xl border border-white/8 bg-black/30 px-3 py-2">
-        <strong className="text-zinc-400">Mainnet :</strong> achat pack = signature xPortal. On-Ramp
-        Euro (MoonPay) si <code className="text-[9px]">VITE_MOONPAY_API_KEY</code> est configurée. Floor
-        packs ~10 EGLD. Yield/Sentinel = salles limitées ; Pulse = hub complet.
-      </p>
-      <PackProductDisclaimer />
-      <FeeTransparency kind="packs" />
-
-      <div className="grid sm:grid-cols-3 gap-3">
+      <div className="grid gap-3 sm:grid-cols-3">
         {PACKS.map(p => (
           <button
             key={p.id}
@@ -128,6 +100,7 @@ export default function Agents() {
             ))}
           </div>
 
+          <Pack3DCockpit packId={active.id} />
           <PackCheckout
             packId={active.id}
             onPaperDone={id => setTheater(id)}
