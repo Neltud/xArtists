@@ -23,6 +23,7 @@ import HolderTerminal from '../components/lia/HolderTerminal'
 import LiveAssetTape from '../components/LiveAssetTape'
 import RceStrip from '../components/RceStrip'
 import LiaAgentControl from '../components/LiaAgentControl'
+import Pack3DCockpit from '../components/packs/Pack3DCockpit'
 
 const API = 'https://api.multiversx.com'
 const LIA_WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
@@ -51,8 +52,8 @@ export default function LiaPage() {
   const { env } = usePulse()
   const lia = useLIAInterpreter(env)
   const ambient = useMemo(
-    () => toAmbientSnapshot(lia.uniforms, lia.confidence, false),
-    [lia.uniforms, lia.confidence],
+    () => toAmbientSnapshot(lia?.uniforms, lia?.confidence ?? 0.5, false),
+    [lia?.uniforms, lia?.confidence],
   )
 
   const [vellum, setVellum] = useState<VellumLastRun | null>(null)
@@ -124,6 +125,8 @@ export default function LiaPage() {
 
       <LiaHubControlRoomLazy />
 
+      <Pack3DCockpit />
+
       <LiaAgentControl />
       <HolderTerminal />
       <LiveAssetTape />
@@ -159,11 +162,11 @@ export default function LiaPage() {
 
       <LiaCommandTerminal
         phrase={lia.phrase}
-        mood={lia.uniforms.mood}
-        confidence={lia.confidence}
+        mood={lia.uniforms?.mood ?? 'stable'}
+        confidence={lia.confidence ?? 0.5}
         source={lia.source}
-        pending={lia.shadow.liaPending}
-        fallback={lia.shadow.fallbackActive}
+        pending={lia.shadow?.liaPending}
+        fallback={lia.shadow?.fallbackActive}
         onAsk={ctx => lia.requestComment(ctx)}
         contextHint="lia-hub"
         defaultOpen={false}
