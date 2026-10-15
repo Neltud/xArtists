@@ -1,14 +1,14 @@
 import { NavLink } from 'react-router-dom'
 import { useI18n } from '../i18n/I18nContext'
 
+/** 4 hubs canoniques — Accueil / Packs / Market / Museum */
 export default function BottomNav() {
   const { t } = useI18n()
   const items = [
-    { to: '/', label: t('nav.home'), icon: '◈', end: true },
-    { to: '/museum', label: t('nav.museum'), icon: '🖼', end: false },
-    { to: '/marketplace', label: t('nav.market'), icon: '◇', end: false },
-    { to: '/lia', label: t('nav.lia'), icon: '◎', end: false },
-    { to: '/agents', label: t('nav.packs'), icon: '✦', end: false },
+    { to: '/', label: t('nav.home'), icon: '\u25c8', end: true },
+    { to: '/agents', label: t('nav.packs'), icon: '\u2726', end: false },
+    { to: '/marketplace', label: t('nav.market'), icon: '\u25c7', end: false },
+    { to: '/museum', label: t('nav.museum'), icon: '\ud83d\uddbc', end: false },
   ] as const
 
   return (
@@ -17,7 +17,7 @@ export default function BottomNav() {
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       aria-label={t('nav.home')}
     >
-      <div className="grid grid-cols-5 gap-0.5 px-1.5 pb-1 pt-1.5">
+      <div className="grid grid-cols-4 gap-0.5 px-1.5 pb-1 pt-1.5">
         {items.map(({ to, label, icon, end }) => (
           <NavLink
             key={to}

@@ -1,6 +1,6 @@
 /**
  * Header produit — menu, wallet, i18n, Mode Pitch B2B.
- * Connexion via LoginModal. Pas de branding partenaire tiers.
+ * Hubs canoniques uniquement (pas de Slot/Casino).
  */
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
@@ -24,12 +24,12 @@ export default function Header() {
 
   const live = connected && (method !== 'xportal' || sessionLive === true)
 
+  /** 4 hubs canoniques — Accueil / Packs / Market / Museum */
   const topNav = [
     { to: '/', label: t('nav.home'), end: true },
-    { to: '/museum', label: t('nav.museum') },
-    { to: '/marketplace', label: t('nav.market') },
     { to: '/agents', label: t('nav.packs') },
-    { to: '/slot', label: t('nav.slot') },
+    { to: '/marketplace', label: t('nav.market') },
+    { to: '/museum', label: t('nav.museum') },
   ]
 
   const togglePitch = () => {
