@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-15T10:54:54.408Z",
+  "updatedAt": "2026-10-15T16:22:38.200Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792081357665",
+      "timestamp": "16:22",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.69 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1792079165000",
+      "timestamp": "15:46",
+      "source": "CoinTelegraph",
+      "title": "Mastercard brings stablecoin balances into traditional banking and card payments",
+      "link": "https://cointelegraph.com/news/mastercard-bvnk-global-money-platform-stablecoins?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792077044000",
+      "timestamp": "15:10",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin slips under $80K after US PPI gains most in four years",
+      "link": "https://cointelegraph.com/markets/bitcoin-price-breaks-under-80k-after-us-ppi-gains-most-in-over-4-years?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792074163000",
+      "timestamp": "14:22",
+      "source": "CoinTelegraph",
+      "title": "Russia to ban direct peer-to-peer crypto trades starting July 2027",
+      "link": "https://cointelegraph.com/news/russia-ban-p2p-crypto-trades-july-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1792073815000",
+      "timestamp": "14:16",
+      "source": "CoinTelegraph",
+      "title": "Nasdaq-listed Tron sets up $200M ATM share offering to fuel TRX acquisitions",
+      "link": "https://cointelegraph.com/news/nasdaq-tron-200m-atm-offering-fuel-trx-acquisitions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1792071000000",
+      "timestamp": "13:30",
+      "source": "CoinTelegraph",
+      "title": "Can the SEC and CFTC’s pro-crypto rules be overturned? Legal opinion",
+      "link": "https://cointelegraph.com/magazine/can-the-sec-and-cftcs-pro-crypto-rules-be-overturned-legal-opinion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1792070265000",
+      "timestamp": "13:17",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1792076400000",
+      "timestamp": "15:00",
+      "source": "CoinDesk",
+      "title": "Crypto for Advisors: Wall Street is done waiting on Congress for crypto rules",
+      "link": "https://www.coindesk.com/coindesk-indices/2026/10/15/crypto-for-advisors-wall-street-is-done-waiting-on-congress-for-crypto-rules"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792067724000",
+      "timestamp": "12:35",
+      "source": "CoinDesk",
+      "title": "How Brooklyn prosecutors and the FBI took down a massive crypto fraud network targeting Russian speakers",
+      "link": "https://www.coindesk.com/business/2026/10/15/how-brooklyn-prosecutors-and-the-fbi-took-down-a-massive-crypto-fraud-network-targeting-russian-speakers"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792065600000",
+      "timestamp": "12:00",
+      "source": "CoinDesk",
+      "title": "Under pressure, Ledger unveils plan to turn its crypto hardware wallet into a smartphone",
+      "link": "https://www.coindesk.com/tech/2026/10/15/under-pressure-ledger-unveils-plan-to-turn-its-crypto-hardware-wallet-into-a-smartphone"
+    },
+    {
+      "id": "rss-CoinDesk-3-1792062900000",
+      "timestamp": "11:15",
+      "source": "CoinDesk",
+      "title": "Bitcoin, copper, stocks, yields all fall; gold rises",
+      "link": "https://www.coindesk.com/daybook-us/2026/10/15/bitcoin-copper-stocks-yields-all-fall-gold-rises"
+    },
     {
       "id": "egld-1792061694103",
       "timestamp": "10:54",
@@ -44,13 +121,6 @@
       "source": "CoinTelegraph",
       "title": "South Korea plans cybersecurity overhaul after attacks hit banks, crypto firms",
       "link": "https://cointelegraph.com/news/south-korea-cybersecurity-overhaul-crypto-exchanges?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792043357000",
-      "timestamp": "05:49",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-0-1792058017000",
@@ -128,76 +198,6 @@
       "source": "CoinDesk",
       "title": "Kalshi CEO says state-led oversight of U.S. prediction markets would push them out",
       "link": "https://www.coindesk.com/policy/2026/10/14/kalshi-ceo-says-state-led-oversight-of-u-s-prediction-markets-would-push-them-out"
-    },
-    {
-      "id": "rss-CoinDesk-1-1791992136000",
-      "timestamp": "15:35",
-      "source": "CoinDesk",
-      "title": "AI agents make 138 million crypto payments as U.S. dominates spending on AI models",
-      "link": "https://www.coindesk.com/business/2026/10/14/ai-agents-make-138-million-crypto-payments-as-u-s-dominates-spending-on-ai-models"
-    },
-    {
-      "id": "rss-CoinDesk-2-1791990315000",
-      "timestamp": "15:05",
-      "source": "CoinDesk",
-      "title": "Crypto Long & Short: Why gold and bitcoin belong in the same portfolio",
-      "link": "https://www.coindesk.com/coindesk-indices/2026/10/14/crypto-long-and-short-why-gold-and-bitcoin-belong-in-the-same-portfolio"
-    },
-    {
-      "id": "rss-CoinDesk-3-1791989372000",
-      "timestamp": "14:49",
-      "source": "CoinDesk",
-      "title": "EasyA hits $1.1 billion valuation, targets 2027 public listing and tokenized shares",
-      "link": "https://www.coindesk.com/business/2026/10/14/easya-hits-usd1-1-billion-valuation-targets-2027-public-listing-and-tokenized-shares"
-    },
-    {
-      "id": "egld-1792005059546",
-      "timestamp": "19:10",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.62 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1791987675000",
-      "timestamp": "14:21",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin price dips below $82K as high oil prices spike US CPI inflation",
-      "link": "https://cointelegraph.com/markets/bitcoin-price-dips-yields-surge-as-high-oil-prices-spike-us-cpi-inflation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1791984600000",
-      "timestamp": "13:30",
-      "source": "CoinTelegraph",
-      "title": "‘Bunker mode’ won’t protect your crypto, critics say",
-      "link": "https://cointelegraph.com/magazine/bunker-mode-wont-protect-your-crypto-critics-say?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1791982800000",
-      "timestamp": "13:00",
-      "source": "CoinTelegraph",
-      "title": "Canada crypto remittances to Asian countries surge 141% to $2.36B: Chainalysis",
-      "link": "https://cointelegraph.com/news/canada-crypto-remittances-asia-surge-chainalysis?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791982421000",
-      "timestamp": "12:53",
-      "source": "CoinTelegraph",
-      "title": "Qivalis wins Dutch e-money license for euro stablecoin",
-      "link": "https://cointelegraph.com/news/qivalis-authorization-dutch-central-bank-euro-stablecoin?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1791974302000",
-      "timestamp": "10:38",
-      "source": "CoinTelegraph",
-      "title": "CryptoQuant’s 3 charts keeping Bitcoin’s ‘Uptober’ thesis valid",
-      "link": "https://cointelegraph.com/markets/cryptoquant-charts-bitcoin-uptober-thesis-valid?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1791973787000",
-      "timestamp": "10:29",
-      "source": "CoinTelegraph",
-      "title": "Sam Bankman-Fried’s lawyer lays out ex-FTX CEO’s Supreme Court case",
-      "link": "https://cointelegraph.com/news/ftx-sam-bankman-fried-lawyer-supreme-court-appeal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
