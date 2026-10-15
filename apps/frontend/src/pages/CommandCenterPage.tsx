@@ -23,6 +23,7 @@ import { useUserAccount } from '../hooks/useUserAccount'
 import { holderStatus } from '../lib/holderAccess'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
+import { toAmbientSnapshot } from '../lib/ambientAura'
 import { setEmpireZone } from '../store/empireStore'
 import { useI18n } from '../i18n/I18nContext'
 import { useToast } from '../components/ui/Toast'
@@ -65,7 +66,11 @@ function CommandCenterInner() {
   const [room, setRoom] = useState<Room>(roomParam || 'hub')
   const [eco, setEco] = useState<EcoTab>('defi')
   const { env } = usePulse()
-  useLIAInterpreter(env)
+  const lia = useLIAInterpreter(env)
+  const ambientSnap = useMemo(
+    () => toAmbientSnapshot(lia?.uniforms, lia?.confidence ?? 0.5, false),
+    [lia?.uniforms, lia?.confidence],
+  )
   const { push } = useToast()
   const tunnelRef = useRef(false)
 
@@ -153,12 +158,12 @@ function CommandCenterInner() {
         </button>
       )}
 
-      <MarketTape />
+      <MarketTape snap={ambientSnap} />
       <LiveAssetTape />
       <CommandWall />
       <DashboardSource />
       <AgentRoster />
-      <AgentNftOrb />
+      <AgentNftOrb packId="pulse" aura={ambientSnap.mode} />
       <LiveNewsStream />
 
       <LiaShadowPanel />
