@@ -20,15 +20,16 @@ type Props = {
 export default function AgentIA_Guard({ children, requirePack, strict = false }: Props) {
   const { connected, address } = useWallet()
   const access = useAgentAccess()
+  const packs = access?.packs ?? []
+  const hasAccess = Boolean(access?.hasAgentAccess)
 
   const admin = isAdminAddress(address)
   const ok =
     admin ||
-    (access.hasAgentAccess && (!requirePack || access.packs.includes(requirePack)))
+    (hasAccess && (!requirePack || packs.includes(requirePack)))
 
   if (ok) return <>{children}</>
 
-  // SAMPLE preview: show children with banner unless strict or room-locked
   if (!strict && !requirePack) {
     return (
       <div className="space-y-3">
@@ -65,25 +66,22 @@ export default function AgentIA_Guard({ children, requirePack, strict = false }:
         <h1 className="text-xl font-bold text-white tracking-tight">Access Denied</h1>
         <p className="text-sm text-zinc-400 leading-relaxed">
           {!connected
-            ? 'Connecte ton wallet pour vérifier la détention d’un Agent IA Pack (Pulse · Yield · Sentinel).'
+            ? 'Connecte ton wallet pour vérifier la détention d\'un pack Agent IA.'
             : requirePack
-              ? `Salle réservée aux holders du pack « ${requirePack} ».`
-              : 'Cette zone est réservée aux holders d’un Agent IA Pack.'}
+              ? `Pack ${requirePack} requis pour cette salle.`
+              : 'Un pack Agent IA (Pulse / Yield / Sentinel) est requis.'}
         </p>
-        <div className="flex flex-wrap gap-2 pt-1">
+        <div className="flex flex-wrap gap-2">
           {!connected ? (
             <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
-              Connect Wallet
+              Connecter
             </button>
           ) : (
-            <Link to="/agents" className="btn-primary text-sm">
-              Obtenir un Pack
+            <Link to="/agents" className="btn-primary text-sm inline-flex items-center">
+              Voir les packs
             </Link>
           )}
-          <Link to="/my-packs" className="btn-secondary text-sm">
-            My Packs
-          </Link>
-          <Link to="/" className="btn-secondary text-sm">
+          <Link to="/" className="btn-secondary text-sm inline-flex items-center">
             Accueil
           </Link>
         </div>

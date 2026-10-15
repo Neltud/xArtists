@@ -1,20 +1,33 @@
 /**
- * Dashboard metrics — reactive to empireStore + agent packs + pulse sentiment.
- * Used as DOM preview + source of truth for ProjectionBridge numbers.
+ * Dashboard source strip — live metrics + agent pack gates.
  */
-import { useEmpireStore, useAgentAccess } from '../store/empireStore'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
+import { useAgentAccess, useEmpireWallet } from '../store/empireStore'
 import { getAppMode } from '../lib/appMode'
+import { usePulse } from '../hooks/usePulse'
 
-type Props = {
-  sentiment?: number
-  className?: string
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-white/8 bg-black/40 px-2 py-2">
+      <p className="text-[9px] uppercase tracking-wider text-zinc-500">{label}</p>
+      <p className="text-sm font-semibold text-white tabular-nums">{value}</p>
+    </div>
+  )
 }
 
-export default function DashboardSource({ sentiment = 0, className = '' }: Props) {
-  const empire = useEmpireStore()
+function fmt(n: number | undefined | null): string {
+  if (n == null || !Number.isFinite(n)) return '—'
+  if (Math.abs(n) >= 1000) return n.toFixed(0)
+  if (Math.abs(n) >= 1) return n.toFixed(2)
+  return n.toFixed(4)
+}
+
+export default function DashboardSource({ className = '' }: { className?: string }) {
+  const empire = useEmpireWallet()
   const access = useAgentAccess()
-  const mode = getAppMode()
+  const { env } = usePulse()
+  const sentiment = typeof env?.sentiment === 'number' ? env.sentiment : 0
+  const mode = getAppMode?.() ?? 'paper'
   const bullish = sentiment >= 0
 
   return (
@@ -24,7 +37,7 @@ export default function DashboardSource({ sentiment = 0, className = '' }: Props
     >
       <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
         <span className="text-[10px] uppercase tracking-widest text-cyan-300">
-          LIVE · Command · {mode.toUpperCase()}
+          LIVE · Command · {(mode ?? 'paper').toString().toUpperCase()}
         </span>
         <span
           className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
@@ -38,16 +51,16 @@ export default function DashboardSource({ sentiment = 0, className = '' }: Props
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center mb-4">
-        <Metric label="EGLD" value={fmt(empire.wallet.egldBalance)} />
-        <Metric label="TRO" value={fmt(empire.wallet.troBalance)} />
-        <Metric label="Packs" value={String(access.packs.length)} />
-        <Metric label="Gate" value={access.source} />
+        <Metric label="EGLD" value={fmt(empire?.egldBalance)} />
+        <Metric label="TRO" value={fmt(empire?.troBalance)} />
+        <Metric label="Packs" value={String(access?.packs?.length ?? 0)} />
+        <Metric label="Gate" value={access?.source ?? '—'} />
       </div>
 
       <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Agents IA</p>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
         {AGENT_PACKS.map(p => {
-          const owned = access.packs.includes(p.id as PackId)
+          const owned = Boolean(access?.packs?.includes(p.id as PackId))
           return (
             <div
               key={p.id}
@@ -58,59 +71,14 @@ export default function DashboardSource({ sentiment = 0, className = '' }: Props
               }`}
             >
               <div className="flex items-center gap-2">
-                <span className="text-lg">{p.icon}</span>
-                <div className="min-w-0">
-                  <p className={`text-xs font-bold ${p.color}`}>{p.name}</p>
-                  <p className="text-[9px] text-zinc-500 truncate">{p.tagline}</p>
-                </div>
+                <span className="text-sm">{p.emoji || '◎'}</span>
+                <span className="text-[12px] font-medium text-white">{p.label}</span>
               </div>
-              <p className="text-[9px] mt-1 text-zinc-500">
-                signal {p.signalIntensity}/3 · {owned ? 'OWNED' : 'locked'}
-              </p>
+              <p className="text-[10px] text-zinc-500 mt-0.5">{owned ? 'détenu' : 'verrouillé'}</p>
             </div>
           )
         })}
       </div>
-
-      <div className="h-20 flex items-end gap-1 px-0.5">
-        {Array.from({ length: 20 }).map((_, i) => {
-          const h = 18 + Math.abs(Math.sin(i * 0.55 + sentiment * 3)) * 55
-          return (
-            <div
-              key={i}
-              className="flex-1 rounded-t min-w-[4px]"
-              style={{
-                height: `${h}%`,
-                background: bullish
-                  ? `linear-gradient(to top, #22d3ee, #fbbf24)`
-                  : `linear-gradient(to top, #7f1d1d, #f43f5e)`,
-                opacity: 0.9,
-              }}
-            />
-          )
-        })}
-      </div>
-
-      <p className="mt-2 text-[9px] mono text-zinc-600 truncate">
-        {(empire.wallet.address || 'no wallet').slice(0, 28)} · flags stake=
-        {empire.flags.canStakeTro ? '1' : '0'} market={empire.flags.canListBuyNft ? '1' : '0'}
-      </p>
     </div>
   )
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-md border border-white/10 bg-black/40 py-2 px-1">
-      <p className="text-[9px] text-zinc-500 uppercase">{label}</p>
-      <p className="text-sm font-semibold text-white tabular-nums truncate">{value}</p>
-    </div>
-  )
-}
-
-function fmt(v: string | null | undefined): string {
-  if (v == null || v === '') return '—'
-  const n = Number(v)
-  if (!Number.isFinite(n)) return String(v).slice(0, 10)
-  return n >= 100 ? n.toFixed(2) : n.toFixed(4)
 }
