@@ -1,5 +1,5 @@
 /**
- * Dictionnaires FR/EN (+ autres) — core + audit + LIA Hub + net/strategy + checkout/legal.
+ * Dictionnaires FR/EN (+ autres) — core + audit + LIA Hub + net/strategy + checkout/legal + market.
  */
 import type { Dict, Lang } from './types'
 import { DICTS as CORE_DICTS } from './dictionariesCore'
@@ -7,13 +7,15 @@ import { auditFr, auditEn } from './auditKeys'
 import { liaHubFr, liaHubEn } from './liaHubKeys'
 import { netStrategyFr, netStrategyEn } from './netAndStrategyKeys'
 import { checkoutLegalFor } from './checkoutLegalKeys'
+import { marketFr, marketEn } from './marketKeys'
 
 function withExtras(lang: Lang, base: Dict): Dict {
   const audit = lang === 'en' ? auditEn : auditFr
   const lia = lang === 'en' ? liaHubEn : liaHubFr
   const net = lang === 'en' ? netStrategyEn : netStrategyFr
   const checkoutLegal = checkoutLegalFor(lang)
-  return { ...base, ...audit, ...lia, ...net, ...checkoutLegal }
+  const market = lang === 'en' ? marketEn : marketFr
+  return { ...base, ...audit, ...lia, ...net, ...checkoutLegal, ...market }
 }
 
 export const dictionaries: Record<Lang, Dict> = {
