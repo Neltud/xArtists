@@ -7,7 +7,7 @@ export default function BottomNav() {
   const items = [
     { to: '/', label: t('nav.home'), icon: '\u25c8', end: true },
     { to: '/agents', label: t('nav.packs'), icon: '\u2726', end: false },
-    { to: '/marketplace', label: t('nav.market'), icon: '\u25c7', end: false },
+    { to: '/market', label: t('nav.market'), icon: '\u25c7', end: false },
     { to: '/museum', label: t('nav.museum'), icon: '\ud83d\uddbc', end: false },
   ] as const
 
