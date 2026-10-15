@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-14T23:42:46.336Z",
+  "updatedAt": "2026-10-15T03:21:53.694Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792034513122",
+      "timestamp": "03:21",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.50 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792021365801",
       "timestamp": "23:42",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Bitwise’s Hougan says Q3 charts point to ‘crypto spring’",
       "link": "https://cointelegraph.com/markets/bitwises-hougan-says-q3-charts-point-to-crypto-spring?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1791934099000",
-      "timestamp": "23:28",
-      "source": "CoinTelegraph",
-      "title": "Ledger asks resellers to halt sales in Southeast Asia and Hong Kong",
-      "link": "https://cointelegraph.com/news/ledger-asks-resellers-to-halt-sales-in-southeast-asia-and-hong-kong?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
