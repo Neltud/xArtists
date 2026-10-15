@@ -17,14 +17,17 @@ export type AmbientSnapshot = {
 
 /** Map semantic uniforms → 4 aura modes */
 export function resolveAuraMode(
-  u: Pick<ShaderUniformsTarget, 'uSentiment' | 'uVolatility' | 'mood'>,
+  u: Pick<ShaderUniformsTarget, 'uSentiment' | 'uVolatility' | 'mood'> | null | undefined,
   opts?: { rewardFlash?: boolean },
 ): AuraMode {
   if (opts?.rewardFlash) return 'reward'
-  if (u.mood === 'aggressive' || u.uSentiment > 0.28) return 'bull'
-  if (u.mood === 'nervous' || u.uSentiment < -0.2) return 'bear'
-  if (u.mood === 'stable' || Math.abs(u.uSentiment) < 0.12) return 'stable'
-  return u.uSentiment >= 0 ? 'bull' : 'bear'
+  if (!u) return 'stable'
+  const sentiment = typeof u.uSentiment === 'number' ? u.uSentiment : 0
+  const mood = u.mood ?? 'stable'
+  if (mood === 'aggressive' || sentiment > 0.28) return 'bull'
+  if (mood === 'nervous' || sentiment < -0.2) return 'bear'
+  if (mood === 'stable' || Math.abs(sentiment) < 0.12) return 'stable'
+  return sentiment >= 0 ? 'bull' : 'bear'
 }
 
 export function trendFromSentiment(s: number): 'UP' | 'DOWN' | 'STABLE' {
@@ -34,17 +37,23 @@ export function trendFromSentiment(s: number): 'UP' | 'DOWN' | 'STABLE' {
 }
 
 export function toAmbientSnapshot(
-  u: ShaderUniformsTarget,
+  u: ShaderUniformsTarget | null | undefined,
   confidence = 0.5,
   rewardFlash = false,
 ): AmbientSnapshot {
-  const mode = resolveAuraMode(u, { rewardFlash })
+  const safe: Pick<ShaderUniformsTarget, 'uSentiment' | 'uVolatility' | 'mood' | 'label'> = {
+    uSentiment: typeof u?.uSentiment === 'number' ? u.uSentiment : 0,
+    uVolatility: typeof u?.uVolatility === 'number' ? u.uVolatility : 0.3,
+    mood: u?.mood ?? 'stable',
+    label: u?.label || 'stable',
+  }
+  const mode = resolveAuraMode(safe, { rewardFlash })
   return {
     mode,
-    trend: trendFromSentiment(u.uSentiment),
-    volatility: u.uVolatility,
-    confidence,
-    label: u.label,
+    trend: trendFromSentiment(safe.uSentiment),
+    volatility: safe.uVolatility,
+    confidence: Number.isFinite(confidence) ? confidence : 0.5,
+    label: safe.label,
     paper: true,
   }
 }

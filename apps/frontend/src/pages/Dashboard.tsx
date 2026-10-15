@@ -34,7 +34,7 @@ export default function Dashboard() {
         <div className="pointer-events-auto mx-auto mt-8 w-full max-w-2xl flex-1 px-3 sm:px-4">
           <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#0c0c14]/90 via-[#101018]/80 to-[#0a1014]/85 p-6 shadow-[0_0_80px_-20px_rgba(0,0,0,0.8)] backdrop-blur-2xl sm:p-8">
             <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-400">
-              RWA &amp; Digital Artwork Marketplace
+              Infrastructure RWA · MultiversX
             </p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">xArtists</h1>
             <p className="mt-3 max-w-lg text-sm leading-relaxed text-zinc-300">
@@ -51,9 +51,15 @@ export default function Dashboard() {
               </Link>
               <Link
                 to="/marketplace"
-                className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-white/25 bg-white/5 px-6 text-sm font-semibold text-white transition hover:bg-white/10 active:scale-[0.98]"
+                className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 text-sm font-medium text-zinc-100 transition hover:bg-white/10 active:scale-[0.98]"
               >
-                Consulter le Marché RWA
+                Marché RWA
+              </Link>
+              <Link
+                to="/agents"
+                className="inline-flex min-h-[48px] items-center justify-center rounded-full border border-white/15 px-5 text-sm font-medium text-zinc-300 transition hover:bg-white/5 active:scale-[0.98]"
+              >
+                Packs Agents
               </Link>
             </div>
           </div>
