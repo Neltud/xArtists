@@ -1,28 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-15T20:57:53.108Z",
+  "updatedAt": "2026-10-15T23:37:24.152Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792097872781",
-      "timestamp": "20:57",
+      "id": "egld-1792107443776",
+      "timestamp": "23:37",
       "source": "EGLD",
-      "title": "Cotation publique · $3.69 (API MultiversX economics)",
+      "title": "Cotation publique · $3.65 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1792079165000",
+      "id": "rss-CoinTelegraph-0-1792095671000",
+      "timestamp": "20:21",
+      "source": "CoinTelegraph",
+      "title": "Binance.US seeks $1B valuation in potential $100M funding round: Report",
+      "link": "https://cointelegraph.com/news/binance-us-funding-valuation-billion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792093047000",
+      "timestamp": "19:37",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792084485000",
+      "timestamp": "17:14",
+      "source": "CoinTelegraph",
+      "title": "Ex-Trump crypto adviser profited after helping pass stablecoin bill: WSJ",
+      "link": "https://cointelegraph.com/news/bo-hines-donald-trump-crypto-advisor-nxum-tether-conflict?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1792082999000",
+      "timestamp": "16:49",
+      "source": "CoinTelegraph",
+      "title": "Sweden revisits digital krona as ECB advances digital euro plans",
+      "link": "https://cointelegraph.com/news/sweden-riksbank-digital-krona-cbdc-legislation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1792079165000",
       "timestamp": "15:46",
       "source": "CoinTelegraph",
       "title": "Mastercard brings stablecoin balances into traditional banking and card payments",
       "link": "https://cointelegraph.com/news/mastercard-bvnk-global-money-platform-stablecoins?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1792077044000",
+      "id": "rss-CoinTelegraph-5-1792077044000",
       "timestamp": "15:10",
       "source": "CoinTelegraph",
       "title": "Bitcoin slips under $80K after US PPI gains most in four years",
       "link": "https://cointelegraph.com/markets/bitcoin-price-breaks-under-80k-after-us-ppi-gains-most-in-over-4-years?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1792090082000",
+      "timestamp": "18:48",
+      "source": "CoinDesk",
+      "title": "At the White House, crypto policy vacancy looms large",
+      "link": "https://www.coindesk.com/news-analysis/2026/10/15/at-the-white-house-crypto-policy-vacancy-looms-large"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792076400000",
+      "timestamp": "15:00",
+      "source": "CoinDesk",
+      "title": "Crypto for Advisors: Wall Street is done waiting on Congress for crypto rules",
+      "link": "https://www.coindesk.com/coindesk-indices/2026/10/15/crypto-for-advisors-wall-street-is-done-waiting-on-congress-for-crypto-rules"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792067724000",
+      "timestamp": "12:35",
+      "source": "CoinDesk",
+      "title": "How Brooklyn prosecutors and the FBI took down a massive crypto fraud network targeting Russian speakers",
+      "link": "https://www.coindesk.com/business/2026/10/15/how-brooklyn-prosecutors-and-the-fbi-took-down-a-massive-crypto-fraud-network-targeting-russian-speakers"
+    },
+    {
+      "id": "rss-CoinDesk-3-1792065600000",
+      "timestamp": "12:00",
+      "source": "CoinDesk",
+      "title": "Under pressure, Ledger unveils plan to turn its crypto hardware wallet into a smartphone",
+      "link": "https://www.coindesk.com/tech/2026/10/15/under-pressure-ledger-unveils-plan-to-turn-its-crypto-hardware-wallet-into-a-smartphone"
+    },
+    {
+      "id": "egld-1792097872781",
+      "timestamp": "20:57",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.69 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-2-1792074163000",
@@ -44,34 +107,6 @@
       "source": "CoinTelegraph",
       "title": "Can the SEC and CFTC’s pro-crypto rules be overturned? Legal opinion",
       "link": "https://cointelegraph.com/magazine/can-the-sec-and-cftcs-pro-crypto-rules-be-overturned-legal-opinion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792070265000",
-      "timestamp": "13:17",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792076400000",
-      "timestamp": "15:00",
-      "source": "CoinDesk",
-      "title": "Crypto for Advisors: Wall Street is done waiting on Congress for crypto rules",
-      "link": "https://www.coindesk.com/coindesk-indices/2026/10/15/crypto-for-advisors-wall-street-is-done-waiting-on-congress-for-crypto-rules"
-    },
-    {
-      "id": "rss-CoinDesk-1-1792067724000",
-      "timestamp": "12:35",
-      "source": "CoinDesk",
-      "title": "How Brooklyn prosecutors and the FBI took down a massive crypto fraud network targeting Russian speakers",
-      "link": "https://www.coindesk.com/business/2026/10/15/how-brooklyn-prosecutors-and-the-fbi-took-down-a-massive-crypto-fraud-network-targeting-russian-speakers"
-    },
-    {
-      "id": "rss-CoinDesk-2-1792065600000",
-      "timestamp": "12:00",
-      "source": "CoinDesk",
-      "title": "Under pressure, Ledger unveils plan to turn its crypto hardware wallet into a smartphone",
-      "link": "https://www.coindesk.com/tech/2026/10/15/under-pressure-ledger-unveils-plan-to-turn-its-crypto-hardware-wallet-into-a-smartphone"
     },
     {
       "id": "rss-CoinDesk-3-1792062900000",
@@ -163,41 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Organizations join forces to fight Illinois crypto tax, after 6-month pause",
       "link": "https://cointelegraph.com/news/cci-ba-fight-illinois-crypto-tax-pause?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1792004632000",
-      "timestamp": "19:03",
-      "source": "CoinTelegraph",
-      "title": "EU authority classifies Circle’s USDC as ‘significant’ under MiCA",
-      "link": "https://cointelegraph.com/news/eba-circle-usdc-stablecoin-significant-token-mica?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1792000605000",
-      "timestamp": "17:56",
-      "source": "CoinTelegraph",
-      "title": "US authorities dismantle crypto scam network that stole tens of millions",
-      "link": "https://cointelegraph.com/news/fbi-brooklyn-crypto-scam-112-servers-241-websites?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1791997400000",
-      "timestamp": "17:03",
-      "source": "CoinTelegraph",
-      "title": "OCC report finds debanking efforts tied to crypto activities",
-      "link": "https://cointelegraph.com/news/occ-trump-debanking-crypto-activities?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1791995191000",
-      "timestamp": "16:26",
-      "source": "CoinTelegraph",
-      "title": "Standard Chartered pushes $2T stablecoin forecast to 2030 as transaction volumes grow",
-      "link": "https://cointelegraph.com/news/standard-chartered-stablecoin-forecast-2030-market-growth?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1791995693000",
-      "timestamp": "16:34",
-      "source": "CoinDesk",
-      "title": "Kalshi CEO says state-led oversight of U.S. prediction markets would push them out",
-      "link": "https://www.coindesk.com/policy/2026/10/14/kalshi-ceo-says-state-led-oversight-of-u-s-prediction-markets-would-push-them-out"
     }
   ]
 }
