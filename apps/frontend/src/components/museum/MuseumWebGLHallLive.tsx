@@ -1,8 +1,6 @@
 /**
- * Musée WebGL Live — fullscreen, joystick mobile, focus lerp, dock RWA.
- * Cleanup dispose au unmount.
- * Focus caméra via ref : inspecter une œuvre ne reconstruit pas la scène.
- * Perf: visibility pause, frustumCulled, adaptive DPR, webglcontextlost → 2D fallback.
+ * Musee WebGL Live — fullscreen, joystick, focus lerp.
+ * placeArt wall hangings + boosted lights + webglPause / frustum / context-loss.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
@@ -78,7 +76,7 @@ export default function MuseumWebGLHallLive({
   frames,
   room = 'stone',
   allowBuy = true,
-  emptyLabel = 'Aucune \u0153uvre',
+  emptyLabel = 'Aucune oeuvre',
 }: {
   blueprint: RoomBlueprint
   frames: FrameItem[]
@@ -104,8 +102,6 @@ export default function MuseumWebGLHallLive({
   const { connected } = useWallet()
   const marketLive = canListBuyNft()
   const pal = PALETTE[room] || PALETTE.stone
-  const roomName = blueprint.rooms?.[0]?.name || blueprint.name
-  const area = Math.round(blueprintAreaM2(blueprint))
   const paintings = useMemo(() => {
     const list = frames.filter(f => !!f.image && f.kind !== 'sculpture').slice(0, MAX_ART)
     return list.map((f, i) => ({
@@ -172,7 +168,7 @@ export default function MuseumWebGLHallLive({
     renderer.setPixelRatio(Math.min(devicePixelRatio, lowEnd ? 1.25 : 1.75))
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.05
+    renderer.toneMappingExposure = 1.12
     mount.appendChild(renderer.domElement)
     const canvas = renderer.domElement
     canvas.style.cssText = 'display:block;width:100%;height:100%;touch-action:none'
@@ -189,7 +185,7 @@ export default function MuseumWebGLHallLive({
       try {
         setOpen(false)
       } catch {
-        /* fallback 2D gallery */
+        /* */
       }
     }
     canvas.addEventListener('webglcontextlost', onContextLost, false)
@@ -220,18 +216,98 @@ export default function MuseumWebGLHallLive({
       scene.add(mesh)
     }
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.42))
-    const key = new THREE.DirectionalLight(0xfff5e6, 1.05)
+    scene.add(new THREE.AmbientLight(0xffffff, 0.58))
+    const key = new THREE.DirectionalLight(0xfff5e6, 1.3)
     key.position.set(b.cx + 3, wallH - 0.4, b.cy - 2)
     scene.add(key)
+    const fill = new THREE.DirectionalLight(0xb8c5ff, 0.4)
+    fill.position.set(b.cx - 4, wallH * 0.6, b.cy + 3)
+    scene.add(fill)
+    const rim = new THREE.PointLight(0xffd9a0, 0.5, 20)
+    rim.position.set(b.cx, wallH - 0.5, b.cy)
+    scene.add(rim)
 
     const skin0 = loadAvatarSkin()
     const accent0 = AVATAR_SKINS.find(s => s.id === skin0)?.accent ?? 0x8b5cf6
     const avatar = createPlayerAvatar(skin0, accent0)
     scene.add(avatar)
 
-    // NOTE: remainder of scene/loop restored via full file in follow-up if truncated
-    // Critical path: loop pause + cleanup listeners
+    const loader = new THREE.TextureLoader()
+    loader.crossOrigin = 'anonymous'
+    const artAnchors: { pos: THREE.Vector3; frame: FrameItem }[] = []
+    const pickMeshes: THREE.Object3D[] = []
+    const frameById = new Map<string, FrameItem>()
+    const wallList = blueprint.walls.filter(w => Math.hypot(w.x2 - w.x1, w.y2 - w.y1) > 1.2)
+
+    function placeArt(
+      tex: THREE.Texture,
+      apx: number,
+      apz: number,
+      nx: number,
+      nz: number,
+      angle: number,
+      frame: FrameItem,
+    ) {
+      if (disposed) return
+      tex.colorSpace = THREE.SRGBColorSpace
+      const art = new THREE.Mesh(
+        new THREE.PlaneGeometry(1.25, 1.5),
+        new THREE.MeshStandardMaterial({
+          map: tex,
+          roughness: 0.48,
+          metalness: 0.05,
+          emissive: 0x1a1814,
+          emissiveIntensity: 0.14,
+        }),
+      )
+      art.position.set(apx + nx * 0.08, 1.65, apz + nz * 0.08)
+      art.rotation.y = -angle
+      art.userData.artworkId = frame.id
+      art.userData.frame = frame
+      art.frustumCulled = true
+      scene.add(art)
+      pickMeshes.push(art)
+    }
+
+    const nWalls = Math.max(1, wallList.length)
+    paintings.forEach((frame, i) => {
+      const w = wallList[i % nWalls]
+      if (!w) return
+      const g = wallGeom(w)
+      const onThis = Math.floor(i / nWalls)
+      const totalOn = Math.ceil(paintings.length / nWalls)
+      const t = 0.18 + ((onThis + 0.5) / Math.max(1, totalOn)) * 0.64
+      const ax = w.x1 + (w.x2 - w.x1) * t
+      const az = w.y1 + (w.y2 - w.y1) * t
+      const nx = -Math.sin(g.angle)
+      const nz = Math.cos(g.angle)
+      const apx = ax + nx * 0.16
+      const apz = az + nz * 0.16
+      const frameMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(1.42, 1.7, 0.1),
+        new THREE.MeshStandardMaterial({
+          color: pal.frame,
+          roughness: 0.4,
+          metalness: 0.28,
+          emissive: pal.emissive,
+          emissiveIntensity: 0.55,
+        }),
+      )
+      frameMesh.position.set(apx, 1.65, apz)
+      frameMesh.rotation.y = -g.angle
+      frameMesh.userData.artworkId = frame.id
+      frameMesh.userData.frame = frame
+      frameMesh.frustumCulled = true
+      scene.add(frameMesh)
+      pickMeshes.push(frameMesh)
+      frameById.set(frame.id, frame)
+      artAnchors.push({ pos: new THREE.Vector3(apx, 1.65, apz), frame })
+      const url = frame.image || ''
+      if (url) {
+        loader.load(url, tex => placeArt(tex, apx, apz, nx, nz, g.angle, frame), undefined, () => {})
+      }
+    })
+
     const isWalkable = makeWalkableChecker(
       blueprint.walls.map(w => ({
         x1: w.x1, y1: w.y1, x2: w.x2, y2: w.y2, thickness: w.thickness || 0.26,
@@ -318,6 +394,25 @@ export default function MuseumWebGLHallLive({
       avatar.position.set(px, 0, pz)
       avatar.rotation.y = facing
       walkPhase = tickAvatarWalk(avatar, walkPhase, Math.min(1, Math.hypot(vx, vz) / WALK), dt)
+
+      let nearest: FrameItem | null = null
+      let best = 4.2
+      for (const a of artAnchors) {
+        const d = Math.hypot(a.pos.x - px, a.pos.z - pz)
+        if (d < best) {
+          best = d
+          nearest = a.frame
+        }
+      }
+      nearestRef.current = nearest
+      if (nearest && nearest.title !== lastNearTitle) {
+        lastNearTitle = nearest.title
+        setNearTitle(nearest.title)
+      } else if (!nearest && lastNearTitle) {
+        lastNearTitle = ''
+        setNearTitle('')
+      }
+
       camera.position.set(
         px - Math.sin(yaw) * CAM_DIST * Math.cos(pitch),
         CAM_HEIGHT + Math.sin(pitch) * 0.5,
