@@ -1,8 +1,10 @@
 /**
- * Cockpit holographique packs / LIA — signaux, tape marché, sentiment, split gouvernance.
- * Paper-first · pas d'exécution autonome · données MVX API + flux public data/.
+ * Cockpit holographique packs / LIA — signaux + intents LIVE xPortal (v0.110).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { LIA_BADGE, LIA_LIVE_TRADING } from '../../config/liaConfig'
+import { LIA_WALLET } from '../../context/WalletContext'
+import IntentXPortalPanel from '../../command-center/IntentXPortalPanel'
 
 type SignalSide = 'BUY' | 'SELL' | 'HOLD'
 type LiaSignal = {
@@ -74,9 +76,11 @@ type Props = {
   packId?: string
   compact?: boolean
   className?: string
+  /** Affiche le panel intents xPortal (défaut true) */
+  showIntents?: boolean
 }
 
-export default function Pack3DCockpit({ packId, compact, className = '' }: Props) {
+export default function Pack3DCockpit({ packId, compact, className = '', showIntents = true }: Props) {
   const [ticks, setTicks] = useState<Tick[]>([])
   const [signals, setSignals] = useState<LiaSignal[]>([])
   const [news, setNews] = useState<NewsItem[]>([])
@@ -89,9 +93,10 @@ export default function Pack3DCockpit({ packId, compact, className = '' }: Props
       const [egld, daily, liveNews, fusion] = await Promise.all([
         fetchEgldUsd(),
         fetchJsonData<{ signal?: string; confidence?: number; asset?: string }>('signals/daily_signal.json'),
-        fetchJsonData<{ items?: { title?: string; source?: string; impact?: number; ts?: number }[] } | { title?: string }[]>(
-          'live_news.json',
-        ),
+        fetchJsonData<
+          | { items?: { title?: string; source?: string; impact?: number; ts?: number }[] }
+          | { title?: string }[]
+        >('live_news.json'),
         fetchJsonData<{ score?: number; mood?: string }>('lia_signal_fusion.json'),
       ])
 
@@ -104,11 +109,12 @@ export default function Pack3DCockpit({ packId, compact, className = '' }: Props
 
       const conf = typeof daily?.confidence === 'number' ? daily.confidence : 0.55
       const sideRaw = String(daily?.signal || 'HOLD').toUpperCase()
-      const side: SignalSide = sideRaw.includes('BUY') || sideRaw.includes('LONG')
-        ? 'BUY'
-        : sideRaw.includes('SELL') || sideRaw.includes('SHORT')
-          ? 'SELL'
-          : 'HOLD'
+      const side: SignalSide =
+        sideRaw.includes('BUY') || sideRaw.includes('LONG')
+          ? 'BUY'
+          : sideRaw.includes('SELL') || sideRaw.includes('SHORT')
+            ? 'SELL'
+            : 'HOLD'
       const asset = daily?.asset || 'EGLD'
       setSignals([
         {
@@ -116,7 +122,7 @@ export default function Pack3DCockpit({ packId, compact, className = '' }: Props
           side,
           confidence: conf,
           model: 'LIA',
-          note: 'Signal journalier · paper',
+          note: LIA_LIVE_TRADING ? 'Signal journalier · live user-sign' : 'Signal journalier · paper',
           target: egld > 0 ? egld * (side === 'BUY' ? 1.04 : side === 'SELL' ? 0.96 : 1) : undefined,
         },
         {
@@ -159,14 +165,14 @@ export default function Pack3DCockpit({ packId, compact, className = '' }: Props
           ts: Date.now() - i * 60_000,
         }))
       } else if (liveNews && Array.isArray((liveNews as { items?: unknown[] }).items)) {
-        items = ((liveNews as { items: { title?: string; impact?: number; source?: string; ts?: number }[] }).items)
-          .slice(0, 6)
-          .map((n, i) => ({
-            title: String(n.title || 'News'),
-            impact: Number(n.impact) || 0,
-            source: String(n.source || 'feed'),
-            ts: Number(n.ts) || Date.now() - i * 60_000,
-          }))
+        items = (
+          liveNews as { items: { title?: string; impact?: number; source?: string; ts?: number }[] }
+        ).items.slice(0, 6).map((n, i) => ({
+          title: String(n.title || 'News'),
+          impact: Number(n.impact) || 0,
+          source: String(n.source || 'feed'),
+          ts: Number(n.ts) || Date.now() - i * 60_000,
+        }))
       }
       if (!items.length) {
         items = [
@@ -177,7 +183,9 @@ export default function Pack3DCockpit({ packId, compact, className = '' }: Props
             ts: Date.now(),
           },
           {
-            title: 'xArtists packs live · paper-first agent desk',
+            title: LIA_LIVE_TRADING
+              ? 'xArtists LIVE bootstrap · 0.001 EGLD xPortal'
+              : 'xArtists packs · paper-first agent desk',
             impact: 8,
             source: 'xartists',
             ts: Date.now(),
@@ -208,146 +216,154 @@ export default function Pack3DCockpit({ packId, compact, className = '' }: Props
   }, [signals])
 
   return (
-    <section
-      className={`relative overflow-hidden rounded-2xl border border-cyan-500/25 bg-gradient-to-br from-[#06080f] via-[#0a0c18] to-[#0c101c] shadow-[0_0_48px_-12px_rgba(34,211,238,0.35)] ${className}`}
-    >
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.12]"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(34,211,238,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.35) 1px, transparent 1px)',
-          backgroundSize: '28px 28px',
-        }}
-        aria-hidden
-      />
-      <div className="relative space-y-4 p-4 sm:p-5">
-        <header className="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-300/90">
-              Cockpit · signaux LIA
-            </p>
-            <h3 className="text-sm font-semibold text-white">
-              {packId ? `Pack ${packId}` : 'Console centrale'} · paper-first
-            </h3>
-          </div>
-          <div className="flex items-center gap-2">
-            <span
-              className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase ${sideColor(consensus)}`}
-            >
-              Consensus {consensus}
-            </span>
-            <button
-              type="button"
-              onClick={() => void refresh()}
-              className="rounded-md border border-white/15 px-2 py-1 text-[10px] text-zinc-400 hover:text-white"
-            >
-              {loading ? 'Sync…' : 'Refresh'}
-            </button>
-          </div>
-        </header>
-
-        <div className="grid grid-cols-3 gap-2">
-          {ticks.map(t => (
-            <div
-              key={t.symbol}
-              className="rounded-xl border border-white/10 bg-black/40 px-2.5 py-2 backdrop-blur-sm"
-            >
-              <p className="text-[10px] uppercase tracking-wider text-zinc-500">{t.symbol}</p>
-              <p className="font-mono text-sm text-white tabular-nums">
-                {t.price > 0 ? (t.price >= 1 ? t.price.toFixed(2) : t.price.toFixed(5)) : '—'}
+    <div className={`space-y-4 ${className}`}>
+      <section className="relative overflow-hidden rounded-2xl border border-cyan-500/25 bg-gradient-to-br from-[#06080f] via-[#0a0c18] to-[#0c101c] shadow-[0_0_48px_-12px_rgba(34,211,238,0.35)]">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.12]"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(34,211,238,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.35) 1px, transparent 1px)',
+            backgroundSize: '28px 28px',
+          }}
+          aria-hidden
+        />
+        <div className="relative space-y-4 p-4 sm:p-5">
+          <header className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-300/90">
+                Cockpit · signaux LIA
               </p>
+              <h3 className="text-sm font-semibold text-white">
+                {packId ? `Pack ${packId}` : 'Console centrale'} ·{' '}
+                {LIA_LIVE_TRADING ? 'LIVE user-sign' : 'paper-first'}
+              </h3>
             </div>
-          ))}
-        </div>
-
-        {!compact && (
-          <div className="grid gap-3 lg:grid-cols-2">
-            <div className="space-y-2 rounded-xl border border-white/10 bg-black/35 p-3">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
-                Moteur multi-modèles
-              </p>
-              <ul className="space-y-2">
-                {signals.map((s, i) => (
-                  <li
-                    key={`${s.model}-${i}`}
-                    className="flex flex-wrap items-center gap-2 rounded-lg border border-white/8 bg-white/[0.03] px-2.5 py-2 text-[12px]"
-                  >
-                    <span
-                      className={`rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${sideColor(s.side)}`}
-                    >
-                      {s.side}
-                    </span>
-                    <span className="font-medium text-zinc-200">{s.asset}</span>
-                    <span className="text-[10px] text-violet-300/90">{s.model}</span>
-                    <span className="ml-auto font-mono text-[11px] text-zinc-400">
-                      {(s.confidence * 100).toFixed(0)}%
-                      {s.target != null ? ` · tgt ${s.target.toFixed(2)}` : ''}
-                    </span>
-                    <p className="w-full text-[11px] text-zinc-500">{s.note}</p>
-                  </li>
-                ))}
-              </ul>
-              <p className="text-[10px] text-zinc-600">
-                Levier virtuel uniquement · aucune TX agent sans signature xPortal.
-              </p>
-            </div>
-
-            <div className="space-y-3 rounded-xl border border-white/10 bg-black/35 p-3">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
-                Sentiment · Fear & Greed
-              </p>
-              <div className="relative h-3 overflow-hidden rounded-full bg-white/10">
-                <div
-                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-400"
-                  style={{ width: `${fearGreed}%` }}
-                />
-              </div>
-              <p className="font-mono text-lg text-white tabular-nums">
-                {fearGreed}
-                <span className="text-xs text-zinc-500"> / 100</span>
-              </p>
-
-              <p className="pt-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
-                News · impact NLP
-              </p>
-              <ul className="max-h-36 space-y-1.5 overflow-y-auto">
-                {news.map((n, i) => (
-                  <li key={i} className="flex gap-2 text-[11px] leading-snug">
-                    <span className={`shrink-0 font-mono tabular-nums ${impactColor(n.impact)}`}>
-                      {n.impact > 0 ? '+' : ''}
-                      {n.impact}
-                    </span>
-                    <span className="text-zinc-300">{n.title}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-
-        <div className="rounded-xl border border-white/10 bg-black/30 p-3">
-          <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
-            Répartition gouvernance DAO (cible)
-          </p>
-          <div className="flex h-2.5 overflow-hidden rounded-full">
-            {GOV_SPLIT.map(g => (
-              <div
-                key={g.label}
-                className={g.color}
-                style={{ width: `${g.pct}%` }}
-                title={`${g.label} ${g.pct}%`}
-              />
-            ))}
-          </div>
-          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-zinc-500">
-            {GOV_SPLIT.map(g => (
-              <span key={g.label}>
-                <span className="text-zinc-300">{g.pct}%</span> {g.label}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] text-emerald-100 max-w-[14rem] leading-snug">
+                {LIA_BADGE}
               </span>
+              <span
+                className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase ${sideColor(consensus)}`}
+              >
+                Consensus {consensus}
+              </span>
+              <button
+                type="button"
+                onClick={() => void refresh()}
+                className="rounded-md border border-white/15 px-2 py-1 text-[10px] text-zinc-400 hover:text-white min-h-[36px]"
+              >
+                {loading ? 'Sync…' : 'Refresh'}
+              </button>
+            </div>
+          </header>
+
+          {LIA_LIVE_TRADING && (
+            <p className="text-[10px] mono text-zinc-500 break-all">
+              LIA ops · {LIA_WALLET.slice(0, 18)}…{LIA_WALLET.slice(-6)} · bootstrap 0.001 EGLD → treasury
+            </p>
+          )}
+
+          <div className="grid grid-cols-3 gap-2">
+            {ticks.map(t => (
+              <div
+                key={t.symbol}
+                className="rounded-xl border border-white/10 bg-black/40 px-2.5 py-2 backdrop-blur-sm"
+              >
+                <p className="text-[10px] uppercase tracking-wider text-zinc-500">{t.symbol}</p>
+                <p className="font-mono text-sm text-white tabular-nums">
+                  {t.price > 0 ? (t.price >= 1 ? t.price.toFixed(2) : t.price.toFixed(5)) : '—'}
+                </p>
+              </div>
             ))}
           </div>
+
+          {!compact && (
+            <div className="grid gap-3 lg:grid-cols-2">
+              <div className="space-y-2 rounded-xl border border-white/10 bg-black/35 p-3">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+                  Moteur multi-modèles
+                </p>
+                <ul className="space-y-2">
+                  {signals.map((s, i) => (
+                    <li
+                      key={`${s.model}-${i}`}
+                      className="flex flex-wrap items-center gap-2 rounded-lg border border-white/8 bg-white/[0.03] px-2.5 py-2 text-[12px]"
+                    >
+                      <span
+                        className={`rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${sideColor(s.side)}`}
+                      >
+                        {s.side}
+                      </span>
+                      <span className="font-medium text-zinc-200">{s.asset}</span>
+                      <span className="text-[10px] text-violet-300/90">{s.model}</span>
+                      <span className="ml-auto font-mono text-[11px] text-zinc-400">
+                        {(s.confidence * 100).toFixed(0)}%
+                        {s.target != null ? ` · tgt ${s.target.toFixed(2)}` : ''}
+                      </span>
+                      <p className="w-full text-[11px] text-zinc-500">{s.note}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="space-y-3 rounded-xl border border-white/10 bg-black/35 p-3">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+                  Sentiment · Fear & Greed
+                </p>
+                <div className="relative h-3 overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-400"
+                    style={{ width: `${fearGreed}%` }}
+                  />
+                </div>
+                <p className="font-mono text-lg text-white tabular-nums">
+                  {fearGreed}
+                  <span className="text-xs text-zinc-500"> / 100</span>
+                </p>
+                <p className="pt-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+                  News · impact NLP
+                </p>
+                <ul className="max-h-36 space-y-1.5 overflow-y-auto">
+                  {news.map((n, i) => (
+                    <li key={i} className="flex gap-2 text-[11px] leading-snug">
+                      <span className={`shrink-0 font-mono tabular-nums ${impactColor(n.impact)}`}>
+                        {n.impact > 0 ? '+' : ''}
+                        {n.impact}
+                      </span>
+                      <span className="text-zinc-300">{n.title}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          <div className="rounded-xl border border-white/10 bg-black/30 p-3">
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+              Répartition gouvernance DAO (cible)
+            </p>
+            <div className="flex h-2.5 overflow-hidden rounded-full">
+              {GOV_SPLIT.map(g => (
+                <div
+                  key={g.label}
+                  className={g.color}
+                  style={{ width: `${g.pct}%` }}
+                  title={`${g.label} ${g.pct}%`}
+                />
+              ))}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-zinc-500">
+              {GOV_SPLIT.map(g => (
+                <span key={g.label}>
+                  <span className="text-zinc-300">{g.pct}%</span> {g.label}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {showIntents && <IntentXPortalPanel />}
+    </div>
   )
 }

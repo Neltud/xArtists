@@ -1,5 +1,5 @@
 /**
- * LIA Hub — live multi-asset + Shadow + Holder terminal + Agent Control + Control Room 3D.
+ * LIA Hub — Control Room 3D + Cockpit LIVE intents xPortal (v0.110).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import LiaHubControlRoomLazy from '../components/lia/LiaHubControlRoomLazy'
@@ -24,6 +24,7 @@ import LiveAssetTape from '../components/LiveAssetTape'
 import RceStrip from '../components/RceStrip'
 import LiaAgentControl from '../components/LiaAgentControl'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
+import { LIA_LIVE_TRADING, LIA_BADGE } from '../config/liaConfig'
 
 const API = 'https://api.multiversx.com'
 const LIA_WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
@@ -111,21 +112,26 @@ export default function LiaPage() {
       <header className="space-y-2">
         <p className="section-label">LIA Hub</p>
         <h1 className="section-title display text-2xl">Agent autonome & signaux</h1>
+        <p className="text-[11px] text-emerald-200/90 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 inline-block max-w-full">
+          {LIA_BADGE}
+        </p>
         <p className="text-[13px] text-zinc-500 leading-relaxed">
-          Multi-IA (Gemini / Grok · Vellum optionnel) · wallet agent en lecture ·{' '}
-          <strong className="text-amber-200/90">paper first</strong>. Aura :{' '}
-          <span className="text-zinc-300">{mAura}</span>
+          Multi-IA · wallet agent en lecture ·{' '}
+          <strong className="text-amber-200/90">
+            {LIA_LIVE_TRADING ? 'LIVE user-sign xPortal' : 'paper first'}
+          </strong>
+          . Aura : <span className="text-zinc-300">{mAura}</span>
           {loading ? ' · sync…' : ''}
         </p>
         <p className="text-[11px] text-zinc-600">
-          Aucune TX agent autonome : les actions on-chain passent par{' '}
+          Aucune TX autonome sans signature : les actions on-chain passent par{' '}
           <strong className="text-zinc-400">xPortal</strong>.
         </p>
       </header>
 
       <LiaHubControlRoomLazy />
 
-      <Pack3DCockpit />
+      <Pack3DCockpit showIntents />
 
       <LiaAgentControl />
       <HolderTerminal />

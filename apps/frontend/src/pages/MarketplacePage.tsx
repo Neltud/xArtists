@@ -1,5 +1,5 @@
 /**
- * Marketplace dual — Onglet RWA Physique | Onglet Digital SFT/NFT.
+ * Marketplace dual — RWA Physique | Digital SFT/NFT (XAIPLS · XAIYLD · XAISNT).
  * Frameit purged. Canonical route: /market
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -9,6 +9,7 @@ import { requestOpenConnect } from '../lib/walletEvents'
 import { useI18n } from '../i18n/I18nContext'
 import { canListBuyNft, MARKETPLACE_ADDRESS } from '../config/scStatus'
 import { AGENT_PACKS } from '../config/agentPacks'
+import { PACK_COLLECTIONS } from '../config/packNftMetadata'
 import RwaPhysicalPanel from '../components/market/RwaPhysicalPanel'
 
 type Tab = 'rwa' | 'digital'
@@ -80,7 +81,7 @@ export default function MarketplacePage() {
           {MARKETPLACE_ADDRESS ? `${MARKETPLACE_ADDRESS.slice(0, 12)}…` : 'SC n/a'}
         </p>
         {!connected && (
-          <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
+          <button type="button" className="btn-primary text-sm min-h-[44px]" onClick={requestOpenConnect}>
             {t('nav.wallet') || 'xPortal'}
           </button>
         )}
@@ -90,20 +91,20 @@ export default function MarketplacePage() {
         <button
           type="button"
           onClick={() => setTab('rwa')}
-          className={`px-4 py-2 rounded-lg text-[12px] font-semibold min-h-[40px] ${
+          className={`px-4 py-2 rounded-lg text-[12px] font-semibold min-h-[44px] ${
             tab === 'rwa' ? 'bg-amber-600/35 text-amber-50' : 'text-zinc-400 hover:text-zinc-200'
           }`}
         >
-          {t('market.tab.rwa') || 'RWA Physique'}
+          {t('market.tab.rwa') || 'Studio RWA · Art physique'}
         </button>
         <button
           type="button"
           onClick={() => setTab('digital')}
-          className={`px-4 py-2 rounded-lg text-[12px] font-semibold min-h-[40px] ${
+          className={`px-4 py-2 rounded-lg text-[12px] font-semibold min-h-[44px] ${
             tab === 'digital' ? 'bg-cyan-600/35 text-cyan-50' : 'text-zinc-400 hover:text-zinc-200'
           }`}
         >
-          {t('market.tab.digital') || 'Digital SFT / NFT'}
+          {t('market.tab.digital') || 'Passes & Digital'}
         </button>
       </div>
 
@@ -121,20 +122,24 @@ export default function MarketplacePage() {
         <section className="space-y-4">
           <div className="rounded-xl border border-cyan-500/20 bg-black/40 p-4 space-y-3">
             <h2 className="text-sm font-semibold text-white">
-              {t('market.digital.packs') || 'Passes Agents (SFT)'}
+              {t('market.digital.packs') || 'Passes Agents (SFT / NFT)'}
             </h2>
             <ul className="grid gap-2 sm:grid-cols-3">
-              {AGENT_PACKS.map(p => (
-                <li key={p.id} className="rounded-xl border border-white/10 bg-black/50 p-3">
-                  <p className="text-sm font-medium text-white">
-                    {p.icon} {p.name}
-                  </p>
-                  <p className="text-[11px] text-zinc-500 mt-1">{p.tagline}</p>
-                  <p className="mt-2 tabular-nums text-cyan-100">{p.priceEgld?.list ?? '—'} EGLD</p>
-                </li>
-              ))}
+              {AGENT_PACKS.map(p => {
+                const col = PACK_COLLECTIONS[p.id]
+                return (
+                  <li key={p.id} className="rounded-xl border border-white/10 bg-black/50 p-3">
+                    <p className="text-sm font-medium text-white">
+                      {p.icon} {p.name}
+                    </p>
+                    <p className="text-[10px] mono text-cyan-300/90 mt-0.5">{col?.ticker || col?.name}</p>
+                    <p className="text-[11px] text-zinc-500 mt-1">{p.tagline}</p>
+                    <p className="mt-2 tabular-nums text-cyan-100">{p.priceEgld?.list ?? '—'} EGLD</p>
+                  </li>
+                )
+              })}
             </ul>
-            <Link to="/agents" className="btn-primary text-xs inline-flex min-h-[40px] items-center px-4">
+            <Link to="/agents" className="btn-primary text-xs inline-flex min-h-[44px] items-center px-4">
               {t('nav.packs') || 'Packs'} →
             </Link>
           </div>
@@ -144,7 +149,11 @@ export default function MarketplacePage() {
               <h2 className="text-sm font-semibold text-white">
                 {t('market.digital.listings') || 'Listings numériques'}
               </h2>
-              <button type="button" className="text-[11px] text-cyan-300" onClick={() => void refresh()}>
+              <button
+                type="button"
+                className="text-[11px] text-cyan-300 min-h-[40px]"
+                onClick={() => void refresh()}
+              >
                 {loading ? '…' : t('market.refresh') || 'Rafraîchir'}
               </button>
             </div>
@@ -181,8 +190,8 @@ export default function MarketplacePage() {
         <Link to="/agents" className="hover:text-zinc-300">
           {t('nav.packs') || 'Packs'}
         </Link>
-        <Link to="/market/analytics" className="hover:text-zinc-300">
-          Analytics
+        <Link to="/museum" className="hover:text-zinc-300">
+          {t('nav.museum') || 'Musée'}
         </Link>
         <Link to="/" className="hover:text-zinc-300">
           {t('nav.home') || 'Accueil'}
