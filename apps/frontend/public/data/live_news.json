@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-16T16:08:32.836Z",
+  "updatedAt": "2026-10-16T20:32:58.035Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792166912356",
-      "timestamp": "16:08",
+      "id": "egld-1792182777633",
+      "timestamp": "20:32",
       "source": "EGLD",
-      "title": "Cotation publique · $3.69 (API MultiversX economics)",
+      "title": "Cotation publique · $3.67 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -81,6 +81,13 @@
       "link": "https://www.coindesk.com/tech/2026/10/16/experts-agree-quantum-computers-could-put-satoshi-s-bitcoin-at-risk-but-not-on-what-s-next"
     },
     {
+      "id": "egld-1792166912356",
+      "timestamp": "16:08",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.69 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
       "id": "egld-1792147583773",
       "timestamp": "10:46",
       "source": "EGLD",
@@ -149,13 +156,6 @@
       "source": "CoinDesk",
       "title": "XRP has failed to make holders rich like bitcoin and ether. Here’s why",
       "link": "https://www.coindesk.com/markets/2026/10/16/xrp-has-failed-to-make-holders-rich-like-bitcoin-and-ether-here-s-why"
-    },
-    {
-      "id": "egld-1792120627908",
-      "timestamp": "03:17",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.67 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-0-1792095671000",
