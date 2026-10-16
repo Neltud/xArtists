@@ -19,19 +19,19 @@ export const LIA_MULTICHAIN = {
 } as const
 
 /**
- * Pack pricing — minimum 10 EGLD (demande produit).
- * EUR affiché ≈ indicative (EGLD * ~4.5).
+ * Pack pricing defaults — official on-chain list: Pulse 10 / Yield 5 / Sentinel 2.5 EGLD.
+ * EUR indicative (~EGLD * ~4.5).
  */
 export const PACK_PRICE_EGLD = {
-  min: 10,
+  min: 2.5,
   max: 50,
-  list: 12,
+  list: 10,
 } as const
 
 export const PACK_PRICE_EUR = {
-  min: 45,
+  min: 10,
   max: 220,
-  list: 55,
+  list: 45,
 } as const
 
 export const PHYSICAL_NFT_TRO_REWARD_MAX = 1
