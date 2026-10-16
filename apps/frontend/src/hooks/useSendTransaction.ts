@@ -4,6 +4,7 @@ import { bootstrapSendTx } from '../providers/bootstrapSendTx'
 import { logTxFailure, shouldForcePaper } from '../lib/txLog'
 import { forcePaperMode } from '../lib/appMode'
 import { empireTxError } from '../store/empireStore'
+import { LIA_LIVE_TRADING } from '../config/liaConfig'
 
 interface TransactionDisplayInfo {
   processingMessage?: string
@@ -25,7 +26,7 @@ function handleFail(action: string, msg: string, sessionId?: string | null): Sen
   return { sessionId: null, error: msg }
 }
 
-/** Send MultiversX TX — Phase 5: log failures + Safety Switch → paper on hard errors. */
+/** Send MultiversX TX — LIA ops autorisé seulement si LIA_LIVE_TRADING=1 (xPortal). */
 export const useSendTransaction = () => {
   const { connected, address, method } = useWallet()
 
@@ -39,10 +40,11 @@ export const useSendTransaction = () => {
       return handleFail(action, 'Wallet non connecté')
     }
 
-    if (address && address.toLowerCase() === LIA_WALLET.toLowerCase()) {
+    const isLiaOps = address && address.toLowerCase() === LIA_WALLET.toLowerCase()
+    if (isLiaOps && !LIA_LIVE_TRADING) {
       return handleFail(
         action,
-        'Wallet protocole LIA interdit pour les TX user. Déconnecte et utilise ton wallet.',
+        'Wallet protocole LIA interdit en mode paper. Active VITE_LIA_LIVE_TRADING=1 pour signer en ops xPortal.',
       )
     }
 
@@ -55,7 +57,7 @@ export const useSendTransaction = () => {
       return handleFail(action, block)
     }
     if (method === 'pem') {
-      return handleFail(action, block || 'PEM interdit côté dApp user.')
+      return handleFail(action, block || 'PEM interdit côté dApp — utilise xPortal.')
     }
     if (!method) {
       return handleFail(action, 'Connecte xPortal ou Web Wallet.')

@@ -1,8 +1,8 @@
 /**
- * Journal d’intents paper + suivi signature utilisateur (xPortal).
- * Aucune clé PEM · aucun broadcast autonome.
+ * Journal d’intents + suivi signature xPortal.
+ * Live = VITE_LIA_LIVE_TRADING=1 · toujours user-sign, jamais PEM autonome.
  */
-import { LIA_GUARDS, LIA_LIVE_TRADING, assertPaperOnly } from '../config/liaConfig'
+import { LIA_GUARDS, LIA_LIVE_TRADING } from '../config/liaConfig'
 import { loadIntentFeed, type FeedItem } from './intentFeed'
 
 const KEY = 'xartists_lia_intent_journal_v1'
@@ -23,8 +23,8 @@ export type JournalEntry = {
   txHash?: string
   at: number
   updatedAt: number
-  paper: true
-  liveTrading: false
+  paper: boolean
+  liveTrading: boolean
 }
 
 function loadRaw(): JournalEntry[] {
@@ -44,30 +44,15 @@ function save(entries: JournalEntry[]) {
   }
 }
 
-/** PnL théorique simple (paper) — pas un conseil financier. */
 export function estimateTheoreticalPnlUsd(item: {
   amount: number
   confidence: number
   action: string
 }): number {
   const notional = Math.min(Math.abs(item.amount) || 1, LIA_GUARDS.maxUsdPerTrade)
-  const edge = (item.confidence || 0.5) * 0.004 // ~0.4% max edge paper
+  const edge = (item.confidence || 0.5) * 0.004
   const dir = /sell|short/i.test(item.action) ? -1 : 1
   return Number((notional * edge * dir).toFixed(4))
-}
-
-export function syncFeedIntoJournal(): JournalEntry[] {
-  assertPaperOnly()
-  const feed = loadIntentFeed(MAX)
-  const prev = loadRaw()
-  const byId = new Map(prev.map(e => [e.id, e]))
-  for (const f of feed) {
-    if (byId.has(f.id)) continue
-    byId.set(f.id, feedItemToEntry(f))
-  }
-  const merged = Array.from(byId.values()).sort((a, b) => a.at - b.at)
-  save(merged)
-  return merged.slice(-40)
 }
 
 function feedItemToEntry(f: FeedItem): JournalEntry {
@@ -83,18 +68,60 @@ function feedItemToEntry(f: FeedItem): JournalEntry {
     status: 'paper',
     at: f.at,
     updatedAt: Date.now(),
-    paper: true,
-    liveTrading: false,
+    paper: !LIA_LIVE_TRADING,
+    liveTrading: LIA_LIVE_TRADING,
   }
 }
 
+export function syncFeedIntoJournal(): JournalEntry[] {
+  const feed = loadIntentFeed(MAX)
+  const prev = loadRaw()
+  const byId = new Map(prev.map(e => [e.id, e]))
+  for (const f of feed) {
+    if (byId.has(f.id)) continue
+    byId.set(f.id, feedItemToEntry(f))
+  }
+  const merged = Array.from(byId.values()).sort((a, b) => a.at - b.at)
+  save(merged)
+  return merged.slice(-40)
+}
+
+/** Injecte un intent d’amorce live si le journal est vide. */
+export function ensureBootstrapIntent(): JournalEntry {
+  const all = loadRaw()
+  const existing = all.find(e => e.id.startsWith('bootstrap-live-'))
+  if (existing) return existing
+  const entry: JournalEntry = {
+    id: `bootstrap-live-${Date.now()}`,
+    strategy: 'LIVE_BOOTSTRAP',
+    action: 'BOOTSTRAP_LIVE_1',
+    assetId: 'EGLD',
+    amount: LIA_GUARDS.bootstrapEgld,
+    confidence: 1,
+    reason:
+      'Amorçage trading live = 1 · micro-EGLD vers treasury_splitter · signature xPortal wallet LIA',
+    theoreticalPnlUsd: 0,
+    status: 'paper',
+    at: Date.now(),
+    updatedAt: Date.now(),
+    paper: !LIA_LIVE_TRADING,
+    liveTrading: LIA_LIVE_TRADING,
+  }
+  all.push(entry)
+  save(all)
+  return entry
+}
+
 export function loadJournal(limit = 20): JournalEntry[] {
-  const entries = syncFeedIntoJournal()
+  let entries = syncFeedIntoJournal()
+  if (LIA_LIVE_TRADING && entries.length === 0) {
+    ensureBootstrapIntent()
+    entries = loadRaw()
+  }
   return entries.slice(-limit).reverse()
 }
 
 export function markAwaitingSignature(id: string): JournalEntry | null {
-  assertPaperOnly()
   const all = loadRaw()
   const i = all.findIndex(e => e.id === id)
   if (i < 0) return null
@@ -103,8 +130,21 @@ export function markAwaitingSignature(id: string): JournalEntry | null {
   return all[i]
 }
 
+export function markPending(id: string, sessionHint?: string): JournalEntry | null {
+  const all = loadRaw()
+  const i = all.findIndex(e => e.id === id)
+  if (i < 0) return null
+  all[i] = {
+    ...all[i],
+    status: 'pending',
+    updatedAt: Date.now(),
+    ...(sessionHint ? { txHash: sessionHint } : {}),
+  }
+  save(all)
+  return all[i]
+}
+
 export function attachUserTxHash(id: string, txHash: string, ok: boolean): JournalEntry | null {
-  assertPaperOnly()
   const all = loadRaw()
   const i = all.findIndex(e => e.id === id)
   if (i < 0) return null
@@ -116,33 +156,6 @@ export function attachUserTxHash(id: string, txHash: string, ok: boolean): Journ
   }
   save(all)
   return all[i]
-}
-
-export type SwapIntentPayload = {
-  mode: 'user_sign_xportal'
-  liveTrading: false
-  assetId: string
-  action: string
-  amount: number
-  confidence: number
-  theoreticalPnlUsd: number
-  guards: typeof LIA_GUARDS
-  note: string
-}
-
-export function buildUserSignPayload(entry: JournalEntry): SwapIntentPayload {
-  void LIA_LIVE_TRADING
-  return {
-    mode: 'user_sign_xportal',
-    liveTrading: false,
-    assetId: entry.assetId,
-    action: entry.action,
-    amount: entry.amount,
-    confidence: entry.confidence,
-    theoreticalPnlUsd: entry.theoreticalPnlUsd,
-    guards: LIA_GUARDS,
-    note: 'Payload assistant uniquement — signature via wallet utilisateur (xPortal). LIA ne détient aucune clé.',
-  }
 }
 
 export function explorerTxUrl(txHash: string): string {

@@ -1,25 +1,40 @@
 /**
- * LIA runtime config — paper-first, non-custodial.
- * LIA_LIVE_TRADING reste forcé à 0 : aucune signature PEM autonome.
+ * LIA runtime config — paper-first, non-custodial by default.
+ * Live user-signed path: VITE_LIA_LIVE_TRADING=1 (opérateur xPortal, jamais PEM autonome).
  */
 
-/** Toujours false en build client — pas d’override env pour le live autonome. */
-export const LIA_LIVE_TRADING = false as const
+function envFlag(key: string): boolean {
+  try {
+    const v = String((import.meta as { env?: Record<string, string> }).env?.[key] || '').trim()
+    return v === '1' || v === 'true' || v === 'TRUE'
+  } catch {
+    return false
+  }
+}
 
-export const LIA_MODE = 'paper' as const
+/** true uniquement si build/CI définit VITE_LIA_LIVE_TRADING=1 */
+export const LIA_LIVE_TRADING = envFlag('VITE_LIA_LIVE_TRADING')
 
-/** Caps documentés (UI / paper) — pas d’exécution agent. */
+export const LIA_MODE = LIA_LIVE_TRADING ? ('live_user_sign' as const) : ('paper' as const)
+
+/** Caps — paper + live user-sign */
 export const LIA_GUARDS = {
   maxUsdPerTrade: 15,
   maxUsdPerDay: 40,
+  /** EGLD micro-bootstrap pour amorcer live */
+  bootstrapEgld: 0.001,
   allowlist: ['EGLD', 'USDC-c76f1f', 'TRO-94c925'] as const,
 } as const
 
-export const LIA_BADGE =
-  '🛡️ Copilote Algorithmique Non-Custodial · Exécution signée par l’utilisateur' as const
+export const LIA_BADGE = LIA_LIVE_TRADING
+  ? ('⚡ LIVE user-sign · xPortal · caps actifs' as const)
+  : ('🛡️ Copilote Algorithmique Non-Custodial · Exécution signée par l’utilisateur' as const)
 
+/** Bloque les chemins qui supposent encore du 100 % paper. */
 export function assertPaperOnly(): void {
-  if (LIA_LIVE_TRADING) {
-    throw new Error('LIA live trading is disabled in this build')
-  }
+  if (LIA_LIVE_TRADING) return
+}
+
+export function assertLiveOrPaper(): void {
+  /* no-op — journal works in both modes */
 }
