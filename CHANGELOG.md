@@ -1,5 +1,23 @@
 # Changelog — xArtists
 
+## [0.112.0](https://github.com/Neltud/xArtists/compare/v0.111.0...v0.112.0) (2026-10-16)
+
+
+### Features
+
+* **lia:** live trading=1 path — xPortal sign for LIA ops + bootstrap TX ([70d8d83](https://github.com/Neltud/xArtists/commit/70d8d831b7185adea28decfd4bc718d8601899b4))
+* **v0.110.0:** wire live xPortal into cockpit, restore dome+portals home, dual market labels ([5f615ae](https://github.com/Neltud/xArtists/commit/5f615aee2045e45114ba3d29b9ac185e0b970d21))
+
+
+### Bug Fixes
+
+* **market:** solid digital NFT/packs tab + live MVX floors; fix Agents notIncluded crash ([d85a8bf](https://github.com/Neltud/xArtists/commit/d85a8bfb498b55a76dbff10a3a39ccecbfe0f236))
+
+
+### Documentation
+
+* **security:** emergency pause runbook + buyAgentAction warnings + audit status update ([a142277](https://github.com/Neltud/xArtists/commit/a142277870b0ee8c670ecf991c06012c6b11249b))
+
 ## [0.111.0](https://github.com/Neltud/xArtists/compare/v0.110.1...v0.111.0) (2026-10-16)
 
 
