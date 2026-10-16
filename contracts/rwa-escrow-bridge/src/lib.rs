@@ -3,7 +3,8 @@
 //! RWA Escrow Bridge — lock EGLD for physical / phygital purchase.
 //! States: Open → Released | Refunded | Cancelled | Disputed
 //! Release: payer confirmReceipt OR attestor submitVerificationProof (NFC/AR hash).
-//! Dispute: 7-day cooling; owner resolves. CEI, pause, 2-step ownership.
+//! Dispute: 7-day cooling enforced on resolveDispute. CEI, pause, 2-step ownership.
+//! P1 (2026-10-16): seller ≠ payer; Kevin-vector hardening (param validation).
 
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
@@ -39,10 +40,15 @@ pub trait RwaEscrowBridge {
     }
 
     #[endpoint(upgrade)]
-    fn upgrade(&self) { self.require_owner(); }
+    fn upgrade(&self) {
+        self.require_owner();
+    }
 
     fn require_owner(&self) {
-        require!(self.blockchain().get_caller() == self.owner().get(), "only owner");
+        require!(
+            self.blockchain().get_caller() == self.owner().get(),
+            "only owner"
+        );
     }
 
     #[endpoint(setPaused)]
@@ -85,8 +91,14 @@ pub trait RwaEscrowBridge {
         deadline: u64,
     ) {
         require!(!self.paused().get(), "paused");
-        require!(trade_id.len() > 0 && trade_id.len() <= MAX_TRADE_ID_LEN, "invalid trade_id");
-        require!(meta_hash.len() > 0 && meta_hash.len() <= MAX_HASH_LEN, "invalid meta_hash");
+        require!(
+            trade_id.len() > 0 && trade_id.len() <= MAX_TRADE_ID_LEN,
+            "invalid trade_id"
+        );
+        require!(
+            meta_hash.len() > 0 && meta_hash.len() <= MAX_HASH_LEN,
+            "invalid meta_hash"
+        );
         require!(!seller.is_zero(), "zero seller");
         require!(deadline > self.blockchain().get_block_timestamp(), "deadline");
         require!(self.trade_escrow_id(&trade_id).is_empty(), "trade already escrowed");
@@ -96,6 +108,8 @@ pub trait RwaEscrowBridge {
 
         let id = self.last_id().get() + 1;
         let payer = self.blockchain().get_caller();
+        // Kevin vector: identical party IDs that must differ
+        require!(payer != seller, "seller must differ from payer");
 
         self.last_id().set(id);
         let esc = Escrow {
@@ -130,8 +144,14 @@ pub trait RwaEscrowBridge {
         require!(!self.escrows(id).is_empty(), "not found");
         let mut esc = self.escrows(id).get();
         require!(esc.status == 0u8, "not open");
-        require!(self.blockchain().get_caller() == self.attestor().get(), "only attestor");
-        require!(proof_hash.len() > 0 && proof_hash.len() <= MAX_HASH_LEN, "invalid proof");
+        require!(
+            self.blockchain().get_caller() == self.attestor().get(),
+            "only attestor"
+        );
+        require!(
+            proof_hash.len() > 0 && proof_hash.len() <= MAX_HASH_LEN,
+            "invalid proof"
+        );
         esc.proof_hash = proof_hash;
         self.release_to_seller(id, &mut esc);
     }
@@ -167,6 +187,13 @@ pub trait RwaEscrowBridge {
         require!(esc.status == 4u8, "not disputed");
         let caller = self.blockchain().get_caller();
         require!(caller == self.owner().get(), "only owner resolves");
+        // P1: enforce 7-day cooling (const was unused before)
+        let now = self.blockchain().get_block_timestamp();
+        require!(
+            esc.dispute_opened_at > 0
+                && now >= esc.dispute_opened_at + DISPUTE_COOLING_SECS,
+            "dispute cooling active"
+        );
 
         let amount = esc.amount.clone();
         if favor_seller {
@@ -218,25 +245,52 @@ pub trait RwaEscrowBridge {
 
     #[view(getEscrow)]
     fn get_escrow(&self, id: u64) -> OptionalValue<Escrow<Self::Api>> {
-        if self.escrows(id).is_empty() { OptionalValue::None } else { OptionalValue::Some(self.escrows(id).get()) }
+        if self.escrows(id).is_empty() {
+            OptionalValue::None
+        } else {
+            OptionalValue::Some(self.escrows(id).get())
+        }
     }
 
     #[view(getEscrowIdByTrade)]
     fn get_escrow_id_by_trade(&self, trade_id: ManagedBuffer) -> OptionalValue<u64> {
-        if self.trade_escrow_id(&trade_id).is_empty() { OptionalValue::None } else { OptionalValue::Some(self.trade_escrow_id(&trade_id).get()) }
+        if self.trade_escrow_id(&trade_id).is_empty() {
+            OptionalValue::None
+        } else {
+            OptionalValue::Some(self.trade_escrow_id(&trade_id).get())
+        }
     }
 
     #[view(getOwner)]
-    fn get_owner(&self) -> ManagedAddress { self.owner().get() }
+    fn get_owner(&self) -> ManagedAddress {
+        self.owner().get()
+    }
 
     #[view(getAttestor)]
-    fn get_attestor(&self) -> ManagedAddress { self.attestor().get() }
+    fn get_attestor(&self) -> ManagedAddress {
+        self.attestor().get()
+    }
 
     #[view(isPaused)]
-    fn is_paused(&self) -> bool { self.paused().get() }
+    fn is_paused(&self) -> bool {
+        self.paused().get()
+    }
+
+    #[view(getDisputeCoolingSecs)]
+    fn get_dispute_cooling_secs(&self) -> u64 {
+        DISPUTE_COOLING_SECS
+    }
 
     #[event("openEscrow")]
-    fn open_event(&self, #[indexed] id: u64, #[indexed] trade_id: &ManagedBuffer, #[indexed] payer: &ManagedAddress, #[indexed] seller: &ManagedAddress, amount: &BigUint, deadline: u64);
+    fn open_event(
+        &self,
+        #[indexed] id: u64,
+        #[indexed] trade_id: &ManagedBuffer,
+        #[indexed] payer: &ManagedAddress,
+        #[indexed] seller: &ManagedAddress,
+        amount: &BigUint,
+        deadline: u64,
+    );
 
     #[event("release")]
     fn release_event(&self, #[indexed] id: u64, #[indexed] to: &ManagedAddress, amount: &BigUint);
