@@ -267,7 +267,6 @@ def fuse_votes(
 
     def _rank(v: StrategyVote) -> float:
         boost = float((STRATEGY_REGISTRY.get(v.strategy) or {}).get("priority_boost") or 1.0)
-        # STATARB / JUPITER_ARB slight preference at equal conf
         extra = 0.02 if v.strategy in ("STATARB", "JUPITER_ARB") else 0.0
         return v.conf01() * boost + extra
 
@@ -387,7 +386,7 @@ def audit_registry_budgets() -> dict[str, Any]:
     new_defaults = sum(float(STRATEGY_REGISTRY[k]["default_budget_pct"]) for k in entry_keys if k in STRATEGY_REGISTRY)
     return {
         "new_default_sum": round(new_defaults, 4),
-        "new_default_ok": new_defaults <= GLOBAL_ENTRY_BUDGET_CAP + 0.15,  # yield separate
+        "new_default_ok": new_defaults <= GLOBAL_ENTRY_BUDGET_CAP + 0.15,
         "global_cap": GLOBAL_ENTRY_BUDGET_CAP,
         "registry": STRATEGY_REGISTRY,
     }
@@ -450,6 +449,72 @@ def votes_from_brain_outputs(outputs: list[dict[str, Any]]) -> list[StrategyVote
 
 def _now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
+def fuse_brain_outputs(
+    outputs: list[dict[str, Any]],
+    *,
+    deployable_usd: float = 100.0,
+    gs_regime: str = "NEUTRAL",
+) -> dict[str, Any]:
+    """Compat wrapper: brain output dicts → fuse_votes → plain dict."""
+    votes = votes_from_brain_outputs(outputs)
+    result = fuse_votes(votes, deployable_usd=deployable_usd, gs_regime=gs_regime)
+    return result.to_dict() if hasattr(result, "to_dict") else asdict(result)
+
+
+def allocate_budget(
+    votes_or_objs: list[Any],
+    equity_usd: float = 100.0,
+    *,
+    gs_regime: str = "NEUTRAL",
+) -> dict[str, Any]:
+    """Compat wrapper for tests / older callers."""
+    votes: list[StrategyVote] = []
+    for v in votes_or_objs:
+        if isinstance(v, StrategyVote):
+            votes.append(v)
+            continue
+        strategy = str(getattr(v, "strategy", None) or (v.get("strategy") if isinstance(v, dict) else "UNKNOWN"))
+        decision = str(
+            getattr(v, "decision", None)
+            or getattr(v, "action", None)
+            or (v.get("decision") if isinstance(v, dict) else None)
+            or (v.get("action") if isinstance(v, dict) else "WAIT")
+        )
+        conf = float(getattr(v, "confidence", None) or (v.get("confidence") if isinstance(v, dict) else 0) or 0)
+        token = str(getattr(v, "token", None) or (v.get("token") if isinstance(v, dict) else "") or "")
+        size_pct = float(getattr(v, "size_pct", None) or (v.get("size_pct") if isinstance(v, dict) else 0) or 0)
+        amount = float(getattr(v, "amount_usd", None) or (v.get("amount_usd") if isinstance(v, dict) else 0) or 0)
+        if amount <= 0 and size_pct > 0:
+            amount = equity_usd * (size_pct / 100.0 if size_pct > 1 else size_pct)
+        votes.append(
+            StrategyVote(
+                strategy=strategy,
+                decision=decision,
+                confidence=conf,
+                token=token,
+                amount_usd=amount,
+                budget_pct=(size_pct / 100.0 if size_pct > 1 else size_pct) if size_pct else 0.0,
+                reason=str(getattr(v, "rationale", None) or getattr(v, "reason", "") or ""),
+            )
+        )
+    result = fuse_votes(votes, deployable_usd=equity_usd, gs_regime=gs_regime)
+    out = result.to_dict() if hasattr(result, "to_dict") else asdict(result)
+    allocations = []
+    for a in out.get("approved_actions") or []:
+        if str(a.get("type", "")).upper() in ("BUY", "ENTRY") or a.get("amount_usd"):
+            allocations.append(
+                {
+                    "strategy": a.get("strategy"),
+                    "token": a.get("token"),
+                    "budget_usd": float(a.get("amount_usd") or 0),
+                    "confidence": a.get("confidence"),
+                }
+            )
+    out["allocations"] = allocations
+    out["buys"] = allocations
+    return out
 
 
 if __name__ == "__main__":
