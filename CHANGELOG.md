@@ -1,5 +1,30 @@
 # Changelog — xArtists
 
+## [0.111.0](https://github.com/Neltud/xArtists/compare/v0.110.1...v0.111.0) (2026-10-16)
+
+
+### Features
+
+* **i18n:** Dashboard + onboarding zero hardcode; net.timeout/okCache keys ([2b484a5](https://github.com/Neltud/xArtists/commit/2b484a5e93a73f32e75aaea283aec41bd60f73fb))
+
+
+### Bug Fixes
+
+* **cc:** distinct Pulse/Yield/Sentinel rooms + arrow-key navigation ([5ebd9c3](https://github.com/Neltud/xArtists/commit/5ebd9c35cedcf35c98f6f135d479086579f0784d))
+* **ui:** restore fullscreen 360° dome home + clean HUD for presentation ([91af544](https://github.com/Neltud/xArtists/commit/91af54496666919a1326d402cca2afc2ba390aa4))
+
+
+### Refactoring
+
+* **clean:** detach RCE from slotHouseGuard after Slot extract ([4ead910](https://github.com/Neltud/xArtists/commit/4ead910199bcd0719e46ed88e9255ce86af48a58))
+* **clean:** drop Slot from chain mirror targets ([0708279](https://github.com/Neltud/xArtists/commit/0708279443a9ebcf8f7f9ef36adab0a3913d0903))
+* **clean:** remove Slot zone audio duck from route sync ([d1a38cf](https://github.com/Neltud/xArtists/commit/d1a38cf0162aace2dceb555d3d51f753d399c058))
+* **clean:** remove slotEconomy (extracted to xArtists-Slot) ([2c3fa39](https://github.com/Neltud/xArtists/commit/2c3fa3929db6672dcfbba2eae4c234e9c312eb8e))
+* **clean:** remove SlotHoloTerminal (extracted to xArtists-Slot) ([27d4310](https://github.com/Neltud/xArtists/commit/27d4310bc750c8dadfb69cd61bf76ed1f80b4212))
+* **clean:** remove slotHouseGuard (xArtists-Slot) ([8b9f339](https://github.com/Neltud/xArtists/commit/8b9f33942d097195ff74e3538192949fdff6562e))
+* **clean:** remove slotSensory ([815abe1](https://github.com/Neltud/xArtists/commit/815abe1c2c312361ab535db6fc02804a093cd3dc))
+* **clean:** remove useSlotTx hook (xArtists-Slot) ([ef4c27a](https://github.com/Neltud/xArtists/commit/ef4c27a14ba8682ceba56f969cb11f8964b2c8f9))
+
 ## [0.110.1](https://github.com/Neltud/xArtists/compare/v0.110.0...v0.110.1) (2026-10-16)
 
 
