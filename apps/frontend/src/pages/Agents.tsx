@@ -5,8 +5,17 @@ import PackCheckout from '../components/PackCheckout'
 import PackOpenTheater from '../components/PackOpenTheater'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
+import { PACK_COLLECTIONS } from '../config/packNftMetadata'
 
 const PACKS = AGENT_PACKS
+
+/** Limites honnêtes par tier (pas de champ notIncluded sur le type). */
+function limitsFor(id: PackId): string[] {
+  if (id === 'pulse') return ['Pas un fonds · pas d’APY promis', 'Signature xPortal obligatoire']
+  if (id === 'yield')
+    return ['Pas TCA / LIA full', 'Hub limité · focus DeFi', 'Pas un fonds · pas d’APY promis']
+  return ['Salle Sentinel uniquement', 'Alertes sparses', 'Pas TCA / trading HF']
+}
 
 export default function Agents() {
   const [selected, setSelected] = useState<PackId | null>(null)
@@ -28,36 +37,40 @@ export default function Agents() {
       </header>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        {PACKS.map(p => (
-          <button
-            key={p.id}
-            type="button"
-            onClick={() => setSelected(p.id)}
-            className={`card text-left card-play transition active:scale-[0.98] hover:border-violet-400/30 border ${
-              p.borderClass || 'border-white/10'
-            } ${selected === p.id ? 'ring-1 ring-violet-400/40' : ''}`}
-          >
-            <div className="flex items-center justify-between gap-1">
-              <p className="text-[15px] font-semibold text-white">
-                {p.icon} {p.name}
+        {PACKS.map(p => {
+          const col = PACK_COLLECTIONS[p.id]
+          return (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => setSelected(p.id)}
+              className={`card text-left card-play transition active:scale-[0.98] hover:border-violet-400/30 border ${
+                p.borderClass || 'border-white/10'
+              } ${selected === p.id ? 'ring-1 ring-violet-400/40' : ''}`}
+            >
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-[15px] font-semibold text-white">
+                  {p.icon} {p.name}
+                </p>
+                <span
+                  className={`text-[9px] font-bold uppercase tracking-wide rounded-full px-1.5 py-0.5 border ${
+                    p.tier === 'full'
+                      ? 'border-emerald-400/50 text-emerald-300 bg-emerald-500/15'
+                      : 'border-white/15 text-zinc-400 bg-white/5'
+                  }`}
+                >
+                  {p.tierLabel}
+                </span>
+              </div>
+              <p className="text-[10px] mono text-cyan-300/80 mt-1">{col?.ticker}</p>
+              <p className="text-[12px] text-zinc-400 mt-1.5 leading-snug">{p.tagline}</p>
+              <p className="mt-3 text-xl text-white tabular-nums">{p.priceEgld?.list ?? 10} EGLD</p>
+              <p className="text-[10px] text-zinc-500 mt-1">
+                Signaux ×{p.signalIntensity} · {p.features.actionsPerWeek}
               </p>
-              <span
-                className={`text-[9px] font-bold uppercase tracking-wide rounded-full px-1.5 py-0.5 border ${
-                  p.tier === 'full'
-                    ? 'border-emerald-400/50 text-emerald-300 bg-emerald-500/15'
-                    : 'border-white/15 text-zinc-400 bg-white/5'
-                }`}
-              >
-                {p.tierLabel}
-              </span>
-            </div>
-            <p className="text-[12px] text-zinc-400 mt-1.5 leading-snug">{p.tagline}</p>
-            <p className="mt-3 text-xl text-white tabular-nums">{p.priceEgld?.list ?? 10} EGLD</p>
-            <p className="text-[10px] text-zinc-500 mt-1">
-              Signaux ×{p.signalIntensity} · {p.features.actionsPerWeek}
-            </p>
-          </button>
-        ))}
+            </button>
+          )
+        })}
       </div>
 
       {active && (
@@ -67,6 +80,9 @@ export default function Agents() {
               {active.icon} {active.name}{' '}
               <span className="text-[10px] text-zinc-400 font-normal">{active.tierLabel}</span>
             </h2>
+            <p className="text-[11px] mono text-cyan-300/80 mt-0.5">
+              {PACK_COLLECTIONS[active.id]?.ticker}
+            </p>
             <p className="text-[13px] text-zinc-400 mt-1">{active.activity}</p>
           </div>
 
@@ -80,9 +96,9 @@ export default function Agents() {
               </ul>
             </div>
             <div>
-              <p className="text-[10px] uppercase text-zinc-500 mb-1">Non inclus / limites</p>
+              <p className="text-[10px] uppercase text-zinc-500 mb-1">Limites</p>
               <ul className="space-y-1 text-zinc-500">
-                {[...active.notIncluded, ...(active.limits || [])].map(e => (
+                {limitsFor(active.id).map(e => (
                   <li key={e}>— {e}</li>
                 ))}
               </ul>
@@ -100,7 +116,7 @@ export default function Agents() {
             ))}
           </div>
 
-          <Pack3DCockpit packId={active.id} />
+          <Pack3DCockpit packId={active.id} showIntents={false} />
           <PackCheckout
             packId={active.id}
             onPaperDone={id => setTheater(id)}
@@ -121,8 +137,8 @@ export default function Agents() {
       </div>
 
       <div className="flex flex-wrap gap-3 text-[12px]">
-        <Link to="/marketplace" className="text-cyan-400 hover:underline">
-          Marketplace NFT →
+        <Link to="/market?tab=digital" className="text-cyan-400 hover:underline">
+          Marketplace NFT & Packs →
         </Link>
         <Link to="/command-center" className="text-zinc-400 hover:underline">
           Command Center →

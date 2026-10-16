@@ -1,16 +1,15 @@
 /**
- * Marketplace dual — RWA Physique | Digital SFT/NFT (XAIPLS · XAIYLD · XAISNT).
- * Frameit purged. Canonical route: /market
+ * Marketplace dual — RWA Physique | Digital NFT/SFT packs.
+ * Frameit hors produit ; floor via MultiversX API.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useI18n } from '../i18n/I18nContext'
 import { canListBuyNft, MARKETPLACE_ADDRESS } from '../config/scStatus'
-import { AGENT_PACKS } from '../config/agentPacks'
-import { PACK_COLLECTIONS } from '../config/packNftMetadata'
 import RwaPhysicalPanel from '../components/market/RwaPhysicalPanel'
+import DigitalPacksPanel from '../components/market/DigitalPacksPanel'
 
 type Tab = 'rwa' | 'digital'
 
@@ -38,9 +37,26 @@ export default function MarketplacePage() {
   const { t } = useI18n()
   const { connected } = useWallet()
   const live = canListBuyNft()
-  const [tab, setTab] = useState<Tab>('rwa')
+  const [params, setParams] = useSearchParams()
+  const tabParam = params.get('tab')
+  const [tab, setTab] = useState<Tab>(tabParam === 'digital' || tabParam === 'nft' ? 'digital' : 'rwa')
   const [listings, setListings] = useState<Listing[]>([])
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (tabParam === 'digital' || tabParam === 'nft') setTab('digital')
+    else if (tabParam === 'rwa') setTab('rwa')
+  }, [tabParam])
+
+  const goTab = (next: Tab) => {
+    setTab(next)
+    setParams(p => {
+      const n = new URLSearchParams(p)
+      if (next === 'rwa') n.delete('tab')
+      else n.set('tab', 'digital')
+      return n
+    })
+  }
 
   const refresh = useCallback(async () => {
     setLoading(true)
@@ -63,8 +79,8 @@ export default function MarketplacePage() {
   }, [])
 
   useEffect(() => {
-    void refresh()
-  }, [refresh])
+    if (tab === 'digital') void refresh()
+  }, [tab, refresh])
 
   const pageListings = useMemo(() => listings.slice(0, 24), [listings])
 
@@ -90,7 +106,7 @@ export default function MarketplacePage() {
       <div className="flex gap-1 p-1 rounded-xl bg-black/40 border border-white/10 w-fit flex-wrap">
         <button
           type="button"
-          onClick={() => setTab('rwa')}
+          onClick={() => goTab('rwa')}
           className={`px-4 py-2 rounded-lg text-[12px] font-semibold min-h-[44px] ${
             tab === 'rwa' ? 'bg-amber-600/35 text-amber-50' : 'text-zinc-400 hover:text-zinc-200'
           }`}
@@ -99,12 +115,12 @@ export default function MarketplacePage() {
         </button>
         <button
           type="button"
-          onClick={() => setTab('digital')}
+          onClick={() => goTab('digital')}
           className={`px-4 py-2 rounded-lg text-[12px] font-semibold min-h-[44px] ${
             tab === 'digital' ? 'bg-cyan-600/35 text-cyan-50' : 'text-zinc-400 hover:text-zinc-200'
           }`}
         >
-          {t('market.tab.digital') || 'Passes & Digital'}
+          {t('market.tab.digital') || 'NFT & Packs'}
         </button>
       </div>
 
@@ -115,39 +131,20 @@ export default function MarketplacePage() {
             {t('market.rwa.hint') ||
               'Médium · dimensions · chip NFC · certificat de provenance on-chain. Distinct des packs agents.'}
           </p>
+          <Link to="/studio" className="btn-secondary text-xs inline-flex min-h-[44px] items-center px-4">
+            Ouvrir Studio Phygital →
+          </Link>
         </section>
       )}
 
       {tab === 'digital' && (
-        <section className="space-y-4">
-          <div className="rounded-xl border border-cyan-500/20 bg-black/40 p-4 space-y-3">
-            <h2 className="text-sm font-semibold text-white">
-              {t('market.digital.packs') || 'Passes Agents (SFT / NFT)'}
-            </h2>
-            <ul className="grid gap-2 sm:grid-cols-3">
-              {AGENT_PACKS.map(p => {
-                const col = PACK_COLLECTIONS[p.id]
-                return (
-                  <li key={p.id} className="rounded-xl border border-white/10 bg-black/50 p-3">
-                    <p className="text-sm font-medium text-white">
-                      {p.icon} {p.name}
-                    </p>
-                    <p className="text-[10px] mono text-cyan-300/90 mt-0.5">{col?.ticker || col?.name}</p>
-                    <p className="text-[11px] text-zinc-500 mt-1">{p.tagline}</p>
-                    <p className="mt-2 tabular-nums text-cyan-100">{p.priceEgld?.list ?? '—'} EGLD</p>
-                  </li>
-                )
-              })}
-            </ul>
-            <Link to="/agents" className="btn-primary text-xs inline-flex min-h-[44px] items-center px-4">
-              {t('nav.packs') || 'Packs'} →
-            </Link>
-          </div>
+        <section className="space-y-6">
+          <DigitalPacksPanel />
 
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-sm font-semibold text-white">
-                {t('market.digital.listings') || 'Listings numériques'}
+                {t('market.digital.listings') || 'Listings marketplace SC'}
               </h2>
               <button
                 type="button"
@@ -159,7 +156,8 @@ export default function MarketplacePage() {
             </div>
             {pageListings.length === 0 && !loading && (
               <p className="text-[13px] text-zinc-500">
-                {t('market.empty') || 'Aucun listing indexé pour le moment.'}
+                {t('market.empty') ||
+                  'Aucun listing SC indexé — utilise Acheter pack (mint) ou le marché secondaire Xoxno.'}
               </p>
             )}
             <ul className="grid gap-3 sm:grid-cols-2">
