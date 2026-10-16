@@ -25,7 +25,7 @@ export default function Dashboard() {
         const p = Number(j.price || j.egldPrice || 0)
         if (!c && p > 0) setEgld(p)
       } catch {
-        /* offline */
+        /* offline — NetworkToastBridge handles global notify */
       }
     })()
     return () => {
@@ -40,25 +40,23 @@ export default function Dashboard() {
       <header className="flex flex-wrap items-center justify-between gap-3 px-1">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
-            Infrastructure RWA · MultiversX
+            {t('home.rwa.kicker')}
           </p>
           <h1 className="text-2xl font-semibold text-white tracking-tight">xArtists</h1>
-          <p className="text-[12px] text-zinc-500 mt-0.5">
-            Entre dans les pièces — Musée · Command · Packs · Market
-          </p>
+          <p className="text-[12px] text-zinc-500 mt-0.5">{t('home.rwa.lead')}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 font-mono text-[11px] text-cyan-100">
+          <div className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1.5 font-mono text-[11px] text-cyan-100 min-h-[44px] inline-flex items-center">
             EGLD {egld != null ? `$${egld.toFixed(2)}` : '…'}
           </div>
-          <div className="rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1.5 font-mono text-[11px] text-violet-100">
+          <div className="rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1.5 font-mono text-[11px] text-violet-100 min-h-[44px] inline-flex items-center">
             $TRO {troApprox != null ? `$${troApprox.toFixed(3)}` : '…'}
             {egld != null ? (
               <span className="text-zinc-500"> · {(troApprox! / egld).toFixed(3)} EGLD</span>
             ) : null}
           </div>
           {!connected && (
-            <button type="button" onClick={requestOpenConnect} className="btn-primary text-xs min-h-[40px] px-3">
+            <button type="button" onClick={requestOpenConnect} className="btn-primary text-xs min-h-[44px] px-3">
               {t('nav.wallet')}
             </button>
           )}
@@ -68,17 +66,17 @@ export default function Dashboard() {
       <HomeMenuHall />
 
       <p className="text-center text-[11px] text-zinc-600">
-        Clique une porte 3D pour entrer ·{' '}
+        {t('home.hall.hint')} ·{' '}
         <Link to="/museum" className="text-zinc-400 hover:text-zinc-200">
-          Musée
+          {t('nav.museum')}
         </Link>
         {' · '}
         <Link to="/command-center" className="text-zinc-400 hover:text-zinc-200">
-          Command
+          {t('nav.command')}
         </Link>
         {' · '}
         <Link to="/agents" className="text-zinc-400 hover:text-zinc-200">
-          Packs
+          {t('nav.packs')}
         </Link>
       </p>
     </div>

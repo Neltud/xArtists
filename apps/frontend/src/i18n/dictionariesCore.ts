@@ -8,6 +8,8 @@ const homeFr = {
   'home.also': 'Aussi',
   'home.contracts': 'Contrats mainnet',
   'home.hall.hint': 'Glisse pour tourner · clique une porte illustrée',
+  'home.rwa.kicker': 'Infrastructure RWA · MultiversX',
+  'home.rwa.lead': 'Entre dans les pièces — Musée · Command · Packs · Market',
   'home.dome.badge': 'Dôme 360° · MultiversX',
   'home.dome.loading': 'Dôme 360°…',
   'home.card.gallery.title': 'Galerie & Dôme 3D',
@@ -30,6 +32,8 @@ const homeEn = {
   'home.also': 'Also',
   'home.contracts': 'Mainnet contracts',
   'home.hall.hint': 'Drag to turn · click an illustrated door',
+  'home.rwa.kicker': 'RWA infrastructure · MultiversX',
+  'home.rwa.lead': 'Enter the rooms — Museum · Command · Packs · Market',
   'home.dome.badge': '360° Dome · MultiversX',
   'home.dome.loading': '360° Dome…',
   'home.card.gallery.title': 'Gallery & 3D Dome',
@@ -44,11 +48,37 @@ const homeEn = {
   'lia.subtitle': 'Paper signals · live tape · shadow',
 }
 
+const onboardFr = {
+  'onboard.kicker': 'Bienvenue',
+  'onboard.title': 'xArtists en 30 secondes',
+  'onboard.lead':
+    'Démo paper sur MultiversX. Explore librement — aucun fonds n’est géré pour toi.',
+  'onboard.step1': 'Galerie — salles 3D & collection',
+  'onboard.step2': 'Packs — Pulse · Yield · Sentinel uniquement',
+  'onboard.step3': 'Tours — carte culture (pas un pack IA)',
+  'onboard.cta.gallery': 'Ouvrir la galerie',
+  'onboard.skip': 'Continuer sans guide',
+}
+
+const onboardEn = {
+  'onboard.kicker': 'Welcome',
+  'onboard.title': 'xArtists in 30 seconds',
+  'onboard.lead':
+    'Paper demo on MultiversX. Explore freely — no funds are managed for you.',
+  'onboard.step1': 'Gallery — 3D halls & collection',
+  'onboard.step2': 'Packs — Pulse · Yield · Sentinel only',
+  'onboard.step3': 'Tours — culture map (not an AI pack)',
+  'onboard.cta.gallery': 'Open the gallery',
+  'onboard.skip': 'Continue without guide',
+}
+
 const networkFr = {
   'net.offline': 'Hors ligne — cache local actif',
   'net.rateLimit': 'Limite API MultiversX atteinte — nouvel essai dans un instant',
   'net.error': 'Réseau indisponible — données en cache',
   'net.retry': 'Réessayer',
+  'net.timeout': 'Délai réseau dépassé — cache local',
+  'net.okCache': 'Données mises en cache',
 }
 
 const networkEn = {
@@ -56,6 +86,8 @@ const networkEn = {
   'net.rateLimit': 'MultiversX API rate limit — retry shortly',
   'net.error': 'Network unavailable — cached data',
   'net.retry': 'Retry',
+  'net.timeout': 'Network timeout — local cache',
+  'net.okCache': 'Data served from cache',
 }
 
 const ccFr = {
@@ -65,10 +97,10 @@ const ccFr = {
   'cc.strategy.aggressive': 'Agressif',
   'cc.cadence': 'Cadence (signaux / h)',
   'cc.blueRibbon': 'Seuil Blue Ribbon',
-  'cc.intents': 'Journal d\'intents',
+  'cc.intents': "Journal d'intents",
   'cc.sign': '⚡ Examiner & Signer xPortal',
   'cc.disclaimer':
-    'Pas de dépôt. Fonds d\'arbitrage via mint. Rewards discrétionnaires. Non-custodial.',
+    "Pas de dépôt. Fonds d'arbitrage via mint. Rewards discrétionnaires. Non-custodial.",
 }
 
 const ccEn = {
@@ -114,6 +146,7 @@ const fr: Dict = {
   'slot.lead': 'Fun = crédits virtuels. Réel bientôt (SC).',
   'slot.spin': 'Tourner',
   ...homeFr,
+  ...onboardFr,
   ...networkFr,
   ...ccFr,
 }
@@ -148,11 +181,11 @@ const en: Dict = {
   'slot.lead': 'Fun = virtual credits. Real mode soon (SC).',
   'slot.spin': 'Spin',
   ...homeEn,
+  ...onboardEn,
   ...networkEn,
   ...ccEn,
 }
 
-/** Secondary locales: EN base + partial native overrides (t() falls back EN→FR). */
 const es: Dict = {
   ...en,
   'nav.home': 'Inicio',
@@ -161,9 +194,9 @@ const es: Dict = {
   'nav.wallet': 'Cartera',
   'common.connect': 'Conectar',
   'lang.label': 'Idioma',
-  'home.dome.badge': 'Cúpula 360° · MultiversX',
-  'home.card.gallery.title': 'Galería y Cúpula 3D',
-  'home.card.tca.title': 'Academia TCA',
+  'home.rwa.kicker': 'Infraestructura RWA · MultiversX',
+  'onboard.kicker': 'Bienvenido',
+  'onboard.title': 'xArtists en 30 segundos',
 }
 
 const de: Dict = {
@@ -174,14 +207,11 @@ const de: Dict = {
   'nav.wallet': 'Wallet',
   'common.connect': 'Verbinden',
   'lang.label': 'Sprache',
-  'home.dome.badge': '360°-Kuppel · MultiversX',
-  'home.dome.loading': '360°-Kuppel…',
-  'home.card.gallery.title': 'Galerie & 3D-Kuppel',
-  'home.card.gallery.blurb': 'Direkter Einstieg in die WebGL-Ausstellung.',
-  'home.card.lia.title': 'LIA Hub (Command Center)',
-  'home.card.lia.blurb': 'Kontrollraum für Agent-Pack-NFT-Inhaber.',
-  'home.card.tca.title': 'TCA Akademie',
-  'home.card.tca.blurb': 'Modul 1 Sfumato & Zero-Trust-Zertifizierung.',
+  'home.rwa.kicker': 'RWA-Infrastruktur · MultiversX',
+  'home.rwa.lead': 'Räume betreten — Museum · Command · Packs · Market',
+  'onboard.kicker': 'Willkommen',
+  'onboard.title': 'xArtists in 30 Sekunden',
+  'onboard.skip': 'Ohne Guide fortfahren',
   'net.offline': 'Offline — lokaler Cache aktiv',
   'net.rateLimit': 'MultiversX-API-Limit — bitte kurz warten',
   'net.retry': 'Erneut versuchen',
@@ -194,9 +224,8 @@ const zh: Dict = {
   'nav.home': '首页',
   'nav.museum': '博物馆',
   'lang.label': '语言',
-  'home.dome.badge': '360° 穹顶 · MultiversX',
-  'home.card.gallery.title': '画廊与 3D 穹顶',
-  'home.card.tca.title': 'TCA 学院',
+  'home.rwa.kicker': 'RWA 基础设施 · MultiversX',
+  'onboard.kicker': '欢迎',
 }
 const ar: Dict = { ...en, 'nav.home': 'الرئيسية', 'lang.label': 'اللغة' }
 
