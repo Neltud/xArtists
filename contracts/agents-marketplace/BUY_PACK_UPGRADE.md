@@ -8,12 +8,24 @@
 - Owner endpoints: `setPackCollection`, `setPackPrice`
 - Existing `listAgentAction` / `buyAgentAction` / `claimFees` unchanged
 
+## ⚠️ buyAgentAction is NOT a pack NFT purchase
+
+| Endpoint | Pays | Transfers NFT |
+|----------|------|---------------|
+| **`buyPack`** | EGLD ≥ pack price | **Yes** — mint to caller |
+| **`buyAgentAction`** | EGLD ≥ listing price | **No** — seller gets EGLD only |
+
+`listAgentAction` stores an `agent_id` string + price; it does **not** escrow an ESDT.
+
+**dApp rule (2026-10-16):** default checkout uses `buyPack` only.
+`buyAgentAction` requires explicit `VITE_AGENT_PACK_BUY_ENDPOINT=buyAgentAction`.
+
 ## Prerequisites (owner / ops)
 
 1. **Collections** issued on MultiversX (full ids with suffix):
-   - Pulse → e.g. `xAiAx-xxxxxx`
-   - Yield → `xAiAy-…`
-   - Sentinel → `xAiAs-…`
+   - Pulse → `XAIPLS-2cf72b`
+   - Yield → `XAIYLD-987e24`
+   - Sentinel → `XAISNT-3d8a6b`
 2. **ESDTRoleNFTCreate** granted to the **agents-marketplace SC address** on each collection.
 3. Owner PEM for the **current** SC owner (upgrade authority).
 
@@ -25,7 +37,6 @@
 ```bash
 cd contracts/agents-marketplace
 sc-meta all build
-# or: cargo build --release --target wasm32-unknown-unknown
 ```
 
 ## Upgrade (mainnet)
@@ -45,27 +56,7 @@ mxpy contract upgrade "$CONTRACT" \
 
 ## Configure collections & prices (after upgrade)
 
-```bash
-mxpy contract call "$CONTRACT" \
-  --function=setPackCollection \
-  --arguments 0x01 str:xAiAx-XXXXXX \
-  --pem=/secure/path/owner.pem \
-  --proxy=https://gateway.multiversx.com --chain=1 \
-  --gas-limit=10000000 --recall-nonce --send
-
-mxpy contract call "$CONTRACT" \
-  --function=setPackPrice \
-  --arguments 0x01 0x0de0b6b3a7640000 \
-  --pem=/secure/path/owner.pem \
-  --proxy=https://gateway.multiversx.com --chain=1 \
-  --gas-limit=10000000 --recall-nonce --send
-```
-
-Repeat for `0x02` (Yield) and `0x03` (Sentinel).
-
-## Grant NFTCreate role
-
-Use MultiversX Console → Token → Roles → add `ESDTRoleNFTCreate` for the SC address on each collection.
+See `MAINNET_STATUS.md` — prices **10 / 5 / 2.5 EGLD** already set (2026-10-15).
 
 ## Test buyPack
 
@@ -73,21 +64,20 @@ Use MultiversX Console → Token → Roles → add `ESDTRoleNFTCreate` for the S
 mxpy contract call "$CONTRACT" \
   --function=buyPack \
   --arguments 0x01 \
-  --value=1000000000000000000 \
-  --pem=/secure/path/admin.pem \
+  --value=10000000000000000000 \
+  --pem=/secure/path/buyer.pem \
   --proxy=https://gateway.multiversx.com --chain=1 \
   --gas-limit=30000000 --recall-nonce --send
 ```
 
-Verify NFTs: https://explorer.multiversx.com/accounts/<erd1>/nfts
-
 ## dApp
 
-- `useAgentPackTx.buyPack` already sends `buyPack@01|02|03`
-- Env after live collections: `VITE_AGENTS_CODEHASH_OK=true` and `VITE_AGENT_PACK_COLLECTIONS=<full-ids>`
+- `useAgentPackTx.buyPack` → `buyPack@01|02|03`
+- Env: `VITE_AGENTS_CODEHASH_OK=true` and collections env if needed
 
-## Security
+## Security / pause
 
 - Never commit PEM files.
-- Prefer **devnet** test before mainnet.
-- `claimFees` withdraws accumulated EGLD from pack sales to owner.
+- Incident: `docs/EMERGENCY_PAUSE.md`
+- Monitor: `python3 scripts/ops_sc_watch.py` · workflow **Ops SC watch**
+- `claimFees` withdraws pack sale EGLD to owner.
