@@ -3,6 +3,8 @@
  * - Pulse  = GOLD (full suite, HF signals)
  * - Yield  = SILVER (DeFi / LP / claim)
  * - Sentinel = PLATINUM (veille / RWA / zero-trust)
+ *
+ * Official on-chain list prices (2026-10-15): 10 / 5 / 2.5 EGLD
  */
 
 import { PACK_PRICE_EGLD, PACK_PRICE_EUR } from './multichain'
@@ -100,23 +102,23 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     tierLabel: 'GOLD',
     icon: '⚡',
     signalIntensity: 3,
-    priceEgld: { min: 10, max: PACK_PRICE_EGLD.max, list: 25 },
-    priceEur: { min: 45, max: PACK_PRICE_EUR.max, list: 110 },
+    priceEgld: { min: 10, max: PACK_PRICE_EGLD.max, list: 10 },
+    priceEur: { min: 45, max: PACK_PRICE_EUR.max, list: 45 },
     strategies: ['MICRO_ARB', 'MOMENTUM', 'MEAN_REVERSION', 'BOARD_TICK'],
-    activity: 'Plusieurs cycles / jour — densité de signaux maximale',
+    activity: 'Plusieurs cycles / jour — intensité max',
     entitlements: [
-      'NFT pack Pulse (badge + salle 3D)',
-      'Command Center full + salles Pulse/Yield/Sentinel',
-      'TCA classroom (1 an conceptuel)',
-      'LIA hub panels + live tape multi-actifs',
-      'Signaux trading HF (paper → xPortal)',
+      'NFT pack Pulse + salle 3D Pulse',
+      'Command Center complet (Hub + toutes salles)',
+      'TCA Academy + LIA full',
+      'Live tape + trading signals',
+      'DeFi sleeve + risk alerts + agent stake',
     ],
     features: PULSE_FEATURES,
     color: 'text-amber-300',
     borderClass: 'border-amber-400/40',
-    domain: 'signals',
+    domain: 'trading',
     risk: 'active',
-    bps: 5000,
+    bps: 10000,
   },
   {
     id: 'yield',
@@ -126,22 +128,22 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     tierLabel: 'SILVER',
     icon: '📈',
     signalIntensity: 2,
-    priceEgld: { min: PACK_PRICE_EGLD.min, max: 22, list: 15 },
-    priceEur: { min: PACK_PRICE_EUR.min, max: 100, list: 65 },
+    priceEgld: { min: 5, max: 22, list: 5 },
+    priceEur: { min: 20, max: 100, list: 22 },
     strategies: ['YIELD_OPT', 'LP_WATCH', 'COMPOUND_READ'],
     activity: 'Cycles DeFi réguliers — focus pool & staking',
     entitlements: [
       'NFT pack Yield + salle 3D Yield',
       'Salle Command « Yield »',
-      'Vues Hatom / LP / compound (lecture)',
-      'Stake NFT agent / claim (quand SC)',
+      'DeFi sleeve + agent stake',
+      'Accès hub limité (pas TCA / LIA full)',
     ],
     features: YIELD_FEATURES,
-    color: 'text-slate-300',
-    borderClass: 'border-slate-400/35',
+    color: 'text-zinc-300',
+    borderClass: 'border-zinc-400/40',
     domain: 'defi',
-    risk: 'lower',
-    bps: 3500,
+    risk: 'moderate',
+    bps: 5000,
   },
   {
     id: 'sentinel',
@@ -151,8 +153,8 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     tierLabel: 'PLATINUM',
     icon: '🛡️',
     signalIntensity: 1,
-    priceEgld: { min: PACK_PRICE_EGLD.min, max: 20, list: 10 },
-    priceEur: { min: PACK_PRICE_EUR.min, max: 90, list: 45 },
+    priceEgld: { min: 2.5, max: 20, list: 2.5 },
+    priceEur: { min: 10, max: 90, list: 12 },
     strategies: ['GUARD', 'ALERT', 'DRAWDOWN_WATCH', 'BOARD_ALERT'],
     activity: 'Alertes sparses — focus protection & conformité',
     entitlements: [
