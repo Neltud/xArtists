@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-16T03:17:08.431Z",
+  "updatedAt": "2026-10-16T10:46:24.188Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792147583773",
+      "timestamp": "10:46",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.77 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1792142533000",
+      "timestamp": "09:22",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin may seek 20-month trend line reclaim before new record highs: CryptoQuant",
+      "link": "https://cointelegraph.com/markets/bitcoin-seeks-20-month-trend-line-reclaim-before-new-record-highs-cryptoquant?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792137586000",
+      "timestamp": "07:59",
+      "source": "CoinTelegraph",
+      "title": "Capital B reports $78M H1 loss driven by Bitcoin impairment charge",
+      "link": "https://cointelegraph.com/news/capital-b-78m-h1-loss-bitcoin-impairment?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792136609000",
+      "timestamp": "07:43",
+      "source": "CoinTelegraph",
+      "title": "Judge rejects CFTC, Gemini bid to undo $5M settlement",
+      "link": "https://cointelegraph.com/news/judge-rejects-cftc-gemini-5m-settlement-reversal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1792131690000",
+      "timestamp": "06:21",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1792131082000",
+      "timestamp": "06:11",
+      "source": "CoinTelegraph",
+      "title": "OpenAI model helped itself to testnet crypto, then kept quiet about it",
+      "link": "https://cointelegraph.com/news/openai-model-spent-testnet-eth-without-authorization?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1792127771000",
+      "timestamp": "05:16",
+      "source": "CoinTelegraph",
+      "title": "Balaji’s ‘Singapore of social media’ begins with a wave of bans",
+      "link": "https://cointelegraph.com/news/balajis-singapore-of-social-media-begins-with-a-wave-of-bans?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1792144094000",
+      "timestamp": "09:48",
+      "source": "CoinDesk",
+      "title": "Live updates: Bitcoin back above $82,000, ZEC jumps 11% as ETF outflows continue",
+      "link": "https://www.coindesk.com/markets/2026/10/16/live-updates-bitcoin-back-above-usd82-000-zec-jumps-11-as-etf-outflows-continue"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792143381000",
+      "timestamp": "09:36",
+      "source": "CoinDesk",
+      "title": "U.S. judge rejects Gemini’s appeal to void $5 million settlement despite CFTC backing",
+      "link": "https://www.coindesk.com/policy/2026/10/16/u-s-judge-rejects-gemini-s-appeal-to-void-usd5-million-settlement-despite-cftc-backing"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792139688000",
+      "timestamp": "08:34",
+      "source": "CoinDesk",
+      "title": "MSCI approves rules that could eject Strategy, Metaplanet from equity indexes",
+      "link": "https://www.coindesk.com/markets/2026/10/16/msci-approves-rules-that-could-eject-strategy-metaplanet-from-equity-indexes"
+    },
+    {
+      "id": "rss-CoinDesk-3-1792130038000",
+      "timestamp": "05:53",
+      "source": "CoinDesk",
+      "title": "XRP has failed to make holders rich like bitcoin and ether. Here’s why",
+      "link": "https://www.coindesk.com/markets/2026/10/16/xrp-has-failed-to-make-holders-rich-like-bitcoin-and-ether-here-s-why"
+    },
     {
       "id": "egld-1792120627908",
       "timestamp": "03:17",
@@ -16,13 +93,6 @@
       "source": "CoinTelegraph",
       "title": "Binance.US seeks $1B valuation in potential $100M funding round: Report",
       "link": "https://cointelegraph.com/news/binance-us-funding-valuation-billion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1792093047000",
-      "timestamp": "19:37",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-2-1792084485000",
@@ -127,76 +197,6 @@
       "timestamp": "10:54",
       "source": "EGLD",
       "title": "Cotation publique · $3.50 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1792057687000",
-      "timestamp": "09:48",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin dips to $80.1K as KOSPI closes at its lowest since April",
-      "link": "https://cointelegraph.com/markets/bitcoin-dips-korea-kospi-lowest-close-since-april?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1792056980000",
-      "timestamp": "09:36",
-      "source": "CoinTelegraph",
-      "title": "Thailand crypto ETFs may see slow start despite new rules: CoinShares",
-      "link": "https://cointelegraph.com/news/thailand-crypto-etfs-slow-start-new-rules-coinshares?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1792055668000",
-      "timestamp": "09:14",
-      "source": "CoinTelegraph",
-      "title": "Babylon advances native Bitcoin lending proposal on Aave V4",
-      "link": "https://cointelegraph.com/news/babylon-native-bitcoin-collateral-aave-v4-proposal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1792049023000",
-      "timestamp": "07:23",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin ETFs shed $261M as XRP funds buck weekly outflow trend",
-      "link": "https://cointelegraph.com/markets/bitcoin-etf-outflow-btc-below-82k?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792043541000",
-      "timestamp": "05:52",
-      "source": "CoinTelegraph",
-      "title": "South Korea plans cybersecurity overhaul after attacks hit banks, crypto firms",
-      "link": "https://cointelegraph.com/news/south-korea-cybersecurity-overhaul-crypto-exchanges?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792058017000",
-      "timestamp": "09:53",
-      "source": "CoinDesk",
-      "title": "Australia’s financial watchdog seeks stiffer rules for crypto exchanges ahead of licensing deadline",
-      "link": "https://www.coindesk.com/policy/2026/10/15/australia-s-financial-watchdog-seeks-stiffer-rules-for-crypto-exchanges-ahead-of-licensing-deadline"
-    },
-    {
-      "id": "rss-CoinDesk-1-1792056057000",
-      "timestamp": "09:20",
-      "source": "CoinDesk",
-      "title": "Hex founder Richard Heart arrested in Istanbul, Turkish media report",
-      "link": "https://www.coindesk.com/policy/2026/10/15/hex-founder-richard-heart-arrested-in-istanbul-turkish-media-report"
-    },
-    {
-      "id": "rss-CoinDesk-2-1792045078000",
-      "timestamp": "06:17",
-      "source": "CoinDesk",
-      "title": "BlackRock's Fink names a U.S. recession trigger, sounds alarm over $40 trillion national debt",
-      "link": "https://www.coindesk.com/markets/2026/10/15/blackrock-s-larry-fink-names-a-u-s-recession-trigger-and-its-tied-to-ai"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792038315000",
-      "timestamp": "04:25",
-      "source": "CoinDesk",
-      "title": "Nearly $1 billion in crypto bets liquidated as bitcoin, ether and XRP slide",
-      "link": "https://www.coindesk.com/markets/2026/10/15/nearly-usd1-billion-in-crypto-bets-liquidated-as-bitcoin-ether-and-xrp-slide"
-    },
-    {
-      "id": "egld-1792021365801",
-      "timestamp": "23:42",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.63 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     }
   ]
