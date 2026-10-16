@@ -1,10 +1,9 @@
 /**
  * Real Capital Engaged — soldes EGLD on-chain des SC (API publique MultiversX).
- * Ne mélange jamais localStorage / pots Fun.
+ * Slot retiré du produit principal (voir Neltud/xArtists-Slot).
  */
 
 import { MAINNET_ADDRESSES } from '../config/contracts'
-import { getCachedHouseEgld, setCachedHouseEgld } from './slotHouseGuard'
 
 const API = 'https://api.multiversx.com'
 
@@ -32,7 +31,6 @@ function addr(key: keyof typeof MAINNET_ADDRESSES): string {
 const TRACK: { id: string; label: string; key: keyof typeof MAINNET_ADDRESSES }[] = [
   { id: 'marketplace', label: 'Marketplace', key: 'nft_marketplace' },
   { id: 'tro_staking', label: 'Staking TRO', key: 'tro_staking' },
-  { id: 'slot', label: 'Slot house', key: 'slot_casino' },
   { id: 'venue', label: 'Venue', key: 'venue_split' },
   { id: 'treasury', label: 'Treasury', key: 'treasury_splitter' },
   { id: 'agents', label: 'Agents SC', key: 'agents_marketplace' },
@@ -66,14 +64,13 @@ export async function loadRce(force = false): Promise<RceSnapshot> {
       try {
         const egld = await fetchEgldBalance(address)
         lines.push({ id: t.id, label: t.label, address, egld })
-        if (t.id === 'slot') setCachedHouseEgld(egld)
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'erreur lecture'
         lines.push({
           id: t.id,
           label: t.label,
           address,
-          egld: t.id === 'slot' ? getCachedHouseEgld() : null,
+          egld: null,
           error: typeof msg === 'string' ? msg : 'erreur',
         })
       }
