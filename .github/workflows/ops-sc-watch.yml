@@ -1,0 +1,25 @@
+name: Ops SC watch
+
+# P0 continuous — codeHash + balance vs MAINNET_CODEHASH
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Probe mainnet SC
+        env:
+          BALANCE_ALERT_EGLD: '2'
+        run: |
+          python3 scripts/ops_sc_watch.py
+          echo "---"
+          python3 scripts/ops_sc_watch.py --json

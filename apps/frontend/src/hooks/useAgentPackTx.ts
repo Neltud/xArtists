@@ -1,7 +1,8 @@
 /**
  * Agent packs — on-chain buy → 1 ESDT NFT in buyer wallet.
- * Endpoints: buyPack@<enum> | buyAgentAction@listing (VITE_AGENT_PACK_LISTINGS).
- * Post-success: transactionMonitor + waitForPackNft.
+ * Canonical endpoint: buyPack@<enum 01|02|03>.
+ * buyAgentAction = secondary listing (EGLD only, NO NFT transfer) — opt-in via
+ * VITE_AGENT_PACK_BUY_ENDPOINT=buyAgentAction + VITE_AGENT_PACK_LISTINGS.
  * Paper mint: DEV only (audit S-02).
  */
 import { useCallback, useState } from 'react'
@@ -52,11 +53,13 @@ function packListingIds(): Partial<Record<PackId, number>> {
   }
 }
 
-function buyPackEndpoint(): string {
+/** Default buyPack. Only force listing path when explicitly configured. */
+function forceListingBuy(): boolean {
   try {
-    return (import.meta.env.VITE_AGENT_PACK_BUY_ENDPOINT as string | undefined)?.trim() || 'buyPack'
+    const ep = (import.meta.env.VITE_AGENT_PACK_BUY_ENDPOINT as string | undefined)?.trim()
+    return ep === 'buyAgentAction'
   } catch {
-    return 'buyPack'
+    return false
   }
 }
 
@@ -92,6 +95,10 @@ export function useAgentPackTx() {
     return { packId: id, meta, sale }
   }, [])
 
+  /**
+   * Secondary listing: pays EGLD to seller — does NOT transfer an NFT.
+   * Prefer buyPack for pack access NFTs.
+   */
   const buyAgentListing = useCallback(
     async (listingId: number, priceEgld: number) => {
       setError(null)
@@ -103,7 +110,7 @@ export function useAgentPackTx() {
       if (!(listingId >= 0) || !(priceEgld > 0)) throw new Error('listing / prix invalide')
       const receiver = agentsMarketplaceReceiverOrThrow()
       setPending(true)
-      empireTxStart(`Buy agent #${listingId}`)
+      empireTxStart(`Buy agent listing #${listingId}`)
       try {
         const res = await send(
           [
@@ -116,9 +123,9 @@ export function useAgentPackTx() {
             },
           ],
           {
-            processingMessage: 'Achat agent NFT…',
-            successMessage: 'Achat soumis — attente confirmation',
-            errorMessage: 'Achat échoué',
+            processingMessage: 'Achat listing agent (pas de NFT)…',
+            successMessage: 'Paiement soumis — pas de mint NFT via cet endpoint',
+            errorMessage: 'Achat listing échoué',
           },
         )
         if (res.error) {
@@ -146,7 +153,7 @@ export function useAgentPackTx() {
     [send],
   )
 
-  /** 1 Pack Acheté = 1 NFT ESDT dans le wallet. */
+  /** 1 Pack acheté = 1 NFT ESDT dans le wallet (buyPack). */
   const buyPack = useCallback(
     async (id: PackId) => {
       setError(null)
@@ -156,13 +163,9 @@ export function useAgentPackTx() {
       const listings = packListingIds()
       const listingId = listings[id]
 
-      if (listingId != null && canBuyAgent()) {
+      // Opt-in only: never default pack purchase to buyAgentAction (no NFT)
+      if (forceListingBuy() && listingId != null && canBuyAgent()) {
         const sid = await buyAgentListing(listingId, price)
-        if (address) {
-          void waitForPackNft(address, id).then(hit => {
-            if (hit && import.meta.env.DEV) markPackOwned(id)
-          })
-        }
         return { mode: 'listing' as const, sessionId: sid, packId: id }
       }
 
@@ -175,11 +178,7 @@ export function useAgentPackTx() {
       }
 
       const receiver = agentsMarketplaceReceiverOrThrow()
-      const endpoint = buyPackEndpoint()
-      const data =
-        endpoint === 'buyAgentAction' && listingId != null
-          ? `buyAgentAction@${numToHex(listingId)}`
-          : `buyPack@${numToHex(PACK_ENUM[id])}`
+      const data = `buyPack@${numToHex(PACK_ENUM[id])}`
 
       setPending(true)
       empireTxStart(`buyPack ${id}`)
