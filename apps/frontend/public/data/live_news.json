@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-15T23:37:24.152Z",
+  "updatedAt": "2026-10-16T03:17:08.431Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792107443776",
-      "timestamp": "23:37",
+      "id": "egld-1792120627908",
+      "timestamp": "03:17",
       "source": "EGLD",
-      "title": "Cotation publique · $3.65 (API MultiversX economics)",
+      "title": "Cotation publique · $3.67 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -79,6 +79,13 @@
       "source": "CoinDesk",
       "title": "Under pressure, Ledger unveils plan to turn its crypto hardware wallet into a smartphone",
       "link": "https://www.coindesk.com/tech/2026/10/15/under-pressure-ledger-unveils-plan-to-turn-its-crypto-hardware-wallet-into-a-smartphone"
+    },
+    {
+      "id": "egld-1792107443776",
+      "timestamp": "23:37",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.65 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "egld-1792097872781",
@@ -191,13 +198,6 @@
       "source": "EGLD",
       "title": "Cotation publique · $3.63 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1792011382000",
-      "timestamp": "20:56",
-      "source": "CoinTelegraph",
-      "title": "Organizations join forces to fight Illinois crypto tax, after 6-month pause",
-      "link": "https://cointelegraph.com/news/cci-ba-fight-illinois-crypto-tax-pause?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
