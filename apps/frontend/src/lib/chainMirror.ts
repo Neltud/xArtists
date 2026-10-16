@@ -1,11 +1,11 @@
 /**
  * MULTIVERSX → SDK/API → empireStore → feedback visuel
  * Lecture RPC (api.multiversx.com) — pas de PEM.
+ * Slot extrait vers Neltud/xArtists-Slot.
  */
 import {
   TRO_STAKING_ADDRESS,
   MARKETPLACE_ADDRESS,
-  SLOT_CASINO_ADDRESS,
   VENUE_SC_ADDRESS,
   TRO_TOKEN_ID,
 } from '../config/scStatus'
@@ -21,7 +21,6 @@ export type ChainObjectState = {
   balanceEgld: number
   live: boolean
   label: string
-  /** 0..1 visual intensity from activity */
   intensity: number
 }
 
@@ -92,7 +91,6 @@ const TARGETS: { key: string; address: string; label: string }[] = [
   { key: 'tro_staking', address: TRO_STAKING_ADDRESS, label: 'TRO Stake' },
   { key: 'marketplace', address: MARKETPLACE_ADDRESS, label: 'Market' },
   { key: 'venue', address: VENUE_SC_ADDRESS, label: 'Venue' },
-  { key: 'slot', address: SLOT_CASINO_ADDRESS, label: 'Slot' },
 ]
 
 export async function refreshChainMirror(): Promise<ChainMirrorSnapshot> {
@@ -122,14 +120,13 @@ export async function refreshChainMirror(): Promise<ChainMirrorSnapshot> {
   emit(snap)
   setEmpirePulse({ apiOk: true, lastPingAt: Date.now(), chainId: '1' })
 
-  // Cerveau: activity from total staked + live SC count
   const liveN = objects.filter(o => o.live).length
-  const score = Math.max(-0.2, Math.min(0.85, (liveN / 4) * 0.5 + (troTotalStaked > 0 ? 0.25 : 0)))
+  const score = Math.max(-0.2, Math.min(0.85, (liveN / 3) * 0.5 + (troTotalStaked > 0 ? 0.25 : 0)))
   publishBrain({
     mood: scoreToMood(score),
     score,
     source: 'lia',
-    note: `chain mirror · ${liveN}/4 SC · stake ${troTotalStaked} ${TRO_TOKEN_ID}`,
+    note: `chain mirror · ${liveN}/3 SC · stake ${troTotalStaked} ${TRO_TOKEN_ID}`,
   })
   return snap
 }
@@ -140,7 +137,6 @@ export function startChainMirror(intervalMs = 45_000): () => void {
   return () => window.clearInterval(id)
 }
 
-/** Debug helper — current empire flags */
 export function empireFlagsSnapshot() {
   return getEmpireState().flags
 }
