@@ -54,6 +54,10 @@ const LPPoolsPage = lazy(() => import('./pages/LPPoolsPage'))
 const HatomPage = lazy(() => import('./pages/HatomPage'))
 const LightningAgentPage = lazy(() => import('./pages/LightningAgentPage'))
 const AgentsPolyliaPage = lazy(() => import('./pages/AgentsPolyliaPage'))
+const RwaCatalogPage = lazy(() => import('./pages/RwaCatalogPage'))
+const HistoryPage = lazy(() => import('./pages/HistoryPage'))
+const DigitalTwinPage = lazy(() => import('./pages/DigitalTwinPage'))
+const VoyageAgentPage = lazy(() => import('./pages/VoyageAgentPage'))
 
 export default function App() {
   const location = useLocation()
@@ -125,6 +129,13 @@ export default function App() {
                   <Route path="/burnify" element={<BurnifyPage />} />
                   <Route path="/lp" element={<LPPoolsPage />} />
                   <Route path="/hatom" element={<HatomPage />} />
+                  <Route path="/rwa" element={<RwaCatalogPage />} />
+                  <Route path="/rwa_catalog" element={<Navigate to="/rwa" replace />} />
+                  <Route path="/history" element={<HistoryPage />} />
+                  <Route path="/digital-twin" element={<DigitalTwinPage />} />
+                  <Route path="/agents/voyage" element={<VoyageAgentPage />} />
+                  <Route path="/entity" element={<Navigate to="/entities" replace />} />
+                  <Route path="/sim" element={<Navigate to="/simulation" replace />} />
                   <Route path="/hub" element={<Navigate to="/" replace />} />
                   <Route path="/slot" element={<Navigate to="/" replace />} />
                   <Route path="/slot/*" element={<Navigate to="/" replace />} />

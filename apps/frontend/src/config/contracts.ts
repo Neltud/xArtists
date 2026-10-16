@@ -44,11 +44,11 @@ export const MAINNET_ADDRESSES = {
   slot_casino: 'erd1qqqqqqqqqqqqqpgquf3cuv2zsfsahy7ypvter3qcep4ptthsvhxqs4g34f',
 } as const
 
-/** Explorer-verified 2026-10-01 — do not invent hashes. */
+/** Explorer-verified 2026-10-16 — agents hash is the buyPack upgrade, not the Oct 1 bytecode. */
 export const MAINNET_CODEHASH = {
   venue_split: 'SRrGio4iLmtQrb22JJhapwobNgavYsoQ52WmfT1owuY=',
   nft_marketplace: '8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=',
-  agents_marketplace: 'tDIcnNMbDG5E7tpb7NTeJDnT6JxKs7faN7hyCALFUWs=',
+  agents_marketplace: 'igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=',
   nft_staking: 'hXcRjpclnq0jsonSIemM17+tszcWpPjWKtCPUfnMuME=',
   tro_staking: 'Jf5ZhzAGu58ez0njdWoZAnRxP7YevYSX9dpO8pGq7SA=',
   tro_staking_legacy: 'Kz0+zcj7w/3RuOl5m6dumxA9dhFOideb7jGKTam2VVA=',

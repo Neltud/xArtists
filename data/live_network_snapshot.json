@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-14T04:35:00Z",
+  "updated": "2026-10-16T04:35:00Z",
   "source": "api.multiversx.com",
   "network": "mainnet",
   "api_health": {
@@ -7,25 +7,25 @@
     "economics": 200,
     "accounts": 200,
     "tokens": 200,
-    "note": "Probe 14 Oct 2026. Supernova refreshRate 600. Not a live trading flag."
+    "note": "Probe 16 Oct 2026. Supernova refreshRate 600. Not a live trading flag."
   },
   "economics": {
-    "egld_price_usd": 3.76,
+    "egld_price_usd": 3.71,
     "egld_price_source": "api.multiversx.com/economics",
-    "market_cap_usd": 116388882,
-    "circulating": 30954490,
-    "staked": 14266945,
-    "apr": 0.088683,
+    "market_cap_usd": 114893610,
+    "circulating": 30968628,
+    "staked": 14270031,
+    "apr": 0.088742,
     "stale": false
   },
   "stats": {
     "refreshRate": 600,
-    "epoch": 2262,
-    "roundsPassed": 71793,
+    "epoch": 2264,
+    "roundsPassed": 71805,
     "roundsPerEpoch": 144000,
-    "accounts": 9270672,
-    "transactions": 632150911,
-    "blocks": 144598421,
+    "accounts": 9272324,
+    "transactions": 632550690,
+    "blocks": 145746889,
     "shards": 3,
     "stale": false
   },
@@ -34,7 +34,12 @@
     "balance_egld": 1.603782,
     "nonce": 1473,
     "stale": false,
-    "last_live": "2026-10-14T04:35:00Z"
+    "last_live": "2026-10-16T04:35:00Z"
+  },
+  "agents_marketplace": {
+    "codeHash": "igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=",
+    "balance_egld": 0.013,
+    "note": "buyPack upgrade. Dust is old micro-price tests, not 10/5/2.5 sales."
   },
   "notes": "Read-only. LIA_LIVE_TRADING=0. Slot isPayable=false. Listing #2 only. Do not fund legacy placeholders."
 }

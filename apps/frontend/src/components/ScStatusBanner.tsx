@@ -98,9 +98,8 @@ export default function ScStatusBanner({ className = '' }: { className?: string 
         </span>
       </div>
       <p className="mt-1 text-[11px] opacity-80">
-        List / Buy / Bid on-chain seulement après codeHash ≠ null et{' '}
-        <code>VITE_*_CODEHASH_OK=1</code>. Jusque-là : consultation + Studio / pin — pas de faux « market
-        live ». Voir docs/CLICK_TX_MATRIX.md.
+        List / Buy / Bid seulement si le codeHash explorer égale le hash attendu (déverrouillage
+        runtime). Le flag Pages est optionnel. Slot REAL reste fermé tant que isPayable=false.
       </p>
     </div>
   )

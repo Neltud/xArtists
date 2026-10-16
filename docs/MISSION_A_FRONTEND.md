@@ -24,7 +24,7 @@
 |----|---------|----------|
 | venue_split | `…suq3vhxq2vje2y` | `SRrGio4iLmtQrb22JJhapwobNgavYsoQ52WmfT1owuY=` |
 | nft_marketplace | `…h9lvhxqq8txmm` | `8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=` |
-| agents_marketplace | `…xcwvhxqgdqwsg` | `tDIcnNMbDG5E7tpb7NTeJDnT6JxKs7faN7hyCALFUWs=` |
+| agents_marketplace | `…xcwvhxqgdqwsg` | `igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=` |
 | nft_staking | `…e7tvhxq4fgtgu` | `hXcRjpclnq0jsonSIemM17+tszcWpPjWKtCPUfnMuME=` |
 | tro_staking | `…p7mvhxq9xvpwf` | `Kz0+zcj7w/3RuOl5m6dumxA9dhFOideb7jGKTam2VVA=` |
 | tro_governance | `…4wcvhxq9e9euy` | `+9aNhboFyQuvteDzjkiQHdRTlXAtFyijK+iXV74UOsQ=` |

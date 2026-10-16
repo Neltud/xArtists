@@ -1,6 +1,6 @@
 # ACTIVE_CONTEXT — xArtists (live system state)
 
-**Last updated:** 2026-10-15  
+**Last updated:** 2026-10-16  
 **Branch:** `main`  
 **Owner / Ops:** Grok (local Dev/Ops) · Gemini Flash (Lead Architect / Audit) · LIA (Vellum Trading & Curation)
 
@@ -11,7 +11,8 @@
 | Item | Value |
 |------|--------|
 | SC address | `erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg` |
-| codeHash | `igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=` |
+| codeHash | `igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=` (buyPack upgrade — **not** `tDIcnNMb…`) |
+| Balance | **0.013 EGLD** (micro-price `buyPack` tests, not 10/5/2.5 sales) |
 | Owner | `erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g` |
 | Admin wallet | `erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l` |
 

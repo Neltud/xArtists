@@ -5,23 +5,24 @@
 dApp (GitHub Pages): https://neltud.github.io/xArtists/  
 Repo: https://github.com/Neltud/xArtists  
 
-**Status (2026-10-14): GO_LIVE SC · LIA paper · slot non payable · listing #2 actif · musée WebGL**
-- Product SCs: codeHash **inchangés**, re-sondés **14 oct 2026**, epoch **2262**, refreshRate 600
-- Market `isPayable=true`. Listing **#1 inactif**. Listing **#2 actif** ASFT-a6273a-01 à **0,25 EGLD**, bid **0,01** encore locké. Le Buy n’invente plus l’id 1
+**Status (2026-10-16): GO_LIVE SC · packs déverrouillés (codeHash buyPack) · LIA paper · slot non payable · listing #2 actif**
+- Product SCs re-sondés **16 oct 2026**, epoch **2264**, refreshRate 600. Seul le codeHash **agents** a changé (upgrade `buyPack`) : `igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=`
+- Le front comparait encore le hash d’avant upgrade → `canBuyAgent()` restait faux en prod (`VITE_AGENTS_CODEHASH_OK` vide). Corrigé. Prix officiels inchangés : Pulse **10** / Yield **5** / Sentinel **2.5** EGLD
+- Agents SC **0,013 EGLD** = essais `buyPack` à micro-prix, pas des ventes 10/5/2.5
+- Market `isPayable=true`. Listing **#1 inactif**. Listing **#2 actif** ASFT-a6273a-01 à **0,25 EGLD**, bid **0,01**. Le Buy n’invente plus l’id 1
 - Market balance **0,0175 EGLD** = fees **0,0075** + bid **0,01**. Fee **300 bps**
-- Slot house **0,5000 EGLD**, `isPayable=false`, min bet **0,001**, spin count 0. REAL fermé. Upgrade metadata du **même** contrat, pas un nouveau deploy
-- TRO stake **3 TRO**. LIA Ops **1,6038 EGLD**, nonce **1473**, trading **paper**
-- EGLD **$3,76** API · mcap ~$116,4M · circ 30,95M · staked 14,27M · APR ~8,87%
-- $TRO circ **476 224** · **562** comptes · ~$0,000082 · mcap ~$39
+- Slot house **0,5000 EGLD**, `isPayable=false`, min bet **0,001**, spin count 0. Le runtime ne déverrouille plus le spin REAL sur un simple codeHash
+- LIA Ops **1,6038 EGLD**, nonce **1473**, trading **paper**
+- EGLD **$3,71** API · mcap ~$114,9M · circ 30,97M · staked 14,27M · APR ~8,87%
+- $TRO circ **476 224** · **562** comptes · ~$0,000080 · mcap ~$38
 - NFTUDURI **152** / **41** holders
-- Musée : salle Three.js restaurée (le 13 oct Pages servait le repli CSS). Sortie d’immersion. Pas de spend
+- Routes orphelines rebranchées : `/rwa`, `/history`, `/digital-twin`, `/agents/voyage`, alias `/entity` et `/sim`
 - Treasury dest **null** — ne pas router les frais
-- Intent xPortal : un hash collé n’est « exécuté » qu’après preuve API (succès + wallet connecté). Pas de broadcast agent
 - `ci-cd.yml` (wipe docs + deploy vide) **désactivé**. Go-live = `static.yml`
 - Legacy empty placeholders must **never** receive funds
 - Not a retail investment fund. Tips ≠ investment. User Connect ≠ LIA Ops.
 
-Recap + veille (14 oct) : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)  
+Recap + veille (16 oct) : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)  
 Demo : https://neltud.github.io/xArtists/#/demo · GO_LIVE : https://neltud.github.io/xArtists/#/go-live
 
 ---
@@ -98,7 +99,7 @@ See [`README_LIA.md`](README_LIA.md) and [`docs/AUTONOMOUS_LIA.md`](docs/AUTONOM
 
 | Doc | Role |
 |-----|------|
-| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap + veille **14 oct** |
+| [ANALYSE_DAPP_COMPLETE.md](docs/ANALYSE_DAPP_COMPLETE.md) | Recap + veille **16 oct** |
 | [SLOT_PAYABLE_UPGRADE.md](docs/SLOT_PAYABLE_UPGRADE.md) | Pourquoi le spin EGLD est rejeté |
 | [MX8004_FIRST100_ALIGNMENT.md](docs/MX8004_FIRST100_ALIGNMENT.md) | Phase 4 / First 100 — LIA → MX-8004 |
 | [DEMO_WALKTHROUGH.md](docs/DEMO_WALKTHROUGH.md) | Parcours démo `/demo` |

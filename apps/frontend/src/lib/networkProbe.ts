@@ -118,24 +118,24 @@ async function getJsonSoft<T>(path: string): Promise<T | null> {
   }
 }
 
-/** Last-known fallback — 2026-10-14 probe. Never used as "live" chrome. */
+/** Last-known fallback — 2026-10-16 probe. Never used as "live" chrome. */
 export const FALLBACK_SNAPSHOT: NetworkSnapshot = {
-  probedAt: '2026-10-14T04:35:00Z',
+  probedAt: '2026-10-16T04:35:00Z',
   ok: false,
   degraded: true,
   api: { stats: false, economics: false, accounts: false, tokens: false },
-  epoch: 2262,
+  epoch: 2264,
   refreshRate: 600,
   roundsPerEpoch: 144000,
-  roundsPassed: 71793,
-  accounts: 9270672,
-  transactions: 632150911,
-  blocks: 144598421,
-  egldPrice: 3.76,
-  marketCap: 116388882,
-  circulating: 30954490,
-  staked: 14266945,
-  apr: 0.088683,
+  roundsPassed: 71805,
+  accounts: 9272324,
+  transactions: 632550690,
+  blocks: 145746889,
+  egldPrice: 3.71,
+  marketCap: 114893610,
+  circulating: 30968628,
+  staked: 14270031,
+  apr: 0.088742,
   liaOps: { balanceEgld: 1.603782, nonce: 1473, stale: true },
   grokyversx: { balanceEgld: 0, nonce: 8, stale: true },
   sc: {

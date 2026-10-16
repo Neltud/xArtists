@@ -100,9 +100,14 @@ export default function TreasuryFlowsPanel() {
           Location salles
         </Link>
         {' · '}
-        <Link to="/docs" className="text-zinc-500 hover:underline">
+        <a
+          href="https://github.com/Neltud/xArtists/blob/main/docs/TREASURY_FLOWS.md"
+          className="text-zinc-500 hover:underline"
+          target="_blank"
+          rel="noreferrer"
+        >
           docs/TREASURY_FLOWS.md
-        </Link>
+        </a>
         {' · '}
         <Link to="/go-live" className="text-zinc-500 hover:underline">
           GO_LIVE

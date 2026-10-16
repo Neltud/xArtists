@@ -1,8 +1,8 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-10-11",
-  "chain_note": "Product SCs codeHash unchanged (re-probed 11 Oct 2026, epoch 2259, refreshRate 600). Market isPayable=true, 0.0175 EGLD = 0.0075 fees + 0.01 bid on listing #2 (active, ASFT-a6273a-01 @ 0.25). Listing #1 inactive \u2014 UI must not buy id 1. Slot house 0.5 EGLD but isPayable=false so spinEgld is rejected. LIA ops 1.603782 EGLD nonce 1473, trading paper. EGLD $3.91. Treasury dest null. Do not use LEGACY_EMPTY placeholders.",
+  "updated": "2026-10-16",
+  "chain_note": "Product SCs re-probed 16 Oct 2026, epoch 2264, refreshRate 600. agents_marketplace codeHash is the buyPack upgrade (igm9oUpgad\u2026). Balance 0.013 EGLD = historical micro buyPack tests, not the official 10/5/2.5 prices. Market isPayable=true, 0.0175 EGLD = 0.0075 fees + 0.01 bid on listing #2 (active, ASFT-a6273a-01 @ 0.25). Listing #1 inactive. Slot house 0.5 EGLD, isPayable=false, spin count 0. LIA ops 1.603782 EGLD nonce 1473, trading paper. EGLD $3.71 API. Treasury dest null. Do not use LEGACY_EMPTY placeholders.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -18,7 +18,7 @@
   "codeHash": {
     "venue_split": "SRrGio4iLmtQrb22JJhapwobNgavYsoQ52WmfT1owuY=",
     "nft_marketplace": "8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=",
-    "agents_marketplace": "tDIcnNMbDG5E7tpb7NTeJDnT6JxKs7faN7hyCALFUWs=",
+    "agents_marketplace": "igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=",
     "nft_staking": "hXcRjpclnq0jsonSIemM17+tszcWpPjWKtCPUfnMuME=",
     "tro_staking": "Jf5ZhzAGu58ez0njdWoZAnRxP7YevYSX9dpO8pGq7SA=",
     "tro_staking_legacy": "Kz0+zcj7w/3RuOl5m6dumxA9dhFOideb7jGKTam2VVA=",
@@ -42,14 +42,15 @@
     "slot_casino": 0.5,
     "nft_marketplace": 0.0175,
     "others": 0,
-    "probed": "2026-10-11",
+    "probed": "2026-10-16",
     "slot_isPayable": false,
     "market_isPayable": true,
     "market_fees_egld": 0.0075,
     "lia_ops_egld": 1.603782,
     "tro_stake_atomic": "3000000",
-    "epoch": 2259,
-    "egld_usd": 3.91
+    "epoch": 2264,
+    "egld_usd": 3.71,
+    "agents_marketplace": 0.013
   },
   "proofs": {
     "buyNft_egld_epoch_2250": 0.25,
@@ -66,5 +67,8 @@
     "legacy_nft_staking": "erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl",
     "legacy_tro_governance": "erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8",
     "legacy_nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn"
+  },
+  "verification": {
+    "agents_marketplace": "LIVE codeHash igm9oUpgad\u2026 (buyPack upgrade) \u00b7 0.013 EGLD test dust \u00b7 official prices Pulse 10 / Yield 5 / Sentinel 2.5 EGLD"
   }
 }

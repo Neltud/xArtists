@@ -7,7 +7,7 @@ import { UNLOCK_JOBS, type UnlockKey } from '../config/contracts'
 
 export type { UnlockKey }
 
-const STORAGE = 'xartists_runtime_codehash_v3'
+const STORAGE = 'xartists_runtime_codehash_v4'
 
 type Cache = Partial<Record<UnlockKey, boolean>> & { slotBalance?: number }
 
@@ -41,12 +41,14 @@ export function runtimeUnlockSnapshot(): Cache {
   return readCache()
 }
 
-async function fetchAccount(addr: string): Promise<{ codeHash?: string; balance?: string } | null> {
+async function fetchAccount(
+  addr: string,
+): Promise<{ codeHash?: string; balance?: string; isPayable?: boolean } | null> {
   if (!addr?.startsWith('erd1')) return null
   try {
     const r = await fetch(`https://api.multiversx.com/accounts/${addr}`, { cache: 'no-store' })
     if (!r.ok) return null
-    return (await r.json()) as { codeHash?: string; balance?: string }
+    return (await r.json()) as { codeHash?: string; balance?: string; isPayable?: boolean }
   } catch {
     return null
   }
@@ -82,9 +84,10 @@ export async function refreshRuntimeCodehashes(): Promise<Cache> {
       if (j.key === 'slot') {
         const bal = Number(acc.balance || 0) / 1e18
         cache.slotBalance = bal
-        if (okHash) cache.slot = true
-      } else if (okHash) {
-        cache[j.key] = true
+        // Hash match is not enough: isPayable=false rejects spinEgld.
+        cache.slot = okHash && acc.isPayable === true
+      } else {
+        cache[j.key] = okHash
       }
     }),
   )
