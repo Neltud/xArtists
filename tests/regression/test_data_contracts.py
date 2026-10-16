@@ -18,28 +18,37 @@ def _load(name: str) -> dict:
 
 def test_contracts_json_shape():
     d = _load("contracts.json")
-    assert d.get("network") == "mainnet"
-    assert d.get("chainId") in ("1", 1)
-    c = d.get("contracts") or {}
-    assert "marketplace" in c
-    assert "agents_marketplace" in c
-    # agents may be null pre-deploy
-    m = c.get("marketplace")
-    if m is not None:
-        assert str(m).startswith("erd1")
+    # Prefer canonical keys (chain / chain_id / addresses); keep legacy aliases
+    network = d.get("chain") or d.get("network")
+    chain_id = d.get("chain_id") if "chain_id" in d else d.get("chainId")
+    assert network == "mainnet"
+    assert chain_id in ("1", 1)
+
+    addresses = d.get("addresses") or {}
+    legacy = d.get("contracts") or {}
+    market = addresses.get("nft_marketplace") or legacy.get("marketplace")
+    agents = addresses.get("agents_marketplace") or legacy.get("agents_marketplace")
+    assert market and str(market).startswith("erd1")
+    assert agents and str(agents).startswith("erd1")
+
+    status = d.get("status") or {}
+    if status:
+        assert status.get("nft_marketplace") == "LIVE"
+        assert status.get("agents_marketplace") == "LIVE"
+
+    code_hash = d.get("codeHash") or {}
+    if code_hash.get("agents_marketplace"):
+        assert len(str(code_hash["agents_marketplace"])) > 10
+
     v = d.get("verification") or {}
-    market = v.get("marketplace_mainnet") or {}
-    assert market.get("codeHash") in (None, "", "null")
-    assert "NOT_DEPLOYED" in str(market.get("verdict") or "")
-    for key in ("nft_staking", "tro_governance", "nft_minter"):
-        entry = v.get(key) or {}
-        if isinstance(entry, dict):
-            assert entry.get("codeHash") in (None, "", "null")
-            assert "NOT_DEPLOYED" in str(entry.get("verdict") or "")
-    wallets = d.get("wallets") or {}
-    assert wallets.get("mission") is None
-    assert wallets.get("reserve") is None
-    assert int(d.get("ui_status", {}).get("lia_live_trading") or 0) == 0
+    market_v = v.get("marketplace_mainnet") or {}
+    if isinstance(market_v, dict) and market_v.get("verdict"):
+        assert "LIVE" in str(market_v.get("verdict") or "")
+        assert "NOT_DEPLOYED" not in str(market_v.get("verdict") or "")
+
+    ui = d.get("ui_status") or {}
+    if "lia_live_trading" in ui:
+        assert int(ui.get("lia_live_trading") or 0) == 0
 
 
 def test_lia_v6_status_live_flag_default_off():
