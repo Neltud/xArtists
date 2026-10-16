@@ -1,5 +1,16 @@
 # Changelog — xArtists
 
+## [0.110.1](https://github.com/Neltud/xArtists/compare/v0.110.0...v0.110.1) (2026-10-16)
+
+
+### Bug Fixes
+
+* **agents:** unlock packs on the buyPack codeHash ([d728c49](https://github.com/Neltud/xArtists/commit/d728c49736dfe078298ba6b03b1cd980ad4c13b4))
+* **lia:** add allocate_budget and fuse_brain_outputs compat wrappers ([fa95524](https://github.com/Neltud/xArtists/commit/fa95524231edd83ba86acb6fd169e2819bc271d9))
+* **pricing:** AGENT_PACKS list prices Pulse 10 / Yield 5 / Sentinel 2.5 EGLD ([9964ada](https://github.com/Neltud/xArtists/commit/9964ada68a275b7bba5c58470f4f57e11d05311e))
+* **pricing:** align UI pack list prices with on-chain 10/5/2.5 EGLD ([5138b96](https://github.com/Neltud/xArtists/commit/5138b96d51e2ba4f5d3dce95b78973af6444f3e7))
+* **regression:** allocate_budget/fuse_brain_outputs compat + contracts LIVE shape ([324bd7d](https://github.com/Neltud/xArtists/commit/324bd7d54c52d011b352e3b248f160c49f937398))
+
 ## [0.110.0](https://github.com/Neltud/xArtists/compare/v0.109.0...v0.110.0) (2026-10-15)
 
 
