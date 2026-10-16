@@ -1,56 +1,56 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-16T20:32:58.035Z",
+  "updatedAt": "2026-10-16T23:15:53.048Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792182777633",
-      "timestamp": "20:32",
+      "id": "egld-1792192552456",
+      "timestamp": "23:15",
       "source": "EGLD",
-      "title": "Cotation publique · $3.67 (API MultiversX economics)",
+      "title": "Cotation publique · $3.71 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1792165948000",
+      "id": "rss-CoinTelegraph-0-1792178224000",
+      "timestamp": "19:17",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792171809000",
+      "timestamp": "17:30",
+      "source": "CoinTelegraph",
+      "title": "Crypto PACs escalate spending against Sherrod Brown in Ohio Senate race",
+      "link": "https://cointelegraph.com/news/crypto-pac-fairshake-spending-ohio-senate-race-sherrod-brown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792171305000",
+      "timestamp": "17:21",
+      "source": "CoinTelegraph",
+      "title": "Stablecoin remittances cost 84% less than traditional transfers, report finds",
+      "link": "https://cointelegraph.com/news/stablecoin-remittances-cost-savings-traditional-transfers?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1792165948000",
       "timestamp": "15:52",
       "source": "CoinTelegraph",
       "title": "Crypto Biz: Wall Street closes at 4. Tokenized stocks keep trading",
       "link": "https://cointelegraph.com/news/tokenized-stocks-after-hours-trading-crypto-biz?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1792165543000",
+      "id": "rss-CoinTelegraph-4-1792165543000",
       "timestamp": "15:45",
       "source": "CoinTelegraph",
       "title": "Bitcoin price steadies around $82K after Fed’s Warsh avoids rate-hike hints",
       "link": "https://cointelegraph.com/markets/bitcoin-price-steadies-82k-fed-warsh-avoids-rate-hike-hints?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1792159863000",
+      "id": "rss-CoinTelegraph-5-1792159863000",
       "timestamp": "14:11",
       "source": "CoinTelegraph",
       "title": "Strategy conditionally declares daily dividends as STRC hovers below $100",
       "link": "https://cointelegraph.com/news/strategy-daily-dividends-strc-hovers-below-100?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1792158975000",
-      "timestamp": "13:56",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792158695000",
-      "timestamp": "13:51",
-      "source": "CoinTelegraph",
-      "title": "Ledger’s early implant warnings deserved more action, Karpelès says",
-      "link": "https://cointelegraph.com/news/ledger-early-implant-warnings-mark-karpeles?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792157620000",
-      "timestamp": "13:33",
-      "source": "CoinTelegraph",
-      "title": "Deutsche Bank prepares German crypto custody launch, eyes Asia: Report",
-      "link": "https://cointelegraph.com/news/deutsche-bank-crypto-custody-expansion-asia-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-0-1792162702000",
@@ -79,6 +79,27 @@
       "source": "CoinDesk",
       "title": "Quantum Alliance forms amid warnings 6.4 million bitcoin face future quantum threat",
       "link": "https://www.coindesk.com/tech/2026/10/16/experts-agree-quantum-computers-could-put-satoshi-s-bitcoin-at-risk-but-not-on-what-s-next"
+    },
+    {
+      "id": "egld-1792182777633",
+      "timestamp": "20:32",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.67 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1792158695000",
+      "timestamp": "13:51",
+      "source": "CoinTelegraph",
+      "title": "Ledger’s early implant warnings deserved more action, Karpelès says",
+      "link": "https://cointelegraph.com/news/ledger-early-implant-warnings-mark-karpeles?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1792157620000",
+      "timestamp": "13:33",
+      "source": "CoinTelegraph",
+      "title": "Deutsche Bank prepares German crypto custody launch, eyes Asia: Report",
+      "link": "https://cointelegraph.com/news/deutsche-bank-crypto-custody-expansion-asia-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "egld-1792166912356",
@@ -177,27 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Sweden revisits digital krona as ECB advances digital euro plans",
       "link": "https://cointelegraph.com/news/sweden-riksbank-digital-krona-cbdc-legislation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792079165000",
-      "timestamp": "15:46",
-      "source": "CoinTelegraph",
-      "title": "Mastercard brings stablecoin balances into traditional banking and card payments",
-      "link": "https://cointelegraph.com/news/mastercard-bvnk-global-money-platform-stablecoins?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792077044000",
-      "timestamp": "15:10",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin slips under $80K after US PPI gains most in four years",
-      "link": "https://cointelegraph.com/markets/bitcoin-price-breaks-under-80k-after-us-ppi-gains-most-in-over-4-years?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792090082000",
-      "timestamp": "18:48",
-      "source": "CoinDesk",
-      "title": "At the White House, crypto policy vacancy looms large",
-      "link": "https://www.coindesk.com/news-analysis/2026/10/15/at-the-white-house-crypto-policy-vacancy-looms-large"
     }
   ]
 }
