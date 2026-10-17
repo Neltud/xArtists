@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-17T15:00:49.078Z",
+  "updatedAt": "2026-10-17T20:10:56.756Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792249248592",
-      "timestamp": "15:00",
+      "id": "egld-1792267856276",
+      "timestamp": "20:10",
       "source": "EGLD",
-      "title": "Cotation publique · $3.62 (API MultiversX economics)",
+      "title": "Cotation publique · $3.63 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -53,18 +53,39 @@
       "link": "https://cointelegraph.com/news/crypto-pac-fairshake-spending-ohio-senate-race-sherrod-brown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinDesk-0-1792245600000",
+      "id": "rss-CoinDesk-0-1792256400000",
+      "timestamp": "17:00",
+      "source": "CoinDesk",
+      "title": "Goldman, Wells Fargo, Morgan Stanley see tokenization as a growth play, not a threat",
+      "link": "https://www.coindesk.com/business/2026/10/17/goldman-wells-fargo-morgan-stanley-see-tokenization-as-a-growth-play-not-a-threat"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792249200000",
+      "timestamp": "15:00",
+      "source": "CoinDesk",
+      "title": "Citrini sees a tokenization boom. The harder question is who profits",
+      "link": "https://www.coindesk.com/business/2026/10/17/citrini-sees-a-tokenization-boom-the-harder-question-is-who-profits"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792245600000",
       "timestamp": "14:00",
       "source": "CoinDesk",
       "title": "Polygon sees Coinme acquisition as entry to payments sector dominated by Visa, Stripe",
       "link": "https://www.coindesk.com/business/2026/10/17/polygon-sees-coinme-acquisition-as-entry-to-payments-sector-dominated-by-visa-stripe"
     },
     {
-      "id": "rss-CoinDesk-1-1792238400000",
+      "id": "rss-CoinDesk-3-1792238400000",
       "timestamp": "12:00",
       "source": "CoinDesk",
       "title": "Banks could slow stablecoin growth by paying savers more, BIS paper finds",
       "link": "https://www.coindesk.com/business/2026/10/14/banks-could-slow-stablecoin-growth-by-paying-savers-more-bis-paper-finds"
+    },
+    {
+      "id": "egld-1792249248592",
+      "timestamp": "15:00",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.62 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinDesk-2-1792219188000",
@@ -177,27 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Deutsche Bank prepares German crypto custody launch, eyes Asia: Report",
       "link": "https://cointelegraph.com/news/deutsche-bank-crypto-custody-expansion-asia-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "egld-1792166912356",
-      "timestamp": "16:08",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.69 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792147583773",
-      "timestamp": "10:46",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.77 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1792142533000",
-      "timestamp": "09:22",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin may seek 20-month trend line reclaim before new record highs: CryptoQuant",
-      "link": "https://cointelegraph.com/markets/bitcoin-seeks-20-month-trend-line-reclaim-before-new-record-highs-cryptoquant?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
