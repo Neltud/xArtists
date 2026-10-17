@@ -23,6 +23,8 @@ Probe API du **17 oct ~04:40 UTC**. Tous les codeHash produit matchent la config
 | **Agents SC** | **0,013 EGLD** · endpoint `buyPack` payable · getPackPrice **10 / 5 / 2.5** EGLD |
 | **$TRO** | circ 476 224 · 562 comptes · ~$0,000080 · mcap ~$38 |
 
+**Build.** `static.yml` est rouge depuis le commit live-sign du 16 oct 14:34 UTC : `LiaSignalPanel` importe `buildUserSignPayload`, qui n’était pas exporté. Les déploiements « pages » verts d’après sont le bot Pages sur des ticks `[skip ci]`, pas un rebuild Vite. Le public servait encore **0.111.0**. Ce push exporte la fonction (en paper : `tx: null`), branche le journal Command Center sur l’événement `lia-user-intent`, et **remet `VITE_LIA_LIVE_TRADING=0`** — le `=1` du workflow n’a jamais atteint GitHub Pages. Stamp bundle `0.113.0`.
+
 ---
 
 ## Couches produit
@@ -80,11 +82,12 @@ Probe API du **17 oct ~04:40 UTC**. Tous les codeHash produit matchent la config
 
 Voir [`SUITE_LOGIQUE_NOW.md`](./SUITE_LOGIQUE_NOW.md).
 
-1. **Attendre décision Upbit 19–23 oct** avant tout live trading LIA.
-2. **1 TX user** micro (stake TRO / buy pack Sentinel / bid #2) documentée explorer.
-3. Garder Slot REAL fermé.
-4. Ne pas committer `VITE_*_CODEHASH_OK=1`.
-5. Après Upbit OK : micro-trade LIA signé + MX-8004 + fund slot progressif.
+1. **Ce push** répare `static.yml` (export manquant) et republie le front. Vérifier le workflow vert, puis hard refresh.
+2. **Attendre décision Upbit 19–23 oct** avant tout live trading LIA.
+3. **1 TX user** micro (stake TRO / buy pack Sentinel / bid #2) documentée explorer.
+4. Garder Slot REAL fermé.
+5. Ne pas committer `VITE_*_CODEHASH_OK=1`.
+6. Après Upbit OK : micro-trade LIA signé + MX-8004 + fund slot progressif.
 
 ---
 

@@ -36,14 +36,14 @@ describe('gates', () => {
   })
 })
 
-describe('fallback snapshot 16 oct', () => {
+describe('fallback snapshot 17 oct', () => {
   it('is fail-closed and marks stale accounts', () => {
     expect(FALLBACK_SNAPSHOT.sc.marketplace.codeEmpty).toBe(true)
     expect(FALLBACK_SNAPSHOT.liaOps.stale).toBe(true)
     expect(FALLBACK_SNAPSHOT.liaOps.balanceEgld).toBeCloseTo(1.603782)
     expect(FALLBACK_SNAPSHOT.degraded).toBe(true)
-    expect(FALLBACK_SNAPSHOT.epoch).toBe(2264)
+    expect(FALLBACK_SNAPSHOT.epoch).toBe(2265)
     expect(FALLBACK_SNAPSHOT.refreshRate).toBe(600)
-    expect(FALLBACK_SNAPSHOT.egldPrice).toBeCloseTo(3.71)
+    expect(FALLBACK_SNAPSHOT.egldPrice).toBeCloseTo(3.7)
   })
 })

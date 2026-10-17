@@ -68,8 +68,8 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=4096
           VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
-          VITE_APP_BUILD: "3.10.0"
-          VITE_LIA_LIVE_TRADING: "1"
+          VITE_APP_BUILD: "0.113.0"
+          VITE_LIA_LIVE_TRADING: "0"
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
           VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
           VITE_MARKETPLACE_CODEHASH_OK: ${{ secrets.VITE_MARKETPLACE_CODEHASH_OK }}
@@ -87,7 +87,7 @@ jobs:
           VITE_XARTISTS_NFT_COLLECTIONS: XAR-cee2e0,AGR-9bd53e,ALISTOR-a646bc,ASFT-a6273a,BGG-2b627c,HP47X2-b71543,MAS-5189b6,NFTUDURI-2990b6,XTR-e5072b,XAUS-d9cf1f,TRO-652d6d
 
       - name: Capture build error log
-        if: steps.vite_build.outcome == 'failure'
+        if: failure()
         working-directory: .
         run: |
           mkdir -p docs
@@ -95,7 +95,7 @@ jobs:
           echo 'Build failed — see docs/BUILD_ERROR.txt'
 
       - name: Fail if build failed
-        if: steps.vite_build.outcome == 'failure'
+        if: failure()
         run: exit 1
 
       - name: Prepare Pages artifact

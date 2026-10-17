@@ -46,7 +46,20 @@ export default function IntentXPortalPanel() {
   useEffect(() => {
     refresh()
     const id = window.setInterval(refresh, 15_000)
-    return () => window.clearInterval(id)
+    const onIntent = (ev: Event) => {
+      const detail = (ev as CustomEvent<{ intentId?: string; payload?: { summary?: string } }>).detail
+      refresh()
+      if (detail?.intentId) {
+        setToast(
+          `Intent ${detail.intentId.slice(0, 22)} prêt · ${detail.payload?.summary || 'signature xPortal'}`,
+        )
+      }
+    }
+    window.addEventListener('lia-user-intent', onIntent)
+    return () => {
+      window.clearInterval(id)
+      window.removeEventListener('lia-user-intent', onIntent)
+    }
   }, [refresh])
 
   const onPrepare = (entry: JournalEntry) => {

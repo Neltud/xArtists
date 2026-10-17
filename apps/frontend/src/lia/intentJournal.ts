@@ -3,6 +3,7 @@
  * Live = VITE_LIA_LIVE_TRADING=1 · toujours user-sign, jamais PEM autonome.
  */
 import { LIA_GUARDS, LIA_LIVE_TRADING } from '../config/liaConfig'
+import { buildTxFromIntent, describeTx } from './buildIntentTx'
 import { loadIntentFeed, type FeedItem } from './intentFeed'
 
 const KEY = 'xartists_lia_intent_journal_v1'
@@ -161,4 +162,55 @@ export function attachUserTxHash(id: string, txHash: string, ok: boolean): Journ
 export function explorerTxUrl(txHash: string): string {
   const h = txHash.replace(/^0x/, '')
   return `https://explorer.multiversx.com/transactions/${h}`
+}
+
+export type UserSignPayload = {
+  intentId: string
+  mode: 'live_user_sign' | 'paper'
+  liveTrading: boolean
+  action: string
+  assetId: string
+  amount: number
+  summary: string
+  tx: {
+    receiver: string
+    value: string
+    gasLimit: number
+    data: string
+    chainID: '1'
+  } | null
+  note: string
+}
+
+/**
+ * Payload examinable côté UI. En paper : aucune TX.
+ * En live : draft micro plafonné (buildTxFromIntent) — signature xPortal, jamais PEM.
+ */
+export function buildUserSignPayload(entry: JournalEntry): UserSignPayload {
+  const summary = `${entry.action} · ${entry.amount} ${entry.assetId}`
+  if (!LIA_LIVE_TRADING) {
+    return {
+      intentId: entry.id,
+      mode: 'paper',
+      liveTrading: false,
+      action: entry.action,
+      assetId: entry.assetId,
+      amount: entry.amount,
+      summary,
+      tx: null,
+      note: 'Paper — aucune transaction. LIA ne détient aucune clé.',
+    }
+  }
+  const draft = buildTxFromIntent(entry)
+  return {
+    intentId: entry.id,
+    mode: 'live_user_sign',
+    liveTrading: true,
+    action: entry.action,
+    assetId: entry.assetId,
+    amount: entry.amount,
+    summary: describeTx(draft),
+    tx: draft,
+    note: 'Signature xPortal uniquement · micro plafonné · LIA ne broadcast pas seule.',
+  }
 }

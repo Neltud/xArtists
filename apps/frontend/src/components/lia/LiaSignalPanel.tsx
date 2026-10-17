@@ -47,6 +47,8 @@ export default function LiaSignalPanel() {
       } catch {
         /* */
       }
+      setToast(`${payload.note} · ${payload.summary}`)
+      return
     }
     setToast('Intent prêt — signe dans xPortal (LIA ne détient aucune clé).')
   }

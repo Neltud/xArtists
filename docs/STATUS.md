@@ -3,7 +3,8 @@
 | Item | State |
 |------|--------|
 | Verdict | **GO_LIVE SC** (LIA paper — not a retail fund) |
-| Release | **0.112.0** · Neltud/xArtists |
+| Release | **0.112.0** + correctif build (stamp `0.113.0`) · Neltud/xArtists |
+| Pages | `static.yml` rouge depuis le 16 oct — ce push débloque le déploiement Vite |
 | Demo | https://neltud.github.io/xArtists/ |
 | Network | MultiversX mainnet **Supernova 600 ms** (epoch **2265**, J+32) |
 | LIA | paper · `LIA_LIVE_TRADING=0` · **1.6038 EGLD** · nonce **1473** |

@@ -44,7 +44,7 @@ export const MAINNET_ADDRESSES = {
   slot_casino: 'erd1qqqqqqqqqqqqqpgquf3cuv2zsfsahy7ypvter3qcep4ptthsvhxqs4g34f',
 } as const
 
-/** Explorer-verified 2026-10-16 — agents hash is the buyPack upgrade, not the Oct 1 bytecode. */
+/** Explorer-verified 2026-10-17 — hashes unchanged vs 16 Oct. agents hash is the buyPack upgrade. */
 export const MAINNET_CODEHASH = {
   venue_split: 'SRrGio4iLmtQrb22JJhapwobNgavYsoQ52WmfT1owuY=',
   nft_marketplace: '8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=',

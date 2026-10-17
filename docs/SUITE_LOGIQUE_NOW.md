@@ -8,6 +8,7 @@
 - Agents SC codeHash buyPack OK · getPackPrice Pulse **10** EGLD
 - Market **0,0175** · Slot house **0,50** · isPayable=false
 - $TRO ~$0,000080 · 562 comptes · illiquide
+- **Build Pages** : `static.yml` échouait depuis le 16 oct 14:34 UTC (`buildUserSignPayload` non exporté). Le site servait encore **0.111.0**. Corrigé dans ce push. `VITE_LIA_LIVE_TRADING=0` sur le workflow (le `=1` du 16 oct n’a jamais été publié).
 
 ## 1. Ne pas allumer LIA live (bloquant externe)
 

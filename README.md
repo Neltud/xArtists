@@ -5,8 +5,9 @@
 dApp (GitHub Pages): https://neltud.github.io/xArtists/  
 Repo: https://github.com/Neltud/xArtists
 
-**Status (2026-10-17): GO_LIVE SC · packs déverrouillés (codeHash buyPack) · LIA paper · slot non payable · listing #2 actif**
+**Status (2026-10-17): GO_LIVE SC · build Pages réparé · LIA paper · slot non payable · listing #2 actif**
 
+- `static.yml` était rouge depuis le 16 oct (`buildUserSignPayload` manquant) — le site public restait sur **0.111.0**. Corrigé : export + bundle stamp `0.113.0`, `VITE_LIA_LIVE_TRADING=0`.
 - Product SCs re-sondés **17 oct 2026**, epoch **2265**, refreshRate 600. CodeHash agents = upgrade `buyPack` : `igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=`
 - Runtime SMART-UNLOCK + match explorer → `canBuyAgent()` OK sans secret Pages. Prix officiels : Pulse **10** / Yield **5** / Sentinel **2.5** EGLD
 - Agents SC **0,013 EGLD** = essais micro, pas des ventes 10/5/2.5
