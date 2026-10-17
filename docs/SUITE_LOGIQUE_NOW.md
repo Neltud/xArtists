@@ -1,46 +1,64 @@
-# Suite logique — 1 octobre 2026
+# Suite logique — 17 octobre 2026
 
-## 0. Vérité
+## 0. Vérité (probe live)
 
-SC produit **live** (codeHash). LIA **paper**. House Slot **0.5 EGLD**.
-Probe : epoch 2249 · EGLD $4.45 · LIA Ops 2.0932 EGLD.
+- Epoch **2265** · refreshRate **600** · Supernova J+32
+- EGLD **$3,70** · mcap ~$114,6M · staked 14,27M · APR ~8,88 %
+- LIA Ops **1,6038 EGLD** · nonce 1473 · **paper only**
+- Agents SC codeHash buyPack OK · getPackPrice Pulse **10** EGLD
+- Market **0,0175** · Slot house **0,50** · isPayable=false
+- $TRO ~$0,000080 · 562 comptes · illiquide
 
-## 1. Rebuild GH Pages
+## 1. Ne pas allumer LIA live (bloquant externe)
 
-Push `main` → workflow Pages. Vérifier :
-- Strip mainnet : Market SC **ouvert** (plus empty)
-- `/go-live` : cases SC vertes via runtime explorer
-- `/slot` : house > 0
-- `/marketplace` : plus de copy « SC empty »
+**Upbit** : EGLD en liste « investissement sous surveillance » depuis le 21 sept.
+Fenêtre de décision **19–23 octobre 2026** (dans 2–6 jours).
+→ `LIA_LIVE_TRADING=0` forcé. Pas de micro-trade live tant que la liquidité CEX n’est pas clarifiée.
 
-## 2. Preuve produit (1 TX user)
+## 2. Preuve produit (1 TX user) — priorité P0
 
-Ordre recommandé, micro montants :
+Ordre recommandé, micro montants, wallet **utilisateur** (pas LIA Ops) :
 
-1. Connect xPortal / Web Wallet (pas coller le wallet LIA)
-2. Stake **1 TRO** → `tro_staking`
-3. **ou** List 1 NFT dust → marketplace
-4. **ou** spin Slot MODE REAL après FUN (house déjà fund)
+1. Connect xPortal / Web Wallet
+2. Stake **1 TRO** → tro_staking (déjà prouvé historiquement)
+3. **ou** Buy pack Sentinel 2,5 EGLD (dépense réelle → mint NFT)
+4. **ou** Bid / buy listing #2 (0,25 EGLD) — attention id #1 mort
+5. Documenter tx hash dans `docs/ONCHAIN_MICRO_PROOFS.md`
 
-Documenter tx hash dans `docs/ONCHAIN_MICRO_PROOFS.md`.
+Sans 1 TX user visible explorer → ne pas annoncer « LIVE public retail ».
 
-## 3. Vellum / LIA — rester paper
+## 3. Slot REAL
 
-```bash
-export PYTHONPATH=. CHAIN=1 LIA_LIVE_TRADING=0
-python -m lia.vellum.production_run
-```
+Rester fermé tant que `isPayable=false` sur le compte.
+Ne pas forcer `VITE_SLOT_CODEHASH_OK=1` en secret Pages.
+Runtime gate v4 + balance + isPayable = source de vérité.
 
-Pas de live trading tant que Guardian + caps + kill-switch + 1 micro-trade.
+## 4. Packs agents
 
-## 4. MX-8004
+- Runtime codehash unlock OK (hash buyPack dans config)
+- Prix officiels : Pulse **10** / Yield **5** / Sentinel **2.5** EGLD
+- Paper mint = DEV only
+- Achat live = vrais EGLD + mint on-chain
 
-Inscrire LIA (identity soulbound) — First 100. Ne pas promettre yield.
+## 5. Hygiène technique (cette passe)
 
-## 5. Ne pas faire
+- Deprecations npm : lodash.omit/isequal, uuid@8/9, @multiversx/sdk-network-providers@2 (intégré sdk-core), @walletconnect/sign-client, recharts 2.x, fontawesome 0.2
+- Node 20 → viser Node 22/24 sur runners Pages quand possible
+- Ne pas merger Dependabot majors (vite 8, eslint 10) sans QA
 
-- Merger Dependabot majors (vite 8, eslint 10, vitest 4)
-- Committer `VITE_*_CODEHASH_OK=1`
-- Financer les placeholders `…8354t` / `…xr8cl` / `…e0ca8` / `…nyztkn`
-- Coller le PEM
+## 6. Ne pas faire
+
+- Committer `VITE_*_CODEHASH_OK=1` dans le repo
+- Financer placeholders legacy empty
+- Coller PEM / secrets
 - Annoncer un fonds retail
+- Router fees tant que treasury dest = null
+- Allumer LIA trading avant décision Upbit + Guardian + caps + 1 micro-proof
+
+## 7. Après Upbit (si maintien)
+
+1. 1 micro-trade LIA signé xPortal (ops) + journal
+2. MX-8004 First 100 registration
+3. Fund slot progressive + 1 spin REAL dust
+4. Index listings on-chain (plus d’id manuel)
+5. Akash / VITE_BRAIN_WS optionnel

@@ -1,21 +1,22 @@
-# Status — 2026-10-07 GO_LIVE SC (Pages rebuild)
+# Status — 2026-10-17 GO_LIVE SC (probe live)
 
 | Item | State |
 |------|--------|
 | Verdict | **GO_LIVE SC** (LIA paper — not a retail fund) |
-| Release | **0.90.0** + Pages hotfix · [Neltud/xArtists](https://github.com/Neltud/xArtists) |
+| Release | **0.112.0** · Neltud/xArtists |
 | Demo | https://neltud.github.io/xArtists/ |
-| Network | MultiversX mainnet **Supernova 600 ms** (epoch **2255**, J+27) |
-| LIA | paper · `LIA_LIVE_TRADING=0` · **1.604 EGLD** · nonce 1473 |
-| Product SCs | **LIVE** — 9/9 codeHash (match 1–2 oct, re-probed 7 oct) |
-| Marketplace | 1st sale 0,25 EGLD (ASFT, epoch 2250) · **placeBid 0,01** (epoch 2252) · ASFT-01 escrowed · fee+bid **0.0175** EGLD · buy retry **inactive** |
-| Slot | house **0.50 EGLD** · FUN ok · REAL `spinEgld` **fail** (`wrong number of arguments` / `ESDT expected`) |
-| $TRO | TRO-94c925 · 476 224 / 500 000 · 563 accounts · API **~$0.000093** · mcap ~$44 |
-| TRO stake | **3 TRO** on SC (stake/unstake 1 TRO proved) |
-| Deployer | `erd1kex0p…vl8v0g` · still ops wallet for list/bid/upgrade |
-| Treasury dest | **null** · [PR #87](https://github.com/Neltud/xArtists/pull/87) — do not route the 0,0175 |
+| Network | MultiversX mainnet **Supernova 600 ms** (epoch **2265**, J+32) |
+| LIA | paper · `LIA_LIVE_TRADING=0` · **1.6038 EGLD** · nonce **1473** |
+| Product SCs | **LIVE** — codeHash match config (agents = buyPack upgrade) |
+| Marketplace | balance **0.0175 EGLD** · payable · listing #2 actif 0,25 EGLD · fee+bid |
+| Agents | balance **0.013 EGLD** · codeHash `igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=` · getPackPrice 10/5/2.5 |
+| Slot | house **0.50 EGLD** · `isPayable=false` · REAL spin fermé |
+| $TRO | TRO-94c925 · 476 224 / 500 000 · 562 accounts · API **~$0.000080** |
+| TRO stake | codeHash live · balance SC 0 (stakes already proved) |
+| Deployer | `erd1kex0p…` · ops wallet |
+| Treasury dest | **null** — do not route fees |
 | MX-8004 | First 100 **not registered** |
-| Pages | **hotfix 7 oct** — restore Agents/MyPacks/Tip + PulseContext so `static.yml` builds |
+| Upbit | EGLD **investment warning** since 21 Sep · decision window **19–23 oct 2026** |
 | Recap | [`ANALYSE_DAPP_COMPLETE.md`](./ANALYSE_DAPP_COMPLETE.md) |
 
 Hard refresh: Ctrl+Shift+R
