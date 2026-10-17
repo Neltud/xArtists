@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-16T23:15:53.048Z",
+  "updatedAt": "2026-10-17T03:08:18.484Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792192552456",
-      "timestamp": "23:15",
+      "id": "egld-1792206498165",
+      "timestamp": "03:08",
       "source": "EGLD",
-      "title": "Cotation publique · $3.71 (API MultiversX economics)",
+      "title": "Cotation publique · $3.70 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -79,6 +79,13 @@
       "source": "CoinDesk",
       "title": "Quantum Alliance forms amid warnings 6.4 million bitcoin face future quantum threat",
       "link": "https://www.coindesk.com/tech/2026/10/16/experts-agree-quantum-computers-could-put-satoshi-s-bitcoin-at-risk-but-not-on-what-s-next"
+    },
+    {
+      "id": "egld-1792192552456",
+      "timestamp": "23:15",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.71 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "egld-1792182777633",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Ex-Trump crypto adviser profited after helping pass stablecoin bill: WSJ",
       "link": "https://cointelegraph.com/news/bo-hines-donald-trump-crypto-advisor-nxum-tether-conflict?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1792082999000",
-      "timestamp": "16:49",
-      "source": "CoinTelegraph",
-      "title": "Sweden revisits digital krona as ECB advances digital euro plans",
-      "link": "https://cointelegraph.com/news/sweden-riksbank-digital-krona-cbdc-legislation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
