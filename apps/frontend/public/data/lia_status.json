@@ -1,12 +1,12 @@
 {
   "schema": "lia_status/v1",
-  "ts": "2026-10-17T08:24:28Z",
+  "ts": "2026-10-17T13:32:02Z",
   "paper": true,
   "LIA_LIVE_TRADING": 0,
   "onchain": {
     "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
-    "egld": 1.603782,
-    "egld_usd": 5.9019,
+    "egld": 1.585598,
+    "egld_usd": 5.724,
     "tokens": [
       {
         "identifier": "ASH-a642d1",
@@ -16,7 +16,7 @@
       {
         "identifier": "HTM-f51d55",
         "ticker": "HTM",
-        "balance": 0.0
+        "balance": 82.483141
       },
       {
         "identifier": "HWBTC-49ca31",
@@ -36,7 +36,7 @@
       {
         "identifier": "TRO-94c925",
         "ticker": "TRO",
-        "balance": 10000.0
+        "balance": 6665.494355
       },
       {
         "identifier": "TROMEX-ad38a1",
@@ -61,12 +61,12 @@
       {
         "identifier": "TROWEGLD-ca2874",
         "ticker": "TROWEGLD-ca2874",
-        "balance": 1.421311
+        "balance": 1.865681
       },
       {
         "identifier": "TROXOXNO-500f78",
         "ticker": "TROXOXNO-500f78",
-        "balance": 0.00016
+        "balance": 0.578465
       }
     ],
     "tx_count": null,
@@ -81,17 +81,10 @@
     "LIA_LIVE_TRADING": 0
   },
   "shadow": {
-    "fills": 48,
-    "shadow_pnl_usd": 2.2513,
-    "win_rate": 0.625,
+    "fills": 49,
+    "shadow_pnl_usd": 2.1166,
+    "win_rate": 0.6122,
     "last_shadow": [
-      {
-        "id": "9d6eb169-33b",
-        "side": "BUY",
-        "asset": "TRO",
-        "pnl_usd": 0.0353,
-        "ts": "2026-10-16T14:40:51Z"
-      },
       {
         "id": "2c51987b-5f7",
         "side": "BUY",
@@ -119,6 +112,13 @@
         "asset": "TRO",
         "pnl_usd": 0.1734,
         "ts": "2026-10-17T08:24:28Z"
+      },
+      {
+        "id": "5a1964db-d9b",
+        "side": "BUY",
+        "asset": "TRO",
+        "pnl_usd": -0.1347,
+        "ts": "2026-10-17T13:32:01Z"
       }
     ],
     "source": "lia_paper_legs.json+friction",
