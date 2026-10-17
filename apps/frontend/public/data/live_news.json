@@ -1,42 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-17T03:08:18.484Z",
+  "updatedAt": "2026-10-17T10:11:54.949Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792206498165",
-      "timestamp": "03:08",
+      "id": "egld-1792231914464",
+      "timestamp": "10:11",
       "source": "EGLD",
-      "title": "Cotation publique · $3.70 (API MultiversX economics)",
+      "title": "Cotation publique · $3.68 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1792178224000",
+      "id": "rss-CoinTelegraph-0-1792225931000",
+      "timestamp": "08:32",
+      "source": "CoinTelegraph",
+      "title": "Lagarde says euro-area economy is resilient, digital euro imminent",
+      "link": "https://cointelegraph.com/news/lagarde-says-euro-area-economy-is-resilient-digital-euro-imminent?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792222017000",
+      "timestamp": "07:26",
+      "source": "CoinTelegraph",
+      "title": "Bitget to discontinue services for some users in one-off exercise",
+      "link": "https://cointelegraph.com/news/bitget-to-discontinue-services-for-some-users-in-one-off-exercise?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792178224000",
       "timestamp": "19:17",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1792171809000",
+      "id": "rss-CoinTelegraph-3-1792171809000",
       "timestamp": "17:30",
       "source": "CoinTelegraph",
       "title": "Crypto PACs escalate spending against Sherrod Brown in Ohio Senate race",
       "link": "https://cointelegraph.com/news/crypto-pac-fairshake-spending-ohio-senate-race-sherrod-brown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1792171305000",
+      "id": "rss-CoinTelegraph-4-1792171305000",
       "timestamp": "17:21",
       "source": "CoinTelegraph",
       "title": "Stablecoin remittances cost 84% less than traditional transfers, report finds",
       "link": "https://cointelegraph.com/news/stablecoin-remittances-cost-savings-traditional-transfers?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1792165948000",
+      "id": "rss-CoinTelegraph-5-1792165948000",
       "timestamp": "15:52",
       "source": "CoinTelegraph",
       "title": "Crypto Biz: Wall Street closes at 4. Tokenized stocks keep trading",
       "link": "https://cointelegraph.com/news/tokenized-stocks-after-hours-trading-crypto-biz?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1792219188000",
+      "timestamp": "06:39",
+      "source": "CoinDesk",
+      "title": "‘Wow, it’s a real discovery’: Claude cracks a 25-year NSA number mystery",
+      "link": "https://www.coindesk.com/tech/2026/10/17/wow-it-s-a-real-discovery-claude-cracks-a-25-year-nsa-number-mystery"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792204200000",
+      "timestamp": "02:30",
+      "source": "CoinDesk",
+      "title": "Satoshi-era bitcoin faces a bigger quantum threat after Google’s new Willow breakthrough",
+      "link": "https://www.coindesk.com/tech/2026/10/16/satoshi-era-bitcoin-faces-a-bigger-quantum-threat-after-google-s-new-willow-breakthrough"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792162702000",
+      "timestamp": "14:58",
+      "source": "CoinDesk",
+      "title": "Big Tech's AI auditors will only see what they're shown",
+      "link": "https://www.coindesk.com/opinion/2026/10/16/big-tech-s-ai-auditors-will-only-see-what-they-re-shown"
+    },
+    {
+      "id": "rss-CoinDesk-3-1792149300000",
+      "timestamp": "11:15",
+      "source": "CoinDesk",
+      "title": "Traders will soon be able to bet on whether Coinbase, Robinhood and Marathon will hit their targets",
+      "link": "https://www.coindesk.com/daybook-us/2026/10/16/traders-will-soon-be-able-to-bet-on-whether-coinbase-robinhood-and-marathon-will-hit-their-targets"
+    },
+    {
+      "id": "egld-1792206498165",
+      "timestamp": "03:08",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.70 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-4-1792165543000",
@@ -51,20 +100,6 @@
       "source": "CoinTelegraph",
       "title": "Strategy conditionally declares daily dividends as STRC hovers below $100",
       "link": "https://cointelegraph.com/news/strategy-daily-dividends-strc-hovers-below-100?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792162702000",
-      "timestamp": "14:58",
-      "source": "CoinDesk",
-      "title": "Big Tech's AI auditors will only see what they're shown",
-      "link": "https://www.coindesk.com/opinion/2026/10/16/big-tech-s-ai-auditors-will-only-see-what-they-re-shown"
-    },
-    {
-      "id": "rss-CoinDesk-1-1792149300000",
-      "timestamp": "11:15",
-      "source": "CoinDesk",
-      "title": "Traders will soon be able to bet on whether Coinbase, Robinhood and Marathon will hit their targets",
-      "link": "https://www.coindesk.com/daybook-us/2026/10/16/traders-will-soon-be-able-to-bet-on-whether-coinbase-robinhood-and-marathon-will-hit-their-targets"
     },
     {
       "id": "rss-CoinDesk-2-1792148075000",
@@ -163,41 +198,6 @@
       "source": "CoinDesk",
       "title": "Live updates: Bitcoin back above $82,000, ZEC jumps 11% as ETF outflows continue",
       "link": "https://www.coindesk.com/markets/2026/10/16/live-updates-bitcoin-back-above-usd82-000-zec-jumps-11-as-etf-outflows-continue"
-    },
-    {
-      "id": "rss-CoinDesk-1-1792143381000",
-      "timestamp": "09:36",
-      "source": "CoinDesk",
-      "title": "U.S. judge rejects Gemini’s appeal to void $5 million settlement despite CFTC backing",
-      "link": "https://www.coindesk.com/policy/2026/10/16/u-s-judge-rejects-gemini-s-appeal-to-void-usd5-million-settlement-despite-cftc-backing"
-    },
-    {
-      "id": "rss-CoinDesk-2-1792139688000",
-      "timestamp": "08:34",
-      "source": "CoinDesk",
-      "title": "MSCI approves rules that could eject Strategy, Metaplanet from equity indexes",
-      "link": "https://www.coindesk.com/markets/2026/10/16/msci-approves-rules-that-could-eject-strategy-metaplanet-from-equity-indexes"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792130038000",
-      "timestamp": "05:53",
-      "source": "CoinDesk",
-      "title": "XRP has failed to make holders rich like bitcoin and ether. Here’s why",
-      "link": "https://www.coindesk.com/markets/2026/10/16/xrp-has-failed-to-make-holders-rich-like-bitcoin-and-ether-here-s-why"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1792095671000",
-      "timestamp": "20:21",
-      "source": "CoinTelegraph",
-      "title": "Binance.US seeks $1B valuation in potential $100M funding round: Report",
-      "link": "https://cointelegraph.com/news/binance-us-funding-valuation-billion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1792084485000",
-      "timestamp": "17:14",
-      "source": "CoinTelegraph",
-      "title": "Ex-Trump crypto adviser profited after helping pass stablecoin bill: WSJ",
-      "link": "https://cointelegraph.com/news/bo-hines-donald-trump-crypto-advisor-nxum-tether-conflict?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
