@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-17T20:10:56.756Z",
+  "updatedAt": "2026-10-17T22:54:33.699Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792267856276",
-      "timestamp": "20:10",
+      "id": "egld-1792277673390",
+      "timestamp": "22:54",
       "source": "EGLD",
-      "title": "Cotation publique · $3.63 (API MultiversX economics)",
+      "title": "Cotation publique · $3.57 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -79,6 +79,13 @@
       "source": "CoinDesk",
       "title": "Banks could slow stablecoin growth by paying savers more, BIS paper finds",
       "link": "https://www.coindesk.com/business/2026/10/14/banks-could-slow-stablecoin-growth-by-paying-savers-more-bis-paper-finds"
+    },
+    {
+      "id": "egld-1792267856276",
+      "timestamp": "20:10",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.63 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "egld-1792249248592",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Ledger’s early implant warnings deserved more action, Karpelès says",
       "link": "https://cointelegraph.com/news/ledger-early-implant-warnings-mark-karpeles?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792157620000",
-      "timestamp": "13:33",
-      "source": "CoinTelegraph",
-      "title": "Deutsche Bank prepares German crypto custody launch, eyes Asia: Report",
-      "link": "https://cointelegraph.com/news/deutsche-bank-crypto-custody-expansion-asia-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
