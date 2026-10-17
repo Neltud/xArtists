@@ -1,5 +1,7 @@
 # Suite logique — 17 octobre 2026
 
+**Audit Grok (lecture + write pass) :** [`AUDIT_GROK_2026-10-17.md`](./AUDIT_GROK_2026-10-17.md)
+
 ## 0. Vérité (probe live)
 
 - Epoch **2265** · refreshRate **600** · Supernova J+32
@@ -8,7 +10,7 @@
 - Agents SC codeHash buyPack OK · getPackPrice Pulse **10** EGLD
 - Market **0,0175** · Slot house **0,50** · isPayable=false
 - $TRO ~$0,000080 · 562 comptes · illiquide
-- **Build Pages** : `static.yml` échouait depuis le 16 oct 14:34 UTC (`buildUserSignPayload` non exporté). Le site servait encore **0.111.0**. Corrigé dans ce push. `VITE_LIA_LIVE_TRADING=0` sur le workflow (le `=1` du 16 oct n’a jamais été publié).
+- **Build Pages** : `static.yml` échouait depuis le 16 oct 14:34 UTC (`buildUserSignPayload` non exporté). Le site servait encore **0.111.0**. Corrigé. `VITE_LIA_LIVE_TRADING=0` sur le workflow.
 
 ## 1. Ne pas allumer LIA live (bloquant externe)
 
@@ -24,7 +26,7 @@ Ordre recommandé, micro montants, wallet **utilisateur** (pas LIA Ops) :
 2. Stake **1 TRO** → tro_staking (déjà prouvé historiquement)
 3. **ou** Buy pack Sentinel 2,5 EGLD (dépense réelle → mint NFT)
 4. **ou** Bid / buy listing #2 (0,25 EGLD) — attention id #1 mort
-5. Documenter tx hash dans `docs/ONCHAIN_MICRO_PROOFS.md`
+5. Documenter tx hash dans [`ONCHAIN_MICRO_PROOFS.md`](./ONCHAIN_MICRO_PROOFS.md)
 
 Sans 1 TX user visible explorer → ne pas annoncer « LIVE public retail ».
 
@@ -46,6 +48,7 @@ Runtime gate v4 + balance + isPayable = source de vérité.
 - Deprecations npm : lodash.omit/isequal, uuid@8/9, @multiversx/sdk-network-providers@2 (intégré sdk-core), @walletconnect/sign-client, recharts 2.x, fontawesome 0.2
 - Node 20 → viser Node 22/24 sur runners Pages quand possible
 - Ne pas merger Dependabot majors (vite 8, eslint 10) sans QA
+- **2026-10-17 Grok write pass :** WarpsMintAgent UX honnête · Stripe stub fail-closed · audit doc
 
 ## 6. Ne pas faire
 
