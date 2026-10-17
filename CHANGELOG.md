@@ -1,5 +1,26 @@
 # Changelog — xArtists
 
+## [0.113.0](https://github.com/Neltud/xArtists/compare/v0.112.1...v0.113.0) (2026-10-17)
+
+
+### Features
+
+* **executor:** PayBox multichain router — DecisionProof → Solana/EVM swap intents ([0657550](https://github.com/Neltud/xArtists/commit/0657550e0c34e75ee780501cb9083cc163f0e055))
+
+
+### Bug Fixes
+
+* **access-api:** clearer Stripe stub responses — no false success, explicit TODO path ([0091e56](https://github.com/Neltud/xArtists/commit/0091e56b3b81307d7d5d8f0c6d81638d75ba2872))
+* **ui:** WarpsMintAgent — honest not-implemented state, no fake success alert ([aa852e8](https://github.com/Neltud/xArtists/commit/aa852e837f7b611dc7b0aec42627fc49c033c8a8))
+
+
+### Documentation
+
+* **audit:** Grok deep READ-ONLY + write pass 2026-10-17 — secrets clean, tickets P0-P2, gates paper ([389525f](https://github.com/Neltud/xArtists/commit/389525f060b68b54fcb15506f8dcae81fadf8415))
+* link AUDIT_GROK_2026-10-17 + reinforce P0 proof / paper gates ([7206b4c](https://github.com/Neltud/xArtists/commit/7206b4cfd7462cf7c5d73b2cd57ceda874d7d2b3))
+* Multichain trading brain → PayBox executor (Solana/EVM) — doctrine + gates ([0e69698](https://github.com/Neltud/xArtists/commit/0e69698c5309fe50b06f3780d002e07920d2a27d))
+* **readme:** link AUDIT_GROK_2026-10-17 after deep write pass ([068b907](https://github.com/Neltud/xArtists/commit/068b907012a213c2e704108a7a8cb322c4358590))
+
 ## [0.112.1](https://github.com/Neltud/xArtists/compare/v0.112.0...v0.112.1) (2026-10-17)
 
 
