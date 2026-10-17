@@ -1,42 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-17T10:11:54.949Z",
+  "updatedAt": "2026-10-17T15:00:49.078Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792231914464",
-      "timestamp": "10:11",
+      "id": "egld-1792249248592",
+      "timestamp": "15:00",
       "source": "EGLD",
-      "title": "Cotation publique · $3.68 (API MultiversX economics)",
+      "title": "Cotation publique · $3.62 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1792225931000",
+      "id": "rss-CoinTelegraph-0-1792243740000",
+      "timestamp": "13:29",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792241883000",
+      "timestamp": "12:58",
+      "source": "CoinTelegraph",
+      "title": "Solana shows resilience, but some areas need continued observation, Fidelity says",
+      "link": "https://cointelegraph.com/news/solana-shows-resilience-but-some-areas-need-continued-observation-fidelity-says?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792231207000",
+      "timestamp": "10:00",
+      "source": "CoinTelegraph",
+      "title": "Circle’s Allaire says stablecoin issuer looking to enter 40 developing markets: Report",
+      "link": "https://cointelegraph.com/news/circles-allaire-says-stablecoin-issuer-looking-to-enter-40-developing-markets-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1792225931000",
       "timestamp": "08:32",
       "source": "CoinTelegraph",
       "title": "Lagarde says euro-area economy is resilient, digital euro imminent",
       "link": "https://cointelegraph.com/news/lagarde-says-euro-area-economy-is-resilient-digital-euro-imminent?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1792222017000",
+      "id": "rss-CoinTelegraph-4-1792222017000",
       "timestamp": "07:26",
       "source": "CoinTelegraph",
       "title": "Bitget to discontinue services for some users in one-off exercise",
       "link": "https://cointelegraph.com/news/bitget-to-discontinue-services-for-some-users-in-one-off-exercise?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1792178224000",
-      "timestamp": "19:17",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1792171809000",
+      "id": "rss-CoinTelegraph-5-1792171809000",
       "timestamp": "17:30",
       "source": "CoinTelegraph",
       "title": "Crypto PACs escalate spending against Sherrod Brown in Ohio Senate race",
       "link": "https://cointelegraph.com/news/crypto-pac-fairshake-spending-ohio-senate-race-sherrod-brown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1792245600000",
+      "timestamp": "14:00",
+      "source": "CoinDesk",
+      "title": "Polygon sees Coinme acquisition as entry to payments sector dominated by Visa, Stripe",
+      "link": "https://www.coindesk.com/business/2026/10/17/polygon-sees-coinme-acquisition-as-entry-to-payments-sector-dominated-by-visa-stripe"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792238400000",
+      "timestamp": "12:00",
+      "source": "CoinDesk",
+      "title": "Banks could slow stablecoin growth by paying savers more, BIS paper finds",
+      "link": "https://www.coindesk.com/business/2026/10/14/banks-could-slow-stablecoin-growth-by-paying-savers-more-bis-paper-finds"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792219188000",
+      "timestamp": "06:39",
+      "source": "CoinDesk",
+      "title": "‘Wow, it’s a real discovery’: Claude cracks a 25-year NSA number mystery",
+      "link": "https://www.coindesk.com/tech/2026/10/17/wow-it-s-a-real-discovery-claude-cracks-a-25-year-nsa-number-mystery"
+    },
+    {
+      "id": "rss-CoinDesk-3-1792204200000",
+      "timestamp": "02:30",
+      "source": "CoinDesk",
+      "title": "Satoshi-era bitcoin faces a bigger quantum threat after Google’s new Willow breakthrough",
+      "link": "https://www.coindesk.com/tech/2026/10/16/satoshi-era-bitcoin-faces-a-bigger-quantum-threat-after-google-s-new-willow-breakthrough"
+    },
+    {
+      "id": "egld-1792231914464",
+      "timestamp": "10:11",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.68 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-4-1792171305000",
@@ -51,20 +100,6 @@
       "source": "CoinTelegraph",
       "title": "Crypto Biz: Wall Street closes at 4. Tokenized stocks keep trading",
       "link": "https://cointelegraph.com/news/tokenized-stocks-after-hours-trading-crypto-biz?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792219188000",
-      "timestamp": "06:39",
-      "source": "CoinDesk",
-      "title": "‘Wow, it’s a real discovery’: Claude cracks a 25-year NSA number mystery",
-      "link": "https://www.coindesk.com/tech/2026/10/17/wow-it-s-a-real-discovery-claude-cracks-a-25-year-nsa-number-mystery"
-    },
-    {
-      "id": "rss-CoinDesk-1-1792204200000",
-      "timestamp": "02:30",
-      "source": "CoinDesk",
-      "title": "Satoshi-era bitcoin faces a bigger quantum threat after Google’s new Willow breakthrough",
-      "link": "https://www.coindesk.com/tech/2026/10/16/satoshi-era-bitcoin-faces-a-bigger-quantum-threat-after-google-s-new-willow-breakthrough"
     },
     {
       "id": "rss-CoinDesk-2-1792162702000",
@@ -163,41 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Bitcoin may seek 20-month trend line reclaim before new record highs: CryptoQuant",
       "link": "https://cointelegraph.com/markets/bitcoin-seeks-20-month-trend-line-reclaim-before-new-record-highs-cryptoquant?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1792137586000",
-      "timestamp": "07:59",
-      "source": "CoinTelegraph",
-      "title": "Capital B reports $78M H1 loss driven by Bitcoin impairment charge",
-      "link": "https://cointelegraph.com/news/capital-b-78m-h1-loss-bitcoin-impairment?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1792136609000",
-      "timestamp": "07:43",
-      "source": "CoinTelegraph",
-      "title": "Judge rejects CFTC, Gemini bid to undo $5M settlement",
-      "link": "https://cointelegraph.com/news/judge-rejects-cftc-gemini-5m-settlement-reversal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792131082000",
-      "timestamp": "06:11",
-      "source": "CoinTelegraph",
-      "title": "OpenAI model helped itself to testnet crypto, then kept quiet about it",
-      "link": "https://cointelegraph.com/news/openai-model-spent-testnet-eth-without-authorization?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792127771000",
-      "timestamp": "05:16",
-      "source": "CoinTelegraph",
-      "title": "Balaji’s ‘Singapore of social media’ begins with a wave of bans",
-      "link": "https://cointelegraph.com/news/balajis-singapore-of-social-media-begins-with-a-wave-of-bans?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792144094000",
-      "timestamp": "09:48",
-      "source": "CoinDesk",
-      "title": "Live updates: Bitcoin back above $82,000, ZEC jumps 11% as ETF outflows continue",
-      "link": "https://www.coindesk.com/markets/2026/10/16/live-updates-bitcoin-back-above-usd82-000-zec-jumps-11-as-etf-outflows-continue"
     }
   ]
 }
