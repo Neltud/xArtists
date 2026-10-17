@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.112.1](https://github.com/Neltud/xArtists/compare/v0.112.0...v0.112.1) (2026-10-17)
+
+
+### Bug Fixes
+
+* **lia:** export buildUserSignPayload so Pages can ship 0.113 ([b8b0900](https://github.com/Neltud/xArtists/commit/b8b0900c5a513c98bbac736a7ca860806d37a476))
+
+
+### Documentation
+
+* **status:** probe 17 oct — epoch 2265, Upbit window, suites logiques GO_LIVE SC ([b8e73b6](https://github.com/Neltud/xArtists/commit/b8e73b6b0c577a5d262769da01cbbfd41d5552be))
+
 ## [0.112.0](https://github.com/Neltud/xArtists/compare/v0.111.0...v0.112.0) (2026-10-16)
 
 
