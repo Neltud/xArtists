@@ -1,6 +1,9 @@
 /**
  * Access API — verify-access JWT, SIWX challenge, daily signals, checkout stubs.
  * Sprint 1: POST /v1/verify-access and alias /api/verify-access
+ *
+ * Stripe: server-side only. Never put STRIPE_SECRET_KEY in frontend.
+ * See docs/AUDIT_GROK_2026-10-17.md + issue [P1] Stripe.
  */
 import http from 'node:http'
 import fs from 'node:fs'
@@ -75,6 +78,7 @@ const server = http.createServer(async (req, res) => {
       jwt: Boolean(JWT_SECRET && JWT_SECRET.length >= 16),
       require_siwx: requireSiwx(),
       pulse_collection: Boolean(process.env.PULSE_COLLECTION),
+      stripe_configured: Boolean(STRIPE_KEY),
       service: 'access-api',
     })
     return
@@ -184,11 +188,26 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'POST' && pth === '/v1/checkout/session') {
     const body = await readBody(req)
+    const packId = (body.pack_id || body.packId || '').trim()
+
     if (!STRIPE_KEY) {
-      json(res, 501, { error: 'STRIPE_SECRET_KEY not set' })
+      json(res, 501, {
+        ok: false,
+        error: 'STRIPE_SECRET_KEY not set',
+        hint: 'Configure secret in vault / env only. Never ship to frontend.',
+        pack_id: packId || null,
+      })
       return
     }
-    json(res, 501, { error: 'stripe SDK TODO', pack_id: body.pack_id })
+
+    // TODO [P1]: integrate stripe SDK (create Checkout Session for Pulse/Yield/Sentinel)
+    // Do not return a fake session URL. Fail closed until implemented.
+    json(res, 501, {
+      ok: false,
+      error: 'stripe_sdk_not_implemented',
+      message: 'Stripe Checkout Session creation is not wired yet. See issue [P1] and AUDIT_GROK_2026-10-17.',
+      pack_id: packId || null,
+    })
     return
   }
 
@@ -201,5 +220,5 @@ const server = http.createServer(async (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`access-api :${PORT} siwx=${requireSiwx()}`)
+  console.log(`access-api :${PORT} siwx=${requireSiwx()} stripe=${Boolean(STRIPE_KEY)}`)
 })
