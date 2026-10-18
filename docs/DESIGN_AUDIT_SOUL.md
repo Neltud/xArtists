@@ -1,24 +1,20 @@
 # Design audit — xArtists × soul.io
 
-**Date :** 2026-10-18  
-**Statut :** Surfaces principales protocol-grade livrées
+**Statut :** surfaces produit principales en chrome protocol
 
-## Pages refondues
+## Livré
 
-| Surface | Statut |
-|---------|--------|
-| Design tokens + index.css | ✅ |
-i18n core packs FR/EN (+ ES/DE/ZH) | ✅ |
-Home · Packs · Sale · Header · Footer | ✅ |
-Command Center · Market · Museum | ✅ |
-**LIA · TCA · Wallet · Staking** | ✅ |
+| Surface | ✅ |
+|---------|---|
+| Tokens + index.css | oui |
+| Home · Packs · Sale · Header · Footer | oui |
+| Command Center · Market · Museum | oui |
+| LIA · TCA · Wallet · Staking | oui |
+| **Studio · Portfolio · DAO · LP** | oui |
 
-## Reste optionnel
-- Studio, Portfolio, DAO, LP, Legal tabs — même pattern `xa-*`
-- Sous-composants 3D / holo (CommandWall, ControlRoom) — logique inchangée
-- Checkout legal ES/DE complets
+## Optionnel restant
+- Legal tabs, MyPacks, TroPage, GoLive, minor routes
+- Sous-composants 3D/holo (logique inchangée)
 
 ## Principes
-- Fond sombre, cards surfaces, CTA mono, stats-first
-- Paper / non-custodial toujours visible
-- Prix packs 110 / 75 / 50 € alignés serveur
+`xa-hero` · `xa-card` · `xa-btn-*` · `xa-disclaimer` · paper / non-custodial · prix 110/75/50 €
