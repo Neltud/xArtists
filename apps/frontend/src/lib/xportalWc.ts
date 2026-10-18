@@ -1,7 +1,9 @@
 /**
- * xPortal / WalletConnect V2 — login + multi-TX + session stability.
+ * xPortal / WalletConnect V2 — correct cycle:
+ * init → connect → login({ approval }) → getAddress → UI connected.
+ * QR local only; open app only on explicit user gesture.
  */
-import { XPORTAL_DEEP_LINKS, sdkDappConfig, WALLET_CONNECT_V2_RELAY_URL } from '../config/sdkDapp'
+import { XPORTAL_DEEP_LINKS, sdkDappConfig, WALLET_CONNECT_V2_RELAY_URL, dappOrigin } from '../config/sdkDapp'
 import * as WcNs from '@multiversx/sdk-wallet-connect-provider'
 
 const MAINNET = '1'
@@ -26,6 +28,7 @@ type PlainTx = {
 type XcProvider = {
   init: () => Promise<boolean>
   connect: () => Promise<{ uri?: string; approval: () => Promise<unknown> }>
+  login?: (opts: { approval: () => Promise<unknown> }) => Promise<unknown>
   getAddress?: () => Promise<string>
   address?: string
   signTransactions?: (txs: unknown[]) => Promise<unknown[]>
@@ -40,6 +43,7 @@ type WcCtor = new (
   chainId: string,
   relayUrl: string,
   projectId: string,
+  metadata?: { name?: string; description?: string; url?: string; icons?: string[] },
 ) => XcProvider
 
 let activeProvider: XcProvider | null = null
@@ -47,6 +51,7 @@ let activeAddress: string | null = null
 let restorePromise: Promise<boolean> | null = null
 let signingLock = 0
 let lastPing = 0
+let lastWcUri: string | null = null
 
 function persistAddr(addr: string | null) {
   try {
@@ -57,13 +62,8 @@ function persistAddr(addr: string | null) {
   }
 }
 
-function readPersistedAddr(): string | null {
-  try {
-    const a = sessionStorage.getItem(SESSION_ADDR_KEY)
-    return a && /^erd1[a-z0-9]{58}$/i.test(a) ? a : null
-  } catch {
-    return null
-  }
+export function getLastWcUri(): string | null {
+  return lastWcUri
 }
 
 export function getXPortalSession(): { address: string; provider: XcProvider } | null {
@@ -81,6 +81,7 @@ export function clearXPortalSession(): void {
   }
   activeProvider = null
   activeAddress = null
+  lastWcUri = null
   persistAddr(null)
 }
 
@@ -112,31 +113,38 @@ function isMobileUa(): boolean {
   return /iPhone|iPad|Android/i.test(navigator.userAgent || '')
 }
 
-function presentWcUri(uri: string) {
+/** Publish URI for local QR — does NOT auto-open the app */
+function publishWcUri(uri: string) {
+  lastWcUri = uri
   try {
     window.dispatchEvent(new CustomEvent('xartists-wc-uri', { detail: { uri } }))
   } catch {
     /* */
   }
+}
 
-  const deep =
-    (typeof XPORTAL_DEEP_LINKS.walletConnectUri === 'function'
-      ? XPORTAL_DEEP_LINKS.walletConnectUri(uri)
-      : null) ||
-    `https://maiar.page.link/?apn=com.elrond.maiar.wallet&isi=1519405832&ibi=com.elrond.maiar.wallet&link=${encodeURIComponent(
-      `https://xportal.com/?wallet-connect=${encodeURIComponent(uri)}`,
-    )}`
-
-  if (isMobileUa()) {
-    try {
-      // Prefer native scheme first
-      window.location.href = `xportal://wc?uri=${encodeURIComponent(uri)}`
-    } catch {
-      /* */
+/**
+ * Open xPortal — must be called from a user gesture (button click).
+ * No Firebase dynamic links.
+ */
+export function openXPortalApp(uri?: string): void {
+  const u = uri || lastWcUri
+  if (!u) {
+    window.open(XPORTAL_DEEP_LINKS.web, '_blank', 'noopener,noreferrer')
+    return
+  }
+  const target = XPORTAL_DEEP_LINKS.walletConnectUri(u)
+  try {
+    if (isMobileUa()) {
+      window.location.href = XPORTAL_DEEP_LINKS.walletConnectNative(u)
+      setTimeout(() => {
+        window.open(XPORTAL_DEEP_LINKS.walletConnectHttps(u), '_blank', 'noopener,noreferrer')
+      }, 600)
+    } else {
+      window.open(target, '_blank', 'noopener,noreferrer')
     }
-    setTimeout(() => {
-      window.open(deep, '_blank', 'noopener,noreferrer')
-    }, 400)
+  } catch {
+    window.open(XPORTAL_DEEP_LINKS.walletConnectHttps(u), '_blank', 'noopener,noreferrer')
   }
 }
 
@@ -144,7 +152,6 @@ function makeCallbacks() {
   return {
     onClientLogin: async () => undefined,
     onClientLogout: async () => {
-      // Do not wipe mid-sign — relay flaps kill multi-TX otherwise
       if (signingLock > 0) {
         console.warn('[xArtists] WC logout ignored during sign')
         return
@@ -161,6 +168,15 @@ function makeCallbacks() {
   }
 }
 
+function wcMetadata() {
+  return {
+    name: 'xArtists',
+    description: 'xArtists — MultiversX RWA & agent packs',
+    url: dappOrigin(),
+    icons: [`${dappOrigin()}/favicon.ico`],
+  }
+}
+
 async function readProviderAddress(provider: XcProvider): Promise<string> {
   if (typeof provider.getAddress === 'function') {
     return (await provider.getAddress()).trim()
@@ -169,7 +185,6 @@ async function readProviderAddress(provider: XcProvider): Promise<string> {
   return ''
 }
 
-/** Soft ping — keeps session warm on mobile after app switch */
 export async function pingXPortalSession(): Promise<boolean> {
   const now = Date.now()
   if (now - lastPing < 8000 && activeProvider && activeAddress) return true
@@ -223,6 +238,7 @@ export async function ensureXPortalSession(): Promise<boolean> {
         MAINNET,
         WALLET_CONNECT_V2_RELAY_URL,
         projectId,
+        wcMetadata(),
       )
       await provider.init()
 
@@ -241,7 +257,6 @@ export async function ensureXPortalSession(): Promise<boolean> {
       activeAddress = address
       persistAddr(address)
       lastPing = Date.now()
-      console.info('[xArtists] xPortal session restored', address.slice(0, 12) + '…')
       return true
     } catch (e) {
       console.warn('[xArtists] xPortal restore failed', e)
@@ -254,7 +269,6 @@ export async function ensureXPortalSession(): Promise<boolean> {
   return restorePromise
 }
 
-/** Call on pageshow / visibility — mobile return from xPortal */
 export function installXPortalVisibilityHooks(): () => void {
   if (typeof window === 'undefined') return () => undefined
 
@@ -277,23 +291,24 @@ export function installXPortalVisibilityHooks(): () => void {
   }
 }
 
+/**
+ * Full login cycle:
+ * 1. init
+ * 2. connect → uri + approval
+ * 3. login({ approval }) when available
+ * 4. getAddress → activate UI
+ */
 export async function loginWithXPortalMainnet(
   onProgress?: (p: XPortalLoginProgress) => void,
 ): Promise<{ ok: true; address: string } | { ok: false; error: string }> {
   const projectId = sdkDappConfig.walletConnectV2ProjectId
   if (!projectId || projectId.length < 32) {
-    return {
-      ok: false,
-      error: 'WalletConnect projectId manquant.',
-    }
+    return { ok: false, error: 'WalletConnect projectId manquant.' }
   }
 
   const WalletConnectV2Provider = resolveWalletConnectCtor()
   if (!WalletConnectV2Provider) {
-    return {
-      ok: false,
-      error: 'Module WalletConnect indisponible — utilise Web Wallet.',
-    }
+    return { ok: false, error: 'Module WalletConnect indisponible — utilise Web Wallet.' }
   }
 
   onProgress?.({ phase: 'init', message: 'Initialisation WalletConnect…' })
@@ -304,9 +319,9 @@ export async function loginWithXPortalMainnet(
     return { ok: true, address: activeAddress }
   }
 
-  // Fresh pairing — do not call clear (logout) which races relay
   activeProvider = null
   activeAddress = null
+  lastWcUri = null
 
   try {
     const provider = new WalletConnectV2Provider(
@@ -314,54 +329,54 @@ export async function loginWithXPortalMainnet(
       MAINNET,
       WALLET_CONNECT_V2_RELAY_URL,
       projectId,
+      wcMetadata(),
     )
 
     await provider.init()
     const { uri, approval } = await provider.connect()
 
     if (uri) {
+      publishWcUri(uri)
       onProgress?.({
         phase: 'uri',
         uri,
         message: isMobileUa()
-          ? 'Ouvre xPortal et approuve la session…'
+          ? 'Scanne ou ouvre xPortal (bouton), puis approuve.'
           : 'Scanne le QR avec xPortal.',
       })
-      presentWcUri(uri)
     }
 
     onProgress?.({
       phase: 'waiting',
-      uri,
+      uri: uri || undefined,
       message: 'En attente d’approbation xPortal…',
     })
 
-    // Mobile: keep polling address while user is in app
-    const approvalPromise = approval()
-    const pollDeadline = Date.now() + 120_000
-    while (Date.now() < pollDeadline) {
-      const raced = await Promise.race([
-        approvalPromise.then(() => 'ok' as const),
-        new Promise<'wait'>(r => setTimeout(() => r('wait'), 1500)),
-      ])
-      if (raced === 'ok') break
+    // Canonical: login({ approval }) when SDK exposes it
+    if (typeof provider.login === 'function') {
+      await provider.login({ approval })
+    } else {
+      await approval()
+    }
+
+    // Late approval / race: poll address briefly
+    let address = ''
+    const deadline = Date.now() + 15_000
+    while (Date.now() < deadline) {
       try {
-        const mid = await readProviderAddress(provider)
-        if (/^erd1[a-z0-9]{58}$/i.test(mid)) break
+        address = await readProviderAddress(provider)
+        if (/^erd1[a-z0-9]{58}$/i.test(address)) break
       } catch {
         /* */
       }
+      await new Promise(r => setTimeout(r, 400))
     }
-    try {
-      await approvalPromise
-    } catch {
-      /* may already resolved */
-    }
-
-    const address = await readProviderAddress(provider)
 
     if (!/^erd1[a-z0-9]{58}$/i.test(address)) {
-      return { ok: false, error: 'Adresse xPortal invalide — réessaie le QR.' }
+      return {
+        ok: false,
+        error: 'Adresse xPortal invalide ou session expirée — réessaie le QR.',
+      }
     }
 
     activeProvider = provider
@@ -376,12 +391,15 @@ export async function loginWithXPortalMainnet(
     activeAddress = null
     const msg = e instanceof Error ? e.message : String(e)
     onProgress?.({ phase: 'error', message: msg })
-    if (/reject/i.test(msg)) {
+    if (/reject|denied|user rejected/i.test(msg)) {
       return { ok: false, error: 'Connexion refusée dans xPortal.' }
+    }
+    if (/expir|timeout|cancel/i.test(msg)) {
+      return { ok: false, error: 'Session expirée ou annulée — relance la connexion.' }
     }
     return {
       ok: false,
-      error: `xPortal: ${msg.slice(0, 100)}. Réessaie ou Web Wallet.`,
+      error: `xPortal: ${msg.slice(0, 120)}. Réessaie ou Web Wallet.`,
     }
   }
 }
@@ -403,11 +421,7 @@ async function toSignableTx(plain: PlainTx, sender: string, nonce: number): Prom
     const Transaction = (core as { Transaction?: new (o: Record<string, unknown>) => unknown }).Transaction
     const Address = (core as { Address?: { fromBech32: (s: string) => unknown } }).Address
     const TransactionPayload = (
-      core as {
-        TransactionPayload?: {
-          fromString?: (s: string) => unknown
-        }
-      }
+      core as { TransactionPayload?: { fromString?: (s: string) => unknown } }
     ).TransactionPayload
     if (Transaction && Address) {
       let dataField: unknown = plain.data || ''
@@ -448,7 +462,7 @@ export async function signWithXPortalSession(
     if (!warm || !getXPortalSession()) {
       return {
         ok: false,
-        error: 'Session xPortal expirée. Reconnecte (QR) puis réessaie immédiatement.',
+        error: 'Session xPortal expirée. Reconnecte (QR) puis réessaie.',
       }
     }
 
