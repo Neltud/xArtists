@@ -1,5 +1,41 @@
 # Changelog — xArtists
 
+## [0.114.0](https://github.com/Neltud/xArtists/compare/v0.113.1...v0.114.0) (2026-10-18)
+
+
+### Features
+
+* **agents:** protocol packs page + i18n keys ([4ef0264](https://github.com/Neltud/xArtists/commit/4ef0264e55eeddf6dc8f511bd576acaa97be1977))
+* **cc:** protocol-grade Command Center UI (soul-aligned) ([92ba961](https://github.com/Neltud/xArtists/commit/92ba961f970153b9f399146722a673e1a4c82f5b))
+* **dao:** protocol DAO page chrome ([24e8c2c](https://github.com/Neltud/xArtists/commit/24e8c2ceda9e0e4fdb2d895594ad1d249cce2b90))
+* **footer:** protocol footer chrome ([0a39b75](https://github.com/Neltud/xArtists/commit/0a39b75f8d3381e63ba86b778fe4f53d35b160fe))
+* **header:** cleaner protocol nav (soul-aligned) ([a458105](https://github.com/Neltud/xArtists/commit/a4581054e5672a0bd552ff8dfeb54dac9520debd))
+* **home:** soul-aligned protocol hero + stats + module grid ([fbe0ed8](https://github.com/Neltud/xArtists/commit/fbe0ed8ed317a41e4685959940ce4bd02728f396))
+* **lia:** protocol LIA Hub chrome + i18n ([a6fc592](https://github.com/Neltud/xArtists/commit/a6fc59209d8737d47ed9bfd9d956a6b5b7686956))
+* **lp:** protocol LP pools page chrome ([61d1699](https://github.com/Neltud/xArtists/commit/61d16992b6d563fc94172eebf3bdc9039e25db97))
+* **market:** protocol marketplace UI + clearer tabs ([a619345](https://github.com/Neltud/xArtists/commit/a619345cebe743755a161aef1b4824706eeb37b3))
+* **museum:** protocol gallery chrome + i18n mode labels ([511407a](https://github.com/Neltud/xArtists/commit/511407a95923446bee260a4d25ec2ca2b380e4ba))
+* **portfolio:** protocol portfolio chrome + i18n ([622f92e](https://github.com/Neltud/xArtists/commit/622f92e3ca33dac7b1c1ed75b5d37d5e03627e5d))
+* **sale:** soul-aligned packs sale + i18n FR/EN ([3701e0c](https://github.com/Neltud/xArtists/commit/3701e0c59e7342d0a3700f6a27df6ffa37d43ed8))
+* **staking:** protocol staking & yield chrome ([a57d7a9](https://github.com/Neltud/xArtists/commit/a57d7a91c07a2a272ce50b7a6da55ef87eeda803))
+* **studio:** protocol Creator Studio chrome + i18n ([c6bae27](https://github.com/Neltud/xArtists/commit/c6bae2797438707076f1d4b1a75414442dfd709d))
+* **tca:** protocol TCA gate chrome + clearer access states ([6d5e09a](https://github.com/Neltud/xArtists/commit/6d5e09ad2c99e2eb26096c34a0990ed14e897e86))
+* **wallet:** protocol wallet page + i18n ([41f07a0](https://github.com/Neltud/xArtists/commit/41f07a06c505685781fe7e5693ec4a37b87e8dcc))
+
+
+### Bug Fixes
+
+* **paybox:** refuse client URL checkout that can carry an amount ([fec4554](https://github.com/Neltud/xArtists/commit/fec45543d564237d3bf14c166d92a8246a8478c4))
+* **paybox:** server catalog 110/75/50 EUR as sole price source ([91eba22](https://github.com/Neltud/xArtists/commit/91eba2236e342bc5e1a89b2f841aa784ce90970c))
+
+
+### Documentation
+
+* design audit xArtists vs soul.io + refonte plan i18n ([459edd4](https://github.com/Neltud/xArtists/commit/459edd44735f923d8746eafd696530cae7baff65))
+* mark LIA TCA Wallet Staking protocol chrome done ([80f5949](https://github.com/Neltud/xArtists/commit/80f5949e73c55665b3f5942f6f9f2f8fae4e2414))
+* mark P2–P5 progress on soul redesign ([e005150](https://github.com/Neltud/xArtists/commit/e005150f3cf32943919cbcc45bd8d817a886bd2d))
+* Studio Portfolio DAO LP protocol chrome done ([58648f0](https://github.com/Neltud/xArtists/commit/58648f009d606a800041f5a5651b2fe007aac440))
+
 ## [0.113.1](https://github.com/Neltud/xArtists/compare/v0.113.0...v0.113.1) (2026-10-18)
 
 
