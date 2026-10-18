@@ -4,7 +4,8 @@
  * - Yield  = SILVER (DeFi / LP / claim)
  * - Sentinel = PLATINUM (veille / RWA / zero-trust)
  *
- * Official on-chain list prices (2026-10-15): 10 / 5 / 2.5 EGLD
+ * Official commercial EUR list prices (2026-10-18): 110 / 75 / 50 EUR
+ * Server-side source of truth: services/access_pack/catalog.py
  */
 
 import { PACK_PRICE_EGLD, PACK_PRICE_EUR } from './multichain'
@@ -103,7 +104,7 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     icon: '⚡',
     signalIntensity: 3,
     priceEgld: { min: 10, max: PACK_PRICE_EGLD.max, list: 10 },
-    priceEur: { min: 45, max: PACK_PRICE_EUR.max, list: 45 },
+    priceEur: { min: 50, max: PACK_PRICE_EUR.max, list: 110 },
     strategies: ['MICRO_ARB', 'MOMENTUM', 'MEAN_REVERSION', 'BOARD_TICK'],
     activity: 'Plusieurs cycles / jour — intensité max',
     entitlements: [
@@ -129,7 +130,7 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     icon: '📈',
     signalIntensity: 2,
     priceEgld: { min: 5, max: 22, list: 5 },
-    priceEur: { min: 20, max: 100, list: 22 },
+    priceEur: { min: 30, max: 100, list: 75 },
     strategies: ['YIELD_OPT', 'LP_WATCH', 'COMPOUND_READ'],
     activity: 'Cycles DeFi réguliers — focus pool & staking',
     entitlements: [
@@ -154,7 +155,7 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     icon: '🛡️',
     signalIntensity: 1,
     priceEgld: { min: 2.5, max: 20, list: 2.5 },
-    priceEur: { min: 10, max: 90, list: 12 },
+    priceEur: { min: 20, max: 90, list: 50 },
     strategies: ['GUARD', 'ALERT', 'DRAWDOWN_WATCH', 'BOARD_ALERT'],
     activity: 'Alertes sparses — focus protection & conformité',
     entitlements: [
@@ -171,6 +172,13 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     bps: 2500,
   },
 ]
+
+/** Commercial EUR prices — display + client-side only; never trust for payment */
+export const AGENT_PACKS_EUR = {
+  pulse: { id: 'pulse', name: 'Pulse Pack (Gold)', priceEur: 110, priceCents: 11000 },
+  yield: { id: 'yield', name: 'Yield Pack (Silver)', priceEur: 75, priceCents: 7500 },
+  sentinel: { id: 'sentinel', name: 'Sentinel Pack (Platinum)', priceEur: 50, priceCents: 5000 },
+} as const
 
 export function isFullPack(id: PackId | string): boolean {
   return id === 'pulse'
