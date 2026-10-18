@@ -3,31 +3,31 @@ from __future__ import annotations
 
 from typing import Any
 
-# cents EUR — aligned agentPacks.ts list prices
+# cents EUR — source of truth, aligned with agentPacks.ts commercial list prices
 PACK_CATALOG: dict[str, dict[str, Any]] = {
     "pulse": {
         "id": "pulse",
-        "name": "Pulse",
-        "price_eur": 18,
-        "price_cents": 1800,
+        "name": "Pulse Pack (Gold)",
+        "price_eur": 110,
+        "price_cents": 11000,
         "signal_intensity": 3,
         "strategies": ["MICRO_ARB", "MOMENTUM", "MEAN_REVERSION"],
         "model": "C",
     },
     "yield": {
         "id": "yield",
-        "name": "Yield",
-        "price_eur": 12,
-        "price_cents": 1200,
+        "name": "Yield Pack (Silver)",
+        "price_eur": 75,
+        "price_cents": 7500,
         "signal_intensity": 2,
         "strategies": ["YIELD", "COMPOUND"],
         "model": "C",
     },
     "sentinel": {
         "id": "sentinel",
-        "name": "Sentinel",
-        "price_eur": 8,
-        "price_cents": 800,
+        "name": "Sentinel Pack (Platinum)",
+        "price_eur": 50,
+        "price_cents": 5000,
         "signal_intensity": 1,
         "strategies": ["DEFENSE", "SOCIAL_WATCH", "ADVISOR"],
         "model": "C",
