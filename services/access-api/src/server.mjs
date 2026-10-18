@@ -2,7 +2,8 @@
  * Access API — verify-access JWT, SIWX challenge, daily signals, checkout stubs.
  * Sprint 1: POST /v1/verify-access and alias /api/verify-access
  *
- * Stripe: server-side only. Never put STRIPE_SECRET_KEY in frontend.
+ * Stripe / PayBox: server-side only. Never put secrets in frontend.
+ * Price source of truth: services/access_pack/catalog.py (mirrored here for Node).
  * See docs/AUDIT_GROK_2026-10-17.md + issue [P1] Stripe.
  */
 import http from 'node:http'
@@ -17,6 +18,19 @@ const PORT = Number(process.env.PORT || 8787)
 const JWT_SECRET = process.env.ACCESS_JWT_SECRET || process.env.JWT_SECRET || ''
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || ''
 const CORS = process.env.CORS_ORIGIN || '*'
+
+/** Server-side pack catalog — NEVER trust client amount_cents / amountEur */
+const PACK_CATALOG = {
+  pulse: { id: 'pulse', name: 'Pulse Pack (Gold)', price_eur: 110, price_cents: 11000 },
+  yield: { id: 'yield', name: 'Yield Pack (Silver)', price_eur: 75, price_cents: 7500 },
+  sentinel: { id: 'sentinel', name: 'Sentinel Pack (Platinum)', price_eur: 50, price_cents: 5000 },
+}
+
+function getPack(packId) {
+  const p = PACK_CATALOG[(packId || '').toLowerCase()]
+  if (!p) throw new Error(`unknown pack_id: ${packId}`)
+  return p
+}
 
 function json(res, code, body) {
   const data = body === undefined ? '' : JSON.stringify(body)
@@ -80,6 +94,7 @@ const server = http.createServer(async (req, res) => {
       pulse_collection: Boolean(process.env.PULSE_COLLECTION),
       stripe_configured: Boolean(STRIPE_KEY),
       service: 'access-api',
+      packs: Object.keys(PACK_CATALOG),
     })
     return
   }
@@ -202,17 +217,64 @@ const server = http.createServer(async (req, res) => {
 
     // TODO [P1]: integrate stripe SDK (create Checkout Session for Pulse/Yield/Sentinel)
     // Do not return a fake session URL. Fail closed until implemented.
-    json(res, 501, {
-      ok: false,
-      error: 'stripe_sdk_not_implemented',
-      message: 'Stripe Checkout Session creation is not wired yet. See issue [P1] and AUDIT_GROK_2026-10-17.',
-      pack_id: packId || null,
-    })
+    // Price is always taken from server catalog, never from client body.
+    try {
+      const pack = getPack(packId)
+      json(res, 501, {
+        ok: false,
+        error: 'stripe_sdk_not_implemented',
+        message: 'Stripe Checkout Session creation is not wired yet. See issue [P1] and AUDIT_GROK_2026-10-17.',
+        pack_id: pack.id,
+        amount_cents: pack.price_cents, // server price only
+      })
+    } catch (e) {
+      json(res, 400, { ok: false, error: String(e.message || e) })
+    }
     return
   }
 
+  // PayBox / e-Transactions — price ALWAYS from server catalog. Client amount_cents is ignored.
   if (req.method === 'POST' && pth === '/v1/checkout/paybox') {
-    json(res, 200, { stub: true, order_id: `xa-${Date.now().toString(36)}` })
+    const body = await readBody(req)
+    const packId = (body.pack_id || body.packId || '').trim()
+    const buyer = (body.buyer_address || body.buyerAddress || '').trim()
+    const successUrl = body.success_url || body.returnUrl || ''
+    const cancelUrl = body.cancel_url || ''
+
+    try {
+      const pack = getPack(packId)
+      // Intentionally ignore body.amount_cents / amountEur — prevent price manipulation
+      const orderId = `xa-${pack.id}-${Date.now().toString(36)}`
+
+      // Stub until HMAC Paybox + merchant keys are wired.
+      // Real impl: sign PBX_TOTAL = pack.price_cents, PBX_DEVISE=978, etc.
+      json(res, 200, {
+        ok: true,
+        order_id: orderId,
+        pack_id: pack.id,
+        amount_cents: pack.price_cents,
+        amount_eur: pack.price_eur,
+        buyer_address: buyer || null,
+        // url would be the signed Paybox TPE redirect when configured
+        url: null,
+        mode: 'stub',
+        note: 'Server-side price enforced. Client amount ignored. Wire Paybox HMAC next.',
+        success_url: successUrl || null,
+        cancel_url: cancelUrl || null,
+      })
+    } catch (e) {
+      json(res, 400, { ok: false, error: String(e.message || e) })
+    }
+    return
+  }
+
+  // Block direct GET with amount params (legacy openPayboxCheckout bypass)
+  if (req.method === 'GET' && (pth === '/v1/checkout/paybox' || pth.includes('paybox'))) {
+    json(res, 405, {
+      ok: false,
+      error: 'method_not_allowed',
+      message: 'PayBox checkout must be initiated via POST /v1/checkout/paybox. Amount is server-side only.',
+    })
     return
   }
 
@@ -220,5 +282,5 @@ const server = http.createServer(async (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`access-api :${PORT} siwx=${requireSiwx()} stripe=${Boolean(STRIPE_KEY)}`)
+  console.log(`access-api :${PORT} siwx=${requireSiwx()} stripe=${Boolean(STRIPE_KEY)} packs=${Object.keys(PACK_CATALOG).join(',')}`)
 })
