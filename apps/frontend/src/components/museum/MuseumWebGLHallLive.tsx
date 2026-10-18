@@ -1,6 +1,6 @@
 /**
- * Musee WebGL Live — placeArt textures, click-to-enlarge modal, drag look, joystick.
- * Lighting: Ambient 0.8 + Key 1.45 + Fill 0.55 + Rim point.
+ * Musée WebGL Live — FPS + avatar, dual-touch, fullscreen, prev/next artwork.
+ * Graphite / acid-green chrome overlays.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
@@ -33,26 +33,26 @@ const WALK = MUSEUM_FPS.walkSpeed
 const SPRINT = MUSEUM_FPS.sprintSpeed
 const MAX_ART = 24
 const PITCH_MAX = MUSEUM_FPS.pitchMax
-const CAM_DIST = MUSEUM_FPS.camMaxDist
-const CAM_HEIGHT = 2.2
+const CAM_DIST_AVATAR = MUSEUM_FPS.camMaxDist
+const CAM_HEIGHT_AVATAR = 2.2
 
-/** Hall lighting (v0.110) */
-const AMBIENT_INTENSITY = 0.8
-const KEY_INTENSITY = 1.45
-const FILL_INTENSITY = 0.55
-const RIM_INTENSITY = 0.55
+const AMBIENT_INTENSITY = 0.85
+const KEY_INTENSITY = 1.5
+const FILL_INTENSITY = 0.6
+const RIM_INTENSITY = 0.5
 
 type Theme = 'cyber' | 'stone' | 'gold' | 'white' | 'dark'
+type ViewMode = 'fps' | 'avatar'
 
 const PALETTE: Record<
   Theme,
   { wall: number; floor: number; ceil: number; fog: number; frame: number; emissive: number }
 > = {
-  cyber: { wall: 0x1e2440, floor: 0x0c1020, ceil: 0x141a30, fog: 0x0a0e1c, frame: 0x334155, emissive: 0x22d3ee },
+  cyber: { wall: 0x1e2440, floor: 0x0c1020, ceil: 0x141a30, fog: 0x0a0e1c, frame: 0x334155, emissive: 0xcdf58b },
   stone: { wall: 0x4a4038, floor: 0x242018, ceil: 0x3a3228, fog: 0x1a1610, frame: 0x6b5a48, emissive: 0xc4a574 },
   gold: { wall: 0x4a3c20, floor: 0x221c10, ceil: 0x3a2e18, fog: 0x18140c, frame: 0x7a6530, emissive: 0xe0b84a },
   white: { wall: 0xf0ebe3, floor: 0xd4cdc2, ceil: 0xfaf7f2, fog: 0xc8c0b4, frame: 0xe0d8cc, emissive: 0xa09888 },
-  dark: { wall: 0x242018, floor: 0x12100c, ceil: 0x1a1814, fog: 0x0c0a08, frame: 0x3a3228, emissive: 0x5a544c },
+  dark: { wall: 0x242018, floor: 0x12100c, ceil: 0x1a1814, fog: 0x0c0a08, frame: 0x3a3228, emissive: 0xcdf58b },
 }
 
 function wallGeom(w: WallSeg) {
@@ -81,12 +81,12 @@ function titlePlaceholder(title: string): THREE.CanvasTexture {
   c.width = 256
   c.height = 320
   const ctx = c.getContext('2d')!
-  ctx.fillStyle = '#1a1620'
+  ctx.fillStyle = '#161914'
   ctx.fillRect(0, 0, 256, 320)
-  ctx.strokeStyle = '#a78bfa'
+  ctx.strokeStyle = '#cdf58b'
   ctx.lineWidth = 4
   ctx.strokeRect(8, 8, 240, 304)
-  ctx.fillStyle = '#e4e4e7'
+  ctx.fillStyle = '#f2f5ee'
   ctx.font = 'bold 16px system-ui'
   ctx.textAlign = 'center'
   ctx.fillText((title || 'Oeuvre').slice(0, 22), 128, 160)
@@ -108,19 +108,29 @@ export default function MuseumWebGLHallLive({
   emptyLabel?: string
 }) {
   const mountRef = useRef<HTMLDivElement>(null)
+  const shellRef = useRef<HTMLDivElement>(null)
   const keys = useRef<Record<string, boolean>>({})
   const hold = useRef({ up: false, down: false, left: false, right: false })
   const nearestRef = useRef<FrameItem | null>(null)
+  const viewModeRef = useRef<ViewMode>('fps')
+  const spawnRef = useRef({ x: 0, z: 0, yaw: 0 })
+  const resetReq = useRef(false)
+
   const [ready, setReady] = useState(false)
   const [nearTitle, setNearTitle] = useState('')
   const [avatarSkin] = useState<AvatarSkinId>(() => loadAvatarSkin())
   const [inspect, setInspect] = useState<FrameItem | null>(null)
   const [isCoarse, setIsCoarse] = useState(false)
   const [open, setOpen] = useState(true)
-  const { t } = useI18n()
+  const [viewMode, setViewMode] = useState<ViewMode>('fps')
+  const [fullscreen, setFullscreen] = useState(false)
+
+  const { t, lang } = useI18n()
   const { connected } = useWallet()
   const marketLive = canListBuyNft()
   const pal = PALETTE[room] || PALETTE.stone
+  const isFr = lang === 'fr'
+
   const paintings = useMemo(() => {
     const list = frames.filter(f => !!f.image && f.kind !== 'sculpture').slice(0, MAX_ART)
     return list.map((f, i) => ({
@@ -130,12 +140,48 @@ export default function MuseumWebGLHallLive({
   }, [frames])
 
   useEffect(() => {
+    viewModeRef.current = viewMode
+  }, [viewMode])
+
+  useEffect(() => {
     const mq = window.matchMedia('(pointer: coarse)')
     const apply = () => setIsCoarse(!!mq.matches)
     apply()
     mq.addEventListener?.('change', apply)
     return () => mq.removeEventListener?.('change', apply)
   }, [])
+
+  useEffect(() => {
+    const onFs = () => setFullscreen(!!document.fullscreenElement)
+    document.addEventListener('fullscreenchange', onFs)
+    return () => document.removeEventListener('fullscreenchange', onFs)
+  }, [])
+
+  const toggleFullscreen = useCallback(async () => {
+    const el = shellRef.current
+    if (!el) return
+    try {
+      if (!document.fullscreenElement) await el.requestFullscreen?.()
+      else await document.exitFullscreen?.()
+    } catch {
+      /* */
+    }
+  }, [])
+
+  const goArt = useCallback(
+    (dir: -1 | 1) => {
+      if (!paintings.length) return
+      setArtIndex(i => {
+        const next = (i + dir + paintings.length) % paintings.length
+        const f = paintings[next]
+        if (f) setInspect(f)
+        return next
+      })
+    },
+    [paintings],
+  )
+
+  const [, setArtIndex] = useState(0)
 
   const onBuy = useCallback(
     async (frame: FrameItem) => {
@@ -163,7 +209,7 @@ export default function MuseumWebGLHallLive({
 
   useEffect(() => {
     const mount = mountRef.current
-    if (!mount) return
+    if (!mount || !open) return
     let disposed = false
     let webglPaused = false
     let vx = 0
@@ -174,23 +220,27 @@ export default function MuseumWebGLHallLive({
     const wallH = blueprint.wallHeight || 3.8
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(pal.fog)
-    scene.fog = new THREE.FogExp2(pal.fog, 0.028)
+    scene.fog = new THREE.FogExp2(pal.fog, 0.026)
     const camera = new THREE.PerspectiveCamera(68, 1, 0.08, 90)
     const coarse = window.matchMedia('(pointer: coarse)').matches
     const lowMem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory
     const lowEnd = coarse || (typeof lowMem === 'number' && lowMem > 0 && lowMem <= 4)
+    const reduceMotion =
+      typeof window !== 'undefined' &&
+      !!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
     const renderer = new THREE.WebGLRenderer({
-      antialias: !lowEnd,
+      antialias: !lowEnd && !reduceMotion,
       powerPreference: lowEnd ? 'low-power' : 'high-performance',
       failIfMajorPerformanceCaveat: false,
     })
-    renderer.setPixelRatio(Math.min(devicePixelRatio, lowEnd ? 1.25 : 1.75))
+    renderer.setPixelRatio(Math.min(devicePixelRatio, lowEnd ? 1.15 : reduceMotion ? 1.25 : 1.75))
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.12
+    renderer.toneMappingExposure = 1.14
     mount.appendChild(renderer.domElement)
     const canvas = renderer.domElement
     canvas.style.cssText = 'display:block;width:100%;height:100%;touch-action:none;pointer-events:auto'
+    canvas.tabIndex = 0
 
     const onVisibility = () => {
       webglPaused = document.visibilityState !== 'visible'
@@ -209,20 +259,18 @@ export default function MuseumWebGLHallLive({
     }
     canvas.addEventListener('webglcontextlost', onContextLost, false)
 
-    const floorMat = new THREE.MeshStandardMaterial({ color: pal.floor, roughness: 0.85, metalness: 0.06 })
-    const wallMat = new THREE.MeshStandardMaterial({ color: pal.wall, roughness: 0.9, metalness: 0.04 })
+    const floorMat = new THREE.MeshStandardMaterial({ color: pal.floor, roughness: 0.82, metalness: 0.08 })
+    const wallMat = new THREE.MeshStandardMaterial({ color: pal.wall, roughness: 0.88, metalness: 0.05 })
     const ceilMat = new THREE.MeshStandardMaterial({ color: pal.ceil, roughness: 1, metalness: 0 })
     const floorW = Math.max(4, b.maxX - b.minX + 2)
     const floorD = Math.max(4, b.maxY - b.minY + 2)
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(floorW, floorD), floorMat)
     floor.rotation.x = -Math.PI / 2
     floor.position.set(b.cx, 0, b.cy)
-    floor.frustumCulled = true
     scene.add(floor)
     const ceil = new THREE.Mesh(new THREE.PlaneGeometry(floorW, floorD), ceilMat)
     ceil.rotation.x = Math.PI / 2
     ceil.position.set(b.cx, wallH, b.cy)
-    ceil.frustumCulled = true
     scene.add(ceil)
 
     for (const w of blueprint.walls) {
@@ -231,7 +279,6 @@ export default function MuseumWebGLHallLive({
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(g.len, g.h, thick), wallMat)
       mesh.position.set(g.mx, g.h / 2, g.my)
       mesh.rotation.y = -g.angle
-      mesh.frustumCulled = true
       scene.add(mesh)
     }
 
@@ -242,12 +289,12 @@ export default function MuseumWebGLHallLive({
     const fill = new THREE.DirectionalLight(0xb8c5ff, FILL_INTENSITY)
     fill.position.set(b.cx - 4, wallH * 0.6, b.cy + 3)
     scene.add(fill)
-    const rim = new THREE.PointLight(0xffd9a0, RIM_INTENSITY, 20)
+    const rim = new THREE.PointLight(0xffd9a0, RIM_INTENSITY, 22)
     rim.position.set(b.cx, wallH - 0.5, b.cy)
     scene.add(rim)
 
     const skin0 = loadAvatarSkin()
-    const accent0 = AVATAR_SKINS.find(s => s.id === skin0)?.accent ?? 0x8b5cf6
+    const accent0 = AVATAR_SKINS.find(s => s.id === skin0)?.accent ?? 0xcdf58b
     const avatar = createPlayerAvatar(skin0, accent0)
     scene.add(avatar)
 
@@ -272,16 +319,16 @@ export default function MuseumWebGLHallLive({
         new THREE.PlaneGeometry(1.25, 1.5),
         new THREE.MeshStandardMaterial({
           map: tex,
-          roughness: 0.48,
-          metalness: 0.05,
+          roughness: 0.45,
+          metalness: 0.06,
           emissive: 0x1a1814,
-          emissiveIntensity: 0.14,
+          emissiveIntensity: 0.16,
+          side: THREE.FrontSide,
         }),
       )
-      art.position.set(apx + nx * 0.08, 1.65, apz + nz * 0.08)
+      art.position.set(apx + nx * 0.09, 1.65, apz + nz * 0.09)
       art.rotation.y = -angle
       art.userData.frame = frame
-      art.frustumCulled = true
       scene.add(art)
       pickMeshes.push(art)
     }
@@ -293,9 +340,9 @@ export default function MuseumWebGLHallLive({
       const g = wallGeom(w)
       const onThis = Math.floor(i / nWalls)
       const totalOn = Math.ceil(paintings.length / nWalls)
-      const t = 0.18 + ((onThis + 0.5) / Math.max(1, totalOn)) * 0.64
-      const ax = w.x1 + (w.x2 - w.x1) * t
-      const az = w.y1 + (w.y2 - w.y1) * t
+      const tt = 0.18 + ((onThis + 0.5) / Math.max(1, totalOn)) * 0.64
+      const ax = w.x1 + (w.x2 - w.x1) * tt
+      const az = w.y1 + (w.y2 - w.y1) * tt
       const nx = -Math.sin(g.angle)
       const nz = Math.cos(g.angle)
       const apx = ax + nx * 0.16
@@ -304,16 +351,15 @@ export default function MuseumWebGLHallLive({
         new THREE.BoxGeometry(1.42, 1.7, 0.1),
         new THREE.MeshStandardMaterial({
           color: pal.frame,
-          roughness: 0.4,
-          metalness: 0.28,
+          roughness: 0.38,
+          metalness: 0.32,
           emissive: pal.emissive,
-          emissiveIntensity: 0.55,
+          emissiveIntensity: 0.45,
         }),
       )
       frameMesh.position.set(apx, 1.65, apz)
       frameMesh.rotation.y = -g.angle
       frameMesh.userData.frame = frame
-      frameMesh.frustumCulled = true
       scene.add(frameMesh)
       pickMeshes.push(frameMesh)
       artAnchors.push({ pos: new THREE.Vector3(apx, 1.65, apz), frame })
@@ -348,8 +394,9 @@ export default function MuseumWebGLHallLive({
       px = b.minX + 1.8
       pz = b.minY + 1.8
     }
+    spawnRef.current = { x: px, z: pz, yaw: 0 }
     let yaw = 0
-    let pitch = 0.22
+    let pitch = 0.08
     let facing = 0
     avatar.position.set(px, 0, pz)
 
@@ -364,18 +411,31 @@ export default function MuseumWebGLHallLive({
     renderer.setSize(mount.clientWidth || 640, mount.clientHeight || 400, false)
 
     const kd = (e: KeyboardEvent) => {
-      if (isNavKey(e)) {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      if (isNavKey(e) || ['z', 'q', 'Z', 'Q'].includes(e.key)) {
         e.preventDefault()
         applyNavKey(keys.current, e, true)
+        const kk = e.key.toLowerCase()
+        if (kk === 'z') keys.current.w = true
+        if (kk === 'q') keys.current.a = true
       }
       const k = e.key.toLowerCase()
       if (['w', 'a', 's', 'd', 'shift', 'e'].includes(k)) {
         keys.current[k] = true
         if (k === 'e' && nearestRef.current) setInspect(nearestRef.current)
       }
+      if (k === 'f') void toggleFullscreen()
+      if (k === 'r') resetReq.current = true
+      if (k === 'v') setViewMode(m => (m === 'fps' ? 'avatar' : 'fps'))
+      if (k === 'escape' && document.fullscreenElement) void document.exitFullscreen?.()
     }
     const ku = (e: KeyboardEvent) => {
-      if (isNavKey(e)) applyNavKey(keys.current, e, false)
+      if (isNavKey(e) || ['z', 'q', 'Z', 'Q'].includes(e.key)) {
+        applyNavKey(keys.current, e, false)
+        const kk = e.key.toLowerCase()
+        if (kk === 'z') keys.current.w = false
+        if (kk === 'q') keys.current.a = false
+      }
       const k = e.key.toLowerCase()
       if (['w', 'a', 's', 'd', 'shift', 'e'].includes(k)) keys.current[k] = false
     }
@@ -384,13 +444,14 @@ export default function MuseumWebGLHallLive({
 
     const raycaster = new THREE.Raycaster()
     const pointer = new THREE.Vector2()
-    let dragYaw = false
+    let lookPointerId: number | null = null
     let lastX = 0
     let lastY = 0
     let moved = false
 
     const onPointerDown = (e: PointerEvent) => {
-      dragYaw = true
+      if (lookPointerId != null) return
+      lookPointerId = e.pointerId
       moved = false
       lastX = e.clientX
       lastY = e.clientY
@@ -399,19 +460,26 @@ export default function MuseumWebGLHallLive({
       } catch {
         /* */
       }
+      try {
+        canvas.focus({ preventScroll: true })
+      } catch {
+        /* */
+      }
     }
     const onPointerMove = (e: PointerEvent) => {
-      if (!dragYaw) return
+      if (lookPointerId !== e.pointerId) return
       const dx = e.clientX - lastX
       const dy = e.clientY - lastY
       if (Math.abs(dx) + Math.abs(dy) > 4) moved = true
       lastX = e.clientX
       lastY = e.clientY
-      yaw -= dx * 0.005
-      pitch = Math.max(-PITCH_MAX, Math.min(PITCH_MAX, pitch - dy * 0.003))
+      const sens = coarse ? 0.0065 : 0.0045
+      yaw -= dx * sens
+      pitch = Math.max(-PITCH_MAX, Math.min(PITCH_MAX, pitch - dy * sens * 0.75))
     }
     const onPointerUp = (e: PointerEvent) => {
-      dragYaw = false
+      if (lookPointerId !== e.pointerId) return
+      lookPointerId = null
       try {
         canvas.releasePointerCapture(e.pointerId)
       } catch {
@@ -443,6 +511,17 @@ export default function MuseumWebGLHallLive({
       raf = requestAnimationFrame(loop)
       if (webglPaused) return
       const dt = Math.min(clock.getDelta(), 0.05)
+
+      if (resetReq.current) {
+        resetReq.current = false
+        px = spawnRef.current.x
+        pz = spawnRef.current.z
+        yaw = spawnRef.current.yaw
+        pitch = 0.08
+        vx = 0
+        vz = 0
+      }
+
       const sprint = !!keys.current.shift
       const speed = sprint ? SPRINT : WALK
       let ix = 0
@@ -480,6 +559,8 @@ export default function MuseumWebGLHallLive({
       vz = slide.vz
       avatar.position.set(px, 0, pz)
       avatar.rotation.y = facing
+      const fpsMode = viewModeRef.current === 'fps'
+      avatar.visible = !fpsMode
       walkPhase = tickAvatarWalk(avatar, walkPhase, Math.min(1, Math.hypot(vx, vz) / WALK), dt)
 
       let nearest: FrameItem | null = null
@@ -500,12 +581,21 @@ export default function MuseumWebGLHallLive({
         setNearTitle('')
       }
 
-      camera.position.set(
-        px - Math.sin(yaw) * CAM_DIST * Math.cos(pitch),
-        CAM_HEIGHT + Math.sin(pitch) * 0.5,
-        pz - Math.cos(yaw) * CAM_DIST * Math.cos(pitch),
-      )
-      camera.lookAt(px, EYE * 0.9, pz)
+      if (fpsMode) {
+        camera.position.set(px, EYE, pz)
+        camera.lookAt(
+          px - Math.sin(yaw) * Math.cos(pitch),
+          EYE + Math.sin(pitch),
+          pz - Math.cos(yaw) * Math.cos(pitch),
+        )
+      } else {
+        camera.position.set(
+          px - Math.sin(yaw) * CAM_DIST_AVATAR * Math.cos(pitch),
+          CAM_HEIGHT_AVATAR + Math.sin(pitch) * 0.5,
+          pz - Math.cos(yaw) * CAM_DIST_AVATAR * Math.cos(pitch),
+        )
+        camera.lookAt(px, EYE * 0.9, pz)
+      }
       renderer.render(scene, camera)
     }
     loop()
@@ -543,40 +633,137 @@ export default function MuseumWebGLHallLive({
       }
       if (mount.contains(canvas)) mount.removeChild(canvas)
     }
-  }, [blueprint, paintings, pal, avatarSkin, open])
+  }, [blueprint, paintings, pal, avatarSkin, open, toggleFullscreen])
+
+  const btnCls =
+    'min-h-[44px] min-w-[44px] rounded-full border px-3 py-2 text-[11px] font-semibold backdrop-blur-md transition active:scale-95'
 
   if (!open) {
     return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="w-full min-h-[140px] rounded-2xl border border-white/10 bg-zinc-950 px-4 text-sm text-zinc-200"
-      >
-        {t('museum.enterImmersion')} (2D fallback)
-      </button>
+      <div className="space-y-3">
+        <p className="text-sm text-[var(--xa-text-muted)]">
+          {isFr
+            ? 'WebGL indisponible ou contexte perdu. Repli 2D.'
+            : 'WebGL unavailable or context lost. 2D fallback.'}
+        </p>
+        <button type="button" className="xa-btn-primary" onClick={() => setOpen(true)}>
+          {t('museum.enterImmersion') || (isFr ? 'Réessayer immersion' : 'Retry immersion')}
+        </button>
+      </div>
     )
   }
 
   return (
-    <div className="fixed inset-0 z-[25] w-full h-full overflow-hidden bg-black">
+    <div
+      ref={shellRef}
+      className="fixed inset-0 z-[25] w-full h-full overflow-hidden bg-[#10120f]"
+      role="application"
+      aria-label={isFr ? 'Galerie immersive' : 'Immersive gallery'}
+    >
       <div ref={mountRef} className="absolute inset-0" style={{ pointerEvents: 'auto' }} />
+
       {!ready && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/90">
-          <p className="text-[12px] text-cyan-100/80">{t('museum.loading')}</p>
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#10120f]/95">
+          <p className="text-sm text-[var(--xa-accent)]">
+            {t('museum.loading') || (isFr ? 'Chargement…' : 'Loading…')}
+          </p>
         </div>
       )}
+
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-2 p-3">
+        <div className="pointer-events-auto flex flex-wrap gap-2">
+          <button
+            type="button"
+            className={btnCls}
+            style={{ borderColor: 'var(--xa-border-strong)', background: 'rgba(16,18,15,0.8)', color: 'var(--xa-text)' }}
+            onClick={() => setOpen(false)}
+          >
+            {isFr ? 'Quitter' : 'Exit'}
+          </button>
+          <button
+            type="button"
+            className={btnCls}
+            style={{ borderColor: 'var(--xa-border-strong)', background: 'rgba(16,18,15,0.8)', color: 'var(--xa-text)' }}
+            onClick={() => void toggleFullscreen()}
+          >
+            {fullscreen ? (isFr ? 'Réduire' : 'Exit FS') : isFr ? 'Plein écran' : 'Fullscreen'}
+          </button>
+          <button
+            type="button"
+            className={btnCls}
+            style={{
+              borderColor: 'var(--xa-accent)',
+              background: viewMode === 'fps' ? 'var(--xa-accent-soft)' : 'rgba(16,18,15,0.8)',
+              color: 'var(--xa-text)',
+            }}
+            onClick={() => setViewMode(m => (m === 'fps' ? 'avatar' : 'fps'))}
+          >
+            {viewMode === 'fps' ? 'FPS' : 'Avatar'}
+          </button>
+          <button
+            type="button"
+            className={btnCls}
+            style={{ borderColor: 'var(--xa-border-strong)', background: 'rgba(16,18,15,0.8)', color: 'var(--xa-text)' }}
+            onClick={() => {
+              resetReq.current = true
+            }}
+          >
+            Reset
+          </button>
+        </div>
+        <div
+          className="pointer-events-none max-w-[50%] rounded-full border px-3 py-1.5 text-[11px] text-[var(--xa-text-secondary)] backdrop-blur-md"
+          style={{ borderColor: 'var(--xa-border)', background: 'rgba(16,18,15,0.75)' }}
+        >
+          {isFr ? 'WASD/ZQSD · glisser regard · E inspecter' : 'WASD · drag look · E inspect'}
+        </div>
+      </div>
+
+      {paintings.length > 0 && (
+        <div className="pointer-events-auto absolute bottom-28 right-3 z-20 flex flex-col gap-2 sm:bottom-8">
+          <button
+            type="button"
+            className={btnCls}
+            style={{ borderColor: 'var(--xa-accent)', background: 'rgba(16,18,15,0.85)', color: 'var(--xa-accent)' }}
+            onClick={() => goArt(-1)}
+            aria-label={isFr ? 'Œuvre précédente' : 'Previous artwork'}
+          >
+            ←
+          </button>
+          <button
+            type="button"
+            className={btnCls}
+            style={{ borderColor: 'var(--xa-accent)', background: 'rgba(16,18,15,0.85)', color: 'var(--xa-accent)' }}
+            onClick={() => goArt(1)}
+            aria-label={isFr ? 'Œuvre suivante' : 'Next artwork'}
+          >
+            →
+          </button>
+        </div>
+      )}
+
       {isCoarse && (
-        <div className="absolute bottom-24 left-1/2 z-10 -translate-x-1/2">
+        <div className="absolute bottom-8 left-3 z-20 md:hidden">
           <VirtualJoystick
             onChange={(x, y) => {
-              hold.current.left = x < -0.25
-              hold.current.right = x > 0.25
-              hold.current.up = y < -0.25
-              hold.current.down = y > 0.25
+              hold.current.left = x < -0.28
+              hold.current.right = x > 0.28
+              hold.current.up = y < -0.28
+              hold.current.down = y > 0.28
             }}
           />
         </div>
       )}
+
+      {nearTitle ? (
+        <div
+          className="pointer-events-none absolute bottom-36 left-1/2 z-20 -translate-x-1/2 rounded-full border px-4 py-1.5 text-[12px] text-[var(--xa-text)] backdrop-blur-md sm:bottom-24"
+          style={{ borderColor: 'var(--xa-border-strong)', background: 'rgba(16,18,15,0.8)' }}
+        >
+          {nearTitle} · {t('museum.tapToEnlarge') || (isFr ? 'toucher pour agrandir' : 'tap to enlarge')}
+        </div>
+      ) : null}
+
       {inspect && (
         <ArtworkDetailsModal
           frame={inspect}
@@ -584,11 +771,7 @@ export default function MuseumWebGLHallLive({
           onBuy={allowBuy ? () => void onBuy(inspect) : undefined}
         />
       )}
-      {nearTitle ? (
-        <div className="pointer-events-none absolute bottom-28 left-1/2 z-20 -translate-x-1/2 rounded-full border border-white/15 bg-black/70 px-4 py-1.5 text-[12px] text-zinc-100 backdrop-blur-md">
-          {nearTitle} · {t('museum.tapToEnlarge') || 'tap to enlarge'}
-        </div>
-      ) : null}
+
       <NavReticle />
     </div>
   )
