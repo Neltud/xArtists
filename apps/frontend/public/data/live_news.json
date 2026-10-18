@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-18T15:25:45.267Z",
+  "updatedAt": "2026-10-18T20:08:56.653Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792337144795",
-      "timestamp": "15:25",
+      "id": "egld-1792354136205",
+      "timestamp": "20:08",
       "source": "EGLD",
-      "title": "Cotation publique · $3.48 (API MultiversX economics)",
+      "title": "Cotation publique · $3.40 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -53,11 +53,39 @@
       "link": "https://cointelegraph.com/news/solana-shows-resilience-but-some-areas-need-continued-observation-fidelity-says?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinDesk-0-1792332000000",
+      "id": "rss-CoinDesk-0-1792348200000",
+      "timestamp": "18:30",
+      "source": "CoinDesk",
+      "title": "The White House's crypto chief departs: State of Crypto",
+      "link": "https://www.coindesk.com/policy/2026/10/18/the-white-house-s-crypto-chief-departs-state-of-crypto"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792341180000",
+      "timestamp": "16:33",
+      "source": "CoinDesk",
+      "title": "Wall Street freaked out Friday. VIX and bitcoin say the fear may fade Monday.",
+      "link": "https://www.coindesk.com/markets/2026/10/18/wall-street-freaked-out-friday-vix-and-bitcoin-say-it-may-not-last"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792339200000",
+      "timestamp": "16:00",
+      "source": "CoinDesk",
+      "title": "Latvia eyes crypto tax payments in 2027 as parliament overhauls crypto taxation",
+      "link": "https://www.coindesk.com/policy/2026/10/18/latvia-eyes-crypto-tax-payments-in-2027-as-parliament-overhauls-crypto-taxation"
+    },
+    {
+      "id": "rss-CoinDesk-3-1792332000000",
       "timestamp": "14:00",
       "source": "CoinDesk",
       "title": "Stablecoin supply stalls, but payments jump 45% as Visa, Mastercard and Stripe connect crypto to cash",
       "link": "https://www.coindesk.com/business/2026/10/18/stablecoin-supply-stalls-but-payments-jump-45-as-visa-mastercard-and-stripe-connect-crypto-to-cash"
+    },
+    {
+      "id": "egld-1792337144795",
+      "timestamp": "15:25",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.48 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinDesk-1-1792328400000",
@@ -170,34 +198,6 @@
       "source": "EGLD",
       "title": "Cotation publique · $3.62 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinDesk-2-1792219188000",
-      "timestamp": "06:39",
-      "source": "CoinDesk",
-      "title": "‘Wow, it’s a real discovery’: Claude cracks a 25-year NSA number mystery",
-      "link": "https://www.coindesk.com/tech/2026/10/17/wow-it-s-a-real-discovery-claude-cracks-a-25-year-nsa-number-mystery"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792204200000",
-      "timestamp": "02:30",
-      "source": "CoinDesk",
-      "title": "Satoshi-era bitcoin faces a bigger quantum threat after Google’s new Willow breakthrough",
-      "link": "https://www.coindesk.com/tech/2026/10/16/satoshi-era-bitcoin-faces-a-bigger-quantum-threat-after-google-s-new-willow-breakthrough"
-    },
-    {
-      "id": "egld-1792231914464",
-      "timestamp": "10:11",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.68 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792171305000",
-      "timestamp": "17:21",
-      "source": "CoinTelegraph",
-      "title": "Stablecoin remittances cost 84% less than traditional transfers, report finds",
-      "link": "https://cointelegraph.com/news/stablecoin-remittances-cost-savings-traditional-transfers?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
