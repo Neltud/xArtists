@@ -1,9 +1,8 @@
 /**
- * Galerie — salles 3D + grille · venue wallId → slots NFT.
- * Capacité : max 4 œuvres/mur · 24 public · pack room 4×4.
+ * Galerie — salles 3D + grille · protocol UI chrome.
  */
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import {
   framesFromUserNfts,
   type FrameItem,
@@ -20,7 +19,6 @@ import { nftImageUrl, type NFT } from '../types/nft'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { consumeTravelDestination } from '../lib/travelBridge'
 import {
-  buildMuseumNetwork,
   loadMuseumNetwork,
   museumIdForCity,
   VIRTUAL_MUSEUMS,
@@ -34,10 +32,19 @@ import { TUDURI_WORKS } from '../config/tuduriAtelier'
 import { loadFullCatalog } from '../lib/loadFullCatalog'
 import { loadDailyMuseumCatalog, dailyWorksToFrames } from '../lib/loadDailyMuseumCatalog'
 import { mergeVenueFrames } from '../lib/venueWallSlots'
+import { useI18n } from '../i18n/I18nContext'
 
 type Mode = 'explore' | 'mine' | 'map' | 'pulse' | 'venue'
 
 const PRIORITY_COLLECTIONS = ['NFTUDURI-2990b6', 'TRO-652d6d', 'XTR-e5072b', 'XAR-cee2e0']
+
+const MODE_LABEL: Record<Mode, { fr: string; en: string }> = {
+  explore: { fr: 'Explorer', en: 'Explore' },
+  venue: { fr: 'Venue', en: 'Venue' },
+  map: { fr: 'Carte', en: 'Map' },
+  mine: { fr: 'Ma collection', en: 'My collection' },
+  pulse: { fr: 'Pulse', en: 'Pulse' },
+}
 
 function preferImage(n: NFT): string | undefined {
   const thumb = n.media?.[0]?.thumbnailUrl as string | undefined
@@ -94,12 +101,12 @@ function ArtworkGrid({
   const cap =
     wallCount != null && wallCount > 0
       ? formatWallOccupancy(frames.length, wallCount)
-      : `${frames.length} œuvre${frames.length > 1 ? 's' : ''} · max ${MUSEUM_CAPACITY.maxArtworksPublic}`
+      : `${frames.length}`
   return (
     <section className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-white">{title}</h3>
-        <p className="text-[11px] text-zinc-500 tabular-nums">{cap}</p>
+        <h3 className="text-sm font-semibold text-[var(--xa-text)]">{title}</h3>
+        <p className="text-[11px] text-[var(--xa-text-muted)] tabular-nums">{cap}</p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {frames.map(f => (
@@ -108,14 +115,14 @@ function ArtworkGrid({
             href={f.href || '#'}
             target="_blank"
             rel="noreferrer"
-            className="rounded-xl border border-white/10 overflow-hidden bg-black/30"
+            className="xa-card overflow-hidden p-0"
           >
             {f.image ? (
               <img src={f.image} alt="" className="w-full aspect-square object-cover" loading="lazy" />
             ) : (
               <div className="w-full aspect-square bg-zinc-900" />
             )}
-            <p className="text-[11px] text-zinc-300 truncate px-2 py-1">{f.title}</p>
+            <p className="text-[11px] text-[var(--xa-text-secondary)] truncate px-2 py-1">{f.title}</p>
           </a>
         ))}
       </div>
@@ -124,6 +131,7 @@ function ArtworkGrid({
 }
 
 export default function MuseumPage() {
+  const { t, lang } = useI18n()
   const [params] = useSearchParams()
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
@@ -140,6 +148,7 @@ export default function MuseumPage() {
 
   const museum = museums.find(m => m.id === museumId) || museums[0] || VIRTUAL_MUSEUMS[0]
   const wallCount = blueprint?.walls?.length ?? 0
+  const isFr = lang === 'fr'
 
   useEffect(() => {
     let cxl = false
@@ -198,10 +207,10 @@ export default function MuseumPage() {
       setTravelBanner(
         city
           ? mid
-            ? `Direction ${city} · ${mid}`
-            : `Direction ${city}`
+            ? `${city} · ${mid}`
+            : city
           : mid
-            ? `Salle ${mid}`
+            ? mid
             : null,
       )
       setMuseumId(mid || 'xartists')
@@ -249,48 +258,49 @@ export default function MuseumPage() {
 
   const hallFrames = useMemo(
     () => mergeVenueFrames(visitFrames, myFrames),
-    // venueRevision forces re-merge after assign
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [visitFrames, myFrames, venueRevision],
   )
 
   return (
-    <div className="animate-fade-in space-y-4 pb-16 max-w-3xl mx-auto">
-      <header className="space-y-2 pt-2">
-        <p className="section-label">Galerie 3D</p>
-        <h1 className="section-title display">{museum?.name || 'Musée'}</h1>
-        <div className="atelier-title-rule" aria-hidden />
-        <p className="section-lead">
-          {museum?.tagline || 'Salles immersives · catalogue quotidien Open Access'}
-          {catalogLoading ? ' · catalogue…' : ''}
+    <div className="xa-page animate-fade-in space-y-6 pb-16 max-w-3xl mx-auto">
+      <header className="xa-hero" style={{ paddingTop: '1.25rem', maxWidth: '100%' }}>
+        <p className="xa-hero__kicker">{t('nav.museum')}</p>
+        <h1 className="xa-hero__title">{museum?.name || t('nav.museum')}</h1>
+        <p className="xa-hero__lead">
+          {museum?.tagline ||
+            (isFr
+              ? 'Salles immersives · catalogue Open Access'
+              : 'Immersive halls · Open Access catalog')}
+          {catalogLoading ? (isFr ? ' · chargement…' : ' · loading…') : ''}
         </p>
         {wallCount > 0 && (
-          <p className="text-[11px] text-zinc-500">
-            Capacité salle : {wallCount} murs · jusqu&apos;à {MUSEUM_CAPACITY.maxArtworksPerWall}{' '}
-            œuvres/mur ({wallCount * MUSEUM_CAPACITY.maxArtworksPerWall} slots) · affichage max{' '}
+          <p className="text-xs text-[var(--xa-text-muted)]">
+            {wallCount} walls · max {MUSEUM_CAPACITY.maxArtworksPerWall}/wall · display{' '}
             {MUSEUM_CAPACITY.maxArtworksPublic}
           </p>
         )}
         {travelBanner && (
-          <p className="text-[12px] text-cyan-200/90 bg-cyan-500/10 border border-cyan-500/20 rounded-xl px-3 py-2">
-            {travelBanner}
-          </p>
+          <p className="text-sm text-[var(--xa-text-secondary)] xa-card mt-2">{travelBanner}</p>
         )}
       </header>
 
-      <div className="flex flex-wrap gap-2">
+      <div
+        className="flex flex-wrap gap-1 p-1 rounded-xl w-fit"
+        style={{ background: 'var(--xa-surface)', border: '1px solid var(--xa-border)' }}
+      >
         {(['explore', 'venue', 'map', 'mine', 'pulse'] as Mode[]).map(m => (
           <button
             key={m}
             type="button"
             onClick={() => setMode(m)}
-            className={`rounded-full px-3 py-1.5 text-[12px] border ${
+            className={`rounded-full px-3 py-1.5 text-[12px] font-medium min-h-[36px] ${
               mode === m
-                ? 'border-violet-400/50 bg-violet-500/20 text-white'
-                : 'border-white/10 text-zinc-400'
+                ? 'bg-white/10 text-[var(--xa-text)]'
+                : 'text-[var(--xa-text-muted)]'
             }`}
           >
-            {m}
+            {MODE_LABEL[m][isFr ? 'fr' : 'en']}
           </button>
         ))}
       </div>
@@ -303,10 +313,10 @@ export default function MuseumPage() {
                 key={m.id}
                 type="button"
                 onClick={() => setMuseumId(m.id)}
-                className={`rounded-xl px-3 py-1.5 text-[12px] border ${
+                className={`rounded-full px-3 py-1.5 text-[12px] border ${
                   museumId === m.id
-                    ? 'border-amber-400/40 bg-amber-500/10 text-amber-50'
-                    : 'border-white/10 text-zinc-400'
+                    ? 'border-[var(--xa-border-strong)] bg-white/5 text-[var(--xa-text)]'
+                    : 'border-[var(--xa-border)] text-[var(--xa-text-muted)]'
                 }`}
               >
                 {m.name}
@@ -319,7 +329,11 @@ export default function MuseumPage() {
             room={museum?.room || 'stone'}
             allowBuy
           />
-          <ArtworkGrid frames={hallFrames} title="Œuvres de la salle" wallCount={wallCount} />
+          <ArtworkGrid
+            frames={hallFrames}
+            title={isFr ? 'Œuvres de la salle' : 'Room works'}
+            wallCount={wallCount}
+          />
           <AdSlot id="drop_feature" />
         </>
       )}
@@ -332,9 +346,13 @@ export default function MuseumPage() {
             frames={hallFrames}
             room={museum?.room || 'cyber'}
             allowBuy={false}
-            emptyLabel="Assigne des NFT à un mur loué"
+            emptyLabel={isFr ? 'Assigne des NFT à un mur loué' : 'Assign NFTs to a rented wall'}
           />
-          <ArtworkGrid frames={hallFrames} title="Vue mur / venue" wallCount={wallCount} />
+          <ArtworkGrid
+            frames={hallFrames}
+            title={isFr ? 'Vue mur / venue' : 'Wall / venue view'}
+            wallCount={wallCount}
+          />
         </>
       )}
 
@@ -343,8 +361,8 @@ export default function MuseumPage() {
       {mode === 'mine' && (
         <>
           {!connected ? (
-            <button type="button" className="btn-primary" onClick={requestOpenConnect}>
-              Connecter pour voir ma collection
+            <button type="button" className="xa-btn-primary" onClick={requestOpenConnect}>
+              {t('common.connect')}
             </button>
           ) : (
             <>
@@ -356,7 +374,11 @@ export default function MuseumPage() {
                   allowBuy={false}
                 />
               )}
-              <ArtworkGrid frames={myFrames} title="Ma collection" wallCount={wallCount} />
+              <ArtworkGrid
+                frames={myFrames}
+                title={isFr ? 'Ma collection' : 'My collection'}
+                wallCount={wallCount}
+              />
             </>
           )}
         </>
@@ -366,19 +388,10 @@ export default function MuseumPage() {
         <HolderPulseTab nfts={account.nfts || []} frames={hallFrames} connected={connected} />
       )}
 
-      <p className="text-[11px] text-zinc-600">
-        <button
-          type="button"
-          className="underline-offset-2 hover:underline"
-          onClick={() => setMode('venue')}
-        >
-          Louer un mur / assigner NFT
-        </button>
-        {' · '}
-        Pack IA = 1 salle privée ({MUSEUM_CAPACITY.wallsPerPackRoom} murs ×{' '}
-        {MUSEUM_CAPACITY.maxArtworksPerWall} œuvres)
-        {' · '}
-        Catalogue Met refresh quotidien (Open Access)
+      <p className="xa-disclaimer">
+        {isFr
+          ? `Mur venue · pack = salle privée (${MUSEUM_CAPACITY.wallsPerPackRoom}×${MUSEUM_CAPACITY.maxArtworksPerWall}) · catalogue quotidien Open Access`
+          : `Venue wall · pack = private room (${MUSEUM_CAPACITY.wallsPerPackRoom}×${MUSEUM_CAPACITY.maxArtworksPerWall}) · daily Open Access catalog`}
       </p>
     </div>
   )
