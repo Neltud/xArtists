@@ -1,30 +1,29 @@
-/** Joystick analogique gauche — mobile / pointer coarse · dual-touch ready. */
+/**
+ * Analog virtual joystick — left zone for walk.
+ * Isolated pointer capture so right-hand look works simultaneously.
+ */
 import { useRef } from 'react'
 
-type Hold = {
-  up: boolean
-  down: boolean
-  left: boolean
-  right: boolean
-}
-
 type Props = {
-  hold: React.MutableRefObject<Hold>
+  /** Continuous stick: x/y in [-1, 1], y negative = forward */
+  onChange?: (x: number, y: number) => void
+  className?: string
 }
 
-export default function VirtualJoystick({ hold }: Props) {
+export default function VirtualJoystick({ onChange, className = '' }: Props) {
   const baseRef = useRef<HTMLDivElement>(null)
   const knobRef = useRef<HTMLDivElement>(null)
   const active = useRef(false)
   const pointerId = useRef<number | null>(null)
 
+  const emit = (x: number, y: number) => {
+    onChange?.(x, y)
+  }
+
   const reset = () => {
     active.current = false
     pointerId.current = null
-    hold.current.up = false
-    hold.current.down = false
-    hold.current.left = false
-    hold.current.right = false
+    emit(0, 0)
     if (knobRef.current) {
       knobRef.current.style.transform = 'translate(-50%, -50%)'
     }
@@ -47,47 +46,54 @@ export default function VirtualJoystick({ hold }: Props) {
     if (knobRef.current) {
       knobRef.current.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`
     }
-    const nx = dx / max
-    const ny = dy / max
-    hold.current.left = nx < -0.28
-    hold.current.right = nx > 0.28
-    hold.current.up = ny < -0.28
-    hold.current.down = ny > 0.28
+    emit(dx / max, dy / max)
   }
 
   return (
     <div
       ref={baseRef}
-      className="absolute bottom-8 left-4 z-20 h-28 w-28 rounded-full border backdrop-blur-md touch-none select-none md:hidden"
+      className={`h-28 w-28 rounded-full border backdrop-blur-md touch-none select-none ${className}`}
       style={{
         touchAction: 'none',
         borderColor: 'var(--xa-border-strong)',
-        background: 'rgba(16, 18, 15, 0.72)',
+        background: 'rgba(16, 18, 15, 0.75)',
         minWidth: 112,
         minHeight: 112,
       }}
       onPointerDown={e => {
         e.stopPropagation()
+        e.preventDefault()
         active.current = true
         pointerId.current = e.pointerId
-        ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
+        ;(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId)
         onMove(e.clientX, e.clientY)
       }}
       onPointerMove={e => {
         if (pointerId.current != null && e.pointerId !== pointerId.current) return
+        e.stopPropagation()
         onMove(e.clientX, e.clientY)
       }}
       onPointerUp={e => {
         if (pointerId.current != null && e.pointerId !== pointerId.current) return
+        e.stopPropagation()
+        try {
+          ;(e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId)
+        } catch {
+          /* */
+        }
         reset()
       }}
-      onPointerCancel={reset}
-      aria-label="Joystick walk"
+      onPointerCancel={e => {
+        e.stopPropagation()
+        reset()
+      }}
+      aria-label="Walk joystick"
     >
       <div
         ref={knobRef}
         className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg"
         style={{
+          position: 'absolute',
           border: '1px solid var(--xa-accent)',
           background: 'var(--xa-accent-soft)',
         }}
