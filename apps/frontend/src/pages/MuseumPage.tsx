@@ -1,5 +1,5 @@
 /**
- * Galerie — salles 3D + grille · protocol UI chrome.
+ * Galerie — salles 3D + grille · protocol UI chrome · i18n.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
@@ -38,12 +38,12 @@ type Mode = 'explore' | 'mine' | 'map' | 'pulse' | 'venue'
 
 const PRIORITY_COLLECTIONS = ['NFTUDURI-2990b6', 'TRO-652d6d', 'XTR-e5072b', 'XAR-cee2e0']
 
-const MODE_LABEL: Record<Mode, { fr: string; en: string }> = {
-  explore: { fr: 'Explorer', en: 'Explore' },
-  venue: { fr: 'Venue', en: 'Venue' },
-  map: { fr: 'Carte', en: 'Map' },
-  mine: { fr: 'Ma collection', en: 'My collection' },
-  pulse: { fr: 'Pulse', en: 'Pulse' },
+const MODE_KEYS: Record<Mode, string> = {
+  explore: 'museum.mode.explore',
+  venue: 'museum.mode.venue',
+  map: 'museum.mode.map',
+  mine: 'museum.mode.mine',
+  pulse: 'museum.mode.pulse',
 }
 
 function preferImage(n: NFT): string | undefined {
@@ -262,6 +262,18 @@ export default function MuseumPage() {
     [visitFrames, myFrames, venueRevision],
   )
 
+  const modeLabel = (m: Mode) => {
+    const key = MODE_KEYS[m]
+    const fallback: Record<Mode, string> = {
+      explore: isFr ? 'Explorer' : 'Explore',
+      venue: 'Venue',
+      map: isFr ? 'Carte' : 'Map',
+      mine: isFr ? 'Ma collection' : 'My collection',
+      pulse: 'Pulse',
+    }
+    return t(key) !== key ? t(key) : fallback[m]
+  }
+
   return (
     <div className="xa-page animate-fade-in space-y-6 pb-16 max-w-3xl mx-auto">
       <header className="xa-hero" style={{ paddingTop: '1.25rem', maxWidth: '100%' }}>
@@ -269,10 +281,13 @@ export default function MuseumPage() {
         <h1 className="xa-hero__title">{museum?.name || t('nav.museum')}</h1>
         <p className="xa-hero__lead">
           {museum?.tagline ||
+            t('museum.lead') ||
             (isFr
               ? 'Salles immersives · catalogue Open Access'
               : 'Immersive halls · Open Access catalog')}
-          {catalogLoading ? (isFr ? ' · chargement…' : ' · loading…') : ''}
+          {catalogLoading
+            ? ` · ${t('common.loading') || (isFr ? 'chargement…' : 'loading…')}`
+            : ''}
         </p>
         {wallCount > 0 && (
           <p className="text-xs text-[var(--xa-text-muted)]">
@@ -300,7 +315,7 @@ export default function MuseumPage() {
                 : 'text-[var(--xa-text-muted)]'
             }`}
           >
-            {MODE_LABEL[m][isFr ? 'fr' : 'en']}
+            {modeLabel(m)}
           </button>
         ))}
       </div>
@@ -331,7 +346,7 @@ export default function MuseumPage() {
           />
           <ArtworkGrid
             frames={hallFrames}
-            title={isFr ? 'Œuvres de la salle' : 'Room works'}
+            title={t('museum.roomWorks') || (isFr ? 'Œuvres de la salle' : 'Room works')}
             wallCount={wallCount}
           />
           <AdSlot id="drop_feature" />
@@ -346,11 +361,14 @@ export default function MuseumPage() {
             frames={hallFrames}
             room={museum?.room || 'cyber'}
             allowBuy={false}
-            emptyLabel={isFr ? 'Assigne des NFT à un mur loué' : 'Assign NFTs to a rented wall'}
+            emptyLabel={
+              t('museum.venueEmpty') ||
+              (isFr ? 'Assigne des NFT à un mur loué' : 'Assign NFTs to a rented wall')
+            }
           />
           <ArtworkGrid
             frames={hallFrames}
-            title={isFr ? 'Vue mur / venue' : 'Wall / venue view'}
+            title={t('museum.venueView') || (isFr ? 'Vue mur / venue' : 'Wall / venue view')}
             wallCount={wallCount}
           />
         </>
@@ -376,7 +394,7 @@ export default function MuseumPage() {
               )}
               <ArtworkGrid
                 frames={myFrames}
-                title={isFr ? 'Ma collection' : 'My collection'}
+                title={t('museum.mode.mine') || (isFr ? 'Ma collection' : 'My collection')}
                 wallCount={wallCount}
               />
             </>
@@ -389,9 +407,10 @@ export default function MuseumPage() {
       )}
 
       <p className="xa-disclaimer">
-        {isFr
-          ? `Mur venue · pack = salle privée (${MUSEUM_CAPACITY.wallsPerPackRoom}×${MUSEUM_CAPACITY.maxArtworksPerWall}) · catalogue quotidien Open Access`
-          : `Venue wall · pack = private room (${MUSEUM_CAPACITY.wallsPerPackRoom}×${MUSEUM_CAPACITY.maxArtworksPerWall}) · daily Open Access catalog`}
+        {t('museum.disclaimer') ||
+          (isFr
+            ? `Mur venue · pack = salle privée (${MUSEUM_CAPACITY.wallsPerPackRoom}×${MUSEUM_CAPACITY.maxArtworksPerWall}) · catalogue quotidien Open Access`
+            : `Venue wall · pack = private room (${MUSEUM_CAPACITY.wallsPerPackRoom}×${MUSEUM_CAPACITY.maxArtworksPerWall}) · daily Open Access catalog`)}
       </p>
     </div>
   )
