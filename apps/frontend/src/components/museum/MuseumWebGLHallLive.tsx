@@ -1,6 +1,6 @@
 /**
  * Musée WebGL Live — FPS + avatar, dual-touch, fullscreen, prev/next artwork.
- * Graphite / acid-green chrome overlays.
+ * Graphite / acid-green chrome overlays. Immersive pass: teleport to art, orient.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import * as THREE from 'three'
@@ -35,6 +35,7 @@ const MAX_ART = 24
 const PITCH_MAX = MUSEUM_FPS.pitchMax
 const CAM_DIST_AVATAR = MUSEUM_FPS.camMaxDist
 const CAM_HEIGHT_AVATAR = 2.2
+const STAND_DIST = 2.35
 
 const AMBIENT_INTENSITY = 0.85
 const KEY_INTENSITY = 1.5
@@ -43,6 +44,13 @@ const RIM_INTENSITY = 0.5
 
 type Theme = 'cyber' | 'stone' | 'gold' | 'white' | 'dark'
 type ViewMode = 'fps' | 'avatar'
+
+type ArtAnchor = {
+  pos: THREE.Vector3
+  nx: number
+  nz: number
+  frame: FrameItem
+}
 
 const PALETTE: Record<
   Theme,
@@ -115,6 +123,8 @@ export default function MuseumWebGLHallLive({
   const viewModeRef = useRef<ViewMode>('fps')
   const spawnRef = useRef({ x: 0, z: 0, yaw: 0 })
   const resetReq = useRef(false)
+  const teleportReq = useRef<number | null>(null)
+  const artAnchorsRef = useRef<ArtAnchor[]>([])
 
   const [ready, setReady] = useState(false)
   const [nearTitle, setNearTitle] = useState('')
@@ -124,6 +134,7 @@ export default function MuseumWebGLHallLive({
   const [open, setOpen] = useState(true)
   const [viewMode, setViewMode] = useState<ViewMode>('fps')
   const [fullscreen, setFullscreen] = useState(false)
+  const [artIndex, setArtIndex] = useState(0)
 
   const { t, lang } = useI18n()
   const { connected } = useWallet()
@@ -173,6 +184,7 @@ export default function MuseumWebGLHallLive({
       if (!paintings.length) return
       setArtIndex(i => {
         const next = (i + dir + paintings.length) % paintings.length
+        teleportReq.current = next
         const f = paintings[next]
         if (f) setInspect(f)
         return next
@@ -180,8 +192,6 @@ export default function MuseumWebGLHallLive({
     },
     [paintings],
   )
-
-  const [, setArtIndex] = useState(0)
 
   const onBuy = useCallback(
     async (frame: FrameItem) => {
@@ -300,7 +310,7 @@ export default function MuseumWebGLHallLive({
 
     const loader = new THREE.TextureLoader()
     loader.crossOrigin = 'anonymous'
-    const artAnchors: { pos: THREE.Vector3; frame: FrameItem }[] = []
+    const artAnchors: ArtAnchor[] = []
     const pickMeshes: THREE.Object3D[] = []
     const wallList = blueprint.walls.filter(w => Math.hypot(w.x2 - w.x1, w.y2 - w.y1) > 1.2)
 
@@ -362,7 +372,7 @@ export default function MuseumWebGLHallLive({
       frameMesh.userData.frame = frame
       scene.add(frameMesh)
       pickMeshes.push(frameMesh)
-      artAnchors.push({ pos: new THREE.Vector3(apx, 1.65, apz), frame })
+      artAnchors.push({ pos: new THREE.Vector3(apx, 1.65, apz), nx, nz, frame })
       const url = frame.image || ''
       if (url) {
         loader.load(
@@ -375,6 +385,7 @@ export default function MuseumWebGLHallLive({
         placeArt(titlePlaceholder(frame.title || 'Art'), apx, apz, nx, nz, g.angle, frame)
       }
     })
+    artAnchorsRef.current = artAnchors
 
     const isWalkable = makeWalkableChecker(
       blueprint.walls.map(w => ({
@@ -428,6 +439,8 @@ export default function MuseumWebGLHallLive({
       if (k === 'r') resetReq.current = true
       if (k === 'v') setViewMode(m => (m === 'fps' ? 'avatar' : 'fps'))
       if (k === 'escape' && document.fullscreenElement) void document.exitFullscreen?.()
+      if (k === 'arrowleft' || k === '[') goArt(-1)
+      if (k === 'arrowright' || k === ']') goArt(1)
     }
     const ku = (e: KeyboardEvent) => {
       if (isNavKey(e) || ['z', 'q', 'Z', 'Q'].includes(e.key)) {
@@ -522,6 +535,36 @@ export default function MuseumWebGLHallLive({
         vz = 0
       }
 
+      // Immersive prev/next: teleport in front of artwork and face it
+      if (teleportReq.current != null) {
+        const idx = teleportReq.current
+        teleportReq.current = null
+        const anchors = artAnchorsRef.current
+        const a = anchors[idx]
+        if (a) {
+          const standX = a.pos.x + a.nx * STAND_DIST
+          const standZ = a.pos.z + a.nz * STAND_DIST
+          if (isWalkable(standX, standZ)) {
+            px = standX
+            pz = standZ
+          } else {
+            // fallback closer
+            const midX = a.pos.x + a.nx * 1.4
+            const midZ = a.pos.z + a.nz * 1.4
+            if (isWalkable(midX, midZ)) {
+              px = midX
+              pz = midZ
+            }
+          }
+          // Face the wall/art (look opposite to outward normal)
+          yaw = Math.atan2(-a.nx, -a.nz)
+          pitch = 0.06
+          vx = 0
+          vz = 0
+          facing = yaw
+        }
+      }
+
       const sprint = !!keys.current.shift
       const speed = sprint ? SPRINT : WALK
       let ix = 0
@@ -558,10 +601,14 @@ export default function MuseumWebGLHallLive({
       vx = slide.vx
       vz = slide.vz
       avatar.position.set(px, 0, pz)
-      avatar.rotation.y = facing
+
       const fpsMode = viewModeRef.current === 'fps'
-      avatar.visible = !fpsMode
-      walkPhase = tickAvatarWalk(avatar, walkPhase, Math.min(1, Math.hypot(vx, vz) / WALK), dt)
+      if (!fpsMode) {
+        walkPhase = tickAvatarWalk(avatar, walkPhase, moving, dt, facing)
+      } else {
+        avatar.visible = false
+      }
+      if (!fpsMode) avatar.visible = true
 
       let nearest: FrameItem | null = null
       let best = 4.2
@@ -633,7 +680,7 @@ export default function MuseumWebGLHallLive({
       }
       if (mount.contains(canvas)) mount.removeChild(canvas)
     }
-  }, [blueprint, paintings, pal, avatarSkin, open, toggleFullscreen])
+  }, [blueprint, paintings, pal, avatarSkin, open, toggleFullscreen, goArt])
 
   const btnCls =
     'min-h-[44px] min-w-[44px] rounded-full border px-3 py-2 text-[11px] font-semibold backdrop-blur-md transition active:scale-95'
@@ -715,12 +762,14 @@ export default function MuseumWebGLHallLive({
           className="pointer-events-none max-w-[50%] rounded-full border px-3 py-1.5 text-[11px] text-[var(--xa-text-secondary)] backdrop-blur-md"
           style={{ borderColor: 'var(--xa-border)', background: 'rgba(16,18,15,0.75)' }}
         >
-          {isFr ? 'WASD/ZQSD · glisser regard · E inspecter' : 'WASD · drag look · E inspect'}
+          {isFr
+            ? 'WASD/ZQSD · glisser regard · E inspecter · ←→ œuvres'
+            : 'WASD · drag look · E inspect · ←→ art'}
         </div>
       </div>
 
       {paintings.length > 0 && (
-        <div className="pointer-events-auto absolute bottom-28 right-3 z-20 flex flex-col gap-2 sm:bottom-8">
+        <div className="pointer-events-auto absolute bottom-28 right-3 z-20 flex flex-col items-center gap-2 sm:bottom-8">
           <button
             type="button"
             className={btnCls}
@@ -730,6 +779,12 @@ export default function MuseumWebGLHallLive({
           >
             ←
           </button>
+          <span
+            className="rounded-full border px-2 py-0.5 text-[10px] tabular-nums text-[var(--xa-text-secondary)]"
+            style={{ borderColor: 'var(--xa-border)', background: 'rgba(16,18,15,0.8)' }}
+          >
+            {artIndex + 1}/{paintings.length}
+          </span>
           <button
             type="button"
             className={btnCls}
