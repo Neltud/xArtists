@@ -1,5 +1,31 @@
 # Changelog — xArtists
 
+## [0.115.0](https://github.com/Neltud/xArtists/compare/v0.114.0...v0.115.0) (2026-10-18)
+
+
+### Features
+
+* **app:** route aliases from registry + real 404 ([733f077](https://github.com/Neltud/xArtists/commit/733f077fa54980bf6c53c4ddc8bb2f3cd182ca2f))
+* centralized route registry — 5 spaces + aliases + meta ([6e47c61](https://github.com/Neltud/xArtists/commit/6e47c61019a64bbaf5d2d33d18e4ac9a2a9e8c1c))
+* **header:** registry nav + graphite/acid chrome ([952a0b7](https://github.com/Neltud/xArtists/commit/952a0b7d4d4cec3b232b6c598044158f3180976d))
+* **museum:** analog joystick with onChange + isolated pointer capture ([24aff68](https://github.com/Neltud/xArtists/commit/24aff6871dfcb1d725da0f23b8f0d38ace699e45))
+* **museum:** FPS/avatar, dual-touch look, fullscreen, prev/next, ZQSD, reset ([195c228](https://github.com/Neltud/xArtists/commit/195c228fb153f1c17042e47403818eb3f35c5639))
+* **museum:** immersive pass — teleport prev/next, dual-touch look, fullscreen polish ([05cf505](https://github.com/Neltud/xArtists/commit/05cf505303745521564e6c35a1fa361165b09f49))
+* **museum:** larger touch joystick + acid green chrome ([6e0f3d4](https://github.com/Neltud/xArtists/commit/6e0f3d45e19397136d504e29bc5a1a84fde90042))
+* **nav:** mobile bottom nav from route registry — 5 hubs ([af19593](https://github.com/Neltud/xArtists/commit/af195939c6a2d89687d3c9220ce50660301631ab))
+* real 404 page (no silent redirect home) ([39fc06d](https://github.com/Neltud/xArtists/commit/39fc06d4061b9a3e1d43e6a200b46d44eb24df31))
+
+
+### Bug Fixes
+
+* **wc:** remove Firebase deep links — native xPortal / https only ([0f98d0e](https://github.com/Neltud/xArtists/commit/0f98d0e4ed2e42ae07d5945d1e9166bb6745a4e9))
+* **xportal:** init → connect → login({ approval }) · no Firebase · explicit open ([ccf8230](https://github.com/Neltud/xArtists/commit/ccf823091bf398d96fc79a334c8d044c054c99eb))
+
+
+### Documentation
+
+* validated design delivery report — graphite/acid, routes, xPortal, limits ([542ba81](https://github.com/Neltud/xArtists/commit/542ba81a0d16f0c64ae9d27f1327ed5429cdd4a7))
+
 ## [0.114.0](https://github.com/Neltud/xArtists/compare/v0.113.1...v0.114.0) (2026-10-18)
 
 
