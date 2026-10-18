@@ -1,4 +1,4 @@
-/** Joystick virtuel discret — bas gauche, mobile / pointer coarse. */
+/** Joystick analogique gauche — mobile / pointer coarse · dual-touch ready. */
 import { useRef } from 'react'
 
 type Hold = {
@@ -16,9 +16,11 @@ export default function VirtualJoystick({ hold }: Props) {
   const baseRef = useRef<HTMLDivElement>(null)
   const knobRef = useRef<HTMLDivElement>(null)
   const active = useRef(false)
+  const pointerId = useRef<number | null>(null)
 
   const reset = () => {
     active.current = false
+    pointerId.current = null
     hold.current.up = false
     hold.current.down = false
     hold.current.left = false
@@ -36,7 +38,7 @@ export default function VirtualJoystick({ hold }: Props) {
     const cy = r.top + r.height / 2
     let dx = clientX - cx
     let dy = clientY - cy
-    const max = r.width * 0.35
+    const max = r.width * 0.38
     const len = Math.hypot(dx, dy) || 1
     if (len > max) {
       dx = (dx / len) * max
@@ -47,30 +49,48 @@ export default function VirtualJoystick({ hold }: Props) {
     }
     const nx = dx / max
     const ny = dy / max
-    hold.current.left = nx < -0.35
-    hold.current.right = nx > 0.35
-    hold.current.up = ny < -0.35
-    hold.current.down = ny > 0.35
+    hold.current.left = nx < -0.28
+    hold.current.right = nx > 0.28
+    hold.current.up = ny < -0.28
+    hold.current.down = ny > 0.28
   }
 
   return (
     <div
       ref={baseRef}
-      className="absolute bottom-6 left-4 z-20 h-24 w-24 rounded-full border border-white/20 bg-black/45 backdrop-blur-md touch-none select-none md:hidden"
-      style={{ touchAction: 'none' }}
+      className="absolute bottom-8 left-4 z-20 h-28 w-28 rounded-full border backdrop-blur-md touch-none select-none md:hidden"
+      style={{
+        touchAction: 'none',
+        borderColor: 'var(--xa-border-strong)',
+        background: 'rgba(16, 18, 15, 0.72)',
+        minWidth: 112,
+        minHeight: 112,
+      }}
       onPointerDown={e => {
+        e.stopPropagation()
         active.current = true
+        pointerId.current = e.pointerId
         ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
         onMove(e.clientX, e.clientY)
       }}
-      onPointerMove={e => onMove(e.clientX, e.clientY)}
-      onPointerUp={reset}
+      onPointerMove={e => {
+        if (pointerId.current != null && e.pointerId !== pointerId.current) return
+        onMove(e.clientX, e.clientY)
+      }}
+      onPointerUp={e => {
+        if (pointerId.current != null && e.pointerId !== pointerId.current) return
+        reset()
+      }}
       onPointerCancel={reset}
-      aria-label="Joystick navigation"
+      aria-label="Joystick walk"
     >
       <div
         ref={knobRef}
-        className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400/40 bg-cyan-500/25 shadow-lg"
+        className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg"
+        style={{
+          border: '1px solid var(--xa-accent)',
+          background: 'var(--xa-accent-soft)',
+        }}
       />
     </div>
   )
