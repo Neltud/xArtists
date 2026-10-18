@@ -1,5 +1,5 @@
 /**
- * LIA Hub — Control Room 3D + Cockpit LIVE intents xPortal (v0.110).
+ * LIA Hub — Control Room + cockpit intents — protocol UI.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import LiaHubControlRoomLazy from '../components/lia/LiaHubControlRoomLazy'
@@ -25,6 +25,7 @@ import RceStrip from '../components/RceStrip'
 import LiaAgentControl from '../components/LiaAgentControl'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
 import { LIA_LIVE_TRADING, LIA_BADGE } from '../config/liaConfig'
+import { useI18n } from '../i18n/I18nContext'
 
 const API = 'https://api.multiversx.com'
 const LIA_WALLET = 'erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6'
@@ -50,6 +51,7 @@ async function fetchRecentTx(size = 8): Promise<ExplorerTx[]> {
 }
 
 export default function LiaPage() {
+  const { t, lang } = useI18n()
   const { env } = usePulse()
   const lia = useLIAInterpreter(env)
   const ambient = useMemo(
@@ -106,26 +108,34 @@ export default function LiaPage() {
   }, [refresh])
 
   void ambient
+  const isFr = lang === 'fr'
 
   return (
-    <div className="animate-fade-in space-y-6 pb-20 max-w-3xl mx-auto">
-      <header className="space-y-2">
-        <p className="section-label">LIA Hub</p>
-        <h1 className="section-title display text-2xl">Agent autonome & signaux</h1>
-        <p className="text-[11px] text-emerald-200/90 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 inline-block max-w-full">
-          {LIA_BADGE}
-        </p>
-        <p className="text-[13px] text-zinc-500 leading-relaxed">
-          Multi-IA · wallet agent en lecture ·{' '}
-          <strong className="text-amber-200/90">
-            {LIA_LIVE_TRADING ? 'LIVE user-sign xPortal' : 'paper first'}
+    <div className="xa-page animate-fade-in space-y-6 pb-20 max-w-3xl mx-auto">
+      <header className="xa-hero" style={{ paddingTop: '1.25rem', maxWidth: '100%' }}>
+        <p className="xa-hero__kicker">{t('lia.title')}</p>
+        <h1 className="xa-hero__title">{t('lia.subtitle')}</h1>
+        <p className="text-xs text-[var(--xa-text-muted)] mb-2">{LIA_BADGE}</p>
+        <p className="xa-hero__lead">
+          {isFr
+            ? 'Multi-IA · wallet agent en lecture ·'
+            : 'Multi-AI · agent wallet read-only ·'}{' '}
+          <strong className="text-[var(--xa-accent)]">
+            {LIA_LIVE_TRADING
+              ? isFr
+                ? 'LIVE user-sign xPortal'
+                : 'LIVE user-sign xPortal'
+              : isFr
+                ? 'paper first'
+                : 'paper first'}
           </strong>
-          . Aura : <span className="text-zinc-300">{mAura}</span>
-          {loading ? ' · sync…' : ''}
+          . Aura: <span className="text-[var(--xa-text)]">{mAura}</span>
+          {loading ? (isFr ? ' · sync…' : ' · sync…') : ''}
         </p>
-        <p className="text-[11px] text-zinc-600">
-          Aucune TX autonome sans signature : les actions on-chain passent par{' '}
-          <strong className="text-zinc-400">xPortal</strong>.
+        <p className="xa-disclaimer">
+          {isFr
+            ? 'Aucune TX autonome sans signature — actions on-chain via xPortal uniquement.'
+            : 'No autonomous TX without signature — on-chain actions via xPortal only.'}
         </p>
       </header>
 
@@ -141,22 +151,22 @@ export default function LiaPage() {
       <EconomicPulse />
       <IntentFeedTerminal />
 
-      <section className="rounded-2xl border border-white/10 bg-black/40 p-4 space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+      <section className="xa-card space-y-2">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--xa-text-muted)]">
           Vellum & hub
         </p>
-        <p className="text-[12px] text-zinc-400">
+        <p className="text-sm text-[var(--xa-text-secondary)]">
           Vellum · {vellum?.live ? 'LIVE' : 'paper'}{' '}
           {vellum?.summary?.mode ? `· ${vellum.summary.mode}` : ''}
         </p>
-        <p className="text-[12px] text-zinc-400">
+        <p className="text-sm text-[var(--xa-text-secondary)]">
           Hub · {hub?.strategy || hub?.note || '—'} · shadow PnL {hub?.shadow_pnl_usd ?? '—'}
         </p>
         {agg?.mindset?.strategy && (
-          <p className="text-[11px] mono text-zinc-500">strategy · {agg.mindset.strategy}</p>
+          <p className="text-xs mono text-[var(--xa-text-muted)]">strategy · {agg.mindset.strategy}</p>
         )}
         {txs.length > 0 && (
-          <ul className="text-[11px] mono text-zinc-500 space-y-1 max-h-28 overflow-y-auto">
+          <ul className="text-xs mono text-[var(--xa-text-muted)] space-y-1 max-h-28 overflow-y-auto">
             {txs.slice(0, 5).map((tx, i) => (
               <li key={tx.txHash || i}>
                 {tx.function || 'tx'} · {tx.status || '—'}
@@ -178,15 +188,15 @@ export default function LiaPage() {
         defaultOpen={false}
       />
 
-      <div className="flex flex-wrap gap-3 text-[12px] text-zinc-500">
-        <Link to="/command-center" className="hover:text-zinc-300">
-          Command Center
+      <div className="flex flex-wrap gap-4 text-sm">
+        <Link to="/command-center" className="text-[var(--xa-text-secondary)] hover:text-[var(--xa-text)]">
+          {t('cc.title')}
         </Link>
-        <Link to="/studio" className="hover:text-zinc-300">
-          Studio Phygital
+        <Link to="/agents" className="text-[var(--xa-text-secondary)] hover:text-[var(--xa-text)]">
+          {t('nav.packs')}
         </Link>
-        <Link to="/agents" className="hover:text-zinc-300">
-          Packs
+        <Link to="/" className="text-[var(--xa-text-secondary)] hover:text-[var(--xa-text)]">
+          {t('nav.home')}
         </Link>
       </div>
     </div>
