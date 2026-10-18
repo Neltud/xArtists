@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.113.1](https://github.com/Neltud/xArtists/compare/v0.113.0...v0.113.1) (2026-10-18)
+
+
+### Documentation
+
+* document server-side price enforcement for PayBox ([4ca8047](https://github.com/Neltud/xArtists/commit/4ca8047854f63d1269a6e387a46cb0b8f0684df0))
+
 ## [0.113.0](https://github.com/Neltud/xArtists/compare/v0.112.1...v0.113.0) (2026-10-17)
 
 
