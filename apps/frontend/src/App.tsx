@@ -17,6 +17,7 @@ import RouteSfx from './components/RouteSfx'
 import AgentAccessSync from './components/AgentAccessSync'
 import BackgroundMusicPlayer from './components/BackgroundMusicPlayer'
 import WebglPauseBridge from './components/WebglPauseBridge'
+import { ROUTE_ALIASES } from './config/routeRegistry'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const MuseumPage = lazy(() => import('./pages/MuseumPage'))
@@ -58,6 +59,18 @@ const RwaCatalogPage = lazy(() => import('./pages/RwaCatalogPage'))
 const HistoryPage = lazy(() => import('./pages/HistoryPage'))
 const DigitalTwinPage = lazy(() => import('./pages/DigitalTwinPage'))
 const VoyageAgentPage = lazy(() => import('./pages/VoyageAgentPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+
+function AliasRedirects() {
+  return (
+    <>
+      {Object.entries(ROUTE_ALIASES).map(([from, to]) => (
+        <Route key={from} path={from} element={<Navigate to={to} replace />} />
+      ))}
+      <Route path="/slot/*" element={<Navigate to="/" replace />} />
+    </>
+  )
+}
 
 export default function App() {
   const location = useLocation()
@@ -86,19 +99,13 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/market" element={<MarketplacePage />} />
-                  <Route path="/marketplace" element={<Navigate to="/market" replace />} />
-                  <Route path="/market-place" element={<Navigate to="/market" replace />} />
                   <Route path="/market/analytics" element={<MarketAnalyticsPage />} />
                   <Route path="/trading" element={<TradingPage />} />
                   <Route path="/agents" element={<AgentsPage />} />
-                  <Route path="/packs" element={<Navigate to="/agents" replace />} />
                   <Route path="/agents/lightning" element={<LightningAgentPage />} />
                   <Route path="/agents/polylia" element={<AgentsPolyliaPage />} />
                   <Route path="/my-packs" element={<MyPacksPage />} />
-                  <Route path="/salles" element={<Navigate to="/my-packs" replace />} />
                   <Route path="/command-center" element={<CommandCenterPage />} />
-                  <Route path="/command" element={<Navigate to="/command-center" replace />} />
-                  <Route path="/cc" element={<Navigate to="/command-center" replace />} />
                   <Route path="/studio" element={<StudioPage />} />
                   <Route path="/tro" element={<TroPage />} />
                   <Route path="/staking" element={<StakingPage />} />
@@ -106,13 +113,10 @@ export default function App() {
                   <Route path="/gallery" element={<GalleryPage />} />
                   <Route path="/museum" element={<MuseumPage />} />
                   <Route path="/legal" element={<LegalPage />} />
-                  <Route path="/legal/terms" element={<LegalPage />} />
-                  <Route path="/mentions-legales" element={<Navigate to="/legal" replace />} />
                   <Route path="/wallet" element={<WalletPage />} />
                   <Route path="/portfolio" element={<PortfolioPage />} />
                   <Route path="/lia" element={<LiaPage />} />
                   <Route path="/tca" element={<TcaGatePage />} />
-                  <Route path="/classroom" element={<TcaGatePage />} />
                   <Route path="/go-live" element={<GoLivePage />} />
                   <Route path="/venues" element={<VenuePage />} />
                   <Route path="/identity" element={<IdentityPage />} />
@@ -130,16 +134,11 @@ export default function App() {
                   <Route path="/lp" element={<LPPoolsPage />} />
                   <Route path="/hatom" element={<HatomPage />} />
                   <Route path="/rwa" element={<RwaCatalogPage />} />
-                  <Route path="/rwa_catalog" element={<Navigate to="/rwa" replace />} />
                   <Route path="/history" element={<HistoryPage />} />
                   <Route path="/digital-twin" element={<DigitalTwinPage />} />
                   <Route path="/agents/voyage" element={<VoyageAgentPage />} />
-                  <Route path="/entity" element={<Navigate to="/entities" replace />} />
-                  <Route path="/sim" element={<Navigate to="/simulation" replace />} />
-                  <Route path="/hub" element={<Navigate to="/" replace />} />
-                  <Route path="/slot" element={<Navigate to="/" replace />} />
-                  <Route path="/slot/*" element={<Navigate to="/" replace />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
+                  {AliasRedirects()}
+                  <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </PageTransition>
             </RouteErrorBoundary>
