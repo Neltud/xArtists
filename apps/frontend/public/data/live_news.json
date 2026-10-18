@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-17T22:54:33.699Z",
+  "updatedAt": "2026-10-18T03:10:48.621Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792277673390",
-      "timestamp": "22:54",
+      "id": "egld-1792293048355",
+      "timestamp": "03:10",
       "source": "EGLD",
       "title": "Cotation publique · $3.57 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
@@ -53,21 +53,28 @@
       "link": "https://cointelegraph.com/news/crypto-pac-fairshake-spending-ohio-senate-race-sherrod-brown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinDesk-0-1792256400000",
+      "id": "rss-CoinDesk-0-1792285595000",
+      "timestamp": "01:06",
+      "source": "CoinDesk",
+      "title": "Circle defends USDC economics as stablecoin rivals court its partners with bigger cut",
+      "link": "https://www.coindesk.com/business/2026/10/17/circle-defends-usdc-economics-as-stablecoin-rivals-court-its-partners-with-bigger-cut"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792256400000",
       "timestamp": "17:00",
       "source": "CoinDesk",
       "title": "Goldman, Wells Fargo, Morgan Stanley see tokenization as a growth play, not a threat",
       "link": "https://www.coindesk.com/business/2026/10/17/goldman-wells-fargo-morgan-stanley-see-tokenization-as-a-growth-play-not-a-threat"
     },
     {
-      "id": "rss-CoinDesk-1-1792249200000",
+      "id": "rss-CoinDesk-2-1792249200000",
       "timestamp": "15:00",
       "source": "CoinDesk",
       "title": "Citrini sees a tokenization boom. The harder question is who profits",
       "link": "https://www.coindesk.com/business/2026/10/17/citrini-sees-a-tokenization-boom-the-harder-question-is-who-profits"
     },
     {
-      "id": "rss-CoinDesk-2-1792245600000",
+      "id": "rss-CoinDesk-3-1792245600000",
       "timestamp": "14:00",
       "source": "CoinDesk",
       "title": "Polygon sees Coinme acquisition as entry to payments sector dominated by Visa, Stripe",
@@ -191,13 +198,6 @@
       "source": "EGLD",
       "title": "Cotation publique · $3.67 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792158695000",
-      "timestamp": "13:51",
-      "source": "CoinTelegraph",
-      "title": "Ledger’s early implant warnings deserved more action, Karpelès says",
-      "link": "https://cointelegraph.com/news/ledger-early-implant-warnings-mark-karpeles?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
