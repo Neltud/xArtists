@@ -1,37 +1,37 @@
 /**
- * xArtists — Soul-aligned design tokens
- * Inspired by protocol-grade UIs (soul.io): dark, sparse, high contrast, stats-first.
- * Does not copy soul branding — accent remains xArtists (amber / violet).
+ * xArtists — Graphite · Chrome · Acid green
+ * Validated direction: #10120f ground, #cdf58b accent, editorial spacing.
  */
 
 :root {
-  /* Surfaces */
-  --xa-bg: #0a0a0f;
-  --xa-bg-elevated: #111118;
-  --xa-surface: #16161f;
-  --xa-surface-hover: #1c1c28;
-  --xa-border: rgba(255, 255, 255, 0.08);
-  --xa-border-strong: rgba(255, 255, 255, 0.14);
+  /* Surfaces — graphite */
+  --xa-bg: #10120f;
+  --xa-bg-elevated: #161914;
+  --xa-surface: #1a1d18;
+  --xa-surface-hover: #22261f;
+  --xa-border: rgba(205, 245, 139, 0.1);
+  --xa-border-strong: rgba(205, 245, 139, 0.22);
 
   /* Text */
-  --xa-text: #f4f4f5;
-  --xa-text-secondary: #a1a1aa;
-  --xa-text-muted: #71717a;
+  --xa-text: #f2f5ee;
+  --xa-text-secondary: #a8b09c;
+  --xa-text-muted: #6e7668;
 
-  /* Accents (xArtists identity) */
-  --xa-accent: #f59e0b;
-  --xa-accent-soft: rgba(245, 158, 11, 0.12);
+  /* Accent — acid green */
+  --xa-accent: #cdf58b;
+  --xa-accent-soft: rgba(205, 245, 139, 0.12);
+  --xa-chrome: #c8ccc4;
   --xa-violet: #8b5cf6;
   --xa-violet-soft: rgba(139, 92, 246, 0.12);
-  --xa-success: #34d399;
+  --xa-success: #cdf58b;
   --xa-danger: #f87171;
 
   /* Pack tiers */
-  --xa-pack-pulse: #fbbf24;
-  --xa-pack-yield: #d4d4d8;
+  --xa-pack-pulse: #e8f5a8;
+  --xa-pack-yield: #c8ccc4;
   --xa-pack-sentinel: #a78bfa;
 
-  /* Radius & spacing */
+  /* Radius & spacing — editorial */
   --xa-radius-sm: 8px;
   --xa-radius: 12px;
   --xa-radius-lg: 16px;
@@ -42,8 +42,9 @@
   --xa-space-6: 1.5rem;
   --xa-space-8: 2rem;
   --xa-space-12: 3rem;
+  --xa-space-16: 4rem;
 
-  /* Type scale (Inter-like hierarchy) */
+  /* Type */
   --xa-text-xs: 0.75rem;
   --xa-text-sm: 0.875rem;
   --xa-text-base: 1rem;
@@ -52,15 +53,26 @@
   --xa-text-2xl: 1.5rem;
   --xa-text-3xl: 1.875rem;
   --xa-text-4xl: 2.25rem;
-  --xa-leading-tight: 1.15;
-  --xa-leading-normal: 1.5;
+  --xa-leading-tight: 1.12;
+  --xa-leading-normal: 1.55;
 
   /* Motion */
   --xa-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --xa-duration: 180ms;
 }
 
-/* Utility classes — opt-in on refactored pages */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --xa-duration: 0.01ms;
+  }
+  .animate-fade-in,
+  .card-play,
+  .xa-card {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 .xa-page {
   background: var(--xa-bg);
   color: var(--xa-text);
@@ -107,12 +119,12 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  color: var(--xa-text-muted);
+  color: var(--xa-accent);
   margin-bottom: var(--xa-space-3);
 }
 
 .xa-hero__title {
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: clamp(2rem, 4vw, 2.85rem);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: var(--xa-leading-tight);
@@ -132,7 +144,8 @@
   border: 1px solid var(--xa-border);
   border-radius: var(--xa-radius-lg);
   padding: var(--xa-space-6);
-  transition: border-color var(--xa-duration) var(--xa-ease), background var(--xa-duration) var(--xa-ease);
+  transition: border-color var(--xa-duration) var(--xa-ease),
+    background var(--xa-duration) var(--xa-ease);
 }
 
 .xa-card:hover {
@@ -145,12 +158,13 @@
   align-items: center;
   justify-content: center;
   gap: var(--xa-space-2);
+  min-height: 44px;
   padding: 0.75rem 1.5rem;
   border-radius: 999px;
   font-size: var(--xa-text-sm);
   font-weight: 600;
-  background: var(--xa-text);
-  color: var(--xa-bg);
+  background: var(--xa-accent);
+  color: #10120f;
   border: none;
   cursor: pointer;
   transition: opacity var(--xa-duration) var(--xa-ease);
@@ -165,6 +179,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--xa-space-2);
+  min-height: 44px;
   padding: 0.75rem 1.5rem;
   border-radius: 999px;
   font-size: var(--xa-text-sm);
