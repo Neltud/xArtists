@@ -1,6 +1,6 @@
 /**
  * Header produit — menu, wallet, i18n, Mode Pitch B2B.
- * Hubs canoniques uniquement (pas de Slot/Casino).
+ * Style protocol (soul-aligned): sobre, contrasté, peu de glow.
  */
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
@@ -24,12 +24,12 @@ export default function Header() {
 
   const live = connected && (method !== 'xportal' || sessionLive === true)
 
-  /** 4 hubs canoniques — Accueil / Packs / Market / Museum */
   const topNav = [
     { to: '/', label: t('nav.home'), end: true },
     { to: '/agents', label: t('nav.packs') },
     { to: '/market', label: t('nav.market') },
     { to: '/museum', label: t('nav.museum') },
+    { to: '/sale', label: t('sale.title') },
   ]
 
   const togglePitch = () => {
@@ -40,13 +40,20 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#07070c]/90 backdrop-blur-xl">
+      <header
+        className="sticky top-0 z-40 border-b backdrop-blur-xl"
+        style={{
+          borderColor: 'var(--xa-border)',
+          background: 'rgba(10, 10, 15, 0.92)',
+        }}
+      >
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-3 sm:px-4">
           <div className="flex min-w-0 items-center gap-2">
             <button
               type="button"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/12 bg-white/[0.04] text-zinc-100 transition hover:bg-white/[0.08]"
-              aria-label="Ouvrir le menu"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border text-zinc-100 transition"
+              style={{ borderColor: 'var(--xa-border)', background: 'rgba(255,255,255,0.03)' }}
+              aria-label="Menu"
               onClick={() => setMenuOpen(true)}
             >
               <span className="text-lg leading-none" aria-hidden>
@@ -54,24 +61,29 @@ export default function Header() {
               </span>
             </button>
             <Link to="/" className="flex min-w-0 items-center gap-2">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-[11px] font-bold text-white shadow-[0_0_24px_-6px_rgba(139,92,246,0.7)]">
+              <span
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
+                style={{ background: 'var(--xa-text)', color: 'var(--xa-bg)' }}
+              >
                 xA
               </span>
-              <span className="hidden truncate text-sm font-semibold tracking-tight text-white sm:inline">
+              <span className="hidden truncate text-sm font-semibold tracking-tight sm:inline" style={{ color: 'var(--xa-text)' }}>
                 xArtists
               </span>
             </Link>
           </div>
 
-          <nav className="hidden items-center gap-0.5 md:flex" aria-label="Navigation rapide">
+          <nav className="hidden items-center gap-0.5 md:flex" aria-label="Navigation">
             {topNav.map(item => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={'end' in item ? item.end : false}
                 className={({ isActive }) =>
-                  `rounded-lg px-3 py-1.5 text-[12px] font-medium transition ${
-                    isActive ? 'bg-white/10 text-white' : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-100'
+                  `rounded-full px-3 py-1.5 text-[12px] font-medium transition ${
+                    isActive
+                      ? 'bg-white/10 text-white'
+                      : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-100'
                   }`
                 }
               >
@@ -84,11 +96,11 @@ export default function Header() {
             <button
               type="button"
               onClick={togglePitch}
-              title={pitch ? 'Désactiver le mode pitch' : 'Activer le mode pitch (démo B2B)'}
+              title={pitch ? 'Pitch off' : 'Pitch on'}
               className={`hidden sm:inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-semibold transition ${
                 pitch
-                  ? 'border-amber-400/45 bg-amber-500/15 text-amber-100'
-                  : 'border-white/12 text-zinc-400 hover:border-white/20'
+                  ? 'border-amber-400/40 bg-amber-500/10 text-amber-100'
+                  : 'border-white/10 text-zinc-400 hover:border-white/20'
               }`}
             >
               Pitch
@@ -99,18 +111,19 @@ export default function Header() {
                 <button
                   type="button"
                   onClick={() => requestOpenAssets()}
-                  className="hidden sm:inline-flex max-w-[9rem] truncate rounded-full border border-white/12 bg-white/[0.04] px-2.5 py-1 text-[11px] font-medium text-zinc-200"
+                  className="hidden sm:inline-flex max-w-[9rem] truncate rounded-full border px-2.5 py-1 text-[11px] font-medium text-zinc-200"
+                  style={{ borderColor: 'var(--xa-border)', background: 'rgba(255,255,255,0.03)' }}
                   title={address || ''}
                 >
                   {live ? '\u25cf' : '\u25cb'} {shortAddress}
                 </button>
                 <button type="button" onClick={() => void disconnect()} className="btn-secondary text-[11px] min-h-[36px] px-2">
-                  {t('nav.disconnect') || 'Out'}
+                  {t('common.disconnect')}
                 </button>
               </>
             ) : (
               <button type="button" onClick={requestOpenConnect} className="btn-primary text-[11px] min-h-[36px] px-3">
-                {t('nav.wallet')}
+                {t('common.connect')}
               </button>
             )}
           </div>
