@@ -63,9 +63,6 @@ const homeEn = {
   'lia.subtitle': 'Paper signals · live tape · shadow',
 }
 
-// NOTE: Full multi-lang expansions for es/de/ru/uk/zh/ar are in the local artifacts.
-// Restoring a working FR/EN core + key overrides to unblock build while full file is re-applied.
-
 const onboardFr = {
   'onboard.kicker': 'Bienvenue',
   'onboard.title': 'xArtists en 30 secondes',
@@ -201,6 +198,17 @@ const museumFr = {
   'museum.retry': 'Réessayer immersion',
   'museum.viewFps': 'FPS',
   'museum.viewAvatar': 'Avatar',
+  'museum.mode.explore': 'Explorer',
+  'museum.mode.venue': 'Venue',
+  'museum.mode.map': 'Carte',
+  'museum.mode.mine': 'Ma collection',
+  'museum.mode.pulse': 'Pulse',
+  'museum.lead': 'Salles immersives · catalogue Open Access',
+  'museum.roomWorks': 'Œuvres de la salle',
+  'museum.venueEmpty': 'Assigne des NFT à un mur loué',
+  'museum.venueView': 'Vue mur / venue',
+  'museum.disclaimer':
+    'Mur venue · pack = salle privée · catalogue quotidien Open Access',
 }
 
 const museumEn = {
@@ -220,6 +228,17 @@ const museumEn = {
   'museum.retry': 'Retry immersion',
   'museum.viewFps': 'FPS',
   'museum.viewAvatar': 'Avatar',
+  'museum.mode.explore': 'Explore',
+  'museum.mode.venue': 'Venue',
+  'museum.mode.map': 'Map',
+  'museum.mode.mine': 'My collection',
+  'museum.mode.pulse': 'Pulse',
+  'museum.lead': 'Immersive halls · Open Access catalog',
+  'museum.roomWorks': 'Room works',
+  'museum.venueEmpty': 'Assign NFTs to a rented wall',
+  'museum.venueView': 'Wall / venue view',
+  'museum.disclaimer':
+    'Venue wall · pack = private room · daily Open Access catalog',
 }
 
 const walletFr = {
@@ -334,7 +353,6 @@ const en: Dict = {
   ...walletEn,
 }
 
-// ES — substantial coverage
 const es: Dict = {
   ...en,
   'nav.home': 'Inicio',
@@ -371,6 +389,11 @@ const es: Dict = {
   'museum.tapToEnlarge': 'toca para ampliar',
   'museum.prev': 'Obra anterior',
   'museum.next': 'Obra siguiente',
+  'museum.mode.explore': 'Explorar',
+  'museum.mode.map': 'Mapa',
+  'museum.mode.mine': 'Mi colección',
+  'museum.lead': 'Salas inmersivas · catálogo Open Access',
+  'museum.roomWorks': 'Obras de la sala',
 }
 
 const de: Dict = {
@@ -409,6 +432,11 @@ const de: Dict = {
   'museum.tapToEnlarge': 'tippen zum Vergrößern',
   'museum.prev': 'Vorheriges Werk',
   'museum.next': 'Nächstes Werk',
+  'museum.mode.explore': 'Erkunden',
+  'museum.mode.map': 'Karte',
+  'museum.mode.mine': 'Meine Sammlung',
+  'museum.lead': 'Immersive Säle · Open-Access-Katalog',
+  'museum.roomWorks': 'Werke im Raum',
 }
 
 const ru: Dict = {
@@ -428,6 +456,11 @@ const ru: Dict = {
   'museum.exit': 'Выйти',
   'museum.fullscreen': 'Полный экран',
   'museum.tapToEnlarge': 'нажмите, чтобы увеличить',
+  'museum.mode.explore': 'Обзор',
+  'museum.mode.map': 'Карта',
+  'museum.mode.mine': 'Моя коллекция',
+  'museum.lead': 'Иммерсивные залы · каталог Open Access',
+  'museum.roomWorks': 'Работы в зале',
 }
 
 const uk: Dict = {
@@ -447,6 +480,11 @@ const uk: Dict = {
   'museum.exit': 'Вийти',
   'museum.fullscreen': 'Повний екран',
   'museum.tapToEnlarge': 'торкніться, щоб збільшити',
+  'museum.mode.explore': 'Огляд',
+  'museum.mode.map': 'Карта',
+  'museum.mode.mine': 'Моя колекція',
+  'museum.lead': 'Імерсивні зали · каталог Open Access',
+  'museum.roomWorks': 'Роботи в залі',
 }
 
 const zh: Dict = {
@@ -470,6 +508,11 @@ const zh: Dict = {
   'museum.exit': '退出',
   'museum.fullscreen': '全屏',
   'museum.tapToEnlarge': '点击放大',
+  'museum.mode.explore': '探索',
+  'museum.mode.map': '地图',
+  'museum.mode.mine': '我的收藏',
+  'museum.lead': '沉浸式展厅 · Open Access 目录',
+  'museum.roomWorks': '展厅作品',
 }
 
 const ar: Dict = {
@@ -489,6 +532,11 @@ const ar: Dict = {
   'museum.exit': 'خروج',
   'museum.fullscreen': 'ملء الشاشة',
   'museum.tapToEnlarge': 'المس للتكبير',
+  'museum.mode.explore': 'استكشاف',
+  'museum.mode.map': 'الخريطة',
+  'museum.mode.mine': 'مجموعتي',
+  'museum.lead': 'قاعات غامرة · كتالوج Open Access',
+  'museum.roomWorks': 'أعمال القاعة',
 }
 
 export const DICTS: Record<Lang, Dict> = { fr, en, es, de, ru, uk, zh, ar }
