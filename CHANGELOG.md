@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.116.0](https://github.com/Neltud/xArtists/compare/v0.115.0...v0.116.0) (2026-10-18)
+
+
+### Features
+
+* **museum:** MuseumPage i18n modes + lead/disclaimer keys ([0e22713](https://github.com/Neltud/xArtists/commit/0e22713f80453f77b92a1a0a91957099da22c7c8))
+
+
+### Documentation
+
+* DESIGN_VALIDATED_DELIVERY — museum immersive + i18n multi-lang done ([e23a951](https://github.com/Neltud/xArtists/commit/e23a951290e1a0135dce5fa3f105e45b3f9ffb4e))
+
 ## [0.115.0](https://github.com/Neltud/xArtists/compare/v0.114.0...v0.115.0) (2026-10-18)
 
 
