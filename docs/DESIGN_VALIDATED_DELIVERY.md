@@ -40,14 +40,18 @@ CTA primaire = fond accent / texte graphite. Logo header = pastille `#cdf58b`.
 
 ---
 
-## 3. Musée immersif
+## 3. Musée immersif ✅
 
-Existant conservé : `MuseumHall`, WebGL halls, `VirtualJoystick`, fiches œuvre.  
-Améliorations livrées :
-- Joystick plus grand (112px), capture pointer isolée, accent vert acide
-- Tokens lumière / chrome pour UI overlay
+| Feature | Statut |
+|---------|--------|
+| Fullscreen (API + touche F) | ✅ |
+| Prev / next artwork + téléport + orientation | ✅ |
+| Dual-touch look (lookPointerId isolé) + VirtualJoystick | ✅ |
+| FPS ↔ Avatar (touche V) | ✅ |
+| Reset (R) · ZQSD · hints FR/EN | ✅ |
+| Chrome graphite / acid-green | ✅ |
 
-**Limite :** dual-touch walk+look complet, avatar mode, fullscreen UI et collision tuning dépendent encore de `MuseumWebGLHallLive` / `MuseumBlueprintRoom` — non réécrits en totalité dans cette passe.
+Fichiers : `MuseumWebGLHallLive.tsx` (impl via `MuseumWebGLHallImpl`), `VirtualJoystick.tsx`, `MuseumPage.tsx` (modes i18n).
 
 ---
 
@@ -71,12 +75,20 @@ Fichiers : `lib/xportalWc.ts`, `config/sdkDapp.ts`
 
 ---
 
-## 5. Multilingue
+## 5. Multilingue ✅ (passe dense)
 
-Langues : `fr | en | es | de | ru | uk | zh | ar` (RTL via `dir` dans `I18nContext`).  
-Clés espaces / nav étendues progressivement ; modules packs/home FR-EN complets ; autres langues fallback EN + overrides.
+Langues : `fr | en | es | de | ru | uk | zh | ar` (RTL via `dir` dans `I18nContext`).
 
-**Limite :** couverture exhaustive de *tous* les formulaires/erreurs des 50+ pages reste partielle hors FR/EN.
+| Zone | Couverture |
+|------|------------|
+| Nav / home / packs / sale | FR/EN complets · ES/DE/RU/UK/ZH/AR solides |
+| Musée (immersion, modes, hints) | FR/EN + overrides multi-lang |
+| Wallet (connect, erreurs) | FR/EN + ES/DE/RU/UK/ZH/AR |
+| Checkout + legal | FR/EN complets · DE/ES/ZH/RU/UK/AR (UI + titres ; corps légaux EN fallback) |
+
+Fallback : langue → EN → FR → clé brute.
+
+Fichiers : `dictionariesCore.ts`, `checkoutLegalKeys.ts`, `marketKeys.ts`, `I18nContext.tsx`.
 
 ---
 
@@ -84,10 +96,12 @@ Clés espaces / nav étendues progressivement ; modules packs/home FR-EN complet
 
 | Contrôle | Statut |
 |----------|--------|
-| Build CI local | Non exécuté dans cet environnement agent (pas de `npm run build` sandboxé sur le monorepo complet) |
+| Build CI local | Non exécuté dans cet environnement agent |
 | Routes + aliases (revue code) | ✅ |
 | Tokens design (revue code) | ✅ |
 | xPortal cycle (revue code) | ✅ |
+| Musée immersif (revue code) | ✅ |
+| i18n multi-lang (revue code) | ✅ |
 | Tests unitaires existants | Non relancés |
 | Téléphone / xPortal réel | ❌ Non effectué |
 | Sites reference pixel-diff | ❌ Login ChatGPT bloquant |
@@ -97,14 +111,17 @@ Clés espaces / nav étendues progressivement ; modules packs/home FR-EN complet
 ## Fichiers principaux modifiés
 
 - `styles/soul-tokens.css`
-- `config/routeRegistry.ts` **(nouveau)**
+- `config/routeRegistry.ts`
 - `config/sdkDapp.ts`
 - `lib/xportalWc.ts`
 - `App.tsx`
-- `pages/NotFoundPage.tsx` **(nouveau)**
+- `pages/NotFoundPage.tsx`
+- `pages/MuseumPage.tsx`
 - `components/Header.tsx`, `BottomNav.tsx`
 - `components/museum/VirtualJoystick.tsx`
-- Pages protocol précédentes (Home, Packs, Sale, CC, Market, Museum, LIA, TCA, Wallet, Staking, Studio, Portfolio, DAO, LP)
+- `components/museum/MuseumWebGLHallLive.tsx`
+- `i18n/dictionariesCore.ts`, `checkoutLegalKeys.ts`, `marketKeys.ts`
+- Pages protocol (Home, Packs, Sale, CC, Market, Museum, LIA, TCA, Wallet, Staking, Studio, Portfolio, DAO, LP)
 
 ---
 
@@ -112,5 +129,6 @@ Clés espaces / nav étendues progressivement ; modules packs/home FR-EN complet
 
 1. `npm run build` + smoke routes sur preview
 2. Test xPortal iOS/Android avec `openXPortalApp`
-3. Pass musée : prev/next artwork + fullscreen + avatar dans `MuseumWebGLHallLive`
-4. Enrichir i18n ES/DE/RU/UK/ZH/AR pour checkout/legal
+3. ~~Pass musée immersif~~ **fait**
+4. ~~Enrichir i18n ES/DE/RU/UK/ZH/AR~~ **fait** (corps légaux longs encore en EN pour DE/ES/ZH/RU/UK/AR — second push dense possible depuis artifacts locaux)
+5. Preuve produit P0 : 1 TX utilisateur (stake TRO / buy pack / bid listing #2) documentée dans `ONCHAIN_MICRO_PROOFS.md`
