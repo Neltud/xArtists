@@ -1,5 +1,9 @@
 /**
  * Paybox / e-Transactions — carte FR (hosted redirect, secrets serveur uniquement).
+ *
+ * SECURITY: amount is NEVER trusted from the client.
+ * Backend (access-api / access_pack) looks up price from server catalog by pack_id only.
+ * Do not pass amount_cents in the request body for payment; it is ignored server-side.
  */
 
 import type { PackId } from '../config/agentPacks'
@@ -8,7 +12,8 @@ import { getAccessApiBase, buildPackSuccessUrl, buildPackCancelUrl } from './str
 export type PayboxSessionRequest = {
   pack_id: PackId
   buyer_address: string
-  amount_cents: number
+  /** @deprecated Ignored by server. Kept for UI display only. */
+  amount_cents?: number
   success_url?: string
   cancel_url?: string
 }
@@ -24,15 +29,17 @@ export function isPayboxConfigured(): boolean {
 
 export async function createPayboxSession(
   body: PayboxSessionRequest
-): Promise<{ url?: string; order_id?: string }> {
+): Promise<{ url?: string; order_id?: string; amount_cents?: number; amount_eur?: number }> {
   const api = getAccessApiBase()
   if (!api) throw new Error('VITE_ACCESS_API_BASE manquant pour Paybox API')
 
+  // Never send amount_cents — server catalog is the only source of truth
   const r = await fetch(`${api}/v1/checkout/paybox`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      ...body,
+      pack_id: body.pack_id,
+      buyer_address: body.buyer_address,
       provider: 'paybox',
       currency: 'eur',
       success_url: body.success_url || buildPackSuccessUrl(body.pack_id),
@@ -43,13 +50,16 @@ export async function createPayboxSession(
     const text = await r.text().catch(() => '')
     throw new Error(`Paybox session HTTP ${r.status}${text ? `: ${text.slice(0, 120)}` : ''}`)
   }
-  return (await r.json()) as { url?: string; order_id?: string }
+  return (await r.json()) as { url?: string; order_id?: string; amount_cents?: number; amount_eur?: number }
 }
 
-/** Ouvre le TPE hébergé (URL backend ou VITE_PAYBOX_PAYMENT_URL). */
+/**
+ * Legacy redirect helper. Amount is intentionally NOT put in the URL
+ * to prevent price manipulation via query params.
+ * Prefer createPayboxSession (POST) which returns a signed URL from the server.
+ */
 export function openPayboxCheckout(opts: {
   orderId: string
-  amountCents: number
   returnUrl?: string
   packId?: PackId
   buyerAddress?: string
@@ -59,7 +69,7 @@ export function openPayboxCheckout(opts: {
   try {
     const url = new URL(base)
     url.searchParams.set('orderId', opts.orderId)
-    url.searchParams.set('amount', String(opts.amountCents))
+    // amount deliberately omitted — server must resolve from pack_id / order
     if (opts.returnUrl) url.searchParams.set('returnUrl', opts.returnUrl)
     if (opts.packId) url.searchParams.set('pack_id', opts.packId)
     if (opts.buyerAddress) url.searchParams.set('buyer_address', opts.buyerAddress)
@@ -72,14 +82,14 @@ export function openPayboxCheckout(opts: {
 }
 
 /**
- * Démarre Paybox : session API → URL env → paper.
+ * Démarre Paybox : session API (server price) → URL env → paper.
  */
 export async function startPayboxCardPayment(opts: {
   packId: PackId
   buyerAddress: string
-  amountEur: number
+  /** Display-only; ignored by payment path */
+  amountEur?: number
 }): Promise<'redirect' | 'payment_link' | 'paper'> {
-  const amountCents = Math.round(opts.amountEur * 100)
   const orderId = `xa-${opts.packId}-${Date.now().toString(36)}`
 
   const api = getAccessApiBase()
@@ -88,12 +98,15 @@ export async function startPayboxCardPayment(opts: {
       const session = await createPayboxSession({
         pack_id: opts.packId,
         buyer_address: opts.buyerAddress,
-        amount_cents: amountCents,
         success_url: buildPackSuccessUrl(opts.packId),
       })
       if (session.url) {
         window.location.href = session.url
         return 'redirect'
+      }
+      // stub may return order_id without url — still considered initiated
+      if (session.order_id) {
+        // fall through to env URL if present, else paper
       }
     } catch {
       /* fallback URL env */
@@ -103,7 +116,6 @@ export async function startPayboxCardPayment(opts: {
   if (getPayboxPaymentUrl()) {
     const ok = openPayboxCheckout({
       orderId,
-      amountCents,
       returnUrl: buildPackSuccessUrl(opts.packId),
       packId: opts.packId,
       buyerAddress: opts.buyerAddress,
