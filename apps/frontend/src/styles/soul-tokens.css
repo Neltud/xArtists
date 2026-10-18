@@ -1,0 +1,182 @@
+/**
+ * xArtists — Soul-aligned design tokens
+ * Inspired by protocol-grade UIs (soul.io): dark, sparse, high contrast, stats-first.
+ * Does not copy soul branding — accent remains xArtists (amber / violet).
+ */
+
+:root {
+  /* Surfaces */
+  --xa-bg: #0a0a0f;
+  --xa-bg-elevated: #111118;
+  --xa-surface: #16161f;
+  --xa-surface-hover: #1c1c28;
+  --xa-border: rgba(255, 255, 255, 0.08);
+  --xa-border-strong: rgba(255, 255, 255, 0.14);
+
+  /* Text */
+  --xa-text: #f4f4f5;
+  --xa-text-secondary: #a1a1aa;
+  --xa-text-muted: #71717a;
+
+  /* Accents (xArtists identity) */
+  --xa-accent: #f59e0b;
+  --xa-accent-soft: rgba(245, 158, 11, 0.12);
+  --xa-violet: #8b5cf6;
+  --xa-violet-soft: rgba(139, 92, 246, 0.12);
+  --xa-success: #34d399;
+  --xa-danger: #f87171;
+
+  /* Pack tiers */
+  --xa-pack-pulse: #fbbf24;
+  --xa-pack-yield: #d4d4d8;
+  --xa-pack-sentinel: #a78bfa;
+
+  /* Radius & spacing */
+  --xa-radius-sm: 8px;
+  --xa-radius: 12px;
+  --xa-radius-lg: 16px;
+  --xa-space-1: 0.25rem;
+  --xa-space-2: 0.5rem;
+  --xa-space-3: 0.75rem;
+  --xa-space-4: 1rem;
+  --xa-space-6: 1.5rem;
+  --xa-space-8: 2rem;
+  --xa-space-12: 3rem;
+
+  /* Type scale (Inter-like hierarchy) */
+  --xa-text-xs: 0.75rem;
+  --xa-text-sm: 0.875rem;
+  --xa-text-base: 1rem;
+  --xa-text-lg: 1.125rem;
+  --xa-text-xl: 1.25rem;
+  --xa-text-2xl: 1.5rem;
+  --xa-text-3xl: 1.875rem;
+  --xa-text-4xl: 2.25rem;
+  --xa-leading-tight: 1.15;
+  --xa-leading-normal: 1.5;
+
+  /* Motion */
+  --xa-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --xa-duration: 180ms;
+}
+
+/* Utility classes — opt-in on refactored pages */
+.xa-page {
+  background: var(--xa-bg);
+  color: var(--xa-text);
+  min-height: 100%;
+}
+
+.xa-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--xa-space-4);
+  padding: var(--xa-space-6) 0;
+  border-bottom: 1px solid var(--xa-border);
+}
+
+.xa-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xa-space-1);
+}
+
+.xa-stat__value {
+  font-size: var(--xa-text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: var(--xa-leading-tight);
+  color: var(--xa-text);
+}
+
+.xa-stat__label {
+  font-size: var(--xa-text-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--xa-text-muted);
+}
+
+.xa-hero {
+  padding: var(--xa-space-12) 0 var(--xa-space-8);
+  max-width: 42rem;
+}
+
+.xa-hero__kicker {
+  font-size: var(--xa-text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--xa-text-muted);
+  margin-bottom: var(--xa-space-3);
+}
+
+.xa-hero__title {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: var(--xa-leading-tight);
+  color: var(--xa-text);
+  margin: 0 0 var(--xa-space-4);
+}
+
+.xa-hero__lead {
+  font-size: var(--xa-text-lg);
+  line-height: var(--xa-leading-normal);
+  color: var(--xa-text-secondary);
+  margin: 0 0 var(--xa-space-6);
+}
+
+.xa-card {
+  background: var(--xa-surface);
+  border: 1px solid var(--xa-border);
+  border-radius: var(--xa-radius-lg);
+  padding: var(--xa-space-6);
+  transition: border-color var(--xa-duration) var(--xa-ease), background var(--xa-duration) var(--xa-ease);
+}
+
+.xa-card:hover {
+  border-color: var(--xa-border-strong);
+  background: var(--xa-surface-hover);
+}
+
+.xa-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--xa-space-2);
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  font-size: var(--xa-text-sm);
+  font-weight: 600;
+  background: var(--xa-text);
+  color: var(--xa-bg);
+  border: none;
+  cursor: pointer;
+  transition: opacity var(--xa-duration) var(--xa-ease);
+}
+
+.xa-btn-primary:hover {
+  opacity: 0.92;
+}
+
+.xa-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--xa-space-2);
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  font-size: var(--xa-text-sm);
+  font-weight: 600;
+  background: transparent;
+  color: var(--xa-text);
+  border: 1px solid var(--xa-border-strong);
+  cursor: pointer;
+}
+
+.xa-disclaimer {
+  font-size: var(--xa-text-xs);
+  color: var(--xa-text-muted);
+  line-height: 1.4;
+}
