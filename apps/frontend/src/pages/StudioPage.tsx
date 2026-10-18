@@ -1,4 +1,4 @@
-/** Creator Studio — collections + mint + list + certification phygital. */
+/** Creator Studio — collections + mint + list + certification phygital. Protocol UI. */
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
@@ -11,8 +11,10 @@ import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
 import { useToast } from '../components/ui/Toast'
 import { asText } from '../lib/safeRender'
 import { saveStudioCollection } from '../lib/studioOnChainMint'
+import { useI18n } from '../i18n/I18nContext'
 
 export default function StudioPage() {
+  const { t, lang } = useI18n()
   const { connected, address, canAttemptSign } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const nfts = account.nfts || []
@@ -25,6 +27,7 @@ export default function StudioPage() {
   const [tokenIdInput, setTokenIdInput] = useState('')
   const mint = useStudioMintTx()
   const { push } = useToast()
+  const isFr = lang === 'fr'
 
   const ownedCollections = useMemo(() => {
     const map = new Map<string, { id: string; count: number; sampleName: string }>()
@@ -68,14 +71,18 @@ export default function StudioPage() {
     }
     saveStudioCollection(rec)
     mint.setCollection(rec)
-    push(`Collection active : ${id}`, 'ok')
+    push(isFr ? `Collection active : ${id}` : `Active collection: ${id}`, 'ok')
   }
 
   const runIssue = async () => {
     if (!connected) return requestOpenConnect()
     const r = await mint.issueCollection(name, ticker)
     push(
-      r.ok ? 'Collection envoyée — signe dans xPortal' : asText(r.error, 'Échec'),
+      r.ok
+        ? isFr
+          ? 'Collection envoyée — signe dans xPortal'
+          : 'Collection sent — sign in xPortal'
+        : asText(r.error, isFr ? 'Échec' : 'Failed'),
       r.ok ? 'ok' : 'err',
     )
   }
@@ -83,17 +90,24 @@ export default function StudioPage() {
   const runRole = async () => {
     const id = activeCollectionId
     if (!id) {
-      push('Choisis ou saisis un token id (TICKER-xxxxxx)', 'err')
+      push(isFr ? 'Choisis ou saisis un token id' : 'Select or paste a token id', 'err')
       return
     }
     const r = await mint.setCreateRole(id)
-    push(r.ok ? 'Rôle NFTCreate envoyé' : asText(r.error, 'Échec'), r.ok ? 'ok' : 'err')
+    push(
+      r.ok
+        ? isFr
+          ? 'Rôle NFTCreate envoyé'
+          : 'NFTCreate role sent'
+        : asText(r.error, isFr ? 'Échec' : 'Failed'),
+      r.ok ? 'ok' : 'err',
+    )
   }
 
   const runMint = async () => {
     const id = activeCollectionId
     if (!id) {
-      push('Sélectionne une collection existante ou issue-en une', 'err')
+      push(isFr ? 'Sélectionne une collection' : 'Select a collection', 'err')
       return
     }
     const r = await mint.createNft({
@@ -103,132 +117,149 @@ export default function StudioPage() {
       attributes: 'studio:xartists',
       uris: [],
     })
-    push(r.ok ? 'Mint envoyé — signe xPortal' : asText(r.error, 'Échec'), r.ok ? 'ok' : 'err')
+    push(
+      r.ok
+        ? isFr
+          ? 'Mint envoyé — signe xPortal'
+          : 'Mint sent — sign xPortal'
+        : asText(r.error, isFr ? 'Échec' : 'Failed'),
+      r.ok ? 'ok' : 'err',
+    )
   }
 
+  const inputClass =
+    'mt-1 w-full rounded-xl border border-[var(--xa-border)] bg-black/40 px-3 py-2 text-sm text-[var(--xa-text)]'
+
   return (
-    <div className="animate-fade-in space-y-6 max-w-xl mx-auto pb-16">
-      <header className="space-y-1">
-        <p className="section-label">Création</p>
-        <h1 className="section-title display text-2xl">Creator Studio</h1>
-        <p className="text-sm text-zinc-400">
-          Collection existante ou nouvelle → mint → list Marketplace. Signature xPortal uniquement.
+    <div className="xa-page animate-fade-in space-y-6 max-w-xl mx-auto pb-16">
+      <header className="xa-hero" style={{ paddingTop: '1.25rem', maxWidth: '100%' }}>
+        <p className="xa-hero__kicker">{t('nav.studio')}</p>
+        <h1 className="xa-hero__title">Creator Studio</h1>
+        <p className="xa-hero__lead">
+          {isFr
+            ? 'Collection existante ou nouvelle → mint → list Marketplace. Signature xPortal uniquement.'
+            : 'Existing or new collection → mint → Marketplace list. xPortal signature only.'}
         </p>
       </header>
 
-      <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">
-          Mes collections ({ownedCollections.length})
+      <section className="xa-card space-y-3">
+        <h2 className="text-sm font-semibold text-[var(--xa-text)]">
+          {isFr ? 'Mes collections' : 'My collections'} ({ownedCollections.length})
         </h2>
         {!connected ? (
-          <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
-            Connecter wallet
+          <button type="button" className="xa-btn-primary text-sm" onClick={requestOpenConnect}>
+            {t('common.connect')}
           </button>
         ) : ownedCollections.length === 0 ? (
-          <p className="text-[13px] text-zinc-500">
-            Aucune collection NFT détectée sur ce wallet — crée-en une ci-dessous.
+          <p className="text-sm text-[var(--xa-text-muted)]">
+            {isFr
+              ? 'Aucune collection NFT — crée-en une ci-dessous.'
+              : 'No NFT collection — create one below.'}
           </p>
         ) : (
-          <div className="max-h-40 overflow-y-auto space-y-1.5 rounded-xl border border-white/10 p-2">
+          <div className="max-h-40 overflow-y-auto space-y-1.5 rounded-xl border border-[var(--xa-border)] p-2">
             {ownedCollections.map(c => (
               <button
                 key={c.id}
                 type="button"
                 onClick={() => selectExisting(c.id)}
-                className={`w-full text-left rounded-lg px-3 py-2 text-[12px] border transition ${
+                className={`w-full text-left rounded-lg px-3 py-2 text-xs border transition ${
                   activeCollectionId === c.id
-                    ? 'border-emerald-400/50 bg-emerald-500/10 text-white'
-                    : 'border-transparent hover:bg-white/5 text-zinc-300'
+                    ? 'border-[var(--xa-border-strong)] bg-white/5 text-[var(--xa-text)]'
+                    : 'border-transparent hover:bg-white/5 text-[var(--xa-text-secondary)]'
                 }`}
               >
                 <span className="mono font-medium">{c.id}</span>
-                <span className="text-zinc-500"> · {c.count} NFT</span>
+                <span className="text-[var(--xa-text-muted)]"> · {c.count} NFT</span>
               </button>
             ))}
           </div>
         )}
-        <label className="block text-[12px] text-zinc-500">
-          Ou coller un token id (TICKER-xxxxxx)
+        <label className="block text-xs text-[var(--xa-text-muted)]">
+          {isFr ? 'Ou coller un token id' : 'Or paste token id'}
           <input
             value={tokenIdInput}
             onChange={e => setTokenIdInput(e.target.value.trim())}
             placeholder="XART-abc123"
-            className="mt-1 w-full rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white mono"
+            className={`${inputClass} mono`}
           />
         </label>
         {activeCollectionId && (
-          <p className="text-[12px] text-emerald-300/90 mono">Active : {activeCollectionId}</p>
+          <p className="text-xs text-[var(--xa-accent)] mono">Active · {activeCollectionId}</p>
         )}
       </section>
 
-      <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">Nouvelle collection (optionnel)</h2>
+      <section className="xa-card space-y-3">
+        <h2 className="text-sm font-semibold text-[var(--xa-text)]">
+          {isFr ? 'Nouvelle collection' : 'New collection'}
+        </h2>
         {connected && (
-          <p className="text-[12px] text-zinc-500 mono truncate">{asText(address)}</p>
+          <p className="text-xs text-[var(--xa-text-muted)] mono truncate">{asText(address)}</p>
         )}
-        <label className="block text-[12px] text-zinc-500">
-          Nom
-          <input
-            value={name}
-            onChange={e => setName(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white"
-          />
+        <label className="block text-xs text-[var(--xa-text-muted)]">
+          {isFr ? 'Nom' : 'Name'}
+          <input value={name} onChange={e => setName(e.target.value)} className={inputClass} />
         </label>
-        <label className="block text-[12px] text-zinc-500">
+        <label className="block text-xs text-[var(--xa-text-muted)]">
           Ticker (A-Z 3–10)
           <input
             value={ticker}
             onChange={e => setTicker(e.target.value.toUpperCase())}
-            className="mt-1 w-full rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white"
+            className={inputClass}
           />
         </label>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            className="btn-primary text-sm"
+            className="xa-btn-primary text-sm"
             disabled={mint.pending || !canAttemptSign}
             onClick={() => void runIssue()}
           >
-            {mint.pending ? 'Signature…' : 'Issue collection'}
+            {mint.pending ? '…' : isFr ? 'Issue collection' : 'Issue collection'}
           </button>
           <button
             type="button"
-            className="btn-secondary text-sm"
+            className="xa-btn-secondary text-sm"
             disabled={mint.pending || !activeCollectionId}
             onClick={() => void runRole()}
           >
             Set NFTCreate role
           </button>
         </div>
-        <p className="text-[11px] text-zinc-600">
-          Après issue : récupère le token id sur l’explorer (TICKER-xxxxxx), colle-le ci-dessus, puis rôle +
-          mint.
+        <p className="xa-disclaimer">
+          {isFr
+            ? 'Après issue : récupère le token id explorer, colle-le, puis rôle + mint.'
+            : 'After issue: get token id from explorer, paste, then role + mint.'}
         </p>
       </section>
 
-      <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">Mint NFT</h2>
+      <section className="xa-card space-y-3">
+        <h2 className="text-sm font-semibold text-[var(--xa-text)]">Mint NFT</h2>
         <input
           value={nftName}
           onChange={e => setNftName(e.target.value)}
-          className="w-full rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white"
-          placeholder="Nom de l’œuvre"
+          className={inputClass}
+          placeholder={isFr ? 'Nom de l’œuvre' : 'Artwork name'}
         />
         <button
           type="button"
-          className="btn-secondary text-sm"
+          className="xa-btn-secondary text-sm"
           disabled={mint.pending || !activeCollectionId}
           onClick={() => void runMint()}
         >
-          {mint.pending ? 'Signature…' : 'Créer NFT'}
+          {mint.pending ? '…' : isFr ? 'Créer NFT' : 'Create NFT'}
         </button>
-        {mint.error && <p className="text-[12px] text-amber-200/90">{asText(mint.error)}</p>}
+        {mint.error && <p className="text-xs text-[var(--xa-accent)]">{asText(mint.error)}</p>}
       </section>
 
-      <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">Mes NFT ({owned.length})</h2>
+      <section className="xa-card space-y-3">
+        <h2 className="text-sm font-semibold text-[var(--xa-text)]">
+          {isFr ? 'Mes NFT' : 'My NFTs'} ({owned.length})
+        </h2>
         {connected && owned.length === 0 && (
-          <p className="text-[13px] text-zinc-500">Aucun NFT — mint ou importe une collection.</p>
+          <p className="text-sm text-[var(--xa-text-muted)]">
+            {isFr ? 'Aucun NFT — mint ou importe.' : 'No NFTs — mint or import.'}
+          </p>
         )}
         <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-72 overflow-y-auto">
           {owned.map(n => (
@@ -237,7 +268,9 @@ export default function StudioPage() {
                 type="button"
                 onClick={() => setPicked(n.id)}
                 className={`w-full text-left rounded-xl border p-2 ${
-                  picked === n.id ? 'border-violet-400/50 bg-violet-500/10' : 'border-white/10'
+                  picked === n.id
+                    ? 'border-[var(--xa-border-strong)] bg-white/5'
+                    : 'border-[var(--xa-border)]'
                 }`}
               >
                 {n.thumb ? (
@@ -250,42 +283,44 @@ export default function StudioPage() {
                 ) : (
                   <div className="w-full aspect-square rounded-lg mb-1.5 bg-zinc-900" />
                 )}
-                <p className="text-[11px] text-zinc-200 truncate">{asText(n.name)}</p>
-                <p className="text-[9px] text-zinc-600 mono truncate">{n.collection}</p>
+                <p className="text-[11px] text-[var(--xa-text-secondary)] truncate">{asText(n.name)}</p>
               </button>
             </li>
           ))}
         </ul>
         {picked && (
           <Link
-            to={`/marketplace?list=${encodeURIComponent(picked)}`}
-            className="btn-primary text-sm inline-block"
+            to={`/market?list=${encodeURIComponent(picked)}`}
+            className="xa-btn-primary text-sm inline-flex"
           >
-            Mettre en vente
+            {isFr ? 'Mettre en vente' : 'List for sale'}
           </Link>
         )}
         <div className="flex flex-wrap gap-2">
-          <Link to="/marketplace" className="btn-secondary text-sm inline-block">
-            Marketplace{listLive ? ' · live' : ''}
+          <Link to="/market" className="xa-btn-secondary text-sm inline-flex">
+            {t('nav.market')}{listLive ? ' · live' : ''}
           </Link>
-          <Link to="/my-packs" className="btn-secondary text-sm inline-block">
-            Mes salles
+          <Link to="/my-packs" className="xa-btn-secondary text-sm inline-flex">
+            {isFr ? 'Mes salles' : 'My rooms'}
           </Link>
         </div>
       </section>
 
-      <section className="card space-y-3 border border-fuchsia-500/20 bg-fuchsia-500/[0.04]">
-        <h2 className="text-sm font-semibold text-white">Certification Phygital</h2>
-        <p className="text-[12px] text-zinc-500 leading-relaxed">
-          Photo HD → hash SHA-256 local → certificats CoA / CoP. Réévaluation future via intention LIA
-          <code className="text-[9px] text-zinc-400"> PHYGITAL_REEVAL</code>.
+      <section className="xa-card space-y-3">
+        <h2 className="text-sm font-semibold text-[var(--xa-text)]">
+          {isFr ? 'Certification Phygital' : 'Phygital certification'}
+        </h2>
+        <p className="xa-disclaimer">
+          {isFr
+            ? 'Photo HD → hash SHA-256 local → certificats CoA / CoP.'
+            : 'HD photo → local SHA-256 hash → CoA / CoP certificates.'}
         </p>
         <PhysicalNftCertifier />
       </section>
 
-      <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">
-          Packs Agent IA{agentMint ? '' : ' · bientôt on-chain'}
+      <section className="xa-card space-y-3">
+        <h2 className="text-sm font-semibold text-[var(--xa-text)]">
+          {t('nav.packs')}{agentMint ? '' : isFr ? ' · bientôt on-chain' : ' · on-chain soon'}
         </h2>
         <PackCheckout />
       </section>
