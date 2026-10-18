@@ -1,42 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-18T10:27:53.397Z",
+  "updatedAt": "2026-10-18T15:25:45.267Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792319273124",
-      "timestamp": "10:27",
+      "id": "egld-1792337144795",
+      "timestamp": "15:25",
       "source": "EGLD",
-      "title": "Cotation publique · $3.57 (API MultiversX economics)",
+      "title": "Cotation publique · $3.48 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1792314866000",
+      "id": "rss-CoinTelegraph-0-1792331640000",
+      "timestamp": "13:54",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792331280000",
+      "timestamp": "13:48",
+      "source": "CoinTelegraph",
+      "title": "Most Americans polled oppose betting on elections: Reuters",
+      "link": "https://cointelegraph.com/news/most-americans-polled-oppose-betting-on-elections-reuters?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792320360000",
+      "timestamp": "10:46",
+      "source": "CoinTelegraph",
+      "title": "Cysic crypto bridge halted after unauthorized mint of 10M CYS",
+      "link": "https://cointelegraph.com/news/cysic-crypto-bridge-halted-after-unauthorized-mint-of-10m-cys?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1792314866000",
       "timestamp": "09:14",
       "source": "CoinTelegraph",
       "title": "Chinese suspect in $75M international crime network arrested in Bangkok",
       "link": "https://cointelegraph.com/news/chinese-suspect-in-75m-international-crime-network-arrested-in-bangkok?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1792304813000",
-      "timestamp": "06:26",
+      "id": "rss-CoinTelegraph-4-1792304940000",
+      "timestamp": "06:29",
       "source": "CoinTelegraph",
       "title": "Tether backs AIsa as strategic investor, completing seed extension round",
       "link": "https://cointelegraph.com/news/tether-backs-aisa-as-strategic-investor-completing-seed-extension-round?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1792243740000",
-      "timestamp": "13:29",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1792242060000",
+      "id": "rss-CoinTelegraph-5-1792242060000",
       "timestamp": "13:01",
       "source": "CoinTelegraph",
       "title": "Solana shows resilience, but some areas need continued observation, Fidelity says",
       "link": "https://cointelegraph.com/news/solana-shows-resilience-but-some-areas-need-continued-observation-fidelity-says?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1792332000000",
+      "timestamp": "14:00",
+      "source": "CoinDesk",
+      "title": "Stablecoin supply stalls, but payments jump 45% as Visa, Mastercard and Stripe connect crypto to cash",
+      "link": "https://www.coindesk.com/business/2026/10/18/stablecoin-supply-stalls-but-payments-jump-45-as-visa-mastercard-and-stripe-connect-crypto-to-cash"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792328400000",
+      "timestamp": "13:00",
+      "source": "CoinDesk",
+      "title": "Bitcoin’s $100,000 year-end hope divides analysts as inflation clouds outlook",
+      "link": "https://www.coindesk.com/markets/2026/10/18/bitcoin-s-usd100-000-year-end-hope-divides-analysts-as-inflation-clouds-outlook"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792328400000",
+      "timestamp": "13:00",
+      "source": "CoinDesk",
+      "title": "Crypto audits give investors false sense of security as Q3 hacks cost $1.18 billion, Hacken says",
+      "link": "https://www.coindesk.com/tech/2026/10/18/crypto-audits-give-investors-false-sense-of-security-as-q3-hacks-cost-usd1-18-billion-hacken-says"
+    },
+    {
+      "id": "rss-CoinDesk-3-1792324800000",
+      "timestamp": "12:00",
+      "source": "CoinDesk",
+      "title": "Crypto exchanges Binance, Coinbase join West Africa scam sweep that flagged $11 million",
+      "link": "https://www.coindesk.com/business/2026/10/14/crypto-exchanges-binance-coinbase-join-west-africa-scam-sweep-that-flagged-usd11-million"
+    },
+    {
+      "id": "egld-1792319273124",
+      "timestamp": "10:27",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.57 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-4-1792231380000",
@@ -149,55 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Stablecoin remittances cost 84% less than traditional transfers, report finds",
       "link": "https://cointelegraph.com/news/stablecoin-remittances-cost-savings-traditional-transfers?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792165948000",
-      "timestamp": "15:52",
-      "source": "CoinTelegraph",
-      "title": "Crypto Biz: Wall Street closes at 4. Tokenized stocks keep trading",
-      "link": "https://cointelegraph.com/news/tokenized-stocks-after-hours-trading-crypto-biz?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-2-1792162702000",
-      "timestamp": "14:58",
-      "source": "CoinDesk",
-      "title": "Big Tech's AI auditors will only see what they're shown",
-      "link": "https://www.coindesk.com/opinion/2026/10/16/big-tech-s-ai-auditors-will-only-see-what-they-re-shown"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792149300000",
-      "timestamp": "11:15",
-      "source": "CoinDesk",
-      "title": "Traders will soon be able to bet on whether Coinbase, Robinhood and Marathon will hit their targets",
-      "link": "https://www.coindesk.com/daybook-us/2026/10/16/traders-will-soon-be-able-to-bet-on-whether-coinbase-robinhood-and-marathon-will-hit-their-targets"
-    },
-    {
-      "id": "egld-1792206498165",
-      "timestamp": "03:08",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.70 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792165543000",
-      "timestamp": "15:45",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin price steadies around $82K after Fed’s Warsh avoids rate-hike hints",
-      "link": "https://cointelegraph.com/markets/bitcoin-price-steadies-82k-fed-warsh-avoids-rate-hike-hints?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792159863000",
-      "timestamp": "14:11",
-      "source": "CoinTelegraph",
-      "title": "Strategy conditionally declares daily dividends as STRC hovers below $100",
-      "link": "https://cointelegraph.com/news/strategy-daily-dividends-strc-hovers-below-100?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-2-1792148075000",
-      "timestamp": "10:54",
-      "source": "CoinDesk",
-      "title": "Circle targets 40 new markets as stablecoin demand grows globally",
-      "link": "https://www.coindesk.com/business/2026/10/16/circle-targets-40-new-markets-as-stablecoin-demand-grows-globally"
     }
   ]
 }
