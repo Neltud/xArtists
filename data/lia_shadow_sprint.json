@@ -3,14 +3,14 @@
   "paper": true,
   "LIA_LIVE_TRADING": 0,
   "started_at": "2026-10-04T12:16:34Z",
-  "updated_at": "2026-10-18T17:10:57Z",
+  "updated_at": "2026-10-18T20:22:04Z",
   "sprint_days_target": 7,
   "day_index": 7,
   "status": "complete",
-  "fills_total": 56,
+  "fills_total": 57,
   "fills_24h": 6,
-  "shadow_pnl_usd": 2.7005,
-  "win_rate": 0.6607,
+  "shadow_pnl_usd": 2.6589,
+  "win_rate": 0.6491,
   "equity_curve": [
     {
       "ts": "2026-08-26T16:30:00Z",
@@ -239,9 +239,13 @@
     {
       "ts": "2026-10-18T17:10:57Z",
       "equity": 1002.7005
+    },
+    {
+      "ts": "2026-10-18T20:22:04Z",
+      "equity": 1002.6589
     }
   ],
   "equity_start_usd": 1000.0,
-  "equity_now_usd": 1002.7005,
+  "equity_now_usd": 1002.6589,
   "note": "Simulated trading only \u2014 friction applied; not financial advice"
 }
