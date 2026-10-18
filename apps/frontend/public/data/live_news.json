@@ -1,42 +1,84 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-18T03:10:48.621Z",
+  "updatedAt": "2026-10-18T10:27:53.397Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792293048355",
-      "timestamp": "03:10",
+      "id": "egld-1792319273124",
+      "timestamp": "10:27",
       "source": "EGLD",
       "title": "Cotation publique · $3.57 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1792243740000",
+      "id": "rss-CoinTelegraph-0-1792314866000",
+      "timestamp": "09:14",
+      "source": "CoinTelegraph",
+      "title": "Chinese suspect in $75M international crime network arrested in Bangkok",
+      "link": "https://cointelegraph.com/news/chinese-suspect-in-75m-international-crime-network-arrested-in-bangkok?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792304813000",
+      "timestamp": "06:26",
+      "source": "CoinTelegraph",
+      "title": "Tether backs AIsa as strategic investor, completing seed extension round",
+      "link": "https://cointelegraph.com/news/tether-backs-aisa-as-strategic-investor-completing-seed-extension-round?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792243740000",
       "timestamp": "13:29",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1792241883000",
-      "timestamp": "12:58",
+      "id": "rss-CoinTelegraph-3-1792242060000",
+      "timestamp": "13:01",
       "source": "CoinTelegraph",
       "title": "Solana shows resilience, but some areas need continued observation, Fidelity says",
       "link": "https://cointelegraph.com/news/solana-shows-resilience-but-some-areas-need-continued-observation-fidelity-says?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1792231207000",
-      "timestamp": "10:00",
+      "id": "rss-CoinTelegraph-4-1792231380000",
+      "timestamp": "10:03",
       "source": "CoinTelegraph",
       "title": "Circle’s Allaire says stablecoin issuer looking to enter 40 developing markets: Report",
       "link": "https://cointelegraph.com/news/circles-allaire-says-stablecoin-issuer-looking-to-enter-40-developing-markets-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1792225931000",
-      "timestamp": "08:32",
+      "id": "rss-CoinTelegraph-5-1792226700000",
+      "timestamp": "08:45",
       "source": "CoinTelegraph",
       "title": "Lagarde says euro-area economy is resilient, digital euro imminent",
       "link": "https://cointelegraph.com/news/lagarde-says-euro-area-economy-is-resilient-digital-euro-imminent?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1792307612000",
+      "timestamp": "07:13",
+      "source": "CoinDesk",
+      "title": "Chip-stock bets lost $52 million in 10 minutes with Wall Street shut",
+      "link": "https://www.coindesk.com/markets/2026/10/18/chip-stock-bets-lost-usd52-million-in-10-minutes-with-wall-street-shut"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792285595000",
+      "timestamp": "01:06",
+      "source": "CoinDesk",
+      "title": "Circle defends USDC economics as stablecoin rivals court its partners with bigger cut",
+      "link": "https://www.coindesk.com/business/2026/10/17/circle-defends-usdc-economics-as-stablecoin-rivals-court-its-partners-with-bigger-cut"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792256400000",
+      "timestamp": "17:00",
+      "source": "CoinDesk",
+      "title": "Goldman, Wells Fargo, Morgan Stanley see tokenization as a growth play, not a threat",
+      "link": "https://www.coindesk.com/business/2026/10/17/goldman-wells-fargo-morgan-stanley-see-tokenization-as-a-growth-play-not-a-threat"
+    },
+    {
+      "id": "rss-CoinDesk-3-1792249200000",
+      "timestamp": "15:00",
+      "source": "CoinDesk",
+      "title": "Citrini sees a tokenization boom. The harder question is who profits",
+      "link": "https://www.coindesk.com/business/2026/10/17/citrini-sees-a-tokenization-boom-the-harder-question-is-who-profits"
     },
     {
       "id": "rss-CoinTelegraph-4-1792222017000",
@@ -51,27 +93,6 @@
       "source": "CoinTelegraph",
       "title": "Crypto PACs escalate spending against Sherrod Brown in Ohio Senate race",
       "link": "https://cointelegraph.com/news/crypto-pac-fairshake-spending-ohio-senate-race-sherrod-brown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792285595000",
-      "timestamp": "01:06",
-      "source": "CoinDesk",
-      "title": "Circle defends USDC economics as stablecoin rivals court its partners with bigger cut",
-      "link": "https://www.coindesk.com/business/2026/10/17/circle-defends-usdc-economics-as-stablecoin-rivals-court-its-partners-with-bigger-cut"
-    },
-    {
-      "id": "rss-CoinDesk-1-1792256400000",
-      "timestamp": "17:00",
-      "source": "CoinDesk",
-      "title": "Goldman, Wells Fargo, Morgan Stanley see tokenization as a growth play, not a threat",
-      "link": "https://www.coindesk.com/business/2026/10/17/goldman-wells-fargo-morgan-stanley-see-tokenization-as-a-growth-play-not-a-threat"
-    },
-    {
-      "id": "rss-CoinDesk-2-1792249200000",
-      "timestamp": "15:00",
-      "source": "CoinDesk",
-      "title": "Citrini sees a tokenization boom. The harder question is who profits",
-      "link": "https://www.coindesk.com/business/2026/10/17/citrini-sees-a-tokenization-boom-the-harder-question-is-who-profits"
     },
     {
       "id": "rss-CoinDesk-3-1792245600000",
@@ -177,27 +198,6 @@
       "source": "CoinDesk",
       "title": "Circle targets 40 new markets as stablecoin demand grows globally",
       "link": "https://www.coindesk.com/business/2026/10/16/circle-targets-40-new-markets-as-stablecoin-demand-grows-globally"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792147946000",
-      "timestamp": "10:52",
-      "source": "CoinDesk",
-      "title": "Quantum Alliance forms amid warnings 6.4 million bitcoin face future quantum threat",
-      "link": "https://www.coindesk.com/tech/2026/10/16/experts-agree-quantum-computers-could-put-satoshi-s-bitcoin-at-risk-but-not-on-what-s-next"
-    },
-    {
-      "id": "egld-1792192552456",
-      "timestamp": "23:15",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.71 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792182777633",
-      "timestamp": "20:32",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.67 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     }
   ]
 }
