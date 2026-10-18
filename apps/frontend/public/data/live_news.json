@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-18T20:08:56.653Z",
+  "updatedAt": "2026-10-18T22:47:50.748Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792354136205",
-      "timestamp": "20:08",
+      "id": "egld-1792363670213",
+      "timestamp": "22:47",
       "source": "EGLD",
-      "title": "Cotation publique · $3.40 (API MultiversX economics)",
+      "title": "Cotation publique · $3.50 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -79,6 +79,13 @@
       "source": "CoinDesk",
       "title": "Stablecoin supply stalls, but payments jump 45% as Visa, Mastercard and Stripe connect crypto to cash",
       "link": "https://www.coindesk.com/business/2026/10/18/stablecoin-supply-stalls-but-payments-jump-45-as-visa-mastercard-and-stripe-connect-crypto-to-cash"
+    },
+    {
+      "id": "egld-1792354136205",
+      "timestamp": "20:08",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.40 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "egld-1792337144795",
@@ -190,13 +197,6 @@
       "timestamp": "20:10",
       "source": "EGLD",
       "title": "Cotation publique · $3.63 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792249248592",
-      "timestamp": "15:00",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.62 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     }
   ]
