@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * LIA host presence — floating core (no fake TX success).
  */
@@ -39,9 +40,8 @@ export default function LiaHost({
         </div>
         <div className="pointer-events-auto rounded-2xl border border-cyan-500/30 bg-black/70 backdrop-blur-md px-3 py-2 shadow-xl">
           <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-300/90 font-semibold mb-0.5">
-            LIA · hôte
-          </p>
-          <p className="text-sm text-zinc-100 leading-snug">{text}</p>
+            {xaRender("LIA · hôte ")}</p>
+          <p className="text-sm text-zinc-100 leading-snug">{xaRender(text)}</p>
         </div>
       </div>
     </div>
