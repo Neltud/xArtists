@@ -1,0 +1,5 @@
+import fs from 'node:fs';import path from 'node:path';import {build} from 'esbuild';
+const table=Object.assign({},...fs.readdirSync('src/i18n/phrases').sort().filter(f=>f.endsWith('.json')).map(f=>JSON.parse(fs.readFileSync('src/i18n/phrases/'+f,'utf8'))))
+const entry=process.argv[2]==='modules'?'module-render-check':process.argv[2]==='mobile'?'mobile-regression-check':'render-check'
+await build({entryPoints:['scripts/'+entry+'.tsx'],bundle:true,platform:'node',packages:'external',format:'esm',jsx:'automatic',splitting:true,outdir:'.sites-runtime/render-check',define:{'import.meta.env':JSON.stringify({BASE_URL:'/',DEV:false,MODE:'production',VITE_LIA_LIVE_TRADING:'0'})},plugins:[{name:'test-phrase-table',setup(b){b.onLoad({filter:/phraseRuntime\.ts$/},async args=>{let contents=fs.readFileSync(args.path,'utf8');contents=contents.replace(/const packs=import\.meta\.glob[^\n]+/,`const packs={all:${JSON.stringify(table)}}`);return{contents,loader:'ts',resolveDir:path.dirname(args.path)}});b.onLoad({filter:/\.css$/},()=>({contents:'',loader:'css'}))}}],logLevel:'silent'})
+await import('../.sites-runtime/render-check/'+entry+'.js?'+Date.now())
