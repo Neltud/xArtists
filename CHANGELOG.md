@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.116.1](https://github.com/Neltud/xArtists/compare/v0.116.0...v0.116.1) (2026-10-19)
+
+
+### Bug Fixes
+
+* **security:** daily safety — fail-closed Paybox, require wallet for fiat, align EUR prices ([6a154b5](https://github.com/Neltud/xArtists/commit/6a154b572124096aac17b9d99a0d71a12d5464b2))
+
+
+### Documentation
+
+* mark Paybox fail-closed safety pass + update suite (2026-10-19) ([40c75ce](https://github.com/Neltud/xArtists/commit/40c75ce7f48a154cf72a0abfacf498115f63c512))
+
 ## [0.116.0](https://github.com/Neltud/xArtists/compare/v0.115.0...v0.116.0) (2026-10-18)
 
 
