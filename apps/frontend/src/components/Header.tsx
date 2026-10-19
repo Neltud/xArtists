@@ -11,6 +11,7 @@ import { primaryNavRoutes } from '../config/routeRegistry'
 import LangSwitcher from './LangSwitcher'
 import SideNav from './SideNav'
 import LoginModal from './LoginModal'
+import NetworkBadge from './ui/NetworkBadge'
 
 export default function Header() {
   const { t } = useI18n()
@@ -72,6 +73,7 @@ export default function Header() {
                 xArtists
               </span>
             </Link>
+            <NetworkBadge className="hidden sm:inline-flex" />
           </div>
 
           <nav className="hidden items-center gap-0.5 md:flex" aria-label="Navigation">
