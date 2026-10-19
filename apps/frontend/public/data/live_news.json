@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-19T03:24:42.760Z",
+  "updatedAt": "2026-10-19T12:14:13.055Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792412052726",
+      "timestamp": "12:14",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.57 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1792411078000",
+      "timestamp": "11:57",
+      "source": "CoinTelegraph",
+      "title": "World Liberty’s USD1 stablecoin sheds $400M in market cap in two weeks",
+      "link": "https://cointelegraph.com/news/world-liberty-usd1-stablecoin-market-cap-drops-400-million?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792409520000",
+      "timestamp": "11:32",
+      "source": "CoinTelegraph",
+      "title": "BingX, YouHodler added to ESMA MiCA register in latest update",
+      "link": "https://cointelegraph.com/news/bingx-youhodler-esma-mica-register-friday-update?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792405350000",
+      "timestamp": "10:22",
+      "source": "CoinTelegraph",
+      "title": "France advances stablecoin tax, eyes self-custodial wallets and exit tax proposals",
+      "link": "https://cointelegraph.com/news/france-stablecoin-tax-eyes-self-custodial-wallets-exit-tax?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1792405200000",
+      "timestamp": "10:20",
+      "source": "CoinTelegraph",
+      "title": "Stocks rebound into key tech earnings: Three things to know in Bitcoin this week",
+      "link": "https://cointelegraph.com/markets/stocks-rebound-into-key-tech-earnings-three-things-to-know-in-bitcoin-this-week?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1792400325000",
+      "timestamp": "08:58",
+      "source": "CoinTelegraph",
+      "title": "JPMorgan takes JPM Coin to Ethereum for institutional clients: Report",
+      "link": "https://cointelegraph.com/news/jpmorgan-jpm-coin-ethereum-institutional-clients?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1792396453000",
+      "timestamp": "07:54",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin, Ether ETFs shed $549M as October ETH outflows near $1B",
+      "link": "https://cointelegraph.com/markets/bitcoin-ether-etfs-549-million-weekly-outflows?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1792408500000",
+      "timestamp": "11:15",
+      "source": "CoinDesk",
+      "title": "Strategy on verge of golden cross, just weeks after bitcoin flashed same bullish signal",
+      "link": "https://www.coindesk.com/daybook-us/2026/10/19/strategy-on-verge-of-golden-cross-just-weeks-after-bitcoin-flashed-same-bullish-signal"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792407954000",
+      "timestamp": "11:05",
+      "source": "CoinDesk",
+      "title": "Live updates: Bitcoin tags $83,000 and slips back as chip stocks lead market rebound",
+      "link": "https://www.coindesk.com/markets/2026/10/19/live-updates-bitcoin-tags-usd83-000-and-slips-back-as-chip-stocks-lead-a-rebound"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792405593000",
+      "timestamp": "10:26",
+      "source": "CoinDesk",
+      "title": "Bitcoin extends bounce above $82,000 as stocks rebound, DeFi tokens lead altcoin gains",
+      "link": "https://www.coindesk.com/markets/2026/10/19/bitcoin-extends-bounce-above-usd82-000-as-stocks-rebound-defi-tokens-lead-altcoin-gains"
+    },
+    {
+      "id": "rss-CoinDesk-3-1792404227000",
+      "timestamp": "10:03",
+      "source": "CoinDesk",
+      "title": "JPMorgan's JPM Coin, representing dollar deposits, is coming to Ethereum: Bloomberg",
+      "link": "https://www.coindesk.com/markets/2026/10/19/jpmorgan-s-jpm-coin-representing-dollar-deposits-is-coming-to-ethereum-bloomberg"
+    },
     {
       "id": "egld-1792380282400",
       "timestamp": "03:24",
@@ -121,83 +198,6 @@
       "source": "CoinDesk",
       "title": "Stablecoin supply stalls, but payments jump 45% as Visa, Mastercard and Stripe connect crypto to cash",
       "link": "https://www.coindesk.com/business/2026/10/18/stablecoin-supply-stalls-but-payments-jump-45-as-visa-mastercard-and-stripe-connect-crypto-to-cash"
-    },
-    {
-      "id": "egld-1792354136205",
-      "timestamp": "20:08",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.40 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792337144795",
-      "timestamp": "15:25",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.48 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinDesk-1-1792328400000",
-      "timestamp": "13:00",
-      "source": "CoinDesk",
-      "title": "Bitcoin’s $100,000 year-end hope divides analysts as inflation clouds outlook",
-      "link": "https://www.coindesk.com/markets/2026/10/18/bitcoin-s-usd100-000-year-end-hope-divides-analysts-as-inflation-clouds-outlook"
-    },
-    {
-      "id": "rss-CoinDesk-2-1792328400000",
-      "timestamp": "13:00",
-      "source": "CoinDesk",
-      "title": "Crypto audits give investors false sense of security as Q3 hacks cost $1.18 billion, Hacken says",
-      "link": "https://www.coindesk.com/tech/2026/10/18/crypto-audits-give-investors-false-sense-of-security-as-q3-hacks-cost-usd1-18-billion-hacken-says"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792324800000",
-      "timestamp": "12:00",
-      "source": "CoinDesk",
-      "title": "Crypto exchanges Binance, Coinbase join West Africa scam sweep that flagged $11 million",
-      "link": "https://www.coindesk.com/business/2026/10/14/crypto-exchanges-binance-coinbase-join-west-africa-scam-sweep-that-flagged-usd11-million"
-    },
-    {
-      "id": "egld-1792319273124",
-      "timestamp": "10:27",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.57 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792231380000",
-      "timestamp": "10:03",
-      "source": "CoinTelegraph",
-      "title": "Circle’s Allaire says stablecoin issuer looking to enter 40 developing markets: Report",
-      "link": "https://cointelegraph.com/news/circles-allaire-says-stablecoin-issuer-looking-to-enter-40-developing-markets-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792226700000",
-      "timestamp": "08:45",
-      "source": "CoinTelegraph",
-      "title": "Lagarde says euro-area economy is resilient, digital euro imminent",
-      "link": "https://cointelegraph.com/news/lagarde-says-euro-area-economy-is-resilient-digital-euro-imminent?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792307612000",
-      "timestamp": "07:13",
-      "source": "CoinDesk",
-      "title": "Chip-stock bets lost $52 million in 10 minutes with Wall Street shut",
-      "link": "https://www.coindesk.com/markets/2026/10/18/chip-stock-bets-lost-usd52-million-in-10-minutes-with-wall-street-shut"
-    },
-    {
-      "id": "rss-CoinDesk-1-1792285595000",
-      "timestamp": "01:06",
-      "source": "CoinDesk",
-      "title": "Circle defends USDC economics as stablecoin rivals court its partners with bigger cut",
-      "link": "https://www.coindesk.com/business/2026/10/17/circle-defends-usdc-economics-as-stablecoin-rivals-court-its-partners-with-bigger-cut"
-    },
-    {
-      "id": "rss-CoinDesk-2-1792256400000",
-      "timestamp": "17:00",
-      "source": "CoinDesk",
-      "title": "Goldman, Wells Fargo, Morgan Stanley see tokenization as a growth play, not a threat",
-      "link": "https://www.coindesk.com/business/2026/10/17/goldman-wells-fargo-morgan-stanley-see-tokenization-as-a-growth-play-not-a-threat"
     }
   ]
 }
