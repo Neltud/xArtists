@@ -42,11 +42,11 @@ Les trades affichés = **paper** (LIA signals → multi_capital_router). **Aucun
 
 | pack_id | List EUR | cents |
 |---------|----------|-------|
-| pulse | 18 | 1800 |
-| yield | 12 | 1200 |
-| sentinel | 8 | 800 |
+| pulse | 110 | 11000 |
+| yield | 75 | 7500 |
+| sentinel | 50 | 5000 |
 
-Aligné `apps/frontend/src/config/agentPacks.ts`. LIA peut publier un override JSON plus tard ; le webhook refuse tout montant ≠ catalogue (±0).
+Aligné `apps/frontend/src/config/agentPacks.ts` et `services/access-api/src/server.mjs`. Le webhook refuse tout montant ≠ catalogue (±0). Aucun override de prix côté client.
 
 ---
 

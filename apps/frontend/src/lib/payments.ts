@@ -13,7 +13,6 @@ import {
 import {
   startPayboxCardPayment,
   isPayboxConfigured,
-  getPayboxPaymentUrl,
 } from './paybox'
 import { isMoonPayConfigured, moonpayStatusHint, openMoonPayBuy } from './moonpay'
 
@@ -39,9 +38,7 @@ export function payMethodLabel(m: PayMethod): string {
     case 'stripe':
       return getAccessApiBase() ? 'Stripe (API)' : 'Stripe (Payment Link)'
     case 'paybox':
-      return getAccessApiBase() && !getPayboxPaymentUrl()
-        ? 'Paybox (API)'
-        : 'Paybox / e-Transactions'
+      return 'Paybox (API)'
     default:
       return 'Paper (démo)'
   }
@@ -76,9 +73,7 @@ export function stripeStatusHint(): string {
 }
 
 export function payboxStatusHint(): string {
-  if (getAccessApiBase()) return 'API'
-  if (getPayboxPaymentUrl()) return 'URL'
-  return 'off'
+  return isPayboxConfigured() ? 'API' : 'off'
 }
 
 /** Recharge EGLD puis user paie on-chain (stake, market, etc.). */

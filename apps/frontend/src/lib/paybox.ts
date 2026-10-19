@@ -17,7 +17,8 @@ export type PayboxSessionRequest = {
 }
 
 export function isPayboxConfigured(): boolean {
-  return Boolean(getAccessApiBase())
+  // Explicit opt-in: the API currently has no signed Paybox session or verified IPN.
+  return Boolean(getAccessApiBase()) && import.meta.env.VITE_PAYBOX_ENABLED === 'true'
 }
 
 export async function createPayboxSession(

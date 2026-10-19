@@ -237,30 +237,17 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && pth === '/v1/checkout/paybox') {
     const body = await readBody(req)
     const packId = (body.pack_id || body.packId || '').trim()
-    const buyer = (body.buyer_address || body.buyerAddress || '').trim()
-    const successUrl = body.success_url || body.returnUrl || ''
-    const cancelUrl = body.cancel_url || ''
 
     try {
       const pack = getPack(packId)
-      // Intentionally ignore body.amount_cents / amountEur — prevent price manipulation
-      const orderId = `xa-${pack.id}-${Date.now().toString(36)}`
-
-      // Stub until HMAC Paybox + merchant keys are wired.
-      // Real impl: sign PBX_TOTAL = pack.price_cents, PBX_DEVISE=978, etc.
-      json(res, 200, {
-        ok: true,
-        order_id: orderId,
+      // No merchant HMAC / IPN verification yet: refuse checkout instead of
+      // returning a misleading HTTP 200 and a fake order reference.
+      json(res, 501, {
+        ok: false,
+        error: 'paybox_not_implemented',
         pack_id: pack.id,
         amount_cents: pack.price_cents,
-        amount_eur: pack.price_eur,
-        buyer_address: buyer || null,
-        // url would be the signed Paybox TPE redirect when configured
-        url: null,
-        mode: 'stub',
-        note: 'Server-side price enforced. Client amount ignored. Wire Paybox HMAC next.',
-        success_url: successUrl || null,
-        cancel_url: cancelUrl || null,
+        message: 'Paybox checkout is unavailable until signed sessions and verified IPN are implemented.',
       })
     } catch (e) {
       json(res, 400, { ok: false, error: String(e.message || e) })

@@ -86,6 +86,13 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       setMsg(t('checkout.msg.fiatNotConfigured'))
       return
     }
+    // Guest-to-wallet claim is not implemented. Never accept payment without
+    // a verified destination for the membership NFT.
+    if (!hasErd1) {
+      setMsg(t('checkout.msg.cryptoNeedsWallet'))
+      requestOpenConnect()
+      return
+    }
     const method = methods.includes(fiatMethod) ? fiatMethod : methods[0]
     const buyer = hasErd1 ? address! : ensureGuestId()
     setBusy(true)
@@ -108,12 +115,16 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       rule: '1_pack_1_esdt_nft_via_relayer',
     })
     try {
-      await startPackPayment({
+      const result = await startPackPayment({
         method,
         packId: pack.id,
         buyerAddress: hasErd1 ? address! : `guest:${buyer}`,
         amountEur: pack.priceEur.list,
       })
+      if (result === 'paper') {
+        setMsg(t('checkout.msg.fiatNotConfigured'))
+        return
+      }
       onStarted?.('fiat')
     } catch (e) {
       setMsg(e instanceof Error ? e.message : String(e))
@@ -266,7 +277,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
         )}
 
         {rail === 'fiat' && !hasErd1 && (
-          <p className="text-[11px] text-zinc-500 leading-relaxed">{t('checkout.guestHint')}</p>
+          <p className="text-[11px] text-zinc-500 leading-relaxed">{t('checkout.msg.cryptoNeedsWallet')}</p>
         )}
 
         {rail === 'crypto' && !hasErd1 && (
