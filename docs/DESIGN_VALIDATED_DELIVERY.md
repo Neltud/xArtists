@@ -1,6 +1,6 @@
 # Livraison design validé — xArtists
 
-**Date :** 2026-10-18  
+**Date :** 2026-10-18 → **mise à jour 2026-10-19**  
 **Référence Sites :** https://xartists.loftypearl128.chatgpt.site (accès login ChatGPT — non inspectable depuis CI)  
 **Dépôt :** https://github.com/Neltud/xArtists
 
@@ -92,7 +92,23 @@ Fichiers : `dictionariesCore.ts`, `checkoutLegalKeys.ts`, `marketKeys.ts`, `I18n
 
 ---
 
-## 6. Contrôles
+## 6. Checkout sécurité (fail-closed) ✅ — 2026-10-19
+
+| Mesure | Statut |
+|--------|--------|
+| `POST /v1/checkout/paybox` → **501** (plus de stub 200) | ✅ |
+| `isPayboxConfigured()` = API **et** `VITE_PAYBOX_ENABLED=true` | ✅ |
+| Fiat refuse sans `erd1` (pas de claim guest→wallet) | ✅ |
+| Prix doc = catalogue **110 / 75 / 50** € | ✅ |
+| Stripe session Node reste 501 jusqu’à SDK + webhook | ✅ |
+
+Commit : `6a154b57` — `fix(security): daily safety — fail-closed Paybox…`
+
+Fichiers : `services/access-api/src/server.mjs`, `lib/paybox.ts`, `lib/payments.ts`, `CheckoutModal.tsx`, `.env.example`, `docs/ACCESS_PACK_CHECKOUT.md`.
+
+---
+
+## 7. Contrôles
 
 | Contrôle | Statut |
 |----------|--------|
@@ -102,6 +118,7 @@ Fichiers : `dictionariesCore.ts`, `checkoutLegalKeys.ts`, `marketKeys.ts`, `I18n
 | xPortal cycle (revue code) | ✅ |
 | Musée immersif (revue code) | ✅ |
 | i18n multi-lang (revue code) | ✅ |
+| Checkout fail-closed (revue code) | ✅ |
 | Tests unitaires existants | Non relancés |
 | Téléphone / xPortal réel | ❌ Non effectué |
 | Sites reference pixel-diff | ❌ Login ChatGPT bloquant |
@@ -114,6 +131,8 @@ Fichiers : `dictionariesCore.ts`, `checkoutLegalKeys.ts`, `marketKeys.ts`, `I18n
 - `config/routeRegistry.ts`
 - `config/sdkDapp.ts`
 - `lib/xportalWc.ts`
+- `lib/paybox.ts`, `lib/payments.ts`
+- `components/CheckoutModal.tsx`
 - `App.tsx`
 - `pages/NotFoundPage.tsx`
 - `pages/MuseumPage.tsx`
@@ -121,6 +140,7 @@ Fichiers : `dictionariesCore.ts`, `checkoutLegalKeys.ts`, `marketKeys.ts`, `I18n
 - `components/museum/VirtualJoystick.tsx`
 - `components/museum/MuseumWebGLHallLive.tsx`
 - `i18n/dictionariesCore.ts`, `checkoutLegalKeys.ts`, `marketKeys.ts`
+- `services/access-api/src/server.mjs`
 - Pages protocol (Home, Packs, Sale, CC, Market, Museum, LIA, TCA, Wallet, Staking, Studio, Portfolio, DAO, LP)
 
 ---
@@ -130,5 +150,6 @@ Fichiers : `dictionariesCore.ts`, `checkoutLegalKeys.ts`, `marketKeys.ts`, `I18n
 1. `npm run build` + smoke routes sur preview
 2. Test xPortal iOS/Android avec `openXPortalApp`
 3. ~~Pass musée immersif~~ **fait**
-4. ~~Enrichir i18n ES/DE/RU/UK/ZH/AR~~ **fait** (corps légaux longs encore en EN pour DE/ES/ZH/RU/UK/AR — second push dense possible depuis artifacts locaux)
-5. Preuve produit P0 : 1 TX utilisateur (stake TRO / buy pack / bid listing #2) documentée dans `ONCHAIN_MICRO_PROOFS.md`
+4. ~~Enrichir i18n ES/DE/RU/UK/ZH/AR~~ **fait**
+5. ~~Fail-closed Paybox / fiat sans wallet~~ **fait** (2026-10-19)
+6. **P0** Preuve produit : 1 TX utilisateur (stake TRO / buy pack / bid listing #2) documentée dans `ONCHAIN_MICRO_PROOFS.md`
