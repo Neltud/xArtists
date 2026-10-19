@@ -7,7 +7,6 @@ const isSdkDapp = (id: string) =>
 export default defineConfig({
   plugins: [react()],
   base: '/xArtists/',
-  // Node shims — fixes "process is not defined" on Trade / sdk deps in browser
   define: {
     'process.env': '{}',
     'process.env.NODE_ENV': JSON.stringify(
