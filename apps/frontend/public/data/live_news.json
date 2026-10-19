@@ -1,42 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-18T22:47:50.748Z",
+  "updatedAt": "2026-10-19T03:24:42.760Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792363670213",
-      "timestamp": "22:47",
+      "id": "egld-1792380282400",
+      "timestamp": "03:24",
       "source": "EGLD",
-      "title": "Cotation publique · $3.50 (API MultiversX economics)",
+      "title": "Cotation publique · $3.59 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1792331640000",
+      "id": "rss-CoinTelegraph-0-1792371807000",
+      "timestamp": "01:03",
+      "source": "CoinTelegraph",
+      "title": "Qubic freezes chain after attacker drains 1.4K wallets with weak seeds",
+      "link": "https://cointelegraph.com/news/qubic-freezes-chain-after-attacker-drains-14k-wallets-with-weak-seeds?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792364297000",
+      "timestamp": "22:58",
+      "source": "CoinTelegraph",
+      "title": "Richard Heart caught ‘off-guard,’ QDay gets even closer: Hodler’s Digest",
+      "link": "https://cointelegraph.com/magazine/richard-heart-caught-with-pants-down-qday-gets-even-closer-hodlers-digest?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792331640000",
       "timestamp": "13:54",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1792331280000",
+      "id": "rss-CoinTelegraph-3-1792331280000",
       "timestamp": "13:48",
       "source": "CoinTelegraph",
       "title": "Most Americans polled oppose betting on elections: Reuters",
       "link": "https://cointelegraph.com/news/most-americans-polled-oppose-betting-on-elections-reuters?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1792320360000",
+      "id": "rss-CoinTelegraph-4-1792320360000",
       "timestamp": "10:46",
       "source": "CoinTelegraph",
       "title": "Cysic crypto bridge halted after unauthorized mint of 10M CYS",
       "link": "https://cointelegraph.com/news/cysic-crypto-bridge-halted-after-unauthorized-mint-of-10m-cys?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1792314866000",
+      "id": "rss-CoinTelegraph-5-1792314866000",
       "timestamp": "09:14",
       "source": "CoinTelegraph",
       "title": "Chinese suspect in $75M international crime network arrested in Bangkok",
       "link": "https://cointelegraph.com/news/chinese-suspect-in-75m-international-crime-network-arrested-in-bangkok?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1792375200000",
+      "timestamp": "02:00",
+      "source": "CoinDesk",
+      "title": "Deutsche Bank targets Asia crypto custody expansion in 2027 as German launch nears",
+      "link": "https://www.coindesk.com/business/2026/10/18/deutsche-bank-targets-asia-crypto-custody-expansion-in-2027-as-german-launch-nears"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792366086000",
+      "timestamp": "23:28",
+      "source": "CoinDesk",
+      "title": "SEC tokenized stock framework faces issuer pushback as Broadcom, Verizon object to OKX-ICE listing",
+      "link": "https://www.coindesk.com/business/2026/10/18/sec-tokenized-stock-framework-faces-issuer-pushback-as-broadcom-verizon-object-to-okx-ice-listing"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792348200000",
+      "timestamp": "18:30",
+      "source": "CoinDesk",
+      "title": "The White House's crypto chief departs: State of Crypto",
+      "link": "https://www.coindesk.com/policy/2026/10/18/the-white-house-s-crypto-chief-departs-state-of-crypto"
+    },
+    {
+      "id": "rss-CoinDesk-3-1792341180000",
+      "timestamp": "16:33",
+      "source": "CoinDesk",
+      "title": "Wall Street freaked out Friday, but VIX and bitcoin trades say the fear may fade Monday.",
+      "link": "https://www.coindesk.com/markets/2026/10/18/wall-street-freaked-out-friday-vix-and-bitcoin-say-it-may-not-last"
+    },
+    {
+      "id": "egld-1792363670213",
+      "timestamp": "22:47",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.50 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-4-1792304940000",
@@ -51,13 +100,6 @@
       "source": "CoinTelegraph",
       "title": "Solana shows resilience, but some areas need continued observation, Fidelity says",
       "link": "https://cointelegraph.com/news/solana-shows-resilience-but-some-areas-need-continued-observation-fidelity-says?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792348200000",
-      "timestamp": "18:30",
-      "source": "CoinDesk",
-      "title": "The White House's crypto chief departs: State of Crypto",
-      "link": "https://www.coindesk.com/policy/2026/10/18/the-white-house-s-crypto-chief-departs-state-of-crypto"
     },
     {
       "id": "rss-CoinDesk-1-1792341180000",
@@ -156,48 +198,6 @@
       "source": "CoinDesk",
       "title": "Goldman, Wells Fargo, Morgan Stanley see tokenization as a growth play, not a threat",
       "link": "https://www.coindesk.com/business/2026/10/17/goldman-wells-fargo-morgan-stanley-see-tokenization-as-a-growth-play-not-a-threat"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792249200000",
-      "timestamp": "15:00",
-      "source": "CoinDesk",
-      "title": "Citrini sees a tokenization boom. The harder question is who profits",
-      "link": "https://www.coindesk.com/business/2026/10/17/citrini-sees-a-tokenization-boom-the-harder-question-is-who-profits"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792222017000",
-      "timestamp": "07:26",
-      "source": "CoinTelegraph",
-      "title": "Bitget to discontinue services for some users in one-off exercise",
-      "link": "https://cointelegraph.com/news/bitget-to-discontinue-services-for-some-users-in-one-off-exercise?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792171809000",
-      "timestamp": "17:30",
-      "source": "CoinTelegraph",
-      "title": "Crypto PACs escalate spending against Sherrod Brown in Ohio Senate race",
-      "link": "https://cointelegraph.com/news/crypto-pac-fairshake-spending-ohio-senate-race-sherrod-brown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792245600000",
-      "timestamp": "14:00",
-      "source": "CoinDesk",
-      "title": "Polygon sees Coinme acquisition as entry to payments sector dominated by Visa, Stripe",
-      "link": "https://www.coindesk.com/business/2026/10/17/polygon-sees-coinme-acquisition-as-entry-to-payments-sector-dominated-by-visa-stripe"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792238400000",
-      "timestamp": "12:00",
-      "source": "CoinDesk",
-      "title": "Banks could slow stablecoin growth by paying savers more, BIS paper finds",
-      "link": "https://www.coindesk.com/business/2026/10/14/banks-could-slow-stablecoin-growth-by-paying-savers-more-bis-paper-finds"
-    },
-    {
-      "id": "egld-1792267856276",
-      "timestamp": "20:10",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.63 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     }
   ]
 }
