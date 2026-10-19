@@ -3,6 +3,7 @@
 **Règle :** secrets (PEM, JWT, HMAC) **jamais** dans git ni dans le bundle front.  
 Front = préfixe `VITE_*` uniquement (build-time Vite).
 
+Architecture & sécurité financière : [`docs/adr/0001-xartists-architecture-v1.md`](adr/0001-xartists-architecture-v1.md)  
 Deploy via Vellum : [`VELLUM_DEPLOY.md`](VELLUM_DEPLOY.md)
 
 ---
@@ -13,15 +14,21 @@ Modèle : [`apps/frontend/.env.example`](../apps/frontend/.env.example)
 
 | Variable | Défaut / exemple | Rôle |
 |----------|------------------|------|
+| `VITE_ACCESS_API_BASE` | URL Access API | Sessions Stripe/Paybox (montants côté serveur) |
+| `VITE_PAYBOX_ENABLED` | `false` | Opt-in Paybox ; rester `false` jusqu’à HMAC + IPN + mint |
+| `VITE_LIA_LIVE_TRADING` | `0` | **Doit rester 0** en CI / Pages — pas de trading autonome front |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | `pk_…` | Publishable only |
+| `VITE_STRIPE_PAYMENT_LINK_*` | URL Dashboard | Fallback links (après preuve liaison wallet) |
 | `VITE_WALLETCONNECT_PROJECT_ID` | project id WC | WalletConnect v2 |
 | `VITE_DAPP_URL` | `https://neltud.github.io/xArtists` | Callback WC |
-| `VITE_MARKETPLACE_ADDRESS` | *(vide)* | SC NFT post-deploy |
-| `VITE_AGENTS_MARKETPLACE_ADDRESS` | *(vide)* | SC agents |
-| `VITE_MARKETPLACE_CODEHASH_OK` | unset → false | `1` après verify only |
-| `VITE_AGENTS_CODEHASH_OK` | unset → false | idem |
-| `VITE_LIA_PROTOCOL_WALLET` | erd1p4zyy… | LIA ops public |
+| `VITE_MARKETPLACE_ADDRESS` | erd1… | SC NFT |
+| `VITE_AGENTS_MARKETPLACE_ADDRESS` | erd1… | SC agents |
+| `VITE_*_CODEHASH_OK` | unset → false | `1` après verify only — **ne pas committer =1** |
+| `VITE_LIA_PROTOCOL_WALLET` | erd1… | LIA ops **public** (≠ User Connect) |
 | `VITE_AGENTS_FEE_BPS` | `300` | Fee agents |
 | `VITE_NFT_MARKET_FEE_BPS` | `250` | Fee NFT |
+
+**Caps produit (ADR 0001, non enforcement serveur tant que non câblé) :** 5 USD/ordre · 15 USD/jour · 50 bps slippage.
 
 ---
 
@@ -31,7 +38,7 @@ Modèle : [`apps/frontend/.env.example`](../apps/frontend/.env.example)
 |----------|--------|------|
 | `PYTHONPATH` | `.` | Package `lia` |
 | `CHAIN` / `LIA_CHAIN_ID` | `1` | Mainnet only |
-| `LIA_LIVE_TRADING` | `0` | Live trading gate |
+| `LIA_LIVE_TRADING` | `0` | Live trading gate — **rester 0** jusqu’à Upbit + micro-proofs + Guardian |
 | `VELLUM_DEPLOY_SCS` | `0` | `1` = phase deploy dans `production_run` |
 | `VELLUM_DEPLOY_DRY` | `0` | `1` = build SC sans `--send` |
 | `DEPLOY_CONTRACT` | `all` | `nft-marketplace` \| `agents-marketplace` \| `all` |
@@ -64,4 +71,4 @@ python -m lia.vellum.production_run
 
 PEM · seeds · `PINATA_JWT` · HMAC — **jamais** en `VITE_*`.
 
-Liens : [`BUILD_STEPS.md`](BUILD_STEPS.md) · [`SC_DEPLOY_COMMANDS.md`](SC_DEPLOY_COMMANDS.md) · [`VELLUM_DEPLOY.md`](VELLUM_DEPLOY.md)
+Liens : [`BUILD_STEPS.md`](BUILD_STEPS.md) · [`SC_DEPLOY_COMMANDS.md`](SC_DEPLOY_COMMANDS.md) · [`VELLUM_DEPLOY.md`](VELLUM_DEPLOY.md) · [`adr/0001-xartists-architecture-v1.md`](adr/0001-xartists-architecture-v1.md)
