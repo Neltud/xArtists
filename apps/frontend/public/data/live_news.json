@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-20T08:12:47.808Z",
+  "updatedAt": "2026-10-20T14:07:59.068Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792505278288",
+      "timestamp": "14:07",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.68 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1792503000000",
+      "timestamp": "13:30",
+      "source": "CoinTelegraph",
+      "title": "Agents can trade 24/7 — but Yat Siu warns you could lose access at any time",
+      "link": "https://cointelegraph.com/magazine/ai-trade-sleep-yat-siu-warns-losing-agent?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792501468000",
+      "timestamp": "13:04",
+      "source": "CoinTelegraph",
+      "title": "FINMA approves Switzerland’s first Bitcoin ETF for retail investors",
+      "link": "https://cointelegraph.com/news/finma-approves-switzerlands-first-bitcoin-etf-retail?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792500613000",
+      "timestamp": "12:50",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1792499908000",
+      "timestamp": "12:38",
+      "source": "CoinTelegraph",
+      "title": "Drift exploiter sends $61M ETH to Tornado Cash, holds $194M",
+      "link": "https://cointelegraph.com/news/drift-exploiter-eth-tornado-cash?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1792499400000",
+      "timestamp": "12:30",
+      "source": "CoinTelegraph",
+      "title": "Tx launches USTX stablecoin to pull RWA liquidity onto its chain",
+      "link": "https://cointelegraph.com/news/tx-ustx-stablecoin-rwa-liquidity-chain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1792498424000",
+      "timestamp": "12:13",
+      "source": "CoinTelegraph",
+      "title": "Lloyds and Barclays among UK banks named in crypto transfer complaints, advocacy group says",
+      "link": "https://cointelegraph.com/news/uk-banks-crypto-transfer-complaints-stand-with-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1792500017000",
+      "timestamp": "12:40",
+      "source": "CoinDesk",
+      "title": "Microsoft, Alphabet and Goldman Sachs join objections to OKX-ICE tokenized stock trading",
+      "link": "https://www.coindesk.com/business/2026/10/19/microsoft-alphabet-and-goldman-sachs-join-objections-to-okx-ice-tokenized-stock-trading"
+    },
+    {
+      "id": "rss-CoinDesk-1-1792495500000",
+      "timestamp": "11:25",
+      "source": "CoinDesk",
+      "title": "France's parliament approves vote to hit stablecoin trades with 31% capital gains tax",
+      "link": "https://www.coindesk.com/policy/2026/10/20/france-s-parliament-approves-vote-to-hit-crypto-to-stablecoin-trades-with-31-levy"
+    },
+    {
+      "id": "rss-CoinDesk-2-1792494861000",
+      "timestamp": "11:14",
+      "source": "CoinDesk",
+      "title": "Equity weakness could damp demand for bitcoin after biggest ETF inflows in a month",
+      "link": "https://www.coindesk.com/daybook-us/2026/10/20/equity-weakness-could-damp-demand-for-bitcoin-after-biggest-etf-inflows-in-a-month"
+    },
+    {
+      "id": "rss-CoinDesk-3-1792494640000",
+      "timestamp": "11:10",
+      "source": "CoinDesk",
+      "title": "JPMorgan sees 10% annual bitcoin returns, topping stocks, bonds and gold over next decade",
+      "link": "https://www.coindesk.com/markets/2026/10/20/jpmorgan-sees-10-annual-bitcoin-returns-topping-stocks-bonds-and-gold-over-next-decade"
+    },
     {
       "id": "egld-1792483967504",
       "timestamp": "08:12",
@@ -88,13 +165,6 @@
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-2-1792440150000",
-      "timestamp": "20:02",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "id": "rss-CoinTelegraph-3-1792439678000",
       "timestamp": "19:54",
       "source": "CoinTelegraph",
@@ -128,76 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Revolut secures Gibraltar crypto license to support global expansion",
       "link": "https://cointelegraph.com/news/revolut-secures-gibraltar-crypto-license-to-support-global-expansion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792428115000",
-      "timestamp": "16:41",
-      "source": "CoinTelegraph",
-      "title": "Metaplanet to take 93.7% stake in Super League through 2,100 BTC deal",
-      "link": "https://cointelegraph.com/news/metaplanet-super-league-2100-btc-us-bitcoin-treasury-deal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792408500000",
-      "timestamp": "11:15",
-      "source": "CoinDesk",
-      "title": "Strategy's price chart is about to flash a major bullish signal weeks after bitcoin did",
-      "link": "https://www.coindesk.com/daybook-us/2026/10/19/strategy-on-verge-of-golden-cross-just-weeks-after-bitcoin-flashed-same-bullish-signal"
-    },
-    {
-      "id": "egld-1792412052726",
-      "timestamp": "12:14",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.57 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1792411078000",
-      "timestamp": "11:57",
-      "source": "CoinTelegraph",
-      "title": "World Liberty’s USD1 stablecoin sheds $400M in market cap in two weeks",
-      "link": "https://cointelegraph.com/news/world-liberty-usd1-stablecoin-market-cap-drops-400-million?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1792409520000",
-      "timestamp": "11:32",
-      "source": "CoinTelegraph",
-      "title": "BingX, YouHodler added to ESMA MiCA register in latest update",
-      "link": "https://cointelegraph.com/news/bingx-youhodler-esma-mica-register-friday-update?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1792405350000",
-      "timestamp": "10:22",
-      "source": "CoinTelegraph",
-      "title": "France advances stablecoin tax, eyes self-custodial wallets and exit tax proposals",
-      "link": "https://cointelegraph.com/news/france-stablecoin-tax-eyes-self-custodial-wallets-exit-tax?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1792405200000",
-      "timestamp": "10:20",
-      "source": "CoinTelegraph",
-      "title": "Stocks rebound into key tech earnings: Three things to know in Bitcoin this week",
-      "link": "https://cointelegraph.com/markets/stocks-rebound-into-key-tech-earnings-three-things-to-know-in-bitcoin-this-week?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792400325000",
-      "timestamp": "08:58",
-      "source": "CoinTelegraph",
-      "title": "JPMorgan takes JPM Coin to Ethereum for institutional clients: Report",
-      "link": "https://cointelegraph.com/news/jpmorgan-jpm-coin-ethereum-institutional-clients?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792396453000",
-      "timestamp": "07:54",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin, Ether ETFs shed $549M as October ETH outflows near $1B",
-      "link": "https://cointelegraph.com/markets/bitcoin-ether-etfs-549-million-weekly-outflows?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792408500000",
-      "timestamp": "11:15",
-      "source": "CoinDesk",
-      "title": "Strategy on verge of golden cross, just weeks after bitcoin flashed same bullish signal",
-      "link": "https://www.coindesk.com/daybook-us/2026/10/19/strategy-on-verge-of-golden-cross-just-weeks-after-bitcoin-flashed-same-bullish-signal"
     }
   ]
 }
