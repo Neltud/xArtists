@@ -1,56 +1,56 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-20T00:06:57.682Z",
+  "updatedAt": "2026-10-20T08:12:47.808Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1792454817332",
-      "timestamp": "00:06",
+      "id": "egld-1792483967504",
+      "timestamp": "08:12",
       "source": "EGLD",
-      "title": "Cotation publique · $3.63 (API MultiversX economics)",
+      "title": "Cotation publique · $3.61 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1792443874000",
+      "id": "rss-CoinTelegraph-0-1792474760000",
+      "timestamp": "05:39",
+      "source": "CoinTelegraph",
+      "title": "US Bitcoin ETFs draw $527M in biggest showing since September",
+      "link": "https://cointelegraph.com/markets/bitcoin-etfs-527m-inflows-biggest-since-september?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1792473251000",
+      "timestamp": "05:14",
+      "source": "CoinTelegraph",
+      "title": "Sophon sets Nov. 25 withdrawal deadline ahead of mainnet shutdown",
+      "link": "https://cointelegraph.com/news/sophon-sets-nov-25-withdrawal-deadline-ahead-of-mainnet-shutdown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792469278000",
+      "timestamp": "04:07",
+      "source": "CoinTelegraph",
+      "title": "US bans DeepSeek from civilian agency IT systems",
+      "link": "https://cointelegraph.com/news/us-bans-deepseek-from-civilian-agency-it-systems?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1792460100000",
+      "timestamp": "01:35",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin rally could revive treasury buying, but easy-money days over",
+      "link": "https://cointelegraph.com/markets/bitcoin-rally-could-revive-treasury-buying-but-easy-money-days-over?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1792443874000",
       "timestamp": "21:04",
       "source": "CoinTelegraph",
       "title": "Solana treasury firm SkyAI sells all SOL holdings, launches $201M buyback",
       "link": "https://cointelegraph.com/news/solana-treasury-skyai-sells-all-sol-holdings-launches-201m-buyback?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1792441361000",
+      "id": "rss-CoinTelegraph-5-1792441361000",
       "timestamp": "20:22",
       "source": "CoinTelegraph",
       "title": "Crypto PAC pours $362K into California race voters essentially decided in August",
       "link": "https://cointelegraph.com/news/crypto-pac-california-race-voters-special-election?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1792440150000",
-      "timestamp": "20:02",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1792439678000",
-      "timestamp": "19:54",
-      "source": "CoinTelegraph",
-      "title": "Market participants weigh in on SEC’s proposed crypto regulations",
-      "link": "https://cointelegraph.com/news/public-comments-us-sec-proposed-crypto-rules?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792437379000",
-      "timestamp": "19:16",
-      "source": "CoinTelegraph",
-      "title": "Visa, Mesh partner to enable crypto spending at 175M merchant locations",
-      "link": "https://cointelegraph.com/news/visa-mesh-partner-crypto-spending-175m-merchant-locations?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792436603000",
-      "timestamp": "19:03",
-      "source": "CoinTelegraph",
-      "title": "Mastercard launches stablecoin risk screening for banks and payment providers",
-      "link": "https://cointelegraph.com/news/mastercard-stablecoin-risk-screening-banks-payments?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-0-1792441273000",
@@ -79,6 +79,41 @@
       "source": "CoinDesk",
       "title": "Cardano founder Charles Hoskinson is building a new programming language for the network",
       "link": "https://www.coindesk.com/tech/2026/10/19/cardano-founder-charles-hoskinson-is-building-a-new-programming-language-for-the-network"
+    },
+    {
+      "id": "egld-1792454817332",
+      "timestamp": "00:06",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.63 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1792440150000",
+      "timestamp": "20:02",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1792439678000",
+      "timestamp": "19:54",
+      "source": "CoinTelegraph",
+      "title": "Market participants weigh in on SEC’s proposed crypto regulations",
+      "link": "https://cointelegraph.com/news/public-comments-us-sec-proposed-crypto-rules?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1792437379000",
+      "timestamp": "19:16",
+      "source": "CoinTelegraph",
+      "title": "Visa, Mesh partner to enable crypto spending at 175M merchant locations",
+      "link": "https://cointelegraph.com/news/visa-mesh-partner-crypto-spending-175m-merchant-locations?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1792436603000",
+      "timestamp": "19:03",
+      "source": "CoinTelegraph",
+      "title": "Mastercard launches stablecoin risk screening for banks and payment providers",
+      "link": "https://cointelegraph.com/news/mastercard-stablecoin-risk-screening-banks-payments?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "egld-1792441393343",
@@ -163,41 +198,6 @@
       "source": "CoinDesk",
       "title": "Strategy on verge of golden cross, just weeks after bitcoin flashed same bullish signal",
       "link": "https://www.coindesk.com/daybook-us/2026/10/19/strategy-on-verge-of-golden-cross-just-weeks-after-bitcoin-flashed-same-bullish-signal"
-    },
-    {
-      "id": "rss-CoinDesk-1-1792407954000",
-      "timestamp": "11:05",
-      "source": "CoinDesk",
-      "title": "Live updates: Bitcoin tags $83,000 and slips back as chip stocks lead market rebound",
-      "link": "https://www.coindesk.com/markets/2026/10/19/live-updates-bitcoin-tags-usd83-000-and-slips-back-as-chip-stocks-lead-a-rebound"
-    },
-    {
-      "id": "rss-CoinDesk-2-1792405593000",
-      "timestamp": "10:26",
-      "source": "CoinDesk",
-      "title": "Bitcoin extends bounce above $82,000 as stocks rebound, DeFi tokens lead altcoin gains",
-      "link": "https://www.coindesk.com/markets/2026/10/19/bitcoin-extends-bounce-above-usd82-000-as-stocks-rebound-defi-tokens-lead-altcoin-gains"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792404227000",
-      "timestamp": "10:03",
-      "source": "CoinDesk",
-      "title": "JPMorgan's JPM Coin, representing dollar deposits, is coming to Ethereum: Bloomberg",
-      "link": "https://www.coindesk.com/markets/2026/10/19/jpmorgan-s-jpm-coin-representing-dollar-deposits-is-coming-to-ethereum-bloomberg"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1792371807000",
-      "timestamp": "01:03",
-      "source": "CoinTelegraph",
-      "title": "Qubic freezes chain after attacker drains 1.4K wallets with weak seeds",
-      "link": "https://cointelegraph.com/news/qubic-freezes-chain-after-attacker-drains-14k-wallets-with-weak-seeds?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1792364297000",
-      "timestamp": "22:58",
-      "source": "CoinTelegraph",
-      "title": "Richard Heart caught ‘off-guard,’ QDay gets even closer: Hodler’s Digest",
-      "link": "https://cointelegraph.com/magazine/richard-heart-caught-with-pants-down-qday-gets-even-closer-hodlers-digest?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
