@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.117.0](https://github.com/Neltud/xArtists/compare/v0.116.1...v0.117.0) (2026-10-20)
+
+
+### Features
+
+* **go-live:** pulse API + Upbit window, no invented listing price ([373df57](https://github.com/Neltud/xArtists/commit/373df570cdb5a710b02e852b57921c7f0ad65b98))
+
 ## [0.116.1](https://github.com/Neltud/xArtists/compare/v0.116.0...v0.116.1) (2026-10-19)
 
 
