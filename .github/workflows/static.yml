@@ -1,4 +1,4 @@
-# Deploy Vite React dApp to GitHub Pages
+# Deploy Vite React dApp to GitHub Pages — sole producer of public frontend
 name: Deploy Vite app to GitHub Pages
 
 on:
@@ -42,6 +42,12 @@ jobs:
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
+
+      - name: check:routes (pre-build)
+        run: npm run check:routes
+
+      - name: render:check (pre-build)
+        run: npm run render:check
 
       - name: Verify Dashboard source (must be clean home)
         run: |
@@ -98,6 +104,30 @@ jobs:
         if: failure()
         run: exit 1
 
+      - name: verify:site (post-build)
+        run: npm run verify:site
+
+      - name: Write build-info.json (public, no secrets)
+        working-directory: .
+        run: |
+          mkdir -p apps/frontend/dist
+          cat > apps/frontend/dist/build-info.json <<EOF
+          {
+            "sha": "${{ github.sha }}",
+            "commit": "${{ github.sha }}",
+            "run_id": "${{ github.run_id }}",
+            "run_number": ${{ github.run_number }},
+            "built_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "app_build": "0.117.0",
+            "workflow": "static.yml",
+            "ref": "${{ github.ref }}"
+          }
+          EOF
+          # Stamp index.html meta if present
+          if [ -f apps/frontend/dist/index.html ]; then
+            sed -i 's/content="4.0.3-csp"/content="0.117.0"/g' apps/frontend/dist/index.html || true
+          fi
+
       - name: Prepare Pages artifact
         working-directory: .
         run: |
@@ -105,6 +135,7 @@ jobs:
           cp -r apps/frontend/dist/* _site/
           # SPA fallback
           cp _site/index.html _site/404.html
+          test -f _site/build-info.json && echo "build-info present" || echo "::warning::build-info missing"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
