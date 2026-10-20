@@ -188,6 +188,8 @@ async function fetchOnChainListings(market: string): Promise<ListingRow[]> {
           if (!match) return
           const listingId = match.id
           if (soldIds.has(listingId)) return
+          const priceEgld = match.priceEgld || fromTx?.price_egld
+          if (!priceEgld) return
           const thumb =
             n.url ||
             n.media?.[0]?.thumbnailUrl ||
@@ -201,7 +203,7 @@ async function fetchOnChainListings(market: string): Promise<ListingRow[]> {
             nonce: n.nonce,
             name: n.name || n.identifier,
             price: match.priceAtomic || fromTx?.price,
-            price_egld: match.priceEgld || fromTx?.price_egld || '0.25',
+            price_egld: priceEgld,
             bid_egld: match.bidEgld,
             seller: fromTx?.seller,
             active: true,

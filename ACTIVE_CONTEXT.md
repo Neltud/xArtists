@@ -1,84 +1,84 @@
 # ACTIVE_CONTEXT — xArtists (live system state)
 
-**Last updated:** 2026-10-17  
+**Last updated:** 2026-10-20  
 **Branch:** `main`  
-**Owner / Ops:** Grok (local Dev/Ops) · Gemini Flash (Lead Architect / Audit) · LIA (Vellum Trading & Curation)
+**Bundle:** `0.117.0` via `static.yml` · `VITE_LIA_LIVE_TRADING=0`
 
 ---
 
-## 1. On-chain status (agents-marketplace)
+## 1. On-chain status (probe 2026-10-20 ~04:40 UTC)
 
 | Item | Value |
 |------|--------|
-| SC address | `erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg` |
-| codeHash | `igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=` (buyPack upgrade — **not** `tDIcnNMb…`) |
-| Balance | **0.013 EGLD** (micro-price `buyPack` tests, not 10/5/2.5 sales) |
-| Owner | `erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g` |
-| Admin wallet | `erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l` |
+| Epoch | **2268** · refreshRate **600** |
+| EGLD | **~$3.65** · mcap ~$113.1M · staked 14.27M · APR ~8.87% |
+| Agents SC | `erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg` |
+| codeHash | `igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=` |
+| Agents balance | **0.013 EGLD** (micro buyPack, pas des ventes 10/5/2.5) |
+| Pack prices | Pulse **10** / Yield **5** / Sentinel **2.5** EGLD |
+| Market | `…8txmm` · **0.0175 EGLD** · `isPayable=true` |
+| Listing #1 | ASFT-a6273a nonce 1 · 0.25 EGLD · **inactif** |
+| Listing #2 | même NFT · 0.25 EGLD · **actif** · bid locké **0.01** |
+| Slot | **0.5000 EGLD** · `isPayable=false` · min bet **0.001** · REAL fermé |
+| LIA Ops | **1.585598 EGLD** · nonce **1479** |
+| $TRO | circ **476 224** · **562** comptes · ~$0.000083 · mcap ~$40 |
+| Treasury dest | **null** — ne pas `claimFees` |
 
-### Collections (mainnet live)
-
-| Pack | Enum | Collection | Official price |
-|------|------|------------|----------------|
-| Pulse | `0x01` | `XAIPLS-2cf72b` | **10.0 EGLD** |
-| Yield | `0x02` | `XAIYLD-987e24` | **5.0 EGLD** |
-| Sentinel | `0x03` | `XAISNT-3d8a6b` | **2.5 EGLD** |
-
-`buyPack` mints 1 NFT to `msg.sender`. Roles `ESDTRoleNFTCreate` granted on SC.
-
-**Price update (2026-10-15):** CI run [#38687973735](https://github.com/Neltud/xArtists/actions/runs/38687973735) — `setPackPrice` nonces 108/109/110.  
-Last TX (Sentinel): [`8ea9d491cbde85b4c04e70172ebb7d517e80314477028fb36fa95d189ee6ae14`](https://explorer.multiversx.com/transactions/8ea9d491cbde85b4c04e70172ebb7d517e80314477028fb36fa95d189ee6ae14).
-
-Recettes `buyPack` → owner SC → financement du wallet de trading LLM **Vellum / LIA**.
-
-See: `contracts/agents-marketplace/MAINNET_STATUS.md`
+Le 17 oct ~13:02 UTC le wallet LIA Ops a signé sur xExchange : `wrapEgld` 0.11024, `addLiquidity` ×2, `swap`, `multiPairSwap`, `xo`. Ce n’est **pas** le client Pages. Le client reste paper tant que la fenêtre Upbit n’est pas close par une annonce de maintien.
 
 ---
 
-## 2. Security fixes (audit P0/P1)
+## 2. Upbit (bloquant live)
 
-**Commit:** `678010c` — *fix(security): tickerToPackId XAIPLS/XAIYLD/XAISNT + DEV-only paper mint in useAgentPackTx*
-
-| Finding | Severity | Status | Remedy |
-|---------|----------|--------|--------|
-| S-01 Tickers mismatch (`xAiAx` vs mainnet) | P0 | ✅ Resolved | `DEFAULT_PACK_COLLECTIONS` → XAIPLS / XAIYLD / XAISNT + prefix matching |
-| S-02 localStorage paper access bypass | P0 | ✅ Resolved | `loadOwnedPacks` / `markPackOwned` / `mintPaper` gated to `import.meta.env.DEV` only; `holderAccess` chain-only |
-| S-04 holderStatus paper grant | P1 | ✅ Resolved | `paper: []` in production; access = on-chain NFTs + admin whitelist |
-
-Frontend gates: `nftPacks.ts`, `holderAccess.ts`, `AgentAccessSync.tsx`, `useAgentPackTx.ts`, `nftService.ts`, `PackCheckout.tsx`.
+Surveillance depuis le **21 sept 2026**. Décision annoncée **19–23 oct**. Au 20 oct matin UTC : EGLD **pas** dans les delist décidés (SOPH / ZIL = 16 nov). Dépôts/retraits encore décrits comme haltés. **Ne pas relancer de trade live.**
 
 ---
 
-## 3. Multi-IA roles
+## 3. Security (inchangé, toujours en force)
+
+| Finding | Status |
+|---------|--------|
+| Tickers mainnet XAIPLS / XAIYLD / XAISNT | résolu |
+| Paper mint prod | DEV only |
+| Paybox | **501** tant que `VITE_PAYBOX_ENABLED` n’est pas true **et** HMAC/IPN/mint prouvés |
+| Prix fiat | catalogue serveur 110 / 75 / 50 €, wallet erd1 requis |
+| Prix listing UI | plus de fallback inventé `0.25` si `getListing` n’a pas de prix |
+
+---
+
+## 4. Ce push
+
+- Page `/go-live` : veille live (epoch, EGLD, LIA Ops, posture Upbit) lue sur l’API publique.
+- `static.yml` stamp **0.117.0** pour que le site public ne reste pas collé au stamp 0.113.0.
+
+Voir [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md) et [`docs/SUITE_LOGIQUE_NOW.md`](docs/SUITE_LOGIQUE_NOW.md).
+
+---
+
+## 5. Multi-IA roles
 
 | Agent | Role | Scope |
 |-------|------|--------|
-| **Grok** | Dev / Ops local | Code, workflows, SC scripts, RAG pipeline, build validation |
-| **Gemini Flash** | Lead Architect / Audit | Architecture review, security dimensions, consistency checks |
-| **LIA (Vellum)** | Trading & Curation | Wallet trading LLM, pedagogical curation (ATC→TCA), persona professors |
+| **Grok** | Dev / Ops | Code, workflows, probes, build Pages |
+| **Gemini Flash** | Lead Architect / Audit | Revue architecture, cohérence |
+| **LIA (Vellum)** | Trading & Curation | Wallet ops, curation ATC→TCA — **pas** de nouveau live pendant Upbit |
 
----
-
-## 4. RAG pipeline (ATC → TCA)
+## 6. RAG
 
 - Source: `knowledge/rag/atc_transcripts/`
-- Curation output: `knowledge/rag/lia_curation/`
-- Workflow: `.github/workflows/rag-ingestion.yml` (push on `knowledge/rag/**` + manual)
-- Consumer: `lia/tca/rag_engine.py` + optional webhook `RAG_INGEST_WEBHOOK_URL`
+- Curation: `knowledge/rag/lia_curation/`
+- Workflow: `.github/workflows/rag-ingestion.yml`
 
----
+## 7. Prix packs
 
-## 5. Price re-evaluation (treasury LIA / Vellum)
+- Workflow manuel: `.github/workflows/update-pack-prices.yml`
+- `setPackPrice` `0x01|0x02|0x03` — officiels **10 / 5 / 2.5** EGLD
+- Recettes → owner SC → financement Vellum, pas un fonds retail
 
-- Workflow: `.github/workflows/update-pack-prices.yml` (manual `workflow_dispatch`)
-- Function: `setPackPrice` args `0x01|0x02|0x03` + atomic EGLD amount
-- **Current official prices:** Pulse **10** / Yield **5** / Sentinel **2.5** EGLD (updated 2026-10-15)
-- Purpose: fund LIA Vellum trading wallet without redeploy
-
----
-
-## 6. Quick links
+## 8. Liens
 
 - dApp: https://neltud.github.io/xArtists/
+- GO_LIVE: https://neltud.github.io/xArtists/#/go-live
 - Repo: https://github.com/Neltud/xArtists
-- Explorer SC: https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg
+- Explorer agents: https://explorer.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg
+

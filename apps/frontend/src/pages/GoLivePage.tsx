@@ -25,6 +25,14 @@ import {
 import { asText, formatRCE } from '../lib/safeRender'
 import { fetchMarketPayable } from '../lib/marketPayable'
 import { fetchOnChainMarketListings, type OnChainListing } from '../lib/marketChain'
+import {
+  fetchProtocolPulse,
+  formatCompact,
+  formatEgld,
+  formatUsd,
+  upbitPosture,
+  type ProtocolPulse,
+} from '../lib/protocolPulse'
 
 type Item = { id: string; label: string; ok: boolean; note?: string; href?: string }
 
@@ -46,8 +54,12 @@ export default function GoLivePage() {
   const [listings, setListings] = useState<OnChainListing[]>([])
   const [slotPayable, setSlotPayable] = useState<boolean | null>(null)
   const [marketPayable, setMarketPayable] = useState<boolean | null>(null)
+  const [pulse, setPulse] = useState<ProtocolPulse | null>(null)
+  const [pulseError, setPulseError] = useState<string | null>(null)
   const mode = getAppMode()
   const envLive = getEnvLiveCapable()
+  const upbit = upbitPosture()
+  const buildStamp = String(import.meta.env.VITE_APP_BUILD || 'dev')
 
   useEffect(() => {
     void refreshRuntimeCodehashes().then(() => setTick(x => x + 1))
@@ -58,6 +70,9 @@ export default function GoLivePage() {
       void fetchMarketPayable(market).then(s => setMarketPayable(s.isPayable))
     }
     if (slot) void fetchMarketPayable(slot).then(s => setSlotPayable(s.isPayable))
+    void fetchProtocolPulse()
+      .then(setPulse)
+      .catch(() => setPulseError('API MultiversX indisponible'))
   }, [])
 
   const marketOk = canListBuyNft() || gate('VITE_MARKETPLACE_CODEHASH_OK', 'marketplace')
@@ -121,11 +136,41 @@ export default function GoLivePage() {
         <h1 className="section-title display">Status & capital</h1>
         <p className="text-sm text-zinc-400">
           Mode app : <strong className="text-zinc-200">{asText(mode)}</strong>
-          {envLive ? ' · env live capable' : ''} · floor pack {formatRCE(PACK_PRICE_EGLD)}
+          {envLive ? ' · env live capable' : ''} · floor pack {formatRCE(PACK_PRICE_EGLD)} · build{' '}
+          {asText(buildStamp)}
         </p>
       </header>
 
       <RceStrip />
+
+      <section className="card space-y-2">
+        <h2 className="text-sm font-semibold text-white">Veille live</h2>
+        <p
+          className={`text-[12px] ${
+            upbit.phase === 'window' ? 'text-amber-200' : 'text-zinc-300'
+          }`}
+        >
+          {upbit.label}
+        </p>
+        {pulse ? (
+          <p className="text-[12px] text-zinc-300">
+            Epoch <strong className="text-zinc-100">{pulse.epoch}</strong> · refresh{' '}
+            {pulse.refreshRate} ms · EGLD <strong className="text-zinc-100">{formatUsd(pulse.egldPrice)}</strong>
+            {' · '}mcap {formatCompact(pulse.marketCap)} · staké {formatCompact(pulse.staked)} · APR{' '}
+            {(pulse.apr * 100).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} %
+            <br />
+            LIA Ops <strong className="text-zinc-100">{formatEgld(pulse.liaEgld, 4)} EGLD</strong> ·
+            nonce {pulse.liaNonce}. Client paper. Le 17 oct le wallet ops a déjà fait des swaps
+            xExchange (wrap, liquidité, multiPair) — ce n’est pas une autorisation de relancer.
+          </p>
+        ) : (
+          <p className="text-[12px] text-zinc-500">{pulseError || 'Lecture API…'}</p>
+        )}
+        <p className="text-[11px] text-zinc-500">
+          User Connect ≠ LIA Ops. Tips ≠ investissement. Pas un fonds retail. Paybox / Stripe
+          restent fermés (pas d’IPN). Slot REAL fermé tant que isPayable=false.
+        </p>
+      </section>
 
       <section className="card space-y-3">
         <h2 className="text-sm font-semibold text-white">Gates SC</h2>
