@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-20T14:07:59.068Z",
+  "updatedAt": "2026-10-20T18:55:37.471Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792522537344",
+      "timestamp": "18:55",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.71 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792505278288",
       "timestamp": "14:07",
@@ -191,13 +198,6 @@
       "source": "EGLD",
       "title": "Cotation publique · $3.59 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792430689000",
-      "timestamp": "17:24",
-      "source": "CoinTelegraph",
-      "title": "Revolut secures Gibraltar crypto license to support global expansion",
-      "link": "https://cointelegraph.com/news/revolut-secures-gibraltar-crypto-license-to-support-global-expansion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
