@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-21T16:40:14.168Z",
+  "updatedAt": "2026-10-21T21:17:07.691Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792617427563",
+      "timestamp": "21:17",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.76 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792600813934",
       "timestamp": "16:40",
@@ -191,13 +198,6 @@
       "source": "EGLD",
       "title": "Cotation publique · $3.63 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1792439678000",
-      "timestamp": "19:54",
-      "source": "CoinTelegraph",
-      "title": "Market participants weigh in on SEC’s proposed crypto regulations",
-      "link": "https://cointelegraph.com/news/public-comments-us-sec-proposed-crypto-rules?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
