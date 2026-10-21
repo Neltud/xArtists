@@ -3,6 +3,7 @@
  * Graphite / acid-green chrome overlays. Immersive pass: teleport to art, orient.
  */
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import * as THREE from 'three'
 import { useI18n } from '../../i18n/I18nContext'
 import {
@@ -135,6 +136,7 @@ export default function MuseumWebGLHallLive({
   const [viewMode, setViewMode] = useState<ViewMode>('fps')
   const [fullscreen, setFullscreen] = useState(false)
   const [artIndex, setArtIndex] = useState(0)
+  const [navInsets, setNavInsets] = useState({ top: 57, bottom: 64 })
 
   const { t, lang } = useI18n()
   const { connected } = useWallet()
@@ -167,6 +169,28 @@ export default function MuseumWebGLHallLive({
     document.addEventListener('fullscreenchange', onFs)
     return () => document.removeEventListener('fullscreenchange', onFs)
   }, [])
+
+  useEffect(() => {
+    if (!open) return
+    const header = document.querySelector<HTMLElement>('header.sticky')
+    const bottomNav = document.querySelector<HTMLElement>('nav.hud-bottom-nav')
+    const updateInsets = () => {
+      const top = Math.ceil(header?.getBoundingClientRect().height || 0)
+      const bottom = Math.ceil(bottomNav?.getBoundingClientRect().height || 0)
+      setNavInsets(previous =>
+        previous.top === top && previous.bottom === bottom ? previous : { top, bottom },
+      )
+    }
+    const observer = new ResizeObserver(updateInsets)
+    if (header) observer.observe(header)
+    if (bottomNav) observer.observe(bottomNav)
+    window.addEventListener('resize', updateInsets)
+    updateInsets()
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', updateInsets)
+    }
+  }, [open])
 
   const toggleFullscreen = useCallback(async () => {
     const el = shellRef.current
@@ -535,7 +559,6 @@ export default function MuseumWebGLHallLive({
         vz = 0
       }
 
-      // Immersive prev/next: teleport in front of artwork and face it
       if (teleportReq.current != null) {
         const idx = teleportReq.current
         teleportReq.current = null
@@ -548,7 +571,6 @@ export default function MuseumWebGLHallLive({
             px = standX
             pz = standZ
           } else {
-            // fallback closer
             const midX = a.pos.x + a.nx * 1.4
             const midZ = a.pos.z + a.nz * 1.4
             if (isWalkable(midX, midZ)) {
@@ -556,7 +578,6 @@ export default function MuseumWebGLHallLive({
               pz = midZ
             }
           }
-          // Face the wall/art (look opposite to outward normal)
           yaw = Math.atan2(-a.nx, -a.nz)
           pitch = 0.06
           vx = 0
@@ -582,15 +603,7 @@ export default function MuseumWebGLHallLive({
       const wishZ = ix * sin + iz * cos
       const moving = Math.hypot(ix, iz) > 0.01
       const integ = integrateWishVelocity(
-        vx,
-        vz,
-        wishX,
-        wishZ,
-        speed,
-        dt,
-        moving,
-        MUSEUM_FPS.accel,
-        MUSEUM_FPS.friction,
+        vx, vz, wishX, wishZ, speed, dt, moving, MUSEUM_FPS.accel, MUSEUM_FPS.friction,
       )
       vx = integ.vx
       vz = integ.vz
@@ -700,10 +713,16 @@ export default function MuseumWebGLHallLive({
     )
   }
 
-  return (
+  return createPortal(
     <div
       ref={shellRef}
-      className="fixed inset-0 z-[25] w-full h-full overflow-hidden bg-[#10120f]"
+      className="museum-immersive-shell fixed z-[25] overflow-hidden bg-[#10120f]"
+      style={{
+        top: `max(${navInsets.top}px, env(safe-area-inset-top, 0px))`,
+        right: 'env(safe-area-inset-right, 0px)',
+        bottom: `max(${navInsets.bottom}px, env(safe-area-inset-bottom, 0px))`,
+        left: 'env(safe-area-inset-left, 0px)',
+      }}
       role="application"
       aria-label={isFr ? 'Galerie immersive' : 'Immersive gallery'}
     >
@@ -769,7 +788,7 @@ export default function MuseumWebGLHallLive({
       </div>
 
       {paintings.length > 0 && (
-        <div className="pointer-events-auto absolute bottom-28 right-3 z-20 flex flex-col items-center gap-2 sm:bottom-8">
+        <div className="pointer-events-auto absolute bottom-8 right-3 z-20 flex flex-col items-center gap-2">
           <button
             type="button"
             className={btnCls}
@@ -828,6 +847,7 @@ export default function MuseumWebGLHallLive({
       )}
 
       <NavReticle />
-    </div>
+    </div>,
+    document.body,
   )
 }
