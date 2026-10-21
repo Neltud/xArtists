@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-21T11:14:05.050Z",
+  "updatedAt": "2026-10-21T16:40:14.168Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792600813934",
+      "timestamp": "16:40",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.79 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792581244777",
       "timestamp": "11:14",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Market participants weigh in on SEC’s proposed crypto regulations",
       "link": "https://cointelegraph.com/news/public-comments-us-sec-proposed-crypto-rules?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792437379000",
-      "timestamp": "19:16",
-      "source": "CoinTelegraph",
-      "title": "Visa, Mesh partner to enable crypto spending at 175M merchant locations",
-      "link": "https://cointelegraph.com/news/visa-mesh-partner-crypto-spending-175m-merchant-locations?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
