@@ -316,3 +316,29 @@ body {
     animation: none;
   }
 }
+
+/* Musée immersif — réserve header, bottom nav et safe-areas téléphone */
+:root {
+  --xa-header-offset: 0px;
+  --xa-bottom-nav-offset: 0px;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --xa-bottom-nav-offset: 64px;
+  }
+}
+
+.museum-immersive-shell {
+  box-sizing: border-box;
+}
+
+.museum-immersive-shell:fullscreen,
+.museum-immersive-shell:-webkit-full-screen {
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
