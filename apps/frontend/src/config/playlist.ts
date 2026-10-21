@@ -7,13 +7,8 @@ export type PlaylistProvider = 'soundcloud' | 'youtube'
 
 export type PlaylistConfig = {
   provider: PlaylistProvider
-  /**
-   * YouTube: ID playlist (PL…) ou ID vidéo (11 chars), ou URL complète.
-   * SoundCloud: URL track/playlist ou ID.
-   */
   url: string
   label: string
-  /** true si `url` est un ID / URL de playlist YouTube (listType=playlist) */
   isPlaylist?: boolean
 }
 
@@ -46,7 +41,6 @@ const envProvider = (() => {
 export const NELSON_PLAYLIST_ID = 'PLgOJTjzDs6ePLXPNu0YE1w-R-iJneJzF3'
 export const NELSON_PLAYLIST_LABEL = 'Nelson Tuduri · Instrumentales'
 
-/** Défaut : instrumentales Nelson Tuduri — override env préservé */
 export const DEFAULT_PLAYLIST: PlaylistConfig = {
   provider: envProvider || (envUrl.includes('soundcloud') ? 'soundcloud' : 'youtube'),
   url: envUrl || NELSON_PLAYLIST_ID,
@@ -82,7 +76,6 @@ export function closePlaylistModal(): void {
   window.dispatchEvent(new CustomEvent(PLAYLIST_MODAL_EVENT, { detail: { open: false } }))
 }
 
-/** Extrait l'ID playlist YouTube depuis URL ou ID brut (ignore si=…) */
 export function extractYoutubePlaylistId(raw: string): string | null {
   const s = (raw || '').trim()
   if (!s) return null
@@ -92,7 +85,6 @@ export function extractYoutubePlaylistId(raw: string): string | null {
   return null
 }
 
-/** Extrait l'ID vidéo YouTube (11 chars) */
 export function extractYoutubeVideoId(raw: string): string | null {
   const s = (raw || '').trim()
   if (!s) return null
@@ -106,7 +98,6 @@ export function extractYoutubeVideoId(raw: string): string | null {
   return null
 }
 
-/** URL publique « Ouvrir sur YouTube » */
 export function buildYoutubeOpenUrl(cfg: PlaylistConfig): string {
   const listId = extractYoutubePlaylistId(cfg.url)
   if (listId) return `https://www.youtube.com/playlist?list=${listId}`
@@ -115,7 +106,6 @@ export function buildYoutubeOpenUrl(cfg: PlaylistConfig): string {
   return 'https://www.youtube.com'
 }
 
-/** Build embed src for iframe */
 export function buildEmbedSrc(cfg: PlaylistConfig, autoplay: boolean): string {
   if (cfg.provider === 'soundcloud') {
     const trackUrl = cfg.url.includes('soundcloud.com')
@@ -134,8 +124,6 @@ export function buildEmbedSrc(cfg: PlaylistConfig, autoplay: boolean): string {
     })
     return `https://w.soundcloud.com/player/?${q.toString()}`
   }
-
-  // YouTube — playlist prioritaire (listType=playlist), sinon vidéo
   const listId = extractYoutubePlaylistId(cfg.url)
   if (listId || cfg.isPlaylist) {
     const id = listId || cfg.url.split(/[?&#]/)[0]
@@ -151,7 +139,6 @@ export function buildEmbedSrc(cfg: PlaylistConfig, autoplay: boolean): string {
     })
     return `https://www.youtube.com/embed/videoseries?${params.toString()}`
   }
-
   const vid = extractYoutubeVideoId(cfg.url) || cfg.url.slice(0, 11)
   const params = new URLSearchParams({
     autoplay: autoplay ? '1' : '0',
