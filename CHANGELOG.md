@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.118.0](https://github.com/Neltud/xArtists/compare/v0.117.0...v0.118.0) (2026-10-21)
+
+
+### Features
+
+* **go-live:** live balances and Korean review day counter ([6042918](https://github.com/Neltud/xArtists/commit/604291851825f67f9655650fe05c88af5e7e089f))
+
 ## [0.117.0](https://github.com/Neltud/xArtists/compare/v0.116.1...v0.117.0) (2026-10-20)
 
 
