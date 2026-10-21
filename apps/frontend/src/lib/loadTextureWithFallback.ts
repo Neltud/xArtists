@@ -4,6 +4,7 @@
  *
  * Ordre : images.weserv.nl → wsrv.nl → URL directe.
  * Placeholder « Image indisponible » uniquement si toutes les tentatives échouent.
+ * Ne pas imbriquer les proxies.
  */
 import * as THREE from 'three'
 
@@ -18,16 +19,20 @@ function proxyWsrv(url: string): string {
 /**
  * Charge une texture avec reprise automatique.
  * crossOrigin forcé à 'anonymous' sur chaque tentative.
+ * Retourne une fonction d'annulation.
  */
 export function loadTextureWithFallback(
   loader: THREE.TextureLoader,
   url: string,
   onSuccess: (tex: THREE.Texture) => void,
   onAllFailed: () => void,
-): void {
+): () => void {
+  let cancelled = false
   if (!url || !url.trim()) {
     onAllFailed()
-    return
+    return () => {
+      cancelled = true
+    }
   }
 
   const attempts: Array<{ src: string }> = [
@@ -38,6 +43,7 @@ export function loadTextureWithFallback(
 
   let i = 0
   const tryNext = () => {
+    if (cancelled) return
     if (i >= attempts.length) {
       onAllFailed()
       return
@@ -47,14 +53,23 @@ export function loadTextureWithFallback(
     loader.load(
       src,
       tex => {
+        if (cancelled) {
+          tex.dispose()
+          return
+        }
         tex.colorSpace = THREE.SRGBColorSpace
         onSuccess(tex)
       },
       undefined,
-      () => tryNext(),
+      () => {
+        if (!cancelled) tryNext()
+      },
     )
   }
   tryNext()
+  return () => {
+    cancelled = true
+  }
 }
 
 /** Placeholder canvas « Image indisponible » */
