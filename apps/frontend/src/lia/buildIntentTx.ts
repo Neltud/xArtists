@@ -1,6 +1,6 @@
 /**
  * Construit des TX MultiversX pour intents LIA (signature xPortal uniquement).
- * Aucune PEM · broadcast via useSendTransaction / __xartistsSendTx.
+ * prepareIntentTx refuse de transformer BUY/SELL/SWAP en dépôt bootstrap.
  */
 import { LIA_GUARDS } from '../config/liaConfig'
 import { MAINNET_ADDRESSES, TREASURY_SPLITTER_ADDRESS } from '../config/contracts'
@@ -14,7 +14,12 @@ export type MxTxDraft = {
   chainID: '1'
 }
 
+export type PrepareResult =
+  | { ok: true; draft: MxTxDraft }
+  | { ok: false; reason: string }
+
 function egldToAtomic(egld: number): string {
+  if (!Number.isFinite(egld) || egld < 0) return '0'
   return BigInt(Math.round(egld * 1e18)).toString()
 }
 
@@ -24,59 +29,90 @@ function strToHex(s: string): string {
     .join('')
 }
 
-/**
- * TX d’amorce live : micro-EGLD → treasury_splitter avec memo on-chain.
- * Montant plafonné à LIA_GUARDS.bootstrapEgld (0.001 EGLD).
- */
+const BOOTSTRAP_ACTIONS = new Set(['BOOTSTRAP', 'LIVE_BOOTSTRAP', 'DEPOSIT', 'FUND', 'AMORCE'])
+const TRADE_ACTIONS = new Set(['BUY', 'SELL', 'SWAP', 'BUY_NFT', 'SELL_NFT', 'TRADE', 'EXCHANGE'])
+
 export function buildBootstrapLiveTx(): MxTxDraft {
   const egld = Math.min(LIA_GUARDS.bootstrapEgld, 0.01)
-  const memo = `LIA_LIVE_BOOTSTRAP@1@${Date.now()}`
   return {
     receiver: TREASURY_SPLITTER_ADDRESS || MAINNET_ADDRESSES.treasury_splitter,
     value: egldToAtomic(egld),
     gasLimit: 600_000,
-    data: memo,
+    data: `LIA_LIVE_BOOTSTRAP@1@${Date.now()}`,
     chainID: '1',
   }
 }
 
-/**
- * Mappe un intent journal → TX draft.
- * - EGLD : transfer micro vers treasury (cap bootstrap)
- * - TRO-94c925 : ESDTTransfer micro vers treasury (si amount > 0)
- * - sinon : bootstrap générique
- */
-export function buildTxFromIntent(entry: JournalEntry): MxTxDraft {
+export function prepareIntentTx(entry: JournalEntry): PrepareResult {
+  const action = String(entry.action || '').toUpperCase().trim()
   const asset = (entry.assetId || 'EGLD').toUpperCase()
+  const amount = Number(entry.amount)
+
+  if (Number.isNaN(amount) || !Number.isFinite(amount)) {
+    return { ok: false, reason: 'Montant invalide (NaN/infini) — intent refusé.' }
+  }
+
+  if (
+    TRADE_ACTIONS.has(action) ||
+    action.includes('SWAP') ||
+    action.includes('BUY') ||
+    action.includes('SELL')
+  ) {
+    return {
+      ok: false,
+      reason: `Intent ${action} : pas de substitution bootstrap. Cotation, route et simulation ESDT requises avant signature.`,
+    }
+  }
+
+  if (!BOOTSTRAP_ACTIONS.has(action) && action && action !== 'TRANSFER' && action !== 'TIP') {
+    return {
+      ok: false,
+      reason: `Action « ${action} » non mappée vers une TX de dépôt. Utilise BOOTSTRAP pour l'amorce 0,001 EGLD.`,
+    }
+  }
+
   const receiver = TREASURY_SPLITTER_ADDRESS || MAINNET_ADDRESSES.treasury_splitter
 
-  if (asset === 'EGLD' || asset === 'WEGLD') {
-    const raw = Math.abs(Number(entry.amount) || LIA_GUARDS.bootstrapEgld)
-    // amount journal est souvent notionnel USD — forcer micro on-chain
-    const egld = Math.min(LIA_GUARDS.bootstrapEgld, Math.max(0.0005, raw > 1 ? LIA_GUARDS.bootstrapEgld : raw))
+  if (asset === 'EGLD' || asset === 'WEGLD' || BOOTSTRAP_ACTIONS.has(action) || !action) {
+    const egld = Math.min(LIA_GUARDS.bootstrapEgld, 0.001)
     return {
-      receiver,
-      value: egldToAtomic(egld),
-      gasLimit: 600_000,
-      data: `LIA_INTENT@${entry.id.slice(0, 24)}@${entry.action}`.slice(0, 120),
-      chainID: '1',
+      ok: true,
+      draft: {
+        receiver,
+        value: egldToAtomic(egld),
+        gasLimit: 600_000,
+        data: `LIA_INTENT@${entry.id.slice(0, 24)}@${action || 'BOOTSTRAP'}`.slice(0, 120),
+        chainID: '1',
+      },
     }
   }
 
   if (asset.startsWith('TRO') || asset === 'TRO-94C925') {
-    // 1 TRO unit (6 decimals) min smoke — amount journal not trusted as on-chain
-    const units = 1_000_000n // 1 TRO
+    const units = 1_000_000n
     const tokenHex = strToHex('TRO-94c925')
     const amtHex = units.toString(16)
     return {
-      receiver,
-      value: '0',
-      gasLimit: 6_000_000,
-      data: `ESDTTransfer@${tokenHex}@${amtHex}`,
-      chainID: '1',
+      ok: true,
+      draft: {
+        receiver,
+        value: '0',
+        gasLimit: 6_000_000,
+        data: `ESDTTransfer@${tokenHex}@${amtHex}`,
+        chainID: '1',
+      },
     }
   }
 
+  return {
+    ok: false,
+    reason: `Asset ${asset} non supporté. Allowlist: ${LIA_GUARDS.allowlist.join(', ')}.`,
+  }
+}
+
+/** @deprecated Préférer prepareIntentTx */
+export function buildTxFromIntent(entry: JournalEntry): MxTxDraft {
+  const prepared = prepareIntentTx(entry)
+  if (prepared.ok) return prepared.draft
   return buildBootstrapLiveTx()
 }
 
