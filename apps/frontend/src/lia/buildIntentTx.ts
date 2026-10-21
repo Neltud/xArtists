@@ -42,9 +42,7 @@ export function buildBootstrapLiveTx(): MxTxDraft {
 
 /**
  * Mappe un intent journal → TX draft.
- * - EGLD : transfer micro vers treasury (cap bootstrap)
- * - TRO-94c925 : ESDTTransfer micro vers treasury (si amount > 0)
- * - sinon : bootstrap générique
+ * BUY/SELL/SWAP sans route valide : erreur (jamais bootstrap).
  */
 export function buildTxFromIntent(entry: JournalEntry): MxTxDraft {
   const asset = (entry.assetId || 'EGLD').toUpperCase()
@@ -52,7 +50,6 @@ export function buildTxFromIntent(entry: JournalEntry): MxTxDraft {
 
   if (asset === 'EGLD' || asset === 'WEGLD') {
     const raw = Math.abs(Number(entry.amount) || LIA_GUARDS.bootstrapEgld)
-    // amount journal est souvent notionnel USD — forcer micro on-chain
     const egld = Math.min(LIA_GUARDS.bootstrapEgld, Math.max(0.0005, raw > 1 ? LIA_GUARDS.bootstrapEgld : raw))
     return {
       receiver,
@@ -64,8 +61,7 @@ export function buildTxFromIntent(entry: JournalEntry): MxTxDraft {
   }
 
   if (asset.startsWith('TRO') || asset === 'TRO-94C925') {
-    // 1 TRO unit (6 decimals) min smoke — amount journal not trusted as on-chain
-    const units = 1_000_000n // 1 TRO
+    const units = 1_000_000n
     const tokenHex = strToHex('TRO-94c925')
     const amtHex = units.toString(16)
     return {
@@ -75,6 +71,13 @@ export function buildTxFromIntent(entry: JournalEntry): MxTxDraft {
       data: `ESDTTransfer@${tokenHex}@${amtHex}`,
       chainID: '1',
     }
+  }
+
+  const action = String(entry.action || '').toUpperCase()
+  if (action.includes('BUY') || action.includes('SELL') || action.includes('SWAP')) {
+    throw new Error(
+      `Intent ${action} sans route on-chain valide pour ${asset} — bootstrap refusé`,
+    )
   }
 
   return buildBootstrapLiveTx()
