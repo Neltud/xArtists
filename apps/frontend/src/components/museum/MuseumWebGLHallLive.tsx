@@ -5,7 +5,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import * as THREE from 'three'
-import { useI18n } from '../../i18n/I18nContext'
+import { useI18n } from '../../ii18n/I18nContext'
 import {
   createPlayerAvatar,
   tickAvatarWalk,
@@ -28,6 +28,7 @@ import {
 } from '../../lib/spatialEngine'
 import { MUSEUM_FPS, applyNavKey, isNavKey } from '../../lib/museumFpsController'
 import NavReticle from './NavReticle'
+import { loadTextureWithFallback, unavailableArtTexture } from '../../lib/loadTextureWithFallback'
 
 const EYE = 1.65
 const WALK = MUSEUM_FPS.walkSpeed
@@ -336,6 +337,7 @@ export default function MuseumWebGLHallLive({
     loader.crossOrigin = 'anonymous'
     const artAnchors: ArtAnchor[] = []
     const pickMeshes: THREE.Object3D[] = []
+    const artTextures: THREE.Texture[] = []
     const wallList = blueprint.walls.filter(w => Math.hypot(w.x2 - w.x1, w.y2 - w.y1) > 1.2)
 
     function placeArt(
@@ -349,14 +351,15 @@ export default function MuseumWebGLHallLive({
     ) {
       if (disposed) return
       tex.colorSpace = THREE.SRGBColorSpace
+      artTextures.push(tex)
       const art = new THREE.Mesh(
         new THREE.PlaneGeometry(1.25, 1.5),
         new THREE.MeshStandardMaterial({
           map: tex,
-          roughness: 0.45,
-          metalness: 0.06,
-          emissive: 0x1a1814,
-          emissiveIntensity: 0.16,
+          roughness: 0.55,
+          metalness: 0.02,
+          emissive: 0x222018,
+          emissiveIntensity: 0.28,
           side: THREE.FrontSide,
         }),
       )
@@ -399,11 +402,20 @@ export default function MuseumWebGLHallLive({
       artAnchors.push({ pos: new THREE.Vector3(apx, 1.65, apz), nx, nz, frame })
       const url = frame.image || ''
       if (url) {
-        loader.load(
+        loadTextureWithFallback(
+          loader,
           url,
           tex => placeArt(tex, apx, apz, nx, nz, g.angle, frame),
-          undefined,
-          () => placeArt(titlePlaceholder(frame.title || 'Art'), apx, apz, nx, nz, g.angle, frame),
+          () =>
+            placeArt(
+              unavailableArtTexture('Image indisponible'),
+              apx,
+              apz,
+              nx,
+              nz,
+              g.angle,
+              frame,
+            ),
         )
       } else {
         placeArt(titlePlaceholder(frame.title || 'Art'), apx, apz, nx, nz, g.angle, frame)
@@ -547,7 +559,7 @@ export default function MuseumWebGLHallLive({
       if (disposed) return
       raf = requestAnimationFrame(loop)
       if (webglPaused) return
-      const dt = Math.min(clock.getDelta(), 0.05)
+      const dt = Math.min(0.05, clock.getDelta())
 
       if (resetReq.current) {
         resetReq.current = false
@@ -559,103 +571,86 @@ export default function MuseumWebGLHallLive({
         vz = 0
       }
 
-      if (teleportReq.current != null) {
-        const idx = teleportReq.current
+      const tp = teleportReq.current
+      if (tp != null && artAnchorsRef.current[tp]) {
+        const a = artAnchorsRef.current[tp]
+        px = a.pos.x + a.nx * STAND_DIST
+        pz = a.pos.z + a.nz * STAND_DIST
+        yaw = Math.atan2(-a.nx, -a.nz)
+        pitch = 0.05
+        vx = 0
+        vz = 0
         teleportReq.current = null
-        const anchors = artAnchorsRef.current
-        const a = anchors[idx]
-        if (a) {
-          const standX = a.pos.x + a.nx * STAND_DIST
-          const standZ = a.pos.z + a.nz * STAND_DIST
-          if (isWalkable(standX, standZ)) {
-            px = standX
-            pz = standZ
-          } else {
-            const midX = a.pos.x + a.nx * 1.4
-            const midZ = a.pos.z + a.nz * 1.4
-            if (isWalkable(midX, midZ)) {
-              px = midX
-              pz = midZ
-            }
-          }
-          yaw = Math.atan2(-a.nx, -a.nz)
-          pitch = 0.06
-          vx = 0
-          vz = 0
-          facing = yaw
-        }
       }
 
-      const sprint = !!keys.current.shift
+      const sprint = !!(keys.current.shift)
       const speed = sprint ? SPRINT : WALK
-      let ix = 0
-      let iz = 0
-      if (keys.current.w || hold.current.up) iz -= 1
-      if (keys.current.s || hold.current.down) iz += 1
-      if (keys.current.a || hold.current.left) ix -= 1
-      if (keys.current.d || hold.current.right) ix += 1
-      const len = Math.hypot(ix, iz) || 1
-      ix /= len
-      iz /= len
-      const cos = Math.cos(yaw)
-      const sin = Math.sin(yaw)
-      const wishX = ix * cos - iz * sin
-      const wishZ = ix * sin + iz * cos
-      const moving = Math.hypot(ix, iz) > 0.01
-      const integ = integrateWishVelocity(
-        vx, vz, wishX, wishZ, speed, dt, moving, MUSEUM_FPS.accel, MUSEUM_FPS.friction,
-      )
-      vx = integ.vx
-      vz = integ.vz
-      if (moving) facing = Math.atan2(wishX, wishZ)
-      const slide = trySlideMove(px, pz, vx, vz, dt, isWalkable, MUSEUM_FPS.collisionRadius)
-      px = slide.x
-      pz = slide.z
-      vx = slide.vx
-      vz = slide.vz
-      avatar.position.set(px, 0, pz)
-
-      const fpsMode = viewModeRef.current === 'fps'
-      if (!fpsMode) {
-        walkPhase = tickAvatarWalk(avatar, walkPhase, moving, dt, facing)
-      } else {
-        avatar.visible = false
+      let wishX = 0
+      let wishZ = 0
+      if (keys.current.w || hold.current.up) {
+        wishX -= Math.sin(yaw)
+        wishZ -= Math.cos(yaw)
       }
-      if (!fpsMode) avatar.visible = true
+      if (keys.current.s || hold.current.down) {
+        wishX += Math.sin(yaw)
+        wishZ += Math.cos(yaw)
+      }
+      if (keys.current.a || hold.current.left) {
+        wishX -= Math.cos(yaw)
+        wishZ += Math.sin(yaw)
+      }
+      if (keys.current.d || hold.current.right) {
+        wishX += Math.cos(yaw)
+        wishZ -= Math.sin(yaw)
+      }
+      const len = Math.hypot(wishX, wishZ)
+      if (len > 0.001) {
+        wishX = (wishX / len) * speed
+        wishZ = (wishZ / len) * speed
+      }
+      const integrated = integrateWishVelocity(vx, vz, wishX, wishZ, dt, MUSEUM_FPS)
+      vx = integrated.vx
+      vz = integrated.vz
+      const moved2 = trySlideMove(px, pz, vx * dt, vz * dt, isWalkable)
+      px = moved2.x
+      pz = moved2.z
+
+      avatar.position.set(px, 0, pz)
+      if (Math.hypot(vx, vz) > 0.15) {
+        facing = Math.atan2(vx, vz)
+        walkPhase += dt * 8
+      }
+      avatar.rotation.y = facing
+      tickAvatarWalk(avatar, walkPhase, Math.hypot(vx, vz) > 0.15)
 
       let nearest: FrameItem | null = null
-      let best = 4.2
-      for (const a of artAnchors) {
+      let nearestD = 3.2
+      for (const a of artAnchorsRef.current) {
         const d = Math.hypot(a.pos.x - px, a.pos.z - pz)
-        if (d < best) {
-          best = d
+        if (d < nearestD) {
+          nearestD = d
           nearest = a.frame
         }
       }
       nearestRef.current = nearest
-      if (nearest && nearest.title !== lastNearTitle) {
-        lastNearTitle = nearest.title
-        setNearTitle(nearest.title)
-      } else if (!nearest && lastNearTitle) {
-        lastNearTitle = ''
-        setNearTitle('')
+      const nt = nearest?.title || ''
+      if (nt !== lastNearTitle) {
+        lastNearTitle = nt
+        setNearTitle(nt)
       }
 
-      if (fpsMode) {
+      if (viewModeRef.current === 'fps') {
         camera.position.set(px, EYE, pz)
-        camera.lookAt(
-          px - Math.sin(yaw) * Math.cos(pitch),
-          EYE + Math.sin(pitch),
-          pz - Math.cos(yaw) * Math.cos(pitch),
-        )
+        camera.rotation.order = 'YXZ'
+        camera.rotation.y = yaw
+        camera.rotation.x = pitch
       } else {
-        camera.position.set(
-          px - Math.sin(yaw) * CAM_DIST_AVATAR * Math.cos(pitch),
-          CAM_HEIGHT_AVATAR + Math.sin(pitch) * 0.5,
-          pz - Math.cos(yaw) * CAM_DIST_AVATAR * Math.cos(pitch),
-        )
-        camera.lookAt(px, EYE * 0.9, pz)
+        const cx = px - Math.sin(yaw) * CAM_DIST_AVATAR
+        const cz = pz - Math.cos(yaw) * CAM_DIST_AVATAR
+        camera.position.set(cx, CAM_HEIGHT_AVATAR, cz)
+        camera.lookAt(px, 1.2, pz)
       }
+
       renderer.render(scene, camera)
     }
     loop()
@@ -687,6 +682,13 @@ export default function MuseumWebGLHallLive({
             })
           }
         })
+        artTextures.forEach(tex => {
+          try {
+            tex.dispose()
+          } catch {
+            /* */
+          }
+        })
         renderer.dispose()
       } catch {
         /* */
@@ -706,8 +708,8 @@ export default function MuseumWebGLHallLive({
             ? 'WebGL indisponible ou contexte perdu. Repli 2D.'
             : 'WebGL unavailable or context lost. 2D fallback.'}
         </p>
-        <button type="button" className="xa-btn-primary" onClick={() => setOpen(true)}>
-          {t('museum.enterImmersion') || (isFr ? 'Réessayer immersion' : 'Retry immersion')}
+        <button type="button" className={btnCls + ' border-white/20 bg-black/40 text-white'} onClick={() => setOpen(true)}>
+          {isFr ? 'Réessayer WebGL' : 'Retry WebGL'}
         </button>
       </div>
     )
@@ -716,137 +718,91 @@ export default function MuseumWebGLHallLive({
   return createPortal(
     <div
       ref={shellRef}
-      className="museum-immersive-shell fixed z-[25] overflow-hidden bg-[#10120f]"
+      className="museum-immersive-shell fixed inset-0 z-[60] flex flex-col bg-black"
       style={{
         top: `max(${navInsets.top}px, env(safe-area-inset-top, 0px))`,
-        right: 'env(safe-area-inset-right, 0px)',
+        left: 0,
+        right: 0,
         bottom: `max(${navInsets.bottom}px, env(safe-area-inset-bottom, 0px))`,
-        left: 'env(safe-area-inset-left, 0px)',
       }}
-      role="application"
-      aria-label={isFr ? 'Galerie immersive' : 'Immersive gallery'}
     >
-      <div ref={mountRef} className="absolute inset-0" style={{ pointerEvents: 'auto' }} />
+      <div ref={mountRef} className="relative flex-1 min-h-0 w-full" />
 
-      {!ready && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#10120f]/95">
-          <p className="text-sm text-[var(--xa-accent)]">
-            {t('museum.loading') || (isFr ? 'Chargement…' : 'Loading…')}
-          </p>
+      {/* HUD chrome */}
+      <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-3 sm:p-4">
+        <div className="flex items-start justify-between gap-2 pointer-events-auto">
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className={btnCls + ' border-white/20 bg-black/55 text-white'}
+              onClick={() => setOpen(false)}
+              aria-label={isFr ? 'Fermer le musée' : 'Close museum'}
+            >
+              ✕
+            </button>
+            <button
+              type="button"
+              className={btnCls + ' border-emerald-400/40 bg-black/55 text-emerald-100'}
+              onClick={() => void toggleFullscreen()}
+              aria-label="Fullscreen"
+            >
+              {fullscreen ? '⛶' : '⛶ FS'}
+            </button>
+            <button
+              type="button"
+              className={btnCls + ' border-violet-400/40 bg-black/55 text-violet-100'}
+              onClick={() => setViewMode(m => (m === 'fps' ? 'avatar' : 'fps'))}
+            >
+              {viewMode === 'fps' ? 'Avatar' : 'FPS'}
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2 justify-end">
+            <button type="button" className={btnCls + ' border-white/15 bg-black/55 text-white'} onClick={() => goArt(-1)}>
+              ◀
+            </button>
+            <button type="button" className={btnCls + ' border-white/15 bg-black/55 text-white'} onClick={() => goArt(1)}>
+              ▶
+            </button>
+          </div>
         </div>
-      )}
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-2 p-3">
-        <div className="pointer-events-auto flex flex-wrap gap-2">
-          <button
-            type="button"
-            className={btnCls}
-            style={{ borderColor: 'var(--xa-border-strong)', background: 'rgba(16,18,15,0.8)', color: 'var(--xa-text)' }}
-            onClick={() => setOpen(false)}
-          >
-            {isFr ? 'Quitter' : 'Exit'}
-          </button>
-          <button
-            type="button"
-            className={btnCls}
-            style={{ borderColor: 'var(--xa-border-strong)', background: 'rgba(16,18,15,0.8)', color: 'var(--xa-text)' }}
-            onClick={() => void toggleFullscreen()}
-          >
-            {fullscreen ? (isFr ? 'Réduire' : 'Exit FS') : isFr ? 'Plein écran' : 'Fullscreen'}
-          </button>
-          <button
-            type="button"
-            className={btnCls}
-            style={{
-              borderColor: 'var(--xa-accent)',
-              background: viewMode === 'fps' ? 'var(--xa-accent-soft)' : 'rgba(16,18,15,0.8)',
-              color: 'var(--xa-text)',
-            }}
-            onClick={() => setViewMode(m => (m === 'fps' ? 'avatar' : 'fps'))}
-          >
-            {viewMode === 'fps' ? 'FPS' : 'Avatar'}
-          </button>
-          <button
-            type="button"
-            className={btnCls}
-            style={{ borderColor: 'var(--xa-border-strong)', background: 'rgba(16,18,15,0.8)', color: 'var(--xa-text)' }}
-            onClick={() => {
-              resetReq.current = true
-            }}
-          >
-            Reset
-          </button>
-        </div>
-        <div
-          className="pointer-events-none max-w-[50%] rounded-full border px-3 py-1.5 text-[11px] text-[var(--xa-text-secondary)] backdrop-blur-md"
-          style={{ borderColor: 'var(--xa-border)', background: 'rgba(16,18,15,0.75)' }}
-        >
-          {isFr
-            ? 'WASD/ZQSD · glisser regard · E inspecter · ←→ œuvres'
-            : 'WASD · drag look · E inspect · ←→ art'}
+        <div className="flex items-end justify-between gap-3 pointer-events-auto">
+          {isCoarse ? (
+            <VirtualJoystick
+              onMove={(dx, dy) => {
+                hold.current.up = dy < -0.25
+                hold.current.down = dy > 0.25
+                hold.current.left = dx < -0.25
+                hold.current.right = dx > 0.25
+              }}
+              onEnd={() => {
+                hold.current = { up: false, down: false, left: false, right: false }
+              }}
+            />
+          ) : (
+            <div />
+          )}
+          <div className="flex flex-col items-end gap-1">
+            {nearTitle && (
+              <p className="rounded-full border border-white/15 bg-black/60 px-3 py-1 text-[11px] text-white/90 max-w-[14rem] truncate">
+                {nearTitle}
+              </p>
+            )}
+            <NavReticle />
+            {!ready && (
+              <p className="text-[10px] text-white/50">{isFr ? 'Chargement…' : 'Loading…'}</p>
+            )}
+          </div>
         </div>
       </div>
-
-      {paintings.length > 0 && (
-        <div className="pointer-events-auto absolute bottom-8 right-3 z-20 flex flex-col items-center gap-2">
-          <button
-            type="button"
-            className={btnCls}
-            style={{ borderColor: 'var(--xa-accent)', background: 'rgba(16,18,15,0.85)', color: 'var(--xa-accent)' }}
-            onClick={() => goArt(-1)}
-            aria-label={isFr ? 'Œuvre précédente' : 'Previous artwork'}
-          >
-            ←
-          </button>
-          <span
-            className="rounded-full border px-2 py-0.5 text-[10px] tabular-nums text-[var(--xa-text-secondary)]"
-            style={{ borderColor: 'var(--xa-border)', background: 'rgba(16,18,15,0.8)' }}
-          >
-            {artIndex + 1}/{paintings.length}
-          </span>
-          <button
-            type="button"
-            className={btnCls}
-            style={{ borderColor: 'var(--xa-accent)', background: 'rgba(16,18,15,0.85)', color: 'var(--xa-accent)' }}
-            onClick={() => goArt(1)}
-            aria-label={isFr ? 'Œuvre suivante' : 'Next artwork'}
-          >
-            →
-          </button>
-        </div>
-      )}
-
-      {isCoarse && (
-        <div className="absolute bottom-8 left-3 z-20 md:hidden">
-          <VirtualJoystick
-            onChange={(x, y) => {
-              hold.current.left = x < -0.28
-              hold.current.right = x > 0.28
-              hold.current.up = y < -0.28
-              hold.current.down = y > 0.28
-            }}
-          />
-        </div>
-      )}
-
-      {nearTitle ? (
-        <div
-          className="pointer-events-none absolute bottom-36 left-1/2 z-20 -translate-x-1/2 rounded-full border px-4 py-1.5 text-[12px] text-[var(--xa-text)] backdrop-blur-md sm:bottom-24"
-          style={{ borderColor: 'var(--xa-border-strong)', background: 'rgba(16,18,15,0.8)' }}
-        >
-          {nearTitle} · {t('museum.tapToEnlarge') || (isFr ? 'toucher pour agrandir' : 'tap to enlarge')}
-        </div>
-      ) : null}
 
       {inspect && (
         <ArtworkDetailsModal
           frame={inspect}
           onClose={() => setInspect(null)}
-          onBuy={allowBuy ? () => void onBuy(inspect) : undefined}
+          onBuy={allowBuy ? onBuy : undefined}
         />
       )}
-
-      <NavReticle />
     </div>,
     document.body,
   )
