@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-21T03:26:47.355Z",
+  "updatedAt": "2026-10-21T11:14:05.050Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792581244777",
+      "timestamp": "11:14",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.74 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792553207122",
       "timestamp": "03:26",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Visa, Mesh partner to enable crypto spending at 175M merchant locations",
       "link": "https://cointelegraph.com/news/visa-mesh-partner-crypto-spending-175m-merchant-locations?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792436603000",
-      "timestamp": "19:03",
-      "source": "CoinTelegraph",
-      "title": "Mastercard launches stablecoin risk screening for banks and payment providers",
-      "link": "https://cointelegraph.com/news/mastercard-stablecoin-risk-screening-banks-payments?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
