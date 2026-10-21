@@ -1,25 +1,33 @@
 /**
  * Compat — audio basculé sur config/playlist.ts (SoundCloud / YouTube embed).
  * Conservé pour imports legacy (ZONE_VOLUME, music toggle).
+ * Distingue ID playlist (PL…) et ID vidéo (11 chars).
  */
 export {
   isMusicEnabled,
   setMusicEnabled,
   MUSIC_STORAGE_KEY,
+  NELSON_PLAYLIST_ID,
+  NELSON_PLAYLIST_LABEL,
+  extractYoutubePlaylistId,
+  extractYoutubeVideoId,
 } from './playlist'
 
 export type NelsonTrack = {
   id: string
   label: string
-  youtubeId: string
+  /** ID vidéo YouTube (11 chars) — lecture single track */
+  youtubeId?: string
+  /** ID playlist YouTube (PL…) — lecture playlist */
+  playlistId?: string
   category?: 'ambient' | 'casino'
 }
 
 export const NELSON_TRACKS: NelsonTrack[] = [
   {
     id: 'main',
-    label: 'Ambiance playlist',
-    youtubeId: 'jfKfPfyJRdk',
+    label: 'Nelson Tuduri · Instrumentales',
+    playlistId: 'PLgOJTjzDs6ePLXPNu0YE1w-R-iJneJzF3',
     category: 'ambient',
   },
 ]
