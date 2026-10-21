@@ -170,8 +170,6 @@ body {
     border: 1px solid var(--xa-border);
     background: rgba(255, 255, 255, 0.04);
     color: var(--xa-text);
-    font-size: 1.125rem;
-    line-height: 1;
   }
   .modal-close-btn:hover {
     background: rgba(255, 255, 255, 0.08);
@@ -315,4 +313,30 @@ body {
   .animate-fade-in {
     animation: none;
   }
+}
+
+/* Musée immersif — réserve header, bottom nav et safe-areas téléphone */
+:root {
+  --xa-header-offset: 0px;
+  --xa-bottom-nav-offset: 0px;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --xa-bottom-nav-offset: 64px;
+  }
+}
+
+.museum-immersive-shell {
+  box-sizing: border-box;
+}
+
+.museum-immersive-shell:fullscreen,
+.museum-immersive-shell:-webkit-full-screen {
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
 }
