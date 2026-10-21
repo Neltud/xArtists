@@ -1,6 +1,6 @@
 /**
  * Journal d’intents · paper ou LIVE user-sign (xPortal).
- * LIA_LIVE_TRADING=1 → bouton Signer xPortal construit une TX MultiversX.
+ * VITE_LIA_LIVE_TRADING=1 → parcours signé explicitement dans xPortal.
  */
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -11,10 +11,10 @@ import {
   explorerTxUrl,
   loadJournal,
   markAwaitingSignature,
-  markPending,
+ Pending,
   type JournalEntry,
 } from '../lia/intentJournal'
-import { buildTxFromIntent, describeTx } from '../lia/buildIntentTx'
+import { prepareIntentTx, buildTxFromIntent, describeTx } from '../lia/buildIntentTx'
 import { useWallet, LIA_WALLET } from '../context/WalletContext'
 import { useSendTransaction } from '../hooks/useSendTransaction'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -63,8 +63,16 @@ export default function IntentXPortalPanel() {
   }, [refresh])
 
   const onPrepare = (entry: JournalEntry) => {
-    markAwaitingSignature(entry.id)
-    const draft = buildTxFromIntent(entry)
+    const prepared = prepareIntentTx(entry)
+    if (!prepared.ok) {
+      setToast(prepared.reason)
+      return
+    }
+    if (!markAwaitingSignature(entry.id)) {
+      setToast('Cet intent est déjà soumis ou confirmé.')
+      return
+    }
+    const draft = prepared.draft
     setToast(
       LIA_LIVE_TRADING
         ? `Prêt à signer · ${describeTx(draft)} · wallet LIA via xPortal`
@@ -89,9 +97,14 @@ export default function IntentXPortalPanel() {
       )
       return
     }
+    const prepared = prepareIntentTx(entry)
+    if (!prepared.ok) {
+      setToast(prepared.reason)
+      return
+    }
     setBusyId(entry.id)
     markAwaitingSignature(entry.id)
-    const draft = buildTxFromIntent(entry)
+    const draft = prepared.draft
     try {
       const res = await send([draft], {
         processingMessage: `Intent ${entry.action}…`,
@@ -149,8 +162,9 @@ export default function IntentXPortalPanel() {
       </div>
 
       <p className="text-[11px] text-zinc-500 leading-relaxed">
-        LIA_LIVE_TRADING={LIA_LIVE_TRADING ? 1 : 0} · bootstrap {LIA_GUARDS.bootstrapEgld} EGLD ·
-        caps {LIA_GUARDS.maxUsdPerTrade}$/trade · allowlist {LIA_GUARDS.allowlist.join(', ')}.
+        Signature xPortal {LIA_LIVE_TRADING ? 'active' : 'désactivée'} · dépôt {LIA_GUARDS.bootstrapEgld} EGLD ·
+        plafond pré-signature {LIA_GUARDS.maxUsdPerTrade} $/opération.
+        BUY/SELL/SWAP ne deviennent jamais un bootstrap.
         {LIA_LIVE_TRADING
           ? ' Connecte le wallet LIA ops dans xPortal puis « Signer xPortal ».'
           : ' Mode paper : colle un hash après signature manuelle, ou rebuild avec VITE_LIA_LIVE_TRADING=1.'}
@@ -187,7 +201,9 @@ export default function IntentXPortalPanel() {
         </div>
       ) : (
         <ul className="space-y-3 max-h-[28rem] overflow-y-auto">
-          {rows.map(e => (
+          {rows.map(e => {
+            const prepared = prepareIntentTx(e)
+            return (
             <li key={e.id} className="rounded-xl border border-white/10 bg-black/40 p-3 space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-[12px] font-medium text-zinc-100">
@@ -206,7 +222,9 @@ export default function IntentXPortalPanel() {
                 </span>
               </p>
               <p className="text-[11px] text-zinc-600 line-clamp-2">{e.reason}</p>
-              <p className="text-[10px] text-zinc-600 mono">{describeTx(buildTxFromIntent(e))}</p>
+              <p className="text-[10px] text-zinc-500 mono">
+                {prepared.ok ? describeTx(prepared.draft) : prepared.reason}
+              </p>
 
               {e.txHash && e.status === 'executed' ? (
                 <a
@@ -223,6 +241,7 @@ export default function IntentXPortalPanel() {
                     <button
                       type="button"
                       className="btn-secondary text-xs min-h-[44px]"
+                      disabled={!prepared.ok || ['pending', 'executed'].includes(e.status)}
                       onClick={() => onPrepare(e)}
                     >
                       Préparer TX
@@ -231,11 +250,11 @@ export default function IntentXPortalPanel() {
                       <button
                         type="button"
                         className="btn-primary text-xs min-h-[44px]"
-                        disabled={busyId === e.id}
+                        disabled={busyId === e.id || !prepared.ok}
                         onClick={() => void onSignXPortal(e)}
                       >
                         {busyId === e.id ? 'xPortal…' : 'Signer xPortal'}
-                      </button>
+                      </ </button>
                     )}
                     <input
                       className="flex-1 rounded-lg border border-white/10 bg-black/50 px-2 py-1.5 text-[11px] text-white mono min-h-[44px]"
@@ -260,7 +279,8 @@ export default function IntentXPortalPanel() {
                 </div>
               )}
             </li>
-          ))}
+            )
+          })}
         </ul>
       )}
 
