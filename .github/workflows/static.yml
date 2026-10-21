@@ -41,7 +41,26 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm ci --legacy-peer-deps
+
+      - name: Install Access API dependencies
+        working-directory: services/access-api
+        run: npm ci --ignore-scripts
+
+      - name: Verify release paths without payment or broadcast
+        run: |
+          npm run test:release
+          node --test ../../services/access-api/tests/*.test.mjs
+          cd ../..
+          LIA_LIVE_TRADING=0 python -m unittest discover -s tests/regression -p test_paybox_release.py -v
+
+      - name: Verify V3 routes and translations
+        run: |
+          npm run check:routes
+          npm run verify:site
+          npm run render:check
+          node scripts/run-render-check.mjs modules
+          node scripts/run-render-check.mjs mobile
 
       - name: Verify Dashboard source (must be clean home)
         run: |
@@ -68,8 +87,11 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=4096
           VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
-          VITE_APP_BUILD: "0.118.0"
-          VITE_LIA_LIVE_TRADING: "0"
+          VITE_APP_BUILD: "sites-v3-release"
+          VITE_LIA_LIVE_TRADING: "1"
+          VITE_ACCESS_API_BASE: ${{ vars.VITE_ACCESS_API_BASE }}
+          VITE_MOONPAY_API_KEY: ${{ vars.VITE_MOONPAY_API_KEY || secrets.VITE_MOONPAY_API_KEY }}
+          VITE_PAYBOX_ENABLED: "false"
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
           VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
           VITE_MARKETPLACE_CODEHASH_OK: ${{ secrets.VITE_MARKETPLACE_CODEHASH_OK }}
@@ -101,10 +123,32 @@ jobs:
       - name: Prepare Pages artifact
         working-directory: .
         run: |
+          cd apps/frontend
+          node scripts/write-build-info.mjs
+          cd ../..
           mkdir -p _site
-          cp -r apps/frontend/dist/* _site/
+          cp -a apps/frontend/dist/. _site/
+          touch _site/.nojekyll
           # SPA fallback
           cp _site/index.html _site/404.html
+
+      - name: Verify built GitHub Pages assets
+        run: npm run verify:site
+
+      # Legacy Pages also publishes main/docs after data-only commits. Keep its
+      # renderer identical to the artifact until Pages is switched to Actions.
+      - name: Synchronize the legacy Pages snapshot
+        if: github.ref == 'refs/heads/main'
+        working-directory: .
+        run: |
+          mkdir -p docs/assets
+          rsync -a --delete _site/assets/ docs/assets/
+          rsync -a --exclude='assets/' --exclude='data/' _site/ docs/
+          git add docs
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore(pages): synchronize V3 build snapshot [skip ci]'
+            git push origin HEAD:main
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -112,6 +156,7 @@ jobs:
           path: _site
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
