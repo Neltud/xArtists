@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-20T23:38:00.987Z",
+  "updatedAt": "2026-10-21T03:26:47.355Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792553207122",
+      "timestamp": "03:26",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.73 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792539480854",
       "timestamp": "23:38",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Mastercard launches stablecoin risk screening for banks and payment providers",
       "link": "https://cointelegraph.com/news/mastercard-stablecoin-risk-screening-banks-payments?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "egld-1792441393343",
-      "timestamp": "20:23",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.59 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     }
   ]
 }
