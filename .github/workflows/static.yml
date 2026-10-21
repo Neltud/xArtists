@@ -69,7 +69,8 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096
           VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
           VITE_APP_BUILD: "0.118.0"
-          VITE_LIA_LIVE_TRADING: "0"
+          # Frontend user-sign path (xPortal). Server LIA_LIVE_TRADING remains separate.
+          VITE_LIA_LIVE_TRADING: "1"
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
           VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
           VITE_MARKETPLACE_CODEHASH_OK: ${{ secrets.VITE_MARKETPLACE_CODEHASH_OK }}
