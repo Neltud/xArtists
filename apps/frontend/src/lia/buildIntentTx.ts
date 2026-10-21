@@ -44,7 +44,7 @@ export function buildBootstrapLiveTx(): MxTxDraft {
  * Mappe un intent journal → TX draft.
  * - EGLD : transfer micro vers treasury (cap bootstrap)
  * - TRO-94c925 : ESDTTransfer micro vers treasury (si amount > 0)
- * - sinon : bootstrap générique
+ * - BUY/SELL/SWAP sans route : erreur (jamais bootstrap)
  */
 export function buildTxFromIntent(entry: JournalEntry): MxTxDraft {
   const asset = (entry.assetId || 'EGLD').toUpperCase()
@@ -75,6 +75,14 @@ export function buildTxFromIntent(entry: JournalEntry): MxTxDraft {
       data: `ESDTTransfer@${tokenHex}@${amtHex}`,
       chainID: '1',
     }
+  }
+
+  // Ne jamais substituer un intent d'achat/vente par un bootstrap
+  const action = String(entry.action || '').toUpperCase()
+  if (action.includes('BUY') || action.includes('SELL') || action.includes('SWAP')) {
+    throw new Error(
+      `Intent ${action} sans route on-chain valide pour ${asset} — bootstrap refusé`,
+    )
   }
 
   return buildBootstrapLiveTx()
