@@ -1,5 +1,20 @@
 # Changelog — xArtists
 
+## [0.119.0](https://github.com/Neltud/xArtists/compare/v0.118.1...v0.119.0) (2026-10-21)
+
+
+### Features
+
+* **v3:** experience state/Dialog/Icon/main + frontend release tests ([a33c63c](https://github.com/Neltud/xArtists/commit/a33c63c49cd074e493b571fabe58b5412169bc78))
+* **v3:** frontend release tests (player, museum, access, load-source) ([66c1900](https://github.com/Neltud/xArtists/commit/66c1900455b51eff7101db2c1cef4394848a9d6b))
+* **v3:** modules registry, App routes, scripts check-routes/verify-site/render, vite config ([a7901e3](https://github.com/Neltud/xArtists/commit/a7901e3a1b49ef54c44a3111b13249db37dddaa2))
+
+
+### Bug Fixes
+
+* **frontend:** Nelson playlist + Cacher keeps iframe / Arrêter unmounts ([00d5922](https://github.com/Neltud/xArtists/commit/00d592282f3cacddcbc14ceba597912aa063372a))
+* **v3:** restore real modules.ts (36 modules + groups) and App/main/experience core ([3c9f3f1](https://github.com/Neltud/xArtists/commit/3c9f3f1e47fd183bef00c98b0cfbfba5bdc4e1f5))
+
 ## [0.118.1](https://github.com/Neltud/xArtists/compare/v0.118.0...v0.118.1) (2026-10-21)
 
 
