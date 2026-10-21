@@ -1,5 +1,16 @@
 # Changelog — xArtists
 
+## [0.118.1](https://github.com/Neltud/xArtists/compare/v0.118.0...v0.118.1) (2026-10-21)
+
+
+### Bug Fixes
+
+* **frontend:** instrumentales Nelson Tuduri et commandes musée mobile ([971b826](https://github.com/Neltud/xArtists/commit/971b82676e5feefdb4bc94993ae7ecf094ec1c9e))
+* **frontend:** museum safe-area / bottom-nav CSS offsets ([5abf9d8](https://github.com/Neltud/xArtists/commit/5abf9d8678ab7d8abdf1962a8f8d410743804ed9))
+* **frontend:** Nelson playlist default + listType=playlist embed ([3e6af6b](https://github.com/Neltud/xArtists/commit/3e6af6b5727ecb035df79a3f14677958dc805526))
+* **frontend:** restore MuseumWebGLHallLive portal + measured nav insets ([1ebe8db](https://github.com/Neltud/xArtists/commit/1ebe8db5bf319fc5171704f1274cf16fd99fb4bf))
+* **frontend:** stable playlist iframe player + museum CSS offsets ([c7096cd](https://github.com/Neltud/xArtists/commit/c7096cda14631ec5d8347304993f21b4752103f8))
+
 ## [0.118.0](https://github.com/Neltud/xArtists/compare/v0.117.0...v0.118.0) (2026-10-21)
 
 
