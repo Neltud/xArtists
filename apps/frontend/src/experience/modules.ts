@@ -1,68 +1,41 @@
-/** V3 module registry — navigation + route surface */
-export type ModuleCategory =
-  | 'home'
-  | 'create'
-  | 'discover'
-  | 'trade'
-  | 'agents'
-  | 'finance'
-  | 'social'
-  | 'system'
-
-export type ModuleDef = {
-  id: string
-  path: string
-  titleKey: string
-  category: ModuleCategory
-  nav?: boolean
-  mobile?: boolean
-}
-
-/** Canonical V3 module list (36 modules). */
-export const MODULES: ModuleDef[] = [
-  { id: 'home', path: '/', titleKey: 'nav.home', category: 'home', nav: true, mobile: true },
-  { id: 'explore', path: '/explore', titleKey: 'nav.explore', category: 'discover', nav: true, mobile: true },
-  { id: 'museum', path: '/museum', titleKey: 'nav.museum', category: 'discover', nav: true, mobile: true },
-  { id: 'gallery', path: '/gallery', titleKey: 'nav.gallery', category: 'discover', nav: true },
-  { id: 'marketplace', path: '/marketplace', titleKey: 'nav.marketplace', category: 'trade', nav: true, mobile: true },
-  { id: 'create', path: '/create', titleKey: 'nav.create', category: 'create', nav: true },
-  { id: 'agents', path: '/agents', titleKey: 'nav.agents', category: 'agents', nav: true, mobile: true },
-  { id: 'lia', path: '/lia', titleKey: 'nav.lia', category: 'agents', nav: true },
-  { id: 'command-center', path: '/command-center', titleKey: 'nav.command', category: 'system', nav: true },
-  { id: 'dashboard', path: '/dashboard', titleKey: 'nav.dashboard', category: 'home', nav: true, mobile: true },
-  { id: 'wallet', path: '/wallet', titleKey: 'nav.wallet', category: 'finance', nav: true, mobile: true },
-  { id: 'staking', path: '/staking', titleKey: 'nav.staking', category: 'finance', nav: true },
-  { id: 'governance', path: '/governance', titleKey: 'nav.governance', category: 'finance' },
-  { id: 'tro', path: '/tro', titleKey: 'nav.tro', category: 'finance' },
-  { id: 'bridge', path: '/bridge', titleKey: 'nav.bridge', category: 'finance' },
-  { id: 'analytics', path: '/analytics', titleKey: 'nav.analytics', category: 'discover' },
-  { id: 'news', path: '/news', titleKey: 'nav.news', category: 'social' },
-  { id: 'social', path: '/social', titleKey: 'nav.social', category: 'social' },
-  { id: 'tours', path: '/tours', titleKey: 'nav.tours', category: 'discover' },
-  { id: 'venue', path: '/venue', titleKey: 'nav.venue', category: 'discover' },
-  { id: 'atelier', path: '/atelier', titleKey: 'nav.atelier', category: 'create' },
-  { id: 'collections', path: '/collections', titleKey: 'nav.collections', category: 'discover' },
-  { id: 'profile', path: '/profile', titleKey: 'nav.profile', category: 'social', mobile: true },
-  { id: 'settings', path: '/settings', titleKey: 'nav.settings', category: 'system' },
-  { id: 'access', path: '/access', titleKey: 'nav.access', category: 'system' },
-  { id: 'tca', path: '/tca', titleKey: 'nav.tca', category: 'system' },
-  { id: 'docs', path: '/docs', titleKey: 'nav.docs', category: 'system' },
-  { id: 'status', path: '/status', titleKey: 'nav.status', category: 'system' },
-  { id: 'signals', path: '/signals', titleKey: 'nav.signals', category: 'agents' },
-  { id: 'packs', path: '/packs', titleKey: 'nav.packs', category: 'agents' },
-  { id: 'yield', path: '/yield', titleKey: 'nav.yield', category: 'finance' },
-  { id: 'guardian', path: '/guardian', titleKey: 'nav.guardian', category: 'agents' },
-  { id: 'onramp', path: '/onramp', titleKey: 'nav.onramp', category: 'finance' },
-  { id: 'activity', path: '/activity', titleKey: 'nav.activity', category: 'social' },
-  { id: 'help', path: '/help', titleKey: 'nav.help', category: 'system' },
-  { id: 'legal', path: '/legal', titleKey: 'nav.legal', category: 'system' },
+import { lazy, type ComponentType, type LazyExoticComponent } from 'react'
+export type Group = 'explore' | 'create' | 'intelligence' | 'finance' | 'workspace'
+export type Module = { id: string; path: string; aliases: string[]; label: string; group: Group; icon: string; page: LazyExoticComponent<ComponentType<any>>; tags: string[]; load: ()=>Promise<any> }
+const module = (id:string,path:string,aliases:string[],label:string,group:Group,icon:string,page:()=>Promise<any>,tags:string[]=[]):Module => ({id,path,aliases,label,group,icon,page:lazy(page),tags,load:page})
+export const modules:Module[] = [
+  module('museum','/explore/museum',['/museum','/gallery'],'museum','explore','museum',()=>import('../pages/MuseumPage'),['3D','WebGL','NFT']),
+  module('market','/explore/market',['/market','/marketplace','/market-place'],'market','explore','market',()=>import('../pages/MarketplacePage'),['NFT','RWA','SFT']),
+  module('analytics','/explore/analytics',['/market/analytics'],'analytics','explore','chart',()=>import('../pages/MarketAnalyticsPage'),['NFT','EGLD']),
+  module('tours','/explore/tours',['/tours','/agents/voyage','/intelligence/voyage'],'tours','explore','globe',()=>import('../pages/ArtToursPage'),['Art','Culture']),
+  module('rwa','/explore/rwa',['/rwa','/rwa_catalog'],'rwa','explore','cube',()=>import('../pages/RwaCatalogPage'),['RWA','NFC']),
+  module('editions','/explore/editions',['/editions'],'editions','explore','layers',()=>import('../pages/Editions'),['SFT','Art']),
+  module('venues','/explore/venues',['/venues'],'venues','explore','museum',()=>import('../pages/VenuePage'),['Art','RWA']),
+  module('studio','/create/studio',['/studio'],'studio','create','create',()=>import('../pages/StudioPage'),['NFT','RWA','Mint']),
+  module('twin','/create/digital-twin',['/digital-twin'],'twin','create','cube',()=>import('../pages/DigitalTwinPage'),['RWA','3D']),
+  module('academy','/create/academy',['/tca','/classroom'],'academy','create','book',()=>import('../pages/TcaGatePage'),['TCA','Sfumato']),
+  module('ads','/create/visibility',['/ads'],'ads','create','globe',()=>import('../pages/AdsPage'),['Art','Media']),
+  module('lia','/intelligence/lia',['/lia'],'lia','intelligence','orb',()=>import('../pages/LiaPage'),['LIA','AI','Paper']),
+  module('agents','/intelligence/agents',['/agents','/packs'],'agents','intelligence','agents',()=>import('../pages/AgentsPage'),['Pulse','Yield','Sentinel']),
+  module('command','/intelligence/command',['/command-center','/command'],'command','intelligence','network',()=>import('../pages/CommandCenterPage'),['LIA','Ops']),
+  module('signals','/intelligence/signals',['/signals'],'signals','intelligence','bolt',()=>import('../pages/SignalsPage'),['LIA','Signal']),
+  module('trading','/finance/trading',['/trading'],'trading','finance','chart',()=>import('../pages/TradingPage'),['EGLD','Trade']),
+  module('tro','/finance/tro',['/tro'],'tro','finance','coin',()=>import('../pages/TroPage'),['TRO','Token']),
+  module('staking','/finance/staking',['/staking'],'staking','finance','layers',()=>import('../pages/StakingPage'),['TRO','NFT','Stake']),
+  module('liquidity','/finance/liquidity',['/lp'],'liquidity','finance','layers',()=>import('../pages/LPPoolsPage'),['LP','DeFi']),
+  module('hatom','/finance/hatom',['/hatom'],'hatom','finance','orb',()=>import('../pages/HatomPage'),['HTM','sEGLD','DeFi']),
+  module('burnify','/finance/burnify',['/burnify'],'burnify','finance','bolt',()=>import('../pages/BurnifyPage'),['Burn','DeFi']),
+  module('dao','/finance/governance',['/dao'],'dao','finance','network',()=>import('../pages/DaoPage'),['DAO','TRO']),
+  module('sale','/finance/sale',['/sale'],'sale','finance','coin',()=>import('../pages/SalePage'),['TRO','EGLD']),
+  module('tip','/finance/support',['/tip'],'tip','finance','heart',()=>import('../pages/TipPage'),['EGLD','TRO']),
+  module('wallet','/workspace/wallet',['/wallet'],'wallet','workspace','wallet',()=>import('../pages/WalletPage'),['xPortal','WalletConnect']),
+  module('portfolio','/workspace/portfolio',['/portfolio'],'portfolio','workspace','layers',()=>import('../pages/PortfolioPage'),['NFT','EGLD','TRO']),
+  module('packs','/workspace/agents',['/my-packs','/salles'],'packs','workspace','agents',()=>import('../pages/MyPacksPage'),['Pulse','Yield','Sentinel']),
+  module('identity','/workspace/identity',['/identity'],'identity','workspace','user',()=>import('../pages/IdentityPage'),['Profile','Identity']),
+  module('payments','/workspace/payments',['/payments'],'payments','workspace','clock',()=>import('../pages/PaymentHistory'),['EGLD','History']),
+  module('history','/workspace/history',['/history'],'history','workspace','clock',()=>import('../pages/HistoryPage'),['History','LIA']),
+  module('status','/workspace/status',['/go-live'],'status','workspace','shield',()=>import('../pages/GoLivePage'),['Mainnet','SC']),
+  module('legal','/legal',['/legal/terms','/mentions-legales'],'legal','workspace','shield',()=>import('../pages/LegalPage'),['Terms','Legal']),
+  module('guide','/guide',['/demo'],'help','explore','book',()=>import('../pages/DemoTourPage'),['Demo','Guide']),
 ]
-
-export function moduleByPath(pathname: string): ModuleDef | undefined {
-  const clean = pathname.replace(/\/+$/, '') || '/'
-  return MODULES.find(m => m.path === clean)
-}
-
-export function navModules(mobile = false): ModuleDef[] {
-  return MODULES.filter(m => m.nav && (!mobile || m.mobile))
-}
+export const groups:Group[]=['explore','create','intelligence','finance','workspace']
+export function findModule(path:string){return modules.find(m=>m.path===path||m.aliases.includes(path))}
