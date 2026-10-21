@@ -1,30 +1,31 @@
-# Suite logique — 20 octobre 2026
+# Suite logique — 21 octobre 2026
 
-Probe : epoch **2268** · EGLD **$3,65** · LIA Ops **1,5856 EGLD** nonce **1479** · packs **10 / 5 / 2,5** · listing **#2 actif** · slot **non payable**.
+Probe ~04:35 UTC : epoch **2269** · EGLD **$3,73** · LIA Ops **1,585598 EGLD** nonce **1479** · packs **10 / 5 / 2,5** · market payable **0,0175** · slot **0,5000 non payable** · $TRO circ **476 224** / **562** comptes.
 
 ## Fait dans ce push
 
-- Page `/go-live` : pulse API (epoch, EGLD, LIA) + phrase Upbit qui bascule seule après le 23 oct.
-- Plus de prix marketplace inventé à 0,25 EGLD.
-- Stamp Pages **0.117.0**. Client `VITE_LIA_LIVE_TRADING=0`.
+- `/go-live` : pulse élargi (agents, market, slot, $TRO) + jour de fenêtre Upbit/Bithumb.
+- Stamp Pages **0.118.0**. `VITE_LIA_LIVE_TRADING=0`.
+- Version du package frontend alignée (elle était restée à 0.113.0).
 
 ## Ne pas faire
 
-- Nouveau swap / wrap / liquidité sur LIA Ops. Le 17 oct 12:57–13:02 UTC a déjà consommé ~0,018 EGLD de frais et de wrap. La fenêtre Upbit est **ouverte**.
-- Paybox ou Stripe réels (pas d’IPN, pas de mint lié).
+- Nouveau swap / wrap / liquidité sur LIA Ops. Nonce figé à 1479 depuis le 17 oct.
+- Allumer le live parce que la fenêtre est « bientôt finie ». Au 21 oct aucune annonce de maintien Upbit ou Bithumb.
+- Paybox ou Stripe réels.
 - `VITE_*_CODEHASH_OK=1` dans git.
-- Fonds vers placeholders vides. `claimFees` (treasury dest null).
+- Fonds vers placeholders vides. `claimFees`.
 - Annoncer un fonds. Confondre Connect visiteur et LIA Ops.
-- Ouvrir le slot REAL (`isPayable=false`, min bet 0,001, house 0,50).
+- Ouvrir le slot REAL ou déployer un second slot.
 
-## Ordre dès qu’Upbit publie un maintien
+## Ordre seulement après un maintien publié (Upbit ou Bithumb)
 
-1. Une TX **utilisateur** visible sur l’explorer (1 TRO staké, ou Sentinel 2,5 EGLD, ou buy/bid #2 — jamais l’id #1).
-2. Un seul micro-trade ops signé xPortal, journalisé, caps déjà dans `liaConfig` (15 USD / trade, 40 USD / jour).
+1. Une TX **utilisateur** sur l’explorer (1 TRO staké, ou Sentinel 2,5 EGLD, ou buy/bid listing **#2** — jamais l’id #1).
+2. Un seul micro-trade ops signé xPortal, journalisé, caps `liaConfig` (15 USD / trade, 40 USD / jour).
 3. Inscription MX-8004 / First 100.
-4. Upgrade **du même** slot en payable, pas un nouveau deploy, puis 1 spin poussière.
-5. Akash `VITE_BRAIN_WS` seulement si le endpoint répond. L’index listings on-chain est déjà le chemin d’achat.
+4. Upgrade **du même** slot en payable, puis 1 spin poussière.
+5. Akash `VITE_BRAIN_WS` seulement si l’endpoint répond.
 
-## Si Upbit delist ou prolonge
+## Si delist ou prolongation
 
-Rester paper. Ne pas « go live trading ». Le site SC (galerie, musée, market lecture, packs) peut rester public.
+Rester paper. Le site (galerie, musée, market en lecture, packs) reste public. Ne pas appeler ça un go-live trading.

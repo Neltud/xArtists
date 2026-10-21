@@ -6,14 +6,21 @@ describe('upbitPosture', () => {
     expect(upbitPosture(Date.parse('2026-10-18T22:00:00Z')).phase).toBe('before')
   })
 
-  it('is inside the window on 20 oct', () => {
-    const row = upbitPosture(Date.parse('2026-10-20T04:40:00Z'))
-    expect(row.phase).toBe('window')
-    expect(row.label).toMatch(/paper/)
+  it('is inside the window on 20 oct (day 2) and 21 oct (day 3)', () => {
+    const d2 = upbitPosture(Date.parse('2026-10-20T04:40:00Z'))
+    expect(d2.phase).toBe('window')
+    expect(d2.day).toBe(2)
+    expect(d2.label).toMatch(/paper/)
+    const d3 = upbitPosture(Date.parse('2026-10-21T04:30:00Z'))
+    expect(d3.day).toBe(3)
+    expect(d3.label).toMatch(/Bithumb/)
+    expect(d3.label).toMatch(/SOPH/)
   })
 
   it('is after the window on 24 oct', () => {
-    expect(upbitPosture(Date.parse('2026-10-24T00:00:00Z')).phase).toBe('after')
+    const row = upbitPosture(Date.parse('2026-10-24T00:00:00Z'))
+    expect(row.phase).toBe('after')
+    expect(row.label).toMatch(/paper/)
   })
 })
 

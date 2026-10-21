@@ -160,8 +160,15 @@ export default function GoLivePage() {
             {(pulse.apr * 100).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} %
             <br />
             LIA Ops <strong className="text-zinc-100">{formatEgld(pulse.liaEgld, 4)} EGLD</strong> ·
-            nonce {pulse.liaNonce}. Client paper. Le 17 oct le wallet ops a déjà fait des swaps
-            xExchange (wrap, liquidité, multiPair) — ce n’est pas une autorisation de relancer.
+            nonce {pulse.liaNonce}. Agents {formatEgld(pulse.agentsEgld, 3)} · market{' '}
+            {formatEgld(pulse.marketEgld, 4)} · slot {formatEgld(pulse.slotEgld, 4)} EGLD.
+            <br />
+            $TRO circ {formatCompact(pulse.troCirc)} · {pulse.troAccounts ?? '—'} comptes ·{' '}
+            {pulse.troPrice != null ? `~$${pulse.troPrice.toPrecision(3)}` : '—'} · mcap{' '}
+            {formatCompact(pulse.troMcap)}.
+            <br />
+            Client paper. Le 17 oct le wallet ops a déjà fait des swaps xExchange (wrap, liquidité,
+            multiPair) — ce n’est pas une autorisation de relancer.
           </p>
         ) : (
           <p className="text-[12px] text-zinc-500">{pulseError || 'Lecture API…'}</p>
