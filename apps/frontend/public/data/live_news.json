@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-22T16:41:03.373Z",
+  "updatedAt": "2026-10-22T21:13:33.083Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792703612791",
+      "timestamp": "21:13",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.52 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792687263248",
       "timestamp": "16:41",
@@ -191,13 +198,6 @@
       "source": "CoinDesk",
       "title": "Tether: Senator's investigation misses positive work that's led to lower Iran volumes",
       "link": "https://www.coindesk.com/policy/2026/10/19/tether-senator-s-investigation-misses-positive-work-that-s-led-to-lower-iran-volumes"
-    },
-    {
-      "id": "rss-CoinDesk-1-1792428420000",
-      "timestamp": "16:47",
-      "source": "CoinDesk",
-      "title": "U.S. CFTC rebuffs CME legal stance in consequential fight over perpetual futures",
-      "link": "https://www.coindesk.com/policy/2026/10/19/u-s-cftc-rebuffs-cme-legal-stance-in-consequential-fight-over-perpetual-futures"
     }
   ]
 }
