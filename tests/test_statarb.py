@@ -16,13 +16,16 @@ FAIL = 0
 
 
 def check(name: str, cond: bool, detail: str = "") -> None:
+    """Record result; raise on failure so run_all / CI cannot false-pass."""
     global PASS, FAIL
     if cond:
         PASS += 1
         print(f"  PASS  {name}" + (f" ({detail})" if detail else ""))
-    else:
-        FAIL += 1
-        print(f"  FAIL  {name}" + (f" — {detail}" if detail else ""))
+        return
+    FAIL += 1
+    msg = f"FAIL  {name}" + (f" — {detail}" if detail else "")
+    print(f"  {msg}")
+    raise AssertionError(msg)
 
 
 def test_statarb_signal() -> None:
@@ -36,7 +39,6 @@ def test_statarb_signal() -> None:
 
     cfg = StatArbConfig()
 
-    # Strong undervaluation → BUY
     s = statistical_arbitrage(
         token_a="WEGLD-bd4d79",
         token_b="USDC-c76f1f",
@@ -54,7 +56,6 @@ def test_statarb_signal() -> None:
     check("strong negative z → BUY", s.action == "BUY", f"conf={s.confidence:.2f}")
     check("strategy STATARB", s.strategy == "STATARB")
 
-    # Strong overvaluation → SELL
     s2 = statistical_arbitrage(
         token_a="WEGLD-bd4d79",
         token_b="USDC-c76f1f",
@@ -71,7 +72,6 @@ def test_statarb_signal() -> None:
     )
     check("strong positive z → SELL", s2.action == "SELL")
 
-    # Neutral
     s3 = statistical_arbitrage(
         token_a="WEGLD",
         token_b="USDC",
@@ -88,7 +88,6 @@ def test_statarb_signal() -> None:
     )
     check("neutral z → WAIT", s3.action == "WAIT")
 
-    # Half-life too long
     s4 = statistical_arbitrage(
         token_a="WEGLD",
         token_b="USDC",
@@ -105,7 +104,6 @@ def test_statarb_signal() -> None:
     )
     check("long half-life → WAIT", s4.action == "WAIT")
 
-    # Low liquidity
     s5 = statistical_arbitrage(
         token_a="WEGLD",
         token_b="USDC",
@@ -122,7 +120,6 @@ def test_statarb_signal() -> None:
     )
     check("low liq → WAIT", s5.action == "WAIT")
 
-    # Math helpers
     sp = compute_spread(10.0, 1.0, 1.0)
     check("spread log", abs(sp - 2.302585) < 0.001, f"{sp:.4f}")
     z = compute_z(2.40, 2.30, 0.05)
@@ -183,8 +180,6 @@ def test_fuse_priority() -> None:
     mom = Signal("BUY", "WEGLD", 0.75, "MOM", "mom")
 
     fused = fuse_signals([mr, stat, mom])
-    # STATARB has higher priority; even with slightly lower conf it should win
-    # if conf close — our rank uses (conf, priority)
     check("fuse returns BUY", fused.action == "BUY")
     check(
         "STATARB preferred when close",
@@ -192,12 +187,10 @@ def test_fuse_priority() -> None:
         fused.strategy,
     )
 
-    # Strong STATARB should dominate
     strong = Signal("BUY", "WEGLD", 0.85, "STATARB", "z=-2.8")
     fused2 = fuse_signals([mr, strong, mom])
     check("strong STATARB wins", fused2.strategy == "STATARB")
 
-    # SELL protection
     sell = Signal("SELL", "WEGLD", 0.72, "STATARB", "z=+2.4")
     fused3 = fuse_signals([strong, sell])
     check("SELL wins over BUY", fused3.action == "SELL")
@@ -206,7 +199,6 @@ def test_fuse_priority() -> None:
 def test_compound_accepts_statarb() -> None:
     print("\n[COMPOUND + STATARB]")
     from lia.circuit.compound_engine import CompoundCircuit, CircuitConfig
-    from lia.circuit.strategies import Signal
 
     tmp_state = ROOT / "data" / "_test_statarb_compound.json"
     tmp_tickets = ROOT / "data" / "_test_statarb_tickets.json"
@@ -224,7 +216,6 @@ def test_compound_accepts_statarb() -> None:
     ok, reason = c.can_open()
     check("can_open", ok, reason)
 
-    # Simulate a StatArb-driven open (same API — strategy is metadata)
     t = c.open_trade(
         token="WEGLD-bd4d79",
         entry=9.6,
@@ -234,7 +225,6 @@ def test_compound_accepts_statarb() -> None:
     )
     check("open from STATARB context", t is not None)
     if t:
-        # Force a modest win compatible with +1% net target
         closed = c.close_trade(
             exit_price=9.6 * 1.025,
             post_balance_usd=81.5,
