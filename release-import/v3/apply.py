@@ -60,20 +60,25 @@ def main(mode: str) -> None:
     for path, oid in required_workflows.items():
         ensure(path.startswith(".github/workflows/") and ".." not in Path(path).parts, "Invalid workflow path.")
         current = git("rev-parse", f"HEAD:{path}").decode().strip()
-        ensure(current == oid, "Synchronize workflow before import: " + path)
-    parts = []
-    for index, expected in enumerate(manifest["parts"]):
-        path = directory / f"part-{index:03d}.b64"
-        data = path.read_text().encode()
-        ensure(digest(data) == expected["sha256"], "Corrupted transport part: " + path.name)
-        parts.append(base64.b64decode(data))
-    payload = b"".join(parts)
-    ensure(digest(payload) == manifest["compressed_sha256"], "Compressed archive digest mismatch.")
-    patch = gzip.decompress(payload)
-    ensure(digest(patch) == manifest["patch_sha256"], "Patch digest mismatch.")
+        ensure(current == oid, "Sync this workflow with the ready snapshot through the GitHub connector first: " + path)
+    changed = [p.decode() for p in git("diff", "--name-only", "--no-renames", "-z", base, "HEAD").split(b"\0") if p]
+    unexpected = [p for p in changed if not p.startswith(PREFIX + "/") and p != WORKFLOW and p not in required_workflows]
+    ensure(not unexpected, "Source files changed after packaging; regenerate from the new remote head: " + ", ".join(unexpected))
+    ensure(bool(manifest.get("chunks")), "Archive has no parts.")
+    compressed_parts = []
+    for index, chunk in enumerate(manifest["chunks"]):
+        ensure(chunk["name"] == f"part-{index:03d}.b64", "Archive part order mismatch.")
+        encoded = (directory / chunk["name"]).read_bytes()
+        ensure(len(encoded) == chunk["bytes"] and digest(encoded) == chunk["sha256"], "Corrupt archive part: " + chunk["name"])
+        compressed_parts.append(base64.b64decode(encoded, validate=True))
+    compressed = b"".join(compressed_parts)
+    ensure(len(compressed) == manifest["compressed_bytes"] and digest(compressed) == manifest["compressed_sha256"], "Compressed archive integrity mismatch.")
+    ensure(0 < manifest["patch_bytes"] < 128 * 1024 * 1024, "Invalid patch size.")
+    patch = gzip.decompress(compressed)
+    ensure(len(patch) == manifest["patch_bytes"] and digest(patch) == manifest["patch_sha256"], "Patch integrity mismatch.")
     for entry in manifest["files"]:
         path = entry["path"]
-        ensure(".." not in Path(path).parts and not path.startswith(".github/workflows/"), "Invalid path in manifest: " + path)
+        ensure(not path.startswith(".github/workflows/") and not path.startswith(PREFIX + "/"), "Transport must not modify workflows or its own files.")
         current = indexed(path)
         expected = entry["before"]
         ensure(current == ({"mode": expected["mode"], "sha": expected["sha"]} if expected else None), "Base file mismatch: " + path)
@@ -96,6 +101,7 @@ def main(mode: str) -> None:
     subprocess.run(["git", "-c", "user.name=github-actions[bot]", "-c", "user.email=41898282+github-actions[bot]@users.noreply.github.com", "commit", "-m", "feat(v3): import complete verified source snapshot", "-m", "Prepared-from: " + manifest["ready_commit"]], check=True)
     head = git("rev-parse", "HEAD").decode().strip()
     if mode == "push":
+        # No force: a concurrent remote update is rejected by Git.
         subprocess.run(["git", "push", "origin", f"HEAD:refs/heads/{BRANCH}"], check=True)
     print(json.dumps({"imported_commit": head, "prepared_from": manifest["ready_commit"], "files": len(manifest["files"]), "pushed": mode == "push"}))
 
