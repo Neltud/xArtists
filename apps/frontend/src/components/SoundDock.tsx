@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Dock son — muet par défaut · futuriste · discret.
  */
@@ -33,7 +34,7 @@ export default function SoundDock() {
       title={muted ? 'Activer les sons UI' : 'Couper les sons'}
       aria-pressed={!muted}
     >
-      {muted ? '🔇 SFX off' : '🔊 SFX on'}
+      {xaRender(muted ? '🔇 SFX off' : '🔊 SFX on')}
     </button>
   )
 }

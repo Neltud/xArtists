@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Last paper legs: gate → EV → DecisionProof (no chain sig).
  */
@@ -53,72 +54,70 @@ export default function PaperLegsPanel() {
     <section className="card mb-8 border-teal-500/20">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div>
-          <h2 className="text-lg font-bold text-teal-100">Paper legs · gate → proof</h2>
+          <h2 className="text-lg font-bold text-teal-100">{xaRender("Paper legs · gate → proof")}</h2>
           <p className="text-[11px] text-zinc-500">
-            Chemin executor paper — aucune signature MultiversX
-          </p>
+            {xaRender("Chemin executor paper — aucune signature MultiversX ")}</p>
         </div>
         <span className="text-[10px] uppercase tracking-wider text-teal-300/80 border border-teal-500/30 rounded-full px-2 py-0.5">
-          paper only
-        </span>
+          {xaRender("paper only ")}</span>
       </div>
 
-      {err && legs.length === 0 && (
+      {xaRender(err && legs.length === 0 && (
         <p className="text-xs text-amber-400">
-          {err} — <code className="text-[10px]">python -m lia.executor.paper_with_proof</code>
+          {xaRender(err)} — <code className="text-[10px]">python -m lia.executor.paper_with_proof</code>
         </p>
-      )}
+      ))}
 
-      {legs.length === 0 && !err ? (
-        <p className="text-sm text-zinc-500">Aucun leg enregistré.</p>
+      {xaRender(legs.length === 0 && !err ? (
+        <p className="text-sm text-zinc-500">{xaRender("Aucun leg enregistré.")}</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[560px]">
             <thead>
               <tr className="text-[10px] uppercase text-zinc-500 border-b border-[#2a2a3a]">
                 <th className="text-left py-2">Ts</th>
-                <th className="text-left py-2">Gate</th>
-                <th className="text-right py-2">Size</th>
+                <th className="text-left py-2">{xaRender("Gate")}</th>
+                <th className="text-right py-2">{xaRender("Size")}</th>
                 <th className="text-right py-2">EV</th>
-                <th className="text-left py-2">Proof</th>
-                <th className="text-left py-2">Verify</th>
+                <th className="text-left py-2">{xaRender("Proof")}</th>
+                <th className="text-left py-2">{xaRender("Verify")}</th>
               </tr>
             </thead>
             <tbody>
-              {legs.map((leg, i) => (
+              {xaRender(legs.map((leg, i) => (
                 <tr key={leg.ts || i} className="border-b border-[#2a2a3a]/40">
                   <td className="py-2 text-[11px] text-zinc-500">
-                    {leg.ts ? new Date(leg.ts).toLocaleString('fr-FR') : '—'}
+                    {xaRender(leg.ts ? new Date(leg.ts).toLocaleString('fr-FR') : '—')}
                   </td>
                   <td className="py-2">
-                    <span className="font-semibold">{leg.gate?.decision || (leg.ok ? '—' : 'BLOCK')}</span>
+                    <span className="font-semibold">{xaRender(leg.gate?.decision || (leg.ok ? '—' : 'BLOCK'))}</span>
                     <span className="text-[10px] text-zinc-500 ml-1">
-                      {leg.gate?.confidence != null
+                      {xaRender(leg.gate?.confidence != null
                         ? `${(Number(leg.gate.confidence) * 100).toFixed(0)}%`
-                        : ''}
+                        : '')}
                     </span>
                   </td>
-                  <td className="py-2 text-right mono">{leg.gate?.size_usd ?? '—'}</td>
+                  <td className="py-2 text-right mono">{xaRender(leg.gate?.size_usd ?? '—')}</td>
                   <td className="py-2 text-right mono text-zinc-300">
-                    {leg.ev?.expected_value != null
+                    {xaRender(leg.ev?.expected_value != null
                       ? Number(leg.ev.expected_value).toFixed(2)
-                      : '—'}
+                      : '—')}
                   </td>
                   <td className="py-2 text-[11px] mono text-zinc-500">
-                    {(leg.decision_proof?.decision_id || '').slice(0, 10) || '—'}
-                    {leg.decision_proof?.action_name
+                    {xaRender((leg.decision_proof?.decision_id || '').slice(0, 10) || '—')}
+                    {xaRender(leg.decision_proof?.action_name
                       ? ` · ${leg.decision_proof.action_name}`
-                      : ''}
+                      : '')}
                   </td>
                   <td className="py-2 text-[11px] text-teal-300/90">
-                    {leg.verification || leg.reason || '—'}
+                    {xaRender(leg.verification || leg.reason || '—')}
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
-      )}
+      ))}
     </section>
   )
 }

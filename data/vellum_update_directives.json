@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "updated": "2026-10-21",
+  "kind": "implementation_directives_index",
+  "status": "specification_only",
+  "repository": "https://github.com/Neltud/xArtists",
+  "workflow_to_verify": "xartists-8008-intents",
+  "source_document": "docs/VELLUM_LIA_WALLET_DIRECTIVES.md",
+  "instructions": "Read the source document before planning the LIA wallet workflow update. Re-audit the current repository SHA and preserve concurrent Grok changes. This index is documentation, not an execution grant or evidence of deployment.",
+  "target_policy": {
+    "autonomous_scope": [
+      "read_only_data_collection",
+      "analysis",
+      "strategy_comparison",
+      "simulation",
+      "monitoring",
+      "unsigned_order_preparation"
+    ],
+    "real_funds_require_human_approval_per_order": true,
+    "approval_bound_to_exact_order": true,
+    "revalidate_after_order_change_or_quote_expiry": true,
+    "scheduler_or_model_may_manage_real_investments": false,
+    "missing_critical_data": "BLOCKED",
+    "maximum_operation_usd": 15,
+    "maximum_daily_usd": 40,
+    "preserve_stricter_existing_limits": true,
+    "bootstrap": {
+      "maximum_egld": "0.001",
+      "explicit_separate_user_request_required": true,
+      "implicit_buy_sell_swap_fallback_allowed": false
+    },
+    "priority_assets": ["EGLD", "USDC-c76f1f", "TRO-94c925"],
+    "other_fungible_esdt": "Require verified identity, liquidity, permissions and an executable route.",
+    "paybox_multiversx_support": "UNKNOWN_UNTIL_VERIFIED",
+    "automatic_financial_test_operations_allowed": false
+  },
+  "capability_statuses": ["SIMULATION", "BLOCKED", "READY_FOR_APPROVAL"],
+  "required_delivery": [
+    "strategy_capability_matrix",
+    "versioned_workflow_and_application_changes",
+    "deterministic_risk_and_approval_checks",
+    "durable_idempotency_and_budget_accounting",
+    "structured_outputs_and_traceability",
+    "simulation_or_mock_test_results",
+    "remaining_blockers_and_verified_deployment_evidence"
+  ]
+}

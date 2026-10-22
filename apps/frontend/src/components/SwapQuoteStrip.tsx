@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Aperçu prix pendant la frappe (Sprint 2) — paper only.
  */
@@ -56,20 +57,18 @@ export default function SwapQuoteStrip({ query }: { query: string }) {
   return (
     <div className="px-4 pb-2 text-[11px] font-mono border-t border-white/5 pt-2">
       <p className="text-[10px] uppercase tracking-wider text-amber-500/80 mb-1">
-        Quote paper · Sprint 2
-      </p>
-      {err && <p className="text-rose-400/90">{err}</p>}
-      {quote && (
+        {xaRender("Quote paper · Sprint 2 ")}</p>
+      {xaRender(err && <p className="text-rose-400/90">{xaRender(err)}</p>)}
+      {xaRender(quote && (
         <div className="text-zinc-300 space-y-0.5">
           <p>
-            {quote.amountInHuman} {quote.assetFrom} → ~{quote.amountOutHuman} {quote.assetTo}
+            {xaRender(quote.amountInHuman)} {xaRender(quote.assetFrom)} → ~{xaRender(quote.amountOutHuman)} {xaRender(quote.assetTo)}
           </p>
           <p className="text-zinc-500">
-            {quote.dex} · route {quote.route.join('→')} · impact ~{quote.priceImpactBps} bps
-          </p>
-          <p className="text-amber-200/70">Non exécuté on-chain tant que live OFF</p>
+            {xaRender(quote.dex)} {xaRender(" · route ")}{xaRender(quote.route.join('→'))} {xaRender(" · impact ~")}{xaRender(quote.priceImpactBps)} {xaRender(" bps ")}</p>
+          <p className="text-amber-200/70">{xaRender("Non exécuté on-chain tant que live OFF")}</p>
         </div>
-      )}
+      ))}
     </div>
   )
 }

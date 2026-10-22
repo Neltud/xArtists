@@ -4,6 +4,7 @@
 
 | Doc | Sujet |
 |------|--------|
+| [VELLUM_LIA_WALLET_DIRECTIVES.md](VELLUM_LIA_WALLET_DIRECTIVES.md) | **Directives Vellum : stratégies, LIA Wallet, MultiversX / PayBox et validation des ordres réels** |
 | [LIA_TRADING_ARCHITECTURE.md](LIA_TRADING_ARCHITECTURE.md) | **Carte modules + cycle Vellum unifié** |
 | [LIA_SPLIT.md](LIA_SPLIT.md) | Splits TRO / PnL / fees / tips |
 | [ORACLES.md](ORACLES.md) | Prix on-chain leaning |
@@ -17,6 +18,8 @@
 | [DAPP_STATUS.md](DAPP_STATUS.md) | État dApp |
 
 ## Déploiement
+
+Publication V3 : [V3_PUBLICATION_2026-10-21.md](V3_PUBLICATION_2026-10-21.md).
 
 | Doc | Sujet |
 |------|--------|

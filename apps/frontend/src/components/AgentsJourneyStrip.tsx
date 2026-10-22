@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 import { Link } from 'react-router-dom'
 
 const STEPS = [
@@ -8,14 +9,16 @@ const STEPS = [
 ]
 
 export default function AgentsJourneyStrip() {
+  xaUsePhraseLocale()
+
   return (
     <nav
       className="mb-6 flex flex-wrap items-center gap-1.5 text-[11px] text-zinc-500"
-      aria-label="Fil d'Ariane agents"
+      aria-label={xaLocalize("Fil d'Ariane agents")}
     >
-      {STEPS.map((s, i) => (
+      {xaRender(STEPS.map((s, i) => (
         <span key={s.to} className="inline-flex items-center gap-1.5">
-          {i > 0 && <span className="text-zinc-600" aria-hidden>→</span>}
+          {xaRender(i > 0 && <span className="text-zinc-600" aria-hidden>→</span>)}
           <Link
             to={s.to}
             className={
@@ -24,13 +27,12 @@ export default function AgentsJourneyStrip() {
                 : 'hover:text-zinc-300 underline-offset-2 hover:underline'
             }
           >
-            {s.label}
+            {xaRender(s.label)}
           </Link>
         </span>
-      ))}
+      )))}
       <span className="ml-auto text-[10px] text-zinc-600 hidden sm:inline">
-        GSN ≥80% = signal LIA · packs ≠ GSN
-      </span>
+        {xaRender("GSN ≥80% = signal LIA · packs ≠ GSN ")}</span>
     </nav>
   )
 }

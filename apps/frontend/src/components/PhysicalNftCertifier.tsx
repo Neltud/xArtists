@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
  * Phygital certifier — upload HD + métadonnées → CoA / CoP + intent LIA.
  * Qualité photo: ≥2 Mo, ≥8 MP, contraste σ≥18 ; capture native environment.
@@ -204,6 +205,8 @@ function buildCoP(p: PhysicalCertificate): string {
 }
 
 export default function PhysicalNftCertifier() {
+  xaUsePhraseLocale()
+
   const [form, setForm] = useState<FormState>(EMPTY)
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
@@ -336,7 +339,7 @@ export default function PhysicalNftCertifier() {
       </div>
 
       <div className="flex gap-2">
-        {(['CoA', 'CoP'] as CertKind[]).map(k => (
+        {xaRender((['CoA', 'CoP'] as CertKind[]).map(k => (
           <button
             key={k}
             type="button"
@@ -347,13 +350,13 @@ export default function PhysicalNftCertifier() {
                 : 'border-white/10 text-zinc-400'
             }`}
           >
-            {k}
+            {xaRender(k)}
           </button>
-        ))}
+        )))}
       </div>
 
       <div className="grid gap-2 sm:grid-cols-2">
-        {(
+        {xaRender((
           [
             ['title', 'Titre'],
             ['artist', 'Artiste'],
@@ -364,17 +367,16 @@ export default function PhysicalNftCertifier() {
           ] as const
         ).map(([key, label]) => (
           <label key={key} className="block text-[11px] text-zinc-500 space-y-1">
-            {label}
+            {xaRender(label)}
             <input
               className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-sm text-white"
               value={form[key]}
               onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
             />
           </label>
-        ))}
+        )))}
         <label className="block text-[11px] text-zinc-500 space-y-1 sm:col-span-2">
-          Notes
-          <textarea
+          {xaRender("Notes ")}<textarea
             className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-sm text-white min-h-[64px]"
             value={form.notes}
             onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
@@ -385,7 +387,7 @@ export default function PhysicalNftCertifier() {
       <div className="flex flex-wrap items-center gap-3">
         <label className="cursor-pointer">
           <span className="rounded-lg border border-dashed border-white/20 px-3 py-2 hover:border-cyan-400/40 text-[12px] text-zinc-300">
-            {file ? file.name : '📷 Photo HD (capteur principal)'}
+            {xaRender(file ? file.name : '📷 Photo HD (capteur principal)')}
           </span>
           <input
             type="file"
@@ -395,50 +397,49 @@ export default function PhysicalNftCertifier() {
             onChange={e => void onFile(e.target.files?.[0] || null)}
           />
         </label>
-        {preview && (
+        {xaRender(preview && (
           <img
             src={preview}
-            alt="Aperçu"
+            alt={xaLocalize("Aperçu")}
             className="h-14 w-14 rounded-lg object-cover border border-white/10"
           />
-        )}
+        ))}
         <button
           type="button"
           disabled={!canSubmit || busy || !!photoError || (!!file && !photoOkMeta)}
           onClick={() => void generate()}
           className="btn-primary text-xs ml-auto disabled:opacity-40"
         >
-          {busy ? 'Génération…' : `Générer ${kind}`}
+          {xaRender(busy ? 'Génération…' : `Générer ${kind}`)}
         </button>
       </div>
-      {photoError && (
+      {xaRender(photoError && (
         <div className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-[12px] text-amber-100" role="alert">
-          ⚠ Qualité photo refusée — {photoError}
+          {xaRender("⚠ Qualité photo refusée — ")}{xaRender(photoError)}
           <p className="text-[10px] text-amber-200/70 mt-1">
-            Utilise le capteur principal (pas une capture messagerie). Min. 2 Mo · 8 MP · net.
-          </p>
+            {xaRender("Utilise le capteur principal (pas une capture messagerie). Min. 2 Mo · 8 MP · net. ")}</p>
         </div>
-      )}
-      {photoOkMeta && !photoError && (
+      ))}
+      {xaRender(photoOkMeta && !photoError && (
         <p className="text-[10px] text-emerald-300/90">
-          ✓ Photo HD validée · {photoOkMeta.mp.toFixed(1)} MP · contraste σ={photoOkMeta.contrastStd.toFixed(0)}
+          {xaRender("✓ Photo HD validée · ")}{xaRender(photoOkMeta.mp.toFixed(1))} {xaRender(" MP · contraste σ=")}{xaRender(photoOkMeta.contrastStd.toFixed(0))}
         </p>
-      )}
+      ))}
 
-      {cert && (
+      {xaRender(cert && (
         <div className="rounded-xl border border-violet-400/25 bg-violet-500/5 p-3 space-y-3">
           <div className="flex items-center justify-between gap-2">
             <p className="text-[12px] font-semibold text-violet-100">
-              {cert.kind} · {cert.id}
+              {xaRender(cert.kind)} · {xaRender(cert.id)}
             </p>
-            <span className="text-[10px] text-zinc-500 mono">{cert.issuedAt.slice(0, 19)}Z</span>
+            <span className="text-[10px] text-zinc-500 mono">{xaRender(cert.issuedAt.slice(0, 19))}Z</span>
           </div>
           <pre className="text-[10px] text-zinc-400 mono whitespace-pre-wrap max-h-40 overflow-y-auto">
             {textDoc}
           </pre>
           <div className="flex flex-wrap gap-2">
             <button type="button" className="btn-secondary text-xs" onClick={() => void copyDoc()}>
-              {copied ? '✓ Copié !' : 'Copier le certificat'}
+              {xaRender(copied ? '✓ Copié !' : 'Copier le certificat')}
             </button>
             <PhysicalNftCertifierPrintButton
               kind={cert.kind}
@@ -450,33 +451,28 @@ export default function PhysicalNftCertifier() {
               preview={preview}
             />
             <button type="button" className="btn-secondary text-xs" onClick={requestLiaReeval}>
-              Demander réévaluation LIA
-            </button>
+              {xaRender("Demander réévaluation LIA ")}</button>
             <button type="button" className="btn-secondary text-xs" onClick={requestPaperMint}>
-              Intent mint paper 1/1
-            </button>
+              {xaRender("Intent mint paper 1/1 ")}</button>
             <a
               href="https://xportal.com"
               target="_blank"
               rel="noreferrer"
               className="btn-primary text-xs inline-flex items-center"
             >
-              Ouvrir xPortal ↗
-            </a>
+              {xaRender("Ouvrir xPortal ↗ ")}</a>
             <Link to="/my-packs" className="btn-secondary text-xs">
-              My Packs
-            </Link>
+              {xaRender("My Packs ")}</Link>
             <Link to="/command-center" className="btn-secondary text-xs">
-              Command Center
-            </Link>
+              {xaRender("Command Center ")}</Link>
           </div>
-          {lockedPhotoSha && (
+          {xaRender(lockedPhotoSha && (
             <p className="text-[10px] mono text-zinc-500">
-              Empreinte SHA-256 · {lockedPhotoSha.slice(0, 16)}…{lockedPhotoSha.slice(-8)}
+              {xaRender("Empreinte SHA-256 · ")}{xaRender(lockedPhotoSha.slice(0, 16))}…{xaRender(lockedPhotoSha.slice(-8))}
             </p>
-          )}
+          ))}
         </div>
-      )}
+      ))}
 
       <CertifierFooterHint />
     </div>

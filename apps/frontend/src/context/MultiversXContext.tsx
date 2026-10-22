@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 
 const MVX_API = 'https://api.multiversx.com'
@@ -237,7 +238,7 @@ export function MultiversXProvider({ children }: { children: ReactNode }) {
     <MultiversXContext.Provider
       value={{ prices, liaStatus, xartists, bonData, loading, lastUpdate, isStale, refresh: fetchAll }}
     >
-      {children}
+      {xaRender(children)}
     </MultiversXContext.Provider>
   )
 }

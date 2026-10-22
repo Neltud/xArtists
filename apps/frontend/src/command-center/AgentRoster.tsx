@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Agent roster — 3 packs with ownership + CTA.
  */
@@ -11,13 +12,12 @@ export default function AgentRoster() {
   return (
     <section className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-bold text-white">Agents IA · roster</h2>
+        <h2 className="text-sm font-bold text-white">{xaRender("Agents IA · roster")}</h2>
         <Link to="/agents" className="text-[11px] text-cyan-300 hover:underline">
-          Catalogue packs →
-        </Link>
+          {xaRender("Catalogue packs → ")}</Link>
       </div>
       <div className="grid sm:grid-cols-3 gap-3">
-        {AGENT_PACKS.map(p => {
+        {xaRender(AGENT_PACKS.map(p => {
           const owned = access.packs.includes(p.id as PackId)
           return (
             <article
@@ -30,7 +30,7 @@ export default function AgentRoster() {
             >
               <div className="flex items-start justify-between gap-2">
                 <span className="text-2xl" aria-hidden>
-                  {p.icon}
+                  {xaRender(p.icon)}
                 </span>
                 <span
                   className={`text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border ${
@@ -39,24 +39,23 @@ export default function AgentRoster() {
                       : 'border-zinc-600 text-zinc-500'
                   }`}
                 >
-                  {owned ? 'Owned' : 'Locked'}
+                  {xaRender(owned ? 'Owned' : 'Locked')}
                 </span>
               </div>
-              <h3 className={`font-bold ${p.color}`}>{p.name}</h3>
-              <p className="text-[11px] text-zinc-400 leading-snug">{p.tagline}</p>
+              <h3 className={`font-bold ${p.color}`}>{xaRender(p.name)}</h3>
+              <p className="text-[11px] text-zinc-400 leading-snug">{xaRender(p.tagline)}</p>
               <ul className="text-[10px] text-zinc-500 space-y-0.5">
-                <li>Signal {p.signalIntensity}/3 · risk {p.risk}</li>
-                <li>Floor {p.priceEgld.min}–{p.priceEgld.list} EGLD</li>
+                <li>{xaRender("Signal ")}{xaRender(p.signalIntensity)}{xaRender("/3 · risk ")}{xaRender(p.risk)}</li>
+                <li>{xaRender("Floor ")}{xaRender(p.priceEgld.min)}–{xaRender(p.priceEgld.list)} {xaRender(" EGLD")}</li>
               </ul>
               <div className="flex flex-wrap gap-1.5 pt-1">
-                {owned ? (
+                {xaRender(owned ? (
                   <>
                     <Link
                       to={`/room/${p.id}`}
                       className="btn-primary text-[10px] py-1 px-2"
                     >
-                      Salle 3D
-                    </Link>
+                      {xaRender("Salle 3D ")}</Link>
                     <button
                       type="button"
                       className="btn-secondary text-[10px] py-1 px-2"
@@ -68,18 +67,16 @@ export default function AgentRoster() {
                         )
                       }}
                     >
-                      CC room
-                    </button>
+                      {xaRender("CC room ")}</button>
                   </>
                 ) : (
                   <Link to="/agents" className="btn-secondary text-[10px] py-1 px-2">
-                    Obtenir
-                  </Link>
-                )}
+                    {xaRender("Obtenir ")}</Link>
+                ))}
               </div>
             </article>
           )
-        })}
+        }))}
       </div>
     </section>
   )

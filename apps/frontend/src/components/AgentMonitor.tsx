@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import React, { useState, useEffect } from 'react';
 import { DynamicShadowCard } from './DynamicShadowCard';
 import { Skeleton } from './Skeleton';
@@ -80,12 +81,12 @@ export const AgentMonitor: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">LIA Agents Monitoring</h3>
+      <h3 className="text-lg font-semibold">{xaRender("LIA Agents Monitoring")}</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {agents.map((agent) => (
+        {xaRender(agents.map((agent) => (
           <DynamicShadowCard key={agent.id} variant="default">
-            {loading ? (
+            {xaRender(loading ? (
               <div className="space-y-3">
                 <Skeleton width="100%" height={20} />
                 <Skeleton width="80%" height={16} />
@@ -94,22 +95,22 @@ export const AgentMonitor: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{agent.icon}</span>
+                    <span className="text-2xl">{xaRender(agent.icon)}</span>
                     <div>
-                      <p className="font-semibold">{agent.name}</p>
-                      <p className="text-xs text-zinc-400">{agent.lastUpdate}</p>
+                      <p className="font-semibold">{xaRender(agent.name)}</p>
+                      <p className="text-xs text-zinc-400">{xaRender(agent.lastUpdate)}</p>
                     </div>
                   </div>
                   <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${statusColors[agent.status]}`}>
-                    {statusIcons[agent.status]} {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
+                    {xaRender(statusIcons[agent.status])} {xaRender(agent.status.charAt(0).toUpperCase() + agent.status.slice(1))}
                   </span>
                 </div>
 
-                {agent.status === 'active' && agent.performance > 0 && (
+                {xaRender(agent.status === 'active' && agent.performance > 0 && (
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs text-zinc-400">Performance</span>
-                      <span className="text-sm font-semibold">{agent.performance}%</span>
+                      <span className="text-xs text-zinc-400">{xaRender("Performance")}</span>
+                      <span className="text-sm font-semibold">{xaRender(agent.performance)}%</span>
                     </div>
                     <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
                       <div
@@ -118,11 +119,11 @@ export const AgentMonitor: React.FC = () => {
                       />
                     </div>
                   </div>
-                )}
+                ))}
               </div>
-            )}
+            ))}
           </DynamicShadowCard>
-        ))}
+        )))}
       </div>
     </div>
   );

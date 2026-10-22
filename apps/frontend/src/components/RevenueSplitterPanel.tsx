@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Visual breakdown of pack sale → artists / protocol / treasury / pools.
  */
@@ -26,16 +27,14 @@ export default function RevenueSplitterPanel({ packId = null, className = '' }: 
     <div className={`rounded-2xl border border-white/10 bg-black/30 p-4 space-y-3 ${className}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold">
-          Revenue splitter
-        </p>
+          {xaRender("Revenue splitter ")}</p>
         <span className="text-[10px] text-zinc-600">
-          Σ {assertSplitSum()} bps · {proj.splitter.label}
+          Σ {xaRender(assertSplitSum())} {xaRender(" bps · ")}{xaRender(proj.splitter.label)}
         </span>
       </div>
 
       <label className="block text-[11px] text-zinc-500">
-        Prix simulé (EGLD)
-        <input
+        {xaRender("Prix simulé (EGLD) ")}<input
           type="number"
           min={10}
           step={0.5}
@@ -46,13 +45,13 @@ export default function RevenueSplitterPanel({ packId = null, className = '' }: 
       </label>
 
       <ul className="space-y-2">
-        {proj.legs.map(l => (
+        {xaRender(proj.legs.map(l => (
           <li key={l.id} className="flex items-center gap-2 text-[12px]">
             <div className="flex-1 min-w-0">
               <div className="flex justify-between gap-2">
-                <span className="text-zinc-300">{l.label}</span>
+                <span className="text-zinc-300">{xaRender(l.label)}</span>
                 <span className="tabular-nums text-white">
-                  {l.amount.toFixed(3)} · {formatBps(l.bps)}
+                  {xaRender(l.amount.toFixed(3))} · {xaRender(formatBps(l.bps))}
                 </span>
               </div>
               <div className="mt-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
@@ -61,23 +60,21 @@ export default function RevenueSplitterPanel({ packId = null, className = '' }: 
                   style={{ width: `${Math.min(100, l.bps / 100)}%` }}
                 />
               </div>
-              {l.note && <p className="text-[10px] text-zinc-600 mt-0.5">{l.note}</p>}
+              {xaRender(l.note && <p className="text-[10px] text-zinc-600 mt-0.5">{xaRender(l.note)}</p>)}
             </div>
           </li>
-        ))}
+        )))}
       </ul>
 
-      {pack && (
+      {xaRender(pack && (
         <p className="text-[11px] text-zinc-500">
-          Part pool {pack.name} : {formatBps(pack.shareOfPackPoolBps)} du bucket « Pack signal pool ».
-        </p>
-      )}
+          {xaRender("Part pool ")}{xaRender(pack.name)} : {xaRender(formatBps(pack.shareOfPackPoolBps))} {xaRender(" du bucket « Pack signal pool ». ")}</p>
+      ))}
 
       <p className="text-[10px] text-zinc-600 leading-relaxed">
-        Paper = comptabilité locale. On-chain ={' '}
-        <code className="text-zinc-500">treasury_splitter</code> après{' '}
-        <code className="text-zinc-500">VITE_TREASURY_CODEHASH_OK</code>. Pas une promesse de rendement.
-      </p>
+        {xaRender("Paper = comptabilité locale. On-chain =")}{xaRender(' ')}
+        <code className="text-zinc-500">treasury_splitter</code> {xaRender(" après")}{xaRender(' ')}
+        <code className="text-zinc-500">VITE_TREASURY_CODEHASH_OK</code>{xaRender(". Pas une promesse de rendement. ")}</p>
     </div>
   )
 }

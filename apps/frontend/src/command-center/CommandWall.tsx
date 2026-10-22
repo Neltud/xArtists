@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Cyber Command Wall — perspective grid, scanlines, particles, neon volumetric bars.
  */
@@ -295,21 +296,19 @@ export default function CommandWall({
     <div className="relative w-full rounded-2xl overflow-hidden border border-cyan-500/20 bg-[#03050c] shadow-[0_0_40px_rgba(34,211,238,0.12)]">
       <div className="absolute top-2 left-3 z-10 flex flex-wrap gap-2 pointer-events-none">
         <span className="text-[9px] uppercase tracking-[0.18em] text-cyan-300/95 font-tech">
-          LIVE · CYBER DECK
-        </span>
+          {xaRender("LIVE · CYBER DECK ")}</span>
         <span
           className={`pill-hud ${bullish ? 'pill-bull' : 'pill-bear'}`}
         >
-          {bullish ? 'BULLISH' : 'BEARISH'} {bullPct}%
+          {xaRender(bullish ? 'BULLISH' : 'BEARISH')} {xaRender(bullPct)}%
         </span>
-        <span className="pill-hud pill-vol">VOL {volPct}%</span>
+        <span className="pill-hud pill-vol">{xaRender("VOL ")}{xaRender(volPct)}%</span>
       </div>
       <LivePriceRail />
       <div ref={hostRef} className="w-full min-h-[340px]" />
       <div className="pointer-events-none absolute inset-0 scanlines opacity-[0.12]" />
       <p className="absolute bottom-2 left-3 right-24 text-[10px] text-zinc-500 pointer-events-none font-tech">
-        NEON BARS · GRID · PARTICLES · vert momentum · violet flow
-      </p>
+        {xaRender("NEON BARS · GRID · PARTICLES · vert momentum · violet flow ")}</p>
     </div>
   )
 }

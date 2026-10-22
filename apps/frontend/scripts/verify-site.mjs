@@ -1,41 +1,12 @@
-import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const dist = path.join(root, 'dist')
-const indexHtml = path.join(dist, 'index.html')
-
-// Allow verify against source markers when dist not yet built (CI pre-build steps)
-const sourceIndex = path.join(root, 'index.html')
-const target = fs.existsSync(indexHtml) ? indexHtml : sourceIndex
-
-if (!fs.existsSync(target)) {
-  console.error('verify-site: index.html missing')
-  process.exit(1)
-}
-
-const html = fs.readFileSync(target, 'utf8')
-const markers = ['xArtists', 'root']
-for (const m of markers) {
-  if (!html.includes(m)) {
-    console.error(`verify-site: missing marker ${m}`)
-    process.exit(1)
-  }
-}
-
-if (fs.existsSync(dist)) {
-  const assets = path.join(dist, 'assets')
-  if (!fs.existsSync(assets)) {
-    console.error('verify-site: dist/assets missing')
-    process.exit(1)
-  }
-  const files = fs.readdirSync(assets)
-  if (!files.some(f => f.endsWith('.js'))) {
-    console.error('verify-site: no JS assets in dist')
-    process.exit(1)
-  }
-  console.log(`verify-site: ok (dist, ${files.length} assets)`)
-} else {
-  console.log('verify-site: ok (source index markers)')
-}
+import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {build} from 'esbuild';
+const catalogue={};let sourceRows=0;const placeholders=s=>[...s.matchAll(/\{([\w]+)\}/g)].map(x=>x[1]).sort();
+for(const f of fs.readdirSync('src/i18n/phrases').sort().filter(f=>f.endsWith('.json'))){const pack=JSON.parse(fs.readFileSync('src/i18n/phrases/'+f,'utf8'));for(const [key,values] of Object.entries(pack)){assert(Array.isArray(values)&&values.length===8,`${f}: ${key}`);for(const value of values){assert(typeof value==='string'&&value.trim().length,`${f}: empty translation`);assert.deepEqual(placeholders(value),placeholders(key),`${f}: changed parameters for ${key}`)}catalogue[key]=values;sourceRows++}}
+// Completeness is checked against extracted source phrases, including dynamic labels.
+if(fs.existsSync('translation-input'))for(const f of fs.readdirSync('translation-input').filter(f=>f.endsWith('.json')))for(const raw of JSON.parse(fs.readFileSync('translation-input/'+f,'utf8')))assert(catalogue[raw],`${f}: missing ${raw}`)
+await build({entryPoints:['src/experience/locale.ts','src/i18n/dictionaries.ts'],bundle:true,platform:'node',format:'esm',outdir:'.sites-runtime/verify',logLevel:'silent'});
+const {copy,order,text}=await import('../.sites-runtime/verify/experience/locale.js?'+Date.now());for(const [key,values] of Object.entries(copy)){assert(values.length===8,key);assert(values.every(x=>typeof x==='string'&&x.length),key)}
+const {DICTS}=await import('../.sites-runtime/verify/i18n/dictionaries.js?'+Date.now());for(const lang of order){assert(DICTS[lang],`missing locale ${lang}`);for(const [key,raw] of Object.entries(DICTS[lang]))assert(catalogue[raw.replace(/\s+/g,' ').trim()],`untranslated dictionary ${lang} ${key}: ${raw}`)}
+assert.notEqual(catalogue['Connecter ton wallet MultiversX'][1],catalogue['Connecter ton wallet MultiversX'][0]);assert(/[\u0600-\u06ff]/.test(text('ar','heroTop')),'missing Arabic');assert(/[\u4e00-\u9fff]/.test(text('zh','heroTop')),'missing Chinese');
+const publicBase='/xArtists/';
+if(fs.existsSync('dist/index.html')){const html=fs.readFileSync('dist/index.html','utf8');for(const match of html.matchAll(/(?:src|href)="(\/(?!\/)[^"#]+)"/g))assert(fs.existsSync(path.join('dist',match[1].split('?')[0].replace(new RegExp('^'+publicBase),''))),`missing static entry ${match[1]}`);assert(html.includes(publicBase+'assets/'),'missing GitHub Pages deployment base');const manifest=JSON.parse(fs.readFileSync('dist/manifest.webmanifest','utf8'));assert(manifest.start_url===publicBase);assert(manifest.scope===publicBase)}
+console.log(`Verified ${Object.keys(catalogue).length} distinct phrases (${sourceRows} rows), ${Object.keys(copy).length} interface keys, 8 complete locales, placeholders and static assets.`)

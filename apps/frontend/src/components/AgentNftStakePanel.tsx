@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Stake agent (UI) → points clone LIA.
  * Stockage local uniquement — PAS un stake on-chain tant que SC NFT-stake absent.
@@ -92,7 +93,7 @@ export default function AgentNftStakePanel({ packIds }: { packIds: PackId[] }) {
   )
 
   if (!packIds.length) {
-    return <div className="card text-sm text-zinc-500">{t('cc.no.pack')}</div>
+    return <div className="card text-sm text-zinc-500">{xaRender(t('cc.no.pack'))}</div>
   }
 
   const id = focus || packIds[0]
@@ -101,10 +102,10 @@ export default function AgentNftStakePanel({ packIds }: { packIds: PackId[] }) {
 
   return (
     <section className="card space-y-3">
-      <h2 className="text-sm font-semibold text-white">{t('cc.stake.nft')}</h2>
-      <p className="text-[12px] text-zinc-500">{t('cc.stake.nft.help')}</p>
+      <h2 className="text-sm font-semibold text-white">{xaRender(t('cc.stake.nft'))}</h2>
+      <p className="text-[12px] text-zinc-500">{xaRender(t('cc.stake.nft.help'))}</p>
       <div className="flex flex-wrap gap-2">
-        {packIds.map(pid => {
+        {xaRender(packIds.map(pid => {
           const p = AGENT_PACKS.find(x => x?.id === pid)
           return (
             <button
@@ -115,39 +116,38 @@ export default function AgentNftStakePanel({ packIds }: { packIds: PackId[] }) {
                 id === pid ? 'border-cyan-400/40 bg-cyan-500/15 text-white' : 'border-white/10 text-zinc-400'
               }`}
             >
-              {p?.icon} {p?.name}
-              {map[pid] ? ' ●' : ''}
+              {xaRender(p?.icon)} {xaRender(p?.name)}
+              {xaRender(map[pid] ? ' ●' : '')}
             </button>
           )
-        })}
+        }))}
       </div>
-      {pack && (
+      {xaRender(pack && (
         <div className="rounded-xl border border-white/10 bg-black/30 p-3 space-y-2">
           <p className="text-sm text-white">
-            {pack.icon} {pack.name}
+            {xaRender(pack.icon)} {xaRender(pack.name)}
           </p>
           <p className="text-[11px] text-zinc-500 mono">
-            {st ? `engagé · claims ${st.claims} · pts ${st.pts || 0}` : 'non engagé'}
+            {xaRender(st ? `engagé · claims ${st.claims} · pts ${st.pts || 0}` : 'non engagé')}
           </p>
           <div className="flex flex-wrap gap-2">
-            {!st ? (
+            {xaRender(!st ? (
               <button type="button" className="btn-primary text-sm active:scale-[0.98]" onClick={() => stake(id)}>
-                {t('cc.stake.nft')}
+                {xaRender(t('cc.stake.nft'))}
               </button>
             ) : (
               <>
                 <button type="button" className="btn-primary text-sm active:scale-[0.98]" onClick={() => claim(id)}>
-                  {t('cc.claim')}
+                  {xaRender(t('cc.claim'))}
                 </button>
                 <button type="button" className="btn-secondary text-sm active:scale-[0.98]" onClick={() => unstake(id)}>
-                  Retirer
-                </button>
+                  {xaRender("Retirer ")}</button>
               </>
-            )}
+            ))}
           </div>
-          <p className="text-[11px] text-zinc-600">{t('cc.claim.note')}</p>
+          <p className="text-[11px] text-zinc-600">{xaRender(t('cc.claim.note'))}</p>
         </div>
-      )}
+      ))}
     </section>
   )
 }

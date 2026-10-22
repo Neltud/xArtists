@@ -1,8 +1,11 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 
 const WalletConnectButton: React.FC = () => {
+  xaUsePhraseLocale()
+
   const { connected, address, shortAddress, disconnect } = useWallet()
   const navigate = useNavigate()
 
@@ -16,17 +19,16 @@ const WalletConnectButton: React.FC = () => {
       <button
         className="px-3 py-1.5 rounded-lg bg-[#16161f] border border-green-500/30 text-green-400 text-xs mono hover:border-red-500/40 hover:text-red-400 transition-colors"
         onClick={disconnect}
-        title="Cliquer pour déconnecter"
+        title={xaLocalize("Cliquer pour déconnecter")}
       >
-        ✅ {shortAddress}
+        ✅ {xaRender(shortAddress)}
       </button>
     )
   }
 
   return (
     <button className="btn-primary text-sm px-4 py-2" onClick={handleLogin}>
-      🔗 Connecter Wallet
-    </button>
+      {xaRender("🔗 Connecter Wallet ")}</button>
   )
 }
 

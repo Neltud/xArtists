@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** Badge live Supernova — stats API MultiversX */
 import { useSupernovaStats } from '../hooks/useSupernovaStats'
 import { SUPERNOVA_HUB } from '../config/supernova'
@@ -21,7 +22,7 @@ export default function SupernovaStatusBadge({ className = '' }: { className?: s
         className={`h-1.5 w-1.5 rounded-full ${isSupernova ? 'bg-cyan-400 animate-pulse' : 'bg-amber-400'}`}
         aria-hidden
       />
-      {loading && !stats ? 'Network…' : label}
+      {xaRender(loading && !stats ? 'Network…' : label)}
     </a>
   )
 }

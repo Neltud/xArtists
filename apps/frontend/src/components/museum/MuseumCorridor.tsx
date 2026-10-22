@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Types + corridor CSS (fallback). Fiche œuvre exhaustive partagée WebGL.
  */
@@ -141,48 +142,46 @@ export function ArtworkDossier({
       >
         <div className="flex gap-3">
           <div className="w-28 sm:w-36 shrink-0 aspect-[4/5] rounded-lg overflow-hidden border border-white/10 bg-black">
-            {frame.image ? (
+            {xaRender(frame.image ? (
               <img src={frame.image} alt="" className="w-full h-full object-cover" decoding="async" />
             ) : (
               <div className="h-full flex items-center justify-center text-zinc-600 text-xs">
-                {frame.kind === 'sculpture' ? 'Sculpture' : '◈'}
+                {xaRender(frame.kind === 'sculpture' ? 'Sculpture' : '◈')}
               </div>
-            )}
+            ))}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-base font-semibold text-white leading-snug">{frame.title}</p>
-            <p className="text-[12px] text-zinc-400 mt-1">{frame.artist || frame.subtitle}</p>
-            {frame.description && (
+            <p className="text-base font-semibold text-white leading-snug">{xaRender(frame.title)}</p>
+            <p className="text-[12px] text-zinc-400 mt-1">{xaRender(frame.artist || frame.subtitle)}</p>
+            {xaRender(frame.description && (
               <p className="text-xs text-zinc-500 mt-2 line-clamp-4 leading-relaxed">
-                {frame.description}
+                {xaRender(frame.description)}
               </p>
-            )}
+            ))}
           </div>
         </div>
 
         <dl className="grid grid-cols-1 gap-1.5 text-[12px] border-t border-white/[0.06] pt-3">
-          {rows.map(r => (
+          {xaRender(rows.map(r => (
             <div key={r.k} className="flex gap-2 justify-between">
-              <dt className="text-zinc-600 shrink-0">{r.k}</dt>
-              <dd className="text-zinc-300 text-right">{r.v}</dd>
+              <dt className="text-zinc-600 shrink-0">{xaRender(r.k)}</dt>
+              <dd className="text-zinc-300 text-right">{xaRender(r.v)}</dd>
             </div>
-          ))}
+          )))}
         </dl>
 
         <div className="flex flex-wrap gap-2 pt-1">
-          {allowBuy && frame.onSale !== false && (
+          {xaRender(allowBuy && frame.onSale !== false && (
             <button type="button" className="btn-primary text-xs" onClick={onBuy}>
-              {marketLive ? 'Acheter…' : 'Intention d’achat'}
+              {xaRender(marketLive ? 'Acheter…' : 'Intention d’achat')}
             </button>
-          )}
-          {frame.href && (
+          ))}
+          {xaRender(frame.href && (
             <a href={frame.href} target="_blank" rel="noreferrer" className="btn-secondary text-xs">
-              Source ↗
-            </a>
-          )}
+              {xaRender("Source ↗ ")}</a>
+          ))}
           <button type="button" className="btn-ghost text-xs" onClick={onClose}>
-            Fermer
-          </button>
+            {xaRender("Fermer ")}</button>
         </div>
       </div>
     </div>
@@ -233,7 +232,7 @@ export default function MuseumCorridor({
   if (!list.length) {
     return (
       <div className="min-h-[280px] rounded-2xl border border-white/10 flex items-center justify-center text-sm text-zinc-500">
-        {emptyLabel}
+        {xaRender(emptyLabel)}
       </div>
     )
   }
@@ -241,19 +240,17 @@ export default function MuseumCorridor({
   return (
     <div className="relative overflow-hidden rounded-2xl border border-white/10">
       <div className="p-4 space-y-3 bg-zinc-950">
-        <p className="text-sm text-white font-medium">{f?.title}</p>
-        <p className="text-[11px] text-zinc-500">{f?.artist || f?.subtitle}</p>
+        <p className="text-sm text-white font-medium">{xaRender(f?.title)}</p>
+        <p className="text-[11px] text-zinc-500">{xaRender(f?.artist || f?.subtitle)}</p>
         <div className="flex flex-wrap gap-2">
           <button type="button" className="btn-secondary text-xs" onClick={() => setInspect(true)}>
-            Fiche complète
-          </button>
+            {xaRender("Fiche complète ")}</button>
           <button type="button" className="btn-primary text-xs" onClick={onBuy}>
-            Intention d’achat
-          </button>
+            {xaRender("Intention d’achat ")}</button>
         </div>
-        {buyMsg && <p className="text-[11px] text-amber-200">{buyMsg}</p>}
+        {xaRender(buyMsg && <p className="text-[11px] text-amber-200">{xaRender(buyMsg)}</p>)}
       </div>
-      {inspect && f && (
+      {xaRender(inspect && f && (
         <ArtworkDossier
           frame={f}
           allowBuy
@@ -261,7 +258,7 @@ export default function MuseumCorridor({
           onBuy={onBuy}
           onClose={() => setInspect(false)}
         />
-      )}
+      ))}
     </div>
   )
 }

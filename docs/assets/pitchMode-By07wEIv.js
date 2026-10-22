@@ -1,0 +1,1 @@
+const t="xartists_pitch_mode_v1",s="xartists-pitch-mode";function e(){try{return localStorage.getItem(t)==="1"}catch{return!1}}const o={troUsd:.048,egldUsd:28.5,tvlUsd:124e3,note:"Données démo pitch — non live"};export{s as P,o as a,e as i};

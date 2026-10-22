@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Simulation Lab — exhaustive client-side demo of LIA trades, user journey, modules.
  * SC deploy soon: UI already models every path; on-chain gates stay fail-closed.
@@ -111,94 +112,89 @@ export default function SimulationLab() {
 
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-purple-400/80">Demo lab</p>
-          <h1 className="text-3xl font-black">Simulation Lab</h1>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-purple-400/80">{xaRender("Demo lab")}</p>
+          <h1 className="text-3xl font-black">{xaRender("Simulation Lab")}</h1>
           <p className="text-sm text-zinc-500 mt-1 max-w-xl">
-            Trades LIA paper côté client — fees & gas inclus. Les SC on-chain restent fail-closed jusqu’au deploy.
-          </p>
+            {xaRender("Trades LIA paper côté client — fees & gas inclus. Les SC on-chain restent fail-closed jusqu’au deploy. ")}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button type="button" className="btn-secondary text-xs py-2 px-3" onClick={reshuffle}>
-            Nouveau tirage
-          </button>
+            {xaRender("Nouveau tirage ")}</button>
           <button
             type="button"
             className="btn-primary text-xs py-2 px-3"
             onClick={() => setRunning(v => !v)}
           >
-            {running ? 'Pause stream' : 'Stream paper'}
+            {xaRender(running ? 'Pause stream' : 'Stream paper')}
           </button>
           <Link to="/trading" className="btn-secondary text-xs py-2 px-3">
-            Board réel →
-          </Link>
+            {xaRender("Board réel → ")}</Link>
           <Link to="/entity" className="btn-secondary text-xs py-2 px-3">
-            Entité
-          </Link>
+            {xaRender("Entité ")}</Link>
         </div>
       </header>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="card">
-          <p className="text-[10px] text-zinc-500 uppercase">Trades</p>
-          <p className="text-2xl font-bold mono">{stats.n}</p>
+          <p className="text-[10px] text-zinc-500 uppercase">{xaRender("Trades")}</p>
+          <p className="text-2xl font-bold mono">{xaRender(stats.n)}</p>
         </div>
         <div className="card">
-          <p className="text-[10px] text-zinc-500 uppercase">Win rate</p>
-          <p className="text-2xl font-bold mono">{stats.winRate.toFixed(1)}%</p>
+          <p className="text-[10px] text-zinc-500 uppercase">{xaRender("Win rate")}</p>
+          <p className="text-2xl font-bold mono">{xaRender(stats.winRate.toFixed(1))}%</p>
         </div>
         <div className="card">
-          <p className="text-[10px] text-zinc-500 uppercase">PnL net</p>
+          <p className="text-[10px] text-zinc-500 uppercase">{xaRender("PnL net")}</p>
           <p className={`text-2xl font-bold mono ${stats.pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-            {stats.pnl}
+            {xaRender(stats.pnl)}
           </p>
         </div>
         <div className="card">
-          <p className="text-[10px] text-zinc-500 uppercase">Fees+gas</p>
-          <p className="text-2xl font-bold mono text-zinc-300">{stats.fees}</p>
+          <p className="text-[10px] text-zinc-500 uppercase">{xaRender("Fees+gas")}</p>
+          <p className="text-2xl font-bold mono text-zinc-300">{xaRender(stats.fees)}</p>
         </div>
       </section>
 
       <div className="card overflow-x-auto">
-        <h2 className="font-bold mb-3">Journal simulé</h2>
+        <h2 className="font-bold mb-3">{xaRender("Journal simulé")}</h2>
         <table className="w-full text-sm min-w-[720px]">
           <thead>
             <tr className="text-zinc-500 border-b border-white/10 text-left">
               <th className="py-2">#</th>
-              <th>Pair</th>
-              <th>Strat</th>
-              <th>Side</th>
-              <th className="text-right">Size</th>
-              <th className="text-right">Fee</th>
-              <th className="text-right">PnL</th>
+              <th>{xaRender("Pair")}</th>
+              <th>{xaRender("Strat")}</th>
+              <th>{xaRender("Side")}</th>
+              <th className="text-right">{xaRender("Size")}</th>
+              <th className="text-right">{xaRender("Fee")}</th>
+              <th className="text-right">{xaRender("PnL")}</th>
               <th className="text-right">SL</th>
             </tr>
           </thead>
           <tbody>
-            {trades.map(t => (
+            {xaRender(trades.map(t => (
               <tr key={t.id + t.ts} className="border-b border-white/5">
-                <td className="py-1.5 text-xs text-zinc-500">E{t.echelon}</td>
-                <td>{t.pair}</td>
-                <td className="text-xs text-purple-300">{t.strategy}</td>
-                <td>{t.side}</td>
-                <td className="text-right mono">{t.sizeUsd}</td>
-                <td className="text-right mono text-zinc-500">{t.feeUsd}</td>
+                <td className="py-1.5 text-xs text-zinc-500">E{xaRender(t.echelon)}</td>
+                <td>{xaRender(t.pair)}</td>
+                <td className="text-xs text-purple-300">{xaRender(t.strategy)}</td>
+                <td>{xaRender(t.side)}</td>
+                <td className="text-right mono">{xaRender(t.sizeUsd)}</td>
+                <td className="text-right mono text-zinc-500">{xaRender(t.feeUsd)}</td>
                 <td
                   className={`text-right mono ${t.pnlNet >= 0 ? 'text-emerald-400' : 'text-red-400'}`}
                 >
-                  {t.pnlNet}
+                  {xaRender(t.pnlNet)}
                 </td>
-                <td className="text-right mono text-xs text-zinc-500">{t.stopLoss}</td>
+                <td className="text-right mono text-xs text-zinc-500">{xaRender(t.stopLoss)}</td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>
 
       <p className="text-[11px] text-zinc-600">
-        Simulation locale navigateur — indépendante du board Vellum JSON. Pour le vrai paper board →{' '}
+        {xaRender("Simulation locale navigateur — indépendante du board Vellum JSON. Pour le vrai paper board →")}{xaRender(' ')}
         <Link to="/trading" className="text-purple-400 underline">
-          Trading
-        </Link>
+          {xaRender("Trading ")}</Link>
         .
       </p>
     </div>

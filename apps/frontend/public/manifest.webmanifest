@@ -1,15 +1,19 @@
 {
-  "name": "xArtists — LIA v6",
+  "name": "xArtists \u2014 LIA v6",
   "short_name": "xArtists",
-  "description": "AI + RWA + NFT on MultiversX — LIA v6 DeFi agent, marketplace, $TRO, GreenSmoke",
+  "description": "AI + RWA + NFT on MultiversX \u2014 LIA v6 DeFi agent, marketplace, $TRO, GreenSmoke",
   "start_url": "/xArtists/",
   "scope": "/xArtists/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#0a0a0f",
-  "theme_color": "#7c3aed",
+  "background_color": "#10120f",
+  "theme_color": "#cdf58b",
   "lang": "fr",
-  "categories": ["finance", "art", "productivity"],
+  "categories": [
+    "finance",
+    "art",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "/xArtists/xartists-logo.png",

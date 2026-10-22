@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { Link } from 'react-router-dom'
 
 /**
@@ -51,45 +52,42 @@ export default function UserPathHub() {
     <section aria-labelledby="path-hub-title" className="space-y-3">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500">Parcours</p>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500">{xaRender("Parcours")}</p>
           <h2 id="path-hub-title" className="text-xl font-black text-white">
-            Que veux-tu faire ?
-          </h2>
+            {xaRender("Que veux-tu faire ? ")}</h2>
         </div>
         <p className="text-[11px] text-zinc-500 max-w-xs text-right">
-          Choisis un chemin. LIA (⌘K) comprend aussi le langage naturel.
-        </p>
+          {xaRender("Choisis un chemin. LIA (⌘K) comprend aussi le langage naturel. ")}</p>
       </div>
       <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-3">
-        {PATHS.map(p => (
+        {xaRender(PATHS.map(p => (
           <article
             key={p.id}
             className={`rounded-2xl border bg-gradient-to-br p-4 flex flex-col min-h-[180px] ${p.accent}`}
           >
             <div className="flex items-start gap-2 mb-2">
               <span className="text-2xl" aria-hidden>
-                {p.emoji}
+                {xaRender(p.emoji)}
               </span>
               <div>
-                <h3 className="font-bold text-white">{p.title}</h3>
-                <p className="text-[11px] text-zinc-400 leading-snug">{p.blurb}</p>
+                <h3 className="font-bold text-white">{xaRender(p.title)}</h3>
+                <p className="text-[11px] text-zinc-400 leading-snug">{xaRender(p.blurb)}</p>
               </div>
             </div>
             <ol className="text-[10px] text-zinc-500 space-y-0.5 mb-3 flex-1 list-decimal pl-4">
-              {p.steps.map(s => (
-                <li key={s}>{s}</li>
-              ))}
+              {xaRender(p.steps.map(s => (
+                <li key={s}>{xaRender(s)}</li>
+              )))}
             </ol>
             <div className="flex flex-wrap gap-2 mt-auto">
               <Link to={p.to} className="btn-primary text-[11px] py-1.5 px-3 flex-1 text-center">
-                Ouvrir
-              </Link>
+                {xaRender("Ouvrir ")}</Link>
               <Link to={p.secondary.to} className="btn-secondary text-[11px] py-1.5 px-3 text-center">
-                {p.secondary.label}
+                {xaRender(p.secondary.label)}
               </Link>
             </div>
           </article>
-        ))}
+        )))}
       </div>
     </section>
   )

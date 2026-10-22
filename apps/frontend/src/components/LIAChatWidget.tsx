@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 import React, { useState, useRef, useEffect } from 'react';
 
 const RAW_BASE = 'https://raw.githubusercontent.com/Neltud/xArtists/main';
@@ -70,6 +71,8 @@ function buildResponse(input: string, live: LiveData): string {
 }
 
 const LIAChatWidget: React.FC = () => {
+  xaUsePhraseLocale()
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: 'lia', content: "Bonjour ! Je suis LIA v6, ton agent intelligent pour xArtists. Comment puis-je t'aider ? (ex: score une œuvre, check liquidité, DAO vote...)" }
@@ -106,20 +109,20 @@ const LIAChatWidget: React.FC = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all z-50 border-2 border-white/20"
-        title="Parler à LIA v6"
+        title={xaLocalize("Parler à LIA v6")}
       >
         <span className="text-2xl">🤖</span>
       </button>
 
-      {isOpen && (
+      {xaRender(isOpen && (
         <div className="fixed bottom-24 right-6 w-96 bg-zinc-900 border border-zinc-700 rounded-3xl shadow-2xl overflow-hidden z-50 flex flex-col max-h-[500px] animate-fade-in">
           {/* Header */}
           <div className="bg-zinc-800 px-5 py-4 flex items-center justify-between border-b border-zinc-700 flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-2xl flex items-center justify-center font-bold text-white">L</div>
               <div>
-                <div className="font-semibold">LIA v6</div>
-                <div className="text-xs text-emerald-400">• En ligne (Vellum + MVX)</div>
+                <div className="font-semibold">{xaRender("LIA v6")}</div>
+                <div className="text-xs text-emerald-400">{xaRender("• En ligne (Vellum + MVX)")}</div>
               </div>
             </div>
             <button onClick={() => setIsOpen(false)} className="text-zinc-400 hover:text-white transition-colors">✕</button>
@@ -127,16 +130,16 @@ const LIAChatWidget: React.FC = () => {
 
           {/* Messages */}
           <div className="flex-1 p-5 overflow-y-auto space-y-4 bg-zinc-950" style={{ maxHeight: '340px' }}>
-            {messages.map((msg, idx) => (
+            {xaRender(messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm whitespace-pre-line ${
                   msg.role === 'user' ? 'bg-violet-600 text-white' : 'bg-zinc-800 text-zinc-200'
                 }`}>
-                  {msg.content}
+                  {xaRender(msg.content)}
                 </div>
               </div>
-            ))}
-            {isTyping && (
+            )))}
+            {xaRender(isTyping && (
               <div className="flex justify-start">
                 <div className="bg-zinc-800 text-zinc-400 px-4 py-3 rounded-2xl text-sm flex items-center gap-1">
                   <span className="inline-block w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -144,7 +147,7 @@ const LIAChatWidget: React.FC = () => {
                   <span className="inline-block w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               </div>
-            )}
+            ))}
             <div ref={messagesEndRef} />
           </div>
 
@@ -156,7 +159,7 @@ const LIAChatWidget: React.FC = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }}
-                placeholder="Pose une question à LIA..."
+                placeholder={xaLocalize("Pose une question à LIA...")}
                 disabled={isTyping}
                 className="flex-1 bg-zinc-800 border border-zinc-700 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 disabled:opacity-50"
               />
@@ -169,11 +172,10 @@ const LIAChatWidget: React.FC = () => {
               </button>
             </div>
             <div className="text-[10px] text-center text-zinc-500 mt-2">
-              LIA v6 — Vellum Workflows • Données GitHub en direct
-            </div>
+              {xaRender("LIA v6 — Vellum Workflows • Données GitHub en direct ")}</div>
           </div>
         </div>
-      )}
+      ))}
     </>
   );
 };

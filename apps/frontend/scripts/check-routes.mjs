@@ -1,36 +1,5 @@
-import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const appPath = path.join(root, 'src/App.tsx')
-const modulesPath = path.join(root, 'src/experience/modules.ts')
-
-if (!fs.existsSync(appPath)) {
-  console.error('check-routes: App.tsx missing')
-  process.exit(1)
-}
-if (!fs.existsSync(modulesPath)) {
-  console.error('check-routes: experience/modules.ts missing')
-  process.exit(1)
-}
-
-const app = fs.readFileSync(appPath, 'utf8')
-const modules = fs.readFileSync(modulesPath, 'utf8')
-
-if (!app.includes('Route') && !app.includes('Routes')) {
-  console.error('check-routes: no Route/Routes in App.tsx')
-  process.exit(1)
-}
-if (!modules.includes('MODULES')) {
-  console.error('check-routes: MODULES export missing')
-  process.exit(1)
-}
-
-const pathMatches = [...modules.matchAll(/path:\s*'([^']+)'/g)].map(m => m[1])
-if (pathMatches.length < 10) {
-  console.error(`check-routes: too few module paths (${pathMatches.length})`)
-  process.exit(1)
-}
-
-console.log(`check-routes: ok (${pathMatches.length} module paths)`)
+import fs from 'node:fs';import path from 'node:path';import ts from 'typescript';import assert from 'node:assert/strict';
+const src=fs.readFileSync('src/experience/modules.ts','utf8'),sf=ts.createSourceFile('modules.ts',src,ts.ScriptTarget.Latest,true),routes=new Set(['/','/explore','/create','/intelligence','/finance','/workspace','/directory','/sitemap','/hub','/slot']);const ids=new Set();let moduleCount=0,aliases=0;
+function route(n){if(ts.isCallExpression(n)&&n.expression.getText(sf)==='module'){const [id,p,as]=n.arguments;assert(!ids.has(id.text),'duplicate module '+id.text);ids.add(id.text);assert(!routes.has(p.text),'duplicate route '+p.text);routes.add(p.text);moduleCount++;for(const a of as.elements){assert(!routes.has(a.text),'duplicate alias '+a.text);routes.add(a.text);aliases++}const rest=n.arguments.find(a=>ts.isArrowFunction(a));if(rest){const match=rest.getText(sf).match(/import\('([^']+)'\)/);if(match)assert(fs.existsSync(path.resolve('src/experience',match[1]+'.tsx')),'missing page '+match[1])}}ts.forEachChild(n,route)}route(sf)
+const unknown={};function checkLink(s,f){if(!s?.startsWith('/')||s.startsWith('//')||/\.(png|jpg|svg|json|webmanifest|mp3|mp4)/.test(s))return;const p=s.split(/[?#]/)[0].replace(/\/$/,'')||'/';if(routes.has(p)||p.startsWith('/explore/artwork/'))return;(unknown[p]??=[]).push(f)}
+const seen=new Set();function walk(f){if(seen.has(f)||!fs.existsSync(f))return;seen.add(f);const text=fs.readFileSync(f,'utf8'),s=ts.createSourceFile(f,text,ts.ScriptTarget.Latest,true,f.endsWith('x')?ts.ScriptKind.TSX:ts.ScriptKind.TS);function visit(n){if(ts.isJsxAttribute(n)&&n.name.text==='to'&&n.initializer&&ts.isStringLiteral(n.initializer))checkLink(n.initializer.text,f);if(ts.isCallExpression(n)&&/^(navigate|nav)$/.test(n.expression.getText(s))&&n.arguments[0]&&ts.isStringLiteral(n.arguments[0]))checkLink(n.arguments[0].text,f);if((ts.isImportDeclaration(n)&&ts.isStringLiteral(n.moduleSpecifier))||(ts.isCallExpression(n)&&n.expression.kind===ts.SyntaxKind.ImportKeyword&&n.arguments[0]&&ts.isStringLiteral(n.arguments[0]))){const p=ts.isImportDeclaration(n)?n.moduleSpecifier.text:n.arguments[0].text;if(p.startsWith('.')){const base=path.resolve(path.dirname(f),p);const file=[base+'.tsx',base+'.ts',base+'/index.tsx',base+'/index.ts'].find(fs.existsSync);if(file)walk(file)}}ts.forEachChild(n,visit)}visit(s)}walk(path.resolve('src/main.tsx'));console.log(JSON.stringify({modules:moduleCount,aliases,reachableFiles:seen.size,routes:routes.size,unresolved:unknown},null,2));fs.writeFileSync('route-audit.json',JSON.stringify({modules:moduleCount,aliases,reachableFiles:seen.size,routes:[...routes],unresolved:unknown},null,2));if(Object.keys(unknown).length)process.exitCode=1

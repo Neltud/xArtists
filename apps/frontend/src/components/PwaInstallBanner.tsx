@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -56,25 +57,22 @@ export default function PwaInstallBanner() {
       <div className="flex items-start gap-3">
         <span className="text-2xl">📱</span>
         <div className="flex-1 text-sm text-gray-200">
-          <p className="font-semibold text-white">Installer xArtists</p>
-          {deferred ? (
+          <p className="font-semibold text-white">{xaRender("Installer xArtists")}</p>
+          {xaRender(deferred ? (
             <p className="mt-1 text-xs text-gray-400">
-              Ajoute l’app sur ton écran d’accueil pour un accès rapide (LIA, marketplace, wallet).
-            </p>
+              {xaRender("Ajoute l’app sur ton écran d’accueil pour un accès rapide (LIA, marketplace, wallet). ")}</p>
           ) : (
             <p className="mt-1 text-xs text-gray-400">
-              Sur iPhone : Safari → Bouton Partager → <strong>Sur l’écran d’accueil</strong>.
+              {xaRender("Sur iPhone : Safari → Bouton Partager → ")}<strong>{xaRender("Sur l’écran d’accueil")}</strong>.
             </p>
-          )}
+          ))}
           <div className="mt-3 flex gap-2">
-            {deferred && (
+            {xaRender(deferred && (
               <button type="button" onClick={install} className="btn-primary text-xs px-3 py-1.5">
-                Installer
-              </button>
-            )}
+                {xaRender("Installer ")}</button>
+            ))}
             <button type="button" onClick={dismiss} className="btn-secondary text-xs px-3 py-1.5">
-              Plus tard
-            </button>
+              {xaRender("Plus tard ")}</button>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** Venue-split — rentPay on-chain si live ; sinon réservation locale (pas un achat). */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -58,21 +59,20 @@ export default function VenuePage() {
   return (
     <div className="animate-fade-in space-y-6 max-w-xl mx-auto pb-16">
       <header className="space-y-1">
-        <p className="section-label">Salles</p>
-        <h1 className="section-title display text-2xl">Venue</h1>
+        <p className="section-label">{xaRender("Salles")}</p>
+        <h1 className="section-title display text-2xl">{xaRender("Venue")}</h1>
         <p className="text-sm text-zinc-400">
-          Location de murs musée. Les packs IA (1 salle privée) restent dans Mes salles.
-        </p>
+          {xaRender("Location de murs musée. Les packs IA (1 salle privée) restent dans Mes salles. ")}</p>
       </header>
 
       <div className="card space-y-3">
         <p className="text-[12px] text-zinc-500">
-          {live
+          {xaRender(live
             ? 'Paiement on-chain disponible'
-            : 'On-chain bientôt — tu peux réserver localement (sans EGLD) pour tester l’accrochage NFT au musée.'}
+            : 'On-chain bientôt — tu peux réserver localement (sans EGLD) pour tester l’accrochage NFT au musée.')}
         </p>
         <div className="grid gap-2">
-          {TIERS.map(t => (
+          {xaRender(TIERS.map(t => (
             <button
               key={t.id}
               type="button"
@@ -81,10 +81,10 @@ export default function VenuePage() {
                 tier === t.id ? 'border-violet-400/40 bg-violet-500/10' : 'border-white/10'
               }`}
             >
-              <span className="text-sm text-white">{t.label}</span>
-              <span className="block text-[12px] text-zinc-500 tabular-nums">{t.egld} EGLD</span>
+              <span className="text-sm text-white">{xaRender(t.label)}</span>
+              <span className="block text-[12px] text-zinc-500 tabular-nums">{xaRender(t.egld)} {xaRender(" EGLD")}</span>
             </button>
-          ))}
+          )))}
         </div>
         <button
           type="button"
@@ -92,32 +92,29 @@ export default function VenuePage() {
           disabled={pending}
           onClick={() => void onPay()}
         >
-          {pending
+          {xaRender(pending
             ? 'Signature…'
             : live
               ? `Payer ${selected.egld} EGLD`
-              : 'Réserver sans paiement (local)'}
+              : 'Réserver sans paiement (local)')}
         </button>
-        {error && <p className="text-[12px] text-amber-200/90">{error}</p>}
-        {lastTx && lastTx !== 'wallet-hook' && (
+        {xaRender(error && <p className="text-[12px] text-amber-200/90">{xaRender(error)}</p>)}
+        {xaRender(lastTx && lastTx !== 'wallet-hook' && (
           <a
             className="text-[11px] text-cyan-400 underline"
             href={`https://explorer.multiversx.com/transactions/${lastTx}`}
             target="_blank"
             rel="noreferrer"
           >
-            Explorer →
-          </a>
-        )}
+            {xaRender("Explorer → ")}</a>
+        ))}
       </div>
 
       <div className="flex flex-wrap gap-2">
         <Link to="/museum" className="btn-secondary text-sm">
-          Musée · accrocher NFT
-        </Link>
+          {xaRender("Musée · accrocher NFT ")}</Link>
         <Link to="/my-packs" className="btn-secondary text-sm">
-          Mes salles pack
-        </Link>
+          {xaRender("Mes salles pack ")}</Link>
       </div>
     </div>
   )

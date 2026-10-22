@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** Bandeau Cerveau — mood Grok/LIA visible Corps */
 import { useBrainMood } from '../hooks/useBrainMood'
 
@@ -18,7 +19,7 @@ export default function BrainMoodStrip() {
       className="hidden sm:flex items-center gap-2 px-3 py-1 text-[10px] border-b border-white/[0.04] bg-black/20"
       title={p.note}
     >
-      <span className="uppercase tracking-wider text-zinc-600 font-semibold">Cerveau</span>
+      <span className="uppercase tracking-wider text-zinc-600 font-semibold">{xaRender("Cerveau")}</span>
       <span
         className={`rounded-full px-2 py-0.5 font-medium ${
           p.mood === 'hype'
@@ -30,16 +31,16 @@ export default function BrainMoodStrip() {
                 : 'bg-violet-500/15 text-violet-200'
         }`}
       >
-        {LABEL[p.mood] || p.mood}
+        {xaRender(LABEL[p.mood] || p.mood)}
       </span>
-      <span className="text-zinc-600 mono">{p.score.toFixed(2)}</span>
+      <span className="text-zinc-600 mono">{xaRender(p.score.toFixed(2))}</span>
       <span className="flex-1 max-w-[6rem] h-1 rounded-full bg-white/5 overflow-hidden">
         <span
           className="block h-full rounded-full bg-violet-400/60 transition-all duration-700"
           style={{ width: `${pct}%` }}
         />
       </span>
-      <span className="text-zinc-700">{p.source}</span>
+      <span className="text-zinc-700">{xaRender(p.source)}</span>
     </div>
   )
 }

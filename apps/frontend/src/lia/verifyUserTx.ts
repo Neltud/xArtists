@@ -10,6 +10,9 @@ export type TxCheckInput = {
   status?: string
   sender?: string
   txHash?: string
+  receiver?: string
+  value?: string
+  data?: string
 } | null
 
 export type TxVerdict =
@@ -23,7 +26,12 @@ export function normalizeTxHash(raw: string): string | null {
 }
 
 /** Pure : mappe la réponse API. `expectedSender` vide = refus (pas de match anonyme). */
-export function interpretAccountTx(tx: TxCheckInput, expectedSender: string, hash: string): TxVerdict {
+export function interpretAccountTx(
+  tx: TxCheckInput,
+  expectedSender: string,
+  hash: string,
+  expected?: { receiver: string; value: string; data: string },
+): TxVerdict {
   if (!tx || typeof tx !== 'object') {
     return { ok: false, reason: 'Transaction introuvable sur l’API MultiversX.' }
   }
@@ -45,17 +53,37 @@ export function interpretAccountTx(tx: TxCheckInput, expectedSender: string, has
       reason: 'L’expéditeur n’est pas le wallet connecté. LIA ne signe pas à ta place.',
     }
   }
+  if (tx.txHash && normalizeTxHash(tx.txHash) !== hash) return { ok: false, reason: 'Hash de transaction différent.' }
+  if (expected) {
+    let matches = false
+    try {
+      matches = tx.receiver === expected.receiver &&
+        BigInt(tx.value ?? '-1') === BigInt(expected.value) &&
+        (tx.data ? atob(tx.data) : '') === expected.data
+    } catch {
+      matches = false
+    }
+    if (!matches) return { ok: false, reason: 'Destinataire, montant ou appel différents de la transaction attendue.' }
+  }
   return { ok: true, hash, sender, status }
 }
 
-export async function verifyUserSignedTx(rawHash: string, expectedSender: string): Promise<TxVerdict> {
+export async function verifyUserSignedTx(
+  rawHash: string,
+  expectedSender: string,
+  expected: { receiver: string; value: string; data: string },
+): Promise<TxVerdict> {
   const hash = normalizeTxHash(rawHash)
   if (!hash) return { ok: false, reason: 'TxHash invalide — 64 caractères hex, sans espace.' }
   let res: Response
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 8000)
   try {
-    res = await fetch(`${API}/transactions/${hash}`, { cache: 'no-store' })
+    res = await fetch(`${API}/transactions/${hash}`, { cache: 'no-store', signal: controller.signal })
   } catch {
     return { ok: false, reason: 'API MultiversX injoignable. Rien n’a été marqué exécuté.' }
+  } finally {
+    clearTimeout(timeout)
   }
   if (res.status === 404) return { ok: false, reason: 'Transaction introuvable.' }
   if (!res.ok) return { ok: false, reason: `API MultiversX HTTP ${res.status}. Rien n’a été marqué exécuté.` }
@@ -65,5 +93,5 @@ export async function verifyUserSignedTx(rawHash: string, expectedSender: string
   } catch {
     return { ok: false, reason: 'Réponse API illisible. Rien n’a été marqué exécuté.' }
   }
-  return interpretAccountTx(body, expectedSender, hash)
+  return interpretAccountTx(body, expectedSender, hash, expected)
 }

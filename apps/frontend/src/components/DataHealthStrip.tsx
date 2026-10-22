@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 import { MARKETPLACE_LIVE, AGENTS_LIVE } from '../config/scStatus'
 
@@ -98,26 +99,26 @@ export default function DataHealthStrip() {
       }`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${ok ? 'bg-green-400' : 'bg-amber-400'}`} />
-      {label}
+      {xaRender(label)}
     </span>
   )
 
   return (
     <div className="mb-4 flex flex-wrap items-center gap-2 text-[10px] text-gray-500">
-      {pill(h.board, h.board ? 'Board' : 'Board…')}
-      {pill(h.status, h.status ? 'Status' : 'Status…')}
-      {pill(h.oracle, h.oracle ? 'Oracle' : 'Oracle…')}
-      {pill(h.brain, h.brain ? 'Brain' : 'Brain…')}
-      {pill(h.fusion, h.fusion ? 'Fusion' : 'Fusion…')}
-      {pill(h.legs, h.legs ? 'Legs' : 'Legs…')}
-      {pill(h.compound, h.compound ? '10-col' : '10-col…')}
-      {pill(MARKETPLACE_LIVE, MARKETPLACE_LIVE ? 'NFT SC' : 'NFT SC pending')}
-      {pill(AGENTS_LIVE, AGENTS_LIVE ? 'Agents SC' : 'Agents SC pending')}
-      {h.boardUpdated && (
+      {xaRender(pill(h.board, h.board ? 'Board' : 'Board…'))}
+      {xaRender(pill(h.status, h.status ? 'Status' : 'Status…'))}
+      {xaRender(pill(h.oracle, h.oracle ? 'Oracle' : 'Oracle…'))}
+      {xaRender(pill(h.brain, h.brain ? 'Brain' : 'Brain…'))}
+      {xaRender(pill(h.fusion, h.fusion ? 'Fusion' : 'Fusion…'))}
+      {xaRender(pill(h.legs, h.legs ? 'Legs' : 'Legs…'))}
+      {xaRender(pill(h.compound, h.compound ? '10-col' : '10-col…'))}
+      {xaRender(pill(MARKETPLACE_LIVE, MARKETPLACE_LIVE ? 'NFT SC' : 'NFT SC pending'))}
+      {xaRender(pill(AGENTS_LIVE, AGENTS_LIVE ? 'Agents SC' : 'Agents SC pending'))}
+      {xaRender(h.boardUpdated && (
         <span className="text-gray-600">
-          data {new Date(h.boardUpdated).toLocaleString('fr-FR')}
+          {xaRender("data ")}{xaRender(new Date(h.boardUpdated).toLocaleString('fr-FR'))}
         </span>
-      )}
+      ))}
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Desk paper mark-to-market — prix live Binance/MVX, positions simulées.
  * Aucune exécution on-chain.
@@ -114,74 +115,71 @@ export default function PaperLiveDesk() {
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-300/80">
-            Live market · paper MTM
-          </p>
+            {xaRender("Live market · paper MTM ")}</p>
           <p className="text-[12px] text-zinc-500 mt-1">
-            Prix réels (Binance / MultiversX) · book simulé · pas d’ordre on-chain
-          </p>
+            {xaRender("Prix réels (Binance / MultiversX) · book simulé · pas d’ordre on-chain ")}</p>
         </div>
         <div className="text-right text-[11px] text-zinc-500 space-y-0.5">
           <p>
-            {loading && !snapshot
+            {xaRender(loading && !snapshot
               ? 'Chargement…'
               : lastUpdate
                 ? `MAJ ${lastUpdate.toLocaleTimeString()}`
-                : '—'}
+                : '—')}
           </p>
           <button
             type="button"
             onClick={() => refresh()}
             className="text-cyan-300/90 hover:text-cyan-200 underline-offset-2 hover:underline"
           >
-            Rafraîchir
-          </button>
+            {xaRender("Rafraîchir ")}</button>
         </div>
       </div>
 
-      {error && (
+      {xaRender(error && (
         <p className="text-xs text-rose-300/90 rounded-lg border border-rose-500/20 px-3 py-2">
-          {error}
+          {xaRender(error)}
         </p>
-      )}
+      ))}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-        {quotes.map(({ key, q }) => (
+        {xaRender(quotes.map(({ key, q }) => (
           <div
             key={key}
             className={`rounded-xl border bg-black/50 px-2.5 py-2 transition-colors ${flashBorder(
               flash[key],
             )}`}
           >
-            <p className="text-[10px] uppercase tracking-wider text-zinc-500">{key}</p>
-            <p className="text-sm font-semibold text-white tabular-nums mt-0.5">${fmtPx(q)}</p>
+            <p className="text-[10px] uppercase tracking-wider text-zinc-500">{xaRender(key)}</p>
+            <p className="text-sm font-semibold text-white tabular-nums mt-0.5">${xaRender(fmtPx(q))}</p>
             <p className={`text-[10px] tabular-nums ${chClass(q?.change24hPct)}`}>
-              {q?.change24hPct != null && Number.isFinite(q.change24hPct)
+              {xaRender(q?.change24hPct != null && Number.isFinite(q.change24hPct)
                 ? `${q.change24hPct >= 0 ? '+' : ''}${q.change24hPct.toFixed(2)}% 24h`
-                : '—'}
+                : '—')}
             </p>
-            <p className="text-[9px] text-zinc-600 mt-0.5">{q?.source || '—'}</p>
+            <p className="text-[9px] text-zinc-600 mt-0.5">{xaRender(q?.source || '—')}</p>
           </div>
-        ))}
+        )))}
       </div>
 
       <div className="grid sm:grid-cols-3 gap-2 text-[12px]">
         <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-          <p className="text-[10px] uppercase text-zinc-500">Equity paper</p>
-          <p className="text-lg font-semibold text-white tabular-nums">{fmtUsd(equity)}</p>
+          <p className="text-[10px] uppercase text-zinc-500">{xaRender("Equity paper")}</p>
+          <p className="text-lg font-semibold text-white tabular-nums">{xaRender(fmtUsd(equity))}</p>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-          <p className="text-[10px] uppercase text-zinc-500">Positions MV</p>
-          <p className="text-lg font-semibold text-white tabular-nums">{fmtUsd(positionsMv)}</p>
+          <p className="text-[10px] uppercase text-zinc-500">{xaRender("Positions MV")}</p>
+          <p className="text-lg font-semibold text-white tabular-nums">{xaRender(fmtUsd(positionsMv))}</p>
         </div>
         <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-          <p className="text-[10px] uppercase text-zinc-500">uPnL</p>
+          <p className="text-[10px] uppercase text-zinc-500">{xaRender("uPnL")}</p>
           <p
             className={`text-lg font-semibold tabular-nums ${
               positionsUpnl >= 0 ? 'text-emerald-400' : 'text-rose-400'
             }`}
           >
-            {positionsUpnl >= 0 ? '+' : ''}
-            {fmtUsd(positionsUpnl)}
+            {xaRender(positionsUpnl >= 0 ? '+' : '')}
+            {xaRender(fmtUsd(positionsUpnl))}
           </p>
         </div>
       </div>
@@ -190,48 +188,47 @@ export default function PaperLiveDesk() {
         <table className="w-full text-left text-[12px]">
           <thead className="bg-white/[0.04] text-[10px] uppercase tracking-wider text-zinc-500">
             <tr>
-              <th className="px-3 py-2 font-medium">Leg</th>
-              <th className="px-3 py-2 font-medium">Qty</th>
-              <th className="px-3 py-2 font-medium">Entry</th>
-              <th className="px-3 py-2 font-medium">Mark</th>
+              <th className="px-3 py-2 font-medium">{xaRender("Leg")}</th>
+              <th className="px-3 py-2 font-medium">{xaRender("Qty")}</th>
+              <th className="px-3 py-2 font-medium">{xaRender("Entry")}</th>
+              <th className="px-3 py-2 font-medium">{xaRender("Mark")}</th>
               <th className="px-3 py-2 font-medium">MV</th>
-              <th className="px-3 py-2 font-medium">uPnL</th>
+              <th className="px-3 py-2 font-medium">{xaRender("uPnL")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {rows.map(r => (
+            {xaRender(rows.map(r => (
               <tr key={r.id} className="text-zinc-300">
                 <td className="px-3 py-2 font-medium text-white">
-                  {r.side.toUpperCase()} {r.base}
+                  {xaRender(r.side.toUpperCase())} {xaRender(r.base)}
                 </td>
-                <td className="px-3 py-2 tabular-nums">{r.qty}</td>
-                <td className="px-3 py-2 tabular-nums">{fmtUsd(r.entry, r.base === 'BTC' ? 0 : 2)}</td>
+                <td className="px-3 py-2 tabular-nums">{xaRender(r.qty)}</td>
+                <td className="px-3 py-2 tabular-nums">{xaRender(fmtUsd(r.entry, r.base === 'BTC' ? 0 : 2))}</td>
                 <td className="px-3 py-2 tabular-nums text-cyan-100/90">
-                  {fmtUsd(r.mark, r.base === 'BTC' ? 0 : 2)}
+                  {xaRender(fmtUsd(r.mark, r.base === 'BTC' ? 0 : 2))}
                 </td>
-                <td className="px-3 py-2 tabular-nums">{fmtUsd(r.mv)}</td>
+                <td className="px-3 py-2 tabular-nums">{xaRender(fmtUsd(r.mv))}</td>
                 <td
                   className={`px-3 py-2 tabular-nums font-medium ${
                     r.upnl >= 0 ? 'text-emerald-400' : 'text-rose-400'
                   }`}
                 >
-                  {r.upnl >= 0 ? '+' : ''}
-                  {fmtUsd(r.upnl)}{' '}
+                  {xaRender(r.upnl >= 0 ? '+' : '')}
+                  {xaRender(fmtUsd(r.upnl))}{xaRender(' ')}
                   <span className="text-[10px] opacity-80">
-                    ({r.upnlPct >= 0 ? '+' : ''}
-                    {r.upnlPct.toFixed(2)}%)
+                    ({xaRender(r.upnlPct >= 0 ? '+' : '')}
+                    {xaRender(r.upnlPct.toFixed(2))}%)
                   </span>
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>
 
       <p className="text-[10px] text-zinc-600 leading-relaxed">
-        Entrées paper figées au premier tick live de la session. Cash notionnel {fmtUsd(PAPER_CASH0)}{' '}
-        USDC. Refresh ~8 s. Simulation uniquement.
-      </p>
+        {xaRender("Entrées paper figées au premier tick live de la session. Cash notionnel ")}{xaRender(fmtUsd(PAPER_CASH0))}{xaRender(' ')}
+        {xaRender("USDC. Refresh ~8 s. Simulation uniquement. ")}</p>
     </section>
   )
 }

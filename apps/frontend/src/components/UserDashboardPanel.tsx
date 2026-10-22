@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Dashboard utilisateur — rewards (points) + packs paper/on-chain.
  * Session xPortal optionnelle.
@@ -30,30 +31,30 @@ export default function UserDashboardPanel() {
     <div className="card space-y-4 border border-white/10">
       <div className="flex items-center justify-between gap-2">
         <div>
-          <p className="text-[11px] uppercase tracking-wider text-zinc-500">Dashboard user</p>
-          <p className="text-[15px] font-semibold text-white">Rewards · Packs</p>
+          <p className="text-[11px] uppercase tracking-wider text-zinc-500">{xaRender("Dashboard user")}</p>
+          <p className="text-[15px] font-semibold text-white">{xaRender("Rewards · Packs")}</p>
         </div>
-        {connected && address ? (
+        {xaRender(connected && address ? (
           <span className="mono text-[10px] text-emerald-300/90">
-            {address.slice(0, 6)}…{address.slice(-4)}
+            {xaRender(address.slice(0, 6))}…{xaRender(address.slice(-4))}
           </span>
         ) : (
-          <span className="text-[10px] text-zinc-600">guest / paper</span>
-        )}
+          <span className="text-[10px] text-zinc-600">{xaRender("guest / paper")}</span>
+        ))}
       </div>
 
       <div className="grid grid-cols-3 gap-2 text-center">
         <div className="rounded-xl bg-black/30 border border-white/5 py-2">
-          <p className="text-lg font-semibold text-white tabular-nums">{totalPoints}</p>
-          <p className="text-[10px] text-zinc-500">points</p>
+          <p className="text-lg font-semibold text-white tabular-nums">{xaRender(totalPoints)}</p>
+          <p className="text-[10px] text-zinc-500">{xaRender("points")}</p>
         </div>
         <div className="rounded-xl bg-black/30 border border-white/5 py-2">
-          <p className="text-lg font-semibold text-white tabular-nums">{streak}</p>
-          <p className="text-[10px] text-zinc-500">série (j)</p>
+          <p className="text-lg font-semibold text-white tabular-nums">{xaRender(streak)}</p>
+          <p className="text-[10px] text-zinc-500">{xaRender("série (j)")}</p>
         </div>
         <div className="rounded-xl bg-black/30 border border-white/5 py-2">
-          <p className="text-lg font-semibold text-white tabular-nums">{owned.length}</p>
-          <p className="text-[10px] text-zinc-500">packs</p>
+          <p className="text-lg font-semibold text-white tabular-nums">{xaRender(owned.length)}</p>
+          <p className="text-[10px] text-zinc-500">{xaRender("packs")}</p>
         </div>
       </div>
 
@@ -66,22 +67,22 @@ export default function UserDashboardPanel() {
         }}
         className="btn-primary w-full text-[12px] py-2 disabled:opacity-40"
       >
-        {canClaimToday ? 'Claim +1 pt (série 7j → +3)' : 'Claim déjà fait aujourd’hui'}
+        {xaRender(canClaimToday ? 'Claim +1 pt (série 7j → +3)' : 'Claim déjà fait aujourd’hui')}
       </button>
 
       <div className="space-y-2">
-        <p className="text-[11px] text-zinc-500 uppercase tracking-wider">Vue packs</p>
-        {packRows.map(p => (
+        <p className="text-[11px] text-zinc-500 uppercase tracking-wider">{xaRender("Vue packs")}</p>
+        {xaRender(packRows.map(p => (
           <div
             key={p.id}
             className="flex items-center justify-between gap-2 rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2"
           >
             <div className="min-w-0">
               <p className="text-[13px] text-white">
-                {p.icon} {p.name}
+                {xaRender(p.icon)} {xaRender(p.name)}
               </p>
               <p className="text-[11px] text-zinc-500 truncate">
-                {p.priceEgld?.list ?? p.priceEur.list} EGLD · {p.tagline}
+                {xaRender(p.priceEgld?.list ?? p.priceEur.list)} {xaRender(" EGLD · ")}{xaRender(p.tagline)}
               </p>
             </div>
             <span
@@ -91,22 +92,19 @@ export default function UserDashboardPanel() {
                   : 'border-white/10 text-zinc-500'
               }`}
             >
-              {p.has ? 'owned' : '—'}
+              {xaRender(p.has ? 'owned' : '—')}
             </span>
           </div>
-        ))}
+        )))}
       </div>
 
       <div className="flex flex-wrap gap-3 text-[11px]">
         <Link to="/agents" className="text-cyan-400 hover:underline">
-          Acheter pack
-        </Link>
+          {xaRender("Acheter pack ")}</Link>
         <Link to="/my-packs" className="text-cyan-400 hover:underline">
-          My Packs
-        </Link>
+          {xaRender("My Packs ")}</Link>
         <Link to="/museum?tab=mine" className="text-cyan-400 hover:underline">
-          Musée · mine
-        </Link>
+          {xaRender("Musée · mine ")}</Link>
       </div>
     </div>
   )

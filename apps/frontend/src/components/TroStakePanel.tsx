@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * TRO stake / unstake panel — gated by canStakeTro().
  * SC bytecode: instant unstake (no on-chain unbonding).
@@ -106,7 +107,7 @@ export default function TroStakePanel() {
   return (
     <div className="card space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-semibold">$TRO staking (SC on-chain)</h2>
+        <h2 className="font-semibold">{xaRender("$TRO staking (SC on-chain)")}</h2>
         <span
           className={`text-[10px] rounded-full border px-2 py-0.5 ${
             live
@@ -114,52 +115,48 @@ export default function TroStakePanel() {
               : 'border-amber-500/40 text-amber-200'
           }`}
         >
-          {troStakingStatusLabel()}
+          {xaRender(troStakingStatusLabel())}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2 text-sm">
         <div className="rounded-xl border border-white/10 bg-black/30 px-3 py-2">
-          <p className="text-[10px] uppercase text-zinc-500">Ton stake</p>
+          <p className="text-[10px] uppercase text-zinc-500">{xaRender("Ton stake")}</p>
           <p className="font-semibold text-emerald-200 tabular-nums">
-            {loading && userTro == null
+            {xaRender(loading && userTro == null
               ? '…'
               : userTro != null
                 ? `${userTro.toLocaleString(undefined, { maximumFractionDigits: 6 })} TRO`
                 : connected
                   ? '0 TRO'
-                  : '—'}
+                  : '—')}
           </p>
         </div>
         <div className="rounded-xl border border-white/10 bg-black/30 px-3 py-2">
-          <p className="text-[10px] uppercase text-zinc-500">Total SC</p>
+          <p className="text-[10px] uppercase text-zinc-500">{xaRender("Total SC")}</p>
           <p className="font-semibold text-zinc-200 tabular-nums">
-            {totalTro != null
+            {xaRender(totalTro != null
               ? `${totalTro.toLocaleString(undefined, { maximumFractionDigits: 6 })} TRO`
-              : '—'}
+              : '—')}
           </p>
         </div>
       </div>
 
       <ul className="text-sm text-zinc-400 space-y-2">
         <li>
-          <strong className="text-zinc-200">Flexible</strong> — unstake{' '}
-          <em className="text-zinc-300">immédiat</em> on-chain (bytecode actuel)
-        </li>
+          <strong className="text-zinc-200">{xaRender("Flexible")}</strong> {xaRender(" — unstake")}{xaRender(' ')}
+          <em className="text-zinc-300">{xaRender("immédiat")}</em> {xaRender(" on-chain (bytecode actuel) ")}</li>
         <li>
-          <strong className="text-zinc-200">Bonded 30 / 90 j</strong> — policy UI / APR futur
-          (pas de lock dans ce SC)
-        </li>
+          <strong className="text-zinc-200">{xaRender("Bonded 30 / 90 j")}</strong> {xaRender(" — policy UI / APR futur (pas de lock dans ce SC) ")}</li>
         <li>
-          <strong className="text-zinc-200">Vote-locked</strong> — pouvoir DAO →{' '}
+          <strong className="text-zinc-200">{xaRender("Vote-locked")}</strong> {xaRender(" — pouvoir DAO →")}{xaRender(' ')}
           <Link to="/dao" className="underline-offset-2 hover:underline text-zinc-300">
-            /dao
-          </Link>
+            {xaRender("/dao ")}</Link>
         </li>
       </ul>
 
       <div className="flex flex-wrap gap-2">
-        {(
+        {xaRender((
           [
             ['flexible', 'Flexible'],
             ['bond30', 'Bond 30j'],
@@ -176,41 +173,38 @@ export default function TroStakePanel() {
                 : 'border-[#2a2a3a] text-zinc-500'
             }`}
           >
-            {label}
+            {xaRender(label)}
           </button>
-        ))}
+        )))}
       </div>
 
-      {remainLabel && mode !== 'flexible' && (
+      {xaRender(remainLabel && mode !== 'flexible' && (
         <div className="rounded-lg border border-violet-500/30 bg-violet-500/10 px-3 py-2 text-xs text-violet-100">
-          Compte à rebours policy (soft) : <strong className="mono">{remainLabel}</strong>
+          {xaRender("Compte à rebours policy (soft) : ")}<strong className="mono">{xaRender(remainLabel)}</strong>
           <span className="block text-[10px] text-violet-200/70 mt-1">
-            Le SC autorise quand même unstake immédiat — ce timer est informatif.
-          </span>
+            {xaRender("Le SC autorise quand même unstake immédiat — ce timer est informatif. ")}</span>
         </div>
-      )}
+      ))}
 
       <p className="text-[11px] mono text-zinc-500 break-all">
-        SC: {TRO_STAKING_ADDRESS || '—'}
+        {xaRender("SC: ")}{xaRender(TRO_STAKING_ADDRESS || '—')}
       </p>
 
-      {!connected && (
+      {xaRender(!connected && (
         <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
-          Connect wallet
-        </button>
-      )}
+          {xaRender("Connect wallet ")}</button>
+      ))}
 
-      {!live && (
+      {xaRender(!live && (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs text-amber-100/90">
-          Fail-closed : secret{' '}
+          {xaRender("Fail-closed : secret")}{xaRender(' ')}
           <code className="text-[10px]">VITE_TRO_STAKING_CODEHASH_OK=1</code>.
         </div>
-      )}
+      ))}
 
       <div className="flex flex-wrap items-end gap-2">
         <label className="flex flex-col gap-1 text-xs text-zinc-400">
-          Montant TRO
-          <input
+          {xaRender("Montant TRO ")}<input
             type="number"
             min="0"
             step="0.1"
@@ -226,15 +220,14 @@ export default function TroStakePanel() {
           disabled={userTro == null || userTro <= 0}
           onClick={setMaxStaked}
         >
-          Max stake
-        </button>
+          {xaRender("Max stake ")}</button>
         <button
           type="button"
           disabled={!live || pending}
           onClick={onStake}
           className={`btn-primary text-sm ${!live || pending ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          {pending ? '…' : 'Stake $TRO'}
+          {xaRender(pending ? '…' : 'Stake $TRO')}
         </button>
         <button
           type="button"
@@ -242,24 +235,21 @@ export default function TroStakePanel() {
           onClick={onUnstake}
           className={`btn-secondary text-sm ${!live || pending ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          Unstake
-        </button>
+          {xaRender("Unstake ")}</button>
         <button type="button" className="btn-secondary text-xs py-2" onClick={() => void refresh()}>
-          Refresh
-        </button>
+          {xaRender("Refresh ")}</button>
       </div>
 
-      {error && <p className="text-xs text-red-400">{error}</p>}
-      {lastTx && (
+      {xaRender(error && <p className="text-xs text-red-400">{xaRender(error)}</p>)}
+      {xaRender(lastTx && (
         <p className="text-xs text-emerald-400">
-          TX: <span className="mono break-all">{lastTx}</span>
+          {xaRender("TX: ")}<span className="mono break-all">{xaRender(lastTx)}</span>
         </p>
-      )}
+      ))}
 
       <p className="text-[11px] text-zinc-500">
-        Token {TRO_TOKEN_ID}. Unstake = endpoint SC <code className="text-[10px]">unstake</code>{' '}
-        (immédiat). Wallet utilisateur uniquement.
-      </p>
+        {xaRender("Token ")}{xaRender(TRO_TOKEN_ID)}{xaRender(". Unstake = endpoint SC ")}<code className="text-[10px]">unstake</code>{xaRender(' ')}
+        {xaRender("(immédiat). Wallet utilisateur uniquement. ")}</p>
     </div>
   )
 }

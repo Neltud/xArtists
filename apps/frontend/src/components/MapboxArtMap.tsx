@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Carte Mapbox GL JS (optionnelle) — POI OSM + destinations + entrée musée virtuel.
  * Active si VITE_MAPBOX_TOKEN est défini ; sinon message + fallback Leaflet.
@@ -144,14 +145,14 @@ export default function MapboxArtMap() {
   if (error) {
     return (
       <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-4 text-[13px] text-amber-100/90">
-        {error}
+        {xaRender(error)}
       </div>
     )
   }
 
   return (
     <div className="space-y-2">
-      <p className="text-[11px] text-zinc-500">{status} · Mapbox GL · cache Overpass v2</p>
+      <p className="text-[11px] text-zinc-500">{xaRender(status)} {xaRender(" · Mapbox GL · cache Overpass v2")}</p>
       <div
         ref={elRef}
         className="w-full h-[min(62vh,520px)] min-h-[320px] rounded-2xl border border-white/10 overflow-hidden"

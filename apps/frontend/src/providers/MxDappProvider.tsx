@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState, type ReactNode } from 'react'
 import { sdkDappConfig } from '../config/sdkDapp'
 import { bootstrapSendTx } from './bootstrapSendTx'
@@ -22,12 +23,12 @@ export function MxDappProvider({ children }: Props) {
     ;(async () => {
       try {
         const mod = await import(/* @vite-ignore */ '@multiversx/sdk-dapp/wrappers/DappProvider')
-        const C = (mod as { DappProvider?: React.ComponentType<Record<string, unknown>> }).DappProvider
+        const C = (mod as unknown as { DappProvider?: React.ComponentType<Record<string, unknown>> }).DappProvider
         if (!cancelled && C) setProvider(() => C)
       } catch {
         try {
           const mod = await import(/* @vite-ignore */ '@multiversx/sdk-dapp')
-          const C = (mod as { DappProvider?: React.ComponentType<Record<string, unknown>> }).DappProvider
+          const C = (mod as unknown as { DappProvider?: React.ComponentType<Record<string, unknown>> }).DappProvider
           if (!cancelled && C) setProvider(() => C)
         } catch {
           /* optional */
@@ -39,7 +40,7 @@ export function MxDappProvider({ children }: Props) {
     }
   }, [])
 
-  if (!Provider) return <>{children}</>
+  if (!Provider) return <>{xaRender(children)}</>
 
   return (
     <Provider
@@ -47,7 +48,7 @@ export function MxDappProvider({ children }: Props) {
       customNetworkConfig={sdkDappConfig.customNetworkConfig}
       dappConfig={sdkDappConfig.dappConfig}
     >
-      {children}
+      {xaRender(children)}
     </Provider>
   )
 }

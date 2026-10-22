@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Live news — live_news.json + EGLD economics + Reddit r/MultiversX (client).
  * Badge ● LIVE animé. Paper / éducatif.
@@ -183,26 +184,24 @@ export default function LiveNewsStream({ compact }: { compact?: boolean }) {
     <div className={`glass-hud overflow-hidden ${compact ? 'h-36' : 'h-52'}`}>
       <div className="flex items-center justify-between px-3 pt-2 pb-1 border-b border-cyan-500/15">
         <p className="text-[10px] font-tech uppercase tracking-[0.2em] text-cyan-300/90">
-          News · MVX / Crypto
-        </p>
+          {xaRender("News · MVX / Crypto ")}</p>
         <span className={`badge-live ${live ? 'badge-live-on' : 'badge-live-off'}`}>
           <span className="badge-live-dot" aria-hidden />
-          LIVE
-        </span>
+          {xaRender("LIVE ")}</span>
       </div>
       <div className="relative h-[calc(100%-28px)] overflow-hidden">
         <ul
           className="absolute inset-x-0 transition-transform duration-700 ease-linear"
           style={{ transform: `translateY(-${start * rowH}px)` }}
         >
-          {loop.map((n, i) => {
+          {xaRender(loop.map((n, i) => {
             const row = (
               <>
-                <span className="mono text-[10px] text-zinc-500 shrink-0 w-10">{n.timestamp}</span>
+                <span className="mono text-[10px] text-zinc-500 shrink-0 w-10">{xaRender(n.timestamp)}</span>
                 <span className="text-[10px] font-semibold text-violet-300/90 shrink-0 w-16 truncate">
-                  {n.source}
+                  {xaRender(n.source)}
                 </span>
-                <span className="text-[11px] text-zinc-300 truncate flex-1">{n.title}</span>
+                <span className="text-[11px] text-zinc-300 truncate flex-1">{xaRender(n.title)}</span>
               </>
             )
             const cls = `flex gap-2 px-3 items-center border-b border-white/[0.04] ${compact ? 'h-9' : 'h-10'}`
@@ -215,15 +214,15 @@ export default function LiveNewsStream({ compact }: { compact?: boolean }) {
                   className="flex gap-2 items-center min-w-0 w-full hover:text-white"
                   title={n.title}
                 >
-                  {row}
+                  {xaRender(row)}
                 </a>
               </li>
             ) : (
               <li key={`${n.id}-${i}`} className={cls} title={n.title}>
-                {row}
+                {xaRender(row)}
               </li>
             )
-          })}
+          }))}
         </ul>
       </div>
     </div>

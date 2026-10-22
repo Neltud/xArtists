@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Analyse marché — F&G · TRO hype · LIA · assets.
  */
@@ -37,11 +38,11 @@ function FngGauge({ value, label }: { value: number; label: string }) {
         style={{ background: `conic-gradient(${color} ${value * 3.6}deg, rgba(255,255,255,0.06) 0)` }}
       >
         <div className="absolute inset-2 rounded-full bg-zinc-950 flex flex-col items-center justify-center">
-          <span className="text-3xl font-semibold tabular-nums text-white">{value}</span>
+          <span className="text-3xl font-semibold tabular-nums text-white">{xaRender(value)}</span>
           <span className="text-[10px] text-zinc-500 mt-0.5">/ 100</span>
         </div>
       </div>
-      <p className="mt-3 text-sm font-medium text-zinc-200">{label}</p>
+      <p className="mt-3 text-sm font-medium text-zinc-200">{xaRender(label)}</p>
     </div>
   )
 }
@@ -94,40 +95,38 @@ export default function MarketPage() {
   return (
     <div className="animate-fade-in pb-14 max-w-5xl mx-auto space-y-8">
       <header className="space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Marché</p>
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">Analyse</h1>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">{xaRender("Marché")}</p>
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">{xaRender("Analyse")}</h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl inline-flex flex-wrap items-center gap-1">
-          Indicateurs publics · TRO hype · LIA
-          <InfoTip>
-            <strong className="text-white block mb-1">Transparence</strong>
-            <span className="text-zinc-400">Données ouvertes. Placement LIA si USDC ≥ {MIN_USDC_DEPLOY}.</span>
+          {xaRender("Indicateurs publics · TRO hype · LIA ")}<InfoTip>
+            <strong className="text-white block mb-1">{xaRender("Transparence")}</strong>
+            <span className="text-zinc-400">{xaRender("Données ouvertes. Placement LIA si USDC ≥ ")}{xaRender(MIN_USDC_DEPLOY)}.</span>
           </InfoTip>
         </p>
-        {snap && (
+        {xaRender(snap && (
           <p className="text-[11px] text-zinc-600">
-            Maj {new Date(snap.updatedAt).toLocaleString('fr-FR')} · {snap.source}
+            {xaRender("Maj ")}{xaRender(new Date(snap.updatedAt).toLocaleString('fr-FR'))} · {xaRender(snap.source)}
           </p>
-        )}
+        ))}
       </header>
 
-      {loading && (
+      {xaRender(loading && (
         <div className="rounded-2xl border border-white/10 bg-zinc-950/60 h-40 flex items-center justify-center text-sm text-zinc-500">
-          Chargement…
-        </div>
-      )}
-      {err && <p className="text-sm text-amber-200 border border-amber-500/30 rounded-xl px-4 py-3">{err}</p>}
+          {xaRender("Chargement… ")}</div>
+      ))}
+      {xaRender(err && <p className="text-sm text-amber-200 border border-amber-500/30 rounded-xl px-4 py-3">{xaRender(err)}</p>)}
 
-      {snap && !loading && (
+      {xaRender(snap && !loading && (
         <>
           <div className="grid sm:grid-cols-3 gap-3">
             <div className="sm:col-span-1 rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-600 mb-1">Fear &amp; Greed</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-600 mb-1">{xaRender("Fear &amp; Greed")}</p>
               <FngGauge value={snap.fearGreed.value} label={snap.fearGreed.classification} />
             </div>
             <div className="sm:col-span-2 rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-600">Régime</p>
-              <p className="text-2xl font-semibold text-white mt-2">{snap.regimeLabel}</p>
-              <p className="text-[13px] text-zinc-500 mt-2">Composite sentiment + 24h. Pas un signal d&apos;entrée.</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-600">{xaRender("Régime")}</p>
+              <p className="text-2xl font-semibold text-white mt-2">{xaRender(snap.regimeLabel)}</p>
+              <p className="text-[13px] text-zinc-500 mt-2">{xaRender("Composite sentiment + 24h. Pas un signal d&apos;entrée.")}</p>
             </div>
           </div>
 
@@ -139,55 +138,55 @@ export default function MarketPage() {
             }`}
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">LIA · trésorerie</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">{xaRender("LIA · trésorerie")}</p>
               <span
                 className={`text-[10px] uppercase px-2 py-0.5 rounded-full border ${
                   deploy.armed ? 'border-emerald-500/40 text-emerald-300' : 'border-amber-500/40 text-amber-200'
                 }`}
               >
-                {deploy.armed ? 'Armée' : 'En attente'}
+                {xaRender(deploy.armed ? 'Armée' : 'En attente')}
               </span>
             </div>
-            <p className="text-[13px] text-zinc-300">{deploy.message}</p>
+            <p className="text-[13px] text-zinc-300">{xaRender(deploy.message)}</p>
             <p className="text-[12px] tabular-nums text-white">
-              USDC {liaUsdc != null ? liaUsdc.toFixed(2) : '—'} / {MIN_USDC_DEPLOY}
+              {xaRender("USDC ")}{xaRender(liaUsdc != null ? liaUsdc.toFixed(2) : '—')} / {xaRender(MIN_USDC_DEPLOY)}
             </p>
             <ul className="space-y-1">
-              {LIA_CHAIN_PRIORITY.map(c => (
+              {xaRender(LIA_CHAIN_PRIORITY.map(c => (
                 <li key={c.id} className="text-[12px] text-zinc-400">
-                  <span className="text-zinc-200 font-medium">{c.label}</span> — {c.notes}
+                  <span className="text-zinc-200 font-medium">{xaRender(c.label)}</span> — {xaRender(c.notes)}
                 </li>
-              ))}
+              )))}
             </ul>
           </section>
 
           <div className="grid sm:grid-cols-2 gap-3">
             <section className="rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] p-5 space-y-2">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-violet-300/80">Synthèse LIA</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-violet-300/80">{xaRender("Synthèse LIA")}</p>
               <ul className="space-y-1.5">
-                {snap.liaBrief.map((line, i) => (
+                {xaRender(snap.liaBrief.map((line, i) => (
                   <li key={i} className="text-[13px] text-zinc-300 flex gap-2">
                     <span className="text-violet-400/60">—</span>
-                    <span>{line}</span>
+                    <span>{xaRender(line)}</span>
                   </li>
-                ))}
+                )))}
               </ul>
             </section>
             <section className="rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5 space-y-2">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Board Vellum (public)</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">{xaRender("Board Vellum (public)")}</p>
               <ul className="space-y-1.5">
-                {snap.vellumBrief.map((line, i) => (
+                {xaRender(snap.vellumBrief.map((line, i) => (
                   <li key={i} className="text-[13px] text-zinc-300 flex gap-2">
                     <span className="text-zinc-600">—</span>
-                    <span>{line}</span>
+                    <span>{xaRender(line)}</span>
                   </li>
-                ))}
+                )))}
               </ul>
             </section>
           </div>
 
           <section className="rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5">
-            <h2 className="text-sm font-semibold text-white mb-4">Variation 24h</h2>
+            <h2 className="text-sm font-semibold text-white mb-4">{xaRender("Variation 24h")}</h2>
             <div className="h-52 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
@@ -205,9 +204,9 @@ export default function MarketPage() {
                   />
                   <ReferenceLine y={0} stroke="rgba(255,255,255,0.12)" />
                   <Bar dataKey="change" radius={[6, 6, 0, 0]} maxBarSize={36}>
-                    {chartData.map((e, i) => (
+                    {xaRender(chartData.map((e, i) => (
                       <Cell key={i} fill={e.change >= 0 ? '#34d399' : '#f87171'} />
-                    ))}
+                    )))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -216,70 +215,68 @@ export default function MarketPage() {
 
           <section className="rounded-2xl border border-white/[0.07] overflow-hidden">
             <div className="px-4 py-3 border-b border-white/[0.06]">
-              <h2 className="text-sm font-semibold text-white">Actifs</h2>
+              <h2 className="text-sm font-semibold text-white">{xaRender("Actifs")}</h2>
             </div>
             <table className="w-full text-left text-[13px]">
               <thead>
                 <tr className="text-[10px] uppercase tracking-wider text-zinc-600 border-b border-white/[0.05]">
-                  <th className="px-4 py-2.5">Actif</th>
-                  <th className="px-4 py-2.5 text-right">Prix</th>
+                  <th className="px-4 py-2.5">{xaRender("Actif")}</th>
+                  <th className="px-4 py-2.5 text-right">{xaRender("Prix")}</th>
                   <th className="px-4 py-2.5 text-right">24h</th>
                 </tr>
               </thead>
               <tbody>
-                {snap.assets.map(a => (
+                {xaRender(snap.assets.map(a => (
                   <tr key={a.id} className="border-b border-white/[0.04] last:border-0">
                     <td className="px-4 py-3">
-                      <span className="font-medium text-white">{a.symbol}</span>
-                      <span className="text-zinc-600 ml-2 text-[12px]">{a.name}</span>
+                      <span className="font-medium text-white">{xaRender(a.symbol)}</span>
+                      <span className="text-zinc-600 ml-2 text-[12px]">{xaRender(a.name)}</span>
                     </td>
-                    <td className="px-4 py-3 text-right tabular-nums text-zinc-200">{formatUsd(a.price)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums text-zinc-200">{xaRender(formatUsd(a.price))}</td>
                     <td
                       className={`px-4 py-3 text-right tabular-nums font-medium ${
                         a.change24h >= 0 ? 'text-emerald-400' : 'text-rose-400'
                       }`}
                     >
-                      {a.change24h >= 0 ? '+' : ''}
-                      {a.change24h.toFixed(2)}%
+                      {xaRender(a.change24h >= 0 ? '+' : '')}
+                      {xaRender(a.change24h.toFixed(2))}%
                     </td>
                   </tr>
-                ))}
+                )))}
               </tbody>
             </table>
           </section>
 
           <section className="rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-sm font-semibold text-white">{SOUL_PROTOCOL.label}</h2>
+              <h2 className="text-sm font-semibold text-white">{xaRender(SOUL_PROTOCOL.label)}</h2>
               <span className="text-[10px] uppercase tracking-wider text-zinc-500 border border-white/10 px-2 py-0.5 rounded-full">
-                {SOUL_PROTOCOL.status}
+                {xaRender(SOUL_PROTOCOL.status)}
               </span>
             </div>
-            <p className="text-[13px] text-zinc-400">{SOUL_PROTOCOL.thesis}</p>
+            <p className="text-[13px] text-zinc-400">{xaRender(SOUL_PROTOCOL.thesis)}</p>
             <a
               href={SOUL_PROTOCOL.x}
               target="_blank"
               rel="noreferrer"
               className="text-[12px] text-cyan-400/90 hover:underline"
             >
-              @0xSoulProtocol ↗
-            </a>
+              {xaRender("@0xSoulProtocol ↗ ")}</a>
           </section>
 
           <p className="text-[11px] text-zinc-600 max-w-2xl">
-            Pas un conseil en investissement. Pas d&apos;auto-exécution. Explorer LIA :{' '}
+            {xaRender("Pas un conseil en investissement. Pas d&apos;auto-exécution. Explorer LIA :")}{xaRender(' ')}
             <a
               href={LINKS.explorerAccount(LIA_WALLET)}
               className="text-zinc-400 hover:text-cyan-300"
               target="_blank"
               rel="noreferrer"
             >
-              wallet
-            </a>
+              {xaRender("wallet ")}</a>
             .
           </p>
         </>
-      )}
+      ))}
     </div>
   )
 }

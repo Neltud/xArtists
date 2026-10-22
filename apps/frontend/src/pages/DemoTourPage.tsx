@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DEMO_BULLETS, DEMO_PATH } from '../config/demoMode'
@@ -144,93 +145,89 @@ export default function DemoTourPage() {
   return (
     <div className="page-wrap py-10 space-y-10">
       <header className="space-y-3">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-cyan-400/80">Parcours démo</p>
-        <h1 className="display text-3xl md:text-4xl text-white">GO_LIVE — tour complet</h1>
+        <p className="text-[11px] uppercase tracking-[0.2em] text-cyan-400/80">{xaRender("Parcours démo")}</p>
+        <h1 className="display text-3xl md:text-4xl text-white">{xaRender("GO_LIVE — tour complet")}</h1>
         <p className="text-sm text-zinc-400 max-w-2xl leading-relaxed">
-          xArtists sur MultiversX : galerie + packs + board LIA paper + slot. Probe epoch{' '}
-          {snap.epoch} (J+{supernovaAgeEpochs(snap.epoch)}). Les smart contracts produit ont un
-          codeHash vérifiable. Le trading LIA reste paper. Pas un fonds d’investissement.
-        </p>
-        {isSupernovaLive() && (
+          {xaRender("xArtists sur MultiversX : galerie + packs + board LIA paper + slot. Probe epoch")}{xaRender(' ')}
+          {xaRender(snap.epoch)} (J+{xaRender(supernovaAgeEpochs(snap.epoch))}{xaRender("). Les smart contracts produit ont un codeHash vérifiable. Le trading LIA reste paper. Pas un fonds d’investissement. ")}</p>
+        {xaRender(isSupernovaLive() && (
           <a
             href={SUPERNOVA_HUB}
             target="_blank"
             rel="noreferrer"
             className="inline-block text-[11px] text-cyan-400/80 hover:text-cyan-300"
           >
-            Mainnet 600 ms (Supernova) →
-          </a>
-        )}
+            {xaRender("Mainnet 600 ms (Supernova) → ")}</a>
+        ))}
       </header>
 
       <Phase4ReadinessBanner variant="full" />
 
       <ul className="grid gap-2 text-sm text-zinc-400">
-        {DEMO_BULLETS.map(b => (
+        {xaRender(DEMO_BULLETS.map(b => (
           <li key={b} className="flex gap-2">
             <span className="text-amber-400/80">▸</span>
-            {b}
+            {xaRender(b)}
           </li>
-        ))}
+        )))}
       </ul>
 
       <section>
-        <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Étapes (2–6 min)</h2>
+        <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">{xaRender("Étapes (2–6 min)")}</h2>
         <ol className="grid md:grid-cols-2 gap-3">
-          {STEPS.map(s => (
+          {xaRender(STEPS.map(s => (
             <li key={s.n}>
               <Link
                 to={s.to}
                 className="block rounded-xl border border-white/10 bg-white/[0.02] p-4 hover:border-cyan-400/30 transition-colors"
               >
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-[10px] text-zinc-600 font-mono">{s.n}</span>
-                  <span className="text-[10px] text-cyan-500/80">{s.to}</span>
+                  <span className="text-[10px] text-zinc-600 font-mono">{xaRender(s.n)}</span>
+                  <span className="text-[10px] text-cyan-500/80">{xaRender(s.to)}</span>
                 </div>
-                <h3 className="mt-1 text-white text-sm font-medium">{s.title}</h3>
-                <p className="mt-1 text-xs text-zinc-500 leading-relaxed">{s.body}</p>
+                <h3 className="mt-1 text-white text-sm font-medium">{xaRender(s.title)}</h3>
+                <p className="mt-1 text-xs text-zinc-500 leading-relaxed">{xaRender(s.body)}</p>
               </Link>
             </li>
-          ))}
+          )))}
         </ol>
       </section>
 
       <section>
-        <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Raccourcis</h2>
+        <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">{xaRender("Raccourcis")}</h2>
         <div className="flex flex-wrap gap-2">
-          {DEMO_PATH.map(p => (
+          {xaRender(DEMO_PATH.map(p => (
             <Link
               key={p.to}
               to={p.to}
               className="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-300 hover:border-cyan-400/40"
             >
-              {p.label}
-              <span className="ml-1 text-zinc-600">{p.hint}</span>
+              {xaRender(p.label)}
+              <span className="ml-1 text-zinc-600">{xaRender(p.hint)}</span>
             </Link>
-          ))}
+          )))}
         </div>
       </section>
 
       <section>
-        <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">Gates honnêtes</h2>
+        <h2 className="text-xs uppercase tracking-widest text-zinc-500 mb-3">{xaRender("Gates honnêtes")}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <tbody>
-              {GATES.map(g => (
+              {xaRender(GATES.map(g => (
                 <tr key={g.label} className="border-t border-white/5">
-                  <td className="py-2 pr-3 text-zinc-400">{g.label}</td>
-                  <td className={g.ok ? 'text-cyan-400' : 'text-amber-400/90'}>{g.value}</td>
+                  <td className="py-2 pr-3 text-zinc-400">{xaRender(g.label)}</td>
+                  <td className={g.ok ? 'text-cyan-400' : 'text-amber-400/90'}>{xaRender(g.value)}</td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
       </section>
 
       <p className="text-[11px] text-zinc-600 leading-relaxed">
-        Recap : docs/ANALYSE_DAPP_COMPLETE.md · Phase 4 : docs/MX8004_FIRST100_ALIGNMENT.md · SoT :
-        data/contracts.json. Pas un conseil en investissement. Tips ≠ investissement. Probe{' '}
-        {snap.ok ? (snap.degraded ? 'partial' : 'live') : 'cache'} {snap.probedAt}.
+        {xaRender("Recap : docs/ANALYSE_DAPP_COMPLETE.md · Phase 4 : docs/MX8004_FIRST100_ALIGNMENT.md · SoT : data/contracts.json. Pas un conseil en investissement. Tips ≠ investissement. Probe")}{xaRender(' ')}
+        {xaRender(snap.ok ? (snap.degraded ? 'partial' : 'live') : 'cache')} {xaRender(snap.probedAt)}.
       </p>
     </div>
   )

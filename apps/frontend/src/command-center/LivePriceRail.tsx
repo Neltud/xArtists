@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Overlay HTML 2D — EGLD USD · $TRO Spot USD · Ratio réserve (1 EGLD = X $TRO).
  * Badge LIVE → STALE si lastUpdated > 300s.
@@ -173,15 +174,13 @@ export default function LivePriceRail() {
         style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
       >
         <div className="flex items-center gap-1.5">
-          {pitch ? (
+          {xaRender(pitch ? (
             <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 text-amber-100 text-[8px] py-0.5 px-1.5 font-tech uppercase">
-              PITCH
-            </span>
+              {xaRender("PITCH ")}</span>
           ) : isLive ? (
             <span className="badge-live badge-live-on text-[8px] py-0.5 px-1.5">
               <span className="badge-live-dot" />
-              LIVE
-            </span>
+              {xaRender("LIVE ")}</span>
           ) : (
             <span
               className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 text-amber-200 text-[8px] py-0.5 px-1.5 font-tech uppercase tracking-wider"
@@ -191,17 +190,16 @@ export default function LivePriceRail() {
                   : `Dernière MAJ il y a ${Math.round((ageMs || 0) / 1000)}s`
               }
             >
-              STALE
-            </span>
-          )}
+              {xaRender("STALE ")}</span>
+          ))}
         </div>
-        {rows.map(row => (
+        {xaRender(rows.map(row => (
           <div key={row.k} className="border-t border-white/5 pt-1.5 first:border-0 first:pt-0">
-            <p className="text-[9px] uppercase tracking-wider text-zinc-500 leading-none">{row.k}</p>
-            <p className={`text-[11px] font-semibold tabular-nums ${row.accent}`}>{row.v}</p>
-            <p className="text-[8px] text-zinc-600">{row.sub}</p>
+            <p className="text-[9px] uppercase tracking-wider text-zinc-500 leading-none">{xaRender(row.k)}</p>
+            <p className={`text-[11px] font-semibold tabular-nums ${row.accent}`}>{xaRender(row.v)}</p>
+            <p className="text-[8px] text-zinc-600">{xaRender(row.sub)}</p>
           </div>
-        ))}
+        )))}
       </div>
     </div>
   )

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 import { memo } from 'react'
 import type { GuardianSnap } from '../../hooks/useLiaFastPath'
 
@@ -46,9 +47,9 @@ function GuardianKillBadge({
         role="status"
         aria-live={killed || tripped ? 'assertive' : 'polite'}
       >
-        <span className="font-bold tracking-wide">{label}</span>
-        <span className="opacity-80 mono">{reason}</span>
-        <span className="badge-gray">{live ? 'LIVE' : 'PAPER'}</span>
+        <span className="font-bold tracking-wide">{xaRender(label)}</span>
+        <span className="opacity-80 mono">{xaRender(reason)}</span>
+        <span className="badge-gray">{xaRender(live ? 'LIVE' : 'PAPER')}</span>
       </div>
     )
   }
@@ -61,37 +62,36 @@ function GuardianKillBadge({
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
         <h2 className="text-base font-bold flex items-center gap-2">
-          <span aria-hidden>🛡️</span> {label}
+          <span aria-hidden>🛡️</span> {xaRender(label)}
         </h2>
         <div className="flex gap-2 text-[10px]">
-          <span className={ok ? 'badge-green' : killed ? 'badge-red' : 'badge-gray'}>{ks}</span>
-          <span className="badge-gray">{live ? 'LIA_LIVE=1' : 'LIA_LIVE=0'}</span>
+          <span className={ok ? 'badge-green' : killed ? 'badge-red' : 'badge-gray'}>{xaRender(ks)}</span>
+          <span className="badge-gray">{xaRender(live ? 'LIA_LIVE=1' : 'LIA_LIVE=0')}</span>
         </div>
       </div>
       <p className="text-xs opacity-80 mb-3">
-        Guardian before Brain · anti death-spiral · live SOL/HL lev ≤ 1.5× · reset ops-only
-      </p>
+        {xaRender("Guardian before Brain · anti death-spiral · live SOL/HL lev ≤ 1.5× · reset ops-only ")}</p>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
         <div>
-          <p className="text-[10px] uppercase tracking-wide opacity-60">Reason</p>
-          <p className="font-semibold mono text-xs">{reason}</p>
+          <p className="text-[10px] uppercase tracking-wide opacity-60">{xaRender("Reason")}</p>
+          <p className="font-semibold mono text-xs">{xaRender(reason)}</p>
         </div>
         <div>
-          <p className="text-[10px] uppercase tracking-wide opacity-60">Spiral</p>
+          <p className="text-[10px] uppercase tracking-wide opacity-60">{xaRender("Spiral")}</p>
           <p className="font-semibold">
-            {guardian?.spiral_score != null ? guardian.spiral_score.toFixed(3) : '—'}
+            {xaRender(guardian?.spiral_score != null ? guardian.spiral_score.toFixed(3) : '—')}
           </p>
         </div>
         <div>
-          <p className="text-[10px] uppercase tracking-wide opacity-60">Lev.</p>
+          <p className="text-[10px] uppercase tracking-wide opacity-60">{xaRender("Lev.")}</p>
           <p className="font-semibold">
-            {guardian?.effective_leverage != null ? guardian.effective_leverage.toFixed(2) : '—'}
+            {xaRender(guardian?.effective_leverage != null ? guardian.effective_leverage.toFixed(2) : '—')}
           </p>
         </div>
         <div>
-          <p className="text-[10px] uppercase tracking-wide opacity-60">Max notional</p>
+          <p className="text-[10px] uppercase tracking-wide opacity-60">{xaRender("Max notional")}</p>
           <p className="font-semibold text-purple-300">
-            {guardian?.max_notional != null ? `$${guardian.max_notional.toFixed(0)}` : '—'}
+            {xaRender(guardian?.max_notional != null ? `$${guardian.max_notional.toFixed(0)}` : '—')}
           </p>
         </div>
       </div>

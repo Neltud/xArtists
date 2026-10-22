@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** MX-8008 Execution Sentinel — bridge lia-intent → Vellum journal */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -56,55 +57,54 @@ export default function Agent8008Panel() {
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-300/80">
-            Agent MX-8008
-          </p>
+            {xaRender("Agent MX-8008 ")}</p>
           <h2 className="text-lg font-semibold text-white mt-0.5">
-            {agent?.codename || AGENT_8008.codename}
+            {xaRender(agent?.codename || AGENT_8008.codename)}
           </h2>
           <p className="text-[12px] text-zinc-500 mt-1 max-w-md">
-            {agent?.role ||
-              'Route lia-intent → journal + workflow Vellum xartists-8008-intents · PEM Vellum only'}
+            {xaRender(agent?.role ||
+              'Route lia-intent → journal + workflow Vellum xartists-8008-intents · PEM Vellum only')}
           </p>
         </div>
         <SupernovaStatusBadge />
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {(agent?.capabilities || AGENT_8008.intents.slice(0, 6)).map(cap => (
+        {xaRender((agent?.capabilities || AGENT_8008.intents.slice(0, 6)).map(cap => (
           <span
             key={cap}
             className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] text-zinc-400"
           >
-            {cap}
+            {xaRender(cap)}
           </span>
-        ))}
+        )))}
       </div>
 
       <p className="text-[11px] text-zinc-600">
-        Status: <span className="text-zinc-400">{agent?.status || 'bridge_live'}</span>
-        {' · '}
-        Mode: <span className="text-zinc-400">{agent?.mode || 'paper'}</span>
-        {' · '}
-        Vellum webhook:{' '}
+        {xaRender("Status: ")}<span className="text-zinc-400">{xaRender(agent?.status || 'bridge_live')}</span>
+        {xaRender(' · ')}
+        {xaRender("Mode: ")}<span className="text-zinc-400">{xaRender(agent?.mode || 'paper')}</span>
+        {xaRender(' · ')}
+        {xaRender("Vellum webhook:")}{xaRender(' ')}
         <span className={webhook ? 'text-emerald-400' : 'text-amber-400/90'}>
-          {webhook ? 'configuré' : 'local journal only'}
+          {xaRender(webhook ? 'configuré' : 'local journal only')}
         </span>
       </p>
 
       <div className="rounded-xl border border-white/10 bg-black/30 p-2.5 space-y-1.5">
-        <p className="text-[10px] uppercase tracking-wider text-zinc-500">Derniers intents</p>
-        {journal.length === 0 ? (
-          <p className="text-[11px] text-zinc-600">Aucun encore — achat musée, location, tip…</p>
+        <p className="text-[10px] uppercase tracking-wider text-zinc-500">{xaRender("Derniers intents")}</p>
+        {xaRender(journal.length === 0 ? (
+          <p className="text-[11px] text-zinc-600">{xaRender("Aucun encore — achat musée, location, tip…")}</p>
         ) : (
           <ul className="space-y-1 max-h-28 overflow-y-auto">
-            {journal.slice(0, 6).map((j, i) => (
+            {xaRender(journal.slice(0, 6).map((j, i) => (
               <li key={i} className="text-[11px] text-zinc-400 flex justify-between gap-2">
-                <span className="text-zinc-200 truncate">{j.type}</span>
-                <span className="shrink-0 text-zinc-600">{j.vellum}</span>
+                <span className="text-zinc-200 truncate">{xaRender(j.type)}</span>
+                <span className="shrink-0 text-zinc-600">{xaRender(j.vellum)}</span>
               </li>
-            ))}
+            )))}
           </ul>
-        )}
+        ))}
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -113,14 +113,11 @@ export default function Agent8008Panel() {
           className="btn-secondary text-xs"
           onClick={() => dispatch8008('TIP_LIA', { raw: 'ping 8008 tip paper' })}
         >
-          Ping intent test
-        </button>
+          {xaRender("Ping intent test ")}</button>
         <Link to="/go-live" className="text-[11px] text-sky-300 hover:text-sky-200 underline-offset-2 hover:underline self-center">
-          GO_LIVE checklist
-        </Link>
+          {xaRender("GO_LIVE checklist ")}</Link>
         <Link to="/trading" className="text-[11px] text-zinc-500 hover:text-zinc-300 self-center">
-          Trade desk
-        </Link>
+          {xaRender("Trade desk ")}</Link>
       </div>
     </section>
   )

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Intent Feed — institutional trade log (SHADOW / SIMULATED only).
  * BUY emerald · SELL crimson · INFO slate.
@@ -131,12 +132,11 @@ export default function IntentFeedTerminal() {
     <section className="rounded-2xl border border-white/[0.06] bg-[#07070a] overflow-hidden">
       <div className="flex items-center justify-between gap-2 px-4 py-2.5 border-b border-white/[0.05]">
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-zinc-400">
-          Intent log
-        </p>
-        <span className="text-[10px] mono text-zinc-600">[SIMULATED] · paper</span>
+          {xaRender("Intent log ")}</p>
+        <span className="text-[10px] mono text-zinc-600">{xaRender("[SIMULATED] · paper")}</span>
       </div>
       <ul className="max-h-48 overflow-y-auto divide-y divide-white/[0.04]">
-        {lines
+        {xaRender(lines
           .slice()
           .reverse()
           .slice(0, 16)
@@ -148,19 +148,18 @@ export default function IntentFeedTerminal() {
                 className="flex items-start gap-2 px-4 py-2 text-[11px] font-mono"
               >
                 <span className={`shrink-0 mt-0.5 px-1.5 py-0.5 rounded border text-[9px] font-bold ${b.cls}`}>
-                  {b.label}
+                  {xaRender(b.label)}
                 </span>
-                <span className={sideClass(l.side)}>{asText(l.text)}</span>
+                <span className={sideClass(l.side)}>{xaRender(asText(l.text))}</span>
               </li>
             )
-          })}
-        {!lines.length && (
-          <li className="px-4 py-6 text-[12px] text-zinc-600 text-center">No shadow intents yet</li>
-        )}
+          }))}
+        {xaRender(!lines.length && (
+          <li className="px-4 py-6 text-[12px] text-zinc-600 text-center">{xaRender("No shadow intents yet")}</li>
+        ))}
       </ul>
       <p className="text-[10px] text-zinc-600 px-4 py-2 border-t border-white/[0.04]">
-        SHADOW MODE / SIMULATED DATA
-      </p>
+        {xaRender("SHADOW MODE / SIMULATED DATA ")}</p>
     </section>
   )
 }

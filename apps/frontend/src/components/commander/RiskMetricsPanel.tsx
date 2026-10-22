@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 import { memo } from 'react'
 import type { GuardianSnap } from '../../hooks/useLiaFastPath'
 
@@ -11,7 +12,7 @@ type Props = {
 function RiskMetricsPanel({ guardian, equityUsd, drawdown, mode }: Props) {
   return (
     <div className="card mb-4 border-white/10">
-      <h2 className="text-sm font-bold mb-3">📊 Risk metrics</h2>
+      <h2 className="text-sm font-bold mb-3">{xaRender("📊 Risk metrics")}</h2>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
         <Metric label="Equity" value={equityUsd != null ? `$${equityUsd.toFixed(0)}` : '—'} />
         <Metric
@@ -50,8 +51,8 @@ function RiskMetricsPanel({ guardian, equityUsd, drawdown, mode }: Props) {
 function Metric({ label, value, warn }: { label: string; value: string; warn?: boolean }) {
   return (
     <div className={`rounded-lg border px-2.5 py-2 ${warn ? 'border-amber-500/40 bg-amber-500/5' : 'border-white/5'}`}>
-      <p className="text-[10px] uppercase tracking-wide text-gray-500">{label}</p>
-      <p className={`font-semibold mono text-sm ${warn ? 'text-amber-300' : 'text-gray-100'}`}>{value}</p>
+      <p className="text-[10px] uppercase tracking-wide text-gray-500">{xaRender(label)}</p>
+      <p className={`font-semibold mono text-sm ${warn ? 'text-amber-300' : 'text-gray-100'}`}>{xaRender(value)}</p>
     </div>
   )
 }

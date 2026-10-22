@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Louer un mur (rentPay live ou réservation locale) puis accrocher jusqu'à N NFT.
  */
@@ -83,16 +84,14 @@ export default function VenueWallAssign({ onChanged }: { onChanged?: () => void 
     <section className="card space-y-4">
       <header className="space-y-1">
         <p className="text-[10px] uppercase tracking-wider text-cyan-400/80 font-semibold">
-          Venue · murs
-        </p>
-        <h2 className="text-lg font-semibold text-white">Louer un mur & accrocher des NFT</h2>
+          {xaRender("Venue · murs ")}</p>
+        <h2 className="text-lg font-semibold text-white">{xaRender("Louer un mur & accrocher des NFT")}</h2>
         <p className="text-[13px] text-zinc-400">
-          1. Loue (EGLD) ou réserve localement · 2. jusqu’à {max} NFT · 3. priorité dans le hall 3D.
-        </p>
+          {xaRender("1. Loue (EGLD) ou réserve localement · 2. jusqu’à ")}{xaRender(max)} {xaRender(" NFT · 3. priorité dans le hall 3D. ")}</p>
       </header>
 
       <div className="flex flex-wrap gap-2">
-        {VENUE_WALL_CATALOG.map(w => {
+        {xaRender(VENUE_WALL_CATALOG.map(w => {
           const on = owned.some(o => o.wallId === w.wallId)
           return (
             <button
@@ -105,74 +104,71 @@ export default function VenueWallAssign({ onChanged }: { onChanged?: () => void 
                   : 'border-white/10 text-zinc-400'
               }`}
             >
-              {w.label}
-              {on ? ' · ✓' : ''}
+              {xaRender(w.label)}
+              {xaRender(on ? ' · ✓' : '')}
             </button>
           )
-        })}
+        }))}
       </div>
 
       <div className="rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-[12px] text-zinc-400">
         <p>
-          <strong className="text-zinc-200">{wallLabel(wallId)}</strong> ·{' '}
-          <span className="mono">{wallId}</span>
+          <strong className="text-zinc-200">{xaRender(wallLabel(wallId))}</strong> ·{xaRender(' ')}
+          <span className="mono">{xaRender(wallId)}</span>
         </p>
-        <p className="mt-0.5">{catalog?.museumHint}</p>
+        <p className="mt-0.5">{xaRender(catalog?.museumHint)}</p>
         <p className="mt-1">
-          Statut :{' '}
-          {wallOwned ? (
+          {xaRender("Statut :")}{xaRender(' ')}
+          {xaRender(wallOwned ? (
             <span className="text-emerald-300">
-              {owned.find(o => o.wallId === wallId)?.mode === 'live' ? 'loué on-chain' : 'réservé local'}
+              {xaRender(owned.find(o => o.wallId === wallId)?.mode === 'live' ? 'loué on-chain' : 'réservé local')}
             </span>
           ) : (
-            <span className="text-amber-200">libre</span>
-          )}{' '}
-          · slots {slots.length}/{max}
+            <span className="text-amber-200">{xaRender("libre")}</span>
+          ))}{xaRender(' ')}
+          {xaRender("· slots ")}{xaRender(slots.length)}/{xaRender(max)}
         </p>
-        {!live && (
+        {xaRender(!live && (
           <p className="text-amber-200/80 mt-1">
-            SC venue non ouvert au public → réservation locale possible (pas un paiement).
-          </p>
-        )}
+            {xaRender("SC venue non ouvert au public → réservation locale possible (pas un paiement). ")}</p>
+        ))}
       </div>
 
-      {!wallOwned ? (
+      {xaRender(!wallOwned ? (
         <button
           type="button"
           className="btn-primary text-sm active:scale-[0.98]"
           disabled={pending}
           onClick={() => void onRent()}
         >
-          {pending
+          {xaRender(pending
             ? '…'
             : live
               ? `Louer · ${catalog?.priceEgld ?? 0.001} EGLD`
-              : 'Réserver sans paiement (local)'}
+              : 'Réserver sans paiement (local)')}
         </button>
       ) : (
-        <p className="text-[12px] text-emerald-200/90">Mur actif — coche les NFT à exposer.</p>
-      )}
+        <p className="text-[12px] text-emerald-200/90">{xaRender("Mur actif — coche les NFT à exposer.")}</p>
+      ))}
 
-      {error && <p className="text-[12px] text-red-400">{error}</p>}
+      {xaRender(error && <p className="text-[12px] text-red-400">{xaRender(error)}</p>)}
 
-      {!connected ? (
+      {xaRender(!connected ? (
         <button type="button" className="btn-secondary text-sm" onClick={requestOpenConnect}>
-          Connecter wallet
-        </button>
+          {xaRender("Connecter wallet ")}</button>
       ) : account.loading ? (
-        <p className="text-[12px] text-zinc-500">Chargement NFT…</p>
+        <p className="text-[12px] text-zinc-500">{xaRender("Chargement NFT…")}</p>
       ) : nfts.length === 0 ? (
         <p className="text-[12px] text-zinc-500">
-          Aucun NFT dans le wallet.{' '}
-          {canListBuyNft() && (
+          {xaRender("Aucun NFT dans le wallet.")}{xaRender(' ')}
+          {xaRender(canListBuyNft() && (
             <a href="#/marketplace" className="text-cyan-400 underline">
-              Marketplace
-            </a>
-          )}
+              {xaRender("Marketplace ")}</a>
+          ))}
         </p>
       ) : (
         <ul className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-          {nfts.map((n: NFT) => {
+          {xaRender(nfts.map((n: NFT) => {
             const id = n.identifier as string
             const on = slots.includes(id)
             const thumb = nftImageUrl(n)
@@ -186,7 +182,7 @@ export default function VenueWallAssign({ onChanged }: { onChanged?: () => void 
                     on ? 'border-cyan-400/50 bg-cyan-500/10' : 'border-white/10'
                   }`}
                 >
-                  {thumb ? (
+                  {xaRender(thumb ? (
                     <img
                       src={thumb}
                       alt=""
@@ -195,15 +191,15 @@ export default function VenueWallAssign({ onChanged }: { onChanged?: () => void 
                     />
                   ) : (
                     <div className="w-full aspect-square rounded-lg bg-zinc-900" />
-                  )}
-                  <p className="text-[10px] text-zinc-300 truncate mt-1">{n.name || id}</p>
-                  {on && <p className="text-[9px] text-cyan-300">Sur le mur</p>}
+                  ))}
+                  <p className="text-[10px] text-zinc-300 truncate mt-1">{xaRender(n.name || id)}</p>
+                  {xaRender(on && <p className="text-[9px] text-cyan-300">{xaRender("Sur le mur")}</p>)}
                 </button>
               </li>
             )
-          })}
+          }))}
         </ul>
-      )}
+      ))}
     </section>
   )
 }

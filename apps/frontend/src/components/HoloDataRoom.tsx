@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Salle holo 360° — éclairage fort mobile, zoom caméra au clic, modal inspect 2D HD.
  * Résilience: webglcontextlost / restored + retry UI.
@@ -310,7 +311,7 @@ export default function HoloDataRoom({
   if (failed) {
     return (
       <div className="rounded-2xl border border-white/10 bg-black/50 p-6 text-center text-sm text-zinc-400 space-y-2">
-        <p>WebGL indisponible — utilise le tape prix HTML ci-dessus.</p>
+        <p>{xaRender("WebGL indisponible — utilise le tape prix HTML ci-dessus.")}</p>
         <button
           type="button"
           className="btn-secondary text-xs"
@@ -320,8 +321,7 @@ export default function HoloDataRoom({
             setSceneKey(k => k + 1)
           }}
         >
-          Réessayer
-        </button>
+          {xaRender("Réessayer ")}</button>
       </div>
     )
   }
@@ -329,9 +329,9 @@ export default function HoloDataRoom({
   return (
     <div className="relative rounded-2xl overflow-hidden border border-cyan-500/20 bg-black/40" style={{ minHeight: height }}>
       <div ref={hostRef} className="w-full" style={{ height }} />
-      {contextLost && (
+      {xaRender(contextLost && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 bg-black/70 p-4">
-          <p className="text-xs text-amber-100 text-center">GPU context perdu</p>
+          <p className="text-xs text-amber-100 text-center">{xaRender("GPU context perdu")}</p>
           <button
             type="button"
             className="btn-primary text-xs"
@@ -340,10 +340,9 @@ export default function HoloDataRoom({
               setSceneKey(k => k + 1)
             }}
           >
-            Relancer 3D
-          </button>
+            {xaRender("Relancer 3D ")}</button>
         </div>
-      )}
+      ))}
     </div>
   )
 }

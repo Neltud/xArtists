@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Signaux LIA paper — marché · intent · examiner & signer xPortal (i18n).
  */
@@ -58,12 +59,11 @@ export default function LiaSignalPanel() {
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="text-[10px] uppercase tracking-[0.18em] text-cyan-300/90 font-tech">
-            LIA Signals · Blue Ribbon
-          </p>
-          <h3 className="text-sm font-semibold text-white">Arbitrage paper · non-custodial</h3>
+            {xaRender("LIA Signals · Blue Ribbon ")}</p>
+          <h3 className="text-sm font-semibold text-white">{xaRender("Arbitrage paper · non-custodial")}</h3>
         </div>
         <span className="text-[10px] text-emerald-200/90 border border-emerald-500/25 rounded-full px-2 py-0.5">
-          LIVE_TRADING={LIA_LIVE_TRADING ? 1 : 0}
+          {xaRender("LIVE_TRADING=")}{xaRender(LIA_LIVE_TRADING ? 1 : 0)}
         </span>
       </div>
 
@@ -71,35 +71,34 @@ export default function LiaSignalPanel() {
 
       <ol className="space-y-2 text-[12px] text-zinc-300">
         <li className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
-          <span className="text-[10px] uppercase text-zinc-500">1 · Signal marché</span>
-          <p className="mt-0.5">{marketSignal}</p>
+          <span className="text-[10px] uppercase text-zinc-500">{xaRender("1 · Signal marché")}</span>
+          <p className="mt-0.5">{xaRender(marketSignal)}</p>
         </li>
         <li className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
-          <span className="text-[10px] uppercase text-zinc-500">2 · LIA Intent</span>
-          <p className="mt-0.5 mono text-cyan-100/90">{intentLabel}</p>
+          <span className="text-[10px] uppercase text-zinc-500">{xaRender("2 · LIA Intent")}</span>
+          <p className="mt-0.5 mono text-cyan-100/90">{xaRender(intentLabel)}</p>
         </li>
         <li className="rounded-xl border border-white/10 bg-black/40 px-3 py-2 space-y-2">
-          <span className="text-[10px] uppercase text-zinc-500">3 · Execution trigger</span>
+          <span className="text-[10px] uppercase text-zinc-500">{xaRender("3 · Execution trigger")}</span>
           <button
             type="button"
             className="btn-primary text-xs min-h-[44px] w-full sm:w-auto"
             onClick={onExamine}
           >
-            {t('cc.sign')}
+            {xaRender(t('cc.sign'))}
           </button>
         </li>
       </ol>
 
-      {toast && (
+      {xaRender(toast && (
         <p className="text-[12px] text-amber-100/90 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2">
-          {toast}
+          {xaRender(toast)}
         </p>
-      )}
+      ))}
 
-      <p className="text-[10px] text-zinc-600 leading-relaxed">{LIA_BADGE}</p>
+      <p className="text-[10px] text-zinc-600 leading-relaxed">{xaRender(LIA_BADGE)}</p>
       <Link to="/command-center" className="text-[11px] text-cyan-300 hover:underline">
-        Ouvrir le journal d’intents →
-      </Link>
+        {xaRender("Ouvrir le journal d’intents → ")}</Link>
     </section>
   )
 }

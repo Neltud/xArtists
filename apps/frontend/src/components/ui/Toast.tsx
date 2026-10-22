@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Lightweight toast — success / error / info. No inline styles.
  */
@@ -30,9 +31,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   return (
     <ToastCtx.Provider value={api}>
-      {children}
+      {xaRender(children)}
       <div className="fixed bottom-20 right-3 z-[90] flex flex-col gap-2 max-w-sm pointer-events-none">
-        {items.map(t => (
+        {xaRender(items.map(t => (
           <div
             key={t.id}
             className={
@@ -43,9 +44,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                   : 'rounded-xl border border-white/15 bg-zinc-950/90 px-3 py-2 text-[13px] text-zinc-100'
             }
           >
-            {t.text}
+            {xaRender(t.text)}
           </div>
-        ))}
+        )))}
       </div>
     </ToastCtx.Provider>
   )

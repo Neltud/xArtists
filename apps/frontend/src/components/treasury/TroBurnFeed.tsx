@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * $TRO burn feed — JSON ops + total on-chain MultiversX (Burnify role).
  * Not a trading performance metric.
@@ -91,62 +92,55 @@ export default function TroBurnFeed() {
   return (
     <div className="card border-orange-500/25 mb-4">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-        <h3 className="text-sm font-bold">🔥 $TRO burn feed</h3>
-        {total != null && (
+        <h3 className="text-sm font-bold">{xaRender("🔥 $TRO burn feed")}</h3>
+        {xaRender(total != null && (
           <span className="text-xs text-orange-300 mono font-semibold">
-            Σ {total.toLocaleString(undefined, { maximumFractionDigits: 3 })} TRO
-          </span>
-        )}
+            Σ {xaRender(total.toLocaleString(undefined, { maximumFractionDigits: 3 }))} {xaRender(" TRO ")}</span>
+        ))}
       </div>
       <p className="text-[11px] text-zinc-500 mb-3">
-        Preuve de déflation on-chain · Burnify (ESDTRoleLocalBurn) · pas une métrique de performance
-      </p>
+        {xaRender("Preuve de déflation on-chain · Burnify (ESDTRoleLocalBurn) · pas une métrique de performance ")}</p>
 
-      {total != null && total > 0 && (
+      {xaRender(total != null && total > 0 && (
         <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 px-3 py-2 mb-3 text-xs text-zinc-300">
           <p>
             <span className="text-orange-200 font-semibold">
-              {total.toLocaleString(undefined, { maximumFractionDigits: 3 })} TRO
-            </span>{' '}
-            brûlés au total (champ <code className="text-[10px]">burnt</code> API MultiversX).
-          </p>
+              {xaRender(total.toLocaleString(undefined, { maximumFractionDigits: 3 }))} {xaRender(" TRO ")}</span>{xaRender(' ')}
+            {xaRender("brûlés au total (champ ")}<code className="text-[10px]">burnt</code> {xaRender(" API MultiversX). ")}</p>
           <p className="text-[10px] text-zinc-500 mt-1">
-            Source live · TRO-94c925 · protocole Burnify officiel
-          </p>
+            {xaRender("Source live · TRO-94c925 · protocole Burnify officiel ")}</p>
           <a
             href="https://explorer.multiversx.com/tokens/TRO-94c925"
             target="_blank"
             rel="noreferrer"
             className="inline-block mt-1.5 text-[11px] text-cyan-400/90 underline underline-offset-2"
           >
-            Explorer TRO ↗
-          </a>
+            {xaRender("Explorer TRO ↗ ")}</a>
         </div>
-      )}
+      ))}
 
-      {err && !doc && (
+      {xaRender(err && !doc && (
         <p className="text-xs text-zinc-500">
-          Feed JSON indisponible — total on-chain affiché si API OK.
-        </p>
-      )}
-      {events.length === 0 && total == null && (
-        <p className="text-xs text-zinc-500">Feed vide — en attente des premiers burns on-chain.</p>
-      )}
-      {events.length > 0 && (
+          {xaRender("Feed JSON indisponible — total on-chain affiché si API OK. ")}</p>
+      ))}
+      {xaRender(events.length === 0 && total == null && (
+        <p className="text-xs text-zinc-500">{xaRender("Feed vide — en attente des premiers burns on-chain.")}</p>
+      ))}
+      {xaRender(events.length > 0 && (
         <ul className="space-y-2 max-h-48 overflow-y-auto text-xs">
-          {events.slice(0, 20).map((e, i) => (
+          {xaRender(events.slice(0, 20).map((e, i) => (
             <li
               key={`${e.ts}-${e.tx}-${i}`}
               className="flex flex-wrap gap-2 border-b border-white/5 pb-1.5"
             >
-              <span className="text-zinc-500 mono">{e.ts ? e.ts.slice(0, 19) : '—'}</span>
+              <span className="text-zinc-500 mono">{xaRender(e.ts ? e.ts.slice(0, 19) : '—')}</span>
               <span className="font-semibold text-orange-300">
-                {e.amount_tro != null
+                {xaRender(e.amount_tro != null
                   ? `−${e.amount_tro.toLocaleString(undefined, { maximumFractionDigits: 3 })} TRO`
-                  : '—'}
+                  : '—')}
               </span>
-              {e.source && <span className="text-zinc-400">{e.source}</span>}
-              {e.tx && (
+              {xaRender(e.source && <span className="text-zinc-400">{xaRender(e.source)}</span>)}
+              {xaRender(e.tx && (
                 <a
                   href={`https://explorer.multiversx.com/transactions/${e.tx}`}
                   target="_blank"
@@ -155,14 +149,14 @@ export default function TroBurnFeed() {
                 >
                   tx
                 </a>
-              )}
+              ))}
             </li>
-          ))}
+          )))}
         </ul>
-      )}
+      ))}
       <p className="text-[10px] text-zinc-600 mt-2">
-        {onchainTotal != null && 'live API · '}
-        {doc?.updated && `json ${doc.updated}`}
+        {xaRender(onchainTotal != null && 'live API · ')}
+        {xaRender(doc?.updated && `json ${doc.updated}`)}
       </p>
     </div>
   )

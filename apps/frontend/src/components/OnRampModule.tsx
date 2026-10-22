@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * On-Ramp Euro — EUR → EGLD / USDC (MoonPay) + simulateur $TRO (swap paper).
  * Guest: conversion dynamique + CTA xPortal.
@@ -115,14 +116,12 @@ export default function OnRampModule({ compact = false, defaultEur = 50, classNa
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-300/90 font-tech">
-            On-Ramp Euro
-          </p>
-          <h3 className="text-base font-semibold text-white">Fiat → Crypto · MultiversX</h3>
-          {!compact && (
+            {xaRender("On-Ramp Euro ")}</p>
+          <h3 className="text-base font-semibold text-white">{xaRender("Fiat → Crypto · MultiversX")}</h3>
+          {xaRender(!compact && (
             <p className="text-[12px] text-zinc-400 mt-1 leading-relaxed">
-              EUR → EGLD / USDC via MoonPay. $TRO via swap après EGLD.
-            </p>
-          )}
+              {xaRender("EUR → EGLD / USDC via MoonPay. $TRO via swap après EGLD. ")}</p>
+          ))}
         </div>
         <span
           className={`shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-semibold ${
@@ -131,12 +130,12 @@ export default function OnRampModule({ compact = false, defaultEur = 50, classNa
               : 'border-amber-400/35 bg-amber-500/10 text-amber-100'
           }`}
         >
-          {connected ? 'Wallet lié' : 'Guest'}
+          {xaRender(connected ? 'Wallet lié' : 'Guest')}
         </span>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {(['EGLD', 'USDC', 'TRO'] as TargetAsset[]).map(a => (
+        {xaRender((['EGLD', 'USDC', 'TRO'] as TargetAsset[]).map(a => (
           <button
             key={a}
             type="button"
@@ -147,14 +146,13 @@ export default function OnRampModule({ compact = false, defaultEur = 50, classNa
                 : 'border-white/10 text-zinc-500 hover:text-white'
             }`}
           >
-            EUR → {a === 'TRO' ? '$TRO' : a}
+            {xaRender("EUR → ")}{xaRender(a === 'TRO' ? '$TRO' : a)}
           </button>
-        ))}
+        )))}
       </div>
 
       <label className="block text-[11px] text-zinc-500 space-y-1">
-        Montant EUR
-        <input
+        {xaRender("Montant EUR ")}<input
           type="number"
           min={20}
           max={5000}
@@ -167,31 +165,27 @@ export default function OnRampModule({ compact = false, defaultEur = 50, classNa
 
       <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 flex items-center justify-between gap-2">
         <div>
-          <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Tu reçois (approx.)</p>
+          <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{xaRender("Tu reçois (approx.)")}</p>
           <p className="text-lg font-semibold text-white tabular-nums">
-            {received.toLocaleString(undefined, { maximumFractionDigits: target === 'TRO' ? 0 : 4 })}{' '}
-            <span className="text-sm text-emerald-200/90">{target === 'TRO' ? '$TRO' : target}</span>
+            {xaRender(received.toLocaleString(undefined, { maximumFractionDigits: target === 'TRO' ? 0 : 4 }))}{xaRender(' ')}
+            <span className="text-sm text-emerald-200/90">{xaRender(target === 'TRO' ? '$TRO' : target)}</span>
           </p>
         </div>
         <p className="text-[10px] text-zinc-600 text-right max-w-[9rem]">
-          ~{rates[target].toFixed(target === 'EGLD' ? 2 : 4)} EUR / unité
-        </p>
+          ~{xaRender(rates[target].toFixed(target === 'EGLD' ? 2 : 4))} {xaRender(" EUR / unité ")}</p>
       </div>
 
-      {target === 'TRO' && (
+      {xaRender(target === 'TRO' && (
         <p className="text-[11px] text-amber-200/85 leading-relaxed">
-          $TRO n&apos;est pas listé en fiat direct. Achete EGLD puis swap sur xExchange / OneDex.
-        </p>
-      )}
+          {xaRender("$TRO n&apos;est pas listé en fiat direct. Achete EGLD puis swap sur xExchange / OneDex. ")}</p>
+      ))}
 
-      {!connected ? (
+      {xaRender(!connected ? (
         <div className="space-y-2">
           <p className="text-[11px] text-zinc-400">
-            Mode invité — estimation seule. Connecte xPortal pour l’achat Euro → crypto (MoonPay).
-          </p>
+            {xaRender("Mode invité — estimation seule. Connecte xPortal pour l’achat Euro → crypto (MoonPay). ")}</p>
           <button type="button" className="btn-primary w-full text-sm" onClick={() => requestOpenConnect()}>
-            Connecter xPortal pour acheter
-          </button>
+            {xaRender("Connecter xPortal pour acheter ")}</button>
         </div>
       ) : (
         <button
@@ -200,27 +194,26 @@ export default function OnRampModule({ compact = false, defaultEur = 50, classNa
           disabled={busy || (target !== 'TRO' && !moonOn)}
           onClick={() => void buy()}
         >
-          {busy
+          {xaRender(busy
             ? 'Ouverture…'
             : target === 'TRO'
               ? 'Guide swap → $TRO'
               : moonOn
                 ? `Acheter ${target} · ${eur} €`
-                : 'MoonPay non configuré'}
+                : 'MoonPay non configuré')}
         </button>
-      )}
+      ))}
 
-      {connected && address && (
+      {xaRender(connected && address && (
         <p className="text-[10px] mono text-zinc-600 truncate" title={address}>
-          Destination · {address.slice(0, 12)}…{address.slice(-6)}
+          {xaRender("Destination · ")}{xaRender(address.slice(0, 12))}…{xaRender(address.slice(-6))}
         </p>
-      )}
+      ))}
 
-      {!moonOn && (
+      {xaRender(!moonOn && (
         <p className="text-[10px] text-zinc-600">
-          Configure <code className="text-[9px]">VITE_MOONPAY_API_KEY</code> (GitHub Secrets / Pages).
-        </p>
-      )}
+          {xaRender("Configure ")}<code className="text-[9px]">VITE_MOONPAY_API_KEY</code> {xaRender(" (GitHub Secrets / Pages). ")}</p>
+      ))}
     </div>
   )
 }

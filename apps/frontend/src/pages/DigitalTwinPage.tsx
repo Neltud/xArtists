@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
  * Studio jumeau numérique — capture labo → job COLMAP → certificat → mint 1/1 paper.
  */
@@ -13,6 +14,8 @@ import { submitColmapJob, listPaperJobs } from '../lib/colmapJobClient'
 import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
 
 export default function DigitalTwinPage() {
+  xaUsePhraseLocale()
+
   const [title, setTitle] = useState('')
   const [artist, setArtist] = useState('')
   const [scaleBarCm, setScaleBarCm] = useState(20)
@@ -72,42 +75,40 @@ export default function DigitalTwinPage() {
   return (
     <div className="animate-fade-in space-y-6 pb-16 max-w-lg mx-auto">
       <header className="space-y-2">
-        <p className="section-label">Labo · jumeau numérique</p>
-        <h1 className="section-title display">Sculpture 1/1 certifiée</h1>
+        <p className="section-label">{xaRender("Labo · jumeau numérique")}</p>
+        <h1 className="section-title display">{xaRender("Sculpture 1/1 certifiée")}</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
-          Pipeline COLMAP / Meshroom (hors navigateur) + mire d’échelle → certificat{' '}
-          <strong className="text-zinc-300">metric-certified</strong> → mint NFT 1/1 paper.
-          L’approximation WebGL reste démo uniquement.
-        </p>
+          {xaRender("Pipeline COLMAP / Meshroom (hors navigateur) + mire d’échelle → certificat")}{xaRender(' ')}
+          <strong className="text-zinc-300">{xaRender("metric-certified")}</strong> {xaRender(" → mint NFT 1/1 paper. L’approximation WebGL reste démo uniquement. ")}</p>
       </header>
 
       <section className="rounded-2xl border border-cyan-500/25 bg-cyan-950/20 p-4 space-y-3 text-[13px] text-zinc-300">
-        <p className="text-[11px] uppercase tracking-[0.18em] text-cyan-300/90">Protocole labo</p>
+        <p className="text-[11px] uppercase tracking-[0.18em] text-cyan-300/90">{xaRender("Protocole labo")}</p>
         <ul className="list-disc pl-4 space-y-1 text-zinc-400">
-          <li>40–120 photos, chevauchement ≥ 60 %</li>
-          <li>Mire d’échelle connue (ex. 20,0 cm) dans le cadre</li>
-          <li>Worker GPU Akash / local COLMAP — pas de PEM</li>
-          <li>Hash SHA-256 du GLB dans le certificat</li>
-          <li>Mint on-chain seulement après GO_LIVE + audit SC</li>
+          <li>{xaRender("40–120 photos, chevauchement ≥ 60 %")}</li>
+          <li>{xaRender("Mire d’échelle connue (ex. 20,0 cm) dans le cadre")}</li>
+          <li>{xaRender("Worker GPU Akash / local COLMAP — pas de PEM")}</li>
+          <li>{xaRender("Hash SHA-256 du GLB dans le certificat")}</li>
+          <li>{xaRender("Mint on-chain seulement après GO_LIVE + audit SC")}</li>
         </ul>
         <p className="text-[11px] text-zinc-500">
-          Doc : <code className="text-zinc-400">docs/DIGITAL_TWIN_SCULPTURE.md</code>
+          {xaRender("Doc : ")}<code className="text-zinc-400">docs/DIGITAL_TWIN_SCULPTURE.md</code>
         </p>
       </section>
 
       <div className="card space-y-3">
         <label className="block space-y-1">
-          <span className="text-[11px] text-zinc-500">Titre sculpture</span>
+          <span className="text-[11px] text-zinc-500">{xaRender("Titre sculpture")}</span>
           <input
             className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
             value={title}
             onChange={e => setTitle(e.target.value)}
-            placeholder="Kouros · atelier…"
+            placeholder={xaLocalize("Kouros · atelier…")}
           />
         </label>
         <label className="block space-y-1">
-          <span className="text-[11px] text-zinc-500">Artiste</span>
+          <span className="text-[11px] text-zinc-500">{xaRender("Artiste")}</span>
           <input
             className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
             value={artist}
@@ -116,7 +117,7 @@ export default function DigitalTwinPage() {
         </label>
         <div className="grid grid-cols-2 gap-3">
           <label className="block space-y-1">
-            <span className="text-[11px] text-zinc-500">Mire échelle (cm)</span>
+            <span className="text-[11px] text-zinc-500">{xaRender("Mire échelle (cm)")}</span>
             <input
               type="number"
               min={1}
@@ -127,7 +128,7 @@ export default function DigitalTwinPage() {
             />
           </label>
           <label className="block space-y-1">
-            <span className="text-[11px] text-zinc-500">Nb vues (estim.)</span>
+            <span className="text-[11px] text-zinc-500">{xaRender("Nb vues (estim.)")}</span>
             <input
               type="number"
               min={8}
@@ -138,7 +139,7 @@ export default function DigitalTwinPage() {
           </label>
         </div>
         <label className="block space-y-1">
-          <span className="text-[11px] text-zinc-500">URLs images (1 par ligne)</span>
+          <span className="text-[11px] text-zinc-500">{xaRender("URLs images (1 par ligne)")}</span>
           <textarea
             className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white min-h-[100px] font-mono text-[11px]"
             value={urlsText}
@@ -149,61 +150,56 @@ export default function DigitalTwinPage() {
 
         <div className="flex flex-col gap-2">
           <button type="button" className="btn-primary w-full" onClick={submitLab}>
-            Soumettre job COLMAP (labo)
-          </button>
+            {xaRender("Soumettre job COLMAP (labo) ")}</button>
           <button
             type="button"
             className="rounded-xl border border-white/15 px-3 py-2 text-[13px] text-zinc-300"
             onClick={previewBrowser}
           >
-            Certificat browser-approx (démo)
-          </button>
+            {xaRender("Certificat browser-approx (démo) ")}</button>
         </div>
-        {msg && <p className="text-[12px] text-amber-100/90">{msg}</p>}
+        {xaRender(msg && <p className="text-[12px] text-amber-100/90">{xaRender(msg)}</p>)}
       </div>
 
-      {lastCert && (
+      {xaRender(lastCert && (
         <section className="rounded-2xl border border-white/10 bg-black/40 p-4 space-y-2 text-[12px]">
-          <p className="text-[11px] uppercase tracking-[0.15em] text-zinc-500">Certificat</p>
+          <p className="text-[11px] uppercase tracking-[0.15em] text-zinc-500">{xaRender("Certificat")}</p>
           <p className="text-white font-medium">
-            {lastCert.title} · grade <span className="text-cyan-300">{lastCert.grade}</span>
+            {xaRender(lastCert.title)} {xaRender(" · grade ")}<span className="text-cyan-300">{xaRender(lastCert.grade)}</span>
           </p>
-          <p className="text-zinc-400">{lastCert.disclaimer}</p>
-          {gate && (
+          <p className="text-zinc-400">{xaRender(lastCert.disclaimer)}</p>
+          {xaRender(gate && (
             <p className={gate.ok ? 'text-emerald-300' : 'text-rose-300'}>
-              Mint 1/1 : {gate.ok ? 'éligible paper' : gate.reason}
-            </p>
-          )}
-          <button type="button" className="btn-primary w-full" onClick={tryMint} disabled={!gate?.ok}>
-            Dispatch mint 1/1 paper
-          </button>
-        </section>
-      )}
-
-      {jobs.length > 0 && (
-        <section className="space-y-1 text-[11px] text-zinc-500">
-          <p className="uppercase tracking-[0.15em]">Jobs paper récents</p>
-          {jobs.slice(0, 5).map(j => (
-            <p key={'jobId' in j ? j.jobId : Math.random()}>
-              {'jobId' in j ? j.jobId : '?'} · {j.status}
-              {'message' in j && j.message ? ` — ${j.message.slice(0, 80)}` : ''}
+              {xaRender("Mint 1/1 : ")}{xaRender(gate.ok ? 'éligible paper' : gate.reason)}
             </p>
           ))}
+          <button type="button" className="btn-primary w-full" onClick={tryMint} disabled={!gate?.ok}>
+            {xaRender("Dispatch mint 1/1 paper ")}</button>
         </section>
-      )}
+      ))}
+
+      {xaRender(jobs.length > 0 && (
+        <section className="space-y-1 text-[11px] text-zinc-500">
+          <p className="uppercase tracking-[0.15em]">{xaRender("Jobs paper récents")}</p>
+          {xaRender(jobs.slice(0, 5).map(j => (
+            <p key={'jobId' in j ? j.jobId : Math.random()}>
+              {xaRender('jobId' in j ? j.jobId : '?')} · {xaRender(j.status)}
+              {xaRender('message' in j && j.message ? ` — ${j.message.slice(0, 80)}` : '')}
+            </p>
+          )))}
+        </section>
+      ))}
 
       <p className="text-[11px] text-zinc-600">
         <Link to="/museum" className="text-zinc-400 underline-offset-2 hover:underline">
-          Galerie
-        </Link>
-        {' · '}
+          {xaRender("Galerie ")}</Link>
+        {xaRender(' · ')}
         <Link to="/venues" className="text-zinc-400 underline-offset-2 hover:underline">
-          Location mur
-        </Link>
+          {xaRender("Location mur ")}</Link>
       </p>
 
       <section className="space-y-2 pt-4 border-t border-white/10">
-        <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Phygital · œuvre physique</p>
+        <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">{xaRender("Phygital · œuvre physique")}</p>
         <PhysicalNftCertifier />
       </section>
     </div>

@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react'
 import { DICTS } from './dictionaries'
+import { phrase, setPhraseLanguage, PhraseLanguageContext } from './phraseRuntime'
 import { LANGS, type Lang } from './types'
 
 const STORAGE = 'xartists_lang'
@@ -26,6 +27,7 @@ function isLang(v: string | null): v is Lang {
 }
 
 function detect(): Lang {
+  try { const urlLang=new URLSearchParams(window.location.search).get('lang');if(isLang(urlLang))return urlLang }catch{}
   try {
     const saved = localStorage.getItem(STORAGE)
     if (isLang(saved)) return saved
@@ -51,17 +53,20 @@ function interpolate(s: string, vars?: Record<string, string | number>): string 
   )
 }
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(() => detect())
+export function I18nProvider({ children, initialLang }: { children: ReactNode; initialLang?: Lang }) {
+  const [lang, setLangState] = useState<Lang>(() => initialLang || detect())
 
   const setLang = useCallback((l: Lang) => {
     setLangState(l)
     try {
       localStorage.setItem(STORAGE, l)
+      const url=new URL(window.location.href);url.searchParams.set('lang',l);window.history.replaceState(window.history.state,'',url.pathname+url.search+url.hash)
     } catch {
       /* */
     }
   }, [])
+
+  setPhraseLanguage(lang)
 
   const dir = LANGS.find(x => x.id === lang)?.dir || 'ltr'
 
@@ -75,14 +80,14 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       const d = DICTS[lang] || DICTS.fr
       // Fallback: current lang → English → French → raw key
       const raw = d[key] || DICTS.en[key] || DICTS.fr[key] || key
-      return interpolate(raw, vars)
+      return interpolate(phrase(raw, lang), vars)
     },
     [lang],
   )
 
   const api = useMemo(() => ({ lang, setLang, t, dir }), [lang, setLang, t, dir])
 
-  return <Ctx.Provider value={api}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={api}><PhraseLanguageContext.Provider value={lang}>{children}</PhraseLanguageContext.Provider></Ctx.Provider>
 }
 
 export function useI18n(): Api {

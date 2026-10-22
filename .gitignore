@@ -41,3 +41,7 @@ venv/
 
 # Locks (optional local)
 apps/frontend/bun.lock
+
+apps/frontend/.sites-runtime/
+
+apps/frontend/route-audit.json

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { setEmpireWallet } from '../store/empireStore'
 import {
@@ -271,7 +272,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         refreshSession,
       }}
     >
-      {children}
+      {xaRender(children)}
     </WalletContext.Provider>
   )
 }

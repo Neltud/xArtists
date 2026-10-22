@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * THE PULSE — source unique via usePulse (WS / HTTP / démo).
  */
@@ -13,12 +14,12 @@ export default function PulseStrip() {
       style={{ boxShadow: `inset 0 0 0 1px ${env.color_target}22` }}
     >
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">The Pulse</p>
+        <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">{xaRender("The Pulse")}</p>
         <span
           className="text-[10px] font-medium px-2 py-0.5 rounded-full border border-white/10"
           style={{ color: env.color_target }}
         >
-          {env.category.replace(/_/g, ' ')}
+          {xaRender(env.category.replace(/_/g, ' '))}
         </span>
       </div>
       <div className="flex items-center gap-3">
@@ -28,10 +29,10 @@ export default function PulseStrip() {
           aria-hidden
         />
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] text-zinc-200 truncate">{env.context || env.vibe}</p>
+          <p className="text-[13px] text-zinc-200 truncate">{xaRender(env.context || env.vibe)}</p>
           <p className="text-[10px] text-zinc-500">
-            sentiment {sentPct}% · {env.intensity} · source {source}
-            {connected ? ' · live' : ''}
+            {xaRender("sentiment ")}{xaRender(sentPct)}% · {xaRender(env.intensity)} {xaRender(" · source ")}{xaRender(source)}
+            {xaRender(connected ? ' · live' : '')}
           </p>
         </div>
       </div>

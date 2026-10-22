@@ -8,9 +8,12 @@ import { requestWebglPause, releaseWebglPause } from '../lib/webglPause'
 
 export default function WebglPauseBridge() {
   useEffect(() => {
+    let paused = false
     const check = () => {
       const open = document.querySelectorAll('[data-xartists-modal="1"]').length > 0
-      if (open) requestWebglPause()
+      if(open===paused)return
+      paused=open
+      if(open)requestWebglPause()
       else releaseWebglPause()
     }
     const mo = new MutationObserver(check)
@@ -18,7 +21,7 @@ export default function WebglPauseBridge() {
     check()
     return () => {
       mo.disconnect()
-      releaseWebglPause()
+      if(paused)releaseWebglPause()
     }
   }, [])
   return null

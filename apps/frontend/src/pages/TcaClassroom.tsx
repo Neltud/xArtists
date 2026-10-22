@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * TCA Classroom — hologram · prosody · lip-sync visemes · EMOTION
  * Sprint 1: ImmersiveErrorBoundary + MentorAskBar + ATC context badge.
@@ -310,52 +311,49 @@ export default function TcaClassroom() {
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-3 md:p-5">
           <header className="pointer-events-auto flex flex-wrap items-start justify-between gap-2">
             <div className="rounded-2xl border border-white/10 bg-black/45 backdrop-blur-md px-4 py-3 max-w-md">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-amber-200/80">TCA · Voice + hologram</p>
-              <h1 className="text-base md:text-lg font-semibold">{pack?.title || 'Masterclass'}</h1>
+              <p className="text-[10px] uppercase tracking-[0.22em] text-amber-200/80">{xaRender("TCA · Voice + hologram")}</p>
+              <h1 className="text-base md:text-lg font-semibold">{xaRender(pack?.title || 'Masterclass')}</h1>
               <p className="text-[11px] text-zinc-400 mt-0.5">
-                {prof?.display_name || professorId}
-                {prof?.epoch ? ` · ${prof.epoch}` : ''}
+                {xaRender(prof?.display_name || professorId)}
+                {xaRender(prof?.epoch ? ` · ${prof.epoch}` : '')}
               </p>
-              {month?.title ? <p className="text-[10px] text-zinc-500 mt-1">{month.title}</p> : null}
+              {xaRender(month?.title ? <p className="text-[10px] text-zinc-500 mt-1">{xaRender(month.title)}</p> : null)}
             </div>
             <div className="flex flex-col items-end gap-2">
               <span className="rounded-full border border-white/15 px-3 py-1 text-[10px] font-bold uppercase text-zinc-300">
-                {status}
+                {xaRender(status)}
               </span>
-              <span className="text-[10px] text-zinc-500 uppercase">{emotionLabel}</span>
+              <span className="text-[10px] text-zinc-500 uppercase">{xaRender(emotionLabel)}</span>
               <Link to="/tca" className="text-[11px] text-cyan-300/80 underline">
-                Exit
-              </Link>
+                {xaRender("Exit ")}</Link>
             </div>
           </header>
           <div className="flex flex-col items-center gap-3 pb-4">
-            {subtitle ? (
+            {xaRender(subtitle ? (
               <p className="max-w-2xl text-center text-sm text-amber-50/95 bg-black/55 backdrop-blur-md border border-white/10 rounded-xl px-5 py-3">
-                {subtitle}
+                {xaRender(subtitle)}
               </p>
-            ) : null}
+            ) : null)}
             <div className="pointer-events-auto flex items-center gap-3 rounded-full border border-white/10 bg-black/55 backdrop-blur-md px-4 py-2">
-              {!playing ? (
+              {xaRender(!playing ? (
                 <button type="button" className="text-[12px] font-semibold text-amber-200" onClick={start}>
-                  ▶ Start
-                </button>
+                  {xaRender("▶ Start ")}</button>
               ) : (
                 <button type="button" className="text-[12px] font-semibold text-zinc-200" onClick={pause}>
-                  ⏸ Pause
-                </button>
-              )}
-              <span className="text-[11px] tabular-nums text-zinc-500">{remaining}s</span>
+                  {xaRender("⏸ Pause ")}</button>
+              ))}
+              <span className="text-[11px] tabular-nums text-zinc-500">{xaRender(remaining)}s</span>
             </div>
           </div>
           <div className="pointer-events-auto absolute bottom-20 left-1/2 z-[80] w-[min(92vw,36rem)] -translate-x-1/2">
             <ImmersiveErrorBoundary area="rag">
               <MentorAskBar professorId={professorId} onCues={cues => { void cues }} />
             </ImmersiveErrorBoundary>
-            {tcaCtx?.video_id ? (
+            {xaRender(tcaCtx?.video_id ? (
               <p className="mt-1 text-center text-[10px] text-zinc-600">
-                Context: {tcaCtx.lesson_id} · yt {tcaCtx.video_id}
+                {xaRender("Context: ")}{xaRender(tcaCtx.lesson_id)} {xaRender(" · yt ")}{xaRender(tcaCtx.video_id)}
               </p>
-            ) : null}
+            ) : null)}
           </div>
         </div>
       </div>

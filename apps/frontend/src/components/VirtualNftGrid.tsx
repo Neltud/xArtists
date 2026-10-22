@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useRef, useMemo, useState, useEffect, type ReactNode } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 
@@ -63,11 +64,11 @@ export default function VirtualNftGrid<T>({
   if (items.length < threshold) {
     return (
       <div className={className}>
-        {items.map((item, i) => (
+        {xaRender(items.map((item, i) => (
           <div key={getKey(item, i)} className="nft-grid-item">
-            {renderItem(item, i)}
+            {xaRender(renderItem(item, i))}
           </div>
-        ))}
+        )))}
       </div>
     )
   }
@@ -86,7 +87,7 @@ export default function VirtualNftGrid<T>({
           position: 'relative',
         }}
       >
-        {virtualizer.getVirtualItems().map(vRow => {
+        {xaRender(virtualizer.getVirtualItems().map(vRow => {
           const row = rows[vRow.index] || []
           return (
             <div
@@ -105,18 +106,18 @@ export default function VirtualNftGrid<T>({
                 className={className}
                 style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
               >
-                {row.map((item, j) => {
+                {xaRender(row.map((item, j) => {
                   const idx = vRow.index * cols + j
                   return (
                     <div key={getKey(item, idx)} className="nft-grid-item">
-                      {renderItem(item, idx)}
+                      {xaRender(renderItem(item, idx))}
                     </div>
                   )
-                })}
+                }))}
               </div>
             </div>
           )
-        })}
+        }))}
       </div>
     </div>
   )

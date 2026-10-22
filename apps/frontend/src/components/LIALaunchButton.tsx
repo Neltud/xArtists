@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 import { useState, useRef, useEffect } from 'react'
 
 /**
@@ -14,6 +15,8 @@ import { useState, useRef, useEffect } from 'react'
 type CycleState = 'idle' | 'running' | 'done'
 
 export default function LIALaunchButton() {
+  xaUsePhraseLocale()
+
   const [open, setOpen] = useState(false)
   const [state, setState] = useState<CycleState>('idle')
   const [logs, setLogs] = useState<string[]>([])
@@ -90,11 +93,10 @@ export default function LIALaunchButton() {
         className="group relative inline-flex items-center gap-2 px-5 py-3 rounded-2xl font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:via-indigo-500 hover:to-purple-500 shadow-lg shadow-purple-600/30 transition-all hover:scale-[1.02] active:scale-95"
       >
         <span className="text-xl transition-transform group-hover:-translate-y-0.5">🚀</span>
-        Lancer cycle LIA
-      </button>
+        {xaRender("Lancer cycle LIA ")}</button>
 
       {/* Modal */}
-      {open && (
+      {xaRender(open && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
           onClick={closeModal}
@@ -108,14 +110,14 @@ export default function LIALaunchButton() {
               <div className="flex items-center gap-2">
                 <span className="text-xl">🚀</span>
                 <div>
-                  <p className="font-bold">Cycle LIA — Vellum Workflow</p>
-                  <p className="text-xs text-gray-500">Déclenchement du cycle agent LIA v6</p>
+                  <p className="font-bold">{xaRender("Cycle LIA — Vellum Workflow")}</p>
+                  <p className="text-xs text-gray-500">{xaRender("Déclenchement du cycle agent LIA v6")}</p>
                 </div>
               </div>
               <button
                 onClick={closeModal}
                 className="text-gray-500 hover:text-white text-xl leading-none px-2"
-                aria-label="Fermer"
+                aria-label={xaLocalize("Fermer")}
               >
                 ✕
               </button>
@@ -123,70 +125,67 @@ export default function LIALaunchButton() {
 
             {/* Modal body */}
             <div className="p-4">
-              {state === 'idle' ? (
+              {xaRender(state === 'idle' ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-300 mb-1">Prêt à lancer un cycle LIA.</p>
+                  <p className="text-gray-300 mb-1">{xaRender("Prêt à lancer un cycle LIA.")}</p>
                   <p className="text-xs text-gray-500 mb-6">
-                    Le cycle déclenche le workflow Vellum (agents trading / yield / marketplace).
-                  </p>
+                    {xaRender("Le cycle déclenche le workflow Vellum (agents trading / yield / marketplace). ")}</p>
                   <button
                     onClick={triggerCycle}
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 shadow-lg shadow-purple-600/30 transition-all hover:scale-[1.02] active:scale-95"
                   >
-                    <span className="text-xl">🚀</span> Déclencher maintenant
-                  </button>
+                    <span className="text-xl">🚀</span> {xaRender(" Déclencher maintenant ")}</button>
                 </div>
               ) : (
                 <>
                   {/* Status line */}
                   <div className="flex items-center gap-2 mb-3 text-sm">
-                    {state === 'running' ? (
+                    {xaRender(state === 'running' ? (
                       <>
                         <span className="w-3 h-3 rounded-full border-2 border-purple-400 border-t-transparent animate-spin" />
-                        <span className="text-purple-400 font-semibold">Cycle en cours d'exécution…</span>
+                        <span className="text-purple-400 font-semibold">{xaRender("Cycle en cours d'exécution…")}</span>
                       </>
                     ) : (
                       <>
                         <span className="w-3 h-3 rounded-full bg-green-400" />
-                        <span className="text-green-400 font-semibold">LIA cycle triggered</span>
+                        <span className="text-green-400 font-semibold">{xaRender("LIA cycle triggered")}</span>
                       </>
-                    )}
+                    ))}
                   </div>
 
                   {/* Scrollable Vellum logs */}
                   <div className="h-56 overflow-y-auto rounded-xl bg-[#0a0a0f] border border-[#2a2a3a] p-3 mono text-xs text-gray-300">
-                    {logs.length === 0 ? (
-                      <p className="text-gray-600">Waiting for Vellum workflow execution logs…</p>
+                    {xaRender(logs.length === 0 ? (
+                      <p className="text-gray-600">{xaRender("Waiting for Vellum workflow execution logs…")}</p>
                     ) : (
                       logs.map((line, i) => (
                         <p key={i} className="whitespace-pre-wrap break-all">
-                          {line}
+                          {xaRender(line)}
                         </p>
                       ))
-                    )}
-                    {state === 'running' && (
-                      <p className="text-gray-600 mt-1">Waiting for Vellum workflow execution logs…</p>
-                    )}
+                    ))}
+                    {xaRender(state === 'running' && (
+                      <p className="text-gray-600 mt-1">{xaRender("Waiting for Vellum workflow execution logs…")}</p>
+                    ))}
                     <div ref={logEndRef} />
                   </div>
 
                   <div className="flex justify-end gap-2 mt-4">
-                    <button onClick={closeModal} className="btn-secondary text-sm">Fermer</button>
-                    {state === 'done' && (
+                    <button onClick={closeModal} className="btn-secondary text-sm">{xaRender("Fermer")}</button>
+                    {xaRender(state === 'done' && (
                       <button
                         onClick={triggerCycle}
                         className="btn-primary text-sm"
                       >
-                        🔄 Relancer
-                      </button>
-                    )}
+                        {xaRender("🔄 Relancer ")}</button>
+                    ))}
                   </div>
                 </>
-              )}
+              ))}
             </div>
           </div>
         </div>
-      )}
+      ))}
     </>
   )
 }

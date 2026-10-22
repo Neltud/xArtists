@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * NFT agent orb — aura 4 modes from ambient state (bull/bear/reward/stable).
  */
@@ -35,21 +36,21 @@ export default function AgentNftOrb({
           className={`w-20 h-20 rounded-full border border-white/25 bg-black/50 flex items-center justify-center text-4xl ${a.pulse}`}
           aria-hidden
         >
-          {pack.icon}
+          {xaRender(pack.icon)}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="text-[10px] uppercase tracking-wider text-zinc-500">{t('cc.agent.visual')}</p>
+            <p className="text-[10px] uppercase tracking-wider text-zinc-500">{xaRender(t('cc.agent.visual'))}</p>
             <span className="text-[9px] rounded-full border border-white/15 px-1.5 py-0.5 text-zinc-400 font-tech">
-              {a.label}
+              {xaRender(a.label)}
             </span>
           </div>
           <p className="text-lg font-semibold text-white">
-            {pack.icon} {pack.name}
+            {xaRender(pack.icon)} {xaRender(pack.name)}
           </p>
-          <p className="text-[12px] text-zinc-400 line-clamp-2">{pack.tagline}</p>
+          <p className="text-[12px] text-zinc-400 line-clamp-2">{xaRender(pack.tagline)}</p>
           <p className="text-[11px] mt-1 tabular-nums text-zinc-500">
-            {staked ? '\u25cf staked \u00b7 clone arm\u00e9' : '\u25cb free \u00b7 stake pour claim'}
+            {xaRender(staked ? '\u25cf staked \u00b7 clone arm\u00e9' : '\u25cb free \u00b7 stake pour claim')}
           </p>
         </div>
       </div>

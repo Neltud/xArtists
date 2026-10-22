@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /** Poll execution telemetry — engine state + event feed. */
 import { useEffect, useMemo, useState } from 'react'
 import { asText } from '../../lib/safeRender'
@@ -75,8 +76,7 @@ export default function LiveExecutionFeed() {
     <section className="rounded-xl border border-orange-500/20 bg-orange-500/[0.04] p-3 space-y-3">
       <div className="flex flex-wrap justify-between gap-2 items-center">
         <p className="text-[10px] uppercase tracking-wider text-orange-200/90 font-semibold">
-          Live execution
-        </p>
+          {xaRender("Live execution ")}</p>
         <span
           className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${
             status.startsWith('Error')
@@ -86,53 +86,53 @@ export default function LiveExecutionFeed() {
                 : 'border-white/10 text-zinc-400'
           }`}
         >
-          {status}
+          {xaRender(status)}
         </span>
       </div>
-      {risk && (
+      {xaRender(risk && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
           <div className="rounded-lg bg-black/30 p-2">
-            <p className="text-zinc-500 text-[9px] uppercase">Drawdown</p>
+            <p className="text-zinc-500 text-[9px] uppercase">{xaRender("Drawdown")}</p>
             <p className="tabular-nums text-white">
-              {asText(((Number(risk.drawdown_pct) || 0) * 100).toFixed(2))}%
+              {xaRender(asText(((Number(risk.drawdown_pct) || 0) * 100).toFixed(2)))}%
             </p>
           </div>
           <div className="rounded-lg bg-black/30 p-2">
-            <p className="text-zinc-500 text-[9px] uppercase">Trades today</p>
-            <p className="tabular-nums text-white">{asText(risk.trades_today)}</p>
+            <p className="text-zinc-500 text-[9px] uppercase">{xaRender("Trades today")}</p>
+            <p className="tabular-nums text-white">{xaRender(asText(risk.trades_today))}</p>
           </div>
           <div className="rounded-lg bg-black/30 p-2">
-            <p className="text-zinc-500 text-[9px] uppercase">Daily loss</p>
-            <p className="tabular-nums text-white">{asText(risk.daily_loss_usd)}</p>
+            <p className="text-zinc-500 text-[9px] uppercase">{xaRender("Daily loss")}</p>
+            <p className="tabular-nums text-white">{xaRender(asText(risk.daily_loss_usd))}</p>
           </div>
           <div className="rounded-lg bg-black/30 p-2">
-            <p className="text-zinc-500 text-[9px] uppercase">Halt</p>
+            <p className="text-zinc-500 text-[9px] uppercase">{xaRender("Halt")}</p>
             <p className={risk.halt ? 'text-rose-400 font-bold' : 'text-emerald-400'}>
-              {risk.halt ? 'ON' : 'off'}
+              {xaRender(risk.halt ? 'ON' : 'off')}
             </p>
           </div>
         </div>
-      )}
+      ))}
       <ul className="max-h-48 overflow-y-auto space-y-1 text-[10px] mono">
-        {events.slice(0, 25).map((e, i) => (
+        {xaRender(events.slice(0, 25).map((e, i) => (
           <li key={`${e.ts}-${i}`} className="border-t border-white/5 pt-1 text-zinc-400">
-            <span className="text-zinc-600">{asText(e.ts)}</span>{' '}
-            <span className="text-orange-300">{asText(e.event)}</span>{' '}
-            {asText(e.label || e.strategy)} {asText(e.action)}
-            {e.tx_hash && (
+            <span className="text-zinc-600">{xaRender(asText(e.ts))}</span>{xaRender(' ')}
+            <span className="text-orange-300">{xaRender(asText(e.event))}</span>{xaRender(' ')}
+            {xaRender(asText(e.label || e.strategy))} {xaRender(asText(e.action))}
+            {xaRender(e.tx_hash && (
               <a
                 className="text-cyan-400 underline ml-1"
                 href={`https://explorer.multiversx.com/transactions/${e.tx_hash}`}
                 target="_blank"
                 rel="noreferrer"
               >
-                {e.tx_hash.slice(0, 10)}…
+                {xaRender(e.tx_hash.slice(0, 10))}…
               </a>
-            )}
-            {e.message && <span className="text-rose-400"> {asText(e.message)}</span>}
+            ))}
+            {xaRender(e.message && <span className="text-rose-400"> {xaRender(asText(e.message))}</span>)}
           </li>
-        ))}
-        {!events.length && <li className="text-zinc-600">No execution events yet</li>}
+        )))}
+        {xaRender(!events.length && <li className="text-zinc-600">{xaRender("No execution events yet")}</li>)}
       </ul>
     </section>
   )

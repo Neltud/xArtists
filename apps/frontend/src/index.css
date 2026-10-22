@@ -28,6 +28,47 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.music-player-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+}
+.music-player-panel {
+  max-width: 480px;
+  max-height: calc(100dvh - 24px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  overscroll-behavior: contain;
+}
+.music-player-video {
+  aspect-ratio: 16 / 9;
+  min-height: 200px;
+}
+.music-player-background {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 320px;
+  visibility: hidden;
+  pointer-events: none;
+}
+.music-player-toggle {
+  position: fixed;
+  z-index: 45;
+  right: max(12px, env(safe-area-inset-right, 0px));
+  bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  width: 44px;
+  height: 44px;
+}
+body:has(.museum-immersive-shell) .music-player-toggle {
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .title-glow {
   text-shadow: none;
 }
@@ -342,3 +383,5 @@ body {
   width: 100% !important;
   height: 100% !important;
 }
+
+body:has(.xa-museum-stage.is-fullscreen) .music-player-toggle { z-index: 115; }

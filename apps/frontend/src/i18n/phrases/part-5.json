@@ -1,0 +1,4612 @@
+{
+  "Locked": [
+    "Verrouillé",
+    "Locked",
+    "Bloqueado",
+    "Gesperrt",
+    "Заблокировано",
+    "Заблоковано",
+    "已锁定",
+    "مقفل"
+  ],
+  "CC room": [
+    "Salle CC",
+    "CC room",
+    "Sala CC",
+    "CC-Raum",
+    "Комната CC",
+    "Кімната CC",
+    "CC 房间",
+    "غرفة CC"
+  ],
+  "NEON BARS · GRID · PARTICLES · vert momentum · violet flow": [
+    "BARRES NÉON · GRILLE · PARTICULES · impulsion verte · flux violet",
+    "NEON BARS · GRID · PARTICLES · green momentum · purple flow",
+    "BARRAS NEÓN · CUADRÍCULA · PARTÍCULAS · impulso verde · flujo violeta",
+    "NEONBALKEN · RASTER · PARTIKEL · grüner Impuls · violetter Fluss",
+    "НЕОНОВЫЕ ПОЛОСЫ · СЕТКА · ЧАСТИЦЫ · зелёный импульс · фиолетовый поток",
+    "НЕОНОВІ СМУГИ · СІТКА · ЧАСТИНКИ · зелений імпульс · фіолетовий потік",
+    "霓虹条 · 网格 · 粒子 · 绿色动量 · 紫色流动",
+    "أشرطة نيون · شبكة · جسيمات · زخم أخضر · تدفق بنفسجي"
+  ],
+  "Intent journal ·": [
+    "Journal d’intentions ·",
+    "Intent journal ·",
+    "Diario de intenciones ·",
+    "Absichtsprotokoll ·",
+    "Журнал намерений ·",
+    "Журнал намірів ·",
+    "意向日志 ·",
+    "سجل النوايا ·"
+  ],
+  "EGLD · caps": [
+    "EGLD · plafonds",
+    "EGLD · caps",
+    "EGLD · límites",
+    "EGLD · Obergrenzen",
+    "EGLD · лимиты",
+    "EGLD · ліміти",
+    "EGLD · 上限",
+    "EGLD · حدود"
+  ],
+  "· ⚠️ autre adresse": [
+    "· ⚠️ autre adresse",
+    "· ⚠️ other address",
+    "· ⚠️ otra dirección",
+    "· ⚠️ andere Adresse",
+    "· ⚠️ другой адрес",
+    "· ⚠️ інша адреса",
+    "· ⚠️ 其他地址",
+    "· ⚠️ عنوان آخر"
+  ],
+  "text-emerald-300": [
+    "text-emerald-300",
+    "text-emerald-300",
+    "text-emerald-300",
+    "text-emerald-300",
+    "text-emerald-300",
+    "text-emerald-300",
+    "text-emerald-300",
+    "text-emerald-300"
+  ],
+  "TxHash (64 hex) après signature": [
+    "TxHash (64 hex) après signature",
+    "TxHash (64 hex) after signing",
+    "TxHash (64 hex) tras firmar",
+    "TxHash (64 Hex-Zeichen) nach Signatur",
+    "TxHash (64 hex) после подписи",
+    "TxHash (64 hex) після підпису",
+    "签名后的 TxHash（64 位十六进制）",
+    "TxHash ‏(64 hex) بعد التوقيع"
+  ],
+  "War room": [
+    "Salle de crise",
+    "War room",
+    "Sala de operaciones",
+    "Einsatzzentrale",
+    "Оперативный штаб",
+    "Оперативний штаб",
+    "作战室",
+    "غرفة العمليات"
+  ],
+  "· live=": [
+    "· live=",
+    "· live=",
+    "· live=",
+    "· live=",
+    "· live=",
+    "· live=",
+    "· live=",
+    "· live="
+  ],
+  "Tick décision": [
+    "Tick de décision",
+    "Decision tick",
+    "Ciclo de decisión",
+    "Entscheidungstakt",
+    "Такт решения",
+    "Такт рішення",
+    "决策周期",
+    "دورة القرار"
+  ],
+  "Fill shadow :": [
+    "Exécution simulée :",
+    "Shadow fill:",
+    "Ejecución simulada:",
+    "Simulierte Ausführung:",
+    "Теневое исполнение:",
+    "Тіньове виконання:",
+    "影子成交：",
+    "تنفيذ ظلي:"
+  ],
+  "Shadow": [
+    "Mode ombre",
+    "Shadow",
+    "Modo sombra",
+    "Schattenmodus",
+    "Теневой режим",
+    "Тіньовий режим",
+    "影子模式",
+    "وضع الظل"
+  ],
+  "Aucun fill — lance un tick.": [
+    "Aucune exécution — lance un tick.",
+    "No fills — run a tick.",
+    "Sin ejecuciones — inicia un ciclo.",
+    "Keine Ausführung — starte einen Takt.",
+    "Нет исполнений — запустите такт.",
+    "Немає виконань — запустіть такт.",
+    "尚无成交 — 运行一个周期。",
+    "لا تنفيذات — شغّل دورة."
+  ],
+  "Tape": [
+    "Flux des transactions",
+    "Trade tape",
+    "Flujo de operaciones",
+    "Handelsfeed",
+    "Лента сделок",
+    "Стрічка угод",
+    "成交流",
+    "شريط التداول"
+  ],
+  "✨ Mint avec AI Agent": [
+    "✨ Mint avec Agent IA",
+    "✨ Mint with AI Agent",
+    "✨ Acuñar con Agente IA",
+    "✨ Mit KI-Agent prägen",
+    "✨ Выпустить с ИИ-агентом",
+    "✨ Створити з ШІ-агентом",
+    "✨ 使用 AI 智能体铸造",
+    "✨ سكّ مع وكيل الذكاء الاصطناعي"
+  ],
+  "Trades shown are": [
+    "Les transactions affichées sont",
+    "Trades shown are",
+    "Las operaciones mostradas son",
+    "Angezeigte Trades sind",
+    "Показанные сделки —",
+    "Показані угоди —",
+    "所显示的交易为",
+    "الصفقات المعروضة هي"
+  ],
+  "Cancel": [
+    "Annuler",
+    "Cancel",
+    "Cancelar",
+    "Abbrechen",
+    "Отмена",
+    "Скасувати",
+    "取消",
+    "إلغاء"
+  ],
+  "Paper bid · pas un investissement": [
+    "Offre simulée · pas un investissement",
+    "Paper bid · not an investment",
+    "Oferta simulada · no es una inversión",
+    "Simuliertes Gebot · keine Anlage",
+    "Симуляция ставки · не инвестиция",
+    "Симуляція ставки · не інвестиція",
+    "模拟出价 · 非投资",
+    "عرض محاكى · ليس استثمارًا"
+  ],
+  "bridge_live": [
+    "bridge_live",
+    "bridge_live",
+    "bridge_live",
+    "bridge_live",
+    "bridge_live",
+    "bridge_live",
+    "bridge_live",
+    "bridge_live"
+  ],
+  "local journal only": [
+    "journal local uniquement",
+    "local journal only",
+    "solo diario local",
+    "nur lokales Protokoll",
+    "только локальный журнал",
+    "лише локальний журнал",
+    "仅本地日志",
+    "سجل محلي فقط"
+  ],
+  "Aperçu SAMPLE — connecte un pack Agent IA pour déverrouiller les salles et les TX.": [
+    "Aperçu SAMPLE — connecte un pack Agent IA pour déverrouiller les salles et les TX.",
+    "SAMPLE preview — connect an AI Agent Pack to unlock rooms and transactions.",
+    "Vista previa SAMPLE — conecta un Pack de Agente IA para desbloquear salas y transacciones.",
+    "SAMPLE-Vorschau — verbinde ein KI-Agentenpaket, um Räume und Transaktionen freizuschalten.",
+    "Предпросмотр SAMPLE — подключите пакет ИИ-агента, чтобы открыть комнаты и транзакции.",
+    "Попередній перегляд SAMPLE — підключіть пакет ШІ-агента, щоб відкрити кімнати й транзакції.",
+    "SAMPLE 预览 — 连接 AI 智能体套餐以解锁房间和交易。",
+    "معاينة SAMPLE — اربط باقة وكيل ذكاء اصطناعي لفتح الغرف والمعاملات."
+  ],
+  "Un pack Agent IA (Pulse / Yield / Sentinel) est requis.": [
+    "Un pack Agent IA (Pulse / Yield / Sentinel) est requis.",
+    "An AI Agent Pack (Pulse / Yield / Sentinel) is required.",
+    "Se necesita un Pack de Agente IA (Pulse / Yield / Sentinel).",
+    "Ein KI-Agentenpaket (Pulse / Yield / Sentinel) ist erforderlich.",
+    "Нужен пакет ИИ-агента (Pulse / Yield / Sentinel).",
+    "Потрібен пакет ШІ-агента (Pulse / Yield / Sentinel).",
+    "需要 AI 智能体套餐（Pulse / Yield / Sentinel）。",
+    "يلزم امتلاك باقة وكيل ذكاء اصطناعي (Pulse / Yield / Sentinel)."
+  ],
+  "Retirer": [
+    "Retirer",
+    "Withdraw",
+    "Retirar",
+    "Abheben",
+    "Вывести",
+    "Вивести",
+    "提取",
+    "سحب"
+  ],
+  "Agents on-chain": [
+    "Agents on-chain",
+    "On-chain agents",
+    "Agentes en cadena",
+    "On-Chain-Agenten",
+    "Агенты в блокчейне",
+    "Агенти в блокчейні",
+    "链上智能体",
+    "وكلاء على السلسلة"
+  ],
+  "Adresse": [
+    "Adresse",
+    "Address",
+    "Dirección",
+    "Adresse",
+    "Адрес",
+    "Адреса",
+    "地址",
+    "العنوان"
+  ],
+  "non live / codeHash KO —": [
+    "non actif / codeHash invalide —",
+    "not live / codeHash invalid —",
+    "inactivo / codeHash inválido —",
+    "nicht aktiv / codeHash ungültig —",
+    "не запущен / неверный codeHash —",
+    "не запущено / хибний codeHash —",
+    "尚未上线 / codeHash 无效 —",
+    "غير نشط / codeHash غير صالح —"
+  ],
+  "+ reçu explorer": [
+    "+ reçu dans l’explorateur",
+    "+ explorer receipt",
+    "+ recibo en el explorador",
+    "+ Beleg im Explorer",
+    "+ квитанция в обозревателе",
+    "+ квитанція в оглядачі",
+    "+ 浏览器收据",
+    "+ إيصال المستكشف"
+  ],
+  "text-purple-300 font-semibold": [
+    "text-purple-300 font-semibold",
+    "text-purple-300 font-semibold",
+    "text-purple-300 font-semibold",
+    "text-purple-300 font-semibold",
+    "text-purple-300 font-semibold",
+    "text-purple-300 font-semibold",
+    "text-purple-300 font-semibold",
+    "text-purple-300 font-semibold"
+  ],
+  "(achat Stripe / accès NFT). Signaux GSN. Ce n’est": [
+    "(achat Stripe / accès NFT). Signaux GSN. Ce n’est",
+    "(Stripe purchase / NFT access). GSN signals. This is not",
+    "(compra con Stripe / acceso NFT). Señales GSN. Esto no es",
+    "(Stripe-Kauf / NFT-Zugang). GSN-Signale. Dies ist kein",
+    "(покупка через Stripe / доступ по NFT). Сигналы GSN. Это не",
+    "(купівля через Stripe / доступ за NFT). Сигнали GSN. Це не",
+    "（Stripe 购买 / NFT 访问）。GSN 信号。这不是",
+    "(شراء عبر Stripe / وصول NFT). إشارات GSN. هذا ليس"
+  ],
+  "Sim rendement 1 an (paper)": [
+    "Sim rendement 1 an (simulation)",
+    "1-year return simulation (paper)",
+    "Simulación de rendimiento a 1 año",
+    "Renditesimulation für 1 Jahr",
+    "Симуляция доходности за 1 год",
+    "Симуляція дохідності за 1 рік",
+    "一年收益模拟",
+    "محاكاة العائد لسنة واحدة"
+  ],
+  "Status": [
+    "Statut",
+    "Status",
+    "Estado",
+    "Status",
+    "Статус",
+    "Статус",
+    "状态",
+    "الحالة"
+  ],
+  "destinations · plan horizontal": [
+    "destinations · plan horizontal",
+    "destinations · horizontal map",
+    "destinos · plano horizontal",
+    "Ziele · horizontaler Plan",
+    "направления · горизонтальный план",
+    "напрямки · горизонтальний план",
+    "目的地 · 水平地图",
+    "الوجهات · مخطط أفقي"
+  ],
+  "P(profit)": [
+    "P(bénéfice)",
+    "P(profit)",
+    "P(beneficio)",
+    "P(Gewinn)",
+    "P(прибыль)",
+    "P(прибуток)",
+    "P(盈利)",
+    "P(ربح)"
+  ],
+  "exposure": [
+    "exposition",
+    "exposure",
+    "exposición",
+    "Exposure",
+    "экспозиция",
+    "експозиція",
+    "敞口",
+    "الانكشاف"
+  ],
+  "Conquest": [
+    "Conquête",
+    "Conquest",
+    "Conquista",
+    "Eroberung",
+    "Завоевание",
+    "Підкорення",
+    "征途",
+    "الفتح"
+  ],
+  "Bridge XOXNO": [
+    "Passerelle XOXNO",
+    "XOXNO bridge",
+    "Puente XOXNO",
+    "XOXNO-Brücke",
+    "Мост XOXNO",
+    "Міст XOXNO",
+    "XOXNO 跨链桥",
+    "جسر XOXNO"
+  ],
+  "LIA = paper": [
+    "LIA = simulation",
+    "LIA = paper",
+    "LIA = simulación",
+    "LIA = Simulation",
+    "LIA = симуляция",
+    "LIA = симуляція",
+    "LIA = 模拟",
+    "LIA = محاكاة"
+  ],
+  "Packs + On-Ramp →": [
+    "Packs + Achat fiat →",
+    "Packs + On-Ramp →",
+    "Packs + Compra con fiat →",
+    "Pakete + Fiat-Einstieg →",
+    "Пакеты + покупка за фиат →",
+    "Пакети + купівля за фіат →",
+    "套餐 + 法币入金 →",
+    "الباقات + شراء بالعملة التقليدية →"
+  ],
+  "atomic ·": [
+    "atomique ·",
+    "atomic ·",
+    "atómico ·",
+    "atomar ·",
+    "атомарно ·",
+    "атомарно ·",
+    "原子化 ·",
+    "ذري ·"
+  ],
+  "EGLD ·": [
+    "EGLD ·",
+    "EGLD ·",
+    "EGLD ·",
+    "EGLD ·",
+    "EGLD ·",
+    "EGLD ·",
+    "EGLD ·",
+    "EGLD ·"
+  ],
+  "). Lancer": [
+    "). Lancer",
+    "). Run",
+    "). Iniciar",
+    "). Starten",
+    "). Запустить",
+    "). Запустити",
+    "）。运行",
+    "). تشغيل"
+  ],
+  "Equity": [
+    "Valeur nette",
+    "Equity",
+    "Patrimonio neto",
+    "Eigenkapital",
+    "Собственный капитал",
+    "Власний капітал",
+    "净值",
+    "صافي القيمة"
+  ],
+  "Session wallet": [
+    "Session wallet",
+    "Wallet session",
+    "Sesión de cartera",
+    "Wallet-Sitzung",
+    "Сессия кошелька",
+    "Сесія гаманця",
+    "钱包会话",
+    "جلسة المحفظة"
+  ],
+  "tokens": [
+    "jetons",
+    "tokens",
+    "tokens",
+    "Token",
+    "токены",
+    "токени",
+    "代币",
+    "رموز"
+  ],
+  "Mes NFTs en musée": [
+    "Mes NFT au musée",
+    "My NFTs in the museum",
+    "Mis NFT en el museo",
+    "Meine NFTs im Museum",
+    "Мои NFT в музее",
+    "Мої NFT у музеї",
+    "我的博物馆 NFT",
+    "رموز NFT الخاصة بي في المتحف"
+  ],
+  "Créer un Agent Pack (NFT limité)": [
+    "Créer un Pack Agent (NFT limité)",
+    "Create an Agent Pack (limited NFT)",
+    "Crear un Pack de Agente (NFT limitado)",
+    "Agentenpaket erstellen (limitiertes NFT)",
+    "Создать пакет агента (ограниченный NFT)",
+    "Створити пакет агента (лімітований NFT)",
+    "创建智能体套餐（限量 NFT）",
+    "إنشاء باقة وكيل (NFT محدود)"
+  ],
+  "Nom (opt.)": [
+    "Nom (facultatif)",
+    "Name (optional)",
+    "Nombre (opcional)",
+    "Name (optional)",
+    "Имя (необязательно)",
+    "Ім’я (необов’язково)",
+    "名称（可选）",
+    "الاسم (اختياري)"
+  ],
+  "Grok ↔ LIA · CrossScore": [
+    "Grok ↔ LIA · CrossScore",
+    "Grok ↔ LIA · CrossScore",
+    "Grok ↔ LIA · CrossScore",
+    "Grok ↔ LIA · CrossScore",
+    "Grok ↔ LIA · CrossScore",
+    "Grok ↔ LIA · CrossScore",
+    "Grok ↔ LIA · CrossScore",
+    "Grok ↔ LIA · CrossScore"
+  ],
+  "Parcours · points on-chain": [
+    "Parcours · points on-chain",
+    "Journey · on-chain points",
+    "Recorrido · puntos en cadena",
+    "Rundgang · On-Chain-Punkte",
+    "Маршрут · баллы в блокчейне",
+    "Маршрут · бали в блокчейні",
+    "探索 · 链上积分",
+    "المسار · نقاط على السلسلة"
+  ],
+  "Deja reclame aujourd hui": [
+    "Déjà réclamé aujourd’hui",
+    "Already claimed today",
+    "Ya reclamado hoy",
+    "Heute bereits abgeholt",
+    "Уже получено сегодня",
+    "Уже отримано сьогодні",
+    "今日已领取",
+    "تم الاستلام اليوم بالفعل"
+  ],
+  "Gouvernance SC :": [
+    "Gouvernance SC :",
+    "SC governance:",
+    "Gobernanza SC:",
+    "SC-Governance:",
+    "Управление SC:",
+    "Управління SC:",
+    "SC 治理：",
+    "حوكمة SC:"
+  ],
+  "text-amber-500/70": [
+    "text-amber-500/70",
+    "text-amber-500/70",
+    "text-amber-500/70",
+    "text-amber-500/70",
+    "text-amber-500/70",
+    "text-amber-500/70",
+    "text-amber-500/70",
+    "text-amber-500/70"
+  ],
+  "· Guardian above": [
+    "· Guardian au-dessus",
+    "· Guardian above",
+    "· Guardian arriba",
+    "· Guardian oben",
+    "· Guardian выше",
+    "· Guardian вище",
+    "· Guardian 在上方",
+    "· Guardian أعلاه"
+  ],
+  "Deux marketplaces": [
+    "Deux marketplaces",
+    "Two marketplaces",
+    "Dos mercados",
+    "Zwei Marktplätze",
+    "Два маркетплейса",
+    "Два маркетплейси",
+    "两个市场",
+    "سوقان"
+  ],
+  "Marketplace B": [
+    "Marketplace B",
+    "Marketplace B",
+    "Mercado B",
+    "Marktplatz B",
+    "Маркетплейс B",
+    "Маркетплейс B",
+    "市场 B",
+    "السوق B"
+  ],
+  "(safety)": [
+    "(sécurité)",
+    "(safety)",
+    "(seguridad)",
+    "(Sicherheit)",
+    "(безопасность)",
+    "(безпека)",
+    "（安全）",
+    "(الأمان)"
+  ],
+  "Stake TRO dust → explorer getTotalStaked": [
+    "Staker les reliquats TRO → explorateur getTotalStaked",
+    "Stake TRO dust → explorer getTotalStaked",
+    "Bloquear restos de TRO → explorador getTotalStaked",
+    "TRO-Restbeträge staken → Explorer getTotalStaked",
+    "Стейкинг остатков TRO → обозреватель getTotalStaked",
+    "Стейкінг залишків TRO → оглядач getTotalStaked",
+    "质押 TRO 零头 → 浏览器 getTotalStaked",
+    "رهن بقايا TRO → المستكشف getTotalStaked"
+  ],
+  "xArtists": [
+    "xArtists",
+    "xArtists",
+    "xArtists",
+    "xArtists",
+    "xArtists",
+    "xArtists",
+    "xArtists",
+    "xArtists"
+  ],
+  "Demo · MultiversX · Vellum paper": [
+    "Démo · MultiversX · Vellum simulé",
+    "Demo · MultiversX · Vellum paper",
+    "Demo · MultiversX · Vellum simulado",
+    "Demo · MultiversX · Vellum-Simulation",
+    "Демо · MultiversX · симуляция Vellum",
+    "Демо · MultiversX · симуляція Vellum",
+    "演示 · MultiversX · Vellum 模拟",
+    "عرض توضيحي · MultiversX · محاكاة Vellum"
+  ],
+  "Mentions légales": [
+    "Mentions légales",
+    "Legal notice",
+    "Aviso legal",
+    "Impressum",
+    "Правовая информация",
+    "Правова інформація",
+    "法律声明",
+    "إشعار قانوني"
+  ],
+  "feed externe · pas un pack LIA": [
+    "flux externe · pas un pack LIA",
+    "external feed · not a LIA pack",
+    "flujo externo · no es un pack LIA",
+    "externer Feed · kein LIA-Paket",
+    "внешний поток · не пакет LIA",
+    "зовнішній потік · не пакет LIA",
+    "外部信息流 · 非 LIA 套餐",
+    "تدفق خارجي · ليس باقة LIA"
+  ],
+  "text-green-400": [
+    "text-green-400",
+    "text-green-400",
+    "text-green-400",
+    "text-green-400",
+    "text-green-400",
+    "text-green-400",
+    "text-green-400",
+    "text-green-400"
+  ],
+  "Gas limit": [
+    "Limite de gas",
+    "Gas limit",
+    "Límite de gas",
+    "Gaslimit",
+    "Лимит газа",
+    "Ліміт газу",
+    "Gas 上限",
+    "حد الغاز"
+  ],
+  "les Agent Packs NFT (5–25 €).": [
+    "les Packs Agent NFT (5–25 €).",
+    "the NFT Agent Packs (€5–25).",
+    "los Packs de Agente NFT (5–25 €).",
+    "die NFT-Agentenpakete (5–25 €).",
+    "пакеты NFT-агентов (5–25 €).",
+    "пакети NFT-агентів (5–25 €).",
+    "NFT 智能体套餐（5–25 欧元）。",
+    "باقات وكيل NFT ‏(5–25 €)."
+  ],
+  "🛡️ Guardian BLOCK": [
+    "🛡️ Guardian BLOQUE",
+    "🛡️ Guardian BLOCK",
+    "🛡️ Guardian BLOQUEA",
+    "🛡️ Guardian BLOCKIERT",
+    "🛡️ Guardian БЛОКИРУЕТ",
+    "🛡️ Guardian БЛОКУЄ",
+    "🛡️ Guardian 阻止",
+    "🛡️ Guardian حظر"
+  ],
+  "DENY": [
+    "REFUSER",
+    "DENY",
+    "DENEGAR",
+    "ABLEHNEN",
+    "ОТКЛОНИТЬ",
+    "ВІДХИЛИТИ",
+    "拒绝",
+    "رفض"
+  ],
+  "Lev. effectif": [
+    "Levier effectif",
+    "Effective leverage",
+    "Apalancamiento efectivo",
+    "Effektiver Hebel",
+    "Фактическое плечо",
+    "Фактичне плече",
+    "实际杠杆",
+    "الرافعة الفعلية"
+  ],
+  "Activer le mode pitch (démo B2B)": [
+    "Activer le mode présentation (démo B2B)",
+    "Enable pitch mode (B2B demo)",
+    "Activar modo presentación (demo B2B)",
+    "Präsentationsmodus aktivieren (B2B-Demo)",
+    "Включить режим презентации (B2B-демо)",
+    "Увімкнути режим презентації (B2B-демо)",
+    "启用演示模式（B2B 演示）",
+    "تفعيل وضع العرض (عرض B2B)"
+  ],
+  "Wallet MultiversX": [
+    "Wallet MultiversX",
+    "MultiversX wallet",
+    "Cartera MultiversX",
+    "MultiversX-Wallet",
+    "Кошелёк MultiversX",
+    "Гаманець MultiversX",
+    "MultiversX 钱包",
+    "محفظة MultiversX"
+  ],
+  "Ex: « swap 1 EGLD USDC » · « tours » · « solde TRO »": [
+    "Ex. : « swap 1 EGLD USDC » · « tours » · « solde TRO »",
+    "E.g. “swap 1 EGLD USDC” · “tours” · “TRO balance”",
+    "Ej.: «swap 1 EGLD USDC» · «recorridos» · «saldo TRO»",
+    "Z. B. „swap 1 EGLD USDC“ · „Touren“ · „TRO-Guthaben“",
+    "Например: «swap 1 EGLD USDC» · «туры» · «баланс TRO»",
+    "Наприклад: «swap 1 EGLD USDC» · «тури» · «баланс TRO»",
+    "例如：“swap 1 EGLD USDC” · “导览” · “TRO 余额”",
+    "مثال: «swap 1 EGLD USDC» · «جولات» · «رصيد TRO»"
+  ],
+  "Guardian": [
+    "Guardian",
+    "Guardian",
+    "Guardian",
+    "Guardian",
+    "Guardian",
+    "Guardian",
+    "Guardian",
+    "Guardian"
+  ],
+  "Essaie : swap 1 EGLD USDC · tours · lightning · trading · buy 50 EGLD": [
+    "Essaie : swap 1 EGLD USDC · tours · lightning · trading · buy 50 EGLD",
+    "Try: swap 1 EGLD USDC · tours · lightning · trading · buy 50 EGLD",
+    "Prueba: swap 1 EGLD USDC · recorridos · lightning · operar · buy 50 EGLD",
+    "Probiere: swap 1 EGLD USDC · Touren · lightning · Handel · buy 50 EGLD",
+    "Попробуйте: swap 1 EGLD USDC · туры · lightning · торговля · buy 50 EGLD",
+    "Спробуйте: swap 1 EGLD USDC · тури · lightning · торгівля · buy 50 EGLD",
+    "试试：swap 1 EGLD USDC · 导览 · lightning · 交易 · buy 50 EGLD",
+    "جرّب: swap 1 EGLD USDC · جولات · lightning · تداول · buy 50 EGLD"
+  ],
+  "LIA v6": [
+    "LIA v6",
+    "LIA v6",
+    "LIA v6",
+    "LIA v6",
+    "LIA v6",
+    "LIA v6",
+    "LIA v6",
+    "LIA v6"
+  ],
+  "Déclenchement du cycle agent LIA v6": [
+    "Déclenchement du cycle agent LIA v6",
+    "Triggering LIA v6 agent cycle",
+    "Iniciando el ciclo del agente LIA v6",
+    "LIA-v6-Agentenzyklus wird gestartet",
+    "Запуск цикла агента LIA v6",
+    "Запуск циклу агента LIA v6",
+    "正在触发 LIA v6 智能体周期",
+    "بدء دورة وكيل LIA v6"
+  ],
+  "LIA cycle triggered": [
+    "Cycle LIA déclenché",
+    "LIA cycle triggered",
+    "Ciclo LIA iniciado",
+    "LIA-Zyklus ausgelöst",
+    "Цикл LIA запущен",
+    "Цикл LIA запущено",
+    "LIA 周期已触发",
+    "تم بدء دورة LIA"
+  ],
+  "Rafraîchir": [
+    "Rafraîchir",
+    "Refresh",
+    "Actualizar",
+    "Aktualisieren",
+    "Обновить",
+    "Оновити",
+    "刷新",
+    "تحديث"
+  ],
+  "text-amber-200": [
+    "text-amber-200",
+    "text-amber-200",
+    "text-amber-200",
+    "text-amber-200",
+    "text-amber-200",
+    "text-amber-200",
+    "text-amber-200",
+    "text-amber-200"
+  ],
+  "strategy ·": [
+    "stratégie ·",
+    "strategy ·",
+    "estrategia ·",
+    "Strategie ·",
+    "стратегия ·",
+    "стратегія ·",
+    "策略 ·",
+    "استراتيجية ·"
+  ],
+  "Studio Phygital": [
+    "Studio phygital",
+    "Phygital Studio",
+    "Estudio físico-digital",
+    "Phygital-Studio",
+    "Физико-цифровая студия",
+    "Фізично-цифрова студія",
+    "虚实融合工作室",
+    "استوديو مادي رقمي"
+  ],
+  "Mode": [
+    "Mode",
+    "Mode",
+    "Modo",
+    "Modus",
+    "Режим",
+    "Режим",
+    "模式",
+    "الوضع"
+  ],
+  "Best edge": [
+    "Meilleur avantage",
+    "Best edge",
+    "Mejor ventaja",
+    "Bester Vorteil",
+    "Лучшее преимущество",
+    "Найкраща перевага",
+    "最佳优势",
+    "أفضل ميزة"
+  ],
+  "📊 Séries paper ($": [
+    "📊 Séries simulées ($",
+    "📊 Paper series ($",
+    "📊 Series simuladas ($",
+    "📊 Simulationsreihen ($",
+    "📊 Симулированные серии ($",
+    "📊 Симульовані серії ($",
+    "📊 模拟序列（$",
+    "📊 سلاسل محاكاة ($"
+  ],
+  "Brief": [
+    "Résumé",
+    "Brief",
+    "Resumen",
+    "Kurzbericht",
+    "Сводка",
+    "Зведення",
+    "简报",
+    "موجز"
+  ],
+  "Chemin LIA (paper)": [
+    "Chemin LIA (simulation)",
+    "LIA path (paper)",
+    "Ruta LIA (simulación)",
+    "LIA-Pfad (Simulation)",
+    "Путь LIA (симуляция)",
+    "Шлях LIA (симуляція)",
+    "LIA 路径（模拟）",
+    "مسار LIA (محاكاة)"
+  ],
+  "BLOCK": [
+    "BLOQUER",
+    "BLOCK",
+    "BLOQUEAR",
+    "BLOCKIEREN",
+    "БЛОКИРОВАТЬ",
+    "БЛОКУВАТИ",
+    "阻止",
+    "حظر"
+  ],
+  "Board": [
+    "Tableau",
+    "Board",
+    "Panel",
+    "Übersicht",
+    "Панель",
+    "Панель",
+    "面板",
+    "اللوحة"
+  ],
+  "Balance": [
+    "Solde",
+    "Balance",
+    "Saldo",
+    "Guthaben",
+    "Баланс",
+    "Баланс",
+    "余额",
+    "الرصيد"
+  ],
+  "Portfolio protocole": [
+    "Portefeuille du protocole",
+    "Protocol portfolio",
+    "Cartera del protocolo",
+    "Protokollportfolio",
+    "Портфель протокола",
+    "Портфель протоколу",
+    "协议投资组合",
+    "محفظة البروتوكول"
+  ],
+  "Bitcoin Lightning · MCP": [
+    "Bitcoin Lightning · MCP",
+    "Bitcoin Lightning · MCP",
+    "Bitcoin Lightning · MCP",
+    "Bitcoin Lightning · MCP",
+    "Bitcoin Lightning · MCP",
+    "Bitcoin Lightning · MCP",
+    "Bitcoin Lightning · MCP",
+    "Bitcoin Lightning · MCP"
+  ],
+  "npm package ↗": [
+    "paquet npm ↗",
+    "npm package ↗",
+    "paquete npm ↗",
+    "npm-Paket ↗",
+    "пакет npm ↗",
+    "пакет npm ↗",
+    "npm 包 ↗",
+    "حزمة npm ↗"
+  ],
+  "Aucune action paper chargée.": [
+    "Aucune action simulée chargée.",
+    "No paper action loaded.",
+    "No hay acciones simuladas cargadas.",
+    "Keine simulierte Aktion geladen.",
+    "Нет загруженных действий симуляции.",
+    "Немає завантажених дій симуляції.",
+    "未加载模拟操作。",
+    "لم يتم تحميل أي إجراء محاكاة."
+  ],
+  "Annuler": [
+    "Annuler",
+    "Cancel",
+    "Cancelar",
+    "Abbrechen",
+    "Отмена",
+    "Скасувати",
+    "取消",
+    "إلغاء"
+  ],
+  "Accès simplifié": [
+    "Accès simplifié",
+    "Simplified access",
+    "Acceso simplificado",
+    "Vereinfachter Zugang",
+    "Упрощённый доступ",
+    "Спрощений доступ",
+    "简易访问",
+    "وصول مبسّط"
+  ],
+  "Lecture seule — coller erd1": [
+    "Lecture seule — coller erd1",
+    "Read-only — paste erd1",
+    "Solo lectura — pega erd1",
+    "Nur lesen — erd1 einfügen",
+    "Только чтение — вставьте erd1",
+    "Лише читання — вставте erd1",
+    "只读 — 粘贴 erd1",
+    "للقراءة فقط — الصق erd1"
+  ],
+  "Ouvrir Web Wallet MVX ↗": [
+    "Ouvrir Web Wallet MVX ↗",
+    "Open MVX Web Wallet ↗",
+    "Abrir Web Wallet MVX ↗",
+    "MVX Web Wallet öffnen ↗",
+    "Открыть MVX Web Wallet ↗",
+    "Відкрити MVX Web Wallet ↗",
+    "打开 MVX Web Wallet ↗",
+    "فتح MVX Web Wallet ↗"
+  ],
+  "List/Buy gated — set VITE_MARKETPLACE_CODEHASH_OK": [
+    "Vente/achat verrouillés — définir VITE_MARKETPLACE_CODEHASH_OK",
+    "List/Buy gated — set VITE_MARKETPLACE_CODEHASH_OK",
+    "Publicar/comprar bloqueado — configura VITE_MARKETPLACE_CODEHASH_OK",
+    "Einstellen/Kaufen gesperrt — VITE_MARKETPLACE_CODEHASH_OK setzen",
+    "Продажа/покупка закрыты — задайте VITE_MARKETPLACE_CODEHASH_OK",
+    "Продаж/купівлю закрито — задайте VITE_MARKETPLACE_CODEHASH_OK",
+    "上架/购买受限 — 设置 VITE_MARKETPLACE_CODEHASH_OK",
+    "الإدراج/الشراء مقيّد — اضبط VITE_MARKETPLACE_CODEHASH_OK"
+  ],
+  "id=": [
+    "id=",
+    "id=",
+    "id=",
+    "id=",
+    "id=",
+    "id=",
+    "id=",
+    "id="
+  ],
+  "Carte / Apple Pay ·": [
+    "Carte / Apple Pay ·",
+    "Card / Apple Pay ·",
+    "Tarjeta / Apple Pay ·",
+    "Karte / Apple Pay ·",
+    "Карта / Apple Pay ·",
+    "Картка / Apple Pay ·",
+    "银行卡 / Apple Pay ·",
+    "بطاقة / Apple Pay ·"
+  ],
+  "Connecte ton wallet pour lister tes actifs.": [
+    "Connecte ton wallet pour lister tes actifs.",
+    "Connect your wallet to list your assets.",
+    "Conecta tu cartera para listar tus activos.",
+    "Verbinde dein Wallet, um deine Vermögenswerte anzuzeigen.",
+    "Подключите кошелёк, чтобы увидеть активы.",
+    "Підключіть гаманець, щоб переглянути активи.",
+    "连接钱包以列出资产。",
+    "اربط محفظتك لعرض أصولك."
+  ],
+  "Untitled": [
+    "Sans titre",
+    "Untitled",
+    "Sin título",
+    "Ohne Titel",
+    "Без названия",
+    "Без назви",
+    "无标题",
+    "بدون عنوان"
+  ],
+  "Fee market estimé": [
+    "Frais de marché estimés",
+    "Estimated marketplace fee",
+    "Comisión de mercado estimada",
+    "Geschätzte Marktplatzgebühr",
+    "Расчётная комиссия рынка",
+    "Орієнтовна комісія ринку",
+    "预计市场费用",
+    "رسوم السوق التقديرية"
+  ],
+  "Withdraw bid": [
+    "Retirer l’offre",
+    "Withdraw bid",
+    "Retirar oferta",
+    "Gebot zurückziehen",
+    "Отозвать ставку",
+    "Відкликати ставку",
+    "撤回出价",
+    "سحب العرض"
+  ],
+  "Voir TX explorer": [
+    "Voir la TX dans l’explorateur",
+    "View transaction in explorer",
+    "Ver TX en el explorador",
+    "Transaktion im Explorer ansehen",
+    "Смотреть транзакцию в обозревателе",
+    "Переглянути транзакцію в оглядачі",
+    "在浏览器中查看交易",
+    "عرض المعاملة في المستكشف"
+  ],
+  "LIA Ops": [
+    "Opérations LIA",
+    "LIA Ops",
+    "Operaciones LIA",
+    "LIA-Betrieb",
+    "Операции LIA",
+    "Операції LIA",
+    "LIA 运营",
+    "عمليات LIA"
+  ],
+  "empty": [
+    "vide",
+    "empty",
+    "vacío",
+    "leer",
+    "пусто",
+    "порожньо",
+    "空",
+    "فارغ"
+  ],
+  "Wallet lié": [
+    "Wallet lié",
+    "Linked wallet",
+    "Cartera vinculada",
+    "Verknüpftes Wallet",
+    "Привязанный кошелёк",
+    "Прив’язаний гаманець",
+    "已关联钱包",
+    "محفظة مرتبطة"
+  ],
+  "$TRO n&apos;est pas listé en fiat direct. Achete EGLD puis swap sur xExchange / OneDex.": [
+    "$TRO n’est pas disponible en achat fiat direct. Achète EGLD puis échange sur xExchange / OneDex.",
+    "$TRO is not available for direct fiat purchase. Buy EGLD, then swap on xExchange / OneDex.",
+    "$TRO no se puede comprar directamente con fiat. Compra EGLD y cámbialo en xExchange / OneDex.",
+    "$TRO ist nicht direkt mit Fiat erhältlich. Kaufe EGLD und tausche auf xExchange / OneDex.",
+    "$TRO нельзя купить напрямую за фиат. Купите EGLD и обменяйте на xExchange / OneDex.",
+    "$TRO не можна купити напряму за фіат. Купіть EGLD та обміняйте на xExchange / OneDex.",
+    "$TRO 不支持直接用法币购买。请先购买 EGLD，再在 xExchange / OneDex 兑换。",
+    "لا يتوفر $TRO للشراء المباشر بالعملة التقليدية. اشترِ EGLD ثم بادله عبر xExchange / OneDex."
+  ],
+  "Destination ·": [
+    "Destination ·",
+    "Destination ·",
+    "Destino ·",
+    "Ziel ·",
+    "Назначение ·",
+    "Призначення ·",
+    "目的地 ·",
+    "الوجهة ·"
+  ],
+  "WAIT": [
+    "ATTENDRE",
+    "WAIT",
+    "ESPERAR",
+    "WARTEN",
+    "ОЖИДАНИЕ",
+    "ОЧІКУВАННЯ",
+    "等待",
+    "انتظار"
+  ],
+  "Moniteur ·": [
+    "Moniteur ·",
+    "Monitor ·",
+    "Monitor ·",
+    "Monitor ·",
+    "Монитор ·",
+    "Монітор ·",
+    "监控 ·",
+    "المراقب ·"
+  ],
+  "Intensité": [
+    "Intensité",
+    "Intensity",
+    "Intensidad",
+    "Intensität",
+    "Интенсивность",
+    "Інтенсивність",
+    "强度",
+    "الشدة"
+  ],
+  "Pack ouvert · paper": [
+    "Pack ouvert · simulation",
+    "Pack open · paper",
+    "Pack abierto · simulación",
+    "Paket geöffnet · Simulation",
+    "Пакет открыт · симуляция",
+    "Пакет відкрито · симуляція",
+    "套餐已打开 · 模拟",
+    "الباقة مفتوحة · محاكاة"
+  ],
+  "(accès, signaux, expérience). Ce ne sont pas des titres financiers, ni une part de fonds. Toute allocation ou reward LIA est discrétionnaire — aucune promesse de rendement. La revente éventuelle d’un NFT agent se fait sur le marketplace comme œuvre / utilitaire, au prix libre entre utilisateurs.": [
+    "(accès, signaux, expérience). Ce ne sont pas des titres financiers, ni une part de fonds. Toute allocation ou récompense LIA est discrétionnaire — aucune promesse de rendement. La revente éventuelle d’un NFT agent se fait sur le marketplace comme œuvre / utilitaire, au prix libre entre utilisateurs.",
+    "(access, signals, experience). These are not securities or fund shares. Any LIA allocation or reward is discretionary — no returns are promised. An agent NFT may be resold on the marketplace as artwork / utility at a price freely agreed between users.",
+    "(acceso, señales, experiencia). No son valores financieros ni participaciones en un fondo. Toda asignación o recompensa LIA es discrecional — no se promete rentabilidad. Un NFT de agente puede revenderse en el mercado como obra / utilidad, al precio acordado libremente entre usuarios.",
+    "(Zugang, Signale, Erlebnis). Dies sind keine Wertpapiere oder Fondsanteile. LIA-Zuteilungen und Prämien erfolgen nach Ermessen — es gibt kein Renditeversprechen. Ein Agenten-NFT kann auf dem Marktplatz als Kunstwerk / Nutzobjekt zu einem frei vereinbarten Preis weiterverkauft werden.",
+    "(доступ, сигналы, опыт). Это не ценные бумаги и не доли фонда. Любые распределения или награды LIA предоставляются по усмотрению — доходность не обещается. NFT агента можно перепродать на маркетплейсе как произведение искусства / утилитарный объект по свободно согласованной цене.",
+    "(доступ, сигнали, досвід). Це не цінні папери та не частки фонду. Будь-які розподіли чи винагороди LIA надаються на розсуд — дохідність не обіцяється. NFT агента можна перепродати на маркетплейсі як твір мистецтва / утилітарний об’єкт за вільно узгодженою ціною.",
+    "（访问、信号、体验）。这些不是证券或基金份额。LIA 的任何分配或奖励均酌情决定，不承诺收益。智能体 NFT 可作为艺术品或实用凭证在市场转售，价格由用户自由协商。",
+    "(وصول وإشارات وتجربة). ليست أوراقًا مالية ولا حصصًا في صندوق. أي تخصيص أو مكافأة من LIA تقديري — دون وعد بعائد. يمكن إعادة بيع NFT الوكيل في السوق كعمل فني / أداة نفعية بسعر يتفق عليه المستخدمون بحرية."
+  ],
+  "Recharger": [
+    "Recharger",
+    "Reload",
+    "Recargar",
+    "Neu laden",
+    "Перезагрузить",
+    "Перезавантажити",
+    "重新加载",
+    "إعادة التحميل"
+  ],
+  "Proof": [
+    "Preuve",
+    "Proof",
+    "Prueba",
+    "Nachweis",
+    "Подтверждение",
+    "Підтвердження",
+    "证明",
+    "إثبات"
+  ],
+  "uPnL": [
+    "uPnL",
+    "uPnL",
+    "uPnL",
+    "uPnL",
+    "uPnL",
+    "uPnL",
+    "uPnL",
+    "uPnL"
+  ],
+  "USDC. Refresh ~8 s. Simulation uniquement.": [
+    "USDC. Actualisation ~8 s. Simulation uniquement.",
+    "USDC. Refresh ~8 s. Simulation only.",
+    "USDC. Actualización ~8 s. Solo simulación.",
+    "USDC. Aktualisierung ~8 s. Nur Simulation.",
+    "USDC. Обновление ~8 с. Только симуляция.",
+    "USDC. Оновлення ~8 с. Лише симуляція.",
+    "USDC。约每 8 秒刷新。仅供模拟。",
+    "USDC. تحديث كل ~8 ثوانٍ. محاكاة فقط."
+  ],
+  "score": [
+    "score",
+    "score",
+    "puntuación",
+    "Wertung",
+    "оценка",
+    "оцінка",
+    "评分",
+    "النتيجة"
+  ],
+  "Qui êtes-vous ?": [
+    "Qui êtes-vous ?",
+    "Who are you?",
+    "¿Quién eres?",
+    "Wer bist du?",
+    "Кто вы?",
+    "Хто ви?",
+    "您是谁？",
+    "من أنت؟"
+  ],
+  "Mint packs on-chain disponible.": [
+    "Mint de packs on-chain disponible.",
+    "On-chain pack minting available.",
+    "Acuñación de packs en cadena disponible.",
+    "On-Chain-Prägung von Paketen verfügbar.",
+    "Доступен выпуск пакетов в блокчейне.",
+    "Доступне створення пакетів у блокчейні.",
+    "支持链上铸造套餐。",
+    "سكّ الباقات على السلسلة متاح."
+  ],
+  "Génération…": [
+    "Génération…",
+    "Generating…",
+    "Generando…",
+    "Wird erstellt…",
+    "Создание…",
+    "Створення…",
+    "正在生成…",
+    "جارٍ الإنشاء…"
+  ],
+  "Copier le certificat": [
+    "Copier le certificat",
+    "Copy certificate",
+    "Copiar certificado",
+    "Zertifikat kopieren",
+    "Копировать сертификат",
+    "Копіювати сертифікат",
+    "复制证书",
+    "نسخ الشهادة"
+  ],
+  "Imprimer / PDF A4": [
+    "Imprimer / PDF A4",
+    "Print / A4 PDF",
+    "Imprimir / PDF A4",
+    "Drucken / A4-PDF",
+    "Печать / PDF A4",
+    "Друк / PDF A4",
+    "打印 / A4 PDF",
+    "طباعة / PDF بحجم A4"
+  ],
+  "Unmute": [
+    "Activer le son",
+    "Unmute",
+    "Activar sonido",
+    "Ton einschalten",
+    "Включить звук",
+    "Увімкнути звук",
+    "开启声音",
+    "تشغيل الصوت"
+  ],
+  "Continuer en fond": [
+    "Continuer en arrière-plan",
+    "Continue in background",
+    "Continuar en segundo plano",
+    "Im Hintergrund fortsetzen",
+    "Продолжить в фоне",
+    "Продовжити у фоні",
+    "在后台继续",
+    "المتابعة في الخلفية"
+  ],
+  "🎵 Activer": [
+    "🎵 Activer",
+    "🎵 Enable",
+    "🎵 Activar",
+    "🎵 Aktivieren",
+    "🎵 Включить",
+    "🎵 Увімкнути",
+    "🎵 启用",
+    "🎵 تفعيل"
+  ],
+  "Client seed": [
+    "Graine client",
+    "Client seed",
+    "Semilla del cliente",
+    "Client-Seed",
+    "Сид клиента",
+    "Сід клієнта",
+    "客户端种子",
+    "بذرة العميل"
+  ],
+  "sentiment": [
+    "sentiment",
+    "sentiment",
+    "sentimiento",
+    "Stimmung",
+    "настроение",
+    "настрій",
+    "情绪",
+    "المعنويات"
+  ],
+  "Sur l’écran d’accueil": [
+    "Sur l’écran d’accueil",
+    "On the home screen",
+    "En la pantalla de inicio",
+    "Auf dem Startbildschirm",
+    "На главном экране",
+    "На головному екрані",
+    "在主屏幕上",
+    "على الشاشة الرئيسية"
+  ],
+  "RCE": [
+    "RCE",
+    "RCE",
+    "RCE",
+    "RCE",
+    "RCE",
+    "RCE",
+    "RCE",
+    "RCE"
+  ],
+  "Checklist go-live →": [
+    "Checklist de mise en ligne →",
+    "Go-live checklist →",
+    "Lista de lanzamiento →",
+    "Checkliste für den Start →",
+    "Список проверки перед запуском →",
+    "Список перевірки перед запуском →",
+    "上线检查清单 →",
+    "قائمة التحقق للإطلاق →"
+  ],
+  "6 MVX": [
+    "6 MVX",
+    "6 MVX",
+    "6 MVX",
+    "6 MVX",
+    "6 MVX",
+    "6 MVX",
+    "6 MVX",
+    "6 MVX"
+  ],
+  "du bucket « Pack signal pool ».": [
+    "du compartiment « Pack signal pool ».",
+    "from the “Pack signal pool” bucket.",
+    "del fondo «Pack signal pool».",
+    "aus dem Bereich „Pack signal pool“.",
+    "из корзины «Pack signal pool».",
+    "з кошика «Pack signal pool».",
+    "来自“Pack signal pool”分组。",
+    "من مجموعة «Pack signal pool»."
+  ],
+  "% / max": [
+    "% / max",
+    "% / max",
+    "% / máx.",
+    "% / max.",
+    "% / макс.",
+    "% / макс.",
+    "% / 最大值",
+    "% / الحد الأقصى"
+  ],
+  "Page indisponible": [
+    "Page indisponible",
+    "Page unavailable",
+    "Página no disponible",
+    "Seite nicht verfügbar",
+    "Страница недоступна",
+    "Сторінка недоступна",
+    "页面不可用",
+    "الصفحة غير متاحة"
+  ],
+  "Plan du site": [
+    "Plan du site",
+    "Sitemap",
+    "Mapa del sitio",
+    "Seitenübersicht",
+    "Карта сайта",
+    "Мапа сайту",
+    "网站地图",
+    "خريطة الموقع"
+  ],
+  "Mode Pitch": [
+    "Mode présentation",
+    "Pitch mode",
+    "Modo presentación",
+    "Präsentationsmodus",
+    "Режим презентации",
+    "Режим презентації",
+    "演示模式",
+    "وضع العرض"
+  ],
+  "SC ·": [
+    "SC ·",
+    "SC ·",
+    "SC ·",
+    "SC ·",
+    "SC ·",
+    "SC ·",
+    "SC ·",
+    "SC ·"
+  ],
+  "List / Buy / Bid seulement si le codeHash explorer égale le hash attendu (déverrouillage runtime). Le flag Pages est optionnel. Slot REAL reste fermé tant que isPayable=false.": [
+    "Vendre / Acheter / Enchérir uniquement si le codeHash de l’explorateur correspond au hash attendu (déverrouillage à l’exécution). Le flag Pages est facultatif. Le slot REAL reste fermé tant que isPayable=false.",
+    "List / Buy / Bid only if the explorer codeHash matches the expected hash (runtime unlock). The Pages flag is optional. The REAL slot stays closed while isPayable=false.",
+    "Publicar / Comprar / Pujar solo si el codeHash del explorador coincide con el hash esperado (desbloqueo en ejecución). El indicador Pages es opcional. El espacio REAL sigue cerrado mientras isPayable=false.",
+    "Einstellen / Kaufen / Bieten nur bei Übereinstimmung des Explorer-codeHash mit dem erwarteten Hash (Freigabe zur Laufzeit). Das Pages-Flag ist optional. Der REAL-Slot bleibt bei isPayable=false geschlossen.",
+    "Продажа / покупка / ставки доступны только при совпадении codeHash в обозревателе с ожидаемым хешем (разблокировка при выполнении). Флаг Pages необязателен. Слот REAL закрыт, пока isPayable=false.",
+    "Продаж / купівля / ставки доступні лише за збігу codeHash в оглядачі з очікуваним хешем (розблокування під час виконання). Прапорець Pages необов’язковий. Слот REAL закритий, поки isPayable=false.",
+    "仅当浏览器中的 codeHash 与预期哈希一致时，才可上架、购买或出价（运行时解锁）。Pages 标记为可选。isPayable=false 时，REAL 槽位保持关闭。",
+    "الإدراج / الشراء / المزايدة فقط عند تطابق codeHash في المستكشف مع البصمة المتوقعة (فتح أثناء التشغيل). علامة Pages اختيارية. تظل خانة REAL مغلقة ما دام isPayable=false."
+  ],
+  "Signaux fusionnés (advisory)": [
+    "Signaux fusionnés (indicatifs)",
+    "Merged signals (advisory)",
+    "Señales fusionadas (orientativas)",
+    "Kombinierte Signale (Hinweise)",
+    "Объединённые сигналы (рекомендательные)",
+    "Об’єднані сигнали (рекомендаційні)",
+    "融合信号（仅供参考）",
+    "إشارات مدمجة (استرشادية)"
+  ],
+  "GSN elite": [
+    "GSN élite",
+    "GSN elite",
+    "GSN élite",
+    "GSN-Elite",
+    "GSN элита",
+    "GSN еліта",
+    "GSN 精英",
+    "نخبة GSN"
+  ],
+  "Zapier : connecter X (OAuth) — à faire dans ton compte Zapier": [
+    "Zapier : connecter X (OAuth) — à faire dans ton compte Zapier",
+    "Zapier: connect X (OAuth) — complete this in your Zapier account",
+    "Zapier: conecta X (OAuth) — hazlo en tu cuenta de Zapier",
+    "Zapier: X verbinden (OAuth) — in deinem Zapier-Konto durchführen",
+    "Zapier: подключите X (OAuth) в своём аккаунте Zapier",
+    "Zapier: підключіть X (OAuth) у своєму обліковому записі Zapier",
+    "Zapier：连接 X（OAuth）— 请在您的 Zapier 账户中完成",
+    "Zapier: اربط X ‏(OAuth) — أكمل ذلك في حسابك على Zapier"
+  ],
+  "GO_DEMO": [
+    "GO_DEMO",
+    "GO_DEMO",
+    "GO_DEMO",
+    "GO_DEMO",
+    "GO_DEMO",
+    "GO_DEMO",
+    "GO_DEMO",
+    "GO_DEMO"
+  ],
+  "data/contracts.json": [
+    "data/contracts.json",
+    "data/contracts.json",
+    "data/contracts.json",
+    "data/contracts.json",
+    "data/contracts.json",
+    "data/contracts.json",
+    "data/contracts.json",
+    "data/contracts.json"
+  ],
+  "Stripe · cartes": [
+    "Stripe · cartes",
+    "Stripe · cards",
+    "Stripe · tarjetas",
+    "Stripe · Karten",
+    "Stripe · карты",
+    "Stripe · картки",
+    "Stripe · 银行卡",
+    "Stripe · بطاقات"
+  ],
+  "Louer un mur": [
+    "Louer un mur",
+    "Rent a wall",
+    "Alquilar una pared",
+    "Wand mieten",
+    "Арендовать стену",
+    "Орендувати стіну",
+    "租用展墙",
+    "استئجار جدار"
+  ],
+  "Connect wallet artiste": [
+    "Connecter le wallet artiste",
+    "Connect artist wallet",
+    "Conectar cartera de artista",
+    "Künstler-Wallet verbinden",
+    "Подключить кошелёк художника",
+    "Підключити гаманець митця",
+    "连接艺术家钱包",
+    "ربط محفظة الفنان"
+  ],
+  "Signer issueNonFungible": [
+    "Signer issueNonFungible",
+    "Sign issueNonFungible",
+    "Firmar issueNonFungible",
+    "issueNonFungible signieren",
+    "Подписать issueNonFungible",
+    "Підписати issueNonFungible",
+    "签署 issueNonFungible",
+    "توقيع issueNonFungible"
+  ],
+  "Titre «": [
+    "Titre «",
+    "Title “",
+    "Título «",
+    "Titel „",
+    "Название «",
+    "Назва «",
+    "标题“",
+    "العنوان «"
+  ],
+  "/marketplace": [
+    "/marketplace",
+    "/marketplace",
+    "/marketplace",
+    "/marketplace",
+    "/marketplace",
+    "/marketplace",
+    "/marketplace",
+    "/marketplace"
+  ],
+  "· total": [
+    "· total",
+    "· total",
+    "· total",
+    "· gesamt",
+    "· всего",
+    "· усього",
+    "· 总计",
+    "· الإجمالي"
+  ],
+  "System Maintenance": [
+    "Maintenance système",
+    "System maintenance",
+    "Mantenimiento del sistema",
+    "Systemwartung",
+    "Техническое обслуживание",
+    "Технічне обслуговування",
+    "系统维护",
+    "صيانة النظام"
+  ],
+  "ton": [
+    "ton",
+    "your",
+    "tu",
+    "dein",
+    "ваш",
+    "ваш",
+    "您的",
+    "الخاص بك"
+  ],
+  "Ouvre /tip avec Web Wallet / extension (pas paste).": [
+    "Ouvre /tip avec Web Wallet / extension (sans coller d’adresse).",
+    "Open /tip with Web Wallet / extension (do not paste an address).",
+    "Abre /tip con Web Wallet / extensión (sin pegar una dirección).",
+    "Öffne /tip mit Web Wallet / Erweiterung (keine Adresse einfügen).",
+    "Откройте /tip через Web Wallet / расширение (не вставляйте адрес).",
+    "Відкрийте /tip через Web Wallet / розширення (не вставляйте адресу).",
+    "使用 Web Wallet / 扩展打开 /tip（不要粘贴地址）。",
+    "افتح /tip باستخدام Web Wallet / الإضافة (دون لصق عنوان)."
+  ],
+  "Packs IA →": [
+    "Packs IA →",
+    "AI Packs →",
+    "Packs IA →",
+    "KI-Pakete →",
+    "Пакеты ИИ →",
+    "Пакети ШІ →",
+    "AI 套餐 →",
+    "باقات الذكاء الاصطناعي →"
+  ],
+  "Aujourd’hui les liquidités protocole sont sur": [
+    "Aujourd’hui les liquidités du protocole sont sur",
+    "Protocol liquidity is currently on",
+    "La liquidez del protocolo está actualmente en",
+    "Die Protokollliquidität liegt derzeit auf",
+    "Сейчас ликвидность протокола находится на",
+    "Зараз ліквідність протоколу розміщено на",
+    "协议流动性当前位于",
+    "توجد سيولة البروتوكول حاليًا على"
+  ],
+  "Trésorerie · modèle": [
+    "Trésorerie · modèle",
+    "Treasury · model",
+    "Tesorería · modelo",
+    "Treasury · Modell",
+    "Казначейство · модель",
+    "Скарбниця · модель",
+    "金库 · 模型",
+    "الخزينة · النموذج"
+  ],
+  "LP burn:": [
+    "Burn LP :",
+    "LP burn:",
+    "Quema de LP:",
+    "LP-Verbrennung:",
+    "Сжигание LP:",
+    "Спалювання LP:",
+    "LP 销毁：",
+    "حرق LP:"
+  ],
+  "Location salles": [
+    "Location de salles",
+    "Room rental",
+    "Alquiler de salas",
+    "Raummiete",
+    "Аренда залов",
+    "Оренда залів",
+    "展厅租赁",
+    "تأجير القاعات"
+  ],
+  "Flexible": [
+    "Flexible",
+    "Flexible",
+    "Flexible",
+    "Flexibel",
+    "Гибкий",
+    "Гнучкий",
+    "灵活",
+    "مرن"
+  ],
+  "Vote-locked": [
+    "Verrouillé pour le vote",
+    "Vote-locked",
+    "Bloqueado para votar",
+    "Für Abstimmungen gesperrt",
+    "Заблокировано для голосования",
+    "Заблоковано для голосування",
+    "投票锁仓",
+    "مقفل للتصويت"
+  ],
+  "Connect wallet": [
+    "Connecter le wallet",
+    "Connect wallet",
+    "Conectar cartera",
+    "Wallet verbinden",
+    "Подключить кошелёк",
+    "Підключити гаманець",
+    "连接钱包",
+    "ربط المحفظة"
+  ],
+  "Refresh": [
+    "Actualiser",
+    "Refresh",
+    "Actualizar",
+    "Aktualisieren",
+    "Обновить",
+    "Оновити",
+    "刷新",
+    "تحديث"
+  ],
+  "pour List / Buy / Bid. Ne jamais coller l’adresse protocole LIA. Coller erd1 = lecture seule.": [
+    "pour vendre / acheter / enchérir. Ne colle jamais l’adresse du protocole LIA. Coller erd1 = lecture seule.",
+    "to list / buy / bid. Never paste the LIA protocol address. Pasting erd1 = read-only.",
+    "para publicar / comprar / pujar. Nunca pegues la dirección del protocolo LIA. Pegar erd1 = solo lectura.",
+    "zum Einstellen / Kaufen / Bieten. Niemals die LIA-Protokolladresse einfügen. erd1 einfügen = nur lesen.",
+    "для продажи / покупки / ставок. Никогда не вставляйте адрес протокола LIA. Вставка erd1 = только чтение.",
+    "для продажу / купівлі / ставок. Ніколи не вставляйте адресу протоколу LIA. Вставлення erd1 = лише читання.",
+    "以上架 / 购买 / 出价。切勿粘贴 LIA 协议地址。粘贴 erd1 = 只读。",
+    "للإدراج / الشراء / المزايدة. لا تلصق عنوان بروتوكول LIA أبدًا. لصق erd1 = قراءة فقط."
+  ],
+  "Signature prête (sdk-dapp) — wallet user uniquement, jamais LIA ops.": [
+    "Signature prête (sdk-dapp) — wallet utilisateur uniquement, jamais LIA ops.",
+    "Signature ready (sdk-dapp) — user wallet only, never LIA ops.",
+    "Firma lista (sdk-dapp) — solo cartera del usuario, nunca operaciones LIA.",
+    "Signatur bereit (sdk-dapp) — nur Benutzer-Wallet, niemals LIA-Betrieb.",
+    "Подпись готова (sdk-dapp) — только кошелёк пользователя, никогда не LIA ops.",
+    "Підпис готовий (sdk-dapp) — лише гаманець користувача, ніколи не LIA ops.",
+    "签名已就绪（sdk-dapp）— 仅限用户钱包，禁止使用 LIA 运营钱包。",
+    "التوقيع جاهز (sdk-dapp) — محفظة المستخدم فقط، وليس محفظة عمليات LIA أبدًا."
+  ],
+  "Watch": [
+    "Surveiller",
+    "Watch",
+    "Vigilar",
+    "Beobachten",
+    "Наблюдать",
+    "Спостерігати",
+    "关注",
+    "مراقبة"
+  ],
+  "Rewards · Packs": [
+    "Récompenses · Packs",
+    "Rewards · Packs",
+    "Recompensas · Packs",
+    "Prämien · Pakete",
+    "Награды · Пакеты",
+    "Винагороди · Пакети",
+    "奖励 · 套餐",
+    "المكافآت · الباقات"
+  ],
+  "Claim déjà fait aujourd’hui": [
+    "Récompense déjà réclamée aujourd’hui",
+    "Already claimed today",
+    "Recompensa ya reclamada hoy",
+    "Heute bereits abgeholt",
+    "Награда уже получена сегодня",
+    "Винагороду вже отримано сьогодні",
+    "今日已领取奖励",
+    "تم استلام المكافأة اليوم بالفعل"
+  ],
+  "Parcours": [
+    "Parcours",
+    "Journey",
+    "Recorrido",
+    "Rundgang",
+    "Маршрут",
+    "Маршрут",
+    "探索",
+    "المسار"
+  ],
+  "(Web Wallet / extension) pour": [
+    "(Web Wallet / extension) pour",
+    "(Web Wallet / extension) to",
+    "(Web Wallet / extensión) para",
+    "(Web Wallet / Erweiterung) für",
+    "(Web Wallet / расширение) для",
+    "(Web Wallet / розширення) для",
+    "（Web Wallet / 扩展）以",
+    "(Web Wallet / الإضافة) من أجل"
+  ],
+  "Session": [
+    "Session",
+    "Session",
+    "Sesión",
+    "Sitzung",
+    "Сессия",
+    "Сесія",
+    "会话",
+    "الجلسة"
+  ],
+  "Aller aux Tours artistiques →": [
+    "Aller aux Tours artistiques →",
+    "Go to Art Tours →",
+    "Ir a los recorridos artísticos →",
+    "Zu den Kunsttouren →",
+    "К художественным турам →",
+    "До мистецьких турів →",
+    "前往艺术导览 →",
+    "الانتقال إلى الجولات الفنية →"
+  ],
+  "Session xPortal active — les TX s’ouvrent dans l’app (pas le Web Wallet).": [
+    "Session xPortal active — les TX s’ouvrent dans l’app (pas le Web Wallet).",
+    "xPortal session active — transactions open in the app (not Web Wallet).",
+    "Sesión xPortal activa — las transacciones se abren en la app (no en Web Wallet).",
+    "xPortal-Sitzung aktiv — Transaktionen öffnen sich in der App (nicht im Web Wallet).",
+    "Сессия xPortal активна — транзакции открываются в приложении (не в Web Wallet).",
+    "Сесія xPortal активна — транзакції відкриваються в застосунку (не у Web Wallet).",
+    "xPortal 会话已激活 — 交易将在应用中打开（而非 Web Wallet）。",
+    "جلسة xPortal نشطة — تُفتح المعاملات في التطبيق (وليس Web Wallet)."
+  ],
+  ". Pas le wallet protocole LIA.": [
+    ". Pas le wallet du protocole LIA.",
+    ". Not the LIA protocol wallet.",
+    ". No la cartera del protocolo LIA.",
+    ". Nicht das LIA-Protokoll-Wallet.",
+    ". Не кошелёк протокола LIA.",
+    ". Не гаманець протоколу LIA.",
+    "。请勿使用 LIA 协议钱包。",
+    ". وليس محفظة بروتوكول LIA."
+  ],
+  "WalletConnect project :": [
+    "Projet WalletConnect :",
+    "WalletConnect project:",
+    "Proyecto WalletConnect:",
+    "WalletConnect-Projekt:",
+    "Проект WalletConnect:",
+    "Проєкт WalletConnect:",
+    "WalletConnect 项目：",
+    "مشروع WalletConnect:"
+  ],
+  "Holders · Vaults · NFT": [
+    "Détenteurs · Coffres · NFT",
+    "Holders · Vaults · NFT",
+    "Titulares · Bóvedas · NFT",
+    "Inhaber · Tresore · NFT",
+    "Владельцы · Хранилища · NFT",
+    "Власники · Сховища · NFT",
+    "持有者 · 金库 · NFT",
+    "المالكون · الخزائن · NFT"
+  ],
+  "pour le leaderboard.": [
+    "pour le classement.",
+    "for the leaderboard.",
+    "para la clasificación.",
+    "für die Rangliste.",
+    "для таблицы лидеров.",
+    "для таблиці лідерів.",
+    "用于排行榜。",
+    "للوحة الترتيب."
+  ],
+  "Meta": [
+    "Métadonnées",
+    "Meta",
+    "Metadatos",
+    "Metadaten",
+    "Метаданные",
+    "Метадані",
+    "元数据",
+    "بيانات وصفية"
+  ],
+  ". Publish :": [
+    ". Publier :",
+    ". Publish:",
+    ". Publicar:",
+    ". Veröffentlichen:",
+    ". Опубликовать:",
+    ". Опублікувати:",
+    "。发布：",
+    ". نشر:"
+  ],
+  "📊 Risk metrics": [
+    "📊 Indicateurs de risque",
+    "📊 Risk metrics",
+    "📊 Métricas de riesgo",
+    "📊 Risikokennzahlen",
+    "📊 Показатели риска",
+    "📊 Показники ризику",
+    "📊 风险指标",
+    "📊 مؤشرات المخاطر"
+  ],
+  "— le farming est sur /staking.": [
+    "— le farming est sur /staking.",
+    "— farming is on /staking.",
+    "— el cultivo de rendimiento está en /staking.",
+    "— Farming findest du unter /staking.",
+    "— фарминг находится на /staking.",
+    "— фармінг доступний на /staking.",
+    "— 收益耕作位于 /staking。",
+    "— زراعة العائد على /staking."
+  ],
+  "DEX ↗": [
+    "DEX ↗",
+    "DEX ↗",
+    "DEX ↗",
+    "DEX ↗",
+    "DEX ↗",
+    "DEX ↗",
+    "DEX ↗",
+    "DEX ↗"
+  ],
+  "Yield / farms = page Staking": [
+    "Rendement / fermes = page Staking",
+    "Yield / farms = Staking page",
+    "Rendimiento / granjas = página de staking",
+    "Rendite / Farmen = Staking-Seite",
+    "Доходность / фермы = страница стейкинга",
+    "Дохідність / ферми = сторінка стейкінгу",
+    "收益 / 农场 = 质押页面",
+    "العائد / المزارع = صفحة الرهن"
+  ],
+  "Vote units": [
+    "Unités de vote",
+    "Vote units",
+    "Unidades de voto",
+    "Stimmeinheiten",
+    "Единицы голосования",
+    "Одиниці голосування",
+    "投票单位",
+    "وحدات التصويت"
+  ],
+  "TRO": [
+    "TRO",
+    "TRO",
+    "TRO",
+    "TRO",
+    "TRO",
+    "TRO",
+    "TRO",
+    "TRO"
+  ],
+  "Hatom · AshSwap · Soul": [
+    "Hatom · AshSwap · Soul",
+    "Hatom · AshSwap · Soul",
+    "Hatom · AshSwap · Soul",
+    "Hatom · AshSwap · Soul",
+    "Hatom · AshSwap · Soul",
+    "Hatom · AshSwap · Soul",
+    "Hatom · AshSwap · Soul",
+    "Hatom · AshSwap · Soul"
+  ],
+  "Mode Pitch · liquidité démo": [
+    "Mode présentation · liquidité démo",
+    "Pitch mode · demo liquidity",
+    "Modo presentación · liquidez demo",
+    "Präsentationsmodus · Demo-Liquidität",
+    "Режим презентации · демоликвидность",
+    "Режим презентації · демоліквідність",
+    "演示模式 · 演示流动性",
+    "وضع العرض · سيولة تجريبية"
+  ],
+  "Lecture seule — exécution via xPortal. Données MultiversX (API publique).": [
+    "Lecture seule — exécution via xPortal. Données MultiversX (API publique).",
+    "Read-only — execution via xPortal. MultiversX data (public API).",
+    "Solo lectura — ejecución mediante xPortal. Datos MultiversX (API pública).",
+    "Nur lesen — Ausführung über xPortal. MultiversX-Daten (öffentliche API).",
+    "Только чтение — исполнение через xPortal. Данные MultiversX (публичный API).",
+    "Лише читання — виконання через xPortal. Дані MultiversX (публічний API).",
+    "只读 — 通过 xPortal 执行。MultiversX 数据（公共 API）。",
+    "للقراءة فقط — التنفيذ عبر xPortal. بيانات MultiversX (واجهة API عامة)."
+  ],
+  "Aucun Pack Agent détecté — pré-réglage paper local.": [
+    "Aucun Pack Agent détecté — préréglage de simulation local.",
+    "No Agent Pack detected — local paper preset.",
+    "No se detectó ningún Pack de Agente — configuración de simulación local.",
+    "Kein Agentenpaket erkannt — lokale Simulationsvorgabe.",
+    "Пакет агента не найден — локальные настройки симуляции.",
+    "Пакет агента не виявлено — локальні налаштування симуляції.",
+    "未检测到智能体套餐 — 使用本地模拟预设。",
+    "لم تُكتشف باقة وكيل — إعداد محاكاة محلي."
+  ],
+  "Aucun dépôt requis.": [
+    "Aucun dépôt requis.",
+    "No deposit required.",
+    "No se requiere depósito.",
+    "Keine Einzahlung erforderlich.",
+    "Депозит не требуется.",
+    "Депозит не потрібен.",
+    "无需充值。",
+    "لا يلزم إيداع."
+  ],
+  "RWA · TRO economic pulse": [
+    "RWA · pouls économique TRO",
+    "RWA · TRO economic pulse",
+    "RWA · pulso económico TRO",
+    "RWA · TRO-Wirtschaftspuls",
+    "RWA · экономический пульс TRO",
+    "RWA · економічний пульс TRO",
+    "RWA · TRO 经济脉搏",
+    "RWA · النبض الاقتصادي لـ TRO"
+  ],
+  "RWA catalog →": [
+    "Catalogue RWA →",
+    "RWA catalog →",
+    "Catálogo RWA →",
+    "RWA-Katalog →",
+    "Каталог RWA →",
+    "Каталог RWA →",
+    "RWA 目录 →",
+    "كتالوج RWA →"
+  ],
+  "Trades today": [
+    "Transactions aujourd’hui",
+    "Trades today",
+    "Operaciones de hoy",
+    "Heutige Trades",
+    "Сделки за сегодня",
+    "Угоди за сьогодні",
+    "今日交易",
+    "صفقات اليوم"
+  ],
+  "· momentum": [
+    "· dynamique",
+    "· momentum",
+    "· impulso",
+    "· Momentum",
+    "· импульс",
+    "· імпульс",
+    "· 动量",
+    "· الزخم"
+  ],
+  "● LIVE": [
+    "● EN DIRECT",
+    "● LIVE",
+    "● EN VIVO",
+    "● LIVE",
+    "● ОНЛАЙН",
+    "● НАЖИВО",
+    "● 实时",
+    "● مباشر"
+  ],
+  "EGLD USD": [
+    "EGLD USD",
+    "EGLD USD",
+    "EGLD USD",
+    "EGLD USD",
+    "EGLD USD",
+    "EGLD USD",
+    "EGLD USD",
+    "EGLD USD"
+  ],
+  "Close": [
+    "Fermer",
+    "Close",
+    "Cerrar",
+    "Schließen",
+    "Закрыть",
+    "Закрити",
+    "关闭",
+    "إغلاق"
+  ],
+  "[SIMULATED] · paper": [
+    "[SIMULÉ] · simulation",
+    "[SIMULATED] · paper",
+    "[SIMULADO] · simulación",
+    "[SIMULIERT] · Simulation",
+    "[СИМУЛЯЦИЯ] · учебный режим",
+    "[СИМУЛЯЦІЯ] · навчальний режим",
+    "[模拟] · 模拟交易",
+    "[محاكى] · محاكاة"
+  ],
+  "LIA Signals · Blue Ribbon": [
+    "Signaux LIA · Blue Ribbon",
+    "LIA Signals · Blue Ribbon",
+    "Señales LIA · Blue Ribbon",
+    "LIA-Signale · Blue Ribbon",
+    "Сигналы LIA · Blue Ribbon",
+    "Сигнали LIA · Blue Ribbon",
+    "LIA 信号 · Blue Ribbon",
+    "إشارات LIA · Blue Ribbon"
+  ],
+  "Live execution": [
+    "Exécution réelle",
+    "Live execution",
+    "Ejecución real",
+    "Live-Ausführung",
+    "Реальное исполнение",
+    "Реальне виконання",
+    "实盘执行",
+    "تنفيذ فعلي"
+  ],
+  "BTC · ETH · SOL · TAO · EGLD · GOLD — poll public APIs": [
+    "BTC · ETH · SOL · TAO · EGLD · GOLD — interrogation d’API publiques",
+    "BTC · ETH · SOL · TAO · EGLD · GOLD — poll public APIs",
+    "BTC · ETH · SOL · TAO · EGLD · GOLD — consultas a API públicas",
+    "BTC · ETH · SOL · TAO · EGLD · GOLD — öffentliche APIs abfragen",
+    "BTC · ETH · SOL · TAO · EGLD · GOLD — опрос публичных API",
+    "BTC · ETH · SOL · TAO · EGLD · GOLD — опитування публічних API",
+    "BTC · ETH · SOL · TAO · EGLD · GOLD — 轮询公共 API",
+    "BTC · ETH · SOL · TAO · EGLD · GOLD — استعلام واجهات API العامة"
+  ],
+  "Actif": [
+    "Actif",
+    "Active",
+    "Activo",
+    "Aktiv",
+    "Активно",
+    "Активно",
+    "已启用",
+    "نشط"
+  ],
+  "UI approved · CLI copied": [
+    "Interface approuvée · CLI copiée",
+    "UI approved · CLI copied",
+    "Interfaz aprobada · CLI copiada",
+    "Oberfläche genehmigt · CLI kopiert",
+    "Интерфейс одобрен · CLI скопирован",
+    "Інтерфейс схвалено · CLI скопійовано",
+    "界面已批准 · CLI 已复制",
+    "الواجهة معتمدة · تم نسخ CLI"
+  ],
+  "Integrity alert": [
+    "Alerte d’intégrité",
+    "Integrity alert",
+    "Alerta de integridad",
+    "Integritätswarnung",
+    "Нарушение целостности",
+    "Порушення цілісності",
+    "完整性警报",
+    "تنبيه سلامة البيانات"
+  ],
+  "· Net": [
+    "· Net",
+    "· Net",
+    "· Neto",
+    "· Netto",
+    "· Нетто",
+    "· Нетто",
+    "· 净额",
+    "· الصافي"
+  ],
+  "No execution events": [
+    "Aucun événement d’exécution",
+    "No execution events",
+    "Sin eventos de ejecución",
+    "Keine Ausführungsereignisse",
+    "Нет событий исполнения",
+    "Немає подій виконання",
+    "无执行事件",
+    "لا توجد أحداث تنفيذ"
+  ],
+  "Why:": [
+    "Pourquoi :",
+    "Why:",
+    "Motivo:",
+    "Warum:",
+    "Причина:",
+    "Причина:",
+    "原因：",
+    "السبب:"
+  ],
+  "Run": [
+    "Lancer",
+    "Run",
+    "Ejecutar",
+    "Starten",
+    "Запустить",
+    "Запустити",
+    "运行",
+    "تشغيل"
+  ],
+  "Signature bridge": [
+    "Passerelle de signature",
+    "Signature bridge",
+    "Puente de firma",
+    "Signaturbrücke",
+    "Мост подписи",
+    "Міст підпису",
+    "签名桥接",
+    "جسر التوقيع"
+  ],
+  "Copy full step": [
+    "Copier l’étape complète",
+    "Copy full step",
+    "Copiar paso completo",
+    "Gesamten Schritt kopieren",
+    "Копировать весь шаг",
+    "Копіювати весь крок",
+    "复制完整步骤",
+    "نسخ الخطوة كاملة"
+  ],
+  "SC live": [
+    "SC actif",
+    "SC live",
+    "SC activo",
+    "SC aktiv",
+    "SC запущен",
+    "SC запущено",
+    "SC 已上线",
+    "SC نشط"
+  ],
+  "Entitlements d&apos;accès (signaux / salles) — pas un fonds, pas d&apos;APY promis. Prix mint officiels : 10 / 5 / 2.5 EGLD. Données collection via api.multiversx.com.": [
+    "Droits d’accès (signaux / salles) — pas un fonds, aucun APY promis. Prix mint officiels : 10 / 5 / 2.5 EGLD. Données de collection via api.multiversx.com.",
+    "Access entitlements (signals / rooms) — not a fund, no promised APY. Official mint prices: 10 / 5 / 2.5 EGLD. Collection data via api.multiversx.com.",
+    "Derechos de acceso (señales / salas) — no es un fondo ni promete APY. Precios oficiales de acuñación: 10 / 5 / 2.5 EGLD. Datos de colección mediante api.multiversx.com.",
+    "Zugangsrechte (Signale / Räume) — kein Fonds, kein versprochener APY. Offizielle Prägepreise: 10 / 5 / 2.5 EGLD. Sammlungsdaten über api.multiversx.com.",
+    "Права доступа (сигналы / комнаты) — не фонд, без обещаний APY. Официальные цены выпуска: 10 / 5 / 2.5 EGLD. Данные коллекций через api.multiversx.com.",
+    "Права доступу (сигнали / кімнати) — не фонд, без обіцянок APY. Офіційні ціни випуску: 10 / 5 / 2.5 EGLD. Дані колекцій через api.multiversx.com.",
+    "访问权益（信号 / 房间）— 非基金，不承诺 APY。官方铸造价格：10 / 5 / 2.5 EGLD。藏品数据来自 api.multiversx.com。",
+    "حقوق وصول (إشارات / غرف) — ليست صندوقًا ولا تعد بعائد APY. أسعار السك الرسمية: 10 / 5 / 2.5 EGLD. بيانات المجموعة عبر api.multiversx.com."
+  ],
+  "Année": [
+    "Année",
+    "Year",
+    "Año",
+    "Jahr",
+    "Год",
+    "Рік",
+    "年份",
+    "السنة"
+  ],
+  "RWA Physical Art": [
+    "Art physique RWA",
+    "RWA Physical Art",
+    "Arte físico RWA",
+    "Physische RWA-Kunst",
+    "Физическое искусство RWA",
+    "Фізичне мистецтво RWA",
+    "RWA 实体艺术",
+    "فن مادي RWA"
+  ],
+  "Packs Agents": [
+    "Packs Agents",
+    "Agent Packs",
+    "Packs de Agente",
+    "Agentenpakete",
+    "Пакеты агентов",
+    "Пакети агентів",
+    "智能体套餐",
+    "باقات الوكلاء"
+  ],
+  "Prix ·": [
+    "Prix ·",
+    "Price ·",
+    "Precio ·",
+    "Preis ·",
+    "Цена ·",
+    "Ціна ·",
+    "价格 ·",
+    "السعر ·"
+  ],
+  "Bid": [
+    "Enchérir",
+    "Bid",
+    "Pujar",
+    "Bieten",
+    "Сделать ставку",
+    "Зробити ставку",
+    "出价",
+    "مزايدة"
+  ],
+  "Toutes les villes": [
+    "Toutes les villes",
+    "All cities",
+    "Todas las ciudades",
+    "Alle Städte",
+    "Все города",
+    "Усі міста",
+    "所有城市",
+    "كل المدن"
+  ],
+  "Carte Tours": [
+    "Carte des Tours",
+    "Tours map",
+    "Mapa de recorridos",
+    "Tourenkarte",
+    "Карта туров",
+    "Мапа турів",
+    "导览地图",
+    "خريطة الجولات"
+  ],
+  "Connecter wallet": [
+    "Connecter le wallet",
+    "Connect wallet",
+    "Conectar cartera",
+    "Wallet verbinden",
+    "Подключить кошелёк",
+    "Підключити гаманець",
+    "连接钱包",
+    "ربط المحفظة"
+  ],
+  "Accès paper local — modifiable dans le navigateur. Ce n’est pas une autorisation on-chain.": [
+    "Accès de simulation local — modifiable dans le navigateur. Ce n’est pas une autorisation on-chain.",
+    "Local paper access — editable in the browser. This is not an on-chain authorization.",
+    "Acceso de simulación local — editable en el navegador. No es una autorización en cadena.",
+    "Lokaler Simulationszugang — im Browser änderbar. Dies ist keine On-Chain-Berechtigung.",
+    "Локальный доступ к симуляции — можно изменить в браузере. Это не разрешение в блокчейне.",
+    "Локальний доступ до симуляції — можна змінити у браузері. Це не дозвіл у блокчейні.",
+    "本地模拟访问 — 可在浏览器中修改。这不是链上授权。",
+    "وصول محاكاة محلي — قابل للتعديل في المتصفح. ليس تفويضًا على السلسلة."
+  ],
+  "Plan 3D": [
+    "Plan 3D",
+    "3D map",
+    "Plano 3D",
+    "3D-Plan",
+    "3D-план",
+    "3D-план",
+    "3D 地图",
+    "مخطط ثلاثي الأبعاد"
+  ],
+  "Œuvres": [
+    "Œuvres",
+    "Artworks",
+    "Obras",
+    "Kunstwerke",
+    "Произведения",
+    "Твори",
+    "作品",
+    "الأعمال الفنية"
+  ],
+  "Acheter…": [
+    "Acheter…",
+    "Buy…",
+    "Comprar…",
+    "Kaufen…",
+    "Купить…",
+    "Купити…",
+    "购买…",
+    "شراء…"
+  ],
+  "Visite libre": [
+    "Visite libre",
+    "Free exploration",
+    "Visita libre",
+    "Freier Rundgang",
+    "Свободный осмотр",
+    "Вільний огляд",
+    "自由参观",
+    "جولة حرة"
+  ],
+  "Venue · murs": [
+    "Lieu · murs",
+    "Venue · walls",
+    "Espacio · paredes",
+    "Ort · Wände",
+    "Площадка · стены",
+    "Локація · стіни",
+    "场地 · 展墙",
+    "المكان · الجدران"
+  ],
+  "réservé local": [
+    "réservé localement",
+    "locally reserved",
+    "reservado localmente",
+    "lokal reserviert",
+    "забронировано локально",
+    "заброньовано локально",
+    "已在本地预订",
+    "محجوز محليًا"
+  ],
+  "Chargement NFT…": [
+    "Chargement des NFT…",
+    "Loading NFTs…",
+    "Cargando NFT…",
+    "NFTs werden geladen…",
+    "Загрузка NFT…",
+    "Завантаження NFT…",
+    "正在加载 NFT…",
+    "جارٍ تحميل NFT…"
+  ],
+  "Google Pay · Apple Pay · Card": [
+    "Google Pay · Apple Pay · Carte",
+    "Google Pay · Apple Pay · Card",
+    "Google Pay · Apple Pay · Tarjeta",
+    "Google Pay · Apple Pay · Karte",
+    "Google Pay · Apple Pay · Карта",
+    "Google Pay · Apple Pay · Картка",
+    "Google Pay · Apple Pay · 银行卡",
+    "Google Pay · Apple Pay · بطاقة"
+  ],
+  "Payer avec Google Pay": [
+    "Payer avec Google Pay",
+    "Pay with Google Pay",
+    "Pagar con Google Pay",
+    "Mit Google Pay bezahlen",
+    "Оплатить через Google Pay",
+    "Сплатити через Google Pay",
+    "使用 Google Pay 支付",
+    "الدفع عبر Google Pay"
+  ],
+  "Simuler succès UI (demo sans paiement)": [
+    "Simuler un succès de l’interface (démo sans paiement)",
+    "Simulate UI success (demo without payment)",
+    "Simular éxito en la interfaz (demo sin pago)",
+    "UI-Erfolg simulieren (Demo ohne Zahlung)",
+    "Симулировать успех в интерфейсе (демо без оплаты)",
+    "Симулювати успіх в інтерфейсі (демо без оплати)",
+    "模拟界面成功状态（无需付款的演示）",
+    "محاكاة نجاح الواجهة (عرض دون دفع)"
+  ],
+  "Google Pay + Apple Pay via MoonPay · pas d’iframe · pas de secret en front": [
+    "Google Pay + Apple Pay via MoonPay · sans iframe · aucun secret côté client",
+    "Google Pay + Apple Pay via MoonPay · no iframe · no frontend secrets",
+    "Google Pay + Apple Pay mediante MoonPay · sin iframe · sin secretos en el cliente",
+    "Google Pay + Apple Pay über MoonPay · kein iframe · keine Geheimnisse im Frontend",
+    "Google Pay + Apple Pay через MoonPay · без iframe · без секретов во фронтенде",
+    "Google Pay + Apple Pay через MoonPay · без iframe · без секретів у фронтенді",
+    "通过 MoonPay 使用 Google Pay + Apple Pay · 无 iframe · 前端无密钥",
+    "Google Pay + Apple Pay عبر MoonPay · دون iframe · دون أسرار في الواجهة"
+  ],
+  "LIA ops ·": [
+    "Opérations LIA ·",
+    "LIA ops ·",
+    "Operaciones LIA ·",
+    "LIA-Betrieb ·",
+    "Операции LIA ·",
+    "Операції LIA ·",
+    "LIA 运营 ·",
+    "عمليات LIA ·"
+  ],
+  "RWA escrow timeline": [
+    "Chronologie du séquestre RWA",
+    "RWA escrow timeline",
+    "Cronología del depósito en garantía RWA",
+    "RWA-Treuhand-Zeitplan",
+    "Этапы эскроу RWA",
+    "Етапи ескроу RWA",
+    "RWA 托管时间线",
+    "الجدول الزمني لضمان RWA"
+  ],
+  "Ask": [
+    "Demander",
+    "Ask",
+    "Preguntar",
+    "Fragen",
+    "Спросить",
+    "Запитати",
+    "提问",
+    "اسأل"
+  ],
+  "Obtenir le Pack Pulse →": [
+    "Obtenir le Pack Pulse →",
+    "Get the Pulse Pack →",
+    "Obtener el Pack Pulse →",
+    "Pulse-Paket holen →",
+    "Получить пакет Pulse →",
+    "Отримати пакет Pulse →",
+    "获取 Pulse 套餐 →",
+    "الحصول على باقة Pulse →"
+  ],
+  "ex. : Qu’est-ce que le sfumato ?": [
+    "ex. : Qu’est-ce que le sfumato ?",
+    "e.g. What is sfumato?",
+    "ej.: ¿Qué es el sfumato?",
+    "z. B.: Was ist Sfumato?",
+    "например: Что такое сфумато?",
+    "наприклад: Що таке сфумато?",
+    "例如：什么是晕涂法？",
+    "مثال: ما تقنية السفوماتو؟"
+  ],
+  "Post fee collection · 40/30/20/10 · on-chain after treasury-splitter deploy": [
+    "Après collecte des frais · 40/30/20/10 · on-chain après déploiement de treasury-splitter",
+    "After fee collection · 40/30/20/10 · on-chain after treasury-splitter deployment",
+    "Tras cobrar comisiones · 40/30/20/10 · en cadena tras desplegar treasury-splitter",
+    "Nach Gebühreneinzug · 40/30/20/10 · On-Chain nach Bereitstellung von treasury-splitter",
+    "После сбора комиссий · 40/30/20/10 · в блокчейне после развёртывания treasury-splitter",
+    "Після збору комісій · 40/30/20/10 · у блокчейні після розгортання treasury-splitter",
+    "收取费用后 · 40/30/20/10 · 部署 treasury-splitter 后上链",
+    "بعد تحصيل الرسوم · 40/30/20/10 · على السلسلة بعد نشر treasury-splitter"
+  ],
+  "Explorer TRO ↗": [
+    "Explorateur TRO ↗",
+    "TRO explorer ↗",
+    "Explorador TRO ↗",
+    "TRO-Explorer ↗",
+    "Обозреватель TRO ↗",
+    "Оглядач TRO ↗",
+    "TRO 浏览器 ↗",
+    "مستكشف TRO ↗"
+  ],
+  "Non connecté": [
+    "Non connecté",
+    "Not connected",
+    "Sin conexión",
+    "Nicht verbunden",
+    "Не подключено",
+    "Не підключено",
+    "未连接",
+    "غير متصل"
+  ],
+  "Aucun token ESDT": [
+    "Aucun jeton ESDT",
+    "No ESDT tokens",
+    "Sin tokens ESDT",
+    "Keine ESDT-Token",
+    "Нет токенов ESDT",
+    "Немає токенів ESDT",
+    "无 ESDT 代币",
+    "لا توجد رموز ESDT"
+  ],
+  "Portal →": [
+    "Portail →",
+    "Portal →",
+    "Portal →",
+    "Portal →",
+    "Портал →",
+    "Портал →",
+    "门户 →",
+    "البوابة →"
+  ],
+  "pas un investissement": [
+    "pas un investissement",
+    "not an investment",
+    "no es una inversión",
+    "keine Anlage",
+    "не инвестиция",
+    "не інвестиція",
+    "非投资",
+    "ليس استثمارًا"
+  ],
+  "Slots": [
+    "Emplacements",
+    "Slots",
+    "Espacios",
+    "Plätze",
+    "Слоты",
+    "Слоти",
+    "槽位",
+    "الخانات"
+  ],
+  "CID IPFS (optionnel)": [
+    "CID IPFS (facultatif)",
+    "IPFS CID (optional)",
+    "CID IPFS (opcional)",
+    "IPFS-CID (optional)",
+    "CID IPFS (необязательно)",
+    "CID IPFS (необов’язково)",
+    "IPFS CID（可选）",
+    "CID IPFS ‏(اختياري)"
+  ],
+  "Autorisé : art, drop, event culturel, outil créatif. Interdit d’imiter Connect / Buy.": [
+    "Autorisé : art, drop, événement culturel, outil créatif. Interdit d’imiter Connexion / Achat.",
+    "Allowed: art, drops, cultural events, creative tools. Do not imitate Connect / Buy.",
+    "Permitido: arte, lanzamientos, eventos culturales y herramientas creativas. Prohibido imitar Conectar / Comprar.",
+    "Erlaubt: Kunst, Drops, Kulturveranstaltungen, Kreativtools. Verbinden / Kaufen darf nicht nachgeahmt werden.",
+    "Разрешены: искусство, дропы, культурные события, творческие инструменты. Запрещено имитировать Подключение / Покупку.",
+    "Дозволено: мистецтво, дропи, культурні події, творчі інструменти. Заборонено імітувати Підключення / Купівлю.",
+    "允许：艺术、发售、文化活动、创作工具。禁止仿冒“连接 / 购买”。",
+    "مسموح: الفن والإصدارات والفعاليات الثقافية والأدوات الإبداعية. يُحظر تقليد الربط / الشراء."
+  ],
+  "Bidder paie EGLD + memo": [
+    "L’enchérisseur paie en EGLD + mémo",
+    "Bidder pays EGLD + memo",
+    "El postor paga EGLD + nota",
+    "Bieter zahlt EGLD + Memo",
+    "Участник платит EGLD + примечание",
+    "Учасник сплачує EGLD + примітка",
+    "出价者支付 EGLD + 备注",
+    "يدفع المزايد EGLD + مذكرة"
+  ],
+  "Commit + Pages deploy — 1 créative max / slot": [
+    "Commit + déploiement Pages — 1 création max / emplacement",
+    "Commit + Pages deploy — max 1 creative / slot",
+    "Commit + despliegue Pages — máx. 1 creatividad / espacio",
+    "Commit + Pages-Bereitstellung — max. 1 Motiv / Platz",
+    "Коммит + развёртывание Pages — максимум 1 креатив / слот",
+    "Коміт + розгортання Pages — максимум 1 креатив / слот",
+    "提交 + 部署 Pages — 每个槽位最多 1 个创意素材",
+    "تثبيت + نشر Pages — تصميم واحد كحد أقصى / خانة"
+  ],
+  "Limites": [
+    "Limites",
+    "Limits",
+    "Límites",
+    "Grenzen",
+    "Лимиты",
+    "Ліміти",
+    "限制",
+    "الحدود"
+  ],
+  "TCA (Pulse) →": [
+    "TCA (Pulse) →",
+    "TCA (Pulse) →",
+    "TCA (Pulse) →",
+    "TCA (Pulse) →",
+    "TCA (Pulse) →",
+    "TCA (Pulse) →",
+    "TCA (Pulse) →",
+    "TCA (Pulse) →"
+  ],
+  "pUSD ·": [
+    "pUSD ·",
+    "pUSD ·",
+    "pUSD ·",
+    "pUSD ·",
+    "pUSD ·",
+    "pUSD ·",
+    "pUSD ·",
+    "pUSD ·"
+  ],
+  "OpenStreetMap · Overpass · match salles virtuelles": [
+    "OpenStreetMap · Overpass · correspondance des salles virtuelles",
+    "OpenStreetMap · Overpass · virtual room matching",
+    "OpenStreetMap · Overpass · correspondencia con salas virtuales",
+    "OpenStreetMap · Overpass · Zuordnung virtueller Räume",
+    "OpenStreetMap · Overpass · сопоставление виртуальных залов",
+    "OpenStreetMap · Overpass · зіставлення віртуальних залів",
+    "OpenStreetMap · Overpass · 匹配虚拟展厅",
+    "OpenStreetMap · Overpass · مطابقة الغرف الافتراضية"
+  ],
+  "Mapbox GL": [
+    "Mapbox GL",
+    "Mapbox GL",
+    "Mapbox GL",
+    "Mapbox GL",
+    "Mapbox GL",
+    "Mapbox GL",
+    "Mapbox GL",
+    "Mapbox GL"
+  ],
+  "préparer → pin → mint (paper ou on-chain) → list": [
+    "préparer → épingler → mint (simulation ou on-chain) → mettre en vente",
+    "prepare → pin → mint (paper or on-chain) → list",
+    "preparar → fijar → acuñar (simulado o en cadena) → publicar",
+    "vorbereiten → anheften → prägen (Simulation oder On-Chain) → einstellen",
+    "подготовить → закрепить → выпустить (симуляция или блокчейн) → выставить",
+    "підготувати → закріпити → створити (симуляція або блокчейн) → виставити",
+    "准备 → 固定 → 铸造（模拟或链上）→ 上架",
+    "إعداد → تثبيت → سكّ (محاكاة أو على السلسلة) → إدراج"
+  ],
+  "Album (optionnel)": [
+    "Album (facultatif)",
+    "Album (optional)",
+    "Álbum (opcional)",
+    "Album (optional)",
+    "Альбом (необязательно)",
+    "Альбом (необов’язково)",
+    "专辑（可选）",
+    "الألبوم (اختياري)"
+  ],
+  "Numérique": [
+    "Numérique",
+    "Digital",
+    "Digital",
+    "Digital",
+    "Цифровое",
+    "Цифрове",
+    "数字",
+    "رقمي"
+  ],
+  "YouTube (optionnel)": [
+    "YouTube (facultatif)",
+    "YouTube (optional)",
+    "YouTube (opcional)",
+    "YouTube (optional)",
+    "YouTube (необязательно)",
+    "YouTube (необов’язково)",
+    "YouTube（可选）",
+    "YouTube ‏(اختياري)"
+  ],
+  "Copié": [
+    "Copié",
+    "Copied",
+    "Copiado",
+    "Kopiert",
+    "Скопировано",
+    "Скопійовано",
+    "已复制",
+    "تم النسخ"
+  ],
+  "· Marketplace SC gated CODEHASH jusqu activation.": [
+    "· SC marketplace verrouillé par CODEHASH jusqu’à activation.",
+    "· Marketplace SC gated by CODEHASH until activation.",
+    "· SC del mercado bloqueado por CODEHASH hasta su activación.",
+    "· Marktplatz-SC bis zur Aktivierung durch CODEHASH gesperrt.",
+    "· SC маркетплейса закрыт по CODEHASH до активации.",
+    "· SC маркетплейсу закрито за CODEHASH до активації.",
+    "· 市场 SC 在激活前受 CODEHASH 限制。",
+    "· عقد السوق SC مقيّد بـ CODEHASH حتى التفعيل."
+  ],
+  "A · Protocole Burnify (wallet LIA)": [
+    "A · Protocole Burnify (wallet LIA)",
+    "A · Burnify protocol (LIA wallet)",
+    "A · Protocolo Burnify (cartera LIA)",
+    "A · Burnify-Protokoll (LIA-Wallet)",
+    "A · Протокол Burnify (кошелёк LIA)",
+    "A · Протокол Burnify (гаманець LIA)",
+    "A · Burnify 协议（LIA 钱包）",
+    "A · بروتوكول Burnify (محفظة LIA)"
+  ],
+  "batches": [
+    "lots",
+    "batches",
+    "lotes",
+    "Stapel",
+    "пакеты",
+    "пакети",
+    "批次",
+    "دفعات"
+  ],
+  "Agent": [
+    "Agent",
+    "Agent",
+    "Agente",
+    "Agent",
+    "Агент",
+    "Агент",
+    "智能体",
+    "وكيل"
+  ],
+  "Produit optionnel : burn": [
+    "Produit facultatif : burn",
+    "Optional product: burn",
+    "Producto opcional: quema",
+    "Optionales Produkt: Verbrennung",
+    "Необязательный продукт: сжигание",
+    "Необов’язковий продукт: спалювання",
+    "可选产品：销毁",
+    "منتج اختياري: الحرق"
+  ],
+  "Burn disabled": [
+    "Burn désactivé",
+    "Burn disabled",
+    "Quema desactivada",
+    "Verbrennung deaktiviert",
+    "Сжигание отключено",
+    "Спалювання вимкнено",
+    "销毁已禁用",
+    "الحرق معطّل"
+  ],
+  "Hub commun · choisis une salle pack (← →) · paper-first · signature utilisateur uniquement.": [
+    "Hub commun · choisis une salle de pack (← →) · simulation d’abord · signature utilisateur uniquement.",
+    "Shared hub · choose a pack room (← →) · paper-first · user signature only.",
+    "Centro común · elige una sala de pack (← →) · simulación primero · solo firma del usuario.",
+    "Gemeinsamer Hub · wähle einen Paketraum (← →) · zuerst Simulation · nur Benutzersignatur.",
+    "Общий центр · выберите комнату пакета (← →) · сначала симуляция · только подпись пользователя.",
+    "Спільний центр · виберіть кімнату пакета (← →) · спочатку симуляція · лише підпис користувача.",
+    "共享中心 · 选择套餐房间（← →）· 模拟优先 · 仅限用户签名。",
+    "مركز مشترك · اختر غرفة باقة (← →) · المحاكاة أولًا · توقيع المستخدم فقط."
+  ],
+  "(DeFi) ou": [
+    "(DeFi) ou",
+    "(DeFi) or",
+    "(DeFi) o",
+    "(DeFi) oder",
+    "(DeFi) или",
+    "(DeFi) або",
+    "（DeFi）或",
+    "(DeFi) أو"
+  ],
+  "/staking": [
+    "/staking",
+    "/staking",
+    "/staking",
+    "/staking",
+    "/staking",
+    "/staking",
+    "/staking",
+    "/staking"
+  ],
+  "🛡️ PLATINUM — veille · RWA · zero-trust · alertes drawdown": [
+    "🛡️ PLATINUM — veille · RWA · confiance zéro · alertes de baisse",
+    "🛡️ PLATINUM — monitoring · RWA · zero-trust · drawdown alerts",
+    "🛡️ PLATINUM — vigilancia · RWA · confianza cero · alertas de caída",
+    "🛡️ PLATINUM — Überwachung · RWA · Null-Vertrauen · Rückgangswarnungen",
+    "🛡️ PLATINUM — мониторинг · RWA · нулевое доверие · оповещения о просадке",
+    "🛡️ PLATINUM — моніторинг · RWA · нульова довіра · сповіщення про просадку",
+    "🛡️ PLATINUM — 监控 · RWA · 零信任 · 回撤警报",
+    "🛡️ PLATINUM — مراقبة · RWA · انعدام الثقة · تنبيهات التراجع"
+  ],
+  "LIA Hub (3 écrans holo)": [
+    "Hub LIA (3 écrans holographiques)",
+    "LIA Hub (3 holo screens)",
+    "Centro LIA (3 pantallas holográficas)",
+    "LIA-Hub (3 Holo-Bildschirme)",
+    "Центр LIA (3 голографических экрана)",
+    "Центр LIA (3 голографічні екрани)",
+    "LIA 中心（3 个全息屏幕）",
+    "مركز LIA ‏(3 شاشات هولوغرافية)"
+  ],
+  "ArtPass / NFT staked": [
+    "ArtPass / NFT staké",
+    "ArtPass / staked NFT",
+    "ArtPass / NFT en staking",
+    "ArtPass / gestaktes NFT",
+    "ArtPass / NFT в стейкинге",
+    "ArtPass / NFT у стейкінгу",
+    "ArtPass / 已质押 NFT",
+    "ArtPass / NFT مرهون"
+  ],
+  "Pools LP éligibles": [
+    "Pools LP éligibles",
+    "Eligible LP pools",
+    "Pools LP elegibles",
+    "Berechtigte LP-Pools",
+    "Подходящие пулы LP",
+    "Відповідні пули LP",
+    "符合条件的 LP 池",
+    "مجمعات LP المؤهلة"
+  ],
+  "· staking NFT": [
+    "· staking NFT",
+    "· NFT staking",
+    "· staking de NFT",
+    "· NFT-Staking",
+    "· стейкинг NFT",
+    "· стейкінг NFT",
+    "· NFT 质押",
+    "· رهن NFT"
+  ],
+  "Parcours démo": [
+    "Parcours démo",
+    "Demo tour",
+    "Recorrido de demostración",
+    "Demo-Rundgang",
+    "Демотур",
+    "Демотур",
+    "演示导览",
+    "جولة توضيحية"
+  ],
+  "Raccourcis": [
+    "Raccourcis",
+    "Shortcuts",
+    "Accesos directos",
+    "Schnellzugriffe",
+    "Быстрые ссылки",
+    "Швидкі посилання",
+    "快捷入口",
+    "الاختصارات"
+  ],
+  "Sculpture 1/1 certifiée": [
+    "Sculpture 1/1 certifiée",
+    "Certified 1/1 sculpture",
+    "Escultura 1/1 certificada",
+    "Zertifizierte 1/1-Skulptur",
+    "Сертифицированная скульптура 1/1",
+    "Сертифікована скульптура 1/1",
+    "认证 1/1 雕塑",
+    "منحوتة 1/1 موثّقة"
+  ],
+  "Mire d’échelle connue (ex. 20,0 cm) dans le cadre": [
+    "Repère d’échelle connu (ex. 20,0 cm) dans le cadre",
+    "Known scale reference (e.g. 20.0 cm) in frame",
+    "Referencia de escala conocida (ej. 20,0 cm) en el encuadre",
+    "Bekannte Maßstabsreferenz (z. B. 20,0 cm) im Bild",
+    "Известный масштабный ориентир (например, 20,0 см) в кадре",
+    "Відомий масштабний орієнтир (наприклад, 20,0 см) у кадрі",
+    "画面中包含已知尺寸参照（例如 20.0 厘米）",
+    "مرجع قياس معلوم (مثل 20.0 سم) داخل الإطار"
+  ],
+  "Kouros · atelier…": [
+    "Kouros · atelier…",
+    "Kouros · studio…",
+    "Kouros · taller…",
+    "Kouros · Atelier…",
+    "Kouros · мастерская…",
+    "Kouros · майстерня…",
+    "Kouros · 工作室…",
+    "Kouros · الاستوديو…"
+  ],
+  "Certificat browser-approx (démo)": [
+    "Certificat approximatif du navigateur (démo)",
+    "Browser-approximate certificate (demo)",
+    "Certificado aproximado del navegador (demo)",
+    "Näherungszertifikat im Browser (Demo)",
+    "Приблизительный сертификат браузера (демо)",
+    "Приблизний сертифікат браузера (демо)",
+    "浏览器近似证书（演示）",
+    "شهادة تقريبية من المتصفح (عرض)"
+  ],
+  "Jobs paper récents": [
+    "Tâches simulées récentes",
+    "Recent paper jobs",
+    "Tareas simuladas recientes",
+    "Letzte Simulationsaufträge",
+    "Последние задачи симуляции",
+    "Останні завдання симуляції",
+    "最近的模拟任务",
+    "مهام محاكاة حديثة"
+  ],
+  ": art · culture · technologie + édito vision xArtists. Abonnement —": [
+    ": art · culture · technologie + éditorial sur la vision xArtists. Abonnement —",
+    ": art · culture · technology + xArtists vision editorial. Subscription —",
+    ": arte · cultura · tecnología + editorial sobre la visión xArtists. Suscripción —",
+    ": Kunst · Kultur · Technologie + Editorial zur xArtists-Vision. Abonnement —",
+    ": искусство · культура · технологии + редакционный взгляд xArtists. Подписка —",
+    ": мистецтво · культура · технології + редакційний погляд xArtists. Підписка —",
+    "：艺术 · 文化 · 科技 + xArtists 愿景社论。订阅 —",
+    ": فن · ثقافة · تكنولوجيا + افتتاحية رؤية xArtists. الاشتراك —"
+  ],
+  "S’abonner (V1)": [
+    "S’abonner (V1)",
+    "Subscribe (V1)",
+    "Suscribirse (V1)",
+    "Abonnieren (V1)",
+    "Подписаться (V1)",
+    "Підписатися (V1)",
+    "订阅（V1）",
+    "اشتراك (V1)"
+  ],
+  "ent?.token || 'TRO-94c925'": [
+    "ent?.token || 'TRO-94c925'",
+    "ent?.token || 'TRO-94c925'",
+    "ent?.token || 'TRO-94c925'",
+    "ent?.token || 'TRO-94c925'",
+    "ent?.token || 'TRO-94c925'",
+    "ent?.token || 'TRO-94c925'",
+    "ent?.token || 'TRO-94c925'",
+    "ent?.token || 'TRO-94c925'"
+  ],
+  "pending": [
+    "en attente",
+    "pending",
+    "pendiente",
+    "ausstehend",
+    "ожидается",
+    "очікується",
+    "待处理",
+    "قيد الانتظار"
+  ],
+  "nonce": [
+    "nonce",
+    "nonce",
+    "nonce",
+    "Nonce",
+    "nonce",
+    "nonce",
+    "nonce",
+    "nonce"
+  ],
+  "Succursales · modules (": [
+    "Succursales · modules (",
+    "Branches · modules (",
+    "Sucursales · módulos (",
+    "Zweigstellen · Module (",
+    "Филиалы · модули (",
+    "Філії · модулі (",
+    "分支 · 模块（",
+    "الفروع · الوحدات ("
+  ],
+  "Marketplace & agents on-chain : codeHash null — pas de faux GMV": [
+    "Marketplace et agents on-chain : codeHash null — aucun faux volume de ventes",
+    "Marketplace & on-chain agents: codeHash null — no fake GMV",
+    "Mercado y agentes en cadena: codeHash null — sin volumen de ventas ficticio",
+    "Marktplatz & On-Chain-Agenten: codeHash null — kein fingiertes Handelsvolumen",
+    "Маркетплейс и агенты в блокчейне: codeHash null — без фиктивного GMV",
+    "Маркетплейс та агенти в блокчейні: codeHash null — без фіктивного GMV",
+    "市场与链上智能体：codeHash null — 不虚构交易总额",
+    "السوق والوكلاء على السلسلة: codeHash null — دون حجم مبيعات وهمي"
+  ],
+  "Status & capital": [
+    "Statut et capital",
+    "Status & capital",
+    "Estado y capital",
+    "Status & Kapital",
+    "Статус и капитал",
+    "Статус і капітал",
+    "状态与资本",
+    "الحالة ورأس المال"
+  ],
+  "Preuves live": [
+    "Preuves en direct",
+    "Live proofs",
+    "Pruebas en vivo",
+    "Live-Nachweise",
+    "Подтверждения в реальном времени",
+    "Підтвердження наживо",
+    "实时证明",
+    "إثباتات مباشرة"
+  ],
+  "Listing #": [
+    "Annonce n°",
+    "Listing #",
+    "Anuncio n.º",
+    "Angebot Nr.",
+    "Объявление №",
+    "Оголошення №",
+    "挂单编号",
+    "الإدراج رقم"
+  ],
+  "N/A — pas de dette mesurée": [
+    "N/D — aucune dette mesurée",
+    "N/A — no measured debt",
+    "N/D — sin deuda medida",
+    "k. A. — keine gemessene Schuld",
+    "Н/Д — долг не измерен",
+    "Н/Д — борг не виміряно",
+    "不适用 — 无已测量债务",
+    "غير متاح — لا دين مقاس"
+  ],
+  "— lending MultiversX ·": [
+    "— prêts MultiversX ·",
+    "— MultiversX lending ·",
+    "— préstamos MultiversX ·",
+    "— MultiversX-Kreditvergabe ·",
+    "— кредитование MultiversX ·",
+    "— кредитування MultiversX ·",
+    "— MultiversX 借贷 ·",
+    "— إقراض MultiversX ·"
+  ],
+  "Pas de dette active": [
+    "Aucune dette active",
+    "No active debt",
+    "Sin deuda activa",
+    "Keine aktive Schuld",
+    "Нет активного долга",
+    "Немає активного боргу",
+    "无未偿债务",
+    "لا ديون نشطة"
+  ],
+  "Borrowed (USD)": [
+    "Emprunté (USD)",
+    "Borrowed (USD)",
+    "Prestado (USD)",
+    "Geliehen (USD)",
+    "Заём (USD)",
+    "Позичено (USD)",
+    "已借入（USD）",
+    "المقترض (USD)"
+  ],
+  "📊 Collateral par marché": [
+    "📊 Garanties par marché",
+    "📊 Collateral by market",
+    "📊 Garantías por mercado",
+    "📊 Sicherheiten nach Markt",
+    "📊 Залог по рынкам",
+    "📊 Застава за ринками",
+    "📊 各市场抵押品",
+    "📊 الضمانات حسب السوق"
+  ],
+  "Collateral déposé. Valeurs USD via API MultiversX (peuvent différer du dashboard Hatom).": [
+    "Garanties déposées. Valeurs USD via l’API MultiversX (peuvent différer du tableau de bord Hatom).",
+    "Deposited collateral. USD values via MultiversX API (may differ from the Hatom dashboard).",
+    "Garantías depositadas. Valores USD mediante la API MultiversX (pueden diferir del panel de Hatom).",
+    "Hinterlegte Sicherheiten. USD-Werte über die MultiversX-API (können vom Hatom-Dashboard abweichen).",
+    "Внесённый залог. Стоимость в USD через API MultiversX (может отличаться от панели Hatom).",
+    "Внесена застава. Вартість у USD через API MultiversX (може відрізнятися від панелі Hatom).",
+    "已存入抵押品。USD 估值来自 MultiversX API（可能与 Hatom 面板不同）。",
+    "الضمانات المودعة. القيم بالدولار عبر API MultiversX (قد تختلف عن لوحة Hatom)."
+  ],
+  "✅ API officielle Hatom — collateral & borrow fiables": [
+    "✅ API officielle Hatom — garanties et emprunts fiables",
+    "✅ Official Hatom API — reliable collateral & borrowing data",
+    "✅ API oficial de Hatom — garantías y préstamos fiables",
+    "✅ Offizielle Hatom-API — verlässliche Sicherheiten- und Kreditdaten",
+    "✅ Официальный API Hatom — надёжные данные залога и займов",
+    "✅ Офіційний API Hatom — надійні дані застави та позик",
+    "✅ Hatom 官方 API — 可靠的抵押与借贷数据",
+    "✅ واجهة Hatom الرسمية — بيانات ضمانات واقتراض موثوقة"
+  ],
+  "Time": [
+    "Heure",
+    "Time",
+    "Hora",
+    "Zeit",
+    "Время",
+    "Час",
+    "时间",
+    "الوقت"
+  ],
+  "Accès réservé au pack": [
+    "Accès réservé au pack",
+    "Pack access only",
+    "Acceso exclusivo del pack",
+    "Zugang nur mit Paket",
+    "Доступ только с пакетом",
+    "Доступ лише з пакетом",
+    "仅限套餐持有者访问",
+    "الوصول لحاملي الباقة فقط"
+  ],
+  "Ouvrir le desk": [
+    "Ouvrir le bureau",
+    "Open desk",
+    "Abrir mesa de operaciones",
+    "Desk öffnen",
+    "Открыть рабочий стол",
+    "Відкрити робочий стіл",
+    "打开工作台",
+    "فتح المكتب"
+  ],
+  "Pas d’inscription on-chain tant que le registry n’est pas public.": [
+    "Pas d’inscription on-chain tant que le registre n’est pas public.",
+    "No on-chain registration until the registry is public.",
+    "Sin registro en cadena hasta que el registro sea público.",
+    "Keine On-Chain-Registrierung, bis das Register öffentlich ist.",
+    "Регистрация в блокчейне недоступна до публикации реестра.",
+    "Реєстрація в блокчейні недоступна до публікації реєстру.",
+    "注册表公开前不支持链上注册。",
+    "لا تسجيل على السلسلة حتى يصبح السجل عامًا."
+  ],
+  "Prix TRO": [
+    "Prix TRO",
+    "TRO price",
+    "Precio TRO",
+    "TRO-Preis",
+    "Цена TRO",
+    "Ціна TRO",
+    "TRO 价格",
+    "سعر TRO"
+  ],
+  "in pool": [
+    "dans le pool",
+    "in pool",
+    "en el pool",
+    "im Pool",
+    "в пуле",
+    "у пулі",
+    "在池中",
+    "في المجمع"
+  ],
+  "OneDex": [
+    "OneDex",
+    "OneDex",
+    "OneDex",
+    "OneDex",
+    "OneDex",
+    "OneDex",
+    "OneDex",
+    "OneDex"
+  ],
+  "Refresh wallet": [
+    "Actualiser le wallet",
+    "Refresh wallet",
+    "Actualizar cartera",
+    "Wallet aktualisieren",
+    "Обновить кошелёк",
+    "Оновити гаманець",
+    "刷新钱包",
+    "تحديث المحفظة"
+  ],
+  "Art, agents IA et finance —": [
+    "Art, agents IA et finance —",
+    "Art, AI agents and finance —",
+    "Arte, agentes IA y finanzas —",
+    "Kunst, KI-Agenten und Finanzen —",
+    "Искусство, ИИ-агенты и финансы —",
+    "Мистецтво, ШІ-агенти та фінанси —",
+    "艺术、AI 智能体与金融 —",
+    "الفن ووكلاء الذكاء الاصطناعي والتمويل —"
+  ],
+  "ou ⌘K pour parler à LIA": [
+    "ou ⌘K pour parler à LIA",
+    "or ⌘K to talk to LIA",
+    "o ⌘K para hablar con LIA",
+    "oder ⌘K, um mit LIA zu sprechen",
+    "или ⌘K, чтобы поговорить с LIA",
+    "або ⌘K, щоб поговорити з LIA",
+    "或按 ⌘K 与 LIA 对话",
+    "أو ⌘K للتحدث إلى LIA"
+  ],
+  "paper first": [
+    "simulation d’abord",
+    "paper first",
+    "simulación primero",
+    "zuerst Simulation",
+    "сначала симуляция",
+    "спочатку симуляція",
+    "模拟优先",
+    "المحاكاة أولًا"
+  ],
+  "· shadow PnL": [
+    "· PnL simulé",
+    "· shadow PnL",
+    "· PnL simulado",
+    "· Schatten-PnL",
+    "· теневой PnL",
+    "· тіньовий PnL",
+    "· 影子盈亏",
+    "· أرباح وخسائر ظلّية"
+  ],
+  "avec": [
+    "avec",
+    "with",
+    "con",
+    "mit",
+    "с",
+    "з",
+    "与",
+    "مع"
+  ],
+  "Slot EGLD/USDC": [
+    "Emplacement EGLD/USDC",
+    "EGLD/USDC slot",
+    "Espacio EGLD/USDC",
+    "EGLD/USDC-Slot",
+    "Слот EGLD/USDC",
+    "Слот EGLD/USDC",
+    "EGLD/USDC 槽位",
+    "خانة EGLD/USDC"
+  ],
+  "Packs MVX": [
+    "Packs MVX",
+    "MVX Packs",
+    "Packs MVX",
+    "MVX-Pakete",
+    "Пакеты MVX",
+    "Пакети MVX",
+    "MVX 套餐",
+    "باقات MVX"
+  ],
+  "Marché": [
+    "Marché",
+    "Market",
+    "Mercado",
+    "Markt",
+    "Рынок",
+    "Ринок",
+    "市场",
+    "السوق"
+  ],
+  "Fear &amp; Greed": [
+    "Peur et avidité",
+    "Fear &amp; Greed",
+    "Miedo y codicia",
+    "Angst & Gier",
+    "Страх и жадность",
+    "Страх і жадібність",
+    "恐惧与贪婪",
+    "الخوف والطمع"
+  ],
+  "Synthèse LIA": [
+    "Synthèse LIA",
+    "LIA summary",
+    "Resumen LIA",
+    "LIA-Zusammenfassung",
+    "Сводка LIA",
+    "Зведення LIA",
+    "LIA 概览",
+    "ملخص LIA"
+  ],
+  "Market": [
+    "Marché",
+    "Market",
+    "Mercado",
+    "Markt",
+    "Рынок",
+    "Ринок",
+    "市场",
+    "السوق"
+  ],
+  "Médium · dimensions · chip NFC · certificat de provenance on-chain. Distinct des packs agents.": [
+    "Médium · dimensions · puce NFC · certificat de provenance on-chain. Distinct des packs agents.",
+    "Medium · dimensions · NFC chip · on-chain provenance certificate. Separate from agent packs.",
+    "Técnica · dimensiones · chip NFC · certificado de procedencia en cadena. Distinto de los packs de agentes.",
+    "Medium · Maße · NFC-Chip · On-Chain-Herkunftszertifikat. Getrennt von Agentenpaketen.",
+    "Материал · размеры · NFC-чип · сертификат происхождения в блокчейне. Отдельно от пакетов агентов.",
+    "Матеріал · розміри · NFC-чип · сертифікат походження в блокчейні. Окремо від пакетів агентів.",
+    "媒介 · 尺寸 · NFC 芯片 · 链上来源证书。独立于智能体套餐。",
+    "الوسيط · الأبعاد · شريحة NFC · شهادة منشأ على السلسلة. منفصلة عن باقات الوكلاء."
+  ],
+  "Musée lab": [
+    "Musée laboratoire",
+    "Museum lab",
+    "Museo laboratorio",
+    "Museumslabor",
+    "Музейная лаборатория",
+    "Музейна лабораторія",
+    "博物馆实验室",
+    "مختبر المتحف"
+  ],
+  "· catalogue…": [
+    "· catalogue…",
+    "· catalog…",
+    "· catálogo…",
+    "· Katalog…",
+    "· каталог…",
+    "· каталог…",
+    "· 目录…",
+    "· الكتالوج…"
+  ],
+  "Œuvres de la salle": [
+    "Œuvres de la salle",
+    "Room artworks",
+    "Obras de la sala",
+    "Kunstwerke im Raum",
+    "Произведения в зале",
+    "Твори в залі",
+    "展厅作品",
+    "أعمال القاعة"
+  ],
+  "Pack IA = 1 salle privée (": [
+    "Pack IA = 1 salle privée (",
+    "AI Pack = 1 private room (",
+    "Pack IA = 1 sala privada (",
+    "KI-Paket = 1 privater Raum (",
+    "Пакет ИИ = 1 приватная комната (",
+    "Пакет ШІ = 1 приватна кімната (",
+    "AI 套餐 = 1 个私人房间（",
+    "باقة ذكاء اصطناعي = غرفة خاصة واحدة ("
+  ],
+  "Mode invité": [
+    "Mode invité",
+    "Guest mode",
+    "Modo invitado",
+    "Gastmodus",
+    "Гостевой режим",
+    "Гостьовий режим",
+    "访客模式",
+    "وضع الضيف"
+  ],
+  "Tes salles (": [
+    "Tes salles (",
+    "Your rooms (",
+    "Tus salas (",
+    "Deine Räume (",
+    "Ваши комнаты (",
+    "Ваші кімнати (",
+    "您的房间（",
+    "غرفك ("
+  ],
+  "On-chain": [
+    "On-chain",
+    "On-chain",
+    "En cadena",
+    "On-Chain",
+    "В блокчейне",
+    "У блокчейні",
+    "链上",
+    "على السلسلة"
+  ],
+  "Aucun historique sur cet appareil.": [
+    "Aucun historique sur cet appareil.",
+    "No history on this device.",
+    "No hay historial en este dispositivo.",
+    "Kein Verlauf auf diesem Gerät.",
+    "На этом устройстве нет истории.",
+    "На цьому пристрої немає історії.",
+    "此设备上无历史记录。",
+    "لا يوجد سجل على هذا الجهاز."
+  ],
+  "EGLD @ $": [
+    "EGLD @ $",
+    "EGLD @ $",
+    "EGLD @ $",
+    "EGLD @ $",
+    "EGLD @ $",
+    "EGLD @ $",
+    "EGLD @ $",
+    "EGLD @ $"
+  ],
+  "pas une promesse": [
+    "pas une promesse",
+    "not a promise",
+    "no es una promesa",
+    "kein Versprechen",
+    "не обещание",
+    "не обіцянка",
+    "并非承诺",
+    "ليس وعدًا"
+  ],
+  "Prix EGLD": [
+    "Prix EGLD",
+    "EGLD price",
+    "Precio EGLD",
+    "EGLD-Preis",
+    "Цена EGLD",
+    "Ціна EGLD",
+    "EGLD 价格",
+    "سعر EGLD"
+  ],
+  "🏆 Jalons paper": [
+    "🏆 Jalons de simulation",
+    "🏆 Paper milestones",
+    "🏆 Hitos de simulación",
+    "🏆 Simulationsmeilensteine",
+    "🏆 Этапы симуляции",
+    "🏆 Етапи симуляції",
+    "🏆 模拟里程碑",
+    "🏆 مراحل المحاكاة"
+  ],
+  "xPortal · reconnecte si une signature échoue": [
+    "xPortal · reconnecte-toi si une signature échoue",
+    "xPortal · reconnect if a signature fails",
+    "xPortal · vuelve a conectar si falla una firma",
+    "xPortal · bei fehlgeschlagener Signatur neu verbinden",
+    "xPortal · переподключитесь при ошибке подписи",
+    "xPortal · перепідключіться у разі помилки підпису",
+    "xPortal · 签名失败时请重新连接",
+    "xPortal · أعد الربط إذا فشل التوقيع"
+  ],
+  "Physical · Digital": [
+    "Physique · Numérique",
+    "Physical · Digital",
+    "Físico · Digital",
+    "Physisch · Digital",
+    "Физическое · Цифровое",
+    "Фізичне · Цифрове",
+    "实体 · 数字",
+    "مادي · رقمي"
+  ],
+  "Studio mint": [
+    "Studio de mint",
+    "Mint studio",
+    "Estudio de acuñación",
+    "Prägestudio",
+    "Студия выпуска",
+    "Студія випуску",
+    "铸造工作室",
+    "استوديو السكّ"
+  ],
+  "Trois packs.": [
+    "Trois packs.",
+    "Three packs.",
+    "Tres packs.",
+    "Drei Pakete.",
+    "Три пакета.",
+    "Три пакети.",
+    "三种套餐。",
+    "ثلاث باقات."
+  ],
+  "Demande ouverte.": [
+    "Demande ouverte.",
+    "Request open.",
+    "Solicitud abierta.",
+    "Anfrage offen.",
+    "Заявка открыта.",
+    "Заявку відкрито.",
+    "请求已开放。",
+    "الطلب مفتوح."
+  ],
+  "Nouveau tirage": [
+    "Nouveau tirage",
+    "New draw",
+    "Nuevo sorteo",
+    "Neue Ziehung",
+    "Новый розыгрыш",
+    "Новий розіграш",
+    "重新抽取",
+    "سحب جديد"
+  ],
+  "Journal simulé": [
+    "Journal simulé",
+    "Simulated journal",
+    "Diario simulado",
+    "Simuliertes Protokoll",
+    "Журнал симуляции",
+    "Журнал симуляції",
+    "模拟日志",
+    "سجل محاكاة"
+  ],
+  "Soul Protocol": [
+    "Soul Protocol",
+    "Soul Protocol",
+    "Soul Protocol",
+    "Soul Protocol",
+    "Soul Protocol",
+    "Soul Protocol",
+    "Soul Protocol",
+    "Soul Protocol"
+  ],
+  "+ marchés Soul natifs": [
+    "+ marchés Soul natifs",
+    "+ native Soul markets",
+    "+ mercados nativos de Soul",
+    "+ native Soul-Märkte",
+    "+ собственные рынки Soul",
+    "+ власні ринки Soul",
+    "+ Soul 原生市场",
+    "+ أسواق Soul الأصلية"
+  ],
+  "LIA paper skip": [
+    "LIA simulation ignorée",
+    "LIA paper skip",
+    "LIA simulación omitida",
+    "LIA-Simulation übersprungen",
+    "LIA: симуляция пропущена",
+    "LIA: симуляцію пропущено",
+    "LIA 模拟已跳过",
+    "تخطي محاكاة LIA"
+  ],
+  "· paper=true": [
+    "· paper=true",
+    "· paper=true",
+    "· paper=true",
+    "· paper=true",
+    "· paper=true",
+    "· paper=true",
+    "· paper=true",
+    "· paper=true"
+  ],
+  "→ SKIP (Guardian)": [
+    "→ IGNORER (Guardian)",
+    "→ SKIP (Guardian)",
+    "→ OMITIR (Guardian)",
+    "→ ÜBERSPRINGEN (Guardian)",
+    "→ ПРОПУСТИТЬ (Guardian)",
+    "→ ПРОПУСТИТИ (Guardian)",
+    "→ 跳过（Guardian）",
+    "→ تخطٍّ (Guardian)"
+  ],
+  "HF paper": [
+    "HF simulé",
+    "Paper HF",
+    "HF simulado",
+    "Simulierter HF",
+    "HF симуляции",
+    "HF симуляції",
+    "模拟 HF",
+    "HF محاكى"
+  ],
+  "Explorer MultiversX": [
+    "Explorateur MultiversX",
+    "MultiversX explorer",
+    "Explorador MultiversX",
+    "MultiversX-Explorer",
+    "Обозреватель MultiversX",
+    "Оглядач MultiversX",
+    "MultiversX 浏览器",
+    "مستكشف MultiversX"
+  ],
+  "Yield LP = farms": [
+    "Rendement LP = fermes",
+    "LP yield = farms",
+    "Rendimiento LP = granjas",
+    "LP-Rendite = Farmen",
+    "Доходность LP = фермы",
+    "Дохідність LP = ферми",
+    "LP 收益 = 农场",
+    "عائد LP = المزارع"
+  ],
+  "Vol 24h": [
+    "Volume 24 h",
+    "24h volume",
+    "Volumen 24 h",
+    "24h-Volumen",
+    "Объём за 24 ч",
+    "Обсяг за 24 год",
+    "24 小时成交量",
+    "حجم 24 ساعة"
+  ],
+  "Rewards report": [
+    "Rapport de récompenses",
+    "Rewards report",
+    "Informe de recompensas",
+    "Prämienbericht",
+    "Отчёт о наградах",
+    "Звіт про винагороди",
+    "奖励报告",
+    "تقرير المكافآت"
+  ],
+  "Risque :": [
+    "Risque :",
+    "Risk:",
+    "Riesgo:",
+    "Risiko:",
+    "Риск:",
+    "Ризик:",
+    "风险：",
+    "المخاطر:"
+  ],
+  "Aucune collection NFT détectée sur ce wallet — crée-en une ci-dessous.": [
+    "Aucune collection NFT détectée sur ce wallet — crée-en une ci-dessous.",
+    "No NFT collection found in this wallet — create one below.",
+    "No se detectó ninguna colección NFT en esta cartera — crea una abajo.",
+    "Keine NFT-Sammlung in diesem Wallet gefunden — erstelle unten eine.",
+    "В этом кошельке не найдены коллекции NFT — создайте коллекцию ниже.",
+    "У цьому гаманці не знайдено колекцій NFT — створіть колекцію нижче.",
+    "此钱包中未检测到 NFT 系列 — 请在下方创建。",
+    "لم تُكتشف مجموعة NFT في هذه المحفظة — أنشئ واحدة أدناه."
+  ],
+  "Signature…": [
+    "Signature…",
+    "Signing…",
+    "Firmando…",
+    "Wird signiert…",
+    "Подписание…",
+    "Підписання…",
+    "正在签名…",
+    "جارٍ التوقيع…"
+  ],
+  "Créer NFT": [
+    "Créer un NFT",
+    "Create NFT",
+    "Crear NFT",
+    "NFT erstellen",
+    "Создать NFT",
+    "Створити NFT",
+    "创建 NFT",
+    "إنشاء NFT"
+  ],
+  "Packs Agent IA": [
+    "Packs Agent IA",
+    "AI Agent Packs",
+    "Packs de Agente IA",
+    "KI-Agentenpakete",
+    "Пакеты ИИ-агентов",
+    "Пакети ШІ-агентів",
+    "AI 智能体套餐",
+    "باقات وكلاء الذكاء الاصطناعي"
+  ],
+  "⏸ Pause": [
+    "⏸ Pause",
+    "⏸ Pause",
+    "⏸ Pausa",
+    "⏸ Pause",
+    "⏸ Пауза",
+    "⏸ Пауза",
+    "⏸ 暂停",
+    "⏸ إيقاف مؤقت"
+  ],
+  "Offres": [
+    "Offres",
+    "Offers",
+    "Ofertas",
+    "Angebote",
+    "Предложения",
+    "Пропозиції",
+    "报价",
+    "العروض"
+  ],
+  "ops / protocole": [
+    "opérations / protocole",
+    "ops / protocol",
+    "operaciones / protocolo",
+    "Betrieb / Protokoll",
+    "операции / протокол",
+    "операції / протокол",
+    "运营 / 协议",
+    "العمليات / البروتوكول"
+  ],
+  "MultiversX (EGLD)": [
+    "MultiversX (EGLD)",
+    "MultiversX (EGLD)",
+    "MultiversX (EGLD)",
+    "MultiversX (EGLD)",
+    "MultiversX (EGLD)",
+    "MultiversX (EGLD)",
+    "MultiversX (EGLD)",
+    "MultiversX (EGLD)"
+  ],
+  "Packs →": [
+    "Packs →",
+    "Packs →",
+    "Packs →",
+    "Pakete →",
+    "Пакеты →",
+    "Пакети →",
+    "套餐 →",
+    "الباقات →"
+  ],
+  "Token · utilitaire": [
+    "Jeton · utilitaire",
+    "Token · utility",
+    "Token · utilidad",
+    "Token · Nutzen",
+    "Токен · утилитарный",
+    "Токен · утилітарний",
+    "代币 · 实用",
+    "رمز · منفعة"
+  ],
+  "Market cap": [
+    "Capitalisation",
+    "Market cap",
+    "Capitalización",
+    "Marktkapitalisierung",
+    "Капитализация",
+    "Капіталізація",
+    "市值",
+    "القيمة السوقية"
+  ],
+  "Assos": [
+    "Associations",
+    "Associations",
+    "Asociaciones",
+    "Vereine",
+    "Ассоциации",
+    "Асоціації",
+    "协会",
+    "الجمعيات"
+  ],
+  "Démo live · paper": [
+    "Démo en direct · simulation",
+    "Live demo · paper",
+    "Demo en vivo · simulación",
+    "Live-Demo · Simulation",
+    "Живое демо · симуляция",
+    "Живе демо · симуляція",
+    "实时演示 · 模拟",
+    "عرض مباشر · محاكاة"
+  ],
+  "€/mois": [
+    "€/mois",
+    "€/month",
+    "€/mes",
+    "€/Monat",
+    "€/мес.",
+    "€/міс.",
+    "€/月",
+    "€/شهر"
+  ],
+  "Split : institution": [
+    "Répartition : institution",
+    "Split: institution",
+    "Reparto: institución",
+    "Aufteilung: Institution",
+    "Распределение: учреждение",
+    "Розподіл: установа",
+    "分配：机构",
+    "التوزيع: المؤسسة"
+  ],
+  "€ · LIA": [
+    "€ · LIA",
+    "€ · LIA",
+    "€ · LIA",
+    "€ · LIA",
+    "€ · LIA",
+    "€ · LIA",
+    "€ · LIA",
+    "€ · LIA"
+  ],
+  "Programme d’expo, partenariat…": [
+    "Programme d’exposition, partenariat…",
+    "Exhibition program, partnership…",
+    "Programa de exposiciones, colaboración…",
+    "Ausstellungsprogramm, Partnerschaft…",
+    "Выставочная программа, партнёрство…",
+    "Виставкова програма, партнерство…",
+    "展览计划、合作…",
+    "برنامج معارض، شراكة…"
+  ],
+  "Salles": [
+    "Salles",
+    "Rooms",
+    "Salas",
+    "Räume",
+    "Залы",
+    "Зали",
+    "展厅",
+    "القاعات"
+  ],
+  "Musée · accrocher NFT": [
+    "Musée · accrocher un NFT",
+    "Museum · hang an NFT",
+    "Museo · colgar NFT",
+    "Museum · NFT aufhängen",
+    "Музей · разместить NFT",
+    "Музей · розмістити NFT",
+    "博物馆 · 悬挂 NFT",
+    "المتحف · تعليق NFT"
+  ],
+  "xPortal · prêt à signer": [
+    "xPortal · prêt à signer",
+    "xPortal · ready to sign",
+    "xPortal · listo para firmar",
+    "xPortal · bereit zum Signieren",
+    "xPortal · готово к подписи",
+    "xPortal · готово до підпису",
+    "xPortal · 可签名",
+    "xPortal · جاهز للتوقيع"
+  ],
+  "session:": [
+    "session :",
+    "session:",
+    "sesión:",
+    "Sitzung:",
+    "сессия:",
+    "сесія:",
+    "会话：",
+    "الجلسة:"
+  ],
+  "$TRO staké": [
+    "$TRO staké",
+    "Staked $TRO",
+    "$TRO en staking",
+    "Gestaktes $TRO",
+    "$TRO в стейкинге",
+    "$TRO у стейкінгу",
+    "已质押 $TRO",
+    "$TRO مرهون"
+  ],
+  "Contre": [
+    "Contre",
+    "Against",
+    "En contra",
+    "Dagegen",
+    "Против",
+    "Проти",
+    "反对",
+    "ضد"
+  ],
+  "Stake · Récompenses": [
+    "Stake · Récompenses",
+    "Stake · Rewards",
+    "Staking · Recompensas",
+    "Staking · Prämien",
+    "Стейкинг · Награды",
+    "Стейкінг · Винагороди",
+    "质押 · 奖励",
+    "الرهن · المكافآت"
+  ],
+  "Est. / jour": [
+    "Estimation / jour",
+    "Est. / day",
+    "Est. / día",
+    "Geschätzt / Tag",
+    "Оценка / день",
+    "Оцінка / день",
+    "估算 / 天",
+    "تقديري / يوم"
+  ],
+  "Certification NFT physique": [
+    "Certification de NFT physique",
+    "Physical NFT certification",
+    "Certificación de NFT físico",
+    "Zertifizierung physischer NFTs",
+    "Сертификация физического NFT",
+    "Сертифікація фізичного NFT",
+    "实体 NFT 认证",
+    "توثيق NFT مادي"
+  ],
+  "Générer": [
+    "Générer",
+    "Generate",
+    "Generar",
+    "Erstellen",
+    "Создать",
+    "Створити",
+    "生成",
+    "إنشاء"
+  ],
+  "Pratiquer une silhouette sans contour dur": [
+    "Pratiquer une silhouette sans contour dur",
+    "Practice a silhouette without hard edges",
+    "Practicar una silueta sin bordes duros",
+    "Eine Silhouette ohne harte Konturen üben",
+    "Практика силуэта без жёстких контуров",
+    "Практика силуету без жорстких контурів",
+    "练习没有硬边的轮廓",
+    "التدرّب على هيئة دون حواف حادة"
+  ],
+  "Le Pack Pulse débloque la salle holographique complète et le mentor RAG.": [
+    "Le Pack Pulse débloque la salle holographique complète et le mentor RAG.",
+    "The Pulse Pack unlocks the full holographic room and RAG mentor.",
+    "El Pack Pulse desbloquea la sala holográfica completa y el mentor RAG.",
+    "Das Pulse-Paket schaltet den vollständigen Holografieraum und den RAG-Mentor frei.",
+    "Пакет Pulse открывает полную голографическую комнату и наставника RAG.",
+    "Пакет Pulse відкриває повну голографічну кімнату та наставника RAG.",
+    "Pulse 套餐可解锁完整全息房间和 RAG 导师。",
+    "تفتح باقة Pulse الغرفة الهولوغرافية الكاملة ومرشد RAG."
+  ],
+  "Governance": [
+    "Gouvernance",
+    "Governance",
+    "Gobernanza",
+    "Governance",
+    "Управление",
+    "Управління",
+    "治理",
+    "الحوكمة"
+  ],
+  "Stake NFT": [
+    "Staker un NFT",
+    "Stake NFT",
+    "Poner NFT en staking",
+    "NFT staken",
+    "Стейкинг NFT",
+    "Стейкінг NFT",
+    "质押 NFT",
+    "رهن NFT"
+  ],
+  "Open real Slot (isPayable) after audit": [
+    "Ouvrir le slot réel (isPayable) après audit",
+    "Open real Slot (isPayable) after audit",
+    "Abrir el espacio real (isPayable) tras la auditoría",
+    "Realen Slot (isPayable) nach Prüfung öffnen",
+    "Открыть реальный слот (isPayable) после аудита",
+    "Відкрити реальний слот (isPayable) після аудиту",
+    "审计后开放真实槽位（isPayable）",
+    "فتح الخانة الفعلية (isPayable) بعد التدقيق"
+  ],
+  "Your stake": [
+    "Ton stake",
+    "Your stake",
+    "Tu participación en staking",
+    "Dein Stake",
+    "Ваш стейкинг",
+    "Ваш стейкінг",
+    "您的质押",
+    "رهنك"
+  ],
+  "Physical NFT certification": [
+    "Certification de NFT physique",
+    "Physical NFT certification",
+    "Certificación de NFT físico",
+    "Zertifizierung physischer NFTs",
+    "Сертификация физического NFT",
+    "Сертифікація фізичного NFT",
+    "实体 NFT 认证",
+    "توثيق NFT مادي"
+  ],
+  "Print / A4 PDF": [
+    "Imprimer / PDF A4",
+    "Print / A4 PDF",
+    "Imprimir / PDF A4",
+    "Drucken / A4-PDF",
+    "Печать / PDF A4",
+    "Друк / PDF A4",
+    "打印 / A4 PDF",
+    "طباعة / PDF بحجم A4"
+  ],
+  "Define sfumato without confusing it with simple blur": [
+    "Définir le sfumato sans le confondre avec un simple flou",
+    "Define sfumato without confusing it with simple blur",
+    "Define el sfumato sin confundirlo con un simple desenfoque",
+    "Sfumato definieren, ohne es mit einfacher Unschärfe zu verwechseln",
+    "Дайте определение сфумато, не путая его с простым размытием",
+    "Визначте сфумато, не плутаючи його з простим розмиттям",
+    "定义晕涂法，勿将其与简单模糊混淆",
+    "عرّف السفوماتو دون الخلط بينه وبين التمويه البسيط"
+  ],
+  "Ask the studio notes": [
+    "Interroger les notes d’atelier",
+    "Ask the studio notes",
+    "Consultar los apuntes del estudio",
+    "Ateliernotizen befragen",
+    "Задать вопрос по записям студии",
+    "Запитати за нотатками студії",
+    "向工作室笔记提问",
+    "اسأل ملاحظات الاستوديو"
+  ],
+  "Pitch mode": [
+    "Mode présentation",
+    "Pitch mode",
+    "Modo presentación",
+    "Präsentationsmodus",
+    "Режим презентации",
+    "Режим презентації",
+    "演示模式",
+    "وضع العرض"
+  ],
+  "EGLD via xPortal (wallet requis).": [
+    "EGLD via xPortal (wallet requis).",
+    "EGLD via xPortal (wallet required).",
+    "EGLD mediante xPortal (cartera necesaria).",
+    "EGLD über xPortal (Wallet erforderlich).",
+    "EGLD через xPortal (нужен кошелёк).",
+    "EGLD через xPortal (потрібен гаманець).",
+    "通过 xPortal 支付 EGLD（需要钱包）。",
+    "EGLD عبر xPortal (تلزم محفظة)."
+  ],
+  "bientot": [
+    "Bientôt",
+    "Coming soon",
+    "Próximamente",
+    "Demnächst",
+    "Скоро",
+    "Незабаром",
+    "即将推出",
+    "قريبًا"
+  ],
+  "Ou connecter xPortal / acces simplifie": [
+    "Ou connecter xPortal / accès simplifié",
+    "Or connect xPortal / simplified access",
+    "O conecta xPortal / acceso simplificado",
+    "Oder xPortal verbinden / vereinfachter Zugang",
+    "Или подключите xPortal / упрощённый доступ",
+    "Або підключіть xPortal / спрощений доступ",
+    "或连接 xPortal / 简易访问",
+    "أو اربط xPortal / وصول مبسّط"
+  ],
+  "Rail fiat non configure (Stripe / Paybox / Access API).": [
+    "Paiement fiat non configuré (Stripe / Paybox / Access API).",
+    "Fiat payment rail not configured (Stripe / Paybox / Access API).",
+    "Pasarela fiat no configurada (Stripe / Paybox / Access API).",
+    "Fiat-Zahlungsweg nicht konfiguriert (Stripe / Paybox / Access API).",
+    "Фиатный платёжный канал не настроен (Stripe / Paybox / Access API).",
+    "Фіатний платіжний канал не налаштовано (Stripe / Paybox / Access API).",
+    "未配置法币支付通道（Stripe / Paybox / Access API）。",
+    "مسار الدفع بالعملة التقليدية غير مهيأ (Stripe / Paybox / Access API)."
+  ],
+  "MoonPay indisponible": [
+    "MoonPay indisponible",
+    "MoonPay unavailable",
+    "MoonPay no disponible",
+    "MoonPay nicht verfügbar",
+    "MoonPay недоступен",
+    "MoonPay недоступний",
+    "MoonPay 不可用",
+    "MoonPay غير متاح"
+  ],
+  "Invite — la salle « {room} » necessite un pack (crypto ou fiat).": [
+    "Invité — la salle « {room} » nécessite un pack (crypto ou fiat).",
+    "Guest — room “{room}” requires a pack (crypto or fiat).",
+    "Invitado — la sala «{room}» requiere un pack (cripto o fiat).",
+    "Gast — der Raum „{room}“ erfordert ein Paket (Krypto oder Fiat).",
+    "Гость — для комнаты «{room}» нужен пакет (крипто или фиат).",
+    "Гість — для кімнати «{room}» потрібен пакет (крипто або фіат).",
+    "访客 — 房间“{room}”需要套餐（加密货币或法币购买）。",
+    "ضيف — تتطلب الغرفة «{room}» باقة (بالعملات المشفّرة أو التقليدية)."
+  ],
+  "{amount} EGLD · xPortal": [
+    "{amount} EGLD · xPortal",
+    "{amount} EGLD · xPortal",
+    "{amount} EGLD · xPortal",
+    "{amount} EGLD · xPortal",
+    "{amount} EGLD · xPortal",
+    "{amount} EGLD · xPortal",
+    "{amount} EGLD · xPortal",
+    "{amount} EGLD · xPortal"
+  ],
+  "Salle Pulse — signaux & flux live": [
+    "Salle Pulse — signaux et flux en direct",
+    "Pulse room — signals & live feeds",
+    "Sala Pulse — señales y flujos en vivo",
+    "Pulse-Raum — Signale & Live-Feeds",
+    "Комната Pulse — сигналы и потоки в реальном времени",
+    "Кімната Pulse — сигнали та потоки наживо",
+    "Pulse 房间 — 信号与实时信息流",
+    "غرفة Pulse — إشارات وتدفقات مباشرة"
+  ],
+  "Terms": [
+    "Conditions",
+    "Terms",
+    "Condiciones",
+    "Bedingungen",
+    "Условия",
+    "Умови",
+    "条款",
+    "الشروط"
+  ],
+  "Les prix $TRO / EGLD sont informatifs. Aucun conseil financier. L'editeur n'est pas responsable des pertes liees a la volatilite.": [
+    "Les prix $TRO / EGLD sont informatifs. Aucun conseil financier. L’éditeur n’est pas responsable des pertes liées à la volatilité.",
+    "$TRO / EGLD prices are informational. No financial advice. The publisher is not liable for losses due to volatility.",
+    "Los precios $TRO / EGLD son informativos. No es asesoramiento financiero. El editor no se responsabiliza de pérdidas por volatilidad.",
+    "$TRO-/EGLD-Preise dienen der Information. Keine Finanzberatung. Der Herausgeber haftet nicht für volatilitätsbedingte Verluste.",
+    "Цены $TRO / EGLD носят информационный характер. Это не финансовая рекомендация. Издатель не отвечает за убытки из-за волатильности.",
+    "Ціни $TRO / EGLD мають інформаційний характер. Це не фінансова порада. Видавець не відповідає за збитки через волатильність.",
+    "$TRO / EGLD 价格仅供参考，不构成财务建议。发布方不对波动造成的损失负责。",
+    "أسعار $TRO / EGLD للمعلومات فقط وليست نصيحة مالية. الناشر غير مسؤول عن الخسائر الناتجة عن التقلبات."
+  ],
+  "LIA est analytique ; mode public = paper trading educatif. Aucun depot de tresorerie utilisateur requis en mode paper.": [
+    "LIA est analytique ; le mode public est une simulation de trading éducative. Aucun dépôt de trésorerie utilisateur requis en mode simulation.",
+    "LIA is analytical; public mode is educational paper trading. No user treasury deposit is required in paper mode.",
+    "LIA es analítico; el modo público es trading simulado educativo. No se requiere depósito de fondos del usuario en modo simulado.",
+    "LIA dient der Analyse; der öffentliche Modus ist pädagogischer Simulationshandel. Im Simulationsmodus ist keine Einzahlung von Benutzergeldern erforderlich.",
+    "LIA — аналитический инструмент; публичный режим — учебная симуляция торговли. В режиме симуляции внесение средств пользователя не требуется.",
+    "LIA — аналітичний інструмент; публічний режим — навчальна симуляція торгівлі. У режимі симуляції внесення коштів користувача не потрібне.",
+    "LIA 用于分析；公开模式为教育性模拟交易。模拟模式无需用户存入资金。",
+    "LIA أداة تحليلية؛ الوضع العام تداول محاكى تعليمي. لا يلزم إيداع أموال المستخدم في وضع المحاكاة."
+  ],
+  "Conditions d'utilisation": [
+    "Conditions d’utilisation",
+    "Terms of use",
+    "Condiciones de uso",
+    "Nutzungsbedingungen",
+    "Условия использования",
+    "Умови використання",
+    "使用条款",
+    "شروط الاستخدام"
+  ],
+  "Pas de compte e-mail obligatoire pour parcourir la dApp.": [
+    "Pas de compte e-mail obligatoire pour parcourir la dApp.",
+    "No email account is required to browse the dApp.",
+    "No se requiere cuenta de correo para explorar la dApp.",
+    "Zum Erkunden der dApp ist kein E-Mail-Konto nötig.",
+    "Для просмотра dApp не нужен аккаунт с электронной почтой.",
+    "Для перегляду dApp не потрібен обліковий запис електронної пошти.",
+    "浏览 dApp 无需电子邮件账户。",
+    "لا يلزم حساب بريد إلكتروني لتصفح dApp."
+  ],
+  "Simulation ≠ performance reelle.": [
+    "Simulation ≠ performance réelle.",
+    "Simulation ≠ actual performance.",
+    "Simulación ≠ rendimiento real.",
+    "Simulation ≠ tatsächliche Leistung.",
+    "Симуляция ≠ реальные результаты.",
+    "Симуляція ≠ реальні результати.",
+    "模拟 ≠ 实际表现。",
+    "المحاكاة ≠ الأداء الفعلي."
+  ],
+  "Stake / market — chaque action exige une signature explicite.": [
+    "Stake / marché — chaque action exige une signature explicite.",
+    "Stake / market — every action requires an explicit signature.",
+    "Staking / mercado — cada acción requiere una firma explícita.",
+    "Staking / Markt — jede Aktion erfordert eine ausdrückliche Signatur.",
+    "Стейкинг / рынок — каждое действие требует явной подписи.",
+    "Стейкінг / ринок — кожна дія потребує явного підпису.",
+    "质押 / 市场 — 每项操作均需明确签名。",
+    "الرهن / السوق — يتطلب كل إجراء توقيعًا صريحًا."
+  ],
+  "mint open": [
+    "Mint ouvert",
+    "Mint open",
+    "Acuñación abierta",
+    "Prägung geöffnet",
+    "Выпуск открыт",
+    "Випуск відкрито",
+    "铸造已开放",
+    "السكّ متاح"
+  ],
+  "💳 Bank card / SEPA": [
+    "💳 Carte bancaire / SEPA",
+    "💳 Bank card / SEPA",
+    "💳 Tarjeta bancaria / SEPA",
+    "💳 Bankkarte / SEPA",
+    "💳 Банковская карта / SEPA",
+    "💳 Банківська картка / SEPA",
+    "💳 银行卡 / SEPA",
+    "💳 بطاقة مصرفية / SEPA"
+  ],
+  "Continue · {amount} EGLD": [
+    "Continuer · {amount} EGLD",
+    "Continue · {amount} EGLD",
+    "Continuar · {amount} EGLD",
+    "Weiter · {amount} EGLD",
+    "Продолжить · {amount} EGLD",
+    "Продовжити · {amount} EGLD",
+    "继续 · {amount} EGLD",
+    "متابعة · {amount} EGLD"
+  ],
+  "Redirecting to Stripe…": [
+    "Redirection vers Stripe…",
+    "Redirecting to Stripe…",
+    "Redirigiendo a Stripe…",
+    "Weiterleitung zu Stripe…",
+    "Переход в Stripe…",
+    "Перехід до Stripe…",
+    "正在跳转至 Stripe…",
+    "جارٍ التحويل إلى Stripe…"
+  ],
+  "Guest mode: connect xPortal to link the preview to your address (no payment).": [
+    "Mode invité : connecte xPortal pour lier l’aperçu à ton adresse (sans paiement).",
+    "Guest mode: connect xPortal to link the preview to your address (no payment).",
+    "Modo invitado: conecta xPortal para vincular la vista previa a tu dirección (sin pago).",
+    "Gastmodus: Verbinde xPortal, um die Vorschau mit deiner Adresse zu verknüpfen (ohne Zahlung).",
+    "Гостевой режим: подключите xPortal, чтобы привязать предпросмотр к своему адресу (без оплаты).",
+    "Гостьовий режим: підключіть xPortal, щоб прив’язати попередній перегляд до своєї адреси (без оплати).",
+    "访客模式：连接 xPortal，将预览关联至您的地址（无需付款）。",
+    "وضع الضيف: اربط xPortal لربط المعاينة بعنوانك (دون دفع)."
+  ],
+  "Connect xPortal before checkout.": [
+    "Connecte xPortal avant le paiement.",
+    "Connect xPortal before checkout.",
+    "Conecta xPortal antes de pagar.",
+    "Verbinde xPortal vor dem Bezahlen.",
+    "Подключите xPortal перед оплатой.",
+    "Підключіть xPortal перед оплатою.",
+    "结账前请连接 xPortal。",
+    "اربط xPortal قبل إتمام الدفع."
+  ],
+  "Yield room — farming & $TRO liquidity": [
+    "Salle Yield — farming et liquidité $TRO",
+    "Yield room — farming & $TRO liquidity",
+    "Sala Yield — cultivo de rendimiento y liquidez $TRO",
+    "Yield-Raum — Farming & $TRO-Liquidität",
+    "Комната Yield — фарминг и ликвидность $TRO",
+    "Кімната Yield — фармінг і ліквідність $TRO",
+    "Yield 房间 — 收益耕作与 $TRO 流动性",
+    "غرفة Yield — زراعة العائد وسيولة $TRO"
+  ],
+  "Privacy": [
+    "Confidentialité",
+    "Privacy",
+    "Privacidad",
+    "Datenschutz",
+    "Конфиденциальность",
+    "Конфіденційність",
+    "隐私",
+    "الخصوصية"
+  ],
+  "$TRO / EGLD prices are informational. No financial advice. Publisher not liable for volatility losses.": [
+    "Les prix $TRO / EGLD sont informatifs. Aucun conseil financier. L’éditeur n’est pas responsable des pertes liées à la volatilité.",
+    "$TRO / EGLD prices are informational. No financial advice. Publisher not liable for volatility losses.",
+    "Los precios $TRO / EGLD son informativos. No es asesoramiento financiero. El editor no responde por pérdidas debidas a la volatilidad.",
+    "$TRO-/EGLD-Preise dienen der Information. Keine Finanzberatung. Der Herausgeber haftet nicht für volatilitätsbedingte Verluste.",
+    "Цены $TRO / EGLD носят информационный характер. Это не финансовая рекомендация. Издатель не отвечает за убытки из-за волатильности.",
+    "Ціни $TRO / EGLD мають інформаційний характер. Це не фінансова порада. Видавець не відповідає за збитки через волатильність.",
+    "$TRO / EGLD 价格仅供参考，不构成财务建议。发布方不对波动造成的损失负责。",
+    "أسعار $TRO / EGLD للمعلومات فقط وليست نصيحة مالية. الناشر غير مسؤول عن خسائر التقلبات."
+  ],
+  "Site publisher": [
+    "Éditeur du site",
+    "Site publisher",
+    "Editor del sitio",
+    "Herausgeber der Website",
+    "Издатель сайта",
+    "Видавець сайту",
+    "网站发布方",
+    "ناشر الموقع"
+  ],
+  "Packs — not an investment fund. Purchase funds product access and LIA ops fund (paper), with no user cash deposit.": [
+    "Packs — pas un fonds d’investissement. L’achat finance l’accès au produit et les opérations LIA (simulation), sans dépôt de fonds utilisateur.",
+    "Packs — not an investment fund. Purchase funds product access and LIA ops fund (paper), with no user cash deposit.",
+    "Packs — no son un fondo de inversión. La compra financia el acceso al producto y las operaciones LIA (simulación), sin depósito de efectivo del usuario.",
+    "Pakete — kein Investmentfonds. Der Kauf finanziert Produktzugang und LIA-Betrieb (Simulation), ohne Geldeinlage des Benutzers.",
+    "Пакеты — не инвестиционный фонд. Покупка финансирует доступ к продукту и операции LIA (симуляция), без внесения денежных средств пользователя.",
+    "Пакети — не інвестиційний фонд. Купівля фінансує доступ до продукту й операції LIA (симуляція), без внесення коштів користувача.",
+    "套餐不是投资基金。购买费用用于产品访问和 LIA 运营（模拟），不涉及用户现金存款。",
+    "الباقات ليست صندوق استثمار. يموّل الشراء الوصول إلى المنتج وعمليات LIA (محاكاة)، دون إيداع نقدي من المستخدم."
+  ],
+  "Card payments: Stripe / Paybox / third-party policies.": [
+    "Paiements par carte : politiques Stripe / Paybox / tiers.",
+    "Card payments: Stripe / Paybox / third-party policies.",
+    "Pagos con tarjeta: políticas de Stripe / Paybox / terceros.",
+    "Kartenzahlungen: Richtlinien von Stripe / Paybox / Drittanbietern.",
+    "Платежи картой: правила Stripe / Paybox / третьих лиц.",
+    "Платежі карткою: правила Stripe / Paybox / третіх сторін.",
+    "银行卡支付：适用 Stripe / Paybox / 第三方政策。",
+    "الدفع بالبطاقة: سياسات Stripe / Paybox / الجهات الخارجية."
+  ],
+  "Bugs and network congestion may occur.": [
+    "Des bugs et une congestion du réseau peuvent survenir.",
+    "Bugs and network congestion may occur.",
+    "Pueden producirse errores y congestión de red.",
+    "Fehler und Netzwerküberlastungen sind möglich.",
+    "Возможны ошибки и перегрузка сети.",
+    "Можливі помилки й перевантаження мережі.",
+    "可能出现程序错误和网络拥堵。",
+    "قد تحدث أخطاء وازدحامات في الشبكة."
+  ],
+  "Schließen": [
+    "Fermer",
+    "Close",
+    "Cerrar",
+    "Schließen",
+    "Закрыть",
+    "Закрити",
+    "关闭",
+    "إغلاق"
+  ],
+  "Checkout del pack": [
+    "Paiement du pack",
+    "Pack checkout",
+    "Checkout del pack",
+    "Paket bezahlen",
+    "Оплата пакета",
+    "Оплата пакета",
+    "套餐结账",
+    "دفع الباقة"
+  ],
+  "套餐结账": [
+    "Paiement du pack",
+    "Pack checkout",
+    "Pago del pack",
+    "Paket bezahlen",
+    "Оплата пакета",
+    "Оплата пакета",
+    "套餐结账",
+    "دفع الباقة"
+  ],
+  "Plan du musée (liste)": [
+    "Plan du musée (liste)",
+    "Museum map (list)",
+    "Plano del museo (lista)",
+    "Museumsplan (Liste)",
+    "План музея (список)",
+    "План музею (список)",
+    "博物馆地图（列表）",
+    "خريطة المتحف (قائمة)"
+  ],
+  "Dôme 360° · MultiversX": [
+    "Dôme 360° · MultiversX",
+    "360° Dome · MultiversX",
+    "Cúpula 360° · MultiversX",
+    "360°-Kuppel · MultiversX",
+    "Купол 360° · MultiversX",
+    "Купол 360° · MultiversX",
+    "360° 穹顶 · MultiversX",
+    "قبة 360° · MultiversX"
+  ],
+  "TCA Academy": [
+    "Académie TCA",
+    "TCA Academy",
+    "Academia TCA",
+    "TCA-Akademie",
+    "Академия TCA",
+    "Академія TCA",
+    "TCA 学院",
+    "أكاديمية TCA"
+  ],
+  "Museum map (list)": [
+    "Plan du musée (liste)",
+    "Museum map (list)",
+    "Plano del museo (lista)",
+    "Museumsplan (Liste)",
+    "План музея (список)",
+    "План музею (список)",
+    "博物馆地图（列表）",
+    "خريطة المتحف (قائمة)"
+  ],
+  "360° Dome · MultiversX": [
+    "Dôme 360° · MultiversX",
+    "360° Dome · MultiversX",
+    "Cúpula 360° · MultiversX",
+    "360°-Kuppel · MultiversX",
+    "Купол 360° · MultiversX",
+    "Купол 360° · MultiversX",
+    "360° 穹顶 · MultiversX",
+    "قبة 360° · MultiversX"
+  ],
+  "Paper signals · live tape · shadow": [
+    "Signaux simulés · flux en direct · mode ombre",
+    "Paper signals · live tape · shadow",
+    "Señales simuladas · flujo en vivo · modo sombra",
+    "Simulierte Signale · Live-Feed · Schattenmodus",
+    "Симулированные сигналы · живая лента · теневой режим",
+    "Симульовані сигнали · жива стрічка · тіньовий режим",
+    "模拟信号 · 实时成交流 · 影子模式",
+    "إشارات محاكاة · شريط مباشر · وضع الظل"
+  ],
+  "Tours — carte culture (pas un pack IA)": [
+    "Tours — carte culturelle (pas un pack IA)",
+    "Tours — culture map (not an AI pack)",
+    "Recorridos — mapa cultural (no es un pack IA)",
+    "Touren — Kulturkarte (kein KI-Paket)",
+    "Туры — культурная карта (не пакет ИИ)",
+    "Тури — культурна мапа (не пакет ШІ)",
+    "导览 — 文化地图（非 AI 套餐）",
+    "الجولات — خريطة ثقافية (ليست باقة ذكاء اصطناعي)"
+  ],
+  "Gallery — 3D halls & collection": [
+    "Galerie — salles 3D et collection",
+    "Gallery — 3D halls & collection",
+    "Galería — salas 3D y colección",
+    "Galerie — 3D-Säle & Sammlung",
+    "Галерея — 3D-залы и коллекция",
+    "Галерея — 3D-зали та колекція",
+    "画廊 — 3D 展厅与藏品",
+    "المعرض — قاعات ثلاثية الأبعاد ومجموعة"
+  ],
+  "Limite API MultiversX atteinte — nouvel essai dans un instant": [
+    "Limite de l’API MultiversX atteinte — nouvel essai dans un instant",
+    "MultiversX API limit reached — retrying shortly",
+    "Límite de API MultiversX alcanzado — nuevo intento en un momento",
+    "MultiversX-API-Limit erreicht — erneuter Versuch in Kürze",
+    "Достигнут лимит API MultiversX — скоро повторим попытку",
+    "Досягнуто ліміту API MultiversX — незабаром повторимо спробу",
+    "已达到 MultiversX API 限额 — 即将重试",
+    "تم بلوغ حد API MultiversX — إعادة المحاولة قريبًا"
+  ],
+  "Network unavailable — cached data": [
+    "Réseau indisponible — données en cache",
+    "Network unavailable — cached data",
+    "Red no disponible — datos en caché",
+    "Netzwerk nicht verfügbar — zwischengespeicherte Daten",
+    "Сеть недоступна — данные из кеша",
+    "Мережа недоступна — дані з кешу",
+    "网络不可用 — 使用缓存数据",
+    "الشبكة غير متاحة — بيانات مخزّنة مؤقتًا"
+  ],
+  "Agressif": [
+    "Agressif",
+    "Aggressive",
+    "Agresivo",
+    "Aggressiv",
+    "Агрессивный",
+    "Агресивний",
+    "激进",
+    "هجومي"
+  ],
+  "Strategy scheduler": [
+    "Planificateur de stratégies",
+    "Strategy scheduler",
+    "Planificador de estrategias",
+    "Strategieplaner",
+    "Планировщик стратегий",
+    "Планувальник стратегій",
+    "策略调度器",
+    "مجدول الاستراتيجيات"
+  ],
+  "⚡ Review & Sign with xPortal": [
+    "⚡ Vérifier et signer avec xPortal",
+    "⚡ Review & Sign with xPortal",
+    "⚡ Revisar y firmar con xPortal",
+    "⚡ Mit xPortal prüfen und signieren",
+    "⚡ Проверить и подписать через xPortal",
+    "⚡ Перевірити й підписати через xPortal",
+    "⚡ 使用 xPortal 审核并签名",
+    "⚡ راجع ووقّع عبر xPortal"
+  ],
+  "Erreur": [
+    "Erreur",
+    "Error",
+    "Error",
+    "Fehler",
+    "Ошибка",
+    "Помилка",
+    "错误",
+    "خطأ"
+  ],
+  "Museum": [
+    "Musée",
+    "Museum",
+    "Museo",
+    "Museum",
+    "Музей",
+    "Музей",
+    "博物馆",
+    "المتحف"
+  ],
+  "Fun = virtual credits. Real mode soon (SC).": [
+    "Ludique = crédits virtuels. Mode réel bientôt (SC).",
+    "Fun = virtual credits. Real mode soon (SC).",
+    "Diversión = créditos virtuales. Modo real próximamente (SC).",
+    "Spaß = virtuelle Guthaben. Realmodus bald verfügbar (SC).",
+    "Развлечение = виртуальные кредиты. Реальный режим скоро (SC).",
+    "Розвага = віртуальні кредити. Реальний режим незабаром (SC).",
+    "娱乐 = 虚拟积分。真实模式即将推出（SC）。",
+    "المتعة = أرصدة افتراضية. الوضع الفعلي قريبًا (SC)."
+  ],
+  "Idioma": [
+    "Langue",
+    "Language",
+    "Idioma",
+    "Sprache",
+    "Язык",
+    "Мова",
+    "语言",
+    "اللغة"
+  ],
+  "Sprache": [
+    "Langue",
+    "Language",
+    "Idioma",
+    "Sprache",
+    "Язык",
+    "Мова",
+    "语言",
+    "اللغة"
+  ],
+  "Offline — lokaler Cache aktiv": [
+    "Hors ligne — cache local actif",
+    "Offline — local cache active",
+    "Sin conexión — caché local activa",
+    "Offline — lokaler Cache aktiv",
+    "Офлайн — локальный кеш активен",
+    "Офлайн — локальний кеш активний",
+    "离线 — 本地缓存已启用",
+    "غير متصل — التخزين المؤقت المحلي نشط"
+  ],
+  "Мова": [
+    "Langue",
+    "Language",
+    "Idioma",
+    "Sprache",
+    "Язык",
+    "Мова",
+    "语言",
+    "اللغة"
+  ],
+  "Survole / clique un écran holo": [
+    "Survole / clique un écran holographique",
+    "Hover over / click a holo screen",
+    "Pasa el cursor / haz clic en una pantalla holográfica",
+    "Holo-Bildschirm mit Maus berühren / anklicken",
+    "Наведите курсор / нажмите на голографический экран",
+    "Наведіть курсор / натисніть на голографічний екран",
+    "悬停 / 点击全息屏幕",
+    "مرّر المؤشر / انقر على شاشة هولوغرافية"
+  ],
+  "Cet écran de contrôle nécessite la possession d’un Pack Agent NFT {pack}.": [
+    "Cet écran de contrôle nécessite un Pack Agent NFT {pack}.",
+    "This control screen requires an NFT Agent Pack {pack}.",
+    "Esta pantalla de control requiere un Pack de Agente NFT {pack}.",
+    "Dieser Kontrollbildschirm erfordert ein NFT-Agentenpaket {pack}.",
+    "Для этого экрана управления нужен пакет NFT-агента {pack}.",
+    "Для цього екрана керування потрібен пакет NFT-агента {pack}.",
+    "此控制屏需要持有 NFT 智能体套餐 {pack}。",
+    "تتطلب شاشة التحكم هذه امتلاك باقة وكيل NFT ‏{pack}."
+  ],
+  "🚀 Entrer dans le Command Center": [
+    "🚀 Entrer dans le centre de commande",
+    "🚀 Enter the Command Center",
+    "🚀 Entrar en el centro de mando",
+    "🚀 Kommandozentrale betreten",
+    "🚀 Войти в командный центр",
+    "🚀 Увійти до командного центру",
+    "🚀 进入指挥中心",
+    "🚀 دخول مركز القيادة"
+  ],
+  "LIA Hub · Control room": [
+    "Hub LIA · salle de contrôle",
+    "LIA Hub · Control room",
+    "Centro LIA · sala de control",
+    "LIA-Hub · Kontrollraum",
+    "Центр LIA · комната управления",
+    "Центр LIA · кімната керування",
+    "LIA 中心 · 控制室",
+    "مركز LIA · غرفة التحكم"
+  ],
+  "Command Center · NFT access": [
+    "Centre de commande · accès NFT",
+    "Command Center · NFT access",
+    "Centro de mando · acceso NFT",
+    "Kommandozentrale · NFT-Zugang",
+    "Командный центр · доступ по NFT",
+    "Командний центр · доступ за NFT",
+    "指挥中心 · NFT 访问",
+    "مركز القيادة · وصول NFT"
+  ],
+  "🛒 Get an Agent Pack": [
+    "🛒 Obtenir un Pack Agent",
+    "🛒 Get an Agent Pack",
+    "🛒 Obtener un Pack de Agente",
+    "🛒 Agentenpaket holen",
+    "🛒 Получить пакет агента",
+    "🛒 Отримати пакет агента",
+    "🛒 获取智能体套餐",
+    "🛒 الحصول على باقة وكيل"
+  ],
+  "Digital SFT / NFT": [
+    "SFT / NFT numérique",
+    "Digital SFT / NFT",
+    "SFT / NFT digital",
+    "Digitales SFT / NFT",
+    "Цифровой SFT / NFT",
+    "Цифровий SFT / NFT",
+    "数字 SFT / NFT",
+    "SFT / NFT رقمي"
+  ],
+  "Agrandir l'image": [
+    "Agrandir l’image",
+    "Enlarge image",
+    "Ampliar imagen",
+    "Bild vergrößern",
+    "Увеличить изображение",
+    "Збільшити зображення",
+    "放大图片",
+    "تكبير الصورة"
+  ],
+  "Linked physical works: dimensions, medium, optional NFC chip, MultiversX NFT certificate.": [
+    "Œuvres physiques liées : dimensions, médium, puce NFC facultative, certificat NFT MultiversX.",
+    "Linked physical works: dimensions, medium, optional NFC chip, MultiversX NFT certificate.",
+    "Obras físicas vinculadas: dimensiones, técnica, chip NFC opcional y certificado NFT MultiversX.",
+    "Verknüpfte physische Werke: Maße, Medium, optionaler NFC-Chip, MultiversX-NFT-Zertifikat.",
+    "Связанные физические работы: размеры, материал, необязательный NFC-чип, NFT-сертификат MultiversX.",
+    "Пов’язані фізичні роботи: розміри, матеріал, необов’язковий NFC-чип, NFT-сертифікат MultiversX.",
+    "关联实体作品：尺寸、媒介、可选 NFC 芯片、MultiversX NFT 证书。",
+    "أعمال مادية مرتبطة: الأبعاد والوسيط وشريحة NFC اختيارية وشهادة NFT من MultiversX."
+  ],
+  "Digital listings": [
+    "Annonces numériques",
+    "Digital listings",
+    "Anuncios digitales",
+    "Digitale Angebote",
+    "Цифровые объявления",
+    "Цифрові оголошення",
+    "数字挂单",
+    "إدراجات رقمية"
+  ],
+  "WebGL unavailable — alternate menu": [
+    "WebGL indisponible — menu alternatif",
+    "WebGL unavailable — alternate menu",
+    "WebGL no disponible — menú alternativo",
+    "WebGL nicht verfügbar — alternatives Menü",
+    "WebGL недоступен — альтернативное меню",
+    "WebGL недоступний — альтернативне меню",
+    "WebGL 不可用 — 备用菜单",
+    "WebGL غير متاح — قائمة بديلة"
+  ],
+  "NFT Agent · Strategy Programmer": [
+    "Agent NFT · Programmeur de stratégies",
+    "NFT Agent · Strategy Programmer",
+    "Agente NFT · Programador de estrategias",
+    "NFT-Agent · Strategieprogrammierer",
+    "NFT-агент · Программист стратегий",
+    "NFT-агент · Програміст стратегій",
+    "NFT 智能体 · 策略编程器",
+    "وكيل NFT · مبرمج الاستراتيجيات"
+  ],
+  "Seuil Blue Ribbon (conviction min)": [
+    "Seuil Blue Ribbon (conviction minimale)",
+    "Blue Ribbon threshold (minimum conviction)",
+    "Umbral Blue Ribbon (convicción mínima)",
+    "Blue-Ribbon-Schwelle (Mindestüberzeugung)",
+    "Порог Blue Ribbon (минимальная уверенность)",
+    "Поріг Blue Ribbon (мінімальна впевненість)",
+    "Blue Ribbon 阈值（最低确信度）",
+    "عتبة Blue Ribbon (الحد الأدنى للقناعة)"
+  ],
+  "Aucun dépôt requis. Acquisition unique du Pack NFT — aucun dépôt de trésorerie de votre part.": [
+    "Aucun dépôt requis. Achat unique du Pack NFT — aucun dépôt de trésorerie de votre part.",
+    "No deposit required. One-time NFT Pack purchase — no treasury deposit from you.",
+    "No se requiere depósito. Compra única del Pack NFT — sin depósito de fondos por tu parte.",
+    "Keine Einzahlung erforderlich. Einmaliger Kauf des NFT-Pakets — keine Einzahlung von dir.",
+    "Депозит не требуется. Разовая покупка пакета NFT — без внесения вами средств в казначейство.",
+    "Депозит не потрібен. Одноразова купівля пакета NFT — без внесення вами коштів до скарбниці.",
+    "无需存款。一次性购买 NFT 套餐 — 无需您向金库存入资金。",
+    "لا يلزم إيداع. شراء باقة NFT لمرة واحدة — دون إيداع منك في الخزينة."
+  ],
+  "🏷️ Faire une offre (Bid)": [
+    "🏷️ Faire une offre",
+    "🏷️ Place a bid",
+    "🏷️ Hacer una oferta",
+    "🏷️ Gebot abgeben",
+    "🏷️ Сделать ставку",
+    "🏷️ Зробити ставку",
+    "🏷️ 出价",
+    "🏷️ تقديم عرض"
+  ],
+  "Fermer immersion": [
+    "Fermer l’immersion",
+    "Close immersion",
+    "Cerrar inmersión",
+    "Immersion schließen",
+    "Выйти из погружения",
+    "Вийти із занурення",
+    "退出沉浸模式",
+    "إغلاق وضع الانغماس"
+  ],
+  "Mise en vente {price} (paper jusqu’au SC live)": [
+    "Mise en vente {price} (simulation jusqu’au SC actif)",
+    "Listing {price} (paper until SC is live)",
+    "Publicación a {price} (simulación hasta activar el SC)",
+    "Angebot {price} (Simulation bis SC aktiv ist)",
+    "Продажа за {price} (симуляция до запуска SC)",
+    "Продаж за {price} (симуляція до запуску SC)",
+    "挂牌价 {price}（SC 上线前为模拟）",
+    "إدراج بسعر {price} (محاكاة حتى تفعيل SC)"
+  ],
+  "PLATINUM": [
+    "PLATINUM",
+    "PLATINUM",
+    "PLATINUM",
+    "PLATINUM",
+    "PLATINUM",
+    "PLATINUM",
+    "PLATINUM",
+    "PLATINUM"
+  ],
+  "Public API timeout. Try again later.": [
+    "Délai d’attente de l’API publique dépassé. Réessaie plus tard.",
+    "Public API timeout. Try again later.",
+    "Tiempo de espera de la API pública agotado. Inténtalo más tarde.",
+    "Zeitüberschreitung der öffentlichen API. Später erneut versuchen.",
+    "Истекло время ожидания публичного API. Повторите позже.",
+    "Час очікування публічного API вичерпано. Спробуйте пізніше.",
+    "公共 API 请求超时。请稍后重试。",
+    "انتهت مهلة API العامة. حاول مجددًا لاحقًا."
+  ],
+  "More ticks · lower ribbon threshold (paper).": [
+    "Plus de ticks · abaisser le seuil du ruban (simulation).",
+    "More ticks · lower ribbon threshold (paper).",
+    "Más ciclos · baja el umbral de la cinta (simulación).",
+    "Mehr Takte · Ribbon-Schwelle senken (Simulation).",
+    "Больше тактов · снизьте порог ленты (симуляция).",
+    "Більше тактів · знизьте поріг стрічки (симуляція).",
+    "更多周期 · 降低带状阈值（模拟）。",
+    "دورات أكثر · خفّض عتبة الشريط (محاكاة)."
+  ],
+  "Confirm": [
+    "Confirmer",
+    "Confirm",
+    "Confirmar",
+    "Bestätigen",
+    "Подтвердить",
+    "Підтвердити",
+    "确认",
+    "تأكيد"
+  ],
+  "WASD · click artwork · E inspect": [
+    "WASD · cliquer sur une œuvre · E inspecter",
+    "WASD · click artwork · E inspect",
+    "WASD · clic en la obra · E inspeccionar",
+    "WASD · Kunstwerk anklicken · E untersuchen",
+    "WASD · нажмите на работу · E осмотр",
+    "WASD · натисніть на твір · E огляд",
+    "WASD · 点击作品 · E 查看",
+    "WASD · انقر على العمل · E للفحص"
+  ],
+  "For sale": [
+    "En vente",
+    "For sale",
+    "En venta",
+    "Zu verkaufen",
+    "В продаже",
+    "У продажу",
+    "在售",
+    "للبيع"
+  ],
+  "Buy intent → sign in xPortal": [
+    "Intention d’achat → signer dans xPortal",
+    "Buy intent → sign in xPortal",
+    "Intención de compra → firmar en xPortal",
+    "Kaufabsicht → in xPortal signieren",
+    "Намерение купить → подпишите в xPortal",
+    "Намір купити → підпишіть у xPortal",
+    "购买意向 → 在 xPortal 签名",
+    "نية شراء → وقّع في xPortal"
+  ],
+  "Marketplace SC gated — paper intents until live codehash.": [
+    "SC marketplace verrouillé — intentions simulées jusqu’au codehash actif.",
+    "Marketplace SC gated — paper intents until live codehash.",
+    "SC del mercado bloqueado — intenciones simuladas hasta activar el codehash.",
+    "Marktplatz-SC gesperrt — simulierte Absichten bis zum aktiven codehash.",
+    "SC маркетплейса закрыт — симуляция намерений до активации codehash.",
+    "SC маркетплейсу закрито — симуляція намірів до активації codehash.",
+    "市场 SC 受限 — codehash 激活前均为模拟意向。",
+    "عقد السوق SC مقيّد — نوايا محاكاة حتى تفعيل codehash."
+  ]
+}

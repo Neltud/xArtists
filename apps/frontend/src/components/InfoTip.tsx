@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
  * InfoTip — bulle au survol / focus du « ? ». Détails hors du flux principal.
  */
@@ -5,6 +6,7 @@ import { useId, useRef, useState } from 'react'
 import { HELP } from '../content/helpCopy'
 
 interface InfoTipProps {
+  text?: string
   label?: string
   k?: keyof typeof HELP
   children?: React.ReactNode
@@ -23,19 +25,22 @@ export default function InfoTip({
   label,
   k,
   children,
+  text,
   tone = 'info',
   side = 'bottom',
   className = '',
 }: InfoTipProps) {
+  xaUsePhraseLocale()
+
   const [open, setOpen] = useState(false)
   const id = useId()
   const closeTimer = useRef<number | null>(null)
   const help = k ? HELP[k] : null
-  const body = children ?? (
+  const body = children ?? text ?? (
     help ? (
       <>
-        <strong className="block mb-1 text-[11px] font-semibold text-white">{help.title}</strong>
-        <span className="text-zinc-400">{help.body}</span>
+        <strong className="block mb-1 text-[11px] font-semibold text-white">{xaRender(help.title)}</strong>
+        <span className="text-zinc-400">{xaRender(help.body)}</span>
       </>
     ) : null
   )
@@ -56,12 +61,12 @@ export default function InfoTip({
       onMouseEnter={show}
       onMouseLeave={hide}
     >
-      {label && <span className="text-xs text-zinc-500">{label}</span>}
+      {xaRender(label && <span className="text-xs text-zinc-500">{xaRender(label)}</span>)}
       <button
         type="button"
         aria-describedby={open ? id : undefined}
         aria-expanded={open}
-        aria-label="Aide"
+        aria-label={xaLocalize("Aide")}
         className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-[10px] font-bold text-zinc-400 hover:border-violet-400/50 hover:text-violet-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60"
         onFocus={show}
         onBlur={hide}
@@ -72,7 +77,7 @@ export default function InfoTip({
       >
         ?
       </button>
-      {open && (
+      {xaRender(open && (
         <span
           id={id}
           role="tooltip"
@@ -82,9 +87,9 @@ export default function InfoTip({
           onMouseEnter={show}
           onMouseLeave={hide}
         >
-          {body}
+          {xaRender(body)}
         </span>
-      )}
+      ))}
     </span>
   )
 }
@@ -98,8 +103,8 @@ export function LabelWithTip({
 }) {
   return (
     <span className="inline-flex items-center gap-1.5">
-      {children}
-      {k && <InfoTip k={k} />}
+      {xaRender(children)}
+      {xaRender(k && <InfoTip k={k} />)}
     </span>
   )
 }

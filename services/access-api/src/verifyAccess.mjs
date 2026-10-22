@@ -24,10 +24,14 @@ export function verifyJwt(token, secret) {
   if (parts.length !== 3) return null
   const [h, p, s] = parts
   const expect = b64url(crypto.createHmac('sha256', secret).update(`${h}.${p}`).digest())
-  if (s !== expect) return null
+  const actualBytes = Buffer.from(s)
+  const expectedBytes = Buffer.from(expect)
+  if (actualBytes.length !== expectedBytes.length || !crypto.timingSafeEqual(actualBytes, expectedBytes)) return null
   try {
+    const header = JSON.parse(Buffer.from(h, 'base64url').toString())
+    if (header.alg !== 'HS256' || header.typ !== 'JWT') return null
     const payload = JSON.parse(Buffer.from(p.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString())
-    if (payload.exp && Date.now() / 1000 > payload.exp) return null
+    if (!Number.isFinite(payload.exp) || Date.now() / 1000 >= payload.exp) return null
     return payload
   } catch {
     return null

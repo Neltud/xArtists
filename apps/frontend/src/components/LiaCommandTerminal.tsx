@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * LIA terminal — collapsible, secondary to ambient aura (default closed).
  */
@@ -64,20 +65,20 @@ export default function LiaCommandTerminal({
           className="w-full flex items-center justify-between px-3 py-2 border-b border-white/10 text-left"
         >
           <span className="text-[10px] uppercase tracking-[0.18em] text-cyan-400/80 font-tech">
-            LIA · {open ? 'terminal' : 'brief'}
+            {xaRender("LIA · ")}{xaRender(open ? 'terminal' : 'brief')}
           </span>
           <span className={`text-[10px] ${moodColor}`}>
-            {pending ? '…' : source} · {(confidence * 100).toFixed(0)}%
+            {xaRender(pending ? '…' : source)} · {xaRender((confidence * 100).toFixed(0))}%
           </span>
         </button>
-        {open && (
+        {xaRender(open && (
           <div className="px-3 py-2 space-y-2">
             <div className="h-20 overflow-y-auto font-mono text-[11px] text-zinc-400 space-y-1">
-              {lines.map((l, i) => (
+              {xaRender(lines.map((l, i) => (
                 <p key={i} className="leading-snug">
-                  {l}
+                  {xaRender(l)}
                 </p>
-              ))}
+              )))}
               <div ref={endRef} />
             </div>
             <div className="flex gap-2">
@@ -87,18 +88,17 @@ export default function LiaCommandTerminal({
                 onClick={() => onAsk?.(contextHint)}
                 disabled={pending}
               >
-                {pending ? '…' : 'Brief'}
+                {xaRender(pending ? '…' : 'Brief')}
               </button>
               <button
                 type="button"
                 className="rounded-lg border border-white/10 px-2 py-1.5 text-[11px] text-zinc-500"
                 onClick={() => setLines(['cleared'])}
               >
-                clr
-              </button>
+                {xaRender("clr ")}</button>
             </div>
           </div>
-        )}
+        ))}
       </div>
     </div>
   )

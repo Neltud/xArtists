@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../../i18n/phraseRuntime'
 /** Floating ask bar — cognitive delay + askMentor RAG (client extractive). */
 import { useState } from 'react'
 import { askMentor } from '../../lib/tcaRag'
@@ -11,6 +12,8 @@ export function MentorAskBar({
   professorId: string
   onCues: (cues: TcaAskResult['cues'], meta: TcaAskResult) => void
 }) {
+  xaUsePhraseLocale()
+
   const [q, setQ] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -37,7 +40,7 @@ export function MentorAskBar({
       <input
         value={q}
         onChange={e => setQ(e.target.value)}
-        placeholder="Ask the mentor (sfumato, light, anatomy…)"
+        placeholder={xaLocalize("Ask the mentor (sfumato, light, anatomy…)")}
         className="flex-1 bg-transparent text-[12px] text-zinc-100 outline-none placeholder:text-zinc-600 px-2"
       />
       <button
@@ -45,7 +48,7 @@ export function MentorAskBar({
         disabled={busy || !q.trim()}
         className="text-[12px] font-semibold text-amber-200 disabled:text-zinc-600 shrink-0"
       >
-        {busy ? 'Thinking…' : 'Ask'}
+        {xaRender(busy ? 'Thinking…' : 'Ask')}
       </button>
     </form>
   )

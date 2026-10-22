@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Brief entry overlay — must not re-trigger on every parent render.
  */
@@ -44,7 +45,7 @@ export default function DataTunnelTransition({ active, onDone, durationMs = 700 
       aria-hidden
     >
       <div className="absolute inset-0 flex items-center justify-center">
-        {Array.from({ length: 16 }).map((_, i) => (
+        {xaRender(Array.from({ length: 16 }).map((_, i) => (
           <div
             key={i}
             className="absolute w-px bg-gradient-to-b from-transparent via-cyan-400/70 to-transparent"
@@ -55,10 +56,9 @@ export default function DataTunnelTransition({ active, onDone, durationMs = 700 
               opacity: 0.3 + (i % 3) * 0.12,
             }}
           />
-        ))}
+        )))}
         <p className="relative z-10 text-[11px] tracking-[0.28em] uppercase text-cyan-100/90 font-semibold">
-          Command Center
-        </p>
+          {xaRender("Command Center ")}</p>
       </div>
       <style>{`
         @keyframes xartists-tunnel {

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 
 /** Shared lazy-route loader. */
@@ -15,18 +16,16 @@ export default function PageLoader() {
           <div className="absolute inset-0 rounded-full border-2 border-violet-500/30" />
           <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-cyan-400 border-r-violet-500 animate-spin" />
         </div>
-        <p className="display text-sm text-zinc-300">Chargement</p>
-        <p className="text-[11px] text-zinc-600 mt-1">Module en cours…</p>
-        {slow && (
+        <p className="display text-sm text-zinc-300">{xaRender("Chargement")}</p>
+        <p className="text-[11px] text-zinc-600 mt-1">{xaRender("Module en cours…")}</p>
+        {xaRender(slow && (
           <div className="mt-5 space-y-2">
             <p className="text-xs text-amber-400/90">
-              Trop long — cache ou déploiement Pages en cours.
-            </p>
+              {xaRender("Trop long — cache ou déploiement Pages en cours. ")}</p>
             <button type="button" className="btn-secondary text-xs" onClick={() => window.location.reload()}>
-              Recharger
-            </button>
+              {xaRender("Recharger ")}</button>
           </div>
-        )}
+        ))}
       </div>
     </div>
   )

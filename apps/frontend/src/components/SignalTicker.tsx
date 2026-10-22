@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
@@ -9,6 +10,8 @@ type TickerPayload = {
 }
 
 export default function SignalTicker() {
+  xaUsePhraseLocale()
+
   const [lines, setLines] = useState<string[]>([
     'LIA · PAPER · GSN · feeds crypto / finance / culture',
   ])
@@ -51,11 +54,11 @@ export default function SignalTicker() {
     <div
       className="fixed bottom-14 md:bottom-0 left-0 right-0 z-40 border-t border-white/[0.06] glass"
       role="marquee"
-      aria-label="Signal ticker LIA"
+      aria-label={xaLocalize("Signal ticker LIA")}
     >
       <div className="flex items-center gap-2 max-w-full overflow-hidden h-8 px-2">
         <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-violet-200 px-2 py-0.5 rounded-md bg-violet-500/15 border border-violet-500/25">
-          {meta}
+          {xaRender(meta)}
         </span>
         <div className="relative flex-1 overflow-hidden">
           <div
@@ -64,7 +67,7 @@ export default function SignalTicker() {
               animation: 'ticker 40s linear infinite',
             }}
           >
-            {text}&nbsp;&nbsp;&nbsp;{text}
+            {xaRender(text)}{xaRender("&nbsp;&nbsp;&nbsp;")}{xaRender(text)}
           </div>
         </div>
       </div>

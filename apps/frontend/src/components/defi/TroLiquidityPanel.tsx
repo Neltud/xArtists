@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Panneau farming $TRO — métriques xExchange + OneDex (lecture seule).
  * Mode Pitch : bloc démo TVL / $TRO (PITCH_DEMO).
@@ -70,77 +71,71 @@ export default function TroLiquidityPanel() {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2 justify-between">
         <p className="text-[10px] font-tech uppercase tracking-wider text-violet-300/90">
-          Farming & Liquidité $TRO
-        </p>
+          {xaRender("Farming & Liquidité $TRO ")}</p>
         <div className="flex flex-wrap items-center gap-2">
-          {snap?.troUsd != null && (
+          {xaRender(snap?.troUsd != null && (
             <span className="text-[11px] mono tabular-nums text-violet-200">
-              $TRO Spot $
-              {snap.troUsd < 0.01 ? snap.troUsd.toFixed(6) : snap.troUsd.toFixed(4)}
+              {xaRender("$TRO Spot $ ")}{xaRender(snap.troUsd < 0.01 ? snap.troUsd.toFixed(6) : snap.troUsd.toFixed(4))}
             </span>
-          )}
-          {snap &&
+          ))}
+          {xaRender(snap &&
             (isStale ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 text-amber-200 text-[9px] py-0.5 px-1.5 font-tech uppercase">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden />
-                STALE
-              </span>
+                {xaRender("STALE ")}</span>
             ) : (
               <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-500/15 text-emerald-200 text-[9px] py-0.5 px-1.5 font-tech uppercase">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
-                LIVE
-              </span>
-            ))}
+                {xaRender("LIVE ")}</span>
+            )))}
         </div>
       </div>
 
-      {pitch && (
+      {xaRender(pitch && (
         <div className="rounded-xl border border-amber-400/25 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-100/90 space-y-1">
-          <p className="font-semibold text-[12px]">Mode Pitch · liquidité démo</p>
-          <p>{pitchLine}</p>
-          <p className="text-[10px] text-amber-200/70">{PITCH_DEMO.note}</p>
+          <p className="font-semibold text-[12px]">{xaRender("Mode Pitch · liquidité démo")}</p>
+          <p>{xaRender(pitchLine)}</p>
+          <p className="text-[10px] text-amber-200/70">{xaRender(PITCH_DEMO.note)}</p>
         </div>
-      )}
+      ))}
 
-      {loading && !snap && !pitch && (
-        <p className="text-[12px] text-zinc-500">Chargement des pools…</p>
-      )}
-      {err && <p className="text-[12px] text-amber-200/90">{err}</p>}
+      {xaRender(loading && !snap && !pitch && (
+        <p className="text-[12px] text-zinc-500">{xaRender("Chargement des pools…")}</p>
+      ))}
+      {xaRender(err && <p className="text-[12px] text-amber-200/90">{xaRender(err)}</p>)}
 
-      {snap && (
+      {xaRender(snap && (
         <div className="grid gap-2 sm:grid-cols-2">
-          {snap.farms.map(f => (
+          {xaRender(snap.farms.map(f => (
             <div
               key={f.poolId}
               className="rounded-xl border border-white/10 bg-black/35 px-3 py-2.5 space-y-1"
             >
               <p className="text-[12px] font-medium text-white">
-                {DEX_LABEL[f.dex] || f.dex} · {f.pair}
+                {xaRender(DEX_LABEL[f.dex] || f.dex)} · {xaRender(f.pair)}
               </p>
               <p className="text-[11px] text-zinc-400">
-                APR {formatApr(f.aprPct)} · TVL {formatTvl(f.tvlUsd)}
+                {xaRender("APR ")}{xaRender(formatApr(f.aprPct))} {xaRender(" · TVL ")}{xaRender(formatTvl(f.tvlUsd))}
               </p>
-              {f.swapUrl && (
+              {xaRender(f.swapUrl && (
                 <a
                   href={f.swapUrl}
                   target="_blank"
                   rel="noreferrer"
                   className="text-[10px] text-cyan-400 hover:underline"
                 >
-                  Ouvrir pool →
-                </a>
-              )}
+                  {xaRender("Ouvrir pool → ")}</a>
+              ))}
             </div>
+          )))}
+          {xaRender(snap.farms.length === 0 && (
+            <p className="text-[12px] text-zinc-500 col-span-full">{xaRender("Aucun pool $TRO indexé.")}</p>
           ))}
-          {snap.farms.length === 0 && (
-            <p className="text-[12px] text-zinc-500 col-span-full">Aucun pool $TRO indexé.</p>
-          )}
         </div>
-      )}
+      ))}
 
       <p className="text-[10px] text-zinc-600">
-        Lecture seule — exécution via xPortal. Données MultiversX (API publique).
-      </p>
+        {xaRender("Lecture seule — exécution via xPortal. Données MultiversX (API publique). ")}</p>
     </div>
   )
 }

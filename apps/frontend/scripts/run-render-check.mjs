@@ -1,46 +1,5 @@
-import fs from 'node:fs'
-import path from 'node:path'
-import { pathToFileURL } from 'node:url'
-import { createRequire } from 'node:module'
-
-const mode = process.argv[2] || 'ui'
-const root = path.resolve(path.dirname(pathToFileURL(import.meta.url).pathname), '..')
-const require = createRequire(import.meta.url)
-
-// Lightweight structural checks — no browser, no network payments.
-const checks = {
-  ui: () => {
-    const app = fs.readFileSync(path.join(root, 'src/App.tsx'), 'utf8')
-    if (!app.includes('Route')) throw new Error('App routes missing')
-    return 64
-  },
-  modules: () => {
-    const dir = path.join(root, 'src')
-    let n = 0
-    const walk = d => {
-      for (const e of fs.readdirSync(d, { withFileTypes: true })) {
-        const p = path.join(d, e.name)
-        if (e.isDirectory()) walk(p)
-        else if (/\.(tsx|ts)$/.test(e.name)) n++
-      }
-    }
-    walk(dir)
-    if (n < 100) throw new Error(`too few modules: ${n}`)
-    return n
-  },
-  mobile: () => {
-    const css = fs.readFileSync(path.join(root, 'src/index.css'), 'utf8')
-    if (!css.includes('safe-area') && !css.includes('env(')) {
-      console.warn('mobile: no safe-area tokens (warning)')
-    }
-    return 12
-  },
-}
-
-const fn = checks[mode]
-if (!fn) {
-  console.error('usage: run-render-check.mjs [ui|modules|mobile]')
-  process.exit(2)
-}
-const count = fn()
-console.log(`render-check ${mode}: ${count} ok`)
+import fs from 'node:fs';import path from 'node:path';import {build} from 'esbuild';
+const table=Object.assign({},...fs.readdirSync('src/i18n/phrases').sort().filter(f=>f.endsWith('.json')).map(f=>JSON.parse(fs.readFileSync('src/i18n/phrases/'+f,'utf8'))))
+const entry=process.argv[2]==='modules'?'module-render-check':process.argv[2]==='mobile'?'mobile-regression-check':'render-check'
+await build({entryPoints:['scripts/'+entry+'.tsx'],bundle:true,platform:'node',packages:'external',format:'esm',jsx:'automatic',splitting:true,outdir:'.sites-runtime/render-check',define:{'import.meta.env':JSON.stringify({BASE_URL:'/xArtists/',DEV:false,MODE:'production',VITE_LIA_LIVE_TRADING:'0'})},plugins:[{name:'test-phrase-table',setup(b){b.onLoad({filter:/phraseRuntime\.ts$/},async args=>{let contents=fs.readFileSync(args.path,'utf8');contents=contents.replace(/const packs=import\.meta\.glob[^\n]+/,`const packs={all:${JSON.stringify(table)}}`);return{contents,loader:'ts',resolveDir:path.dirname(args.path)}});b.onLoad({filter:/\.css$/},()=>({contents:'',loader:'css'}))}}],logLevel:'silent'})
+await import('../.sites-runtime/render-check/'+entry+'.js?'+Date.now())

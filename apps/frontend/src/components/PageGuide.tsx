@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Guide page — uniquement le « ? », plus de titre répété à côté du H1.
  */
@@ -18,15 +19,15 @@ export default function PageGuide({
   return (
     <div className={`flex justify-end mb-2 ${className}`}>
       <InfoTip tone={guide.warn ? 'warn' : 'info'}>
-        <strong className="block mb-1.5 text-[11px] font-semibold text-white">{guide.title}</strong>
+        <strong className="block mb-1.5 text-[11px] font-semibold text-white">{xaRender(guide.title)}</strong>
         <ul className="list-disc pl-3.5 space-y-1 text-zinc-400">
-          {guide.bullets.map(b => (
-            <li key={b}>{b}</li>
-          ))}
+          {xaRender(guide.bullets.map(b => (
+            <li key={b}>{xaRender(b)}</li>
+          )))}
         </ul>
-        {guide.warn && (
-          <p className="mt-2 text-amber-300/90 border-t border-white/10 pt-2">{guide.warn}</p>
-        )}
+        {xaRender(guide.warn && (
+          <p className="mt-2 text-amber-300/90 border-t border-white/10 pt-2">{xaRender(guide.warn)}</p>
+        ))}
       </InfoTip>
     </div>
   )

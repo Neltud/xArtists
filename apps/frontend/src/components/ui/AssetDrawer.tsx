@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../../i18n/phraseRuntime'
 /**
  * Asset hub slide-over — tokens + NFT grid (memoized rows).
  */
@@ -11,35 +12,37 @@ const TokenRow = memo(function TokenRow({ t }: { t: UserToken }) {
     <li className="flex items-center justify-between gap-2 rounded-lg border border-white/[0.06] bg-black/30 px-2.5 py-1.5">
       <div className="min-w-0">
         <p className="text-xs text-white font-medium truncate">
-          {t.ticker}
-          <span className="text-zinc-500 font-normal ml-1">{t.name}</span>
+          {xaRender(t.ticker)}
+          <span className="text-zinc-500 font-normal ml-1">{xaRender(t.name)}</span>
         </p>
-        <p className="text-[9px] text-zinc-600 mono truncate">{t.identifier}</p>
+        <p className="text-[9px] text-zinc-600 mono truncate">{xaRender(t.identifier)}</p>
       </div>
       <p className="text-xs mono text-zinc-200 shrink-0">
-        {t.balance.toLocaleString(undefined, { maximumFractionDigits: 4 })}
+        {xaRender(t.balance.toLocaleString(undefined, { maximumFractionDigits: 4 }))}
       </p>
     </li>
   )
 })
 
 const NftCard = memo(function NftCard({ n }: { n: UserNft }) {
+  xaUsePhraseLocale()
+
   const img = n.url || n.media?.[0]?.url
   return (
     <li>
       <Link
         to="/museum"
         className="block rounded-xl border border-white/10 bg-black/40 overflow-hidden hover:border-fuchsia-400/40"
-        title="Voir dans le Musée 3D"
+        title={xaLocalize("Voir dans le Musée 3D")}
       >
         <div className="aspect-square bg-zinc-900 flex items-center justify-center">
-          {img && /^https?:/i.test(img) ? (
+          {xaRender(img && /^https?:/i.test(img) ? (
             <img src={img} alt={n.name} className="w-full h-full object-cover" loading="lazy" />
           ) : (
             <span className="opacity-40 text-xl">🖼</span>
-          )}
+          ))}
         </div>
-        <p className="px-1.5 py-1 text-[10px] text-white truncate">{n.name}</p>
+        <p className="px-1.5 py-1 text-[10px] text-white truncate">{xaRender(n.name)}</p>
       </Link>
     </li>
   )
@@ -52,6 +55,8 @@ export default function AssetDrawer({
   open: boolean
   onClose: () => void
 }) {
+  xaUsePhraseLocale()
+
   const assets = useAssets()
   const [q, setQ] = useState('')
   const [tab, setTab] = useState<'tokens' | 'nfts'>('tokens')
@@ -84,21 +89,20 @@ export default function AssetDrawer({
       <button
         type="button"
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        aria-label="Fermer"
+        aria-label={xaLocalize("Fermer")}
         onClick={onClose}
       />
       <aside className="relative w-full max-w-sm h-full border-l border-white/10 bg-[#0a0a10]/95 backdrop-blur-xl shadow-2xl flex flex-col animate-fade-in">
         <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-white/10">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-cyan-300/80 font-semibold">
-              Asset Hub
-            </p>
+              {xaRender("Asset Hub ")}</p>
             <p className="text-sm text-white font-medium">
-              {assets.connected ? `${assets.egld.toFixed(4)} EGLD` : 'Non connecté'}
+              {xaRender(assets.connected ? `${assets.egld.toFixed(4)} EGLD` : 'Non connecté')}
             </p>
           </div>
           <div className="flex gap-2">
-            {assets.connected && (
+            {xaRender(assets.connected && (
               <button
                 type="button"
                 className="btn-secondary text-[10px] py-1"
@@ -106,7 +110,7 @@ export default function AssetDrawer({
               >
                 ↻
               </button>
-            )}
+            ))}
             <button type="button" className="btn-secondary text-[10px] py-1" onClick={onClose}>
               ✕
             </button>
@@ -123,7 +127,7 @@ export default function AssetDrawer({
             }`}
             onClick={() => setTab('tokens')}
           >
-            Tokens ({assets.tokens.length})
+            {xaRender("Tokens (")}{xaRender(assets.tokens.length)})
           </button>
           <button
             type="button"
@@ -134,7 +138,7 @@ export default function AssetDrawer({
             }`}
             onClick={() => setTab('nfts')}
           >
-            NFTs ({assets.nfts.length})
+            {xaRender("NFTs (")}{xaRender(assets.nfts.length)})
           </button>
         </div>
 
@@ -148,39 +152,38 @@ export default function AssetDrawer({
         </div>
 
         <div className="flex-1 overflow-y-auto px-3 pb-6">
-          {!assets.connected && (
+          {xaRender(!assets.connected && (
             <p className="text-sm text-zinc-500 py-6 text-center">
-              Connecte ton wallet pour voir tokens & NFTs.
-            </p>
-          )}
-          {assets.connected && assets.loading && (
-            <p className="text-sm text-zinc-500 py-4">Chargement…</p>
-          )}
-          {assets.connected && tab === 'tokens' && (
+              {xaRender("Connecte ton wallet pour voir tokens & NFTs. ")}</p>
+          ))}
+          {xaRender(assets.connected && assets.loading && (
+            <p className="text-sm text-zinc-500 py-4">{xaRender("Chargement…")}</p>
+          ))}
+          {xaRender(assets.connected && tab === 'tokens' && (
             <ul className="space-y-1.5">
-              {tokens.map(t => (
+              {xaRender(tokens.map(t => (
                 <TokenRow key={t.identifier} t={t} />
+              )))}
+              {xaRender(!tokens.length && !assets.loading && (
+                <p className="text-xs text-zinc-600 py-4 text-center">{xaRender("Aucun token ESDT")}</p>
               ))}
-              {!tokens.length && !assets.loading && (
-                <p className="text-xs text-zinc-600 py-4 text-center">Aucun token ESDT</p>
-              )}
             </ul>
-          )}
-          {assets.connected && tab === 'nfts' && (
+          ))}
+          {xaRender(assets.connected && tab === 'nfts' && (
             <>
               <ul className="grid grid-cols-3 gap-2">
-                {nfts.map(n => (
+                {xaRender(nfts.map(n => (
                   <NftCard key={n.identifier} n={n} />
-                ))}
+                )))}
               </ul>
-              {!nfts.length && !assets.loading && (
-                <p className="text-xs text-zinc-600 py-4 text-center">Aucun NFT</p>
-              )}
-              {!!nfts.length && (
-                <p className="text-[10px] text-zinc-600 mt-3 text-center">Clic → Musée 3D (Mydee)</p>
-              )}
+              {xaRender(!nfts.length && !assets.loading && (
+                <p className="text-xs text-zinc-600 py-4 text-center">{xaRender("Aucun NFT")}</p>
+              ))}
+              {xaRender(!!nfts.length && (
+                <p className="text-[10px] text-zinc-600 mt-3 text-center">{xaRender("Clic → Musée 3D (Mydee)")}</p>
+              ))}
             </>
-          )}
+          ))}
         </div>
       </aside>
     </div>

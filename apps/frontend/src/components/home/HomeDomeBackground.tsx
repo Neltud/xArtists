@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Dôme 360° WebGL — fond fixed inset-0, rotation orbitale douce, dispose strict.
  * Pas d’écran noir : fond CSS + loader discret jusqu’à sceneReady.
@@ -190,13 +191,13 @@ export default function HomeDomeBackground() {
       className="fixed inset-0 -z-10 bg-[#05050c]"
       aria-hidden
     >
-      {!ready && (
+      {xaRender(!ready && (
         <div className="absolute inset-0 flex items-center justify-center bg-[#05050c]">
           <p className="text-[11px] uppercase tracking-[0.2em] text-violet-300/60">
-            {t('home.dome.loading')}
+            {xaRender(t('home.dome.loading'))}
           </p>
         </div>
-      )}
+      ))}
     </div>
   )
 }

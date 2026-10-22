@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * LIA Hub — salle de contrôle 3D · 3 écrans holo distincts (PULSE/YIELD/SENTINEL).
  * 30 FPS · pool $TRO réelle injectée sur YIELD · dispose strict.
@@ -286,12 +287,11 @@ export default function LiaHubControlRoom() {
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-300/80">
-            LIA Hub · Control Room
-          </p>
-          <p className="text-[12px] text-zinc-400">{hint}</p>
+            {xaRender("LIA Hub · Control Room ")}</p>
+          <p className="text-[12px] text-zinc-400">{xaRender(hint)}</p>
         </div>
         <div className="flex gap-1">
-          {SCREEN_META.map(s => (
+          {xaRender(SCREEN_META.map(s => (
             <button
               key={s.id}
               type="button"
@@ -299,13 +299,13 @@ export default function LiaHubControlRoom() {
               className="rounded-lg border border-white/10 px-2 py-1 text-[10px] font-bold uppercase text-zinc-300 hover:border-cyan-400/40 min-h-[36px]"
               style={{ color: s.color }}
             >
-              {s.title}
+              {xaRender(s.title)}
             </button>
-          ))}
+          )))}
         </div>
       </div>
       <div ref={mountRef} className="relative h-[min(52vh,420px)] w-full bg-black">
-        {!ready ? <ProgressUnpackLoader progress={progress} /> : null}
+        {xaRender(!ready ? <ProgressUnpackLoader progress={progress} /> : null)}
       </div>
       <HoloPackModal packId={selected} onClose={() => setSelected(null)} />
     </div>

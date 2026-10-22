@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** Audit trail — proposals + live TX + performance delta. */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -85,50 +86,49 @@ export default function HistoryPage() {
   return (
     <div className="animate-fade-in space-y-4 max-w-3xl mx-auto pb-16">
       <header>
-        <p className="section-label">Audit</p>
-        <h1 className="section-title display text-2xl">History</h1>
-        <p className="text-sm text-zinc-400">Strike · on-chain · slippage</p>
+        <p className="section-label">{xaRender("Audit")}</p>
+        <h1 className="section-title display text-2xl">{xaRender("History")}</h1>
+        <p className="text-sm text-zinc-400">{xaRender("Strike · on-chain · slippage")}</p>
       </header>
       <div className="overflow-x-auto rounded-xl border border-white/10">
         <table className="w-full text-left text-[11px]">
           <thead className="bg-white/5 text-zinc-500 uppercase tracking-wider">
             <tr>
-              <th className="p-2">Time</th>
-              <th className="p-2">Strategy</th>
-              <th className="p-2">Intent</th>
-              <th className="p-2">Status</th>
-              <th className="p-2">Hash / Slip</th>
+              <th className="p-2">{xaRender("Time")}</th>
+              <th className="p-2">{xaRender("Strategy")}</th>
+              <th className="p-2">{xaRender("Intent")}</th>
+              <th className="p-2">{xaRender("Status")}</th>
+              <th className="p-2">{xaRender("Hash / Slip")}</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((r, i) => (
+            {xaRender(rows.map((r, i) => (
               <tr key={i} className="border-t border-white/5">
-                <td className="p-2 text-zinc-500 mono">{asText(r.ts)}</td>
-                <td className="p-2">{asText(r.strategy)}</td>
-                <td className="p-2">{asText(r.intent)}</td>
-                <td className="p-2">{asText(r.status)}</td>
+                <td className="p-2 text-zinc-500 mono">{xaRender(asText(r.ts))}</td>
+                <td className="p-2">{xaRender(asText(r.strategy))}</td>
+                <td className="p-2">{xaRender(asText(r.intent))}</td>
+                <td className="p-2">{xaRender(asText(r.status))}</td>
                 <td className="p-2 mono">
-                  {r.hash ? (
+                  {xaRender(r.hash ? (
                     <a
                       className="text-cyan-400 underline"
                       href={`https://explorer.multiversx.com/transactions/${r.hash}`}
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {r.hash.slice(0, 10)}…
+                      {xaRender(r.hash.slice(0, 10))}…
                     </a>
                   ) : (
                     asText(r.slip || '—')
-                  )}
+                  ))}
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>
       <Link to="/lia" className="btn-secondary text-sm">
-        ← LIA hub
-      </Link>
+        {xaRender("← LIA hub ")}</Link>
     </div>
   )
 }

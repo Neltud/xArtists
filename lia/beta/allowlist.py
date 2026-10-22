@@ -5,6 +5,7 @@ Not a free multi-ESDT mandate — closed set only.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from typing import FrozenSet
 
 # --- Allowlist (exactly these rails) ---
@@ -69,6 +70,12 @@ def assert_trade_caps(
     daily_notional_usd: float,
     wallet_egld: float | None = None,
 ) -> GateResult:
+    if not math.isfinite(size_usd) or not math.isfinite(daily_notional_usd) or daily_notional_usd < 0:
+        return GateResult(False, "nonfinite_or_invalid_notional")
+    if isinstance(trades_today, bool) or not isinstance(trades_today, int) or trades_today < 0:
+        return GateResult(False, "invalid_trade_count")
+    if wallet_egld is not None and not math.isfinite(wallet_egld):
+        return GateResult(False, "nonfinite_wallet_balance")
     if size_usd <= 0:
         return GateResult(False, "size_usd_non_positive")
     if size_usd > MAX_TRADE_USD:
@@ -83,6 +90,8 @@ def assert_trade_caps(
 
 
 def assert_micro_egld(amount_egld: float) -> GateResult:
+    if not math.isfinite(amount_egld):
+        return GateResult(False, "nonfinite_micro_egld")
     if amount_egld <= 0:
         return GateResult(False, "micro_egld_non_positive")
     if amount_egld > MAX_MICRO_EGLD:
@@ -100,6 +109,8 @@ def beta_preflight(
     micro_egld: float | None = None,
 ) -> GateResult:
     """Combine allowlist + caps for a Beta action."""
+    if not math.isfinite(size_usd) or size_usd < 0:
+        return GateResult(False, "invalid_size_usd")
     a = assert_token_allowed(token)
     if not a.ok:
         return a

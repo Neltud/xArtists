@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** Bouton export PDF A4 pour certificat phygital. */
 import { openPrintableCertificate } from '../lib/printCertificateA4'
 
@@ -18,7 +19,6 @@ export function PhysicalNftCertifierPrintButton(props: Props) {
       className="btn-primary text-xs min-h-[44px]"
       onClick={() => openPrintableCertificate(props)}
     >
-      Imprimer / PDF A4
-    </button>
+      {xaRender("Imprimer / PDF A4 ")}</button>
   )
 }

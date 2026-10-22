@@ -1,0 +1,422 @@
+{
+  "${value0}": [
+    "${value0}",
+    "${value0}",
+    "${value0}",
+    "${value0}",
+    "${value0}",
+    "${value0}",
+    "${value0}",
+    "${value0}"
+  ],
+  "· bloqué {value0}": [
+    "· bloqué {value0}",
+    "· locked {value0}",
+    "· bloqueado {value0}",
+    "· gesperrt {value0}",
+    "· заблокировано {value0}",
+    "· заблоковано {value0}",
+    "· 已锁定 {value0}",
+    "· مقفل {value0}"
+  ],
+  "Pack {value0} requis pour cette salle.": [
+    "Pack {value0} requis pour cette salle.",
+    "Pack {value0} required for this room.",
+    "Se requiere el paquete {value0} para esta sala.",
+    "Paket {value0} für diesen Raum erforderlich.",
+    "Для этого зала требуется пакет {value0}.",
+    "Для цього залу потрібен пакет {value0}.",
+    "此房间需要 {value0} 套餐。",
+    "تتطلب هذه القاعة باقة {value0}."
+  ],
+  "engagé · claims {value0} · pts {value1}": [
+    "engagé · réclamations {value0} · points {value1}",
+    "engaged · claims {value0} · points {value1}",
+    "participando · reclamaciones {value0} · puntos {value1}",
+    "aktiv · Abrufe {value0} · Punkte {value1}",
+    "участвует · получений {value0} · баллов {value1}",
+    "бере участь · отримань {value0} · балів {value1}",
+    "已参与 · 领取 {value0} · 积分 {value1}",
+    "مشارك · مطالبات {value0} · نقاط {value1}"
+  ],
+  "{value0}%": [
+    "{value0}%",
+    "{value0}%",
+    "{value0}%",
+    "{value0}%",
+    "{value0}%",
+    "{value0}%",
+    "{value0}%",
+    "{value0}%"
+  ],
+  "· Losers: {value0}": [
+    "· Perdants : {value0}",
+    "· Losers: {value0}",
+    "· Perdedores: {value0}",
+    "· Verlierer: {value0}",
+    "· Убыточные: {value0}",
+    "· Збиткові: {value0}",
+    "· 下跌：{value0}",
+    "· الخاسرون: {value0}"
+  ],
+  "· {value0}…": [
+    "· {value0}…",
+    "· {value0}…",
+    "· {value0}…",
+    "· {value0}…",
+    "· {value0}…",
+    "· {value0}…",
+    "· {value0}…",
+    "· {value0}…"
+  ],
+  "· fuse:{value0}": [
+    "· fusible : {value0}",
+    "· fuse: {value0}",
+    "· fusible: {value0}",
+    "· Sicherung: {value0}",
+    "· предохранитель: {value0}",
+    "· запобіжник: {value0}",
+    "· 熔断器：{value0}",
+    "· قاطع الأمان: {value0}"
+  ],
+  "· {value0}": [
+    "· {value0}",
+    "· {value0}",
+    "· {value0}",
+    "· {value0}",
+    "· {value0}",
+    "· {value0}",
+    "· {value0}",
+    "· {value0}"
+  ],
+  "maj {value0}": [
+    "mise à jour {value0}",
+    "updated {value0}",
+    "actualizado {value0}",
+    "aktualisiert {value0}",
+    "обновлено {value0}",
+    "оновлено {value0}",
+    "更新于 {value0}",
+    "آخر تحديث {value0}"
+  ],
+  "· {value0} poussière masquée": [
+    "· {value0} petits soldes masqués",
+    "· {value0} dust balances hidden",
+    "· {value0} saldos mínimos ocultos",
+    "· {value0} Kleinstbeträge ausgeblendet",
+    "· скрыто мелких остатков: {value0}",
+    "· приховано дрібних залишків: {value0}",
+    "· 已隐藏 {value0} 笔小额余额",
+    "· أُخفيت {value0} أرصدة ضئيلة"
+  ],
+  "{value0} EGLD": [
+    "{value0} EGLD",
+    "{value0} EGLD",
+    "{value0} EGLD",
+    "{value0} EGLD",
+    "{value0} EGLD",
+    "{value0} EGLD",
+    "{value0} EGLD",
+    "{value0} EGLD"
+  ],
+  "{value0} actif(s) · affichage max. 48": [
+    "{value0} actif(s) · affichage max. 48",
+    "{value0} asset(s) · showing up to 48",
+    "{value0} activo(s) · máximo 48 visibles",
+    "{value0} Vermögenswerte · max. 48 angezeigt",
+    "Активов: {value0} · показано не более 48",
+    "Активів: {value0} · показано не більше 48",
+    "{value0} 项资产 · 最多显示 48 项",
+    "{value0} أصل · عرض 48 كحد أقصى"
+  ],
+  "{value0}…": [
+    "{value0}…",
+    "{value0}…",
+    "{value0}…",
+    "{value0}…",
+    "{value0}…",
+    "{value0}…",
+    "{value0}…",
+    "{value0}…"
+  ],
+  "Source: {value0}": [
+    "Source : {value0}",
+    "Source: {value0}",
+    "Fuente: {value0}",
+    "Quelle: {value0}",
+    "Источник: {value0}",
+    "Джерело: {value0}",
+    "来源：{value0}",
+    "المصدر: {value0}"
+  ],
+  "Acheter {value0} · {value1} €": [
+    "Acheter {value0} · {value1} €",
+    "Buy {value0} · {value1} €",
+    "Comprar {value0} · {value1} €",
+    "{value0} kaufen · {value1} €",
+    "Купить {value0} · {value1} €",
+    "Купити {value0} · {value1} €",
+    "购买 {value0} · {value1} €",
+    "شراء {value0} · {value1} €"
+  ],
+  "MAJ {value0}": [
+    "MISE À JOUR {value0}",
+    "UPDATED {value0}",
+    "ACTUALIZADO {value0}",
+    "AKTUALISIERT {value0}",
+    "ОБНОВЛЕНО {value0}",
+    "ОНОВЛЕНО {value0}",
+    "更新于 {value0}",
+    "آخر تحديث {value0}"
+  ],
+  "{value0}{value1}% 24h": [
+    "{value0}{value1}% sur 24 h",
+    "{value0}{value1}% 24h",
+    "{value0}{value1}% en 24 h",
+    "{value0}{value1}% in 24 Std.",
+    "{value0}{value1}% за 24 ч",
+    "{value0}{value1}% за 24 год",
+    "24 小时 {value0}{value1}%",
+    "{value0}{value1}% خلال 24 ساعة"
+  ],
+  "Générer {value0}": [
+    "Générer {value0}",
+    "Generate {value0}",
+    "Generar {value0}",
+    "{value0} erzeugen",
+    "Создать {value0}",
+    "Створити {value0}",
+    "生成 {value0}",
+    "توليد {value0}"
+  ],
+  "— {value0}": [
+    "— {value0}",
+    "— {value0}",
+    "— {value0}",
+    "— {value0}",
+    "— {value0}",
+    "— {value0}",
+    "— {value0}",
+    "— {value0}"
+  ],
+  "{value0} TRO": [
+    "{value0} TRO",
+    "{value0} TRO",
+    "{value0} TRO",
+    "{value0} TRO",
+    "{value0} TRO",
+    "{value0} TRO",
+    "{value0} TRO",
+    "{value0} TRO"
+  ],
+  "✓ {value0}": [
+    "✓ {value0}",
+    "✓ {value0}",
+    "✓ {value0}",
+    "✓ {value0}",
+    "✓ {value0}",
+    "✓ {value0}",
+    "✓ {value0}",
+    "✓ {value0}"
+  ],
+  "{value0}/7": [
+    "{value0}/7",
+    "{value0}/7",
+    "{value0}/7",
+    "{value0}/7",
+    "{value0}/7",
+    "{value0}/7",
+    "{value0}/7",
+    "{value0}/7"
+  ],
+  "{value0}{value1} USD": [
+    "{value0}{value1} USD",
+    "{value0}{value1} USD",
+    "{value0}{value1} USD",
+    "{value0}{value1} USD",
+    "{value0}{value1} USD",
+    "{value0}{value1} USD",
+    "{value0}{value1} USD",
+    "{value0}{value1} USD"
+  ],
+  "Louer · {value0} EGLD": [
+    "Louer · {value0} EGLD",
+    "Rent · {value0} EGLD",
+    "Alquilar · {value0} EGLD",
+    "Mieten · {value0} EGLD",
+    "Арендовать · {value0} EGLD",
+    "Орендувати · {value0} EGLD",
+    "租用 · {value0} EGLD",
+    "استئجار · {value0} EGLD"
+  ],
+  "Pack {value0}": [
+    "Pack {value0}",
+    "Pack {value0}",
+    "Paquete {value0}",
+    "Paket {value0}",
+    "Пакет {value0}",
+    "Пакет {value0}",
+    "{value0} 套餐",
+    "باقة {value0}"
+  ],
+  "· tgt {value0}": [
+    "· cible {value0}",
+    "· target {value0}",
+    "· objetivo {value0}",
+    "· Ziel {value0}",
+    "· цель {value0}",
+    "· ціль {value0}",
+    "· 目标 {value0}",
+    "· الهدف {value0}"
+  ],
+  "−{value0} TRO": [
+    "−{value0} TRO",
+    "−{value0} TRO",
+    "−{value0} TRO",
+    "−{value0} TRO",
+    "−{value0} TRO",
+    "−{value0} TRO",
+    "−{value0} TRO",
+    "−{value0} TRO"
+  ],
+  "Burn {value0} $TRO": [
+    "Brûler {value0} $TRO",
+    "Burn {value0} $TRO",
+    "Quemar {value0} $TRO",
+    "{value0} $TRO verbrennen",
+    "Сжечь {value0} $TRO",
+    "Спалити {value0} $TRO",
+    "销毁 {value0} $TRO",
+    "حرق {value0} $TRO"
+  ],
+  "{value0} {value1} · {value2}": [
+    "{value0} {value1} · {value2}",
+    "{value0} {value1} · {value2}",
+    "{value0} {value1} · {value2}",
+    "{value0} {value1} · {value2}",
+    "{value0} {value1} · {value2}",
+    "{value0} {value1} · {value2}",
+    "{value0} {value1} · {value2}",
+    "{value0} {value1} · {value2}"
+  ],
+  "· bid {value0} EGLD locké": [
+    "· offre {value0} EGLD bloqués",
+    "· bid {value0} EGLD locked",
+    "· puja {value0} EGLD bloqueados",
+    "· Gebot {value0} EGLD gesperrt",
+    "· ставка {value0} EGLD заблокирована",
+    "· ставка {value0} EGLD заблокована",
+    "· 出价 {value0} EGLD 已锁定",
+    "· مزايدة {value0} EGLD مقفلة"
+  ],
+  "≈ ${value0}": [
+    "≈ ${value0}",
+    "≈ ${value0}",
+    "≈ ${value0}",
+    "≈ ${value0}",
+    "≈ ${value0}",
+    "≈ ${value0}",
+    "≈ ${value0}",
+    "≈ ${value0}"
+  ],
+  "inst {value0}": [
+    "institution {value0}",
+    "institution {value0}",
+    "institución {value0}",
+    "Institution {value0}",
+    "учреждение {value0}",
+    "установа {value0}",
+    "机构 {value0}",
+    "مؤسسة {value0}"
+  ],
+  "créateur {value0}": [
+    "créateur {value0}",
+    "creator {value0}",
+    "creador {value0}",
+    "Ersteller {value0}",
+    "создатель {value0}",
+    "творець {value0}",
+    "创作者 {value0}",
+    "منشئ {value0}"
+  ],
+  "burn {value0}": [
+    "destruction {value0}",
+    "burn {value0}",
+    "quema {value0}",
+    "Verbrennung {value0}",
+    "сжигание {value0}",
+    "спалення {value0}",
+    "销毁 {value0}",
+    "حرق {value0}"
+  ],
+  "protocol {value0}": [
+    "protocole {value0}",
+    "protocol {value0}",
+    "protocolo {value0}",
+    "Protokoll {value0}",
+    "протокол {value0}",
+    "протокол {value0}",
+    "协议 {value0}",
+    "البروتوكول {value0}"
+  ],
+  "SC live · {value0}…": [
+    "SC actif · {value0}…",
+    "SC live · {value0}…",
+    "SC activo · {value0}…",
+    "SC aktiv · {value0}…",
+    "SC активен · {value0}…",
+    "SC активний · {value0}…",
+    "SC 已上线 · {value0}…",
+    "SC نشط · {value0}…"
+  ],
+  "(−{value0}%)": [
+    "(−{value0}%)",
+    "(−{value0}%)",
+    "(−{value0}%)",
+    "(−{value0}%)",
+    "(−{value0}%)",
+    "(−{value0}%)",
+    "(−{value0}%)",
+    "(−{value0}%)"
+  ],
+  "On-chain ready · {value0}": [
+    "Prêt on-chain · {value0}",
+    "On-chain ready · {value0}",
+    "Listo en cadena · {value0}",
+    "On-Chain bereit · {value0}",
+    "Готово в блокчейне · {value0}",
+    "Готово в блокчейні · {value0}",
+    "链上已就绪 · {value0}",
+    "جاهز على السلسلة · {value0}"
+  ],
+  "Réserver · {value0} € (journal + SC registered)": [
+    "Réserver · {value0} € (journal + SC enregistré)",
+    "Reserve · {value0} € (log + registered SC)",
+    "Reservar · {value0} € (registro + SC registrado)",
+    "Reservieren · {value0} € (Protokoll + registrierter SC)",
+    "Забронировать · {value0} € (журнал + зарегистрированный SC)",
+    "Забронювати · {value0} € (журнал + зареєстрований SC)",
+    "预约 · {value0} €（日志 + 已注册 SC）",
+    "حجز · {value0} € (سجل + SC مسجّل)"
+  ],
+  "Réserver (paper) · {value0} €": [
+    "Réserver (simulation) · {value0} €",
+    "Reserve (paper) · {value0} €",
+    "Reservar (simulado) · {value0} €",
+    "Reservieren (Simulation) · {value0} €",
+    "Забронировать (симуляция) · {value0} €",
+    "Забронювати (симуляція) · {value0} €",
+    "预约（模拟）· {value0} €",
+    "حجز (محاكاة) · {value0} €"
+  ],
+  "Payer {value0} EGLD": [
+    "Payer {value0} EGLD",
+    "Pay {value0} EGLD",
+    "Pagar {value0} EGLD",
+    "{value0} EGLD bezahlen",
+    "Оплатить {value0} EGLD",
+    "Сплатити {value0} EGLD",
+    "支付 {value0} EGLD",
+    "دفع {value0} EGLD"
+  ]
+}

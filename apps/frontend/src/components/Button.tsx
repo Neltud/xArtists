@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -41,14 +42,13 @@ export const Button: React.FC<ButtonProps> = ({
         ${props.className || ''}
       `}
     >
-      {loading ? (
+      {xaRender(loading ? (
         <span className="inline-flex items-center gap-2">
           <span className="animate-spin">⟳</span>
-          Loading...
-        </span>
+          {xaRender("Loading... ")}</span>
       ) : (
         children
-      )}
+      ))}
     </button>
   );
 };

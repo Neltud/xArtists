@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
@@ -117,19 +118,18 @@ export default function PersonaWelcome({ forceOpen = false, onClose }: Props) {
   if (!open) {
     return (
       <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-gray-500">
-        {chosen && (
+        {xaRender(chosen && (
           <span className="rounded-full border border-white/10 px-3 py-1">
-            Parcours :{' '}
-            <strong className="text-purple-300">{PERSONAS.find(p => p.id === chosen)?.title}</strong>
+            {xaRender("Parcours :")}{xaRender(' ')}
+            <strong className="text-purple-300">{xaRender(PERSONAS.find(p => p.id === chosen)?.title)}</strong>
           </span>
-        )}
+        ))}
         <button
           type="button"
           className="underline text-purple-400 hover:text-purple-300"
           onClick={() => setOpen(true)}
         >
-          Changer de profil
-        </button>
+          {xaRender("Changer de profil ")}</button>
       </div>
     )
   }
@@ -150,17 +150,14 @@ export default function PersonaWelcome({ forceOpen = false, onClose }: Props) {
         aria-hidden
       />
       <div className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border border-purple-500/30 bg-[#0d0d14] p-6 sm:p-8 shadow-2xl">
-        <p className="text-xs uppercase tracking-widest text-purple-400 mb-2">Bienvenue sur xArtists</p>
+        <p className="text-xs uppercase tracking-widest text-purple-400 mb-2">{xaRender("Bienvenue sur xArtists")}</p>
         <h2 id="persona-title" className="text-2xl sm:text-3xl font-black mb-2">
-          Qui êtes-vous ?
-        </h2>
+          {xaRender("Qui êtes-vous ? ")}</h2>
         <p id="persona-desc" className="text-sm text-gray-400 mb-6">
-          Choisissez un parcours pour accéder plus vite aux bonnes pages. Vous pourrez modifier ce choix à tout
-          moment.
-        </p>
+          {xaRender("Choisissez un parcours pour accéder plus vite aux bonnes pages. Vous pourrez modifier ce choix à tout moment. ")}</p>
 
         <div className="grid sm:grid-cols-2 gap-3">
-          {PERSONAS.map(p => (
+          {xaRender(PERSONAS.map(p => (
             <button
               key={p.id}
               type="button"
@@ -168,15 +165,15 @@ export default function PersonaWelcome({ forceOpen = false, onClose }: Props) {
               className="text-left rounded-2xl border border-[#2a2a3a] bg-[#12121a] p-4 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
             >
               <span className="text-3xl" aria-hidden>
-                {p.emoji}
+                {xaRender(p.emoji)}
               </span>
-              <p className="font-bold text-lg mt-2">{p.title}</p>
-              <p className="text-xs text-gray-400 mt-1 leading-relaxed">{p.blurb}</p>
+              <p className="font-bold text-lg mt-2">{xaRender(p.title)}</p>
+              <p className="text-xs text-gray-400 mt-1 leading-relaxed">{xaRender(p.blurb)}</p>
               <span className="inline-block mt-3 text-xs font-semibold text-purple-400">
-                {p.primary.label} →
+                {xaRender(p.primary.label)} →
               </span>
             </button>
-          ))}
+          )))}
         </div>
 
         <div className="mt-6 flex flex-wrap gap-3 justify-between items-center">
@@ -185,15 +182,13 @@ export default function PersonaWelcome({ forceOpen = false, onClose }: Props) {
             className="text-xs text-gray-500 underline"
             onClick={() => selectPersona('curious', false)}
           >
-            Continuer sans choisir
-          </button>
+            {xaRender("Continuer sans choisir ")}</button>
           <Link
             to="/sim"
             className="text-xs text-purple-400"
             onClick={() => selectPersona('curious', false)}
           >
-            Sim Lab →
-          </Link>
+            {xaRender("Sim Lab → ")}</Link>
         </div>
       </div>
     </div>
@@ -201,21 +196,21 @@ export default function PersonaWelcome({ forceOpen = false, onClose }: Props) {
 }
 
 export function PersonaQuickLinks({ persona }: { persona: Persona | null }) {
+  xaUsePhraseLocale()
+
   const p = PERSONAS.find(x => x.id === persona) || PERSONAS[3]
   return (
-    <nav aria-label="Parcours recommandé" className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-2">
+    <nav aria-label={xaLocalize("Parcours recommandé")} className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-2">
       <Link to={p.primary.to} className="btn-primary text-center text-xs sm:text-sm py-2.5">
-        {p.primary.label}
+        {xaRender(p.primary.label)}
       </Link>
       <Link to={p.secondary.to} className="btn-secondary text-center text-xs sm:text-sm py-2.5">
-        {p.secondary.label}
+        {xaRender(p.secondary.label)}
       </Link>
       <Link to="/sim" className="btn-secondary text-center text-xs sm:text-sm py-2.5">
-        Sim Lab
-      </Link>
+        {xaRender("Sim Lab ")}</Link>
       <Link to="/agents" className="btn-secondary text-center text-xs sm:text-sm py-2.5">
-        Agents
-      </Link>
+        {xaRender("Agents ")}</Link>
     </nav>
   )
 }

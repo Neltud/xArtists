@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /** Unified cockpit — Trading / RWA / Economy / Audit tabs. Paper-default. */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -57,15 +58,13 @@ export default function GenesisCockpit() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-medium">
-          Genesis cockpit
-        </p>
+          {xaRender("Genesis cockpit ")}</p>
         <span className="text-[10px] text-zinc-600">
-          Shadow default · HITL for chain · LIA_LIVE_TRADING=0
-        </span>
+          {xaRender("Shadow default · HITL for chain · LIA_LIVE_TRADING=0 ")}</span>
       </div>
 
       <div className="flex gap-1 p-0.5 rounded-full border border-white/10 w-fit">
-        {tabs.map(t => (
+        {xaRender(tabs.map(t => (
           <button
             key={t.id}
             type="button"
@@ -74,65 +73,63 @@ export default function GenesisCockpit() {
               tab === t.id ? 'bg-white/10 text-white' : 'text-zinc-500'
             }`}
           >
-            {t.label}
+            {xaRender(t.label)}
           </button>
-        ))}
+        )))}
       </div>
 
-      {tab === 'trading' && (
+      {xaRender(tab === 'trading' && (
         <div className="space-y-3">
           <PendingActions />
           <HolderTerminal />
         </div>
-      )}
+      ))}
 
-      {tab === 'rwa' && (
+      {xaRender(tab === 'rwa' && (
         <div className="space-y-3">
           <p className="text-[12px] text-zinc-400">
-            Avg AI score: {asText(tick?.rwa_avg_score)} · momentum{' '}
-            {asText(tick?.rwa_momentum_hint)}
+            {xaRender("Avg AI score: ")}{xaRender(asText(tick?.rwa_avg_score))} {xaRender(" · momentum")}{xaRender(' ')}
+            {xaRender(asText(tick?.rwa_momentum_hint))}
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
-            {(rwa?.items || []).slice(0, 4).map(it => (
+            {xaRender((rwa?.items || []).slice(0, 4).map(it => (
               <div
                 key={String(it.id)}
                 className="rounded-xl border border-white/10 bg-black/30 p-3 text-[12px]"
               >
-                <p className="font-medium text-white">{asText(it.title)}</p>
-                <p className="text-zinc-500">{asText(it.artist)}</p>
+                <p className="font-medium text-white">{xaRender(asText(it.title))}</p>
+                <p className="text-zinc-500">{xaRender(asText(it.artist))}</p>
                 <p className="tabular-nums text-cyan-300 mt-1">
-                  {asText((it.valuation as { score?: number } | undefined)?.score)} / 100
+                  {xaRender(asText((it.valuation as { score?: number } | undefined)?.score))} / 100
                 </p>
-                <p className="text-[10px] text-zinc-600">{asText(it.shipment_status || it.status)}</p>
+                <p className="text-[10px] text-zinc-600">{xaRender(asText(it.shipment_status || it.status))}</p>
               </div>
-            ))}
+            )))}
           </div>
           <Link to="/rwa" className="btn-secondary text-sm">
-            Full catalog
-          </Link>
+            {xaRender("Full catalog ")}</Link>
         </div>
-      )}
+      ))}
 
-      {tab === 'economy' && (
+      {xaRender(tab === 'economy' && (
         <div className="space-y-3">
           <EconomicPulse />
           <p className="text-[11px] text-zinc-500">
-            Ledger paper until TRO reward/burn TX marked on-chain. Plans:{" '"}
+            {xaRender("Ledger paper until TRO reward/burn TX marked on-chain. Plans:")}{xaRender(" '")}
             <code className="text-zinc-400">lia.calldata.tro_economic</code>
           </p>
         </div>
-      )}
+      ))}
 
-      {tab === 'audit' && (
+      {xaRender(tab === 'audit' && (
         <div className="space-y-2 text-[12px]">
           <Link to="/history" className="btn-secondary text-sm">
-            History table
-          </Link>
+            {xaRender("History table ")}</Link>
           <pre className="rounded-xl bg-black/40 border border-white/5 p-3 overflow-x-auto text-[10px] text-zinc-400 max-h-48">
             {tick ? JSON.stringify(tick, null, 2).slice(0, 1200) : 'No genesis_tick.json yet'}
           </pre>
         </div>
-      )}
+      ))}
     </div>
   )
 }

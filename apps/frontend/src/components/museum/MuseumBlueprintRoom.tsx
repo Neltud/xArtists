@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Salle 3D optimisée — caméra via refs (pas de setState/frame),
  * culling distance, textures en file limitée, pause si hors écran.
@@ -158,7 +159,7 @@ function Pad({ label, on }: { label: string; on: (v: boolean) => void }) {
       onPointerCancel={() => on(false)}
       onPointerLeave={() => on(false)}
     >
-      {label}
+      {xaRender(label)}
     </button>
   )
 }
@@ -413,7 +414,7 @@ export default function MuseumBlueprintRoom({
   if (!list.length) {
     return (
       <div className="rounded-2xl border border-white/10 bg-zinc-950 min-h-[280px] flex items-center justify-center text-sm text-zinc-500">
-        {emptyLabel}
+        {xaRender(emptyLabel)}
       </div>
     )
   }
@@ -426,10 +427,10 @@ export default function MuseumBlueprintRoom({
     <div className="space-y-2">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[13px] font-medium text-white">{roomName}</p>
+          <p className="text-[13px] font-medium text-white">{xaRender(roomName)}</p>
           <p className="text-[11px] text-zinc-500 mt-0.5">
-            {blueprint.description || 'Plan 3D'}
-            {details?.era ? ` · ${details.era}` : ''}
+            {xaRender(blueprint.description || 'Plan 3D')}
+            {xaRender(details?.era ? ` · ${details.era}` : '')}
           </p>
         </div>
         <button
@@ -437,34 +438,34 @@ export default function MuseumBlueprintRoom({
           className="text-[10px] uppercase tracking-wider text-zinc-500 border border-white/10 rounded-full px-2.5 py-1 hover:text-zinc-300"
           onClick={() => setShowDetails(s => !s)}
         >
-          {showDetails ? 'Masquer' : 'Détails'} · I
+          {xaRender(showDetails ? 'Masquer' : 'Détails')} · I
         </button>
       </div>
 
-      {showDetails && (
+      {xaRender(showDetails && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
           <div className="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2">
-            <p className="text-zinc-600 uppercase tracking-wider text-[9px]">Surface</p>
-            <p className="text-zinc-200 tabular-nums mt-0.5">{area} m²</p>
+            <p className="text-zinc-600 uppercase tracking-wider text-[9px]">{xaRender("Surface")}</p>
+            <p className="text-zinc-200 tabular-nums mt-0.5">{xaRender(area)} m²</p>
           </div>
           <div className="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2">
-            <p className="text-zinc-600 uppercase tracking-wider text-[9px]">Murs</p>
+            <p className="text-zinc-600 uppercase tracking-wider text-[9px]">{xaRender("Murs")}</p>
             <p className="text-zinc-200 mt-0.5">
-              {walls.length} · h {blueprint.wallHeight} m
+              {xaRender(walls.length)} · h {xaRender(blueprint.wallHeight)} m
             </p>
           </div>
           <div className="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2">
-            <p className="text-zinc-600 uppercase tracking-wider text-[9px]">Ouvertures</p>
+            <p className="text-zinc-600 uppercase tracking-wider text-[9px]">{xaRender("Ouvertures")}</p>
             <p className="text-zinc-200 mt-0.5">
-              {doors}p · {windows}f
+              {xaRender(doors)}p · {xaRender(windows)}f
             </p>
           </div>
           <div className="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2">
-            <p className="text-zinc-600 uppercase tracking-wider text-[9px]">Œuvres</p>
-            <p className="text-zinc-200 mt-0.5">{framed.length}</p>
+            <p className="text-zinc-600 uppercase tracking-wider text-[9px]">{xaRender("Œuvres")}</p>
+            <p className="text-zinc-200 mt-0.5">{xaRender(framed.length)}</p>
           </div>
         </div>
-      )}
+      ))}
 
       <div
         ref={viewportRef}
@@ -508,7 +509,7 @@ export default function MuseumBlueprintRoom({
             }}
           />
 
-          {walls.map(w => {
+          {xaRender(walls.map(w => {
             const g = wallGeom(w)
             const left = (g.mx - b.cx) * SCALE - (g.len * SCALE) / 2
             const top = (g.my - b.cy) * SCALE
@@ -535,9 +536,9 @@ export default function MuseumBlueprintRoom({
                 />
               </div>
             )
-          })}
+          }))}
 
-          {openings.map(o => {
+          {xaRender(openings.map(o => {
             const wall = blueprint.walls.find(w => w.id === o.wallId)
             if (!wall) return null
             const op = openingOnWall(wall, o)
@@ -560,9 +561,9 @@ export default function MuseumBlueprintRoom({
                 }}
               />
             )
-          })}
+          }))}
 
-          {framed.map((it, i) => {
+          {xaRender(framed.map((it, i) => {
             const left = (it.x - b.cx) * SCALE
             const top = (it.y - b.cy) * SCALE
             const lift = it.height * SCALE * 0.26
@@ -590,15 +591,14 @@ export default function MuseumBlueprintRoom({
                   style={{ background: theme.frame }}
                 >
                   <div className="h-full w-full bg-black overflow-hidden">
-                    {it.frame.image && !broken[it.frame.id] ? (
+                    {xaRender(it.frame.image && !broken[it.frame.id] ? (
                       <img
                         src={it.frame.image}
                         alt=""
                         className="h-full w-full object-cover"
                         loading={eager ? 'eager' : 'lazy'}
                         decoding="async"
-                        // @ts-expect-error fetchPriority
-                        fetchPriority={eager ? 'high' : 'low'}
+                        {...{fetchpriority:eager ? 'high' : 'low'}}
                         width={104}
                         height={136}
                         draggable={false}
@@ -606,14 +606,14 @@ export default function MuseumBlueprintRoom({
                       />
                     ) : (
                       <div className="h-full flex items-center justify-center text-[7px] text-zinc-600 px-0.5">
-                        {it.frame.title.slice(0, 10)}
+                        {xaRender(it.frame.title.slice(0, 10))}
                       </div>
-                    )}
+                    ))}
                   </div>
                 </div>
               </button>
             )
-          })}
+          }))}
         </div>
 
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -629,7 +629,7 @@ export default function MuseumBlueprintRoom({
                 : 'bg-black/60 border-white/10 text-zinc-300'
             }`}
           >
-            {nearTitle}
+            {xaRender(nearTitle)}
           </div>
           <div ref={hudPosRef} className="text-[9px] font-mono text-zinc-600 self-center">
             —
@@ -653,18 +653,17 @@ export default function MuseumBlueprintRoom({
               if (f) setInspect(f.frame)
             }}
           >
-            Inspecter
-          </button>
+            {xaRender("Inspecter ")}</button>
         </div>
       </div>
 
-      {buyMsg && (
+      {xaRender(buyMsg && (
         <p className="text-[11px] text-zinc-400 border border-white/10 bg-white/[0.03] rounded-lg px-2.5 py-1.5">
-          {buyMsg}
+          {xaRender(buyMsg)}
         </p>
-      )}
+      ))}
 
-      {inspect && (
+      {xaRender(inspect && (
         <div
           className="fixed inset-0 z-[90] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-3"
           role="dialog"
@@ -677,47 +676,44 @@ export default function MuseumBlueprintRoom({
           >
             <div className="flex gap-3">
               <div className="w-28 shrink-0 aspect-[4/5] rounded-lg overflow-hidden border border-white/10 bg-black">
-                {inspect.image && !broken[inspect.id] ? (
+                {xaRender(inspect.image && !broken[inspect.id] ? (
                   <img
                     src={inspect.image}
                     alt=""
                     className="w-full h-full object-cover"
                     decoding="async"
-                    // @ts-expect-error
-                    fetchPriority="high"
+                    {...{fetchpriority:'high'}}
                   />
                 ) : (
                   <div className="h-full flex items-center justify-center opacity-40">◈</div>
-                )}
+                ))}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-base font-semibold text-white">{inspect.title}</p>
+                <p className="text-base font-semibold text-white">{xaRender(inspect.title)}</p>
                 <p className="text-[11px] text-zinc-500 mt-1">
-                  {inspect.subtitle || inspect.collection}
+                  {xaRender(inspect.subtitle || inspect.collection)}
                 </p>
-                {inspect.description && (
-                  <p className="text-xs text-zinc-400 mt-2 line-clamp-4">{inspect.description}</p>
-                )}
+                {xaRender(inspect.description && (
+                  <p className="text-xs text-zinc-400 mt-2 line-clamp-4">{xaRender(inspect.description)}</p>
+                ))}
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {allowBuy && (
+              {xaRender(allowBuy && (
                 <button type="button" className="btn-primary text-xs" onClick={onBuy}>
-                  {marketLive ? 'Acheter…' : 'Intention d’achat'}
+                  {xaRender(marketLive ? 'Acheter…' : 'Intention d’achat')}
                 </button>
-              )}
-              {inspect.href && (
+              ))}
+              {xaRender(inspect.href && (
                 <a href={inspect.href} target="_blank" rel="noreferrer" className="btn-secondary text-xs">
-                  Source ↗
-                </a>
-              )}
+                  {xaRender("Source ↗ ")}</a>
+              ))}
               <button type="button" className="btn-ghost text-xs" onClick={() => setInspect(null)}>
-                Fermer
-              </button>
+                {xaRender("Fermer ")}</button>
             </div>
           </div>
         </div>
-      )}
+      ))}
     </div>
   )
 }

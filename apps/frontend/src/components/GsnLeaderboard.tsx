@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 
 const RAW =
@@ -51,31 +52,28 @@ export default function GsnLeaderboard() {
 
   return (
     <div className="card border-emerald-500/20 mb-6">
-      <h3 className="font-bold text-sm text-emerald-200 mb-1">GSN Leaderboard → score pré-trade LIA</h3>
+      <h3 className="font-bold text-sm text-emerald-200 mb-1">{xaRender("GSN Leaderboard → score pré-trade LIA")}</h3>
       <p className="text-[11px] text-gray-500 mb-3">
-        Agents <strong>prévisionnels externes</strong> (GreenSmoke). Poids max ~30 %. Ne sont{' '}
-        <strong>pas</strong> les Agent Packs NFT (5–25 €).
-      </p>
-      {err && <p className="text-xs text-red-400">{err}</p>}
-      {score != null && (
+        {xaRender("Agents ")}<strong>{xaRender("prévisionnels externes")}</strong> {xaRender(" (GreenSmoke). Poids max ~30 %. Ne sont")}{xaRender(' ')}
+        <strong>{xaRender("pas")}</strong> {xaRender(" les Agent Packs NFT (5–25 €). ")}</p>
+      {xaRender(err && <p className="text-xs text-red-400">{xaRender(err)}</p>)}
+      {xaRender(score != null && (
         <p className="text-xs mb-2">
-          Score advisory : <strong className="text-emerald-300">{(score * 100).toFixed(1)} %</strong> du poids max
-          signal GSN
-        </p>
-      )}
+          {xaRender("Score advisory : ")}<strong className="text-emerald-300">{xaRender((score * 100).toFixed(1))} %</strong> {xaRender(" du poids max signal GSN ")}</p>
+      ))}
       <ul className="space-y-1.5">
-        {rows.map((r, i) => (
+        {xaRender(rows.map((r, i) => (
           <li
             key={r.id}
             className="flex justify-between text-xs p-2 rounded-lg bg-[#111118] border border-[#2a2a3a]"
           >
             <span>
-              #{i + 1} {r.name}{' '}
-              <span className="text-gray-500">{r.domain}</span>
+              #{xaRender(i + 1)} {xaRender(r.name)}{xaRender(' ')}
+              <span className="text-gray-500">{xaRender(r.domain)}</span>
             </span>
-            <span className="font-mono text-emerald-400">{(r.confidence * 100).toFixed(0)}%</span>
+            <span className="font-mono text-emerald-400">{xaRender((r.confidence * 100).toFixed(0))}%</span>
           </li>
-        ))}
+        )))}
       </ul>
     </div>
   )

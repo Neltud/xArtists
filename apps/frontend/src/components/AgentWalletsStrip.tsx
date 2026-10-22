@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * LIA + GrokyversX — protocol agents (read-only links, never Connect).
  */
@@ -11,7 +12,7 @@ function short(a: string) {
 export default function AgentWalletsStrip() {
   return (
     <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] px-4 py-3 space-y-2">
-      <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Agents on-chain</p>
+      <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">{xaRender("Agents on-chain")}</p>
       <div className="grid sm:grid-cols-2 gap-2 text-[12px]">
         <a
           href={LINKS.liaExplorer}
@@ -20,10 +21,10 @@ export default function AgentWalletsStrip() {
           className="flex items-center justify-between rounded-xl border border-violet-500/20 bg-violet-500/[0.06] px-3 py-2 hover:border-violet-400/40 transition-colors"
         >
           <span>
-            <span className="font-semibold text-violet-200">LIA</span>
-            <span className="text-zinc-500 ml-2">ops · board</span>
+            <span className="font-semibold text-violet-200">{xaRender("LIA")}</span>
+            <span className="text-zinc-500 ml-2">{xaRender("ops · board")}</span>
           </span>
-          <span className="mono text-zinc-400">{short(LIA_WALLET)}</span>
+          <span className="mono text-zinc-400">{xaRender(short(LIA_WALLET))}</span>
         </a>
         <a
           href={LINKS.grokyversxExplorer}
@@ -32,15 +33,14 @@ export default function AgentWalletsStrip() {
           className="flex items-center justify-between rounded-xl border border-cyan-500/20 bg-cyan-500/[0.06] px-3 py-2 hover:border-cyan-400/40 transition-colors"
         >
           <span>
-            <span className="font-semibold text-cyan-200">{GROKYVERSX.name}</span>
-            <span className="text-zinc-500 ml-2">trader</span>
+            <span className="font-semibold text-cyan-200">{xaRender(GROKYVERSX.name)}</span>
+            <span className="text-zinc-500 ml-2">{xaRender("trader")}</span>
           </span>
-          <span className="mono text-zinc-400">{short(GROK_WALLET)}</span>
+          <span className="mono text-zinc-400">{xaRender(short(GROK_WALLET))}</span>
         </a>
       </div>
       <p className="text-[11px] text-zinc-600">
-        Adresses protocole — pas le bouton Connect utilisateur.
-      </p>
+        {xaRender("Adresses protocole — pas le bouton Connect utilisateur. ")}</p>
     </div>
   )
 }

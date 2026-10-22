@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Liste déroulante villes + annuaire musées 3D (bas de carte / tours).
  * Clic → salle 3D via travelBridge.
@@ -48,12 +49,11 @@ export default function CityMuseumDirectory({
     <div className="space-y-3 rounded-2xl border border-white/10 bg-zinc-950/70 p-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-rose-300/80">Musées 3D</p>
-          <h3 className="text-sm font-semibold text-white mt-0.5">Annuaire · visite surréaliste</h3>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-rose-300/80">{xaRender("Musées 3D")}</p>
+          <h3 className="text-sm font-semibold text-white mt-0.5">{xaRender("Annuaire · visite surréaliste")}</h3>
         </div>
         <label className="flex flex-col gap-1 text-[11px] text-zinc-500">
-          Ville
-          <select
+          {xaRender("Ville ")}<select
             value={cityFilter}
             onChange={e => {
               const v = e.target.value
@@ -62,43 +62,42 @@ export default function CityMuseumDirectory({
             }}
             className="rounded-lg border border-white/15 bg-black/50 px-3 py-1.5 text-sm text-zinc-100 min-w-[10rem]"
           >
-            <option value="">Toutes les villes</option>
-            {cities.map(c => (
+            <option value="">{xaRender("Toutes les villes")}</option>
+            {xaRender(cities.map(c => (
               <option key={c} value={c}>
-                {c}
+                {xaRender(c)}
               </option>
-            ))}
+            )))}
           </select>
         </label>
       </div>
 
       <div className="max-h-48 overflow-y-auto space-y-3 pr-1">
-        {filtered.map(([city, museums]) => (
+        {xaRender(filtered.map(([city, museums]) => (
           <div key={city}>
             <p className="text-[11px] font-medium text-zinc-400 mb-1.5 sticky top-0 bg-zinc-950/90 py-0.5">
-              {city}
-              <span className="text-zinc-600 font-normal"> · {museums.length}</span>
+              {xaRender(city)}
+              <span className="text-zinc-600 font-normal"> · {xaRender(museums.length)}</span>
             </p>
             <div className="flex flex-wrap gap-1.5">
-              {museums.map(m => (
+              {xaRender(museums.map(m => (
                 <button
                   key={m.id}
                   type="button"
                   onClick={() => go(m.id, m.city, m.name)}
                   className="rounded-lg border border-white/12 bg-gradient-to-br from-violet-500/10 to-rose-500/5 hover:border-rose-400/40 hover:from-violet-500/20 px-2.5 py-1.5 text-left transition-all"
                 >
-                  <span className="block text-[12px] text-white font-medium leading-tight">{m.name}</span>
-                  <span className="block text-[10px] text-zinc-500 mt-0.5">{m.tagline}</span>
+                  <span className="block text-[12px] text-white font-medium leading-tight">{xaRender(m.name)}</span>
+                  <span className="block text-[10px] text-zinc-500 mt-0.5">{xaRender(m.tagline)}</span>
                 </button>
-              ))}
+              )))}
             </div>
           </div>
-        ))}
+        )))}
       </div>
 
       <p className="text-[10px] text-zinc-600">
-        {VIRTUAL_MUSEUMS.length} salles 3D · clic = entrée WebGL / CSS 3D
-      </p>
+        {xaRender(VIRTUAL_MUSEUMS.length)} {xaRender(" salles 3D · clic = entrée WebGL / CSS 3D ")}</p>
     </div>
   )
 }

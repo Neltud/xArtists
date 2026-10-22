@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Console LIA autonome — wallet dédié, multi-IA (Gemini/Grok), pipelines GitHub.
  * Objectifs paper : PHYGITAL_REEVAL, slippage, santé DeFi.
@@ -101,14 +102,12 @@ export default function LiaAgentControl({ compact = false }: Props) {
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-300/90 font-tech">
-            LIA · Wallet autonome
-          </p>
-          <h3 className="text-base font-semibold text-white">Orchestration Multi-IA</h3>
-          {!compact && (
+            {xaRender("LIA · Wallet autonome ")}</p>
+          <h3 className="text-base font-semibold text-white">{xaRender("Orchestration Multi-IA")}</h3>
+          {xaRender(!compact && (
             <p className="text-[12px] text-zinc-400 mt-1 leading-relaxed">
-              Vellum + Gemini (contexte) + Grok (live data) · objectifs paper réalistes
-            </p>
-          )}
+              {xaRender("Vellum + Gemini (contexte) + Grok (live data) · objectifs paper réalistes ")}</p>
+          ))}
         </div>
         <button
           type="button"
@@ -116,44 +115,44 @@ export default function LiaAgentControl({ compact = false }: Props) {
           onClick={() => void refresh()}
           disabled={loading}
         >
-          {loading ? '…' : 'Rafraîchir'}
+          {xaRender(loading ? '…' : 'Rafraîchir')}
         </button>
       </div>
 
       <div className="rounded-xl border border-white/10 bg-black/40 p-3 space-y-2">
-        <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Wallet agent</p>
+        <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{xaRender("Wallet agent")}</p>
         <a
           href={`https://explorer.multiversx.com/accounts/${LIA_WALLET}`}
           target="_blank"
           rel="noreferrer"
           className="mono text-[12px] text-cyan-200/90 hover:text-cyan-100 break-all"
         >
-          {shortAddr} ↗
+          {xaRender(shortAddr)} ↗
         </a>
         <div className="grid grid-cols-2 gap-2 mt-1">
           <div className="rounded-lg bg-white/5 px-2 py-1.5">
-            <p className="text-[9px] text-zinc-500">EGLD</p>
+            <p className="text-[9px] text-zinc-500">{xaRender("EGLD")}</p>
             <p className="text-sm font-semibold text-white tabular-nums">
-              {bal.egld == null ? '—' : bal.egld.toFixed(4)}
+              {xaRender(bal.egld == null ? '—' : bal.egld.toFixed(4))}
             </p>
           </div>
           <div className="rounded-lg bg-white/5 px-2 py-1.5">
-            <p className="text-[9px] text-zinc-500">$TRO</p>
+            <p className="text-[9px] text-zinc-500">{xaRender("$TRO")}</p>
             <p className="text-sm font-semibold text-white tabular-nums">
-              {bal.tro == null
+              {xaRender(bal.tro == null
                 ? '—'
-                : bal.tro.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                : bal.tro.toLocaleString(undefined, { maximumFractionDigits: 0 }))}
             </p>
           </div>
         </div>
       </div>
 
       <div className="rounded-xl border border-white/10 bg-black/40 p-3 space-y-2">
-        <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Flux signaux Multi-IA</p>
+        <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{xaRender("Flux signaux Multi-IA")}</p>
         <ul className="space-y-1.5 max-h-40 overflow-y-auto">
-          {signals.map((s, i) => (
+          {xaRender(signals.map((s, i) => (
             <li key={`${s.source}-${i}`} className="flex gap-2 text-[11px] leading-snug">
-              <span className="shrink-0 mono text-zinc-600">{s.ts}</span>
+              <span className="shrink-0 mono text-zinc-600">{xaRender(s.ts)}</span>
               <span
                 className={`shrink-0 font-semibold ${
                   s.source === 'Grok'
@@ -165,64 +164,59 @@ export default function LiaAgentControl({ compact = false }: Props) {
                         : 'text-zinc-400'
                 }`}
               >
-                {s.source}
+                {xaRender(s.source)}
               </span>
-              <span className="text-zinc-300">{s.text}</span>
+              <span className="text-zinc-300">{xaRender(s.text)}</span>
             </li>
-          ))}
-          {!signals.length && <li className="text-[11px] text-zinc-500">En attente de signaux…</li>}
+          )))}
+          {xaRender(!signals.length && <li className="text-[11px] text-zinc-500">{xaRender("En attente de signaux…")}</li>)}
         </ul>
       </div>
 
       <div className="rounded-xl border border-white/10 bg-black/40 p-3 space-y-1.5">
-        <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Pipelines & sync</p>
+        <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{xaRender("Pipelines & sync")}</p>
         <p className="text-[12px] text-zinc-300">
-          Vellum ·{' '}
+          {xaRender("Vellum ·")}{xaRender(' ')}
           <span className={vellum?.live ? 'text-emerald-300' : 'text-amber-200'}>
-            {vellum?.live ? 'LIVE' : 'paper / offline'}
+            {xaRender(vellum?.live ? 'LIVE' : 'paper / offline')}
           </span>
-          {vellum?.summary?.mode ? ` · ${vellum.summary.mode}` : ''}
+          {xaRender(vellum?.summary?.mode ? ` · ${vellum.summary.mode}` : '')}
         </p>
         <p className="text-[12px] text-zinc-300">
-          Hub LIA ·{' '}
+          {xaRender("Hub LIA ·")}{xaRender(' ')}
           <span className={hub ? 'text-emerald-300' : 'text-zinc-500'}>
-            {hub ? hub.strategy || hub.note || 'sync' : 'non joignable'}
+            {xaRender(hub ? hub.strategy || hub.note || 'sync' : 'non joignable')}
           </span>
         </p>
         <p className="text-[12px] text-zinc-300">
-          GitHub data · commits / news / catalog alimentent LIA (Actions)
-        </p>
-        {status?.mindset?.strategy && (
-          <p className="text-[11px] text-zinc-500 mono">strategy · {status.mindset.strategy}</p>
-        )}
+          {xaRender("GitHub data · commits / news / catalog alimentent LIA (Actions) ")}</p>
+        {xaRender(status?.mindset?.strategy && (
+          <p className="text-[11px] text-zinc-500 mono">{xaRender("strategy · ")}{xaRender(status.mindset.strategy)}</p>
+        ))}
       </div>
 
-      {!compact && (
+      {xaRender(!compact && (
         <div className="rounded-xl border border-violet-400/20 bg-violet-950/20 p-3 space-y-2">
           <p className="text-[10px] text-violet-300/90 uppercase tracking-wider font-tech">
-            Objectifs atteignables (paper)
-          </p>
+            {xaRender("Objectifs atteignables (paper) ")}</p>
           <ul className="text-[12px] text-zinc-300 space-y-1 list-disc list-inside">
             <li>
-              Réévaluation œuvres RWA — intent{' '}
+              {xaRender("Réévaluation œuvres RWA — intent")}{xaRender(' ')}
               <code className="text-[10px] text-violet-200">PHYGITAL_REEVAL</code>
             </li>
-            <li>Monitoring santé pools DeFi & slippage (lecture seule)</li>
-            <li>Signaux pack Pulse / Yield / Sentinel sans exécution auto</li>
+            <li>{xaRender("Monitoring santé pools DeFi & slippage (lecture seule)")}</li>
+            <li>{xaRender("Signaux pack Pulse / Yield / Sentinel sans exécution auto")}</li>
           </ul>
           <div className="flex flex-wrap gap-2 pt-1">
             <Link to="/lia" className="btn-secondary text-[11px] px-2 py-1">
-              Hub LIA
-            </Link>
+              {xaRender("Hub LIA ")}</Link>
             <Link to="/studio" className="btn-secondary text-[11px] px-2 py-1">
-              Studio Phygital
-            </Link>
+              {xaRender("Studio Phygital ")}</Link>
             <Link to="/command-center" className="btn-secondary text-[11px] px-2 py-1">
-              Command Center
-            </Link>
+              {xaRender("Command Center ")}</Link>
           </div>
         </div>
-      )}
+      ))}
     </div>
   )
 }

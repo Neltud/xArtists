@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -27,40 +28,37 @@ export default function NetworkLiveStrip() {
   return (
     <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] px-4 py-3 space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Mainnet probe</p>
+        <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">{xaRender("Mainnet probe")}</p>
         <span className={`text-[10px] ${snap.degraded ? 'text-amber-400/90' : 'text-zinc-600'}`}>
-          {status}
+          {xaRender(status)}
         </span>
       </div>
-      {snap.degraded && (
+      {xaRender(snap.degraded && (
         <p className="text-[11px] text-amber-200/80 leading-relaxed">
-          Probe partiel — un endpoint API n’a pas répondu. Soldes et contrats = last-known. Pas de
-          TX tant que /accounts est KO.
-        </p>
-      )}
+          {xaRender("Probe partiel — un endpoint API n’a pas répondu. Soldes et contrats = last-known. Pas de TX tant que /accounts est KO. ")}</p>
+      ))}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[12px]">
         <div>
-          <p className="text-zinc-600">Epoch</p>
+          <p className="text-zinc-600">{xaRender("Epoch")}</p>
           <p className="text-zinc-200">
-            {snap.epoch} · J+{supernovaAgeEpochs(snap.epoch)}
+            {xaRender(snap.epoch)} · J+{xaRender(supernovaAgeEpochs(snap.epoch))}
           </p>
         </div>
         <div>
-          <p className="text-zinc-600">EGLD</p>
+          <p className="text-zinc-600">{xaRender("EGLD")}</p>
           <p className="text-zinc-200">
-            ${snap.egldPrice.toFixed(2)}
-            {!snap.api.economics ? <span className="text-zinc-600"> *</span> : null}
+            ${xaRender(snap.egldPrice.toFixed(2))}
+            {xaRender(!snap.api.economics ? <span className="text-zinc-600"> *</span> : null)}
           </p>
         </div>
         <div>
-          <p className="text-zinc-600">LIA Ops</p>
+          <p className="text-zinc-600">{xaRender("LIA Ops")}</p>
           <p className={funded ? 'text-cyan-300' : 'text-amber-400'}>
-            {snap.liaOps.balanceEgld.toFixed(3)} EGLD
-            {snap.liaOps.stale ? ' *' : ''}
+            {xaRender(snap.liaOps.balanceEgld.toFixed(3))} {xaRender(" EGLD ")}{xaRender(snap.liaOps.stale ? ' *' : '')}
           </p>
         </div>
         <div>
-          <p className="text-zinc-600">Market SC</p>
+          <p className="text-zinc-600">{xaRender("Market SC")}</p>
           <p
             className={
               snap.scStale
@@ -70,13 +68,12 @@ export default function NetworkLiveStrip() {
                   : 'text-emerald-400/90'
             }
           >
-            {snap.scStale ? 'unread' : snap.sc.marketplace.codeEmpty ? 'empty' : 'ouvert'}
+            {xaRender(snap.scStale ? 'unread' : snap.sc.marketplace.codeEmpty ? 'empty' : 'ouvert')}
           </p>
         </div>
       </div>
       <Link to="/demo" className="text-[11px] text-zinc-500 hover:text-white">
-        Tour + gates →
-      </Link>
+        {xaRender("Tour + gates → ")}</Link>
     </div>
   )
 }

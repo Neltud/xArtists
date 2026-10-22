@@ -9,7 +9,7 @@ export type TravelDestination = {
   country?: string
   focus?: string
   space?: 'catzligue' | 'mydee' | 'world_tour' | 'vr_core'
-  source?: 'tours' | 'world_tour' | 'map'
+  source?: 'tours' | 'world_tour' | 'map' | 'directory'
   /** id musée résolu (louvre, rijks…) */
   museumId?: string
 }

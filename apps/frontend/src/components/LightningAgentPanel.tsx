@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 
 type LightningDoc = {
@@ -53,31 +54,29 @@ export default function LightningAgentPanel({ compact = false }: { compact?: boo
     >
       <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-orange-400/90">Bitcoin Lightning · MCP</p>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-orange-400/90">{xaRender("Bitcoin Lightning · MCP")}</p>
           <h3 className="text-lg font-black text-white">
-            {doc?.name || 'Lightning Agent Wallet'}
+            {xaRender(doc?.name || 'Lightning Agent Wallet')}
           </h3>
           <p className="text-xs text-zinc-400 mt-1 max-w-xl">
-            Donne à un agent IA (LIA / Claude / Cursor) un wallet Lightning pour micropaiements L402 —
-            via <code className="text-orange-200/90">lightning-wallet-mcp</code>. Ce n’est pas MultiversX.
-          </p>
+            {xaRender("Donne à un agent IA (LIA / Claude / Cursor) un wallet Lightning pour micropaiements L402 — via ")}<code className="text-orange-200/90">lightning-wallet-mcp</code>{xaRender(". Ce n’est pas MultiversX. ")}</p>
         </div>
         <span className="text-[10px] uppercase px-2 py-1 rounded-full border border-orange-500/40 text-orange-200 bg-orange-500/10">
-          {(doc?.status || 'optional_ops_mcp').replace(/_/g, ' ')}
+          {xaRender((doc?.status || 'optional_ops_mcp').replace(/_/g, ' '))}
         </span>
       </div>
 
       <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2 font-mono text-[11px] text-orange-100/90 mb-3 overflow-x-auto">
-        $ {doc?.install?.mcp || 'npx -y lightning-wallet-mcp'}
+        $ {xaRender(doc?.install?.mcp || 'npx -y lightning-wallet-mcp')}
       </div>
 
-      {!compact && (
+      {xaRender(!compact && (
         <ul className="text-xs text-zinc-400 space-y-1 mb-3 list-disc pl-4">
-          {(doc?.capabilities || ['balance', 'L402 pay', 'register_operator']).map(cap => (
-            <li key={cap}>{cap}</li>
-          ))}
+          {xaRender((doc?.capabilities || ['balance', 'L402 pay', 'register_operator']).map(cap => (
+            <li key={cap}>{xaRender(cap)}</li>
+          )))}
         </ul>
-      )}
+      ))}
 
       <div className="flex flex-wrap gap-2 text-[11px]">
         <a
@@ -86,23 +85,20 @@ export default function LightningAgentPanel({ compact = false }: { compact?: boo
           rel="noreferrer"
           className="btn-primary text-xs py-2 px-3"
         >
-          Docs Lightning Faucet ↗
-        </a>
+          {xaRender("Docs Lightning Faucet ↗ ")}</a>
         <a
           href="https://www.npmjs.com/package/lightning-wallet-mcp"
           target="_blank"
           rel="noreferrer"
           className="btn-secondary text-xs py-2 px-3"
         >
-          npm package ↗
-        </a>
+          {xaRender("npm package ↗ ")}</a>
       </div>
 
       <p className="text-[10px] text-zinc-600 mt-3 border-t border-white/5 pt-2">
-        Policy xArtists : front = doc/status only · Vellum ops peut brancher le MCP · flag{' '}
-        <code className="text-zinc-500">{doc?.xartists_policy?.live_flag || 'LIGHTNING_AGENT_LIVE'}</code>{' '}
-        · trésorerie Lightning séparée du wallet EGLD LIA.
-      </p>
+        {xaRender("Policy xArtists : front = doc/status only · Vellum ops peut brancher le MCP · flag")}{xaRender(' ')}
+        <code className="text-zinc-500">{doc?.xartists_policy?.live_flag || 'LIGHTNING_AGENT_LIVE'}</code>{xaRender(' ')}
+        {xaRender("· trésorerie Lightning séparée du wallet EGLD LIA. ")}</p>
     </div>
   )
 }

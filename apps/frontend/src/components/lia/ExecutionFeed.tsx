@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /** Poll execution telemetry — no websocket required on static Pages. */
 import { useEffect, useState } from 'react'
 import { asText } from '../../lib/safeRender'
@@ -52,48 +53,47 @@ export default function ExecutionFeed() {
   return (
     <section className="rounded-xl border border-orange-500/20 bg-orange-500/[0.04] p-3 space-y-3">
       <p className="text-[10px] uppercase tracking-wider text-orange-200/90 font-semibold">
-        Live execution feed
-      </p>
+        {xaRender("Live execution feed ")}</p>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
         <div className="rounded-lg bg-black/30 p-2">
-          <p className="text-zinc-500 text-[9px] uppercase">Halt</p>
+          <p className="text-zinc-500 text-[9px] uppercase">{xaRender("Halt")}</p>
           <p className={risk?.halt ? 'text-rose-400' : 'text-emerald-400'}>
-            {risk?.halt ? 'LOCKED' : 'OPEN'}
+            {xaRender(risk?.halt ? 'LOCKED' : 'OPEN')}
           </p>
         </div>
         <div className="rounded-lg bg-black/30 p-2">
-          <p className="text-zinc-500 text-[9px] uppercase">Trades today</p>
-          <p className="tabular-nums text-white">{asText(risk?.trades_today)}</p>
+          <p className="text-zinc-500 text-[9px] uppercase">{xaRender("Trades today")}</p>
+          <p className="tabular-nums text-white">{xaRender(asText(risk?.trades_today))}</p>
         </div>
         <div className="rounded-lg bg-black/30 p-2">
-          <p className="text-zinc-500 text-[9px] uppercase">Daily loss $</p>
-          <p className="tabular-nums text-white">{asText(risk?.daily_loss_usd)}</p>
+          <p className="text-zinc-500 text-[9px] uppercase">{xaRender("Daily loss $")}</p>
+          <p className="tabular-nums text-white">{xaRender(asText(risk?.daily_loss_usd))}</p>
         </div>
         <div className="rounded-lg bg-black/30 p-2">
-          <p className="text-zinc-500 text-[9px] uppercase">Reason</p>
-          <p className="truncate text-zinc-300">{asText(risk?.halt_reason || '—')}</p>
+          <p className="text-zinc-500 text-[9px] uppercase">{xaRender("Reason")}</p>
+          <p className="truncate text-zinc-300">{xaRender(asText(risk?.halt_reason || '—'))}</p>
         </div>
       </div>
       <ul className="max-h-48 overflow-y-auto space-y-1 text-[10px] font-mono">
-        {items.slice(0, 25).map((it, i) => (
+        {xaRender(items.slice(0, 25).map((it, i) => (
           <li key={i} className="border-t border-white/5 pt-1 text-zinc-400">
-            <span className="text-zinc-600">{asText(it.ts)?.slice(11, 19)}</span>{' '}
-            <span className="text-orange-300">{asText(it.event)}</span>{' '}
-            {asText(it.label || it.strategy)}{' '}
-            {it.tx_hash && (
+            <span className="text-zinc-600">{xaRender(asText(it.ts)?.slice(11, 19))}</span>{xaRender(' ')}
+            <span className="text-orange-300">{xaRender(asText(it.event))}</span>{xaRender(' ')}
+            {xaRender(asText(it.label || it.strategy))}{xaRender(' ')}
+            {xaRender(it.tx_hash && (
               <a
                 className="text-cyan-400 underline"
                 href={`https://explorer.multiversx.com/transactions/${it.tx_hash}`}
                 target="_blank"
                 rel="noreferrer"
               >
-                {it.tx_hash.slice(0, 8)}…
+                {xaRender(it.tx_hash.slice(0, 8))}…
               </a>
-            )}
-            {it.message ? ` · ${asText(it.message)}` : ''}
+            ))}
+            {xaRender(it.message ? ` · ${asText(it.message)}` : '')}
           </li>
-        ))}
-        {!items.length && <li className="text-zinc-600">No execution events yet</li>}
+        )))}
+        {xaRender(!items.length && <li className="text-zinc-600">{xaRender("No execution events yet")}</li>)}
       </ul>
     </section>
   )

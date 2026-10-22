@@ -1,4 +1,5 @@
-/** Packs Agents — Pulse / Yield / Sentinel — soul-aligned UI + i18n. */
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
+/** Packs Agents — Pulse / Yield / Sentinel + cockpit signaux LIA. */
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
@@ -6,129 +7,112 @@ import PackOpenTheater from '../components/PackOpenTheater'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 import { PACK_COLLECTIONS } from '../config/packNftMetadata'
-import { useI18n } from '../i18n/I18nContext'
 
 const PACKS = AGENT_PACKS
 
-const NAME_KEY: Record<PackId, string> = {
-  pulse: 'packs.pulse.name',
-  yield: 'packs.yield.name',
-  sentinel: 'packs.sentinel.name',
-}
-const TAG_KEY: Record<PackId, string> = {
-  pulse: 'packs.pulse.tagline',
-  yield: 'packs.yield.tagline',
-  sentinel: 'packs.sentinel.tagline',
-}
-const EUR: Record<PackId, number> = { pulse: 110, yield: 75, sentinel: 50 }
-
-function limitsFor(id: PackId, lang: string): string[] {
-  if (lang === 'fr') {
-    if (id === 'pulse') return ['Pas un fonds · pas d’APY promis', 'Signature xPortal obligatoire']
-    if (id === 'yield') return ['Pas TCA / LIA full', 'Hub limité · focus DeFi', 'Pas un fonds · pas d’APY promis']
-    return ['Salle Sentinel uniquement', 'Alertes sparses', 'Pas TCA / trading HF']
-  }
-  if (id === 'pulse') return ['Not a fund · no promised APY', 'xPortal signature required']
-  if (id === 'yield') return ['No full TCA / LIA', 'Limited hub · DeFi focus', 'Not a fund · no promised APY']
-  return ['Sentinel room only', 'Sparse alerts', 'No TCA / HF trading']
+/** Limites honnêtes par tier (pas de champ notIncluded sur le type). */
+function limitsFor(id: PackId): string[] {
+  if (id === 'pulse') return ['Pas un fonds · pas d’APY promis', 'Signature xPortal obligatoire']
+  if (id === 'yield')
+    return ['Pas TCA / LIA full', 'Hub limité · focus DeFi', 'Pas un fonds · pas d’APY promis']
+  return ['Salle Sentinel uniquement', 'Alertes sparses', 'Pas TCA / trading HF']
 }
 
 export default function Agents() {
-  const { t, lang } = useI18n()
   const [selected, setSelected] = useState<PackId | null>(null)
   const [theater, setTheater] = useState<PackId | null>(null)
   const active = PACKS.find(p => p && p.id === selected) || null
   const theaterPack = PACKS.find(p => p && p.id === theater) || null
 
   return (
-    <div className="xa-page animate-fade-in space-y-8 pb-20 max-w-3xl mx-auto">
-      <header className="xa-hero" style={{ paddingTop: '1.5rem', maxWidth: '100%' }}>
-        <p className="xa-hero__kicker">{t('packs.title')}</p>
-        <h1 className="xa-hero__title">Pulse · Yield · Sentinel</h1>
-        <p className="xa-hero__lead">{t('packs.lead')}</p>
+    <div className="animate-fade-in space-y-6 pb-20 max-w-3xl mx-auto">
+      <header className="space-y-2">
+        <p className="section-label">{xaRender("Packs")}</p>
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <h1 className="section-title display">{xaRender("Pulse · Yield · Sentinel")}</h1>
+        </div>
+        <p className="section-lead">
+          {xaRender("Entitlements d&apos;accès (signaux / salles) — pas un fonds, pas d&apos;APY promis. Prix officiels on-chain : 10 / 5 / 2.5 EGLD. ")}</p>
       </header>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        {PACKS.map(p => {
+        {xaRender(PACKS.map(p => {
           const col = PACK_COLLECTIONS[p.id]
           return (
             <button
               key={p.id}
               type="button"
               onClick={() => setSelected(p.id)}
-              className={`xa-card text-left w-full ${
-                selected === p.id ? 'ring-1 ring-white/20' : ''
-              }`}
+              className={`card text-left card-play transition active:scale-[0.98] hover:border-violet-400/30 border ${
+                p.borderClass || 'border-white/10'
+              } ${selected === p.id ? 'ring-1 ring-violet-400/40' : ''}`}
             >
               <div className="flex items-center justify-between gap-1">
-                <p className="text-[15px] font-semibold text-[var(--xa-text)]">{t(NAME_KEY[p.id])}</p>
-                <span className="text-[9px] font-bold uppercase tracking-wide rounded-full px-1.5 py-0.5 border border-[var(--xa-border)] text-[var(--xa-text-muted)]">
-                  {p.tierLabel}
+                <p className="text-[15px] font-semibold text-white">
+                  {xaRender(p.icon)} {xaRender(p.name)}
+                </p>
+                <span
+                  className={`text-[9px] font-bold uppercase tracking-wide rounded-full px-1.5 py-0.5 border ${
+                    p.tier === 'full'
+                      ? 'border-emerald-400/50 text-emerald-300 bg-emerald-500/15'
+                      : 'border-white/15 text-zinc-400 bg-white/5'
+                  }`}
+                >
+                  {xaRender(p.tierLabel)}
                 </span>
               </div>
-              <p className="text-[10px] mono text-[var(--xa-text-muted)] mt-1">{col?.ticker}</p>
-              <p className="text-[12px] text-[var(--xa-text-secondary)] mt-1.5 leading-snug">
-                {t(TAG_KEY[p.id])}
-              </p>
-              <p className="mt-3 text-xl text-[var(--xa-text)] tabular-nums">
-                {EUR[p.id]} €
-                <span className="text-xs text-[var(--xa-text-muted)] ml-2">
-                  · {p.priceEgld?.list ?? 10} EGLD
-                </span>
-              </p>
-              <p className="text-[10px] text-[var(--xa-text-muted)] mt-1">
-                ×{p.signalIntensity} · {p.features.actionsPerWeek}
+              <p className="text-[10px] mono text-cyan-300/80 mt-1">{xaRender(col?.ticker)}</p>
+              <p className="text-[12px] text-zinc-400 mt-1.5 leading-snug">{xaRender(p.tagline)}</p>
+              <p className="mt-3 text-xl text-white tabular-nums">{xaRender(p.priceEgld?.list ?? 10)} {xaRender(" EGLD")}</p>
+              <p className="text-[10px] text-zinc-500 mt-1">
+                {xaRender("Signaux ×")}{xaRender(p.signalIntensity)} · {xaRender(p.features.actionsPerWeek)}
               </p>
             </button>
           )
-        })}
+        }))}
       </div>
 
-      {active && (
-        <section className="xa-card space-y-4">
+      {xaRender(active && (
+        <section className={`card space-y-4 border ${active.borderClass}`}>
           <div>
-            <h2 className="text-sm font-semibold text-[var(--xa-text)]">
-              {t(NAME_KEY[active.id])}{' '}
-              <span className="text-[10px] text-[var(--xa-text-muted)] font-normal">{active.tierLabel}</span>
+            <h2 className="text-sm font-semibold text-white">
+              {xaRender(active.icon)} {xaRender(active.name)}{xaRender(' ')}
+              <span className="text-[10px] text-zinc-400 font-normal">{xaRender(active.tierLabel)}</span>
             </h2>
-            <p className="text-[11px] mono text-[var(--xa-text-muted)] mt-0.5">
-              {PACK_COLLECTIONS[active.id]?.ticker}
+            <p className="text-[11px] mono text-cyan-300/80 mt-0.5">
+              {xaRender(PACK_COLLECTIONS[active.id]?.ticker)}
             </p>
-            <p className="text-[13px] text-[var(--xa-text-secondary)] mt-1">{t(TAG_KEY[active.id])}</p>
+            <p className="text-[13px] text-zinc-400 mt-1">{xaRender(active.activity)}</p>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-3 text-[12px]">
             <div>
-              <p className="text-[10px] uppercase text-[var(--xa-text-muted)] mb-1">
-                {lang === 'fr' ? 'Inclus' : 'Included'}
-              </p>
-              <ul className="space-y-1 text-[var(--xa-text-secondary)]">
-                {active.entitlements.map(e => (
-                  <li key={e}>✓ {e}</li>
-                ))}
+              <p className="text-[10px] uppercase text-zinc-500 mb-1">{xaRender("Inclus")}</p>
+              <ul className="space-y-1 text-zinc-300">
+                {xaRender(active.entitlements.map(e => (
+                  <li key={e}>✓ {xaRender(e)}</li>
+                )))}
               </ul>
             </div>
             <div>
-              <p className="text-[10px] uppercase text-[var(--xa-text-muted)] mb-1">
-                {lang === 'fr' ? 'Limites' : 'Limits'}
-              </p>
-              <ul className="space-y-1 text-[var(--xa-text-muted)]">
-                {limitsFor(active.id, lang).map(e => (
-                  <li key={e}>— {e}</li>
-                ))}
+              <p className="text-[10px] uppercase text-zinc-500 mb-1">{xaRender("Limites")}</p>
+              <ul className="space-y-1 text-zinc-500">
+                {xaRender(limitsFor(active.id).map(e => (
+                  <li key={e}>— {xaRender(e)}</li>
+                )))}
               </ul>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-1.5">
-            {active.strategies.map(s => (
+            {xaRender(active.strategies.map(s => (
               <span
                 key={s}
-                className="rounded-full border border-[var(--xa-border)] bg-black/40 px-2 py-0.5 text-[10px] mono text-[var(--xa-text-muted)]"
+                className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] mono text-zinc-400"
               >
-                {s}
+                {xaRender(s)}
               </span>
-            ))}
+            )))}
           </div>
 
           <Pack3DCockpit packId={active.id} showIntents={false} />
@@ -137,29 +121,28 @@ export default function Agents() {
             onPaperDone={id => setTheater(id)}
             onClear={() => setSelected(null)}
           />
-          <Link to="/my-packs" className="text-[12px] text-[var(--xa-accent)] underline">
-            {lang === 'fr' ? 'Ouvrir mes salles →' : 'Open my rooms →'}
-          </Link>
+          <Link to="/my-packs" className="text-[12px] text-cyan-400 underline">
+            {xaRender("Ouvrir mes salles → ")}</Link>
         </section>
-      )}
+      ))}
 
-      {theaterPack && <PackOpenTheater pack={theaterPack} open onClose={() => setTheater(null)} />}
+      {xaRender(theaterPack && <PackOpenTheater pack={theaterPack} open onClose={() => setTheater(null)} />)}
 
-      <p className="xa-disclaimer">{t('packs.disclaimer')}</p>
+      <div className="rounded-xl border border-white/10 bg-white/[0.02] px-3 py-3 text-[11px] text-zinc-500 space-y-1">
+        <p className="font-medium text-zinc-400">{xaRender("Rappel flux")}</p>
+        <p>{xaRender("1. Choisir pack → 2. Wallet erd1 → 3. Payer ou aperçu appareil → 4. Salle / CC selon tier")}</p>
+        <p>{xaRender("Pulse débloque hub CC + TCA + LIA full. Yield / Sentinel = salle dédiée seulement.")}</p>
+      </div>
 
       <div className="flex flex-wrap gap-3 text-[12px]">
-        <Link to="/sale" className="text-[var(--xa-text-secondary)] hover:text-[var(--xa-text)]">
-          {t('sale.title')} →
-        </Link>
-        <Link to="/command-center" className="text-[var(--xa-text-secondary)] hover:text-[var(--xa-text)]">
-          {t('cc.title')} →
-        </Link>
-        <Link to="/tca" className="text-[var(--xa-text-secondary)] hover:text-[var(--xa-text)]">
-          TCA →
-        </Link>
-        <Link to="/lia" className="text-[var(--xa-text-secondary)] hover:text-[var(--xa-text)]">
-          {t('lia.title')} →
-        </Link>
+        <Link to="/market?tab=digital" className="text-cyan-400 hover:underline">
+          {xaRender("Marketplace NFT & Packs → ")}</Link>
+        <Link to="/command-center" className="text-zinc-400 hover:underline">
+          {xaRender("Command Center → ")}</Link>
+        <Link to="/tca" className="text-zinc-400 hover:underline">
+          {xaRender("TCA (Pulse) → ")}</Link>
+        <Link to="/lia" className="text-zinc-400 hover:underline">
+          {xaRender("LIA Hub → ")}</Link>
       </div>
     </div>
   )

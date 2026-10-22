@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import React from 'react';
 
 interface DynamicShadowCardProps {
@@ -31,7 +32,7 @@ export const DynamicShadowCard: React.FC<DynamicShadowCardProps> = ({
         ${className}
       `}
     >
-      {children}
+      {xaRender(children)}
     </div>
   );
 };

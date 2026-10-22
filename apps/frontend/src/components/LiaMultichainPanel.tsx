@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 import { LIA_MULTICHAIN } from '../config/multichain'
 
@@ -93,30 +94,28 @@ export default function LiaMultichainPanel() {
 
   return (
     <div className="card border-indigo-500/25 bg-indigo-500/5 mb-6">
-      <h2 className="text-lg font-bold mb-1">🌐 LIA multi-chain (ops)</h2>
+      <h2 className="text-lg font-bold mb-1">{xaRender("🌐 LIA multi-chain (ops)")}</h2>
       <p className="text-xs text-gray-500 mb-4">
-        Trésorerie protocole — <strong>pas</strong> ton Connect. EGLD live · BTC/SOL adresses receive.
-      </p>
+        {xaRender("Trésorerie protocole — ")}<strong>{xaRender("pas")}</strong> {xaRender(" ton Connect. EGLD live · BTC/SOL adresses receive. ")}</p>
       <div className="space-y-3">
-        {(rows.length ? rows : []).map(c => (
+        {xaRender((rows.length ? rows : []).map(c => (
           <div
             key={c.symbol}
             className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-[#111118] border border-[#2a2a3a]"
           >
             <div className="min-w-0">
-              <p className="font-bold text-sm">{c.symbol}</p>
-              <p className="mono text-[10px] text-gray-500 break-all">{c.address}</p>
-              {c.note && <p className="text-[10px] text-gray-600">{c.note}</p>}
+              <p className="font-bold text-sm">{xaRender(c.symbol)}</p>
+              <p className="mono text-[10px] text-gray-500 break-all">{xaRender(c.address)}</p>
+              {xaRender(c.note && <p className="text-[10px] text-gray-600">{xaRender(c.note)}</p>)}
             </div>
             <div className="text-right shrink-0">
-              <p className="font-semibold text-indigo-300 text-sm">{c.balanceLabel}</p>
+              <p className="font-semibold text-indigo-300 text-sm">{xaRender(c.balanceLabel)}</p>
               <a href={c.explorer} target="_blank" rel="noreferrer" className="text-[10px] text-purple-400">
-                Explorer ↗
-              </a>
+                {xaRender("Explorer ↗ ")}</a>
             </div>
           </div>
-        ))}
-        {!rows.length && <p className="text-sm text-gray-500">Chargement multi-chain… ({egld})</p>}
+        )))}
+        {xaRender(!rows.length && <p className="text-sm text-gray-500">{xaRender("Chargement multi-chain… (")}{xaRender(egld)})</p>)}
       </div>
     </div>
   )

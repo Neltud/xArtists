@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 import { TUDURI_WORKS, ATELIER_EXPLORER } from '../config/tuduriAtelier'
@@ -51,14 +52,14 @@ export default function ArtAtelierBackdrop() {
         style={{ background: 'var(--brain-tint, transparent)' }}
       />
       <div className="atelier-strip">
-        {strip.map((w, i) => (
+        {xaRender(strip.map((w, i) => (
           <div
             key={`${theme.id}-${w.id}-${i}`}
             className={`atelier-panel atelier-panel--${i}`}
             style={{ backgroundImage: `url(${w.thumb})` }}
             title={`${w.name} · ${w.year}`}
           />
-        ))}
+        )))}
       </div>
       <div
         className="atelier-orb atelier-orb--a"
@@ -79,7 +80,7 @@ export default function ArtAtelierBackdrop() {
         className="atelier-credit pointer-events-auto"
         title={`Thème ${theme.label} · cerveau ${brain.mood}`}
       >
-        Atelier Tuduri · {theme.label}
+        {xaRender("Atelier Tuduri · ")}{xaRender(theme.label)}
       </a>
     </div>
   )

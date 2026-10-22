@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 import { useEffect } from 'react'
 import { useRiskStore, bindRiskFromStatus } from '../../store/riskStore'
 
@@ -76,17 +77,17 @@ export default function GuardianStatusBar() {
       aria-live={risk.status === 'KILLED' || risk.status === 'TRIPPED' ? 'assertive' : 'polite'}
     >
       <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-x-3 gap-y-1">
-        <span className="font-bold tracking-wide">{label(risk.status)}</span>
-        <span className="opacity-80 mono truncate max-w-[14rem] sm:max-w-xs">{risk.reason}</span>
-        {risk.mode && <span className="opacity-70">mode {risk.mode}</span>}
-        <span className="badge-gray text-[10px]">{risk.liveTrading ? 'LIVE' : 'PAPER'}</span>
-        {risk.currentDrawdown != null && (
-          <span className="opacity-70 mono">DD {(risk.currentDrawdown * 100).toFixed(1)}%</span>
-        )}
-        {risk.spiralScore != null && (
-          <span className="opacity-70 mono">S {risk.spiralScore.toFixed(3)}</span>
-        )}
-        {risk.alertMessage && <span className="font-semibold opacity-95">{risk.alertMessage}</span>}
+        <span className="font-bold tracking-wide">{xaRender(label(risk.status))}</span>
+        <span className="opacity-80 mono truncate max-w-[14rem] sm:max-w-xs">{xaRender(risk.reason)}</span>
+        {xaRender(risk.mode && <span className="opacity-70">{xaRender("mode ")}{xaRender(risk.mode)}</span>)}
+        <span className="badge-gray text-[10px]">{xaRender(risk.liveTrading ? 'LIVE' : 'PAPER')}</span>
+        {xaRender(risk.currentDrawdown != null && (
+          <span className="opacity-70 mono">DD {xaRender((risk.currentDrawdown * 100).toFixed(1))}%</span>
+        ))}
+        {xaRender(risk.spiralScore != null && (
+          <span className="opacity-70 mono">S {xaRender(risk.spiralScore.toFixed(3))}</span>
+        ))}
+        {xaRender(risk.alertMessage && <span className="font-semibold opacity-95">{xaRender(risk.alertMessage)}</span>)}
       </div>
     </div>
   )

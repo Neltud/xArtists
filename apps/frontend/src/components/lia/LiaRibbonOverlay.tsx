@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../../i18n/phraseRuntime'
 /**
  * Blue Ribbon — ruban néon cyan dont l’écartement suit la conviction LIA (spread vol).
  */
@@ -18,6 +19,8 @@ export default function LiaRibbonOverlay({
   className = '',
   height = 56,
 }: Props) {
+  xaUsePhraseLocale()
+
   const ref = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -98,7 +101,7 @@ export default function LiaRibbonOverlay({
       ref={ref}
       className={`w-full rounded-xl border border-cyan-500/25 bg-black/50 ${className}`}
       style={{ height }}
-      aria-label="Blue Ribbon LIA"
+      aria-label={xaLocalize("Blue Ribbon LIA")}
     />
   )
 }

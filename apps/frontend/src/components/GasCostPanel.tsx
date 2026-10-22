@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main/data/mvx_gas.json'
@@ -22,36 +23,36 @@ export default function GasCostPanel() {
   if (!ops.length) {
     return (
       <div className="card mb-6 text-xs text-gray-500">
-        Frais gaz MVX : publier via <code className="text-purple-400">python -m lia.gas.publish</code>
+        {xaRender("Frais gaz MVX : publier via ")}<code className="text-purple-400">python -m lia.gas.publish</code>
       </div>
     )
   }
 
   return (
     <div className="card mb-6">
-      <h2 className="text-lg font-bold mb-2">⛽ Frais gaz MultiversX (estim.)</h2>
-      <p className="text-xs text-gray-500 mb-3">{note}</p>
+      <h2 className="text-lg font-bold mb-2">{xaRender("⛽ Frais gaz MultiversX (estim.)")}</h2>
+      <p className="text-xs text-gray-500 mb-3">{xaRender(note)}</p>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
-              <th className="text-left py-2">Opération</th>
-              <th className="text-right py-2">Gas limit</th>
-              <th className="text-right py-2">≈ EGLD</th>
-              <th className="text-right py-2">≈ USD</th>
+              <th className="text-left py-2">{xaRender("Opération")}</th>
+              <th className="text-right py-2">{xaRender("Gas limit")}</th>
+              <th className="text-right py-2">{xaRender("≈ EGLD")}</th>
+              <th className="text-right py-2">{xaRender("≈ USD")}</th>
             </tr>
           </thead>
           <tbody>
-            {ops.map(o => (
+            {xaRender(ops.map(o => (
               <tr key={o.op} className="border-b border-[#2a2a3a]/40">
-                <td className="py-1.5 mono text-xs text-teal-200">{o.op}</td>
-                <td className="py-1.5 text-right mono text-xs">{o.gas_limit.toLocaleString()}</td>
-                <td className="py-1.5 text-right">{o.fee_egld.toFixed(6)}</td>
+                <td className="py-1.5 mono text-xs text-teal-200">{xaRender(o.op)}</td>
+                <td className="py-1.5 text-right mono text-xs">{xaRender(o.gas_limit.toLocaleString())}</td>
+                <td className="py-1.5 text-right">{xaRender(o.fee_egld.toFixed(6))}</td>
                 <td className="py-1.5 text-right text-gray-400">
-                  {o.fee_usd != null ? `$${o.fee_usd.toFixed(4)}` : '—'}
+                  {xaRender(o.fee_usd != null ? `$${o.fee_usd.toFixed(4)}` : '—')}
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>

@@ -1,8 +1,9 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../../i18n/phraseRuntime'
 /**
  * Fiche inspection œuvre + dock RWA Buy / Bid / Cert / Sell (i18n).
  * Option Agrandir l'image plein écran.
  */
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import type { FrameItem } from './MuseumCorridor'
 import { useI18n } from '../../i18n/I18nContext'
@@ -18,6 +19,8 @@ type Props = {
 }
 
 export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: Props) {
+  xaUsePhraseLocale()
+
   const { t } = useI18n()
   const { connected } = useWallet()
   const live = canListBuyNft()
@@ -27,6 +30,8 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
   const [sellPrice, setSellPrice] = useState('')
   const [enlarged, setEnlarged] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
+  const dialog=useRef<HTMLDivElement>(null)
+  useEffect(()=>{const previous=document.activeElement as HTMLElement;dialog.current?.focus({preventScroll:true});return()=>previous?.focus?.({preventScroll:true})},[])
 
   const priceLabel =
     frame.priceLabel ||
@@ -86,18 +91,23 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
       className="absolute inset-0 z-30 flex items-end sm:items-center justify-center p-3 bg-black/60 backdrop-blur-md"
       role="dialog"
       aria-modal
+      aria-label={frame.title}
+      ref={dialog}
+      tabIndex={-1}
+      data-xartists-modal="1"
+      onKeyDown={e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();if(enlarged)setEnlarged(false);else onClose()}if(e.key==='Tab'){const items=Array.from(dialog.current?.querySelectorAll<HTMLElement>('button,a,input')||[]).filter(el=>!el.hasAttribute('disabled'));const first=items[0],last=items[items.length-1];if(e.shiftKey&&(document.activeElement===first||document.activeElement===dialog.current)){e.preventDefault();last?.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus()}}}}
       onClick={onClose}
     >
       <div
         className="w-full max-w-lg rounded-2xl border border-purple-500/30 bg-black/90 shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
-        {frame.image ? (
+        {xaRender(frame.image ? (
           <button
             type="button"
             className="relative w-full block group"
             onClick={() => setEnlarged(true)}
-            aria-label="Agrandir l image"
+            aria-label={xaLocalize("Agrandir l image")}
           >
             <img
               src={frame.image}
@@ -105,14 +115,13 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
               className="w-full max-h-56 object-cover bg-zinc-950"
             />
             <span className="absolute bottom-2 right-2 rounded-full border border-white/20 bg-black/70 px-2.5 py-1 text-[10px] font-semibold text-white opacity-90 group-hover:opacity-100">
-              Agrandir l image
-            </span>
+              {xaRender("Agrandir l image ")}</span>
           </button>
         ) : (
           <div className="h-32 bg-zinc-900 flex items-center justify-center text-4xl">🎨</div>
-        )}
+        ))}
 
-        {enlarged && frame.image ? (
+        {xaRender(enlarged && frame.image ? (
           <div
             className="fixed inset-0 z-[90] flex items-center justify-center bg-black/95 p-3"
             role="dialog"
@@ -133,21 +142,21 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
               ✕
             </button>
           </div>
-        ) : null}
+        ) : null)}
 
         <div className="p-4 space-y-3">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h2 className="text-lg font-semibold text-white">{frame.title}</h2>
+              <h2 className="text-lg font-semibold text-white">{xaRender(frame.title)}</h2>
               <p className="text-[12px] text-zinc-400">
-                {frame.artist || frame.subtitle || '—'} · {frame.collection || '—'}
+                {xaRender(frame.artist || frame.subtitle || '—')} · {xaRender(frame.collection || '—')}
               </p>
             </div>
             <button
               type="button"
               className="min-h-[44px] min-w-[44px] rounded-xl border border-white/15 text-zinc-300"
               onClick={onClose}
-              aria-label="Close"
+              aria-label={xaLocalize("Close")}
             >
               ✕
             </button>
@@ -155,54 +164,50 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
 
           <div className="grid grid-cols-2 gap-2 text-[11px] text-zinc-400">
             <p>
-              Prix · <span className="text-zinc-200">{priceLabel}</span>
+              {xaRender("Prix · ")}<span className="text-zinc-200">{xaRender(priceLabel)}</span>
             </p>
             <p>
-              {forSale ? 'En vente' : 'Exposition'}
+              {xaRender(forSale ? 'En vente' : 'Exposition')}
             </p>
-            {nfc ? (
+            {xaRender(nfc ? (
               <p className="col-span-2 mono">
-                NFC / chip · <span className="text-amber-200/90">{nfc}</span>
+                {xaRender("NFC / chip · ")}<span className="text-amber-200/90">{xaRender(nfc)}</span>
               </p>
-            ) : null}
-            {sha ? (
+            ) : null)}
+            {xaRender(sha ? (
               <p className="col-span-2 mono truncate">
-                Certificat · <span className="text-zinc-300">{String(sha).slice(0, 18)}…</span>
+                {xaRender("Certificat · ")}<span className="text-zinc-300">{xaRender(String(sha).slice(0, 18))}…</span>
               </p>
             ) : (
-              <p className="col-span-2 text-zinc-500">Certificat RWA · provenance on-chain</p>
-            )}
+              <p className="col-span-2 text-zinc-500">{xaRender("Certificat RWA · provenance on-chain")}</p>
+            ))}
           </div>
 
-          {msg && <p className="text-[12px] text-amber-100/90">{msg}</p>}
+          {xaRender(msg && <p className="text-[12px] text-amber-100/90">{xaRender(msg)}</p>)}
 
           <div className="flex flex-wrap gap-2">
-            {frame.image && (
+            {xaRender(frame.image && (
               <button type="button" className="btn-secondary text-xs min-h-[44px]" onClick={() => setEnlarged(true)}>
-                Agrandir l image
-              </button>
-            )}
+                {xaRender("Agrandir l image ")}</button>
+            ))}
             <button type="button" className="btn-primary text-xs min-h-[44px]" onClick={doBuy}>
-              {t('museum.buy') || 'Buy'}
+              {xaRender(t('museum.buy') || 'Buy')}
             </button>
             <button type="button" className="btn-secondary text-xs min-h-[44px]" onClick={() => setBidOpen(v => !v)}>
-              Bid
-            </button>
-            {isOwner && (
+              {xaRender("Bid ")}</button>
+            {xaRender(isOwner && (
               <button type="button" className="btn-secondary text-xs min-h-[44px]" onClick={() => setSellOpen(v => !v)}>
-                Sell
-              </button>
-            )}
+                {xaRender("Sell ")}</button>
+            ))}
             <Link to="/studio" className="btn-secondary text-xs min-h-[44px] inline-flex items-center">
-              Studio RWA
-            </Link>
+              {xaRender("Studio RWA ")}</Link>
           </div>
 
-          {bidOpen && (
+          {xaRender(bidOpen && (
             <div className="flex gap-2">
               <input
                 className="flex-1 rounded-lg border border-white/15 bg-black/50 px-3 py-2 text-sm text-white"
-                placeholder="EGLD"
+                placeholder={xaLocalize("EGLD")}
                 value={bidAmt}
                 onChange={e => setBidAmt(e.target.value)}
               />
@@ -210,12 +215,12 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
                 OK
               </button>
             </div>
-          )}
-          {sellOpen && (
+          ))}
+          {xaRender(sellOpen && (
             <div className="flex gap-2">
               <input
                 className="flex-1 rounded-lg border border-white/15 bg-black/50 px-3 py-2 text-sm text-white"
-                placeholder="Prix"
+                placeholder={xaLocalize("Prix")}
                 value={sellPrice}
                 onChange={e => setSellPrice(e.target.value)}
               />
@@ -223,7 +228,7 @@ export default function ArtworkDetailsModal({ frame, onClose, onBuy, isOwner }: 
                 OK
               </button>
             </div>
-          )}
+          ))}
         </div>
       </div>
     </div>

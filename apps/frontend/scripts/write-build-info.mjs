@@ -2,19 +2,15 @@ import { execFileSync } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
 
 const sha = process.env.GITHUB_SHA || execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
-const info = {
+if (!/^[a-f0-9]{40}$/.test(sha)) throw new Error('Cannot identify the source commit')
+writeFileSync('dist/build-info.json', JSON.stringify({
   schema_version: 1,
   renderer: 'sites-v3',
   source_sha: sha,
-  presentation_source_sha: process.env.VITE_PRESENTATION_SHA || null,
+  presentation_source_sha: '8a607c8831234fe738a091a5a4caf325811c1b5b',
   base_url: '/xArtists/',
   built_at: new Date().toISOString(),
-  workflow_run_url:
-    process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY && process.env.GITHUB_RUN_ID
-      ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
-      : null,
-  app_build: process.env.VITE_APP_BUILD || 'sites-v3-release',
-}
-
-writeFileSync('dist/build-info.json', JSON.stringify(info, null, 2) + '\n')
-console.log('build-info', info.source_sha)
+  workflow_run_url: process.env.GITHUB_RUN_ID
+    ? `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+    : null,
+}, null, 2) + '\n')

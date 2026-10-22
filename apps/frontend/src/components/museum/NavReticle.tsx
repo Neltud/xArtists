@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Dynamic reticle / movement arrow HUD for museum spatial navigation.
  */
@@ -48,14 +49,14 @@ export default function NavReticle({ movingRef }: Props) {
         <line x1="2" y1="14" x2="8" y2="14" stroke="rgba(255,255,255,0.55)" strokeWidth="1" />
         <line x1="20" y1="14" x2="26" y2="14" stroke="rgba(255,255,255,0.55)" strokeWidth="1" />
         {/* direction chevron when moving */}
-        {moving && (
+        {xaRender(moving && (
           <polygon
             points="14,5 17,10 11,10"
             fill="rgba(34,211,238,0.9)"
             className="origin-center"
             style={{ transformOrigin: '14px 14px', animation: 'xartists-reticle-pulse 0.8s ease-in-out infinite' }}
           />
-        )}
+        ))}
       </svg>
       <style>{`
         @keyframes xartists-reticle-pulse {

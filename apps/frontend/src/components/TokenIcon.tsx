@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Mini-logos tokens — SVG inline (pas de CDN bloquant).
  * TRO · EGLD · USDC · generic ESDT.
@@ -145,7 +146,7 @@ export default function TokenIcon({ token = 'TRO', size = 20, className = '', ti
         fill="#a1a1aa"
         fontFamily="system-ui,sans-serif"
       >
-        {k === 'LP' ? 'LP' : '?'}
+        {xaRender(k === 'LP' ? 'LP' : '?')}
       </text>
     </svg>
   )

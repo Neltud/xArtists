@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * LAB ONLY — multiplayer presence overlay (Three.js, no R3F required).
  * Route: /museum/lab?museum=louvre
@@ -213,14 +214,12 @@ export default function MuseumLabPage() {
     <div className="animate-fade-in pb-12 max-w-5xl mx-auto space-y-4">
       <header className="space-y-2">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-400/80">
-          Lab · multiplayer
-        </p>
-        <h1 className="text-2xl font-semibold text-white">Musée lab</h1>
+          {xaRender("Lab · multiplayer ")}</p>
+        <h1 className="text-2xl font-semibold text-white">{xaRender("Musée lab")}</h1>
         <p className="text-[13px] text-zinc-500 max-w-lg">
-          Chemin expérimental. WASD. Multiplayer réel uniquement si{' '}
-          <code className="text-zinc-400">VITE_MULTIPLAYER_URL</code> + serveur Socket.IO.
-        </p>
-        <p className="text-[11px] text-zinc-600">{status}</p>
+          {xaRender("Chemin expérimental. WASD. Multiplayer réel uniquement si")}{xaRender(' ')}
+          <code className="text-zinc-400">VITE_MULTIPLAYER_URL</code> {xaRender(" + serveur Socket.IO. ")}</p>
+        <p className="text-[11px] text-zinc-600">{xaRender(status)}</p>
       </header>
 
       <div
@@ -231,10 +230,9 @@ export default function MuseumLabPage() {
 
       <p className="text-[12px] text-zinc-500">
         <Link to="/museum" className="text-cyan-400/90 hover:underline">
-          ← Galerie principale
-        </Link>
-        {' · salle '}
-        <span className="text-zinc-400">{museumId}</span>
+          {xaRender("← Galerie principale ")}</Link>
+        {xaRender(' · salle ')}
+        <span className="text-zinc-400">{xaRender(museumId)}</span>
       </p>
     </div>
   )

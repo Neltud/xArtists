@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /** Matrice 10 colonnes — paper display, enfants React toujours string. */
 import { useEffect, useState } from 'react'
 import { matrixFromPulse, runDecisionCycle } from '../../lia/decisionCycle'
@@ -77,39 +78,37 @@ export default function MatrixBoard() {
     <section className="card space-y-3 overflow-x-auto">
       <div>
         <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-400 font-semibold">
-          Matrice 10 colonnes
-        </p>
+          {xaRender("Matrice 10 colonnes ")}</p>
         <p className="text-[12px] text-zinc-500 mt-0.5 max-w-xl">
-          Vue recherche (simulée) — pas un conseil d’investissement.
-        </p>
+          {xaRender("Vue recherche (simulée) — pas un conseil d’investissement. ")}</p>
       </div>
-      {err && <p className="text-[12px] text-amber-200">{asText(err)}</p>}
+      {xaRender(err && <p className="text-[12px] text-amber-200">{xaRender(asText(err))}</p>)}
       <table className="w-full text-[11px] min-w-[640px]">
         <thead>
           <tr className="text-zinc-500 border-b border-white/10">
-            <th className="text-left py-2 px-1">Actif</th>
-            {COLS.map(col => (
+            <th className="text-left py-2 px-1">{xaRender("Actif")}</th>
+            {xaRender(COLS.map(col => (
               <th key={col.key} className="text-right py-2 px-1" title={col.tip}>
-                {col.label}
+                {xaRender(col.label)}
               </th>
-            ))}
-            <th className="text-right py-2 px-1">Strat</th>
+            )))}
+            <th className="text-right py-2 px-1">{xaRender("Strat")}</th>
           </tr>
         </thead>
         <tbody>
-          {rows.map(r => (
+          {xaRender(rows.map(r => (
             <tr key={asText(r.matrix.assetId)} className="border-b border-white/5">
-              <td className="py-2 px-1 font-semibold text-white">{asText(r.matrix.assetId)}</td>
-              {COLS.map(col => (
+              <td className="py-2 px-1 font-semibold text-white">{xaRender(asText(r.matrix.assetId))}</td>
+              {xaRender(COLS.map(col => (
                 <td key={col.key} className="text-right py-2 px-1 mono text-zinc-300">
-                  {cell(r.matrix, col.key)}
+                  {xaRender(cell(r.matrix, col.key))}
                 </td>
-              ))}
+              )))}
               <td className="text-right py-2 px-1 text-cyan-200/90 truncate max-w-[8rem]" title={r.reason}>
-                {asText(r.strategy).replace(/^STRAT_/, '')}
+                {xaRender(asText(r.strategy).replace(/^STRAT_/, ''))}
               </td>
             </tr>
-          ))}
+          )))}
         </tbody>
       </table>
     </section>

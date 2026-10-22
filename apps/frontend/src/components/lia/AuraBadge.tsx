@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../../i18n/phraseRuntime'
 /** Task 3 — Compact aura indicator (paper stream proxy). */
 
 const STYLES: Record<string, string> = {
@@ -15,19 +16,21 @@ export default function AuraBadge({
   mode: string
   trend?: string
 }) {
+  xaUsePhraseLocale()
+
   const cls = STYLES[mode] || 'bg-white/5 border-white/15 text-zinc-300'
   return (
     <div
       className={`inline-flex items-center gap-2 rounded-2xl border px-3 py-1.5 ${cls}`}
-      title="Aura paper — dérivée du pulse / stratégie, pas un ordre live"
+      title={xaLocalize("Aura paper — dérivée du pulse / stratégie, pas un ordre live")}
     >
       <span
         className="h-2 w-2 rounded-full bg-current animate-pulse"
         aria-hidden
       />
       <span className="text-[11px] font-semibold uppercase tracking-wider">
-        Aura {mode}
-        {trend ? ` · ${trend}` : ''}
+        {xaRender("Aura ")}{xaRender(mode)}
+        {xaRender(trend ? ` · ${trend}` : '')}
       </span>
     </div>
   )

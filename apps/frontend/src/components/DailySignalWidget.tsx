@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** Daily patronage signal — read-only, no auto trade. */
 import { useEffect, useState } from 'react'
 
@@ -54,21 +55,21 @@ export default function DailySignalWidget({ compact }: { compact?: boolean }) {
         compact ? 'p-3' : 'p-4'
       }`}
     >
-      <p className="text-[9px] uppercase tracking-[0.2em] text-zinc-500">Signal du jour</p>
-      <p className="mt-1 text-[13px] font-medium text-amber-50/95">{sig.headline}</p>
-      {!compact && sig.summary ? (
-        <p className="mt-2 text-[11px] leading-relaxed text-zinc-400">{sig.summary}</p>
-      ) : null}
+      <p className="text-[9px] uppercase tracking-[0.2em] text-zinc-500">{xaRender("Signal du jour")}</p>
+      <p className="mt-1 text-[13px] font-medium text-amber-50/95">{xaRender(sig.headline)}</p>
+      {xaRender(!compact && sig.summary ? (
+        <p className="mt-2 text-[11px] leading-relaxed text-zinc-400">{xaRender(sig.summary)}</p>
+      ) : null)}
       <div className="mt-2 flex flex-wrap gap-2 text-[10px] text-zinc-500">
-        {sig.regime ? <span className="rounded-full border border-white/10 px-2 py-0.5">{sig.regime}</span> : null}
-        {sig.patronage?.rebalance_hint ? (
+        {xaRender(sig.regime ? <span className="rounded-full border border-white/10 px-2 py-0.5">{xaRender(sig.regime)}</span> : null)}
+        {xaRender(sig.patronage?.rebalance_hint ? (
           <span className="rounded-full border border-white/10 px-2 py-0.5">
-            {sig.patronage.rebalance_hint}
+            {xaRender(sig.patronage.rebalance_hint)}
           </span>
-        ) : null}
-        {sig.date ? <span>{sig.date}</span> : null}
+        ) : null)}
+        {xaRender(sig.date ? <span>{xaRender(sig.date)}</span> : null)}
       </div>
-      <p className="mt-2 text-[9px] text-zinc-600">{sig.disclaimer || 'Pas un conseil financier.'}</p>
+      <p className="mt-2 text-[9px] text-zinc-600">{xaRender(sig.disclaimer || 'Pas un conseil financier.')}</p>
     </div>
   )
 }

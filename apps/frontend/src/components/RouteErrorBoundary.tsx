@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Per-route boundary — recovers failed lazy chunks without blank app.
  * React #31 = "Objects are not valid as a React child" (objet affiché comme texte).
@@ -47,30 +48,24 @@ export default class RouteErrorBoundary extends Component<Props, State> {
             ⚠️
           </p>
           <h1 className="text-xl font-semibold text-white">
-            Page indisponible{this.props.label ? ` · ${asText(this.props.label)}` : ''}
+            {xaRender("Page indisponible")}{xaRender(this.props.label ? ` · ${asText(this.props.label)}` : '')}
           </h1>
-          <p className="text-sm text-zinc-400 leading-relaxed break-words">{msg}</p>
-          {react31 && (
+          <p className="text-sm text-zinc-400 leading-relaxed break-words">{xaRender(msg)}</p>
+          {xaRender(react31 && (
             <p className="text-[12px] text-amber-200/90 text-left max-w-md mx-auto">
-              <strong>React #31</strong> : un <em>objet</em> a été affiché comme texte (souvent données
-              API ou tooltip). Ce n’est pas une route manquante. Recharge forcée après deploy.
-            </p>
-          )}
-          {chunk && (
+              <strong>{xaRender("React #31")}</strong> {xaRender(" : un ")}<em>{xaRender("objet")}</em> {xaRender(" a été affiché comme texte (souvent données API ou tooltip). Ce n’est pas une route manquante. Recharge forcée après deploy. ")}</p>
+          ))}
+          {xaRender(chunk && (
             <p className="text-[12px] text-amber-200/80">
-              Souvent un cache après deploy GitHub Pages — recharge forcée recommandée.
-            </p>
-          )}
+              {xaRender("Souvent un cache après deploy GitHub Pages — recharge forcée recommandée. ")}</p>
+          ))}
           <div className="flex flex-wrap gap-2 justify-center">
             <button type="button" className="btn-primary text-sm" onClick={this.retry}>
-              Réessayer
-            </button>
+              {xaRender("Réessayer ")}</button>
             <a href="#/" className="btn-secondary text-sm">
-              Accueil
-            </a>
+              {xaRender("Accueil ")}</a>
             <a href="#/sitemap" className="btn-ghost text-sm">
-              Plan du site
-            </a>
+              {xaRender("Plan du site ")}</a>
           </div>
         </div>
       )

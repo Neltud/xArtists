@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Market metrics — multi-asset live (BTC ETH SOL TAO EGLD GOLD) + shadow bars.
  */
@@ -60,7 +61,7 @@ function BarChart({
   }, [values, labels, color])
   return (
     <div>
-      <p className="text-[10px] uppercase text-zinc-500 mb-1">{label}</p>
+      <p className="text-[10px] uppercase text-zinc-500 mb-1">{xaRender(label)}</p>
       <canvas
         ref={ref}
         width={320}
@@ -172,13 +173,12 @@ export default function MarketMetricsCharts() {
     <section className="card space-y-4 border-cyan-500/20 bg-gradient-to-b from-cyan-950/20 to-transparent">
       <div>
         <p className="text-[10px] uppercase tracking-wider text-cyan-300/80 font-semibold">
-          Market · live
-        </p>
-        <p className="text-[12px] text-zinc-500">BTC · ETH · SOL · TAO · EGLD · GOLD — poll public APIs</p>
+          {xaRender("Market · live ")}</p>
+        <p className="text-[12px] text-zinc-500">{xaRender("BTC · ETH · SOL · TAO · EGLD · GOLD — poll public APIs")}</p>
       </div>
       <LiveAssetTape compact />
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-[11px]">
-        {(
+        {xaRender((
           [
             ['BTC', m.btcUsd],
             ['ETH', m.ethUsd],
@@ -189,12 +189,12 @@ export default function MarketMetricsCharts() {
           ] as const
         ).map(([lab, v]) => (
           <div key={lab} className="rounded-lg border border-white/10 bg-black/30 px-2 py-1.5">
-            <p className="text-zinc-500">{lab}</p>
+            <p className="text-zinc-500">{xaRender(lab)}</p>
             <p className="font-semibold tabular-nums text-white">
-              {v != null ? (v >= 100 ? `$${Math.round(v)}` : `$${v.toFixed(2)}`) : '—'}
+              {xaRender(v != null ? (v >= 100 ? `$${Math.round(v)}` : `$${v.toFixed(2)}`) : '—')}
             </p>
           </div>
-        ))}
+        )))}
       </div>
       <BarChart
         label="Log scale (display)"
@@ -204,23 +204,23 @@ export default function MarketMetricsCharts() {
       />
       <div className="grid grid-cols-3 gap-2 text-[12px]">
         <div>
-          <p className="text-zinc-500">Shadow PnL</p>
-          <p className="font-semibold tabular-nums">{asText(m.shadowPnl)} USD</p>
+          <p className="text-zinc-500">{xaRender("Shadow PnL")}</p>
+          <p className="font-semibold tabular-nums">{xaRender(asText(m.shadowPnl))} {xaRender(" USD")}</p>
         </div>
         <div>
-          <p className="text-zinc-500">Win rate</p>
+          <p className="text-zinc-500">{xaRender("Win rate")}</p>
           <p className="font-semibold tabular-nums">
-            {m.winRate != null ? `${asText(Math.round(m.winRate * 100))}%` : '—'}
+            {xaRender(m.winRate != null ? `${asText(Math.round(m.winRate * 100))}%` : '—')}
           </p>
         </div>
         <div>
-          <p className="text-zinc-500">Sprint day</p>
+          <p className="text-zinc-500">{xaRender("Sprint day")}</p>
           <p className="font-semibold tabular-nums">
-            {m.dayIndex != null ? `${asText(m.dayIndex)}/7` : '—'}
+            {xaRender(m.dayIndex != null ? `${asText(m.dayIndex)}/7` : '—')}
           </p>
         </div>
       </div>
-      <p className="text-[10px] text-zinc-600">Paper · not investment advice</p>
+      <p className="text-[10px] text-zinc-600">{xaRender("Paper · not investment advice")}</p>
     </section>
   )
 }

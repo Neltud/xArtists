@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Reality signal — simulation vs live vs loading.
  * CSS vars: --status-color, --status-icon (set on root element).
@@ -66,11 +67,11 @@ function StatusIndicator({
       title={meta.detail}
     >
       <span aria-hidden className="opacity-90">
-        {meta.icon}
+        {xaRender(meta.icon)}
       </span>
-      <span>{meta.label}</span>
+      <span>{xaRender(meta.label)}</span>
       <span className="hidden sm:inline font-normal opacity-70 max-w-[140px] truncate">
-        {meta.detail}
+        {xaRender(meta.detail)}
       </span>
     </div>
   )

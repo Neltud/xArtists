@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * TerminalLog — flux d'événements LIP / Guardian (paper).
  * Écoute CustomEvent `lia-intent` émis par IntentBar.
@@ -80,16 +81,16 @@ export default function TerminalLog({ compact = false }: { compact?: boolean }) 
       aria-live="polite"
     >
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] uppercase tracking-[0.15em] text-cyan-500/80">Terminal LIP</span>
-        <span className="text-zinc-600">{lines.length} lines</span>
+        <span className="text-[10px] uppercase tracking-[0.15em] text-cyan-500/80">{xaRender("Terminal LIP")}</span>
+        <span className="text-zinc-600">{xaRender(lines.length)} {xaRender(" lines")}</span>
       </div>
       <ul className="space-y-1 max-h-36 overflow-y-auto">
-        {lines.map((line, i) => (
+        {xaRender(lines.map((line, i) => (
           <li key={`${line.ts}-${i}`} className={color(line.level)}>
-            <span className="text-zinc-600 mr-2">{line.ts}</span>
-            {line.text}
+            <span className="text-zinc-600 mr-2">{xaRender(line.ts)}</span>
+            {xaRender(line.text)}
           </li>
-        ))}
+        )))}
       </ul>
     </div>
   )

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Checklist GO_LIVE mainnet + Real Capital Engaged.
  */
@@ -25,14 +26,6 @@ import {
 import { asText, formatRCE } from '../lib/safeRender'
 import { fetchMarketPayable } from '../lib/marketPayable'
 import { fetchOnChainMarketListings, type OnChainListing } from '../lib/marketChain'
-import {
-  fetchProtocolPulse,
-  formatCompact,
-  formatEgld,
-  formatUsd,
-  upbitPosture,
-  type ProtocolPulse,
-} from '../lib/protocolPulse'
 
 type Item = { id: string; label: string; ok: boolean; note?: string; href?: string }
 
@@ -54,12 +47,8 @@ export default function GoLivePage() {
   const [listings, setListings] = useState<OnChainListing[]>([])
   const [slotPayable, setSlotPayable] = useState<boolean | null>(null)
   const [marketPayable, setMarketPayable] = useState<boolean | null>(null)
-  const [pulse, setPulse] = useState<ProtocolPulse | null>(null)
-  const [pulseError, setPulseError] = useState<string | null>(null)
   const mode = getAppMode()
   const envLive = getEnvLiveCapable()
-  const upbit = upbitPosture()
-  const buildStamp = String(import.meta.env.VITE_APP_BUILD || 'dev')
 
   useEffect(() => {
     void refreshRuntimeCodehashes().then(() => setTick(x => x + 1))
@@ -70,9 +59,6 @@ export default function GoLivePage() {
       void fetchMarketPayable(market).then(s => setMarketPayable(s.isPayable))
     }
     if (slot) void fetchMarketPayable(slot).then(s => setSlotPayable(s.isPayable))
-    void fetchProtocolPulse()
-      .then(setPulse)
-      .catch(() => setPulseError('API MultiversX indisponible'))
   }, [])
 
   const marketOk = canListBuyNft() || gate('VITE_MARKETPLACE_CODEHASH_OK', 'marketplace')
@@ -132,74 +118,36 @@ export default function GoLivePage() {
   return (
     <div className="animate-fade-in space-y-6 max-w-2xl mx-auto pb-16">
       <header className="space-y-2">
-        <p className="section-label">Mainnet</p>
-        <h1 className="section-title display">Status & capital</h1>
+        <p className="section-label">{xaRender("Mainnet")}</p>
+        <h1 className="section-title display">{xaRender("Status & capital")}</h1>
         <p className="text-sm text-zinc-400">
-          Mode app : <strong className="text-zinc-200">{asText(mode)}</strong>
-          {envLive ? ' · env live capable' : ''} · floor pack {formatRCE(PACK_PRICE_EGLD)} · build{' '}
-          {asText(buildStamp)}
+          {xaRender("Mode app : ")}<strong className="text-zinc-200">{xaRender(asText(mode))}</strong>
+          {xaRender(envLive ? ' · env live capable' : '')} {xaRender(" · floor pack ")}{xaRender(formatRCE(PACK_PRICE_EGLD))}
         </p>
       </header>
 
       <RceStrip />
 
-      <section className="card space-y-2">
-        <h2 className="text-sm font-semibold text-white">Veille live</h2>
-        <p
-          className={`text-[12px] ${
-            upbit.phase === 'window' ? 'text-amber-200' : 'text-zinc-300'
-          }`}
-        >
-          {upbit.label}
-        </p>
-        {pulse ? (
-          <p className="text-[12px] text-zinc-300">
-            Epoch <strong className="text-zinc-100">{pulse.epoch}</strong> · refresh{' '}
-            {pulse.refreshRate} ms · EGLD <strong className="text-zinc-100">{formatUsd(pulse.egldPrice)}</strong>
-            {' · '}mcap {formatCompact(pulse.marketCap)} · staké {formatCompact(pulse.staked)} · APR{' '}
-            {(pulse.apr * 100).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} %
-            <br />
-            LIA Ops <strong className="text-zinc-100">{formatEgld(pulse.liaEgld, 4)} EGLD</strong> ·
-            nonce {pulse.liaNonce}. Agents {formatEgld(pulse.agentsEgld, 3)} · market{' '}
-            {formatEgld(pulse.marketEgld, 4)} · slot {formatEgld(pulse.slotEgld, 4)} EGLD.
-            <br />
-            $TRO circ {formatCompact(pulse.troCirc)} · {pulse.troAccounts ?? '—'} comptes ·{' '}
-            {pulse.troPrice != null ? `~$${pulse.troPrice.toPrecision(3)}` : '—'} · mcap{' '}
-            {formatCompact(pulse.troMcap)}.
-            <br />
-            Client paper. Le 17 oct le wallet ops a déjà fait des swaps xExchange (wrap, liquidité,
-            multiPair) — ce n’est pas une autorisation de relancer.
-          </p>
-        ) : (
-          <p className="text-[12px] text-zinc-500">{pulseError || 'Lecture API…'}</p>
-        )}
-        <p className="text-[11px] text-zinc-500">
-          User Connect ≠ LIA Ops. Tips ≠ investissement. Pas un fonds retail. Paybox / Stripe
-          restent fermés (pas d’IPN). Slot REAL fermé tant que isPayable=false.
-        </p>
-      </section>
-
       <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">Gates SC</h2>
+        <h2 className="text-sm font-semibold text-white">{xaRender("Gates SC")}</h2>
         <ul className="space-y-2">
-          {scItems.map(it => (
+          {xaRender(scItems.map(it => (
             <li
               key={it.id}
               className="flex flex-wrap items-start justify-between gap-2 rounded-xl border border-white/10 px-3 py-2 text-[13px]"
             >
               <div>
-                <p className="text-zinc-200">{asText(it.label)}</p>
-                {it.note && <p className="text-[11px] text-zinc-500">{asText(it.note)}</p>}
-                {it.href && (
+                <p className="text-zinc-200">{xaRender(asText(it.label))}</p>
+                {xaRender(it.note && <p className="text-[11px] text-zinc-500">{xaRender(asText(it.note))}</p>)}
+                {xaRender(it.href && (
                   <a
                     className="text-[11px] text-cyan-400 underline"
                     href={it.href}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Explorer
-                  </a>
-                )}
+                    {xaRender("Explorer ")}</a>
+                ))}
               </div>
               <span
                 className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
@@ -208,58 +156,52 @@ export default function GoLivePage() {
                     : 'border-amber-500/35 text-amber-200'
                 }`}
               >
-                {it.ok ? 'OK' : 'ATTENTE'}
+                {xaRender(it.ok ? 'OK' : 'ATTENTE')}
               </span>
             </li>
-          ))}
+          )))}
         </ul>
       </section>
 
       <DustTestPanel />
 
       <section className="card space-y-2">
-        <h2 className="text-sm font-semibold text-white">Preuves live</h2>
+        <h2 className="text-sm font-semibold text-white">{xaRender("Preuves live")}</h2>
         <p className="text-[12px] text-zinc-400">
-          Market payable :{' '}
+          {xaRender("Market payable :")}{xaRender(' ')}
           <strong className="text-zinc-200">
-            {marketPayable == null ? '…' : marketPayable ? 'oui' : 'non'}
+            {xaRender(marketPayable == null ? '…' : marketPayable ? 'oui' : 'non')}
           </strong>
-          . Slot payable :{' '}
+          {xaRender(". Slot payable :")}{xaRender(' ')}
           <strong className="text-zinc-200">
-            {slotPayable == null ? '…' : slotPayable ? 'oui' : 'non'}
+            {xaRender(slotPayable == null ? '…' : slotPayable ? 'oui' : 'non')}
           </strong>
-          . Treasury dest toujours null — ne pas router les frais.
-        </p>
-        {listings.length > 0 && (
+          {xaRender(". Treasury dest toujours null — ne pas router les frais. ")}</p>
+        {xaRender(listings.length > 0 && (
           <ul className="space-y-1 text-[12px] text-zinc-300">
-            {listings.map(l => (
+            {xaRender(listings.map(l => (
               <li key={l.id}>
-                Listing #{l.id} {l.token}-{String(l.nonce).padStart(2, '0')} · {l.priceEgld} EGLD ·{' '}
-                {l.active ? 'actif' : 'inactif'}
-                {l.bidEgld ? ` · bid ${l.bidEgld} EGLD locké` : ''}
+                {xaRender("Listing #")}{xaRender(l.id)} {xaRender(l.token)}-{xaRender(String(l.nonce).padStart(2, '0'))} · {xaRender(l.priceEgld)} {xaRender(" EGLD ·")}{xaRender(' ')}
+                {xaRender(l.active ? 'actif' : 'inactif')}
+                {xaRender(l.bidEgld ? ` · bid ${l.bidEgld} EGLD locké` : '')}
               </li>
-            ))}
+            )))}
           </ul>
-        )}
+        ))}
       </section>
 
       <section className="card space-y-2">
-        <h2 className="text-sm font-semibold text-white">Spin réel</h2>
+        <h2 className="text-sm font-semibold text-white">{xaRender("Spin réel")}</h2>
         <p className="text-[12px] text-zinc-400">
-          House 0,5 EGLD. Le compte slot n’est pas payable : un spin EGLD est rejeté par le
-          protocole. Fun reste le chemin public. Upgrade du même contrat avec metadata-payable
-          seulement — pas un nouveau deploy.
-        </p>
+          {xaRender("House 0,5 EGLD. Le compte slot n’est pas payable : un spin EGLD est rejeté par le protocole. Fun reste le chemin public. Upgrade du même contrat avec metadata-payable seulement — pas un nouveau deploy. ")}</p>
       </section>
       <p className="text-[11px] text-zinc-600">
-        Agent 8008 : {asText(AGENT_8008?.id, '—')} ·{' '}
+        {xaRender("Agent 8008 : ")}{xaRender(asText(AGENT_8008?.id, '—'))} ·{xaRender(' ')}
         <Link to="/" className="text-cyan-400 underline">
-          Accueil
-        </Link>
-        {' · '}
+          {xaRender("Accueil ")}</Link>
+        {xaRender(' · ')}
         <Link to="/lia" className="text-cyan-400 underline">
-          LIA Hub
-        </Link>
+          {xaRender("LIA Hub ")}</Link>
       </p>
     </div>
   )

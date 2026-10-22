@@ -39,7 +39,7 @@ export default function MoonPayBuyButton({ amountEur = 50, className = '', label
   if (!on) {
     return (
       <p className="text-[11px] text-zinc-600">
-        MoonPay : configure <code className="text-[10px]">VITE_MOONPAY_API_KEY</code> (secrets Pages).
+        Achat par carte indisponible pour le moment.
       </p>
     )
   }
@@ -55,7 +55,7 @@ export default function MoonPayBuyButton({ amountEur = 50, className = '', label
         {busy ? '…' : label || `Acheter EGLD · MoonPay (~${amountEur} €)`}
       </button>
       <p className="text-[10px] text-zinc-500">
-        Carte / Apple Pay · {moonpayStatusHint()} · fonds vers ton wallet MultiversX
+        Carte / Apple Pay · {moonpayStatusHint() === 'sandbox' ? 'test · ' : ''}vérifie le montant et l’adresse dans MoonPay
       </p>
     </div>
   )

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Lottie léger — lazy + reduced-motion safe.
  * Animations embarquées (pas de réseau) pour packs / empty / success.
@@ -169,7 +170,7 @@ export default function LottieIcon({
         style={{ width: size, height: size, ...style }}
         aria-hidden
       >
-        {preset === 'check' ? '✓' : '✦'}
+        {xaRender(preset === 'check' ? '✓' : '✦')}
       </span>
     )
   }

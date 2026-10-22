@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** Circuit Breaker UI when SC paused */
 import { useEffect, useState } from 'react'
 import { fetchScPauseState } from '../lib/scPause'
@@ -27,8 +28,7 @@ export default function SystemMaintenanceBanner() {
       className="fixed top-0 inset-x-0 z-[90] border-b border-amber-500/40 bg-amber-950/95 px-4 py-2 text-center text-[12px] text-amber-100"
       role="alert"
     >
-      <strong className="font-tech">System Maintenance</strong>
-      {' — '}Slot SC en pause (circuit breaker). TX casino désactivées jusqu’à reprise admin/multisig.
-    </div>
+      <strong className="font-tech">{xaRender("System Maintenance")}</strong>
+      {xaRender(' — ')}{xaRender("Slot SC en pause (circuit breaker). TX casino désactivées jusqu’à reprise admin/multisig. ")}</div>
   )
 }

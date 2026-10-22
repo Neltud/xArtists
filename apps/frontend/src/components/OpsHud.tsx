@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 
 type Lights = { paper: boolean; signal: 'BUY' | 'SELL' | 'WAIT'; breaker: boolean; supernova: boolean }
@@ -59,7 +60,7 @@ function Light({
         } ${on ? 'shadow-[0_0_8px]' : ''}`}
         aria-hidden
       />
-      <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">{label}</span>
+      <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">{xaRender(label)}</span>
     </div>
   )
 }

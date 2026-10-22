@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Image avec loader discret + fallback — évite carrés blancs / icônes cassées.
  */
@@ -43,12 +44,12 @@ export function ImageWithFallback({
 
   return (
     <div className={`relative overflow-hidden bg-zinc-950/80 ${wrapperClassName}`}>
-      {status === 'loading' ? (
+      {xaRender(status === 'loading' ? (
         <div
           className="absolute inset-0 animate-pulse bg-gradient-to-br from-zinc-900 via-zinc-800/40 to-zinc-900"
           aria-hidden
         />
-      ) : null}
+      ) : null)}
       <img
         src={current || fallbackSrc}
         alt={alt}

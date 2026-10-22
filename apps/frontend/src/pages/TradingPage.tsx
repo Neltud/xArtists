@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** Desk trading — paper LIA + accès salles pack. */
 import { Link } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
@@ -11,33 +12,28 @@ export default function TradingPage() {
   return (
     <div className="animate-fade-in space-y-6 max-w-xl mx-auto pb-16">
       <header className="space-y-1">
-        <p className="section-label">Desk</p>
-        <h1 className="section-title display text-2xl">Trading</h1>
+        <p className="section-label">{xaRender("Desk")}</p>
+        <h1 className="section-title display text-2xl">{xaRender("Trading")}</h1>
         <p className="text-sm text-zinc-400">
-          Signaux LIA en simulation. Pas de mandat, pas de promesse de performance.
-        </p>
+          {xaRender("Signaux LIA en simulation. Pas de mandat, pas de promesse de performance. ")}</p>
       </header>
 
       <div className="card space-y-3 text-sm text-zinc-300">
         <p>
-          Accès packs :{' '}
-          {access.packs.length ? access.packs.join(' · ') : 'aucun — ouvre un pack'}
+          {xaRender("Accès packs :")}{xaRender(' ')}
+          {xaRender(access.packs.length ? access.packs.join(' · ') : 'aucun — ouvre un pack')}
         </p>
-        {!connected && (
+        {xaRender(!connected && (
           <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
-            Connecter wallet
-          </button>
-        )}
+            {xaRender("Connecter wallet ")}</button>
+        ))}
         <div className="flex flex-wrap gap-2">
           <Link to="/my-packs" className="btn-primary text-sm">
-            Mes salles
-          </Link>
+            {xaRender("Mes salles ")}</Link>
           <Link to="/command-center" className="btn-secondary text-sm">
-            Command Center
-          </Link>
+            {xaRender("Command Center ")}</Link>
           <Link to="/lia" className="btn-secondary text-sm">
-            LIA
-          </Link>
+            {xaRender("LIA ")}</Link>
         </div>
       </div>
     </div>

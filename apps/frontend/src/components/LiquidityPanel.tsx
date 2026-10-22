@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 
 type Action = {
@@ -42,26 +43,26 @@ export default function LiquidityPanel() {
 
   return (
     <div className="card border-cyan-500/20 mb-6">
-      <h3 className="text-sm font-bold text-cyan-200 mb-1">Liquidity Orchestrator (paper)</h3>
+      <h3 className="text-sm font-bold text-cyan-200 mb-1">{xaRender("Liquidity Orchestrator (paper)")}</h3>
       <p className="text-[11px] text-zinc-500 mb-3">
-        Cycle rebalance — aucune bridge live. {updated && <>MAJ {new Date(updated).toLocaleString('fr-FR')}</>}
+        {xaRender("Cycle rebalance — aucune bridge live. ")}{xaRender(updated && <>{xaRender("MAJ ")}{xaRender(new Date(updated).toLocaleString('fr-FR'))}</>)}
       </p>
-      {actions.length === 0 && <p className="text-xs text-zinc-600">Aucune action paper chargée.</p>}
+      {xaRender(actions.length === 0 && <p className="text-xs text-zinc-600">{xaRender("Aucune action paper chargée.")}</p>)}
       <ul className="space-y-2">
-        {actions.map((a, i) => (
+        {xaRender(actions.map((a, i) => (
           <li
             key={i}
             className="text-xs rounded-lg border border-white/5 bg-black/30 px-3 py-2 flex flex-wrap gap-2 justify-between"
           >
             <span className="text-zinc-300">
-              {a.imbalance?.asset} {a.imbalance?.source_chain} → {a.imbalance?.target_chain}
+              {xaRender(a.imbalance?.asset)} {xaRender(a.imbalance?.source_chain)} → {xaRender(a.imbalance?.target_chain)}
             </span>
             <span className={a.profitable ? 'text-emerald-400' : 'text-zinc-500'}>
-              {a.profitable ? 'profitable (stub)' : 'skip'} · exec={String(a.executed)}
+              {xaRender(a.profitable ? 'profitable (stub)' : 'skip')} {xaRender(" · exec=")}{xaRender(String(a.executed))}
             </span>
-            <span className="w-full text-zinc-600">{a.reason}</span>
+            <span className="w-full text-zinc-600">{xaRender(a.reason)}</span>
           </li>
-        ))}
+        )))}
       </ul>
     </div>
   )

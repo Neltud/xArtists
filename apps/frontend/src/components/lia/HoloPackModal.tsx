@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Modale holo pack — NFT gate Command Center + disclosure économique.
  */
@@ -57,16 +58,16 @@ export function HoloPackModal({ packId, onClose }: Props) {
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-300/80">
-              {t('pack.gate.kicker')}
+              {xaRender(t('pack.gate.kicker'))}
             </p>
             <h2 className="text-xl font-semibold text-white">
-              {ownsThis ? (
+              {xaRender(ownsThis ? (
                 <>
-                  {pack.icon} {pack.name} · {pack.tierLabel}
+                  {xaRender(pack.icon)} {xaRender(pack.name)} · {xaRender(pack.tierLabel)}
                 </>
               ) : (
                 t('pack.gate.title')
-              )}
+              ))}
             </h2>
           </div>
           <button
@@ -79,26 +80,26 @@ export function HoloPackModal({ packId, onClose }: Props) {
           </button>
         </div>
 
-        {!ownsThis ? (
+        {xaRender(!ownsThis ? (
           <>
             <p className="text-[13px] text-zinc-300 leading-relaxed">
-              {t('pack.gate.locked').replace('{pack}', packName)}
+              {xaRender(t('pack.gate.locked').replace('{pack}', packName))}
             </p>
-            <p className="text-[12px] text-zinc-500">{pack.tagline}</p>
+            <p className="text-[12px] text-zinc-500">{xaRender(pack.tagline)}</p>
             <EconomicDisclosure />
-            {!connected && (
-              <p className="text-[12px] text-amber-200/90">{t('pack.gate.connectFirst')}</p>
-            )}
-            {connected && account.loading && (
-              <p className="text-[12px] text-zinc-500">{t('pack.gate.checking')}</p>
-            )}
+            {xaRender(!connected && (
+              <p className="text-[12px] text-amber-200/90">{xaRender(t('pack.gate.connectFirst'))}</p>
+            ))}
+            {xaRender(connected && account.loading && (
+              <p className="text-[12px] text-zinc-500">{xaRender(t('pack.gate.checking'))}</p>
+            ))}
             <div className="flex flex-col gap-2 pt-1">
               <Link
                 to="/agents"
                 className="btn-primary text-sm min-h-[44px] inline-flex items-center justify-center"
                 onClick={onClose}
               >
-                {t('pack.gate.acquire')}
+                {xaRender(t('pack.gate.acquire'))}
               </Link>
               <button
                 type="button"
@@ -111,20 +112,20 @@ export function HoloPackModal({ packId, onClose }: Props) {
                   void account.refresh?.()
                 }}
               >
-                {t('pack.gate.verify')}
+                {xaRender(t('pack.gate.verify'))}
               </button>
             </div>
           </>
         ) : (
           <>
             <p className="text-[13px] text-emerald-200/90 leading-relaxed">
-              {t('pack.gate.unlocked').replace('{pack}', packName)}
+              {xaRender(t('pack.gate.unlocked').replace('{pack}', packName))}
             </p>
             <EconomicDisclosure />
             <ul className="text-[12px] text-zinc-400 space-y-1 list-disc list-inside">
-              {(pack.entitlements || []).slice(0, 4).map(e => (
-                <li key={e}>{e}</li>
-              ))}
+              {xaRender((pack.entitlements || []).slice(0, 4).map(e => (
+                <li key={e}>{xaRender(e)}</li>
+              )))}
             </ul>
             <div className="flex flex-col gap-2 pt-1">
               <Link
@@ -132,20 +133,20 @@ export function HoloPackModal({ packId, onClose }: Props) {
                 className="btn-primary text-sm min-h-[44px] inline-flex items-center justify-center gap-2"
                 onClick={onClose}
               >
-                {t('pack.gate.enterCc')}
+                {xaRender(t('pack.gate.enterCc'))}
               </Link>
               <Link
                 to="/agents"
                 className="btn-secondary text-sm min-h-[44px] inline-flex items-center justify-center"
                 onClick={onClose}
               >
-                {t('pack.cta.agents')}
+                {xaRender(t('pack.cta.agents'))}
               </Link>
             </div>
           </>
-        )}
+        ))}
 
-        <p className="text-[10px] text-zinc-600 leading-relaxed">{t('pack.gate.disclaimer')}</p>
+        <p className="text-[10px] text-zinc-600 leading-relaxed">{xaRender(t('pack.gate.disclaimer'))}</p>
       </div>
     </div>
   )

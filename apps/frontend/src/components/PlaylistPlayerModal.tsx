@@ -55,6 +55,19 @@ export default function PlaylistPlayerModal() {
         event.stopPropagation()
         setVisible(false)
       }
+      if (event.key === 'Tab') {
+        const controls = hideButton.current?.closest('section')
+          ?.querySelectorAll<HTMLElement>('button, iframe, a[href]')
+        const first = controls?.[0]
+        const last = controls?.[controls.length - 1]
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault()
+          last?.focus()
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault()
+          first?.focus()
+        }
+      }
     }
     document.addEventListener('keydown', onKey, true)
     return () => {
@@ -117,6 +130,7 @@ export default function PlaylistPlayerModal() {
             </div>
             <p className="px-3 pt-3 text-xs text-[var(--xa-text-muted)]">
               Cacher le lecteur garde la musique. Pause et volume : commandes {providerName}.
+              Si la lecture ne démarre pas, touche ▶ dans le lecteur.
             </p>
             <div className="flex flex-wrap gap-2 p-3">
               <button type="button" className="btn-secondary flex-1 text-xs px-3" onClick={stop}>

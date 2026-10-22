@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 
 /**
@@ -145,12 +146,10 @@ export default function GSNBanner() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-bold uppercase tracking-widest text-emerald-300/90">
-              🔮 GreenSmoke Network
-            </span>
+              {xaRender("🔮 GreenSmoke Network ")}</span>
             <span className="text-[10px] px-2 py-0.5 rounded-full border border-white/10 text-gray-400">
-              feed externe · pas un pack LIA
-            </span>
-            <span className={`text-sm font-black ${style.text}`}>{sig.primary || '—'}</span>
+              {xaRender("feed externe · pas un pack LIA ")}</span>
+            <span className={`text-sm font-black ${style.text}`}>{xaRender(sig.primary || '—')}</span>
           </div>
           <div className="flex items-center gap-1.5 flex-wrap">
             <span
@@ -158,26 +157,25 @@ export default function GSNBanner() {
                 regime === 'RISK_ON' ? 'badge-green' : regime === 'RISK_OFF' ? 'badge-red' : 'badge-gray'
               }`}
             >
-              {sig.regime || 'NEUTRAL'}
+              {xaRender(sig.regime || 'NEUTRAL')}
             </span>
-            {sig.secondary && <span className="badge-purple">{sig.secondary}</span>}
+            {xaRender(sig.secondary && <span className="badge-purple">{xaRender(sig.secondary)}</span>)}
           </div>
         </div>
         <p className="text-[11px] text-gray-500 mb-2">
-          Prévisions GSN affichées à titre informatif. Les <strong className="text-gray-400">packs agents LIA</strong>{' '}
-          (Vellum / marketplace xArtists) sont un produit séparé.
-        </p>
-        <p className="text-xs text-gray-400 mb-2">{sig.recommended_action || 'Feed GSN chargé'}</p>
-        {marqueeItems.length > 0 && (
+          {xaRender("Prévisions GSN affichées à titre informatif. Les ")}<strong className="text-gray-400">{xaRender("packs agents LIA")}</strong>{xaRender(' ')}
+          {xaRender("(Vellum / marketplace xArtists) sont un produit séparé. ")}</p>
+        <p className="text-xs text-gray-400 mb-2">{xaRender(sig.recommended_action || 'Feed GSN chargé')}</p>
+        {xaRender(marqueeItems.length > 0 && (
           <div className="relative overflow-hidden">
             <div className="flex gap-3 whitespace-nowrap" style={{ animation: 'gsn-marquee 38s linear infinite' }}>
-              {marqueeItems.map(({ agent, f }, i) => (
+              {xaRender(marqueeItems.map(({ agent, f }, i) => (
                 <span
                   key={`${agent}-${f.asset}-${i}`}
                   className="inline-flex items-center gap-1.5 text-[11px] text-gray-300 px-2.5 py-1 rounded-lg bg-white/5 border border-white/5"
                 >
-                  <span className="text-gray-500">{agent}</span>
-                  <span className="font-semibold text-gray-200">{f.asset}</span>
+                  <span className="text-gray-500">{xaRender(agent)}</span>
+                  <span className="font-semibold text-gray-200">{xaRender(f.asset)}</span>
                   <span
                     className={
                       String(f.direction).toLowerCase().includes('bull') ||
@@ -188,14 +186,14 @@ export default function GSNBanner() {
                           : 'text-yellow-400'
                     }
                   >
-                    {f.direction}
+                    {xaRender(f.direction)}
                   </span>
-                  <span className="text-gray-500">{(Number(f.confidence) * 100).toFixed(0)}%</span>
+                  <span className="text-gray-500">{xaRender((Number(f.confidence) * 100).toFixed(0))}%</span>
                 </span>
-              ))}
+              )))}
             </div>
           </div>
-        )}
+        ))}
       </div>
       <style>{`
         @keyframes gsn-marquee {

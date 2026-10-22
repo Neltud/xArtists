@@ -1,5 +1,5 @@
 /**
- * Marketplace dual + RWA / digital + museum — FR / EN (other langs via core + fallback).
+ * Marketplace dual + RWA / digital — FR / EN (fallback chain covers ES/DE/…).
  */
 export const marketFr: Record<string, string> = {
   'market.title': 'Marketplace',

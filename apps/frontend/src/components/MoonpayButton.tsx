@@ -4,6 +4,7 @@ import {
   type MoonpayPaymentMethod,
   isMoonpayLive,
   MOONPAY_DEFAULT_WALLET,
+  isMoonPayConfigured,
 } from '../lib/moonpay'
 
 interface MoonpayButtonProps {
@@ -24,6 +25,7 @@ export const MoonpayButton: React.FC<MoonpayButtonProps> = ({
   baseCurrencyAmount,
 }) => {
   const [opening, setOpening] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const live = isMoonpayLive()
 
   const defaultLabel =
@@ -35,22 +37,25 @@ export const MoonpayButton: React.FC<MoonpayButtonProps> = ({
           ? 'Carte (MoonPay)'
           : `Acheter ${currencyCode} avec MoonPay`
 
-  const handleBuy = () => {
+  const handleBuy = async () => {
     setOpening(true)
-    openMoonpayBuy({
+    setError(null)
+    const result = await openMoonpayBuy({
       walletAddress,
       currencyCode,
       paymentMethod,
       baseCurrencyAmount,
     })
-    setTimeout(() => setOpening(false), 1200)
+    if (!result.ok) setError(result.error || 'Achat par carte indisponible.')
+    setOpening(false)
   }
 
   return (
+    <div>
     <button
       type="button"
-      onClick={handleBuy}
-      disabled={opening}
+      onClick={() => void handleBuy()}
+      disabled={opening || !isMoonPayConfigured()}
       className={
         className ||
         `bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-60 text-white px-5 py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20`
@@ -75,6 +80,9 @@ export const MoonpayButton: React.FC<MoonpayButtonProps> = ({
         </>
       )}
     </button>
+    {error && <p role="alert" className="mt-2 text-xs text-amber-300">{error}</p>}
+    {!isMoonPayConfigured() && <p className="mt-2 text-xs text-zinc-400">Achat par carte indisponible pour le moment.</p>}
+    </div>
   )
 }
 
