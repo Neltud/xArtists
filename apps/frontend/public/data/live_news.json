@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-22T03:26:20.596Z",
+  "updatedAt": "2026-10-22T11:12:42.341Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792667562133",
+      "timestamp": "11:12",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.65 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792639580503",
       "timestamp": "03:26",
@@ -191,13 +198,6 @@
       "source": "CoinDesk",
       "title": "Zerohash rolls out a new tool to move crypto without copying wallet addresses",
       "link": "https://www.coindesk.com/business/2026/10/19/zerohash-rolls-out-a-new-tool-to-move-crypto-without-copying-wallet-addresses"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792412218000",
-      "timestamp": "12:16",
-      "source": "CoinDesk",
-      "title": "Cardano founder Charles Hoskinson is building a new programming language for the network",
-      "link": "https://www.coindesk.com/tech/2026/10/19/cardano-founder-charles-hoskinson-is-building-a-new-programming-language-for-the-network"
     }
   ]
 }
