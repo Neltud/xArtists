@@ -18,16 +18,40 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install Playwright + deps
+      - name: Install frontend deps
+        working-directory: apps/frontend
+        run: npm ci --legacy-peer-deps
+
+      - name: Build V3 paper (no live trading flags required for static shell)
+        working-directory: apps/frontend
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+          VITE_APP_BUILD: sites-v3-release
+          VITE_LIA_LIVE_TRADING: "0"
+          VITE_PAYBOX_ENABLED: "false"
+          VITE_TRO_TOKEN_ID: TRO-94c925
+        run: npm run build
+
+      - name: Install Playwright Chromium
         run: |
-          npm install -D @playwright/test || true
+          npm install -D @playwright/test
           npx playwright install --with-deps chromium
 
-      - name: Run E2E
+      - name: Serve V3 build under /xArtists/ and run E2E
         env:
-          E2E_BASE_URL: https://neltud.github.io/xArtists
           CI: true
-        run: npx playwright test --config=playwright.config.ts
+          E2E_BASE_URL: http://127.0.0.1:4173/xArtists
+        run: |
+          mkdir -p /tmp/e2e-root/xArtists
+          cp -a apps/frontend/dist/. /tmp/e2e-root/xArtists/
+          # SPA fallback
+          cp /tmp/e2e-root/xArtists/index.html /tmp/e2e-root/xArtists/404.html
+          python3 -m http.server 4173 --directory /tmp/e2e-root &
+          echo $! > /tmp/e2e-server.pid
+          sleep 2
+          curl -sfI http://127.0.0.1:4173/xArtists/ | head -5
+          npx playwright test --config=playwright.config.ts
+          kill $(cat /tmp/e2e-server.pid) || true
 
       - uses: actions/upload-artifact@v4
         if: failure()
