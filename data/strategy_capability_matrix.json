@@ -1,13 +1,34 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "updated": "2026-10-22",
   "source_sha_reference": "5af60b5f4c1cdcbfeb097b9f421147ed39c60138",
   "source_module": "lia/brain/strategies.py",
+  "v3_preserved": {
+    "release_pr": 180,
+    "source_sha": "1f2941198d7b1a19962582fc400aa09ca08a3c4b",
+    "renderer": "sites-v3",
+    "build_marker": "sites-v3-release"
+  },
+  "transport_lots_reference": {
+    "report": "docs/audits/vellum-2026-10-22/kit/VALIDATION.md",
+    "snapshot_sha": "236d365ebadca9d98e068c765061c15407070592",
+    "base_sha": "2b39ac6da5fddcafe31f4de81d048a3e0e7953da",
+    "files_transported": 552,
+    "archive_bytes": 3557672,
+    "b64_parts": 14,
+    "max_part_bytes": 349528,
+    "status": "historical_validation_only_v3_already_on_main"
+  },
   "policy": {
     "real_funds_require_human_approval_per_order": true,
     "automatic_financial_test_operations_allowed": false,
-    "owner_builder_repartition_proposals": "inactive"
+    "owner_builder_repartition_proposals": "inactive",
+    "scheduler_or_model_may_manage_real_investments": false,
+    "live_execution_enabled": false
   },
+  "allowed_statuses": ["SIMULATION", "BLOCKED", "READY_FOR_APPROVAL"],
+  "allowed_families": ["trend", "mean", "yield", "hedge", "meta"],
+  "allowed_tx_build": [false, true, "unsigned_only"],
   "strategies": [
     {
       "id": "STRAT_TREND_FOLLOW",
@@ -20,7 +41,8 @@
       "status": "SIMULATION",
       "network": "multiversx",
       "priority_assets": ["EGLD", "TRO-94c925"],
-      "blockers": ["no_verified_live_route", "paper_only_registry"]
+      "blockers": ["no_verified_live_route", "paper_only_registry"],
+      "lot": "G1-signal-sim"
     },
     {
       "id": "STRAT_MEAN_REVERSION",
@@ -33,7 +55,8 @@
       "status": "SIMULATION",
       "network": "multiversx",
       "priority_assets": ["EGLD", "USDC-c76f1f"],
-      "blockers": ["no_verified_live_route", "paper_only_registry"]
+      "blockers": ["no_verified_live_route", "paper_only_registry"],
+      "lot": "G1-signal-sim"
     },
     {
       "id": "STRAT_SENTIMENT_DIV",
@@ -46,7 +69,8 @@
       "status": "SIMULATION",
       "network": "multiversx",
       "priority_assets": ["EGLD"],
-      "blockers": ["sentiment_source_freshness", "paper_only_registry"]
+      "blockers": ["sentiment_source_freshness", "paper_only_registry"],
+      "lot": "G1-signal-sim"
     },
     {
       "id": "STRAT_DELTA_NEUTRAL",
@@ -59,7 +83,8 @@
       "status": "BLOCKED",
       "network": "multiversx",
       "priority_assets": [],
-      "blockers": ["no_multi_leg_infra", "no_short_or_derivatives", "paper_only_registry"]
+      "blockers": ["no_multi_leg_infra", "no_short_or_derivatives", "paper_only_registry"],
+      "lot": "G1-blocked-infra"
     },
     {
       "id": "STRAT_COMPOUND_MAX",
@@ -72,7 +97,8 @@
       "status": "SIMULATION",
       "network": "multiversx",
       "priority_assets": ["EGLD", "TRO-94c925"],
-      "blockers": ["compound_adapter_not_verified_live", "paper_only_registry"]
+      "blockers": ["compound_adapter_not_verified_live", "paper_only_registry"],
+      "lot": "G1-signal-sim"
     },
     {
       "id": "STRAT_YIELD_OPTIMIZER",
@@ -85,7 +111,8 @@
       "status": "SIMULATION",
       "network": "multiversx",
       "priority_assets": ["EGLD", "USDC-c76f1f"],
-      "blockers": ["yield_route_not_verified", "paper_only_registry"]
+      "blockers": ["yield_route_not_verified", "paper_only_registry"],
+      "lot": "G1-signal-sim"
     },
     {
       "id": "STRAT_VOLATILITY_EXT",
@@ -98,7 +125,8 @@
       "status": "BLOCKED",
       "network": "multiversx",
       "priority_assets": [],
-      "blockers": ["options_infra_absent", "paper_only_registry"]
+      "blockers": ["options_infra_absent", "paper_only_registry"],
+      "lot": "G1-blocked-infra"
     },
     {
       "id": "STRAT_ARB_MARKET",
@@ -111,7 +139,8 @@
       "status": "BLOCKED",
       "network": "multiversx",
       "priority_assets": [],
-      "blockers": ["cross_venue_arb_infra_absent", "paper_only_registry"]
+      "blockers": ["cross_venue_arb_infra_absent", "paper_only_registry"],
+      "lot": "G1-blocked-infra"
     },
     {
       "id": "STRAT_CORRELATION_ARB",
@@ -124,7 +153,8 @@
       "status": "BLOCKED",
       "network": "multiversx",
       "priority_assets": [],
-      "blockers": ["pair_leg_infra_absent", "paper_only_registry"]
+      "blockers": ["pair_leg_infra_absent", "paper_only_registry"],
+      "lot": "G1-blocked-infra"
     },
     {
       "id": "STRAT_SENTINEL",
@@ -137,7 +167,8 @@
       "status": "SIMULATION",
       "network": "multiversx",
       "priority_assets": [],
-      "blockers": ["defensive_hold_only"]
+      "blockers": ["defensive_hold_only"],
+      "lot": "G1-signal-sim"
     },
     {
       "id": "STRAT_MOMENTUM_BREAKOUT",
@@ -150,7 +181,8 @@
       "status": "SIMULATION",
       "network": "multiversx",
       "priority_assets": ["EGLD"],
-      "blockers": ["paper_only_registry"]
+      "blockers": ["paper_only_registry"],
+      "lot": "G1-signal-sim"
     },
     {
       "id": "STRAT_LIQUIDITY_SNIPER",
@@ -163,7 +195,8 @@
       "status": "BLOCKED",
       "network": "multiversx",
       "priority_assets": [],
-      "blockers": ["thin_book_execution_unverified", "paper_only_registry"]
+      "blockers": ["thin_book_execution_unverified", "paper_only_registry"],
+      "lot": "G1-blocked-infra"
     },
     {
       "id": "STRAT_MICRO_PROOF",
@@ -181,7 +214,8 @@
         "ops_dust_only",
         "not_auto_enabled"
       ],
-      "notes": "Registry marks paper_only=False for ops dust TX path only. Suite does not enable auto-execution. User validates intents one by one via LIA wallet."
+      "lot": "G1-approval-gated",
+      "notes": "paper_only=False in registry for ops dust only; not auto-enabled; human per-order approval required."
     }
   ],
   "summary": {
@@ -189,6 +223,19 @@
     "simulation": 7,
     "blocked": 5,
     "ready_for_approval": 1,
-    "live_execution_enabled": 0
+    "live_execution_enabled": 0,
+    "by_family": {
+      "trend": 2,
+      "mean": 2,
+      "hedge": 2,
+      "yield": 3,
+      "meta": 4
+    },
+    "by_lot": {
+      "G1-signal-sim": 7,
+      "G1-blocked-infra": 5,
+      "G1-approval-gated": 1
+    },
+    "unique_ids": true
   }
 }

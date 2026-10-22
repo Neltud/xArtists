@@ -8,6 +8,7 @@ on:
       - 'scripts/**'
       - 'tests/**'
       - 'data/contracts.json'
+      - 'data/strategy_capability_matrix.json'
       - 'data/treasury_wallets.json'
       - 'data/lia_v6_status.json'
       - 'data/lia_board.json'
@@ -19,6 +20,7 @@ on:
       - 'scripts/**'
       - 'tests/**'
       - 'data/contracts.json'
+      - 'data/strategy_capability_matrix.json'
       - '.github/workflows/regression.yml'
   workflow_dispatch:
 
