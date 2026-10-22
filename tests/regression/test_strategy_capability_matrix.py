@@ -110,3 +110,10 @@ def test_family_and_lot_summary_consistent():
     by_l = Counter(s["lot"] for s in m["strategies"])
     assert m["summary"]["by_family"] == dict(by_f)
     assert m["summary"]["by_lot"] == dict(by_l)
+
+
+def test_validate_matrix_helper_accepts_canonical():
+    from lia.validation.strategy_matrix import validate_matrix
+
+    m = _load()
+    validate_matrix(m, registry_check=True)
