@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /** TRO hype score — QuantOracle MultiversX */
 import { useEffect, useState } from 'react'
 import { quantOracle, type HypeScore } from '../../lab/quant/quantOracle'
@@ -37,18 +38,18 @@ export default function TroHypeCard() {
     <section className="rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-600">Hype · TRO</p>
-          <p className="text-sm font-semibold text-white mt-1">TUDURIORIGINAL</p>
+          <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-600">{xaRender("Hype · TRO")}</p>
+          <p className="text-sm font-semibold text-white mt-1">{xaRender("TUDURIORIGINAL")}</p>
         </div>
-        <span className="text-[11px] text-zinc-500 font-mono">{TRO}</span>
+        <span className="text-[11px] text-zinc-500 font-mono">{xaRender(TRO)}</span>
       </div>
 
-      {err && <p className="text-[12px] text-amber-200">{err}</p>}
+      {xaRender(err && <p className="text-[12px] text-amber-200">{xaRender(err)}</p>)}
 
       <div className="flex items-end gap-4">
         <p className="text-4xl font-semibold tabular-nums text-white tracking-tight">
-          {pct != null ? pct : '—'}
-          {pct != null && <span className="text-lg text-zinc-500 font-normal">/100</span>}
+          {xaRender(pct != null ? pct : '—')}
+          {xaRender(pct != null && <span className="text-lg text-zinc-500 font-normal">/100</span>)}
         </p>
         <div className="flex-1 min-w-[8rem]">
           <div className="h-2 rounded-full bg-white/5 overflow-hidden">
@@ -58,15 +59,13 @@ export default function TroHypeCard() {
             />
           </div>
           <p className="text-[10px] text-zinc-600 mt-1.5">
-            {hype?.sources.join(' · ') || 'chargement…'}
+            {xaRender(hype?.sources.join(' · ') || 'chargement…')}
           </p>
         </div>
       </div>
 
       <p className="text-[11px] text-zinc-600 leading-relaxed">
-        Score paper (on-chain MultiversX + social placeholder). Pas un signal d’achat. Vellum/X =
-        couche séparée.
-      </p>
+        {xaRender("Score paper (on-chain MultiversX + social placeholder). Pas un signal d’achat. Vellum/X = couche séparée. ")}</p>
     </section>
   )
 }

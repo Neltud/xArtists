@@ -3,7 +3,7 @@
  * Live = VITE_LIA_LIVE_TRADING=1 · toujours user-sign, jamais PEM autonome.
  */
 import { LIA_GUARDS, LIA_LIVE_TRADING } from '../config/liaConfig'
-import { buildTxFromIntent, describeTx } from './buildIntentTx'
+import { prepareIntentTx, describeTx } from './buildIntentTx'
 import { loadIntentFeed, type FeedItem } from './intentFeed'
 
 const KEY = 'xartists_lia_intent_journal_v1'
@@ -22,6 +22,8 @@ export type JournalEntry = {
   theoreticalPnlUsd: number
   status: IntentStatus
   txHash?: string
+  sessionHint?: string
+  usdNotional?: number
   at: number
   updatedAt: number
   paper: boolean
@@ -84,7 +86,7 @@ export function syncFeedIntoJournal(): JournalEntry[] {
   }
   const merged = Array.from(byId.values()).sort((a, b) => a.at - b.at)
   save(merged)
-  return merged.slice(-40)
+  return merged.slice(-MAX)
 }
 
 /** Injecte un intent d’amorce live si le journal est vide. */
@@ -126,12 +128,13 @@ export function markAwaitingSignature(id: string): JournalEntry | null {
   const all = loadRaw()
   const i = all.findIndex(e => e.id === id)
   if (i < 0) return null
+  if (['pending', 'executed'].includes(all[i].status)) return null
   all[i] = { ...all[i], status: 'awaiting_signature', updatedAt: Date.now() }
   save(all)
   return all[i]
 }
 
-export function markPending(id: string, sessionHint?: string): JournalEntry | null {
+export function markPending(id: string, sessionHint?: string, usdNotional?: number): JournalEntry | null {
   const all = loadRaw()
   const i = all.findIndex(e => e.id === id)
   if (i < 0) return null
@@ -139,7 +142,8 @@ export function markPending(id: string, sessionHint?: string): JournalEntry | nu
     ...all[i],
     status: 'pending',
     updatedAt: Date.now(),
-    ...(sessionHint ? { txHash: sessionHint } : {}),
+    ...(sessionHint ? { sessionHint } : {}),
+    ...(usdNotional != null ? { usdNotional } : {}),
   }
   save(all)
   return all[i]
@@ -147,11 +151,13 @@ export function markPending(id: string, sessionHint?: string): JournalEntry | nu
 
 export function attachUserTxHash(id: string, txHash: string, ok: boolean): JournalEntry | null {
   const all = loadRaw()
+  const normalizedHash = txHash.replace(/^0x/i, '').toLowerCase()
+  if (all.some(entry => entry.id !== id && entry.txHash?.toLowerCase() === normalizedHash)) return null
   const i = all.findIndex(e => e.id === id)
   if (i < 0) return null
   all[i] = {
     ...all[i],
-    txHash: txHash.replace(/^0x/, ''),
+    txHash: normalizedHash,
     status: ok ? 'executed' : 'failed',
     updatedAt: Date.now(),
   }
@@ -201,7 +207,8 @@ export function buildUserSignPayload(entry: JournalEntry): UserSignPayload {
       note: 'Paper — aucune transaction. LIA ne détient aucune clé.',
     }
   }
-  const draft = buildTxFromIntent(entry)
+  const prepared = prepareIntentTx(entry)
+  const draft = prepared.ok ? prepared.draft : null
   return {
     intentId: entry.id,
     mode: 'live_user_sign',
@@ -209,8 +216,10 @@ export function buildUserSignPayload(entry: JournalEntry): UserSignPayload {
     action: entry.action,
     assetId: entry.assetId,
     amount: entry.amount,
-    summary: describeTx(draft),
+    summary: draft ? describeTx(draft) : summary,
     tx: draft,
-    note: 'Signature xPortal uniquement · micro plafonné · LIA ne broadcast pas seule.',
+    note: prepared.ok
+      ? 'Dépôt de vérification explicite · signature xPortal uniquement.'
+      : prepared.reason,
   }
 }

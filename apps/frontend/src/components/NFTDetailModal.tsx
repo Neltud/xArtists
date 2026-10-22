@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 import type { NFT } from '../types/nft'
 import {
@@ -35,6 +36,8 @@ export default function NFTDetailModal({
   initialAction = null,
   initialListingId = null,
 }: Props) {
+  xaUsePhraseLocale()
+
   const { isLoggedIn, address, method } = useWeb3()
   const {
     listNft,
@@ -158,30 +161,28 @@ export default function NFTDetailModal({
         </button>
         <div className="grid md:grid-cols-2">
           <div className="aspect-square bg-[#0a0a0f]">
-            {img ? (
+            {xaRender(img ? (
               <img src={img} alt={nft.name} className="h-full w-full object-cover" />
             ) : (
               <div className="flex h-full items-center justify-center text-6xl">🎨</div>
-            )}
+            ))}
           </div>
           <div className="flex flex-col gap-3 p-6">
-            <h2 className="text-2xl font-black">{nft.name || 'Untitled'}</h2>
-            <p className="mono text-xs text-gray-500">{nft.identifier}</p>
+            <h2 className="text-2xl font-black">{xaRender(nft.name || 'Untitled')}</h2>
+            <p className="mono text-xs text-gray-500">{xaRender(nft.identifier)}</p>
             <p className="text-xs text-gray-400">
-              {nft.collection_name} · {nonceLabel(nft)} · royalties {royalties ?? '—'}% ·{' '}
-              {typeLabel(nft.type)}
+              {xaRender(nft.collection_name)} · {xaRender(nonceLabel(nft))} {xaRender(" · royalties ")}{xaRender(royalties ?? '—')}% ·{xaRender(' ')}
+              {xaRender(typeLabel(nft.type))}
             </p>
             <TxCapabilityBanner />
-            {!live && (
+            {xaRender(!live && (
               <p className="text-[10px] text-red-300/90">
-                SC marketplace non live (codeHash null) — TX on-chain bloquées jusqu’au deploy +
-                verify.
-              </p>
-            )}
+                {xaRender("SC marketplace non live (codeHash null) — TX on-chain bloquées jusqu’au deploy + verify. ")}</p>
+            ))}
             <UserWalletGuard address={address} action="List / Buy / Bid" />
 
             <div className="flex flex-wrap gap-1">
-              {(['buy', 'sell', 'bid', 'manage', 'offer'] as const).map(t => (
+              {xaRender((['buy', 'sell', 'bid', 'manage', 'offer'] as const).map(t => (
                 <button
                   key={t}
                   type="button"
@@ -194,17 +195,16 @@ export default function NFTDetailModal({
                         : 'bg-[#15151f] border border-[#2a2a3a] text-gray-400'
                   }`}
                 >
-                  {t}
+                  {xaRender(t)}
                 </button>
-              ))}
+              )))}
             </div>
             <p className="text-[10px] mono text-gray-500">
-              SC {marketplaceAddress ? `${marketplaceAddress.slice(0, 18)}…` : '— (not live)'}
+              SC {xaRender(marketplaceAddress ? `${marketplaceAddress.slice(0, 18)}…` : '— (not live)')}
             </p>
 
             <label className="flex flex-col gap-1 text-[10px] uppercase text-gray-500">
-              Listing ID
-              <input
+              {xaRender("Listing ID ")}<input
                 type="number"
                 min={0}
                 value={listingId}
@@ -215,35 +215,34 @@ export default function NFTDetailModal({
                 className="rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm text-white"
               />
               <span className="normal-case text-gray-600">
-                {indexHint
+                {xaRender(indexHint
                   ? `Source: ${indexHint}`
-                  : 'P1: index listings (token+nonce) ou activité SC'}
+                  : 'P1: index listings (token+nonce) ou activité SC')}
               </span>
             </label>
 
-            {(tab === 'buy' || tab === 'sell') && priceN > 0 && (
+            {xaRender((tab === 'buy' || tab === 'sell') && priceN > 0 && (
               <div className="rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] px-3 py-2 text-[11px] text-gray-400 space-y-1">
                 <p>
-                  Fee market estimé {(NFT_MARKET_FEE_BPS / 100).toFixed(1)}% →{' '}
-                  <span className="text-amber-200">{split.fee.toFixed(4)} EGLD</span> · seller ≈{' '}
-                  <span className="text-teal-300">{split.toSeller.toFixed(4)} EGLD</span>
+                  {xaRender("Fee market estimé ")}{xaRender((NFT_MARKET_FEE_BPS / 100).toFixed(1))}% →{xaRender(' ')}
+                  <span className="text-amber-200">{xaRender(split.fee.toFixed(4))} {xaRender(" EGLD")}</span> {xaRender(" · seller ≈")}{xaRender(' ')}
+                  <span className="text-teal-300">{xaRender(split.toSeller.toFixed(4))} {xaRender(" EGLD")}</span>
                 </p>
-                {royaltyPlusFee > 10_000 && (
+                {xaRender(royaltyPlusFee > 10_000 && (
                   <p className="text-red-300">
-                    Attention: royalty+fee &gt; 100% — SC doit rejeter (cap P0).
-                  </p>
-                )}
+                    {xaRender("Attention: royalty+fee &gt; 100% — SC doit rejeter (cap P0). ")}</p>
+                ))}
               </div>
-            )}
+            ))}
 
-            {tab === 'buy' && (
+            {xaRender(tab === 'buy' && (
               <div className="flex flex-wrap gap-2 items-end">
                 <input
                   type="number"
                   value={buyPrice}
                   onChange={e => setBuyPrice(e.target.value)}
                   className="w-28 rounded-lg border border-[#2a2a3a] bg-[#15151f] px-2 py-1.5 text-sm"
-                  placeholder="EGLD"
+                  placeholder={xaLocalize("EGLD")}
                 />
                 <button
                   type="button"
@@ -251,12 +250,11 @@ export default function NFTDetailModal({
                   className="btn-primary text-sm"
                   onClick={guard(() => buyNft({ listingId: id, priceEgld: parseFloat(buyPrice) }))}
                 >
-                  Buy
-                </button>
+                  {xaRender("Buy ")}</button>
               </div>
-            )}
+            ))}
 
-            {tab === 'sell' && (
+            {xaRender(tab === 'sell' && (
               <div className="flex flex-wrap gap-2 items-end">
                 <input
                   type="number"
@@ -276,12 +274,11 @@ export default function NFTDetailModal({
                     })
                   )}
                 >
-                  List / Sell
-                </button>
+                  {xaRender("List / Sell ")}</button>
               </div>
-            )}
+            ))}
 
-            {tab === 'bid' && (
+            {xaRender(tab === 'bid' && (
               <div className="flex flex-wrap gap-2 items-end">
                 <input
                   type="number"
@@ -295,20 +292,18 @@ export default function NFTDetailModal({
                   className="btn-primary text-sm"
                   onClick={guard(() => placeBid({ listingId: id, amountEgld: parseFloat(bidPrice) }))}
                 >
-                  Place bid
-                </button>
+                  {xaRender("Place bid ")}</button>
                 <button
                   type="button"
                   disabled={txDisabled}
                   className="btn-secondary text-sm"
                   onClick={guard(() => withdrawBid(id))}
                 >
-                  Withdraw bid
-                </button>
+                  {xaRender("Withdraw bid ")}</button>
               </div>
-            )}
+            ))}
 
-            {tab === 'manage' && (
+            {xaRender(tab === 'manage' && (
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -316,42 +311,37 @@ export default function NFTDetailModal({
                   className="btn-secondary text-sm"
                   onClick={guard(() => acceptBid(id))}
                 >
-                  Accept bid
-                </button>
+                  {xaRender("Accept bid ")}</button>
                 <button
                   type="button"
                   disabled={txDisabled}
                   className="btn-secondary text-sm"
                   onClick={guard(() => cancelListing(id))}
                 >
-                  Cancel listing
-                </button>
+                  {xaRender("Cancel listing ")}</button>
               </div>
-            )}
+            ))}
 
-            {tab === 'offer' && (
+            {xaRender(tab === 'offer' && (
               <div className="rounded-xl border border-dashed border-gray-600 bg-[#0a0a0f] px-3 py-3 text-xs text-gray-400 space-y-2">
                 <p>
-                  <strong className="text-gray-300">Offer</strong> n’a pas d’endpoint on-chain (V2
-                  escrow).
-                </p>
-                <p>Utilise Bid si le listing est live.</p>
+                  <strong className="text-gray-300">{xaRender("Offer")}</strong> {xaRender(" n’a pas d’endpoint on-chain (V2 escrow). ")}</p>
+                <p>{xaRender("Utilise Bid si le listing est live.")}</p>
               </div>
-            )}
+            ))}
 
-            {(txMsg || error) && (
-              <p className={`text-xs ${error ? 'text-red-400' : 'text-green-400'}`}>{txMsg || error}</p>
-            )}
-            {lastTx && (
+            {xaRender((txMsg || error) && (
+              <p className={`text-xs ${error ? 'text-red-400' : 'text-green-400'}`}>{xaRender(txMsg || error)}</p>
+            ))}
+            {xaRender(lastTx && (
               <a
                 className="text-xs text-purple-300 underline"
                 href={`${LINKS.explorer}/transactions/${lastTx}`}
                 target="_blank"
                 rel="noreferrer"
               >
-                Voir TX explorer
-              </a>
-            )}
+                {xaRender("Voir TX explorer ")}</a>
+            ))}
 
             <div className="flex gap-3 text-xs mt-2">
               <a
@@ -360,16 +350,14 @@ export default function NFTDetailModal({
                 rel="noreferrer"
                 className="text-purple-300"
               >
-                Explorer
-              </a>
+                {xaRender("Explorer ")}</a>
               <a
                 href={XOXNO_COLLECTION(nft.collection)}
                 target="_blank"
                 rel="noreferrer"
                 className="text-gray-400"
               >
-                XOXNO
-              </a>
+                {xaRender("XOXNO ")}</a>
             </div>
           </div>
         </div>

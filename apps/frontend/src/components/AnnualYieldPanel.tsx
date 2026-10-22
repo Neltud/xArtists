@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
@@ -55,54 +56,53 @@ export default function AnnualYieldPanel() {
     <div className="card mb-8">
       <div className="flex flex-wrap justify-between gap-2 mb-3">
         <div>
-          <h2 className="text-lg font-bold">Sim rendement 1 an (paper)</h2>
+          <h2 className="text-lg font-bold">{xaRender("Sim rendement 1 an (paper)")}</h2>
           <p className="text-xs text-gray-500 mt-1">
-            Inclut des colonnes perdantes — pas une promesse de performance
-          </p>
+            {xaRender("Inclut des colonnes perdantes — pas une promesse de performance ")}</p>
         </div>
         <span className="text-sm mono font-bold text-teal-300">
-          Portfolio {agg?.portfolio_return_1y_pct != null ? `${agg.portfolio_return_1y_pct}%` : '—'}
+          {xaRender("Portfolio ")}{xaRender(agg?.portfolio_return_1y_pct != null ? `${agg.portfolio_return_1y_pct}%` : '—')}
         </span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm min-w-[480px]">
           <thead>
             <tr className="text-[10px] uppercase text-gray-500 border-b border-[#2a2a3a]">
-              <th className="text-left py-2">Col</th>
-              <th className="text-right py-2">Return 1y</th>
-              <th className="text-right py-2">Stress</th>
-              <th className="text-left py-2">Status</th>
+              <th className="text-left py-2">{xaRender("Col")}</th>
+              <th className="text-right py-2">{xaRender("Return 1y")}</th>
+              <th className="text-right py-2">{xaRender("Stress")}</th>
+              <th className="text-left py-2">{xaRender("Status")}</th>
             </tr>
           </thead>
           <tbody>
-            {data.echelons.map((e) => (
+            {xaRender(data.echelons.map((e) => (
               <tr key={e.id} className="border-b border-[#2a2a3a]/40">
-                <td className="py-1.5 font-semibold">{e.id}</td>
+                <td className="py-1.5 font-semibold">{xaRender(e.id)}</td>
                 <td
                   className={`py-1.5 text-right mono ${
                     (e.return_1y_pct ?? 0) >= 0 ? 'text-green-400' : 'text-red-400'
                   }`}
                 >
-                  {e.return_1y_pct != null ? `${e.return_1y_pct}%` : '—'}
+                  {xaRender(e.return_1y_pct != null ? `${e.return_1y_pct}%` : '—')}
                 </td>
-                <td className="py-1.5 text-right mono text-gray-500">{e.stress ?? '—'}</td>
+                <td className="py-1.5 text-right mono text-gray-500">{xaRender(e.stress ?? '—')}</td>
                 <td className="py-1.5 text-xs">
-                  {e.lost_money ? (
-                    <span className="text-red-400">loss column</span>
+                  {xaRender(e.lost_money ? (
+                    <span className="text-red-400">{xaRender("loss column")}</span>
                   ) : (
                     <span className="text-green-400/80">ok</span>
-                  )}
+                  ))}
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>
       <p className="text-[10px] text-gray-600 mt-2">
-        {data.disclaimer || agg?.note || 'Simulation only.'}
-        {agg?.losing_columns?.length
+        {xaRender(data.disclaimer || agg?.note || 'Simulation only.')}
+        {xaRender(agg?.losing_columns?.length
           ? ` · Losers: ${agg.losing_columns.join(', ')}`
-          : ''}
+          : '')}
       </p>
     </div>
   )

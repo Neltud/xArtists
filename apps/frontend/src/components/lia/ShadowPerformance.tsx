@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../../i18n/phraseRuntime'
 /** Shadow sprint performance — equity curve + KPIs (paper only). */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { asText } from '../../lib/safeRender'
@@ -55,6 +56,8 @@ async function loadExport(): Promise<ShadowExport | null> {
 }
 
 function EquityCanvas({ curve }: { curve: CurvePt[] }) {
+  xaUsePhraseLocale()
+
   const ref = useRef<HTMLCanvasElement>(null)
   useEffect(() => {
     const c = ref.current
@@ -92,7 +95,7 @@ function EquityCanvas({ curve }: { curve: CurvePt[] }) {
       width={320}
       height={100}
       className="w-full max-w-md h-[100px] rounded-lg bg-black/40 border border-white/10"
-      aria-label="Courbe equity shadow"
+      aria-label={xaLocalize("Courbe equity shadow")}
     />
   )
 }
@@ -117,7 +120,7 @@ export default function ShadowPerformance() {
   const curve = useMemo(() => data?.equity_curve || [], [data])
 
   if (!data) {
-    return <p className="text-[12px] text-zinc-500 animate-pulse">Chargement shadow sprint…</p>
+    return <p className="text-[12px] text-zinc-500 animate-pulse">{xaRender("Chargement shadow sprint…")}</p>
   }
 
   const pnl = data.shadow_pnl_usd
@@ -133,36 +136,35 @@ export default function ShadowPerformance() {
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
           <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold">
-            Shadow Performance
-          </p>
+            {xaRender("Shadow Performance ")}</p>
           <p className="text-[12px] text-zinc-500">
-            Sprint jour {asText(data.day_index ?? '—')}/7 · {asText(data.sprint_status || 'paper')}
+            {xaRender("Sprint jour ")}{xaRender(asText(data.day_index ?? '—'))}/7 · {xaRender(asText(data.sprint_status || 'paper'))}
           </p>
         </div>
         <p className={`text-lg font-bold tabular-nums ${pnlCls}`}>
-          {pnl != null ? `${pnl >= 0 ? '+' : ''}${asText(pnl)} USD` : '—'}
+          {xaRender(pnl != null ? `${pnl >= 0 ? '+' : ''}${asText(pnl)} USD` : '—')}
         </p>
       </div>
       <div className="grid grid-cols-3 gap-2 text-[12px]">
         <div>
-          <p className="text-zinc-500">Fills</p>
-          <p className="font-semibold tabular-nums">{asText(data.fills)}</p>
+          <p className="text-zinc-500">{xaRender("Fills")}</p>
+          <p className="font-semibold tabular-nums">{xaRender(asText(data.fills))}</p>
         </div>
         <div>
-          <p className="text-zinc-500">Win rate</p>
+          <p className="text-zinc-500">{xaRender("Win rate")}</p>
           <p className="font-semibold tabular-nums">
-            {data.win_rate != null ? `${asText(Math.round(Number(data.win_rate) * 100))}%` : '—'}
+            {xaRender(data.win_rate != null ? `${asText(Math.round(Number(data.win_rate) * 100))}%` : '—')}
           </p>
         </div>
         <div>
-          <p className="text-zinc-500">Equity</p>
-          <p className="font-semibold tabular-nums">{asText(data.equity_now_usd)} USD</p>
+          <p className="text-zinc-500">{xaRender("Equity")}</p>
+          <p className="font-semibold tabular-nums">{xaRender(asText(data.equity_now_usd))} {xaRender(" USD")}</p>
         </div>
       </div>
-      {curve.length >= 2 && <EquityCanvas curve={curve} />}
-      {data.last_shadow && data.last_shadow.length > 0 && (
+      {xaRender(curve.length >= 2 && <EquityCanvas curve={curve} />)}
+      {xaRender(data.last_shadow && data.last_shadow.length > 0 && (
         <ul className="text-[11px] space-y-1 text-zinc-400 max-h-28 overflow-y-auto">
-          {data.last_shadow
+          {xaRender(data.last_shadow
             .slice()
             .reverse()
             .map((x, i) => (
@@ -171,15 +173,15 @@ export default function ShadowPerformance() {
                 className="flex justify-between gap-2 border-b border-white/5 py-0.5"
               >
                 <span>
-                  {asText(x.side)} {asText(x.asset)}
+                  {xaRender(asText(x.side))} {xaRender(asText(x.asset))}
                 </span>
-                <span className="tabular-nums">{asText(x.pnl_usd)}</span>
+                <span className="tabular-nums">{xaRender(asText(x.pnl_usd))}</span>
               </li>
-            ))}
+            )))}
         </ul>
-      )}
+      ))}
       <p className="text-[10px] text-zinc-600">
-        {asText(data.note, 'Paper only — zero real capital')}
+        {xaRender(asText(data.note, 'Paper only — zero real capital'))}
       </p>
     </section>
   )

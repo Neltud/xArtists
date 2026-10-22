@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Dashboard source strip — live metrics + agent pack gates.
  */
@@ -9,8 +10,8 @@ import { usePulse } from '../hooks/usePulse'
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-white/8 bg-black/40 px-2 py-2">
-      <p className="text-[9px] uppercase tracking-wider text-zinc-500">{label}</p>
-      <p className="text-sm font-semibold text-white tabular-nums">{value}</p>
+      <p className="text-[9px] uppercase tracking-wider text-zinc-500">{xaRender(label)}</p>
+      <p className="text-sm font-semibold text-white tabular-nums">{xaRender(value)}</p>
     </div>
   )
 }
@@ -37,7 +38,7 @@ export default function DashboardSource({ className = '' }: { className?: string
     >
       <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
         <span className="text-[10px] uppercase tracking-widest text-cyan-300">
-          LIVE · Command · {String(mode).toUpperCase()}
+          {xaRender("LIVE · Command · ")}{xaRender(String(mode).toUpperCase())}
         </span>
         <span
           className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
@@ -46,7 +47,7 @@ export default function DashboardSource({ className = '' }: { className?: string
               : 'text-rose-300 border-rose-500/40 bg-rose-500/10'
           }`}
         >
-          {bullish ? 'BULLISH' : 'BEARISH'} {(sentiment * 100).toFixed(0)}%
+          {xaRender(bullish ? 'BULLISH' : 'BEARISH')} {xaRender((sentiment * 100).toFixed(0))}%
         </span>
       </div>
 
@@ -57,9 +58,9 @@ export default function DashboardSource({ className = '' }: { className?: string
         <Metric label="Gate" value={access?.source ?? '—'} />
       </div>
 
-      <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2">Agents IA</p>
+      <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-2">{xaRender("Agents IA")}</p>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
-        {AGENT_PACKS.map(p => {
+        {xaRender(AGENT_PACKS.map(p => {
           const owned = Boolean(access?.packs?.includes(p.id as PackId))
           return (
             <div
@@ -71,13 +72,13 @@ export default function DashboardSource({ className = '' }: { className?: string
               }`}
             >
               <div className="flex items-center gap-2">
-                <span className="text-sm">{p.icon || '◎'}</span>
-                <span className="text-[12px] font-medium text-white">{p.name}</span>
+                <span className="text-sm">{xaRender(p.icon || '◎')}</span>
+                <span className="text-[12px] font-medium text-white">{xaRender(p.name)}</span>
               </div>
-              <p className="text-[10px] text-zinc-500 mt-0.5">{owned ? 'détenu' : 'verrouillé'}</p>
+              <p className="text-[10px] text-zinc-500 mt-0.5">{xaRender(owned ? 'détenu' : 'verrouillé')}</p>
             </div>
           )
-        })}
+        }))}
       </div>
     </div>
   )

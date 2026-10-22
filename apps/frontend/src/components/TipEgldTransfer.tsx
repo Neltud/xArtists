@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Voluntary tip: EGLD transfer user → LIA ops with memo tip:mission|…
  * Not investment. Requires signable session (not paste).
@@ -96,20 +97,19 @@ export default function TipEgldTransfer() {
 
   return (
     <div className="card border-purple-500/25 mb-8">
-      <h2 className="text-lg font-bold mb-1">Envoyer un tip EGLD (on-chain)</h2>
+      <h2 className="text-lg font-bold mb-1">{xaRender("Envoyer un tip EGLD (on-chain)")}</h2>
       <p className="text-xs text-gray-500 mb-4">
-        Depuis <strong className="text-gray-300">ton</strong> wallet vers LIA Ops · memo traçable ·{' '}
-        <strong className="text-amber-200">don, pas un investissement</strong>
+        {xaRender("Depuis ")}<strong className="text-gray-300">{xaRender("ton")}</strong> {xaRender(" wallet vers LIA Ops · memo traçable ·")}{xaRender(' ')}
+        <strong className="text-amber-200">{xaRender("don, pas un investissement")}</strong>
       </p>
 
-      {!connected ? (
+      {xaRender(!connected ? (
         <button type="button" onClick={requestOpenConnect} className="btn-primary text-sm">
-          🔗 Connecter pour tipper
-        </button>
+          {xaRender("🔗 Connecter pour tipper ")}</button>
       ) : (
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2">
-            {MEMOS.map(m => (
+            {xaRender(MEMOS.map(m => (
               <button
                 key={m.id}
                 type="button"
@@ -120,15 +120,14 @@ export default function TipEgldTransfer() {
                     : 'bg-[#111118] border border-[#2a2a3a] text-gray-400'
                 }`}
               >
-                {m.label}
+                {xaRender(m.label)}
               </button>
-            ))}
+            )))}
           </div>
-          <p className="text-[10px] mono text-gray-600">memo: {memo}</p>
+          <p className="text-[10px] mono text-gray-600">{xaRender("memo: ")}{xaRender(memo)}</p>
           <div className="flex flex-wrap gap-2 items-end">
             <label className="flex flex-col gap-1 text-[10px] uppercase text-gray-500">
-              EGLD
-              <input
+              {xaRender("EGLD ")}<input
                 type="number"
                 min={0}
                 step={0.001}
@@ -143,27 +142,26 @@ export default function TipEgldTransfer() {
               onClick={submit}
               className="btn-primary text-sm disabled:opacity-40"
             >
-              {pending ? '…' : 'Envoyer tip'}
+              {xaRender(pending ? '…' : 'Envoyer tip')}
             </button>
           </div>
-          {(block || !canSign) && (
+          {xaRender((block || !canSign) && (
             <p className="text-xs text-amber-300">
-              {block || 'Ouvre /tip avec Web Wallet / extension (pas paste).'}
+              {xaRender(block || 'Ouvre /tip avec Web Wallet / extension (pas paste).')}
             </p>
-          )}
-          {msg && <p className="text-xs text-gray-300">{msg}</p>}
-          {lastTx && (
+          ))}
+          {xaRender(msg && <p className="text-xs text-gray-300">{xaRender(msg)}</p>)}
+          {xaRender(lastTx && (
             <a
               className="text-xs text-purple-300 underline"
               href={`${LINKS.explorer}/transactions/${lastTx}`}
               target="_blank"
               rel="noreferrer"
             >
-              Explorer session
-            </a>
-          )}
+              {xaRender("Explorer session ")}</a>
+          ))}
         </div>
-      )}
+      ))}
     </div>
   )
 }

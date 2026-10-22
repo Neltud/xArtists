@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * P4 Holder terminal — Shadow (default) + Live on-chain display toggle.
  * Live = balances/TX display only. Does not enable LIA_LIVE_TRADING.
@@ -164,9 +165,8 @@ export default function HolderTerminal() {
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[10px] uppercase tracking-[0.22em] text-zinc-500 font-medium">
-            Holder terminal
-          </p>
-          <h2 className="text-2xl font-semibold tracking-tight text-white">Performance</h2>
+            {xaRender("Holder terminal ")}</p>
+          <h2 className="text-2xl font-semibold tracking-tight text-white">{xaRender("Performance")}</h2>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex rounded-full border border-white/10 p-0.5 text-[10px] font-bold uppercase">
@@ -177,8 +177,7 @@ export default function HolderTerminal() {
               }`}
               onClick={() => setMode('shadow')}
             >
-              Shadow
-            </button>
+              {xaRender("Shadow ")}</button>
             <button
               type="button"
               className={`px-3 py-1 rounded-full ${
@@ -186,83 +185,80 @@ export default function HolderTerminal() {
               }`}
               onClick={() => setMode('live')}
             >
-              Live
-            </button>
+              {xaRender("Live ")}</button>
           </div>
-          {isLive && (
+          {xaRender(isLive && (
             <span className="text-[10px] font-bold tracking-widest text-rose-400 animate-pulse">
-              ● LIVE
-            </span>
-          )}
+              {xaRender("● LIVE ")}</span>
+          ))}
         </div>
       </header>
 
       <div className="text-right">
         <p className="text-[10px] uppercase tracking-wider text-zinc-500">
-          {isLive ? 'On-chain equity proxy' : 'Shadow equity'}
+          {xaRender(isLive ? 'On-chain equity proxy' : 'Shadow equity')}
         </p>
         <p className="text-xl font-semibold tabular-nums text-white">
-          {asText(displayEquity)} <span className="text-sm text-zinc-500">USD</span>
+          {xaRender(asText(displayEquity))} <span className="text-sm text-zinc-500">{xaRender("USD")}</span>
         </p>
       </div>
 
-      {!isLive &&
+      {xaRender(!isLive &&
         (curve.length >= 2 ? (
           <EquityArea curve={curve} />
         ) : (
           <div className="h-[120px] rounded-xl bg-[#0a0a0c] flex items-center justify-center text-[12px] text-zinc-600">
-            Equity curve · shadow sprint
-          </div>
-        ))}
+            {xaRender("Equity curve · shadow sprint ")}</div>
+        )))}
 
-      {isLive && (
+      {xaRender(isLive && (
         <div className="rounded-xl border border-rose-500/20 bg-black/40 p-3 space-y-2">
-          <p className="text-[10px] uppercase text-rose-300/80 font-semibold">Real balances</p>
+          <p className="text-[10px] uppercase text-rose-300/80 font-semibold">{xaRender("Real balances")}</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[12px]">
             <div>
-              <p className="text-zinc-500">EGLD</p>
-              <p className="tabular-nums text-white">{asText(live?.deployer?.egld)}</p>
+              <p className="text-zinc-500">{xaRender("EGLD")}</p>
+              <p className="tabular-nums text-white">{xaRender(asText(live?.deployer?.egld))}</p>
             </div>
             <div>
-              <p className="text-zinc-500">USDC</p>
+              <p className="text-zinc-500">{xaRender("USDC")}</p>
               <p className="tabular-nums text-white">
-                {asText(live?.deployer?.tokens?.['USDC-c76f1f'])}
+                {xaRender(asText(live?.deployer?.tokens?.['USDC-c76f1f']))}
               </p>
             </div>
             <div>
-              <p className="text-zinc-500">TRO</p>
+              <p className="text-zinc-500">{xaRender("TRO")}</p>
               <p className="tabular-nums text-white">
-                {asText(live?.deployer?.tokens?.['TRO-94c925'])}
+                {xaRender(asText(live?.deployer?.tokens?.['TRO-94c925']))}
               </p>
             </div>
             <div>
-              <p className="text-zinc-500">EGLD USD</p>
-              <p className="tabular-nums text-white">{asText(live?.egld_usd)}</p>
+              <p className="text-zinc-500">{xaRender("EGLD USD")}</p>
+              <p className="tabular-nums text-white">{xaRender(asText(live?.egld_usd))}</p>
             </div>
           </div>
-          <p className="text-[10px] text-zinc-500">Display only · trading remains gated (LIA_LIVE_TRADING=0)</p>
+          <p className="text-[10px] text-zinc-500">{xaRender("Display only · trading remains gated (LIA_LIVE_TRADING=0)")}</p>
           <ul className="text-[11px] space-y-1 max-h-28 overflow-y-auto">
-            {(live?.deployer?.txs || []).slice(0, 5).map(t => (
+            {xaRender((live?.deployer?.txs || []).slice(0, 5).map(t => (
               <li key={asText(t.txHash)} className="flex gap-2">
-                <span className="text-rose-400 font-mono shrink-0">[LIVE]</span>
+                <span className="text-rose-400 font-mono shrink-0">{xaRender("[LIVE]")}</span>
                 <a
                   className="text-cyan-400 underline truncate"
                   href={t.explorer || `https://explorer.multiversx.com/transactions/${t.txHash}`}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {asText(t.function || t.txHash?.slice(0, 10))}
+                  {xaRender(asText(t.function || t.txHash?.slice(0, 10)))}
                 </a>
-                <span className="text-zinc-500">{asText(t.status)}</span>
+                <span className="text-zinc-500">{xaRender(asText(t.status))}</span>
               </li>
-            ))}
+            )))}
           </ul>
         </div>
-      )}
+      ))}
 
-      {!isLive && (
+      {xaRender(!isLive && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {[
+          {xaRender([
             {
               label: 'Cumul. PnL',
               value:
@@ -286,34 +282,31 @@ export default function HolderTerminal() {
             },
           ].map(k => (
             <div key={k.label} className="rounded-xl bg-black/30 px-3 py-3 border border-white/[0.04]">
-              <p className="text-[10px] uppercase tracking-wider text-zinc-500">{k.label}</p>
-              <p className={`text-lg font-semibold tabular-nums ${k.tone}`}>{k.value}</p>
+              <p className="text-[10px] uppercase tracking-wider text-zinc-500">{xaRender(k.label)}</p>
+              <p className={`text-lg font-semibold tabular-nums ${k.tone}`}>{xaRender(k.value)}</p>
             </div>
-          ))}
+          )))}
         </div>
-      )}
+      ))}
 
       <div className="rounded-xl border border-cyan-500/15 bg-cyan-500/[0.03] p-3 space-y-1">
         <p className="text-[10px] uppercase tracking-wider text-cyan-200/70 font-semibold">
-          Active strategy
-        </p>
-        <p className="text-sm font-medium text-white mono">{asText(activeStrat)}</p>
-        <p className="text-[11px] text-zinc-500">{asText(switchReason || 'Hysteresis stable')}</p>
+          {xaRender("Active strategy ")}</p>
+        <p className="text-sm font-medium text-white mono">{xaRender(asText(activeStrat))}</p>
+        <p className="text-[11px] text-zinc-500">{xaRender(asText(switchReason || 'Hysteresis stable'))}</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
         <Link to="/portfolio" className="btn-secondary text-sm">
-          Portfolio
-        </Link>
+          {xaRender("Portfolio ")}</Link>
         <Link to="/go-live" className="btn-secondary text-sm">
-          Status
-        </Link>
+          {xaRender("Status ")}</Link>
       </div>
 
       <p className="text-[10px] text-zinc-600 border-t border-white/[0.04] pt-3">
-        {isLive
+        {xaRender(isLive
           ? 'LIVE DISPLAY — balances & TX from chain · execution still gated · switch to Shadow anytime'
-          : 'SHADOW MODE / SIMULATED DATA · LIA_LIVE_TRADING=0 · Beta toggle locked'}
+          : 'SHADOW MODE / SIMULATED DATA · LIA_LIVE_TRADING=0 · Beta toggle locked')}
       </p>
     </section>
   )

@@ -26,6 +26,11 @@ export function applyNavKey(
 ): void {
   const code = e.code
   const key = e.key
+  const lower=key.toLowerCase()
+  if(code==='KeyW'||lower==='w'||lower==='z')keys.w=down
+  if(code==='KeyS'||lower==='s')keys.s=down
+  if(code==='KeyA'||lower==='a'||lower==='q')keys.a=down
+  if(code==='KeyD'||lower==='d')keys.d=down
 
   if (key === 'ArrowUp' || code === 'Numpad8') keys.w = down
   if (key === 'ArrowDown' || code === 'Numpad2') keys.s = down
@@ -58,6 +63,6 @@ export function isNavKey(e: KeyboardEvent): boolean {
   const c = e.code
   if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(k)) return true
   if (c.startsWith('Numpad') && c !== 'NumpadDecimal') return true
-  if (['w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(k)) return true
+  if (['w','a','s','d','z','q','W','A','S','D','Z','Q'].includes(k)||['KeyW','KeyA','KeyS','KeyD'].includes(c)) return true
   return false
 }

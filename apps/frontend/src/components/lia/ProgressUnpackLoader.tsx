@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /** Loader WebGL — pourcentage pour éviter l’écran noir au boot. */
 
 type Props = {
@@ -10,10 +11,9 @@ export function ProgressUnpackLoader({ progress, label }: Props) {
   return (
     <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 bg-black/90 backdrop-blur-md">
       <p className="text-[10px] uppercase tracking-[0.25em] text-cyan-300/80 font-tech">
-        LIA Hub · Control Room
-      </p>
+        {xaRender("LIA Hub · Control Room ")}</p>
       <p className="text-sm text-zinc-300">
-        {label || 'Initialisation de l’infrastructure xArtists…'}
+        {xaRender(label || 'Initialisation de l’infrastructure xArtists…')}
       </p>
       <div className="h-1.5 w-48 overflow-hidden rounded-full bg-white/10">
         <div
@@ -21,7 +21,7 @@ export function ProgressUnpackLoader({ progress, label }: Props) {
           style={{ width: `${pct}%` }}
         />
       </div>
-      <p className="tabular-nums text-xs text-zinc-500">{pct}%</p>
+      <p className="tabular-nums text-xs text-zinc-500">{xaRender(pct)}%</p>
     </div>
   )
 }

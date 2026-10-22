@@ -5,6 +5,11 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+    <!--
+      CSP : hardening + domaines requis (MVX, WalletConnect, embeds, prix, fonts).
+      GitHub Pages ne sert pas toujours Content-Security-Policy HTTP → meta fallback.
+      Ne jamais élargir script-src à des CDN non listés.
+    -->
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://api.multiversx.com https://devnet-api.multiversx.com https://gateway.multiversx.com https://raw.githubusercontent.com https://api.coingecko.com https://api.frankfurter.app https://www.reddit.com https://api.rss2json.com https://explorer.multiversx.com https://*.walletconnect.com https://*.walletconnect.org wss://*.walletconnect.com wss://*.walletconnect.org https://pulse.walletconnect.org https://registry.walletconnect.com https://verify.walletconnect.com https://verify.walletconnect.org https://api.web3modal.org https://*.infura.io https://cloudflare-ipfs.com https://ipfs.io; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://w.soundcloud.com https://soundcloud.com https://*.walletconnect.com https://*.walletconnect.org; worker-src 'self' blob:; manifest-src 'self';"
@@ -14,8 +19,22 @@
     <link rel="manifest" href="/xArtists/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5" />
     <title>xArtists — L’art dans une autre dimension</title>
-    <meta name="description" content="xArtists : galerie NFT MultiversX, $TRO, agents IA LIA, Art Tours, marketplace. Paper-first. Musée 3e personne." />
+    <meta
+      name="description"
+      content="xArtists : galerie NFT MultiversX, $TRO, agents IA LIA, Art Tours, marketplace. Paper-first. Musée 3e personne."
+    />
     <meta name="theme-color" content="#cdf58b" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="canonical" href="https://neltud.github.io/xArtists/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://neltud.github.io/xArtists/" />
+    <meta property="og:title" content="xArtists — NFT Art & Agents IA sur MultiversX" />
+    <meta property="og:image" content="https://neltud.github.io/xArtists/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Must run before any ES module: MultiversX / WalletConnect expect Node process -->
     <script>
       (function () {
         var g = typeof globalThis !== 'undefined' ? globalThis : window;

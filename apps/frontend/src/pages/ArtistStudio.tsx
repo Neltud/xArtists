@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AdSlot from '../components/AdSlot'
@@ -23,6 +24,8 @@ const GAS_HINT: Record<string, string> = {
 }
 
 export default function ArtistStudio() {
+  xaUsePhraseLocale()
+
   const { connected, address, method } = useWallet()
   const [step, setStep] = useState(1)
   const [collectionName, setCollectionName] = useState('')
@@ -137,51 +140,45 @@ export default function ArtistStudio() {
 
       <header className="mb-4 space-y-2">
         <p className="text-[10px] uppercase tracking-[0.2em] text-violet-400/80 font-semibold">
-          Création · MultiversX mainnet
-        </p>
+          {xaRender("Création · MultiversX mainnet ")}</p>
         <h1 className="text-3xl font-black">
-          Studio <span className="gradient-text">xArtists</span>
+          {xaRender("Studio ")}<span className="gradient-text">{xaRender("xArtists")}</span>
         </h1>
         <p className="text-gray-500 text-sm">
-          <strong className="text-gray-300">préparer → pin → mint (paper ou on-chain) → list</strong>
-          {' · '}wallet artiste (pas LIA ops)
-        </p>
+          <strong className="text-gray-300">{xaRender("préparer → pin → mint (paper ou on-chain) → list")}</strong>
+          {xaRender(' · ')}{xaRender("wallet artiste (pas LIA ops) ")}</p>
         <div className="flex flex-wrap gap-2 pt-1">
           <Link to="/museum" className="btn-secondary text-xs">
-            Galerie
-          </Link>
+            {xaRender("Galerie ")}</Link>
           <Link to="/marketplace" className="btn-secondary text-xs">
-            Marketplace
-          </Link>
+            {xaRender("Marketplace ")}</Link>
           <Link to="/my-packs" className="btn-secondary text-xs">
-            My Packs
-          </Link>
+            {xaRender("My Packs ")}</Link>
         </div>
       </header>
 
       <ScStatusBanner />
       <TxCapabilityBanner />
 
-      {!connected ? (
+      {xaRender(!connected ? (
         <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-100 flex flex-wrap items-center justify-between gap-2">
-          <span>Connecte ton wallet artiste pour mint / list.</span>
+          <span>{xaRender("Connecte ton wallet artiste pour mint / list.")}</span>
           <button type="button" className="btn-primary text-xs" onClick={requestOpenConnect}>
-            Connect
-          </button>
+            {xaRender("Connect ")}</button>
         </div>
       ) : (
         <p className="mb-4 text-[11px] text-zinc-500 mono break-all">
-          Session {method} · {address}
-          {!canSign && ' · lecture seule'}
+          {xaRender("Session ")}{xaRender(method)} · {xaRender(address)}
+          {xaRender(!canSign && ' · lecture seule')}
         </p>
-      )}
+      ))}
 
       <div className="mb-6">
         <AdSlot id="studio_banner" />
       </div>
 
       <ol className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] sm:text-xs">
-        {[
+        {xaRender([
           { n: '1', t: 'Collection' },
           { n: '2', t: 'IPFS média' },
           { n: '3', t: 'Métadonnées' },
@@ -195,13 +192,13 @@ export default function ArtistStudio() {
                 : 'border-[#2a2a3a] text-gray-500'
             }`}
           >
-            <span className="font-black">{s.n}</span> {s.t}
+            <span className="font-black">{xaRender(s.n)}</span> {xaRender(s.t)}
           </li>
-        ))}
+        )))}
       </ol>
 
       <div className="flex flex-wrap gap-2 mb-4 text-xs font-semibold">
-        {[1, 2, 3, 4].map(n => (
+        {xaRender([1, 2, 3, 4].map(n => (
           <button
             key={n}
             type="button"
@@ -212,9 +209,9 @@ export default function ArtistStudio() {
                 : 'border-[#2a2a3a] text-gray-500'
             }`}
           >
-            Étape {n}
+            {xaRender("Étape ")}{xaRender(n)}
           </button>
-        ))}
+        )))}
       </div>
 
       <div className="h-1.5 rounded-full bg-white/[0.06] overflow-hidden mb-4" aria-hidden>
@@ -224,47 +221,43 @@ export default function ArtistStudio() {
         />
       </div>
 
-      {step === 1 && (
+      {xaRender(step === 1 && (
         <div className="card space-y-4">
-          <h2 className="font-bold">1 — Collection / album</h2>
+          <h2 className="font-bold">{xaRender("1 — Collection / album")}</h2>
           <label className="block text-sm text-gray-400">
-            Nom collection
-            <input
+            {xaRender("Nom collection ")}<input
               className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2.5 text-white"
               value={collectionName}
               onChange={e => setCollectionName(e.target.value)}
-              placeholder="xArtists Genesis"
+              placeholder={xaLocalize("xArtists Genesis")}
             />
           </label>
           <label className="block text-sm text-gray-400">
-            Album (optionnel)
-            <input
+            {xaRender("Album (optionnel) ")}<input
               className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2.5 text-white"
               value={albumTitle}
               onChange={e => setAlbumTitle(e.target.value)}
             />
           </label>
           <label className="block text-sm text-gray-400">
-            Ticker (3–10)
-            <input
+            {xaRender("Ticker (3–10) ")}<input
               className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2.5 mono"
               value={ticker}
               onChange={e => setTicker(e.target.value.toUpperCase().slice(0, 10))}
-              placeholder="XART"
+              placeholder={xaLocalize("XART")}
             />
           </label>
-          <p className="text-xs text-gray-500">Gaz issue : {GAS_HINT.issue_collection}</p>
+          <p className="text-xs text-gray-500">{xaRender("Gaz issue : ")}{xaRender(GAS_HINT.issue_collection)}</p>
           <button type="button" className="btn-primary text-sm" onClick={() => setStep(2)}>
-            Continuer →
-          </button>
+            {xaRender("Continuer → ")}</button>
         </div>
-      )}
+      ))}
 
-      {step === 2 && (
+      {xaRender(step === 2 && (
         <div className="card space-y-4">
-          <h2 className="font-bold">2 — Média & stockage</h2>
+          <h2 className="font-bold">{xaRender("2 — Média & stockage")}</h2>
           <div className="flex flex-wrap gap-2">
-            {(['image', 'video', 'audio'] as MediaKind[]).map(m => (
+            {xaRender((['image', 'video', 'audio'] as MediaKind[]).map(m => (
               <button
                 key={m}
                 type="button"
@@ -273,12 +266,12 @@ export default function ArtistStudio() {
                   media === m ? 'border-purple-500 bg-purple-500/15' : 'border-[#2a2a3a]'
                 }`}
               >
-                {m}
+                {xaRender(m)}
               </button>
-            ))}
+            )))}
           </div>
           <div className="flex flex-wrap gap-2">
-            {(['digital', 'physical'] as AssetMode[]).map(m => (
+            {xaRender((['digital', 'physical'] as AssetMode[]).map(m => (
               <button
                 key={m}
                 type="button"
@@ -287,31 +280,28 @@ export default function ArtistStudio() {
                   mode === m ? 'border-teal-500 bg-teal-500/15' : 'border-[#2a2a3a]'
                 }`}
               >
-                {m === 'digital' ? 'Numérique' : 'Physique / phygital'}
+                {xaRender(m === 'digital' ? 'Numérique' : 'Physique / phygital')}
               </button>
-            ))}
+            )))}
           </div>
           <label className="block text-sm text-gray-400">
-            URI IPFS / gateway
-            <input
+            {xaRender("URI IPFS / gateway ")}<input
               className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2.5 mono text-xs"
               value={ipfsUri}
               onChange={e => setIpfsUri(e.target.value)}
-              placeholder="ipfs://Qm… ou https://…"
+              placeholder={xaLocalize("ipfs://Qm… ou https://…")}
             />
           </label>
           <label className="block text-sm text-gray-400">
-            Fichier local (pin hors front)
-            <input
+            {xaRender("Fichier local (pin hors front) ")}<input
               type="file"
               className="mt-1 block w-full text-xs"
               onChange={e => setFileName(e.target.files?.[0]?.name || '')}
             />
           </label>
-          {fileName && <p className="text-xs text-green-400">Fichier : {fileName}</p>}
+          {xaRender(fileName && <p className="text-xs text-green-400">{xaRender("Fichier : ")}{xaRender(fileName)}</p>)}
           <label className="block text-sm text-gray-400">
-            YouTube (optionnel)
-            <input
+            {xaRender("YouTube (optionnel) ")}<input
               className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2"
               value={youtubeUrl}
               onChange={e => setYoutubeUrl(e.target.value)}
@@ -322,34 +312,30 @@ export default function ArtistStudio() {
               ←
             </button>
             <button type="button" className="btn-primary text-sm flex-1" onClick={() => setStep(3)}>
-              Continuer →
-            </button>
+              {xaRender("Continuer → ")}</button>
           </div>
         </div>
-      )}
+      ))}
 
-      {step === 3 && (
+      {xaRender(step === 3 && (
         <div className="card space-y-4">
-          <h2 className="font-bold">3 — Métadonnées</h2>
+          <h2 className="font-bold">{xaRender("3 — Métadonnées")}</h2>
           <label className="block text-sm text-gray-400">
-            Titre
-            <input
+            {xaRender("Titre ")}<input
               className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2.5"
               value={title}
               onChange={e => setTitle(e.target.value)}
             />
           </label>
           <label className="block text-sm text-gray-400">
-            Description
-            <textarea
+            {xaRender("Description ")}<textarea
               className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] px-3 py-2 min-h-[80px]"
               value={description}
               onChange={e => setDescription(e.target.value)}
             />
           </label>
           <label className="block text-sm text-gray-400">
-            Royalties % (0–10)
-            <input
+            {xaRender("Royalties % (0–10) ")}<input
               type="number"
               min={0}
               max={10}
@@ -359,22 +345,21 @@ export default function ArtistStudio() {
             />
           </label>
           <ul className="text-xs text-gray-500 space-y-1">
-            {checklist.map(c => (
+            {xaRender(checklist.map(c => (
               <li key={c.label}>
-                {c.ok ? '✅' : '⬜'} {c.label}
+                {xaRender(c.ok ? '✅' : '⬜')} {xaRender(c.label)}
               </li>
-            ))}
+            )))}
           </ul>
           <div className="rounded-xl border border-[#2a2a3a] bg-[#0a0a0f] p-3">
             <div className="flex justify-between mb-2">
-              <p className="text-xs font-semibold text-zinc-400">Metadata JSON</p>
+              <p className="text-xs font-semibold text-zinc-400">{xaRender("Metadata JSON")}</p>
               <div className="flex gap-2">
                 <button type="button" className="btn-secondary text-[10px] py-1" onClick={copyMeta}>
-                  {copied ? 'Copié' : 'Copier'}
+                  {xaRender(copied ? 'Copié' : 'Copier')}
                 </button>
                 <button type="button" className="btn-secondary text-[10px] py-1" onClick={downloadMeta}>
-                  Télécharger
-                </button>
+                  {xaRender("Télécharger ")}</button>
               </div>
             </div>
             <pre className="text-[10px] mono text-zinc-500 overflow-x-auto max-h-40">{metadataJson}</pre>
@@ -389,13 +374,12 @@ export default function ArtistStudio() {
               disabled={!ready}
               onClick={() => setStep(4)}
             >
-              Continuer →
-            </button>
+              {xaRender("Continuer → ")}</button>
           </div>
         </div>
-      )}
+      ))}
 
-      {step === 4 && (
+      {xaRender(step === 4 && (
         <>
           <StudioOnChainMintCard
             ready={ready}
@@ -424,25 +408,23 @@ export default function ArtistStudio() {
             artistAddress={address || undefined}
           />
           <div className="card space-y-3">
-            <h2 className="font-bold">Ensuite · list & sell</h2>
+            <h2 className="font-bold">{xaRender("Ensuite · list & sell")}</h2>
             <p className="text-xs text-zinc-500">
-              Gaz mint : {GAS_HINT.mint_nft} · list : {GAS_HINT.list_nft}
-              {!marketLive && ' · Marketplace SC gated CODEHASH jusqu activation.'}
+              {xaRender("Gaz mint : ")}{xaRender(GAS_HINT.mint_nft)} {xaRender(" · list : ")}{xaRender(GAS_HINT.list_nft)}
+              {xaRender(!marketLive && ' · Marketplace SC gated CODEHASH jusqu activation.')}
             </p>
             <div className="flex flex-wrap gap-2">
               <button type="button" className="btn-secondary text-sm" onClick={() => setStep(3)}>
                 ←
               </button>
               <Link to="/marketplace" className="btn-primary text-sm">
-                Marketplace
-              </Link>
+                {xaRender("Marketplace ")}</Link>
               <Link to="/museum" className="btn-secondary text-sm">
-                Galerie
-              </Link>
+                {xaRender("Galerie ")}</Link>
             </div>
           </div>
         </>
-      )}
+      ))}
     </div>
   )
 }

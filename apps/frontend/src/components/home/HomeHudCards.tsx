@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /** 3 cartes HUD — i18n + contraste fort + repères géométriques sur dôme */
 import { Link } from 'react-router-dom'
 import { useI18n } from '../../i18n/I18nContext'
@@ -48,7 +49,7 @@ export default function HomeHudCards() {
       />
 
       <div className="grid gap-3 sm:grid-cols-3 animate-[fadeIn_0.6s_ease-out]">
-        {CARD_META.map((c, i) => (
+        {xaRender(CARD_META.map((c, i) => (
           <Link
             key={c.to}
             to={c.to}
@@ -64,14 +65,14 @@ export default function HomeHudCards() {
               aria-hidden
             />
             <p className="text-2xl mb-2" aria-hidden>
-              {c.emoji}
+              {xaRender(c.emoji)}
             </p>
             <h2 className="text-sm font-semibold text-white group-hover:text-violet-100">
-              {t(c.titleKey)}
+              {xaRender(t(c.titleKey))}
             </h2>
-            <p className="mt-1.5 text-[12px] leading-relaxed text-zinc-200">{t(c.blurbKey)}</p>
+            <p className="mt-1.5 text-[12px] leading-relaxed text-zinc-200">{xaRender(t(c.blurbKey))}</p>
           </Link>
-        ))}
+        )))}
       </div>
     </div>
   )

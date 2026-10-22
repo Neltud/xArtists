@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
  * UI monitoring transactionnel — statut API MultiversX réel.
  */
@@ -17,6 +18,8 @@ const STATUS_STYLE: Record<string, string> = {
 }
 
 export default function TxMonitorPanel({ compact = false }: { compact?: boolean }) {
+  xaUsePhraseLocale()
+
   const [active, setActive] = useState<MonitoredTx[]>([])
   const [history, setHistory] = useState<MonitoredTx[]>([])
   const [manualHash, setManualHash] = useState('')
@@ -45,17 +48,17 @@ export default function TxMonitorPanel({ compact = false }: { compact?: boolean 
     <div className="rounded-2xl border border-cyan-500/25 bg-[#0c0c14] p-4 space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-[10px] uppercase tracking-wider text-cyan-400/80">TX Monitor</p>
-          <h3 className="text-sm font-bold text-white">Suivi on-chain MultiversX</h3>
+          <p className="text-[10px] uppercase tracking-wider text-cyan-400/80">{xaRender("TX Monitor")}</p>
+          <h3 className="text-sm font-bold text-white">{xaRender("Suivi on-chain MultiversX")}</h3>
         </div>
-        <span className="text-[10px] text-zinc-500">{active.length} active</span>
+        <span className="text-[10px] text-zinc-500">{xaRender(active.length)} {xaRender(" active")}</span>
       </div>
 
       <div className="flex flex-wrap gap-2">
         <input
           value={manualHash}
           onChange={e => setManualHash(e.target.value)}
-          placeholder="tx hash…"
+          placeholder={xaLocalize("tx hash…")}
           className="flex-1 min-w-[140px] rounded-lg border border-white/10 bg-black/40 px-2 py-1.5 text-[11px] font-mono text-white"
         />
         <select
@@ -63,34 +66,32 @@ export default function TxMonitorPanel({ compact = false }: { compact?: boolean 
           onChange={e => setNetwork(e.target.value as TxNetwork)}
           className="rounded-lg border border-white/10 bg-black/40 px-2 py-1.5 text-[11px] text-zinc-300"
         >
-          <option value="mainnet">mainnet</option>
-          <option value="devnet">devnet</option>
-          <option value="testnet">testnet</option>
+          <option value="mainnet">{xaRender("mainnet")}</option>
+          <option value="devnet">{xaRender("devnet")}</option>
+          <option value="testnet">{xaRender("testnet")}</option>
         </select>
         <button type="button" className="btn-secondary text-[11px] py-1.5 px-2" onClick={startWatch}>
-          Watch
-        </button>
+          {xaRender("Watch ")}</button>
       </div>
 
-      {rows.length === 0 && (
+      {xaRender(rows.length === 0 && (
         <p className="text-[11px] text-zinc-600">
-          Aucune TX suivie. Après broadcast, le hash est monitoré via API (pas de faux succès).
-        </p>
-      )}
+          {xaRender("Aucune TX suivie. Après broadcast, le hash est monitoré via API (pas de faux succès). ")}</p>
+      ))}
 
       <ul className="space-y-2">
-        {rows.map(tx => (
+        {xaRender(rows.map(tx => (
           <li
             key={`${tx.network}-${tx.hash}-${tx.startedAt}`}
             className={`rounded-lg border px-3 py-2 text-[11px] ${STATUS_STYLE[tx.status] || STATUS_STYLE.unknown}`}
           >
             <div className="flex justify-between gap-2">
-              <span className="font-mono">{tx.hash.slice(0, 12)}…{tx.hash.slice(-6)}</span>
-              <span className="uppercase font-semibold">{tx.status}</span>
+              <span className="font-mono">{xaRender(tx.hash.slice(0, 12))}…{xaRender(tx.hash.slice(-6))}</span>
+              <span className="uppercase font-semibold">{xaRender(tx.status)}</span>
             </div>
             <div className="flex justify-between mt-1 text-zinc-500">
               <span>
-                {tx.network} · polls {tx.polls}
+                {xaRender(tx.network)} {xaRender(" · polls ")}{xaRender(tx.polls)}
               </span>
               <a
                 href={tx.explorerUrl}
@@ -98,12 +99,11 @@ export default function TxMonitorPanel({ compact = false }: { compact?: boolean 
                 rel="noreferrer"
                 className="text-cyan-400/80 underline"
               >
-                Explorer
-              </a>
+                {xaRender("Explorer ")}</a>
             </div>
-            {tx.error && <p className="text-rose-400/90 mt-1">{tx.error}</p>}
+            {xaRender(tx.error && <p className="text-rose-400/90 mt-1">{xaRender(tx.error)}</p>)}
           </li>
-        ))}
+        )))}
       </ul>
     </div>
   )

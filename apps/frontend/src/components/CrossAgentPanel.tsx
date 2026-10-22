@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * CrossAgentPanel — Grok ↔ LIA (Vellum) bridge transparency
  * Reads public mirrored JSON only (no secrets).
@@ -109,11 +110,10 @@ export default function CrossAgentPanel() {
   if (!cross && !fb?.entries?.length) {
     return (
       <div className="card mb-8 border border-dashed border-zinc-700">
-        <h2 className="text-lg font-bold mb-1">Grok ↔ LIA bridge</h2>
+        <h2 className="text-lg font-bold mb-1">{xaRender("Grok ↔ LIA bridge")}</h2>
         <p className="text-xs text-zinc-500">
-          Pas encore de CrossScore — lance un cycle{' '}
-          <code className="text-zinc-400">lia.vellum.grok_mcp_ingest</code> ou le serveur MCP.
-        </p>
+          {xaRender("Pas encore de CrossScore — lance un cycle")}{xaRender(' ')}
+          <code className="text-zinc-400">lia.vellum.grok_mcp_ingest</code> {xaRender(" ou le serveur MCP. ")}</p>
       </div>
     )
   }
@@ -125,33 +125,32 @@ export default function CrossAgentPanel() {
     <div className="card mb-8">
       <div className="flex flex-wrap justify-between gap-2 mb-4">
         <div>
-          <h2 className="text-lg font-bold">Grok ↔ LIA · CrossScore</h2>
+          <h2 className="text-lg font-bold">{xaRender("Grok ↔ LIA · CrossScore")}</h2>
           <p className="text-xs text-zinc-500 mt-1">
-            Signaux fusionnés · design 360 · feedback agents · paper-first
-          </p>
+            {xaRender("Signaux fusionnés · design 360 · feedback agents · paper-first ")}</p>
         </div>
-        {score != null && (
+        {xaRender(score != null && (
           <div className="text-right">
             <div className={`text-3xl font-bold mono ${scoreColor(score)}`}>
-              {score.toFixed(1)}
+              {xaRender(score.toFixed(1))}
             </div>
             <div className="text-[10px] uppercase text-zinc-500 tracking-wide">
-              {cross?.horizon || '1h'} · {cross?.ts?.slice(0, 16) || '—'}
+              {xaRender(cross?.horizon || '1h')} · {xaRender(cross?.ts?.slice(0, 16) || '—')}
             </div>
           </div>
-        )}
+        ))}
       </div>
 
-      {Object.keys(comps).length > 0 && (
+      {xaRender(Object.keys(comps).length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-          {Object.entries(comps).map(([k, v]) => (
+          {xaRender(Object.entries(comps).map(([k, v]) => (
             <div
               key={k}
               className="rounded-lg bg-zinc-900/60 border border-zinc-800 px-3 py-2"
             >
-              <div className="text-[10px] uppercase text-zinc-500 truncate">{k}</div>
+              <div className="text-[10px] uppercase text-zinc-500 truncate">{xaRender(k)}</div>
               <div className={`text-lg font-semibold mono ${scoreColor(Number(v))}`}>
-                {Number(v).toFixed(1)}
+                {xaRender(Number(v).toFixed(1))}
               </div>
               <div className="mt-1 h-1 rounded-full bg-zinc-800 overflow-hidden">
                 <div
@@ -160,46 +159,45 @@ export default function CrossAgentPanel() {
                 />
               </div>
             </div>
-          ))}
+          )))}
         </div>
-      )}
+      ))}
 
-      {cross?.rationale && (
-        <p className="text-xs text-zinc-500 mb-4 mono">{cross.rationale}</p>
-      )}
+      {xaRender(cross?.rationale && (
+        <p className="text-xs text-zinc-500 mb-4 mono">{xaRender(cross.rationale)}</p>
+      ))}
 
-      {fb?.entries && fb.entries.length > 0 && (
+      {xaRender(fb?.entries && fb.entries.length > 0 && (
         <div>
           <h3 className="text-sm font-semibold mb-2 text-zinc-300">
-            Feedback récent
-            <span className="text-zinc-600 font-normal ml-2">
-              {fb.count ?? fb.entries.length}
+            {xaRender("Feedback récent ")}<span className="text-zinc-600 font-normal ml-2">
+              {xaRender(fb.count ?? fb.entries.length)}
             </span>
           </h3>
           <ul className="space-y-2 max-h-56 overflow-y-auto">
-            {[...fb.entries].reverse().slice(0, 8).map((e, i) => (
+            {xaRender([...fb.entries].reverse().slice(0, 8).map((e, i) => (
               <li
                 key={`${e.ts}-${i}`}
                 className="flex flex-wrap items-start gap-2 text-xs border-b border-zinc-800/60 pb-2"
               >
                 <span className={`px-2 py-0.5 rounded-full shrink-0 ${kindBadge(e.kind)}`}>
-                  {e.kind || 'note'}
+                  {xaRender(e.kind || 'note')}
                 </span>
                 <span className="text-zinc-500 shrink-0">
-                  {e.from_agent || '?'} → {e.to_agent || 'both'}
+                  {xaRender(e.from_agent || '?')} → {xaRender(e.to_agent || 'both')}
                 </span>
-                <span className="text-zinc-300 flex-1 min-w-[12rem]">{e.summary}</span>
+                <span className="text-zinc-300 flex-1 min-w-[12rem]">{xaRender(e.summary)}</span>
                 <span className="text-zinc-600 mono shrink-0">
-                  {e.ts?.replace('T', ' ').slice(0, 16) || ''}
+                  {xaRender(e.ts?.replace('T', ' ').slice(0, 16) || '')}
                 </span>
               </li>
-            ))}
+            )))}
           </ul>
         </div>
-      )}
+      ))}
 
       <p className="text-[10px] text-zinc-600 mt-3">
-        MCP · pas de PEM · lecture seule côté dApp · source{' '}
+        {xaRender("MCP · pas de PEM · lecture seule côté dApp · source")}{xaRender(' ')}
         <code>data/cross_score.json</code> + <code>agent_feedback_summary.json</code>
       </p>
     </div>

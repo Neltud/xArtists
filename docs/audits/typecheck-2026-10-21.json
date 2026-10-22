@@ -1,0 +1,460 @@
+{
+  "base": "1ca9e74e27c36fdfddfc74e616217db676222dcf",
+  "baseline": 90,
+  "current": 87,
+  "added": [],
+  "resolved": [
+    {
+      "file": "src/components/MoonpayButton.tsx",
+      "code": 2322,
+      "message": "Type 'string | number | undefined' is not assignable to type 'number | undefined'.\n  Type 'string' is not assignable to type 'number'."
+    },
+    {
+      "file": "src/components/museum/MuseumWebGLHallLive.tsx",
+      "code": 2554,
+      "message": "Expected 3-4 arguments, but got 5."
+    },
+    {
+      "file": "src/components/onramp/FiatOnRampModal.tsx",
+      "code": 2322,
+      "message": "Type 'string' is not assignable to type 'number'."
+    }
+  ],
+  "remaining": [
+    {
+      "file": "src/command-center/DashboardSource.tsx",
+      "code": 2345,
+      "message": "Argument of type 'string | null' is not assignable to parameter of type 'number | null | undefined'.\n  Type 'string' is not assignable to type 'number'."
+    },
+    {
+      "file": "src/command-center/DashboardSource.tsx",
+      "code": 2345,
+      "message": "Argument of type 'string | null' is not assignable to parameter of type 'number | null | undefined'.\n  Type 'string' is not assignable to type 'number'."
+    },
+    {
+      "file": "src/command-center/LiaShadowPanel.tsx",
+      "code": 2352,
+      "message": "Conversion of type 'PulseEnvironment' to type '{ volatility: number; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.\n  Property 'volatility' is missing in type 'PulseEnvironment' but required in type '{ volatility: number; }'."
+    },
+    {
+      "file": "src/components/AgentNftStakePanel.tsx",
+      "code": 2339,
+      "message": "Property 'paperPts' does not exist on type '{ stakedAt: number; claims: number; pts: number; }'."
+    },
+    {
+      "file": "src/components/AgentNftStakePanel.tsx",
+      "code": 2339,
+      "message": "Property 'paperPts' does not exist on type '{ stakedAt: number; claims: number; pts: number; }'."
+    },
+    {
+      "file": "src/components/AgentPackJourney.tsx",
+      "code": 2305,
+      "message": "Module '\"../config/agentPacks\"' has no exported member 'PACK_JOURNEY_STEPS'."
+    },
+    {
+      "file": "src/components/AgentPackJourney.tsx",
+      "code": 2305,
+      "message": "Module '\"../config/agentPacks\"' has no exported member 'FUNDING_MODELS'."
+    },
+    {
+      "file": "src/components/AgentPackJourney.tsx",
+      "code": 2305,
+      "message": "Module '\"../config/agentPacks\"' has no exported member 'GSN_POLICY'."
+    },
+    {
+      "file": "src/components/AgentPackJourney.tsx",
+      "code": 2305,
+      "message": "Module '\"../config/agentPacks\"' has no exported member 'PACK_PRICING_POLICY'."
+    },
+    {
+      "file": "src/components/AgentPackJourney.tsx",
+      "code": 7006,
+      "message": "Parameter 's' implicitly has an 'any' type."
+    },
+    {
+      "file": "src/components/AgentWalletsStrip.tsx",
+      "code": 2305,
+      "message": "Module '\"../config/links\"' has no exported member 'GROK_WALLET'."
+    },
+    {
+      "file": "src/components/AgentWalletsStrip.tsx",
+      "code": 2551,
+      "message": "Property 'liaExplorer' does not exist on type '{ github: string; explorer: string; walletWeb: string; xportal: string; docs: string; githubPages: string; treasuryPolicy: string; walletLogin: (callback: string) => string; explorerAccount: (addr: string) => string; explorerTx: (hash: string) => string; explorerToken: (id: string) => string; }'. Did you mean 'explorer'?"
+    },
+    {
+      "file": "src/components/AgentWalletsStrip.tsx",
+      "code": 2339,
+      "message": "Property 'grokyversxExplorer' does not exist on type '{ github: string; explorer: string; walletWeb: string; xportal: string; docs: string; githubPages: string; treasuryPolicy: string; walletLogin: (callback: string) => string; explorerAccount: (addr: string) => string; explorerTx: (hash: string) => string; explorerToken: (id: string) => string; }'."
+    },
+    {
+      "file": "src/components/ArtWorldMap.tsx",
+      "code": 2353,
+      "message": "Object literal may only specify known properties, and 'lat' does not exist in type 'TravelDestination'."
+    },
+    {
+      "file": "src/components/ArtWorldMap.tsx",
+      "code": 2322,
+      "message": "Type '() => number' is not assignable to type 'ReactNode'."
+    },
+    {
+      "file": "src/components/BridgeUsdtCard.tsx",
+      "code": 2339,
+      "message": "Property 'xoxnoBridge' does not exist on type '{ github: string; explorer: string; walletWeb: string; xportal: string; docs: string; githubPages: string; treasuryPolicy: string; walletLogin: (callback: string) => string; explorerAccount: (addr: string) => string; explorerTx: (hash: string) => string; explorerToken: (id: string) => string; }'."
+    },
+    {
+      "file": "src/components/BridgeUsdtCard.tsx",
+      "code": 2339,
+      "message": "Property 'usdt0' does not exist on type '{ github: string; explorer: string; walletWeb: string; xportal: string; docs: string; githubPages: string; treasuryPolicy: string; walletLogin: (callback: string) => string; explorerAccount: (addr: string) => string; explorerTx: (hash: string) => string; explorerToken: (id: string) => string; }'."
+    },
+    {
+      "file": "src/components/CheckoutModal.tsx",
+      "code": 2345,
+      "message": "Argument of type 'PayMethod' is not assignable to parameter of type '\"stripe\" | \"paybox\"'.\n  Type '\"paper\"' is not assignable to type '\"stripe\" | \"paybox\"'."
+    },
+    {
+      "file": "src/components/CheckoutModal.tsx",
+      "code": 2322,
+      "message": "Type '{ open: boolean; onClose: () => void; onAccept: () => Promise<void>; packName: string; }' is not assignable to type 'IntrinsicAttributes & Props'.\n  Property 'onClose' does not exist on type 'IntrinsicAttributes & Props'."
+    },
+    {
+      "file": "src/components/DeskPanel.tsx",
+      "code": 2322,
+      "message": "Type '\"guardian\"' is not assignable to type '\"liaVsUser\" | \"paperFirst\" | \"guardianFirst\" | \"profitLock\" | \"scStatus\" | \"mainnetOnly\" | \"troUtility\" | \"museumGame\" | \"softLaunch\" | undefined'."
+    },
+    {
+      "file": "src/components/FirstVisitOnboarding.tsx",
+      "code": 2339,
+      "message": "Property 'discord' does not exist on type '{ github: string; explorer: string; walletWeb: string; xportal: string; docs: string; githubPages: string; treasuryPolicy: string; walletLogin: (callback: string) => string; explorerAccount: (addr: string) => string; explorerTx: (hash: string) => string; explorerToken: (id: string) => string; }'."
+    },
+    {
+      "file": "src/components/ListNftSheet.tsx",
+      "code": 2339,
+      "message": "Property 'marketplaceLive' does not exist on type '{ listNft: (p: ListNftParams) => Promise<SendTransactionResult>; buyNft: (p: BuyNftParams) => Promise<SendTransactionResult>; ... 6 more ...; lastTx: string | null; }'."
+    },
+    {
+      "file": "src/components/MapboxArtMap.tsx",
+      "code": 7006,
+      "message": "Parameter 'e' implicitly has an 'any' type."
+    },
+    {
+      "file": "src/components/NFTDetailModal.tsx",
+      "code": 2339,
+      "message": "Property 'marketplaceAddress' does not exist on type '{ listNft: (p: ListNftParams) => Promise<SendTransactionResult>; buyNft: (p: BuyNftParams) => Promise<SendTransactionResult>; ... 6 more ...; lastTx: string | null; }'."
+    },
+    {
+      "file": "src/components/NFTDetailModal.tsx",
+      "code": 2741,
+      "message": "Property 'children' is missing in type '{ address: string; action: string; }' but required in type 'Props'."
+    },
+    {
+      "file": "src/components/PackAgentMonitor.tsx",
+      "code": 2339,
+      "message": "Property 'shareOfPackPoolBps' does not exist on type 'AgentPackProfile'."
+    },
+    {
+      "file": "src/components/PackAgentMonitor.tsx",
+      "code": 2339,
+      "message": "Property 'shareOfPackPoolBps' does not exist on type 'AgentPackProfile'."
+    },
+    {
+      "file": "src/components/PackAgentMonitor.tsx",
+      "code": 2339,
+      "message": "Property 'shareOfPackPoolBps' does not exist on type 'AgentPackProfile'."
+    },
+    {
+      "file": "src/components/RevenueSplitterPanel.tsx",
+      "code": 2339,
+      "message": "Property 'shareOfPackPoolBps' does not exist on type 'AgentPackProfile'."
+    },
+    {
+      "file": "src/components/RoutePrefetch.tsx",
+      "code": 2307,
+      "message": "Cannot find module '../pages/Gallery' or its corresponding type declarations."
+    },
+    {
+      "file": "src/components/RoutePrefetch.tsx",
+      "code": 2307,
+      "message": "Cannot find module '../pages/Marketplace' or its corresponding type declarations."
+    },
+    {
+      "file": "src/components/RoutePrefetch.tsx",
+      "code": 2307,
+      "message": "Cannot find module '../pages/Trading' or its corresponding type declarations."
+    },
+    {
+      "file": "src/components/RoutePrefetch.tsx",
+      "code": 2339,
+      "message": "Property 'setTimeout' does not exist on type 'never'."
+    },
+    {
+      "file": "src/components/TreasuryFlowsPanel.tsx",
+      "code": 2739,
+      "message": "Type '{ pack_paper: string; ads_bid: string; venue_rental: string; marketplace_sale: string; slot_casino: string; tip: string; lp_fees_external: string; }' is missing the following properties from type 'Record<RevenueSource, string>': agents_marketplace, farm_external"
+    },
+    {
+      "file": "src/components/defi/DeFiBuilder.tsx",
+      "code": 2741,
+      "message": "Property 'packIds' is missing in type '{}' but required in type '{ packIds: PackId[]; }'."
+    },
+    {
+      "file": "src/components/lia/HolderTerminal.tsx",
+      "code": 2339,
+      "message": "Property 'equity_now_usd' does not exist on type 'ExportSnap'."
+    },
+    {
+      "file": "src/components/museum/CityMuseumDirectory.tsx",
+      "code": 2322,
+      "message": "Type '\"directory\"' is not assignable to type '\"map\" | \"tours\" | \"world_tour\" | undefined'."
+    },
+    {
+      "file": "src/components/museum/MuseumBlueprintRoom.tsx",
+      "code": 2578,
+      "message": "Unused '@ts-expect-error' directive."
+    },
+    {
+      "file": "src/components/museum/MuseumBlueprintRoom.tsx",
+      "code": 2578,
+      "message": "Unused '@ts-expect-error' directive."
+    },
+    {
+      "file": "src/components/museum/MuseumCorridor.tsx",
+      "code": 2339,
+      "message": "Property 'thumbnailUrl' does not exist on type '{ url?: string | undefined; }'."
+    },
+    {
+      "file": "src/components/museum/MuseumCorridor.tsx",
+      "code": 2339,
+      "message": "Property 'thumbnailUrl' does not exist on type '{ url?: string | undefined; }'."
+    },
+    {
+      "file": "src/components/museum/MuseumCorridor.tsx",
+      "code": 2339,
+      "message": "Property 'thumbnailUrl' does not exist on type '{ url?: string | undefined; }'."
+    },
+    {
+      "file": "src/components/museum/VenueWallAssign.tsx",
+      "code": 2769,
+      "message": "No overload matches this call.\n  Overload 1 of 2, '(predicate: (value: UserNft, index: number, array: UserNft[]) => value is UserNft, thisArg?: any): UserNft[]', gave the following error.\n    Argument of type '(n: NFT) => string' is not assignable to parameter of type '(value: UserNft, index: number, array: UserNft[]) => value is UserNft'.\n      Types of parameters 'n' and 'value' are incompatible.\n        Property 'collection_name' is missing in type 'UserNft' but required in type 'NFT'.\n  Overload 2 of 2, '(predicate: (value: UserNft, index: number, array: UserNft[]) => unknown, thisArg?: any): UserNft[]', gave the following error.\n    Argument of type '(n: NFT) => string' is not assignable to parameter of type '(value: UserNft, index: number, array: UserNft[]) => unknown'.\n      Types of parameters 'n' and 'value' are incompatible.\n        Property 'collection_name' is missing in type 'UserNft' but required in type 'NFT'."
+    },
+    {
+      "file": "src/components/museum/VenueWallAssign.tsx",
+      "code": 2345,
+      "message": "Argument of type '(n: NFT) => React.JSX.Element' is not assignable to parameter of type '(value: UserNft, index: number, array: UserNft[]) => Element'.\n  Types of parameters 'n' and 'value' are incompatible.\n    Property 'collection_name' is missing in type 'UserNft' but required in type 'NFT'."
+    },
+    {
+      "file": "src/config/revenueSplitter.ts",
+      "code": 2339,
+      "message": "Property 'shareOfPackPoolBps' does not exist on type 'AgentPackProfile'."
+    },
+    {
+      "file": "src/lia/verifyUserTx.test.ts",
+      "code": 2307,
+      "message": "Cannot find module 'vitest' or its corresponding type declarations."
+    },
+    {
+      "file": "src/lib/holderAccess.ts",
+      "code": 2459,
+      "message": "Module '\"./nftPacks\"' declares 'PackId' locally, but it is not exported."
+    },
+    {
+      "file": "src/lib/imagePreload.ts",
+      "code": 2578,
+      "message": "Unused '@ts-expect-error' directive."
+    },
+    {
+      "file": "src/lib/marketChain.test.ts",
+      "code": 2307,
+      "message": "Cannot find module 'vitest' or its corresponding type declarations."
+    },
+    {
+      "file": "src/lib/networkProbe.test.ts",
+      "code": 2307,
+      "message": "Cannot find module 'vitest' or its corresponding type declarations."
+    },
+    {
+      "file": "src/lib/placeSculptures.ts",
+      "code": 2339,
+      "message": "Property 'heightCm' does not exist on type 'FrameItem'."
+    },
+    {
+      "file": "src/lib/placeSculptures.ts",
+      "code": 2339,
+      "message": "Property 'widthCm' does not exist on type 'FrameItem'."
+    },
+    {
+      "file": "src/lib/placeSculptures.ts",
+      "code": 2339,
+      "message": "Property 'depthCm' does not exist on type 'FrameItem'."
+    },
+    {
+      "file": "src/lib/placeSculptures.ts",
+      "code": 2339,
+      "message": "Property 'circumferenceCm' does not exist on type 'FrameItem'."
+    },
+    {
+      "file": "src/lib/placeSculptures.ts",
+      "code": 2339,
+      "message": "Property 'sideImage' does not exist on type 'FrameItem'."
+    },
+    {
+      "file": "src/lib/placeSculptures.ts",
+      "code": 2339,
+      "message": "Property 'sideImage' does not exist on type 'FrameItem'."
+    },
+    {
+      "file": "src/lib/placeSculptures.ts",
+      "code": 2339,
+      "message": "Property 'heightCm' does not exist on type 'FrameItem'."
+    },
+    {
+      "file": "src/lib/placeSculptures.ts",
+      "code": 2339,
+      "message": "Property 'widthCm' does not exist on type 'FrameItem'."
+    },
+    {
+      "file": "src/lib/placeSculptures.ts",
+      "code": 2339,
+      "message": "Property 'depthCm' does not exist on type 'FrameItem'."
+    },
+    {
+      "file": "src/lib/placeSculptures.ts",
+      "code": 2339,
+      "message": "Property 'circumferenceCm' does not exist on type 'FrameItem'."
+    },
+    {
+      "file": "src/lib/protocolPulse.test.ts",
+      "code": 2307,
+      "message": "Cannot find module 'vitest' or its corresponding type declarations."
+    },
+    {
+      "file": "src/lib/xportalWc.ts",
+      "code": 2352,
+      "message": "Conversion of type '{ default: typeof import(\"apps/frontend/node_modules/@multiversx/sdk-core/out/index\"); Account: typeof Account; ... 269 more ...; ValidatorSigner: typeof ValidatorSigner; }' to type '{ Transaction?: (new (o: Record<string, unknown>) => unknown) | undefined; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.\n  Types of property 'Transaction' are incompatible.\n    Type 'typeof Transaction' is not comparable to type 'new (o: Record<string, unknown>) => unknown'.\n      Types of construct signatures are incompatible.\n        Type 'new (options: { nonce?: bigint | INonce | undefined; value?: bigint | ITransactionValue | undefined; sender: string | IAddress; receiver: string | IAddress; ... 12 more ...; relayerSignature?: Uint8Array<...> | undefined; }) => Transaction' is not assignable to type 'new (o: Record<string, unknown>) => unknown'.\n          Types of parameters 'options' and 'o' are incompatible.\n            Type 'Record<string, unknown>' is missing the following properties from type '{ nonce?: bigint | INonce | undefined; value?: bigint | ITransactionValue | undefined; sender: string | IAddress; receiver: string | IAddress; ... 12 more ...; relayerSignature?: Uint8Array<...> | undefined; }': sender, receiver, gasLimit, chainID"
+    },
+    {
+      "file": "src/pages/ArtToursPage.tsx",
+      "code": 2322,
+      "message": "Type '{ text: string; }' is not assignable to type 'IntrinsicAttributes & InfoTipProps'.\n  Property 'text' does not exist on type 'IntrinsicAttributes & InfoTipProps'."
+    },
+    {
+      "file": "src/pages/DemoTourPage.tsx",
+      "code": 2322,
+      "message": "Type '{ variant: string; }' is not assignable to type 'IntrinsicAttributes'.\n  Property 'variant' does not exist on type 'IntrinsicAttributes'."
+    },
+    {
+      "file": "src/pages/HolderRoomPage.tsx",
+      "code": 2339,
+      "message": "Property 'nfts' does not exist on type 'WalletContextValue'."
+    },
+    {
+      "file": "src/pages/LegalPage.tsx",
+      "code": 2322,
+      "message": "Type '\"home\"' is not assignable to type 'PageGuideKey'."
+    },
+    {
+      "file": "src/pages/MuseumPage.tsx",
+      "code": 2339,
+      "message": "Property 'thumb' does not exist on type 'never'."
+    },
+    {
+      "file": "src/pages/MyPacks.tsx",
+      "code": 2322,
+      "message": "Type 'string' is not assignable to type 'PackId | null'."
+    },
+    {
+      "file": "src/pages/MyPacks.tsx",
+      "code": 2339,
+      "message": "Property 'pollMs' does not exist on type '() => { mode: ChainTimingMode; roundMs: 600 | 6000; txStatusPollMs: 3000 | 800; txStatusTimeoutMs: 45000 | 120000; noncePollMs: 500 | 1500; nonceAdvancePollMs: 600 | 2000; nonceStableTimeoutMs: 45000 | 20000; nonceAdvanceTimeoutMs: 45000 | 120000; mintStatusPollMs: 1500 | 3000; fetchTimeoutMs: 12000; }'."
+    },
+    {
+      "file": "src/pages/SalePage.tsx",
+      "code": 2339,
+      "message": "Property 'discord' does not exist on type '{ github: string; explorer: string; walletWeb: string; xportal: string; docs: string; githubPages: string; treasuryPolicy: string; walletLogin: (callback: string) => string; explorerAccount: (addr: string) => string; explorerTx: (hash: string) => string; explorerToken: (id: string) => string; }'."
+    },
+    {
+      "file": "src/pages/SiteMapPage.tsx",
+      "code": 2322,
+      "message": "Type '\"sitemap\"' is not assignable to type 'PageGuideKey'."
+    },
+    {
+      "file": "src/pages/TcaClassroom.tsx",
+      "code": 2554,
+      "message": "Expected 2 arguments, but got 3."
+    },
+    {
+      "file": "src/pages/TcaClassroom.tsx",
+      "code": 2554,
+      "message": "Expected 4-5 arguments, but got 2."
+    },
+    {
+      "file": "src/pages/TcaClassroom.tsx",
+      "code": 2345,
+      "message": "Argument of type 'LipSyncController | null' is not assignable to parameter of type 'LipSyncController'.\n  Type 'null' is not assignable to type 'LipSyncController'."
+    },
+    {
+      "file": "src/pages/TcaClassroom.tsx",
+      "code": 2345,
+      "message": "Argument of type 'LipSyncController | null' is not assignable to parameter of type 'LipSyncController'.\n  Type 'null' is not assignable to type 'LipSyncController'."
+    },
+    {
+      "file": "src/pages/Tip.tsx",
+      "code": 2339,
+      "message": "Property 'egldUsd' does not exist on type 'Prices'."
+    },
+    {
+      "file": "src/pages/VenueAccountPage.tsx",
+      "code": 2783,
+      "message": "'totalEur' is specified more than once, so this usage will be overwritten."
+    },
+    {
+      "file": "src/pages/VenueAccountPage.tsx",
+      "code": 2783,
+      "message": "'months' is specified more than once, so this usage will be overwritten."
+    },
+    {
+      "file": "src/pages/VenueAccountPage.tsx",
+      "code": 2783,
+      "message": "'walls' is specified more than once, so this usage will be overwritten."
+    },
+    {
+      "file": "src/pages/VenueAccountPage.tsx",
+      "code": 2322,
+      "message": "Type '{ variant: string; }' is not assignable to type 'IntrinsicAttributes'.\n  Property 'variant' does not exist on type 'IntrinsicAttributes'."
+    },
+    {
+      "file": "src/providers/MxDappProvider.tsx",
+      "code": 2352,
+      "message": "Conversion of type '{ default: typeof import(\"apps/frontend/node_modules/@multiversx/sdk-dapp/wrappers/DappProvider/index\"); DappProvider: ({ children, customNetworkConfig, externalProvider, environment, customComponents, dappConfig }: DappProviderPropsType) => Element; }' to type '{ DappProvider?: ComponentType<Record<string, unknown>> | undefined; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.\n  Types of property 'DappProvider' are incompatible.\n    Type '({ children, customNetworkConfig, externalProvider, environment, customComponents, dappConfig }: DappProviderPropsType) => Element' is not comparable to type 'ComponentType<Record<string, unknown>> | undefined'.\n      Type '({ children, customNetworkConfig, externalProvider, environment, customComponents, dappConfig }: DappProviderPropsType) => Element' is not comparable to type 'FunctionComponent<Record<string, unknown>>'.\n        Types of parameters '__0' and 'props' are incompatible.\n          Type 'Record<string, unknown>' is missing the following properties from type 'DappProviderPropsType': children, environment"
+    },
+    {
+      "file": "src/providers/MxDappProvider.tsx",
+      "code": 2307,
+      "message": "Cannot find module '@multiversx/sdk-dapp' or its corresponding type declarations."
+    },
+    {
+      "file": "src/services/analytics/holderService.ts",
+      "code": 7006,
+      "message": "Parameter 's' implicitly has an 'any' type."
+    },
+    {
+      "file": "src/services/analytics/holderService.ts",
+      "code": 7006,
+      "message": "Parameter 's' implicitly has an 'any' type."
+    },
+    {
+      "file": "src/services/multiversXService.ts",
+      "code": 2345,
+      "message": "Argument of type 'string' is not assignable to parameter of type 'IAddress'."
+    },
+    {
+      "file": "src/services/poolService.ts",
+      "code": 2554,
+      "message": "Expected 2 arguments, but got 1."
+    },
+    {
+      "file": "src/store/empireStore.ts",
+      "code": 2305,
+      "message": "Module '\"../config/scStatus\"' has no exported member 'ScSnapshot'."
+    }
+  ]
+}

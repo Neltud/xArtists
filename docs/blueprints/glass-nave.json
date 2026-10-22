@@ -1,0 +1,56 @@
+{
+  "id": "glass-nave",
+  "name": "Nef vitrée",
+  "description": "Grande nef ouverte — baies hautes, sol clair, volume aéré (Orsay / Met)",
+  "wallHeight": 7.5,
+  "wallThickness": 0.28,
+  "details": {
+    "era": "XIXe industriel / Beaux-Arts",
+    "city": "Paris / New York",
+    "capacity": 200,
+    "lighting": "daylight",
+    "ambient": "Verrière zénithale · reflets sur sol clair"
+  },
+  "walls": [
+    {"id": "n-s", "x1": 0, "y1": 0, "x2": 36, "y2": 0, "height": 7.5, "thickness": 0.28, "material": "glass"},
+    {"id": "n-e", "x1": 36, "y1": 0, "x2": 36, "y2": 16, "height": 7.5, "thickness": 0.28, "material": "plaster"},
+    {"id": "n-n", "x1": 36, "y1": 16, "x2": 0, "y2": 16, "height": 7.5, "thickness": 0.28, "material": "glass"},
+    {"id": "n-w", "x1": 0, "y1": 16, "x2": 0, "y2": 0, "height": 7.5, "thickness": 0.28, "material": "plaster"}
+  ],
+  "openings": [
+    {"id": "n-d1", "wallId": "n-w", "type": "door", "offset": 6, "width": 3.2, "height": 4.0, "sill": 0},
+    {"id": "n-w1", "wallId": "n-s", "type": "window", "offset": 4, "width": 6, "height": 4.5, "sill": 1.8},
+    {"id": "n-w2", "wallId": "n-s", "type": "window", "offset": 14, "width": 6, "height": 4.5, "sill": 1.8},
+    {"id": "n-w3", "wallId": "n-s", "type": "window", "offset": 24, "width": 6, "height": 4.5, "sill": 1.8},
+    {"id": "n-w4", "wallId": "n-n", "type": "window", "offset": 4, "width": 6, "height": 4.5, "sill": 1.8},
+    {"id": "n-w5", "wallId": "n-n", "type": "window", "offset": 14, "width": 6, "height": 4.5, "sill": 1.8},
+    {"id": "n-w6", "wallId": "n-n", "type": "window", "offset": 24, "width": 6, "height": 4.5, "sill": 1.8}
+  ],
+  "rooms": [
+    {
+      "id": "n-main",
+      "name": "Nef centrale",
+      "polygon": [{"x": 0, "y": 0}, {"x": 36, "y": 0}, {"x": 36, "y": 16}, {"x": 0, "y": 16}],
+      "floor": "marble",
+      "note": "36 × 16 m — hauteur sous verrière 7,5 m"
+    }
+  ],
+  "artAnchors": [
+    {"id": "a1", "wallId": "n-e", "x": 36, "y": 2, "facing": 3.1416, "height": 1.7, "plaque": "Abside est"},
+    {"id": "a2", "wallId": "n-e", "x": 36, "y": 5, "facing": 3.1416, "height": 1.7},
+    {"id": "a3", "wallId": "n-e", "x": 36, "y": 8, "facing": 3.1416, "height": 1.75},
+    {"id": "a4", "wallId": "n-e", "x": 36, "y": 11, "facing": 3.1416, "height": 1.7},
+    {"id": "a5", "wallId": "n-e", "x": 36, "y": 14, "facing": 3.1416, "height": 1.7},
+    {"id": "a6", "wallId": "n-w", "x": 0, "y": 2, "facing": 0, "height": 1.7},
+    {"id": "a7", "wallId": "n-w", "x": 0, "y": 8, "facing": 0, "height": 1.7, "plaque": "Entrée ouest"},
+    {"id": "a8", "wallId": "n-w", "x": 0, "y": 14, "facing": 0, "height": 1.7},
+    {"id": "a9", "wallId": "n-s", "x": 8, "y": 0, "facing": 1.5708, "height": 1.55},
+    {"id": "a10", "wallId": "n-s", "x": 18, "y": 0, "facing": 1.5708, "height": 1.55},
+    {"id": "a11", "wallId": "n-s", "x": 28, "y": 0, "facing": 1.5708, "height": 1.55},
+    {"id": "a12", "wallId": "n-n", "x": 8, "y": 16, "facing": 4.7124, "height": 1.55},
+    {"id": "a13", "wallId": "n-n", "x": 18, "y": 16, "facing": 4.7124, "height": 1.55},
+    {"id": "a14", "wallId": "n-n", "x": 28, "y": 16, "facing": 4.7124, "height": 1.55}
+  ],
+  "schema": "xartists.roomBlueprint.v1",
+  "source": "blend-glade-wolf-grove"
+}

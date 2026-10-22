@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Marché RWA — œuvres physiques uniquement (dimensions, médium, NFC, certificat on-chain).
  * Pas de Frameit / Xoxno / SFT génériques.
@@ -55,74 +56,73 @@ export default function RwaMarketPanel() {
   return (
     <section className="rounded-xl border border-white/10 bg-black/40 p-4 backdrop-blur-sm">
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <h2 className="text-lg font-semibold tracking-tight text-white">Art physique · RWA</h2>
+        <h2 className="text-lg font-semibold tracking-tight text-white">{xaRender("Art physique · RWA")}</h2>
         <button
           type="button"
           onClick={() => void load()}
           className="ml-auto rounded-md border border-white/15 px-2 py-1 text-xs text-white/70 hover:bg-white/5"
         >
-          Actualiser
-        </button>
+          {xaRender("Actualiser ")}</button>
       </div>
 
-      {loading && <p className="text-sm text-white/50">Chargement du catalogue…</p>}
-      {err && <p className="text-sm text-rose-300">{err}</p>}
+      {xaRender(loading && <p className="text-sm text-white/50">{xaRender("Chargement du catalogue…")}</p>)}
+      {xaRender(err && <p className="text-sm text-rose-300">{xaRender(err)}</p>)}
 
-      {!loading && items.length === 0 && !err && (
-        <p className="text-sm text-zinc-500">Aucune œuvre physique référencée pour le moment.</p>
-      )}
+      {xaRender(!loading && items.length === 0 && !err && (
+        <p className="text-sm text-zinc-500">{xaRender("Aucune œuvre physique référencée pour le moment.")}</p>
+      ))}
 
       <div className="grid gap-3 sm:grid-cols-2">
-        {items.map(it => (
+        {xaRender(items.map(it => (
           <article
             key={it.id}
             className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent p-4"
           >
-            <h3 className="text-sm font-semibold text-white">{it.title}</h3>
-            <p className="mt-0.5 text-[12px] text-zinc-400">{it.artist || '—'}</p>
+            <h3 className="text-sm font-semibold text-white">{xaRender(it.title)}</h3>
+            <p className="mt-0.5 text-[12px] text-zinc-400">{xaRender(it.artist || '—')}</p>
             <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px]">
               <div>
-                <dt className="text-zinc-500">Médium</dt>
-                <dd className="text-zinc-200">{it.medium || it.style || '—'}</dd>
+                <dt className="text-zinc-500">{xaRender("Médium")}</dt>
+                <dd className="text-zinc-200">{xaRender(it.medium || it.style || '—')}</dd>
               </div>
               <div>
-                <dt className="text-zinc-500">Année</dt>
-                <dd className="text-zinc-200">{it.year ?? '—'}</dd>
+                <dt className="text-zinc-500">{xaRender("Année")}</dt>
+                <dd className="text-zinc-200">{xaRender(it.year ?? '—')}</dd>
               </div>
               <div>
-                <dt className="text-zinc-500">Provenance</dt>
-                <dd className="text-zinc-200">{it.provenance || '—'}</dd>
+                <dt className="text-zinc-500">{xaRender("Provenance")}</dt>
+                <dd className="text-zinc-200">{xaRender(it.provenance || '—')}</dd>
               </div>
               <div>
-                <dt className="text-zinc-500">Statut</dt>
-                <dd className="text-zinc-200">{it.shipment_status || it.condition || '—'}</dd>
+                <dt className="text-zinc-500">{xaRender("Statut")}</dt>
+                <dd className="text-zinc-200">{xaRender(it.shipment_status || it.condition || '—')}</dd>
               </div>
-              {it.dimensions && (
+              {xaRender(it.dimensions && (
                 <div className="col-span-2">
-                  <dt className="text-zinc-500">Dimensions</dt>
+                  <dt className="text-zinc-500">{xaRender("Dimensions")}</dt>
                   <dd className="text-zinc-200">
-                    {[it.dimensions.widthCm, it.dimensions.heightCm, it.dimensions.depthCm]
+                    {xaRender([it.dimensions.widthCm, it.dimensions.heightCm, it.dimensions.depthCm]
                       .filter(v => v != null)
-                      .join(' × ')}{' '}
+                      .join(' × '))}{xaRender(' ')}
                     cm
                   </dd>
                 </div>
-              )}
-              {it.nfc_chip_id && (
+              ))}
+              {xaRender(it.nfc_chip_id && (
                 <div className="col-span-2">
-                  <dt className="text-zinc-500">Puce NFC</dt>
-                  <dd className="font-mono text-zinc-200">{it.nfc_chip_id}</dd>
+                  <dt className="text-zinc-500">{xaRender("Puce NFC")}</dt>
+                  <dd className="font-mono text-zinc-200">{xaRender(it.nfc_chip_id)}</dd>
                 </div>
-              )}
-              {it.certificate_hash && (
+              ))}
+              {xaRender(it.certificate_hash && (
                 <div className="col-span-2">
-                  <dt className="text-zinc-500">Certificat on-chain</dt>
-                  <dd className="break-all font-mono text-[10px] text-cyan-200/90">{it.certificate_hash}</dd>
+                  <dt className="text-zinc-500">{xaRender("Certificat on-chain")}</dt>
+                  <dd className="break-all font-mono text-[10px] text-cyan-200/90">{xaRender(it.certificate_hash)}</dd>
                 </div>
-              )}
+              ))}
             </dl>
           </article>
-        ))}
+        )))}
       </div>
     </section>
   )

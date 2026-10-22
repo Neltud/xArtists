@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Historique paper — intents checkout + packs locaux (pas L402 mock).
  * Route: /payments
@@ -77,50 +78,45 @@ export default function PaymentHistory() {
   return (
     <div className="animate-fade-in max-w-xl mx-auto space-y-6 pb-12">
       <header className="space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">Compte</p>
-        <h1 className="text-3xl font-semibold tracking-tight text-white">Paiements paper</h1>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500">{xaRender("Compte")}</p>
+        <h1 className="text-3xl font-semibold tracking-tight text-white">{xaRender("Paiements paper")}</h1>
         <p className="text-sm text-zinc-500">
-          Intentions checkout et packs locaux sur cet appareil — pas un extrait bancaire on-chain.
-        </p>
+          {xaRender("Intentions checkout et packs locaux sur cet appareil — pas un extrait bancaire on-chain. ")}</p>
       </header>
 
-      {rows.length === 0 ? (
+      {xaRender(rows.length === 0 ? (
         <div className="rounded-2xl border border-white/10 bg-zinc-950/50 px-4 py-8 text-center space-y-3">
-          <p className="text-sm text-zinc-500">Aucun historique sur cet appareil.</p>
+          <p className="text-sm text-zinc-500">{xaRender("Aucun historique sur cet appareil.")}</p>
           <Link to="/agents" className="text-sm text-violet-300 underline">
-            Voir les packs
-          </Link>
+            {xaRender("Voir les packs ")}</Link>
         </div>
       ) : (
         <ul className="space-y-2">
-          {rows.map((r, i) => (
+          {xaRender(rows.map((r, i) => (
             <li
               key={`${r.label}-${i}`}
               className="rounded-xl border border-white/10 bg-zinc-950/60 px-4 py-3 flex justify-between gap-3"
             >
               <div>
-                <p className="text-sm font-medium text-white">{r.label}</p>
-                <p className="text-[12px] text-zinc-500 mt-0.5">{r.detail}</p>
-                <p className="text-[10px] text-zinc-600 mt-1">{r.when}</p>
+                <p className="text-sm font-medium text-white">{xaRender(r.label)}</p>
+                <p className="text-[12px] text-zinc-500 mt-0.5">{xaRender(r.detail)}</p>
+                <p className="text-[10px] text-zinc-600 mt-1">{xaRender(r.when)}</p>
               </div>
-              <span className="text-[10px] uppercase tracking-wide text-zinc-500 shrink-0">{r.kind}</span>
+              <span className="text-[10px] uppercase tracking-wide text-zinc-500 shrink-0">{xaRender(r.kind)}</span>
             </li>
-          ))}
+          )))}
         </ul>
-      )}
+      ))}
 
       <p className="text-[12px] text-zinc-600">
         <Link to="/my-packs" className="text-zinc-400 hover:text-white underline">
-          My Packs
-        </Link>
-        {' · '}
+          {xaRender("My Packs ")}</Link>
+        {xaRender(' · ')}
         <Link to="/ads" className="text-zinc-400 hover:text-white underline">
-          Ads
-        </Link>
-        {' · '}
+          {xaRender("Ads ")}</Link>
+        {xaRender(' · ')}
         <Link to="/tip" className="text-zinc-400 hover:text-white underline">
-          Tip
-        </Link>
+          {xaRender("Tip ")}</Link>
       </p>
     </div>
   )

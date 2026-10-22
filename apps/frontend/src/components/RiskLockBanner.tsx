@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Risk Manager lockdown banner — drawdown ceiling (paper state JSON).
  */
@@ -50,11 +51,10 @@ export default function RiskLockBanner() {
   if (!locked) {
     return (
       <div className="mb-4 rounded-lg border border-emerald-500/25 bg-emerald-500/5 px-3 py-2 text-[11px] text-emerald-100/90 flex flex-wrap gap-2 items-center">
-        <span className="font-semibold">Risk Manager</span>
-        <span className="text-emerald-300/80">ACTIVE</span>
+        <span className="font-semibold">{xaRender("Risk Manager")}</span>
+        <span className="text-emerald-300/80">{xaRender("ACTIVE")}</span>
         <span className="text-zinc-500">
-          dd {curPct}% / max {maxPct}% · unlock ops-only si lockdown
-        </span>
+          dd {xaRender(curPct)}{xaRender("% / max ")}{xaRender(maxPct)}{xaRender("% · unlock ops-only si lockdown ")}</span>
       </div>
     )
   }
@@ -65,13 +65,12 @@ export default function RiskLockBanner() {
       role="alert"
       aria-live="assertive"
     >
-      <p className="font-bold tracking-wide">SYSTEM LOCKDOWN — Risk Manager</p>
+      <p className="font-bold tracking-wide">{xaRender("SYSTEM LOCKDOWN — Risk Manager")}</p>
       <p className="text-xs mt-1 opacity-90">
-        {s.last_event || 'Drawdown limit exceeded. All agents commanded to cease operations.'}
+        {xaRender(s.last_event || 'Drawdown limit exceeded. All agents commanded to cease operations.')}
       </p>
       <p className="text-[10px] mt-2 text-red-200/80">
-        dd {curPct}% · plafond {maxPct}% · reset manuel ops uniquement
-      </p>
+        dd {xaRender(curPct)}{xaRender("% · plafond ")}{xaRender(maxPct)}{xaRender("% · reset manuel ops uniquement ")}</p>
     </div>
   )
 }

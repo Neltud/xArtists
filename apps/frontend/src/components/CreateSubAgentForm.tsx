@@ -1,8 +1,11 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 import { useState } from 'react'
 import { useWallet } from '../context/WalletContext'
 import { PACK_PRICE_EUR } from '../config/multichain'
 
 export default function CreateSubAgentForm() {
+  xaUsePhraseLocale()
+
   const { connected, address } = useWallet()
   const [prompt, setPrompt] = useState('')
   const [name, setName] = useState('')
@@ -45,34 +48,31 @@ export default function CreateSubAgentForm() {
 
   return (
     <form onSubmit={onSubmit} className="card border-purple-500/20 space-y-3">
-      <h3 className="font-semibold text-sm text-purple-200">Créer un Agent Pack (NFT limité)</h3>
+      <h3 className="font-semibold text-sm text-purple-200">{xaRender("Créer un Agent Pack (NFT limité)")}</h3>
       <p className="text-[11px] text-gray-500">
-        Catalogue <strong>{PACK_PRICE_EUR.list} €</strong> · corridor{' '}
+        {xaRender("Catalogue ")}<strong>{xaRender(PACK_PRICE_EUR.list)} €</strong> {xaRender(" · corridor")}{xaRender(' ')}
         <strong>
-          {PACK_PRICE_EUR.min}–{PACK_PRICE_EUR.max} €
-        </strong>{' '}
-        · LIA fixe le prix pour la marge · ≠ GreenSmoke (signal only)
-      </p>
+          {xaRender(PACK_PRICE_EUR.min)}–{xaRender(PACK_PRICE_EUR.max)} €
+        </strong>{xaRender(' ')}
+        {xaRender("· LIA fixe le prix pour la marge · ≠ GreenSmoke (signal only) ")}</p>
       <label className="block text-xs text-gray-500">
-        Prompt
-        <textarea
+        {xaRender("Prompt ")}<textarea
           className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm min-h-[80px]"
           value={prompt}
           onChange={e => setPrompt(e.target.value)}
-          placeholder="Ex. Micro-arb xExchange vs OneDex…"
+          placeholder={xaLocalize("Ex. Micro-arb xExchange vs OneDex…")}
         />
       </label>
       <div className="grid grid-cols-2 gap-2">
         <label className="block text-xs text-gray-500">
-          Nom (opt.)
-          <input
+          {xaRender("Nom (opt.) ")}<input
             className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm"
             value={name}
             onChange={e => setName(e.target.value)}
           />
         </label>
         <label className="block text-xs text-gray-500">
-          Prix € ({PACK_PRICE_EUR.min}–{PACK_PRICE_EUR.max})
+          {xaRender("Prix € (")}{xaRender(PACK_PRICE_EUR.min)}–{xaRender(PACK_PRICE_EUR.max)})
           <input
             type="number"
             min={PACK_PRICE_EUR.min}
@@ -85,9 +85,8 @@ export default function CreateSubAgentForm() {
         </label>
       </div>
       <button type="submit" className="btn-primary text-sm w-full sm:w-auto">
-        Enregistrer l’intent
-      </button>
-      {msg && <p className="text-xs text-amber-200/90 leading-relaxed">{msg}</p>}
+        {xaRender("Enregistrer l’intent ")}</button>
+      {xaRender(msg && <p className="text-xs text-amber-200/90 leading-relaxed">{xaRender(msg)}</p>)}
     </form>
   )
 }

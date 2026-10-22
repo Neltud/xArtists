@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Transitions de pages — CSS only (pas de framer-motion).
  * Fade + slide léger à chaque changement de route.
@@ -33,7 +34,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
       className={`page-transition page-transition--${phase}`}
       key={path}
     >
-      {display}
+      {xaRender(display)}
     </div>
   )
 }

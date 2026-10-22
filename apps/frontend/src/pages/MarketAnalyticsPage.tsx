@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * /market — analyse publique + matrice + holders (onglets, anti-scroll).
  */
@@ -22,7 +23,7 @@ export default function MarketAnalyticsPage() {
     <div className="space-y-4 pb-16">
       <div className="max-w-4xl mx-auto">
         <div className="flex gap-1 p-1 rounded-xl bg-[#111118] border border-[#2a2a3a] overflow-x-auto">
-          {TABS.map(t => (
+          {xaRender(TABS.map(t => (
             <button
               key={t.id}
               type="button"
@@ -33,30 +34,30 @@ export default function MarketAnalyticsPage() {
                   : 'text-zinc-500 hover:text-white border border-transparent'
               }`}
             >
-              {t.label}
+              {xaRender(t.label)}
             </button>
-          ))}
+          )))}
         </div>
       </div>
 
-      {tab === 'dashboard' && (
+      {xaRender(tab === 'dashboard' && (
         <div className="space-y-6">
           <MarketPage />
           <div className="max-w-4xl mx-auto">
             <MatrixBoard />
           </div>
         </div>
-      )}
-      {tab === 'liquidity' && (
+      ))}
+      {xaRender(tab === 'liquidity' && (
         <div className="max-w-4xl mx-auto">
           <TroLiquidityPanel />
         </div>
-      )}
-      {tab === 'holders' && (
+      ))}
+      {xaRender(tab === 'holders' && (
         <div className="max-w-4xl mx-auto">
           <TroHolderBoard />
         </div>
-      )}
+      ))}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-10-04",
+  "updated": "2026-10-21",
   "repo": "https://github.com/Neltud/xArtists",
   "branch": "main",
   "pythonpath": ".",
@@ -37,6 +37,8 @@
     "executes_tx": false
   },
   "docs": [
+    "docs/VELLUM_LIA_WALLET_DIRECTIVES.md",
+    "data/vellum_update_directives.json",
     "docs/VELLUM_INTEGRATION.md",
     "docs/CLAUDE_API_CONTRACT.md",
     "docs/LIA_SHADOW_AND_STRATEGY.md",

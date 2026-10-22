@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Corps 3D-lite — objets = SC mainnet.
  * Clic → prepare path wallet (xPortal / TxShell) selon objet.
@@ -28,19 +29,17 @@ export default function ChainObjectCanvas() {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-[10px] uppercase tracking-wider text-cyan-300/80 font-semibold">
-            Mainnet · objets on-chain
-          </p>
+            {xaRender("Mainnet · objets on-chain ")}</p>
           <p className="text-[12px] text-zinc-500">
-            RPC → store → couleur · clic → xPortal / page SC
-          </p>
+            {xaRender("RPC → store → couleur · clic → xPortal / page SC ")}</p>
         </div>
         <span className="text-[10px] mono text-zinc-600">
-          stake {snap.troTotalStaked} atomic · {snap.apiOk ? 'api ok' : 'api?'}
+          {xaRender("stake ")}{xaRender(snap.troTotalStaked)} {xaRender(" atomic · ")}{xaRender(snap.apiOk ? 'api ok' : 'api?')}
         </span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {snap.objects.map(o => {
+        {xaRender(snap.objects.map(o => {
           const act = ACTION[o.key]
           const hue = o.live ? 160 - o.intensity * 40 : 0
           const sat = o.live ? 70 : 10
@@ -66,13 +65,12 @@ export default function ChainObjectCanvas() {
                 }}
               >
                 <span className="absolute inset-0 flex flex-col items-center justify-center text-white/90">
-                  <span className="text-lg font-semibold">{o.label}</span>
+                  <span className="text-lg font-semibold">{xaRender(o.label)}</span>
                   <span className="text-[10px] mt-1 opacity-80">
-                    {o.live ? 'LIVE' : '—'} · {o.balanceEgld.toFixed(3)} EGLD
-                  </span>
+                    {xaRender(o.live ? 'LIVE' : '—')} · {xaRender(o.balanceEgld.toFixed(3))} {xaRender(" EGLD ")}</span>
                 </span>
               </button>
-              {act && (
+              {xaRender(act && (
                 <Link
                   to={act.href}
                   className={`block text-center text-[11px] rounded-lg py-1.5 border ${
@@ -81,22 +79,20 @@ export default function ChainObjectCanvas() {
                       : 'border-white/10 text-zinc-500'
                   }`}
                 >
-                  {act.cta} {act.gated() ? '→' : '(gate)'}
+                  {xaRender(act.cta)} {xaRender(act.gated() ? '→' : '(gate)')}
                 </Link>
-              )}
+              ))}
             </div>
           )
-        })}
+        }))}
       </div>
 
-      {snap.objects.length === 0 && (
-        <p className="text-[12px] text-zinc-600 text-center py-6">Chargement miroir chaîne…</p>
-      )}
+      {xaRender(snap.objects.length === 0 && (
+        <p className="text-[12px] text-zinc-600 text-center py-6">{xaRender("Chargement miroir chaîne…")}</p>
+      ))}
 
       <p className="text-[10px] text-zinc-600 leading-relaxed">
-        Clic objet : connecte xPortal si besoin, puis ouvre la page SC. Signature user uniquement —
-        aucune clé dans le navigateur.
-      </p>
+        {xaRender("Clic objet : connecte xPortal si besoin, puis ouvre la page SC. Signature user uniquement — aucune clé dans le navigateur. ")}</p>
     </section>
   )
 }

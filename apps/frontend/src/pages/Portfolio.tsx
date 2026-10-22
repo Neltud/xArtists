@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { usePortfolioValue, type PortfolioToken, type PortfolioNft } from '../hooks/usePortfolioValue'
@@ -43,15 +44,15 @@ function TokenRow({ t }: { t: PortfolioToken }) {
   return (
     <tr className="border-b border-[#2a2a3a]/50 hover:bg-[#111118] transition-colors">
       <td className="py-3 px-3">
-        <p className="font-semibold text-sm">{t.ticker || t.identifier.split('-')[0]}</p>
-        <p className="text-xs text-gray-500 truncate max-w-[180px]">{t.name}</p>
+        <p className="font-semibold text-sm">{xaRender(t.ticker || t.identifier.split('-')[0])}</p>
+        <p className="text-xs text-gray-500 truncate max-w-[180px]">{xaRender(t.name)}</p>
       </td>
-      <td className="py-3 px-3 text-right mono text-sm">{fmtBalance(t.balance)}</td>
+      <td className="py-3 px-3 text-right mono text-sm">{xaRender(fmtBalance(t.balance))}</td>
       <td className="py-3 px-3 text-right text-sm">
-        {t.price > 0 ? `$${t.price.toLocaleString('fr-FR', { maximumFractionDigits: 6 })}` : '—'}
+        {xaRender(t.price > 0 ? `$${t.price.toLocaleString('fr-FR', { maximumFractionDigits: 6 })}` : '—')}
       </td>
       <td className="py-3 px-3 text-right font-bold text-sm">
-        {t.valueUsd > 0 ? fmtUsd(t.valueUsd) : '—'}
+        {xaRender(t.valueUsd > 0 ? fmtUsd(t.valueUsd) : '—')}
       </td>
     </tr>
   )
@@ -62,7 +63,7 @@ function NftRow({ n }: { n: PortfolioNft }) {
     <tr className="border-b border-[#2a2a3a]/50 hover:bg-[#111118] transition-colors">
       <td className="py-3 px-3">
         <div className="flex items-center gap-3">
-          {n.mediaUrl ? (
+          {xaRender(n.mediaUrl ? (
             <img
               src={n.mediaUrl}
               alt={n.name}
@@ -73,21 +74,21 @@ function NftRow({ n }: { n: PortfolioNft }) {
             />
           ) : (
             <div className="w-10 h-10 rounded-lg bg-[#111118] flex items-center justify-center text-lg flex-shrink-0">
-              {n.type === 'MetaESDT' ? '💧' : '🖼️'}
+              {xaRender(n.type === 'MetaESDT' ? '💧' : '🖼️')}
             </div>
-          )}
+          ))}
           <div className="min-w-0">
-            <p className="font-semibold text-sm">{n.name || n.collection}</p>
-            <p className="text-[10px] mono text-gray-600">{n.identifier}</p>
+            <p className="font-semibold text-sm">{xaRender(n.name || n.collection)}</p>
+            <p className="text-[10px] mono text-gray-600">{xaRender(n.identifier)}</p>
           </div>
         </div>
       </td>
-      <td className="py-3 px-3 text-right mono text-sm">{fmtBalance(n.balance)}</td>
+      <td className="py-3 px-3 text-right mono text-sm">{xaRender(fmtBalance(n.balance))}</td>
       <td className="py-3 px-3 text-right text-sm">
-        {n.price > 0 ? `$${n.price.toLocaleString('fr-FR', { maximumFractionDigits: 6 })}` : '—'}
+        {xaRender(n.price > 0 ? `$${n.price.toLocaleString('fr-FR', { maximumFractionDigits: 6 })}` : '—')}
       </td>
       <td className="py-3 px-3 text-right font-bold text-sm text-purple-400">
-        {n.valueUsd > 0 ? fmtUsd(n.valueUsd) : '—'}
+        {xaRender(n.valueUsd > 0 ? fmtUsd(n.valueUsd) : '—')}
       </td>
     </tr>
   )
@@ -129,48 +130,45 @@ export default function Portfolio() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-3xl font-black">📈 Portfolio LIA (protocole)</h1>
+          <h1 className="text-3xl font-black">{xaRender("📈 Portfolio LIA (protocole)")}</h1>
           <p className="text-gray-500 mt-1 text-sm">
-            Book ops MultiversX + BTC/SOL · scénarios paper. <InfoTip k="liaVsUser" />{' '}
+            {xaRender("Book ops MultiversX + BTC/SOL · scénarios paper. ")}<InfoTip k="liaVsUser" />{xaRender(' ')}
             <Link to="/wallet" className="text-green-300 underline">
-              Mon wallet Connect →
-            </Link>
+              {xaRender("Mon wallet Connect → ")}</Link>
           </p>
         </div>
         <button type="button" onClick={refresh} className="btn-secondary text-sm self-start sm:self-auto">
-          🔄 Actualiser
-        </button>
+          {xaRender("🔄 Actualiser ")}</button>
       </div>
 
       <LiaVsUserBanner tone="protocol" />
 
       <p className="mb-4 text-[11px] mono text-zinc-600 break-all">
-        LIA ops · {LIA_WALLET}
+        {xaRender("LIA ops · ")}{xaRender(LIA_WALLET)}
       </p>
 
       <LiaMultichainPanel />
 
-      {error && (
-        <div className="card mb-6 border-red-500/30 text-red-400 text-sm">⚠️ Erreur: {error}</div>
-      )}
+      {xaRender(error && (
+        <div className="card mb-6 border-red-500/30 text-red-400 text-sm">{xaRender("⚠️ Erreur: ")}{xaRender(error)}</div>
+      ))}
 
       <div className="card mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-widest">Valeur MVX LIA estimée</p>
-            {loading ? (
+            <p className="text-xs text-gray-500 uppercase tracking-widest">{xaRender("Valeur MVX LIA estimée")}</p>
+            {xaRender(loading ? (
               <div className="h-10 w-48 rounded-lg bg-[#16161f] animate-pulse mt-1" />
             ) : (
-              <p className="text-4xl font-black gradient-text">{fmtUsd(totalUsd)}</p>
-            )}
+              <p className="text-4xl font-black gradient-text">{xaRender(fmtUsd(totalUsd))}</p>
+            ))}
             <p className="text-xs text-gray-500 mt-1">
-              EGLD @ ${egldPrice.toFixed(4)} · {tokens.length} tokens · {nfts.length} NFT
-            </p>
+              {xaRender("EGLD @ $")}{xaRender(egldPrice.toFixed(4))} · {xaRender(tokens.length)} {xaRender(" tokens · ")}{xaRender(nfts.length)} {xaRender(" NFT ")}</p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-gray-500">Objectif paper</p>
+            <p className="text-xs text-gray-500">{xaRender("Objectif paper")}</p>
             <p className="text-2xl font-bold text-purple-400">$1,000,000</p>
-            <p className="text-xs text-gray-500">{millionPct.toFixed(6)}% atteint</p>
+            <p className="text-xs text-gray-500">{xaRender(millionPct.toFixed(6))}{xaRender("% atteint")}</p>
           </div>
         </div>
         <div className="progress-bar mb-2">
@@ -180,51 +178,51 @@ export default function Portfolio() {
 
       <div className="card mb-6 border-teal-500/20">
         <h2 className="text-lg font-bold mb-2 flex items-center gap-1.5">
-          📅 Rendement 365j — scénarios <InfoTip k="paperFirst" />
+          {xaRender("📅 Rendement 365j — scénarios ")}<InfoTip k="paperFirst" />
         </h2>
         <p className="text-xs text-gray-500 mb-4">
-          5 trades/j · +1% / −0,8% · <span className="text-amber-400/90">pas une promesse</span>
+          {xaRender("5 trades/j · +1% / −0,8% · ")}<span className="text-amber-400/90">{xaRender("pas une promesse")}</span>
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
-                <th className="text-left py-2 px-2">Scénario</th>
-                <th className="text-right py-2 px-2">Wins / Losses</th>
-                <th className="text-right py-2 px-2">Fin an</th>
+                <th className="text-left py-2 px-2">{xaRender("Scénario")}</th>
+                <th className="text-right py-2 px-2">{xaRender("Wins / Losses")}</th>
+                <th className="text-right py-2 px-2">{xaRender("Fin an")}</th>
                 <th className="text-right py-2 px-2">×</th>
               </tr>
             </thead>
             <tbody>
-              {scenarios.map(s => (
+              {xaRender(scenarios.map(s => (
                 <tr key={s.label} className="border-b border-[#2a2a3a]/40">
-                  <td className="py-2.5 px-2 font-semibold text-teal-300">{s.label}</td>
+                  <td className="py-2.5 px-2 font-semibold text-teal-300">{xaRender(s.label)}</td>
                   <td className="py-2.5 px-2 text-right mono text-xs text-gray-400">
-                    {s.wins} / {s.losses}
+                    {xaRender(s.wins)} / {xaRender(s.losses)}
                   </td>
-                  <td className="py-2.5 px-2 text-right font-bold text-purple-300">{fmtUsd(s.endValue)}</td>
-                  <td className="py-2.5 px-2 text-right text-gray-300">×{s.multiple.toFixed(2)}</td>
+                  <td className="py-2.5 px-2 text-right font-bold text-purple-300">{xaRender(fmtUsd(s.endValue))}</td>
+                  <td className="py-2.5 px-2 text-right text-gray-300">×{xaRender(s.multiple.toFixed(2))}</td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
       </div>
 
       <div className="card mb-6">
-        <h2 className="text-lg font-bold mb-4">📊 Répartition MVX LIA</h2>
+        <h2 className="text-lg font-bold mb-4">{xaRender("📊 Répartition MVX LIA")}</h2>
         <div className="space-y-3">
-          {breakdown.map(b => {
+          {xaRender(breakdown.map(b => {
             const pct = totalUsd > 0 ? (b.value / totalUsd) * 100 : 0
             return (
               <div key={b.label}>
                 <div className="flex items-center justify-between text-sm mb-1">
                   <span className="font-semibold">
-                    {b.icon} {b.label}
+                    {xaRender(b.icon)} {xaRender(b.label)}
                   </span>
                   <span className={`font-bold ${b.color}`}>
-                    {fmtUsd(b.value)}{' '}
-                    <span className="text-gray-500 font-normal">({pct.toFixed(1)}%)</span>
+                    {xaRender(fmtUsd(b.value))}{xaRender(' ')}
+                    <span className="text-gray-500 font-normal">({xaRender(pct.toFixed(1))}%)</span>
                   </span>
                 </div>
                 <div className="h-2 rounded-full bg-[#0a0a0f] overflow-hidden">
@@ -235,88 +233,88 @@ export default function Portfolio() {
                 </div>
               </div>
             )
-          })}
+          }))}
         </div>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="card">
-          <p className="text-xs text-gray-500 uppercase mb-1">EGLD LIA</p>
-          <p className="text-xl font-bold">{egldBalance.toFixed(6)}</p>
-          <p className="text-xs text-gray-500">{fmtUsd(egldValueUsd)}</p>
+          <p className="text-xs text-gray-500 uppercase mb-1">{xaRender("EGLD LIA")}</p>
+          <p className="text-xl font-bold">{xaRender(egldBalance.toFixed(6))}</p>
+          <p className="text-xs text-gray-500">{xaRender(fmtUsd(egldValueUsd))}</p>
         </div>
         <div className="card">
           <p className="text-xs text-gray-500 uppercase mb-1 flex items-center gap-1">
-            Prix EGLD <InfoTip k="scStatus" />
+            {xaRender("Prix EGLD ")}<InfoTip k="scStatus" />
           </p>
-          <p className="text-xl font-bold text-blue-400">${egldPrice.toFixed(4)}</p>
+          <p className="text-xl font-bold text-blue-400">${xaRender(egldPrice.toFixed(4))}</p>
         </div>
         <div className="card">
-          <p className="text-xs text-gray-500 uppercase mb-1">Tokens</p>
-          <p className="text-xl font-bold">{tokens.length}</p>
+          <p className="text-xs text-gray-500 uppercase mb-1">{xaRender("Tokens")}</p>
+          <p className="text-xl font-bold">{xaRender(tokens.length)}</p>
         </div>
         <div className="card">
-          <p className="text-xs text-gray-500 uppercase mb-1">NFTs</p>
-          <p className="text-xl font-bold">{nfts.length}</p>
+          <p className="text-xs text-gray-500 uppercase mb-1">{xaRender("NFTs")}</p>
+          <p className="text-xl font-bold">{xaRender(nfts.length)}</p>
         </div>
       </div>
 
       <div className="card mb-6">
-        <h2 className="text-lg font-bold mb-4">🪙 ESDT LIA ({tokens.length})</h2>
-        {loading ? (
+        <h2 className="text-lg font-bold mb-4">{xaRender("🪙 ESDT LIA (")}{xaRender(tokens.length)})</h2>
+        {xaRender(loading ? (
           <div className="h-12 animate-pulse bg-[#111118] rounded-lg" />
         ) : tokens.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
-                  <th className="text-left py-2 px-3">Token</th>
-                  <th className="text-right py-2 px-3">Balance</th>
-                  <th className="text-right py-2 px-3">Prix</th>
-                  <th className="text-right py-2 px-3">USD</th>
+                  <th className="text-left py-2 px-3">{xaRender("Token")}</th>
+                  <th className="text-right py-2 px-3">{xaRender("Balance")}</th>
+                  <th className="text-right py-2 px-3">{xaRender("Prix")}</th>
+                  <th className="text-right py-2 px-3">{xaRender("USD")}</th>
                 </tr>
               </thead>
               <tbody>
-                {tokens.map(t => (
+                {xaRender(tokens.map(t => (
                   <TokenRow key={t.identifier} t={t} />
-                ))}
+                )))}
               </tbody>
             </table>
           </div>
         ) : (
-          <p className="text-center text-gray-500 py-6">Aucun token</p>
-        )}
+          <p className="text-center text-gray-500 py-6">{xaRender("Aucun token")}</p>
+        ))}
       </div>
 
       <div className="card mb-8">
-        <h2 className="text-lg font-bold mb-4">🖼️ NFTs LIA ({nfts.length})</h2>
-        {nfts.length > 0 ? (
+        <h2 className="text-lg font-bold mb-4">{xaRender("🖼️ NFTs LIA (")}{xaRender(nfts.length)})</h2>
+        {xaRender(nfts.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
-                  <th className="text-left py-2 px-3">NFT</th>
-                  <th className="text-right py-2 px-3">Bal</th>
-                  <th className="text-right py-2 px-3">Prix</th>
-                  <th className="text-right py-2 px-3">USD</th>
+                  <th className="text-left py-2 px-3">{xaRender("NFT")}</th>
+                  <th className="text-right py-2 px-3">{xaRender("Bal")}</th>
+                  <th className="text-right py-2 px-3">{xaRender("Prix")}</th>
+                  <th className="text-right py-2 px-3">{xaRender("USD")}</th>
                 </tr>
               </thead>
               <tbody>
-                {nfts.map(n => (
+                {xaRender(nfts.map(n => (
                   <NftRow key={n.identifier} n={n} />
-                ))}
+                )))}
               </tbody>
             </table>
           </div>
         ) : (
-          <p className="text-center text-gray-500 py-6">Aucun NFT</p>
-        )}
+          <p className="text-center text-gray-500 py-6">{xaRender("Aucun NFT")}</p>
+        ))}
       </div>
 
       <div className="card mb-8">
-        <h2 className="text-lg font-bold mb-4">🏆 Jalons paper</h2>
+        <h2 className="text-lg font-bold mb-4">{xaRender("🏆 Jalons paper")}</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          {MILESTONES.map(m => {
+          {xaRender(MILESTONES.map(m => {
             const reached = totalUsd >= m.threshold
             return (
               <div
@@ -327,10 +325,10 @@ export default function Portfolio() {
                     : 'bg-[#111118] text-gray-500 border border-[#2a2a3a]'
                 }`}
               >
-                {reached ? '✅' : '⬜'} {m.label}
+                {xaRender(reached ? '✅' : '⬜')} {xaRender(m.label)}
               </div>
             )
-          })}
+          }))}
         </div>
       </div>
 
@@ -341,15 +339,12 @@ export default function Portfolio() {
           target="_blank"
           rel="noreferrer"
         >
-          Explorer LIA MVX
-        </a>
-        {' · '}
+          {xaRender("Explorer LIA MVX ")}</a>
+        {xaRender(' · ')}
         <Link to="/tip" className="text-purple-400 hover:underline">
-          Tip protocole
-        </Link>
-        {' · '}
-        docs/LIA_VS_USER.md
-      </p>
+          {xaRender("Tip protocole ")}</Link>
+        {xaRender(' · ')}
+        {xaRender("docs/LIA_VS_USER.md ")}</p>
     </div>
   )
 }

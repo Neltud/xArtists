@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
  * Overlay listing — prix → listNft → TxShell overlay.
  */
@@ -22,6 +23,8 @@ type Props = {
 }
 
 export default function ListNftSheet({ target, onClose, onListed }: Props) {
+  xaUsePhraseLocale()
+
   const { connected, canAttemptSign } = useWallet()
   const { listNft, pending, error, lastTx, marketplaceLive } = useMarketplaceTx()
   const [price, setPrice] = useState('1')
@@ -64,26 +67,25 @@ export default function ListNftSheet({ target, onClose, onListed }: Props) {
 
   return (
     <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-3">
-      <button type="button" className="absolute inset-0 bg-black/70" onClick={onClose} aria-label="Fermer" />
+      <button type="button" className="absolute inset-0 bg-black/70" onClick={onClose} aria-label={xaLocalize("Fermer")} />
       <div className="relative z-10 w-full max-w-md rounded-2xl border border-violet-500/30 bg-[#12121a] p-5 space-y-4 shadow-2xl">
         <div className="flex gap-3">
           <div className="h-16 w-16 rounded-xl bg-black/40 overflow-hidden shrink-0">
-            {target.imageUrl ? (
+            {xaRender(target.imageUrl ? (
               <img src={target.imageUrl} alt="" className="h-full w-full object-cover" />
             ) : (
               <div className="h-full w-full flex items-center justify-center text-2xl">🖼</div>
-            )}
+            ))}
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-wider text-violet-300/80">Mettre en vente</p>
-            <h3 className="font-bold text-white truncate">{target.name}</h3>
-            <p className="text-[10px] mono text-zinc-500 truncate">{target.identifier}</p>
+            <p className="text-[10px] uppercase tracking-wider text-violet-300/80">{xaRender("Mettre en vente")}</p>
+            <h3 className="font-bold text-white truncate">{xaRender(target.name)}</h3>
+            <p className="text-[10px] mono text-zinc-500 truncate">{xaRender(target.identifier)}</p>
           </div>
         </div>
 
         <label className="block text-xs text-zinc-400">
-          Prix (EGLD)
-          <input
+          {xaRender("Prix (EGLD) ")}<input
             type="number"
             min="0"
             step="0.01"
@@ -93,30 +95,29 @@ export default function ListNftSheet({ target, onClose, onListed }: Props) {
           />
         </label>
 
-        {!live && (
-          <p className="text-xs text-amber-200">Marketplace gated — secret CODEHASH requis.</p>
-        )}
+        {xaRender(!live && (
+          <p className="text-xs text-amber-200">{xaRender("Marketplace gated — secret CODEHASH requis.")}</p>
+        ))}
 
         <div className="flex gap-2">
           <button type="button" className="btn-secondary flex-1 text-sm" onClick={onClose}>
-            Annuler
-          </button>
+            {xaRender("Annuler ")}</button>
           <button
             type="button"
             className="btn-primary flex-1 text-sm"
             disabled={pending || !live}
             onClick={() => void onSubmit()}
           >
-            {pending ? '…' : 'Signer listNft'}
+            {xaRender(pending ? '…' : 'Signer listNft')}
           </button>
         </div>
 
-        {(msg || error) && (
-          <p className={`text-xs ${error ? 'text-rose-300' : 'text-emerald-300'}`}>{msg || error}</p>
-        )}
-        {lastTx && (
-          <p className="text-[10px] mono text-zinc-500 break-all">TX {lastTx}</p>
-        )}
+        {xaRender((msg || error) && (
+          <p className={`text-xs ${error ? 'text-rose-300' : 'text-emerald-300'}`}>{xaRender(msg || error)}</p>
+        ))}
+        {xaRender(lastTx && (
+          <p className="text-[10px] mono text-zinc-500 break-all">TX {xaRender(lastTx)}</p>
+        ))}
       </div>
     </div>
   )

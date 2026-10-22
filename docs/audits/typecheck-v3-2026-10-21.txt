@@ -1,0 +1,107 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> xartists-frontend@0.118.0 typecheck
+> tsc --noEmit
+
+src/command-center/DashboardSource.tsx(55,41): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'number | null | undefined'.
+  Type 'string' is not assignable to type 'number'.
+src/command-center/DashboardSource.tsx(56,40): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'number | null | undefined'.
+  Type 'string' is not assignable to type 'number'.
+src/command-center/LiaShadowPanel.tsx(72,14): error TS2352: Conversion of type 'PulseEnvironment' to type '{ volatility: number; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'volatility' is missing in type 'PulseEnvironment' but required in type '{ volatility: number; }'.
+src/components/AgentNftStakePanel.tsx(23,41): error TS2339: Property 'paperPts' does not exist on type '{ stakedAt: number; claims: number; pts: number; }'.
+src/components/AgentNftStakePanel.tsx(23,73): error TS2339: Property 'paperPts' does not exist on type '{ stakedAt: number; claims: number; pts: number; }'.
+src/components/AgentPackJourney.tsx(2,10): error TS2305: Module '"../config/agentPacks"' has no exported member 'PACK_JOURNEY_STEPS'.
+src/components/AgentPackJourney.tsx(2,30): error TS2305: Module '"../config/agentPacks"' has no exported member 'FUNDING_MODELS'.
+src/components/AgentPackJourney.tsx(2,46): error TS2305: Module '"../config/agentPacks"' has no exported member 'GSN_POLICY'.
+src/components/AgentPackJourney.tsx(2,58): error TS2305: Module '"../config/agentPacks"' has no exported member 'PACK_PRICING_POLICY'.
+src/components/AgentPackJourney.tsx(15,42): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/components/AgentWalletsStrip.tsx(5,29): error TS2305: Module '"../config/links"' has no exported member 'GROK_WALLET'.
+src/components/AgentWalletsStrip.tsx(18,23): error TS2551: Property 'liaExplorer' does not exist on type '{ github: string; explorer: string; walletWeb: string; xportal: string; docs: string; githubPages: string; treasuryPolicy: string; walletLogin: (callback: string) => string; explorerAccount: (addr: string) => string; explorerTx: (hash: string) => string; explorerToken: (id: string) => string; }'. Did you mean 'explorer'?
+src/components/AgentWalletsStrip.tsx(30,23): error TS2339: Property 'grokyversxExplorer' does not exist on type '{ github: string; explorer: string; walletWeb: string; xportal: string; docs: string; githubPages: string; treasuryPolicy: string; walletLogin: (callback: string) => string; explorerAccount: (addr: string) => string; explorerTx: (hash: string) => string; explorerToken: (id: string) => string; }'.
+src/components/ArtWorldMap.tsx(244,11): error TS2353: Object literal may only specify known properties, and 'lat' does not exist in type 'TravelDestination'.
+src/components/BridgeUsdtCard.tsx(20,23): error TS2339: Property 'xoxnoBridge' does not exist on type '{ github: string; explorer: string; walletWeb: string; xportal: string; docs: string; githubPages: string; treasuryPolicy: string; walletLogin: (callback: string) => string; explorerAccount: (addr: string) => string; explorerTx: (hash: string) => string; explorerToken: (id: string) => string; }'.
+src/components/BridgeUsdtCard.tsx(28,25): error TS2339: Property 'usdt0' does not exist on type '{ github: string; explorer: string; walletWeb: string; xportal: string; docs: string; githubPages: string; treasuryPolicy: string; walletLogin: (callback: string) => string; explorerAccount: (addr: string) => string; explorerTx: (hash: string) => string; explorerToken: (id: string) => string; }'.
+src/components/CheckoutModal.tsx(90,37): error TS2345: Argument of type 'PayMethod' is not assignable to parameter of type '"stripe" | "paybox"'.
+  Type '"paper"' is not assignable to type '"stripe" | "paybox"'.
+src/components/CheckoutModal.tsx(353,11): error TS2322: Type '{ open: boolean; onClose: () => void; onAccept: () => Promise<void>; packName: string; }' is not assignable to type 'IntrinsicAttributes & Props'.
+  Property 'onClose' does not exist on type 'IntrinsicAttributes & Props'.
+src/components/DeskPanel.tsx(82,59): error TS2322: Type '"guardian"' is not assignable to type '"liaVsUser" | "paperFirst" | "guardianFirst" | "profitLock" | "scStatus" | "mainnetOnly" | "troUtility" | "museumGame" | "softLaunch" | undefined'.
+src/components/FirstVisitOnboarding.tsx(71,25): error TS2339: Property 'discord' does not exist on type '{ github: string; explorer: string; walletWeb: string; xportal: string; docs: string; githubPages: string; treasuryPolicy: string; walletLogin: (callback: string) => string; explorerAccount: (addr: string) => string; explorerTx: (hash: string) => string; explorerToken: (id: string) => string; }'.
+src/components/ListNftSheet.tsx(29,44): error TS2339: Property 'marketplaceLive' does not exist on type '{ listNft: (p: ListNftParams) => Promise<SendTransactionResult>; buyNft: (p: BuyNftParams) => Promise<SendTransactionResult>; ... 6 more ...; lastTx: string | null; }'.
+src/components/MapboxArtMap.tsx(69,47): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/components/NFTDetailModal.tsx(52,5): error TS2339: Property 'marketplaceAddress' does not exist on type '{ listNft: (p: ListNftParams) => Promise<SendTransactionResult>; buyNft: (p: BuyNftParams) => Promise<SendTransactionResult>; ... 6 more ...; lastTx: string | null; }'.
+src/components/NFTDetailModal.tsx(182,14): error TS2741: Property 'children' is missing in type '{ address: string; action: string; }' but required in type 'Props'.
+src/components/PackAgentMonitor.tsx(89,43): error TS2339: Property 'shareOfPackPoolBps' does not exist on type 'AgentPackProfile'.
+src/components/PackAgentMonitor.tsx(92,20): error TS2339: Property 'shareOfPackPoolBps' does not exist on type 'AgentPackProfile'.
+src/components/PackAgentMonitor.tsx(135,54): error TS2339: Property 'shareOfPackPoolBps' does not exist on type 'AgentPackProfile'.
+src/components/RevenueSplitterPanel.tsx(71,84): error TS2339: Property 'shareOfPackPoolBps' does not exist on type 'AgentPackProfile'.
+src/components/RoutePrefetch.tsx(5,16): error TS2307: Cannot find module '../pages/Gallery' or its corresponding type declarations.
+src/components/RoutePrefetch.tsx(6,16): error TS2307: Cannot find module '../pages/Marketplace' or its corresponding type declarations.
+src/components/RoutePrefetch.tsx(8,16): error TS2307: Cannot find module '../pages/Trading' or its corresponding type declarations.
+src/components/RoutePrefetch.tsx(29,22): error TS2339: Property 'setTimeout' does not exist on type 'never'.
+src/components/TreasuryFlowsPanel.tsx(13,7): error TS2739: Type '{ pack_paper: string; ads_bid: string; venue_rental: string; marketplace_sale: string; slot_casino: string; tip: string; lp_fees_external: string; }' is missing the following properties from type 'Record<RevenueSource, string>': agents_marketplace, farm_external
+src/components/defi/DeFiBuilder.tsx(82,34): error TS2741: Property 'packIds' is missing in type '{}' but required in type '{ packIds: PackId[]; }'.
+src/components/lia/HolderTerminal.tsx(150,55): error TS2339: Property 'equity_now_usd' does not exist on type 'ExportSnap'.
+src/components/museum/MuseumCorridor.tsx(41,10): error TS2339: Property 'thumbnailUrl' does not exist on type '{ url?: string | undefined; }'.
+src/components/museum/MuseumCorridor.tsx(41,49): error TS2339: Property 'thumbnailUrl' does not exist on type '{ url?: string | undefined; }'.
+src/components/museum/MuseumCorridor.tsx(41,73): error TS2339: Property 'thumbnailUrl' does not exist on type '{ url?: string | undefined; }'.
+src/components/museum/VenueWallAssign.tsx(41,40): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(predicate: (value: UserNft, index: number, array: UserNft[]) => value is UserNft, thisArg?: any): UserNft[]', gave the following error.
+    Argument of type '(n: NFT) => string' is not assignable to parameter of type '(value: UserNft, index: number, array: UserNft[]) => value is UserNft'.
+      Types of parameters 'n' and 'value' are incompatible.
+        Property 'collection_name' is missing in type 'UserNft' but required in type 'NFT'.
+  Overload 2 of 2, '(predicate: (value: UserNft, index: number, array: UserNft[]) => unknown, thisArg?: any): UserNft[]', gave the following error.
+    Argument of type '(n: NFT) => string' is not assignable to parameter of type '(value: UserNft, index: number, array: UserNft[]) => unknown'.
+      Types of parameters 'n' and 'value' are incompatible.
+        Property 'collection_name' is missing in type 'UserNft' but required in type 'NFT'.
+src/components/museum/VenueWallAssign.tsx(171,30): error TS2345: Argument of type '(n: NFT) => React.JSX.Element' is not assignable to parameter of type '(value: UserNft, index: number, array: UserNft[]) => Element'.
+  Types of parameters 'n' and 'value' are incompatible.
+    Property 'collection_name' is missing in type 'UserNft' but required in type 'NFT'.
+src/config/revenueSplitter.ts(41,50): error TS2339: Property 'shareOfPackPoolBps' does not exist on type 'AgentPackProfile'.
+src/lia/verifyUserTx.test.ts(1,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+src/lib/holderAccess.ts(6,34): error TS2459: Module '"./nftPacks"' declares 'PackId' locally, but it is not exported.
+src/lib/imagePreload.ts(23,5): error TS2578: Unused '@ts-expect-error' directive.
+src/lib/marketChain.test.ts(1,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+src/lib/networkProbe.test.ts(1,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+src/lib/placeSculptures.ts(63,11): error TS2339: Property 'heightCm' does not exist on type 'FrameItem'.
+src/lib/placeSculptures.ts(64,11): error TS2339: Property 'widthCm' does not exist on type 'FrameItem'.
+src/lib/placeSculptures.ts(65,11): error TS2339: Property 'depthCm' does not exist on type 'FrameItem'.
+src/lib/placeSculptures.ts(66,11): error TS2339: Property 'circumferenceCm' does not exist on type 'FrameItem'.
+src/lib/placeSculptures.ts(80,23): error TS2339: Property 'sideImage' does not exist on type 'FrameItem'.
+src/lib/placeSculptures.ts(80,54): error TS2339: Property 'sideImage' does not exist on type 'FrameItem'.
+src/lib/placeSculptures.ts(91,15): error TS2339: Property 'heightCm' does not exist on type 'FrameItem'.
+src/lib/placeSculptures.ts(92,15): error TS2339: Property 'widthCm' does not exist on type 'FrameItem'.
+src/lib/placeSculptures.ts(93,15): error TS2339: Property 'depthCm' does not exist on type 'FrameItem'.
+src/lib/placeSculptures.ts(94,15): error TS2339: Property 'circumferenceCm' does not exist on type 'FrameItem'.
+src/lib/protocolPulse.test.ts(1,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+src/pages/DemoTourPage.tsx(164,30): error TS2322: Type '{ variant: string; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes'.
+src/pages/HolderRoomPage.tsx(22,22): error TS2339: Property 'nfts' does not exist on type 'WalletContextValue'.
+src/pages/MyPacks.tsx(36,41): error TS2322: Type 'string' is not assignable to type 'PackId | null'.
+src/pages/MyPacks.tsx(92,61): error TS2339: Property 'pollMs' does not exist on type '() => { mode: ChainTimingMode; roundMs: 600 | 6000; txStatusPollMs: 3000 | 800; txStatusTimeoutMs: 45000 | 120000; noncePollMs: 500 | 1500; nonceAdvancePollMs: 600 | 2000; nonceStableTimeoutMs: 45000 | 20000; nonceAdvanceTimeoutMs: 45000 | 120000; mintStatusPollMs: 1500 | 3000; fetchTimeoutMs: 12000; }'.
+src/pages/SalePage.tsx(168,52): error TS2339: Property 'discord' does not exist on type '{ github: string; explorer: string; walletWeb: string; xportal: string; docs: string; githubPages: string; treasuryPolicy: string; walletLogin: (callback: string) => string; explorerAccount: (addr: string) => string; explorerTx: (hash: string) => string; explorerToken: (id: string) => string; }'.
+src/pages/SiteMapPage.tsx(72,18): error TS2322: Type '"sitemap"' is not assignable to type 'PageGuideKey'.
+src/pages/TcaClassroom.tsx(230,62): error TS2554: Expected 2 arguments, but got 3.
+src/pages/TcaClassroom.tsx(247,21): error TS2554: Expected 4-5 arguments, but got 2.
+src/pages/TcaClassroom.tsx(271,21): error TS2345: Argument of type 'LipSyncController | null' is not assignable to parameter of type 'LipSyncController'.
+  Type 'null' is not assignable to type 'LipSyncController'.
+src/pages/TcaClassroom.tsx(300,17): error TS2345: Argument of type 'LipSyncController | null' is not assignable to parameter of type 'LipSyncController'.
+  Type 'null' is not assignable to type 'LipSyncController'.
+src/pages/Tip.tsx(63,27): error TS2339: Property 'egldUsd' does not exist on type 'Prices'.
+src/pages/VenueAccountPage.tsx(120,7): error TS2783: 'totalEur' is specified more than once, so this usage will be overwritten.
+src/pages/VenueAccountPage.tsx(121,7): error TS2783: 'months' is specified more than once, so this usage will be overwritten.
+src/pages/VenueAccountPage.tsx(122,7): error TS2783: 'walls' is specified more than once, so this usage will be overwritten.
+src/pages/VenueAccountPage.tsx(147,30): error TS2322: Type '{ variant: string; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'variant' does not exist on type 'IntrinsicAttributes'.
+src/providers/MxDappProvider.tsx(30,55): error TS2307: Cannot find module '@multiversx/sdk-dapp' or its corresponding type declarations.
+src/services/analytics/holderService.ts(37,10): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/services/analytics/holderService.ts(38,13): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/services/multiversXService.ts(77,50): error TS2345: Argument of type 'string' is not assignable to parameter of type 'IAddress'.
+src/services/poolService.ts(86,19): error TS2554: Expected 2 arguments, but got 1.
+src/store/empireStore.ts(9,8): error TS2305: Module '"../config/scStatus"' has no exported member 'ScSnapshot'.
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

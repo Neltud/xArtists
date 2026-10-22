@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * ScStatusBanner — honest on-chain readiness (address ≠ codeHash live).
  */
@@ -69,38 +70,36 @@ export default function ScStatusBanner({ className = '' }: { className?: string 
     <div className={`rounded-xl border px-4 py-3 text-xs ${border} ${className}`}>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <span className="font-semibold">
-          SC · {c?.network ?? 'mainnet'} (chain {c?.chainId ?? '1'})
+          {xaRender("SC · ")}{xaRender(c?.network ?? 'mainnet')} {xaRender(" (chain ")}{xaRender(c?.chainId ?? '1')})
         </span>
         <span>
-          Marketplace NFT :{' '}
-          {marketLive ? (
-            <span className="text-green-300">LIVE {shortAddr(marketAddr)}</span>
+          {xaRender("Marketplace NFT :")}{xaRender(' ')}
+          {xaRender(marketLive ? (
+            <span className="text-green-300">{xaRender("LIVE ")}{xaRender(shortAddr(marketAddr))}</span>
           ) : marketAddr ? (
             <>
-              configuré {shortAddr(marketAddr)}
-              {codeEmpty || !codeHash
+              {xaRender("configuré ")}{xaRender(shortAddr(marketAddr))}
+              {xaRender(codeEmpty || !codeHash
                 ? ' — codeHash null / compte vide'
-                : ` — ${verdict || 'vérifier codeHash'}`}
+                : ` — ${verdict || 'vérifier codeHash'}`)}
             </>
           ) : (
             'adresse absente'
-          )}
+          ))}
         </span>
         <span>
-          Agents Marketplace :{' '}
-          {agentsLive ? (
-            <span className="text-green-300">LIVE {shortAddr(agentsAddr)}</span>
+          {xaRender("Agents Marketplace :")}{xaRender(' ')}
+          {xaRender(agentsLive ? (
+            <span className="text-green-300">{xaRender("LIVE ")}{xaRender(shortAddr(agentsAddr))}</span>
           ) : agentsAddr ? (
             `configuré ${shortAddr(agentsAddr)} — codeHash non OK`
           ) : (
             'non déployé (null)'
-          )}
+          ))}
         </span>
       </div>
       <p className="mt-1 text-[11px] opacity-80">
-        List / Buy / Bid seulement si le codeHash explorer égale le hash attendu (déverrouillage
-        runtime). Le flag Pages est optionnel. Slot REAL reste fermé tant que isPayable=false.
-      </p>
+        {xaRender("List / Buy / Bid seulement si le codeHash explorer égale le hash attendu (déverrouillage runtime). Le flag Pages est optionnel. Slot REAL reste fermé tant que isPayable=false. ")}</p>
     </div>
   )
 }

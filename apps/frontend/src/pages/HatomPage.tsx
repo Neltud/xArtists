@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useWalletTokens } from '../hooks/useWalletTokens'
 import { useMultiversX } from '../hooks/useMultiversX'
 import LiaVsUserBanner from '../components/LiaVsUserBanner'
@@ -10,11 +11,11 @@ const IDENTIFIER_PREVIEW_LENGTH = 20
 
 function HfBadge({ hf, fromApi }: { hf: number; fromApi: boolean }) {
   if (!fromApi || hf >= 999) {
-    return <span className="badge-gray">N/A — pas de dette mesurée</span>
+    return <span className="badge-gray">{xaRender("N/A — pas de dette mesurée")}</span>
   }
-  if (hf >= 2) return <span className="badge-green">✅ {hf.toFixed(2)} — Sûr</span>
-  if (hf >= 1.5) return <span className="badge-orange">⚠️ {hf.toFixed(2)} — Attention</span>
-  return <span className="badge-red">🚨 {hf.toFixed(2)} — Critique</span>
+  if (hf >= 2) return <span className="badge-green">✅ {xaRender(hf.toFixed(2))} {xaRender(" — Sûr")}</span>
+  if (hf >= 1.5) return <span className="badge-orange">⚠️ {xaRender(hf.toFixed(2))} {xaRender(" — Attention")}</span>
+  return <span className="badge-red">🚨 {xaRender(hf.toFixed(2))} {xaRender(" — Critique")}</span>
 }
 
 export default function HatomPage() {
@@ -41,214 +42,207 @@ export default function HatomPage() {
       <LiaVsUserBanner tone="protocol" />
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-black">🏦 Hatom Protocol</h1>
+          <h1 className="text-3xl font-black">{xaRender("🏦 Hatom Protocol")}</h1>
           <p className="text-gray-500 mt-1">
-            Positions <strong className="text-purple-300">LIA protocole</strong> — lending MultiversX ·{' '}
+            {xaRender("Positions ")}<strong className="text-purple-300">{xaRender("LIA protocole")}</strong> {xaRender(" — lending MultiversX ·")}{xaRender(' ')}
             <Link to="/wallet" className="text-green-300 underline">
-              Mon wallet →
-            </Link>
+              {xaRender("Mon wallet → ")}</Link>
           </p>
         </div>
         <div className="flex gap-2">
           <button type="button" onClick={refresh} className="btn-secondary text-sm">
-            🔄 Actualiser
-          </button>
+            {xaRender("🔄 Actualiser ")}</button>
           <a href={HATOM_DAPP} target="_blank" rel="noreferrer" className="btn-primary text-sm">
-            🏦 Ouvrir Hatom
-          </a>
+            {xaRender("🏦 Ouvrir Hatom ")}</a>
         </div>
       </div>
 
-      {loading ? (
+      {xaRender(loading ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {[...Array(4)].map((_, i) => (
+          {xaRender([...Array(4)].map((_, i) => (
             <div key={i} className="card h-24 animate-pulse bg-[#16161f]" />
-          ))}
+          )))}
         </div>
       ) : (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="card">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Health Factor</p>
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">{xaRender("Health Factor")}</p>
               <div className="mt-1">
                 <HfBadge hf={hf} fromApi={fromApi} />
               </div>
               <p className="text-xs text-gray-400 mt-2">
-                {!fromApi
+                {xaRender(!fromApi
                   ? 'API Hatom indisponible — HF non fiable'
                   : hf >= 999
                     ? 'Pas de dette active'
                     : hf >= 2
                       ? 'Liquidation éloignée'
-                      : 'Surveiller de près!'}
+                      : 'Surveiller de près!')}
               </p>
             </div>
             <div className="card">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Collateral (USD)</p>
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">{xaRender("Collateral (USD)")}</p>
               <p className="text-2xl font-black text-green-400">
-                ${displaySupplied.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}
+                ${xaRender(displaySupplied.toLocaleString('fr-FR', { maximumFractionDigits: 2 }))}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                {fromApi && supplied > 0 ? 'API Hatom (supplied)' : 'H-tokens wallet (approx)'}
+                {xaRender(fromApi && supplied > 0 ? 'API Hatom (supplied)' : 'H-tokens wallet (approx)')}
               </p>
             </div>
             <div className="card">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Borrowed (USD)</p>
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">{xaRender("Borrowed (USD)")}</p>
               <p className={`text-2xl font-black ${borrowed > 0 ? 'text-orange-400' : 'text-gray-500'}`}>
-                {fromApi ? `$${borrowed.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}` : 'N/A'}
+                {xaRender(fromApi ? `$${borrowed.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}` : 'N/A')}
               </p>
-              {!fromApi && <p className="text-xs text-gray-500 mt-1">Nécessite API Hatom</p>}
+              {xaRender(!fromApi && <p className="text-xs text-gray-500 mt-1">{xaRender("Nécessite API Hatom")}</p>)}
             </div>
             <div className="card">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Net Position</p>
+              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">{xaRender("Net Position")}</p>
               <p className={`text-2xl font-black ${net >= 0 ? 'text-purple-400' : 'text-red-400'}`}>
-                {fromApi
+                {xaRender(fromApi
                   ? `$${net.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`
-                  : `≈ $${walletSupplied.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`}
+                  : `≈ $${walletSupplied.toLocaleString('fr-FR', { maximumFractionDigits: 2 })}`)}
               </p>
             </div>
           </div>
 
-          {(claimHtm > 0 || claimUsd > 0) && (
+          {xaRender((claimHtm > 0 || claimUsd > 0) && (
             <div className="card mb-6 border-teal-500/30 bg-teal-500/5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-teal-400 uppercase tracking-widest mb-1">🌾 Rewards Claimables</p>
-                  <p className="text-2xl font-black">{claimHtm.toFixed(4)} HTM</p>
-                  <p className="text-sm text-gray-400">≈ ${claimUsd.toFixed(2)}</p>
+                  <p className="text-xs text-teal-400 uppercase tracking-widest mb-1">{xaRender("🌾 Rewards Claimables")}</p>
+                  <p className="text-2xl font-black">{xaRender(claimHtm.toFixed(4))} {xaRender(" HTM")}</p>
+                  <p className="text-sm text-gray-400">≈ ${xaRender(claimUsd.toFixed(2))}</p>
                 </div>
                 <a href={HATOM_DAPP} target="_blank" rel="noreferrer" className="btn-primary text-sm">
-                  Claim sur Hatom
-                </a>
+                  {xaRender("Claim sur Hatom ")}</a>
               </div>
             </div>
-          )}
+          ))}
 
-          {markets.length > 0 && (
+          {xaRender(markets.length > 0 && (
             <div className="card mb-6">
-              <h2 className="text-lg font-bold mb-4">📊 Collateral par marché</h2>
+              <h2 className="text-lg font-bold mb-4">{xaRender("📊 Collateral par marché")}</h2>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
-                      <th className="text-left py-2 px-3">Actif</th>
-                      <th className="text-right py-2 px-3">Supplied</th>
-                      <th className="text-right py-2 px-3">Borrowed</th>
-                      <th className="text-right py-2 px-3">Supplied USD</th>
-                      <th className="text-right py-2 px-3">Borrowed USD</th>
+                      <th className="text-left py-2 px-3">{xaRender("Actif")}</th>
+                      <th className="text-right py-2 px-3">{xaRender("Supplied")}</th>
+                      <th className="text-right py-2 px-3">{xaRender("Borrowed")}</th>
+                      <th className="text-right py-2 px-3">{xaRender("Supplied USD")}</th>
+                      <th className="text-right py-2 px-3">{xaRender("Borrowed USD")}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {markets.map(m => (
+                    {xaRender(markets.map(m => (
                       <tr key={m.identifier} className="border-b border-[#2a2a3a]/50 hover:bg-[#111118]">
                         <td className="py-3 px-3">
-                          <p className="font-semibold text-sm">{m.label}</p>
-                          {m.identifier && (
+                          <p className="font-semibold text-sm">{xaRender(m.label)}</p>
+                          {xaRender(m.identifier && (
                             <p className="text-xs mono text-gray-500">
-                              {m.identifier.slice(0, IDENTIFIER_PREVIEW_LENGTH)}...
+                              {xaRender(m.identifier.slice(0, IDENTIFIER_PREVIEW_LENGTH))}...
                             </p>
-                          )}
+                          ))}
                         </td>
                         <td className="py-3 px-3 text-right mono text-sm text-green-400">
-                          {m.supplied > 0
+                          {xaRender(m.supplied > 0
                             ? m.supplied.toLocaleString('fr-FR', { maximumFractionDigits: 4 })
-                            : '—'}
+                            : '—')}
                         </td>
                         <td className="py-3 px-3 text-right mono text-sm text-orange-400">
-                          {m.borrowed > 0
+                          {xaRender(m.borrowed > 0
                             ? m.borrowed.toLocaleString('fr-FR', { maximumFractionDigits: 4 })
-                            : '—'}
+                            : '—')}
                         </td>
                         <td className="py-3 px-3 text-right font-bold text-sm">
-                          ${m.valueSuppliedUsd.toFixed(2)}
+                          ${xaRender(m.valueSuppliedUsd.toFixed(2))}
                         </td>
                         <td className="py-3 px-3 text-right font-bold text-sm text-orange-400">
-                          {m.valueBorrowedUsd > 0 ? `$${m.valueBorrowedUsd.toFixed(2)}` : '—'}
+                          {xaRender(m.valueBorrowedUsd > 0 ? `$${m.valueBorrowedUsd.toFixed(2)}` : '—')}
                         </td>
                       </tr>
-                    ))}
+                    )))}
                   </tbody>
                 </table>
               </div>
             </div>
-          )}
+          ))}
 
-          {hatomTokens.length > 0 && (
+          {xaRender(hatomTokens.length > 0 && (
             <div className="card mb-6">
-              <h2 className="text-lg font-bold mb-4">🪙 H-Tokens (collateral proxy)</h2>
+              <h2 className="text-lg font-bold mb-4">{xaRender("🪙 H-Tokens (collateral proxy)")}</h2>
               <p className="text-xs text-gray-500 mb-3">
-                Collateral déposé. Valeurs USD via API MultiversX (peuvent différer du dashboard Hatom).
-              </p>
+                {xaRender("Collateral déposé. Valeurs USD via API MultiversX (peuvent différer du dashboard Hatom). ")}</p>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
-                      <th className="text-left py-2 px-3">Token</th>
-                      <th className="text-right py-2 px-3">Balance</th>
-                      <th className="text-right py-2 px-3">Prix</th>
-                      <th className="text-right py-2 px-3">Valeur USD</th>
+                      <th className="text-left py-2 px-3">{xaRender("Token")}</th>
+                      <th className="text-right py-2 px-3">{xaRender("Balance")}</th>
+                      <th className="text-right py-2 px-3">{xaRender("Prix")}</th>
+                      <th className="text-right py-2 px-3">{xaRender("Valeur USD")}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {hatomTokens.map(t => (
+                    {xaRender(hatomTokens.map(t => (
                       <tr key={t.identifier} className="border-b border-[#2a2a3a]/50 hover:bg-[#111118]">
                         <td className="py-3 px-3">
-                          <p className="font-semibold text-sm">{t.ticker}</p>
-                          <p className="text-xs mono text-gray-500">{t.identifier}</p>
+                          <p className="font-semibold text-sm">{xaRender(t.ticker)}</p>
+                          <p className="text-xs mono text-gray-500">{xaRender(t.identifier)}</p>
                         </td>
                         <td className="py-3 px-3 text-right mono text-sm">
-                          {t.balance.toLocaleString('fr-FR', { maximumFractionDigits: 6 })}
+                          {xaRender(t.balance.toLocaleString('fr-FR', { maximumFractionDigits: 6 }))}
                         </td>
-                        <td className="py-3 px-3 text-right text-sm">${t.price.toFixed(6)}</td>
+                        <td className="py-3 px-3 text-right text-sm">${xaRender(t.price.toFixed(6))}</td>
                         <td className="py-3 px-3 text-right font-bold text-sm text-green-400">
-                          ${t.valueUsd.toFixed(2)}
+                          ${xaRender(t.valueUsd.toFixed(2))}
                         </td>
                       </tr>
-                    ))}
+                    )))}
                   </tbody>
                   <tfoot>
                     <tr className="border-t border-[#2a2a3a]">
                       <td colSpan={3} className="py-3 px-3 text-sm text-gray-400 font-semibold">
-                        Total H-tokens
-                      </td>
+                        {xaRender("Total H-tokens ")}</td>
                       <td className="py-3 px-3 text-right font-black text-green-400">
-                        ${hatomTokens.reduce((s, t) => s + t.valueUsd, 0).toFixed(2)}
+                        ${xaRender(hatomTokens.reduce((s, t) => s + t.valueUsd, 0).toFixed(2))}
                       </td>
                     </tr>
                   </tfoot>
                 </table>
               </div>
             </div>
-          )}
+          ))}
 
-          {!hatomPosition && hatomTokens.length === 0 && (
+          {xaRender(!hatomPosition && hatomTokens.length === 0 && (
             <div className="card mb-6 text-center py-12">
               <p className="text-4xl mb-3">🏦</p>
-              <p className="text-gray-400 font-semibold">Aucune position Hatom détectée</p>
+              <p className="text-gray-400 font-semibold">{xaRender("Aucune position Hatom détectée")}</p>
               <p className="text-sm text-gray-500 mt-1">
-                Pas de H-tokens wallet et API Hatom sans position.
-              </p>
+                {xaRender("Pas de H-tokens wallet et API Hatom sans position. ")}</p>
             </div>
-          )}
+          ))}
 
           <div className="card mb-6">
             <div className="flex items-center gap-3">
               <span className="text-xl">ℹ️</span>
               <div>
-                <p className="text-sm font-semibold">Source des données</p>
+                <p className="text-sm font-semibold">{xaRender("Source des données")}</p>
                 <p className="text-xs text-gray-500">
-                  {fromApi
+                  {xaRender(fromApi
                     ? '✅ API officielle Hatom — collateral & borrow fiables'
-                    : '🔍 Fallback H-tokens wallet uniquement — borrow/HF non disponibles'}
+                    : '🔍 Fallback H-tokens wallet uniquement — borrow/HF non disponibles')}
                 </p>
               </div>
             </div>
           </div>
 
           <div className="card">
-            <h2 className="text-lg font-bold mb-4">🔗 Liens Rapides</h2>
+            <h2 className="text-lg font-bold mb-4">{xaRender("🔗 Liens Rapides")}</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {[
+              {xaRender([
                 { href: `${HATOM_DAPP}/dashboard`, label: 'Mon Dashboard Hatom', icon: '📊' },
                 { href: `${HATOM_DAPP}/market/EGLD`, label: 'Marché EGLD', icon: '💎' },
                 { href: `${HATOM_DAPP}/market/USDC`, label: 'Marché USDC', icon: '💵' },
@@ -267,13 +261,13 @@ export default function HatomPage() {
                   rel="noreferrer"
                   className="btn-secondary text-sm text-center"
                 >
-                  {l.icon} {l.label}
+                  {xaRender(l.icon)} {xaRender(l.label)}
                 </a>
-              ))}
+              )))}
             </div>
           </div>
         </>
-      )}
+      ))}
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * $TRO tokenomics — cap 500k, burns, flows, pools, utilitaire (pas share).
  */
@@ -110,24 +111,21 @@ export default function TroPage() {
       <PageGuide page="tro" />
 
       <header className="space-y-2">
-        <p className="section-label">Token · utilitaire</p>
-        <h1 className="section-title display">$TRO tokenomics</h1>
+        <p className="section-label">{xaRender("Token · utilitaire")}</p>
+        <h1 className="section-title display">{xaRender("$TRO tokenomics")}</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
-          Cap produit <strong className="text-white">{MAX_SUPPLY.toLocaleString('fr-FR')}</strong> ·
-          burns · flux trésorerie · pools. Pas une security / share de fonds.
-        </p>
+          {xaRender("Cap produit ")}<strong className="text-white">{xaRender(MAX_SUPPLY.toLocaleString('fr-FR'))}</strong> {xaRender(" · burns · flux trésorerie · pools. Pas une security / share de fonds. ")}</p>
         <a
           href={EXPLORER}
           target="_blank"
           rel="noreferrer"
           className="text-[12px] text-cyan-400 hover:underline"
         >
-          {TRO_ID} · Explorer ↗
-        </a>
+          {xaRender(TRO_ID)} {xaRender(" · Explorer ↗ ")}</a>
       </header>
 
-      {err && <p className="text-sm text-rose-400">{err}</p>}
+      {xaRender(err && <p className="text-sm text-rose-400">{xaRender(err)}</p>)}
 
       <div className="grid md:grid-cols-2 gap-4">
         <TreasurySplitViz />
@@ -136,35 +134,35 @@ export default function TroPage() {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <div className="card">
-          <p className="text-[10px] text-zinc-500">Prix USD</p>
+          <p className="text-[10px] text-zinc-500">{xaRender("Prix USD")}</p>
           <p className="text-lg font-semibold text-white">
-            {info ? `$${info.price.toFixed(6)}` : '—'}
+            {xaRender(info ? `$${info.price.toFixed(6)}` : '—')}
           </p>
         </div>
         <div className="card">
-          <p className="text-[10px] text-zinc-500">Prix EGLD</p>
+          <p className="text-[10px] text-zinc-500">{xaRender("Prix EGLD")}</p>
           <p className="text-lg font-semibold text-white">
-            {priceEgld ? priceEgld.toFixed(8) : '—'}
+            {xaRender(priceEgld ? priceEgld.toFixed(8) : '—')}
           </p>
         </div>
         <div className="card">
-          <p className="text-[10px] text-zinc-500">Market cap</p>
+          <p className="text-[10px] text-zinc-500">{xaRender("Market cap")}</p>
           <p className="text-lg font-semibold text-white">
-            {info ? `$${info.marketCap.toFixed(0)}` : '—'}
+            {xaRender(info ? `$${info.marketCap.toFixed(0)}` : '—')}
           </p>
         </div>
         <div className="card">
-          <p className="text-[10px] text-zinc-500">Holders</p>
+          <p className="text-[10px] text-zinc-500">{xaRender("Holders")}</p>
           <p className="text-lg font-semibold text-white">
-            {info ? info.holders.toLocaleString() : '—'}
+            {xaRender(info ? info.holders.toLocaleString() : '—')}
           </p>
         </div>
       </div>
 
       <div className="card space-y-2">
         <div className="flex justify-between text-[11px] text-zinc-500">
-          <span>Circulating vs cap {MAX_SUPPLY.toLocaleString('fr-FR')}</span>
-          <span>{supplyPct.toFixed(1)}%</span>
+          <span>{xaRender("Circulating vs cap ")}{xaRender(MAX_SUPPLY.toLocaleString('fr-FR'))}</span>
+          <span>{xaRender(supplyPct.toFixed(1))}%</span>
         </div>
         <div className="h-2 rounded-full bg-black/40 overflow-hidden">
           <div
@@ -173,51 +171,50 @@ export default function TroPage() {
           />
         </div>
         <p className="text-[11px] text-zinc-600">
-          Circulating API MultiversX · cap = règle produit (jamais 1M affiché comme max).
-        </p>
+          {xaRender("Circulating API MultiversX · cap = règle produit (jamais 1M affiché comme max). ")}</p>
       </div>
 
       <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">Utilité $TRO</h2>
+        <h2 className="text-sm font-semibold text-white">{xaRender("Utilité $TRO")}</h2>
         <ul className="space-y-2">
-          {UTILITY.map(u => (
+          {xaRender(UTILITY.map(u => (
             <li key={u.t} className="text-[13px]">
-              <span className="text-violet-300 font-medium">{u.t}</span>
-              <span className="text-zinc-500"> — {u.d}</span>
+              <span className="text-violet-300 font-medium">{xaRender(u.t)}</span>
+              <span className="text-zinc-500"> — {xaRender(u.d)}</span>
             </li>
-          ))}
+          )))}
         </ul>
       </section>
 
       <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">Matrice de flux (cible %)</h2>
+        <h2 className="text-sm font-semibold text-white">{xaRender("Matrice de flux (cible %)")}</h2>
         <p className="text-[11px] text-zinc-500">
-          Paper-first · SC après audit. LP burn auto désactivé ({String(BURN_POLICY.lpBurn.enabled)}).
+          {xaRender("Paper-first · SC après audit. LP burn auto désactivé (")}{xaRender(String(BURN_POLICY.lpBurn.enabled))}).
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-[11px] text-left">
             <thead>
               <tr className="text-zinc-500 border-b border-white/10">
-                <th className="py-1 pr-2">Source</th>
-                <th className="py-1 pr-2">LIA</th>
-                <th className="py-1 pr-2">Holders</th>
-                <th className="py-1 pr-2">Assos</th>
-                <th className="py-1 pr-2">Autre</th>
+                <th className="py-1 pr-2">{xaRender("Source")}</th>
+                <th className="py-1 pr-2">{xaRender("LIA")}</th>
+                <th className="py-1 pr-2">{xaRender("Holders")}</th>
+                <th className="py-1 pr-2">{xaRender("Assos")}</th>
+                <th className="py-1 pr-2">{xaRender("Autre")}</th>
               </tr>
             </thead>
             <tbody>
-              {sources
+              {xaRender(sources
                 .filter(s => s !== 'lp_fees_external')
                 .map(s => {
                   const m = TREASURY_FLOW_MATRIX[s] || {}
                   return (
                     <tr key={s} className="border-b border-white/5 text-zinc-300">
-                      <td className="py-1.5 pr-2">{FLOW_LABELS[s] || s}</td>
-                      <td className="pr-2">{m.lia_treasury ?? '—'}</td>
-                      <td className="pr-2">{m.holders_rewards ?? '—'}</td>
-                      <td className="pr-2">{m.associations ?? '—'}</td>
+                      <td className="py-1.5 pr-2">{xaRender(FLOW_LABELS[s] || s)}</td>
+                      <td className="pr-2">{xaRender(m.lia_treasury ?? '—')}</td>
+                      <td className="pr-2">{xaRender(m.holders_rewards ?? '—')}</td>
+                      <td className="pr-2">{xaRender(m.associations ?? '—')}</td>
                       <td className="pr-2 text-zinc-500">
-                        {m.institution
+                        {xaRender(m.institution
                           ? `inst ${m.institution}`
                           : m.creator_royalty
                             ? `créateur ${m.creator_royalty}`
@@ -225,20 +222,20 @@ export default function TroPage() {
                               ? `burn ${m.burn_tro}`
                               : m.protocol_fee
                                 ? `protocol ${m.protocol_fee}`
-                                : '—'}
+                                : '—')}
                       </td>
                     </tr>
                   )
-                })}
+                }))}
             </tbody>
           </table>
         </div>
       </section>
 
       <section className="card space-y-2">
-        <h2 className="text-sm font-semibold text-white">Acheter $TRO</h2>
+        <h2 className="text-sm font-semibold text-white">{xaRender("Acheter $TRO")}</h2>
         <div className="flex flex-wrap gap-2">
-          {BUY_LINKS.map(b => (
+          {xaRender(BUY_LINKS.map(b => (
             <a
               key={b.name}
               href={b.url}
@@ -246,47 +243,42 @@ export default function TroPage() {
               rel="noreferrer"
               className="btn-secondary text-[12px]"
             >
-              {b.icon} {b.name}
+              {xaRender(b.icon)} {xaRender(b.name)}
             </a>
-          ))}
+          )))}
         </div>
       </section>
 
-      {pools.length > 0 && (
+      {xaRender(pools.length > 0 && (
         <div className="card">
-          <h2 className="text-sm font-bold mb-2">Pools (config)</h2>
+          <h2 className="text-sm font-bold mb-2">{xaRender("Pools (config)")}</h2>
           <ul className="text-xs space-y-1">
-            {pools.map(p => (
+            {xaRender(pools.map(p => (
               <li key={p.address} className="flex flex-wrap gap-2">
-                <span>{p.dex}</span>
-                <span className="text-zinc-500">{p.pair}</span>
-                {p.swap_url && (
+                <span>{xaRender(p.dex)}</span>
+                <span className="text-zinc-500">{xaRender(p.pair)}</span>
+                {xaRender(p.swap_url && (
                   <a href={p.swap_url} className="text-cyan-400 underline" target="_blank" rel="noreferrer">
-                    swap
-                  </a>
-                )}
+                    {xaRender("swap ")}</a>
+                ))}
               </li>
-            ))}
+            )))}
           </ul>
         </div>
-      )}
+      ))}
 
       <p className="text-[12px] text-zinc-600">
         <Link to="/dao" className="text-violet-300 hover:underline">
-          DAO
-        </Link>
-        {' · '}
+          {xaRender("DAO ")}</Link>
+        {xaRender(' · ')}
         <Link to="/burnify" className="text-violet-300 hover:underline">
-          Burnify
-        </Link>
-        {' · '}
+          {xaRender("Burnify ")}</Link>
+        {xaRender(' · ')}
         <Link to="/lia" className="text-violet-300 hover:underline">
-          Trésorerie LIA
-        </Link>
-        {' · '}
+          {xaRender("Trésorerie LIA ")}</Link>
+        {xaRender(' · ')}
         <Link to="/go-live" className="text-violet-300 hover:underline">
-          GO_LIVE
-        </Link>
+          {xaRender("GO_LIVE ")}</Link>
       </p>
     </div>
   )

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import React from 'react';
 import { DynamicShadowCard } from './DynamicShadowCard';
 import { Skeleton } from './Skeleton';
@@ -23,21 +24,21 @@ export const PriceCard: React.FC<PriceCardProps> = ({
     <DynamicShadowCard variant="hover">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="text-3xl">{icon}</span>
+          <span className="text-3xl">{xaRender(icon)}</span>
           <div>
-            <p className="text-sm text-zinc-400">{symbol}</p>
-            {loading ? (
+            <p className="text-sm text-zinc-400">{xaRender(symbol)}</p>
+            {xaRender(loading ? (
               <Skeleton width={100} height={24} className="mt-1" />
             ) : (
-              <p className="text-xl font-bold">${price.toFixed(2)}</p>
-            )}
+              <p className="text-xl font-bold">${xaRender(price.toFixed(2))}</p>
+            ))}
           </div>
         </div>
-        {!loading && change24h !== undefined && (
+        {xaRender(!loading && change24h !== undefined && (
           <div className={`px-3 py-1 rounded-lg text-sm font-medium ${isPositive ? 'bg-emerald-900/50 text-emerald-400' : 'bg-red-900/50 text-red-400'}`}>
-            {isPositive ? '+' : ''}{change24h.toFixed(2)}%
+            {xaRender(isPositive ? '+' : '')}{xaRender(change24h.toFixed(2))}%
           </div>
-        )}
+        ))}
       </div>
     </DynamicShadowCard>
   );

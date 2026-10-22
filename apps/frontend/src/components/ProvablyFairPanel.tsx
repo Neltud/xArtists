@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Provably fair receipt UI — client seed editable + hashes.
  */
@@ -32,17 +33,16 @@ export default function ProvablyFairPanel({
   return (
     <div className="rounded-xl border border-white/10 bg-black/40 p-3 space-y-2 text-[11px]">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="uppercase tracking-wider text-zinc-500 font-tech">Provably fair</p>
+        <p className="uppercase tracking-wider text-zinc-500 font-tech">{xaRender("Provably fair")}</p>
         <button
           type="button"
           className="text-cyan-400 hover:underline"
           onClick={() => onClientSeed(randomClientSeed())}
         >
-          new client seed
-        </button>
+          {xaRender("new client seed ")}</button>
       </div>
       <label className="block space-y-1">
-        <span className="text-zinc-500">Client seed</span>
+        <span className="text-zinc-500">{xaRender("Client seed")}</span>
         <input
           className="w-full rounded-lg border border-white/10 bg-black/50 px-2 py-1.5 mono text-[11px] text-zinc-200"
           value={clientSeed}
@@ -50,24 +50,23 @@ export default function ProvablyFairPanel({
           spellCheck={false}
         />
       </label>
-      {receipt && (
+      {xaRender(receipt && (
         <div className="space-y-1 mono text-zinc-500 break-all">
           <p>
-            <span className="text-zinc-400">sha256(client)</span> {receipt.clientSeedHash.slice(0, 24)}…
+            <span className="text-zinc-400">{xaRender("sha256(client)")}</span> {xaRender(receipt.clientSeedHash.slice(0, 24))}…
           </p>
           <p>
-            <span className="text-zinc-400">hint</span> {receipt.combinedHint}
+            <span className="text-zinc-400">{xaRender("hint")}</span> {xaRender(receipt.combinedHint)}
           </p>
-          {txSessionId && (
+          {xaRender(txSessionId && (
             <p>
-              <span className="text-zinc-400">tx session</span> {txSessionId}
+              <span className="text-zinc-400">{xaRender("tx session")}</span> {xaRender(txSessionId)}
             </p>
-          )}
+          ))}
         </div>
-      )}
+      ))}
       <p className="text-zinc-600 leading-snug">
-        On-chain: spinEgld@hex(client_seed). Après resolve, croiser explorer + seed pour audit.
-      </p>
+        {xaRender("On-chain: spinEgld@hex(client_seed). Après resolve, croiser explorer + seed pour audit. ")}</p>
     </div>
   )
 }

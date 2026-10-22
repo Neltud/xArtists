@@ -1,0 +1,55 @@
+{
+  "id": "cyber-grid",
+  "name": "Grille cyber xArtists",
+  "description": "Salle signature — grille, néons, ancrages NFT on-chain",
+  "wallHeight": 4.2,
+  "wallThickness": 0.25,
+  "details": {
+    "era": "2026 · MultiversX",
+    "city": "Virtuel",
+    "capacity": 80,
+    "lighting": "neon",
+    "ambient": "Grille cyan · spots sur chaque slot NFT"
+  },
+  "walls": [
+    {"id": "x-s", "x1": 0, "y1": 0, "x2": 20, "y2": 0, "height": 4.2, "thickness": 0.25, "material": "metal"},
+    {"id": "x-e", "x1": 20, "y1": 0, "x2": 20, "y2": 14, "height": 4.2, "thickness": 0.25, "material": "metal"},
+    {"id": "x-n", "x1": 20, "y1": 14, "x2": 0, "y2": 14, "height": 4.2, "thickness": 0.25, "material": "metal"},
+    {"id": "x-w", "x1": 0, "y1": 14, "x2": 0, "y2": 0, "height": 4.2, "thickness": 0.25, "material": "metal"},
+    {"id": "x-m1", "x1": 10, "y1": 0, "x2": 10, "y2": 3, "height": 3.2, "thickness": 0.15, "material": "glass"},
+    {"id": "x-m2", "x1": 10, "y1": 11, "x2": 10, "y2": 14, "height": 3.2, "thickness": 0.15, "material": "glass"}
+  ],
+  "openings": [
+    {"id": "x-d", "wallId": "x-w", "type": "door", "offset": 5.5, "width": 2.4, "height": 3.0, "sill": 0},
+    {"id": "x-w1", "wallId": "x-n", "type": "window", "offset": 4, "width": 4, "height": 2.2, "sill": 1.4},
+    {"id": "x-w2", "wallId": "x-n", "type": "window", "offset": 12, "width": 4, "height": 2.2, "sill": 1.4}
+  ],
+  "rooms": [
+    {
+      "id": "x-main",
+      "name": "Hall xArtists",
+      "polygon": [{"x": 0, "y": 0}, {"x": 20, "y": 0}, {"x": 20, "y": 14}, {"x": 0, "y": 14}],
+      "floor": "concrete",
+      "note": "20 × 14 m — double baie + cloison centrale"
+    }
+  ],
+  "artAnchors": [
+    {"id": "xa1", "wallId": "x-s", "x": 2, "y": 0, "facing": 1.5708, "height": 1.55, "plaque": "Slot A1"},
+    {"id": "xa2", "wallId": "x-s", "x": 5, "y": 0, "facing": 1.5708, "height": 1.55, "plaque": "Slot A2"},
+    {"id": "xa3", "wallId": "x-s", "x": 8, "y": 0, "facing": 1.5708, "height": 1.55},
+    {"id": "xa4", "wallId": "x-s", "x": 12, "y": 0, "facing": 1.5708, "height": 1.55},
+    {"id": "xa5", "wallId": "x-s", "x": 15, "y": 0, "facing": 1.5708, "height": 1.55},
+    {"id": "xa6", "wallId": "x-s", "x": 18, "y": 0, "facing": 1.5708, "height": 1.55},
+    {"id": "xa7", "wallId": "x-e", "x": 20, "y": 3, "facing": 3.1416, "height": 1.55, "plaque": "Mur est"},
+    {"id": "xa8", "wallId": "x-e", "x": 20, "y": 7, "facing": 3.1416, "height": 1.6},
+    {"id": "xa9", "wallId": "x-e", "x": 20, "y": 11, "facing": 3.1416, "height": 1.55},
+    {"id": "xa10", "wallId": "x-n", "x": 18, "y": 14, "facing": 4.7124, "height": 1.55},
+    {"id": "xa11", "wallId": "x-n", "x": 12, "y": 14, "facing": 4.7124, "height": 1.55},
+    {"id": "xa12", "wallId": "x-n", "x": 6, "y": 14, "facing": 4.7124, "height": 1.55},
+    {"id": "xa13", "wallId": "x-n", "x": 2, "y": 14, "facing": 4.7124, "height": 1.55},
+    {"id": "xa14", "wallId": "x-w", "x": 0, "y": 11, "facing": 0, "height": 1.55},
+    {"id": "xa15", "wallId": "x-w", "x": 0, "y": 3, "facing": 0, "height": 1.55, "plaque": "Entrée"}
+  ],
+  "schema": "xartists.roomBlueprint.v1",
+  "source": "blend-glade-wolf-grove"
+}

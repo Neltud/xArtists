@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { Link } from 'react-router-dom'
 import { isStripeConfigured, getAccessApiBase } from '../lib/stripe'
 
@@ -14,15 +15,14 @@ export default function StripeCardBanner() {
           : 'border-zinc-700 bg-zinc-900/50 text-zinc-400'
       }`}
     >
-      <strong className="text-white">Stripe · cartes</strong>
-      {ok
+      <strong className="text-white">{xaRender("Stripe · cartes")}</strong>
+      {xaRender(ok
         ? api
           ? ' — Checkout Session API branchée (packs Pulse / Yield / Sentinel).'
           : ' — Payment Links env — brancher API pour mint auto post-paiement.'
-        : ' — non configuré : intent paper uniquement.'}{' '}
+        : ' — non configuré : intent paper uniquement.')}{xaRender(' ')}
       <Link to="/my-packs" className="underline text-indigo-200">
-        My Packs
-      </Link>
+        {xaRender("My Packs ")}</Link>
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Session wallet connecté (xPortal / Web) — lecture on-chain live + claim points.
  * Pas de signature auto : actions signées restent explicites (tip, stake…).
@@ -72,10 +73,9 @@ export default function ConnectedSessionPanel() {
   if (!connected || !address) {
     return (
       <div className="card border border-white/10 space-y-2">
-        <p className="text-[12px] text-zinc-400">Session wallet</p>
+        <p className="text-[12px] text-zinc-400">{xaRender("Session wallet")}</p>
         <p className="text-[13px] text-zinc-500">
-          Connecte xPortal ou Web Wallet pour voir solde live, NFTs et claim quotidien.
-        </p>
+          {xaRender("Connecte xPortal ou Web Wallet pour voir solde live, NFTs et claim quotidien. ")}</p>
       </div>
     )
   }
@@ -87,9 +87,9 @@ export default function ConnectedSessionPanel() {
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-[11px] uppercase tracking-wider text-emerald-300/80">
-            Session · {method || 'wallet'}
+            {xaRender("Session · ")}{xaRender(method || 'wallet')}
           </p>
-          <p className="mono text-[12px] text-white break-all">{short}</p>
+          <p className="mono text-[12px] text-white break-all">{xaRender(short)}</p>
         </div>
         <a
           href={`https://explorer.multiversx.com/accounts/${address}`}
@@ -97,40 +97,39 @@ export default function ConnectedSessionPanel() {
           rel="noreferrer"
           className="text-[11px] text-cyan-400 hover:underline shrink-0"
         >
-          Explorer ↗
-        </a>
+          {xaRender("Explorer ↗ ")}</a>
       </div>
 
-      {loading && <p className="text-[12px] text-zinc-500">Lecture mainnet…</p>}
-      {err && <p className="text-[12px] text-rose-400">{err}</p>}
+      {xaRender(loading && <p className="text-[12px] text-zinc-500">{xaRender("Lecture mainnet…")}</p>)}
+      {xaRender(err && <p className="text-[12px] text-rose-400">{xaRender(err)}</p>)}
 
-      {live && (
+      {xaRender(live && (
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="rounded-xl bg-black/30 border border-white/5 py-2">
-            <p className="text-lg font-semibold text-white tabular-nums">{live.egld.toFixed(3)}</p>
-            <p className="text-[10px] text-zinc-500">EGLD</p>
+            <p className="text-lg font-semibold text-white tabular-nums">{xaRender(live.egld.toFixed(3))}</p>
+            <p className="text-[10px] text-zinc-500">{xaRender("EGLD")}</p>
           </div>
           <div className="rounded-xl bg-black/30 border border-white/5 py-2">
-            <p className="text-lg font-semibold text-white tabular-nums">{live.tokenCount}</p>
-            <p className="text-[10px] text-zinc-500">tokens</p>
+            <p className="text-lg font-semibold text-white tabular-nums">{xaRender(live.tokenCount)}</p>
+            <p className="text-[10px] text-zinc-500">{xaRender("tokens")}</p>
           </div>
           <div className="rounded-xl bg-black/30 border border-white/5 py-2">
-            <p className="text-lg font-semibold text-white tabular-nums">{live.nftCount}</p>
-            <p className="text-[10px] text-zinc-500">NFTs</p>
+            <p className="text-lg font-semibold text-white tabular-nums">{xaRender(live.nftCount)}</p>
+            <p className="text-[10px] text-zinc-500">{xaRender("NFTs")}</p>
           </div>
         </div>
-      )}
+      ))}
 
-      {live?.top && live.top.length > 0 && (
+      {xaRender(live?.top && live.top.length > 0 && (
         <div className="text-[11px] text-zinc-500 space-y-0.5">
-          {live.top.map(t => (
+          {xaRender(live.top.map(t => (
             <div key={t.ticker} className="flex justify-between gap-2">
-              <span className="text-zinc-400 truncate">{t.ticker}</span>
-              <span className="tabular-nums text-zinc-300">{t.bal > 1 ? t.bal.toFixed(2) : t.bal.toPrecision(3)}</span>
+              <span className="text-zinc-400 truncate">{xaRender(t.ticker)}</span>
+              <span className="tabular-nums text-zinc-300">{xaRender(t.bal > 1 ? t.bal.toFixed(2) : t.bal.toPrecision(3))}</span>
             </div>
-          ))}
+          )))}
         </div>
-      )}
+      ))}
 
       <div className="flex flex-wrap items-center gap-2 pt-1">
         <button
@@ -139,36 +138,31 @@ export default function ConnectedSessionPanel() {
           onClick={claim}
           className="btn-primary text-[12px] py-1.5 px-3 disabled:opacity-40"
         >
-          {canClaimToday ? 'Claim +1 pt aujourd’hui' : 'Déjà claim aujourd’hui'}
+          {xaRender(canClaimToday ? 'Claim +1 pt aujourd’hui' : 'Déjà claim aujourd’hui')}
         </button>
         <span className="text-[11px] text-zinc-500">
-          {totalPoints} pts · série {streak}j
-          {streak > 0 && streak % 7 === 0 ? ' · bonus 7j OK' : ''}
+          {xaRender(totalPoints)} {xaRender(" pts · série ")}{xaRender(streak)}j
+          {xaRender(streak > 0 && streak % 7 === 0 ? ' · bonus 7j OK' : '')}
         </span>
       </div>
 
       <div className="flex flex-wrap gap-2 text-[11px]">
         <Link to="/museum?tab=mine" className="text-cyan-400 hover:underline">
-          Mes NFTs en musée
-        </Link>
+          {xaRender("Mes NFTs en musée ")}</Link>
         <span className="text-zinc-700">·</span>
         <Link to="/tip" className="text-cyan-400 hover:underline">
-          Tip / services
-        </Link>
+          {xaRender("Tip / services ")}</Link>
         <span className="text-zinc-700">·</span>
         <Link to="/dao" className="text-cyan-400 hover:underline">
-          DAO{live?.hasTroLp ? ' (LP TRO détecté)' : ''}
+          {xaRender("DAO")}{xaRender(live?.hasTroLp ? ' (LP TRO détecté)' : '')}
         </Link>
         <span className="text-zinc-700">·</span>
         <Link to="/wallet" className="text-cyan-400 hover:underline">
-          Wallet détail
-        </Link>
+          {xaRender("Wallet détail ")}</Link>
       </div>
 
       <p className="text-[10px] text-zinc-600">
-        Lecture API publique MultiversX. Aucune tx signée automatiquement — tu confirmes chaque action dans
-        xPortal.
-      </p>
+        {xaRender("Lecture API publique MultiversX. Aucune tx signée automatiquement — tu confirmes chaque action dans xPortal. ")}</p>
     </div>
   )
 }

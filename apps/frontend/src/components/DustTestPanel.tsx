@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Phase 5 Dust Test checklist — ops visibility (not a public marketing page).
  */
@@ -45,7 +46,7 @@ export default function DustTestPanel() {
   return (
     <div className="card space-y-3 border-amber-500/20">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-amber-100 font-tech">Dust Test · Phase 5</h2>
+        <h2 className="text-sm font-semibold text-amber-100 font-tech">{xaRender("Dust Test · Phase 5")}</h2>
         <span
           className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full border ${
             mode === 'live'
@@ -53,62 +54,60 @@ export default function DustTestPanel() {
               : 'border-amber-500/40 text-amber-200'
           }`}
         >
-          {mode}
-          {isSessionForcedPaper() ? ' (safety)' : getEnvLiveCapable() ? '' : ' (env)'}
+          {xaRender(mode)}
+          {xaRender(isSessionForcedPaper() ? ' (safety)' : getEnvLiveCapable() ? '' : ' (env)')}
         </span>
       </div>
 
-      {isSessionForcedPaper() && (
+      {xaRender(isSessionForcedPaper() && (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[12px] text-amber-100 space-y-2">
-          <p>Safety Switch actif — paper forcé après échec TX.</p>
-          {getForcePaperReason() && (
-            <p className="text-amber-200/80 mono text-[11px]">{getForcePaperReason()}</p>
-          )}
+          <p>{xaRender("Safety Switch actif — paper forcé après échec TX.")}</p>
+          {xaRender(getForcePaperReason() && (
+            <p className="text-amber-200/80 mono text-[11px]">{xaRender(getForcePaperReason())}</p>
+          ))}
           <button type="button" className="btn-secondary text-[11px]" onClick={() => { clearForcePaperMode(); setMode(getAppMode()) }}>
-            Revenir live (cette session)
-          </button>
+            {xaRender("Revenir live (cette session) ")}</button>
         </div>
-      )}
+      ))}
 
       <ul className="space-y-1.5 text-[12px]">
-        {gates.map(g => (
+        {xaRender(gates.map(g => (
           <li key={g.id} className="flex flex-wrap gap-2 items-center">
-            <span className={g.ok ? 'text-emerald-400' : 'text-zinc-500'}>{g.ok ? '●' : '○'}</span>
-            <span className="text-zinc-300">{g.label}</span>
-            {g.addr && <span className="mono text-[10px] text-zinc-500">{short(g.addr)}</span>}
+            <span className={g.ok ? 'text-emerald-400' : 'text-zinc-500'}>{xaRender(g.ok ? '●' : '○')}</span>
+            <span className="text-zinc-300">{xaRender(g.label)}</span>
+            {xaRender(g.addr && <span className="mono text-[10px] text-zinc-500">{xaRender(short(g.addr))}</span>)}
           </li>
-        ))}
+        )))}
       </ul>
 
       <div className="text-[11px] text-zinc-500 space-y-1">
-        <p>Cycle dust conseillé :</p>
+        <p>{xaRender("Cycle dust conseillé :")}</p>
         <ol className="list-decimal list-inside text-zinc-400 space-y-0.5">
-          <li>Stake TRO dust → explorer getTotalStaked</li>
-          <li>Slot spinEgld dust (gate CODEHASH + fund house)</li>
-          <li>Treasury receiveAndSplit (owner)</li>
-          <li>Market list/buy après Studio mint</li>
+          <li>{xaRender("Stake TRO dust → explorer getTotalStaked")}</li>
+          <li>{xaRender("Slot spinEgld dust (gate CODEHASH + fund house)")}</li>
+          <li>{xaRender("Treasury receiveAndSplit (owner)")}</li>
+          <li>{xaRender("Market list/buy après Studio mint")}</li>
         </ol>
       </div>
 
-      {log.length > 0 && (
+      {xaRender(log.length > 0 && (
         <div className="space-y-1">
           <div className="flex justify-between items-center">
-            <p className="text-[10px] uppercase tracking-wider text-zinc-500">TX failures</p>
+            <p className="text-[10px] uppercase tracking-wider text-zinc-500">{xaRender("TX failures")}</p>
             <button type="button" className="text-[10px] text-zinc-500 hover:text-zinc-300" onClick={() => { clearTxLog(); setLog([]) }}>
-              clear
-            </button>
+              {xaRender("clear ")}</button>
           </div>
           <ul className="max-h-32 overflow-y-auto space-y-1">
-            {log.slice(0, 8).map(e => (
+            {xaRender(log.slice(0, 8).map(e => (
               <li key={e.id} className="text-[11px] mono text-zinc-400 border-l-2 border-rose-500/40 pl-2">
-                <span className="text-rose-300/90">{e.kind}</span> · {e.action}
+                <span className="text-rose-300/90">{xaRender(e.kind)}</span> · {xaRender(e.action)}
                 <br />
-                <span className="text-zinc-500">{e.message.slice(0, 120)}</span>
+                <span className="text-zinc-500">{xaRender(e.message.slice(0, 120))}</span>
               </li>
-            ))}
+            )))}
           </ul>
         </div>
-      )}
+      ))}
     </div>
   )
 }

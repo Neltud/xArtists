@@ -1,0 +1,9 @@
+/*
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://api.multiversx.com https://devnet-api.multiversx.com https://gateway.multiversx.com https://raw.githubusercontent.com https://api.coingecko.com https://api.frankfurter.app https://www.reddit.com https://api.rss2json.com https://explorer.multiversx.com https://*.walletconnect.com https://*.walletconnect.org wss://*.walletconnect.com wss://*.walletconnect.org https://pulse.walletconnect.org https://registry.walletconnect.com https://verify.walletconnect.com https://verify.walletconnect.org https://api.web3modal.org https://*.infura.io https://cloudflare-ipfs.com https://ipfs.io; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://w.soundcloud.com https://soundcloud.com https://*.walletconnect.com https://*.walletconnect.org; worker-src 'self' blob:; manifest-src 'self';
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/data/*
+  Cache-Control: public, max-age=120, must-revalidate

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Market tape — flux paper discret (pas de promesse de profit).
  * snap optionnel : jamais de crash sur .mode si props absentes.
@@ -57,27 +58,27 @@ export default function MarketTape({ snap }: { snap?: AmbientSnapshot | null }) 
   return (
     <aside className="rounded-xl border border-white/10 bg-black/40 overflow-hidden">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/10">
-        <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-tech">Tape</span>
-        <span className="text-[9px] text-amber-200/70">paper only</span>
+        <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-tech">{xaRender("Tape")}</span>
+        <span className="text-[9px] text-amber-200/70">{xaRender("paper only")}</span>
       </div>
       <ul className="max-h-28 overflow-y-auto px-3 py-2 space-y-1 font-mono text-[11px] text-zinc-400">
-        {lines.length === 0 && (
+        {xaRender(lines.length === 0 && (
           <li className="text-zinc-500 flex flex-col gap-0.5">
             <span className="inline-flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/80 animate-pulse" aria-hidden />
-              {LOADING_TICKS[tickIdx]}
+              {xaRender(LOADING_TICKS[tickIdx])}
             </span>
-            {cacheHint ? (
-              <span className="text-[10px] text-zinc-600 truncate">cache · {cacheHint}</span>
-            ) : null}
-          </li>
-        )}
-        {lines.map(l => (
-          <li key={l.id} className="flex gap-2">
-            <span className="text-zinc-600 shrink-0">{l.kind}</span>
-            <span className="truncate">{l.text}</span>
+            {xaRender(cacheHint ? (
+              <span className="text-[10px] text-zinc-600 truncate">{xaRender("cache · ")}{xaRender(cacheHint)}</span>
+            ) : null)}
           </li>
         ))}
+        {xaRender(lines.map(l => (
+          <li key={l.id} className="flex gap-2">
+            <span className="text-zinc-600 shrink-0">{xaRender(l.kind)}</span>
+            <span className="truncate">{xaRender(l.text)}</span>
+          </li>
+        )))}
       </ul>
     </aside>
   )

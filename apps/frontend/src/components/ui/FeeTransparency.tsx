@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /** Public fee copy — no SC jargon. */
 
 type Kind = 'market' | 'slot-paper' | 'packs'
@@ -35,11 +36,11 @@ export default function FeeTransparency({ kind }: { kind: Kind }) {
   const c = COPY[kind]
   return (
     <aside className="rounded-xl border border-white/10 bg-black/30 px-3 py-2.5 text-[12px] text-zinc-400 space-y-1">
-      <p className="text-[11px] uppercase tracking-wider text-zinc-500">{c.title}</p>
+      <p className="text-[11px] uppercase tracking-wider text-zinc-500">{xaRender(c.title)}</p>
       <ul className="space-y-0.5">
-        {c.lines.map(l => (
-          <li key={l}>· {l}</li>
-        ))}
+        {xaRender(c.lines.map(l => (
+          <li key={l}>· {xaRender(l)}</li>
+        )))}
       </ul>
     </aside>
   )

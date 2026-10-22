@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../../i18n/phraseRuntime'
 /** Minimal canvas equity curve from shadow fills (paper). */
 import { useEffect, useRef } from 'react'
 import type { ShadowFill } from '../../lia/shadowLedger'
@@ -25,6 +26,8 @@ function series(fills: ShadowFill[], start = 110): number[] {
 }
 
 export default function ShadowEquityChart({ fills, startEquity = 110, className = '' }: Props) {
+  xaUsePhraseLocale()
+
   const ref = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -97,7 +100,7 @@ export default function ShadowEquityChart({ fills, startEquity = 110, className 
     <canvas
       ref={ref}
       className={`w-full h-[120px] rounded-xl bg-black/40 border border-white/10 ${className}`}
-      aria-label="Courbe equity shadow"
+      aria-label={xaLocalize("Courbe equity shadow")}
     />
   )
 }

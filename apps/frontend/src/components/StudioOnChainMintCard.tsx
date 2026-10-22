@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
  * Mint NFT on-chain — 3 étapes ESDT système (issue → rôle → create).
  * Signature wallet utilisateur uniquement.
@@ -20,6 +21,8 @@ type Props = {
 }
 
 export default function StudioOnChainMintCard(props: Props) {
+  xaUsePhraseLocale()
+
   const { connected } = useWallet()
   const { issueCollection, setCreateRole, createNft, pending, error, lastTx, collection, canSign } =
     useStudioMintTx()
@@ -65,52 +68,46 @@ export default function StudioOnChainMintCard(props: Props) {
     <div className="card space-y-4 mb-4 border border-violet-500/25 bg-violet-500/[0.05]">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h2 className="font-bold text-violet-100">Mint on-chain (ton wallet)</h2>
+          <h2 className="font-bold text-violet-100">{xaRender("Mint on-chain (ton wallet)")}</h2>
           <p className="text-xs text-zinc-500 mt-1">
-            ESDT système MultiversX · 3 signatures · ~0.05 EGLD issue + gas
-          </p>
+            {xaRender("ESDT système MultiversX · 3 signatures · ~0.05 EGLD issue + gas ")}</p>
         </div>
         <span className="text-[10px] rounded-full border border-violet-400/30 px-2 py-0.5 text-violet-200">
-          Creator Studio
-        </span>
+          {xaRender("Creator Studio ")}</span>
       </div>
 
-      {!connected && (
+      {xaRender(!connected && (
         <button type="button" className="btn-primary text-sm w-full" onClick={requestOpenConnect}>
-          Connect wallet artiste
-        </button>
-      )}
+          {xaRender("Connect wallet artiste ")}</button>
+      ))}
 
-      {connected && !canSign && (
+      {xaRender(connected && !canSign && (
         <p className="text-xs text-amber-200 border border-amber-500/30 rounded-lg p-2">
-          Lecture seule — Disconnect puis xPortal / Web Wallet pour signer.
-        </p>
-      )}
+          {xaRender("Lecture seule — Disconnect puis xPortal / Web Wallet pour signer. ")}</p>
+      ))}
 
       <ol className="space-y-4 text-sm">
         <li className="rounded-xl border border-white/10 bg-black/30 p-3 space-y-2">
-          <p className="font-semibold text-zinc-200">1 · Issue collection NFT</p>
+          <p className="font-semibold text-zinc-200">{xaRender("1 · Issue collection NFT")}</p>
           <p className="text-[11px] text-zinc-500">
-            Nom « {props.collectionName || '…'} » · ticker{' '}
-            <span className="mono text-zinc-300">{props.ticker || '—'}</span> · coût 0.05 EGLD
-          </p>
+            {xaRender("Nom « ")}{xaRender(props.collectionName || '…')} {xaRender(" » · ticker")}{xaRender(' ')}
+            <span className="mono text-zinc-300">{xaRender(props.ticker || '—')}</span> {xaRender(" · coût 0.05 EGLD ")}</p>
           <button
             type="button"
             className="btn-primary text-xs"
             disabled={!props.ready || !canSign || pending || props.ticker.length < 3}
             onClick={onIssue}
           >
-            {pending ? '…' : 'Signer issueNonFungible'}
+            {xaRender(pending ? '…' : 'Signer issueNonFungible')}
           </button>
         </li>
 
         <li className="rounded-xl border border-white/10 bg-black/30 p-3 space-y-2">
-          <p className="font-semibold text-zinc-200">2 · Rôle ESDTNFTCreate</p>
+          <p className="font-semibold text-zinc-200">{xaRender("2 · Rôle ESDTNFTCreate")}</p>
           <label className="block text-[11px] text-zinc-500">
-            Token identifier (après issue, sur Explorer)
-            <input
+            {xaRender("Token identifier (après issue, sur Explorer) ")}<input
               className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs mono text-white"
-              placeholder="XART-abc123"
+              placeholder={xaLocalize("XART-abc123")}
               value={tokenId}
               onChange={e => setTokenId(e.target.value)}
             />
@@ -121,36 +118,33 @@ export default function StudioOnChainMintCard(props: Props) {
             disabled={!canSign || pending || tokenId.length < 8}
             onClick={onRole}
           >
-            {pending ? '…' : 'Signer setSpecialRole'}
+            {xaRender(pending ? '…' : 'Signer setSpecialRole')}
           </button>
         </li>
 
         <li className="rounded-xl border border-white/10 bg-black/30 p-3 space-y-2">
-          <p className="font-semibold text-zinc-200">3 · Créer le NFT</p>
+          <p className="font-semibold text-zinc-200">{xaRender("3 · Créer le NFT")}</p>
           <p className="text-[11px] text-zinc-500">
-            Titre « {props.title || '…'} » · royalties {props.royalty}% · URI média
-          </p>
+            {xaRender("Titre « ")}{xaRender(props.title || '…')} {xaRender(" » · royalties ")}{xaRender(props.royalty)}{xaRender("% · URI média ")}</p>
           <button
             type="button"
             className="btn-primary text-xs"
             disabled={!props.ready || !canSign || pending}
             onClick={onMint}
           >
-            {pending ? '…' : 'Signer ESDTNFTCreate'}
+            {xaRender(pending ? '…' : 'Signer ESDTNFTCreate')}
           </button>
         </li>
       </ol>
 
-      {error && <p className="text-xs text-rose-300">{error}</p>}
-      {stepMsg && <p className="text-xs text-emerald-300">{stepMsg}</p>}
-      {lastTx && (
-        <p className="text-[11px] mono text-zinc-500 break-all">TX / session : {lastTx}</p>
-      )}
+      {xaRender(error && <p className="text-xs text-rose-300">{xaRender(error)}</p>)}
+      {xaRender(stepMsg && <p className="text-xs text-emerald-300">{xaRender(stepMsg)}</p>)}
+      {xaRender(lastTx && (
+        <p className="text-[11px] mono text-zinc-500 break-all">{xaRender("TX / session : ")}{xaRender(lastTx)}</p>
+      ))}
 
       <p className="text-[10px] text-zinc-600 leading-relaxed">
-        Après mint : list sur <strong className="text-zinc-400">/marketplace</strong> si CODEHASH market
-        OK. Collection déjà existante ? Passe direct étape 2–3 avec ton token id.
-      </p>
+        {xaRender("Après mint : list sur ")}<strong className="text-zinc-400">{xaRender("/marketplace")}</strong> {xaRender(" si CODEHASH market OK. Collection déjà existante ? Passe direct étape 2–3 avec ton token id. ")}</p>
     </div>
   )
 }

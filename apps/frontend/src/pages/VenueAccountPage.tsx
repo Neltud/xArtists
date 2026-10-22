@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
  * Comptes officiels + location d’espace (grille dégressive lieu × durée × murs).
  * On-chain rentPay only if VITE_VENUE_SC_ADDRESS + VITE_VENUE_CODEHASH_OK.
@@ -27,6 +28,8 @@ const ROLES: { id: Role; label: string; hint: string }[] = [
 ]
 
 export default function VenueAccountPage() {
+  xaUsePhraseLocale()
+
   const { connected, address } = useWallet()
   const { live: venueLive, pending: venuePending, error: venueErr, rentPay, venueAddress } =
     useVenueRentTx()
@@ -130,14 +133,14 @@ export default function VenueAccountPage() {
   return (
     <div className="animate-fade-in space-y-6 pb-16 max-w-lg mx-auto">
       <header className="space-y-2">
-        <p className="section-label">Démo live · paper</p>
-        <h1 className="section-title display">Comptes & location</h1>
+        <p className="section-label">{xaRender("Démo live · paper")}</p>
+        <h1 className="section-title display">{xaRender("Comptes & location")}</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
-          Louez un mur (Louvre, Orsay…) avec grille dégressive selon durée et nombre de murs.{' '}
-          {venueLive
+          {xaRender("Louez un mur (Louvre, Orsay…) avec grille dégressive selon durée et nombre de murs.")}{xaRender(' ')}
+          {xaRender(venueLive
             ? `SC live · ${venueAddress.slice(0, 14)}…`
-            : 'Paper fail-closed jusqu’à VITE_VENUE_CODEHASH_OK.'}
+            : 'Paper fail-closed jusqu’à VITE_VENUE_CODEHASH_OK.')}
         </p>
       </header>
 
@@ -145,12 +148,11 @@ export default function VenueAccountPage() {
 
       <section className="rounded-2xl border border-violet-500/25 bg-violet-950/20 p-4 space-y-4">
         <p className="text-[11px] uppercase tracking-[0.18em] text-violet-300/90">
-          Location d’espace · grille dégressive
-        </p>
-        <h2 className="text-lg font-semibold text-white">Mur d’exposition</h2>
+          {xaRender("Location d’espace · grille dégressive ")}</p>
+        <h2 className="text-lg font-semibold text-white">{xaRender("Mur d’exposition")}</h2>
 
         <div className="space-y-2">
-          {VENUE_RENTAL_TIERS.map(t => (
+          {xaRender(VENUE_RENTAL_TIERS.map(t => (
             <button
               key={t.id}
               type="button"
@@ -162,76 +164,76 @@ export default function VenueAccountPage() {
               }`}
             >
               <span className="flex justify-between gap-2">
-                <span className="font-semibold">{t.label}</span>
-                <span className="text-amber-200/90">{t.priceEurMonth} €/mois</span>
+                <span className="font-semibold">{xaRender(t.label)}</span>
+                <span className="text-amber-200/90">{xaRender(t.priceEurMonth)} {xaRender(" €/mois")}</span>
               </span>
               <span className="text-[10px] text-zinc-500 block mt-0.5">
-                {t.examples.join(' · ')}
+                {xaRender(t.examples.join(' · '))}
               </span>
             </button>
-          ))}
+          )))}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <label className="block space-y-1">
-            <span className="text-[11px] text-zinc-500">Durée</span>
+            <span className="text-[11px] text-zinc-500">{xaRender("Durée")}</span>
             <select
               className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
               value={months}
               onChange={e => setMonths(Number(e.target.value))}
             >
-              {DURATION_OPTIONS.map(d => (
+              {xaRender(DURATION_OPTIONS.map(d => (
                 <option key={d.months} value={d.months}>
-                  {d.label}
-                  {d.multiplier < 1 ? ` (−${Math.round((1 - d.multiplier) * 100)}%)` : ''}
+                  {xaRender(d.label)}
+                  {xaRender(d.multiplier < 1 ? ` (−${Math.round((1 - d.multiplier) * 100)}%)` : '')}
                 </option>
-              ))}
+              )))}
             </select>
           </label>
           <label className="block space-y-1">
-            <span className="text-[11px] text-zinc-500">Murs</span>
+            <span className="text-[11px] text-zinc-500">{xaRender("Murs")}</span>
             <select
               className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
               value={walls}
               onChange={e => setWalls(Number(e.target.value))}
             >
-              {[1, 2, 3, 4].map(n => (
+              {xaRender([1, 2, 3, 4].map(n => (
                 <option key={n} value={n}>
-                  {n} mur{n > 1 ? 's' : ''}
+                  {xaRender(n)} {xaRender(" mur")}{xaRender(n > 1 ? 's' : '')}
                 </option>
-              ))}
+              )))}
             </select>
           </label>
         </div>
 
         <div className="rounded-xl border border-white/10 bg-black/40 p-3 text-[12px] space-y-1.5">
           <p className="flex justify-between text-zinc-300">
-            <span>Total paper</span>
-            <span className="font-semibold text-white">{quote.totalEur} €</span>
+            <span>{xaRender("Total paper")}</span>
+            <span className="font-semibold text-white">{xaRender(quote.totalEur)} €</span>
           </p>
           <p className="flex justify-between text-zinc-500">
-            <span>Effectif / mois</span>
-            <span>{quote.perMonthEffective} €</span>
+            <span>{xaRender("Effectif / mois")}</span>
+            <span>{xaRender(quote.perMonthEffective)} €</span>
           </p>
-          {quote.savingsPct > 0 && (
-            <p className="text-emerald-400/90">Économie grille −{quote.savingsPct}%</p>
-          )}
+          {xaRender(quote.savingsPct > 0 && (
+            <p className="text-emerald-400/90">{xaRender("Économie grille −")}{xaRender(quote.savingsPct)}%</p>
+          ))}
           <p className="text-[10px] text-zinc-600 pt-1 border-t border-white/5">
-            Split : institution {VENUE_REVENUE_SPLIT.institution}% · assoc.{' '}
-            {VENUE_REVENUE_SPLIT.associations}% · LIA {VENUE_REVENUE_SPLIT.liaTreasury}% · holders{' '}
-            {VENUE_REVENUE_SPLIT.holdersRewards}%
+            {xaRender("Split : institution ")}{xaRender(VENUE_REVENUE_SPLIT.institution)}{xaRender("% · assoc.")}{xaRender(' ')}
+            {xaRender(VENUE_REVENUE_SPLIT.associations)}{xaRender("% · LIA ")}{xaRender(VENUE_REVENUE_SPLIT.liaTreasury)}{xaRender("% · holders")}{xaRender(' ')}
+            {xaRender(VENUE_REVENUE_SPLIT.holdersRewards)}%
           </p>
           <p className="text-[10px] text-zinc-500">
-            → inst. {split.institution.toFixed(1)} € · assoc. {split.associations.toFixed(1)} € · LIA{' '}
-            {split.liaTreasury.toFixed(1)} € · holders {split.holdersRewards.toFixed(1)} €
+            {xaRender("→ inst. ")}{xaRender(split.institution.toFixed(1))} {xaRender(" € · assoc. ")}{xaRender(split.associations.toFixed(1))} {xaRender(" € · LIA")}{xaRender(' ')}
+            {xaRender(split.liaTreasury.toFixed(1))} {xaRender(" € · holders ")}{xaRender(split.holdersRewards.toFixed(1))} €
           </p>
         </div>
 
-        {venueErr && <p className="text-xs text-rose-400">{venueErr}</p>}
+        {xaRender(venueErr && <p className="text-xs text-rose-400">{xaRender(venueErr)}</p>)}
         <p className="text-[10px] text-zinc-500">
-          {venueLive
+          {xaRender(venueLive
             ? `On-chain ready · ${venueAddress}`
-            : 'Fail-closed · VITE_VENUE_SC_ADDRESS + VITE_VENUE_CODEHASH_OK après verify'}
+            : 'Fail-closed · VITE_VENUE_SC_ADDRESS + VITE_VENUE_CODEHASH_OK après verify')}
         </p>
         <button
           type="button"
@@ -239,18 +241,18 @@ export default function VenueAccountPage() {
           disabled={venuePending}
           onClick={() => void bookRental()}
         >
-          {venueLive
+          {xaRender(venueLive
             ? `Réserver · ${quote.totalEur} € (journal + SC registered)`
-            : `Réserver (paper) · ${quote.totalEur} €`}
-          {venuePending ? '…' : ''}
+            : `Réserver (paper) · ${quote.totalEur} €`)}
+          {xaRender(venuePending ? '…' : '')}
         </button>
-        {done && <p className="text-[12px] text-emerald-300">{done}</p>}
+        {xaRender(done && <p className="text-[12px] text-emerald-300">{xaRender(done)}</p>)}
       </section>
 
       <div className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">Compte officiel</h2>
+        <h2 className="text-sm font-semibold text-white">{xaRender("Compte officiel")}</h2>
         <div className="grid grid-cols-2 gap-2">
-          {ROLES.map(r => (
+          {xaRender(ROLES.map(r => (
             <button
               key={r.id}
               type="button"
@@ -261,60 +263,57 @@ export default function VenueAccountPage() {
                   : 'border-white/10 bg-black/30 text-zinc-400'
               }`}
             >
-              <span className="font-semibold block text-zinc-200">{r.label}</span>
-              <span className="text-[10px] text-zinc-500">{r.hint}</span>
+              <span className="font-semibold block text-zinc-200">{xaRender(r.label)}</span>
+              <span className="text-[10px] text-zinc-500">{xaRender(r.hint)}</span>
             </button>
-          ))}
+          )))}
         </div>
 
         <label className="block space-y-1">
-          <span className="text-[11px] text-zinc-500">Nom</span>
+          <span className="text-[11px] text-zinc-500">{xaRender("Nom")}</span>
           <input
             className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
             value={name}
             onChange={e => setName(e.target.value)}
-            placeholder="Musée / galerie / artiste"
+            placeholder={xaLocalize("Musée / galerie / artiste")}
           />
         </label>
         <label className="block space-y-1">
-          <span className="text-[11px] text-zinc-500">Ville</span>
+          <span className="text-[11px] text-zinc-500">{xaRender("Ville")}</span>
           <input
             className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
             value={city}
             onChange={e => setCity(e.target.value)}
-            placeholder="Paris"
+            placeholder={xaLocalize("Paris")}
           />
         </label>
         <label className="block space-y-1">
-          <span className="text-[11px] text-zinc-500">Note</span>
+          <span className="text-[11px] text-zinc-500">{xaRender("Note")}</span>
           <textarea
             className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white min-h-[72px]"
             value={note}
             onChange={e => setNote(e.target.value)}
-            placeholder="Programme d’expo, partenariat…"
+            placeholder={xaLocalize("Programme d’expo, partenariat…")}
           />
         </label>
 
-        {!connected && (
-          <p className="text-[12px] text-amber-200/90">Connectez un wallet pour enregistrer (paper).</p>
-        )}
+        {xaRender(!connected && (
+          <p className="text-[12px] text-amber-200/90">{xaRender("Connectez un wallet pour enregistrer (paper).")}</p>
+        ))}
         <button type="button" className="btn-primary w-full" onClick={submit}>
-          {connected ? 'Enregistrer le compte' : 'Connecter & enregistrer'}
+          {xaRender(connected ? 'Enregistrer le compte' : 'Connecter & enregistrer')}
         </button>
       </div>
 
       <p className="text-[11px] text-zinc-600">
         <Link to="/museum" className="text-zinc-400 underline-offset-2 hover:underline">
-          Retour galerie 3D
-        </Link>
-        {' · '}
+          {xaRender("Retour galerie 3D ")}</Link>
+        {xaRender(' · ')}
         <Link to="/go-live" className="text-zinc-400 underline-offset-2 hover:underline">
-          GO_LIVE
-        </Link>
-        {' · '}
+          {xaRender("GO_LIVE ")}</Link>
+        {xaRender(' · ')}
         <Link to="/ads" className="text-zinc-400 underline-offset-2 hover:underline">
-          Enchères pubs
-        </Link>
+          {xaRender("Enchères pubs ")}</Link>
       </p>
     </div>
   )

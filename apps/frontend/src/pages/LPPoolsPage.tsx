@@ -1,5 +1,7 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
- * Liquidity & Farms — TRO pools + wallet positions — protocol UI.
+ * Liquidity & Farms — all TRO pools (xExchange + OneDex) + wallet positions.
+ * Safe React children only (React #31).
  */
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,7 +10,6 @@ import { getTroInfo, getEgldPrice } from '../services/priceService'
 import LiaVsUserBanner from '../components/LiaVsUserBanner'
 import { mergeTroPools, type TroPoolDef } from '../data/troPools'
 import { asText } from '../lib/safeRender'
-import { useI18n } from '../i18n/I18nContext'
 
 const XEXCHANGE_APP = 'https://xexchange.com'
 const ONEDEX_APP = 'https://onedex.app'
@@ -139,10 +140,12 @@ async function loadPoolLive(
 
 function TokenTable({
   title,
+  icon,
   tokens,
   emptyText,
 }: {
   title: string
+  icon: string
   tokens: Array<{
     identifier: string
     ticker: string
@@ -155,60 +158,58 @@ function TokenTable({
 }) {
   const total = tokens.reduce((s, t) => s + (Number(t.valueUsd) || 0), 0)
   return (
-    <div className="xa-card mb-6">
+    <div className="card mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-base font-semibold text-[var(--xa-text)]">{title}</h2>
-        {tokens.length > 0 && (
-          <span className="text-xs font-medium text-[var(--xa-text-muted)]">{fmtUsd(total)}</span>
-        )}
+        <h2 className="text-lg font-bold">
+          {xaRender(icon)} {xaRender(title)}
+        </h2>
+        {xaRender(tokens.length > 0 && <span className="badge-purple">{xaRender(fmtUsd(total))}</span>)}
       </div>
-      {tokens.length === 0 ? (
-        <p className="text-center text-[var(--xa-text-muted)] py-6 text-sm">{emptyText}</p>
+      {xaRender(tokens.length === 0 ? (
+        <p className="text-center text-gray-500 py-6">{xaRender(emptyText)}</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="text-[10px] text-[var(--xa-text-muted)] uppercase border-b border-[var(--xa-border)]">
-                <th className="text-left py-2 px-2">Token</th>
-                <th className="text-right py-2 px-2">Balance</th>
-                <th className="text-right py-2 px-2">Price</th>
-                <th className="text-right py-2 px-2">USD</th>
+              <tr className="text-xs text-gray-500 uppercase border-b border-[#2a2a3a]">
+                <th className="text-left py-2 px-3">{xaRender("Token")}</th>
+                <th className="text-right py-2 px-3">{xaRender("Balance")}</th>
+                <th className="text-right py-2 px-3">{xaRender("Prix")}</th>
+                <th className="text-right py-2 px-3">{xaRender("Valeur USD")}</th>
               </tr>
             </thead>
             <tbody>
-              {tokens.map(t => (
+              {xaRender(tokens.map(t => (
                 <tr
                   key={asText(t.identifier)}
-                  className="border-b border-[var(--xa-border)]/60 hover:bg-white/[0.02]"
+                  className="border-b border-[#2a2a3a]/50 hover:bg-[#111118] transition-colors"
                 >
-                  <td className="py-3 px-2">
-                    <p className="font-semibold text-sm text-[var(--xa-text)]">
-                      {asText(t.ticker || t.name)}
-                    </p>
-                    <p className="text-xs mono text-[var(--xa-text-muted)]">{asText(t.identifier)}</p>
+                  <td className="py-3 px-3">
+                    <p className="font-semibold text-sm">{xaRender(asText(t.ticker || t.name))}</p>
+                    <p className="text-xs mono text-gray-500">{xaRender(asText(t.identifier))}</p>
                   </td>
-                  <td className="py-3 px-2 text-right mono text-sm">{fmtAmt(t.balance, 6)}</td>
-                  <td className="py-3 px-2 text-right mono text-sm">{fmtUsd(t.price, 6)}</td>
-                  <td className="py-3 px-2 text-right mono text-sm text-emerald-400/90">
-                    {fmtUsd(t.valueUsd)}
+                  <td className="py-3 px-3 text-right mono text-sm">{xaRender(fmtAmt(t.balance, 6))}</td>
+                  <td className="py-3 px-3 text-right mono text-sm">{xaRender(fmtUsd(t.price, 6))}</td>
+                  <td className="py-3 px-3 text-right mono text-sm text-green-400">
+                    {xaRender(fmtUsd(t.valueUsd))}
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
-      )}
+      ))}
     </div>
   )
 }
 
 export default function LPPoolsPage() {
-  const { t, lang } = useI18n()
+  xaUsePhraseLocale()
+
   const { lpTokens, farmTokens, loading, refresh, totalEsdtUsd } = useWalletTokens()
   const [pools, setPools] = useState<PoolLive[]>([])
   const [meta, setMeta] = useState({ troPrice: 0, egldPrice: 0 })
   const [err, setErr] = useState<string | null>(null)
-  const isFr = lang === 'fr'
 
   const load = useCallback(async () => {
     setErr(null)
@@ -231,161 +232,153 @@ export default function LPPoolsPage() {
       const live = await Promise.all(list.map(p => loadPoolLive(p, troPrice, num(egldPrice))))
       setPools(live)
     } catch (e) {
-      setErr(asText(e, isFr ? 'Chargement pools échoué' : 'Pool load failed'))
+      setErr(asText(e, 'Chargement pools échoué'))
     }
-  }, [isFr])
+  }, [])
 
   useEffect(() => {
     void load()
   }, [load])
 
   return (
-    <div className="xa-page animate-fade-in space-y-6 max-w-3xl mx-auto pb-16">
-      <header className="xa-hero" style={{ paddingTop: '1.25rem', maxWidth: '100%' }}>
-        <p className="xa-hero__kicker">{isFr ? 'Liquidité' : 'Liquidity'}</p>
-        <h1 className="xa-hero__title">Pools & LP</h1>
-        <p className="xa-hero__lead">
-          {isFr
-            ? 'Pools $TRO (xExchange + OneDex). Rewards = fees DEX. Token TRO-94c925.'
-            : '$TRO pools (xExchange + OneDex). Rewards = DEX fees. Token TRO-94c925.'}
-        </p>
-        <div className="flex flex-wrap gap-2 mt-2">
-          <button type="button" className="xa-btn-secondary text-sm" onClick={() => void load()}>
-            {isFr ? 'Actualiser' : 'Refresh'}
-          </button>
+    <div className="animate-fade-in space-y-6 max-w-3xl mx-auto pb-16">
+      <header className="space-y-2">
+        <p className="section-label">{xaRender("Liquidité")}</p>
+        <h1 className="section-title display text-2xl">{xaRender("Pools & LP")}</h1>
+        <p className="text-sm text-zinc-400">
+          {xaRender("Toutes les pools $TRO listées (xExchange + OneDex). Rewards = fees DEX (+ farms si actives). Token TRO-94c925. ")}</p>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" className="btn-secondary text-sm" onClick={() => void load()}>
+            {xaRender("Actualiser pools ")}</button>
           <a
-            className="xa-btn-primary text-sm"
+            className="btn-primary text-sm"
             href={`${XEXCHANGE_APP}/trade?firstToken=TRO-94c925&secondToken=WEGLD-bd4d79`}
             target="_blank"
             rel="noreferrer"
           >
-            $TRO / Buy
-          </a>
-          <Link to="/dao" className="xa-btn-secondary text-sm">
-            DAO
-          </Link>
+            {xaRender("$TRO / Buy ")}</a>
+          <Link to="/dao" className="btn-secondary text-sm">
+            {xaRender("DAO ")}</Link>
         </div>
       </header>
 
-      <div className="xa-stats-strip">
-        <div className="xa-stat">
-          <span className="xa-stat__value" style={{ fontSize: '1.25rem' }}>
-            {fmtUsd(meta.troPrice, 6)}
-          </span>
-          <span className="xa-stat__label">TRO</span>
+      <div className="grid grid-cols-3 gap-3 text-sm">
+        <div className="card">
+          <p className="text-[10px] uppercase text-zinc-500">{xaRender("Prix TRO")}</p>
+          <p className="font-bold tabular-nums">{xaRender(fmtUsd(meta.troPrice, 6))}</p>
         </div>
-        <div className="xa-stat">
-          <span className="xa-stat__value" style={{ fontSize: '1.25rem' }}>
-            {fmtUsd(meta.egldPrice, 2)}
-          </span>
-          <span className="xa-stat__label">EGLD</span>
+        <div className="card">
+          <p className="text-[10px] uppercase text-zinc-500">{xaRender("EGLD")}</p>
+          <p className="font-bold tabular-nums">{xaRender(fmtUsd(meta.egldPrice, 2))}</p>
         </div>
-        <div className="xa-stat">
-          <span className="xa-stat__value">{pools.length}</span>
-          <span className="xa-stat__label">{isFr ? 'Pools' : 'Pools'}</span>
+        <div className="card">
+          <p className="text-[10px] uppercase text-zinc-500">{xaRender("Pools listées")}</p>
+          <p className="font-bold">{xaRender(pools.length)}</p>
         </div>
       </div>
 
-      {err && <p className="text-xs text-[var(--xa-accent)]">{asText(err)}</p>}
+      {xaRender(err && <p className="text-[12px] text-amber-200">{xaRender(asText(err))}</p>)}
 
       <div className="space-y-4">
-        {pools.length === 0 && (
-          <p className="text-sm text-[var(--xa-text-muted)]">{t('common.loading')}</p>
-        )}
-        {pools.map(p => (
-          <article key={asText(p.lpToken || p.pair)} className="xa-card space-y-3">
+        {xaRender(pools.length === 0 && <p className="text-sm text-zinc-500">{xaRender("Chargement des pools…")}</p>)}
+        {xaRender(pools.map(p => (
+          <article
+            key={asText(p.lpToken || p.pair)}
+            className="card space-y-3 border border-white/10"
+          >
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-[var(--xa-text-muted)]">
-                  {asText(p.dex)}
+                <p className="text-[10px] uppercase tracking-wider text-zinc-500">
+                  {xaRender(asText(p.dex))}
                 </p>
-                <h2 className="text-lg font-bold text-[var(--xa-text)]">{asText(p.pair)}</h2>
-                <p className="text-xs text-[var(--xa-text-muted)] mt-0.5">
-                  LP {asText(p.lpToken)}
-                  {p.sharedRouter ? (isFr ? ' · router partagé' : ' · shared router') : ''}
+                <h2 className="text-lg font-bold text-white">{xaRender(asText(p.pair))}</h2>
+                <p className="text-[12px] text-zinc-500 mt-0.5">
+                  {xaRender(asText(p.dex))} {xaRender(" · LP ")}{xaRender(asText(p.lpToken))}
+                  {xaRender(p.sharedRouter ? ' · router partagé' : '')}
                 </p>
+              </div>
+              <span className="rounded-full border border-white/15 px-2 py-0.5 text-[10px] text-zinc-400">
+                {xaRender("active ")}</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-[12px]">
+              <div>
+                <p className="text-zinc-500">{xaRender("TVL EST.")}</p>
+                <p className="font-semibold text-emerald-300 tabular-nums">{xaRender(fmtUsd(p.tvlUsd))}</p>
+              </div>
+              <div>
+                <p className="text-zinc-500">{xaRender("TRO in pool")}</p>
+                <p className="font-semibold tabular-nums">{xaRender(fmtAmt(p.troReserve))}</p>
+              </div>
+              <div>
+                <p className="text-zinc-500">{xaRender(asText(p.quoteSymbol))} {xaRender(" in pool")}</p>
+                <p className="font-semibold tabular-nums">{xaRender(fmtAmt(p.quoteReserve))}</p>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2 text-xs">
-              <div>
-                <p className="text-[var(--xa-text-muted)]">TVL</p>
-                <p className="font-semibold text-emerald-300/90 tabular-nums">{fmtUsd(p.tvlUsd)}</p>
-              </div>
-              <div>
-                <p className="text-[var(--xa-text-muted)]">TRO</p>
-                <p className="font-semibold tabular-nums">{fmtAmt(p.troReserve)}</p>
-              </div>
-              <div>
-                <p className="text-[var(--xa-text-muted)]">{asText(p.quoteSymbol)}</p>
-                <p className="font-semibold tabular-nums">{fmtAmt(p.quoteReserve)}</p>
-              </div>
-            </div>
-            {p.note && <p className="text-[11px] text-[var(--xa-text-muted)]">{asText(p.note)}</p>}
+            {xaRender(p.note && <p className="text-[11px] text-zinc-500">{xaRender(asText(p.note))}</p>)}
             <div className="flex flex-wrap gap-2">
               <a
-                className="xa-btn-primary text-sm"
+                className="btn-primary text-sm"
                 href={p.add_liquidity_url || (p.dex === 'OneDex' ? ONEDEX_APP : `${XEXCHANGE_APP}/pools`)}
                 target="_blank"
                 rel="noreferrer"
               >
-                Add liquidity ↗
-              </a>
-              {p.dexscreener && (
-                <a className="xa-btn-secondary text-sm" href={p.dexscreener} target="_blank" rel="noreferrer">
-                  DexScreener
-                </a>
-              )}
-              {p.swap_url && (
-                <a className="xa-btn-secondary text-sm" href={p.swap_url} target="_blank" rel="noreferrer">
-                  Swap
-                </a>
-              )}
+                {xaRender("Add liquidity ↗ ")}</a>
+              {xaRender(p.dexscreener && (
+                <a className="btn-secondary text-sm" href={p.dexscreener} target="_blank" rel="noreferrer">
+                  {xaRender("DexScreener ")}</a>
+              ))}
+              {xaRender(p.swap_url && (
+                <a className="btn-secondary text-sm" href={p.swap_url} target="_blank" rel="noreferrer">
+                  {xaRender("Swap ")}</a>
+              ))}
             </div>
           </article>
-        ))}
+        )))}
       </div>
 
-      <p className="xa-disclaimer">
-        <a href={`${XEXCHANGE_APP}/farms`} className="underline" target="_blank" rel="noreferrer">
-          xExchange farms
-        </a>
-        {' · '}
-        <a href={ONEDEX_APP} className="underline" target="_blank" rel="noreferrer">
-          OneDex
-        </a>
-        {' · '}
-        <Link to="/dao" className="underline">
-          DAO
-        </Link>
+      <p className="text-[12px] text-zinc-500">
+        {xaRender("Lien farms xExchange :")}{xaRender(' ')}
+        <a href={`${XEXCHANGE_APP}/farms`} className="text-cyan-400 underline" target="_blank" rel="noreferrer">
+          {xaRender("xexchange.com/farms ")}</a>
+        {xaRender(' · ')}
+        <a href={ONEDEX_APP} className="text-cyan-400 underline" target="_blank" rel="noreferrer">
+          {xaRender("OneDex ")}</a>
+        {xaRender(' · DAO : ')}
+        <Link to="/dao" className="text-cyan-400 underline">
+          {xaRender("/dao ")}</Link>
       </p>
 
       <LiaVsUserBanner />
 
       <TokenTable
-        title={isFr ? 'Tes LP tokens' : 'Your LP tokens'}
+        title={xaLocalize("Tes LP tokens")}
+        icon="💧"
         tokens={lpTokens || []}
-        emptyText={loading ? t('common.loading') : isFr ? 'Aucun LP détecté.' : 'No LP detected.'}
+        emptyText={loading ? 'Chargement…' : 'Aucun LP détecté dans le wallet connecté.'}
       />
       <TokenTable
-        title="Farms"
+        title={xaLocalize("Farms")}
+        icon="🌾"
         tokens={farmTokens || []}
-        emptyText={loading ? t('common.loading') : isFr ? 'Aucune farm détectée.' : 'No farm position.'}
+        emptyText={loading ? 'Chargement…' : 'Aucune position farm détectée.'}
       />
 
       <div className="flex flex-wrap gap-2">
-        <button type="button" className="xa-btn-secondary text-sm" onClick={() => void refresh()}>
-          {isFr ? 'Refresh wallet' : 'Refresh wallet'}
-        </button>
-        {totalEsdtUsd != null && (
-          <span className="text-xs text-[var(--xa-text-muted)] self-center">
-            ESDT ~ {fmtUsd(totalEsdtUsd)}
+        <button type="button" className="btn-secondary text-sm" onClick={() => void refresh()}>
+          {xaRender("Refresh wallet ")}</button>
+        <a href={`${XEXCHANGE_APP}/pools`} className="btn-secondary text-sm" target="_blank" rel="noreferrer">
+          {xaRender("xExchange pools ")}</a>
+        <a href={ONEDEX_APP} className="btn-secondary text-sm" target="_blank" rel="noreferrer">
+          {xaRender("OneDex ")}</a>
+        {xaRender(totalEsdtUsd != null && (
+          <span className="text-[12px] text-zinc-500 self-center">
+            {xaRender("ESDT wallet ~ ")}{xaRender(fmtUsd(totalEsdtUsd))}
           </span>
-        )}
+        ))}
       </div>
 
-      <p className="xa-disclaimer">
-        LIA ref: {WALLET.slice(0, 12)}… — {isFr ? 'positions user = wallet connecté.' : 'user positions = connected wallet only.'}
-      </p>
+      <p className="text-[11px] text-zinc-600">
+        {xaRender("Wallet LIA (réf.) : ")}{xaRender(WALLET.slice(0, 12))}{xaRender("… — positions user = wallet connecté uniquement. ")}</p>
     </div>
   )
 }

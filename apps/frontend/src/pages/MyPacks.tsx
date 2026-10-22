@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * My Packs — on-chain vs paper + salles holo (1 ambiance / pack).
  * Guest : message explicite de salles verrouillées (Pulse / Yield / Sentinel).
@@ -107,44 +108,38 @@ export default function MyPacks() {
   return (
     <div className="animate-fade-in space-y-8 pb-12 max-w-xl mx-auto">
       <header className="space-y-2">
-        <p className="section-label">Compte</p>
-        <h1 className="section-title display">My Packs</h1>
+        <p className="section-label">{xaRender("Compte")}</p>
+        <h1 className="section-title display">{xaRender("My Packs")}</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
-          1 pack = 1 salle (ambiance distincte) + moniteur. Pas un fond d’investissement.
-        </p>
+          {xaRender("1 pack = 1 salle (ambiance distincte) + moniteur. Pas un fond d’investissement. ")}</p>
       </header>
 
-      {!connected && (
+      {xaRender(!connected && (
         <div className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 space-y-2">
           <p className="text-[13px] text-amber-100/95 leading-relaxed">
-            <span className="font-semibold">Mode invité</span> — les salles Pulse, Yield et Sentinel
-            sont verrouillées tant qu’aucun pack n’est lié à un wallet (achat crypto / fiat ou
-            aperçu appareil).
-          </p>
+            <span className="font-semibold">{xaRender("Mode invité")}</span> {xaRender(" — les salles Pulse, Yield et Sentinel sont verrouillées tant qu’aucun pack n’est lié à un wallet (achat crypto / fiat ou aperçu appareil). ")}</p>
           <button type="button" className="btn-primary text-sm" onClick={() => requestOpenConnect()}>
-            Connecter xPortal
-          </button>
+            {xaRender("Connecter xPortal ")}</button>
         </div>
-      )}
+      ))}
 
-      {cancelled && (
+      {xaRender(cancelled && (
         <p className="text-[13px] text-amber-200/90 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2">
-          Paiement annulé — aucun pack ajouté.
-        </p>
-      )}
+          {xaRender("Paiement annulé — aucun pack ajouté. ")}</p>
+      ))}
 
-      {mintStatus && (
+      {xaRender(mintStatus && (
         <p className="text-[13px] text-zinc-300 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2">
-          {mintStatus}
+          {xaRender(mintStatus)}
         </p>
-      )}
+      ))}
 
-      {ownedAll.length === 0 ? (
+      {xaRender(ownedAll.length === 0 ? (
         <div className="card space-y-4 text-sm text-zinc-400">
-          <p>Aucune salle déverrouillée pour l’instant.</p>
+          <p>{xaRender("Aucune salle déverrouillée pour l’instant.")}</p>
           <div className="grid gap-2">
-            {PACK_IDS.map(id => {
+            {xaRender(PACK_IDS.map(id => {
               const p = AGENT_PACKS.find(x => x?.id === id)
               return (
                 <div
@@ -153,27 +148,25 @@ export default function MyPacks() {
                 >
                   <div className="min-w-0">
                     <p className="text-[13px] text-zinc-200 font-medium">
-                      {p?.icon} {p?.name || id}{' '}
+                      {xaRender(p?.icon)} {xaRender(p?.name || id)}{xaRender(' ')}
                       <span className="text-[10px] uppercase tracking-wide text-amber-300/80">
-                        verrouillée
-                      </span>
+                        {xaRender("verrouillée ")}</span>
                     </p>
-                    <p className="text-[11px] text-zinc-500">{ROOM_BLURB[id]}</p>
+                    <p className="text-[11px] text-zinc-500">{xaRender(ROOM_BLURB[id])}</p>
                   </div>
                   <span className="text-[10px] text-zinc-600 shrink-0">🔒</span>
                 </div>
               )
-            })}
+            }))}
           </div>
           <Link to="/agents" className="btn-primary text-sm inline-block">
-            Voir les packs / déverrouiller
-          </Link>
+            {xaRender("Voir les packs / déverrouiller ")}</Link>
         </div>
       ) : (
         <section className="space-y-3">
-          <h2 className="section-label">Tes salles ({ownedAll.length})</h2>
+          <h2 className="section-label">{xaRender("Tes salles (")}{xaRender(ownedAll.length)})</h2>
           <div className="flex flex-wrap gap-2">
-            {ownedAll.map(id => {
+            {xaRender(ownedAll.map(id => {
               const p = AGENT_PACKS.find(x => x?.id === id)
               return (
                 <button
@@ -186,14 +179,14 @@ export default function MyPacks() {
                       : 'border-white/10 text-zinc-400'
                   }`}
                 >
-                  {p?.icon} {p?.name || id}
+                  {xaRender(p?.icon)} {xaRender(p?.name || id)}
                 </button>
               )
-            })}
+            }))}
           </div>
-          {room && <PackRoomHolo packId={room} />}
+          {xaRender(room && <PackRoomHolo packId={room} />)}
           <div className="grid gap-2">
-            {ownedAll.map(id => {
+            {xaRender(ownedAll.map(id => {
               const p = AGENT_PACKS.find(x => x?.id === id)
               const meta = ROOM_META[id]
               const onChain = chainHits.some(h => h.packId === id)
@@ -205,24 +198,24 @@ export default function MyPacks() {
                 >
                   <div>
                     <p className="text-sm font-medium text-white">
-                      {p?.icon} {p?.name || id}
+                      {xaRender(p?.icon)} {xaRender(p?.name || id)}
                       <span className="ml-2 text-[10px] font-normal text-zinc-500">
-                        {onChain ? 'on-chain' : 'aperçu local'}
+                        {xaRender(onChain ? 'on-chain' : 'aperçu local')}
                       </span>
                     </p>
-                    <p className="text-[11px] text-zinc-500">{p?.tagline || meta?.title}</p>
+                    <p className="text-[11px] text-zinc-500">{xaRender(p?.tagline || meta?.title)}</p>
                   </div>
-                  <span className="text-[11px] text-violet-200">Command →</span>
+                  <span className="text-[11px] text-violet-200">{xaRender("Command →")}</span>
                 </Link>
               )
-            })}
+            }))}
           </div>
 
-          {lockedIds.length > 0 && (
+          {xaRender(lockedIds.length > 0 && (
             <div className="space-y-2 pt-2">
-              <h3 className="text-[11px] uppercase tracking-wide text-zinc-600">Encore verrouillées</h3>
+              <h3 className="text-[11px] uppercase tracking-wide text-zinc-600">{xaRender("Encore verrouillées")}</h3>
               <div className="grid gap-1.5">
-                {lockedIds.map(id => {
+                {xaRender(lockedIds.map(id => {
                   const p = AGENT_PACKS.find(x => x?.id === id)
                   return (
                     <div
@@ -230,48 +223,45 @@ export default function MyPacks() {
                       className="rounded-lg border border-white/[0.06] px-3 py-2 flex justify-between items-center text-[12px] text-zinc-500"
                     >
                       <span>
-                        {p?.icon} {p?.name || id} · {ROOM_BLURB[id]}
+                        {xaRender(p?.icon)} {xaRender(p?.name || id)} · {xaRender(ROOM_BLURB[id])}
                       </span>
                       <Link to="/agents" className="text-cyan-400/90 text-[11px] underline">
-                        Débloquer
-                      </Link>
+                        {xaRender("Débloquer ")}</Link>
                     </div>
                   )
-                })}
+                }))}
               </div>
             </div>
-          )}
+          ))}
         </section>
-      )}
+      ))}
 
       <section className="space-y-2">
-        <h2 className="section-label">On-chain</h2>
-        {chainHits.length === 0 ? (
+        <h2 className="section-label">{xaRender("On-chain")}</h2>
+        {xaRender(chainHits.length === 0 ? (
           <p className="text-[12px] text-zinc-600 rounded-xl border border-white/[0.06] px-3 py-3">
-            Aucun pack agent détecté dans le wallet
-            {connected ? '' : ' — connecte xPortal pour scanner'}.
+            {xaRender("Aucun pack agent détecté dans le wallet ")}{xaRender(connected ? '' : ' — connecte xPortal pour scanner')}.
           </p>
         ) : (
           <ul className="space-y-2">
-            {chainHits.map(h => {
+            {xaRender(chainHits.map(h => {
               const p = AGENT_PACKS.find(x => x?.id === h.packId)
               return (
                 <li
                   key={h.identifier}
                   className="text-[13px] text-zinc-300 rounded-xl border border-white/10 px-3 py-2"
                 >
-                  {p?.name || h.packId} · {h.identifier}
+                  {xaRender(p?.name || h.packId)} · {xaRender(h.identifier)}
                 </li>
               )
-            })}
+            }))}
           </ul>
-        )}
+        ))}
       </section>
 
       <p className="text-[11px] text-zinc-600">
         <Link to="/agents" className="text-cyan-400 hover:underline">
-          Voir les packs →
-        </Link>
+          {xaRender("Voir les packs → ")}</Link>
       </p>
     </div>
   )

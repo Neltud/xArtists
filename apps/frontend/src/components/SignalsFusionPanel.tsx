@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main'
@@ -21,6 +22,8 @@ type Fusion = {
 }
 
 export default function SignalsFusionPanel() {
+  xaUsePhraseLocale()
+
   const [data, setData] = useState<Fusion | null>(null)
   const [err, setErr] = useState<string | null>(null)
 
@@ -59,37 +62,36 @@ export default function SignalsFusionPanel() {
     <div className="card mb-8">
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
         <div>
-          <h2 className="text-lg font-bold">Signaux fusionnés (advisory)</h2>
+          <h2 className="text-lg font-bold">{xaRender("Signaux fusionnés (advisory)")}</h2>
           <p className="text-xs text-gray-500 mt-1">
-            GSN ≥80% · Polymarket (hors MVX) · feeds gratuits · social — jamais seul pour exécuter
-          </p>
+            {xaRender("GSN ≥80% · Polymarket (hors MVX) · feeds gratuits · social — jamais seul pour exécuter ")}</p>
         </div>
-        <span className="badge-gray text-[10px]">PAPER · {data?.updated?.slice(0, 19) || '—'}</span>
+        <span className="badge-gray text-[10px]">{xaRender("PAPER · ")}{xaRender(data?.updated?.slice(0, 19) || '—')}</span>
       </div>
-      {err && <p className="text-xs text-amber-400 mb-2">{err}</p>}
-      {f && (
+      {xaRender(err && <p className="text-xs text-amber-400 mb-2">{xaRender(err)}</p>)}
+      {xaRender(f && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-sm">
           <div className="rounded-lg bg-[#111118] p-3">
-            <p className="text-[10px] text-gray-500 uppercase">Decision</p>
-            <p className="font-black text-lg">{f.decision || 'WAIT'}</p>
+            <p className="text-[10px] text-gray-500 uppercase">{xaRender("Decision")}</p>
+            <p className="font-black text-lg">{xaRender(f.decision || 'WAIT')}</p>
           </div>
           <div className="rounded-lg bg-[#111118] p-3">
-            <p className="text-[10px] text-gray-500 uppercase">Conf</p>
-            <p className="mono font-bold">{f.confidence ?? '—'}</p>
+            <p className="text-[10px] text-gray-500 uppercase">{xaRender("Conf")}</p>
+            <p className="mono font-bold">{xaRender(f.confidence ?? '—')}</p>
           </div>
           <div className="rounded-lg bg-[#111118] p-3">
-            <p className="text-[10px] text-gray-500 uppercase">Source</p>
-            <p className="text-xs text-purple-300 break-all">{f.source || '—'}</p>
+            <p className="text-[10px] text-gray-500 uppercase">{xaRender("Source")}</p>
+            <p className="text-xs text-purple-300 break-all">{xaRender(f.source || '—')}</p>
           </div>
           <div className="rounded-lg bg-[#111118] p-3">
-            <p className="text-[10px] text-gray-500 uppercase">Ext weight</p>
-            <p className="mono font-bold">{f.external_weight_sum ?? '—'}</p>
+            <p className="text-[10px] text-gray-500 uppercase">{xaRender("Ext weight")}</p>
+            <p className="mono font-bold">{xaRender(f.external_weight_sum ?? '—')}</p>
           </div>
         </div>
-      )}
+      ))}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
         <Leg
-          title="GSN elite"
+          title={xaLocalize("GSN elite")}
           bias={legs?.gsn?.bias}
           extra={
             legs?.gsn
@@ -98,17 +100,17 @@ export default function SignalsFusionPanel() {
           }
         />
         <Leg
-          title="Polymarket"
+          title={xaLocalize("Polymarket")}
           bias={legs?.polymarket?.bias}
           extra={legs?.polymarket ? `n=${legs.polymarket.n ?? 0} w=${legs.polymarket.weight ?? 0}` : '—'}
         />
         <Leg
-          title="Free feeds"
+          title={xaLocalize("Free feeds")}
           bias={legs?.free_feeds?.bias}
           extra={legs?.free_feeds ? `n=${legs.free_feeds.n ?? 0} w=${legs.free_feeds.weight ?? 0}` : '—'}
         />
         <Leg
-          title="Social"
+          title={xaLocalize("Social")}
           bias={legs?.social?.bias}
           extra={
             legs?.social
@@ -118,7 +120,7 @@ export default function SignalsFusionPanel() {
         />
       </div>
       <p className="text-[10px] text-gray-600 mt-3">
-        {data?.note || 'Guardian + Intent obligatoires avant tout size live.'}
+        {xaRender(data?.note || 'Guardian + Intent obligatoires avant tout size live.')}
       </p>
     </div>
   )
@@ -129,9 +131,9 @@ function Leg({ title, bias, extra }: { title: string; bias?: string; extra: stri
     bias === 'BUY' ? 'text-green-400' : bias === 'SELL' ? 'text-red-400' : 'text-gray-400'
   return (
     <div className="rounded-lg border border-[#2a2a3a] bg-[#0d0d14] p-2">
-      <p className="text-[10px] uppercase text-gray-500">{title}</p>
-      <p className={`font-bold ${color}`}>{bias || 'WAIT'}</p>
-      <p className="text-gray-500 mt-0.5">{extra}</p>
+      <p className="text-[10px] uppercase text-gray-500">{xaRender(title)}</p>
+      <p className={`font-bold ${color}`}>{xaRender(bias || 'WAIT')}</p>
+      <p className="text-gray-500 mt-0.5">{xaRender(extra)}</p>
     </div>
   )
 }

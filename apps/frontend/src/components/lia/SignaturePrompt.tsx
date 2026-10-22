@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /** Signature package — copy calldata; optional waiting-for-chain state. */
 import { useEffect, useState } from 'react'
 import { asText } from '../../lib/safeRender'
@@ -58,38 +59,33 @@ export default function SignaturePrompt() {
   return (
     <section className="rounded-xl border border-fuchsia-500/20 bg-fuchsia-500/[0.04] p-3 space-y-2">
       <p className="text-[10px] uppercase tracking-wider text-fuchsia-200/90 font-semibold">
-        Signature bridge
-      </p>
+        {xaRender("Signature bridge ")}</p>
 
-      {!open.length && !done.length && (
+      {xaRender(!open.length && !done.length && (
         <p className="text-[11px] text-zinc-600">
-          No package — decision_chain then signature_bridge --from-decision
-        </p>
-      )}
+          {xaRender("No package — decision_chain then signature_bridge --from-decision ")}</p>
+      ))}
 
-      {open.slice(0, 3).map(p => {
+      {xaRender(open.slice(0, 3).map(p => {
         const id = String(p.id || '')
         const isWaiting = waitingId === id
         return (
           <div key={id} className="rounded-lg bg-black/40 border border-white/5 p-2 space-y-2">
             <p className="text-[11px] text-white">
-              {asText(p.action_type)} {asText(p.pair)} · {asText(p.amount_egld)} EGLD
-            </p>
-            <p className="text-[10px] text-zinc-500">{asText(p.reason)}</p>
-            {(p.txs || []).map(t => (
+              {xaRender(asText(p.action_type))} {xaRender(asText(p.pair))} · {xaRender(asText(p.amount_egld))} {xaRender(" EGLD ")}</p>
+            <p className="text-[10px] text-zinc-500">{xaRender(asText(p.reason))}</p>
+            {xaRender((p.txs || []).map(t => (
               <div key={asText(t.step)} className="text-[10px] space-y-1 border-t border-white/5 pt-1">
                 <p className="text-zinc-400">
-                  Step {asText(t.step)} · {asText(t.label)} · gas {asText(t.gasLimit)} · value{' '}
-                  {asText(t.value_egld ?? t.value)} EGLD
-                </p>
-                <p className="mono text-zinc-500 truncate">to {asText(t.receiver)}</p>
+                  {xaRender("Step ")}{xaRender(asText(t.step))} · {xaRender(asText(t.label))} {xaRender(" · gas ")}{xaRender(asText(t.gasLimit))} {xaRender(" · value")}{xaRender(' ')}
+                  {xaRender(asText(t.value_egld ?? t.value))} {xaRender(" EGLD ")}</p>
+                <p className="mono text-zinc-500 truncate">to {xaRender(asText(t.receiver))}</p>
                 <button
                   type="button"
                   className="btn-secondary text-[10px] !py-0.5"
                   onClick={() => void navigator.clipboard?.writeText(String(t.data || ''))}
                 >
-                  Copy calldata
-                </button>
+                  {xaRender("Copy calldata ")}</button>
                 <button
                   type="button"
                   className="btn-secondary text-[10px] !py-0.5 ml-1"
@@ -108,44 +104,41 @@ export default function SignaturePrompt() {
                     )
                   }
                 >
-                  Copy full step
-                </button>
+                  {xaRender("Copy full step ")}</button>
               </div>
-            ))}
+            )))}
             <button
               type="button"
               className="text-[10px] text-fuchsia-300 underline"
               onClick={() => setWaitingId(id)}
             >
-              I signed — wait for on-chain
-            </button>
-            {isWaiting && (
+              {xaRender("I signed — wait for on-chain ")}</button>
+            {xaRender(isWaiting && (
               <p className="text-[10px] text-amber-300/90 animate-pulse flex items-center gap-2">
                 <span className="inline-block h-2 w-2 rounded-full bg-amber-400 animate-ping" />
-                Waiting for on-chain confirmation — ops runs signature_bridge --match &lt;txHash&gt;
-              </p>
-            )}
+                {xaRender("Waiting for on-chain confirmation — ops runs signature_bridge --match &lt;txHash&gt; ")}</p>
+            ))}
           </div>
         )
-      })}
+      }))}
 
-      {done.slice(0, 2).map(p => (
+      {xaRender(done.slice(0, 2).map(p => (
         <p key={asText(p.id)} className="text-[10px] text-emerald-400/90">
-          Executed{' '}
-          {p.tx_hash ? (
+          {xaRender("Executed")}{xaRender(' ')}
+          {xaRender(p.tx_hash ? (
             <a
               className="underline"
               href={p.explorer || `https://explorer.multiversx.com/transactions/${p.tx_hash}`}
               target="_blank"
               rel="noreferrer"
             >
-              {asText(p.tx_hash.slice(0, 12))}…
+              {xaRender(asText(p.tx_hash.slice(0, 12)))}…
             </a>
           ) : (
             'on-chain'
-          )}
+          ))}
         </p>
-      ))}
+      )))}
     </section>
   )
 }

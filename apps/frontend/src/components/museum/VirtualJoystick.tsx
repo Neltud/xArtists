@@ -1,103 +1,11 @@
-/**
- * Analog virtual joystick — left zone for walk.
- * Isolated pointer capture so right-hand look works simultaneously.
- */
-import { useRef } from 'react'
-
-type Props = {
-  /** Continuous stick: x/y in [-1, 1], y negative = forward */
-  onChange?: (x: number, y: number) => void
-  className?: string
-}
-
-export default function VirtualJoystick({ onChange, className = '' }: Props) {
-  const baseRef = useRef<HTMLDivElement>(null)
-  const knobRef = useRef<HTMLDivElement>(null)
-  const active = useRef(false)
-  const pointerId = useRef<number | null>(null)
-
-  const emit = (x: number, y: number) => {
-    onChange?.(x, y)
-  }
-
-  const reset = () => {
-    active.current = false
-    pointerId.current = null
-    emit(0, 0)
-    if (knobRef.current) {
-      knobRef.current.style.transform = 'translate(-50%, -50%)'
-    }
-  }
-
-  const onMove = (clientX: number, clientY: number) => {
-    const base = baseRef.current
-    if (!base || !active.current) return
-    const r = base.getBoundingClientRect()
-    const cx = r.left + r.width / 2
-    const cy = r.top + r.height / 2
-    let dx = clientX - cx
-    let dy = clientY - cy
-    const max = r.width * 0.38
-    const len = Math.hypot(dx, dy) || 1
-    if (len > max) {
-      dx = (dx / len) * max
-      dy = (dy / len) * max
-    }
-    if (knobRef.current) {
-      knobRef.current.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`
-    }
-    emit(dx / max, dy / max)
-  }
-
-  return (
-    <div
-      ref={baseRef}
-      className={`h-28 w-28 rounded-full border backdrop-blur-md touch-none select-none ${className}`}
-      style={{
-        touchAction: 'none',
-        borderColor: 'var(--xa-border-strong)',
-        background: 'rgba(16, 18, 15, 0.75)',
-        minWidth: 112,
-        minHeight: 112,
-      }}
-      onPointerDown={e => {
-        e.stopPropagation()
-        e.preventDefault()
-        active.current = true
-        pointerId.current = e.pointerId
-        ;(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId)
-        onMove(e.clientX, e.clientY)
-      }}
-      onPointerMove={e => {
-        if (pointerId.current != null && e.pointerId !== pointerId.current) return
-        e.stopPropagation()
-        onMove(e.clientX, e.clientY)
-      }}
-      onPointerUp={e => {
-        if (pointerId.current != null && e.pointerId !== pointerId.current) return
-        e.stopPropagation()
-        try {
-          ;(e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId)
-        } catch {
-          /* */
-        }
-        reset()
-      }}
-      onPointerCancel={e => {
-        e.stopPropagation()
-        reset()
-      }}
-      aria-label="Walk joystick"
-    >
-      <div
-        ref={knobRef}
-        className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full shadow-lg"
-        style={{
-          position: 'absolute',
-          border: '1px solid var(--xa-accent)',
-          background: 'var(--xa-accent-soft)',
-        }}
-      />
-    </div>
-  )
+import {useEffect,useRef,type MutableRefObject} from 'react'
+import {joystickAxes,holdFromAxes,type NavigationHold} from '../../lib/museumNavigation'
+import {useCopy} from '../../experience/state'
+/** Independent pointer capture lets one thumb walk while the other rotates the camera. */
+export default function VirtualJoystick({hold,axes}:{hold:MutableRefObject<NavigationHold>;axes?:MutableRefObject<{x:number;y:number}>}){
+ const base=useRef<HTMLDivElement>(null),knob=useRef<HTMLDivElement>(null),pointer=useRef<number|null>(null),c=useCopy()
+ const reset=()=>{pointer.current=null;Object.assign(hold.current,holdFromAxes(0,0));if(axes)axes.current={x:0,y:0};if(knob.current)knob.current.style.transform='translate(-50%,-50%)'}
+ const move=(x:number,y:number)=>{const r=base.current?.getBoundingClientRect();if(!r)return;const radius=r.width*.32,v=joystickAxes(x-r.left-r.width/2,y-r.top-r.height/2,radius);Object.assign(hold.current,holdFromAxes(v.x,v.y));if(axes)axes.current=v;if(knob.current)knob.current.style.transform=`translate(calc(-50% + ${v.x*radius}px),calc(-50% + ${v.y*radius}px))`}
+ useEffect(()=>{const onVisibility=()=>{if(document.hidden)reset()};window.addEventListener('blur',reset);document.addEventListener('visibilitychange',onVisibility);return()=>{reset();window.removeEventListener('blur',reset);document.removeEventListener('visibilitychange',onVisibility)}},[])
+ return <div className="xa-museum-joystick-wrap"><div ref={base} className="xa-museum-joystick" role="group" tabIndex={0} aria-label={c('museumMove')} style={{touchAction:'none'}} onPointerDown={e=>{if(pointer.current!==null)return;e.preventDefault();e.stopPropagation();pointer.current=e.pointerId;e.currentTarget.setPointerCapture(e.pointerId);move(e.clientX,e.clientY)}} onPointerMove={e=>{if(e.pointerId!==pointer.current)return;e.preventDefault();e.stopPropagation();move(e.clientX,e.clientY)}} onPointerUp={e=>{if(e.pointerId!==pointer.current)return;reset();if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId)}} onPointerCancel={reset} onLostPointerCapture={reset} onKeyDown={e=>{const axis:Record<string,[number,number]>={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};const v=axis[e.key];if(v){e.preventDefault();Object.assign(hold.current,holdFromAxes(...v));if(axes)axes.current={x:v[0],y:v[1]}}}} onKeyUp={reset} onBlur={reset}><span className="xa-stick-arrow up">↑</span><span className="xa-stick-arrow right">→</span><span className="xa-stick-arrow down">↓</span><span className="xa-stick-arrow left">←</span><div ref={knob} className="xa-museum-joystick-knob"/></div><span className="xa-museum-control-caption">{c('museumMove')}</span></div>
 }

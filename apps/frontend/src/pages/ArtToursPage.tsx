@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Tours artistiques — carte + musées 3D (service CULTURE, pas un pack agent).
  */
@@ -77,81 +78,76 @@ export default function ArtToursPage() {
   return (
     <div className="animate-fade-in space-y-6 pb-16 max-w-3xl mx-auto">
       <header className="space-y-2">
-        <p className="section-label">Culture · tours</p>
-        <h1 className="section-title display">Tours & carte mondiale</h1>
+        <p className="section-label">{xaRender("Culture · tours")}</p>
+        <h1 className="section-title display">{xaRender("Tours & carte mondiale")}</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
-          OpenStreetMap · Overpass · match salles virtuelles
-          {isMapboxConfigured() ? ' · Mapbox GL' : ''}.{' '}
+          {xaRender("OpenStreetMap · Overpass · match salles virtuelles ")}{xaRender(isMapboxConfigured() ? ' · Mapbox GL' : '')}.{xaRender(' ')}
           <InfoTip text="Service culturel — distinct des packs agents IA." />
         </p>
       </header>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-zinc-300">Carte mondiale</h2>
+        <h2 className="text-sm font-semibold text-zinc-300">{xaRender("Carte mondiale")}</h2>
         <p className="text-[11px] text-zinc-600">
-          Zoom ≥ 10 → POI OSM · popup <strong className="text-zinc-400">Entrer · musée</strong> si match
-          catalogue
-        </p>
+          {xaRender("Zoom ≥ 10 → POI OSM · popup ")}<strong className="text-zinc-400">{xaRender("Entrer · musée")}</strong> {xaRender(" si match catalogue ")}</p>
         <ErrorBoundary>
           <ArtWorldMap />
         </ErrorBoundary>
-        {isMapboxConfigured() && (
+        {xaRender(isMapboxConfigured() && (
           <div className="space-y-1">
-            <p className="text-[11px] uppercase tracking-wider text-cyan-400/80">Mapbox GL</p>
+            <p className="text-[11px] uppercase tracking-wider text-cyan-400/80">{xaRender("Mapbox GL")}</p>
             <ErrorBoundary>
               <MapboxArtMap />
             </ErrorBoundary>
           </div>
-        )}
+        ))}
         <CityMuseumDirectory />
       </section>
 
-      {doc?.cities && doc.cities.length > 0 && (
+      {xaRender(doc?.cities && doc.cities.length > 0 && (
         <section className="space-y-2">
-          <h2 className="text-sm font-semibold text-zinc-300">Villes du catalogue tours</h2>
+          <h2 className="text-sm font-semibold text-zinc-300">{xaRender("Villes du catalogue tours")}</h2>
           <div className="flex flex-wrap gap-1.5">
-            {doc.cities.map(c => (
+            {xaRender(doc.cities.map(c => (
               <button
                 key={c.id}
                 type="button"
                 onClick={() => enterCity(c.label || c.id)}
                 className="rounded-full border border-white/10 px-3 py-1 text-[11px] text-zinc-300 hover:border-rose-400/40 hover:text-white"
               >
-                {c.label || c.id}
+                {xaRender(c.label || c.id)}
               </button>
-            ))}
+            )))}
           </div>
         </section>
-      )}
+      ))}
 
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-zinc-300">Musées virtuels</h2>
+        <h2 className="text-sm font-semibold text-zinc-300">{xaRender("Musées virtuels")}</h2>
         <div className="grid sm:grid-cols-2 gap-2">
-          {museums.map(m => (
+          {xaRender(museums.map(m => (
             <button
               key={m.id}
               type="button"
               onClick={() => enterMuseum(m)}
               className="rounded-xl border border-white/10 bg-black/40 px-3 py-2.5 text-left hover:border-cyan-500/30"
             >
-              <span className="text-sm font-medium text-white">{m.name}</span>
+              <span className="text-sm font-medium text-white">{xaRender(m.name)}</span>
               <span className="block text-[11px] text-zinc-500">
-                {m.city}
-                {m.country ? ` · ${m.country}` : ''}
+                {xaRender(m.city)}
+                {xaRender(m.country ? ` · ${m.country}` : '')}
               </span>
             </button>
-          ))}
+          )))}
         </div>
       </section>
 
       <p className="text-[11px] text-zinc-600">
         <Link to="/museum" className="underline-offset-2 hover:underline">
-          Galerie 3D
-        </Link>
-        {' · '}
-        © OpenStreetMap contributors
-      </p>
+          {xaRender("Galerie 3D ")}</Link>
+        {xaRender(' · ')}
+        {xaRender("© OpenStreetMap contributors ")}</p>
     </div>
   )
 }

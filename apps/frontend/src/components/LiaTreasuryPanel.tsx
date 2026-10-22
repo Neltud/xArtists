@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Trésorerie LIA — soldes lisibles, poussière filtrée, USD clair.
  */
@@ -94,34 +95,32 @@ export default function LiaTreasuryPanel() {
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-violet-300/80">
-            Trésorerie LIA (lecture)
-          </p>
-          <p className="text-[11px] font-mono text-zinc-500 break-all mt-1">{LIA_WALLET}</p>
+            {xaRender("Trésorerie LIA (lecture) ")}</p>
+          <p className="text-[11px] font-mono text-zinc-500 break-all mt-1">{xaRender(LIA_WALLET)}</p>
           <a
             href={LINKS.explorerAccount?.(LIA_WALLET) || `https://explorer.multiversx.com/accounts/${LIA_WALLET}`}
             target="_blank"
             rel="noreferrer"
             className="text-[12px] text-cyan-300 hover:text-cyan-200 mt-1 inline-block"
           >
-            Explorer ↗
-          </a>
+            {xaRender("Explorer ↗ ")}</a>
         </div>
       </div>
 
-      {loading && <p className="text-sm text-zinc-500">Chargement soldes…</p>}
-      {err && <p className="text-sm text-rose-300">{err}</p>}
+      {xaRender(loading && <p className="text-sm text-zinc-500">{xaRender("Chargement soldes…")}</p>)}
+      {xaRender(err && <p className="text-sm text-rose-300">{xaRender(err)}</p>)}
 
-      {!loading && !err && (
+      {xaRender(!loading && !err && (
         <>
           <div className="grid grid-cols-2 gap-2 text-[12px]">
             <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2.5">
-              <p className="text-[10px] uppercase text-zinc-500">EGLD</p>
-              <p className="text-xl font-semibold text-white tabular-nums">{fmt(egld, 4)}</p>
+              <p className="text-[10px] uppercase text-zinc-500">{xaRender("EGLD")}</p>
+              <p className="text-xl font-semibold text-white tabular-nums">{xaRender(fmt(egld, 4))}</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2.5">
-              <p className="text-[10px] uppercase text-zinc-500">Tokens (USD)</p>
+              <p className="text-[10px] uppercase text-zinc-500">{xaRender("Tokens (USD)")}</p>
               <p className="text-xl font-semibold text-emerald-200 tabular-nums">
-                ${fmt(tokensUsd, 2)}
+                ${xaRender(fmt(tokensUsd, 2))}
               </p>
             </div>
           </div>
@@ -130,42 +129,40 @@ export default function LiaTreasuryPanel() {
             <table className="w-full text-left text-[11px]">
               <thead className="sticky top-0 bg-zinc-950 text-[10px] uppercase tracking-wider text-zinc-500">
                 <tr>
-                  <th className="px-2.5 py-2">Token</th>
-                  <th className="px-2.5 py-2 text-right">Balance</th>
-                  <th className="px-2.5 py-2 text-right">USD</th>
+                  <th className="px-2.5 py-2">{xaRender("Token")}</th>
+                  <th className="px-2.5 py-2 text-right">{xaRender("Balance")}</th>
+                  <th className="px-2.5 py-2 text-right">{xaRender("USD")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5 text-zinc-300">
-                {visible.length === 0 && (
+                {xaRender(visible.length === 0 && (
                   <tr>
                     <td colSpan={3} className="px-2.5 py-3 text-zinc-600">
-                      Aucun token significatif
-                    </td>
-                  </tr>
-                )}
-                {visible.map(t => (
-                  <tr key={t.identifier} className="hover:bg-white/[0.03]">
-                    <td className="px-2.5 py-2">
-                      <span className="text-white font-medium">{t.ticker || t.name}</span>
-                      <span className="block text-[9px] text-zinc-600 font-mono truncate max-w-[150px]">
-                        {t.identifier}
-                      </span>
-                    </td>
-                    <td className="px-2.5 py-2 text-right tabular-nums text-zinc-100">{fmt(t.balance)}</td>
-                    <td className="px-2.5 py-2 text-right tabular-nums text-zinc-400">
-                      {t.valueUsd > 0 ? `$${fmt(t.valueUsd, 2)}` : '—'}
-                    </td>
+                      {xaRender("Aucun token significatif ")}</td>
                   </tr>
                 ))}
+                {xaRender(visible.map(t => (
+                  <tr key={t.identifier} className="hover:bg-white/[0.03]">
+                    <td className="px-2.5 py-2">
+                      <span className="text-white font-medium">{xaRender(t.ticker || t.name)}</span>
+                      <span className="block text-[9px] text-zinc-600 font-mono truncate max-w-[150px]">
+                        {xaRender(t.identifier)}
+                      </span>
+                    </td>
+                    <td className="px-2.5 py-2 text-right tabular-nums text-zinc-100">{xaRender(fmt(t.balance))}</td>
+                    <td className="px-2.5 py-2 text-right tabular-nums text-zinc-400">
+                      {xaRender(t.valueUsd > 0 ? `$${fmt(t.valueUsd, 2)}` : '—')}
+                    </td>
+                  </tr>
+                )))}
               </tbody>
             </table>
           </div>
           <p className="text-[10px] text-zinc-600">
-            api.multiversx.com · lecture seule
-            {dustHidden > 0 ? ` · ${dustHidden} poussière masquée` : ''}
+            {xaRender("api.multiversx.com · lecture seule ")}{xaRender(dustHidden > 0 ? ` · ${dustHidden} poussière masquée` : '')}
           </p>
         </>
-      )}
+      ))}
     </section>
   )
 }

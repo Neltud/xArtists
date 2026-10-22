@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Brain cycle snapshot — EV, meta swarm, optional DecisionProof (paper).
  */
@@ -81,36 +82,35 @@ export default function BrainCyclePanel() {
     <section className="card mb-6 border-indigo-500/25">
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
         <div>
-          <h2 className="text-lg font-bold text-indigo-200">Brain cycle · EV + DecisionProof</h2>
+          <h2 className="text-lg font-bold text-indigo-200">{xaRender("Brain cycle · EV + DecisionProof")}</h2>
           <p className="text-[11px] text-zinc-500 mt-0.5">
-            Monte-Carlo · Meta Predator/Harvester · preuve paper (pas un SNARK live)
-          </p>
+            {xaRender("Monte-Carlo · Meta Predator/Harvester · preuve paper (pas un SNARK live) ")}</p>
         </div>
-        {data?.ts && (
+        {xaRender(data?.ts && (
           <span className="text-[10px] text-zinc-500">
-            {new Date(data.ts).toLocaleString('fr-FR')}
+            {xaRender(new Date(data.ts).toLocaleString('fr-FR'))}
           </span>
-        )}
+        ))}
       </div>
 
-      {err && !data && (
+      {xaRender(err && !data && (
         <p className="text-xs text-amber-400">
-          Pas de cycle publié — <code className="text-[10px]">python -m lia.brain.cycle</code>
+          {xaRender("Pas de cycle publié — ")}<code className="text-[10px]">python -m lia.brain.cycle</code>
         </p>
-      )}
+      ))}
 
-      {data && (
+      {xaRender(data && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
           <div className="rounded-lg border border-white/5 bg-black/30 p-3">
             <p className="text-[10px] uppercase text-zinc-500">EV</p>
             <p className="font-mono font-semibold mt-1">
-              {ev?.expected_value != null ? `$${Number(ev.expected_value).toFixed(2)}` : '—'}
+              {xaRender(ev?.expected_value != null ? `$${Number(ev.expected_value).toFixed(2)}` : '—')}
             </p>
             <p className="text-[11px] text-zinc-500 mt-1">
-              P(profit){' '}
-              {ev?.probability_of_profit != null
+              {xaRender("P(profit)")}{xaRender(' ')}
+              {xaRender(ev?.probability_of_profit != null
                 ? `${(Number(ev.probability_of_profit) * 100).toFixed(1)}%`
-                : '—'}
+                : '—')}
             </p>
             <span
               className={`inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full border ${
@@ -119,62 +119,61 @@ export default function BrainCyclePanel() {
                   : 'border-zinc-600 text-zinc-400'
               }`}
             >
-              {ev?.is_viable ? 'viable' : 'rejected'}
+              {xaRender(ev?.is_viable ? 'viable' : 'rejected')}
             </span>
           </div>
 
           <div className="rounded-lg border border-white/5 bg-black/30 p-3">
-            <p className="text-[10px] uppercase text-zinc-500">Meta swarm</p>
-            <p className="font-semibold mt-1 text-purple-200">{data.meta?.primary || '—'}</p>
-            <p className="text-[11px] text-zinc-500">scale back {data.meta?.secondary || '—'}</p>
+            <p className="text-[10px] uppercase text-zinc-500">{xaRender("Meta swarm")}</p>
+            <p className="font-semibold mt-1 text-purple-200">{xaRender(data.meta?.primary || '—')}</p>
+            <p className="text-[11px] text-zinc-500">{xaRender("scale back ")}{xaRender(data.meta?.secondary || '—')}</p>
             <p className="text-[11px] text-zinc-500 mt-1">
-              vol{' '}
-              {data.meta?.volatility != null ? Number(data.meta.volatility).toFixed(2) : '—'}
+              {xaRender("vol")}{xaRender(' ')}
+              {xaRender(data.meta?.volatility != null ? Number(data.meta.volatility).toFixed(2) : '—')}
             </p>
           </div>
 
           <div className="rounded-lg border border-white/5 bg-black/30 p-3">
-            <p className="text-[10px] uppercase text-zinc-500">Portfolio</p>
-            <p className="font-semibold mt-1">{data.portfolio?.plan || '—'}</p>
+            <p className="text-[10px] uppercase text-zinc-500">{xaRender("Portfolio")}</p>
+            <p className="font-semibold mt-1">{xaRender(data.portfolio?.plan || '—')}</p>
             <p className="text-[11px] text-zinc-500">
-              exposure{' '}
-              {data.portfolio?.current_vol_proxy != null
+              {xaRender("exposure")}{xaRender(' ')}
+              {xaRender(data.portfolio?.current_vol_proxy != null
                 ? Number(data.portfolio.current_vol_proxy).toFixed(2)
-                : '—'}{' '}
-              · {data.portfolio?.rebalance ? 'rebalance' : 'hold'}
+                : '—')}{xaRender(' ')}
+              · {xaRender(data.portfolio?.rebalance ? 'rebalance' : 'hold')}
             </p>
           </div>
 
           <div className="rounded-lg border border-white/5 bg-black/30 p-3">
-            <p className="text-[10px] uppercase text-zinc-500">DecisionProof</p>
-            {proof ? (
+            <p className="text-[10px] uppercase text-zinc-500">{xaRender("DecisionProof")}</p>
+            {xaRender(proof ? (
               <>
-                <p className="font-semibold mt-1 text-teal-200">{proof.verification || '—'}</p>
+                <p className="font-semibold mt-1 text-teal-200">{xaRender(proof.verification || '—')}</p>
                 <p
                   className="text-[10px] text-zinc-500 mono truncate mt-1"
                   title={proof.proof?.decision_id}
                 >
-                  {proof.proof?.action_name || '—'} ·{' '}
-                  {(proof.proof?.decision_id || '').slice(0, 12)}…
+                  {xaRender(proof.proof?.action_name || '—')} ·{xaRender(' ')}
+                  {xaRender((proof.proof?.decision_id || '').slice(0, 12))}…
                 </p>
-                <span className="text-[10px] text-amber-300/90">paper commitment</span>
+                <span className="text-[10px] text-amber-300/90">{xaRender("paper commitment")}</span>
               </>
             ) : (
-              <p className="text-zinc-500 mt-1 text-xs">Aucun (EV non viable)</p>
-            )}
+              <p className="text-zinc-500 mt-1 text-xs">{xaRender("Aucun (EV non viable)")}</p>
+            ))}
           </div>
         </div>
-      )}
+      ))}
 
-      {data?.conquest && (
+      {xaRender(data?.conquest && (
         <p className="text-[11px] text-zinc-500 mt-3">
-          Conquest {data.conquest.source}→{data.conquest.dest} · net $
-          {typeof data.conquest.net_profit === 'number'
+          {xaRender("Conquest ")}{xaRender(data.conquest.source)}→{xaRender(data.conquest.dest)} {xaRender(" · net $ ")}{xaRender(typeof data.conquest.net_profit === 'number'
             ? data.conquest.net_profit.toFixed(2)
-            : data.conquest.net_profit}{' '}
-          · {data.conquest.viable ? 'viable' : 'skip'}
+            : data.conquest.net_profit)}{xaRender(' ')}
+          · {xaRender(data.conquest.viable ? 'viable' : 'skip')}
         </p>
-      )}
+      ))}
     </section>
   )
 }

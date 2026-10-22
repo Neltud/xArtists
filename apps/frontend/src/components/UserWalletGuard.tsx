@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import type { ReactNode } from 'react'
 import { isLiaOpsWallet } from '../config/scStatus'
 import { useWallet } from '../context/WalletContext'
@@ -19,11 +20,9 @@ export default function UserWalletGuard({ address, children, action = 'signer' }
   if (!address) {
     return (
       <div className="rounded-xl border border-[#2a2a3a] bg-[#15151f] p-4 text-sm text-gray-400">
-        Connecte ton <strong className="text-white">wallet utilisateur</strong> (Web Wallet /
-        extension) pour {action}. Ne colle pas l’adresse protocole LIA.{' '}
+        {xaRender("Connecte ton ")}<strong className="text-white">{xaRender("wallet utilisateur")}</strong> {xaRender(" (Web Wallet / extension) pour ")}{xaRender(action)}{xaRender(". Ne colle pas l’adresse protocole LIA.")}{xaRender(' ')}
         <button type="button" onClick={requestOpenConnect} className="text-purple-300 underline ml-1">
-          Connect
-        </button>
+          {xaRender("Connect ")}</button>
       </div>
     )
   }
@@ -33,9 +32,7 @@ export default function UserWalletGuard({ address, children, action = 'signer' }
         className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-100"
         role="alert"
       >
-        <strong>Wallet protocole LIA détecté</strong> — interdit pour List / Buy / Bid / tip signé.
-        Déconnecte et utilise <em>ton</em> wallet.
-      </div>
+        <strong>{xaRender("Wallet protocole LIA détecté")}</strong> {xaRender(" — interdit pour List / Buy / Bid / tip signé. Déconnecte et utilise ")}<em>{xaRender("ton")}</em> {xaRender(" wallet. ")}</div>
     )
   }
   if (method === 'paste_readonly') {
@@ -44,12 +41,11 @@ export default function UserWalletGuard({ address, children, action = 'signer' }
         className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-100"
         role="status"
       >
-        Session <strong>lecture seule</strong> (erd1 collé) — impossible de signer {action}.{' '}
+        {xaRender("Session ")}<strong>{xaRender("lecture seule")}</strong> {xaRender(" (erd1 collé) — impossible de signer ")}{xaRender(action)}.{xaRender(' ')}
         <button type="button" onClick={requestOpenConnect} className="underline text-amber-50">
-          Reconnecter Web Wallet / extension
-        </button>
+          {xaRender("Reconnecter Web Wallet / extension ")}</button>
       </div>
     )
   }
-  return <>{children}</>
+  return <>{xaRender(children)}</>
 }

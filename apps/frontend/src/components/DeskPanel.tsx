@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { useEffect, useState } from 'react'
 import InfoTip from './InfoTip'
 
@@ -65,7 +66,7 @@ export default function DeskPanel() {
   if (err && !desk) {
     return (
       <div className="card mb-4 border-gray-600/30 text-xs text-gray-500">
-        Desk LIA : données absentes ({err}). Pipeline 1.3 :{' '}
+        {xaRender("Desk LIA : données absentes (")}{xaRender(err)}{xaRender("). Pipeline 1.3 :")}{xaRender(' ')}
         <code>python -m lia.vellum.pipeline</code>
       </div>
     )
@@ -78,54 +79,52 @@ export default function DeskPanel() {
     <div className="card mb-4 border-indigo-500/25">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <h2 className="text-sm font-bold flex items-center gap-1.5">
-          Desk multi-rôles (paper)
-          <InfoTip k="guardian" />
+          {xaRender("Desk multi-rôles (paper) ")}<InfoTip k="guardian" />
         </h2>
         <span className="text-[10px] text-gray-500">
-          pipeline 1.3{fuseSrc ? ` · fuse:${fuseSrc}` : ''} · Guardian above
-        </span>
+          {xaRender("pipeline 1.3")}{xaRender(fuseSrc ? ` · fuse:${fuseSrc}` : '')} {xaRender(" · Guardian above ")}</span>
       </div>
       <div className="flex flex-wrap gap-3 mb-3 text-sm">
         <div>
-          <span className="text-xs text-gray-500">Action </span>
+          <span className="text-xs text-gray-500">{xaRender("Action ")}</span>
           <strong
             className={stanceColor(
               desk.action === 'BUY' ? 'BULL' : desk.action === 'SELL' ? 'BEAR' : 'NEUTRAL',
             )}
           >
-            {desk.action || '—'}
+            {xaRender(desk.action || '—')}
           </strong>
         </div>
         <div>
-          <span className="text-xs text-gray-500">Conf </span>
-          <strong>{((desk.confidence || 0) * 100).toFixed(0)}%</strong>
+          <span className="text-xs text-gray-500">{xaRender("Conf ")}</span>
+          <strong>{xaRender(((desk.confidence || 0) * 100).toFixed(0))}%</strong>
         </div>
         <div>
-          <span className="text-xs text-gray-500">Net </span>
-          <strong className="mono">{(desk.net_score ?? 0).toFixed(3)}</strong>
+          <span className="text-xs text-gray-500">{xaRender("Net ")}</span>
+          <strong className="mono">{xaRender((desk.net_score ?? 0).toFixed(3))}</strong>
         </div>
-        {typeof desk.agreement === 'number' && (
+        {xaRender(typeof desk.agreement === 'number' && (
           <div>
-            <span className="text-xs text-gray-500">Accord </span>
-            <strong>{(desk.agreement * 100).toFixed(0)}%</strong>
+            <span className="text-xs text-gray-500">{xaRender("Accord ")}</span>
+            <strong>{xaRender((desk.agreement * 100).toFixed(0))}%</strong>
           </div>
-        )}
-        {desk.risk_veto && <span className="badge-red">RISK VETO</span>}
+        ))}
+        {xaRender(desk.risk_veto && <span className="badge-red">{xaRender("RISK VETO")}</span>)}
       </div>
-      {desk.rationale && <p className="text-[11px] text-gray-400 mb-3">{desk.rationale}</p>}
-      {desk.roles && desk.roles.length > 0 && (
+      {xaRender(desk.rationale && <p className="text-[11px] text-gray-400 mb-3">{xaRender(desk.rationale)}</p>)}
+      {xaRender(desk.roles && desk.roles.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {desk.roles.map(r => (
+          {xaRender(desk.roles.map(r => (
             <div key={r.role} className="rounded-lg bg-[#111118] px-2 py-1.5 text-[10px]">
               <div className="flex justify-between gap-1">
-                <span className="text-gray-500 truncate">{r.role}</span>
-                <span className={`font-semibold ${stanceColor(r.stance)}`}>{r.stance}</span>
+                <span className="text-gray-500 truncate">{xaRender(r.role)}</span>
+                <span className={`font-semibold ${stanceColor(r.stance)}`}>{xaRender(r.stance)}</span>
               </div>
-              <p className="mono text-gray-400">{r.score.toFixed(2)}</p>
+              <p className="mono text-gray-400">{xaRender(r.score.toFixed(2))}</p>
             </div>
-          ))}
+          )))}
         </div>
-      )}
+      ))}
     </div>
   )
 }

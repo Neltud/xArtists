@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
  * Sovereign Intent Bar — Cmd/Ctrl+K
  * LIP + Guardian + Sprint 2 swap quote preview.
@@ -18,6 +19,8 @@ import SwapQuoteStrip from './SwapQuoteStrip'
 type LiaUiState = 'idle' | 'thinking' | 'success' | 'error'
 
 export default function IntentBar() {
+  xaUsePhraseLocale()
+
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState('')
   const [preview, setPreview] = useState<StructuredIntent | null>(null)
@@ -137,13 +140,13 @@ export default function IntentBar() {
         type="button"
         onClick={() => setOpen(true)}
         className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 rounded-full border border-cyan-500/30 bg-[#0e0e18]/95 px-4 py-2 text-xs text-cyan-100/90 shadow-lg backdrop-blur hover:border-cyan-400/50"
-        aria-label="Ouvrir la barre d’intention"
+        aria-label={xaLocalize("Ouvrir la barre d’intention")}
       >
         <span className="text-cyan-400">⌘K</span>
-        <span className="text-zinc-400">Intention LIA…</span>
+        <span className="text-zinc-400">{xaRender("Intention LIA…")}</span>
       </button>
 
-      {open && (
+      {xaRender(open && (
         <div
           className="fixed inset-0 z-[70] flex items-start justify-center bg-black/70 pt-[12vh] px-4"
           onClick={() => setOpen(false)}
@@ -154,7 +157,7 @@ export default function IntentBar() {
           >
             <div className="flex items-center gap-2 border-b border-[#2a2a3a] px-4 py-3">
               <span className={`text-sm ${stateColor}`}>
-                {liaState === 'thinking' ? '◉' : liaState === 'success' ? '✓' : liaState === 'error' ? '!' : '✦'}
+                {xaRender(liaState === 'thinking' ? '◉' : liaState === 'success' ? '✓' : liaState === 'error' ? '!' : '✦')}
               </span>
               <input
                 autoFocus
@@ -163,67 +166,63 @@ export default function IntentBar() {
                 onKeyDown={e => {
                   if (e.key === 'Enter') submit()
                 }}
-                placeholder='Ex: « swap 1 EGLD USDC » · « tours » · « solde TRO »'
+                placeholder={xaLocalize("Ex: « swap 1 EGLD USDC » · « tours » · « solde TRO »")}
                 className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-600 focus:outline-none"
               />
               <kbd className="hidden sm:inline text-[10px] text-zinc-600 border border-zinc-700 rounded px-1">
-                ESC
-              </kbd>
+                {xaRender("ESC ")}</kbd>
             </div>
 
             <div className="px-4 py-2 flex items-center justify-between text-[10px] uppercase tracking-wider">
               <span className={stateColor}>
-                LIA · {liaState === 'idle' ? 'ready' : liaState}
+                {xaRender("LIA · ")}{xaRender(liaState === 'idle' ? 'ready' : liaState)}
               </span>
-              {guardian && (
+              {xaRender(guardian && (
                 <span className={guardian.allowed ? 'text-emerald-500/80' : 'text-rose-400/90'}>
-                  Guardian {guardian.code}
+                  {xaRender("Guardian ")}{xaRender(guardian.code)}
                 </span>
-              )}
+              ))}
             </div>
 
             <SwapQuoteStrip query={q} />
 
-            {preview && (
+            {xaRender(preview && (
               <div className="px-4 pb-3 text-xs space-y-1 border-t border-white/5 pt-2">
                 <p className="text-zinc-400">
-                  Route <strong className="text-cyan-300">{preview.action}</strong>
+                  {xaRender("Route ")}<strong className="text-cyan-300">{xaRender(preview.action)}</strong>
                   <span className="text-zinc-600 ml-2">
-                    conf {(preview.confidence * 100).toFixed(0)}%
+                    {xaRender("conf ")}{xaRender((preview.confidence * 100).toFixed(0))}%
                   </span>
                 </p>
-                <p className="text-white">{preview.summary}</p>
+                <p className="text-white">{xaRender(preview.summary)}</p>
               </div>
-            )}
+            ))}
 
-            {lip && (
+            {xaRender(lip && (
               <div className="px-4 pb-3 text-[11px] space-y-1 font-mono text-zinc-400">
                 <p>
-                  LIP <span className="text-violet-300">{lip.intent_type}</span> · {lip.chain} ·{' '}
-                  {lip.decimals} dec
-                </p>
-                <p className="text-zinc-500">{lip.reason}</p>
+                  {xaRender("LIP ")}<span className="text-violet-300">{xaRender(lip.intent_type)}</span> · {xaRender(lip.chain)} ·{xaRender(' ')}
+                  {xaRender(lip.decimals)} {xaRender(" dec ")}</p>
+                <p className="text-zinc-500">{xaRender(lip.reason)}</p>
               </div>
-            )}
+            ))}
 
-            {clarify && <p className="px-4 pb-2 text-xs text-rose-200/90">{clarify}</p>}
+            {xaRender(clarify && <p className="px-4 pb-2 text-xs text-rose-200/90">{xaRender(clarify)}</p>)}
 
-            {(preview || lip) && (
+            {xaRender((preview || lip) && (
               <div className="px-4 pb-4">
                 <button type="button" className="btn-primary text-xs w-full" onClick={submit}>
-                  Exécuter →
-                </button>
+                  {xaRender("Exécuter → ")}</button>
               </div>
-            )}
+            ))}
 
-            {!preview && !q.trim() && (
+            {xaRender(!preview && !q.trim() && (
               <p className="px-4 py-3 text-[11px] text-zinc-600">
-                Essaie : swap 1 EGLD USDC · tours · lightning · trading · buy 50 EGLD
-              </p>
-            )}
+                {xaRender("Essaie : swap 1 EGLD USDC · tours · lightning · trading · buy 50 EGLD ")}</p>
+            ))}
           </div>
         </div>
-      )}
+      ))}
 
       <FiatOnRampModal
         isOpen={Boolean(onRamp)}

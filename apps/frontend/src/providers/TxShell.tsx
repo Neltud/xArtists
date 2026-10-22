@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
  * TX shell + TransactionOverlay.
  * Ensures __xartistsSendTx is injected (web-wallet hook + optional sdk-dapp).
@@ -43,6 +44,8 @@ function phaseLabel(phase: string): string {
 }
 
 function TransactionOverlay() {
+  xaUsePhraseLocale()
+
   const tx = useEmpireTx()
   if (tx.phase === 'idle') return null
 
@@ -58,45 +61,43 @@ function TransactionOverlay() {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 space-y-1">
             <p className="text-[11px] uppercase tracking-wider text-zinc-400">
-              {phaseLabel(tx.phase)}
+              {xaRender(phaseLabel(tx.phase))}
             </p>
-            <p className="text-sm font-medium text-white truncate">{tx.label || 'Transaction'}</p>
-            {tx.error && (
-              <p className="text-xs text-red-300 break-words">{tx.error}</p>
-            )}
-            {tx.sessionId && tx.phase !== 'error' && tx.sessionId !== 'wallet-hook' && (
-              <p className="text-[11px] mono text-zinc-400 truncate">session: {tx.sessionId}</p>
-            )}
-            {tx.sessionId === 'wallet-hook' && (
+            <p className="text-sm font-medium text-white truncate">{xaRender(tx.label || 'Transaction')}</p>
+            {xaRender(tx.error && (
+              <p className="text-xs text-red-300 break-words">{xaRender(tx.error)}</p>
+            ))}
+            {xaRender(tx.sessionId && tx.phase !== 'error' && tx.sessionId !== 'wallet-hook' && (
+              <p className="text-[11px] mono text-zinc-400 truncate">{xaRender("session: ")}{xaRender(tx.sessionId)}</p>
+            ))}
+            {xaRender(tx.sessionId === 'wallet-hook' && (
               <p className="text-xs text-amber-200">
-                Ouvre xPortal / Web Wallet pour signer, puis reviens sur la dApp.
-              </p>
-            )}
-            {tx.explorerUrl && (
+                {xaRender("Ouvre xPortal / Web Wallet pour signer, puis reviens sur la dApp. ")}</p>
+            ))}
+            {xaRender(tx.explorerUrl && (
               <a
                 href={tx.explorerUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-block text-xs text-emerald-300 hover:underline mt-1"
               >
-                Voir sur Explorer ↗
-              </a>
-            )}
+                {xaRender("Voir sur Explorer ↗ ")}</a>
+            ))}
           </div>
           <button
             type="button"
             onClick={() => empireTxClear()}
             className="shrink-0 text-zinc-500 hover:text-white text-lg leading-none px-1"
-            aria-label="Fermer"
+            aria-label={xaLocalize("Fermer")}
           >
             ×
           </button>
         </div>
-        {(tx.phase === 'preparing' || tx.phase === 'signing' || tx.phase === 'broadcast') && (
+        {xaRender((tx.phase === 'preparing' || tx.phase === 'signing' || tx.phase === 'broadcast') && (
           <div className="mt-2 h-1 rounded-full bg-white/10 overflow-hidden">
             <div className="h-full w-1/2 rounded-full bg-violet-400 animate-pulse" />
           </div>
-        )}
+        ))}
       </div>
     </div>
   )
@@ -108,7 +109,7 @@ export default function TxShell({ children }: { children: ReactNode }) {
   }, [])
   return (
     <>
-      {children}
+      {xaRender(children)}
       <TransactionOverlay />
     </>
   )

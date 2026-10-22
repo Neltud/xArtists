@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Live multi-asset tape — mono tabular-nums.
  */
@@ -123,20 +124,18 @@ export default function LiveAssetTape({ compact }: { compact?: boolean }) {
     >
       <div className="flex items-center gap-2 px-3 pb-1">
         <span className="text-[9px] uppercase tracking-[0.2em] text-cyan-300/90 font-semibold font-tech">
-          Live tape
-        </span>
+          {xaRender("Live tape ")}</span>
         <span className="badge-live badge-live-on">
           <span className="badge-live-dot" />
-          LIVE
-        </span>
-        {ts && (
+          {xaRender("LIVE ")}</span>
+        {xaRender(ts && (
           <span className="text-[9px] text-zinc-600 mono tabular-nums">
-            {new Date(ts).toLocaleTimeString()}
+            {xaRender(new Date(ts).toLocaleTimeString())}
           </span>
-        )}
+        ))}
       </div>
       <div className="flex gap-3 overflow-x-auto px-3 pb-1">
-        {rows.map(a => {
+        {xaRender(rows.map(a => {
           const ch = a.change24h
           const up = ch != null && ch >= 0
           return (
@@ -144,23 +143,23 @@ export default function LiveAssetTape({ compact }: { compact?: boolean }) {
               key={a.id}
               className="shrink-0 min-w-[92px] rounded-xl border border-white/12 bg-black/45 px-2.5 py-1.5"
             >
-              <p className="text-[10px] font-semibold tracking-wide text-zinc-400">{a.symbol}</p>
+              <p className="text-[10px] font-semibold tracking-wide text-zinc-400">{xaRender(a.symbol)}</p>
               <p className="text-[14px] font-bold mono tabular-nums text-white antialiased">
-                {fmt(a.usd, a.symbol)}
+                {xaRender(fmt(a.usd, a.symbol))}
               </p>
-              {ch != null && (
+              {xaRender(ch != null && (
                 <p
                   className={`text-[10px] mono tabular-nums ${up ? 'text-emerald-400' : 'text-rose-400'}`}
                 >
-                  {up ? '+' : ''}
-                  {asText(ch.toFixed(1))}%
+                  {xaRender(up ? '+' : '')}
+                  {xaRender(asText(ch.toFixed(1)))}%
                 </p>
-              )}
+              ))}
             </div>
           )
-        })}
+        }))}
       </div>
-      <p className="px-3 pt-0.5 text-[9px] text-zinc-600">Sources publiques · pas un conseil financier</p>
+      <p className="px-3 pt-0.5 text-[9px] text-zinc-600">{xaRender("Sources publiques · pas un conseil financier")}</p>
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Salle 3D CSS — architecture différente par musée (layout plan).
  */
@@ -83,7 +84,7 @@ function PadBtn({ label, onPress }: { label: string; onPress: (on: boolean) => v
       onPointerCancel={() => onPress(false)}
       onPointerLeave={() => onPress(false)}
     >
-      {label}
+      {xaRender(label)}
     </button>
   )
 }
@@ -211,7 +212,7 @@ export default function MuseumGameHall({
   if (!list.length) {
     return (
       <div className="rounded-2xl border border-white/10 bg-zinc-950 min-h-[280px] flex items-center justify-center text-sm text-zinc-500 px-4 text-center">
-        {emptyLabel}
+        {xaRender(emptyLabel)}
       </div>
     )
   }
@@ -220,10 +221,10 @@ export default function MuseumGameHall({
     <div className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500">
         <span className="inline-flex items-center gap-1">
-          {layout.label}
+          {xaRender(layout.label)}
           <InfoTip k="museumGame" />
         </span>
-        <span className="mono text-zinc-600 text-[10px]">{Math.round((z / maxZ) * 100)}%</span>
+        <span className="mono text-zinc-600 text-[10px]">{xaRender(Math.round((z / maxZ) * 100))}%</span>
       </div>
 
       <div
@@ -287,7 +288,7 @@ export default function MuseumGameHall({
             }}
           />
 
-          {list.map((item, i) => {
+          {xaRender(list.map((item, i) => {
             const { artZ, side, xBias } = artPosition(layout, i, list.length, maxZ)
             const rel = artZ - z
             if (rel < RENDER_BEHIND || rel > RENDER_AHEAD) return null
@@ -330,7 +331,7 @@ export default function MuseumGameHall({
                   }}
                 >
                   <div className="absolute inset-[5%] bg-black overflow-hidden">
-                    {item.image && !imgBroken ? (
+                    {xaRender(item.image && !imgBroken ? (
                       <img
                         src={item.image}
                         alt={item.title}
@@ -345,14 +346,14 @@ export default function MuseumGameHall({
                       />
                     ) : (
                       <div className="h-full w-full flex items-center justify-center opacity-40 text-xs px-1 text-center">
-                        {item.title.slice(0, 24)}
+                        {xaRender(item.title.slice(0, 24))}
                       </div>
-                    )}
+                    ))}
                   </div>
                 </div>
               </button>
             )
-          })}
+          }))}
         </div>
 
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -371,7 +372,7 @@ export default function MuseumGameHall({
                 : 'bg-black/55 border-white/10 text-zinc-400'
             }`}
           >
-            {nearest ? nearest.title : 'Avancez vers une œuvre'}
+            {xaRender(nearest ? nearest.title : 'Avancez vers une œuvre')}
           </div>
           <div className="h-1.5 w-20 self-center rounded-full bg-black/30 overflow-hidden">
             <div className="h-full bg-cyan-400/80" style={{ width: `${(z / maxZ) * 100}%` }} />
@@ -393,18 +394,17 @@ export default function MuseumGameHall({
             disabled={!nearest}
             onClick={() => nearest && setInspect(nearest)}
           >
-            Inspecter
-          </button>
+            {xaRender("Inspecter ")}</button>
         </div>
       </div>
 
-      {buyMsg && (
+      {xaRender(buyMsg && (
         <p className="text-[11px] text-zinc-400 border border-white/10 bg-white/[0.03] rounded-lg px-2.5 py-1.5">
-          {buyMsg}
+          {xaRender(buyMsg)}
         </p>
-      )}
+      ))}
 
-      {inspect && (
+      {xaRender(inspect && (
         <div
           className="fixed inset-0 z-[90] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4"
           role="dialog"
@@ -417,7 +417,7 @@ export default function MuseumGameHall({
           >
             <div className="flex gap-3">
               <div className="w-24 sm:w-36 shrink-0 aspect-[4/5] rounded-lg overflow-hidden border border-white/10 bg-black">
-                {inspect.image && !broken[inspect.id] ? (
+                {xaRender(inspect.image && !broken[inspect.id] ? (
                   <img
                     src={inspect.image}
                     alt=""
@@ -427,44 +427,42 @@ export default function MuseumGameHall({
                   />
                 ) : (
                   <div className="h-full flex items-center justify-center opacity-40">◈</div>
-                )}
+                ))}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-base font-semibold text-white">{inspect.title}</p>
+                <p className="text-base font-semibold text-white">{xaRender(inspect.title)}</p>
                 <p className="text-[11px] text-zinc-500 mt-1">
-                  {inspect.subtitle || inspect.collection}
+                  {xaRender(inspect.subtitle || inspect.collection)}
                 </p>
-                {inspect.description && (
-                  <p className="text-xs text-zinc-400 mt-2 line-clamp-5">{inspect.description}</p>
-                )}
+                {xaRender(inspect.description && (
+                  <p className="text-xs text-zinc-400 mt-2 line-clamp-5">{xaRender(inspect.description)}</p>
+                ))}
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {allowBuy && (
+              {xaRender(allowBuy && (
                 <button type="button" className="btn-primary text-xs" onClick={onBuy}>
-                  {marketLive ? 'Acheter…' : 'Intention d’achat'}
+                  {xaRender(marketLive ? 'Acheter…' : 'Intention d’achat')}
                 </button>
-              )}
-              {!allowBuy && (
-                <span className="text-[10px] text-zinc-500 self-center">Visite libre</span>
-              )}
-              {inspect.href && (
+              ))}
+              {xaRender(!allowBuy && (
+                <span className="text-[10px] text-zinc-500 self-center">{xaRender("Visite libre")}</span>
+              ))}
+              {xaRender(inspect.href && (
                 <a
                   href={inspect.href}
                   target="_blank"
                   rel="noreferrer"
                   className="btn-secondary text-xs"
                 >
-                  Source ↗
-                </a>
-              )}
+                  {xaRender("Source ↗ ")}</a>
+              ))}
               <button type="button" className="btn-ghost text-xs" onClick={() => setInspect(null)}>
-                Fermer
-              </button>
+                {xaRender("Fermer ")}</button>
             </div>
           </div>
         </div>
-      )}
+      ))}
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Pont stablecoins → MultiversX (XOXNO / USDT0) — externe, discret.
  */
@@ -11,11 +12,9 @@ export default function BridgeUsdtCard({ compact = false }: { compact?: boolean 
       }`}
     >
       <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-600">
-        Financer le wallet
-      </p>
+        {xaRender("Financer le wallet ")}</p>
       <p className={`text-[13px] text-zinc-400 mt-1 leading-relaxed ${compact ? '' : 'max-w-md'}`}>
-        USDT via XOXNO (chemin USDT0) vers MultiversX.
-      </p>
+        {xaRender("USDT via XOXNO (chemin USDT0) vers MultiversX. ")}</p>
       <div className="flex flex-wrap gap-2 mt-2.5">
         <a
           href={LINKS.xoxnoBridge}
@@ -23,18 +22,16 @@ export default function BridgeUsdtCard({ compact = false }: { compact?: boolean 
           rel="noreferrer"
           className="btn-secondary text-xs !py-1.5"
         >
-          Bridge XOXNO
-        </a>
-        {!compact && (
+          {xaRender("Bridge XOXNO ")}</a>
+        {xaRender(!compact && (
           <a
             href={LINKS.usdt0}
             target="_blank"
             rel="noreferrer"
             className="btn-ghost text-xs !py-1.5"
           >
-            USDT0
-          </a>
-        )}
+            {xaRender("USDT0 ")}</a>
+        ))}
       </div>
     </div>
   )

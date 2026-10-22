@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../../i18n/phraseRuntime'
 /** Decision-chain proposals — SIGN disabled while LIA_LIVE_TRADING=0. */
 import { useEffect, useState } from 'react'
 import { asText } from '../../lib/safeRender'
@@ -18,6 +19,8 @@ type Prop = {
 }
 
 export default function ProposedActions() {
+  xaUsePhraseLocale()
+
   const [items, setItems] = useState<Prop[]>([])
   const [meta, setMeta] = useState<{ ready_to_sign?: number; cycles?: number }>({})
 
@@ -53,33 +56,30 @@ export default function ProposedActions() {
     <section className="rounded-xl border border-sky-500/20 bg-sky-500/[0.04] p-3 space-y-2">
       <div className="flex justify-between items-center">
         <p className="text-[10px] uppercase tracking-wider text-sky-200/90 font-semibold">
-          Proposed actions
-        </p>
+          {xaRender("Proposed actions ")}</p>
         <span className="text-[9px] text-zinc-500">
-          {asText(meta.ready_to_sign)}/{asText(meta.cycles)} ready · no broadcast
-        </span>
+          {xaRender(asText(meta.ready_to_sign))}/{xaRender(asText(meta.cycles))} {xaRender(" ready · no broadcast ")}</span>
       </div>
-      {items.filter(p => p.status === 'ready_to_sign' || p.status === 'blocked').map(p => (
+      {xaRender(items.filter(p => p.status === 'ready_to_sign' || p.status === 'blocked').map(p => (
         <div key={asText(p.id)} className="rounded-lg bg-black/40 border border-white/5 p-2 space-y-1">
           <div className="flex flex-wrap gap-2 items-center text-[11px]">
-            <span className="font-bold text-sky-300">{asText(p.action_type)}</span>
-            <span className="text-zinc-400">{asText(p.pair)}</span>
+            <span className="font-bold text-sky-300">{xaRender(asText(p.action_type))}</span>
+            <span className="text-zinc-400">{xaRender(asText(p.pair))}</span>
             <span className="tabular-nums text-white">
-              {asText(p.amount_egld)} EGLD (~${asText(p.amount_usd)})
+              {xaRender(asText(p.amount_egld))} {xaRender(" EGLD (~$")}{xaRender(asText(p.amount_usd))})
             </span>
             <span
               className={`text-[9px] uppercase font-bold ${
                 p.status === 'ready_to_sign' ? 'text-emerald-400' : 'text-amber-400'
               }`}
             >
-              {asText(p.status)}
+              {xaRender(asText(p.status))}
             </span>
           </div>
-          <p className="text-[10px] text-zinc-500">Why: {asText(p.reason)}</p>
+          <p className="text-[10px] text-zinc-500">{xaRender("Why: ")}{xaRender(asText(p.reason))}</p>
           <p className="text-[10px] text-zinc-600">
-            Gas ~{asText(p.gas_total)} · min USDC {asText(p.slippage?.min_out_usdc)} · guard{' '}
-            {asText(p.slippage?.guard_bps)} bps
-          </p>
+            {xaRender("Gas ~")}{xaRender(asText(p.gas_total))} {xaRender(" · min USDC ")}{xaRender(asText(p.slippage?.min_out_usdc))} {xaRender(" · guard")}{xaRender(' ')}
+            {xaRender(asText(p.slippage?.guard_bps))} {xaRender(" bps ")}</p>
           <button
             type="button"
             disabled={!live}
@@ -88,17 +88,16 @@ export default function ProposedActions() {
                 ? 'border-emerald-500/40 text-emerald-300'
                 : 'border-white/10 text-zinc-600 cursor-not-allowed'
             }`}
-            title="Requires LIA_LIVE_TRADING=1 + ops executor"
+            title={xaLocalize("Requires LIA_LIVE_TRADING=1 + ops executor")}
           >
-            Sign & broadcast (locked)
-          </button>
+            {xaRender("Sign & broadcast (locked) ")}</button>
         </div>
-      ))}
-      {!items.length && (
+      )))}
+      {xaRender(!items.length && (
         <p className="text-[11px] text-zinc-600">
-          Run <code className="text-zinc-400">python -m lia.genesis.decision_chain</code>
+          {xaRender("Run ")}<code className="text-zinc-400">python -m lia.genesis.decision_chain</code>
         </p>
-      )}
+      ))}
     </section>
   )
 }

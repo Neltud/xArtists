@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Bandeau info mainnet — statuts SC, limites connues, liens explorer.
  * Lecture publique uniquement (pas de signature).
@@ -68,34 +69,30 @@ export default function ChainInfoBanner({ compact = false }: { compact?: boolean
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-semibold">
-            MultiversX · Mainnet
-          </p>
+            {xaRender("MultiversX · Mainnet ")}</p>
           <p className="text-[13px] text-zinc-300 mt-0.5">
-            EGLD{' '}
+            {xaRender("EGLD")}{xaRender(' ')}
             <span className="text-white tabular-nums font-medium">
-              {egld.price != null ? `$${egld.price.toFixed(2)}` : '—'}
+              {xaRender(egld.price != null ? `$${egld.price.toFixed(2)}` : '—')}
             </span>
-            {egld.epoch != null && (
-              <span className="text-zinc-500 text-[11px] ml-2">epoch {egld.epoch}</span>
-            )}
+            {xaRender(egld.epoch != null && (
+              <span className="text-zinc-500 text-[11px] ml-2">{xaRender("epoch ")}{xaRender(egld.epoch)}</span>
+            ))}
           </p>
         </div>
         <div className="flex flex-wrap gap-1.5">
           <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-semibold text-emerald-200">
-            SC déployés
-          </span>
+            {xaRender("SC déployés ")}</span>
           <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-2 py-0.5 text-[9px] font-semibold text-amber-100">
-            LIA = paper
-          </span>
+            {xaRender("LIA = paper ")}</span>
           <span className="rounded-full border border-white/15 px-2 py-0.5 text-[9px] font-semibold text-zinc-400">
-            TX = xPortal
-          </span>
+            {xaRender("TX = xPortal ")}</span>
         </div>
       </div>
 
-      {!compact && (
+      {xaRender(!compact && (
         <ul className="grid sm:grid-cols-2 gap-2">
-          {rows.map(r => (
+          {xaRender(rows.map(r => (
             <li
               key={r.label}
               className="rounded-xl border border-white/8 bg-black/30 px-2.5 py-2 flex items-start gap-2"
@@ -107,10 +104,10 @@ export default function ChainInfoBanner({ compact = false }: { compact?: boolean
                 aria-hidden
               />
               <div className="min-w-0 flex-1">
-                <p className="text-[12px] font-medium text-white">{r.label}</p>
-                <p className="text-[10px] text-zinc-500 leading-snug">{r.note}</p>
+                <p className="text-[12px] font-medium text-white">{xaRender(r.label)}</p>
+                <p className="text-[10px] text-zinc-500 leading-snug">{xaRender(r.note)}</p>
               </div>
-              {r.href && (
+              {xaRender(r.href && (
                 <a
                   href={r.href}
                   target="_blank"
@@ -119,34 +116,28 @@ export default function ChainInfoBanner({ compact = false }: { compact?: boolean
                 >
                   ↗
                 </a>
-              )}
+              ))}
             </li>
-          ))}
+          )))}
         </ul>
-      )}
+      ))}
 
       <p className="text-[10px] text-zinc-600 leading-relaxed">
-        Token $TRO · <code className="text-[9px]">TRO-94c925</code>
-        {' · '}
-        USDC · <code className="text-[9px]">USDC-c76f1f</code>
-        {' · '}
-        Signatures on-chain uniquement via wallet utilisateur (xPortal). Trading agent = lecture /
-        intents paper jusqu&apos;à activation produit explicite.
-      </p>
+        {xaRender("Token $TRO · ")}<code className="text-[9px]">TRO-94c925</code>
+        {xaRender(' · ')}
+        {xaRender("USDC · ")}<code className="text-[9px]">USDC-c76f1f</code>
+        {xaRender(' · ')}
+        {xaRender("Signatures on-chain uniquement via wallet utilisateur (xPortal). Trading agent = lecture / intents paper jusqu&apos;à activation produit explicite. ")}</p>
 
       <div className="flex flex-wrap gap-2 text-[11px]">
         <Link to="/go-live" className="text-cyan-400 hover:underline">
-          Checklist GO_LIVE →
-        </Link>
+          {xaRender("Checklist GO_LIVE → ")}</Link>
         <Link to="/agents" className="text-zinc-400 hover:underline">
-          Packs + On-Ramp →
-        </Link>
+          {xaRender("Packs + On-Ramp → ")}</Link>
         <Link to="/lia" className="text-zinc-400 hover:underline">
-          Hub LIA →
-        </Link>
+          {xaRender("Hub LIA → ")}</Link>
         <Link to="/command-center" className="text-zinc-400 hover:underline">
-          Command Center →
-        </Link>
+          {xaRender("Command Center → ")}</Link>
       </div>
     </div>
   )

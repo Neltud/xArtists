@@ -26,8 +26,20 @@ export const LIA_GUARDS = {
   allowlist: ['EGLD', 'USDC-c76f1f', 'TRO-94c925'] as const,
 } as const
 
+/** Univers demandé : EGLD et ESDT fongibles identifiés par le registre MultiversX. */
+export function isSupportedTradingAsset(asset: {
+  identifier: string
+  type?: string
+  decimals?: number
+}): boolean {
+  if (asset.identifier === 'EGLD') return true
+  return /^[A-Z0-9]{3,20}-[a-f0-9]{6}$/.test(asset.identifier) &&
+    asset.type === 'FungibleESDT' &&
+    Number.isInteger(asset.decimals) && (asset.decimals ?? -1) >= 0 && (asset.decimals ?? 19) <= 18
+}
+
 export const LIA_BADGE = LIA_LIVE_TRADING
-  ? ('⚡ LIVE user-sign · xPortal · caps actifs' as const)
+  ? ('⚡ Signature xPortal · dépôt de vérification' as const)
   : ('🛡️ Copilote Algorithmique Non-Custodial · Exécution signée par l’utilisateur' as const)
 
 /** Bloque les chemins qui supposent encore du 100 % paper. */

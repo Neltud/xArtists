@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
  * Carte mondiale — plan horizontal Leaflet + OSM (sans clé API).
  * locations optionnel : défaut = hubs culturels mondiaux.
@@ -118,6 +119,8 @@ async function ensureLeaflet(): Promise<LeafletNS> {
 }
 
 export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] | null }) {
+  xaUsePhraseLocale()
+
   const mapRef = useRef<HTMLDivElement>(null)
   const mapObj = useRef<LeafletNS>(null)
   const layerRef = useRef<LeafletNS>(null)
@@ -297,7 +300,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
         <input
           value={cityFilter}
           onChange={e => setCityFilter(e.target.value)}
-          placeholder="Filtrer ville…"
+          placeholder={xaLocalize("Filtrer ville…")}
           className="rounded-lg bg-black/40 border border-white/10 px-2 py-1 text-zinc-200"
         />
         <select
@@ -305,18 +308,18 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
           onChange={e => setRegion(e.target.value)}
           className="rounded-lg bg-black/40 border border-white/10 px-2 py-1 text-zinc-200"
         >
-          <option value="all">Toutes régions</option>
-          {Object.entries(REGION_COLORS).map(([k, v]) => (
+          <option value="all">{xaRender("Toutes régions")}</option>
+          {xaRender(Object.entries(REGION_COLORS).map(([k, v]) => (
             <option key={k} value={k}>
-              {v.label}
+              {xaRender(v.label)}
             </option>
-          ))}
+          )))}
         </select>
-        <span className="text-zinc-500">{filtered?.length ?? 0} destinations · plan horizontal</span>
+        <span className="text-zinc-500">{xaRender(filtered?.length ?? 0)} {xaRender(" destinations · plan horizontal")}</span>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {(Object.keys(BASEMAPS) as BasemapId[]).map(id => (
+        {xaRender((Object.keys(BASEMAPS) as BasemapId[]).map(id => (
           <button
             key={id}
             type="button"
@@ -327,9 +330,9 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
                 : 'border-white/10 text-zinc-500'
             }`}
           >
-            {BASEMAPS[id].label}
+            {xaRender(BASEMAPS[id].label)}
           </button>
-        ))}
+        )))}
       </div>
 
       <div
@@ -338,8 +341,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
       />
 
       <p className="text-[10px] text-zinc-600">
-        Zoom ≥ {osmMinZoom} → POI OSM · Entrer musée si match · tuiles OSM sans clé
-      </p>
+        {xaRender("Zoom ≥ ")}{xaRender(osmMinZoom())} {xaRender(" → POI OSM · Entrer musée si match · tuiles OSM sans clé ")}</p>
       <MapMuseumEnter city={selectedCity || cityFilter || undefined} id="world_map" />
     </div>
   )

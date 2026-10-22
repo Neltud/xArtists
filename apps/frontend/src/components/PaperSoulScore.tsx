@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
  * Paper Sovereign Identity score — localStorage until on-chain SBT.
  */
@@ -6,6 +7,8 @@ import { Link } from 'react-router-dom'
 import { levelFor, loadPaperSoul, type PaperSoul } from '../lib/paperSoul'
 
 export default function PaperSoulScore({ compact = false }: { compact?: boolean }) {
+  xaUsePhraseLocale()
+
   const [soul, setSoul] = useState<PaperSoul>(() => loadPaperSoul())
 
   useEffect(() => {
@@ -30,10 +33,10 @@ export default function PaperSoulScore({ compact = false }: { compact?: boolean 
       <Link
         to="/wallet"
         className="inline-flex items-center gap-2 rounded-full border border-cyan-500/25 bg-cyan-500/5 px-2.5 py-1 text-[10px] text-cyan-100/90 hover:border-cyan-400/40"
-        title="Paper Soul Score"
+        title={xaLocalize("Paper Soul Score")}
       >
-        <span className="font-mono font-bold text-cyan-300">{soul.score}</span>
-        <span className="text-zinc-500">Soul · paper</span>
+        <span className="font-mono font-bold text-cyan-300">{xaRender(soul.score)}</span>
+        <span className="text-zinc-500">{xaRender("Soul · paper")}</span>
       </Link>
     )
   }
@@ -42,12 +45,11 @@ export default function PaperSoulScore({ compact = false }: { compact?: boolean 
     <div className="card border-cyan-500/20">
       <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
         <div>
-          <h2 className="text-sm font-bold text-cyan-100">Sovereign Identity · paper</h2>
+          <h2 className="text-sm font-bold text-cyan-100">{xaRender("Sovereign Identity · paper")}</h2>
           <p className="text-[10px] text-zinc-500 mt-0.5">
-            Pas un SBT on-chain — score local jusqu’à credentials MVX
-          </p>
+            {xaRender("Pas un SBT on-chain — score local jusqu’à credentials MVX ")}</p>
         </div>
-        <span className="text-[10px] uppercase tracking-wider text-cyan-400/80">vellum-ready</span>
+        <span className="text-[10px] uppercase tracking-wider text-cyan-400/80">{xaRender("vellum-ready")}</span>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-6 items-center">
@@ -67,8 +69,8 @@ export default function PaperSoulScore({ compact = false }: { compact?: boolean 
             />
           </svg>
           <div className="text-center">
-            <p className="text-2xl font-black text-white">{soul.score}</p>
-            <p className="text-[9px] text-zinc-500 uppercase">score</p>
+            <p className="text-2xl font-black text-white">{xaRender(soul.score)}</p>
+            <p className="text-[9px] text-zinc-500 uppercase">{xaRender("score")}</p>
           </div>
         </div>
 
@@ -79,8 +81,7 @@ export default function PaperSoulScore({ compact = false }: { compact?: boolean 
         </div>
       </div>
       <p className="text-[10px] text-zinc-600 mt-3">
-        Intentions enregistrées : {soul.intents} · utilise ⌘K pour progresser (démo)
-      </p>
+        {xaRender("Intentions enregistrées : ")}{xaRender(soul.intents)} {xaRender(" · utilise ⌘K pour progresser (démo) ")}</p>
     </div>
   )
 }
@@ -88,9 +89,9 @@ export default function PaperSoulScore({ compact = false }: { compact?: boolean 
 function Cred({ label, n }: { label: string; n: number }) {
   return (
     <div className="rounded-xl border border-white/5 bg-black/30 p-2">
-      <p className="text-[10px] text-zinc-500">{label}</p>
-      <p className="font-semibold text-white">{levelFor(n)}</p>
-      <p className="mono text-[10px] text-cyan-300/80">{n}</p>
+      <p className="text-[10px] text-zinc-500">{xaRender(label)}</p>
+      <p className="font-semibold text-white">{xaRender(levelFor(n))}</p>
+      <p className="mono text-[10px] text-cyan-300/80">{xaRender(n)}</p>
     </div>
   )
 }

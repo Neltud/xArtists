@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * DAO governance UI — pouvoir de vote = TRO staké + SFT/NFT stakés.
  */
@@ -100,37 +101,37 @@ export default function DaoGovernance() {
     <div className="space-y-5">
       <div className="rounded-2xl border border-purple-500/30 bg-black/85 backdrop-blur-md p-4 shadow-2xl space-y-3">
         <p className="text-[10px] uppercase tracking-[0.2em] text-purple-300/90">
-          DAO · {t('dao.votingPower')}
+          {xaRender("DAO · ")}{xaRender(t('dao.votingPower'))}
         </p>
         <p className="text-2xl font-semibold text-white tabular-nums">
-          {loading ? '…' : votingPower.toFixed(2)}
+          {xaRender(loading ? '…' : votingPower.toFixed(2))}
         </p>
-        <p className="text-[12px] text-zinc-400">{t('dao.formula')}</p>
+        <p className="text-[12px] text-zinc-400">{xaRender(t('dao.formula'))}</p>
         <div className="grid grid-cols-2 gap-2 text-[12px]">
           <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-            <p className="text-zinc-500">{t('dao.troStaked')}</p>
-            <p className="font-semibold text-emerald-200/90 tabular-nums">{troStaked.toFixed(2)}</p>
+            <p className="text-zinc-500">{xaRender(t('dao.troStaked'))}</p>
+            <p className="font-semibold text-emerald-200/90 tabular-nums">{xaRender(troStaked.toFixed(2))}</p>
           </div>
           <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-            <p className="text-zinc-500">{t('dao.sftStaked')}</p>
-            <p className="font-semibold text-cyan-200/90 tabular-nums">{sftUnits.toFixed(0)} u</p>
+            <p className="text-zinc-500">{xaRender(t('dao.sftStaked'))}</p>
+            <p className="font-semibold text-cyan-200/90 tabular-nums">{xaRender(sftUnits.toFixed(0))} u</p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link to="/staking" className="btn-primary text-xs">
-            {t('dao.stakeTro')}
+            {xaRender(t('dao.stakeTro'))}
           </Link>
           <Link to="/staking" className="btn-secondary text-xs">
-            {t('dao.stakeNft')}
+            {xaRender(t('dao.stakeNft'))}
           </Link>
         </div>
         <p className="text-[10px] text-zinc-600">
-          Gouvernance SC : {live ? 'LIVE' : 'gates'} · {TRO_GOVERNANCE_ADDRESS.slice(0, 18)}…
+          {xaRender("Gouvernance SC : ")}{xaRender(live ? 'LIVE' : 'gates')} · {xaRender(TRO_GOVERNANCE_ADDRESS.slice(0, 18))}…
         </p>
       </div>
 
       <div className="space-y-3">
-        {DEFAULT_PROPOSALS.map(p => {
+        {xaRender(DEFAULT_PROPOSALS.map(p => {
           const mine = votes[p.id]
           return (
             <article
@@ -138,10 +139,10 @@ export default function DaoGovernance() {
               className="rounded-2xl border border-purple-500/25 bg-black/80 backdrop-blur-md p-4 shadow-xl space-y-2"
             >
               <div className="flex items-start justify-between gap-2">
-                <h3 className="text-sm font-semibold text-white">{t(p.titleKey)}</h3>
-                <span className="text-[10px] uppercase text-amber-200/80">{p.status}</span>
+                <h3 className="text-sm font-semibold text-white">{xaRender(t(p.titleKey))}</h3>
+                <span className="text-[10px] uppercase text-amber-200/80">{xaRender(p.status)}</span>
               </div>
-              <p className="text-[13px] text-zinc-400">{t(p.bodyKey)}</p>
+              <p className="text-[13px] text-zinc-400">{xaRender(t(p.bodyKey))}</p>
               <div className="flex flex-wrap gap-2 pt-1">
                 <button
                   type="button"
@@ -153,7 +154,7 @@ export default function DaoGovernance() {
                       : 'border-white/15 bg-white/5 text-zinc-200'
                   }`}
                 >
-                  {t('dao.voteYes')}
+                  {xaRender(t('dao.voteYes'))}
                 </button>
                 <button
                   type="button"
@@ -165,20 +166,20 @@ export default function DaoGovernance() {
                       : 'border-white/15 bg-white/5 text-zinc-200'
                   }`}
                 >
-                  {t('dao.voteNo')}
+                  {xaRender(t('dao.voteNo'))}
                 </button>
-                {mine ? (
+                {xaRender(mine ? (
                   <span className="self-center text-[11px] text-zinc-500">
-                    {t('dao.yourVote')} {mine}
+                    {xaRender(t('dao.yourVote'))} {xaRender(mine)}
                   </span>
-                ) : null}
+                ) : null)}
               </div>
             </article>
           )
-        })}
+        }))}
       </div>
 
-      {msg ? <p className="text-[12px] text-cyan-200/90">{msg}</p> : null}
+      {xaRender(msg ? <p className="text-[12px] text-cyan-200/90">{xaRender(msg)}</p> : null)}
     </div>
   )
 }

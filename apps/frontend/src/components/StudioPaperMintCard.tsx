@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Bouton mint paper E2E — étape 4 Studio.
  */
@@ -26,11 +27,9 @@ export default function StudioPaperMintCard(props: Props) {
 
   return (
     <div className="card space-y-4 mb-4 border border-emerald-500/20 bg-emerald-500/[0.04]">
-      <h2 className="font-bold text-emerald-200">Mint paper E2E (local)</h2>
+      <h2 className="font-bold text-emerald-200">{xaRender("Mint paper E2E (local)")}</h2>
       <p className="text-xs text-zinc-500">
-        Certificat local + intent STUDIO_MINT_PAPER → journal 8008 / Vellum. Pas de tx on-chain tant que SC
-        mint OFF.
-      </p>
+        {xaRender("Certificat local + intent STUDIO_MINT_PAPER → journal 8008 / Vellum. Pas de tx on-chain tant que SC mint OFF. ")}</p>
       <button
         type="button"
         className="btn-primary w-full text-sm"
@@ -54,13 +53,12 @@ export default function StudioPaperMintCard(props: Props) {
           setCount(listStudioPaperMints().length)
         }}
       >
-        Mint paper · certificat local
-      </button>
-      {lastId && (
+        {xaRender("Mint paper · certificat local ")}</button>
+      {xaRender(lastId && (
         <p className="text-[11px] text-emerald-300 mono">
-          OK · {lastId} · total {count}
+          {xaRender("OK · ")}{xaRender(lastId)} {xaRender(" · total ")}{xaRender(count)}
         </p>
-      )}
+      ))}
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 import {
   maySupportApplePay,
   maySupportGooglePay,
@@ -53,9 +54,8 @@ export default function ExpressPaymentOptions({
   return (
     <div className="mt-2 space-y-2">
       <p className="text-[10px] text-zinc-500 uppercase tracking-[0.2em] mb-3 text-center">
-        Express checkout
-      </p>
-      {ITEMS.map(it => {
+        {xaRender("Express checkout ")}</p>
+      {xaRender(ITEMS.map(it => {
         const hint =
           it.kind === 'apple' && !appleOk
             ? 'Surtout Safari / appareil Apple — MoonPay confirmera.'
@@ -71,25 +71,25 @@ export default function ExpressPaymentOptions({
           >
             <div>
               <p className="text-sm text-white font-medium flex items-center gap-2">
-                {it.kind === 'google' && (
+                {xaRender(it.kind === 'google' && (
                   <span className="font-black text-blue-400" aria-hidden>
                     G
                   </span>
-                )}
-                {it.kind === 'apple' && <span aria-hidden></span>}
-                {it.label}
+                ))}
+                {xaRender(it.kind === 'apple' && <span aria-hidden></span>)}
+                {xaRender(it.label)}
               </p>
-              <p className="text-[10px] text-zinc-500 uppercase tracking-widest">{it.sub}</p>
-              {hint && (
+              <p className="text-[10px] text-zinc-500 uppercase tracking-widest">{xaRender(it.sub)}</p>
+              {xaRender(hint && (
                 <p className="text-[10px] text-amber-400/90 mt-0.5 normal-case tracking-normal">
-                  {hint}
+                  {xaRender(hint)}
                 </p>
-              )}
+              ))}
             </div>
-            <span className="text-cyan-400 text-xs font-mono shrink-0">Select</span>
+            <span className="text-cyan-400 text-xs font-mono shrink-0">{xaRender("Select")}</span>
           </button>
         )
-      })}
+      }))}
     </div>
   )
 }

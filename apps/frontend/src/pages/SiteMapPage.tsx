@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
 
@@ -70,31 +71,31 @@ export default function SiteMapPage() {
     <div className="animate-fade-in max-w-2xl mx-auto space-y-8 pb-16">
       <PageGuide page="sitemap" />
       <header className="space-y-2">
-        <p className="section-label">Navigation</p>
-        <h1 className="section-title display">Plan du site</h1>
+        <p className="section-label">{xaRender("Navigation")}</p>
+        <h1 className="section-title display">{xaRender("Plan du site")}</h1>
         <div className="atelier-title-rule" aria-hidden />
-        <p className="section-lead">Toutes les entrées utiles — paper-first · SC off jusqu’à GO_LIVE.</p>
+        <p className="section-lead">{xaRender("Toutes les entrées utiles — paper-first · SC off jusqu’à GO_LIVE.")}</p>
       </header>
-      {GROUPS.map(g => (
+      {xaRender(GROUPS.map(g => (
         <section key={g.title} className="space-y-2">
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
-            {g.title}
+            {xaRender(g.title)}
           </h2>
           <ul className="rounded-2xl border border-white/10 bg-zinc-950/40 divide-y divide-white/5">
-            {g.items.map(it => (
+            {xaRender(g.items.map(it => (
               <li key={it.to}>
                 <Link
                   to={it.to}
                   className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors"
                 >
-                  <span className="text-sm text-white">{it.label}</span>
-                  <span className="text-[11px] text-zinc-500 text-right">{it.note}</span>
+                  <span className="text-sm text-white">{xaRender(it.label)}</span>
+                  <span className="text-[11px] text-zinc-500 text-right">{xaRender(it.note)}</span>
                 </Link>
               </li>
-            ))}
+            )))}
           </ul>
         </section>
-      ))}
+      )))}
     </div>
   )
 }

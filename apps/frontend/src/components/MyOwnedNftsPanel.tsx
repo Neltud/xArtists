@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Mes NFT (wallet) → « Mettre en vente » → ListNftSheet.
  * Miniatures via ImageWithFallback (pas de carré blanc si média offline).
@@ -22,11 +23,10 @@ export default function MyOwnedNftsPanel() {
   if (!connected) {
     return (
       <div className="card space-y-3">
-        <h2 className="font-semibold">Mes NFT · mise en vente</h2>
-        <p className="text-sm text-zinc-500">Connecte ton wallet pour lister tes actifs.</p>
+        <h2 className="font-semibold">{xaRender("Mes NFT · mise en vente")}</h2>
+        <p className="text-sm text-zinc-500">{xaRender("Connecte ton wallet pour lister tes actifs.")}</p>
         <button type="button" className="btn-primary text-sm min-h-[44px]" onClick={requestOpenConnect}>
-          Connecter
-        </button>
+          {xaRender("Connecter ")}</button>
       </div>
     )
   }
@@ -36,22 +36,22 @@ export default function MyOwnedNftsPanel() {
       <div className="card space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 className="font-semibold">Mes NFT · mise en vente</h2>
+            <h2 className="font-semibold">{xaRender("Mes NFT · mise en vente")}</h2>
             <p className="text-[11px] text-zinc-500">
-              {account.loading
+              {xaRender(account.loading
                 ? 'Chargement…'
-                : `${account.nftCount ?? items.length} actif(s) · affichage max. 48`}
+                : `${account.nftCount ?? items.length} actif(s) · affichage max. 48`)}
             </p>
           </div>
         </div>
 
-        {account.loading && items.length === 0 ? (
-          <p className="text-sm text-zinc-500">Chargement des NFT…</p>
+        {xaRender(account.loading && items.length === 0 ? (
+          <p className="text-sm text-zinc-500">{xaRender("Chargement des NFT…")}</p>
         ) : items.length === 0 ? (
-          <p className="text-sm text-zinc-500">Aucun NFT détecté sur ce wallet.</p>
+          <p className="text-sm text-zinc-500">{xaRender("Aucun NFT détecté sur ce wallet.")}</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {items.map(n => {
+            {xaRender(items.map(n => {
               const img = n.url || n.media?.[0]?.url
               const nonce =
                 typeof n.nonce === 'number'
@@ -72,9 +72,9 @@ export default function MyOwnedNftsPanel() {
                   </div>
                   <div className="p-2 space-y-1.5">
                     <p className="text-xs font-semibold text-white truncate">
-                      {n.name || n.identifier}
+                      {xaRender(n.name || n.identifier)}
                     </p>
-                    <p className="text-[9px] mono text-zinc-500 truncate">{n.collection}</p>
+                    <p className="text-[9px] mono text-zinc-500 truncate">{xaRender(n.collection)}</p>
                     <button
                       type="button"
                       className="btn-primary w-full text-[11px] py-1.5 min-h-[36px]"
@@ -89,20 +89,18 @@ export default function MyOwnedNftsPanel() {
                         })
                       }
                     >
-                      Mettre en vente
-                    </button>
+                      {xaRender("Mettre en vente ")}</button>
                   </div>
                 </div>
               )
-            })}
+            }))}
           </div>
-        )}
+        ))}
 
-        {!live && (
+        {xaRender(!live && (
           <p className="text-[11px] text-amber-200">
-            Listing gated — marketplace SC / codehash Pages.
-          </p>
-        )}
+            {xaRender("Listing gated — marketplace SC / codehash Pages. ")}</p>
+        ))}
       </div>
 
       <ListNftSheet

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * LIA run strip — paper status from published JSON (board + v6).
  * Never implies live trading.
@@ -86,8 +87,7 @@ export default function LiaRunStrip() {
     <div className="rounded-2xl border border-cyan-500/25 bg-gradient-to-br from-cyan-500/10 via-transparent to-violet-500/10 px-4 py-3">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
         <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-300/90 font-semibold">
-          LIA run
-        </p>
+          {xaRender("LIA run ")}</p>
         <span
           className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${
             live
@@ -95,45 +95,42 @@ export default function LiaRunStrip() {
               : 'border-amber-400/40 bg-amber-500/15 text-amber-100'
           }`}
         >
-          {live ? 'LIVE' : 'PAPER'}
+          {xaRender(live ? 'LIVE' : 'PAPER')}
         </span>
       </div>
 
-      {err && <p className="text-xs text-zinc-500">{err}</p>}
+      {xaRender(err && <p className="text-xs text-zinc-500">{xaRender(err)}</p>)}
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
         <div className="rounded-lg border border-white/10 bg-black/25 px-2.5 py-2">
-          <p className="text-[9px] uppercase text-zinc-500">Action</p>
-          <p className="text-white font-semibold mono">{action}</p>
+          <p className="text-[9px] uppercase text-zinc-500">{xaRender("Action")}</p>
+          <p className="text-white font-semibold mono">{xaRender(action)}</p>
         </div>
         <div className="rounded-lg border border-white/10 bg-black/25 px-2.5 py-2">
-          <p className="text-[9px] uppercase text-zinc-500">Guardian</p>
+          <p className="text-[9px] uppercase text-zinc-500">{xaRender("Guardian")}</p>
           <p className={gAllow === false ? 'text-rose-300 font-semibold' : 'text-emerald-300 font-semibold'}>
-            {gAllow === false ? 'BLOCK' : 'OK'}
+            {xaRender(gAllow === false ? 'BLOCK' : 'OK')}
           </p>
         </div>
         <div className="rounded-lg border border-white/10 bg-black/25 px-2.5 py-2">
-          <p className="text-[9px] uppercase text-zinc-500">Séries paper</p>
-          <p className="text-white font-semibold">{seriesN || '—'}</p>
+          <p className="text-[9px] uppercase text-zinc-500">{xaRender("Séries paper")}</p>
+          <p className="text-white font-semibold">{xaRender(seriesN || '—')}</p>
         </div>
         <div className="rounded-lg border border-white/10 bg-black/25 px-2.5 py-2">
-          <p className="text-[9px] uppercase text-zinc-500">Arb</p>
-          <p className="text-zinc-300">{board?.arb?.actionable ? 'signal' : 'idle'}</p>
+          <p className="text-[9px] uppercase text-zinc-500">{xaRender("Arb")}</p>
+          <p className="text-zinc-300">{xaRender(board?.arb?.actionable ? 'signal' : 'idle')}</p>
         </div>
       </div>
 
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
         <p className="text-[10px] text-zinc-600">
-          {updated ? `maj ${updated.slice(0, 16).replace('T', ' ')}` : '—'}
-          {' · '}packs Pulse·Yield·Sentinel · SC mint pending
-        </p>
+          {xaRender(updated ? `maj ${updated.slice(0, 16).replace('T', ' ')}` : '—')}
+          {xaRender(' · ')}{xaRender("packs Pulse·Yield·Sentinel · SC mint pending ")}</p>
         <div className="flex gap-2">
           <Link to="/trading" className="text-[11px] text-cyan-300 hover:text-cyan-200 underline underline-offset-2">
-            Board
-          </Link>
+            {xaRender("Board ")}</Link>
           <Link to="/portfolio" className="text-[11px] text-zinc-400 hover:text-white underline underline-offset-2">
-            Portfolio LIA
-          </Link>
+            {xaRender("Portfolio LIA ")}</Link>
         </div>
       </div>
     </div>

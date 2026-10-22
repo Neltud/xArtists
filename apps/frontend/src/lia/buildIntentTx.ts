@@ -1,9 +1,9 @@
 /**
- * Construit des TX MultiversX pour intents LIA (signature xPortal uniquement).
- * Aucune PEM · broadcast via useSendTransaction / __xartistsSendTx.
+ * Drafts MultiversX examinables avant signature xPortal.
+ * Un signal de trading ne devient jamais un transfert bootstrap implicite.
  */
 import { LIA_GUARDS } from '../config/liaConfig'
-import { MAINNET_ADDRESSES, TREASURY_SPLITTER_ADDRESS } from '../config/contracts'
+import { TREASURY_SPLITTER_ADDRESS } from '../config/contracts'
 import type { JournalEntry } from './intentJournal'
 
 export type MxTxDraft = {
@@ -14,70 +14,52 @@ export type MxTxDraft = {
   chainID: '1'
 }
 
-function egldToAtomic(egld: number): string {
-  return BigInt(Math.round(egld * 1e18)).toString()
-}
-
-function strToHex(s: string): string {
-  return Array.from(new TextEncoder().encode(s))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('')
-}
-
-/**
- * TX d’amorce live : micro-EGLD → treasury_splitter avec memo on-chain.
- * Montant plafonné à LIA_GUARDS.bootstrapEgld (0.001 EGLD).
- */
+/** Un dépôt de vérification explicite, pas une opération d'achat/vente. */
 export function buildBootstrapLiveTx(): MxTxDraft {
-  const egld = Math.min(LIA_GUARDS.bootstrapEgld, 0.01)
-  const memo = `LIA_LIVE_BOOTSTRAP@1@${Date.now()}`
   return {
-    receiver: TREASURY_SPLITTER_ADDRESS || MAINNET_ADDRESSES.treasury_splitter,
-    value: egldToAtomic(egld),
-    gasLimit: 600_000,
-    data: memo,
+    receiver: TREASURY_SPLITTER_ADDRESS,
+    value: '1000000000000000',
+    gasLimit: 6_000_000,
+    data: 'receiveAndSplit',
     chainID: '1',
   }
 }
 
-/**
- * Mappe un intent journal → TX draft.
- * - EGLD : transfer micro vers treasury (cap bootstrap)
- * - TRO-94c925 : ESDTTransfer micro vers treasury (si amount > 0)
- * - sinon : bootstrap générique
- */
+/** Les autres actions nécessitent une cotation et un payload vérifiés du routeur. */
 export function buildTxFromIntent(entry: JournalEntry): MxTxDraft {
-  const asset = (entry.assetId || 'EGLD').toUpperCase()
-  const receiver = TREASURY_SPLITTER_ADDRESS || MAINNET_ADDRESSES.treasury_splitter
-
-  if (asset === 'EGLD' || asset === 'WEGLD') {
-    const raw = Math.abs(Number(entry.amount) || LIA_GUARDS.bootstrapEgld)
-    // amount journal est souvent notionnel USD — forcer micro on-chain
-    const egld = Math.min(LIA_GUARDS.bootstrapEgld, Math.max(0.0005, raw > 1 ? LIA_GUARDS.bootstrapEgld : raw))
-    return {
-      receiver,
-      value: egldToAtomic(egld),
-      gasLimit: 600_000,
-      data: `LIA_INTENT@${entry.id.slice(0, 24)}@${entry.action}`.slice(0, 120),
-      chainID: '1',
-    }
+  if (
+    entry.strategy !== 'LIVE_BOOTSTRAP' ||
+    entry.action !== 'BOOTSTRAP_LIVE_1' ||
+    entry.assetId !== 'EGLD'
+  ) {
+    throw new Error('Cotation et transaction vérifiées requises pour cet intent. Aucun transfert de remplacement.')
   }
-
-  if (asset.startsWith('TRO') || asset === 'TRO-94C925') {
-    // 1 TRO unit (6 decimals) min smoke — amount journal not trusted as on-chain
-    const units = 1_000_000n // 1 TRO
-    const tokenHex = strToHex('TRO-94c925')
-    const amtHex = units.toString(16)
-    return {
-      receiver,
-      value: '0',
-      gasLimit: 6_000_000,
-      data: `ESDTTransfer@${tokenHex}@${amtHex}`,
-      chainID: '1',
-    }
+  if (!Number.isFinite(entry.amount) || entry.amount <= 0 || entry.amount > LIA_GUARDS.bootstrapEgld) {
+    throw new Error('Montant bootstrap invalide : maximum 0.001 EGLD.')
   }
+  const atomic = BigInt(Math.round(entry.amount * 1e18))
+  if (atomic <= 0n) throw new Error('Montant bootstrap inférieur à une unité atomique.')
+  return { ...buildBootstrapLiveTx(), value: atomic.toString() }
+}
 
-  return buildBootstrapLiveTx()
+export function prepareIntentTx(entry: JournalEntry):
+  | { ok: true; draft: MxTxDraft }
+  | { ok: false; reason: string } {
+  try {
+    return { ok: true, draft: buildTxFromIntent(entry) }
+  } catch (error) {
+    return { ok: false, reason: error instanceof Error ? error.message : 'Transaction indisponible.' }
+  }
+}
+
+export function assertLiveRisk(input: { usdNotional: number; dailySpentUsd: number }): void {
+  const { usdNotional, dailySpentUsd } = input
+  if (!Number.isFinite(usdNotional) || usdNotional <= 0 || usdNotional > LIA_GUARDS.maxUsdPerTrade) {
+    throw new Error('Montant USD non vérifié ou plafond de 15 $ dépassé.')
+  }
+  if (!Number.isFinite(dailySpentUsd) || dailySpentUsd < 0 || dailySpentUsd + usdNotional > LIA_GUARDS.maxUsdPerDay) {
+    throw new Error('Budget journalier non vérifié ou plafond de 40 $ dépassé.')
+  }
 }
 
 export function describeTx(draft: MxTxDraft): string {

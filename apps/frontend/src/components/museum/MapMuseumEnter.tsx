@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /** CTA carte → musée 3D (ville + lieux cliquables depuis le catalog) */
 import { useNavigate } from 'react-router-dom'
 import { museumTravelHref } from '../../lib/travelBridge'
@@ -62,13 +63,13 @@ export default function MapMuseumEnter({
     <div className="flex flex-col gap-3 pt-2 border-t border-white/10">
       <div className="space-y-1.5">
         <p className="text-[10px] uppercase tracking-[0.18em] text-rose-300/90">
-          Musées 3D{citySafe ? ` · ${citySafe}` : ' · annuaire'}
+          {xaRender("Musées 3D")}{xaRender(citySafe ? ` · ${citySafe}` : ' · annuaire')}
         </p>
-        {list.length === 0 ? (
-          <p className="text-[11px] text-zinc-500">Aucune salle mappée — entrée xArtists.</p>
+        {xaRender(list.length === 0 ? (
+          <p className="text-[11px] text-zinc-500">{xaRender("Aucune salle mappée — entrée xArtists.")}</p>
         ) : (
           <div className="flex flex-wrap gap-1.5">
-            {list.map(v => {
+            {xaRender(list.map(v => {
               const meta = getMuseum(v.museumId)
               return (
                 <button
@@ -78,23 +79,23 @@ export default function MapMuseumEnter({
                   className="rounded-xl border border-white/15 bg-gradient-to-br from-fuchsia-500/15 via-violet-500/10 to-cyan-500/5 hover:border-fuchsia-400/50 hover:shadow-[0_0_20px_rgba(232,121,249,0.15)] px-3 py-2 text-left transition-all max-w-[14rem]"
                 >
                   <span className="block text-[12px] font-semibold text-white leading-tight">
-                    {v.label}
+                    {xaRender(v.label)}
                   </span>
-                  {meta?.tagline && (
-                    <span className="block text-[10px] text-zinc-500 mt-0.5">{meta.tagline}</span>
-                  )}
+                  {xaRender(meta?.tagline && (
+                    <span className="block text-[10px] text-zinc-500 mt-0.5">{xaRender(meta.tagline)}</span>
+                  ))}
                 </button>
               )
-            })}
+            }))}
           </div>
-        )}
+        ))}
       </div>
       <button
         type="button"
         onClick={() => go(defaultId)}
         className="self-start rounded-full border border-cyan-400/40 bg-cyan-500/15 px-4 py-1.5 text-[12px] text-cyan-100 hover:bg-cyan-500/25"
       >
-        Entrer · {defaultMuseum?.name || 'musée'}
+        {xaRender("Entrer · ")}{xaRender(defaultMuseum?.name || 'musée')}
       </button>
     </div>
   )

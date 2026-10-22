@@ -1,5 +1,5 @@
 /**
- * Checkout + Legal i18n keys (FR / EN / DE / ES / ZH / RU / UK / AR)
+ * Checkout + Legal i18n keys (FR / EN / DE / ES / ZH)
  */
 import type { Dict } from './types'
 
@@ -235,102 +235,36 @@ export const checkoutLegalDe: Dict = {
   ...checkoutLegalEn,
   'checkout.title': 'Pack-Checkout',
   'checkout.close': 'Schließen',
-  'checkout.chooseRail': 'Zahlungsweg wählen',
   'checkout.rail.card': '💳 Bankkarte / SEPA',
   'checkout.rail.web3': '⚡ Web3 MultiversX (EGLD)',
-  'checkout.continueFiat': 'Weiter · {amount} € Fiat',
-  'checkout.continueCrypto': 'Weiter · {amount} EGLD',
   'packCheckout.buy': 'Kaufen / Checkout',
-  'packCheckout.connectFirst': 'xPortal vor dem Checkout verbinden.',
   'legal.title': 'Impressum & Rechtliches',
   'legal.sectionLabel': 'Rechtliches',
   'legal.nav.home': 'Start',
-  'legal.nav.packs': 'Packs',
 }
 
 export const checkoutLegalEs: Dict = {
   ...checkoutLegalEn,
   'checkout.title': 'Checkout del pack',
   'checkout.close': 'Cerrar',
-  'checkout.chooseRail': 'Elegir vía de pago',
   'checkout.rail.card': '💳 Tarjeta bancaria / SEPA',
   'checkout.rail.web3': '⚡ Web3 MultiversX (EGLD)',
-  'checkout.continueFiat': 'Continuar · {amount} € fiat',
-  'checkout.continueCrypto': 'Continuar · {amount} EGLD',
   'packCheckout.buy': 'Comprar / Checkout',
-  'packCheckout.connectFirst': 'Conecta xPortal antes del checkout.',
   'legal.title': 'Avisos legales',
   'legal.sectionLabel': 'Legal',
   'legal.nav.home': 'Inicio',
-  'legal.nav.packs': 'Packs',
 }
 
 export const checkoutLegalZh: Dict = {
   ...checkoutLegalEn,
   'checkout.title': '套餐结账',
   'checkout.close': '关闭',
-  'checkout.chooseRail': '选择支付通道',
   'checkout.rail.card': '💳 银行卡 / SEPA',
   'checkout.rail.web3': '⚡ Web3 MultiversX (EGLD)',
-  'checkout.continueFiat': '继续 · {amount} € 法币',
-  'checkout.continueCrypto': '继续 · {amount} EGLD',
   'packCheckout.buy': '购买 / 结账',
-  'packCheckout.connectFirst': '结账前请连接 xPortal。',
   'legal.title': '法律声明',
   'legal.sectionLabel': '法律',
   'legal.nav.home': '首页',
-  'legal.nav.packs': '礼包',
-}
-
-export const checkoutLegalRu: Dict = {
-  ...checkoutLegalEn,
-  'checkout.title': 'Оформление пакета',
-  'checkout.close': 'Закрыть',
-  'checkout.chooseRail': 'Выбрать способ оплаты',
-  'checkout.rail.card': '💳 Банковская карта / SEPA',
-  'checkout.rail.web3': '⚡ Web3 MultiversX (EGLD)',
-  'checkout.continueFiat': 'Продолжить · {amount} € fiat',
-  'checkout.continueCrypto': 'Продолжить · {amount} EGLD',
-  'packCheckout.buy': 'Купить / Оформить',
-  'packCheckout.connectFirst': 'Подключите xPortal перед оформлением.',
-  'legal.title': 'Юридические сведения',
-  'legal.sectionLabel': 'Юридическое',
-  'legal.nav.home': 'Главная',
-  'legal.nav.packs': 'Пакеты',
-}
-
-export const checkoutLegalUk: Dict = {
-  ...checkoutLegalEn,
-  'checkout.title': 'Оформлення пакета',
-  'checkout.close': 'Закрити',
-  'checkout.chooseRail': 'Обрати спосіб оплати',
-  'checkout.rail.card': '💳 Банківська картка / SEPA',
-  'checkout.rail.web3': '⚡ Web3 MultiversX (EGLD)',
-  'checkout.continueFiat': 'Продовжити · {amount} € fiat',
-  'checkout.continueCrypto': 'Продовжити · {amount} EGLD',
-  'packCheckout.buy': 'Купити / Оформити',
-  'packCheckout.connectFirst': 'Підключіть xPortal перед оформленням.',
-  'legal.title': 'Юридичні відомості',
-  'legal.sectionLabel': 'Юридичне',
-  'legal.nav.home': 'Головна',
-  'legal.nav.packs': 'Пакети',
-}
-
-export const checkoutLegalAr: Dict = {
-  ...checkoutLegalEn,
-  'checkout.title': 'إتمام شراء الباقة',
-  'checkout.close': 'إغلاق',
-  'checkout.chooseRail': 'اختر مسار الدفع',
-  'checkout.rail.card': '💳 بطاقة بنكية / SEPA',
-  'checkout.rail.web3': '⚡ Web3 MultiversX (EGLD)',
-  'checkout.continueFiat': 'متابعة · {amount} € عملة ورقية',
-  'checkout.continueCrypto': 'متابعة · {amount} EGLD',
-  'packCheckout.buy': 'شراء / إتمام',
-  'packCheckout.connectFirst': 'صل xPortal قبل الإتمام.',
-  'legal.title': 'الإشعارات القانونية',
-  'legal.sectionLabel': 'قانوني',
-  'legal.nav.home': 'الرئيسية',
-  'legal.nav.packs': 'الباقات',
 }
 
 export function checkoutLegalFor(lang: string): Dict {
@@ -343,12 +277,6 @@ export function checkoutLegalFor(lang: string): Dict {
       return checkoutLegalEs
     case 'zh':
       return checkoutLegalZh
-    case 'ru':
-      return checkoutLegalRu
-    case 'uk':
-      return checkoutLegalUk
-    case 'ar':
-      return checkoutLegalAr
     case 'fr':
       return checkoutLegalFr
     default:

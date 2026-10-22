@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Checkout packs — opens CheckoutModal (crypto | fiat). Full i18n.
  * Device preview is never presented as a purchase.
@@ -90,9 +91,9 @@ export default function PackCheckout({
 
   return (
     <div className="space-y-4">
-      {!selected && (
+      {xaRender(!selected && (
         <div className="flex flex-wrap gap-2">
-          {PACKS.map(p => (
+          {xaRender(PACKS.map(p => (
             <button
               key={p.id}
               type="button"
@@ -100,19 +101,19 @@ export default function PackCheckout({
               className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-left text-sm hover:border-violet-400/40"
             >
               <span className="font-semibold text-white">
-                {p.icon} {p.name}
+                {xaRender(p.icon)} {xaRender(p.name)}
               </span>
-              <span className="block text-[11px] text-zinc-500">{p.priceEgld.list} EGLD</span>
+              <span className="block text-[11px] text-zinc-500">{xaRender(p.priceEgld.list)} {xaRender(" EGLD")}</span>
             </button>
-          ))}
+          )))}
         </div>
-      )}
+      ))}
 
-      {selected && pack && status !== 'done' && (
+      {xaRender(selected && pack && status !== 'done' && (
         <>
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-sm text-zinc-300">
-              {t('packCheckout.selected')} <strong className="text-white">{pack.name}</strong>
+              {xaRender(t('packCheckout.selected'))} <strong className="text-white">{xaRender(pack.name)}</strong>
             </p>
             <button
               type="button"
@@ -126,57 +127,57 @@ export default function PackCheckout({
                 setModalOpen(true)
               }}
             >
-              {t('packCheckout.buy')}
+              {xaRender(t('packCheckout.buy'))}
             </button>
-            {onClear && (
+            {xaRender(onClear && (
               <button type="button" className="text-xs text-zinc-500 underline" onClick={onClear}>
-                {t('packCheckout.change')}
+                {xaRender(t('packCheckout.change'))}
               </button>
-            )}
+            ))}
           </div>
 
           <div className="grid sm:grid-cols-2 gap-2 text-[11px]">
             <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/[0.06] px-3 py-2">
-              <p className="font-medium text-cyan-100/90">{t('packCheckout.crypto')}</p>
+              <p className="font-medium text-cyan-100/90">{xaRender(t('packCheckout.crypto'))}</p>
               <p className="text-zinc-400 mt-0.5">
-                {t('packCheckout.cryptoLine', { amount: pack.priceEgld.list })}
-                {' · '}
-                {mintLive ? t('packCheckout.mintLive') : t('packCheckout.mintSoon')}
+                {xaRender(t('packCheckout.cryptoLine', { amount: pack.priceEgld.list }))}
+                {xaRender(' · ')}
+                {xaRender(mintLive ? t('packCheckout.mintLive') : t('packCheckout.mintSoon'))}
               </p>
             </div>
             <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] px-3 py-2">
-              <p className="font-medium text-violet-100/90">{t('packCheckout.fiat')}</p>
+              <p className="font-medium text-violet-100/90">{xaRender(t('packCheckout.fiat'))}</p>
               <p className="text-zinc-400 mt-0.5">
-                {t('packCheckout.fiatLine', { amount: pack.priceEur.list })}
-                {' · '}
-                {hasPaidRail ? t('packCheckout.gatewayOn') : t('packCheckout.soon')}
+                {xaRender(t('packCheckout.fiatLine', { amount: pack.priceEur.list }))}
+                {xaRender(' · ')}
+                {xaRender(hasPaidRail ? t('packCheckout.gatewayOn') : t('packCheckout.soon'))}
               </p>
             </div>
           </div>
 
-          <p className="text-[11px] text-zinc-500">{t('packCheckout.liaNote')}</p>
+          <p className="text-[11px] text-zinc-500">{xaRender(t('packCheckout.liaNote'))}</p>
         </>
-      )}
+      ))}
 
-      {status === 'done' && (
+      {xaRender(status === 'done' && (
         <div className="flex items-start gap-3 rounded-xl border border-cyan-500/25 bg-cyan-500/10 px-3 py-3">
           <LottieIcon preset="check" loop={false} size={36} />
           <div className="min-w-0">
-            <p className="text-sm text-cyan-50 font-medium">{msg}</p>
+            <p className="text-sm text-cyan-50 font-medium">{xaRender(msg)}</p>
             <p className="text-[12px] text-cyan-100/70 mt-0.5">
               <Link to="/my-packs" className="underline underline-offset-2 hover:text-white">
-                {t('packCheckout.myRooms')}
+                {xaRender(t('packCheckout.myRooms'))}
               </Link>
             </p>
           </div>
         </div>
-      )}
+      ))}
 
-      {msg && status !== 'done' && (
-        <p className="text-[12px] text-amber-200/90 leading-relaxed">{msg}</p>
-      )}
+      {xaRender(msg && status !== 'done' && (
+        <p className="text-[12px] text-amber-200/90 leading-relaxed">{xaRender(msg)}</p>
+      ))}
 
-      {selected && (
+      {xaRender(selected && (
         <CheckoutModal
           open={modalOpen}
           packId={selected}
@@ -184,7 +185,7 @@ export default function PackCheckout({
           onPreview={onPreview}
           onStarted={() => setModalOpen(false)}
         />
-      )}
+      ))}
     </div>
   )
 }

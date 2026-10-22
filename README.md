@@ -5,7 +5,14 @@
 dApp (GitHub Pages): https://neltud.github.io/xArtists/  
 Repo: https://github.com/Neltud/xArtists
 
-**Status (2026-10-21): site SC live · pulse /go-live · LIA client paper · slot non payable · listing #2 actif**
+Publication V3 du 21 octobre : [`docs/V3_PUBLICATION_2026-10-21.md`](docs/V3_PUBLICATION_2026-10-21.md).
+
+**Vellum · mise à jour LIA Wallet :**
+[`docs/VELLUM_LIA_WALLET_DIRECTIVES.md`](docs/VELLUM_LIA_WALLET_DIRECTIVES.md)
+— directives MultiversX / PayBox, stratégies, validations des ordres réels et
+critères de livraison. Spécification de mise à jour ; aucune activation live.
+
+**Dernier état GitHub Pages observé avant intégration V3 (2026-10-21) : site SC live · LIA client paper · slot non payable · listing #2 actif**
 
 - Bundle stamp **0.118.0** (`static.yml`). `VITE_LIA_LIVE_TRADING=0`.
 - Probe **21 oct ~04:35 UTC**, epoch **2269**, refreshRate 600. CodeHash agents inchangé.

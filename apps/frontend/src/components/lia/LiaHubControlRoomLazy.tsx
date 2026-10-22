@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /** Lazy mount control room to avoid blocking LiaPage first paint. */
 import { lazy, Suspense, useState } from 'react'
 import { ProgressUnpackLoader } from './ProgressUnpackLoader'
@@ -14,8 +15,7 @@ export default function LiaHubControlRoomLazy() {
         onClick={() => setOpen(true)}
         className="w-full rounded-2xl border border-purple-500/30 bg-black/60 px-4 py-3 text-left text-sm text-cyan-100"
       >
-        Ouvrir la salle de contrôle 3D · Packs Sponsors
-      </button>
+        {xaRender("Ouvrir la salle de contrôle 3D · Packs Sponsors ")}</button>
     )
   }
 

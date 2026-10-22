@@ -11,13 +11,16 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { resolveAccessLevel, issueAccessToken, verifyJwt } from './verifyAccess.mjs'
-import { createChallenge, consumeNonce, verifyErdSignature, requireSiwx } from './siwx.mjs'
+import { createChallenge, verifySignedChallenge, requireSiwx } from './siwx.mjs'
+import { moonpayConfig, signMoonpayUrl } from './moonpay.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PORT = Number(process.env.PORT || 8787)
 const JWT_SECRET = process.env.ACCESS_JWT_SECRET || process.env.JWT_SECRET || ''
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || ''
 const CORS = process.env.CORS_ORIGIN || '*'
+const MOONPAY = moonpayConfig()
+const signingRequests = new Map()
 
 /** Server-side pack catalog — NEVER trust client amount_cents / amountEur */
 const PACK_CATALOG = {
@@ -46,13 +49,20 @@ function json(res, code, body) {
 
 async function readBody(req) {
   const chunks = []
-  for await (const c of req) chunks.push(c)
+  let size = 0
+  for await (const c of req) {
+    size += c.length
+    if (size > 16_384) throw Object.assign(new Error('body_too_large'), { statusCode: 413 })
+    chunks.push(c)
+  }
   const raw = Buffer.concat(chunks).toString('utf8')
   if (!raw) return {}
   try {
-    return JSON.parse(raw)
+    const body = JSON.parse(raw)
+    if (!body || typeof body !== 'object' || Array.isArray(body)) throw new Error('invalid_json')
+    return body
   } catch {
-    return {}
+    throw Object.assign(new Error('invalid_json'), { statusCode: 400 })
   }
 }
 
@@ -77,7 +87,7 @@ function loadDailySignal() {
   }
 }
 
-const server = http.createServer(async (req, res) => {
+async function handleRequest(req, res) {
   if (req.method === 'OPTIONS') {
     json(res, 204, {})
     return
@@ -93,68 +103,70 @@ const server = http.createServer(async (req, res) => {
       require_siwx: requireSiwx(),
       pulse_collection: Boolean(process.env.PULSE_COLLECTION),
       stripe_configured: Boolean(STRIPE_KEY),
+      moonpay_configured: MOONPAY.ready,
+      moonpay_mode: MOONPAY.ready ? MOONPAY.mode : 'off',
+      paybox_configured: false,
       service: 'access-api',
       packs: Object.keys(PACK_CATALOG),
     })
     return
   }
 
+  if (req.method === 'POST' && pth === '/moonpay/sign') {
+    if (req.headers.origin && req.headers.origin !== new URL(MOONPAY.returnUrl).origin) {
+      json(res, 403, { ok: false, error: 'origin_not_allowed' })
+      return
+    }
+    const minute = Math.floor(Date.now() / 60_000)
+    const client = req.socket.remoteAddress || 'unknown'
+    for (const [key, value] of signingRequests) if (value.minute !== minute) signingRequests.delete(key)
+    const previous = signingRequests.get(client)
+    const count = previous?.minute === minute ? previous.count + 1 : 1
+    if (count > 30 || (!previous && signingRequests.size >= 10000)) {
+      json(res, 429, { ok: false, error: 'rate_limit' })
+      return
+    }
+    signingRequests.set(client, { minute, count })
+    const body = await readBody(req)
+    try {
+      json(res, 200, { ok: true, url: signMoonpayUrl(body.url, MOONPAY) })
+    } catch (error) {
+      json(res, error.statusCode || 400, { ok: false, error: error.statusCode === 503 ? 'moonpay_not_configured' : 'invalid_moonpay_request' })
+    }
+    return
+  }
+
   if (req.method === 'POST' && pth === '/v1/access/challenge') {
     const body = await readBody(req)
-    const address = (body.address || '').trim()
-    const ch = createChallenge(address || null)
-    json(res, 200, { ok: true, ...ch, require_siwx: requireSiwx() })
+    const address = typeof body.address === 'string' ? body.address.trim() : ''
+    try {
+      const ch = createChallenge(address)
+      json(res, 200, { ok: true, ...ch, require_siwx: requireSiwx() })
+    } catch (error) {
+      json(res, error.statusCode || 400, { ok: false, error: 'invalid_or_unavailable_challenge' })
+    }
     return
   }
 
   if (req.method === 'POST' && (pth === '/v1/verify-access' || pth === '/api/verify-access')) {
     const body = await readBody(req)
-    const address = (body.address || body.wallet || '').trim()
+    const address = typeof (body.address || body.wallet) === 'string' ? (body.address || body.wallet).trim() : ''
     const signature = body.signature || body.sig || ''
     const message = body.message || ''
     const nonce = body.nonce || ''
 
-    if (requireSiwx()) {
-      if (!address || !signature || !message) {
-        json(res, 401, {
-          ok: false,
-          status: 'SAMPLE',
-          hasAccess: false,
-          reason: 'siwx_required',
-          error: 'signature + message required',
-        })
-        return
-      }
-      if (nonce && !consumeNonce(nonce, address)) {
-        json(res, 401, {
-          ok: false,
-          status: 'SAMPLE',
-          hasAccess: false,
-          reason: 'siwx_nonce_invalid',
-        })
-        return
-      }
-      if (!verifyErdSignature(address, message, signature)) {
-        json(res, 401, {
-          ok: false,
-          status: 'SAMPLE',
-          hasAccess: false,
-          reason: 'siwx_bad_signature',
-        })
-        return
-      }
-    } else if (signature && message && address) {
-      if (nonce && !consumeNonce(nonce, address)) {
-        json(res, 401, { ok: false, status: 'SAMPLE', hasAccess: false, reason: 'siwx_nonce_invalid' })
-        return
-      }
-      if (!verifyErdSignature(address, message, signature)) {
-        json(res, 401, { ok: false, status: 'SAMPLE', hasAccess: false, reason: 'siwx_bad_signature' })
-        return
-      }
+    const hasProof = Boolean(signature || message || nonce)
+    const verified = hasProof && verifySignedChallenge({ address, signature, message, nonce })
+    if ((requireSiwx() || hasProof) && !verified) {
+      json(res, 401, { ok: false, status: 'SAMPLE', hasAccess: false, reason: 'siwx_invalid_or_missing_challenge' })
+      return
     }
 
     const access = await resolveAccessLevel(address || null)
+    if (access.status === 'FULL' && !verified) {
+      json(res, 401, { ok: false, status: 'SAMPLE', hasAccess: false, reason: 'siwx_required_for_full_access' })
+      return
+    }
     const issued = issueAccessToken(access, address || null, JWT_SECRET)
     if (issued.error && access.status === 'FULL') {
       json(res, 503, {
@@ -266,8 +278,15 @@ const server = http.createServer(async (req, res) => {
   }
 
   json(res, 404, { error: 'not_found', path: pth })
+}
+
+const server = http.createServer((req, res) => {
+  handleRequest(req, res).catch(error => {
+    if (!res.headersSent) json(res, error.statusCode || 500, { ok: false, error: error.statusCode ? error.message : 'internal_error' })
+    else res.end()
+  })
 })
 
 server.listen(PORT, () => {
-  console.log(`access-api :${PORT} siwx=${requireSiwx()} stripe=${Boolean(STRIPE_KEY)} packs=${Object.keys(PACK_CATALOG).join(',')}`)
+  console.log(`access-api :${server.address().port} siwx=${requireSiwx()} stripe=${Boolean(STRIPE_KEY)} packs=${Object.keys(PACK_CATALOG).join(',')}`)
 })

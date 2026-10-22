@@ -6,16 +6,14 @@ import { fileURLToPath } from 'node:url'
 export const frontend = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const require = createRequire(import.meta.url)
 
-export function loadSource(relPath) {
-  const entry = resolve(frontend, relPath)
+export function loadSource(filename, env = {}) {
   const result = buildSync({
-    entryPoints: [entry],
-    bundle: true,
-    write: false,
-    platform: 'node',
-    format: 'esm',
-    target: 'node20',
-    packages: 'external',
+    entryPoints: [resolve(frontend, filename)],
+    bundle: true, write: false, platform: 'node', format: 'cjs', jsx: 'automatic',
+    external: ['react', 'react-dom', 'react/jsx-runtime', '@multiversx/sdk-core'],
+    define: { 'import.meta.env': JSON.stringify(env) }, logLevel: 'silent',
   })
-  return result.outputFiles[0].text
+  const module = { exports: {} }
+  new Function('require', 'module', 'exports', result.outputFiles[0].text)(require, module, module.exports)
+  return module.exports
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useWallet } from '../../context/WalletContext'
 import {
   openMoonpayBuy,
-  isMoonpayLive,
+  isMoonPayConfigured,
   maySupportApplePay,
   maySupportGooglePay,
   MOONPAY_DEFAULT_WALLET,
@@ -11,7 +11,7 @@ import {
 import ExpressPaymentOptions, { type ExpressKind } from './ExpressPaymentOptions'
 import MoonpayButton from '../MoonpayButton'
 
-type Step = 'ready' | 'redirecting' | 'sim_success'
+type Step = 'ready' | 'redirecting'
 
 export type FiatOnRampModalProps = {
   isOpen: boolean
@@ -33,6 +33,7 @@ export default function FiatOnRampModal({
 }: FiatOnRampModalProps) {
   const { address, connected } = useWallet()
   const [step, setStep] = useState<Step>('ready')
+  const [error, setError] = useState<string | null>(null)
 
   const recipient =
     walletAddress?.startsWith('erd1')
@@ -45,29 +46,31 @@ export default function FiatOnRampModal({
     asset === '$TRO' || asset === 'TRO' ? 'EGLD' : asset || 'EGLD'
 
   useEffect(() => {
-    if (isOpen) setStep('ready')
+    if (isOpen) { setStep('ready'); setError(null) }
   }, [isOpen])
 
   if (!isOpen) return null
 
-  const launch = (method?: MoonpayPaymentMethod) => {
+  const launch = async (method?: MoonpayPaymentMethod) => {
     setStep('redirecting')
-    openMoonpayBuy({
+    setError(null)
+    const result = await openMoonpayBuy({
       walletAddress: recipient,
       currencyCode: currency,
       paymentMethod: method,
       baseCurrencyAmount: amount,
       baseCurrencyCode: 'usd',
     })
-    window.setTimeout(() => setStep('ready'), 2000)
+    if (!result.ok) setError(result.error || 'Achat par carte indisponible.')
+    setStep('ready')
   }
 
   const onExpress = (kind: ExpressKind, method?: MoonpayPaymentMethod) => {
     if (kind === 'moonpay') {
-      launch(undefined)
+      void launch(undefined)
       return
     }
-    launch(method)
+    void launch(method)
   }
 
   return (
@@ -123,17 +126,20 @@ export default function FiatOnRampModal({
             </div>
             {!connected && (
               <p className="text-[10px] text-amber-300/90">
-                Connecte ton wallet pour recevoir sur ton erd1 (sinon adresse ops par défaut).
+                Connecte ton wallet ou renseigne et vérifie ton adresse dans MoonPay.
               </p>
             )}
           </div>
+
+          {error && <p role="alert" className="text-sm text-amber-300">{error}</p>}
 
           {step === 'ready' && (
             <>
               <div className="grid grid-cols-1 gap-2">
                 <button
                   type="button"
-                  onClick={() => launch('google_pay')}
+                  onClick={() => void launch('google_pay')}
+                  disabled={!isMoonPayConfigured()}
                   className="w-full py-3.5 rounded-2xl bg-white text-zinc-900 font-semibold flex items-center justify-center gap-2 hover:bg-zinc-100 transition-colors border border-white/10"
                 >
                   <span
@@ -156,7 +162,8 @@ export default function FiatOnRampModal({
 
                 <button
                   type="button"
-                  onClick={() => launch('apple_pay')}
+                  onClick={() => void launch('apple_pay')}
+                  disabled={!isMoonPayConfigured()}
                   className="w-full py-3.5 rounded-2xl bg-black border border-white/20 text-white font-semibold flex items-center justify-center gap-2 hover:bg-zinc-900 transition-colors"
                 >
                   <span className="text-lg" aria-hidden>
@@ -194,13 +201,6 @@ export default function FiatOnRampModal({
                 className="w-full btn-secondary text-sm py-3"
               />
 
-              <button
-                type="button"
-                className="w-full text-[11px] text-zinc-500 underline"
-                onClick={() => setStep('sim_success')}
-              >
-                Simuler succès UI (demo sans paiement)
-              </button>
             </>
           )}
 
@@ -209,27 +209,15 @@ export default function FiatOnRampModal({
               <div className="w-10 h-10 mx-auto rounded-full border-2 border-cyan-500 border-t-transparent animate-spin" />
               <p className="text-sm text-zinc-300">Ouverture de MoonPay…</p>
               <p className="text-[11px] text-zinc-500">
-                {isMoonpayLive() ? 'Clé publique configurée' : 'Mode staging — VITE_MOONPAY_PUBLIC_KEY'}
+                Vérification du lien de paiement…
               </p>
             </div>
           )}
 
-          {step === 'sim_success' && (
-            <div className="text-center py-8 space-y-3">
-              <p className="text-3xl">✓</p>
-              <h3 className="text-xl font-bold text-white">Demo OK</h3>
-              <p className="text-sm text-zinc-400">
-                Aucun débit réel. Pour payer vraiment, utilise Google Pay / Apple Pay / MoonPay.
-              </p>
-              <button type="button" className="btn-primary text-sm" onClick={onClose}>
-                Fermer
-              </button>
-            </div>
-          )}
         </div>
 
         <div className="px-6 py-3 bg-black/30 text-center text-[10px] text-zinc-500 uppercase tracking-widest">
-          Google Pay + Apple Pay via MoonPay · pas d’iframe · pas de secret en front
+          Moyens de paiement proposés selon ton pays et ton éligibilité dans MoonPay
         </div>
       </div>
     </div>

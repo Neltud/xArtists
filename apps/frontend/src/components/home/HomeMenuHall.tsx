@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Accueil 360° — galerie néon + portails 4 hubs (Musée / Packs / Market / Command).
  */
@@ -281,42 +282,39 @@ export default function HomeMenuHall() {
   return (
     <div className="relative w-full h-[min(78vh,720px)] rounded-2xl overflow-hidden border border-violet-500/25 bg-black shadow-[0_0_60px_-16px_rgba(124,58,237,0.45)]">
       <div ref={hostRef} className="absolute inset-0" />
-      {!sceneReady && !contextLost && !webglFailed && (
+      {xaRender(!sceneReady && !contextLost && !webglFailed && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/60 backdrop-blur-md">
           <div className="h-9 w-9 rounded-full border-2 border-fuchsia-400/30 border-t-cyan-300 animate-spin" />
           <p className="text-[12px] text-cyan-100/85 font-medium tracking-wide">
-            Initialisation de l infrastructure xArtists…
-          </p>
+            {xaRender("Initialisation de l infrastructure xArtists… ")}</p>
         </div>
-      )}
-      {contextLost && (
+      ))}
+      {xaRender(contextLost && (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/80 px-4 text-center text-[12px] text-amber-200">
-          Contexte WebGL perdu — recharge la page
-        </div>
-      )}
-      {webglFailed && (
+          {xaRender("Contexte WebGL perdu — recharge la page ")}</div>
+      ))}
+      {xaRender(webglFailed && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black/90 p-4">
-          <p className="text-[13px] text-zinc-300 text-center">WebGL indisponible — menu alternatif</p>
+          <p className="text-[13px] text-zinc-300 text-center">{xaRender("WebGL indisponible — menu alternatif")}</p>
           <div className="grid grid-cols-2 gap-2 w-full max-w-sm">
-            {DOORS.map(d => (
+            {xaRender(DOORS.map(d => (
               <button
                 key={d.id}
                 type="button"
                 className="rounded-xl border border-white/15 bg-white/5 px-3 py-3 text-[12px] text-white"
                 onClick={() => go(d.route)}
               >
-                {d.label}
-                <span className="block text-[10px] text-zinc-500">{d.sub}</span>
+                {xaRender(d.label)}
+                <span className="block text-[10px] text-zinc-500">{xaRender(d.sub)}</span>
               </button>
-            ))}
+            )))}
           </div>
         </div>
-      )}
-      {!webglFailed && (
+      ))}
+      {xaRender(!webglFailed && (
         <p className="pointer-events-none absolute bottom-3 left-0 right-0 text-center text-[11px] text-zinc-500">
-          Clique une porte 3D — Entre dans les pièces
-        </p>
-      )}
+          {xaRender("Clique une porte 3D — Entre dans les pièces ")}</p>
+      ))}
     </div>
   )
 }

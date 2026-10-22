@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Ouverture pack — safe si pack absent.
  */
@@ -69,13 +70,13 @@ export default function PackOpenTheater({
           }}
         >
           <span className="text-5xl" aria-hidden>
-            {pack.icon}
+            {xaRender(pack.icon)}
           </span>
         </div>
 
-        {(phase === 'burst' || phase === 'reveal' || phase === 'done') && (
+        {xaRender((phase === 'burst' || phase === 'reveal' || phase === 'done') && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            {[...Array(12)].map((_, i) => (
+            {xaRender([...Array(12)].map((_, i) => (
               <span
                 key={i}
                 className="absolute w-2 h-2 rounded-full"
@@ -86,29 +87,29 @@ export default function PackOpenTheater({
                   transition: 'opacity 0.8s',
                 }}
               />
-            ))}
+            )))}
           </div>
-        )}
+        ))}
 
-        {(phase === 'reveal' || phase === 'done') && (
+        {xaRender((phase === 'reveal' || phase === 'done') && (
           <div className="mt-6 rounded-2xl border border-white/15 bg-zinc-950/95 p-5 space-y-3 animate-fade-in shadow-[0_0_40px_-10px_rgba(255,255,255,0.15)]">
             <div className="flex items-center gap-3">
               <LottieIcon preset="check" loop={false} size={44} />
               <div>
-                <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Pack ouvert · paper</p>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">{xaRender("Pack ouvert · paper")}</p>
                 <h2 id="pack-open-title" className="text-xl font-semibold text-white">
-                  {pack.icon} {pack.name}
+                  {xaRender(pack.icon)} {xaRender(pack.name)}
                 </h2>
               </div>
             </div>
-            <p className="text-sm text-zinc-400">{pack.tagline}</p>
+            <p className="text-sm text-zinc-400">{xaRender(pack.tagline)}</p>
             <ul className="space-y-1.5 pt-1">
-              {(pack.entitlements || []).map(e => (
+              {xaRender((pack.entitlements || []).map(e => (
                 <li key={e} className="text-[13px] text-zinc-300 flex gap-2">
                   <span className="text-emerald-400">✓</span>
-                  <span>{e}</span>
+                  <span>{xaRender(e)}</span>
                 </li>
-              ))}
+              )))}
             </ul>
             <div className="flex flex-col gap-2 pt-1">
               <button
@@ -116,22 +117,20 @@ export default function PackOpenTheater({
                 onClick={close}
                 className="w-full rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 py-2.5 text-sm font-medium text-white"
               >
-                Continuer
-              </button>
+                {xaRender("Continuer ")}</button>
               <Link
                 to="/my-packs"
                 onClick={close}
                 className="w-full text-center text-[12px] text-zinc-500 hover:text-zinc-300"
               >
-                Voir My Packs
-              </Link>
+                {xaRender("Voir My Packs ")}</Link>
             </div>
           </div>
-        )}
+        ))}
 
-        {phase !== 'reveal' && phase !== 'done' && (
-          <p className="text-center text-xs text-zinc-500 mt-6">Ouverture…</p>
-        )}
+        {xaRender(phase !== 'reveal' && phase !== 'done' && (
+          <p className="text-center text-xs text-zinc-500 mt-6">{xaRender("Ouverture…")}</p>
+        ))}
       </div>
     </div>
   )

@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../../i18n/phraseRuntime'
 import { memo } from 'react'
 import { useLiaFastPath } from '../../hooks/useLiaFastPath'
 import { useLiaSlowPath } from '../../hooks/useLiaSlowPath'
@@ -7,23 +8,24 @@ import RiskMetricsPanel from './RiskMetricsPanel'
 import RiskLockBanner from '../RiskLockBanner'
 
 function CommanderStrip() {
+  xaUsePhraseLocale()
+
   const fast = useLiaFastPath()
   const slow = useLiaSlowPath()
 
   return (
-    <section className="mb-6" aria-label="LIA Commander">
-      {fast.killAlert && (
+    <section className="mb-6" aria-label={xaLocalize("LIA Commander")}>
+      {xaRender(fast.killAlert && (
         <div
           className="mb-3 rounded-lg border border-red-500 bg-red-500/20 px-3 py-2 text-sm text-red-100"
           role="alert"
           aria-live="assertive"
         >
-          Guardian state → <strong>{fast.killAlert}</strong>
+          {xaRender("Guardian state → ")}<strong>{xaRender(fast.killAlert)}</strong>
           <button type="button" className="ml-3 text-xs underline opacity-80" onClick={fast.clearKillAlert}>
-            dismiss
-          </button>
+            {xaRender("dismiss ")}</button>
         </div>
-      )}
+      ))}
 
       <RiskLockBanner />
 
@@ -50,11 +52,11 @@ function CommanderStrip() {
         />
       </div>
 
-      {fast.err && !fast.doc && (
+      {xaRender(fast.err && !fast.doc && (
         <p className="text-xs text-amber-400/90 mt-2">
-          Fast path offline — {fast.err}. Publish : <code>python -m lia.vellum.production_run</code>
+          {xaRender("Fast path offline — ")}{xaRender(fast.err)}{xaRender(". Publish : ")}<code>python -m lia.vellum.production_run</code>
         </p>
-      )}
+      ))}
     </section>
   )
 }

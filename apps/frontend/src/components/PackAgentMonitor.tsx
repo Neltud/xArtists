@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
  * Moniteur agent — max data: tableur signaux, KPI, spark, stratégies.
  */
@@ -103,40 +104,39 @@ export default function PackAgentMonitor({ packId }: Props) {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-[10px] uppercase tracking-wider text-cyan-300/80 font-semibold">
-            Moniteur · {pack.name} · {pack.tierLabel}
+            {xaRender("Moniteur · ")}{xaRender(pack.name)} · {xaRender(pack.tierLabel)}
           </p>
-          <p className="text-sm text-white font-medium mt-0.5">Clone LIA · data dense · paper</p>
+          <p className="text-sm text-white font-medium mt-0.5">{xaRender("Clone LIA · data dense · paper")}</p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-white tabular-nums">{perf}</p>
-          <p className="text-[10px] text-zinc-500">score moyen · tick {tick}</p>
+          <p className="text-2xl font-bold text-white tabular-nums">{xaRender(perf)}</p>
+          <p className="text-[10px] text-zinc-500">{xaRender("score moyen · tick ")}{xaRender(tick)}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
         <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
-          <p className="text-zinc-500">EGLD</p>
+          <p className="text-zinc-500">{xaRender("EGLD")}</p>
           <p className="text-white font-semibold tabular-nums">
-            {egld != null ? `$${egld.toFixed(2)}` : '—'}
+            {xaRender(egld != null ? `$${egld.toFixed(2)}` : '—')}
           </p>
         </div>
         <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
-          <p className="text-zinc-500">LONG / SHORT</p>
+          <p className="text-zinc-500">{xaRender("LONG / SHORT")}</p>
           <p className="text-white font-semibold tabular-nums">
-            <span className="text-emerald-400">{longN}</span>
-            {' / '}
-            <span className="text-rose-400">{shortN}</span>
+            <span className="text-emerald-400">{xaRender(longN)}</span>
+            {xaRender(' / ')}
+            <span className="text-rose-400">{xaRender(shortN)}</span>
           </p>
         </div>
         <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
-          <p className="text-zinc-500">Part pool</p>
+          <p className="text-zinc-500">{xaRender("Part pool")}</p>
           <p className="text-white font-semibold tabular-nums">
-            {cloneShareBps}/{pack.shareOfPackPoolBps} bps
-          </p>
+            {xaRender(cloneShareBps)}/{xaRender(pack.shareOfPackPoolBps)} {xaRender(" bps ")}</p>
         </div>
         <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
-          <p className="text-zinc-500">Intensité</p>
-          <p className="text-white font-semibold">×{pack.signalIntensity}</p>
+          <p className="text-zinc-500">{xaRender("Intensité")}</p>
+          <p className="text-white font-semibold">×{xaRender(pack.signalIntensity)}</p>
         </div>
       </div>
 
@@ -146,19 +146,19 @@ export default function PackAgentMonitor({ packId }: Props) {
             <thead>
               <tr className="bg-white/[0.04] text-zinc-500 text-left">
                 <th className="px-2 py-1.5">#</th>
-                <th className="px-2 py-1.5">Signal</th>
-                <th className="px-2 py-1.5">Score</th>
-                <th className="px-2 py-1.5">Bias</th>
-                <th className="px-2 py-1.5">UTC</th>
-                <th className="px-2 py-1.5">Note</th>
+                <th className="px-2 py-1.5">{xaRender("Signal")}</th>
+                <th className="px-2 py-1.5">{xaRender("Score")}</th>
+                <th className="px-2 py-1.5">{xaRender("Bias")}</th>
+                <th className="px-2 py-1.5">{xaRender("UTC")}</th>
+                <th className="px-2 py-1.5">{xaRender("Note")}</th>
               </tr>
             </thead>
             <tbody>
-              {signals.map((s, i) => (
+              {xaRender(signals.map((s, i) => (
                 <tr key={s.id} className="border-t border-white/[0.05]">
-                  <td className="px-2 py-1.5 text-zinc-600">{String(i + 1).padStart(2, '0')}</td>
-                  <td className="px-2 py-1.5 text-cyan-200/90 font-medium">{s.kind}</td>
-                  <td className="px-2 py-1.5 tabular-nums text-zinc-200">{s.score}</td>
+                  <td className="px-2 py-1.5 text-zinc-600">{xaRender(String(i + 1).padStart(2, '0'))}</td>
+                  <td className="px-2 py-1.5 text-cyan-200/90 font-medium">{xaRender(s.kind)}</td>
+                  <td className="px-2 py-1.5 tabular-nums text-zinc-200">{xaRender(s.score)}</td>
                   <td
                     className={`px-2 py-1.5 font-semibold ${
                       s.bias === 'LONG'
@@ -168,31 +168,30 @@ export default function PackAgentMonitor({ packId }: Props) {
                           : 'text-zinc-500'
                     }`}
                   >
-                    {s.bias}
+                    {xaRender(s.bias)}
                   </td>
-                  <td className="px-2 py-1.5 text-zinc-500">{s.ts}</td>
-                  <td className="px-2 py-1.5 text-zinc-600 truncate max-w-[120px]">{s.detail}</td>
+                  <td className="px-2 py-1.5 text-zinc-500">{xaRender(s.ts)}</td>
+                  <td className="px-2 py-1.5 text-zinc-600 truncate max-w-[120px]">{xaRender(s.detail)}</td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {pack.strategies.map(s => (
+        {xaRender(pack.strategies.map(s => (
           <span
             key={s}
             className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] mono text-zinc-400"
           >
-            {s}
+            {xaRender(s)}
           </span>
-        ))}
+        )))}
       </div>
 
       <p className="text-[10px] text-zinc-600 leading-relaxed">
-        Paper only — pas un rendement. Signaux + part pool affichés ; fonds sous ta signature.
-      </p>
+        {xaRender("Paper only — pas un rendement. Signaux + part pool affichés ; fonds sous ta signature. ")}</p>
     </section>
   )
 }

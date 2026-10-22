@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Guardian / TX ritual overlay — glassmorphism.
  * SUCCESS only when lifecycle says so (no fake setTimeout success).
@@ -83,31 +84,30 @@ function TransactionOverlay({
                     : 'text-cyan-200'
               }`}
             >
-              {title || m.h}
+              {xaRender(title || m.h)}
             </p>
-            <p className="text-sm text-zinc-300 mt-1">{detail || m.c}</p>
+            <p className="text-sm text-zinc-300 mt-1">{xaRender(detail || m.c)}</p>
           </div>
-          {(phase === 'SUCCESS' || phase === 'ERROR') && onClose && (
+          {xaRender((phase === 'SUCCESS' || phase === 'ERROR') && onClose && (
             <button type="button" className="btn-secondary text-xs" onClick={onClose}>
-              Fermer
-            </button>
-          )}
+              {xaRender("Fermer ")}</button>
+          ))}
         </div>
-        {txHash && (
+        {xaRender(txHash && (
           <a
             href={`https://explorer.multiversx.com/transactions/${txHash}`}
             target="_blank"
             rel="noreferrer"
             className="block text-[11px] mono text-cyan-300/90 truncate underline"
           >
-            {txHash}
+            {xaRender(txHash)}
           </a>
-        )}
-        {phase === 'PREPARING' || phase === 'CONFIRMING' || phase === 'AWAITING_SIGNATURE' ? (
+        ))}
+        {xaRender(phase === 'PREPARING' || phase === 'CONFIRMING' || phase === 'AWAITING_SIGNATURE' ? (
           <div className="h-1 rounded-full bg-white/10 overflow-hidden">
             <div className="h-full w-1/2 animate-pulse bg-gradient-to-r from-cyan-400/80 to-violet-400/80" />
           </div>
-        ) : null}
+        ) : null)}
       </div>
     </div>
   )

@@ -1,5 +1,7 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * Command Center — salles pack (Pulse · Yield · Sentinel) — UI protocol.
+ * Command Center — 3 salles pack distinctes (Pulse GOLD · Yield SILVER · Sentinel PLATINUM).
+ * Flèches ← → pour changer de salle (si déverrouillée).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -51,11 +53,11 @@ function parseRoom(v: string | null): Room | null {
   return ROOM_IDS.includes(x as Room) ? (x as Room) : null
 }
 
-function roomLabel(id: Room, t: (k: string) => string): string {
-  if (id === 'pulse') return t('cc.pulse')
-  if (id === 'yield') return t('cc.yield')
-  if (id === 'sentinel') return t('cc.sentinel')
-  return t('cc.hub')
+function roomLabel(id: Room): string {
+  if (id === 'pulse') return 'Pulse · GOLD'
+  if (id === 'yield') return 'Yield · SILVER'
+  if (id === 'sentinel') return 'Sentinel · PLATINUM'
+  return 'Hub'
 }
 
 export default function CommandCenterPage() {
@@ -67,7 +69,7 @@ export default function CommandCenterPage() {
 }
 
 function CommandCenterInner() {
-  const { t, lang } = useI18n()
+  const { t } = useI18n()
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const status = useMemo(() => holderStatus(account.nfts || [], address), [account.nfts, address])
@@ -120,21 +122,18 @@ function CommandCenterInner() {
 
   const onRoomClick = (r: Room) => {
     if (locked(r)) {
-      const label = roomLabel(r, t)
+      const label = roomLabel(r)
       push(
         connected
-          ? lang === 'fr'
-            ? `Pack ${label} requis. Voir Packs.`
-            : `${label} pack required. See Packs.`
-          : lang === 'fr'
-            ? `Guest — salle ${label} verrouillée. Connecte le wallet.`
-            : `Guest — ${label} locked. Connect wallet.`,
+          ? `Pack ${label} requis (ou Pulse GOLD full). Voir Agents.`
+          : `Mode Guest — salle ${label} verrouillée. Connecte xPortal ou obtiens le pack.`,
       )
       return
     }
     goRoom(r)
   }
 
+  // ← → cycle unlocked rooms
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
@@ -159,90 +158,91 @@ function CommandCenterInner() {
   const wallCfg = activePackId ? ROOM_WALL[activePackId] : null
 
   return (
-    <div className="xa-page animate-fade-in space-y-6 pb-24 max-w-5xl mx-auto">
-      <header className="xa-hero" style={{ paddingTop: '1.25rem', maxWidth: '100%' }}>
-        <p className="xa-hero__kicker">{t('cc.title')}</p>
-        <h1 className="xa-hero__title" style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)' }}>
-          {pack ? `${pack.name} · ${pack.tierLabel}` : t('cc.subtitle')}
+    <div className="animate-fade-in space-y-4 pb-24 max-w-5xl mx-auto">
+      <header className="space-y-2">
+        <p className="section-label">{xaRender(t('cc.title') || 'Command Center')}</p>
+        <h1 className="section-title display text-2xl">
+          {xaRender(pack ? `${pack.icon} ${pack.name} · ${pack.tierLabel}` : 'L’Intellect · cockpit')}
         </h1>
-        <p className="text-xs text-[var(--xa-text-muted)] mb-2">{LIA_BADGE}</p>
-        <p className="xa-hero__lead" style={{ marginBottom: '0.75rem' }}>
-          {pack
+        <p className="text-[11px] text-emerald-200/90 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 inline-block max-w-full">
+          {xaRender(LIA_BADGE)}
+        </p>
+        <p className="text-[12px] text-zinc-500">
+          {xaRender(pack
             ? pack.tagline
-            : lang === 'fr'
-              ? 'Hub ops · salles pack (← →) · paper-first · signature utilisateur uniquement.'
-              : 'Ops hub · pack rooms (← →) · paper-first · user signature only.'}
+            : 'Hub commun · choisis une salle pack (← →) · paper-first · signature utilisateur uniquement.')}
         </p>
         <EconomicDisclosure compact />
       </header>
 
       <div className="flex flex-wrap items-center gap-2">
-        <div
-          className="flex flex-wrap gap-1 p-1 rounded-xl w-fit"
-          style={{ background: 'var(--xa-surface)', border: '1px solid var(--xa-border)' }}
-        >
-          {ROOM_IDS.map(r => (
+        <div className="flex flex-wrap gap-1 p-1 rounded-xl bg-black/40 border border-white/10 w-fit">
+          {xaRender(ROOM_IDS.map(r => (
             <button
               key={r}
               type="button"
               onClick={() => onRoomClick(r)}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-semibold min-h-[40px] transition ${
+              className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold min-h-[44px] ${
                 room === r
-                  ? 'bg-white/10 text-[var(--xa-text)]'
+                  ? r === 'pulse'
+                    ? 'bg-amber-600/40 text-amber-100'
+                    : r === 'yield'
+                      ? 'bg-zinc-500/40 text-zinc-100'
+                      : r === 'sentinel'
+                        ? 'bg-violet-600/40 text-violet-100'
+                        : 'bg-violet-600/40 text-violet-100'
                   : locked(r)
-                    ? 'text-[var(--xa-text-muted)] opacity-50'
-                    : 'text-[var(--xa-text-secondary)] hover:text-[var(--xa-text)]'
+                    ? 'text-zinc-600'
+                    : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              {roomLabel(r, t)}
-              {locked(r) ? ` · ${t('cc.locked')}` : ''}
+              {xaRender(roomLabel(r))}
+              {xaRender(locked(r) ? ' 🔒' : '')}
             </button>
-          ))}
+          )))}
         </div>
-        <p className="text-[10px] text-[var(--xa-text-muted)] hidden sm:block">← →</p>
+        <p className="text-[10px] text-zinc-600 hidden sm:block">{xaRender("← → changer de salle")}</p>
       </div>
 
-      {!connected && (
-        <button type="button" className="xa-btn-primary text-sm" onClick={requestOpenConnect}>
-          {t('common.connect')}
-        </button>
-      )}
+      {xaRender(!connected && (
+        <button type="button" className="btn-primary text-sm min-h-[44px]" onClick={requestOpenConnect}>
+          {xaRender("Connecter xPortal ")}</button>
+      ))}
 
-      {room === 'hub' && (
+      {/* ——— HUB ——— */}
+      {xaRender(room === 'hub' && (
         <>
           <MarketTape snap={ambientSnap} />
           <LiveAssetTape />
           <CommandWall
             sentiment={ambientSnap.mode === 'bear' ? -0.4 : 0.2}
             volatility={0.35}
-            color={[0.6, 0.6, 0.65]}
+            color={[0.15, 0.85, 0.95]}
           />
           <DashboardSource />
           <AgentRoster />
           <div className="grid gap-3 sm:grid-cols-3">
-            {AGENT_PACKS.map(p => (
+            {xaRender(AGENT_PACKS.map(p => (
               <AgentNftOrb
                 key={p.id}
                 packId={p.id}
                 aura={ambientSnap.mode}
                 onSelect={() => onRoomClick(p.id)}
               />
-            ))}
+            )))}
           </div>
           <ClickGuide />
-          <p className="xa-disclaimer">
-            {lang === 'fr'
-              ? 'Hub : vue d’ensemble. Pulse (signaux), Yield (DeFi), Sentinel (risk / RWA).'
-              : 'Hub overview. Pulse (signals), Yield (DeFi), Sentinel (risk / RWA).'}
-          </p>
+          <p className="text-[12px] text-zinc-500">
+            {xaRender("Hub : vue d’ensemble. Entre dans ")}<strong className="text-zinc-300">{xaRender("Pulse")}</strong> {xaRender(" (signaux HF), ")}<strong className="text-zinc-300">{xaRender("Yield")}</strong> {xaRender(" (DeFi) ou")}{xaRender(' ')}
+            <strong className="text-zinc-300">{xaRender("Sentinel")}</strong> {xaRender(" (risk / RWA). ")}</p>
         </>
-      )}
+      ))}
 
-      {room === 'pulse' && (
+      {/* ——— PULSE GOLD ——— */}
+      {xaRender(room === 'pulse' && (
         <>
-          <div className="xa-card text-sm text-[var(--xa-text-secondary)]">
-            Pulse · HF signals · TCA · LIA · live tape
-          </div>
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[12px] text-amber-100">
+            {xaRender("⚡ GOLD — trading HF · TCA · LIA full · tape live · intensité max ")}</div>
           <MarketTape snap={ambientSnap} />
           <LiveAssetTape />
           <CommandWall
@@ -259,13 +259,13 @@ function CommandCenterInner() {
           <LiveNewsStream />
           <ClickGuide />
         </>
-      )}
+      ))}
 
-      {room === 'yield' && (
+      {/* ——— YIELD SILVER ——— */}
+      {xaRender(room === 'yield' && (
         <>
-          <div className="xa-card text-sm text-[var(--xa-text-secondary)]">
-            Yield · DeFi sleeve · LP · staking · compound
-          </div>
+          <div className="rounded-xl border border-zinc-400/30 bg-zinc-500/10 px-3 py-2 text-[12px] text-zinc-200">
+            {xaRender("📈 SILVER — DeFi sleeve · LP · staking · compound (pas TCA / LIA full) ")}</div>
           <CommandWall
             sentiment={wallCfg!.sentiment}
             volatility={wallCfg!.volatility}
@@ -274,48 +274,44 @@ function CommandCenterInner() {
           />
           <AgentNftOrb packId="yield" aura="stable" />
           <section className="space-y-2">
-            <div
-              className="flex gap-1 p-1 rounded-xl w-fit flex-wrap"
-              style={{ background: 'var(--xa-surface)', border: '1px solid var(--xa-border)' }}
-            >
-              {(['defi', 'liquidity', 'holders'] as EcoTab[]).map(tab => (
+            <div className="flex gap-1 p-1 rounded-xl bg-black/40 border border-white/10 w-fit flex-wrap">
+              {xaRender((['defi', 'liquidity', 'holders'] as EcoTab[]).map(tab => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setEco(tab)}
-                  className={`px-3 py-1.5 rounded-full text-[11px] font-semibold min-h-[40px] ${
-                    eco === tab ? 'bg-white/10 text-[var(--xa-text)]' : 'text-[var(--xa-text-muted)]'
+                  className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold min-h-[44px] ${
+                    eco === tab ? 'bg-zinc-500/40 text-zinc-100' : 'text-zinc-400'
                   }`}
                 >
-                  {tab}
+                  {xaRender(tab)}
                 </button>
-              ))}
+              )))}
             </div>
-            {eco === 'defi' && (
-              <p className="text-sm text-[var(--xa-text-secondary)]">
-                DeFi — <Link className="underline" to="/staking">/staking</Link>
+            {xaRender(eco === 'defi' && (
+              <p className="text-[12px] text-zinc-500">
+                {xaRender("DeFi hub — ")}<Link className="text-cyan-300" to="/staking">{xaRender("/staking")}</Link> {xaRender(" · compound & claim ")}</p>
+            ))}
+            {xaRender(eco === 'liquidity' && (
+              <p className="text-[12px] text-zinc-500">
+                {xaRender("Liquidité $TRO — ")}<Link className="text-cyan-300" to="/lp">{xaRender("/lp")}</Link> ·{xaRender(' ')}
+                <Link className="text-cyan-300" to="/hatom">{xaRender("/hatom")}</Link>
               </p>
-            )}
-            {eco === 'liquidity' && (
-              <p className="text-sm text-[var(--xa-text-secondary)]">
-                $TRO — <Link className="underline" to="/lp">/lp</Link> ·{' '}
-                <Link className="underline" to="/hatom">/hatom</Link>
-              </p>
-            )}
-            {eco === 'holders' && (
-              <p className="text-sm text-[var(--xa-text-secondary)]">Holders Yield — pool analytics</p>
-            )}
+            ))}
+            {xaRender(eco === 'holders' && (
+              <p className="text-[12px] text-zinc-500">{xaRender("Holders Yield — analytics pool & stake")}</p>
+            ))}
           </section>
           <IntentXPortalPanel />
           <DashboardSource />
         </>
-      )}
+      ))}
 
-      {room === 'sentinel' && (
+      {/* ——— SENTINEL PLATINUM ——— */}
+      {xaRender(room === 'sentinel' && (
         <>
-          <div className="xa-card text-sm text-[var(--xa-text-secondary)]">
-            Sentinel · watch · RWA · zero-trust · drawdown alerts
-          </div>
+          <div className="rounded-xl border border-violet-500/30 bg-violet-500/10 px-3 py-2 text-[12px] text-violet-100">
+            {xaRender("🛡️ PLATINUM — veille · RWA · zero-trust · alertes drawdown ")}</div>
           <CommandWall
             sentiment={wallCfg!.sentiment}
             volatility={wallCfg!.volatility}
@@ -323,34 +319,30 @@ function CommandCenterInner() {
             color={wallCfg!.color}
           />
           <AgentNftOrb packId="sentinel" aura="bear" />
-          <section className="xa-card space-y-2">
-            <p className="text-[11px] uppercase tracking-wider text-[var(--xa-text-muted)]">Risk sleeve</p>
-            <ul className="text-sm text-[var(--xa-text-secondary)] space-y-1">
-              <li>· Board drawdown alerts</li>
-              <li>· RWA / zero-trust gates</li>
-              <li>· GUARD · ALERT · DRAWDOWN_WATCH</li>
+          <section className="rounded-2xl border border-violet-500/20 bg-black/40 p-4 space-y-2">
+            <p className="text-[11px] uppercase tracking-wider text-violet-300/80">{xaRender("Risk sleeve")}</p>
+            <ul className="text-[12px] text-zinc-400 space-y-1">
+              <li>{xaRender("· Alertes drawdown board")}</li>
+              <li>{xaRender("· Certification RWA / gates zero-trust")}</li>
+              <li>{xaRender("· Stratégies GUARD · ALERT · DRAWDOWN_WATCH")}</li>
             </ul>
-            <Link to="/tca" className="text-sm text-[var(--xa-accent)] hover:underline">
-              TCA Academy →
-            </Link>
+            <Link to="/tca" className="text-violet-300 text-[12px] hover:underline">
+              {xaRender("TCA Academy → Module Zero-Trust ")}</Link>
           </section>
           <IntentXPortalPanel />
           <LiveNewsStream />
         </>
-      )}
+      ))}
 
       <DataTunnelTransition active={tunnelRef.current} />
 
-      <div className="flex flex-wrap gap-4 text-sm">
-        <Link to="/lia" className="text-[var(--xa-text-secondary)] hover:text-[var(--xa-text)]">
-          {t('lia.title')}
-        </Link>
-        <Link to="/agents" className="text-[var(--xa-text-secondary)] hover:text-[var(--xa-text)]">
-          {t('nav.packs')}
-        </Link>
-        <Link to="/" className="text-[var(--xa-text-secondary)] hover:text-[var(--xa-text)]">
-          {t('nav.home')}
-        </Link>
+      <div className="flex flex-wrap gap-3 text-[12px] text-zinc-500">
+        <Link to="/lia" className="hover:text-zinc-300">
+          {xaRender("LIA Hub (3 écrans holo) ")}</Link>
+        <Link to="/agents" className="hover:text-zinc-300">
+          {xaRender("Packs ")}</Link>
+        <Link to="/" className="hover:text-zinc-300">
+          {xaRender("Accueil ")}</Link>
       </div>
     </div>
   )

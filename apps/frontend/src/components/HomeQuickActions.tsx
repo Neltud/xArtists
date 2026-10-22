@@ -1,3 +1,4 @@
+import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { Link } from 'react-router-dom'
 import { requestOpenConnect } from '../lib/walletEvents'
 
@@ -11,19 +12,19 @@ const ACTIONS = [
 export default function HomeQuickActions() {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
-      {ACTIONS.map(a => (
+      {xaRender(ACTIONS.map(a => (
         <Link
           key={a.to}
           to={a.to}
           className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-3 hover:border-purple-400/40 transition-colors"
         >
           <span className="text-lg" aria-hidden>
-            {a.emoji}
+            {xaRender(a.emoji)}
           </span>
-          <p className="text-sm font-bold text-white mt-1">{a.label}</p>
-          <p className="text-[10px] text-zinc-500">{a.sub}</p>
+          <p className="text-sm font-bold text-white mt-1">{xaRender(a.label)}</p>
+          <p className="text-[10px] text-zinc-500">{xaRender(a.sub)}</p>
         </Link>
-      ))}
+      )))}
       <button
         type="button"
         onClick={() => requestOpenConnect()}
@@ -32,8 +33,8 @@ export default function HomeQuickActions() {
         <span className="text-lg" aria-hidden>
           🔗
         </span>
-        <p className="text-sm font-bold text-cyan-100 mt-1">Connecter</p>
-        <p className="text-[10px] text-zinc-500">Wallet MultiversX</p>
+        <p className="text-sm font-bold text-cyan-100 mt-1">{xaRender("Connecter")}</p>
+        <p className="text-[10px] text-zinc-500">{xaRender("Wallet MultiversX")}</p>
       </button>
     </div>
   )
