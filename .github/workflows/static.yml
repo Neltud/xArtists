@@ -88,7 +88,7 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096
           VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
           VITE_APP_BUILD: "sites-v3-release"
-          VITE_LIA_LIVE_TRADING: "1"
+          VITE_LIA_LIVE_TRADING: "0"
           VITE_ACCESS_API_BASE: ${{ vars.VITE_ACCESS_API_BASE }}
           VITE_MOONPAY_API_KEY: ${{ vars.VITE_MOONPAY_API_KEY || secrets.VITE_MOONPAY_API_KEY }}
           VITE_PAYBOX_ENABLED: "false"
@@ -135,8 +135,6 @@ jobs:
       - name: Verify built GitHub Pages assets
         run: npm run verify:site
 
-      # Legacy Pages also publishes main/docs after data-only commits. Keep its
-      # renderer identical to the artifact until Pages is switched to Actions.
       - name: Synchronize the legacy Pages snapshot
         if: github.ref == 'refs/heads/main'
         working-directory: .
