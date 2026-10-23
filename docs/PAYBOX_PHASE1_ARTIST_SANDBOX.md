@@ -1,54 +1,69 @@
-# Paybox System phase 1 — paiements artistes (sandbox)
+# Paybox System phase 1 — artist sandbox (hardened)
 
-**Branche :** `feat/paybox-artist-sandbox-p0`  
-**Date :** 2026-10-23  
-**Offre PSP :** **Paybox System** (Verifone) — TPE web e-Transactions, manuel d'intégration **v8.3 (2025-09)**.  
-Ce n'est **pas** le produit PayBox agent API (paybox.sh).
+**Branch:** `feat/paybox-artist-sandbox-p0`  
+**Manual:** Verifone Paybox System v8.3 (2025-09)
 
-## Authentification (protocole officiel)
+## IPN signature policy (no SHA-1 fallback)
 
-| Direction | Mécanisme | Preuve |
-|-----------|-----------|--------|
-| Sortante (session) | **HMAC-SHA512** `PBX_HMAC`, clé secrète marchand (hex → binaire) | `signPayboxHmac` |
-| Entrante (IPN) | **RSA SHA1withRSA** param `sign:K`, clé publique Paybox | `verifyPayboxRsaSignature` |
-| Retour navigateur | **Aucune preuve** | `server_confirmed` uniquement après IPN RSA + montant |
+| Setting | Value |
+|---------|-------|
+| `PBX_IPNALGOSIGN` | **SHA_256** |
+| `PBX_SIGN_KEYSIZE` | **2048** |
+| OpenSSL verify | RSA-SHA256 |
+| Public key file | `services/access-api/src/paybox_pubkey_rsa2048.pem` |
+| Provenance | https://www.paybox.com/wp-content/uploads/2025/09/pubkey_RSA_2048.pem |
+| DER SHA-256 fingerprint | `f4926805a6b5294a3b4523f260c51c412617d774e2a4ef27c4ec0eb85ecb93d6` |
 
-Clé publique officielle : `services/access-api/src/paybox_pubkey.pem`  
-(http://www1.paybox.com/wp-content/uploads/2014/03/pubkey.pem)
+Legacy 1024-bit / SHA-1 signatures are **rejected**.
 
-## Sécurité commandes
+IPN verifies the **raw query/body string** with `sign` stripped (`extractRawSignedData`). `PBX_RETOUR` ends with `sign:K`.
 
-- Prix serveur (Pulse 11000 / Yield 7500 / Sentinel 5000 cents, devise 978)
-- Références uniques, écriture atomique + lock fichier
-- Idempotence IPN, late IPN, une seule livraison simulée
-- Artiste : allowlist serveur uniquement (`PAYBOX_ARTIST_ALLOWLIST`) — absente = aucun bénéficiaire arbitraire
-- Consultation commande : liée à `buyer` (403 sinon)
-- Mint blockchain : **simulé**
+3DSv2 outbound: `PBX_BILLING` + `PBX_SHOPPINGCART` always set.
 
-## P0 application
+## Buyer identity
 
-- `VITE_LIA_LIVE_TRADING=0` / `LIA_LIVE_TRADING=0` sur Pages
-- `VITE_PAYBOX_ENABLED=false` jusqu'à preprod prouvée
-- `claimFees` : endpoint SC `require_owner` + garde applicative `scripts/claim_fees_guard.mjs` (treasury dest null → bloqué)
-- Aucun chemin front `claimFees`
+Checkout and order status require **server-verified** identity:
 
-## Prérequis externes
+1. `Authorization: Bearer` access JWT (`verifyJwt` HS256, `sub` = erd1…)
+2. or SIWX body (`verifySignedChallenge` — nonce one-use + expiry)
 
-1. Compte marchand Paybox System preprod (SITE, RANG, IDENTIFIANT, HMAC hex)
-2. URL publique access-api pour `PBX_REPONDRE_A`
-3. Allowlist artistes optionnelle
-4. Échanges preprod PSP réels — **non effectués** ici (fixtures RSA isolées uniquement)
+Client `buyer_address` alone is **rejected**. Token/sub mismatch → 403.
+
+## Artist designation
+
+If `artist_beneficiary` is set, it **must** pass `PAYBOX_ARTIST_ALLOWLIST` (even without payout split).
+
+| Layer | Status |
+|-------|--------|
+| Merchant capture (Paybox account) | Session → IPN paid |
+| Accounting attribution | `artist_beneficiary` on order |
+| Effective payout / reversement | **not_implemented** |
+
+## claimFees application guard
+
+| Path | Guard |
+|------|-------|
+| `scripts/claim_fees_guard.mjs` | Blocks if treasury dest null / LIA live / Guardian / codehash / proof |
+| `scripts/claim_fees_prepare.mjs` | **Only** prepare entry — always runs guard; never broadcasts |
+| SC `claimFees` | `require_owner` only — does **not** enforce treasury dest on-chain |
+
+**Limit:** human `mxpy` with PEM is outside code control.
+
+## Order store limits
+
+- File lock = single-host concurrent IPN only
+- Survives restart on persistent volume; not multi-replica safe without external DB
 
 ## Tests
 
 ```bash
 cd services/access-api && npm ci
-node --test tests/paybox_*.test.mjs
-node scripts/test_claim_fees_guard.mjs
+node --test tests/paybox_v2.test.mjs
+# 11/11 pass (local RSA-2048 fixtures)
 ```
 
-| Couche | Statut |
-|--------|--------|
-| Fixtures locales (HMAC + RSA test keys) | Automatisé |
-| Preprod PSP réelle | **Non exécutée** — prérequis compte |
-| Production | **Non activée** |
+| Layer | Result |
+|-------|--------|
+| Local RSA-2048 fixtures | Automated pass |
+| Real PSP preprod | **Not run** |
+| Production | **Not activated** |
