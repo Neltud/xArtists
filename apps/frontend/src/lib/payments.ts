@@ -44,12 +44,14 @@ export function payMethodLabel(m: PayMethod): string {
   }
 }
 
+export type PackPaymentResult = 'redirect' | 'payment_link' | 'paper' | 'unavailable' | 'refused'
+
 export async function startPackPayment(opts: {
   method: PayMethod
   packId: PackId
   buyerAddress: string
   amountEur: number
-}): Promise<'redirect' | 'payment_link' | 'paper'> {
+}): Promise<PackPaymentResult> {
   if (opts.method === 'stripe') {
     return startStripeCardPayment({
       packId: opts.packId,
@@ -57,11 +59,19 @@ export async function startPackPayment(opts: {
     })
   }
   if (opts.method === 'paybox') {
-    return startPayboxCardPayment({
-      packId: opts.packId,
-      buyerAddress: opts.buyerAddress,
-      amountEur: opts.amountEur,
-    })
+    try {
+      const r = await startPayboxCardPayment({
+        packId: opts.packId,
+        buyerAddress: opts.buyerAddress,
+        amountEur: opts.amountEur,
+      })
+      return r
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      if (msg.includes('paybox_refused')) return 'refused'
+      if (msg.includes('paybox_unavailable') || msg.includes('501')) return 'unavailable'
+      throw e
+    }
   }
   return 'paper'
 }
