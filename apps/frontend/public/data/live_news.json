@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-23T11:04:22.304Z",
+  "updatedAt": "2026-10-23T16:31:25.851Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792773085613",
+      "timestamp": "16:31",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.61 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792753462166",
       "timestamp": "11:04",
@@ -142,13 +149,6 @@
       "source": "CoinDesk",
       "title": "JPMorgan sees 10% annual bitcoin returns, topping stocks, bonds and gold over next decade",
       "link": "https://www.coindesk.com/markets/2026/10/20/jpmorgan-sees-10-annual-bitcoin-returns-topping-stocks-bonds-and-gold-over-next-decade"
-    },
-    {
-      "id": "egld-1792483967504",
-      "timestamp": "08:12",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.61 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-0-1792474760000",
