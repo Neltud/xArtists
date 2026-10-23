@@ -1,6 +1,11 @@
 /**
- * Persistent Paybox orders — atomic file store, fail-closed.
- * One delivery per successful payment. Mint remains simulated.
+ * Persistent Paybox orders — atomic rename + best-effort single-host lock file.
+ *
+ * LIMITS (explicit):
+ * - Lock is local file (wx); protects concurrent IPNs on ONE host only.
+ * - Does NOT coordinate multi-replica access-api — use single-writer or external DB.
+ * - Survives process restart on same volume; NOT ephemeral redeploy without PVC.
+ * - Mint remains simulated.
  */
 import fs from 'node:fs'
 import path from 'node:path'
