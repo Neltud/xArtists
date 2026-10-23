@@ -58,12 +58,18 @@ If `artist_beneficiary` is set, it **must** pass `PAYBOX_ARTIST_ALLOWLIST` (even
 
 ```bash
 cd services/access-api && npm ci
-node --test tests/paybox_v2.test.mjs
-# 11/11 pass (local RSA-2048 fixtures)
+node --test tests/paybox_*.test.mjs
+# 19/19 pass (local RSA-2048 fixtures + HTTP JWT/IPN)
+node scripts/test_claim_fees_guard.mjs
+# claim_fees_guard tests OK
 ```
+
+Covered: invalid signatures, altered encoded data, amount mismatch, buyer spoof, cross-user order access, concurrent IPN idempotence, restart persistence (same volume), artist allowlist without split, fail-closed without merchant config.
 
 | Layer | Result |
 |-------|--------|
-| Local RSA-2048 fixtures | Automated pass |
-| Real PSP preprod | **Not run** |
+| Local RSA-2048 fixtures + HTTP | **19/19 automated pass** (this branch) |
+| Real PSP preprod | **Not run** — no merchant credentials in CI |
 | Production | **Not activated** |
+
+**Lock limits:** file lock protects concurrent IPNs on **one host only**. Multi-replica requires external DB. Persistence survives restart on same volume; not guaranteed across ephemeral redeploys without PVC.
