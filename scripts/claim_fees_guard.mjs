@@ -1,9 +1,10 @@
 /**
- * Application-layer guard: refuse claimFees unless explicit ops conditions.
- * SC-level require_owner is the on-chain guarantee; this blocks accidental ops scripts.
+ * Application-layer guard for claimFees preparation.
+ * SC require_owner does NOT enforce treasury destination on-chain.
+ * This guard MUST run before any PEM sign / broadcast of claimFees.
  *
- * Usage: node scripts/claim_fees_guard.mjs
- * Exit 0 only when all gates pass — still does NOT broadcast.
+ * Covered: scripts/claim_fees_guard.mjs, scripts/claim_fees_prepare.mjs
+ * NOT covered: direct mxpy/erdpy by human with PEM (operational control).
  */
 const dest = process.env.TREASURY_DEST || process.env.CLAIM_FEES_DEST || ''
 const live = process.env.LIA_LIVE_TRADING === '1'
