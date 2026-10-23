@@ -1,15 +1,18 @@
 /**
  * Paybox System (Verifone) — e-Transactions carte FR.
  *
- * Offre: Paybox System (TPE web), protocol manuel d'intégration v8.3 (2025-09).
- * NOT "PayBox" agent API / paybox.sh — different product.
+ * Offre: Paybox System TPE web — manuel d'intégration v8.3 (2025-09).
+ * NOT paybox.sh agent API.
  *
- * Outbound request authentication: HMAC-SHA512 (PBX_HMAC), key = hex merchant secret.
- * Inbound IPN authentication: RSA SHA1withRSA (param sign:K), Paybox public key.
- *   Official: http://www1.paybox.com/wp-content/uploads/2014/03/pubkey.pem
- *   HMAC is NEVER used to verify IPN. Browser return is NEVER payment proof.
+ * Outbound: HMAC-SHA512 (PBX_HMAC).
+ * Inbound IPN: RSA SHA-256 withRSA, key size 2048 only.
+ *   PBX_IPNALGOSIGN=SHA_256, PBX_SIGN_KEYSIZE=2048 — no SHA-1 / RSA-1024 fallback.
+ *   Official pubkey: https://www.paybox.com/wp-content/uploads/2025/09/pubkey_RSA_2048.pem
+ *   Bundled: paybox_pubkey_rsa2048.pem
+ *   DER SHA-256: f4926805a6b5294a3b4523f260c51c412617d774e2a4ef27c4ec0eb85ecb93d6
  *
- * Price ALWAYS from server catalog. Secrets only in server env.
+ * IPN signature verified over raw query with sign stripped (extractRawSignedData).
+ * PBX_RETOUR ends with sign:K. 3DSv2: PBX_BILLING + PBX_SHOPPINGCART.
  */
 import crypto from 'node:crypto'
 import fs from 'node:fs'
@@ -23,7 +26,16 @@ const TPE = {
   prod: 'https://tpeweb.paybox.com/cgi/MYchoix_pagepaiement.cgi',
 }
 
-/** @param {NodeJS.ProcessEnv} [env] */
+export const IPN_POLICY = Object.freeze({
+  algorithm: 'SHA_256',
+  keySize: 2048,
+  opensslDigest: 'RSA-SHA256',
+  expectedSigBytes: 256,
+  pubkeyFile: 'paybox_pubkey_rsa2048.pem',
+  pubkeyUrl: 'https://www.paybox.com/wp-content/uploads/2025/09/pubkey_RSA_2048.pem',
+  pubkeySha256: 'f4926805a6b5294a3b4523f260c51c412617d774e2a4ef27c4ec0eb85ecb93d6',
+})
+
 export function payboxConfig(env = process.env) {
   const site = String(env.PAYBOX_SITE || '').trim()
   const rang = String(env.PAYBOX_RANG || '').trim()
@@ -49,7 +61,8 @@ export function buildHmacMessage(fields) {
   const order = [
     'PBX_SITE', 'PBX_RANG', 'PBX_IDENTIFIANT', 'PBX_TOTAL', 'PBX_DEVISE', 'PBX_CMD',
     'PBX_PORTEUR', 'PBX_RETOUR', 'PBX_HASH', 'PBX_TIME', 'PBX_EFFECTUE', 'PBX_ANNULE',
-    'PBX_REFUSE', 'PBX_ATTENTE', 'PBX_REPONDRE_A',
+    'PBX_REFUSE', 'PBX_ATTENTE', 'PBX_REPONDRE_A', 'PBX_SHOPPINGCART', 'PBX_BILLING',
+    'PBX_IPNALGOSIGN', 'PBX_SIGN_KEYSIZE',
   ]
   const parts = []
   for (const k of order) {
@@ -59,22 +72,60 @@ export function buildHmacMessage(fields) {
   return parts.join('&')
 }
 
-export function loadPayboxPublicKey(env = process.env) {
-  if (env.PAYBOX_PUBKEY_PEM) return crypto.createPublicKey(env.PAYBOX_PUBKEY_PEM)
+export function buildShoppingCartXml(totalCents, quantity = 1) {
+  return `<?xml version="1.0" encoding="utf-8"?><shoppingcart><total><totalQuantity>${quantity}</totalQuantity></total></shoppingcart>`
+}
+
+function escapeXml(s) {
+  return String(s).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"')
+}
+
+export function buildBillingXml(opts = {}) {
+  const first = opts.firstName || 'Client'
+  const last = opts.lastName || 'XArtists'
+  const addr = opts.address || '1 rue de la Paix'
+  const zip = opts.zip || '75001'
+  const city = opts.city || 'Paris'
+  const country = opts.countryCode || '250'
+  return `<?xml version="1.0" encoding="utf-8"?><Billing><Address><FirstName>${escapeXml(first)}</FirstName><LastName>${escapeXml(last)}</LastName><Address1>${escapeXml(addr)}</Address1><ZipCode>${escapeXml(zip)}</ZipCode><City>${escapeXml(city)}</City><CountryCode>${escapeXml(country)}</CountryCode></Address></Billing>`
+}
+
+function assertKey2048(key) {
+  const bits = key.asymmetricKeyDetails?.modulusLength
+  if (bits && bits !== 2048) {
+    const err = new Error(`paybox_pubkey_must_be_2048_got_${bits}`)
+    err.code = 'KEY_SIZE'
+    err.statusCode = 503
+    throw err
+  }
+}
+
+export function loadPayboxPublicKey2048(env = process.env) {
+  if (env.PAYBOX_PUBKEY_PEM) {
+    const key = crypto.createPublicKey(env.PAYBOX_PUBKEY_PEM)
+    assertKey2048(key)
+    return key
+  }
   const candidates = [
     env.PAYBOX_PUBKEY_PATH,
-    path.join(__dirname, 'paybox_pubkey.pem'),
-    path.join(__dirname, '../paybox_pubkey.pem'),
+    path.join(__dirname, 'paybox_pubkey_rsa2048.pem'),
+    path.join(__dirname, '../paybox_pubkey_rsa2048.pem'),
   ].filter(Boolean)
   for (const p of candidates) {
     try {
-      if (fs.existsSync(p)) return crypto.createPublicKey(fs.readFileSync(p, 'utf8'))
-    } catch { /* */ }
+      if (fs.existsSync(p)) {
+        const key = crypto.createPublicKey(fs.readFileSync(p, 'utf8'))
+        assertKey2048(key)
+        return key
+      }
+    } catch (e) {
+      if (e.code === 'KEY_SIZE') throw e
+    }
   }
-  throw Object.assign(new Error('paybox_pubkey_missing'), { statusCode: 503 })
+  throw Object.assign(new Error('paybox_pubkey_2048_missing'), { statusCode: 503 })
 }
 
-export function verifyPayboxRsaSignature(dataString, signatureB64, pubKey = loadPayboxPublicKey()) {
+export function verifyPayboxRsaSignature(dataString, signatureB64, pubKey = loadPayboxPublicKey2048()) {
   if (!dataString || !signatureB64) return false
   let sigRaw = String(signatureB64)
   if (/%[0-9A-Fa-f]{2}/.test(sigRaw)) {
@@ -82,9 +133,9 @@ export function verifyPayboxRsaSignature(dataString, signatureB64, pubKey = load
   }
   let sigBuf
   try { sigBuf = Buffer.from(sigRaw, 'base64') } catch { return false }
-  if (sigBuf.length !== 128) return false
+  if (sigBuf.length !== IPN_POLICY.expectedSigBytes) return false
   try {
-    const verifier = crypto.createVerify('RSA-SHA1')
+    const verifier = crypto.createVerify(IPN_POLICY.opensslDigest)
     verifier.update(Buffer.from(dataString, 'utf8'))
     verifier.end()
     return verifier.verify({ key: pubKey, padding: crypto.constants.RSA_PKCS1_PADDING }, sigBuf)
@@ -125,21 +176,26 @@ export function createPayboxSession(input, cfg = payboxConfig()) {
     PBX_ANNULE: input.cancelUrl,
     PBX_REFUSE: input.cancelUrl,
     PBX_REPONDRE_A: input.ipnUrl,
+    PBX_SHOPPINGCART: buildShoppingCartXml(amount),
+    PBX_BILLING: buildBillingXml(input.billing || {}),
+    PBX_IPNALGOSIGN: IPN_POLICY.algorithm,
+    PBX_SIGN_KEYSIZE: String(IPN_POLICY.keySize),
   }
   if (cfg.identifiant) fields.PBX_IDENTIFIANT = cfg.identifiant
   fields.PBX_HMAC = signPayboxHmac(buildHmacMessage(fields), cfg.hmacKey)
   return {
-    ok: true,
-    url: cfg.endpoint,
-    method: 'POST',
-    fields,
-    order_id: orderId,
-    amount_cents: amount,
-    currency: 'EUR',
-    delivery: 'ipn_only',
-    auth_outbound: 'hmac_sha512',
-    auth_inbound: 'rsa_sha1',
+    ok: true, url: cfg.endpoint, method: 'POST', fields, order_id: orderId,
+    amount_cents: amount, currency: 'EUR', delivery: 'ipn_only',
+    auth_outbound: 'hmac_sha512', auth_inbound: 'rsa_sha256_2048',
+    ipn_policy: { ...IPN_POLICY },
   }
+}
+
+export function extractRawSignedData(rawQuery) {
+  if (!rawQuery || typeof rawQuery !== 'string') return null
+  const m = rawQuery.match(/^(.*)(?:&sign=|&K=)([^&]*)$/i)
+  if (!m) return null
+  return m[1]
 }
 
 export function verifyPayboxIpn(params, expectedAmountCents, merchant = {}, opts = {}) {
@@ -163,30 +219,26 @@ export function verifyPayboxIpn(params, expectedAmountCents, merchant = {}, opts
   if (merchant.devise && deviseEcho && String(deviseEcho) !== String(merchant.devise)) {
     return { ok: false, reason: 'currency_mismatch' }
   }
-  const dataString = ['amount', 'ref', 'auto', 'error', 'idtrans']
-    .map(k => {
-      const v = params[k] ?? params[{ amount: 'M', ref: 'R', auto: 'A', error: 'E', idtrans: 'S' }[k]] ?? ''
-      return `${k}=${v}`
-    })
-    .join('&')
-  if (!opts.skipRsa) {
-    let pubKey = opts.pubKey
-    try {
-      if (!pubKey) pubKey = loadPayboxPublicKey()
-    } catch {
-      return { ok: false, reason: 'pubkey_unavailable' }
-    }
-    if (!verifyPayboxRsaSignature(dataString, sign, pubKey)) {
-      return { ok: false, reason: 'bad_signature', ref }
-    }
+  let dataString = opts.rawSignedData
+  if (!dataString) {
+    dataString = ['amount', 'ref', 'auto', 'error', 'idtrans']
+      .map(k => {
+        const v = params[k] ?? params[{ amount: 'M', ref: 'R', auto: 'A', error: 'E', idtrans: 'S' }[k]] ?? ''
+        return `${k}=${v}`
+      })
+      .join('&')
+  }
+  let pubKey = opts.pubKey
+  try {
+    if (!pubKey) pubKey = loadPayboxPublicKey2048()
+  } catch (e) {
+    return { ok: false, reason: e.message || 'pubkey_unavailable' }
+  }
+  if (!verifyPayboxRsaSignature(dataString, sign, pubKey)) {
+    return { ok: false, reason: 'bad_signature', ref }
   }
   return {
-    ok: true,
-    ref,
-    amount_cents: amountInt,
-    error,
-    authorization: auto || null,
-    provider_tx_id: idtrans || null,
-    paid: error === '00000',
+    ok: true, ref, amount_cents: amountInt, error,
+    authorization: auto || null, provider_tx_id: idtrans || null, paid: error === '00000',
   }
 }
