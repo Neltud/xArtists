@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-23T16:31:25.851Z",
+  "updatedAt": "2026-10-23T21:01:55.441Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792789315076",
+      "timestamp": "21:01",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.50 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792773085613",
       "timestamp": "16:31",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Crypto PAC pours $362K into California race voters essentially decided in August",
       "link": "https://cointelegraph.com/news/crypto-pac-california-race-voters-special-election?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792441273000",
-      "timestamp": "20:21",
-      "source": "CoinDesk",
-      "title": "Tether: Senator's investigation misses positive work that's led to lower Iran volumes",
-      "link": "https://www.coindesk.com/policy/2026/10/19/tether-senator-s-investigation-misses-positive-work-that-s-led-to-lower-iran-volumes"
     }
   ]
 }
