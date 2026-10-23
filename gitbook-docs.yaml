@@ -1,0 +1,14 @@
+# GitBook Site Git Sync — Neltud/xArtists
+# Schema: https://api.gitbook.com/gitbook-docs.yaml
+$schema: https://api.gitbook.com/gitbook-docs.yaml
+version: 1
+site:
+  title: xArtists
+  structure:
+    - type: space
+      key: space-docs
+      title: Documentation
+      path: docs
+      default: true
+      content:
+        directory: ./docs
