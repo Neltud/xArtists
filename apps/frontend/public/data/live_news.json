@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-23T21:01:55.441Z",
+  "updatedAt": "2026-10-24T03:25:43.390Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792812343114",
+      "timestamp": "03:25",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.45 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792789315076",
       "timestamp": "21:01",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Solana treasury firm SkyAI sells all SOL holdings, launches $201M buyback",
       "link": "https://cointelegraph.com/news/solana-treasury-skyai-sells-all-sol-holdings-launches-201m-buyback?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792441361000",
-      "timestamp": "20:22",
-      "source": "CoinTelegraph",
-      "title": "Crypto PAC pours $362K into California race voters essentially decided in August",
-      "link": "https://cointelegraph.com/news/crypto-pac-california-race-voters-special-election?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
