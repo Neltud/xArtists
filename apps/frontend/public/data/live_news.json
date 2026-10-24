@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-24T10:20:52.009Z",
+  "updatedAt": "2026-10-24T15:25:55.053Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792855554936",
+      "timestamp": "15:25",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.28 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792837251622",
       "timestamp": "10:20",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "US bans DeepSeek from civilian agency IT systems",
       "link": "https://cointelegraph.com/news/us-bans-deepseek-from-civilian-agency-it-systems?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1792460100000",
-      "timestamp": "01:35",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin rally could revive treasury buying, but easy-money days over",
-      "link": "https://cointelegraph.com/markets/bitcoin-rally-could-revive-treasury-buying-but-easy-money-days-over?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
