@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-24T20:16:51.522Z",
+  "updatedAt": "2026-10-24T22:54:38.097Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792882477916",
+      "timestamp": "22:54",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.30 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792873011301",
       "timestamp": "20:16",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "US Bitcoin ETFs draw $527M in biggest showing since September",
       "link": "https://cointelegraph.com/markets/bitcoin-etfs-527m-inflows-biggest-since-september?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1792473251000",
-      "timestamp": "05:14",
-      "source": "CoinTelegraph",
-      "title": "Sophon sets Nov. 25 withdrawal deadline ahead of mainnet shutdown",
-      "link": "https://cointelegraph.com/news/sophon-sets-nov-25-withdrawal-deadline-ahead-of-mainnet-shutdown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
