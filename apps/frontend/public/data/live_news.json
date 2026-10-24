@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-24T15:25:55.053Z",
+  "updatedAt": "2026-10-24T20:16:51.522Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792873011301",
+      "timestamp": "20:16",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.26 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792855554936",
       "timestamp": "15:25",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Sophon sets Nov. 25 withdrawal deadline ahead of mainnet shutdown",
       "link": "https://cointelegraph.com/news/sophon-sets-nov-25-withdrawal-deadline-ahead-of-mainnet-shutdown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1792469278000",
-      "timestamp": "04:07",
-      "source": "CoinTelegraph",
-      "title": "US bans DeepSeek from civilian agency IT systems",
-      "link": "https://cointelegraph.com/news/us-bans-deepseek-from-civilian-agency-it-systems?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
