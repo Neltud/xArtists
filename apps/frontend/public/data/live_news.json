@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-24T03:25:43.390Z",
+  "updatedAt": "2026-10-24T10:20:52.009Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792837251622",
+      "timestamp": "10:20",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.38 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792812343114",
       "timestamp": "03:25",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Bitcoin rally could revive treasury buying, but easy-money days over",
       "link": "https://cointelegraph.com/markets/bitcoin-rally-could-revive-treasury-buying-but-easy-money-days-over?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792443874000",
-      "timestamp": "21:04",
-      "source": "CoinTelegraph",
-      "title": "Solana treasury firm SkyAI sells all SOL holdings, launches $201M buyback",
-      "link": "https://cointelegraph.com/news/solana-treasury-skyai-sells-all-sol-holdings-launches-201m-buyback?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
