@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "renderer": "sites-v3",
-  "source_sha": "1aef2db57b42240f4b1b8bfa238aed4731b9c568",
+  "source_sha": "b20132baf90fc87969250f0a04c540368ce75dbd",
   "presentation_source_sha": "8a607c8831234fe738a091a5a4caf325811c1b5b",
   "base_url": "/xArtists/",
-  "built_at": "2026-10-24T04:53:16.215Z",
-  "workflow_run_url": "https://github.com/Neltud/xArtists/actions/runs/40064058659"
+  "built_at": "2026-10-24T11:40:30.974Z",
+  "workflow_run_url": "https://github.com/Neltud/xArtists/actions/runs/40090808772"
 }
