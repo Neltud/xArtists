@@ -1,6 +1,7 @@
 /**
  * Orchestrateur checkout packs — Stripe + Paybox + paper.
  * MoonPay = on-ramp EGLD (voir lib/moonpay.ts), pas un moyen de payer le pack fiat direct.
+ * Paybox requires wallet-bound accessToken (JWT). Guest addresses are rejected.
  */
 
 import type { PackId } from '../config/agentPacks'
@@ -15,6 +16,7 @@ import {
   isPayboxConfigured,
 } from './paybox'
 import { isMoonPayConfigured, moonpayStatusHint, openMoonPayBuy } from './moonpay'
+import { getAccessToken, ensureAccessToken } from './accessSession'
 
 export type PayMethod = 'stripe' | 'paybox' | 'paper'
 
@@ -40,17 +42,24 @@ export function payMethodLabel(m: PayMethod): string {
     case 'paybox':
       return 'Paybox (API)'
     default:
-      return 'Paper (démo)'
+      return 'Paper (demo)'
   }
 }
 
-export type PackPaymentResult = 'redirect' | 'payment_link' | 'paper' | 'unavailable' | 'refused'
+export type PackPaymentResult =
+  | 'redirect'
+  | 'payment_link'
+  | 'paper'
+  | 'unavailable'
+  | 'refused'
+  | 'auth_required'
 
 export async function startPackPayment(opts: {
   method: PayMethod
   packId: PackId
   buyerAddress: string
   amountEur: number
+  accessToken?: string
 }): Promise<PackPaymentResult> {
   if (opts.method === 'stripe') {
     return startStripeCardPayment({
@@ -59,15 +68,27 @@ export async function startPackPayment(opts: {
     })
   }
   if (opts.method === 'paybox') {
+    const isWallet = /^erd1[a-z0-9]{58}$/i.test(opts.buyerAddress)
+    if (!isWallet) return 'auth_required'
+
+    let token = opts.accessToken || getAccessToken(opts.buyerAddress)
+    if (!token) {
+      token = (await ensureAccessToken({ address: opts.buyerAddress })) || undefined
+    }
+    if (!token) return 'auth_required'
+
     try {
       const r = await startPayboxCardPayment({
         packId: opts.packId,
         buyerAddress: opts.buyerAddress,
         amountEur: opts.amountEur,
+        accessToken: token,
       })
+      if (r === 'auth_required') return 'auth_required'
       return r
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
+      if (msg.includes('paybox_auth')) return 'auth_required'
       if (msg.includes('paybox_refused')) return 'refused'
       if (msg.includes('paybox_unavailable') || msg.includes('501')) return 'unavailable'
       throw e
