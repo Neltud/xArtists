@@ -20,6 +20,9 @@ const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || ''
 const CORS = process.env.CORS_ORIGIN || '*'
 const MOONPAY = moonpayConfig()
 const PAYBOX = payboxConfig()
+const moonpayHits = new Map()
+const MOONPAY_WINDOW_MS = 60_000
+const MOONPAY_MAX = 30
 
 const PACK_CATALOG = {
   pulse: { id: 'pulse', name: 'Pulse Pack (Gold)', price_eur: 110, price_cents: 11000 },
@@ -79,6 +82,9 @@ async function handleRequest(req, res) {
   if (req.method === 'GET' && pth === '/health') {
     json(res, 200, {
       ok: true,
+      moonpay_configured: Boolean(MOONPAY.ready),
+      moonpay_mode: MOONPAY.mode || 'off',
+      stripe_configured: Boolean(STRIPE_KEY),
       paybox_configured: PAYBOX.ready,
       paybox_mode: PAYBOX.ready ? PAYBOX.mode : 'off',
       paybox_auth_outbound: 'hmac_sha512',
@@ -92,6 +98,20 @@ async function handleRequest(req, res) {
   }
 
   if (req.method === 'POST' && pth === '/moonpay/sign') {
+    const origin = String(req.headers.origin || '')
+    if (origin && origin !== 'https://neltud.github.io' && !origin.startsWith('http://127.0.0.1') && !origin.startsWith('http://localhost')) {
+      json(res, 403, { ok: false, error: 'origin_forbidden' })
+      return
+    }
+    const ip = String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'local').split(',')[0].trim()
+    const now = Date.now()
+    const hits = (moonpayHits.get(ip) || []).filter(t => now - t < MOONPAY_WINDOW_MS)
+    if (hits.length >= MOONPAY_MAX) {
+      json(res, 429, { ok: false, error: 'rate_limited' })
+      return
+    }
+    hits.push(now)
+    moonpayHits.set(ip, hits)
     const { body } = await readRawAndBody(req)
     try { json(res, 200, { ok: true, url: signMoonpayUrl(body.url, MOONPAY) }) }
     catch (error) {
@@ -145,12 +165,6 @@ async function handleRequest(req, res) {
       ? (body.artist_beneficiary || body.artistBeneficiary).trim() : ''
     try {
       const pack = getPack(packId)
-      const auth = resolveAuthenticatedBuyer({ headers: req.headers, body, jwtSecret: JWT_SECRET })
-      if (!auth.ok) {
-        json(res, auth.statusCode, { ok: false, error: auth.error })
-        return
-      }
-      const buyer = auth.buyer
       if (!PAYBOX.ready) {
         json(res, 501, {
           ok: false, error: 'paybox_not_configured', pack_id: pack.id, amount_cents: pack.price_cents,
@@ -158,6 +172,12 @@ async function handleRequest(req, res) {
         })
         return
       }
+      const auth = resolveAuthenticatedBuyer({ headers: req.headers, body, jwtSecret: JWT_SECRET })
+      if (!auth.ok) {
+        json(res, auth.statusCode, { ok: false, error: auth.error })
+        return
+      }
+      const buyer = auth.buyer
       let artist = null
       if (artistRaw) artist = resolveArtistBeneficiary(artistRaw)
       const orderId = newOrderId(pack.id, buyer)
@@ -257,6 +277,22 @@ async function handleRequest(req, res) {
 
   if (req.method === 'GET' && pth === '/v1/checkout/paybox') {
     json(res, 405, { ok: false, error: 'method_not_allowed' })
+    return
+  }
+
+  if (req.method === 'GET' && pth === '/v1/access/introspect') {
+    const auth = String(req.headers.authorization || '')
+    const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : ''
+    if (!token || !JWT_SECRET || JWT_SECRET.length < 16) {
+      json(res, 401, { ok: false, error: 'missing_or_invalid_token' })
+      return
+    }
+    const payload = verifyJwt(token, JWT_SECRET)
+    if (!payload) {
+      json(res, 401, { ok: false, error: 'invalid_or_expired_token' })
+      return
+    }
+    json(res, 200, { ok: true, sub: payload.sub || null, status: payload.status || null, exp: payload.exp || null })
     return
   }
 
