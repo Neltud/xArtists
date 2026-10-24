@@ -14,6 +14,7 @@ import { matchOnChainPacks, loadOwnedPacks, markPackOwned } from '../lib/nftPack
 import { ROOM_META } from '../lib/holderAccess'
 import PackRoomHolo from '../components/PackRoomHolo'
 import { fetchPayboxOrderStatus, type PayboxOrderStatus } from '../lib/paybox'
+import { getAccessToken } from '../lib/accessSession'
 
 const API = (import.meta.env.VITE_ACCESS_API_BASE as string | undefined) || ''
 
@@ -21,7 +22,7 @@ const PACK_IDS: PackId[] = ['pulse', 'yield', 'sentinel']
 
 const ROOM_BLURB: Record<string, string> = {
   pulse: 'Signaux & flux live',
-  yield: 'Farming & liquidité $TRO',
+  yield: 'Farming & liquidite $TRO',
   sentinel: 'Alertes & garde-fous',
 }
 
@@ -62,7 +63,7 @@ export default function MyPacks() {
   useEffect(() => {
     if (!paid) return
     setMintStatus(
-      'Retour navigateur reçu — confirmation serveur en cours (IPN). Le flag ?paid= ne débloque pas les salles.',
+      'Retour navigateur reçu — confirmation serveur en cours (IPN). Le flag ?paid= ne debloque pas les salles.',
     )
     const next = new URLSearchParams(params)
     next.delete('paid')
@@ -77,17 +78,18 @@ export default function MyPacks() {
       for (let i = 0; i < 12; i++) {
         if (stop) return
         try {
-          // accessToken: WalletContext / session storage if available later; optional for now
+          // Bearer from accessSession (wallet-bound JWT)
           const st = await fetchPayboxOrderStatus(orderId, {
             buyerAddress: address || undefined,
+            accessToken: address ? getAccessToken(address) || undefined : undefined,
           })
           if (stop) return
           setOrderStatus(st)
           if (st.server_confirmed) {
             setMintStatus(
               st.pack_id
-                ? `Paiement confirmé serveur — pack ${st.pack_id} (mint simulé / on-chain à venir).`
-                : 'Paiement confirmé serveur.',
+                ? `Paiement confirme serveur — pack ${st.pack_id} (mint simule / on-chain a venir).`
+                : 'Paiement confirme serveur.',
             )
             return
           }
@@ -144,13 +146,13 @@ export default function MyPacks() {
         <h1 className="section-title display">{xaRender("My Packs")}</h1>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
-          {xaRender("1 pack = 1 salle (ambiance distincte) + moniteur. Pas un fond d’investissement. ")}</p>
+          {xaRender("1 pack = 1 salle (ambiance distincte) + moniteur. Pas un fond d investissement. ")}</p>
       </header>
 
       {xaRender(!connected && (
         <div className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 space-y-2">
           <p className="text-[13px] text-amber-100/95 leading-relaxed">
-            <span className="font-semibold">{xaRender("Mode invité")}</span> {xaRender(" — les salles Pulse, Yield et Sentinel sont verrouillées tant qu’aucun pack n’est lié à un wallet (achat crypto / fiat ou aperçu appareil). ")}</p>
+            <span className="font-semibold">{xaRender("Mode invite")}</span> {xaRender(" — les salles Pulse, Yield et Sentinel sont verrouillees tant qu aucun pack n est lie a un wallet (achat crypto / fiat ou apercu appareil). ")}</p>
           <button type="button" className="btn-primary text-sm" onClick={() => requestOpenConnect()}>
             {xaRender("Connecter xPortal ")}</button>
         </div>
@@ -158,7 +160,7 @@ export default function MyPacks() {
 
       {xaRender(cancelled && (
         <p className="text-[13px] text-amber-200/90 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2">
-          {xaRender("Paiement annulé — aucun pack ajouté. ")}</p>
+          {xaRender("Paiement annule — aucun pack ajoute. ")}</p>
       ))}
 
       {xaRender(orderStatus && (
@@ -168,7 +170,7 @@ export default function MyPacks() {
             {' · '}
             {xaRender(
               orderStatus.server_confirmed
-                ? 'paiement confirmé (serveur)'
+                ? 'paiement confirme (serveur)'
                 : orderStatus.status === 'refused' || orderStatus.status === 'cancelled'
                   ? orderStatus.status
                   : 'paiement en attente / IPN',
@@ -188,7 +190,7 @@ export default function MyPacks() {
 
       {xaRender(ownedAll.length === 0 ? (
         <div className="card space-y-4 text-sm text-zinc-400">
-          <p>{xaRender("Aucune salle déverrouillée pour l’instant.")}</p>
+          <p>{xaRender("Aucune salle deverrouillee pour l instant.")}</p>
           <div className="grid gap-2">
             {xaRender(PACK_IDS.map(id => {
               const p = AGENT_PACKS.find(x => x?.id === id)
@@ -201,7 +203,7 @@ export default function MyPacks() {
                     <p className="text-[13px] text-zinc-200 font-medium">
                       {xaRender(p?.icon)} {xaRender(p?.name || id)}{xaRender(' ')}
                       <span className="text-[10px] uppercase tracking-wide text-amber-300/80">
-                        {xaRender("verrouillée ")}</span>
+                        {xaRender("verrouillee ")}</span>
                     </p>
                     <p className="text-[11px] text-zinc-500">{xaRender(ROOM_BLURB[id])}</p>
                   </div>
@@ -211,7 +213,7 @@ export default function MyPacks() {
             }))}
           </div>
           <Link to="/agents" className="btn-primary text-sm inline-block">
-            {xaRender("Voir les packs / déverrouiller ")}</Link>
+            {xaRender("Voir les packs / deverrouiller ")}</Link>
         </div>
       ) : (
         <section className="space-y-3">
@@ -251,7 +253,7 @@ export default function MyPacks() {
                     <p className="text-sm font-medium text-white">
                       {xaRender(p?.icon)} {xaRender(p?.name || id)}
                       <span className="ml-2 text-[10px] font-normal text-zinc-500">
-                        {xaRender(onChain ? 'on-chain' : 'aperçu local')}
+                        {xaRender(onChain ? 'on-chain' : 'apercu local')}
                       </span>
                     </p>
                     <p className="text-[11px] text-zinc-500">{xaRender(p?.tagline || meta?.title)}</p>
@@ -264,7 +266,7 @@ export default function MyPacks() {
 
           {xaRender(lockedIds.length > 0 && (
             <div className="space-y-2 pt-2">
-              <h3 className="text-[11px] uppercase tracking-wide text-zinc-600">{xaRender("Encore verrouillées")}</h3>
+              <h3 className="text-[11px] uppercase tracking-wide text-zinc-600">{xaRender("Encore verrouillees")}</h3>
               <div className="grid gap-1.5">
                 {xaRender(lockedIds.map(id => {
                   const p = AGENT_PACKS.find(x => x?.id === id)
@@ -277,7 +279,7 @@ export default function MyPacks() {
                         {xaRender(p?.icon)} {xaRender(p?.name || id)} · {xaRender(ROOM_BLURB[id])}
                       </span>
                       <Link to="/agents" className="text-cyan-400/90 text-[11px] underline">
-                        {xaRender("Débloquer ")}</Link>
+                        {xaRender("Debloquer ")}</Link>
                     </div>
                   )
                 }))}
@@ -291,7 +293,7 @@ export default function MyPacks() {
         <h2 className="section-label">{xaRender("On-chain")}</h2>
         {xaRender(chainHits.length === 0 ? (
           <p className="text-[12px] text-zinc-600 rounded-xl border border-white/[0.06] px-3 py-3">
-            {xaRender("Aucun pack agent détecté dans le wallet ")}{xaRender(connected ? '' : ' — connecte xPortal pour scanner')}.
+            {xaRender("Aucun pack agent detecte dans le wallet ")}{xaRender(connected ? '' : ' — connecte xPortal pour scanner')}.
           </p>
         ) : (
           <ul className="space-y-2">
