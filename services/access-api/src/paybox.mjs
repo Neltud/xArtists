@@ -1,7 +1,7 @@
 /**
  * Paybox System (Verifone) — e-Transactions carte FR.
  *
- * Offre: Paybox System TPE web — manuel d'intégration v8.3 (2025-09).
+ * Offre: Paybox System TPE web — manuel d'integration v8.3 (2025-09).
  * NOT paybox.sh agent API.
  *
  * Outbound: HMAC-SHA512 (PBX_HMAC).
@@ -78,12 +78,18 @@ export function buildShoppingCartXml(totalCents, quantity = 1) {
 }
 
 function escapeXml(s) {
+  // Entities built at runtime so source never embeds literal XML entities (pipeline-safe)
+  const AMP = String.fromCharCode(38) + 'amp;'
+  const LT = String.fromCharCode(38) + 'lt;'
+  const GT = String.fromCharCode(38) + 'gt;'
+  const QUOT = String.fromCharCode(38) + 'quot;'
+  const APOS = String.fromCharCode(38) + 'apos;'
   return String(s)
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
-    .replace(/'/g, ''')
+    .replace(/&/g, AMP)
+    .replace(/</g, LT)
+    .replace(/>/g, GT)
+    .replace(/"/g, QUOT)
+    .replace(/'/g, APOS)
 }
 
 /** Exported for unit tests (3DSv2 billing / shopping cart safety). */
