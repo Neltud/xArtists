@@ -6,12 +6,19 @@ import { LIA_OPS, MAINNET_ADDRESSES, TRO_TOKEN_ID } from '../config/contracts'
 
 const API = 'https://api.multiversx.com'
 
-/** Upbit + Bithumb review window. Decision expected 19–23 Oct 2026. */
+/**
+ * Original Upbit + Bithumb decision window (19–23 Oct 2026).
+ * Closed by an extension, not by a delist and not by a clearance.
+ */
 export const UPBIT_WINDOW_START = Date.parse('2026-10-19T00:00:00Z')
-export const UPBIT_WINDOW_END = Date.parse('2026-10-24T00:00:00Z')
+/** Upbit notice 207379109, posted 2026-10-23 06:02 UTC. */
+export const KR_EXTENSION_START = Date.parse('2026-10-23T06:02:00Z')
+/** Through 20 Nov 2026 inclusive (third week of November, 16–20). */
+export const KR_EXTENSION_END = Date.parse('2026-11-21T00:00:00Z')
 const WINDOW_DAYS = 5
+const EXTENSION_DAYS = 29
 
-export type UpbitPhase = 'before' | 'window' | 'after'
+export type UpbitPhase = 'before' | 'window' | 'extended' | 'after'
 
 export function upbitPosture(now = Date.now()): { phase: UpbitPhase; label: string; day: number | null } {
   if (now < UPBIT_WINDOW_START) {
@@ -22,7 +29,7 @@ export function upbitPosture(now = Date.now()): { phase: UpbitPhase; label: stri
       day: null,
     }
   }
-  if (now < UPBIT_WINDOW_END) {
+  if (now < KR_EXTENSION_START) {
     const day = Math.min(
       WINDOW_DAYS,
       Math.max(1, Math.floor((now - UPBIT_WINDOW_START) / 86_400_000) + 1),
@@ -36,11 +43,26 @@ export function upbitPosture(now = Date.now()): { phase: UpbitPhase; label: stri
         'Client LIA = paper. Pas de nouveau trade live.',
     }
   }
+  if (now < KR_EXTENSION_END) {
+    const day = Math.min(
+      EXTENSION_DAYS,
+      Math.max(1, Math.floor((now - KR_EXTENSION_START) / 86_400_000) + 1),
+    )
+    return {
+      phase: 'extended',
+      day,
+      label:
+        `Prolongation officielle, jour ${day}/${EXTENSION_DAYS}. ` +
+        'Upbit (notice 207379109, 23 oct 06:02 UTC) étend la surveillance EGLD/KRW, EGLD/BTC et EGLD/USDT jusqu’au 16–20 nov 2026. ' +
+        'Bithumb prolonge le même jour le warning EGLD (et FET). Ce n’est pas un delist, ce n’est pas un maintien. ' +
+        'VITE_LIA_LIVE_TRADING reste 0. Pas de swap, pas de claimFees, Paybox 501.',
+    }
+  }
   return {
     phase: 'after',
     day: null,
     label:
-      'Fenêtre 19–23 oct échue. Ne pas allumer le live tant qu’une annonce claire (maintien, retraits) n’est pas vérifiée. Client LIA = paper.',
+      'Fenêtre prolongée 16–20 nov échue. Ne pas allumer le live sans annonce explicite de maintien (trading + retraits). Client LIA = paper.',
   }
 }
 

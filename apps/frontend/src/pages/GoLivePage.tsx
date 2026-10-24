@@ -8,6 +8,7 @@ import RceStrip from '../components/RceStrip'
 import { AGENT_8008 } from '../config/agent8008'
 import { PACK_PRICE_EGLD } from '../config/multichain'
 import DustTestPanel from '../components/DustTestPanel'
+import ProtocolPulsePanel from '../components/ProtocolPulsePanel'
 import { getEnvLiveCapable, getAppMode } from '../lib/appMode'
 import {
   refreshRuntimeCodehashes,
@@ -127,6 +128,8 @@ export default function GoLivePage() {
       </header>
 
       <RceStrip />
+
+      <ProtocolPulsePanel />
 
       <section className="card space-y-3">
         <h2 className="text-sm font-semibold text-white">{xaRender("Gates SC")}</h2>

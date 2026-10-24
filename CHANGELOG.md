@@ -1,5 +1,11 @@
 # Changelog — xArtists
 
+## [0.120.0] — 2026-10-24
+
+### Bug Fixes
+
+* **go-live:** mount the orphan public pulse and treat the 23 Oct Upbit/Bithumb notice as an extension through 16–20 Nov, not a trading clearance. `VITE_LIA_LIVE_TRADING` stays 0.
+
 ## [0.119.0](https://github.com/Neltud/xArtists/compare/v0.118.1...v0.119.0) (2026-10-21)
 
 

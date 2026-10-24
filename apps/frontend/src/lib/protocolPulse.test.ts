@@ -17,8 +17,27 @@ describe('upbitPosture', () => {
     expect(d3.label).toMatch(/SOPH/)
   })
 
-  it('is after the window on 24 oct', () => {
-    const row = upbitPosture(Date.parse('2026-10-24T00:00:00Z'))
+  it('is still the original window just before the Upbit extension post', () => {
+    const row = upbitPosture(Date.parse('2026-10-23T05:00:00Z'))
+    expect(row.phase).toBe('window')
+    expect(row.day).toBe(5)
+  })
+
+  it('is the official extension on 24 oct — not a clearance', () => {
+    const morning = upbitPosture(Date.parse('2026-10-24T04:40:00Z'))
+    expect(morning.phase).toBe('extended')
+    expect(morning.day).toBe(1)
+    const row = upbitPosture(Date.parse('2026-10-24T08:00:00Z'))
+    expect(row.phase).toBe('extended')
+    expect(row.day).toBe(2)
+    expect(row.label).toMatch(/Prolongation/)
+    expect(row.label).toMatch(/207379109/)
+    expect(row.label).toMatch(/VITE_LIA_LIVE_TRADING/)
+    expect(row.label).toMatch(/Pas de swap/)
+  })
+
+  it('stays paper after 20 nov until an explicit maintain notice', () => {
+    const row = upbitPosture(Date.parse('2026-11-21T00:00:00Z'))
     expect(row.phase).toBe('after')
     expect(row.label).toMatch(/paper/)
   })
