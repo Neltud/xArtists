@@ -122,7 +122,6 @@ export async function startPayboxCardPayment(opts: {
       submitPayboxHostedForm(session.url, session.fields)
       return 'redirect'
     }
-    // Fail closed: never GET-navigate with only URL (drops PBX_HMAC)
     return 'unavailable'
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
