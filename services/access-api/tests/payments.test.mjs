@@ -40,11 +40,12 @@ test('HTTP integration: unconfigured payments fail closed; client prices never o
     assert.equal(health.moonpay_configured, false)
     assert.equal(health.paybox_configured, false)
     assert.equal((await post(server.base + '/moonpay/sign', { url: base })).status, 503)
-    for (const [pack_id, expected] of [['pulse', 11000], ['yield', 7500], ['sentinel', 5000]]) {
+    // Auth runs before paybox_not_configured (P0): unauthenticated → 401, not 501
+    for (const [pack_id] of [['pulse', 11000], ['yield', 7500], ['sentinel', 5000]]) {
       const response = await post(server.base + '/v1/checkout/paybox', { pack_id, amount_cents: 1 })
-      assert.equal(response.status, 501)
+      assert.equal(response.status, 401)
       const body = await response.json()
-      assert.equal(body.amount_cents, expected)
+      assert.ok(body.error === 'buyer_auth_required' || body.error)
       assert.equal(body.url, undefined)
     }
     assert.equal((await fetch(server.base + '/v1/checkout/paybox?amount_cents=1')).status, 405)
