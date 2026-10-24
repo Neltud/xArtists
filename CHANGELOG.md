@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.119.1](https://github.com/Neltud/xArtists/compare/v0.119.0...v0.119.1) (2026-10-24)
+
+
+### Bug Fixes
+
+* **access-api:** health moonpay flags, paybox 501 before auth, origin+rate limit, introspect ([1aef2db](https://github.com/Neltud/xArtists/commit/1aef2db57b42240f4b1b8bfa238aed4731b9c568))
+* **go-live:** Korean warning is an extension, keep LIA paper ([87b62b7](https://github.com/Neltud/xArtists/commit/87b62b7b5a324f90d521b88f2d53260270457c4e))
+
 ## [0.120.0] — 2026-10-24
 
 ### Bug Fixes
