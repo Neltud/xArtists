@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.119.2](https://github.com/Neltud/xArtists/compare/v0.119.1...v0.119.2) (2026-10-25)
+
+
+### Bug Fixes
+
+* **go-live:** publish the site, keep LIA paper through the Korean extension ([6665441](https://github.com/Neltud/xArtists/commit/666544199617d087ea1f1702dfef35a98fc09627))
+
 ## [0.121.0] — 2026-10-25
 
 ### Bug Fixes
