@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-25T20:25:04.670Z",
+  "updatedAt": "2026-10-25T23:01:42.234Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792969302052",
+      "timestamp": "23:01",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.24 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792959904326",
       "timestamp": "20:25",
@@ -191,13 +198,6 @@
       "source": "CoinDesk",
       "title": "Microsoft, Alphabet and Goldman Sachs join objections to OKX-ICE tokenized stock trading",
       "link": "https://www.coindesk.com/business/2026/10/19/microsoft-alphabet-and-goldman-sachs-join-objections-to-okx-ice-tokenized-stock-trading"
-    },
-    {
-      "id": "rss-CoinDesk-1-1792495500000",
-      "timestamp": "11:25",
-      "source": "CoinDesk",
-      "title": "France's parliament approves vote to hit stablecoin trades with 31% capital gains tax",
-      "link": "https://www.coindesk.com/policy/2026/10/20/france-s-parliament-approves-vote-to-hit-crypto-to-stablecoin-trades-with-31-levy"
     }
   ]
 }
