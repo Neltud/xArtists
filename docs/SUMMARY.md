@@ -525,4 +525,5 @@
     * [Retirer polyLIA et GreenSmoke — correctif obligatoire](prompts/grok-dapp-mobile-2026-10-25/retirer-polylia-greensmoke.md)
     * [Sortie officielle — reprise automatique et contrôles publics](prompts/grok-dapp-mobile-2026-10-25/sortie-officielle.md)
     * [Lien public et QR — GitHub Pages uniquement](prompts/grok-dapp-mobile-2026-10-25/partager-lien-officiel.md)
+    * [Finaliser la sortie publique — import terminé, correctif Pages](prompts/grok-dapp-mobile-2026-10-25/finaliser-release-publique.md)
 * [Documentation technique et passations](documentation-technique.md)

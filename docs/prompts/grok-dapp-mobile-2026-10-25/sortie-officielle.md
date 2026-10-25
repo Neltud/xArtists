@@ -5,9 +5,11 @@ noIndex: true
 
 # Sortie officielle — reprise automatique et contrôles publics
 
+**Cette reprise mobile est désormais historique : l’import 26/26 est terminé.** La suite active est [Finaliser la sortie publique](finaliser-release-publique.md). Ne pas relancer l’ancien bootstrap mobile ci-dessous. Le nouveau bootstrap réutilise les onze fichiers de retrait inchangés et corrige l’échec Pages `navigator is not defined`.
+
 Passation prioritaire pour Grok : terminer la sortie publique officielle de xArtists, en conservant l'ordre import mobile → retrait polyLIA → checks → merge → vérification Pages. Cette page réunit les fichiers et les contrôles nécessaires, sans ZIP.
 
-### État vérifié le 25 octobre 2026
+#### État vérifié le 25 octobre 2026
 
 La PR #186 est ouverte : https://github.com/Neltud/xArtists/pull/186 . À la lecture détaillée, GitHub indique `mergeable: true` et `mergeable_state: unstable`. Sa tête relue est `7b43b96cc28d321e508d1f1eca5da9a8cc776a8c`. Le merge local de `main` à `a6adaf6eec883fffef35d2990508cd35e78d6be0` est propre. Relire les références actuelles avant reprise.
 
@@ -15,7 +17,7 @@ Le transport distant est encore incomplet : `part-002.b64` mesure 100 octets, `r
 
 Les quatre annexes GitBook sont déjà synchronisées dans `main`, sous `docs/prompts/grok-dapp-mobile-2026-10-25/fichiers-api-1.md` à `fichiers-api-4.md`. Elles contiennent tous les octets manquants. Le lanceur ci-dessous reconstitue les fichiers sur le runner GitHub, en vérifiant les empreintes de chaque annexe et de chaque fichier.
 
-### Prochaine action : un fichier de 2,8 Ko à publier
+#### Prochaine action : un fichier de 2,8 Ko à publier
 
 1. Lis le bloc JSON « Fichier API du lanceur ». Publie son `content_utf8` exact, avec ton outil API GitHub authentifié, sur la branche `feat/dapp-mobile-transport`, au chemin `.github/workflows/hydrate-mobile-transport.yml`. Vérifie le SHA-256 distant. Ce fichier temporaire déclenche le job `hydrate`.
 2. Attends le job sans écrire sur cette branche pendant son exécution. Il répare et complète uniquement les 34 morceaux et les trois métadonnées du transport. Il préserve `static.yml` déjà vérifié, vérifie les deux suppressions déjà réalisées, et ne modifie aucune source applicative. Les 41 opérations du kit initial et leurs empreintes restent inchangées.
@@ -26,7 +28,7 @@ Les quatre annexes GitBook sont déjà synchronisées dans `main`, sous `docs/pr
 
 Le lanceur est limité à `Neltud/xArtists` et à cette branche. Son push est normal, sans force, et refuse une branche avancée depuis son démarrage. La simulation locale a restauré les 37 fichiers exactement à partir de l'état distant tronqué et créé le commit local prévu, sans changement des sources applicatives. Aucun job GitHub n'a été lancé depuis l'accès Codex, dont l'écriture retourne 403 ; Grok doit effectuer l'appel API ci-dessus.
 
-### Trois corrections YAML avant les checks finaux
+#### Trois corrections YAML avant les checks finaux
 
 Trois workflows échouent avant même de créer un job :
 
@@ -37,11 +39,11 @@ Le bloc JSON « Réparations YAML » contient les trois versions complètes, les
 
 Ces validations sont des vérifications de syntaxe. Le lancement manuel du workflow de collections, qui comporte des opérations financières, ne fait pas partie de cette sortie frontend. Aucun PEM, signature ou appel financier n'est nécessaire à cette mission.
 
-### Merge et preuve de publication officielle
+#### Merge et preuve de publication officielle
 
 Après les deux imports et les réparations, relis le dernier `main` et réconcilie les changements récents par merge normal si nécessaire. Actualise le titre et la description de la PR autour de l'état final : disponibilité publique mobile, retrait polyLIA et corrections de workflow. Attends tous les checks requis sur le dernier SHA. Respecte les protections du dépôt.
 
-Merge seulement lorsque les sources et les preuves runner sont complètes. Attends ensuite le run Pages de `main`. L'URL officielle cible est `https://neltud.github.io/xArtists/app/`. La version Sites déjà publiée à 97 routes reste accessible à `https://xartists-dapp-mobile.loftypearl128.chatgpt.site/xArtists/app/`, avec une publication distincte de GitHub Pages.
+Merge seulement lorsque les sources et les preuves runner sont complètes. Attends ensuite le run Pages de `main`. L'URL officielle cible est `https://neltud.github.io/xArtists/`. La version Sites déjà publiée à 97 routes reste accessible à `https://xartists-dapp-mobile.loftypearl128.chatgpt.site/xArtists/app/`, avec une publication distincte de GitHub Pages.
 
 Le script de contrôle HTTP ci-dessous doit être exécuté depuis un environnement ayant accès au site public, avec le SHA source du run Pages :
 
@@ -53,17 +55,17 @@ Il vérifie le SHA servi, 97 routes, le flag LIA à false, les entrées mobiles,
 
 Vérifie aussi dans le navigateur l'annuaire sans polyLIA, les liens directs et l'actualisation, les huit langues, le partage, l'installation PWA et le sélecteur xPortal. Une connexion sur téléphone physique et les domaines autorisés du projet WalletConnect doivent être attestés séparément, sans exposer de clé.
 
-### Distribution grand public et xPortal
+#### Distribution grand public et xPortal
 
 La fiche de référencement ci-dessous est prête pour le site officiel une fois son déploiement vérifié. Elle décrit l'art, le musée et les outils créatifs ; le mode reste paper et aucune activité de trading autonome n'est annoncée comme active.
 
 Une intégration WalletConnect/xPortal n'atteste pas une inscription dans un catalogue. Aucune soumission ni validation de catalogue n'est réalisée par cette documentation. Vérifie le parcours officiel de soumission en vigueur, puis utilise les informations exactes de la fiche. Le site MultiversX propose un parcours « Submit Project » : https://multiversx.com/ecosystem/projects . La documentation primaire décrit WalletConnect comme chemin d'intégration dApp/mobile : https://docs.multiversx.com/welcome/terminology/ . Le site officiel xPortal est https://xportal.com/ .
 
-### Compte rendu final exigé
+#### Compte rendu final exigé
 
 Fournis les URL des jobs hydrate, import et retrait, les SHA distants complets, la PR fusionnée, le run Pages, le contenu de `build-info.json`, le contrôle HTTP réussi à 97 routes et les tests mobile réellement effectués. Indique séparément l'état de la connexion physique xPortal et celui du référencement. Un formulaire, un commit local ou les seuls checks de la PR ne prouvent pas la publication complète.
 
-### Fichier API du lanceur
+#### Fichier API du lanceur
 
 ````json
 {
@@ -76,7 +78,7 @@ Fournis les URL des jobs hydrate, import et retrait, les SHA distants complets, 
 }
 ````
 
-### Code vérifié : hydrate\_transport.py
+#### Code vérifié : hydrate\_transport.py
 
 ````python
 import argparse, hashlib, json, os, re, subprocess
@@ -138,7 +140,7 @@ def main():
 if __name__=='__main__':main()
 ````
 
-### Réparations YAML
+#### Réparations YAML
 
 ```json
 [
@@ -166,7 +168,7 @@ if __name__=='__main__':main()
 ]
 ```
 
-### Contrôle HTTP : verify\_public\_release.py
+#### Contrôle HTTP : verify\_public\_release.py
 
 ```python
 import argparse, hashlib, json, re, urllib.request
@@ -215,14 +217,14 @@ assert b'<!doctype html' not in sw.lower()
 print(json.dumps({'official_url':base,'source_sha':info['source_sha'],'public_routes':97,'lia_live_trading':False,'module_entrypoints_served':scripts,'icons':icons,'http_smoke':'passed'},indent=2))
 ```
 
-### Fiche de référencement
+#### Fiche de référencement
 
 ```json
 {
   "name": "xArtists \u2014 Art & Intelligence",
   "short_name": "xArtists",
   "description": "Discover digital art, explore a 3D museum and access creative tools on MultiversX.",
-  "website": "https://neltud.github.io/xArtists/app/",
+  "website": "https://neltud.github.io/xArtists/",
   "documentation": "https://xartists.gitbook.io/xartists/",
   "repository": "https://github.com/Neltud/xArtists",
   "categories": [
@@ -241,7 +243,7 @@ print(json.dumps({'official_url':base,'source_sha':info['source_sha'],'public_ro
 }
 ```
 
-### Preuves locales
+#### Preuves locales
 
 ```json
 {

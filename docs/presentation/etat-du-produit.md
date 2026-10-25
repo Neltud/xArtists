@@ -9,6 +9,8 @@ icon: circle-check
 
 **État de référence : 25 octobre 2026.** Cette page distingue l’accès à une présentation de la dapp, les fonctions conditionnelles et les prochaines validations de publication.
 
+**Publication mobile en cours.** L’adresse d’entrée GitHub est accessible. Les accès directs à certains modules peuvent encore renvoyer une erreur 404 pendant cette phase ; utiliser l’adresse principale ci-dessous. La nouvelle version sera annoncée ici après vérification de sa publication.
+
 ### Les points d’entrée du projet
 
 | Accès                                                              | Usage et état                                                                                        |
