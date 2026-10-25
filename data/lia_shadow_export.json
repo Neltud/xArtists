@@ -1,18 +1,11 @@
 {
   "schema": "lia_shadow_export/v1",
-  "ts": "2026-10-25T07:26:53Z",
+  "ts": "2026-10-25T13:04:36Z",
   "paper": true,
-  "fills": 86,
-  "shadow_pnl_usd": 4.1446,
-  "win_rate": 0.6279,
+  "fills": 87,
+  "shadow_pnl_usd": 4.0794,
+  "win_rate": 0.6207,
   "last_shadow": [
-    {
-      "id": "96486b74-0f2",
-      "side": "BUY",
-      "asset": "USDC",
-      "pnl_usd": 0.0489,
-      "ts": "2026-10-24T12:31:43Z"
-    },
     {
       "id": "4f3b1455-c16",
       "side": "BUY",
@@ -40,6 +33,13 @@
       "asset": "USDC",
       "pnl_usd": -0.0021,
       "ts": "2026-10-25T07:26:52Z"
+    },
+    {
+      "id": "0225833d-42b",
+      "side": "BUY",
+      "asset": "USDC",
+      "pnl_usd": -0.0653,
+      "ts": "2026-10-25T13:04:34Z"
     }
   ],
   "friction_model": {
