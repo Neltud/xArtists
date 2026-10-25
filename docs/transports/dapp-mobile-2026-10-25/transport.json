@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "archive_sha256": "ae35ee4db896258e22de1afac3cbe0944fe1642711e14453e44f40986fc8afce",
+  "parts": [
+    {
+      "name": "part-001.b64",
+      "sha256": "2547fef23dcf827af0e683751ff1cd1c87b6152f964fef1513010f140b74d844"
+    }
+  ]
+}
