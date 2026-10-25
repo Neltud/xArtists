@@ -1,0 +1,56 @@
+name: Hydrate verified mobile transport from GitBook
+on:
+  push:
+    branches: ['feat/dapp-mobile-transport']
+    paths: ['.github/workflows/hydrate-mobile-transport.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: dapp-mobile-completion
+  cancel-in-progress: false
+jobs:
+  hydrate:
+    if: github.repository == 'Neltud/xArtists' && github.ref == 'refs/heads/feat/dapp-mobile-transport'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Reconstruct the exact published GitBook files
+        run: |
+          python - --write --proof "$RUNNER_TEMP/mobile-transport-proof.json" <<'PY'
+          import hashlib,re,subprocess
+          subprocess.run(['git','fetch','origin','main'],check=True)
+          path='docs/prompts/grok-dapp-mobile-2026-10-25/sortie-officielle.md'
+          markdown=subprocess.check_output(['git','show','FETCH_HEAD:'+path],text=True)
+          blocks=[s.rstrip('\n')+'\n' for s in re.findall(r'```python[^\n]*\n(.*?)\n```',markdown,re.S)]
+          code=next((s for s in blocks if hashlib.sha256(s.encode()).hexdigest()=='19e488c4ee1cdc7145e33176190b7d352150688f8141b7eee56b2e79abbfc0e0'),None)
+          assert code is not None,'Verified hydration source missing from GitBook-synced docs'
+          exec(compile(code,'hydrate_transport.py','exec'),{'__name__':'__main__'})
+          PY
+      - name: Commit transport files and publish without force
+        run: |
+          git add docs/transports/dapp-mobile-2026-10-25
+          if git diff --cached --name-only | grep -v '^docs/transports/dapp-mobile-2026-10-25/' | grep -q .; then
+            echo '::error::Unexpected staged path.'
+            exit 1
+          fi
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore(transport): restore complete verified GitBook mobile files'
+          fi
+          git fetch origin refs/heads/feat/dapp-mobile-transport
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA" || { echo 'Branch advanced; retry from its current head.'; exit 1; }
+          git push origin HEAD:refs/heads/feat/dapp-mobile-transport
+          echo "Verified transport commit: $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          echo '34 parts and 3 metadata files verified; application import remains the next step.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve transport proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-transport-proof
+          path: ${{ runner.temp }}/mobile-transport-proof.json
