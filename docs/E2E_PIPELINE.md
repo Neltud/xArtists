@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Pipeline end-to-end xArtists
 
 ## Vellum / ops (chaque cycle)
@@ -13,19 +18,19 @@ Puis commit/push des `data/*` + `apps/frontend/public/data/*` (GitHubReporter) �
 
 ## dApp lecture
 
-| Source | Usage |
-|--------|--------|
-| `public/data/*.json` | Pages (priorité) |
-| raw.githubusercontent.com | fallback |
-| API MultiversX | prix EGLD, NFT wallet LIA |
+| Source                    | Usage                     |
+| ------------------------- | ------------------------- |
+| `public/data/*.json`      | Pages (priorité)          |
+| raw.githubusercontent.com | fallback                  |
+| API MultiversX            | prix EGLD, NFT wallet LIA |
 
 ## dApp écriture (TX)
 
-| Gate | Condition |
-|------|-----------|
-| List/Buy/Bid NFT | `VITE_MARKETPLACE_CODEHASH_OK=1` + adresse ≠ empty known |
-| Buy agent | `VITE_AGENTS_MARKETPLACE_ADDRESS` + `VITE_AGENTS_CODEHASH_OK=1` |
-| LIA live trades | `LIA_LIVE_TRADING=1` + micro-proof |
+| Gate             | Condition                                                       |
+| ---------------- | --------------------------------------------------------------- |
+| List/Buy/Bid NFT | `VITE_MARKETPLACE_CODEHASH_OK=1` + adresse ≠ empty known        |
+| Buy agent        | `VITE_AGENTS_MARKETPLACE_ADDRESS` + `VITE_AGENTS_CODEHASH_OK=1` |
+| LIA live trades  | `LIA_LIVE_TRADING=1` + micro-proof                              |
 
 `useMarketplaceTx` refuse toute TX si gate false.
 

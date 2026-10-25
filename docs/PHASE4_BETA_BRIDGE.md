@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Phase 4 — Live data bridge (not auto-trading)
 
 ## Principles
@@ -17,10 +22,10 @@ PYTHONPATH=. python -m lia.brain.post_trade
 
 ## Proven dust (already on mainnet)
 
-| Action | TX |
-|--------|-----|
-| TRO ESDT | `1b56321b…` |
-| wrapEgld | `b843b2cc…` |
+| Action     | TX          |
+| ---------- | ----------- |
+| TRO ESDT   | `1b56321b…` |
+| wrapEgld   | `b843b2cc…` |
 | WEGLD→USDC | `c45847d4…` |
 
 ## Safety

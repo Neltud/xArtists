@@ -1,11 +1,16 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Sprint 1.1 — Zero-trust verify-access
 
 ## Shipped
 
-- `services/access-api/src/verifyAccess.mjs` — MVX NFT read + HS256 JWT
-- `POST /v1/verify-access` · `GET /v1/access/introspect`
-- `tcaVerifyClient.ts` + `TcaGatePage` — FULL only from server
-- Demo localStorage packs disabled when `import.meta.env.PROD`
+* `services/access-api/src/verifyAccess.mjs` — MVX NFT read + HS256 JWT
+* `POST /v1/verify-access` · `GET /v1/access/introspect`
+* `tcaVerifyClient.ts` + `TcaGatePage` — FULL only from server
+* Demo localStorage packs disabled when `import.meta.env.PROD`
 
 ## Server env (never git)
 
@@ -28,12 +33,12 @@ VITE_ALLOW_TCA_DEMO_PACKS=true
 
 ## Fail closed
 
-| Case | Result |
-|------|--------|
-| No API base | SAMPLE |
-| API down | SAMPLE |
-| FULL without JWT_SECRET | 503 then SAMPLE |
-| No wallet | NONE |
+| Case                     | Result          |
+| ------------------------ | --------------- |
+| No API base              | SAMPLE          |
+| API down                 | SAMPLE          |
+| FULL without JWT\_SECRET | 503 then SAMPLE |
+| No wallet                | NONE            |
 
 ## Local test
 

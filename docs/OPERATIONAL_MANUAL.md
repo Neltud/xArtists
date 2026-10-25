@@ -1,34 +1,41 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Operational Manual — xArtists / LIA
 
 You control capital. The machine proposes.
 
 ## Defaults
 
-| Setting | Value |
-|---------|--------|
-| `LIA_LIVE_TRADING` | **0** |
-| UI mode | Shadow |
-| LIA + NFT | **Blocked** |
+| Setting            | Value       |
+| ------------------ | ----------- |
+| `LIA_LIVE_TRADING` | **0**       |
+| UI mode            | Shadow      |
+| LIA + NFT          | **Blocked** |
 
----
+***
 
 ## Signature process (xPortal / Vellum)
 
-1. Generate proposal
-   ```bash
-   PYTHONPATH=. python -m lia.genesis.decision_chain --cycles 1
-   PYTHONPATH=. python -m lia.guardian.signature_bridge --from-decision
-   ```
+1.  Generate proposal
+
+    ```bash
+    PYTHONPATH=. python -m lia.genesis.decision_chain --cycles 1
+    PYTHONPATH=. python -m lia.guardian.signature_bridge --from-decision
+    ```
 2. Open dApp → Signature bridge (or `data/signature_packages.json`)
 3. **Copy calldata** / full step (receiver, value, data, gasLimit)
 4. Sign & send in **xPortal** or Vellum executor
-5. Close the loop
-   ```bash
-   PYTHONPATH=. python -m lia.guardian.signature_bridge --match <txHash>
-   ```
+5.  Close the loop
+
+    ```bash
+    PYTHONPATH=. python -m lia.guardian.signature_bridge --match <txHash>
+    ```
 6. Optional UI: “I signed — wait for on-chain” (spinner until package shows executed)
 
----
+***
 
 ## First Blood (first real dust session)
 
@@ -40,7 +47,7 @@ You control capital. The machine proposes.
 
 Proven foundation TX: wrap `b843b2cc…` · swap `c45847d4…` · TRO `1b56321b…`
 
----
+***
 
 ## Emergency Kill-Switch
 
@@ -49,23 +56,24 @@ PYTHONPATH=. python -c "from lia.guardian.kill_switch import get_kill_switch; ge
 ```
 
 Clear:
+
 ```bash
 PYTHONPATH=. python -c "from lia.guardian.kill_switch import get_kill_switch; get_kill_switch().clear('ops_ack_clear')"
 ```
 
-Auto: EGLD −8% / 15 min → BLACK_SWAN.
+Auto: EGLD −8% / 15 min → BLACK\_SWAN.
 
----
+***
 
 ## Economic Pulse
 
-| Field | Meaning |
-|-------|---------|
-| Minted | TRO on RWA mint ledger |
-| Burned | TRO on sold+shipped |
-| Circulating | Minted − Burned |
+| Field       | Meaning                |
+| ----------- | ---------------------- |
+| Minted      | TRO on RWA mint ledger |
+| Burned      | TRO on sold+shipped    |
+| Circulating | Minted − Burned        |
 
----
+***
 
 ## Daily (optional)
 

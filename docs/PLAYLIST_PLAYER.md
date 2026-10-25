@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Playlist player (SoundCloud / YouTube)
 
 ## Composant
@@ -8,10 +13,10 @@
 
 `apps/frontend/src/config/playlist.ts`
 
-| Variable env | Effet |
-|--------------|--------|
-| `VITE_PLAYLIST_URL` | URL SoundCloud ou ID / URL YouTube |
-| `VITE_PLAYLIST_PROVIDER` | `soundcloud` \| `youtube` |
+| Variable env             | Effet                              |
+| ------------------------ | ---------------------------------- |
+| `VITE_PLAYLIST_URL`      | URL SoundCloud ou ID / URL YouTube |
+| `VITE_PLAYLIST_PROVIDER` | `soundcloud` \| `youtube`          |
 
 Défaut : YouTube lofi (`jfKfPfyJRdk`).
 

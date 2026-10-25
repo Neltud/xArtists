@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Bootstrap critical modules
 
 On a fresh clone, `compound_engine` may still be a placeholder and swarm/path/preflight may be missing.
@@ -10,9 +15,9 @@ bash scripts/bootstrap_critical.sh
 
 Requires on `scripts/`:
 
-- `apply_compound_and_path.py` → compound_engine + million_path
-- `apply_preflight_stack.py` → preflight + orchestrator + guardian_hook
-- `apply_autonomous_swarm.py` → autonomous_swarm
+* `apply_compound_and_path.py` → compound\_engine + million\_path
+* `apply_preflight_stack.py` → preflight + orchestrator + guardian\_hook
+* `apply_autonomous_swarm.py` → autonomous\_swarm
 
 Copy from session artifacts if not yet on main:
 

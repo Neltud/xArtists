@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Audit publication mainnet — xArtists (pré-hub xPortal)
 
 ## Gas / funding SC
@@ -6,12 +11,12 @@
 
 Sur MultiversX, **l’utilisateur paie le gas** de chaque TX. Le solde d’un SC sert aux **réserves économiques** (caisse slot, progressive), pas au gas des appels.
 
-| SC | Solde min utile | Pourquoi |
-|----|-----------------|----------|
-| Slot | ≥ 0,5 EGLD | Payouts + progressive (seed fait) |
-| Marketplace | 0 | OK |
-| TRO staking | 0 | OK (TRO stakés séparément) |
-| Venue / Treasury | 0 | OK |
+| SC               | Solde min utile | Pourquoi                          |
+| ---------------- | --------------- | --------------------------------- |
+| Slot             | ≥ 0,5 EGLD      | Payouts + progressive (seed fait) |
+| Marketplace      | 0               | OK                                |
+| TRO staking      | 0               | OK (TRO stakés séparément)        |
+| Venue / Treasury | 0               | OK                                |
 
 ## Smart-unlock REAL
 
@@ -26,17 +31,17 @@ Slot actuel : **0,5 EGLD** + codeHash match → REAL doit s’ouvrir après refr
 
 ## Checklist hub xPortal
 
-- [x] SC slot seedé
-- [x] Disconnect wallet
-- [x] Mentions légales (entrepreneur individuel / pas un fond d’investissement)
-- [x] Smart-unlock REAL
-- [ ] 1 spin user réel post-unlock
-- [ ] 1 listNft signé xPortal
-- [ ] Secrets Pages optionnels (renfort)
-- [ ] Screenshots marketing
+* [x] SC slot seedé
+* [x] Disconnect wallet
+* [x] Mentions légales (entrepreneur individuel / pas un fond d’investissement)
+* [x] Smart-unlock REAL
+* [ ] 1 spin user réel post-unlock
+* [ ] 1 listNft signé xPortal
+* [ ] Secrets Pages optionnels (renfort)
+* [ ] Screenshots marketing
 
 ## Non-objectifs
 
-- Ne pas promettre rendement / APY
-- Packs paper jusqu’à minter SC
-- Mode FUN toujours dispo si REAL indisponible
+* Ne pas promettre rendement / APY
+* Packs paper jusqu’à minter SC
+* Mode FUN toujours dispo si REAL indisponible

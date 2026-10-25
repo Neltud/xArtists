@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # SC Deployer plan
 
 ## Address (public)
@@ -19,9 +24,9 @@ Mainnet · fund with EGLD for gas · PEM held offline (sandbox ops) — **never 
 
 ## Immutability model
 
-- **No `upgrade` endpoint** on staking SCs
-- Admin: pause / allowlist until `renounceOwnership`
-- After renounce: users can still stake/unstake; no further admin
+* **No `upgrade` endpoint** on staking SCs
+* Admin: pause / allowlist until `renounceOwnership`
+* After renounce: users can still stake/unstake; no further admin
 
 ## After deploy
 

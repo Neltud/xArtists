@@ -1,19 +1,24 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Live News — Command Center
 
 ## Sources (sans clé CryptoCompare)
 
-| Source | Où |
-|--------|-----|
-| MultiversX economics (prix EGLD) | API publique |
-| Reddit `r/MultiversX` | JSON public (worker + client si CORS OK) |
-| CoinTelegraph / CoinDesk RSS | via rss2json (worker Node) |
-| Seed blog MultiversX | fallback |
+| Source                           | Où                                       |
+| -------------------------------- | ---------------------------------------- |
+| MultiversX economics (prix EGLD) | API publique                             |
+| Reddit `r/MultiversX`            | JSON public (worker + client si CORS OK) |
+| CoinTelegraph / CoinDesk RSS     | via rss2json (worker Node)               |
+| Seed blog MultiversX             | fallback                                 |
 
 ## Fichiers
 
-- `services/news-worker/fetch_news.mjs`
-- `apps/frontend/public/data/live_news.json`
-- `LiveNewsStream.tsx` — UI scroll + liens
+* `services/news-worker/fetch_news.mjs`
+* `apps/frontend/public/data/live_news.json`
+* `LiveNewsStream.tsx` — UI scroll + liens
 
 ## Format
 

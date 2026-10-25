@@ -1,14 +1,19 @@
+---
+hidden: true
+noIndex: true
+---
+
 # OpenStreetMap & Mapbox dans xArtists
 
 ## Couches
 
-| Couche | Techno | Fichier |
-|--------|--------|--------|
-| Tuiles OSM / CARTO / topo | Leaflet | `ArtWorldMap.tsx` |
-| POI live Overpass | `osmOverpass.ts` | cache session + localStorage |
-| Match → salle virtuelle | `osmMuseumMatch.ts` | Louvre, Orsay, … |
-| Mapbox GL (option) | CDN + `VITE_MAPBOX_TOKEN` | `MapboxArtMap.tsx` |
-| Catalogue OSM offline | Akash indexer | `deploy/akash/indexer/osmCatalog.mjs` |
+| Couche                    | Techno                    | Fichier                               |
+| ------------------------- | ------------------------- | ------------------------------------- |
+| Tuiles OSM / CARTO / topo | Leaflet                   | `ArtWorldMap.tsx`                     |
+| POI live Overpass         | `osmOverpass.ts`          | cache session + localStorage          |
+| Match → salle virtuelle   | `osmMuseumMatch.ts`       | Louvre, Orsay, …                      |
+| Mapbox GL (option)        | CDN + `VITE_MAPBOX_TOKEN` | `MapboxArtMap.tsx`                    |
+| Catalogue OSM offline     | Akash indexer             | `deploy/akash/indexer/osmCatalog.mjs` |
 
 ## Cache Overpass
 
@@ -25,9 +30,9 @@ configureOsmCache({
 })
 ```
 
-- **sessionStorage** : TTL court (navigation)
-- **localStorage** : TTL 24 h (retour visite)
-- `clearOsmCache()` pour invalider
+* **sessionStorage** : TTL court (navigation)
+* **localStorage** : TTL 24 h (retour visite)
+* `clearOsmCache()` pour invalider
 
 ## Matcher OSM → musée virtuel
 

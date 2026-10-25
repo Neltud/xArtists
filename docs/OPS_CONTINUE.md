@@ -1,19 +1,24 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Continue ops — état au 2026-08-09
 
 ## Vert local (après restore artifacts)
 
-- Regression **76/76**
-- `million_path` tests OK
-- `preflight` tests OK
-- `after_trade_close` → lock adaptatif + next_size
+* Regression **76/76**
+* `million_path` tests OK
+* `preflight` tests OK
+* `after_trade_close` → lock adaptatif + next\_size
 
 ## Sur main déjà
 
-- `docs/MILLION_PATH.md`, `docs/ARCHITECTURE_THREE_CRITICAL.md`
-- `lia/circuit/path_executor_hooks.py`
-- `lia/risk/profit_lock.py` + `credit_for_equity`
-- `lia/board/publish_path.py`, `data/lia_million_path.json`
-- UX honesty (PageGuide, ScStatusBanner), SPA `404.html` stubs desk
+* `docs/MILLION_PATH.md`, `docs/ARCHITECTURE_THREE_CRITICAL.md`
+* `lia/circuit/path_executor_hooks.py`
+* `lia/risk/profit_lock.py` + `credit_for_equity`
+* `lia/board/publish_path.py`, `data/lia_million_path.json`
+* UX honesty (PageGuide, ScStatusBanner), SPA `404.html` stubs desk
 
 ## À appliquer encore (placeholders sur main)
 

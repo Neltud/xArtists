@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Production live — xArtists dApp
 
 **URL :** https://neltud.github.io/xArtists/
@@ -13,23 +18,23 @@ npm run build   # vite build — green
 
 ## Données réelles
 
-| Source | Usage |
-|--------|--------|
-| `api.multiversx.com/economics` | Prix EGLD, market cap, APR |
-| LIA ops account API | Solde ~0.069 EGLD |
-| `data/live_network_snapshot.json` | Snapshot publié |
-| `data/entity_map.json` | Organigramme modules |
-| Board / brain JSON | Paper LIA (Vellum `production_run`) |
+| Source                            | Usage                               |
+| --------------------------------- | ----------------------------------- |
+| `api.multiversx.com/economics`    | Prix EGLD, market cap, APR          |
+| LIA ops account API               | Solde \~0.069 EGLD                  |
+| `data/live_network_snapshot.json` | Snapshot publié                     |
+| `data/entity_map.json`            | Organigramme modules                |
+| Board / brain JSON                | Paper LIA (Vellum `production_run`) |
 
 ## Pages deploy
 
-Workflow : `Deploy xArtists dApp to GitHub Pages`  
+Workflow : `Deploy xArtists dApp to GitHub Pages`\
 Push `main` (apps/frontend|data) ou **Actions → Run workflow**.
 
 SPA : `docs/404.html` copié depuis `index.html`.
 
 ## Limites prod honnêtes
 
-- Marketplace / agents SC : codeHash null → pas de List/Buy on-chain
-- TxShell : pas de bundle sdk-dapp (Vite 5 + Ledger BLE) — Web Wallet redirect OK
-- LIA trading : paper jusqu’à micro-preuves + flag live
+* Marketplace / agents SC : codeHash null → pas de List/Buy on-chain
+* TxShell : pas de bundle sdk-dapp (Vite 5 + Ledger BLE) — Web Wallet redirect OK
+* LIA trading : paper jusqu’à micro-preuves + flag live

@@ -1,18 +1,23 @@
+---
+hidden: true
+noIndex: true
+---
+
 # P0 — Calldata layer (Brain → Guardian bridge)
 
 ## Problem (audit R1/R2)
 
-- Decision engine produced **Intent** (paper).
-- UniversalExecutor needs **`data` / `data_hex`** strings.
-- No constructor → no safe autonomous swap.
+* Decision engine produced **Intent** (paper).
+* UniversalExecutor needs **`data` / `data_hex`** strings.
+* No constructor → no safe autonomous swap.
 
 ## Solution
 
 Package `lia/calldata/`:
 
-| Module | Builds |
-|--------|--------|
-| `esdt.py` | `ESDTTransfer@token@amount` |
+| Module    | Builds                                                                   |
+| --------- | ------------------------------------------------------------------------ |
+| `esdt.py` | `ESDTTransfer@token@amount`                                              |
 | `swap.py` | `wrapEgld`, `ESDTTransfer+swapTokensFixedInput`, **dust EGLD→USDC plan** |
 
 ## Usage
@@ -30,11 +35,11 @@ Guardian path (conceptual):
 
 ## Safety
 
-- Does **not** enable live trading by itself
-- Router / WEGLD addresses must be re-verified on explorer before first LIVE dust
-- `min_out=0` forbidden in Beta live policy (ops must inject quote)
+* Does **not** enable live trading by itself
+* Router / WEGLD addresses must be re-verified on explorer before first LIVE dust
+* `min_out=0` forbidden in Beta live policy (ops must inject quote)
 
 ## Next
 
-- Quote client (xExchange price) → fill `min_usdc`
-- Wire plan runner behind allowlist in `lia.beta`
+* Quote client (xExchange price) → fill `min_usdc`
+* Wire plan runner behind allowlist in `lia.beta`

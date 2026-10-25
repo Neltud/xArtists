@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # PWA mobile + nœuds Vellum
 
 ## 1. Installer l’app sur le téléphone (PWA)
@@ -5,40 +10,44 @@
 Ce n’est **pas** une app App Store / Play Store native, mais une **Progressive Web App** : icône sur l’écran d’accueil, ouverture plein écran, cache offline partiel.
 
 ### Android (Chrome)
+
 1. Ouvre https://neltud.github.io/xArtists
 2. Menu ⋮ → **Installer l’application** / **Ajouter à l’écran d’accueil**
 3. Ou bandeau **Installer xArtists** dans l’app
 
 ### iPhone (Safari)
+
 1. Ouvre le site dans **Safari** (pas Chrome)
 2. Bouton **Partager** → **Sur l’écran d’accueil**
 3. Confirme **Ajouter**
 
 ### Technique repo
-- `apps/frontend/public/manifest.webmanifest`
-- `apps/frontend/public/service-worker.js`
-- `apps/frontend/src/pwa/registerSW.ts`
-- `apps/frontend/src/components/PwaInstallBanner.tsx`
+
+* `apps/frontend/public/manifest.webmanifest`
+* `apps/frontend/public/service-worker.js`
+* `apps/frontend/src/pwa/registerSW.ts`
+* `apps/frontend/src/components/PwaInstallBanner.tsx`
 
 Après deploy frontend : recharger une fois, puis installer.
 
 ### Limites
-- Wallet : xPortal / WalletConnect dans le navigateur intégré
-- Notifications push : optionnel plus tard
-- Pour une vraie app stores : Capacitor/React Native (phase 2)
 
----
+* Wallet : xPortal / WalletConnect dans le navigateur intégré
+* Notifications push : optionnel plus tard
+* Pour une vraie app stores : Capacitor/React Native (phase 2)
+
+***
 
 ## 2. Nœuds Vellum à intégrer
 
 **Code :** `lia/vellum/nodes_trailing_cycle.py`
 
-| Node | Fonction |
-|------|----------|
-| `gate_cycle` | SKIP si WAIT, low confidence, max trades/jour, frais trop hauts |
-| `open_trailing` | Ouvre position + trailing hybrid |
-| `trailing_tick` | MAJ stops ; `should_close` si STOP |
-| `append_trade` | Log dans `data/lia_trades.json` |
+| Node            | Fonction                                                        |
+| --------------- | --------------------------------------------------------------- |
+| `gate_cycle`    | SKIP si WAIT, low confidence, max trades/jour, frais trop hauts |
+| `open_trailing` | Ouvre position + trailing hybrid                                |
+| `trailing_tick` | MAJ stops ; `should_close` si STOP                              |
+| `append_trade`  | Log dans `data/lia_trades.json`                                 |
 
 ### Schéma workflow Vellum
 

@@ -1,6 +1,11 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Contrat API exact — Claude ↔ LIA
 
-## social_intel (`lia/signals/social_intel.py`)
+## social\_intel (`lia/signals/social_intel.py`)
 
 ```python
 from lia.signals.social_intel import SocialIntel, SocialBias, analyze_items
@@ -25,7 +30,7 @@ out = bus.composite()  # no args
 # out: bias, confidence [0,1], weight, n, caps, sources
 ```
 
-## compound_pyramids (`lia/circuit/compound_pyramids.py`)
+## compound\_pyramids (`lia/circuit/compound_pyramids.py`)
 
 ```python
 from lia.circuit.compound_pyramids import (
@@ -52,7 +57,7 @@ p.save()
 
 **No separate `compute_weights()` function** — weights live on `DEFAULT_PYRAMID[i].weight`.
 
-## pyramids_external_allocator (`lia/claude_agent/pyramids_adapter.py`)
+## pyramids\_external\_allocator (`lia/claude_agent/pyramids_adapter.py`)
 
 ```python
 from lia.claude_agent.pyramids_adapter import pyramids_external_allocator, sleeves_to_weights

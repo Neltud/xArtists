@@ -1,15 +1,20 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Soft launch xArtists (paper-first)
 
 **Décision produit :** A public maintenant · B ops SC en parallèle · C musée mur/zoom/intent sans fake buy.
 
-## A — Surface publique (GO_DEMO)
+## A — Surface publique (GO\_DEMO)
 
-- Banner : `SOFT LAUNCH · PAPER` (`apps/frontend/src/config/demoMode.ts`)
-- Parcours critique : Accueil → Wallet → Musée → Tours → Packs (`SoftLaunchPath`)
-- Trading LIA live **OFF**
-- Packs : Pulse · Yield · Sentinel
-- Tours = culture, pas pack agent
-- Aucune promesse gasless / swap auto non déployé
+* Banner : `SOFT LAUNCH · PAPER` (`apps/frontend/src/config/demoMode.ts`)
+* Parcours critique : Accueil → Wallet → Musée → Tours → Packs (`SoftLaunchPath`)
+* Trading LIA live **OFF**
+* Packs : Pulse · Yield · Sentinel
+* Tours = culture, pas pack agent
+* Aucune promesse gasless / swap auto non déployé
 
 ## B — SC (ops, hors git secrets)
 
@@ -27,9 +32,9 @@ UI reste **fail-closed** via `canListBuyNft()` / `canBuyAgent()` tant que flags 
 
 ## C — Musée
 
-- Mur + cadre + zoom (±, clic)
-- CTA **Intention d’achat** → event `lia-intent` paper / Guardian
-- Si SC live + flag : parcours signature wallet (pas de SUCCESS simulé)
+* Mur + cadre + zoom (±, clic)
+* CTA **Intention d’achat** → event `lia-intent` paper / Guardian
+* Si SC live + flag : parcours signature wallet (pas de SUCCESS simulé)
 
 ## QA soft launch (5 min)
 

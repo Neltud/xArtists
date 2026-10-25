@@ -1,20 +1,25 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Risk Manager — emergency drawdown lock
 
 ## Intent
 
 Si le **drawdown** (perte depuis le pic) dépasse le plafond (défaut **15 %**), le système passe en **LOCKED** :
 
-- plus de size-up Guardian / Executor
-- signal essaim LIA : cesse operations
-- unlock **manuel ops uniquement** (`UNLOCK_RISK_MANAGER`)
+* plus de size-up Guardian / Executor
+* signal essaim LIA : cesse operations
+* unlock **manuel ops uniquement** (`UNLOCK_RISK_MANAGER`)
 
 ## Code
 
-| Couche | Path |
-|--------|------|
-| SC référence | `contracts/risk-manager/types_reference.rs` |
-| Off-chain (live paper) | `lia/security/risk_manager.py` |
-| Fil Guardian | `lia/vellum/guardian_hook.check_before_open` appelle RiskManager **avant** spiral |
+| Couche                 | Path                                                                              |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| SC référence           | `contracts/risk-manager/types_reference.rs`                                       |
+| Off-chain (live paper) | `lia/security/risk_manager.py`                                                    |
+| Fil Guardian           | `lia/vellum/guardian_hook.check_before_open` appelle RiskManager **avant** spiral |
 
 ```python
 from lia.security.risk_manager import RiskManager, check_drawdown
@@ -35,5 +40,5 @@ ev, p_profit = calculate_ev(amount, price_diff, volatility, delay_range, gas_cos
 
 ## Deploy SC
 
-Pas encore déployé. Après audit : build/deploy comme les autres SC, puis codeHash + VITE.  
+Pas encore déployé. Après audit : build/deploy comme les autres SC, puis codeHash + VITE.\
 Jusque-là l’off-chain RiskManager est la source de vérité paper.

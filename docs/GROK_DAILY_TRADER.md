@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Grok Daily Trader
 
 Agent autonome **journalier** · MultiversX · paper-first.
@@ -20,7 +25,7 @@ mxpy wallet new --format pem --outfile grok-trader.pem
 mxpy wallet pem-address grok-trader.pem
 ```
 
-Puis `GROK_WALLET_ADDRESS=erd1...` dans `.env`.  
+Puis `GROK_WALLET_ADDRESS=erd1...` dans `.env`.\
 PEM → secret Vellum uniquement.
 
 Option : observer d’abord le wallet LIA ops (défaut script si address vide).

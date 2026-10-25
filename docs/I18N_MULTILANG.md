@@ -1,22 +1,27 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Multilingue xArtists
 
 ## Langues supportées
 
-| Code | Langue | Direction |
-|------|--------|-----------|
-| `fr` | Français (défaut) | LTR |
-| `en` | English | LTR |
-| `es` | Español | LTR |
-| `ru` | Русский | LTR |
-| `uk` | Українська | LTR |
-| `zh` | 中文 | LTR |
-| `ar` | العربية | RTL |
+| Code | Langue            | Direction |
+| ---- | ----------------- | --------- |
+| `fr` | Français (défaut) | LTR       |
+| `en` | English           | LTR       |
+| `es` | Español           | LTR       |
+| `ru` | Русский           | LTR       |
+| `uk` | Українська        | LTR       |
+| `zh` | 中文                | LTR       |
+| `ar` | العربية           | RTL       |
 
 ## Fichiers
 
-- `apps/frontend/src/i18n/types.ts` — type `Lang`, liste `LANGS`
-- `apps/frontend/src/i18n/dictionaries.ts` — clés UI (`nav.*`, `cc.*`, `home.*`, `slot.*`, …)
-- `apps/frontend/src/i18n/I18nContext.tsx` — `t(key)`, détection navigateur, `localStorage`
+* `apps/frontend/src/i18n/types.ts` — type `Lang`, liste `LANGS`
+* `apps/frontend/src/i18n/dictionaries.ts` — clés UI (`nav.*`, `cc.*`, `home.*`, `slot.*`, …)
+* `apps/frontend/src/i18n/I18nContext.tsx` — `t(key)`, détection navigateur, `localStorage`
 
 ## Usage dans un composant
 
@@ -39,13 +44,13 @@ Le sélecteur existant (nav / settings) appelle `setLang`. Après changement : `
 
 ## Hors scope pour l’instant
 
-- Traduction des **données on-chain** / noms NFT
-- Traduction auto des **signaux LIA** paper (anglais technique OK)
-- Pages légales complètes (à faire par juriste par locale)
+* Traduction des **données on-chain** / noms NFT
+* Traduction auto des **signaux LIA** paper (anglais technique OK)
+* Pages légales complètes (à faire par juriste par locale)
 
 ## Checklist pages
 
-- [x] Nav / CC / Slot / common
-- [x] Home (`home.*`)
-- [ ] Marketplace formulaires (en cours)
-- [ ] Studio / legal long form
+* [x] Nav / CC / Slot / common
+* [x] Home (`home.*`)
+* [ ] Marketplace formulaires (en cours)
+* [ ] Studio / legal long form

@@ -1,14 +1,19 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Roadmap commercial xArtists + LIA
 
 ## Fait (données repo — 2026-07-29)
 
-- [x] Supply $TRO documentée ≈ **476 223**
-- [x] Pool **OneDex TRO/EGLD** référencée (`data/tro_pool.json`)
-- [x] Template positions **Hatom** (collateral + HTM, pas de borrow)
-- [x] Spec **Achat en EUR** (MoonPay en premier)
-- [x] **CGU + disclaimer + commissions** (`docs/LEGAL.md`)
-- [x] Spec **chart $TRO** (DexScreener embed)
-- [x] Workflow exclusif Pages renforcé
+* [x] Supply $TRO documentée ≈ **476 223**
+* [x] Pool **OneDex TRO/EGLD** référencée (`data/tro_pool.json`)
+* [x] Template positions **Hatom** (collateral + HTM, pas de borrow)
+* [x] Spec **Achat en EUR** (MoonPay en premier)
+* [x] **CGU + disclaimer + commissions** (`docs/LEGAL.md`)
+* [x] Spec **chart $TRO** (DexScreener embed)
+* [x] Workflow exclusif Pages renforcé
 
 ## À brancher dans le dashboard live (`docs/index.html` / Vellum)
 
@@ -21,16 +26,16 @@
 
 ## Ensuite
 
-- GreenSmoke top 10 agents
-- Performance fee LIA 15 % (high-water mark)
-- xMoney webhooks production
+* GreenSmoke top 10 agents
+* Performance fee LIA 15 % (high-water mark)
+* xMoney webhooks production
 
 ## Commissions (rappel)
 
-| Type | % |
-|------|---|
-| Vendeur marketplace | 2,5 % |
-| Acheteur | 0,5 % |
-| Royalty secondaire | 5 % |
-| RWA escrow | 2 % |
-| Performance LIA | 15 % sur PnL + |
+| Type                | %              |
+| ------------------- | -------------- |
+| Vendeur marketplace | 2,5 %          |
+| Acheteur            | 0,5 %          |
+| Royalty secondaire  | 5 %            |
+| RWA escrow          | 2 %            |
+| Performance LIA     | 15 % sur PnL + |

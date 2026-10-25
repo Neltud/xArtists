@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Vellum Integration Kit — Plug & Play
 
 **Pilier 2 · Alliance**
@@ -19,20 +24,20 @@ Front xArtists
 
 ## Artefacts à consommer
 
-| Path | Usage Vellum |
-|------|----------------|
-| `docs/prompts/LIA_SYSTEM_PROMPT.md` | System prompt |
-| `packages/core-protocol/*` | LIP / Guardian types |
-| `apps/frontend/src/core/doctrine.ts` | Règles validation |
-| `apps/frontend/src/types/intent.ts` | Schéma intent |
-| `docs/marketing/VELLUM_SOCIAL_WORKFLOW_SPEC.json` | Social 30m |
-| `data/*.json` | Board paper |
+| Path                                              | Usage Vellum         |
+| ------------------------------------------------- | -------------------- |
+| `docs/prompts/LIA_SYSTEM_PROMPT.md`               | System prompt        |
+| `packages/core-protocol/*`                        | LIP / Guardian types |
+| `apps/frontend/src/core/doctrine.ts`              | Règles validation    |
+| `apps/frontend/src/types/intent.ts`               | Schéma intent        |
+| `docs/marketing/VELLUM_SOCIAL_WORKFLOW_SPEC.json` | Social 30m           |
+| `data/*.json`                                     | Board paper          |
 
 ## Secrets (vault Vellum uniquement)
 
-- Wallet ops LIA PEM / seed — **jamais** dans le repo
-- `X_*` ou Zapier hook pour social
-- OpenAI / model keys
+* Wallet ops LIA PEM / seed — **jamais** dans le repo
+* `X_*` ou Zapier hook pour social
+* OpenAI / model keys
 
 ## Sync cadence
 

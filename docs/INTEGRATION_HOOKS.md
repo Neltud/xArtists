@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Integration hooks — Grok MCP + CrossAgentPanel
 
 ## 1. Vellum node
@@ -61,11 +66,11 @@ import CrossAgentPanel from '../components/CrossAgentPanel'
 
 ## 4. Outputs
 
-| File | Role |
-|------|------|
-| `data/cross_score.json` | Score 0–100 + components |
-| `data/agent_feedback.jsonl` | Append-only log |
-| `data/agent_feedback_summary.json` | Last ~12 entries for UI |
+| File                               | Role                     |
+| ---------------------------------- | ------------------------ |
+| `data/cross_score.json`            | Score 0–100 + components |
+| `data/agent_feedback.jsonl`        | Append-only log          |
+| `data/agent_feedback_summary.json` | Last \~12 entries for UI |
 
 ## 5. MCP (already shipped)
 

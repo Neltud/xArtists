@@ -1,45 +1,50 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Vellum — marche à suivre exhaustive (Build Cycle Run)
 
-**Réseau :** MultiversX mainnet `CHAIN=1` · Proxy `https://gateway.multiversx.com`  
-**Demo :** https://neltud.github.io/xArtists/  
-**Repo :** https://github.com/Neltud/xArtists  
+**Réseau :** MultiversX mainnet `CHAIN=1` · Proxy `https://gateway.multiversx.com`\
+**Demo :** https://neltud.github.io/xArtists/\
+**Repo :** https://github.com/Neltud/xArtists\
 **Supernova :** epoch **2233** — 2026-09-10 17:45 UTC (`docs/SUPERNOVA_EPOCH_2233.md`)
 
-> LIA = cerveau Vellum (service payant). Le **code produit** vit dans GitHub.  
+> LIA = cerveau Vellum (service payant). Le **code produit** vit dans GitHub.\
 > **Jamais** de PEM dans le frontend ni dans un commit.
 
----
+***
 
 ## 0. Préflight (chaque run)
 
 1. Confirmer secrets Vellum + GitHub :
-   - `LIA_WALLET_PEM` (PEM complet, jamais loggé)
-   - `LIA_CHAIN_ID=1`
-   - `LIA_MVX_PROXY=https://gateway.multiversx.com`
-   - `FEE_BPS=300`
-   - `DEPLOY_CONTRACT=all` (ou ciblé)
+   * `LIA_WALLET_PEM` (PEM complet, jamais loggé)
+   * `LIA_CHAIN_ID=1`
+   * `LIA_MVX_PROXY=https://gateway.multiversx.com`
+   * `FEE_BPS=300`
+   * `DEPLOY_CONTRACT=all` (ou ciblé)
 2. Solde deployer : EGLD suffisant gas (wallet dédié, pas cold storage entier).
 3. `LIA_LIVE_TRADING=0` tant que paper / soft launch.
 4. Si date ≥ 10 sept 2026 17:45 UTC → cocher checklist Supernova avant TX lourdes.
 
----
+***
 
 ## 1. Cycle Vellum « board / data » (paper — sûr)
 
 Ordre strict (idempotent) :
 
-| # | Commande | Sortie |
-|---|----------|--------|
-| 1 | `python -m lia.gas.publish` | `data/mvx_gas.json` |
-| 2 | `python -m lia.board.publish` | `data/lia_board.json` |
-| 3 | (opt) `python -c "from lia.venues.hatom import publish_hatom; publish_hatom()"` | hatom JSON |
-| 4 | `python -c "from lia.media.storage import storage_status; ..."` | status média |
-| 5 | `python -m lia.vellum.orchestrator` avec `LIA_LIVE_TRADING=0` | dry-run only |
-| 6 | Commit + push `data/*.json` (+ `apps/frontend/public/data/` si miroir) | Pages live |
+| # | Commande                                                                        | Sortie                |
+| - | ------------------------------------------------------------------------------- | --------------------- |
+| 1 | `python -m lia.gas.publish`                                                     | `data/mvx_gas.json`   |
+| 2 | `python -m lia.board.publish`                                                   | `data/lia_board.json` |
+| 3 | (opt) `python -c "from lia.venues.hatom import publish_hatom; publish_hatom()"` | hatom JSON            |
+| 4 | `python -c "from lia.media.storage import storage_status; ..."`                 | status média          |
+| 5 | `python -m lia.vellum.orchestrator` avec `LIA_LIVE_TRADING=0`                   | dry-run only          |
+| 6 | Commit + push `data/*.json` (+ `apps/frontend/public/data/` si miroir)          | Pages live            |
 
 **Interdit en paper :** swap auto, mint SC non vérifié, claim fees, setTimeout fake-success.
 
----
+***
 
 ## 2. Déployer les Smart Contracts (live)
 
@@ -52,7 +57,7 @@ Ordre strict (idempotent) :
 5. Explorer devnet : codeHash non null
 6. **Mainnet** : `chain=1`, mêmes inputs **seulement** si devnet OK + EGLD mainnet
 
-Workflow : `.github/workflows/deploy-scs.yml`  
+Workflow : `.github/workflows/deploy-scs.yml`\
 Node : `lia/vellum/deploy_scs_node.py`
 
 ### 2.B Depuis Vellum (même PEM)
@@ -77,11 +82,11 @@ Puis seulement : activer flags Vite / `contracts.ts` adresses mainnet.
 
 Contrats cibles typiques :
 
-- `nft-marketplace`
-- `agents-marketplace` (packs Pulse · Yield · Sentinel)
-- (plus tard) staking / governance vote SC
+* `nft-marketplace`
+* `agents-marketplace` (packs Pulse · Yield · Sentinel)
+* (plus tard) staking / governance vote SC
 
----
+***
 
 ## 3. Frontend (build + Pages)
 
@@ -104,36 +109,36 @@ Hard refresh demo : `Ctrl+Shift+R` → https://neltud.github.io/xArtists/
 
 Packages épinglés paper : `sdk-dapp@^3`, `sdk-core@^13`.
 
----
+***
 
 ## 4. Modules Empire (ordre de construction)
 
-| Module | Priorité | État cible |
-|--------|----------|------------|
-| SC Marketplace multi-token | P0 | Deploy + verify codeHash |
-| Agents packs (3 NFT) | P0 | Mint gated + metadata xAiAx/y/s |
-| Guardian + no fake TX | P0 | Déjà policy front |
-| LIA treasury ≥10 USDC | P1 | Policy paper → Guardian |
-| Yield TRO/EGLD (DEX) | P1 | Staking page (pas DAO) |
-| DAO LP vote power | P1 | Paper units |
-| Oracle / Market page | P1 | Public indicators |
-| Musée 3D surréaliste | P1 | WebGL + map links |
-| Multiplayer lab | P2 | `/museum/lab` + Socket.IO opt-in |
-| Auto-trading live | **BLOQUÉ** | Tant que `LIA_LIVE_TRADING=0` |
-| WebXR casque | P3 | Post LIA Pass mint |
+| Module                     | Priorité   | État cible                       |
+| -------------------------- | ---------- | -------------------------------- |
+| SC Marketplace multi-token | P0         | Deploy + verify codeHash         |
+| Agents packs (3 NFT)       | P0         | Mint gated + metadata xAiAx/y/s  |
+| Guardian + no fake TX      | P0         | Déjà policy front                |
+| LIA treasury ≥10 USDC      | P1         | Policy paper → Guardian          |
+| Yield TRO/EGLD (DEX)       | P1         | Staking page (pas DAO)           |
+| DAO LP vote power          | P1         | Paper units                      |
+| Oracle / Market page       | P1         | Public indicators                |
+| Musée 3D surréaliste       | P1         | WebGL + map links                |
+| Multiplayer lab            | P2         | `/museum/lab` + Socket.IO opt-in |
+| Auto-trading live          | **BLOQUÉ** | Tant que `LIA_LIVE_TRADING=0`    |
+| WebXR casque               | P3         | Post LIA Pass mint               |
 
----
+***
 
 ## 5. Prompt système Vellum (copier)
 
 Voir **`docs/VELLUM_ASSISTANT_PROMPT.md`**. Compléments run :
 
-- Packs IA affichés = **Pulse · Yield · Sentinel uniquement**
-- Tours artistiques = service **CULTURE**, pas un pack
-- Trading live **OFF** en demo
-- Supernova epoch 2233 noté dans banner démo
+* Packs IA affichés = **Pulse · Yield · Sentinel uniquement**
+* Tours artistiques = service **CULTURE**, pas un pack
+* Trading live **OFF** en demo
+* Supernova epoch 2233 noté dans banner démo
 
----
+***
 
 ## 6. ENV template (référence)
 
@@ -153,19 +158,19 @@ VITE_MULTIPLAYER_URL=   # lab only
 
 Fichier d’exemple : `apps/frontend/.env.vellum.example`
 
----
+***
 
 ## 7. Definition of Done (un cycle)
 
-- [ ] Data JSON publiés (board/gas)
-- [ ] SC devnet OK **ou** mainnet verify codeHash
-- [ ] `contracts.json` à jour sur main
-- [ ] Frontend CI vert → Pages
-- [ ] Aucun secret dans le diff
-- [ ] Demo paper honnête (pas de claim live non déployé)
-- [ ] Si post-10-sept : checklist Supernova cochée
+* [ ] Data JSON publiés (board/gas)
+* [ ] SC devnet OK **ou** mainnet verify codeHash
+* [ ] `contracts.json` à jour sur main
+* [ ] Frontend CI vert → Pages
+* [ ] Aucun secret dans le diff
+* [ ] Demo paper honnête (pas de claim live non déployé)
+* [ ] Si post-10-sept : checklist Supernova cochée
 
----
+***
 
 ## 8. Message type « prochain build cycle »
 

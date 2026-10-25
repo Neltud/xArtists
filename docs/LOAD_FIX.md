@@ -1,9 +1,14 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Fix chargement — conflit index vs 404
 
 ## Cause (2026-08-27)
 
-- `docs/index.html` → `assets/index-CtYXMuxI.js` (**200**)
-- `docs/404.html` → `assets/index-CEhbLFWV.js` (**404 fichier manquant**)
+* `docs/index.html` → `assets/index-CtYXMuxI.js` (**200**)
+* `docs/404.html` → `assets/index-CEhbLFWV.js` (**404 fichier manquant**)
 
 Toute navigation deep-link / refresh hors `/` servait le mauvais shell → JS introuvable → « Chargement… » / ErrorBoundary.
 

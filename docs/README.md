@@ -1,35 +1,26 @@
-# xArtists docs
+---
+description: >-
+  Découvrez xArtists et sa dapp : art, création, musée immersif, outils IA et
+  accès mobile sur MultiversX.
+icon: house
+---
 
-## LIA / Trading
+# xArtists — Art, création et intelligence
 
-| Doc | Sujet |
-|------|--------|
-| [VELLUM_LIA_WALLET_DIRECTIVES.md](VELLUM_LIA_WALLET_DIRECTIVES.md) | **Directives Vellum : stratégies, LIA Wallet, MultiversX / PayBox et validation des ordres réels** |
-| [LIA_TRADING_ARCHITECTURE.md](LIA_TRADING_ARCHITECTURE.md) | **Carte modules + cycle Vellum unifié** |
-| [LIA_SPLIT.md](LIA_SPLIT.md) | Splits TRO / PnL / fees / tips |
-| [ORACLES.md](ORACLES.md) | Prix on-chain leaning |
-| [TRO.md](TRO.md) | Token $TRO |
+![xArtists — Art × Intelligence sur MultiversX](.gitbook/assets/xartists-public-cover.png)
 
-## Produit & treasury
+**Un écosystème créatif sur MultiversX.**
 
-| Doc | Sujet |
-|------|--------|
-| [TREASURY_POLICY.md](TREASURY_POLICY.md) | Fondation décentralisée |
-| [DAPP_STATUS.md](DAPP_STATUS.md) | État dApp |
+xArtists relie les œuvres, leurs créateurs et leurs publics à travers une application web qui réunit musée, collections, Studio et outils d’intelligence artificielle.
 
-## Déploiement
+La présentation publique vous accompagne de la découverte du projet à la prise en main de la dapp. Elle s’adresse aux artistes, aux visiteurs, aux collectionneurs et aux partenaires.
 
-Publication V3 : [V3_PUBLICATION_2026-10-21.md](V3_PUBLICATION_2026-10-21.md).
+<table data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Le projet xArtists</strong></td><td>La vision, les usages et les parcours selon votre profil.</td><td><a href="presentation/">presentation</a></td></tr><tr><td><strong>La dapp, pas à pas</strong></td><td>Explorer, créer et comprendre les cinq espaces de l’application.</td><td><a href="presentation/decouvrir-la-dapp.md">decouvrir-la-dapp.md</a></td></tr><tr><td><strong>Web, mobile et xPortal</strong></td><td>Commencer sans wallet, installer l’application web et comprendre la connexion.</td><td><a href="presentation/demarrer-sur-mobile.md">demarrer-sur-mobile.md</a></td></tr><tr><td><strong>Accès et disponibilité</strong></td><td>Les liens publics et l’état actuel des parcours.</td><td><a href="presentation/etat-du-produit.md">etat-du-produit.md</a></td></tr></tbody></table>
 
-| Doc | Sujet |
-|------|--------|
-| [RUNBOOK_DEPLOY.md](RUNBOOK_DEPLOY.md) | Deploy SC mainnet |
-| [POST_DEPLOY_VERIFY.md](POST_DEPLOY_VERIFY.md) | Vérifs post-deploy |
-| [REGRESSION.md](REGRESSION.md) | Tests |
+**Version de découverte publique · LIA en simulation.** La sortie GitHub mobile consolidée est en cours de validation. Les fonctions de paiement et le trading live sont désactivés dans la version de découverte.
 
-## Commande cycle LIA
+<a href="https://xartists-dapp-mobile.loftypearl128.chatgpt.site/xArtists/app/" class="button primary">Ouvrir la version de découverte</a>
 
-```bash
-export LIA_LIVE_TRADING=0 CHAIN=1
-python -m lia.vellum.pipeline
-```
+[English overview](presentation/english-overview.md) · [Questions fréquentes](presentation/questions-frequentes.md) · [Contribuer](presentation/contribuer-et-partenariats.md)
+
+Projet porté par **Nelson Tuduri / Neltud** · [Code et développement](https://github.com/Neltud/xArtists)

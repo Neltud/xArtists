@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Instruction prioritaire : retirer polyLIA / GreenSmoke
 
 ### Reprise de la sortie officielle

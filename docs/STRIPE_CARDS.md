@@ -1,21 +1,26 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Stripe — paiements carte (xArtists)
 
 ## Rôle
 
-| Flux | Provider |
-|------|----------|
-| **Packs IA** (Pulse / Yield / Sentinel) en € | **Stripe Checkout** (carte) |
-| On-ramp **EGLD** crypto | **MoonPay** (Apple Pay / Google Pay / carte) |
+| Flux                                         | Provider                                     |
+| -------------------------------------------- | -------------------------------------------- |
+| **Packs IA** (Pulse / Yield / Sentinel) en € | **Stripe Checkout** (carte)                  |
+| On-ramp **EGLD** crypto                      | **MoonPay** (Apple Pay / Google Pay / carte) |
 
 Stripe **ne remplace pas** MoonPay pour acheter de l’EGLD on-chain. Stripe paie le **produit access pack** (fiat) ; le mint NFT suit le webhook.
 
 ## Frontend
 
-| Fichier | Rôle |
-|---------|------|
-| `lib/stripe.ts` | Session API + Payment Links |
-| `PackCheckout.tsx` | CTA carte Stripe |
-| `StripeCardBanner.tsx` | Statut config |
+| Fichier                | Rôle                        |
+| ---------------------- | --------------------------- |
+| `lib/stripe.ts`        | Session API + Payment Links |
+| `PackCheckout.tsx`     | CTA carte Stripe            |
+| `StripeCardBanner.tsx` | Statut config               |
 
 ## Variables d’environnement (Pages / Vite)
 
@@ -56,7 +61,7 @@ Réponse :
 
 ### Serveur (référence)
 
-```text
+```
 stripe.checkout.sessions.create({
   mode: 'payment',
   payment_method_types: ['card'],
@@ -73,12 +78,12 @@ stripe.checkout.sessions.create({
 
 ## Sécurité
 
-- `sk_live_…` **uniquement** serveur / Vellum secret store  
-- Front : `pk_` optionnel + URLs session  
-- Idempotence webhook par `session.id`  
+* `sk_live_…` **uniquement** serveur / Vellum secret store
+* Front : `pk_` optionnel + URLs session
+* Idempotence webhook par `session.id`
 
 ## Test
 
-1. Cartes test Stripe `4242…`  
-2. Success → `/#/my-packs?paid=1`  
-3. Sans API ni Payment Link → intent `localStorage` paper  
+1. Cartes test Stripe `4242…`
+2. Success → `/#/my-packs?paid=1`
+3. Sans API ni Payment Link → intent `localStorage` paper

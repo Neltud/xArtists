@@ -1,35 +1,41 @@
+---
+hidden: true
+noIndex: true
+---
+
 # E2E Test Report — 2026-08-09
 
 ## Live site (neltud.github.io/xArtists)
 
-| Check | Result |
-|-------|--------|
-| GET `/xArtists/` | 200 — SPA shell OK |
+| Check                             | Result                                                            |
+| --------------------------------- | ----------------------------------------------------------------- |
+| GET `/xArtists/`                  | 200 — SPA shell OK                                                |
 | GET deep routes (`/trading` etc.) | 404 HTTP (SPA) — **404.html** added to `public/` for next rebuild |
-| `data/contracts.json` | 200 |
-| `data/lia_v6_status.json` | 200 |
-| `data/greensmoke_forecasts.json` | 200 |
-| `data/lia_trades.json` | 200 |
-| `data/desk_last.json` | 200 (stub published) |
-| `data/vellum_last_run.json` | 200 (stub published) |
+| `data/contracts.json`             | 200                                                               |
+| `data/lia_v6_status.json`         | 200                                                               |
+| `data/greensmoke_forecasts.json`  | 200                                                               |
+| `data/lia_trades.json`            | 200                                                               |
+| `data/desk_last.json`             | 200 (stub published)                                              |
+| `data/vellum_last_run.json`       | 200 (stub published)                                              |
 
 ### SC readiness (contracts.json)
 
-- marketplace address present but **codeHash null / empty account** → NOT live
-- agents_marketplace: **null**
-- rwa_escrow_bridge: **null**
-- Do not send user funds until codeHash ≠ null
+* marketplace address present but **codeHash null / empty account** → NOT live
+* agents\_marketplace: **null**
+* rwa\_escrow\_bridge: **null**
+* Do not send user funds until codeHash ≠ null
 
 ## Python regression (fresh clone + fixes)
 
-| Suite | Result |
-|-------|--------|
-| Before compound restore | 72 PASS / 4 FAIL (placeholder compound_engine) |
-| After local restore | **76 PASS / 0 FAIL** |
+| Suite                   | Result                                          |
+| ----------------------- | ----------------------------------------------- |
+| Before compound restore | 72 PASS / 4 FAIL (placeholder compound\_engine) |
+| After local restore     | **76 PASS / 0 FAIL**                            |
 
 Failures fixed locally:
+
 1. `compound_engine.py` placeholder → real CompoundCircuit
-2. `test_symbiosis` old_docs_problem → new_default_ok
+2. `test_symbiosis` old\_docs\_problem → new\_default\_ok
 
 ## Critical remaining on main
 
@@ -52,4 +58,4 @@ After Pages rebuild with `public/404.html` (= index shell), routes like `/xArtis
 1. Deploy agents-marketplace + nft-marketplace (codeHash)
 2. Rebuild Pages
 3. Micro List/Buy with user wallet
-4. Keep LIA_LIVE_TRADING=0
+4. Keep LIA\_LIVE\_TRADING=0

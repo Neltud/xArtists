@@ -1,8 +1,13 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Vellum Operator — run NOW
 
-**CHAIN=1 · LIA_LIVE_TRADING=0 · PEM secrets only in vault.**
+**CHAIN=1 · LIA\_LIVE\_TRADING=0 · PEM secrets only in vault.**
 
-Deploy détaillé : **[`VELLUM_DEPLOY.md`](VELLUM_DEPLOY.md)**
+Deploy détaillé : [**`VELLUM_DEPLOY.md`**](VELLUM_DEPLOY.md)
 
 ## One-shot (paper + publish frontend)
 
@@ -33,7 +38,7 @@ Ou module direct : `python -m lia.vellum.deploy_scs_node`
 
 ## Interdits
 
-- No LIVE without micro-proofs
-- No bandeau removal without codeHash
-- No auto kill-reset
-- No PEM in git
+* No LIVE without micro-proofs
+* No bandeau removal without codeHash
+* No auto kill-reset
+* No PEM in git

@@ -1,10 +1,15 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Venue-split — deploy testnet
 
 ## Prérequis
 
-- `mxpy` + toolchain MultiversX SC
-- `SC_DEPLOYER_PEM` (wallet funded **devnet**)
-- 4 adresses bucket (institution, associations, LIA, holders pool)
+* `mxpy` + toolchain MultiversX SC
+* `SC_DEPLOYER_PEM` (wallet funded **devnet**)
+* 4 adresses bucket (institution, associations, LIA, holders pool)
 
 ## Commande
 
@@ -21,7 +26,7 @@ export HOLDERS_POOL_ADDR=erd1...
 
 1. Explorer devnet → noter **address** + **codeHash**
 2. Appeler `getSplitBps` / `getBuckets`
-3. Test micro `rentPay` avec tier_id
+3. Test micro `rentPay` avec tier\_id
 4. **Ne pas** activer `VITE_VENUE_CODEHASH_OK` sur mainnet Pages tant que non audité
 
 ## Alignement

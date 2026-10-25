@@ -1,16 +1,21 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Phase 5 — RWA Intelligence Engine
 
 **Paper / HITL.** Valuations are AI proxies, not formal appraisals. Mint does not auto-broadcast.
 
 ## Modules
 
-| Module | Role |
-|--------|------|
-| `lia/brain/sentiment_analyzer.py` | Market sentiment proxy |
-| `lia/brain/rwa_evaluator.py` | Score 0–100 + price proxy + reassess |
-| `lia/guardian/rwa_minter.py` | Mint proposal + cert hash metadata |
-| `lia/guardian/fulfillment.py` | Sell → shipment sim + audit |
-| `STRAT_ART_MOMENTUM` | Rising aesthetic momentum (paper) |
+| Module                            | Role                                 |
+| --------------------------------- | ------------------------------------ |
+| `lia/brain/sentiment_analyzer.py` | Market sentiment proxy               |
+| `lia/brain/rwa_evaluator.py`      | Score 0–100 + price proxy + reassess |
+| `lia/guardian/rwa_minter.py`      | Mint proposal + cert hash metadata   |
+| `lia/guardian/fulfillment.py`     | Sell → shipment sim + audit          |
+| `STRAT_ART_MOMENTUM`              | Rising aesthetic momentum (paper)    |
 
 ## Commands
 

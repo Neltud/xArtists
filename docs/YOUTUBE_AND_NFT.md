@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # YouTube ↔ NFT — ce qui est possible / impossible
 
 ## Transfert d’une vidéo YouTube d’un compte à un autre
@@ -14,12 +19,12 @@ Options réalistes côté YouTube uniquement :
 
 ## Vidéo **vendable** (xArtists)
 
-| Élément | Requis |
-|---------|--------|
-| Fichier vidéo | **Pin IPFS (Pinata) ou Arweave** |
-| Metadata | JSON piné avec `animation_url` + `image` (cover) |
-| YouTube | Optionnel : `external_url` trailer |
-| Achat/vente | SC marketplace / XOXNO — **pas YouTube** |
+| Élément            | Requis                                                              |
+| ------------------ | ------------------------------------------------------------------- |
+| Fichier vidéo      | **Pin IPFS (Pinata) ou Arweave**                                    |
+| Metadata           | JSON piné avec `animation_url` + `image` (cover)                    |
+| YouTube            | Optionnel : `external_url` trailer                                  |
+| Achat/vente        | SC marketplace / XOXNO — **pas YouTube**                            |
 | Transfert acheteur | Transfert NFT on-chain = nouveau owner du **certificat + URI IPFS** |
 
 L’acheteur possède le **NFT** et l’accès au media via CID piné, **pas** la chaîne YouTube de l’artiste.

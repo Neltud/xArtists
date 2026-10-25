@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Wire CompoundingPanel into Trading.tsx
 
 ```tsx

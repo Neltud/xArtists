@@ -1,10 +1,15 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Ops sequence — maintenant
 
 Ordre strict. **Mainnet only.** `LIA_LIVE_TRADING=0` jusqu’aux micro-trades OK.
 
 ## 0. État vérifié (2026-08-11)
 
-Marketplace placeholder `erd1…8354t` = **compte vide** (balance 0, pas de codeHash).  
+Marketplace placeholder `erd1…8354t` = **compte vide** (balance 0, pas de codeHash).\
 → Micro List/Buy **impossible** tant que SC non redéployé.
 
 ## 1. Deploy SC (goulet cash)
@@ -61,7 +66,7 @@ python scripts/pinata_proxy_local.py --file ./oeuvre.jpg
 # → ipfs://Qm… coller dans Studio
 ```
 
-Doc : `docs/PINATA_PROXY.md`. **Aucun JWT dans VITE_***.
+Doc : `docs/PINATA_PROXY.md`. **Aucun JWT dans VITE\_**\*.
 
 ## 6. Offer V2
 
@@ -69,14 +74,14 @@ Doc : `docs/PINATA_PROXY.md`. **Aucun JWT dans VITE_***.
 
 ## 7. Rebuild Pages (gates signature)
 
-Push sur `main` déclenche `deploy-pages.yml` / exclusive.  
+Push sur `main` déclenche `deploy-pages.yml` / exclusive.\
 Sinon : GitHub → Actions → **Deploy** → **Run workflow**.
 
 Après 2–5 min vérifier sur https://neltud.github.io/xArtists/ :
 
-- Guardian bar
-- Connect → paste = read-only (badge 👁)
-- Market → bandeau SC + TxCapabilityBanner
+* Guardian bar
+* Connect → paste = read-only (badge 👁)
+* Market → bandeau SC + TxCapabilityBanner
 
 ## Vellum
 

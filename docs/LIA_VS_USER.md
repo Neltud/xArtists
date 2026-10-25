@@ -1,11 +1,16 @@
+---
+hidden: true
+noIndex: true
+---
+
 # LIA vs utilisateur — séparation obligatoire
 
-| Qui | Adresse | Où dans la dApp | Peut signer List/Buy ? |
-|-----|---------|-----------------|-------------------------|
-| **User** | Wallet Connect (xPortal / DeFi / Web) | `/wallet`, Header Connect | Oui si method ≠ paste_readonly + sdk-dapp |
-| **LIA Ops** | `erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6` | `/portfolio`, Tip, Board, Trading paper | **Jamais** en session UI |
-| **Paste erd1** | N’importe quelle erd1 collée | Session lecture seule | **Non** |
-| **My Packs** | Access NFT → wallet user | `/my-packs` | Fiat→mint ; perf = paper LIA |
+| Qui            | Adresse                                                          | Où dans la dApp                         | Peut signer List/Buy ?                     |
+| -------------- | ---------------------------------------------------------------- | --------------------------------------- | ------------------------------------------ |
+| **User**       | Wallet Connect (xPortal / DeFi / Web)                            | `/wallet`, Header Connect               | Oui si method ≠ paste\_readonly + sdk-dapp |
+| **LIA Ops**    | `erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6` | `/portfolio`, Tip, Board, Trading paper | **Jamais** en session UI                   |
+| **Paste erd1** | N’importe quelle erd1 collée                                     | Session lecture seule                   | **Non**                                    |
+| **My Packs**   | Access NFT → wallet user                                         | `/my-packs`                             | Fiat→mint ; perf = paper LIA               |
 
 ## Règles produit
 
@@ -18,6 +23,6 @@
 
 ## Vellum / backend
 
-- PEM LIA = exécution autonome **hors** session navigateur.
-- `LIA_LIVE_TRADING=0` jusqu’aux micro-preuves.
-- `operator_control` pause = human override.
+* PEM LIA = exécution autonome **hors** session navigateur.
+* `LIA_LIVE_TRADING=0` jusqu’aux micro-preuves.
+* `operator_control` pause = human override.

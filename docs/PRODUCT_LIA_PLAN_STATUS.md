@@ -1,45 +1,50 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Plan produit / LIA — statut (1 août 2026)
 
 **PEM = Vellum uniquement.** GitHub deploy-scs est optionnel.
 
 ## Vellum nodes live
 
-| Étape | Code | Statut |
-|-------|------|--------|
-| gate → open_trailing → tick → close | `lia/vellum/live_cycle.py` | ✅ |
-| append_trade | `nodes_trailing_cycle.py` + `data/lia_trades.json` | ✅ |
-| redistribute TRO no-hold | policy + executor hook dans live_cycle | 🟡 appeler `redistribute_tro` live |
-| Doc resume | `docs/VELLUM_RESUME_LIVE.md` | ✅ |
+| Étape                                | Code                                               | Statut                             |
+| ------------------------------------ | -------------------------------------------------- | ---------------------------------- |
+| gate → open\_trailing → tick → close | `lia/vellum/live_cycle.py`                         | ✅                                  |
+| append\_trade                        | `nodes_trailing_cycle.py` + `data/lia_trades.json` | ✅                                  |
+| redistribute TRO no-hold             | policy + executor hook dans live\_cycle            | 🟡 appeler `redistribute_tro` live |
+| Doc resume                           | `docs/VELLUM_RESUME_LIVE.md`                       | ✅                                  |
 
 **Action Vellum :** coller `run_cycle(...)` après le dernier publish ; push JSON `data/*` vers GitHub.
 
 ## Dashboard
 
-| Item | Statut |
-|------|--------|
-| Liste trades LIA | ✅ `Trading.tsx` lit `lia_trades.json` |
-| État trailing | ✅ `lia_trailing_state.json` |
-| Hatom réel | ✅ service `hatomService.ts` (ESDT wallet proxy) |
+| Item             | Statut                                          |
+| ---------------- | ----------------------------------------------- |
+| Liste trades LIA | ✅ `Trading.tsx` lit `lia_trades.json`           |
+| État trailing    | ✅ `lia_trailing_state.json`                     |
+| Hatom réel       | ✅ service `hatomService.ts` (ESDT wallet proxy) |
 
 ## $TRO
 
-| Item | Statut |
-|------|--------|
-| Supply ~476 223 fallback | ✅ `priceService.ts` |
+| Item                      | Statut                             |
+| ------------------------- | ---------------------------------- |
+| Supply \~476 223 fallback | ✅ `priceService.ts`                |
 | Pool OneDex + DexScreener | ✅ config + TroPage / Trading links |
-| Prix MVX API | ✅ economics + token |
+| Prix MVX API              | ✅ economics + token                |
 
 ## Fiat / PWA / P2
 
-| Item | Statut |
-|------|--------|
-| MoonPay button | ✅ composant ; à coller hero Marketplace au prochain patch UI |
-| PWA install | ✅ banner + SW ; icons = logo existant |
-| GreenSmoke top 10 | 🟡 `data/greensmoke_top.json` seed |
-| Perf fee 15% | doc LEGAL / commissions |
-| Video Shorts NFT | design only |
-| E2E CI | workflow présent |
-| Audit SC | avant TVL |
+| Item              | Statut                                                       |
+| ----------------- | ------------------------------------------------------------ |
+| MoonPay button    | ✅ composant ; à coller hero Marketplace au prochain patch UI |
+| PWA install       | ✅ banner + SW ; icons = logo existant                        |
+| GreenSmoke top 10 | 🟡 `data/greensmoke_top.json` seed                           |
+| Perf fee 15%      | doc LEGAL / commissions                                      |
+| Video Shorts NFT  | design only                                                  |
+| E2E CI            | workflow présent                                             |
+| Audit SC          | avant TVL                                                    |
 
 ## Prochaine action humaine (Vellum)
 

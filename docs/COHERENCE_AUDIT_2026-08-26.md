@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Audit de cohérence dApp — 2026-08-26
 
 ## Chaîne décisionnelle (paper)
@@ -13,21 +18,21 @@ Cohérence **OK** si chaque étape soft-fail et n’ouvre pas de TX user.
 
 ## Séparation des rôles
 
-| Acteur | OK ? |
-|--------|------|
+| Acteur                        | OK ?                |
+| ----------------------------- | ------------------- |
 | User Connect ≠ LIA ops wallet | Oui (front + gates) |
-| LIA paper ≠ user funds | Oui |
-| List/Buy gated by codeHash | Oui (SC null) |
-| PEM hors git | Oui (gate no_pem) |
+| LIA paper ≠ user funds        | Oui                 |
+| List/Buy gated by codeHash    | Oui (SC null)       |
+| PEM hors git                  | Oui (gate no\_pem)  |
 
 ## Modules brain joints (intégrés)
 
-| Concept joint | Repo |
-|---------------|------|
-| DecisionProof / Verifier | `lia/intent/decision_proof.py` + types_reference.rs |
-| Probabilistic EV | `lia/brain/probabilistic.py` |
-| AutoTuner / Conquest / Portfolio / Economy / Evolutionary / Meta | `lia/brain/*` |
-| Executor + proof | `lia/executor/paper_with_proof.py` |
+| Concept joint                                                    | Repo                                                 |
+| ---------------------------------------------------------------- | ---------------------------------------------------- |
+| DecisionProof / Verifier                                         | `lia/intent/decision_proof.py` + types\_reference.rs |
+| Probabilistic EV                                                 | `lia/brain/probabilistic.py`                         |
+| AutoTuner / Conquest / Portfolio / Economy / Evolutionary / Meta | `lia/brain/*`                                        |
+| Executor + proof                                                 | `lia/executor/paper_with_proof.py`                   |
 
 ## Incohérences restantes (acceptées ou P0)
 

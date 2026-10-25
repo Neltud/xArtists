@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Chart $TRO — Intégration pro
 
 ## Option recommandée (la plus pro)
@@ -30,5 +35,5 @@ En attendant, **DexScreener** est la solution la plus fiable pour TRO-94c925.
 
 ## Emplacement UI
 
-- Page **$TRO** du dashboard (sous le hero prix).
-- Optionnel : mini-chart sur le Dashboard principal.
+* Page **$TRO** du dashboard (sous le hero prix).
+* Optionnel : mini-chart sur le Dashboard principal.

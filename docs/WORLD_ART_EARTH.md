@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # xArtists Vision — « Google Earth de l’art mondial »
 
 ## Ambition
@@ -6,16 +11,16 @@ Couche planétaire navigable : musées, galeries, expos, événements, défis ar
 
 ## Couches produit
 
-| Couche | Contenu | État |
-|--------|---------|------|
-| **Globe / carte** | Villes · musées virtuels · pin expos | `GuidedWorldTour`, `museumWorldCatalog` |
-| **Salles 3D** | Halls WebGL 3e personne · œuvres · sculptures | `MuseumWebGLHall` + catalogue quotidien Met |
-| **Catalogue vivant** | Open Access Met (cron) + NFT on-chain | `museum-catalog-daily` + Akash indexer |
-| **Galeries & lieux** | Comptes venue · location mur dégressive | `/venues` |
-| **Événements** | Expo temporaires · openings | paper intents → SC events (futur) |
-| **Défis artistes** | Challenges · classes · ateliers | Studio + packs agents (produits, pas investissement) |
-| **Jumeau 1/1** | COLMAP labo · certificat metric · mint | `/digital-twin` + worker GPU |
-| **Économie** | Tips · ads · packs · slot paper · TRO utility | flags SC OFF jusqu’à GO_LIVE |
+| Couche               | Contenu                                       | État                                                 |
+| -------------------- | --------------------------------------------- | ---------------------------------------------------- |
+| **Globe / carte**    | Villes · musées virtuels · pin expos          | `GuidedWorldTour`, `museumWorldCatalog`              |
+| **Salles 3D**        | Halls WebGL 3e personne · œuvres · sculptures | `MuseumWebGLHall` + catalogue quotidien Met          |
+| **Catalogue vivant** | Open Access Met (cron) + NFT on-chain         | `museum-catalog-daily` + Akash indexer               |
+| **Galeries & lieux** | Comptes venue · location mur dégressive       | `/venues`                                            |
+| **Événements**       | Expo temporaires · openings                   | paper intents → SC events (futur)                    |
+| **Défis artistes**   | Challenges · classes · ateliers               | Studio + packs agents (produits, pas investissement) |
+| **Jumeau 1/1**       | COLMAP labo · certificat metric · mint        | `/digital-twin` + worker GPU                         |
+| **Économie**         | Tips · ads · packs · slot paper · TRO utility | flags SC OFF jusqu’à GO\_LIVE                        |
 
 ## Worker GPU Akash (COLMAP)
 
@@ -31,10 +36,10 @@ Couche planétaire navigable : musées, galeries, expos, événements, défis ar
 
 ## Principes
 
-- Open Access / droits clairs pour catalogue auto
-- Paper ≠ live · SC immuables après deploy
-- Packs / agents = produits numériques limités, pas produits financiers
-- PEM jamais git / front / Vellum / Akash
+* Open Access / droits clairs pour catalogue auto
+* Paper ≠ live · SC immuables après deploy
+* Packs / agents = produits numériques limités, pas produits financiers
+* PEM jamais git / front / Vellum / Akash
 
 ## Roadmap
 

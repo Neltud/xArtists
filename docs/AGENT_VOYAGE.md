@@ -1,26 +1,31 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Agent de voyage
 
 ## Produit
 
-| Couche | Contenu |
-|--------|--------|
-| Pack NFT | `voyage` — list ~14 €, intensity 2 |
-| Catalogue | `lia-voyage-01` (pending SC deploy) |
-| GSN | Agent **Voyage** — DEST_LISBON, RWA_HOSPITALITY, CULTURE_FLOW |
-| UI | `VoyageAgentPanel` sur `/agents` |
+| Couche    | Contenu                                                          |
+| --------- | ---------------------------------------------------------------- |
+| Pack NFT  | `voyage` — list \~14 €, intensity 2                              |
+| Catalogue | `lia-voyage-01` (pending SC deploy)                              |
+| GSN       | Agent **Voyage** — DEST\_LISBON, RWA\_HOSPITALITY, CULTURE\_FLOW |
+| UI        | `VoyageAgentPanel` sur `/agents`                                 |
 
 ## v1 scope
 
-- Signaux destinations / saisonnalité (paper)
-- Corrélation crypto × tourisme (lecture)
-- Veille RWA hospitality / culture
-- Bandeau GSN domain travel
+* Signaux destinations / saisonnalité (paper)
+* Corrélation crypto × tourisme (lecture)
+* Veille RWA hospitality / culture
+* Bandeau GSN domain travel
 
 ## v1 NOT
 
-- Booking hôtel/vol réel
-- Custodie dépôt voyage
-- Assurance voyage
+* Booking hôtel/vol réel
+* Custodie dépôt voyage
+* Assurance voyage
 
 ## LIA / Vellum
 

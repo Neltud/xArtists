@@ -1,6 +1,11 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Treasury Splitter — design & integration
 
-**Contract:** `contracts/treasury-splitter`  
+**Contract:** `contracts/treasury-splitter`\
 **Default split:** Mission 40% · Reserve 30% · Community 30% (bps 4000/3000/3000)
 
 ## State machine

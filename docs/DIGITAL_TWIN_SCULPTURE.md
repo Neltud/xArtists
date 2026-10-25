@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Jumeau numérique métrique — sculpture 1/1 (COLMAP / labo)
 
 ## Objectif
@@ -9,10 +14,10 @@ Produire un **mesh métrique certifié** d’une sculpture physique pour :
 
 Le navigateur **ne remplace pas** COLMAP / RealityCapture / Meshroom. Il orchestre :
 
-- capture guidée (protocole photos)
-- dépôt job worker
-- affichage certificat + preview GLB
-- intent mint paper → SC mint après GO_LIVE
+* capture guidée (protocole photos)
+* dépôt job worker
+* affichage certificat + preview GLB
+* intent mint paper → SC mint après GO\_LIVE
 
 ## Pipeline (labo)
 
@@ -37,24 +42,24 @@ Photos (40–120) + mire d’échelle
 
 ## Protocole de capture (obligatoire pour grade `lab`)
 
-| Règle | Minimum | Recommandé |
-|-------|---------|------------|
-| Vues orbitantes | 40 | 80–120 |
-| Hauteurs | 2 niveaux | 3 (bas / milieu / haut) |
-| Mire d’échelle | 1 barre connue (ex. 20,0 cm) | 2 mires orthogonales |
-| Fond | uni, mat | cabine lumière soft |
-| EXIF | conservé | RAW + JPEG proxy |
-| Chevauchement | ≥ 60 % | 70–80 % |
+| Règle           | Minimum                      | Recommandé              |
+| --------------- | ---------------------------- | ----------------------- |
+| Vues orbitantes | 40                           | 80–120                  |
+| Hauteurs        | 2 niveaux                    | 3 (bas / milieu / haut) |
+| Mire d’échelle  | 1 barre connue (ex. 20,0 cm) | 2 mires orthogonales    |
+| Fond            | uni, mat                     | cabine lumière soft     |
+| EXIF            | conservé                     | RAW + JPEG proxy        |
+| Chevauchement   | ≥ 60 %                       | 70–80 %                 |
 
 Sans **mire d’échelle mesurée**, le mesh reste **à échelle relative** (grade `relative`, pas `metric-certified`).
 
 ## Grades de confiance
 
-| Grade | Signification | Usage mint |
-|-------|---------------|------------|
-| `browser-approx` | Silhouette multi-vues WebGL | Paper / démo seulement |
-| `relative` | COLMAP sans mire | Preview, pas claim métrique |
-| `metric-certified` | COLMAP + scale bar + QC hash | Candidat mint 1/1 |
+| Grade              | Signification                | Usage mint                  |
+| ------------------ | ---------------------------- | --------------------------- |
+| `browser-approx`   | Silhouette multi-vues WebGL  | Paper / démo seulement      |
+| `relative`         | COLMAP sans mire             | Preview, pas claim métrique |
+| `metric-certified` | COLMAP + scale bar + QC hash | Candidat mint 1/1           |
 
 ## Certificat (JSON)
 
@@ -62,12 +67,12 @@ Voir `apps/frontend/src/lib/digitalTwinCertificate.ts`.
 
 Champs critiques :
 
-- `scaleBarCm` + `measuredEdgeMm`
-- `meshCid` / `sha256Glb`
-- `colmapVersion` / `pipelineId`
-- `qc.holeRatio`, `qc.vertexCount`
-- `physical.objectId` (lien inventaire)
-- `issuer` (xArtists lab paper / future org)
+* `scaleBarCm` + `measuredEdgeMm`
+* `meshCid` / `sha256Glb`
+* `colmapVersion` / `pipelineId`
+* `qc.holeRatio`, `qc.vertexCount`
+* `physical.objectId` (lien inventaire)
+* `issuer` (xArtists lab paper / future org)
 
 ## Worker Akash
 
@@ -103,9 +108,9 @@ On-chain (après audit SC) : ESDT NFT avec URI métadonnées = certificat IPFS.
 
 ## Ce qui n’est PAS certifié
 
-- `photoSculpture3d` / `multiViewPhotogrammetry` navigateur
-- Mesh sans mire d’échelle
-- Export GLB sans `sha256` dans le certificat
+* `photoSculpture3d` / `multiViewPhotogrammetry` navigateur
+* Mesh sans mire d’échelle
+* Export GLB sans `sha256` dans le certificat
 
 ## Prochaines étapes techniques
 
@@ -113,4 +118,4 @@ On-chain (après audit SC) : ESDT NFT avec URI métadonnées = certificat IPFS.
 2. UI upload multi-photos + saisie scale bar
 3. Stockage IPFS (Pinata / web3.storage) pour GLB + certificat
 4. Draft SC `sculpture_1of1` (mint unique, royalties, burn-link physique optionnel)
-5. Audit + GO_LIVE avant announcement public « jumeau certifié »
+5. Audit + GO\_LIVE avant announcement public « jumeau certifié »

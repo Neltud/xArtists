@@ -1,10 +1,15 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Checklist Akash indexeur xArtists
 
 ## Canary Hello World
 
-- [x] Lease Running — Digital Frontier EU
-- [x] URL : `http://rfqkb6agcle8n1o7206lpmkj0g.ingress.h6i-dedicated.eu-se-1.digitalfrontier.so`
-- [ ] **Décision** : garder comme canary **ou** close pour économiser uAKT
+* [x] Lease Running — Digital Frontier EU
+* [x] URL : `http://rfqkb6agcle8n1o7206lpmkj0g.ingress.h6i-dedicated.eu-se-1.digitalfrontier.so`
+* [ ] **Décision** : garder comme canary **ou** close pour économiser uAKT
 
 ## Build & push image (sur ta machine / CI)
 
@@ -46,6 +51,6 @@ La dApp essaie d’abord cette API, puis le JSON GitHub en fallback.
 
 ## Sécurité
 
-- [x] Pas de PEM sur Akash
-- [x] Lecture API MultiversX publique uniquement
-- [ ] CORS = `https://neltud.github.io` en prod
+* [x] Pas de PEM sur Akash
+* [x] Lecture API MultiversX publique uniquement
+* [ ] CORS = `https://neltud.github.io` en prod

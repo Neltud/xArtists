@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # TCA — Techniques & Civilization of Art
 
 **Layer 2 only.** Does not write pack equity, does not touch risk/execution.
@@ -20,35 +25,35 @@ apps/frontend/
 
 ## Access gate (honest)
 
-| Rule | Meaning |
-|------|--------|
-| `public` | Anyone can preview lobby |
+| Rule          | Meaning                                |
+| ------------- | -------------------------------------- |
+| `public`      | Anyone can preview lobby               |
 | `pack_holder` | Wallet holds configured pack NFT/token |
-| `allowlist` | Ops list |
+| `allowlist`   | Ops list                               |
 
 Gate is **read-only** against chain/index — no mint from TCA.
 
 ## Session windows (default Europe/Paris)
 
-- Slot A: 18:00–20:00
-- Slot B: 20:00–22:00
+* Slot A: 18:00–20:00
+* Slot B: 20:00–22:00
 
 ## Avatar pipeline (scalable 1 → 100 professors)
 
-1. Curriculum emits `LessonBeat[]` (text, gesture_id, camera_target, duration_s)
+1. Curriculum emits `LessonBeat[]` (text, gesture\_id, camera\_target, duration\_s)
 2. Avatar controller maps beat → `{ lip_sync_key, animation, pan }`
 3. Front plays GLB professor + optional TTS URL per locale
 4. New professor = new row in `professors.json` + GLB path + voice id — **no engine change**
 
 ## 3D roadmap
 
-| Phase | Deliverable |
-|-------|-------------|
-| T0 | Data models + scheduler CLI (this commit) |
-| T1 | React full-screen canvas + static room + HUD |
-| T2 | GLB professor + animation clips + beat scrubber |
-| T3 | TTS per locale + subtitles |
-| T4 | Multi-professor lobby + live slot sync |
+| Phase | Deliverable                                     |
+| ----- | ----------------------------------------------- |
+| T0    | Data models + scheduler CLI (this commit)       |
+| T1    | React full-screen canvas + static room + HUD    |
+| T2    | GLB professor + animation clips + beat scrubber |
+| T3    | TTS per locale + subtitles                      |
+| T4    | Multi-professor lobby + live slot sync          |
 
 **Three.js** preferred (already used in museum). Babylon optional later.
 

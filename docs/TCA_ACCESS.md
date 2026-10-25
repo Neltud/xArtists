@@ -1,12 +1,17 @@
+---
+hidden: true
+noIndex: true
+---
+
 # TCA access — Pack Pulse gatekeeper
 
 ## Hierarchy
 
-| Status | Condition | Experience |
-|--------|-----------|------------|
-| **FULL** | Active Pulse (`now < activatedAt + 365d`) | Classroom + unlimited RAG Q&A + HD |
-| **SAMPLE** | No pack or expired | One sample lesson (`sample_01`) |
-| **NONE** | Explicit lobby-only | Gallery / Pulse info |
+| Status     | Condition                                 | Experience                          |
+| ---------- | ----------------------------------------- | ----------------------------------- |
+| **FULL**   | Active Pulse (`now < activatedAt + 365d`) | Classroom + unlimited RAG Q\&A + HD |
+| **SAMPLE** | No pack or expired                        | One sample lesson (`sample_01`)     |
+| **NONE**   | Explicit lobby-only                       | Gallery / Pulse info                |
 
 ## Air-gap
 

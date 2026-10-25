@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Art Tours — carte mondiale
 
 ## Produit
@@ -8,9 +13,9 @@ Service **culturel** : lieux d’art, expos, parcours.
 
 ## Front
 
-- Route : `/#/tours`
-- `ArtWorldMap` — SVG interactif (12 villes)
-- Data : `data/art_tour_locations.json`
+* Route : `/#/tours`
+* `ArtWorldMap` — SVG interactif (12 villes)
+* Data : `data/art_tour_locations.json`
 
 ## Agents
 

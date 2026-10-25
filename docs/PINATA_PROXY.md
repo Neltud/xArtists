@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Pinata proxy — JWT hors front (P1)
 
 ## Règle sécurité
@@ -24,9 +29,9 @@ python -m lia.media.storage --name "Œuvre 01" --pin
 
 ## Studio UX (actuel)
 
-- Champ URI IPFS manuel + fichier local « préparation »
-- Message : pin via Vellum / JWT serveur
-- Pas d’upload direct Pinata depuis le navigateur public
+* Champ URI IPFS manuel + fichier local « préparation »
+* Message : pin via Vellum / JWT serveur
+* Pas d’upload direct Pinata depuis le navigateur public
 
 ## Endpoint minimal (à déployer ops)
 

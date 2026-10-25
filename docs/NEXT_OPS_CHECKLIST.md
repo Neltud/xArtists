@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Next ops checklist — xArtists (mainnet only)
 
 ## P0 — cash path
@@ -14,16 +19,16 @@
 
 ## P1
 
-- Create **Mission** + **Reserve** wallets → `data/contracts.json` + TREASURY_POLICY
-- `listings_index.json` after first listings
-- Pinata proxy (JWT server-side only)
-- Stripe webhook HTTPS for Model C mint
+* Create **Mission** + **Reserve** wallets → `data/contracts.json` + TREASURY\_POLICY
+* `listings_index.json` after first listings
+* Pinata proxy (JWT server-side only)
+* Stripe webhook HTTPS for Model C mint
 
 ## Never
 
-- Paste LIA ops as Connect user
-- Claim market live without codeHash
-- Vote TX UI without sdk-dapp + SC
-- Soul / bridge user funds pre-mainnet gates
+* Paste LIA ops as Connect user
+* Claim market live without codeHash
+* Vote TX UI without sdk-dapp + SC
+* Soul / bridge user funds pre-mainnet gates
 
 See also: `docs/LIA_VS_USER.md`, `docs/DAPP_MODULES_MAP.md`, `docs/TREASURY_POLICY.md`.

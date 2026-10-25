@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Retirer polyLIA et GreenSmoke — correctif obligatoire
 
 Instruction prioritaire de Nelson, le 25 octobre 2026 : supprimer le module et la page polyLIA ; GreenSmoke Network n'est plus utilisé par la dApp.

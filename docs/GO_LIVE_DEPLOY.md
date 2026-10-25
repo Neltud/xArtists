@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # GO LIVE — Deploy SC + Pages + Signature
 
 **Ne jamais coller le PEM dans le chat, Git, ou Vellum logs.**
@@ -27,7 +32,7 @@ RUN_SIMULATE=1 ./scripts/sprint_a_mainnet.sh
 # ./scripts/deploy_mainnet.sh all
 ```
 
-Prérequis : `mxpy` + `sc-meta` (ou mxpy contract build), solde EGLD suffisant (~0.5+ pour 2 deploys).
+Prérequis : `mxpy` + `sc-meta` (ou mxpy contract build), solde EGLD suffisant (\~0.5+ pour 2 deploys).
 
 ## 2. Après succès — noter les 2 adresses `erd1…`
 
@@ -63,7 +68,7 @@ Workflows : `deploy-pages.yml` · `deploy-frontend.yml` (dispatch depuis Actions
 
 ## 6. Réponse safe à renvoyer ici
 
-- Adresse marketplace `erd1…`
-- Adresse agents `erd1…`
-- `codeHash` présent oui/non
-- tx hash(es) optionnels
+* Adresse marketplace `erd1…`
+* Adresse agents `erd1…`
+* `codeHash` présent oui/non
+* tx hash(es) optionnels

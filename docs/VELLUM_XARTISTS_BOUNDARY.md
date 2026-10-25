@@ -1,11 +1,16 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Vellum ↔ xArtists — frontières
 
-| Élément | Rôle |
-|---------|------|
-| **Vellum** | Service **payant** externe. Cerveau LIA (workflows, nodes, décisions, exécution ops). |
-| **LIA** | Agent développé / orchestré **sur Vellum**. Wallet ops LIA ≠ wallet utilisateur. |
+| Élément                      | Rôle                                                                                           |
+| ---------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Vellum**                   | Service **payant** externe. Cerveau LIA (workflows, nodes, décisions, exécution ops).          |
+| **LIA**                      | Agent développé / orchestré **sur Vellum**. Wallet ops LIA ≠ wallet utilisateur.               |
 | **GitHub `Neltud/xArtists`** | Corps produit : front Vite, data JSON, SC refs, docs. Vellum **git pull** / s’inspire du repo. |
-| **Pages** | https://neltud.github.io/xArtists/ — demo UI |
+| **Pages**                    | https://neltud.github.io/xArtists/ — demo UI                                                   |
 
 ## Qui fait quoi
 

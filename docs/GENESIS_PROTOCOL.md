@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Genesis Protocol (Phase 6) — Master position
 
 ## Authority
@@ -8,18 +13,18 @@
 
 ## What is unified
 
-| Layer | Module |
-|-------|--------|
-| Pulse | `python -m lia.genesis.tick` |
-| Economy plans | `lia.calldata.tro_economic` (reward / burn **plans**) |
-| UI | `GenesisCockpit` tabs: Trading · RWA · Economy · Audit |
-| NFT rule | `agent_constraints` — LIA never holds NFT |
+| Layer         | Module                                                 |
+| ------------- | ------------------------------------------------------ |
+| Pulse         | `python -m lia.genesis.tick`                           |
+| Economy plans | `lia.calldata.tro_economic` (reward / burn **plans**)  |
+| UI            | `GenesisCockpit` tabs: Trading · RWA · Economy · Audit |
+| NFT rule      | `agent_constraints` — LIA never holds NFT              |
 
 ## What is still HITL / paper
 
-- TRO +1 / burn −1 **ledger** until ops signs ESDT TX and marks hash in audit.
-- No auto-broadcast from genesis tick.
-- Shadow UI default; Live display ≠ live trading.
+* TRO +1 / burn −1 **ledger** until ops signs ESDT TX and marks hash in audit.
+* No auto-broadcast from genesis tick.
+* Shadow UI default; Live display ≠ live trading.
 
 ## Production path (ops)
 

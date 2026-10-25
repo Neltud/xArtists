@@ -1,19 +1,24 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Apple Pay — intégration xArtists
 
 ## Approche
 
 **Apple Pay via MoonPay** (`paymentMethod=apple_pay`).
 
-Parité Google Pay : [GOOGLE_PAY_ONRAMP.md](GOOGLE_PAY_ONRAMP.md).
+Parité Google Pay : [GOOGLE\_PAY\_ONRAMP.md](GOOGLE_PAY_ONRAMP.md).
 
 ## Code
 
-| Fichier | Rôle |
-|---------|------|
-| `lib/moonpay.ts` | URL + hints Apple/Google |
-| `FiatOnRampModal.tsx` | Boutons Google Pay + Apple Pay |
-| `ExpressPaymentOptions.tsx` | Liste express |
-| `MoonpayButton.tsx` | CTA paramétrable |
+| Fichier                     | Rôle                           |
+| --------------------------- | ------------------------------ |
+| `lib/moonpay.ts`            | URL + hints Apple/Google       |
+| `FiatOnRampModal.tsx`       | Boutons Google Pay + Apple Pay |
+| `ExpressPaymentOptions.tsx` | Liste express                  |
+| `MoonpayButton.tsx`         | CTA paramétrable               |
 
 ## Config
 

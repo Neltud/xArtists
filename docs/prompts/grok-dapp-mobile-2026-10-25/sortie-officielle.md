@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Sortie officielle — reprise automatique et contrôles publics
 
 Passation prioritaire pour Grok : terminer la sortie publique officielle de xArtists, en conservant l'ordre import mobile → retrait polyLIA → checks → merge → vérification Pages. Cette page réunit les fichiers et les contrôles nécessaires, sans ZIP.

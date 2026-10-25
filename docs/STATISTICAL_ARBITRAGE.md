@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Statistical Arbitrage (StatArb) — LIA v6+ (paramètres optimisés)
 
 > Objectif: rendre LIA aussi compétente que possible — plus d’edges valides, winrate élevé, risk serré.
@@ -6,35 +11,35 @@
 
 ### StatArbConfig
 
-| Paramètre | Valeur | Raison |
-|-----------|--------|--------|
-| `entry_z` | **1.85** | Plus d’opportunités qu’à 2.0, toujours sélectif |
-| `soft_entry_z` | **1.50** | Zone soft contrôlée |
-| `exit_z` | **0.25** | Sortie plus proche de la mean |
-| `max_half_life_h` | **24 h** | Préférer mean-reversion rapide |
-| `min_liquidity_usd` | **60 000** | Moins de slippage |
-| `min_cointegration` | **0.62** | Filtre qualité |
-| `min_samples` | **8** | Évite z bruités au boot |
-| `ewma_alpha` | **0.06** | Mean/std plus stables |
+| Paramètre           | Valeur     | Raison                                          |
+| ------------------- | ---------- | ----------------------------------------------- |
+| `entry_z`           | **1.85**   | Plus d’opportunités qu’à 2.0, toujours sélectif |
+| `soft_entry_z`      | **1.50**   | Zone soft contrôlée                             |
+| `exit_z`            | **0.25**   | Sortie plus proche de la mean                   |
+| `max_half_life_h`   | **24 h**   | Préférer mean-reversion rapide                  |
+| `min_liquidity_usd` | **60 000** | Moins de slippage                               |
+| `min_cointegration` | **0.62**   | Filtre qualité                                  |
+| `min_samples`       | **8**      | Évite z bruités au boot                         |
+| `ewma_alpha`        | **0.06**   | Mean/std plus stables                           |
 
 Confiance boostée si half-life ≤ 8–14 h et coint ≥ 0.70–0.80.
 
 ### CircuitConfig (Compound)
 
-| Paramètre | Valeur | Raison |
-|-----------|--------|--------|
-| `target_net_pct` | 1.0 % | Inchangé |
-| `stop_loss_pct` | **0.9 %** | Légèrement plus serré |
-| `be_trigger_pct` | **0.4 %** | BE plus tôt |
-| `trail_after_pct` | **0.6 %** | Trailing plus tôt |
-| `trail_pct` | **0.35 %** | Trailing plus serré |
-| `risk_per_trade_pct` | **1.5 %** | Conservateur |
-| `max_deployable_pct` | **22 %** | Cap de taille |
-| `base_compound_fraction` | **75 %** | Plus de capital compoundé |
-| `surplus_fraction` | 25 % | Yield sleeve |
-| `max_consecutive_losses` | **2** | Halt plus strict |
-| `cooldown_after_win` | **45 s** | Multi-cycles / jour |
-| `cooldown_after_loss` | **20 min** | Pause après drawdown |
+| Paramètre                | Valeur     | Raison                    |
+| ------------------------ | ---------- | ------------------------- |
+| `target_net_pct`         | 1.0 %      | Inchangé                  |
+| `stop_loss_pct`          | **0.9 %**  | Légèrement plus serré     |
+| `be_trigger_pct`         | **0.4 %**  | BE plus tôt               |
+| `trail_after_pct`        | **0.6 %**  | Trailing plus tôt         |
+| `trail_pct`              | **0.35 %** | Trailing plus serré       |
+| `risk_per_trade_pct`     | **1.5 %**  | Conservateur              |
+| `max_deployable_pct`     | **22 %**   | Cap de taille             |
+| `base_compound_fraction` | **75 %**   | Plus de capital compoundé |
+| `surplus_fraction`       | 25 %       | Yield sleeve              |
+| `max_consecutive_losses` | **2**      | Halt plus strict          |
+| `cooldown_after_win`     | **45 s**   | Multi-cycles / jour       |
+| `cooldown_after_loss`    | **20 min** | Pause après drawdown      |
 
 ### Fusion des signaux
 
@@ -42,15 +47,15 @@ Confiance boostée si half-life ≤ 8–14 h et coint ≥ 0.70–0.80.
 STATARB > ARB > MR > MOM > YIELD
 ```
 
-- SELL dès confiance ≥ **0.55** (protection capital)
-- BUY STATARB dès **0.55**, ARB dès **0.57**, autres dès **0.62**
+* SELL dès confiance ≥ **0.55** (protection capital)
+* BUY STATARB dès **0.55**, ARB dès **0.57**, autres dès **0.62**
 
 ### StatArbBrain
 
-- Budget allocation **30 %**
-- Scale ×1.15 si confiance ≥ 0.80
-- HF Hatom minimum **1.8**
-- Pause totale en `RISK_OFF`
+* Budget allocation **30 %**
+* Scale ×1.15 si confiance ≥ 0.80
+* HF Hatom minimum **1.8**
+* Pause totale en `RISK_OFF`
 
 ## Philosophie
 
@@ -67,5 +72,6 @@ python tests/test_statarb.py
 python tests/test_lia_circuit.py
 ```
 
----
-*LIA v6+ — calibrated for competence — xArtists / MultiversX*
+***
+
+_LIA v6+ — calibrated for competence — xArtists / MultiversX_

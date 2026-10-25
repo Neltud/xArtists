@@ -1,11 +1,16 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Wire RAG into TcaClassroom
 
 ## Already on main
 
-- `lia/tca/rag_engine.py` — retrieve + persona synthesis + cue emission
-- `apps/frontend/src/lib/tcaRag.ts` — client mirror (`askMentor`)
-- `apps/frontend/src/components/tca/MentorAskBar.tsx` — UI + 1.5s cognitive delay
-- `data/tca/knowledge/chunks.jsonl` — curated notes (not full copyrighted books)
+* `lia/tca/rag_engine.py` — retrieve + persona synthesis + cue emission
+* `apps/frontend/src/lib/tcaRag.ts` — client mirror (`askMentor`)
+* `apps/frontend/src/components/tca/MentorAskBar.tsx` — UI + 1.5s cognitive delay
+* `data/tca/knowledge/chunks.jsonl` — curated notes (not full copyrighted books)
 
 ## Minimal graft in TcaClassroom
 
@@ -28,9 +33,9 @@ import { MentorAskBar } from '../components/tca/MentorAskBar'
 
 Handle in `applyCue`:
 
-- `DYNAMIC_TEXT` → subtitle (+ cite → analysisNote)
-- `THINKING` / `EMOTIONAL_SHIFT` → emotionRef
-- `VISUAL_HIGHLIGHT` → optional PROJECT
+* `DYNAMIC_TEXT` → subtitle (+ cite → analysisNote)
+* `THINKING` / `EMOTIONAL_SHIFT` → emotionRef
+* `VISUAL_HIGHLIGHT` → optional PROJECT
 
 ## CLI test
 

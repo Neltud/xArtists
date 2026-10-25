@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Claude Trading Agent + Portfolio Allocator
 
 Modules **prêts**, tests unitaires fournis isolément. **Non connectés** à un wallet réel. `auto_execute=False`.

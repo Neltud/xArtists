@@ -1,13 +1,18 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Audit — Swarm coordination + Compound engine (2026-08-09)
 
 ## Scope
 
-- `lia/agents/swarm_roles.py` — DEFENSE / MOMENTUM / MEAN_REV / MICRO_ARB / YIELD
-- `lia/agents/swarm_coord.py` — priority fuse + PreFlight sizing
-- `lia/agents/autonomous_swarm.py` — cycle paper + journal
-- `lia/agents/swarm_compound_bridge.py` — **integration** swarm → CompoundCircuit
-- `lia/circuit/compound_engine.py` — open / tick / close / compound 70/30
-- `lia/circuit/million_path.py` + `lia/guardian/preflight.py` — path + guardian
+* `lia/agents/swarm_roles.py` — DEFENSE / MOMENTUM / MEAN\_REV / MICRO\_ARB / YIELD
+* `lia/agents/swarm_coord.py` — priority fuse + PreFlight sizing
+* `lia/agents/autonomous_swarm.py` — cycle paper + journal
+* `lia/agents/swarm_compound_bridge.py` — **integration** swarm → CompoundCircuit
+* `lia/circuit/compound_engine.py` — open / tick / close / compound 70/30
+* `lia/circuit/million_path.py` + `lia/guardian/preflight.py` — path + guardian
 
 ## Coordination mechanism
 
@@ -24,23 +29,23 @@ Market+Book
 
 ## Compound engine logic
 
-| Step | Behavior |
-|------|----------|
-| `can_open` | halt / cooldown / max losses / goal |
-| `size_notional` | risk% / stop → cap deployable 22% |
-| `levels` | stop −1%, target net+fees |
-| `on_tick` | STOP_LOSS / TAKE_PROFIT / TRAIL / BE |
-| `close_trade` | net after fees → 70% compound / 30% surplus |
-| Cooldown | after win/loss (configurable) |
+| Step            | Behavior                                    |
+| --------------- | ------------------------------------------- |
+| `can_open`      | halt / cooldown / max losses / goal         |
+| `size_notional` | risk% / stop → cap deployable 22%           |
+| `levels`        | stop −1%, target net+fees                   |
+| `on_tick`       | STOP\_LOSS / TAKE\_PROFIT / TRAIL / BE      |
+| `close_trade`   | net after fees → 70% compound / 30% surplus |
+| Cooldown        | after win/loss (configurable)               |
 
 ## Test results (this audit)
 
-| Suite | Result |
-|-------|--------|
-| Regression `tests/regression/run_all.py` | **76/76 PASS** |
-| `test_autonomous_swarm` | OK |
-| `test_swarm_compound_bridge` | OK |
-| Integrated multi 25 cycles | 15 opens / 15 closes (lab) |
+| Suite                                    | Result                     |
+| ---------------------------------------- | -------------------------- |
+| Regression `tests/regression/run_all.py` | **76/76 PASS**             |
+| `test_autonomous_swarm`                  | OK                         |
+| `test_swarm_compound_bridge`             | OK                         |
+| Integrated multi 25 cycles               | 15 opens / 15 closes (lab) |
 
 ## CLI
 
@@ -53,11 +58,10 @@ python -m lia.agents.paper_lab --cycles 50
 
 ## Residual risks
 
-- Paper fill ≠ live fills
-- `LIA_LIVE_TRADING=0` until micro-proofs
-- SC marketplace undeployed
+* Paper fill ≠ live fills
+* `LIA_LIVE_TRADING=0` until micro-proofs
+* SC marketplace undeployed
 
 ## Verdict
 
-**Swarm coordination + compound engine integrated and regression-green.**
-Cash path: deploy SC + user micro-TX remains P0.
+**Swarm coordination + compound engine integrated and regression-green.** Cash path: deploy SC + user micro-TX remains P0.

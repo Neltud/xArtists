@@ -1,17 +1,22 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Marketplace — Bid vs Offer
 
-| Action | On-chain endpoint | Status |
-|--------|-------------------|--------|
-| **List / Sell** | `listNft` | Live (code) |
-| **Buy** | `buyNft` | Live (code) |
-| **Cancel** | `cancelListing` | Live (code) |
-| **Bid** | `placeBid` / `acceptBid` / `withdrawBid` | **Implemented in SC** (needs redeploy) |
-| **Offer** | — | **No endpoint** — not the same as Bid |
+| Action          | On-chain endpoint                        | Status                                 |
+| --------------- | ---------------------------------------- | -------------------------------------- |
+| **List / Sell** | `listNft`                                | Live (code)                            |
+| **Buy**         | `buyNft`                                 | Live (code)                            |
+| **Cancel**      | `cancelListing`                          | Live (code)                            |
+| **Bid**         | `placeBid` / `acceptBid` / `withdrawBid` | **Implemented in SC** (needs redeploy) |
+| **Offer**       | —                                        | **No endpoint** — not the same as Bid  |
 
 ## Clarification
 
-- **Bid** = escrow EGLD against an **existing listing** (auction-style highest bid).
-- **Offer** = free-form price to owner **without** a listing. **Not supported** on the SC (no escrow without listing). UI may show “Offer” as disabled / “use Bid on a listing”.
+* **Bid** = escrow EGLD against an **existing listing** (auction-style highest bid).
+* **Offer** = free-form price to owner **without** a listing. **Not supported** on the SC (no escrow without listing). UI may show “Offer” as disabled / “use Bid on a listing”.
 
 ## Bid flow
 

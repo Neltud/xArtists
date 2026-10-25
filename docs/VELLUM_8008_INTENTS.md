@@ -1,13 +1,18 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Vellum → MX-8008 intents
 
 ## Rôles
 
-| Acteur | Rôle |
-|--------|------|
-| **MX-8004** | Identité / First 100 registration |
-| **MX-8008** | Execution Sentinel — guardian + journal |
-| **Vellum** | Seul signataire ops (**PEM Vellum / LIA_WALLET_PEM** secret) |
-| **Grok** | Propose intents — ne signe pas |
+| Acteur      | Rôle                                                           |
+| ----------- | -------------------------------------------------------------- |
+| **MX-8004** | Identité / First 100 registration                              |
+| **MX-8008** | Execution Sentinel — guardian + journal                        |
+| **Vellum**  | Seul signataire ops (**PEM Vellum / LIA\_WALLET\_PEM** secret) |
+| **Grok**    | Propose intents — ne signe pas                                 |
 
 ## Flux
 
@@ -27,7 +32,7 @@ Aujourd’hui (2026-09-25) : **aucun SC produit déployé** (comptes vides).
 
 ## Deploy micro-EGLD
 
-1. Secret GitHub `LIA_WALLET_PEM` (LIA a ~2 EGLD)
+1. Secret GitHub `LIA_WALLET_PEM` (LIA a \~2 EGLD)
 2. Actions → **Deploy Smart Contracts**
 3. chain=`D` d’abord (devnet) OU mainnet + `confirm_mainnet=DEPLOY_MAINNET`
 4. contract = `nft-staking` | `tro-staking` | marketplaces

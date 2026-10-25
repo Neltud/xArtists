@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Fichiers API 4 sur 4
 
 Annexe 4/4 de la passation Grok dApp mobile. Opérations 31 à 41, dans cet ordre. Enregistre le bloc JSON entier sous `gitbook-json/api-4.json`, puis utilise le script de la page principale pour vérifier et reconstituer les fichiers. Le champ `content_utf8` contient le contenu exact après décodage JSON ; les empreintes sont à contrôler avant et après publication GitHub.

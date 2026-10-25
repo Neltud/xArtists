@@ -1,10 +1,15 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Priorités confirmées (2026-08-04)
 
 ## Décisions produit
 
-- **Branding galerie** : titre + bios = **xArtists uniquement**. Aucun « Nelson Tuduri » en titre ni en bio collection.
-- **Studio ≠ DAO** : deux modules ; BottomNav mobile expose **Studio** et **DAO** (+ Market, $TRO).
-- **KPI rétention n°1** : Studio mint → sell art → buy NFT → buy $TRO.
+* **Branding galerie** : titre + bios = **xArtists uniquement**. Aucun « Nelson Tuduri » en titre ni en bio collection.
+* **Studio ≠ DAO** : deux modules ; BottomNav mobile expose **Studio** et **DAO** (+ Market, $TRO).
+* **KPI rétention n°1** : Studio mint → sell art → buy NFT → buy $TRO.
 
 ## P0
 
@@ -14,9 +19,9 @@
 
 ## P1
 
-- Index listings post-deploy
-- Bios collections (génériques / multi-artistes plus tard)
-- Studio pin proxy Pinata
+* Index listings post-deploy
+* Bios collections (génériques / multi-artistes plus tard)
+* Studio pin proxy Pinata
 
 ## Ops deploy (quand EGLD + PEM)
 

@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Apply critical modules (ops)
 
 `compound_engine.py`, `million_path.py`, and `preflight.py` must not stay as placeholders.
