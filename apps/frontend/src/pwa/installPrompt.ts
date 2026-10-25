@@ -1,47 +1,47 @@
-/** Deferred beforeinstallprompt — no auto reload during wallet approval. */
-type InstallOutcome = 'unsupported' | 'ready' | 'installed' | 'dismissed'
-
-let deferred: any = null
-let status: InstallOutcome = 'unsupported'
-const listeners = new Set<() => void>()
-
-function emit() {
-  for (const l of listeners) l()
+type InstallEvent = Event & {
+  prompt: () => Promise<void>
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
 }
-
-if (typeof window !== 'undefined') {
-  window.addEventListener('beforeinstallprompt', (e: Event) => {
-    e.preventDefault()
-    deferred = e
-    status = 'ready'
-    emit()
+export type InstallStatus = 'unavailable' | 'ready' | 'installed'
+let prompt: InstallEvent | null = null
+let status: InstallStatus = 'unavailable'
+let listening = false
+const subscribers = new Set<() => void>()
+function publish(next: InstallStatus) {
+  status = next
+  for (const notify of subscribers) notify()
+}
+export function watchInstallPrompt(): void {
+  if (listening || typeof window === 'undefined') return
+  listening = true
+  const standalone = window.matchMedia?.('(display-mode: standalone)')
+  const update = () => {
+    if (standalone?.matches || (navigator as Navigator & { standalone?: boolean }).standalone) publish('installed')
+  }
+  update()
+  standalone?.addEventListener?.('change', update)
+  window.addEventListener('beforeinstallprompt', event => {
+    event.preventDefault()
+    prompt = event as InstallEvent
+    publish('ready')
   })
   window.addEventListener('appinstalled', () => {
-    deferred = null
-    status = 'installed'
-    emit()
+    prompt = null
+    publish('installed')
   })
 }
-
-export function subscribeInstall(cb: () => void) {
-  listeners.add(cb)
-  return () => listeners.delete(cb)
+export const getInstallStatus = () => status
+export const getServerInstallStatus = (): InstallStatus => 'unavailable'
+export function subscribeInstall(notify: () => void) {
+  subscribers.add(notify)
+  return () => { subscribers.delete(notify) }
 }
-
-export function getInstallStatus(): InstallOutcome {
-  return status
-}
-
-export function getServerInstallStatus(): InstallOutcome {
-  return 'unsupported'
-}
-
 export async function installDapp(): Promise<void> {
-  if (!deferred) throw new Error('install_unavailable')
-  const result = await deferred.prompt()
-  deferred = null
-  const choice = result?.outcome || 'dismissed'
-  status = choice === 'accepted' ? 'installed' : 'dismissed'
-  emit()
-  if (choice !== 'accepted') throw new Error('install_dismissed')
+  const pending = prompt
+  if (!pending) return
+  prompt = null
+  publish('unavailable')
+  await pending.prompt()
+  await pending.userChoice
+  // Only appinstalled / display-mode confirm that installation actually happened.
 }

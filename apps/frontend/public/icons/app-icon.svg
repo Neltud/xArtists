@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="xArtists">
-  <rect width="128" height="128" rx="28" fill="#10120f"/>
-  <path fill="#9ad1b1" d="M36 88V40h16l12 28 12-28h16v48H78V62l-12 26H62L50 62v26H36z"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 40 40"><rect width="40" height="40" fill="#10120f"/><path d="m8 7 12 13L32 7M8 33l12-13 12 13" stroke="#f2f3ed" stroke-width="6" fill="none"/><path d="m8 7 24 26" stroke="#cdf58b" stroke-width="6"/></svg>

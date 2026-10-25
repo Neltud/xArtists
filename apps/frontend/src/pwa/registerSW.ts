@@ -1,35 +1,18 @@
-/** Register service worker — force update when a new SW is available */
+let started = false
+/** Never reload automatically: a wallet approval may still be in progress. */
 export function registerSW(): void {
-  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return
-
-  const swUrl = `${import.meta.env.BASE_URL}service-worker.js?v=10`
-
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register(swUrl)
-      .then((reg) => {
-        console.info('[PWA] SW registered', reg.scope)
-        reg.update().catch(() => undefined)
-        setInterval(() => reg.update().catch(() => undefined), 60_000)
-
-        reg.addEventListener('updatefound', () => {
-          const nw = reg.installing
-          if (!nw) return
-          nw.addEventListener('statechange', () => {
-            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-              nw.postMessage?.({ type: 'SKIP_WAITING' })
-              window.location.reload()
-            }
-          })
+  if (started || typeof window === 'undefined' || !('serviceWorker' in navigator)) return
+  started = true
+  const register = () => {
+    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}service-worker.js`, { updateViaCache: 'none' })
+      .then(reg => {
+        void reg.update().catch(() => undefined)
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') void reg.update().catch(() => undefined)
         })
       })
-      .catch((err) => console.warn('[PWA] SW register failed', err))
-
-    let refreshing = false
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (refreshing) return
-      refreshing = true
-      window.location.reload()
-    })
-  })
+      .catch(error => console.warn('[PWA] Registration unavailable', error))
+  }
+  if (document.readyState === 'complete') register()
+  else window.addEventListener('load', register, { once: true })
 }
