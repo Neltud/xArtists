@@ -31,7 +31,7 @@ $TRO, referenced as **TRO-94c925** on MultiversX, is described by the project as
 
 ### Availability — 25 October 2026
 
-The [public discovery version](https://xartists-dapp-mobile.loftypearl128.chatgpt.site/xArtists/app/) presents the interface, mobile entry and exploration. It does not deploy payment or automated signing services. The consolidated mobile update of [GitHub Pages](https://neltud.github.io/xArtists/) is still being validated.
+The [official public dapp entry on GitHub Pages](https://neltud.github.io/xArtists/) is the link to open and share. GitBook hosts this project presentation. The consolidated mobile update remains under validation; payment and blockchain actions depend on the specific service and require separate approval in the user's wallet.
 
 The interface provides a xPortal/WalletConnect connection path. Final device testing and official xPortal catalogue inclusion are not attested by this documentation. xArtists is presented as a web app that compatible browsers may add to the home screen; no native store release is announced here.
 

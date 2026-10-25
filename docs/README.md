@@ -17,9 +17,9 @@ La présentation publique vous accompagne de la découverte du projet à la pris
 
 <table data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Le projet xArtists</strong></td><td>La vision, les usages et les parcours selon votre profil.</td><td><a href="presentation/">presentation</a></td></tr><tr><td><strong>La dapp, pas à pas</strong></td><td>Explorer, créer et comprendre les cinq espaces de l’application.</td><td><a href="presentation/decouvrir-la-dapp.md">decouvrir-la-dapp.md</a></td></tr><tr><td><strong>Web, mobile et xPortal</strong></td><td>Commencer sans wallet, installer l’application web et comprendre la connexion.</td><td><a href="presentation/demarrer-sur-mobile.md">demarrer-sur-mobile.md</a></td></tr><tr><td><strong>Accès et disponibilité</strong></td><td>Les liens publics et l’état actuel des parcours.</td><td><a href="presentation/etat-du-produit.md">etat-du-produit.md</a></td></tr></tbody></table>
 
-**Version de découverte publique · LIA en simulation.** La sortie GitHub mobile consolidée est en cours de validation. Les fonctions de paiement et le trading live sont désactivés dans la version de découverte.
+**Dapp publique sur GitHub Pages · LIA en simulation.** La mise à jour mobile consolidée reste en cours de validation. Les actions de paiement et les opérations blockchain dépendent des services activés et d’une validation distincte.
 
-<a href="https://xartists-dapp-mobile.loftypearl128.chatgpt.site/xArtists/app/" class="button primary">Ouvrir la version de découverte</a>
+<a href="https://neltud.github.io/xArtists/" class="button primary">Ouvrir la dapp sur GitHub</a>
 
 [English overview](presentation/english-overview.md) · [Questions fréquentes](presentation/questions-frequentes.md) · [Contribuer](presentation/contribuer-et-partenariats.md)
 

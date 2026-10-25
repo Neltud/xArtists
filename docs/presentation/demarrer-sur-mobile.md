@@ -9,6 +9,8 @@ icon: mobile-screen-button
 
 xArtists s’utilise comme une application web. On peut commencer par une visite dans son navigateur, puis connecter son propre portefeuille pour les fonctions qui le demandent. La [page de disponibilité](etat-du-produit.md) distingue la version de découverte et l’adresse GitHub Pages.
 
+[Ouvrir la dapp sur GitHub Pages](https://neltud.github.io/xArtists/). Pour partager xArtists, utiliser cette adresse GitHub ; le lien et le QR de partage doivent renvoyer à la même adresse.
+
 ### Commencer sans portefeuille
 
 Ouvrir la version de découverte, choisir sa langue et entrer dans le musée ou l’explorateur de modules. Aucun achat n’est nécessaire pour commencer la visite publique.

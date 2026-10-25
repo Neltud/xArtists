@@ -31,7 +31,7 @@ Le projet porte aussi une ambition de transmission et de mise en relation des li
 
 La page [Accès et disponibilité](etat-du-produit.md) rassemble les liens et le périmètre des services. Elle permet de distinguer une interface accessible, une simulation et une opération effectivement activée.
 
-<a href="https://xartists-dapp-mobile.loftypearl128.chatgpt.site/xArtists/app/" class="button primary">Ouvrir la version de découverte</a>
+<a href="https://neltud.github.io/xArtists/" class="button primary">Ouvrir la dapp sur GitHub</a>
 
 ### Approfondir
 

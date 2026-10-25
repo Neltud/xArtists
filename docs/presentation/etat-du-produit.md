@@ -11,18 +11,17 @@ icon: circle-check
 
 ### Les points d’entrée du projet
 
-| Accès                                                                                                     | Usage et état                                                                                                    |
-| --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| [Version de découverte de la dapp](https://xartists-dapp-mobile.loftypearl128.chatgpt.site/xArtists/app/) | Version de présentation publiée : exploration, accès mobile et interfaces ; trading live et paiements désactivés |
-| [GitHub Pages xArtists](https://neltud.github.io/xArtists/)                                               | Adresse du site GitHub ; la mise à jour mobile complète de la sortie officielle reste en cours de validation     |
-| [Présentation publique GitBook](./)                                                                       | Comprendre le projet et trouver les guides utilisateurs                                                          |
-| [Dépôt Neltud/xArtists](https://github.com/Neltud/xArtists)                                               | Consulter le code, l’historique et le développement                                                              |
+| Accès                                                              | Usage et état                                                                                        |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| [Dapp xArtists — GitHub Pages](https://neltud.github.io/xArtists/) | Adresse publique principale de la dapp ; la mise à jour mobile complète reste en cours de validation |
+| [Présentation publique GitBook](./)                                | Comprendre le projet et trouver les guides utilisateurs                                              |
+| [Dépôt Neltud/xArtists](https://github.com/Neltud/xArtists)        | Consulter le code, l’historique et le développement                                                  |
 
-### Ce que présente la version de découverte
+### Ce que l’on peut explorer
 
 Le parcours comprend la navigation par espaces, le musée, les fiches et modules, les vues de création et les interfaces d’intelligence. L’entrée mobile réunit les options d’ouverture, d’installation web et de partage. Les données de certains écrans dépendent des services externes disponibles.
 
-La version de découverte sert à présenter l’expérience. Elle ne déploie pas de service de paiement ni de service de signature automatique.
+GitBook présente le projet ; GitHub Pages héberge la dapp. Une page de présentation ou un bouton ne suffit pas à attester l’activation d’un paiement ou d’une opération blockchain. Consulter le statut du service concerné avant toute validation.
 
 ### État par capacité
 
@@ -32,7 +31,7 @@ La version de découverte sert à présenter l’expérience. Elle ne déploie p
 | Musée, catalogues et fiches                     | Interfaces de découverte ; chargement des médias et données selon leurs sources                                                |
 | Studio et préparation d’œuvres                  | Parcours de création ; distinguer préparation, aperçu et publication confirmée                                                 |
 | LIA et simulations                              | Mode « paper » ; **trading live désactivé**                                                                                    |
-| Packs Pulse, Yield et Sentinel                  | Présentation des profils et accès ; aucun paiement activé par le site de découverte                                            |
+| Packs Pulse, Yield et Sentinel                  | Présentation des profils et accès ; disponibilité selon le service et les conditions du produit                                |
 | Paiements et actions blockchain                 | Dépendent du service, du compte et de sa disponibilité ; non attestés par la seule présence d’un bouton                        |
 | Installation web                                | Proposée selon le navigateur et l’appareil ; ajout à l’écran d’accueil sur les appareils compatibles                           |
 | Connexion xPortal                               | Parcours prévu dans l’interface ; validation finale de l’intégration sur appareils réels à compléter pour la sortie officielle |

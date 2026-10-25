@@ -524,4 +524,5 @@
     * [Fichiers API 4 sur 4](prompts/grok-dapp-mobile-2026-10-25/fichiers-api-4.md)
     * [Retirer polyLIA et GreenSmoke — correctif obligatoire](prompts/grok-dapp-mobile-2026-10-25/retirer-polylia-greensmoke.md)
     * [Sortie officielle — reprise automatique et contrôles publics](prompts/grok-dapp-mobile-2026-10-25/sortie-officielle.md)
+    * [Lien public et QR — GitHub Pages uniquement](prompts/grok-dapp-mobile-2026-10-25/partager-lien-officiel.md)
 * [Documentation technique et passations](documentation-technique.md)
