@@ -509,3 +509,4 @@
     * [Fichiers API 3 sur 4](prompts/grok-dapp-mobile-2026-10-25/fichiers-api-3.md)
     * [Fichiers API 4 sur 4](prompts/grok-dapp-mobile-2026-10-25/fichiers-api-4.md)
     * [Retirer polyLIA et GreenSmoke — correctif obligatoire](prompts/grok-dapp-mobile-2026-10-25/retirer-polylia-greensmoke.md)
+    * [Sortie officielle — reprise automatique et contrôles publics](prompts/grok-dapp-mobile-2026-10-25/sortie-officielle.md)

@@ -1,21 +1,25 @@
 # Instruction prioritaire : retirer polyLIA / GreenSmoke
 
+### Reprise de la sortie officielle
+
+Le [lanceur de reprise et les contrôles de publication](sortie-officielle.md) complètent cette mission. Le lanceur de 2,8 Ko reconstitue les 37 fichiers du transport depuis les annexes GitBook déjà synchronisées dans le dépôt. Ensuite : import mobile, retrait polyLIA, corrections YAML, checks, merge et contrôle du site officiel à 97 routes. Les preuves et les fichiers API complets sont sur cette page ; aucun ZIP n'est nécessaire.
+
 Nelson demande de supprimer ce module abandonné. Termine l'import initial à 99 routes avec ses empreintes existantes, puis applique le [correctif polyLIA / GreenSmoke](retirer-polylia-greensmoke.md) avant toute fusion. Le correctif contient ses fichiers API complets et ses vérifications. L'état final attendu devient **36 modules et 97 routes**, avec LIA désactivé. Les quatre annexes initiales restent la référence de la première étape d'import.
 
 Mission pour Grok : terminer la publication complète de la dApp mobile xArtists dans `Neltud/xArtists`, puis vérifier sa disponibilité sur GitHub Pages et préparer la validation xPortal. Tous les fichiers nécessaires sont disponibles en texte dans les quatre annexes de cette page. La livraison s'utilise directement depuis GitBook, sans archive ZIP.
 
-## Documents à lire
+### Documents à lire
 
 * [Fichiers API 1 sur 4](fichiers-api-1.md)
 * [Fichiers API 2 sur 4](fichiers-api-2.md)
 * [Fichiers API 3 sur 4](fichiers-api-3.md)
 * [Fichiers API 4 sur 4](fichiers-api-4.md)
 
-## Commencer ici
+### Commencer ici
 
 Lis cette page et les quatre annexes « Fichiers API ». Reconstitue leurs fichiers UTF-8, vérifie les empreintes, puis utilise tes outils API GitHub déjà authentifiés pour exécuter les opérations dans l'ordre. Les morceaux `.b64` sont du texte à publier tel quel. Le workflow d'import est la dernière opération. Rapporte les liens et les SHA réels à chaque étape.
 
-## Destination et état observé
+### Destination et état observé
 
 | Élément                             | Valeur                                                                  |
 | ----------------------------------- | ----------------------------------------------------------------------- |
@@ -31,7 +35,7 @@ Ces références décrivent une observation datée. Relis le tip et les fichiers
 
 Au contrôle, seuls 3 des 26 fichiers distants correspondaient exactement au kit. L'ancien `release-import/dapp-mobile/manifest.json` contenait 17 entrées, un `PLACEHOLDER` pour le CSS et une empreinte Shell différente du kit. Les trois morceaux annoncés et le workflow d'import n'étaient pas publiés. Aucune PR n'était visible pour cette branche. Les PR #184 et #185 ont déjà été fusionnées et ne prouvent pas que la suite complète a été livrée.
 
-## Reconstituer les fichiers depuis les annexes
+### Reconstituer les fichiers depuis les annexes
 
 Chaque annexe contient un seul bloc JSON au format `xartists-gitbook-api-files-v1`. Enregistre ces quatre blocs sous `gitbook-json/api-1.json` à `api-4.json`. Lis les données depuis les pages GitBook ou leur contenu Markdown intégral ; conserve chaque chaîne JSON complète.
 
@@ -74,7 +78,7 @@ order.update(upload_workflow_last=True, parts=34, files=operations)
 print('39 fichiers vérifiés et 41 opérations prêtes, workflow en dernier.')
 ```
 
-## Publier par l'API GitHub authentifiée
+### Publier par l'API GitHub authentifiée
 
 1. Pour chaque opération, lis le chemin distant actuel. Si les octets attendus sont déjà présents, vérifie l'empreinte et reprends à l'opération suivante. Pour une création ou mise à jour, lis le fichier local indiqué par `local` et fournis son contenu intégral à l'outil GitHub. Effectue un appel par fichier, puis relis le contenu distant et compare son SHA-256. Utilise l'empreinte Git courante pour une mise à jour. Arrête et réconcilie une modification inattendue ; aucun contenu ne doit être reconstitué à la main.
 2. La première opération met `.github/workflows/static.yml` à jour par l'API autorisée. Les deux suppressions suivantes concernent uniquement les anciens `release-import/dapp-mobile/apply.py` et `manifest.json`. Leurs empreintes Git observées sont données : si leur contenu a changé, arrête avant suppression. Un fichier déjà absent peut être passé après vérification.
@@ -84,7 +88,7 @@ print('39 fichiers vérifiés et 41 opérations prêtes, workflow en dernier.')
 
 Le script de restauration vérifie les morceaux, l'archive, les 26 chemins et leurs empreintes avant l'écriture des sources. `static.yml` doit déjà correspondre à la version finale ; le runner ne modifie aucun workflow. Il prépare un commit local, exécute les vérifications ci-dessous puis pousse par commit normal si la branche distante n'a pas avancé.
 
-## Vérifications avant le push du runner
+### Vérifications avant le push du runner
 
 Environnement du workflow : `NODE_OPTIONS=--max-old-space-size=4096`, `VITE_LIA_LIVE_TRADING=0`, `VITE_PAYBOX_ENABLED=false`.
 
@@ -104,7 +108,7 @@ python -c 'import json; p=json.load(open("dist/dapp-release.json")); assert p["l
 
 Résultats locaux déjà obtenus : 26/26 empreintes exactes, rejet d'un morceau tronqué avant toute modification, YAML et syntaxe shell vérifiés. L'arbre Git du frontend final est `368fd971d5c890bc90472f0cc5872a4d56d0aa08`, identique à celui sur lequel 22 tests frontend et le build paper avec 4 Go de heap ont réussi. Ce résultat local ne prouve pas une exécution Actions distante. Le typecheck global conserve 78 diagnostics préexistants ; il n'est pas présenté comme vert.
 
-## PR, merge et contrôle de publication
+### PR, merge et contrôle de publication
 
 Après succès de l'import, conserve l'URL du run, son résultat, le SHA effectivement poussé et l'artefact `dapp-mobile-import-proof`. Supprime ensuite le seul workflow temporaire `.github/workflows/import-dapp-mobile.yml` via ton API GitHub authentifiée. Ouvre ou reprends une PR de la branche complétée vers `main`. Attends les checks requis verts et respecte les protections du dépôt avant merge.
 
@@ -121,13 +125,13 @@ Contrôles du site publié :
 
 Périmètre de cette mission : frontend, publication et contrôles paper. Aucun accès PEM, appel financier, signature de transaction ou activation live. Aucun force-push ni changement de permissions n'est demandé. Préserve les protections V3/G1/P0 et les changements de source hors des 26 chemins du kit.
 
-## Compte rendu attendu de Grok
+### Compte rendu attendu de Grok
 
 Réponds avec les liens du run d'import, de la PR et du déploiement Pages, les SHA distants complets, le résultat des 26 empreintes, les tests et le flag compilé LIA. Un brouillon de formulaire, un accusé de réception ou un commit local ne remplace pas une preuve distante.
 
 Références : [workflows Pages existants](../../WORKFLOWS_PAGES.md), [publication V3 précédente](../../V3_PUBLICATION_2026-10-21.md), [règles GitHub Token](https://docs.github.com/en/actions/concepts/security/github_token), [permissions des workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#permissions).
 
-## Empreintes SHA-256 des 26 sources finales
+### Empreintes SHA-256 des 26 sources finales
 
 ```json
 {
