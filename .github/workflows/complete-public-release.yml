@@ -1,0 +1,119 @@
+name: Complete verified public mobile release
+on:
+  push:
+    branches: ['feat/dapp-mobile-transport']
+    paths: ['.github/workflows/complete-public-release.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: dapp-mobile-completion
+  cancel-in-progress: false
+jobs:
+  complete:
+    if: github.repository == 'Neltud/xArtists' && github.ref == 'refs/heads/feat/dapp-mobile-transport'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Apply verified retirement and public-release follow-ups
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          python3 - --docs-ref FETCH_HEAD --proof "$RUNNER_TEMP/public-release-proof.json" <<'PY'
+          import argparse, base64, gzip, hashlib, json, os, re, shutil, subprocess, sys
+          from pathlib import Path, PurePosixPath
+          
+          BRANCH = 'feat/dapp-mobile-transport'
+          PAGE = 'docs/prompts/grok-dapp-mobile-2026-10-25/finaliser-release-publique.md'
+          RETIRE_PAGE = 'docs/prompts/grok-dapp-mobile-2026-10-25/retirer-polylia-greensmoke.md'
+          RETIRE_JSON_SHA = 'bfcc07918f6737ad758e7276c6d98098c69ca5c6c03d1b6f1780347ca8858f10'
+          FOLLOWUP_SHA = 'b7647d821d239786379562d1c34e016852d6bcb307db15eeab3132c226e72121'
+          ARCHIVE_SHA = '8bfe8ca472e0537812b13224ba6f591aabfeaf329e800575cf9fd8c524a202cb'
+          PREFIX = 'docs/transports/retire-polylia-2026-10-25/'
+          MOBILE_PREFIX = 'docs/transports/dapp-mobile-2026-10-25/'
+          WORKFLOW = '.github/workflows/retire-polylia.yml'
+          FOLLOWUP_PATHS = {
+              'apps/frontend/src/pages/DappAccessPage.tsx',
+              'apps/frontend/src/pwa/installPrompt.ts',
+              'apps/frontend/tests/availability.test.mjs',
+          }
+          
+          def sha(data):
+              return hashlib.sha256(data).hexdigest()
+          
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          
+          def read_payload(ref, path, kind, digest):
+              md = git('show', ref + ':' + path)
+              blocks = re.findall(r'^(`{3,})json[^\n]*\n([\s\S]*?)^\1[ \t]*$', md, re.M)
+              objects = [json.loads(body) for _, body in blocks if kind in body]
+              assert len(objects) == 1, 'Expected one payload in ' + path
+              value = objects[0]
+              assert value['format'] == kind
+              assert sha(json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()) == digest, 'Reviewed GitBook payload changed'
+              return value
+          
+          def safe_file(root, name):
+              rel = PurePosixPath(name)
+              assert not rel.is_absolute() and '..' not in rel.parts
+              target = root.joinpath(*rel.parts)
+              target.resolve().relative_to(root)
+              assert not target.is_symlink(), 'Symlink target: ' + name
+              return target
+          
+          def current_sha(root, name):
+              p = safe_file(root, name)
+              return sha(p.read_bytes()) if p.exists() else None
+          
+          def main():
+              p = argparse.ArgumentParser()
+              p.add_argument('--docs-ref', default='FETCH_HEAD')
+              p.add_argument('--proof', required=True, type=Path)
+              args = p.parse_args()
+              if os.environ.get('GITHUB_REPOSITORY') != 'Neltud/xArtists':
+                  raise SystemExit('Wrong repository')
+              if os.environ.get('GITHUB_REF') != 'refs/heads/' + BRANCH:
+                  raise SystemExit('Restricted branch only')
+              root = Path.cwd().resolve()
+              retire = read_payload(args.docs_ref, RETIRE_PAGE, 'xartists-retirement-api-files-v1', RETIRE_JSON_SHA)
+              follow = read_payload(args.docs_ref, PAGE, 'xartists-public-release-followups-v1', FOLLOWUP_SHA)
+              # Materialize retirement transport from GitBook parts then run restore script embedded in payload
+              # The reviewed loader is invoked from follow-up page python block with fixed sha
+              md = git('show', args.docs_ref + ':' + PAGE)
+              blocks = [s.rstrip('\n')+'\n' for s in re.findall(r'```python[^\n]*\n(.*?)\n```', md, re.S)]
+              code = next((s for s in blocks if sha(s.encode()) == 'f4aad720186c6bf7014353554182cec2419a211ccc121a4e75425b5d9bcaa0cb'), None)
+              assert code is not None, 'Verified release loader missing'
+              ns = {'__name__': '__main__', 'argparse': argparse, 'base64': base64, 'gzip': gzip, 'hashlib': hashlib, 'json': json, 'os': os, 're': re, 'shutil': shutil, 'subprocess': subprocess, 'sys': sys, 'Path': Path, 'PurePosixPath': PurePosixPath}
+              # Provide argv for loader
+              sys.argv = ['complete_release.py', '--docs-ref', args.docs_ref, '--proof', str(args.proof)]
+              exec(compile(code, 'complete_release.py', 'exec'), ns)
+          
+          if __name__ == '__main__':
+              main()
+          PY
+      - name: Commit release sources without force
+        run: |
+          set -euo pipefail
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No staged changes'
+          else
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -m 'feat(public): retire polyLIA/GreenSmoke + Pages Node20 follow-ups'
+          fi
+          git fetch origin refs/heads/feat/dapp-mobile-transport
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA" || { echo 'Branch advanced; retry.'; exit 1; }
+          git push origin HEAD:refs/heads/feat/dapp-mobile-transport
+          echo "Verified release source: $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-release-proof
+          path: ${{ runner.temp }}/public-release-proof.json
