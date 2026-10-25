@@ -2,7 +2,7 @@
 
 Instruction prioritaire de Nelson, le 25 octobre 2026 : supprimer le module et la page polyLIA ; GreenSmoke Network n'est plus utilisé par la dApp.
 
-### Résultat et ordre d'exécution
+#### Résultat et ordre d'exécution
 
 Le correctif supprime le module polyLIA, ses routes `/intelligence/polylia` et `/agents/polylia`, son entrée dans le plan du site et le catalogue pré-mainnet, ainsi que ses libellés dans les huit langues. Il retire la stratégie GSN de la simulation, les composants GSN et leur configuration, le fichier de prévisions public dédié et les mentions de ce partenaire dans les anciens composants frontend. Les autres modules et les protections de paiement sont conservés.
 
@@ -10,7 +10,7 @@ La version hébergée est déjà publiée sans ce module : https://xartists-dapp
 
 Grok : termine d'abord l'import mobile déjà en cours, dont les 41 opérations et empreintes restent valides. Cet import vérifie encore son état initial à 99 routes. Après son succès, supprime son workflow temporaire `.github/workflows/import-dapp-mobile.yml` par ton API, puis applique le présent correctif avant toute fusion de la PR. Le résultat final est **36 modules, 51 alias, 97 routes**, avec `lia_live_trading: false`.
 
-### Publication du correctif par l'API connectée
+#### Publication du correctif par l'API connectée
 
 Le bloc JSON de cette page est autonome : `xartists-retirement-api-files-v1`. Il contient 11 fichiers prêts à publier : sept morceaux de texte de 4 096 octets maximum, les métadonnées, la liste des sources, le script et le workflow. Aucun ZIP n'est requis.
 
@@ -50,6 +50,8 @@ assert operations[-1]['remote'] == '.github/workflows/retire-polylia.yml'
 print('11 fichiers vérifiés ; workflow en dernier.')
 ```
 
+\#Le workflow de cette page inclut la correction vérifiée de préparation du commit : le patch place déjà les modifications et suppressions dans l'index. La simulation complète de cette étape reproduit exactement l'arbre frontend testé.
+
 ### Vérifications déjà réalisées
 
 * 22 tests frontend réussis ; 64 rendus d'interface et 288 rendus de modules réussis dans huit langues ; régressions mobile réussies.
@@ -64,7 +66,7 @@ Le typecheck global n'a pas été relancé ; le précédent contrôle conservait
 
 Si un appel API est refusé, rapporte le code, le chemin et la dernière opération vérifiée. Si le runner détecte une modification inattendue, réconcilie les sources avant reprise.
 
-### Fichiers API complets
+#### Fichiers API complets
 
 ```json
 {
@@ -169,15 +171,15 @@ Si un appel API est refusé, rapporte le code, le chemin et la dernière opérat
       "operation": "upsert",
       "local": "retire-polylia.yml",
       "remote": ".github/workflows/retire-polylia.yml",
-      "size_bytes": 3167,
-      "sha256": "ddbcbc644a481cdb20469d150358aaaf796abfb4a8922c225142d60481138c8f",
-      "content_utf8": "name: Retire polyLIA and GreenSmoke frontend\non:\n  push:\n    branches: ['feat/dapp-mobile-transport']\n    paths: ['.github/workflows/retire-polylia.yml']\n  workflow_dispatch:\npermissions:\n  contents: read\nconcurrency:\n  group: dapp-mobile-completion\n  cancel-in-progress: false\njobs:\n  retire:\n    if: github.repository == 'Neltud/xArtists' && github.ref == 'refs/heads/feat/dapp-mobile-transport'\n    runs-on: ubuntu-latest\n    timeout-minutes: 25\n    permissions:\n      contents: write\n    env:\n      NODE_OPTIONS: --max-old-space-size=4096\n      VITE_LIA_LIVE_TRADING: '0'\n      VITE_PAYBOX_ENABLED: 'false'\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          ref: ${{ github.sha }}\n          fetch-depth: 0\n      - name: Apply the verified retirement after the mobile import\n        run: python docs/transports/retire-polylia-2026-10-25/apply_retirement.py --proof \"$RUNNER_TEMP/retire-polylia-proof.json\"\n      - name: Commit candidate locally\n        run: |\n          git add --pathspec-from-file=docs/transports/retire-polylia-2026-10-25/FILES.txt\n          if git diff --cached --name-only | grep -q '^.github/workflows/'; then\n            echo '::error::Runner cannot change workflow files.'\n            exit 1\n          fi\n          git rm -r docs/transports/retire-polylia-2026-10-25\n          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'fix(dapp): retire polyLIA and GreenSmoke UI'\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - name: Check remaining modules and mobile experience\n        working-directory: apps/frontend\n        run: |\n          npm ci --legacy-peer-deps\n          npm run test:release\n          npm run check:routes\n          npm run render:check\n          node scripts/run-render-check.mjs modules\n          node scripts/run-render-check.mjs mobile\n      - name: Build and verify 97 public routes in paper mode\n        working-directory: apps/frontend\n        run: |\n          npm run build\n          GITHUB_SHA=\"$(git rev-parse HEAD)\" node scripts/write-build-info.mjs\n          npm run verify:site\n          python -c 'import json; p=json.load(open(\"dist/dapp-release.json\")); assert p[\"lia_live_trading\"] is False; assert len(p[\"routes\"]) == 97; assert not any(\"polylia\" in r.lower() for r in p[\"routes\"])'\n      - name: Publish after checks, without force\n        run: |\n          git diff --exit-code\n          git fetch origin refs/heads/feat/dapp-mobile-transport\n          test \"$(git rev-parse FETCH_HEAD)\" = \"$GITHUB_SHA\" || { echo 'Branch advanced; reconcile before retrying.'; exit 1; }\n          git push origin HEAD:refs/heads/feat/dapp-mobile-transport\n          SHA=\"$(git rev-parse HEAD)\"\n          test \"$SHA\" = \"$(git ls-remote origin refs/heads/feat/dapp-mobile-transport | cut -f1)\"\n          echo \"Retirement source commit: $SHA\" >> \"$GITHUB_STEP_SUMMARY\"\n      - name: Preserve source verification evidence\n        if: always()\n        uses: actions/upload-artifact@v4\n        with:\n          name: retire-polylia-proof\n          path: ${{ runner.temp }}/retire-polylia-proof.json\n"
+      "size_bytes": 3076,
+      "sha256": "adee9ac0cea4c36683e3ca491fa96bf6123fabf679b7e3a1f93f18642201df9c",
+      "content_utf8": "name: Retire polyLIA and GreenSmoke frontend\non:\n  push:\n    branches: ['feat/dapp-mobile-transport']\n    paths: ['.github/workflows/retire-polylia.yml']\n  workflow_dispatch:\npermissions:\n  contents: read\nconcurrency:\n  group: dapp-mobile-completion\n  cancel-in-progress: false\njobs:\n  retire:\n    if: github.repository == 'Neltud/xArtists' && github.ref == 'refs/heads/feat/dapp-mobile-transport'\n    runs-on: ubuntu-latest\n    timeout-minutes: 25\n    permissions:\n      contents: write\n    env:\n      NODE_OPTIONS: --max-old-space-size=4096\n      VITE_LIA_LIVE_TRADING: '0'\n      VITE_PAYBOX_ENABLED: 'false'\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          ref: ${{ github.sha }}\n          fetch-depth: 0\n      - name: Apply the verified retirement after the mobile import\n        run: python docs/transports/retire-polylia-2026-10-25/apply_retirement.py --proof \"$RUNNER_TEMP/retire-polylia-proof.json\"\n      - name: Commit candidate locally\n        run: |\n          if git diff --cached --name-only | grep -q '^.github/workflows/'; then\n            echo '::error::Runner cannot change workflow files.'\n            exit 1\n          fi\n          git rm -r docs/transports/retire-polylia-2026-10-25\n          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'fix(dapp): retire polyLIA and GreenSmoke UI'\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - name: Check remaining modules and mobile experience\n        working-directory: apps/frontend\n        run: |\n          npm ci --legacy-peer-deps\n          npm run test:release\n          npm run check:routes\n          npm run render:check\n          node scripts/run-render-check.mjs modules\n          node scripts/run-render-check.mjs mobile\n      - name: Build and verify 97 public routes in paper mode\n        working-directory: apps/frontend\n        run: |\n          npm run build\n          GITHUB_SHA=\"$(git rev-parse HEAD)\" node scripts/write-build-info.mjs\n          npm run verify:site\n          python -c 'import json; p=json.load(open(\"dist/dapp-release.json\")); assert p[\"lia_live_trading\"] is False; assert len(p[\"routes\"]) == 97; assert not any(\"polylia\" in r.lower() for r in p[\"routes\"])'\n      - name: Publish after checks, without force\n        run: |\n          git diff --exit-code\n          git fetch origin refs/heads/feat/dapp-mobile-transport\n          test \"$(git rev-parse FETCH_HEAD)\" = \"$GITHUB_SHA\" || { echo 'Branch advanced; reconcile before retrying.'; exit 1; }\n          git push origin HEAD:refs/heads/feat/dapp-mobile-transport\n          SHA=\"$(git rev-parse HEAD)\"\n          test \"$SHA\" = \"$(git ls-remote origin refs/heads/feat/dapp-mobile-transport | cut -f1)\"\n          echo \"Retirement source commit: $SHA\" >> \"$GITHUB_STEP_SUMMARY\"\n      - name: Preserve source verification evidence\n        if: always()\n        uses: actions/upload-artifact@v4\n        with:\n          name: retire-polylia-proof\n          path: ${{ runner.temp }}/retire-polylia-proof.json\n"
     }
   ]
 }
 ```
 
-### Empreintes des 32 chemins
+#### Empreintes des 32 chemins
 
 ```json
 [
