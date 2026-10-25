@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-25T10:48:02.979Z",
+  "updatedAt": "2026-10-25T15:36:28.775Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792942588552",
+      "timestamp": "15:36",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.23 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792925282858",
       "timestamp": "10:48",
@@ -191,13 +198,6 @@
       "source": "CoinDesk",
       "title": "Equity weakness could damp demand for bitcoin after biggest ETF inflows in a month",
       "link": "https://www.coindesk.com/daybook-us/2026/10/20/equity-weakness-could-damp-demand-for-bitcoin-after-biggest-etf-inflows-in-a-month"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792494640000",
-      "timestamp": "11:10",
-      "source": "CoinDesk",
-      "title": "JPMorgan sees 10% annual bitcoin returns, topping stocks, bonds and gold over next decade",
-      "link": "https://www.coindesk.com/markets/2026/10/20/jpmorgan-sees-10-annual-bitcoin-returns-topping-stocks-bonds-and-gold-over-next-decade"
     }
   ]
 }
