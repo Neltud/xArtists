@@ -1,12 +1,12 @@
 {
   "schema": "lia_status/v1",
-  "ts": "2026-10-25T20:37:43Z",
+  "ts": "2026-10-25T23:58:21Z",
   "paper": true,
   "LIA_LIVE_TRADING": 0,
   "onchain": {
     "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "egld": 1.585598,
-    "egld_usd": 5.1373,
+    "egld_usd": 5.1215,
     "tokens": [
       {
         "identifier": "ASH-a642d1",
@@ -81,17 +81,10 @@
     "LIA_LIVE_TRADING": 0
   },
   "shadow": {
-    "fills": 89,
-    "shadow_pnl_usd": 3.9069,
-    "win_rate": 0.6067,
+    "fills": 90,
+    "shadow_pnl_usd": 3.8029,
+    "win_rate": 0.6,
     "last_shadow": [
-      {
-        "id": "fa81dd61-b62",
-        "side": "BUY",
-        "asset": "TRO",
-        "pnl_usd": -0.0206,
-        "ts": "2026-10-25T00:07:31Z"
-      },
       {
         "id": "31f2f5f0-6d6",
         "side": "BUY",
@@ -119,6 +112,13 @@
         "asset": "TRO",
         "pnl_usd": -0.1031,
         "ts": "2026-10-25T20:37:42Z"
+      },
+      {
+        "id": "a5700c65-fae",
+        "side": "BUY",
+        "asset": "TRO",
+        "pnl_usd": -0.104,
+        "ts": "2026-10-25T23:58:20Z"
       }
     ],
     "source": "lia_paper_legs.json+friction",
