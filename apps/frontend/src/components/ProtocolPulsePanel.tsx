@@ -45,6 +45,12 @@ export default function ProtocolPulsePanel() {
         </span>
       </div>
       <p className="text-[12px] leading-relaxed text-zinc-300">{xaRender(posture.label)}</p>
+      <ul className="grid sm:grid-cols-2 gap-2 text-[12px]">
+        <Li k="Site" v="public · lecture" />
+        <Li k="Trading" v="paper · flag 0" />
+        <Li k="Avant le 16 nov" v={`${posture.daysUntilDecisionWeek} j`} />
+        <Li k="Avant le 21 nov" v={`${posture.daysUntilHardEnd} j`} />
+      </ul>
       {err ? <p className="text-[11px] text-zinc-500">{xaRender(err)}</p> : null}
       {!pulse && !err ? (
         <p className="text-[11px] text-zinc-500 animate-pulse">{xaRender('Lecture API MultiversX…')}</p>

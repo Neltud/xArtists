@@ -36,6 +36,20 @@ describe('upbitPosture', () => {
     expect(row.label).toMatch(/Pas de swap/)
   })
 
+  it('counts whole days until the 16 Nov decision week', () => {
+    const row = upbitPosture(Date.parse('2026-10-25T04:45:00Z'))
+    expect(row.phase).toBe('extended')
+    expect(row.day).toBe(2)
+    expect(row.daysUntilDecisionWeek).toBe(22)
+    expect(row.daysUntilHardEnd).toBe(27)
+    expect(row.label).toMatch(/go-live du site/)
+    expect(row.label).toMatch(/pas un go-live trading/)
+    const week = upbitPosture(Date.parse('2026-11-16T00:00:00Z'))
+    expect(week.phase).toBe('extended')
+    expect(week.daysUntilDecisionWeek).toBe(0)
+    expect(week.daysUntilHardEnd).toBe(5)
+  })
+
   it('stays paper after 20 nov until an explicit maintain notice', () => {
     const row = upbitPosture(Date.parse('2026-11-21T00:00:00Z'))
     expect(row.phase).toBe('after')

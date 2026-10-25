@@ -46,6 +46,7 @@ type EntityDoc = {
 
 type LiveSnap = {
   updated?: string
+  source?: 'api' | 'snapshot'
   economics?: { egld_price_usd?: number; market_cap_usd?: number; apr?: number }
   lia_ops?: { balance_egld?: number; nonce?: number; address?: string }
 }
@@ -116,7 +117,35 @@ export default function EntityMap() {
         if (c) return
         if (!entity) setErr('entity_map indisponible')
         setDoc(entity)
-        setLive(snap)
+        setLive(snap ? { ...snap, source: 'snapshot' } : null)
+        try {
+          const [eco, lia] = await Promise.all([
+            fetch('https://api.multiversx.com/economics', { cache: 'no-store' }).then(r =>
+              r.ok ? r.json() : null,
+            ),
+            fetch(`https://api.multiversx.com/accounts/${LIA_WALLET}`, { cache: 'no-store' }).then(r =>
+              r.ok ? r.json() : null,
+            ),
+          ])
+          if (c || !eco) return
+          const atomic = Number(lia?.balance || 0)
+          setLive({
+            updated: new Date().toISOString(),
+            source: 'api',
+            economics: {
+              egld_price_usd: Number(eco.price),
+              market_cap_usd: Number(eco.marketCap),
+              apr: Number(eco.apr),
+            },
+            lia_ops: {
+              address: LIA_WALLET,
+              balance_egld: Number.isFinite(atomic) ? atomic / 1e18 : snap?.lia_ops?.balance_egld,
+              nonce: lia?.nonce ?? snap?.lia_ops?.nonce,
+            },
+          })
+        } catch {
+          /* snapshot remains the reference */
+        }
       } catch {
         if (!c) setErr('chargement entité échoué')
       }
@@ -186,7 +215,9 @@ export default function EntityMap() {
       {/* Live ops strip */}
       <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="card">
-          <p className="text-[10px] uppercase text-zinc-500">{xaRender("EGLD (ref)")}</p>
+          <p className="text-[10px] uppercase text-zinc-500">
+            {xaRender(live?.source === 'api' ? 'EGLD (API)' : 'EGLD (snapshot)')}
+          </p>
           <p className="text-xl font-bold mono mt-1">
             {xaRender(live?.economics?.egld_price_usd != null
               ? `$${Number(live.economics.egld_price_usd).toFixed(2)}`
@@ -212,6 +243,9 @@ export default function EntityMap() {
               : '—')}
           </p>
           <p className="text-[10px] text-zinc-600">{xaRender("nonce ")}{xaRender(live?.lia_ops?.nonce ?? '—')}</p>
+          <p className="text-[10px] text-zinc-600">
+            {xaRender(live?.source === 'api' ? 'sonde live' : `figé ${live?.updated || ''}`)}
+          </p>
         </div>
         <div className="card">
           <p className="text-[10px] uppercase text-zinc-500">{xaRender("Network APR (ref)")}</p>

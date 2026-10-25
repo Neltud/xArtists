@@ -1,38 +1,38 @@
 # ACTIVE_CONTEXT — xArtists (live system state)
 
-**Last updated:** 2026-10-24  
+**Last updated:** 2026-10-25  
 **Branch:** `main`  
-**Bundle:** `0.120.0` via `static.yml` · `VITE_LIA_LIVE_TRADING=0`
+**Bundle:** `0.121.0` via `static.yml` · `VITE_LIA_LIVE_TRADING=0`
 
 ---
 
-## 1. On-chain status (probe 2026-10-24 ~04:40 UTC)
+## 1. On-chain status (probe 2026-10-25 ~04:45 UTC)
 
 | Item | Value |
 |------|--------|
-| Epoch | **2272** · refreshRate **600** |
-| EGLD | **~$3.46** · mcap ~$107.3M · staked 13.94M · APR ~9.06% |
+| Epoch | **2273** · refreshRate **600** · rounds passed ~77883 / 144000 |
+| EGLD | **$3.30** · mcap **$102.4M** · circ 31.03M · staked 13.92M · APR **9.07%** |
 | Agents SC | `erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg` |
 | codeHash | `igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=` |
 | Agents balance | **0.013 EGLD** |
 | Pack prices | Pulse **10** / Yield **5** / Sentinel **2.5** EGLD (`getPackPrice` ok) |
 | Market | `…8txmm` · **0.0175 EGLD** · hash inchangé |
-| Listing #1 / #2 | `getListing` répond encore · ASFT-a6273a nonce 1 · acheter **#2** seulement |
+| Listing #1 / #2 | acheter **#2** seulement |
 | Slot | **0.5000 EGLD** · hash inchangé · REAL fermé |
 | LIA Ops | **1.585598 EGLD** · nonce **1479** (inchangé depuis le 17 oct) |
-| $TRO | `TRO-94c925` · circ **476 224** · **562** comptes · ~$0.0000843 · mcap ~$40 |
+| $TRO | `TRO-94c925` · circ **476 224** · **562** comptes · ~$0.0000807 · mcap ~$38 |
 | Treasury dest | **null** — ne pas `claimFees` |
 
-Le 17 oct ~13:02 UTC le wallet LIA Ops a signé sur xExchange : `wrapEgld` 0.11024, `addLiquidity` ×2, `swap`, `multiPairSwap`, `xo`. Ce n’est **pas** le client Pages.
+Le 17 oct ~13:02 UTC le wallet LIA Ops a signé sur xExchange. Ce n’est **pas** le client Pages. Le snapshot public affichait encore 1.603782 EGLD / nonce 1473 : corrigé.
 
 ---
 
-## 2. Revues coréennes (bloquant live) — PROLONGÉES
+## 2. Revues coréennes (bloquant live) — TOUJOURS EN FORCE
 
-**Upbit** notice **207379109**, 23 oct 06:02 UTC : warning EGLD/KRW, EGLD/BTC, EGLD/USDT étendu jusqu’au **16–20 nov 2026**.  
+**Upbit** notice **207379109**, 23 oct 06:02 UTC : warning EGLD/KRW, EGLD/BTC, EGLD/USDT jusqu’au **16–20 nov 2026**.  
 **Bithumb** : warning EGLD + FET prolongé le 23 oct.  
-Retraits Upbit interrompus le 21 oct 20:00 KST (upgrade réseau), pas encore une reprise.  
-**Ne pas relancer de trade live.** Phase code : `extended`.
+Retraits Upbit interrompus le 21 oct 20:00 KST (upgrade réseau). Aucune notice de reprise indexée au 25 oct.  
+**Ne pas relancer de trade live.** Phase code : `extended`. Au 25 oct 04:45 UTC : **jour 2/29**, **22 j** avant le 16 nov, **27 j** avant le 21 nov 00:00 UTC.
 
 ---
 
@@ -45,14 +45,16 @@ Retraits Upbit interrompus le 21 oct 20:00 KST (upgrade réseau), pas encore une
 | Paybox | **501** tant que `VITE_PAYBOX_ENABLED` n’est pas true **et** HMAC/IPN/mint prouvés |
 | Prix fiat | catalogue serveur 110 / 75 / 50 €, wallet erd1 requis |
 | Prix listing UI | plus de fallback inventé `0.25` si `getListing` n’a pas de prix |
-| Pulse orphelin | corrigé — monté sur `/go-live` |
+| Snapshot entité périmé | corrigé — API live, repli 25 oct |
 
 ---
 
 ## 4. Ce push
 
-- `/go-live` lit le pulse (agents, market, slot, $TRO, epoch, EGLD, LIA) **et** la prolongation KR. Le 24 oct n’est pas traité comme une fin de revue.
-- Stamp **0.120.0**. `tests/kr-review.test.mjs` dans `test:release`.
+- `/go-live` dit explicitement : **site en lecture = go-live**, **trading = non**.
+- Compte à rebours 16 nov / 21 nov. Retraits KR séparés du warning trading.
+- Carte entité ne montre plus le solde LIA d’avant les swaps du 17 oct.
+- Stamp **0.121.0**. `tests/kr-review.test.mjs` dans `test:release`.
 
 Voir [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md) et [`docs/SUITE_LOGIQUE_NOW.md`](docs/SUITE_LOGIQUE_NOW.md).
 

@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.121.0] — 2026-10-25
+
+### Bug Fixes
+
+* **go-live:** distinguish site go-live from trading go-live. Show days left until 16 Nov and 21 Nov. Keep `VITE_LIA_LIVE_TRADING=0`.
+* **entity map:** stop serving the 17 Oct LIA snapshot (1.603782 EGLD, nonce 1473). Live API overlay, fallback probe nonce 1479 / 1.585598 EGLD.
+
 ## [0.119.1](https://github.com/Neltud/xArtists/compare/v0.119.0...v0.119.1) (2026-10-24)
 
 
