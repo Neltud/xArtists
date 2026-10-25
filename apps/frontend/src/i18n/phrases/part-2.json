@@ -279,16 +279,6 @@
     "链上购买后：",
     "بعد الشراء على السلسلة:"
   ],
-  "Packs Access (Pulse/Yield/Sentinel) ≠ GreenSmoke (prévisions) · fiat →": [
-    "Packs Access (Pulse/Yield/Sentinel) ≠ GreenSmoke (prévisions) · fiat →",
-    "Access packs (Pulse/Yield/Sentinel) ≠ GreenSmoke (forecasts) · fiat →",
-    "Paquetes Access (Pulse/Yield/Sentinel) ≠ GreenSmoke (previsiones) · fiat →",
-    "Access-Pakete (Pulse/Yield/Sentinel) ≠ GreenSmoke (Prognosen) · Fiat →",
-    "Пакеты Access (Pulse/Yield/Sentinel) ≠ GreenSmoke (прогнозы) · фиат →",
-    "Пакети Access (Pulse/Yield/Sentinel) ≠ GreenSmoke (прогнози) · фіат →",
-    "Access 套餐（Pulse/Yield/Sentinel）≠ GreenSmoke（预测）· 法币 →",
-    "باقات Access ‏(Pulse/Yield/Sentinel) ≠ GreenSmoke (توقعات) · عملات نقدية →"
-  ],
   "Page Agents = packs IA uniquement": [
     "Page Agents = packs IA uniquement",
     "Agents page = AI packs only",
@@ -469,16 +459,6 @@
     "（已检测到 TRO LP）",
     "(تم اكتشاف LP TRO)"
   ],
-  "· LIA fixe le prix pour la marge · ≠ GreenSmoke (signal only)": [
-    "· LIA fixe le prix pour la marge · ≠ GreenSmoke (signaux uniquement)",
-    "· LIA sets the price for margin · ≠ GreenSmoke (signals only)",
-    "· LIA fija el precio según el margen · ≠ GreenSmoke (solo señales)",
-    "· LIA legt den Preis für die Marge fest · ≠ GreenSmoke (nur Signale)",
-    "· LIA задаёт цену с учётом маржи · ≠ GreenSmoke (только сигналы)",
-    "· LIA задає ціну з урахуванням маржі · ≠ GreenSmoke (лише сигнали)",
-    "· LIA 根据利润率定价 · ≠ GreenSmoke（仅信号）",
-    "· تحدد LIA السعر وفق الهامش · ≠ GreenSmoke (إشارات فقط)"
-  ],
   "Grok ↔ LIA bridge": [
     "Pont Grok ↔ LIA",
     "Grok ↔ LIA bridge",
@@ -638,16 +618,6 @@
     "Комісія за газ MVX: опублікувати через",
     "MVX Gas 费：通过以下方式发布",
     "رسوم غاز MVX: النشر عبر"
-  ],
-  "GSN Leaderboard → score pré-trade LIA": [
-    "Classement GSN → score LIA avant transaction",
-    "GSN Leaderboard → LIA pre-trade score",
-    "Clasificación GSN → puntuación LIA previa a la operación",
-    "GSN-Rangliste → LIA-Bewertung vor dem Handel",
-    "Рейтинг GSN → оценка LIA до сделки",
-    "Рейтинг GSN → оцінка LIA до угоди",
-    "GSN 排行榜 → LIA 交易前评分",
-    "لوحة صدارة GSN → تقييم LIA قبل التداول"
   ],
   "Guardian status :": [
     "État Guardian :",
@@ -2508,26 +2478,6 @@
     "1. Обрати пакет → 2. Гаманець erd1 → 3. Сплатити або перегляд на пристрої → 4. Зал / командний центр за рівнем",
     "1. 选择套餐 → 2. erd1 钱包 → 3. 付款或设备预览 → 4. 按等级进入房间 / 指挥中心",
     "1. اختر باقة → 2. محفظة erd1 → 3. الدفع أو معاينة الجهاز → 4. قاعة / مركز القيادة حسب المستوى"
-  ],
-  "Prediction markets (paper) · GreenSmoke · MultiversX": [
-    "Marchés de prédiction (simulation) · GreenSmoke · MultiversX",
-    "Prediction markets (paper) · GreenSmoke · MultiversX",
-    "Mercados de predicción (simulación) · GreenSmoke · MultiversX",
-    "Prognosemärkte (Simulation) · GreenSmoke · MultiversX",
-    "Рынки прогнозов (симуляция) · GreenSmoke · MultiversX",
-    "Ринки прогнозів (симуляція) · GreenSmoke · MultiversX",
-    "预测市场（模拟）· GreenSmoke · MultiversX",
-    "أسواق التوقعات (محاكاة) · GreenSmoke · MultiversX"
-  ],
-  "GreenSmoke agents": [
-    "Agents GreenSmoke",
-    "GreenSmoke agents",
-    "Agentes GreenSmoke",
-    "GreenSmoke-Agenten",
-    "Агенты GreenSmoke",
-    "Агенти GreenSmoke",
-    "GreenSmoke 代理",
-    "وكلاء GreenSmoke"
   ],
   "Zoom ≥ 10 → POI OSM · popup": [
     "Zoom ≥ 10 → points d’intérêt OSM · fenêtre contextuelle",

@@ -13,7 +13,6 @@ type Fusion = {
     external_weight_sum?: number
   }
   legs?: {
-    gsn?: { n_elite?: number; bias?: string; gsn_weight?: number; top_avg_accuracy?: number }
     polymarket?: { bias?: string; weight?: number; n?: number }
     free_feeds?: { bias?: string; weight?: number; n?: number }
     social?: { bias?: string; weight?: number; n?: number; rumor_flag?: boolean }
@@ -64,7 +63,7 @@ export default function SignalsFusionPanel() {
         <div>
           <h2 className="text-lg font-bold">{xaRender("Signaux fusionnés (advisory)")}</h2>
           <p className="text-xs text-gray-500 mt-1">
-            {xaRender("GSN ≥80% · Polymarket (hors MVX) · feeds gratuits · social — jamais seul pour exécuter ")}</p>
+            {xaRender("Polymarket (hors MVX) · feeds gratuits · social — jamais seul pour exécuter ")}</p>
         </div>
         <span className="badge-gray text-[10px]">{xaRender("PAPER · ")}{xaRender(data?.updated?.slice(0, 19) || '—')}</span>
       </div>
@@ -89,16 +88,7 @@ export default function SignalsFusionPanel() {
           </div>
         </div>
       ))}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
-        <Leg
-          title={xaLocalize("GSN elite")}
-          bias={legs?.gsn?.bias}
-          extra={
-            legs?.gsn
-              ? `n=${legs.gsn.n_elite ?? 0} w=${legs.gsn.gsn_weight ?? 0} acc=${legs.gsn.top_avg_accuracy ?? '—'}`
-              : '—'
-          }
-        />
+      <div className="grid sm:grid-cols-3 gap-2 text-xs">
         <Leg
           title={xaLocalize("Polymarket")}
           bias={legs?.polymarket?.bias}

@@ -105,7 +105,6 @@ Object.assign(copy, {
   lia:['LIA · Vue d’ensemble','LIA · Overview','LIA · Visión general','LIA · Übersicht','LIA · Обзор','LIA · Огляд','LIA · 概览','LIA · نظرة عامة'],
   command:['Centre de contrôle','Command center','Centro de control','Kontrollzentrum','Центр управления','Центр керування','控制中心','مركز التحكم'],
   lightning:['Agent Lightning','Lightning agent','Agente Lightning','Lightning-Agent','Агент Lightning','Агент Lightning','Lightning智能体','وكيل Lightning'],
-  polylia:['Agent PolyLIA','PolyLIA agent','Agente PolyLIA','PolyLIA-Agent','Агент PolyLIA','Агент PolyLIA','PolyLIA智能体','وكيل PolyLIA'],
   voyage:['Agent Voyage','Travel agent','Agente de viaje','Reiseagent','Агент путешествий','Агент подорожей','旅行智能体','وكيل السفر'],
   simulation:['Laboratoire de simulation','Simulation lab','Laboratorio de simulación','Simulationslabor','Лаборатория симуляций','Лабораторія симуляцій','模拟实验室','مختبر المحاكاة'],
   entities:['Réseau des agents','Agent network','Red de agentes','Agentennetzwerk','Сеть агентов','Мережа агентів','智能体网络','شبكة الوكلاء'],

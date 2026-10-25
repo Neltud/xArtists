@@ -1,0 +1,72 @@
+{
+  "Packs LIA (5–25 €) · NFT stake · 3 profils. Prix borné, LIA propose.": [
+    "Packs LIA (5–25 €) · staking NFT · 3 profils. Prix plafonné, LIA propose.",
+    "LIA packs (€5–25) · NFT staking · 3 profiles. Capped price, proposed by LIA.",
+    "Paquetes LIA (5–25 €) · staking NFT · 3 perfiles. Precio limitado, propuesto por LIA.",
+    "LIA-Pakete (5–25 €) · NFT-Staking · 3 Profile. Preis begrenzt, LIA schlägt vor.",
+    "Пакеты LIA (5–25 €) · NFT-стейкинг · 3 профиля. Цена ограничена, предлагает LIA.",
+    "Пакети LIA (5–25 €) · NFT-стейкінг · 3 профілі. Ціну обмежено, пропонує LIA.",
+    "LIA 套装（5–25 欧元）· NFT 质押 · 3 种配置。 价格有上限，由 LIA 提议。",
+    "حزم LIA ‏(5–25 €) · تحصيص NFT · 3 ملفات. سعر محدود، يقترحه LIA."
+  ],
+  "Packs Access (Pulse/Yield/Sentinel) · fiat →": [
+    "Packs Access (Pulse/Yield/Sentinel) · fiat →",
+    "Access packs (Pulse/Yield/Sentinel) · fiat →",
+    "Paquetes Access (Pulse/Yield/Sentinel) · fiat →",
+    "Access-Pakete (Pulse/Yield/Sentinel) · Fiat →",
+    "Пакеты Access (Pulse/Yield/Sentinel) · фиат →",
+    "Пакети Access (Pulse/Yield/Sentinel) · фіат →",
+    "Access 套餐（Pulse/Yield/Sentinel） · 法币 →",
+    "باقات Access ‏(Pulse/Yield/Sentinel) · عملات نقدية →"
+  ],
+  "· LIA fixe le prix pour la marge": [
+    "· LIA fixe le prix pour la marge",
+    "· LIA sets the price for margin",
+    "· LIA fija el precio según el margen",
+    "· LIA legt den Preis für die Marge fest",
+    "· LIA задаёт цену с учётом маржи",
+    "· LIA задає ціну з урахуванням маржі",
+    "· LIA 根据利润率定价",
+    "· تحدد LIA السعر وفق الهامش"
+  ],
+  "Pas de mandat de gestion · pas de dépôt trading user vers LIA ops": [
+    "Pas de mandat de gestion · aucun dépôt utilisateur de trading vers LIA ops",
+    "No management mandate · no user trading deposits to LIA ops",
+    "Sin mandato de gestión · sin depósitos de trading de usuarios en LIA ops",
+    "Kein Verwaltungsmandat · keine Handelsgelder von Nutzern an LIA ops",
+    "Без управления средствами · без торговых депозитов пользователей в LIA ops",
+    "Без управління коштами · без торгових депозитів користувачів у LIA ops",
+    "无资产管理委托 · 用户交易资金不存入 LIA ops",
+    "لا تفويض لإدارة الأموال · لا ودائع تداول من المستخدمين إلى LIA ops"
+  ],
+  "Polymarket (hors MVX) · feeds gratuits · social — jamais seul pour exécuter": [
+    "Polymarket (hors MVX) · flux gratuits · social — jamais seul pour exécuter",
+    "Polymarket (outside MVX) · free feeds · social — never used alone to execute",
+    "Polymarket (fuera de MVX) · fuentes gratuitas · social — nunca se usa solo para ejecutar",
+    "Polymarket (außerhalb MVX) · kostenlose Feeds · Social — nie allein zur Ausführung",
+    "Polymarket (вне MVX) · бесплатные потоки · соцсети — не единственное основание для исполнения",
+    "Polymarket (поза MVX) · безкоштовні потоки · соцмережі — не єдина підстава для виконання",
+    "Polymarket（MVX 之外）· 免费数据源 · 社交信号 — 绝不单独作为执行依据",
+    "Polymarket (خارج MVX) · مصادر مجانية · اجتماعي — لا يُستخدم منفردًا للتنفيذ"
+  ],
+  "Clone LIA en NFT limité (5–25 €) · stake · 3 profils. Revenu passif selon règles pack.": [
+    "Clone LIA en NFT limité (5–25 €) · staking · 3 profils. Revenu passif selon les règles du pack.",
+    "Limited LIA clone NFT (€5–25) · staking · 3 profiles. Passive income under pack rules.",
+    "Clon LIA en NFT limitado (5–25 €) · staking · 3 perfiles. Ingresos pasivos según las reglas del paquete.",
+    "Limitierter LIA-Klon als NFT (5–25 €) · Staking · 3 Profile. Passives Einkommen gemäß Paketregeln.",
+    "Лимитированный NFT-клон LIA (5–25 €) · стейкинг · 3 профиля. Пассивный доход по правилам пакета.",
+    "Лімітований NFT-клон LIA (5–25 €) · стейкінг · 3 профілі. Пасивний дохід за правилами пакета.",
+    "限量 LIA 克隆 NFT（5–25 欧元）· 质押 · 3 种配置。按套装规则获得被动收入.",
+    "نسخة LIA محدودة بصيغة NFT ‏(5–25 €) · تحصيص · 3 ملفات. دخل سلبي وفق قواعد الحزمة."
+  ],
+  "(achat Stripe / accès NFT). Ce n’est": [
+    "(achat Stripe / accès NFT). Ce n’est",
+    "(Stripe purchase / NFT access). This is not",
+    "(compra con Stripe / acceso NFT). Esto no es",
+    "(Stripe-Kauf / NFT-Zugang). Dies ist kein",
+    "(покупка через Stripe / доступ по NFT). Это не",
+    "(купівля через Stripe / доступ за NFT). Це не",
+    "（Stripe 购买 / NFT 访问）。这不是",
+    "(شراء عبر Stripe / وصول NFT). هذا ليس"
+  ]
+}

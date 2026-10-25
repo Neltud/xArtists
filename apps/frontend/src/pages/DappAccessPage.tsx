@@ -20,7 +20,7 @@ export default function DappAccessPage() {
   const [ios, setIos] = useState(false)
   const [busy, setBusy] = useState(false)
   useEffect(() => {
-    const link = new URL('app/', new URL(import.meta.env.BASE_URL, window.location.origin))
+    const link = new URL('https://neltud.github.io/xArtists/')
     link.searchParams.set('lang', lang)
     setUrl(link.href)
     let current = true

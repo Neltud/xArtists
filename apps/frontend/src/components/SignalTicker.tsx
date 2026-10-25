@@ -13,7 +13,7 @@ export default function SignalTicker() {
   xaUsePhraseLocale()
 
   const [lines, setLines] = useState<string[]>([
-    'LIA · PAPER · GSN · feeds crypto / finance / culture',
+    'LIA · PAPER · feeds crypto / finance / culture',
   ])
   const [meta, setMeta] = useState<string>('PAPER')
 

@@ -289,16 +289,6 @@
     "（所有者）",
     "(المالك)"
   ],
-  "GSN ≥80% = signal LIA · packs ≠ GSN": [
-    "GSN ≥80% = signal LIA · packs ≠ GSN",
-    "GSN ≥80% = LIA signal · packs ≠ GSN",
-    "GSN ≥80% = señal LIA · paquetes ≠ GSN",
-    "GSN ≥80% = LIA-Signal · Pakete ≠ GSN",
-    "GSN ≥80% = сигнал LIA · пакеты ≠ GSN",
-    "GSN ≥80% = сигнал LIA · пакети ≠ GSN",
-    "GSN ≥80% = LIA 信号 · 套装 ≠ GSN",
-    "GSN ≥80% = إشارة LIA · الحزم ≠ GSN"
-  ],
   "un agent de voyage ni un service de réservation.": [
     "un agent de voyage ni un service de réservation.",
     "a travel agent or a booking service.",
@@ -559,16 +549,6 @@
     "艺术 · RWA · NFT",
     "فنون · RWA · NFT"
   ],
-  "Clone LIA en NFT limité (5–25 €) · stake · 3 profils. Revenu passif selon règles pack — pas GreenSmoke.": [
-    "Clone LIA en NFT limité (5–25 €) · staking · 3 profils. Revenu passif selon les règles du pack — pas GreenSmoke.",
-    "Limited LIA clone NFT (€5–25) · staking · 3 profiles. Passive income under pack rules — not GreenSmoke.",
-    "Clon LIA en NFT limitado (5–25 €) · staking · 3 perfiles. Ingresos pasivos según las reglas del paquete — no GreenSmoke.",
-    "Limitierter LIA-Klon als NFT (5–25 €) · Staking · 3 Profile. Passives Einkommen gemäß Paketregeln — kein GreenSmoke.",
-    "Лимитированный NFT-клон LIA (5–25 €) · стейкинг · 3 профиля. Пассивный доход по правилам пакета — не GreenSmoke.",
-    "Лімітований NFT-клон LIA (5–25 €) · стейкінг · 3 профілі. Пасивний дохід за правилами пакета — не GreenSmoke.",
-    "限量 LIA 克隆 NFT（5–25 欧元）· 质押 · 3 种配置。按套装规则获得被动收入 — 非 GreenSmoke。",
-    "نسخة LIA محدودة بصيغة NFT ‏(5–25 €) · تحصيص · 3 ملفات. دخل سلبي وفق قواعد الحزمة — ليس GreenSmoke."
-  ],
   "Safety Switch actif — paper forcé après échec TX.": [
     "Sécurité active — simulation forcée après échec de transaction.",
     "Safety Switch active — paper mode enforced after TX failure.",
@@ -619,16 +599,6 @@
     "风险",
     "المخاطر"
   ],
-  "Prévisions GSN affichées à titre informatif. Les": [
-    "Prévisions GSN affichées à titre informatif. Les",
-    "GSN forecasts are for information only. The",
-    "Las previsiones GSN son informativas. Los",
-    "GSN-Prognosen dienen nur zur Information. Die",
-    "Прогнозы GSN приведены для информации. Эти",
-    "Прогнози GSN наведено для інформації. Ці",
-    "GSN 预测仅供参考。这些",
-    "تُعرض توقعات GSN للمعلومات فقط. إن"
-  ],
   "text-yellow-400": [
     "text-yellow-400",
     "text-yellow-400",
@@ -648,16 +618,6 @@
     "≈ USD",
     "≈ USD",
     "≈ USD"
-  ],
-  "du poids max signal GSN": [
-    "du poids maximal du signal GSN",
-    "of the maximum GSN signal weight",
-    "del peso máximo de la señal GSN",
-    "des maximalen GSN-Signalgewichts",
-    "от максимального веса сигнала GSN",
-    "від максимальної ваги сигналу GSN",
-    "占 GSN 信号最大权重",
-    "من أقصى وزن لإشارة GSN"
   ],
   "🛡️ Guardian (avant Brain)": [
     "🛡️ Guardian (avant Brain)",
@@ -2508,16 +2468,6 @@
     "Нагадування про процес",
     "流程提示",
     "تذكير بالمسار"
-  ],
-  "PolyLIA · Agents": [
-    "PolyLIA · Agents",
-    "PolyLIA · Agents",
-    "PolyLIA · Agentes",
-    "PolyLIA · Agenten",
-    "PolyLIA · Агенты",
-    "PolyLIA · Агенти",
-    "PolyLIA · 智能体",
-    "PolyLIA · الوكلاء"
   ],
   "No paper portfolio yet": [
     "Aucun portefeuille simulé pour le moment",

@@ -32,7 +32,6 @@ export default function CreateSubAgentForm() {
       price_bounds: { min: PACK_PRICE_EUR.min, max: PACK_PRICE_EUR.max },
       creator: connected && address ? address : 'anonymous',
       product: 'lia_subagent_pack',
-      not: 'greensmoke_forecast_agent',
       pricing: 'lia_vellum_sets_price_for_margin',
       note: 'Vellum lia.agents.vellum_provision — list after agents_marketplace live',
     }
@@ -42,7 +41,7 @@ export default function CreateSubAgentForm() {
       /* ignore */
     }
     setMsg(
-      `Intent ${eur} € enregistré (défaut catalogue ${PACK_PRICE_EUR.list} €). ≠ GreenSmoke. List on-chain après deploy.`
+      `Intent ${eur} € enregistré (défaut catalogue ${PACK_PRICE_EUR.list} €). List on-chain après deploy.`
     )
   }
 
@@ -54,7 +53,7 @@ export default function CreateSubAgentForm() {
         <strong>
           {xaRender(PACK_PRICE_EUR.min)}–{xaRender(PACK_PRICE_EUR.max)} €
         </strong>{xaRender(' ')}
-        {xaRender("· LIA fixe le prix pour la marge · ≠ GreenSmoke (signal only) ")}</p>
+        {xaRender("· LIA fixe le prix pour la marge ")}</p>
       <label className="block text-xs text-gray-500">
         {xaRender("Prompt ")}<textarea
           className="mt-1 w-full rounded-lg bg-[#111118] border border-[#2a2a3a] p-2 text-sm min-h-[80px]"

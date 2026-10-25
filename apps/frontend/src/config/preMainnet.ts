@@ -31,14 +31,6 @@ export const PRE_MAINNET_MODULES: PreMainnetModule[] = [
     acceptUserFunds: false,
   },
   {
-    id: 'polylia',
-    route: '/agents/polylia',
-    label: 'Agents Polylia',
-    status: 'pre-mainnet',
-    blurb: 'Variante agents — pas de marketplace agents live tant que SC null.',
-    acceptUserFunds: false,
-  },
-  {
     id: 'rwa_bridge',
     route: '',
     label: 'RWA / Bridge',

@@ -289,16 +289,6 @@
     "text-purple-300 font-semibold",
     "text-purple-300 font-semibold"
   ],
-  "(achat Stripe / accès NFT). Signaux GSN. Ce n’est": [
-    "(achat Stripe / accès NFT). Signaux GSN. Ce n’est",
-    "(Stripe purchase / NFT access). GSN signals. This is not",
-    "(compra con Stripe / acceso NFT). Señales GSN. Esto no es",
-    "(Stripe-Kauf / NFT-Zugang). GSN-Signale. Dies ist kein",
-    "(покупка через Stripe / доступ по NFT). Сигналы GSN. Это не",
-    "(купівля через Stripe / доступ за NFT). Сигнали GSN. Це не",
-    "（Stripe 购买 / NFT 访问）。GSN 信号。这不是",
-    "(شراء عبر Stripe / وصول NFT). إشارات GSN. هذا ليس"
-  ],
   "Sim rendement 1 an (paper)": [
     "Sim rendement 1 an (simulation)",
     "1-year return simulation (paper)",
@@ -1408,16 +1398,6 @@
     "Об’єднані сигнали (рекомендаційні)",
     "融合信号（仅供参考）",
     "إشارات مدمجة (استرشادية)"
-  ],
-  "GSN elite": [
-    "GSN élite",
-    "GSN elite",
-    "GSN élite",
-    "GSN-Elite",
-    "GSN элита",
-    "GSN еліта",
-    "GSN 精英",
-    "نخبة GSN"
   ],
   "Zapier : connecter X (OAuth) — à faire dans ton compte Zapier": [
     "Zapier : connecter X (OAuth) — à faire dans ton compte Zapier",

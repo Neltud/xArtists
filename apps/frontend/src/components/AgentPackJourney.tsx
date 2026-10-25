@@ -1,5 +1,5 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
-import { PACK_JOURNEY_STEPS, FUNDING_MODELS, GSN_POLICY, PACK_PRICING_POLICY } from '../config/agentPacks'
+import { PACK_JOURNEY_STEPS, FUNDING_MODELS, PACK_PRICING_POLICY } from '../config/agentPacks'
 
 export default function AgentPackJourney() {
   const v1 = FUNDING_MODELS.C_no_user_capital
@@ -29,8 +29,7 @@ export default function AgentPackJourney() {
         <p className="text-[10px] uppercase tracking-widest text-teal-400/90">{xaRender("v1 verrouillé — ")}{xaRender(v1.id)}</p>
         <p className="text-xs text-zinc-300">{xaRender(v1.when)}</p>
         <p className="text-[11px] text-zinc-500">
-          {xaRender("Pas de mandat de gestion · pas de dépôt trading user vers LIA ops · GSN :")}{xaRender(' ')}
-          {xaRender(GSN_POLICY.description)}
+          {xaRender("Pas de mandat de gestion · pas de dépôt trading user vers LIA ops")}
         </p>
       </div>
     </section>

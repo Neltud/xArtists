@@ -20,7 +20,6 @@ const GROUPS = [
       { to: '/agents', label: 'Packs', note: 'Pulse · Yield · Sentinel' },
       { to: '/my-packs', label: 'My Packs', note: 'Accès achetés' },
       { to: '/agents/lightning', label: 'Lightning ops', note: 'MCP BTC doc' },
-      { to: '/agents/polylia', label: 'Polylia', note: 'Vue multi' },
     ],
   },
   {

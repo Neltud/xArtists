@@ -31,8 +31,6 @@ export default function AgentsJourneyStrip() {
           </Link>
         </span>
       )))}
-      <span className="ml-auto text-[10px] text-zinc-600 hidden sm:inline">
-        {xaRender("GSN ≥80% = signal LIA · packs ≠ GSN ")}</span>
     </nav>
   )
 }

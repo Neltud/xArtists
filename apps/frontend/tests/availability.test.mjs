@@ -71,9 +71,11 @@ test('PWA manifest declares real PNG dimensions and keeps shortcuts inside its s
 
 test('an install prompt survives navigation, is used once, and is not reported installed before appinstalled', async () => {
   const previousWindow = globalThis.window
+  const previousNavigator = Object.getOwnPropertyDescriptor(globalThis, 'navigator')
   const window = new EventTarget()
   window.matchMedia = () => ({ matches: false, addEventListener() {} })
   globalThis.window = window
+  delete globalThis.navigator
   try {
     const install = loadSource('src/pwa/installPrompt.ts')
     install.watchInstallPrompt(); install.watchInstallPrompt()
@@ -93,7 +95,11 @@ test('an install prompt survives navigation, is used once, and is not reported i
     assert.equal(install.getInstallStatus(), 'installed')
     assert.equal(notifications, 2)
     unsubscribe()
-  } finally { globalThis.window = previousWindow }
+  } finally {
+    globalThis.window = previousWindow
+    if (previousNavigator) Object.defineProperty(globalThis, 'navigator', previousNavigator)
+    else delete globalThis.navigator
+  }
 })
 
 async function serviceWorker() {

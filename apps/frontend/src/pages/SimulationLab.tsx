@@ -24,7 +24,7 @@ type SimTrade = {
 }
 
 const PAIRS = ['TRO/USDC', 'WEGLD/USDC', 'MEX/WEGLD', 'UTK/WEGLD', 'TRO/WEGLD']
-const STRATS = ['S1-1pct', 'S05-scalp', 'S2-swing', 'GSN-elite', 'ARB-xEx']
+const STRATS = ['S1-1pct', 'S05-scalp', 'S2-swing', 'ARB-xEx']
 
 function rng(seed: number) {
   let s = seed >>> 0

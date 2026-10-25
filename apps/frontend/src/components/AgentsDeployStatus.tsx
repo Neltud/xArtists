@@ -37,7 +37,7 @@ export default function AgentsDeployStatus() {
         <li>
           {xaRender("Fee reste sur le SC jusqu’à ")}<code>claimFees</code> {xaRender(" (owner) ")}</li>
         <li>
-          {xaRender("Packs Access (Pulse/Yield/Sentinel) ≠ GreenSmoke (prévisions) · fiat →")}{xaRender(' ')}
+          {xaRender("Packs Access (Pulse/Yield/Sentinel) · fiat →")}{xaRender(' ')}
           <Link to="/my-packs" className="text-purple-300 underline">
             {xaRender("My Packs ")}</Link>
         </li>

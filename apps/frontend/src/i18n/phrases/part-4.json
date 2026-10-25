@@ -239,16 +239,6 @@
     "未投入",
     "غير ملتزم"
   ],
-  "Pas de mandat de gestion · pas de dépôt trading user vers LIA ops · GSN :": [
-    "Pas de mandat de gestion · aucun dépôt utilisateur de trading vers LIA ops · GSN :",
-    "No management mandate · no user trading deposits to LIA ops · GSN:",
-    "Sin mandato de gestión · sin depósitos de trading de usuarios en LIA ops · GSN:",
-    "Kein Verwaltungsmandat · keine Handelsgelder von Nutzern an LIA ops · GSN:",
-    "Без управления средствами · без торговых депозитов пользователей в LIA ops · GSN:",
-    "Без управління коштами · без торгових депозитів користувачів у LIA ops · GSN:",
-    "无资产管理委托 · 用户交易资金不存入 LIA ops · GSN：",
-    "لا تفويض لإدارة الأموال · لا ودائع تداول من المستخدمين إلى LIA ops · GSN:"
-  ],
   "Agents marketplace — SC live": [
     "Marché des agents — SC actif",
     "Agent marketplace — SC live",
@@ -609,26 +599,6 @@
     "Discord",
     "Discord"
   ],
-  "🔮 GreenSmoke Network": [
-    "🔮 GreenSmoke Network",
-    "🔮 GreenSmoke Network",
-    "🔮 GreenSmoke Network",
-    "🔮 GreenSmoke Network",
-    "🔮 GreenSmoke Network",
-    "🔮 GreenSmoke Network",
-    "🔮 GreenSmoke Network",
-    "🔮 GreenSmoke Network"
-  ],
-  "Feed GSN chargé": [
-    "Flux GSN chargé",
-    "GSN feed loaded",
-    "Fuente GSN cargada",
-    "GSN-Feed geladen",
-    "Лента GSN загружена",
-    "Стрічку GSN завантажено",
-    "GSN 动态已加载",
-    "تم تحميل موجز GSN"
-  ],
   "Opération": [
     "Opération",
     "Operation",
@@ -638,16 +608,6 @@
     "Операція",
     "操作",
     "عملية"
-  ],
-  "(GreenSmoke). Poids max ~30 %. Ne sont": [
-    "(GreenSmoke). Poids maximal ~30 %. Ne sont",
-    "(GreenSmoke). Maximum weight ~30%. Are not",
-    "(GreenSmoke). Peso máximo ~30 %. No son",
-    "(GreenSmoke). Maximalgewicht ~30 %. Sind keine",
-    "(GreenSmoke). Макс. вес ~30 %. Не являются",
-    "(GreenSmoke). Макс. вага ~30 %. Не є",
-    "(GreenSmoke)。最大权重约 30%。并非",
-    "(GreenSmoke). أقصى وزن ~30٪. ليست"
   ],
   "🛡️ Guardian OK": [
     "🛡️ Guardian OK",

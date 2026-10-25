@@ -24,7 +24,7 @@ const CARDS = [
   {
     emoji: '🧠',
     title: 'Market Agents IA',
-    body: 'Packs LIA (5–25 €) · NFT stake · 3 profils. ≠ GreenSmoke (prévisions). Prix borné, LIA propose.',
+    body: 'Packs LIA (5–25 €) · NFT stake · 3 profils. Prix borné, LIA propose.',
     to: '/agents',
     cta: 'Agents packs',
   },
