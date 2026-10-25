@@ -1,0 +1,52 @@
+name: Import verified dapp-mobile sources
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feat/dapp-mobile-transport']
+    paths: ['.github/workflows/import-dapp-mobile.yml']
+permissions:
+  contents: read
+concurrency:
+  group: dapp-mobile-completion
+  cancel-in-progress: false
+jobs:
+  import:
+    if: github.repository == 'Neltud/xArtists' && github.ref == 'refs/heads/feat/dapp-mobile-transport'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Import 26 reviewed sources via restore.py
+        run: |
+          python3 docs/transports/dapp-mobile-2026-10-25/restore.py --proof "$RUNNER_TEMP/import-proof.json"
+      - name: Commit imported application sources
+        run: |
+          set -euo pipefail
+          git add apps/frontend .github/workflows/static.yml || true
+          if git diff --cached --quiet; then
+            echo "No application source changes staged (already imported or identical)."
+          else
+            if git diff --cached --name-only | grep -vE '^(apps/frontend/|\.github/workflows/static\.yml$)' | grep -q .; then
+              echo "::error::Unexpected staged path outside allowed import set."
+              git diff --cached --name-only
+              exit 1
+            fi
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -m 'feat(mobile): import verified dapp-mobile sources (26/26)'
+          fi
+          git fetch origin refs/heads/feat/dapp-mobile-transport
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA" || { echo 'Branch advanced; retry from its current head.'; exit 1; }
+          git push origin HEAD:refs/heads/feat/dapp-mobile-transport
+          echo "Import commit: $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/import-proof.json" >> "$GITHUB_STEP_SUMMARY" || true
+      - name: Preserve import proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-import-proof
+          path: ${{ runner.temp }}/import-proof.json
