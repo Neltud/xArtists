@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-25T15:36:28.775Z",
+  "updatedAt": "2026-10-25T20:25:04.670Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1792959904326",
+      "timestamp": "20:25",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.25 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792942588552",
       "timestamp": "15:36",
@@ -191,13 +198,6 @@
       "source": "CoinDesk",
       "title": "France's parliament approves vote to hit stablecoin trades with 31% capital gains tax",
       "link": "https://www.coindesk.com/policy/2026/10/20/france-s-parliament-approves-vote-to-hit-crypto-to-stablecoin-trades-with-31-levy"
-    },
-    {
-      "id": "rss-CoinDesk-2-1792494861000",
-      "timestamp": "11:14",
-      "source": "CoinDesk",
-      "title": "Equity weakness could damp demand for bitcoin after biggest ETF inflows in a month",
-      "link": "https://www.coindesk.com/daybook-us/2026/10/20/equity-weakness-could-damp-demand-for-bitcoin-after-biggest-etf-inflows-in-a-month"
     }
   ]
 }
