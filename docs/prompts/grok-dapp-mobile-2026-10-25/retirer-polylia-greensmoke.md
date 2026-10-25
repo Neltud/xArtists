@@ -1,0 +1,345 @@
+# Retirer polyLIA et GreenSmoke — correctif obligatoire
+
+Instruction prioritaire de Nelson, le 25 octobre 2026 : supprimer le module et la page polyLIA ; GreenSmoke Network n'est plus utilisé par la dApp.
+
+### Résultat et ordre d'exécution
+
+Le correctif supprime le module polyLIA, ses routes `/intelligence/polylia` et `/agents/polylia`, son entrée dans le plan du site et le catalogue pré-mainnet, ainsi que ses libellés dans les huit langues. Il retire la stratégie GSN de la simulation, les composants GSN et leur configuration, le fichier de prévisions public dédié et les mentions de ce partenaire dans les anciens composants frontend. Les autres modules et les protections de paiement sont conservés.
+
+La version hébergée est déjà publiée sans ce module : https://xartists-dapp-mobile.loftypearl128.chatgpt.site/xArtists/app/ . Version Sites 3, source Sites `ba5c0ebb701121106cc83481a6ec37e4c49813df`, déploiement `appgdep_6ade0ccde2b08191bd94bf432e2e0eb8`, résultat `succeeded`. Cette publication n'atteste pas une fusion dans GitHub `main`.
+
+Grok : termine d'abord l'import mobile déjà en cours, dont les 41 opérations et empreintes restent valides. Cet import vérifie encore son état initial à 99 routes. Après son succès, supprime son workflow temporaire `.github/workflows/import-dapp-mobile.yml` par ton API, puis applique le présent correctif avant toute fusion de la PR. Le résultat final est **36 modules, 51 alias, 97 routes**, avec `lia_live_trading: false`.
+
+### Publication du correctif par l'API connectée
+
+Le bloc JSON de cette page est autonome : `xartists-retirement-api-files-v1`. Il contient 11 fichiers prêts à publier : sept morceaux de texte de 4 096 octets maximum, les métadonnées, la liste des sources, le script et le workflow. Aucun ZIP n'est requis.
+
+1. Enregistre le bloc JSON intégral sous `api-retirement.json`. Reconstitue et vérifie ses fichiers avec le script ci-dessous.
+2. Utilise tes outils API GitHub authentifiés sur `Neltud/xArtists`, branche `feat/dapp-mobile-transport`. Publie les opérations dans l'ordre, en lisant le contenu local exact. Relis chaque contenu distant et vérifie son SHA-256. Pour une reprise, passe uniquement les fichiers déjà strictement identiques ; réconcilie toute modification inconnue.
+3. Le dernier fichier est `.github/workflows/retire-polylia.yml`. Publie-le après tous les autres fichiers, puis attends le job `retire` sans écrire sur la branche pendant son exécution.
+4. Le runner exige que le premier workflow d'import ait déjà été retiré. Il vérifie l'état initial des 32 chemins, applique le patch localement, vérifie les états finaux, prépare son commit, lance les tests et le build paper avec 4 Go de heap et contrôle les 97 routes. Il pousse ensuite un commit normal seulement si la branche distante n'a pas avancé.
+5. Après succès, conserve l'URL du run, le SHA distant et l'artefact `retire-polylia-proof`. Supprime `.github/workflows/retire-polylia.yml` par ton API GitHub, puis ouvre ou actualise la PR et attends les checks requis avant merge. Aucun workflow n'est modifié dans le commit poussé par le runner.
+6. Après merge et déploiement Pages, vérifie que l'annuaire, le menu Intelligence et la recherche ne proposent plus polyLIA, que les deux anciens chemins affichent l'écran de page introuvable et que les autres modules restent accessibles. Le bundle servi ne doit plus contenir de chunk `AgentsPolyliaPage` ni de texte GreenSmoke/GSN. Vérifie `build-info.json`, les 97 routes et le flag compilé à false.
+
+```python
+import hashlib
+import json
+from pathlib import Path
+
+data = json.loads(Path('api-retirement.json').read_text())
+assert data['format'] == 'xartists-retirement-api-files-v1'
+assert data['repository'] == 'Neltud/xArtists'
+assert data['branch'] == 'feat/dapp-mobile-transport'
+assert data['source_files'] == 32 and data['parts'] == 7
+out = Path('retirement_api')
+out.mkdir(exist_ok=True)
+operations = []
+for index, entry in enumerate(data['operations'], 1):
+    operation = dict(entry)
+    assert operation['sequence'] == index
+    raw = operation.pop('content_utf8').encode('utf-8')
+    assert len(raw) == operation['size_bytes']
+    assert hashlib.sha256(raw).hexdigest() == operation['sha256']
+    name = operation['local']
+    assert Path(name).name == name
+    (out / name).write_bytes(raw)
+    operations.append(operation)
+assert len(operations) == 11
+assert operations[-1]['remote'] == '.github/workflows/retire-polylia.yml'
+(out / 'UPLOAD_ORDER.json').write_text(json.dumps(operations, indent=2) + '\n')
+print('11 fichiers vérifiés ; workflow en dernier.')
+```
+
+### Vérifications déjà réalisées
+
+* 22 tests frontend réussis ; 64 rendus d'interface et 288 rendus de modules réussis dans huit langues ; régressions mobile réussies.
+* Build paper réussi avec `NODE_OPTIONS=--max-old-space-size=4096`, `VITE_LIA_LIVE_TRADING=0`, `VITE_PAYBOX_ENABLED=false`.
+* 97 entrées publiques vérifiées, aucun lien interne non résolu, aucun chunk ni texte de l'ancien module dans les fichiers JavaScript construits.
+* Simulation du transport : 32/32 états source vérifiés, dont cinq fichiers supprimés ; un morceau tronqué est rejeté avant toute modification des sources. YAML et syntaxe shell du workflow validés.
+* Candidat de source local : `501a1234501c46d76030bf5bdd8ec4ab9821f174`. Ce SHA local n'est pas présenté comme un commit distant : le runner produira son propre commit sur l'historique réel de la branche.
+
+Les 32 empreintes de référence ci-dessous remplacent les empreintes initiales uniquement pour les chemins modifiés par ce correctif. Les empreintes du kit initial servent toujours à vérifier la première étape d'import. Une valeur finale `null` désigne un fichier supprimé. Les archives historiques et les moteurs backend restent hors de ce changement frontend.
+
+Le typecheck global n'a pas été relancé ; le précédent contrôle conservait des diagnostics préexistants. Aucun accès PEM, appel financier, signature wallet, activation live, force-push ou modification de permissions n'est inclus dans ce correctif.
+
+Si un appel API est refusé, rapporte le code, le chemin et la dernière opération vérifiée. Si le runner détecte une modification inattendue, réconcilie les sources avant reprise.
+
+### Fichiers API complets
+
+```json
+{
+  "format": "xartists-retirement-api-files-v1",
+  "repository": "Neltud/xArtists",
+  "branch": "feat/dapp-mobile-transport",
+  "parts": 7,
+  "source_files": 32,
+  "operations": [
+    {
+      "sequence": 1,
+      "operation": "upsert",
+      "local": "part-001.b64",
+      "remote": "docs/transports/retire-polylia-2026-10-25/part-001.b64",
+      "size_bytes": 4096,
+      "sha256": "7ac0ef27af7cbfc39affa3c71401bce3bc9b58b2d27a6eb500302036360e5f87",
+      "content_utf8": "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"
+    },
+    {
+      "sequence": 2,
+      "operation": "upsert",
+      "local": "part-002.b64",
+      "remote": "docs/transports/retire-polylia-2026-10-25/part-002.b64",
+      "size_bytes": 4096,
+      "sha256": "f94ad9c61f612fa748e5c4580260a42b4d9d8f92e14e3ef1d9cc94dd388b5011",
+      "content_utf8": "r/QavAtX6yC3Bw20WeIWzAbqAdxYeCWuV9FgI2tVwxAlKAgodLfmgE21MjpjcThMpTK4HNanY6YI3ARVUCRa6BVDwJfSOHQPXGZDLwGgVa5ZrgCHYupg0BllmOewImqaqcF8KUEJjdenLrya9hDSqcDqK5eqIGUMPXd1C/LGKZXLEDmeBxI2HbsEoeG6bq1Wgggq1fRSzYV6AevCyU0rQmhTcCI8Jdvm3KlqFKctwbjRdNAl1HoN0k7OsuHCFMe4OFzA4oT6KWEKK3etn5ihHjnUJbfueaxQWKp3GZ+9g+UYZt9JrYcg4BqiK1xGS0IM7oZguqZBRTzUrOPbKoO3VzLgRBeLWvDfQ81CoXBnSD7UnJ6eZrOuODVLjPdQ80c/YgV9RjdrbFqb0diPfgTgZ/A/xh6665ToUCDgobt24MEo6g/dNRN86bXRjHAXeTf4CG+soFULRmVBr+zQtR2a9q9xab/V6zhClbw3csQPi+7pVudkXKwZvqByh3qNbp0QeJAFi0txQRcdV6WWu922v2OWRqIY97nY7APd6gbtH2g6jZ4rfHZ/aw1EymYZvIZTosE4ib4im+t0+BqLBo11xL/1SFYze43dd6AYg5TlfQKqhoveHazXefINvau7quGG/DaT+NLkKwFSB/u+uS3qtfp6WoDnRCevwKLXUWVWNi52Ny620mU6rUbQgJTrrN3ZuHiqTlPqs9wKvlwrUVW4Q+Of/i4jFy75xYv81BKV04oVI1mCO06vw521vG/RoNLH49EHlhiuAIjvi4CwHtg3t/DjfccWDx6Yv/vI4SQ2wTBgbpxuRKSniZf7S8V4B3hlCyy3OvVHI0ov5YDoSEHNwwE9mhjKrlhpb1xEgV4HDMxX2T/Ovoy/HWd546LP7p3PQVstKwaUfuTwgYUjxx66K1FmPfp9Ivi1PpOgsiFExgtOZ63dbQ0mtSGUllc1Q2h5RYbRWV75OyKz0mAyq5a+Kpntu/fgPSOJy4bArPvjkFdpKH1V3JHkdai1goHsrbCNi07LX/O7G2+sCDbN5ntt0Wm2TvHhJDW3d+99h+47OLewL01VM+ONxt0Le7/GwRg6Fnpp9GAc27i4VEf3O3X/ZAF6tp+k+kfg7vt+Oj5DHeJOpzWIpVbUx3xuOtT/MclPOXVjXpF1oX/2P/g1cEd1CHfoX5U79h776dGFI4vH9t174NC+kZRB07RIDyMpozqUNExtNGkcrEM7u3VoMjCH12id9tmxB+aGk8axA/M/WSRdMi55KEthEH2ckl8LyooYRCchiEGEklc7I3hPRfYKrKm6vyKGy2CYkUEN0kay/71VmJd2vSGH6/vMgYUFjfU1EF95CPF9ZQvgnn3zC+Oq//GF0lcnvXlehz2N54D6AoOKkS3H8HapuXFRDb4rVjgs+WjiyLrsDqfRB+YW9v54kbp+4PDcwoEstY4px8EKiz8+Mn/0wMLcwQMLPx05fE3RAyE2xhg+fejw1cYYvvtFvQF/Bygyf+PiIxgaOVZOq9OBMa5EfCjxZ1ib+0TRdqt1st5cYq1mwVkGc7BT+ghFeM/9B+aPHPvpHQ3f3vsOLtx3bN/i/oNHHvjWjINxFOL+Blg5YF8IBHGKPBHF5w2BJwyXczJ0cFbnOt26ZLlhAxX2dTtycclvFgTIXxRqg4Rjqki+aIR9zPZREXbo/ge3Z5rGMk8BgAfdFaCjZ/5S1b731eVadZhSrf5zmZzV6lc1OdUQhr1kS7wrBRU7eGDuK5ta8u967DnDVV+S8QMFJ+NFtzt1eE9rIfSDEP4/XlQ2SIwJcBAYBDcquHBs7v59BxeV5MzqC/RWkA2ZsQCSn53WygpFm91FnpiAvUoQEZEqsoKkDxiLu/BxWp01NukKv1tvyuH0pyQfSnk1IVZhvvfoNeM9QGnWQwmWbFoFEhbVzLfC7gyPbMyG0Qc1svgX/xszgDUoX3do/GpQpTBIxU3bpaWzYlEXWtUxeCWKYo2KVQ0GTaGqO0OKolqlmQqbLs2UZUxLjnRQJmDSgEEjWeW3eqT6pFzpheGiWXpb6GKCVQQqI0qAQSEOTykpIdrd+3zR2d9rurKUBwIXRPzZBu1ep1n31vrbTH24o+ZkRSe0LVsFgvjQXZHsTiDRVrH+fiQUhc2mvn9tXe+c5ot2p+5KmzjZsFzzuOOWZEMnZoLpliaCEi3p2GIKWBwahP5hKjcHdkVRl/+vYdTG5qz+ZPGh5NtfPOQm17PKtDZYLFbLpkFx8LG5KQ/oKD7Kq0McVCYOKsccxCJfkP0/H7O7F/YyaGgIPmgh1uFNyES85g3YIrbociYa4hRJeSnsguo0xihEyo81AudtjXWXYcthtFb4I61OYMnUHxXsdL27zLxOPRDIMZj7jxwkMB0BQ/tR4bJTPquvtBt1/PRBLtxVMJa52zrNer7woSI16x9nf2kUre/BSqq3kxJ4ft/hBXi2hxcIpofirhT404wWwlZkQiu5l5DCzBPC9dlkJPtbzcbaVBKz+R/P3XPkAQLk8jVCpg5nrNNrNsluxVuoU2in+/ctQl/dc+Dwvbu0ZO3DR9jcwaM/nmN7D84dOETl27wNkwaWTQNdVLFr6GYf+FAv2tKrjMh+CJ2Okf3fRyNj1Akp1qyUKJ0V8t/iulPRPXMoxY4FOY9sx6qo1jQsNk3/SNoFccDnYmdkehooZu9yveEyDOMqPxi8mmFqsTnx6Zh8sY6Zb62wiWIxuYh7rNfswqCYQP9C4Ozo3N6fLP6vI/cdO7zvp4vzC/uOzs+w/fcdpmlePHTknn0H8QzCWjx65OCBvT+dUeWPHjuwlwqolyzRWpAnyMM++mhseluN3UEDDP8vVmUbrvA4nAxwRFMyIMuO9uQUWW2gPQDyuxCabFcGheLexWZrERzVWXR4u97lwYqTUZupsmn8W8H8bL899d/ONnMasKgPw5fYBT0nVruF47rWXj3Bem1wDSxyQas7DllchdN1MtOYLNWF3CiUNG22Bu7bfSac6cmH7kIfTokO1BEYDm49SZGH7ppaj4tAM9TdqfWds+3dI1BZ9VVjj4JtC6aWbglgTi+L5liAjus69SkGZklgKZM82YejylmmoAOXgaAlsk8xnlKcyG/uxsX2xgddGh2XBBPNEHXcJ/nEWm2fypIM3JHu/QSbmFof0HBM2UWMtNOpt6lRKj79zeFJ6CWHLzmaO2fd+qnwceesrxyr3dsWk30bicaSSn21QlGpVUxaU3eKReEYFUeUvG2LyhzY4wrLnKrEkGaFdL38dxRDpiBkWbJRT1Jzer73Q392MMWC+b0Oawg2v5c90vP/rfePs7/deFXy2U6n5Yrd4ID6Ckr7O2flcwoKm2ydborOlCo/m25QtT+QLyDi2ByMRx8q/GgPFuPsT+ui4c7Oo1v1pmjAeXvmVRYvUbPJxFLWlLQO6iDVfzz177lsMX3n7Y4CnRjSnQfrzZOs24J4mF1ZK1CsB2zQLzbavU67IUjysB6BaqAlKTYYGzBBh9aYwlUNLbWTGlw12NvlnuxGtfHINFsr5B7DKlUr1YooFu1KhdtcL22fe/phj809/VUl9+ikzvBveTT3JCFkuIeGuH/Q/TZvxm+mphICeCd9S838SqMgQw1JZRgrjjJoYbnuuqLJ/JUd9WZEEoU8ckgEPXapFYSGFLtSPBOZSGZBIUUuSTx3zjZ5IHqn8O/69qkmswFwvNnJVIqM05JZrnmaWyy6Fc3QyxbfPs30gR6bZPpqEsVIcTuWtE1UT5DLTqi21MTDZKHgVWG1wexWBxMY/Cmcqrcaoks2w6xpMXsp+ULXWHu1UGLttYKpyMRfSYqIjDXioZsFX6zU7RZMZFk+AKZrWUOKMsCCHoB6FL2AdnpNOH2CFrcV0bQHNhZQsJGmYBhtbAXtQX1Ii6DQEQ2+Sj7mICqe37jYqYtApvldTNVSfzu5Nho6QbKa6F2Ka/oRSuyA5CW4rH7izjIkuWRwCs9zx9l4w2eH9y9MFdl8sBAHtimyvYI1ofvILL0T7GAjDUGj11QpTYmVwGad3sKEOlWHx473UG70JCOXRRbPyPQ//0D+047ddqjZUtRspNVyEpUFaAufcbmEQ5wDA4LE"
+    },
+    {
+      "sequence": 3,
+      "operation": "upsert",
+      "local": "part-003.b64",
+      "remote": "docs/transports/retire-polylia-2026-10-25/part-003.b64",
+      "size_bytes": 4096,
+      "sha256": "cc753a722fa469259506f732d7d34fe28cc5e7c5fd6e8d354bc2265f433d66ff",
+      "content_utf8": "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"
+    },
+    {
+      "sequence": 4,
+      "operation": "upsert",
+      "local": "part-004.b64",
+      "remote": "docs/transports/retire-polylia-2026-10-25/part-004.b64",
+      "size_bytes": 4096,
+      "sha256": "869a936efb68be252d13e507c57115002fe5ab78d7f2c5505ca710dff8e26d96",
+      "content_utf8": "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"
+    },
+    {
+      "sequence": 5,
+      "operation": "upsert",
+      "local": "part-005.b64",
+      "remote": "docs/transports/retire-polylia-2026-10-25/part-005.b64",
+      "size_bytes": 4096,
+      "sha256": "d9f75d500686d2f1a0b4df6734a4fc9d6d1eecc24a691fe3989046da5410e5bb",
+      "content_utf8": "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"
+    },
+    {
+      "sequence": 6,
+      "operation": "upsert",
+      "local": "part-006.b64",
+      "remote": "docs/transports/retire-polylia-2026-10-25/part-006.b64",
+      "size_bytes": 4096,
+      "sha256": "3c87f2205f63adda9cceac8e28d737bf706fb6e0b5a6c6492cf3f7530aaee8b9",
+      "content_utf8": "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"
+    },
+    {
+      "sequence": 7,
+      "operation": "upsert",
+      "local": "part-007.b64",
+      "remote": "docs/transports/retire-polylia-2026-10-25/part-007.b64",
+      "size_bytes": 4064,
+      "sha256": "9a0ed41c91de00443fa37a20555cce28c120d82cc46db34d6169ba49ed206c42",
+      "content_utf8": "e3yGgJHnCaQBvTyoKiWNJtJ6vrzyV4ZhwtvNyx/d/v0fBreYzfdBczfeLAY5m9ffHJnuc+QnI3J8qMDMyM/btpGt7djI6Z3cuiucis3LxSIvlS3HMMUd2MjWtm1ka5ytOTLNrt3rtBtCXmyeuhW8Lx9vcMEM53JI1a68CLutdi07lAJ7eP/CVJGFt2XQebpsL7iKDpX0s3x8RxASRBfUBMYA5BMISj7mct0aIOIsPZ8SSOs+nb+e5W+6GKbDKT6TQoQYPUAkWIRUmOyj40tgaKfzqwJMCj/hPU9hUfjX3hJvLiksgpw+IRNLCYuuZP0UBGnsXSGrUa5G0GEg0ob9OEZLJpUr4+8LlROvMLz6WnKRUeEps00/lznl6WZkE2Q2qqzSkc1Q9np/MypZVR1k0tcIhZ8UMJWDE8zLrbe+uP2bt9TJHXHiYJCbeumFrf94O4VpIjlHHiIY4Qeh8qG0HhVaqVVEidSNp6+/ozb9Qdz0pYXXV9QNz9J70snJCILkmdTvnHKJmHxqzaKwJngnPIg5kR0eAZ7J7qo2szbjrT+8sPnS+XCh9XwyezebVJZaNT1HFjM0/EU2iRfvy9NG6LNMtcjdaxfc7JHdTLdxUb1Pmxoi72Vu0cK+vKLXXpBr0o+nLR9p6nxIflHely/f+/zWc+9m9h28BRrIzRX9V96uw2+U19o2hUMJ8w+yySNzve6yuhdi41VKn6ezNDldzIBpIZaHfadqZmK7XxnaTAZWBCoDiKrR1RqsKwVTk61R4kbQPgRQq9fc/gZTdXX52FtMU8Wj0KlnV0W1YhaLUAGOte1oTwboWLosU0cdZhGeZZHhlPhYXOWmPUB7y1MZP4NK9PFCIZ8XCnlU/8/xMnPaiDgtb9ZYblHsJBNUPLZxkWiMjnL2pdPrblyke+RFGEIMyv1YVob0krASS8NytcEoZRcbXnnz1tufbL74a0ipWx/8lSIIl17YfPHtL19+Iyuooijc43KV4TU2GWzjodToN6T8ispAcF2g1fJvdFUBErpOF9MGV8WMzSX9tR5q0iXogy7FCa/CKRZdo2QZFVFWvJO45mZMtshrmWaH7saZ1mcqhpya6TPysqI7OTNv1Kl403d+Kt7Ic++m7/zcuzHOtpv+amfbjXt63fRXOL1uvBPqpr/2E+q+0vFz01/78XN3dLbc9Fc/W46Ne37c9NdxftzYB8RNKwk/PW5ieH9W+fT4WeXZPOzp8RPHB1QdMzt8aMMjEsCzWd7T287yzsvhnt52Dndehvb0tjK0WX8i9vT2E7FHpVonKWpkznCahsYoPpMtPDB3OKfsiNTgnBqjE39zKm03sXcYiG0m6uaAyk2+zZTbRm5tv9D46qubWUnyNS5qJjv6VdYyk3C+xjXMJNivY+0yJVv+CdYsR+Dzra1VJvH4KmuUSTjf/spkH+99M+fbTWfPnvr6TrTLAf21nWGXA/sbObUup52v/Zy6nDb+WU+my0P1n+osuj4Ev7nT53LG4v/EeXNJGfGNnvOUcdy/nUOd0i7ZN3eCU6qdb/e4pv4ufhuHM6Vd7v8PHMSUQfif+dClFKrfxgFLqQb/Oc5S6gs4DF2T7VvInR5jITezdjs93tptdrl2etzl2swC7fToBdr+Ndnpr2FNNrP+Ov01rL+m1lqnx15rTS+vTm9zebVvMXVaBufHCL0PuKWp2PVXc0PfQ8qPvoee1zi3SlVnnHvohzaUex19zUhcR68uLWJn5JWb9UfF3uV6w6UrpVf5weDVjFo67iQ+HZMvZshYPirD+7KsUB/vS79ch8XdWmF0LVJiPeBYr9mtr4iJBAoEbZ/nCacrAUPTdNF2dw0TeUxwp3uYBiqE1qE3E+oKY1lE3kB1NDoLJbwx3uH+8p4dsLtXbLgI6tZH+M500ARez3U6fG3nGUYOQnhv8Q/x9KgIq/yQ8VNLRyn0E79RptcBN7oCe323uqu91eWNo81Gur1em8IA7lw3ukI7vnxZYn6vf5SvUeJehHRQZZGn6tCl6lDyS/JTkAqC72eCzQXxDd3rQWEiCbw9Jihbc6f6OIPydCd03Fu3RXdbxM/y+mCXrtlaRNfjXoe35Cb7HHRD3aR399z8PnRBTWdxRXR5UTRPFen14n3HDrKf/YxNzAZTFlzB5wqP9xqJq6T76HgyvHy7j67kjdGJi6WPy/yEGQrYSVqgm/xCMtqZoQ51h/nuSXmTeRLGki8B3OunasczlK2opiuk20lgu2t3dFdxeOG1nFnurzUdli4AkumsJZ7irsywJcKAn+aQRzCzVuq+KMKfmzyeKMzgxnad5cmHv3uGBnkdRMNn5SgsRocCyWW2h6eK3WXRnJzsyOYnO8XWSbaHqTU4oLRDXek+NTMKeHz/9mJ0ssodt3BiKvEQztpkO/P2Xn9yKX61DoamswaTYzb7AwZmoF3j8nbyoGDwaz26I5y7wR3j6zPs+IkM8SgWwogv+XuKOWxWDArs2cMm4DZNhLUz95XvdOun4CbAGj4MHtv10F0r9WZhuXDc0k4tn2AyI+1ReAMFnc6H2x0hu3NZ7mRP17QL1WQZKqWnSkhwxmpDZbZRVhsFAx0yzwtddY7b7jOhrJ7MPXJran3n7LKeaqTd34ZEuaRpqgP+ClvpFvQs8DvcrksYtBMjMauGYnc4wLmjutSpu2yJtwsltuLuoCeIoIZfMFjOqO2l4wG69W5D7DoTK7XJ/M1bU+u7UzyQNxxmOOQrLZhm8pVYoVujXXXuX2JcFNVk+jgI7qqfoBALw41hNjLDHGgGRpjG74loY50REWlfuztnaTDGG52j6cPF+ocmbl6dQ7Yn4oIBncyMWWMp1TcFpUj6mjqgQaC09tdXhTtpTE2ts+QgsPZ98/cQIaVHQQGI1XuxIZpL3QBaFkLL76M9+o8k1YhupOcoYInMNA06nC2vxan1ITO0cxa0n2YGX0g2S0sGox/FxlI65ZV4w8zgmbMZWooEIwV9IPsZzF9JsV9jKfFophkxSTFKysptK9//fma4g9vdT/FGT0D2+0HBqeIKb09OcqVfMnUCJE+KtV1neJHsm/UUxp0WBV9cGhMbthAmRv1R81jFPNpL6ndN02ZLGmuvFkzWXpP819dWzpB4DZjtj/T8bt1bK9iiexrjyupdseIHN+7mw6HpbPNmDptAmvbSVKX6RdNDVcaFlitZMnCVZTcMckSGfR/GlGP6oP4n8VCWaJZVwedkkmaYHZRQTFuqZF9qU+wH5EvFwkMDf30vt0ftfoRyuzmV5dBUGYxZmh8T36diCzkycIm9J88oiTvDHHKp4F2xdbLj5cuEIR583JF0f0JzeJThEVL8amMcii+D4gultEli5s5sr92mYzV8Edsap+sEPjPldkZ1yb5J2WLGjcSfw75GQ90/jGM56PtW2w3QEI2yP8I3zxYNne+S5nEh6KJynduuKBujD4McBHBQXtyg8jJVsSSvKqd/8ais071zx+6Zjy4mPxMkJYqV1iP1HWzif/544dWJMFMxoKGJQ2p5INhTSBcgBwNrt9w1fP/WLqSdCMM0d9zwUNCq0y0Ajq5hD146XY630YF5dDG7+rQ+MyYxpa65HkFNfWWjvTSc63rJMopFo2KbFatsjElOORCH01NOhX6CkhEHlJSXUKuAA/lI7KFmQGtH5w4ck7Q2sXDsyCwMrb0TM2ziAbq7Ono6tO/B2QfUbdZs4r6Fn8QPVEc9nIjiAvMLx+YWFMh5vaC3nS6VnNesgg9rsy0fjIJ/Wl6tzSaiBGF6mDt2d2F13ypBm74jaAkA1MdIDneaS5O+EG4Y35gK2KoBpvHl7Tiwsnfv3s20sYmlKw7x9hhBwUzJKOhna5pma16xyE1DlPSaNTahZOCNIpNMcUkkmiQSTWanB5Rw77Ej9x2NxY4U2BlWYw1ui0bI1XhutrokfdSRHWBjdQwHrRsF+V0Tkv0y4FbWCgGDRgAPrbEMzDkVh5f3SW5c9HMBKbxmG2HOfAJgnEffaiegHtp7lN29sJe5LUdBLORCbKuIVLLH0ZsA0v09wVbIs01gdiKWOEpw37X+/wKxSra1CBwBAA=="
+    },
+    {
+      "sequence": 8,
+      "operation": "upsert",
+      "local": "transport.json",
+      "remote": "docs/transports/retire-polylia-2026-10-25/transport.json",
+      "size_bytes": 1072,
+      "sha256": "7beab83c7428b59463a6c14cdfd488d6db16b8d65986291346c6e48e8b4e091b",
+      "content_utf8": "{\n  \"schema_version\": 1,\n  \"parts\": [\n    {\n      \"name\": \"part-001.b64\",\n      \"bytes\": 4096,\n      \"sha256\": \"7ac0ef27af7cbfc39affa3c71401bce3bc9b58b2d27a6eb500302036360e5f87\"\n    },\n    {\n      \"name\": \"part-002.b64\",\n      \"bytes\": 4096,\n      \"sha256\": \"f94ad9c61f612fa748e5c4580260a42b4d9d8f92e14e3ef1d9cc94dd388b5011\"\n    },\n    {\n      \"name\": \"part-003.b64\",\n      \"bytes\": 4096,\n      \"sha256\": \"cc753a722fa469259506f732d7d34fe28cc5e7c5fd6e8d354bc2265f433d66ff\"\n    },\n    {\n      \"name\": \"part-004.b64\",\n      \"bytes\": 4096,\n      \"sha256\": \"869a936efb68be252d13e507c57115002fe5ab78d7f2c5505ca710dff8e26d96\"\n    },\n    {\n      \"name\": \"part-005.b64\",\n      \"bytes\": 4096,\n      \"sha256\": \"d9f75d500686d2f1a0b4df6734a4fc9d6d1eecc24a691fe3989046da5410e5bb\"\n    },\n    {\n      \"name\": \"part-006.b64\",\n      \"bytes\": 4096,\n      \"sha256\": \"3c87f2205f63adda9cceac8e28d737bf706fb6e0b5a6c6492cf3f7530aaee8b9\"\n    },\n    {\n      \"name\": \"part-007.b64\",\n      \"bytes\": 4064,\n      \"sha256\": \"9a0ed41c91de00443fa37a20555cce28c120d82cc46db34d6169ba49ed206c42\"\n    }\n  ]\n}\n"
+    },
+    {
+      "sequence": 9,
+      "operation": "upsert",
+      "local": "FILES.txt",
+      "remote": "docs/transports/retire-polylia-2026-10-25/FILES.txt",
+      "size_bytes": 1461,
+      "sha256": "600bdc91cb2ec32165c6cb0eee1f80773d11696870eadd54294c6019b54f2cc0",
+      "content_utf8": "apps/frontend/public/data/greensmoke_forecasts.json\napps/frontend/public/data/pre_mainnet_modules.json\napps/frontend/public/data/signal_ticker.json\napps/frontend/src/components/AgentPackJourney.tsx\napps/frontend/src/components/AgentsDeployStatus.tsx\napps/frontend/src/components/AgentsJourneyStrip.tsx\napps/frontend/src/components/AgentsScopeBanner.tsx\napps/frontend/src/components/CreateSubAgentForm.tsx\napps/frontend/src/components/DualMarketplaceStrip.tsx\napps/frontend/src/components/GSNBanner.tsx\napps/frontend/src/components/GsnLeaderboard.tsx\napps/frontend/src/components/LiaMonitor.tsx\napps/frontend/src/components/SignalTicker.tsx\napps/frontend/src/components/SignalsFusionPanel.tsx\napps/frontend/src/config/greenSmoke.ts\napps/frontend/src/config/preMainnet.ts\napps/frontend/src/experience/locale.ts\napps/frontend/src/experience/modules.ts\napps/frontend/src/i18n/phrases/extra-1.json\napps/frontend/src/i18n/phrases/extra-5.json\napps/frontend/src/i18n/phrases/part-0.json\napps/frontend/src/i18n/phrases/part-1.json\napps/frontend/src/i18n/phrases/part-2.json\napps/frontend/src/i18n/phrases/part-3.json\napps/frontend/src/i18n/phrases/part-4.json\napps/frontend/src/i18n/phrases/part-5.json\napps/frontend/src/i18n/phrases/render-1.json\napps/frontend/src/i18n/phrases/retired-partner.json\napps/frontend/src/pages/AgentsPolyliaPage.tsx\napps/frontend/src/pages/ExplainCards.tsx\napps/frontend/src/pages/SimulationLab.tsx\napps/frontend/src/pages/SiteMapPage.tsx\n"
+    },
+    {
+      "sequence": 10,
+      "operation": "upsert",
+      "local": "apply_retirement.py",
+      "remote": "docs/transports/retire-polylia-2026-10-25/apply_retirement.py",
+      "size_bytes": 4406,
+      "sha256": "81c89cf78e5ae19257bf41eb563a31bd1e7fab5b5d5c288d6cffa25df3c55a77",
+      "content_utf8": "import argparse, base64, gzip, hashlib, json, os, subprocess, tempfile\nfrom pathlib import Path, PurePosixPath\n\nBRANCH = 'feat/dapp-mobile-transport'\nPREFIX = 'docs/transports/retire-polylia-2026-10-25'\nARCHIVE_SHA256 = '8bfe8ca472e0537812b13224ba6f591aabfeaf329e800575cf9fd8c524a202cb'\nTARGETS_SHA256 = '1c1586034055ee437e661cd5ea4762abe2a7e2a1231931deb79e5c9ad0ca7d95'\n\ndef sha(data):\n    return hashlib.sha256(data).hexdigest()\n\ndef git(*args):\n    return subprocess.check_output(['git', *args], text=True).strip()\n\ndef main():\n    p = argparse.ArgumentParser()\n    p.add_argument('--proof', required=True, type=Path)\n    args = p.parse_args()\n    if os.environ.get('GITHUB_REPOSITORY') != 'Neltud/xArtists' or os.environ.get('GITHUB_REF') != 'refs/heads/' + BRANCH:\n        raise RuntimeError('Wrong repository or branch')\n    if git('status', '--porcelain', '--untracked-files=no'):\n        raise RuntimeError('Tracked tree is not clean')\n    if Path('.github/workflows/import-dapp-mobile.yml').exists():\n        raise RuntimeError('Finish the mobile import and remove its workflow through the API first')\n    root = Path.cwd().resolve()\n    directory = root / PREFIX\n    meta = json.loads((directory / 'transport.json').read_text())\n    expected = {r['name'] for r in meta['parts']} | {'transport.json', 'FILES.txt', 'apply_retirement.py'}\n    observed = {f.relative_to(directory).as_posix() for f in directory.rglob('*') if f.is_file()}\n    if expected != observed:\n        raise RuntimeError('Missing or unexpected transport files')\n    pieces = []\n    for row in meta['parts']:\n        if PurePosixPath(row['name']).name != row['name']:\n            raise RuntimeError('Unsafe part name')\n        data = (directory / row['name']).read_bytes()\n        if len(data) != row['bytes'] or sha(data) != row['sha256']:\n            raise RuntimeError('Altered part: ' + row['name'])\n        pieces.append(data)\n    compressed = base64.b64decode(b''.join(pieces), validate=True)\n    if sha(compressed) != ARCHIVE_SHA256:\n        raise RuntimeError('Archive integrity failure')\n    payload = json.loads(gzip.decompress(compressed))\n    rows = payload['files']\n    targets = sorted((r['path'], r['sha256']) for r in rows)\n    if len(rows) != 32 or len(dict(targets)) != 32 or sha(json.dumps(targets, separators=(',', ':')).encode()) != TARGETS_SHA256:\n        raise RuntimeError('Unexpected retirement source set')\n    if (directory / 'FILES.txt').read_text().splitlines() != [r['path'] for r in rows]:\n        raise RuntimeError('Unexpected staging list')\n    before, after = [], []\n    for row in rows:\n        rel = PurePosixPath(row['path'])\n        if rel.is_absolute() or '..' in rel.parts or not row['path'].startswith('apps/frontend/'):\n            raise RuntimeError('Unsafe source path')\n        target = root.joinpath(*rel.parts)\n        target.resolve().relative_to(root)\n        if target.is_symlink():\n            raise RuntimeError('Symlink source')\n        current = sha(target.read_bytes()) if target.exists() else None\n        before.append(current == row['before_sha256'])\n        after.append(current == row['sha256'])\n    if not all(after):\n        if not all(before):\n            raise RuntimeError('Source drift: reconcile without overwriting')\n        with tempfile.TemporaryDirectory(prefix='retire-polylia-') as tmp:\n            patch = Path(tmp) / 'retirement.patch'\n            patch.write_text(payload['patch'])\n            subprocess.run(['git', 'apply', '--check', '--index', str(patch)], check=True)\n            subprocess.run(['git', 'apply', '--index', str(patch)], check=True)\n    verified = []\n    for row in rows:\n        target = root / row['path']\n        actual = sha(target.read_bytes()) if target.exists() else None\n        if actual != row['sha256']:\n            raise RuntimeError('Post-import hash mismatch: ' + row['path'])\n        verified.append({'path': row['path'], 'sha256': actual})\n    if any(not name.startswith('apps/frontend/') for name in git('diff', '--cached', '--name-only').splitlines()):\n        raise RuntimeError('Unexpected staged path')\n    args.proof.parent.mkdir(parents=True, exist_ok=True)\n    args.proof.write_text(json.dumps({'verified_sources': 32, 'archive_sha256': ARCHIVE_SHA256, 'files': verified}, indent=2) + '\\n')\n    print('32/32 retirement states verified, including five deleted files.')\n\nif __name__ == '__main__':\n    main()\n"
+    },
+    {
+      "sequence": 11,
+      "operation": "upsert",
+      "local": "retire-polylia.yml",
+      "remote": ".github/workflows/retire-polylia.yml",
+      "size_bytes": 3167,
+      "sha256": "ddbcbc644a481cdb20469d150358aaaf796abfb4a8922c225142d60481138c8f",
+      "content_utf8": "name: Retire polyLIA and GreenSmoke frontend\non:\n  push:\n    branches: ['feat/dapp-mobile-transport']\n    paths: ['.github/workflows/retire-polylia.yml']\n  workflow_dispatch:\npermissions:\n  contents: read\nconcurrency:\n  group: dapp-mobile-completion\n  cancel-in-progress: false\njobs:\n  retire:\n    if: github.repository == 'Neltud/xArtists' && github.ref == 'refs/heads/feat/dapp-mobile-transport'\n    runs-on: ubuntu-latest\n    timeout-minutes: 25\n    permissions:\n      contents: write\n    env:\n      NODE_OPTIONS: --max-old-space-size=4096\n      VITE_LIA_LIVE_TRADING: '0'\n      VITE_PAYBOX_ENABLED: 'false'\n    steps:\n      - uses: actions/checkout@v4\n        with:\n          ref: ${{ github.sha }}\n          fetch-depth: 0\n      - name: Apply the verified retirement after the mobile import\n        run: python docs/transports/retire-polylia-2026-10-25/apply_retirement.py --proof \"$RUNNER_TEMP/retire-polylia-proof.json\"\n      - name: Commit candidate locally\n        run: |\n          git add --pathspec-from-file=docs/transports/retire-polylia-2026-10-25/FILES.txt\n          if git diff --cached --name-only | grep -q '^.github/workflows/'; then\n            echo '::error::Runner cannot change workflow files.'\n            exit 1\n          fi\n          git rm -r docs/transports/retire-polylia-2026-10-25\n          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'fix(dapp): retire polyLIA and GreenSmoke UI'\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - name: Check remaining modules and mobile experience\n        working-directory: apps/frontend\n        run: |\n          npm ci --legacy-peer-deps\n          npm run test:release\n          npm run check:routes\n          npm run render:check\n          node scripts/run-render-check.mjs modules\n          node scripts/run-render-check.mjs mobile\n      - name: Build and verify 97 public routes in paper mode\n        working-directory: apps/frontend\n        run: |\n          npm run build\n          GITHUB_SHA=\"$(git rev-parse HEAD)\" node scripts/write-build-info.mjs\n          npm run verify:site\n          python -c 'import json; p=json.load(open(\"dist/dapp-release.json\")); assert p[\"lia_live_trading\"] is False; assert len(p[\"routes\"]) == 97; assert not any(\"polylia\" in r.lower() for r in p[\"routes\"])'\n      - name: Publish after checks, without force\n        run: |\n          git diff --exit-code\n          git fetch origin refs/heads/feat/dapp-mobile-transport\n          test \"$(git rev-parse FETCH_HEAD)\" = \"$GITHUB_SHA\" || { echo 'Branch advanced; reconcile before retrying.'; exit 1; }\n          git push origin HEAD:refs/heads/feat/dapp-mobile-transport\n          SHA=\"$(git rev-parse HEAD)\"\n          test \"$SHA\" = \"$(git ls-remote origin refs/heads/feat/dapp-mobile-transport | cut -f1)\"\n          echo \"Retirement source commit: $SHA\" >> \"$GITHUB_STEP_SUMMARY\"\n      - name: Preserve source verification evidence\n        if: always()\n        uses: actions/upload-artifact@v4\n        with:\n          name: retire-polylia-proof\n          path: ${{ runner.temp }}/retire-polylia-proof.json\n"
+    }
+  ]
+}
+```
+
+### Empreintes des 32 chemins
+
+```json
+[
+  {
+    "path": "apps/frontend/public/data/greensmoke_forecasts.json",
+    "before_sha256": "4777f5e29b8fcdb1482b42d9b6d437b01c0ad95522af75cda30ac4e5e3c4c321",
+    "sha256": null
+  },
+  {
+    "path": "apps/frontend/public/data/pre_mainnet_modules.json",
+    "before_sha256": "9b0419304e287bfa1317682003c23a00073d051136823e9c6809dd982fe520e7",
+    "sha256": "cf553b8b39822cd6f88b6aa205db67bfdbed76e90ca7c4518b3606fb80be4709"
+  },
+  {
+    "path": "apps/frontend/public/data/signal_ticker.json",
+    "before_sha256": "85223ebf39eb8f58d3d10cb2869d2ab580e16f6b1e3dd9cdf3d0ecf8fbd0cfa9",
+    "sha256": "f3fee73b8e3576ecc6aa7c7391d95451b29609487c82f8012aadf60963de8bf3"
+  },
+  {
+    "path": "apps/frontend/src/components/AgentPackJourney.tsx",
+    "before_sha256": "5a3b25eb28ec7439cb0a38108d821dc5bafff95e6e54305b99c82e3243b9f4f6",
+    "sha256": "d39c41421b85a345251a82bbe9622584ee8d2b184c06851da3055327e5503531"
+  },
+  {
+    "path": "apps/frontend/src/components/AgentsDeployStatus.tsx",
+    "before_sha256": "9e8a235d7e39d111085fc310cf185679bb1ab2a90db70c151850df47d3bbe05c",
+    "sha256": "3b1e4a9dd278f81bd3e81917b7fcfd5e6dd09358e4714a4ec4a48deef5a1dc8b"
+  },
+  {
+    "path": "apps/frontend/src/components/AgentsJourneyStrip.tsx",
+    "before_sha256": "55b16dc6c61c090a10e26759c0b50bfb78ea022ee5cf3d9b3dd56ecca070d539",
+    "sha256": "f6fa428d06530a657982f898ddaa4db355e0b2baaa4542948dd275c330079d21"
+  },
+  {
+    "path": "apps/frontend/src/components/AgentsScopeBanner.tsx",
+    "before_sha256": "f46567beb905af82fdfa6891eaf72fb100fd97532de1dfbfb52b40116c74927b",
+    "sha256": "1d59a726bf715c81169836de0b0f6c2ddf8f6b8b0aa0b4862159ad282fc9aff7"
+  },
+  {
+    "path": "apps/frontend/src/components/CreateSubAgentForm.tsx",
+    "before_sha256": "47f8cbbdf94cdd8b4640b01bab56a39b9e7e29f792b4d9a2ad452169728eca69",
+    "sha256": "07734abb925183a0c2740fa3a83bfcb7497e3256a4dc093cc9bac6d7616da890"
+  },
+  {
+    "path": "apps/frontend/src/components/DualMarketplaceStrip.tsx",
+    "before_sha256": "6fb3a80deb1845e7b8f0237c1d80d54faac101a919d504f14610a5669053abb3",
+    "sha256": "d111dfa52cbf8bc631f397bc47e41662fc79502b01364f319ba4a8f3bfc61ae3"
+  },
+  {
+    "path": "apps/frontend/src/components/GSNBanner.tsx",
+    "before_sha256": "52101eedfb201d5d0a13cbd06feec52ba4486b810b5c89ec8ddbee8167d0e749",
+    "sha256": null
+  },
+  {
+    "path": "apps/frontend/src/components/GsnLeaderboard.tsx",
+    "before_sha256": "2360428fb0853cbed23b68e2981ff1bb6adaf619918cb81f660baf91605d5309",
+    "sha256": null
+  },
+  {
+    "path": "apps/frontend/src/components/LiaMonitor.tsx",
+    "before_sha256": "c85807b95b00985fab0a6fdadae6aaf36e2b2d84de1d89bd20eb712b935aeabc",
+    "sha256": "4c88e3f736183712ad44a8552468c732fedfc29e7221deedf2a677c63597545c"
+  },
+  {
+    "path": "apps/frontend/src/components/SignalTicker.tsx",
+    "before_sha256": "8b44928eec35db0804b4d56687f9d871668d74566451b4476f18e543e59b6686",
+    "sha256": "5639e1d44160043c236ae6d105f28154d14a024ecfea7e998f01a65dc0d61918"
+  },
+  {
+    "path": "apps/frontend/src/components/SignalsFusionPanel.tsx",
+    "before_sha256": "5b8495bee5fb533fe66a1fd57f24392a85db948c21e947724dd3a6c4accc0458",
+    "sha256": "033d6739fb3ca69b2fd136b583cd9ba117dd0dc62d696bc4879f18f98acd9199"
+  },
+  {
+    "path": "apps/frontend/src/config/greenSmoke.ts",
+    "before_sha256": "8144d5ce0d79d348732671d470475d3976098557bf54815ea4411b20b09b9e88",
+    "sha256": null
+  },
+  {
+    "path": "apps/frontend/src/config/preMainnet.ts",
+    "before_sha256": "ae203b9c93396794fed274a40e4de096f80c988fc5d5f268d4c23f45d7d01f5f",
+    "sha256": "799324d69e3f86bd64627c519bbc38460f8679b65efebcfa5e3f8927217e320d"
+  },
+  {
+    "path": "apps/frontend/src/experience/locale.ts",
+    "before_sha256": "01d38ae886d071eca9a59084fb5112bc81217873738e951ef0d4a2e799e29f9a",
+    "sha256": "c70268f2691a2c0487ec3ca87f4e83e043d131cd7ab0bf6e271356042dd76ffe"
+  },
+  {
+    "path": "apps/frontend/src/experience/modules.ts",
+    "before_sha256": "e27b4482c3fc6218f35875e05f4297d2e03616547d42b400ca353c09e5870296",
+    "sha256": "6cc0d831d21a445ee0103e7805fcef3efda44e90ae99b8aca345d96db7d6601a"
+  },
+  {
+    "path": "apps/frontend/src/i18n/phrases/extra-1.json",
+    "before_sha256": "352d68a60937431d0781275ae7afb7fa6a0370de463639d71c1360af79391e9c",
+    "sha256": "889198bc4a21dde4fa90dd839a9224da7387276a6a2bb3830d4fc73dd580a9d6"
+  },
+  {
+    "path": "apps/frontend/src/i18n/phrases/extra-5.json",
+    "before_sha256": "f7778807d9abac02825cd6c5c6eb729e230e744a4d4f9ab88d70d174572bb7ff",
+    "sha256": "dfa56dabcb3a0b04604ca1cd176b5d382f61699701083c6457ebe136a0913b64"
+  },
+  {
+    "path": "apps/frontend/src/i18n/phrases/part-0.json",
+    "before_sha256": "ab5da7f32fad49b8331c3141f77a6c43b75f67c7a4ab41ebcdb0c89855ace768",
+    "sha256": "adbed37dcfedfa66c03d8d2a7951836c8b951f8fa5b2aa8801fe6738e117d05a"
+  },
+  {
+    "path": "apps/frontend/src/i18n/phrases/part-1.json",
+    "before_sha256": "693fa2dad53c5b69c3eb967efd72770a281f287eefb99b115275f6872338540d",
+    "sha256": "1a6561c9ddc5f1cc52298c43ef9c372ace06c23db883b875a3ca24e656c2c94c"
+  },
+  {
+    "path": "apps/frontend/src/i18n/phrases/part-2.json",
+    "before_sha256": "7674ffddb155f39af66ebe14fd2c8b9f3061bd2d532dc02339a9e038c5e59c26",
+    "sha256": "d6160e87c376f7faf2bd18e36b6bc956a50b43d890c2eef5c55422934edb2a50"
+  },
+  {
+    "path": "apps/frontend/src/i18n/phrases/part-3.json",
+    "before_sha256": "15b08f55293ce1410bfdc0bb65b4c5b88a5777673c3298911a72dccd33feb708",
+    "sha256": "8923be51f05fe6022a81fa29775b7dcbf0a43239a3c298e1bd98f0ae45a9df4c"
+  },
+  {
+    "path": "apps/frontend/src/i18n/phrases/part-4.json",
+    "before_sha256": "d88e2807c9fd73b050fcfbfbb3639790684c952daa77b44504ee9cb083bb6888",
+    "sha256": "34b2f73ef4456c909da1f9644d38bdb0258e8a3d56eeb050b4362c3aea98359b"
+  },
+  {
+    "path": "apps/frontend/src/i18n/phrases/part-5.json",
+    "before_sha256": "b58261163d42bb5841d3a00b11df2a4d898ee981e8d9f845c355bc4eece9f104",
+    "sha256": "8fc8b9a0dcc437fc256c6c9e6bab96c905900eb2f5538b74ac64d6102ac66aa9"
+  },
+  {
+    "path": "apps/frontend/src/i18n/phrases/render-1.json",
+    "before_sha256": "06b76cfdeaa7f2ca53641196a760659b574af4ccd02f62dccab05cf363a208eb",
+    "sha256": "acecdc44270da1afdc69a712497192f92698e6d259a48d8919835c93291a73f0"
+  },
+  {
+    "path": "apps/frontend/src/i18n/phrases/retired-partner.json",
+    "before_sha256": null,
+    "sha256": "afba768bcfc8a13ef241bc7897cb9132a60cb2c959ef5ecfac0d0b94dc8a5794"
+  },
+  {
+    "path": "apps/frontend/src/pages/AgentsPolyliaPage.tsx",
+    "before_sha256": "a9831db0eace31d5c8e7fa9122c490bdc633986e354f3755cfd7edc9caf98cb0",
+    "sha256": null
+  },
+  {
+    "path": "apps/frontend/src/pages/ExplainCards.tsx",
+    "before_sha256": "c912b2a2e3961a1ca08f68a258afeee958eeea75bf0b44856260d34d90e8cc30",
+    "sha256": "a318e9dff00d50a55545c6bd0eaf8799cf596fa40400abc068b05e39d52c73a5"
+  },
+  {
+    "path": "apps/frontend/src/pages/SimulationLab.tsx",
+    "before_sha256": "a34a5a09afee246326df707370822e4038b0cd9cce906d345aa1146d42d2ec3b",
+    "sha256": "35ec0e16e172e6960ad2cc882147375695dec66633c1326a9a77a903057e459c"
+  },
+  {
+    "path": "apps/frontend/src/pages/SiteMapPage.tsx",
+    "before_sha256": "74da648a7634dad159f8c4665c3ff60c3cb4b74ddd994bc449149dce1ab00246",
+    "sha256": "db15d89ae2bbaac800db7455a01ce323d942b260d32d03646dcae3873fe49cf7"
+  }
+]
+```
