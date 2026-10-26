@@ -145,24 +145,9 @@ jobs:
             HASH=$(echo "$LOG" | grep -oE '[a-f0-9]{64}' | head -1 || true)
             echo "issue_tx_$TICKER=${HASH:-none}"
             sleep 8
-            TOKEN=$(curl -sS "${API}/accounts/${DEPLOYER}/tokens?size=50" | python3 -c "
-import sys,json
-tick='${TICKER}'.upper()
-items=json.load(sys.stdin)
-if not isinstance(items,list): items=[]
-for t in items:
-  c=(t.get('identifier') or t.get('ticker') or '')
-  if c.upper().startswith(tick+'-') or c.upper()==tick:
-    print(t.get('identifier') or c); break
-" || true)
+            TOKEN=$(curl -sS "${API}/accounts/${DEPLOYER}/tokens?size=50" | python3 -c 'import sys,json; tick="${TICKER}".upper(); items=json.load(sys.stdin); items=items if isinstance(items,list) else []; print(next((str(t.get("identifier") or t.get("ticker") or "") for t in items if str(t.get("identifier") or t.get("ticker") or "").upper().startswith(tick+"-") or str(t.get("identifier") or t.get("ticker") or "").upper()==tick),""))' || true)
             if [ -z "$TOKEN" ] && [ -n "$HASH" ]; then
-              TOKEN=$(curl -sS "${API}/transactions/${HASH}?withResults=true" | python3 -c "
-import sys,json,re
-d=json.load(sys.stdin)
-blob=json.dumps(d)
-m=re.findall(r'${TICKER}-[a-f0-9]{6}', blob, re.I)
-print(m[0] if m else '')
-" || true)
+              TOKEN=$(curl -sS "${API}/transactions/${HASH}?withResults=true" | python3 -c 'import sys,json,re; d=json.load(sys.stdin); m=re.findall(r"${TICKER}-[a-f0-9]{6}", json.dumps(d), re.I); print(m[0] if m else "")' || true)
             fi
             echo "resolved_$TICKER=${TOKEN}"
             if [ -z "$TOKEN" ]; then
