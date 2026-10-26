@@ -131,6 +131,7 @@ jobs:
           cp -a apps/frontend/dist/. _site/
           touch _site/.nojekyll
           # The build emits static route entries and a query-preserving 404 fallback.
+          cp _site/index.html _site/404.html
 
       - name: Verify built GitHub Pages assets
         run: npm run verify:site
