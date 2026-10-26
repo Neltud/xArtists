@@ -1,5 +1,6 @@
 /**
  * React hook: server-verified access (JWT). localStorage cannot force FULL.
+ * Fail-closed: network/API errors drop local FULL claims to SAMPLE.
  */
 import { useCallback, useEffect, useState } from 'react'
 import {
@@ -49,7 +50,12 @@ export function useAccessGate(walletAddress?: string | null) {
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'verify_error'
       setError(msg)
-      refreshLocal()
+      // Fail-closed: API/network errors drop local FULL claims
+      clearStoredAccessToken()
+      setLevel('SAMPLE')
+      setClaims(null)
+      setToken(null)
+      setLast(null)
       return null
     } finally {
       setLoading(false)
