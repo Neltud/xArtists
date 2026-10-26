@@ -6,6 +6,10 @@ noRobotsIndex: true
 
 # Sprint V2 — coordination et correctifs vérifiés
 
+**Suite active après le merge de la PR #188 :** [Pages, deux correctifs CI exacts et plan des intents cotés](../suite-apres-merge-188.md).
+
+Le merge `00fabfee` est confirmé et le dernier contrôle Paybox est vert. Le run Vite Pages de ce SHA échoue sur un test Python absent ; le site observé sert encore `1f81d092`. Les instructions et constats ci-dessous sont historiques et restent attachés aux SHA indiqués. **Ne pas réappliquer les lots V1 ou V2 sur main.** Le lot actuel contient seulement deux workflows réservés à Grok, à proposer dans une nouvelle PR non draft. Le serveur et `payments.test.mjs` restent hors de cette réparation. Toute fusion ou exécution de déploiement attend le GO humain.
+
 **Instruction de Nelson : poursuivre le sprint de la PR #188 en respectant la propriété exclusive de chaque chemin, la relecture du tip et les GO humains.**
 
 **Protocole de coordination prioritaire**

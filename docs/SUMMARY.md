@@ -544,4 +544,5 @@
       * [Transport vérifié — sans application](prompts/grok-pr188-ipn-2026-10-26/sprint-v2/transport.md)
       * [Validations et plan d’intégration](prompts/grok-pr188-ipn-2026-10-26/sprint-v2/validation-et-pr.md)
       * [Coordination Grok / ChatGPT](prompts/grok-pr188-ipn-2026-10-26/sprint-v2/coordination.md)
+    * [Après merge #188 — Pages et intents cotés](prompts/grok-pr188-ipn-2026-10-26/suite-apres-merge-188.md)
 * [Documentation technique et passations](documentation-technique.md)
