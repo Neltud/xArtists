@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.119.3](https://github.com/Neltud/xArtists/compare/v0.119.2...v0.119.3) (2026-10-26)
+
+
+### Bug Fixes
+
+* **probe:** refresh 26 Oct fallback and keep trading paper ([0fb30d7](https://github.com/Neltud/xArtists/commit/0fb30d75d6943a85945e7ca42c86eeb09e1ffd99))
+* **pwa:** do not read navigator outside a browser ([b420bd5](https://github.com/Neltud/xArtists/commit/b420bd5d8a03b0d67f90278d1c173529afe051be))
+
 ## [0.122.0] — 2026-10-26
 
 ### Bug Fixes
