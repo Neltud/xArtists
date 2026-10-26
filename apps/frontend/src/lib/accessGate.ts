@@ -1,6 +1,7 @@
 /**
  * Zero-trust access gate — FULL only from server-signed JWT.
  * localStorage may cache the token string; it NEVER decides access_level alone.
+ * Fail-closed: network/HTTP failure clears any prior FULL session.
  */
 
 export type AccessLevel = 'FULL' | 'SAMPLE' | 'NONE'
@@ -74,7 +75,6 @@ function storeToken(token: string, meta: Record<string, unknown>): void {
   try {
     sessionStorage.setItem(TOKEN_KEY, token)
     sessionStorage.setItem(META_KEY, JSON.stringify(meta))
-    // optional mirror — still not authoritative without valid exp claims
     localStorage.setItem(TOKEN_KEY, token)
   } catch {
     /* */
@@ -107,6 +107,7 @@ export function resolveClientAccess(wallet?: string | null): {
 
 /**
  * Call access-api. Never elevates FULL based on local flags.
+ * Fail-closed on network errors and non-OK responses without token.
  */
 export async function verifyAccessWithServer(address: string): Promise<VerifyAccessResult> {
   const base = apiBase()
@@ -141,10 +142,21 @@ export async function verifyAccessWithServer(address: string): Promise<VerifyAcc
       })
       const data = (await res.json()) as VerifyAccessResult & { status?: string }
       const status = (String(data.status || 'SAMPLE').toUpperCase() as AccessLevel) || 'SAMPLE'
-      if (data.token && status === 'FULL') {
+      if (!res.ok && !data.token) {
+        clearStoredAccessToken()
+        return {
+          ok: false,
+          status: 'SAMPLE',
+          hasAccess: false,
+          token: null,
+          reason: data.reason || 'verify_http_error',
+          error: data.error || `http_${res.status}`,
+        }
+      }
+      if (data.token) {
         storeToken(data.token, { status, reason: data.reason, at: Date.now() })
-      } else if (data.token) {
-        storeToken(data.token, { status, reason: data.reason, at: Date.now() })
+      } else if (status !== 'FULL') {
+        clearStoredAccessToken()
       }
       return {
         ok: Boolean(data.ok ?? res.ok),
@@ -162,6 +174,7 @@ export async function verifyAccessWithServer(address: string): Promise<VerifyAcc
       lastErr = e instanceof Error ? e.message : 'fetch_failed'
     }
   }
+  clearStoredAccessToken()
   return {
     ok: false,
     status: 'SAMPLE',
