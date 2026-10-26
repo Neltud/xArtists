@@ -3,7 +3,7 @@ name: "[deprecated] deploy-exclusive"
 on:
   workflow_dispatch:
 jobs:
-  notice:
+  noop:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Deprecated. Canonical: static.yml"
+      - run: echo "Use static.yml / Deploy Vite app to GitHub Pages instead"
