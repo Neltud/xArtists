@@ -3,22 +3,23 @@ hidden: true
 noIndex: true
 ---
 
-# Suite logique — 25 octobre 2026
+# Suite logique — 26 octobre 2026
 
-Probe \~04:45 UTC : epoch **2273** · EGLD **$3,30** · mcap **$102,4M** · APR **9,07 %** · LIA Ops **1,585598 EGLD** nonce **1479** · packs **10 / 5 / 2,5** · market **0,0175** · slot **0,5000** · $TRO circ **476 224** / **562** comptes · \~$0,0000807.
+Probe 2026-10-26T05:36:31Z : epoch **2274** · EGLD **$3,23** · mcap **$100,3M** · APR **9,10 %** · LIA Ops **1.585598 EGLD** nonce **1479** · packs **10 / 5 / 2,5** · market **0,0175** · slot **0,5000** · $TRO circ **476 224** / **562** comptes · ~$0.0000796.
 
-## Fait dans ce push (0.121.0)
+## Fait dans ce push (0.122.0)
 
 * Le site se republie. Ce n’est **pas** un go-live trading. `/go-live` le dit en tête.
-* Compteur de prolongation : jour **2/29** (24 h depuis le 23 oct 06:02 UTC). **22 jours** avant le 16 nov, **27 jours** avant le 21 nov 00:00 UTC.
-* La carte entité ne sert plus le snapshot du 17 oct (1,603782 EGLD, nonce 1473). Elle lit l’API, et le JSON de repli est celui du 25 oct.
-* `VITE_LIA_LIVE_TRADING=0`. Paybox **501**. Slot REAL fermé. Hashes SC inchangés. `getPackPrice` confirmé **10 / 5 / 2,5**.
+* Compteur de prolongation : jour **3/29** (tranches de 24 h depuis le 23 oct 06:02 UTC). **21 jours** avant le 16 nov, **26 jours** avant le 21 nov 00:00 UTC.
+* Fallback `networkProbe` et snapshots publics alignés sur ce probe. Le 25 oct (epoch 2273, $3,30) n’est plus le repli.
+* Le README ne confond plus la preuve historique d’un achat à 0,25 EGLD avec le solde market **0,0175**.
+* `VITE_LIA_LIVE_TRADING=0`. Paybox **501**. Slot REAL fermé. Hashes SC inchangés.
 
 ## Ne pas faire
 
 * Appeler ce déploiement un go-live trading.
 * Nouveau swap / wrap / liquidité sur LIA Ops. Nonce figé à 1479 depuis le 17 oct.
-* Allumer le live parce que le 23 oct est passé, ou parce que le site est « en ligne ».
+* Allumer le live parce que le 23 oct est passé, parce que le site est « en ligne », ou parce qu’une annonce FET Bithumb tombe le 2–6 nov.
 * Paybox ou Stripe réels. `claimFees`. Fonds vers placeholders vides.
 * `VITE_*_CODEHASH_OK=1` dans git.
 * Annoncer un fonds. Confondre Connect visiteur et LIA Ops.
@@ -37,4 +38,4 @@ Probe \~04:45 UTC : epoch **2273** · EGLD **$3,30** · mcap **$102,4M** · APR 
 
 ## D’ici le 16–20 nov
 
-Rester paper. Le travail utile est la lisibilité publique (galerie, musée, market en lecture, packs affichés, `/go-live` honnête). Pas de capital nouveau.
+Rester paper. Le travail utile est la lisibilité publique (galerie, musée, market en lecture, packs affichés, `/go-live` honnête, repli réseau à jour). Pas de capital nouveau.
