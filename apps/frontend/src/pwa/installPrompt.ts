@@ -16,7 +16,9 @@ export function watchInstallPrompt(): void {
   listening = true
   const standalone = window.matchMedia?.('(display-mode: standalone)')
   const update = () => {
-    if (standalone?.matches || (navigator as Navigator & { standalone?: boolean }).standalone) publish('installed')
+    const standaloneApp = typeof navigator !== 'undefined'
+      && (navigator as Navigator & { standalone?: boolean }).standalone
+    if (standalone?.matches || standaloneApp) publish('installed')
   }
   update()
   standalone?.addEventListener?.('change', update)
