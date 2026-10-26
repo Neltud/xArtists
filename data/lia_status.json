@@ -1,12 +1,12 @@
 {
   "schema": "lia_status/v1",
-  "ts": "2026-10-26T12:34:13Z",
+  "ts": "2026-10-26T19:48:15Z",
   "paper": true,
   "LIA_LIVE_TRADING": 0,
   "onchain": {
     "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "egld": 1.585598,
-    "egld_usd": 5.0739,
+    "egld_usd": 5.1532,
     "tokens": [
       {
         "identifier": "ASH-a642d1",
@@ -31,7 +31,7 @@
       {
         "identifier": "MEX-455c57",
         "ticker": "MEX",
-        "balance": 5.5e-05
+        "balance": 6330619.942575
       },
       {
         "identifier": "TRO-94c925",
@@ -81,17 +81,10 @@
     "LIA_LIVE_TRADING": 0
   },
   "shadow": {
-    "fills": 92,
-    "shadow_pnl_usd": 4.1498,
-    "win_rate": 0.6087,
+    "fills": 93,
+    "shadow_pnl_usd": 4.3784,
+    "win_rate": 0.6129,
     "last_shadow": [
-      {
-        "id": "c0d62d8e-38e",
-        "side": "BUY",
-        "asset": "EGLD",
-        "pnl_usd": -0.0693,
-        "ts": "2026-10-25T17:31:24Z"
-      },
       {
         "id": "35f26d88-b69",
         "side": "BUY",
@@ -119,6 +112,13 @@
         "asset": "TRO",
         "pnl_usd": 0.1748,
         "ts": "2026-10-26T12:34:13Z"
+      },
+      {
+        "id": "36db7d46-aef",
+        "side": "BUY",
+        "asset": "TRO",
+        "pnl_usd": 0.2286,
+        "ts": "2026-10-26T19:48:14Z"
       }
     ],
     "source": "lia_paper_legs.json+friction",
