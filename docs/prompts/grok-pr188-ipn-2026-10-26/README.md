@@ -9,22 +9,26 @@ noRobotsIndex: true
 
 # Grok — PR #188 : résolution P0 complète
 
+**Coordination prioritaire — protocole confirmé par Nelson.** [État vérifié, tests HTTP signés, proposition V2 et note partagée](sprint-v2/).
+
+**Grok écrit seul `server.mjs`, `static.yml` et `issue-agent-pack-collections.yml` pour les réaligner sur les sources V1 ci-dessous. `payments.test.mjs` est déjà correct : vérification seule. ChatGPT vérifie les SHA, prépare les tests HTTP, le body de PR et le plan d’intégration. Avant chaque écriture, relire le tip. Aucun merge, déploiement, paiement réel ou transaction sans GO humain.** Les anciennes procédures d’intégration et le transport V1 conservés plus bas sont des références techniques : ils ne constituent plus un ordre d’exécution. Le transport V2 prépare uniquement un plan, sans commit ni push.
+
 **Instruction de Nelson, 26 octobre 2026 : mettre le correctif complet à disposition de Grok et poursuivre la PR #188 en revue uniquement.**
 
 Ce dossier est une passation technique. La présentation publique du projet reste séparée. Le correctif est prêt et testé localement ; il n’a pas été poussé par cette session, dont l’accès GitHub en écriture renvoie `403 — Resource not accessible by integration`.
 
-### Mission à exécuter
+#### Mission actuelle — réalignement V1 par Grok
 
-1. Lire ce dossier et le manifeste ; récupérer les six parties de sources exactes.
-2. Relire la PR #188 et les références distantes avant toute écriture.
-3. Intégrer le dernier main dans la branche P0 en conservant les corrections de sécurité, de Pages et de mobile.
-4. Écrire la résolution vérifiée uniquement sur `fix/p0-ipn-signed-binding-and-build`.
-5. Compléter le titre et la description de la PR existante ; attendre et examiner les contrôles GitHub.
-6. Rendre un compte rendu avec le SHA réellement poussé, les résultats des checks et le lien de la PR. Ne pas s’arrêter à « prêt » ou à la simple présence des fichiers.
+1. Relire la PR #188 et le tip distant avant chaque écriture.
+2. Grok réaligne uniquement ses trois fichiers réservés sur les sources et SHA-256 du manifeste V1.
+3. Vérifier les 20 blobs distants, sans réécrire `payments.test.mjs`, puis rendre le tip réellement observé.
+4. ChatGPT vérifie les empreintes, les tests HTTP signés, le body de PR et le plan d’intégration documentés dans la proposition V2.
+5. Après 20/20 V1, toute intégration attend le GO humain et la réattribution explicite des chemins qui se chevauchent.
+6. Rendre les résultats des contrôles effectivement lus. Aucun message de commit ne remplace une vérification des octets.
 
 **Aucun ordre de fusion de la PR vers main, de déploiement, de paiement réel ou de transaction blockchain n’est donné par cette passation.** Ne pas lancer de workflow de déploiement, de mint, d’émission de collection ou de microtransaction. Le contrôle ajouté est une CI de revue avec fixtures, en lecture seule. La publication de cette documentation GitBook ne vaut pas validation du produit en production.
 
-### Références vérifiées
+#### Références vérifiées
 
 | Élément                                   | Valeur                                                                          |
 | ----------------------------------------- | ------------------------------------------------------------------------------- |
@@ -37,7 +41,7 @@ Ce dossier est une passation technique. La présentation publique du projet rest
 | Arbre candidat à cette base               | `16955e7f4934cc1dbe3fc8c926bf07b308bb41e4`                                      |
 | Portée du diff                            | 20 fichiers : 16 fichiers de la PR initiale et 4 fichiers de CI supplémentaires |
 
-### Sources complètes
+#### Sources complètes
 
 * [Manifeste et empreintes](manifeste-et-empreintes.md)
 * [API 1 — serveur et liaison IPN](fichiers-api-1.md)
@@ -49,7 +53,7 @@ Ce dossier est une passation technique. La présentation publique du projet rest
 * [Validations et description de la PR](validations-et-description-pr.md)
 * [Archive complète — ZIP vérifiable](archive-complete.md)
 
-### Procédure pour un exécutant disposant des API GitHub
+#### Plan historique V1 pour les API GitHub — GO humain préalable requis
 
 Les six parties utilisent le format `xartists-pr188-api-files-v1`. Chaque entrée fournit le chemin, le contenu UTF-8 complet, le nombre d’octets, le SHA-256, le SHA de blob Git et les empreintes attendues sur les deux branches. Décoder les chaînes JSON une fois ; ne pas reformuler le code, convertir les entités HTML, modifier les sauts de ligne ni réécrire les workflows à la main.
 
@@ -64,23 +68,24 @@ Les six parties utilisent le format `xartists-pr188-api-files-v1`. Chaque entré
 
 Avec les outils du connecteur GitHub, les actions correspondantes sont : lecture des refs/commits/blobs, création des blobs et de l’arbre, création du commit avec `additional_parent_shas: [main_actuel]`, puis mise à jour de la seule ref de la branche P0. Les erreurs d’accès doivent être rapportées ; ne pas annoncer un push si l’API le refuse.
 
-### Variante avec Git local
+#### Transport historique V1 — GO humain préalable requis
 
 Reconstruire le ZIP depuis la page « Archive complète », vérifier sa taille et son SHA-256, puis lire son README. Le bundle contient le candidat exact de référence. `apply.py` a été exécuté en mode vérification, sans push, et contrôle les références distantes, les parents du commit, l’arbre et l’intégrité des fichiers.
 
 ```bash
 python3 apply.py /chemin/vers/xArtists
-python3 apply.py /chemin/vers/xArtists --push
+# Ne pas exécuter l’envoi V1 pendant le réalignement concurrent.
+# Attendre le GO humain et le plan V2 revu.
 ```
 
 Cette variante exige les références de départ exactes. Si Git Sync a fait avancer main, elle s’arrête volontairement ; utiliser la procédure d’intégration ci-dessus, sans retirer les gardes ni faire de force-push.
 
-### Validation à reproduire avant la revue finale
+#### Validation à reproduire avant la revue finale
 
 Les résultats locaux sont détaillés dans la sous-page dédiée : 41 tests API, 22 tests frontend, 7 tests Python Paybox et 5 garde-fous de trading passent ; build Vite réussi ; 64 rendus du shell, 296 rendus des modules et régressions mobiles passés ; contrôles des traductions et des ressources construits réussis. Le build contient `lia_live_trading: false` et Paybox désactivé. L’exécution locale utilisait Node v24.22.1 ; la nouvelle CI GitHub utilise Node 20 et reste à confirmer après push.
 
 Toute adaptation à un main plus récent exige de produire des résultats frais et de mettre à jour le JSON de validation avec les compteurs réels. Garder les opérations live désactivées. La source historique `P0_SERVED_BUILD_BEFORE.json` est conservée telle quelle et n’est pas une nouvelle mesure du site servi.
 
-### Compte rendu exigé de Grok
+#### Compte rendu exigé de Grok
 
 Donner le SHA distant, ses deux parents, la branche et le lien PR #188 ; les résultats des contrôles du nouveau SHA ; les éventuels conflits ou blocages restants ; et confirmer la portée exacte des opérations effectuées. Pour GitBook, un état de documentation publié ne doit pas être décrit comme un déploiement applicatif ou une fusion de code.
