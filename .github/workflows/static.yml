@@ -53,7 +53,7 @@ jobs:
           node --test ../../services/access-api/tests/*.test.mjs
           cd ../..
           LIA_LIVE_TRADING=0 python -m unittest discover -s tests/regression -p test_paybox_release.py -v
-          LIA_LIVE_TRADING=0 python tests/regression/test_go_live_gates_p0.py
+          LIA_LIVE_TRADING=0 python tests/regression/test_trading_stack_gates.py
 
       - name: Verify V3 routes and translations
         run: |
@@ -131,6 +131,7 @@ jobs:
           cp -a apps/frontend/dist/. _site/
           touch _site/.nojekyll
           # The build emits static route entries and a query-preserving 404 fallback.
+          cp _site/index.html _site/404.html
 
       - name: Verify built GitHub Pages assets
         run: npm run verify:site
