@@ -96,13 +96,17 @@ function withLock(fn) {
 
 export function loadOrders() {
   const p = storePath()
+  if (!fs.existsSync(p)) return emptyDb()
+  // Never replace a corrupt/unreadable existing ledger with an empty store.
   try {
-    if (!fs.existsSync(p)) return emptyDb()
     const raw = JSON.parse(fs.readFileSync(p, 'utf8'))
-    if (!raw || typeof raw !== 'object' || !raw.orders) return emptyDb()
+    if (!raw || raw.schema !== 'xartists_paybox_orders/v1' ||
+        !raw.orders || typeof raw.orders !== 'object' || Array.isArray(raw.orders)) {
+      throw new Error('invalid_orders_schema')
+    }
     return raw
   } catch {
-    return emptyDb()
+    throw Object.assign(new Error('orders_store_unavailable'), { statusCode: 503 })
   }
 }
 
@@ -205,8 +209,18 @@ export function applyIpn(ipn) {
     order.updated_at = now
     if (ipn.error_code === '00000') {
       if (order.status === 'paid' && order.delivery === 'simulated') {
+        // A different provider transaction cannot silently replace a paid one.
+        if (ipn.provider_tx_id && order.provider_tx_id &&
+            String(ipn.provider_tx_id) !== String(order.provider_tx_id)) {
+          return { ok: false, reason: 'provider_tx_mismatch' }
+        }
         saveOrders(db)
         return { ok: true, duplicate: true, order_id: order.order_id, status: order.status, delivery: order.delivery }
+      }
+      // Preserve historical created -> paid IPNs (redirect may not persist).
+      // Terminal states require explicit financial reconciliation, not revival.
+      if (!['created', 'redirected'].includes(order.status)) {
+        return { ok: false, reason: 'illegal_transition', from: order.status, to: 'paid' }
       }
       order.status = 'paid'
       order.authorization = ipn.authorization || null
@@ -222,12 +236,19 @@ export function applyIpn(ipn) {
       return { ok: true, duplicate: false, order_id: order.order_id, status: order.status, delivery: order.delivery }
     }
     if (order.status === 'paid') {
-      order.status = 'late_paid'
-      order.delivery_note = `late_ipn_error_${ipn.error_code}`
+      // A later failed IPN cannot revoke a verified payment; refunds are separate.
       saveOrders(db)
-      return { ok: true, late: true, order_id: order.order_id, status: order.status }
+      return { ok: true, duplicate: true, late: true, order_id: order.order_id, status: order.status }
     }
-    order.status = ipn.error_code === '00001' ? 'cancelled' : 'refused'
+    const failureStatus = ipn.error_code === '00001' ? 'cancelled' : 'refused'
+    if (order.status === failureStatus) {
+      saveOrders(db)
+      return { ok: true, duplicate: true, order_id: order.order_id, status: order.status }
+    }
+    if (!['created', 'redirected'].includes(order.status)) {
+      return { ok: false, reason: 'illegal_transition', from: order.status, to: failureStatus }
+    }
+    order.status = failureStatus
     order.authorization = ipn.authorization || null
     saveOrders(db)
     return { ok: true, order_id: order.order_id, status: order.status }
