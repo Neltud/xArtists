@@ -1,6 +1,7 @@
 {
   "probed_at": "2026-10-24T06:30:00+02:00",
   "site": "https://neltud.github.io/xArtists/",
-  "served_build_id": "pre-p0-validation",
-  "note": "Historical probe before P0.4 orders fail-closed; not a live measurement of the current site."
+  "served_build_sha": "2c615728",
+  "note": "Public probe still serves pre-P0 build with LIA flag compiled to 1",
+  "deployed_changes_by_this_task": false
 }

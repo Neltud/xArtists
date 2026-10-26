@@ -1,16 +1,27 @@
 {
   "schema": "xartists_p0_validation/v1",
-  "candidate": "57f1080b3d1dec5f13aaf3b92dac31acc75b6e13",
-  "branch": "fix/p0-ipn-signed-binding-and-build",
-  "local": {
-    "access_api_tests": 41,
-    "frontend_tests": 22,
-    "python_paybox_tests": 7,
-    "trading_guards": 5,
-    "vite_build": "ok",
-    "lia_live_trading": false,
-    "node": "v24.22.1"
+  "validated_on": "2026-10-26",
+  "scope": "Local PR 188 integration candidate; fixture tests and build only",
+  "main_base_sha": "52b2207aba7eb6a942fc6084d2f12652496f18c0",
+  "previous_branch_sha": "861fd0fd4abf428f7330716ca9c2de8ca8d0956d",
+  "node_version": "v24.22.1",
+  "checks": {
+    "access_api": { "passed": 41, "failed": 0 },
+    "frontend_release": { "passed": 22, "failed": 0 },
+    "paybox_python_regressions": { "passed": 7, "failed": 0 },
+    "trading_stack_gates": { "passed": 5, "failed": 0 },
+    "production_build": "passed",
+    "routes": { "modules": 37, "aliases": 52, "routes": 99, "unresolved": 0 },
+    "translations_and_built_assets": "passed",
+    "shell_server_renders": { "passed": 64, "failed": 0 },
+    "module_server_renders": { "passed": 296, "failed": 0 },
+    "mobile_regressions": "passed"
   },
-  "remote_applied": false,
-  "notes": "Kit GitBook PR188 — counters from local candidate; re-confirm after push on CI Node 20."
+  "compiled_lia_live_trading": false,
+  "build_paybox_enabled": false,
+  "deployment_performed": false,
+  "real_payment_performed": false,
+  "blockchain_transaction_performed": false,
+  "main_modified": false,
+  "remote_ci_status": "pending separate GitHub execution"
 }
