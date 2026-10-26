@@ -1,1 +1,16 @@
-placeholder
+{
+  "schema": "xartists_p0_validation/v1",
+  "candidate": "57f1080b3d1dec5f13aaf3b92dac31acc75b6e13",
+  "branch": "fix/p0-ipn-signed-binding-and-build",
+  "local": {
+    "access_api_tests": 41,
+    "frontend_tests": 22,
+    "python_paybox_tests": 7,
+    "trading_guards": 5,
+    "vite_build": "ok",
+    "lia_live_trading": false,
+    "node": "v24.22.1"
+  },
+  "remote_applied": false,
+  "notes": "Kit GitBook PR188 — counters from local candidate; re-confirm after push on CI Node 20."
+}
