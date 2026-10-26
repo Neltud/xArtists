@@ -2,6 +2,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
 /**
  * Checkout packs — Crypto | Fiat. Full i18n. On-chain buyPack → 1 ESDT NFT.
  * data-xartists-modal="1" → pause WebGL.
+ * Paybox: wallet-bound JWT required (accessSession). Guests cannot start card session.
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -22,6 +23,7 @@ import { generateGuestReceiveId, loadGuestReceiveId, saveGuestReceiveId } from '
 import { useWebglPauseWhen } from '../hooks/useWebglPause'
 import { useI18n } from '../i18n/I18nContext'
 import { useAgentPackTx } from '../hooks/useAgentPackTx'
+import { ensureAccessToken, getAccessToken } from '../lib/accessSession'
 
 export type CheckoutRail = 'crypto' | 'fiat' | null
 
@@ -88,6 +90,12 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       return
     }
     const method = methods.includes(fiatMethod) ? fiatMethod : methods[0]
+    // Paybox requires wallet-bound JWT — never guest alone
+    if (method === 'paybox' && !hasErd1) {
+      setMsg(t('checkout.msg.cryptoNeedsWallet'))
+      requestOpenConnect()
+      return
+    }
     const buyer = hasErd1 ? address! : ensureGuestId()
     setBusy(true)
     setMsg(
@@ -109,12 +117,29 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       rule: '1_pack_1_esdt_nft_via_relayer',
     })
     try {
-      await startPackPayment({
+      let accessToken: string | undefined
+      if (method === 'paybox' && hasErd1) {
+        accessToken =
+          getAccessToken(address!) ||
+          (await ensureAccessToken({ address: address! })) ||
+          undefined
+        if (!accessToken) {
+          setMsg('Authentification portefeuille requise (JWT / SIWX).')
+          return
+        }
+      }
+      const result = await startPackPayment({
         method,
         packId: pack.id,
         buyerAddress: hasErd1 ? address! : `guest:${buyer}`,
         amountEur: pack.priceEur.list,
+        accessToken,
       })
+      if (result === 'auth_required') {
+        setMsg('Authentification portefeuille requise (JWT / SIWX).')
+        requestOpenConnect()
+        return
+      }
       onStarted?.('fiat')
     } catch (e) {
       setMsg(e instanceof Error ? e.message : String(e))
@@ -143,7 +168,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       const result = await buyPack(pack.id)
       setMsg(
         result.sessionId
-          ? `TX ${String(result.sessionId).slice(0, 12)}… — NFT ${pack.id} à la confirmation bloc`
+          ? `TX ${String(result.sessionId).slice(0, 12)}… — NFT ${pack.id} a la confirmation bloc`
           : t('checkout.msg.mintSoon', { amount: pack.priceEgld.list }),
       )
       onStarted?.('crypto')

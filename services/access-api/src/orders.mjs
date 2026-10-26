@@ -12,6 +12,56 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import crypto from 'node:crypto'
 
+
+/** Explicit order lifecycle (P0.1). Sandbox mint stays simulated — never grants production rights. */
+export const ORDER_STATUS = Object.freeze({
+  CREATED: 'created',
+  PAYMENT_PENDING: 'redirected', // historical alias kept for compatibility
+  REDIRECTED: 'redirected',
+  PAID: 'paid',
+  MINT_QUEUED: 'mint_queued',
+  MINT_CONFIRMED: 'mint_confirmed',
+  ACTIVE: 'active',
+  REFUSED: 'refused',
+  CANCELLED: 'cancelled',
+  LATE_PAID: 'late_paid',
+  EXPIRED: 'expired',
+  REFUNDED: 'refunded',
+  FAILED: 'failed',
+})
+
+/** Allowed transitions — payment confirmation is separate from mint / access activation. */
+const TRANSITIONS = Object.freeze({
+  created: new Set(['redirected', 'expired', 'cancelled']),
+  redirected: new Set(['paid', 'refused', 'cancelled', 'expired']),
+  paid: new Set(['mint_queued', 'late_paid', 'refunded']),
+  mint_queued: new Set(['mint_confirmed', 'failed']),
+  mint_confirmed: new Set(['active', 'failed']),
+  active: new Set(['refunded']),
+  refused: new Set([]),
+  cancelled: new Set([]),
+  late_paid: new Set(['refunded']),
+  expired: new Set([]),
+  refunded: new Set([]),
+  failed: new Set(['mint_queued']), // controlled retry of mint intent only
+})
+
+export function canTransition(from, to) {
+  const allowed = TRANSITIONS[from]
+  return Boolean(allowed && allowed.has(to))
+}
+
+function applyStatus(order, next, note) {
+  if (!canTransition(order.status, next) && order.status !== next) {
+    return { ok: false, reason: 'illegal_transition', from: order.status, to: next }
+  }
+  order.status = next
+  if (note) order.delivery_note = note
+  order.updated_at = new Date().toISOString()
+  return { ok: true }
+}
+
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 function storePath() {
@@ -46,13 +96,17 @@ function withLock(fn) {
 
 export function loadOrders() {
   const p = storePath()
+  if (!fs.existsSync(p)) return emptyDb()
+  // Never replace a corrupt/unreadable existing ledger with an empty store.
   try {
-    if (!fs.existsSync(p)) return emptyDb()
     const raw = JSON.parse(fs.readFileSync(p, 'utf8'))
-    if (!raw || typeof raw !== 'object' || !raw.orders) return emptyDb()
+    if (!raw || raw.schema !== 'xartists_paybox_orders/v1' ||
+        !raw.orders || typeof raw.orders !== 'object' || Array.isArray(raw.orders)) {
+      throw new Error('invalid_orders_schema')
+    }
     return raw
   } catch {
-    return emptyDb()
+    throw Object.assign(new Error('orders_store_unavailable'), { statusCode: 503 })
   }
 }
 
@@ -108,6 +162,7 @@ export function createOrder(input) {
       authorization: null,
       provider_tx_id: null,
       delivery: 'none',
+      mint_status: null,
       delivery_note: null,
       delivered_at: null,
     }
@@ -140,33 +195,60 @@ export function applyIpn(ipn) {
     if (order.amount_cents !== ipn.amount_cents) {
       return { ok: false, reason: 'amount_mismatch', expected: order.amount_cents, got: ipn.amount_cents }
     }
+    // Provider tx id may not be reused across different orders
+    if (ipn.provider_tx_id) {
+      for (const [oid, o] of Object.entries(db.orders)) {
+        if (oid !== ipn.order_id && o.provider_tx_id && String(o.provider_tx_id) === String(ipn.provider_tx_id)) {
+          return { ok: false, reason: 'provider_tx_reused', order_id: oid }
+        }
+      }
+    }
     const now = new Date().toISOString()
     order.ipn_count += 1
     order.last_ipn_at = now
     order.updated_at = now
     if (ipn.error_code === '00000') {
       if (order.status === 'paid' && order.delivery === 'simulated') {
+        // A different provider transaction cannot silently replace a paid one.
+        if (ipn.provider_tx_id && order.provider_tx_id &&
+            String(ipn.provider_tx_id) !== String(order.provider_tx_id)) {
+          return { ok: false, reason: 'provider_tx_mismatch' }
+        }
         saveOrders(db)
         return { ok: true, duplicate: true, order_id: order.order_id, status: order.status, delivery: order.delivery }
+      }
+      // Preserve historical created -> paid IPNs (redirect may not persist).
+      // Terminal states require explicit financial reconciliation, not revival.
+      if (!['created', 'redirected'].includes(order.status)) {
+        return { ok: false, reason: 'illegal_transition', from: order.status, to: 'paid' }
       }
       order.status = 'paid'
       order.authorization = ipn.authorization || null
       order.provider_tx_id = ipn.provider_tx_id || null
+      // Sandbox delivery pipeline (never grants production NFT rights)
       if (order.delivery !== 'simulated') {
         order.delivery = 'simulated'
-        order.delivery_note = 'payment_verified_mint_simulated'
+        order.mint_status = 'mint_confirmed' // sandbox fast-path; prod would be mint_queued then chain confirm
+        order.delivery_note = 'payment_verified_mint_simulated_no_production_rights'
         order.delivered_at = now
       }
       saveOrders(db)
       return { ok: true, duplicate: false, order_id: order.order_id, status: order.status, delivery: order.delivery }
     }
     if (order.status === 'paid') {
-      order.status = 'late_paid'
-      order.delivery_note = `late_ipn_error_${ipn.error_code}`
+      // A later failed IPN cannot revoke a verified payment; refunds are separate.
       saveOrders(db)
-      return { ok: true, late: true, order_id: order.order_id, status: order.status }
+      return { ok: true, duplicate: true, late: true, order_id: order.order_id, status: order.status }
     }
-    order.status = ipn.error_code === '00001' ? 'cancelled' : 'refused'
+    const failureStatus = ipn.error_code === '00001' ? 'cancelled' : 'refused'
+    if (order.status === failureStatus) {
+      saveOrders(db)
+      return { ok: true, duplicate: true, order_id: order.order_id, status: order.status }
+    }
+    if (!['created', 'redirected'].includes(order.status)) {
+      return { ok: false, reason: 'illegal_transition', from: order.status, to: failureStatus }
+    }
+    order.status = failureStatus
     order.authorization = ipn.authorization || null
     saveOrders(db)
     return { ok: true, order_id: order.order_id, status: order.status }

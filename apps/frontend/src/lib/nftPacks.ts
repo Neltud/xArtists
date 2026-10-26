@@ -1,6 +1,7 @@
 /**
  * NFT Pack series — metadata + optional DEV-only local cache.
- * On-chain matching via PACK_COLLECTIONS + VITE_AGENT_PACK_COLLECTIONS + name heuristics.
+ * On-chain matching via exact collection tickers only (PACK_COLLECTIONS + env).
+ * Name-based attribution is forbidden (P0 security).
  * Access rights: never from localStorage (audit S-02).
  */
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
@@ -109,12 +110,6 @@ export function agentPackCollectionIds(): string[] {
   }
 }
 
-const PACK_NAME_HINTS: Record<PackId, string[]> = {
-  pulse: ['pulse'],
-  yield: ['yield'],
-  sentinel: ['sentinel'],
-}
-
 export type OnChainPackHit = {
   packId: PackId
   identifier: string
@@ -126,8 +121,8 @@ export type OnChainPackHit = {
 
 /**
  * Map user NFTs → agent packs (Pulse / Yield / Sentinel).
- * 1) Exact / prefix map XAIPLS-* · XAIYLD-* · XAISNT-* (mainnet)
- * 2) Env VITE_AGENT_PACK_COLLECTIONS + name heuristics
+ * Exact collection ticker only — never name / partial-string heuristics (P0).
+ * Official mainnet: XAIPLS-2cf72b · XAIYLD-987e24 · XAISNT-3d8a6b
  */
 export function matchOnChainPacks(
   nfts: Array<{
@@ -139,38 +134,29 @@ export function matchOnChainPacks(
     media?: { url?: string }[]
   }>,
 ): OnChainPackHit[] {
-  const cols = new Set(agentPackCollectionIds().map(c => c.toUpperCase()))
+  const tickerToPack = new Map<string, PackId>([
+    [PACK_COLLECTIONS.pulse.ticker.toUpperCase(), 'pulse'],
+    [PACK_COLLECTIONS.yield.ticker.toUpperCase(), 'yield'],
+    [PACK_COLLECTIONS.sentinel.ticker.toUpperCase(), 'sentinel'],
+  ])
+  // Env overrides: only exact known tickers map to packs — never invent via name.
+  for (const t of agentPackCollectionIds()) {
+    const u = t.toUpperCase()
+    if (!tickerToPack.has(u)) continue
+  }
+
   const hits: OnChainPackHit[] = []
   const seen = new Set<string>()
 
   for (const n of nfts) {
     const col = (n.collection || '').toUpperCase()
-    const name = (n.name || '').toLowerCase()
-    const id = (n.identifier || '').toLowerCase()
-    let packId: PackId | null = null
+    const id = (n.identifier || '').toUpperCase()
+    let packId: PackId | null = tickerToPack.get(col) || null
 
-    const pulseT = PACK_COLLECTIONS.pulse.ticker.toUpperCase()
-    const yieldT = PACK_COLLECTIONS.yield.ticker.toUpperCase()
-    const sentT = PACK_COLLECTIONS.sentinel.ticker.toUpperCase()
-    if (col === pulseT || col.startsWith('XAIPLS')) packId = 'pulse'
-    else if (col === yieldT || col.startsWith('XAIYLD')) packId = 'yield'
-    else if (col === sentT || col.startsWith('XAISNT')) packId = 'sentinel'
-
-    if (!packId && cols.size && cols.has(col)) {
-      for (const [pid, hints] of Object.entries(PACK_NAME_HINTS) as [PackId, string[]][]) {
-        if (hints.some(h => name.includes(h) || id.includes(h))) {
-          packId = pid
-          break
-        }
-      }
-      if (!packId) {
-        if (col.includes('PLS') || col.includes('PULSE')) packId = 'pulse'
-        else if (col.includes('YLD') || col.includes('YIELD')) packId = 'yield'
-        else if (col.includes('SNT') || col.includes('SENTINEL')) packId = 'sentinel'
-      }
-    } else if (!packId) {
-      for (const [pid, hints] of Object.entries(PACK_NAME_HINTS) as [PackId, string[]][]) {
-        if (hints.some(h => name.includes(h))) {
+    // MultiversX identifier form COLLECTION-nonce — exact collection prefix only
+    if (!packId) {
+      for (const [ticker, pid] of tickerToPack) {
+        if (id.startsWith(ticker + '-')) {
           packId = pid
           break
         }

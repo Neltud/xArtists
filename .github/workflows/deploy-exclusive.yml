@@ -6,4 +6,5 @@ jobs:
   notice:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Deprecated. Canonical: static.yml"
+      - run: |
+          echo "Deprecated. Canonical: static.yml"
