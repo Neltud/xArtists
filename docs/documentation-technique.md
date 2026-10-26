@@ -10,8 +10,9 @@ noIndex: true
 
 Cette page est destinée aux mainteneurs du projet. Les documents de travail peuvent décrire des hypothèses, des validations partielles ou des états historiques. Pour présenter xArtists à un visiteur, utiliser la [présentation publique](presentation/) et son [état de disponibilité](presentation/etat-du-produit.md).
 
-### Passations et documentation technique
+#### Passations et documentation technique
 
+* [Grok — PR #188 : résolution P0 complète](prompts/grok-pr188-ipn-2026-10-26/)
 * [Passation GPT–Grok : dapp mobile](prompts/grok-dapp-mobile-2026-10-25/)
 * [Reprise de la sortie officielle](prompts/grok-dapp-mobile-2026-10-25/sortie-officielle.md)
 * [Correctif de retrait des modules abandonnés](prompts/grok-dapp-mobile-2026-10-25/retirer-polylia-greensmoke.md)
@@ -21,7 +22,7 @@ Cette page est destinée aux mainteneurs du projet. Les documents de travail peu
 
 <summary>Ancien index de la page d’accueil — références conservées</summary>
 
-### LIA / Trading
+#### LIA / Trading
 
 | Doc                                                                   | Sujet                                                                                              |
 | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
@@ -31,14 +32,14 @@ Cette page est destinée aux mainteneurs du projet. Les documents de travail peu
 | [ORACLES.md](ORACLES.md)                                              | Prix on-chain leaning                                                                              |
 | [TRO.md](TRO.md)                                                      | Token $TRO                                                                                         |
 
-### Produit & treasury
+#### Produit & treasury
 
 | Doc                                       | Sujet                   |
 | ----------------------------------------- | ----------------------- |
 | [TREASURY\_POLICY.md](TREASURY_POLICY.md) | Fondation décentralisée |
 | [DAPP\_STATUS.md](DAPP_STATUS.md)         | État dApp               |
 
-### Déploiement
+#### Déploiement
 
 Publication V3 : [V3\_PUBLICATION\_2026-10-21.md](V3_PUBLICATION_2026-10-21.md).
 
@@ -48,7 +49,7 @@ Publication V3 : [V3\_PUBLICATION\_2026-10-21.md](V3_PUBLICATION_2026-10-21.md).
 | [POST\_DEPLOY\_VERIFY.md](POST_DEPLOY_VERIFY.md) | Vérifs post-deploy |
 | [REGRESSION.md](REGRESSION.md)                   | Tests              |
 
-### Commande cycle LIA
+#### Commande cycle LIA
 
 ```bash
 export LIA_LIVE_TRADING=0 CHAIN=1
