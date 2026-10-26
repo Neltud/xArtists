@@ -3,6 +3,7 @@
  * Issued by POST /v1/verify-access after SIWX (or allowlist path).
  * Never treat wallet address in query/body as identity proof.
  * Guests (no erd1) cannot obtain a production access token for Paybox.
+ * Fail-closed: API/network failure clears any prior session.
  */
 import { getAccessApiBase } from './stripe'
 
@@ -68,6 +69,7 @@ export function storeAccessSession(token: string, address: string) {
  * Request a short-lived access JWT bound to the wallet.
  * Without SIWX proof the API returns SAMPLE / 401 for FULL paths;
  * for Paybox checkout we still need a valid Bearer when JWT secret is configured.
+ * Fail-closed on network or non-OK responses (no stale token retention).
  */
 export async function ensureAccessToken(opts: {
   address: string
@@ -97,8 +99,10 @@ export async function ensureAccessToken(opts: {
       storeAccessSession(data.token, opts.address)
       return data.token
     }
+    clearAccessSession()
+    return null
   } catch {
-    /* */
+    clearAccessSession()
+    return null
   }
-  return getAccessToken(opts.address)
 }
