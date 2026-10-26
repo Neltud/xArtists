@@ -3,7 +3,8 @@ name: "[deprecated] deploy-frontend"
 on:
   workflow_dispatch:
 jobs:
-  noop:
+  notice:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Use static.yml / Deploy Vite app to GitHub Pages instead"
+      - run: |
+          echo "Deprecated. Canonical: .github/workflows/static.yml"

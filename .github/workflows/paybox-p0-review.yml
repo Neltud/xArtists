@@ -1,0 +1,86 @@
+name: Paybox P0 sandbox review
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/frontend/**'
+      - 'services/access-api/**'
+      - 'lia/**'
+      - 'tests/regression/**'
+      - '.github/workflows/paybox-p0-review.yml'
+      - '.github/workflows/static.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: paybox-p0-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  CI: 'true'
+  LIA_LIVE_TRADING: '0'
+  VITE_LIA_LIVE_TRADING: '0'
+  VITE_PAYBOX_ENABLED: 'false'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: |
+            apps/frontend/package-lock.json
+            services/access-api/package-lock.json
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install frontend dependencies
+        working-directory: apps/frontend
+        run: npm ci --legacy-peer-deps --ignore-scripts
+
+      - name: Install API dependencies
+        working-directory: services/access-api
+        run: npm ci --ignore-scripts
+
+      - name: Test API authentication and signed IPNs with fixtures
+        run: node --test services/access-api/tests/*.test.mjs
+
+      - name: Test frontend release behavior
+        working-directory: apps/frontend
+        run: npm run test:release
+
+      - name: Test payment and trading gates offline
+        run: |
+          python -m unittest discover -s tests/regression -p test_paybox_release.py -v
+          python tests/regression/test_trading_stack_gates.py
+
+      - name: Verify routes, modules and mobile rendering
+        working-directory: apps/frontend
+        run: |
+          npm run check:routes
+          npm run render:check
+          node scripts/run-render-check.mjs modules
+          node scripts/run-render-check.mjs mobile
+
+      - name: Build candidate with live operations disabled
+        working-directory: apps/frontend
+        run: npm run build
+        env:
+          NODE_ENV: production
+          NODE_OPTIONS: --max-old-space-size=4096
+          VITE_APP_BUILD: sites-v3-release
+
+      - name: Verify translations and built assets
+        working-directory: apps/frontend
+        run: npm run verify:site
