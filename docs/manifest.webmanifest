@@ -1,31 +1,59 @@
 {
-  "name": "xArtists \u2014 LIA v6",
+  "id": "/xArtists/",
+  "name": "xArtists — Art & Intelligence",
   "short_name": "xArtists",
-  "description": "AI + RWA + NFT on MultiversX \u2014 LIA v6 DeFi agent, marketplace, $TRO, GreenSmoke",
+  "description": "Art, NFT and creative intelligence on MultiversX.",
   "start_url": "/xArtists/",
   "scope": "/xArtists/",
   "display": "standalone",
-  "orientation": "portrait-primary",
   "background_color": "#10120f",
   "theme_color": "#cdf58b",
   "lang": "fr",
   "categories": [
-    "finance",
     "art",
+    "entertainment",
     "productivity"
   ],
   "icons": [
     {
-      "src": "/xArtists/xartists-logo.png",
+      "src": "/xArtists/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/xArtists/xartists-logo.png",
+      "src": "/xArtists/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/xArtists/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Explore",
+      "url": "/xArtists/explore/",
+      "icons": [
+        {
+          "src": "/xArtists/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Wallet",
+      "url": "/xArtists/workspace/wallet/",
+      "icons": [
+        {
+          "src": "/xArtists/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

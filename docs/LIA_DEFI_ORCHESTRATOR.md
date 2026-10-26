@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # LIA Vellum — Orchestrateur DeFi xArtists
 
 **Principe :** LIA (workflow Vellum) est le cerveau opérationnel DeFi de la dApp.
@@ -10,4 +15,4 @@ Secrets Vellum : `LIA_PEM_*`, `FORCE_MODE=paper`, `MX_GATEWAY`, `HATOM_CONTROLLE
 
 Risk : HF Hatom, circuit breaker, max notional $50, no Soul mainnet, no PEM in git.
 
-Voir aussi : docs/VELLUM_GITHUB_CONFIG.md, nodes/swarm_*, nodes/rewards_agent.py
+Voir aussi : docs/VELLUM\_GITHUB\_CONFIG.md, nodes/swarm\_\*, nodes/rewards\_agent.py

@@ -10,3 +10,12 @@ assert.notEqual(catalogue['Connecter ton wallet MultiversX'][1],catalogue['Conne
 const publicBase='/xArtists/';
 if(fs.existsSync('dist/index.html')){const html=fs.readFileSync('dist/index.html','utf8');for(const match of html.matchAll(/(?:src|href)="(\/(?!\/)[^"#]+)"/g))assert(fs.existsSync(path.join('dist',match[1].split('?')[0].replace(new RegExp('^'+publicBase),''))),`missing static entry ${match[1]}`);assert(html.includes(publicBase+'assets/'),'missing GitHub Pages deployment base');const manifest=JSON.parse(fs.readFileSync('dist/manifest.webmanifest','utf8'));assert(manifest.start_url===publicBase);assert(manifest.scope===publicBase)}
 console.log(`Verified ${Object.keys(catalogue).length} distinct phrases (${sourceRows} rows), ${Object.keys(copy).length} interface keys, 8 complete locales, placeholders and static assets.`)
+if(fs.existsSync('dist/dapp-release.json')){
+ const release=JSON.parse(fs.readFileSync('dist/dapp-release.json','utf8'));
+ for(const route of release.routes){const entry=path.join('dist',route.slice(1),'index.html');assert(fs.existsSync(entry),`missing public route entry ${route}`);assert(fs.readFileSync(entry,'utf8').includes('sites-v3-release'),`wrong renderer on ${route}`)}
+ assert(fs.readFileSync('dist/404.html','utf8').includes('_xa_route'),'missing Pages route recovery');
+ const manifest=JSON.parse(fs.readFileSync('dist/manifest.webmanifest','utf8'));
+ for(const icon of manifest.icons){const bytes=fs.readFileSync(path.join('dist',icon.src.replace(publicBase,'')));assert.equal(bytes.subarray(0,8).toString('hex'),'89504e470d0a1a0a');assert.equal(`${bytes.readUInt32BE(16)}x${bytes.readUInt32BE(20)}`,icon.sizes)}
+ assert(fs.existsSync('dist/og-image.png'),'missing social sharing image');
+ console.log(`Verified ${release.routes.length} static route entries, Pages fallback and install icons; compiled LIA live flag: ${release.lia_live_trading}.`)
+}

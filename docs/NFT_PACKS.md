@@ -1,12 +1,17 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Packs NFT Agents
 
 ## Séries (limitées)
 
-| ID | Tier | Supply max | Prix liste |
-|----|------|------------|-----------|
-| pulse | A | 333 | 18 € |
-| yield | B | 500 | 12 € |
-| sentinel | C | 777 | 8 € |
+| ID       | Tier | Supply max | Prix liste |
+| -------- | ---- | ---------- | ---------- |
+| pulse    | A    | 333        | 18 €       |
+| yield    | B    | 500        | 12 €       |
+| sentinel | C    | 777        | 8 €        |
 
 ## Flux
 
@@ -17,9 +22,9 @@
 
 ## Data
 
-- `data/nft_packs.json`
-- `apps/frontend/src/lib/nftPacks.ts`
-- `NftPacksGallery` · `MyNftPacksStrip`
+* `data/nft_packs.json`
+* `apps/frontend/src/lib/nftPacks.ts`
+* `NftPacksGallery` · `MyNftPacksStrip`
 
 ## Hors scope
 

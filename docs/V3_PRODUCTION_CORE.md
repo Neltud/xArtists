@@ -1,13 +1,18 @@
+---
+hidden: true
+noIndex: true
+---
+
 # v3.0 — Core production (MultiversX)
 
 ## Modules
 
-| Couche | Fichier |
-|--------|--------|
-| Guardian | `src/core/doctrine.ts` |
-| Provider | `src/services/multiversXService.ts` |
-| Schema | `src/types/intent.ts` |
-| Orchestrateur | `src/hooks/useLIA.ts` |
+| Couche        | Fichier                             |
+| ------------- | ----------------------------------- |
+| Guardian      | `src/core/doctrine.ts`              |
+| Provider      | `src/services/multiversXService.ts` |
+| Schema        | `src/types/intent.ts`               |
+| Orchestrateur | `src/hooks/useLIA.ts`               |
 
 ## Workflow
 
@@ -22,9 +27,9 @@ UI → useLIA.runNatural / runIntent
 
 ## Interdits respectés
 
-- Pas de `setTimeout` pour marquer une TX « success »
-- Pas de `any` dans le flux intent
-- UI ne parle pas au provider sans passer par useLIA / doctrine
+* Pas de `setTimeout` pour marquer une TX « success »
+* Pas de `any` dans le flux intent
+* UI ne parle pas au provider sans passer par useLIA / doctrine
 
 ## SWAP réel (testnet)
 

@@ -1,12 +1,17 @@
+---
+hidden: true
+noIndex: true
+---
+
 # LIA UniversalExecutor
 
 ## Modes
 
-| Mode | Condition |
-|------|-----------|
-| **paper** | default (`LIA_LIVE_TRADING=0`) or `force_mode=paper` |
-| **live** | `LIA_LIVE_TRADING=1` **and** valid PEM |
-| **halted** | ≥3 consecutive live failures |
+| Mode       | Condition                                            |
+| ---------- | ---------------------------------------------------- |
+| **paper**  | default (`LIA_LIVE_TRADING=0`) or `force_mode=paper` |
+| **live**   | `LIA_LIVE_TRADING=1` **and** valid PEM               |
+| **halted** | ≥3 consecutive live failures                         |
 
 **`force_mode=auto` does not mean live.** See `lia/executor/mode.py`.
 
@@ -21,10 +26,10 @@ export LIA_LIVE_TRADING=0
 
 ## Safety
 
-- MAINNET only (`CHAIN=1`) on live path
-- Risk limits from `lia.board.risk`
-- Circuit breaker → halt
-- Frontend never sees PEM
+* MAINNET only (`CHAIN=1`) on live path
+* Risk limits from `lia.board.risk`
+* Circuit breaker → halt
+* Frontend never sees PEM
 
 ## Wire from board / Vellum
 

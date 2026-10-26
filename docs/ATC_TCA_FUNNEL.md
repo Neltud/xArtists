@@ -1,10 +1,15 @@
+---
+hidden: true
+noIndex: true
+---
+
 # ATC vs TCA — content funnel & gate
 
 ## Naming (locked)
 
-| Acronym | Layer | Who |
-|---------|-------|-----|
-| **ATC** | Arts, Techniques & Civilisations | Public educational layer (free) |
+| Acronym | Layer                              | Who                                  |
+| ------- | ---------------------------------- | ------------------------------------ |
+| **ATC** | Arts, Techniques & Civilisations   | Public educational layer (free)      |
 | **TCA** | Immersive classroom + RAG hologram | Premium — **Pack Pulse** (12 months) |
 
 ## Conversion loop
@@ -21,13 +26,13 @@ Pack Pulse mint / buy
 
 ## Gate modes (air-gap)
 
-| Mode | Condition | UI |
-|------|-----------|-----|
-| **FULL** | Active Pulse (`activatedAt + 365d`) | TcaClassroom |
-| **SAMPLE** | Wallet, no/expired Pulse | YouTube + CTA |
-| **NONE** | No wallet | Lobby connect / offers |
+| Mode       | Condition                           | UI                     |
+| ---------- | ----------------------------------- | ---------------------- |
+| **FULL**   | Active Pulse (`activatedAt + 365d`) | TcaClassroom           |
+| **SAMPLE** | Wallet, no/expired Pulse            | YouTube + CTA          |
+| **NONE**   | No wallet                           | Lobby connect / offers |
 
-Gatekeeper: `TcaGatePage` — **reads** packs only, **never** writes ledger.  
+Gatekeeper: `TcaGatePage` — **reads** packs only, **never** writes ledger.\
 Purchases: `/agents` (Genesis / MoonPay).
 
 ## Demo FULL (dev only)
@@ -50,6 +55,6 @@ Live session → export → (optional) RAG chunk review → SAMPLE embed updates
 
 ## Pillars (unchanged)
 
-1. **Machine** — Guardian/Genesis locked  
-2. **Intellect** — ATC public + TCA premium  
-3. **Patronage** — Command Center read-only vs ledger  
+1. **Machine** — Guardian/Genesis locked
+2. **Intellect** — ATC public + TCA premium
+3. **Patronage** — Command Center read-only vs ledger

@@ -6,23 +6,52 @@ import { LIA_OPS, MAINNET_ADDRESSES, TRO_TOKEN_ID } from '../config/contracts'
 
 const API = 'https://api.multiversx.com'
 
-/** Upbit + Bithumb review window. Decision expected 19–23 Oct 2026. */
+/**
+ * Original Upbit + Bithumb decision window (19–23 Oct 2026).
+ * Closed by an extension, not by a delist and not by a clearance.
+ */
 export const UPBIT_WINDOW_START = Date.parse('2026-10-19T00:00:00Z')
-export const UPBIT_WINDOW_END = Date.parse('2026-10-24T00:00:00Z')
+/** Upbit notice 207379109, posted 2026-10-23 06:02 UTC. */
+export const KR_EXTENSION_START = Date.parse('2026-10-23T06:02:00Z')
+/** First day of the week Upbit named (16–20 Nov 2026). */
+export const KR_DECISION_WEEK_START = Date.parse('2026-11-16T00:00:00Z')
+/** Through 20 Nov 2026 inclusive (third week of November, 16–20). */
+export const KR_EXTENSION_END = Date.parse('2026-11-21T00:00:00Z')
 const WINDOW_DAYS = 5
+const EXTENSION_DAYS = 29
 
-export type UpbitPhase = 'before' | 'window' | 'after'
+export type UpbitPhase = 'before' | 'window' | 'extended' | 'after'
 
-export function upbitPosture(now = Date.now()): { phase: UpbitPhase; label: string; day: number | null } {
+export type UpbitPosture = {
+  phase: UpbitPhase
+  label: string
+  day: number | null
+  /** Whole days until 16 Nov 00:00 UTC. 0 once that week has started. */
+  daysUntilDecisionWeek: number
+  /** Whole days until 21 Nov 00:00 UTC. 0 once the published extension has ended. */
+  daysUntilHardEnd: number
+}
+
+export function daysUntil(targetMs: number, now = Date.now()): number {
+  if (now >= targetMs) return 0
+  return Math.ceil((targetMs - now) / 86_400_000)
+}
+
+export function upbitPosture(now = Date.now()): UpbitPosture {
+  const clock = {
+    daysUntilDecisionWeek: daysUntil(KR_DECISION_WEEK_START, now),
+    daysUntilHardEnd: daysUntil(KR_EXTENSION_END, now),
+  }
   if (now < UPBIT_WINDOW_START) {
     return {
       phase: 'before',
       label:
         'Upbit et Bithumb : EGLD en surveillance. Décision annoncée pour le 19–23 oct. Client LIA = paper.',
       day: null,
+      ...clock,
     }
   }
-  if (now < UPBIT_WINDOW_END) {
+  if (now < KR_EXTENSION_START) {
     const day = Math.min(
       WINDOW_DAYS,
       Math.max(1, Math.floor((now - UPBIT_WINDOW_START) / 86_400_000) + 1),
@@ -30,17 +59,38 @@ export function upbitPosture(now = Date.now()): { phase: UpbitPhase; label: stri
     return {
       phase: 'window',
       day,
+      ...clock,
       label:
         `Fenêtre de revue 19–23 oct, jour ${day}/${WINDOW_DAYS} (Upbit, même calendrier annoncé chez Bithumb). ` +
         'Aucun maintien ni delist EGLD publié — SOPH et ZIL sont les delist décidés, pas EGLD. ' +
         'Client LIA = paper. Pas de nouveau trade live.',
     }
   }
+  if (now < KR_EXTENSION_END) {
+    const day = Math.min(
+      EXTENSION_DAYS,
+      Math.max(1, Math.floor((now - KR_EXTENSION_START) / 86_400_000) + 1),
+    )
+    return {
+      phase: 'extended',
+      day,
+      ...clock,
+      label:
+        `Prolongation officielle, jour ${day}/${EXTENSION_DAYS} (tranches de 24 h depuis le 23 oct 06:02 UTC, pas des dates civiles). ` +
+        'Upbit (notice 207379109, 23 oct 06:02 UTC) étend la surveillance EGLD/KRW, EGLD/BTC et EGLD/USDT jusqu’au 16–20 nov 2026. ' +
+        'Bithumb prolonge le même jour le warning EGLD (et FET). Ce n’est pas un delist, ce n’est pas un maintien. ' +
+        `Encore ${clock.daysUntilDecisionWeek} j avant le 16 nov, ${clock.daysUntilHardEnd} j avant la fin dure (21 nov 00:00 UTC). ` +
+        'Retraits Upbit suspendus depuis le 21 oct 20:00 KST : aucune reprise dans ce build, revérifier la notice avant tout mouvement. ' +
+        'VITE_LIA_LIVE_TRADING reste 0. Pas de swap, pas de claimFees, Paybox 501. ' +
+        'Ce déploiement est le go-live du site en lecture, pas un go-live trading.',
+    }
+  }
   return {
     phase: 'after',
     day: null,
+    ...clock,
     label:
-      'Fenêtre 19–23 oct échue. Ne pas allumer le live tant qu’une annonce claire (maintien, retraits) n’est pas vérifiée. Client LIA = paper.',
+      'Fenêtre prolongée 16–20 nov échue. Ne pas allumer le live sans annonce explicite de maintien (trading + retraits). Client LIA = paper.',
   }
 }
 

@@ -1,8 +1,10 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react'
+import { normalizePublicPath } from '../lib/publicRoutes'
 export type Group = 'explore' | 'create' | 'intelligence' | 'finance' | 'workspace'
 export type Module = { id: string; path: string; aliases: string[]; label: string; group: Group; icon: string; page: LazyExoticComponent<ComponentType<any>>; tags: string[]; load: ()=>Promise<any> }
 const module = (id:string,path:string,aliases:string[],label:string,group:Group,icon:string,page:()=>Promise<any>,tags:string[]=[]):Module => ({id,path,aliases,label,group,icon,page:lazy(page),tags,load:page})
 export const modules:Module[] = [
+  module('app','/app',['/install','/mobile'],'appAccess','workspace','globe',()=>import('../pages/DappAccessPage'),['xPortal','iOS','Android','PWA']),
   module('museum','/explore/museum',['/museum','/gallery'],'museum','explore','museum',()=>import('../pages/MuseumPage'),['3D','WebGL','NFT']),
   module('market','/explore/market',['/market','/marketplace','/market-place'],'market','explore','market',()=>import('../pages/MarketplacePage'),['NFT','RWA','SFT']),
   module('analytics','/explore/analytics',['/market/analytics'],'analytics','explore','chart',()=>import('../pages/MarketAnalyticsPage'),['NFT','EGLD']),
@@ -41,4 +43,4 @@ export const modules:Module[] = [
   module('guide','/guide',['/demo'],'help','explore','book',()=>import('../pages/DemoTourPage'),['Demo','Guide']),
 ]
 export const groups:Group[]=['explore','create','intelligence','finance','workspace']
-export function findModule(path:string){return modules.find(m=>m.path===path||m.aliases.includes(path))}
+export function findModule(path:string){const normalized=normalizePublicPath(path);return modules.find(m=>m.path===normalized||m.aliases.includes(normalized))}

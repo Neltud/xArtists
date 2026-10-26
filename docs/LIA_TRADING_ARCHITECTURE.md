@@ -1,11 +1,16 @@
+---
+hidden: true
+noIndex: true
+---
+
 # LIA × Vellum — architecture trading (organisation complète)
 
 **Principe :** Guardian before Brain · paper-first · `LIA_LIVE_TRADING=0` jusqu’à micro-proof · mainnet only.
 
-**Entrée unique cycle :** `python -m lia.vellum.pipeline`  
+**Entrée unique cycle :** `python -m lia.vellum.pipeline`\
 (legacy : `python -m lia.vellum.next_run` · `lia.vellum.orchestrator`)
 
----
+***
 
 ## 1. Carte des modules (par couche)
 
@@ -48,42 +53,42 @@
 └──────────────────────────────────────────────────────────────────┘
 ```
 
----
+***
 
 ## 2. Ordre d’un cycle Vellum (optimisé)
 
-| # | Étape | Module | Skip si |
-|---|--------|--------|---------|
-| 0 | Bootstrap env | `pipeline` | chain ≠ 1 → abort |
-| 1 | Oracles prix | `lia.oracles.publish` | — |
-| 2 | Gas snapshot | `lia.gas.publish` | — |
-| 3 | Feeds + board | `lia.board.publish` | — |
-| 4 | Social watch (soft) | `signals/social_intel` | module absent |
-| 5 | Agent decide | `agents.mvx_agent.decide` | — |
-| 6 | Mode select | `circuit.trading_modes.select_mode` | — |
-| 7 | **Guardian** | `vellum.guardian_hook` | — |
-| 8 | TradingStack propose / on_price | `circuit.trading_stack` | DEFENSE / !guardian |
-| 9 | Arb cross-chain scan | `trading_stack.scan_cross_arb` | paper only |
-| 10 | Hatom / yield snapshot | `publish_hatom` | — |
-| 11 | Mirror frontend | `publish_data_for_frontend` | — |
-| 12 | Status + `vellum_last_run.json` | pipeline | — |
-| 13 | Executor live | `executor.*` | **toujours skip si live=0** |
+| #  | Étape                            | Module                              | Skip si                     |
+| -- | -------------------------------- | ----------------------------------- | --------------------------- |
+| 0  | Bootstrap env                    | `pipeline`                          | chain ≠ 1 → abort           |
+| 1  | Oracles prix                     | `lia.oracles.publish`               | —                           |
+| 2  | Gas snapshot                     | `lia.gas.publish`                   | —                           |
+| 3  | Feeds + board                    | `lia.board.publish`                 | —                           |
+| 4  | Social watch (soft)              | `signals/social_intel`              | module absent               |
+| 5  | Agent decide                     | `agents.mvx_agent.decide`           | —                           |
+| 6  | Mode select                      | `circuit.trading_modes.select_mode` | —                           |
+| 7  | **Guardian**                     | `vellum.guardian_hook`              | —                           |
+| 8  | TradingStack propose / on\_price | `circuit.trading_stack`             | DEFENSE / !guardian         |
+| 9  | Arb cross-chain scan             | `trading_stack.scan_cross_arb`      | paper only                  |
+| 10 | Hatom / yield snapshot           | `publish_hatom`                     | —                           |
+| 11 | Mirror frontend                  | `publish_data_for_frontend`         | —                           |
+| 12 | Status + `vellum_last_run.json`  | pipeline                            | —                           |
+| 13 | Executor live                    | `executor.*`                        | **toujours skip si live=0** |
 
----
+***
 
 ## 3. Modes (priorité)
 
 Source : `lia/circuit/trading_modes.py`
 
-1. **DEFENSE** — RISK_OFF / fear≤25 / DD≥12 % → pas de nouveau BUY  
-2. **COMPOUND** — position ouverte → TP / trailing / profit_lock  
-3. **MICRO_ARB** — spread > 2.5× fees, conf ≥ 0.62  
-4. **MOMENTUM** — tendance + GSN bullish + pas de rumeur  
-5. **MEAN_REVERSION** — VWAP + RSI + liquidité  
-6. **YIELD** — pas d’edge → Hatom / stable  
-7. **SOCIAL_WATCH** / **ADVISOR** — veille / Claude 1×/j (paper)
+1. **DEFENSE** — RISK\_OFF / fear≤25 / DD≥12 % → pas de nouveau BUY
+2. **COMPOUND** — position ouverte → TP / trailing / profit\_lock
+3. **MICRO\_ARB** — spread > 2.5× fees, conf ≥ 0.62
+4. **MOMENTUM** — tendance + GSN bullish + pas de rumeur
+5. **MEAN\_REVERSION** — VWAP + RSI + liquidité
+6. **YIELD** — pas d’edge → Hatom / stable
+7. **SOCIAL\_WATCH** / **ADVISOR** — veille / Claude 1×/j (paper)
 
----
+***
 
 ## 4. TradingStack — cœur risk
 
@@ -96,42 +101,42 @@ DEFENSE → leverage_policy → Guardian → slippage → micro_fee_skip
   → optional cross_chain_arb (non-atomic, inventory-first)
 ```
 
-| Module risk | Rôle |
-|-------------|------|
-| `profit_lock` | 70/30 lock/compound |
-| `secure_tp` | TP log/exp/ladder + min net edge |
-| `dynamic_trail` | ATR / step / break-even |
-| `slippage` | impact + cap |
-| `leverage_policy` | grille chain/venue |
-| `spiral` | anti death-spiral levier |
+| Module risk       | Rôle                             |
+| ----------------- | -------------------------------- |
+| `profit_lock`     | 70/30 lock/compound              |
+| `secure_tp`       | TP log/exp/ladder + min net edge |
+| `dynamic_trail`   | ATR / step / break-even          |
+| `slippage`        | impact + cap                     |
+| `leverage_policy` | grille chain/venue               |
+| `spiral`          | anti death-spiral levier         |
 
----
+***
 
 ## 5. Ce que LIA **ne** fait pas (encore / volontaire)
 
-| Action | Condition |
-|--------|-----------|
-| Envoi TX PEM | `LIA_LIVE_TRADING=1` + micro-proof + signature |
-| Bridge fonds user | Jamais auto |
-| Mint $TRO | Owner token ≠ LIA |
-| Grants Mission | Multisig / DAO, pas LIA |
-| Buy agents SC | Deploy agents_marketplace |
+| Action            | Condition                                      |
+| ----------------- | ---------------------------------------------- |
+| Envoi TX PEM      | `LIA_LIVE_TRADING=1` + micro-proof + signature |
+| Bridge fonds user | Jamais auto                                    |
+| Mint $TRO         | Owner token ≠ LIA                              |
+| Grants Mission    | Multisig / DAO, pas LIA                        |
+| Buy agents SC     | Deploy agents\_marketplace                     |
 
----
+***
 
 ## 6. Fichiers data produits
 
-| Fichier | Producteur |
-|---------|------------|
-| `oracle_prices.json` | oracles.publish |
-| `lia_board.json` | board.publish |
-| `lia_v6_status.json` | orchestrator / pipeline |
-| `lia_profit_lock.json` | TradingStack |
-| `lia_trailing_state.json` | dynamic_trail |
-| `vellum_last_run.json` | pipeline / next_run |
-| `hatom_lia.json` | hatom publish |
+| Fichier                   | Producteur              |
+| ------------------------- | ----------------------- |
+| `oracle_prices.json`      | oracles.publish         |
+| `lia_board.json`          | board.publish           |
+| `lia_v6_status.json`      | orchestrator / pipeline |
+| `lia_profit_lock.json`    | TradingStack            |
+| `lia_trailing_state.json` | dynamic\_trail          |
+| `vellum_last_run.json`    | pipeline / next\_run    |
+| `hatom_lia.json`          | hatom publish           |
 
----
+***
 
 ## 7. Commandes
 
@@ -143,24 +148,24 @@ python -m lia.vellum.next_run          # legacy alias → pipeline
 ./scripts/run_regression.sh            # tests offline
 ```
 
----
+***
 
 ## 8. Optimisations appliquées
 
-| Avant | Après |
-|-------|--------|
-| next_run sans oracles / stack | pipeline ordonné oracles → modes → stack |
-| orchestrator // TradingStack parallèles | stack appelé dans le cycle unifié |
-| docs éparses | **cette architecture** + LIA_SPLIT + ORACLES + TRO |
-| modes non reliés au run | `select_mode` dans pipeline |
+| Avant                                   | Après                                               |
+| --------------------------------------- | --------------------------------------------------- |
+| next\_run sans oracles / stack          | pipeline ordonné oracles → modes → stack            |
+| orchestrator // TradingStack parallèles | stack appelé dans le cycle unifié                   |
+| docs éparses                            | **cette architecture** + LIA\_SPLIT + ORACLES + TRO |
+| modes non reliés au run                 | `select_mode` dans pipeline                         |
 
----
+***
 
 ## 9. Checklist ops LIA
 
-- [ ] `LIA_LIVE_TRADING=0`  
-- [ ] Oracles OK (`oracle_prices.json`)  
-- [ ] Guardian `allow` lu dans `vellum_last_run`  
-- [ ] Ledger profit_lock cohérent  
-- [ ] SC market live avant tout fee narrative  
-- [ ] Micro-trades user wallet avant live LIA  
+* [ ] `LIA_LIVE_TRADING=0`
+* [ ] Oracles OK (`oracle_prices.json`)
+* [ ] Guardian `allow` lu dans `vellum_last_run`
+* [ ] Ledger profit\_lock cohérent
+* [ ] SC market live avant tout fee narrative
+* [ ] Micro-trades user wallet avant live LIA

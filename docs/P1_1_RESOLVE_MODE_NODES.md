@@ -1,4 +1,9 @@
-# P1.1 — nodes UniversalExecutor + resolve_mode
+---
+hidden: true
+noIndex: true
+---
+
+# P1.1 — nodes UniversalExecutor + resolve\_mode
 
 **2026-09-15**
 

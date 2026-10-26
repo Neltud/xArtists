@@ -1,6 +1,11 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Autonomous LIA (Vellum)
 
-**Objectif** : produire du profit de façon autonome — compounding trades + yields.  
+**Objectif** : produire du profit de façon autonome — compounding trades + yields.\
 **PEM** : détenu uniquement dans les secrets Vellum (`LIA_WALLET_PEM_PATH` / `LIA_WALLET_PEM`). Jamais dans le repo.
 
 ## Pipeline
@@ -28,21 +33,22 @@ Surplus → yield sleeve
 `nodes/autonomous_lia.py` → classe `AutonomousLia`
 
 Inputs principaux :
-- `market`, `portfolio`, `pairs_market`
-- `brain_outputs` (optionnel, autres cerveaux parallèles)
-- `force_mode`: `paper` (défaut) | `live`
-- `enable_jupiter_arb`: true
+
+* `market`, `portfolio`, `pairs_market`
+* `brain_outputs` (optionnel, autres cerveaux parallèles)
+* `force_mode`: `paper` (défaut) | `live`
+* `enable_jupiter_arb`: true
 
 ## Jupiter latency arb
 
 `lia/executor/jupiter_latency_arb.py`
 
-| Param | Défaut | Rôle |
-|-------|--------|------|
-| max_quote_age_ms | 400 | rejette quote lente |
-| max_drift_bps | 15 | abort si re-quote dérive |
-| min_edge_bps | 25 | edge net min après fees |
-| slippage_bps | 30 | serré pour arb |
+| Param               | Défaut | Rôle                     |
+| ------------------- | ------ | ------------------------ |
+| max\_quote\_age\_ms | 400    | rejette quote lente      |
+| max\_drift\_bps     | 15     | abort si re-quote dérive |
+| min\_edge\_bps      | 25     | edge net min après fees  |
+| slippage\_bps       | 30     | serré pour arb           |
 
 Flux : scan → si edge OK → **re-quote** → si drift OK → execute (paper/live).
 
@@ -52,15 +58,16 @@ Flux : scan → si edge OK → **re-quote** → si drift OK → execute (paper/l
 
 Classes : `transient` | `stale` | `risk` | `execution` | `config` | `fatal`
 
-- 3 fails exécution consécutifs → **halt**
-- RISK / FATAL → halt entries
-- CONFIG (PEM manquant) → live bloqué, paper continue
-- Persistance : `data/lia_error_bus.json`
+* 3 fails exécution consécutifs → **halt**
+* RISK / FATAL → halt entries
+* CONFIG (PEM manquant) → live bloqué, paper continue
+* Persistance : `data/lia_error_bus.json`
 
 ## Symbiose
 
 Stratégies enregistrées (+ nouvelles) :
-- STATARB, JUPITER_ARB, CIRCUIT_1PCT, TP1/3/5, LIABrain, Contrarian, YieldAgent, RiskAgent
+
+* STATARB, JUPITER\_ARB, CIRCUIT\_1PCT, TP1/3/5, LIABrain, Contrarian, YieldAgent, RiskAgent
 
 Priorité : Risk → SELL → STATARB/entries (budget cap 85 %) → Yield.
 
@@ -85,5 +92,6 @@ Passer `force_mode=live` **uniquement** après validation paper et secrets OK.
 4. Idle capital → yield (Hatom / stables)
 5. Jamais hold TRO ; redistribute policy
 
----
-*LIA autonome — xArtists / Vellum*
+***
+
+_LIA autonome — xArtists / Vellum_

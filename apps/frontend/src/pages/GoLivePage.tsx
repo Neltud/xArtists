@@ -8,6 +8,7 @@ import RceStrip from '../components/RceStrip'
 import { AGENT_8008 } from '../config/agent8008'
 import { PACK_PRICE_EGLD } from '../config/multichain'
 import DustTestPanel from '../components/DustTestPanel'
+import ProtocolPulsePanel from '../components/ProtocolPulsePanel'
 import { getEnvLiveCapable, getAppMode } from '../lib/appMode'
 import {
   refreshRuntimeCodehashes,
@@ -120,6 +121,9 @@ export default function GoLivePage() {
       <header className="space-y-2">
         <p className="section-label">{xaRender("Mainnet")}</p>
         <h1 className="section-title display">{xaRender("Status & capital")}</h1>
+        <p className="text-sm text-amber-200/90">
+          {xaRender("Go-live du site : oui, en lecture. Go-live trading : non. La prolongation Upbit/Bithumb court jusqu’au 16–20 nov.")}
+        </p>
         <p className="text-sm text-zinc-400">
           {xaRender("Mode app : ")}<strong className="text-zinc-200">{xaRender(asText(mode))}</strong>
           {xaRender(envLive ? ' · env live capable' : '')} {xaRender(" · floor pack ")}{xaRender(formatRCE(PACK_PRICE_EGLD))}
@@ -127,6 +131,8 @@ export default function GoLivePage() {
       </header>
 
       <RceStrip />
+
+      <ProtocolPulsePanel />
 
       <section className="card space-y-3">
         <h2 className="text-sm font-semibold text-white">{xaRender("Gates SC")}</h2>

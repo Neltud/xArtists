@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Vellum — run now (LIA)
 
 ## Secrets
@@ -13,16 +18,16 @@ SOUL_ENABLED=testnet
 
 ## Repo paths for Vellum
 
-- `config/protocols.json`
-- `docs/LIA_DEFI_ORCHESTRATOR.md`
-- `docs/AGENTS_REGISTRY.md`
-- `lia/executor/universal_executor.py` + patch PEM
-- `nodes/rewards_agent.py`, `nodes/swarm_*.py`
-- `lia/agents/green_smoke_consumer.py`
+* `config/protocols.json`
+* `docs/LIA_DEFI_ORCHESTRATOR.md`
+* `docs/AGENTS_REGISTRY.md`
+* `lia/executor/universal_executor.py` + patch PEM
+* `nodes/rewards_agent.py`, `nodes/swarm_*.py`
+* `lia/agents/green_smoke_consumer.py`
 
 ## Ordered mission
 
-1. FORCE_MODE=paper
+1. FORCE\_MODE=paper
 2. Apply UniversalExecutor PEM signature (no literal swap string)
 3. Swarm + RewardsAgent paper cycle
 4. GreenSmokeConsumer → opportunities score
@@ -31,5 +36,5 @@ SOUL_ENABLED=testnet
 
 ## Frontend wallet (separate from LIA PEM)
 
-User: xPortal / Web Wallet / DeFi extension via sdk-dapp + WalletContext.  
+User: xPortal / Web Wallet / DeFi extension via sdk-dapp + WalletContext.\
 LIA: PEM secret in Vellum only.

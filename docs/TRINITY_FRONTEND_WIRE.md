@@ -1,12 +1,17 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Trinity → Frontend wire
 
 ## Fait
 
-| Couche | Fichier |
-|--------|--------|
-| LIP + Guardian (mirror packages) | `apps/frontend/src/lib/lipBridge.ts` |
-| IntentBar states | thinking / success / error + badge Guardian |
-| Event | `lia-intent` detail `{ route, lip, guardian }` |
+| Couche                           | Fichier                                        |
+| -------------------------------- | ---------------------------------------------- |
+| LIP + Guardian (mirror packages) | `apps/frontend/src/lib/lipBridge.ts`           |
+| IntentBar states                 | thinking / success / error + badge Guardian    |
+| Event                            | `lia-intent` detail `{ route, lip, guardian }` |
 
 ## Packages (source de vérité TS)
 
@@ -16,6 +21,6 @@ Le front **duplique** via `lipBridge` pour build Vite sans workspace link. Toute
 
 ## Pas encore
 
-- Relayer live broadcast
-- LLM adapter
-- Socket War Room metrics
+* Relayer live broadcast
+* LLM adapter
+* Socket War Room metrics

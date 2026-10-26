@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Multi-Venue Execution — Solana (Jupiter) + Hyperliquid + MultiversX
 
 LIA peut router les ordres vers **trois venues** depuis Vellum.
@@ -15,25 +20,26 @@ MultiVenueExecutor (nodes/multi_venue_executor.py)
 
 ## Fichiers
 
-| Path | Rôle |
-|------|------|
-| `lia/executor/jupiter_solana.py` | Quote + swap Jupiter v6 |
-| `lia/executor/hyperliquid_exec.py` | Info + place order HL |
-| `lia/executor/multi_venue.py` | Router unifié |
-| `nodes/multi_venue_executor.py` | Nœud Vellum multi-venue |
-| `nodes/jupiter_executor.py` | Nœud Vellum Solana only |
-| `nodes/hyperliquid_executor.py` | Nœud Vellum HL only |
+| Path                               | Rôle                    |
+| ---------------------------------- | ----------------------- |
+| `lia/executor/jupiter_solana.py`   | Quote + swap Jupiter v6 |
+| `lia/executor/hyperliquid_exec.py` | Info + place order HL   |
+| `lia/executor/multi_venue.py`      | Router unifié           |
+| `nodes/multi_venue_executor.py`    | Nœud Vellum multi-venue |
+| `nodes/jupiter_executor.py`        | Nœud Vellum Solana only |
+| `nodes/hyperliquid_executor.py`    | Nœud Vellum HL only     |
 
 ## Modes
 
-| Mode | Comportement |
-|------|----------------|
-| `paper` (défaut) | Quotes / ordres simulés, **aucun** broadcast |
-| `live` | Broadcast réel si env flags + clés configurés |
+| Mode             | Comportement                                  |
+| ---------------- | --------------------------------------------- |
+| `paper` (défaut) | Quotes / ordres simulés, **aucun** broadcast  |
+| `live`           | Broadcast réel si env flags + clés configurés |
 
 ## Variables d'environnement
 
 ### Solana / Jupiter
+
 ```bash
 LIA_SOL_LIVE=0
 LIA_SOL_KEYPAIR_PATH=/secure/solana-keypair.json
@@ -43,6 +49,7 @@ LIA_JUPITER_SLIPPAGE_BPS=50
 ```
 
 ### Hyperliquid
+
 ```bash
 LIA_HL_LIVE=0
 LIA_HL_PRIVATE_KEY=0x...
@@ -52,6 +59,7 @@ LIA_HL_BASE_URL=https://api.hyperliquid.xyz
 ```
 
 ### MultiversX (existant)
+
 ```bash
 LIA_LIVE_TRADING=0
 LIA_WALLET_PEM_PATH=/secure/wallet.pem
@@ -96,10 +104,11 @@ Paper mode ne nécessite **aucune** de ces libs.
 
 ## Sécurité
 
-- Circuit breaker 5 fails → pause 5 min (par venue)
-- Slippage Jupiter configurable (bps)
-- HL: prefer limit + reduce_only pour closes
-- LIA guards (G01–G20) restent en amont du router
+* Circuit breaker 5 fails → pause 5 min (par venue)
+* Slippage Jupiter configurable (bps)
+* HL: prefer limit + reduce\_only pour closes
+* LIA guards (G01–G20) restent en amont du router
 
----
-*LIA v6+ multi-venue — xArtists*
+***
+
+_LIA v6+ multi-venue — xArtists_

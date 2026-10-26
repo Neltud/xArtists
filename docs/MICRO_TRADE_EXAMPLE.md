@@ -1,4 +1,9 @@
-# Exemple `should_skip_micro_trade`
+---
+hidden: true
+noIndex: true
+---
+
+# Exemple should\_skip\_micro\_trade
 
 ```python
 from lia.gas.micro_trade import should_skip_micro_trade, optimize_plan

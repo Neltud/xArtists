@@ -1,6 +1,12 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Deep ops checklist — xArtists
 
 ## A. Data / Pages
+
 ```bash
 ./scripts/ensure_pages_data.sh
 PYTHONPATH=. python -m lia.oracles.publish
@@ -9,6 +15,7 @@ PYTHONPATH=. LIA_LIVE_TRADING=0 CHAIN=1 python -m lia.vellum.pipeline
 ```
 
 ## B. SC mainnet (PEM + EGLD)
+
 ```bash
 ./scripts/deploy_mainnet.sh agents-marketplace
 ./scripts/deploy_mainnet.sh nft-marketplace
@@ -19,13 +26,17 @@ python scripts/verify_marketplace_codehash.py
 ```
 
 ## C. Env front
-VITE_* + CODEHASH_OK=1 only after verify · rebuild Pages
+
+VITE\_\* + CODEHASH\_OK=1 only after verify · rebuild Pages
 
 ## D. Gates
+
 ```bash
 PYTHONPATH=. python -m lia.security.go_live_gates
 ```
-LIVE only if micro_proofs ≥ 1 and codeHashes OK.
+
+LIVE only if micro\_proofs ≥ 1 and codeHashes OK.
 
 ## E. Honesty
+
 PrivateReleaseStrip · AgentsDeployStatus · Burnify quote = estimate · Wallet ≠ Portfolio · Packs ≠ GSN

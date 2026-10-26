@@ -1,11 +1,16 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Mainnet deployment sequence (MultiversX)
 
 ## Already live (reference)
 
 See `apps/frontend/public/data/contracts.json`:
 
-- tro_staking, nft_marketplace, slot_casino, treasury_splitter, venue, governance, …
-- status: LIVE + codeHash map
+* tro\_staking, nft\_marketplace, slot\_casino, treasury\_splitter, venue, governance, …
+* status: LIVE + codeHash map
 
 ## Grand Switch (front)
 

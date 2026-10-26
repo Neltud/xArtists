@@ -1,16 +1,21 @@
+---
+hidden: true
+noIndex: true
+---
+
 # DecisionProof & LIA Brain modules
 
 ## DecisionProof (`lia/intent/decision_proof.py`)
 
 Receipt LIA → exécuteur (Vellum / futur SC).
 
-| Champ | Rôle |
-|-------|------|
-| decision_id | Anti-replay |
-| action_type | 0 SWAP · 1 STAKE · 2 CLAIM · 3 REBALANCE · 4 BRIDGE |
-| amount / target_price | Atomic + bound slippage |
-| zk_proof | **Commitment hash** (pas un vrai SNARK on-chain) |
-| agent_signature | HMAC si `LIA_AGENT_HMAC_SECRET`, sinon marque paper |
+| Champ                  | Rôle                                                |
+| ---------------------- | --------------------------------------------------- |
+| decision\_id           | Anti-replay                                         |
+| action\_type           | 0 SWAP · 1 STAKE · 2 CLAIM · 3 REBALANCE · 4 BRIDGE |
+| amount / target\_price | Atomic + bound slippage                             |
+| zk\_proof              | **Commitment hash** (pas un vrai SNARK on-chain)    |
+| agent\_signature       | HMAC si `LIA_AGENT_HMAC_SECRET`, sinon marque paper |
 
 Vérification : replay · TTL · commitment · signature → `PaperOnly` ou `Valid` si `allow_live`.
 
@@ -18,16 +23,16 @@ Vérification : replay · TTL · commitment · signature → `PaperOnly` ou `Val
 
 ## Brain (`lia/brain/`)
 
-| Module | Rôle |
-|--------|------|
-| probabilistic | Monte-Carlo EV + P(profit) |
-| autotuner | Ajuste vol / latence / gas bias |
-| conquest | Arb inter-chaînes net de frais (advisory) |
-| portfolio | Exposition + flag rebalance |
-| economy | Flux fees → proposition mutation |
-| evolutionary | Mutation specialization |
-| meta_lia | Predator vs Harvester |
-| cycle | Un tour paper → `data/lia_brain_cycle.json` |
+| Module        | Rôle                                        |
+| ------------- | ------------------------------------------- |
+| probabilistic | Monte-Carlo EV + P(profit)                  |
+| autotuner     | Ajuste vol / latence / gas bias             |
+| conquest      | Arb inter-chaînes net de frais (advisory)   |
+| portfolio     | Exposition + flag rebalance                 |
+| economy       | Flux fees → proposition mutation            |
+| evolutionary  | Mutation specialization                     |
+| meta\_lia     | Predator vs Harvester                       |
+| cycle         | Un tour paper → `data/lia_brain_cycle.json` |
 
 ## Ops
 

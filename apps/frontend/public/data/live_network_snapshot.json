@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-17T04:40:00Z",
+  "updated": "2026-10-26T05:36:31Z",
   "source": "api.multiversx.com",
   "network": "mainnet",
   "api_health": {
@@ -7,39 +7,56 @@
     "economics": 200,
     "accounts": 200,
     "tokens": 200,
-    "note": "Probe 17 Oct 2026 ~04:40 UTC. Supernova refreshRate 600. User-sign live path is opt-in via xPortal, not autonomous PEM."
+    "note": "Probe 26 Oct 2026 ~05:36 UTC. Supernova refreshRate 600. LIA nonce frozen at 1479. VITE_LIA_LIVE_TRADING=0. Not a trading go-live."
   },
   "economics": {
-    "egld_price_usd": 3.7,
+    "egld_price_usd": 3.23,
     "egld_price_source": "api.multiversx.com/economics",
-    "market_cap_usd": 114610134,
-    "circulating": 30975712,
-    "staked": 14265045,
-    "apr": 0.088773,
+    "market_cap_usd": 100256716,
+    "circulating": 31039231,
+    "staked": 13885098,
+    "apr": 0.090996,
     "stale": false
   },
   "stats": {
     "refreshRate": 600,
-    "epoch": 2265,
-    "roundsPassed": 71983,
+    "epoch": 2274,
+    "roundsPassed": 78129,
     "roundsPerEpoch": 144000,
-    "accounts": 9272675,
-    "transactions": 632733485,
-    "blocks": 146320229,
+    "accounts": 9275583,
+    "transactions": 634212101,
+    "blocks": 151489544,
     "shards": 3,
     "stale": false
   },
   "lia_ops": {
     "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
-    "balance_egld": 1.603782,
-    "nonce": 1473,
+    "balance_egld": 1.585598,
+    "nonce": 1479,
     "stale": false,
-    "last_live": "2026-10-17T04:40:00Z"
+    "last_live": "2026-10-17T13:02:00Z"
   },
   "agents_marketplace": {
     "codeHash": "igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=",
     "balance_egld": 0.013,
-    "note": "buyPack upgrade. Dust is old micro-price tests, not 10/5/2.5 sales."
+    "note": "getPackPrice still 10 / 5 / 2.5 EGLD. Dust is old micro-price tests, not those sales."
   },
-  "notes": "Read-only probe. VITE_LIA_LIVE_TRADING=0 on Pages (paper). Slot isPayable=false. Listing #2 only. Do not fund legacy placeholders. Do not claimFees (treasury dest null)."
+  "market": {
+    "balance_egld": 0.0175,
+    "codeHash": "8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc="
+  },
+  "slot": {
+    "balance_egld": 0.5,
+    "codeHash": "UZ0nX6dWsSgkVqjnFnR5zPNPk1UrNtR5SsrYf96VJCs=",
+    "real_spin": "closed"
+  },
+  "tro": {
+    "id": "TRO-94c925",
+    "circulating": 476224,
+    "accounts": 562,
+    "price_usd": 7.96312e-05,
+    "market_cap_usd": 37.92,
+    "transactions": 2813
+  },
+  "notes": "Read-only probe. Site go-live only. VITE_LIA_LIVE_TRADING=0. Slot isPayable=false. Listing #2 only. Do not fund legacy placeholders. Do not claimFees (treasury dest null). Upbit notice 207379109 still extended through 16-20 Nov 2026. Bithumb FET window 2-6 Nov is not an EGLD clearance."
 }

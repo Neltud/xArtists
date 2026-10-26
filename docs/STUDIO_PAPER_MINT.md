@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Studio paper mint E2E
 
 Parcours:
@@ -8,4 +13,4 @@ Parcours:
 4. Event `lia-intent` type `STUDIO_MINT_PAPER` → journal 8008
 5. Si `VITE_VELLUM_8008_WEBHOOK` → proxy → Vellum workflow
 
-On-chain mint = ops mxpy / SC après GO_LIVE (pas de PEM dans le front).
+On-chain mint = ops mxpy / SC après GO\_LIVE (pas de PEM dans le front).

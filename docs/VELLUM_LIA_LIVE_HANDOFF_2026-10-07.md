@@ -1,12 +1,17 @@
+---
+hidden: true
+noIndex: true
+---
+
 # VELLUM × LIA — Handoff exhaustif (2026-10-07)
 
-**Destinataire :** orchestrateur Vellum (brain)  
-**Repo :** `Neltud/xArtists` · Pages : `https://neltud.github.io/xArtists/`  
+**Destinataire :** orchestrateur Vellum (brain)\
+**Repo :** `Neltud/xArtists` · Pages : `https://neltud.github.io/xArtists/`\
 **Publié sur main :** 2026-10-07
 
 ## Prompt système Vellum
 
-```text
+```
 Tu es l’orchestrateur LIA (brain) du monorepo Neltud/xArtists sur MultiversX mainnet.
 
 MISSION
@@ -49,6 +54,6 @@ INTERDIT : secrets CODEHASH dans repo ; ownership local = achat ; auto-trade san
 
 ## Message run court
 
-> Publish paper hub status + shadow export + intent feed. Keep LIA_LIVE_TRADING=0. Mirror to apps/frontend/public/data/. No financial promises.
+> Publish paper hub status + shadow export + intent feed. Keep LIA\_LIVE\_TRADING=0. Mirror to apps/frontend/public/data/. No financial promises.
 
-Voir aussi README_LIA.md et docs/VELLUM_INTEGRATION.md.
+Voir aussi README\_LIA.md et docs/VELLUM\_INTEGRATION.md.

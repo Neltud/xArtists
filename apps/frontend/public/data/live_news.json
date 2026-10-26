@@ -1,8 +1,71 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-24T03:25:43.390Z",
+  "updatedAt": "2026-10-26T12:18:57.868Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793017137714",
+      "timestamp": "12:18",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.19 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "egld-1792984992513",
+      "timestamp": "03:23",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.23 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "egld-1792969302052",
+      "timestamp": "23:01",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.24 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "egld-1792959904326",
+      "timestamp": "20:25",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.25 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "egld-1792925282858",
+      "timestamp": "10:48",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.26 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "egld-1792898484855",
+      "timestamp": "03:21",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.29 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "egld-1792882477916",
+      "timestamp": "22:54",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.30 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "egld-1792855554936",
+      "timestamp": "15:25",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.28 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "egld-1792837251622",
+      "timestamp": "10:20",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.38 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792812343114",
       "timestamp": "03:25",
@@ -135,69 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Lloyds and Barclays among UK banks named in crypto transfer complaints, advocacy group says",
       "link": "https://cointelegraph.com/news/uk-banks-crypto-transfer-complaints-stand-with-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792500017000",
-      "timestamp": "12:40",
-      "source": "CoinDesk",
-      "title": "Microsoft, Alphabet and Goldman Sachs join objections to OKX-ICE tokenized stock trading",
-      "link": "https://www.coindesk.com/business/2026/10/19/microsoft-alphabet-and-goldman-sachs-join-objections-to-okx-ice-tokenized-stock-trading"
-    },
-    {
-      "id": "rss-CoinDesk-1-1792495500000",
-      "timestamp": "11:25",
-      "source": "CoinDesk",
-      "title": "France's parliament approves vote to hit stablecoin trades with 31% capital gains tax",
-      "link": "https://www.coindesk.com/policy/2026/10/20/france-s-parliament-approves-vote-to-hit-crypto-to-stablecoin-trades-with-31-levy"
-    },
-    {
-      "id": "rss-CoinDesk-2-1792494861000",
-      "timestamp": "11:14",
-      "source": "CoinDesk",
-      "title": "Equity weakness could damp demand for bitcoin after biggest ETF inflows in a month",
-      "link": "https://www.coindesk.com/daybook-us/2026/10/20/equity-weakness-could-damp-demand-for-bitcoin-after-biggest-etf-inflows-in-a-month"
-    },
-    {
-      "id": "rss-CoinDesk-3-1792494640000",
-      "timestamp": "11:10",
-      "source": "CoinDesk",
-      "title": "JPMorgan sees 10% annual bitcoin returns, topping stocks, bonds and gold over next decade",
-      "link": "https://www.coindesk.com/markets/2026/10/20/jpmorgan-sees-10-annual-bitcoin-returns-topping-stocks-bonds-and-gold-over-next-decade"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1792474760000",
-      "timestamp": "05:39",
-      "source": "CoinTelegraph",
-      "title": "US Bitcoin ETFs draw $527M in biggest showing since September",
-      "link": "https://cointelegraph.com/markets/bitcoin-etfs-527m-inflows-biggest-since-september?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1792473251000",
-      "timestamp": "05:14",
-      "source": "CoinTelegraph",
-      "title": "Sophon sets Nov. 25 withdrawal deadline ahead of mainnet shutdown",
-      "link": "https://cointelegraph.com/news/sophon-sets-nov-25-withdrawal-deadline-ahead-of-mainnet-shutdown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1792469278000",
-      "timestamp": "04:07",
-      "source": "CoinTelegraph",
-      "title": "US bans DeepSeek from civilian agency IT systems",
-      "link": "https://cointelegraph.com/news/us-bans-deepseek-from-civilian-agency-it-systems?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1792460100000",
-      "timestamp": "01:35",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin rally could revive treasury buying, but easy-money days over",
-      "link": "https://cointelegraph.com/markets/bitcoin-rally-could-revive-treasury-buying-but-easy-money-days-over?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1792443874000",
-      "timestamp": "21:04",
-      "source": "CoinTelegraph",
-      "title": "Solana treasury firm SkyAI sells all SOL holdings, launches $201M buyback",
-      "link": "https://cointelegraph.com/news/solana-treasury-skyai-sells-all-sol-holdings-launches-201m-buyback?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }

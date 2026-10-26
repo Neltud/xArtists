@@ -1,13 +1,18 @@
+---
+hidden: true
+noIndex: true
+---
+
 # LIA Dynamic Trailing Stop
 
 **Module :** `lia/risk/trailing_stop.py`
 
 ## Modes
 
-| Mode | Comportement |
-|------|----------------|
-| `percent` | Stop = HWM × (1 − trail_pct) |
-| `atr` | Stop = HWM − k×ATR |
+| Mode              | Comportement                                                 |
+| ----------------- | ------------------------------------------------------------ |
+| `percent`         | Stop = HWM × (1 − trail\_pct)                                |
+| `atr`             | Stop = HWM − k×ATR                                           |
 | `hybrid` (défaut) | max(distance %, distance ATR), puis resserrement par paliers |
 
 ## Fonctionnalités
@@ -50,14 +55,14 @@ mgr.persist()
 
 ## Paramètres recommandés $TRO (faible liquidité)
 
-| Param | Valeur |
-|-------|--------|
-| trail_pct initial | 8–12 % |
-| atr_mult | 2.0–2.5 |
-| be_trigger_pct | 2 % |
-| partial 1R | 40–50 % |
-| min size | éviter frais (ex. > 8–10 USD) |
+| Param              | Valeur                        |
+| ------------------ | ----------------------------- |
+| trail\_pct initial | 8–12 %                        |
+| atr\_mult          | 2.0–2.5                       |
+| be\_trigger\_pct   | 2 %                           |
+| partial 1R         | 40–50 %                       |
+| min size           | éviter frais (ex. > 8–10 USD) |
 
 ## Dashboard
 
-Lire `data/lia_trailing_state.json` : entry, stop, hwm, size_remaining_pct, status.
+Lire `data/lia_trailing_state.json` : entry, stop, hwm, size\_remaining\_pct, status.

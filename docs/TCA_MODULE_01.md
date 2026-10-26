@@ -1,12 +1,17 @@
+---
+hidden: true
+noIndex: true
+---
+
 # TCA Module 1 — Sfumato (first video course)
 
 ## Paths
 
-| Path | Role |
-|------|------|
-| `/tca` · `/classroom` | Gate (JWT FULL → classroom, else Module 1 SAMPLE) |
-| `public/data/tca/module_01_sfumato.json` | Curriculum JSON |
-| `TcaModuleOne.tsx` | UI: video, sections, mentor notes, context bridge |
+| Path                                     | Role                                              |
+| ---------------------------------------- | ------------------------------------------------- |
+| `/tca` · `/classroom`                    | Gate (JWT FULL → classroom, else Module 1 SAMPLE) |
+| `public/data/tca/module_01_sfumato.json` | Curriculum JSON                                   |
+| `TcaModuleOne.tsx`                       | UI: video, sections, mentor notes, context bridge |
 
 ## Flow
 

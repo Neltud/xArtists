@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Google Pay — intégration xArtists
 
 ## Approche
@@ -8,9 +13,9 @@ Paramètre MoonPay : [on-ramp widget parameters](https://dev.moonpay.com/widget/
 
 ## UI
 
-- Bouton principal **Payer avec Google Pay** dans `FiatOnRampModal`
-- Liste Express : Google Pay en premier
-- `MoonpayButton` avec `paymentMethod="google_pay"`
+* Bouton principal **Payer avec Google Pay** dans `FiatOnRampModal`
+* Liste Express : Google Pay en premier
+* `MoonpayButton` avec `paymentMethod="google_pay"`
 
 ## Config
 
@@ -26,10 +31,10 @@ Sans clé → `buy-staging.moonpay.com`.
 
 ## Parité Apple / Google
 
-| Moyen | `paymentMethod` | Hint UI |
-|-------|-----------------|--------|
-| Google Pay | `google_pay` | Chrome / Android |
-| Apple Pay | `apple_pay` | Safari / iOS |
-| Carte | `credit_debit_card` | — |
+| Moyen      | `paymentMethod`     | Hint UI          |
+| ---------- | ------------------- | ---------------- |
+| Google Pay | `google_pay`        | Chrome / Android |
+| Apple Pay  | `apple_pay`         | Safari / iOS     |
+| Carte      | `credit_debit_card` | —                |
 
-Voir aussi [APPLE_PAY_ONRAMP.md](APPLE_PAY_ONRAMP.md).
+Voir aussi [APPLE\_PAY\_ONRAMP.md](APPLE_PAY_ONRAMP.md).

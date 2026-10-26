@@ -1,9 +1,14 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Utiliser Vellum pour les déploiements SC
 
-Vellum = **cerveau + exécuteur ops**. Les secrets restent dans le **vault Vellum**.  
+Vellum = **cerveau + exécuteur ops**. Les secrets restent dans le **vault Vellum**.\
 Le repo public ne contient que le code (`lia/vellum/deploy_scs_node.py`, scripts).
 
----
+***
 
 ## Architecture
 
@@ -27,36 +32,36 @@ Ops: verify codeHash → VITE flags → Pages rebuild
 
 **Paper quotidien :** `VELLUM_DEPLOY_SCS` absent ou `0` → phase deploy **skipped**.
 
----
+***
 
 ## Secrets Vellum (vault)
 
-| Secret | Usage |
-|--------|--------|
-| `LIA_WALLET_PEM` | Texte PEM **ou** chemin monté |
-| `LIA_WALLET_PEM_PATH` | Chemin fichier PEM alternatif |
-| *(optionnel)* `PINATA_JWT` | IPFS — pas requis pour deploy SC |
+| Secret                     | Usage                            |
+| -------------------------- | -------------------------------- |
+| `LIA_WALLET_PEM`           | Texte PEM **ou** chemin monté    |
+| `LIA_WALLET_PEM_PATH`      | Chemin fichier PEM alternatif    |
+| _(optionnel)_ `PINATA_JWT` | IPFS — pas requis pour deploy SC |
 
 Ne jamais echo / commit le PEM. Le node redacte les blocs PEM dans les logs.
 
----
+***
 
 ## Variables d’environnement (node Vellum)
 
-| Variable | Valeur | Rôle |
-|----------|--------|------|
-| `CHAIN` / `LIA_CHAIN_ID` | `1` | Mainnet only — refus sinon |
-| `LIA_LIVE_TRADING` | `0` | Pendant deploy |
-| `VELLUM_DEPLOY_SCS` | `1` | Active la phase dans `production_run` |
-| `VELLUM_DEPLOY_DRY` | `0` / `1` | `1` = build only, pas de `--send` |
-| `DEPLOY_CONTRACT` | `all` · `nft-marketplace` · `agents-marketplace` | Cible |
-| `FEE_BPS` | `300` | Argument constructeur |
-| `LIA_MVX_PROXY` / `PROXY` | gateway mainnet | API |
-| `PYTHONPATH` | `.` | Racine repo |
+| Variable                  | Valeur                                           | Rôle                                  |
+| ------------------------- | ------------------------------------------------ | ------------------------------------- |
+| `CHAIN` / `LIA_CHAIN_ID`  | `1`                                              | Mainnet only — refus sinon            |
+| `LIA_LIVE_TRADING`        | `0`                                              | Pendant deploy                        |
+| `VELLUM_DEPLOY_SCS`       | `1`                                              | Active la phase dans `production_run` |
+| `VELLUM_DEPLOY_DRY`       | `0` / `1`                                        | `1` = build only, pas de `--send`     |
+| `DEPLOY_CONTRACT`         | `all` · `nft-marketplace` · `agents-marketplace` | Cible                                 |
+| `FEE_BPS`                 | `300`                                            | Argument constructeur                 |
+| `LIA_MVX_PROXY` / `PROXY` | gateway mainnet                                  | API                                   |
+| `PYTHONPATH`              | `.`                                              | Racine repo                           |
 
 Réf. globale : [`ENVIRONMENT_VARIABLES.md`](ENVIRONMENT_VARIABLES.md).
 
----
+***
 
 ## Workflow Vellum A — Paper only (cadence 3–5 min)
 
@@ -113,7 +118,7 @@ export PEM=$LIA_WALLET_PEM_PATH   # si fichier
 ./scripts/runbook_deploy.sh verify
 ```
 
----
+***
 
 ## Prompt type pour l’assistant Vellum
 
@@ -129,18 +134,18 @@ Tu es LIA ops sur MultiversX mainnet.
 Code source: repo Neltud/xArtists (modules lia/vellum/*)
 ```
 
----
+***
 
 ## Interdits
 
-| Interdit | Pourquoi |
-|----------|----------|
-| `CHAIN≠1` | Projet mainnet-only |
-| PEM dans git / logs | Compromission LIA ops |
-| `VITE_*_CODEHASH_OK=1` sans verify | UX ment sur le live SC |
-| Deploy sur wallet user Connect | Séparer user / LIA ops |
-| LIVE trading auto après deploy | Gates + micro-proofs d’abord |
+| Interdit                           | Pourquoi                     |
+| ---------------------------------- | ---------------------------- |
+| `CHAIN≠1`                          | Projet mainnet-only          |
+| PEM dans git / logs                | Compromission LIA ops        |
+| `VITE_*_CODEHASH_OK=1` sans verify | UX ment sur le live SC       |
+| Deploy sur wallet user Connect     | Séparer user / LIA ops       |
+| LIVE trading auto après deploy     | Gates + micro-proofs d’abord |
 
----
+***
 
 Module : `lia/vellum/deploy_scs_node.py` · Entrée : `lia.vellum.production_run` phase `deploy_scs` · Commandes shell : [`SC_DEPLOY_COMMANDS.md`](SC_DEPLOY_COMMANDS.md)

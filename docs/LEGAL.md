@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # xArtists — Conditions d'utilisation & Disclaimer
 
 **Dernière mise à jour : 29 juillet 2026**
@@ -8,37 +13,37 @@ xArtists est une plateforme décentralisée sur MultiversX dédiée aux NFT arti
 
 ## 2. Nature non financière réglementée
 
-- $TRO n'est **pas** un titre financier, ni un produit d'investissement réglementé.
-- Aucun rendement n'est garanti.
-- Les performances passées de LIA ne préjugent pas des performances futures.
-- Vous pouvez perdre tout ou partie des fonds engagés.
+* $TRO n'est **pas** un titre financier, ni un produit d'investissement réglementé.
+* Aucun rendement n'est garanti.
+* Les performances passées de LIA ne préjugent pas des performances futures.
+* Vous pouvez perdre tout ou partie des fonds engagés.
 
 ## 3. Structure des commissions (marketplace)
 
-| Type | Taux | Bénéficiaire |
-|------|------|----------------|
-| Frais vendeur (vente primaire / secondaire) | 2,5 % | Trésorerie xArtists / LIA |
-| Frais acheteur | 0,5 % | Trésorerie xArtists / LIA |
-| Royalties secondaires (reventes) | 5 % | Créateur / projet |
-| Escrow RWA (art physique) | 2 % | Trésorerie xArtists |
-| Frais de listing | 0,01 EGLD | Trésorerie xArtists |
-| Performance fee LIA (PnL positif uniquement) | 15 % | Trésorerie LIA (high-water mark) |
+| Type                                         | Taux      | Bénéficiaire                     |
+| -------------------------------------------- | --------- | -------------------------------- |
+| Frais vendeur (vente primaire / secondaire)  | 2,5 %     | Trésorerie xArtists / LIA        |
+| Frais acheteur                               | 0,5 %     | Trésorerie xArtists / LIA        |
+| Royalties secondaires (reventes)             | 5 %       | Créateur / projet                |
+| Escrow RWA (art physique)                    | 2 %       | Trésorerie xArtists              |
+| Frais de listing                             | 0,01 EGLD | Trésorerie xArtists              |
+| Performance fee LIA (PnL positif uniquement) | 15 %      | Trésorerie LIA (high-water mark) |
 
 Les frais sont affichés avant validation de chaque transaction. Aucun frais caché.
 
 ## 4. Achats en fiat (EUR)
 
-Les paiements en euro / carte sont facilités via des prestataires tiers (ex. MoonPay, xMoney).  
-xArtists ne détient pas les fonds fiat : l'utilisateur achète de la crypto (EGLD/USDC) puis finalise l'achat NFT on-chain.  
+Les paiements en euro / carte sont facilités via des prestataires tiers (ex. MoonPay, xMoney).\
+xArtists ne détient pas les fonds fiat : l'utilisateur achète de la crypto (EGLD/USDC) puis finalise l'achat NFT on-chain.\
 Les conditions KYC/AML du prestataire s'appliquent.
 
 ## 5. Risques
 
-- Volatilité des crypto-actifs et des NFT.
-- Risques de smart contracts (bugs, exploits).
-- Risques de liquidité (pools $TRO à faible profondeur).
-- Risques opérationnels de l'agent LIA (signaux erronés, latence, API).
-- Risques réglementaires selon votre juridiction.
+* Volatilité des crypto-actifs et des NFT.
+* Risques de smart contracts (bugs, exploits).
+* Risques de liquidité (pools $TRO à faible profondeur).
+* Risques opérationnels de l'agent LIA (signaux erronés, latence, API).
+* Risques réglementaires selon votre juridiction.
 
 ## 6. Responsabilité
 
@@ -50,7 +55,7 @@ Les présentes conditions sont régies par le droit applicable au siège de l'op
 
 ## 8. Contact
 
-- GitHub : https://github.com/Neltud/xArtists
-- Wallet LIA : erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
+* GitHub : https://github.com/Neltud/xArtists
+* Wallet LIA : erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
 
 **En utilisant la dApp, vous acceptez ces conditions et le disclaimer de risque.**

@@ -1,10 +1,15 @@
+---
+hidden: true
+noIndex: true
+---
+
 # PUBLIC GO LIVE — 2026-09-30
 
 ## Decision
 
-- **Multisig:** not required (owner remains deployer until later).
-- **House:** funded — first user spins authorized.
-- **Scope:** full dapp mainnet (stake, market, venue, slot, packs paper/live per gate).
+* **Multisig:** not required (owner remains deployer until later).
+* **House:** funded — first user spins authorized.
+* **Scope:** full dapp mainnet (stake, market, venue, slot, packs paper/live per gate).
 
 ## Secrets (GitHub Pages / Actions) — required
 
@@ -21,23 +26,23 @@ Never commit `=1` in the repo.
 
 ## User paths
 
-| Flow | Route |
-|------|-------|
-| Connect xPortal | Header |
-| Stake TRO | `/staking` |
-| Marketplace | `/marketplace` |
-| Slot spin | `/slot` |
-| Museum 3D | `/museum` |
-| Packs / rooms | `/my-packs` |
-| Command Center | `/command-center` |
-| Checklist | `/go-live` |
+| Flow            | Route             |
+| --------------- | ----------------- |
+| Connect xPortal | Header            |
+| Stake TRO       | `/staking`        |
+| Marketplace     | `/marketplace`    |
+| Slot spin       | `/slot`           |
+| Museum 3D       | `/museum`         |
+| Packs / rooms   | `/my-packs`       |
+| Command Center  | `/command-center` |
+| Checklist       | `/go-live`        |
 
 ## Safety still on
 
-- Circuit breaker: owner `setPaused` on Slot / Market
-- Safety Switch → paper on hard TX fail
-- `TransactionMonitor` + `txLog`
-- Fail-closed if CODEHASH secret missing
+* Circuit breaker: owner `setPaused` on Slot / Market
+* Safety Switch → paper on hard TX fail
+* `TransactionMonitor` + `txLog`
+* Fail-closed if CODEHASH secret missing
 
 ## Post-launch
 

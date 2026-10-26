@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # @multiversx/sdk-dapp — installation xArtists
 
 ## Packages (apps/frontend/package.json)
@@ -51,9 +56,8 @@ import {
 } from '@multiversx/sdk-dapp/UI'
 ```
 
-(Exact export paths depend on sdk-dapp major version — check node_modules after install.)
+(Exact export paths depend on sdk-dapp major version — check node\_modules after install.)
 
 ## Note
 
-Current production connect path = Web Wallet redirect + address guard (no LIA mock).
-sdk-dapp enables full xPortal **QR** WalletConnect.
+Current production connect path = Web Wallet redirect + address guard (no LIA mock). sdk-dapp enables full xPortal **QR** WalletConnect.

@@ -1,6 +1,11 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Smart Contract deploy — optimisé (mainnet only)
 
-> **Entrée canonique:** [`docs/RUNBOOK_DEPLOY.md`](RUNBOOK_DEPLOY.md)  
+> **Entrée canonique:** [`docs/RUNBOOK_DEPLOY.md`](RUNBOOK_DEPLOY.md)\
 > **Orchestrateur:** `./scripts/runbook_deploy.sh <dry|deploy|verify|all>`
 
 ## Objectif
@@ -20,15 +25,15 @@ Sous le capot: `preflight_deploy_mainnet.sh` → `deploy_optimized_mainnet.sh` �
 
 ## Optimisations
 
-| Optimisation | Effet |
-|--------------|--------|
-| Gas = taille WASM × 1.35 (floor 120M, cap 600M) | Moins OOG / surpay |
-| Balance min ~0.15–0.25 EGLD | Stop avant send |
-| Build isolé | Workspace SC indépendant |
-| Retry gateway + bump gas | Récupération 502 / OOG |
-| Confirm adaptive 1s→8s | Finality Supernova |
-| Pas d'adresse fake | contracts.json seulement si confirm OK |
-| Phases runbook | dry gratuit avant deploy payant |
+| Optimisation                                    | Effet                                  |
+| ----------------------------------------------- | -------------------------------------- |
+| Gas = taille WASM × 1.35 (floor 120M, cap 600M) | Moins OOG / surpay                     |
+| Balance min \~0.15–0.25 EGLD                    | Stop avant send                        |
+| Build isolé                                     | Workspace SC indépendant               |
+| Retry gateway + bump gas                        | Récupération 502 / OOG                 |
+| Confirm adaptive 1s→8s                          | Finality Supernova                     |
+| Pas d'adresse fake                              | contracts.json seulement si confirm OK |
+| Phases runbook                                  | dry gratuit avant deploy payant        |
 
 ## Formule gas
 
@@ -39,23 +44,23 @@ recommended = min(600_000_000, max(120_000_000, data_est * 1.35))
 
 ## Coûts
 
-| Étape | EGLD |
-|-------|------|
-| dry | 0 |
-| Deploy 1 SC | ~0.05–0.15 |
+| Étape         | EGLD                   |
+| ------------- | ---------------------- |
+| dry           | 0                      |
+| Deploy 1 SC   | \~0.05–0.15            |
 | 2 SC + buffer | **>= 0.25** recommandé |
 
 ## Erreurs → action
 
-| Symptôme | Action |
-|----------|--------|
-| out of gas | `GAS_LIMIT_OVERRIDE=500000000 ./scripts/runbook_deploy.sh deploy` |
-| insufficient funds | top-up deployer |
-| codeHash null | re-run `verify` après 30–90 s |
-| adresse non parsée | explorer tx → `post_deploy_contracts.py` |
+| Symptôme           | Action                                                            |
+| ------------------ | ----------------------------------------------------------------- |
+| out of gas         | `GAS_LIMIT_OVERRIDE=500000000 ./scripts/runbook_deploy.sh deploy` |
+| insufficient funds | top-up deployer                                                   |
+| codeHash null      | re-run `verify` après 30–90 s                                     |
+| adresse non parsée | explorer tx → `post_deploy_contracts.py`                          |
 
 ## Après succès
 
-1. VITE + rebuild Pages  
-2. Micro List/Buy wallet **user**  
-3. `LIA_LIVE_TRADING=0` jusqu'à preuve micro  
+1. VITE + rebuild Pages
+2. Micro List/Buy wallet **user**
+3. `LIA_LIVE_TRADING=0` jusqu'à preuve micro

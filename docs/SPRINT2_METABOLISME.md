@@ -1,19 +1,24 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Sprint 2 — Le Métabolisme (Liquidity & Swaps)
 
 ## Livré
 
-| Mission | Fichier |
-|---------|--------|
-| Pools + price feeds | `src/services/liquidityService.ts` |
-| Best route | `src/services/aggregatorService.ts` |
-| Types SWAP / LP | `src/types/intent.ts` |
-| Quote pendant frappe | `SwapQuoteStrip` dans IntentBar ⌘K |
+| Mission              | Fichier                             |
+| -------------------- | ----------------------------------- |
+| Pools + price feeds  | `src/services/liquidityService.ts`  |
+| Best route           | `src/services/aggregatorService.ts` |
+| Types SWAP / LP      | `src/types/intent.ts`               |
+| Quote pendant frappe | `SwapQuoteStrip` dans IntentBar ⌘K  |
 
 ## Comportement
 
-- Quotes **paper** (référence + economics EGLD API).
-- Comparaison xExchange vs OneDex **simulée** pour ranking.
-- Aucun swap broadcast tant que Sprint 1 live gates non ouverts.
+* Quotes **paper** (référence + economics EGLD API).
+* Comparaison xExchange vs OneDex **simulée** pour ranking.
+* Aucun swap broadcast tant que Sprint 1 live gates non ouverts.
 
 ## Test manuel
 

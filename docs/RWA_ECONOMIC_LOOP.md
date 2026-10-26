@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Phase 5.5 — Mint-to-Burn economic loop
 
 ```

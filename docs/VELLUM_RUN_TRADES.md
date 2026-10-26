@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Prompt Vellum — construire & démarrer trades (ESDT filtrés)
 
 ## Copier dans Vellum

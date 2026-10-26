@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Sprint A + B — Operator (Vellum + mainnet agents)
 
 ## Sprint A (blocking)
@@ -34,7 +39,7 @@ Commit addresses only → GH Pages build.
 
 ## Sprint B (Vellum)
 
-```text
+```
 Secrets: LIA_WALLET_PEM, LIA_LIVE_TRADING=0
 Node code:
   from lia.vellum.orchestrator import run_orchestrator
@@ -43,21 +48,21 @@ Node code:
 
 Pipeline inside orchestrator:
 
-1. bootstrap chain=1  
-2. mvx_agent.decide  
-3. live_cycle (trailing)  
-4. compound health (tp_mode=log)  
-5. publish + lia_v6_status timestamp  
+1. bootstrap chain=1
+2. mvx\_agent.decide
+3. live\_cycle (trailing)
+4. compound health (tp\_mode=log)
+5. publish + lia\_v6\_status timestamp
 
 Flip `LIA_LIVE_TRADING=1` only after A blackbox green and micro size limits.
 
 ## Sprint C (after addresses live)
 
-- /agents Buy via SC  
-- fee 3% UI (agentFee.ts + VITE_AGENTS_FEE_BPS)  
-- Trading streak from lia_compound_streak.json  
+* /agents Buy via SC
+* fee 3% UI (agentFee.ts + VITE\_AGENTS\_FEE\_BPS)
+* Trading streak from lia\_compound\_streak.json
 
 ## Sprint D
 
-- soul-zk-verifier deploy optional  
-- no SOL/HL execution  
+* soul-zk-verifier deploy optional
+* no SOL/HL execution

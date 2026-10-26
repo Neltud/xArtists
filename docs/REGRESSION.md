@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Tests de régression — xArtists
 
 ## Lancer (rapide — défaut)
@@ -12,11 +17,11 @@ Cible locale : **quelques secondes**, pas des dizaines.
 
 ### Modes
 
-| Mode | Commande | Usage |
-|------|----------|--------|
-| **fast** (défaut) | `./scripts/run_regression.sh` | CI + dev |
-| pytest | `REGRESSION_MODE=pytest ./scripts/run_regression.sh` | debug assert |
-| legacy | `REGRESSION_MODE=legacy ./scripts/run_regression.sh` | 1 process / fichier |
+| Mode              | Commande                                             | Usage               |
+| ----------------- | ---------------------------------------------------- | ------------------- |
+| **fast** (défaut) | `./scripts/run_regression.sh`                        | CI + dev            |
+| pytest            | `REGRESSION_MODE=pytest ./scripts/run_regression.sh` | debug assert        |
+| legacy            | `REGRESSION_MODE=legacy ./scripts/run_regression.sh` | 1 process / fichier |
 
 ```bash
 REGRESSION_FAILFAST=1 REGRESSION_QUIET=1 ./scripts/run_regression.sh
@@ -24,17 +29,17 @@ REGRESSION_FAILFAST=1 REGRESSION_QUIET=1 ./scripts/run_regression.sh
 
 ## Optimisations temps
 
-| Avant | Après |
-|-------|--------|
-| 13× `python3 file.py` (cold start chacun) | **1 process** charge tous les modules |
-| pytest **en plus** des self-tests (double run) | Un seul passage |
-| CI timeout 15 min + pip upgrade | timeout 8 min, cache pip, pas de double suite |
-| confirm_tx start 1s | start **0.4s**, timeout défaut 120s |
+| Avant                                          | Après                                         |
+| ---------------------------------------------- | --------------------------------------------- |
+| 13× `python3 file.py` (cold start chacun)      | **1 process** charge tous les modules         |
+| pytest **en plus** des self-tests (double run) | Un seul passage                               |
+| CI timeout 15 min + pip upgrade                | timeout 8 min, cache pip, pas de double suite |
+| confirm\_tx start 1s                           | start **0.4s**, timeout défaut 120s           |
 
 ## Périmètre
 
-- `tests/regression/*` (data, post-deploy mock, trading gates, sc flags)
-- bridge / guardian / secure_tp / slippage / claude_agent / circuit / statarb / symbiosis
+* `tests/regression/*` (data, post-deploy mock, trading gates, sc flags)
+* bridge / guardian / secure\_tp / slippage / claude\_agent / circuit / statarb / symbiosis
 
 ## CI
 

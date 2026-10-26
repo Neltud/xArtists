@@ -1,11 +1,15 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Parcours utilisateur complet — xArtists
 
 ## Principes
 
-- **Packs / Agents IA** = produits numériques **uniques et limités** (expérience, signaux, accès).
-  **Pas** un produit financier, **pas** un investissement, **pas** de promesse de rendement.
-- Rewards éventuels = **cadeaux / allocations LIA** discrétionnaires, pas un droit contractuel de yield.
-- Connect wallet = **user** only (jamais LIA / deployer en session achat).
+* **Packs / Agents IA** = produits numériques **uniques et limités** (expérience, signaux, accès). **Pas** un produit financier, **pas** un investissement, **pas** de promesse de rendement.
+* Rewards éventuels = **cadeaux / allocations LIA** discrétionnaires, pas un droit contractuel de yield.
+* Connect wallet = **user** only (jamais LIA / deployer en session achat).
 
 ## Funnel
 
@@ -23,16 +27,16 @@ Landing → Musée 3D / Galerie
 
 ## Stake / Unstake
 
-| Asset | SC | User action |
-|-------|-----|-------------|
-| NFT art / ArtPass | nft-staking / governance | stakeNft / unstake |
-| TRO | tro-staking | stake / unstake amount |
+| Asset             | SC                       | User action            |
+| ----------------- | ------------------------ | ---------------------- |
+| NFT art / ArtPass | nft-staking / governance | stakeNft / unstake     |
+| TRO               | tro-staking              | stake / unstake amount |
 
 ## Vote power
 
 `power = LP_weight(user) + artpass_staked * 10`
 
-LP_weight set by ops oracle (preuve LP off-chain) until on-chain LP proof.
+LP\_weight set by ops oracle (preuve LP off-chain) until on-chain LP proof.
 
 ## Resale agent IA
 
@@ -43,9 +47,9 @@ LP_weight set by ops oracle (preuve LP off-chain) until on-chain LP proof.
 
 ## Ads / Bids / Slot
 
-- Ads: placeholder + paper bid tunnel `/ads`
-- NFT bids: on-chain Bid endpoint marketplace
-- Slot: progressive + rake → house → LIA
+* Ads: placeholder + paper bid tunnel `/ads`
+* NFT bids: on-chain Bid endpoint marketplace
+* Slot: progressive + rake → house → LIA
 
 ## Design
 

@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Vellum — reprendre depuis le dernier publish
 
 **PEM = secret Vellum uniquement** (pas GitHub Secret obligatoire si tout tourne dans Vellum).
@@ -31,19 +36,19 @@ print(run_cycle(
 
 ## Secrets Vellum
 
-| Secret | Rôle |
-|--------|------|
-| `LIA_WALLET_PEM` | Signature + deploy (jamais git) |
-| `LIA_LIVE_TRADING` | `0` dry-run / `1` mainnet |
-| `LIA_MVX_API` | `https://api.multiversx.com` |
-| `LIA_MVX_PROXY` | gateway |
+| Secret             | Rôle                            |
+| ------------------ | ------------------------------- |
+| `LIA_WALLET_PEM`   | Signature + deploy (jamais git) |
+| `LIA_LIVE_TRADING` | `0` dry-run / `1` mainnet       |
+| `LIA_MVX_API`      | `https://api.multiversx.com`    |
+| `LIA_MVX_PROXY`    | gateway                         |
 
 ## Fichiers lus/écrits par le cycle
 
-- `data/lia_trades.json` — historique dashboard
-- `data/lia_trailing_state.json` — stops dynamiques
-- `data/lia_tro_policy.json` — no-hold TRO
-- `data/contracts.json` — adresses SC
+* `data/lia_trades.json` — historique dashboard
+* `data/lia_trailing_state.json` — stops dynamiques
+* `data/lia_tro_policy.json` — no-hold TRO
+* `data/contracts.json` — adresses SC
 
 ## Après chaque run Vellum
 

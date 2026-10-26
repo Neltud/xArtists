@@ -1,6 +1,11 @@
+---
+hidden: true
+noIndex: true
+---
+
 # SC deploy checklist (ops)
 
-**Status today:** product SCs **NOT_DEPLOYED** (`codeHash` null).  
+**Status today:** product SCs **NOT\_DEPLOYED** (`codeHash` null).\
 **SoT:** `data/contracts.json` · `docs/SOURCE_OF_TRUTH.md`
 
 ## 0. Probe (no PEM required)
@@ -47,14 +52,15 @@ python3 scripts/ops_sc_status.py --strict   # should pass when codeHash set
 ```
 
 Update `data/contracts.json`:
-- addresses if changed
-- `deploy_status.* = "DEPLOYED"`
-- only then relax UI claims beyond GO_DEMO
+
+* addresses if changed
+* `deploy_status.* = "DEPLOYED"`
+* only then relax UI claims beyond GO\_DEMO
 
 ## 4. Frontend env (after verify)
 
-- `VITE_MARKETPLACE_ADDRESS` / agents address
-- integrityGates must see non-null codeHash
+* `VITE_MARKETPLACE_ADDRESS` / agents address
+* integrityGates must see non-null codeHash
 
 ## 5. Log
 
@@ -62,4 +68,4 @@ Append TX hashes + explorer links to `DEPLOYMENT_LOG.md`.
 
 ## Gas note
 
-Supernova ~600ms rounds — still budget gas limits from preflight output.
+Supernova \~600ms rounds — still budget gas limits from preflight output.

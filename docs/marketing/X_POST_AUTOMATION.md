@@ -1,15 +1,20 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Posts X — automation
 
 ## Limitation Grok Automations
 
-Cadence minimale supportée ici : **horaire** (`intervalMinutes: 60`), fenêtre 08:00–23:00 Europe/Paris.  
+Cadence minimale supportée ici : **horaire** (`intervalMinutes: 60`), fenêtre 08:00–23:00 Europe/Paris.\
 Pas de publication API X native dans ce connecteur → chaque run **rédige un draft** (`---DRAFT---`) à coller ou à faire publier par un posteur Vellum / Buffer / Typefully.
 
 ## Automation créée
 
-- **Name :** `xArtists-X-draft-30m-vellum-sync`
-- **taskId :** `4df77f9f-1f1b-4f80-a646-ff03727ca779`
-- **Rôle :** drafts alignés repo + honnêteté paper
+* **Name :** `xArtists-X-draft-30m-vellum-sync`
+* **taskId :** `4df77f9f-1f1b-4f80-a646-ff03727ca779`
+* **Rôle :** drafts alignés repo + honnêteté paper
 
 ## Alignement 30 min (comme Vellum)
 

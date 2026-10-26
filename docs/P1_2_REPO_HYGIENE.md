@@ -1,22 +1,27 @@
-# P1.2 — Nested copy hygiene (`xArtists-master/`)
+---
+hidden: true
+noIndex: true
+---
+
+# P1.2 — Nested copy hygiene (xArtists-master/)
 
 **2026-09-15**
 
 ## Problem (audit)
 
-A nested folder `xArtists-master/` (typical GitHub zip extract) was reported in earlier audits (~90+ files). Risk:
+A nested folder `xArtists-master/` (typical GitHub zip extract) was reported in earlier audits (\~90+ files). Risk:
 
-- Editing the wrong tree
-- Duplicate docs/status claims
-- Repo weight / confusion for CI
+* Editing the wrong tree
+* Duplicate docs/status claims
+* Repo weight / confusion for CI
 
 ## Current policy
 
-| Item | Policy |
-|------|--------|
-| `xArtists-master/` | **Forbidden** on `main` |
-| `.gitignore` | Must list `xArtists-master/` and `archive/` |
-| Accidental local zip | Keep local only; never `git add` |
+| Item                 | Policy                                      |
+| -------------------- | ------------------------------------------- |
+| `xArtists-master/`   | **Forbidden** on `main`                     |
+| `.gitignore`         | Must list `xArtists-master/` and `archive/` |
+| Accidental local zip | Keep local only; never `git add`            |
 
 ## Verify
 
@@ -36,8 +41,8 @@ git commit -m "chore: drop nested xArtists-master from index"
 
 ## Related clutter (optional follow-up)
 
-- Root `dist/` — prefer CI artifacts only (`static.yml`)
-- Multiple `DEPLOY_TRIGGER*.md` — can move under `archive/` later
+* Root `dist/` — prefer CI artifacts only (`static.yml`)
+* Multiple `DEPLOY_TRIGGER*.md` — can move under `archive/` later
 
 ## Status
 

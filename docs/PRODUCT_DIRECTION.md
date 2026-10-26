@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Direction produit xArtists (dApp démo)
 
 > Document de pilotage — 2026-09-02
@@ -6,19 +11,19 @@
 
 **xArtists** = galerie NFT MultiversX + packs agents IA (Pulse · Yield · Sentinel) + visites culturelles (Galerie 3D / Tours).
 
-- **Mode public** : soft launch **paper** — pas de trading live, pas de market on-chain tant que SC non vérifiés.
-- **Honnêteté** : fail-closed (pas de faux « live »).
-- **Public cible** : collectionneurs, curieux crypto-art, early adopters MultiversX — **pas** un dashboard ops LIA.
+* **Mode public** : soft launch **paper** — pas de trading live, pas de market on-chain tant que SC non vérifiés.
+* **Honnêteté** : fail-closed (pas de faux « live »).
+* **Public cible** : collectionneurs, curieux crypto-art, early adopters MultiversX — **pas** un dashboard ops LIA.
 
 ## Cœur produit (5 écrans)
 
-| Route | Rôle |
-|-------|------|
-| `/` | Accueil calme — CTA Galerie / Packs / Tours |
+| Route     | Rôle                                                     |
+| --------- | -------------------------------------------------------- |
+| `/`       | Accueil calme — CTA Galerie / Packs / Tours              |
 | `/museum` | **Galerie unique** 3D (Explorer · Ma collection · Carte) |
-| `/agents` | Packs Pulse · Yield · Sentinel + comparatif |
-| `/wallet` | Portefeuille utilisateur |
-| `/tours` | Carte destinations artistiques |
+| `/agents` | Packs Pulse · Yield · Sentinel + comparatif              |
+| `/wallet` | Portefeuille utilisateur                                 |
+| `/tours`  | Carte destinations artistiques                           |
 
 Secondaires utiles : `/marketplace` (catalogue), `/my-packs`, `/trading` (paper), `/legal`.
 
@@ -26,18 +31,18 @@ Secondaires utiles : `/marketplace` (catalogue), `/my-packs`, `/trading` (paper)
 
 ## Ce qui n’est PAS la Home
 
-- Checklists Zapier / posts X ops
-- Blocs codeHash / adresses SC
-- Pastilles Board / Guardian / GSN feed
-- Jargon Catzligue / Mydee
+* Checklists Zapier / posts X ops
+* Blocs codeHash / adresses SC
+* Pastilles Board / Guardian / GSN feed
+* Jargon Catzligue / Mydee
 
 Ces éléments restent en **mode ops** (`DEMO_MODE=false`) ou pages Lab.
 
 ## Paiements
 
-- Packs : Stripe (session API ou Payment Link) → intention paper / mint ultérieur
-- On-ramp EGLD : MoonPay
-- Paybox FR : `VITE_PAYBOX_PAYMENT_URL` + backend signé (voir `docs/PAYBOX_INTEGRATION.md`)
+* Packs : Stripe (session API ou Payment Link) → intention paper / mint ultérieur
+* On-ramp EGLD : MoonPay
+* Paybox FR : `VITE_PAYBOX_PAYMENT_URL` + backend signé (voir `docs/PAYBOX_INTEGRATION.md`)
 
 ## Live on-chain (plus tard)
 
@@ -47,9 +52,9 @@ Ces éléments restent en **mode ops** (`DEMO_MODE=false`) ou pages Lab.
 
 ## Déploiement
 
-- Source : `main` → GitHub Actions `static.yml` → Pages
-- Site : https://neltud.github.io/xArtists/
-- Si le live montre encore l’ancienne Home saturée : hard refresh + vérifier le run Actions vert sur le dernier SHA `main`.
+* Source : `main` → GitHub Actions `static.yml` → Pages
+* Site : https://neltud.github.io/xArtists/
+* Si le live montre encore l’ancienne Home saturée : hard refresh + vérifier le run Actions vert sur le dernier SHA `main`.
 
 ## Prochaines priorités
 

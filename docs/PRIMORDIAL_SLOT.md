@@ -1,19 +1,24 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Primordial Slot — SC & rewards (paper → mainnet)
 
 ## Product
 
-- **UI**: `/slot` · temple pré-humanité · scatter anim · paper bank
-- **Rewards**:
-  - Mini: `$TRO`, `EGLD`
-  - Jackpot soft: NFT 1/1 digital (video / music / numeric)
-  - Jackpot hard: **RWA 1/1** certified painting / hard copy (ops claim)
-- **Mode**: paper-first until SC `codeHash` verified on mainnet
+* **UI**: `/slot` · temple pré-humanité · scatter anim · paper bank
+* **Rewards**:
+  * Mini: `$TRO`, `EGLD`
+  * Jackpot soft: NFT 1/1 digital (video / music / numeric)
+  * Jackpot hard: **RWA 1/1** certified painting / hard copy (ops claim)
+* **Mode**: paper-first until SC `codeHash` verified on mainnet
 
 ## Wallet / deploy (ops)
 
-- **Do not** put PEM in git.
-- Preferred: ops machine or future Vellum workflow injects `SLOT_DEPLOY_PEM` env only.
-- Separate **Slot treasury** wallet recommended (not LIA trading wallet).
+* **Do not** put PEM in git.
+* Preferred: ops machine or future Vellum workflow injects `SLOT_DEPLOY_PEM` env only.
+* Separate **Slot treasury** wallet recommended (not LIA trading wallet).
 
 ## SC skeleton (future)
 
@@ -33,9 +38,9 @@ Slot jobs (verified spins / claims) can feed MX-8004 trust later — not require
 
 ## Checklist
 
-1. [x] UI paper `/slot`
-2. [x] Route `/slot` wired in App + BottomNav (24 Sep — restored from PLACEHOLDER)
-3. [ ] Paytable freeze + legal copy
-4. [ ] SC draft + audit path
-5. [ ] Deploy mainnet + codeHash in contracts.json
-6. [ ] Wire claim buttons fail-open only when codeHash live
+* [x] UI paper `/slot`
+* [x] Route `/slot` wired in App + BottomNav (24 Sep — restored from PLACEHOLDER)
+* [ ] Paytable freeze + legal copy
+* [ ] SC draft + audit path
+* [ ] Deploy mainnet + codeHash in contracts.json
+* [ ] Wire claim buttons fail-open only when codeHash live

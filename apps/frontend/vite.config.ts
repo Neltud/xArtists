@@ -1,12 +1,13 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { accessApiCspPlugin } from './scripts/accessApiCsp.mjs'
+import { publicAvailabilityPlugin } from './scripts/publicAvailability.mjs'
 
 const isSdkDapp = (id: string) =>
   id === '@multiversx/sdk-dapp' || id.startsWith('@multiversx/sdk-dapp/')
 
 export default defineConfig(({ mode }) => ({
-  plugins: [react(), accessApiCspPlugin(process.env.VITE_ACCESS_API_BASE || loadEnv(mode, process.cwd(), 'VITE_ACCESS_API_BASE').VITE_ACCESS_API_BASE)],
+  plugins: [react(), accessApiCspPlugin(process.env.VITE_ACCESS_API_BASE || loadEnv(mode, process.cwd(), 'VITE_ACCESS_API_BASE').VITE_ACCESS_API_BASE), publicAvailabilityPlugin()],
   base: '/xArtists/',
   define: {
     'process.env': '{}',

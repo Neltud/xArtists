@@ -1,14 +1,19 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Safety Manifesto — LIA & xArtists
 
 **Version publique · Pilier 1 (Bouclier)**
 
 ## Distinction
 
-| | Rôle | Ne fait pas |
-|--|------|-------------|
-| **LIA** | Agent d’intention (comprend, valide, propose l’exécution) | Détenir tes clés |
-| **$TRO** | Actif économique (utilité, rareté, staking) | Remplacer le Guardian |
-| **Ton wallet** | Signe les TX | Être le wallet protocole LIA |
+|                | Rôle                                                      | Ne fait pas                  |
+| -------------- | --------------------------------------------------------- | ---------------------------- |
+| **LIA**        | Agent d’intention (comprend, valide, propose l’exécution) | Détenir tes clés             |
+| **$TRO**       | Actif économique (utilité, rareté, staking)               | Remplacer le Guardian        |
+| **Ton wallet** | Signe les TX                                              | Être le wallet protocole LIA |
 
 ## Comment LIA protège les fonds
 
@@ -21,9 +26,9 @@
 
 ## Ce que nous ne promettons pas (encore)
 
-- Gasless live généralisé
-- Swaps auto sans signature
-- Rendement garanti des packs ou du board paper
+* Gasless live généralisé
+* Swaps auto sans signature
+* Rendement garanti des packs ou du board paper
 
 ## Signalement
 

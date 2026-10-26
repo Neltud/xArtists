@@ -1,10 +1,15 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Runbook — suite immédiate
 
 ## 1. Frontend (fait en local / à rebuild Pages)
 
-- PageGuide + InfoTip + ScStatusBanner sur : Dashboard, Trading, Wallet, Marketplace, Agents, DAO, Gallery, Portfolio, Hatom, Staking, Tro
-- Galerie titre = **xArtists Gallery** (plus Nelson Tuduri en H1)
-- Wallet / Portfolio = **LIA treasury** explicite
+* PageGuide + InfoTip + ScStatusBanner sur : Dashboard, Trading, Wallet, Marketplace, Agents, DAO, Gallery, Portfolio, Hatom, Staking, Tro
+* Galerie titre = **xArtists Gallery** (plus Nelson Tuduri en H1)
+* Wallet / Portfolio = **LIA treasury** explicite
 
 ```bash
 cd apps/frontend && npm ci && npm run build
@@ -34,5 +39,5 @@ python -m lia.board.publish
 
 ## 4. Gates
 
-- Signature user (extension) pour List/Buy — pas wallet LIA ops
-- LIA_LIVE_TRADING=1 seulement après micro-trades OK
+* Signature user (extension) pour List/Buy — pas wallet LIA ops
+* LIA\_LIVE\_TRADING=1 seulement après micro-trades OK

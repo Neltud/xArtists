@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # dApp finale — timeouts, concurrence, wallets, cycle LIA
 
 ## Timeouts réseau
@@ -8,16 +13,16 @@
 
 `src/services/txQueue.ts` — file **FIFO par adresse**.
 
-- `withTxLock(address, fn)` dans `useSendTx`
-- `queue: false` → rejet immédiat si busy (`TX_CONCURRENCY`)
+* `withTxLock(address, fn)` dans `useSendTx`
+* `queue: false` → rejet immédiat si busy (`TX_CONCURRENCY`)
 
 ## Wallets
 
-| Option | Provider |
-|--------|----------|
-| **xPortal** | WalletConnect V2 (`VITE_WALLETCONNECT_PROJECT_ID`) |
-| **DeFi Wallet** | Extension navigateur |
-| **Web Wallet** | wallet.multiversx.com |
+| Option          | Provider                                           |
+| --------------- | -------------------------------------------------- |
+| **xPortal**     | WalletConnect V2 (`VITE_WALLETCONNECT_PROJECT_ID`) |
+| **DeFi Wallet** | Extension navigateur                               |
+| **Web Wallet**  | wallet.multiversx.com                              |
 
 Modal : `WalletModal` + `WalletConnect`.
 
@@ -25,8 +30,8 @@ Modal : `WalletModal` + `WalletConnect`.
 
 **Visible uniquement si** `address === LIA_WALLET` (case-insensitive).
 
-- Utilisateur standard : **aucun** bouton cycle
-- LIA ops connecté : panneau contrôle + webhook optionnel `VITE_LIA_CYCLE_WEBHOOK`
+* Utilisateur standard : **aucun** bouton cycle
+* LIA ops connecté : panneau contrôle + webhook optionnel `VITE_LIA_CYCLE_WEBHOOK`
 
 Helper : `src/utils/liaAuth.ts` → `isLiaWalletConnected()`.
 

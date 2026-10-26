@@ -1,26 +1,31 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Review complète xArtists — 2026-08-04
 
 ## Architecture
 
-| Couche | Contenu |
-|--------|---------|
+| Couche   | Contenu                                                                   |
+| -------- | ------------------------------------------------------------------------- |
 | **dApp** | `apps/frontend` React/Vite · GH Pages · routes Studio/Market/Agents/DAO/… |
-| **LIA** | `lia/` circuit, defi, oracles, signals, claude_agent, memory |
-| **SC** | `contracts/` nft-marketplace + agents-marketplace (deploy P0) |
-| **Data** | `data/*.json` board, oracle, pyramids, defense |
-| **Docs** | MICRO_PROOF, TREASURY, placements, Vellum prompts |
+| **LIA**  | `lia/` circuit, defi, oracles, signals, claude\_agent, memory             |
+| **SC**   | `contracts/` nft-marketplace + agents-marketplace (deploy P0)             |
+| **Data** | `data/*.json` board, oracle, pyramids, defense                            |
+| **Docs** | MICRO\_PROOF, TREASURY, placements, Vellum prompts                        |
 
 ## État readiness
 
-| Capacité | Prêt ? |
-|----------|--------|
-| Consultation UI / SEO / persona | Oui |
-| Oracle EGLD multi-source | Oui (nouveau) |
-| Pinata IPFS | Oui (secrets Vellum) |
-| List/Buy on-chain | **Non** — SC codeHash null |
-| Buy agent | **Non** |
-| LIA live trading | **Non** — flag 0 |
-| DAO vote TX | Non (lecture seule volontaire) |
+| Capacité                        | Prêt ?                         |
+| ------------------------------- | ------------------------------ |
+| Consultation UI / SEO / persona | Oui                            |
+| Oracle EGLD multi-source        | Oui (nouveau)                  |
+| Pinata IPFS                     | Oui (secrets Vellum)           |
+| List/Buy on-chain               | **Non** — SC codeHash null     |
+| Buy agent                       | **Non**                        |
+| LIA live trading                | **Non** — flag 0               |
+| DAO vote TX                     | Non (lecture seule volontaire) |
 
 ## Modules LIA récents (structure)
 
@@ -35,10 +40,10 @@ lia/signals/social_intel.py      # social cap 0.15
 
 ## Corrections structure / orthographe docs
 
-- Titres unifiés **xArtists** (pas Nelson Tuduri en galerie)
-- Supply **$TRO max 500 000**
-- Fautes fréquentes évitées dans nouveaux docs (français technique clair)
-- Priorité P0 inchangée : deploy SC → signature → micro proof
+* Titres unifiés **xArtists** (pas Nelson Tuduri en galerie)
+* Supply **$TRO max 500 000**
+* Fautes fréquentes évitées dans nouveaux docs (français technique clair)
+* Priorité P0 inchangée : deploy SC → signature → micro proof
 
 ## Frontend publish
 
@@ -58,7 +63,7 @@ Sources : MVX economics (prioritaire) · xExchange URL optionnelle · CoinGecko 
 
 ## P0 suivant
 
-1. Deploy marketplace + agents + codeHash  
-2. Rebuild Pages  
-3. Signature user List/Buy  
+1. Deploy marketplace + agents + codeHash
+2. Rebuild Pages
+3. Signature user List/Buy
 4. Preuve micro → seulement alors `LIA_LIVE_TRADING=1`

@@ -1,7 +1,12 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Garde-fous Circuit LIA — Risk Management optimisé
 
-**Module** : `lia/circuit/guards.py` (v2.0.0-risk-opt)  
-**Cycle câblé** : `lia/circuit/guarded_cycle.py`  
+**Module** : `lia/circuit/guards.py` (v2.0.0-risk-opt)\
+**Cycle câblé** : `lia/circuit/guarded_cycle.py`\
 **Trailing** : `lia/risk/trailing_stop.py`
 
 ## Philosophie
@@ -14,28 +19,28 @@
 
 ## Liste G01–G20
 
-| Code | Garde-fou | Fail behavior |
-|------|-----------|---------------|
-| G01 | HALT (manuel ou **2** losses) | Bloque tout BUY |
-| G02 | COOLDOWN | Attend fin timer |
-| G03 | Position déjà ouverte | Max 1 position |
-| G04 | Goal 1000 trades | Stop compounding |
-| G05 | Pace (**20 min** min) | Bloque |
-| G06 | Cap journalier (**6** trades) | Bloque |
-| G07 | Asset policy (pas de TRO) | Bloque token |
-| G08 | Notional + **risk dynamique** 1.5 % | Recale / bloque |
-| G09 | Profit validated (fees + 1 % net) | Bloque |
-| G10 | Liquidité min **$60k** | Bloque |
-| G11 | GreenSmoke RISK_OFF | Bloque BUY |
-| G12 | Hatom HF < **1.8** | Bloque |
-| G13 | Pre-verify on-chain | Bloque live |
-| G14 | SL **0.9 %** / BE **0.4 %** / trail **0.35 %** | Force exit |
-| G15 | Post-verify tx | Flag ERROR |
-| G16 | Drawdown hard **12 %** peak | HALT |
-| G17 | Veto multi-horizon | Bloque BUY |
-| G18 | **Volatility** ATR > 4 % | Bloque |
-| G19 | **Time-stop** hold > 4 h | Force exit |
-| G20 | **Soft DD** ≥ 6 % | Réduit risk (scale) |
+| Code | Garde-fou                                      | Fail behavior       |
+| ---- | ---------------------------------------------- | ------------------- |
+| G01  | HALT (manuel ou **2** losses)                  | Bloque tout BUY     |
+| G02  | COOLDOWN                                       | Attend fin timer    |
+| G03  | Position déjà ouverte                          | Max 1 position      |
+| G04  | Goal 1000 trades                               | Stop compounding    |
+| G05  | Pace (**20 min** min)                          | Bloque              |
+| G06  | Cap journalier (**6** trades)                  | Bloque              |
+| G07  | Asset policy (pas de TRO)                      | Bloque token        |
+| G08  | Notional + **risk dynamique** 1.5 %            | Recale / bloque     |
+| G09  | Profit validated (fees + 1 % net)              | Bloque              |
+| G10  | Liquidité min **$60k**                         | Bloque              |
+| G11  | GreenSmoke RISK\_OFF                           | Bloque BUY          |
+| G12  | Hatom HF < **1.8**                             | Bloque              |
+| G13  | Pre-verify on-chain                            | Bloque live         |
+| G14  | SL **0.9 %** / BE **0.4 %** / trail **0.35 %** | Force exit          |
+| G15  | Post-verify tx                                 | Flag ERROR          |
+| G16  | Drawdown hard **12 %** peak                    | HALT                |
+| G17  | Veto multi-horizon                             | Bloque BUY          |
+| G18  | **Volatility** ATR > 4 %                       | Bloque              |
+| G19  | **Time-stop** hold > 4 h                       | Force exit          |
+| G20  | **Soft DD** ≥ 6 %                              | Réduit risk (scale) |
 
 ## Risk scale dynamique
 
@@ -50,18 +55,17 @@ scale ∈ [0.50, 1.20]
 ↑ RISK_ON + STATARB
 ```
 
-`max_notional = deployable × (risk_per_trade × scale) / stop_loss`
-plafonné à 20 % du déployable et $350.
+`max_notional = deployable × (risk_per_trade × scale) / stop_loss` plafonné à 20 % du déployable et $350.
 
 ## Stops template (G14)
 
-| Niveau | Valeur |
-|--------|--------|
-| Hard SL | entry × (1 − 0.9 %) |
-| Break-even | dès +0.4 % |
-| Trailing on | dès +0.6 % |
-| Trail distance | 0.35 % sous HWM |
-| Time-stop | 4 heures |
+| Niveau         | Valeur              |
+| -------------- | ------------------- |
+| Hard SL        | entry × (1 − 0.9 %) |
+| Break-even     | dès +0.4 %          |
+| Trailing on    | dès +0.6 %          |
+| Trail distance | 0.35 % sous HWM     |
+| Time-stop      | 4 heures            |
 
 ## Usage
 
@@ -98,8 +102,8 @@ act = g.runtime_action(
 
 ## État
 
-- `data/lia_guards_state.json` — compteur journalier + halt manuel
-- `data/lia_compound_streak.json` — streak / cooldown / open ticket
+* `data/lia_guards_state.json` — compteur journalier + halt manuel
+* `data/lia_compound_streak.json` — streak / cooldown / open ticket
 
 ## Halt manuel
 
@@ -108,5 +112,6 @@ CircuitGuards().set_halt("ops intervention")
 CircuitGuards().clear_halt()
 ```
 
----
-*LIA v6+ risk-opt — xArtists / MultiversX*
+***
+
+_LIA v6+ risk-opt — xArtists / MultiversX_

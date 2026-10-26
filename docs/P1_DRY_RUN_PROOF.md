@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # P1 — Intent feed + calldata dry-run
 
 ## Intent feed loop
@@ -13,11 +18,11 @@
 PYTHONPATH=. python -m lia.calldata.dry_run --egld 0.001 --slippage-bps 100
 ```
 
-- Fetches EGLD USD from MultiversX economics
-- `min_usdc = amount_egld * egld_usd * (1 - slippage)`
-- Injects min_out into `swapTokensFixedInput` arg (nonzero)
-- Logs `swap_data_string`, `swap_data_hex`, TRO ESDT dust template
-- **No broadcast**, `LIA_LIVE_TRADING=0`
+* Fetches EGLD USD from MultiversX economics
+* `min_usdc = amount_egld * egld_usd * (1 - slippage)`
+* Injects min\_out into `swapTokensFixedInput` arg (nonzero)
+* Logs `swap_data_string`, `swap_data_hex`, TRO ESDT dust template
+* **No broadcast**, `LIA_LIVE_TRADING=0`
 
 ## Next (real ESDT dust)
 

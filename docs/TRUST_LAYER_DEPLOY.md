@@ -1,15 +1,20 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Trust Layer — Deploy Protocol (Verify → Deploy → Release)
 
 **Mainnet only (CHAIN=1). Fail-closed. No performance promises.**
 
 ## 1. Treasury Splitter
 
-| Destination | bps | % |
-|-------------|-----|---|
-| Mission_Fund | 4000 | 40 |
-| Reserve_Fund | 3000 | 30 |
-| Reward_Pool | 2000 | 20 |
-| Operational_Ops | 1000 | 10 |
+| Destination      | bps  | %  |
+| ---------------- | ---- | -- |
+| Mission\_Fund    | 4000 | 40 |
+| Reserve\_Fund    | 3000 | 30 |
+| Reward\_Pool     | 2000 | 20 |
+| Operational\_Ops | 1000 | 10 |
 
 Source: `contracts/treasury-splitter/src/lib.rs`
 
@@ -21,11 +26,11 @@ python scripts/post_deploy_contracts.py --treasury-splitter erd1...
 python scripts/codehash_protocol.py --contract treasury-splitter
 ```
 
-Log: `data/deploy_treasury_splitter_last.json` (address + wasm_sha256).
+Log: `data/deploy_treasury_splitter_last.json` (address + wasm\_sha256).
 
 ## 2. Multisig parameter change
 
-Proposal → Time-lock (48h bps / 7d ownership) → M-of-N signatures → Execution  
+Proposal → Time-lock (48h bps / 7d ownership) → M-of-N signatures → Execution\
 `setSplitBps` / `setDestinations` / `setPaused` / 2-step `transferOwnership`+`acceptOwnership`
 
 ## 3. CodeHash protocol (market + agents)

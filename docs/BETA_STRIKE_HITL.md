@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Beta Strike — Human-in-the-Loop
 
 ```bash

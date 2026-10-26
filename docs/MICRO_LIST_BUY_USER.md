@@ -1,4 +1,9 @@
-# Micro List / Buy — wallet **user** (pas LIA)
+---
+hidden: true
+noIndex: true
+---
+
+# Micro List / Buy — wallet user (pas LIA)
 
 **Objectif** : prouver E2E List + Buy avec un wallet collectionneur/artiste, après SC live.
 
@@ -12,13 +17,13 @@
 
 ## Signature (P0)
 
-| Méthode | TX List/Buy ? |
-|---------|----------------|
-| xPortal / WC | Oui si `__xartistsSendTx` injecté (TxShell) |
-| DeFi Wallet extension | Oui (recommandé micro-test) |
-| Web Wallet redirect | Oui si callback + sdk-dapp |
-| **Coller erd1** (`paste_readonly`) | **Non** — lecture seule |
-| Wallet LIA ops | **Non** — bloqué UI |
+| Méthode                            | TX List/Buy ?                               |
+| ---------------------------------- | ------------------------------------------- |
+| xPortal / WC                       | Oui si `__xartistsSendTx` injecté (TxShell) |
+| DeFi Wallet extension              | Oui (recommandé micro-test)                 |
+| Web Wallet redirect                | Oui si callback + sdk-dapp                  |
+| **Coller erd1** (`paste_readonly`) | **Non** — lecture seule                     |
+| Wallet LIA ops                     | **Non** — bloqué UI                         |
 
 ## Procédure micro (user)
 
@@ -31,12 +36,12 @@
 
 ## Interdits
 
-- Signer avec PEM LIA depuis la dApp
-- Envoyer EGLD vers l’ancienne adresse empty account
-- Afficher succès si `sessionId` null / error sign
+* Signer avec PEM LIA depuis la dApp
+* Envoyer EGLD vers l’ancienne adresse empty account
+* Afficher succès si `sessionId` null / error sign
 
 ## Après succès
 
-- Retirer bandeaux P0 market
-- Activer index listings (`data/listings_index.json`)
-- Documenter tx hashes dans `DEPLOYMENT_LOG.md`
+* Retirer bandeaux P0 market
+* Activer index listings (`data/listings_index.json`)
+* Documenter tx hashes dans `DEPLOYMENT_LOG.md`

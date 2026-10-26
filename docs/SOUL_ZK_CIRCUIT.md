@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Soul zk proof circuit — configuration
 
 ## Status
@@ -8,16 +13,16 @@
 
 `config/soul_zk_circuit.json`
 
-| Key | Meaning |
-|-----|--------|
-| `scheme.primary` | groth16 (bn254) default |
-| `prover.enabled` | false until endpoint ready |
-| `verifier.address` | null → set `erd1…` after SC deploy |
-| `circuits.credit` | score ≥ threshold without revealing score |
-| `circuits.restake` | position commitment |
-| `circuits.eligibility` | merkle / soulbound cohort |
-| `gates.size_boost_max` | 1.5× size if proof valid |
-| `nullifier_store` | `data/soul_zk_nullifiers.json` |
+| Key                    | Meaning                                   |
+| ---------------------- | ----------------------------------------- |
+| `scheme.primary`       | groth16 (bn254) default                   |
+| `prover.enabled`       | false until endpoint ready                |
+| `verifier.address`     | null → set `erd1…` after SC deploy        |
+| `circuits.credit`      | score ≥ threshold without revealing score |
+| `circuits.restake`     | position commitment                       |
+| `circuits.eligibility` | merkle / soulbound cohort                 |
+| `gates.size_boost_max` | 1.5× size if proof valid                  |
+| `nullifier_store`      | `data/soul_zk_nullifiers.json`            |
 
 ## Env overrides (Vellum secrets)
 
@@ -28,7 +33,7 @@ export SOUL_ZK_VERIFIER_ADDRESS=         # erd1… verifier SC
 
 ## Pipeline
 
-```text
+```
 build_proof_request(subject, claim_type, amount)
   → public_inputs + commitment + nullifier
   → [off-chain prover] proof_bytes_hex
@@ -40,11 +45,11 @@ record_nullifier(nf)  # after successful on-chain verify
 
 ## Claims
 
-| claim_type | Circuit id | Use |
-|------------|------------|-----|
-| `credit` | soul_credit_v1 | Size boost / agent gate |
-| `restake` | soul_restake_v1 | Yield sleeve unlock |
-| `eligibility` | soul_elig_v1 | Limited agent pack access |
+| claim\_type   | Circuit id        | Use                       |
+| ------------- | ----------------- | ------------------------- |
+| `credit`      | soul\_credit\_v1  | Size boost / agent gate   |
+| `restake`     | soul\_restake\_v1 | Yield sleeve unlock       |
+| `eligibility` | soul\_elig\_v1    | Limited agent pack access |
 
 ## Activation checklist
 

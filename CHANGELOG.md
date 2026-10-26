@@ -1,5 +1,49 @@
 # Changelog — xArtists
 
+## [0.119.3](https://github.com/Neltud/xArtists/compare/v0.119.2...v0.119.3) (2026-10-26)
+
+
+### Bug Fixes
+
+* **probe:** refresh 26 Oct fallback and keep trading paper ([0fb30d7](https://github.com/Neltud/xArtists/commit/0fb30d75d6943a85945e7ca42c86eeb09e1ffd99))
+* **pwa:** do not read navigator outside a browser ([b420bd5](https://github.com/Neltud/xArtists/commit/b420bd5d8a03b0d67f90278d1c173529afe051be))
+
+## [0.122.0] — 2026-10-26
+
+### Bug Fixes
+
+* **probe:** refresh the public fallback and entity snapshots to the 26 Oct mainnet probe (epoch 2274, EGLD $3.23). Stop serving the 25 Oct chrome when the API is down.
+* **readme:** stop describing listing #2 as a live 0.25 EGLD price. That figure is a historical proof, not a fallback.
+* **go-live:** keep `VITE_LIA_LIVE_TRADING=0`. Day 3/29 of the Upbit 207379109 extension. A Bithumb FET notice in early November is not an EGLD clearance.
+
+## [0.119.2](https://github.com/Neltud/xArtists/compare/v0.119.1...v0.119.2) (2026-10-25)
+
+
+### Bug Fixes
+
+* **go-live:** publish the site, keep LIA paper through the Korean extension ([6665441](https://github.com/Neltud/xArtists/commit/666544199617d087ea1f1702dfef35a98fc09627))
+
+## [0.121.0] — 2026-10-25
+
+### Bug Fixes
+
+* **go-live:** distinguish site go-live from trading go-live. Show days left until 16 Nov and 21 Nov. Keep `VITE_LIA_LIVE_TRADING=0`.
+* **entity map:** stop serving the 17 Oct LIA snapshot (1.603782 EGLD, nonce 1473). Live API overlay, fallback probe nonce 1479 / 1.585598 EGLD.
+
+## [0.119.1](https://github.com/Neltud/xArtists/compare/v0.119.0...v0.119.1) (2026-10-24)
+
+
+### Bug Fixes
+
+* **access-api:** health moonpay flags, paybox 501 before auth, origin+rate limit, introspect ([1aef2db](https://github.com/Neltud/xArtists/commit/1aef2db57b42240f4b1b8bfa238aed4731b9c568))
+* **go-live:** Korean warning is an extension, keep LIA paper ([87b62b7](https://github.com/Neltud/xArtists/commit/87b62b7b5a324f90d521b88f2d53260270457c4e))
+
+## [0.120.0] — 2026-10-24
+
+### Bug Fixes
+
+* **go-live:** mount the orphan public pulse and treat the 23 Oct Upbit/Bithumb notice as an extension through 16–20 Nov, not a trading clearance. `VITE_LIA_LIVE_TRADING` stays 0.
+
 ## [0.119.0](https://github.com/Neltud/xArtists/compare/v0.118.1...v0.119.0) (2026-10-21)
 
 

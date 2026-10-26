@@ -1,12 +1,18 @@
+---
+hidden: true
+noIndex: true
+---
+
 # mxpy — issue collection NFT + mint (mainnet)
 
 > **PEM uniquement hors navigateur** (machine ops / Vellum isolé). Chain `1` = mainnet.
 
 Remplacer :
-- `wallet.pem`
-- `COLLECTION_TICKER` (3–10 A-Z0-9)
-- `COLLECTION_NAME`
-- URIs IPFS après pin Pinata
+
+* `wallet.pem`
+* `COLLECTION_TICKER` (3–10 A-Z0-9)
+* `COLLECTION_NAME`
+* URIs IPFS après pin Pinata
 
 ## 0. Config
 
@@ -33,7 +39,7 @@ mxpy tx new --proxy https://gateway.multiversx.com --chain 1 \
 
 Décodage data (human) :
 
-```text
+```
 issueNonFungible
   @name_hex
   @ticker_hex

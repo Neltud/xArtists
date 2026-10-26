@@ -1,12 +1,17 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Intégration dans Neltud/xArtists
 
 ## Version de référence
 
-- Site : https://xartists.loftypearl128.chatgpt.site/
-- Version Sites : 3.
-- Source : `8a607c8831234fe738a091a5a4caf325811c1b5b`.
-- Base GitHub examinée : `e14d586e054556768e35ed50043b0950bc4b686c` sur `main`.
-- Branche locale proposée par le script : `codex/xartists-sites-v3-exact`.
+* Site : https://xartists.loftypearl128.chatgpt.site/
+* Version Sites : 3.
+* Source : `8a607c8831234fe738a091a5a4caf325811c1b5b`.
+* Base GitHub examinée : `e14d586e054556768e35ed50043b0950bc4b686c` sur `main`.
+* Branche locale proposée par le script : `codex/xartists-sites-v3-exact`.
 
 Les 751 fichiers de `source/` sont destinés à `apps/frontend/`. La source inclut l’accueil, les 36 modules, les 50 alias de routes, les huit langues, les musées tactiles et la correction du cycle de connexion xPortal. Le sous-arbre frontend est un instantané exact de la version validée. Le script d’import conserve les autres répertoires du dépôt depuis le HEAD du clone fourni.
 
@@ -26,6 +31,7 @@ Vérifier aussi les domaines autorisés du projet WalletConnect si le relais ref
 ## Statut Grok (2026-10-19)
 
 ### Fait localement
+
 1. Extraction vérifiée : **751 fichiers**, commit Sites `8a607c8831234fe738a091a5a4caf325811c1b5b`, SHA archive `c1b5fcd558902a50aa90c19bfd5286ecb29f8ba8e4b6d0e60b361da8abe74e49`.
 2. `IMPORT_IN_REPO.py` sur clone propre → branche `codex/xartists-sites-v3-exact`.
 3. Commit exact : `4b2026d` (751 fichiers `apps/frontend`).
@@ -33,10 +39,11 @@ Vérifier aussi les domaines autorisés du projet WalletConnect si le relais ref
 5. Bundle : `xartists-sites-v3-exact.bundle` (4.2 Mo) dans l’environnement agent pour push manuel.
 
 ### Non fait / bloqué
-- `git push` HTTPS : pas de credentials agent → **les 751 fichiers ne sont pas encore sur GitHub** (seule la branche pointe encore sur un tip proche de main + ce doc).
-- `npm install` incomplet ici (502 registry WalletConnect) → build Vite **non exécuté**.
-- Scripts `check-routes` / `verify-site` / `run-render-check` : **non exécutés**.
-- Comparaison visuelle navigateur / téléphone / xPortal réel : **non exécutée**.
+
+* `git push` HTTPS : pas de credentials agent → **les 751 fichiers ne sont pas encore sur GitHub** (seule la branche pointe encore sur un tip proche de main + ce doc).
+* `npm install` incomplet ici (502 registry WalletConnect) → build Vite **non exécuté**.
+* Scripts `check-routes` / `verify-site` / `run-render-check` : **non exécutés**.
+* Comparaison visuelle navigateur / téléphone / xPortal réel : **non exécutée**.
 
 ### Push recommandé (machine avec auth GitHub)
 

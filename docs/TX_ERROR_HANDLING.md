@@ -1,27 +1,32 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Gestion des erreurs de transaction
 
 ## Modules
 
-| Fichier | Rôle |
-|---------|------|
-| `src/services/txErrors.ts` | Classification, preflight, poll status |
-| `src/hooks/useSendTx.ts` | Envoi sdk-dapp + phases |
-| `src/components/TxStatusBanner.tsx` | Feedback UI |
-| `src/hooks/useAgentsMarketplace.ts` | List/Buy/Cancel + errors |
+| Fichier                             | Rôle                                   |
+| ----------------------------------- | -------------------------------------- |
+| `src/services/txErrors.ts`          | Classification, preflight, poll status |
+| `src/hooks/useSendTx.ts`            | Envoi sdk-dapp + phases                |
+| `src/components/TxStatusBanner.tsx` | Feedback UI                            |
+| `src/hooks/useAgentsMarketplace.ts` | List/Buy/Cancel + errors               |
 
 ## Codes
 
-| Code | Signification | Retry |
-|------|---------------|-------|
-| `USER_REJECTED` | Refus signature wallet | oui |
-| `INSUFFICIENT_FUNDS` | EGLD + gas | oui |
-| `INSUFFICIENT_GAS` | Gas limit | oui |
-| `WRONG_NONCE` | Nonce stale | oui |
-| `CONTRACT_ERROR` | SC require! / return | non |
-| `TIMEOUT` | Poll explorer | oui (check explorer) |
-| `NETWORK` | API/gateway | oui |
-| `NOT_CONFIGURED` | Adresse SC manquante | non |
-| `NOT_LOGGED_IN` | Wallet | oui |
+| Code                 | Signification          | Retry                |
+| -------------------- | ---------------------- | -------------------- |
+| `USER_REJECTED`      | Refus signature wallet | oui                  |
+| `INSUFFICIENT_FUNDS` | EGLD + gas             | oui                  |
+| `INSUFFICIENT_GAS`   | Gas limit              | oui                  |
+| `WRONG_NONCE`        | Nonce stale            | oui                  |
+| `CONTRACT_ERROR`     | SC require! / return   | non                  |
+| `TIMEOUT`            | Poll explorer          | oui (check explorer) |
+| `NETWORK`            | API/gateway            | oui                  |
+| `NOT_CONFIGURED`     | Adresse SC manquante   | non                  |
+| `NOT_LOGGED_IN`      | Wallet                 | oui                  |
 
 ## Phases
 

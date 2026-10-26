@@ -1,15 +1,20 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Audit V6.1 response (Grok)
 
 Auditor notes corrected against **current main** (2026-09-30).
 
 ## Status vs audit table
 
-| Module | Audit said | Actual |
-|--------|------------|--------|
-| Raycaster / CommandWall | Pending | **Done** |
-| Audio / Shader | Pending | **Done** (PulseAtmosphere + music cross-fade) |
-| Real-world minting | Pending | Paper **Done** · on-chain gated CODEHASH |
-| LIA Velum | Missing | Phase 6+ (after dust) |
+| Module                  | Audit said | Actual                                        |
+| ----------------------- | ---------- | --------------------------------------------- |
+| Raycaster / CommandWall | Pending    | **Done**                                      |
+| Audio / Shader          | Pending    | **Done** (PulseAtmosphere + music cross-fade) |
+| Real-world minting      | Pending    | Paper **Done** · on-chain gated CODEHASH      |
+| LIA Velum               | Missing    | Phase 6+ (after dust)                         |
 
 ## Critical gaps closed this commit
 
@@ -20,23 +25,23 @@ Auditor notes corrected against **current main** (2026-09-30).
 
 ## Still ops / Phase 5 (not pure front)
 
-| Item | Owner |
-|------|--------|
-| `VITE_*_CODEHASH_OK` secrets | GH Pages secrets only |
-| ABI verify agents `buyPack` | Ops bytecode vs front tag |
-| Fund slot progressive + `setCachedHouseEgld` / API refresh | Ops |
-| Dust loop mint / spin / treasury | Human + xPortal |
-| Akash / LIA Velum | Phase 6–8 after dust green |
+| Item                                                       | Owner                      |
+| ---------------------------------------------------------- | -------------------------- |
+| `VITE_*_CODEHASH_OK` secrets                               | GH Pages secrets only      |
+| ABI verify agents `buyPack`                                | Ops bytecode vs front tag  |
+| Fund slot progressive + `setCachedHouseEgld` / API refresh | Ops                        |
+| Dust loop mint / spin / treasury                           | Human + xPortal            |
+| Akash / LIA Velum                                          | Phase 6–8 after dust green |
 
 ## Rules respected
 
-- No `=1` CODEHASH in repo
-- Paper mode remains always available
-- Museum extension-only
+* No `=1` CODEHASH in repo
+* Paper mode remains always available
+* Museum extension-only
 
 ## Recommended next human step
 
-1. Rebuild Pages  
-2. Optional secrets: already set TRO/MARKET/VENUE; add SLOT/AGENTS only after ABI + fund  
-3. Dust spin + dust stake (already once) + listNft  
+1. Rebuild Pages
+2. Optional secrets: already set TRO/MARKET/VENUE; add SLOT/AGENTS only after ABI + fund
+3. Dust spin + dust stake (already once) + listNft
 4. Only then Akash Shadow Engine

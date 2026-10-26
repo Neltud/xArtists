@@ -1,7 +1,11 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Emergency pause — xArtists mainnet SC
 
-Use when `ops_sc_watch` fails, unexpected balance spike, or suspected exploit pattern
-(see Kevin Lallement 2026-10-16 note on automated SC scanning).
+Use when `ops_sc_watch` fails, unexpected balance spike, or suspected exploit pattern (see Kevin Lallement 2026-10-16 note on automated SC scanning).
 
 ## 1. Detect
 
@@ -18,13 +22,13 @@ Fail conditions: `MISMATCH` codeHash · `NULL` · balance ≥ alert (default 2 E
 
 Priority order (public money surfaces first):
 
-| Priority | SC | Address |
-|----------|-----|--------|
-| 1 | agents_marketplace | `erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg` |
-| 2 | nft_marketplace | `erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm` |
-| 3 | slot_casino | `erd1qqqqqqqqqqqqqpgquf3cuv2zsfsahy7ypvter3qcep4ptthsvhxqs4g34f` |
-| 4 | agent_stake_escrow | `erd1qqqqqqqqqqqqqpgqzyvwldu6jq8w6ry6s856dl0uy7g0v37vvhxqndvzr3` |
-| 5 | others | see `contracts.ts` |
+| Priority | SC                   | Address                                                          |
+| -------- | -------------------- | ---------------------------------------------------------------- |
+| 1        | agents\_marketplace  | `erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg` |
+| 2        | nft\_marketplace     | `erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm` |
+| 3        | slot\_casino         | `erd1qqqqqqqqqqqqqpgquf3cuv2zsfsahy7ypvter3qcep4ptthsvhxqs4g34f` |
+| 4        | agent\_stake\_escrow | `erd1qqqqqqqqqqqqqpgqzyvwldu6jq8w6ry6s856dl0uy7g0v37vvhxqndvzr3` |
+| 5        | others               | see `contracts.ts`                                               |
 
 ```bash
 SC=erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg
@@ -50,14 +54,14 @@ mxpy contract query "$SC" --function=isPaused --proxy=https://gateway.multiversx
 
 Until codeHash re-verified:
 
-- Set GitHub Actions secrets / env: `VITE_AGENTS_CODEHASH_OK=0`, `VITE_MARKETPLACE_CODEHASH_OK=0`, etc.
-- Redeploy Pages so `canBuyAgent()` / `canListBuyNft()` stay closed.
+* Set GitHub Actions secrets / env: `VITE_AGENTS_CODEHASH_OK=0`, `VITE_MARKETPLACE_CODEHASH_OK=0`, etc.
+* Redeploy Pages so `canBuyAgent()` / `canListBuyNft()` stay closed.
 
 ## 4. Do not
 
-- Do not `claimFees` during an active incident unless isolating funds to a known safe cold wallet with dual review.
-- Do not upgrade SC mid-incident without a known-good wasm + hash plan.
-- Do not post PEM or seed anywhere.
+* Do not `claimFees` during an active incident unless isolating funds to a known safe cold wallet with dual review.
+* Do not upgrade SC mid-incident without a known-good wasm + hash plan.
+* Do not post PEM or seed anywhere.
 
 ## 5. Resume
 

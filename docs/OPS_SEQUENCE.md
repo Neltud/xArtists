@@ -1,13 +1,18 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Séquence ops production (ordre strict)
 
 ## 1. Rebuild GH Pages (Board + DAO + galerie)
 
-- Push `main` déjà contient seeds `public/data/lia_board.json`, nav DAO, branding xArtists.
-- GitHub → **Actions** → workflow `deploy-pages.yml` ou `deploy-frontend.yml` → **Run workflow**.
-- Vérifier : https://neltud.github.io/xArtists/  
-  - `/trading` Board plus en 404  
-  - Nav **DAO**  
-  - Galerie titre **xArtists**
+* Push `main` déjà contient seeds `public/data/lia_board.json`, nav DAO, branding xArtists.
+* GitHub → **Actions** → workflow `deploy-pages.yml` ou `deploy-frontend.yml` → **Run workflow**.
+* Vérifier : https://neltud.github.io/xArtists/
+  * `/trading` Board plus en 404
+  * Nav **DAO**
+  * Galerie titre **xArtists**
 
 ```bash
 # local
@@ -40,7 +45,7 @@ export FEE_BPS=300
 
 `docs/MAINNET_DEPLOY_BLACKBOX.md` — cocher list/buy/claim/bid.
 
-## 5. contracts.json + VITE_* + rebuild
+## 5. contracts.json + VITE\_\* + rebuild
 
 ```bash
 python scripts/post_deploy_contracts.py \
@@ -60,9 +65,9 @@ cd apps/frontend && npm run build
 
 **Garder `LIA_LIVE_TRADING=0`** jusqu’à :
 
-- [ ] Signature wallet user OK (`__xartistsSendTx`)
-- [ ] Micro Buy NFT OK
-- [ ] Micro Buy agent OK (si SC live)
-- [ ] Executor health paper OK
+* [ ] Signature wallet user OK (`__xartistsSendTx`)
+* [ ] Micro Buy NFT OK
+* [ ] Micro Buy agent OK (si SC live)
+* [ ] Executor health paper OK
 
 Puis seulement : `export LIA_LIVE_TRADING=1` sur l’hôte Vellum sécurisé.

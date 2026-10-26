@@ -1,10 +1,15 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Marketplace — upgrade payable (ops)
 
 ## Problem
 
 Account `nft_marketplace` reports:
 
-```text
+```
 isPayable: false
 isPayableBySmartContract: false
 codeHash: 8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=
@@ -49,5 +54,5 @@ Expect `isPayable: true`. Then micro-buy `buyNft@01` with listing price.
 
 ## Do not
 
-- Change SC address in front without updating secrets + contracts.json
-- Commit PEM
+* Change SC address in front without updating secrets + contracts.json
+* Commit PEM

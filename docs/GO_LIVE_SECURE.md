@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Go-live secure — chemin rapide et fermé
 
 ## Objectif
@@ -27,32 +32,32 @@ python scripts/generate_vite_env.py
 
 ## Gates (`python -m lia.security.go_live_gates`)
 
-| Gate | Critique | Condition |
-|------|----------|-----------|
-| chain_mainnet | oui | CHAIN=1 |
-| marketplace_codehash | oui | codeHash ≠ null |
-| agents_marketplace_codehash | oui | codeHash ≠ null |
-| no_pem_in_repo | oui | zéro `.pem` tracké |
-| micro_proofs | si LIVE | ≥1 tx proof OK |
+| Gate                          | Critique | Condition          |
+| ----------------------------- | -------- | ------------------ |
+| chain\_mainnet                | oui      | CHAIN=1            |
+| marketplace\_codehash         | oui      | codeHash ≠ null    |
+| agents\_marketplace\_codehash | oui      | codeHash ≠ null    |
+| no\_pem\_in\_repo             | oui      | zéro `.pem` tracké |
+| micro\_proofs                 | si LIVE  | ≥1 tx proof OK     |
 
-`allow_product_claims_live` = les deux SC live.  
+`allow_product_claims_live` = les deux SC live.\
 `allow_live_trading` = flag 1 **et** gates + micro-proof.
 
 ## SC déjà sécurisés dans le code
 
-- pause · CEI (`active=false` avant transfers) · fee cap · claimFees owner  
-- upgrade owner · transferOwnership 2-step · agent_id length cap  
+* pause · CEI (`active=false` avant transfers) · fee cap · claimFees owner
+* upgrade owner · transferOwnership 2-step · agent\_id length cap
 
 ## Ne pas faire
 
-- Fonds vers adresse marketplace **empty** actuelle  
-- `LIA_LIVE_TRADING=1` sans micro-proof  
-- PEM dans git / Pages  
-- Afficher Buy live tant que codeHash null  
+* Fonds vers adresse marketplace **empty** actuelle
+* `LIA_LIVE_TRADING=1` sans micro-proof
+* PEM dans git / Pages
+* Afficher Buy live tant que codeHash null
 
 ## Après deploy
 
-1. Blackbox `docs/MAINNET_DEPLOY_BLACKBOX.md` (wallet **user**)  
-2. Fee split UI 3 %  
-3. Journal micro-proofs  
-4. Seulement alors envisager trading live micro  
+1. Blackbox `docs/MAINNET_DEPLOY_BLACKBOX.md` (wallet **user**)
+2. Fee split UI 3 %
+3. Journal micro-proofs
+4. Seulement alors envisager trading live micro

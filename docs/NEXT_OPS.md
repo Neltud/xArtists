@@ -1,11 +1,16 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Next ops — xArtists
 
 ## Immédiat
 
-1. **Pages rebuild** (ce push) — seeds `lia_board` + index + critical data copy  
+1. **Pages rebuild** (ce push) — seeds `lia_board` + index + critical data copy
 2. Vérifier :
-   - https://neltud.github.io/xArtists/data/lia_board.json  
-   - https://neltud.github.io/xArtists/data/xartists_collections.index.json  
+   * https://neltud.github.io/xArtists/data/lia\_board.json
+   * https://neltud.github.io/xArtists/data/xartists\_collections.index.json
 3. **Deploy SC** quand PEM prêt : `docs/SC_DEPLOY_OPTIMIZED.md`
 
 ## P0 produit
@@ -29,6 +34,6 @@ python -m lia.vellum.publish_data_for_frontend
 
 ## P1
 
-- Index listings on-chain  
-- Studio pin auto  
-- Treasury Mission + Reserve  
+* Index listings on-chain
+* Studio pin auto
+* Treasury Mission + Reserve

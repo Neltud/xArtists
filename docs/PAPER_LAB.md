@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Paper Lab — autonomous swarm stress test
 
 ```bash
@@ -7,14 +12,14 @@ PYTHONPATH=. python -m lia.agents.paper_lab --cycles 100 --equity 100
 # → data/lia_paper_lab.json
 ```
 
-## Example (seed=42, 100 cycles, honest ~55–65% edge model)
+## Example (seed=42, 100 cycles, honest \~55–65% edge model)
 
-| Metric | Value |
-|--------|-------|
-| Return | ~+2.8% |
-| Winrate | ~65% |
-| Max DD | ~0.5% |
-| Lead agents | MOMENTUM, MEAN_REV |
+| Metric      | Value                        |
+| ----------- | ---------------------------- |
+| Return      | \~+2.8%                      |
+| Winrate     | \~65%                        |
+| Max DD      | \~0.5%                       |
+| Lead agents | MOMENTUM, MEAN\_REV          |
 | Lock ledger | 60% lock mid-path ACCUMULATE |
 
 **Not a live forecast.** Stresses routing, PreFlight, phase locks.

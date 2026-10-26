@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Architecture Cerveau / Corps — xArtists
 
 ## Diagramme 1 — Flux décision (Akash + Front)
@@ -17,11 +22,11 @@
 
 ### Implémentation front (actuel)
 
-| Couche | Module |
-|--------|--------|
-| Bus pulse | `lib/brainStream.ts` |
-| Hook | `hooks/useBrainMood.ts` |
-| Bandeau | `components/BrainMoodStrip.tsx` |
+| Couche       | Module                                      |
+| ------------ | ------------------------------------------- |
+| Bus pulse    | `lib/brainStream.ts`                        |
+| Hook         | `hooks/useBrainMood.ts`                     |
+| Bandeau      | `components/BrainMoodStrip.tsx`             |
 | Corps visuel | `ArtAtelierBackdrop` + CSS vars `--brain-*` |
 
 ### Env optionnels
@@ -56,16 +61,16 @@ Payload WS/HTTP attendu :
 
 ### Modules
 
-| Étape | Module |
-|-------|--------|
-| UI | PackCheckout, Marketplace, StakingPage |
-| Signature | TxShell `__xartistsSendTx`, xPortal WC |
-| SC | tro_staking, marketplace, venue, slot… |
-| Store | `empireStore` phase TX + `empireTxSuccess` |
-| Feedback | TransactionOverlay, PackOpenTheater, HolderRoom |
+| Étape     | Module                                          |
+| --------- | ----------------------------------------------- |
+| UI        | PackCheckout, Marketplace, StakingPage          |
+| Signature | TxShell `__xartistsSendTx`, xPortal WC          |
+| SC        | tro\_staking, marketplace, venue, slot…         |
+| Store     | `empireStore` phase TX + `empireTxSuccess`      |
+| Feedback  | TransactionOverlay, PackOpenTheater, HolderRoom |
 
 ## Règles
 
-- Pas de PEM dans le navigateur.
-- LIA / Grok **décident** (paper ou signaux) ; **l’utilisateur signe** les fonds.
-- CODEHASH fail-closed sur chaque SC live.
+* Pas de PEM dans le navigateur.
+* LIA / Grok **décident** (paper ou signaux) ; **l’utilisateur signe** les fonds.
+* CODEHASH fail-closed sur chaque SC live.

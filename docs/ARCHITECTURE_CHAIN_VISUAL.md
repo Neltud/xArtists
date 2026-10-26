@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Architecture chaîne ↔ visuel (mainnet)
 
 ## Lecture (RPC → UI)
@@ -39,11 +44,11 @@ Modules : `lib/chainMirror.ts`, `hooks/useChainMirror.ts`, `components/ChainObje
 
 ## Production live checklist
 
-- [x] tro_staking redeploy + stake dust
-- [x] marketplace / venue / dao / treasury LIVE
-- [x] slot_casino déployé
-- [x] Pages GitHub + CODEHASH secrets
-- [ ] User stake xPortal sur /staking
-- [ ] Market list/buy dust
-- [ ] VITE_SLOT_CASINO_CODEHASH_OK + fund progressive
-- [ ] VITE_BRAIN_WS (Akash) optionnel
+* [x] tro\_staking redeploy + stake dust
+* [x] marketplace / venue / dao / treasury LIVE
+* [x] slot\_casino déployé
+* [x] Pages GitHub + CODEHASH secrets
+* [ ] User stake xPortal sur /staking
+* [ ] Market list/buy dust
+* [ ] VITE\_SLOT\_CASINO\_CODEHASH\_OK + fund progressive
+* [ ] VITE\_BRAIN\_WS (Akash) optionnel

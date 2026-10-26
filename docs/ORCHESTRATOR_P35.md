@@ -1,11 +1,16 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Phase 3.5 — Orchestrator & validation
 
 ## Hysteresis (`lia/brain/orchestrator.py`)
 
-- Raw `select_strategy` each tick
-- Switch only after **N consecutive** same raw picks (default N=3)
-- Weights from last ~24h shadow PnL can shorten hysteresis by 1 if pending >> active
-- State: `data/strategy_orchestrator.json` (+ public mirror)
+* Raw `select_strategy` each tick
+* Switch only after **N consecutive** same raw picks (default N=3)
+* Weights from last \~24h shadow PnL can shorten hysteresis by 1 if pending >> active
+* State: `data/strategy_orchestrator.json` (+ public mirror)
 
 ## Precision (`lia/utils/precision.py`)
 

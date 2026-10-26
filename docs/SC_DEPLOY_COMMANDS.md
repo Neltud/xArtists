@@ -1,9 +1,14 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Commandes de déploiement SC — MultiversX MAINNET
 
-**Réseau uniquement :** `CHAIN=1` · Proxy `https://gateway.multiversx.com`  
+**Réseau uniquement :** `CHAIN=1` · Proxy `https://gateway.multiversx.com`\
 **PEM jamais dans git.** `LIA_LIVE_TRADING=0` pendant le deploy.
 
----
+***
 
 ## Variables d’environnement
 
@@ -19,9 +24,9 @@ export PROXY=https://gateway.multiversx.com
 # export ONLY=nft-marketplace   # ou agents-marketplace | all
 ```
 
-Balance déployeur recommandée : **≥ ~0.25 EGLD**.
+Balance déployeur recommandée : **≥ \~0.25 EGLD**.
 
----
+***
 
 ## Chemin canonique (recommandé)
 
@@ -41,7 +46,7 @@ Balance déployeur recommandée : **≥ ~0.25 EGLD**.
 
 Rapport : `data/post_deploy_report.json`
 
----
+***
 
 ## Build WASM seul (pas de TX)
 
@@ -51,7 +56,7 @@ Rapport : `data/post_deploy_report.json`
 ./scripts/build_scs_isolated.sh agents-marketplace
 ```
 
----
+***
 
 ## Deploy ciblé
 
@@ -76,7 +81,7 @@ Autres scripts utiles :
 ./scripts/simulate_deploy_mainnet.sh   # simulation légère
 ```
 
----
+***
 
 ## Post-deploy (adresses + codeHash)
 
@@ -116,7 +121,7 @@ Ou helper :
 bash scripts/post_deploy_to_pages.sh
 ```
 
----
+***
 
 ## Vellum (deploy opt-in)
 
@@ -132,25 +137,25 @@ PYTHONPATH=. python -m lia.vellum.production_run
 
 Sans `VELLUM_DEPLOY_SCS=1` → phase **skipped** (comportement normal paper).
 
----
+***
 
 ## Ordre produit strict
 
-1. `runbook_deploy.sh dry`  
-2. `runbook_deploy.sh deploy` (nft + agents)  
-3. `verify_marketplace_codehash.py` **exit 0**  
-4. Flags `VITE_*_CODEHASH_OK=1` + rebuild Pages  
-5. Micro List/Buy avec **wallet utilisateur** (pas LIA ops)  
-6. Treasury wallets → `deploy_treasury_splitter.sh`  
-7. Garder `LIA_LIVE_TRADING=0` jusqu’aux micro-preuves trading  
+1. `runbook_deploy.sh dry`
+2. `runbook_deploy.sh deploy` (nft + agents)
+3. `verify_marketplace_codehash.py` **exit 0**
+4. Flags `VITE_*_CODEHASH_OK=1` + rebuild Pages
+5. Micro List/Buy avec **wallet utilisateur** (pas LIA ops)
+6. Treasury wallets → `deploy_treasury_splitter.sh`
+7. Garder `LIA_LIVE_TRADING=0` jusqu’aux micro-preuves trading
 
----
+***
 
 ## Interdits
 
-- Deploy si `CHAIN != 1`  
-- Commit PEM / `.env` avec secrets  
-- Activer banners market/agents sans codeHash vérifié  
-- Confondre wallet user Connect et wallet LIA ops deployer  
+* Deploy si `CHAIN != 1`
+* Commit PEM / `.env` avec secrets
+* Activer banners market/agents sans codeHash vérifié
+* Confondre wallet user Connect et wallet LIA ops deployer
 
 Erreurs : [`DEPLOY_ERRORS.md`](DEPLOY_ERRORS.md) · Runbook : [`DEPLOYMENT_STEPS.md`](DEPLOYMENT_STEPS.md) · Build global : [`BUILD_STEPS.md`](BUILD_STEPS.md)

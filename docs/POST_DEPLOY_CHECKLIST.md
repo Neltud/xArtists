@@ -1,6 +1,11 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Post-deploy checklist
 
-> Suite immédiate après `./scripts/runbook_deploy.sh verify`  
+> Suite immédiate après `./scripts/runbook_deploy.sh verify`\
 > Runbook complet: [`RUNBOOK_DEPLOY.md`](RUNBOOK_DEPLOY.md)
 
 ## 1. Verify OK
@@ -30,15 +35,15 @@ git push
 
 ## 3. Micro List/Buy — wallet user only
 
-| Interdit | Autorisé |
-|----------|----------|
+| Interdit            | Autorisé                     |
+| ------------------- | ---------------------------- |
 | LIA ops `erd1p4zy…` | Web Wallet / extension perso |
 
-1. Connect user  
-2. List 1 NFT test  
-3. Buy depuis 2e wallet  
-4. Fee 3 % on-chain  
-5. claimFees = owner PEM offline  
+1. Connect user
+2. List 1 NFT test
+3. Buy depuis 2e wallet
+4. Fee 3 % on-chain
+5. claimFees = owner PEM offline
 
 ## 4. Vellum cadence
 

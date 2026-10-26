@@ -1,23 +1,28 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Test Report — 31 juillet 2026
 
 ## Résumé
 
-| Domaine | Résultat |
-|---------|----------|
-| Strategies | PASS (après fix) |
-| Guards G01–G17 | PASS |
-| Compound engine | PASS |
-| Multi-horizon | PASS |
-| Asset policy TRO | PASS |
-| Guarded cycle | PASS |
-| DApp static | OK (React/Vite/sdk-dapp v0.6.0) |
+| Domaine          | Résultat                        |
+| ---------------- | ------------------------------- |
+| Strategies       | PASS (après fix)                |
+| Guards G01–G17   | PASS                            |
+| Compound engine  | PASS                            |
+| Multi-horizon    | PASS                            |
+| Asset policy TRO | PASS                            |
+| Guarded cycle    | PASS                            |
+| DApp static      | OK (React/Vite/sdk-dapp v0.6.0) |
 
 ## Bug corrigé
 
 **`lia/circuit/strategies.py` → `momentum_regime`**
 
-- Avant : `price_spike` non défini → `NameError`
-- Après : conf basée sur `price_change_1h` + `volume_spike`
+* Avant : `price_spike` non défini → `NameError`
+* Après : conf basée sur `price_change_1h` + `volume_spike`
 
 ## Fee model vérifié
 

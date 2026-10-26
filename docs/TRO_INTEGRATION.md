@@ -1,14 +1,19 @@
+---
+hidden: true
+noIndex: true
+---
+
 # 🪙 $TRO Token — Documentation d'Intégration Complète
 
-> **Token ID :** `TRO-94c925`  
-> **Ticker :** `$TRO`  
-> **Réseau :** MultiversX Mainnet  
-> **Décimales :** 18  
-> **Standard :** ESDT (Elrond Standard Digital Token)  
-> **Projet :** xArtists — Tuduri Original  
-> **Artiste :** @tudurioriginal  
+> **Token ID :** `TRO-94c925`\
+> **Ticker :** `$TRO`\
+> **Réseau :** MultiversX Mainnet\
+> **Décimales :** 18\
+> **Standard :** ESDT (Elrond Standard Digital Token)\
+> **Projet :** xArtists — Tuduri Original\
+> **Artiste :** @tudurioriginal
 
----
+***
 
 ## 🎯 Vision
 
@@ -19,40 +24,42 @@ $TRO = Liquidité + Burn + Staking + Gouvernance DAO + Certificat d'authenticit�
 ```
 
 **Triangle de valeur :**
-- 🎨 **xArtists** (Corps) — Marketplace NFT, Galerie, Portfolio, dApp
-- 🧠 **LIA v6** (Tête) — Agent IA autonome de trading, optimisation profits
-- 🪙 **$TRO** (Cœur) — Token utilitaire, liquidité, burn, staking, gouvernance
 
----
+* 🎨 **xArtists** (Corps) — Marketplace NFT, Galerie, Portfolio, dApp
+* 🧠 **LIA v6** (Tête) — Agent IA autonome de trading, optimisation profits
+* 🪙 **$TRO** (Cœur) — Token utilitaire, liquidité, burn, staking, gouvernance
+
+***
 
 ## 📋 Spécifications Techniques
 
-| Paramètre | Valeur |
-|---|---|
-| **Identifier** | `TRO-94c925` |
-| **Ticker** | `TRO` |
-| **Décimales** | `18` |
-| **Standard** | ESDT (MultiversX) |
-| **Réseau** | Mainnet (`chain_id = 1`) |
-| **Explorer** | [explorer.multiversx.com/tokens/TRO-94c925](https://explorer.multiversx.com/tokens/TRO-94c925) |
-| **Prix référence** | `AVG_ENTRY_TRO = 0.000097` USDC |
+| Paramètre          | Valeur                                                                                         |
+| ------------------ | ---------------------------------------------------------------------------------------------- |
+| **Identifier**     | `TRO-94c925`                                                                                   |
+| **Ticker**         | `TRO`                                                                                          |
+| **Décimales**      | `18`                                                                                           |
+| **Standard**       | ESDT (MultiversX)                                                                              |
+| **Réseau**         | Mainnet (`chain_id = 1`)                                                                       |
+| **Explorer**       | [explorer.multiversx.com/tokens/TRO-94c925](https://explorer.multiversx.com/tokens/TRO-94c925) |
+| **Prix référence** | `AVG_ENTRY_TRO = 0.000097` USDC                                                                |
 
----
+***
 
 ## 🔗 Smart Contracts Mainnet
 
-| Contrat | Adresse | Statut |
-|---|---|---|
-| **NFT Staking** | `erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl` | 🔗 Déployé |
+| Contrat            | Adresse                                                          | Statut     |
+| ------------------ | ---------------------------------------------------------------- | ---------- |
+| **NFT Staking**    | `erd1qqqqqqqqqqqqqpgqmhtx5cctwwtatyaluycjfucre9y5vq2xyj7sqxr8cl` | 🔗 Déployé |
 | **TRO Governance** | `erd1qqqqqqqqqqqqqpgqrscvsxseyw04l0urzgnm2er5mxd2z64nyj7s6e0ca8` | 🔗 Déployé |
-| **Marketplace** | `erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t` | 🔗 Déployé |
-| **NFT Minter** | `erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn` | 🔗 Déployé |
+| **Marketplace**    | `erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t` | 🔗 Déployé |
+| **NFT Minter**     | `erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn` | 🔗 Déployé |
 
----
+***
 
 ## 🏦 Utilités du Token $TRO
 
 ### 1. 🔒 Staking & Gouvernance DAO
+
 ```
 Staker TRO → Voting Power proportionnel
 Voting Power → Voter les proposals DAO
@@ -60,20 +67,23 @@ Proposals → Décider l'allocation liquidité LIA
 ```
 
 **Paramètres DAO :**
-- Quorum requis : **60%**
-- Durée proposal : **24h** (7 epochs on-chain)
-- Min stake pour voter : **1000 TRO**
-- Unstake bloqué pendant proposals actives
+
+* Quorum requis : **60%**
+* Durée proposal : **24h** (7 epochs on-chain)
+* Min stake pour voter : **1000 TRO**
+* Unstake bloqué pendant proposals actives
 
 **Paires candidates pour vote :**
-| Paire | DEX | Risque | APR estimé |
-|---|---|---|---|
-| `TRO/USDC` | xExchange | FAIBLE | ~9% |
-| `TRO/WEGLD` | xExchange | MOYEN | ~12% |
-| `TRO/WBTC` | xExchange | ÉLEVÉ | Variable |
-| `TRO/XOXNO` | XOXNO | ÉLEVÉ | Variable |
+
+| Paire       | DEX       | Risque | APR estimé |
+| ----------- | --------- | ------ | ---------- |
+| `TRO/USDC`  | xExchange | FAIBLE | \~9%       |
+| `TRO/WEGLD` | xExchange | MOYEN  | \~12%      |
+| `TRO/WBTC`  | xExchange | ÉLEVÉ  | Variable   |
+| `TRO/XOXNO` | XOXNO     | ÉLEVÉ  | Variable   |
 
 ### 2. 🖼️ NFT Staking → Rewards $TRO
+
 ```
 Staker NFTs xArtists → Recevoir $TRO en rewards
 Collections éligibles : 11 collections mainnet
@@ -81,6 +91,7 @@ Rewards : automatiques, claimables via smart contract
 ```
 
 **Collections éligibles :**
+
 ```
 AGR-9bd53e    ALISTOR-a646bc  ASFT-a6273a
 BGG-2b627c    HP47X2-b71543   MAS-5189b6
@@ -89,6 +100,7 @@ XAR-cee2e0    TRO-652d6d
 ```
 
 ### 3. 💰 Réinvestissement LIA v6 (50% profits)
+
 ```
 LIA génère des profits de trading
 → 50% réinvestis en liquidité $TRO
@@ -97,6 +109,7 @@ LIA génère des profits de trading
 ```
 
 ### 4. 🏛️ Escrow RWA (Real World Assets)
+
 ```
 Œuvres physiques Tuduri Original
 → Tokenisées via $TRO
@@ -104,12 +117,13 @@ LIA génère des profits de trading
 ```
 
 ### 5. 🔥 Burn Mechanism
+
 ```
 Frais marketplace → Burn $TRO
 Réduction supply → Pression haussière
 ```
 
----
+***
 
 ## 🔍 Intégration LIA v6 (Vellum Workflows)
 
@@ -138,17 +152,17 @@ AVG_ENTRY_TRO = 0.000097  # Prix d'entrée de référence
 
 ### Nœuds qui utilisent $TRO
 
-| Nœud | Rôle |
-|---|---|
-| `XArtistsMonitor` | Surveillance balance, staking, rewards, prix |
+| Nœud                  | Rôle                                            |
+| --------------------- | ----------------------------------------------- |
+| `XArtistsMonitor`     | Surveillance balance, staking, rewards, prix    |
 | `TROLiquidityScanner` | Scan pools TRO sur xExchange, OneDex, JEXchange |
-| `TRODaoVote` | Vote DAO pour allocation liquidité |
-| `DAppDataAggregator` | Agrège données TRO pour la dApp |
-| `FrontendBuilder` | Affiche prix, balance, TVL dans la dApp |
-| `GitHubReporter` | Push métriques TRO vers GitHub Pages |
-| `LIABrain` | Calcul ROI position TRO |
-| `AvgEntryUpdater` | Prix live TRO depuis xExchange |
-| `MCPConnector` | Pools TRO via API MultiversX |
+| `TRODaoVote`          | Vote DAO pour allocation liquidité              |
+| `DAppDataAggregator`  | Agrège données TRO pour la dApp                 |
+| `FrontendBuilder`     | Affiche prix, balance, TVL dans la dApp         |
+| `GitHubReporter`      | Push métriques TRO vers GitHub Pages            |
+| `LIABrain`            | Calcul ROI position TRO                         |
+| `AvgEntryUpdater`     | Prix live TRO depuis xExchange                  |
+| `MCPConnector`        | Pools TRO via API MultiversX                    |
 
 ### Encodage ESDT pour transactions
 
@@ -165,11 +179,12 @@ amount_hex = hex(amount_raw)[2:]  # sans '0x'
 data = f"ESDTTransfer@{tro_hex}@{amount_hex}@{function_hex}"
 ```
 
----
+***
 
 ## 📊 Pools de Liquidité $TRO
 
 ### xExchange (Principal)
+
 ```
 Paire TRO/WEGLD — Liquidité maximale
 Paire TRO/USDC  — Stabilité, IL minimal
@@ -177,18 +192,20 @@ API : https://api.multiversx.com/mex/pairs?size=500
 ```
 
 ### OneDex
+
 ```
 Contrat : erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc
 Méthode : viewPair(pair_id) — scan itératif
 ```
 
 ### JEXchange
+
 ```
 API : https://api.jexchange.io/pools
 GitHub pools : https://github.com/jexchange-defi/jex-router-pools
 ```
 
----
+***
 
 ## 🌐 Endpoints API MultiversX pour $TRO
 
@@ -210,7 +227,7 @@ GET https://api.multiversx.com/mex/pairs?size=500
 GET https://api.multiversx.com/accounts/{wallet}/tokens/TRO-94c925
 ```
 
----
+***
 
 ## 🔧 Variables d'Environnement
 
@@ -225,54 +242,54 @@ WALLET_ADDRESS=erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6
 MVX_PRIVATE_KEY=<votre_clé_privée>
 ```
 
----
+***
 
 ## 🚀 Déploiement Mainnet — Checklist
 
-- [x] Token `TRO-94c925` déployé sur mainnet
-- [x] NFT Staking contract actif
-- [x] TRO Governance contract actif
-- [x] Marketplace contract actif
-- [x] NFT Minter contract actif
-- [x] 11 collections whitelistées dans NFT Staking
-- [x] LIA v6 intégré (XArtistsMonitor, TROLiquidityScanner, TRODaoVote)
-- [x] GitHub Pages dApp live
-- [ ] Pools TRO/USDC et TRO/WEGLD avec liquidité initiale
-- [ ] Première proposal DAO créée
-- [ ] NFTs stakés dans le contrat
+* [x] Token `TRO-94c925` déployé sur mainnet
+* [x] NFT Staking contract actif
+* [x] TRO Governance contract actif
+* [x] Marketplace contract actif
+* [x] NFT Minter contract actif
+* [x] 11 collections whitelistées dans NFT Staking
+* [x] LIA v6 intégré (XArtistsMonitor, TROLiquidityScanner, TRODaoVote)
+* [x] GitHub Pages dApp live
+* [ ] Pools TRO/USDC et TRO/WEGLD avec liquidité initiale
+* [ ] Première proposal DAO créée
+* [ ] NFTs stakés dans le contrat
 
----
+***
 
 ## 📈 Métriques Battle of Nodes
 
 LIA v6 soumet automatiquement ces métriques $TRO au Battle of Nodes Supernova :
 
-| Métrique | Source | Impact Score |
-|---|---|---|
-| NFT Staking actif | `XArtistsMonitor` | +15 pts |
-| TRO Governance actif | `XArtistsMonitor` | +15 pts |
-| NFTs stakés | `XArtistsMonitor` | +3 pts/NFT (max 15) |
-| TRO stakés | `XArtistsMonitor` | +1 pt/1000 TRO |
-| Proposals DAO actives | `TRODaoVote` | +10 pts |
-| Balance TRO wallet | `ConnectWallet` | +5 pts |
-| Agent LIA intégré | Automatique | +10 pts |
+| Métrique              | Source            | Impact Score        |
+| --------------------- | ----------------- | ------------------- |
+| NFT Staking actif     | `XArtistsMonitor` | +15 pts             |
+| TRO Governance actif  | `XArtistsMonitor` | +15 pts             |
+| NFTs stakés           | `XArtistsMonitor` | +3 pts/NFT (max 15) |
+| TRO stakés            | `XArtistsMonitor` | +1 pt/1000 TRO      |
+| Proposals DAO actives | `TRODaoVote`      | +10 pts             |
+| Balance TRO wallet    | `ConnectWallet`   | +5 pts              |
+| Agent LIA intégré     | Automatique       | +10 pts             |
 
 **Score maximum : 100/100**
 
----
+***
 
 ## 🔗 Liens Utiles
 
-| Ressource | URL |
-|---|---|
-| Explorer Token | https://explorer.multiversx.com/tokens/TRO-94c925 |
-| dApp xArtists | https://neltud.github.io/xArtists |
-| GitHub | https://github.com/Neltud/xArtists |
-| xExchange | https://xexchange.com |
-| Battle of Nodes | https://bon.multiversx.com |
-| Artiste | https://twitter.com/tudurioriginal |
+| Ressource       | URL                                               |
+| --------------- | ------------------------------------------------- |
+| Explorer Token  | https://explorer.multiversx.com/tokens/TRO-94c925 |
+| dApp xArtists   | https://neltud.github.io/xArtists                 |
+| GitHub          | https://github.com/Neltud/xArtists                |
+| xExchange       | https://xexchange.com                             |
+| Battle of Nodes | https://bon.multiversx.com                        |
+| Artiste         | https://twitter.com/tudurioriginal                |
 
----
+***
 
-*Documentation générée par LIA v6 — Agent IA autonome xArtists*  
-*Dernière mise à jour : 2026-07-23*
+_Documentation générée par LIA v6 — Agent IA autonome xArtists_\
+_&#x44;ernière mise à jour : 2026-07-23_

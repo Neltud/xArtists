@@ -1,6 +1,12 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Acheter des NFT xArtists en EUR (Fiat)
 
 ## Objectif
+
 Permettre l'achat de NFT de la marketplace sans détenir déjà de crypto.
 
 ## Flow recommandé (v1)
@@ -14,11 +20,11 @@ Permettre l'achat de NFT de la marketplace sans détenir déjà de crypto.
 
 ## Prestataires
 
-| Prestataire | Rôle | Priorité |
-|------------|------|----------|
-| MoonPay | On-ramp carte → EGLD/USDC | 1 (premier) |
-| xMoney | Carte + webhooks MultiversX | 2 |
-| Stripe | Checkout fiat + mint custom | 3 (plus tard) |
+| Prestataire | Rôle                        | Priorité      |
+| ----------- | --------------------------- | ------------- |
+| MoonPay     | On-ramp carte → EGLD/USDC   | 1 (premier)   |
+| xMoney      | Carte + webhooks MultiversX | 2             |
+| Stripe      | Checkout fiat + mint custom | 3 (plus tard) |
 
 ## Intégration technique (frontend)
 
@@ -35,12 +41,12 @@ Pour xMoney : utiliser le SDK / checkout + webhook déjà prévu dans le repo (P
 
 ## Conformité
 
-- KYC/AML géré par le prestataire d'on-ramp.
-- xArtists ne stocke pas de données carte.
-- Afficher le disclaimer (LEGAL.md) avant le paiement.
-- Prix NFT affiché en EUR (indicatif) + montant crypto exact on-chain.
+* KYC/AML géré par le prestataire d'on-ramp.
+* xArtists ne stocke pas de données carte.
+* Afficher le disclaimer (LEGAL.md) avant le paiement.
+* Prix NFT affiché en EUR (indicatif) + montant crypto exact on-chain.
 
 ## Prochaine étape code
 
-- Ajouter onglet / page `buy` dans le dashboard Vellum.
-- Lier chaque listing NFT au flow MoonPay + deep-link retour dApp.
+* Ajouter onglet / page `buy` dans le dashboard Vellum.
+* Lier chaque listing NFT au flow MoonPay + deep-link retour dApp.

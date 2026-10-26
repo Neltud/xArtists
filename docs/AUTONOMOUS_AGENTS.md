@@ -1,17 +1,22 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Autonomous trading agents — LIA
 
 ## What runs
 
-| Agent | Rôle |
-|-------|------|
-| **DEFENSE** | Veto si fear≤25, DD≥12%, loss streak, regime RISK_OFF |
-| **MOMENTUM** | Trend 7d + bias GSN |
-| **MEAN_REV** | RSI + écart VWAP |
-| **MICRO_ARB** | Spread DEX (block-time, fees×2.5) |
-| **YIELD** | Fallback idle → sleeve yield |
+| Agent          | Rôle                                                   |
+| -------------- | ------------------------------------------------------ |
+| **DEFENSE**    | Veto si fear≤25, DD≥12%, loss streak, regime RISK\_OFF |
+| **MOMENTUM**   | Trend 7d + bias GSN                                    |
+| **MEAN\_REV**  | RSI + écart VWAP                                       |
+| **MICRO\_ARB** | Spread DEX (block-time, fees×2.5)                      |
+| **YIELD**      | Fallback idle → sleeve yield                           |
 
-Coordinator: 1 trade de risque max / cycle, sinon YIELD/WAIT.  
-**PreFlight** (VaR/Kelly/kill) + **million_path** phase sizing.  
+Coordinator: 1 trade de risque max / cycle, sinon YIELD/WAIT.\
+**PreFlight** (VaR/Kelly/kill) + **million\_path** phase sizing.\
 Paper fill → `path_executor_hooks.after_trade_close`.
 
 ## Run (Vellum cadence)
@@ -31,9 +36,9 @@ PYTHONPATH=. python -m lia.agents.run_autonomous --mode legacy
 
 ## Safety
 
-- CLI **refuse** si `LIA_LIVE_TRADING=1` sans policy micro-proof
-- Pas de signature dans le swarm — UniversalExecutor + PEM seulement plus tard
-- Live SOL perps >1.5x bloqués par PreFlight/Guardian
+* CLI **refuse** si `LIA_LIVE_TRADING=1` sans policy micro-proof
+* Pas de signature dans le swarm — UniversalExecutor + PEM seulement plus tard
+* Live SOL perps >1.5x bloqués par PreFlight/Guardian
 
 ## Module
 

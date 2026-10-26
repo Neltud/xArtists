@@ -1,13 +1,18 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Publish main — 2026-10-09
 
 ## Poussé sur main
 
-| Item | Détail |
-|------|--------|
-| HomeMenuHall | Monument 3D robuste + fallback grille si WebGL fail |
-| CommandWall | atmo.mesh + colorRgb alias + WebGL safe |
-| AgentIA_Guard | SAMPLE preview (voir CC sans pack) |
-| REDEPLOY_TRIGGER | force Pages rebuild |
+| Item              | Détail                                              |
+| ----------------- | --------------------------------------------------- |
+| HomeMenuHall      | Monument 3D robuste + fallback grille si WebGL fail |
+| CommandWall       | atmo.mesh + colorRgb alias + WebGL safe             |
+| AgentIA\_Guard    | SAMPLE preview (voir CC sans pack)                  |
+| REDEPLOY\_TRIGGER | force Pages rebuild                                 |
 
 ## Vérifier après Actions vertes
 

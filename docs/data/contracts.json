@@ -1,8 +1,8 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-10-16",
-  "chain_note": "Product SCs re-probed 16 Oct 2026, epoch 2264, refreshRate 600. agents_marketplace codeHash is the buyPack upgrade (igm9oUpgad\u2026). Balance 0.013 EGLD = historical micro buyPack tests, not the official 10/5/2.5 prices. Market isPayable=true, 0.0175 EGLD = 0.0075 fees + 0.01 bid on listing #2 (active, ASFT-a6273a-01 @ 0.25). Listing #1 inactive. Slot house 0.5 EGLD, isPayable=false, spin count 0. LIA ops 1.603782 EGLD nonce 1473, trading paper. EGLD $3.71 API. Treasury dest null. Do not use LEGACY_EMPTY placeholders.",
+  "updated": "2026-10-26",
+  "chain_note": "Product SCs re-probed 26 Oct 2026 ~05:36 UTC, epoch 2274, refreshRate 600. CodeHashes unchanged (agents buyPack igm9oUpgad…). getPackPrice 10 / 5 / 2.5 EGLD. Agents balance 0.013 EGLD = historical micro tests, not those prices. Market 0.0175 EGLD, listing #2 only. Slot house 0.5 EGLD, isPayable=false. LIA ops 1.585598 EGLD nonce 1479 (frozen since 17 Oct). EGLD $3.23 API, mcap ~$100.3M, APR 9.10%. Treasury dest null. Korean warning still extended through 16–20 Nov (Upbit 207379109). Jour 3/29, 21 j avant le 16 nov. Not a trading go-live.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -42,15 +42,16 @@
     "slot_casino": 0.5,
     "nft_marketplace": 0.0175,
     "others": 0,
-    "probed": "2026-10-16",
+    "probed": "2026-10-26T05:36:31Z",
     "slot_isPayable": false,
     "market_isPayable": true,
     "market_fees_egld": 0.0075,
-    "lia_ops_egld": 1.603782,
+    "lia_ops_egld": 1.585598,
     "tro_stake_atomic": "3000000",
-    "epoch": 2264,
-    "egld_usd": 3.71,
-    "agents_marketplace": 0.013
+    "epoch": 2274,
+    "egld_usd": 3.23,
+    "agents_marketplace": 0.013,
+    "lia_ops_nonce": 1479
   },
   "proofs": {
     "buyNft_egld_epoch_2250": 0.25,
@@ -69,6 +70,6 @@
     "legacy_nft_minter": "erd1qqqqqqqqqqqqqpgq00a2jzre64akaw4jx257gwwyfxxd8fzfyj7snyztkn"
   },
   "verification": {
-    "agents_marketplace": "LIVE codeHash igm9oUpgad\u2026 (buyPack upgrade) \u00b7 0.013 EGLD test dust \u00b7 official prices Pulse 10 / Yield 5 / Sentinel 2.5 EGLD"
+    "agents_marketplace": "LIVE codeHash igm9oUpgad… (buyPack upgrade) · 0.013 EGLD test dust · official prices Pulse 10 / Yield 5 / Sentinel 2.5 EGLD"
   }
 }

@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # DeFi Hub — Hatom · AshSwap · Soul
 
 ## Architecture
@@ -14,12 +19,12 @@ src/components/defi/DeFiCommandPanel.tsx  → Command Center
 
 ## Adresses mainnet (docs publiques)
 
-| Protocole | SC / note |
-|-----------|-----------|
-| Hatom EGLD market | `erd1…jleq3` |
-| Hatom USDC market | `erd1…4aldu` |
-| AshSwap stable pool | `erd1…hfyd9c` |
-| Soul | deep-link `soul.io` — pas de router MVX dans le repo |
+| Protocole           | SC / note                                            |
+| ------------------- | ---------------------------------------------------- |
+| Hatom EGLD market   | `erd1…jleq3`                                         |
+| Hatom USDC market   | `erd1…4aldu`                                         |
+| AshSwap stable pool | `erd1…hfyd9c`                                        |
+| Soul                | deep-link `soul.io` — pas de router MVX dans le repo |
 
 ## Flux UX
 

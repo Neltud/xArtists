@@ -1,3 +1,8 @@
+---
+hidden: true
+noIndex: true
+---
+
 # Guardian FAST PATH — Task 1 (War Room)
 
 **Module:** `lia/guardian/` · **Before Brain** · **Budget: < 10 ms**
@@ -12,14 +17,14 @@ ARMED --trip(soft)--> TRIPPED --trip(hard)--> KILLED
 
 ## Math
 
-- VaR = |N| * σ * z * L (z=1.65)
-- Kelly f* = (p(b+1)-1)/b ; f = κ f* (κ=0.25)
-- Spiral S = max(0,r_roe)*I*L + 2*max(0,-DD)*L
-- Death spiral if S≥0.35 OR (L>1 AND wins≥3 AND I≥0.5) OR auto_compound_loop
+* VaR = |N| \* σ \* z \* L (z=1.65)
+* Kelly f\* = (p(b+1)-1)/b ; f = κ f\* (κ=0.25)
+* Spiral S = max(0,r\_roe)_&#x49;_&#x4C; + 2\*max(0,-DD)\*L
+* Death spiral if S≥0.35 OR (L>1 AND wins≥3 AND I≥0.5) OR auto\_compound\_loop
 
 ## Defaults
 
-max_dd=12%, loss_streak=5, var_limit=2% equity, max_live_lev=1.5, max_pct=20%
+max\_dd=12%, loss\_streak=5, var\_limit=2% equity, max\_live\_lev=1.5, max\_pct=20%
 
 ## Integration
 

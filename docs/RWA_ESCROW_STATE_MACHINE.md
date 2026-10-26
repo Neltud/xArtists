@@ -1,6 +1,11 @@
+---
+hidden: true
+noIndex: true
+---
+
 # RWA Escrow — state machine
 
-**Contract:** `contracts/rwa-escrow-bridge`  
+**Contract:** `contracts/rwa-escrow-bridge`\
 **Statuses:** 0 Open · 1 Released · 2 Refunded · 3 Cancelled · 4 Disputed
 
 ```
@@ -22,6 +27,4 @@
                          [RELEASED]             [REFUNDED]
 ```
 
-Dispute cooling: 7 days. Only owner resolves (multisig recommended).
-Attestor posts NFC/AR proof hash → release to seller.
-CEI on all money paths. Experimental until codeHash live.
+Dispute cooling: 7 days. Only owner resolves (multisig recommended). Attestor posts NFC/AR proof hash → release to seller. CEI on all money paths. Experimental until codeHash live.
