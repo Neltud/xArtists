@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-26T03:23:12.719Z",
+  "updatedAt": "2026-10-26T12:18:57.868Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793017137714",
+      "timestamp": "12:18",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.19 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1792984992513",
       "timestamp": "03:23",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Lloyds and Barclays among UK banks named in crypto transfer complaints, advocacy group says",
       "link": "https://cointelegraph.com/news/uk-banks-crypto-transfer-complaints-stand-with-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1792500017000",
-      "timestamp": "12:40",
-      "source": "CoinDesk",
-      "title": "Microsoft, Alphabet and Goldman Sachs join objections to OKX-ICE tokenized stock trading",
-      "link": "https://www.coindesk.com/business/2026/10/19/microsoft-alphabet-and-goldman-sachs-join-objections-to-okx-ice-tokenized-stock-trading"
     }
   ]
 }
