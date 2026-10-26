@@ -311,9 +311,21 @@ async function handleRequest(req, res) {
 
   if (req.method === 'GET' && pth === '/v1/access/introspect') {
     const auth = String(req.headers.authorization || '')
-    const payload = verifyJwt(auth.startsWith('Bearer ') ? auth.slice(7) : '', JWT_SECRET)
+    const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : ''
+    if (!token || !JWT_SECRET || JWT_SECRET.length < 16) {
+      json(res, 401, { ok: false, error: 'missing_or_invalid_token' })
+      return
+    }
+    const payload = verifyJwt(token, JWT_SECRET)
     if (!payload) { json(res, 401, { ok: false, error: 'invalid_or_expired_token' }); return }
-    json(res, 200, { ok: true, payload })
+    // Dual response shape for clients that expect either nested payload or flat claims.
+    json(res, 200, {
+      ok: true,
+      payload,
+      sub: payload.sub,
+      status: payload.access_level || payload.status,
+      exp: payload.exp,
+    })
     return
   }
 
