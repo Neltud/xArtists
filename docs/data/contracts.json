@@ -1,8 +1,8 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-10-26",
-  "chain_note": "Product SCs re-probed 26 Oct 2026 ~05:36 UTC, epoch 2274, refreshRate 600. CodeHashes unchanged (agents buyPack igm9oUpgad…). getPackPrice 10 / 5 / 2.5 EGLD. Agents balance 0.013 EGLD = historical micro tests, not those prices. Market 0.0175 EGLD, listing #2 only. Slot house 0.5 EGLD, isPayable=false. LIA ops 1.585598 EGLD nonce 1479 (frozen since 17 Oct). EGLD $3.23 API, mcap ~$100.3M, APR 9.10%. Treasury dest null. Korean warning still extended through 16–20 Nov (Upbit 207379109). Jour 3/29, 21 j avant le 16 nov. Not a trading go-live.",
+  "updated": "2026-10-27",
+  "chain_note": "Product SCs re-probed 27 Oct 2026 ~05:35 UTC, epoch 2275, refreshRate 600. CodeHashes unchanged (agents buyPack igm9oUpgad…). getPackPrice 10 / 5 / 2.5 EGLD. Agents balance 0.013 EGLD = historical micro tests, not those prices. Market 0.0175 EGLD, listing #2 only. Slot house 0.5 EGLD, isPayable=false. LIA ops 1.585598 EGLD nonce 1479 (frozen since 17 Oct). EGLD $3.22 API, mcap ~$99.97M, APR 9.09%. Treasury dest null. Korean warning still extended through 16–20 Nov (Upbit 207379109). Jour 4/29, 20 j avant le 16 nov. Not a trading go-live.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -42,14 +42,14 @@
     "slot_casino": 0.5,
     "nft_marketplace": 0.0175,
     "others": 0,
-    "probed": "2026-10-26T05:36:31Z",
+    "probed": "2026-10-27T05:34:51Z",
     "slot_isPayable": false,
     "market_isPayable": true,
     "market_fees_egld": 0.0075,
     "lia_ops_egld": 1.585598,
     "tro_stake_atomic": "3000000",
-    "epoch": 2274,
-    "egld_usd": 3.23,
+    "epoch": 2275,
+    "egld_usd": 3.22,
     "agents_marketplace": 0.013,
     "lia_ops_nonce": 1479
   },

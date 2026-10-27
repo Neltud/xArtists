@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.123.0] — 2026-10-27
+
+### Bug Fixes
+
+* **probe:** refresh the public fallback and entity snapshots to the 27 Oct mainnet probe (epoch 2275, EGLD $3.22). Stop serving the 26 Oct chrome when the API is down.
+* **contracts:** stop labeling listing #2 as a live 0.25 EGLD price. That figure stays a historical proof. SC balance remains 0.0175 EGLD.
+* **go-live:** keep `VITE_LIA_LIVE_TRADING=0`. Day 4/29 of the Upbit 207379109 extension. A Bithumb FET notice on 2–6 Nov is not an EGLD clearance.
+
 ## [0.119.3](https://github.com/Neltud/xArtists/compare/v0.119.2...v0.119.3) (2026-10-26)
 
 
