@@ -1,5 +1,6 @@
 /**
  * SMART-UNLOCK — Mode REAL sans secret Pages si explorer confirme le codeHash.
+ * Fail-closed: live/mainnet never pre-authorizes; missing explorer data = locked.
  * Source: config/contracts.ts (hashes vérifiés 2026-10-01).
  */
 
@@ -7,7 +8,7 @@ import { UNLOCK_JOBS, type UnlockKey } from '../config/contracts'
 
 export type { UnlockKey }
 
-const STORAGE = 'xartists_runtime_codehash_v4'
+const STORAGE = 'xartists_runtime_codehash_v5'
 
 type Cache = Partial<Record<UnlockKey, boolean>> & { slotBalance?: number }
 
@@ -59,27 +60,21 @@ function matchHash(expected: string, got?: string): boolean {
   return got === expected || got.replace(/=+$/, '') === expected.replace(/=+$/, '')
 }
 
-function envLiveMode(): boolean {
-  try {
-    const e = (import.meta as { env?: Record<string, string> }).env || {}
-    if (e.VITE_LIVE_MODE === '1' || e.VITE_LIVE_MODE === 'true') return true
-    const m = String(e.VITE_APP_MODE || '').toLowerCase()
-    return m === 'live' || m === 'mainnet'
-  } catch {
-    return false
-  }
-}
-
+/**
+ * Refresh unlocks from on-chain reads only.
+ * Never sets keys to true because VITE_LIVE_MODE / mainnet is set.
+ * If explorer fetch fails for a job, that key is forced false (fail-closed).
+ */
 export async function refreshRuntimeCodehashes(): Promise<Cache> {
-  const cache = readCache()
-  if (envLiveMode()) {
-    for (const j of UNLOCK_JOBS) cache[j.key] = true
-  }
+  const cache: Cache = {}
 
   await Promise.all(
     UNLOCK_JOBS.map(async j => {
       const acc = await fetchAccount(j.addr)
-      if (!acc) return
+      if (!acc) {
+        cache[j.key] = false
+        return
+      }
       const okHash = matchHash(j.expected, acc.codeHash)
       if (j.key === 'slot') {
         const bal = Number(acc.balance || 0) / 1e18
