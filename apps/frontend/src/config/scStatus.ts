@@ -1,5 +1,6 @@
 /**
- * On-chain SC readiness — VITE_*_CODEHASH_OK at build OR runtime explorer match.
+ * On-chain SC readiness — VITE_*_CODEHASH_OK at build AND fresh runtime explorer match.
+ * Build flag alone never opens fund-moving gates.
  */
 
 import { runtimeCodehashOk } from '../lib/runtimeCodehash'
@@ -57,16 +58,31 @@ export function isUsableScAddress(addr: string | undefined | null): boolean {
   return !!addr && addr.startsWith('erd1') && addr.length >= 60
 }
 
+/**
+ * Pure gate: build CODEHASH_OK flag AND fresh runtime observation.
+ * Flag 0 → closed even if runtime matched.
+ * Flag 1 + runtime false/stale/missing → closed.
+ */
+export function isLiveGate(buildFlag: boolean, runtimeFreshOk: boolean): boolean {
+  return buildFlag === true && runtimeFreshOk === true
+}
+
 export function canListBuyNft(): boolean {
-  return (MARKETPLACE_LIVE || runtimeCodehashOk('marketplace')) && isUsableScAddress(MARKETPLACE_ADDRESS)
+  return (
+    isLiveGate(MARKETPLACE_LIVE, runtimeCodehashOk('marketplace')) &&
+    isUsableScAddress(MARKETPLACE_ADDRESS)
+  )
 }
 
 export function canBuyAgent(): boolean {
-  return (AGENTS_LIVE || runtimeCodehashOk('agents')) && isUsableScAddress(AGENTS_MARKETPLACE_ADDRESS)
+  return (
+    isLiveGate(AGENTS_LIVE, runtimeCodehashOk('agents')) &&
+    isUsableScAddress(AGENTS_MARKETPLACE_ADDRESS)
+  )
 }
 
 export function canRentVenueOnChain(): boolean {
-  return (VENUE_LIVE || runtimeCodehashOk('venue')) && isUsableScAddress(VENUE_SC_ADDRESS)
+  return isLiveGate(VENUE_LIVE, runtimeCodehashOk('venue')) && isUsableScAddress(VENUE_SC_ADDRESS)
 }
 
 /** Alias used by GO_LIVE checklist. Same gate as canRentVenueOnChain. */
@@ -75,27 +91,44 @@ export function canUseVenue(): boolean {
 }
 
 export function canStakeTro(): boolean {
-  return (TRO_STAKING_LIVE || runtimeCodehashOk('tro_staking')) && isUsableScAddress(TRO_STAKING_ADDRESS)
+  return (
+    isLiveGate(TRO_STAKING_LIVE, runtimeCodehashOk('tro_staking')) &&
+    isUsableScAddress(TRO_STAKING_ADDRESS)
+  )
 }
 
 export function canStakeNft(): boolean {
-  return (NFT_STAKING_LIVE || runtimeCodehashOk('nft_staking')) && isUsableScAddress(NFT_STAKING_ADDRESS)
+  return (
+    isLiveGate(NFT_STAKING_LIVE, runtimeCodehashOk('nft_staking')) &&
+    isUsableScAddress(NFT_STAKING_ADDRESS)
+  )
 }
 
 export function canVoteDao(): boolean {
-  return (TRO_GOVERNANCE_LIVE || runtimeCodehashOk('governance')) && isUsableScAddress(TRO_GOVERNANCE_ADDRESS)
+  return (
+    isLiveGate(TRO_GOVERNANCE_LIVE, runtimeCodehashOk('governance')) &&
+    isUsableScAddress(TRO_GOVERNANCE_ADDRESS)
+  )
 }
 
 export function canUseAgentEscrow(): boolean {
-  return (AGENT_ESCROW_LIVE || runtimeCodehashOk('escrow')) && isUsableScAddress(AGENT_STAKE_ESCROW_ADDRESS)
+  return (
+    isLiveGate(AGENT_ESCROW_LIVE, runtimeCodehashOk('escrow')) &&
+    isUsableScAddress(AGENT_STAKE_ESCROW_ADDRESS)
+  )
 }
 
 export function canUseTreasury(): boolean {
-  return (TREASURY_LIVE || runtimeCodehashOk('treasury')) && isUsableScAddress(TREASURY_SPLITTER_ADDRESS)
+  return (
+    isLiveGate(TREASURY_LIVE, runtimeCodehashOk('treasury')) &&
+    isUsableScAddress(TREASURY_SPLITTER_ADDRESS)
+  )
 }
 
 export function canSpinSlot(): boolean {
-  return (SLOT_CASINO_LIVE || runtimeCodehashOk('slot')) && isUsableScAddress(SLOT_CASINO_ADDRESS)
+  return (
+    isLiveGate(SLOT_CASINO_LIVE, runtimeCodehashOk('slot')) && isUsableScAddress(SLOT_CASINO_ADDRESS)
+  )
 }
 
 export function marketplaceReceiverOrThrow(): string {

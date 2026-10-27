@@ -12,7 +12,6 @@ import ProtocolPulsePanel from '../components/ProtocolPulsePanel'
 import { getEnvLiveCapable, getAppMode } from '../lib/appMode'
 import {
   refreshRuntimeCodehashes,
-  runtimeCodehashOk,
   runtimeSlotBalance,
 } from '../lib/runtimeCodehash'
 import { MAINNET_ADDRESSES } from '../config/contracts'
@@ -29,19 +28,6 @@ import { fetchMarketPayable } from '../lib/marketPayable'
 import { fetchOnChainMarketListings, type OnChainListing } from '../lib/marketChain'
 
 type Item = { id: string; label: string; ok: boolean; note?: string; href?: string }
-
-function envFlag(name: string): boolean {
-  try {
-    const v = String((import.meta as { env?: Record<string, string> }).env?.[name] || '').toLowerCase()
-    return v === 'true' || v === '1'
-  } catch {
-    return false
-  }
-}
-
-function gate(envName: string, key: Parameters<typeof runtimeCodehashOk>[0]): boolean {
-  return envFlag(envName) || runtimeCodehashOk(key)
-}
 
 export default function GoLivePage() {
   const [, setTick] = useState(0)
@@ -62,12 +48,13 @@ export default function GoLivePage() {
     if (slot) void fetchMarketPayable(slot).then(s => setSlotPayable(s.isPayable))
   }, [])
 
-  const marketOk = canListBuyNft() || gate('VITE_MARKETPLACE_CODEHASH_OK', 'marketplace')
-  const troOk = canStakeTro() || gate('VITE_TRO_STAKING_CODEHASH_OK', 'tro_staking')
-  const venueOk = canUseVenue() || gate('VITE_VENUE_CODEHASH_OK', 'venue')
-  const treasuryOk = canUseTreasury() || gate('VITE_TREASURY_CODEHASH_OK', 'treasury')
-  const agentsOk = canBuyAgent() || gate('VITE_AGENTS_CODEHASH_OK', 'agents')
-  const slotOk = canSpinSlot() || runtimeCodehashOk('slot')
+  // AND gates only: build CODEHASH_OK + fresh runtime — no env OR bypass
+  const marketOk = canListBuyNft()
+  const troOk = canStakeTro()
+  const venueOk = canUseVenue()
+  const treasuryOk = canUseTreasury()
+  const agentsOk = canBuyAgent()
+  const slotOk = canSpinSlot()
   const house = runtimeSlotBalance()
 
   const scItems: Item[] = [
@@ -91,124 +78,75 @@ export default function GoLivePage() {
     },
     {
       id: 'treasury',
-      label: 'Treasury',
+      label: 'Treasury splitter',
       ok: treasuryOk,
       href: `https://explorer.multiversx.com/accounts/${MAINNET_ADDRESSES.treasury_splitter}`,
     },
     {
       id: 'agents',
-      label: 'Agents mint / buy',
+      label: 'Agents marketplace',
       ok: agentsOk,
-      note: agentsOk ? undefined : 'mint pack SC pas prêt',
       href: `https://explorer.multiversx.com/accounts/${MAINNET_ADDRESSES.agents_marketplace}`,
     },
     {
       id: 'slot',
       label: 'Slot casino',
-      ok: slotOk,
+      ok: slotOk && slotPayable !== false,
       note:
         slotPayable === false
-          ? 'isPayable=false — EGLD rejeté, spin REAL fermé'
-          : house != null
-            ? `house ~${asText(typeof house === 'number' ? house.toFixed(4) : house)} EGLD`
+          ? 'isPayable=false (transferts directs rejetés) — endpoints SC distincts'
+          : house
+            ? `bal ${house.toFixed(4)} EGLD`
             : undefined,
       href: `https://explorer.multiversx.com/accounts/${MAINNET_ADDRESSES.slot_casino}`,
     },
   ]
 
   return (
-    <div className="animate-fade-in space-y-6 max-w-2xl mx-auto pb-16">
-      <header className="space-y-2">
-        <p className="section-label">{xaRender("Mainnet")}</p>
-        <h1 className="section-title display">{xaRender("Status & capital")}</h1>
-        <p className="text-sm text-amber-200/90">
-          {xaRender("Go-live du site : oui, en lecture. Go-live trading : non. La prolongation Upbit/Bithumb court jusqu’au 16–20 nov.")}
+    <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
+      <div>
+        <h1 className="text-2xl font-semibold text-white">{xaRender('GO LIVE')}</h1>
+        <p className="mt-1 text-sm text-zinc-400">
+          {xaRender('Checklist mainnet — gates = CODEHASH_OK build')}{' '}
+          <span className="text-zinc-500">AND</span>{' '}
+          {xaRender('observation runtime fraîche. Paper par défaut.')}
         </p>
-        <p className="text-sm text-zinc-400">
-          {xaRender("Mode app : ")}<strong className="text-zinc-200">{xaRender(asText(mode))}</strong>
-          {xaRender(envLive ? ' · env live capable' : '')} {xaRender(" · floor pack ")}{xaRender(formatRCE(PACK_PRICE_EGLD))}
+        <p className="mt-1 text-xs text-zinc-500">
+          mode={asText(mode)} · envLiveCapable={String(envLive)} · marketPayable=
+          {String(marketPayable)} · listings={listings.length}
         </p>
-      </header>
-
+      </div>
       <RceStrip />
-
-      <ProtocolPulsePanel />
-
-      <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">{xaRender("Gates SC")}</h2>
-        <ul className="space-y-2">
-          {xaRender(scItems.map(it => (
-            <li
-              key={it.id}
-              className="flex flex-wrap items-start justify-between gap-2 rounded-xl border border-white/10 px-3 py-2 text-[13px]"
-            >
-              <div>
-                <p className="text-zinc-200">{xaRender(asText(it.label))}</p>
-                {xaRender(it.note && <p className="text-[11px] text-zinc-500">{xaRender(asText(it.note))}</p>)}
-                {xaRender(it.href && (
-                  <a
-                    className="text-[11px] text-cyan-400 underline"
-                    href={it.href}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {xaRender("Explorer ")}</a>
-                ))}
-              </div>
-              <span
-                className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
-                  it.ok
-                    ? 'border-emerald-500/40 text-emerald-300'
-                    : 'border-amber-500/35 text-amber-200'
-                }`}
-              >
-                {xaRender(it.ok ? 'OK' : 'ATTENTE')}
-              </span>
-            </li>
-          )))}
-        </ul>
-      </section>
-
-      <DustTestPanel />
-
-      <section className="card space-y-2">
-        <h2 className="text-sm font-semibold text-white">{xaRender("Preuves live")}</h2>
-        <p className="text-[12px] text-zinc-400">
-          {xaRender("Market payable :")}{xaRender(' ')}
-          <strong className="text-zinc-200">
-            {xaRender(marketPayable == null ? '…' : marketPayable ? 'oui' : 'non')}
-          </strong>
-          {xaRender(". Slot payable :")}{xaRender(' ')}
-          <strong className="text-zinc-200">
-            {xaRender(slotPayable == null ? '…' : slotPayable ? 'oui' : 'non')}
-          </strong>
-          {xaRender(". Treasury dest toujours null — ne pas router les frais. ")}</p>
-        {xaRender(listings.length > 0 && (
-          <ul className="space-y-1 text-[12px] text-zinc-300">
-            {xaRender(listings.map(l => (
-              <li key={l.id}>
-                {xaRender("Listing #")}{xaRender(l.id)} {xaRender(l.token)}-{xaRender(String(l.nonce).padStart(2, '0'))} · {xaRender(l.priceEgld)} {xaRender(" EGLD ·")}{xaRender(' ')}
-                {xaRender(l.active ? 'actif' : 'inactif')}
-                {xaRender(l.bidEgld ? ` · bid ${l.bidEgld} EGLD locké` : '')}
-              </li>
-            )))}
-          </ul>
+      <ul className="space-y-2">
+        {scItems.map(it => (
+          <li
+            key={it.id}
+            className={`rounded-lg border px-3 py-2 text-sm ${
+              it.ok ? 'border-emerald-800/60 bg-emerald-950/30' : 'border-zinc-800 bg-zinc-900/40'
+            }`}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className={it.ok ? 'text-emerald-300' : 'text-zinc-400'}>{it.label}</span>
+              <span className="text-xs">{it.ok ? 'OK' : 'CLOSED'}</span>
+            </div>
+            {it.note ? <p className="mt-1 text-[11px] text-zinc-500">{it.note}</p> : null}
+            {it.href ? (
+              <a className="mt-1 inline-block text-[11px] text-sky-400" href={it.href} target="_blank" rel="noreferrer">
+                explorer
+              </a>
+            ) : null}
+          </li>
         ))}
-      </section>
-
-      <section className="card space-y-2">
-        <h2 className="text-sm font-semibold text-white">{xaRender("Spin réel")}</h2>
-        <p className="text-[12px] text-zinc-400">
-          {xaRender("House 0,5 EGLD. Le compte slot n’est pas payable : un spin EGLD est rejeté par le protocole. Fun reste le chemin public. Upgrade du même contrat avec metadata-payable seulement — pas un nouveau deploy. ")}</p>
-      </section>
-      <p className="text-[11px] text-zinc-600">
-        {xaRender("Agent 8008 : ")}{xaRender(asText(AGENT_8008?.id, '—'))} ·{xaRender(' ')}
-        <Link to="/" className="text-cyan-400 underline">
-          {xaRender("Accueil ")}</Link>
-        {xaRender(' · ')}
-        <Link to="/lia" className="text-cyan-400 underline">
-          {xaRender("LIA Hub ")}</Link>
-      </p>
+      </ul>
+      <ProtocolPulsePanel />
+      <DustTestPanel />
+      <div className="text-xs text-zinc-600">
+        <Link to="/" className="text-sky-500">
+          {xaRender('← Accueil')}
+        </Link>
+        {' · '}
+        packs={formatRCE(PACK_PRICE_EGLD)} · agent={AGENT_8008?.id || '—'}
+      </div>
     </div>
   )
 }

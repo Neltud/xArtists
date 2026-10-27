@@ -1,6 +1,7 @@
 /**
  * SMART-UNLOCK — Mode REAL sans secret Pages si explorer confirme le codeHash.
  * Fail-closed: live/mainnet never pre-authorizes; missing explorer data = locked.
+ * Freshness: a prior true cache cannot reopen after a later failed refresh.
  * Source: config/contracts.ts (hashes vérifiés 2026-10-01).
  */
 
@@ -8,9 +9,15 @@ import { UNLOCK_JOBS, type UnlockKey } from '../config/contracts'
 
 export type { UnlockKey }
 
-const STORAGE = 'xartists_runtime_codehash_v5'
+const STORAGE = 'xartists_runtime_codehash_v6'
 
-type Cache = Partial<Record<UnlockKey, boolean>> & { slotBalance?: number }
+type Cache = Partial<Record<UnlockKey, boolean>> & {
+  slotBalance?: number
+  /** Epoch ms of last successful full refresh write */
+  refreshedAt?: number
+  /** Monotonic generation; bumps on every refresh attempt */
+  generation?: number
+}
 
 function readCache(): Cache {
   try {
@@ -30,8 +37,14 @@ function writeCache(c: Cache) {
   }
 }
 
+/**
+ * True only when this key was observed true on the latest refresh write.
+ * Missing refresh / false / absent key → not ok (fail-closed).
+ */
 export function runtimeCodehashOk(key: UnlockKey): boolean {
-  return readCache()[key] === true
+  const c = readCache()
+  if (!c.refreshedAt || typeof c.refreshedAt !== 'number') return false
+  return c[key] === true
 }
 
 export function runtimeSlotBalance(): number {
@@ -40,6 +53,10 @@ export function runtimeSlotBalance(): number {
 
 export function runtimeUnlockSnapshot(): Cache {
   return readCache()
+}
+
+export function runtimeRefreshGeneration(): number {
+  return Number(readCache().generation || 0)
 }
 
 async function fetchAccount(
@@ -62,11 +79,12 @@ function matchHash(expected: string, got?: string): boolean {
 
 /**
  * Refresh unlocks from on-chain reads only.
- * Never sets keys to true because VITE_LIVE_MODE / mainnet is set.
- * If explorer fetch fails for a job, that key is forced false (fail-closed).
+ * Always rewrites the whole cache: a previous true cannot survive a failed observation.
  */
 export async function refreshRuntimeCodehashes(): Promise<Cache> {
-  const cache: Cache = {}
+  const prev = readCache()
+  const generation = Number(prev.generation || 0) + 1
+  const cache: Cache = { generation, refreshedAt: Date.now() }
 
   await Promise.all(
     UNLOCK_JOBS.map(async j => {
