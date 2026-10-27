@@ -48,7 +48,7 @@ export default function GoLivePage() {
     if (slot) void fetchMarketPayable(slot).then(s => setSlotPayable(s.isPayable))
   }, [])
 
-  // AND gates only (scStatus): build CODEHASH_OK + fresh runtime — no env OR bypass
+  // AND gates only: build CODEHASH_OK + fresh runtime — no env OR bypass
   const marketOk = canListBuyNft()
   const troOk = canStakeTro()
   const venueOk = canUseVenue()
@@ -113,7 +113,7 @@ export default function GoLivePage() {
         </p>
         <p className="mt-1 text-xs text-zinc-500">
           mode={asText(mode)} · envLiveCapable={String(envLive)} · marketPayable=
-          {String(marketPayable)}
+          {String(marketPayable)} · listings={listings.length}
         </p>
       </div>
       <RceStrip />
