@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.119.5](https://github.com/Neltud/xArtists/compare/v0.119.4...v0.119.5) (2026-10-27)
+
+
+### Bug Fixes
+
+* **quote:** Rule1 parity — EGLD = fiat anchor / rate (margin accounting only) ([#198](https://github.com/Neltud/xArtists/issues/198)) ([0d24baf](https://github.com/Neltud/xArtists/commit/0d24bafa0768102d102686211161d8a049434578))
+
+
+### Documentation
+
+* sandbox access-api deploy runbook + Dockerfile ([#197](https://github.com/Neltud/xArtists/issues/197)) ([9370a10](https://github.com/Neltud/xArtists/commit/9370a1014797eeeb92bc97aee8c5ee2980ffc428))
+
 ## [0.119.4](https://github.com/Neltud/xArtists/compare/v0.119.3...v0.119.4) (2026-10-27)
 
 
