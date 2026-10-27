@@ -13,6 +13,7 @@ import {
   createOrder, getOrder, getOrderForBuyer, applyIpn, markRedirected, newOrderId, resolveArtistBeneficiary,
 } from './orders.mjs'
 import { resolveAuthenticatedBuyer } from './buyerAuth.mjs'
+import { buildPackQuote } from './quote.mjs'
 
 const PORT = Number(process.env.PORT || 8787)
 const JWT_SECRET = process.env.ACCESS_JWT_SECRET || process.env.JWT_SECRET || ''
@@ -158,6 +159,21 @@ async function handleRequest(req, res) {
       ok: true, status: access.status, hasAccess: access.hasAccess, reason: access.reason,
       token: issued.token, expiresIn: issued.expiresIn || null,
     })
+    return
+  }
+
+  if (req.method === 'POST' && pth === '/v1/checkout/quote') {
+    const { body } = await readRawAndBody(req)
+    try {
+      const rate = body.rate_eur_per_egld ?? body.rate ?? body.fx
+      const quote = buildPackQuote({
+        pack_id: body.pack_id || body.packId,
+        rate_eur_per_egld: rate,
+      })
+      json(res, 200, quote)
+    } catch (e) {
+      json(res, e.statusCode || 400, { ok: false, error: String(e.message || e), gap: e.gap })
+    }
     return
   }
 
