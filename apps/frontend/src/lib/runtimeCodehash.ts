@@ -91,10 +91,13 @@ function matchHash(expected: string, got?: string): boolean {
 /**
  * Refresh unlocks from on-chain reads only.
  * Always rewrites the whole cache: a previous true cannot survive a failed observation.
+ * Concurrent: claim generation first; a late success never overwrites a newer failure.
  */
 export async function refreshRuntimeCodehashes(): Promise<Cache> {
   const prev = readCache()
   const generation = Number(prev.generation || 0) + 1
+  // Claim generation immediately so concurrent older fetches cannot win the write race
+  writeCache({ ...prev, generation })
   const cache: Cache = { generation, refreshedAt: Date.now(), jobsFp: jobsFingerprint() }
 
   await Promise.all(
@@ -116,6 +119,11 @@ export async function refreshRuntimeCodehashes(): Promise<Cache> {
     }),
   )
 
+  // Discard if a newer refresh already committed (stale success must not erase recent failure)
+  const latest = readCache()
+  if (Number(latest.generation || 0) > generation) {
+    return latest
+  }
   writeCache(cache)
   try {
     window.dispatchEvent(new CustomEvent('xartists-codehash', { detail: cache }))
