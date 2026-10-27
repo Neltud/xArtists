@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-27T15:08:41.474Z",
+  "updatedAt": "2026-10-27T21:50:57.168Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793137857056",
+      "timestamp": "21:50",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.33 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1793113720629",
       "timestamp": "15:08",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Tx launches USTX stablecoin to pull RWA liquidity onto its chain",
       "link": "https://cointelegraph.com/news/tx-ustx-stablecoin-rwa-liquidity-chain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1792498424000",
-      "timestamp": "12:13",
-      "source": "CoinTelegraph",
-      "title": "Lloyds and Barclays among UK banks named in crypto transfer complaints, advocacy group says",
-      "link": "https://cointelegraph.com/news/uk-banks-crypto-transfer-complaints-stand-with-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
