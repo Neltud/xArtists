@@ -6,13 +6,9 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "start": "node src/server.mjs",
-    "test": "node --test tests/*.test.mjs",
-    "postinstall": "node -e \"try{require('fs').accessSync('node_modules/pg')}catch{process.exit(0)}\""
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@multiversx/sdk-core": "13.17.2"
-  },
-  "optionalDependencies": {
-    "pg": "8.13.1"
   }
 }

@@ -7,21 +7,16 @@
 
 ## Render Free + Neon Free
 
-1. Neon project → copy `DATABASE_URL`  
-2. Render Web Service root `services/access-api`  
-3. Build: `npm install --include=optional` (installs `pg`)  
-4. Start: `npm start`  
-5. Env:
-   - `DATABASE_URL=postgresql://…`
-   - `ACCESS_JWT_SECRET` (≥16)
-   - `CORS_ORIGIN=https://neltud.github.io`
-   - `LIA_LIVE_TRADING=0`
-6. Schema auto-created on first write (`ensureSchema`)  
-7. GitHub variable `VITE_ACCESS_API_BASE=https://…onrender.com`  
-8. Rebuild Pages
+1. Neon project → `DATABASE_URL`  
+2. Render Web Service root: `services/access-api`  
+3. **Build command:** `npm install --ignore-scripts && npm install pg@8.13.1 --ignore-scripts`  
+4. **Start:** `npm start`  
+5. Env: `DATABASE_URL`, `ACCESS_JWT_SECRET`, `CORS_ORIGIN=https://neltud.github.io`, `LIA_LIVE_TRADING=0`  
+6. Schema auto-created on first write  
+7. GitHub var `VITE_ACCESS_API_BASE` + rebuild Pages  
 
-`GET /health` → `orders_backend: "postgres" | "file"`.
+`pg` is **not** in package.json deps (keeps CI `npm ci` green). Install on Render only.
 
-`pg` is **optionalDependency** so CI `npm ci` stays green without Postgres. Render must install optionals.
+`GET /health` → `orders_backend: postgres|file`
 
-Paper only — mint simulated.
+Paper only.
