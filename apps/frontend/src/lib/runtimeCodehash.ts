@@ -17,6 +17,8 @@ type Cache = Partial<Record<UnlockKey, boolean>> & {
   refreshedAt?: number
   /** Monotonic generation; bumps on every refresh attempt */
   generation?: number
+  /** Fingerprint of UNLOCK_JOBS addresses/hashes — invalidates on config change */
+  jobsFp?: string
 }
 
 function readCache(): Cache {
@@ -37,13 +39,22 @@ function writeCache(c: Cache) {
   }
 }
 
+/** Max age for a positive observation (ms). Stale cache never opens gates. */
+export const RUNTIME_CODEHASH_MAX_AGE_MS = 5 * 60 * 1000
+
+function jobsFingerprint(): string {
+  return UNLOCK_JOBS.map(j => `${j.key}:${j.addr}:${j.expected}`).join('|')
+}
+
 /**
- * True only when this key was observed true on the latest refresh write.
- * Missing refresh / false / absent key → not ok (fail-closed).
+ * True only when this key was observed true on a fresh refresh for the current job set.
+ * Missing refresh / false / absent / stale / address change → not ok (fail-closed).
  */
 export function runtimeCodehashOk(key: UnlockKey): boolean {
   const c = readCache()
   if (!c.refreshedAt || typeof c.refreshedAt !== 'number') return false
+  if (Date.now() - c.refreshedAt > RUNTIME_CODEHASH_MAX_AGE_MS) return false
+  if (c.jobsFp && c.jobsFp !== jobsFingerprint()) return false
   return c[key] === true
 }
 
@@ -84,7 +95,7 @@ function matchHash(expected: string, got?: string): boolean {
 export async function refreshRuntimeCodehashes(): Promise<Cache> {
   const prev = readCache()
   const generation = Number(prev.generation || 0) + 1
-  const cache: Cache = { generation, refreshedAt: Date.now() }
+  const cache: Cache = { generation, refreshedAt: Date.now(), jobsFp: jobsFingerprint() }
 
   await Promise.all(
     UNLOCK_JOBS.map(async j => {
