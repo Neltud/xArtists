@@ -8,6 +8,14 @@ Repo: https://github.com/Neltud/xArtists
 Publication du 27 octobre : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md).  
 La revue coréenne est **prolongée** (Upbit notice 207379109, 16–20 nov). Le site est en ligne. Le trading ne l’est pas.
 
+**Catalogue packs (Rule 1 — 2026-10-27)**  
+Client : Pulse **110 €** · Yield **75 €** · Sentinel **50 €** (marge 4 % **interne**).  
+Devis serveur : `POST /v1/checkout/quote` · TTL 12 min · EGLD ceil 4 dp · tolérance ≤ 0,02 €.  
+Spec : [`docs/PACK_QUOTE_RULE1.md`](docs/PACK_QUOTE_RULE1.md) · Escrow NFT P1 : [`docs/ESCROW_NFT_P1.md`](docs/ESCROW_NFT_P1.md) · Rails : [`docs/MULTICHAIN_PAYMENT_RAILS.md`](docs/MULTICHAIN_PAYMENT_RAILS.md).
+
+**Marketplace**  
+P1 = escrow NFT MultiversX (pay vs delivery atomique). Physique = tracking manuel d’abord. Dropship exclu P1–P2.
+
 **Vellum · mise à jour LIA Wallet :**
 [`docs/VELLUM_LIA_WALLET_DIRECTIVES.md`](docs/VELLUM_LIA_WALLET_DIRECTIVES.md)
 — directives MultiversX / PayBox, stratégies, validations des ordres réels et
@@ -27,42 +35,4 @@ critères de livraison. Spécification de mise à jour ; aucune activation live.
 - Treasury dest **null** — ne pas router les frais.
 - `ci-cd.yml` désactivé. Go-live site = `static.yml`.
 - Legacy empty placeholders must **never** receive funds.
-- Not a retail investment fund. Tips ≠ investment. User Connect ≠ LIA Ops.
-
-Recap + veille (21 oct) : [`docs/ANALYSE_DAPP_COMPLETE.md`](docs/ANALYSE_DAPP_COMPLETE.md)  
-Suite logique : [`docs/SUITE_LOGIQUE_NOW.md`](docs/SUITE_LOGIQUE_NOW.md)  
-**Audit Grok (deep pass)** : [`docs/AUDIT_GROK_2026-10-17.md`](docs/AUDIT_GROK_2026-10-17.md)  
-Demo : https://neltud.github.io/xArtists/#/demo · GO_LIVE : https://neltud.github.io/xArtists/#/go-live
-
----
-
-## What it is
-
-| Layer | Role |
-|-------|------|
-| **Studio / Gallery** | Create & browse NFT collections (NFTUDURI live via API) |
-| **Marketplace** | List / Buy / Bid — listing **#2** seulement. Prix affiché = `getListing`, jamais un 0,25 inventé. Solde SC **0,0175** |
-| **Agents** | Limited LIA sub-agent packs (Pulse · Yield · Sentinel) |
-| **LIA** | Autonomous agent (Guardian → Brain → paper until micro-proofs) |
-| **$TRO** | Utility token — max supply product 500 000 · circ ~476 224 · API ~$0.0000809 |
-| **Slot** | Primordial Slot — house 0,5 EGLD, REAL fermé (`isPayable=false`) |
-
-Not a retail investment fund. Tips ≠ investment.
-
----
-
-## Environment variables
-
-Full reference: **[`docs/ENVIRONMENT_VARIABLES.md`](docs/ENVIRONMENT_VARIABLES.md)**  
-Frontend template: [`apps/frontend/.env.example`](apps/frontend/.env.example)
-
-```bash
-# Never commit VITE_*_CODEHASH_OK=1 — runtime explorer match is the unlock.
-# LIA_LIVE_TRADING=0 until Upbit clarity + Guardian + micro-proofs.
-```
-
----
-
-## License
-
-MIT · See [LICENSE](LICENSE)
+- Not a retail investment fund. Paper until explicit GO.
