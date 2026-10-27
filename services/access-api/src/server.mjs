@@ -226,9 +226,10 @@ async function handleRequest(req, res) {
         const r = await readRawAndBody(req)
         bodyRaw = r.raw || ''
         bodyParams = r.body || {}
-      } catch {
-        bodyRaw = ''
-        bodyParams = {}
+      } catch (e) {
+        const code = Number(e?.statusCode) || 400
+        json(res, code, { ok: false, error: e?.message || 'invalid_body' })
+        return
       }
     }
     const queryRaw = u.search ? u.search.slice(1) : ''
@@ -237,7 +238,6 @@ async function handleRequest(req, res) {
       json(res, 400, { ok: false, error: source.reason })
       return
     }
-    // Business fields ONLY from RSA-authenticated signed payload (no query/body merge).
     const result = verifyPayboxIpn(
       {},
       undefined,
@@ -320,7 +320,6 @@ async function handleRequest(req, res) {
       json(res, 401, { ok: false, error: 'invalid_or_expired_token' })
       return
     }
-    // Dual shape: nested payload (tests/clients) + flat claims
     json(res, 200, {
       ok: true,
       payload,

@@ -78,7 +78,6 @@ export function buildShoppingCartXml(totalCents, quantity = 1) {
 }
 
 function escapeXml(s) {
-  // Entities built at runtime so source never embeds literal XML entities (pipeline-safe)
   const AMP = String.fromCharCode(38) + 'amp;'
   const LT = String.fromCharCode(38) + 'lt;'
   const GT = String.fromCharCode(38) + 'gt;'
@@ -92,7 +91,6 @@ function escapeXml(s) {
     .replace(/'/g, APOS)
 }
 
-/** Exported for unit tests (3DSv2 billing / shopping cart safety). */
 export { escapeXml as _escapeXmlForTests }
 
 export function buildBillingXml(opts = {}) {
@@ -237,7 +235,10 @@ export function parseSignedIpnFields(dataString) {
     if (seen.has(canon) && seen.get(canon) !== v) return null
     seen.set(canon, v)
   }
-  const amountInt = Number.parseInt(String(amount), 10)
+  // Strict decimal digits only — reject partial numerics like "11000abc"
+  const amountStr = String(amount).trim()
+  if (!/^\d+$/.test(amountStr)) return null
+  const amountInt = Number(amountStr)
   if (!Number.isInteger(amountInt) || amountInt <= 0) return null
   if (!String(ref).trim()) return null
   return {
