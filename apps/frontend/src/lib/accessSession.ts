@@ -1,11 +1,12 @@
 /**
  * Access JWT session — wallet-bound only.
- * Issued by POST /v1/verify-access after SIWX (or allowlist path).
+ * Issued by POST /v1/verify-access after SIWX challenge (or supplied proof).
  * Never treat wallet address in query/body as identity proof.
  * Guests (no erd1) cannot obtain a production access token for Paybox.
  * Fail-closed: API/network failure clears any prior session.
  */
 import { getAccessApiBase } from './stripe'
+import { signAccessMessage } from './signAccessMessage'
 
 const STORAGE_KEY = 'xartists_access_jwt'
 const STORAGE_ADDR = 'xartists_access_jwt_addr'
@@ -66,9 +67,8 @@ export function storeAccessSession(token: string, address: string) {
 }
 
 /**
- * Request a short-lived access JWT bound to the wallet.
- * Without SIWX proof the API returns SAMPLE / 401 for FULL paths;
- * for Paybox checkout we still need a valid Bearer when JWT secret is configured.
+ * Request a short-lived access JWT bound to the wallet via SIWX proof.
+ * If signature/message/nonce are omitted, fetches a challenge and signs via xPortal.
  * Fail-closed on network or non-OK responses (no stale token retention).
  */
 export async function ensureAccessToken(opts: {
@@ -84,20 +84,55 @@ export async function ensureAccessToken(opts: {
   if (!api || !/^erd1[a-z0-9]{58}$/i.test(opts.address)) return null
 
   try {
+    let { signature, message, nonce } = opts
+    const suppliedProof = Boolean(signature || message || nonce)
+    if (suppliedProof && !(signature && message && nonce)) {
+      clearAccessSession()
+      return null
+    }
+    if (!suppliedProof) {
+      const challengeResponse = await fetch(`${api}/v1/access/challenge`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: opts.address }),
+      })
+      if (!challengeResponse.ok) {
+        clearAccessSession()
+        return null
+      }
+      const challenge = (await challengeResponse.json()) as { message?: string; nonce?: string }
+      if (
+        typeof challenge.message !== 'string' ||
+        !challenge.message ||
+        typeof challenge.nonce !== 'string' ||
+        !challenge.nonce
+      ) {
+        clearAccessSession()
+        return null
+      }
+      const signed = await signAccessMessage(challenge.message)
+      if (!signed.ok || !signed.signature) {
+        clearAccessSession()
+        return null
+      }
+      signature = signed.signature
+      message = challenge.message
+      nonce = challenge.nonce
+    }
     const r = await fetch(`${api}/v1/verify-access`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         address: opts.address,
-        signature: opts.signature,
-        message: opts.message,
-        nonce: opts.nonce,
+        signature,
+        message,
+        nonce,
       }),
     })
     const data = (await r.json().catch(() => ({}))) as { token?: string; ok?: boolean }
-    if (r.ok && data.token) {
+    if (r.ok && data.ok && typeof data.token === 'string' && data.token) {
       storeAccessSession(data.token, opts.address)
-      return data.token
+      return getAccessToken(opts.address)
     }
     clearAccessSession()
     return null
