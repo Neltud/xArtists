@@ -1,5 +1,5 @@
 /**
- * Rule 1 pack quote — client anchors, internal margin, ceil EGLD, tolerance.
+ * Rule 1 pack quote — client anchors, parity fiat↔crypto, ceil EGLD.
  */
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
@@ -23,10 +23,23 @@ test('yield and sentinel anchors', () => {
   assert.equal(buildPackQuote({ pack_id: 'sentinel', rate_eur_per_egld: 12 }).amount_cents, 5000)
 })
 
-test('ceil to 4 decimal EGLD', () => {
-  assert.equal(ceilDp(8.81411, 4), 8.8142)
+test('crypto leg equals fiat anchor at rate (parity, not /1.04)', () => {
+  assert.equal(ceilDp(110 / 12, 4), 9.1667)
   const q = buildPackQuote({ pack_id: 'pulse', rate_eur_per_egld: 12 })
-  assert.equal(q.amount_egld, 8.8142)
+  assert.equal(q.amount_egld, 9.1667)
+  const implied = q.amount_egld * 12
+  assert.ok(Math.abs(implied - 110) <= RULE1.toleranceEur + 1e-9)
+})
+
+test('parity holds for all packs', () => {
+  for (const id of Object.keys(PACK_FIAT_CENTS)) {
+    const q = buildPackQuote({ pack_id: id, rate_eur_per_egld: 10 })
+    const implied = q.amount_egld * 10
+    assert.ok(
+      Math.abs(implied - q.amount_eur) <= RULE1.toleranceEur + 1e-9,
+      `${id} gap ${Math.abs(implied - q.amount_eur)}`,
+    )
+  }
 })
 
 test('unknown pack rejected', () => {

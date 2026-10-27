@@ -1,7 +1,8 @@
 /**
  * Pack quote — Rule 1 (2026-10-27).
- * Client pays fiat anchors only. Margin 4% is internal (not added to client price,
- * not applied as a crypto FX markup). Server is sole authority for amounts.
+ * Client pays fiat anchors only (110 / 75 / 50 €).
+ * Margin 4% is accounting metadata only — it must NOT reduce the crypto leg.
+ * Parity: amount_egld * rate ≈ amount_eur (ceil 4 dp, gap ≤ tolerance).
  *
  * PAPER / SANDBOX: no payment execution in this module.
  */
@@ -20,7 +21,7 @@ export const PACK_FIAT_CENTS = Object.freeze({
   sentinel: 5000,
 })
 
-/** On-chain reference list (EGLD) — informational for crypto rail derivation. */
+/** On-chain reference list (EGLD) — informational; not the quote authority. */
 export const PACK_SC_EGLD = Object.freeze({
   pulse: 10,
   yield: 5,
@@ -58,9 +59,8 @@ export function buildPackQuote(input) {
 
   const now = Number(input.now) || Date.now()
   const listEur = listCents / 100
-  // Internal economic base after removing embedded margin (merchant economics)
-  const baseEur = listEur / (1 + RULE1.margin)
-  const rawEgld = baseEur / rate
+  // Parity: crypto leg equals client fiat anchor at locked rate (not list/(1+margin))
+  const rawEgld = listEur / rate
   const amountEgld = ceilDp(rawEgld, RULE1.egldDecimals)
   if (amountEgld == null || amountEgld <= 0) {
     const err = new Error('invalid_egld_amount')
@@ -69,7 +69,7 @@ export function buildPackQuote(input) {
   }
 
   const impliedEur = amountEgld * rate
-  const roundingGapEur = Math.abs(impliedEur - baseEur)
+  const roundingGapEur = Math.abs(impliedEur - listEur)
   if (roundingGapEur > RULE1.toleranceEur + 1e-9) {
     const err = new Error('rounding_gap_exceeds_tolerance')
     err.statusCode = 422
@@ -77,18 +77,20 @@ export function buildPackQuote(input) {
     throw err
   }
 
+  // Accounting only — not applied to buyer crypto amount
+  const marginEur = Number((listEur * RULE1.margin / (1 + RULE1.margin)).toFixed(4))
+
   return {
     ok: true,
     schema: 'xartists.pack_quote.v1',
     pack_id: packId,
     currency: RULE1.currency,
-    // What the client pays on the fiat rail
     amount_cents: listCents,
     amount_eur: listEur,
-    // Crypto rail (derived) — same economic value at locked rate
     amount_egld: amountEgld,
     rate_eur_per_egld: rate,
     margin_internal: RULE1.margin,
+    margin_eur_accounting: marginEur,
     rounding_gap_eur: Number(roundingGapEur.toFixed(6)),
     tolerance_eur: RULE1.toleranceEur,
     sc_reference_egld: PACK_SC_EGLD[packId],
