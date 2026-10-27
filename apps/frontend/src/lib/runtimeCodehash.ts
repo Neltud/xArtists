@@ -17,6 +17,8 @@ type Cache = Partial<Record<UnlockKey, boolean>> & {
   refreshedAt?: number
   /** Monotonic generation; bumps on every refresh attempt */
   generation?: number
+  /** Fingerprint of UNLOCK_JOBS addresses/hashes — invalidates on config change */
+  jobsFp?: string
 }
 
 function readCache(): Cache {
@@ -37,13 +39,22 @@ function writeCache(c: Cache) {
   }
 }
 
+/** Max age for a positive observation (ms). Stale cache never opens gates. */
+export const RUNTIME_CODEHASH_MAX_AGE_MS = 5 * 60 * 1000
+
+function jobsFingerprint(): string {
+  return UNLOCK_JOBS.map(j => `${j.key}:${j.addr}:${j.expected}`).join('|')
+}
+
 /**
- * True only when this key was observed true on the latest refresh write.
- * Missing refresh / false / absent key → not ok (fail-closed).
+ * True only when this key was observed true on a fresh refresh for the current job set.
+ * Missing refresh / false / absent / stale / address change → not ok (fail-closed).
  */
 export function runtimeCodehashOk(key: UnlockKey): boolean {
   const c = readCache()
   if (!c.refreshedAt || typeof c.refreshedAt !== 'number') return false
+  if (Date.now() - c.refreshedAt > RUNTIME_CODEHASH_MAX_AGE_MS) return false
+  if (c.jobsFp && c.jobsFp !== jobsFingerprint()) return false
   return c[key] === true
 }
 
@@ -80,11 +91,14 @@ function matchHash(expected: string, got?: string): boolean {
 /**
  * Refresh unlocks from on-chain reads only.
  * Always rewrites the whole cache: a previous true cannot survive a failed observation.
+ * Concurrent: claim generation first; a late success never overwrites a newer failure.
  */
 export async function refreshRuntimeCodehashes(): Promise<Cache> {
   const prev = readCache()
   const generation = Number(prev.generation || 0) + 1
-  const cache: Cache = { generation, refreshedAt: Date.now() }
+  // Claim generation immediately so concurrent older fetches cannot win the write race
+  writeCache({ ...prev, generation })
+  const cache: Cache = { generation, refreshedAt: Date.now(), jobsFp: jobsFingerprint() }
 
   await Promise.all(
     UNLOCK_JOBS.map(async j => {
@@ -105,6 +119,11 @@ export async function refreshRuntimeCodehashes(): Promise<Cache> {
     }),
   )
 
+  // Discard if a newer refresh already committed (stale success must not erase recent failure)
+  const latest = readCache()
+  if (Number(latest.generation || 0) > generation) {
+    return latest
+  }
   writeCache(cache)
   try {
     window.dispatchEvent(new CustomEvent('xartists-codehash', { detail: cache }))

@@ -228,8 +228,13 @@ export function parseSignedIpnFields(dataString) {
     const i = p.indexOf('=')
     return i < 0 ? [p, ''] : [p.slice(0, i), p.slice(i + 1)]
   })
+  const decodePart = (s) => {
+    try { return decodeURIComponent(String(s).replace(/\+/g, ' ')) } catch { return String(s) }
+  }
   const seen = new Map()
-  for (const [k, v] of pairs) {
+  for (const [rawK, rawV] of pairs) {
+    const k = decodePart(rawK)
+    const v = decodePart(rawV)
     const canon = ({ M: 'amount', R: 'ref', A: 'auto', E: 'error', S: 'idtrans',
       PBX_TOTAL: 'amount', PBX_CMD: 'ref', Erreur: 'error', trans: 'idtrans' })[k] || k
     if (seen.has(canon) && seen.get(canon) !== v) return null
