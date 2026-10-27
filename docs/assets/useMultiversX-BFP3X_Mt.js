@@ -1,1 +1,0 @@
-import{r as e}from"./react-Ld9GqlFr.js";import"./index-BDRzgOqP.js";const r=e.createContext(null);function o(){const t=e.useContext(r);if(!t)throw new Error("useMultiversXContext must be used inside MultiversXProvider");return t}function n(){return o()}export{n as u};
