@@ -10,99 +10,216 @@ const BUYER = 'erd1' + 'a'.repeat(58)
 const OTHER = 'erd1' + 'c'.repeat(58)
 const API = 'https://payments.example'
 const expiresAt = Math.floor(Date.now() / 1000) + 900
-const jwt = (sub = BUYER, exp = expiresAt) => 'header.' + Buffer.from(JSON.stringify({ sub, exp, access_level: 'SAMPLE' })).toString('base64url') + '.fixture_signature'
+const jwt = (sub = BUYER, exp = expiresAt) =>
+  'header.' + Buffer.from(JSON.stringify({ sub, exp, access_level: 'SAMPLE' })).toString('base64url') + '.fixture_signature'
 
 async function withSession(run, signer = async () => ({ ok: true, signature: 'fixture_signature' })) {
-  const storage = new Map(), previous = { fetch: globalThis.fetch, storage: globalThis.sessionStorage, signer: globalThis.__accessSessionSigner }
-  globalThis.sessionStorage = { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, String(value)), removeItem: key => storage.delete(key) }
+  const storage = new Map()
+  const previous = {
+    fetch: globalThis.fetch,
+    storage: globalThis.sessionStorage,
+    signer: globalThis.__accessSessionSigner,
+  }
+  globalThis.sessionStorage = {
+    getItem: key => storage.get(key) ?? null,
+    setItem: (key, value) => storage.set(key, value),
+    removeItem: key => storage.delete(key),
+  }
   globalThis.__accessSessionSigner = signer
-  try { return await run(storage) } finally {
+  const built = await build({
+    entryPoints: [resolve(frontend, 'src/lib/accessSession.ts')],
+    bundle: true,
+    write: false,
+    platform: 'node',
+    format: 'cjs',
+    define: { 'import.meta.env': JSON.stringify({ VITE_ACCESS_API_BASE: API }) },
+    logLevel: 'silent',
+    plugins: [
+      {
+        name: 'wallet-fixture',
+        setup(buildApi) {
+          buildApi.onResolve({ filter: /signAccessMessage$/ }, () => ({
+            path: 'signer',
+            namespace: 'fixture',
+          }))
+          buildApi.onLoad({ filter: /.*/, namespace: 'fixture' }, () => ({
+            contents:
+              'export const signAccessMessage = message => globalThis.__accessSessionSigner(message)',
+            loader: 'js',
+          }))
+        },
+      },
+    ],
+  })
+  const module = { exports: {} }
+  new Function('require', 'module', 'exports', built.outputFiles[0].text)(
+    require,
+    module,
+    module.exports,
+  )
+  try {
+    await run(module.exports, storage)
+  } finally {
     globalThis.fetch = previous.fetch
     globalThis.sessionStorage = previous.storage
     globalThis.__accessSessionSigner = previous.signer
   }
 }
 
-async function loadSessionModule() {
-  const entry = resolve(frontend, 'src/lib/accessSession.ts')
-  const result = await build({
-    entryPoints: [entry],
-    bundle: true,
-    write: false,
-    format: 'cjs',
-    platform: 'browser',
-    target: 'es2020',
-    logLevel: 'silent',
-    external: [],
-    plugins: [{
-      name: 'stub-deps',
-      setup(build) {
-        build.onResolve({ filter: /^\.\/stripe$/ }, () => ({ path: 'stripe-stub', namespace: 'stub' }))
-        build.onResolve({ filter: /^\.\/signAccessMessage$/ }, () => ({ path: 'sign-stub', namespace: 'stub' }))
-        build.onLoad({ filter: /.*/, namespace: 'stub' }, (args) => {
-          if (args.path === 'stripe-stub') return { contents: `export function getAccessApiBase() { return '${API}' }`, loader: 'js' }
-          return { contents: `export async function signAccessMessage(message) {
-  if (typeof globalThis.__accessSessionSigner === 'function') return globalThis.__accessSessionSigner(message)
-  return { ok: true, signature: 'fixture_signature' }
-}`, loader: 'js' }
-        })
-      },
-    }],
-  })
-  const code = result.outputFiles[0].text
-  const module = { exports: {} }
-  const fn = new Function('module', 'exports', 'require', code + '\n;module.exports = exports;')
-  fn(module, module.exports, require)
-  return module.exports
-}
+const reply = (body, ok = true) => ({ ok, json: async () => body })
 
-test('ensureAccessToken challenges, signs, and binds JWT to wallet', async () => {
-  await withSession(async () => {
+test('checkout session obtains one signed server challenge and stores the wallet-bound SAMPLE JWT', () => {
+  const signed = []
+  return withSession(async session => {
     const calls = []
-    globalThis.fetch = async (url, init = {}) => {
-      calls.push({ url: String(url), method: init.method || 'GET', body: init.body })
-      if (String(url).endsWith('/v1/access/challenge')) {
-        return { ok: true, status: 200, json: async () => ({ message: 'sign-me', nonce: 'n1' }) }
-      }
-      if (String(url).endsWith('/v1/verify-access')) {
-        return { ok: true, status: 200, json: async () => ({ ok: true, token: jwt() }) }
-      }
-      return { ok: false, status: 500, json: async () => ({}) }
+    globalThis.fetch = async (url, options) => {
+      calls.push({ url, body: JSON.parse(options.body) })
+      return String(url).endsWith('/challenge')
+        ? reply({ message: 'challenge', nonce: 'nonce' })
+        : reply({ ok: true, token: jwt() })
     }
-    const mod = await loadSessionModule()
-    const token = await mod.ensureAccessToken({ address: BUYER })
-    assert.equal(token, jwt())
-    assert.equal(mod.getAccessToken(BUYER), jwt())
-    assert.equal(mod.getAccessToken(OTHER), null)
-    assert.equal(calls[0].url, API + '/v1/access/challenge')
-    assert.equal(calls[1].url, API + '/v1/verify-access')
-    const body = JSON.parse(calls[1].body)
-    assert.equal(body.signature, 'fixture_signature')
-    assert.equal(body.message, 'sign-me')
-    assert.equal(body.nonce, 'n1')
+    assert.equal(await session.ensureAccessToken({ address: BUYER }), jwt())
+    assert.equal(session.getAccessToken(BUYER), jwt())
+    assert.equal(session.getAccessToken(OTHER), null)
+    assert.deepEqual(calls, [
+      { url: API + '/v1/access/challenge', body: { address: BUYER } },
+      {
+        url: API + '/v1/verify-access',
+        body: {
+          address: BUYER,
+          signature: 'fixture_signature',
+          message: 'challenge',
+          nonce: 'nonce',
+        },
+      },
+    ])
+    assert.deepEqual(signed, ['challenge'])
+  }, async message => {
+    signed.push(message)
+    return { ok: true, signature: 'fixture_signature' }
   })
 })
 
-test('ensureAccessToken fails closed when challenge or verify fails', async () => {
-  await withSession(async (storage) => {
-    storage.set('xartists_access_jwt', jwt())
-    storage.set('xartists_access_jwt_addr', BUYER)
-    globalThis.fetch = async () => ({ ok: false, status: 503, json: async () => ({}) })
-    const mod = await loadSessionModule()
-    // existing valid token short-circuits before fetch
-    assert.equal(await mod.ensureAccessToken({ address: BUYER }), jwt())
-    mod.clearAccessSession()
-    assert.equal(await mod.ensureAccessToken({ address: BUYER }), null)
-    assert.equal(mod.getAccessToken(BUYER), null)
-  })
+test('challenge or signing failure fails closed without a session', () => {
+  let signatures = 0
+  return withSession(
+    async session => {
+      const calls = []
+      globalThis.fetch = async url => {
+        calls.push(String(url))
+        return String(url).endsWith('/challenge')
+          ? reply({}, false)
+          : reply({ ok: true, token: jwt() })
+      }
+      assert.equal(await session.ensureAccessToken({ address: BUYER }), null)
+      assert.deepEqual(calls, [API + '/v1/access/challenge'])
+      assert.equal(signatures, 0)
+    },
+    async () => {
+      signatures++
+      return { ok: false, error: 'unexpected_signing' }
+    },
+  )
 })
 
-test('partial proof is rejected without calling verify', async () => {
-  await withSession(async () => {
-    let called = false
-    globalThis.fetch = async () => { called = true; return { ok: false, status: 500, json: async () => ({}) } }
-    const mod = await loadSessionModule()
-    assert.equal(await mod.ensureAccessToken({ address: BUYER, signature: 'only-sig' }), null)
-    assert.equal(called, false)
-  })
+test('wrong-wallet, expired and unsuccessful verification responses never yield an access session', () =>
+  withSession(async session => {
+    for (const result of [
+      { ok: true, token: jwt(OTHER) },
+      { ok: true, token: jwt(BUYER, 1) },
+      { ok: false, token: jwt() },
+    ]) {
+      globalThis.fetch = async url =>
+        String(url).endsWith('/challenge')
+          ? reply({ message: 'challenge', nonce: 'nonce' })
+          : reply(result)
+      assert.equal(await session.ensureAccessToken({ address: BUYER }), null)
+      assert.equal(session.getAccessToken(BUYER), null)
+    }
+  }),
+)
+
+test('cached session avoids network and signing while remaining bound to its wallet', () => {
+  let signatures = 0
+  let requests = 0
+  return withSession(
+    async session => {
+      const token = jwt()
+      session.storeAccessSession(token, BUYER)
+      globalThis.fetch = async () => {
+        requests++
+        return reply({}, false)
+      }
+      assert.equal(await session.ensureAccessToken({ address: BUYER }), token)
+      assert.equal(session.getAccessToken(OTHER), null)
+      assert.equal(requests, 0)
+      assert.equal(signatures, 0)
+    },
+    async () => {
+      signatures++
+      return { ok: false, error: 'unexpected_signing' }
+    },
+  )
 })
+
+test('partial supplied proof fails closed without signing or making requests', () => {
+  let signatures = 0
+  let requests = 0
+  return withSession(
+    async session => {
+      globalThis.fetch = async () => {
+        requests++
+        return reply({}, false)
+      }
+      assert.equal(
+        await session.ensureAccessToken({
+          address: BUYER,
+          message: 'partial',
+          nonce: 'nonce',
+        }),
+        null,
+      )
+      assert.equal(requests, 0)
+      assert.equal(signatures, 0)
+    },
+    async () => {
+      signatures++
+      return { ok: false, error: 'unexpected_signing' }
+    },
+  )
+})
+
+test('complete supplied proof is verified once without requesting or signing another challenge', () =>
+  withSession(
+    async session => {
+      const calls = []
+      globalThis.fetch = async (url, options) => {
+        calls.push({ url, body: JSON.parse(options.body) })
+        return reply({ ok: true, token: jwt() })
+      }
+      assert.equal(
+        await session.ensureAccessToken({
+          address: BUYER,
+          signature: 'supplied',
+          message: 'original',
+          nonce: 'nonce_once',
+        }),
+        jwt(),
+      )
+      assert.deepEqual(calls, [
+        {
+          url: API + '/v1/verify-access',
+          body: {
+            address: BUYER,
+            signature: 'supplied',
+            message: 'original',
+            nonce: 'nonce_once',
+          },
+        },
+      ])
+    },
+    async () => {
+      assert.fail('supplied proof must not trigger another signature')
+    },
+  ),
+)
