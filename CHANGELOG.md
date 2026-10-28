@@ -1,5 +1,22 @@
 # Changelog — xArtists
 
+## [0.121.0](https://github.com/Neltud/xArtists/compare/v0.120.0...v0.121.0) (2026-10-28)
+
+
+### Features
+
+* **ui:** CheckoutModal Genesis visual + wallet gate + AccessTerms props fix ([9231d4b](https://github.com/Neltud/xArtists/commit/9231d4b306db8d8b8de7e68e2394821931c42177))
+* **ui:** GenesisPackShelf home component ([b03428d](https://github.com/Neltud/xArtists/commit/b03428dd05b5ededd6ccc46cbcc4ddd7e2fb6546))
+* **ui:** mount GenesisPackShelf on Home after NetworkStrip ([826fbe1](https://github.com/Neltud/xArtists/commit/826fbe1b75198bd3cc382e904deeb290680e287f))
+* **ui:** MyPacks Genesis hierarchy PACK_VISUAL + edition caps + xa-page ([2158300](https://github.com/Neltud/xArtists/commit/2158300a0a9fa51b15ca3ac78a93d4287b72281e))
+* **ui:** Pages default access-api URL + GenesisPackShelf home + tokens ([d001bce](https://github.com/Neltud/xArtists/commit/d001bceefc46052272ab0640c7f1d93203fd47b6))
+
+
+### Bug Fixes
+
+* **ci:** restore Pages workflow + default VITE_ACCESS_API_BASE to Render access-api ([ad95c75](https://github.com/Neltud/xArtists/commit/ad95c75eb614c9d791b4a71721c750c87d48e15d))
+* **ui:** restore MyPacks + Genesis PACK_VISUAL hierarchy ([c9e20bd](https://github.com/Neltud/xArtists/commit/c9e20bdfe3c66903e811a67ec18724e8504a5825))
+
 ## [0.120.0](https://github.com/Neltud/xArtists/compare/v0.119.7...v0.120.0) (2026-10-28)
 
 
