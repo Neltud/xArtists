@@ -1,1 +1,32 @@
-PLACEHOLDER_JSON
+{
+  "Ancre EGLD": [
+    "Ancre EGLD",
+    "EGLD anchor",
+    "Referencia EGLD",
+    "EGLD-Referenz",
+    "Базовый ориентир EGLD",
+    "Базовий орієнтир EGLD",
+    "EGLD 参考锚点",
+    "مرجع EGLD"
+  ],
+  "1 achat = 1 siège SFT": [
+    "1 achat = 1 siège SFT",
+    "1 purchase = 1 SFT seat",
+    "1 compra = 1 plaza SFT",
+    "1 Kauf = 1 SFT-Zugang",
+    "1 покупка = 1 место SFT",
+    "1 покупка = 1 місце SFT",
+    "1 次购买 = 1 个 SFT 席位",
+    "عملية شراء واحدة = مقعد SFT واحد"
+  ],
+  "Un portefeuille connecté est requis.": [
+    "Un portefeuille connecté est requis.",
+    "A connected wallet is required.",
+    "Se requiere una cartera conectada.",
+    "Eine verbundene Wallet ist erforderlich.",
+    "Требуется подключённый кошелёк.",
+    "Потрібен підключений гаманець.",
+    "需要已连接的钱包。",
+    "يلزم محفظة متصلة."
+  ]
+}
