@@ -1,6 +1,7 @@
 import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
  * Modal connexion — xPortal / extension + accès simplifié (Web Wallet / passkey path).
+ * Shell tokens: acid accent, graphite surface.
  * Écoute OPEN_CONNECT_EVENT (requestOpenConnect).
  */
 import { useEffect, useState, useRef } from 'react'
@@ -178,13 +179,13 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
   return (
     <Dialog title={t('common.connect')} onClose={close} className="xa-wallet-dialog">
       <div
-        className="w-full max-w-md space-y-4 rounded-2xl border border-purple-500/30 bg-black/85 backdrop-blur-md p-5 shadow-2xl"
+        className="w-full max-w-md space-y-4 rounded-2xl border border-[color:var(--xa-border-strong)] bg-[color:var(--xa-bg-elevated)] backdrop-blur-md p-5 shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-white font-tech">{xaRender(t('common.connect'))}</h2>
-            <p className="mt-1 text-[12px] text-zinc-500">
+            <h2 className="text-lg font-semibold text-[color:var(--xa-text)] font-tech">{xaRender(t('common.connect'))}</h2>
+            <p className="mt-1 text-[12px] text-[color:var(--xa-text-muted)]">
               {xaRender("Non-custodial — aucune clé privée stockée par xArtists. ")}</p>
           </div>
           <button type="button" className="modal-close-btn" onClick={close} aria-label={xaLocalize("Fermer")}>
@@ -198,7 +199,7 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
             onClick={() => setMode('classic')}
             className={`flex-1 rounded-xl border px-2 py-2 text-[12px] ${
               mode === 'classic'
-                ? 'border-cyan-400/40 bg-cyan-500/10 text-white'
+                ? 'border-[color:var(--xa-border-strong)] bg-[color:var(--xa-accent-soft)] text-[color:var(--xa-text)]'
                 : 'border-white/10 text-zinc-500'
             }`}
           >
@@ -208,7 +209,7 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
             onClick={() => setMode('simple')}
             className={`flex-1 rounded-xl border px-2 py-2 text-[12px] ${
               mode === 'simple'
-                ? 'border-violet-400/40 bg-violet-500/10 text-white'
+                ? 'border-[color:var(--xa-border-strong)] bg-[color:var(--xa-accent-soft)] text-[color:var(--xa-text)]'
                 : 'border-white/10 text-zinc-500'
             }`}
           >
@@ -229,7 +230,7 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
                 value={manual}
                 onChange={e => setManual(e.target.value)}
                 placeholder="erd1…"
-                className="mono w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-violet-400/40"
+                className="mono w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-[color:var(--xa-accent)]"
               />
               <button type="button" className="btn-secondary w-full text-xs" onClick={runPaste}>
                 {xaRender("Lecture seule ")}</button>
