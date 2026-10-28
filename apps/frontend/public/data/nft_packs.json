@@ -1,80 +1,76 @@
 {
-  "version": "1.1",
-  "collection": "xArtists Agent Packs",
-  "ticker_hint": "XAPACK-pending",
+  "version": "1.2",
+  "collection": "xArtists Agent Packs Genesis",
   "chain": "multiversx",
-  "note": "Pulse = FULL suite. Yield/Sentinel = limited tiers. Tours art is NOT a pack.",
+  "note": "Genesis SFT caps locked. Prices server authority 110/75/50 EUR. Mint simulated until GO_LIVE.",
   "series": [
     {
       "id": "pulse",
       "name": "Pulse",
       "tier": "full",
-      "tier_label": "COMPLET",
+      "tier_label": "GOLD",
       "max_supply": 333,
-      "price_egld": 25,
+      "series_name": "Genesis Pulse",
+      "price_egld": 10,
       "price_eur": 110,
-      "features": [
-        "command_hub",
-        "tca",
-        "lia_full",
-        "live_tape_full",
-        "trading_signals",
-        "defi_sleeve",
-        "risk_alerts",
-        "room_3d"
-      ],
+      "visual": { "motif": "hex-crystal · acid core", "accent": "#e8f5a8" },
+      "features": ["command_hub", "tca", "lia_full", "live_tape_full", "trading_signals", "defi_sleeve", "risk_alerts", "room_3d"],
       "attributes": [
         { "trait_type": "Series", "value": "Pulse" },
-        { "trait_type": "Tier", "value": "Full" },
-        { "trait_type": "Signal", "value": "High" },
-        { "trait_type": "Strategies", "value": "MICRO_ARB,MOMENTUM,MEAN_REVERSION,BOARD_TICK" }
+        { "trait_type": "Tier", "value": "Gold Full" },
+        { "trait_type": "EditionMax", "value": 333 },
+        { "trait_type": "Signal", "value": "High" }
       ],
       "image": "ipfs://pending/pulse.png",
-      "description": "Pack complet — CC hub, TCA, LIA, multi-actifs, signaux HF. Not investment advice."
+      "description": "Genesis Pulse — full suite. Not investment advice."
     },
     {
       "id": "yield",
       "name": "Yield",
       "tier": "limited_defi",
-      "tier_label": "LIMITÉ · DEFI",
+      "tier_label": "SILVER",
       "max_supply": 500,
-      "price_egld": 15,
-      "price_eur": 68,
+      "series_name": "Genesis Yield",
+      "price_egld": 5,
+      "price_eur": 75,
+      "visual": { "motif": "chrome lattice · yield rings", "accent": "#c8ccc4" },
       "features": ["room_3d", "command_room_yield", "defi_sleeve", "agent_stake"],
-      "limits": ["no_tca", "no_trading_hf", "no_lia_full", "no_command_hub"],
+      "limits": ["no_tca", "no_trading_hf", "no_lia_full"],
       "attributes": [
         { "trait_type": "Series", "value": "Yield" },
-        { "trait_type": "Tier", "value": "Limited DeFi" },
-        { "trait_type": "Signal", "value": "Medium" },
-        { "trait_type": "Strategies", "value": "YIELD,COMPOUND,LP_REBALANCE,HATOM_VIEW" }
+        { "trait_type": "Tier", "value": "Silver DeFi" },
+        { "trait_type": "EditionMax", "value": 500 },
+        { "trait_type": "Signal", "value": "Medium" }
       ],
       "image": "ipfs://pending/yield.png",
-      "description": "Pack limité DeFi — LP/Hatom/compound. Pas de trading HF ni TCA."
+      "description": "Genesis Yield — DeFi limited. Not investment advice."
     },
     {
       "id": "sentinel",
       "name": "Sentinel",
       "tier": "limited_guard",
-      "tier_label": "LIMITÉ · GUARD",
+      "tier_label": "PLATINUM",
       "max_supply": 777,
-      "price_egld": 10,
-      "price_eur": 45,
+      "series_name": "Genesis Sentinel",
+      "price_egld": 2.5,
+      "price_eur": 50,
+      "visual": { "motif": "shield lattice · guard pulse", "accent": "#a78bfa" },
       "features": ["room_3d", "command_room_sentinel", "risk_alerts", "agent_stake"],
-      "limits": ["no_tca", "no_trading_hf", "no_lia_full", "no_command_hub", "no_defi_active"],
+      "limits": ["no_tca", "no_trading_hf", "no_lia_full", "no_defi_active"],
       "attributes": [
         { "trait_type": "Series", "value": "Sentinel" },
-        { "trait_type": "Tier", "value": "Limited Guard" },
-        { "trait_type": "Signal", "value": "Guard" },
-        { "trait_type": "Strategies", "value": "GUARD,ALERT,DRAWDOWN_WATCH,BOARD_ALERT" }
+        { "trait_type": "Tier", "value": "Platinum Guard" },
+        { "trait_type": "EditionMax", "value": 777 },
+        { "trait_type": "Signal", "value": "Guard" }
       ],
       "image": "ipfs://pending/sentinel.png",
-      "description": "Pack limité guard — alertes risk. Pas d'exécution agressive."
+      "description": "Genesis Sentinel — guard alerts. Not investment advice."
     }
   ],
   "mint": {
     "sc_status": "pending_deploy",
-    "payment": ["stripe_eur", "egld", "usdc", "tro"],
+    "payment": ["paybox_eur", "egld"],
     "royalties_bps": 500,
-    "receiver": "buyer_wallet_erd1"
+    "receiver": "buyer_wallet"
   }
 }
