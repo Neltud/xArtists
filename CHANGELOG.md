@@ -1,5 +1,24 @@
 # Changelog — xArtists
 
+## [0.120.0](https://github.com/Neltud/xArtists/compare/v0.119.7...v0.120.0) (2026-10-28)
+
+
+### Features
+
+* **packs:** align Genesis catalog prices 110/75/50 + visual motifs + caps ([a46925b](https://github.com/Neltud/xArtists/commit/a46925b931c29fcf8da602ddd4537c31a50bf899))
+* **ui:** Agents page Genesis caps + acid visual system (Vague 1) ([c763ef4](https://github.com/Neltud/xArtists/commit/c763ef41afc13146d147684d35762a593aabd00e))
+* **ui:** Genesis pack edition caps 333/500/777 + Agents page harmonize (Vague 0+1) ([0fa27b6](https://github.com/Neltud/xArtists/commit/0fa27b690c0cdf0ad1d1b197d7f9dd145f28823e))
+
+
+### Bug Fixes
+
+* **ui:** restore agentPacks + Genesis caps 333/500/777 + PACK_VISUAL ([2f84608](https://github.com/Neltud/xArtists/commit/2f84608599d0908b4fa4d3fb7a591ef8385fb642))
+
+
+### Documentation
+
+* lock Genesis pack editions 333/500/777 ([42fd6c0](https://github.com/Neltud/xArtists/commit/42fd6c0c4b9cef77971e7be893095590f1c5b2b8))
+
 ## [0.119.7](https://github.com/Neltud/xArtists/compare/v0.119.6...v0.119.7) (2026-10-28)
 
 
