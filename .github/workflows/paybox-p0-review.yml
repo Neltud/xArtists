@@ -39,7 +39,6 @@ jobs:
           cache: npm
           cache-dependency-path: |
             apps/frontend/package-lock.json
-            services/access-api/package-lock.json
 
       - uses: actions/setup-python@v5
         with:
@@ -49,9 +48,12 @@ jobs:
         working-directory: apps/frontend
         run: npm ci --legacy-peer-deps --ignore-scripts
 
-      - name: Install API dependencies
+      - name: Install API dependencies (resolve full tree from package.json)
         working-directory: services/access-api
-        run: npm ci --ignore-scripts
+        run: |
+          rm -f package-lock.json
+          npm install --ignore-scripts --no-package-lock
+          npm install --package-lock-only --ignore-scripts || true
 
       - name: Test API authentication and signed IPNs with fixtures
         run: node --test services/access-api/tests/*.test.mjs

@@ -96,6 +96,7 @@ async function handleRequest(req, res) {
       lia_live_trading: process.env.LIA_LIVE_TRADING === '1' ? '1' : '0',
       service: 'access-api',
       packs: Object.keys(PACK_CATALOG),
+      orders_backend: process.env.DATABASE_URL ? 'postgres' : 'file',
     })
     return
   }
@@ -200,7 +201,7 @@ async function handleRequest(req, res) {
       let artist = null
       if (artistRaw) artist = resolveArtistBeneficiary(artistRaw)
       const orderId = newOrderId(pack.id, buyer)
-      createOrder({
+      await createOrder({
         order_id: orderId, pack_id: pack.id, amount_cents: pack.price_cents,
         buyer_address: buyer, artist_beneficiary: artist,
       })
@@ -219,7 +220,7 @@ async function handleRequest(req, res) {
         cancelUrl: typeof body.cancel_url === 'string' ? body.cancel_url : `${origin}/xArtists/#/my-packs?cancelled=1`,
         ipnUrl, email: typeof body.email === 'string' ? body.email : undefined,
       }, PAYBOX)
-      markRedirected(orderId)
+      await markRedirected(orderId)
       json(res, 200, {
         ok: true, ...session, pack_id: pack.id, amount_eur: pack.price_cents / 100,
         artist_beneficiary: artist,
@@ -264,7 +265,7 @@ async function handleRequest(req, res) {
       json(res, 400, { ok: false, error: result.reason })
       return
     }
-    const order = getOrder(result.ref)
+    const order = await getOrder(result.ref)
     if (!order) {
       json(res, 400, { ok: false, error: 'unknown_order', order_id: result.ref })
       return
@@ -276,7 +277,7 @@ async function handleRequest(req, res) {
       })
       return
     }
-    const applied = applyIpn({
+    const applied = await applyIpn({
       order_id: result.ref,
       amount_cents: result.amount_cents,
       error_code: result.error,
@@ -307,7 +308,7 @@ async function handleRequest(req, res) {
       return
     }
     try {
-      const order = getOrderForBuyer(orderId, auth.buyer)
+      const order = await getOrderForBuyer(orderId, auth.buyer)
       if (!order) { json(res, 404, { ok: false, error: 'unknown_order' }); return }
       json(res, 200, {
         ok: true, order_id: order.order_id, pack_id: order.pack_id, amount_cents: order.amount_cents,
