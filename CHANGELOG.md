@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.119.7](https://github.com/Neltud/xArtists/compare/v0.119.6...v0.119.7) (2026-10-28)
+
+
+### Documentation
+
+* **deploy:** point SANDBOX runbook to Render+Neon GO checklist ([4900137](https://github.com/Neltud/xArtists/commit/4900137a176d9111e5a8ea1a7e0c630e48f3bc51))
+* **deploy:** Render Free + Neon GO checklist (budget 0€, paper) ([ecc08d3](https://github.com/Neltud/xArtists/commit/ecc08d313ecdb4dc13790585a3d8664eb48d7ee7))
+
 ## [0.119.6](https://github.com/Neltud/xArtists/compare/v0.119.5...v0.119.6) (2026-10-28)
 
 
