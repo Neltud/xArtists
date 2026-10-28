@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.119.6](https://github.com/Neltud/xArtists/compare/v0.119.5...v0.119.6) (2026-10-28)
+
+
+### Bug Fixes
+
+* **go-live:** refresh 28 Oct probe, keep LIA paper ([8653f4c](https://github.com/Neltud/xArtists/commit/8653f4cc85af04166e90c7e6d123e9bdd46761a3))
+
 ## [0.124.0] — 2026-10-28
 
 ### Bug Fixes
