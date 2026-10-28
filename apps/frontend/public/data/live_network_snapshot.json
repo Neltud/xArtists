@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-27T05:34:51Z",
+  "updated": "2026-10-28T06:14:47Z",
   "source": "api.multiversx.com",
   "network": "mainnet",
   "api_health": {
@@ -7,25 +7,25 @@
     "economics": 200,
     "accounts": 200,
     "tokens": 200,
-    "note": "Probe 27 Oct 2026 ~05:35 UTC. Supernova refreshRate 600. LIA nonce frozen at 1479. VITE_LIA_LIVE_TRADING=0. Not a trading go-live."
+    "note": "Probe 28 Oct 2026 06:14 UTC. Supernova refreshRate 600, epoch 2276 (+43 since activation 2233). LIA nonce frozen at 1479. VITE_LIA_LIVE_TRADING=0. Not a trading go-live."
   },
   "economics": {
-    "egld_price_usd": 3.22,
+    "egld_price_usd": 3.37,
     "egld_price_source": "api.multiversx.com/economics",
-    "market_cap_usd": 99969138,
-    "circulating": 31046316,
-    "staked": 13886749,
-    "apr": 0.090936,
+    "market_cap_usd": 104650056,
+    "circulating": 31053429,
+    "staked": 13884402,
+    "apr": 0.091462,
     "stale": false
   },
   "stats": {
     "refreshRate": 600,
-    "epoch": 2275,
-    "roundsPassed": 77966,
+    "epoch": 2276,
+    "roundsPassed": 81955,
     "roundsPerEpoch": 144000,
-    "accounts": 9276107,
-    "transactions": 634367120,
-    "blocks": 152061878,
+    "accounts": 9276802,
+    "transactions": 634530780,
+    "blocks": 152652858,
     "shards": 3,
     "stale": false
   },
@@ -54,9 +54,9 @@
     "id": "TRO-94c925",
     "circulating": 476224,
     "accounts": 562,
-    "price_usd": 8.08575e-05,
-    "market_cap_usd": 38.51,
-    "transactions": 2813
+    "price_usd": 8.3747e-05,
+    "market_cap_usd": 39.88,
+    "transactions": 2814
   },
-  "notes": "Read-only probe. Site go-live only. VITE_LIA_LIVE_TRADING=0. Slot isPayable=false. Listing #2 only. Do not fund legacy placeholders. Do not claimFees (treasury dest null). Upbit notice 207379109 still extended through 16-20 Nov 2026. Bithumb FET window 2-6 Nov is not an EGLD clearance."
+  "notes": "Read-only probe. Site go-live only. VITE_LIA_LIVE_TRADING=0. Slot isPayable=false. Listing #2 only. Do not fund legacy placeholders. Do not claimFees (treasury dest null). Upbit notice 207379109 still extended through 16-20 Nov 2026. Bithumb FET window 2-6 Nov is not an EGLD clearance. PR #200 (orders neon) is not merged: lockfile stripped, base behind main."
 }

@@ -3,24 +3,26 @@ hidden: true
 noIndex: true
 ---
 
-# Suite logique — 27 octobre 2026
+# Suite logique — 28 octobre 2026
 
-Probe 2026-10-27T05:34:51Z : epoch **2275** · EGLD **$3,22** · mcap **$99,97M** · APR **9,09 %** · LIA Ops **1.585598 EGLD** nonce **1479** · packs **10 / 5 / 2,5** · market **0,0175** · slot **0,5000** · $TRO circ **476 224** / **562** comptes · ~$0.0000809.
+Probe 2026-10-28T06:14:47Z : epoch **2276** · EGLD **$3,37** · mcap **$104,65M** · APR **9,15 %** · LIA Ops **1.585598 EGLD** nonce **1479** · packs **10 / 5 / 2,5** · market **0,0175** · slot **0,5000** · $TRO circ **476 224** / **562** comptes · ~$0.0000837 · 2814 tx.
 
-## Fait dans ce push (0.123.0)
+## Fait dans ce push (0.124.0)
 
-* Le site se republie. Ce n’est **pas** un go-live trading. `/go-live` le dit en tête.
-* Compteur de prolongation : jour **4/29** (tranches de 24 h depuis le 23 oct 06:02 UTC). **20 jours** avant le 16 nov, **25 jours** avant le 21 nov 00:00 UTC.
-* Fallback `networkProbe` et snapshots publics alignés sur ce probe. Le 26 oct (epoch 2274, $3,23) n’est plus le repli.
-* Le JSON contrat ne décrit plus le listing #2 comme un prix vivant de 0,25 EGLD. Cette valeur reste une preuve historique. Le solde market est **0,0175**.
-* `VITE_LIA_LIVE_TRADING=0`. Paybox **501**. Slot REAL fermé. Hashes SC inchangés.
+* Le site se republie via `static.yml`. Ce n’est **pas** un go-live trading. `/go-live` le dit en tête.
+* Compteur de prolongation, au probe : jour **6/29** (tranches de 24 h depuis le 23 oct 06:02 UTC). **19 jours** avant le 16 nov, **24 jours** avant le 21 nov 00:00 UTC. Le client recalcule ; le markdown ne fige pas l’horloge.
+* Fallback `networkProbe` et snapshots publics alignés sur ce probe. Le 27 oct (epoch 2275, $3,22) n’est plus le repli.
+* Hashes SC inchangés. Slot toujours non payable. LIA nonce toujours 1479.
+* `VITE_LIA_LIVE_TRADING=0`. Paybox **501**. Slot REAL fermé.
+* PR [#200](https://github.com/Neltud/xArtists/pull/200) **non mergée** : lockfile access-api détruit, base derrière `main`, `unstable`.
 
 ## Ne pas faire
 
 * Appeler ce déploiement un go-live trading.
 * Nouveau swap / wrap / liquidité sur LIA Ops. Nonce figé à 1479 depuis le 17 oct.
-* Allumer le live parce que le 23 oct est passé, parce que le site est « en ligne », parce qu’une annonce FET Bithumb tombe le 2–6 nov, ou parce qu’une notice concerne un autre actif (INIT le 26 oct).
-* Paybox ou Stripe réels. `claimFees`. Fonds vers placeholders vides.
+* Allumer le live parce que le prix est remonté à $3,37, parce que le 23 oct est passé, parce que le site est « en ligne », parce qu’une annonce FET Bithumb tombe le 2–6 nov, ou parce qu’une notice concerne un autre actif.
+* Paybox, Stripe ou Neon réels. `claimFees`. Fonds vers placeholders vides.
+* Merger la PR #200 tant que `npm ci` n’est pas rétabli et que la base n’est pas rebasée sur `main`.
 * `VITE_*_CODEHASH_OK=1` dans git.
 * Annoncer un fonds. Confondre Connect visiteur et LIA Ops.
 * Ouvrir le slot REAL ou déployer un second slot.
@@ -34,8 +36,8 @@ Probe 2026-10-27T05:34:51Z : epoch **2275** · EGLD **$3,22** · mcap **$99,97M*
 3. Inscription MX-8004 / First 100.
 4. Upgrade **du même** slot en payable, puis 1 spin poussière.
 5. Akash `VITE_BRAIN_WS` seulement si l’endpoint répond.
-6. Paybox : secrets preprod hors git, IPN prouvée, puis seulement `VITE_PAYBOX_ENABLED`.
+6. Paybox : secrets preprod hors git, IPN prouvée, puis seulement `VITE_PAYBOX_ENABLED`. Le store Neon vient **après**, avec un lockfile complet, pas à la place.
 
 ## D’ici le 16–20 nov
 
-Rester paper. Le travail utile est la lisibilité publique (galerie, musée, market en lecture, packs affichés, `/go-live` honnête, repli réseau à jour). Pas de capital nouveau.
+Rester paper. Le travail utile est la lisibilité publique (galerie, musée, market en lecture, packs affichés, `/go-live` honnête, repli réseau à jour). Pas de capital nouveau. Prochain probe utile : à chaque epoch qui change le chrome public, ou dès qu’une notice KR bouge.

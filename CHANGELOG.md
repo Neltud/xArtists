@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.124.0] — 2026-10-28
+
+### Bug Fixes
+
+* **probe:** refresh the public fallback and entity snapshots to the 28 Oct mainnet probe (epoch 2276, EGLD $3.37, mcap $104.65M). Stop serving the 27 Oct chrome when the API is down.
+* **go-live:** keep `VITE_LIA_LIVE_TRADING=0`. Day 6/29 of the Upbit 207379109 extension at probe time. A Bithumb FET notice on 2–6 Nov is not an EGLD clearance. Do not merge PR #200 (stripped access-api lockfile).
+
 ## [0.119.5](https://github.com/Neltud/xArtists/compare/v0.119.4...v0.119.5) (2026-10-27)
 
 

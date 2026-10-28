@@ -118,24 +118,24 @@ async function getJsonSoft<T>(path: string): Promise<T | null> {
   }
 }
 
-/** Last-known fallback — 2026-10-27 probe. Never used as "live" chrome. */
+/** Last-known fallback — 2026-10-28 probe. Never used as "live" chrome. */
 export const FALLBACK_SNAPSHOT: NetworkSnapshot = {
-  probedAt: '2026-10-27T05:34:51Z',
+  probedAt: '2026-10-28T06:14:47Z',
   ok: false,
   degraded: true,
   api: { stats: false, economics: false, accounts: false, tokens: false },
-  epoch: 2275,
+  epoch: 2276,
   refreshRate: 600,
   roundsPerEpoch: 144000,
-  roundsPassed: 77966,
-  accounts: 9276107,
-  transactions: 634367120,
-  blocks: 152061878,
-  egldPrice: 3.22,
-  marketCap: 99969138,
-  circulating: 31046316,
-  staked: 13886749,
-  apr: 0.090936,
+  roundsPassed: 81955,
+  accounts: 9276802,
+  transactions: 634530780,
+  blocks: 152652858,
+  egldPrice: 3.37,
+  marketCap: 104650056,
+  circulating: 31053429,
+  staked: 13884402,
+  apr: 0.091462,
   liaOps: { balanceEgld: 1.585598, nonce: 1479, stale: true },
   grokyversx: { balanceEgld: 0, nonce: 8, stale: true },
   sc: {
@@ -149,7 +149,7 @@ export const FALLBACK_SNAPSHOT: NetworkSnapshot = {
     treasury: asSc(PROBE_ADDRESSES.treasury, null),
   },
   scStale: true,
-  tro: { supply: 476224, accounts: 562, transactions: 2813, stale: true },
+  tro: { supply: 476224, accounts: 562, transactions: 2814, stale: true },
 }
 
 type StatsJson = {
