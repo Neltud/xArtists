@@ -7,15 +7,17 @@
 
 ## Render Free + Neon Free
 
-1. Neon project → `DATABASE_URL`  
-2. Render Web Service root: `services/access-api`  
-3. **Build command:** `npm install --ignore-scripts && npm install pg@8.13.1 --ignore-scripts`  
-4. **Start:** `npm start`  
-5. Env: `DATABASE_URL`, `ACCESS_JWT_SECRET`, `CORS_ORIGIN=https://neltud.github.io`, `LIA_LIVE_TRADING=0`  
-6. Schema auto-created on first write  
-7. GitHub var `VITE_ACCESS_API_BASE` + rebuild Pages  
+1. Neon project → `DATABASE_URL` (SSL required; cert verification on by default)
+2. Render Web Service root: `services/access-api`
+3. **Build command:** `npm ci --ignore-scripts`
+4. **Start:** `npm start`
+5. Env: `DATABASE_URL`, `ACCESS_JWT_SECRET`, `CORS_ORIGIN=https://neltud.github.io`, `LIA_LIVE_TRADING=0`
+6. Schema auto-created on first write
+7. GitHub var `VITE_ACCESS_API_BASE` + rebuild Pages
 
-`pg` is **not** in package.json deps (keeps CI `npm ci` green). Install on Render only.
+`pg` is a declared dependency (`package.json` + lockfile). CI uses `npm ci`.
+
+TLS: `rejectUnauthorized: true` by default. Set `PGSSL=0` only for local non-TLS Postgres.
 
 `GET /health` → `orders_backend: postgres|file`
 
