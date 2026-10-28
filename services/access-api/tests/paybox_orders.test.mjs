@@ -41,6 +41,7 @@ before(() => {
   process.env.PAYBOX_ORDERS_PATH = ordersPath
   process.env.PAYBOX_ARTIST_ALLOWLIST = ''
   process.env.PAYBOX_PUBKEY_PEM = testPubPem
+  delete process.env.DATABASE_URL
 })
 
 after(() => {
@@ -55,35 +56,35 @@ test('newOrderId is unique and bounded', () => {
   assert.ok(a.startsWith('xa_'))
 })
 
-test('createOrder + applyIpn amount mismatch + idempotent delivery', () => {
+test('createOrder + applyIpn amount mismatch + idempotent delivery', async () => {
   const id = newOrderId('yield', BUYER)
-  createOrder({
+  await createOrder({
     order_id: id,
     pack_id: 'yield',
     amount_cents: 7500,
     buyer_address: BUYER,
   })
-  const bad = applyIpn({ order_id: id, amount_cents: 1, error_code: '00000' })
+  const bad = await applyIpn({ order_id: id, amount_cents: 1, error_code: '00000' })
   assert.equal(bad.ok, false)
   assert.equal(bad.reason, 'amount_mismatch')
 
-  const first = applyIpn({ order_id: id, amount_cents: 7500, error_code: '00000', authorization: 'AUTH1' })
+  const first = await applyIpn({ order_id: id, amount_cents: 7500, error_code: '00000', authorization: 'AUTH1' })
   assert.equal(first.ok, true)
   assert.equal(first.duplicate, false)
   assert.equal(first.status, 'paid')
   assert.equal(first.delivery, 'simulated')
 
-  const second = applyIpn({ order_id: id, amount_cents: 7500, error_code: '00000', authorization: 'AUTH1' })
+  const second = await applyIpn({ order_id: id, amount_cents: 7500, error_code: '00000', authorization: 'AUTH1' })
   assert.equal(second.ok, true)
   assert.equal(second.duplicate, true)
-  assert.equal(getOrder(id).ipn_count, 2)
+  assert.equal((await getOrder(id)).ipn_count, 2)
 })
 
-test('getOrderForBuyer denies cross-user access', () => {
+test('getOrderForBuyer denies cross-user access', async () => {
   const id = newOrderId('pulse', BUYER)
-  createOrder({ order_id: id, pack_id: 'pulse', amount_cents: 11000, buyer_address: BUYER })
-  assert.equal(getOrderForBuyer(id, BUYER).order_id, id)
-  assert.throws(() => getOrderForBuyer(id, OTHER), { statusCode: 403 })
+  await createOrder({ order_id: id, pack_id: 'pulse', amount_cents: 11000, buyer_address: BUYER })
+  assert.equal((await getOrderForBuyer(id, BUYER)).order_id, id)
+  await assert.rejects(() => getOrderForBuyer(id, OTHER), (e) => e.statusCode === 403)
 })
 
 test('artist allowlist required when beneficiary is designated', () => {
@@ -145,8 +146,22 @@ test('HMAC session fails closed without credentials; RSA IPN only with fixtures'
   assert.equal(IPN_POLICY.algorithm, 'SHA_256')
 })
 
-test('loadOrders returns schema after writes', () => {
-  const db = loadOrders()
+test('loadOrders returns schema after writes', async () => {
+  const db = await loadOrders()
   assert.equal(db.schema, 'xartists_paybox_orders/v1')
   assert.ok(typeof db.orders === 'object')
+})
+
+test('file store keeps all concurrent creates under wx lock', async () => {
+  const ids = [0, 1, 2].map((i) => newOrderId(`c${i}`, BUYER))
+  await Promise.all(ids.map((id) => createOrder({
+    order_id: id,
+    pack_id: 'pulse',
+    amount_cents: 11000,
+    buyer_address: BUYER,
+  })))
+  const db = await loadOrders()
+  for (const id of ids) {
+    assert.ok(db.orders[id], `missing concurrent order ${id}`)
+  }
 })
