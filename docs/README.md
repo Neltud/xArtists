@@ -19,6 +19,10 @@ La présentation publique vous accompagne de la découverte du projet à la pris
 
 **Dapp publique sur GitHub Pages · LIA en simulation.** La mise à jour mobile consolidée reste en cours de validation. Les actions de paiement et les opérations blockchain dépendent des services activés et d’une validation distincte.
 
+{% hint style="info" %}
+**Sécurité — 28 octobre 2026.** Checkout Paybox désactivé, API publique non reliée, ouverture marchande non validée. [Dossier de sécurité et critères de lancement](security/). Les contrats mainnet restent une surface distincte de l'interface paper.
+{% endhint %}
+
 <a href="https://neltud.github.io/xArtists/" class="button primary">Ouvrir la dapp sur GitHub</a>
 
 [English overview](presentation/english-overview.md) · [Questions fréquentes](presentation/questions-frequentes.md) · [Contribuer](presentation/contribuer-et-partenariats.md)

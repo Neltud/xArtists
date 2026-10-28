@@ -5,69 +5,47 @@ noIndex: true
 
 # Emergency pause — xArtists mainnet SC
 
-Use when `ops_sc_watch` fails, unexpected balance spike, or suspected exploit pattern (see Kevin Lallement 2026-10-16 note on automated SC scanning).
+Révision documentaire : 28 octobre 2026, audit `352de2dc…`. Ce runbook ne constitue pas un GO pour envoyer une transaction, changer une clé ou redéployer. Chaque action de mutation exige l'opérateur autorisé et son approbation sur la cible précise.
 
-## 1. Detect
+### 1. Détecter et conserver les preuves
 
-```bash
-python3 scripts/ops_sc_watch.py
-# or GitHub Actions → Ops SC watch
-```
+Déclencheurs : hash/owner inattendu, comportement financier anormal, corruption du ledger ou de l'état de risque, paiement non rapproché, signature inattendue ou service de confiance indisponible.
 
-Fail conditions: `MISMATCH` codeHash · `NULL` · balance ≥ alert (default 2 EGLD).
+Relever UTC et Europe/Paris, commit, build servi, chaîne, adresse exacte, requête/réponse et identifiants de commande/TX. Exporter des journaux sans secrets ni données personnelles inutiles. Ne pas réinitialiser le fichier corrompu, effacer les commandes ou relancer une livraison ambiguë.
 
-## 2. Pause on-chain (owner wallet only)
+Les lectures `ops_sc_watch` et explorer peuvent aider ; un résultat manquant n'est pas un état sûr. Ne pas transformer une erreur d'indexer en succès.
 
-**Never** use dApp user Connect for this. Use mxpy / MultiversX Utils with **owner** PEM offline.
+### 2. Arrêter les chemins hors chaîne
 
-Priority order (public money surfaces first):
+L'opérateur suspend les exécuteurs, tâches de signature et entrées d'ordre concernés. Le rapport quotidien alerte mais n'effectue pas cette mutation. Conserver LIA en paper et fermer le checkout visé ; bloquer la création de nouvelles commandes tout en gardant un chemin de rapprochement des paiements déjà reçus.
 
-| Priority | SC                   | Address                                                          |
-| -------- | -------------------- | ---------------------------------------------------------------- |
-| 1        | agents\_marketplace  | `erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg` |
-| 2        | nft\_marketplace     | `erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm` |
-| 3        | slot\_casino         | `erd1qqqqqqqqqqqqqpgquf3cuv2zsfsahy7ypvter3qcep4ptthsvhxqs4g34f` |
-| 4        | agent\_stake\_escrow | `erd1qqqqqqqqqqqqqpgqzyvwldu6jq8w6ry6s856dl0uy7g0v37vvhxqndvzr3` |
-| 5        | others               | see `contracts.ts`                                               |
+Les flags frontend exigent un rebuild pour modifier un ancien bundle. Fermer l'UI ne ferme ni l'API ni les appels directs au contrat. Une API ou base indisponible ne doit pas créer un nouveau ledger vide.
 
-```bash
-SC=erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg
+### 3. Pause contractuelle, par ABI et par pouvoir
 
-mxpy contract call "$SC" \
-  --function=setPaused \
-  --arguments true \
-  --pem=/secure/path/owner.pem \
-  --proxy=https://gateway.multiversx.com \
-  --chain=1 \
-  --gas-limit=10000000 \
-  --recall-nonce \
-  --send
-```
+`isPayable=false` concerne la réception native selon les métadonnées du compte : ce n'est pas une preuve de pause de ses endpoints payables, ni un arrêt HTTP. Vérifier les endpoints, l'ABI et les protections réellement déployés avant de conclure.
 
-Verify view `isPaused` → `true` on explorer or:
+| Cible de l'inventaire                                                                                                          | Lecture du 28 octobre                | Conséquence                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ | ------------------------------------------------------------------------------- |
+| agents\_marketplace, nft\_marketplace, nft\_staking, tro\_staking et legacy, tro\_governance, treasury\_splitter, slot\_casino | `isPaused` répond `ok`, false encodé | Une pause n'est pas attestée par ces réponses                                   |
+| venue\_split, agent\_stake\_escrow                                                                                             | `isPaused` : function not found      | Identifier la vue réelle et son ABI ; ne pas assimiler l'erreur à true ou false |
 
-```bash
-mxpy contract query "$SC" --function=isPaused --proxy=https://gateway.multiversx.com
-```
+Les adresses de référence et hashes figurent dans `data/contracts.json`. Un hash égal à cette référence ne prouve pas un build reproductible.
 
-## 3. Gate dApp OFF
+Avant une pause réelle : double vérification du réseau et de l'adresse, ABI correspondant au bytecode, owner métier et owner blockchain, signataire approprié, effet sur retraits/refunds en cours et méthode de vérification après confirmation. Le `setPaused` métier et le pouvoir d'upgrade du compte sont distincts. Aucun exemple prêt à diffuser n'est exécuté par cet audit.
 
-Until codeHash re-verified:
+La préparation peut être faite sans signature ni broadcast. Le responsable donne ensuite le GO sur l'opération ; le signataire garde les clés hors Git, chatbot, GitBook et runner de build.
 
-* Set GitHub Actions secrets / env: `VITE_AGENTS_CODEHASH_OK=0`, `VITE_MARKETPLACE_CODEHASH_OK=0`, etc.
-* Redeploy Pages so `canBuyAgent()` / `canListBuyNft()` stay closed.
+### 4. Rapprocher et contenir
 
-## 4. Do not
+Lister les commandes et TX à statut incertain. Rechercher un identifiant fournisseur avant toute nouvelle tentative. Geler la livraison ou le paiement sortant concerné ; les remboursements, transferts, upgrades et rotations sont des décisions séparées, avec preuve d'autorité.
 
-* Do not `claimFees` during an active incident unless isolating funds to a known safe cold wallet with dual review.
-* Do not upgrade SC mid-incident without a known-good wasm + hash plan.
-* Do not post PEM or seed anywhere.
+Ne pas lancer claimFees pendant l'incident sans décision explicite et destination vérifiée. Ne pas corriger un incident par un upgrade non reproductible. Une clé potentiellement exposée n'est pas recopiée dans un nouveau fichier partagé.
 
-## 5. Resume
+### 5. Reprendre
 
-1. Root cause documented.
-2. `ops_sc_watch.py` green.
-3. `setPaused false` per SC.
-4. Re-enable `VITE_*_CODEHASH_OK` only after hash match.
+Cause et périmètre établis, correctif relu au SHA exact, tests de panne/concurrence verts, état financier rapproché et restauration vérifiée. Revalider hash/ABI/owners et confirmer séparément l'état du contrat, du serveur et du bundle servi.
 
-Owner (2026-10-16 probe): `erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g`
+Le responsable et le vérificateur approuvent la capacité exacte à reprendre ; un cron ou un badge ne réactive rien. Documenter le retour à l'état fermé. Tout doute sur la livraison ou le budget garde le chemin concerné fermé.
+
+[Audit et preuves](security/audit-2026-10-28.md) · [Critères de lancement](security/launch-gates.md)
