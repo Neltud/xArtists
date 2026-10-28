@@ -151,21 +151,22 @@ test('buyer auth: JWT required; address spoof denied', () => {
   assert.equal(bare.statusCode, 401)
 })
 
-test('order access: other user denied', () => {
+test('order access: other user denied', async () => {
   const id = newOrderId('pulse', 't2')
-  createOrder({ order_id: id, pack_id: 'pulse', amount_cents: 11000, buyer_address: BUYER })
-  assert.throws(() => getOrderForBuyer(id, OTHER), { statusCode: 403 })
+  await createOrder({ order_id: id, pack_id: 'pulse', amount_cents: 11000, buyer_address: BUYER })
+  await assert.rejects(() => getOrderForBuyer(id, OTHER), { statusCode: 403 })
 })
 
-test('idempotent delivery + restart persistence', () => {
+test('idempotent delivery + restart persistence', async () => {
   const id = newOrderId('yield', 't3')
-  createOrder({ order_id: id, pack_id: 'yield', amount_cents: 7500, buyer_address: BUYER })
-  const a = applyIpn({ order_id: id, amount_cents: 7500, error_code: '00000', authorization: 'X' })
+  await createOrder({ order_id: id, pack_id: 'yield', amount_cents: 7500, buyer_address: BUYER })
+  const a = await applyIpn({ order_id: id, amount_cents: 7500, error_code: '00000', authorization: 'X' })
   assert.equal(a.duplicate, false)
-  const b = applyIpn({ order_id: id, amount_cents: 7500, error_code: '00000', authorization: 'X' })
+  const b = await applyIpn({ order_id: id, amount_cents: 7500, error_code: '00000', authorization: 'X' })
   assert.equal(b.duplicate, true)
-  assert.equal(loadOrders().orders[id].status, 'paid')
-  assert.equal(loadOrders().orders[id].delivery, 'simulated')
+  const orders = await loadOrders()
+  assert.equal(orders.orders[id].status, 'paid')
+  assert.equal(orders.orders[id].delivery, 'simulated')
 })
 
 test('fail closed without merchant config', () => {
