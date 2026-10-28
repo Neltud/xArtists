@@ -120,7 +120,8 @@ async function getPool() {
     const { default: pg } = await import('pg')
     pool = new pg.Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: process.env.PGSSL === '0' ? false : { rejectUnauthorized: false },
+      // Neon requires TLS. Default: verify certs. Set PGSSL=0 only for local non-TLS Postgres.
+      ssl: process.env.PGSSL === '0' ? false : { rejectUnauthorized: true },
       max: 3,
     })
   }
