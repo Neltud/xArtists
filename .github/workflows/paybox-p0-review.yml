@@ -51,7 +51,7 @@ jobs:
 
       - name: Install API dependencies
         working-directory: services/access-api
-        run: npm install --ignore-scripts
+        run: npm ci --ignore-scripts
 
       - name: Test API authentication and signed IPNs with fixtures
         run: node --test services/access-api/tests/*.test.mjs
