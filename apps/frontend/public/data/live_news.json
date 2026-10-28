@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-28T12:11:01.744Z",
+  "updatedAt": "2026-10-28T20:05:11.863Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793217911666",
+      "timestamp": "20:05",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.41 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1793189460899",
       "timestamp": "12:11",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1792499908000",
-      "timestamp": "12:38",
-      "source": "CoinTelegraph",
-      "title": "Drift exploiter sends $61M ETH to Tornado Cash, holds $194M",
-      "link": "https://cointelegraph.com/news/drift-exploiter-eth-tornado-cash?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
