@@ -6,7 +6,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getPack, type PackId } from '../config/agentPacks'
+import { getPack, PACK_VISUAL, type PackId } from '../config/agentPacks'
 import { useWallet } from '../context/WalletContext'
 import { canBuyAgent } from '../config/scStatus'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -73,6 +73,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
   }, [open])
 
   if (!open || !pack) return null
+  const visual = PACK_VISUAL[pack.id]
 
   const ensureGuestId = () => {
     let id = guestId || loadGuestReceiveId()
@@ -89,8 +90,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       setMsg(t('checkout.msg.fiatNotConfigured'))
       return
     }
-    const method = methods.includes(fiatMethod) ? fiatMethod : methods[0]
-    // Paybox requires wallet-bound JWT — never guest alone
+    const method = methods.find(method => method === fiatMethod) || methods[0]
     if (method === 'paybox' && !hasErd1) {
       setMsg(t('checkout.msg.cryptoNeedsWallet'))
       requestOpenConnect()
@@ -196,20 +196,28 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       onClick={onClose}
     >
       <div
-        className="xa-modal-panel glass-hud w-full max-w-md max-h-[92vh] overflow-y-auto space-y-4 rounded-2xl border border-purple-500/30 bg-black/85 backdrop-blur-md shadow-2xl"
+        className="xa-modal-panel glass-hud w-full max-w-md max-h-[92vh] overflow-y-auto space-y-4 rounded-2xl border bg-[color:var(--xa-bg-elevated)] backdrop-blur-md shadow-2xl"
+        style={{ borderColor: visual.border, boxShadow: visual.glow }}
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-2">
           <div>
-            <p className="text-[10px] font-tech uppercase tracking-widest text-violet-300/90">
+            <p className="text-[10px] font-tech uppercase tracking-widest" style={{ color: visual.accent }}>
               {xaRender(t('checkout.title'))}
             </p>
             <h2 id="checkout-title" className="text-lg font-bold text-white">
               {xaRender(pack.icon)} {xaRender(pack.name)}{xaRender(' ')}
               <span className="text-[11px] font-normal text-zinc-500">{xaRender(pack.tierLabel)}</span>
             </h2>
-            <p className="text-[12px] text-zinc-400 mt-0.5 mono tabular-nums">
-              {xaRender(t('checkout.priceLine', { egld: pack.priceEgld.list, eur: pack.priceEur.list }))}
+            <p className="text-[12px] text-[color:var(--xa-text-secondary)] mt-0.5 mono tabular-nums">
+              <strong className="text-base text-[color:var(--xa-text)]">{xaRender(pack.priceEur.list)} €</strong>
+              {' · '}{xaRender('Ancre EGLD')} {xaRender(pack.priceEgld.list)}
+            </p>
+            <p
+              className="mt-2 inline-flex rounded-full border px-2 py-1 text-[10px] tabular-nums"
+              style={{ color: visual.accent, borderColor: visual.border, background: visual.accentSoft }}
+            >
+              {xaRender(pack.seriesName)} · max {xaRender(pack.maxSupply)}
             </p>
           </div>
           <button
@@ -237,15 +245,13 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
               setRail('crypto')
               setMsg('')
             }}
-            className={`w-full text-left rounded-2xl border p-3 transition active:scale-[0.99] ${
-              rail === 'crypto'
-                ? 'border-cyan-400/50 bg-cyan-500/10'
-                : 'border-white/10 bg-black/30 hover:border-white/20'
-            }`}
+            className="w-full text-left rounded-2xl border border-[color:var(--xa-border)] bg-[color:var(--xa-bg)] p-3 transition active:scale-[0.99]"
+            style={rail === 'crypto' ? { borderColor: visual.border, background: visual.accentSoft } : undefined}
+            aria-pressed={rail === 'crypto'}
           >
             <p className="text-sm font-semibold text-white">{xaRender(t('checkout.rail.web3'))}</p>
             <p className="text-[11px] text-zinc-400 mt-0.5">{xaRender(t('checkout.rail.crypto.desc'))}</p>
-            <p className="text-[11px] text-cyan-300/90 mt-1 mono">
+            <p className="text-[11px] mt-1 mono" style={{ color: visual.accent }}>
               {xaRender(pack.priceEgld.list)} {xaRender(" EGLD ·")}{xaRender(' ')}
               {xaRender(mintLive ? t('checkout.rail.crypto.mintOpen') : t('checkout.rail.crypto.mintSoon'))}
             </p>
@@ -257,15 +263,13 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
               setRail('fiat')
               setMsg('')
             }}
-            className={`w-full text-left rounded-2xl border p-3 transition active:scale-[0.99] ${
-              rail === 'fiat'
-                ? 'border-violet-400/50 bg-violet-500/10'
-                : 'border-white/10 bg-black/30 hover:border-white/20'
-            }`}
+            className="w-full text-left rounded-2xl border border-[color:var(--xa-border)] bg-[color:var(--xa-bg)] p-3 transition active:scale-[0.99]"
+            style={rail === 'fiat' ? { borderColor: visual.border, background: visual.accentSoft } : undefined}
+            aria-pressed={rail === 'fiat'}
           >
             <p className="text-sm font-semibold text-white">{xaRender(t('checkout.rail.card'))}</p>
-            <p className="text-[11px] text-zinc-400 mt-0.5">{xaRender(t('checkout.rail.fiat.desc'))}</p>
-            <p className="text-[11px] text-violet-300/90 mt-1 mono">
+            <p className="text-[11px] text-zinc-400 mt-0.5">{xaRender('Un portefeuille connecté est requis.')}</p>
+            <p className="text-[11px] mt-1 mono" style={{ color: visual.accent }}>
               {xaRender(pack.priceEur.list)} € ·{xaRender(' ')}
               {xaRender(hasFiat ? t('checkout.rail.fiat.ready') : t('checkout.rail.fiat.soon'))}
             </p>
@@ -279,11 +283,9 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
                 key={m}
                 type="button"
                 onClick={() => setFiatMethod(m)}
-                className={`rounded-full border px-3 py-1.5 text-[11px] font-medium ${
-                  fiatMethod === m
-                    ? 'border-violet-400/50 bg-violet-500/20 text-white'
-                    : 'border-white/10 text-zinc-400'
-                }`}
+                className="rounded-full border border-[color:var(--xa-border)] px-3 py-1.5 text-[11px] font-medium text-[color:var(--xa-text-secondary)]"
+                style={fiatMethod === m ? { borderColor: visual.border, background: visual.accentSoft, color: visual.accent } : undefined}
+                aria-pressed={fiatMethod === m}
               >
                 {xaRender(m === 'stripe' ? t('checkout.method.stripe') : t('checkout.method.paybox'))}
               </button>
@@ -292,17 +294,17 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
         ))}
 
         {xaRender(rail === 'fiat' && !hasErd1 && (
-          <p className="text-[11px] text-zinc-500 leading-relaxed">{xaRender(t('checkout.guestHint'))}</p>
+          <p className="text-[11px] text-zinc-500 leading-relaxed">{xaRender(t('packCheckout.connectFirst'))}</p>
         ))}
 
-        {xaRender(rail === 'crypto' && !hasErd1 && (
+        {xaRender(rail && !hasErd1 && (
           <div className="space-y-2">
             <button type="button" className="btn-primary w-full text-sm" onClick={() => requestOpenConnect()}>
               {xaRender(t('common.connect'))}
             </button>
             <button
               type="button"
-              className="w-full text-center text-[12px] underline text-cyan-300"
+              className="w-full text-center text-[12px] underline text-[color:var(--xa-accent)]"
               onClick={() => requestOpenConnect()}
             >
               {xaRender(t('checkout.connectXportal'))}
@@ -334,7 +336,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
           <button
             type="button"
             className="btn-primary w-full text-sm"
-            disabled={busy || packTxPending || (rail === 'crypto' && !hasErd1)}
+            disabled={busy || packTxPending || !hasErd1 || (rail === 'fiat' && !hasFiat)}
             onClick={() => setTermsOpen(true)}
           >
             {xaRender(busy || packTxPending
@@ -375,9 +377,9 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
 
         <AccessTermsModal
           open={termsOpen}
-          onClose={() => setTermsOpen(false)}
+          onCancel={() => setTermsOpen(false)}
           onAccept={onAcceptTerms}
-          packName={pack.name}
+          packLabel={pack.name}
         />
       </div>
     </div>
