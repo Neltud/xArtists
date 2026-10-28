@@ -51,7 +51,8 @@ jobs:
 
       - name: Install API dependencies
         working-directory: services/access-api
-        run: npm ci --ignore-scripts
+        # npm install resolves full tree; lean lock lacks nested pg/sdk entries
+        run: npm install --ignore-scripts
 
       - name: Test API authentication and signed IPNs with fixtures
         run: node --test services/access-api/tests/*.test.mjs
