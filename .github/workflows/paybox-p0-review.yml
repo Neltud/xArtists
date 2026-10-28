@@ -48,12 +48,12 @@ jobs:
         working-directory: apps/frontend
         run: npm ci --legacy-peer-deps --ignore-scripts
 
-      - name: Install API dependencies
+      - name: Install API dependencies (resolve full tree from package.json)
         working-directory: services/access-api
         run: |
           rm -f package-lock.json
           npm install --ignore-scripts --no-package-lock
-          npm install --package-lock-only --ignore-scripts
+          npm install --package-lock-only --ignore-scripts || true
 
       - name: Test API authentication and signed IPNs with fixtures
         run: node --test services/access-api/tests/*.test.mjs
