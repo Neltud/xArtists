@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-28T20:05:11.863Z",
+  "updatedAt": "2026-10-29T00:37:00.877Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793234220682",
+      "timestamp": "00:37",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.44 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1793217911666",
       "timestamp": "20:05",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "FINMA approves Switzerland’s first Bitcoin ETF for retail investors",
       "link": "https://cointelegraph.com/news/finma-approves-switzerlands-first-bitcoin-etf-retail?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1792500613000",
-      "timestamp": "12:50",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
