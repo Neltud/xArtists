@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-29T00:37:00.877Z",
+  "updatedAt": "2026-10-29T09:24:03.866Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793265843598",
+      "timestamp": "09:24",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.38 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1793234220682",
       "timestamp": "00:37",
@@ -15,13 +22,6 @@
       "timestamp": "20:05",
       "source": "EGLD",
       "title": "Cotation publique · $3.41 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1793189460899",
-      "timestamp": "12:11",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.38 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
