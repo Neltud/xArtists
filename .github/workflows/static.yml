@@ -45,7 +45,13 @@ jobs:
 
       - name: Install Access API dependencies
         working-directory: services/access-api
-        run: npm ci --ignore-scripts
+        run: |
+          if [ -f package-lock.json ] && [ "$(wc -c < package-lock.json)" -gt 1000 ]; then
+            npm ci --ignore-scripts
+          else
+            echo "minimal lock — npm install"
+            npm install --ignore-scripts
+          fi
 
       - name: Verify release paths without payment or broadcast
         run: |
