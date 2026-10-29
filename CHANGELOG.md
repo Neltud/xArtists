@@ -1,5 +1,24 @@
 # Changelog — xArtists
 
+## [0.122.0](https://github.com/Neltud/xArtists/compare/v0.121.0...v0.122.0) (2026-10-29)
+
+
+### Features
+
+* **access-api:** quote FX fallback from EGLD_EUR_RATE env ([581e5ec](https://github.com/Neltud/xArtists/commit/581e5ec39fc15cd973ce9ed2cd308a2aba1fa269))
+
+
+### Bug Fixes
+
+* **ui:** restore MuseumPage + shell mode chips ([84bfa81](https://github.com/Neltud/xArtists/commit/84bfa81d9af3c4e6a3d01be93b1a6d3f7330d505))
+
+
+### Documentation
+
+* A sandbox status — preprod armed, E2E pending wallet+IPN ([99372b7](https://github.com/Neltud/xArtists/commit/99372b7204f9a238d1f73441e20512cec0300cee))
+* launch prep checklist site + dApp 2026-10-29 ([3266407](https://github.com/Neltud/xArtists/commit/3266407a1dbf729167af39e14642b34e11150789))
+* runbook A sandbox + B production PayBox marchande ([0be50e5](https://github.com/Neltud/xArtists/commit/0be50e5ad9bbc6b382b5421293d930b30476eabd))
+
 ## [0.121.0](https://github.com/Neltud/xArtists/compare/v0.120.0...v0.121.0) (2026-10-28)
 
 
