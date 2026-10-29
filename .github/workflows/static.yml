@@ -94,12 +94,11 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=4096
           VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
-          VITE_APP_BUILD: "sites-v3-release-paybox-preprod"
-          VITE_LIA_LIVE_TRADING: "0"
+          VITE_APP_BUILD: "sites-v3-release-lia-live"
+          # GO 2026-10-29: micro-live UI. Orchestrator must also set LIA_LIVE_TRADING=1 + gates AND.
+          VITE_LIA_LIVE_TRADING: ${{ vars.VITE_LIA_LIVE_TRADING || '1' }}
           VITE_ACCESS_API_BASE: ${{ vars.VITE_ACCESS_API_BASE || 'https://xartists-access-api.onrender.com' }}
           VITE_MOONPAY_API_KEY: ${{ vars.VITE_MOONPAY_API_KEY || secrets.VITE_MOONPAY_API_KEY }}
-          # A-E2E: UI flag ON — real gate is access-api PAYBOX_ENV=preprod (not prod).
-          # Override via repo var VITE_PAYBOX_ENABLED=false to hide card rail.
           VITE_PAYBOX_ENABLED: ${{ vars.VITE_PAYBOX_ENABLED || 'true' }}
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
           VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
@@ -138,7 +137,6 @@ jobs:
           mkdir -p _site
           cp -a apps/frontend/dist/. _site/
           touch _site/.nojekyll
-          # The build emits static route entries and a query-preserving 404 fallback.
           cp _site/index.html _site/404.html
 
       - name: Verify built GitHub Pages assets
