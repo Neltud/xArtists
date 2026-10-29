@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.122.2](https://github.com/Neltud/xArtists/compare/v0.122.1...v0.122.2) (2026-10-29)
+
+
+### Documentation
+
+* Vellum LIA live-trade prompt + arming checklist 2026-10-29 ([60c47e9](https://github.com/Neltud/xArtists/commit/60c47e916ede6d2c2478feb77913fa6847e559f4))
+
 ## [0.122.1](https://github.com/Neltud/xArtists/compare/v0.122.0...v0.122.1) (2026-10-29)
 
 
