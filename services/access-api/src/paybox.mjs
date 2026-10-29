@@ -127,18 +127,6 @@ export function loadPayboxPublicKey2048(env = process.env) {
   ].filter(Boolean)
   for (const p of candidates) {
     try {
-      if (fs.existsExists?.(p) || require('fs').existsSync(p)) {
-        const key = crypto.createPublicKey(fs.readFileSync(p, 'utf8'))
-        assertKey2048(key)
-        return key
-      }
-    } catch (e) {
-      if (e.code === 'KEY_SIZE') throw e
-    }
-  }
-  // standard existsSync path
-  for (const p of candidates) {
-    try {
       if (fs.existsSync(p)) {
         const key = crypto.createPublicKey(fs.readFileSync(p, 'utf8'))
         assertKey2048(key)
@@ -256,7 +244,6 @@ export function parseSignedIpnFields(dataString) {
     if (seen.has(canon) && seen.get(canon) !== v) return null
     seen.set(canon, v)
   }
-  // Strict decimal digits only — reject partial numerics like "11000abc"
   const amountStr = String(amount).trim()
   if (!/^\d+$/.test(amountStr)) return null
   const amountInt = Number(amountStr)
