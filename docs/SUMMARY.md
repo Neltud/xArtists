@@ -12,6 +12,8 @@
   * [PR #200 — relais ChatGPT et correctif validé](security/pr200-relai-chatgpt.md)
   * [Prochain sprint — sécurité et pilote de la dapp](security/next-sprint-2026-10-28.md)
   * [Contrat du pilote — prix, paiement et livraison](security/payment-pilot-contract.md)
+  * [Paybox prod — statut et sécurité du 29 octobre 2026](security/prod-live-2026-10-29.md)
+  * [Smoke Sentinel — paiement réel en prod](security/smoke-paybox-prod-2026-10-29.md)
 * [xArtists — Projet et dapp](presentation/README.md)
   * [Vision et mission](presentation/vision-et-mission.md)
   * [Découvrir la dapp](presentation/decouvrir-la-dapp.md)
