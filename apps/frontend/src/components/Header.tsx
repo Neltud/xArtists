@@ -2,6 +2,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as
 /**
  * Header produit — menu, wallet, i18n, Mode Pitch B2B.
  * Hubs canoniques uniquement (pas de Slot/Casino).
+ * Shell: acid / graphite.
  */
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
@@ -57,7 +58,7 @@ export default function Header() {
               </span>
             </button>
             <Link to="/" className="flex min-w-0 items-center gap-2">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 text-[11px] font-bold text-white shadow-[0_0_24px_-6px_rgba(139,92,246,0.7)]">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[color:var(--xa-accent)] text-[11px] font-bold text-black shadow-[0_0_24px_-6px_rgba(205,245,139,0.45)]">
                 xA
               </span>
               <span className="hidden truncate text-sm font-semibold tracking-tight text-white sm:inline">
