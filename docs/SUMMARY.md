@@ -556,6 +556,7 @@
       * [Validations et plan d’intégration](prompts/grok-pr188-ipn-2026-10-26/sprint-v2/validation-et-pr.md)
       * [Coordination Grok / ChatGPT](prompts/grok-pr188-ipn-2026-10-26/sprint-v2/coordination.md)
     * [Après merge #188 — Pages et intents cotés](prompts/grok-pr188-ipn-2026-10-26/suite-apres-merge-188.md)
+  * [Grok — suite PROD LIVE du 29 octobre 2026](prompts/grok-suite-prod-live-du-29-octobre-2026.md)
 * [Documentation technique et passations](documentation-technique.md)
 * [Connexions — LIA, Grok, MoonPay et TCA Academy](lia-copilot-tca-2026-10-28/README.md)
   * [Copilote de relais pour LIA](lia-copilot-tca-2026-10-28/copilote-relais-lia.md)
