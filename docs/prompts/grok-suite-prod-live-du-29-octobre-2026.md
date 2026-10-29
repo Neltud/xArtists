@@ -8,6 +8,28 @@ noIndex: true
 
 # Grok — suite PROD LIVE du 29 octobre 2026
 
+## Mise à jour demandée par Nelson — cours marché + WHOOP privé
+
+Cette instruction remplace toute consigne de figer `EGLD_EUR_RATE=3.24`. Le taux EGLD doit provenir du marché horodaté. **Le correctif est écrit et testé localement, mais n’est pas encore poussé ni déployé.**
+
+* [Kit complet : patch, manifeste et consignes](../.gitbook/assets/XARTISTS_LIVE_FX_WHOOP_2026-10-29.zip)
+* Archive : **26 513 octets** ; SHA-256 : `3b83264e5dd15a4c82742150df87d4e6203630a4e0199e79220eb0e35f81eb9b`.
+* Base testée : `1a17877fc8334c964e613c8616410aca62bcf775`.
+* Commit local candidat : `d16a1930559f42e59797d7d804a903792c11c6b7`, 22 fichiers. La branche distante n’a pas été créée : le push Git n’a pas de credentials dans cet environnement.
+* Validation : **73 tests API + 44 tests frontend passent**, build Vite réussi. Le typecheck complet reste rouge comme sur la base : **aucun nouveau diagnostic** après comparaison.
+
+### Travail Grok immédiat
+
+1. Télécharger le kit, vérifier taille/empreinte et lire README + manifeste. Avec ton accès GitHub d’écriture autorisé, créer une branche sur main relu, appliquer `git apply --check` puis le patch. Si main a changé, adapter sans écraser les autres travaux. Rejouer les tests et ouvrir la PR.
+2. Après intégration API + Pages, vérifier `fx_mode: live`, le marché `/v1/market/egld` et une quote avec `fx.as_of`. **Retirer seulement alors** les variables de taux fixes sur Render. Le correctif ignore tous les taux du client et les valeurs fixes, conserve les prix 110/75/50 EUR, utilise un cache de 30 s, une source de moins de 120 s et une quote de 60 s maximum. Les anciens caches frontend EGLD ne servent plus de cours actuel. En panne : 503 / prix indisponible.
+3. WHOOP a été confirmé par Nelson pour un **espace personnel privé** : récupération, sommeil, effort. Le panneau est ajouté au wallet ; API WHOOP v2, OAuth et JWT avec preuve SIWX signée (`amr: ["siwx"]`), chiffrement des jetons, state à usage unique et révocation. Les anciens JWT sans cette méthode exigent une nouvelle signature. **Désactivé par défaut**. Appliquer la migration 002 et configurer la vraie app WHOOP avant activation ; recueillir le consentement officiel. Aucun compte WHOOP réel n’a été connecté ou lu dans les tests.
+
+La sonde du correctif local a utilisé un vrai cours source âgé de 12 secondes : à 18:22:35 Europe/Paris, 3.1256411107501973 EUR/EGLD, quote 50 EUR = 15.9968 EGLD. Ce nombre est une preuve historique, **jamais une nouvelle constante**.
+
+Les identifiants marchand PayBox LIVE restent absents du kit. Aucune bascule PayBox prod, paiement réel ou transaction LIA n’a été effectué. Le texte plus bas conserve le point de contrôle historique ; appliquer cette mise à jour en priorité.
+
+***
+
 **Destinataire : Grok, opérateur du dépôt Neltud/xArtists.**\
 **Mandat : Nelson autorise la poursuite PayBox prod et LIA live, sur deux rails indépendants.**\
 **Point de contrôle : 29 octobre 2026, 13:42 Europe/Paris.** Les faits ci-dessous sont un instantané de cette session. Relire les sources avant chaque mutation.
@@ -67,7 +89,7 @@ PAYBOX_HMAC_KEY=<valeur merchant LIVE>
 PAYBOX_ENV=prod
 PAYBOX_DEVISE=978
 PAYBOX_IPN_URL=https://xartists-access-api.onrender.com/v1/checkout/paybox/ipn
-EGLD_EUR_RATE=3.24
+# FX : cours marché serveur après déploiement du correctif ; aucun taux fixe.
 LIA_LIVE_TRADING=0
 ```
 
