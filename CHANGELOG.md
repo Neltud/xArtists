@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.122.1](https://github.com/Neltud/xArtists/compare/v0.122.0...v0.122.1) (2026-10-29)
+
+
+### Bug Fixes
+
+* **paybox:** clean ESM existsSync in loadPayboxPublicKey2048 ([f58062b](https://github.com/Neltud/xArtists/commit/f58062bcfc06e5e4dc13d770673b45ea5c3f39fc))
+* **paybox:** HMAC field order EFFECTUE/REFUSE/ANNULE + IDENTIFIANT position ([b5f9499](https://github.com/Neltud/xArtists/commit/b5f9499c99e37b7f641679b5564c95edc6352ce0))
+
 ## [0.122.0](https://github.com/Neltud/xArtists/compare/v0.121.0...v0.122.0) (2026-10-29)
 
 
