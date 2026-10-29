@@ -92,7 +92,7 @@ jobs:
           VITE_LIA_LIVE_TRADING: "0"
           VITE_ACCESS_API_BASE: ${{ vars.VITE_ACCESS_API_BASE || 'https://xartists-access-api.onrender.com' }}
           VITE_MOONPAY_API_KEY: ${{ vars.VITE_MOONPAY_API_KEY || secrets.VITE_MOONPAY_API_KEY }}
-          VITE_PAYBOX_ENABLED: "false"
+          VITE_PAYBOX_ENABLED: ${{ vars.VITE_PAYBOX_ENABLED || 'false' }}
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
           VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
           VITE_MARKETPLACE_CODEHASH_OK: ${{ secrets.VITE_MARKETPLACE_CODEHASH_OK }}
