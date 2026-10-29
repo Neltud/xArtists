@@ -86,7 +86,7 @@ export default function MarketplacePage() {
   const pageListings = useMemo(() => listings.slice(0, 24), [listings])
 
   return (
-    <div className="animate-fade-in space-y-5 pb-24 max-w-4xl mx-auto">
+    <div className="xa-page animate-fade-in space-y-5 pb-24 max-w-4xl mx-auto">
       <header className="space-y-2">
         <p className="section-label">{xaRender(t('nav.market') || 'Market')}</p>
         <h1 className="section-title display text-2xl">{xaRender(t('market.title') || 'Marketplace')}</h1>
@@ -109,7 +109,9 @@ export default function MarketplacePage() {
           type="button"
           onClick={() => goTab('rwa')}
           className={`px-4 py-2 rounded-lg text-[12px] font-semibold min-h-[44px] ${
-            tab === 'rwa' ? 'bg-amber-600/35 text-amber-50' : 'text-zinc-400 hover:text-zinc-200'
+            tab === 'rwa'
+              ? 'bg-amber-600/35 text-amber-50'
+              : 'text-zinc-400 hover:text-zinc-200'
           }`}
         >
           {xaRender(t('market.tab.rwa') || 'Studio RWA · Art physique')}
@@ -118,7 +120,9 @@ export default function MarketplacePage() {
           type="button"
           onClick={() => goTab('digital')}
           className={`px-4 py-2 rounded-lg text-[12px] font-semibold min-h-[44px] ${
-            tab === 'digital' ? 'bg-cyan-600/35 text-cyan-50' : 'text-zinc-400 hover:text-zinc-200'
+            tab === 'digital'
+              ? 'bg-[color:var(--xa-accent-soft)] text-[color:var(--xa-text)] border border-[color:var(--xa-border-strong)]'
+              : 'text-zinc-400 hover:text-zinc-200'
           }`}
         >
           {xaRender(t('market.tab.digital') || 'NFT & Packs')}
@@ -148,7 +152,7 @@ export default function MarketplacePage() {
               </h2>
               <button
                 type="button"
-                className="text-[11px] text-cyan-300 min-h-[40px]"
+                className="text-[11px] text-[color:var(--xa-accent)] min-h-[40px]"
                 onClick={() => void refresh()}
               >
                 {xaRender(loading ? '…' : t('market.refresh') || 'Rafraîchir')}
