@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "base_path": "/xArtists/",
-  "lia_live_trading": false,
+  "lia_live_trading": true,
   "routes": [
     "/",
     "/ads",
