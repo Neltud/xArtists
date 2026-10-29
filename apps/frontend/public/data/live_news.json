@@ -1,8 +1,15 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-29T09:24:03.866Z",
+  "updatedAt": "2026-10-29T18:03:55.454Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793297035276",
+      "timestamp": "18:03",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.49 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
     {
       "id": "egld-1793265843598",
       "timestamp": "09:24",
@@ -191,13 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Agents can trade 24/7 — but Yat Siu warns you could lose access at any time",
       "link": "https://cointelegraph.com/magazine/ai-trade-sleep-yat-siu-warns-losing-agent?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1792501468000",
-      "timestamp": "13:04",
-      "source": "CoinTelegraph",
-      "title": "FINMA approves Switzerland’s first Bitcoin ETF for retail investors",
-      "link": "https://cointelegraph.com/news/finma-approves-switzerlands-first-bitcoin-etf-retail?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
