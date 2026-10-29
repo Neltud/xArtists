@@ -59,10 +59,11 @@ export function signPayboxHmac(message, hmacKeyHex) {
 }
 
 export function buildHmacMessage(fields) {
+  // Verifone v8.3 sequence: EFFECTUE → REFUSE → ANNULE → ATTENTE → REPONDRE_A → 3DSv2 extras
   const order = [
     'PBX_SITE', 'PBX_RANG', 'PBX_IDENTIFIANT', 'PBX_TOTAL', 'PBX_DEVISE', 'PBX_CMD',
-    'PBX_PORTEUR', 'PBX_RETOUR', 'PBX_HASH', 'PBX_TIME', 'PBX_EFFECTUE', 'PBX_ANNULE',
-    'PBX_REFUSE', 'PBX_ATTENTE', 'PBX_REPONDRE_A', 'PBX_SHOPPINGCART', 'PBX_BILLING',
+    'PBX_PORTEUR', 'PBX_RETOUR', 'PBX_HASH', 'PBX_TIME', 'PBX_EFFECTUE', 'PBX_REFUSE',
+    'PBX_ANNULE', 'PBX_ATTENTE', 'PBX_REPONDRE_A', 'PBX_SHOPPINGCART', 'PBX_BILLING',
     'PBX_IPNALGOSIGN', 'PBX_SIGN_KEYSIZE',
   ]
   const parts = []
@@ -126,6 +127,18 @@ export function loadPayboxPublicKey2048(env = process.env) {
   ].filter(Boolean)
   for (const p of candidates) {
     try {
+      if (fs.existsExists?.(p) || require('fs').existsSync(p)) {
+        const key = crypto.createPublicKey(fs.readFileSync(p, 'utf8'))
+        assertKey2048(key)
+        return key
+      }
+    } catch (e) {
+      if (e.code === 'KEY_SIZE') throw e
+    }
+  }
+  // standard existsSync path
+  for (const p of candidates) {
+    try {
       if (fs.existsSync(p)) {
         const key = crypto.createPublicKey(fs.readFileSync(p, 'utf8'))
         assertKey2048(key)
@@ -178,6 +191,10 @@ export function createPayboxSession(input, cfg = payboxConfig()) {
   const fields = {
     PBX_SITE: cfg.site,
     PBX_RANG: cfg.rang,
+  }
+  // IDENTIFIANT must sit in HMAC sequence before TOTAL when present.
+  if (cfg.identifiant) fields.PBX_IDENTIFIANT = cfg.identifiant
+  Object.assign(fields, {
     PBX_TOTAL: String(amount),
     PBX_DEVISE: cfg.devise,
     PBX_CMD: orderId,
@@ -186,15 +203,14 @@ export function createPayboxSession(input, cfg = payboxConfig()) {
     PBX_HASH: 'SHA512',
     PBX_TIME: time,
     PBX_EFFECTUE: input.successUrl,
-    PBX_ANNULE: input.cancelUrl,
     PBX_REFUSE: input.cancelUrl,
+    PBX_ANNULE: input.cancelUrl,
     PBX_REPONDRE_A: input.ipnUrl,
     PBX_SHOPPINGCART: buildShoppingCartXml(amount),
     PBX_BILLING: buildBillingXml(input.billing || {}),
     PBX_IPNALGOSIGN: IPN_POLICY.algorithm,
     PBX_SIGN_KEYSIZE: String(IPN_POLICY.keySize),
-  }
-  if (cfg.identifiant) fields.PBX_IDENTIFIANT = cfg.identifiant
+  })
   fields.PBX_HMAC = signPayboxHmac(buildHmacMessage(fields), cfg.hmacKey)
   return {
     ok: true, url: cfg.endpoint, method: 'POST', fields, order_id: orderId,
