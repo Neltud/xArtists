@@ -1,32 +1,47 @@
 ---
 description: >-
-  Consignes Grok : PayBox marchand LIVE, LIA avec signature xPortal et preuves
-  de sortie.
+  Consignes Grok : cours EGLD marché, Whop via PayBox Markets et reprise des
+  rails prod.
 hidden: true
 noIndex: true
 ---
 
 # Grok — suite PROD LIVE du 29 octobre 2026
 
-## Mise à jour demandée par Nelson — cours marché + WHOOP privé
+## Correction prioritaire de Nelson — Whop commerce
 
-Cette instruction remplace toute consigne de figer `EGLD_EUR_RATE=3.24`. Le taux EGLD doit provenir du marché horodaté. **Le correctif est écrit et testé localement, mais n’est pas encore poussé ni déployé.**
+Nelson a précisé **« Whop pas whoop »**, avec une capture de l’annonce PayBox Markets / Whop. La consigne précédente sur un espace WHOOP santé provenait d’une mauvaise interprétation et est annulée.
 
-* [Kit complet : patch, manifeste et consignes](../.gitbook/assets/XARTISTS_LIVE_FX_WHOOP_2026-10-29.zip)
-* Archive : **26 513 octets** ; SHA-256 : `3b83264e5dd15a4c82742150df87d4e6203630a4e0199e79220eb0e35f81eb9b`.
+**Ne pas appliquer le précédent kit `XARTISTS_LIVE_FX_WHOOP_2026-10-29.zip`** ni le commit local `d16a1930559f42e59797d7d804a903792c11c6b7`. Son empreinte publiée `3b83264e5dd15a4c82742150df87d4e6203630a4e0199e79220eb0e35f81eb9b` identifie une version retirée. Ne pas créer le panneau santé, les variables WHOOP ou la migration 002. Si cet ancien diff a déjà été appliqué ailleurs, vérifier la branche et retirer seulement ses changements erronés par une revue explicite.
+
+### Kit corrigé — cours EGLD marché et passation Whop
+
+* [Télécharger le kit corrigé : patch, manifeste et consignes](../.gitbook/assets/XARTISTS_EGLD_LIVE_WHOP_2026-10-29.zip)
+* Archive : **14 094 octets** ; SHA-256 : `8b32c79924c7d386d86363565e829e86d312bbbc9828a469e1c9c337d4c9ea68`.
 * Base testée : `1a17877fc8334c964e613c8616410aca62bcf775`.
-* Commit local candidat : `d16a1930559f42e59797d7d804a903792c11c6b7`, 22 fichiers. La branche distante n’a pas été créée : le push Git n’a pas de credentials dans cet environnement.
-* Validation : **73 tests API + 44 tests frontend passent**, build Vite réussi. Le typecheck complet reste rouge comme sur la base : **aucun nouveau diagnostic** après comparaison.
+* Candidat local : `342f3810719804b6dfab335e3b40a991c92b755d`, **11 fichiers** ; branche `fix/live-egld-market-20261029`.
+* **66 tests API et 42 tests frontend passent ; build Vite réussi.** Le typecheck complet garde les erreurs de la base, sans nouveau diagnostic.
+* Le patch ne contient aucune intégration WHOOP santé. Son code concerne le marché EGLD ; son document `services/access-api/LIVE_FX_AND_WHOP.md` prépare Whop. **L’intégration Whop n’est pas encore réalisée.**
+* Le code API/frontend n’est pas poussé ni déployé : l’accès GitHub d’écriture reste indisponible. Une publication GitBook met à jour les consignes et le kit, sans appliquer ce patch.
 
-### Travail Grok immédiat
+### Travail Grok
 
-1. Télécharger le kit, vérifier taille/empreinte et lire README + manifeste. Avec ton accès GitHub d’écriture autorisé, créer une branche sur main relu, appliquer `git apply --check` puis le patch. Si main a changé, adapter sans écraser les autres travaux. Rejouer les tests et ouvrir la PR.
-2. Après intégration API + Pages, vérifier `fx_mode: live`, le marché `/v1/market/egld` et une quote avec `fx.as_of`. **Retirer seulement alors** les variables de taux fixes sur Render. Le correctif ignore tous les taux du client et les valeurs fixes, conserve les prix 110/75/50 EUR, utilise un cache de 30 s, une source de moins de 120 s et une quote de 60 s maximum. Les anciens caches frontend EGLD ne servent plus de cours actuel. En panne : 503 / prix indisponible.
-3. WHOOP a été confirmé par Nelson pour un **espace personnel privé** : récupération, sommeil, effort. Le panneau est ajouté au wallet ; API WHOOP v2, OAuth et JWT avec preuve SIWX signée (`amr: ["siwx"]`), chiffrement des jetons, state à usage unique et révocation. Les anciens JWT sans cette méthode exigent une nouvelle signature. **Désactivé par défaut**. Appliquer la migration 002 et configurer la vraie app WHOOP avant activation ; recueillir le consentement officiel. Aucun compte WHOOP réel n’a été connecté ou lu dans les tests.
+1. Relire main, vérifier l’archive et son manifeste. Avec un accès GitHub autorisé, créer la branche et exécuter `git apply --check live-egld-market.patch`, puis appliquer, tester et ouvrir la PR. Adapter aux changements récents sans écraser les autres travaux.
+2. Déployer API et Pages après intégration. Vérifier `fx_mode: live`, `/v1/market/egld` et une quote portant `fx.as_of`. **Retirer seulement alors** les anciennes variables de taux fixes. Le marché est horodaté : cache 30 s, observation de moins de 120 s, quote 60 s maximum. Les entrées client et les valeurs fixes sont ignorées. Panne fournisseur : 503 / prix indisponible. Aucun nouveau taux numérique fixe.
+3. Reprendre **Whop commerce via PayBox Markets de MoonPay**, selon la capture : article réel, prix courant, achat approuvé par passkey et USDC depuis un wallet Solana. Cette annonce ne prouve pas un catalogue ou un compte xArtists déjà connecté.
+4. Sur le host connecté au MCP officiel `https://api.paybox.sh/mcp`, lire les outils et les autorisations réellement accordés. Si `discover_plugins` est exposé, rechercher Whop, transmettre le `contract_uri` officiel inchangé à `get_contract`, puis utiliser `use_plugin` avec le schéma retourné. Les plugins du compte PayBox se gèrent dans son app ; la liste de plugins ChatGPT est distincte. Aucun endpoint Whop/Markets n’est à inventer.
+5. Présenter l’article, le marchand, le prix actuel, la devise, les frais, le renouvellement éventuel et le total avant toute demande d’achat. La confirmation de cette opération précise et l’approbation passkey appartiennent à Nelson. Le GO de déploiement ne désigne pas un article à acheter. Suivre ensuite l’identifiant de requête jusqu’à son statut final et recueillir reçu / accès livré.
+6. Pour commercialiser les packs xArtists sur Whop, vérifier d’abord le compte marchand, les produits et les prix, puis définir leur confirmation serveur authentifiée. Ne pas supposer qu’un achat Whop confirme un pack Sentinel.
 
-La sonde du correctif local a utilisé un vrai cours source âgé de 12 secondes : à 18:22:35 Europe/Paris, 3.1256411107501973 EUR/EGLD, quote 50 EUR = 15.9968 EGLD. Ce nombre est une preuve historique, **jamais une nouvelle constante**.
+### Deux services PayBox à distinguer
 
-Les identifiants marchand PayBox LIVE restent absents du kit. Aucune bascule PayBox prod, paiement réel ou transaction LIA n’a été effectué. Le texte plus bas conserve le point de contrôle historique ; appliquer cette mise à jour en priorité.
+Le checkout carte existant utilise **Paybox Verifone** : ses variables `PAYBOX_SITE / RANG / IDENTIFIANT / HMAC_KEY / ENV` et son IPN concernent ce rail. **PayBox Markets de MoonPay** utilise son accès OAuth/MCP et ses autorisations propres. Modifier les secrets Verifone n’active pas Whop.
+
+Dans la présente session, aucun outil PayBox/Whop n’est exposé ; la recherche de plugins ne renvoie aucun résultat. Le catalogue authentifié, un prix Whop réellement consulté et un paiement restent à vérifier via le host connecté. Aucun compte de santé n’a été lu, aucun achat Whop n’a été engagé.
+
+Références : [PayBox MoonPay](https://docs.paybox.sh/), [outils MCP et découverte de plugins](https://docs.paybox.sh/reference/mcp-tools), [plateforme Whop](https://docs.whop.com/).
+
+Le point de contrôle historique ci-dessous reste daté ; cette correction remplace ses éventuelles consignes de taux fixe et toute ancienne instruction WHOOP.
 
 ***
 
