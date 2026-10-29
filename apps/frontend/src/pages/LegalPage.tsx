@@ -37,7 +37,7 @@ export default function LegalPage() {
   }, [params])
 
   return (
-    <div className="animate-fade-in space-y-5 pb-12 max-w-2xl">
+    <div className="xa-page animate-fade-in space-y-5 pb-12 max-w-2xl">
       <header className="space-y-1">
         <p className="section-label text-zinc-400">{xaRender(t('legal.sectionLabel'))}</p>
         <h1 className="page-title">{xaRender(t('legal.title'))}</h1>
@@ -102,7 +102,7 @@ export default function LegalPage() {
               {xaRender(LEGAL_ENTITY.country)}. {xaRender(LEGAL_ENTITY.addressLine)}.
             </p>
             <p>
-              <a className="text-cyan-300/90 hover:underline" href={LINKS.github} target="_blank" rel="noreferrer">
+              <a className="text-[color:var(--xa-accent)] hover:underline" href={LINKS.github} target="_blank" rel="noreferrer">
                 {xaRender("Neltud/xArtists ")}</a>
             </p>
             <h2 className="text-base font-semibold text-white pt-2">{xaRender(t('legal.mentions.hosting'))}</h2>
@@ -179,11 +179,11 @@ export default function LegalPage() {
         ))}
       </article>
       <p className="text-[11px] text-zinc-600">
-        <Link to="/" className="text-cyan-300/90 hover:underline">
+        <Link to="/" className="text-[color:var(--xa-accent)] hover:underline">
           {xaRender(t('legal.nav.home'))}
         </Link>
         {xaRender(' · ')}
-        <Link to="/agents" className="text-cyan-300/90 hover:underline">
+        <Link to="/agents" className="text-[color:var(--xa-accent)] hover:underline">
           {xaRender(t('legal.nav.packs'))}
         </Link>
       </p>
