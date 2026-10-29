@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.122.3](https://github.com/Neltud/xArtists/compare/v0.122.2...v0.122.3) (2026-10-29)
+
+
+### Documentation
+
+* prod live status + security posture for GitBook sync ([7b3826a](https://github.com/Neltud/xArtists/commit/7b3826a5811ae5c42e12502e7adf9236818db6d7))
+
 ## [0.122.2](https://github.com/Neltud/xArtists/compare/v0.122.1...v0.122.2) (2026-10-29)
 
 
