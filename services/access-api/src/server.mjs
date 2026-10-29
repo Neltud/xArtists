@@ -37,6 +37,11 @@ function getPack(packId) {
   return p
 }
 
+function envFxRate() {
+  const n = Number(process.env.EGLD_EUR_RATE || process.env.ACCESS_FX_EUR_PER_EGLD || '')
+  return Number.isFinite(n) && n > 0 ? n : null
+}
+
 function json(res, code, body) {
   res.writeHead(code, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -93,6 +98,7 @@ async function handleRequest(req, res) {
       paybox_auth_outbound: 'hmac_sha512',
       paybox_auth_inbound: 'rsa_sha256_2048',
       paybox_ipn_policy: IPN_POLICY,
+      fx_env_configured: envFxRate() != null,
       lia_live_trading: process.env.LIA_LIVE_TRADING === '1' ? '1' : '0',
       service: 'access-api',
       packs: Object.keys(PACK_CATALOG),
@@ -166,7 +172,7 @@ async function handleRequest(req, res) {
   if (req.method === 'POST' && pth === '/v1/checkout/quote') {
     const { body } = await readRawAndBody(req)
     try {
-      const rate = body.rate_eur_per_egld ?? body.rate ?? body.fx
+      const rate = body.rate_eur_per_egld ?? body.rate ?? body.fx ?? envFxRate()
       const quote = buildPackQuote({
         pack_id: body.pack_id || body.packId,
         rate_eur_per_egld: rate,
