@@ -88,11 +88,13 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=4096
           VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
-          VITE_APP_BUILD: "sites-v3-release"
+          VITE_APP_BUILD: "sites-v3-release-paybox-preprod"
           VITE_LIA_LIVE_TRADING: "0"
           VITE_ACCESS_API_BASE: ${{ vars.VITE_ACCESS_API_BASE || 'https://xartists-access-api.onrender.com' }}
           VITE_MOONPAY_API_KEY: ${{ vars.VITE_MOONPAY_API_KEY || secrets.VITE_MOONPAY_API_KEY }}
-          VITE_PAYBOX_ENABLED: ${{ vars.VITE_PAYBOX_ENABLED || 'false' }}
+          # A-E2E: UI flag ON — real gate is access-api PAYBOX_ENV=preprod (not prod).
+          # Override via repo var VITE_PAYBOX_ENABLED=false to hide card rail.
+          VITE_PAYBOX_ENABLED: ${{ vars.VITE_PAYBOX_ENABLED || 'true' }}
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
           VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
           VITE_MARKETPLACE_CODEHASH_OK: ${{ secrets.VITE_MARKETPLACE_CODEHASH_OK }}
