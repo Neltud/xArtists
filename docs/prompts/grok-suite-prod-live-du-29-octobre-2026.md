@@ -8,6 +8,28 @@ noIndex: true
 
 # Grok — suite PROD LIVE du 29 octobre 2026
 
+## Priorité stricte ce soir — instruction Nelson à 19:21 CET
+
+**P0 : Paybox Verifone prod, smoke Sentinel réel, puis armement LIA sur son host.** Le correctif de cours marché et Whop / PayBox Markets sont **P2** et ne bloquent pas cette séquence. Nelson accepte pour ce soir le taux ops fixe `EGLD_EUR_RATE=3.24` ; il ne doit pas être présenté comme un cours marché automatique.
+
+1. Render, service `xartists-access-api` : renseigner les quatre identifiants du compte merchant **LIVE**, puis `PAYBOX_ENV=prod`, `PAYBOX_DEVISE=978` et `PAYBOX_IPN_URL=https://xartists-access-api.onrender.com/v1/checkout/paybox/ipn`. Garder `LIA_LIVE_TRADING=0` dans cette API. Déployer puis vérifier `paybox_mode: prod` et `paybox_configured: true`.
+2. Réaliser un seul achat Sentinel réel avec validation de Nelson, obtenir l’IPN authentifié, `server_confirmed: true`, la confirmation My Packs et le véritable `order_id`. Ne pas déclarer le smoke validé sur la seule valeur `prod` du health.
+3. Sur le **host LIA/Vellum distinct**, poser `LIA_LIVE_TRADING=1` sous gates AND. Préparer le BOOTSTRAP 0.001 EGLD et laisser Nelson signer via xPortal. Vérifier le `tx_hash` réel et son contenu avant validation.
+4. WHOOP santé reste retiré du correctif ; ne créer ni panneau, ni variables, ni migration de santé.
+
+### Accès réellement contrôlés dans cette session
+
+* Render est connecté au workspace `tea-dba7q5rrjlhs73986otg`. Le service exact est `srv-dbh35rt9fdbs73a4i100`, lié à main ; dernier déploiement observé `dep-dbhol395efls7396coa0`, statut live, commit `5f5ed762c8b37e89ec0a4fbfa3a96ddc3ce8ba2e`.
+* Le health relu reste `paybox_mode: preprod`, `paybox_configured: true`, `lia_live_trading: "0"`. La présence d’une configuration ne prouve pas que les valeurs merchant sont LIVE.
+* Le connecteur Render expose la mise à jour des variables et le déclenchement de déploiement, mais aucun outil de lecture des valeurs existantes. Aucun jeu de secrets merchant LIVE n’a été fourni à l’agent. Il faut donc confirmer leur présence dans Render avant d’appliquer le flag prod avec ce jeu de valeurs. Aucun blocage d’autorisation du GO humain n’est ajouté ici.
+* [Deploy Vite contrôlé : succès](https://github.com/Neltud/xArtists/actions/runs/40927014717). Le workflow déclare déjà le flag frontend LIA à 1 ; cela ne prouve pas l’armement du host.
+* Le workspace Render ne liste que l’access-api et le service frontend. Aucun host LIA/Vellum n’y est identifié ; aucun outil Vellum ni identifiant d’accès au host n’est disponible dans la session.
+* La suppression demandée de l’ancienne archive WHOOP sur main a été tentée, mais GitHub répond **403 — Resource not accessible by integration**. Elle reste retirée des liens actifs et annulée dans cette page ; ne pas annoncer sa suppression physique du dépôt.
+
+Cette priorité remplace l’ordre d’exécution des sections et kits conservés ci-dessous. Leurs tests ne constituent pas un déploiement prod.
+
+***
+
 ## Correction prioritaire de Nelson — Whop commerce
 
 Nelson a précisé **« Whop pas whoop »**, avec une capture de l’annonce PayBox Markets / Whop. La consigne précédente sur un espace WHOOP santé provenait d’une mauvaise interprétation et est annulée.
