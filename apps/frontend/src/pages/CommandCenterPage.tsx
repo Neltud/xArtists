@@ -1,7 +1,7 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * Command Center — 3 salles pack distinctes (Pulse GOLD · Yield SILVER · Sentinel PLATINUM).
- * Flèches ← → pour changer de salle (si déverrouillée).
+ * Command Center — 3 salles pack (Pulse · Yield · Sentinel).
+ * Panneau de contrôle sérieux (indicateurs labellisés), paper-first.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -133,7 +133,6 @@ function CommandCenterInner() {
     goRoom(r)
   }
 
-  // ← → cycle unlocked rooms
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
@@ -170,7 +169,7 @@ function CommandCenterInner() {
         <p className="text-[12px] text-zinc-500">
           {xaRender(pack
             ? pack.tagline
-            : 'Hub commun · choisis une salle pack (← →) · paper-first · signature utilisateur uniquement.')}
+            : 'Hub · salles pack (← →) · paper-first · indicateurs labellisés · signature utilisateur uniquement.')}
         </p>
         <EconomicDisclosure compact />
       </header>
@@ -190,7 +189,7 @@ function CommandCenterInner() {
                       ? 'bg-zinc-500/40 text-zinc-100'
                       : r === 'sentinel'
                         ? 'bg-violet-600/40 text-violet-100'
-                        : 'bg-violet-600/40 text-violet-100'
+                        : 'bg-[color:var(--xa-accent-soft,#a3e635)]/20 text-[color:var(--xa-accent,#bef264)]'
                   : locked(r)
                     ? 'text-zinc-600'
                     : 'text-zinc-400 hover:text-zinc-200'
@@ -209,15 +208,15 @@ function CommandCenterInner() {
           {xaRender("Connecter xPortal ")}</button>
       ))}
 
-      {/* ——— HUB ——— */}
       {xaRender(room === 'hub' && (
         <>
           <MarketTape snap={ambientSnap} />
           <LiveAssetTape />
           <CommandWall
+            room="hub"
+            paper
             sentiment={ambientSnap.mode === 'bear' ? -0.4 : 0.2}
             volatility={0.35}
-            color={[0.15, 0.85, 0.95]}
           />
           <DashboardSource />
           <AgentRoster />
@@ -233,23 +232,22 @@ function CommandCenterInner() {
           </div>
           <ClickGuide />
           <p className="text-[12px] text-zinc-500">
-            {xaRender("Hub : vue d’ensemble. Entre dans ")}<strong className="text-zinc-300">{xaRender("Pulse")}</strong> {xaRender(" (signaux HF), ")}<strong className="text-zinc-300">{xaRender("Yield")}</strong> {xaRender(" (DeFi) ou")}{xaRender(' ')}
-            <strong className="text-zinc-300">{xaRender("Sentinel")}</strong> {xaRender(" (risk / RWA). ")}</p>
+            {xaRender("Hub : vue d’ensemble. Entre dans ")}<strong className="text-zinc-300">{xaRender("Pulse")}</strong> {xaRender(" (signaux), ")}<strong className="text-zinc-300">{xaRender("Yield")}</strong> {xaRender(" (DeFi) ou")}{xaRender(' ')}
+            <strong className="text-zinc-300">{xaRender("Sentinel")}</strong> {xaRender(" (risque / RWA). ")}</p>
         </>
       ))}
 
-      {/* ——— PULSE GOLD ——— */}
       {xaRender(room === 'pulse' && (
         <>
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[12px] text-amber-100">
-            {xaRender("⚡ GOLD — trading HF · TCA · LIA full · tape live · intensité max ")}</div>
+            {xaRender("GOLD — trading HF · TCA · LIA · tape live ")}</div>
           <MarketTape snap={ambientSnap} />
           <LiveAssetTape />
           <CommandWall
+            room="pulse"
+            paper
             sentiment={wallCfg!.sentiment}
             volatility={wallCfg!.volatility}
-            pulseSpeed={wallCfg!.pulseSpeed}
-            color={wallCfg!.color}
           />
           <AgentNftOrb packId="pulse" aura={ambientSnap.mode} />
           <LiaShadowPanel />
@@ -261,16 +259,15 @@ function CommandCenterInner() {
         </>
       ))}
 
-      {/* ——— YIELD SILVER ——— */}
       {xaRender(room === 'yield' && (
         <>
           <div className="rounded-xl border border-zinc-400/30 bg-zinc-500/10 px-3 py-2 text-[12px] text-zinc-200">
-            {xaRender("📈 SILVER — DeFi sleeve · LP · staking · compound (pas TCA / LIA full) ")}</div>
+            {xaRender("SILVER — DeFi · LP · staking · compound ")}</div>
           <CommandWall
+            room="yield"
+            paper
             sentiment={wallCfg!.sentiment}
             volatility={wallCfg!.volatility}
-            pulseSpeed={wallCfg!.pulseSpeed}
-            color={wallCfg!.color}
           />
           <AgentNftOrb packId="yield" aura="stable" />
           <section className="space-y-2">
@@ -290,12 +287,12 @@ function CommandCenterInner() {
             </div>
             {xaRender(eco === 'defi' && (
               <p className="text-[12px] text-zinc-500">
-                {xaRender("DeFi hub — ")}<Link className="text-cyan-300" to="/staking">{xaRender("/staking")}</Link> {xaRender(" · compound & claim ")}</p>
+                {xaRender("DeFi hub — ")}<Link className="text-[color:var(--xa-accent,#bef264)]" to="/staking">{xaRender("/staking")}</Link> {xaRender(" · compound & claim ")}</p>
             ))}
             {xaRender(eco === 'liquidity' && (
               <p className="text-[12px] text-zinc-500">
-                {xaRender("Liquidité $TRO — ")}<Link className="text-cyan-300" to="/lp">{xaRender("/lp")}</Link> ·{xaRender(' ')}
-                <Link className="text-cyan-300" to="/hatom">{xaRender("/hatom")}</Link>
+                {xaRender("Liquidité $TRO — ")}<Link className="text-[color:var(--xa-accent,#bef264)]" to="/lp">{xaRender("/lp")}</Link> ·{xaRender(' ')}
+                <Link className="text-[color:var(--xa-accent,#bef264)]" to="/hatom">{xaRender("/hatom")}</Link>
               </p>
             ))}
             {xaRender(eco === 'holders' && (
@@ -307,16 +304,15 @@ function CommandCenterInner() {
         </>
       ))}
 
-      {/* ——— SENTINEL PLATINUM ——— */}
       {xaRender(room === 'sentinel' && (
         <>
           <div className="rounded-xl border border-violet-500/30 bg-violet-500/10 px-3 py-2 text-[12px] text-violet-100">
-            {xaRender("🛡️ PLATINUM — veille · RWA · zero-trust · alertes drawdown ")}</div>
+            {xaRender("PLATINUM — veille · RWA · zero-trust · drawdown ")}</div>
           <CommandWall
+            room="sentinel"
+            paper
             sentiment={wallCfg!.sentiment}
             volatility={wallCfg!.volatility}
-            pulseSpeed={wallCfg!.pulseSpeed}
-            color={wallCfg!.color}
           />
           <AgentNftOrb packId="sentinel" aura="bear" />
           <section className="rounded-2xl border border-violet-500/20 bg-black/40 p-4 space-y-2">
@@ -338,7 +334,7 @@ function CommandCenterInner() {
 
       <div className="flex flex-wrap gap-3 text-[12px] text-zinc-500">
         <Link to="/lia" className="hover:text-zinc-300">
-          {xaRender("LIA Hub (3 écrans holo) ")}</Link>
+          {xaRender("LIA Hub ")}</Link>
         <Link to="/agents" className="hover:text-zinc-300">
           {xaRender("Packs ")}</Link>
         <Link to="/" className="hover:text-zinc-300">
