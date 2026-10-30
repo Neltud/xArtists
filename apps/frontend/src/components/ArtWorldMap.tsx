@@ -2,6 +2,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as
 /**
  * Carte mondiale — satellite Esri (défaut) + Leaflet (sans clé API).
  * locations optionnel : défaut = hubs culturels mondiaux.
+ * Monuments capitales artistiques en relief CSS.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import MapMuseumEnter from './museum/MapMuseumEnter'
@@ -69,6 +70,40 @@ const REGION_COLORS: Record<string, { fill: string; stroke: string; label: strin
 
 function regionStyle(region?: string) {
   return REGION_COLORS[region || ''] || { fill: '#e11d48', stroke: '#fecdd3', label: 'Autre' }
+}
+
+/** Glyphs monument par capitale artistique — relief CSS (pas WebGL). */
+const MONUMENT_GLYPH: Record<string, string> = {
+  paris: '🏛️',
+  london: '🏛️',
+  nyc: '🗽',
+  tokyo: '🏯',
+  florence: '🏛️',
+  madrid: '🏛️',
+  berlin: '🏛️',
+  amsterdam: '🖼️',
+  vienna: '🎼',
+  rome: '🏟️',
+  la: '🎬',
+  sao: '🏛️',
+  seoul: '🏯',
+  shanghai: '🏙️',
+  sydney: '🎭',
+  cairo: '🔺',
+  lagos: '🎨',
+  mumbai: '🕌',
+  mexico: '🏛️',
+  istanbul: '🕌',
+}
+
+function monumentIconHtml(loc: ArtLocation): string {
+  const style = regionStyle(loc.region)
+  const glyph = MONUMENT_GLYPH[loc.id] || '◆'
+  const city = String(loc.city || '').replace(/[<>&]/g, '')
+  return `<div class="xa-monument" style="display:flex;flex-direction:column;align-items:center;transform:translateY(-8px);filter:drop-shadow(0 4px 8px rgba(0,0,0,.6));">
+    <div style="width:20px;height:26px;border-radius:5px 5px 2px 2px;background:linear-gradient(180deg,${style.stroke} 0%,${style.fill} 65%,#111 100%);border:1px solid rgba(255,255,255,.4);display:flex;align-items:flex-start;justify-content:center;font-size:12px;line-height:18px;box-shadow:0 8px 14px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.3);">${glyph}</div>
+    <div style="margin-top:3px;padding:2px 6px;border-radius:999px;background:rgba(0,0,0,.78);border:1px solid rgba(255,255,255,.22);color:#fafafa;font:600 9px/1.2 system-ui,sans-serif;white-space:nowrap;max-width:92px;overflow:hidden;text-overflow:ellipsis;">${city}</div>
+  </div>`
 }
 
 type BasemapId = 'osm' | 'relief' | 'satellite'
@@ -225,16 +260,16 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
     layer.clearLayers()
     ;(filtered || []).forEach(loc => {
       if (loc.lat == null || loc.lng == null) return
-      const style = regionStyle(loc.region)
-      const m = L.circleMarker([loc.lat, loc.lng], {
-        radius: 7,
-        color: style.stroke,
-        fillColor: style.fill,
-        fillOpacity: 0.85,
-        weight: 1.5,
+      const icon = L.divIcon({
+        className: 'xa-monument-icon',
+        html: monumentIconHtml(loc),
+        iconSize: [88, 44],
+        iconAnchor: [44, 40],
+        popupAnchor: [0, -36],
       })
+      const m = L.marker([loc.lat, loc.lng], { icon })
       m.bindPopup(
-        `<strong>${loc.city}</strong> · ${loc.country || ''}<br/><span style="opacity:.7">${loc.focus || ''}</span>`,
+        `<strong>${loc.city}</strong> · ${loc.country || ''}<br/><span style="opacity:.7">${loc.focus || ''}</span><br/><span style="opacity:.55;font-size:11px">Capitale artistique · satellite</span>`,
       )
       m.on('click', () => {
         setSelectedCity(loc.city)
@@ -342,7 +377,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
       />
 
       <p className="text-[10px] text-zinc-600">
-        {xaRender("Zoom ≥ ")}{xaRender(osmMinZoom())} {xaRender(" → POI OSM · Entrer musée si match · fond Esri satellite ")}</p>
+        {xaRender("Zoom ≥ ")}{xaRender(osmMinZoom())} {xaRender(" → POI OSM · Entrer musée si match · fond Esri satellite · monuments capitales artistiques ")}</p>
       <MapMuseumEnter city={selectedCity || cityFilter || undefined} id="world_map" />
     </div>
   )
