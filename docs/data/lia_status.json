@@ -1,22 +1,17 @@
 {
   "schema": "lia_status/v1",
-  "ts": "2026-10-30T12:28:07Z",
+  "ts": "2026-10-30T19:04:11Z",
   "paper": true,
   "LIA_LIVE_TRADING": 0,
   "onchain": {
     "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
-    "egld": 1.585598,
-    "egld_usd": 5.169,
+    "egld": 0.907888,
+    "egld_usd": 2.9506,
     "tokens": [
       {
         "identifier": "ASH-a642d1",
         "ticker": "ASH",
         "balance": 544.35637
-      },
-      {
-        "identifier": "HTM-f51d55",
-        "ticker": "HTM",
-        "balance": 82.483141
       },
       {
         "identifier": "HWBTC-49ca31",
@@ -29,14 +24,9 @@
         "balance": 0.040862
       },
       {
-        "identifier": "MEX-455c57",
-        "ticker": "MEX",
-        "balance": 6330619.942575
-      },
-      {
         "identifier": "TRO-94c925",
         "ticker": "TRO",
-        "balance": 6665.494355
+        "balance": 41243.00138
       },
       {
         "identifier": "TROMEX-ad38a1",
@@ -67,6 +57,11 @@
         "identifier": "TROXOXNO-500f78",
         "ticker": "TROXOXNO-500f78",
         "balance": 0.578465
+      },
+      {
+        "identifier": "XOXNO-c1293a",
+        "ticker": "XOXNO",
+        "balance": 3.7e-05
       }
     ],
     "tx_count": null,
@@ -81,17 +76,10 @@
     "LIA_LIVE_TRADING": 0
   },
   "shadow": {
-    "fills": 108,
-    "shadow_pnl_usd": 4.8118,
-    "win_rate": 0.6204,
+    "fills": 109,
+    "shadow_pnl_usd": 4.8757,
+    "win_rate": 0.6239,
     "last_shadow": [
-      {
-        "id": "649214b8-34a",
-        "side": "BUY",
-        "asset": "USDC",
-        "pnl_usd": 0.1423,
-        "ts": "2026-10-29T12:37:01Z"
-      },
       {
         "id": "66c02a75-48e",
         "side": "BUY",
@@ -119,6 +107,13 @@
         "asset": "USDC",
         "pnl_usd": -0.1093,
         "ts": "2026-10-30T12:28:06Z"
+      },
+      {
+        "id": "1d63452b-5ab",
+        "side": "BUY",
+        "asset": "TRO",
+        "pnl_usd": 0.0638,
+        "ts": "2026-10-30T19:04:11Z"
       }
     ],
     "source": "lia_paper_legs.json+friction",
