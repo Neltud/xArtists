@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-30T00:37:39.412Z",
+  "updatedAt": "2026-10-30T09:38:35.738Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793353115190",
+      "timestamp": "09:38",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.26 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793352405000",
+      "timestamp": "09:26",
+      "source": "CoinTelegraph",
+      "title": "Trezor warns CryptoBilis buyers to move funds over suspected implant",
+      "link": "https://cointelegraph.com/news/trezor-cryptobilis-wallet-implant-funds-warning?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793351305000",
+      "timestamp": "09:08",
+      "source": "CoinTelegraph",
+      "title": "Live updates: Binance uncovers more breach points in $6.3B hack",
+      "link": "https://cointelegraph.com/news/live-updates-binance-63b-hack-linked-to-north-koreas-tradertraitor?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793340000000",
+      "timestamp": "06:00",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1793339587000",
+      "timestamp": "05:53",
+      "source": "CoinTelegraph",
+      "title": "Strategy eyes more Bitcoin buys as Saylor touts $30B credit capacity",
+      "link": "https://cointelegraph.com/news/strategy-30-billion-digital-credit-capacity-bitcoin-buys?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793339501000",
+      "timestamp": "05:51",
+      "source": "CoinTelegraph",
+      "title": "North Korea’s TraderTraitor linked to $6.3B Binance hack",
+      "link": "https://cointelegraph.com/news/north-korea-linked-to-63b-binance-hack-by-crypto-investigators?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793332021000",
+      "timestamp": "03:47",
+      "source": "CoinTelegraph",
+      "title": "Binance hack could accelerate shift to DEXs: Standard Chartered",
+      "link": "https://cointelegraph.com/news/binance-hack-could-accelerate-shift-to-dexs-standard-chartered?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793349412000",
+      "timestamp": "08:36",
+      "source": "CoinDesk",
+      "title": "Live News: Binance hack rattles crypto as Intel plunges and AI spending fears hit tech",
+      "link": "https://www.coindesk.com/markets/2026/10/30/live-news-binance-hack-rattles-crypto-as-intel-plunges-and-ai-spending-fears-hit-tech"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793346847000",
+      "timestamp": "07:54",
+      "source": "CoinDesk",
+      "title": "Binance hacker dumps a little-known 2017 token and it crashes 90%",
+      "link": "https://www.coindesk.com/markets/2026/10/30/binance-hacker-dumps-a-little-known-2017-token-and-it-crashes-90"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793341320000",
+      "timestamp": "06:22",
+      "source": "CoinDesk",
+      "title": "Bitcoin, ether and XRP selloff wipes out $1.5 billion in leveraged crypto bets",
+      "link": "https://www.coindesk.com/markets/2026/10/30/bitcoin-ether-and-xrp-selloff-wipes-out-usd1-5-billion-in-leveraged-crypto-bets"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793339127000",
+      "timestamp": "05:45",
+      "source": "CoinDesk",
+      "title": "XRP Ledger developers tighten the rules for who can hold 'restricted' tokens",
+      "link": "https://www.coindesk.com/tech/2026/10/30/xrp-ledger-developers-tighten-the-rules-for-who-can-hold-restricted-tokens"
+    },
     {
       "id": "egld-1793320659177",
       "timestamp": "00:37",
@@ -57,13 +134,6 @@
       "timestamp": "15:08",
       "source": "EGLD",
       "title": "Cotation publique · $3.29 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1793090413821",
-      "timestamp": "08:40",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.26 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -127,76 +197,6 @@
       "timestamp": "16:31",
       "source": "EGLD",
       "title": "Cotation publique · $3.61 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792753462166",
-      "timestamp": "11:04",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.65 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792703612791",
-      "timestamp": "21:13",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.52 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792687263248",
-      "timestamp": "16:41",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.58 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792639580503",
-      "timestamp": "03:26",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.70 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792617427563",
-      "timestamp": "21:17",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.76 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792600813934",
-      "timestamp": "16:40",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.79 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792581244777",
-      "timestamp": "11:14",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.74 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792553207122",
-      "timestamp": "03:26",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.73 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792539480854",
-      "timestamp": "23:38",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.71 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792505278288",
-      "timestamp": "14:07",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.68 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     }
   ]
