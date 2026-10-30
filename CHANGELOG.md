@@ -1,5 +1,13 @@
 # Changelog — xArtists
 
+## [0.125.0] — 2026-10-30
+
+* **probe:** public fallback and entity snapshots move to the 30 Oct mainnet probe (epoch 2278, EGLD $3.21, mcap $99.73M, $TRO 561 accounts / 2815 tx). Stop serving the 28 Oct chrome when the API is down.
+* **go-live copy:** Upbit wallet status is withdrawals-open / deposits-blocked with the caution designation still on. That is not a clearance of notice 207379109. Day 7/29 at probe time.
+* **paybox:** Pages default `VITE_PAYBOX_ENABLED` returns to false. Preprod stays preprod. Do not treat the 29 Oct default `true` as production.
+* **trading:** user-sign micro stays armed. LIA Ops nonce stays 1479. Proposal broadcast button stays locked.
+
+
 ## [0.122.3](https://github.com/Neltud/xArtists/compare/v0.122.2...v0.122.3) (2026-10-29)
 
 

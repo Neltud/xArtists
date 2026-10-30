@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-28T06:14:47Z",
+  "updated": "2026-10-30T05:36:00Z",
   "source": "api.multiversx.com",
   "network": "mainnet",
   "api_health": {
@@ -7,25 +7,25 @@
     "economics": 200,
     "accounts": 200,
     "tokens": 200,
-    "note": "Probe 28 Oct 2026 06:14 UTC. Supernova refreshRate 600, epoch 2276 (+43 since activation 2233). LIA nonce frozen at 1479. VITE_LIA_LIVE_TRADING=0. Not a trading go-live."
+    "note": "Probe 30 Oct 2026 05:36 UTC. Supernova refreshRate 600, epoch 2278 (+45 since activation 2233). LIA nonce frozen at 1479. Not a trading go-live."
   },
   "economics": {
-    "egld_price_usd": 3.37,
+    "egld_price_usd": 3.21,
     "egld_price_source": "api.multiversx.com/economics",
-    "market_cap_usd": 104650056,
-    "circulating": 31053429,
-    "staked": 13884402,
-    "apr": 0.091462,
+    "market_cap_usd": 99727189,
+    "circulating": 31067660,
+    "staked": 13891006,
+    "apr": 0.091269,
     "stale": false
   },
   "stats": {
     "refreshRate": 600,
-    "epoch": 2276,
-    "roundsPassed": 81955,
+    "epoch": 2278,
+    "roundsPassed": 78085,
     "roundsPerEpoch": 144000,
-    "accounts": 9276802,
-    "transactions": 634530780,
-    "blocks": 152652858,
+    "accounts": 9277816,
+    "transactions": 634892002,
+    "blocks": 153787371,
     "shards": 3,
     "stale": false
   },
@@ -53,10 +53,10 @@
   "tro": {
     "id": "TRO-94c925",
     "circulating": 476224,
-    "accounts": 562,
-    "price_usd": 8.3747e-05,
-    "market_cap_usd": 39.88,
-    "transactions": 2814
+    "accounts": 561,
+    "price_usd": 7.9023e-05,
+    "market_cap_usd": 37.63,
+    "transactions": 2815
   },
-  "notes": "Read-only probe. Site go-live only. VITE_LIA_LIVE_TRADING=0. Slot isPayable=false. Listing #2 only. Do not fund legacy placeholders. Do not claimFees (treasury dest null). Upbit notice 207379109 still extended through 16-20 Nov 2026. Bithumb FET window 2-6 Nov is not an EGLD clearance. PR #200 (orders neon) is not merged: lockfile stripped, base behind main."
+  "notes": "Read-only probe 30 Oct 2026 05:36 UTC. Site go-live only. VITE_LIA_LIVE_TRADING may arm xPortal user-sign (15/40 USD caps); it is not an autonomous broadcast. LIA nonce frozen at 1479. Slot isPayable=false. Listing #2 only \u2014 0.25 EGLD is a historical proof, not the SC balance (0.0175). Do not fund legacy placeholders. Do not claimFees (treasury dest null). Upbit notice 207379109 still extended through 16-20 Nov 2026. Wallet status observed 30 Oct: withdrawals open, deposits blocked, caution designation still on. That is not a clearance. Bithumb FET window 2-6 Nov is not an EGLD clearance. Paybox UI fail-closed unless the GitHub variable is set after a green IPN. PR #200 not merged."
 }

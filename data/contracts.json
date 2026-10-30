@@ -1,8 +1,8 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-10-28",
-  "chain_note": "Product SCs re-probed 28 Oct 2026 06:14 UTC, epoch 2276, refreshRate 600. CodeHashes unchanged (agents buyPack igm9oUpgad…). getPackPrice 10 / 5 / 2.5 EGLD. Agents balance 0.013 EGLD = historical micro tests, not those prices. Market 0.0175 EGLD, listing #2 only. Slot house 0.5 EGLD, isPayable=false. LIA ops 1.585598 EGLD nonce 1479 (frozen since 17 Oct). EGLD $3.37 API, mcap ~$104.65M, APR 9.15%. Treasury dest still not claimable. Korean warning still extended through 16–20 Nov (Upbit 207379109). Jour 6/29 at probe, 19 j avant le 16 nov. Not a trading go-live.",
+  "updated": "2026-10-30",
+  "chain_note": "Product SCs re-probed 30 Oct 2026 05:36 UTC, epoch 2278, refreshRate 600. CodeHashes unchanged (agents buyPack igm9oUpgad\u2026). getPackPrice 10 / 5 / 2.5 EGLD. Agents balance 0.013 EGLD = historical micro tests, not those prices. Market 0.0175 EGLD, listing #2 only. The 0.25 EGLD figure is a historical proof, not a live display price. Slot house 0.5 EGLD, isPayable=false. LIA ops 1.585598 EGLD nonce 1479 (frozen since 17 Oct). EGLD $3.21 API, mcap ~$99.73M, APR 9.13%. Treasury dest still not claimable. Korean warning still extended through 16\u201320 Nov (Upbit 207379109). Jour 7/29 at probe, 17 j avant le 16 nov. Withdrawals-only on Upbit is not a clearance. Not a trading go-live.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -42,14 +42,14 @@
     "slot_casino": 0.5,
     "nft_marketplace": 0.0175,
     "others": 0,
-    "probed": "2026-10-28T06:14:47Z",
+    "probed": "2026-10-30T05:36:00Z",
     "slot_isPayable": false,
     "market_isPayable": true,
     "market_fees_egld": 0.0075,
     "lia_ops_egld": 1.585598,
     "tro_stake_atomic": "3000000",
-    "epoch": 2276,
-    "egld_usd": 3.37,
+    "epoch": 2278,
+    "egld_usd": 3.21,
     "agents_marketplace": 0.013,
     "lia_ops_nonce": 1479
   },
@@ -57,7 +57,7 @@
     "buyNft_egld_epoch_2250": 0.25,
     "collection": "ASFT-a6273a-01",
     "listing_1": "inactive",
-    "listing_2": "active 0.25 EGLD",
+    "listing_2": "active \u2014 buy this id only; 0.25 EGLD is a historical proof, not the live SC balance (0.0175)",
     "placeBid_listing_2_egld": 0.01,
     "buyNft_retry_wrong_id": "fail:inactive",
     "spinEgld_real": "blocked: account isPayable=false",
@@ -86,8 +86,8 @@
     "marketplace_mainnet": {
       "codeHash": "8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=",
       "code_empty": false,
-      "verdict": "LIVE payable · buy listing #2 only · 0.25 EGLD is a historical proof, not the 0.0175 SC balance · #1 inactive"
+      "verdict": "LIVE payable \u00b7 buy listing #2 only \u00b7 0.25 EGLD is a historical proof, not the 0.0175 SC balance \u00b7 #1 inactive"
     },
-    "agents_marketplace": "LIVE codeHash igm9oUpgad… (buyPack upgrade) · 0.013 EGLD test dust · official prices Pulse 10 / Yield 5 / Sentinel 2.5 EGLD"
+    "agents_marketplace": "LIVE codeHash igm9oUpgad\u2026 (buyPack upgrade) \u00b7 0.013 EGLD test dust \u00b7 official prices Pulse 10 / Yield 5 / Sentinel 2.5 EGLD"
   }
 }

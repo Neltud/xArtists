@@ -50,7 +50,9 @@ export default function ProposedActions() {
     }
   }, [])
 
-  const live = false // hard: Pages cannot flip LIA_LIVE_TRADING
+  // Locked on purpose: this button has no signer. A static page must not look like it broadcasts,
+  // even when VITE_LIA_LIVE_TRADING arms the separate xPortal user-sign path.
+  const live = false
 
   return (
     <section className="rounded-xl border border-sky-500/20 bg-sky-500/[0.04] p-3 space-y-2">
