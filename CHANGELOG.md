@@ -1,5 +1,16 @@
 # Changelog — xArtists
 
+## [0.125.1](https://github.com/Neltud/xArtists/compare/v0.125.0...v0.125.1) (2026-10-30)
+
+
+### Bug Fixes
+
+* **p0:** default VITE_LIA_LIVE_TRADING=0 fail-closed on Pages ([a260c09](https://github.com/Neltud/xArtists/commit/a260c0946b91d69d0263b01b209966dff0ecb13e))
+* **p0:** fail-closed LIA=0, explicit PAYBOX_IPN_URL, no Stripe link fallback ([eb63df3](https://github.com/Neltud/xArtists/commit/eb63df32e93e62b30f4d19a9b798a35adc45003a))
+* **p0:** require PAYBOX_IPN_URL env — no origin fallback before createOrder ([cbb23c1](https://github.com/Neltud/xArtists/commit/cbb23c12354524e7a41a3e17f5ed9bee5cc1dc67))
+* **p0:** restore complete Pages workflow + LIA default 0 (rsync/build-info) ([e9ff790](https://github.com/Neltud/xArtists/commit/e9ff790b15382a86e0688ff72e360332b9d10c57))
+* **p0:** restore full Pages workflow + LIA default 0 ([e596550](https://github.com/Neltud/xArtists/commit/e596550640b78b8d763cd7e5a4ca6ea81dd0b3b2))
+
 ## [0.125.0](https://github.com/Neltud/xArtists/compare/v0.124.0...v0.125.0) (2026-10-30)
 
 
