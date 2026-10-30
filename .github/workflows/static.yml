@@ -95,12 +95,11 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096
           VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
           VITE_APP_BUILD: "sites-v3-release-paper"
-          # Fail-closed paper default. Set repo var VITE_LIA_LIVE_TRADING=1 only after explicit GO.
+          # Fail-closed paper default. Repo var =1 only after explicit GO.
           VITE_LIA_LIVE_TRADING: ${{ vars.VITE_LIA_LIVE_TRADING || '0' }}
           VITE_ACCESS_API_BASE: ${{ vars.VITE_ACCESS_API_BASE || 'https://xartists-access-api.onrender.com' }}
           VITE_MOONPAY_API_KEY: ${{ vars.VITE_MOONPAY_API_KEY || secrets.VITE_MOONPAY_API_KEY }}
           # Fail-closed. Preprod Paybox is not a public checkout until A-E2E (IPN) is green.
-          # Set repository variable VITE_PAYBOX_ENABLED=true only after that proof.
           VITE_PAYBOX_ENABLED: ${{ vars.VITE_PAYBOX_ENABLED || 'false' }}
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
           VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
@@ -129,6 +128,39 @@ jobs:
             echo "=== tsc noEmit ==="
             (cd apps/frontend && npx tsc -p tsconfig.json --noEmit) 2>&1 | tail -n 80 || true
           } > docs/BUILD_ERROR.txt
+          cp apps/frontend/build-out.txt docs/BUILD_ERROR.txt || true
+          echo 'Build failed — see docs/BUILD_ERROR.txt'
+
+      - name: Fail if build failed
+        if: failure()
+        run: exit 1
+
+      - name: Prepare Pages artifact
+        working-directory: .
+        run: |
+          cd apps/frontend
+          node scripts/write-build-info.mjs
+          mkdir -p _site
+          cp -a apps/frontend/dist/. _site/
+          touch _site/.nojekyll
+          cp _site/index.html _site/404.html
+
+      - name: Verify built GitHub Pages assets
+        working-directory: apps/frontend
+        run: npm run verify:site
+
+      - name: Synchronize the legacy Pages snapshot
+        if: github.ref == 'refs/heads/main'
+        working-directory: .
+        run: |
+          mkdir -p docs/assets
+          rsync -a --delete _site/assets/ docs/assets/
+          rsync -a --exclude='assets/' --exclude='data/' _site/ docs/
+          git add docs
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore(pages): synchronize V3 build snapshot [skip ci]'
+            git push origin HEAD:main
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -136,7 +168,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: apps/frontend/dist
+          path: _site
 
   deploy:
     environment:
@@ -144,6 +176,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
