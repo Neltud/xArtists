@@ -1,7 +1,6 @@
 /**
  * Orchestrateur checkout packs — Stripe + Paybox + paper.
- * MoonPay = on-ramp EGLD (voir lib/moonpay.ts), pas un moyen de payer le pack fiat direct.
- * Paybox requires wallet-bound accessToken (JWT). Guest addresses are rejected.
+ * Fail-closed: Stripe without server session = unavailable.
  */
 
 import type { PackId } from '../config/agentPacks'
@@ -11,12 +10,9 @@ import {
   getAccessApiBase,
   getStripePaymentLink,
 } from './stripe'
-import {
-  startPayboxCardPayment,
-  isPayboxConfigured,
-} from './paybox'
-import { isMoonPayConfigured, moonpayStatusHint, openMoonPayBuy } from './moonpay'
-import { getAccessToken, ensureAccessToken } from './accessSession'
+import { startPayboxCardPayment, isPayboxConfigured } from './payboxClient'
+import { ensureAccessToken, getAccessToken } from './accessSession'
+import { isMoonPayConfigured, openMoonPayBuy, moonpayStatusHint } from './moonpay'
 
 export type PayMethod = 'stripe' | 'paybox' | 'paper'
 
@@ -24,21 +20,21 @@ export function availablePayMethods(): PayMethod[] {
   const m: PayMethod[] = []
   if (isStripeConfigured()) m.push('stripe')
   if (isPayboxConfigured()) m.push('paybox')
-  if (!m.length) m.push('paper')
+  m.push('paper')
   return m
 }
 
-export function defaultPayMethod(): PayMethod {
+export function preferredPayMethod(): PayMethod {
   const m = availablePayMethods()
-  if (m.includes('stripe')) return 'stripe'
   if (m.includes('paybox')) return 'paybox'
+  if (m.includes('stripe')) return 'stripe'
   return 'paper'
 }
 
 export function payMethodLabel(m: PayMethod): string {
   switch (m) {
     case 'stripe':
-      return getAccessApiBase() ? 'Stripe (API)' : 'Stripe (Payment Link)'
+      return 'Stripe (API)'
     case 'paybox':
       return 'Paybox (API)'
     default:
@@ -99,7 +95,6 @@ export async function startPackPayment(opts: {
 
 export function stripeStatusHint(): string {
   if (getAccessApiBase()) return 'API'
-  if (getStripePaymentLink('pulse')) return 'Links'
   return 'off'
 }
 

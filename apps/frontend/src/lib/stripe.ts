@@ -2,10 +2,9 @@
  * Stripe card payments (Access Packs Model C).
  * Secret key NEVER in frontend — only publishable key + backend session URL.
  *
- * Flow:
- * 1) Preferred: POST {VITE_ACCESS_API_BASE}/v1/checkout/session → redirect to session.url
- * 2) Fallback: VITE_STRIPE_PAYMENT_LINK_{PACK} Payment Links (Dashboard)
- * 3) Else: local paper intent
+ * Flow (fail-closed):
+ * 1) POST {VITE_ACCESS_API_BASE}/v1/checkout/session → redirect to session.url
+ * 2) Else unavailable — no Payment Link / paper silent path for card.
  */
 
 import type { PackId } from '../config/agentPacks'
@@ -34,10 +33,12 @@ export function getStripePublishableKey(): string | undefined {
 }
 
 export function isStripeConfigured(): boolean {
-  return Boolean(getAccessApiBase() || getStripePaymentLink('pulse'))
+  // Fail-closed: Payment Links alone are NOT enough (no server reconciliation).
+  // Stripe only if API can create a session that the backend can confirm.
+  return Boolean(getAccessApiBase())
 }
 
-/** Optional per-pack Payment Links from Stripe Dashboard */
+/** Optional per-pack Payment Links from Stripe Dashboard — not used for checkout (fail-closed). */
 export function getStripePaymentLink(packId: PackId): string | undefined {
   const map: Record<PackId, string | undefined> = {
     pulse: import.meta.env.VITE_STRIPE_PAYMENT_LINK_PULSE as string | undefined,
@@ -89,41 +90,27 @@ export async function createStripeCheckoutSession(
 }
 
 /**
- * Démarre Stripe : session API → Payment Link → paper.
+ * Démarre Stripe : session API uniquement (fail-closed).
+ * Pas de Payment Link sans confirmation serveur · pas de paper silencieux.
  */
 export async function startStripeCardPayment(opts: {
   packId: PackId
   buyerAddress: string
-}): Promise<'redirect' | 'payment_link' | 'paper'> {
+}): Promise<'redirect' | 'unavailable'> {
   const api = getAccessApiBase()
-  if (api) {
-    try {
-      const session = await createStripeCheckoutSession({
-        pack_id: opts.packId,
-        buyer_address: opts.buyerAddress,
-        success_url: buildPackSuccessUrl(opts.packId),
-      })
-      if (session.url) {
-        window.location.href = session.url
-        return 'redirect'
-      }
-    } catch {
-      /* fallback link */
+  if (!api) return 'unavailable'
+  try {
+    const session = await createStripeCheckoutSession({
+      pack_id: opts.packId,
+      buyer_address: opts.buyerAddress,
+      success_url: buildPackSuccessUrl(opts.packId),
+    })
+    if (session.url) {
+      window.location.href = session.url
+      return 'redirect'
     }
+  } catch {
+    return 'unavailable'
   }
-
-  const link = getStripePaymentLink(opts.packId)
-  if (link) {
-    try {
-      const u = new URL(link)
-      // Client-side only hint; Stripe Links ignore unknown params sometimes — intent in localStorage is source of truth
-      u.searchParams.set('client_reference_id', opts.buyerAddress)
-      window.location.href = u.toString()
-    } catch {
-      window.location.href = link
-    }
-    return 'payment_link'
-  }
-
-  return 'paper'
+  return 'unavailable'
 }
