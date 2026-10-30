@@ -1,6 +1,6 @@
 import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
- * Carte mondiale — plan horizontal Leaflet + OSM (sans clé API).
+ * Carte mondiale — satellite Esri (défaut) + Leaflet (sans clé API).
  * locations optionnel : défaut = hubs culturels mondiaux.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -126,7 +126,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
   const layerRef = useRef<LeafletNS>(null)
   const tileRef = useRef<LeafletNS>(null)
   const [mapReady, setMapReady] = useState(false)
-  const [basemap, setBasemap] = useState<BasemapId>('osm')
+  const [basemap, setBasemap] = useState<BasemapId>('satellite')
   const [cityFilter, setCityFilter] = useState('')
   const [region, setRegion] = useState<string>('all')
   const [osmPois, setOsmPois] = useState<OsmPoi[]>([])
@@ -169,7 +169,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
           maxZoom: 18,
           worldCopyJump: true,
         })
-        const bm = BASEMAPS[basemap]
+        const bm = BASEMAPS.satellite
         const tile = L.tileLayer(bm.url, {
           attribution: bm.attribution,
           maxZoom: bm.maxZoom,
@@ -181,6 +181,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
         mapObj.current = map
         setMapReady(true)
         setTimeout(() => map.invalidateSize(), 80)
+        setTimeout(() => map.invalidateSize(), 400)
       } catch (e) {
         console.error('[ArtWorldMap]', e)
         setMapReady(false)
@@ -197,7 +198,6 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
         mapObj.current = null
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -315,18 +315,18 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
             </option>
           )))}
         </select>
-        <span className="text-zinc-500">{xaRender(filtered?.length ?? 0)} {xaRender(" destinations · plan horizontal")}</span>
+        <span className="text-zinc-500">{xaRender(filtered?.length ?? 0)} {xaRender(" destinations · vue satellite")}</span>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {xaRender((Object.keys(BASEMAPS) as BasemapId[]).map(id => (
+        {xaRender(((['satellite'] as BasemapId[])).map(id => (
           <button
             key={id}
             type="button"
             onClick={() => setBasemap(id)}
             className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded-full border ${
               basemap === id
-                ? 'border-cyan-400/50 bg-cyan-500/15 text-cyan-200'
+                ? 'border-lime-400/50 bg-lime-500/15 text-lime-200'
                 : 'border-white/10 text-zinc-500'
             }`}
           >
@@ -338,10 +338,11 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
       <div
         ref={mapRef}
         className="w-full h-[min(62vh,520px)] rounded-2xl border border-white/10 overflow-hidden bg-zinc-950"
+        style={{ minHeight: 420 }}
       />
 
       <p className="text-[10px] text-zinc-600">
-        {xaRender("Zoom ≥ ")}{xaRender(osmMinZoom())} {xaRender(" → POI OSM · Entrer musée si match · tuiles OSM sans clé ")}</p>
+        {xaRender("Zoom ≥ ")}{xaRender(osmMinZoom())} {xaRender(" → POI OSM · Entrer musée si match · fond Esri satellite ")}</p>
       <MapMuseumEnter city={selectedCity || cityFilter || undefined} id="world_map" />
     </div>
   )
