@@ -1,42 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-30T17:44:52.288Z",
+  "updatedAt": "2026-10-30T21:57:42.815Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1793382291912",
-      "timestamp": "17:44",
+      "id": "egld-1793397462509",
+      "timestamp": "21:57",
       "source": "EGLD",
-      "title": "Cotation publique · $3.30 (API MultiversX economics)",
+      "title": "Cotation publique · $3.29 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1793380171000",
+      "id": "rss-CoinTelegraph-0-1793386918000",
+      "timestamp": "19:01",
+      "source": "CoinTelegraph",
+      "title": "Tether’s excess reserves nearly double to $8B as Q3 profit hits $1.5B",
+      "link": "https://cointelegraph.com/news/tethers-excess-reserves-nearly-double-to-8b-as-q3-profit-hits-15b?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793382507000",
+      "timestamp": "17:48",
+      "source": "CoinTelegraph",
+      "title": "Coinbase leads crypto stock selloff following $6.3B Binance hack",
+      "link": "https://cointelegraph.com/markets/coinbase-leads-crypto-stock-selloff-shares-tumble?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793380171000",
       "timestamp": "17:09",
       "source": "CoinTelegraph",
       "title": "Crypto Biz: Bitcoin’s quantum threat is becoming an economic problem",
       "link": "https://cointelegraph.com/news/bitcoin-quantum-threat-ripple-bank-usdc-vaneck-crypto-biz?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1793379226000",
+      "id": "rss-CoinTelegraph-3-1793379226000",
       "timestamp": "16:53",
       "source": "CoinTelegraph",
       "title": "Recap: How Binance’s record $6.3B hack unfolded",
       "link": "https://cointelegraph.com/news/recap-binances-record-63b-hack-unfolded?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1793378990000",
+      "id": "rss-CoinTelegraph-4-1793378990000",
       "timestamp": "16:49",
       "source": "CoinTelegraph",
       "title": "As it happened: Binance’s record $6.3B crypto hack",
       "link": "https://cointelegraph.com/news/live-updates-binance-63b-hack-linked-to-north-koreas-tradertraitor?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1793376388000",
+      "id": "rss-CoinTelegraph-5-1793376388000",
       "timestamp": "16:06",
       "source": "CoinTelegraph",
       "title": "Bitcoin risks worst October in 12 years as tech sell-off spreads to gold",
       "link": "https://cointelegraph.com/markets/bitcoin-risks-worst-october-in-12-years-as-tech-sell-off-spreads-to-gold?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793390100000",
+      "timestamp": "19:55",
+      "source": "CoinDesk",
+      "title": "Experts divided over Binance hack asset freezes, warn recovery is another matter",
+      "link": "https://www.coindesk.com/business/2026/10/30/experts-divided-over-binance-hack-asset-freezes-warn-recovery-is-another-matter"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793377877000",
+      "timestamp": "16:31",
+      "source": "CoinDesk",
+      "title": "Binance uncovers wider breach in $6.3 billion exploit, targets Sunday withdrawal restart",
+      "link": "https://www.coindesk.com/tech/2026/10/30/binance-uncovers-wider-breach-in-usd6-3-billion-exploit-targets-sunday-withdrawal-restart"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793369614000",
+      "timestamp": "14:13",
+      "source": "CoinDesk",
+      "title": "Wall Street analysts urge investors to buy crypto stocks after $6.3 billion Binance hack",
+      "link": "https://www.coindesk.com/markets/2026/10/30/wall-street-analysts-urge-investors-to-buy-crypto-stocks-on-weakness-after-usd6-3-billion-binance-hack"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793362382000",
+      "timestamp": "12:13",
+      "source": "CoinDesk",
+      "title": "Binance arranges $6.34 billion to cover losses from record crypto hack",
+      "link": "https://www.coindesk.com/business/2026/10/30/binance-arranges-usd6-34-billion-to-cover-losses-from-record-crypto-hack"
+    },
+    {
+      "id": "egld-1793382291912",
+      "timestamp": "17:44",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.30 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-4-1793369262000",
@@ -51,27 +100,6 @@
       "source": "CoinTelegraph",
       "title": "Will gold’s ‘infinite mint bug’ make Bitcoin more valuable?",
       "link": "https://cointelegraph.com/magazine/will-golds-infinite-mint-bug-make-bitcoin-more-valuable?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793377877000",
-      "timestamp": "16:31",
-      "source": "CoinDesk",
-      "title": "Binance uncovers wider breach in $6.3 billion exploit, targets Sunday withdrawal restart",
-      "link": "https://www.coindesk.com/tech/2026/10/30/binance-uncovers-wider-breach-in-usd6-3-billion-exploit-targets-sunday-withdrawal-restart"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793369614000",
-      "timestamp": "14:13",
-      "source": "CoinDesk",
-      "title": "Wall Street analysts urge investors to buy crypto stocks after $6.3 billion Binance hack",
-      "link": "https://www.coindesk.com/markets/2026/10/30/wall-street-analysts-urge-investors-to-buy-crypto-stocks-on-weakness-after-usd6-3-billion-binance-hack"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793362382000",
-      "timestamp": "12:13",
-      "source": "CoinDesk",
-      "title": "Binance arranges $6.34 billion to cover losses from record crypto hack",
-      "link": "https://www.coindesk.com/business/2026/10/30/binance-arranges-usd6-34-billion-to-cover-losses-from-record-crypto-hack"
     },
     {
       "id": "rss-CoinDesk-3-1793361086000",
@@ -169,34 +197,6 @@
       "timestamp": "09:24",
       "source": "EGLD",
       "title": "Cotation publique · $3.38 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1793234220682",
-      "timestamp": "00:37",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.44 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1793217911666",
-      "timestamp": "20:05",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.41 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1793160626727",
-      "timestamp": "04:10",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.42 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1793137857056",
-      "timestamp": "21:50",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.33 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     }
   ]
