@@ -3,6 +3,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as
  * Galerie — salles 3D + grille · venue wallId → slots NFT.
  * Capacité : max 4 œuvres/mur · 24 public · pack room 4×4.
  * Shell tokens for chrome; immersive canvas unchanged.
+ * Louvre M1 : aile multi-salles + frames ALISTOR/BGG/XAUS.
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -32,6 +33,12 @@ import {
 } from '../lib/museumWorldCatalog'
 import { preloadImages } from '../lib/imagePreload'
 import { loadBlueprint } from '../lib/loadBlueprint'
+import LouvreWingNav from '../components/museum/LouvreWingNav'
+import {
+  louvreRoomById,
+  loadLouvreFrames,
+  type LouvreRoomId,
+} from '../lib/louvreM1'
 import { builtinBlueprintForMuseum } from '../lib/builtinBlueprints'
 import type { RoomBlueprint } from '../lib/roomBlueprint'
 import { TUDURI_WORKS } from '../config/tuduriAtelier'
@@ -137,6 +144,8 @@ export default function MuseumPage() {
   const [mode, setMode] = useState<Mode>('explore')
   const [venueRevision, setVenueRevision] = useState(0)
   const [museumId, setMuseumId] = useState('xartists')
+  const [louvreRoomId, setLouvreRoomId] = useState<LouvreRoomId>('denon-gal')
+  const [louvreFrames, setLouvreFrames] = useState<FrameItem[]>([])
   const [museums, setMuseums] = useState<VirtualMuseum[]>(() => VIRTUAL_MUSEUMS)
   const [blueprint, setBlueprint] = useState<RoomBlueprint>(() =>
     builtinBlueprintForMuseum('xartists'),
@@ -217,15 +226,43 @@ export default function MuseumPage() {
   }, [params])
 
   useEffect(() => {
-    setBlueprint(builtinBlueprintForMuseum(museumId))
     let c = false
-    loadBlueprint(museumId).then(bp => {
-      if (!c && bp?.walls?.length) setBlueprint(bp)
-    })
+    if (museumId === 'louvre') {
+      setBlueprint(louvreRoomById(louvreRoomId).blueprint)
+    } else {
+      setBlueprint(builtinBlueprintForMuseum(museumId))
+      loadBlueprint(museumId).then(bp => {
+        if (!c && bp?.walls?.length) setBlueprint(bp)
+      })
+    }
     return () => {
       c = true
     }
-  }, [museumId])
+  }, [museumId, louvreRoomId])
+
+  useEffect(() => {
+    if (museumId !== 'louvre') {
+      setLouvreFrames([])
+      return
+    }
+    let cancelled = false
+    const room = louvreRoomById(louvreRoomId)
+    loadLouvreFrames(room.collections, 14).then(seeds => {
+      if (cancelled) return
+      setLouvreFrames(
+        seeds.map(s => ({
+          id: s.id,
+          title: s.title,
+          image: s.image,
+          collection: s.collection,
+          kind: 'painting' as const,
+        })),
+      )
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [museumId, louvreRoomId])
 
   const xartistsFrames = useMemo(() => {
     const ranked = prioritizeNfts(allNfts)
@@ -254,11 +291,13 @@ export default function MuseumPage() {
 
   const myFrames = useMemo(() => framesFromUserNfts(account.nfts || []), [account.nfts])
 
-  const hallFrames = useMemo(
-    () => mergeVenueFrames(visitFrames, myFrames),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [visitFrames, myFrames, venueRevision],
-  )
+  const hallFrames = useMemo(() => {
+    if (museumId === 'louvre' && louvreFrames.length >= 4) {
+      return louvreFrames.slice(0, MUSEUM_CAPACITY.maxArtworksPublic)
+    }
+    return mergeVenueFrames(visitFrames, myFrames)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- venueRevision triggers wall remap
+  }, [museumId, louvreFrames, visitFrames, myFrames, venueRevision])
 
   return (
     <div className="xa-museum-page space-y-5">
@@ -303,10 +342,13 @@ export default function MuseumPage() {
 
       {xaRender(mode === 'explore' && (
         <>
+          {museumId === 'louvre' && (
+            <LouvreWingNav activeId={louvreRoomId} onSelect={setLouvreRoomId} />
+          )}
           <div className="xa-museum-select-row"><label><Icon name="museum" size={20}/><span className="sr-only">{c('museumChoose')}</span><select value={museumId} aria-label={c('museumChoose')} onChange={e=>{const id=e.target.value;setMuseumId(id);setParams(p=>{const next=new URLSearchParams(p);next.set('museum',id);next.delete('city');return next},{replace:true})}}>{museums.map(m=><option key={m.id} value={m.id}>{m.name} · {m.city}</option>)}</select></label><span>{c('museumTouchHelp')}</span></div>
           <MuseumHall
             blueprint={blueprint}
-            roomTitle={museum?.name||'xArtists'}
+            roomTitle={museumId === 'louvre' ? louvreRoomById(louvreRoomId).label : (museum?.name||'xArtists')}
             frames={hallFrames}
             room={museum?.room || 'stone'}
             allowBuy
