@@ -20,7 +20,6 @@ export const modules:Module[] = [
   module('agents','/intelligence/agents',['/agents','/packs'],'agents','intelligence','agents',()=>import('../pages/AgentsPage'),['Pulse','Yield','Sentinel']),
   module('command','/intelligence/command',['/command-center','/command','/cc'],'command','intelligence','command',()=>import('../pages/CommandCenterPage'),['LIA','AI','Ops']),
   module('lightning','/intelligence/lightning',['/agents/lightning'],'lightning','intelligence','bolt',()=>import('../pages/LightningAgentPage'),['AI','Lightning']),
-  module('polylia','/intelligence/polylia',['/agents/polylia'],'polylia','intelligence','orb',()=>import('../pages/AgentsPolyliaPage'),['AI','Polymarket']),
   module('simulation','/intelligence/simulation',['/simulation','/sim'],'simulation','intelligence','chart',()=>import('../pages/SimulationLab'),['Paper','Lab']),
   module('entities','/intelligence/network',['/entities','/entity'],'entities','intelligence','network',()=>import('../pages/EntityMap'),['LIA','Network']),
   module('trading','/finance/trading',['/trading'],'trading','finance','chart',()=>import('../pages/TradingPage'),['EGLD','Trade']),
