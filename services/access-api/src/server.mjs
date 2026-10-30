@@ -206,20 +206,21 @@ async function handleRequest(req, res) {
       }
       let artist = null
       if (artistRaw) artist = resolveArtistBeneficiary(artistRaw)
+      const origin = publicBase()
+      // Fail-closed: absolute HTTPS IPN from env only — no silent origin fallback.
+      const ipnUrl = String(process.env.PAYBOX_IPN_URL || '').trim()
+      if (!/^https:\/\//i.test(ipnUrl)) {
+        json(res, 503, {
+          ok: false, error: 'paybox_ipn_url_required',
+          message: 'Set PAYBOX_IPN_URL to an absolute https:// endpoint before accepting card sessions. No origin fallback.',
+        })
+        return
+      }
       const orderId = newOrderId(pack.id, buyer)
       await createOrder({
         order_id: orderId, pack_id: pack.id, amount_cents: pack.price_cents,
         buyer_address: buyer, artist_beneficiary: artist,
       })
-      const origin = publicBase()
-      const ipnUrl = process.env.PAYBOX_IPN_URL || `${origin}/v1/checkout/paybox/ipn`
-      if (!/^https:\/\//i.test(String(ipnUrl))) {
-        json(res, 503, {
-          ok: false, error: 'paybox_ipn_https_required',
-          message: 'PAYBOX_IPN_URL must be an https:// absolute URL before accepting card sessions.',
-        })
-        return
-      }
       const session = createPayboxSession({
         pack, buyerAddress: buyer, orderId,
         successUrl: typeof body.success_url === 'string' ? body.success_url : `${origin}/xArtists/#/my-packs?order=${orderId}`,
