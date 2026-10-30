@@ -2,6 +2,7 @@
  * Plans 3D inspirés des typologies réelles (proportions, pas un jumeau BIM).
  */
 import type { RoomBlueprint, WallSeg, ArtAnchor } from './roomBlueprint'
+import { LOUVRE_M1_ENTRY } from './louvreM1'
 
 function polyWalls(id: string, pts: { x: number; y: number }[], h: number): WallSeg[] {
   const walls: WallSeg[] = []
@@ -81,10 +82,7 @@ function makePlan(
   }
 }
 
-const LOUVRE = makePlan('louvre-gal', 'Grande Galerie (esprit Louvre)', [{ x: 0, y: 0 }, { x: 72, y: 0 }, { x: 72, y: 8.5 }, { x: 0, y: 8.5 }], 5.8, {
-  description: 'Enfilade type Denon', floor: 'stone', spacing: 3.0, doorWallIndex: 3,
-  details: { era: 'Louvre', lighting: 'museum', ambient: 'Perspective forcée', capacity: 180, city: 'Paris' },
-})
+const LOUVRE = LOUVRE_M1_ENTRY
 const HERMITAGE = makePlan('hermitage-hall', 'Salon impérial (esprit Ermitage)', [{ x: 0, y: 0 }, { x: 28, y: 0 }, { x: 28, y: 18 }, { x: 0, y: 18 }], 6.4, {
   description: 'Winter Palace', floor: 'marble', spacing: 3.6,
   details: { era: 'Ermitage', lighting: 'daylight', ambient: 'Hauteur impériale', capacity: 120, city: 'Saint Petersburg' },
