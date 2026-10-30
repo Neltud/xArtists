@@ -1,5 +1,15 @@
 # Changelog — xArtists
 
+## [0.124.0](https://github.com/Neltud/xArtists/compare/v0.123.0...v0.124.0) (2026-10-30)
+
+
+### Features
+
+* **museum:** Louvre M1 minimap room switcher ([84e18bf](https://github.com/Neltud/xArtists/commit/84e18bfb119e64a1e22cda086169fb8e519a47e8))
+* **museum:** Louvre M1 multi-room nav + on-chain collection frames ([607f28e](https://github.com/Neltud/xArtists/commit/607f28e0ec4953f14ac2c10cdd6050f667a405d8))
+* **museum:** Louvre M1 wing — 6 rooms + ALISTOR/BGG/XAUS frame loader ([7a3f3cf](https://github.com/Neltud/xArtists/commit/7a3f3cff039b9960628ea7ff8c6d1a9fb53d9a8a))
+* **museum:** wire Louvre M1 entry blueprint into builtin layouts ([158ba47](https://github.com/Neltud/xArtists/commit/158ba474ebf4bb6158fd959f43a2f807dd7ca794))
+
 ## [0.123.0](https://github.com/Neltud/xArtists/compare/v0.122.4...v0.123.0) (2026-10-30)
 
 
