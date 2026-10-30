@@ -1,5 +1,19 @@
 # Changelog — xArtists
 
+## [0.125.0](https://github.com/Neltud/xArtists/compare/v0.124.0...v0.125.0) (2026-10-30)
+
+
+### Features
+
+* **map:** satellite-only capitals with monument relief markers ([3f47264](https://github.com/Neltud/xArtists/commit/3f47264119eb9e03580ddca5fa42f1e2bd63f513))
+* **packs:** Genesis NFT-style preview plates + Rule1 caps ([b3a3f8e](https://github.com/Neltud/xArtists/commit/b3a3f8e968cffe98ad494f51740a04a714695aa0))
+
+
+### Refactoring
+
+* **hub:** replace neon gadget wall with labeled live control panel ([5b4ae0d](https://github.com/Neltud/xArtists/commit/5b4ae0db83b0e6c7f6f1a93c0acae2f8172070ea))
+* **hub:** wire CommandWall rooms + drop holo gadget copy ([53a4949](https://github.com/Neltud/xArtists/commit/53a4949376ef4fc8553b4e7a7d6bdcaf9a708eb6))
+
 ## [0.124.0](https://github.com/Neltud/xArtists/compare/v0.123.0...v0.124.0) (2026-10-30)
 
 
