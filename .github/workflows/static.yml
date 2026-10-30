@@ -1,54 +1,98 @@
-name: Deploy Vite to GitHub Pages
+# Deploy Vite React dApp to GitHub Pages
+name: Deploy Vite app to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: ["main"]
+    paths-ignore:
+      - "docs/assets/**"
+      - "docs/index.html"
+      - "docs/404.html"
+      - "docs/**/*.md"
+      - "**.md"
+      - "docs/marketing/**"
+      - "docs/BUILD_ERROR.txt"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
 concurrency:
-  group: pages
+  group: "pages-static"
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/frontend
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          python-version: '3.11'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Regression gates (paybox + trading)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Install Access API dependencies
+        working-directory: services/access-api
         run: |
+          if [ -f package-lock.json ] && [ "$(wc -c < package-lock.json)" -gt 1000 ]; then
+            npm ci --ignore-scripts
+          else
+            echo "minimal lock — npm install"
+            npm install --ignore-scripts
+          fi
+
+      - name: Verify release paths without payment or broadcast
+        run: |
+          npm run test:release
+          node --test ../../services/access-api/tests/*.test.mjs
+          cd ../..
           LIA_LIVE_TRADING=0 python -m unittest discover -s tests/regression -p test_paybox_release.py -v
           LIA_LIVE_TRADING=0 python tests/regression/test_trading_stack_gates.py
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-          cache-dependency-path: apps/frontend/package-lock.json
-
-      - name: Install frontend
-        working-directory: apps/frontend
+      - name: Verify V3 routes and translations
         run: |
-          if [ -f package-lock.json ] && [ -s package-lock.json ]; then
-            npm ci || npm install
-          else
-            npm install
+          npm run check:routes
+          npm run verify:site
+          npm run render:check
+          node scripts/run-render-check.mjs modules
+          node scripts/run-render-check.mjs mobile
+
+      - name: Verify Dashboard source (must be clean home)
+        run: |
+          if grep -qiE 'ops clutter|dev home|Become\\|Posts X' src/pages/Dashboard.tsx; then
+            echo '::error::Dashboard.tsx still contains ops/home clutter'
+            exit 1
+          fi
+          echo 'Dashboard source OK'
+
+      - name: Verify Agents = 3 packs only
+        run: |
+          AGENTS_FILE=src/pages/Agents.tsx
+          if [ ! -f "$AGENTS_FILE" ]; then AGENTS_FILE=src/pages/AgentsPage.tsx; fi
+          if ! grep -q 'Pulse · Yield · Sentinel' "$AGENTS_FILE" 2>/dev/null; then
+            echo '::warning::Agents pack label not found (non-blocking)'
           fi
 
       - name: Build
-        working-directory: apps/frontend
+        id: vite_build
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build-out.txt
+          echo "EXIT:${PIPESTATUS[0]}" | tee -a build-out.txt
         env:
+          NODE_OPTIONS: --max-old-space-size=4096
           VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
           VITE_APP_BUILD: "sites-v3-release-paper"
           # Fail-closed paper default. Set repo var VITE_LIA_LIVE_TRADING=1 only after explicit GO.
@@ -59,22 +103,47 @@ jobs:
           # Set repository variable VITE_PAYBOX_ENABLED=true only after that proof.
           VITE_PAYBOX_ENABLED: ${{ vars.VITE_PAYBOX_ENABLED || 'false' }}
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
-          VITE_CHAIN_ID: ${{ vars.VITE_CHAIN_ID || '1' }}
+          VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
+          VITE_MARKETPLACE_CODEHASH_OK: ${{ secrets.VITE_MARKETPLACE_CODEHASH_OK }}
+          VITE_VENUE_CODEHASH_OK: ${{ secrets.VITE_VENUE_CODEHASH_OK }}
+          VITE_AGENTS_CODEHASH_OK: ${{ secrets.VITE_AGENTS_CODEHASH_OK }}
+          VITE_NFT_STAKING_CODEHASH_OK: ${{ secrets.VITE_NFT_STAKING_CODEHASH_OK }}
+          VITE_TRO_GOVERNANCE_CODEHASH_OK: ${{ secrets.VITE_TRO_GOVERNANCE_CODEHASH_OK }}
+          VITE_AGENT_ESCROW_CODEHASH_OK: ${{ secrets.VITE_AGENT_ESCROW_CODEHASH_OK }}
+          VITE_TREASURY_CODEHASH_OK: ${{ secrets.VITE_TREASURY_CODEHASH_OK }}
+          VITE_SLOT_CASINO_CODEHASH_OK: ${{ secrets.VITE_SLOT_CASINO_CODEHASH_OK }}
+          VITE_TRO_STAKING_ADDRESS: ${{ secrets.VITE_TRO_STAKING_ADDRESS }}
+          VITE_MARKETPLACE_ADDRESS: ${{ secrets.VITE_MARKETPLACE_ADDRESS }}
+          VITE_VENUE_SC_ADDRESS: ${{ secrets.VITE_VENUE_SC_ADDRESS }}
           VITE_TRO_TOKEN_ID: TRO-94c925
           VITE_XARTISTS_NFT_COLLECTIONS: XAR-cee2e0,AGR-9bd53e,ALISTOR-a646bc,ASFT-a6273a,BGG-2b627c,HP47X2-b71543,MAS-5189b6,NFTUDURI-2990b6,XTR-e5072b,XAUS-d9cf1f,TRO-652d6d
-        run: npm run build
 
-      - name: Upload Pages artifact
+      - name: Capture build error log
+        if: failure()
+        working-directory: .
+        run: |
+          mkdir -p docs
+          {
+            echo "=== build-out.txt ==="
+            cat apps/frontend/build-out.txt 2>/dev/null || true
+            echo "=== tsc noEmit ==="
+            (cd apps/frontend && npx tsc -p tsconfig.json --noEmit) 2>&1 | tail -n 80 || true
+          } > docs/BUILD_ERROR.txt
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: apps/frontend/dist
 
   deploy:
-    needs: build
-    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
