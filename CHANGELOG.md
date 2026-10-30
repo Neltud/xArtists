@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.122.4](https://github.com/Neltud/xArtists/compare/v0.122.3...v0.122.4) (2026-10-30)
+
+
+### Bug Fixes
+
+* **probe:** epoch 2278 fallback and fail-closed Paybox default ([f36092b](https://github.com/Neltud/xArtists/commit/f36092b4271e29a9ffe07869002c6a57e5d22366))
+
 ## [0.125.0] — 2026-10-30
 
 * **probe:** public fallback and entity snapshots move to the 30 Oct mainnet probe (epoch 2278, EGLD $3.21, mcap $99.73M, $TRO 561 accounts / 2815 tx). Stop serving the 28 Oct chrome when the API is down.
