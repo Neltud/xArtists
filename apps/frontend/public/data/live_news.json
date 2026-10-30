@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-30T09:38:35.738Z",
+  "updatedAt": "2026-10-30T17:44:52.288Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793382291912",
+      "timestamp": "17:44",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.30 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793380171000",
+      "timestamp": "17:09",
+      "source": "CoinTelegraph",
+      "title": "Crypto Biz: Bitcoin’s quantum threat is becoming an economic problem",
+      "link": "https://cointelegraph.com/news/bitcoin-quantum-threat-ripple-bank-usdc-vaneck-crypto-biz?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793379226000",
+      "timestamp": "16:53",
+      "source": "CoinTelegraph",
+      "title": "Recap: How Binance’s record $6.3B hack unfolded",
+      "link": "https://cointelegraph.com/news/recap-binances-record-63b-hack-unfolded?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793378990000",
+      "timestamp": "16:49",
+      "source": "CoinTelegraph",
+      "title": "As it happened: Binance’s record $6.3B crypto hack",
+      "link": "https://cointelegraph.com/news/live-updates-binance-63b-hack-linked-to-north-koreas-tradertraitor?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1793376388000",
+      "timestamp": "16:06",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin risks worst October in 12 years as tech sell-off spreads to gold",
+      "link": "https://cointelegraph.com/markets/bitcoin-risks-worst-october-in-12-years-as-tech-sell-off-spreads-to-gold?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793369262000",
+      "timestamp": "14:07",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793367000000",
+      "timestamp": "13:30",
+      "source": "CoinTelegraph",
+      "title": "Will gold’s ‘infinite mint bug’ make Bitcoin more valuable?",
+      "link": "https://cointelegraph.com/magazine/will-golds-infinite-mint-bug-make-bitcoin-more-valuable?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793377877000",
+      "timestamp": "16:31",
+      "source": "CoinDesk",
+      "title": "Binance uncovers wider breach in $6.3 billion exploit, targets Sunday withdrawal restart",
+      "link": "https://www.coindesk.com/tech/2026/10/30/binance-uncovers-wider-breach-in-usd6-3-billion-exploit-targets-sunday-withdrawal-restart"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793369614000",
+      "timestamp": "14:13",
+      "source": "CoinDesk",
+      "title": "Wall Street analysts urge investors to buy crypto stocks after $6.3 billion Binance hack",
+      "link": "https://www.coindesk.com/markets/2026/10/30/wall-street-analysts-urge-investors-to-buy-crypto-stocks-on-weakness-after-usd6-3-billion-binance-hack"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793362382000",
+      "timestamp": "12:13",
+      "source": "CoinDesk",
+      "title": "Binance arranges $6.34 billion to cover losses from record crypto hack",
+      "link": "https://www.coindesk.com/business/2026/10/30/binance-arranges-usd6-34-billion-to-cover-losses-from-record-crypto-hack"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793361086000",
+      "timestamp": "11:51",
+      "source": "CoinDesk",
+      "title": "Here's how big bitcoin traders responded after the Binance hack hit",
+      "link": "https://www.coindesk.com/daybook-us/2026/10/30/here-s-how-big-bitcoin-traders-responded-after-the-binance-hack-hit"
+    },
     {
       "id": "egld-1793353115190",
       "timestamp": "09:38",
@@ -23,13 +100,6 @@
       "source": "CoinTelegraph",
       "title": "Live updates: Binance uncovers more breach points in $6.3B hack",
       "link": "https://cointelegraph.com/news/live-updates-binance-63b-hack-linked-to-north-koreas-tradertraitor?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1793340000000",
-      "timestamp": "06:00",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-3-1793339587000",
@@ -127,76 +197,6 @@
       "timestamp": "21:50",
       "source": "EGLD",
       "title": "Cotation publique · $3.33 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1793113720629",
-      "timestamp": "15:08",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.29 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1793060084847",
-      "timestamp": "00:14",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.24 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1793017137714",
-      "timestamp": "12:18",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.19 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792984992513",
-      "timestamp": "03:23",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.23 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792959904326",
-      "timestamp": "20:25",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.25 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792882477916",
-      "timestamp": "22:54",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.30 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792855554936",
-      "timestamp": "15:25",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.28 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792812343114",
-      "timestamp": "03:25",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.45 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792789315076",
-      "timestamp": "21:01",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.50 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "egld-1792773085613",
-      "timestamp": "16:31",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.61 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     }
   ]
