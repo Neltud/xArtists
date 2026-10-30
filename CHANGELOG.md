@@ -1,5 +1,18 @@
 # Changelog — xArtists
 
+## [0.123.0](https://github.com/Neltud/xArtists/compare/v0.122.4...v0.123.0) (2026-10-30)
+
+
+### Features
+
+* **ui:** redirect retired PolyLIA page to agents packs ([4dd63f6](https://github.com/Neltud/xArtists/commit/4dd63f603622ce896a52884911bb177ede63cd09))
+* **ui:** retire PolyLIA module from experience registry ([09d6f0e](https://github.com/Neltud/xArtists/commit/09d6f0ee50ba3c01e3c810d36f7591413f2f4eea))
+
+
+### Bug Fixes
+
+* **map:** default Esri satellite only + fix container height ([d938b90](https://github.com/Neltud/xArtists/commit/d938b90e007b76baa94d13aec47090ec50d295df))
+
 ## [0.122.4](https://github.com/Neltud/xArtists/compare/v0.122.3...v0.122.4) (2026-10-30)
 
 
