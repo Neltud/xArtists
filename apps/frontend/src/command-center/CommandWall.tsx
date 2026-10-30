@@ -1,13 +1,11 @@
-import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
+import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
- * Cyber Command Wall — perspective grid, scanlines, particles, neon volumetric bars.
+ * Hub LIA — panneau de contrôle (sérieux).
+ * Indicateurs nommés · data live (prix) · mode paper explicite.
+ * Plus de mur « hologramme gadget » : grille sobre aux tokens du site.
  */
-import { useEffect, useRef } from 'react'
-import * as THREE from 'three'
-import { createPulseAtmosphereMesh } from './PulseAtmosphere'
+import { useEffect, useMemo, useState } from 'react'
 import LivePriceRail from './LivePriceRail'
-
-type HitAction = 'MOMENTUM' | 'FLOW' | 'PULSE'
 
 type Props = {
   sentiment?: number
@@ -16,299 +14,241 @@ type Props = {
   pulseSpeed?: number
   color?: [number, number, number]
   colorRgb?: [number, number, number]
+  room?: 'hub' | 'pulse' | 'yield' | 'sentinel'
+  paper?: boolean
 }
+
+type LiaSnap = {
+  ts?: string
+  paper?: boolean
+  LIA_LIVE_TRADING?: number | string
+  onchain?: {
+    egld?: number
+    egld_usd?: number
+    tokens?: Array<{ ticker?: string; balance?: number }>
+  }
+  risk?: { halt?: boolean; regime?: string }
+  signal?: { mode?: string; confidence?: number }
+}
+
+function clamp01(n: number) {
+  if (!Number.isFinite(n)) return 0
+  return Math.max(0, Math.min(1, n))
+}
+
+function fmtNum(n: number | undefined, d = 2) {
+  if (n == null || !Number.isFinite(n)) return '—'
+  return n.toLocaleString('fr-FR', { maximumFractionDigits: d })
+}
+
+/** Indicateurs techniques affichés — mapping explicite produit. */
+const INDICATORS = {
+  pulse: {
+    title: 'PULSE · Flux',
+    items: [
+      { key: 'intent_rate', label: 'Débit intentions', unit: 'evt/cycle', hint: 'Volume d’intents paper traités sur le dernier cycle LIA' },
+      { key: 'latency', label: 'Latence signal', unit: 'ms', hint: 'Délai agrégation pulse (WS/HTTP/démo)' },
+      { key: 'sentiment', label: 'Sentiment', unit: '−1…+1', hint: 'Score directionnel normalisé (pas un conseil)' },
+    ],
+  },
+  yield: {
+    title: 'YIELD · Rendement',
+    items: [
+      { key: 'vol', label: 'Volatilité', unit: 'σ', hint: 'Amplitude relative proxy (0–1) du moteur pulse' },
+      { key: 'apr_est', label: 'APR est.', unit: '%', hint: 'Estimation illustrative — non garantie' },
+      { key: 'depth', label: 'Profondeur', unit: 'idx', hint: 'Proxy liquidité relative (paper)' },
+    ],
+  },
+  sentinel: {
+    title: 'SENTINEL · Risque',
+    items: [
+      { key: 'halt', label: 'Circuit breaker', unit: 'on/off', hint: 'Halt risque si état corrompu ou règle Guardian' },
+      { key: 'regime', label: 'Régime', unit: '', hint: 'Régime marché déclaré (paper/live status)' },
+      { key: 'confidence', label: 'Confiance', unit: '%', hint: 'Confiance signal agrégé LIA' },
+    ],
+  },
+} as const
 
 export default function CommandWall({
   sentiment = 0,
   volatility = 0.35,
-  interactive = true,
-  pulseSpeed = 1,
-  color,
-  colorRgb,
+  room = 'hub',
+  paper = true,
 }: Props) {
-  const resolved = color ?? colorRgb ?? ([0.15, 0.85, 0.95] as [number, number, number])
-  const hostRef = useRef<HTMLDivElement>(null)
-  const sentRef = useRef(sentiment)
-  const volRef = useRef(volatility)
-  const spdRef = useRef(pulseSpeed)
-  const colRef = useRef(resolved)
-  sentRef.current = sentiment
-  volRef.current = volatility
-  spdRef.current = pulseSpeed
-  colRef.current = resolved
+  xaUsePhraseLocale()
+  const [snap, setSnap] = useState<LiaSnap | null>(null)
+  const [src, setSrc] = useState<'lia_status' | 'fallback'>('fallback')
 
   useEffect(() => {
-    const host = hostRef.current
-    if (!host) return
-
-    let renderer: THREE.WebGLRenderer
-    try {
-      const w = host.clientWidth || 360
-      const h = Math.max(340, Math.floor(w * 0.55))
-
-      const scene = new THREE.Scene()
-      scene.background = new THREE.Color(0x03050c)
-      scene.fog = new THREE.FogExp2(0x03050c, 0.045)
-
-      const camera = new THREE.PerspectiveCamera(48, w / h, 0.1, 100)
-      camera.position.set(0, 0.55, 3.6)
-
-      renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        alpha: true,
-        powerPreference: 'default',
-        failIfMajorPerformanceCaveat: false,
-      })
-      renderer.setSize(w, h)
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
-      host.innerHTML = ''
-      host.appendChild(renderer.domElement)
-
-      const amb = new THREE.AmbientLight(0x88aacc, 0.35)
-      scene.add(amb)
-      const dir = new THREE.DirectionalLight(0xaaffff, 0.9)
-      dir.position.set(2, 4, 5)
-      scene.add(dir)
-      const neon = new THREE.PointLight(0x22d3ee, 1.8, 12)
-      neon.position.set(-1.5, 1.2, 2)
-      scene.add(neon)
-      const neon2 = new THREE.PointLight(0xa855f7, 1.2, 10)
-      neon2.position.set(1.8, 0.8, 1.5)
-      scene.add(neon2)
-
-      // Perspective floor grid
-      const grid = new THREE.GridHelper(10, 40, 0x22d3ee, 0x0a2030)
-      grid.position.y = -0.85
-      scene.add(grid)
-
-      // Back wall plate
-      const wallGeo = new THREE.BoxGeometry(3.2, 1.7, 0.06)
-      const wallMat = new THREE.MeshPhongMaterial({
-        color: 0x0a1018,
-        emissive: 0x0a3040,
-        emissiveIntensity: 0.4,
-        shininess: 80,
-        transparent: true,
-        opacity: 0.92,
-      })
-      const wall = new THREE.Mesh(wallGeo, wallMat)
-      wall.position.z = -0.2
-      wall.userData.action = 'PULSE' satisfies HitAction
-      scene.add(wall)
-
-      // Scanline plane (subtle)
-      const scanGeo = new THREE.PlaneGeometry(3.1, 1.6)
-      const scanMat = new THREE.MeshBasicMaterial({
-        color: 0x22d3ee,
-        transparent: true,
-        opacity: 0.04,
-        depthWrite: false,
-      })
-      const scan = new THREE.Mesh(scanGeo, scanMat)
-      scan.position.z = -0.16
-      scene.add(scan)
-
-      const atmo = createPulseAtmosphereMesh()
-      atmo.mesh.position.z = 0.02
-      scene.add(atmo.mesh)
-
-      // Volumetric neon bars (Phong + emissive)
-      const barGroup = new THREE.Group()
-      const bars: THREE.Mesh[] = []
-      for (let i = 0; i < 12; i++) {
-        const bh = 0.2 + Math.random() * 0.5
-        const geo = new THREE.BoxGeometry(0.14, bh, 0.14)
-        const isGreen = i < 6
-        const mat = new THREE.MeshPhongMaterial({
-          color: isGreen ? 0x22c55e : 0xa855f7,
-          emissive: isGreen ? 0x16a34a : 0x7c3aed,
-          emissiveIntensity: 0.75,
-          transparent: true,
-          opacity: 0.85,
-          shininess: 120,
-        })
-        const m = new THREE.Mesh(geo, mat)
-        m.position.set(-1.25 + i * 0.22, -0.7 + bh / 2, 0.15)
-        barGroup.add(m)
-        bars.push(m)
+    let cancelled = false
+    const base = import.meta.env.BASE_URL || '/'
+    ;(async () => {
+      try {
+        const r = await fetch(`${base}data/lia_status.json`, { cache: 'no-store' })
+        if (!r.ok) return
+        const j = (await r.json()) as LiaSnap
+        if (cancelled) return
+        setSnap(j)
+        setSrc('lia_status')
+      } catch {
+        /* keep fallback */
       }
-      scene.add(barGroup)
-
-      // Particles
-      const pCount = 120
-      const pGeo = new THREE.BufferGeometry()
-      const pPos = new Float32Array(pCount * 3)
-      for (let i = 0; i < pCount; i++) {
-        pPos[i * 3] = (Math.random() - 0.5) * 4
-        pPos[i * 3 + 1] = (Math.random() - 0.5) * 2
-        pPos[i * 3 + 2] = Math.random() * 2 - 0.5
-      }
-      pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3))
-      const pMat = new THREE.PointsMaterial({
-        color: 0x67e8f9,
-        size: 0.03,
-        transparent: true,
-        opacity: 0.7,
-        depthWrite: false,
-      })
-      const points = new THREE.Points(pGeo, pMat)
-      scene.add(points)
-
-      const nodeGeo = new THREE.BoxGeometry(0.28, 0.28, 0.14)
-      const momMat = new THREE.MeshPhongMaterial({
-        color: 0x22c55e,
-        emissive: 0x14532d,
-        emissiveIntensity: 0.85,
-        shininess: 100,
-      })
-      const flowMat = new THREE.MeshPhongMaterial({
-        color: 0xa855f7,
-        emissive: 0x4c1d95,
-        emissiveIntensity: 0.85,
-        shininess: 100,
-      })
-      const momNode = new THREE.Mesh(nodeGeo, momMat)
-      momNode.position.set(-1.15, -0.25, 0.35)
-      momNode.userData.action = 'MOMENTUM' satisfies HitAction
-      const flowNode = new THREE.Mesh(nodeGeo, flowMat)
-      flowNode.position.set(1.15, -0.25, 0.35)
-      flowNode.userData.action = 'FLOW' satisfies HitAction
-      scene.add(momNode, flowNode)
-
-      const raycaster = new THREE.Raycaster()
-      const pointer = new THREE.Vector2()
-      const targets = [wall, momNode, flowNode]
-
-      const flash = (mesh: THREE.Mesh) => {
-        const m = mesh.material as THREE.MeshPhongMaterial
-        const prev = m.emissiveIntensity
-        m.emissiveIntensity = 1.8
-        setTimeout(() => {
-          m.emissiveIntensity = prev
-        }, 180)
-      }
-
-      const onPointer = (ev: PointerEvent) => {
-        if (!interactive) return
-        const rect = renderer.domElement.getBoundingClientRect()
-        pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1
-        pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1
-        raycaster.setFromCamera(pointer, camera)
-        const hits = raycaster.intersectObjects(targets, false)
-        if (!hits.length) return
-        const obj = hits[0].object as THREE.Mesh
-        flash(obj)
-        const action = (obj.userData.action || 'PULSE') as HitAction
-        if (action === 'MOMENTUM') window.location.hash = '#/lia'
-        else if (action === 'FLOW') window.location.hash = '#/trading'
-      }
-      renderer.domElement.style.cursor = interactive ? 'pointer' : 'default'
-      renderer.domElement.addEventListener('pointerdown', onPointer)
-
-      let raf = 0
-      const t0 = performance.now()
-      const animate = () => {
-        raf = requestAnimationFrame(animate)
-        const s = sentRef.current
-        const v = volRef.current
-        const highVol = v > 0.55
-        const t = (performance.now() - t0) / 1000
-
-        atmo.uniforms.uTime.value = t
-        atmo.uniforms.uSentiment.value = s
-        atmo.uniforms.uVolatility.value = v
-        atmo.uniforms.uPulseSpeed.value = spdRef.current * (1 + (highVol ? 0.4 : 0))
-        const c = colRef.current
-        if (highVol) atmo.uniforms.uColor.value.set(c[0] * 0.5 + 0.4, c[1] * 0.35 + 0.2, c[2] * 0.5 + 0.5)
-        else atmo.uniforms.uColor.value.set(c[0], c[1], c[2])
-
-        wallMat.emissiveIntensity = 0.35 + Math.abs(s) * 0.5 + v * 0.25
-        scan.position.y = Math.sin(t * 1.2) * 0.15
-        scanMat.opacity = 0.03 + Math.abs(Math.sin(t * 2)) * 0.05
-
-        bars.forEach((b, i) => {
-          const base = 0.15 + ((Math.sin(t * 1.6 + i * 0.5) + 1) / 2) * (0.3 + v * 0.55)
-          const bias = i < 6 ? Math.max(0, s) * 0.4 : Math.max(0, -s) * 0.3 + v * 0.25
-          const bh = Math.min(1.0, base + bias)
-          b.scale.y = Math.max(0.15, bh / 0.35)
-          b.position.y = -0.7 + (0.35 * b.scale.y) / 2
-          const mat = b.material as THREE.MeshPhongMaterial
-          mat.emissiveIntensity = 0.55 + Math.sin(t * 3 + i) * 0.25
-        })
-
-        const pos = pGeo.getAttribute('position') as THREE.BufferAttribute
-        for (let i = 0; i < pCount; i++) {
-          let y = pos.getY(i) + 0.004 + (i % 5) * 0.0005
-          if (y > 1.2) y = -1.1
-          pos.setY(i, y)
-        }
-        pos.needsUpdate = true
-
-        momNode.rotation.y = t * 0.7
-        flowNode.rotation.y = -t * 0.65
-        grid.position.z = ((t * 0.15) % 0.5) - 0.25
-
-        renderer.render(scene, camera)
-      }
-      animate()
-
-      const onResize = () => {
-        const nw = host.clientWidth || 360
-        const nh = Math.max(340, Math.floor(nw * 0.55))
-        camera.aspect = nw / nh
-        camera.updateProjectionMatrix()
-        renderer.setSize(nw, nh)
-      }
-      window.addEventListener('resize', onResize)
-
-      return () => {
-        cancelAnimationFrame(raf)
-        window.removeEventListener('resize', onResize)
-        renderer.domElement.removeEventListener('pointerdown', onPointer)
-        atmo.dispose()
-        wallGeo.dispose()
-        wallMat.dispose()
-        scanGeo.dispose()
-        scanMat.dispose()
-        nodeGeo.dispose()
-        momMat.dispose()
-        flowMat.dispose()
-        pGeo.dispose()
-        pMat.dispose()
-        bars.forEach(b => {
-          b.geometry.dispose()
-          ;(b.material as THREE.Material).dispose()
-        })
-        renderer.dispose()
-        if (host.contains(renderer.domElement)) host.removeChild(renderer.domElement)
-      }
-    } catch (e) {
-      console.warn('[CommandWall] WebGL fail', e)
-      return
+    })()
+    return () => {
+      cancelled = true
     }
-  }, [interactive])
+  }, [])
 
-  const bullPct = (50 + Math.max(-40, Math.min(40, sentiment * 50))).toFixed(1)
-  const volPct = (volatility * 100).toFixed(1)
-  const bullish = sentiment >= 0
+  const s = clamp01((sentiment + 1) / 2)
+  const v = clamp01(volatility)
+  const isPaper = paper || snap?.paper !== false || String(snap?.LIA_LIVE_TRADING ?? '0') === '0'
+
+  const egld = snap?.onchain?.egld
+  const egldUsd = snap?.onchain?.egld_usd
+  const tro = snap?.onchain?.tokens?.find(t => (t.ticker || '').toUpperCase() === 'TRO')?.balance
+  const halt = Boolean(snap?.risk?.halt)
+  const regime = snap?.risk?.regime || snap?.signal?.mode || (isPaper ? 'paper' : '—')
+  const conf = snap?.signal?.confidence
+
+  const bars = useMemo(() => {
+    const base = [0.35, 0.42, 0.28, 0.55, 0.48, 0.38, 0.62, 0.44, 0.31, 0.5, 0.4, 0.36]
+    return base.map((b, i) => clamp01(b * (0.7 + v * 0.6) * (0.85 + (i % 3) * 0.05 * s)))
+  }, [s, v])
+
+  const focus =
+    room === 'pulse' ? INDICATORS.pulse : room === 'yield' ? INDICATORS.yield : room === 'sentinel' ? INDICATORS.sentinel : null
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-cyan-500/20 bg-[#03050c] shadow-[0_0_40px_rgba(34,211,238,0.12)]">
-      <div className="absolute top-2 left-3 z-10 flex flex-wrap gap-2 pointer-events-none">
-        <span className="text-[9px] uppercase tracking-[0.18em] text-cyan-300/95 font-tech">
-          {xaRender("LIVE · CYBER DECK ")}</span>
-        <span
-          className={`pill-hud ${bullish ? 'pill-bull' : 'pill-bear'}`}
-        >
-          {xaRender(bullish ? 'BULLISH' : 'BEARISH')} {xaRender(bullPct)}%
-        </span>
-        <span className="pill-hud pill-vol">{xaRender("VOL ")}{xaRender(volPct)}%</span>
+    <div className="xa-command-wall overflow-hidden rounded-2xl border border-[color:var(--xa-border,#27272a)] bg-[color:var(--xa-bg-elevated,#0c0c0e)]">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 px-3 py-2">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.18em] text-[color:var(--xa-accent,#bef264)]">
+            {xaLocalize('Hub LIA · salle de contrôle')}
+          </p>
+          <p className="text-[11px] text-zinc-500">
+            {xaLocalize('Indicateurs techniques labellisés · pas un hologramme décoratif')}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span
+            className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${
+              isPaper
+                ? 'border border-amber-500/30 bg-amber-500/10 text-amber-200'
+                : 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-200'
+            }`}
+          >
+            {xaRender(isPaper ? 'paper' : 'live')}
+          </span>
+          <span className="text-[10px] tabular-nums text-zinc-600">
+            {xaRender(src === 'lia_status' ? 'lia_status' : 'fallback')}
+            {xaRender(snap?.ts ? ` · ${snap.ts}` : '')}
+          </span>
+        </div>
       </div>
-      <LivePriceRail />
-      <div ref={hostRef} className="w-full min-h-[340px]" />
-      <div className="pointer-events-none absolute inset-0 scanlines opacity-[0.12]" />
-      <p className="absolute bottom-2 left-3 right-24 text-[10px] text-zinc-500 pointer-events-none font-tech">
-        {xaRender("NEON BARS · GRID · PARTICLES · vert momentum · violet flow ")}</p>
+
+      <div className="border-b border-white/5 px-2 py-1.5">
+        <LivePriceRail />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 p-3 sm:grid-cols-4">
+        <Kpi label="EGLD wallet" value={fmtNum(egld, 4)} sub={egldUsd != null ? `≈ ${fmtNum(egldUsd, 2)} $` : '—'} />
+        <Kpi label="TRO" value={fmtNum(tro, 2)} sub="balance on-chain" />
+        <Kpi label="Sentiment" value={fmtNum(sentiment, 2)} sub="−1 … +1" />
+        <Kpi label="Volatilité σ" value={fmtNum(volatility, 2)} sub="proxy pulse 0–1" />
+      </div>
+
+      <div className="px-3 pb-2">
+        <div className="mb-1 flex items-center justify-between">
+          <p className="text-[10px] uppercase tracking-wider text-zinc-500">
+            {xaLocalize('Profil volume (proxy)')}
+          </p>
+          <p className="text-[10px] text-zinc-600">{xaLocalize('dérivé sentiment × σ — non aléatoire')}</p>
+        </div>
+        <div className="flex h-16 items-end gap-1 rounded-xl border border-white/5 bg-black/40 px-2 py-1.5">
+          {xaRender(
+            bars.map((h, i) => (
+              <div
+                key={i}
+                className="flex-1 rounded-sm bg-[color:var(--xa-accent,#bef264)]/80"
+                style={{ height: `${Math.max(8, h * 100)}%`, opacity: 0.45 + h * 0.55 }}
+                title={`bin ${i + 1}`}
+              />
+            )),
+          )}
+        </div>
+      </div>
+
+      <div className="grid gap-2 p-3 pt-0 sm:grid-cols-3">
+        {xaRender(
+          (Object.keys(INDICATORS) as Array<keyof typeof INDICATORS>).map(id => {
+            const block = INDICATORS[id]
+            const active = room === 'hub' || room === id
+            return (
+              <div
+                key={id}
+                className={`rounded-xl border px-3 py-2.5 ${
+                  active
+                    ? 'border-[color:var(--xa-border-strong,#3f3f46)] bg-white/[0.03]'
+                    : 'border-white/5 bg-black/20 opacity-70'
+                }`}
+              >
+                <p className="text-[11px] font-semibold tracking-wide text-zinc-200">{xaRender(block.title)}</p>
+                <ul className="mt-2 space-y-1.5">
+                  {xaRender(
+                    block.items.map(it => (
+                      <li key={it.key} className="text-[11px] leading-snug">
+                        <span className="text-zinc-300">{xaRender(it.label)}</span>
+                        <span className="text-zinc-600"> · {xaRender(it.unit)}</span>
+                        <span className="mt-0.5 block text-[10px] text-zinc-500">{xaRender(it.hint)}</span>
+                      </li>
+                    )),
+                  )}
+                </ul>
+                {id === 'sentinel' && (
+                  <p className="mt-2 text-[11px] tabular-nums text-zinc-400">
+                    halt={xaRender(halt ? 'ON' : 'off')} · régime={xaRender(regime)}
+                    {conf != null ? ` · conf ${Math.round(clamp01(conf) * 100)}%` : ''}
+                  </p>
+                )}
+                {id === 'pulse' && (
+                  <p className="mt-2 text-[11px] tabular-nums text-zinc-400">
+                    sentiment={xaRender(fmtNum(sentiment, 2))} · σ={xaRender(fmtNum(volatility, 2))}
+                  </p>
+                )}
+                {id === 'yield' && (
+                  <p className="mt-2 text-[11px] tabular-nums text-zinc-400">
+                    profondeur idx={xaRender(fmtNum(0.4 + v * 0.5, 2))} · APR est. n/a paper
+                  </p>
+                )}
+              </div>
+            )
+          }),
+        )}
+      </div>
+
+      {focus && (
+        <div className="border-t border-white/5 px-3 py-2 text-[11px] text-zinc-500">
+          {xaLocalize('Salle active :')} <span className="text-zinc-300">{xaRender(focus.title)}</span>
+          {' — '}
+          {xaLocalize('les valeurs chiffrées viennent de lia_status + pulse ; le profil volume est un proxy déterministe, pas un ordre.')}
+        </div>
+      )}
+
+      {!focus && (
+        <div className="border-t border-white/5 px-3 py-2 text-[11px] text-zinc-500">
+          {xaLocalize('Ouvre Pulse · Yield · Sentinel pour le détail salle. Aucune TX automatique (LIA live = 0).')}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function Kpi({ label, value, sub }: { label: string; value: string; sub: string }) {
+  return (
+    <div className="rounded-xl border border-white/5 bg-black/30 px-2.5 py-2">
+      <p className="text-[10px] uppercase tracking-wider text-zinc-500">{xaRender(label)}</p>
+      <p className="mt-0.5 font-mono text-[15px] tabular-nums text-[color:var(--xa-text,#fafafa)]">{xaRender(value)}</p>
+      <p className="text-[10px] text-zinc-600">{xaRender(sub)}</p>
     </div>
   )
 }
