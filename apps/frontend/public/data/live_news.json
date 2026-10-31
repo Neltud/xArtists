@@ -1,42 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-31T04:14:30.736Z",
+  "updatedAt": "2026-10-31T11:44:25.955Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1793420070490",
-      "timestamp": "04:14",
+      "id": "egld-1793447065438",
+      "timestamp": "11:44",
       "source": "EGLD",
-      "title": "Cotation publique · $3.30 (API MultiversX economics)",
+      "title": "Cotation publique · $3.39 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1793397600000",
+      "id": "rss-CoinTelegraph-0-1793445769000",
+      "timestamp": "11:22",
+      "source": "CoinTelegraph",
+      "title": "Blockchain investigator Chainalysis hit by cybersecurity incident",
+      "link": "https://cointelegraph.com/news/blockchain-investigator-chainalysis-hit-by-cybersecurity-incident?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793440730000",
+      "timestamp": "09:58",
+      "source": "CoinTelegraph",
+      "title": "Binance $6.3B record hack sparks pre-election political chatter",
+      "link": "https://cointelegraph.com/news/binance-63b-record-hack-sparks-pre-election-political-chatter?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793397600000",
       "timestamp": "22:00",
       "source": "CoinTelegraph",
       "title": "Binance hackers raced to move billions before it could be frozen",
       "link": "https://cointelegraph.com/magazine/binance-hackers-raced-to-move-billions-before-could-be-frozen?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1793386918000",
+      "id": "rss-CoinTelegraph-3-1793386918000",
       "timestamp": "19:01",
       "source": "CoinTelegraph",
       "title": "Tether’s excess reserves nearly double to $8B as Q3 profit hits $1.5B",
       "link": "https://cointelegraph.com/news/tethers-excess-reserves-nearly-double-to-8b-as-q3-profit-hits-15b?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1793382507000",
+      "id": "rss-CoinTelegraph-4-1793382507000",
       "timestamp": "17:48",
       "source": "CoinTelegraph",
       "title": "Coinbase leads crypto stock selloff following $6.3B Binance hack",
       "link": "https://cointelegraph.com/markets/coinbase-leads-crypto-stock-selloff-shares-tumble?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1793380171000",
+      "id": "rss-CoinTelegraph-5-1793380171000",
       "timestamp": "17:09",
       "source": "CoinTelegraph",
       "title": "Crypto Biz: Bitcoin’s quantum threat is becoming an economic problem",
       "link": "https://cointelegraph.com/news/bitcoin-quantum-threat-ripple-bank-usdc-vaneck-crypto-biz?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793422892000",
+      "timestamp": "05:01",
+      "source": "CoinDesk",
+      "title": "Bitcoin stolen from Binance tops Tesla’s holdings and is over twice El Salvador’s reserve",
+      "link": "https://www.coindesk.com/markets/2026/10/31/bitcoin-stolen-from-binance-tops-tesla-s-holdings-and-is-over-twice-el-salvador-s-reserve"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793407736000",
+      "timestamp": "00:48",
+      "source": "CoinDesk",
+      "title": "OpenAI reportedly cuts fundraising and valuation targets amid AI jitters",
+      "link": "https://www.coindesk.com/business/2026/10/30/openai-reportedly-cuts-fundraising-target-amid-ai-jitters"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793390100000",
+      "timestamp": "19:55",
+      "source": "CoinDesk",
+      "title": "Experts divided over Binance hack asset freezes, warn recovery is another matter",
+      "link": "https://www.coindesk.com/business/2026/10/30/experts-divided-over-binance-hack-asset-freezes-warn-recovery-is-another-matter"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793377877000",
+      "timestamp": "16:31",
+      "source": "CoinDesk",
+      "title": "Binance uncovers wider breach in $6.3 billion exploit, targets Sunday withdrawal restart",
+      "link": "https://www.coindesk.com/tech/2026/10/30/binance-uncovers-wider-breach-in-usd6-3-billion-exploit-targets-sunday-withdrawal-restart"
+    },
+    {
+      "id": "egld-1793420070490",
+      "timestamp": "04:14",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.30 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-4-1793379226000",
@@ -51,27 +100,6 @@
       "source": "CoinTelegraph",
       "title": "As it happened: Binance’s record $6.3B crypto hack",
       "link": "https://cointelegraph.com/news/live-updates-binance-63b-hack-linked-to-north-koreas-tradertraitor?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793407736000",
-      "timestamp": "00:48",
-      "source": "CoinDesk",
-      "title": "OpenAI reportedly cuts fundraising and valuation targets amid AI jitters",
-      "link": "https://www.coindesk.com/business/2026/10/30/openai-reportedly-cuts-fundraising-target-amid-ai-jitters"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793390100000",
-      "timestamp": "19:55",
-      "source": "CoinDesk",
-      "title": "Experts divided over Binance hack asset freezes, warn recovery is another matter",
-      "link": "https://www.coindesk.com/business/2026/10/30/experts-divided-over-binance-hack-asset-freezes-warn-recovery-is-another-matter"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793377877000",
-      "timestamp": "16:31",
-      "source": "CoinDesk",
-      "title": "Binance uncovers wider breach in $6.3 billion exploit, targets Sunday withdrawal restart",
-      "link": "https://www.coindesk.com/tech/2026/10/30/binance-uncovers-wider-breach-in-usd6-3-billion-exploit-targets-sunday-withdrawal-restart"
     },
     {
       "id": "rss-CoinDesk-3-1793369614000",
@@ -170,34 +198,6 @@
       "source": "CoinDesk",
       "title": "Live News: Binance hack rattles crypto as Intel plunges and AI spending fears hit tech",
       "link": "https://www.coindesk.com/markets/2026/10/30/live-news-binance-hack-rattles-crypto-as-intel-plunges-and-ai-spending-fears-hit-tech"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793346847000",
-      "timestamp": "07:54",
-      "source": "CoinDesk",
-      "title": "Binance hacker dumps a little-known 2017 token and it crashes 90%",
-      "link": "https://www.coindesk.com/markets/2026/10/30/binance-hacker-dumps-a-little-known-2017-token-and-it-crashes-90"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793341320000",
-      "timestamp": "06:22",
-      "source": "CoinDesk",
-      "title": "Bitcoin, ether and XRP selloff wipes out $1.5 billion in leveraged crypto bets",
-      "link": "https://www.coindesk.com/markets/2026/10/30/bitcoin-ether-and-xrp-selloff-wipes-out-usd1-5-billion-in-leveraged-crypto-bets"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793339127000",
-      "timestamp": "05:45",
-      "source": "CoinDesk",
-      "title": "XRP Ledger developers tighten the rules for who can hold 'restricted' tokens",
-      "link": "https://www.coindesk.com/tech/2026/10/30/xrp-ledger-developers-tighten-the-rules-for-who-can-hold-restricted-tokens"
-    },
-    {
-      "id": "egld-1793320659177",
-      "timestamp": "00:37",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.11 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     }
   ]
 }
