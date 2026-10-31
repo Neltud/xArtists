@@ -31,6 +31,9 @@ export function preferredPayMethod(): PayMethod {
   return 'paper'
 }
 
+/** Alias historique — CheckoutModal importe defaultPayMethod */
+export const defaultPayMethod = preferredPayMethod
+
 export function payMethodLabel(m: PayMethod): string {
   switch (m) {
     case 'stripe':
