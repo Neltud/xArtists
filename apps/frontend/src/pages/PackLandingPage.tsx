@@ -7,6 +7,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
 import PackOpenTheater from '../components/PackOpenTheater'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
+import GenesisCard3D from '../components/packs/GenesisCard3D'
 import {
   AGENT_PACKS,
   PACK_COMMERCIAL,
@@ -35,50 +36,6 @@ function limitsFor(id: PackId): string[] {
   if (id === 'yield')
     return ['Pas TCA / LIA full', 'Hub limité · focus DeFi', 'Pas un fonds · pas d’APY promis']
   return ['Salle Sentinel uniquement', 'Alertes sparses', 'Pas TCA / trading HF']
-}
-
-function PackHeroPlate({ id }: { id: PackId }) {
-  const v = PACK_VISUAL[id]
-  const layers =
-    id === 'pulse'
-      ? {
-          base: 'linear-gradient(155deg, #0e120a 0%, #1a2210 38%, #0a0c08 100%)',
-          veil: 'radial-gradient(ellipse 80% 60% at 28% 32%, rgba(232,245,168,.5), transparent 62%)',
-        }
-      : id === 'yield'
-        ? {
-            base: 'linear-gradient(165deg, #0c0d0c 0%, #171917 42%, #0a0b0a 100%)',
-            veil: 'radial-gradient(ellipse 70% 55% at 68% 24%, rgba(200,204,196,.38), transparent 58%)',
-          }
-        : {
-            base: 'linear-gradient(148deg, #0c0a12 0%, #16101c 40%, #09080e 100%)',
-            veil: 'radial-gradient(ellipse 75% 65% at 50% 85%, rgba(167,139,250,.42), transparent 58%)',
-          }
-  return (
-    <div
-      className="relative aspect-square w-full max-w-md overflow-hidden rounded-2xl border mx-auto"
-      style={{ borderColor: v.border, boxShadow: v.glow, background: layers.base }}
-      aria-hidden
-    >
-      <div className="absolute inset-0" style={{ background: layers.veil }} />
-      <div
-        className="absolute inset-0 opacity-[0.35] mix-blend-overlay"
-        style={{
-          backgroundImage:
-            'url("data:image/svg+xml,%3Csvg viewBox=%270 0 200 200%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.9%27 numOctaves=%273%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23n)%27 opacity=%270.45%27/%3E%3C/svg%3E")',
-        }}
-      />
-      <div className="absolute bottom-3 left-3 right-3 flex justify-between text-[11px]">
-        <span
-          className="rounded-full border px-2 py-0.5 font-semibold uppercase tracking-wider"
-          style={{ borderColor: v.border, color: v.accent, background: 'rgba(0,0,0,.5)' }}
-        >
-          {v.badge}
-        </span>
-        <span className="text-zinc-400 tabular-nums">SFT · œuvre</span>
-      </div>
-    </div>
-  )
 }
 
 export default function PackLandingPage() {
@@ -139,10 +96,15 @@ export default function PackLandingPage() {
         </p>
       </header>
 
-      <PackHeroPlate id={id} />
-      <p className="text-center text-[12px] text-[color:var(--xa-text-muted)]">
-        {xaRender(vis.mediaMotif)} · {xaRender(col?.ticker || '')}
-      </p>
+      <div className="mx-auto w-full max-w-sm">
+        <GenesisCard3D
+          id={id}
+          sampleEdition={id === 'pulse' ? 47 : id === 'yield' ? 112 : 3}
+        />
+        <p className="mt-3 text-center text-[12px] text-[color:var(--xa-text-muted)]">
+          {xaLocalize('Recto peinture · verso HUD · hover pour pause')} · {xaRender(col?.ticker || '')}
+        </p>
+      </div>
 
       <section className="grid sm:grid-cols-2 gap-4 text-[13px]">
         <div className="card space-y-2">
