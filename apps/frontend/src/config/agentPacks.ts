@@ -6,20 +6,21 @@
  *
  * MODÈLE COMMERCIAL (lock 2026-10-31 — GitBook #24) :
  * - Achat unique (crypto ou fiat) — PAS d'abonnement
- * - NFT MultiversX édition limitée inclus
+ * - NFT MultiversX édition limitée : 1 siège = 1 œuvre SFT unique
+ *   (identité visuelle inspirée de l’univers artistique Nelson Tuduri)
  * - Droits d'accès liés au NFT : durables (aucune expiration annuelle)
  * - Whop xArtists = abonnement mensuel DISTINCT (voir docs/COMMERCIAL_MODEL.md)
  *
- * Official commercial EUR list prices (Rule 1): 110 / 75 / 50 EUR
- * Server-side source of truth: services/access_pack/catalog.py
- * Genesis edition caps: Pulse 333 · Yield 500 · Sentinel 777
+ * EUR list (Rule 1): 110 / 75 / 50
+ * EGLD list (parité ref 100 € ≈ 30 EGLD): 33 / 22.5 / 15
+ * Server-side source of truth at payment: services/access_pack/catalog.py + quote
+ * Genesis caps: Pulse 333 · Yield 500 · Sentinel 777
  */
 
 import { PACK_PRICE_EGLD, PACK_PRICE_EUR } from './multichain'
 
 export type PackId = 'pulse' | 'yield' | 'sentinel'
 
-/** Feature flags par pack — source de vérité UI + gates */
 export type PackFeatures = {
   room: boolean
   commandHub: boolean
@@ -80,7 +81,6 @@ const SENTINEL_FEATURES: PackFeatures = {
   actionsPerWeek: 'alertes sparses',
 }
 
-/** Visual identity — Graphite · Chrome · Acid (soul-tokens) */
 export type PackVisual = {
   accent: string
   accentSoft: string
@@ -97,7 +97,7 @@ export const PACK_VISUAL: Record<PackId, PackVisual> = {
     border: 'rgba(232, 245, 168, 0.35)',
     badge: 'GOLD',
     glow: '0 0 40px rgba(205, 245, 139, 0.15)',
-    mediaMotif: 'hex-crystal · acid core',
+    mediaMotif: 'Sfumato lumière · cristallin — série Tuduri',
   },
   yield: {
     accent: 'var(--xa-pack-yield, #c8ccc4)',
@@ -105,7 +105,7 @@ export const PACK_VISUAL: Record<PackId, PackVisual> = {
     border: 'rgba(200, 204, 196, 0.32)',
     badge: 'SILVER',
     glow: '0 0 32px rgba(200, 204, 196, 0.12)',
-    mediaMotif: 'chrome lattice · yield rings',
+    mediaMotif: 'Lattice chrome · anneaux — série Tuduri',
   },
   sentinel: {
     accent: 'var(--xa-pack-sentinel, #a78bfa)',
@@ -113,23 +113,22 @@ export const PACK_VISUAL: Record<PackId, PackVisual> = {
     border: 'rgba(167, 139, 250, 0.32)',
     badge: 'PLATINUM',
     glow: '0 0 32px rgba(167, 139, 250, 0.14)',
-    mediaMotif: 'shield lattice · guard pulse',
+    mediaMotif: 'Voile gardien · profondeur — série Tuduri',
   },
 }
 
-/** Genesis edition hard caps — product lock until GO raises them */
 export const PACK_EDITION = {
   pulse: { maxSupply: 333, mintedMode: 'sft' as const, seriesName: 'Genesis Pulse', scarcity: 'rare' },
   yield: { maxSupply: 500, mintedMode: 'sft' as const, seriesName: 'Genesis Yield', scarcity: 'limited' },
   sentinel: { maxSupply: 777, mintedMode: 'sft' as const, seriesName: 'Genesis Sentinel', scarcity: 'open-limited' },
 } as const
 
-/** Commercial lock — one-time purchase, durable NFT rights (no annual expiry) */
 export const PACK_COMMERCIAL = {
   billing: 'one_time' as const,
   includesNft: true,
-  rightsExpiry: 'none' as const, // no annual / time-boxed rights on the NFT
+  rightsExpiry: 'none' as const,
   distinctFromWhop: true,
+  artwork: 'unique_edition' as const, // 1 siège = 1 œuvre unique d’édition (visuel série Tuduri)
 } as const
 
 export type AgentPackProfile = {
@@ -164,14 +163,14 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     tierLabel: 'GOLD',
     icon: '⚡',
     signalIntensity: 3,
-    priceEgld: { min: 10, max: PACK_PRICE_EGLD.max, list: 10 },
+    priceEgld: { min: 30, max: PACK_PRICE_EGLD.max, list: 33 },
     priceEur: { min: 50, max: PACK_PRICE_EUR.max, list: 110 },
     maxSupply: PACK_EDITION.pulse.maxSupply,
     seriesName: PACK_EDITION.pulse.seriesName,
     strategies: ['MICRO_ARB', 'MOMENTUM', 'MEAN_REVERSION', 'BOARD_TICK'],
     activity: 'Plusieurs cycles / jour — intensité max',
     entitlements: [
-      'Achat unique · NFT Genesis Pulse (droits durables)',
+      'Achat unique · œuvre SFT Genesis Pulse (édition limitée, droits durables)',
       'NFT pack Pulse + salle 3D Pulse',
       'Command Center complet (Hub + toutes salles)',
       'TCA Academy + LIA full',
@@ -193,14 +192,14 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     tierLabel: 'SILVER',
     icon: '📈',
     signalIntensity: 2,
-    priceEgld: { min: 5, max: 22, list: 5 },
+    priceEgld: { min: 20, max: 40, list: 22.5 },
     priceEur: { min: 30, max: 100, list: 75 },
     maxSupply: PACK_EDITION.yield.maxSupply,
     seriesName: PACK_EDITION.yield.seriesName,
     strategies: ['YIELD_OPT', 'LP_WATCH', 'COMPOUND_READ'],
     activity: 'Cycles DeFi réguliers — focus pool & staking',
     entitlements: [
-      'Achat unique · NFT Genesis Yield (droits durables)',
+      'Achat unique · œuvre SFT Genesis Yield (édition limitée, droits durables)',
       'NFT pack Yield + salle 3D Yield',
       'Salle Command « Yield »',
       'DeFi sleeve + agent stake',
@@ -221,14 +220,14 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     tierLabel: 'PLATINUM',
     icon: '🛡️',
     signalIntensity: 1,
-    priceEgld: { min: 2.5, max: 20, list: 2.5 },
+    priceEgld: { min: 12, max: 30, list: 15 },
     priceEur: { min: 20, max: 90, list: 50 },
     maxSupply: PACK_EDITION.sentinel.maxSupply,
     seriesName: PACK_EDITION.sentinel.seriesName,
     strategies: ['GUARD', 'ALERT', 'DRAWDOWN_WATCH', 'BOARD_ALERT'],
     activity: 'Alertes sparses — focus protection & conformité',
     entitlements: [
-      'Achat unique · NFT Genesis Sentinel (droits durables)',
+      'Achat unique · œuvre SFT Genesis Sentinel (édition limitée, droits durables)',
       'NFT pack Sentinel + salle 3D Sentinel',
       'Salle Command « Sentinel » uniquement',
       'Alertes risk / drawdown board',
@@ -243,7 +242,6 @@ export const AGENT_PACKS: AgentPackProfile[] = [
   },
 ]
 
-/** Commercial EUR prices — display + client-side only; never trust for payment */
 export const AGENT_PACKS_EUR = {
   pulse: { id: 'pulse', name: 'Pulse Pack (Gold)', priceEur: 110, priceCents: 11000 },
   yield: { id: 'yield', name: 'Yield Pack (Silver)', priceEur: 75, priceCents: 7500 },
