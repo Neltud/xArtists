@@ -1,6 +1,7 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * Checklist GO_LIVE mainnet + Real Capital Engaged.
+ * Checklist services / SC gates — paper by default.
+ * Commercial packs GO is gated by smoke PayBox + My Packs (not this page alone).
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -48,7 +49,6 @@ export default function GoLivePage() {
     if (slot) void fetchMarketPayable(slot).then(s => setSlotPayable(s.isPayable))
   }, [])
 
-  // AND gates only: build CODEHASH_OK + fresh runtime — no env OR bypass
   const marketOk = canListBuyNft()
   const troOk = canStakeTro()
   const venueOk = canUseVenue()
@@ -104,18 +104,46 @@ export default function GoLivePage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
-      <div>
-        <h1 className="text-2xl font-semibold text-white">{xaRender('GO LIVE')}</h1>
+      <div className="space-y-2">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500">{xaRender('Services · gates')}</p>
+        <h1 className="text-2xl font-semibold text-white">{xaRender('État des services')}</h1>
         <p className="mt-1 text-sm text-zinc-400">
           {xaRender('Checklist mainnet — gates = CODEHASH_OK build')}{' '}
           <span className="text-zinc-500">AND</span>{' '}
-          {xaRender('observation runtime fraîche. Paper par défaut.')}
+          {xaRender('observation runtime. Posture produit : paper (LIA live = 0).')}
         </p>
         <p className="mt-1 text-xs text-zinc-500">
           mode={asText(mode)} · envLiveCapable={String(envLive)} · marketPayable=
           {String(marketPayable)} · listings={listings.length}
         </p>
       </div>
+
+      <div className="rounded-xl border border-amber-500/30 bg-amber-950/25 px-3 py-2.5 text-[12px] leading-relaxed text-amber-50/90">
+        <span className="font-semibold text-amber-100">{xaRender('NO-GO commercial packs')}</span>
+        <span className="text-amber-100/70"> — </span>
+        {xaRender(
+          'Annonce packs / LIA réel uniquement après smoke PayBox (S1) + preuve My Packs NFT (S2). Les pastilles SC ci-dessous ne remplacent pas ce gate.',
+        )}
+        <div className="mt-2 flex flex-wrap gap-2">
+          <Link to="/intelligence/agents" className="underline text-amber-50 font-medium">
+            {xaRender('Packs')}
+          </Link>
+          <span className="text-amber-100/40">·</span>
+          <Link to="/workspace/agents" className="underline text-amber-50 font-medium">
+            {xaRender('My Packs')}
+          </Link>
+          <span className="text-amber-100/40">·</span>
+          <a
+            className="underline text-amber-50 font-medium"
+            href="https://github.com/Neltud/xArtists/blob/main/docs/SMOKE_PAYBOX_P0.md"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {xaRender('Runbook smoke')}
+          </a>
+        </div>
+      </div>
+
       <RceStrip />
       <ul className="space-y-2">
         {scItems.map(it => (

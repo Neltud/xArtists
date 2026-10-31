@@ -1,7 +1,8 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * Reality signal — simulation vs live vs loading.
- * CSS vars: --status-color, --status-icon (set on root element).
+ * LIVE only when VITE_LIA_LIVE_TRADING=1 AND connected wallet can sign.
+ * Default product posture: PAPER (no live LIA TX).
  */
 import { memo, useMemo } from 'react'
 import { useWallet } from '../../context/WalletContext'
@@ -12,6 +13,7 @@ function detectMode(connected: boolean, canSign: boolean, loading?: boolean): Re
   if (loading) return 'loading'
   const envLive =
     typeof import.meta !== 'undefined' && import.meta.env?.VITE_LIA_LIVE_TRADING === '1'
+  // Fail-closed: wallet alone never implies LIVE trading
   if (envLive && connected && canSign) return 'live'
   return 'simulation'
 }
@@ -26,19 +28,21 @@ function StatusIndicator({
   const { connected, canAttemptSign, method } = useWallet()
   const mode = useMemo(
     () => detectMode(!!connected, canAttemptSign !== false, loading),
-    [connected, canAttemptSign, loading]
+    [connected, canAttemptSign, loading],
   )
 
   const meta = {
     simulation: {
       label: 'PAPER',
-      detail: connected ? `wallet · ${method || 'ro'}` : 'demo · no live TX',
+      detail: connected
+        ? `wallet · ${method || 'ro'} · LIA live=0`
+        : 'demo · aucune TX LIA',
       color: '#22d3ee',
       icon: '◇',
     },
     live: {
       label: 'LIVE',
-      detail: 'signing enabled · Guardian on',
+      detail: 'LIA live=1 · signing · Guardian',
       color: '#34d399',
       icon: '◈',
     },
@@ -70,7 +74,7 @@ function StatusIndicator({
         {xaRender(meta.icon)}
       </span>
       <span>{xaRender(meta.label)}</span>
-      <span className="hidden sm:inline font-normal opacity-70 max-w-[140px] truncate">
+      <span className="hidden sm:inline font-normal opacity-70 max-w-[160px] truncate">
         {xaRender(meta.detail)}
       </span>
     </div>
