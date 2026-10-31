@@ -1,5 +1,5 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from './i18n/phraseRuntime'
-import {useEffect,useState} from 'react'
+import {useEffect,useState,lazy,Suspense} from 'react'
 import {Navigate,Route,Routes,useLocation} from 'react-router-dom'
 import ErrorBoundary from './components/ErrorBoundary'
 import PlaylistPlayerModal from './components/PlaylistPlayerModal'
@@ -11,5 +11,9 @@ import Shell from './experience/Shell'
 import {groups,modules} from './experience/modules'
 import {Home,GroupPage,ModulePage,Directory,NotFound,ArtworkDetail} from './experience/Pages'
 import './experience/experience.css'
+
+const PackLandingPage = lazy(() => import('./pages/PackLandingPage'))
+
 function Alias({to}:{to:string}){const location=useLocation();const params=new URLSearchParams(location.search);if(location.pathname==='/legal/terms')params.set('tab','terms');return <Navigate to={{pathname:to,search:params.toString()?'?'+params.toString():'',hash:location.hash}} replace/>}
-export default function App(){const [assetsOpen,setAssetsOpen]=useState(false);useEffect(()=>{const open=()=>setAssetsOpen(true);window.addEventListener(OPEN_ASSETS_EVENT,open);return()=>window.removeEventListener(OPEN_ASSETS_EVENT,open)},[]);return <ErrorBoundary><ExperienceProvider><WebglPauseBridge/><Shell><Routes><Route path="/" element={<Home/>}/>{xaRender(groups.map(group=><Route key={group} path={'/'+group} element={<GroupPage group={group}/>}/>))}<Route path="/directory" element={<Directory/>}/><Route path="/sitemap" element={<Alias to="/directory"/>}/><Route path="/explore/artwork/:identifier" element={<ArtworkDetail/>}/>{xaRender(modules.flatMap(m=>[<Route key={m.id} path={m.path} element={<ModulePage module={m}/>}/>,...m.aliases.map(alias=><Route key={alias} path={alias} element={<Alias to={m.path}/>}/>)]))}<Route path="/hub" element={<Alias to="/"/>}/><Route path="/slot/*" element={<Alias to="/"/>}/><Route path="*" element={<NotFound/>}/></Routes></Shell><PlaylistPlayerModal/><AssetDrawer open={assetsOpen} onClose={()=>setAssetsOpen(false)}/></ExperienceProvider></ErrorBoundary>}
+
+export default function App(){const [assetsOpen,setAssetsOpen]=useState(false);useEffect(()=>{const open=()=>setAssetsOpen(true);window.addEventListener(OPEN_ASSETS_EVENT,open);return()=>window.removeEventListener(OPEN_ASSETS_EVENT,open)},[]);return <ErrorBoundary><ExperienceProvider><WebglPauseBridge/><Shell><Routes><Route path="/" element={<Home/>}/>{xaRender(groups.map(group=><Route key={group} path={'/'+group} element={<GroupPage group={group}/>}/>))}<Route path="/directory" element={<Directory/>}/><Route path="/sitemap" element={<Alias to="/directory"/>}/><Route path="/explore/artwork/:identifier" element={<ArtworkDetail/>}/><Route path="/packs/:packId" element={<Suspense fallback={null}><PackLandingPage/></Suspense>}/><Route path="/intelligence/agents/:packId" element={<Suspense fallback={null}><PackLandingPage/></Suspense>}/>{xaRender(modules.flatMap(m=>[<Route key={m.id} path={m.path} element={<ModulePage module={m}/>}/>,...m.aliases.map(alias=><Route key={alias} path={alias} element={<Alias to={m.path}/>}/>)]))}<Route path="/hub" element={<Alias to="/"/>}/><Route path="/slot/*" element={<Alias to="/"/>}/><Route path="*" element={<NotFound/>}/></Routes></Shell><PlaylistPlayerModal/><AssetDrawer open={assetsOpen} onClose={()=>setAssetsOpen(false)}/></ExperienceProvider></ErrorBoundary>}
