@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.125.2](https://github.com/Neltud/xArtists/compare/v0.125.1...v0.125.2) (2026-10-31)
+
+
+### Documentation
+
+* **security:** P0 headers Pages + smoke checklist + marketing lock ([#215](https://github.com/Neltud/xArtists/issues/215)) ([d22d93d](https://github.com/Neltud/xArtists/commit/d22d93dcb14e49f8edd51532b70b0eb5842fd4c2))
+
 ## [0.125.1](https://github.com/Neltud/xArtists/compare/v0.125.0...v0.125.1) (2026-10-30)
 
 
