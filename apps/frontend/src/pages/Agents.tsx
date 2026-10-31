@@ -1,7 +1,7 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** Packs Agents — Genesis limited · œuvres série Tuduri. */
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
 import PackOpenTheater from '../components/PackOpenTheater'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
@@ -18,10 +18,16 @@ function limitsFor(id: PackId): string[] {
 }
 
 export default function Agents() {
+  const [params] = useSearchParams()
   const [selected, setSelected] = useState<PackId | null>(null)
   const [theater, setTheater] = useState<PackId | null>(null)
   const active = PACKS.find(p => p && p.id === selected) || null
   const theaterPack = PACKS.find(p => p && p.id === theater) || null
+
+  useEffect(() => {
+    const q = params.get('pack')
+    if (q === 'pulse' || q === 'yield' || q === 'sentinel') setSelected(q)
+  }, [params])
 
   return (
     <div className="xa-page animate-fade-in space-y-6 pb-20 max-w-4xl mx-auto">
@@ -51,48 +57,55 @@ export default function Agents() {
             const ed = PACK_EDITION[p.id]
             const isSel = selected === p.id
             return (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => setSelected(p.id)}
-                className="card text-left card-play transition active:scale-[0.98]"
-                style={{ borderColor: isSel ? vis.border : undefined, boxShadow: isSel ? vis.glow : undefined }}
-              >
-                <div className="flex items-center justify-between gap-1">
-                  <p className="text-[15px] font-semibold text-[color:var(--xa-text)]">
-                    {xaRender(p.icon)} {xaRender(p.name)}
+              <div key={p.id} className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => setSelected(p.id)}
+                  className="card text-left card-play transition active:scale-[0.98] w-full"
+                  style={{ borderColor: isSel ? vis.border : undefined, boxShadow: isSel ? vis.glow : undefined }}
+                >
+                  <div className="flex items-center justify-between gap-1">
+                    <p className="text-[15px] font-semibold text-[color:var(--xa-text)]">
+                      {xaRender(p.icon)} {xaRender(p.name)}
+                    </p>
+                    <span
+                      className="text-[9px] font-bold uppercase tracking-wide rounded-full px-1.5 py-0.5 border"
+                      style={{ borderColor: vis.border, color: vis.accent, background: vis.accentSoft }}
+                    >
+                      {xaRender(p.tierLabel)}
+                    </span>
+                  </div>
+                  <p className="text-[10px] mono mt-1 text-[color:var(--xa-text-muted)]">{xaRender(col?.ticker)}</p>
+                  <p className="text-[12px] mt-1.5 leading-snug text-[color:var(--xa-text-secondary)]">{xaRender(p.tagline)}</p>
+                  <div className="mt-3 flex items-end justify-between">
+                    <div>
+                      <p className="text-xl tabular-nums text-[color:var(--xa-text)]">
+                        {xaRender(String(p.priceEur.list))}{' '}
+                        <span className="text-sm text-[color:var(--xa-text-muted)]">{xaRender('€')}</span>
+                      </p>
+                      <p className="text-[10px] text-[color:var(--xa-text-muted)]">
+                        {xaRender('≈ ')}{xaRender(String(p.priceEgld.list))} {xaRender('EGLD')}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[12px] font-semibold tabular-nums" style={{ color: vis.accent }}>
+                        {xaRender(String(ed.maxSupply))}
+                      </p>
+                      <p className="text-[9px] uppercase tracking-wider text-[color:var(--xa-text-muted)]">{xaRender('max')}</p>
+                    </div>
+                  </div>
+                  <p className="text-[10px] mt-2 text-[color:var(--xa-text-muted)]">
+                    {xaRender('Signaux ×')}
+                    {xaRender(String(p.signalIntensity))} · {xaRender(p.features.actionsPerWeek)}
                   </p>
-                  <span
-                    className="text-[9px] font-bold uppercase tracking-wide rounded-full px-1.5 py-0.5 border"
-                    style={{ borderColor: vis.border, color: vis.accent, background: vis.accentSoft }}
-                  >
-                    {xaRender(p.tierLabel)}
-                  </span>
-                </div>
-                <p className="text-[10px] mono mt-1 text-[color:var(--xa-text-muted)]">{xaRender(col?.ticker)}</p>
-                <p className="text-[12px] mt-1.5 leading-snug text-[color:var(--xa-text-secondary)]">{xaRender(p.tagline)}</p>
-                <div className="mt-3 flex items-end justify-between">
-                  <div>
-                    <p className="text-xl tabular-nums text-[color:var(--xa-text)]">
-                      {xaRender(String(p.priceEur.list))}{' '}
-                      <span className="text-sm text-[color:var(--xa-text-muted)]">{xaRender('€')}</span>
-                    </p>
-                    <p className="text-[10px] text-[color:var(--xa-text-muted)]">
-                      {xaRender('≈ ')}{xaRender(String(p.priceEgld.list))} {xaRender('EGLD')}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[12px] font-semibold tabular-nums" style={{ color: vis.accent }}>
-                      {xaRender(String(ed.maxSupply))}
-                    </p>
-                    <p className="text-[9px] uppercase tracking-wider text-[color:var(--xa-text-muted)]">{xaRender('max')}</p>
-                  </div>
-                </div>
-                <p className="text-[10px] mt-2 text-[color:var(--xa-text-muted)]">
-                  {xaRender('Signaux ×')}
-                  {xaRender(String(p.signalIntensity))} · {xaRender(p.features.actionsPerWeek)}
-                </p>
-              </button>
+                </button>
+                <Link
+                  to={`/packs/${p.id}`}
+                  className="block text-center text-[11px] text-[color:var(--xa-accent)] underline"
+                >
+                  {xaLocalize('Page produit →')}
+                </Link>
+              </div>
             )
           }),
         )}
@@ -168,9 +181,14 @@ export default function Agents() {
 
             <Pack3DCockpit packId={active.id} showIntents={false} />
             <PackCheckout packId={active.id} onPaperDone={id => setTheater(id)} onClear={() => setSelected(null)} />
-            <Link to="/workspace/agents" className="text-[12px] text-[color:var(--xa-accent)] underline">
-              {xaRender('Mes packs →')}
-            </Link>
+            <div className="flex flex-wrap gap-3 text-[12px]">
+              <Link to={`/packs/${active.id}`} className="text-[color:var(--xa-accent)] underline">
+                {xaRender('Page produit →')}
+              </Link>
+              <Link to="/workspace/agents" className="text-[color:var(--xa-accent)] underline">
+                {xaRender('Mes packs →')}
+              </Link>
+            </div>
           </section>
         ),
       )}

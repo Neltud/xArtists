@@ -152,7 +152,7 @@ export default function GenesisPackShelf() {
                   {xaLocalize('max')} · {xaRender(edition.scarcity)}
                 </p>
                 <Link
-                  to={`/intelligence/agents?pack=${pack.id}`}
+                  to={`/packs/${pack.id}`}
                   className="mt-auto inline-flex min-h-[44px] items-center justify-center rounded-xl border text-[13px] font-medium"
                   style={{
                     borderColor: visual.border,
