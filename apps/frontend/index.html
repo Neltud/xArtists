@@ -6,14 +6,16 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <!--
-      CSP : hardening + domaines requis (MVX, WalletConnect, embeds, prix, fonts).
+      CSP : hardening + domaines requis (MVX, WalletConnect, Leaflet, embeds, prix, fonts).
       GitHub Pages ne sert pas toujours Content-Security-Policy HTTP → meta fallback.
-      Ne jamais élargir script-src à des CDN non listés.
+      Ne jamais élargir script-src à des CDN non listés hors besoin carte / média.
     -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com https://www.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://api.multiversx.com https://devnet-api.multiversx.com https://gateway.multiversx.com https://raw.githubusercontent.com https://api.coingecko.com https://api.frankfurter.app https://www.reddit.com https://api.rss2json.com https://explorer.multiversx.com https://*.walletconnect.com https://*.walletconnect.org wss://*.walletconnect.com wss://*.walletconnect.org https://pulse.walletconnect.org https://registry.walletconnect.com https://verify.walletconnect.com https://verify.walletconnect.org https://api.web3modal.org https://*.infura.io https://cloudflare-ipfs.com https://ipfs.io; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://w.soundcloud.com https://soundcloud.com https://*.walletconnect.com https://*.walletconnect.org; worker-src 'self' blob:; manifest-src 'self';"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com https://www.google.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://xartists-access-api.onrender.com https://api.multiversx.com https://devnet-api.multiversx.com https://gateway.multiversx.com https://explorer.multiversx.com https://raw.githubusercontent.com https://api.coingecko.com https://api.frankfurter.app https://www.reddit.com https://api.rss2json.com https://*.walletconnect.com https://*.walletconnect.org wss://*.walletconnect.com wss://*.walletconnect.org https://pulse.walletconnect.org https://registry.walletconnect.com https://verify.walletconnect.com https://verify.walletconnect.org https://api.web3modal.org https://*.infura.io https://cloudflare-ipfs.com https://ipfs.io https://*.moonpay.com https://api.moonpay.com https://overpass-api.de https://*.overpass-api.de; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://w.soundcloud.com https://soundcloud.com https://*.walletconnect.com https://*.walletconnect.org https://*.moonpay.com; worker-src 'self' blob:; manifest-src 'self';"
     />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(self)" />
     <meta name="xartists-build" content="sites-v3-release" />
     <link rel="icon" type="image/svg+xml" href="/xArtists/favicon.svg" />
     <link rel="manifest" href="/xArtists/manifest.webmanifest" />
