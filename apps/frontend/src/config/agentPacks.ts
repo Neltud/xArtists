@@ -4,7 +4,13 @@
  * - Yield  = SILVER (DeFi / LP / claim)
  * - Sentinel = PLATINUM (veille / RWA / zero-trust)
  *
- * Official commercial EUR list prices (2026-10-18): 110 / 75 / 50 EUR
+ * MODÈLE COMMERCIAL (lock 2026-10-31 — GitBook #24) :
+ * - Achat unique (crypto ou fiat) — PAS d'abonnement
+ * - NFT MultiversX édition limitée inclus
+ * - Droits d'accès liés au NFT : durables (aucune expiration annuelle)
+ * - Whop xArtists = abonnement mensuel DISTINCT (voir docs/COMMERCIAL_MODEL.md)
+ *
+ * Official commercial EUR list prices (Rule 1): 110 / 75 / 50 EUR
  * Server-side source of truth: services/access_pack/catalog.py
  * Genesis edition caps: Pulse 333 · Yield 500 · Sentinel 777
  */
@@ -118,6 +124,14 @@ export const PACK_EDITION = {
   sentinel: { maxSupply: 777, mintedMode: 'sft' as const, seriesName: 'Genesis Sentinel', scarcity: 'open-limited' },
 } as const
 
+/** Commercial lock — one-time purchase, durable NFT rights (no annual expiry) */
+export const PACK_COMMERCIAL = {
+  billing: 'one_time' as const,
+  includesNft: true,
+  rightsExpiry: 'none' as const, // no annual / time-boxed rights on the NFT
+  distinctFromWhop: true,
+} as const
+
 export type AgentPackProfile = {
   id: PackId
   name: string
@@ -157,6 +171,7 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     strategies: ['MICRO_ARB', 'MOMENTUM', 'MEAN_REVERSION', 'BOARD_TICK'],
     activity: 'Plusieurs cycles / jour — intensité max',
     entitlements: [
+      'Achat unique · NFT Genesis Pulse (droits durables)',
       'NFT pack Pulse + salle 3D Pulse',
       'Command Center complet (Hub + toutes salles)',
       'TCA Academy + LIA full',
@@ -185,6 +200,7 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     strategies: ['YIELD_OPT', 'LP_WATCH', 'COMPOUND_READ'],
     activity: 'Cycles DeFi réguliers — focus pool & staking',
     entitlements: [
+      'Achat unique · NFT Genesis Yield (droits durables)',
       'NFT pack Yield + salle 3D Yield',
       'Salle Command « Yield »',
       'DeFi sleeve + agent stake',
@@ -212,6 +228,7 @@ export const AGENT_PACKS: AgentPackProfile[] = [
     strategies: ['GUARD', 'ALERT', 'DRAWDOWN_WATCH', 'BOARD_ALERT'],
     activity: 'Alertes sparses — focus protection & conformité',
     entitlements: [
+      'Achat unique · NFT Genesis Sentinel (droits durables)',
       'NFT pack Sentinel + salle 3D Sentinel',
       'Salle Command « Sentinel » uniquement',
       'Alertes risk / drawdown board',
