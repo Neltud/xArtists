@@ -3,6 +3,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as
  * Carte mondiale — satellite Esri (défaut) + Leaflet (sans clé API).
  * locations optionnel : défaut = hubs culturels mondiaux.
  * Monuments capitales artistiques en relief CSS.
+ * Fail-soft : si Leaflet/CSP bloque → liste des hubs (data-first).
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import MapMuseumEnter from './museum/MapMuseumEnter'
@@ -72,7 +73,6 @@ function regionStyle(region?: string) {
   return REGION_COLORS[region || ''] || { fill: '#e11d48', stroke: '#fecdd3', label: 'Autre' }
 }
 
-/** Glyphs monument par capitale artistique — relief CSS (pas WebGL). */
 const MONUMENT_GLYPH: Record<string, string> = {
   paris: '🏛️',
   london: '🏛️',
@@ -136,21 +136,54 @@ const BASEMAPS: Record<
 
 async function ensureLeaflet(): Promise<LeafletNS> {
   if (window.L) return window.L
-  await new Promise<void>((resolve, reject) => {
-    if (!document.querySelector('link[data-leaflet]')) {
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-      link.setAttribute('data-leaflet', '1')
-      document.head.appendChild(link)
+
+  const cssCandidates = [
+    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+    'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css',
+  ]
+  const jsCandidates = [
+    'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+    'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js',
+  ]
+
+  if (!document.querySelector('link[data-leaflet]')) {
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = cssCandidates[0]
+    link.setAttribute('data-leaflet', '1')
+    link.onerror = () => {
+      link.href = cssCandidates[1]
     }
-    const s = document.createElement('script')
-    s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-    s.onload = () => resolve()
-    s.onerror = () => reject(new Error('Leaflet load failed'))
-    document.head.appendChild(s)
-  })
-  return window.L!
+    document.head.appendChild(link)
+  }
+
+  const loadScript = (src: string) =>
+    new Promise<void>((resolve, reject) => {
+      const existing = document.querySelector(`script[data-leaflet-src="${src}"]`) as HTMLScriptElement | null
+      if (existing) {
+        if (window.L) resolve()
+        else existing.addEventListener('load', () => resolve())
+        return
+      }
+      const s = document.createElement('script')
+      s.src = src
+      s.async = true
+      s.setAttribute('data-leaflet-src', src)
+      s.onload = () => resolve()
+      s.onerror = () => reject(new Error(`Leaflet script failed: ${src}`))
+      document.head.appendChild(s)
+    })
+
+  let lastErr: unknown
+  for (const src of jsCandidates) {
+    try {
+      await loadScript(src)
+      if (window.L) return window.L
+    } catch (e) {
+      lastErr = e
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error('Leaflet load failed')
 }
 
 export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] | null }) {
@@ -161,6 +194,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
   const layerRef = useRef<LeafletNS>(null)
   const tileRef = useRef<LeafletNS>(null)
   const [mapReady, setMapReady] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [basemap, setBasemap] = useState<BasemapId>('satellite')
   const [cityFilter, setCityFilter] = useState('')
   const [region, setRegion] = useState<string>('all')
@@ -214,12 +248,14 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
         const layer = L.layerGroup().addTo(map)
         layerRef.current = layer
         mapObj.current = map
+        setLoadError(null)
         setMapReady(true)
         setTimeout(() => map.invalidateSize(), 80)
         setTimeout(() => map.invalidateSize(), 400)
       } catch (e) {
         console.error('[ArtWorldMap]', e)
         setMapReady(false)
+        setLoadError(e instanceof Error ? e.message : 'Carte indisponible (Leaflet / CSP)')
       }
     })()
     return () => {
@@ -269,7 +305,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
       })
       const m = L.marker([loc.lat, loc.lng], { icon })
       m.bindPopup(
-        `<strong>${loc.city}</strong> · ${loc.country || ''}<br/><span style="opacity:.7">${loc.focus || ''}</span><br/><span style="opacity:.55;font-size:11px">Capitale artistique · satellite</span>`,
+        `<strong>${loc.city}</strong> · ${loc.country || ''}<br/><span style="opacity:.7">${loc.focus || ''}</span><br/><span style="opacity:.55;font-size:11px">Capitale artistique</span>`,
       )
       m.on('click', () => {
         setSelectedCity(loc.city)
@@ -306,7 +342,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
     const map = mapObj.current
     const onMove = async () => {
       const z = map.getZoom()
-      if (z < osmMinZoom) {
+      if (z < osmMinZoom()) {
         setOsmPois([])
         return
       }
@@ -335,7 +371,7 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
         <input
           value={cityFilter}
           onChange={e => setCityFilter(e.target.value)}
-          placeholder={xaLocalize("Filtrer ville…")}
+          placeholder={xaLocalize('Filtrer ville…')}
           className="rounded-lg bg-black/40 border border-white/10 px-2 py-1 text-zinc-200"
         />
         <select
@@ -343,41 +379,91 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
           onChange={e => setRegion(e.target.value)}
           className="rounded-lg bg-black/40 border border-white/10 px-2 py-1 text-zinc-200"
         >
-          <option value="all">{xaRender("Toutes régions")}</option>
-          {xaRender(Object.entries(REGION_COLORS).map(([k, v]) => (
-            <option key={k} value={k}>
-              {xaRender(v.label)}
-            </option>
-          )))}
+          <option value="all">{xaRender('Toutes régions')}</option>
+          {xaRender(
+            Object.entries(REGION_COLORS).map(([k, v]) => (
+              <option key={k} value={k}>
+                {xaRender(v.label)}
+              </option>
+            )),
+          )}
         </select>
-        <span className="text-zinc-500">{xaRender(filtered?.length ?? 0)} {xaRender(" destinations · vue satellite")}</span>
+        <span className="text-zinc-500">
+          {xaRender(filtered?.length ?? 0)} {xaRender(' destinations · ')}{xaRender(BASEMAPS[basemap].label)}
+        </span>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {xaRender(((['satellite'] as BasemapId[])).map(id => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setBasemap(id)}
-            className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded-full border ${
-              basemap === id
-                ? 'border-lime-400/50 bg-lime-500/15 text-lime-200'
-                : 'border-white/10 text-zinc-500'
-            }`}
-          >
-            {xaRender(BASEMAPS[id].label)}
-          </button>
-        )))}
+        {xaRender(
+          (['osm', 'relief', 'satellite'] as BasemapId[]).map(id => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setBasemap(id)}
+              className={`text-[10px] uppercase tracking-wider px-2 py-1 rounded-full border ${
+                basemap === id
+                  ? 'border-lime-400/50 bg-lime-500/15 text-lime-200'
+                  : 'border-white/10 text-zinc-500 hover:text-zinc-300'
+              }`}
+            >
+              {xaRender(BASEMAPS[id].label)}
+            </button>
+          )),
+        )}
       </div>
+
+      {loadError && (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-950/40 px-3 py-2 text-[12px] text-amber-100/90">
+          {xaRender('Carte interactive indisponible — ')}
+          {xaRender(loadError)}
+          {xaRender('. Liste des hubs culturels (données cohérentes, sans tuiles).')}
+        </div>
+      )}
 
       <div
         ref={mapRef}
-        className="w-full h-[min(62vh,520px)] rounded-2xl border border-white/10 overflow-hidden bg-zinc-950"
-        style={{ minHeight: 420 }}
+        className={`w-full rounded-2xl border border-white/10 overflow-hidden bg-zinc-950 relative ${
+          loadError ? 'hidden' : 'h-[min(62vh,520px)]'
+        }`}
+        style={{ minHeight: loadError ? 0 : 420 }}
+        aria-hidden={Boolean(loadError)}
       />
 
+      {loadError && (
+        <ul className="grid gap-2 sm:grid-cols-2 max-h-[min(62vh,520px)] overflow-y-auto rounded-2xl border border-white/10 bg-black/40 p-3">
+          {xaRender(
+            filtered.map(loc => (
+              <li key={loc.id}>
+                <button
+                  type="button"
+                  className="w-full text-left rounded-xl border border-white/10 bg-zinc-950/80 px-3 py-2 hover:border-lime-400/30"
+                  onClick={() => {
+                    setSelectedCity(loc.city)
+                    setTravelDestination({
+                      city: loc.city,
+                      country: loc.country,
+                      lat: loc.lat,
+                      lng: loc.lng,
+                    })
+                  }}
+                >
+                  <span className="text-sm font-medium text-white">{xaRender(loc.city)}</span>
+                  <span className="block text-[11px] text-zinc-500">
+                    {xaRender(loc.country)}
+                    {xaRender(loc.focus ? ` · ${loc.focus}` : '')}
+                  </span>
+                </button>
+              </li>
+            )),
+          )}
+        </ul>
+      )}
+
       <p className="text-[10px] text-zinc-600">
-        {xaRender("Zoom ≥ ")}{xaRender(osmMinZoom())} {xaRender(" → POI OSM · Entrer musée si match · fond Esri satellite · monuments capitales artistiques ")}</p>
+        {xaRender('Zoom ≥ ')}
+        {xaRender(osmMinZoom())}
+        {xaRender(' → POI OSM · Entrer musée si match · fonds OSM / Relief / Esri · monuments capitales')}
+      </p>
       <MapMuseumEnter city={selectedCity || cityFilter || undefined} id="world_map" />
     </div>
   )
