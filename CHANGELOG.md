@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.126.0](https://github.com/Neltud/xArtists/compare/v0.125.2...v0.126.0) (2026-10-31)
+
+
+### Features
+
+* **packs:** landing /packs/:packId miroir Whop + CTA checkout ([#220](https://github.com/Neltud/xArtists/issues/220)) ([d09f8e2](https://github.com/Neltud/xArtists/commit/d09f8e20251e66f6163a6e40a97b586b0ae267d6))
+
 ## [0.125.2](https://github.com/Neltud/xArtists/compare/v0.125.1...v0.125.2) (2026-10-31)
 
 
