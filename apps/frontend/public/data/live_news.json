@@ -1,21 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-31T11:44:25.955Z",
+  "updatedAt": "2026-10-31T16:52:02.680Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793465522145",
+      "timestamp": "16:52",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.46 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793460961000",
+      "timestamp": "15:36",
+      "source": "CoinTelegraph",
+      "title": "Binance says 90% of stolen assets replenished, targets Sunday withdrawals",
+      "link": "https://cointelegraph.com/news/binance-hack-90-percent-replenished?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793460406000",
+      "timestamp": "15:26",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin held up better than expected after Binance hack, Strive CEO says",
+      "link": "https://cointelegraph.com/markets/bitcoin-binance-hack-strive-ceo?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793459395000",
+      "timestamp": "15:09",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1793456872000",
+      "timestamp": "14:27",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin turns 18: Has the original rebel grown up?",
+      "link": "https://cointelegraph.com/magazine/bitcoin-turns-18-has-the-original-rebel-grown-up?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793453869000",
+      "timestamp": "13:37",
+      "source": "CoinTelegraph",
+      "title": "Texas brothers sentenced to 15 years in prison for armed crypto robbery, kidnapping",
+      "link": "https://cointelegraph.com/news/texas-brothers-sentenced-to-15-years-in-prison-for-armed-crypto-robbery-kidnapping?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793445769000",
+      "timestamp": "11:22",
+      "source": "CoinTelegraph",
+      "title": "Blockchain investigator Chainalysis hit by cybersecurity incident",
+      "link": "https://cointelegraph.com/news/blockchain-investigator-chainalysis-hit-by-cybersecurity-incident?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793462400000",
+      "timestamp": "16:00",
+      "source": "CoinDesk",
+      "title": "Traders are already placing leveraged bets on Anthropic’s IPO using crypto contracts",
+      "link": "https://www.coindesk.com/business/2026/10/31/traders-are-already-placing-leveraged-bets-on-anthropic-s-ipo-using-crypto-contracts"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793460250000",
+      "timestamp": "15:24",
+      "source": "CoinDesk",
+      "title": "Binance says it has replaced 90% of stolen crypto after massive $6.3 billion breach",
+      "link": "https://www.coindesk.com/business/2026/10/31/binance-says-it-has-replaced-90-of-stolen-crypto-after-massive-usd6-3-billion-breach"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793458800000",
+      "timestamp": "15:00",
+      "source": "CoinDesk",
+      "title": "Institutions embrace crypto staking despite shrinking yields",
+      "link": "https://www.coindesk.com/business/2026/10/26/institutions-embrace-crypto-staking-despite-shrinking-yields"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793457629000",
+      "timestamp": "14:40",
+      "source": "CoinDesk",
+      "title": "Uber tests how tokenization can put idle cash to work with HSBC, Franklin Templeton",
+      "link": "https://www.coindesk.com/business/2026/10/31/uber-tests-how-tokenization-can-put-idle-cash-to-work-with-hsbc-franklin-templeton"
+    },
     {
       "id": "egld-1793447065438",
       "timestamp": "11:44",
       "source": "EGLD",
       "title": "Cotation publique · $3.39 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793445769000",
-      "timestamp": "11:22",
-      "source": "CoinTelegraph",
-      "title": "Blockchain investigator Chainalysis hit by cybersecurity incident",
-      "link": "https://cointelegraph.com/news/blockchain-investigator-chainalysis-hit-by-cybersecurity-incident?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-1-1793440730000",
@@ -128,76 +198,6 @@
       "source": "CoinDesk",
       "title": "Binance arranges $6.34 billion to cover losses from record crypto hack",
       "link": "https://www.coindesk.com/business/2026/10/30/binance-arranges-usd6-34-billion-to-cover-losses-from-record-crypto-hack"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793369262000",
-      "timestamp": "14:07",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793367000000",
-      "timestamp": "13:30",
-      "source": "CoinTelegraph",
-      "title": "Will gold’s ‘infinite mint bug’ make Bitcoin more valuable?",
-      "link": "https://cointelegraph.com/magazine/will-golds-infinite-mint-bug-make-bitcoin-more-valuable?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793361086000",
-      "timestamp": "11:51",
-      "source": "CoinDesk",
-      "title": "Here's how big bitcoin traders responded after the Binance hack hit",
-      "link": "https://www.coindesk.com/daybook-us/2026/10/30/here-s-how-big-bitcoin-traders-responded-after-the-binance-hack-hit"
-    },
-    {
-      "id": "egld-1793353115190",
-      "timestamp": "09:38",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.26 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793352405000",
-      "timestamp": "09:26",
-      "source": "CoinTelegraph",
-      "title": "Trezor warns CryptoBilis buyers to move funds over suspected implant",
-      "link": "https://cointelegraph.com/news/trezor-cryptobilis-wallet-implant-funds-warning?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793351305000",
-      "timestamp": "09:08",
-      "source": "CoinTelegraph",
-      "title": "Live updates: Binance uncovers more breach points in $6.3B hack",
-      "link": "https://cointelegraph.com/news/live-updates-binance-63b-hack-linked-to-north-koreas-tradertraitor?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793339587000",
-      "timestamp": "05:53",
-      "source": "CoinTelegraph",
-      "title": "Strategy eyes more Bitcoin buys as Saylor touts $30B credit capacity",
-      "link": "https://cointelegraph.com/news/strategy-30-billion-digital-credit-capacity-bitcoin-buys?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793339501000",
-      "timestamp": "05:51",
-      "source": "CoinTelegraph",
-      "title": "North Korea’s TraderTraitor linked to $6.3B Binance hack",
-      "link": "https://cointelegraph.com/news/north-korea-linked-to-63b-binance-hack-by-crypto-investigators?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793332021000",
-      "timestamp": "03:47",
-      "source": "CoinTelegraph",
-      "title": "Binance hack could accelerate shift to DEXs: Standard Chartered",
-      "link": "https://cointelegraph.com/news/binance-hack-could-accelerate-shift-to-dexs-standard-chartered?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793349412000",
-      "timestamp": "08:36",
-      "source": "CoinDesk",
-      "title": "Live News: Binance hack rattles crypto as Intel plunges and AI spending fears hit tech",
-      "link": "https://www.coindesk.com/markets/2026/10/30/live-news-binance-hack-rattles-crypto-as-intel-plunges-and-ai-spending-fears-hit-tech"
     }
   ]
 }
