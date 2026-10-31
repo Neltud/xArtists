@@ -10,7 +10,7 @@ import {
   getAccessApiBase,
   getStripePaymentLink,
 } from './stripe'
-import { startPayboxCardPayment, isPayboxConfigured } from './payboxClient'
+import { startPayboxCardPayment, isPayboxConfigured } from './paybox'
 import { ensureAccessToken, getAccessToken } from './accessSession'
 import { isMoonPayConfigured, openMoonPayBuy, moonpayStatusHint } from './moonpay'
 
@@ -30,6 +30,9 @@ export function preferredPayMethod(): PayMethod {
   if (m.includes('stripe')) return 'stripe'
   return 'paper'
 }
+
+/** Alias historique — CheckoutModal importe defaultPayMethod */
+export const defaultPayMethod = preferredPayMethod
 
 export function payMethodLabel(m: PayMethod): string {
   switch (m) {
