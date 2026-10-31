@@ -10,7 +10,7 @@ import {
   getAccessApiBase,
   getStripePaymentLink,
 } from './stripe'
-import { startPayboxCardPayment, isPayboxConfigured } from './payboxClient'
+import { startPayboxCardPayment, isPayboxConfigured } from './paybox'
 import { ensureAccessToken, getAccessToken } from './accessSession'
 import { isMoonPayConfigured, openMoonPayBuy, moonpayStatusHint } from './moonpay'
 
