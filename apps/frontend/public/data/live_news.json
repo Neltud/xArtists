@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-31T16:52:02.680Z",
+  "updatedAt": "2026-10-31T21:01:22.463Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1793465522145",
-      "timestamp": "16:52",
+      "id": "egld-1793480481995",
+      "timestamp": "21:01",
       "source": "EGLD",
-      "title": "Cotation publique · $3.46 (API MultiversX economics)",
+      "title": "Cotation publique · $3.40 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -53,18 +53,39 @@
       "link": "https://cointelegraph.com/news/blockchain-investigator-chainalysis-hit-by-cybersecurity-incident?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinDesk-0-1793462400000",
+      "id": "rss-CoinDesk-0-1793469600000",
+      "timestamp": "18:00",
+      "source": "CoinDesk",
+      "title": "Bitcoin's white paper turns 18, and small businesses are still paying for the bailouts it answered",
+      "link": "https://www.coindesk.com/opinion/2026/10/31/bitcoin-s-white-paper-turns-18-and-small-businesses-are-still-paying-for-the-bailouts-it-answered"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793462970000",
+      "timestamp": "16:09",
+      "source": "CoinDesk",
+      "title": "A stolen iPhone, $14,000 in losses and London's crypto theft problem",
+      "link": "https://www.coindesk.com/business/2026/11/01/a-stolen-iphone-usd14-000-in-losses-and-london-s-crypto-theft-problem"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793462400000",
       "timestamp": "16:00",
       "source": "CoinDesk",
       "title": "Traders are already placing leveraged bets on Anthropic’s IPO using crypto contracts",
       "link": "https://www.coindesk.com/business/2026/10/31/traders-are-already-placing-leveraged-bets-on-anthropic-s-ipo-using-crypto-contracts"
     },
     {
-      "id": "rss-CoinDesk-1-1793460250000",
+      "id": "rss-CoinDesk-3-1793460250000",
       "timestamp": "15:24",
       "source": "CoinDesk",
       "title": "Binance says it has replaced 90% of stolen crypto after massive $6.3 billion breach",
       "link": "https://www.coindesk.com/business/2026/10/31/binance-says-it-has-replaced-90-of-stolen-crypto-after-massive-usd6-3-billion-breach"
+    },
+    {
+      "id": "egld-1793465522145",
+      "timestamp": "16:52",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.46 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinDesk-2-1793458800000",
@@ -177,27 +198,6 @@
       "source": "CoinDesk",
       "title": "Wall Street analysts urge investors to buy crypto stocks after $6.3 billion Binance hack",
       "link": "https://www.coindesk.com/markets/2026/10/30/wall-street-analysts-urge-investors-to-buy-crypto-stocks-on-weakness-after-usd6-3-billion-binance-hack"
-    },
-    {
-      "id": "egld-1793397462509",
-      "timestamp": "21:57",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.29 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793376388000",
-      "timestamp": "16:06",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin risks worst October in 12 years as tech sell-off spreads to gold",
-      "link": "https://cointelegraph.com/markets/bitcoin-risks-worst-october-in-12-years-as-tech-sell-off-spreads-to-gold?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793362382000",
-      "timestamp": "12:13",
-      "source": "CoinDesk",
-      "title": "Binance arranges $6.34 billion to cover losses from record crypto hack",
-      "link": "https://www.coindesk.com/business/2026/10/30/binance-arranges-usd6-34-billion-to-cover-losses-from-record-crypto-hack"
     }
   ]
 }
