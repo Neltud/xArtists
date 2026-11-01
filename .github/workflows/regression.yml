@@ -41,6 +41,12 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Verify pinned codeHashes (mainnet read-only)
+        env:
+          LIA_LIVE_TRADING: '0'
+        run: |
+          python3 scripts/verify_pinned_codehashes.py
+
       - name: Fast regression (single process)
         env:
           LIA_LIVE_TRADING: '0'
@@ -56,6 +62,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: regression-report
-          path: data/regression_report.json
+          path: |
+            data/regression_report.json
+            data/codehash_pin_check.json
           if-no-files-found: ignore
           retention-days: 14
