@@ -2,6 +2,7 @@ name: Deploy staking + governance
 
 # nft-staking → tro-staking → tro-governance (mainnet gated)
 # Secret: SC_DEPLOYER_PEM
+# Sprint 0: environment production required for secret access.
 
 on:
   workflow_dispatch:
@@ -39,6 +40,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    environment: production   # Sprint 0
     env:
       CHAIN_ID: ${{ github.event.inputs.chain }}
       TRO_TOKEN: ${{ github.event.inputs.tro_token }}
