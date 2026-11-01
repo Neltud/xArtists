@@ -1,5 +1,17 @@
 # Changelog — xArtists
 
+## [0.126.0](https://github.com/Neltud/xArtists/compare/v0.125.2...v0.126.0) (2026-11-01)
+
+
+### Features
+
+* **packs:** landing /packs/:packId miroir Whop + CTA checkout ([#220](https://github.com/Neltud/xArtists/issues/220)) ([d09f8e2](https://github.com/Neltud/xArtists/commit/d09f8e20251e66f6163a6e40a97b586b0ae267d6))
+
+
+### Bug Fixes
+
+* **probe:** 1 Nov mainnet snapshot, record LIA Ops breach, keep trading paper ([4f5628b](https://github.com/Neltud/xArtists/commit/4f5628b78312f4ced0663dc34f18187001da7572))
+
 ## [0.126.0] — 2026-11-01
 
 * **probe:** public fallback moves to the 1 Nov mainnet probe (epoch 2280, EGLD $3.44, mcap $106.92M, LIA Ops 0.907888 EGLD / nonce 1487). Stop serving the 30 Oct chrome (epoch 2278, nonce 1479).
