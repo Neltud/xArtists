@@ -1,8 +1,11 @@
 # Sprint 0 — Gel des risques & sécurisation
 
 **Statut** : EN COURS (démarré 2026-11-01)  
+**Branche** : `sprint-0/governance-hardening`  
 **Objectif** : Aucune clé exposée connue · main protégée · Vellum tag-only · slot absent du site public  
 **Décision commerciale** : No-Go jusqu’à clôture Sprint 0 + preuves S1–S2
+
+Voir aussi : [SPRINTS_MASTER.md](./SPRINTS_MASTER.md) · [SECURITY.md](../SECURITY.md)
 
 ---
 
@@ -19,21 +22,18 @@ Toute clé ayant touché un sandbox ou un environnement non-prod **doit être ro
 
 ---
 
-## 2. Checklist Sprint 0 (exécutable)
+## 2. Checklist Sprint 0
 
 ### 2.1 Gouvernance repo (code + admin)
 
-- [x] CODEOWNERS ajouté (ce PR)
-- [ ] Branch protection sur `main`
-  - Require pull request reviews (min 1)
-  - Require status checks to pass
-  - Restrict who can push
-  - Do not allow force pushes / deletions
-- [ ] Required status checks sur jobs critiques (static, regression, paybox tests si présents)
-- [ ] GitHub Environment `production` créé
-  - Required reviewers pour les jobs qui lisent `SC_DEPLOYER_PEM`
-  - Secrets liés uniquement à cet environment
-- [ ] Secret scanning + push protection activés (Settings → Code security)
+- [x] CODEOWNERS ajouté
+- [x] SECURITY.md
+- [x] SPRINTS_MASTER.md
+- [x] environment: production sur deploy-agents-marketplace.yml
+- [ ] Branch protection sur `main` (admin)
+- [ ] Required status checks sur jobs critiques (admin)
+- [ ] GitHub Environment `production` créé + required reviewers (admin)
+- [ ] Secret scanning + push protection (admin)
 - [ ] Dependabot maintenu (déjà présent)
 
 ### 2.2 Secrets & clés
@@ -41,24 +41,16 @@ Toute clé ayant touché un sandbox ou un environnement non-prod **doit être ro
 - [ ] Inventaire de toutes les clés ayant touché sandbox / non-prod
 - [ ] Rotation des clés concernées
 - [ ] Confirmation : aucune PEM / private key dans le repo, logs, artifacts, history
-- [ ] SC_DEPLOYER_PEM uniquement dans Environment `production` (pas en secret global si possible)
+- [ ] SC_DEPLOYER_PEM uniquement dans Environment `production`
 - [ ] LIA Ops PEM uniquement dans Vellum vault (jamais GitHub)
 
 ### 2.3 Workflows sensibles
 
-Workflows utilisant `SC_DEPLOYER_PEM` (à durcir) :
-- deploy-agents-marketplace.yml
-- deploy-marketplaces.yml
-- deploy-scs.yml / deploy-staking.yml / deploy-treasury.yml / deploy-tro-gov.yml / deploy-venue-split.yml / deploy-wave3.yml
-- update-pack-prices.yml
-- issue-pack-collections.yml / configure-pack-collections.yml / mint-*
-- microtest-* / redeploy-tro-staking.yml
-
-Actions recommandées :
-- [ ] Ajouter `environment: production` sur les jobs qui lisent le secret
-- [ ] Conserver le gate `confirm_mainnet=DEPLOY_MAINNET`
-- [ ] Cleanup PEM en `if: always()` (déjà présent sur plusieurs)
-- [ ] Interdire `pull_request_target` (déjà absent — confirmer)
+- [x] Pattern `environment: production` appliqué sur deploy-agents-marketplace
+- [ ] Appliquer le même pattern sur : deploy-marketplaces, deploy-scs, deploy-staking, deploy-treasury, deploy-tro-gov, deploy-venue-split, deploy-wave3, update-pack-prices, issue-*, mint-*, microtest-*, redeploy-*
+- [x] Gate `confirm_mainnet=DEPLOY_MAINNET` conservé
+- [x] Cleanup PEM en `if: always()`
+- [x] Absence de `pull_request_target` confirmée
 
 ### 2.4 Slot & surface publique
 
@@ -68,8 +60,8 @@ Actions recommandées :
 
 ### 2.5 Vellum
 
-- [ ] Politique tag-only : pas d’auto-pull sur branches
-- [ ] Documenté dans VELLUM_WORKFLOW_MAP.md (déjà paper-first, secrets dans vault)
+- [x] Doctrine paper-first + secrets dans vault déjà documentée
+- [ ] Politique tag-only formalisée (pas d’auto-pull sur branches)
 
 ---
 
@@ -96,10 +88,10 @@ Actions recommandées :
 
 ---
 
-## 5. Prochaine étape immédiate après merge
+## 5. Prochaine étape après merge
 
 - Exécuter les actions manuelles ci-dessus
-- Ouvrir PR de hardening workflows (ajout `environment: production`)
-- Passer à Sprint 1 (preuves on-chain) uniquement quand Sprint 0 est vert
+- Appliquer `environment: production` sur le reste des workflows SC
+- Passer à Sprint 1 uniquement quand Sprint 0 est vert
 
 **Doctrine** : fail-closed · paper-first · no commercial GO jusqu’à smoke réel + My Packs NFT + conformité.
