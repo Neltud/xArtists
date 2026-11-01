@@ -4,6 +4,7 @@ name: Deploy venue-split
 # Secret: SC_DEPLOYER_PEM (Repository secret)
 # Mainnet (chain=1) requires confirm_mainnet = DEPLOY_MAINNET
 # Does NOT set VITE_VENUE_CODEHASH_OK — verify explorer first.
+# Sprint 0: environment production required for secret access.
 
 on:
   workflow_dispatch:
@@ -53,6 +54,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    environment: production   # Sprint 0
     env:
       CHAIN_ID: ${{ github.event.inputs.chain }}
       INSTITUTION_ADDR: ${{ github.event.inputs.institution_addr }}
@@ -156,7 +158,6 @@ jobs:
           set -euo pipefail
           echo "Deploy chain=${CHAIN_ID} proxy=${PROXY} wasm=${WASM}"
           set +e
-          # mxpy 12: nonce auto-fetched if omitted (no --recall-nonce)
           LOG=$(mxpy contract deploy \
             --bytecode="${WASM}" \
             --pem="${RUNNER_TEMP}/deployer.pem" \
