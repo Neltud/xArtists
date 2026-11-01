@@ -1,6 +1,7 @@
 name: Mint 3 packs + transfer to admin
 
 # Micro-price mint of Pulse/Yield/Sentinel via deployer PEM, transfer NFTs to admin, restore prices.
+# Sprint 0: environment production required for secret access.
 on:
   workflow_dispatch:
     inputs:
@@ -26,6 +27,7 @@ jobs:
   mint-transfer:
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    environment: production   # Sprint 0
     env:
       SC: ${{ github.event.inputs.sc_address }}
       ADMIN: ${{ github.event.inputs.admin_address }}
@@ -121,17 +123,15 @@ jobs:
           admin_hex = Address.new_from_bech32(ADMIN).to_hex()
 
           for n in items:
-              ident = n["identifier"]  # e.g. XAIPLS-2cf72b-01
+              ident = n["identifier"]
               col = n["collection"]
               nonce = int(n.get("nonce") or 0)
-              # data: ESDTNFTTransfer@token@nonce@qty@receiver
               token_hex = col.encode().hex()
               nonce_hex = format(nonce, "x") or "0"
               if len(nonce_hex) % 2:
                   nonce_hex = "0" + nonce_hex
               qty_hex = "01"
               data = f"ESDTNFTTransfer@{token_hex}@{nonce_hex}@{qty_hex}@{admin_hex}"
-              # nonce
               acc = json.load(urllib.request.urlopen(f"{API}/accounts/{DEP}"))
               tx_nonce = acc.get("nonce", 0)
               print(f"Transfer {ident} → admin nonce={tx_nonce}")
@@ -149,7 +149,6 @@ jobs:
               ]
               r = subprocess.run(cmd, capture_output=True, text=True)
               out = (r.stdout or "") + (r.stderr or "")
-              # scrub secrets
               lines = [ln for ln in out.splitlines() if "PRIVATE" not in ln.upper()]
               print("\n".join(lines[-20:]))
               if r.returncode != 0:
@@ -161,7 +160,6 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
-          # 1 / 2 / 3 EGLD
           restore() {
             local PT="$1" PRICE="$2"
             NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
