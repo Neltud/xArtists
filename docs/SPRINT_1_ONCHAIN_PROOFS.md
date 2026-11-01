@@ -1,51 +1,50 @@
 # Sprint 1 — Preuves on-chain & verrouillage technique
 
-**Statut** : PRÊT À DÉMARRER (après Sprint 0 vert)  
-**Dépendance** : Sprint 0 criteria met (branch protection, environment production, CODEOWNERS, keys rotated)
+**Statut** : EN COURS (docs + CI codeHash)  
+**Dépendance** : Sprint 0 code mergé (PR #222) · admin residual pour VERT total  
+**Branche de travail récente** : `sprint-1/ci-codehash-owner`
 
 ## Objectifs
 
-1. Build reproductible + hash épinglé
-2. Vérification codeHash on-chain vs hash épinglé
-3. Owner SC → multisig + timelock
-4. Micro-preuve d’achat pack complet documentée
-5. Pause d’urgence testée
-6. Politique de prix explicite + CID IPFS définitifs
+1. Build reproductible + hash épinglé  
+2. Vérification codeHash on-chain vs hash épinglé  
+3. Owner SC → multisig + timelock  
+4. Micro-preuve d’achat pack complet documentée  
+5. Pause d’urgence testée  
+6. Politique de prix explicite + CID IPFS définitifs  
 
-## Checklist détaillée
+## Checklist
 
 ### 1.1 Build & hash
-- [ ] CI produit un artefact wasm déterministe
-- [ ] Hash SHA-256 du bytecode épinglé dans un fichier versionné (`contracts/*/CODEHASH.md` ou data/contracts.json)
-- [ ] Job CI échoue si le hash on-chain ne correspond pas (optionnel post-deploy)
+- [x] `data/contracts.json` codeHash pins  
+- [x] `scripts/verify_pinned_codehashes.py` (11/11 match live 2026-11-01)  
+- [x] CI Regression : step « Verify pinned codeHashes »  
+- [ ] Artefact wasm déterministe local documenté (optionnel post-build)  
 
 ### 1.2 Owner & upgrade control
-- [ ] Identifier l’owner actuel de chaque SC critique (agents-marketplace, nft-marketplace, treasury, etc.)
-- [ ] Migrer ownership vers multisig + timelock (ou documenter le plan et le délai)
-- [ ] Vérifier que l’upgrade n’est possible que via le chemin contrôlé
+- [x] Owner actuel identifié (EOA deployer) — voir `OWNER_MULTISIG_PLAN.md`  
+- [ ] Multisig + timelock exécuté ou plan daté accepté  
+- [ ] `data/contracts.json` section owners  
 
-### 1.3 Micro-preuve d’achat (plus petit pack = Sentinel 50 €)
-- [ ] Quote Rule 1 validée
-- [ ] Paiement test (sandbox ou réel contrôlé)
-- [ ] NFT reçu dans le wallet acheteur / custody
-- [ ] Supply débitée
-- [ ] Fonds arrivés dans le bucket attendu
-- [ ] Annulation / remboursement testé et journalisé
+### 1.3 Micro-preuve d’achat
+- [x] Runbook `MICRO_PROOF_BUY_PACK.md`  
+- [ ] Exécution Variante A ou B journalisée  
 
 ### 1.4 Pause d’urgence
-- [ ] Fonction pause/unpause présente et testée
-- [ ] Exercice documenté (qui, quand, résultat)
+- [x] Endpoints `set_paused` / `is_paused` présents (agents, escrow, …)  
+- [x] Runbook `PAUSE_EXERCISE.md`  
+- [ ] Exercice journalisé (hashes)  
 
 ### 1.5 Prix & IPFS
-- [ ] Prix packs verrouillés (110/75/50 € Rule 1)
-- [ ] CID IPFS définitifs (plus de temporaires)
+- [x] Rule 1 110/75/50 documenté  
+- [ ] CID IPFS définitifs (plus de temporaires)  
 
 ## Critère de sortie
 
-- Rapport d’achat réel de bout en bout (screenshot + tx hashes + balances)
-- Pause testée
-- codeHash épinglé en CI
-- Owner plan multisig/timelock documenté ou exécuté
+- Rapport d’achat réel de bout en bout (screenshot + tx hashes + balances)  
+- Pause testée  
+- codeHash épinglé en CI ✅  
+- Owner plan multisig/timelock documenté ou exécuté  
 
 ## Doctrine
 
