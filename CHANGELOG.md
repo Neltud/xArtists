@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.126.3](https://github.com/Neltud/xArtists/compare/v0.126.2...v0.126.3) (2026-11-01)
+
+
+### Documentation
+
+* **sprint-2:** operator card B PayBox + compliance progress after S1-A VERT ([#240](https://github.com/Neltud/xArtists/issues/240)) ([4e32cf3](https://github.com/Neltud/xArtists/commit/4e32cf36dc0fbe5328ad9bb04fe32df015dd78b0))
+
 ## [0.126.2](https://github.com/Neltud/xArtists/compare/v0.126.1...v0.126.2) (2026-11-01)
 
 
