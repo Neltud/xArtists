@@ -1,49 +1,84 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-01T12:43:16.746Z",
+  "updatedAt": "2026-11-01T19:22:08.882Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1793536996221",
-      "timestamp": "12:43",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.41 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
+      "id": "rss-CoinTelegraph-0-1793542620000",
+      "timestamp": "14:17",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-0-1793525898000",
+      "id": "rss-CoinTelegraph-1-1793540433000",
+      "timestamp": "13:40",
+      "source": "CoinTelegraph",
+      "title": "DeepSeek developing AI agent requiring less human input: Report",
+      "link": "https://cointelegraph.com/news/deepseek-developing-ai-agent-requiring-less-human-input-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793525898000",
       "timestamp": "09:38",
       "source": "CoinTelegraph",
       "title": "Binance says phase one of withdrawals opens after $6.3B hack",
       "link": "https://cointelegraph.com/news/binance-says-phase-one-of-withdrawals-opens-after-63b-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1793519078000",
+      "id": "rss-CoinTelegraph-3-1793519078000",
       "timestamp": "07:44",
       "source": "CoinTelegraph",
       "title": "FBI blames North Korea for record $6.3B Binance hack",
       "link": "https://cointelegraph.com/news/fbi-blames-north-korea-for-record-63b-binance-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1793460961000",
+      "id": "rss-CoinTelegraph-4-1793460961000",
       "timestamp": "15:36",
       "source": "CoinTelegraph",
       "title": "Binance says 90% of stolen assets replenished, targets Sunday withdrawals",
       "link": "https://cointelegraph.com/news/binance-hack-90-percent-replenished?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1793460406000",
+      "id": "rss-CoinTelegraph-5-1793460406000",
       "timestamp": "15:26",
       "source": "CoinTelegraph",
       "title": "Bitcoin held up better than expected after Binance hack, Strive CEO says",
       "link": "https://cointelegraph.com/markets/bitcoin-binance-hack-strive-ceo?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-4-1793459395000",
-      "timestamp": "15:09",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "id": "rss-CoinDesk-0-1793552400000",
+      "timestamp": "17:00",
+      "source": "CoinDesk",
+      "title": "AI agents bypassed crypto spending limits without human approval, researchers find in a new test",
+      "link": "https://www.coindesk.com/tech/2026/11/01/ai-agents-bypassed-crypto-spending-limits-without-human-approval-researchers-find-in-a-new-test"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793545200000",
+      "timestamp": "15:00",
+      "source": "CoinDesk",
+      "title": "The key races to watch for the 2026 election",
+      "link": "https://www.coindesk.com/policy/2026/11/01/the-key-races-to-watch-for-the-2026-election"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793545200000",
+      "timestamp": "15:00",
+      "source": "CoinDesk",
+      "title": "Crypto card startups are racking up losses just to buy your loyalty with big rewards",
+      "link": "https://www.coindesk.com/business/2026/11/01/crypto-card-startups-are-racking-up-losses-just-to-buy-your-loyalty-with-big-rewards"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793541600000",
+      "timestamp": "14:00",
+      "source": "CoinDesk",
+      "title": "Crypto PACs made big Republican push in final weeks before November 3 election",
+      "link": "https://www.coindesk.com/policy/2026/11/01/crypto-pacs-made-big-republican-push-in-final-weeks-before-november-3-election"
+    },
+    {
+      "id": "egld-1793536996221",
+      "timestamp": "12:43",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.41 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-5-1793456872000",
@@ -163,41 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Binance hackers raced to move billions before it could be frozen",
       "link": "https://cointelegraph.com/magazine/binance-hackers-raced-to-move-billions-before-could-be-frozen?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793386918000",
-      "timestamp": "19:01",
-      "source": "CoinTelegraph",
-      "title": "Tether’s excess reserves nearly double to $8B as Q3 profit hits $1.5B",
-      "link": "https://cointelegraph.com/news/tethers-excess-reserves-nearly-double-to-8b-as-q3-profit-hits-15b?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793382507000",
-      "timestamp": "17:48",
-      "source": "CoinTelegraph",
-      "title": "Coinbase leads crypto stock selloff following $6.3B Binance hack",
-      "link": "https://cointelegraph.com/markets/coinbase-leads-crypto-stock-selloff-shares-tumble?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793380171000",
-      "timestamp": "17:09",
-      "source": "CoinTelegraph",
-      "title": "Crypto Biz: Bitcoin’s quantum threat is becoming an economic problem",
-      "link": "https://cointelegraph.com/news/bitcoin-quantum-threat-ripple-bank-usdc-vaneck-crypto-biz?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793422892000",
-      "timestamp": "05:01",
-      "source": "CoinDesk",
-      "title": "Bitcoin stolen from Binance tops Tesla’s holdings and is over twice El Salvador’s reserve",
-      "link": "https://www.coindesk.com/markets/2026/10/31/bitcoin-stolen-from-binance-tops-tesla-s-holdings-and-is-over-twice-el-salvador-s-reserve"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793407736000",
-      "timestamp": "00:48",
-      "source": "CoinDesk",
-      "title": "OpenAI reportedly cuts fundraising and valuation targets amid AI jitters",
-      "link": "https://www.coindesk.com/business/2026/10/30/openai-reportedly-cuts-fundraising-target-amid-ai-jitters"
     }
   ]
 }
