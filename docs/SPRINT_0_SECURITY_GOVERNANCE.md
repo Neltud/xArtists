@@ -1,6 +1,6 @@
 # Sprint 0 — Gel des risques & sécurisation
 
-**Statut** : EN COURS (démarré 2026-11-01)  
+**Statut** : EN COURS (démarré 2026-11-01) — package code prêt  
 **Branche** : `sprint-0/governance-hardening`  
 **Objectif** : Aucune clé exposée connue · main protégée · Vellum tag-only · slot absent du site public  
 **Décision commerciale** : No-Go jusqu’à clôture Sprint 0 + preuves S1–S2
@@ -28,13 +28,13 @@ Toute clé ayant touché un sandbox ou un environnement non-prod **doit être ro
 
 - [x] CODEOWNERS ajouté
 - [x] SECURITY.md
-- [x] SPRINTS_MASTER.md
-- [x] environment: production sur deploy-agents-marketplace.yml
+- [x] SPRINTS_MASTER.md + Sprint 1–4 skeletons
+- [x] environment: production sur 5 workflows critiques (voir 2.3)
 - [ ] Branch protection sur `main` (admin)
 - [ ] Required status checks sur jobs critiques (admin)
 - [ ] GitHub Environment `production` créé + required reviewers (admin)
 - [ ] Secret scanning + push protection (admin)
-- [ ] Dependabot maintenu (déjà présent)
+- [x] Dependabot maintenu
 
 ### 2.2 Secrets & clés
 
@@ -44,12 +44,23 @@ Toute clé ayant touché un sandbox ou un environnement non-prod **doit être ro
 - [ ] SC_DEPLOYER_PEM uniquement dans Environment `production`
 - [ ] LIA Ops PEM uniquement dans Vellum vault (jamais GitHub)
 
-### 2.3 Workflows sensibles
+### 2.3 Workflows sensibles — environment production
 
-- [x] Pattern `environment: production` appliqué sur deploy-agents-marketplace
-- [ ] Appliquer le même pattern sur : deploy-marketplaces, deploy-scs, deploy-staking, deploy-treasury, deploy-tro-gov, deploy-venue-split, deploy-wave3, update-pack-prices, issue-*, mint-*, microtest-*, redeploy-*
-- [x] Gate `confirm_mainnet=DEPLOY_MAINNET` conservé
-- [x] Cleanup PEM en `if: always()`
+**Déjà hardenés :**
+- [x] deploy-agents-marketplace.yml
+- [x] deploy-marketplaces.yml
+- [x] update-pack-prices.yml
+- [x] deploy-scs.yml
+- [x] mint-3-packs-to-admin.yml
+
+**Restants (même pattern à appliquer après merge) :**
+- issue-pack-collections.yml / configure-pack-collections.yml / issue-agent-pack-collections.yml
+- microtest-dao.yml / microtest-tro-stake.yml / microtest-treasury-dust.yml
+- redeploy-tro-staking.yml / deploy-staking.yml / deploy-treasury.yml / deploy-tro-gov.yml / deploy-venue-split.yml / deploy-wave3.yml
+- mint-test-buypack.yml
+
+- [x] Gate `confirm_mainnet=DEPLOY_MAINNET` (ou équivalent) conservé
+- [x] Cleanup PEM en `if: always()` sur les jobs hardenés
 - [x] Absence de `pull_request_target` confirmée
 
 ### 2.4 Slot & surface publique
@@ -91,7 +102,7 @@ Toute clé ayant touché un sandbox ou un environnement non-prod **doit être ro
 ## 5. Prochaine étape après merge
 
 - Exécuter les actions manuelles ci-dessus
-- Appliquer `environment: production` sur le reste des workflows SC
+- Appliquer `environment: production` sur le reste des workflows SC listés en 2.3
 - Passer à Sprint 1 uniquement quand Sprint 0 est vert
 
 **Doctrine** : fail-closed · paper-first · no commercial GO jusqu’à smoke réel + My Packs NFT + conformité.
