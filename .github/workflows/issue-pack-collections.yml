@@ -1,5 +1,6 @@
 name: Issue pack NFT collections + setPackCollection
 
+# Sprint 0: environment production required for secret access.
 on:
   workflow_dispatch:
     inputs:
@@ -33,6 +34,7 @@ jobs:
   issue:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    environment: production   # Sprint 0
     env:
       CHAIN_ID: ${{ github.event.inputs.chain }}
       SC_ADDRESS: ${{ github.event.inputs.sc_address }}

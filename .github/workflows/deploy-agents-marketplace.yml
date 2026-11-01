@@ -1,6 +1,7 @@
 name: Deploy agents-marketplace
 
 # Uses secret SC_DEPLOYER_PEM (never logged). Supports deploy OR upgrade of buyPack bytecode.
+# Sprint 0: environment production required for secret access.
 on:
   workflow_dispatch:
     inputs:
@@ -54,6 +55,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    environment: production   # Sprint 0: required reviewers + secrets scoped to this environment
     env:
       CHAIN_ID: ${{ github.event.inputs.chain }}
       FEE_BPS: ${{ github.event.inputs.fee_bps }}

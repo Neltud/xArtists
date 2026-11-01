@@ -2,6 +2,7 @@ name: Update pack prices (setPackPrice)
 
 # Manual re-evaluation of Pulse / Yield / Sentinel prices on agents-marketplace.
 # Funds flow to SC owner → can be directed to LIA Vellum trading wallet.
+# Sprint 0: environment production required for secret access.
 on:
   workflow_dispatch:
     inputs:
@@ -33,6 +34,7 @@ jobs:
   set-prices:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    environment: production   # Sprint 0
     env:
       SC: ${{ github.event.inputs.sc_address }}
       SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
@@ -67,7 +69,6 @@ jobs:
           import os, subprocess, time, json, urllib.request
 
           def egld_to_atomic(s: str) -> str:
-              # support "1", "1.5", "0.001"
               from decimal import Decimal
               d = Decimal(s.strip())
               atomic = int(d * Decimal(10**18))
@@ -90,7 +91,6 @@ jobs:
               with urllib.request.urlopen(f"{api}/accounts/{addr}") as r:
                   return int(json.load(r).get("nonce", 0))
 
-          # resolve deployer address
           from pathlib import Path
           from multiversx_sdk import UserPEM
           deployer = UserPEM.from_file(Path(pem)).public_key.to_address().to_bech32()
@@ -129,3 +129,7 @@ jobs:
           echo ""
           echo "SC: ${{ github.event.inputs.sc_address }}"
           echo "Explorer: https://explorer.multiversx.com/accounts/${{ github.event.inputs.sc_address }}"
+
+      - name: Cleanup PEM
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/deployer.pem"

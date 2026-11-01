@@ -5,6 +5,7 @@ name: Deploy Smart Contracts
 #   SC_DEPLOYER_PEM  preferred (ephemeral deployer)
 #   LIA_WALLET_PEM   legacy name, same role
 # Mainnet (chain=1) blocked unless confirm_mainnet = DEPLOY_MAINNET
+# Sprint 0: environment production required for secret access.
 
 on:
   workflow_dispatch:
@@ -58,6 +59,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    environment: production   # Sprint 0
     env:
       LIA_CHAIN_ID: ${{ github.event.inputs.chain }}
       FEE_BPS: ${{ github.event.inputs.fee_bps }}

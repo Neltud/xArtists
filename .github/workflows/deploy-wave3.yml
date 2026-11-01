@@ -19,6 +19,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    environment: production   # Sprint 0
     env:
       CHAIN_ID: ${{ github.event.inputs.chain }}
       SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}

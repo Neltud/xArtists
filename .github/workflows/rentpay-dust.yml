@@ -15,6 +15,7 @@ on:
 jobs:
   rentpay:
     runs-on: ubuntu-latest
+    environment: production   # Sprint 0
     steps:
       - name: Checkout
         uses: actions/checkout@v4
