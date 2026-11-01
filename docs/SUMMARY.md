@@ -565,3 +565,4 @@
   * [Prompt Grok — reprise du sprint xArtists](lia-copilot-tca-2026-10-28/prompt-grok-reprise-2026-10-28.md)
 * [TCA Academy — pilote de masterclasses](tca-academy-pilote-2026-10-28/README.md)
   * [Cours 1 — Sfumato : dessiner sans tout cerner](tca-academy-pilote-2026-10-28/cours-01-sfumato.md)
+* [Sprint 2 — État de validation commerciale](sprint-2-validation-commerciale.md)
