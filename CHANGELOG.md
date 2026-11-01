@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.126.0] — 2026-11-01
+
+* **probe:** public fallback moves to the 1 Nov mainnet probe (epoch 2280, EGLD $3.44, mcap $106.92M, LIA Ops 0.907888 EGLD / nonce 1487). Stop serving the 30 Oct chrome (epoch 2278, nonce 1479).
+* **ops:** record the 30 Oct 17:20–17:29 UTC LIA Ops burst (8 txs, TROMEX removeLiquidity, 7.09 EGLD to the $TRO owner). That burst broke the published freeze. It is not a trading go-live and it does not authorise another signature.
+* **go-live copy:** workflow default `VITE_LIA_LIVE_TRADING` is 0. Day 9/29 of Upbit notice 207379109. The Bithumb FET window (2–6 Nov) is not an EGLD clearance. No lift notice indexed on 1 Nov.
+* **ci:** Pages artifact copy returns to the repo root before writing `_site`. `BUILD_ID.txt` catches up to 0.126.0 (it was still 0.124.0).
+
 ## [0.125.2](https://github.com/Neltud/xArtists/compare/v0.125.1...v0.125.2) (2026-10-31)
 
 

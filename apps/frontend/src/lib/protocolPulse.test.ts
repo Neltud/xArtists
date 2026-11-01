@@ -50,6 +50,19 @@ describe('upbitPosture', () => {
     expect(week.daysUntilHardEnd).toBe(5)
   })
 
+
+  it('is day 9 of the extension on 1 Nov 2026 and records the ops breach', () => {
+    const row = upbitPosture(Date.parse('2026-11-01T05:48:00Z'))
+    expect(row.phase).toBe('extended')
+    expect(row.day).toBe(9)
+    expect(row.daysUntilDecisionWeek).toBe(15)
+    expect(row.daysUntilHardEnd).toBe(20)
+    expect(row.label).toMatch(/0,907888/)
+    expect(row.label).toMatch(/1487/)
+    expect(row.label).toMatch(/Pas de swap/)
+    expect(row.label).toMatch(/pas un go-live trading/)
+  })
+
   it('stays paper after 20 nov until an explicit maintain notice', () => {
     const row = upbitPosture(Date.parse('2026-11-21T00:00:00Z'))
     expect(row.phase).toBe('after')

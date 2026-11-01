@@ -80,9 +80,10 @@ export function upbitPosture(now = Date.now()): UpbitPosture {
         'Upbit (notice 207379109, 23 oct 06:02 UTC) étend la surveillance EGLD/KRW, EGLD/BTC et EGLD/USDT jusqu’au 16–20 nov 2026. ' +
         'Bithumb prolonge le même jour le warning EGLD (et FET). Ce n’est pas un delist, ce n’est pas un maintien. ' +
         `Encore ${clock.daysUntilDecisionWeek} j avant le 16 nov, ${clock.daysUntilHardEnd} j avant la fin dure (21 nov 00:00 UTC). ` +
-        'Statut wallet Upbit au 30 oct 2026 : retraits EGLD ouverts, dépôts bloqués, désignation « 유의 » toujours affichée. ' +
+        'Dernier statut wallet Upbit observé le 30 oct 2026 : retraits EGLD ouverts, dépôts bloqués, désignation « 유의 » toujours affichée. Aucune notice de levée indexée au 1er nov. ' +
         'Reprise des retraits ≠ levée du warning. La fenêtre FET Bithumb (2–6 nov) n’est pas une levée EGLD. ' +
-        'VITE_LIA_LIVE_TRADING peut armer une micro-signature xPortal (15 USD / trade, 40 USD / jour) ; ce n’est pas un broadcast autonome. ' +
+        'VITE_LIA_LIVE_TRADING défaut workflow = 0 (fail-closed). Une variable dépôt à 1 n’arme qu’une micro-signature xPortal, pas un broadcast autonome. ' +
+        'Le 30 oct 17:20–17:29 UTC, LIA Ops a signé malgré le gel : nonce 1479→1486, sortie LP TROMEX, swaps xExchange, transfert 7,09 EGLD vers le owner $TRO. Repli 1er nov : 0,907888 EGLD, nonce 1487. Ce n’est pas une autorisation. ' +
         'Pas de swap LIA Ops, pas de claimFees. Paybox reste fail-closed sans preuve IPN. ' +
         'Ce déploiement est le go-live du site en lecture, pas un go-live trading.',
     }

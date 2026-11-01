@@ -140,6 +140,7 @@ jobs:
         run: |
           cd apps/frontend
           node scripts/write-build-info.mjs
+          cd ../..
           mkdir -p _site
           cp -a apps/frontend/dist/. _site/
           touch _site/.nojekyll
