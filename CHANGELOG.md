@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.126.1](https://github.com/Neltud/xArtists/compare/v0.126.0...v0.126.1) (2026-11-01)
+
+
+### Documentation
+
+* **sprint-1/2:** operator card micro-proof A + Sprint 2 compliance skeleton ([#225](https://github.com/Neltud/xArtists/issues/225)) ([098609d](https://github.com/Neltud/xArtists/commit/098609dc68b1012581c09206bd704c3fb7283446))
+
 ## [0.126.0](https://github.com/Neltud/xArtists/compare/v0.125.2...v0.126.0) (2026-11-01)
 
 
