@@ -1,0 +1,24 @@
+# xArtists CODEOWNERS — Sprint 0 governance
+# Required reviewers for sensitive paths.
+# Owner: @Neltud (single maintainer model until team expansion)
+
+# Default
+* @Neltud
+
+# Critical security & CI/CD
+.github/ @Neltud
+.github/workflows/ @Neltud
+CODEOWNERS @Neltud
+
+# Smart contracts & deploy surface
+contracts/ @Neltud
+**/mx-*/ @Neltud
+
+# Payment / orders / access-api
+access-api/ @Neltud
+**/paybox* @Neltud
+**/orders* @Neltud
+
+# LIA / Vellum / go-live gates
+lia/ @Neltud
+docs/ @Neltud
