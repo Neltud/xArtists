@@ -14,6 +14,7 @@
   * [Contrat du pilote — prix, paiement et livraison](security/payment-pilot-contract.md)
   * [État vérifié — PayBox et LIA](security/prod-live-2026-10-29.md)
   * [Smoke Sentinel — paiement réel en prod](security/smoke-paybox-prod-2026-10-29.md)
+  * [Guide public — Packs IA et abonnements Whop](security/guide-public-packs-whop.md)
 * [xArtists — Projet et dapp](presentation/README.md)
   * [Vision et mission](presentation/vision-et-mission.md)
   * [Découvrir la dapp](presentation/decouvrir-la-dapp.md)
