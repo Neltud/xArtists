@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.126.2](https://github.com/Neltud/xArtists/compare/v0.126.1...v0.126.2) (2026-11-01)
+
+
+### Documentation
+
+* **sprint-1:** micro-preuve A VERT — buyPack Pulse journal 2026-11-01 ([#238](https://github.com/Neltud/xArtists/issues/238)) ([6fe32ea](https://github.com/Neltud/xArtists/commit/6fe32ea0bf9364c3574216940f6ca70caff48ca2))
+
 ## [0.126.1](https://github.com/Neltud/xArtists/compare/v0.126.0...v0.126.1) (2026-11-01)
 
 
