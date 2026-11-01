@@ -1,7 +1,7 @@
 # Sprint 0 — Gel des risques & sécurisation
 
-**Statut** : EN COURS — package code prêt (8 workflows hardenés)  
-**Branche** : `sprint-0/governance-hardening` (tip ~69280dd2)  
+**Statut** : CODE MERGÉ sur main (PR #222) — **admin residual** pour VERT  
+**Checklist admin détaillée** : [ADMIN_CHECKLIST_SPRINT_0.md](./ADMIN_CHECKLIST_SPRINT_0.md)  
 **Objectif** : Aucune clé exposée connue · main protégée · Vellum tag-only · slot absent du site public  
 **Décision commerciale** : No-Go jusqu’à clôture Sprint 0 + preuves S1–S2
 
@@ -26,10 +26,10 @@ Toute clé ayant touché un sandbox ou un environnement non-prod **doit être ro
 
 ### 2.1 Gouvernance repo (code + admin)
 
-- [x] CODEOWNERS
+- [x] CODEOWNERS (racine)
 - [x] SECURITY.md
 - [x] SPRINTS_MASTER.md + Sprint 1–4 skeletons
-- [x] environment: production sur **8 workflows** critiques
+- [x] environment: production sur **20 workflows** SC (PR #222)
 - [ ] Branch protection sur `main` (admin)
 - [ ] Required status checks (admin)
 - [ ] GitHub Environment `production` + required reviewers (admin)
@@ -44,27 +44,9 @@ Toute clé ayant touché un sandbox ou un environnement non-prod **doit être ro
 - [ ] SC_DEPLOYER_PEM uniquement dans Environment `production`
 - [ ] LIA Ops PEM uniquement dans Vellum vault
 
-### 2.3 Workflows sensibles — environment production
+### 2.3 Workflows sensibles — 20/20 sous environment production
 
-**Hardened (8) :**
-1. deploy-agents-marketplace.yml
-2. deploy-marketplaces.yml
-3. update-pack-prices.yml
-4. deploy-scs.yml
-5. mint-3-packs-to-admin.yml
-6. configure-pack-collections.yml
-7. microtest-dao.yml
-8. redeploy-tro-staking.yml
-
-**Restants (même pattern) :**
-- issue-pack-collections.yml / issue-agent-pack-collections.yml
-- microtest-tro-stake.yml / microtest-treasury-dust.yml
-- deploy-staking.yml / deploy-treasury.yml / deploy-tro-gov.yml / deploy-venue-split.yml / deploy-wave3.yml
-- mint-test-buypack.yml
-
-- [x] Gates confirm_* conservés
-- [x] Cleanup PEM `if: always()` sur les jobs hardenés
-- [x] Absence de `pull_request_target` confirmée
+Voir PR #222. Gates confirm_* · cleanup PEM · pas de pull_request_target.
 
 ### 2.4 Slot & surface publique
 
@@ -79,33 +61,15 @@ Toute clé ayant touché un sandbox ou un environnement non-prod **doit être ro
 
 ---
 
-## 3. Critères de sortie Sprint 0
+## 3. Critères de sortie Sprint 0 (VERT)
 
 | Critère | Preuve |
 |---------|--------|
-| Aucune clé exposée connue | Inventaire + rotation |
+| 20 workflows environment production | PR #222 mergée |
 | main protégée | Capture Settings → Branches |
 | Environment production | Capture Settings → Environments |
-| CODEOWNERS actif | Fichier + reviews |
-| Slot absent du site public | Review Pages + search |
-| Vellum tag-only | Doc + procédure |
-
----
-
-## 4. Actions manuelles (admin — Neltud)
-
-1. Settings → Branches → protéger `main`
-2. Settings → Environments → `production` + required reviewers
-3. Secret scanning + push protection
-4. Lier `SC_DEPLOYER_PEM` à l’environment `production`
-5. Rotation clés sandbox si applicable
-
----
-
-## 5. Après merge
-
-- Actions admin ci-dessus
-- Finir le hardening des workflows restants
-- Sprint 1 (preuves on-chain) uniquement quand Sprint 0 vert
+| SC_DEPLOYER_PEM scoped environment | Capture Environment secrets (noms) |
+| Secret scanning + push protection | Capture Security |
+| CODEOWNERS | Fichier racine |
 
 **Doctrine** : fail-closed · paper-first · no commercial GO jusqu’à smoke réel + My Packs NFT + conformité.

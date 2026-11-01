@@ -35,10 +35,11 @@ jobs:
         with:
           fetch-depth: 1
 
+      # No cache: 'pip' — this job does not pip install; empty cache path
+      # fails setup-python@v5 post-run ("Cache folder path ... doesn't exist").
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: 'pip'
 
       - name: Fast regression (single process)
         env:
