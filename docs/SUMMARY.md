@@ -16,6 +16,7 @@
   * [Smoke Sentinel — paiement réel en prod](security/smoke-paybox-prod-2026-10-29.md)
   * [Guide public — Packs IA et abonnements Whop](security/guide-public-packs-whop.md)
   * [Audit V3 — Checkout et paiements](security/audit-v3-checkout-2026-11-01.md)
+  * [Addendum V3 — Cache NFT et correctifs P1](security/addendum-v3-nft-correctifs-2026-11-01.md)
 * [xArtists — Projet et dapp](presentation/README.md)
   * [Vision et mission](presentation/vision-et-mission.md)
   * [Découvrir la dapp](presentation/decouvrir-la-dapp.md)
