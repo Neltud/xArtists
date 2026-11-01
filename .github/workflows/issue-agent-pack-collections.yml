@@ -2,6 +2,7 @@ name: Issue agent pack NFT collections
 
 # Issues 3 mainnet NFT collections, grants ESDTRoleNFTCreate to agents-marketplace SC,
 # then setPackCollection on the SC. Uses secret SC_DEPLOYER_PEM only.
+# Sprint 0: environment production required for secret access.
 on:
   workflow_dispatch:
     inputs:
@@ -57,6 +58,7 @@ jobs:
   issue-and-configure:
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    environment: production   # Sprint 0
     env:
       SC_ADDRESS: ${{ github.event.inputs.sc_address }}
       TICKER_PULSE: ${{ github.event.inputs.ticker_pulse }}
