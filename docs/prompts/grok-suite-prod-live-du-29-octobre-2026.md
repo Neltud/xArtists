@@ -1,14 +1,18 @@
 ---
-description: >-
-  Consignes Grok : cours EGLD marché, Whop via PayBox Markets et reprise des
-  rails prod.
+description: 'P0 du 30 octobre : smoke paiement réel, alignement paper B et statut unique.'
 hidden: true
 noIndex: true
 ---
 
 # Grok — suite PROD LIVE du 29 octobre 2026
 
-## Priorité stricte ce soir — instruction Nelson à 19:21 CET
+### Consigne P0 du 30 octobre — état de référence
+
+Lire d’abord [État vérifié — PayBox et LIA](../security/prod-live-2026-10-29.md). PayBox MODE prod est armé ; aucun paiement réel n’est attesté dans cette recette. L’option **B paper** est préparée localement sur `fix/p0-paper-align-20261030`, sans déploiement ni armement du host Vellum. Ordre de clôture : un Sentinel réel avec preuve serveur, puis alignement front/rebuild, publication du statut et vérification des entêtes HTTP. La création de branche GitHub par ChatGPT a été refusée avec HTTP 403 ; utiliser le patch vérifiable, sans supposer une PR existante.
+
+Les consignes du 29 octobre ci-dessous sont historiques. Elles ne demandent pas d’activer le host, d’effectuer un bootstrap ou de reprendre Whop/bot/vidéo/LLM dans le P0 actuel. Ne pas confondre un brouillon GitBook ou un build local avec un déploiement.
+
+### Priorité stricte ce soir — instruction Nelson à 19:21 CET
 
 **P0 : Paybox Verifone prod, smoke Sentinel réel, puis armement LIA sur son host.** Le correctif de cours marché et Whop / PayBox Markets sont **P2** et ne bloquent pas cette séquence. Nelson accepte pour ce soir le taux ops fixe `EGLD_EUR_RATE=3.24` ; il ne doit pas être présenté comme un cours marché automatique.
 
@@ -17,7 +21,7 @@ noIndex: true
 3. Sur le **host LIA/Vellum distinct**, poser `LIA_LIVE_TRADING=1` sous gates AND. Préparer le BOOTSTRAP 0.001 EGLD et laisser Nelson signer via xPortal. Vérifier le `tx_hash` réel et son contenu avant validation.
 4. WHOOP santé reste retiré du correctif ; ne créer ni panneau, ni variables, ni migration de santé.
 
-### Accès réellement contrôlés dans cette session
+#### Accès réellement contrôlés dans cette session
 
 * Render est connecté au workspace `tea-dba7q5rrjlhs73986otg`. Le service exact est `srv-dbh35rt9fdbs73a4i100`, lié à main ; dernier déploiement observé `dep-dbhol395efls7396coa0`, statut live, commit `5f5ed762c8b37e89ec0a4fbfa3a96ddc3ce8ba2e`.
 * Le health relu reste `paybox_mode: preprod`, `paybox_configured: true`, `lia_live_trading: "0"`. La présence d’une configuration ne prouve pas que les valeurs merchant sont LIVE.
@@ -30,13 +34,13 @@ Cette priorité remplace l’ordre d’exécution des sections et kits conservé
 
 ***
 
-## Correction prioritaire de Nelson — Whop commerce
+### Correction prioritaire de Nelson — Whop commerce
 
 Nelson a précisé **« Whop pas whoop »**, avec une capture de l’annonce PayBox Markets / Whop. La consigne précédente sur un espace WHOOP santé provenait d’une mauvaise interprétation et est annulée.
 
 **Ne pas appliquer le précédent kit `XARTISTS_LIVE_FX_WHOOP_2026-10-29.zip`** ni le commit local `d16a1930559f42e59797d7d804a903792c11c6b7`. Son empreinte publiée `3b83264e5dd15a4c82742150df87d4e6203630a4e0199e79220eb0e35f81eb9b` identifie une version retirée. Ne pas créer le panneau santé, les variables WHOOP ou la migration 002. Si cet ancien diff a déjà été appliqué ailleurs, vérifier la branche et retirer seulement ses changements erronés par une revue explicite.
 
-### Kit corrigé — cours EGLD marché et passation Whop
+#### Kit corrigé — cours EGLD marché et passation Whop
 
 * [Télécharger le kit corrigé : patch, manifeste et consignes](../.gitbook/assets/XARTISTS_EGLD_LIVE_WHOP_2026-10-29.zip)
 * Archive : **14 094 octets** ; SHA-256 : `8b32c79924c7d386d86363565e829e86d312bbbc9828a469e1c9c337d4c9ea68`.
@@ -46,7 +50,7 @@ Nelson a précisé **« Whop pas whoop »**, avec une capture de l’annonce Pay
 * Le patch ne contient aucune intégration WHOOP santé. Son code concerne le marché EGLD ; son document `services/access-api/LIVE_FX_AND_WHOP.md` prépare Whop. **L’intégration Whop n’est pas encore réalisée.**
 * Le code API/frontend n’est pas poussé ni déployé : l’accès GitHub d’écriture reste indisponible. Une publication GitBook met à jour les consignes et le kit, sans appliquer ce patch.
 
-### Travail Grok
+#### Travail Grok
 
 1. Relire main, vérifier l’archive et son manifeste. Avec un accès GitHub autorisé, créer la branche et exécuter `git apply --check live-egld-market.patch`, puis appliquer, tester et ouvrir la PR. Adapter aux changements récents sans écraser les autres travaux.
 2. Déployer API et Pages après intégration. Vérifier `fx_mode: live`, `/v1/market/egld` et une quote portant `fx.as_of`. **Retirer seulement alors** les anciennes variables de taux fixes. Le marché est horodaté : cache 30 s, observation de moins de 120 s, quote 60 s maximum. Les entrées client et les valeurs fixes sont ignorées. Panne fournisseur : 503 / prix indisponible. Aucun nouveau taux numérique fixe.
@@ -55,7 +59,7 @@ Nelson a précisé **« Whop pas whoop »**, avec une capture de l’annonce Pay
 5. Présenter l’article, le marchand, le prix actuel, la devise, les frais, le renouvellement éventuel et le total avant toute demande d’achat. La confirmation de cette opération précise et l’approbation passkey appartiennent à Nelson. Le GO de déploiement ne désigne pas un article à acheter. Suivre ensuite l’identifiant de requête jusqu’à son statut final et recueillir reçu / accès livré.
 6. Pour commercialiser les packs xArtists sur Whop, vérifier d’abord le compte marchand, les produits et les prix, puis définir leur confirmation serveur authentifiée. Ne pas supposer qu’un achat Whop confirme un pack Sentinel.
 
-### Deux services PayBox à distinguer
+#### Deux services PayBox à distinguer
 
 Le checkout carte existant utilise **Paybox Verifone** : ses variables `PAYBOX_SITE / RANG / IDENTIFIANT / HMAC_KEY / ENV` et son IPN concernent ce rail. **PayBox Markets de MoonPay** utilise son accès OAuth/MCP et ses autorisations propres. Modifier les secrets Verifone n’active pas Whop.
 
@@ -73,7 +77,7 @@ Le point de contrôle historique ci-dessous reste daté ; cette correction rempl
 
 Grok, reprends l’exécution. Termine le travail possible sur chaque rail, consigne les prérequis réellement manquants, et fournis les preuves. Le GO humain est acquis ; la disponibilité des secrets, du host et des signatures doit être vérifiée séparément.
 
-## 1. Base vérifiée — ne pas repartir d’un ancien état
+### 1. Base vérifiée — ne pas repartir d’un ancien état
 
 | Élément                                     | Observation                                                                                                                           |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
@@ -101,16 +105,16 @@ Sources :
 * [Statut agrégé](https://neltud.github.io/xArtists/data/lia_status.json)
 * [Dernier run Vellum publié](https://neltud.github.io/xArtists/data/vellum_last_run.json)
 
-## 2. Lot immédiat — fermer les écarts de preuve
+### 2. Lot immédiat — fermer les écarts de preuve
 
 1. Relire main, les PR ouvertes et les derniers runs ; annoncer les chemins que tu modifies pour éviter les écrasements entre agents.
 2. Conserver la séparation : access-api PayBox garde `LIA_LIVE_TRADING=0` ; le runtime de trading se configure sur **son propre hôte**.
 3. Ne pas relancer un build Pages déjà vert sans changement utile. Le front live est maintenant servi ; le prochain travail porte sur le runtime Vellum, les statuts contradictoires et les recettes.
 4. Si les secrets marchand LIVE ou l’accès host manquent, enregistrer ce blocage et avancer sur les autres lots. Aucun secret dans le chat, GitBook, GitHub, les logs ou les artefacts.
 
-## 3. PayBox marchand LIVE — bascule cohérente, puis une recette
+### 3. PayBox marchand LIVE — bascule cohérente, puis une recette
 
-### Configuration Render
+#### Configuration Render
 
 Cible exclusive : [xartists-access-api](https://dashboard.render.com/web/srv-dbh35rt9fdbs73a4i100).
 
@@ -144,7 +148,7 @@ Déployer après enregistrement du jeu complet. Capturer le deploy ID, le SHA et
 
 `paybox_configured: true` atteste la présence d’une configuration, pas l’acceptation du compte par Verifone. Vérifier aussi le refus sans JWT, les quotes serveur et l’ordre des champs HMAC.
 
-### Smoke prod
+#### Smoke prod
 
 Préparer **un seul Sentinel à 50 EUR**, prix canonique serveur. Ne pas créer un tarif de test plus bas sans décision explicite sur le catalogue. Nelson valide le wallet et la carte ; ne pas utiliser une carte de test sur le TPE prod.
 
@@ -159,11 +163,11 @@ Preuves requises :
 
 Le retour navigateur `?paid=`, le ticket seul et une réponse JSON fabriquée ne ferment pas la recette. Identifier précisément si le rejeu utilise le retour marchand signé ou l’IPN originale.
 
-### Rollback PayBox
+#### Rollback PayBox
 
 La désactivation immédiate consiste à vider `PAYBOX_HMAC_KEY`, puis redéployer et vérifier le mode off. Pour restaurer preprod, remettre **le jeu complet sandbox cohérent** et `PAYBOX_ENV=preprod`. Changer seulement l’environnement tout en conservant les identifiants LIVE n’est pas une restauration sandbox attestée.
 
-## 4. LIA — identifier le host et réconcilier les sources
+### 4. LIA — identifier le host et réconcilier les sources
 
 Lire d’abord :
 
@@ -182,7 +186,7 @@ Exiger les gates AND : réseau mainnet/chainID 1, codehash piné, destinataire e
 
 **Limite du code actuel :** `buildTxFromIntent` accepte le BOOTSTRAP explicite. Il refuse les autres actions en demandant une cotation et une transaction vérifiées. `runDecisionCycle` produit des intents paper. Ne pas annoncer que le flag active à lui seul un moteur swap/staking réel ; ne pas remplacer un swap manquant par un transfert.
 
-## 5. Première preuve LIA — BOOTSTRAP de 0.001 EGLD maximum
+### 5. Première preuve LIA — BOOTSTRAP de 0.001 EGLD maximum
 
 Préparer un draft contrôlable avant la signature humaine :
 
@@ -208,7 +212,7 @@ Après signature, vérifier un **nouveau** hash on-chain : succès, hash, sender
 
 Ce dépôt atteste un appel au splitter ; il ne prouve pas encore un swap rentable ou une boucle de trading autonome.
 
-## 6. Statuts publics — montrer les trois états distinctement
+### 6. Statuts publics — montrer les trois états distinctement
 
 Traiter le décalage observé :
 
@@ -224,7 +228,7 @@ Publier les sorties réelles et contrôler les copies servies dans `data/`, `app
 
 Si du code change : PR ciblée, tests utiles des gates et de la confirmation, build frontend et contrôles de release existants. Aucun test désactivé pour obtenir un vert. Conserver la présentation publique séparée des consignes opérateur sous Prompts.
 
-## 7. Rapport de fin obligatoire
+### 7. Rapport de fin obligatoire
 
 Rendre les résultats séparément :
 
