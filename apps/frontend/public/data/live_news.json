@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-10-31T21:01:22.463Z",
+  "updatedAt": "2026-11-01T04:34:45.177Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1793480481995",
-      "timestamp": "21:01",
+      "id": "egld-1793507684636",
+      "timestamp": "04:34",
       "source": "EGLD",
-      "title": "Cotation publique · $3.40 (API MultiversX economics)",
+      "title": "Cotation publique · $3.43 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -53,25 +53,39 @@
       "link": "https://cointelegraph.com/news/blockchain-investigator-chainalysis-hit-by-cybersecurity-incident?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinDesk-0-1793469600000",
+      "id": "rss-CoinDesk-0-1793495405000",
+      "timestamp": "01:10",
+      "source": "CoinDesk",
+      "title": "FBI confirms North Korea's role in $6 billion Binance hack, asks DeFi community to block BTC, ETH, SOL addresses",
+      "link": "https://www.coindesk.com/policy/2026/10/31/fbi-confirms-north-korea-s-role-in-usd6-billion-binance-hack-asks-defi-community-to-block-btc-eth-sol-addresses"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793469600000",
       "timestamp": "18:00",
       "source": "CoinDesk",
       "title": "Bitcoin's white paper turns 18, and small businesses are still paying for the bailouts it answered",
       "link": "https://www.coindesk.com/opinion/2026/10/31/bitcoin-s-white-paper-turns-18-and-small-businesses-are-still-paying-for-the-bailouts-it-answered"
     },
     {
-      "id": "rss-CoinDesk-1-1793462970000",
+      "id": "rss-CoinDesk-2-1793462970000",
       "timestamp": "16:09",
       "source": "CoinDesk",
       "title": "A stolen iPhone, $14,000 in losses and London's crypto theft problem",
       "link": "https://www.coindesk.com/business/2026/11/01/a-stolen-iphone-usd14-000-in-losses-and-london-s-crypto-theft-problem"
     },
     {
-      "id": "rss-CoinDesk-2-1793462400000",
+      "id": "rss-CoinDesk-3-1793462400000",
       "timestamp": "16:00",
       "source": "CoinDesk",
       "title": "Traders are already placing leveraged bets on Anthropic’s IPO using crypto contracts",
       "link": "https://www.coindesk.com/business/2026/10/31/traders-are-already-placing-leveraged-bets-on-anthropic-s-ipo-using-crypto-contracts"
+    },
+    {
+      "id": "egld-1793480481995",
+      "timestamp": "21:01",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.40 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinDesk-3-1793460250000",
@@ -184,20 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Recap: How Binance’s record $6.3B hack unfolded",
       "link": "https://cointelegraph.com/news/recap-binances-record-63b-hack-unfolded?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793378990000",
-      "timestamp": "16:49",
-      "source": "CoinTelegraph",
-      "title": "As it happened: Binance’s record $6.3B crypto hack",
-      "link": "https://cointelegraph.com/news/live-updates-binance-63b-hack-linked-to-north-koreas-tradertraitor?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793369614000",
-      "timestamp": "14:13",
-      "source": "CoinDesk",
-      "title": "Wall Street analysts urge investors to buy crypto stocks after $6.3 billion Binance hack",
-      "link": "https://www.coindesk.com/markets/2026/10/30/wall-street-analysts-urge-investors-to-buy-crypto-stocks-on-weakness-after-usd6-3-billion-binance-hack"
     }
   ]
 }
