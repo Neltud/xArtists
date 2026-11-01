@@ -15,6 +15,7 @@ jobs:
   dust:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    environment: production   # Sprint 0
     env:
       SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
       DEPLOYER: erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g
@@ -44,7 +45,6 @@ jobs:
           set -euo pipefail
           NONCE=$(curl -s "https://api.multiversx.com/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
           echo "nonce=$NONCE"
-          # mxpy expects atomic units (1e18) as integer string for --value in recent CLI
           mxpy contract call "$TREASURY" \
             --pem="${RUNNER_TEMP}/deployer.pem" \
             --function receiveAndSplit \
