@@ -2,6 +2,7 @@ name: Microtest DAO
 
 # Owner-only smoke: setLpWeight + createProposal on tro-governance
 # Secret: SC_DEPLOYER_PEM
+# Sprint 0: environment production required for secret access.
 
 on:
   workflow_dispatch:
@@ -19,6 +20,7 @@ jobs:
   microtest:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment: production   # Sprint 0
     env:
       SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
       DEPLOYER: erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g
@@ -88,7 +90,7 @@ jobs:
               rd=(d.get("data") or {}).get("data") or {}
               print(func, rd.get("returnCode"), rd.get("returnData"))
           q("getProposalCount")
-          q("getLpWeight")  # may need arg
+          q("getLpWeight")
           PY
 
       - name: Cleanup

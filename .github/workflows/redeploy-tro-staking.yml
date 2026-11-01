@@ -1,5 +1,6 @@
 name: Redeploy tro-staking (new address)
 # Old SC has no #[upgrade] endpoint → cannot upgrade. Deploy NEW + update addresses.
+# Sprint 0: environment production required for secret access.
 on:
   workflow_dispatch:
     inputs:
@@ -19,6 +20,7 @@ jobs:
   redeploy:
     runs-on: ubuntu-latest
     timeout-minutes: 50
+    environment: production   # Sprint 0
     env:
       CHAIN_ID: "1"
       PROXY: https://gateway.multiversx.com
@@ -73,7 +75,6 @@ jobs:
             --gas-limit=60000000 --proxy="$PROXY" --chain="$CHAIN_ID" --nonce="$NONCE" \
             --arguments "str:${TRO_TOKEN}" --send --wait-result 2>&1) || true
           echo "$LOG"
-          # Prefer SCDeploy event address via API (mxpy grep often wrong)
           sleep 3
           ADDR=$(python3 <<'PY'
           import urllib.request, json, re, sys
@@ -102,7 +103,6 @@ jobs:
           CH=$(curl -s "$API/accounts/$ADDR" | python3 -c "import sys,json; print(json.load(sys.stdin).get('codeHash',''))")
           echo "codeHash=$CH"
           echo "codehash=$CH" >> "$GITHUB_OUTPUT"
-          # verify getTroToken
           python3 <<PY
           import urllib.request, json, base64
           addr="$ADDR"
@@ -122,7 +122,6 @@ jobs:
           ADDR="${{ steps.deploy.outputs.address }}"
           test -n "$ADDR"
           NONCE=$(curl -s "$API/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
-          # 1 TRO = 1e6 atomic (6 decimals)
           mxpy contract call "$ADDR" \
             --function="ESDTTransfer" \
             --arguments "str:TRO-94c925" "1000000" "str:stake" \

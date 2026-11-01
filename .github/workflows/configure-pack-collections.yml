@@ -1,6 +1,7 @@
 name: Configure pack collections (roles + setPackCollection)
 
 # Use after collections already issued. SC_DEPLOYER_PEM only.
+# Sprint 0: environment production required for secret access.
 on:
   workflow_dispatch:
     inputs:
@@ -29,6 +30,7 @@ jobs:
   configure:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    environment: production   # Sprint 0
     env:
       SC_ADDRESS: ${{ github.event.inputs.sc_address }}
       COL_PULSE: ${{ github.event.inputs.col_pulse }}
