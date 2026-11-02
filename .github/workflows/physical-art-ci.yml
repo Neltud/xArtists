@@ -24,13 +24,9 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: services/access-api/package-lock.json
-      - name: Backend dependency installation (existing API lockfile drift)
+      - name: Locked backend dependencies (strict, PR #274)
         working-directory: services/access-api
-        run: |
-          # API dependency lock drift predates this PR. Keep the lock intact;
-          # run behavioral tests with the pinned direct deps from package.json.
-          npm install --ignore-scripts --no-audit --no-fund --package-lock=false
-          echo "::warning title=API dependency lock drift::The checked-in services/access-api/package-lock.json is not compatible with npm ci; regenerate it in a dedicated lockfile fix."
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Test Shopify HMAC, physical custody and wallet security
         working-directory: services/access-api
         run: npm test
