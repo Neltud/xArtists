@@ -19,6 +19,8 @@ import { resolveAuthenticatedBuyer } from './buyerAuth.mjs'
 import { buildPackQuote } from './quote.mjs'
 import { loadDailySignal } from './signals.mjs'
 import { mintDispatchConfig } from './mintDispatch.mjs'
+import {studioMediaConfig,mediaJwt,mediaActor,readCreatorMedia,
+  uploadStudioMedia,pinStudioMetadata} from './creatorMedia.mjs'
 import {
   physicalConfig, issuePhysicalSession, physicalActor, merchantAuthorized,
   registerPhysicalWork, readPhysicalWork, changePhysicalWork,
@@ -121,10 +123,72 @@ async function handleRequest(req, res) {
       orders_backend: process.env.DATABASE_URL ? 'postgres' : 'file',
       physical_works: physicalConfig().enabled ? 'configured' : 'off',
       physical_store: physicalConfig().storage,
+      studio_media_upload:studioMediaConfig().enabled ? 'pinata_ipfs' : 'off',
     })
     return
   }
 
+
+
+  // Artist-owned image/video IPFS upload, disabled unless PINATA_JWT + PG + explicit gate.
+  // The wallet alone signs the mint; this backend does NOT submit any tx.
+  if (req.method === 'GET' && pth === '/v1/studio/media/config') {
+    json(res,200,{ok:true,...studioMediaConfig(),mint_requires_artist_signature:true})
+    return
+  }
+  if (req.method === 'POST' && pth === '/v1/studio/media/challenge') {
+    if (!studioMediaConfig().enabled) {
+      json(res,503,{ok:false,error:'studio_upload_not_configured'});return
+    }
+    const {body}=await readRawAndBody(req)
+    try{
+      const ch=createChallenge(String(body.address||'').trim(),Date.now(),'studio_media')
+      json(res,200,{ok:true,...ch})
+    }catch{json(res,400,{ok:false,error:'invalid_creator_challenge'})}
+    return
+  }
+  if (req.method === 'POST' && pth === '/v1/studio/media/session') {
+    if (!studioMediaConfig().enabled) {
+      json(res,503,{ok:false,error:'studio_upload_not_configured'});return
+    }
+    const {body}=await readRawAndBody(req)
+    const address=String(body.address||'').trim()
+    const valid=typeof body.message==='string'
+      && body.message.startsWith('xArtists Creator Studio media upload login\n')
+      && verifySignedChallenge({address,message:body.message,
+        nonce:body.nonce,signature:body.signature})
+    if(!valid){json(res,401,{ok:false,error:'studio_media_siwx_invalid'});return}
+    try{json(res,200,{ok:true,...mediaJwt(address,JWT_SECRET)})}
+    catch{json(res,401,{ok:false,error:'media_session_unavailable'})}
+    return
+  }
+  if (req.method === 'POST' && pth === '/v1/studio/media/upload') {
+    if (!studioMediaConfig().enabled) {
+      json(res,503,{ok:false,error:'studio_upload_not_configured'});return
+    }
+    const actor=mediaActor(req.headers,JWT_SECRET)
+    if(!actor){json(res,401,{ok:false,error:'studio_media_wallet_required'});return}
+    try{
+      const media=await readCreatorMedia(req)
+      const result=await uploadStudioMedia(media,actor)
+      json(res,201,{ok:true,...result})
+    }catch(e){
+      json(res,e.statusCode||503,{ok:false,error:e.statusCode?e.message:'media_upload_unavailable'})
+    }
+    return
+  }
+  if (req.method === 'POST' && pth === '/v1/studio/media/metadata') {
+    if (!studioMediaConfig().enabled) {
+      json(res,503,{ok:false,error:'studio_upload_not_configured'});return
+    }
+    const actor=mediaActor(req.headers,JWT_SECRET)
+    if(!actor){json(res,401,{ok:false,error:'studio_media_wallet_required'});return}
+    const {body}=await readRawAndBody(req)
+    try{json(res,200,{ok:true,...await pinStudioMetadata(actor,body)})}
+    catch(e){json(res,e.statusCode||503,
+      {ok:false,error:e.statusCode?e.message:'media_metadata_unavailable'})}
+    return
+  }
 
   // Physical work fulfillment is a separate, opt-in channel from PayBox packs.
   // No NFT mint, payment capture, escrow release, NFT transfer or AI appraisal.
