@@ -1,74 +1,81 @@
 ---
 description: >-
-  Préparer une collection, présenter une œuvre et comprendre le lien entre
-  média, NFT et objet physique.
+  Guide pratique et statut réel pour créer sa collection et minter son premier
+  NFT depuis xArtists Studio avec son propre wallet MultiversX mainnet.
 icon: palette
 ---
 
 # Artistes et créateurs
 
-xArtists propose aux artistes un parcours qui relie la préparation d’une œuvre, sa présentation et sa référence numérique. Le Studio est l’espace de création ; le musée, les éditions et les lieux d’exposition donnent un contexte à sa découverte.
+**Le Creator Studio V3 est ouvert aux artistes.** Ils peuvent préparer leurs œuvres, demander la création de leur propre collection NFT sur **MultiversX mainnet**, attribuer le rôle de création si nécessaire et signer le mint d'un premier NFT depuis leur wallet personnel. Le parcours a été corrigé dans [la PR #268](https://github.com/Neltud/xArtists/pull/268), fusionnée, testée et déployée le 2 novembre 2026.
 
-### Préparer le dossier d’une œuvre
+[**Ouvrir le Creator Studio**](https://neltud.github.io/xArtists/create/studio/) · [Voir le code du parcours](https://github.com/Neltud/xArtists/blob/main/docs/CREATOR_MAINNET_MINT.md)
 
-Avant toute publication, réunir un titre, une description, le nom ou la signature de l’auteur, un média de présentation et les conditions d’utilisation. Pour une édition, préciser ce que représente chaque exemplaire. Pour une œuvre physique, documenter le lien avec l’objet réel.
+> **État de validation :** l'interface et les tests automatisés sont en production. Le premier **mint réellement signé par un artiste et confirmé sur Explorer** reste à documenter. Aucun wallet, aucune clé et aucun achat ne sont utilisés par le support pour effectuer une transaction à la place de l'artiste. Ce flux est distinct des achats de packs Genesis par PayBox, qui restent soumis à leur propre validation.
 
-Un dossier clair facilite la lecture par les visiteurs et évite de confondre la possession d’un token avec l’acquisition de tous les droits sur une œuvre.
-
-| Élément             | Question à laquelle répondre                                           |
-| ------------------- | ---------------------------------------------------------------------- |
-| Œuvre               | Quel est l’objet présenté et qui en est l’auteur ?                     |
-| Média               | Quelle image, vidéo ou ressource permet de le découvrir ?              |
-| Collection          | Dans quel ensemble l’œuvre s’inscrit-elle ?                            |
-| Référence numérique | Quel identifiant représente le NFT ou l’édition ?                      |
-| Conditions          | Quels droits, usages ou éléments physiques sont explicitement inclus ? |
-
-### Le parcours du Studio
+## Votre première collection et votre premier NFT
 
 {% stepper %}
 {% step %}
-#### Choisir une collection
+### Connecter son propre portefeuille
 
-Le Studio permet de sélectionner une collection détectée dans le portefeuille ou de préparer une nouvelle collection. La création effective dépend du parcours actif et des autorisations du compte.
+Ouvrez le [Studio xArtists](https://neltud.github.io/xArtists/studio). Utilisez votre wallet artiste **xPortal ou Web Wallet** connecté à MultiversX mainnet. Vous restez propriétaire de votre collection et contrôlez les signatures. Ne communiquez jamais votre seed phrase, PEM ou clé privée.
 {% endstep %}
 
 {% step %}
-#### Préparer l’œuvre et ses informations
+### Émettre une collection NFT
 
-Renseigner les champs proposés et vérifier le média ainsi que les références associées. Certaines étapes peuvent nécessiter un outil ou un service de stockage complémentaire.
+Choisissez un nom de **3 à 20 caractères**, puis un ticker de **3 à 10 caractères A-Z/0-9**. La transaction officielle **`issueNonFungible`** est signée par vous. Le coût d'émission sur MultiversX est de **0,05 EGLD**, auxquels s'ajoutent les frais réseau. Vérifiez les valeurs et le destinataire dans votre wallet avant de signer.
+
+Attendez la réussite sur [MultiversX Explorer](https://explorer.multiversx.com/) ; relevez l'identifiant réel, par exemple `ATELIER-abcdef`. Le ticker seul n'est pas l'identifiant de collection.
 {% endstep %}
 
 {% step %}
-#### Identifier la nature de l’action
+### Vérifier la propriété et le droit de création
 
-Un aperçu ou un enregistrement local sert à préparer le travail. Une émission de collection ou un mint sur la blockchain nécessite une action disponible, la validation du portefeuille et une confirmation réseau.
+Indiquez le véritable identifiant de collection dans le Studio. L'interface consulte l'API publique MultiversX pour contrôler le propriétaire et le rôle **`ESDTRoleNFTCreate`**. Si le rôle existe déjà sur votre adresse, vous pouvez continuer. Sinon, seul le **propriétaire** de la collection peut demander son attribution via **`setSpecialRole`** et signer la transaction.
+
+Après chaque signature, attendez la confirmation de la blockchain. Un simple envoi de transaction ou un identifiant de session n'est **pas** une preuve de réussite.
 {% endstep %}
 
 {% step %}
-#### Présenter et suivre la référence publiée
+### Publier l'œuvre et minter
 
-Après une publication effectivement confirmée, conserver l’identifiant et le lien d’explorateur. La mise en vente, lorsqu’elle est disponible, constitue une étape supplémentaire avec ses propres conditions.
+Préparez le titre, la description, les droits et une image ou vidéo dont vous détenez les autorisations. Publiez réellement le média sur **IPFS** ou à une **URL HTTPS durable** et collez l'URI dans le formulaire : un fichier choisi sur votre ordinateur n'est pas téléversé automatiquement.
+
+Vous pouvez ensuite signer **`ESDTNFTCreate`** pour créer un premier NFT unique (quantité 1), avec des royalties Studio de **0 à 10 %**. Le système exige le rôle de création de votre wallet avant l'envoi.
+{% endstep %}
+
+{% step %}
+### Vérifier votre premier NFT
+
+Vérifiez le statut `success` sur Explorer, le nonce, le nom, le média et la présence du NFT dans **votre portefeuille**. Tant que la transaction reste en attente, ne la renvoyez pas sans vérification : vous risqueriez de créer un doublon.
+
+Le **listing Marketplace**, la certification d'une œuvre physique et les packs Genesis sont des fonctionnalités distinctes avec leurs propres conditions.
 {% endstep %}
 {% endstepper %}
 
-### Œuvres physiques et jumeaux numériques
+## Quel dossier préparer ?
 
-Le terme **phygital** décrit le lien entre une œuvre physique et sa représentation numérique. Un jumeau numérique peut ajouter une restitution visuelle ou des informations sur l’objet. Les outils avancés de reconstruction et de certification font partie des développements progressifs du projet.
+| Élément        | À renseigner                                                               |
+| -------------- | -------------------------------------------------------------------------- |
+| Créateur       | Nom ou signature, et adresse wallet propriétaire                           |
+| Œuvre          | Titre, description, support et droits afférents                            |
+| Média          | URL IPFS ou HTTPS durable et accessible                                    |
+| Collection     | Ticker et véritable identifiant on-chain                                   |
+| On-chain       | TX issue, preuve du rôle NFTCreate, TX mint confirmée                      |
+| Œuvre physique | Conditions de propriété matérielle, certificat et livraison si applicables |
 
-La présence d’un NFT ne suffit pas, à elle seule, à prouver l’authenticité matérielle, la qualité d’une numérisation ou la livraison de l’objet. Ces éléments dépendent du dossier, des justificatifs et des conditions convenues pour l’œuvre.
+## Limites, sécurité et disponibilité
 
-### Présentation, visibilité et apprentissage
+* **Mint direct par l'artiste :** chemin frontend mis à disposition, tests de protocole et CI réussis, premier essai mainnet humain **à confirmer**.
+* **Pack Genesis Pulse / Yield / Sentinel :** vente unique distincte, livraison après paiement et NFT commerciaux **non homologués** dans ce guide.
+* **LIA et trading autonome :** mode paper ; non activé par le parcours créateur.
+* **Stockage :** une URI IPFS ou HTTPS doit être publiée séparément ; ni le NFT ni le Studio ne garantissent à eux seuls une conservation perpétuelle du fichier.
+* **Droits d'auteur et œuvres physiques :** un NFT ne cède pas automatiquement tous les droits patrimoniaux ni le titre de propriété de l'œuvre physique.
 
-Le musée et les lieux d’exposition portent l’expérience de visite. Les éditions permettent de présenter des séries ; l’espace de visibilité et médias explore la mise en avant des créations. TCA Academy est consacré à la transmission artistique, avec des conditions d’accès propres à ses contenus.
+La page [État du produit](etat-du-produit.md) détaille les disponibilités. Les contrats système et le fonctionnement des NFT sont décrits dans la [documentation officielle MultiversX](https://docs.multiversx.com/tokens/nft-tokens/).
 
-L’artiste peut préparer ces usages sans supposer que tous les services de vente, de publicité ou d’exposition sont déjà activés. La page [État du produit](etat-du-produit.md) précise le cadre de la version publique.
+## Pour aller plus loin
 
-### Ce qu’il faut conserver
-
-Garder les fichiers originaux, les autorisations utiles, la description des droits et les références de publication. Le stockage d’un média et l’existence d’un token sont deux composantes différentes : un identifiant blockchain ne garantit pas la disponibilité permanente du fichier auquel il renvoie.
-
-Pour proposer un travail artistique ou une collaboration, consulter [Contribuer et partenariats](contribuer-et-partenariats.md).
-
-***
-
-[Présentation xArtists](./) · [Démarrer](demarrer-sur-mobile.md) · [Disponibilité](etat-du-produit.md)
+[Présentation xArtists](./) · [Démarrer](demarrer-sur-mobile.md) · [Disponibilité](etat-du-produit.md) · [Contribuer et partenariats](contribuer-et-partenariats.md)
