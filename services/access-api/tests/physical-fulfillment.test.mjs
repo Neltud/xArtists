@@ -106,7 +106,7 @@ test('an unpaid, refunded, multi-item, wrong SKU, or cancelled order cannot star
   assert.equal(work.status,'REGISTERED')
   assert.equal(applyPaidOrder(work,paid(work.sku)).applied,true)
   assert.equal(work.status,'ORDER_PAID')
-  assert.throws(()=>applyPaidOrder(work,paid(work.sku,'another-order')),/artwork_already_bound/)
+  assert.throws(()=>applyPaidOrder(work,paid(work.sku,'98765432')),/artwork_already_bound/)
 })
 
 test('carrier label or fulfillment success is not delivered, and delivery is not buyer receipt',()=>{
