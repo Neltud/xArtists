@@ -38,7 +38,8 @@ export function amountFromBps(total: number, bps: number): number {
 }
 
 export function packPoolShare(packId: PackId): number {
-  return AGENT_PACKS.find(p => p.id === packId)?.shareOfPackPoolBps ?? 0
+  // Unknown until a documented pool allocation is published; never fabricate 0 or a yield promise.
+  return null
 }
 
 export function splitterStatus() {
