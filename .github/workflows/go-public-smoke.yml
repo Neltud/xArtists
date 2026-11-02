@@ -10,18 +10,30 @@ on:
       - '.github/workflows/go-public-smoke.yml'
       - 'docs/GO_OPERATOR_CHECKLIST.md'
 
+permissions:
+  contents: read
+
+concurrency:
+  group: go-public-smoke
+  cancel-in-progress: false
+
 jobs:
   smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Pages + access-api probes
+      - name: Probe Pages and access-api
+        shell: bash
         run: |
           set -euo pipefail
           fail=0
           check() {
-            url="$1"
-            code=$(curl -sS -o /tmp/body -w '%{http_code}' --max-time 45 "$url" || echo 000)
+            local url="$1"
+            local output="/dev/null"
+            if [ "$#" -gt 1 ]; then output="$2"; fi
+            local code
+            code=$(curl -sS --retry 2 --retry-delay 2 --max-time 45 \
+              -o "$output" -w '%{http_code}' "$url") || code="000"
             echo "$code  $url"
             if [ "$code" != "200" ]; then fail=1; fi
           }
@@ -33,30 +45,44 @@ jobs:
           check "$BASE/packs/yield/"
           check "$BASE/packs/sentinel/"
           check "$BASE/tro/sale/"
-          check "$BASE/data/lia_status.json"
+          check "$BASE/data/lia_status.json" /tmp/lia_status.json
           check "$BASE/data/signals/daily_signal.json"
-          check "$API/health"
+          check "$API/health" /tmp/access_api_health.json
           check "$API/v1/signals/daily"
           check "$API/v1/tro/bridge/status"
 
-          python3 <<'PY'
-          import json,sys
-          j=json.load(open('/tmp/body'))  # last body may not be health — re-fetch
-          import urllib.request
-          h=json.load(urllib.request.urlopen('https://xartists-access-api.onrender.com/health', timeout=45))
-          print('health', {k:h.get(k) for k in [
-            'ok','paybox_mode','mint_dispatch_enabled','mint_dry_run','mint_live_enabled',
-            'lia_live_trading','signals_daily','tro_solana_bridge','studio_media_upload','physical_works'
-          ]})
-          assert h.get('ok') is True
-          assert h.get('lia_live_trading') in (0,'0',None) or str(h.get('lia_live_trading')) == '0'
-          assert h.get('mint_live_enabled') in (False, None, 'false', 0)
-          assert h.get('tro_solana_bridge') in ('off', None, False)
-          lia=json.load(urllib.request.urlopen('https://neltud.github.io/xArtists/data/lia_status.json', timeout=45))
-          assert lia.get('paper') is True
-          assert int(lia.get('LIA_LIVE_TRADING') or 0) == 0
-          print('lia_status paper OK')
-          PY
+          if [ "$fail" != "0" ]; then
+            echo "::error::At least one public endpoint failed HTTP 200."
+            exit 1
+          fi
 
-          if [ "$fail" != "0" ]; then exit 1; fi
-          echo 'GO public smoke OK'
+          python3 <<'PY'
+          import json
+
+          with open('/tmp/access_api_health.json', encoding='utf-8') as f:
+              h = json.load(f)
+          with open('/tmp/lia_status.json', encoding='utf-8') as f:
+              lia = json.load(f)
+
+          print('API safety flags:', {k: h.get(k) for k in (
+              'ok', 'paybox_mode', 'orders_backend',
+              'mint_dispatch_enabled', 'mint_dry_run', 'mint_live_enabled',
+              'lia_live_trading', 'signals_daily', 'tro_solana_bridge',
+              'studio_media_upload', 'physical_works',
+          )})
+
+          # Fail closed. A separately authorised GO must update this monitor
+          # before deliberately enabling live mint, LIA trading or gated features.
+          assert h.get('ok') is True, 'API not healthy'
+          assert h.get('mint_dry_run') is True, 'mint no longer dry-run'
+          assert h.get('mint_live_enabled') is False, 'live mint enabled'
+          assert type(h.get('mint_dispatch_enabled')) is bool, 'dispatch status unknown'
+          assert str(h.get('lia_live_trading')) == '0', 'live trading enabled or unknown'
+          assert h.get('tro_solana_bridge') == 'off', 'Solana bridge enabled or unknown'
+          assert h.get('studio_media_upload') == 'off', 'Studio upload enabled or unknown'
+          assert h.get('physical_works') == 'off', 'physical commerce enabled or unknown'
+          assert lia.get('paper') is True, 'LIA paper mode not confirmed'
+          assert str(lia.get('LIA_LIVE_TRADING')) == '0', 'LIA trading unsafe or unknown'
+
+          print('GO public smoke OK — public surfaces up, safety flags fail-closed')
+          PY
