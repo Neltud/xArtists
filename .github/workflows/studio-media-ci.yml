@@ -45,21 +45,9 @@ jobs:
       - name: Install frontend
         working-directory: apps/frontend
         run: npm ci --legacy-peer-deps --ignore-scripts
-      - name: Check touched files against preexisting TypeScript baseline
+      - name: Strict global TypeScript (issue 271 resolved)
         working-directory: apps/frontend
-        run: |
-          set +e
-          npm run typecheck > /tmp/studio-typecheck.log 2>&1
-          status=$?
-          set -e
-          if grep -E '^src/(components/CreatorMediaUpload|pages/StudioPage|pages/MarketplacePage|components/market/RwaPhysicalPanel)\.tsx.*error TS[0-9]+' /tmp/studio-typecheck.log; then
-            echo "::error title=Creator Studio regression::TS errors in changed Studio/Marketplace files"
-            exit 1
-          fi
-          if [ "$status" -ne 0 ]; then
-            count=$(grep -c 'error TS[0-9]' /tmp/studio-typecheck.log || true)
-            echo "::warning title=TypeScript baseline issue #271::Global check still reports $count errors outside this PR's changed files"
-          fi
+        run: npm run typecheck
       - name: Production build
         working-directory: apps/frontend
         run: npm run build
