@@ -6,7 +6,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "06:00"
-    open-pull-requests-limit: 6
+    open-pull-requests-limit: 4
     versioning-strategy: "increase"
     ignore:
       - dependency-name: "vite"
@@ -22,6 +22,22 @@ updates:
       - dependency-name: "tailwindcss"
         update-types: ["version-update:semver-major"]
       - dependency-name: "@vitejs/plugin-react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-router-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "recharts"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@multiversx/sdk-core"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@multiversx/sdk-dapp"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react-dom"
         update-types: ["version-update:semver-major"]
     groups:
       minor-patch:
@@ -39,7 +55,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "06:30"
-    open-pull-requests-limit: 4
+    open-pull-requests-limit: 3
     versioning-strategy: "increase"
     ignore:
       - dependency-name: "vite"
@@ -51,6 +67,24 @@ updates:
       - dependency-name: "@typescript-eslint/parser"
         update-types: ["version-update:semver-major"]
       - dependency-name: "@typescript-eslint/eslint-plugin"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@vitejs/plugin-react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-router-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "recharts"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@multiversx/sdk-core"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@multiversx/sdk-dapp"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react-dom"
         update-types: ["version-update:semver-major"]
     groups:
       frontend-minor-patch:
@@ -66,6 +100,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 2
     commit-message:
       prefix: "ci(deps)"
