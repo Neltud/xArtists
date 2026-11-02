@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { asText } from '../lib/safeRender'
 import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
+import PhysicalWorkFlowPanel from '../components/PhysicalWorkFlowPanel'
 
 type Item = {
   id?: string
@@ -120,8 +121,10 @@ export default function RwaCatalogPage() {
         <PhysicalNftCertifier />
       </section>
 
+      <PhysicalWorkFlowPanel />
+
       <p className="text-[10px] text-zinc-600 border-t border-white/5 pt-3">
-        {xaRender("Paper valuations · physical logistics simulated · LIA_LIVE_TRADING=0 ")}</p>
+        {xaRender("Catalogue valorisé en simulation · commandes et livraisons consultables seulement si Shopify et serveur de provenance sont activés · LIA_LIVE_TRADING=0 ")}</p>
       <Link to="/lia" className="btn-secondary text-sm">
         {xaRender("← LIA hub ")}</Link>
     </div>
