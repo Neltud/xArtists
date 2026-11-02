@@ -36,6 +36,14 @@ icon: circle-check
 
 Les montants EGLD doivent provenir d'un devis serveur valide ou du contrat effectivement interrogé ; les équivalences indicatives d'une carte produit ne sont pas des offres irrévocables.
 
+## Contrôle de production post-fusion — 2 novembre 2026
+
+Après la fusion de la [PR #280](https://github.com/Neltud/xArtists/pull/280), le commit [`15f6f14e`](https://github.com/Neltud/xArtists/commit/15f6f14e551921a4a4a2b1838d2f7e12cd907e50) est déployé sur le service **xartists-access-api** (Render : build et déploiement réussis). Le premier workflow [GO public smoke #41513014908](https://github.com/Neltud/xArtists/actions/runs/41513014908) a **réussi**, contrôlant les pages, les endpoints publics, le mode paper LIA et l'absence d'activation de capacités réservées.
+
+Lecture directe de [`/health`](https://xartists-access-api.onrender.com/health) lors de ce contrôle : `paybox_mode=prod`, `orders_backend=postgres`, `mint_dispatch_enabled=false`, `mint_dry_run=true`, `mint_live_enabled=false`, `lia_live_trading=0`, `tro_solana_bridge=off`, `studio_media_upload=off`, `physical_works=off`. Le fichier [`lia_status.json`](https://neltud.github.io/xArtists/data/lia_status.json) confirme `paper=true` et `LIA_LIVE_TRADING=0`.
+
+**Portée de cette preuve :** disponibilité des surfaces publiques et des garde-fous logiciels au moment du contrôle. **Elle ne prouve pas** un paiement carte réel, un callback IPN confirmé, un mint NFT mainnet, la livraison à l'acheteur ou un remboursement. Ces étapes restent **NO-GO commercial** tant qu'une recette réelle contrôlée et son rapprochement n'ont pas été attestés. Les valeurs ci-dessus sont un instantané daté, pas une garantie permanente.
+
 ## À propos des confirmations
 
 Les tests de la PR #262 (Rust, Playwright, audit de sécurité automatisé et fixtures PayBox) et le déploiement GitHub Pages ont réussi. **Cela ne valide ni l'autorisation d'exécuter un ordre autonome, ni un paiement réel, ni un remboursement.**
