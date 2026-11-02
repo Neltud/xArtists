@@ -67,8 +67,7 @@ export default function RevenueSplitterPanel({ packId = null, className = '' }: 
       </ul>
 
       {xaRender(pack && (
-        <p className="text-[11px] text-zinc-500">
-          {xaRender("Part pool ")}{xaRender(pack.name)} : {xaRender(formatBps(pack.shareOfPackPoolBps))} {xaRender(" du bucket « Pack signal pool ». ")}</p>
+        <p className="text-[11px] text-zinc-500">{xaRender(`Part du pool pour ${pack.name} non documentée — aucun pourcentage affiché.`)}</p>
       ))}
 
       <p className="text-[10px] text-zinc-600 leading-relaxed">
