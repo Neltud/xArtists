@@ -298,7 +298,8 @@ export async function getOrderForBuyer(orderId, requester) {
 
 /**
  * Apply authenticated IPN fields only (caller must verify RSA first).
- * On success: status=paid + server_confirmed + payment_verified.
+ * On success: status=paid + server_confirmed + payment_verified + delivery simulated marker.
+ * Response always includes delivery for CI / callers that assert on the return object.
  */
 export async function applyIpn(ipn) {
   return withStore(async ({ load, save }) => {
@@ -331,6 +332,7 @@ export async function applyIpn(ipn) {
           duplicate: true,
           order_id: order.order_id,
           status: order.status,
+          delivery: order.delivery || 'simulated',
           server_confirmed: true,
           dispatch_eligible: true,
         }
@@ -341,28 +343,35 @@ export async function applyIpn(ipn) {
       order.status = 'paid'
       order.authorization = ipn.authorization || null
       order.provider_tx_id = ipn.provider_tx_id || null
-      // Flags required by mintDispatch.assertPaymentAllowsMint
       order.server_confirmed = true
       order.payment_verified = true
-      if (order.delivery !== 'simulated') {
-        order.delivery = 'simulated'
-        order.mint_status = 'awaiting_dispatch'
-        order.delivery_note = 'payment_verified_awaiting_mint_dispatch'
-        order.delivered_at = now
-      }
+      // delivery=simulated = payment verified, mint not production-granted yet
+      order.delivery = 'simulated'
+      order.mint_status = order.mint_status === 'mint_confirmed' ? order.mint_status : 'awaiting_dispatch'
+      order.delivery_note =
+        order.delivery_note || 'payment_verified_awaiting_mint_dispatch'
+      order.delivered_at = order.delivered_at || now
       await save(db)
       return {
         ok: true,
         duplicate: false,
         order_id: order.order_id,
         status: order.status,
+        delivery: order.delivery,
         server_confirmed: true,
         dispatch_eligible: true,
       }
     }
     if (order.status === 'paid') {
       await save(db)
-      return { ok: true, duplicate: true, late: true, order_id: order.order_id, status: order.status }
+      return {
+        ok: true,
+        duplicate: true,
+        late: true,
+        order_id: order.order_id,
+        status: order.status,
+        delivery: order.delivery,
+      }
     }
     const failureStatus = ipn.error_code === '00001' ? 'cancelled' : 'refused'
     if (order.status === failureStatus) {
@@ -381,9 +390,6 @@ export async function applyIpn(ipn) {
   })
 }
 
-/**
- * Fire-and-forget mint dispatch after verified IPN. Never throws to caller.
- */
 export async function triggerMintDispatchSafe(order) {
   try {
     const { maybeDispatchMintAfterPaid } = await import('./mintDispatch.mjs')
