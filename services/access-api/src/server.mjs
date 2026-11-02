@@ -1,6 +1,7 @@
 /**
- * Access API — JWT, SIWX, Paybox System sandbox (v8.3).
+ * Access API — JWT, SIWX, Paybox System (v8.3).
  * Paybox IPN: RSA-SHA256 / 2048 only. Buyer identity: JWT or SIWX.
+ * Post-IPN: optional mintDispatch (dry_run default; live needs explicit env gates).
  */
 import http from 'node:http'
 import { resolveAccessLevel, issueAccessToken, verifyJwt } from './verifyAccess.mjs'
@@ -11,9 +12,11 @@ import {
 } from './paybox.mjs'
 import {
   createOrder, getOrder, getOrderForBuyer, applyIpn, markRedirected, newOrderId, resolveArtistBeneficiary,
+  triggerMintDispatchSafe,
 } from './orders.mjs'
 import { resolveAuthenticatedBuyer } from './buyerAuth.mjs'
 import { buildPackQuote } from './quote.mjs'
+import { mintDispatchConfig } from './mintDispatch.mjs'
 
 const PORT = Number(process.env.PORT || 8787)
 const JWT_SECRET = process.env.ACCESS_JWT_SECRET || process.env.JWT_SECRET || ''
@@ -21,6 +24,7 @@ const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || ''
 const CORS = process.env.CORS_ORIGIN || '*'
 const MOONPAY = moonpayConfig()
 const PAYBOX = payboxConfig()
+const MINT_CFG = mintDispatchConfig()
 const moonpayHits = new Map()
 const MOONPAY_WINDOW_MS = 60_000
 const MOONPAY_MAX = 30
@@ -100,6 +104,10 @@ async function handleRequest(req, res) {
       paybox_ipn_policy: IPN_POLICY,
       fx_env_configured: envFxRate() != null,
       lia_live_trading: process.env.LIA_LIVE_TRADING === '1' ? '1' : '0',
+      mint_dispatch_enabled: MINT_CFG.enabled,
+      mint_dry_run: MINT_CFG.dryRun,
+      mint_live_enabled: MINT_CFG.liveEnabled,
+      mint_micro_price: MINT_CFG.micro,
       service: 'access-api',
       packs: Object.keys(PACK_CATALOG),
       orders_backend: process.env.DATABASE_URL ? 'postgres' : 'file',
@@ -207,7 +215,6 @@ async function handleRequest(req, res) {
       let artist = null
       if (artistRaw) artist = resolveArtistBeneficiary(artistRaw)
       const origin = publicBase()
-      // Fail-closed: absolute HTTPS IPN from env only — no silent origin fallback.
       const ipnUrl = String(process.env.PAYBOX_IPN_URL || '').trim()
       if (!/^https:\/\//i.test(ipnUrl)) {
         json(res, 503, {
@@ -244,12 +251,10 @@ async function handleRequest(req, res) {
 
   if ((req.method === 'POST' || req.method === 'GET') && pth === '/v1/checkout/paybox/ipn') {
     let bodyRaw = ''
-    let bodyParams = {}
     if (req.method === 'POST') {
       try {
         const r = await readRawAndBody(req)
         bodyRaw = r.raw || ''
-        bodyParams = r.body || {}
       } catch (e) {
         const code = Number(e?.statusCode) || 400
         json(res, code, { ok: false, error: e?.message || 'invalid_body' })
@@ -291,6 +296,14 @@ async function handleRequest(req, res) {
       authorization: result.authorization,
       provider_tx_id: result.provider_tx_id,
     })
+
+    // Never fail IPN HTTP on mint dispatch errors
+    let mint = null
+    if (applied.ok && applied.dispatch_eligible) {
+      const fresh = await getOrder(result.ref)
+      mint = await triggerMintDispatchSafe(fresh)
+    }
+
     json(res, applied.ok ? 200 : 400, {
       ok: applied.ok,
       error: applied.reason || undefined,
@@ -299,6 +312,16 @@ async function handleRequest(req, res) {
       duplicate: Boolean(applied.duplicate),
       late: Boolean(applied.late),
       delivery: applied.delivery || 'none',
+      server_confirmed: Boolean(applied.server_confirmed),
+      mint_dispatch: mint
+        ? {
+            ok: Boolean(mint.ok),
+            skipped: Boolean(mint.skipped),
+            reason: mint.reason || null,
+            mode: mint.mode || null,
+            note: mint.note || null,
+          }
+        : null,
     })
     return
   }
@@ -318,8 +341,15 @@ async function handleRequest(req, res) {
       const order = await getOrderForBuyer(orderId, auth.buyer)
       if (!order) { json(res, 404, { ok: false, error: 'unknown_order' }); return }
       json(res, 200, {
-        ok: true, order_id: order.order_id, pack_id: order.pack_id, amount_cents: order.amount_cents,
-        status: order.status, delivery: order.delivery, server_confirmed: order.status === 'paid',
+        ok: true,
+        order_id: order.order_id,
+        pack_id: order.pack_id,
+        amount_cents: order.amount_cents,
+        status: order.status,
+        delivery: order.delivery,
+        server_confirmed: order.server_confirmed === true,
+        payment_verified: order.payment_verified === true,
+        provider_tx_id: order.provider_tx_id || null,
       })
     } catch (e) {
       json(res, e.statusCode || 403, { ok: false, error: String(e.message || e) })
@@ -365,5 +395,7 @@ const server = http.createServer((req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`access-api :${server.address().port} paybox=${PAYBOX.ready} ipn=${IPN_POLICY.algorithm}/${IPN_POLICY.keySize}`)
+  console.log(
+    `access-api :${server.address().port} paybox=${PAYBOX.ready} ipn=${IPN_POLICY.algorithm}/${IPN_POLICY.keySize} mint=${MINT_CFG.enabled ? (MINT_CFG.dryRun ? 'dry_run' : 'live_armed') : 'off'}`,
+  )
 })
