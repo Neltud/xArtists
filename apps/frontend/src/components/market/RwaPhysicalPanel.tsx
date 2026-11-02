@@ -14,7 +14,7 @@ export default function RwaPhysicalPanel() {
           {xaRender(t('market.rwa.title') || 'RWA Physical Art')}
         </h2>
         <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-100">
-          {xaRender(t('market.rwa.badge') || 'Provenance on-chain')}
+          {xaRender(t('market.rwa.badge') || 'Provenance · vérification progressive')}
         </span>
       </div>
       <div className="space-y-2 text-sm text-white/75">
@@ -25,7 +25,7 @@ export default function RwaPhysicalPanel() {
         <ul className="list-inside list-disc space-y-1 text-white/60">
           <li>{xaRender(t('market.rwa.li1') || 'Record de provenance → metadata IPFS + NFT certificat')}</li>
           <li>{xaRender(t('market.rwa.li2') || 'NFC chip ID pour verification phygitale')}</li>
-          <li>{xaRender(t('market.rwa.li3') || 'Escrow / livraison : bridge P2 (rwa_escrow)')}</li>
+          <li>{xaRender(t('market.rwa.li3') || 'Suivi transporteur et réception par wallet : service opt-in (hors escrow)')}</li>
         </ul>
         <div className="flex flex-wrap gap-2 pt-2">
           <Link
