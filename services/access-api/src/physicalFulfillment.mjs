@@ -293,7 +293,11 @@ export function requestPhysicalReassessment(work, actor, input) {
     reviewStatus: 'pending_human', advisory, // rules-based triage, NOT an AI appraisal
     reviewer: null, approvedValue: null,
   }
-  if (reason === 'missing' || reason === 'damaged') work.status = 'DISPUTED'
+  // A condition review before any dispatch is NOT a delivery dispute.
+  if ((reason === 'missing' || reason === 'damaged')
+    && ['SHIPPED','CARRIER_DELIVERED','BUYER_ACCEPTED'].includes(work.status)) {
+    work.status = 'DISPUTED'
+  }
   append(work, 'CONDITION_REVIEW_REQUESTED', 'wallet', {
     reason, risk: advisory.risk, human_review_required: true,
   })
@@ -343,16 +347,20 @@ async function database() {
 async function physicalTx(operation) {
   const p = await database()
   const client = await p.connect()
+  let schemaCreated = false
   try {
     await client.query('BEGIN')
     await client.query('SELECT pg_advisory_xact_lock($1)', [PG_LOCK])
     if (!ready) {
       await client.query('CREATE TABLE IF NOT EXISTS xartists_physical_works (id TEXT PRIMARY KEY, sku TEXT UNIQUE NOT NULL, payload JSONB NOT NULL, updated_at TIMESTAMPTZ DEFAULT NOW())')
       await client.query('CREATE TABLE IF NOT EXISTS xartists_physical_deliveries (webhook_id TEXT PRIMARY KEY, body_sha256 TEXT NOT NULL, received_at TIMESTAMPTZ DEFAULT NOW())')
-      ready = true
+      schemaCreated = true
     }
     const result = await operation(client)
     await client.query('COMMIT')
+    // PG DDL is transactional. Never cache schema readiness until the transaction commits:
+    // otherwise an operation failure could roll back CREATE TABLE and leave ready=true.
+    if (schemaCreated) ready = true
     return result
   } catch (e) {
     await client.query('ROLLBACK').catch(()=>{})
