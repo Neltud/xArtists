@@ -1,0 +1,43 @@
+name: Issue 271 — One-shot Vitest lockfile repair
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/frontend/package.json'
+      - 'apps/frontend/package-lock.json'
+      - '.github/workflows/rebuild-frontend-vitest-lockfile.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'fix/issue-271-frontend-types-pass1-20261102'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Regenerate and verify locked frontend dependencies
+        working-directory: apps/frontend
+        run: |
+          npm install --package-lock-only --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+          npm ci --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+          npx vitest --version
+      - name: Commit only frontend lockfile to this PR branch
+        run: |
+          set -euo pipefail
+          test "$GITHUB_HEAD_REF" = 'fix/issue-271-frontend-types-pass1-20261102'
+          git add apps/frontend/package-lock.json
+          if git diff --cached --quiet; then echo "Frontend lockfile is already reproducible"; exit 0; fi
+          git config user.name "xartists-ci[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(types): resolve frontend Vitest dependency tree"
+          git push origin "HEAD:refs/heads/${GITHUB_HEAD_REF}"
