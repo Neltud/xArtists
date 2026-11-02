@@ -41,6 +41,16 @@ Le mode de présentation conserve le trading LIA désactivé. Les scénarios de 
 
 Détenir un NFT, un pack ou $TRO ne constitue pas, par cette présentation, une promesse de revenu, une part de trésorerie ou un droit général aux résultats de LIA. Les droits éventuels d’un produit doivent être décrits dans ses conditions propres.
 
+### $TRO : achat MultiversX et interopérabilité Solana (2 novembre 2026)
+
+La [nouvelle page $TRO — Achat & Solana](https://neltud.github.io/xArtists/tro/sale), livrée via [GitHub PR #277](https://github.com/Neltud/xArtists/pull/277), permet de **vérifier le jeton configuré `TRO-94c925` sur** [**l'explorateur MultiversX**](https://explorer.multiversx.com/tokens/TRO-94c925), et de consulter séparément une plateforme d'échange externe. La présence d'un lien vers le DEX ne garantit ni prix, ni liquidité, ni disponibilité d'achat à un moment donné. Aucun paiement direct n'est exécuté par xArtists sur cette page.
+
+**Bridge Solana : non actif.** Au 2 novembre 2026, xArtists n'a publié aucune preuve vérifiable d'un mint SPL officiel $TRO, d'un escrow MultiversX dédié et audité, ni d'un système sécurisé de validation de transferts entre les deux réseaux. Il n'existe **aucune adresse de dépôt Solana officiellement attestée** dans la dApp. N'envoyez pas vos $TRO vers un compte prétendant servir de bridge ; vérifiez tout nouvel actif Solana via les canaux officiels et les deux explorateurs avant toute opération.
+
+Le [plan technique et les conditions GO/NO-GO du bridge](https://github.com/Neltud/xArtists/blob/main/docs/TRO_SOLANA_BRIDGE_GO_NO_GO.md) précise les invariants de couverture, les contrôles anti-rejeu, la finalité, les multisignatures, les audits et les contraintes de conformité. La vente primaire de tokens, lorsqu'elle est juridiquement applicable, impose une revue dédiée des obligations MiCA en France et dans l'UE. **Une vitrine d'information n'est pas une offre publique de tokens.**
+
+**Les œuvres physiques Shopify/Etsy et les NFT d'artistes sont des parcours commerciaux distincts**. En particulier, un NFT créé et confirmé sur MultiversX ne devient pas automatiquement une œuvre physique livrable ni un actif transférable sur Solana.
+
 ### Où vérifier une information
 
 Pour l’identité d’un actif, utiliser son identifiant exact et l’explorateur. Pour une fonction du produit, consulter [État du produit](etat-du-produit.md). Pour les modalités d’utilisation d’un service, lire les conditions présentées dans la dapp au moment du parcours.
