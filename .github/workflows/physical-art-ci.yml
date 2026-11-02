@@ -1,0 +1,51 @@
+name: Physical Art V1 — API security and frontend typecheck
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'services/access-api/**'
+      - 'apps/frontend/src/components/PhysicalWorkFlowPanel.tsx'
+      - 'apps/frontend/src/pages/RwaCatalogPage.tsx'
+      - '.github/workflows/physical-art-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  physical-access-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/access-api/package-lock.json
+      - name: Locked backend dependencies
+        working-directory: services/access-api
+        run: npm ci --ignore-scripts
+      - name: Test Shopify HMAC, physical custody and wallet security
+        working-directory: services/access-api
+        run: npm test
+  physical-frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Locked frontend dependencies
+        working-directory: apps/frontend
+        run: npm ci --legacy-peer-deps --ignore-scripts
+      - name: TypeScript strict build check
+        working-directory: apps/frontend
+        run: npm run typecheck
+      - name: Production frontend build
+        working-directory: apps/frontend
+        run: npm run build
