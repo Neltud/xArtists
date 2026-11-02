@@ -19,6 +19,11 @@ import { resolveAuthenticatedBuyer } from './buyerAuth.mjs'
 import { buildPackQuote } from './quote.mjs'
 import { loadDailySignal } from './signals.mjs'
 import { mintDispatchConfig } from './mintDispatch.mjs'
+import {
+  physicalConfig, issuePhysicalSession, physicalActor, merchantAuthorized,
+  registerPhysicalWork, readPhysicalWork, changePhysicalWork,
+  processShopifyPhysicalWebhook, readPhysicalRaw,
+} from './physicalFulfillment.mjs'
 
 const PORT = Number(process.env.PORT || 8787)
 const JWT_SECRET = process.env.ACCESS_JWT_SECRET || process.env.JWT_SECRET || ''
@@ -114,7 +119,119 @@ async function handleRequest(req, res) {
       service: 'access-api',
       packs: Object.keys(PACK_CATALOG),
       orders_backend: process.env.DATABASE_URL ? 'postgres' : 'file',
+      physical_works: physicalConfig().enabled ? 'configured' : 'off',
+      physical_store: physicalConfig().storage,
     })
+    return
+  }
+
+
+  // Physical work fulfillment is a separate, opt-in channel from PayBox packs.
+  // No NFT mint, payment capture, escrow release, NFT transfer or AI appraisal.
+  if (req.method === 'GET' && pth === '/v1/physical/config') {
+    json(res, 200, { ok: true, ...physicalConfig(),
+      shopify_webhook_registered: 'operator_must_verify',
+      automatic_escrow_release: false, automatic_nft_transfer: false })
+    return
+  }
+
+  if (req.method === 'POST' && pth === '/v1/webhooks/shopify/physical') {
+    if (!physicalConfig().enabled) {
+      json(res, 503, { ok: false, error: 'physical_fulfillment_not_configured' })
+      return
+    }
+    const raw = await readPhysicalRaw(req)
+    try {
+      const result = await processShopifyPhysicalWebhook(raw, req.headers)
+      json(res, 200, result)
+    } catch (error) {
+      json(res, error.statusCode || 503, { ok: false,
+        error: error.statusCode ? error.message : 'physical_webhook_store_unavailable' })
+    }
+    return
+  }
+
+  if (req.method === 'POST' && pth === '/v1/physical/challenge') {
+    if (!physicalConfig().enabled) {
+      json(res, 503, { ok: false, error: 'physical_fulfillment_not_configured' })
+      return
+    }
+    const { body } = await readRawAndBody(req)
+    try {
+      const challenge = createChallenge(String(body.address || '').trim(), Date.now(), 'physical')
+      json(res, 200, { ok: true, ...challenge })
+    } catch {
+      json(res, 400, { ok: false, error: 'invalid_physical_challenge' })
+    }
+    return
+  }
+
+  if (req.method === 'POST' && pth === '/v1/physical/session') {
+    if (!physicalConfig().enabled) {
+      json(res, 503, { ok: false, error: 'physical_fulfillment_not_configured' })
+      return
+    }
+    const { body } = await readRawAndBody(req)
+    const address = String(body.address || '').trim()
+    const accepted = typeof body.message === 'string' && body.message.startsWith('xArtists physical artwork login\n') && verifySignedChallenge({
+      address, message: body.message, nonce: body.nonce, signature: body.signature,
+    })
+    if (!accepted) { json(res, 401, { ok: false, error: 'physical_siwx_invalid' }); return }
+    try {
+      const issued = issuePhysicalSession(address, JWT_SECRET)
+      json(res, 200, { ok: true, ...issued })
+    } catch { json(res, 401, { ok: false, error: 'physical_session_unavailable' }) }
+    return
+  }
+
+  if (req.method === 'POST' && pth === '/v1/physical/works') {
+    if (!physicalConfig().enabled) {
+      json(res, 503, { ok: false, error: 'physical_fulfillment_not_configured' }); return
+    }
+    const actor = physicalActor(req.headers, JWT_SECRET)
+    if (!actor) { json(res, 401, { ok: false, error: 'physical_wallet_auth_required' }); return }
+    const { body } = await readRawAndBody(req)
+    try { json(res, 201, { ok: true, work: await registerPhysicalWork(body, actor) }) }
+    catch (e) { json(res, e.statusCode || 503, { ok: false, error: e.statusCode ? e.message : 'work_store_unavailable' }) }
+    return
+  }
+
+  if (pth.startsWith('/v1/physical/works/')) {
+    if (!physicalConfig().enabled) {
+      json(res, 503, { ok: false, error: 'physical_fulfillment_not_configured' }); return
+    }
+    const parts = pth.slice('/v1/physical/works/'.length).split('/')
+    const id = parts[0]
+    const action = parts[1] || ''
+    if (req.method === 'GET' && !action) {
+      const actor = physicalActor(req.headers, JWT_SECRET)
+      if (!actor) { json(res, 401, { ok: false, error: 'physical_wallet_auth_required' }); return }
+      try {
+        const work = await readPhysicalWork(id, actor)
+        json(res, work ? 200 : 404, work ? { ok: true, work } : { ok: false, error: 'work_not_found' })
+      } catch (e) {
+        json(res, e.statusCode || 503, { ok: false, error: e.statusCode ? e.message : 'work_store_unavailable' })
+      }
+      return
+    }
+    const actionMap = { 'bind-buyer': 'bind_buyer', 'receipt': 'receipt', 'reassess': 'reassess', 'verify-nft': 'verify_nft' }
+    if (req.method === 'POST' && actionMap[action] && parts.length === 2) {
+      const isAdmin = action === 'bind-buyer' && merchantAuthorized(req.headers)
+      const actor = isAdmin ? 'merchant' : physicalActor(req.headers, JWT_SECRET)
+      if (!actor || (action === 'bind-buyer' && !isAdmin)) {
+        json(res, 403, { ok: false, error: 'physical_actor_not_authorized' }); return
+      }
+      const { body } = await readRawAndBody(req)
+      try {
+        const updated = await changePhysicalWork(id, actor, actionMap[action], body, isAdmin)
+        json(res, updated ? 200 : 404,
+          updated ? { ok: true, ...updated } : { ok: false, error: 'work_not_found' })
+      } catch (e) {
+        json(res, e.statusCode || 503, { ok: false, error: e.statusCode ? e.message : 'work_store_unavailable' })
+      }
+      return
+    }
+    json(res, 405, { ok: false, error: 'physical_method_not_allowed' })
     return
   }
 
