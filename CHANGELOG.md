@@ -1,5 +1,22 @@
 # Changelog — xArtists
 
+## [0.129.0](https://github.com/Neltud/xArtists/compare/v0.128.0...v0.129.0) (2026-11-02)
+
+
+### Features
+
+* **rwa:** physical art provenance, Shopify fulfillment and signed receipts ([#270](https://github.com/Neltud/xArtists/issues/270)) ([2232648](https://github.com/Neltud/xArtists/commit/22326482691e0a145798226d92edc36d74095d7e))
+* **studio:** artist-owned MultiversX mainnet collection and verified first NFT ([#268](https://github.com/Neltud/xArtists/issues/268)) ([f1ee088](https://github.com/Neltud/xArtists/commit/f1ee088abee5ed99586eae96037ece93e0a5e26c))
+* **studio:** direct JPG and MP4 IPFS upload with creator wallet NFT mint ([#273](https://github.com/Neltud/xArtists/issues/273)) ([597e302](https://github.com/Neltud/xArtists/commit/597e302a8b3506a8ca1dcee44cb67bf2636cd1a3))
+* **tro:** safe Solana bridge status and token discovery portal ([#277](https://github.com/Neltud/xArtists/issues/277)) ([0483ecd](https://github.com/Neltud/xArtists/commit/0483ecd4f51b4ccdf1fc93db0dbd82095725a300))
+
+
+### Bug Fixes
+
+* **ci:** enforce reproducible npm ci after issue [#271](https://github.com/Neltud/xArtists/issues/271) lockfile repair ([#275](https://github.com/Neltud/xArtists/issues/275)) ([4085b49](https://github.com/Neltud/xArtists/commit/4085b499d89354eda567a30476694c3469c373c8))
+* **ci:** restore reproducible access-api npm lockfile ([#274](https://github.com/Neltud/xArtists/issues/274)) ([bd62446](https://github.com/Neltud/xArtists/commit/bd624460829cffc129c764b76b676201ffa18739))
+* **types:** restore strict global TypeScript and frontend reproducibility ([#276](https://github.com/Neltud/xArtists/issues/276)) ([8e878c5](https://github.com/Neltud/xArtists/commit/8e878c5d6647dd48270f8f7e176d2b78b1698be1))
+
 ## [0.128.0](https://github.com/Neltud/xArtists/compare/v0.127.0...v0.128.0) (2026-11-02)
 
 
