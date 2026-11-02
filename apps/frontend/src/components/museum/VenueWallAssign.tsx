@@ -18,7 +18,7 @@ import {
   wallLabel,
   loadOwnedWalls,
 } from '../../lib/venueWallSlots'
-import { nftImageUrl, type NFT } from '../../types/nft'
+
 import { useToast } from '../ui/Toast'
 import { canListBuyNft } from '../../config/scStatus'
 
@@ -38,7 +38,7 @@ export default function VenueWallAssign({ onChanged }: { onChanged?: () => void 
   const catalog = VENUE_WALL_CATALOG.find(w => w.wallId === wallId)
 
   const nfts = useMemo(() => {
-    return (account.nfts || []).filter((n: NFT) => n?.identifier).slice(0, 48)
+    return (account.nfts || []).filter(n => n?.identifier).slice(0, 48)
   }, [account.nfts])
 
   const refresh = useCallback(() => {
@@ -168,10 +168,10 @@ export default function VenueWallAssign({ onChanged }: { onChanged?: () => void 
         </p>
       ) : (
         <ul className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-          {xaRender(nfts.map((n: NFT) => {
+          {xaRender(nfts.map(n => {
             const id = n.identifier as string
             const on = slots.includes(id)
-            const thumb = nftImageUrl(n)
+            const thumb = [n.url, n.media?.[0]?.url].find(url => typeof url === 'string' && /^https:\/\//i.test(url)) || ''
             return (
               <li key={id}>
                 <button
