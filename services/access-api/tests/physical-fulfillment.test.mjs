@@ -4,7 +4,7 @@ import crypto from 'node:crypto'
 import sdk from '@multiversx/sdk-core'
 import {
   physicalConfig, verifyShopifyDelivery, issuePhysicalSession, physicalActor,
-  createPhysicalRecord, applyPaidOrder, applyFulfillment, bindBuyer,
+  createPhysicalRecord, applyPaidOrder, applyFulfillment, applyPaymentReversal, bindBuyer,
   confirmPhysicalReceipt, requestPhysicalReassessment, publicWorkView,
   merchantAuthorized, assessConditionRisk, verifyDeclaredPhysicalNft,
 } from '../src/physicalFulfillment.mjs'
@@ -199,4 +199,20 @@ test('NFT linkage requires an on-chain self-created NFT held by the registered a
     await assert.rejects(()=>verifyDeclaredPhysicalNft(invalid,artist),/nft_ownership_or_creator_mismatch/)
     assert.equal(invalid.nftLinkVerified,false)
   }finally {globalThis.fetch=original}
+})
+
+test('late Shopify refund or cancellation places physical receipt on HOLD for human review',()=>{
+  const work=makeWork()
+  applyPaidOrder(work,paid(work.sku))
+  bindBuyer(work,buyer)
+  assert.equal(applyPaymentReversal(work,{id:'different'},'orders/cancelled').applied,false)
+  assert.equal(applyPaymentReversal(work,{order_id:'1234567'},'refunds/create').applied,true)
+  assert.equal(work.status,'DISPUTED')
+  assert.equal(work.paymentReview.reviewStatus,'pending_human')
+  assert.equal(applyPaymentReversal(work,{order_id:'1234567'},'refunds/create').applied,false)
+  assert.equal(applyFulfillment(work,ship(work.sku,'delivered')).applied,true)
+  assert.equal(work.status,'DISPUTED')
+  assert.throws(()=>confirmPhysicalReceipt(work,buyer,
+    {decision:'accepted',evidenceSha256:evidence}),/carrier_delivery_not_confirmed/)
+  assert.equal(work.events.find(e=>e.type==='PAYMENT_REVERSAL_REVIEW').detail.funds_auto_moved,false)
 })
