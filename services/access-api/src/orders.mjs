@@ -4,7 +4,7 @@
  * LIMITS:
  * - File: local wx lock; single host; ephemeral on Render disk.
  * - Postgres: DATABASE_URL required; advisory xact lock; survives Render sleep.
- * - Mint remains simulated — never grants production rights.
+ * - Mint dispatch is optional post-IPN; never grants rights without server_confirmed.
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -69,26 +69,6 @@ function emptyDb() {
   return { schema: SCHEMA, orders: {} }
 }
 
-function withFileLock(fn) {
-  const lock = storePath() + '.lock'
-  const start = Date.now()
-  for (;;) {
-    try {
-      const fd = fs.openSync(lock, 'wx')
-      try {
-        return fn()
-      } finally {
-        fs.closeSync(fd)
-        try { fs.unlinkSync(lock) } catch { /* */ }
-      }
-    } catch (e) {
-      if (e.code !== 'EEXIST') throw e
-      if (Date.now() - start > 5000) throw Object.assign(new Error('orders_lock_timeout'), { statusCode: 503 })
-      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 20)
-    }
-  }
-}
-
 function loadOrdersFile() {
   const p = storePath()
   if (!fs.existsSync(p)) return emptyDb()
@@ -120,7 +100,6 @@ async function getPool() {
     const { default: pg } = await import('pg')
     pool = new pg.Pool({
       connectionString: process.env.DATABASE_URL,
-      // Neon requires TLS. Default: verify certs. Set PGSSL=0 only for local non-TLS Postgres.
       ssl: process.env.PGSSL === '0' ? false : { rejectUnauthorized: true },
       max: 3,
     })
@@ -198,8 +177,6 @@ async function saveOrdersPg(client, db) {
 
 async function withStore(fn) {
   if (!usePostgres()) {
-    // Hold wx lock for the full async critical section (load → mutate → save).
-    // Previous sync-only lock released before await completed → lost concurrent creates.
     const lock = storePath() + '.lock'
     const start = Date.now()
     let fd
@@ -294,6 +271,8 @@ export async function createOrder(input) {
       mint_status: null,
       delivery_note: null,
       delivered_at: null,
+      server_confirmed: false,
+      payment_verified: false,
     }
     db.orders[input.order_id] = order
     await save(db)
@@ -317,6 +296,10 @@ export async function getOrderForBuyer(orderId, requester) {
   return order
 }
 
+/**
+ * Apply authenticated IPN fields only (caller must verify RSA first).
+ * On success: status=paid + server_confirmed + payment_verified.
+ */
 export async function applyIpn(ipn) {
   return withStore(async ({ load, save }) => {
     const db = await load()
@@ -337,13 +320,20 @@ export async function applyIpn(ipn) {
     order.last_ipn_at = now
     order.updated_at = now
     if (ipn.error_code === '00000') {
-      if (order.status === 'paid' && order.delivery === 'simulated') {
+      if (order.status === 'paid' && order.server_confirmed === true) {
         if (ipn.provider_tx_id && order.provider_tx_id &&
             String(ipn.provider_tx_id) !== String(order.provider_tx_id)) {
           return { ok: false, reason: 'provider_tx_mismatch' }
         }
         await save(db)
-        return { ok: true, duplicate: true, order_id: order.order_id, status: order.status, delivery: order.delivery }
+        return {
+          ok: true,
+          duplicate: true,
+          order_id: order.order_id,
+          status: order.status,
+          server_confirmed: true,
+          dispatch_eligible: true,
+        }
       }
       if (!['created', 'redirected'].includes(order.status)) {
         return { ok: false, reason: 'illegal_transition', from: order.status, to: 'paid' }
@@ -351,14 +341,24 @@ export async function applyIpn(ipn) {
       order.status = 'paid'
       order.authorization = ipn.authorization || null
       order.provider_tx_id = ipn.provider_tx_id || null
+      // Flags required by mintDispatch.assertPaymentAllowsMint
+      order.server_confirmed = true
+      order.payment_verified = true
       if (order.delivery !== 'simulated') {
         order.delivery = 'simulated'
-        order.mint_status = 'mint_confirmed'
-        order.delivery_note = 'payment_verified_mint_simulated_no_production_rights'
+        order.mint_status = 'awaiting_dispatch'
+        order.delivery_note = 'payment_verified_awaiting_mint_dispatch'
         order.delivered_at = now
       }
       await save(db)
-      return { ok: true, duplicate: false, order_id: order.order_id, status: order.status, delivery: order.delivery }
+      return {
+        ok: true,
+        duplicate: false,
+        order_id: order.order_id,
+        status: order.status,
+        server_confirmed: true,
+        dispatch_eligible: true,
+      }
     }
     if (order.status === 'paid') {
       await save(db)
@@ -374,9 +374,23 @@ export async function applyIpn(ipn) {
     }
     order.status = failureStatus
     order.authorization = ipn.authorization || null
+    order.server_confirmed = false
+    order.payment_verified = false
     await save(db)
     return { ok: true, order_id: order.order_id, status: order.status }
   })
+}
+
+/**
+ * Fire-and-forget mint dispatch after verified IPN. Never throws to caller.
+ */
+export async function triggerMintDispatchSafe(order) {
+  try {
+    const { maybeDispatchMintAfterPaid } = await import('./mintDispatch.mjs')
+    return await maybeDispatchMintAfterPaid(order)
+  } catch (e) {
+    return { ok: false, reason: 'dispatch_hook_error', error: String(e && e.message ? e.message : e) }
+  }
 }
 
 export async function markRedirected(orderId) {
