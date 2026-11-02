@@ -1,56 +1,31 @@
-# Internal — Mint security model (Sprint 2)
+# Internal — Mint security model (Sprint 2 review)
 
-> **INTERNAL ONLY** — do not publish to public GitBook as-is.
+## Review fixes applied
 
-## Trust boundaries
+| Risk | Mitigation |
+|------|------------|
+| Multi-instance file lock | `DATABASE_URL` → Postgres `mint_jobs` + `pg_advisory_xact_lock` |
+| `status=paid` legacy | **Removed** — only `server_confirmed` or `payment_verified` |
+| NFT most-recent | Snapshot pre-buy identifiers; transfer **exactly one new** |
+| Restore soft-fail | **exit 1** if restore fails; post-query `getPackPrice` must match Rule1 |
+| Price non-atomic | Residual: concurrency group per pack; no micro path in long-term GO |
 
-| Layer | Trust |
-|-------|-------|
-| Paybox IPN RSA-2048 | Payment authenticity |
-| access-api orders store | Order state machine |
-| mint_jobs store | Dispatch idempotency |
-| GitHub Actions production env | PEM access |
-| MultiversX mainnet | Final NFT ownership |
+## Payment proof
 
-GitHub 204 ≠ mint success. Only explorer/NFT ownership confirms.
+`assertPaymentAllowsMint` requires:
 
-## States (mint_jobs)
+- `server_confirmed === true` **OR** `payment_verified === true`
+- `provider_tx_id` present
+- amount/currency/pack/buyer/order_id valid
+- not refunded/cancelled/refused
 
-`pending → dispatching → submitted → confirmed | failed | reconciliation_required`
+IPN handler must set the flag only after RSA verification.
 
-- **submitted**: Actions accepted workflow_dispatch
-- **confirmed**: human/automation recorded chain_tx + nft id
-- **reconciliation_required**: network error mid-flight — **do not** auto re-dispatch
+## Idempotency stores
 
-## Gates for live
+- **Postgres** (production multi-replica): table `mint_jobs`
+- **File** (local/single): `MINT_JOBS_PATH` + wx lock — **not** multi-instance safe
 
-1. `MINT_DISPATCH_ENABLED=1`
-2. `MINT_DRY_RUN=0`
-3. `MINT_LIVE_ENABLED=1`
-4. `MINT_MAINNET_CONFIRM=LIVE_MINT_MAINNET`
-5. Workflow input `live_mint=true` + `confirm=LIVE_MINT_MAINNET`
-6. `SC_DEPLOYER_PEM` present in environment production
-7. Deployer address matches expected owner
+## Residual
 
-## Residual risk — price window
-
-`setPackPrice(micro)` → `buyPack` → `setPackPrice(Rule1)` is **not atomic**.
-
-Mitigations:
-- concurrency group `mint-pack-${pack}` (no cancel-in-progress to avoid half-state)
-- Always attempt restore on failure
-- Manual check `getPackPrice` after incident
-- Prefer funded Rule1 path long-term (no micro window)
-
-## Secrets
-
-- Never log PEM
-- umask 077 + delete in `always()`
-- No PEM in access-api
-
-## Incident
-
-1. Pause `MINT_LIVE_ENABLED`
-2. Query SC prices; restore Rule1 if stuck micro
-3. Reconcile `mint_jobs` vs explorer NFTs
-4. Manual transfer if buy succeeded, transfer failed
+Micro `setPackPrice` window remains non-atomic vs external buyers. Prefer funded Rule1 path when liquid.
