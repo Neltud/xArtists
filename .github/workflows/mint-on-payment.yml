@@ -1,0 +1,115 @@
+name: Mint on payment (paper-first)
+
+# Specialized connector: post-IPN mint for Genesis SFT packs.
+# Default PAPER — no chain tx until live_mint=true + CONFIRM=LIVE_MINT_MAINNET + GO S1+S2.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pack:
+        description: "pulse | yield | sentinel"
+        required: true
+        type: choice
+        options: [pulse, yield, sentinel]
+      edition:
+        description: "Edition number (1-based)"
+        required: true
+        default: "1"
+      buyer:
+        description: "Buyer MultiversX bech32 (required if live)"
+        required: false
+        default: ""
+      live_mint:
+        description: "true only after S1+S2 GO"
+        required: true
+        type: choice
+        options: ["false", "true"]
+        default: "false"
+      confirm:
+        description: "Must be LIVE_MINT_MAINNET if live_mint=true"
+        required: false
+        default: ""
+
+env:
+  PACK: ${{ github.event.inputs.pack }}
+  EDITION: ${{ github.event.inputs.edition }}
+  BUYER: ${{ github.event.inputs.buyer }}
+  LIVE: ${{ github.event.inputs.live_mint }}
+  CONFIRM: ${{ github.event.inputs.confirm }}
+
+jobs:
+  mint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve collection
+        id: col
+        run: |
+          set -euo pipefail
+          case "$PACK" in
+            pulse) echo "ticker=XAIPLS-2cf72b" >> "$GITHUB_OUTPUT"; echo "max=333" >> "$GITHUB_OUTPUT" ;;
+            yield) echo "ticker=XAIYLD-987e24" >> "$GITHUB_OUTPUT"; echo "max=500" >> "$GITHUB_OUTPUT" ;;
+            sentinel) echo "ticker=XAISNT-3d8a6b" >> "$GITHUB_OUTPUT"; echo "max=777" >> "$GITHUB_OUTPUT" ;;
+            *) echo "unknown pack"; exit 1 ;;
+          esac
+
+      - name: Build mint metadata (peinture+hud)
+        env:
+          PACK: ${{ github.event.inputs.pack }}
+          EDITION: ${{ github.event.inputs.edition }}
+          LIVE: ${{ github.event.inputs.live_mint }}
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json, os
+          pack = os.environ["PACK"]
+          ed = int(os.environ["EDITION"])
+          max_s = int("${{ steps.col.outputs.max }}")
+          ticker = "${{ steps.col.outputs.ticker }}"
+          meta = {
+            "name": f"Genesis {pack.title()} #{ed:03d}",
+            "description": f"SFT Genesis {pack} — recto peinture · verso HUD. one_time · durable rights.",
+            "collection": ticker,
+            "edition": f"{ed}/{max_s}",
+            "attributes": [
+              {"trait_type": "Pack", "value": pack.title()},
+              {"trait_type": "Face", "value": "peinture+hud"},
+              {"trait_type": "Billing", "value": "one_time"},
+              {"trait_type": "Rights", "value": "durable"},
+              {"trait_type": "Edition", "value": f"{ed}/{max_s}"},
+            ],
+            "properties": {
+              "face_recto": "peinture",
+              "face_verso": "hud",
+              "pack": pack,
+              "billing": "one_time",
+              "rights": "durable",
+            },
+            "mode": "paper" if os.environ.get("LIVE") != "true" else "live",
+          }
+          path = os.environ["RUNNER_TEMP"] + "/mint_meta.json"
+          open(path, "w").write(json.dumps(meta, indent=2))
+          print(json.dumps(meta, indent=2))
+          PY
+          echo "### Mint metadata" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat "${RUNNER_TEMP}/mint_meta.json" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Paper gate (default)
+        if: ${{ github.event.inputs.live_mint != 'true' }}
+        run: |
+          echo "PAPER mode — no chain tx. Set live_mint=true + LIVE_MINT_MAINNET after S1+S2."
+          echo "status=paper_ok" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Live gate
+        if: ${{ github.event.inputs.live_mint == 'true' }}
+        run: |
+          set -euo pipefail
+          test "$CONFIRM" = "LIVE_MINT_MAINNET"
+          test -n "${BUYER}"
+          echo "LIVE requested — wire ESDTNFTCreate + transfer here (SC_DEPLOYER_PEM)."
+          echo "Buyer: $BUYER Pack: $PACK Edition: $EDITION"
+          echo "status=live_stub_pending_pem_path" >> "$GITHUB_STEP_SUMMARY"
