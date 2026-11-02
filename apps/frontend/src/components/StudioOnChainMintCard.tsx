@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { useStudioMintTx } from '../hooks/useStudioMintTx'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useWallet } from '../context/WalletContext'
+import { isValidMintMediaUri } from '../lib/studioOnChainMint'
 
 type Props = {
   ready: boolean
@@ -28,22 +29,19 @@ export default function StudioOnChainMintCard(props: Props) {
     useStudioMintTx()
   const [tokenId, setTokenId] = useState(collection?.tokenIdentifier || '')
   const [stepMsg, setStepMsg] = useState('')
+  const mediaReady = isValidMintMediaUri(props.ipfsUri)
 
   const onIssue = async () => {
     setStepMsg('')
     const r = await issueCollection(props.collectionName, props.ticker)
-    if (r.ok) {
-      setStepMsg(
-        'Collection demandée. Sur Explorer → ton compte → Tokens : copie l’id (ex XART-abc123) puis étape 2.',
-      )
-    }
+    if (r.ok) setStepMsg(r.confirmed ? 'Collection confirmée sur MultiversX. Copie le Token ID sur Explorer.' : 'Émission soumise : attends la confirmation blockchain avant de continuer.')
   }
 
   const onRole = async () => {
     setStepMsg('')
     const id = tokenId.trim()
     const r = await setCreateRole(id)
-    if (r.ok) setStepMsg('Rôle NFTCreate OK — tu peux mint (étape 3).')
+    if (r.ok) setStepMsg(r.alreadySet ? 'Rôle NFTCreate déjà confirmé par MultiversX.' : r.confirmed ? 'Transaction de rôle confirmée. Vérifie la présence du rôle avant le mint.' : 'Rôle demandé, confirmation blockchain en attente.')
   }
 
   const onMint = async () => {
@@ -61,7 +59,7 @@ export default function StudioOnChainMintCard(props: Props) {
       attributes: `description:${(props.description || '').slice(0, 120)};tags:xartists,studio`,
       uris,
     })
-    if (r.ok) setStepMsg('NFT minté — vérifie ton wallet / Explorer.')
+    if (r.ok) setStepMsg(r.confirmed ? 'Mint confirmé par la blockchain. Vérifie le NFT dans ton wallet.' : 'Mint soumis, confirmation blockchain en attente : ne renvoie pas une seconde transaction.')
   }
 
   return (
@@ -70,7 +68,7 @@ export default function StudioOnChainMintCard(props: Props) {
         <div>
           <h2 className="font-bold text-violet-100">{xaRender("Mint on-chain (ton wallet)")}</h2>
           <p className="text-xs text-zinc-500 mt-1">
-            {xaRender("ESDT système MultiversX · 3 signatures · ~0.05 EGLD issue + gas ")}</p>
+            {xaRender("Mainnet NFT · collection 0,05 EGLD + gaz · rôle si nécessaire · ton wallet signe")}</p>
         </div>
         <span className="text-[10px] rounded-full border border-violet-400/30 px-2 py-0.5 text-violet-200">
           {xaRender("Creator Studio ")}</span>
@@ -129,7 +127,7 @@ export default function StudioOnChainMintCard(props: Props) {
           <button
             type="button"
             className="btn-primary text-xs"
-            disabled={!props.ready || !canSign || pending}
+            disabled={!props.ready || !mediaReady || !canSign || pending}
             onClick={onMint}
           >
             {xaRender(pending ? '…' : 'Signer ESDTNFTCreate')}
@@ -137,11 +135,15 @@ export default function StudioOnChainMintCard(props: Props) {
         </li>
       </ol>
 
+      {!mediaReady && <p className="text-xs text-amber-200">Publie le fichier sur IPFS ou HTTPS avant de minter. Sélectionner un fichier local ne le téléverse pas.</p>}
       {xaRender(error && <p className="text-xs text-rose-300">{xaRender(error)}</p>)}
       {xaRender(stepMsg && <p className="text-xs text-emerald-300">{xaRender(stepMsg)}</p>)}
-      {xaRender(lastTx && (
-        <p className="text-[11px] mono text-zinc-500 break-all">{xaRender("TX / session : ")}{xaRender(lastTx)}</p>
-      ))}
+      {lastTx && <p className="text-[11px] mono text-zinc-500 break-all">
+        TX / session : {lastTx}
+        {/^[a-f0-9]{64}$/i.test(lastTx) && <a
+          href={'https://explorer.multiversx.com/transactions/' + lastTx}
+          rel="noopener noreferrer" target="_blank" className="ml-2 underline text-cyan-200">Voir Explorer</a>}
+      </p>}
 
       <p className="text-[10px] text-zinc-600 leading-relaxed">
         {xaRender("Après mint : list sur ")}<strong className="text-zinc-400">{xaRender("/marketplace")}</strong> {xaRender(" si CODEHASH market OK. Collection déjà existante ? Passe direct étape 2–3 avec ton token id. ")}</p>
