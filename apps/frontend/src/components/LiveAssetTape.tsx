@@ -115,6 +115,8 @@ export default function LiveAssetTape({ compact }: { compact?: boolean }) {
     }
   }, [])
 
+  const hasMarketPrices = rows.some(q => q.id !== 'usd' && q.usd != null)
+
   return (
     <div
       className={`data-overlay-tape rounded-2xl border border-cyan-500/25 bg-gradient-to-r from-cyan-950/40 via-black/50 to-violet-950/40 overflow-hidden ${
@@ -125,10 +127,13 @@ export default function LiveAssetTape({ compact }: { compact?: boolean }) {
       <div className="flex items-center gap-2 px-3 pb-1">
         <span className="text-[9px] uppercase tracking-[0.2em] text-cyan-300/90 font-semibold font-tech">
           {xaRender("Live tape ")}</span>
-        <span className="badge-live badge-live-on">
-          <span className="badge-live-dot" />
-          {xaRender("LIVE ")}</span>
-        {xaRender(ts && (
+        <span className={hasMarketPrices
+          ? 'badge-live badge-live-on'
+          : 'rounded-md border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 text-[9px] text-amber-200'}>
+          {hasMarketPrices ? <span className="badge-live-dot" /> : null}
+          {xaRender(hasMarketPrices ? 'LIVE' : 'SOURCES INDISPONIBLES')}
+        </span>
+        {xaRender(hasMarketPrices && ts && (
           <span className="text-[9px] text-zinc-600 mono tabular-nums">
             {xaRender(new Date(ts).toLocaleTimeString())}
           </span>
