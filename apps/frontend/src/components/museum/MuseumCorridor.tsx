@@ -38,7 +38,6 @@ export type FrameItem = {
 function thumb(n: UserNft): string | undefined {
   if (n.url && /^https?:\/\//i.test(n.url)) return n.url
   const m = n.media?.[0]
-  if (m?.thumbnailUrl && /^https?:\/\//i.test(m.thumbnailUrl)) return m.thumbnailUrl
   if (m?.url && /^https?:\/\//i.test(m.url)) return m.url
   return undefined
 }
