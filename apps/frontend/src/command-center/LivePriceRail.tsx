@@ -168,12 +168,12 @@ export default function LivePriceRail() {
   ]
 
   return (
-    <div className="data-overlay-rail absolute right-2 top-10 bottom-8 z-10 w-[8.5rem] pointer-events-none">
+    <div className="data-overlay-rail w-full min-w-0">
       <div
-        className="h-full rounded-xl border border-cyan-400/30 bg-black/55 px-2.5 py-2.5 flex flex-col gap-2 shadow-[0_0_20px_rgba(34,211,238,0.12)]"
+        className="grid grid-cols-2 gap-3 rounded-xl border border-cyan-400/30 bg-black/55 px-3 py-3 shadow-[0_0_20px_rgba(34,211,238,0.12)] sm:grid-cols-4"
         style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
       >
-        <div className="flex items-center gap-1.5">
+        <div className="col-span-2 flex items-center gap-1.5 sm:col-span-4">
           {xaRender(pitch ? (
             <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 text-amber-100 text-[8px] py-0.5 px-1.5 font-tech uppercase">
               {xaRender("PITCH ")}</span>

@@ -190,3 +190,24 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify public Genesis product links return HTTP 200
+        run: |
+          set -euo pipefail
+          for pack in pulse yield sentinel; do
+            ok=0
+            for attempt in 1 2 3 4 5 6; do
+              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-product.html -w '%{http_code}' "https://neltud.github.io/xArtists/packs/$pack/")
+              if [ "$status" = 200 ] && grep -q '/xArtists/assets/' /tmp/xartists-product.html; then
+                echo "Verified $pack direct link HTTP 200 and Vite asset reference"
+                ok=1
+                break
+              fi
+              echo "Product $pack not ready (HTTP $status), attempt $attempt"
+              sleep 5
+            done
+            if [ "$ok" != 1 ]; then
+              echo "::error::Public Genesis pack $pack did not pass direct-link check"
+              exit 1
+            fi
+          done
