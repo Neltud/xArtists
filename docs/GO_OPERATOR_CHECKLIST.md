@@ -56,13 +56,25 @@ to run a live transaction.
 No live mint, NFT delivery, buyer payment or chain transfer is authorised
 by this checklist. Keep `MINT_DRY_RUN=1` until a separately approved GO.
 
-## C. First mainnet mint (human)
+## C. Mainnet mint — blocked until separate human GO
 
-Deployer ~0.005 EGLD → **micro_price=true** only.
+The legacy `micro_price=true` route is **NOT authorised**. The smart-contract
+`setPackPrice`-then-`buyPack` sequence is non-atomic for unrelated purchasers,
+even with a GitHub Actions concurrency group. After the P0 safety fix, the
+backend defaults `MINT_MICRO_PRICE=false`, requires an **explicit**
+`MINT_MAINNET_CONFIRM=LIVE_MINT_MAINNET`, and the workflow refuses **live**
+`micro_price=true` before loading or writing the PEM.
 
-1. PEM on environment production
-2. buyer erd1
-3. Actions: pack=sentinel · live_mint=true · confirm=LIVE_MINT_MAINNET · micro_price=true
+- [ ] Independent security review of mainnet pricing/mint semantics and verified
+      wallet recipient, collection, supply and replay protection.
+- [ ] Separate on-chain receipt/transfer verifier correlating buyer, order,
+      NFT identifier and tx hash before reporting delivery.
+- [ ] Controlled S1 PayBox test and refund reconciliation; no real payment yet.
+- [ ] Explicit per-capability operator approval and protected GitHub environment.
+
+**Do not use the legacy micro-price recipe or turn on
+`MINT_LIVE_ENABLED` to conduct the dry-run proof.**
+
 
 ## D. Commercial
 
