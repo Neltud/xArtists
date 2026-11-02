@@ -9,6 +9,7 @@ import { requestOpenConnect } from '../lib/walletEvents'
 import { canListBuyNft, canBuyAgent } from '../config/scStatus'
 import PackCheckout from '../components/PackCheckout'
 import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
+import CreatorMediaUpload from '../components/CreatorMediaUpload'
 import { useToast } from '../components/ui/Toast'
 import { asText } from '../lib/safeRender'
 import { saveStudioCollection } from '../lib/studioOnChainMint'
@@ -26,6 +27,7 @@ export default function StudioPage() {
   const [ticker, setTicker] = useState('ATELIER')
   const [nftName, setNftName] = useState('Oeuvre 1')
   const [nftMediaUri, setNftMediaUri] = useState('')
+  const [pinnedMedia, setPinnedMedia] = useState<{mediaUri:string;metadataUri:string;attributes:string;title:string}|null>(null)
   const [tokenIdInput, setTokenIdInput] = useState('')
   const mint = useStudioMintTx()
   const { push } = useToast()
@@ -101,11 +103,15 @@ export default function StudioPage() {
       push('Sélectionne une collection existante ou issue-en une', 'err')
       return
     }
+    if (pinnedMedia && pinnedMedia.title !== nftName.trim()) {
+      push('Le titre a changé depuis le pin IPFS. Recrée les métadonnées avant de signer.', 'err')
+      return
+    }
     const r = await mint.createNft({
       tokenIdentifier: id,
       name: nftName,
       royaltiesPct: 5,
-      attributes: 'studio:xartists',
+      attributes: pinnedMedia && pinnedMedia.mediaUri===nftMediaUri.trim() ? pinnedMedia.attributes : 'studio:xartists',
       uris: [nftMediaUri.trim()],
     })
     push(r.ok ? (r.confirmed ? 'Mint confirmé sur MultiversX' : 'Mint soumis, confirmation blockchain en attente') : asText(r.error, 'Échec'), r.ok ? 'ok' : 'err')
@@ -210,16 +216,20 @@ export default function StudioPage() {
           className="w-full rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white"
           placeholder={xaLocalize("Nom de l’œuvre")}
         />
+        <CreatorMediaUpload title={nftName} onReady={pin => {
+          setPinnedMedia(pin)
+          setNftMediaUri(pin?.mediaUri || '')
+        }} />
         <label className="block text-[12px] text-zinc-400">
-          URI média déjà publiée (IPFS ou HTTPS)
+          2. URI média IPFS/HTTPS (automatique après upload, ou saisie manuelle)
           <input
             value={nftMediaUri}
-            onChange={e => setNftMediaUri(e.target.value)}
+            onChange={e => {setNftMediaUri(e.target.value);setPinnedMedia(null)}}
             className="mt-1 w-full rounded-lg border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white"
             placeholder="ipfs://bafy.../artwork.png"
           />
         </label>
-        <p className="text-[11px] text-amber-200">Un fichier local n'est pas mis en ligne automatiquement. Vérifie l'URI, le propriétaire de la collection et le rôle NFTCreate avant chaque mint.</p>
+        <p className="text-[11px] text-amber-200">Un fichier sélectionné seul ne suffit pas : le mint exige un upload IPFS confirmé ou une URL déjà hébergée. Vérifie la collection, le rôle NFTCreate et les détails dans xPortal avant la signature.</p>
         <button
           type="button"
           className="btn-secondary text-sm"
