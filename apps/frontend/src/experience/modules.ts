@@ -24,6 +24,7 @@ export const modules:Module[] = [
   module('entities','/intelligence/network',['/entities','/entity'],'entities','intelligence','network',()=>import('../pages/EntityMap'),['LIA','Network']),
   module('trading','/finance/trading',['/trading'],'trading','finance','chart',()=>import('../pages/TradingPage'),['EGLD','Trade']),
   module('tro','/finance/tro',['/tro'],'tro','finance','coin',()=>import('../pages/TroPage'),['TRO','Token']),
+  module('tro-crosschain','/finance/tro/sale',['/tro/sale','/buy-tro','/tro/bridge','/solana/tro'],'$TRO · Achat & Solana','finance','coin',()=>import('../pages/TroCrosschainPage'),['$TRO','Bridge','Solana','MultiversX','Sale']),
   module('staking','/finance/staking',['/staking'],'staking','finance','layers',()=>import('../pages/StakingPage'),['TRO','NFT','Stake']),
   module('liquidity','/finance/liquidity',['/lp'],'liquidity','finance','layers',()=>import('../pages/LPPoolsPage'),['LP','DeFi']),
   module('hatom','/finance/hatom',['/hatom'],'hatom','finance','orb',()=>import('../pages/HatomPage'),['HTM','sEGLD','DeFi']),

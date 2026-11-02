@@ -1,0 +1,60 @@
+name: $TRO Solana launch safety — frontend + backend
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/server.mjs'
+      - 'services/access-api/src/troBridgeStatus.mjs'
+      - 'services/access-api/tests/tro-bridge-status.test.mjs'
+      - 'services/access-api/migrations/004_creator_media_pinata.sql'
+      - 'apps/frontend/src/pages/TroCrosschainPage.tsx'
+      - 'apps/frontend/src/pages/troCrosschain.css'
+      - 'apps/frontend/src/pages/TroPage.tsx'
+      - 'apps/frontend/src/experience/modules.ts'
+      - 'apps/frontend/src/experience/softLaunch.ts'
+      - '.github/workflows/tro-solana-bridge-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tro-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/access-api/package-lock.json
+      - name: Install exact API dependencies
+        working-directory: services/access-api
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify no token transfer or phantom Solana mint can be exposed
+        working-directory: services/access-api
+        run: npm test
+  tro-frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Install exact frontend dependencies
+        working-directory: apps/frontend
+        run: npm ci --legacy-peer-deps --ignore-scripts
+      - name: Strict TypeScript
+        working-directory: apps/frontend
+        run: npm run typecheck
+      - name: Check actual routes
+        working-directory: apps/frontend
+        run: npm run check:routes
+      - name: Production Vite build
+        working-directory: apps/frontend
+        run: npm run build
