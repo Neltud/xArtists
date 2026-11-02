@@ -26,9 +26,9 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: services/access-api/package-lock.json
-      - name: Install API dependencies (issue 271 lockfile drift)
+      - name: Locked API dependencies (strict, PR #274)
         working-directory: services/access-api
-        run: npm install --ignore-scripts --no-audit --no-fund --package-lock=false
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Run deterministic IPFS, MIME, JWT and physical custody tests
         working-directory: services/access-api
         run: npm test

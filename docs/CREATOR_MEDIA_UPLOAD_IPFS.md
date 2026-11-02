@@ -62,7 +62,7 @@ Sources : https://www.etsy.com/legal/policy/non-fungible-tokens-nfts-policy/1114
 
 ## Tests et gates de mise en service
 
-1. `services/access-api` : `npm install --package-lock=false --ignore-scripts`, `npm test` ; suite de tests MIME/magic, JWT purpose, quota/config fail-closed, droits et métadonnées.
+1. `services/access-api` : `npm ci --ignore-scripts`, `npm test` ; suite de tests MIME/magic, JWT purpose, quota/config fail-closed, droits et métadonnées.
 2. `apps/frontend` : `npm ci --legacy-peer-deps --ignore-scripts`, `npm run build` ; vérification des erreurs de types spécifiques aux fichiers ajoutés. Le typecheck global est traité séparément dans l'issue #271.
 3. En recette : wallet xPortal test, publication de médias légitimes, validité du CID et des metadata sur IPFS, vidéo lisible, NFT mainnet minté par l'artiste puis effectivement indexé sur Explorer.
 4. En production : surveillance du quota, coûts Pinata et SQL, rate limiting anti-abus persistant, remontée d'erreurs, conformité RGPD/PI et responsabilité des œuvres, procédure de retrait des contenus pirates et revue de sécurité.
