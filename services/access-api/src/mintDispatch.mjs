@@ -41,8 +41,8 @@ export function mintDispatchConfig(env = process.env) {
     String(env.MINT_DRY_RUN ?? '1').trim() !== '0' &&
     String(env.MINT_DRY_RUN ?? '1').toLowerCase() !== 'false'
   const liveEnabled = String(env.MINT_LIVE_ENABLED || '').trim() === '1'
-  const mainnetConfirm = String(env.MINT_MAINNET_CONFIRM || 'LIVE_MINT_MAINNET').trim()
-  const micro = String(env.MINT_MICRO_PRICE || 'true').toLowerCase() !== 'false'
+  const mainnetConfirm = String(env.MINT_MAINNET_CONFIRM ?? '').trim()
+  const micro = String(env.MINT_MICRO_PRICE ?? 'false').trim().toLowerCase() === 'true'
   return {
     enabled: enabled && Boolean(token),
     token,
@@ -264,6 +264,10 @@ export function resolveLiveInputs(cfg) {
   }
   if (cfg.mainnetConfirm !== 'LIVE_MINT_MAINNET') {
     return { live_mint: 'false', confirm: '', mode: 'live_blocked_bad_confirm_env' }
+  }
+  // Never enter the non-atomic on-chain setPackPrice micro-price window.
+  if (cfg.micro) {
+    return { live_mint: 'false', confirm: '', mode: 'live_blocked_non_atomic_micro_price' }
   }
   return { live_mint: 'true', confirm: 'LIVE_MINT_MAINNET', mode: 'live' }
 }
