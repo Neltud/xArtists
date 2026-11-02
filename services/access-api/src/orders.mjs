@@ -297,9 +297,28 @@ export async function getOrderForBuyer(orderId, requester) {
 }
 
 /**
+ * Public delivery state: a successful payment is not a delivered NFT.
+ * Legacy delivery='simulated' and legacy delivered_at timestamps do not grant rights.
+ * Only an independently reconciled NFT identifier + chain transaction may
+ * qualify as confirmed. Nothing in the current PayBox IPN path supplies this.
+ */
+export function publicOrderDelivery(order) {
+  const verified = Boolean(
+    order && order.delivery === 'confirmed' &&
+    order.status !== ORDER_STATUS.REFUNDED &&
+    order.chain_tx_hash && order.nft_identifier && order.delivered_at,
+  )
+  return {
+    delivery: verified ? 'confirmed' : order?.server_confirmed === true ? 'pending' : 'none',
+    delivery_verified: verified,
+    delivered_at: verified ? order.delivered_at : null,
+  }
+}
+
+/**
  * Apply authenticated IPN fields only (caller must verify RSA first).
- * On success: status=paid + server_confirmed + payment_verified + delivery simulated marker.
- * Response always includes delivery for CI / callers that assert on the return object.
+ * On success: payment verified, with delivery pending until proof on-chain.
+ * Response includes a non-entitling delivery state for API consumers.
  */
 export async function applyIpn(ipn) {
   return withStore(async ({ load, save }) => {
@@ -326,13 +345,20 @@ export async function applyIpn(ipn) {
             String(ipn.provider_tx_id) !== String(order.provider_tx_id)) {
           return { ok: false, reason: 'provider_tx_mismatch' }
         }
+        // Repair legacy simulated delivery only on a verified duplicate IPN.
+        if (order.delivery === 'simulated') {
+          order.delivery = 'pending'
+          order.mint_status = 'awaiting_dispatch'
+          order.delivery_note = 'payment_verified_awaiting_mint_dispatch'
+        }
+        if (order.delivery !== 'confirmed') order.delivered_at = null
         await save(db)
         return {
           ok: true,
           duplicate: true,
           order_id: order.order_id,
           status: order.status,
-          delivery: order.delivery || 'simulated',
+          delivery: publicOrderDelivery(order).delivery,
           server_confirmed: true,
           dispatch_eligible: true,
         }
@@ -345,19 +371,19 @@ export async function applyIpn(ipn) {
       order.provider_tx_id = ipn.provider_tx_id || null
       order.server_confirmed = true
       order.payment_verified = true
-      // delivery=simulated = payment verified, mint not production-granted yet
-      order.delivery = 'simulated'
+      // Payment confirmation is not fulfilment. Never mark delivered here.
+      order.delivery = 'pending'
       order.mint_status = order.mint_status === 'mint_confirmed' ? order.mint_status : 'awaiting_dispatch'
       order.delivery_note =
         order.delivery_note || 'payment_verified_awaiting_mint_dispatch'
-      order.delivered_at = order.delivered_at || now
+      order.delivered_at = null
       await save(db)
       return {
         ok: true,
         duplicate: false,
         order_id: order.order_id,
         status: order.status,
-        delivery: order.delivery,
+        delivery: publicOrderDelivery(order).delivery,
         server_confirmed: true,
         dispatch_eligible: true,
       }
@@ -370,7 +396,7 @@ export async function applyIpn(ipn) {
         late: true,
         order_id: order.order_id,
         status: order.status,
-        delivery: order.delivery,
+        delivery: publicOrderDelivery(order).delivery,
       }
     }
     const failureStatus = ipn.error_code === '00001' ? 'cancelled' : 'refused'
