@@ -269,5 +269,7 @@ export function useMarketplaceTx() {
     pending,
     error,
     lastTx,
+    marketplaceLive: live,
+    marketplaceAddress: MARKETPLACE_ADDRESS,
   }
 }
