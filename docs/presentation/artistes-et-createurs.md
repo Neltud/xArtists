@@ -109,7 +109,7 @@ La [Marketplace xArtists](https://neltud.github.io/xArtists/marketplace) sépare
 
 Les workflows de code sont vérifiés, mais **la mise en vente contractuelle et les achats réels restent désactivés** lorsque le contrat Marketplace n'a pas son codehash validé. Il ne faut ni créer de faux prix ni confondre catalogue et marché live.
 
-**Qualité technique :** la [PR #274](https://github.com/Neltud/xArtists/pull/274) a rétabli le lockfile API reproductible ; les erreurs TypeScript globales historiques sont encore suivies dans [l'issue #271](https://github.com/Neltud/xArtists/issues/271).
+**Qualité technique vérifiée :** les [PR #274](https://github.com/Neltud/xArtists/pull/274), [#275](https://github.com/Neltud/xArtists/pull/275) et [#276](https://github.com/Neltud/xArtists/pull/276) sont fusionnées. Le frontend est passé de **76 à 0 erreur TypeScript** et les tests `npm ci`, `npm run typecheck`, `npm run build`, E2E et sécurité ont réussi en CI. [L'issue #271 est résolue et clôturée](https://github.com/Neltud/xArtists/issues/271). Cela ne signifie pas que l'upload automatique IPFS ni les achats NFT sont activés : les gates Pinata/serveur et smart contract restent indépendants.
 
 ## Œuvres physiques et NFT : suivi de livraison (nouveau)
 
