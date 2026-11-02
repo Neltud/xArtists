@@ -76,7 +76,9 @@ test('on-chain delivery presentation requires all three proof fields', () => {
   const paid = {status:'paid',server_confirmed:true,delivery:'confirmed',delivered_at:'2026-11-02T19:00:00.000Z'}
   assert.equal(publicOrderDelivery(paid).delivery_verified,false)
   assert.equal(publicOrderDelivery({...paid,chain_tx_hash:'tx'}).delivery_verified,false)
-  const verified = {...paid,chain_tx_hash:'tx',nft_identifier:'XAISNT-3d8a6b-01'}
+  const unverified = {...paid,chain_tx_hash:'tx',nft_identifier:'XAISNT-3d8a6b-01'}
+  assert.equal(publicOrderDelivery(unverified).delivery_verified,false)
+  const verified = {...unverified,delivery_verified:true}
   assert.deepEqual(publicOrderDelivery(verified),{
     delivery:'confirmed',delivery_verified:true,delivered_at:paid.delivered_at,
   })
