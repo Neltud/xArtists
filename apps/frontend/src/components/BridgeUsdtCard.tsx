@@ -2,7 +2,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
 /**
  * Pont stablecoins → MultiversX (XOXNO / USDT0) — externe, discret.
  */
-import { LINKS } from '../config/links'
+
 
 export default function BridgeUsdtCard({ compact = false }: { compact?: boolean }) {
   return (
@@ -16,21 +16,11 @@ export default function BridgeUsdtCard({ compact = false }: { compact?: boolean 
       <p className={`text-[13px] text-zinc-400 mt-1 leading-relaxed ${compact ? '' : 'max-w-md'}`}>
         {xaRender("USDT via XOXNO (chemin USDT0) vers MultiversX. ")}</p>
       <div className="flex flex-wrap gap-2 mt-2.5">
-        <a
-          href={LINKS.xoxnoBridge}
-          target="_blank"
-          rel="noreferrer"
-          className="btn-secondary text-xs !py-1.5"
-        >
-          {xaRender("Bridge XOXNO ")}</a>
+        <span className="text-xs text-amber-200">
+          {xaRender("Lien bridge indisponible — aucun swap initié par xArtists")}
+        </span>
         {xaRender(!compact && (
-          <a
-            href={LINKS.usdt0}
-            target="_blank"
-            rel="noreferrer"
-            className="btn-ghost text-xs !py-1.5"
-          >
-            {xaRender("USDT0 ")}</a>
+          <span className="text-xs text-zinc-500">USDT0 · consulter uniquement les sources officielles avant d’envoyer des fonds</span>
         ))}
       </div>
     </div>
