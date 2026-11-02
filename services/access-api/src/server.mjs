@@ -393,12 +393,6 @@ async function handleRequest(req, res) {
   }
 
   if (req.method === 'POST' && pth === '/v1/checkout/paybox') {
-    // Fail closed: configured PayBox merchant credentials do not grant a commercial GO.
-    // Signed IPNs remain active for reconciliation of existing orders.
-    if (!payboxCheckoutEnabled()) {
-      json(res, 503, { ok: false, error: 'paybox_checkout_not_approved' })
-      return
-    }
     const { body } = await readRawAndBody(req)
     const packId = (body.pack_id || body.packId || '').trim()
     const artistRaw = typeof (body.artist_beneficiary || body.artistBeneficiary) === 'string'
@@ -411,6 +405,13 @@ async function handleRequest(req, res) {
         return
       }
       const buyer = auth.buyer
+      // Auth must still return 401/403 first. A configured merchant is not
+      // commercial approval; fail closed before creating any order/session.
+      // Signed IPNs stay active for already-existing orders.
+      if (!payboxCheckoutEnabled()) {
+        json(res, 503, { ok: false, error: 'paybox_checkout_not_approved' })
+        return
+      }
       if (!PAYBOX.ready) {
         json(res, 501, {
           ok: false, error: 'paybox_not_configured', pack_id: pack.id, amount_cents: pack.price_cents,
