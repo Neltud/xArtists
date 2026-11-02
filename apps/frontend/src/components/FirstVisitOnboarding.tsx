@@ -46,6 +46,9 @@ export default function FirstVisitOnboarding() {
           {xaRender(t('onboard.title'))}
         </h2>
         <p className="text-[13px] text-zinc-400 leading-relaxed mb-4">{xaRender(t('onboard.lead'))}</p>
+        <p className="mb-4 rounded-xl border border-cyan-500/25 bg-cyan-500/5 p-3 text-[13px] leading-relaxed text-cyan-100">
+          Explore xArtists without a wallet: visit the immersive museum, discover AI agents Pulse / Yield / Sentinel, and view LIA in read-only paper mode. Connect only if you later choose to use wallet features.
+        </p>
         <ul className="space-y-2.5 text-[13px] text-zinc-300 mb-5">
           <li className="flex gap-2">
             <span className="text-violet-400 shrink-0">1</span>
