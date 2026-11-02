@@ -1,0 +1,141 @@
+name: Mint dispatch dry-run probe (ephemeral GitHub token)
+
+# Trusted main branch only. No payment callback, real wallet or production secret.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/mint-dispatch-dryrun-probe.yml'
+      - '.github/workflows/mint-on-payment.yml'
+      - 'services/access-api/src/mintDispatch.mjs'
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: xartists-mint-dryrun-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ensure public API remains fail-closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --retry 2 --retry-delay 2 --max-time 45 \
+            https://xartists-access-api.onrender.com/health -o "$RUNNER_TEMP/health.json"
+          python3 - <<'PY'
+          import json, os
+          with open(os.environ['RUNNER_TEMP'] + '/health.json', encoding='utf-8') as f:
+              h = json.load(f)
+          assert h.get('ok') is True
+          assert h.get('mint_dry_run') is True
+          assert h.get('mint_live_enabled') is False
+          assert str(h.get('lia_live_trading')) == '0'
+          assert h.get('tro_solana_bridge') == 'off'
+          print('Runtime safety flags OK')
+          PY
+
+      - name: Real GitHub dry-run dispatch + double-dispatch guard
+        id: probe
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          MINT_DISPATCH_ENABLED: '1'
+          MINT_DRY_RUN: '1'
+          MINT_LIVE_ENABLED: '0'
+          MINT_MAINNET_CONFIRM: 'DRY_RUN_ONLY'
+          MINT_MICRO_PRICE: 'false'
+          MINT_GITHUB_OWNER: Neltud
+          MINT_GITHUB_REPO: xArtists
+          MINT_REF: main
+          MINT_JOBS_PATH: ${{ runner.temp }}/mint-dispatch-probe.json
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict'
+          import fs from 'node:fs'
+          import {
+            maybeDispatchMintAfterPaid, getMintJob, MINT_JOB_STATUS,
+          } from './services/access-api/src/mintDispatch.mjs'
+
+          // Synthetic signed-payment state fixture: NOT a real IPN or paid order.
+          const orderId = 'probe_' + process.env.GITHUB_RUN_ID + '_' + process.env.GITHUB_RUN_ATTEMPT
+          const order = {
+            order_id: orderId,
+            pack_id: 'sentinel',
+            buyer_address: 'erd1' + 'q'.repeat(58),
+            amount_cents: 5000,
+            currency: 'EUR',
+            status: 'paid',
+            server_confirmed: true,
+            provider_tx_id: 'fixture_' + orderId,
+          }
+          assert.ok(process.env.GITHUB_TOKEN, 'GitHub ephemeral token missing')
+          const results = await Promise.all([
+            maybeDispatchMintAfterPaid(order),
+            maybeDispatchMintAfterPaid(order),
+          ])
+          assert.equal(results.filter(x => x.ok && x.status === 204 && x.mode === 'dry_run').length, 1)
+          assert.equal(results.filter(x => x.skipped && x.reason === 'already_in_flight').length, 1)
+          assert.equal((await maybeDispatchMintAfterPaid(order)).skipped, true)
+          const job = await getMintJob(orderId)
+          assert.equal(job.status, MINT_JOB_STATUS.SUBMITTED)
+          assert.equal(job.github_dispatch_accepted, true)
+          assert.equal(job.attempts, 1)
+          assert.equal(job.mode, 'dry_run')
+          assert.equal(job.chain_tx_hash, null)
+          assert.equal(job.nft_identifier, null)
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, 'order_id=' + orderId + '\n')
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+            '\nSynthetic order: ' + orderId +
+            '\nReal GitHub 204: 1; duplicate/replay: 2 skipped. Status: submitted, NOT minted.\n')
+          console.log('Real dispatch HTTP 204 accepted exactly once; no on-chain effects')
+          NODE
+
+      - name: Confirm downstream dry-run finished
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PROBE_ORDER_ID: ${{ steps.probe.outputs.order_id }}
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict'
+          import fs from 'node:fs'
+          import { setTimeout } from 'node:timers/promises'
+          const orderId = process.env.PROBE_ORDER_ID
+          assert.match(orderId, /^probe_[0-9]+_[0-9]+$/)
+          const url = 'https://api.github.com/repos/' + process.env.GITHUB_REPOSITORY +
+            '/actions/workflows/mint-on-payment.yml/runs?event=workflow_dispatch&per_page=40'
+          const headers = {
+            Authorization: 'Bearer ' + process.env.GITHUB_TOKEN,
+            Accept: 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28',
+          }
+          const deadline = Date.now() + 165000
+          let matched
+          while (Date.now() < deadline) {
+            const response = await fetch(url, { headers })
+            assert.equal(response.status, 200, 'unable to inspect downstream workflow')
+            const data = await response.json()
+            matched = (data.workflow_runs || []).find(r =>
+              r.event === 'workflow_dispatch' &&
+              String(r.display_title || '').includes(orderId))
+            if (matched && matched.status === 'completed') break
+            await setTimeout(3500)
+          }
+          assert.ok(matched, 'GitHub accepted dispatch but correlated run not found')
+          assert.equal(matched.status, 'completed')
+          assert.equal(matched.conclusion, 'success')
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+            'Downstream dry-run success: ' + matched.html_url + '\n')
+          console.log('Correlated downstream dry-run success:', matched.html_url)
+          NODE
