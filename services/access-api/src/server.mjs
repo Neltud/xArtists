@@ -214,7 +214,7 @@ async function handleRequest(req, res) {
       }
       return
     }
-    const actionMap = { 'bind-buyer': 'bind_buyer', 'receipt': 'receipt', 'reassess': 'reassess' }
+    const actionMap = { 'bind-buyer': 'bind_buyer', 'receipt': 'receipt', 'reassess': 'reassess', 'verify-nft': 'verify_nft' }
     if (req.method === 'POST' && actionMap[action] && parts.length === 2) {
       const isAdmin = action === 'bind-buyer' && merchantAuthorized(req.headers)
       const actor = isAdmin ? 'merchant' : physicalActor(req.headers, JWT_SECRET)
