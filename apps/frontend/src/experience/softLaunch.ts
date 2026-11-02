@@ -12,6 +12,7 @@ export const CORE_MODULE_IDS = new Set([
   'agents',
   'lia',
   'studio',
+  'tro-crosschain',
   'wallet',
   'packs',
   'app',
