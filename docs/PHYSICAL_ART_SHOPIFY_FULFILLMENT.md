@@ -38,7 +38,7 @@ Le Creator Studio mint mainnet appartient au wallet personnel de l'artiste. Le n
 | ACCESS_JWT_SECRET | JWT signé sur le serveur, session 15 minutes avec purpose=physical_art |
 | CORS_ORIGIN=https://neltud.github.io | Origine de la dApp |
 
-**Webhook cible après vérification du service hébergé** : https://xartists-access-api.onrender.com/v1/webhooks/shopify/physical (ne pas supposer que le serveur est effectivement configuré). Créer dans Shopify l'app et les abonnements HTTPS orders/paid, fulfillments/create, fulfillments/update. Contrôler scopes, version API, client secret, domaine et delivery ID. Le backend compare le **corps brut** par HMAC-SHA256 en temps constant, restreint le topic et déduplique dans PostgreSQL en utilisant X-Shopify-Webhook-Id.
+**Webhook cible après vérification du service hébergé** : https://xartists-access-api.onrender.com/v1/webhooks/shopify/physical (ne pas supposer que le serveur est effectivement configuré). Créer dans Shopify l'app et les abonnements HTTPS orders/paid, orders/cancelled, refunds/create, fulfillments/create, fulfillments/update. Contrôler scopes, version API, client secret, domaine et delivery ID. Le backend compare le **corps brut** par HMAC-SHA256 en temps constant, restreint le topic et déduplique dans PostgreSQL en utilisant X-Shopify-Webhook-Id.
 
 Docs officielles : https://shopify.dev/docs/apps/build/webhooks/verify-deliveries · https://shopify.dev/docs/api/admin-rest/latest/resources/fulfillment · https://docs.multiversx.com/sdk-and-tools/rest-api/multiversx-api/
 
@@ -76,3 +76,5 @@ Le journal d'événements est chaîné par SHA-256 pour vérifier sa cohérence 
 - **IA multimodale** : comparer photo avant/après, suggérer anomalie de condition et niveau d'incertitude, ne jamais conclure automatiquement au prix, à l'authenticité ou à la remise d'une œuvre ; évaluation indépendante humaine.
 - **MoonPay** : on-ramp volontaire, hors parcours Shopify et sans déclencher une vente ou un transfert NFT.
 - **AMD** : optimisation de l'inférence seulement si un hôte AMD Instinct réel, un modèle et un budget sont disponibles.
+
+**Correctif anti-régression paiement :** une annulation ou un remboursement Shopify signé **après** un événement paid ouvre un statut DISPUTED/pending_human ; la réception ne peut plus être considérée comme acceptée ni aucun fonds libéré automatiquement.
