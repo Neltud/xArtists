@@ -1,57 +1,271 @@
 /**
- * Post-IPN mint dispatch → GitHub Actions mint-on-payment.yml (mainnet).
+ * Post-IPN mint dispatch → GitHub Actions mint-on-payment.yml
+ *
+ * SECURITY (Sprint 2 P0):
+ * - dry_run DEFAULT — never inject live_mint=true unless gates explicit
+ * - payment proof required (server_confirmed + provider_tx + amount + not refunded)
+ * - durable idempotency per order_id (file or Postgres)
+ * - GitHub 204 = dispatch accepted, NOT mint confirmed
+ * - never re-dispatch blindly after timeout → reconciliation_required
  *
  * Env:
  *   MINT_DISPATCH_ENABLED=1
- *   GITHUB_TOKEN or MINT_GITHUB_PAT — repo scope workflow
- *   MINT_GITHUB_OWNER=Neltud
- *   MINT_GITHUB_REPO=xArtists
- *   MINT_WORKFLOW_FILE=mint-on-payment.yml
- *   MINT_REF=main
- *   MINT_MICRO_PRICE=true|false  (default true while deployer underfunded)
- *
- * Does NOT hold PEM. Chain mint runs only in Actions env production.
+ *   MINT_GITHUB_PAT (preferred) or GITHUB_TOKEN
+ *   MINT_LIVE_ENABLED=1          # required for live_mint=true
+ *   MINT_MAINNET_CONFIRM=LIVE_MINT_MAINNET
+ *   MINT_DRY_RUN=1               # default if unset → dry run
+ *   MINT_MICRO_PRICE=true|false
+ *   MINT_JOBS_PATH               # file store path
+ *   DATABASE_URL                 # optional Postgres for jobs
  */
 
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import crypto from 'node:crypto'
+
 const PACK_IDS = new Set(['pulse', 'yield', 'sentinel'])
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+export const MINT_JOB_STATUS = Object.freeze({
+  PENDING: 'pending',
+  DISPATCHING: 'dispatching',
+  SUBMITTED: 'submitted',
+  CONFIRMED: 'confirmed',
+  FAILED: 'failed',
+  RECONCILIATION_REQUIRED: 'reconciliation_required',
+})
+
+const TERMINAL = new Set([
+  MINT_JOB_STATUS.CONFIRMED,
+  MINT_JOB_STATUS.FAILED,
+])
+
+const BLOCK_REDISPATCH = new Set([
+  MINT_JOB_STATUS.DISPATCHING,
+  MINT_JOB_STATUS.SUBMITTED,
+  MINT_JOB_STATUS.CONFIRMED,
+  MINT_JOB_STATUS.RECONCILIATION_REQUIRED,
+])
 
 export function mintDispatchConfig(env = process.env) {
   const token = String(env.MINT_GITHUB_PAT || env.GITHUB_TOKEN || '').trim()
   const enabled = String(env.MINT_DISPATCH_ENABLED || '').trim() === '1'
-  const owner = String(env.MINT_GITHUB_OWNER || 'Neltud').trim()
-  const repo = String(env.MINT_GITHUB_REPO || 'xArtists').trim()
-  const workflow = String(env.MINT_WORKFLOW_FILE || 'mint-on-payment.yml').trim()
-  const ref = String(env.MINT_REF || 'main').trim()
+  const dryRun =
+    String(env.MINT_DRY_RUN ?? '1').trim() !== '0' &&
+    String(env.MINT_DRY_RUN ?? '1').toLowerCase() !== 'false'
+  const liveEnabled = String(env.MINT_LIVE_ENABLED || '').trim() === '1'
+  const mainnetConfirm = String(env.MINT_MAINNET_CONFIRM || 'LIVE_MINT_MAINNET').trim()
   const micro = String(env.MINT_MICRO_PRICE || 'true').toLowerCase() !== 'false'
   return {
     enabled: enabled && Boolean(token),
     token,
-    owner,
-    repo,
-    workflow,
-    ref,
+    owner: String(env.MINT_GITHUB_OWNER || 'Neltud').trim(),
+    repo: String(env.MINT_GITHUB_REPO || 'xArtists').trim(),
+    workflow: String(env.MINT_WORKFLOW_FILE || 'mint-on-payment.yml').trim(),
+    ref: String(env.MINT_REF || 'main').trim(),
+    dryRun,
+    liveEnabled,
+    mainnetConfirm,
     micro,
   }
 }
 
+function jobsPath(env = process.env) {
+  if (env.MINT_JOBS_PATH) return path.resolve(env.MINT_JOBS_PATH)
+  return path.resolve(__dirname, '../../../data/mint_jobs.json')
+}
+
+function emptyJobs() {
+  return { schema: 'xartists_mint_jobs/v1', jobs: {} }
+}
+
+function loadJobsFile(env) {
+  const p = jobsPath(env)
+  if (!fs.existsSync(p)) return emptyJobs()
+  try {
+    const raw = JSON.parse(fs.readFileSync(p, 'utf8'))
+    if (!raw || raw.schema !== 'xartists_mint_jobs/v1' || typeof raw.jobs !== 'object') {
+      throw new Error('invalid_mint_jobs_schema')
+    }
+    return raw
+  } catch {
+    throw Object.assign(new Error('mint_jobs_store_unavailable'), { statusCode: 503 })
+  }
+}
+
+function saveJobsFile(db, env) {
+  const p = jobsPath(env)
+  fs.mkdirSync(path.dirname(p), { recursive: true })
+  const tmp = `${p}.${process.pid}.${Date.now()}.${crypto.randomBytes(4).toString('hex')}.tmp`
+  fs.writeFileSync(tmp, JSON.stringify(db, null, 2) + '\n', 'utf8')
+  fs.renameSync(tmp, p)
+}
+
+/** Atomic file reservation for order_id */
+export async function withMintJobLock(orderId, fn, env = process.env) {
+  const lock = jobsPath(env) + '.lock'
+  const start = Date.now()
+  let fd
+  for (;;) {
+    try {
+      fd = fs.openSync(lock, 'wx')
+      break
+    } catch (e) {
+      if (e.code !== 'EEXIST') throw e
+      if (Date.now() - start > 5000) {
+        throw Object.assign(new Error('mint_jobs_lock_timeout'), { statusCode: 503 })
+      }
+      await new Promise((r) => setTimeout(r, 15))
+    }
+  }
+  try {
+    const db = loadJobsFile(env)
+    const result = await fn(db, orderId)
+    saveJobsFile(db, env)
+    return result
+  } finally {
+    try {
+      fs.closeSync(fd)
+    } catch {
+      /* */
+    }
+    try {
+      fs.unlinkSync(lock)
+    } catch {
+      /* */
+    }
+  }
+}
+
 /**
- * @param {{ packId: string, buyer: string, edition?: string|number, orderId?: string }}
- * @returns {Promise<{ ok: boolean, skipped?: boolean, reason?: string, status?: number, body?: unknown }>}
+ * Strict payment gate — no status-only path.
+ * Requires authenticated server confirmation fields.
  */
-export async function dispatchMintOnPayment(input, env = process.env) {
+export function assertPaymentAllowsMint(order) {
+  if (!order || typeof order !== 'object') {
+    return { ok: false, reason: 'missing_order' }
+  }
+  if (order.server_confirmed !== true && order.payment_verified !== true) {
+    // legacy: only accept paid IF delivery path already recorded provider proof
+    if (!(order.status === 'paid' && order.provider_tx_id && order.authorization)) {
+      return { ok: false, reason: 'payment_not_server_verified' }
+    }
+  }
+  if (order.status === 'refunded' || order.status === 'cancelled' || order.status === 'refused') {
+    return { ok: false, reason: 'order_invalidating_status', status: order.status }
+  }
+  if (!order.provider_tx_id) {
+    return { ok: false, reason: 'missing_provider_tx_id' }
+  }
+  if (!Number.isInteger(order.amount_cents) || order.amount_cents <= 0) {
+    return { ok: false, reason: 'invalid_amount' }
+  }
+  if (order.currency && String(order.currency).toUpperCase() !== 'EUR') {
+    return { ok: false, reason: 'currency_mismatch' }
+  }
+  const pack = String(order.pack_id || order.packId || '').toLowerCase()
+  if (!PACK_IDS.has(pack)) {
+    return { ok: false, reason: 'invalid_pack' }
+  }
+  const buyer = String(order.buyer_address || order.buyer || '').trim()
+  if (!/^erd1[a-z0-9]{58}$/.test(buyer)) {
+    return { ok: false, reason: 'invalid_buyer' }
+  }
+  const orderId = String(order.order_id || order.id || '').trim()
+  if (!orderId) {
+    return { ok: false, reason: 'missing_order_id' }
+  }
+  return { ok: true, pack, buyer, orderId, amount_cents: order.amount_cents }
+}
+
+export function resolveLiveInputs(cfg) {
+  if (cfg.dryRun || !cfg.liveEnabled) {
+    return {
+      live_mint: 'false',
+      confirm: '',
+      mode: 'dry_run',
+    }
+  }
+  if (cfg.mainnetConfirm !== 'LIVE_MINT_MAINNET') {
+    return {
+      live_mint: 'false',
+      confirm: '',
+      mode: 'live_blocked_bad_confirm_env',
+    }
+  }
+  return {
+    live_mint: 'true',
+    confirm: 'LIVE_MINT_MAINNET',
+    mode: 'live',
+  }
+}
+
+export async function dispatchMintOnPayment(input, env = process.env, fetchImpl = fetch) {
   const cfg = mintDispatchConfig(env)
   if (!cfg.enabled) {
     return { ok: false, skipped: true, reason: 'mint_dispatch_disabled_or_no_token' }
   }
   const pack = String(input.packId || '').toLowerCase()
   const buyer = String(input.buyer || '').trim()
-  if (!PACK_IDS.has(pack)) {
-    return { ok: false, reason: 'invalid_pack' }
-  }
-  if (!/^erd1[a-z0-9]{58}$/.test(buyer)) {
-    return { ok: false, reason: 'invalid_buyer' }
-  }
+  const orderId = String(input.orderId || '').trim()
+  if (!PACK_IDS.has(pack)) return { ok: false, reason: 'invalid_pack' }
+  if (!/^erd1[a-z0-9]{58}$/.test(buyer)) return { ok: false, reason: 'invalid_buyer' }
+  if (!orderId) return { ok: false, reason: 'missing_order_id' }
+
+  const live = resolveLiveInputs(cfg)
   const edition = String(input.edition ?? '1')
+
+  // Idempotent reservation
+  const reservation = await withMintJobLock(
+    orderId,
+    async (db) => {
+      const existing = db.jobs[orderId]
+      if (existing) {
+        if (BLOCK_REDISPATCH.has(existing.status)) {
+          return {
+            proceed: false,
+            job: existing,
+            reason: existing.status === MINT_JOB_STATUS.CONFIRMED ? 'already_confirmed' : 'already_in_flight',
+          }
+        }
+        if (existing.status === MINT_JOB_STATUS.FAILED && input.allowRetry !== true) {
+          return { proceed: false, job: existing, reason: 'failed_needs_manual_retry' }
+        }
+      }
+      const job = {
+        order_id: orderId,
+        pack_id: pack,
+        buyer_address: buyer,
+        edition,
+        status: MINT_JOB_STATUS.DISPATCHING,
+        mode: live.mode,
+        micro_price: cfg.micro,
+        provider_tx_id: input.providerTxId || null,
+        amount_cents: input.amountCents || null,
+        github_dispatch_accepted: false,
+        chain_tx_hash: null,
+        nft_identifier: null,
+        error: null,
+        created_at: existing?.created_at || new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        attempts: (existing?.attempts || 0) + 1,
+      }
+      db.jobs[orderId] = job
+      return { proceed: true, job }
+    },
+    env,
+  )
+
+  if (!reservation.proceed) {
+    return {
+      ok: false,
+      skipped: true,
+      reason: reservation.reason,
+      job: reservation.job,
+    }
+  }
+
   const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/actions/workflows/${cfg.workflow}/dispatches`
   const body = {
     ref: cfg.ref,
@@ -59,53 +273,129 @@ export async function dispatchMintOnPayment(input, env = process.env) {
       pack,
       edition,
       buyer,
-      live_mint: 'true',
-      confirm: 'LIVE_MINT_MAINNET',
+      order_id: orderId,
+      live_mint: live.live_mint,
+      confirm: live.confirm || 'DRY_RUN',
       micro_price: cfg.micro ? 'true' : 'false',
     },
   }
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/vnd.github+json',
-      Authorization: `Bearer ${cfg.token}`,
-      'X-GitHub-Api-Version': '2022-11-28',
-      'Content-Type': 'application/json',
-      'User-Agent': 'xartists-access-api-mint-dispatch',
-    },
-    body: JSON.stringify(body),
-  })
+
+  let res
+  try {
+    res = await fetchImpl(url, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${cfg.token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+        'Content-Type': 'application/json',
+        'User-Agent': 'xartists-access-api-mint-dispatch',
+      },
+      body: JSON.stringify(body),
+    })
+  } catch (e) {
+    await withMintJobLock(
+      orderId,
+      async (db) => {
+        const j = db.jobs[orderId]
+        if (j) {
+          j.status = MINT_JOB_STATUS.RECONCILIATION_REQUIRED
+          j.error = `fetch_error:${e.message || 'network'}`
+          j.updated_at = new Date().toISOString()
+        }
+      },
+      env,
+    )
+    return { ok: false, reason: 'github_unreachable', reconciliation_required: true }
+  }
+
   if (res.status === 204) {
+    await withMintJobLock(
+      orderId,
+      async (db) => {
+        const j = db.jobs[orderId]
+        if (j) {
+          j.status = MINT_JOB_STATUS.SUBMITTED
+          j.github_dispatch_accepted = true
+          j.updated_at = new Date().toISOString()
+        }
+      },
+      env,
+    )
     return {
       ok: true,
       status: 204,
-      orderId: input.orderId || null,
+      orderId,
       pack,
       buyer,
+      mode: live.mode,
       micro: cfg.micro,
+      note: 'github_accepted_dispatch_not_mint_confirmed',
     }
   }
+
   let errBody = null
   try {
     errBody = await res.json()
   } catch {
-    errBody = await res.text().catch(() => null)
+    errBody = null
   }
+  await withMintJobLock(
+    orderId,
+    async (db) => {
+      const j = db.jobs[orderId]
+      if (j) {
+        j.status = MINT_JOB_STATUS.FAILED
+        j.error = `github_${res.status}`
+        j.updated_at = new Date().toISOString()
+      }
+    },
+    env,
+  )
   return { ok: false, status: res.status, body: errBody, reason: 'github_dispatch_failed' }
 }
 
 /**
- * Call after order marked server_confirmed / paid.
- * Failures are logged by caller — never fail the IPN HTTP 200.
+ * After IPN paid — never throw to IPN handler.
+ * Does not treat plain status==='paid' without proof as sufficient when
+ * server_confirmed/payment_verified/provider fields absent.
  */
-export async function maybeDispatchMintAfterPaid(order, env = process.env) {
-  if (!order || order.server_confirmed !== true && order.status !== 'paid') {
-    return { ok: false, skipped: true, reason: 'order_not_paid' }
+export async function maybeDispatchMintAfterPaid(order, env = process.env, fetchImpl = fetch) {
+  const gate = assertPaymentAllowsMint(order)
+  if (!gate.ok) {
+    return { ok: false, skipped: true, reason: gate.reason }
   }
-  const packId = order.pack_id || order.packId
-  const buyer = order.buyer_address || order.buyer || order.erd
   return dispatchMintOnPayment(
-    { packId, buyer, edition: order.edition || 1, orderId: order.id || order.order_id },
+    {
+      packId: gate.pack,
+      buyer: gate.buyer,
+      orderId: gate.orderId,
+      edition: order.edition || 1,
+      providerTxId: order.provider_tx_id,
+      amountCents: gate.amount_cents,
+    },
+    env,
+    fetchImpl,
+  )
+}
+
+export async function markMintJobConfirmed(orderId, { chainTxHash, nftIdentifier } = {}, env = process.env) {
+  return withMintJobLock(
+    orderId,
+    async (db) => {
+      const j = db.jobs[orderId]
+      if (!j) return null
+      j.status = MINT_JOB_STATUS.CONFIRMED
+      j.chain_tx_hash = chainTxHash || j.chain_tx_hash
+      j.nft_identifier = nftIdentifier || j.nft_identifier
+      j.updated_at = new Date().toISOString()
+      return j
+    },
     env,
   )
+}
+
+export async function getMintJob(orderId, env = process.env) {
+  const db = loadJobsFile(env)
+  return db.jobs[orderId] || null
 }
