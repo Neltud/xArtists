@@ -20,6 +20,14 @@ export type PayboxSessionRequest = {
 export type PayboxOrderStatus =
   | 'created' | 'redirected' | 'paid' | 'refused' | 'cancelled' | 'error' | 'late_paid' | 'unavailable'
 
+export type PayboxOrderResult = {
+  status: PayboxOrderStatus
+  server_confirmed: boolean
+  pack_id?: string
+  delivery: 'none' | 'pending' | 'confirmed'
+  delivery_verified: boolean
+}
+
 export type PayboxSessionResponse = {
   ok?: boolean
   url?: string
@@ -135,19 +143,28 @@ export async function startPayboxCardPayment(opts: {
 export async function fetchPayboxOrderStatus(
   orderId: string,
   opts?: { buyerAddress?: string; accessToken?: string }
-): Promise<{ status: PayboxOrderStatus; server_confirmed: boolean; pack_id?: string }> {
+): Promise<PayboxOrderResult> {
   const api = getAccessApiBase()
-  if (!api) return { status: 'unavailable', server_confirmed: false }
+  if (!api) return { status: 'unavailable', server_confirmed: false, delivery: 'none', delivery_verified: false }
   const headers: HeadersInit = {}
   if (opts?.accessToken) headers.Authorization = `Bearer ${opts.accessToken}`
   const q = opts?.buyerAddress ? `?buyer=${encodeURIComponent(opts.buyerAddress)}` : ''
   const r = await fetch(`${api}/v1/checkout/paybox/order/${encodeURIComponent(orderId)}${q}`, { headers })
-  if (r.status === 401 || r.status === 403) return { status: 'error', server_confirmed: false }
-  if (!r.ok) return { status: 'error', server_confirmed: false }
-  const data = (await r.json()) as { status?: PayboxOrderStatus; server_confirmed?: boolean; pack_id?: string }
+  if (r.status === 401 || r.status === 403) return { status: 'error', server_confirmed: false, delivery: 'none', delivery_verified: false }
+  if (!r.ok) return { status: 'error', server_confirmed: false, delivery: 'none', delivery_verified: false }
+  const data = (await r.json()) as {
+    status?: PayboxOrderStatus
+    server_confirmed?: boolean
+    pack_id?: string
+    delivery?: string
+    delivery_verified?: boolean
+  }
+  const verified = data.delivery === 'confirmed' && data.delivery_verified === true
   return {
     status: (data.status as PayboxOrderStatus) || 'error',
-    server_confirmed: Boolean(data.server_confirmed),
+    server_confirmed: data.server_confirmed === true,
     pack_id: data.pack_id,
+    delivery: verified ? 'confirmed' : data.server_confirmed === true ? 'pending' : 'none',
+    delivery_verified: verified,
   }
 }
