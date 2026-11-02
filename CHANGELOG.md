@@ -1,5 +1,23 @@
 # Changelog — xArtists
 
+## [0.128.0](https://github.com/Neltud/xArtists/compare/v0.127.0...v0.128.0) (2026-11-02)
+
+
+### Features
+
+* **access-api:** mintDispatch after IPN + funding playbook ([9c0b8f4](https://github.com/Neltud/xArtists/commit/9c0b8f4eea142e41abe48e6377bcc8b9cbf92684))
+* **mint:** LIVE_MINT_MAINNET armed — post-payment path + Rule1 SC prices ([58d1f0b](https://github.com/Neltud/xArtists/commit/58d1f0b68d2e6a888592a0f044c674d23c95cab7))
+* **packs:** My Packs GenesisCard3D + media dual-face + GO S1/S2 checklist ([089b674](https://github.com/Neltud/xArtists/commit/089b67447e132904be0420a948e22773691ea37f))
+* **ux:** touch-first LIA Control Room and wallet-optional welcome ([#262](https://github.com/Neltud/xArtists/issues/262)) ([a006622](https://github.com/Neltud/xArtists/commit/a006622c829a40598b22243ca6751c3ddb167d1f))
+
+
+### Bug Fixes
+
+* **launch:** V3 direct pack links + checkout lock + docs ([#264](https://github.com/Neltud/xArtists/issues/264)) ([f6c01ea](https://github.com/Neltud/xArtists/commit/f6c01ea9d68db515f3cdd82c1cf665329939789d))
+* **mint:** restore SC pack prices to Rule1 33/22.5/15 EGLD after admin mint ([611e3b5](https://github.com/Neltud/xArtists/commit/611e3b5531fd2714297d95f45bedcbf75a7d5fa2))
+* **mobile:** responsive Command Center rail, honest quote status and route checks ([#265](https://github.com/Neltud/xArtists/issues/265)) ([425c13c](https://github.com/Neltud/xArtists/commit/425c13ca5efed760f31d56f083dd8318f76cacc5))
+* **public:** clarify Whop membership vs Genesis, official docs and HTTPS catalog CSP ([#266](https://github.com/Neltud/xArtists/issues/266)) ([92806c1](https://github.com/Neltud/xArtists/commit/92806c1ca6614521cf63462ee817c96cf496753e))
+
 ## [0.127.0](https://github.com/Neltud/xArtists/compare/v0.126.3...v0.127.0) (2026-11-02)
 
 
