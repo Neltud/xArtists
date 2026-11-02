@@ -48,6 +48,16 @@ export function payboxConfig(env = process.env) {
   return { ready, site, rang, identifiant, hmacKey, mode, devise, endpoint: TPE[mode] }
 }
 
+/**
+ * Production PayBox credentials being present is NOT commercial approval.
+ * Explicitly require a separate checkout gate. Signed IPNs for already
+ * existing orders remain handled even while new checkout is disabled.
+ */
+export function payboxCheckoutEnabled(env = process.env) {
+  return payboxConfig(env).ready &&
+    String(env.PAYBOX_CHECKOUT_ENABLED || '').trim() === '1'
+}
+
 export function signPayboxHmac(message, hmacKeyHex) {
   const key = Buffer.from(String(hmacKeyHex).replace(/\s+/g, ''), 'hex')
   if (key.length < 8) {
