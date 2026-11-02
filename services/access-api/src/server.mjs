@@ -2,6 +2,7 @@
  * Access API — JWT, SIWX, Paybox System (v8.3).
  * Paybox IPN: RSA-SHA256 / 2048 only. Buyer identity: JWT or SIWX.
  * Post-IPN: optional mintDispatch (dry_run default; live needs explicit env gates).
+ * Signals: read-only daily signal (never executes trades).
  */
 import http from 'node:http'
 import { resolveAccessLevel, issueAccessToken, verifyJwt } from './verifyAccess.mjs'
@@ -16,6 +17,7 @@ import {
 } from './orders.mjs'
 import { resolveAuthenticatedBuyer } from './buyerAuth.mjs'
 import { buildPackQuote } from './quote.mjs'
+import { loadDailySignal } from './signals.mjs'
 import { mintDispatchConfig } from './mintDispatch.mjs'
 
 const PORT = Number(process.env.PORT || 8787)
@@ -108,10 +110,17 @@ async function handleRequest(req, res) {
       mint_dry_run: MINT_CFG.dryRun,
       mint_live_enabled: MINT_CFG.liveEnabled,
       mint_micro_price: MINT_CFG.micro,
+      signals_daily: true,
       service: 'access-api',
       packs: Object.keys(PACK_CATALOG),
       orders_backend: process.env.DATABASE_URL ? 'postgres' : 'file',
     })
+    return
+  }
+
+  if (req.method === 'GET' && (pth === '/v1/signals/daily' || pth === '/api/signals/daily')) {
+    const out = loadDailySignal()
+    json(res, 200, { ok: true, ...out, live_trading: 0, execution: 'disabled' })
     return
   }
 
@@ -297,7 +306,6 @@ async function handleRequest(req, res) {
       provider_tx_id: result.provider_tx_id,
     })
 
-    // Never fail IPN HTTP on mint dispatch errors
     let mint = null
     if (applied.ok && applied.dispatch_eligible) {
       const fresh = await getOrder(result.ref)
@@ -396,6 +404,6 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, () => {
   console.log(
-    `access-api :${server.address().port} paybox=${PAYBOX.ready} ipn=${IPN_POLICY.algorithm}/${IPN_POLICY.keySize} mint=${MINT_CFG.enabled ? (MINT_CFG.dryRun ? 'dry_run' : 'live_armed') : 'off'}`,
+    `access-api :${server.address().port} paybox=${PAYBOX.ready} ipn=${IPN_POLICY.algorithm}/${IPN_POLICY.keySize} mint=${MINT_CFG.enabled ? (MINT_CFG.dryRun ? 'dry_run' : 'live_armed') : 'off'} signals=on`,
   )
 })
