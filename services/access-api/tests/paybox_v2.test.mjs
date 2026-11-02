@@ -166,7 +166,8 @@ test('idempotent delivery + restart persistence', async () => {
   assert.equal(b.duplicate, true)
   const orders = await loadOrders()
   assert.equal(orders.orders[id].status, 'paid')
-  assert.equal(orders.orders[id].delivery, 'simulated')
+  assert.equal(orders.orders[id].delivery, 'pending')
+  assert.equal(orders.orders[id].delivered_at, null)
 })
 
 test('fail closed without merchant config', () => {
