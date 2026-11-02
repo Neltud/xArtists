@@ -57,6 +57,41 @@ test('HTTP integration: unconfigured payments fail closed; client prices never o
   } finally { await server.close() }
 })
 
+test('HTTP PayBox prod credentials cannot create a card session without separate commercial GO', async () => {
+  const jwtSecret = 'test-only-paybox-checkout-gate-secret'
+  const buyer = 'erd1' + 'q'.repeat(58)
+  const server = await startServer({
+    PAYBOX_ENV: 'prod',
+    PAYBOX_SITE: '1999888',
+    PAYBOX_RANG: '32',
+    PAYBOX_HMAC_KEY: '0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF',
+    PAYBOX_CHECKOUT_ENABLED: '0',
+    ACCESS_JWT_SECRET: jwtSecret,
+  })
+  try {
+    const health = await (await fetch(server.base + '/health')).json()
+    assert.equal(health.paybox_configured, true)
+    assert.equal(health.paybox_mode, 'prod')
+    assert.equal(health.paybox_checkout_enabled, false)
+    const url = server.base + '/v1/checkout/paybox'
+    // Existing auth contract remains intact: unauthenticated requests get 401.
+    assert.equal((await post(url, { pack_id: 'sentinel', buyer_address: buyer })).status, 401)
+    const token = signJwt({
+      sub: buyer, exp: Math.floor(Date.now() / 1000) + 600,
+    }, jwtSecret)
+    const response = await post(url, { pack_id: 'sentinel', buyer_address: buyer }, {
+      Authorization: 'Bearer ' + token,
+    })
+    assert.equal(response.status, 503)
+    const payload = await response.json()
+    assert.equal(payload.error, 'paybox_checkout_not_approved')
+    assert.equal(payload.url, undefined)
+    assert.equal(payload.fields, undefined)
+  } finally {
+    await server.close()
+  }
+})
+
 test('HTTP integration: configured signer returns an encoded signature, rejects foreign origin and throttles requests', async () => {
   const server = await startServer(env)
   try {
