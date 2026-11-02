@@ -1,0 +1,49 @@
+name: Rebuild access-api npm lockfile (issue 271)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/rebuild-access-api-lockfile.yml'
+      - 'services/access-api/package.json'
+      - 'services/access-api/package-lock.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'fix/issue-271-access-lockfile-20261102'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Regenerate only lockfile with npm 10, no dependency scripts
+        working-directory: services/access-api
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm test
+      - name: Commit reproducible lockfile to this same PR branch
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_HEAD_REF}" != 'fix/issue-271-access-lockfile-20261102' ]; then
+            echo "::error::Unexpected head ref; refusing to push"
+            exit 1
+          fi
+          git add services/access-api/package-lock.json
+          if git diff --cached --quiet; then
+            echo "lockfile already reproducible"
+            exit 0
+          fi
+          git config user.name "xartists-ci[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(ci): regenerate access-api npm lockfile for Node 22"
+          git push origin "HEAD:refs/heads/${GITHUB_HEAD_REF}"
