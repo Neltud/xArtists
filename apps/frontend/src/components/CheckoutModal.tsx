@@ -73,6 +73,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
   }, [open])
 
   if (!open || !pack) return null
+  const railLocked = busy || packTxPending || termsOpen
   const visual = PACK_VISUAL[pack.id]
 
   const ensureGuestId = () => {
@@ -193,7 +194,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       role="dialog"
       aria-modal
       aria-labelledby="checkout-title"
-      onClick={onClose}
+      onClick={() => { if (!railLocked) onClose() }}
     >
       <div
         className="xa-modal-panel glass-hud w-full max-w-md max-h-[92vh] overflow-y-auto space-y-4 rounded-2xl border bg-[color:var(--xa-bg-elevated)] backdrop-blur-md shadow-2xl"
@@ -224,7 +225,8 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
             type="button"
             className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl border border-white/15 bg-white/5 text-zinc-200 hover:bg-white/10 text-lg leading-none"
             aria-label={t('checkout.close')}
-            onClick={onClose}
+            disabled={railLocked}
+            onClick={() => { if (!railLocked) onClose() }}
           >
             ✕
           </button>
@@ -241,7 +243,9 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
 
           <button
             type="button"
+            disabled={railLocked}
             onClick={() => {
+              if (railLocked) return
               setRail('crypto')
               setMsg('')
             }}
@@ -259,7 +263,9 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
 
           <button
             type="button"
+            disabled={railLocked}
             onClick={() => {
+              if (railLocked) return
               setRail('fiat')
               setMsg('')
             }}
@@ -282,7 +288,8 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
               <button
                 key={m}
                 type="button"
-                onClick={() => setFiatMethod(m)}
+                disabled={railLocked}
+                onClick={() => { if (!railLocked) setFiatMethod(m) }}
                 className="rounded-full border border-[color:var(--xa-border)] px-3 py-1.5 text-[11px] font-medium text-[color:var(--xa-text-secondary)]"
                 style={fiatMethod === m ? { borderColor: visual.border, background: visual.accentSoft, color: visual.accent } : undefined}
                 aria-pressed={fiatMethod === m}
@@ -353,7 +360,9 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
             <button
               type="button"
               className="text-amber-200/90 underline"
+              disabled={railLocked}
               onClick={() => {
+                if (railLocked) return
                 if (!hasErd1) {
                   setMsg(t('checkout.msg.previewNeedWallet'))
                   requestOpenConnect()
