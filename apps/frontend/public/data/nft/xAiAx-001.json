@@ -1,27 +1,36 @@
 {
-  "name": "Agent 001",
-  "description": "Entitlement NFT Pack Pulse (xArtists). Agent crystallin — bouclier hexagonal d’énergie. Accès signaux haute fréquence · board paper. Pas un fonds, pas de rendement promis.",
+  "name": "Genesis Pulse",
+  "description": "Œuvre SFT Genesis Pulse (xArtists). Recto : peinture sfumato lumière cristalline. Verso : plaque HUD droits durables. Achat unique · édition limitée · pas un fonds, pas de rendement promis.",
   "collection": "xArtists AI Agents — Pulse",
-  "ticker": "xAiAx",
+  "ticker": "XAIPLS-2cf72b",
   "nonce": 1,
   "attributes": [
     { "trait_type": "Pack", "value": "Pulse" },
-    { "trait_type": "Agent", "value": "001" },
+    { "trait_type": "Tier", "value": "GOLD" },
+    { "trait_type": "Face", "value": "peinture+hud" },
+    { "trait_type": "Mode", "value": "SFT" },
+    { "trait_type": "Billing", "value": "one_time" },
+    { "trait_type": "Rights", "value": "durable" },
+    { "trait_type": "Series", "value": "Genesis Pulse" },
     { "trait_type": "Artist", "value": "NT" },
-    { "trait_type": "Date", "value": "2027" },
-    { "trait_type": "Technique", "value": "IA generated" },
-    { "trait_type": "Class", "value": "Crystal Sentinel" },
-    { "trait_type": "Rarity", "value": "Genesis" },
-    { "trait_type": "Signal intensity", "value": 3 },
-    { "trait_type": "Collection", "value": "xAiAx" }
+    { "trait_type": "Technique", "value": "Peinture sfumato + HUD data · série Tuduri" },
+    { "trait_type": "Rarity", "value": "Genesis" }
   ],
   "properties": {
     "artist": "NT",
-    "date": "2027",
-    "technique": "IA generated",
+    "date": "2026",
+    "technique": "Peinture sfumato + HUD data · série Tuduri",
     "pack": "pulse",
-    "collection_ticker": "xAiAx",
+    "face_recto": "peinture",
+    "face_verso": "hud",
+    "billing": "one_time",
+    "rights": "durable",
+    "collection_ticker": "XAIPLS-2cf72b",
     "onSale": false
   },
-  "external_url": "https://neltud.github.io/xArtists/#/my-packs"
+  "media": {
+    "recto": "media/xAiAx-pulse-recto.png",
+    "verso": "media/xAiAx-pulse-verso-hud.png"
+  },
+  "external_url": "https://neltud.github.io/xArtists/#/packs/pulse"
 }

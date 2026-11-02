@@ -1,8 +1,13 @@
 {
-  "version": "1.2",
+  "version": "1.3",
   "collection": "xArtists Agent Packs Genesis",
   "chain": "multiversx",
-  "note": "Genesis SFT caps locked. Prices server authority 110/75/50 EUR. Mint simulated until GO_LIVE.",
+  "note": "Genesis SFT caps locked. Prices server authority 110/75/50 EUR. Mint simulated until GO_LIVE. Visual: recto peinture · verso HUD.",
+  "face": {
+    "recto": "peinture",
+    "verso": "hud",
+    "component": "GenesisCard3D"
+  },
   "series": [
     {
       "id": "pulse",
@@ -11,18 +16,28 @@
       "tier_label": "GOLD",
       "max_supply": 333,
       "series_name": "Genesis Pulse",
-      "price_egld": 10,
+      "price_egld": 33,
       "price_eur": 110,
-      "visual": { "motif": "hex-crystal · acid core", "accent": "#e8f5a8" },
+      "collection": "XAIPLS-2cf72b",
+      "visual": {
+        "motif": "Sfumato lumière · cristallin — série Tuduri",
+        "accent": "#e8f5a8",
+        "recto": "peinture",
+        "verso": "hud"
+      },
       "features": ["command_hub", "tca", "lia_full", "live_tape_full", "trading_signals", "defi_sleeve", "risk_alerts", "room_3d"],
       "attributes": [
         { "trait_type": "Series", "value": "Pulse" },
         { "trait_type": "Tier", "value": "Gold Full" },
+        { "trait_type": "Face", "value": "peinture+hud" },
         { "trait_type": "EditionMax", "value": 333 },
+        { "trait_type": "Billing", "value": "one_time" },
+        { "trait_type": "Rights", "value": "durable" },
         { "trait_type": "Signal", "value": "High" }
       ],
-      "image": "ipfs://pending/pulse.png",
-      "description": "Genesis Pulse — full suite. Not investment advice."
+      "image": "ipfs://pending/pulse-recto.png",
+      "image_back": "ipfs://pending/pulse-verso-hud.png",
+      "description": "Genesis Pulse — full suite. Recto peinture · verso HUD. Not investment advice."
     },
     {
       "id": "yield",
@@ -31,19 +46,29 @@
       "tier_label": "SILVER",
       "max_supply": 500,
       "series_name": "Genesis Yield",
-      "price_egld": 5,
+      "price_egld": 22.5,
       "price_eur": 75,
-      "visual": { "motif": "chrome lattice · yield rings", "accent": "#c8ccc4" },
+      "collection": "XAIYLD-987e24",
+      "visual": {
+        "motif": "Lattice chrome · anneaux — série Tuduri",
+        "accent": "#c8ccc4",
+        "recto": "peinture",
+        "verso": "hud"
+      },
       "features": ["room_3d", "command_room_yield", "defi_sleeve", "agent_stake"],
       "limits": ["no_tca", "no_trading_hf", "no_lia_full"],
       "attributes": [
         { "trait_type": "Series", "value": "Yield" },
         { "trait_type": "Tier", "value": "Silver DeFi" },
+        { "trait_type": "Face", "value": "peinture+hud" },
         { "trait_type": "EditionMax", "value": 500 },
+        { "trait_type": "Billing", "value": "one_time" },
+        { "trait_type": "Rights", "value": "durable" },
         { "trait_type": "Signal", "value": "Medium" }
       ],
-      "image": "ipfs://pending/yield.png",
-      "description": "Genesis Yield — DeFi limited. Not investment advice."
+      "image": "ipfs://pending/yield-recto.png",
+      "image_back": "ipfs://pending/yield-verso-hud.png",
+      "description": "Genesis Yield — DeFi limited. Recto peinture · verso HUD. Not investment advice."
     },
     {
       "id": "sentinel",
@@ -52,25 +77,37 @@
       "tier_label": "PLATINUM",
       "max_supply": 777,
       "series_name": "Genesis Sentinel",
-      "price_egld": 2.5,
+      "price_egld": 15,
       "price_eur": 50,
-      "visual": { "motif": "shield lattice · guard pulse", "accent": "#a78bfa" },
+      "collection": "XAISNT-3d8a6b",
+      "visual": {
+        "motif": "Voile gardien · profondeur — série Tuduri",
+        "accent": "#a78bfa",
+        "recto": "peinture",
+        "verso": "hud"
+      },
       "features": ["room_3d", "command_room_sentinel", "risk_alerts", "agent_stake"],
       "limits": ["no_tca", "no_trading_hf", "no_lia_full", "no_defi_active"],
       "attributes": [
         { "trait_type": "Series", "value": "Sentinel" },
         { "trait_type": "Tier", "value": "Platinum Guard" },
+        { "trait_type": "Face", "value": "peinture+hud" },
         { "trait_type": "EditionMax", "value": 777 },
+        { "trait_type": "Billing", "value": "one_time" },
+        { "trait_type": "Rights", "value": "durable" },
         { "trait_type": "Signal", "value": "Guard" }
       ],
-      "image": "ipfs://pending/sentinel.png",
-      "description": "Genesis Sentinel — guard alerts. Not investment advice."
+      "image": "ipfs://pending/sentinel-recto.png",
+      "image_back": "ipfs://pending/sentinel-verso-hud.png",
+      "description": "Genesis Sentinel — guard alerts. Recto peinture · verso HUD. Not investment advice."
     }
   ],
   "mint": {
     "sc_status": "pending_deploy",
-    "payment": ["paybox_eur", "egld"],
+    "payment": ["paybox_eur", "egld", "whop_one_time"],
     "royalties_bps": 500,
-    "receiver": "buyer_wallet"
+    "receiver": "buyer_wallet",
+    "trigger": "post_ipn_validated",
+    "mode_until_go": "paper_simulate"
   }
 }

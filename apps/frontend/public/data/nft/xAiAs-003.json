@@ -1,27 +1,36 @@
 {
-  "name": "Agent 003",
-  "description": "Entitlement NFT Pack Sentinel (xArtists). Agent de veille — alertes risk · sleeve protection. Signaux sparses. Pas un fonds, pas d’exécution trading agressive.",
+  "name": "Genesis Sentinel",
+  "description": "Œuvre SFT Genesis Sentinel (xArtists). Recto : voile gardien · profondeur (peinture). Verso : HUD alertes / zero-trust. Achat unique · pas un fonds, pas de rendement promis.",
   "collection": "xArtists AI Agents — Sentinel",
-  "ticker": "xAiAs",
+  "ticker": "XAISNT-3d8a6b",
   "nonce": 1,
   "attributes": [
     { "trait_type": "Pack", "value": "Sentinel" },
-    { "trait_type": "Agent", "value": "003" },
+    { "trait_type": "Tier", "value": "PLATINUM" },
+    { "trait_type": "Face", "value": "peinture+hud" },
+    { "trait_type": "Mode", "value": "SFT" },
+    { "trait_type": "Billing", "value": "one_time" },
+    { "trait_type": "Rights", "value": "durable" },
+    { "trait_type": "Series", "value": "Genesis Sentinel" },
     { "trait_type": "Artist", "value": "NT" },
-    { "trait_type": "Date", "value": "2027" },
-    { "trait_type": "Technique", "value": "IA generated" },
-    { "trait_type": "Class", "value": "Aegis Watch" },
-    { "trait_type": "Rarity", "value": "Genesis" },
-    { "trait_type": "Signal intensity", "value": 1 },
-    { "trait_type": "Collection", "value": "xAiAs" }
+    { "trait_type": "Technique", "value": "Peinture sfumato + HUD data · série Tuduri" },
+    { "trait_type": "Rarity", "value": "Genesis" }
   ],
   "properties": {
     "artist": "NT",
-    "date": "2027",
-    "technique": "IA generated",
+    "date": "2026",
+    "technique": "Peinture sfumato + HUD data · série Tuduri",
     "pack": "sentinel",
-    "collection_ticker": "xAiAs",
+    "face_recto": "peinture",
+    "face_verso": "hud",
+    "billing": "one_time",
+    "rights": "durable",
+    "collection_ticker": "XAISNT-3d8a6b",
     "onSale": false
   },
-  "external_url": "https://neltud.github.io/xArtists/#/my-packs"
+  "media": {
+    "recto": "media/xAiAs-sentinel-recto.png",
+    "verso": "media/xAiAs-sentinel-verso-hud.png"
+  },
+  "external_url": "https://neltud.github.io/xArtists/#/packs/sentinel"
 }

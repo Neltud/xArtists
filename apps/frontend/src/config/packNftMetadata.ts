@@ -5,9 +5,10 @@
  * Sentinel → XAISNT-3d8a6b (mainnet)
  *
  * NFT = 1/1 unique · SFT = Meta-ESDT supply plafonnée par nonce.
+ * Visuel mint : recto peinture (sfumato Tuduri) · verso HUD (metadata on-chain readable).
  * Produit d’accès (signaux / badge / part pool pack) — PAS un fonds, PAS d’APY promis.
  * Mint on-chain après GO_LIVE · revente via agents-marketplace (fee ≤ 10 %).
- * Voir docs/PACK_NFT_SFT.md · docs/REVENUE_DISTRIBUTION.md
+ * Voir docs/PACK_NFT_SFT.md · docs/PACK_NFT_MINT_METADATA.md
  */
 
 import type { PackId } from './agentPacks'
@@ -25,9 +26,17 @@ export type PackNftMeta = {
   packId: PackId
   attributes: { trait_type: string; value: string | number }[]
   mediaHint: string
+  /** Optional verso / HUD media key */
+  mediaBackHint?: string
   royaltiesBps: number
   /** NFT unique vs SFT série limitée */
   tokenMode?: 'nft' | 'sft'
+  /** Dual-face card contract */
+  face?: {
+    recto: 'peinture'
+    verso: 'hud'
+    series: string
+  }
 }
 
 /** Collections mainnet live (issue 2026-10-14). Override: VITE_AGENT_PACK_COLLECTIONS */
@@ -68,99 +77,113 @@ export const PACK_NFT_COLLECTION = {
 } as const
 
 const ARTIST = 'NT'
-const DATE = '2027'
-const TECHNIQUE = 'IA generated'
+const DATE = '2026'
+const TECHNIQUE = 'Peinture sfumato + HUD data · série Tuduri'
 const ROYALTIES = 500 // 5%
 
-/** NFT #001 — Pack Pulse (cristal violet / bouclier hexagonal) */
+const FACE_BASE = {
+  recto: 'peinture' as const,
+  verso: 'hud' as const,
+}
+
+/** NFT #001 — Pack Pulse (recto lumière cristalline · verso HUD GOLD) */
 export const AGENT_001: PackNftMeta = {
   collection: PACK_COLLECTIONS.pulse.ticker,
   collectionName: PACK_COLLECTIONS.pulse.fullName,
-  tokenName: 'Agent 001',
+  tokenName: 'Genesis Pulse',
   nonceHint: 1,
-  title: 'Agent 001',
+  title: 'Genesis Pulse',
   artist: ARTIST,
   date: DATE,
   technique: TECHNIQUE,
   description:
-    'Entitlement NFT Pack Pulse (xArtists). Agent crystallin — bouclier hexagonal d’énergie. Accès signaux haute fréquence · board paper. Pas un fonds, pas de rendement promis.',
+    'Œuvre SFT Genesis Pulse (xArtists). Recto : peinture sfumato lumière cristalline. Verso : plaque HUD droits durables. Achat unique · édition limitée · pas un fonds, pas de rendement promis.',
   packId: 'pulse',
-  tokenMode: 'nft',
+  tokenMode: 'sft',
+  face: { ...FACE_BASE, series: 'Genesis Pulse' },
   attributes: [
     { trait_type: 'Pack', value: 'Pulse' },
-    { trait_type: 'Agent', value: '001' },
-    { trait_type: 'Mode', value: 'NFT' },
+    { trait_type: 'Tier', value: 'GOLD' },
+    { trait_type: 'Face', value: 'peinture+hud' },
+    { trait_type: 'Mode', value: 'SFT' },
+    { trait_type: 'Billing', value: 'one_time' },
+    { trait_type: 'Rights', value: 'durable' },
+    { trait_type: 'Series', value: 'Genesis Pulse' },
     { trait_type: 'Risk', value: 'High-Frequency' },
+    { trait_type: 'Artist', value: ARTIST },
   ],
-  mediaHint: 'media/xAiAx-pulse.mp4',
+  mediaHint: 'media/xAiAx-pulse-recto.png',
+  mediaBackHint: 'media/xAiAx-pulse-verso-hud.png',
   royaltiesBps: ROYALTIES,
 }
 
-/** SFT série limitée — Pack Pulse */
+/** SFT série limitée — Pack Pulse (alias série) */
 export const AGENT_001_SFT: PackNftMeta = {
-  collection: PACK_COLLECTIONS.pulse.ticker,
-  collectionName: PACK_COLLECTIONS.pulse.fullName,
-  tokenName: 'Agent 001 Series',
+  ...AGENT_001,
+  tokenName: 'Genesis Pulse Series',
+  title: 'Genesis Pulse Series',
   nonceHint: 2,
-  title: 'Agent 001 Series',
-  artist: ARTIST,
-  date: DATE,
-  technique: TECHNIQUE,
-  description: 'SFT série limitée Pack Pulse — même entitlement d’accès, supply plafonnée.',
-  packId: 'pulse',
-  tokenMode: 'sft',
-  attributes: [
-    { trait_type: 'Pack', value: 'Pulse' },
-    { trait_type: 'Agent', value: '001' },
-    { trait_type: 'Mode', value: 'SFT' },
-  ],
-  mediaHint: 'media/xAiAx-pulse.mp4',
-  royaltiesBps: ROYALTIES,
+  description:
+    'SFT série limitée Pack Pulse — même entitlement, supply plafonnée. Recto peinture · verso HUD.',
 }
 
 export const AGENT_002: PackNftMeta = {
   collection: PACK_COLLECTIONS.yield.ticker,
   collectionName: PACK_COLLECTIONS.yield.fullName,
-  tokenName: 'Agent 002',
+  tokenName: 'Genesis Yield',
   nonceHint: 1,
-  title: 'Agent 002',
+  title: 'Genesis Yield',
   artist: ARTIST,
   date: DATE,
   technique: TECHNIQUE,
   description:
-    'Entitlement NFT Pack Yield (xArtists). Accès DeFi limité — LP · Hatom · compound. Pas un fonds, pas d’APY promis.',
+    'Œuvre SFT Genesis Yield (xArtists). Recto : lattice chrome · anneaux de rendement (peinture). Verso : HUD DeFi. Achat unique · pas un fonds, pas d’APY promis.',
   packId: 'yield',
-  tokenMode: 'nft',
+  tokenMode: 'sft',
+  face: { ...FACE_BASE, series: 'Genesis Yield' },
   attributes: [
     { trait_type: 'Pack', value: 'Yield' },
-    { trait_type: 'Agent', value: '002' },
-    { trait_type: 'Mode', value: 'NFT' },
+    { trait_type: 'Tier', value: 'SILVER' },
+    { trait_type: 'Face', value: 'peinture+hud' },
+    { trait_type: 'Mode', value: 'SFT' },
+    { trait_type: 'Billing', value: 'one_time' },
+    { trait_type: 'Rights', value: 'durable' },
+    { trait_type: 'Series', value: 'Genesis Yield' },
     { trait_type: 'Risk', value: 'DeFi' },
+    { trait_type: 'Artist', value: ARTIST },
   ],
-  mediaHint: 'media/xAiAy-yield.mp4',
+  mediaHint: 'media/xAiAy-yield-recto.png',
+  mediaBackHint: 'media/xAiAy-yield-verso-hud.png',
   royaltiesBps: ROYALTIES,
 }
 
 export const AGENT_003: PackNftMeta = {
   collection: PACK_COLLECTIONS.sentinel.ticker,
   collectionName: PACK_COLLECTIONS.sentinel.fullName,
-  tokenName: 'Agent 003',
+  tokenName: 'Genesis Sentinel',
   nonceHint: 1,
-  title: 'Agent 003',
+  title: 'Genesis Sentinel',
   artist: ARTIST,
   date: DATE,
   technique: TECHNIQUE,
   description:
-    'Entitlement NFT Pack Sentinel (xArtists). Alertes & garde-fous. Pas un fonds, pas de rendement promis.',
+    'Œuvre SFT Genesis Sentinel (xArtists). Recto : voile gardien · profondeur (peinture). Verso : HUD alertes / zero-trust. Achat unique · pas un fonds, pas de rendement promis.',
   packId: 'sentinel',
-  tokenMode: 'nft',
+  tokenMode: 'sft',
+  face: { ...FACE_BASE, series: 'Genesis Sentinel' },
   attributes: [
     { trait_type: 'Pack', value: 'Sentinel' },
-    { trait_type: 'Agent', value: '003' },
-    { trait_type: 'Mode', value: 'NFT' },
+    { trait_type: 'Tier', value: 'PLATINUM' },
+    { trait_type: 'Face', value: 'peinture+hud' },
+    { trait_type: 'Mode', value: 'SFT' },
+    { trait_type: 'Billing', value: 'one_time' },
+    { trait_type: 'Rights', value: 'durable' },
+    { trait_type: 'Series', value: 'Genesis Sentinel' },
     { trait_type: 'Risk', value: 'Guard' },
+    { trait_type: 'Artist', value: ARTIST },
   ],
-  mediaHint: 'media/xAiAs-sentinel.mp4',
+  mediaHint: 'media/xAiAs-sentinel-recto.png',
+  mediaBackHint: 'media/xAiAs-sentinel-verso-hud.png',
   royaltiesBps: ROYALTIES,
 }
 
@@ -172,4 +195,38 @@ export const PACK_NFT_BY_ID: Record<PackId, PackNftMeta> = {
 
 export function packMetaForId(id: PackId): PackNftMeta {
   return PACK_NFT_BY_ID[id]
+}
+
+/** Build MultiversX-compatible metadata URI payload for a minted edition. */
+export function buildMintMetadata(id: PackId, edition: number, maxSupply: number) {
+  const m = packMetaForId(id)
+  return {
+    name: `${m.title} #${String(edition).padStart(3, '0')}`,
+    description: m.description,
+    collection: m.collectionName,
+    ticker: m.collection,
+    royalties: m.royaltiesBps,
+    attributes: [
+      ...m.attributes,
+      { trait_type: 'Edition', value: `${edition}/${maxSupply}` },
+      { trait_type: 'Chain', value: 'MultiversX' },
+    ],
+    properties: {
+      artist: m.artist,
+      date: m.date,
+      technique: m.technique,
+      pack: m.packId,
+      face_recto: m.face?.recto ?? 'peinture',
+      face_verso: m.face?.verso ?? 'hud',
+      billing: 'one_time',
+      rights: 'durable',
+      collection_ticker: m.collection,
+      onSale: false,
+    },
+    media: {
+      recto: m.mediaHint,
+      verso: m.mediaBackHint,
+    },
+    external_url: 'https://neltud.github.io/xArtists/#/workspace/agents',
+  }
 }

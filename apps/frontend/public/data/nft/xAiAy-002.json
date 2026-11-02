@@ -1,27 +1,36 @@
 {
-  "name": "Agent 002",
-  "description": "Entitlement NFT Pack Yield (xArtists). Agent de rendement — lecture Hatom / LP / compound. Signaux moyens, pas d’APY annoncé. Pas un fonds, pas de mandat de gestion.",
+  "name": "Genesis Yield",
+  "description": "Œuvre SFT Genesis Yield (xArtists). Recto : lattice chrome · anneaux de rendement (peinture). Verso : HUD DeFi. Achat unique · pas un fonds, pas d’APY promis.",
   "collection": "xArtists AI Agents — Yield",
-  "ticker": "xAiAy",
+  "ticker": "XAIYLD-987e24",
   "nonce": 1,
   "attributes": [
     { "trait_type": "Pack", "value": "Yield" },
-    { "trait_type": "Agent", "value": "002" },
+    { "trait_type": "Tier", "value": "SILVER" },
+    { "trait_type": "Face", "value": "peinture+hud" },
+    { "trait_type": "Mode", "value": "SFT" },
+    { "trait_type": "Billing", "value": "one_time" },
+    { "trait_type": "Rights", "value": "durable" },
+    { "trait_type": "Series", "value": "Genesis Yield" },
     { "trait_type": "Artist", "value": "NT" },
-    { "trait_type": "Date", "value": "2027" },
-    { "trait_type": "Technique", "value": "IA generated" },
-    { "trait_type": "Class", "value": "Harvest Core" },
-    { "trait_type": "Rarity", "value": "Genesis" },
-    { "trait_type": "Signal intensity", "value": 2 },
-    { "trait_type": "Collection", "value": "xAiAy" }
+    { "trait_type": "Technique", "value": "Peinture sfumato + HUD data · série Tuduri" },
+    { "trait_type": "Rarity", "value": "Genesis" }
   ],
   "properties": {
     "artist": "NT",
-    "date": "2027",
-    "technique": "IA generated",
+    "date": "2026",
+    "technique": "Peinture sfumato + HUD data · série Tuduri",
     "pack": "yield",
-    "collection_ticker": "xAiAy",
+    "face_recto": "peinture",
+    "face_verso": "hud",
+    "billing": "one_time",
+    "rights": "durable",
+    "collection_ticker": "XAIYLD-987e24",
     "onSale": false
   },
-  "external_url": "https://neltud.github.io/xArtists/#/my-packs"
+  "media": {
+    "recto": "media/xAiAy-yield-recto.png",
+    "verso": "media/xAiAy-yield-verso-hud.png"
+  },
+  "external_url": "https://neltud.github.io/xArtists/#/packs/yield"
 }
