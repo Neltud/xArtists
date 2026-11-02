@@ -4,6 +4,16 @@
 
 [**Launch the public dApp**](https://neltud.github.io/xArtists/) · [**Official GitBook**](https://xartists.gitbook.io/xartists/) · [**Browse the museum**](https://neltud.github.io/xArtists/museum) · [**AI Agents**](https://neltud.github.io/xArtists/agents)
 
+## $TRO — acquisition et interopérabilité Solana (release gated)
+
+La nouvelle [page $TRO · achat & Solana](https://neltud.github.io/xArtists/tro/sale) propose une présentation claire de **TRO-94c925 sur MultiversX**, le contrôle de l'identifiant sur Explorer et un accès externe au DEX, **sans prix ni liquidité garantis**. Le projet de bridge Solana est **désactivé** : aucun mint SPL officiellement attesté, aucune adresse de dépôt, aucun transfert, aucune vente directe xArtists.
+
+- [Architecture et GO/NO-GO du bridge](docs/TRO_SOLANA_BRIDGE_GO_NO_GO.md)
+- [Premier mint NFT artiste mainnet — checklist de preuves](docs/FIRST_ARTIST_MAINNET_MINT.md)
+- API publique de statut **en lecture seule** : https://xartists-access-api.onrender.com/v1/tro/bridge/status (disponible après fusion et déploiement)
+
+Le **Creator Studio** accepte JPG/PNG/WebP/MP4 mais l'upload automatique Pinata reste désactivé jusqu'à la configuration sécurisée de Render et la vérification de la base de données. Le mint lui-même exige la signature de l'artiste avec son wallet et une transaction mainnet confirmée. L'inscription Shopify/Etsy pour des œuvres physiques relève d'un canal distinct et ne constitue pas une vente de NFT ni de $TRO.
+
 ## Discover xArtists
 
 | Explore | Create | Intelligence | Your space |
