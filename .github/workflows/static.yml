@@ -93,7 +93,7 @@ jobs:
           echo "EXIT:${PIPESTATUS[0]}" | tee -a build-out.txt
         env:
           NODE_OPTIONS: --max-old-space-size=4096
-          VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
+          VITE_CATALOG_API: https://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
           VITE_APP_BUILD: "sites-v3-release-paper"
           # Fail-closed paper default. Repo var =1 only after explicit GO.
           VITE_LIA_LIVE_TRADING: ${{ vars.VITE_LIA_LIVE_TRADING || '0' }}
