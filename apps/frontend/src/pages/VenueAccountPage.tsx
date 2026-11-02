@@ -117,11 +117,8 @@ export default function VenueAccountPage() {
     }
     // EUR catalog = paper journal; on-chain micro EGLD via scripts/rentpay_micro_test.sh
     await rentPay(tier.id, 0, {
-      totalEur: quote.totalEur,
-      months,
-      walls,
-      forcePaper: true,
       ...payload,
+      forcePaper: true,
     })
     setDone(
       `Location ${tier.label} · ${walls} mur(s) · ${months} mois · ${quote.totalEur} € · ${
