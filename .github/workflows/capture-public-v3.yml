@@ -34,7 +34,7 @@ jobs:
           command -v ffmpeg
       - name: Record genuine site desktop and mobile
         env:
-          MAX_PAGES: ${{ github.event.inputs.max_pages || '8' }}
+          MAX_PAGES: ${{ github.event.inputs.max_pages || '10' }}
         run: |
           cat > /tmp/xartists_capture.py <<'PY'
           import asyncio, json, pathlib, re, subprocess, time
