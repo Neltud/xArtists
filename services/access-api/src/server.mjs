@@ -19,6 +19,7 @@ import { resolveAuthenticatedBuyer } from './buyerAuth.mjs'
 import { buildPackQuote } from './quote.mjs'
 import { loadDailySignal } from './signals.mjs'
 import { mintDispatchConfig } from './mintDispatch.mjs'
+import { troBridgeStatus } from './troBridgeStatus.mjs'
 import {studioMediaConfig,mediaJwt,mediaActor,readCreatorMedia,
   uploadStudioMedia,pinStudioMetadata} from './creatorMedia.mjs'
 import {
@@ -124,11 +125,19 @@ async function handleRequest(req, res) {
       physical_works: physicalConfig().enabled ? 'configured' : 'off',
       physical_store: physicalConfig().storage,
       studio_media_upload:studioMediaConfig().enabled ? 'pinata_ipfs' : 'off',
+      tro_solana_bridge:'off',
     })
     return
   }
 
 
+
+  // The TRO Solana bridge and direct sale are not deployed.
+  // Read-only status, intentionally no deposits, quotes or automated signing.
+  if (req.method === 'GET' && pth === '/v1/tro/bridge/status') {
+    json(res,200,troBridgeStatus())
+    return
+  }
 
   // Artist-owned image/video IPFS upload, disabled unless PINATA_JWT + PG + explicit gate.
   // The wallet alone signs the mint; this backend does NOT submit any tx.
