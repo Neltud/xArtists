@@ -6,7 +6,7 @@ import {
   physicalConfig, verifyShopifyDelivery, issuePhysicalSession, physicalActor,
   createPhysicalRecord, applyPaidOrder, applyFulfillment, bindBuyer,
   confirmPhysicalReceipt, requestPhysicalReassessment, publicWorkView,
-  merchantAuthorized, assessConditionRisk,
+  merchantAuthorized, assessConditionRisk, verifyDeclaredPhysicalNft,
 } from '../src/physicalFulfillment.mjs'
 import { signJwt, verifyJwt } from '../src/verifyAccess.mjs'
 import { startServer, post } from './server-fixture.mjs'
@@ -175,4 +175,28 @@ test('HTTP path is fail-closed before a database/shop webhook is configured',asy
     assert.equal((await post(server.base+'/v1/physical/works',{title:'test'})).status,503)
     assert.equal((await post(server.base+'/v1/physical/session',{address:artist})).status,503)
   }finally{await server.close()}
+})
+
+
+test('NFT linkage requires an on-chain self-created NFT held by the registered artist',async()=>{
+  const work=makeWork()
+  const original=globalThis.fetch
+  globalThis.fetch=async()=>({
+    ok:true,json:async()=>({identifier:work.nftIdentifier,creator:artist,
+      type:'NonFungibleESDT',balance:'1'}),
+  })
+  try{
+    const verified=await verifyDeclaredPhysicalNft(work,artist)
+    assert.equal(verified.applied,true)
+    assert.equal(work.nftLinkVerified,true)
+    assert.equal(work.events.at(-1).type,'NFT_LINK_VERIFIED')
+    await assert.rejects(()=>verifyDeclaredPhysicalNft(work,buyer),/artist_wallet_required/)
+    const invalid=makeWork()
+    globalThis.fetch=async()=>({
+      ok:true,json:async()=>({identifier:invalid.nftIdentifier,creator:buyer,
+        type:'NonFungibleESDT',balance:'1'}),
+    })
+    await assert.rejects(()=>verifyDeclaredPhysicalNft(invalid,artist),/nft_ownership_or_creator_mismatch/)
+    assert.equal(invalid.nftLinkVerified,false)
+  }finally {globalThis.fetch=original}
 })
