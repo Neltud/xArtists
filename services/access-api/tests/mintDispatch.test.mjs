@@ -148,6 +148,46 @@ describe('resolveLiveInputs', () => {
       'false',
     )
   })
+
+  it('no implicit mainnet confirmation or micro-price', () => {
+    const cfg = mintDispatchConfig(envBase({
+      MINT_DRY_RUN: '0',
+      MINT_LIVE_ENABLED: '1',
+    }))
+    assert.equal(cfg.mainnetConfirm, '')
+    assert.equal(cfg.micro, false)
+    assert.deepEqual(resolveLiveInputs(cfg), {
+      live_mint: 'false',
+      confirm: '',
+      mode: 'live_blocked_bad_confirm_env',
+    })
+  })
+
+  it('explicit mainnet confirmation still rejects non-atomic micro-price', () => {
+    const cfg = mintDispatchConfig(envBase({
+      MINT_DRY_RUN: '0',
+      MINT_LIVE_ENABLED: '1',
+      MINT_MAINNET_CONFIRM: 'LIVE_MINT_MAINNET',
+      MINT_MICRO_PRICE: 'true',
+    }))
+    assert.equal(cfg.micro, true)
+    assert.deepEqual(resolveLiveInputs(cfg), {
+      live_mint: 'false',
+      confirm: '',
+      mode: 'live_blocked_non_atomic_micro_price',
+    })
+  })
+
+  it('safe defaults persist even with token and dispatch enabled', () => {
+    const cfg = mintDispatchConfig(envBase({
+      MINT_DISPATCH_ENABLED: '1',
+      MINT_GITHUB_PAT: 'fixture-only-token',
+      MINT_LIVE_ENABLED: '1',
+    }))
+    assert.equal(cfg.enabled, true)
+    assert.equal(cfg.dryRun, true)
+    assert.equal(resolveLiveInputs(cfg).live_mint, 'false')
+  })
 })
 
 describe('idempotency', () => {
