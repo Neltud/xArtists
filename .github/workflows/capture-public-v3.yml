@@ -1,0 +1,159 @@
+name: Capture real xArtists V3 UX video (read-only)
+on:
+  workflow_dispatch:
+    inputs:
+      max_pages:
+        description: 'Public routes per device, 1-10'
+        required: false
+        default: '10'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/capture-public-v3.yml'
+permissions:
+  contents: read
+concurrency:
+  group: xartists-ux-video-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  real-public-capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Chromium and ffmpeg
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+          command -v ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+          command -v ffmpeg
+      - name: Record genuine site desktop and mobile
+        env:
+          MAX_PAGES: ${{ github.event.inputs.max_pages || '8' }}
+        run: |
+          cat > /tmp/xartists_capture.py <<'PY'
+          import asyncio, json, pathlib, re, subprocess, time
+          from datetime import datetime, timezone
+          from playwright.async_api import async_playwright
+          
+          BASE = "https://neltud.github.io/xArtists"
+          ROUTES = ["/", "/museum", "/lia", "/command-center", "/agents",
+                    "/packs/pulse", "/packs/yield", "/packs/sentinel", "/market", "/guide"]
+          
+          async def capture(profile, paths, root):
+              width, height = (1920,1080) if profile == "desktop" else (390,844)
+              out = root / profile
+              out.mkdir(parents=True, exist_ok=True)
+              raw = out / "webm"
+              raw.mkdir(exist_ok=True)
+              findings = []
+              async with async_playwright() as p:
+                  browser = await p.chromium.launch(headless=True, args=["--no-sandbox"])
+                  context = await browser.new_context(
+                      viewport={"width": width, "height": height},
+                      is_mobile=(profile=="mobile"), has_touch=(profile=="mobile"),
+                      device_scale_factor=1, locale="fr-FR", reduced_motion="reduce",
+                      record_video_dir=str(raw),
+                      record_video_size={"width":width,"height":height},
+                      accept_downloads=False, permissions=[])
+                  async def read_only(route):
+                      if route.request.method.upper() in ("GET","HEAD","OPTIONS"):
+                          await route.continue_()
+                      else:
+                          await route.abort("blockedbyclient")
+                  await context.route("**/*", read_only)
+                  await context.add_init_script("document.addEventListener('submit', e => e.preventDefault(), true)")
+                  for i, path in enumerate(paths):
+                      page = await context.new_page()
+                      errors = []
+                      page.on("pageerror", lambda error: errors.append(str(error)[:250]))
+                      page.on("console", lambda msg: errors.append(msg.text[:250]) if msg.type=="error" else None)
+                      record = {"device":profile,"route":path,"errors":errors}
+                      try:
+                          response = await page.goto(BASE+path, wait_until="domcontentloaded", timeout=30000)
+                          record["http_status"] = response.status if response else None
+                          await page.wait_for_timeout(2000)
+                          record["title"] = await page.title()
+                          record["final_url"] = page.url
+                          m = await page.evaluate("""() => ({
+                            documentWidth: document.documentElement.scrollWidth,
+                            viewportWidth: innerWidth,
+                            documentHeight: document.documentElement.scrollHeight,
+                            brokenImages: [...document.images].filter(i=>i.complete&&i.naturalWidth===0).length,
+                            hasHeading: !!document.querySelector('h1'),
+                            bodyText: document.body.innerText.slice(0,360)
+                          })""")
+                          record["metrics"]=m
+                          record["horizontal_overflow"]=m["documentWidth"]>m["viewportWidth"]+3
+                          await page.screenshot(path=str(out / f"{i:02d}_top.png"),animations="disabled")
+                          limit=min(m["documentHeight"]-height, 3600)
+                          for y in range(0, max(0,limit)+1, max(220,int(height*0.6))):
+                              await page.evaluate("(n)=>window.scrollTo({top:n,behavior:'instant'})",y)
+                              await page.wait_for_timeout(280)
+                          await page.screenshot(path=str(out / f"{i:02d}_bottom.png"),animations="disabled")
+                          await page.wait_for_timeout(500)
+                      except Exception as ex:
+                          record["error"]=str(ex)[:350]
+                      finally:
+                          await page.close()
+                          record["video_path"]=str(await page.video.path()) if page.video else ""
+                          findings.append(record)
+                          print(profile, i, path, record.get("http_status"), record.get("error"),flush=True)
+                  await context.close()
+                  await browser.close()
+              (out/"audit.json").write_text(json.dumps(findings,ensure_ascii=False,indent=2),encoding="utf-8")
+              parts=[]
+              for i, entry in enumerate(findings):
+                  inp=entry.get("video_path")
+                  if not inp or not pathlib.Path(inp).exists():
+                      continue
+                  mp4=out/f"{i:02d}.mp4"
+                  p=subprocess.run(["ffmpeg","-y","-loglevel","error","-i",inp,"-an",
+                                    "-c:v","libx264","-preset","veryfast","-crf","26","-pix_fmt","yuv420p",str(mp4)],
+                                   capture_output=True,text=True)
+                  if p.returncode==0 and mp4.exists() and mp4.stat().st_size:
+                      parts.append(mp4)
+                  else:print("FFMPEG_ERROR",profile,i,p.stderr[-250:],flush=True)
+              if parts:
+                  concat=out/"concat.txt"
+                  concat.write_text("".join("file '"+str(p.resolve())+"'\n" for p in parts))
+                  proc=subprocess.run(["ffmpeg","-y","-loglevel","error","-f","concat","-safe","0",
+                                       "-i",str(concat),"-c","copy",str(root/f"xartists_{profile}.mp4")],
+                                      capture_output=True,text=True)
+                  if proc.returncode:print("CONCAT_ERROR",proc.stderr[-300:],flush=True)
+              return findings
+          
+          async def main():
+              import os
+              n=max(1,min(10,int(os.environ.get("MAX_PAGES","8"))))
+              root=pathlib.Path("xartists-capture-v3")
+              root.mkdir(exist_ok=True)
+              results=[]
+              for device in ["desktop","mobile"]:
+                  results+=await capture(device, ROUTES[:n], root)
+              lines=["# xArtists — evidence capture","",f"Captured UTC: {datetime.now(timezone.utc).isoformat()}","",
+                     "Real Chromium pages, read-only and no wallet. No transaction, wallet or checkout action is performed.","",
+                     "| Device | Route | HTTP | Overflow | Browser exceptions |","|---|---|---|---|---|"]
+              for x in results:
+                  lines.append(f"| {x['device']} | {x['route']} | {x.get('http_status','—')} | {x.get('horizontal_overflow','—')} | {len(x['errors'])} |")
+              (root/"report.md").write_text("\n".join(lines),encoding="utf-8")
+              print("\n".join(lines),flush=True)
+          
+          asyncio.run(main())
+          PY
+          python -m py_compile /tmp/xartists_capture.py
+          python /tmp/xartists_capture.py
+      - name: Upload actual MP4 and screen recordings
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xartists-v3-real-ux-video
+          path: xartists-capture-v3/
+          retention-days: 14
+          compression-level: 3
+          if-no-files-found: warn
