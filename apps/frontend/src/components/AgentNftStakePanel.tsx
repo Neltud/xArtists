@@ -19,7 +19,7 @@ function load(): StakeMap {
     const raw = JSON.parse(localStorage.getItem(KEY) || '{}') as StakeMap & Record<string, { paperPts?: number; pts?: number }>
     // migrate paperPts → pts
     for (const k of Object.keys(raw)) {
-      const row = raw[k as PackId]
+      const row = raw[k as PackId] as (StakeMap[PackId] & {paperPts?:number}) | undefined
       if (row && row.pts == null && row.paperPts != null) row.pts = row.paperPts
     }
     return raw as StakeMap
