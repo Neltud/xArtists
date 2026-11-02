@@ -6,7 +6,7 @@ import { requestOpenConnect } from '../lib/walletEvents'
 
 type Props = {
   address?: string | null
-  children: ReactNode
+  children?: ReactNode
   /** Action label for copy */
   action?: string
 }
