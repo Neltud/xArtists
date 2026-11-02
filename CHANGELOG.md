@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.129.1](https://github.com/Neltud/xArtists/compare/v0.129.0...v0.129.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* **pages:** single deploy owner and TRO deep-link verification ([#278](https://github.com/Neltud/xArtists/issues/278)) ([f4ab298](https://github.com/Neltud/xArtists/commit/f4ab298f5c0a5a32e952df68044d2d28db810ddf))
+
 ## [0.129.0](https://github.com/Neltud/xArtists/compare/v0.128.0...v0.129.0) (2026-11-02)
 
 
