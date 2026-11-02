@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "renderer": "sites-v3",
-  "source_sha": "f6c01ea9d68db515f3cdd82c1cf665329939789d",
+  "source_sha": "425c13ca5efed760f31d56f083dd8318f76cacc5",
   "presentation_source_sha": "8a607c8831234fe738a091a5a4caf325811c1b5b",
   "base_url": "/xArtists/",
   "lia_live_trading": false,
   "public_route_count": 97,
-  "built_at": "2026-11-02T15:09:48.027Z",
-  "workflow_run_url": "https://github.com/Neltud/xArtists/actions/runs/41468641818"
+  "built_at": "2026-11-02T15:16:02.290Z",
+  "workflow_run_url": "https://github.com/Neltud/xArtists/actions/runs/41469731518"
 }
