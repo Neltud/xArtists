@@ -16,7 +16,7 @@ import { signJwt, verifyJwt } from './verifyAccess.mjs'
 
 const PG_LOCK = 87231521
 const MAX_BODY = 256 * 1024
-const TOPICS = new Set(['orders/paid', 'fulfillments/create', 'fulfillments/update'])
+const TOPICS = new Set(['orders/paid', 'orders/cancelled', 'refunds/create', 'fulfillments/create', 'fulfillments/update'])
 const SHIPPED = new Set(['in_transit', 'out_for_delivery', 'delivered'])
 const HEX64 = /^[a-f0-9]{64}$/i
 const NFT_ID = /^[A-Z0-9]{3,10}-[a-f0-9]{6}-[a-f0-9]+$/i
@@ -193,6 +193,28 @@ export function applyPaidOrder(work, payload) {
   append(work, 'ORDER_PAID', 'shopify', { orderIdHash: sha(id).slice(0, 20) })
   return { applied: true }
 }
+/**
+ * A paid Shopify order can later be cancelled/refunded. Never keep shipping
+ * or buyer-receipt gates open after a verified merchant reversal.
+ */
+export function applyPaymentReversal(work, payload, topic) {
+  if (!['orders/cancelled','refunds/create'].includes(topic)) throw fail('unsupported_payment_event')
+  const id = String(topic === 'refunds/create' ? payload?.order_id : payload?.id || '')
+  if (!work.shopifyOrderId || id !== work.shopifyOrderId) {
+    return { applied: false, reason: 'reversal_order_not_matched' }
+  }
+  if (work.paymentReview) return { applied: false, reason: 'reversal_already_flagged' }
+  work.status = 'DISPUTED'
+  work.paymentReview = {
+    reason: topic === 'refunds/create' ? 'merchant_refund' : 'order_cancelled',
+    createdAt: new Date().toISOString(), reviewStatus: 'pending_human',
+  }
+  append(work, 'PAYMENT_REVERSAL_REVIEW', 'shopify', {
+    reason: work.paymentReview.reason, funds_auto_moved: false,
+  })
+  return { applied: true }
+}
+
 export function applyFulfillment(work, payload) {
   if (!work.shopifyOrderId || String(payload?.order_id || '') !== work.shopifyOrderId) {
     return { applied: false, reason: 'unmatched_order' }
@@ -314,6 +336,7 @@ export function publicWorkView(work) {
     shipment:work.shipment, receipt:work.receipt ? {
       decision:work.receipt.decision, confirmedAt:work.receipt.confirmedAt,
     } : null,
+    paymentReview:work.paymentReview || null,
     assessment:work.assessment ? {
       reason:work.assessment.reason, reviewStatus:work.assessment.reviewStatus,
       advisory:work.assessment.advisory, requestedAt:work.assessment.requestedAt,
@@ -427,17 +450,23 @@ export async function processShopifyPhysicalWebhook(raw, headers) {
       if(old.rows[0].body_sha256!==check.hash)throw fail('webhook_id_reused_with_different_payload',409)
       return {ok:true,duplicate:true,updated:0}
     }
+    const reversalTopic = check.topic === 'refunds/create' || check.topic === 'orders/cancelled'
+    const reversalId = String(check.topic === 'refunds/create' ? data.order_id : data.id || '')
     const skus = (Array.isArray(data.line_items) ? data.line_items : [])
       .map(item => String(item.sku || '')).filter(sku => /^XAPHY-[A-F0-9]{14}$/.test(sku))
-    const targets = skus.length
-      ? await c.query('SELECT payload FROM xartists_physical_works WHERE sku = ANY($1::text[])', [skus])
-      : { rows: [] }
+    const targets = reversalTopic && /^[0-9]{1,24}$/.test(reversalId)
+      ? await c.query("SELECT payload FROM xartists_physical_works WHERE payload->>'shopifyOrderId' = $1", [reversalId])
+      : skus.length
+        ? await c.query('SELECT payload FROM xartists_physical_works WHERE sku = ANY($1::text[])', [skus])
+        : { rows: [] }
     let updated=0
     for(const row of targets.rows){
       const work=row.payload
       const change=check.topic==='orders/paid'
         ? applyPaidOrder(work,data)
-        : applyFulfillment(work,data)
+        : (check.topic==='orders/cancelled' || check.topic==='refunds/create')
+          ? applyPaymentReversal(work,data,check.topic)
+          : applyFulfillment(work,data)
       if(change.applied){await writeWork(c,work);updated++}
     }
     await c.query('INSERT INTO xartists_physical_deliveries (webhook_id,body_sha256) VALUES ($1,$2)',[check.id,check.hash])
