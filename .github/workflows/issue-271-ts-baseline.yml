@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'apps/frontend/src/**'
+      - 'apps/frontend/package.json'
+      - 'apps/frontend/package-lock.json'
       - '.github/workflows/issue-271-ts-baseline.yml'
   workflow_dispatch:
 
