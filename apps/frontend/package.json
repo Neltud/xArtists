@@ -14,7 +14,7 @@
     "render:check": "node scripts/run-render-check.mjs"
   },
   "dependencies": {
-    "@multiversx/sdk-core": "13.17.2",
+    "@multiversx/sdk-core": "16.0.0",
     "@multiversx/sdk-dapp": "^3.0.0",
     "@multiversx/sdk-network-providers": "^2.0.0",
     "@multiversx/sdk-wallet-connect-provider": "^5.0.0",
