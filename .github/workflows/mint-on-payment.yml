@@ -1,8 +1,7 @@
 name: Mint on payment (LIVE mainnet armed)
 
-# Post-IPN / manual mint for Genesis SFT packs.
-# Operator GO 2026-11-02: live_mint=true + confirm=LIVE_MINT_MAINNET authorized on mainnet.
-# Requires secrets.SC_DEPLOYER_PEM in environment production.
+# Operator GO: live_mint + LIVE_MINT_MAINNET.
+# If deployer underfunded: set micro_price=true (0.001 EGLD) then prices restored to Rule1.
 
 on:
   workflow_dispatch:
@@ -13,11 +12,11 @@ on:
         type: choice
         options: [pulse, yield, sentinel]
       edition:
-        description: "Edition number (1-based, metadata label)"
+        description: "Edition label (metadata)"
         required: true
         default: "1"
       buyer:
-        description: "Buyer MultiversX bech32 (required if live)"
+        description: "Buyer erd1 (required if live)"
         required: true
         default: ""
       live_mint:
@@ -27,9 +26,15 @@ on:
         options: ["true", "false"]
         default: "true"
       confirm:
-        description: "LIVE_MINT_MAINNET required when live"
+        description: "LIVE_MINT_MAINNET if live"
         required: true
         default: "LIVE_MINT_MAINNET"
+      micro_price:
+        description: "true = buy at 0.001 EGLD then restore Rule1 (underfunded deployer)"
+        required: true
+        type: choice
+        options: ["true", "false"]
+        default: "true"
 
 env:
   PACK: ${{ github.event.inputs.pack }}
@@ -37,6 +42,7 @@ env:
   BUYER: ${{ github.event.inputs.buyer }}
   LIVE: ${{ github.event.inputs.live_mint }}
   CONFIRM: ${{ github.event.inputs.confirm }}
+  MICRO: ${{ github.event.inputs.micro_price }}
   PROXY: https://gateway.multiversx.com
   API: https://api.multiversx.com
   CHAIN: "1"
@@ -48,6 +54,7 @@ jobs:
     environment: production
     env:
       SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
+      SC: erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg
     steps:
       - uses: actions/checkout@v4
 
@@ -59,22 +66,17 @@ jobs:
             pulse) echo "ticker=XAIPLS-2cf72b" >> "$GITHUB_OUTPUT"; echo "max=333" >> "$GITHUB_OUTPUT"; echo "pt=01" >> "$GITHUB_OUTPUT" ;;
             yield) echo "ticker=XAIYLD-987e24" >> "$GITHUB_OUTPUT"; echo "max=500" >> "$GITHUB_OUTPUT"; echo "pt=02" >> "$GITHUB_OUTPUT" ;;
             sentinel) echo "ticker=XAISNT-3d8a6b" >> "$GITHUB_OUTPUT"; echo "max=777" >> "$GITHUB_OUTPUT"; echo "pt=03" >> "$GITHUB_OUTPUT" ;;
-            *) echo "unknown pack"; exit 1 ;;
+            *) exit 1 ;;
           esac
 
-      - name: Build mint metadata (peinture+hud)
+      - name: Build metadata
         run: |
-          set -euo pipefail
           python3 <<'PY'
           import json, os
-          pack = os.environ["PACK"]
-          ed = int(os.environ["EDITION"])
-          max_s = int("${{ steps.col.outputs.max }}")
-          ticker = "${{ steps.col.outputs.ticker }}"
-          live = os.environ.get("LIVE") == "true"
+          pack, ed = os.environ["PACK"], int(os.environ["EDITION"])
+          max_s, ticker = int("${{ steps.col.outputs.max }}"), "${{ steps.col.outputs.ticker }}"
           meta = {
             "name": f"Genesis {pack.title()} #{ed:03d}",
-            "description": f"SFT Genesis {pack} — recto peinture · verso HUD. one_time · durable rights.",
             "collection": ticker,
             "edition": f"{ed}/{max_s}",
             "attributes": [
@@ -82,43 +84,27 @@ jobs:
               {"trait_type": "Face", "value": "peinture+hud"},
               {"trait_type": "Billing", "value": "one_time"},
               {"trait_type": "Rights", "value": "durable"},
-              {"trait_type": "Edition", "value": f"{ed}/{max_s}"},
-              {"trait_type": "Chain", "value": "MultiversX"},
             ],
-            "properties": {
-              "face_recto": "peinture",
-              "face_verso": "hud",
-              "pack": pack,
-              "billing": "one_time",
-              "rights": "durable",
-            },
-            "mode": "live" if live else "paper",
-            "buyer": os.environ.get("BUYER") or None,
+            "mode": "live" if os.environ.get("LIVE") == "true" else "paper",
+            "micro_price": os.environ.get("MICRO") == "true",
+            "buyer": os.environ.get("BUYER"),
           }
-          path = os.environ["RUNNER_TEMP"] + "/mint_meta.json"
-          open(path, "w").write(json.dumps(meta, indent=2))
+          open(os.environ["RUNNER_TEMP"] + "/mint_meta.json", "w").write(json.dumps(meta, indent=2))
           print(json.dumps(meta, indent=2))
           PY
-          echo "### Mint metadata" >> "$GITHUB_STEP_SUMMARY"
-          echo '```json' >> "$GITHUB_STEP_SUMMARY"
           cat "${RUNNER_TEMP}/mint_meta.json" >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Paper only
         if: ${{ github.event.inputs.live_mint != 'true' }}
-        run: |
-          echo "PAPER — no chain tx"
-          echo "status=paper_ok" >> "$GITHUB_STEP_SUMMARY"
+        run: echo "status=paper_ok" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Live gates
         if: ${{ github.event.inputs.live_mint == 'true' }}
         run: |
           set -euo pipefail
           test "$CONFIRM" = "LIVE_MINT_MAINNET"
-          test -n "${BUYER}"
-          echo "${BUYER}" | grep -qE '^erd1[a-z0-9]{58}$'
+          echo "$BUYER" | grep -qE '^erd1[a-z0-9]{58}$'
           test -n "${SC_DEPLOYER_PEM:-}"
-          echo "gates_ok buyer=$BUYER pack=$PACK" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Write PEM
         if: ${{ github.event.inputs.live_mint == 'true' }}
@@ -140,101 +126,82 @@ jobs:
         if: ${{ github.event.inputs.live_mint == 'true' }}
         run: pip install multiversx-sdk-cli multiversx-sdk
 
-      - name: Live mint via SC buyPack + transfer buyer
+      - name: Live buyPack + transfer
         if: ${{ github.event.inputs.live_mint == 'true' }}
         env:
-          SC: erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg
           PT: ${{ steps.col.outputs.pt }}
           TICKER: ${{ steps.col.outputs.ticker }}
         run: |
           set -euo pipefail
-          DEPLOYER=$(python3 -c "import os; from pathlib import Path; from multiversx_sdk import UserPEM; print(UserPEM.from_file(Path(os.environ['RUNNER_TEMP'])/'deployer.pem').public_key.to_address().to_bech32())")
+          DEPLOYER=$(python3 -c "from pathlib import Path; from multiversx_sdk import UserPEM; import os; print(UserPEM.from_file(Path(os.environ['RUNNER_TEMP'])/'deployer.pem').public_key.to_address().to_bech32())")
           echo "DEPLOYER=$DEPLOYER"
-          BAL=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('balance','0'))")
+          BAL=$(curl -sS "$API/accounts/$DEPLOYER" | python3 -c "import sys,json; print(json.load(sys.stdin).get('balance','0'))")
           echo "balance_atomic=$BAL"
-          # Official Rule1 list prices (atomic 18 decimals)
-          case "$PACK" in
-            pulse) PRICE=33000000000000000000 ;;
-            yield) PRICE=22500000000000000000 ;;
-            sentinel) PRICE=15000000000000000000 ;;
-          esac
-          # Ensure pack price on SC matches Rule1 for this buy
-          NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
-          mxpy contract call "${SC}" \
-            --function=setPackPrice \
-            --arguments "0x${PT}" "${PRICE}" \
-            --pem="${RUNNER_TEMP}/deployer.pem" \
-            --proxy="${PROXY}" --chain="${CHAIN}" \
-            --nonce="${NONCE}" --gas-limit=12000000 --send --wait-result
+          if [ "$MICRO" = "true" ]; then
+            PRICE=1000000000000000
+          else
+            case "$PACK" in
+              pulse) PRICE=33000000000000000000 ;;
+              yield) PRICE=22500000000000000000 ;;
+              sentinel) PRICE=15000000000000000000 ;;
+            esac
+          fi
+          echo "buy_price_atomic=$PRICE micro=$MICRO"
+          python3 -c "b=int('$BAL'); need=int('$PRICE')+50_000_000_000_000_000; assert b>=need, f'need {need/1e18:.4f} EGLD have {b/1e18:.6f} — fund deployer or micro_price=true'"
+          NONCE=$(curl -sS "$API/accounts/$DEPLOYER" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          mxpy contract call "$SC" --function=setPackPrice --arguments "0x$PT" "$PRICE" \
+            --pem="${RUNNER_TEMP}/deployer.pem" --proxy="$PROXY" --chain="$CHAIN" \
+            --nonce="$NONCE" --gas-limit=12000000 --send --wait-result
           sleep 5
-          NONCE=$(curl -sS "${API}/accounts/${DEPLOYER}" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
-          LOG=$(mxpy contract call "${SC}" \
-            --function=buyPack \
-            --arguments "0x${PT}" \
-            --value="${PRICE}" \
-            --pem="${RUNNER_TEMP}/deployer.pem" \
-            --proxy="${PROXY}" --chain="${CHAIN}" \
-            --nonce="${NONCE}" --gas-limit=30000000 --send --wait-result 2>&1) || true
+          NONCE=$(curl -sS "$API/accounts/$DEPLOYER" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          LOG=$(mxpy contract call "$SC" --function=buyPack --arguments "0x$PT" --value="$PRICE" \
+            --pem="${RUNNER_TEMP}/deployer.pem" --proxy="$PROXY" --chain="$CHAIN" \
+            --nonce="$NONCE" --gas-limit=30000000 --send --wait-result 2>&1) || true
           echo "$LOG" | sed 's/PRIVATE KEY.*//' | tail -20
-          BUY_TX=$(echo "$LOG" | grep -oE '[a-f0-9]{64}' | head -1 || true)
-          echo "buy_tx=$BUY_TX" >> "$GITHUB_STEP_SUMMARY"
           sleep 10
-          # Transfer newest NFT of collection to buyer
+          # restore Rule1 always after micro
+          case "$PACK" in
+            pulse) RPRICE=33000000000000000000 ;;
+            yield) RPRICE=22500000000000000000 ;;
+            sentinel) RPRICE=15000000000000000000 ;;
+          esac
+          NONCE=$(curl -sS "$API/accounts/$DEPLOYER" | python3 -c "import sys,json; print(json.load(sys.stdin).get('nonce',0))")
+          mxpy contract call "$SC" --function=setPackPrice --arguments "0x$PT" "$RPRICE" \
+            --pem="${RUNNER_TEMP}/deployer.pem" --proxy="$PROXY" --chain="$CHAIN" \
+            --nonce="$NONCE" --gas-limit=12000000 --send --wait-result || true
+          sleep 4
           python3 <<'PY'
-          import json, urllib.request, os, subprocess, time
-          API = os.environ["API"]
-          DEP = os.environ["DEPLOYER"] if "DEPLOYER" in os.environ else None
-          # re-read deployer from pem
+          import json, urllib.request, os, subprocess
           from pathlib import Path
           from multiversx_sdk import UserPEM, Address
+          API, PROXY, CHAIN = os.environ["API"], os.environ["PROXY"], os.environ["CHAIN"]
           DEP = UserPEM.from_file(Path(os.environ["RUNNER_TEMP"]) / "deployer.pem").public_key.to_address().to_bech32()
-          BUYER = os.environ["BUYER"]
-          TICKER = os.environ["TICKER"]
+          BUYER, TICKER = os.environ["BUYER"], os.environ["TICKER"]
           PEM = os.environ["RUNNER_TEMP"] + "/deployer.pem"
-          PROXY = os.environ["PROXY"]
-          CHAIN = os.environ["CHAIN"]
-          nfts = json.load(urllib.request.urlopen(f"{API}/accounts/{DEP}/nfts?size=100&identity={TICKER}"))
+          nfts = json.load(urllib.request.urlopen(f"{API}/accounts/{DEP}/nfts?size=100"))
           items = [n for n in (nfts if isinstance(nfts, list) else []) if (n.get("collection") or "") == TICKER]
           items.sort(key=lambda n: int(n.get("nonce") or 0), reverse=True)
           if not items:
-              # fallback without identity filter
-              nfts = json.load(urllib.request.urlopen(f"{API}/accounts/{DEP}/nfts?size=100"))
-              items = [n for n in (nfts if isinstance(nfts, list) else []) if (n.get("collection") or "") == TICKER]
-              items.sort(key=lambda n: int(n.get("nonce") or 0), reverse=True)
-          if not items:
-              raise SystemExit(f"No NFT for {TICKER} on deployer after buyPack")
+              raise SystemExit(f"No NFT {TICKER} on deployer")
           n = items[0]
-          ident = n["identifier"]
-          nonce = int(n.get("nonce") or 0)
+          ident, nonce = n["identifier"], int(n.get("nonce") or 0)
           token_hex = TICKER.encode().hex()
           nonce_hex = format(nonce, "x") or "0"
           if len(nonce_hex) % 2:
               nonce_hex = "0" + nonce_hex
-          admin_hex = Address.new_from_bech32(BUYER).to_hex()
-          data = f"ESDTNFTTransfer@{token_hex}@{nonce_hex}@01@{admin_hex}"
-          acc = json.load(urllib.request.urlopen(f"{API}/accounts/{DEP}"))
-          tx_nonce = acc.get("nonce", 0)
-          print(f"Transfer {ident} → {BUYER} nonce={tx_nonce}")
-          cmd = [
-              "mxpy", "tx", "new",
-              f"--receiver={DEP}",
-              f"--pem={PEM}",
-              "--gas-limit=1000000",
-              f"--proxy={PROXY}",
-              f"--chain={CHAIN}",
-              f"--nonce={tx_nonce}",
-              f"--data={data}",
-              "--send",
-              "--wait-result",
-          ]
-          r = subprocess.run(cmd, capture_output=True, text=True)
-          out = (r.stdout or "") + (r.stderr or "")
-          lines = [ln for ln in out.splitlines() if "PRIVATE" not in ln.upper()]
-          print("\n".join(lines[-25:]))
+          data = f"ESDTNFTTransfer@{token_hex}@{nonce_hex}@01@{Address.new_from_bech32(BUYER).to_hex()}"
+          tx_nonce = json.load(urllib.request.urlopen(f"{API}/accounts/{DEP}")).get("nonce", 0)
+          print(f"Transfer {ident} → {BUYER}")
+          r = subprocess.run([
+              "mxpy", "tx", "new", f"--receiver={DEP}", f"--pem={PEM}",
+              "--gas-limit=1000000", f"--proxy={PROXY}", f"--chain={CHAIN}",
+              f"--nonce={tx_nonce}", f"--data={data}", "--send", "--wait-result",
+          ], capture_output=True, text=True)
+          out = ((r.stdout or "") + (r.stderr or "")).splitlines()
+          print("\n".join([ln for ln in out if "PRIVATE" not in ln.upper()][-20:]))
           if r.returncode != 0:
-              raise SystemExit(f"transfer failed {r.returncode}")
-          open(os.environ["GITHUB_STEP_SUMMARY"], "a").write(f"\n- transferred `{ident}` → `{BUYER}`\n")
-          print("OK", ident)
+              raise SystemExit("transfer failed")
+          open(os.environ["GITHUB_STEP_SUMMARY"], "a").write(f"\n- OK `{ident}` → `{BUYER}`\n")
           PY
           echo "status=live_mint_ok" >> "$GITHUB_STEP_SUMMARY"
 
