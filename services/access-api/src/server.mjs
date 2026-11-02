@@ -173,7 +173,7 @@ async function handleRequest(req, res) {
     }
     const { body } = await readRawAndBody(req)
     const address = String(body.address || '').trim()
-    const accepted = verifySignedChallenge({
+    const accepted = typeof body.message === 'string' && body.message.startsWith('xArtists physical artwork login\n') && verifySignedChallenge({
       address, message: body.message, nonce: body.nonce, signature: body.signature,
     })
     if (!accepted) { json(res, 401, { ok: false, error: 'physical_siwx_invalid' }); return }
