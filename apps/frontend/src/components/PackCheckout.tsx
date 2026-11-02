@@ -9,7 +9,6 @@ import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 import { useWallet } from '../context/WalletContext'
 import CheckoutModal from './CheckoutModal'
 import { canBuyAgent } from '../config/scStatus'
-import { markPackOwned } from '../lib/nftPacks'
 import LottieIcon from './LottieIcon'
 import { availablePayMethods } from '../lib/payments'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -74,7 +73,6 @@ export default function PackCheckout({
     } catch {
       /* */
     }
-    markPackOwned(id)
     setStatus('done')
     setMsg(t('packCheckout.previewDone', { id, room: roomKey(id) }))
     onPaperDone?.(id)

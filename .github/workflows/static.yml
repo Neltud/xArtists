@@ -93,7 +93,7 @@ jobs:
           echo "EXIT:${PIPESTATUS[0]}" | tee -a build-out.txt
         env:
           NODE_OPTIONS: --max-old-space-size=4096
-          VITE_CATALOG_API: http://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
+          VITE_CATALOG_API: https://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
           VITE_APP_BUILD: "sites-v3-release-paper"
           # Fail-closed paper default. Repo var =1 only after explicit GO.
           VITE_LIA_LIVE_TRADING: ${{ vars.VITE_LIA_LIVE_TRADING || '0' }}
@@ -145,6 +145,14 @@ jobs:
           cp -a apps/frontend/dist/. _site/
           touch _site/.nojekyll
           cp _site/index.html _site/404.html
+          # GitHub Pages serves the SPA from 404.html on direct dynamic URLs.
+          # Prebuild the actual known Genesis landing entrypoints for HTTP 200.
+          for id in pulse yield sentinel; do
+            mkdir -p "_site/packs/$id" "_site/intelligence/agents/$id"
+            cp _site/index.html "_site/packs/$id/index.html"
+            cp _site/index.html "_site/intelligence/agents/$id/index.html"
+            test -s "_site/packs/$id/index.html"
+          done
 
       - name: Verify built GitHub Pages assets
         working-directory: apps/frontend
