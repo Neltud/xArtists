@@ -1,7 +1,7 @@
 ---
 description: >-
-  Découvrez xArtists et sa dapp : art, création, musée immersif, outils IA et
-  accès mobile sur MultiversX.
+  Présentation officielle de xArtists, dApp artistique et IA sur MultiversX —
+  statut public vérifié au 2 novembre 2026.
 icon: house
 ---
 
@@ -9,22 +9,32 @@ icon: house
 
 ![xArtists — Art × Intelligence sur MultiversX](.gitbook/assets/xartists-public-cover.png)
 
-**Un écosystème créatif sur MultiversX.**
+**L'art rencontre une autre dimension.** xArtists réunit un musée immersif, des œuvres numériques et physiques, un Studio créatif et des espaces d'intelligence artificielle sur MultiversX.
 
-xArtists relie les œuvres, leurs créateurs et leurs publics à travers une application web qui réunit musée, collections, Studio et outils d’intelligence artificielle.
+[**Ouvrir la dApp xArtists**](https://neltud.github.io/xArtists/) · [**Découvrir le projet**](presentation/) · [**Statut et disponibilité**](presentation/etat-du-produit.md)
 
-La présentation publique vous accompagne de la découverte du projet à la prise en main de la dapp. Elle s’adresse aux artistes, aux visiteurs, aux collectionneurs et aux partenaires.
+## Votre première visite
 
-<table data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Le projet xArtists</strong></td><td>La vision, les usages et les parcours selon votre profil.</td><td><a href="presentation/">presentation</a></td></tr><tr><td><strong>La dapp, pas à pas</strong></td><td>Explorer, créer et comprendre les cinq espaces de l’application.</td><td><a href="presentation/decouvrir-la-dapp.md">decouvrir-la-dapp.md</a></td></tr><tr><td><strong>Web, mobile et xPortal</strong></td><td>Commencer sans wallet, installer l’application web et comprendre la connexion.</td><td><a href="presentation/demarrer-sur-mobile.md">demarrer-sur-mobile.md</a></td></tr><tr><td><strong>Accès et disponibilité</strong></td><td>Les liens publics et l’état actuel des parcours.</td><td><a href="presentation/etat-du-produit.md">etat-du-produit.md</a></td></tr></tbody></table>
+1. **Visitez le musée**, sans portefeuille ni achat : [Immersive Museum](https://neltud.github.io/xArtists/museum).
+2. **Découvrez les artistes et les créations**, puis explorez le Studio et les collections.
+3. **Comprenez LIA**, le centre de contrôle et les agents Pulse, Yield et Sentinel : les signaux publics sont présentés en mode **paper / simulation**.
+4. **Choisissez vos services** seulement après avoir lu leurs statuts, droits et conditions ; un bouton visible ne prouve pas qu'un paiement est disponible.
 
-**Dapp publique sur GitHub Pages · LIA en simulation.** La mise à jour mobile consolidée reste en cours de validation. Les actions de paiement et les opérations blockchain dépendent des services activés et d’une validation distincte.
+## Packs IA et services Whop : deux offres distinctes
 
-{% hint style="info" %}
-**Sécurité — 28 octobre 2026.** Checkout Paybox désactivé, API publique non reliée, ouverture marchande non validée. [Dossier de sécurité et critères de lancement](security/). Les contrats mainnet restent une surface distincte de l'interface paper.
-{% endhint %}
+| Produit                  | Modèle                          | Détail                                                                                                                                       |
+| ------------------------ | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pulse / Yield / Sentinel | Achat unique (pas d'abonnement) | Packs Genesis SFT en édition limitée, droits associés durables ; livraison effective à confirmer par la chaîne de paiement et la transaction |
+| TCA Membership via Whop  | Abonnement distinct             | Services du plan pendant la période active ; **pas de NFT Genesis inclus**                                                                   |
 
-<a href="https://neltud.github.io/xArtists/" class="button primary">Ouvrir la dapp sur GitHub</a>
+Prix catalogue affichés pour les packs : **Pulse 110 € · Yield 75 € · Sentinel 50 €**. Un montant en EGLD n'est contractuel que lorsqu'un devis valide est proposé et vérifié sur le parcours choisi.
 
-[English overview](presentation/english-overview.md) · [Questions fréquentes](presentation/questions-frequentes.md) · [Contribuer](presentation/contribuer-et-partenariats.md)
+## Disponibilité vérifiée — 2 novembre 2026
 
-Projet porté par **Nelson Tuduri / Neltud** · [Code et développement](https://github.com/Neltud/xArtists)
+Le site et la dApp sont **publiquement accessibles** sur GitHub Pages. Le correctif mobile V3 [PR #262](https://github.com/Neltud/xArtists/pull/262) a été fusionné, avec tests automatisés réussis et déploiement Pages réussi.
+
+**LIA trading autonome n'est pas ouvert.** Les données shadow sont simulées. Le lancement marchand général PayBox, les remboursements et la livraison réelle de droits doivent faire l'objet de preuves et d'un GO opérationnel spécifiques. Déploiement de contrats mainnet ≠ homologation de tous les usages financiers.
+
+[Lire l'état détaillé](presentation/etat-du-produit.md) · [Sécurité et critères de lancement](security/launch-gates.md) · [English overview](presentation/english-overview.md)
+
+Projet porté par **Nelson Tuduri / Neltud** · [Dépôt GitHub officiel](https://github.com/Neltud/xArtists)

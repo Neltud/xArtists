@@ -1,61 +1,49 @@
 ---
 description: >-
-  L’état public de xArtists au 25 octobre 2026 : découverte accessible, LIA en
-  simulation et validation de la sortie GitHub en cours.
+  Disponibilité vérifiée le 2 novembre 2026 — site V3 public et mainnet séparé
+  du GO commercial.
 icon: circle-check
 ---
 
 # Accès et disponibilité
 
-**État de référence : 25 octobre 2026.** Cette page distingue l’accès à une présentation de la dapp, les fonctions conditionnelles et les prochaines validations de publication.
+**Référence : 2 novembre 2026.** Cette page distingue la disponibilité d'un site web, l'existence de contrats déployés, la lecture de données et l'autorisation de traitements commerciaux ou financiers.
 
-**Publication mobile en cours.** L’adresse d’entrée GitHub est accessible. Les accès directs à certains modules peuvent encore renvoyer une erreur 404 pendant cette phase ; utiliser l’adresse principale ci-dessous. La nouvelle version sera annoncée ici après vérification de sa publication.
+## Adresses officielles
 
-### Les points d’entrée du projet
+| Destination          | Lien                                                                                              |
+| -------------------- | ------------------------------------------------------------------------------------------------- |
+| Site et dApp publics | [neltud.github.io/xArtists](https://neltud.github.io/xArtists/)                                   |
+| Musée                | [Immersive Museum](https://neltud.github.io/xArtists/museum)                                      |
+| LIA et agents        | [LIA](https://neltud.github.io/xArtists/lia) · [Agents](https://neltud.github.io/xArtists/agents) |
+| Guide public         | [GitBook xArtists](https://xartists.gitbook.io/xartists/)                                         |
+| Code et historique   | [Neltud/xArtists](https://github.com/Neltud/xArtists)                                             |
 
-| Accès                                                              | Usage et état                                                                                        |
-| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| [Dapp xArtists — GitHub Pages](https://neltud.github.io/xArtists/) | Adresse publique principale de la dapp ; la mise à jour mobile complète reste en cours de validation |
-| [Présentation publique GitBook](./)                                | Comprendre le projet et trouver les guides utilisateurs                                              |
-| [Dépôt Neltud/xArtists](https://github.com/Neltud/xArtists)        | Consulter le code, l’historique et le développement                                                  |
+## État réel par capacité
 
-### Ce que l’on peut explorer
+| Domaine                         | État au 2 novembre                                                                                                                                                      |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Site web / dApp V3              | **En ligne** sur GitHub Pages, dernière publication CI vérifiée                                                                                                         |
+| Navigation publique             | Accessible sans wallet ; musée, pages agents, LIA, marketplace de consultation                                                                                          |
+| UX mobile                       | PR [#262](https://github.com/Neltud/xArtists/pull/262) fusionnée, Control Room 2D et 3D facultative ; revue mobile matérielle et enregistrements complémentaires prévus |
+| LIA                             | **Paper / shadow** par défaut ; l'automatisation du trading LIA Ops n'est pas autorisée                                                                                 |
+| Contrats sur MultiversX mainnet | Certains composants sont déployés ; leur existence ne prouve pas la disponibilité de chaque fonction d'achat ou de mint                                                 |
+| Packs Genesis                   | Catalogue **110 / 75 / 50 €** ; achat unique, droits durables associés aux SFT ; état de checkout et livraison à vérifier avant encaissement public                     |
+| Whop TCA                        | Abonnement **distinct**, services sans SFT Genesis ; disponibilité selon le plan réellement publié                                                                      |
+| PayBox                          | Tests automatisés sandbox disponibles ; **aucune preuve de bout en bout d'un encaissement réel + IPN + attribution + remboursement** validée ici                        |
+| xPortal                         | Une interface de connexion existe ; test matériel et état des intégrations externes restent à prouver                                                                   |
+| Application native              | Aucune publication App Store/Google Play attestée                                                                                                                       |
 
-Le parcours comprend la navigation par espaces, le musée, les fiches et modules, les vues de création et les interfaces d’intelligence. L’entrée mobile réunit les options d’ouverture, d’installation web et de partage. Les données de certains écrans dépendent des services externes disponibles.
+Les montants EGLD doivent provenir d'un devis serveur valide ou du contrat effectivement interrogé ; les équivalences indicatives d'une carte produit ne sont pas des offres irrévocables.
 
-GitBook présente le projet ; GitHub Pages héberge la dapp. Une page de présentation ou un bouton ne suffit pas à attester l’activation d’un paiement ou d’une opération blockchain. Consulter le statut du service concerné avant toute validation.
+## À propos des confirmations
 
-### État par capacité
+Les tests de la PR #262 (Rust, Playwright, audit de sécurité automatisé et fixtures PayBox) et le déploiement GitHub Pages ont réussi. **Cela ne valide ni l'autorisation d'exécuter un ordre autonome, ni un paiement réel, ni un remboursement.**
 
-| Capacité                                        | État de la présentation publique                                                                                               |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Découvrir le projet et parcourir la dapp        | Accessible sans achat et sans wallet pour l’exploration publique                                                               |
-| Musée, catalogues et fiches                     | Interfaces de découverte ; chargement des médias et données selon leurs sources                                                |
-| Studio et préparation d’œuvres                  | Parcours de création ; distinguer préparation, aperçu et publication confirmée                                                 |
-| LIA et simulations                              | Mode « paper » ; **trading live désactivé**                                                                                    |
-| Packs Pulse, Yield et Sentinel                  | Présentation des profils et accès ; disponibilité selon le service et les conditions du produit                                |
-| Paiements et actions blockchain                 | Dépendent du service, du compte et de sa disponibilité ; non attestés par la seule présence d’un bouton                        |
-| Installation web                                | Proposée selon le navigateur et l’appareil ; ajout à l’écran d’accueil sur les appareils compatibles                           |
-| Connexion xPortal                               | Parcours prévu dans l’interface ; validation finale de l’intégration sur appareils réels à compléter pour la sortie officielle |
-| Catalogue xPortal                               | Référencement officiel **non confirmé**                                                                                        |
-| Applications App Store / Google Play            | Aucune publication native annoncée dans cette présentation                                                                     |
-| Certification physique et intégrations avancées | Développement progressif ; portée à vérifier par service et par œuvre                                                          |
+Le GO marchand requiert au minimum : identité de l'acheteur, devis et montant fiables, preuve PSP signée, liaison d'une seule commande à une seule livraison, état serveur vérifié, contrôle d'idempotence, remboursement et procédure d'arrêt. Pour le trading, un GO distinct est nécessaire.
 
-### Quand une nouvelle capacité sera-t-elle annoncée ?
+## Pour les visiteurs
 
-Une mise en ligne d’interface, une connexion de portefeuille, un paiement et l’activation d’un service sont des étapes différentes. Une annonce publique doit préciser le service, le périmètre et la preuve correspondant à l’étape réellement franchie.
+Commencez sans portefeuille ; choisissez une œuvre ou un agent, puis consultez l'état de la fonction voulue. Ne transmettez jamais de phrase de récupération ou de clé privée. Les signaux LIA sont informatifs et ne constituent ni des conseils financiers ni des rendements garantis.
 
-La sortie GitHub consolidée sera décrite comme validée lorsque sa version publiée et ses parcours auront été vérifiés. D’ici là, les liens GitHub permettent de suivre l’avancement sans supposer la livraison de chaque fonction.
-
-### Repères de lecture
-
-* **Accessible** : la consultation publique du contenu ou de l’interface est ouverte.
-* **Simulation / paper** : le résultat relève d’un scénario sans exécution financière réelle.
-* **Conditionnel** : le parcours dépend de droits, d’un service actif ou d’une confirmation.
-* **Prévu / expérimental** : le développement ne vaut pas disponibilité générale.
-
-Les anciens documents techniques peuvent décrire des états antérieurs ou des objectifs. Cette page est le repère de la présentation publique à la date indiquée ; elle sera actualisée au fur et à mesure des validations.
-
-***
-
-[Présentation xArtists](./) · [Démarrer](demarrer-sur-mobile.md) · [Disponibilité](etat-du-produit.md)
+[Présentation](./) · [Guide mobile](demarrer-sur-mobile.md) · [Sécurité](../security/launch-gates.md)

@@ -1,46 +1,37 @@
 ---
 description: >-
-  A public introduction to xArtists: art, creation, AI tools and the current
-  availability of its MultiversX dapp.
+  Official English overview of xArtists and its V3 public release status as of
+  November 2, 2026.
 icon: globe
 ---
 
-# English overview
+# xArtists — English overview
 
-**xArtists brings art, creative tools and artificial intelligence into one web experience on MultiversX.** The project connects an immersive museum, artwork and collection discovery, a creator workspace, and interfaces for AI analysis and simulation.
+**Where art, creative experiences and AI agents meet on MultiversX.** Explore the immersive museum, artwork collections, creator tools, and LIA's intelligence dashboards in your browser.
 
-### What the project offers
+[**Visit xArtists**](https://neltud.github.io/xArtists/) · [Museum](https://neltud.github.io/xArtists/museum) · [AI Agents](https://neltud.github.io/xArtists/agents)
 
-Visitors can start with the museum and public discovery pages without connecting a wallet. Artists can explore the Studio and the process of preparing a collection or an artwork reference. Collectors can examine available artwork information and blockchain references. Some services depend on specific access rights or further activation.
+## Discover the ecosystem
 
-The application is organised into five areas: **Explore**, **Create**, **Intelligence**, **Finance** and **My space**. Its presentation version includes French, English, Spanish, German, Russian, Ukrainian, Chinese and Arabic. This GitBook public guide is primarily written in French.
+* **Explore:** a digital museum, artworks, cultural experiences and artwork references.
+* **Create:** tools for artists and phygital collection preparation.
+* **Intelligence:** LIA, the Control Room, and the Pulse / Yield / Sentinel agents.
+* **Finance & My space:** informational interfaces and personal assets, subject to availability and wallet authorization.
 
-### Artworks and physical connections
+You can explore public pages **without connecting a wallet**. Mobile V3 includes a lightweight 2D LIA view with an optional immersive 3D Control Room.
 
-The project includes digital art and the connection between physical works and digital references. A token, a media file, the physical object and the rights attached to a work are distinct elements. The artwork record and its terms should explain what is included. Advanced reconstruction and physical certification services are part of progressive development.
+## What are the Genesis packs?
 
-### LIA and agent packs
+**Pulse (€110), Yield (€75), and Sentinel (€50)** are separate, limited-edition **one-time purchase** packs associated with MultiversX SFT artwork and durable pack access rights. Delivery depends on confirmed payment and on-chain verification; a storefront listing does not mean a payment rail is cleared to accept orders.
 
-LIA is the project's AI component, with analysis, monitoring and simulation interfaces. **Live trading is disabled in the current public presentation.** Paper results describe simulations rather than executed financial operations.
+**Whop TCA Membership** is a **separate recurring subscription for services**. It does not itself include a Genesis pack NFT.
 
-Pulse, Yield and Sentinel are presented as different access profiles for rooms, tools and content. Their actual access conditions depend on the product and service availability. This presentation makes no guarantee of financial returns.
+## Release status — November 2, 2026
 
-### $TRO
+The public website and dApp are deployed on GitHub Pages, and the V3 mobile PR [#262](https://github.com/Neltud/xArtists/pull/262) passed automated checks and was merged.
 
-$TRO, referenced as **TRO-94c925** on MultiversX, is described by the project as a cultural and utility token. Individual uses, governance actions and staking functions must be assessed according to their actual activation. Current market figures and prices are not presented here as verified values.
+**Autonomous LIA trading is not live.** Public LIA performance is simulated/paper unless independently verified otherwise. Real payment, NFT fulfilment, refunds, and commercial/mainnet transaction paths require separate end-to-end evidence and a capacity-specific operational go decision. No returns are guaranteed.
 
-### Availability — 25 October 2026
+[Detailed French availability page](etat-du-produit.md) · [Public project overview](./) · [GitHub repository](https://github.com/Neltud/xArtists)
 
-The [official public dapp entry on GitHub Pages](https://neltud.github.io/xArtists/) is the link to open and share. GitBook hosts this project presentation. The consolidated mobile update remains under validation; payment and blockchain actions depend on the specific service and require separate approval in the user's wallet.
-
-The interface provides a xPortal/WalletConnect connection path. Final device testing and official xPortal catalogue inclusion are not attested by this documentation. xArtists is presented as a web app that compatible browsers may add to the home screen; no native store release is announced here.
-
-### Follow or contribute
-
-The project is led by **Nelson Tuduri**, known as **Neltud** on GitHub. Visit the [repository](https://github.com/Neltud/xArtists), [discussions](https://github.com/Neltud/xArtists/discussions) or [issues](https://github.com/Neltud/xArtists/issues) to follow development, propose a collaboration or report a reproducible problem.
-
-The [availability page](etat-du-produit.md) is the dated reference for this public presentation. The [project overview](./) leads to the full French guide.
-
-***
-
-[Présentation xArtists](./) · [Démarrer](demarrer-sur-mobile.md) · [Disponibilité](etat-du-produit.md)
+Project led by **Nelson Tuduri / Neltud**.
