@@ -70,7 +70,7 @@ export async function startPackPayment(opts: {
     const isWallet = /^erd1[a-z0-9]{58}$/i.test(opts.buyerAddress)
     if (!isWallet) return 'auth_required'
 
-    let token = opts.accessToken || getAccessToken(opts.buyerAddress)
+    let token: string | null | undefined = opts.accessToken || getAccessToken(opts.buyerAddress)
     if (!token) {
       token = (await ensureAccessToken({ address: opts.buyerAddress })) || undefined
     }
