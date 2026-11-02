@@ -43,24 +43,9 @@ jobs:
       - name: Locked frontend dependencies
         working-directory: apps/frontend
         run: npm ci --legacy-peer-deps --ignore-scripts
-      - name: TypeScript baseline assessment (new RWA files must have zero TS errors)
+      - name: Strict global TypeScript (issue 271 resolved)
         working-directory: apps/frontend
-        run: |
-          set +e
-          npm run typecheck > /tmp/xartists-tsc.log 2>&1
-          status=$?
-          set -e
-          grep -E 'src/(components/PhysicalWorkFlowPanel|pages/RwaCatalogPage)\\.tsx.*error TS[0-9]+' /tmp/xartists-tsc.log > /tmp/rwa-ts-errors.log || true
-          if [ -s /tmp/rwa-ts-errors.log ]; then
-            cat /tmp/rwa-ts-errors.log
-            echo "::error title=RWA type errors::New physical-art components have TypeScript errors."
-            exit 1
-          fi
-          if [ "$status" -ne 0 ]; then
-            count=$(grep -c 'error TS[0-9]' /tmp/xartists-tsc.log || true)
-            echo "::warning title=Frontend preexisting TypeScript debt::Global typecheck failed with $count errors outside the new RWA files. Full strict typecheck is NOT green."
-            echo "New RWA files have no TypeScript errors in this run."
-          fi
+        run: npm run typecheck
       - name: Production frontend build
         working-directory: apps/frontend
         run: npm run build
