@@ -303,13 +303,14 @@ export async function getOrderForBuyer(orderId, requester) {
  * qualify as confirmed. Nothing in the current PayBox IPN path supplies this.
  */
 export function publicOrderDelivery(order) {
+  const invalidated = [ORDER_STATUS.REFUNDED, ORDER_STATUS.CANCELLED, ORDER_STATUS.REFUSED]
+    .includes(order?.status)
   const verified = Boolean(
-    order && order.delivery === 'confirmed' &&
-    order.status !== ORDER_STATUS.REFUNDED &&
+    order && !invalidated && order.delivery === 'confirmed' &&
     order.chain_tx_hash && order.nft_identifier && order.delivered_at,
   )
   return {
-    delivery: verified ? 'confirmed' : order?.server_confirmed === true ? 'pending' : 'none',
+    delivery: verified ? 'confirmed' : !invalidated && order?.server_confirmed === true ? 'pending' : 'none',
     delivery_verified: verified,
     delivered_at: verified ? order.delivered_at : null,
   }
