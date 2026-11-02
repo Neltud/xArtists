@@ -76,6 +76,32 @@ Le **listing Marketplace**, la certification d'une œuvre physique et les packs 
 
 La page [État du produit](etat-du-produit.md) détaille les disponibilités. Les contrats système et le fonctionnement des NFT sont décrits dans la [documentation officielle MultiversX](https://docs.multiversx.com/tokens/nft-tokens/).
 
+## Œuvres physiques et NFT : suivi de livraison (nouveau)
+
+xArtists développe également un module de **provenance phygitale** : il associe les informations d'une œuvre tangible à un dossier de suivi, un SKU Shopify unique et, si l'artiste le souhaite, un NFT MultiversX **vérifiable sur le réseau**.
+
+Ce module a été intégré au code le **2 novembre 2026**, dans la [PR #270](https://github.com/Neltud/xArtists/pull/270), avec des tests API, une interface sur la [page RWA](https://neltud.github.io/xArtists/rwa) et un guide technique dans [GitHub](https://github.com/Neltud/xArtists/blob/main/docs/PHYSICAL_ART_SHOPIFY_FULFILLMENT.md).
+
+> **Important : la vente et la livraison physiques ne sont pas encore ouvertes commercialement.** Le service est désactivé côté API tant que les secrets marchand, les webhooks Shopify et une base PostgreSQL durable ne sont pas configurés et testés. La boutique Shopify est encore en période d'essai. Aucun premier colis, réception d'acheteur ni expertise IA de l'état d'une œuvre n'a été confirmé en production.
+
+### Comment une œuvre physique sera suivie
+
+1. **L'artiste enregistre son œuvre**, une photo originale dont une empreinte cryptographique est calculée, et éventuellement son identifiant NFT. Le fichier photo lui-même reste sous son contrôle ; il doit conserver l'original.
+2. **Un marchand publie un produit physique Shopify** avec le SKU donné et le stock correct, après accord sur le prix, l'assurance, le transport et les conditions de vente.
+3. **Une commande effectivement payée** est rapprochée du dossier grâce à un webhook Shopify signé. Un panier, un paiement en attente ou une commande remboursée ne valent pas vente confirmée.
+4. **Le transporteur indique l'expédition puis la livraison.** Ces événements ne suffisent pas à prouver l'acceptation par l'acheteur.
+5. **L'acheteur confirme lui-même sa réception**, après connexion et signature avec son wallet, ou signale un dommage ou une non-réception avec une empreinte de sa photographie.
+6. **Une demande de réévaluation** peut déclencher une revue humaine avec historique et preuves ; le premier niveau ne fournit qu'un triage déterministe, sans expertise IA ni estimation de valeur certifiée.
+
+### NFT et propriété : ce qu'il faut savoir
+
+* Un NFT associé peut être contrôlé sur **MultiversX mainnet** pour vérifier la détention du NFT créé par le wallet de l'artiste ; cette vérification ne prouve pas, à elle seule, le titre de propriété de l'œuvre tangible.
+* Une livraison indiquée comme terminée par un transporteur n'est pas une réception acceptée par l'acheteur.
+* Un NFT, une réception ou une proposition d'IA **ne transfèrent jamais automatiquement des droits légaux, des fonds ou un escrow**.
+* Les médias privés et les adresses des acheteurs ne sont pas publiés dans le registre public ; leur traitement, leur conservation et les consentements devront être revus avant ouverture commerciale.
+
+Les artistes peuvent continuer à [préparer leur NFT dans le Studio](https://neltud.github.io/xArtists/studio) ; l'activation commerciale et le suivi de colis réel resteront annoncés séparément, après validation.
+
 ## Pour aller plus loin
 
 [Présentation xArtists](./) · [Démarrer](demarrer-sur-mobile.md) · [Disponibilité](etat-du-produit.md) · [Contribuer et partenariats](contribuer-et-partenariats.md)
