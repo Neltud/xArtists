@@ -1,0 +1,55 @@
+name: Mint Postgres idempotency (ephemeral CI)
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/src/mintDispatch.mjs'
+      - 'services/access-api/tests/mintDispatchPostgres.test.mjs'
+      - '.github/workflows/mint-dispatch-postgres-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/mintDispatch.mjs'
+      - 'services/access-api/tests/mintDispatchPostgres.test.mjs'
+      - '.github/workflows/mint-dispatch-postgres-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  postgres-idempotence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: xartists_mint_probe
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d xartists_mint_probe"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      # This database exists only in this workflow's disposable container.
+      TEST_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/xartists_mint_probe
+      ALLOW_EPHEMERAL_MINT_PG_TEST: '1'
+      PGSSL: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/access-api/package-lock.json
+      - name: Install locked Access API dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: services/access-api
+      - name: Prove exactly-once across separate PostgreSQL clients
+        run: node --test tests/mintDispatchPostgres.test.mjs
+        working-directory: services/access-api
