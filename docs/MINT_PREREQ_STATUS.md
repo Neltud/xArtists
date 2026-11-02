@@ -1,37 +1,58 @@
-# Mint live — audit prérequis (2026-11-02 ~13:25 CET)
+# Mint live — audit prérequis (refresh 2026-11-02 13:30 CET)
 
-## Verdict
+## On-chain (re-vérifié)
 
-| Prérequis | Status | Détail |
-|-----------|--------|--------|
-| `SC_DEPLOYER_PEM` env **production** | ⚠️ **non vérifiable via API** | Secrets GitHub ne se lisent pas en externe — à confirmer UI : Settings → Environments → production → Secrets |
-| Deployer = owner collections / SC | 📍 `erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g` | SC owner + collection owner XAIPLS/XAIYLD/XAISNT |
-| EGLD deployer | ❌ **0.005342 EGLD** | **Insuffisant** pour buyPack Rule1 (15–33 EGLD) |
-| Admin | 0.136 EGLD · **0** pack NFT | `erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l` |
-| LIA wallet | 0.908 EGLD · 0 pack NFT | `erd1p4zyy…0crn6` |
-| Prix SC on-chain | ⚠️ **1 / 5 / 2.5 EGLD** | **≠ Rule1** 33 / 22.5 / 15 |
-| NFTs déjà mintés (owner) | 2× Pulse | `XAIPLS-2cf72b-03` · `XAIPLS-2cf72b-04` |
-| Type collection | NonFungibleESDT | NFT (pas Meta-ESDT SFT) sur explorer |
+| Wallet | EGLD | Pack NFTs |
+|--------|------|-----------|
+| **Deployer / SC owner** `erd1kex0…vl8v0g` | **0.005342** | Pulse-03, Pulse-04 |
+| Admin `erd1mmh2…nucj5l` | 0.136 | 0 |
+| LIA `erd1p4zy…0crn6` | 0.908 | 0 |
+| **Total liquide ops** | **~1.05 EGLD** | — |
 
-## Actions bloquantes (ordre)
+| SC pack price | On-chain | Rule1 cible |
+|---------------|----------|-------------|
+| Pulse | **1.0** EGLD | 33 |
+| Yield | **5.0** EGLD | 22.5 |
+| Sentinel | **2.5** EGLD | 15 |
 
-1. **Confirmer secret** `SC_DEPLOYER_PEM` sur environment `production` (GitHub UI).
-2. **Financer le deployer** (recommandé ≥ **40 EGLD** pour un Pulse + gas, ou ≥ **20 EGLD** pour Sentinel seul).
-   - OU lancer mint en **`micro_price=true`** (0.001 EGLD temp) puis restore Rule1 — voir workflow.
-3. **Aligner prix SC → Rule1** après funding (workflow le fait sur chaque live mint / restore admin).
-4. Dispatch **Mint on payment** avec `buyer=erd1…` + `confirm=LIVE_MINT_MAINNET`.
+## Secret PEM
 
-## Seuils EGLD (atomic)
+`SC_DEPLOYER_PEM` sur environment **production** : **non lisible via API**. Confirmer dans GitHub UI.
 
-| Mode | Pulse | Yield | Sentinel | Gas marge |
-|------|-------|-------|----------|-----------|
-| Rule1 catalogue | 33 | 22.5 | 15 | ~0.05 |
-| Micro (ops) | 0.001 | 0.001 | 0.001 | ~0.05 |
+## Décision ops
 
-Deployer actuel **0.005** → **seul micro_price** est viable sans top-up.
+| Mode | Viable maintenant ? |
+|------|---------------------|
+| buyPack **Rule1** (15–33 EGLD) | ❌ non — financer deployer |
+| buyPack **micro 0.001** + restore Rule1 | ✅ si PEM présent + ≥0.05 EGLD gas |
+| Transfert Pulse-03/04 existants → buyer | ✅ via même PEM (manuel mxpy / workflow admin) |
 
-## Suite produit (indépendant funding)
+## Funding plan (Rule1 catalogue)
 
-- Wire IPN → `workflow_dispatch` mint
-- TCA Whop `prod_`
-- My Packs lit déjà on-chain via `matchOnChainPacks`
+1. Envoyer **≥ 20 EGLD** (Sentinel) ou **≥ 40 EGLD** (Pulse) vers `erd1kex0…vl8v0g`
+2. Lancer mint-on-payment avec `micro_price=false`
+3. Ou garder `micro_price=true` pour ops / tests jusqu’au top-up
+
+Consolider LIA+admin → deployer ne suffit **pas** pour Rule1 (~1 EGLD).
+
+## IPN → mint
+
+Module : `services/access-api/src/mintDispatch.mjs`
+
+```
+MINT_DISPATCH_ENABLED=1
+MINT_GITHUB_PAT=<pat workflow>
+MINT_MICRO_PRICE=true   # default underfunded
+```
+
+Appeler `maybeDispatchMintAfterPaid(order)` après IPN `paid` / `server_confirmed` (ne jamais faire échouer le 200 IPN).
+
+## Dispatch manuel (maintenant)
+
+Actions → **Mint on payment** :
+
+- live_mint=**true**
+- confirm=**LIVE_MINT_MAINNET**
+- micro_price=**true**
+- buyer=`erd1…`
+- pack=`sentinel`|`pulse`|`yield`
