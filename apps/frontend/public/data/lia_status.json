@@ -1,120 +1,39 @@
 {
   "schema": "lia_status/v1",
-  "ts": "2026-11-02T09:06:56Z",
+  "ts": "2026-11-02T13:15:00Z",
   "paper": true,
   "LIA_LIVE_TRADING": 0,
   "onchain": {
     "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "egld": 0.907888,
-    "egld_usd": 3.0505,
+    "egld_usd": null,
     "tokens": [
-      {
-        "identifier": "ASH-a642d1",
-        "ticker": "ASH",
-        "balance": 544.35637
-      },
-      {
-        "identifier": "HWBTC-49ca31",
-        "ticker": "HWBTC",
-        "balance": 0.0
-      },
-      {
-        "identifier": "LPROARTRO-f1212f",
-        "ticker": "LPROARTRO-f1212f",
-        "balance": 0.040862
-      },
-      {
-        "identifier": "TRO-94c925",
-        "ticker": "TRO",
-        "balance": 41243.00138
-      },
-      {
-        "identifier": "TROMEX-ad38a1",
-        "ticker": "TROMEX-ad38a1",
-        "balance": 0.0
-      },
-      {
-        "identifier": "TROUSDC-2a60c7",
-        "ticker": "TROUSDC",
-        "balance": 0.0
-      },
-      {
-        "identifier": "TROUSDT-67d574",
-        "ticker": "TROUSDT-67d574",
-        "balance": 0.0
-      },
-      {
-        "identifier": "TROWEGLD-891183",
-        "ticker": "TROWEGLD",
-        "balance": 0.0
-      },
-      {
-        "identifier": "TROWEGLD-ca2874",
-        "ticker": "TROWEGLD-ca2874",
-        "balance": 1.865681
-      },
-      {
-        "identifier": "TROXOXNO-500f78",
-        "ticker": "TROXOXNO-500f78",
-        "balance": 0.578465
-      },
-      {
-        "identifier": "XOXNO-c1293a",
-        "ticker": "XOXNO",
-        "balance": 3.7e-05
-      }
+      { "identifier": "ASH-a642d1", "ticker": "ASH", "balance": 544.35637 },
+      { "identifier": "TRO-94c925", "ticker": "TRO", "balance": 41243.00138 },
+      { "identifier": "TROWEGLD-ca2874", "ticker": "TROWEGLD", "balance": 1.865681 },
+      { "identifier": "TROXOXNO-500f78", "ticker": "TROXOXNO", "balance": 0.578465 },
+      { "identifier": "XOXNO-c1293a", "ticker": "XOXNO", "balance": 0.000037 }
     ],
     "tx_count": null,
     "error": null
   },
   "mindset": {
     "strategy": "YIELD",
-    "confidence": null,
-    "vellum_ts": "2026-08-09T15:16:00Z",
+    "confidence": 0.52,
+    "vellum_ts": "2026-11-02T13:15:00Z",
     "vellum_ok": true,
-    "guardian_allow": null,
-    "LIA_LIVE_TRADING": 0
+    "guardian_allow": false,
+    "LIA_LIVE_TRADING": 0,
+    "signal_only": true
   },
   "shadow": {
     "fills": 120,
     "shadow_pnl_usd": 5.1642,
     "win_rate": 0.6,
     "last_shadow": [
-      {
-        "id": "0b3b0a4a-83c",
-        "side": "BUY",
-        "asset": "USDC",
-        "pnl_usd": -0.0571,
-        "ts": "2026-11-01T08:56:05Z"
-      },
-      {
-        "id": "9de75dde-89f",
-        "side": "BUY",
-        "asset": "USDC",
-        "pnl_usd": -0.0387,
-        "ts": "2026-11-01T16:40:30Z"
-      },
-      {
-        "id": "90044645-4a6",
-        "side": "BUY",
-        "asset": "EGLD",
-        "pnl_usd": -0.0258,
-        "ts": "2026-11-01T21:52:26Z"
-      },
-      {
-        "id": "520bb678-bdd",
-        "side": "BUY",
-        "asset": "EGLD",
-        "pnl_usd": -0.0036,
-        "ts": "2026-11-02T01:22:50Z"
-      },
-      {
-        "id": "ba425786-919",
-        "side": "BUY",
-        "asset": "TRO",
-        "pnl_usd": -0.0288,
-        "ts": "2026-11-02T09:06:56Z"
-      }
+      { "id": "ba425786-919", "side": "BUY", "asset": "TRO", "pnl_usd": -0.0288, "ts": "2026-11-02T09:06:56Z" },
+      { "id": "520bb678-bdd", "side": "BUY", "asset": "EGLD", "pnl_usd": -0.0036, "ts": "2026-11-02T01:22:50Z" },
+      { "id": "90044645-4a6", "side": "BUY", "asset": "EGLD", "pnl_usd": -0.0258, "ts": "2026-11-01T21:52:26Z" }
     ],
     "source": "lia_paper_legs.json+friction",
     "friction_model": {
@@ -122,15 +41,20 @@
       "slippage": "liquidity_impact_0.05pct_to_2.5pct"
     }
   },
+  "signals": {
+    "daily": "data/signals/daily_signal.json",
+    "mode": "publish_only",
+    "execution": "disabled"
+  },
   "aura": {
     "mode": "bull",
     "trend": "up",
-    "confidence": null,
-    "source": "publish_lia_status"
+    "confidence": 0.52,
+    "source": "sprint3-status-refresh"
   },
   "links": {
     "explorer": "https://explorer.multiversx.com/accounts/erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
     "hub": "https://neltud.github.io/xArtists/#/lia"
   },
-  "note": "Aggregated snapshot \u2014 paper/shadow with friction; not live trading"
+  "note": "Aggregated snapshot — paper/shadow with friction; SIGNAL ONLY, not live trading"
 }
