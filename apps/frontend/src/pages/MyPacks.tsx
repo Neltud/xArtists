@@ -14,7 +14,7 @@ import { matchOnChainPacks, loadOwnedPacks } from '../lib/nftPacks'
 import { ROOM_META } from '../lib/holderAccess'
 import PackRoomHolo from '../components/PackRoomHolo'
 import GenesisCard3D from '../components/packs/GenesisCard3D'
-import { fetchPayboxOrderStatus, type PayboxOrderStatus } from '../lib/paybox'
+import { fetchPayboxOrderStatus, type PayboxOrderResult } from '../lib/paybox'
 import { getAccessToken } from '../lib/accessSession'
 
 const API = (import.meta.env.VITE_ACCESS_API_BASE as string | undefined) || ''
@@ -37,11 +37,7 @@ export default function MyPacks() {
   const cancelled = params.get('cancelled')
   const sessionId = params.get('session_id')
   const orderId = params.get('order')
-  const [orderStatus, setOrderStatus] = useState<{
-    status: PayboxOrderStatus
-    server_confirmed: boolean
-    pack_id?: string
-  } | null>(null)
+  const [orderStatus, setOrderStatus] = useState<PayboxOrderResult | null>(null)
 
   useEffect(() => {
     if (!paid) return
@@ -68,9 +64,9 @@ export default function MyPacks() {
           setOrderStatus(st)
           if (st.server_confirmed) {
             setMintStatus(
-              st.pack_id
-                ? `Paiement confirme serveur — pack ${st.pack_id} (mint paper / on-chain a venir post-GO).`
-                : 'Paiement confirme serveur.',
+              st.delivery_verified
+                ? 'Livraison NFT enregistree par le serveur — verifier aussi la possession on-chain dans le wallet.'
+                : 'Paiement confirme par le serveur — NFT non encore livre. Aucun droit on-chain accorde par ce paiement seul.',
             )
             return
           }
@@ -174,6 +170,15 @@ export default function MyPacks() {
             {xaRender(
               orderStatus.pack_id && (
                 <p className="text-[11px] text-zinc-500">pack: {xaRender(orderStatus.pack_id)}</p>
+              ),
+            )}
+            {xaRender(
+              orderStatus.server_confirmed && (
+                <p className="text-[11px] text-amber-200/90">
+                  {xaRender(orderStatus.delivery_verified
+                    ? 'NFT livre selon le backend — validation wallet necessaire'
+                    : 'NFT en attente de livraison — aucun acces NFT accorde')}
+                </p>
               ),
             )}
           </div>
