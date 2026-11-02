@@ -1,73 +1,52 @@
-# Sprint GO — Operator checklist (2026-11-02)
+# Sprint GO — Operator checklist (updated 2026-11-02 20:38 CET)
 
-**Release on main:** 0.129.1 · tip `eee78a85`  
-**LIA trading:** OFF · **Mint live:** OFF until explicit GO
+**Release:** 0.129.1  
+**API:** https://xartists-access-api.onrender.com
 
-## A. Public surfaces (automated / browser)
+## A. Public surfaces — DONE (probed)
 
-- [x] `https://neltud.github.io/xArtists/` → 200
-- [x] `/packs/pulse|yield|sentinel/` → 200
-- [x] `/tro/sale/` → 200
-- [x] `/data/lia_status.json` → `paper:true`, `LIA_LIVE_TRADING:0`
-- [x] `/data/signals/daily_signal.json` → 200
+- [x] Pages home + 3 packs + TRO sale → 200
+- [x] `lia_status.json` paper · LIA_LIVE_TRADING 0
+- [x] daily signal 200
+- [x] API `/health` 200
+- [x] API signals / TRO bridge status / physical+studio config
 
-## B. access-api production (you)
+## B. access-api — measured
 
-Set / confirm:
+| Flag | Measured | Target dry GO |
+|------|----------|---------------|
+| paybox_mode | **prod** | prod |
+| orders_backend | postgres | postgres |
+| mint_dry_run | true | true |
+| mint_live_enabled | false | false |
+| mint_dispatch_enabled | **false** | **true** (next) |
+| lia_live_trading | 0 | 0 |
 
-```env
+### Next Render env (you — 1 minute)
+
+```
 MINT_DISPATCH_ENABLED=1
 MINT_DRY_RUN=1
 MINT_LIVE_ENABLED=0
-# LIA_LIVE_TRADING must NOT be 1
-DATABASE_URL=<postgres>   # recommended
-MINT_GITHUB_PAT=<workflow scope>  # if dispatch armed
-PAYBOX_IPN_URL=https://...
+MINT_GITHUB_PAT=<PAT workflow>
 ```
 
-`GET /health` must show:
+Then re-hit `/health` until `mint_dispatch_enabled: true`.
 
-| Field | Expected |
-|-------|----------|
-| `ok` | true |
-| `mint_dry_run` | **true** |
-| `mint_live_enabled` | **false** |
-| `lia_live_trading` | `"0"` |
-| `signals_daily` | true |
-| `tro_solana_bridge` | `off` |
-| `studio_media_upload` | `off` (unless Pinata GO) |
-| `physical_works` | `off` (unless Shopify GO) |
+## C. First mainnet mint (human)
 
-Paste `/health` JSON in ops channel before any live mint.
+Deployer ~0.005 EGLD → **micro_price=true** only.
 
-## C. First mainnet mint (optional, human)
+1. PEM on environment production
+2. buyer erd1
+3. Actions: pack=sentinel · live_mint=true · confirm=LIVE_MINT_MAINNET · micro_price=true
 
-Only after B:
+## D. Commercial
 
-1. `SC_DEPLOYER_PEM` present on environment **production** (UI only)
-2. Buyer `erd1…`
-3. Workflow **Mint on payment**:
-   - pack=`sentinel`
-   - `live_mint=true`
-   - `confirm=LIVE_MINT_MAINNET`
-   - `micro_price=true` (deployer ~0.005 EGLD)
-4. Explorer: NFT on buyer · SC prices restored toward Rule1
+- [ ] S1 PayBox real (Sentinel)
+- [ ] S2 My Packs NFT
+- [ ] Whop TCA prod_
 
-## D. Commercial packs
+## E. Non-goals
 
-- [ ] **S1** real PayBox payment (Sentinel 50€)
-- [ ] **S2** My Packs shows NFT
-- [ ] Whop TCA `prod_` (services only, no Genesis SFT)
-
-## E. Explicit non-goals
-
-- LIA live trading
-- Solana TRO bridge enable
-- Studio Pinata / Physical Shopify without separate GO
-- Catalogue Rule1 mint without deployer top-up
-
-## Decision log
-
-| Date | Decision |
-|------|----------|
-| 2026-11-02 20:35 CET | Pages + signals GO · commercial NO-GO · mint dry only |
+LIA trade · Solana bridge · Studio/Physical prod without separate GO

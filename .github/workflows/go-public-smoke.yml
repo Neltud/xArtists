@@ -1,0 +1,62 @@
+name: GO public smoke
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/go-public-smoke.yml'
+      - 'docs/GO_OPERATOR_CHECKLIST.md'
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Pages + access-api probes
+        run: |
+          set -euo pipefail
+          fail=0
+          check() {
+            url="$1"
+            code=$(curl -sS -o /tmp/body -w '%{http_code}' --max-time 45 "$url" || echo 000)
+            echo "$code  $url"
+            if [ "$code" != "200" ]; then fail=1; fi
+          }
+          BASE=https://neltud.github.io/xArtists
+          API=https://xartists-access-api.onrender.com
+
+          check "$BASE/"
+          check "$BASE/packs/pulse/"
+          check "$BASE/packs/yield/"
+          check "$BASE/packs/sentinel/"
+          check "$BASE/tro/sale/"
+          check "$BASE/data/lia_status.json"
+          check "$BASE/data/signals/daily_signal.json"
+          check "$API/health"
+          check "$API/v1/signals/daily"
+          check "$API/v1/tro/bridge/status"
+
+          python3 <<'PY'
+          import json,sys
+          j=json.load(open('/tmp/body'))  # last body may not be health — re-fetch
+          import urllib.request
+          h=json.load(urllib.request.urlopen('https://xartists-access-api.onrender.com/health', timeout=45))
+          print('health', {k:h.get(k) for k in [
+            'ok','paybox_mode','mint_dispatch_enabled','mint_dry_run','mint_live_enabled',
+            'lia_live_trading','signals_daily','tro_solana_bridge','studio_media_upload','physical_works'
+          ]})
+          assert h.get('ok') is True
+          assert h.get('lia_live_trading') in (0,'0',None) or str(h.get('lia_live_trading')) == '0'
+          assert h.get('mint_live_enabled') in (False, None, 'false', 0)
+          assert h.get('tro_solana_bridge') in ('off', None, False)
+          lia=json.load(urllib.request.urlopen('https://neltud.github.io/xArtists/data/lia_status.json', timeout=45))
+          assert lia.get('paper') is True
+          assert int(lia.get('LIA_LIVE_TRADING') or 0) == 0
+          print('lia_status paper OK')
+          PY
+
+          if [ "$fail" != "0" ]; then exit 1; fi
+          echo 'GO public smoke OK'
