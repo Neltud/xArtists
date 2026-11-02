@@ -310,10 +310,11 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
       m.on('click', () => {
         setSelectedCity(loc.city)
         setTravelDestination({
+          id: loc.id,
           city: loc.city,
           country: loc.country,
-          lat: loc.lat,
-          lng: loc.lng,
+          focus: loc.focus,
+          source: 'world_tour',
         })
       })
       m.addTo(layer)
@@ -440,10 +441,11 @@ export default function ArtWorldMap({ locations }: { locations?: ArtLocation[] |
                   onClick={() => {
                     setSelectedCity(loc.city)
                     setTravelDestination({
+                      id: loc.id,
                       city: loc.city,
                       country: loc.country,
-                      lat: loc.lat,
-                      lng: loc.lng,
+                      focus: loc.focus,
+                      source: 'world_tour',
                     })
                   }}
                 >
