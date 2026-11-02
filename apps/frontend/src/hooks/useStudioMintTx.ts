@@ -88,7 +88,7 @@ export function useStudioMintTx() {
       const record={ticker:id.split('-')[0],name:id,tokenIdentifier:id,
         walletAddress:address,roleSet:false,at:Date.now()}
       saveStudioCollection(record);setCollection(record);setLastTx(res.sessionId)
-      return {ok:true as const,confirmed:state==='confirmed',sessionId:res.sessionId}
+      return {ok:true as const,alreadySet:false as const,confirmed:state==='confirmed',sessionId:res.sessionId}
     }catch(e){
       const msg=e instanceof Error?e.message:'Échec attribution de rôle.'
       setError(msg);return {ok:false as const,error:msg}
