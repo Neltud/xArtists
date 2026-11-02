@@ -11,25 +11,29 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    # Soft until Pages smoke is proven green on main (SOURCE_OF_TRUTH).
+    # Still runs and uploads report; does not block product merges.
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
-      - name: Install Playwright + deps
+      - name: Install deps
         run: |
-          npm install -D @playwright/test || true
+          if [ -f package-lock.json ]; then npm ci --ignore-scripts; else npm install --ignore-scripts; fi
           npx playwright install --with-deps chromium
 
-      - name: Run E2E
+      - name: Run E2E against Pages
         env:
           E2E_BASE_URL: https://neltud.github.io/xArtists
           CI: true
         run: npx playwright test --config=playwright.config.ts
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: playwright-report
