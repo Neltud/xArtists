@@ -39,6 +39,14 @@ Un GO pour publier une documentation ou lancer une recette ne vaut pas GO marcha
 
 La validation d'un acteur ne clôture pas son propre travail sans preuve de revue. Les tests des chemins signant ou diffusant ne doivent jamais hériter de clés réelles.
 
+### Mise à jour P0 — 2 novembre 2026 (livraison NFT)
+
+La [PR #282](https://github.com/Neltud/xArtists/pull/282) est fusionnée et sa CI est verte. Elle évite qu'un IPN PayBox signé, à lui seul, inscrive une livraison NFT fictive. L'API retourne désormais un statut de livraison en attente et exige une attestation indépendante avant un statut confirmé. La présence du contrat et un retour GitHub Actions HTTP 204 ne sont **pas** des preuves d'une livraison au bon acheteur. Le service Render est déployé mais le dispatch mint reste inactif (`mint_dispatch_enabled=false`), malgré les flags dry-run ; aucun jeton de dispatch GitHub n'a été attesté.
+
+Audit Neon en lecture agrégée : la base **sandbox** accessible compte deux anciennes lignes marquées `simulated` avec horodatage, et zéro avec `server_confirmed=true`. La correspondance de ce projet Neon avec la base effectivement utilisée par Render **n'est pas prouvée**. Aucune migration de lignes commerciales n'a été effectuée.
+
+**G11/G12 ne sont pas clôturés** : il reste à valider l'identité de la base de production sans exposer la chaîne de connexion, la signature IPN en environnement isolé, les retries, la réconciliation on-chain, l'idempotence après panne, S1/S2 et les remboursements. Voir l'[issue #281](https://github.com/Neltud/xArtists/issues/281). GO commercial : **NON**.
+
 ### Ordre des lots
 
 1. **Fiabilité et preuve** : corriger PR #200, état de risque, cache et CI trompeuse. Conserver les assertions métier ; ne pas fusionner la release pour masquer les échecs.

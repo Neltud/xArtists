@@ -44,6 +44,14 @@ Lecture directe de [`/health`](https://xartists-access-api.onrender.com/health) 
 
 **Portée de cette preuve :** disponibilité des surfaces publiques et des garde-fous logiciels au moment du contrôle. **Elle ne prouve pas** un paiement carte réel, un callback IPN confirmé, un mint NFT mainnet, la livraison à l'acheteur ou un remboursement. Ces étapes restent **NO-GO commercial** tant qu'une recette réelle contrôlée et son rapprochement n'ont pas été attestés. Les valeurs ci-dessus sont un instantané daté, pas une garantie permanente.
 
+## Correctif de livraison PayBox — preuve du 2 novembre 2026
+
+La [PR #282](https://github.com/Neltud/xArtists/pull/282), commit [`a98424cd`](https://github.com/Neltud/xArtists/commit/a98424cd7a9e4853c29d57fcb9437f36d7b0fd19), a corrigé un faux état de livraison : après IPN PayBox confirmé, l'API conserve désormais **`delivery=pending`** et **`delivered_at=null`**. Un NFT n'est indiqué comme livré qu'après attestation distincte et éléments corrélés (transaction on-chain, identifiant NFT, horodatage) ; la validation de la chaîne d'attestation reste un travail opérationnel à prouver. Les anciennes lignes `simulated` ne donnent pas de droit de livraison. **My Packs** sépare paiement confirmé, livraison NFT et possession réellement détectée dans le wallet.
+
+Les huit contrôles CI de la PR ont réussi (API, PayBox sandbox, E2E, TypeScript, Rust, audit sécurité, Studio/Physical et $TRO). Le service Render `xartists-access-api` a déployé ce commit avec succès. Le contrôle direct `/health` post-déploiement confirme `mint_dry_run=true`, `mint_live_enabled=false`, `mint_dispatch_enabled=false`, `lia_live_trading=0`, et bridge Solana, Studio et œuvres physiques désactivés.
+
+**Aucun paiement carte réel, mint mainnet, transfert de NFT ni remboursement n'a été effectué au titre de ce correctif.** L'ouverture commerciale reste **NO-GO** jusqu'aux preuves S1/S2/réconciliation. L'[issue P0 #281](https://github.com/Neltud/xArtists/issues/281) suit les tâches restantes. Ces informations sont un instantané daté, pas une garantie de disponibilité permanente.
+
 ## À propos des confirmations
 
 Les tests de la PR #262 (Rust, Playwright, audit de sécurité automatisé et fixtures PayBox) et le déploiement GitHub Pages ont réussi. **Cela ne valide ni l'autorisation d'exécuter un ordre autonome, ni un paiement réel, ni un remboursement.**
