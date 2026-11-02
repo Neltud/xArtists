@@ -3,7 +3,8 @@
  * 1 pack = 1 salle. Pulse = full suite features (voir agentPacks.mergePackFeatures).
  * localStorage paper packs never grant rights.
  */
-import { matchOnChainPacks, type PackId } from './nftPacks'
+import { matchOnChainPacks } from './nftPacks'
+import type { PackId } from '../config/agentPacks'
 import { mergePackFeatures, type PackFeatures, isFullPack } from '../config/agentPacks'
 import { isAdminAddress } from '../config/accessControl'
 
