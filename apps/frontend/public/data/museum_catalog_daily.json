@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-11-01T12:16:45.234Z",
+  "generatedAt": "2026-11-02T14:09:29.351Z",
   "source": "collectionapi.metmuseum.org",
   "note": "Public domain only · daily refresh · not an investment",
-  "count": 25,
+  "count": 26,
   "works": [
     {
       "id": "met-436532",
@@ -18,7 +18,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:35.863Z"
+      "updatedAt": "2026-11-02T14:09:18.695Z"
     },
     {
       "id": "met-437402",
@@ -34,7 +34,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:36.255Z"
+      "updatedAt": "2026-11-02T14:09:19.128Z"
     },
     {
       "id": "met-436121",
@@ -50,7 +50,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:36.829Z"
+      "updatedAt": "2026-11-02T14:09:19.793Z"
     },
     {
       "id": "met-437658",
@@ -66,7 +66,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:37.274Z"
+      "updatedAt": "2026-11-02T14:09:20.418Z"
     },
     {
       "id": "met-436105",
@@ -82,7 +82,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:37.992Z"
+      "updatedAt": "2026-11-02T14:09:21.499Z"
     },
     {
       "id": "met-437812",
@@ -98,7 +98,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:38.278Z"
+      "updatedAt": "2026-11-02T14:09:21.797Z"
     },
     {
       "id": "met-437749",
@@ -114,7 +114,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:38.550Z"
+      "updatedAt": "2026-11-02T14:09:22.082Z"
     },
     {
       "id": "met-436896",
@@ -130,7 +130,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:38.967Z"
+      "updatedAt": "2026-11-02T14:09:22.533Z"
     },
     {
       "id": "met-435904",
@@ -146,7 +146,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:39.216Z"
+      "updatedAt": "2026-11-02T14:09:22.780Z"
     },
     {
       "id": "met-437368",
@@ -162,7 +162,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:39.468Z"
+      "updatedAt": "2026-11-02T14:09:23.176Z"
     },
     {
       "id": "met-437283",
@@ -178,7 +178,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:39.818Z"
+      "updatedAt": "2026-11-02T14:09:23.799Z"
     },
     {
       "id": "met-437995",
@@ -194,7 +194,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:40.046Z"
+      "updatedAt": "2026-11-02T14:09:24.075Z"
     },
     {
       "id": "met-437792",
@@ -210,7 +210,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:40.345Z"
+      "updatedAt": "2026-11-02T14:09:24.599Z"
     },
     {
       "id": "met-544439",
@@ -226,7 +226,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:41.025Z"
+      "updatedAt": "2026-11-02T14:09:24.782Z"
     },
     {
       "id": "met-544448",
@@ -242,7 +242,7 @@
       "kind": "sculpture",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:41.259Z"
+      "updatedAt": "2026-11-02T14:09:24.975Z"
     },
     {
       "id": "met-247414",
@@ -258,7 +258,7 @@
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:41.624Z"
+      "updatedAt": "2026-11-02T14:09:25.311Z"
     },
     {
       "id": "met-546502",
@@ -274,7 +274,7 @@
       "kind": "sculpture",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:42.312Z"
+      "updatedAt": "2026-11-02T14:09:25.988Z"
     },
     {
       "id": "met-547802",
@@ -290,119 +290,135 @@
       "kind": "sculpture",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:42.595Z"
+      "updatedAt": "2026-11-02T14:09:26.222Z"
     },
     {
-      "id": "met-436535",
-      "metId": 436535,
-      "title": "Wheat Field with Cypresses",
+      "id": "met-436536",
+      "metId": 436536,
+      "title": "Women Picking Olives",
       "artist": "Vincent van Gogh",
       "year": "1889",
       "medium": "Oil on canvas",
-      "dimensions": "73.2 × 93.4 cm",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-42549-001.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP-42549-001.jpg",
+      "dimensions": "72.7 x 91.4 cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-17161-001.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP-17161-001.jpg",
       "department": "European Paintings",
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:43.133Z"
+      "updatedAt": "2026-11-02T14:09:26.537Z"
     },
     {
-      "id": "met-437406",
-      "metId": 437406,
-      "title": "Portrait of a Man (\"The Auctioneer\")",
+      "id": "met-437407",
+      "metId": 437407,
+      "title": "Christ with a Staff",
       "artist": "Rembrandt",
-      "year": "probably ca. 1658–62",
+      "year": "",
       "medium": "Oil on canvas",
-      "dimensions": "108.6 x 86.4 cm",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP145912.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP145912.jpg",
+      "dimensions": "95.3 x 82.6 cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1347.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DT1347.jpg",
       "department": "European Paintings",
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:43.517Z"
+      "updatedAt": "2026-11-02T14:09:26.854Z"
     },
     {
-      "id": "met-436126",
-      "metId": 436126,
-      "title": "At the Milliner's",
+      "id": "met-436127",
+      "metId": 436127,
+      "title": "Woman Bathing in a Shallow Tub",
       "artist": "Edgar Degas",
-      "year": "1882",
-      "medium": "Pastel on pale gray wove paper (industrial wrapping paper), laid down on silk bolting",
-      "dimensions": "76.2 x 86.4 cm",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DT1046.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DT1046.jpg",
+      "year": "1885",
+      "medium": "Charcoal and pastel on light green wove paper, now discolored to warm gray, laid down on silk bolting",
+      "dimensions": "81.3 x 56.2cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP253483.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP253483.jpg",
       "department": "European Paintings",
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:43.879Z"
+      "updatedAt": "2026-11-02T14:09:27.146Z"
     },
     {
-      "id": "met-437664",
-      "metId": 437664,
-      "title": "Portrait of a Man",
-      "artist": "Samuel Shelley",
-      "year": "probably ca. 1800",
-      "medium": "Ivory",
-      "dimensions": "Oval, 3 x 2 3/8 in. (75 x 60 mm)",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/175488.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/175488.jpg",
-      "department": "European Paintings",
-      "kind": "painting",
-      "license": "Met Open Access / Public Domain",
-      "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:44.097Z"
-    },
-    {
-      "id": "met-437813",
-      "metId": 437813,
-      "title": "Allegorical Figure Representing Europe",
-      "artist": "Giovanni Domenico Tiepolo",
-      "year": "",
-      "medium": "Fresco, transferred to canvas",
-      "dimensions": "81.9 x 108.6 cm",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DT201333.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DT201333.jpg",
-      "department": "European Paintings",
-      "kind": "painting",
-      "license": "Met Open Access / Public Domain",
-      "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:44.356Z"
-    },
-    {
-      "id": "met-436899",
-      "metId": 436899,
-      "title": "The Annunciation",
-      "artist": "Fra Filippo Lippi",
-      "year": "",
-      "medium": "Tempera on wood",
-      "dimensions": "40.3 x 69.9 cm",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-46544-001.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP-46544-001.jpg",
-      "department": "European Paintings",
-      "kind": "painting",
-      "license": "Met Open Access / Public Domain",
-      "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:44.850Z"
-    },
-    {
-      "id": "met-435908",
-      "metId": 435908,
-      "title": "The Trojan Women Setting Fire to Their Fleet",
-      "artist": "Claude Lorrain (Claude Gellée)",
-      "year": "ca. 1643",
+      "id": "met-436106",
+      "metId": 436106,
+      "title": "Antoine Laurent Lavoisier (1743–1794) and Marie Anne Lavoisier (Marie Anne Pierrette Paulze, 1758–1836)",
+      "artist": "Jacques Louis David",
+      "year": "1788",
       "medium": "Oil on canvas",
-      "dimensions": "105.1 x 152.1 cm",
-      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP226145.jpg",
-      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP226145.jpg",
+      "dimensions": "259.7 x 194.6 cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-19709-001.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP-19709-001.jpg",
       "department": "European Paintings",
       "kind": "painting",
       "license": "Met Open Access / Public Domain",
       "source": "met-api",
-      "updatedAt": "2026-11-01T12:16:45.114Z"
+      "updatedAt": "2026-11-02T14:09:27.960Z"
+    },
+    {
+      "id": "met-437814",
+      "metId": 437814,
+      "title": "The Glorification of the Giustiniani Family",
+      "artist": "Giovanni Domenico Tiepolo",
+      "year": "1783",
+      "medium": "Oil on canvas",
+      "dimensions": "116.8 x 82.6 cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP123832.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP123832.jpg",
+      "department": "European Paintings",
+      "kind": "painting",
+      "license": "Met Open Access / Public Domain",
+      "source": "met-api",
+      "updatedAt": "2026-11-02T14:09:28.389Z"
+    },
+    {
+      "id": "met-437752",
+      "metId": 437752,
+      "title": "Portrait of a Man",
+      "artist": "Theodor Friedrich Stein",
+      "year": "",
+      "medium": "Ivory",
+      "dimensions": "1 5/8 x 2 1/4 in. (41 x 62 mm)",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/175522.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/175522.jpg",
+      "department": "European Paintings",
+      "kind": "painting",
+      "license": "Met Open Access / Public Domain",
+      "source": "met-api",
+      "updatedAt": "2026-11-02T14:09:28.615Z"
+    },
+    {
+      "id": "met-436900",
+      "metId": 436900,
+      "title": "Madonna and Child",
+      "artist": "Lippo di Benivieni",
+      "year": "",
+      "medium": "Tempera on wood, gold ground",
+      "dimensions": "170.8 x 85.7 cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/0007.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/0007.jpg",
+      "department": "European Paintings",
+      "kind": "painting",
+      "license": "Met Open Access / Public Domain",
+      "source": "met-api",
+      "updatedAt": "2026-11-02T14:09:28.927Z"
+    },
+    {
+      "id": "met-435909",
+      "metId": 435909,
+      "title": "View of La Crescenza",
+      "artist": "Claude Lorrain (Claude Gellée)",
+      "year": "1648–50",
+      "medium": "Oil on canvas",
+      "dimensions": "38.7 x 58.1 cm",
+      "image": "https://images.metmuseum.org/CRDImages/ep/web-large/DP-27909-001.jpg",
+      "imageFull": "https://images.metmuseum.org/CRDImages/ep/original/DP-27909-001.jpg",
+      "department": "European Paintings",
+      "kind": "painting",
+      "license": "Met Open Access / Public Domain",
+      "source": "met-api",
+      "updatedAt": "2026-11-02T14:09:29.232Z"
     }
   ]
 }
