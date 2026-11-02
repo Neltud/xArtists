@@ -38,7 +38,7 @@ export default function DashboardSource({ className = '' }: { className?: string
     >
       <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
         <span className="text-[10px] uppercase tracking-widest text-cyan-300">
-          {xaRender("LIVE · Command · ")}{xaRender(String(mode).toUpperCase())}
+          {xaRender("Command · ")}{xaRender(String(mode).toUpperCase())}
         </span>
         <span
           className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${

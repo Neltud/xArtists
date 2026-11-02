@@ -19,18 +19,6 @@ import {
 import { PACK_COLLECTIONS } from '../config/packNftMetadata'
 import { localizeChild as xaLocalize, renderChild as xaRender } from '../i18n/phraseRuntime'
 
-const WHOP_CHECKOUT: Record<PackId, string> = {
-  pulse: 'https://whop.com/checkout/plan_ziaFs2H422RCR',
-  yield: 'https://whop.com/checkout/plan_HMn3olyxL2hcV',
-  sentinel: 'https://whop.com/checkout/plan_PHJkoYxSIDMub',
-}
-
-const WHOP_PRODUCT: Record<PackId, string> = {
-  pulse: 'https://whop.com/xartists-niche-mastery/',
-  yield: 'https://whop.com/tca-a9/',
-  sentinel: 'https://whop.com/xartists-sentinel-platinum/',
-}
-
 function limitsFor(id: PackId): string[] {
   if (id === 'pulse') return ['Pas un fonds · pas d’APY promis', 'Signature xPortal obligatoire']
   if (id === 'yield')
@@ -141,31 +129,23 @@ export default function PackLandingPage() {
       </section>
 
       <section className="card space-y-2">
-        <h2 className="text-sm font-semibold">{xaLocalize('Whop (fiat catalogue)')}</h2>
+        <h2 className="text-sm font-semibold">{xaLocalize('Whop · abonnement TCA distinct')}</h2>
         <p className="text-[12px] text-[color:var(--xa-text-muted)]">
           {xaLocalize(
-            'Même prix one-time. Les droits on-chain / salle restent activés via la dApp après preuve de paiement.',
+            'Les abonnements mensuels Whop donnent accès aux services du plan TCA. Ils ne sont pas un moyen de régler ce pack Genesis, ne comprennent pas ce NFT et ne livrent aucun droit on-chain Genesis.',
           )}
         </p>
-        <div className="flex flex-wrap gap-2">
-          <a
-            href={WHOP_CHECKOUT[id]}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-[44px] items-center rounded-xl border px-4 text-[13px] font-medium"
-            style={{ borderColor: vis.border, color: vis.accent, background: vis.accentSoft }}
-          >
-            Whop · {pack.priceEur.list} € →
-          </a>
-          <a
-            href={WHOP_PRODUCT[id]}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-[44px] items-center rounded-xl border border-[color:var(--xa-border)] px-4 text-[13px] text-[color:var(--xa-text-secondary)]"
-          >
-            Fiche produit Whop →
-          </a>
-        </div>
+        <p className="text-[12px] text-[color:var(--xa-text-muted)]">
+          {xaLocalize('Le paiement et le mint Genesis sont soumis au statut de disponibilité et aux conditions du checkout dApp.')}
+        </p>
+        <a
+          href="https://xartists.gitbook.io/xartists/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-[44px] items-center rounded-xl border border-[color:var(--xa-border)] px-4 text-[13px] text-[color:var(--xa-text-secondary)]"
+        >
+          Guide officiel · offres &amp; disponibilité →
+        </a>
       </section>
 
       <p className="text-[11px] text-[color:var(--xa-text-muted)] leading-relaxed">
