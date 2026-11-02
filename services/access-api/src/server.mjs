@@ -9,7 +9,7 @@ import { resolveAccessLevel, issueAccessToken, verifyJwt } from './verifyAccess.
 import { createChallenge, verifySignedChallenge, requireSiwx } from './siwx.mjs'
 import { moonpayConfig, signMoonpayUrl } from './moonpay.mjs'
 import {
-  payboxConfig, createPayboxSession, verifyPayboxIpn, extractRawSignedData, resolveIpnAuthenticatedSource, IPN_POLICY,
+  payboxConfig, payboxCheckoutEnabled, createPayboxSession, verifyPayboxIpn, extractRawSignedData, resolveIpnAuthenticatedSource, IPN_POLICY,
 } from './paybox.mjs'
 import {
   createOrder, getOrder, getOrderForBuyer, applyIpn, markRedirected, newOrderId, resolveArtistBeneficiary,
@@ -108,6 +108,7 @@ async function handleRequest(req, res) {
       moonpay_mode: MOONPAY.ready ? MOONPAY.mode : 'off',
       stripe_configured: Boolean(STRIPE_KEY),
       paybox_configured: PAYBOX.ready,
+      paybox_checkout_enabled: payboxCheckoutEnabled(),
       paybox_mode: PAYBOX.ready ? PAYBOX.mode : 'off',
       paybox_auth_outbound: 'hmac_sha512',
       paybox_auth_inbound: 'rsa_sha256_2048',
@@ -392,6 +393,12 @@ async function handleRequest(req, res) {
   }
 
   if (req.method === 'POST' && pth === '/v1/checkout/paybox') {
+    // Fail closed: configured PayBox merchant credentials do not grant a commercial GO.
+    // Signed IPNs remain active for reconciliation of existing orders.
+    if (!payboxCheckoutEnabled()) {
+      json(res, 503, { ok: false, error: 'paybox_checkout_not_approved' })
+      return
+    }
     const { body } = await readRawAndBody(req)
     const packId = (body.pack_id || body.packId || '').trim()
     const artistRaw = typeof (body.artist_beneficiary || body.artistBeneficiary) === 'string'
