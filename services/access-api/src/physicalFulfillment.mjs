@@ -183,6 +183,11 @@ export function applyFulfillment(work, payload) {
   } catch { /* no externally trusted link */ }
   const delivery = shipmentStatus === 'delivered'
   const prior = work.status
+  const previousCarrierStatus = work.shipment?.carrierStatus || null
+  const previousTrackingNumber = work.shipment?.trackingNumber || null
+  if (['CARRIER_DELIVERED','BUYER_ACCEPTED'].includes(work.status) && !delivery) {
+    return { applied: false, reason: 'out_of_order_carrier_update' }
+  }
   if (!work.shipment) work.shipment = {
     fulfillmentId: String(payload?.id || ''), trackingNumber,
     trackingCompany, trackingUrl, carrierStatus: shipmentStatus,
@@ -198,8 +203,8 @@ export function applyFulfillment(work, payload) {
     if (delivery) work.status = 'CARRIER_DELIVERED'
     else if (work.status !== 'CARRIER_DELIVERED') work.status = 'SHIPPED'
   }
-  if (prior === work.status && work.shipment.carrierStatus === shipmentStatus) {
-    // A different valid Shopify delivery may repeat the same carrier state.
+  if (prior === work.status && previousCarrierStatus === shipmentStatus
+      && previousTrackingNumber === trackingNumber) {
     return { applied: false, reason: 'carrier_status_unchanged' }
   }
   append(work, delivery ? 'CARRIER_DELIVERED' : 'CARRIER_IN_TRANSIT', 'shopify', {
@@ -276,7 +281,7 @@ export function publicWorkView(work) {
       reason:work.assessment.reason, reviewStatus:work.assessment.reviewStatus,
       advisory:work.assessment.advisory, requestedAt:work.assessment.requestedAt,
     } : null,
-    events:work.events.map(({ type, at, actor, hash, prev }) => ({ type, at, actor, hash, prev })),
+    events:work.events.map(({ type, at, actor, detail, hash, prev }) => ({ type, at, actor, detail, hash, prev })),
   }
 }
 
@@ -379,7 +384,11 @@ export async function processShopifyPhysicalWebhook(raw, headers) {
       if(old.rows[0].body_sha256!==check.hash)throw fail('webhook_id_reused_with_different_payload',409)
       return {ok:true,duplicate:true,updated:0}
     }
-    const targets = await c.query('SELECT payload FROM xartists_physical_works')
+    const skus = (Array.isArray(data.line_items) ? data.line_items : [])
+      .map(item => String(item.sku || '')).filter(sku => /^XAPHY-[A-F0-9]{14}$/.test(sku))
+    const targets = skus.length
+      ? await c.query('SELECT payload FROM xartists_physical_works WHERE sku = ANY($1::text[])', [skus])
+      : { rows: [] }
     let updated=0
     for(const row of targets.rows){
       const work=row.payload
