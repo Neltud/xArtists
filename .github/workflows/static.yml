@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -144,6 +144,9 @@ jobs:
           mkdir -p _site
           cp -a apps/frontend/dist/. _site/
           touch _site/.nojekyll
+          # Finance TRO canonical + alias must have real static entrypoints.
+          test -s _site/tro/sale/index.html
+          test -s _site/finance/tro/sale/index.html
           cp _site/index.html _site/404.html
           # GitHub Pages serves the SPA from 404.html on direct dynamic URLs.
           # Prebuild the actual known Genesis landing entrypoints for HTTP 200.
@@ -158,18 +161,8 @@ jobs:
         working-directory: apps/frontend
         run: npm run verify:site
 
-      - name: Synchronize the legacy Pages snapshot
-        if: github.ref == 'refs/heads/main'
-        working-directory: .
-        run: |
-          mkdir -p docs/assets
-          rsync -a --delete _site/assets/ docs/assets/
-          rsync -a --exclude='assets/' --exclude='data/' _site/ docs/
-          git add docs
-          if ! git diff --cached --quiet; then
-            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore(pages): synchronize V3 build snapshot [skip ci]'
-            git push origin HEAD:main
-          fi
+      # Single deployment owner: actions/deploy-pages. Do NOT push a second
+      # generated docs snapshot to main: that races GitHub Pages publishing.
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -208,6 +201,25 @@ jobs:
             done
             if [ "$ok" != 1 ]; then
               echo "::error::Public Genesis pack $pack did not pass direct-link check"
+              exit 1
+            fi
+          done
+
+          # Direct deep links to the new $TRO discovery page must work.
+          for page in tro/sale finance/tro/sale; do
+            ok=0
+            for attempt in 1 2 3 4 5 6; do
+              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-tro.html -w '%{http_code}' "https://neltud.github.io/xArtists/$page/")
+              if [ "$status" = 200 ] && grep -q '/xArtists/assets/' /tmp/xartists-tro.html; then
+                echo "Verified $page direct URL HTTP 200 and Vite asset reference"
+                ok=1
+                break
+              fi
+              echo "$page not yet ready (HTTP $status), attempt $attempt"
+              sleep 5
+            done
+            if [ "$ok" != 1 ]; then
+              echo "::error::TRO public deep link $page not ready"
               exit 1
             fi
           done
