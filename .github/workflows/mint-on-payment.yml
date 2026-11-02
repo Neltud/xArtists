@@ -2,8 +2,8 @@ name: Mint on payment (hardened Sprint 2)
 
 run-name: "Mint ${{ inputs.live_mint == 'true' && 'LIVE' || 'DRY_RUN' }} / ${{ inputs.order_id }}"
 
-# live_mint default false. Micro price window is non-atomic — concurrency group mitigates only.
-# Restore failure after micro = job failure (fail-closed).
+# live_mint defaults false. Non-atomic micro-pricing is prohibited by the live gate.
+# The full live-mint flow still needs a separate signed mainnet operational GO.
 
 on:
   workflow_dispatch:
@@ -36,11 +36,11 @@ on:
         required: false
         default: ""
       micro_price:
-        description: "0.001 EGLD then restore Rule1"
+        description: "Legacy micro-price flag — live mint rejects true (non-atomic)"
         required: true
         type: choice
         options: ["true", "false"]
-        default: "true"
+        default: "false"
 
 permissions:
   contents: read
@@ -144,6 +144,8 @@ jobs:
           set -euo pipefail
           test "$CONFIRM" = "LIVE_MINT_MAINNET"
           test "$CHAIN" = "1"
+          # Non-atomic contract-price changes can affect other buyers; fail closed.
+          test "$MICRO" = "false"
           test -n "${SC_DEPLOYER_PEM:-}"
 
       - name: Write PEM
