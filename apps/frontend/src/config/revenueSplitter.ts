@@ -37,7 +37,7 @@ export function amountFromBps(total: number, bps: number): number {
   return (total * bps) / 10_000
 }
 
-export function packPoolShare(packId: PackId): number {
+export function packPoolShare(packId: PackId): number | null {
   // Unknown until a documented pool allocation is published; never fabricate 0 or a yield promise.
   return null
 }
