@@ -5,6 +5,7 @@
  */
 import { ApiNetworkProvider } from '@multiversx/sdk-network-providers'
 import { Address } from '@multiversx/sdk-core'
+import { Address } from '@multiversx/sdk-core'
 import type { ExecutionResult, Intent, NetworkMode } from '../types/intent'
 import { validateIntent } from '../core/doctrine'
 import { canonicalIntentType } from '../types/intent'
