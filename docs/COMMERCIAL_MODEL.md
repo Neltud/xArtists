@@ -2,57 +2,52 @@
 hidden: false
 ---
 
-# Modèle commercial xArtists — lock (2026-10-31)
+# Modèle commercial xArtists — lock (2026-11-02)
 
-**Source de vérité** : décision commerciale enregistrée dans GitBook revue nº 24 (brouillon) + ce document.
+**Source de vérité** : GitBook revue nº 24 + ce document + `agentPacks.ts`.
 
 ## Distinction stricte
 
 | Offre | Facturation | Contenu | Droits |
 |-------|-------------|---------|--------|
-| **Packs IA** (Pulse / Yield / Sentinel) | **Achat unique** (crypto EGLD ou fiat EUR via PayBox / Stripe) — **sans abonnement** | NFT MultiversX édition limitée (Genesis) inclus | **Durables** — aucune expiration annuelle des droits NFT / d'accès liés au pack |
-| **Produits Whop xArtists** | **Abonnement mensuel** | Accès aux produits et services du plan Whop (référence TCA) | Liés à la période d'abonnement active |
+| **Packs IA** (Pulse / Yield / Sentinel) | **Achat unique** (crypto EGLD ou fiat EUR via PayBox / Whop one_time) — **sans abonnement** | SFT MultiversX édition limitée (Genesis) inclus — recto peinture · verso HUD | **Durables** — aucune expiration annuelle |
+| **TCA Membership Whop** | **Abonnement** mensuel / annuel | Services (briefings LIA paper, hub lecture) | Liés à la période d'abonnement — **pas de NFT Genesis** |
 
 ### Packs IA — règles produit
 
-- Prix catalogue serveur (Rule 1) : **110 € / 75 € / 50 €** (Pulse / Yield / Sentinel).
-- Ancres EGLD : 10 / 5 / 2.5.
+- Prix catalogue Rule 1 : **110 € / 75 € / 50 €** (Pulse / Yield / Sentinel).
+- Parité EGLD (ref 100 € ≈ 30 EGLD) : **33 / 22.5 / 15**.
 - Caps Genesis hard-lock : Pulse **333** · Yield **500** · Sentinel **777**.
-- Un achat = un siège SFT / NFT de la collection du pack.
-- Le checkout **verrouille le rail** (crypto | fiat) pendant l'opération — pas de bascule mid-flow.
-- Expiration du jeton de session = contrôle de **sécurité** uniquement (pas une limite commerciale des droits NFT).
+- Collections mainnet : `XAIPLS-2cf72b` · `XAIYLD-987e24` · `XAISNT-3d8a6b`.
+- Un achat = un siège SFT de la collection du pack.
+- Checkout verrouille le rail (crypto | fiat) pendant l'opération.
 
-### Whop — règles
+### Whop TCA — règles
 
-- Section clairement séparée dans l'UI et la documentation.
-- Référence TCA pour le périmètre des services inclus dans le plan.
-- **Raccordement Whop → droits internes** (mapping adhésion → gates d'accès) **volontairement reporté** jusqu'à vérification des plans réels côté Whop.
-- Aucune confusion avec les packs NFT : l'abonnement n'émet pas de NFT Genesis pack.
+- Produit séparé : voir `docs/WHOP_TCA_MEMBERSHIP.md` (29 €/mois · 290 €/an cibles).
+- **Jamais** de mint Genesis sur renouvellement TCA.
+- Mapping membership → gates internes **après** `prod_` réel.
 
-## Positions opérationnelles (inchangées)
+## NO-GO jusqu'à S1 + S2
 
-- **NO-GO commercial** des packs et de l'exécution LIA réelle jusqu'à preuves de bout-en-bout :
-  - paiement réel (smoke Sentinel + IPN signé)
-  - livraison / mint NFT prouvé
-  - droits d'accès activés
-  - remboursements / fail-closed validés
-- Mode simulation / paper maintenu (`VITE_LIA_LIVE_TRADING=0`).
-- Aucun fallback Payment Link silencieux / paper path commercial.
+1. **S1** — 1 paiement réel (smoke Sentinel 50 €) + IPN signé fail-closed
+2. **S2** — My Packs affiche preuve NFT/SFT (on-chain identifier) + carte Genesis
 
-## Checklist d'implémentation (PR associée)
+`VITE_LIA_LIVE_TRADING=0` · mint paper · pas de Payment Link silencieux.
 
-- [x] Distinction packs (achat unique + NFT) vs Whop (abonnement) documentée
-- [x] Droits NFT sans expiration annuelle formalisés
-- [x] Rail de checkout verrouillé (comportement existant conservé et documenté)
-- [ ] Section Whop UI + TCA (après plans réels)
-- [ ] Mapping Whop membership → droits internes (post-vérification)
-- [ ] Smoke paiement réel + preuve My Packs NFT
+## Checklist
+
+- [x] Distinction packs vs TCA documentée
+- [x] GenesisCard3D + landings `/packs/:id`
+- [x] mint-on-payment.yml paper-first
+- [x] My Packs cartes 3D (preuve visuelle)
+- [ ] TCA product `prod_` Whop + wire dApp
+- [ ] S1 paiement réel
+- [ ] S2 mint on-chain prouvé dans My Packs
 
 ## Références
 
-- GitBook revue nº 24 (dossier + patch)
-- `docs/GENESIS_PACK_EDITIONS.md`
-- `docs/ACCESS_PACK_CHECKOUT.md`
-- `docs/PACK_QUOTE_RULE1.md`
+- `docs/GO_LIVE_S1_S2.md`
+- `docs/PACK_NFT_MINT_METADATA.md`
+- `docs/WHOP_TCA_MEMBERSHIP.md`
 - `apps/frontend/src/config/agentPacks.ts`
-- `apps/frontend/src/components/CheckoutModal.tsx`
