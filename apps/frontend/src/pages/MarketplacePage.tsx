@@ -7,7 +7,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { requestOpenConnect } from '../lib/walletEvents'
-import { useI18n } from '../i18n/I18nContext'
 import { canListBuyNft } from '../config/scStatus'
 import RwaPhysicalPanel from '../components/market/RwaPhysicalPanel'
 import DigitalPacksPanel from '../components/market/DigitalPacksPanel'
@@ -51,7 +50,6 @@ function isNftId(v:string):boolean{
   return /^[A-Z0-9]{3,10}-[a-f0-9]{6}-[a-f0-9]+$/i.test(v)
 }
 export default function MarketplacePage(){
-  const {t}=useI18n()
   const {connected}=useWallet()
   const live=canListBuyNft()
   const [params,setParams]=useSearchParams()
@@ -215,7 +213,7 @@ export default function MarketplacePage(){
       </div>
       <p className="rounded-xl border border-amber-500/20 p-3 text-xs text-amber-100">
         Vente d’œuvres physiques sur Etsy : possible sous les règles de l’art original du vendeur ;
-        **la vente de NFT sur Etsy est interdite**. Ne pas diriger un paiement Etsy vers xArtists.
+        la vente de NFT sur Etsy est interdite. Ne pas diriger un paiement Etsy vers xArtists.
         Les NFT et la propriété matérielle restent juridiquement distincts.
       </p>
       <Link to="/rwa" className="btn-primary inline-flex min-h-[44px] items-center px-4 text-sm">
