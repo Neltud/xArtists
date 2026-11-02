@@ -26,7 +26,7 @@ export function createChallenge(address, now = Date.now(), purpose = 'tca', acti
     throw new Error('invalid_receipt_context')
   }
   const label = purpose === 'physical_receipt' ? 'xArtists physical artwork receipt'
-    : purpose === 'physical' ? 'xArtists physical artwork login' : 'xArtists TCA login'
+    : purpose === 'studio_media' ? 'xArtists Creator Studio media upload login' : purpose === 'physical' ? 'xArtists physical artwork login' : 'xArtists TCA login'
   const message = `${label}\naddress:${address}\nnonce:${nonce}\nissued:${issued}\ndomain:neltud.github.io${purpose === 'physical_receipt' ? '\naction:' + action : ''}`
   nonces.set(nonce, { address, message, exp: now + NONCE_TTL_MS })
   return { message, nonce, issued, expiresIn: NONCE_TTL_MS / 1000 }
