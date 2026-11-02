@@ -1,40 +1,29 @@
 {
   "schema": "xartists_daily_signal/v1",
-  "generated_at": "2026-11-02T13:15:00+00:00",
+  "generated_at": "2026-11-02T17:52:17.609674+00:00",
   "date": "2026-11-02",
-  "regime": "observe",
-  "confidence": 0.52,
-  "headline": "LIA en mode signal — paper only, pas d'exécution",
-  "summary": "Snapshot ops: wallet LIA ~0.91 EGLD, TRO en observation, strategy mindset YIELD. Aucune transaction live. Le Guardian et les flags LIA_LIVE_TRADING=0 restent le seul frein d'ordre. Signal éducatif pour packs Pulse/Yield/Sentinel.",
+  "regime": "neutral",
+  "confidence": 0.45,
+  "headline": "Observation macro — pas un conseil d'investissement",
+  "summary": "Signal éditorial du mécénat : volatilité surveillée, liquidité à préserver. Aucune exécution automatique. Le Machine (Guardian) reste le seul chemin d'ordre.",
   "macro": {
     "usd_liquidity": "watch",
-    "risk_appetite": "selective",
+    "risk_appetite": "mixed",
     "notes": [
-      "Priorité liquidité et non-levier jusqu'à GO commercial S1/S2.",
-      "Fenêtre KR (Upbit/Bithumb) notée mid-novembre — observation uniquement."
+      "Données à enrichir via API prix ops — placeholder honnête."
     ]
   },
   "crypto": {
-    "egld": "hold_observe",
+    "egld": "neutral",
     "tro": "observe",
-    "ash": "hold",
     "notes": [
-      "Balances LIA publiées en lecture seule via lia_status.json.",
-      "Shadow legs paper: friction gas+slippage appliquée, PnL non-garanti."
+      "Pas de promesse de rendement."
     ]
   },
   "patronage": {
     "rebalance_hint": "hold",
-    "pulse_focus": "education_and_pack_rights",
-    "pack_hint": "sentinel_entry_then_yield"
-  },
-  "lia": {
-    "paper": true,
-    "live_trading": 0,
-    "mindset": "YIELD",
-    "aura": "bull",
-    "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6"
+    "pulse_focus": "education_over_leverage"
   },
   "disclaimer": "Contenu informatif / éducatif. Pas un conseil financier. Aucune TX n'est déclenchée par ce fichier.",
-  "source": "sprint3-signals-refresh"
+  "source": "signals-worker"
 }
