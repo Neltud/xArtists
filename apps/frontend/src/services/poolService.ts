@@ -83,7 +83,7 @@ export async function fetchTroEgldPool(): Promise<TroEgldPoolSnapshot> {
 
     let tvl = best.tvlUsd
     if ((tvl == null || tvl === 0) && best.address) {
-      tvl = await fetchPoolAccountTvl(best.address)
+      tvl = await fetchPoolAccountTvl(best.address, egldUsd ?? 0)
     }
 
     const priceTroUsd =

@@ -4,6 +4,7 @@
  * Signature : wallet utilisateur uniquement (callback signAndSend).
  */
 import { ApiNetworkProvider } from '@multiversx/sdk-network-providers'
+import { Address } from '@multiversx/sdk-core'
 import type { ExecutionResult, Intent, NetworkMode } from '../types/intent'
 import { validateIntent } from '../core/doctrine'
 import { canonicalIntentType } from '../types/intent'
@@ -74,7 +75,7 @@ export class MultiversXService {
 
   async getRealBalance(address: string, assetId = 'EGLD'): Promise<string> {
     if (!assetId || assetId.toUpperCase() === 'EGLD') {
-      const acc = await this.provider.getAccount(address)
+      const acc = await this.provider.getAccount(Address.newFromBech32(address))
       return acc.balance.toString(10)
     }
     const base = ENDPOINTS[this.network].api

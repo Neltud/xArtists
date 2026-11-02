@@ -1,6 +1,5 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { Link } from 'react-router-dom'
-import PageGuide from '../components/PageGuide'
 
 const GROUPS = [
   {
@@ -69,7 +68,6 @@ const GROUPS = [
 export default function SiteMapPage() {
   return (
     <div className="animate-fade-in max-w-2xl mx-auto space-y-8 pb-16">
-      <PageGuide page="sitemap" />
       <header className="space-y-2">
         <p className="section-label">{xaRender("Navigation")}</p>
         <h1 className="section-title display">{xaRender("Plan du site")}</h1>

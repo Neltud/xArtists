@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AGENT_PACKS, type PackId } from '../config/agentPacks'
 import { useWallet } from '../context/WalletContext'
+import { useUserAccount } from '../hooks/useUserAccount'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { holderStatus, canEnterRoom, ROOM_META } from '../lib/holderAccess'
 import PackRoomHolo from '../components/PackRoomHolo'
@@ -19,8 +20,9 @@ type EcoTab = 'defi' | 'liquidity' | 'holders'
 export default function HolderRoomPage() {
   const { packId: raw } = useParams<{ packId: string }>()
   const packId = (raw === 'pulse' || raw === 'yield' || raw === 'sentinel' ? raw : 'pulse') as PackId
-  const { connected, nfts } = useWallet()
-  const status = useMemo(() => holderStatus(nfts || []), [nfts])
+  const { connected, address } = useWallet()
+  const { nfts } = useUserAccount(connected ? address : null)
+  const status = useMemo(() => holderStatus(nfts || [], address), [nfts, address])
   const pack = AGENT_PACKS.find(p => p.id === packId) || AGENT_PACKS[0]
   const meta = ROOM_META[packId]
   const [ecoTab, setEcoTab] = useState<EcoTab>('defi')

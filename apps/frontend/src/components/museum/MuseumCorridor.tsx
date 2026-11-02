@@ -26,6 +26,12 @@ export type FrameItem = {
   date?: string
   technique?: string
   dimensions?: string
+  /** Optional physical measurements, only populated when source evidence exists. */
+  widthCm?: number
+  heightCm?: number
+  depthCm?: number
+  circumferenceCm?: number
+  sideImage?: string
   medium?: ArtworkMedium
   kind?: ArtworkKind
   onSale?: boolean
@@ -38,7 +44,6 @@ export type FrameItem = {
 function thumb(n: UserNft): string | undefined {
   if (n.url && /^https?:\/\//i.test(n.url)) return n.url
   const m = n.media?.[0]
-  if (m?.thumbnailUrl && /^https?:\/\//i.test(m.thumbnailUrl)) return m.thumbnailUrl
   if (m?.url && /^https?:\/\//i.test(m.url)) return m.url
   return undefined
 }

@@ -34,8 +34,8 @@ function resolveNftCollections(): string[] {
       : undefined
   const parsed = (fromEnv || '')
     .split(',')
-    .map(s => s.trim())
-    .filter(s => s && !s.includes('000000'))
+    .map((s: string) => s.trim())
+    .filter((s: string) => s && !s.includes('000000'))
   return parsed.length > 0 ? parsed : [...DEFAULT_NFT_COLLECTIONS]
 }
 

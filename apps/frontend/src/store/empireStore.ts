@@ -6,7 +6,6 @@
 import { useSyncExternalStore } from 'react'
 import {
   getAllScSnapshots,
-  type ScSnapshot,
   TRO_TOKEN_ID,
   TRO_STAKING_ADDRESS,
   MARKETPLACE_ADDRESS,
@@ -53,7 +52,7 @@ export type ModeLock = {
 }
 
 export type EmpireState = {
-  scs: ScSnapshot[]
+  scs: ReturnType<typeof getAllScSnapshots>
   wallet: EmpireWallet
   tx: EmpireTx
   pulse: {

@@ -152,6 +152,8 @@ export type AgentPackProfile = {
   domain?: string
   risk?: string
   bps?: number
+  /** Unset until merchant/DAO ratifies the commercial allocation; never infer it from bps. */
+  shareOfPackPoolBps?: number
 }
 
 export const AGENT_PACKS: AgentPackProfile[] = [

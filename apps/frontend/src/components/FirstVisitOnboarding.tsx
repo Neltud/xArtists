@@ -71,13 +71,13 @@ export default function FirstVisitOnboarding() {
             {xaRender(t('nav.packs'))}
           </Link>
           <a
-            href={LINKS.discord}
+            href={LINKS.github}
             target="_blank"
             rel="noreferrer"
             onClick={dismiss}
             className="btn-secondary text-sm min-h-[44px] inline-flex items-center"
           >
-            {xaRender("Discord ")}</a>
+            {xaRender("GitHub ")}</a>
         </div>
         <button
           type="button"

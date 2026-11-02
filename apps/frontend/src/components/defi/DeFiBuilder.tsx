@@ -6,6 +6,9 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import TroStakePanel from '../TroStakePanel'
 import AgentNftStakePanel from '../AgentNftStakePanel'
+import { useWallet } from '../../context/WalletContext'
+import { useUserAccount } from '../../hooks/useUserAccount'
+import { matchOnChainPacks } from '../../lib/nftPacks'
 import { useTroStakedBalance } from '../../hooks/useTroStakedBalance'
 import { canStakeTro, canStakeNft } from '../../config/scStatus'
 import { isPitchMode, PITCH_DEMO } from '../../lib/pitchMode'
@@ -16,6 +19,9 @@ export default function DeFiBuilder() {
 
   const { t } = useI18n()
   const [tab, setTab] = useState<'tro' | 'nft' | 'rewards'>('tro')
+  const {connected,address} = useWallet()
+  const {nfts} = useUserAccount(connected ? address : null)
+  const packIds = useMemo(() => [...new Set(matchOnChainPacks(nfts).map(hit => hit.packId))], [nfts])
   const { userTro, totalTro, loading } = useTroStakedBalance()
   const pitch = isPitchMode()
 
@@ -79,7 +85,7 @@ export default function DeFiBuilder() {
       </div>
 
       {xaRender(tab === 'tro' ? <TroStakePanel /> : null)}
-      {xaRender(tab === 'nft' ? <AgentNftStakePanel /> : null)}
+      {xaRender(tab === 'nft' ? <AgentNftStakePanel packIds={packIds} /> : null)}
       {xaRender(tab === 'rewards' ? (
         <div className="rounded-2xl border border-purple-500/25 bg-black/80 backdrop-blur-md p-4 space-y-3 shadow-xl">
           <p className="text-sm text-zinc-300">{xaRender(t('defi.rewards.hint'))}</p>

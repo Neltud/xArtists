@@ -66,7 +66,7 @@ export default function MapboxArtMap() {
             },
           })
 
-          map!.on('click', 'osm-pois-circle', e => {
+          map!.on('click', 'osm-pois-circle', (e: {lngLat: {lng: number; lat: number}; features?: Array<{properties?: Record<string, unknown>}>}) => {
             const f = e.features?.[0]
             if (!f?.properties) return
             const poi = JSON.parse(f.properties.poiJson as string) as OsmPoi

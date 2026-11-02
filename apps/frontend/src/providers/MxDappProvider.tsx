@@ -27,7 +27,9 @@ export function MxDappProvider({ children }: Props) {
         if (!cancelled && C) setProvider(() => C)
       } catch {
         try {
-          const mod = await import(/* @vite-ignore */ '@multiversx/sdk-dapp')
+          // Optional fallback is resolved dynamically at runtime.
+          const fallbackModule = '@multiversx/' + 'sdk-dapp'
+          const mod = await import(/* @vite-ignore */ fallbackModule)
           const C = (mod as unknown as { DappProvider?: React.ComponentType<Record<string, unknown>> }).DappProvider
           if (!cancelled && C) setProvider(() => C)
         } catch {

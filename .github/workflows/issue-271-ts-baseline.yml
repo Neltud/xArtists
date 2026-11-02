@@ -1,0 +1,43 @@
+name: Frontend TypeScript — strict release gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/frontend/src/**'
+      - 'apps/frontend/package.json'
+      - 'apps/frontend/package-lock.json'
+      - '.github/workflows/issue-271-ts-baseline.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  typescript-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Strict dependency install
+        working-directory: apps/frontend
+        run: npm ci --legacy-peer-deps --ignore-scripts
+      - name: Strict global frontend TypeScript check
+        shell: bash
+        working-directory: apps/frontend
+        run: |
+          set -o pipefail
+          npm run typecheck 2>&1 | tee "${RUNNER_TEMP}/typecheck-271.log"
+          echo "### Global TypeScript check: **PASS — 0 errors**" >> "${GITHUB_STEP_SUMMARY}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: issue-271-typecheck-log
+          path: ${{ runner.temp }}/typecheck-271.log
+          if-no-files-found: warn
+          retention-days: 7

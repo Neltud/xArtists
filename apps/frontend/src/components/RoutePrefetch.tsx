@@ -2,17 +2,17 @@ import { useEffect } from 'react'
 
 /** Soft-prefetch heavy route chunks after idle (Home first paint first). */
 const ROUTES = [
-  () => import('../pages/Gallery'),
-  () => import('../pages/Marketplace'),
-  () => import('../pages/Portfolio'),
-  () => import('../pages/Trading'),
+  () => import('../pages/MuseumPage'),
+  () => import('../pages/MarketplacePage'),
+  () => import('../pages/PortfolioPage'),
+  () => import('../pages/TradingPage'),
 ]
 
 export default function RoutePrefetch() {
   useEffect(() => {
     const run = () => {
       ROUTES.forEach((load, i) => {
-        window.setTimeout(() => {
+        setTimeout(() => {
           load().catch(() => {})
         }, 800 + i * 400)
       })
@@ -26,7 +26,7 @@ export default function RoutePrefetch() {
         ;(window as Window & { cancelIdleCallback?: (n: number) => void }).cancelIdleCallback?.(id)
       }
     }
-    const t = window.setTimeout(run, 2000)
+    const t = setTimeout(run, 2000)
     return () => clearTimeout(t)
   }, [])
   return null

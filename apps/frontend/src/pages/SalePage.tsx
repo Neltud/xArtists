@@ -165,7 +165,7 @@ export default function SalePage() {
           {xaRender(sent && (
             <p className="text-[13px] text-emerald-300/90">
               {xaRender("Demande ouverte.")}{xaRender(' ')}
-              <a className="underline" href={LINKS.discord} target="_blank" rel="noreferrer">{xaRender("Discord")}</a>
+              <a className="underline" href={LINKS.github} target="_blank" rel="noreferrer">{xaRender("GitHub · informations publiques")}</a>
             </p>
           ))}
         </form>

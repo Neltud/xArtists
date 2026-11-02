@@ -68,8 +68,8 @@ export default function LiaShadowPanel() {
         assetId: 'EGLD',
         price: px,
         sentiment: typeof env?.sentiment === 'number' ? env.sentiment : 0,
-        volatility: typeof (env as { volatility?: number })?.volatility === 'number'
-          ? (env as { volatility: number }).volatility
+        volatility: typeof (env as unknown as { volatility?: unknown } | null)?.volatility === 'number'
+          ? Number((env as unknown as { volatility: number }).volatility)
           : 0.35,
         confidence: 0.6,
         rce: bal.EGLD * (px || 0) + bal.USDC,

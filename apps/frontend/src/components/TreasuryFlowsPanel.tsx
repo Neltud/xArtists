@@ -18,6 +18,8 @@ const SOURCE_LABELS: Record<RevenueSource, string> = {
   slot_casino: 'Slot (rake)',
   tip: 'Tips LIA',
   lp_fees_external: 'LP fees externes',
+  agents_marketplace: 'Marché des agents',
+  farm_external: 'Farming externe',
 }
 
 const BUCKET_LABELS: Record<string, string> = {

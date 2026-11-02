@@ -227,7 +227,8 @@ export default function TcaClassroom() {
               if (c.type === 'AUDIO') {
                 const text = String(c.payload.text || '')
                 if (text && lipSyncRef.current) {
-                  speakWithLipSync(lipSyncRef.current, text, {
+                  speakWithLipSync(text, {
+                    lip: lipSyncRef.current,
                     rate: prof?.personality?.speech_style?.speed_multiplier || 1,
                     pitch: prof?.personality?.speech_style?.pitch || 1,
                   })
@@ -242,9 +243,14 @@ export default function TcaClassroom() {
         }
         const ls = lipSyncRef.current
         if (ls) {
-          tickLipSync(ls, dt)
+          const shape = tickLipSync(ls, performance.now() / 1000)
           const root = professorRef.current
-          if (root) applyMouthShape(root, ls)
+          if (root) applyMouthShape(
+            root.getObjectByName('Jaw') || root.getObjectByName('jaw') || null,
+            root.getObjectByName('LowerLip') || root.getObjectByName('lowerLip') || null,
+            root.getObjectByName('UpperLip') || root.getObjectByName('upperLip') || null,
+            shape,
+          )
         }
         try {
           renderer!.render(scene, camera)
@@ -268,7 +274,7 @@ export default function TcaClassroom() {
         disposed = true
         cancelAnimationFrame(raf)
         ro.disconnect()
-        stopLipSync(lipSyncRef.current)
+        if (lipSyncRef.current) stopLipSync(lipSyncRef.current)
         window.speechSynthesis?.cancel()
         try {
           renderer?.dispose()
@@ -297,7 +303,7 @@ export default function TcaClassroom() {
     playingRef.current = false
     setPlaying(false)
     window.speechSynthesis?.cancel()
-    stopLipSync(lipSyncRef.current)
+    if (lipSyncRef.current) stopLipSync(lipSyncRef.current)
   }, [])
 
   const remaining = Math.max(0, Math.floor((pack?.total_duration_s || 58) - t))

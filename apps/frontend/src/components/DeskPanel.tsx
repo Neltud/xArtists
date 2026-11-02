@@ -79,7 +79,7 @@ export default function DeskPanel() {
     <div className="card mb-4 border-indigo-500/25">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <h2 className="text-sm font-bold flex items-center gap-1.5">
-          {xaRender("Desk multi-rôles (paper) ")}<InfoTip k="guardian" />
+          {xaRender("Desk multi-rôles (paper) ")}<InfoTip text="Débat Guardian-first et signaux en mode papier, sans signature ni ordre réel." />
         </h2>
         <span className="text-[10px] text-gray-500">
           {xaRender("pipeline 1.3")}{xaRender(fuseSrc ? ` · fuse:${fuseSrc}` : '')} {xaRender(" · Guardian above ")}</span>
