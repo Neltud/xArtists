@@ -1,22 +1,11 @@
 /**
  * Post-IPN mint dispatch → GitHub Actions mint-on-payment.yml
  *
- * SECURITY (Sprint 2 P0):
- * - dry_run DEFAULT — never inject live_mint=true unless gates explicit
- * - payment proof required (server_confirmed + provider_tx + amount + not refunded)
- * - durable idempotency per order_id (file or Postgres)
- * - GitHub 204 = dispatch accepted, NOT mint confirmed
- * - never re-dispatch blindly after timeout → reconciliation_required
- *
- * Env:
- *   MINT_DISPATCH_ENABLED=1
- *   MINT_GITHUB_PAT (preferred) or GITHUB_TOKEN
- *   MINT_LIVE_ENABLED=1          # required for live_mint=true
- *   MINT_MAINNET_CONFIRM=LIVE_MINT_MAINNET
- *   MINT_DRY_RUN=1               # default if unset → dry run
- *   MINT_MICRO_PRICE=true|false
- *   MINT_JOBS_PATH               # file store path
- *   DATABASE_URL                 # optional Postgres for jobs
+ * Sprint 2 P0 + review fixes:
+ * - dry_run DEFAULT
+ * - payment: server_confirmed|payment_verified ONLY (no status=paid legacy)
+ * - idempotency: file lock OR Postgres advisory lock (DATABASE_URL)
+ * - GitHub 204 ≠ mint confirmed
  */
 
 import fs from 'node:fs'
@@ -26,6 +15,8 @@ import crypto from 'node:crypto'
 
 const PACK_IDS = new Set(['pulse', 'yield', 'sentinel'])
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const PG_LOCK_KEY = 87231402
+const JOBS_SCHEMA = 'xartists_mint_jobs/v1'
 
 export const MINT_JOB_STATUS = Object.freeze({
   PENDING: 'pending',
@@ -35,11 +26,6 @@ export const MINT_JOB_STATUS = Object.freeze({
   FAILED: 'failed',
   RECONCILIATION_REQUIRED: 'reconciliation_required',
 })
-
-const TERMINAL = new Set([
-  MINT_JOB_STATUS.CONFIRMED,
-  MINT_JOB_STATUS.FAILED,
-])
 
 const BLOCK_REDISPATCH = new Set([
   MINT_JOB_STATUS.DISPATCHING,
@@ -71,13 +57,17 @@ export function mintDispatchConfig(env = process.env) {
   }
 }
 
+export function usePostgresJobs(env = process.env) {
+  return Boolean(String(env.DATABASE_URL || '').trim())
+}
+
 function jobsPath(env = process.env) {
   if (env.MINT_JOBS_PATH) return path.resolve(env.MINT_JOBS_PATH)
   return path.resolve(__dirname, '../../../data/mint_jobs.json')
 }
 
 function emptyJobs() {
-  return { schema: 'xartists_mint_jobs/v1', jobs: {} }
+  return { schema: JOBS_SCHEMA, jobs: {} }
 }
 
 function loadJobsFile(env) {
@@ -85,7 +75,7 @@ function loadJobsFile(env) {
   if (!fs.existsSync(p)) return emptyJobs()
   try {
     const raw = JSON.parse(fs.readFileSync(p, 'utf8'))
-    if (!raw || raw.schema !== 'xartists_mint_jobs/v1' || typeof raw.jobs !== 'object') {
+    if (!raw || raw.schema !== JOBS_SCHEMA || typeof raw.jobs !== 'object') {
       throw new Error('invalid_mint_jobs_schema')
     }
     return raw
@@ -102,8 +92,98 @@ function saveJobsFile(db, env) {
   fs.renameSync(tmp, p)
 }
 
-/** Atomic file reservation for order_id */
+let pool = null
+let schemaReady = false
+
+async function getPool(env) {
+  if (!pool) {
+    const { default: pg } = await import('pg')
+    pool = new pg.Pool({
+      connectionString: env.DATABASE_URL,
+      ssl: env.PGSSL === '0' ? false : { rejectUnauthorized: true },
+      max: 3,
+    })
+  }
+  return pool
+}
+
+async function ensureMintJobsSchema(client) {
+  if (schemaReady) return
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS mint_jobs (
+      order_id   TEXT PRIMARY KEY,
+      status     TEXT NOT NULL,
+      payload    JSONB NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `)
+  schemaReady = true
+}
+
+async function loadJobsPg(client) {
+  await ensureMintJobsSchema(client)
+  const r = await client.query('SELECT payload FROM mint_jobs')
+  const jobs = {}
+  for (const row of r.rows) {
+    const j = row.payload
+    if (j && j.order_id) jobs[j.order_id] = j
+  }
+  return { schema: JOBS_SCHEMA, jobs }
+}
+
+async function saveJobsPg(client, db) {
+  await ensureMintJobsSchema(client)
+  const ids = Object.keys(db.jobs)
+  if (!ids.length) {
+    await client.query('DELETE FROM mint_jobs')
+    return
+  }
+  await client.query('DELETE FROM mint_jobs WHERE order_id <> ALL($1::text[])', [ids])
+  for (const job of Object.values(db.jobs)) {
+    await client.query(
+      `INSERT INTO mint_jobs (order_id, status, payload, created_at, updated_at)
+       VALUES ($1,$2,$3::jsonb,$4,$5)
+       ON CONFLICT (order_id) DO UPDATE SET
+         status = EXCLUDED.status,
+         payload = EXCLUDED.payload,
+         updated_at = EXCLUDED.updated_at`,
+      [
+        job.order_id,
+        job.status,
+        JSON.stringify(job),
+        job.created_at || new Date().toISOString(),
+        job.updated_at || new Date().toISOString(),
+      ],
+    )
+  }
+}
+
+/** Cross-instance safe when DATABASE_URL set; else process-local file lock. */
 export async function withMintJobLock(orderId, fn, env = process.env) {
+  if (usePostgresJobs(env)) {
+    const p = await getPool(env)
+    const client = await p.connect()
+    try {
+      await client.query('BEGIN')
+      await client.query('SELECT pg_advisory_xact_lock($1)', [PG_LOCK_KEY])
+      const db = await loadJobsPg(client)
+      const result = await fn(db, orderId)
+      await saveJobsPg(client, db)
+      await client.query('COMMIT')
+      return result
+    } catch (e) {
+      try {
+        await client.query('ROLLBACK')
+      } catch {
+        /* */
+      }
+      throw e
+    } finally {
+      client.release()
+    }
+  }
+
   const lock = jobsPath(env) + '.lock'
   const start = Date.now()
   let fd
@@ -139,18 +219,17 @@ export async function withMintJobLock(orderId, fn, env = process.env) {
 }
 
 /**
- * Strict payment gate — no status-only path.
- * Requires authenticated server confirmation fields.
+ * Strict payment gate.
+ * ONLY server_confirmed === true OR payment_verified === true.
+ * status=paid alone is NEVER sufficient (even with provider fields).
+ * Those fields must be set by authenticated IPN path which also sets the flag.
  */
 export function assertPaymentAllowsMint(order) {
   if (!order || typeof order !== 'object') {
     return { ok: false, reason: 'missing_order' }
   }
   if (order.server_confirmed !== true && order.payment_verified !== true) {
-    // legacy: only accept paid IF delivery path already recorded provider proof
-    if (!(order.status === 'paid' && order.provider_tx_id && order.authorization)) {
-      return { ok: false, reason: 'payment_not_server_verified' }
-    }
+    return { ok: false, reason: 'payment_not_server_verified' }
   }
   if (order.status === 'refunded' || order.status === 'cancelled' || order.status === 'refused') {
     return { ok: false, reason: 'order_invalidating_status', status: order.status }
@@ -181,24 +260,12 @@ export function assertPaymentAllowsMint(order) {
 
 export function resolveLiveInputs(cfg) {
   if (cfg.dryRun || !cfg.liveEnabled) {
-    return {
-      live_mint: 'false',
-      confirm: '',
-      mode: 'dry_run',
-    }
+    return { live_mint: 'false', confirm: '', mode: 'dry_run' }
   }
   if (cfg.mainnetConfirm !== 'LIVE_MINT_MAINNET') {
-    return {
-      live_mint: 'false',
-      confirm: '',
-      mode: 'live_blocked_bad_confirm_env',
-    }
+    return { live_mint: 'false', confirm: '', mode: 'live_blocked_bad_confirm_env' }
   }
-  return {
-    live_mint: 'true',
-    confirm: 'LIVE_MINT_MAINNET',
-    mode: 'live',
-  }
+  return { live_mint: 'true', confirm: 'LIVE_MINT_MAINNET', mode: 'live' }
 }
 
 export async function dispatchMintOnPayment(input, env = process.env, fetchImpl = fetch) {
@@ -216,7 +283,6 @@ export async function dispatchMintOnPayment(input, env = process.env, fetchImpl 
   const live = resolveLiveInputs(cfg)
   const edition = String(input.edition ?? '1')
 
-  // Idempotent reservation
   const reservation = await withMintJobLock(
     orderId,
     async (db) => {
@@ -226,7 +292,10 @@ export async function dispatchMintOnPayment(input, env = process.env, fetchImpl 
           return {
             proceed: false,
             job: existing,
-            reason: existing.status === MINT_JOB_STATUS.CONFIRMED ? 'already_confirmed' : 'already_in_flight',
+            reason:
+              existing.status === MINT_JOB_STATUS.CONFIRMED
+                ? 'already_confirmed'
+                : 'already_in_flight',
           }
         }
         if (existing.status === MINT_JOB_STATUS.FAILED && input.allowRetry !== true) {
@@ -250,6 +319,7 @@ export async function dispatchMintOnPayment(input, env = process.env, fetchImpl 
         created_at: existing?.created_at || new Date().toISOString(),
         updated_at: new Date().toISOString(),
         attempts: (existing?.attempts || 0) + 1,
+        store: usePostgresJobs(env) ? 'postgres' : 'file',
       }
       db.jobs[orderId] = job
       return { proceed: true, job }
@@ -258,12 +328,7 @@ export async function dispatchMintOnPayment(input, env = process.env, fetchImpl 
   )
 
   if (!reservation.proceed) {
-    return {
-      ok: false,
-      skipped: true,
-      reason: reservation.reason,
-      job: reservation.job,
-    }
+    return { ok: false, skipped: true, reason: reservation.reason, job: reservation.job }
   }
 
   const url = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/actions/workflows/${cfg.workflow}/dispatches`
@@ -355,11 +420,6 @@ export async function dispatchMintOnPayment(input, env = process.env, fetchImpl 
   return { ok: false, status: res.status, body: errBody, reason: 'github_dispatch_failed' }
 }
 
-/**
- * After IPN paid — never throw to IPN handler.
- * Does not treat plain status==='paid' without proof as sufficient when
- * server_confirmed/payment_verified/provider fields absent.
- */
 export async function maybeDispatchMintAfterPaid(order, env = process.env, fetchImpl = fetch) {
   const gate = assertPaymentAllowsMint(order)
   if (!gate.ok) {
@@ -396,6 +456,9 @@ export async function markMintJobConfirmed(orderId, { chainTxHash, nftIdentifier
 }
 
 export async function getMintJob(orderId, env = process.env) {
+  if (usePostgresJobs(env)) {
+    return withMintJobLock(orderId, async (db) => db.jobs[orderId] || null, env)
+  }
   const db = loadJobsFile(env)
   return db.jobs[orderId] || null
 }
