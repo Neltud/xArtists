@@ -25,6 +25,7 @@ export default function StudioPage() {
   const [name, setName] = useState('Atelier')
   const [ticker, setTicker] = useState('ATELIER')
   const [nftName, setNftName] = useState('Oeuvre 1')
+  const [nftMediaUri, setNftMediaUri] = useState('')
   const [tokenIdInput, setTokenIdInput] = useState('')
   const mint = useStudioMintTx()
   const { push } = useToast()
@@ -56,8 +57,8 @@ export default function StudioPage() {
   )
 
   const activeCollectionId =
-    mint.collection?.tokenIdentifier ||
-    (tokenIdInput.trim().match(/^[A-Z0-9]+-[a-f0-9]{6}$/i) ? tokenIdInput.trim() : '')
+    (tokenIdInput.trim().match(/^[A-Z0-9]+-[a-f0-9]{6}$/i) ? tokenIdInput.trim() : '') ||
+    mint.collection?.tokenIdentifier || ''
 
   const selectExisting = (id: string) => {
     setTokenIdInput(id)
@@ -66,7 +67,8 @@ export default function StudioPage() {
       ticker: tickerOnly,
       name: tickerOnly,
       tokenIdentifier: id,
-      roleSet: true,
+      roleSet: false,
+      walletAddress: address,
       at: Date.now(),
     }
     saveStudioCollection(rec)
@@ -78,7 +80,7 @@ export default function StudioPage() {
     if (!connected) return requestOpenConnect()
     const r = await mint.issueCollection(name, ticker)
     push(
-      r.ok ? 'Collection envoyée — signe dans xPortal' : asText(r.error, 'Échec'),
+      r.ok ? (r.confirmed ? 'Collection émise — copie son identifiant depuis Explorer' : 'Collection demandée — en attente de confirmation') : asText(r.error, 'Échec'),
       r.ok ? 'ok' : 'err',
     )
   }
@@ -90,7 +92,7 @@ export default function StudioPage() {
       return
     }
     const r = await mint.setCreateRole(id)
-    push(r.ok ? 'Rôle NFTCreate envoyé' : asText(r.error, 'Échec'), r.ok ? 'ok' : 'err')
+    push(r.ok ? (r.alreadySet ? 'Rôle NFTCreate déjà confirmé on-chain' : 'Rôle demandé — vérifie Explorer avant mint') : asText(r.error, 'Échec'), r.ok ? 'ok' : 'err')
   }
 
   const runMint = async () => {
@@ -104,9 +106,9 @@ export default function StudioPage() {
       name: nftName,
       royaltiesPct: 5,
       attributes: 'studio:xartists',
-      uris: [],
+      uris: [nftMediaUri.trim()],
     })
-    push(r.ok ? 'Mint envoyé — signe xPortal' : asText(r.error, 'Échec'), r.ok ? 'ok' : 'err')
+    push(r.ok ? (r.confirmed ? 'Mint confirmé sur MultiversX' : 'Mint soumis, confirmation blockchain en attente') : asText(r.error, 'Échec'), r.ok ? 'ok' : 'err')
   }
 
   return (
@@ -208,14 +210,29 @@ export default function StudioPage() {
           className="w-full rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white"
           placeholder={xaLocalize("Nom de l’œuvre")}
         />
+        <label className="block text-[12px] text-zinc-400">
+          URI média déjà publiée (IPFS ou HTTPS)
+          <input
+            value={nftMediaUri}
+            onChange={e => setNftMediaUri(e.target.value)}
+            className="mt-1 w-full rounded-lg border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white"
+            placeholder="ipfs://bafy.../artwork.png"
+          />
+        </label>
+        <p className="text-[11px] text-amber-200">Un fichier local n'est pas mis en ligne automatiquement. Vérifie l'URI, le propriétaire de la collection et le rôle NFTCreate avant chaque mint.</p>
         <button
           type="button"
           className="btn-secondary text-sm"
-          disabled={mint.pending || !activeCollectionId}
+          disabled={mint.pending || !activeCollectionId || !nftMediaUri.trim() || !mint.canSign}
           onClick={() => void runMint()}
         >
           {xaRender(mint.pending ? 'Signature…' : 'Créer NFT')}
         </button>
+        {mint.lastTx && <p className="break-all text-xs text-cyan-200">Session / Tx : {mint.lastTx}
+          {/^[a-f0-9]{64}$/i.test(mint.lastTx) && <a
+            href={'https://explorer.multiversx.com/transactions/' + mint.lastTx}
+            target="_blank" rel="noopener noreferrer" className="ml-2 underline">Voir Explorer</a>}
+        </p>}
         {xaRender(mint.error && <p className="text-[12px] text-amber-200/90">{xaRender(asText(mint.error))}</p>)}
       </section>
 
