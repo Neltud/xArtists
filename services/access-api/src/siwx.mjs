@@ -16,14 +16,18 @@ export function erdToPubkey(address) {
   return Buffer.from(key)
 }
 
-export function createChallenge(address, now = Date.now(), purpose = 'tca') {
+export function createChallenge(address, now = Date.now(), purpose = 'tca', action = '') {
   erdToPubkey(address)
   for (const [key, value] of nonces) if (value.exp <= now) nonces.delete(key)
   if (nonces.size >= 10000) throw Object.assign(new Error('challenge_capacity'), { statusCode: 429 })
   const nonce = crypto.randomBytes(16).toString('hex')
   const issued = new Date(now).toISOString()
-  const label = purpose === 'physical' ? 'xArtists physical artwork login' : 'xArtists TCA login'
-  const message = `${label}\naddress:${address}\nnonce:${nonce}\nissued:${issued}\ndomain:neltud.github.io`
+  if (purpose === 'physical_receipt' && !/^xa_phy_[a-f0-9]{18}\|(accepted|damaged|missing)\|[a-f0-9]{64}$/.test(action)) {
+    throw new Error('invalid_receipt_context')
+  }
+  const label = purpose === 'physical_receipt' ? 'xArtists physical artwork receipt'
+    : purpose === 'physical' ? 'xArtists physical artwork login' : 'xArtists TCA login'
+  const message = `${label}\\naddress:${address}\\nnonce:${nonce}\\nissued:${issued}\\ndomain:neltud.github.io${purpose === 'physical_receipt' ? '\\naction:' + action : ''}`
   nonces.set(nonce, { address, message, exp: now + NONCE_TTL_MS })
   return { message, nonce, issued, expiresIn: NONCE_TTL_MS / 1000 }
 }
