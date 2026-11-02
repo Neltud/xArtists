@@ -1,5 +1,14 @@
 # Changelog — xArtists
 
+## [0.127.0](https://github.com/Neltud/xArtists/compare/v0.126.3...v0.127.0) (2026-11-02)
+
+
+### Features
+
+* **packs:** GenesisCard3D + mint-on-payment paper + metadata doc ([cd1a0f3](https://github.com/Neltud/xArtists/commit/cd1a0f3c552cd765e1162a2e4278c2cc2e989967))
+* **packs:** PackLanding hero = GenesisCard3D + TCA Membership runbook ([01e34ed](https://github.com/Neltud/xArtists/commit/01e34ede8e9d9e1fa75582fb1c9ac72c6f7ad23a))
+* **packs:** wire GenesisCard3D into GenesisPackShelf (recto/verso spin) ([5ac0b78](https://github.com/Neltud/xArtists/commit/5ac0b78bd86b453c265be55c0b4dfe61025b7fce))
+
 ## [0.126.3](https://github.com/Neltud/xArtists/compare/v0.126.2...v0.126.3) (2026-11-01)
 
 
