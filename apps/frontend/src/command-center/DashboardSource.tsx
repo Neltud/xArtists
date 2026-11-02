@@ -16,7 +16,8 @@ function Metric({ label, value }: { label: string; value: string }) {
   )
 }
 
-function fmt(n: number | undefined | null): string {
+function fmt(raw: number | string | undefined | null): string {
+  const n = typeof raw === 'string' && raw.trim() !== '' ? Number(raw) : raw
   if (n == null || !Number.isFinite(n)) return '—'
   if (Math.abs(n) >= 1000) return n.toFixed(0)
   if (Math.abs(n) >= 1) return n.toFixed(2)
