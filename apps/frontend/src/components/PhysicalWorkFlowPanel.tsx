@@ -247,6 +247,20 @@ export default function PhysicalWorkFlowPanel() {
         </div>
       </div>
 
+      {work?.nftIdentifier && <div className="flex flex-wrap items-center gap-3 text-xs">
+        <span className={work.nftLinkVerified ? 'text-emerald-300' : 'text-amber-300'}>
+          {work.nftLinkVerified ? 'NFT du créateur vérifié via MultiversX API' : 'Lien NFT déclaré, non vérifié'}
+        </span>
+        {!work.nftLinkVerified && <button type="button" className="btn-secondary text-xs"
+          disabled={!configured || busy || !auth}
+          onClick={()=>run(async()=>{
+            const token=await getAuth()
+            const r=await jsonApi(base,'/v1/physical/works/'+encodeURIComponent(work.id)+'/verify-nft',{},token)
+            if(!r.work)throw new Error('Vérification blockchain impossible.')
+            setWork(r.work)
+            setNotice('L’API confirme que le créateur possède ce NFT qu’il a créé. Aucun transfert de propriété physique implicite.')
+          })}>Vérifier le NFT sur mainnet</button>}
+      </div>}
       {work && <div className="space-y-4">
         <h3 className="text-sm font-semibold">Chaîne de garde · {work.status}</h3>
         {work.status==='DISPUTED' && <p role="alert" className="text-rose-300 text-sm">
