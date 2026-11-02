@@ -42,13 +42,11 @@ function seedSignals(packId: PackId): SignalRow[] {
 export default function PackAgentMonitor({ packId }: Props) {
   const pack = AGENT_PACKS.find(p => p.id === packId)!
   const [signals, setSignals] = useState(() => seedSignals(packId))
-  const [cloneShareBps, setCloneShareBps] = useState(12)
   const [tick, setTick] = useState(0)
   const [egld, setEgld] = useState<number | null>(null)
 
   useEffect(() => {
     setSignals(seedSignals(packId))
-    setCloneShareBps(12)
   }, [packId])
 
   useEffect(() => {
@@ -86,10 +84,9 @@ export default function PackAgentMonitor({ packId }: Props) {
         }
         return [row, ...prev].slice(0, 12)
       })
-      setCloneShareBps(b => Math.min(pack.shareOfPackPoolBps, b + 1))
     }, 10_000)
     return () => window.clearInterval(id)
-  }, [packId, pack.shareOfPackPoolBps])
+  }, [packId])
 
   const perf = useMemo(() => {
     if (!signals.length) return 0
@@ -131,8 +128,7 @@ export default function PackAgentMonitor({ packId }: Props) {
         </div>
         <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
           <p className="text-zinc-500">{xaRender("Part pool")}</p>
-          <p className="text-white font-semibold tabular-nums">
-            {xaRender(cloneShareBps)}/{xaRender(pack.shareOfPackPoolBps)} {xaRender(" bps ")}</p>
+          <p className="text-white font-semibold text-xs">{xaRender("Répartition non attestée")}</p>
         </div>
         <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
           <p className="text-zinc-500">{xaRender("Intensité")}</p>
