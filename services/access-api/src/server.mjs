@@ -13,7 +13,7 @@ import {
 } from './paybox.mjs'
 import {
   createOrder, getOrder, getOrderForBuyer, applyIpn, markRedirected, newOrderId, resolveArtistBeneficiary,
-  triggerMintDispatchSafe,
+  triggerMintDispatchSafe, publicOrderDelivery,
 } from './orders.mjs'
 import { resolveAuthenticatedBuyer } from './buyerAuth.mjs'
 import { buildPackQuote } from './quote.mjs'
@@ -538,13 +538,14 @@ async function handleRequest(req, res) {
     try {
       const order = await getOrderForBuyer(orderId, auth.buyer)
       if (!order) { json(res, 404, { ok: false, error: 'unknown_order' }); return }
+      const delivery = publicOrderDelivery(order)
       json(res, 200, {
         ok: true,
         order_id: order.order_id,
         pack_id: order.pack_id,
         amount_cents: order.amount_cents,
         status: order.status,
-        delivery: order.delivery,
+        ...delivery,
         server_confirmed: order.server_confirmed === true,
         payment_verified: order.payment_verified === true,
         provider_tx_id: order.provider_tx_id || null,
