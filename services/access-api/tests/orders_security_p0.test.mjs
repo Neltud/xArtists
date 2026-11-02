@@ -41,7 +41,7 @@ test('backend is file when DATABASE_URL unset', async () => {
 })
 
 for (const [pack, amount] of Object.entries(PRICES)) {
-  test(`${pack}: IPN application amount matches server price (simulated only)`, async () => {
+  test(`${pack}: IPN matches server price without NFT delivery`, async () => {
     await withStore(async () => {
       const id = `xa_${pack}_test`
       await order(id, pack)
@@ -49,7 +49,8 @@ for (const [pack, amount] of Object.entries(PRICES)) {
       assert.equal(bad.reason, 'amount_mismatch')
       const ok = await applyIpn({ order_id: id, amount_cents: amount, error_code: '00000', provider_tx_id: `tx_${pack}` })
       assert.equal(ok.status, 'paid')
-      assert.equal(ok.delivery, 'simulated')
+      assert.equal(ok.delivery, 'pending')
+      assert.equal((await getOrder(id)).delivered_at, null)
       assert.notEqual((await getOrder(id)).status, 'active')
     })
   })
