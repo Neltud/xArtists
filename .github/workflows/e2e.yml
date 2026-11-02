@@ -23,7 +23,17 @@ jobs:
 
       - name: Install deps
         run: |
-          if [ -f package-lock.json ]; then npm ci --ignore-scripts; else npm install --ignore-scripts; fi
+          set -euo pipefail
+          if [ -f package-lock.json ]; then
+            if npm ci --ignore-scripts; then
+              echo "npm_ci_ok"
+            else
+              echo "npm_ci_lock_mismatch — fallback npm install"
+              npm install --ignore-scripts
+            fi
+          else
+            npm install --ignore-scripts
+          fi
           npx playwright install --with-deps chromium
 
       - name: Run E2E against Pages
