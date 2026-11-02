@@ -271,6 +271,7 @@ export async function createOrder(input) {
       mint_status: null,
       delivery_note: null,
       delivered_at: null,
+      delivery_verified: false,
       server_confirmed: false,
       payment_verified: false,
     }
@@ -299,15 +300,17 @@ export async function getOrderForBuyer(orderId, requester) {
 /**
  * Public delivery state: a successful payment is not a delivered NFT.
  * Legacy delivery='simulated' and legacy delivered_at timestamps do not grant rights.
- * Only an independently reconciled NFT identifier + chain transaction may
- * qualify as confirmed. Nothing in the current PayBox IPN path supplies this.
+ * Only an explicit trusted delivery_verified flag AND correlated chain tx,
+ * NFT identifier and timestamp may qualify as confirmed. The PayBox IPN
+ * never sets that flag; a future on-chain verifier must set it separately.
  */
 export function publicOrderDelivery(order) {
   const invalidated = [ORDER_STATUS.REFUNDED, ORDER_STATUS.CANCELLED, ORDER_STATUS.REFUSED]
     .includes(order?.status)
   const verified = Boolean(
-    order && !invalidated && order.delivery === 'confirmed' &&
-    order.chain_tx_hash && order.nft_identifier && order.delivered_at,
+    order && !invalidated && order.delivery_verified === true &&
+    order.delivery === 'confirmed' && order.chain_tx_hash &&
+    order.nft_identifier && order.delivered_at,
   )
   return {
     delivery: verified ? 'confirmed' : !invalidated && order?.server_confirmed === true ? 'pending' : 'none',
