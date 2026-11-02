@@ -1,35 +1,84 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-01T19:22:08.882Z",
+  "updatedAt": "2026-11-02T00:16:04.262Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "rss-CoinTelegraph-0-1793542620000",
+      "id": "egld-1793578563978",
+      "timestamp": "00:16",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.41 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793577567000",
+      "timestamp": "23:59",
+      "source": "CoinTelegraph",
+      "title": "Binance net outflows surge to $5.8B as withdrawals resume after record hack",
+      "link": "https://cointelegraph.com/news/binance-net-outflows-surge-to-58b-as-withdrawals-resume-after-record-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793574553000",
+      "timestamp": "23:09",
+      "source": "CoinTelegraph",
+      "title": "$3.64B flees Binance on reopen, THORChain co-founder opposes coin freeze: Hodler’s Digest",
+      "link": "https://cointelegraph.com/magazine/36b-flees-binance-on-reopen-thorchain-co-founder-opposes-coin-freeze-hodlers-digest?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793542620000",
       "timestamp": "14:17",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1793540433000",
+      "id": "rss-CoinTelegraph-3-1793540433000",
       "timestamp": "13:40",
       "source": "CoinTelegraph",
       "title": "DeepSeek developing AI agent requiring less human input: Report",
       "link": "https://cointelegraph.com/news/deepseek-developing-ai-agent-requiring-less-human-input-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1793525898000",
+      "id": "rss-CoinTelegraph-4-1793525898000",
       "timestamp": "09:38",
       "source": "CoinTelegraph",
       "title": "Binance says phase one of withdrawals opens after $6.3B hack",
       "link": "https://cointelegraph.com/news/binance-says-phase-one-of-withdrawals-opens-after-63b-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1793519078000",
+      "id": "rss-CoinTelegraph-5-1793519078000",
       "timestamp": "07:44",
       "source": "CoinTelegraph",
       "title": "FBI blames North Korea for record $6.3B Binance hack",
       "link": "https://cointelegraph.com/news/fbi-blames-north-korea-for-record-63b-binance-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793561400000",
+      "timestamp": "19:30",
+      "source": "CoinDesk",
+      "title": "The crypto reader's guide to the 2026 midterm election: State of Crypto",
+      "link": "https://www.coindesk.com/policy/2026/11/01/the-crypto-reader-s-guide-to-the-2026-midterm-election-state-of-crypto"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793552400000",
+      "timestamp": "17:00",
+      "source": "CoinDesk",
+      "title": "AI agents bypassed crypto spending limits without human approval, researchers find in a new test",
+      "link": "https://www.coindesk.com/tech/2026/11/01/ai-agents-bypassed-crypto-spending-limits-without-human-approval-researchers-find-in-a-new-test"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793545200000",
+      "timestamp": "15:00",
+      "source": "CoinDesk",
+      "title": "The key races to watch for the 2026 election",
+      "link": "https://www.coindesk.com/policy/2026/11/01/the-key-races-to-watch-for-the-2026-election"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793545200000",
+      "timestamp": "15:00",
+      "source": "CoinDesk",
+      "title": "Crypto card startups are racking up losses just to buy your loyalty with big rewards",
+      "link": "https://www.coindesk.com/business/2026/11/01/crypto-card-startups-are-racking-up-losses-just-to-buy-your-loyalty-with-big-rewards"
     },
     {
       "id": "rss-CoinTelegraph-4-1793460961000",
@@ -46,39 +95,11 @@
       "link": "https://cointelegraph.com/markets/bitcoin-binance-hack-strive-ceo?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinDesk-0-1793552400000",
-      "timestamp": "17:00",
-      "source": "CoinDesk",
-      "title": "AI agents bypassed crypto spending limits without human approval, researchers find in a new test",
-      "link": "https://www.coindesk.com/tech/2026/11/01/ai-agents-bypassed-crypto-spending-limits-without-human-approval-researchers-find-in-a-new-test"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793545200000",
-      "timestamp": "15:00",
-      "source": "CoinDesk",
-      "title": "The key races to watch for the 2026 election",
-      "link": "https://www.coindesk.com/policy/2026/11/01/the-key-races-to-watch-for-the-2026-election"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793545200000",
-      "timestamp": "15:00",
-      "source": "CoinDesk",
-      "title": "Crypto card startups are racking up losses just to buy your loyalty with big rewards",
-      "link": "https://www.coindesk.com/business/2026/11/01/crypto-card-startups-are-racking-up-losses-just-to-buy-your-loyalty-with-big-rewards"
-    },
-    {
       "id": "rss-CoinDesk-3-1793541600000",
       "timestamp": "14:00",
       "source": "CoinDesk",
       "title": "Crypto PACs made big Republican push in final weeks before November 3 election",
       "link": "https://www.coindesk.com/policy/2026/11/01/crypto-pacs-made-big-republican-push-in-final-weeks-before-november-3-election"
-    },
-    {
-      "id": "egld-1793536996221",
-      "timestamp": "12:43",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.41 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-5-1793456872000",
@@ -177,27 +198,6 @@
       "source": "CoinDesk",
       "title": "Uber tests how tokenization can put idle cash to work with HSBC, Franklin Templeton",
       "link": "https://www.coindesk.com/business/2026/10/31/uber-tests-how-tokenization-can-put-idle-cash-to-work-with-hsbc-franklin-templeton"
-    },
-    {
-      "id": "egld-1793447065438",
-      "timestamp": "11:44",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.39 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793440730000",
-      "timestamp": "09:58",
-      "source": "CoinTelegraph",
-      "title": "Binance $6.3B record hack sparks pre-election political chatter",
-      "link": "https://cointelegraph.com/news/binance-63b-record-hack-sparks-pre-election-political-chatter?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1793397600000",
-      "timestamp": "22:00",
-      "source": "CoinTelegraph",
-      "title": "Binance hackers raced to move billions before it could be frozen",
-      "link": "https://cointelegraph.com/magazine/binance-hackers-raced-to-move-billions-before-could-be-frozen?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
