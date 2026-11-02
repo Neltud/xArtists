@@ -34,7 +34,7 @@ COPY ops/render-service-entrypoint.sh /usr/local/bin/xartists-entrypoint
 RUN chmod 755 /usr/local/bin/xartists-entrypoint
 
 # Existing SPA fallback, unchanged.
-RUN printf 'server {\\n  listen 80;\\n  root /usr/share/nginx/html;\\n  location /xArtists/ {\\n    try_files $uri $uri/ /xArtists/index.html;\\n  }\\n  location / {\\n    return 302 /xArtists/;\\n  }\\n}\\n' > /etc/nginx/conf.d/default.conf
+RUN printf 'server {\n  listen 80;\n  root /usr/share/nginx/html;\n  location /xArtists/ {\n    try_files $uri $uri/ /xArtists/index.html;\n  }\n  location / {\n    return 302 /xArtists/;\n  }\n}\n' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 80 8787
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s \
