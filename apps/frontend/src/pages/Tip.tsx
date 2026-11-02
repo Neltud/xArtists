@@ -60,7 +60,7 @@ const SERVICES = [
 export default function Tip() {
   const { prices } = useMultiversX()
   const [copied, setCopied] = useState('')
-  const egldUsd = prices?.egldUsd ?? 4.5
+  const egldUsd = Number.isFinite(prices?.egld) && prices.egld > 0 ? prices.egld : null
 
   const copy = (text: string, key: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -108,7 +108,7 @@ export default function Tip() {
               </div>
               <div className="text-right shrink-0">
                 <p className="text-amber-300 font-semibold text-sm">{xaRender(s.price_egld)} {xaRender(" EGLD")}</p>
-                <p className="text-[10px] text-zinc-500">≈ ${xaRender((s.price_egld * egldUsd).toFixed(2))}</p>
+                <p className="text-[10px] text-zinc-500">{egldUsd == null ? "USD · cours indisponible" : <>≈ ${xaRender((s.price_egld * egldUsd).toFixed(2))}</>}</p>
               </div>
             </li>
           )))}
