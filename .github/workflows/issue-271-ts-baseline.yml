@@ -1,4 +1,4 @@
-name: Issue 271 — TypeScript debt measurement
+name: Frontend TypeScript — strict release gate
 
 on:
   pull_request:
@@ -27,34 +27,13 @@ jobs:
       - name: Strict dependency install
         working-directory: apps/frontend
         run: npm ci --legacy-peer-deps --ignore-scripts
-      - name: Quantify full frontend TypeScript errors (issue 271)
+      - name: Strict global frontend TypeScript check
         shell: bash
         working-directory: apps/frontend
         run: |
-          set +e
-          npm run typecheck > "${RUNNER_TEMP}/typecheck-271.log" 2>&1
-          code=$?
-          set -e
-          cat "${RUNNER_TEMP}/typecheck-271.log"
-          count=$(grep -c 'error TS[0-9]' "${RUNNER_TEMP}/typecheck-271.log" || true)
-          echo "TypeScript errors: ${count}; compiler exit: ${code}"
-          {
-            echo "### Frontend TypeScript debt (issue #271)"
-            echo "Found **${count}** TypeScript errors on this commit; the measured pre-fix baseline was **76**."
-            echo "Full strict typecheck status: **$(if [ "${code}" -eq 0 ]; then echo PASS; else echo FAIL; fi)**."
-            echo "This measurement is not a full green typecheck until error count reaches zero."
-          } >> "${GITHUB_STEP_SUMMARY}"
-          if [ "${code}" -ne 0 ] && [ "${count}" -eq 0 ]; then
-            echo "::error::Compiler failed without TS diagnostics, investigate failure"
-            exit 1
-          fi
-          if [ "${count}" -gt 76 ]; then
-            echo "::error::TypeScript regression: above 76-error baseline"
-            exit 1
-          fi
-          if [ "${code}" -ne 0 ]; then
-            echo "::warning::Global frontend typecheck still fails with ${count} errors; tracked by issue #271"
-          fi
+          set -o pipefail
+          npm run typecheck 2>&1 | tee "${RUNNER_TEMP}/typecheck-271.log"
+          echo "### Global TypeScript check: **PASS — 0 errors**" >> "${GITHUB_STEP_SUMMARY}"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
