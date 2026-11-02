@@ -3,10 +3,10 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
 import { Link } from 'react-router-dom'
 import { canBuyAgent } from '../config/scStatus'
 
-export default function Phase4ReadinessBanner() {
+export default function Phase4ReadinessBanner({ variant = 'compact' }: { variant?: 'compact' | 'full' }) {
   const live = canBuyAgent()
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 space-y-2">
+    <div className={`rounded-2xl border border-white/10 bg-black/40 px-4 py-3 space-y-2 ${variant === "full" ? "sm:py-5" : ""}`}>
       <p className="text-[12px] text-zinc-400 leading-relaxed">
         {xaRender(live
           ? 'Mint packs on-chain disponible.'
