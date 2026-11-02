@@ -1,5 +1,7 @@
 name: Mint on payment (hardened Sprint 2)
 
+run-name: "Mint ${{ inputs.live_mint == 'true' && 'LIVE' || 'DRY_RUN' }} / ${{ inputs.order_id }}"
+
 # live_mint default false. Micro price window is non-atomic — concurrency group mitigates only.
 # Restore failure after micro = job failure (fail-closed).
 
@@ -62,7 +64,36 @@ env:
   SC: erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg
 
 jobs:
+  dry_run:
+    # No production environment or deployer key is available to a dry-run.
+    if: ${{ github.event.inputs.live_mint != 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Validate simulation inputs (no on-chain side effects)
+        env:
+          PACK: ${{ inputs.pack }}
+          EDITION: ${{ inputs.edition }}
+          BUYER: ${{ inputs.buyer }}
+          ORDER_ID: ${{ inputs.order_id }}
+          LIVE: ${{ inputs.live_mint }}
+          CONFIRM: ${{ inputs.confirm }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$LIVE" = "false"
+          [[ "$PACK" =~ ^(pulse|yield|sentinel)$ ]]
+          [[ "$EDITION" =~ ^[1-9][0-9]{0,5}$ ]]
+          [[ "$BUYER" =~ ^erd1[a-z0-9]{58}$ ]]
+          [[ "$ORDER_ID" =~ ^[A-Za-z0-9_-]{1,64}$ ]]
+          test "$CONFIRM" != "LIVE_MINT_MAINNET"
+          echo "status=dry_run_ok" >> "$GITHUB_STEP_SUMMARY"
+          echo "order_id=$ORDER_ID; pack=$PACK" >> "$GITHUB_STEP_SUMMARY"
+          echo "No production environment, no PEM, no signing, no mint, no transfers." >> "$GITHUB_STEP_SUMMARY"
+
   mint:
+    # Live execution must retain explicit production environment approval.
+    if: ${{ github.event.inputs.live_mint == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment: production
