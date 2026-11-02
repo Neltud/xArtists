@@ -6,6 +6,7 @@ import os from 'node:os'
 import crypto from 'node:crypto'
 import {
   payboxConfig,
+  payboxCheckoutEnabled,
   createPayboxSession,
   verifyPayboxIpn,
   verifyPayboxRsaSignature,
@@ -48,6 +49,22 @@ before(() => {
 
 after(() => {
   try { fs.rmSync(tmpDir, { recursive: true, force: true }) } catch { /* */ }
+})
+
+test('new PayBox sessions are NO-GO by default even with production merchant credentials', () => {
+  const merchant = {
+    PAYBOX_ENV: 'prod',
+    PAYBOX_SITE: '1999888',
+    PAYBOX_RANG: '32',
+    PAYBOX_HMAC_KEY: HMAC_HEX,
+  }
+  assert.equal(payboxConfig(merchant).ready, true)
+  assert.equal(payboxConfig(merchant).mode, 'prod')
+  assert.equal(payboxCheckoutEnabled(merchant), false)
+  assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: 'true' }), false)
+  assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: '0' }), false)
+  assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: '1' }), true)
+  assert.equal(payboxCheckoutEnabled({ PAYBOX_CHECKOUT_ENABLED: '1' }), false)
 })
 
 test('IPN policy is SHA_256 / 2048 with no SHA1 fallback', () => {
