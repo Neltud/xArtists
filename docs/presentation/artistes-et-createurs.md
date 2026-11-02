@@ -76,6 +76,41 @@ Le **listing Marketplace**, la certification d'une œuvre physique et les packs 
 
 La page [État du produit](etat-du-produit.md) détaille les disponibilités. Les contrats système et le fonctionnement des NFT sont décrits dans la [documentation officielle MultiversX](https://docs.multiversx.com/tokens/nft-tokens/).
 
+## Importer une image ou une vidéo et préparer le mint NFT
+
+Le **Creator Studio V3** permet désormais de sélectionner un fichier **JPG/JPEG, PNG, WebP (jusqu'à 16 Mo) ou MP4 (jusqu'à 48 Mo)** directement dans la dApp, de voir un aperçu, puis de préparer sa publication IPFS avant la création du NFT.
+
+Ce parcours a été intégré par la [PR #273](https://github.com/Neltud/xArtists/pull/273), fusionnée et contrôlée par la CI, avec une [nouvelle Marketplace](https://neltud.github.io/xArtists/marketplace) séparant art numérique, œuvres physiques et packs IA.
+
+### Comment cela fonctionne
+
+1. Ouvrez le [Creator Studio](https://neltud.github.io/xArtists/studio), connectez votre portefeuille xPortal, choisissez ou émettez votre collection NFT.
+2. Sélectionnez votre photo ou MP4. Le navigateur en propose un aperçu **local** ; ce n'est ni un upload réussi ni un NFT.
+3. Confirmez vos droits de publication et ajoutez un titre et une description. Pour une vidéo, les métadonnées utilisent le champ `animation_url`; pour une image, le champ `image`.
+4. Lorsque le service d'upload est activé, signez un challenge dédié. L'API épingle le média et ses métadonnées JSON sur IPFS via un secret Pinata conservé **sur le serveur**, sans clé privée de wallet.
+5. Vérifiez les URI `ipfs://...`, le nom de l'œuvre, le rôle `ESDTRoleNFTCreate` et les frais, puis **signez vous-même** `ESDTNFTCreate` dans xPortal.
+6. Une transaction sur MultiversX Explorer marquée `success` et un NFT récupérable dans le wallet constituent la preuve du mint, contrairement à un simple CID ou identifiant de session.
+
+> **Disponibilité vérifiée :** le sélecteur et les aperçus sont déployés sur le site. **L'upload automatique n'est pas encore activé côté API** : la dApp affiche le message correspondant. Il faut une configuration Pinata, une base PostgreSQL durable et une validation de recette. En attendant, le Studio accepte toujours une **URI IPFS ou HTTPS déjà publiée** manuellement. Aucun premier mint humain JPG/MP4 abouti n'est attesté par cette mise à jour.
+
+**Vie privée et propriété intellectuelle :** les fichiers publiés sur IPFS peuvent rester accessibles durablement. N'importez pas de médias dont vous ne possédez pas les droits ; ne publiez pas de documents sensibles. Un NFT ne transfère pas par lui-même les droits d'auteur d'une œuvre.
+
+Le [guide technique complet est sur GitHub](https://github.com/Neltud/xArtists/blob/main/docs/CREATOR_MEDIA_UPLOAD_IPFS.md).
+
+### Nouvelle Marketplace et canaux commerciaux
+
+La [Marketplace xArtists](https://neltud.github.io/xArtists/marketplace) sépare désormais :
+
+* **Art numérique** : NFT d'artistes, photo, image, vidéo MP4, avec recherche et tri quand des offres vérifiées sont indexées.
+* **Œuvres physiques / RWA** : certificat, suivi logistique Shopify et réception de l'acheteur, quand le service est activé.
+* **Packs IA** : Pulse, Yield et Sentinel ; droits d'accès distincts des œuvres.
+
+**Etsy** peut être étudié pour des **œuvres physiques originales éligibles** selon ses règles de créativité, d'expédition et de vendeur. **Etsy interdit la vente et l'achat de NFT**, et une vente Etsy ne doit pas être redirigée vers un paiement xArtists. Aucune annonce Etsy n'a été publiée automatiquement.
+
+Les workflows de code sont vérifiés, mais **la mise en vente contractuelle et les achats réels restent désactivés** lorsque le contrat Marketplace n'a pas son codehash validé. Il ne faut ni créer de faux prix ni confondre catalogue et marché live.
+
+**Qualité technique :** la [PR #274](https://github.com/Neltud/xArtists/pull/274) a rétabli le lockfile API reproductible ; les erreurs TypeScript globales historiques sont encore suivies dans [l'issue #271](https://github.com/Neltud/xArtists/issues/271).
+
 ## Œuvres physiques et NFT : suivi de livraison (nouveau)
 
 xArtists développe également un module de **provenance phygitale** : il associe les informations d'une œuvre tangible à un dossier de suivi, un SKU Shopify unique et, si l'artiste le souhaite, un NFT MultiversX **vérifiable sur le réseau**.
