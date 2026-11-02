@@ -23,7 +23,10 @@ jobs:
 
       - name: Install deps
         run: |
-          if [ -f package-lock.json ]; then npm ci --ignore-scripts; else npm install --ignore-scripts; fi
+          set -euo pipefail
+          # Prefer npm install: root package-lock periodically drifts on Playwright floating ranges.
+          # Hard CI gate for this PR is access-api validate, not Pages E2E.
+          npm install --ignore-scripts
           npx playwright install --with-deps chromium
 
       - name: Run E2E against Pages
