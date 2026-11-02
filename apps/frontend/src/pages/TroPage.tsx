@@ -113,6 +113,10 @@ export default function TroPage() {
       <header className="space-y-2">
         <p className="section-label">{xaRender("Token · utilitaire")}</p>
         <h1 className="section-title display">{xaRender("$TRO tokenomics")}</h1>
+        <Link to="/tro/sale"
+          className="inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-lime-300/30 bg-lime-300/10 px-4 py-2 text-sm font-semibold text-lime-200 hover:border-lime-300/70">
+          Découvrir $TRO · Achat et projet de bridge Solana <span aria-hidden="true">↗</span>
+        </Link>
         <div className="atelier-title-rule" aria-hidden />
         <p className="section-lead">
           {xaRender("Cap produit ")}<strong className="text-white">{xaRender(MAX_SUPPLY.toLocaleString('fr-FR'))}</strong> {xaRender(" · burns · flux trésorerie · pools. Pas une security / share de fonds. ")}</p>
