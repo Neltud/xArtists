@@ -26,6 +26,12 @@ export type FrameItem = {
   date?: string
   technique?: string
   dimensions?: string
+  /** Optional physical measurements, only populated when source evidence exists. */
+  widthCm?: number
+  heightCm?: number
+  depthCm?: number
+  circumferenceCm?: number
+  sideImage?: string
   medium?: ArtworkMedium
   kind?: ArtworkKind
   onSale?: boolean
