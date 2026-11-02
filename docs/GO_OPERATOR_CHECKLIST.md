@@ -16,6 +16,7 @@
 | Flag | Measured | Target dry GO |
 |------|----------|---------------|
 | paybox_mode | **prod** | prod |
+| paybox_checkout_enabled | **false** (expected after API repair) | **false until commercial GO** |
 | orders_backend | postgres | postgres |
 | mint_dry_run | true | true |
 | mint_live_enabled | false | false |

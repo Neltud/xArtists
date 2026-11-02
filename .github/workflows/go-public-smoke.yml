@@ -59,10 +59,20 @@ jobs:
           python3 <<'PY'
           import json
 
-          with open('/tmp/access_api_health.json', encoding='utf-8') as f:
-              h = json.load(f)
+          try:
+              with open('/tmp/access_api_health.json', encoding='utf-8') as f:
+                  h = json.load(f)
+          except (json.JSONDecodeError, UnicodeError) as exc:
+              raise SystemExit(
+                  'P0 WRONG RENDER IMAGE: /health is not JSON. '
+                  'Render xartists-access-api must build services/access-api/Dockerfile '
+                  'with services/access-api as root/build context; see issue #287.'
+              ) from exc
           with open('/tmp/lia_status.json', encoding='utf-8') as f:
               lia = json.load(f)
+          assert h.get('service') == 'access-api', (
+              'P0 WRONG SERVICE: /health does not identify access-api; see issue #287'
+          )
 
           print('API safety flags:', {k: h.get(k) for k in (
               'ok', 'paybox_mode', 'orders_backend',

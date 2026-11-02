@@ -9,7 +9,7 @@ import { resolveAccessLevel, issueAccessToken, verifyJwt } from './verifyAccess.
 import { createChallenge, verifySignedChallenge, requireSiwx } from './siwx.mjs'
 import { moonpayConfig, signMoonpayUrl } from './moonpay.mjs'
 import {
-  payboxConfig, createPayboxSession, verifyPayboxIpn, extractRawSignedData, resolveIpnAuthenticatedSource, IPN_POLICY,
+  payboxConfig, payboxCheckoutEnabled, createPayboxSession, verifyPayboxIpn, extractRawSignedData, resolveIpnAuthenticatedSource, IPN_POLICY,
 } from './paybox.mjs'
 import {
   createOrder, getOrder, getOrderForBuyer, applyIpn, markRedirected, newOrderId, resolveArtistBeneficiary,
@@ -108,6 +108,7 @@ async function handleRequest(req, res) {
       moonpay_mode: MOONPAY.ready ? MOONPAY.mode : 'off',
       stripe_configured: Boolean(STRIPE_KEY),
       paybox_configured: PAYBOX.ready,
+      paybox_checkout_enabled: payboxCheckoutEnabled(),
       paybox_mode: PAYBOX.ready ? PAYBOX.mode : 'off',
       paybox_auth_outbound: 'hmac_sha512',
       paybox_auth_inbound: 'rsa_sha256_2048',
@@ -404,6 +405,13 @@ async function handleRequest(req, res) {
         return
       }
       const buyer = auth.buyer
+      // Auth must still return 401/403 first. A configured merchant is not
+      // commercial approval; fail closed before creating any order/session.
+      // Signed IPNs stay active for already-existing orders.
+      if (!payboxCheckoutEnabled()) {
+        json(res, 503, { ok: false, error: 'paybox_checkout_not_approved' })
+        return
+      }
       if (!PAYBOX.ready) {
         json(res, 501, {
           ok: false, error: 'paybox_not_configured', pack_id: pack.id, amount_cents: pack.price_cents,

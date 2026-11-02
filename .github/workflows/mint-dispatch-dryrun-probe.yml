@@ -37,8 +37,18 @@ jobs:
             https://xartists-access-api.onrender.com/health -o "$RUNNER_TEMP/health.json"
           python3 - <<'PY'
           import json, os
-          with open(os.environ['RUNNER_TEMP'] + '/health.json', encoding='utf-8') as f:
-              h = json.load(f)
+          try:
+              with open(os.environ['RUNNER_TEMP'] + '/health.json', encoding='utf-8') as f:
+                  h = json.load(f)
+          except (json.JSONDecodeError, UnicodeError) as exc:
+              raise SystemExit(
+                  'P0 API WRONG IMAGE: /health is not JSON. '
+                  'Check Render xartists-access-api Root Directory=services/access-api, '
+                  'Dockerfile=./Dockerfile, Docker Context=.; issue #287.'
+              ) from exc
+          assert h.get('service') == 'access-api', (
+              'P0 API WRONG SERVICE: /health does not identify service=access-api; issue #287'
+          )
           assert h.get('ok') is True
           assert h.get('mint_dry_run') is True
           assert h.get('mint_live_enabled') is False
