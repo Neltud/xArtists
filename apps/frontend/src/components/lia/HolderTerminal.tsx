@@ -19,6 +19,7 @@ type Sprint = {
   equity_start_usd?: number
 }
 type ExportSnap = {
+  equity_now_usd?: number
   fills?: number
   shadow_pnl_usd?: number
   win_rate?: number | null
