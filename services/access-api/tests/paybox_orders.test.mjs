@@ -72,7 +72,8 @@ test('createOrder + applyIpn amount mismatch + idempotent delivery', async () =>
   assert.equal(first.ok, true)
   assert.equal(first.duplicate, false)
   assert.equal(first.status, 'paid')
-  assert.equal(first.delivery, 'simulated')
+  assert.equal(first.delivery, 'pending')
+  assert.equal((await getOrder(id)).delivered_at, null)
 
   const second = await applyIpn({ order_id: id, amount_cents: 7500, error_code: '00000', authorization: 'AUTH1' })
   assert.equal(second.ok, true)
