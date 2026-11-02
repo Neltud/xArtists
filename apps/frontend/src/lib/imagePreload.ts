@@ -20,7 +20,6 @@ function pump() {
     active += 1
     const img = new Image()
     img.decoding = 'async'
-    // @ts-expect-error fetchPriority is widely supported
     img.fetchPriority = next.priority >= 8 ? 'high' : 'low'
     img.onload = () => {
       cache.set(next.url, img)
