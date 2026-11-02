@@ -126,6 +126,38 @@ function append(record, type, actor, detail = {}) {
   record.events.push(event)
   return record
 }
+/**
+ * Read-only proof that the declared creator wallet holds an NFT it created.
+ * Not proof of legal ownership of the physical piece or of independent authenticity.
+ */
+export async function verifyDeclaredPhysicalNft(work, actor) {
+  if (normal(actor) !== normal(work.owner)) throw fail('artist_wallet_required', 403)
+  if (!work.nftIdentifier || !NFT_ID.test(work.nftIdentifier)) throw fail('nft_not_declared')
+  const endpoint = 'https://api.multiversx.com/accounts/'
+    + encodeURIComponent(work.owner) + '/nfts/' + encodeURIComponent(work.nftIdentifier)
+  let response
+  try {
+    response = await fetch(endpoint, { headers: {Accept:'application/json'},
+      signal: AbortSignal.timeout(9000) })
+  } catch { throw fail('multiversx_verification_unavailable', 503) }
+  if (!response.ok) throw fail('nft_not_confirmed_for_artist', 409)
+  const data = await response.json()
+  if (data?.identifier !== work.nftIdentifier
+      || normal(data.creator) !== normal(work.owner)
+      || (data.type && data.type !== 'NonFungibleESDT')
+      || (data.balance != null && !(Number(data.balance) >= 1))) {
+    throw fail('nft_ownership_or_creator_mismatch', 409)
+  }
+  if (work.nftLinkVerified) return { applied: false, reason: 'already_verified' }
+  work.nftLinkVerified = true
+  work.nftVerifiedAt = new Date().toISOString()
+  append(work, 'NFT_LINK_VERIFIED', 'multiversx_api', {
+    nftIdHash: sha(work.nftIdentifier).slice(0, 20),
+    scope:'creator_wallet_holds_self_created_nft_only',
+  })
+  return { applied:true }
+}
+
 export function assessConditionRisk(reason, status) {
   if (reason === 'missing') return {
     risk: 'critical', actions: ['verify_carrier_chain', 'request_human_claim_review'],
@@ -273,6 +305,7 @@ export function publicWorkView(work) {
   return {
     id:work.id, sku:work.sku, title:work.title, artist:work.artist, medium:work.medium,
     nftIdentifier:work.nftIdentifier, nftLinkVerified:work.nftLinkVerified,
+    nftVerifiedAt:work.nftVerifiedAt || null,
     status:work.status, buyerBound:!!work.buyerWallet,
     shipment:work.shipment, receipt:work.receipt ? {
       decision:work.receipt.decision, confirmedAt:work.receipt.confirmedAt,
@@ -365,6 +398,8 @@ export async function changePhysicalWork(id, actor, type, input, isAdmin = false
       result=confirmPhysicalReceipt(work,actor,input)
     } else if(type==='reassess'){
       result=requestPhysicalReassessment(work,actor,input)
+    } else if(type==='verify_nft'){
+      result=await verifyDeclaredPhysicalNft(work,actor)
     } else throw fail('invalid_physical_action')
     if(result.applied)await writeWork(c,work)
     return { ...result, work:publicWorkView(work) }
