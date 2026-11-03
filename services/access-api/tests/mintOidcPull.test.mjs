@@ -100,8 +100,11 @@ test('OIDC queue only lists paid and server-confirmed non-delivered orders', () 
     refunded: { ...good, order_id: 'refunded', status: 'refunded' },
     fulfilled: { ...good, order_id: 'fulfilled', delivery_verified: true },
     invalid_buyer: { ...good, order_id: 'invalid_buyer', buyer_address: 'erd1bad' },
+    invalid_edition: { ...good, order_id: 'invalid_edition', edition: 0 },
   } }
   assert.deepEqual(eligibleOidcOrders(db), [{ order_id: good.order_id }])
+  db.orders.second = { ...good, order_id: 'xa_sentinel_unit_2', created_at: '2026-11-03T11:00:00Z' }
+  assert.deepEqual(eligibleOidcOrders(db, 1, 1), [{ order_id: 'xa_sentinel_unit_2' }])
 })
 const localDb = process.env.TEST_DATABASE_URL || ''
 let approved = false
