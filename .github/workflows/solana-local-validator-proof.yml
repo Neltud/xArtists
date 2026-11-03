@@ -58,7 +58,7 @@ jobs:
           export PATH="$RUNNER_TEMP/solana-release/bin:$PATH"
           solana-test-validator --version
           solana-test-validator --ledger "$RUNNER_TEMP/xartists-local-ledger" \
-            --reset --rpc-port 8899 --rpc-bind-address 127.0.0.1 \
+            --reset --rpc-port 8899 --bind-address 127.0.0.1 \
             > "$RUNNER_TEMP/xartists-validator.log" 2>&1 &
           validator_pid=$!
           trap 'kill "$validator_pid" 2>/dev/null || true; wait "$validator_pid" 2>/dev/null || true' EXIT
