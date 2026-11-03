@@ -35,7 +35,9 @@ test('chargeback flag blocks issuance', () => {
 test('TTL clamp respects bounds', () => {
   assert.equal(clampVoucherTtlSec(60), CLAIM_VOUCHER_TTL_POLICY.min_ttl_sec)
   assert.equal(clampVoucherTtlSec(999999), CLAIM_VOUCHER_TTL_POLICY.max_ttl_sec)
-  assert.equal(clampVoucherTtlSec(1800), 1800)
+  assert.equal(clampVoucherTtlSec(1800), 900)
+  assert.equal(clampVoucherTtlSec(undefined), 600)
+  assert.equal(CLAIM_VOUCHER_TTL_POLICY.max_ttl_sec, 900)
 })
 
 test('GO policy requires on-chain revoke', () => {
