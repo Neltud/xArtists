@@ -33,8 +33,11 @@ test('prelaunch discovery page cannot take money, mint or record an order',()=>{
   ]){
     assert.doesNotMatch(page, forbidden)
   }
-  assert.match(page,/mailto:hello@xartists\.art/)
-  assert.match(page,/encodeURIComponent\(subject\)/)
+  assert.doesNotMatch(page,/mailto:|hello@xartists\.art/)
+  assert.match(page,/issues\/new\?template=commercial-introduction\.yml/)
+  assert.match(page,/PUBLIC_INTAKE_URL/)
+  assert.match(page,/publicNote/)
+  assert.match(page,/x\.com\/tudurioriginal/)
   assert.match(page,/no orders or payments are accepted/)
   assert.match(page,/achats publics et la livraison/)
 })
@@ -46,6 +49,19 @@ test('all contact CTA are inquiries, not promises of purchase or delivery',()=>{
   assert.match(page,/certified_authentic|aucun certificat|not authenticity certificates/)
   assert.doesNotMatch(page,/\bcheckout_enabled\s*=\s*true/)
   assert.doesNotMatch(page,/mint_live_enabled\s*=\s*true/)
+})
+
+test('public contact requires GitHub consent and must never collect private information',()=>{
+  const form=read('../../.github/ISSUE_TEMPLATE/commercial-introduction.yml')
+  const legacy=read('src/pages/SalePage.tsx')
+  assert.match(form,/type: checkboxes/)
+  assert.match(form,/required: true/)
+  assert.match(form,/This GitHub issue is \*\*public\*\*/)
+  assert.match(form,/no payment|No payment|no payment/i)
+  assert.match(form,/private key/i)
+  assert.match(legacy,/Navigate to="\/offres" replace/)
+  assert.doesNotMatch(legacy,/mailto:|Réserver|reservation|createOrder/)
+  assert.doesNotMatch(page,/mailto:|hello@xartists\.art|fetch\s*\(/)
 })
 
 test('direct campaign URLs are prebuilt as HTTP 200 entrypoints on GitHub Pages',()=>{
