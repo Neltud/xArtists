@@ -36,6 +36,11 @@ test('V2 has exact byte layout and does not reuse V1 domain', () => {
   assert.deepEqual(b.subarray(51), encodeClaimVoucherV1(base).subarray(19))
 })
 
+test('byte-exact 178-byte shared Node/Rust golden vector', () => {
+  const actual = encodeClaimVoucherV2(base)
+  assert.equal(actual.toString('hex'), '58412d434c41494d2d5041434b2d56320001541111111111111111111111111111111111111111111111111111111111111111333333333333333333333333333333333333333333333333333333333333333300000001ff2a71382133d6506e867241979d466fcc5f375ef848f63b6bab27fa08d20cda0344444444444444444444444444444444444444444444444444444444444444440000000000001388000000006ae9ccc0000000006ae9cf180001')
+})
+
 test('same SC address, signer, order and buyer but different deployment domains reject replay', () => {
   const { publicKey, privateKey } = generateKeyPairSync('ed25519')
   const key = publicKey.export({ format: 'der', type: 'spki' }).subarray(-32)
