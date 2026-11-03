@@ -19,6 +19,8 @@ import { resolveAuthenticatedBuyer } from './buyerAuth.mjs'
 import { buildPackQuote } from './quote.mjs'
 import { loadDailySignal } from './signals.mjs'
 import { mintDispatchConfig } from './mintDispatch.mjs'
+import { oidcMintPullEnabled, verifyGitHubOidc, eligibleOidcOrders, claimOidcMintOrder, ackOidcMintOrder } from './mintOidcPull.mjs'
+import { loadOrders } from './orders.mjs'
 import { troBridgeStatus } from './troBridgeStatus.mjs'
 import {studioMediaConfig,mediaJwt,mediaActor,readCreatorMedia,
   uploadStudioMedia,pinStudioMetadata} from './creatorMedia.mjs'
@@ -131,6 +133,7 @@ async function handleRequest(req, res) {
       fx_env_configured: envFxRate() != null,
       lia_live_trading: process.env.LIA_LIVE_TRADING === '1' ? '1' : '0',
       mint_dispatch_enabled: MINT_CFG.enabled,
+      mint_oidc_pull_enabled: oidcMintPullEnabled(),
       mint_dry_run: MINT_CFG.dryRun,
       mint_live_enabled: MINT_CFG.liveEnabled,
       mint_micro_price: MINT_CFG.micro,
@@ -154,6 +157,47 @@ async function handleRequest(req, res) {
   if (req.method === 'GET' && pth === '/v1/ops/orders-store/status') {
     const status = await probeOrdersStore()
     json(res, status.ok ? 200 : 503, status)
+    return
+  }
+
+  // Secretless GitHub OIDC mint-pull: hard-disabled by default, PostgreSQL only.
+  // This route never signs, mints, sends a chain transaction or confirms delivery.
+  if (req.method === 'POST' && pth === '/v1/ops/mint-oidc-pull') {
+    if (!oidcMintPullEnabled()) {
+      json(res, 503, { ok: false, error: 'oidc_pull_disabled' })
+      return
+    }
+    // Identity must be cryptographically verified before reading buyer records.
+    let identity
+    try {
+      identity = await verifyGitHubOidc(req.headers.authorization)
+    } catch {
+      json(res, 401, { ok: false, error: 'github_oidc_denied' })
+      return
+    }
+    const { body } = await readRawAndBody(req)
+    if (body.action === 'list') {
+      const db = await loadOrders()
+      json(res, 200, { ok: true, orders: eligibleOidcOrders(db) })
+      return
+    }
+    if (body.action === 'claim') {
+      const id = String(body.order_id || '')
+      if (!/^[A-Za-z0-9_-]{1,64}$/.test(id)) {
+        json(res, 400, { ok: false, error: 'invalid_order_id' })
+        return
+      }
+      const order = await getOrder(id)
+      const result = await claimOidcMintOrder(order, identity)
+      json(res, result.ok ? 200 : 409, result)
+      return
+    }
+    if (body.action === 'ack') {
+      const result = await ackOidcMintOrder(body, identity)
+      json(res, result.ok ? 200 : 409, result)
+      return
+    }
+    json(res, 400, { ok: false, error: 'unknown_action' })
     return
   }
 
