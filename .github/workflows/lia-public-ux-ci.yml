@@ -1,0 +1,54 @@
+name: LIA public-first Control Room — safe UX gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/frontend/src/pages/LiaPage.tsx'
+      - 'apps/frontend/src/components/lia/LiaHubControlRoomLazy.tsx'
+      - 'apps/frontend/src/components/lia/LiaMobileOverview.tsx'
+      - 'apps/frontend/tests/lia-public-first.test.mjs'
+      - '.github/workflows/lia-public-ux-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/frontend/src/pages/LiaPage.tsx'
+      - 'apps/frontend/src/components/lia/LiaHubControlRoomLazy.tsx'
+      - 'apps/frontend/src/components/lia/LiaMobileOverview.tsx'
+      - 'apps/frontend/tests/lia-public-first.test.mjs'
+      - '.github/workflows/lia-public-ux-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  lia-public:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Locked dependencies (no install scripts)
+        working-directory: apps/frontend
+        run: npm ci --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+      - name: Public-first status and no-live-claim regressions
+        working-directory: apps/frontend
+        run: node --test tests/lia-public-first.test.mjs
+      - name: TypeScript check
+        working-directory: apps/frontend
+        run: npm run typecheck
+      - name: Production build
+        working-directory: apps/frontend
+        run: npm run build
+      - name: Page aliases and assets
+        working-directory: apps/frontend
+        run: |
+          npm run check:routes
+          npm run verify:site
+          test -s dist/intelligence/lia/index.html
+          grep -q '/xArtists/assets/' dist/intelligence/lia/index.html
+          echo 'LIA read-only route built. No payment, mint or live trading enabled.'
