@@ -67,7 +67,11 @@ test('public contact requires GitHub consent and must never collect private info
 test('direct campaign URLs are prebuilt as HTTP 200 entrypoints on GitHub Pages',()=>{
   const wf=read('../../.github/workflows/static.yml')
   assert.match(wf,/for page in offres offers; do/)
-  assert.ok(wf.includes('cp _site/index.html "_site/$page/index.html"'))
+  assert.ok(wf.includes('test -s "_site/$page/index.html"'))
+  assert.ok(wf.includes('Vite generates route-specific titles/descriptions/OG metadata.'))
+  assert.doesNotMatch(wf, /cp _site\/index\.html "_site\/\$page\/index\.html"/)
+  const generator = read('scripts/publicAvailability.mjs')
+  assert.match(generator, /commercialSeoHtml\(html, route\)/)
   assert.ok(wf.includes('test -s "_site/$page/index.html"'))
   assert.ok(wf.includes('"https://neltud.github.io/xArtists/$page/"'))
   assert.match(wf,/Public campaign deep link \$page did not pass HTTP 200 check/)
