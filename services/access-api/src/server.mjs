@@ -18,7 +18,7 @@ import {
 import { resolveAuthenticatedBuyer } from './buyerAuth.mjs'
 import { buildPackQuote } from './quote.mjs'
 import { loadDailySignal } from './signals.mjs'
-import { mintDispatchConfig } from './mintDispatch.mjs'
+import { mintDispatchConfig, probeMintJobsStore } from './mintDispatch.mjs'
 import { oidcMintPullEnabled, verifyGitHubOidc, eligibleOidcOrders, claimOidcMintOrder, ackOidcMintOrder } from './mintOidcPull.mjs'
 import { loadOrders } from './orders.mjs'
 import { troBridgeStatus } from './troBridgeStatus.mjs'
@@ -160,6 +160,14 @@ async function handleRequest(req, res) {
   // Safe for public monitoring: SELECT only, no PII, no SQL errors or secrets.
   if (req.method === 'GET' && pth === '/v1/ops/orders-store/status') {
     const status = await probeOrdersStore()
+    json(res, status.ok ? 200 : 503, status)
+    return
+  }
+
+  // Live Render-bound mint_jobs evidence: read-only table-existence check.
+  // HTTP 503 means missing/unreachable; it must NOT auto-create the schema.
+  if (req.method === 'GET' && pth === '/v1/ops/mint-jobs-store/status') {
+    const status = await probeMintJobsStore()
     json(res, status.ok ? 200 : 503, status)
     return
   }
