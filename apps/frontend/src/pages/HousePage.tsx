@@ -10,6 +10,7 @@ const copy = {
     explore: 'Entrer dans le musée',
     auction: 'Découvrir les enchères',
     studio: 'Créer au Studio',
+    offers: 'Découvrir les offres · demander une présentation',
     chapters: 'Les espaces de la Maison',
     museum: 'Le musée',
     museumDesc: 'Une expérience pour voir les œuvres, leur histoire et leurs collections, sans portefeuille obligatoire.',
@@ -36,6 +37,7 @@ const copy = {
     explore: 'Enter the museum',
     auction: 'Explore auctions',
     studio: 'Create in the Studio',
+    offers: 'Explore offers · request an introduction',
     chapters: 'Inside the House',
     museum: 'The museum',
     museumDesc: 'Explore works, stories and collections without needing a wallet to visit.',
@@ -78,6 +80,7 @@ export default function HousePage() {
           <Link className="inline-flex min-h-[44px] items-center rounded-full bg-amber-100 px-6 py-3 text-sm font-semibold text-zinc-950 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-300" to="/museum">{t.explore}</Link>
           <Link className="inline-flex min-h-[44px] items-center rounded-full border border-white/30 px-6 py-3 text-sm text-white hover:bg-white/10" to="/auction">{t.auction}</Link>
           <Link className="inline-flex min-h-[44px] items-center rounded-full border border-white/20 px-6 py-3 text-sm text-white hover:bg-white/10" to="/studio">{t.studio}</Link>
+          <Link className="inline-flex min-h-[44px] items-center rounded-full border border-amber-100/40 bg-amber-100/10 px-6 py-3 text-sm text-amber-100 hover:bg-amber-100/20" to="/offres">{t.offers}</Link>
         </div>
       </section>
 
