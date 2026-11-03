@@ -1,0 +1,69 @@
+name: Mobile Marketplace and Auction — navigation & safe browse
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/frontend/src/experience/Shell.tsx'
+      - 'apps/frontend/src/experience/experience.css'
+      - 'apps/frontend/src/experience/Icon.tsx'
+      - 'apps/frontend/src/experience/Pages.tsx'
+      - 'apps/frontend/src/pages/MarketplacePage.tsx'
+      - 'apps/frontend/src/pages/AuctionPage.tsx'
+      - 'apps/frontend/src/components/CreatorMediaUpload.tsx'
+      - 'apps/frontend/tests/mobile-commerce-navigation.test.mjs'
+      - '.github/workflows/static.yml'
+      - '.github/workflows/mobile-market-auction-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/frontend/src/experience/Shell.tsx'
+      - 'apps/frontend/src/experience/experience.css'
+      - 'apps/frontend/src/experience/Icon.tsx'
+      - 'apps/frontend/src/experience/Pages.tsx'
+      - 'apps/frontend/src/pages/MarketplacePage.tsx'
+      - 'apps/frontend/src/pages/AuctionPage.tsx'
+      - 'apps/frontend/src/components/CreatorMediaUpload.tsx'
+      - 'apps/frontend/tests/mobile-commerce-navigation.test.mjs'
+      - '.github/workflows/static.yml'
+      - '.github/workflows/mobile-market-auction-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  mobile-commerce-navigation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Locked dependencies — no install scripts
+        working-directory: apps/frontend
+        run: npm ci --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+      - name: Five-column dock and public page no-transaction invariants
+        working-directory: apps/frontend
+        run: node --test tests/mobile-commerce-navigation.test.mjs
+      - name: TypeScript check
+        working-directory: apps/frontend
+        run: npm run typecheck
+      - name: Build Vite for production
+        working-directory: apps/frontend
+        run: npm run build
+      - name: Verify all static aliases, asset base, and SPA 404
+        working-directory: apps/frontend
+        run: |
+          npm run check:routes
+          npm run verify:site
+      - name: Assert public market/auction routes are direct-linkable
+        working-directory: apps/frontend
+        run: |
+          test -s dist/marketplace/index.html
+          test -s dist/auction/index.html
+          grep -q '/xArtists/assets/' dist/marketplace/index.html
+          grep -q '/xArtists/assets/' dist/auction/index.html
+          echo 'Browse-only routes are built. No auction, sale, checkout, or mint enabled.'
