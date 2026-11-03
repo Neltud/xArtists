@@ -28,10 +28,20 @@ pub trait XArtistsClaimPackTestnet {
         self.claims_paused().set(true);
     }
 
+    /// Whitebox tests call trait methods directly and bypass endpoint-only
+    /// macro guards, so privilege checking also lives in the method itself.
+    fn assert_owner(&self) {
+        require!(
+            self.blockchain().get_caller() == self.blockchain().get_owner_address(),
+            "claim owner required"
+        );
+    }
+
     /// Immutable signer epoch. An epoch cannot be overwritten or re-enabled.
     #[only_owner]
     #[endpoint(registerClaimSigner)]
     fn register_claim_signer(&self, epoch: u32, public_key: ManagedByteArray<32>) {
+        self.assert_owner();
         require!(self.claims_paused().get(), "pause before signer configuration");
         require!(epoch > 0, "invalid epoch");
         require!(self.signer(epoch).is_empty(), "signer epoch already registered");
@@ -44,6 +54,7 @@ pub trait XArtistsClaimPackTestnet {
     #[only_owner]
     #[endpoint(disableClaimSigner)]
     fn disable_claim_signer(&self, epoch: u32) {
+        self.assert_owner();
         require!(epoch > 0, "invalid epoch");
         self.signer_disabled(epoch).set(true);
         if self.active_signer_epoch().get() == epoch {
@@ -56,6 +67,7 @@ pub trait XArtistsClaimPackTestnet {
     #[only_owner]
     #[endpoint(configurePackCollection)]
     fn configure_pack_collection(&self, pack_type: u8, token: TokenIdentifier) {
+        self.assert_owner();
         require!(self.claims_paused().get(), "pause before configuring collection");
         require!(self.price_cents(pack_type) > 0, "unknown pack");
         require!(token.is_valid_esdt_identifier(), "invalid collection");
@@ -66,6 +78,7 @@ pub trait XArtistsClaimPackTestnet {
     #[only_owner]
     #[endpoint(pauseClaims)]
     fn pause_claims(&self) {
+        self.assert_owner();
         self.claims_paused().set(true);
     }
 
@@ -73,6 +86,7 @@ pub trait XArtistsClaimPackTestnet {
     #[only_owner]
     #[endpoint(unpauseClaims)]
     fn unpause_claims(&self) {
+        self.assert_owner();
         let epoch = self.active_signer_epoch().get();
         require!(epoch > 0 && !self.signer(epoch).is_empty(), "signer not configured");
         require!(!self.signer_disabled(epoch).get(), "signer disabled");
@@ -82,6 +96,7 @@ pub trait XArtistsClaimPackTestnet {
     #[only_owner]
     #[endpoint(revokeOrderHash)]
     fn revoke_order_hash(&self, order_hash: ManagedByteArray<32>) {
+        self.assert_owner();
         require!(!self.claimed(&order_hash).get(), "cannot unwind delivered NFT");
         self.revoked(&order_hash).set(true);
     }
