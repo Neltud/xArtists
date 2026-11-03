@@ -17,7 +17,7 @@ export function auctionPublicConfig(env = process.env) {
  */
 export async function tryHandleAuction(req, res, ctx) {
   const { path: pth, url: u, json, readRawAndBody, resolveAuthenticatedBuyer, jwtSecret } = ctx
-  if (!pth.startsWith('/v1/auction')) return false
+  if (pth !== '/v1/auction' && !pth.startsWith('/v1/auction/')) return false
 
   if (req.method === 'GET' && pth === '/v1/auction/config') {
     json(res, 200, { ok: true, ...auctionConfig() })
@@ -26,6 +26,13 @@ export async function tryHandleAuction(req, res, ctx) {
 
   if (!auctionConfig().enabled) {
     json(res, 503, { ok: false, error: 'auction_not_enabled' })
+    return true
+  }
+
+  // P1 contains no durable bid ledger or settlement. Two independent
+  // environment gates are required before *demo* POST mutations are allowed.
+  if (req.method === 'POST' && !auctionConfig().demo_writes_enabled) {
+    json(res, 503, { ok: false, error: 'auction_demo_writes_disabled' })
     return true
   }
 
