@@ -21,7 +21,7 @@ icon: circle-check
 
 ## État réel par capacité
 
-| Domaine                         | État au 2 novembre                                                                                                                                                      |
+| Domaine                         | État historique au 2 novembre                                                                                                                                                      |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Site web / dApp V3              | **En ligne** sur GitHub Pages, dernière publication CI vérifiée                                                                                                         |
 | Navigation publique             | Accessible sans wallet ; musée, pages agents, LIA, marketplace de consultation                                                                                          |
@@ -35,6 +35,39 @@ icon: circle-check
 | Application native              | Aucune publication App Store/Google Play attestée                                                                                                                       |
 
 Les montants EGLD doivent provenir d'un devis serveur valide ou du contrat effectivement interrogé ; les équivalences indicatives d'une carte produit ne sont pas des offres irrévocables.
+
+## Contrôle le plus récent — 3 novembre 2026 (post-PR #306)
+
+Le commit [`df501fd4`](https://github.com/Neltud/xArtists/commit/df501fd408ab8c427c453676c9c48b12727bf88e)
+est déployé sur **les deux services Render** (API et frontend).
+Ces observations vérifiées priment sur les instantanés historiques ci-dessous.
+
+| Capacité | Mesure du 3 novembre | Signification |
+|---|---|---|
+| Site et API | Services Render en ligne ; API `ok=true` | Vitrine et services de lecture opérationnels |
+| PostgreSQL commandes | `backend=postgres`, `table_ready=true` | Disponibilité de lecture, **pas** preuve d'encaissement |
+| PayBox | `paybox_mode=prod` ; `paybox_checkout_enabled=false` | Prestataire configuré, **aucun checkout marchand public autorisé** |
+| Dispatch GitHub OIDC | `mint_oidc_pull_enabled=true` ; legacy `mint_dispatch_enabled=false` | Authentification GitHub→Render sans PAT vérifiée, **dry-run uniquement** |
+| Mint NFT | `mint_dry_run=true`, `mint_live_enabled=false`, `mint_micro_price=false` | Aucun mint live activé |
+| LIA / bridge TRO | `lia_live_trading=0` ; bridge `off` | Ni trading réel ni transfert interchaînes |
+
+Le [workflow OIDC #41624043754](https://github.com/Neltud/xArtists/actions/runs/41624043754)
+a réussi à consulter la file sécurisée Render. Il a trouvé **zéro commande
+payée éligible** : il ne prouve ni dispatch effectif d'une vente, ni
+création/livraison NFT.
+
+La [PR #306](https://github.com/Neltud/xArtists/pull/306) a aussi fusionné
+une **vérification candidate S1/S2 en lecture seule**. Elle exige un paiement
+PayBox confirmé, le bon prix, un job de mint réel, une collection/issuer
+approuvés séparément et une preuve de réception MultiversX non réutilisée.
+Ce contrôle ne modifie aucun droit acheteur : **`delivery_verified=false`**
+tant que la transaction SQL atomique et les preuves commerciales réelles
+n'ont pas été indépendamment approuvées.
+
+**Décision : GO pour l'exploration publique ; NO-GO pour les paiements
+publics, le mint mainnet, la livraison commerciale NFT, le trading et
+le bridge.** Voir [les critères de lancement](../security/launch-gates.md)
+et [l'issue P0 #281](https://github.com/Neltud/xArtists/issues/281).
 
 ## Contrôle de production post-fusion — 2 novembre 2026
 
