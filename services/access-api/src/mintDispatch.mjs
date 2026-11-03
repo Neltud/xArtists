@@ -102,9 +102,50 @@ async function getPool(env) {
       connectionString: env.DATABASE_URL,
       ssl: env.PGSSL === '0' ? false : { rejectUnauthorized: true },
       max: 3,
+      connectionTimeoutMillis: 4_000,
     })
   }
   return pool
+}
+
+const MINT_JOBS_PROBE_CACHE_MS = 30_000
+let mintJobsProbeCached = null
+let mintJobsProbeInFlight = null
+
+/**
+ * Read-only presence check against the EXACT DATABASE_URL used by this API.
+ * Does not invoke ensureMintJobsSchema, trigger dispatch, or read any rows.
+ * Public response never exposes database identity, counts, credentials or SQL.
+ */
+export async function probeMintJobsStore({ fresh = false } = {}, env = process.env) {
+  const backend = usePostgresJobs(env) ? 'postgres' : 'file'
+  if (backend !== 'postgres') {
+    return { ok: false, backend, table_ready: false }
+  }
+  if (!fresh && mintJobsProbeCached && Date.now() < mintJobsProbeCached.until) {
+    return mintJobsProbeCached.result
+  }
+  if (mintJobsProbeInFlight) return mintJobsProbeInFlight
+
+  mintJobsProbeInFlight = (async () => {
+    try {
+      const p = await getPool(env)
+      const result = await p.query({
+        text: "SELECT to_regclass('public.mint_jobs') IS NOT NULL AS table_ready",
+        query_timeout: 3_000,
+      })
+      const tableReady = result.rows[0]?.table_ready === true
+      return { ok: tableReady, backend: 'postgres', table_ready: tableReady }
+    } catch {
+      return { ok: false, backend: 'postgres', table_ready: false }
+    }
+  })()
+    .then((result) => {
+      mintJobsProbeCached = { result, until: Date.now() + MINT_JOBS_PROBE_CACHE_MS }
+      return result
+    })
+    .finally(() => { mintJobsProbeInFlight = null })
+  return mintJobsProbeInFlight
 }
 
 async function ensureMintJobsSchema(client) {
