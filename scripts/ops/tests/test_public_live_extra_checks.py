@@ -2,6 +2,7 @@
 import unittest
 from unittest.mock import patch
 from urllib.error import HTTPError
+from email.message import Message
 
 from scripts.ops import public_live_extra_checks as smoke
 
@@ -78,6 +79,21 @@ class PublicLiveChecksTests(unittest.TestCase):
         ]:
             with self.assertRaises(AssertionError):
                 smoke.check_bridge({**safe, **bad})
+
+    def test_duplicate_vary_headers_are_preserved_from_proxy(self):
+        class ProxyResponse(FakeResponse):
+            headers = Message()
+            headers.add_header("Content-Type", "application/json")
+            headers.add_header("Vary", "Origin")
+            headers.add_header("Vary", "Accept-Encoding")
+            headers.add_header("Access-Control-Allow-Origin", smoke.RENDER)
+
+        with patch.object(smoke, "urlopen", return_value=ProxyResponse()):
+            status, headers, _ = smoke.fetch_public("https://example.test", smoke.RENDER, attempts=1)
+        self.assertEqual(status, 200)
+        self.assertIn("Origin", headers["vary"])
+        self.assertIn("Accept-Encoding", headers["vary"])
+        smoke.check_cors(headers, smoke.RENDER, allowed=True)
 
     def test_transient_503_can_recover_but_404_fails_immediately(self):
         transient = HTTPError("https://example.test", 503, "asleep", {}, None)
