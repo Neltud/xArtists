@@ -45,7 +45,7 @@ jobs:
           curl --proto '=https' --tlsv1.2 -fLsS --retry 2 --retry-delay 3 \
             'https://github.com/anza-xyz/agave/releases/download/v4.3.0/solana-release-x86_64-unknown-linux-gnu.tar.bz2' \
             -o "$RUNNER_TEMP/solana-release.tar.bz2"
-          sha256sum "$RUNNER_TEMP/solana-release.tar.bz2"
+          echo "c97289a8abb1d0efb497d8b5cb285baabd9b7f8ea6647f5d145c5dc8ff3611e8  $RUNNER_TEMP/solana-release.tar.bz2" | sha256sum --check --status
           tar -xjf "$RUNNER_TEMP/solana-release.tar.bz2" -C "$RUNNER_TEMP"
           test -x "$RUNNER_TEMP/solana-release/bin/solana-test-validator"
           echo "$RUNNER_TEMP/solana-release/bin" >> "$GITHUB_PATH"
