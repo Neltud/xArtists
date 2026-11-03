@@ -158,7 +158,9 @@ fn t02_different_wallet_cannot_redeem_a_voucher_for_buyer() {
     setup.role();
     let buyer = setup.buyer.clone();
     let other = setup.other.clone();
-    setup.execute(&other, &buyer, Claim::default(), None).assert_user_error("invalid signature");
+    let failed = setup.execute(&other, &buyer, Claim::default(), None);
+    assert!(!failed.result_status.is_success(), "wrong caller signature must fail");
+    assert_eq!(failed.result_message, "ed25519 verify error");
     assert!(!setup.claimed(ORDER_HASH));
     setup.world.check_nft_balance(&other, TOKEN, 1, &rust_biguint!(0u64), None::<&u32>);
 }
@@ -182,7 +184,9 @@ fn t04_wrong_signature_and_unknown_epoch_rejected() {
     let buyer = setup.buyer.clone();
     let mut bad = signature(setup.sc.address_ref(), &buyer, Claim::default());
     bad[0] ^= 0x20;
-    setup.execute(&buyer, &buyer, Claim::default(), Some(bad)).assert_user_error("invalid signature");
+    let failed = setup.execute(&buyer, &buyer, Claim::default(), Some(bad));
+    assert!(!failed.result_status.is_success(), "tampered signature must fail");
+    assert_eq!(failed.result_message, "ed25519 verify error");
     let epoch = Claim {epoch: 8, ..Claim::default()};
     setup.execute(&buyer, &buyer, epoch, None).assert_user_error("signer epoch stale");
     assert!(!setup.claimed(ORDER_HASH));
