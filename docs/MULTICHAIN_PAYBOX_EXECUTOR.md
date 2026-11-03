@@ -85,6 +85,9 @@ L'adaptateur demande désormais un solde observé, un prix USD daté de moins de
 
 > **STOP FINANCEMENT (3 novembre 2026).** L'adresse ci-dessous est une **référence historique**, pas une adresse de dépôt actuellement autorisée. Une vérification publique de Solscan a montré 0 SOL / « Account does not exist onchain » ; cela ne prouve ni que le wallet est perdu, ni que PayBox le contrôle. La lecture d'une adresse dans GitHub ou l'explorateur ne démontre jamais la possession de la clé. **Ne pas envoyer de SOL, USDC, ETH, EGLD ou autres tokens à une adresse non revalidée.**
 
+
+> **Confirmation propriétaire (3 novembre 2026).** Le responsable du projet a déclaré dans la conversation xArtists que `Dmc7RKdPNKcDDeGVW37rPnZZ7jJiPYuCmgB1EMBbRRFN` est **bien l'adresse PayBox Solana partagée avec Grok**. Cela valide le *destinataire indiqué par le propriétaire*, mais pas encore une attestation technique d'accès/signature PayBox ni une transaction créditée. Le microfinancement volontaire n'est **pas** une autorisation de trading, swap, bridge ou transfert automatisé. Après comparaison sur l'écran de signature du wallet source, l'opérateur peut effectuer lui-même un **microtransfert SOL natif uniquement sur Solana mainnet**, conserver du SOL pour les frais et vérifier le hash finalisé sur un explorateur. Les tokens d'autres réseaux ne doivent jamais être envoyés à cette adresse.
+
 ### Protocole de confirmation avant un premier transfert
 
 1. Le propriétaire ouvre [PayBox](https://paybox.sh/) sur son propre compte et vérifie l'identifiant du credential Solana **actuellement** connecté, le réseau `solana:mainnet`, le wallet public affiché et son contrôle d'approbation/passkey. Aucun mot de passe, clé privée ou seed en chat ou dans le dépôt.
