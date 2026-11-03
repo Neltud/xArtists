@@ -1,9 +1,3 @@
----
-description: >-
-  xArtists au 3 novembre 2026 : visite, démonstration et transactions clairement séparées.
-icon: circle-check
----
-
 # Disponibilité de xArtists
 
 **Mise à jour : 3 novembre 2026.** Un site accessible, un contrat existant et une transaction commerciale autorisée sont trois choses différentes.
