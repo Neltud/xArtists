@@ -1,5 +1,8 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react'
 import { normalizePublicPath } from '../lib/publicRoutes'
+// Critical $TRO landing-page styles must be available before lazy route resolution.
+// Avoid a separate CSS-preload failure on direct Pages / Render deep links.
+import '../pages/troCrosschain.css'
 export type Group = 'explore' | 'create' | 'intelligence' | 'finance' | 'workspace'
 export type Module = { id: string; path: string; aliases: string[]; label: string; group: Group; icon: string; page: LazyExoticComponent<ComponentType<any>>; tags: string[]; load: ()=>Promise<any> }
 const module = (id:string,path:string,aliases:string[],label:string,group:Group,icon:string,page:()=>Promise<any>,tags:string[]=[]):Module => ({id,path,aliases,label,group,icon,page:lazy(page),tags,load:page})
