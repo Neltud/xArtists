@@ -1,6 +1,6 @@
 /**
- * Public no-wallet visit guide. Technical GO_LIVE diagnostics and closed Slot
- * experiments belong to operator/lab pages, never the visitor first journey.
+ * Public no-wallet visitor guide. Technical operations and closed experiments
+ * belong to operator/lab pages, never the visitor first journey.
  */
 import { Link } from 'react-router-dom'
 import { useCopy } from '../experience/state'
