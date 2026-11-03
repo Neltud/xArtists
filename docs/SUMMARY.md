@@ -1,4 +1,4 @@
-# xArtists — Guide public
+# Table of contents
 
 * [Bienvenue — xArtists](README.md)
 * [La Maison xArtists](presentation/README.md)
@@ -22,13 +22,3 @@
   * [Contribuer et partenariats](presentation/contribuer-et-partenariats.md)
   * [xArtists — English overview](presentation/english-overview.md)
 
-<!--
-PUBLIC NAVIGATION POLICY (2026-11-03)
-The GitBook site is a visitor-facing product guide. Do not bulk-index GitHub
-runbooks, prompt relays (Grok/GPT), secrets-handling guides, unverified LIVE
-contract claims, production incident logs, payment credentials or obsolete audits.
-The technical files remain in the public GitHub repository unless separately
-removed/migrated. Removing them from SUMMARY.md does NOT make them private.
-A security/legal review is required to assess any sensitive documents that
-were previously public. Keep the public availability page accurate.
--->
