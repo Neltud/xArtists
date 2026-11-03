@@ -51,7 +51,7 @@ pas sur JSON réordonnable. Domain separator obligatoire :
 **À corriger lors de l'implémentation** : le domaine est défini par les
 octets littéraux (non une longueur tapée à la main) ; les vecteurs hex de
 référence devront être calculés et comparés Node/Rust avant tout testnet.
-Ni `provider_tx_id` ni le prix ELF/EGLD du deployer ne doivent faire
+Ni `provider_tx_id` ni le prix EGLD du deployer ne doivent faire
 partie d'une transaction NFT publique. Ils restent dans le ledger PSP.
 Une signature contient tous les champs ci-dessus ; aucune substitution
 de pack, montant, contrat, réseau, signer ou buyer n'est acceptée.
@@ -129,3 +129,46 @@ contrat testnet et les prérequis précédents.
 Voir aussi [Prix, droits et livraison](pricing-delivery.md) et
 [Critères de lancement](launch-gates.md). Le verrou
 [PR #310](https://github.com/Neltud/xArtists/pull/310) reste en vigueur.
+
+
+## Implémentation v1 hors ligne et vecteur de référence
+
+La phase actuelle fournit le module `services/access-api/src/claimVoucherCodec.mjs`
+et ses tests `claimVoucherCodec.test.mjs` **sans émission de voucher,
+clé de production, endpoint HTTP, transaction ni effet de bord**.
+Le format signé fait **146 octets** sur les trois réseaux reconnus ;
+les identifiants réseau sont `1` (mainnet), `T` (testnet) et `D` (devnet).
+Les adresses sont décodées et leur checksum Bech32 est vérifié avant signature.
+La fenêtre de validité est au maximum de **900 secondes**.
+
+La valeur du séparateur de domaine est définie sans ambiguïté par
+`0x58412d434c41494d2d5041434b2d563100` (17 octets, NUL final).
+Le domaine du hachage de commande est la séquence ASCII
+`xartists/order/v1` puis `0x00`, soit 18 octets au total.
+
+Pour les tests indépendants Rust / JS, le vecteur canonique est :
+
+| Champ | Valeur **fictive de test** |
+| --- | --- |
+| Réseau / contrat | `T` / 32 octets `0x11` |
+| `signer_epoch` | `7` |
+| `order_id` | `xa_test_001` |
+| `order_hash` | `e6bc635174d7e7662636b2d416874a7395948ff38dac0bb0bb426add2b84be8c` |
+| Pack / acheteur | `1` (Pulse) / 32 octets `0x22` |
+| Prix / catalogue | `11000` centimes EUR / v1 |
+| Période | 2026-11-03 12:00:00 UTC → 12:10:00 UTC |
+| SHA-256 des 146 octets signés | `d0db4848cb62c46a4ff7fbfde9306f705b9373a17add313aad6aa6a272b62a4c` |
+
+Ces octets de test sont des valeurs fictives ; **aucun contrat réel n'est
+impliqué**. La signature Ed25519 est appliquée **aux 146 octets bruts**,
+sans seconde transformation ni sérialisation JSON. L'implémentation
+Rust du contrat et ses scénarios de tests doivent reproduire ce hash
+avant tout déploiement testnet ; ce contrôle Rust n'est pas encore acquis.
+
+La migration `services/access-api/migrations/candidate_claim_voucher_v1.sql`
+est un **candidat non appliqué**, décrivant des contraintes d'unicité
+`order_id`, `provider_tx_id`, `order_hash` et une durée de validité
+maximale. Elle ne constitue pas le verrou transactionnel S1/S2 :
+ce verrou et les tests de concurrence/réclamation/remboursement
+restent à implémenter, puis à faire approuver. Une signature valide
+ne prouve ni le paiement, ni la propriété d'un NFT, ni la livraison.
