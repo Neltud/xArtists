@@ -39,7 +39,13 @@ RETURNS TRIGGER AS $func$
 DECLARE
   o paybox_orders%ROWTYPE;
   j mint_jobs%ROWTYPE;
+  expected_cents INTEGER;
 BEGIN
+  -- PL/pgSQL parses THEN as IF terminator even in a SQL CASE expression:
+  -- compute Rule1 catalogue price separately, before the IF predicate.
+  expected_cents := CASE NEW.pack_id
+    WHEN 'pulse' THEN 11000 WHEN 'yield' THEN 7500
+    WHEN 'sentinel' THEN 5000 ELSE -1 END;
   SELECT * INTO o FROM paybox_orders
     WHERE order_id = NEW.order_id FOR SHARE;
   SELECT * INTO j FROM mint_jobs
@@ -53,9 +59,7 @@ BEGIN
      o.amount_cents IS DISTINCT FROM NEW.amount_cents OR
      -- Duplicate an amount in both ledgers cannot make a discounted
      -- or forged price into a valid pack payment.
-     NEW.amount_cents <> CASE NEW.pack_id
-       WHEN 'pulse' THEN 11000 WHEN 'yield' THEN 7500
-       WHEN 'sentinel' THEN 5000 ELSE -1 END OR
+     NEW.amount_cents IS DISTINCT FROM expected_cents OR
      o.payload->>'status' IS DISTINCT FROM 'paid' OR
      o.payload->>'provider_tx_id' IS DISTINCT FROM NEW.provider_tx_id OR
      o.payload->>'buyer_address' IS DISTINCT FROM NEW.buyer_address OR
