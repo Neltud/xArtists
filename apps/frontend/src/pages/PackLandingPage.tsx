@@ -73,7 +73,7 @@ export default function PackLandingPage() {
         <div className="flex flex-wrap gap-3 items-baseline">
           <strong className="text-3xl tabular-nums text-[color:var(--xa-text)]">{pack.priceEur.list} €</strong>
           <span className="text-[14px] text-[color:var(--xa-text-muted)]">
-            ≈ {pack.priceEgld.list} EGLD · Rule1
+            ≈ {pack.priceEgld.list} EGLD · estimation catalogue, non contractuelle
           </span>
         </div>
         <p className="text-[12px] text-[color:var(--xa-text-muted)]">
@@ -115,6 +115,10 @@ export default function PackLandingPage() {
           </ul>
         </div>
       </section>
+
+      <p role="status" className="rounded-xl border border-amber-300/25 bg-amber-300/[0.06] px-4 py-3 text-[12px] text-[color:var(--xa-text-secondary)]">
+        {xaRender('Vitrine Genesis en mode aperçu : aucun prix affiché ne constitue un devis payable. Paiement et livraison NFT restent bloqués tant que les validations on-chain, API, banque et opérateur ne sont pas réunies.')}
+      </p>
 
       <Pack3DCockpit packId={id} showIntents={false} />
 
