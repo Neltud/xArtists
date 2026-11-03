@@ -13,7 +13,7 @@ import {
 } from './paybox.mjs'
 import {
   createOrder, getOrder, getOrderForBuyer, applyIpn, markRedirected, newOrderId, resolveArtistBeneficiary,
-  triggerMintDispatchSafe, publicOrderDelivery,
+  triggerMintDispatchSafe, publicOrderDelivery, probeOrdersStore,
 } from './orders.mjs'
 import { resolveAuthenticatedBuyer } from './buyerAuth.mjs'
 import { buildPackQuote } from './quote.mjs'
@@ -132,6 +132,15 @@ async function handleRequest(req, res) {
   }
 
 
+
+  // Separate operational dependency check: /health intentionally stays fast
+  // and does not pretend that DATABASE_URL guarantees a working database.
+  // Safe for public monitoring: SELECT only, no PII, no SQL errors or secrets.
+  if (req.method === 'GET' && pth === '/v1/ops/orders-store/status') {
+    const status = await probeOrdersStore()
+    json(res, status.ok ? 200 : 503, status)
+    return
+  }
 
   // The TRO Solana bridge and direct sale are not deployed.
   // Read-only status, intentionally no deposits, quotes or automated signing.
