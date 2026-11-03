@@ -8,6 +8,7 @@ on:
       - 'services/access-api/src/orders.mjs'
       - 'services/access-api/src/server.mjs'
       - 'services/access-api/tests/ordersStoreProbePostgres.test.mjs'
+      - 'services/access-api/tests/payboxSignedIpnPostgres.test.mjs'
       - '.github/workflows/mint-dispatch-postgres-ci.yml'
   push:
     branches: [main]
@@ -17,6 +18,7 @@ on:
       - 'services/access-api/src/orders.mjs'
       - 'services/access-api/src/server.mjs'
       - 'services/access-api/tests/ordersStoreProbePostgres.test.mjs'
+      - 'services/access-api/tests/payboxSignedIpnPostgres.test.mjs'
       - '.github/workflows/mint-dispatch-postgres-ci.yml'
   workflow_dispatch:
 
@@ -61,4 +63,15 @@ jobs:
         working-directory: services/access-api
       - name: Verify read-only order-store readiness against isolated PostgreSQL
         run: node --test tests/ordersStoreProbePostgres.test.mjs
+        working-directory: services/access-api
+      - name: Create a second disposable DB solely for signed PayBox HTTP tests
+        env:
+          PGPASSWORD: postgres
+        run: |
+          set -euo pipefail
+          psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -c 'CREATE DATABASE xartists_ipn_probe'
+      - name: Prove RSA signed IPN through HTTP and PostgreSQL with replay safety
+        env:
+          TEST_IPN_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/xartists_ipn_probe
+        run: node --test tests/payboxSignedIpnPostgres.test.mjs
         working-directory: services/access-api
