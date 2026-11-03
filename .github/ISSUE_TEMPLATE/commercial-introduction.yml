@@ -1,0 +1,48 @@
+name: "xArtists · Public introduction"
+description: "Demonstration, artist presentation or partnership enquiry — public, non-binding, no payment."
+title: "[Introduction] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Public contact — no payment or reservation
+        This GitHub issue is **public**. Do not share your email address,
+        phone number, postal address, wallet/seed/private key, identity
+        documents, unpublished artwork or confidential business information.
+
+        This form is for a **non-binding introduction only**.
+        xArtists checkout and NFT mint are not open. A message is not a
+        purchase, guaranteed response, claim, invoice, reservation or proof
+        of ownership. GitHub login is required to submit the request.
+
+        Français : ce ticket est **public**. Ne partagez aucune donnée
+        personnelle, clé privée, adresse de portefeuille ou œuvre
+        confidentielle. Aucun paiement ni droit NFT ne découle du ticket.
+  - type: dropdown
+    id: interest
+    attributes:
+      label: "Type de demande / Area of interest"
+      options:
+        - "Présentation pack Pulse / Pulse introduction"
+        - "Présentation pack Yield / Yield introduction"
+        - "Présentation pack Sentinel / Sentinel introduction"
+        - "Artiste et exposition / Artist collaboration"
+        - "Partenariat / Partnership"
+        - "Question générale / General question"
+    validations:
+      required: true
+  - type: textarea
+    id: publicly-shareable-description
+    attributes:
+      label: "Votre demande publique / Public description"
+      description: "Non-confidential, no PII or payment instructions."
+      placeholder: "Je souhaite découvrir... / I would like to explore..."
+    validations:
+      required: true
+  - type: checkboxes
+    id: public-consent
+    attributes:
+      label: "Confirmation"
+      options:
+        - label: "I understand this issue is public and does not place an order or transmit a payment."
+          required: true
