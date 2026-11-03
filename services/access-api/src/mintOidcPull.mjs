@@ -99,7 +99,7 @@ function eligible(order) {
   return order && order.status === 'paid' &&
     order.server_confirmed === true &&
     order.delivery_verified !== true &&
-    /^[1-9][0-9]{0,5}$/.test(String(order.edition || 1)) &&
+    /^[1-9][0-9]{0,5}$/.test(String(order.edition ?? 1)) &&
     /^[A-Za-z0-9_-]{1,64}$/.test(String(order.order_id || '')) &&
     assertPaymentAllowsMint(order).ok
 }
@@ -127,7 +127,7 @@ export async function claimOidcMintOrder(order, identity, env = process.env) {
       order_id: order.order_id,
       pack_id: String(order.pack_id).toLowerCase(),
       buyer_address: order.buyer_address,
-      edition: String(order.edition || 1),
+      edition: String(order.edition ?? 1),
       status: MINT_JOB_STATUS.DISPATCHING,
       mode: 'dry_run',
       github_dispatch_accepted: false,
