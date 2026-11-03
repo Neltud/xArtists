@@ -53,6 +53,27 @@ test('every canonical route and alias is emitted as real HTML, including mobile 
   } finally { await fs.rm(root, { recursive: true, force: true }) }
 })
 
+test('Vite CSS/JS preload errors ask for explicit full reload, not a React-only retry', async () => {
+  const { needsFreshBundle } = loadSource('src/lib/routeChunkRecovery.ts')
+  for (const message of [
+    'Unable to preload CSS for /xArtists/assets/TroCrosschainPage-B21Qc--r.css',
+    'Unable to preload JS for /xArtists/assets/OldPage-aaaa.js',
+    'Failed to fetch dynamically imported module: https://neltud.github.io/xArtists/assets/OldPage.js',
+    'Loading chunk 17 failed',
+    'Importing a module script failed.',
+    'ChunkLoadError: Loading chunk 12 failed.',
+  ]) {
+    assert.equal(needsFreshBundle(message), true, message)
+  }
+  for (const message of ['Network error', 'Invalid React child', null, {}, 'Invalid session', '']) {
+    assert.equal(needsFreshBundle(message), false, String(message))
+  }
+  const boundary = await fs.readFile(path.join(frontend, 'src/components/RouteErrorBoundary.tsx'), 'utf8')
+  assert.match(boundary, /needsFreshBundle\(msg\)/)
+  assert.match(boundary, /window\.location\.reload\(\)/)
+  assert.match(boundary, /onClick=\{this\.retry\}/)
+})
+
 test('PWA manifest declares real PNG dimensions and keeps shortcuts inside its scope', async () => {
   const manifest = JSON.parse(await fs.readFile(path.join(frontend, 'public/manifest.webmanifest'), 'utf8'))
   assert.equal(manifest.id, '/xArtists/')
