@@ -493,6 +493,13 @@ async function handleRequest(req, res) {
       json(res, 400, { ok: false, error: result.reason })
       return
     }
+    // A signed success without a PSP transaction identifier cannot be
+    // reconciled or reliably deduplicated against other orders. Fail closed
+    // before reading or modifying the buyer's ledger entry.
+    if (result.paid && !String(result.provider_tx_id || '').trim()) {
+      json(res, 400, { ok: false, error: 'missing_provider_transaction_id' })
+      return
+    }
     const order = await getOrder(result.ref)
     if (!order) {
       json(res, 400, { ok: false, error: 'unknown_order', order_id: result.ref })
