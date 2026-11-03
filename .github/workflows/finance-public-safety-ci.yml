@@ -1,0 +1,22 @@
+name: Finance route and RWA public safety
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/pages/AdsPage.tsx'
+      - 'apps/frontend/src/pages/RwaCatalogPage.tsx'
+      - 'apps/frontend/src/pages/GoLivePage.tsx'
+      - 'apps/frontend/src/experience/Pages.tsx'
+      - 'apps/frontend/src/experience/modules.ts'
+      - 'apps/frontend/tests/finance-public-safety.test.mjs'
+      - '.github/workflows/finance-public-safety-ci.yml'
+permissions:
+  contents: read
+jobs:
+  finance-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test apps/frontend/tests/finance-public-safety.test.mjs
