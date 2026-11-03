@@ -76,3 +76,15 @@ test('direct campaign URLs are prebuilt as HTTP 200 entrypoints on GitHub Pages'
   assert.ok(wf.includes('"https://neltud.github.io/xArtists/$page/"'))
   assert.match(wf,/Public campaign deep link \$page did not pass HTTP 200 check/)
 })
+
+test('commercial trailing slash cannot downgrade the browser title to NotFound',()=>{
+  const shell = read('src/experience/Shell.tsx')
+  assert.match(shell,/const key=pathname\.split\('\/'\)\.filter\(Boolean\)\.join\('\/'\)/)
+  assert.match(shell,/const isOffers=key==='offres'\|\|key==='offers'/)
+  assert.match(shell,/const title=isOffers\?/)
+  assert.match(shell,/const canonical=isOffers\?new URL\('offres\/'/)
+  for (const route of ['/offres', '/offres/', '/offers', '/offers/']) {
+    const key = route.split('/').filter(Boolean).join('/')
+    assert.ok(key === 'offres' || key === 'offers', route)
+  }
+})
