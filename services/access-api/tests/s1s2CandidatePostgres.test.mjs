@@ -33,17 +33,17 @@ test('PostgreSQL candidate ledger: unique PSP/tx/NFT, correlated S1/S2, immutabl
   const hash = chr => chr.repeat(64)
   const serial = Date.now().toString(36)
 
-  async function fixture(index, { paid = true, mode = 'live',
+  async function fixture(index, { paid = true, mode = 'live', amount = 5000,
     tx = hash(String(index)), token = String(index).padStart(2, '0') } = {}) {
     const orderId = 's1s2_' + serial + '_' + index
     const provider = 'fixture_psp_' + orderId
     await createOrder({
       order_id: orderId, pack_id: 'sentinel',
-      amount_cents: 5000, buyer_address: buyer,
+      amount_cents: amount, buyer_address: buyer,
     })
     if (paid) {
       const paidResult = await applyIpn({
-        order_id: orderId, amount_cents: 5000,
+        order_id: orderId, amount_cents: amount,
         provider_tx_id: provider,
         authorization: 'fixture_only',
         error_code: '00000',
@@ -57,7 +57,7 @@ test('PostgreSQL candidate ledger: unique PSP/tx/NFT, correlated S1/S2, immutabl
         order_id: orderId,
         status: 'submitted',
         pack_id: 'sentinel', buyer_address: buyer,
-        amount_cents: 5000,
+        amount_cents: amount,
         provider_tx_id: provider,
         chain_tx_hash: tx, nft_identifier: nft,
         mode, micro_price: false,
@@ -67,7 +67,7 @@ test('PostgreSQL candidate ledger: unique PSP/tx/NFT, correlated S1/S2, immutabl
       }
     }, env)
     return { orderId, provider, tx, nft, buyer,
-      pack: 'sentinel', amount: 5000 }
+      pack: 'sentinel', amount }
   }
 
   async function insert(row) {
@@ -94,6 +94,9 @@ test('PostgreSQL candidate ledger: unique PSP/tx/NFT, correlated S1/S2, immutabl
     const unpaid = await fixture(5, { paid: false, tx: hash('d'), token: '05' })
     const dry = await fixture(6, { mode: 'dry_run', tx: hash('e'), token: '06' })
     const rollback = await fixture(7, { tx: hash('f'), token: '07' })
+    const discounted = await fixture(8, { amount: 1, tx: hash('8'), token: '08' })
+    const missingStatus = await fixture(9, { tx: hash('9'), token: '09' })
+    const missingMicroFlag = await fixture(10, { tx: hash('0'), token: '0a' })
 
     // No migration is run during production startup. CI applies only to its
     // disposable localhost PostgreSQL service after synthetic parent tables.
@@ -117,6 +120,18 @@ test('PostgreSQL candidate ledger: unique PSP/tx/NFT, correlated S1/S2, immutabl
     await rejectCode(insert(reusedNft), '23505') // Same NFT, another tx/order.
     await rejectCode(insert(unpaid), '23514') // No verified paid IPN.
     await rejectCode(insert(dry), '23514') // GitHub dry-run is not S2.
+    await rejectCode(insert(discounted), '23514') // Synthetic S1 can never discount catalogue.
+    // Missing JSON keys must fail closed (SQL three-valued NULL logic).
+    await pool.query(
+      "UPDATE paybox_orders SET payload = payload - 'status' WHERE order_id=$1",
+      [missingStatus.orderId],
+    )
+    await rejectCode(insert(missingStatus), '23514')
+    await pool.query(
+      "UPDATE mint_jobs SET payload = payload - 'micro_price' WHERE order_id=$1",
+      [missingMicroFlag.orderId],
+    )
+    await rejectCode(insert(missingMicroFlag), '23514')
     await rejectCode(insert({ ...concurrent, orderId: 'unknown_parent' }), '23514')
     await rejectCode(insert({ ...concurrent, provider: first.provider }), '23514')
 
@@ -172,12 +187,50 @@ test('PostgreSQL candidate ledger: unique PSP/tx/NFT, correlated S1/S2, immutabl
     )
     assert.equal(reverted.rowCount, 0)
 
+    // Historical reservation remains, but a later refund/dispute or failed
+    // mint job MUST immediately invalidate the live read-only consistency view.
+    const verifyConsistency = async id => {
+      const r = await pool.query(
+        'SELECT state, current_ledger_consistent FROM s1s2_candidate_current_consistency WHERE order_id=$1',
+        [id],
+      )
+      assert.equal(r.rows.length, 1)
+      assert.equal(r.rows[0].state, 'review_pending')
+      return r.rows[0].current_ledger_consistent
+    }
+    assert.equal(await verifyConsistency(first.orderId), true)
+    assert.equal(await verifyConsistency(concurrent.orderId), true)
+    await pool.query(
+      `UPDATE paybox_orders SET status='refunded',
+        payload=jsonb_set(payload, '{status}', '"refunded"'::jsonb),
+        updated_at=NOW()
+       WHERE order_id=$1`,
+      [first.orderId],
+    )
+    assert.equal(await verifyConsistency(first.orderId), false,
+      'refunded candidate can never be current evidence')
+    assert.equal(await verifyConsistency(concurrent.orderId), true)
+    await pool.query(
+      `UPDATE mint_jobs SET status='failed',
+        payload=jsonb_set(payload, '{status}', '"failed"'::jsonb),
+        updated_at=NOW() WHERE order_id=$1`,
+      [concurrent.orderId],
+    )
+    assert.equal(await verifyConsistency(concurrent.orderId), false,
+      'failed mint job must invalidate reservation')
+    const rowCount = await pool.query(
+      'SELECT count(*)::int AS n FROM s1s2_candidate_reservations',
+    )
+    assert.equal(rowCount.rows[0].n, 2,
+      'refund/failed job does not rewrite immutable audit evidence')
+
     // Neither signed IPN receipt nor candidate proof ever grants ownership.
     const order = await getOrder(first.orderId)
     assert.equal(order.delivery_verified, false)
     assert.equal(order.delivery, 'pending')
     assert.equal(order.delivered_at, null)
-    console.log('S1S2_POSTGRES_CANDIDATE_OK: one immutable candidate, one concurrent reservation, duplicates blocked, no delivery')
+    assert.equal(order.status, 'refunded')
+    console.log('S1S2_POSTGRES_FRESHNESS_OK: exact catalogue, null guards, refund/failure stale detection, immutable evidence, no delivery')
   } finally {
     await pool.end()
   }
