@@ -35,6 +35,6 @@ jobs:
       - name: Scope invariant — no existing marketplace code modified
         run: |
           test -f contracts/claim-pack-testnet/src/lib.rs
-          grep -F 'verify_ed25519_legacy_managed' contracts/claim-pack-testnet/src/lib.rs
+          grep -F 'verify_ed25519(' contracts/claim-pack-testnet/src/lib.rs
           ! grep -E 'setPackPrice|MINT_LIVE_ENABLED|PAYBOX_CHECKOUT_ENABLED|MINT_GITHUB_PAT' contracts/claim-pack-testnet/src/lib.rs
           echo "Compile only; no mainnet or testnet transaction was attempted"
