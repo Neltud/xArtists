@@ -57,7 +57,7 @@ pub trait XArtistsClaimPackTestnet {
     #[endpoint(configurePackCollection)]
     fn configure_pack_collection(&self, pack_type: u8, token: TokenIdentifier) {
         require!(self.claims_paused().get(), "pause before configuring collection");
-        require!(Self::price_cents(pack_type) > 0, "unknown pack");
+        require!(self.price_cents(pack_type) > 0, "unknown pack");
         require!(token.is_valid_esdt_identifier(), "invalid collection");
         require!(self.pack_collection(pack_type).is_empty(), "collection sealed");
         self.pack_collection(pack_type).set(token);
@@ -106,7 +106,7 @@ pub trait XArtistsClaimPackTestnet {
     ) {
         require!(!self.claims_paused().get(), "claims paused");
         require!(!self.pack_collection(pack_type).is_empty(), "collection missing");
-        let price = Self::price_cents(pack_type);
+        let price = self.price_cents(pack_type);
         require!(price > 0 && amount_cents == price, "catalogue mismatch");
         require!(catalog_version == CATALOG_VERSION, "catalogue version mismatch");
         require!(
@@ -142,7 +142,7 @@ pub trait XArtistsClaimPackTestnet {
         self.claimed(&order_hash).set(true);
 
         let token = self.pack_collection(pack_type).get();
-        let name = Self::pack_name(pack_type);
+        let name = self.pack_name(pack_type);
         let attributes = ManagedBuffer::from(&b"xartists:claim-v1;entitlement:pending-s2"[..]);
         let uris = ManagedVec::new();
         let nonce = self.send().esdt_nft_create(
@@ -190,7 +190,7 @@ pub trait XArtistsClaimPackTestnet {
         out
     }
 
-    fn price_cents(pack: u8) -> u64 {
+    fn price_cents(&self, pack: u8) -> u64 {
         match pack {
             1 => 11_000, // Pulse
             2 => 7_500,  // Yield
@@ -199,7 +199,7 @@ pub trait XArtistsClaimPackTestnet {
         }
     }
 
-    fn pack_name(pack: u8) -> ManagedBuffer {
+    fn pack_name(&self, pack: u8) -> ManagedBuffer {
         match pack {
             1 => ManagedBuffer::from(&b"xArtists Pulse"[..]),
             2 => ManagedBuffer::from(&b"xArtists Yield"[..]),
