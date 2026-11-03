@@ -1,0 +1,83 @@
+name: PayBox + EGLD + SOL micro preflight (testnets, no spending)
+
+# PayBox locally signed fixtures and synthetic EGLD/SOL fees on devnet.
+# No private key, real card, payment, requestAirdrop, sendTransaction, mint,
+# swap, or bridge operation can be performed by this workflow.
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/microtest_chain_fees.py'
+      - '.github/workflows/paybox-egld-sol-micro-preflight.yml'
+      - 'services/access-api/src/paybox.mjs'
+      - 'docs/OPS_PAYBOX_EGLD_SOL_MICRO_2026-11-03.md'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ops/microtest_chain_fees.py'
+      - '.github/workflows/paybox-egld-sol-micro-preflight.yml'
+      - 'services/access-api/src/paybox.mjs'
+      - 'docs/OPS_PAYBOX_EGLD_SOL_MICRO_2026-11-03.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xartists-no-spend-micro-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  no-spend-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      MINT_DISPATCH_ENABLED: '0'
+      MINT_DRY_RUN: '1'
+      MINT_LIVE_ENABLED: '0'
+      LIA_LIVE_TRADING: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/access-api/package-lock.json
+
+      - name: Local PayBox merchant/session signing and RSA callback validation
+        working-directory: services/access-api
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          node --test tests/paybox_v2.test.mjs
+          echo "PayBox local cryptographic fixtures: PASS. No PSP card charge." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Estimate micro transfer gas on MultiversX devnet and fee on Solana devnet
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/ops/microtest_chain_fees.py
+
+      - name: Check Render remains commercially fail-closed (read only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS --retry 3 --retry-delay 4 --max-time 50 \
+            'https://xartists-access-api.onrender.com/health' -o "$RUNNER_TEMP/xartists-health.json"
+          python3 - <<'PY'
+          import json, os
+          with open(os.path.join(os.environ['RUNNER_TEMP'], 'xartists-health.json')) as f:
+              h = json.load(f)
+          assert h.get('service') == 'access-api' and h.get('ok') is True
+          assert h.get('paybox_checkout_enabled') is False
+          assert h.get('mint_dispatch_enabled') is False
+          assert h.get('mint_dry_run') is True
+          assert h.get('mint_live_enabled') is False
+          assert str(h.get('lia_live_trading')) == '0'
+          assert h.get('tro_solana_bridge') == 'off'
+          print('Render commercial NO-GO verified')
+          PY
