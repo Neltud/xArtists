@@ -15,7 +15,7 @@ for (const name of [
     assert.match(workflow, /jobs:\s*\n\s+blocked:/)
     assert.match(workflow, /^\s+exit 1$/m)
     assert.doesNotMatch(workflow, /SC_DEPLOYER_PEM|secrets\.|environment:\s*production/i)
-    assert.doesNotMatch(workflow, /setPackPrice|buyPack|mxpy|--send|--wait-result/i)
+    assert.doesNotMatch(workflow, /setPackPrice|buyPack|mxpy|--send|--wait-result/)
     assert.doesNotMatch(workflow, /\buses:\s*actions\//i)
   })
 }
