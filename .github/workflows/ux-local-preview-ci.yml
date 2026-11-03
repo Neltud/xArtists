@@ -1,0 +1,49 @@
+name: UX local preview — responsive + no-wallet safety
+on:
+  pull_request:
+    paths:
+      - 'e2e/public-ux-preview.config.ts'
+      - 'e2e/public-ux-responsive.spec.ts'
+      - '.github/workflows/ux-local-preview-ci.yml'
+      - 'apps/frontend/src/experience/**'
+      - 'apps/frontend/src/pages/**'
+      - 'apps/frontend/src/context/MultiversXContext.tsx'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ux-local:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: 'true'
+      LIA_LIVE_TRADING: '0'
+      VITE_LIA_LIVE_TRADING: '0'
+      VITE_PAYBOX_ENABLED: 'false'
+      VITE_MINT_LIVE_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install workspace and frontend dependencies
+        run: |
+          set -euo pipefail
+          npm install --ignore-scripts
+          npm install --prefix apps/frontend --ignore-scripts
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Build THIS PR's frontend
+        run: npm run build --prefix apps/frontend
+      - name: Responsive no-wallet assertions on local Vite preview
+        run: npx playwright test --config=e2e/public-ux-preview.config.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xartists-local-ux-mobile-screenshots
+          path: |
+            artifacts/ux-mobile/
+            playwright-report/ux-local/
+            test-results/
+          retention-days: 10
