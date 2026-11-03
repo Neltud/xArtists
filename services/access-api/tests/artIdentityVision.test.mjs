@@ -55,6 +55,16 @@ test('uniform, fully transparent and near-flat inputs are low information',()=>{
   assert.equal(almostFlat.phash64,null)
 })
 
+test('native browser Uint8ClampedArray image data is accepted', () => {
+  const frameData = frame(32, 32, verticalBlocks)
+  const browserData = {
+    ...frameData,
+    rgba:new Uint8ClampedArray(frameData.rgba),
+  }
+  assert.equal(computeArtPHash64V1(browserData).phash64,
+    computeArtPHash64V1(frameData).phash64)
+})
+
 test('strict bounds protect the vision pipeline from huge malformed frames',()=>{
   const valid=frame(32,32,verticalBlocks)
   for(const input of [
