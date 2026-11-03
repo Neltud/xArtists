@@ -1,0 +1,35 @@
+name: Manual live mint P0 hardlock (dry-run only)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/mint-on-payment.yml'
+      - '.github/workflows/mint-live-hardlock-ci.yml'
+      - 'tests/mint-live-hardlock.test.mjs'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/mint-on-payment.yml'
+      - '.github/workflows/mint-live-hardlock-ci.yml'
+      - 'tests/mint-live-hardlock.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  assert-mainnet-inert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    env:
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      MINT_LIVE_ENABLED: '0'
+      MINT_DISPATCH_ENABLED: '0'
+      LIA_LIVE_TRADING: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prevent manual mainnet mint bypass of Render safety flags
+        run: node --test tests/mint-live-hardlock.test.mjs

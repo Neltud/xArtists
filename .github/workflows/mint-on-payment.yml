@@ -2,8 +2,9 @@ name: Mint on payment (hardened Sprint 2)
 
 run-name: "Mint ${{ inputs.live_mint == 'true' && 'LIVE' || 'DRY_RUN' }} / ${{ inputs.order_id }}"
 
-# live_mint defaults false. Non-atomic micro-pricing is prohibited by the live gate.
-# The full live-mint flow still needs a separate signed mainnet operational GO.
+# live_mint defaults false. The entire manual live job is hard-disabled
+# until a safe atomic-price design, chain receipt and independent operational GO.
+# Render feature flags do not guard a manually dispatched GitHub Actions job.
 
 on:
   workflow_dispatch:
@@ -64,6 +65,19 @@ env:
   SC: erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg
 
 jobs:
+  # Explicitly FAIL a manual "live_mint=true" request. A skipped mint job alone
+  # would make the Actions run look green despite no signed mint.
+  live_disabled:
+    if: ${{ github.event.inputs.live_mint == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Stop manual live mint before accessing production environment
+        shell: bash
+        run: |
+          echo "::error title=Mint mainnet intentionally disabled::Unsafe non-atomic setPackPrice/buyPack route is blocked. Use dry-run only and request independent mainnet GO after redesign."
+          exit 1
+
   dry_run:
     # No production environment or deployer key is available to a dry-run.
     if: ${{ github.event.inputs.live_mint != 'true' }}
@@ -92,8 +106,11 @@ jobs:
           echo "No production environment, no PEM, no signing, no mint, no transfers." >> "$GITHUB_STEP_SUMMARY"
 
   mint:
-    # Live execution must retain explicit production environment approval.
-    if: ${{ github.event.inputs.live_mint == 'true' }}
+    # SECURITY P0 HARD LOCK: live workflow is DISABLED until an atomic,
+    # separately reviewed chain mint+delivery route replaces setPackPrice -> buyPack.
+    # Do NOT rely on Render's MINT_LIVE_ENABLED (manual Actions bypasses Render).
+    # Keep the job as inert reference only; never load the production PEM.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment: production
