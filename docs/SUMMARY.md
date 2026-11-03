@@ -44,6 +44,7 @@
   * [Accès et disponibilité](presentation/etat-du-produit.md)
   * [Ouverture commerciale — catalogue et demandes de présentation](presentation/ouverture-demandes-2026-11-03.md)
   * [Contact commercial — DNS et fiabilité des demandes](ops/CONTACT_CHANNEL_READINESS_2026-11-03.md)
+  * [Pages Offres — récupération des routes et sonde mint_jobs](ops/PAGES_OFFRES_AND_MINT_JOBS_PROBE_2026-11-03.md)
   * [Feuille de route](presentation/feuille-de-route.md)
   * [Questions fréquentes](presentation/questions-frequentes.md)
   * [Contribuer et partenariats](presentation/contribuer-et-partenariats.md)
