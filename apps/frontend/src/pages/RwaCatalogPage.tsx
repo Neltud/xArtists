@@ -61,8 +61,10 @@ export default function RwaCatalogPage() {
         <p className="section-label">{xaRender("RWA")}</p>
         <h1 className="section-title display text-2xl">{xaRender("Physical · Digital")}</h1>
         <p className="text-sm text-zinc-400">
-          {xaRender("AI valuation proxy + shipment status. Not a formal appraisal. Mint/sell remain HITL. ")}</p>
+          {xaRender("Catalogue d’études : données et valorisations simulées, sans authentification d’œuvre, expertise, garde physique, vente ni mint attestés. ")}</p>
       </header>
+
+      <p role="status" className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm leading-6 text-amber-100">Catalogue de démonstration publié le 5 octobre 2026. Aucune valeur en USD, certification ou mention « en dépôt » ci-dessous ne constitue une évaluation, un titre de propriété ou une preuve de garde. Aucun lot n’est proposé à la vente.</p>
 
       <div className="grid gap-4 sm:grid-cols-2">
         {xaRender(items.map(it => {
@@ -78,10 +80,11 @@ export default function RwaCatalogPage() {
               <div>
                 <h2 className="text-lg font-semibold text-white">{xaRender(asText(it.title))}</h2>
                 <p className="text-[12px] text-zinc-400">{xaRender(asText(it.artist))}</p>
+                <p className="mt-2 text-xs font-semibold text-amber-200">Exemple éditorial · pas de mise en vente certifiée</p>
               </div>
               <div>
                 <div className="flex justify-between text-[10px] uppercase tracking-wider text-zinc-500 mb-1">
-                  <span>{xaRender("AI valuation")}</span>
+                  <span>{xaRender("Score IA simulé")}</span>
                   <span>{xaRender(asText(score.toFixed(0)))} / 100</span>
                 </div>
                 <div className="h-2 rounded-full bg-black/50 overflow-hidden">
@@ -91,13 +94,12 @@ export default function RwaCatalogPage() {
                   />
                 </div>
                 <p className="text-[12px] tabular-nums text-zinc-300 mt-1">
-                  {xaRender("Proxy $")}{xaRender(asText(it.valuation?.price_proxy_usd))} {xaRender(" · momentum")}{xaRender(' ')}
-                  {xaRender(asText(it.valuation?.momentum))}
+                  {xaRender("Valeur fictive indicative $")}{xaRender(asText(it.valuation?.price_proxy_usd))} {xaRender(" · indicateur de démonstration")}
+                  <span className="sr-only">{xaRender(asText(it.valuation?.momentum))}</span>
                 </p>
               </div>
               <p className="text-[11px] text-zinc-500">
-                {xaRender("Shipment: ")}<span className="text-zinc-300">{xaRender(asText(it.shipment_status, '—'))}</span>
-                {xaRender(it.listed ? ' · listed' : '')}
+                {xaRender("Garde physique : non vérifiée · déclaration source : ")}<span className="text-zinc-300">{xaRender(asText(it.shipment_status, 'indisponible'))}</span>
               </p>
               <div className="flex flex-wrap gap-2">
                 <Link to="/marketplace" className="btn-secondary text-[11px]">
@@ -112,7 +114,7 @@ export default function RwaCatalogPage() {
           )
         }))}
         {xaRender(!items.length && (
-          <p className="text-zinc-500 text-sm col-span-2">{xaRender("Catalog empty — run rwa_evaluator --reassess")}</p>
+          <p className="text-zinc-500 text-sm col-span-2">{xaRender("Aucune œuvre de démonstration disponible. Aucun listing ou certificat de propriété n’est présumé.")}</p>
         ))}
       </div>
 
@@ -124,7 +126,7 @@ export default function RwaCatalogPage() {
       <PhysicalWorkFlowPanel />
 
       <p className="text-[10px] text-zinc-600 border-t border-white/5 pt-3">
-        {xaRender("Catalogue valorisé en simulation · commandes et livraisons consultables seulement si Shopify et serveur de provenance sont activés · LIA_LIVE_TRADING=0 ")}</p>
+        {xaRender("Fiches illustratives uniquement. Les décisions de propriété, de conservation, de livraison et de publication NFT exigent des documents et des signatures indépendants.")}</p>
       <Link to="/lia" className="btn-secondary text-sm">
         {xaRender("← LIA hub ")}</Link>
     </div>
