@@ -83,3 +83,15 @@ on the **Render-bound** database remains operator-only.
 
 **GO** testnet SC design + offline vectors.  
 **NO-GO** commercial checkout, mainnet claim, LIA live, TRO bridge.
+
+## Preflight invariants (strict V1)
+
+- Testnet/mainnet replay prevention: signed payload binds literal chain ID and this 32-byte SC address, signer epoch, caller buyer bytes, and order hash. No JSON serialization.
+- The SC checks `expires_at > not_before` and `expires_at - not_before <= 900` seconds. Server compose defaults to 600s, max 900s.
+- Signer registry rejects unconfigured/zero epochs and malformed 32-byte public keys; rotation must not reauthorize revoked claims.
+- The minting SC must hold the **ESDTRoleNFTCreate** local role for the configured collection on the chosen network.
+- A signature proves authorization by the signing key, NOT PayBox payment, legal ownership, or physical art authenticity.
+- Mint and transfer must be atomic with the claimed flag; failure must revert the entire transaction. Test missing NFT create role and insufficient gas.
+- The legacy `setPackPrice` endpoint must never participate in the fiat path.
+
+References: [NFT roles](https://docs.multiversx.com/tokens/nft-tokens/) and [SC functions](https://docs.multiversx.com/developers/developer-reference/sc-api-functions/).
