@@ -4,7 +4,8 @@
  */
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { encodeClaimVoucherV1 } from '../src/claimVoucherCodec.mjs'
+import { generateKeyPairSync, sign } from 'node:crypto'
+import { encodeClaimVoucherV1, verifyClaimVoucherSignatureOfflineV1 } from '../src/claimVoucherCodec.mjs'
 
 const sc = new Uint8Array(32).fill(0x11)
 const buyer = new Uint8Array(32).fill(0x22)
@@ -38,4 +39,24 @@ test('devnet D differs from T and 1', () => {
 
 test('invalid chain id rejected', () => {
   assert.throws(() => encodeClaimVoucherV1({ ...base, chain_id: 'X' }), /chain/)
+})
+
+test('signed testnet T voucher cannot verify for mainnet 1 or devnet D inputs', () => {
+  // This checks only the OFFLINE Ed25519 voucher domain separation.
+  // It cannot demonstrate runtime chain attestation inside the SC.
+  const { publicKey, privateKey } = generateKeyPairSync('ed25519')
+  const key = publicKey.export({ format: 'der', type: 'spki' }).subarray(-32)
+  const testnet = { ...base, chain_id: 'T' }
+  const signature = sign(null, encodeClaimVoucherV1(testnet), privateKey)
+  assert.equal(verifyClaimVoucherSignatureOfflineV1(testnet, signature, key), true)
+  assert.equal(verifyClaimVoucherSignatureOfflineV1({ ...base, chain_id: '1' }, signature, key), false)
+  assert.equal(verifyClaimVoucherSignatureOfflineV1({ ...base, chain_id: 'D' }, signature, key), false)
+})
+
+test('even valid T voucher does not certify SC execution network', () => {
+  const t = encodeClaimVoucherV1({ ...base, chain_id: 'T' })
+  // The SC itself hardcodes T and reconstructs these bytes. Deploying an
+  // identical SC at an identical address on another chain remains a risk.
+  assert.equal(t[18], 'T'.charCodeAt(0))
+  assert.equal(t.length, 146)
 })
