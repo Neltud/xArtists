@@ -1,0 +1,53 @@
+name: Commercial discovery — no checkout or NFT release
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/frontend/src/pages/CommercialLaunchPage.tsx'
+      - 'apps/frontend/src/pages/HousePage.tsx'
+      - 'apps/frontend/src/experience/Pages.tsx'
+      - 'apps/frontend/src/App.tsx'
+      - 'apps/frontend/tests/commercial-prelaunch.test.mjs'
+      - 'docs/presentation/ouverture-demandes-2026-11-03.md'
+      - '.github/workflows/commercial-prelaunch-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/frontend/src/pages/CommercialLaunchPage.tsx'
+      - 'apps/frontend/src/pages/HousePage.tsx'
+      - 'apps/frontend/src/experience/Pages.tsx'
+      - 'apps/frontend/src/App.tsx'
+      - 'apps/frontend/tests/commercial-prelaunch.test.mjs'
+      - '.github/workflows/commercial-prelaunch-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  catalog-discovery-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Install locked frontend dependencies
+        working-directory: apps/frontend
+        run: npm ci --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+      - name: Verify no payment, mint or order side effects in commercial prelaunch page
+        working-directory: apps/frontend
+        run: node --test tests/commercial-prelaunch.test.mjs
+      - name: Strict TypeScript
+        working-directory: apps/frontend
+        run: npm run typecheck
+      - name: Production Vite build
+        working-directory: apps/frontend
+        run: npm run build
+      - name: Commercial status invariant
+        run: |
+          echo 'Only catalogue discovery and email enquiries: no paid checkout, issuer or NFT mint.'
+          test -f docs/presentation/ouverture-demandes-2026-11-03.md
