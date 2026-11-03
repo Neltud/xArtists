@@ -72,14 +72,19 @@ async function callApi(action) {
   return { status: r.status, data: await r.json() }
 }
 
-const list = await callApi({ action: 'list' })
-assert.equal(list.status, 200)
-assert.equal(list.data.ok, true)
-assert.ok(Array.isArray(list.data.orders))
 let examined = 0
 let accepted = 0
 let skipped = 0
-for (const o of list.data.orders.slice(0, MAX_BATCH)) {
+// Paginate past already-claimed orders; otherwise the oldest three orders
+// would starve all newer paid orders forever. Hard-bounded to 15 pages.
+for (let page = 0; page < 15 && accepted < MAX_BATCH; page++) {
+  const list = await callApi({ action: 'list', offset: page * 10 })
+  assert.equal(list.status, 200)
+  assert.equal(list.data.ok, true)
+  assert.ok(Array.isArray(list.data.orders))
+  if (list.data.orders.length === 0) break
+  for (const o of list.data.orders) {
+    if (accepted >= MAX_BATCH) break
   examined++
   const claimed = await callApi({ action: 'claim', order_id: o.order_id })
   if (claimed.status === 409 && claimed.data.reason === 'already_claimed_or_dispatched') {
@@ -129,6 +134,7 @@ for (const o of list.data.orders.slice(0, MAX_BATCH)) {
   assert.equal(ack.data.status, 'submitted')
   assert.equal(ack.data.delivery_verified, false)
   accepted++
+  }
 }
 summary('OIDC dry-run pull: candidate orders=' + examined +
   ', GitHub HTTP 204=' + accepted + ', already reserved=' + skipped +
