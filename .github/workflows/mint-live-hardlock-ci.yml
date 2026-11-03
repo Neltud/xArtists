@@ -6,12 +6,20 @@ on:
       - '.github/workflows/mint-on-payment.yml'
       - '.github/workflows/mint-live-hardlock-ci.yml'
       - 'tests/mint-live-hardlock.test.mjs'
+      - 'tests/mint-legacy-workflows-hardlock.test.mjs'
+      - '.github/workflows/mint-test-buypack.yml'
+      - '.github/workflows/mint-3-packs-to-admin.yml'
+      - '.github/workflows/update-pack-prices.yml'
   push:
     branches: [main]
     paths:
       - '.github/workflows/mint-on-payment.yml'
       - '.github/workflows/mint-live-hardlock-ci.yml'
       - 'tests/mint-live-hardlock.test.mjs'
+      - 'tests/mint-legacy-workflows-hardlock.test.mjs'
+      - '.github/workflows/mint-test-buypack.yml'
+      - '.github/workflows/mint-3-packs-to-admin.yml'
+      - '.github/workflows/update-pack-prices.yml'
   workflow_dispatch:
 
 permissions:
@@ -32,4 +40,4 @@ jobs:
         with:
           node-version: '22'
       - name: Prevent manual mainnet mint bypass of Render safety flags
-        run: node --test tests/mint-live-hardlock.test.mjs
+        run: node --test tests/mint-live-hardlock.test.mjs tests/mint-legacy-workflows-hardlock.test.mjs
