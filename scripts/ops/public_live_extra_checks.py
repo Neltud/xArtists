@@ -34,7 +34,12 @@ def fetch_public(url: str, origin: str | None = None, *, attempts: int = 4):
             with urlopen(request, timeout=24) as response:
                 status = response.status
                 body = response.read(512_000)
-                meta = {name.lower(): value for name, value in response.headers.items()}
+                # Proxies may emit Vary more than once. Preserve every field value,
+                # rather than silently overwriting Vary: Origin with Vary: Accept-Encoding.
+                meta = {}
+                for name, value in response.headers.items():
+                    key = name.lower()
+                    meta[key] = meta[key] + ", " + value if key in meta else value
             if index:
                 print(f"::warning::Transient public endpoint recovered after {index} retries: {url}")
             return status, meta, body
