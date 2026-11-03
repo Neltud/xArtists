@@ -1,40 +1,42 @@
 ---
-description: >-
-  Présentation officielle de xArtists, dApp artistique et IA sur MultiversX —
-  statut public vérifié au 2 novembre 2026.
+description: Guide public xArtists. Art, musée, Studio, LIA, NFT et disponibilité vérifiée au 3 novembre 2026.
 icon: house
 ---
 
-# xArtists — Art, création et intelligence
+# xArtists — L'art rencontre une autre dimension
 
 ![xArtists — Art × Intelligence sur MultiversX](.gitbook/assets/xartists-public-cover.png)
 
-**L'art rencontre une autre dimension.** xArtists réunit un musée immersif, des œuvres numériques et physiques, un Studio créatif et des espaces d'intelligence artificielle sur MultiversX.
+**xArtists** réunit des artistes, des œuvres numériques et physiques, un musée immersif, un Studio créatif et des outils d'intelligence artificielle sur MultiversX. **La visite est libre, sans wallet.**
 
-[**Ouvrir la dApp xArtists**](https://neltud.github.io/xArtists/) · [**Découvrir le projet**](presentation/) · [**Statut et disponibilité**](presentation/etat-du-produit.md)
+[**Explorer la dApp**](https://neltud.github.io/xArtists/) · [**Visiter le musée**](https://neltud.github.io/xArtists/museum/) · [**Marketplace**](https://neltud.github.io/xArtists/marketplace/) · [**Enchères**](https://neltud.github.io/xArtists/auction/)
 
-## Votre première visite
+## Découvrir l'écosystème
 
-1. **Visitez le musée**, sans portefeuille ni achat : [Immersive Museum](https://neltud.github.io/xArtists/museum).
-2. **Découvrez les artistes et les créations**, puis explorez le Studio et les collections.
-3. **Comprenez LIA**, le centre de contrôle et les agents Pulse, Yield et Sentinel : les signaux publics sont présentés en mode **paper / simulation**.
-4. **Choisissez vos services** seulement après avoir lu leurs statuts, droits et conditions ; un bouton visible ne prouve pas qu'un paiement est disponible.
+| Expérience | Accès public | Ce qui reste fermé |
+| --- | --- | --- |
+| Musée | Visiter et découvrir les œuvres | L'exposition n'atteste pas la possession d'un NFT |
+| Marketplace | Explorer les catalogues d'œuvres et de packs | Achat et listing on-chain non certifiés |
+| Enchères | Voir la salle et les exemples d'œuvres | Enchères et adjudications réelles |
+| Studio | Prévisualiser localement JPG, PNG, WebP et MP4 | Upload IPFS et mint réels |
+| LIA Control Room | Voir des données publiées, agents et simulations | Trading autonome : mode paper/shadow |
 
-## Packs IA et services Whop : deux offres distinctes
+[**Ouvrir LIA Control Room**](https://neltud.github.io/xArtists/intelligence/lia) · [**État des fonctionnalités**](presentation/etat-du-produit.md) · [**Guide mobile**](presentation/demarrer-sur-mobile.md)
 
-| Produit                  | Modèle                          | Détail                                                                                                                                       |
-| ------------------------ | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pulse / Yield / Sentinel | Achat unique (pas d'abonnement) | Packs Genesis SFT en édition limitée, droits associés durables ; livraison effective à confirmer par la chaîne de paiement et la transaction |
-| TCA Membership via Whop  | Abonnement distinct             | Services du plan pendant la période active ; **pas de NFT Genesis inclus**                                                                   |
+## Les offres : ne pas confondre les produits
 
-Prix catalogue affichés pour les packs : **Pulse 110 € · Yield 75 € · Sentinel 50 €**. Un montant en EGLD n'est contractuel que lorsqu'un devis valide est proposé et vérifié sur le parcours choisi.
+Les packs Genesis **Pulse (110 €), Yield (75 €), Sentinel (50 €)** sont présentés comme des produits à achat unique avec droits numériques associés. Les montants indiqués sont des **prix de catalogue**, pas des paiements activés ni des NFT déjà livrés.
 
-## Disponibilité vérifiée — 2 novembre 2026
+**Whop / TCA Membership** correspond à des abonnements de services séparés, sans NFT Genesis inclus. Aucun de ces produits ne garantit un rendement financier.
 
-Le site et la dApp sont **publiquement accessibles** sur GitHub Pages. Le correctif mobile V3 [PR #262](https://github.com/Neltud/xArtists/pull/262) a été fusionné, avec tests automatisés réussis et déploiement Pages réussi.
+[**Packs IA et Whop**](security/guide-public-packs-whop.md) · [**Offres xArtists**](https://neltud.github.io/xArtists/offres/)
 
-**LIA trading autonome n'est pas ouvert.** Les données shadow sont simulées. Le lancement marchand général PayBox, les remboursements et la livraison réelle de droits doivent faire l'objet de preuves et d'un GO opérationnel spécifiques. Déploiement de contrats mainnet ≠ homologation de tous les usages financiers.
+## Transparence et lancement
 
-[Lire l'état détaillé](presentation/etat-du-produit.md) · [Sécurité et critères de lancement](security/launch-gates.md) · [English overview](presentation/english-overview.md)
+**3 novembre 2026 : GO découverte publique, NO-GO transactions commerciales.** Navigation Marketplace/Enchères et interface LIA améliorées dans le dépôt GitHub. Une fusion de PR n'est pas en soi la preuve du déploiement sur tous les appareils.
 
-Projet porté par **Nelson Tuduri / Neltud** · [Dépôt GitHub officiel](https://github.com/Neltud/xArtists)
+Paiement, enchères réelles, mint automatique, bridge et trading nécessitent une vérification de bout en bout et des autorisations distinctes. Les données paper/shadow ne sont pas des gains réels.
+
+Le présent GitBook est un guide visiteurs. Les runbooks, prompts d'agents et audits historiques sont retirés de la navigation publique ; certains fichiers techniques demeurent visibles dans le [dépôt GitHub](https://github.com/Neltud/xArtists), qui ne doit pas être confondu avec une documentation privée.
+
+[**La Maison xArtists**](presentation/) · [**Confiance et transparence**](presentation/confiance-et-transparence.md) · [**English overview**](presentation/english-overview.md)
