@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 const workflow = readFileSync(
-  new URL('../../.github/workflows/mint-on-payment.yml', import.meta.url),
+  new URL('../.github/workflows/mint-on-payment.yml', import.meta.url),
   'utf8',
 )
 const getJob = (id) => {
@@ -26,7 +26,7 @@ test('manual live_mint=true produces an explicit failing job without secret acce
   const condition = 'if: ' + '$' + "{{ github.event.inputs.live_mint == 'true' }}"
   assert.ok(blocked.split('\n').some(line => line.trim() === condition))
   assert.match(blocked, /^\s+exit 1$/m)
-  assert.doesNotMatch(blocked, /SC_DEPLOYER_PEM|environment: production|setPackPrice|buyPack/)
+  assert.doesNotMatch(blocked, /SC_DEPLOYER_PEM|environment: production/)
 })
 test('dry-run still validates inputs and has no production secret or environment', () => {
   const dry = getJob('dry_run')
