@@ -14,10 +14,10 @@ export function auctionConfig(env = process.env) {
   // Two independent explicit switches plus isolated PSP/mint state are needed
   // to test POST routes on a sandbox, not a public production service.
   const sandbox = String(env.AUCTION_ENV || '').trim() === 'sandbox'
-  const paymentMode = String(env.PAYBOX_MODE || env.PAYBOX_ENV || '').trim().toLowerCase()
+  const paymentModes = [env.PAYBOX_MODE, env.PAYBOX_ENV].map(v => String(v || '').trim().toLowerCase())
   const demoWritesEnabled = enabled && sandbox &&
     String(env.AUCTION_DEMO_WRITES_ENABLED || '').trim() === '1' &&
-    !['prod', 'production'].includes(paymentMode) &&
+    !paymentModes.some(mode => ['prod', 'production'].includes(mode)) &&
     String(env.PAYBOX_CHECKOUT_ENABLED || '') !== '1' &&
     String(env.MINT_LIVE_ENABLED || '') !== '1' &&
     String(env.LIA_LIVE_TRADING || '') !== '1'
