@@ -110,6 +110,12 @@ export function assessArtEvidenceV1(input = {}) {
     throw new TypeError('invalid_art_id')
   }
   const master = hex64(input.master_sha256, 'master')
+  const canonicalId = deriveArtIdV1({
+    creator_namespace: input.creator_namespace,
+    master_sha256: master,
+    edition_id: input.edition_id ?? 'original',
+  })
+  if (canonicalId !== artId) throw new TypeError('art_id_derivation_mismatch')
   const observed = input.observed_sha256 == null ? null
     : hex64(input.observed_sha256, 'observed')
   const rawCandidates = input.visual_candidates ?? []
@@ -179,7 +185,9 @@ export function assessArtEvidenceV1(input = {}) {
     if (nft.reported_metadata_hash_match === null) flags.push('nft_metadata_not_checked')
   } else flags.push('onchain_not_checked')
   const stable = {
-    art_id: artId, master_sha256: master, observed_sha256: observed,
+    art_id: artId, creator_namespace: input.creator_namespace,
+    edition_id: input.edition_id ?? 'original',
+    master_sha256: master, observed_sha256: observed,
     visual_candidates: visual, theft_registry_checks: registries,
     c2pa_reported_status: c2pa.reported_status,
     rights_to_mint_attested: input.rights_to_mint_attested === true,
