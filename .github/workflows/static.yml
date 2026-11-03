@@ -159,6 +159,13 @@ jobs:
             cp _site/index.html "_site/intelligence/agents/$id/index.html"
             test -s "_site/packs/$id/index.html"
           done
+          # Public commercial campaign URLs must return HTTP 200 on first GET
+          # without needing GitHub Pages 404.html SPA fallback.
+          for page in offres offers; do
+            mkdir -p "_site/$page"
+            cp _site/index.html "_site/$page/index.html"
+            test -s "_site/$page/index.html"
+          done
 
       - name: Verify built GitHub Pages assets
         working-directory: apps/frontend
@@ -204,6 +211,25 @@ jobs:
             done
             if [ "$ok" != 1 ]; then
               echo "::error::Public Genesis pack $pack did not pass direct-link check"
+              exit 1
+            fi
+          done
+
+          # Campaign links must open directly from emails/social shares.
+          for page in offres offers; do
+            ok=0
+            for attempt in 1 2 3 4 5 6; do
+              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-commercial.html -w '%{http_code}' "https://neltud.github.io/xArtists/$page/")
+              if [ "$status" = 200 ] && grep -q '/xArtists/assets/' /tmp/xartists-commercial.html; then
+                echo "Verified $page campaign deep link HTTP 200 and Vite asset reference"
+                ok=1
+                break
+              fi
+              echo "$page campaign URL not ready (HTTP $status), attempt $attempt"
+              sleep 5
+            done
+            if [ "$ok" != 1 ]; then
+              echo "::error::Public campaign deep link $page did not pass HTTP 200 check"
               exit 1
             fi
           done
