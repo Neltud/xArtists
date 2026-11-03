@@ -7,6 +7,7 @@ on:
       - 'services/access-api/src/claimVoucherCodecV2.mjs'
       - 'services/access-api/tests/claimVoucherCodecV2.test.mjs'
       - '.github/workflows/claim-v2-offline.yml'
+      - 'tests/rust/claim_voucher_v2_vectors.rs'
   push:
     branches: [main]
     paths:
@@ -27,6 +28,11 @@ jobs:
           node-version: '22'
       - name: Run offline Ed25519 V2 isolation matrix (not runtime VM proof)
         run: node --test services/access-api/tests/claimVoucherCodecV2.test.mjs
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Rust — byte-exact V2 parity and negative control
+        run: |
+          rustc --edition=2021 --test tests/rust/claim_voucher_v2_vectors.rs -o /tmp/xartists-claim-v2-vectors
+          /tmp/xartists-claim-v2-vectors --nocapture
       - name: Assert no server issuer or SC integration in this change
         run: |
           test -s services/access-api/src/claimVoucherCodecV2.mjs
