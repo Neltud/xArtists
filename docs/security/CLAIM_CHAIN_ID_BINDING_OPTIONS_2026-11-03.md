@@ -40,9 +40,34 @@ A binary built for testnet could still be deployed on another network if ops fai
 
 ## GO criteria for “testnet deploy”
 
-1. Option A checklist signed by human  
-2. At least one of B/C/D implemented and tested  
-3. Post-deploy: explorer shows testnet + first claimPack tx + NFT receipt  
-4. Still **NO** commercial checkout / mainnet mint  
+1. Option A checklist signed by human, **including independent, testnet-specific owner and claim-only signer identities**, no secrets in repo/CI, plus a post-deployment bytecode and network check.  
+2. **Crypto-level on-chain chain binding:** require C if the available framework/VM can attest runtime chain identity. If C is unavailable, escalate to independent security review and an explicit documented exception/modified protocol; **A+B or A+D do not independently prove the chain**, and are not interchangeable with C.  
+3. B is a useful immutable configuration assertion only; an attacker or accidental operator can set the same `T` in a copied contract on another chain. D enables auditing bytecode policy only; the code hash alone does not bind the execution network. Neither should silently clear issue #328.  
+4. After a separately approved testnet-only deployment, prove network badge + tx chainID, contract address, code hash, owner, initial paused state, signer epoch, allowed NFT collection and local role, NFT receipt and anti-replay from the actual public testnet.  
+5. Still **NO** commercial checkout, PayBox-based issuer, mainnet mint, or automatic authenticity certification.  
 
 ChatGPT leads SC changes; Grok owns this gate language + Node cross-chain encode tests.
+
+## Threat model and acceptance boundary
+
+A malicious or accidental deployment to another MultiversX network can
+reproduce the same **WASM, address and verification key**. The contract
+rebuilds the voucher with its own hardcoded `T`, so it can accept a
+testnet-authorized signature **without knowing its runtime network**.
+Cross-chain Node encoder inequality tests alone do not catch this copy.
+
+Do **not** infer a runtime chain ID API from a block header, external
+gateway config, SDK transaction chainID or an `init(network_tag)` argument.
+No verified runtime getter is currently established for this contract
+using `multiversx-sc = 0.66.2`; issue #328 stays a hard release gate.
+The existing read-only public probe, CI build hash and off-chain test
+vectors are necessary **preflight evidence, never sufficient deployment
+authorization**.
+
+If a VM getter is unavailable, investigate alternative voucher V2
+deployment-specific commitments (e.g. genesis-bound domain data under a
+separate trust model) and validate their threat model independently.
+Even a deployment-specific init value supplied only by an operator
+is not, on its own, unforgeable evidence of the network.
+
+**State now:** review/design only, SC source remains not deployed.
