@@ -1,0 +1,21 @@
+name: Mobile Home no-auto-WebGL guard
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/experience/Pages.tsx'
+      - 'apps/frontend/src/experience/HomeHeroSculpture.tsx'
+      - 'apps/frontend/src/experience/experience.css'
+      - 'apps/frontend/src/experience/locale.ts'
+      - 'apps/frontend/tests/home-hero-2d.test.mjs'
+      - '.github/workflows/home-hero-2d-ci.yml'
+permissions:
+  contents: read
+jobs:
+  home-hero-2d:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test apps/frontend/tests/home-hero-2d.test.mjs
