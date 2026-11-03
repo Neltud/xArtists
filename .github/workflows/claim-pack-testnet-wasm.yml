@@ -1,4 +1,4 @@
-name: Claim Pack Testnet — reproducible WASM and ABI (NO DEPLOY)
+name: Claim Pack Testnet — unreviewed WASM and ABI (NO DEPLOY)
 
 # Compiles artifacts for human inspection. No action broadcasts blockchain tx.
 on:
@@ -34,15 +34,33 @@ jobs:
       - name: Build testnet candidate WASM (no network, no signing)
         working-directory: contracts/claim-pack-testnet/meta
         run: cargo run -- build --no-wasm-opt --no-imports
-      - name: Verify non-empty WASM and publish SHA-256 in logs
+      - name: Verify candidate WASM and publish both SHA-256 and on-chain BLAKE2b-256
         run: |
           set -euo pipefail
           WASM="$(find contracts/claim-pack-testnet/output -maxdepth 1 -type f -name '*.wasm' -print -quit)"
+          ABI="$(find contracts/claim-pack-testnet/output -maxdepth 1 -type f -name '*.abi.json' -print -quit)"
           test -n "$WASM"
+          test -n "$ABI"
           test "$(wc -c < "$WASM")" -gt 1000
+          # WASM_SHA256 is the file checksum. MultiversX on-chain codeHash
+          # is NOT SHA-256; it is BLAKE2b with a 256-bit output length.
+          SHA="$(sha256sum "$WASM" | cut -d ' ' -f1)"
+          BLAKE="$(b2sum -l 256 "$WASM" | cut -d ' ' -f1)"
+          test "${#SHA}" -eq 64
+          test "${#BLAKE}" -eq 64
           echo "OFFLINE_WASM_PATH=$WASM"
-          sha256sum "$WASM"
-          find contracts/claim-pack-testnet/output -maxdepth 1 -type f -name '*.abi.json' -print
+          echo "OFFLINE_ABI_PATH=$ABI"
+          echo "WASM_SHA256=$SHA"
+          echo "WASM_BLAKE2B256_CODEHASH=$BLAKE"
+          # Explicitly mark unpinned transitive deps/toolchain as unreviewed.
+          # This build is NOT proven reproducible until both are pinned.
+          if [ -f contracts/claim-pack-testnet/Cargo.lock ]; then
+            LOCK_PRESENT=true
+          else
+            LOCK_PRESENT=false
+          fi
+          printf '{"schema":"xartists.claim-build-evidence.v1","status":"unreviewed_not_deployed","wasm_sha256":"%s","multiversx_blake2b256_codehash":"%s","cargo_lock_present":%s,"rust_toolchain_pinned":false,"sc_runtime_chain_id_attested":false,"deployment_authorized":false}\n' "$SHA" "$BLAKE" "$LOCK_PRESENT" > contracts/claim-pack-testnet/output/build-evidence.json
+          echo "BUILD_REPRODUCIBILITY_NOT_PROVEN: lock/toolchain pinning outstanding"
           echo "NO-DEPLOY: no transaction signed or broadcast"
       - uses: actions/upload-artifact@v4
         with:
