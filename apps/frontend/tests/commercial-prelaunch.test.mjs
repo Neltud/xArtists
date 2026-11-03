@@ -77,6 +77,19 @@ test('direct campaign URLs are prebuilt as HTTP 200 entrypoints on GitHub Pages'
   assert.match(wf,/Public campaign deep link \$page did not pass HTTP 200 check/)
 })
 
+test('Pages artifact retains Vite route-aware 404 recovery, never generic index.html',()=>{
+  const wf=read('../../.github/workflows/static.yml')
+  const generator=read('scripts/publicAvailability.mjs')
+  const browser=read('src/lib/publicRoutes.ts')
+  assert.doesNotMatch(wf,/cp\s+_site\/index\.html\s+_site\/404\.html/)
+  assert.match(wf,/test -s _site\/404\.html/)
+  assert.match(wf,/grep -q '_xa_route' _site\/404\.html/)
+  assert.match(wf,/grep -q 'noindex' _site\/404\.html/)
+  assert.match(generator,/fallbackHtml\(config\.base\)/)
+  assert.match(generator,/_xa_route/)
+  assert.match(browser,/searchParams\.get\('_xa_route'\)/)
+})
+
 test('commercial trailing slash cannot downgrade the browser title to NotFound',()=>{
   const shell = read('src/experience/Shell.tsx')
   assert.match(shell,/const key=pathname\.split\('\/'\)\.filter\(Boolean\)\.join\('\/'\)/)
