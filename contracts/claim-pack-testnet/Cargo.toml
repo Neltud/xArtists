@@ -1,0 +1,19 @@
+[package]
+name = "xartists-claim-pack-testnet"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+multiversx-sc = "=0.66.2"
+
+[dev-dependencies]
+multiversx-sc-scenario = "=0.66.2"
+ed25519-dalek = "2.2.0"
+
+# Isolated, independent contract: does not upgrade existing agents-marketplace.
+[workspace]
+members = ["."]

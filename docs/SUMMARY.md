@@ -8,6 +8,7 @@
   * [Prix, droits et livraison](security/pricing-delivery.md)
   * [Claim voucher post-PayBox — architecture B + A](security/claim-voucher-b-a-2026-11-03.md)
   * [claimPack testnet — spécification de sécurité](security/CLAIM_PACK_TESTNET_SPEC_2026-11-03.md)
+  * [claimPack testnet — prototype Rust et matrice de preuve](security/CLAIM_PACK_TESTNET_IMPLEMENTATION_2026-11-03.md)
   * [xArt-ID — reconnaissance, provenance et réévaluation des œuvres](security/ART_ID_PROVENANCE_V1_2026-11-03.md)
   * [Claim — vérification des étapes](security/CLAIM_PHASE0_CHECKLIST.md)
   * [Claim — symbiose et protocole](security/CLAIM_SYMBIOSIS_GROK_2026-11-03.md)

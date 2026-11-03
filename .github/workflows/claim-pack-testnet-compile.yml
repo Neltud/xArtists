@@ -1,0 +1,40 @@
+name: Claim Pack V1 — isolated SC compile (NO DEPLOY)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'contracts/claim-pack-testnet/**'
+      - '.github/workflows/claim-pack-testnet-compile.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'contracts/claim-pack-testnet/**'
+      - '.github/workflows/claim-pack-testnet-compile.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: contracts/claim-pack-testnet
+      - name: Compile actual MultiversX 0.66.2 contract crate
+        run: cargo check --manifest-path contracts/claim-pack-testnet/Cargo.toml --lib
+      - name: Run actual Rust crate tests (if defined)
+        run: cargo test --manifest-path contracts/claim-pack-testnet/Cargo.toml -- --nocapture
+      - name: Scope invariant — no existing marketplace code modified
+        run: |
+          test -f contracts/claim-pack-testnet/src/lib.rs
+          grep -F 'verify_ed25519(' contracts/claim-pack-testnet/src/lib.rs
+          ! grep -E 'setPackPrice|MINT_LIVE_ENABLED|PAYBOX_CHECKOUT_ENABLED|MINT_GITHUB_PAT' contracts/claim-pack-testnet/src/lib.rs
+          echo "Compile only; no mainnet or testnet transaction was attempted"
