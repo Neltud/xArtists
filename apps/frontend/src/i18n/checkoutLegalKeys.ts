@@ -67,8 +67,8 @@ export const checkoutLegalFr: Dict = {
   'legal.subtitle': 'Editeur · interface non-custodiale · MultiversX mainnet',
   'legal.siretMissing': 'SIRET editeur non renseigne dans la config.',
   'legal.tab.mentions': 'Mentions',
-  'legal.tab.terms': 'Terms',
-  'legal.tab.cgu': 'Conditions',
+  'legal.tab.terms': 'Conditions produits',
+  'legal.tab.cgu': 'Conditions d’utilisation',
   'legal.tab.privacy': 'Confidentialite',
   'legal.tab.risk': 'Risques',
   'legal.tab.process': 'Processus',
@@ -181,8 +181,8 @@ export const checkoutLegalEn: Dict = {
   'legal.subtitle': 'Publisher · non-custodial interface · MultiversX mainnet',
   'legal.siretMissing': 'Publisher SIRET not set in config.',
   'legal.tab.mentions': 'Notices',
-  'legal.tab.terms': 'Terms',
-  'legal.tab.cgu': 'Conditions',
+  'legal.tab.terms': 'Product terms',
+  'legal.tab.cgu': 'Terms of use',
   'legal.tab.privacy': 'Privacy',
   'legal.tab.risk': 'Risks',
   'legal.tab.process': 'Process',
@@ -240,6 +240,8 @@ export const checkoutLegalDe: Dict = {
   'packCheckout.buy': 'Kaufen / Checkout',
   'legal.title': 'Impressum & Rechtliches',
   'legal.sectionLabel': 'Rechtliches',
+  'legal.tab.terms': 'Produktbedingungen',
+  'legal.tab.cgu': 'Nutzungsbedingungen',
   'legal.nav.home': 'Start',
 }
 
@@ -252,6 +254,8 @@ export const checkoutLegalEs: Dict = {
   'packCheckout.buy': 'Comprar / Checkout',
   'legal.title': 'Avisos legales',
   'legal.sectionLabel': 'Legal',
+  'legal.tab.terms': 'Términos del producto',
+  'legal.tab.cgu': 'Condiciones de uso',
   'legal.nav.home': 'Inicio',
 }
 
@@ -264,6 +268,8 @@ export const checkoutLegalZh: Dict = {
   'packCheckout.buy': '购买 / 结账',
   'legal.title': '法律声明',
   'legal.sectionLabel': '法律',
+  'legal.tab.terms': '产品条款',
+  'legal.tab.cgu': '使用条款',
   'legal.nav.home': '首页',
 }
 

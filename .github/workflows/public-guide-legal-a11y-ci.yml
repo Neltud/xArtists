@@ -1,0 +1,22 @@
+name: Public visitor guide and legal accessibility
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/pages/DemoTourPage.tsx'
+      - 'apps/frontend/src/pages/LegalPage.tsx'
+      - 'apps/frontend/src/pages/DappAccessPage.tsx'
+      - 'apps/frontend/src/i18n/checkoutLegalKeys.ts'
+      - 'apps/frontend/src/experience/locale.ts'
+      - 'apps/frontend/tests/public-guide-legal-a11y.test.mjs'
+      - '.github/workflows/public-guide-legal-a11y-ci.yml'
+permissions:
+  contents: read
+jobs:
+  verify-public-guide:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test apps/frontend/tests/public-guide-legal-a11y.test.mjs
