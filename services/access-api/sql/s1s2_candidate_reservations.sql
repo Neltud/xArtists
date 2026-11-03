@@ -30,6 +30,74 @@ CREATE TABLE IF NOT EXISTS s1s2_candidate_reservations (
   CONSTRAINT s1s2_candidate_mint_job_order_fkey FOREIGN KEY (order_id)
     REFERENCES mint_jobs(order_id) ON DELETE RESTRICT
 );
+
+-- Require a genuine server-recorded paid state and a correlated *live* job.
+-- These checks do not verify RSA PSP signatures or chain finality themselves:
+-- caller must supply separately authenticated and reviewed S1/S2 evidence.
+CREATE OR REPLACE FUNCTION s1s2_candidate_assert_correlated()
+RETURNS TRIGGER AS $func$
+DECLARE
+  o paybox_orders%ROWTYPE;
+  j mint_jobs%ROWTYPE;
+BEGIN
+  SELECT * INTO o FROM paybox_orders
+    WHERE order_id = NEW.order_id FOR SHARE;
+  SELECT * INTO j FROM mint_jobs
+    WHERE order_id = NEW.order_id FOR SHARE;
+
+  IF o.order_id IS NULL OR j.order_id IS NULL OR
+     o.status <> 'paid' OR
+     o.provider_tx_id IS DISTINCT FROM NEW.provider_tx_id OR
+     o.pack_id IS DISTINCT FROM NEW.pack_id OR
+     o.buyer_address IS DISTINCT FROM NEW.buyer_address OR
+     o.amount_cents IS DISTINCT FROM NEW.amount_cents OR
+     o.payload->>'status' <> 'paid' OR
+     o.payload->>'server_confirmed' IS DISTINCT FROM 'true' OR
+     o.payload->>'payment_verified' IS DISTINCT FROM 'true' OR
+     o.payload->>'delivery_verified' = 'true' OR
+     o.payload->>'delivery' = 'confirmed' OR
+     o.payload->>'delivered_at' IS NOT NULL OR
+     o.payload->>'currency' IS DISTINCT FROM 'EUR' OR
+     j.status NOT IN ('submitted', 'confirmed') OR
+     j.payload->>'mode' IS DISTINCT FROM 'live' OR
+     j.payload->>'micro_price' = 'true' OR
+     j.payload->>'github_dispatch_accepted' IS DISTINCT FROM 'true' OR
+     j.payload->>'order_id' IS DISTINCT FROM NEW.order_id OR
+     j.payload->>'provider_tx_id' IS DISTINCT FROM NEW.provider_tx_id OR
+     j.payload->>'pack_id' IS DISTINCT FROM NEW.pack_id OR
+     j.payload->>'buyer_address' IS DISTINCT FROM NEW.buyer_address OR
+     j.payload->>'amount_cents' IS DISTINCT FROM NEW.amount_cents::text OR
+     j.payload->>'chain_tx_hash' IS DISTINCT FROM NEW.chain_tx_hash OR
+     j.payload->>'nft_identifier' IS DISTINCT FROM NEW.nft_identifier
+  THEN
+    RAISE EXCEPTION 'S1/S2 candidate ledger rejects uncorrelated payment or mint'
+      USING ERRCODE = '23514';
+  END IF;
+  RETURN NEW;
+END
+$func$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS s1s2_candidate_insert_gate ON s1s2_candidate_reservations;
+CREATE TRIGGER s1s2_candidate_insert_gate
+  BEFORE INSERT ON s1s2_candidate_reservations
+  FOR EACH ROW EXECUTE FUNCTION s1s2_candidate_assert_correlated();
+
+-- Audit evidence is immutable, even if a payment is subsequently refunded.
+-- New rights / revocation are separate transactions and are never inferred
+-- from this table. Corrections require independent migration approval.
+CREATE OR REPLACE FUNCTION s1s2_candidate_block_mutations()
+RETURNS TRIGGER AS $func$
+BEGIN
+  RAISE EXCEPTION 'S1/S2 candidate reservations are immutable'
+    USING ERRCODE = '23514';
+END
+$func$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS s1s2_candidate_immutable ON s1s2_candidate_reservations;
+CREATE TRIGGER s1s2_candidate_immutable
+  BEFORE UPDATE OR DELETE ON s1s2_candidate_reservations
+  FOR EACH ROW EXECUTE FUNCTION s1s2_candidate_block_mutations();
+
 -- No changes to paybox_orders, mint_jobs, buyer entitlements or on-chain state.
 -- Future atomic delivery requires a separately reviewed, one-transaction
 -- state transition with refund controls; it is intentionally absent here.
