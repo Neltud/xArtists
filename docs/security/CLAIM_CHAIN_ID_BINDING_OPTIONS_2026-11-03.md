@@ -71,3 +71,18 @@ Even a deployment-specific init value supplied only by an operator
 is not, on its own, unforgeable evidence of the network.
 
 **State now:** review/design only, SC source remains not deployed.
+
+## Contract code hash vs build checksum
+
+MultiversX computes a deployed contract `codeHash` using **BLAKE2b-256** of
+the WASM bytes. It is **not** the SHA-256 artifact checksum printed by
+the GitHub Actions offline build (#327). To corroborate a future
+testnet deployment, independently compute `b2sum -l 256` over the
+reviewed WASM and compare against the on-chain `codeHash` decoded
+from base64, then additionally match owner, address and deployment
+transaction on the **testnet** explorer.
+
+Reference: [MultiversX reproducible contract builds](https://docs.multiversx.com/developers/reproducible-contract-builds/).
+A matching BLAKE2b codeHash confirms bytecode identity only. It does
+not certify the network where the VM is running and does not remove
+the #328 blocker.
