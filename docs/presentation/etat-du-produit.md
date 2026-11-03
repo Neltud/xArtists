@@ -1,5 +1,6 @@
 ---
-description: xArtists au 3 novembre 2026 : visite, démonstration et transactions clairement séparées.
+description: >-
+  xArtists au 3 novembre 2026 : visite, démonstration et transactions clairement séparées.
 icon: circle-check
 ---
 
