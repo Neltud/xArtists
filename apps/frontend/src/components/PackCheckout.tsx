@@ -11,6 +11,7 @@ import CheckoutModal from './CheckoutModal'
 import { canBuyAgent } from '../config/scStatus'
 import LottieIcon from './LottieIcon'
 import { availablePayMethods } from '../lib/payments'
+import { getAccessApiBase } from '../lib/stripe'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useI18n } from '../i18n/I18nContext'
 
@@ -30,6 +31,29 @@ export default function PackCheckout({
   const { connected, address } = useWallet()
   const methods = availablePayMethods()
   const hasPaidRail = methods.some(m => m === 'stripe' || m === 'paybox')
+  // A compiled-in payment method is not evidence of a LIVE merchant checkout.
+  // The API is the source of truth; unknown, offline and stale states stay closed.
+  const [merchantCheckoutReady, setMerchantCheckoutReady] = useState(false)
+  useEffect(() => {
+    if (!hasPaidRail) return
+    const abort = new AbortController()
+    const api = getAccessApiBase() || 'https://xartists-access-api.onrender.com'
+    fetch(api + '/health', { signal: abort.signal, cache: 'no-store' })
+      .then(response => {
+        if (!response.ok) throw new Error('merchant_health_unavailable')
+        return response.json()
+      })
+      .then(health => {
+        if (abort.signal.aborted) return
+        const payboxReady = methods.includes('paybox') && health?.paybox_checkout_enabled === true
+        // No approved Stripe live flag is presently exposed: fail closed for Stripe.
+        setMerchantCheckoutReady(payboxReady)
+      })
+      .catch(() => {
+        if (!abort.signal.aborted) setMerchantCheckoutReady(false)
+      })
+    return () => abort.abort()
+  }, [hasPaidRail])
   const [selected, setSelected] = useState<PackId | null>(
     forcedId && ONLY.includes(forcedId) ? forcedId : null,
   )
@@ -148,7 +172,7 @@ export default function PackCheckout({
               <p className="text-zinc-400 mt-0.5">
                 {xaRender(t('packCheckout.fiatLine', { amount: pack.priceEur.list }))}
                 {xaRender(' · ')}
-                {xaRender(hasPaidRail ? t('packCheckout.gatewayOn') : t('packCheckout.soon'))}
+                {xaRender(merchantCheckoutReady ? t('packCheckout.gatewayOn') : t('packCheckout.soon'))}
               </p>
             </div>
           </div>
