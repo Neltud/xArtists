@@ -2,6 +2,8 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { createPublicKey, sign, verify } from 'node:crypto'
+import { spawnSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 import { encode58, decode58, keypair, uvarint } from './solana_devnet_micro_transfer.mjs'
 
 test('base58 round-trip preserves leading zero bytes', () => {
@@ -41,4 +43,16 @@ test('importing codec helpers does not require the live Devnet send opt-in', () 
   // Any accidental top-level send would have caused the test import to fail.
   assert.equal(typeof encode58, 'function')
   assert.equal(typeof keypair, 'function')
+})
+
+test('refuses an unapproved devnet send before any RPC or faucet call', () => {
+  const file = fileURLToPath(new URL('./solana_devnet_micro_transfer.mjs', import.meta.url))
+  const child = spawnSync(process.execPath, [file], {
+    env: { ...process.env, XARTISTS_ALLOW_DEVNET_SEND: '0' },
+    encoding: 'utf8',
+    timeout: 10000,
+  })
+  assert.equal(child.status, 1)
+  assert.match(child.stderr, /explicit DEVNET ONLY opt-in missing/)
+  assert.doesNotMatch(child.stdout, /MICRO_TRANSFER_CONFIRMED/)
 })
