@@ -38,6 +38,7 @@ pub trait XArtistsClaimPackTestnet {
         require!(!self.signer_disabled(epoch).get(), "epoch permanently disabled");
         require!(public_key.to_byte_array() != [0u8; 32], "zero signer");
         self.signer(epoch).set(public_key);
+        self.active_signer_epoch().set(epoch);
     }
 
     #[only_owner]
@@ -45,6 +46,9 @@ pub trait XArtistsClaimPackTestnet {
     fn disable_claim_signer(&self, epoch: u32) {
         require!(epoch > 0, "invalid epoch");
         self.signer_disabled(epoch).set(true);
+        if self.active_signer_epoch().get() == epoch {
+            self.claims_paused().set(true);
+        }
     }
 
     /// One collection per pack. Never change a collection after first set.
@@ -69,10 +73,9 @@ pub trait XArtistsClaimPackTestnet {
     #[only_owner]
     #[endpoint(unpauseClaims)]
     fn unpause_claims(&self) {
-        require!(
-            !self.signer(1).is_empty() || !self.signer(2).is_empty(),
-            "signer not configured"
-        );
+        let epoch = self.active_signer_epoch().get();
+        require!(epoch > 0 && !self.signer(epoch).is_empty(), "signer not configured");
+        require!(!self.signer_disabled(epoch).get(), "signer disabled");
         self.claims_paused().set(false);
     }
 
@@ -117,6 +120,7 @@ pub trait XArtistsClaimPackTestnet {
         require!(!self.claimed(&order_hash).get(), "claim already used");
         require!(!self.revoked(&order_hash).get(), "claim revoked");
         require!(signer_epoch > 0 && !self.signer_disabled(signer_epoch).get(), "signer disabled");
+        require!(signer_epoch == self.active_signer_epoch().get(), "signer epoch stale");
         require!(!self.signer(signer_epoch).is_empty(), "signer unknown");
         let buyer = self.blockchain().get_caller();
         let sc = self.blockchain().get_sc_address();
@@ -215,6 +219,10 @@ pub trait XArtistsClaimPackTestnet {
     #[view(isClaimsPaused)]
     #[storage_mapper("claimsPaused")]
     fn claims_paused(&self) -> SingleValueMapper<bool>;
+
+    #[view(getActiveClaimSignerEpoch)]
+    #[storage_mapper("activeSignerEpoch")]
+    fn active_signer_epoch(&self) -> SingleValueMapper<u32>;
 
     #[view(getClaimSigner)]
     #[storage_mapper("claimSigner")]
