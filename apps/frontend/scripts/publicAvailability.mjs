@@ -22,11 +22,8 @@ export function publicRoutes(source) {
 }
 
 /**
- * SEO and social metadata for the public, DISCOVERY-ONLY commercial landing.
- * Every route gets a physical HTML entrypoint at build time; social crawlers
- * must receive truthful metadata without executing the React bundle.
- *
- * This function does not activate sales, checkout, claims or NFT issuance.
+ * Offline-built route metadata for search/social crawlers (no checkout).
+ * Keep canonical /offres/ for both locale-route variants.
  */
 export function commercialSeoHtml(html, route) {
   if (!['/offres', '/offers'].includes(route) || !html.includes('</head>')) return html
@@ -56,26 +53,6 @@ export function commercialSeoHtml(html, route) {
   html = canonicalPattern.test(html)
     ? html.replace(canonicalPattern, link)
     : html.replace('</head>', '    ' + link + '\n  </head>')
-  return html
-}
-
-export function fallbackHtml(base) {')
-    const pattern = new RegExp(`<meta\\b(?=[^>]*\\b${attribute}=["']${escaped}["'])[^>]*>`, 'i')
-    html = pattern.test(html) ? html.replace(pattern, tag) : html.replace('</head>', `    ${tag}\\n  </head>`)
-  }
-  html = html.replace(/<title>[\\s\\S]*?<\\/title>/i, `<title>${title}</title>`)
-  meta('name', 'description', description)
-  meta('name', 'robots', 'index, follow')
-  meta('property', 'og:title', title)
-  meta('property', 'og:description', description)
-  meta('property', 'og:url', canonical)
-  meta('name', 'twitter:title', title)
-  meta('name', 'twitter:description', description)
-  const link = `<link rel="canonical" href="${canonical}" />`
-  const canonicalPattern = /<link\\b(?=[^>]*\\brel=["']canonical["'])[^>]*>/i
-  html = canonicalPattern.test(html)
-    ? html.replace(canonicalPattern, link)
-    : html.replace('</head>', `    ${link}\\n  </head>`)
   return html
 }
 
