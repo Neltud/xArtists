@@ -162,9 +162,10 @@ jobs:
           # Public commercial campaign URLs must return HTTP 200 on first GET
           # without needing GitHub Pages 404.html SPA fallback.
           for page in offres offers; do
-            mkdir -p "_site/$page"
-            cp _site/index.html "_site/$page/index.html"
+            # Vite generates route-specific titles/descriptions/OG metadata.
+            # Never overwrite them with the generic root index.html.
             test -s "_site/$page/index.html"
+            grep -q 'xArtists.*Packs IA\|xArtists Offers' "_site/$page/index.html"
           done
 
       - name: Verify built GitHub Pages assets
