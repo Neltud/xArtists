@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-02T20:06:42Z",
+  "updated": "2026-11-03T03:23:25Z",
   "paper": true,
   "legs": [
     {
@@ -4706,6 +4706,45 @@
       "fee_egld": 0.0008,
       "fee_usd_est": 0.00264,
       "pnl_usd_friction": 0.122534,
+      "friction_model": "gas_0.0008_egld+slip_liquidity"
+    },
+    {
+      "id": "c644619a-cf5",
+      "ts": "2026-11-03T03:23:25Z",
+      "ok": true,
+      "paper": true,
+      "side": "BUY",
+      "asset": "EGLD",
+      "amount": 10.96,
+      "size": 10.96,
+      "strategy": "STRAT_YIELD_OPTIMIZER",
+      "liquidity": 0.6476999999999999,
+      "pnl_usd": -0.130904,
+      "gate": {
+        "decision": "BUY",
+        "confidence": 0.6435,
+        "size_usd": 10.96,
+        "source": "shadow_sprint",
+        "level": 2,
+        "strategy": "STRAT_YIELD_OPTIMIZER",
+        "allow_size": true
+      },
+      "decision_proof": {
+        "decision_id": "a8bfd8df-66a9-4a",
+        "action_name": "BUY",
+        "reason": "default_foundation|sent=0.137|vol=0.352|STRAT_YIELD_OPTIMIZER",
+        "paper": true
+      },
+      "verification": "PaperOnly",
+      "scan": {
+        "egld_usd": 3.3,
+        "sentiment": 0.1365,
+        "volatility": 0.3523
+      },
+      "slippage_pct": 2.5,
+      "fee_egld": 0.0008,
+      "fee_usd_est": 0.00264,
+      "pnl_usd_friction": -0.133871,
       "friction_model": "gas_0.0008_egld+slip_liquidity"
     }
   ],
