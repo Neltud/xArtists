@@ -1,0 +1,34 @@
+name: Claim Voucher V2 — offline deploy-domain tests (NO DEPLOY)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/claimVoucherCodec.mjs'
+      - 'services/access-api/src/claimVoucherCodecV2.mjs'
+      - 'services/access-api/tests/claimVoucherCodecV2.test.mjs'
+      - '.github/workflows/claim-v2-offline.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/claimVoucherCodec.mjs'
+      - 'services/access-api/src/claimVoucherCodecV2.mjs'
+      - 'services/access-api/tests/claimVoucherCodecV2.test.mjs'
+      - '.github/workflows/claim-v2-offline.yml'
+permissions:
+  contents: read
+jobs:
+  v2-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run offline Ed25519 V2 isolation matrix (not runtime VM proof)
+        run: node --test services/access-api/tests/claimVoucherCodecV2.test.mjs
+      - name: Assert no server issuer or SC integration in this change
+        run: |
+          test -s services/access-api/src/claimVoucherCodecV2.mjs
+          ! grep -E "createPrivateKey|\\bsign\\(|fetch\\(|http\\.|listen\\(" services/access-api/src/claimVoucherCodecV2.mjs
+          echo "OFFLINE ONLY — #328 still NO-GO; no deploy/checkout/mint"
