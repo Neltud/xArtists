@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-03T13:40:53.576Z",
+  "updatedAt": "2026-11-03T20:47:11.687Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793738830993",
+      "timestamp": "20:47",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.41 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793737495000",
+      "timestamp": "20:24",
+      "source": "CoinTelegraph",
+      "title": "CFTC clears stock perpetual futures for trading on US exchanges",
+      "link": "https://cointelegraph.com/news/cftc-equity-perpetual-futures-trading-us-exchanges?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793734699000",
+      "timestamp": "19:38",
+      "source": "CoinTelegraph",
+      "title": "US midterms: Prediction markets favor Democrats in key crypto races",
+      "link": "https://cointelegraph.com/news/us-midterm-prediction-markets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793724421000",
+      "timestamp": "16:47",
+      "source": "CoinTelegraph",
+      "title": "Wall Street killed Bitcoin’s wild rallies: 10x’s Markus Thielen",
+      "link": "https://cointelegraph.com/magazine/wall-street-killed-bitcoins-wild-rallies-markus-thielen?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1793724246000",
+      "timestamp": "16:44",
+      "source": "CoinTelegraph",
+      "title": "Binance traces $6.3B hack to fake job interviews, compromised AI tool",
+      "link": "https://cointelegraph.com/news/binance-fake-job-interviews-compromised-ai-tool-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793720682000",
+      "timestamp": "15:44",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin price defends $76K lows as analysts see stocks pricing in ‘political gridlock’",
+      "link": "https://cointelegraph.com/markets/bitcoin-price-defends-76k-lows-as-analysis-sees-stocks-pricing-in-political-gridlock?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793713987000",
+      "timestamp": "13:53",
+      "source": "CoinTelegraph",
+      "title": "What’s at stake for crypto as the US votes in the 2026 midterms?",
+      "link": "https://cointelegraph.com/news/us-midterms-2026-stake-crypto-election-day?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793724910000",
+      "timestamp": "16:55",
+      "source": "CoinDesk",
+      "title": "Justin Sun seeks sanctions against Trump-linked World Liberty Financial over UAE ties",
+      "link": "https://www.coindesk.com/policy/2026/11/03/justin-sun-seeks-sanctions-against-trump-linked-world-liberty-financial-over-uae-ties"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793724596000",
+      "timestamp": "16:49",
+      "source": "CoinDesk",
+      "title": "South Korea's president says country needs a ‘cybersecurity czar’ following $6.3 billion Binance hack",
+      "link": "https://www.coindesk.com/tech/2026/11/03/south-korea-s-president-says-country-needs-a-cybersecurity-czar-following-usd6-3-billion-binance-hack"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793722671000",
+      "timestamp": "16:17",
+      "source": "CoinDesk",
+      "title": "Amazon, Tesla and SpaceX join OKX–ICE tokenized stock objections as deadline looms",
+      "link": "https://www.coindesk.com/business/2026/11/03/amazon-tesla-and-spacex-join-okx-ice-tokenized-stock-objections-as-deadline-looms"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793722355000",
+      "timestamp": "16:12",
+      "source": "CoinDesk",
+      "title": "Stablecoin governance group behind OUSD sets out management fee, offers equity earning pool",
+      "link": "https://www.coindesk.com/business/2026/11/03/stablecoin-governance-group-behind-ousd-sets-out-management-fee-offers-equity-earning-pool"
+    },
     {
       "id": "egld-1793713253022",
       "timestamp": "13:40",
@@ -121,83 +198,6 @@
       "source": "CoinTelegraph",
       "title": "North Korea denies role in $6.3B Binance hack, points finger at US",
       "link": "https://cointelegraph.com/news/north-korea-denies-role-in-63b-binance-hack-points-finger-at-us?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793658150000",
-      "timestamp": "22:22",
-      "source": "CoinTelegraph",
-      "title": "New Jersey drops Coinbase staking order ahead of crypto’s midterm test",
-      "link": "https://cointelegraph.com/news/new-jersey-coinbase-staking?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793681297000",
-      "timestamp": "04:48",
-      "source": "CoinDesk",
-      "title": "Bitcoin drops below $77,000 as chip rout deepens ahead of U.S. midterm vote",
-      "link": "https://www.coindesk.com/markets/2026/11/03/bitcoin-drops-below-usd77-000-as-chip-rout-deepens-ahead-of-u-s-midterm-vote"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793655533000",
-      "timestamp": "21:38",
-      "source": "CoinDesk",
-      "title": "Big crypto wants the one thing it can’t buy: your vote",
-      "link": "https://www.coindesk.com/opinion/2026/11/02/big-crypto-wants-the-one-thing-it-can-t-buy-your-vote"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793643237000",
-      "timestamp": "18:13",
-      "source": "CoinDesk",
-      "title": "Bitcoin traders eye post-election rally as exchange outflows point to supply squeeze",
-      "link": "https://www.coindesk.com/markets/2026/11/02/bitcoin-traders-eye-post-election-rally-as-exchange-outflows-point-to-supply-squeeze"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793640064000",
-      "timestamp": "17:21",
-      "source": "CoinDesk",
-      "title": "EU entity suspected of losing $106 million from crypto exchange accounts, ZachXBT says",
-      "link": "https://www.coindesk.com/tech/2026/11/02/eu-entity-suspected-of-losing-usd106-million-from-crypto-exchange-accounts-zachxbt-says"
-    },
-    {
-      "id": "egld-1793654753005",
-      "timestamp": "21:25",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.32 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793654184000",
-      "timestamp": "21:16",
-      "source": "CoinTelegraph",
-      "title": "Crypto investigators flag suspected $106M theft, $786K Solana bot drain",
-      "link": "https://cointelegraph.com/news/zachxbt-flags-suspected-106m-crypto-theft-as-solana-bot-faces-possible-786k-drain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793650943000",
-      "timestamp": "20:22",
-      "source": "CoinTelegraph",
-      "title": "Coinbase hit with 50% price target cut as post-earnings rout deepens",
-      "link": "https://cointelegraph.com/news/morgan-stanley-cuts-coinbase-target-to-120-as-earnings-recovery-outlook-weakens?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1793647678000",
-      "timestamp": "19:27",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin risks drop below $76K as 7% oil slide fails to spark BTC price rally",
-      "link": "https://cointelegraph.com/markets/bitcoin-risks-sub-76k-drop-as-7-fall-in-oil-fails-to-spark-btc-price-rally?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793646335000",
-      "timestamp": "19:05",
-      "source": "CoinTelegraph",
-      "title": "Mercado Bitcoin wallets show post-hack transfers after $46M theft",
-      "link": "https://cointelegraph.com/news/mercado-bitcoin-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793642416000",
-      "timestamp": "18:00",
-      "source": "CoinTelegraph",
-      "title": "Animoca Brands clears final hurdle for Abu Dhabi fund management",
-      "link": "https://cointelegraph.com/news/animoca-brands-expands-asset-management-business-with-abu-dhabi-approval?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
