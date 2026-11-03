@@ -18,7 +18,8 @@ function assertFrame({width,height,rgba}) {
   if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height) ||
       width < 1 || height < 1 || width > 4096 || height > 4096 ||
       width*height > MAX_SOURCE_PIXELS ||
-      !(rgba instanceof Uint8Array) || rgba.byteLength !== width*height*4) {
+      !(rgba instanceof Uint8Array || rgba instanceof Uint8ClampedArray) ||
+      rgba.byteLength !== width*height*4) {
     throw new TypeError('decoded_rgba_frame_required_or_too_large')
   }
 }
