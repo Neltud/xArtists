@@ -6,7 +6,7 @@
  * still require separate operator approval before commercial delivery.
  *
  * Caller MUST pass a trusted, complete snapshot of the orders and mint jobs and
- * the issuer/collection expected for that pack. Never call with buyer-supplied
+ * separately reviewed issuer/collection approval for that pack. Never call with buyer-supplied
  * receipt parameters or an incomplete snapshot and treat the result as delivery.
  */
 import { PACK_FIAT_CENTS } from './quote.mjs'
@@ -28,9 +28,9 @@ export function expectedNftIdentifier(collection, nonce) {
 
 /** Offline, early fail-closed checks. No HTTP or filesystem side effects. */
 export function verifyOrderReceiptBindings({
-  order, mintJob, receipt, ordersSnapshot, jobsSnapshot,
+  order, mintJob, receipt, approved, ordersSnapshot, jobsSnapshot,
 } = {}) {
-  if (!order || !mintJob || !receipt ||
+  if (!order || !mintJob || !receipt || !approved ||
       !Array.isArray(ordersSnapshot) || !Array.isArray(jobsSnapshot)) {
     return blocked('missing_reconciled_evidence_snapshot')
   }
@@ -60,9 +60,10 @@ export function verifyOrderReceiptBindings({
   }
   if (!receipt || !HASH.test(String(receipt.txHash || '')) ||
       !COLLECTION.test(String(receipt.collection || '')) ||
-      receipt.collection !== receipt.approvedCollection ||
+      receipt.collection !== approved.collection ||
+      approved.pack_id !== order.pack_id ||
       typeof receipt.issuer !== 'string' ||
-      receipt.issuer !== receipt.approvedIssuer ||
+      receipt.issuer !== approved.issuer ||
       receipt.buyer !== order.buyer_address ||
       receipt.amount !== 1) {
     return blocked('untrusted_or_inconsistent_chain_receipt')
@@ -100,12 +101,12 @@ export function verifyOrderReceiptBindings({
 export async function attestS1S2Candidate(evidence, fetchImpl = fetch) {
   const bound = verifyOrderReceiptBindings(evidence)
   if (!bound.candidate_verified) return bound
-  const { receipt, order } = evidence
+  const { receipt, order, approved } = evidence
   const chain = await verifyMainnetNftReceipt({
     txHash: receipt.txHash,
     buyer: order.buyer_address,
-    issuer: receipt.approvedIssuer,
-    collection: receipt.approvedCollection,
+    issuer: approved.issuer,
+    collection: approved.collection,
     nonce: receipt.nonce,
     amount: 1,
   }, fetchImpl)
