@@ -47,6 +47,16 @@ Audit Neon en lecture agrégée : la base **sandbox** accessible compte deux anc
 
 **G11/G12 ne sont pas clôturés** : il reste à valider l'identité de la base de production sans exposer la chaîne de connexion, la signature IPN en environnement isolé, les retries, la réconciliation on-chain, l'idempotence après panne, S1/S2 et les remboursements. Voir l'[issue #281](https://github.com/Neltud/xArtists/issues/281). GO commercial : **NON**.
 
+### Mise à jour P0 — 3 novembre 2026 (base réellement testée)
+
+* [PR #289](https://github.com/Neltud/xArtists/pull/289) : backend API Node rétabli sur Render par image Docker à deux rôles, sans rupture du frontend existant.
+* [PR #290](https://github.com/Neltud/xArtists/pull/290) : huit suites CI vertes et nouveau `GET /v1/ops/orders-store/status`. Après déploiement Render `da591e93`, une **vraie requête SQL en lecture seule** confirme `ok=true`, `backend=postgres`, `table_ready=true`.
+* Les champs `orders_backend=postgres` et `paybox_mode=prod` dans `/health` sont des **configurations**, et non des preuves de paiement ou de transactions. La nouvelle preuve établit la connexion PostgreSQL et la table présente, mais **pas** les droits d'écriture, l'identité du projet Neon, la qualité des anciennes commandes ou la concordance PSP.
+* PayBox checkout `false`, mint dispatch `false`, mint live `false`, dry-run `true`, trading LIA `0` : aucune activation marchande.
+* L'ancien jeton GitHub partagé doit être révoqué dans GitHub ; sa variable Render a été vidée. La disponibilité de l'API sur Render Free reste sujette au réveil après inactivité.
+
+**Gates encore ouverts :** G11/G12, IPN signé réel, paiement S1, rapprochement PostgreSQL ↔ PSP, preuve NFT on-chain liée au bon destinataire, remboursement et procédures d'arrêt. Voir l'[issue #281](https://github.com/Neltud/xArtists/issues/281). **NO-GO commercial**.
+
 ### Ordre des lots
 
 1. **Fiabilité et preuve** : corriger PR #200, état de risque, cache et CI trompeuse. Conserver les assertions métier ; ne pas fusionner la release pour masquer les échecs.

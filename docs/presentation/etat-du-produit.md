@@ -1,13 +1,13 @@
 ---
 description: >-
-  Disponibilité vérifiée le 2 novembre 2026 — site V3 public et mainnet séparé
+  Disponibilité vérifiée le 3 novembre 2026 — site V3 public et mainnet séparé
   du GO commercial.
 icon: circle-check
 ---
 
 # Accès et disponibilité
 
-**Référence : 2 novembre 2026.** Cette page distingue la disponibilité d'un site web, l'existence de contrats déployés, la lecture de données et l'autorisation de traitements commerciaux ou financiers.
+**Mise à jour : 3 novembre 2026.** Cette page distingue la disponibilité d'un site web, l'existence de contrats déployés, la lecture de données et l'autorisation de traitements commerciaux ou financiers.
 
 ## Adresses officielles
 
@@ -43,6 +43,16 @@ Après la fusion de la [PR #280](https://github.com/Neltud/xArtists/pull/280), l
 Lecture directe de [`/health`](https://xartists-access-api.onrender.com/health) lors de ce contrôle : `paybox_mode=prod`, `orders_backend=postgres`, `mint_dispatch_enabled=false`, `mint_dry_run=true`, `mint_live_enabled=false`, `lia_live_trading=0`, `tro_solana_bridge=off`, `studio_media_upload=off`, `physical_works=off`. Le fichier [`lia_status.json`](https://neltud.github.io/xArtists/data/lia_status.json) confirme `paper=true` et `LIA_LIVE_TRADING=0`.
 
 **Portée de cette preuve :** disponibilité des surfaces publiques et des garde-fous logiciels au moment du contrôle. **Elle ne prouve pas** un paiement carte réel, un callback IPN confirmé, un mint NFT mainnet, la livraison à l'acheteur ou un remboursement. Ces étapes restent **NO-GO commercial** tant qu'une recette réelle contrôlée et son rapprochement n'ont pas été attestés. Les valeurs ci-dessus sont un instantané daté, pas une garantie permanente.
+
+## Contrôle de production — 3 novembre 2026
+
+Le service `xartists-access-api` est de nouveau une **API Node réelle** après la [PR #289](https://github.com/Neltud/xArtists/pull/289) : Docker partagé avec rôles explicites `api` et `frontend`, sans détruire le frontend existant. Le site `xArtists services and products` continue à servir le frontend. Le code `main` de la [PR #290](https://github.com/Neltud/xArtists/pull/290), commit [`da591e93`](https://github.com/Neltud/xArtists/commit/da591e9349c86854eee605333c7df3d42a512c1c), est **live sur les deux services Render** ; ses huit suites CI sont vertes, dont PostgreSQL jetable, PayBox sandbox, E2E et audit sécurité.
+
+Vérification publique après déploiement : [`/health`](https://xartists-access-api.onrender.com/health) répond `ok=true`, `service=access-api` ; le nouvel [état de la base de commandes](https://xartists-access-api.onrender.com/v1/ops/orders-store/status) répond `ok=true`, `backend=postgres`, `table_ready=true`. **La base réellement utilisée par l'API est joignable et sa table `paybox_orders` existe**. Ce contrôle exécute une requête SQL en lecture seule, sans exposer de transactions ni de données d'acheteurs. Il ne permet pas d'identifier à lui seul quel projet Neon héberge cette base ni de prouver les droits d'écriture ou les transactions PSP.
+
+Les protections commerciales sont toujours actives : `paybox_checkout_enabled=false`, `mint_dispatch_enabled=false`, `mint_dry_run=true`, `mint_live_enabled=false`, `lia_live_trading=0`. Le bridge TRO, les uploads Studio et les ventes physiques restent désactivés. Les services Render Free peuvent toutefois s'endormir, ce qui peut retarder des requêtes ou entraîner des 503 transitoires ; disponibilité et paiements réels ne sont pas garantis en permanence.
+
+**GO public technique confirmé pour ce contrôle daté ; GO commercial NFT toujours NON.** Les paiements réels S1, signatures IPN réelles, livraison NFT S2, remboursements et rapprochement restent à prouver selon l'[issue #281](https://github.com/Neltud/xArtists/issues/281). Le jeton GitHub autrefois exposé a été effacé de Render, mais sa révocation côté GitHub doit encore être vérifiée.
 
 ## Correctif de livraison PayBox — preuve du 2 novembre 2026
 
