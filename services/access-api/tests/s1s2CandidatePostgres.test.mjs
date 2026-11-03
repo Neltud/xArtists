@@ -72,10 +72,10 @@ test('PostgreSQL candidate ledger: unique PSP/tx/NFT, correlated S1/S2, immutabl
 
   async function insert(row) {
     return pool.query(
-      \`INSERT INTO s1s2_candidate_reservations
+      `INSERT INTO s1s2_candidate_reservations
         (order_id, provider_tx_id, chain_tx_hash, nft_identifier,
          buyer_address, pack_id, amount_cents)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)\`,
+       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
       [row.orderId, row.provider, row.tx, row.nft, row.buyer,
         row.pack, row.amount],
     )
@@ -144,8 +144,8 @@ test('PostgreSQL candidate ledger: unique PSP/tx/NFT, correlated S1/S2, immutabl
     ), '23514')
 
     const cols = await pool.query(
-      \`SELECT column_name FROM information_schema.columns
-       WHERE table_schema='public' AND table_name='s1s2_candidate_reservations'\`,
+      `SELECT column_name FROM information_schema.columns
+       WHERE table_schema='public' AND table_name='s1s2_candidate_reservations'`,
     )
     assert.equal(cols.rows.some(x => x.column_name === 'delivery_verified'), false)
     assert.equal(cols.rows.some(x => x.column_name === 'delivered_at'), false)
@@ -155,10 +155,10 @@ test('PostgreSQL candidate ledger: unique PSP/tx/NFT, correlated S1/S2, immutabl
     try {
       await client.query('BEGIN')
       await client.query(
-        \`INSERT INTO s1s2_candidate_reservations
+        `INSERT INTO s1s2_candidate_reservations
          (order_id,provider_tx_id,chain_tx_hash,nft_identifier,
           buyer_address,pack_id,amount_cents)
-         VALUES ($1,$2,$3,$4,$5,$6,$7)\`,
+         VALUES ($1,$2,$3,$4,$5,$6,$7)`,
         [rollback.orderId, rollback.provider, rollback.tx,
           rollback.nft, rollback.buyer, rollback.pack, rollback.amount],
       )
