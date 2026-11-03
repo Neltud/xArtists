@@ -12,7 +12,7 @@ const API = 'https://api.multiversx.com'
 const BRIDGE = 'https://xartists-access-api.onrender.com/v1/tro/bridge/status'
 
 function positiveAtomic(value, label, errors) {
-  if (typeof value !== 'string' || !/^\\d+$/.test(value)) {
+  if (typeof value !== 'string' || !/^\d+$/.test(value)) {
     errors.push(`${label}: expected decimal atomic-unit string`)
     return 0n
   }
