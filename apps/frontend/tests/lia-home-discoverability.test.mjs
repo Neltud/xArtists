@@ -16,8 +16,8 @@ test('homepage links to LIA without expanding primary art-first CTA count', () =
 test('mobile menu shows LIA without replacing five-item fixed dock', () => {
   const shell = read('Shell.tsx')
   assert.match(shell, /to="\/lia" onClick=\{closeMobile\}/)
-  const dock = shell.slice(shell.indexOf('function MobileDock()'))
+  const dock = shell.slice(shell.indexOf('const MOBILE_DESTINATIONS ='), shell.indexOf('function MobileDock()'))
   for (const to of ["/museum","/marketplace","/auction","/studio"]) {
-    assert.ok(dock.includes(to), 'missing dock path ' + to)
+    assert.ok(dock.includes("to:'" + to + "'"), 'missing dock path ' + to)
   }
 })
