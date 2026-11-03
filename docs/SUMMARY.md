@@ -6,6 +6,7 @@
   * [Audit renforcé — 28 octobre 2026](security/audit-2026-10-28.md)
   * [Critères de lancement](security/launch-gates.md)
   * [Prix, droits et livraison](security/pricing-delivery.md)
+  * [Claim voucher post-PayBox — architecture B + A](security/claim-voucher-b-a-2026-11-03.md)
   * [Régime d'automatisation](security/automation.md)
   * [Passation quotidienne Grok](security/grok-daily.md)
   * [README proposé du dépôt](security/readme-du-depot.md)
