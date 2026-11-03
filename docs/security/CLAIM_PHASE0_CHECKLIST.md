@@ -1,17 +1,21 @@
-# Claim phase 0 checklist — dual agent
+# Claim phase checklist — dual agent (updated 2026-11-03)
 
 | Item | Owner | Status |
 |------|-------|--------|
-| Architecture B+A doc | ChatGPT #312 | Merged #312 (offline only) |
-| `assessPaidClaimCandidate` | ChatGPT #312 | Merged #312 + tests |
-| Domain codec 17-byte + orderHash | Grok | Done on symbiosis branch |
-| Revocation / TTL policy pure | Grok | Done |
-| CI green on merged #312 | shared | Verified at merge |
-| SC claimPack testnet | ChatGPT lead | **TODO** |
-| Ed25519 claim-only key in vault | ops + ChatGPT | **TODO** |
-| Neon/Render DB has mint_jobs | ops | **TODO** (sandbox gap noted) |
-| HTTP issuer endpoint | later | **NO** until SC+revoke |
+| Architecture B+A doc | ChatGPT | Done (merged) |
+| `assessPaidClaimCandidate` | ChatGPT | Done |
+| Canonical `claimVoucherCodec` | ChatGPT | Done |
+| Domain facade + revoke + compose | Grok → merged | Done |
+| TTL ≤ 15 min | shared | Done |
+| Isolated SC `claim-pack-testnet` | ChatGPT | Done in repo |
+| VM scenario matrix | ChatGPT | Reported 12/12 (local) |
+| Public testnet deploy + chain-id | ChatGPT lead | **TODO** |
+| Shared hex Node↔Rust golden lock | shared | **TODO** confirm on main |
+| Ed25519 claim-only key in vault | ops | **TODO** |
+| Neon/Render `mint_jobs` | ops | **TODO** (#281 SQL) |
+| HTTP issuer endpoint | later | **NO** until testnet+revoke proven |
 | #310 live mint lock | both | **KEEP** |
-| Marketing #311 | ChatGPT | parallel OK |
+| xArt-ID pHash candidate | ChatGPT #326 | Done (candidate only) |
+| xArt-ID file decode + C2PA | #324 | **TODO** |
 
-**Merge order:** #312 → codec/revocation branch → SC PR séparée.
+See `CLAIM_VM_VS_TESTNET_GATES_2026-11-03.md`.
