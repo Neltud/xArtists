@@ -2,12 +2,11 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
 /**
  * LIA Hub — Control Room 3D + Cockpit LIVE intents xPortal (v0.110).
  */
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import LiaHubControlRoomLazy from '../components/lia/LiaHubControlRoomLazy'
 import { Link } from 'react-router-dom'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
-import { toAmbientSnapshot } from '../lib/ambientAura'
 import { fetchProtocolProfile } from '../lia/protocolProfile'
 import { fetchEgldPrice } from '../lia/priceTick'
 import { persistShadowExport } from '../lia/shadowExport'
@@ -53,17 +52,13 @@ async function fetchRecentTx(size = 8): Promise<ExplorerTx[]> {
 export default function LiaPage() {
   const { env } = usePulse()
   const lia = useLIAInterpreter(env)
-  const ambient = useMemo(
-    () => toAmbientSnapshot(lia?.uniforms, lia?.confidence ?? 0.5, false),
-    [lia?.uniforms, lia?.confidence],
-  )
-
   const [vellum, setVellum] = useState<VellumLastRun | null>(null)
   const [hub, setHub] = useState<LiaHubStatus | null>(null)
   const [agg, setAgg] = useState<LiaStatusV1 | null>(null)
   const [txs, setTxs] = useState<ExplorerTx[]>([])
   const [loading, setLoading] = useState(true)
   const [mAura, setMAura] = useState<string>('stable')
+  const [advancedOpen, setAdvancedOpen] = useState(false)
 
   const refresh = useCallback(async () => {
     setLoading(true)
@@ -106,86 +101,111 @@ export default function LiaPage() {
     return () => window.clearInterval(id)
   }, [refresh])
 
-  void ambient
-
   return (
-    <div className="animate-fade-in space-y-6 pb-20 max-w-3xl mx-auto">
-      <header className="space-y-2">
-        <p className="section-label">{xaRender("LIA Hub")}</p>
-        <h1 className="section-title display text-2xl">{xaRender("Agent autonome & signaux")}</h1>
-        <p className="text-[11px] text-emerald-200/90 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 inline-block max-w-full">
-          {xaRender(LIA_BADGE)}
+    <main className="animate-fade-in mx-auto max-w-5xl min-w-0 space-y-6 pb-28">
+      <header className="space-y-3">
+        <p className="section-label">LIA · PUBLIC CONTROL ROOM</p>
+        <h1 className="section-title display text-2xl sm:text-3xl">Agent signals, clearly explained</h1>
+        <p className="max-w-2xl text-sm leading-relaxed text-zinc-300">
+          Explore the published signals of the xArtists AI agents, read the source timestamps, and
+          distinguish market observations from simulations. No wallet is needed to view this page.
         </p>
-        <p className="text-[13px] text-zinc-500 leading-relaxed">
-          {xaRender("Multi-IA · wallet agent en lecture ·")}{xaRender(' ')}
-          <strong className="text-amber-200/90">
-            {xaRender(LIA_LIVE_TRADING ? 'LIVE user-sign xPortal' : 'paper first')}
-          </strong>
-          {xaRender(". Aura : ")}<span className="text-zinc-300">{xaRender(mAura)}</span>
-          {xaRender(loading ? ' · sync…' : '')}
+        <p className="inline-block max-w-full rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs leading-relaxed text-amber-100" role="status">
+          {LIA_LIVE_TRADING
+            ? 'Trading flag reported: enabled. This page does not independently verify execution readiness.'
+            : 'PAPER / SHADOW · Automated live trading is disabled. Simulated P&L is not realized profit.'}
         </p>
-        <p className="text-[11px] text-zinc-600">
-          {xaRender("Aucune TX autonome sans signature : les actions on-chain passent par")}{xaRender(' ')}
-          <strong className="text-zinc-400">{xaRender("xPortal")}</strong>.
+        <p className="max-w-2xl text-xs text-zinc-500">
+          Data comes from periodically published snapshots, not a continuous LIA trading stream.
+          The published timestamp is different from the time at which you open this page.
         </p>
       </header>
 
       <LiaHubControlRoomLazy />
 
-      <Pack3DCockpit showIntents />
+      <nav aria-label="Explore xArtists" className="flex flex-wrap gap-2">
+        <Link to="/intelligence/agents" className="min-h-[44px] rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-4 py-3 text-sm font-semibold text-cyan-100">
+          Explore Pulse, Yield &amp; Sentinel
+        </Link>
+        <Link to="/explore/market" className="min-h-[44px] rounded-xl border border-white/20 px-4 py-3 text-sm text-zinc-200">
+          Marketplace
+        </Link>
+        <Link to="/explore/auction" className="min-h-[44px] rounded-xl border border-white/20 px-4 py-3 text-sm text-zinc-200">
+          Auctions
+        </Link>
+      </nav>
 
-      <LiaAgentControl />
-      <HolderTerminal />
-      <LiveAssetTape />
-      <RceStrip compact />
-      <DailySignalWidget />
-      <EconomicPulse />
-      <IntentFeedTerminal />
-
-      <section className="rounded-2xl border border-white/10 bg-black/40 p-4 space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-          {xaRender("Vellum & hub ")}</p>
-        <p className="text-[12px] text-zinc-400">
-          {xaRender("Vellum · ")}{xaRender(vellum?.live ? 'LIVE' : 'paper')}{xaRender(' ')}
-          {xaRender(vellum?.summary?.mode ? `· ${vellum.summary.mode}` : '')}
-        </p>
-        <p className="text-[12px] text-zinc-400">
-          {xaRender("Hub · ")}{xaRender(hub?.strategy || hub?.note || '—')} {xaRender(" · shadow PnL ")}{xaRender(hub?.shadow_pnl_usd ?? '—')}
-        </p>
-        {xaRender(agg?.mindset?.strategy && (
-          <p className="text-[11px] mono text-zinc-500">{xaRender("strategy · ")}{xaRender(agg.mindset.strategy)}</p>
-        ))}
-        {xaRender(txs.length > 0 && (
-          <ul className="text-[11px] mono text-zinc-500 space-y-1 max-h-28 overflow-y-auto">
-            {xaRender(txs.slice(0, 5).map((tx, i) => (
-              <li key={tx.txHash || i}>
-                {xaRender(tx.function || 'tx')} · {xaRender(tx.status || '—')}
-              </li>
-            )))}
-          </ul>
-        ))}
+      <section aria-labelledby="lia-advanced" className="min-w-0 space-y-4 rounded-2xl border border-white/10 bg-black/30 p-4 sm:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="max-w-xl">
+            <h2 id="lia-advanced" className="text-lg font-semibold text-white">Advanced intelligence &amp; diagnostics</h2>
+            <p className="mt-1 text-xs leading-relaxed text-zinc-400">
+              Optional technical dashboards, asset tickers, intent logs and simulations.
+              These are not confirmations of trades, NFT deliveries or real-time LIA executions.
+            </p>
+          </div>
+          <button type="button" onClick={() => setAdvancedOpen(open => !open)} aria-expanded={advancedOpen}
+            aria-controls="lia-advanced-content"
+            className="min-h-[44px] rounded-xl border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
+            {advancedOpen ? 'Hide advanced dashboards' : 'Show advanced dashboards'}
+          </button>
+        </div>
+        {advancedOpen && (
+          <div id="lia-advanced-content" className="min-w-0 space-y-5">
+            <div className="grid min-w-0 gap-4 lg:grid-cols-2">
+              <div className="min-w-0 space-y-4">
+                <LiaAgentControl />
+                <HolderTerminal />
+                <DailySignalWidget />
+                <EconomicPulse />
+              </div>
+              <div className="min-w-0 space-y-4">
+                <LiveAssetTape />
+                <RceStrip compact />
+                <IntentFeedTerminal />
+              </div>
+            </div>
+            <div className="min-w-0 overflow-x-auto"><Pack3DCockpit showIntents /></div>
+            <section className="min-w-0 space-y-2 rounded-xl border border-white/10 p-4">
+              <h3 className="text-sm font-semibold text-zinc-100">Sources &amp; operator telemetry</h3>
+              <p className="text-xs text-zinc-400">
+                Vellum: {vellum?.live ? 'source reports live; not independent trading proof' : 'paper/offline'}
+                {' · '}Model aura: {mAura}
+                {loading ? ' · synchronizing snapshots' : ''}
+              </p>
+              <p className="text-xs text-zinc-400">Hub strategy: {hub?.strategy || 'not published'} · Shadow P&amp;L: {hub?.shadow_pnl_usd ?? 'unavailable'}</p>
+              {agg?.mindset?.strategy && <p className="text-xs text-zinc-400">Published strategy: {agg.mindset.strategy}</p>}
+              {txs.length > 0 && (
+                <div className="text-xs text-zinc-500">
+                  <p>Recent public wallet transactions (not proof of autonomous agent trading):</p>
+                  <ul className="mt-2 max-h-32 space-y-1 overflow-y-auto">
+                    {txs.slice(0, 5).map((tx, i) => (
+                      <li key={tx.txHash || i} className="break-all">{tx.function || 'transaction'} · {tx.status || 'status unknown'}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </section>
+            <LiaCommandTerminal
+              phrase={lia.phrase}
+              mood={lia.uniforms?.mood ?? 'stable'}
+              confidence={lia.confidence ?? 0.5}
+              source={lia.source}
+              pending={lia.shadow?.liaPending}
+              fallback={lia.shadow?.fallbackActive}
+              onAsk={ctx => lia.requestComment(ctx)}
+              contextHint="lia-hub"
+              defaultOpen={false}
+            />
+            <p className="text-xs text-zinc-500">{LIA_BADGE} · On-chain actions require user authorization through xPortal.</p>
+            <nav className="flex flex-wrap gap-3 text-xs text-zinc-400" aria-label="Additional tools">
+              <Link to="/command-center" className="underline underline-offset-4 hover:text-white">Command Center (access restricted)</Link>
+              <Link to="/studio" className="underline underline-offset-4 hover:text-white">Creative Studio</Link>
+              <Link to="/agents" className="underline underline-offset-4 hover:text-white">Agent packs</Link>
+            </nav>
+          </div>
+        )}
       </section>
-
-      <LiaCommandTerminal
-        phrase={lia.phrase}
-        mood={lia.uniforms?.mood ?? 'stable'}
-        confidence={lia.confidence ?? 0.5}
-        source={lia.source}
-        pending={lia.shadow?.liaPending}
-        fallback={lia.shadow?.fallbackActive}
-        onAsk={ctx => lia.requestComment(ctx)}
-        contextHint="lia-hub"
-        defaultOpen={false}
-      />
-
-      <div className="flex flex-wrap gap-3 text-[12px] text-zinc-500">
-        <Link to="/command-center" className="hover:text-zinc-300">
-          {xaRender("Command Center ")}</Link>
-        <Link to="/studio" className="hover:text-zinc-300">
-          {xaRender("Studio Phygital ")}</Link>
-        <Link to="/agents" className="hover:text-zinc-300">
-          {xaRender("Packs ")}</Link>
-      </div>
-    </div>
+    </main>
   )
 }
