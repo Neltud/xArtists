@@ -162,6 +162,10 @@ test('duplicate PSP transaction, NFT or tx in ledger must block candidate before
     f => f.ordersSnapshot.splice(0),
     f => f.jobsSnapshot.splice(0),
     f => f.ordersSnapshot.push({ ...f.order }),
+    f => { f.ordersSnapshot[0] = { ...f.order, amount_cents: 1 } },
+    f => { f.ordersSnapshot[0] = { ...f.order, server_confirmed: false } },
+    f => { f.jobsSnapshot[0] = { ...f.mintJob, mode: 'dry_run' } },
+    f => { f.jobsSnapshot[0] = { ...f.mintJob, nft_identifier: 'OTHER-123456-01' } },
   ]) {
     const f = fixture()
     reuse(f)
