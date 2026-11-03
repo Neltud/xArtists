@@ -78,7 +78,7 @@ export default function BurnifyPage() {
           <li>
             {xaRender("BFY libre → ")}<code className="text-xs">deposit</code> {xaRender(" sur SC staking (rester staké). ")}</li>
           <li>
-            {xaRender("Batches ")}<strong>{xaRender("TRO")}</strong> {xaRender(" (≈0,015 EGLD + equiv. token) → fin de cycle : TRO brûlé. ")}</li>
+            {xaRender("Batches ")}<strong>{xaRender("TRO")}</strong> {xaRender(" : uniquement si TRO est effectivement accepté par Burnify ; aucune soumission automatique active. Les montants variables sont définis par le protocole. ")}</li>
           <li>
             {xaRender("Après ")}<strong>{xaRender(CLAIM_AFTER)} {xaRender(" batches")}</strong> → <code className="text-xs">claimRewards</code>{xaRender(' ')}
             {xaRender("EGLD vers LIA. Claim ")}<em>{xaRender("obligatoire")}</em> {xaRender(" au seuil. ")}</li>
