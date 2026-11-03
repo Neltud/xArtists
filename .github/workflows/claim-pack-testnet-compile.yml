@@ -31,7 +31,7 @@ jobs:
       - name: Compile actual MultiversX 0.66.2 contract crate
         run: cargo check --manifest-path contracts/claim-pack-testnet/Cargo.toml --lib
       - name: Run actual Rust crate tests (if defined)
-        run: cargo test --manifest-path contracts/claim-pack-testnet/Cargo.toml --lib
+        run: cargo test --manifest-path contracts/claim-pack-testnet/Cargo.toml -- --nocapture
       - name: Scope invariant — no existing marketplace code modified
         run: |
           test -f contracts/claim-pack-testnet/src/lib.rs
