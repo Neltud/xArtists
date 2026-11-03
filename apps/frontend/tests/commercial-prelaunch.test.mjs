@@ -60,7 +60,7 @@ test('public contact requires GitHub consent and must never collect private info
   assert.match(form,/no payment|No payment|no payment/i)
   assert.match(form,/private key/i)
   assert.match(legacy,/Navigate to="\/offres" replace/)
-  assert.doesNotMatch(legacy,/mailto:|Réserver|reservation|createOrder/)
+  assert.doesNotMatch(legacy,/<form|mailto:|onReserve|createOrder/)
   assert.doesNotMatch(page,/mailto:|hello@xartists\.art|fetch\s*\(/)
 })
 
