@@ -88,7 +88,6 @@ export default function PackCheckout({
   }, [forcedId])
 
   const pack = PACKS.find(p => p.id === selected)
-  const mintLive = canBuyAgent()
   const checkoutAvailable = commercialGoRequested && (merchantCheckoutReady || cryptoCheckoutReady)
   const isGuest = !connected || !address?.startsWith('erd1')
 
@@ -204,7 +203,7 @@ export default function PackCheckout({
               <p className="text-zinc-400 mt-0.5">
                 {xaRender(t('packCheckout.cryptoLine', { amount: pack.priceEgld.list }))}
                 {xaRender(' · ')}
-                {xaRender(mintLive ? t('packCheckout.mintLive') : t('packCheckout.mintSoon'))}
+                {xaRender(cryptoCheckoutReady ? t('packCheckout.mintLive') : t('packCheckout.mintSoon'))}
               </p>
             </div>
             <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] px-3 py-2">
