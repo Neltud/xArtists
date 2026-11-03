@@ -99,15 +99,16 @@ function eligible(order) {
   return order && order.status === 'paid' &&
     order.server_confirmed === true &&
     order.delivery_verified !== true &&
+    /^[1-9][0-9]{0,5}$/.test(String(order.edition || 1)) &&
     /^[A-Za-z0-9_-]{1,64}$/.test(String(order.order_id || '')) &&
     assertPaymentAllowsMint(order).ok
 }
 
-export function eligibleOidcOrders(db, limit = 10) {
+export function eligibleOidcOrders(db, limit = 10, offset = 0) {
   const orders = Object.values(db?.orders || {})
   return orders.filter(eligible)
     .sort((a, b) => String(a.created_at || '').localeCompare(String(b.created_at || '')))
-    .slice(0, Math.min(Math.max(1, limit), 10))
+    .slice(Math.max(0, offset), Math.max(0, offset) + Math.min(Math.max(1, limit), 10))
     .map(o => ({ order_id: o.order_id }))
 }
 
