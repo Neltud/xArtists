@@ -36,7 +36,7 @@ pas sur JSON réordonnable. Domain separator obligatoire :
 
 | Champ | Encodage signé, dans cet ordre | Autorité |
 | --- | --- | --- |
-| Domaine | 17 octets ASCII + NUL final (vérifier longueur à l'implémentation) | Constante V1 |
+| Domaine | 16 octets ASCII + NUL final (17 octets au total) | Constante V1 |
 | `chain_id` | longueur u8 puis ASCII (mainnet `1`, testnet séparé) | SC |
 | `sc_address` | 32 octets adresse SC | SC |
 | `signer_epoch` | u32 big-endian | gouvernance signer |
