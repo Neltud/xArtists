@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getAccessApiBase } from '../lib/stripe'
 import { TRO_TOKEN_ID, TRO_YIELD_POOLS } from '../config/troPools'
-import './troCrosschain.css'
+// Styles are loaded eagerly by experience/modules.ts to prevent lazy CSS preload failures.
 
 const EXPLORER = 'https://explorer.multiversx.com/tokens/' + TRO_TOKEN_ID
 const DEX = TRO_YIELD_POOLS.find(p => p.dex === 'xexchange')
