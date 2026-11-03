@@ -47,3 +47,12 @@ test('all contact CTA are inquiries, not promises of purchase or delivery',()=>{
   assert.doesNotMatch(page,/\bcheckout_enabled\s*=\s*true/)
   assert.doesNotMatch(page,/mint_live_enabled\s*=\s*true/)
 })
+
+test('direct campaign URLs are prebuilt as HTTP 200 entrypoints on GitHub Pages',()=>{
+  const wf=read('../../.github/workflows/static.yml')
+  assert.match(wf,/for page in offres offers; do/)
+  assert.ok(wf.includes('cp _site/index.html "_site/$page/index.html"'))
+  assert.ok(wf.includes('test -s "_site/$page/index.html"'))
+  assert.ok(wf.includes('"https://neltud.github.io/xArtists/$page/"'))
+  assert.match(wf,/Public campaign deep link \$page did not pass HTTP 200 check/)
+})
