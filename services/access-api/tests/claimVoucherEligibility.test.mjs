@@ -2,7 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { assessPaidClaimCandidate } from '../src/claimVoucherEligibility.mjs'
 
-const buyer = 'erd1' + 'q'.repeat(58)
+const buyer = 'erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th'
 const valid = () => ({
   order_id: 'xa_test_001', provider_tx_id: 'PBX.20261103:123',
   buyer_address: buyer, pack_id: 'pulse', amount_cents: 11000,
@@ -27,6 +27,7 @@ for (const [name, field, value] of [
   ['wrong fiat price', 'amount_cents', 10999],
   ['wrong currency', 'currency', 'USD'],
   ['wrong buyer format', 'buyer_address', 'guest:abc'],
+  ['wrong buyer checksum', 'buyer_address', 'erd1' + 'q'.repeat(58)],
   ['no PSP transaction', 'provider_tx_id', null],
   ['already verified delivery', 'delivery_verified', true],
   ['delivery marked confirmed', 'delivery', 'confirmed'],
