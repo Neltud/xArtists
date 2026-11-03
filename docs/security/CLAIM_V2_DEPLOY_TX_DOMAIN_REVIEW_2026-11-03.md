@@ -42,6 +42,15 @@ MultiversX publishes `get_tx_hash()` as a VM-accessible API and includes `chainI
 
 This anchors a **deployment instance**, not an intrinsic chain-ID getter. It does not defend against an adversarial VM that lies about `get_tx_hash()`, wholesale state copying, or a fork reusing the same deployment history; those are outside the proposed honest-network threat model and must be reviewed explicitly. Do not describe this as an unforgeable statement of universal runtime network identity.
 
+## Mocked-VM trap in current V1 tests (verified framework source)
+
+The existing V1 test suite uses `whitebox_legacy::BlockchainStateWrapper::execute_tx`. In the 0.66.2 scenario source, that method sets `sc_call_step.explicit_tx_hash = Some(H256::zero())` before invoking the contract lambda. **Therefore, legacy `execute_tx` cannot provide realistic evidence for an `init().get_tx_hash()`-bound protocol.** Merely copying the old 12 tests into V2 would wrongly initialize a zero anchor.
+
+Do not relax the contract's zero-anchor prohibition merely to accommodate the old mock. Use the 0.66.2 `ScenarioWorld` transaction API with `.tx_hash(...)` on distinct **nonzero** deterministic 32-byte mock hashes, and verify the constructor stores exactly the provided hash. Assert signature verification fails on the clone while the SC address and signer key are identical. Prove the same-hash negative control too, then separately establish real VM/deploy semantics with pinned source and independent public-testnet evidence. Distinguish a simulated hash supplied by a test from a hash independently returned by a real network.
+
+- Source: https://docs.rs/crate/multiversx-sc-scenario/0.66.2/source/src/whitebox_legacy/contract_obj_wrapper.rs
+- Explicit test-only tx hash API: https://docs.rs/multiversx-sc-scenario/0.66.2/multiversx_sc_scenario/imports/struct.Tx.html
+
 ## Required adversarial evidence before any approval
 
 - [ ] Framework pin: confirm `get_tx_hash()` inside `#[init]` with `multiversx-sc=0.66.2`, including 32-byte type, nonzero value and expected semantics.
