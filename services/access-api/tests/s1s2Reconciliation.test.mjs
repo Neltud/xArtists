@@ -33,9 +33,10 @@ function fixture() {
   }
   const receipt = {
     txHash: TX, nonce: 1, amount: 1, collection: COLLECTION,
-    approvedCollection: COLLECTION, issuer: ISSUER, approvedIssuer: ISSUER,
+    issuer: ISSUER,
     buyer: BUYER,
   }
+  const approved = { pack_id: 'sentinel', collection: COLLECTION, issuer: ISSUER }
   const event = {
     identifier: 'ESDTNFTTransfer',
     address: ISSUER,
@@ -65,7 +66,7 @@ function fixture() {
       json: async () => data.get(url) }
   }
   return {
-    order, mintJob, receipt,
+    order, mintJob, receipt, approved,
     ordersSnapshot: [order], jobsSnapshot: [mintJob],
     fetchImpl, calls, data,
   }
@@ -137,6 +138,9 @@ test('dry-run job, missing tx, mismatched buyer, pack or PSP proof never becomes
     f => { f.mintJob.nft_identifier = 'OTHER-123456-01' },
     f => { f.receipt.txHash = 'b'.repeat(64) },
     f => { f.receipt.collection = 'OTHER-123456' },
+    f => { f.approved.collection = 'OTHER-123456' },
+    f => { f.approved.pack_id = 'yield' },
+    f => { f.approved.issuer = BUYER },
     f => { f.receipt.issuer = BUYER },
     f => { f.receipt.buyer = ISSUER },
     f => { f.receipt.amount = 2 },
