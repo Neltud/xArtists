@@ -13,13 +13,20 @@ documentation synchronisée GitBook uniquement après validation CI et merge.
 ## Ce qui est ouvert
 
 - Présentation publique du musée, des œuvres exposées, du Studio et des packs.
-- Nouveau parcours d'information dans la dApp : **[/offres](https://neltud.github.io/xArtists/offres)** (route à confirmer live après déploiement).
-- Demande de démonstration ou partenariat en ouvrant l'application email
-  du visiteur vers l'adresse **hello@xartists.art**, déjà utilisée par la
-  dApp. Ce mécanisme **ne transmet pas automatiquement** de message et
-  ne crée aucune commande, réservation garantie, dossier client ou NFT.
-  **L'opérateur doit confirmer que cette boîte reçoit les messages** avant
-  une campagne payante ou des volumes importants.
+- Nouveau parcours public **[/offres/](https://neltud.github.io/xArtists/offres/)**, vérifié accessible sur GitHub Pages.
+- Demande de présentation **publiquement sur GitHub** via
+  [le formulaire officiel d'introduction](https://github.com/Neltud/xArtists/issues/new?template=commercial-introduction.yml).
+  Connexion GitHub nécessaire ; les tickets sont publics. **N'y indiquer
+  ni email, téléphone, adresse, wallet/seed, œuvre non publiée ou
+  information confidentielle.** Une issue n'est ni une commande,
+  ni une réservation, ni une garantie de réponse.
+- [Profil X xArtists](https://x.com/tudurioriginal) pour les actualités ;
+  la disponibilité de la messagerie privée n'a pas été vérifiée.
+- L'ancien lien `mailto:hello@xartists.art` est désactivé :
+  le 3 novembre 2026 les résolveurs publics renvoient `NXDOMAIN`
+  pour `xartists.art` (A, NS et MX). **Ne pas collecter de prospects
+  sur cette adresse sans correction DNS et essai de réception réel.**
+  Le formulaire historique /sale est remplacé par un renvoi vers /offres.
 - Catalogue public prévu, achat unique, sans abonnement :
   **Pulse 110 €**, **Yield 75 €**, **Sentinel 50 €**. Ces tarifs ne
   constituent **pas** un devis accepté ni une vente possible aujourd'hui.
@@ -48,7 +55,7 @@ documentation synchronisée GitBook uniquement après validation CI et merge.
 > Découvrez le catalogue et contactez-nous via la page Offres.
 > Les ventes et mint NFT automatiques ne sont pas encore ouverts ;
 > pas de promesse de rendement.
-> https://neltud.github.io/xArtists/offres
+> https://neltud.github.io/xArtists/offres/
 
 **Post EN**
 
@@ -58,7 +65,7 @@ documentation synchronisée GitBook uniquement après validation CI et merge.
 > provenance. Discover the offers and contact us.
 > Public checkout and automated NFT minting are not yet live;
 > no financial return is guaranteed.
-> https://neltud.github.io/xArtists/offres
+> https://neltud.github.io/xArtists/offres/
 
 **Artist outreach**
 
@@ -66,7 +73,7 @@ documentation synchronisée GitBook uniquement après validation CI et merge.
 > exposition, présentation des artistes et constitution de dossiers de
 > provenance. Aucune authentification automatique, promesse de vente
 > ou mint mainnet n'est proposé par ce contact. Présentez votre travail
-> via notre Studio ou écrivez-nous pour une présentation.
+> via notre Studio ou faites une demande publique de présentation via le lien Offres.
 
 Ces textes sont des **brouillons**. Ils ne signifient pas qu'un réseau
 social les a publiés, qu'un contact a été reçu, ni que la page a été
@@ -75,10 +82,10 @@ ni publication automatique n'est autorisé dans ce dossier.
 
 ## Mesures hebdomadaires (sans fausses données)
 
-- Visites de la route \`/offres\` et conversion vers les demandes email,
+- Visites de la route \`/offres\` et orientation vers les tickets GitHub,
   **si** un analytics consenti existe ; ne pas inventer de conversion
   si le fournisseur n'est pas installé.
-- Nombre de demandes **réellement reçues** en boîte et triées par piste :
+- Nombre de demandes **réellement créées** dans GitHub et triées par piste :
   artiste, collectionneur, partenaire, pack IA.
 - Nombre de démonstrations réalisées et retours sur la disponibilité.
 - Suivi des problèmes d'accessibilité mobile, des liens erronés
@@ -94,3 +101,7 @@ Consulter les [gates de lancement](../security/launch-gates.md),
 [l'issue #328](https://github.com/Neltud/xArtists/issues/328).
 
 Le GO de prospection et d'information ne lève aucun de ces critères.
+
+## Reprise d'une adresse email professionnelle
+
+L'absence actuelle de zone DNS rend les anciennes adresses `@xartists.art` non exploitables. Le futur canal email devra respecter la procédure [Contact — DNS et réception](../ops/CONTACT_CHANNEL_READINESS_2026-11-03.md). **Ne pas substituer un compte Gmail personnel à l'insu du propriétaire.**

@@ -1,7 +1,7 @@
 /**
  * xArtists /offres — non-transactional commercial discovery.
  *
- * Public catalog display and voluntary email enquiry only:
+ * Public catalog and public issue-form enquiry only (no email collection):
  * NO checkout, payment collection, reservation, order, wallet, mint,
  * NFT certificate, automatic access or entitlement in this page.
  */
@@ -23,7 +23,7 @@ const COPY = {
     badge:'Tarif catalogue indicatif · achat unique prévu',
     intro:'Les trois packs Genesis',
     detail:'Découvrir le pack',
-    enquiry:'Demander une présentation',
+    enquiry:'Demande publique de présentation',
     descriptions:{
       pulse:'Tableaux de bord, signaux et outils de pilotage IA à découvrir en mode démonstration. Aucun gain financier promis.',
       yield:'Découverte d’outils d’observation DeFi et d’analyse, sans placement ni rendement garanti.',
@@ -32,16 +32,18 @@ const COPY = {
     delivery:'Édition limitée prévue, sous réserve de la validation des smart contracts, du paiement et de la livraison. Afficher un prix ne crée pas un droit à livraison.',
     how:'Comment rejoindre le lancement ?',
     step1:'Explorez le musée et les packs. Les démonstrations sont sans achat.',
-    step2:'Contactez xArtists par email pour une présentation ou une demande de partenariat. Votre application de messagerie s’ouvre ; aucun formulaire n’enregistre de données ici.',
+    step2:'Déposez une demande de présentation dans un ticket GitHub public (compte GitHub requis). Ne communiquez aucune adresse email, téléphone, clé, adresse de portefeuille ou information confidentielle.',
     step3:'Une offre ferme, ses conditions, le paiement et la livraison ne seront disponibles qu’après vérification et annonce officielle.',
-    contact:'Contacter xArtists',
+    contact:'Demande publique sur GitHub',
+    social:'Actualités xArtists sur X',
+    publicNote:'Le ticket GitHub est visible par tous. Aucune donnée personnelle, clé privée ou commande ne doit y être publiée.',
     artist:'Vous êtes artiste ? Découvrir le Studio',
     museum:'Visiter le Musée',
     whop:'Abonnements Whop : offre distincte',
     whopCopy:'Les éventuels abonnements TCA/Whop sont des services mensuels indépendants des packs Genesis. Aucun abonnement Whop ni NFT n’est inclus dans une demande de présentation.',
     trust:'Transparence avant toute vente',
     trustCopy:'Les NFT ne prouvent pas automatiquement la propriété d’une œuvre physique. Les évaluations IA et les scores de similarité ne sont pas des certificats. Le trading LIA reste en mode paper et aucun rendement n’est garanti.',
-    status:'Lancement des prises de contact : ouvert. Paiements publics, revendication NFT sur mainnet, enchères et ventes d’œuvres physiques : non activés sur cette page.',
+    status:'Contact public via GitHub uniquement tant que la messagerie du domaine n’est pas vérifiée. Paiements publics, revendication NFT sur mainnet, enchères et ventes physiques : non activés.',
     docs:'Conditions et état des fonctionnalités',
   },
   en: {
@@ -52,7 +54,7 @@ const COPY = {
     badge:'Indicative catalog price · planned one-time purchase',
     intro:'The three Genesis packs',
     detail:'Explore the pack',
-    enquiry:'Request an introduction',
+    enquiry:'Public introduction request',
     descriptions:{
       pulse:'Explore AI dashboards, signals and tools in demonstration mode. No financial returns are promised.',
       yield:'Discover DeFi observation and analysis tools, not an investment or guaranteed yield.',
@@ -61,30 +63,25 @@ const COPY = {
     delivery:'A limited edition is planned, subject to validation of the smart contracts, payment and delivery. A displayed price creates no delivery entitlement.',
     how:'How to join the launch',
     step1:'Explore the museum and packs. Demonstrations do not require a purchase.',
-    step2:'Email xArtists to request an introduction or propose a partnership. Your email app opens; this page does not collect personal data.',
+    step2:'Use the public GitHub issue form to request an introduction or propose a partnership (GitHub login required). Do not share email, phone, wallet details, private keys or confidential information.',
     step3:'A binding offer, its terms, payment and delivery will be made available only after verification and an official announcement.',
-    contact:'Contact xArtists',
+    contact:'Public enquiry on GitHub',
+    social:'xArtists updates on X',
+    publicNote:'GitHub issues are visible to everyone. Never post personal data, private keys or a payment order.',
     artist:'Are you an artist? Discover the Studio',
     museum:'Visit the Museum',
     whop:'Whop subscriptions are separate',
     whopCopy:'Any TCA/Whop subscription is a separate monthly service, not a Genesis pack. Requesting an introduction does not include any Whop membership or NFT.',
     trust:'Transparency before any sale',
     trustCopy:'An NFT does not automatically confer legal title to physical art. AI assessments and visual similarity scores are not authenticity certificates. LIA trading remains in paper mode. No financial return is guaranteed.',
-    status:'Enquiries open. Public payments, mainnet NFT claims, auctions and physical-art purchases are not enabled on this page.',
+    status:'Public contact via GitHub only until the domain email is verified. Public payments, mainnet NFT claims, auctions and physical-art purchases remain disabled.',
     docs:'Terms and feature availability',
   },
 } as const
 
-function inquiryHref(packId?: string) {
-  const subject = packId ? 'xArtists — présentation ' + packId : 'xArtists — présentation ou partenariat'
-  const body = packId
-    ? 'Bonjour, je souhaite recevoir une présentation du pack ' + packId + '.\n\n'
-    : 'Bonjour, je souhaite échanger à propos de xArtists.\n\n'
-  // The existing repo's contact address is used; this opens the visitor's
-  // own email client and does NOT claim that an enquiry was delivered.
-  return 'mailto:hello@xartists.art?subject=' +
-    encodeURIComponent(subject) + '&body=' + encodeURIComponent(body)
-}
+// Dedicated public, non-binding issue form; no PII or payment capture.
+const PUBLIC_INTAKE_URL = 'https://github.com/Neltud/xArtists/issues/new?template=commercial-introduction.yml'
+const PUBLIC_SOCIAL_URL = 'https://x.com/tudurioriginal'
 
 export default function CommercialLaunchPage() {
   const { lang } = useI18n()
@@ -99,9 +96,11 @@ export default function CommercialLaunchPage() {
         <p className="relative mt-6 max-w-2xl text-sm leading-7 text-zinc-300 sm:text-base">{c.lead}</p>
         <p role="status" className="relative mt-6 max-w-2xl rounded-xl border border-amber-200/25 bg-amber-100/[0.06] px-4 py-3 text-sm text-amber-100">{c.signal}</p>
         <div className="relative mt-8 flex flex-wrap gap-3">
-          <a href={inquiryHref()} className="inline-flex min-h-[44px] items-center rounded-full bg-amber-100 px-6 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">{c.contact}</a>
+          <a href={PUBLIC_INTAKE_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center rounded-full bg-amber-100 px-6 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">{c.contact}</a>
+          <a href={PUBLIC_SOCIAL_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center rounded-full border border-amber-100/40 px-6 py-3 text-sm text-amber-100 hover:bg-amber-100/10">{c.social}</a>
           <Link to="/museum" className="inline-flex min-h-[44px] items-center rounded-full border border-white/25 px-6 py-3 text-sm text-white hover:bg-white/10">{c.museum}</Link>
         </div>
+        <p className="relative mt-4 max-w-2xl text-xs leading-5 text-amber-200/85">{c.publicNote}</p>
       </section>
 
       <section aria-labelledby="commercial-packs">
@@ -117,7 +116,7 @@ export default function CommercialLaunchPage() {
               <p className="mt-3 text-xs leading-5 text-zinc-400">{c.delivery}</p>
               <div className="mt-5 flex flex-col gap-2">
                 <Link to={'/packs/' + pack.id} className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-white/20 px-4 py-2 text-sm hover:bg-white/10">{c.detail}</Link>
-                <a href={inquiryHref(pack.id)} className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-amber-100 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-white">{c.enquiry}</a>
+                <a href={PUBLIC_INTAKE_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-amber-100 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-white">{c.enquiry}</a>
               </div>
             </article>
           ))}

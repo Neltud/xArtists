@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'apps/frontend/src/pages/CommercialLaunchPage.tsx'
+      - 'apps/frontend/src/pages/SalePage.tsx'
+      - '.github/ISSUE_TEMPLATE/commercial-introduction.yml'
       - 'apps/frontend/src/pages/HousePage.tsx'
       - 'apps/frontend/src/experience/Pages.tsx'
       - 'apps/frontend/src/App.tsx'
@@ -16,6 +18,8 @@ on:
     branches: [main]
     paths:
       - 'apps/frontend/src/pages/CommercialLaunchPage.tsx'
+      - 'apps/frontend/src/pages/SalePage.tsx'
+      - '.github/ISSUE_TEMPLATE/commercial-introduction.yml'
       - 'apps/frontend/src/pages/HousePage.tsx'
       - 'apps/frontend/src/experience/Pages.tsx'
       - 'apps/frontend/src/App.tsx'
@@ -51,5 +55,5 @@ jobs:
         run: npm run build
       - name: Commercial status invariant
         run: |
-          echo 'Only catalogue discovery and email enquiries: no paid checkout, issuer or NFT mint.'
+          echo 'Only catalogue discovery and public GitHub enquiries: no paid checkout, issuer or NFT mint.'
           test -f docs/presentation/ouverture-demandes-2026-11-03.md
