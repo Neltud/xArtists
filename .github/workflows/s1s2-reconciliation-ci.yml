@@ -1,0 +1,49 @@
+name: S1 / S2 reconciliation — evidence only (NO-GO commercial)
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/src/s1s2Reconciliation.mjs'
+      - 'services/access-api/tests/s1s2Reconciliation.test.mjs'
+      - 'services/access-api/src/mvxReceiptVerifier.mjs'
+      - 'services/access-api/src/quote.mjs'
+      - '.github/workflows/s1s2-reconciliation-ci.yml'
+      - 'docs/OPS_S1_S2_RECONCILIATION_2026-11-03.md'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/s1s2Reconciliation.mjs'
+      - 'services/access-api/tests/s1s2Reconciliation.test.mjs'
+      - 'services/access-api/src/mvxReceiptVerifier.mjs'
+      - 'services/access-api/src/quote.mjs'
+      - '.github/workflows/s1s2-reconciliation-ci.yml'
+      - 'docs/OPS_S1_S2_RECONCILIATION_2026-11-03.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  no-delivery-without-s1-s2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      MINT_DISPATCH_ENABLED: '0'
+      MINT_OIDC_PULL_ENABLED: '0'
+      MINT_DRY_RUN: '1'
+      MINT_LIVE_ENABLED: '0'
+      LIA_LIVE_TRADING: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify reconciliation candidate is pure, strict and syntactically valid
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check services/access-api/src/s1s2Reconciliation.mjs
+          node --check services/access-api/tests/s1s2Reconciliation.test.mjs
+          node --test services/access-api/tests/mvxReceiptVerifier.test.mjs services/access-api/tests/s1s2Reconciliation.test.mjs
+          echo "Only read-only candidate verification; NO PayBox charge, NFT mint, transfer, delivery mutation or mainnet RPC." >> "$GITHUB_STEP_SUMMARY"
