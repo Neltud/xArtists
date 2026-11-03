@@ -43,6 +43,7 @@
   * [Confiance et transparence](presentation/confiance-et-transparence.md)
   * [Accès et disponibilité](presentation/etat-du-produit.md)
   * [Ouverture commerciale — catalogue et demandes de présentation](presentation/ouverture-demandes-2026-11-03.md)
+  * [Contact commercial — DNS et fiabilité des demandes](ops/CONTACT_CHANNEL_READINESS_2026-11-03.md)
   * [Feuille de route](presentation/feuille-de-route.md)
   * [Questions fréquentes](presentation/questions-frequentes.md)
   * [Contribuer et partenariats](presentation/contribuer-et-partenariats.md)
