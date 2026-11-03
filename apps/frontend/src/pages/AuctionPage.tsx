@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { TUDURI_WORKS, ATELIER_EXPLORER } from '../config/tuduriAtelier'
 
 type Listing = {
@@ -61,6 +62,19 @@ export default function AuctionPage() {
       <p className="mt-3 text-sm leading-relaxed text-zinc-400">
         Œuvres physiques, objets de collection et lots hybrid (NFT de provenance). Règlement EUR prévu
         post-adjudication — payout et transfert NFT jamais automatiques sur le seul webhook.
+      </p>
+
+      <nav aria-label="Découvrir les espaces de vente xArtists" className="mt-5 flex flex-wrap gap-3">
+        <Link to="/marketplace" className="inline-flex min-h-[44px] items-center rounded-xl bg-amber-100 px-4 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">
+          Explorer la Marketplace
+        </Link>
+        <Link to="/studio" className="inline-flex min-h-[44px] items-center rounded-xl border border-amber-100/30 px-4 py-3 text-sm text-amber-100 hover:bg-amber-100/10">
+          Préparer une œuvre au Studio
+        </Link>
+      </nav>
+      <p role="status" className="mt-3 text-xs leading-relaxed text-amber-200/85">
+        Salle publique consultable. La consultation d'une œuvre ne constitue pas une enchère ni une commande.
+        {enabled === false ? ' Aucune enchère ni adjudication réelle n’est acceptée actuellement.' : ''}
       </p>
 
       <section aria-labelledby="auction-editorial-preview" className="mt-7 grid overflow-hidden rounded-3xl border border-amber-200/20 bg-[#151410] sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
