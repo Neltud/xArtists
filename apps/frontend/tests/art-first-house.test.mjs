@@ -15,10 +15,13 @@ test('Art-first hierarchy prioritizes museum, auction, RWA and Studio', () => {
   assert.deepEqual([...indexes].sort((a,b) => a-b), indexes)
   assert.match(core, /'auction'/)
   assert.match(core, /'rwa'/)
-  const links = ["/museum',c('museum')","/auction',c('auction')","/rwa',c('rwa')","/studio',c('studio')"]
+  // Desktop now surfaces Marketplace before Auctions; RWA remains discoverable
+  // in the mobile menu and Explore. Do not assert the superseded desktop nav.
+  const links = ["/museum',c('museum')","/marketplace',c('market')","/auction',c('auction')","/studio',c('studio')"]
   const navIndexes = links.map(link => nav.indexOf(link))
-  assert.ok(navIndexes.every(i => i >= 0))
+  assert.ok(navIndexes.every(i => i >= 0), 'museum, marketplace, auction and studio must be direct desktop destinations')
   assert.deepEqual([...navIndexes].sort((a,b) => a-b), navIndexes)
+  assert.match(nav, /to="\/rwa"/)
 })
 
 test('Maison is a real public route and GitBook page, not a placeholder', () => {

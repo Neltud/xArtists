@@ -35,6 +35,7 @@
   * [La Maison xArtists — manifeste](presentation/maison-manifeste.md)
   * [Vision et mission](presentation/vision-et-mission.md)
   * [Découvrir la dapp](presentation/decouvrir-la-dapp.md)
+  * [Sur mobile — Marketplace, enchères et Studio](presentation/mobile-marketplace-auctions.md)
   * [Artistes et créateurs](presentation/artistes-et-createurs.md)
   * [Collectionneurs et visiteurs](presentation/collectionneurs-et-visiteurs.md)
   * [LIA et agents IA](presentation/lia-et-agents-ia.md)

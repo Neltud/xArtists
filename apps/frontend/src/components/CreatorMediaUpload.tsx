@@ -90,10 +90,19 @@ export default function CreatorMediaUpload({title,onReady}:Props){
   return (
     <div className="space-y-3 rounded-xl border border-cyan-500/20 bg-cyan-500/[0.04] p-3 sm:p-4">
       <div>
-        <h3 className="font-semibold text-white text-sm">1. Importer votre œuvre et préparer le NFT</h3>
+        <h3 className="font-semibold text-white text-sm">1. Prévisualiser l’œuvre puis préparer sa publication</h3>
         <p className="text-xs text-zinc-400 mt-1">JPG · PNG · WebP (16 Mo max), MP4 (48 Mo max).
           Les fichiers sont publiés sur IPFS uniquement après signature de connexion et confirmation.</p>
       </div>
+      {enabled===null&&<p role="status" className="rounded-lg border border-white/15 p-3 text-xs text-zinc-300">
+        Vérification du service d’upload… Aucun fichier n’est transmis pendant cette étape.
+      </p>}
+      {enabled===false&&<p role="status" className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs leading-relaxed text-amber-100">
+        Upload IPFS indisponible : la photo ou vidéo sélectionnée reste uniquement sur votre appareil.
+        L’aperçu local n’est pas un fichier publié, une transaction ou un NFT minté.
+        Pour préparer une œuvre, utilisez une URI IPFS/HTTPS que vous hébergez vous-même ;
+        ne signez aucune transaction avant d’avoir vérifié le média, les droits et la collection.
+      </p>}
       <label className="block text-xs text-zinc-300">
         Photo ou vidéo originale
         <input type="file" accept=".jpg,.jpeg,.png,.webp,.mp4,image/jpeg,image/png,image/webp,video/mp4"
@@ -105,6 +114,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
           ? <video src={preview} controls playsInline preload="metadata" className="w-full max-h-64 rounded-lg bg-black"/>
           : <img src={preview} alt="Aperçu local avant publication IPFS" className="max-h-64 w-full rounded-lg object-contain bg-black"/>}
         <p className="break-all text-xs text-zinc-400">{file.name} · {(file.size/1048576).toFixed(2)} Mo</p>
+        <p className="text-xs text-zinc-400">Aperçu local uniquement : aucune publication IPFS ni création de NFT.</p>
       </div>}
       <label className="block text-xs text-zinc-300">
         Description publique du NFT (facultative)
@@ -119,11 +129,6 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         Je possède les droits de reproduire et publier ce média. Je comprends qu'une publication
         IPFS et un NFT ne sont pas automatiquement supprimables.
       </label>
-      {enabled===false&&<p role="status" className="rounded-lg border border-amber-500/30 p-2 text-xs text-amber-100">
-        Le serveur d'upload n'est pas encore activé. Pour minter dès maintenant,
-        vous pouvez toujours coller une URI IPFS/HTTPS hébergée par vos soins ci-dessous.
-        Aucune image locale ne sera considérée comme publiée.
-      </p>}
       <button type="button" className="btn-primary text-sm min-h-[44px] disabled:opacity-50"
         disabled={!enabled||pending||!file||!rights||!connected||method!=='xportal'}
         onClick={()=>void pin()}>
