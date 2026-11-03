@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { TUDURI_WORKS, ATELIER_EXPLORER } from '../config/tuduriAtelier'
 
 type Listing = {
   id: string
@@ -61,6 +62,26 @@ export default function AuctionPage() {
         Œuvres physiques, objets de collection et lots hybrid (NFT de provenance). Règlement EUR prévu
         post-adjudication — payout et transfert NFT jamais automatiques sur le seul webhook.
       </p>
+
+      <section aria-labelledby="auction-editorial-preview" className="mt-7 grid overflow-hidden rounded-3xl border border-amber-200/20 bg-[#151410] sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+        <div className="flex min-h-[225px] items-center justify-center bg-[#221f1b] p-4">
+          <img src={TUDURI_WORKS[0].url} alt={TUDURI_WORKS[0].name} loading="lazy" className="max-h-72 w-full object-contain" />
+        </div>
+        <div className="flex flex-col justify-center p-5 sm:p-7">
+          <p className="text-[10px] uppercase tracking-[0.18em] text-amber-200/80">Atelier Tuduri · Exemple éditorial</p>
+          <h2 id="auction-editorial-preview" className="mt-3 font-serif text-2xl text-amber-50">Œuvre témoin · {TUDURI_WORKS[0].name}</h2>
+          <p className="mt-3 text-xs leading-6 text-zinc-300">
+            Illustration d’une future fiche de lot : artiste, état, provenance et documents
+            seront vérifiés indépendamment avant toute mise aux enchères.
+          </p>
+          <p className="mt-3 text-xs font-medium text-amber-200">
+            Non proposé à la vente · aucune enchère, prix, garde ni adjudication attestés.
+          </p>
+          <a href={ATELIER_EXPLORER} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex min-h-[44px] items-center text-xs text-zinc-100 underline underline-offset-4">
+            Consulter la collection sur MultiversX ↗
+          </a>
+        </div>
+      </section>
 
       {enabled === false && (
         <div className="mt-6 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-400">

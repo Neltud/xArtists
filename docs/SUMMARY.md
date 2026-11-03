@@ -1,6 +1,7 @@
 # Table of contents
 
 * [xArtists — Art, création et intelligence](README.md)
+* [Étude de marché et stratégie Art-first — novembre 2026](STRATEGY_ART_FIRST_NOV_2026.md)
 * [Sécurité et préparation de la sortie publique](security/README.md)
   * [Audit renforcé — 28 octobre 2026](security/audit-2026-10-28.md)
   * [Critères de lancement](security/launch-gates.md)
@@ -18,6 +19,7 @@
   * [Audit V3 — Checkout et paiements](security/audit-v3-checkout-2026-11-01.md)
   * [Addendum V3 — Cache NFT et correctifs P1](security/addendum-v3-nft-correctifs-2026-11-01.md)
 * [xArtists — Projet et dApp V3](presentation/README.md)
+  * [La Maison xArtists — manifeste](presentation/maison-manifeste.md)
   * [Vision et mission](presentation/vision-et-mission.md)
   * [Découvrir la dapp](presentation/decouvrir-la-dapp.md)
   * [Artistes et créateurs](presentation/artistes-et-createurs.md)

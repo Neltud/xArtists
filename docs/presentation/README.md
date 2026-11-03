@@ -9,6 +9,10 @@ icon: palette
 
 ![xArtists — Art × Intelligence](../.gitbook/assets/xartists-public-cover.png)
 
+## Entrez dans la Maison xArtists
+
+**L’œuvre d’abord. La preuve ensuite.** Découvrez le [manifeste public de la Maison](maison-manifeste.md) et une expérience pensée autour de quatre espaces : Musée, Enchères, Provenance/RWA et Studio. La salle d’enchères reste une démonstration, sans adjudication ou règlement commercial actif.
+
 ## La vision
 
 **L'art rencontre une autre dimension.** xArtists relie les artistes, leurs œuvres et les visiteurs au sein d'une expérience web sur MultiversX. L'écosystème permet de découvrir une collection, d'explorer un musée immersif, de préparer des créations dans le Studio et de consulter des interfaces d'intelligence artificielle.
