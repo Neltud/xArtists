@@ -1,7 +1,9 @@
-# Sprint GO — Operator checklist (updated 2026-11-02 20:38 CET)
+# Sprint GO — Operator checklist (updated 2026-11-03, Europe/Paris)
 
-**Release:** 0.129.1  
+**Deployment evidence:** `main` commit `627409a293ec7d9f455edf6360a2de4271c52d4e` live on both Render services after PR #295.
 **API:** https://xartists-access-api.onrender.com
+
+**Decision:** Public read-only website **GO with transient availability caveat**; commercial PayBox, autonomous LIA, mainnet mint and $TRO Solana bridge **NO-GO**. A Render `live` deployment is not a PSP transaction or NFT delivery proof.
 
 ## A. Public surfaces — DONE (probed)
 
@@ -10,6 +12,10 @@
 - [x] daily signal 200
 - [x] API `/health` 200
 - [x] API signals / TRO bridge status / physical+studio config
+- [x] Public Render frontend `https://xartists-services-and-products.onrender.com/xArtists/` reachable in independent smoke (Render Free may briefly return 503)
+- [x] Both `/xArtists/tro/sale/` frontends render informational portal; bridge and direct sale stay off
+- [x] PR #295 fixes exact CORS for Pages and Render; unknown browser origins denied
+- [ ] Observe repeated six-hour `GO public smoke` after the additional Render/CORS probe is merged; report recurrent 503 and stale Pages cached assets
 
 ## B. access-api — measured
 
@@ -20,42 +26,41 @@
 | orders_backend | postgres | postgres |
 | mint_dry_run | true | true |
 | mint_live_enabled | false | false |
-| mint_dispatch_enabled | **false** | **true** (next) |
+| mint_dispatch_enabled | **false** | **false until separately authorised** |
 | lia_live_trading | 0 | 0 |
 
 ### Credential and dispatch proof — separate gates
 
-**Current finding:** Render flags `MINT_DISPATCH_ENABLED=1`, `MINT_DRY_RUN=1`,
-`MINT_LIVE_ENABLED=0`, `LIA_LIVE_TRADING=0` were set earlier; public
-`/health` still reports `mint_dispatch_enabled=false`. The server evaluates
-this as *flag AND token present*. This is a credential block, **not** permission
-to run a live transaction.
+**Current public observation (3 November 2026):** `/health` returns
+`paybox_checkout_enabled=false`, `mint_dispatch_enabled=false`,
+`mint_dry_run=true`, `mint_live_enabled=false`, `lia_live_trading=0`,
+`tro_solana_bridge=off`; `/v1/ops/orders-store/status` confirms actual
+read-only PostgreSQL connectivity and `paybox_orders` table readiness.
+These are not proofs of PSP settlement, on-chain mint or NFT delivery.
 
-1. GitHub → Settings → Developer settings → Personal access tokens →
-   **Fine-grained tokens**. Create a short-lived token restricted to
-   `Neltud/xArtists`, with **Actions: Read and write** (Metadata: Read).
-   Do not place a token in Git, a PR, a CI log or a chat.
-2. Render → xartists-access-api → Environment: set **secret**
-   `MINT_GITHUB_PAT` to that token using the dashboard, not a placeholder.
-   Ensure `MINT_DISPATCH_ENABLED=1`, `MINT_DRY_RUN=1`,
-   `MINT_LIVE_ENABLED=0`, `LIA_LIVE_TRADING=0`. Save/deploy.
-3. After Render is live, verify `/health` has
-   `mint_dispatch_enabled=true`, `mint_dry_run=true`,
-   `mint_live_enabled=false`, `lia_live_trading=0`. Do not print token.
-4. To prove the **GitHub Actions** side independently, run
+1. **Security P0: revoke the GitHub PAT previously posted into the chat.**
+   The operator must verify its revocation in GitHub secure settings.
+   The cleared Render environment value is not sufficient to revoke
+   a compromised token. Do not paste or log the replacement.
+2. **Independent CI dry-run requires no Render PAT.** The
    [Mint dispatch dry-run probe](https://github.com/Neltud/xArtists/actions/workflows/mint-dispatch-dryrun-probe.yml)
-   on `main`. This trusted workflow uses the built-in **short-lived**
-   `GITHUB_TOKEN` in an isolated runner; it issues one real HTTP 204
-   dispatch, rejects concurrent replay in its isolated store, checks the
-   downstream dry-run completed and does **not** use the Render secret,
-   any PSP payment or a PEM. Its success **does not** prove Render→GitHub
-   or Postgres cross-instance idempotence; test those separately.
-5. The production IPN-path proof requires a **properly signed** test
-   payment on an isolated, authorized PSP test environment and a
-   reconciliation receipt. Never manufacture a paid order in production.
+   uses an ephemeral job-scoped `GITHUB_TOKEN`, isolated runner state,
+   no actual payment, no PEM and no mainnet mint. Its recorded success
+   proves only the isolated dispatch path, not Render-to-GitHub dispatch.
+3. Keep production `MINT_DISPATCH_ENABLED=0`, `MINT_DRY_RUN=1`,
+   `MINT_LIVE_ENABLED=0`, `PAYBOX_CHECKOUT_ENABLED=0` and
+   `LIA_LIVE_TRADING=0` until an expressly approved scoped release.
+   Do **not** change production environment flags just to obtain a green smoke.
+4. A later production-to-GitHub dispatch proof needs a fresh,
+   least-privileged credential configured **only in Render's secure store**,
+   an independently reviewed authorization and idempotence/rollback proof;
+   HTTP 204 indicates accepted dispatch, never confirmed NFT delivery.
+5. PSP S1 real signatures, on-chain S2 buyer/asset/tx proof, rollback and
+   refund reconciliation remain mandatory for commercial GO in
+   [issue #281](https://github.com/Neltud/xArtists/issues/281).
 
-No live mint, NFT delivery, buyer payment or chain transfer is authorised
-by this checklist. Keep `MINT_DRY_RUN=1` until a separately approved GO.
+No live mint, NFT delivery, buyer payment or mainnet transfer is
+authorised by this checklist.
 
 ## C. Mainnet mint — blocked until separate human GO
 
