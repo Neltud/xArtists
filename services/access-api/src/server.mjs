@@ -32,6 +32,18 @@ const PORT = Number(process.env.PORT || 8787)
 const JWT_SECRET = process.env.ACCESS_JWT_SECRET || process.env.JWT_SECRET || ''
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || ''
 const CORS = process.env.CORS_ORIGIN || '*'
+const RENDER_PUBLIC_FRONTEND = 'https://xartists-services-and-products.onrender.com'
+
+// The canonical Pages origin is configured by CORS_ORIGIN in production.
+// The second official frontend is hosted on Render. Match exact origins;
+// never reflect arbitrary websites or send Access-Control-Allow-Credentials.
+function responseCorsOrigin(origin) {
+  if (CORS === '*') return '*'
+  if (origin === CORS || origin === RENDER_PUBLIC_FRONTEND) return origin
+  // Retain the legacy non-browser behavior for probes without Origin.
+  if (!origin) return CORS
+  return null
+}
 const MOONPAY = moonpayConfig()
 const PAYBOX = payboxConfig()
 const MINT_CFG = mintDispatchConfig()
@@ -57,13 +69,16 @@ function envFxRate() {
 }
 
 function json(res, code, body) {
-  res.writeHead(code, {
+  const origin = responseCorsOrigin(res.req?.headers?.origin)
+  const headers = {
     'Content-Type': 'application/json; charset=utf-8',
-    'Access-Control-Allow-Origin': CORS,
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Cache-Control': 'no-store',
-  })
+    'Vary': 'Origin',
+  }
+  if (origin) headers['Access-Control-Allow-Origin'] = origin
+  res.writeHead(code, headers)
   res.end(body === undefined ? '' : JSON.stringify(body))
 }
 
