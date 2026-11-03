@@ -1,0 +1,57 @@
+name: Solana Devnet ephemeral 1000-lamport transfer proof
+
+# Testnet ONLY. Merge on main runs one faucet-funded transfer with ephemeral
+# in-memory Ed25519 accounts. Pull requests run local codec/safety tests only.
+# No tokens, private keys, paid RPC, mainnet wallet or production secrets.
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/solana_devnet_micro_transfer.mjs'
+      - 'scripts/ops/solana_devnet_micro_transfer.test.mjs'
+      - '.github/workflows/solana-devnet-micro-transfer.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/solana-devnet-micro-transfer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xartists-solana-devnet-transfer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  offline-codec-and-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify base58, Ed25519 signatures, shortvec and non-opt-in guard
+        run: node --test scripts/ops/solana_devnet_micro_transfer.test.mjs
+
+  single-devnet-micro-transfer:
+    needs: offline-codec-and-safety
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      XARTISTS_ALLOW_DEVNET_SEND: '1'
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      MINT_DISPATCH_ENABLED: '0'
+      MINT_LIVE_ENABLED: '0'
+      LIA_LIVE_TRADING: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: One ephemeral Solana Devnet faucet-funded microtransfer
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/ops/solana_devnet_micro_transfer.mjs
