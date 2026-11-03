@@ -1,6 +1,6 @@
 # PAT-free mint dry-run dispatch — GitHub OIDC pull
 
-Status: **opt-in, disabled by default**. Scope: dry-run dispatch **only**.
+Code default: **disabled** unless explicitly enabled. **Production observation 3 November 2026:** Render `MINT_OIDC_PULL_ENABLED=1`, OIDC dry-run enabled; legacy PAT-based dispatch **off**. Scope: dry-run dispatch **only**.
 No PayBox payments are created by this workflow; no private key, transaction signing,
 NFT delivery, transfer, live trading, or Solana bridge action is possible.
 
@@ -36,20 +36,47 @@ Render, then calls GitHub's workflow dispatch endpoint with its short-lived
   `micro_price=false`, `confirm=DRY_RUN`. Its dry_run job has no production
   environment, PEM, or on-chain effect.
 
+## Verified production exercise — 3 November 2026
+
+- [PR #304](https://github.com/Neltud/xArtists/pull/304) merged the OIDC queue,
+  RS256 verification and PostgreSQL anti-replay checks; its isolated OIDC/PG
+  CI and all PR checks passed.
+- [PR #305](https://github.com/Neltud/xArtists/pull/305) added one-shot
+  trusted-main bootstrap. [Bootstrap #41624031389](https://github.com/Neltud/xArtists/actions/runs/41624031389)
+  completed and started [OIDC child #41624043754](https://github.com/Neltud/xArtists/actions/runs/41624043754),
+  which successfully **authenticated with Render and queried the queue**.
+  Its log states `candidate orders=0, GitHub HTTP 204=0`.
+- The OIDC proof confirms **GitHub → Render authentication only**, not an
+  HTTP 204 mint dispatch for an authentic paid order and not S1/S2 delivery.
+  No synthetic paid orders were inserted into production.
+- After [PR #306](https://github.com/Neltud/xArtists/pull/306) deployed
+  (`main=df501fd408ab8c427c453676c9c48b12727bf88e`), both Render services
+  were live and `/health` still reported:
+  `mint_oidc_pull_enabled=true`, `mint_dispatch_enabled=false`,
+  `mint_dry_run=true`, `mint_live_enabled=false`,
+  `mint_micro_price=false`, `paybox_checkout_enabled=false`,
+  `lia_live_trading=0`, `tro_solana_bridge=off`; PostgreSQL readiness
+  remained `ok=true`, `table_ready=true`.
+- The older PAT was **cleared in Render**, but only the operator can
+  independently confirm its **revocation at GitHub**. Never reuse it.
+
 ## Activation order
 
-1. Review and merge code PR **after CI**. Confirm Render deployed that exact
-   commit and `/health` still reports mint live off.
+1. **Completed for the current dry-run rollout:** merge PRs #304/#305,
+   confirm Render deployed them and `/health` reports mint live off.
+   Repeat this check for every subsequent deployment.
 2. Keep `MINT_DISPATCH_ENABLED=0` (legacy PAT push path off), keep
    `PAYBOX_CHECKOUT_ENABLED=0`, and do NOT add or reuse any GitHub PAT.
-3. Via Render secure environment settings, set **only**
-   `MINT_OIDC_PULL_ENABLED=1`; verify `/health` reports
+3. **Already enabled in Render for dry-run** (`MINT_OIDC_PULL_ENABLED=1`).
+   Do not change other gates; verify `/health` reports
    `mint_oidc_pull_enabled=true`, `mint_dispatch_enabled=false`,
    `mint_dry_run=true`, `mint_live_enabled=false`,
    `mint_micro_price=false`, `lia_live_trading=0`.
-4. Run the trusted **Mint OIDC pull (PAT-free, DRY RUN ONLY)** GitHub Actions
-   workflow manually. If there are no authentic previously verified paid orders,
-   it should complete with `candidate orders=0`, no dispatch.
+4. **Completed authentication probe:** trusted bootstrap and OIDC child
+   succeeded with `candidate orders=0`, and therefore zero actual mint
+   dispatches. Scheduled and manual future runs remain **dry-run only**.
+   Check the ledger and child run when authentic paid orders appear; never
+   fabricate them in production.
 5. For any authentic paid order, correlate `mint_jobs` `submitted` to the
    downstream `Mint on payment` dry-run SUCCESS workflow run. A `204` alone
    is NOT delivery. Do not create fake paid orders in production to test.
