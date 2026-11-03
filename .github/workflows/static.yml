@@ -101,6 +101,9 @@ jobs:
           VITE_MOONPAY_API_KEY: ${{ vars.VITE_MOONPAY_API_KEY || secrets.VITE_MOONPAY_API_KEY }}
           # Fail-closed. Preprod Paybox is not a public checkout until A-E2E (IPN) is green.
           VITE_PAYBOX_ENABLED: ${{ vars.VITE_PAYBOX_ENABLED || 'false' }}
+          # Separate, operator-approved commercial release gate. Unset = OFF.
+          # A value of 1 never bypasses live API/payment/SC checks.
+          VITE_GENESIS_COMMERCIAL_GO: ${{ vars.VITE_GENESIS_COMMERCIAL_GO || '0' }}
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
           VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
           VITE_MARKETPLACE_CODEHASH_OK: ${{ secrets.VITE_MARKETPLACE_CODEHASH_OK }}
