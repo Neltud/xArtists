@@ -1,0 +1,41 @@
+name: Claim Testnet — read-only chain ID preflight
+
+# Public network observations only. No deployment, transaction, wallet, PEM,
+# on-chain claim signing or Render/PayBox secret.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/claimTestnetNetworkPreflight.mjs'
+      - 'services/access-api/tests/claimTestnetNetworkPreflight.test.mjs'
+      - 'scripts/claim-testnet-public-preflight.mjs'
+      - '.github/workflows/claim-testnet-readonly-network.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/claimTestnetNetworkPreflight.mjs'
+      - 'services/access-api/tests/claimTestnetNetworkPreflight.test.mjs'
+      - 'scripts/claim-testnet-public-preflight.mjs'
+      - '.github/workflows/claim-testnet-readonly-network.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chain-id-offchain-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fail-closed network config tests with adversarial mocks
+        run: node --test services/access-api/tests/claimTestnetNetworkPreflight.test.mjs
+      - name: Observe public testnet T vs mainnet 1 (GET only, no credentials)
+        run: node scripts/claim-testnet-public-preflight.mjs
+      - name: Explicitly deny deployment authority
+        run: |
+          echo "Read-only public chain ID checked; NOT proof inside smart contract."
+          echo "No transaction or deploy in this workflow."

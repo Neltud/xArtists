@@ -1,0 +1,52 @@
+name: Claim Pack Testnet — reproducible WASM and ABI (NO DEPLOY)
+
+# Compiles artifacts for human inspection. No action broadcasts blockchain tx.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'contracts/claim-pack-testnet/**'
+      - '.github/workflows/claim-pack-testnet-wasm.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'contracts/claim-pack-testnet/**'
+      - '.github/workflows/claim-pack-testnet-wasm.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32v1-none
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: contracts/claim-pack-testnet
+      - name: Generate ABI with pinned 0.66.2 meta tool
+        working-directory: contracts/claim-pack-testnet/meta
+        run: cargo run -- abi
+      - name: Build testnet candidate WASM (no network, no signing)
+        working-directory: contracts/claim-pack-testnet/meta
+        run: cargo run -- build --no-wasm-opt --no-imports
+      - name: Verify non-empty WASM and publish SHA-256 in logs
+        run: |
+          set -euo pipefail
+          WASM="$(find contracts/claim-pack-testnet/output -maxdepth 1 -type f -name '*.wasm' -print -quit)"
+          test -n "$WASM"
+          test "$(wc -c < "$WASM")" -gt 1000
+          echo "OFFLINE_WASM_PATH=$WASM"
+          sha256sum "$WASM"
+          find contracts/claim-pack-testnet/output -maxdepth 1 -type f -name '*.abi.json' -print
+          echo "NO-DEPLOY: no transaction signed or broadcast"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xartists-claim-pack-testnet-unreviewed-build
+          path: contracts/claim-pack-testnet/output/
+          retention-days: 7
+          if-no-files-found: error

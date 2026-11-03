@@ -16,4 +16,4 @@ ed25519-dalek = "2.2.0"
 
 # Isolated, independent contract: does not upgrade existing agents-marketplace.
 [workspace]
-members = ["."]
+members = [".", "meta"]
