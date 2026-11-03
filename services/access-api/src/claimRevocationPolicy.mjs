@@ -44,8 +44,9 @@ export function assessClaimIssuanceGate(order) {
 
 /** TTL policy defaults (seconds) — issuer must enforce; SC checks expires_at. */
 export const CLAIM_VOUCHER_TTL_POLICY = Object.freeze({
-  default_ttl_sec: 30 * 60,
-  max_ttl_sec: 2 * 60 * 60,
+  // Must match the canonical 15-minute upper bound in #312's binary codec.
+  default_ttl_sec: 10 * 60,
+  max_ttl_sec: 15 * 60,
   min_ttl_sec: 5 * 60,
   require_onchain_revoke_before_go: true,
 })
