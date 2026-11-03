@@ -1,7 +1,7 @@
 ---
 description: >
   claimPack V1 public testnet readiness: read-only chain-ID preflight,
-  offline WASM/ABI reproducibility, and manual deployment blockers.
+  offline WASM/ABI candidate checksums (reproducibility not yet proven), and manual deployment blockers.
 ---
 
 # claimPack — préparation testnet public, chain-id et NO-GO
@@ -84,6 +84,36 @@ WASM/ABI et publie une archive GitHub Actions **non revue** à rétention
 sept jours. Il n'autorise aucune diffusion sur blockchain, ni
 chargement de secret de déploiement. Le hash WASM doit être comparé
 aux octets effectivement soumis lors du déploiement humain.
+
+## Double empreinte du candidat WASM — correction P0
+
+Le système de build CI calcule et sauvegarde maintenant **deux**
+empreintes sur les mêmes octets du WASM :
+
+- `WASM_SHA256` : contrôle d'intégrité du fichier uploadé en artefact
+  GitHub Actions ; **ne doit pas** être comparé au `codeHash` réseau.
+- `WASM_BLAKE2B256_CODEHASH` : sortie de
+  `b2sum -l 256 <WASM>`, correspondant à l'algorithme MultiversX
+  BLAKE2b avec longueur de sortie 256 bits. Un opérateur pourra
+  le comparer au champ `codeHash` d'un contrat déployé
+  **après** décodage base64 du résultat de l'API.
+
+L'artefact `output/build-evidence.json` porte le statut explicite
+`unreviewed_not_deployed`, les deux empreintes, `deployment_authorized=false`
+et `sc_runtime_chain_id_attested=false` ; il ne contient aucun secret.
+Il ne constitue **ni** un reçu testnet **ni** une autorisation de déploiement.
+
+**Précision sur la reproductibilité :** malgré l'intitulé historique de
+l'ancien workflow, le dépôt ne versionne pas encore de
+`contracts/claim-pack-testnet/Cargo.lock`, et le CI suit une
+toolchain `stable` mobile. La compilation est fonctionnelle, mais
+**la reproductibilité octet-pour-octet entre deux environnements n'est
+pas démontrée**. Pour réclamer cette propriété, il faut verrouiller
+la fermeture complète des dépendances, la toolchain, les paramètres
+de compilation et comparer deux constructions indépendantes.
+
+Documentation officielle :
+[MultiversX — Reproducible Contract Builds](https://docs.multiversx.com/developers/reproducible-contract-builds/).
 
 ## Critères pour une éventuelle opération testnet
 
