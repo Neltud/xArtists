@@ -3,6 +3,9 @@ import { normalizePublicPath } from '../lib/publicRoutes'
 // Critical $TRO landing-page styles must be available before lazy route resolution.
 // Avoid a separate CSS-preload failure on direct Pages / Render deep links.
 import '../pages/troCrosschain.css'
+// $TRO sale is informational and essential: bundle it eagerly to avoid stale
+// lazy-chunk preload errors across direct GitHub Pages and PWA deep links.
+import TroCrosschainPage from '../pages/TroCrosschainPage'
 export type Group = 'explore' | 'create' | 'intelligence' | 'finance' | 'workspace'
 export type Module = { id: string; path: string; aliases: string[]; label: string; group: Group; icon: string; page: LazyExoticComponent<ComponentType<any>>; tags: string[]; load: ()=>Promise<any> }
 const module = (id:string,path:string,aliases:string[],label:string,group:Group,icon:string,page:()=>Promise<any>,tags:string[]=[]):Module => ({id,path,aliases,label,group,icon,page:lazy(page),tags,load:page})
@@ -28,7 +31,7 @@ export const modules:Module[] = [
   module('entities','/intelligence/network',['/entities','/entity'],'entities','intelligence','network',()=>import('../pages/EntityMap'),['LIA','Network']),
   module('trading','/finance/trading',['/trading'],'trading','finance','chart',()=>import('../pages/TradingPage'),['EGLD','Trade']),
   module('tro','/finance/tro',['/tro'],'tro','finance','coin',()=>import('../pages/TroPage'),['TRO','Token']),
-  module('tro-crosschain','/finance/tro/sale',['/tro/sale','/buy-tro','/tro/bridge','/solana/tro'],'$TRO · Achat & Solana','finance','coin',()=>import('../pages/TroCrosschainPage'),['$TRO','Bridge','Solana','MultiversX','Sale']),
+  module('tro-crosschain','/finance/tro/sale',['/tro/sale','/buy-tro','/tro/bridge','/solana/tro'],'$TRO · Achat & Solana','finance','coin',()=>Promise.resolve({default:TroCrosschainPage}),['$TRO','Bridge','Solana','MultiversX','Sale']),
   module('staking','/finance/staking',['/staking'],'staking','finance','layers',()=>import('../pages/StakingPage'),['TRO','NFT','Stake']),
   module('liquidity','/finance/liquidity',['/lp'],'liquidity','finance','layers',()=>import('../pages/LPPoolsPage'),['LP','DeFi']),
   module('hatom','/finance/hatom',['/hatom'],'hatom','finance','orb',()=>import('../pages/HatomPage'),['HTM','sEGLD','DeFi']),

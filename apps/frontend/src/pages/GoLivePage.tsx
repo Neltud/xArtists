@@ -30,6 +30,7 @@ import { fetchOnChainMarketListings, type OnChainListing } from '../lib/marketCh
 type Item = { id: string; label: string; ok: boolean; note?: string; href?: string }
 
 export default function GoLivePage() {
+  const [showDiagnostics, setShowDiagnostics] = useState(false)
   const [, setTick] = useState(0)
   const [listings, setListings] = useState<OnChainListing[]>([])
   const [slotPayable, setSlotPayable] = useState<boolean | null>(null)
@@ -104,19 +105,37 @@ export default function GoLivePage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
-      <div>
-        <h1 className="text-2xl font-semibold text-white">{xaRender('GO LIVE')}</h1>
-        <p className="mt-1 text-sm text-zinc-400">
-          {xaRender('Checklist mainnet — gates = CODEHASH_OK build')}{' '}
-          <span className="text-zinc-500">AND</span>{' '}
-          {xaRender('observation runtime fraîche. Paper par défaut.')}
+      <header className="space-y-3">
+        <p className="section-label">État public · xArtists</p>
+        <h1 className="text-2xl font-semibold text-white">Disponibilité des services</h1>
+        <p className="max-w-2xl text-sm leading-7 text-zinc-300">
+          Les œuvres et modules de xArtists se visitent librement. Le checkout, les
+          enchères réelles, la livraison NFT automatisée, le bridge Solana et le
+          trading autonome ne sont pas ouverts au public.
         </p>
-        <p className="mt-1 text-xs text-zinc-500">
+        <p role="status" className="rounded-xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm leading-6 text-amber-100">
+          Mode découverte et démonstration uniquement. Un contrat présent sur la
+          blockchain ou un solde de trésorerie ne signifie pas qu’un service
+          marchand est homologué ni que les fonds des visiteurs sont acceptés.
+        </p>
+        <nav aria-label="Parcours publics" className="flex flex-wrap gap-3">
+          <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/marketplace">Marketplace</Link>
+          <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/studio">Studio</Link>
+          <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/lia">LIA · Paper</Link>
+        </nav>
+      </header>
+      <button type="button" onClick={() => setShowDiagnostics(v => !v)} aria-expanded={showDiagnostics}
+        aria-controls="xa-operator-diagnostics"
+        className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm">
+        {showDiagnostics ? 'Masquer les diagnostics techniques' : 'Afficher les diagnostics techniques (lecture seule)'}
+      </button>
+      {showDiagnostics && <section id="xa-operator-diagnostics" className="space-y-5" aria-label="Diagnostics avancés">
+        <p className="text-xs text-zinc-400">
+          Diagnostics techniques, non destinés aux transactions :
           mode={asText(mode)} · envLiveCapable={String(envLive)} · marketPayable=
           {String(marketPayable)} · listings={listings.length}
         </p>
-      </div>
-      <RceStrip />
+        <RceStrip />
       <ul className="space-y-2">
         {scItems.map(it => (
           <li
@@ -147,6 +166,7 @@ export default function GoLivePage() {
         {' · '}
         packs={formatRCE(PACK_PRICE_EGLD)} · agent={AGENT_8008?.id || '—'}
       </div>
+      </section>}
     </div>
   )
 }
