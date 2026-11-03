@@ -1,0 +1,41 @@
+name: Claim Voucher V1 — Node x Rust byte parity
+
+# Pure offline fixture test. Not a smart-contract testnet deployment, signer,
+# PayBox transaction, mint, entitlement, or chain confirmation.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/claimVoucherCodec.mjs'
+      - 'services/access-api/src/quote.mjs'
+      - 'services/access-api/tests/claimVoucherCodec.test.mjs'
+      - 'tests/rust/claim_voucher_v1_vectors.rs'
+      - '.github/workflows/claim-voucher-vector-parity.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/claimVoucherCodec.mjs'
+      - 'services/access-api/src/quote.mjs'
+      - 'services/access-api/tests/claimVoucherCodec.test.mjs'
+      - 'tests/rust/claim_voucher_v1_vectors.rs'
+      - '.github/workflows/claim-voucher-vector-parity.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  offline-vectors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Node — cryptographic golden and tamper tests
+        run: node --test services/access-api/tests/claimVoucherCodec.test.mjs
+      - name: Rust — canonical 146-byte framing and rejection matrix
+        run: |
+          rustc --edition=2021 --test tests/rust/claim_voucher_v1_vectors.rs -o /tmp/xartists-claim-vector-tests
+          /tmp/xartists-claim-vector-tests --nocapture

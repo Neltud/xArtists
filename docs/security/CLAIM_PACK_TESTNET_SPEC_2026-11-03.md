@@ -95,3 +95,22 @@ on the **Render-bound** database remains operator-only.
 - The legacy `setPackPrice` endpoint must never participate in the fiat path.
 
 References: [NFT roles](https://docs.multiversx.com/tokens/nft-tokens/) and [SC functions](https://docs.multiversx.com/developers/developer-reference/sc-api-functions/).
+
+
+## Cross-language offline parity implemented
+
+`tests/rust/claim_voucher_v1_vectors.rs` now reconstructs the 146-byte
+binary voucher for the same **fictitious** fields used by
+`services/access-api/tests/claimVoucherCodec.test.mjs` and asserts
+byte-for-byte equality with the canonical hex vector. It tests wrong
+network, signer epoch, buyer, contract, order hash, exact EUR catalogue,
+version and expiry. `.github/workflows/claim-voucher-vector-parity.yml`
+runs Node's real SHA256/Ed25519 tests plus this standalone Rust framing test.
+
+**Important limitation:** Rust currently reuses the Node fixture's 32-byte
+order hash, rather than implementing an independent Rust SHA-256 routine.
+These checks validate layout and lengths, **not** a deployed SC's signature
+verification, order-hash calculation or claim/mint behavior. The eight-case
+on-chain matrix and independently computed SC hash must still be implemented
+before testnet approval. No keys, real vouchers, SC deployment or NFT
+transactions are performed by this parity workflow.
