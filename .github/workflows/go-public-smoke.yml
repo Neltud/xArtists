@@ -4,10 +4,19 @@ on:
   schedule:
     - cron: '0 */6 * * *'
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/go-public-smoke.yml'
+      - 'scripts/ops/public_live_extra_checks.py'
+      - 'scripts/ops/tests/test_public_live_extra_checks.py'
+      - 'docs/GO_OPERATOR_CHECKLIST.md'
   push:
     branches: [main]
     paths:
       - '.github/workflows/go-public-smoke.yml'
+      - 'scripts/ops/public_live_extra_checks.py'
+      - 'scripts/ops/tests/test_public_live_extra_checks.py'
       - 'docs/GO_OPERATOR_CHECKLIST.md'
       - 'services/access-api/src/orders.mjs'
       - 'services/access-api/src/server.mjs'
@@ -24,6 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - uses: actions/checkout@v4
+      - name: Prove read-only probe is fail-closed without network
+        run: python3 -m unittest discover -s scripts/ops/tests -p 'test_public_live_extra_checks.py' -v
       - name: Probe Pages and access-api
         shell: bash
         run: |
@@ -68,8 +80,8 @@ jobs:
           except (json.JSONDecodeError, UnicodeError) as exc:
               raise SystemExit(
                   'P0 WRONG RENDER IMAGE: /health is not JSON. '
-                  'Render xartists-access-api must build services/access-api/Dockerfile '
-                  'with services/access-api as root/build context; see issue #287.'
+                  'The shared root Dockerfile requires XARTISTS_ROLE=api '
+                  'on the dedicated Render API service (PR #289 / issue #287).'
               ) from exc
           with open('/tmp/lia_status.json', encoding='utf-8') as f:
               lia = json.load(f)
@@ -106,3 +118,6 @@ jobs:
 
           print('GO public smoke OK — public surfaces, DB read-only readiness and safety flags verified')
           PY
+
+      - name: Verify Pages and Render origins, safe CORS, TRO bridge and DB
+        run: python3 scripts/ops/public_live_extra_checks.py
