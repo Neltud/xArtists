@@ -79,7 +79,20 @@ export function verifyOrderReceiptBindings({
   const sameJob = jobsSnapshot.filter(j => j?.order_id === mintJob.order_id)
   if (sameOrder.length !== 1 || sameJob.length !== 1 ||
       sameOrder[0].provider_tx_id !== order.provider_tx_id ||
-      sameJob[0].chain_tx_hash !== mintJob.chain_tx_hash) {
+      sameOrder[0].status !== order.status ||
+      sameOrder[0].server_confirmed !== order.server_confirmed ||
+      sameOrder[0].payment_verified !== order.payment_verified ||
+      sameOrder[0].amount_cents !== order.amount_cents ||
+      sameOrder[0].pack_id !== order.pack_id ||
+      sameOrder[0].buyer_address !== order.buyer_address ||
+      sameOrder[0].delivery_verified !== order.delivery_verified ||
+      sameJob[0].chain_tx_hash !== mintJob.chain_tx_hash ||
+      sameJob[0].provider_tx_id !== mintJob.provider_tx_id ||
+      sameJob[0].status !== mintJob.status ||
+      sameJob[0].mode !== mintJob.mode ||
+      sameJob[0].amount_cents !== mintJob.amount_cents ||
+      sameJob[0].buyer_address !== mintJob.buyer_address ||
+      sameJob[0].nft_identifier !== mintJob.nft_identifier) {
     return blocked('incomplete_or_inconsistent_snapshot')
   }
   if (ordersSnapshot.some(o => o?.order_id !== order.order_id &&
