@@ -1,6 +1,7 @@
 # Table of contents
 
 * [xArtists — Art, création et intelligence](README.md)
+* [Étude de marché et stratégie Art-first — novembre 2026](STRATEGY_ART_FIRST_NOV_2026.md)
 * [Sécurité et préparation de la sortie publique](security/README.md)
   * [Audit renforcé — 28 octobre 2026](security/audit-2026-10-28.md)
   * [Critères de lancement](security/launch-gates.md)
