@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-03T05:29:15.376Z",
+  "updatedAt": "2026-11-03T13:40:53.576Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793713253022",
+      "timestamp": "13:40",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.37 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793711747000",
+      "timestamp": "13:15",
+      "source": "CoinTelegraph",
+      "title": "Moscow Exchange to launch Bitcoin, Ether and USDT trading in December",
+      "link": "https://cointelegraph.com/news/moscow-exchange-bitcoin-ether-usdt-trading-december?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793709013000",
+      "timestamp": "12:30",
+      "source": "CoinTelegraph",
+      "title": "NEAR token sinks 7% as proposal to cut annual token issuance passes",
+      "link": "https://cointelegraph.com/markets/near-sinks-7-proposal-cut-annual-token-issuance-passes?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793705522000",
+      "timestamp": "11:32",
+      "source": "CoinTelegraph",
+      "title": "Binance’s net inflows turn positive at $2.3B as withdrawals expand",
+      "link": "https://cointelegraph.com/news/binances-daily-inflows-positive-18b-withdrawals?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1793702966000",
+      "timestamp": "10:49",
+      "source": "CoinTelegraph",
+      "title": "France postpones 2027 budget vote, crypto exit-tax proposals scrapped",
+      "link": "https://cointelegraph.com/news/france-postpones-2027-budget-vote-reject-crypto-exit-tax?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793700245000",
+      "timestamp": "10:04",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin price threatens $77.7K support loss with recent buyers underwater",
+      "link": "https://cointelegraph.com/markets/bitcoin-price-support-loss-recent-buyers-underwater?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793694913000",
+      "timestamp": "08:35",
+      "source": "CoinTelegraph",
+      "title": "ARK buys $17M in Coinbase, Circle shares while trimming Bullish",
+      "link": "https://cointelegraph.com/news/ark-buys-coinbase-circle-trims-bullish?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793709009000",
+      "timestamp": "12:30",
+      "source": "CoinDesk",
+      "title": "Bitcoin is breaking a midterm election pattern going back to 2014",
+      "link": "https://www.coindesk.com/daybook-us/2026/11/03/bitcoin-is-breaking-a-midterm-election-pattern-going-back-to-2014"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793707265000",
+      "timestamp": "12:01",
+      "source": "CoinDesk",
+      "title": "ETHGas wants to bring Wall Street to public Ethereum by selling advance block reservations",
+      "link": "https://www.coindesk.com/business/2026/11/03/ethgas-courts-wall-street-with-ethereum-blockspace-but-compensation-for-missed-trades-is-zero"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793705280000",
+      "timestamp": "11:28",
+      "source": "CoinDesk",
+      "title": "Bitcoin steadies after dip to $76,300 as ETF outflows and midterm elections weigh on crypto",
+      "link": "https://www.coindesk.com/markets/2026/11/03/bitcoin-steadies-after-dip-to-usd76-300-as-etf-outflows-and-midterm-elections-weigh-on-crypto"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793704332000",
+      "timestamp": "11:12",
+      "source": "CoinDesk",
+      "title": "Liquid’s bitcoin IOUs are fully backed again after a $320 million exploit",
+      "link": "https://www.coindesk.com/markets/2026/11/03/liquid-s-bitcoin-ious-are-fully-backed-again-after-a-usd320-million-exploit"
+    },
     {
       "id": "egld-1793683754964",
       "timestamp": "05:29",
@@ -121,83 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Animoca Brands clears final hurdle for Abu Dhabi fund management",
       "link": "https://cointelegraph.com/news/animoca-brands-expands-asset-management-business-with-abu-dhabi-approval?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793627308000",
-      "timestamp": "13:48",
-      "source": "CoinTelegraph",
-      "title": "Strategy spends triple its weekly Bitcoin outlay on STRC buybacks",
-      "link": "https://cointelegraph.com/news/strategy-repurchases-208m-strc-65m-bitcoin?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793637706000",
-      "timestamp": "16:41",
-      "source": "CoinDesk",
-      "title": "NYSE tokenized stock plans take shape as four more transfer agents join",
-      "link": "https://www.coindesk.com/business/2026/11/02/nyse-taps-wall-street-giant-broadridge-to-bring-shareholder-voting-onto-blockchain-rails"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793634809000",
-      "timestamp": "15:53",
-      "source": "CoinDesk",
-      "title": "Brazil’s Mercado Bitcoin halts withdrawals after $40 million drained across 10 chains",
-      "link": "https://www.coindesk.com/business/2026/11/02/brazil-s-mercado-bitcoin-halts-withdrawals-after-usd40-million-drained-across-10-chains"
-    },
-    {
-      "id": "egld-1793615692043",
-      "timestamp": "10:34",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.36 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793614495000",
-      "timestamp": "10:14",
-      "source": "CoinTelegraph",
-      "title": "Hong Kong takes tokenized settlement to 24/7, plans stablecoin trials",
-      "link": "https://cointelegraph.com/news/hong-kong-24-7-tokenized-settlements-stablecoin-trials?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793612496000",
-      "timestamp": "09:41",
-      "source": "CoinTelegraph",
-      "title": "BTC heads into US midterm showdown: Three things to know in Bitcoin this week",
-      "link": "https://cointelegraph.com/markets/btc-price-script-midterms-three-things-bitcoin-week?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1793609763000",
-      "timestamp": "08:56",
-      "source": "CoinTelegraph",
-      "title": "OKX draws $445M in net inflows as Binance outflows exceed $7B",
-      "link": "https://cointelegraph.com/news/okx-leads-crypto-exchanges-445m-inflows?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793605836000",
-      "timestamp": "07:50",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin ETFs sink into October outflows with $643M exit after Binance hack",
-      "link": "https://cointelegraph.com/markets/bitcoin-etfs-october-red-binance-hack-outflows?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793597642000",
-      "timestamp": "05:34",
-      "source": "CoinTelegraph",
-      "title": "BTCPay Server warns of hot wallet thefts running on outdated software",
-      "link": "https://cointelegraph.com/news/btcpay-server-hot-wallet-thefts-older-versions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793591750000",
-      "timestamp": "03:55",
-      "source": "CoinTelegraph",
-      "title": "Bank of Korea probes financial firms’ exposure to crypto risks",
-      "link": "https://cointelegraph.com/news/bank-of-korea-probes-financial-firms-exposure-to-crypto-risks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793612000000",
-      "timestamp": "09:33",
-      "source": "CoinDesk",
-      "title": "Metals.io issues tokens backed by 25 tonnes of physical copper stored in Germany",
-      "link": "https://www.coindesk.com/markets/2026/11/02/metals-io-issues-tokens-backed-by-25-tonnes-of-physical-copper-stored-in-germany"
     }
   ]
 }
