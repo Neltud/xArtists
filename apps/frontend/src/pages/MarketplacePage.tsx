@@ -105,11 +105,14 @@ export default function MarketplacePage(){
         Trois univers, des droits différents, des statuts de vente transparents.
       </p>
       <div className="flex flex-wrap gap-2">
-        <Link to="/studio" className="btn-primary inline-flex min-h-[44px] items-center px-4 text-sm">
-          Créer et minter mon NFT
+        <Link to="/auction" className="btn-primary inline-flex min-h-[44px] items-center px-4 text-sm">
+          Visiter la salle des enchères
+        </Link>
+        <Link to="/studio" className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm">
+          Préparer une œuvre au Studio
         </Link>
         <Link to="/rwa" className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm">
-          Certifier une œuvre physique
+          Dossier d’œuvre physique
         </Link>
         {!connected&&<button type="button" className="btn-secondary min-h-[44px] px-4 text-sm"
           onClick={requestOpenConnect}>Connecter xPortal</button>}
@@ -236,6 +239,7 @@ export default function MarketplacePage(){
       <Link to="/studio" className="hover:text-cyan-200">Creator Studio</Link>
       <Link to="/rwa" className="hover:text-cyan-200">Provenance RWA</Link>
       <Link to="/museum" className="hover:text-cyan-200">Musée</Link>
+      <Link to="/auction" className="hover:text-cyan-200">Enchères</Link>
       <Link to="/agents" className="hover:text-cyan-200">Agents IA</Link>
       <span className="text-zinc-600">xArtists · Aucun achat sans contrôle wallet/contrat</span>
     </footer>
