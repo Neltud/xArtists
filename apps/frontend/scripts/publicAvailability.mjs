@@ -39,8 +39,27 @@ export function commercialSeoHtml(html, route) {
     : 'Découvrez la Maison xArtists, son musée et les packs IA Pulse, Yield et Sentinel. Demandes de présentation ouvertes ; paiement et mint NFT non activés.'
   const canonical = 'https://neltud.github.io/xArtists/offres/'
   const meta = (attribute, name, value) => {
-    const tag = `<meta ${attribute}="${name}" content="${value}" />`
-    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\export function fallbackHtml(base) {')
+    const tag = '<meta ' + attribute + '="' + name + '" content="' + value + '" />'
+    const pattern = new RegExp('<meta\\b(?=[^>]*\\b' + attribute + '="' + name + '")[^>]*>', 'i')
+    html = pattern.test(html) ? html.replace(pattern, tag) : html.replace('</head>', '    ' + tag + '\n  </head>')
+  }
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, '<title>' + title + '</title>')
+  meta('name', 'description', description)
+  meta('name', 'robots', 'index, follow')
+  meta('property', 'og:title', title)
+  meta('property', 'og:description', description)
+  meta('property', 'og:url', canonical)
+  meta('name', 'twitter:title', title)
+  meta('name', 'twitter:description', description)
+  const link = '<link rel="canonical" href="' + canonical + '" />'
+  const canonicalPattern = /<link\b(?=[^>]*\brel="canonical")[^>]*>/i
+  html = canonicalPattern.test(html)
+    ? html.replace(canonicalPattern, link)
+    : html.replace('</head>', '    ' + link + '\n  </head>')
+  return html
+}
+
+export function fallbackHtml(base) {')
     const pattern = new RegExp(`<meta\\b(?=[^>]*\\b${attribute}=["']${escaped}["'])[^>]*>`, 'i')
     html = pattern.test(html) ? html.replace(pattern, tag) : html.replace('</head>', `    ${tag}\\n  </head>`)
   }
