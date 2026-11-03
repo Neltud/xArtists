@@ -6,6 +6,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '17,47 * * * *'
+  # One-shot proof after an approved main workflow edit. A push NEVER accesses Render:
+  # it requests a normal workflow_dispatch, which receives its own signed OIDC JWT.
+  push:
+    branches: [main]
+    paths: ['.github/workflows/mint-oidc-pull.yml']
 
 permissions:
   contents: read
@@ -17,6 +22,29 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  bootstrap:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - name: One-time dispatch OIDC pull using ephemeral GitHub token
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail-with-body -sS --max-time 20 -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            -H "Content-Type: application/json" \
+            -d '{"ref":"main"}' \
+            https://api.github.com/repos/Neltud/xArtists/actions/workflows/mint-oidc-pull.yml/dispatches
+          echo "Bootstrap HTTP 204: workflow_dispatch requested; see separate OIDC workflow run." >> "$GITHUB_STEP_SUMMARY"
+
   poll:
     if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
