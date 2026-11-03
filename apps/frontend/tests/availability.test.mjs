@@ -4,7 +4,29 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import vm from 'node:vm'
 import { loadSource, frontend } from './load-source.mjs'
-import { fallbackHtml, publicRoutes, publicAvailabilityPlugin } from '../scripts/publicAvailability.mjs'
+import { fallbackHtml, publicRoutes, publicAvailabilityPlugin, commercialSeoHtml } from '../scripts/publicAvailability.mjs'
+
+test('commercial /offres and /offers static HTML have truthful crawler-readable SEO and social cards', () => {
+  const template = '<html><head><title>Generic xArtists</title><meta name="description" content="generic" /><meta property="og:title" content="generic" /><meta property="og:url" content="https://neltud.github.io/xArtists/" /><link rel="canonical" href="https://neltud.github.io/xArtists/" /></head><body>sites-v3-release</body></html>'
+  const fr = commercialSeoHtml(template, '/offres')
+  const en = commercialSeoHtml(template, '/offers')
+  for (const html of [fr, en]) {
+    assert.match(html, /https:\/\/neltud\.github\.io\/xArtists\/offres\//)
+    assert.match(html, /name="robots" content="index, follow"/)
+    assert.match(html, /property="og:description"/)
+    assert.match(html, /name="twitter:description"/)
+    assert.doesNotMatch(html, /content="generic"/)
+    assert.doesNotMatch(html, /<title>Generic xArtists<\/title>/)
+    assert.doesNotMatch(html, /checkout enabled|public sales live|guaranteed returns/i)
+    assert.equal((html.match(/rel="canonical"/g) || []).length, 1)
+    assert.equal((html.match(/name="description"/g) || []).length, 1)
+  }
+  assert.match(fr, /<title>xArtists Offres/)
+  assert.match(fr, /paiement et mint NFT non activés/)
+  assert.match(en, /<title>xArtists Offers/)
+  assert.match(en, /public payment and Genesis NFT minting are not yet available/)
+  assert.equal(commercialSeoHtml(template, '/museum'), template)
+})
 
 test('Pages and legacy hash links restore the destination, query and fragment without leaving the app', () => {
   const { restoredPublicUrl, normalizePublicPath } = loadSource('src/lib/publicRoutes.ts')
@@ -32,7 +54,7 @@ test('the emitted 404 redirect round-trips an artwork URL including wallet callb
 
 test('every canonical route and alias is emitted as real HTML, including mobile entry points', async () => {
   const routes = publicRoutes(await fs.readFile(path.join(frontend, 'src/experience/modules.ts'), 'utf8'))
-  for (const required of ['/app', '/install', '/mobile', '/workspace/wallet', '/wallet', '/explore/museum', '/museum']) assert(routes.includes(required), required)
+  for (const required of ['/app', '/install', '/mobile', '/workspace/wallet', '/wallet', '/explore/museum', '/museum', '/maison', '/offres', '/offers']) assert(routes.includes(required), required)
   assert.equal(new Set(routes).size, routes.length)
   const runtime = path.join(frontend, '.sites-runtime')
   await fs.mkdir(runtime, { recursive: true })
@@ -41,13 +63,15 @@ test('every canonical route and alias is emitted as real HTML, including mobile 
     await fs.mkdir(path.join(root, 'src/experience'), { recursive: true })
     await fs.writeFile(path.join(root, 'src/experience/modules.ts'), "module('wallet','/workspace/wallet',['/wallet'])")
     await fs.mkdir(path.join(root, 'dist'))
-    const html = '<html>sites-v3-release</html>'
+    const html = '<html><head><title>Generic xArtists</title><meta name="description" content="generic" /></head><body>sites-v3-release</body></html>'
     await fs.writeFile(path.join(root, 'dist/index.html'), html)
     const plugin = publicAvailabilityPlugin()
     plugin.configResolved({ root, build: { outDir: 'dist' }, base: '/xArtists/', env: { VITE_LIA_LIVE_TRADING: '0' } })
     await plugin.closeBundle()
     assert.equal(await fs.readFile(path.join(root, 'dist/workspace/wallet/index.html'), 'utf8'), html)
     assert.equal(await fs.readFile(path.join(root, 'dist/wallet/index.html'), 'utf8'), html)
+    assert.match(await fs.readFile(path.join(root, 'dist/offres/index.html'), 'utf8'), /<title>xArtists Offres/)
+    assert.match(await fs.readFile(path.join(root, 'dist/offers/index.html'), 'utf8'), /<title>xArtists Offers/)
     assert((await fs.readFile(path.join(root, 'dist/404.html'), 'utf8')).includes('_xa_route'))
     assert.equal(JSON.parse(await fs.readFile(path.join(root, 'dist/dapp-release.json'), 'utf8')).lia_live_trading, false)
   } finally { await fs.rm(root, { recursive: true, force: true }) }
