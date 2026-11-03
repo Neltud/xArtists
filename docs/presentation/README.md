@@ -1,48 +1,47 @@
 ---
-description: >-
-  Découvrez la vision xArtists, le musée, le Studio, les agents IA et le
-  parcours public V3.
+description: Présentation publique xArtists — Maison, musée, Marketplace, enchères, Studio et Control Room LIA.
 icon: palette
 ---
 
-# xArtists — Projet et dApp V3
+# La Maison xArtists — Art × Intelligence
 
 ![xArtists — Art × Intelligence](../.gitbook/assets/xartists-public-cover.png)
 
-## Entrez dans la Maison xArtists
+**L'œuvre d'abord. La technologie au service de sa découverte.** xArtists relie création, provenance, espaces immersifs et outils intelligents dans une expérience accessible sans portefeuille.
 
-**L’œuvre d’abord. La preuve ensuite.** Découvrez le [manifeste public de la Maison](maison-manifeste.md) et une expérience pensée autour de quatre espaces : Musée, Enchères, Provenance/RWA et Studio. La salle d’enchères reste une démonstration, sans adjudication ou règlement commercial actif.
+[**Explorer xArtists**](https://neltud.github.io/xArtists/) · [**Manifeste**](maison-manifeste.md)
 
-## La vision
+## Cinq portes d'entrée
 
-**L'art rencontre une autre dimension.** xArtists relie les artistes, leurs œuvres et les visiteurs au sein d'une expérience web sur MultiversX. L'écosystème permet de découvrir une collection, d'explorer un musée immersif, de préparer des créations dans le Studio et de consulter des interfaces d'intelligence artificielle.
+| Espace | Utilité publique |
+| --- | --- |
+| **Musée** | Explorer les œuvres et l'univers artistique |
+| **Marketplace** | Découvrir art numérique, œuvres physiques et packs, sans achat non attesté |
+| **Enchères** | Consulter des aperçus de lots, sans possibilité actuelle d'enchère réelle |
+| **Studio** | Prévisualiser images et vidéos ; publication IPFS et mint indépendants |
+| **LIA Control Room** | Lire les données sourcées, les simulations et les agents Pulse, Yield, Sentinel |
 
-L'expérience publique est accessible **sans wallet**. La connexion xPortal reste facultative pour explorer et peut être requise pour des fonctionnalités liées au compte ou aux transactions effectivement activées.
+[**Marketplace**](https://neltud.github.io/xArtists/marketplace/) · [**Enchères**](https://neltud.github.io/xArtists/auction/) · [**Control Room**](https://neltud.github.io/xArtists/intelligence/lia)
 
-## Cinq espaces pour cinq usages
+## À qui s'adresse xArtists ?
 
-| Espace           | Expérience                                                             |
-| ---------------- | ---------------------------------------------------------------------- |
-| **Explore**      | Musée immersif, œuvres, collections, visites, catalogues RWA           |
-| **Create**       | Studio phygital, création, représentations numériques                  |
-| **Intelligence** | LIA, Pulse, Yield, Sentinel, Command Center, données et simulation     |
-| **Finance**      | Informations DeFi, staking, gouvernance et disponibilité contractuelle |
-| **My space**     | Portefeuille, identité, collections et accès utilisateur               |
+**Artistes :** présenter une démarche et explorer les futurs parcours phygitaux.  
+**Collectionneurs :** comprendre les œuvres, leurs provenances et la distinction entre NFT et propriété physique.  
+**Visiteurs :** découvrir sans connexion obligatoire.  
+**Partenaires :** étudier les possibilités et le statut actuel du projet.
 
-### Découvrez les agents Genesis
+[**Artistes et créateurs**](artistes-et-createurs.md) · [**Collectionneurs**](collectionneurs-et-visiteurs.md) · [**Partenariats**](contribuer-et-partenariats.md)
 
-**Pulse** — exploration de signaux et d'analyses ; **Yield** — outils de suivi DeFi ; **Sentinel** — veille et risque. Chacun constitue une offre distincte en édition limitée. **Aucun de ces packs ne garantit un rendement ou une gestion de fonds utilisateur.**
+## LIA et produits IA
 
-Les offres **Whop TCA Membership** sont des abonnements de services séparés, sans NFT Genesis inclus.
+Le trading LIA public est désactivé : son mode reste **paper/shadow**. Les données publiées peuvent être différées, et les performances simulées ne sont pas des gains réalisés.
+
+Les packs Genesis sont des produits à **achat unique**. Les abonnements Whop/TCA relèvent d'une offre distincte. L'accès à une présentation n'implique pas une disponibilité immédiate du paiement ou de la livraison NFT.
+
+[**LIA et agents IA**](lia-et-agents-ia.md) · [**Guide des packs**](../security/guide-public-packs-whop.md)
 
 ## Où en est le projet ?
 
-**Au 2 novembre 2026 :** le site public est en ligne, la PR mobile V3 #262 a été fusionnée et les validations CI/Pages correspondantes sont vertes. La Control Room 2D mobile et l'option 3D coexistent. Les parcours commerciaux réels et toute activation du trading autonome demandent une approbation distincte et des tests supplémentaires.
+**3 novembre 2026 :** découverte publique ouverte ; améliorations de navigation mobile et de lecture LIA fusionnées dans le code. Paiement PayBox public, mint mainnet automatique, enchères réelles, bridge et trading autonome toujours **fermés**.
 
-[Accès et statut](etat-du-produit.md) · [Découvrir la dApp](decouvrir-la-dapp.md) · [Démarrer sur mobile](demarrer-sur-mobile.md)
-
-## Pour aller plus loin
-
-[Vision et mission](vision-et-mission.md) · [Artistes et créateurs](artistes-et-createurs.md) · [Collectionneurs et visiteurs](collectionneurs-et-visiteurs.md) · [LIA et agents IA](lia-et-agents-ia.md) · [Confiance et transparence](confiance-et-transparence.md)
-
-[**Ouvrir la dApp**](https://neltud.github.io/xArtists/) · [Source GitHub](https://github.com/Neltud/xArtists)
+[**État des fonctionnalités**](etat-du-produit.md) · [**Confiance**](confiance-et-transparence.md) · [**Démarrer sur mobile**](demarrer-sur-mobile.md)
