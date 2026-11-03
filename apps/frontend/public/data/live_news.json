@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-02T21:25:53.318Z",
+  "updatedAt": "2026-11-03T05:29:15.376Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793683754964",
+      "timestamp": "05:29",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.33 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793682619000",
+      "timestamp": "05:10",
+      "source": "CoinTelegraph",
+      "title": "Crypto.com to withdraw Hong Kong consumer app citing regulatory changes",
+      "link": "https://cointelegraph.com/news/crypto-com-hong-kong-app-shutdown-license-pending?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793679272000",
+      "timestamp": "04:14",
+      "source": "CoinTelegraph",
+      "title": "Australia lifts rates to 18-year high as AI boom, energy costs fuel inflation",
+      "link": "https://cointelegraph.com/markets/australia-lifts-rates-as-ai-boom-energy-costs-fuel-inflation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793675024000",
+      "timestamp": "03:03",
+      "source": "CoinTelegraph",
+      "title": "Binance begins second withdrawal phase, exchange outflows slow",
+      "link": "https://cointelegraph.com/news/binance-begins-second-withdrawal-phase-following-record-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1793669559000",
+      "timestamp": "01:32",
+      "source": "CoinTelegraph",
+      "title": "South Korea urges exchanges to boost cold storage after Binance hack",
+      "link": "https://cointelegraph.com/news/south-korea-urges-exchanges-to-boost-cold-storage-after-binance-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793660827000",
+      "timestamp": "23:07",
+      "source": "CoinTelegraph",
+      "title": "North Korea denies role in $6.3B Binance hack, points finger at US",
+      "link": "https://cointelegraph.com/news/north-korea-denies-role-in-63b-binance-hack-points-finger-at-us?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793658150000",
+      "timestamp": "22:22",
+      "source": "CoinTelegraph",
+      "title": "New Jersey drops Coinbase staking order ahead of crypto’s midterm test",
+      "link": "https://cointelegraph.com/news/new-jersey-coinbase-staking?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793681297000",
+      "timestamp": "04:48",
+      "source": "CoinDesk",
+      "title": "Bitcoin drops below $77,000 as chip rout deepens ahead of U.S. midterm vote",
+      "link": "https://www.coindesk.com/markets/2026/11/03/bitcoin-drops-below-usd77-000-as-chip-rout-deepens-ahead-of-u-s-midterm-vote"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793655533000",
+      "timestamp": "21:38",
+      "source": "CoinDesk",
+      "title": "Big crypto wants the one thing it can’t buy: your vote",
+      "link": "https://www.coindesk.com/opinion/2026/11/02/big-crypto-wants-the-one-thing-it-can-t-buy-your-vote"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793643237000",
+      "timestamp": "18:13",
+      "source": "CoinDesk",
+      "title": "Bitcoin traders eye post-election rally as exchange outflows point to supply squeeze",
+      "link": "https://www.coindesk.com/markets/2026/11/02/bitcoin-traders-eye-post-election-rally-as-exchange-outflows-point-to-supply-squeeze"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793640064000",
+      "timestamp": "17:21",
+      "source": "CoinDesk",
+      "title": "EU entity suspected of losing $106 million from crypto exchange accounts, ZachXBT says",
+      "link": "https://www.coindesk.com/tech/2026/11/02/eu-entity-suspected-of-losing-usd106-million-from-crypto-exchange-accounts-zachxbt-says"
+    },
     {
       "id": "egld-1793654753005",
       "timestamp": "21:25",
@@ -51,20 +128,6 @@
       "source": "CoinTelegraph",
       "title": "Strategy spends triple its weekly Bitcoin outlay on STRC buybacks",
       "link": "https://cointelegraph.com/news/strategy-repurchases-208m-strc-65m-bitcoin?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793643237000",
-      "timestamp": "18:13",
-      "source": "CoinDesk",
-      "title": "Bitcoin traders eye post-election rally as exchange outflows point to supply squeeze",
-      "link": "https://www.coindesk.com/markets/2026/11/02/bitcoin-traders-eye-post-election-rally-as-exchange-outflows-point-to-supply-squeeze"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793640064000",
-      "timestamp": "17:21",
-      "source": "CoinDesk",
-      "title": "EU entity suspected of losing $106 million from crypto exchange accounts, ZachXBT says",
-      "link": "https://www.coindesk.com/tech/2026/11/02/eu-entity-suspected-of-losing-usd106-million-from-crypto-exchange-accounts-zachxbt-says"
     },
     {
       "id": "rss-CoinDesk-2-1793637706000",
@@ -135,69 +198,6 @@
       "source": "CoinDesk",
       "title": "Metals.io issues tokens backed by 25 tonnes of physical copper stored in Germany",
       "link": "https://www.coindesk.com/markets/2026/11/02/metals-io-issues-tokens-backed-by-25-tonnes-of-physical-copper-stored-in-germany"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793610289000",
-      "timestamp": "09:04",
-      "source": "CoinDesk",
-      "title": "Binance hack fallout, U.S. midterms and jobs report: Crypto Week Ahead",
-      "link": "https://www.coindesk.com/markets/2026/11/02/binance-hack-fallout-u-s-midterms-and-jobs-report-crypto-week-ahead"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793609370000",
-      "timestamp": "08:49",
-      "source": "CoinDesk",
-      "title": "Live updates: Binance records $6 billion outflows after starting withdrawals, less then 4% of total holdings",
-      "link": "https://www.coindesk.com/markets/2026/11/02/live-updates-binance-records-usd6-billion-outflows-after-starting-withdrawals-less-then-4-of-total-holdings"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793608888000",
-      "timestamp": "08:41",
-      "source": "CoinDesk",
-      "title": "China’s Communist Party calls for a crackdown on corruption that uses crypto and blockchain",
-      "link": "https://www.coindesk.com/markets/2026/11/02/china-s-communist-party-calls-for-a-crackdown-on-corruption-that-uses-crypto-and-blockchain"
-    },
-    {
-      "id": "egld-1793578563978",
-      "timestamp": "00:16",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.41 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793577567000",
-      "timestamp": "23:59",
-      "source": "CoinTelegraph",
-      "title": "Binance net outflows surge to $5.8B as withdrawals resume after record hack",
-      "link": "https://cointelegraph.com/news/binance-net-outflows-surge-to-58b-as-withdrawals-resume-after-record-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793574553000",
-      "timestamp": "23:09",
-      "source": "CoinTelegraph",
-      "title": "$3.64B flees Binance on reopen, THORChain co-founder opposes coin freeze: Hodler’s Digest",
-      "link": "https://cointelegraph.com/magazine/36b-flees-binance-on-reopen-thorchain-co-founder-opposes-coin-freeze-hodlers-digest?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1793542620000",
-      "timestamp": "14:17",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793540433000",
-      "timestamp": "13:40",
-      "source": "CoinTelegraph",
-      "title": "DeepSeek developing AI agent requiring less human input: Report",
-      "link": "https://cointelegraph.com/news/deepseek-developing-ai-agent-requiring-less-human-input-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793525898000",
-      "timestamp": "09:38",
-      "source": "CoinTelegraph",
-      "title": "Binance says phase one of withdrawals opens after $6.3B hack",
-      "link": "https://cointelegraph.com/news/binance-says-phase-one-of-withdrawals-opens-after-63b-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
