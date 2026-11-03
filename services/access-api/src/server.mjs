@@ -22,6 +22,7 @@ import { mintDispatchConfig } from './mintDispatch.mjs'
 import { oidcMintPullEnabled, verifyGitHubOidc, eligibleOidcOrders, claimOidcMintOrder, ackOidcMintOrder } from './mintOidcPull.mjs'
 import { loadOrders } from './orders.mjs'
 import { troBridgeStatus } from './troBridgeStatus.mjs'
+import { tryHandleAuction, auctionPublicConfig } from './auctionHttp.mjs'
 import {studioMediaConfig,mediaJwt,mediaActor,readCreatorMedia,
   uploadStudioMedia,pinStudioMetadata} from './creatorMedia.mjs'
 import {
@@ -145,6 +146,9 @@ async function handleRequest(req, res) {
       physical_store: physicalConfig().storage,
       studio_media_upload:studioMediaConfig().enabled ? 'pinata_ipfs' : 'off',
       tro_solana_bridge:'off',
+      auction_enabled: auctionPublicConfig().enabled,
+      auction_demo_writes_enabled: auctionPublicConfig().demo_writes_enabled,
+      auction_settle: false,
     })
     return
   }
@@ -670,6 +674,13 @@ async function handleRequest(req, res) {
     })
     return
   }
+
+  // P1 auctions: config/public reads and explicitly sandbox-gated demo writes.
+  // Always route before the generic 404; no PayBox settle or NFT side effects.
+  if (await tryHandleAuction(req, res, {
+    path: pth, url: u, json, readRawAndBody, resolveAuthenticatedBuyer,
+    jwtSecret: JWT_SECRET,
+  })) return
 
   json(res, 404, { error: 'not_found', path: pth })
 }

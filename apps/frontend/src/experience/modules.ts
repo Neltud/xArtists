@@ -12,6 +12,7 @@ export const modules:Module[] = [
   module('market','/explore/market',['/market','/marketplace','/market-place'],'market','explore','market',()=>import('../pages/MarketplacePage'),['NFT','RWA','SFT']),
   module('analytics','/explore/analytics',['/market/analytics'],'analytics','explore','chart',()=>import('../pages/MarketAnalyticsPage'),['NFT','EGLD']),
   module('tours','/explore/tours',['/tours','/agents/voyage','/intelligence/voyage'],'tours','explore','globe',()=>import('../pages/ArtToursPage'),['Art','Culture']),
+  module('auction','/explore/auction',['/auction','/encheres'],'auction','explore','market',()=>import('../pages/AuctionPage'),['RWA','Auction','NFT']),
   module('rwa','/explore/rwa',['/rwa','/rwa_catalog'],'rwa','explore','cube',()=>import('../pages/RwaCatalogPage'),['RWA','NFC']),
   module('editions','/explore/editions',['/editions'],'editions','explore','layers',()=>import('../pages/Editions'),['SFT','Art']),
   module('venues','/explore/venues',['/venues'],'venues','explore','museum',()=>import('../pages/VenuePage'),['Art','RWA']),
