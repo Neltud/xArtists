@@ -8,6 +8,8 @@ on:
       - 'services/access-api/src/orders.mjs'
       - 'services/access-api/src/server.mjs'
       - 'services/access-api/tests/ordersStoreProbePostgres.test.mjs'
+      - 'services/access-api/tests/mintJobsProbePostgres.test.mjs'
+      - 'services/access-api/tests/mintJobsProbe.test.mjs'
       - 'services/access-api/tests/payboxSignedIpnPostgres.test.mjs'
       - '.github/workflows/mint-dispatch-postgres-ci.yml'
   push:
@@ -64,6 +66,18 @@ jobs:
       - name: Verify read-only order-store readiness against isolated PostgreSQL
         run: node --test tests/ordersStoreProbePostgres.test.mjs
         working-directory: services/access-api
+      - name: Create isolated DB for mint-jobs read-only probe
+        env:
+          PGPASSWORD: postgres
+        run: |
+          set -euo pipefail
+          psql -h 127.0.0.1 -U postgres -d postgres -v ON_ERROR_STOP=1 -c 'CREATE DATABASE xartists_mint_readiness_probe'
+      - name: Prove mint_jobs probe never creates the schema
+        env:
+          TEST_MINT_READINESS_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/xartists_mint_readiness_probe
+          ALLOW_EPHEMERAL_MINT_READINESS_PG_TEST: '1'
+        working-directory: services/access-api
+        run: node --test tests/mintJobsProbePostgres.test.mjs
       - name: Create a second disposable DB solely for signed PayBox HTTP tests
         env:
           PGPASSWORD: postgres
