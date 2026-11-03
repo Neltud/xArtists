@@ -261,3 +261,43 @@ fn t10_disable_current_signer_auto_pauses_and_cannot_be_reenabled() {
     setup.execute(&buyer, &buyer, Claim::default(), None).assert_user_error("claims paused");
     assert!(!setup.claimed(ORDER_HASH));
 }
+
+
+#[test]
+fn t11_contract_identity_binding_rejects_foreign_signature() {
+    let mut setup = setup();
+    setup.role();
+    let buyer = setup.buyer.clone();
+    let foreign_sc = setup.other.clone();
+    let signed_for_other_contract = signature(&foreign_sc, &buyer, Claim::default());
+    let result = setup.execute(
+        &buyer, &buyer, Claim::default(), Some(signed_for_other_contract),
+    );
+    assert!(!result.result_status.is_success(), "cross-contract voucher must fail");
+    assert_eq!(result.result_message, "ed25519 verify error");
+    assert!(!setup.claimed(ORDER_HASH));
+    setup.world.check_nft_balance(&buyer, TOKEN, 1, &rust_biguint!(0u64), None::<&u32>);
+}
+
+#[test]
+fn t12_unprivileged_caller_cannot_revoke_or_unpause() {
+    let mut setup = setup();
+    let other = setup.other.clone();
+    let result = setup.world.execute_tx(
+        &other, &setup.sc, &rust_biguint!(0u64), |contract| {
+            contract.revoke_order_hash(ManagedByteArray::new_from_bytes(&ORDER_HASH));
+        },
+    );
+    assert!(!result.result_status.is_success(), "only owner may revoke claims");
+    let result = setup.world.execute_tx(
+        &other, &setup.sc, &rust_biguint!(0u64), |contract| {
+            contract.unpause_claims();
+        },
+    );
+    assert!(!result.result_status.is_success(), "only owner may enable claims");
+    assert!(!setup.claimed(ORDER_HASH));
+    let owner = setup.owner.clone();
+    setup.world.execute_tx(&owner, &setup.sc, &rust_biguint!(0u64), |contract| {
+        assert!(!contract.revoked(&ManagedByteArray::new_from_bytes(&ORDER_HASH)).get());
+    }).assert_ok();
+}
