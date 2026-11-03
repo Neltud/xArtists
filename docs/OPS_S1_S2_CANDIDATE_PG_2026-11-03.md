@@ -55,6 +55,36 @@ le ROLLBACK SQL ; puis relit `getOrder` pour prouver que
 Le code n'a ni endpoint d'écriture commerciale ni mécanisme d'application
 automatique : il attend une migration et une revue de sécurité séparées.
 
+## Durcissement du 3 novembre : preuve ancienne vs état présent
+
+Le contrôle d'insertion PostgreSQL est désormais **fail-closed** pour les
+champs JSON absents : un `status` manquant, un drapeau de livraison
+indéfini ou l'absence explicite de `micro_price=false` ne peut plus
+être autorisé par la logique SQL à trois valeurs (`NULL`).
+
+Les montants sont confrontés **au catalogue Rule1 courant**
+(`pulse=11 000`, `yield=7 500`, `sentinel=5 000` centimes),
+et non seulement à deux enregistrements qui reprendraient ensemble
+un montant de vente incorrect. **Tout changement du catalogue doit
+déclencher une revue et une mise à jour de cette migration.**
+
+La vue en lecture seule `s1s2_candidate_current_consistency` calcule
+`current_ledger_consistent` à partir des **lignes actuelles** des
+commandes et jobs. Après un remboursement, une annulation ou un échec
+de mint, cette valeur doit passer de `true` à `false`, même si
+la réservation historique reste conservée pour l'audit. Un opérateur
+ne doit **jamais** déduire de `true` que les fonds PayBox sont
+définitivement réglés ou que la propriété NFT est définitivement
+transférée : ni le PSP externe ni la blockchain ne sont revérifiés
+par cette vue.
+
+La vue **n'est pas une API publique, ni un verrou de livraison**.
+Une lecture peut devenir obsolète une milliseconde plus tard. Le GO
+commercial exige toujours un rapprochement S1, S2 et remboursement
+**au sein d'une future transaction SQL atomique, sans fenêtre de course**,
+avec autorisation opérateur séparée. Aucune mutation du compte acheteur
+n'est livrée dans cette suite.
+
 ## Ce qui reste à concevoir avant tout GO
 
 1. Un opérateur habilité doit démontrer une signature PayBox PSP **réelle**
