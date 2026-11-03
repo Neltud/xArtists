@@ -177,8 +177,13 @@ async function handleRequest(req, res) {
     }
     const { body } = await readRawAndBody(req)
     if (body.action === 'list') {
+      const offset = Number(body.offset ?? 0)
+      if (!Number.isSafeInteger(offset) || offset < 0 || offset > 10000) {
+        json(res, 400, { ok: false, error: 'invalid_offset' })
+        return
+      }
       const db = await loadOrders()
-      json(res, 200, { ok: true, orders: eligibleOidcOrders(db) })
+      json(res, 200, { ok: true, orders: eligibleOidcOrders(db, 10, offset) })
       return
     }
     if (body.action === 'claim') {
