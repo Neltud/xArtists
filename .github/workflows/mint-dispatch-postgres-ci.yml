@@ -1,16 +1,22 @@
-name: Mint Postgres idempotency (ephemeral CI)
+name: Mint Postgres idempotency + order-store readiness (ephemeral CI)
 
 on:
   pull_request:
     paths:
       - 'services/access-api/src/mintDispatch.mjs'
       - 'services/access-api/tests/mintDispatchPostgres.test.mjs'
+      - 'services/access-api/src/orders.mjs'
+      - 'services/access-api/src/server.mjs'
+      - 'services/access-api/tests/ordersStoreProbePostgres.test.mjs'
       - '.github/workflows/mint-dispatch-postgres-ci.yml'
   push:
     branches: [main]
     paths:
       - 'services/access-api/src/mintDispatch.mjs'
       - 'services/access-api/tests/mintDispatchPostgres.test.mjs'
+      - 'services/access-api/src/orders.mjs'
+      - 'services/access-api/src/server.mjs'
+      - 'services/access-api/tests/ordersStoreProbePostgres.test.mjs'
       - '.github/workflows/mint-dispatch-postgres-ci.yml'
   workflow_dispatch:
 
@@ -52,4 +58,7 @@ jobs:
         working-directory: services/access-api
       - name: Prove exactly-once across separate PostgreSQL clients
         run: node --test tests/mintDispatchPostgres.test.mjs
+        working-directory: services/access-api
+      - name: Verify read-only order-store readiness against isolated PostgreSQL
+        run: node --test tests/ordersStoreProbePostgres.test.mjs
         working-directory: services/access-api
