@@ -47,7 +47,7 @@ test('cross-language golden fixture fixes layout and endian order (146 bytes)', 
 })
 
 test('official sample erd1 address is checksum verified, not regex-trusted', () => {
-  const sample = 'erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zp3hypefsdd8ssycr6th'
+  const sample = 'erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6tq'
   // Use the documented (correct) address as the authoritative vector.
   const official = 'erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th'
   const decoded = decodeErdAddress(official)
