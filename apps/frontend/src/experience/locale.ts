@@ -2,6 +2,8 @@ import type { Lang } from '../i18n/types'
 export const order: Lang[] = ['fr','en','es','de','ru','uk','zh','ar']
 // Each row is checked at build time; languages never inherit another locale.
 export const copy: Record<string, string[]> = {
+  hero3dAction: ['Activer la vue 3D', 'Enable 3D view', 'Activar vista 3D', '3D-Ansicht aktivieren', 'Включить 3D', 'Увімкнути 3D', '开启 3D 视图', 'تفعيل العرض ثلاثي الأبعاد'],
+  hero3dLead: ['Aperçu 2D léger · la vue 3D est facultative.', 'Lightweight 2D preview · immersive 3D is optional.', 'Vista previa 2D ligera · 3D opcional.', 'Leichte 2D-Vorschau · 3D ist optional.', 'Лёгкий 2D-просмотр · 3D по желанию.', 'Легкий 2D-перегляд · 3D за бажанням.', '轻量级 2D 预览 · 3D 可选。', 'معاينة ثنائية الأبعاد خفيفة · العرض ثلاثي الأبعاد اختياري.'],
   house: ['La Maison','The House','La Casa','Das Haus','Дом','Дім','艺术之家','الدار'],
   auction: ['Enchères','Auctions','Subastas','Auktionen','Аукционы','Аукціони','拍卖','المزادات'],
   auctionLead: ['Un salon d’enchères curaté en préparation. Aucun règlement ni transfert réel.', 'A curated auction room in development. No real settlement or transfers.', 'Una sala de subastas en preparación, sin liquidaciones reales.', 'Ein kuratierter Auktionsraum in Vorbereitung, ohne echte Abwicklung.', 'Кураторский зал аукционов в подготовке; без реальных расчетов.', 'Кураторський аукціонний зал у підготовці; без реальних розрахунків.', '策展拍卖厅正在筹备中；暂无真实结算或转移。', 'قاعة مزادات منتقاة قيد الإعداد، دون تسوية أو تحويل حقيقي.'],
