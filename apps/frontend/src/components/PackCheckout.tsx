@@ -180,7 +180,7 @@ export default function PackCheckout({
               <button
                 type="button"
                 className="rounded-xl border border-white/15 px-3 py-2 text-sm text-white/90 hover:border-violet-400/40"
-                onClick={() => onPreview(selected)}
+                onClick={() => onPreview(pack.id)}
               >
                 {xaRender(t('checkout.preview'))} · {xaRender('sans paiement ni NFT')}
               </button>
