@@ -69,10 +69,11 @@ function unfilter(row,prev,bpp) {
 }
 
 export function decodePngToRgbaV1(bytes) {
-  if(!(bytes instanceof Uint8Array)||bytes.byteLength<45||bytes.byteLength>MAX_BYTES)
+  if(!(bytes instanceof Uint8Array)||bytes.byteLength<8||bytes.byteLength>MAX_BYTES)
     throw new RangeError('png_bytes_invalid_or_too_large')
   const buf=Buffer.from(bytes)
   if(!buf.subarray(0,8).equals(PNG_SIG))throw new TypeError('not_a_png')
+  if(buf.length<45)throw new RangeError('png_bytes_invalid_or_too_large')
 
   let offset=8,width=0,height=0,colorType=0,seenIhdr=false,seenIdat=false
   let idatClosed=false,seenIend=false,chunkCount=0
