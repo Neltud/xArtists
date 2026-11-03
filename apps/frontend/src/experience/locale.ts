@@ -2,6 +2,8 @@ import type { Lang } from '../i18n/types'
 export const order: Lang[] = ['fr','en','es','de','ru','uk','zh','ar']
 // Each row is checked at build time; languages never inherit another locale.
 export const copy: Record<string, string[]> = {
+  house: ['La Maison','The House','La Casa','Das Haus','Дом','Дім','艺术之家','الدار'],
+  auction: ['Enchères','Auctions','Subastas','Auktionen','Аукционы','Аукціони','拍卖','المزادات'],
   appAccess: ["Accéder à la dapp", "Access the app", "Acceder a la app", "App öffnen", "Открыть приложение", "Відкрити застосунок", "访问应用", "افتح التطبيق"],
   accessLead: ["Explorez xArtists sur ordinateur, sur mobile ou avec xPortal. Retrouvez vos modules depuis le même lien.", "Explore xArtists on desktop, mobile or with xPortal. Reach your modules from one link.", "Explora xArtists en ordenador, móvil o con xPortal. Accede a los módulos desde un mismo enlace.", "Entdecke xArtists am Computer, mobil oder mit xPortal. Ein Link führt zu allen Modulen.", "Открывайте xArtists на компьютере, телефоне или с xPortal. Одна ссылка для всех модулей.", "Відкривайте xArtists на комп’ютері, телефоні або з xPortal. Одне посилання для всіх модулів.", "在电脑、手机或通过xPortal探索xArtists。一个链接即可访问所有模块。", "استكشف xArtists على الحاسوب أو الهاتف أو باستخدام xPortal. رابط واحد للوصول إلى وحداتك."],
   accessBrowser: ["Dans votre navigateur", "In your browser", "En tu navegador", "Im Browser", "В браузере", "У браузері", "在浏览器中", "في متصفحك"],
