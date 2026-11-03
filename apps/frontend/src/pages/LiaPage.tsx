@@ -102,7 +102,7 @@ export default function LiaPage() {
   }, [refresh])
 
   return (
-    <main className="animate-fade-in mx-auto max-w-5xl min-w-0 space-y-6 pb-28">
+    <div className="animate-fade-in mx-auto max-w-5xl min-w-0 space-y-6 pb-28">
       <header className="space-y-3">
         <p className="section-label">LIA · PUBLIC CONTROL ROOM</p>
         <h1 className="section-title display text-2xl sm:text-3xl">Agent signals, clearly explained</h1>
@@ -206,6 +206,6 @@ export default function LiaPage() {
           </div>
         )}
       </section>
-    </main>
+    </div>
   )
 }
