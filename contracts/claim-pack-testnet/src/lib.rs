@@ -130,11 +130,10 @@ pub trait XArtistsClaimPackTestnet {
         );
         require!(message.len() == CLAIM_V1_SIZE, "internal message length");
         let signer = self.signer(signer_epoch).get();
-        require!(
-            self.crypto().verify_ed25519_legacy_managed::<CLAIM_V1_SIZE>(
-                &signer, &message, &signature
-            ),
-            "invalid claim signature"
+        // 0.66.2 CryptoWrapper::verify_ed25519 is a transaction-reverting
+        // primitive: an invalid signature panics before any claim storage write.
+        self.crypto().verify_ed25519(
+            signer.as_managed_buffer(), &message, signature.as_managed_buffer(),
         );
 
         // Mark before mint; any ESDT create/transfer failure MUST revert this
