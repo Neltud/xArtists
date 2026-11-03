@@ -117,7 +117,7 @@ export default function PackLandingPage() {
       </section>
 
       <p role="status" className="rounded-xl border border-amber-300/25 bg-amber-300/[0.06] px-4 py-3 text-[12px] text-[color:var(--xa-text-secondary)]">
-        {xaRender('Vitrine Genesis en mode aperçu : aucun prix affiché ne constitue un devis payable. Paiement et livraison NFT restent bloqués tant que les validations on-chain, API, banque et opérateur ne sont pas réunies.')}
+        {xaRender('Packs Genesis : les prix affichés sont indicatifs, pas des devis payables. La disponibilité de l’achat doit être confirmée dans le checkout ; l’aperçu ne réalise aucun paiement et ne délivre aucun NFT.')}
       </p>
 
       <Pack3DCockpit packId={id} showIntents={false} />
