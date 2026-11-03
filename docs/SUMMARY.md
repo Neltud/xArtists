@@ -11,6 +11,8 @@
   * [claimPack testnet — prototype Rust et matrice de preuve](security/CLAIM_PACK_TESTNET_IMPLEMENTATION_2026-11-03.md)
   * [claimPack testnet — chaîne publique, chain-id et build WASM](security/CLAIM_PACK_TESTNET_PUBLIC_PREFLIGHT_2026-11-03.md)
   * [xArt-ID — reconnaissance, provenance et réévaluation des œuvres](security/ART_ID_PROVENANCE_V1_2026-11-03.md)
+  * [xArt-ID — décodage PNG sécurisé (laboratoire)](security/ART_ID_PNG_DECODE_LAB_2026-11-03.md)
+  * [xArt-ID — calibration de similarité (synthétique)](security/ART_ID_CALIBRATION_NOTES_2026-11-03.md)
   * [Claim — vérification des étapes](security/CLAIM_PHASE0_CHECKLIST.md)
   * [Claim — symbiose et protocole](security/CLAIM_SYMBIOSIS_GROK_2026-11-03.md)
   * [Claim — suivi sécurité](security/SYMBIOSIS_BOARD_2026-11-03.md)
