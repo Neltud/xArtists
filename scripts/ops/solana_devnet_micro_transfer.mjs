@@ -5,6 +5,7 @@
  */
 import assert from 'node:assert/strict'
 import { generateKeyPairSync, sign } from 'node:crypto'
+import { pathToFileURL } from 'node:url'
 
 const RPC = 'https://api.devnet.solana.com'
 const LAMPORTS = 1000
@@ -13,7 +14,7 @@ const SYSTEM = Buffer.alloc(32)
 const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-function encode58(bytes) {
+export function encode58(bytes) {
   let value = BigInt('0x' + Buffer.from(bytes).toString('hex'))
   let result = ''
   while (value > 0n) {
@@ -27,7 +28,7 @@ function encode58(bytes) {
   }
   return result || '1'
 }
-function decode58(text) {
+export function decode58(text) {
   let value = 0n
   for (const ch of text) {
     const i = ALPHABET.indexOf(ch)
@@ -40,14 +41,14 @@ function decode58(text) {
   const prefix = (text.match(/^1*/) || [''])[0].length
   return Buffer.concat([Buffer.alloc(prefix), data])
 }
-function keypair() {
+export function keypair() {
   const { privateKey, publicKey } = generateKeyPairSync('ed25519')
   const spki = publicKey.export({ type: 'spki', format: 'der' })
   const pubkey = spki.subarray(-32)
   assert.equal(pubkey.length, 32)
   return { privateKey, pubkey, address: encode58(pubkey) }
 }
-function uvarint(n) {
+export function uvarint(n) {
   const out = []
   do {
     let octet = n & 127
@@ -67,7 +68,7 @@ async function rpc(method, params = []) {
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
       signal: controller.signal,
     })
-    assert.equal(response.ok, true, 'Solana Devnet HTTP error: ' + response.status)
+    if (!response.ok) throw new Error(method + ': Solana Devnet HTTP ' + response.status)
     const json = await response.json()
     if (json.error) throw new Error(method + ' RPC: ' + String(json.error.message).slice(0, 160))
     return json.result
@@ -143,7 +144,9 @@ async function main() {
       'Transaction: ' + explorer + '\nNo mainnet transaction or real funds.\n')
   }
 }
-main().catch(error => {
-  console.error('DEVNET_SOL_MICRO_BLOCKED:', String(error.message).slice(0, 240))
-  process.exitCode = 1
-})
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch(error => {
+    console.error('DEVNET_SOL_MICRO_BLOCKED:', String(error.message).slice(0, 240))
+    process.exitCode = 1
+  })
+}
