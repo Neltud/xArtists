@@ -1,0 +1,85 @@
+name: Solana local-validator microtransfer proof (no public network)
+
+# Deterministic faucet-independent ledger test: ephemeral local RPC only.
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/solana_local_validator_micro_transfer.mjs'
+      - 'scripts/ops/solana_local_validator_micro_transfer.test.mjs'
+      - '.github/workflows/solana-local-validator-proof.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ops/solana_local_validator_micro_transfer.mjs'
+      - 'scripts/ops/solana_local_validator_micro_transfer.test.mjs'
+      - '.github/workflows/solana-local-validator-proof.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  solana-local-validator:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      MINT_DISPATCH_ENABLED: '0'
+      MINT_LIVE_ENABLED: '0'
+      LIA_LIVE_TRADING: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check offline guard and transaction script syntax
+        run: |
+          set -euo pipefail
+          node --check scripts/ops/solana_local_validator_micro_transfer.mjs
+          node --test scripts/ops/solana_local_validator_micro_transfer.test.mjs
+      - name: Download official Agave 4.3.0 local validator (pinned version)
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Official release artifact, not a dynamic install-script pipe.
+          curl --proto '=https' --tlsv1.2 -fLsS --retry 2 --retry-delay 3 \
+            'https://github.com/anza-xyz/agave/releases/download/v4.3.0/solana-release-x86_64-unknown-linux-gnu.tar.bz2' \
+            -o "$RUNNER_TEMP/solana-release.tar.bz2"
+          sha256sum "$RUNNER_TEMP/solana-release.tar.bz2"
+          tar -xjf "$RUNNER_TEMP/solana-release.tar.bz2" -C "$RUNNER_TEMP"
+          test -x "$RUNNER_TEMP/solana-release/bin/solana-test-validator"
+          echo "$RUNNER_TEMP/solana-release/bin" >> "$GITHUB_PATH"
+      - name: Transfer 1000 lamports with local-faucet test balances
+        shell: bash
+        env:
+          XARTISTS_ALLOW_LOCAL_VALIDATOR_SEND: '1'
+        run: |
+          set -euo pipefail
+          export PATH="$RUNNER_TEMP/solana-release/bin:$PATH"
+          solana-test-validator --version
+          solana-test-validator --ledger "$RUNNER_TEMP/xartists-local-ledger" \
+            --reset --rpc-port 8899 --rpc-bind-address 127.0.0.1 \
+            > "$RUNNER_TEMP/xartists-validator.log" 2>&1 &
+          validator_pid=$!
+          trap 'kill "$validator_pid" 2>/dev/null || true; wait "$validator_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 80); do
+            if ! kill -0 "$validator_pid" 2>/dev/null; then
+              echo 'Local validator exited early'
+              tail -40 "$RUNNER_TEMP/xartists-validator.log"
+              exit 1
+            fi
+            if curl -fsS --max-time 2 -H 'Content-Type: application/json' \
+              -d '{"jsonrpc":"2.0","id":1,"method":"getHealth"}' \
+              http://127.0.0.1:8899 | grep -q '"result":"ok"'; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo 'Local validator was not healthy before deadline'
+            tail -40 "$RUNNER_TEMP/xartists-validator.log"
+            exit 1
+          fi
+          node scripts/ops/solana_local_validator_micro_transfer.mjs
