@@ -147,9 +147,9 @@ fn t01_happy_path_mints_once_to_buyer_then_blocks_replay() {
     let buyer = setup.buyer.clone();
     setup.execute(&buyer, &buyer, Claim::default(), None).assert_ok();
     assert!(setup.claimed(ORDER_HASH));
-    setup.world.check_nft_balance(&buyer, TOKEN, 1, &rust_biguint!(1u64), None::<&()>);
+    setup.world.check_nft_balance(&buyer, TOKEN, 1, &rust_biguint!(1u64), None::<&u32>);
     setup.execute(&buyer, &buyer, Claim::default(), None).assert_user_error("claim already used");
-    setup.world.check_nft_balance(&buyer, TOKEN, 1, &rust_biguint!(1u64), None::<&()>);
+    setup.world.check_nft_balance(&buyer, TOKEN, 1, &rust_biguint!(1u64), None::<&u32>);
 }
 
 #[test]
@@ -160,7 +160,7 @@ fn t02_different_wallet_cannot_redeem_a_voucher_for_buyer() {
     let other = setup.other.clone();
     setup.execute(&other, &buyer, Claim::default(), None).assert_user_error("invalid signature");
     assert!(!setup.claimed(ORDER_HASH));
-    setup.world.check_nft_balance(&other, TOKEN, 1, &rust_biguint!(0u64), None::<&()>);
+    setup.world.check_nft_balance(&other, TOKEN, 1, &rust_biguint!(0u64), None::<&u32>);
 }
 
 #[test]
@@ -240,9 +240,9 @@ fn t09_missing_nft_create_role_reverts_storage_reservation() {
     let buyer = setup.buyer.clone();
     // No ESDTNFTCreate role. Should fail in VM and leave claimed=false.
     let result = setup.execute(&buyer, &buyer, Claim::default(), None);
-    assert_ne!(result.result_status, 0u64, "mint without local role unexpectedly succeeded");
+    assert!(!result.result_status.is_success(), "mint without local role unexpectedly succeeded");
     assert!(!setup.claimed(ORDER_HASH));
-    setup.world.check_nft_balance(&buyer, TOKEN, 1, &rust_biguint!(0u64), None::<&()>);
+    setup.world.check_nft_balance(&buyer, TOKEN, 1, &rust_biguint!(0u64), None::<&u32>);
 }
 
 #[test]
