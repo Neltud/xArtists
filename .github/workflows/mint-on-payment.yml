@@ -65,6 +65,19 @@ env:
   SC: erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg
 
 jobs:
+  # Explicitly FAIL a manual "live_mint=true" request. A skipped mint job alone
+  # would make the Actions run look green despite no signed mint.
+  live_disabled:
+    if: ${{ github.event.inputs.live_mint == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Stop manual live mint before accessing production environment
+        shell: bash
+        run: |
+          echo "::error title=Mint mainnet intentionally disabled::Unsafe non-atomic setPackPrice/buyPack route is blocked. Use dry-run only and request independent mainnet GO after redesign."
+          exit 1
+
   dry_run:
     # No production environment or deployer key is available to a dry-run.
     if: ${{ github.event.inputs.live_mint != 'true' }}
