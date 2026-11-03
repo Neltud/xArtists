@@ -1,0 +1,75 @@
+name: S1/S2 PostgreSQL candidate uniqueness (disposable DB ONLY)
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/sql/s1s2_candidate_reservations.sql'
+      - 'services/access-api/tests/s1s2CandidatePostgres.test.mjs'
+      - 'services/access-api/src/s1s2Reconciliation.mjs'
+      - 'services/access-api/tests/s1s2Reconciliation.test.mjs'
+      - '.github/workflows/s1s2-candidate-postgres-ci.yml'
+      - 'docs/OPS_S1_S2_CANDIDATE_PG_2026-11-03.md'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/sql/s1s2_candidate_reservations.sql'
+      - 'services/access-api/tests/s1s2CandidatePostgres.test.mjs'
+      - 'services/access-api/src/s1s2Reconciliation.mjs'
+      - 'services/access-api/tests/s1s2Reconciliation.test.mjs'
+      - '.github/workflows/s1s2-candidate-postgres-ci.yml'
+      - 'docs/OPS_S1_S2_CANDIDATE_PG_2026-11-03.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  candidate-pg-isolated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: xartists_s1s2_probe
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d xartists_s1s2_probe"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      TEST_S1S2_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/xartists_s1s2_probe
+      ALLOW_EPHEMERAL_S1S2_PG_TEST: '1'
+      PGSSL: '0'
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      MINT_LIVE_ENABLED: '0'
+      MINT_DISPATCH_ENABLED: '0'
+      MINT_OIDC_PULL_ENABLED: '0'
+      LIA_LIVE_TRADING: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/access-api/package-lock.json
+      - name: Install API dependencies (locked, scripts disabled)
+        working-directory: services/access-api
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Validate S1/S2 read-only candidate source and test syntax
+        working-directory: services/access-api
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tests/s1s2CandidatePostgres.test.mjs
+          node --check src/s1s2Reconciliation.mjs
+      - name: Prove unique, immutable S1/S2 candidates on disposable PostgreSQL
+        working-directory: services/access-api
+        run: node --test tests/s1s2CandidatePostgres.test.mjs
+      - name: Reconfirm S1/S2 read-only verifier never marks NFT delivered
+        working-directory: services/access-api
+        run: node --test tests/s1s2Reconciliation.test.mjs tests/mvxReceiptVerifier.test.mjs
