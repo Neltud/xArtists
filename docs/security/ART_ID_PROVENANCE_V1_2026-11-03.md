@@ -188,3 +188,43 @@ Références :
 
 **NO-GO** commerce, claims NFT mainnet, paiement réel, mint automatique,
 trading LIA ou pont TRO. La provenance ne déverrouille aucun rail commercial.
+
+## xArt-ID Vision — DCT pHash local (incrément suivant)
+
+Le module `services/access-api/src/artIdentityVision.mjs` complète
+`compareVisualHash64V1` : il **calcule maintenant** une empreinte
+perceptuelle à partir de **pixels RGBA déjà décodés**. Méthode versionnée
+`xartists.phash64-dct-fit.v1` : redimensionnement bilinéaire avec
+conservation du ratio dans un canevas 32×32 blanc, DCT-II 8×8,
+médiane des 63 coefficients AC, mot de 64 bits avec DC ignoré.
+Le calcul est déterministe sur la même frame et indépendant du format
+de fichier d'origine une fois les pixels normalisés.
+
+`rankArtPHashCandidatesV1` trie au maximum **2 000** références
+d'empreinte en mémoire, limitées à **50 résultats** et un seuil de
+Hamming entre 0 et 16. Le niveau par défaut de huit bits
+est un point de départ **non calibré**. Il ne constitue pas une
+probabilité, un score universel de fraude ou un verdict.
+
+**Ce que cette étape ne fait PAS :**
+
+- Elle ne décode pas JPG, PNG, WebP, vidéo ou GIF : la future passerelle
+  doit utiliser un décodeur sandboxé, valider le format réel, limiter les
+  octets, pixels et durée de décodage, et conserver séparément le hash
+  SHA-256 des octets originaux.
+- Elle ne produit pas de certificat unique : pHash peut collisionner,
+  être modifié par recadrage/rotation, transformations IA et
+  rééchantillonnage. Une image plate ou totalement transparente
+  renvoie `low_information`, pas un hash arbitrairement « unique ».
+- Elle ne recherche pas l'ensemble d'Internet, INTERPOL ou les
+  collections privées et n'interroge pas des propriétaires.
+- Aucune route HTTP ni tâche automatique n'utilise le calcul ;
+  aucune photo utilisateur n'est transférée ni stockée par ce module.
+
+Les tests vérifient une empreinte déterministe sur **un corpus
+synthétique**, la stabilité sous un changement de résolution, les
+arrangements différents, la transparence et les limites d'entrée.
+Une **évaluation indépendante sur œuvres réelles consenties** est
+indispensable avant de fixer le seuil ou d'afficher une alerte
+publique. Toute correspondance est étiquetée
+`human_review_required`.
