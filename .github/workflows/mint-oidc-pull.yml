@@ -1,0 +1,32 @@
+name: Mint OIDC pull (PAT-free, DRY RUN ONLY)
+
+# Only trusted main may access the Render queue. NO production environment,
+# NO signing key. GITHUB_TOKEN and GitHub OIDC JWT expire automatically.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17,47 * * * *'
+
+permissions:
+  contents: read
+  actions: write
+  id-token: write
+
+concurrency:
+  group: xartists-mint-oidc-pull
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Poll signed-payment queue via GitHub OIDC (dry-run only)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/ops/mint_oidc_pull.mjs
