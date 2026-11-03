@@ -34,3 +34,19 @@ html{scroll-behavior:smooth;scroll-padding-top:100px}body{background:var(--xa-bg
   .xa-mobile-dock{inset-inline:5px;height:65px}
   .xa-mobile-dock>a{font-size:8px;gap:3px}
 }
+
+/* Public Home: 2D mobile/low-power fallback. No THREE/WebGL canvas is mounted
+   until the visitor explicitly selects the immersive view. */
+.xa-hero-2d{position:relative;width:100%;height:100%;min-height:290px;display:flex;flex-direction:column;align-items:center;justify-content:center;isolation:isolate}
+.xa-hero-2d-visual{position:absolute;inset:9% 12% 18%;display:grid;place-items:center;overflow:hidden;border-radius:50%;background:radial-gradient(circle at 42% 38%,rgba(205,245,139,.14),transparent 54%)}
+.xa-hero-2d-ring{position:absolute;width:62%;aspect-ratio:1;border:24px solid rgba(207,220,197,.9);border-radius:50%;box-shadow:inset 4px 4px 15px #0006,5px 12px 25px #0005}
+.xa-hero-2d-ring-one{transform:rotateY(58deg) rotateX(30deg)}
+.xa-hero-2d-ring-two{border-color:rgba(156,186,134,.75);transform:rotateY(-52deg) rotateX(37deg)}
+.xa-hero-2d-center{width:19%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 30% 25%,#f1f7e6,#80976a 60%,#26351c);box-shadow:0 0 30px #cdf58b3d}
+.xa-hero-2d[data-variant="1"] .xa-hero-2d-center{background:radial-gradient(circle at 30% 25%,#f2e3cb,#bc8b60 60%,#3c2b20)}
+.xa-hero-2d[data-variant="2"] .xa-hero-2d-center{background:radial-gradient(circle at 30% 25%,#e2ecff,#7794c7 60%,#232b40)}
+.xa-hero-2d-actions{position:absolute;z-index:3;inset-inline:8%;bottom:11%;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.xa-hero-2d-actions p{margin:0;color:var(--xa-text);font-size:11px;text-shadow:0 1px 8px var(--xa-bg)}
+.xa-hero-2d-button{min-height:44px;padding:10px 17px;border:1px solid var(--xa-accent);border-radius:6px;background:var(--xa-panel);color:var(--xa-text);font-size:12px;font-weight:600;touch-action:manipulation}
+.xa-hero-2d-button:hover,.xa-hero-2d-button:focus-visible{background:var(--xa-panel2)}
+@media(max-width:720px){.xa-hero-2d{min-height:320px}.xa-hero-2d-ring{border-width:18px}.xa-hero-2d-actions{bottom:13%}}
