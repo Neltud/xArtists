@@ -29,9 +29,11 @@ jobs:
         with:
           workspaces: contracts/claim-pack-testnet
       - name: Generate ABI with pinned 0.66.2 meta tool
-        run: cargo run --manifest-path contracts/claim-pack-testnet/meta/Cargo.toml -- abi
+        working-directory: contracts/claim-pack-testnet/meta
+        run: cargo run -- abi
       - name: Build testnet candidate WASM (no network, no signing)
-        run: cargo run --manifest-path contracts/claim-pack-testnet/meta/Cargo.toml -- build --no-wasm-opt --no-imports
+        working-directory: contracts/claim-pack-testnet/meta
+        run: cargo run -- build --no-wasm-opt --no-imports
       - name: Verify non-empty WASM and publish SHA-256 in logs
         run: |
           set -euo pipefail
