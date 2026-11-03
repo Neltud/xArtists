@@ -10,6 +10,7 @@ on:
       - 'apps/frontend/src/App.tsx'
       - 'apps/frontend/tests/commercial-prelaunch.test.mjs'
       - 'docs/presentation/ouverture-demandes-2026-11-03.md'
+      - '.github/workflows/static.yml'
       - '.github/workflows/commercial-prelaunch-ci.yml'
   push:
     branches: [main]
@@ -19,6 +20,7 @@ on:
       - 'apps/frontend/src/experience/Pages.tsx'
       - 'apps/frontend/src/App.tsx'
       - 'apps/frontend/tests/commercial-prelaunch.test.mjs'
+      - '.github/workflows/static.yml'
       - '.github/workflows/commercial-prelaunch-ci.yml'
 
 permissions:
