@@ -21,3 +21,16 @@ test('Genesis buy CTA stays disabled unless independent commercial GO and API ru
   assert.match(source, /selected && checkoutAvailable &&/)
   assert.match(source, /sans paiement ni NFT/)
 })
+
+test('CheckoutModal revalidates release flags at action time before fiat or crypto', async () => {
+  const source = await fs.readFile(new URL('../src/components/CheckoutModal.tsx', import.meta.url), 'utf8')
+  assert.match(source, /async function confirmGenesisCommerceNow\(/)
+  assert.match(source, /VITE_GENESIS_COMMERCIAL_GO !== '1'/)
+  assert.match(source, /cache: 'no-store'/)
+  assert.match(source, /mint_live_enabled === true/)
+  assert.match(source, /mint_dry_run === false/)
+  assert.match(source, /method === 'paybox' && health\?\.paybox_checkout_enabled === true/)
+  assert.match(source, /await confirmGenesisCommerceNow\('fiat', method\)/)
+  assert.match(source, /await confirmGenesisCommerceNow\('crypto'\)/)
+  assert.match(source, /catch \{\s*return false/)
+})
