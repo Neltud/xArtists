@@ -53,7 +53,7 @@ export default function DappAccessPage() {
     try { await installDapp() } catch { setError(true) } finally { setBusy(false) }
   }
   return <div className="xa-access">
-    <div className="xa-access-intro"><p>{c('accessLead')}</p></div>
+    <div className="xa-access-intro"><h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">{c('appAccess')}</h1><p>{c('accessLead')}</p></div>
     {!online && <p className="xa-access-notice" role="status">{c('accessOffline')}</p>}
     <div className="xa-access-grid">
       <section className="xa-access-card"><span className="xa-module-icon"><Icon name="globe" size={25}/></span><h2>{c('accessBrowser')}</h2><p>{c('accessBrowserLead')}</p><Link className="xa-button primary" to="/explore">{c('explore')}<Icon name="arrow" size={17}/></Link></section>
