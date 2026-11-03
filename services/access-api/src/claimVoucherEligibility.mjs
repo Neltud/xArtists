@@ -7,10 +7,14 @@
  * Never accept an order or snapshot from an HTTP client as proof of payment.
  */
 import { PACK_FIAT_CENTS } from './quote.mjs'
+import { decodeErdAddress } from './claimVoucherCodec.mjs'
 
 const ORDER_ID = /^[A-Za-z0-9_-]{1,64}$/
 const PSP_TX = /^[A-Za-z0-9_:.\-]{1,128}$/
-const BUYER = /^erd1[a-z0-9]{58}$/
+function isValidBuyerAddress(address) {
+  try { decodeErdAddress(address); return true }
+  catch { return false }
+}
 const deny = reason => Object.freeze({ candidate_eligible: false, reason })
 
 export function assessPaidClaimCandidate({ order, ordersSnapshot } = {}) {
@@ -19,7 +23,7 @@ export function assessPaidClaimCandidate({ order, ordersSnapshot } = {}) {
   }
   if (!ORDER_ID.test(String(order.order_id ?? '')) ||
       !PSP_TX.test(String(order.provider_tx_id ?? '')) ||
-      !BUYER.test(String(order.buyer_address ?? ''))) {
+      !isValidBuyerAddress(order.buyer_address)) {
     return deny('invalid_order_payment_or_buyer_identity')
   }
   if (!Object.hasOwn(PACK_FIAT_CENTS, order.pack_id) ||
