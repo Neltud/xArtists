@@ -91,6 +91,24 @@ média, puis documenter le fournisseur et la version.
 - `diffArtEvidenceV1` : comparaison déterministe de dossiers pour
   réévaluation, sans conclusion automatique de fraude.
 
+### Nouveau : observation NFT MultiversX en lecture seule
+
+`services/access-api/src/artIdentityChain.mjs` réalise uniquement
+`GET /nfts/{identifier}` vers un **hôte fixé par le réseau** :
+`api.multiversx.com`, `testnet-api.multiversx.com` ou
+`devnet-api.multiversx.com`. Le service ne suit pas de redirection et
+refuse un identifiant/nonce/collection incohérent. Il produit un digest
+de snapshot des champs publics signalés (URIs, attributs, hash, creator)
+pour comparer les changements lors d'une nouvelle observation.
+
+Il ne consulte ni les adresses privées ni un endpoint fourni par un
+utilisateur. Il **ne ré-hashe pas l'image d'origine**, ne valide pas les
+manifestes C2PA, ne prouve pas la propriété actuelle du token ni la
+finalité de la chaîne. Une réponse API indexée peut être incomplète,
+mise en cache ou erronée ; la vérification indépendante et le curator
+restent indispensables. Aucune route HTTP publique n'utilise ce module
+pour l'instant.
+
 Les données transmises à ce module doivent être considérées **non fiables** :
 son appelant serveur doit authentifier les sources, contrôler ACL/tenant et
 enregistrer séparément la preuve du vérificateur, avant toute revue publique.
@@ -132,7 +150,8 @@ Artist Wallet / Museum / Curator
   -> C2PA/IPTC validation + provenance documents (non connectés)
   -> possible visual duplicate candidates (pHash / embeddings, non connectés)
   -> authorized stolen registry search (non connecté)
-  -> independently verified on-chain metadata / transfers (à ajouter)
+  -> read-only public indexer snapshot (new, not independent chain proof)
+  -> independent chain proof / transfer attestation (à ajouter)
   -> manual artist/curator/legal approval
   -> private dossier + redacted, time-stamped public attestations (à ajouter)
   -> scheduled differential reassessment, alerts, revoke (à ajouter)
