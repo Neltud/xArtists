@@ -116,7 +116,7 @@ class BurnifyAgent:
         if not self.cfg.tro_listed:
             return BurnifyDecision(
                 action="idle",
-                reason="TRO not listed on Burnify",
+                reason="TRO listing on Burnify has not been verified",
                 risk="low",
                 paper=paper,
                 reasoning=reasoning + ["batch path disabled"],

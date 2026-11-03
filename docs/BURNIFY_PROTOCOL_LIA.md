@@ -16,8 +16,8 @@ noIndex: true
 
 1. **DEFENSE** — EGLD < gas\_reserve → stop
 2. **STAKE** — BFY libre → `deposit` staking SC
-3. **CLAIM** — `batches_since_claim >= X` → `claimRewards` EGLD (**obligatoire**)
-4. **BATCH** — TRO + EGLD + TRO listé → N batches
+3. **CLAIM** — `batches_since_claim >= X` → intention `claimRewards` EGLD (stratégie LIA, pas obligation protocolaire, montant non garanti)
+4. **BATCH** — TRO + EGLD + inscription TRO **prouvée pour le cycle en cours** → intention N batches (pas de receiver fictif en production)
 5. **IDLE**
 
 Default: `claim_after_batches = 5`.
@@ -31,12 +31,10 @@ Default: `claim_after_batches = 5`.
 ## Flags
 
 ```bash
-LIA_LIVE_TRADING=1
-LIA_BURNIFY_LIVE=1
 PYTHONPATH=. python -m lia.burnify.agent
 ```
 
-Sans les deux flags → **paper** (`data/burnify_lia_state.json`).
+**Paper uniquement dans la configuration publiée.** Les flags de trading ne prouvent ni le listing TRO, ni l’autorisation de dépenses, ni la validité du batch. Le constructeur de batch renvoie un placeholder `BURNIFY_BATCH_SC`, non signable en l’état. Ne jamais exécuter sans SC/protocole attesté et approbation multisig. See `docs/TRO_SOLANA_BRIDGE_GO_NO_GO.md`.
 
 ## Réf
 

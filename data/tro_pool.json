@@ -3,20 +3,20 @@
   "name": "TUDURIORIGINAL",
   "supply": 476223,
   "circulating": 476223,
-  "decimals": 18,
+  "decimals": 6,
   "pools": [
     {
       "dex": "OneDex",
       "pair": "TRO/EGLD",
       "pair_id": "TROW EGLD-ca2874",
       "address": "erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc",
-      "liquidity_usd_approx": 6,
+      "liquidity_usd_approx": null,
       "dexscreener": "https://dexscreener.com/multiversx/erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc-trowegld-ca2874",
       "swap": "https://onedex.app",
-      "status": "active_low_liquidity"
+      "status": "historical_unverified"
     }
   ],
   "xexchange": [],
-  "note": "Primary liquidity on OneDex. xExchange pairs not listed in public MEX API at this time.",
+  "note": "Historical OneDex TRO/EGLD reference from 2026-07-29. USD liquidity is not a verified live price or backing asset. Always query official MultiversX API and verify DEX reserves. No Solana LP, bridge or public sale is attested.",
   "updated": "2026-07-29"
 }

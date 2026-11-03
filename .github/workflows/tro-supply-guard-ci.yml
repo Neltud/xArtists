@@ -1,0 +1,21 @@
+name: TRO supply and Burnify fail-closed guard
+on:
+  pull_request:
+    paths:
+      - 'scripts/tro_supply_audit.mjs'
+      - 'apps/frontend/tests/tro-crosschain-guard.test.mjs'
+      - 'lia/burnify/**'
+      - 'data/tro_pool.json'
+      - '.github/workflows/tro-supply-guard-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tro-supply-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test apps/frontend/tests/tro-crosschain-guard.test.mjs

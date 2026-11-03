@@ -29,7 +29,8 @@ class BurnifyConfig:
     min_tro_for_batch: float = 1.0
     min_egld_for_batch: float = 0.02
     egld_gas_reserve: float = 0.15
-    tro_listed: bool = True
+    # Unknown until the Burnify on-chain allowlist is checked at the actual cycle; fail closed.
+    tro_listed: bool = False
     require_live_flag: bool = True
     env_live_key: str = "LIA_BURNIFY_LIVE"
     paper_default: bool = True
