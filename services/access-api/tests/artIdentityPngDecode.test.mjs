@@ -22,15 +22,13 @@ function chunk(type, data) {
   return Buffer.concat([len, typeB, data, crc])
 }
 
-/** Minimal 2×2 solid red RGBA PNG */
 function solidRedPng() {
   const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])
   const ihdr = Buffer.alloc(13)
   ihdr.writeUInt32BE(2, 0)
   ihdr.writeUInt32BE(2, 4)
   ihdr[8] = 8
-  ihdr[9] = 6 // RGBA
-  // 2 rows: filter0 + 8 bytes each
+  ihdr[9] = 6
   const raw = Buffer.alloc(2 * (1 + 8))
   for (let y = 0; y < 2; y++) {
     const o = y * 9
@@ -69,6 +67,6 @@ test('phash from png is candidate-only', () => {
 })
 
 test('reject non-png and empty', () => {
-  assert.throws(() => decodePngToRgbaV1(Buffer.from('notpng')), /not_a_png/)
+  assert.throws(() => decodePngToRgbaV1(Buffer.alloc(40, 1)), /not_a_png/)
   assert.throws(() => decodePngToRgbaV1(Buffer.alloc(0)), /invalid_or_too_large/)
 })
