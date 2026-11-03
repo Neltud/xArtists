@@ -24,6 +24,7 @@ import { useWebglPauseWhen } from '../hooks/useWebglPause'
 import { useI18n } from '../i18n/I18nContext'
 import { useAgentPackTx } from '../hooks/useAgentPackTx'
 import { ensureAccessToken, getAccessToken } from '../lib/accessSession'
+import { getAccessApiBase } from '../lib/stripe'
 
 export type CheckoutRail = 'crypto' | 'fiat' | null
 
@@ -43,6 +44,40 @@ function saveIntent(payload: Record<string, unknown>) {
     )
   } catch {
     /* */
+  }
+}
+
+/**
+ * Last-mile check at transaction time, not only at page render time.
+ * This prevents a stale React readiness snapshot from authorizing a buy.
+ * Any timeout/invalid JSON/flag mismatch => false, never a fallback.
+ * No mutation, no secrets, no payment.
+ */
+async function confirmGenesisCommerceNow(rail: 'fiat' | 'crypto', method?: PayMethod): Promise<boolean> {
+  if (import.meta.env.VITE_GENESIS_COMMERCIAL_GO !== '1') return false
+  const api = getAccessApiBase() || 'https://xartists-access-api.onrender.com'
+  const abort = new AbortController()
+  const timeout = setTimeout(() => abort.abort(), 5_000)
+  try {
+    const response = await fetch(api + '/health', { cache: 'no-store', signal: abort.signal })
+    if (!response.ok) return false
+    const health = await response.json()
+    const releaseReady =
+      health?.service === 'access-api' &&
+      health?.orders_backend === 'postgres' &&
+      health?.mint_live_enabled === true &&
+      health?.mint_dry_run === false
+    if (!releaseReady) return false
+    if (rail === 'fiat') {
+      // No approved Stripe live state exists; do not route to Stripe just
+      // because the frontend SDK is configured.
+      return method === 'paybox' && health?.paybox_checkout_enabled === true
+    }
+    return rail === 'crypto' && canBuyAgent()
+  } catch {
+    return false
+  } finally {
+    clearTimeout(timeout)
   }
 }
 
@@ -92,6 +127,10 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       return
     }
     const method = methods.find(method => method === fiatMethod) || methods[0]
+    if (!(await confirmGenesisCommerceNow('fiat', method))) {
+      setMsg('Paiement indisponible : validation commerciale ou API manquante.')
+      return
+    }
     if (method === 'paybox' && !hasErd1) {
       setMsg(t('checkout.msg.cryptoNeedsWallet'))
       requestOpenConnect()
@@ -150,6 +189,10 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
   }
 
   const launchCrypto = async () => {
+    if (!(await confirmGenesisCommerceNow('crypto'))) {
+      setMsg('Mint indisponible : validation commerciale ou API manquante.')
+      return
+    }
     if (!hasErd1) {
       setMsg(t('checkout.msg.cryptoNeedsWallet'))
       requestOpenConnect()
