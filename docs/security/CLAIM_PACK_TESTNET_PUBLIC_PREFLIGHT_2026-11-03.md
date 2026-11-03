@@ -71,8 +71,11 @@ Le crate \`contracts/claim-pack-testnet/meta\` référence exactement
 \`multiversx-sc-meta-lib = 0.66.2\`. Procédure :
 
 \`\`\`bash
-cargo run --manifest-path contracts/claim-pack-testnet/meta/Cargo.toml -- abi
-cargo run --manifest-path contracts/claim-pack-testnet/meta/Cargo.toml -- build --no-wasm-opt --no-imports
+(
+  cd contracts/claim-pack-testnet/meta
+  cargo run -- abi
+  cargo run -- build --no-wasm-opt --no-imports
+)
 find contracts/claim-pack-testnet/output -name '*.wasm' -exec sha256sum {} \;
 \`\`\`
 
