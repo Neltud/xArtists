@@ -1,0 +1,54 @@
+name: Solana Devnet ephemeral 1000-lamport transfer (no real SOL)
+
+# PR validation is deterministic and offline. A real faucet-funded Devnet
+# broadcast runs ONLY by explicit manual dispatch from main.
+# No repository, Render, PayBox, wallet or production credentials are used.
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/solana_devnet_micro_transfer.mjs'
+      - 'scripts/ops/solana_devnet_micro_transfer.test.mjs'
+      - '.github/workflows/solana-devnet-ephemeral-transfer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xartists-one-devnet-sol-micro-transfer
+  cancel-in-progress: false
+
+jobs:
+  offline-encoding:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify Solana transaction script syntax
+        run: node --check scripts/ops/solana_devnet_micro_transfer.mjs
+      - name: Offline Ed25519 and codec regression suite (no RPC or funds)
+        run: node --test scripts/ops/solana_devnet_micro_transfer.test.mjs
+
+  ephemeral-devnet-sol:
+    # An untrusted PR must never start a live RPC send. Manual runs from
+    # main are isolated from all commercial wallets and production secrets.
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
+    needs: offline-encoding
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    env:
+      XARTISTS_ALLOW_DEVNET_SEND: '1'
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      MINT_DISPATCH_ENABLED: '0'
+      MINT_LIVE_ENABLED: '0'
+      LIA_LIVE_TRADING: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Faucet-funded single 1000-lamport Solana Devnet transfer
+        run: node scripts/ops/solana_devnet_micro_transfer.mjs
