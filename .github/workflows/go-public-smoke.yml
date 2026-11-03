@@ -9,6 +9,8 @@ on:
     paths:
       - '.github/workflows/go-public-smoke.yml'
       - 'docs/GO_OPERATOR_CHECKLIST.md'
+      - 'services/access-api/src/orders.mjs'
+      - 'services/access-api/src/server.mjs'
 
 permissions:
   contents: read
@@ -32,7 +34,7 @@ jobs:
             local output="/dev/null"
             if [ "$#" -gt 1 ]; then output="$2"; fi
             local code
-            code=$(curl -sS --retry 2 --retry-delay 2 --max-time 45 \
+            code=$(curl -sS --retry 4 --retry-delay 8 --max-time 75 \
               -o "$output" -w '%{http_code}' "$url") || code="000"
             echo "$code  $url"
             if [ "$code" != "200" ]; then fail=1; fi
@@ -48,6 +50,7 @@ jobs:
           check "$BASE/data/lia_status.json" /tmp/lia_status.json
           check "$BASE/data/signals/daily_signal.json"
           check "$API/health" /tmp/access_api_health.json
+          check "$API/v1/ops/orders-store/status" /tmp/orders_store_status.json
           check "$API/v1/signals/daily"
           check "$API/v1/tro/bridge/status"
 
@@ -70,6 +73,8 @@ jobs:
               ) from exc
           with open('/tmp/lia_status.json', encoding='utf-8') as f:
               lia = json.load(f)
+          with open('/tmp/orders_store_status.json', encoding='utf-8') as f:
+              db = json.load(f)
           assert h.get('service') == 'access-api', (
               'P0 WRONG SERVICE: /health does not identify access-api; see issue #287'
           )
@@ -84,6 +89,11 @@ jobs:
           # Fail closed. A separately authorised GO must update this monitor
           # before deliberately enabling live mint, LIA trading or gated features.
           assert h.get('ok') is True, 'API not healthy'
+          assert h.get('paybox_checkout_enabled') is False, 'commercial checkout enabled'
+          assert h.get('mint_dispatch_enabled') is False, 'mint dispatch unexpectedly enabled'
+          assert db.get('ok') is True, 'order database not reachable'
+          assert db.get('backend') == 'postgres', 'production order database not Postgres'
+          assert db.get('table_ready') is True, 'paybox_orders schema is missing'
           assert h.get('mint_dry_run') is True, 'mint no longer dry-run'
           assert h.get('mint_live_enabled') is False, 'live mint enabled'
           assert type(h.get('mint_dispatch_enabled')) is bool, 'dispatch status unknown'
@@ -94,5 +104,5 @@ jobs:
           assert lia.get('paper') is True, 'LIA paper mode not confirmed'
           assert str(lia.get('LIA_LIVE_TRADING')) == '0', 'LIA trading unsafe or unknown'
 
-          print('GO public smoke OK — public surfaces up, safety flags fail-closed')
+          print('GO public smoke OK — public surfaces, DB read-only readiness and safety flags verified')
           PY

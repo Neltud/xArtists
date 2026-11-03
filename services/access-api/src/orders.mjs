@@ -102,9 +102,52 @@ async function getPool() {
       connectionString: process.env.DATABASE_URL,
       ssl: process.env.PGSSL === '0' ? false : { rejectUnauthorized: true },
       max: 3,
+      connectionTimeoutMillis: 4_000,
     })
   }
   return pool
+}
+
+// Read-only database probe for operators. /health stays fast and independent
+// of the database; this separate endpoint checks actual PostgreSQL reachability
+// and the existing order table without ever creating a table or reading buyers.
+// Cache and coalesce checks to avoid turning an unauthenticated probe into a
+// database connection amplifier on the Render Free tier.
+const ORDERS_PROBE_CACHE_MS = 30_000
+let ordersProbeCache = null
+let ordersProbeInFlight = null
+
+export async function probeOrdersStore({ fresh = false } = {}) {
+  if (!usePostgres()) {
+    return { ok: false, backend: 'file', table_ready: false }
+  }
+  if (!fresh && ordersProbeCache && Date.now() < ordersProbeCache.until) {
+    return ordersProbeCache.result
+  }
+  if (ordersProbeInFlight) return ordersProbeInFlight
+
+  ordersProbeInFlight = (async () => {
+    try {
+      const p = await getPool()
+      const result = await p.query({
+        text: "SELECT to_regclass('public.paybox_orders') IS NOT NULL AS table_ready",
+        query_timeout: 3_000,
+      })
+      const tableReady = result.rows[0]?.table_ready === true
+      return { ok: tableReady, backend: 'postgres', table_ready: tableReady }
+    } catch {
+      // Never return PostgreSQL errors, URLs, hostnames, user identities,
+      // table rows, order counts, or connection strings on public endpoints.
+      return { ok: false, backend: 'postgres', table_ready: false }
+    }
+  })()
+    .then((result) => {
+      ordersProbeCache = { result, until: Date.now() + ORDERS_PROBE_CACHE_MS }
+      return result
+    })
+    .finally(() => { ordersProbeInFlight = null })
+
+  return ordersProbeInFlight
 }
 
 async function ensureSchema(client) {
