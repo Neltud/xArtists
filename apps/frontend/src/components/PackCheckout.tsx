@@ -31,11 +31,16 @@ export default function PackCheckout({
   const { connected, address } = useWallet()
   const methods = availablePayMethods()
   const hasPaidRail = methods.some(m => m === 'stripe' || m === 'paybox')
-  // A compiled-in payment method is not evidence of a LIVE merchant checkout.
-  // The API is the source of truth; unknown, offline and stale states stay closed.
+  // Independent manual release decision: unset/false on every public build
+  // until payments, S1/S2, DB schema, contract and refunds are reviewed.
+  // A frontend flag alone NEVER grants permission; API runtime must also pass.
+  const commercialGoRequested = import.meta.env.VITE_GENESIS_COMMERCIAL_GO === '1'
   const [merchantCheckoutReady, setMerchantCheckoutReady] = useState(false)
+  const [cryptoCheckoutReady, setCryptoCheckoutReady] = useState(false)
   useEffect(() => {
-    if (!hasPaidRail) return
+    setMerchantCheckoutReady(false)
+    setCryptoCheckoutReady(false)
+    if (!commercialGoRequested) return
     const abort = new AbortController()
     const api = getAccessApiBase() || 'https://xartists-access-api.onrender.com'
     fetch(api + '/health', { signal: abort.signal, cache: 'no-store' })
@@ -45,15 +50,31 @@ export default function PackCheckout({
       })
       .then(health => {
         if (abort.signal.aborted) return
-        const payboxReady = methods.includes('paybox') && health?.paybox_checkout_enabled === true
-        // No approved Stripe live flag is presently exposed: fail closed for Stripe.
+        // No commercial claim on config alone. Failed/stale/unavailable
+        // health checks always keep both rails disabled.
+        const deliveryReady =
+          health?.service === 'access-api' &&
+          health?.orders_backend === 'postgres' &&
+          health?.mint_live_enabled === true &&
+          health?.mint_dry_run === false
+        const payboxReady =
+          hasPaidRail && methods.includes('paybox') &&
+          health?.paybox_checkout_enabled === true &&
+          deliveryReady
+        // Crypto cannot bypass the independent operator release flag merely
+        // because an SC address/code hash is configured in the frontend.
+        const cryptoReady = deliveryReady && canBuyAgent()
         setMerchantCheckoutReady(payboxReady)
+        setCryptoCheckoutReady(cryptoReady)
       })
       .catch(() => {
-        if (!abort.signal.aborted) setMerchantCheckoutReady(false)
+        if (!abort.signal.aborted) {
+          setMerchantCheckoutReady(false)
+          setCryptoCheckoutReady(false)
+        }
       })
     return () => abort.abort()
-  }, [hasPaidRail])
+  }, [commercialGoRequested, hasPaidRail])
   const [selected, setSelected] = useState<PackId | null>(
     forcedId && ONLY.includes(forcedId) ? forcedId : null,
   )
@@ -67,7 +88,7 @@ export default function PackCheckout({
   }, [forcedId])
 
   const pack = PACKS.find(p => p.id === selected)
-  const mintLive = canBuyAgent()
+  const checkoutAvailable = commercialGoRequested && (merchantCheckoutReady || cryptoCheckoutReady)
   const isGuest = !connected || !address?.startsWith('erd1')
 
   const roomKey = (id: PackId) =>
@@ -139,8 +160,11 @@ export default function PackCheckout({
             </p>
             <button
               type="button"
-              className="btn-primary text-sm"
+              className="btn-primary text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={!checkoutAvailable}
+              aria-disabled={!checkoutAvailable}
               onClick={() => {
+                if (!checkoutAvailable) return
                 if (isGuest) {
                   setMsg(t('packCheckout.connectFirst'))
                   requestOpenConnect()
@@ -149,8 +173,17 @@ export default function PackCheckout({
                 setModalOpen(true)
               }}
             >
-              {xaRender(t('packCheckout.buy'))}
+              {xaRender(checkoutAvailable ? t('packCheckout.buy') : 'Achat suspendu')}
             </button>
+            {!checkoutAvailable && (
+              <button
+                type="button"
+                className="rounded-xl border border-white/15 px-3 py-2 text-sm text-white/90 hover:border-violet-400/40"
+                onClick={() => onPreview(pack.id)}
+              >
+                {xaRender(t('checkout.preview'))} · {xaRender('sans paiement ni NFT')}
+              </button>
+            )}
             {xaRender(onClear && (
               <button type="button" className="text-xs text-zinc-500 underline" onClick={onClear}>
                 {xaRender(t('packCheckout.change'))}
@@ -158,13 +191,19 @@ export default function PackCheckout({
             ))}
           </div>
 
+          {!checkoutAvailable && (
+            <p role="status" className="text-[12px] text-amber-200/90 leading-relaxed">
+              {xaRender('Aucun achat ni mint disponible actuellement. Les prix sont indicatifs et l’aperçu ne délivre aucun droit NFT.')}
+            </p>
+          )}
+
           <div className="grid sm:grid-cols-2 gap-2 text-[11px]">
             <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/[0.06] px-3 py-2">
               <p className="font-medium text-cyan-100/90">{xaRender(t('packCheckout.crypto'))}</p>
               <p className="text-zinc-400 mt-0.5">
                 {xaRender(t('packCheckout.cryptoLine', { amount: pack.priceEgld.list }))}
                 {xaRender(' · ')}
-                {xaRender(mintLive ? t('packCheckout.mintLive') : t('packCheckout.mintSoon'))}
+                {xaRender(cryptoCheckoutReady ? t('packCheckout.mintLive') : t('packCheckout.mintSoon'))}
               </p>
             </div>
             <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] px-3 py-2">
@@ -199,7 +238,7 @@ export default function PackCheckout({
         <p className="text-[12px] text-amber-200/90 leading-relaxed">{xaRender(msg)}</p>
       ))}
 
-      {xaRender(selected && (
+      {xaRender(selected && checkoutAvailable && (
         <CheckoutModal
           open={modalOpen}
           packId={selected}
