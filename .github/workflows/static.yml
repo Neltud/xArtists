@@ -150,8 +150,13 @@ jobs:
           # Finance TRO canonical + alias must have real static entrypoints.
           test -s _site/tro/sale/index.html
           test -s _site/finance/tro/sale/index.html
-          cp _site/index.html _site/404.html
-          # GitHub Pages serves the SPA from 404.html on direct dynamic URLs.
+          # Vite publicAvailabilityPlugin generated a route-aware 404.html.
+          # Never overwrite it with generic index.html: the fallback must
+          # redirect missing deep URLs via _xa_route to BrowserRouter.
+          test -s _site/404.html
+          grep -q '_xa_route' _site/404.html
+          grep -q 'noindex' _site/404.html
+          # GitHub Pages serves this route-aware 404.html on unknown paths.
           # Prebuild the actual known Genesis landing entrypoints for HTTP 200.
           for id in pulse yield sentinel; do
             mkdir -p "_site/packs/$id" "_site/intelligence/agents/$id"
