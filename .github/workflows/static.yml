@@ -195,6 +195,13 @@ jobs:
         working-directory: apps/frontend
         run: npm run verify:site
 
+      - name: Verify final upload contains this source and every Vite lazy asset
+        working-directory: .
+        run: >-
+          node apps/frontend/scripts/verify-pages-artifact.mjs
+          --directory _site --expected-sha "$GITHUB_SHA"
+          --release-manifest .release-please-manifest.json
+
       # Single deployment owner: actions/deploy-pages. Do NOT push a second
       # generated docs snapshot to main: that races GitHub Pages publishing.
 

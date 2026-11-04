@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: 'dist',
+    manifest: true,
     emptyOutDir: true,
     target: 'es2020',
     cssCodeSplit: true,

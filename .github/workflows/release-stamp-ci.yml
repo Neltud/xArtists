@@ -7,6 +7,7 @@ on:
       - 'CHANGELOG.md'
       - 'apps/frontend/scripts/write-build-info.mjs'
       - 'apps/frontend/tests/release-build-stamp.test.mjs'
+      - 'apps/frontend/**'
       - '.github/workflows/static.yml'
       - '.github/workflows/release-stamp-ci.yml'
       - '.github/workflows/pages-live-watchdog.yml'
@@ -16,6 +17,7 @@ on:
       - '.release-please-manifest.json'
       - 'apps/frontend/scripts/write-build-info.mjs'
       - 'apps/frontend/tests/release-build-stamp.test.mjs'
+      - 'apps/frontend/**'
       - '.github/workflows/static.yml'
 permissions:
   contents: read
@@ -29,7 +31,7 @@ jobs:
         with:
           node-version: '22'
       - name: Verify release-stamp fixtures and Pages gate without network or payments
-        run: node --test apps/frontend/tests/release-build-stamp.test.mjs
+        run: node --test apps/frontend/tests/release-build-stamp.test.mjs apps/frontend/tests/pages-artifact-integrity.test.mjs
       - name: Verify root Release Please version
         run: |
           node --input-type=module -e '
@@ -38,3 +40,46 @@ jobs:
             if (!/^\d+\.\d+\.\d+$/.test(m["."])) throw new Error("invalid release version");
             console.log("Root release version: " + m["."]);
           '
+
+  pages-artifact:
+    name: Build and verify Pages artifact (no deploy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VITE_LIA_LIVE_TRADING: '0'
+      VITE_PAYBOX_ENABLED: 'false'
+      VITE_MINT_LIVE_ENABLED: 'false'
+      VITE_GENESIS_COMMERCIAL_GO: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Install frontend dependencies
+        run: npm ci --prefix apps/frontend --legacy-peer-deps --ignore-scripts
+      - name: Build this PR's frontend and stamp its checked-out source
+        working-directory: apps/frontend
+        run: |
+          npm run build
+          node scripts/write-build-info.mjs
+      - name: Verify actual Pages upload directory, including lazy module assets
+        run: |
+          set -euo pipefail
+          mkdir -p _site artifacts
+          cp -a apps/frontend/dist/. _site/
+          node apps/frontend/scripts/verify-pages-artifact.mjs \
+            --directory _site --expected-sha "$GITHUB_SHA" \
+            --release-manifest .release-please-manifest.json | tee artifacts/pages-integrity.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pages-build-integrity-evidence
+          include-hidden-files: true
+          path: |
+            artifacts/pages-integrity.json
+            _site/build-info.json
+            _site/dapp-release.json
+            _site/.vite/manifest.json
+          retention-days: 10
