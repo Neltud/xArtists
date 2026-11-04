@@ -14,6 +14,9 @@ import { availablePayMethods } from '../lib/payments'
 import { getAccessApiBase } from '../lib/stripe'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useI18n } from '../i18n/I18nContext'
+import { ensureAccessToken, getAccessToken } from '../lib/accessSession'
+import { prepareSimplePack, confirmSimplePack, cancelSimplePack } from '../lib/liaSimple'
+import type { PreparedSimpleIntent, SimplePaperReceipt, SimpleIntent } from '../../../../packages/lia-intent/src/simple'
 
 const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
 const PACKS = AGENT_PACKS.filter(p => ONLY.includes(p.id)).slice(0, 3)
@@ -28,7 +31,7 @@ export default function PackCheckout({
   onPaperDone?: (id: PackId) => void
 } = {}) {
   const { t } = useI18n()
-  const { connected, address } = useWallet()
+  const { connected, address, canAttemptSign } = useWallet()
   const methods = availablePayMethods()
   const hasPaidRail = methods.some(m => m === 'stripe' || m === 'paybox')
   // Independent manual release decision: unset/false on every public build
@@ -81,6 +84,10 @@ export default function PackCheckout({
   const [modalOpen, setModalOpen] = useState(false)
   const [status, setStatus] = useState<'idle' | 'done'>('idle')
   const [msg, setMsg] = useState('')
+  const [paperBusy, setPaperBusy] = useState(false)
+  const [paperPrepared, setPaperPrepared] = useState<PreparedSimpleIntent | null>(null)
+  const [paperReceipt, setPaperReceipt] = useState<SimplePaperReceipt | null>(null)
+  const [paperMessage, setPaperMessage] = useState('')
 
   useEffect(() => {
     if (forcedId && ONLY.includes(forcedId)) setSelected(forcedId)
@@ -97,6 +104,72 @@ export default function PackCheckout({
       : id === 'yield'
         ? t('packCheckout.room.yield')
         : t('packCheckout.room.sentinel')
+
+  // The existing purchase action now prepares a strictly paper-only quote when
+  // commercial checkout is closed. Access SIWX authenticates the wallet; it
+  // does NOT authorize a transaction or sign an intent.
+  const onPreparePaper = async (id: PackId) => {
+    if (paperBusy) return
+    setPaperPrepared(null)
+    setPaperReceipt(null)
+    setPaperMessage('')
+    if (isGuest) {
+      setPaperMessage('Connectez votre wallet pour préparer une simulation. Aucun achat ne sera effectué.')
+      requestOpenConnect()
+      return
+    }
+    if (!canAttemptSign && !getAccessToken(address)) {
+      setPaperMessage('Vérification xPortal nécessaire. Une adresse en lecture seule ne peut pas préparer une simulation authentifiée.')
+      return
+    }
+    const intent: SimpleIntent =
+      id === 'pulse'
+        ? { type: 'BUY_PACK', packTier: 'pulse', amountEur: '110', userAddress: address }
+        : id === 'yield'
+          ? { type: 'BUY_PACK', packTier: 'yield', amountEur: '75', userAddress: address }
+          : { type: 'BUY_PACK', packTier: 'sentinel', amountEur: '50', userAddress: address }
+    setPaperBusy(true)
+    try {
+      const token = await ensureAccessToken({ address })
+      if (!token) throw new Error('Authentification SIWX indisponible. Aucun paiement lancé.')
+      const ready = await prepareSimplePack(intent, token)
+      setPaperPrepared(ready)
+    } catch (error) {
+      setPaperMessage(error instanceof Error ? error.message : 'Simulation temporairement indisponible')
+    } finally {
+      setPaperBusy(false)
+    }
+  }
+
+  const onConfirmPaper = async () => {
+    if (!paperPrepared || paperBusy || paperPrepared.quote.packTier !== selected) return
+    setPaperBusy(true)
+    setPaperMessage('')
+    try {
+      const token = getAccessToken(address) || await ensureAccessToken({ address })
+      if (!token) throw new Error('Authentification du wallet expirée')
+      const receipt = await confirmSimplePack(paperPrepared.confirmationId, token)
+      setPaperReceipt(receipt)
+      setPaperPrepared(null)
+    } catch (error) {
+      setPaperPrepared(null)
+      setPaperMessage(error instanceof Error ? error.message : 'Simulation non confirmée')
+    } finally {
+      setPaperBusy(false)
+    }
+  }
+
+  const onCancelPaper = async () => {
+    if (!paperPrepared || paperBusy) return
+    const id = paperPrepared.confirmationId
+    setPaperPrepared(null)
+    setPaperMessage('Simulation annulée · aucun paiement ni NFT.')
+    const token = getAccessToken(address)
+    if (!token) return
+    try { await cancelSimplePack(id, token) } catch {
+      // The backend may have expired the quote. No payment or mint can occur.
+    }
+  }
 
   const onPreview = (id: PackId) => {
     if (isGuest) {
@@ -125,6 +198,9 @@ export default function PackCheckout({
 
   const onSelectPack = (id: PackId) => {
     setSelected(id)
+    setPaperPrepared(null)
+    setPaperReceipt(null)
+    setPaperMessage('')
     setMsg('')
     setStatus('idle')
     if (isGuest) {
@@ -161,10 +237,13 @@ export default function PackCheckout({
             <button
               type="button"
               className="btn-primary text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-              disabled={!checkoutAvailable}
-              aria-disabled={!checkoutAvailable}
+              disabled={paperBusy}
+              aria-disabled={paperBusy}
               onClick={() => {
-                if (!checkoutAvailable) return
+                if (!checkoutAvailable) {
+                  void onPreparePaper(pack.id)
+                  return
+                }
                 if (isGuest) {
                   setMsg(t('packCheckout.connectFirst'))
                   requestOpenConnect()
@@ -173,7 +252,7 @@ export default function PackCheckout({
                 setModalOpen(true)
               }}
             >
-              {xaRender(checkoutAvailable ? t('packCheckout.buy') : 'Achat suspendu')}
+              {xaRender(paperBusy ? 'Préparation…' : checkoutAvailable ? t('packCheckout.buy') : 'Préparer une simulation · PAPER')}
             </button>
             {!checkoutAvailable && (
               <button
@@ -218,6 +297,44 @@ export default function PackCheckout({
 
           <p className="text-[11px] text-zinc-500">{xaRender(t('packCheckout.liaNote'))}</p>
         </>
+      ))}
+
+      {xaRender(paperPrepared && selected === paperPrepared.quote.packTier && (
+        <section role="region" aria-label="Confirmer la simulation LIA" className="rounded-xl border border-cyan-400/40 bg-cyan-500/[0.06] p-4 space-y-3">
+          <p className="text-sm font-semibold text-cyan-100">LIA · devis Rule1 · simulation uniquement</p>
+          <p className="text-xs text-zinc-200">
+            {xaRender(paperPrepared.quote.packTier.toUpperCase())} · {xaRender(paperPrepared.quote.amountEur)} € ·
+            estimation {xaRender(paperPrepared.quote.estimatedEgld)} EGLD
+          </p>
+          <p className="text-xs text-zinc-400">
+            Taux indicatif : {xaRender(paperPrepared.quote.rateEurPerEgld)} €/EGLD.
+            Validité 30 s maximum. Solde et gas non vérifiés.
+          </p>
+          <p className="text-xs text-amber-100">Aucun paiement, ordre, NFT, avantage ou accès ne sera créé.</p>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" disabled={paperBusy}
+              className="btn-primary text-xs disabled:opacity-50"
+              onClick={() => { void onConfirmPaper() }}>
+              Confirmer la simulation
+            </button>
+            <button type="button" disabled={paperBusy}
+              className="rounded-xl border border-white/20 px-3 py-2 text-xs text-white disabled:opacity-50"
+              onClick={() => { void onCancelPaper() }}>
+              Annuler
+            </button>
+          </div>
+        </section>
+      ))}
+
+      {xaRender(paperReceipt && (
+        <p role="status" className="rounded-xl border border-emerald-400/30 bg-emerald-500/[0.06] p-3 text-xs text-emerald-100">
+          Simulation enregistrée (PAPER). 0 € prélevé · aucun NFT minté · aucun accès accordé.
+          Référence audit : <code>{xaRender(paperReceipt.auditId.slice(0, 12))}</code>
+        </p>
+      ))}
+
+      {xaRender(paperMessage && (
+        <p role="alert" className="rounded-xl border border-amber-400/25 p-3 text-xs text-amber-100">{xaRender(paperMessage)}</p>
       ))}
 
       {xaRender(status === 'done' && (
