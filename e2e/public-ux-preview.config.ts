@@ -23,7 +23,7 @@ export default defineConfig({
   timeout: 70_000,
   expect: { timeout: 15_000 },
   webServer: {
-    command: 'npm run preview --prefix apps/frontend -- --host 127.0.0.1 --port 4173 --strictPort',
+    command: 'npm run preview --prefix ../apps/frontend -- --host 127.0.0.1 --port 4173 --strictPort',
     url: 'http://127.0.0.1:4173/xArtists/',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
