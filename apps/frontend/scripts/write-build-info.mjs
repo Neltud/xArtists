@@ -7,7 +7,7 @@ const release = JSON.parse(readFileSync('dist/dapp-release.json', 'utf8'))
 // apps/frontend/package.json tracks the frontend package lifecycle separately.
 const releaseManifest = JSON.parse(readFileSync('../../.release-please-manifest.json', 'utf8'))
 const releaseVersion = releaseManifest['.']
-if (typeof releaseVersion !== 'string' || !/^\\d+\\.\\d+\\.\\d+$/.test(releaseVersion)) {
+if (typeof releaseVersion !== 'string' || !/^\d+\.\d+\.\d+$/.test(releaseVersion)) {
   throw new Error('Invalid root Release Please version')
 }
 if (!/^[a-f0-9]{40}$/.test(sha)) throw new Error('Cannot identify the source commit')
