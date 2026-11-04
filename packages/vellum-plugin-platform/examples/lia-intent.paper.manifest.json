@@ -1,0 +1,18 @@
+{
+  "schema": "xartists.plugin.manifest.v1",
+  "pluginId": "lia-intent",
+  "version": "0.1.0",
+  "publisherKeyId": "untrusted-example-key",
+  "issuedAtMs": 0,
+  "expiresAtMs": 86400000,
+  "capabilities": [
+    "orders:prepare:paper",
+    "read:catalog"
+  ],
+  "resources": [
+    "pack:pulse",
+    "pack:sentinel",
+    "pack:yield"
+  ],
+  "maxDailyPaperCalls": 30
+}
