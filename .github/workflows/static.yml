@@ -218,6 +218,31 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+      - name: Verify deployed Pages serves EXACT source SHA (not just a successful upload)
+        run: |
+          set -euo pipefail
+          ok=0
+          for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            status=$(curl -sS -L --max-time 20 -H 'Cache-Control: no-cache' \
+              -o /tmp/xartists-live-build-info.json -w '%{http_code}' \
+              "https://neltud.github.io/xArtists/build-info.json?sha=${GITHUB_SHA}&attempt=${attempt}") || status=000
+            if [ "$status" = 200 ] && jq -e --arg sha "$GITHUB_SHA" \
+              '.source_sha == $sha and .renderer == "sites-v3" and
+               (.release_version | type == "string") and
+               .version_source == ".release-please-manifest.json"' \
+              /tmp/xartists-live-build-info.json >/dev/null 2>&1; then
+              echo "Pages built commit confirmed: $GITHUB_SHA"
+              ok=1
+              break
+            fi
+            echo "Pages still stale/unavailable at attempt $attempt (HTTP $status)"
+            sleep 6
+          done
+          if [ "$ok" != 1 ]; then
+            echo "::error::Pages did not serve this exact commit SHA. No public GO."
+            exit 1
+          fi
+
       - name: Verify public Genesis product links return HTTP 200
         run: |
           set -euo pipefail
