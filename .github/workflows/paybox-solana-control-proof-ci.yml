@@ -1,0 +1,40 @@
+name: PayBox Solana wallet control proof
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/payboxWalletControl.mjs'
+      - 'services/access-api/tests/paybox-wallet-control.test.mjs'
+      - 'docs/PAYBOX_SOLANA_CONTROL_PROOF.md'
+      - '.github/workflows/paybox-solana-control-proof-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/payboxWalletControl.mjs'
+      - 'services/access-api/tests/paybox-wallet-control.test.mjs'
+      - '.github/workflows/paybox-solana-control-proof-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      LIA_LIVE_TRADING: '0'
+      VITE_LIA_LIVE_TRADING: '0'
+      PAYBOX_CHECKOUT_ENABLED: 'false'
+      MINT_LIVE_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax
+        run: node --check services/access-api/src/payboxWalletControl.mjs
+      - name: Verify non-spending Ed25519 proof gate
+        run: node --test services/access-api/tests/paybox-wallet-control.test.mjs
