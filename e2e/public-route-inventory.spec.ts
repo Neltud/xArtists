@@ -90,7 +90,7 @@ test('mobile dock links navigate to the five public destinations', async ({ page
   expect(hrefs).toHaveLength(5)
   for (const href of hrefs) {
     await page.locator('.xa-mobile-dock a[href="' + href + '"]').click()
-    await expect(page).toHaveURL(url => url.pathname.replace(/\/$/, '') === href.replace(/\/$/, ''))
+    await expect.poll(() => new URL(page.url()).pathname.replace(/\/$/, '')).toBe(href.replace(/\/$/, ''))
     await expect(page.getByText('Page unavailable', { exact: true })).toHaveCount(0)
   }
 })
