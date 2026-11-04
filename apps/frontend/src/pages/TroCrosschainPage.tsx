@@ -81,13 +81,6 @@ export default function TroCrosschainPage() {
   return (
     <main className="tro-portal" id="tro-main">
       <div className="tro-portal__aura" aria-hidden="true" />
-      <nav className="tro-portal__crumb" aria-label="Navigation">
-        <Link to="/finance">Finance</Link>
-        <span aria-hidden="true">/</span>
-        <Link to="/tro">Token $TRO</Link>
-        <span aria-hidden="true">/</span>
-        <span>Solana & acquisition</span>
-      </nav>
 
       <section className="tro-portal__hero" aria-labelledby="tro-hero-title">
         <div className="tro-portal__lead">
