@@ -34,6 +34,6 @@ jobs:
           node --input-type=module -e '
             import { readFileSync } from "node:fs";
             const m=JSON.parse(readFileSync(".release-please-manifest.json", "utf8"));
-            if (!/^\\d+\\.\\d+\\.\\d+$/.test(m["."])) throw new Error("invalid release version");
+            if (!/^\d+\.\d+\.\d+$/.test(m["."])) throw new Error("invalid release version");
             console.log("Root release version: " + m["."]);
           '
