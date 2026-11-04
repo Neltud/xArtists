@@ -10,6 +10,8 @@ noIndex: true
 
 Date: 2026-09-30 · Branch: `main`
 
+> **Archive technique, pas autorisation de lancement.** Les PASS/GO ci-dessous décrivent des assertions historiques non revalidées dans ce sprint. La décision actuelle et les preuves manquantes figurent dans [GO live status](GO_LIVE_STATUS.md). Le 4 novembre : build public ancien, Auction/Offres 404, TRO en erreur CSS et API health 503. Codehash, déploiement et tests locaux ne prouvent pas un parcours financier sûr.
+
 ***
 
 ## PART 1 — Self-Audit
@@ -68,7 +70,7 @@ Contracts are **already deployed** on MultiversX mainnet (see `contracts.json`).
 1. **Build & test** SC in isolation (devnet optional).
 2. **Deploy / upgrade** with deployer PEM in CI secret only — never VITE\_\*.
 3. **Verify** codeHash on [explorer](https://explorer.multiversx.com) vs `contracts.json`.
-4. **Set GH Pages secrets** `VITE_*_CODEHASH_OK=1` only after verify.
+4. **Verify runtime codehash and applicable release gates**. Do not force frontend CODEHASH flags to bypass runtime or financial checks.
 5. **Transfer ownership** to multisig (`propose` → accept pending owner).
 6. **Fund House** (Slot progressive + liquid house above jackpot needs).
 7. **Rebuild Pages** → confirm Grand Switch on `/go-live`.
@@ -99,7 +101,7 @@ Order historically used: staking / marketplace / venue / treasury / **slot** (al
 | 1.3 Secrets          | **GO**                                                        |
 | Dust user validation | **PENDING human** (1 real spin + 1 stake visible on explorer) |
 
-**Authorization:** Front + SC patterns are ready for production _discipline_.\
+**Historical assessment only:** this document grants no present production or financial authorization.\
 **Blocker for “public open”:** complete dust gauntlet + multisig owner + house fund documented.
 
 ### Immediate ops checklist
