@@ -48,7 +48,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     for (const path of ['/museum', '/marketplace', '/auction', '/studio', '/lia', '/offres', '/legal']) {
       await expect(page.locator(`ol a[href*="${path}"]`).first()).toBeVisible()
     }
-    await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/guide-390.png' })
+    await page.screenshot({ animations: 'disabled', fullPage: true, path: 'artifacts/ux-mobile/guide-390.png' })
   })
 
   test('previous crashing Hatom and Support route render headings without provider error', async ({ page }) => {
@@ -70,7 +70,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await expect(page.locator('.tro-portal__hero')).toBeVisible()
     await expect(page.getByText(/Bridge Solana : désactivé/)).toBeVisible()
     await expect(page.getByText('Page unavailable')).toHaveCount(0)
-    await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/tro-sale-390.png' })
+    await page.screenshot({ animations: 'disabled', fullPage: true, path: 'artifacts/ux-mobile/tro-sale-390.png' })
   })
 
   test('advertising mock never instructs EGLD transfer and RWA says values are paper', async ({ page }) => {
@@ -79,12 +79,23 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await expect(page.getByText(/Présentation uniquement/)).toBeVisible()
     await expect(page.getByText(/Ne transférez pas d’EGLD/)).toBeVisible()
     await expect(page.getByText(/Paiement V1/)).toHaveCount(0)
-    await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/visibility-390.png' })
+    await page.screenshot({ animations: 'disabled', fullPage: true, path: 'artifacts/ux-mobile/visibility-390.png' })
 
     await visit(page, '/explore/rwa/')
     await expect(page.getByText(/Catalogue de démonstration/)).toBeVisible()
     await expect(page.getByText(/Garde physique : non vérifiée/).first()).toBeVisible()
-    await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/rwa-390.png' })
+    await page.screenshot({ animations: 'disabled', fullPage: true, path: 'artifacts/ux-mobile/rwa-390.png' })
+  })
+
+  test('mobile 390px: public journey scrolls without sideways overflow or wallet', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    for (const path of ['/guide/', '/marketplace/', '/auction/', '/explore/rwa/', '/finance/tro/sale/', '/legal/']) {
+      await visit(page, path)
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+      expect(overflow, `${path} horizontal overflow at 390px: ${overflow}px`).toBeLessThanOrEqual(12)
+      await expect(page.locator('.xa-mobile-dock')).toBeVisible()
+    }
   })
 
   test('status is visitor-first; legal tabs have distinct accessible labels', async ({ page }) => {
@@ -99,6 +110,6 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await expect(tabs).toHaveCount(6)
     await expect(page.getByRole('button', { name: /Product terms|Conditions produits/ })).toBeVisible()
     await expect(page.getByRole('button', { name: /Terms of use|Conditions d’utilisation/ })).toBeVisible()
-    await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/legal-390.png' })
+    await page.screenshot({ animations: 'disabled', fullPage: true, path: 'artifacts/ux-mobile/legal-390.png' })
   })
 })
