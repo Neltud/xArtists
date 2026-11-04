@@ -1,21 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-03T20:47:11.687Z",
+  "updatedAt": "2026-11-04T01:03:35.053Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793754214619",
+      "timestamp": "01:03",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.39 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793753116000",
+      "timestamp": "00:45",
+      "source": "CoinTelegraph",
+      "title": "1inch lawyer sees agencies driving US crypto regulation as midterms unfold",
+      "link": "https://cointelegraph.com/news/1inch-lawyer-sees-agencies-driving-us-crypto-regulation-as-midterms-unfold?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793752596000",
+      "timestamp": "00:36",
+      "source": "CoinTelegraph",
+      "title": "US midterms election 2026 live: Mark Warner retains Virginia Senate seat",
+      "link": "https://cointelegraph.com/news/us-midterms-2026-live-results-and-what-they-mean-for-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793750169000",
+      "timestamp": "23:56",
+      "source": "CoinTelegraph",
+      "title": "RUNE rallies 15% as THORChain restarts most swaps after halt",
+      "link": "https://cointelegraph.com/markets/rune-rallies-15-as-thorchain-restarts-most-swaps-after-outage?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1793745558000",
+      "timestamp": "22:39",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793742440000",
+      "timestamp": "21:47",
+      "source": "CoinTelegraph",
+      "title": "SpaceX blocks tokenized stock listing on OKXICE despite offshore trading boom",
+      "link": "https://cointelegraph.com/news/spacex-tokenization-okxice?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793737495000",
+      "timestamp": "20:24",
+      "source": "CoinTelegraph",
+      "title": "CFTC clears stock perpetual futures for trading on US exchanges",
+      "link": "https://cointelegraph.com/news/cftc-equity-perpetual-futures-trading-us-exchanges?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793750400000",
+      "timestamp": "00:00",
+      "source": "CoinDesk",
+      "title": "Live updates: 2026 U.S. midterm elections",
+      "link": "https://www.coindesk.com/tech/2026/11/03/election-2026-coindesk-live-blog"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793747984000",
+      "timestamp": "23:19",
+      "source": "CoinDesk",
+      "title": "What voters said about their views on crypto",
+      "link": "https://www.coindesk.com/policy/2026/11/03/what-voters-said-about-their-views-on-crypto"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793746807000",
+      "timestamp": "23:00",
+      "source": "CoinDesk",
+      "title": "What happens if North Korea steals Wall Street's tokenized assets next",
+      "link": "https://www.coindesk.com/business/2026/11/03/what-happens-if-north-korea-steals-wall-street-s-tokenized-assets-next"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793744084000",
+      "timestamp": "22:14",
+      "source": "CoinDesk",
+      "title": "CFTC gets into legal clash over stock perps after having cleared path for crypto version",
+      "link": "https://www.coindesk.com/policy/2026/11/03/cftc-gets-into-legal-clash-over-stock-perps-after-having-cleared-path-for-crypto-version"
+    },
     {
       "id": "egld-1793738830993",
       "timestamp": "20:47",
       "source": "EGLD",
       "title": "Cotation publique · $3.41 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793737495000",
-      "timestamp": "20:24",
-      "source": "CoinTelegraph",
-      "title": "CFTC clears stock perpetual futures for trading on US exchanges",
-      "link": "https://cointelegraph.com/news/cftc-equity-perpetual-futures-trading-us-exchanges?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-1-1793734699000",
@@ -128,76 +198,6 @@
       "source": "CoinTelegraph",
       "title": "ARK buys $17M in Coinbase, Circle shares while trimming Bullish",
       "link": "https://cointelegraph.com/news/ark-buys-coinbase-circle-trims-bullish?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793709009000",
-      "timestamp": "12:30",
-      "source": "CoinDesk",
-      "title": "Bitcoin is breaking a midterm election pattern going back to 2014",
-      "link": "https://www.coindesk.com/daybook-us/2026/11/03/bitcoin-is-breaking-a-midterm-election-pattern-going-back-to-2014"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793707265000",
-      "timestamp": "12:01",
-      "source": "CoinDesk",
-      "title": "ETHGas wants to bring Wall Street to public Ethereum by selling advance block reservations",
-      "link": "https://www.coindesk.com/business/2026/11/03/ethgas-courts-wall-street-with-ethereum-blockspace-but-compensation-for-missed-trades-is-zero"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793705280000",
-      "timestamp": "11:28",
-      "source": "CoinDesk",
-      "title": "Bitcoin steadies after dip to $76,300 as ETF outflows and midterm elections weigh on crypto",
-      "link": "https://www.coindesk.com/markets/2026/11/03/bitcoin-steadies-after-dip-to-usd76-300-as-etf-outflows-and-midterm-elections-weigh-on-crypto"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793704332000",
-      "timestamp": "11:12",
-      "source": "CoinDesk",
-      "title": "Liquid’s bitcoin IOUs are fully backed again after a $320 million exploit",
-      "link": "https://www.coindesk.com/markets/2026/11/03/liquid-s-bitcoin-ious-are-fully-backed-again-after-a-usd320-million-exploit"
-    },
-    {
-      "id": "egld-1793683754964",
-      "timestamp": "05:29",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.33 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793682619000",
-      "timestamp": "05:10",
-      "source": "CoinTelegraph",
-      "title": "Crypto.com to withdraw Hong Kong consumer app citing regulatory changes",
-      "link": "https://cointelegraph.com/news/crypto-com-hong-kong-app-shutdown-license-pending?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793679272000",
-      "timestamp": "04:14",
-      "source": "CoinTelegraph",
-      "title": "Australia lifts rates to 18-year high as AI boom, energy costs fuel inflation",
-      "link": "https://cointelegraph.com/markets/australia-lifts-rates-as-ai-boom-energy-costs-fuel-inflation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1793675024000",
-      "timestamp": "03:03",
-      "source": "CoinTelegraph",
-      "title": "Binance begins second withdrawal phase, exchange outflows slow",
-      "link": "https://cointelegraph.com/news/binance-begins-second-withdrawal-phase-following-record-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793669559000",
-      "timestamp": "01:32",
-      "source": "CoinTelegraph",
-      "title": "South Korea urges exchanges to boost cold storage after Binance hack",
-      "link": "https://cointelegraph.com/news/south-korea-urges-exchanges-to-boost-cold-storage-after-binance-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793660827000",
-      "timestamp": "23:07",
-      "source": "CoinTelegraph",
-      "title": "North Korea denies role in $6.3B Binance hack, points finger at US",
-      "link": "https://cointelegraph.com/news/north-korea-denies-role-in-63b-binance-hack-points-finger-at-us?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
