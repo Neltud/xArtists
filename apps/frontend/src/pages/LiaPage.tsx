@@ -14,6 +14,7 @@ import { matrixFromPulse } from '../lia/decisionCycle'
 import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumStatus'
 import { fetchLiaHubStatus, type LiaHubStatus } from '../lia/hubStatus'
 import { fetchLiaStatus, type LiaStatusV1 } from '../lia/liaStatus'
+import { assessTelemetrySource } from '../lia/telemetryTruth.mjs'
 import { fetchMarketAura } from '../lia/marketAura'
 import LiaCommandTerminal from '../components/LiaCommandTerminal'
 import DailySignalWidget from '../components/DailySignalWidget'
@@ -59,6 +60,15 @@ export default function LiaPage() {
   const [loading, setLoading] = useState(true)
   const [mAura, setMAura] = useState<string>('stable')
   const [advancedOpen, setAdvancedOpen] = useState(false)
+  const producerFreshness = assessTelemetrySource({
+    source_ts: agg?.mindset?.vellum_ts ?? null,
+    published_at: agg?.ts ?? null,
+    provider: 'Vellum producer', data_mode: 'paper',
+  })
+  const hubFreshness = assessTelemetrySource({
+    source_ts: hub?.ts ?? null, published_at: hub?.ts ?? null,
+    provider: 'Vellum hub mirror', data_mode: 'paper',
+  })
 
   const refresh = useCallback(async () => {
     setLoading(true)
@@ -169,12 +179,14 @@ export default function LiaPage() {
             <section className="min-w-0 space-y-2 rounded-xl border border-white/10 p-4">
               <h3 className="text-sm font-semibold text-zinc-100">Sources &amp; operator telemetry</h3>
               <p className="text-xs text-zinc-400">
-                Vellum: {vellum?.live ? 'source reports live; not independent trading proof' : 'paper/offline'}
+                Vellum: paper/delayed snapshots only; no independently verified trading execution
                 {' · '}Model aura: {mAura}
                 {loading ? ' · synchronizing snapshots' : ''}
               </p>
-              <p className="text-xs text-zinc-400">Hub strategy: {hub?.strategy || 'not published'} · Shadow P&amp;L: {hub?.shadow_pnl_usd ?? 'unavailable'}</p>
-              {agg?.mindset?.strategy && <p className="text-xs text-zinc-400">Published strategy: {agg.mindset.strategy}</p>}
+              <p className="break-words text-xs text-zinc-400">Hub mirror: {hubFreshness.source_ts || 'unavailable'} · {hubFreshness.source_health} · no LIVE claim</p>
+              {!producerFreshness.is_stale && agg?.paper === true && agg?.mindset?.strategy
+                ? <p className="text-xs text-zinc-400">Paper strategy (producer fresh): {agg.mindset.strategy}</p>
+                : <p className="break-words text-xs text-amber-200">Vellum strategy withheld — producer {producerFreshness.source_health}; source {producerFreshness.source_ts || 'unavailable'}</p>}
               {txs.length > 0 && (
                 <div className="text-xs text-zinc-500">
                   <p>Recent public wallet transactions (not proof of autonomous agent trading):</p>
