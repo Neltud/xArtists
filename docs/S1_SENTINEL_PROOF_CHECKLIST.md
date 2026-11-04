@@ -36,6 +36,14 @@ Vérification publique sans paiement :
 
 Il s'agit de disponibilité HTTP, **pas** de capacité de checkout ou d'authentification de l'acheteur. Les captures publiques ne doivent contenir ni wallet, ni PII, ni URL de session PayBox.
 
+### Observation vérifiée le 4 novembre 2026 (sans écriture)
+
+- Une nouvelle sonde HTTP après réveil de Render : `GET /health` répond `ok=true`, `paybox_checkout_enabled=false`, `mint_live_enabled=false`, `lia_live_trading=0` ; `GET /v1/ops/orders-store/status` répond `ok=true,backend=postgres,table_ready=true` ; `GET /v1/ops/mint-jobs-store/status` répond encore **HTTP 503**.
+- Dans le connecteur Neon, **le seul projet visible** est `xartists-access-sandbox`, branche `sandbox`. Une requête `SELECT to_regclass` uniquement (sans mutation) confirme dans **cette branche sandbox** `public.paybox_orders` présente et `public.mint_jobs` absente.
+- **Séparation fondamentale :** l'identité de la base `DATABASE_URL` utilisée par Render n'a **pas** été rapprochée du projet Neon. On ne peut pas conclure que la table `mint_jobs` manque en production sur cette seule observation sandbox, ni que la base sandbox est la base Render.
+- La réponse publique `HTTP 503` peut signifier table absente, droits insuffisants ou indisponibilité SQL. Une enquête privée sur l'environnement réellement configuré doit lever cette ambiguïté avant toute migration.
+- Aucun privilège en écriture n'a été testé ; aucun secret ni DSN n'a été divulgué. Les observations sont des instantanés, à rafraîchir avant revue.
+
 ### Evidence DB privée — seulement l'opérateur autorisé
 
 1. Dans **Render**, identifier le service API, son déploiement exact et la provenance de la variable `DATABASE_URL` via une interface protégée ; ne pas imprimer, copier, hacher publiquement ni consigner le DSN, son hostname, ses accès, ou l'identité d'une base.
