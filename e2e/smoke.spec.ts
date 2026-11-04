@@ -1,69 +1,58 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
-const BASE = process.env.E2E_BASE_URL || 'https://neltud.github.io/xArtists';
+const BASE = (process.env.E2E_BASE_URL || 'https://neltud.github.io/xArtists').replace(/\/+$/, '');
 
-test.describe('xArtists smoke', () => {
-  test('dashboard loads', async ({ page }) => {
-    await page.goto(BASE);
-    await expect(page.locator('body')).toBeVisible();
-    await expect(
-      page.locator('text=/xArtists|Musée|Connect|Empire|Packs|Galerie/i').first(),
-    ).toBeVisible({ timeout: 25000 });
+// Read-only checks of the deployed host, separate from the PR-local UX suite.
+async function visitPublished(page: Page, path: string) {
+  const response = await page.goto(`${BASE}${path}`, { waitUntil: 'domcontentloaded' });
+  expect(response, `No HTTP response for ${path}`).not.toBeNull();
+  expect(response!.status(), `Direct published route ${path} must return HTTP 200`).toBe(200);
+  await expect(page.locator('#root')).toBeVisible();
+  await expect(page.getByText('Page unavailable', { exact: true })).toHaveCount(0);
+}
+
+test.describe('xArtists published Pages — no wallet or transactions', () => {
+  test.use({ reducedMotion: 'reduce' });
+
+  test('home renders the application', async ({ page }) => {
+    await visitPublished(page, '/');
+    await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
   });
 
-  test('marketplace or gallery section reachable', async ({ page }) => {
-    await page.goto(BASE);
-    await page.waitForLoadState('domcontentloaded');
-    await expect(page.locator('body')).toBeVisible();
-  });
-});
+  for (const route of [
+    { path: '/marketplace/', heading: /L’art physique rencontre le Web3|Physical art meets Web3/i },
+    { path: '/auction/', heading: /Salle des enchères|Auction room/i },
+    { path: '/finance/tro/sale/', heading: null },
+  ]) {
+    test(`direct ${route.path} returns 200 and renders its page`, async ({ page }) => {
+      await visitPublished(page, route.path);
+      if (route.heading) {
+        await expect(page.getByRole('heading', { name: route.heading })).toBeVisible();
+      } else {
+        // The hero requires the TRO lazy module and its stylesheet to load.
+        await expect(page.locator('.tro-portal__hero')).toBeVisible();
+        await expect(page.getByText(/Bridge Solana : désactivé/)).toBeVisible();
+      }
+    });
+  }
 
-test.describe('xArtists extended (Vellum prep)', () => {
-  test('nav links present (wallet / marketplace / agents)', async ({ page }) => {
-    await page.goto(BASE);
-    await page.waitForLoadState('networkidle').catch(() => undefined);
-    await page.waitForTimeout(1500);
-    const body = (await page.locator('body').innerText()).toLowerCase();
-    // Home may show FR copy; accept shell + any product word
-    const hasShell =
-      body.includes('xartists') ||
-      body.includes('connect') ||
-      body.includes('musée') ||
-      body.includes('musee') ||
-      body.includes('empire');
-    const hasProduct =
-      /marketplace|market|gallery|galerie|nft|pack|agent|lia|tro|slot|staking/.test(body);
-    expect(hasShell || hasProduct).toBeTruthy();
-  });
-
-  test('hash or path routes do not 404 shell', async ({ page }) => {
-    for (const path of ['', '#/', '#/marketplace', '#/wallet', '#/agents']) {
-      await page.goto(`${BASE}${path}`);
-      await expect(page.locator('body')).toBeVisible({ timeout: 15000 });
-    }
+  test('published build stamp is available (not a PR SHA assertion)', async ({ request }) => {
+    const response = await request.get(`${BASE}/build-info.json`);
+    expect(response.status()).toBe(200);
+    const stamp = await response.json();
+    expect(stamp.source_sha).toMatch(/^[a-f0-9]{40}$/);
+    await test.info().attach('published-build-info', {
+      body: JSON.stringify(stamp, null, 2), contentType: 'application/json',
+    });
   });
 
-  test('PWA manifest reachable when served', async ({ page }) => {
-    const res = await page.request.get(`${BASE}/manifest.webmanifest`).catch(() => null);
-    if (res && res.ok()) {
-      const json = await res.json();
-      expect(json.name || json.short_name).toBeTruthy();
-    } else {
-      test.info().annotations.push({
-        type: 'note',
-        description: 'manifest optional on current host',
-      });
-    }
-  });
-
-  test('no critical console errors on home', async ({ page }) => {
+  test('home has no unhandled application or chunk-loading errors', async ({ page }) => {
     const errors: string[] = [];
-    page.on('pageerror', e => errors.push(e.message));
-    await page.goto(BASE);
+    page.on('pageerror', error => errors.push(error.message));
+    await visitPublished(page, '/');
+    await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
+    // Keep listening briefly for deferred/lazy-module errors after rendering.
     await page.waitForTimeout(2000);
-    const critical = errors.filter(
-      m => !/ResizeObserver|Non-Error|favicon|chunk|WalletConnect/i.test(m),
-    );
-    expect(critical.length).toBeLessThan(5);
+    expect(errors.filter(message => !/ResizeObserver loop/i.test(message))).toEqual([]);
   });
 });

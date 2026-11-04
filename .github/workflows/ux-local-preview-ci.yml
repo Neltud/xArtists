@@ -1,13 +1,16 @@
 name: UX local preview — responsive + no-wallet safety
 on:
   pull_request:
+    branches: [main]
     paths:
       - 'e2e/public-ux-preview.config.ts'
       - 'e2e/public-ux-responsive.spec.ts'
       - '.github/workflows/ux-local-preview-ci.yml'
-      - 'apps/frontend/src/experience/**'
-      - 'apps/frontend/src/pages/**'
-      - 'apps/frontend/src/context/MultiversXContext.tsx'
+      - '.github/workflows/e2e.yml'
+      - 'playwright.config.ts'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'apps/frontend/**'
   workflow_dispatch:
 permissions:
   contents: read
