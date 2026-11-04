@@ -237,13 +237,10 @@ export default function PackCheckout({
             <button
               type="button"
               className="btn-primary text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-              disabled={paperBusy}
-              aria-disabled={paperBusy}
+              disabled={!checkoutAvailable}
+              aria-disabled={!checkoutAvailable}
               onClick={() => {
-                if (!checkoutAvailable) {
-                  void onPreparePaper(pack.id)
-                  return
-                }
+                if (!checkoutAvailable) return
                 if (isGuest) {
                   setMsg(t('packCheckout.connectFirst'))
                   requestOpenConnect()
@@ -252,8 +249,17 @@ export default function PackCheckout({
                 setModalOpen(true)
               }}
             >
-              {xaRender(paperBusy ? 'Préparation…' : checkoutAvailable ? t('packCheckout.buy') : 'Préparer une simulation · PAPER')}
+              {xaRender(checkoutAvailable ? t('packCheckout.buy') : 'Achat suspendu')}
             </button>
+            {!checkoutAvailable && (
+              <button type="button"
+                disabled={paperBusy}
+                aria-disabled={paperBusy}
+                className="rounded-xl border border-cyan-400/40 px-3 py-2 text-sm text-cyan-100 disabled:opacity-50"
+                onClick={() => { void onPreparePaper(pack.id) }}>
+                {xaRender(paperBusy ? 'Préparation…' : 'Préparer une simulation · PAPER')}
+              </button>
+            )}
             {!checkoutAvailable && (
               <button
                 type="button"
