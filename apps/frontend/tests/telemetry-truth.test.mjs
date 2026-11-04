@@ -27,7 +27,7 @@ test('14-min producer is fresh; browser check time is never the source timestamp
 test('15-minute boundary is delayed, as are 24-hour and older model decisions', () => {
   assert.equal(inspect(15 * 60_000).source_health, 'delayed')
   assert.equal(inspect(24 * 60 * 60_000).source_health, 'delayed')
-  assert.equal(inspect(60_000, 24 * 60 * 60_000).source_health, 'delayed')
+  assert.equal(inspect(60_000, 24 * 60 * 60_000).source_health, 'clock_skew') // published before producer
 })
 
 test('missing source, malformed timestamp and invalid leap date fail closed', () => {
