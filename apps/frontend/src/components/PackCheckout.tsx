@@ -14,8 +14,8 @@ import { availablePayMethods } from '../lib/payments'
 import { getAccessApiBase } from '../lib/stripe'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useI18n } from '../i18n/I18nContext'
-import { ensureAccessToken, getAccessToken } from '../lib/accessSession'
-import { prepareSimplePack, confirmSimplePack, cancelSimplePack } from '../lib/liaSimple'
+import { getAccessToken } from '../lib/accessSession'
+import { prepareSimplePack, confirmSimplePack, cancelSimplePack, ensureSimplePaperToken } from '../lib/liaSimple'
 import type { PreparedSimpleIntent, SimplePaperReceipt, SimpleIntent } from '../../../../packages/lia-intent/src/simple'
 
 const ONLY: PackId[] = ['pulse', 'yield', 'sentinel']
@@ -130,7 +130,7 @@ export default function PackCheckout({
           : { type: 'BUY_PACK', packTier: 'sentinel', amountEur: '50', userAddress: address }
     setPaperBusy(true)
     try {
-      const token = await ensureAccessToken({ address })
+      const token = await ensureSimplePaperToken(address)
       if (!token) throw new Error('Authentification SIWX indisponible. Aucun paiement lancé.')
       const ready = await prepareSimplePack(intent, token)
       setPaperPrepared(ready)
@@ -146,7 +146,7 @@ export default function PackCheckout({
     setPaperBusy(true)
     setPaperMessage('')
     try {
-      const token = getAccessToken(address) || await ensureAccessToken({ address })
+      const token = getAccessToken(address) || await ensureSimplePaperToken(address)
       if (!token) throw new Error('Authentification du wallet expirée')
       const receipt = await confirmSimplePack(paperPrepared.confirmationId, token)
       setPaperReceipt(receipt)
