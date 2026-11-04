@@ -6,7 +6,8 @@
  */
 import http from 'node:http'
 import { resolveAccessLevel, issueAccessToken, verifyJwt } from './verifyAccess.mjs'
-import { createChallenge, verifySignedChallenge, requireSiwx } from './siwx.mjs'
+import { createChallenge, verifySignedChallenge, requireSiwx, erdToPubkey } from './siwx.mjs'
+import { createSimpleIntentService } from './liaSimple.mjs'
 import { moonpayConfig, signMoonpayUrl } from './moonpay.mjs'
 import {
   payboxConfig, payboxCheckoutEnabled, createPayboxSession, verifyPayboxIpn, extractRawSignedData, resolveIpnAuthenticatedSource, IPN_POLICY,
@@ -58,6 +59,25 @@ const PACK_CATALOG = {
   pulse: { id: 'pulse', name: 'Pulse Pack (Gold)', price_eur: 110, price_cents: 11000 },
   yield: { id: 'yield', name: 'Yield Pack (Silver)', price_eur: 75, price_cents: 7500 },
   sentinel: { id: 'sentinel', name: 'Sentinel Pack (Platinum)', price_eur: 50, price_cents: 5000 },
+}
+
+// Single P0 paper path: the backend owns the fiat catalogue, Rule1 quote and JWT wallet identity.
+// Existing PSP checkout remains independently gated; this never calls createOrder or mint.
+const LIA_SIMPLE = createSimpleIntentService({
+  quoteProvider: async ({ packTier, nowMs }) => {
+    const rate = envFxRate()
+    if (!rate) throw new Error('missing_egld_eur_rate')
+    return buildPackQuote({ pack_id: packTier, rate_eur_per_egld: rate, now: nowMs })
+  },
+  guardian: () => ({ mode: 'paper', paused: process.env.LIA_LIVE_TRADING === '1' }),
+})
+
+function liaSimpleOriginAllowed(origin) {
+  if (!origin) return true // machine-to-machine with a real bearer token
+  if (origin === 'https://neltud.github.io' || origin === RENDER_PUBLIC_FRONTEND ||
+      (CORS !== '*' && origin === CORS)) return true
+  return process.env.NODE_ENV !== 'production' &&
+    /^http:\/\/(?:127\.0\.0\.1|localhost):\d{2,5}$/.test(origin)
 }
 
 function getPack(packId) {
@@ -391,6 +411,57 @@ async function handleRequest(req, res) {
       return
     }
     json(res, 405, { ok: false, error: 'physical_method_not_allowed' })
+    return
+  }
+
+  // Structured LIA P0 — no NLP, mandates, signatures, PSP sessions or chain execution.
+  if (pth === '/api/lia/intent' || pth === '/v1/lia/intent') {
+    if (req.method !== 'POST') { json(res, 405, { ok: false, error: 'method_not_allowed' }); return }
+    if (!liaSimpleOriginAllowed(String(req.headers.origin || ''))) {
+      json(res, 403, { ok: false, error: 'origin_not_allowed' }); return
+    }
+    if (!String(req.headers['content-type'] || '').toLowerCase().startsWith('application/json')) {
+      json(res, 415, { ok: false, error: 'json_required' }); return
+    }
+    // In legacy deployments, /verify-access may issue unsigned SAMPLE JWTs
+    // when REQUIRE_SIWX=false; never allow those tokens to prepare simulations.
+    if (!requireSiwx() || JWT_SECRET.length < 16) {
+      json(res, 503, { ok: false, error: 'wallet_auth_proof_required' }); return
+    }
+    const authHeader = String(req.headers.authorization || '')
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : ''
+    const payload = verifyJwt(token, JWT_SECRET)
+    if (!payload || payload.iss !== 'xartists-access-api' ||
+        typeof payload.sub !== 'string') {
+      json(res, 401, { ok: false, error: 'wallet_auth_required' }); return
+    }
+    let userAddress
+    try {
+      erdToPubkey(payload.sub)
+      userAddress = payload.sub
+    } catch {
+      json(res, 401, { ok: false, error: 'wallet_auth_required' }); return
+    }
+    const { body } = await readRawAndBody(req)
+    const keys = Object.keys(body).sort()
+    const only = expected => keys.length === expected.length &&
+      expected.every(x => keys.includes(x))
+    try {
+      if (body.action === 'prepare' && only(['action', 'intent'])) {
+        const result = await LIA_SIMPLE.prepare(body.intent, { userAddress })
+        json(res, 200, result)
+      } else if (body.action === 'confirm' && only(['action', 'confirmationId'])) {
+        json(res, 200, LIA_SIMPLE.confirm(body.confirmationId, { userAddress }))
+      } else if (body.action === 'cancel' && only(['action', 'confirmationId'])) {
+        json(res, 200, LIA_SIMPLE.cancel(body.confirmationId, { userAddress }))
+      } else {
+        json(res, 400, { ok: false, error: 'invalid_simple_intent_request' })
+      }
+    } catch (e) {
+      json(res, e.statusCode || 503, {
+        ok: false, error: e.code || (e.statusCode ? e.message : 'paper_service_unavailable'),
+      })
+    }
     return
   }
 
