@@ -54,7 +54,7 @@ test('the emitted 404 redirect round-trips an artwork URL including wallet callb
 
 test('every canonical route and alias is emitted as real HTML, including mobile entry points', async () => {
   const routes = publicRoutes(await fs.readFile(path.join(frontend, 'src/experience/modules.ts'), 'utf8'))
-  for (const required of ['/app', '/install', '/mobile', '/workspace/wallet', '/wallet', '/explore/museum', '/museum', '/maison', '/offres', '/offers']) assert(routes.includes(required), required)
+  for (const required of ['/app', '/install', '/mobile', '/workspace/wallet', '/wallet', '/explore/museum', '/museum', '/maison', '/offres', '/offers', '/packs/pulse', '/packs/yield', '/packs/sentinel', '/intelligence/agents/pulse', '/intelligence/agents/yield', '/intelligence/agents/sentinel']) assert(routes.includes(required), required)
   assert.equal(new Set(routes).size, routes.length)
   const runtime = path.join(frontend, '.sites-runtime')
   await fs.mkdir(runtime, { recursive: true })
@@ -72,6 +72,11 @@ test('every canonical route and alias is emitted as real HTML, including mobile 
     assert.equal(await fs.readFile(path.join(root, 'dist/wallet/index.html'), 'utf8'), html)
     assert.match(await fs.readFile(path.join(root, 'dist/offres/index.html'), 'utf8'), /<title>xArtists Offres/)
     assert.match(await fs.readFile(path.join(root, 'dist/offers/index.html'), 'utf8'), /<title>xArtists Offers/)
+    for (const pack of ['pulse', 'yield', 'sentinel']) {
+      for (const prefix of ['packs', 'intelligence/agents']) {
+        assert.equal(await fs.readFile(path.join(root, 'dist', prefix, pack, 'index.html'), 'utf8'), html)
+      }
+    }
     assert((await fs.readFile(path.join(root, 'dist/404.html'), 'utf8')).includes('_xa_route'))
     assert.equal(JSON.parse(await fs.readFile(path.join(root, 'dist/dapp-release.json'), 'utf8')).lia_live_trading, false)
   } finally { await fs.rm(root, { recursive: true, force: true }) }
@@ -191,4 +196,17 @@ test('missing JS never receives HTML, offline navigation is explicit, and failed
   }
   await sw.send(sw.request('/xArtists/assets/app-hashed.js', { destination: 'script' }))
   assert.deepEqual(sw.cached, ['https://example.com/xArtists/assets/app-hashed.js'])
+})
+
+test('pack page titles resolve both product route families without labelling them 404', () => {
+  const { packNameForPublicPath } = loadSource('src/lib/publicRoutes.ts')
+  for (const [id, name] of [['pulse', 'Pulse'], ['yield', 'Yield'], ['sentinel', 'Sentinel']]) {
+    for (const prefix of ['/packs/', '/intelligence/agents/']) {
+      assert.equal(packNameForPublicPath(prefix + id), name)
+      assert.equal(packNameForPublicPath(prefix + id + '/'), name)
+    }
+  }
+  for (const path of ['/packs/unknown', '/packs/__proto__', '/packs/pulse/extra', '/workspace/pulse', '/packs']) {
+    assert.equal(packNameForPublicPath(path), null)
+  }
 })
