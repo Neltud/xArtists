@@ -2,7 +2,7 @@
 
 ## Archive remplacée pour les décisions de lancement
 
-**Ce snapshot du 2 novembre est historique.** Pour les blocages et preuves exigées, consulter [GO live status](GO_LIVE_STATUS.md). Le 4 novembre, la sonde publique de `/health` a reçu HTTP 503 à deux reprises ; les flags actuels ne sont donc pas établis par ce contrôle.
+**Ce snapshot du 2 novembre est historique.** Pour les blocages et preuves exigées, consulter [GO live status](GO_LIVE_STATUS.md). Le 4 novembre, deux sondes initiales de `/health` ont reçu HTTP 503 ; deux relectures suivantes répondent OK et confirment checkout/live mint/trading/bridge/enchères désactivés. Render indique #378 déployée. Le stockage orders est prêt, mais `/v1/ops/mint-jobs-store/status` répond toujours 503. Les constats détaillés et les limites figurent dans le statut actualisé.
 
 Les valeurs historiques étaient : `paybox_mode=prod`, `orders_backend=postgres`, `mint_dry_run=true`, `mint_live_enabled=false`, `mint_dispatch_enabled=false`, `lia_live_trading=0`. Elles ne sont ni une garantie de disponibilité actuelle, ni une preuve de règlement PSP, ni une preuve NFT.
 
