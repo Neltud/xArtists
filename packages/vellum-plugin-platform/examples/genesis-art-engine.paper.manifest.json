@@ -1,0 +1,16 @@
+{
+  "schema": "xartists.plugin.manifest.v1",
+  "pluginId": "genesis-art-engine",
+  "version": "0.1.0",
+  "publisherKeyId": "untrusted-example-key",
+  "issuedAtMs": 0,
+  "expiresAtMs": 86400000,
+  "capabilities": [
+    "art:generate:paper",
+    "read:catalog"
+  ],
+  "resources": [
+    "art:genesis"
+  ],
+  "maxDailyPaperCalls": 10
+}
