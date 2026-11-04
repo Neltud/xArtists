@@ -19,6 +19,9 @@ on:
       - 'apps/frontend/src/components/lia/LiaHubControlRoomLazy.tsx'
       - 'apps/frontend/src/components/lia/LiaMobileOverview.tsx'
       - 'apps/frontend/tests/lia-public-first.test.mjs'
+      - 'apps/frontend/tests/telemetry-truth.test.mjs'
+      - 'apps/frontend/src/lia/telemetryTruth.mjs'
+      - 'apps/frontend/src/lia/telemetryTruth.d.mts'
       - '.github/workflows/lia-public-ux-ci.yml'
 
 permissions:
