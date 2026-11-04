@@ -1,0 +1,38 @@
+name: Vellum plugin platform paper contracts
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'packages/vellum-plugin-platform/**'
+      - '.github/workflows/vellum-plugin-platform-paper-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/vellum-plugin-platform/**'
+      - '.github/workflows/vellum-plugin-platform-paper-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  paper-governance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      LIA_LIVE_TRADING: '0'
+      PAYBOX_CHECKOUT_ENABLED: 'false'
+      MINT_LIVE_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax
+        run: |
+          node --check packages/vellum-plugin-platform/src/platform.mjs
+          node --check packages/vellum-plugin-platform/src/revenue.mjs
+      - name: Verify signed manifests, permissions and simulated revenue
+        run: npm --prefix packages/vellum-plugin-platform test
