@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-04T01:03:35.053Z",
+  "updatedAt": "2026-11-04T10:30:20.261Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793788218688",
+      "timestamp": "10:30",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.45 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793785087000",
+      "timestamp": "09:38",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin ETFs lose $1.16B as Bitwise calls selling ‘short-term’",
+      "link": "https://cointelegraph.com/markets/bitcoin-etf-shed-1-16-billion-bitwise-short-term-risk-off?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793784454000",
+      "timestamp": "09:27",
+      "source": "CoinTelegraph",
+      "title": "US midterm elections 2026 as it happened: Democrats win control of Congress",
+      "link": "https://cointelegraph.com/news/us-midterms-2026-live-results-and-what-they-mean-for-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793783755000",
+      "timestamp": "09:15",
+      "source": "CoinTelegraph",
+      "title": "Binance hackers move 81% of stolen Solana, route funds via THORChain",
+      "link": "https://cointelegraph.com/news/binance-hackers-move-81-stolen-solana-route-thorchain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1793778627000",
+      "timestamp": "07:50",
+      "source": "CoinTelegraph",
+      "title": "Democrats win US House to secure control of Congress in midterms",
+      "link": "https://cointelegraph.com/news/democrats-win-us-house-congress-control?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793777147000",
+      "timestamp": "07:25",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin bounces from 7-week low under $76K as Democrats sweep Congress",
+      "link": "https://cointelegraph.com/markets/bitcoin-bounces-from-7-week-low-under-76k-as-democrats-eye-congress-sweep?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793772213000",
+      "timestamp": "06:03",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793784178000",
+      "timestamp": "09:22",
+      "source": "CoinDesk",
+      "title": "Morgan Stanley says it is among the first banks to tokenize real world assets",
+      "link": "https://www.coindesk.com/markets/2026/11/04/morgan-stanley-says-it-is-among-the-first-banks-to-put-u-s-stocks-and-treasuries-on-a-blockchain"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793779444000",
+      "timestamp": "08:04",
+      "source": "CoinDesk",
+      "title": "Zcash grants committee drops plan to redirect 98,000 ZEC to future mining rewards",
+      "link": "https://www.coindesk.com/markets/2026/11/04/zcash-grants-committee-drops-plan-to-redirect-98-000-zec-to-future-mining-rewards"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793773000000",
+      "timestamp": "06:16",
+      "source": "CoinDesk",
+      "title": "Bitcoin surges to $78,300 in V-shaped comeback as midterm election uncertainty fades",
+      "link": "https://www.coindesk.com/markets/2026/11/04/bitcoin-knocks-on-usd78-000-in-v-shaped-comeback-as-midterm-uncertainty-fades"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793772364000",
+      "timestamp": "06:06",
+      "source": "CoinDesk",
+      "title": "Jack Dorsey's Block faces $764 million DOJ settlement as bitcoin profit plunges 50%",
+      "link": "https://www.coindesk.com/markets/2026/11/04/jack-dorsey-s-block-faces-usd764-million-doj-settlement-as-bitcoin-profit-plunges-50"
+    },
     {
       "id": "egld-1793754214619",
       "timestamp": "01:03",
@@ -30,13 +107,6 @@
       "source": "CoinTelegraph",
       "title": "RUNE rallies 15% as THORChain restarts most swaps after halt",
       "link": "https://cointelegraph.com/markets/rune-rallies-15-as-thorchain-restarts-most-swaps-after-outage?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793745558000",
-      "timestamp": "22:39",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-4-1793742440000",
@@ -128,76 +198,6 @@
       "source": "CoinDesk",
       "title": "Justin Sun seeks sanctions against Trump-linked World Liberty Financial over UAE ties",
       "link": "https://www.coindesk.com/policy/2026/11/03/justin-sun-seeks-sanctions-against-trump-linked-world-liberty-financial-over-uae-ties"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793724596000",
-      "timestamp": "16:49",
-      "source": "CoinDesk",
-      "title": "South Korea's president says country needs a ‘cybersecurity czar’ following $6.3 billion Binance hack",
-      "link": "https://www.coindesk.com/tech/2026/11/03/south-korea-s-president-says-country-needs-a-cybersecurity-czar-following-usd6-3-billion-binance-hack"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793722671000",
-      "timestamp": "16:17",
-      "source": "CoinDesk",
-      "title": "Amazon, Tesla and SpaceX join OKX–ICE tokenized stock objections as deadline looms",
-      "link": "https://www.coindesk.com/business/2026/11/03/amazon-tesla-and-spacex-join-okx-ice-tokenized-stock-objections-as-deadline-looms"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793722355000",
-      "timestamp": "16:12",
-      "source": "CoinDesk",
-      "title": "Stablecoin governance group behind OUSD sets out management fee, offers equity earning pool",
-      "link": "https://www.coindesk.com/business/2026/11/03/stablecoin-governance-group-behind-ousd-sets-out-management-fee-offers-equity-earning-pool"
-    },
-    {
-      "id": "egld-1793713253022",
-      "timestamp": "13:40",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.37 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793711747000",
-      "timestamp": "13:15",
-      "source": "CoinTelegraph",
-      "title": "Moscow Exchange to launch Bitcoin, Ether and USDT trading in December",
-      "link": "https://cointelegraph.com/news/moscow-exchange-bitcoin-ether-usdt-trading-december?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793709013000",
-      "timestamp": "12:30",
-      "source": "CoinTelegraph",
-      "title": "NEAR token sinks 7% as proposal to cut annual token issuance passes",
-      "link": "https://cointelegraph.com/markets/near-sinks-7-proposal-cut-annual-token-issuance-passes?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1793705522000",
-      "timestamp": "11:32",
-      "source": "CoinTelegraph",
-      "title": "Binance’s net inflows turn positive at $2.3B as withdrawals expand",
-      "link": "https://cointelegraph.com/news/binances-daily-inflows-positive-18b-withdrawals?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793702966000",
-      "timestamp": "10:49",
-      "source": "CoinTelegraph",
-      "title": "France postpones 2027 budget vote, crypto exit-tax proposals scrapped",
-      "link": "https://cointelegraph.com/news/france-postpones-2027-budget-vote-reject-crypto-exit-tax?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793700245000",
-      "timestamp": "10:04",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin price threatens $77.7K support loss with recent buyers underwater",
-      "link": "https://cointelegraph.com/markets/bitcoin-price-support-loss-recent-buyers-underwater?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793694913000",
-      "timestamp": "08:35",
-      "source": "CoinTelegraph",
-      "title": "ARK buys $17M in Coinbase, Circle shares while trimming Bullish",
-      "link": "https://cointelegraph.com/news/ark-buys-coinbase-circle-trims-bullish?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
