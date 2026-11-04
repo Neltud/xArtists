@@ -17,17 +17,17 @@ test.describe('all built routes and visible actions — anonymous, no signing', 
   for (const path of routes) {
     test(`built route ${path}`, async ({ page }) => {
       const errors: string[] = []
-      const blockedWrites: string[] = []
+      const blockedNonGetRequests: string[] = []
       page.on('pageerror', error => errors.push(error.message))
       // Browsing proof only. Never let the crawler submit a mutation or a signed transaction.
       await page.route('**/*', async route => {
         const request = route.request()
         if (['GET', 'HEAD', 'OPTIONS'].includes(request.method())) return route.continue()
         const url = new URL(request.url())
-        blockedWrites.push(request.method() + ' ' + url.origin + url.pathname)
+        blockedNonGetRequests.push(request.method() + ' ' + url.origin + url.pathname)
         return route.abort('blockedbyclient')
       })
-      const row: Record<string, unknown> = { path, status: 'failed', blockedWrites }
+      const row: Record<string, unknown> = { path, status: 'failed', blockedNonGetRequests }
       try {
         expect(existsSync(dist + (path === '/' ? 'index.html' : path.slice(1) + '/index.html')),
           'A direct entry must exist in this build').toBe(true)
@@ -88,9 +88,17 @@ test('mobile dock links navigate to the five public destinations', async ({ page
   await expect(dock).toBeVisible()
   const hrefs = await dock.locator('a').evaluateAll(elements => elements.map(a => a.getAttribute('href')!))
   expect(hrefs).toHaveLength(5)
+  const canonical: Record<string, string> = {
+    '/': '/', '/museum': '/explore/museum', '/marketplace': '/explore/market',
+    '/auction': '/explore/auction', '/studio': '/create/studio',
+  }
   for (const href of hrefs) {
+    const path = new URL(href, page.url()).pathname.slice(BASE.length).replace(/\/$/, '') || '/'
+    expect(Object.hasOwn(canonical, path), 'The dock must expose one of the five intended destinations').toBe(true)
     await page.locator('.xa-mobile-dock a[href="' + href + '"]').click()
-    await expect.poll(() => new URL(page.url()).pathname.replace(/\/$/, '')).toBe(href.replace(/\/$/, ''))
+    await expect.poll(() => new URL(page.url()).pathname.replace(/\/$/, '')).toBe((BASE + canonical[path]).replace(/\/$/, ''))
+    await expect(page.locator('.xa-mobile-dock a[href="' + href + '"]')).toHaveAttribute('aria-current', 'page')
+    await expect(page.locator('.xa-module-body > .xa-loading')).toHaveCount(0)
     await expect(page.getByText('Page unavailable', { exact: true })).toHaveCount(0)
   }
 })
