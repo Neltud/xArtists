@@ -6,6 +6,8 @@ on:
 
 jobs:
   review:
+    # Draft work must not incur model charges or publish automated comments.
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -29,3 +31,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_COMMENTS_URL: ${{ github.event.pull_request.comments_url }}
         run: python3 scripts/ci_ai_pr_review.py
+

@@ -181,9 +181,11 @@ test('concurrent prepares with maxRecords=1: only one succeeds', async () => {
   const { service } = setup({ maxRecords: 1, maxPreparationsPerHour: 10, quoteProvider })
   const p1 = service.prepare(pack('pulse'), { userAddress: A })
   const p2 = service.prepare(pack('yield'), { userAddress: A })
+  // Attach rejection handlers before yielding: the capacity refusal is immediate.
+  const settled = Promise.allSettled([p1, p2])
   await new Promise(r => setImmediate(r))
   release()
-  const results = await Promise.allSettled([p1, p2])
+  const results = await settled
   const fulfilled = results.filter(r => r.status === 'fulfilled')
   const rejected = results.filter(r => r.status === 'rejected')
   assert.equal(fulfilled.length, 1, 'exactly one prepare must succeed under maxRecords=1')
@@ -194,7 +196,7 @@ test('concurrent prepares with maxRecords=1: only one succeeds', async () => {
   assert.equal(fulfilled[0].value.quote.payable, false)
 })
 
-test('behavioral PAPER path without CheckoutModal: prepare \u2192 confirm \u2192 paper receipt only', async () => {
+test('service PAPER receipt has no payment, mint or entitlement', async () => {
   const { service, logs } = setup()
   const prepared = await service.prepare(pack('sentinel'), { userAddress: A })
   assert.equal(prepared.status, 'ready')
@@ -228,3 +230,40 @@ test('audit logger fails: no false paper success or retry', async () => {
   assert.throws(() => service.confirm(ready.confirmationId, { userAddress: A }), e => e.code === 'paper_audit_unavailable')
   assert.throws(() => service.confirm(ready.confirmationId, { userAddress: A }), e => e.code === 'confirmation_not_available')
 })
+for (const failure of ['provider_error', 'invalid_rule1', 'guardian_pause']) {
+  test('failed preparation releases capacity and quota: ' + failure, async () => {
+    let calls = 0
+    let paused = false
+    const { service } = setup({
+      maxRecords: 1,
+      maxPreparationsPerHour: 1,
+      guardian: () => ({ mode: 'paper', paused }),
+      quoteProvider: ({ packTier, nowMs }) => {
+        const quote = buildPackQuote({ pack_id: packTier, rate_eur_per_egld: 10, now: nowMs })
+        if (++calls === 1) {
+          if (failure === 'provider_error') throw new Error('offline')
+          if (failure === 'invalid_rule1') return { ...quote, margin_internal: 0.01 }
+          paused = true
+        }
+        return quote
+      },
+    })
+    const code = failure === 'provider_error' ? 'rule1_quote_unavailable'
+      : failure === 'invalid_rule1' ? 'rule1_quote_invalid_or_expired' : 'paper_guardian_paused'
+    await expectReject(() => service.prepare(pack(), { userAddress: A }), code)
+    paused = false
+    const retry = await service.prepare(pack(), { userAddress: A })
+    assert.equal(retry.status, 'ready')
+    assert.equal(calls, 2)
+    await expectReject(() => service.prepare(pack(), { userAddress: A }), 'paper_capacity_reached')
+  })
+}
+
+test('quota rejection releases only its provisional capacity slot', async () => {
+  const { service } = setup({ maxRecords: 2, maxPreparationsPerHour: 1 })
+  await service.prepare(pack(), { userAddress: A })
+  await expectReject(() => service.prepare(pack(), { userAddress: A }), 'paper_rate_limit')
+  const other = await service.prepare({ ...pack(), userAddress: B }, { userAddress: B })
+  assert.equal(other.status, 'ready')
+})
+

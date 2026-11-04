@@ -10,6 +10,7 @@ on:
       - 'services/access-api/tests/lia-simple*.test.mjs'
       - 'apps/frontend/src/components/PackCheckout.tsx'
       - 'apps/frontend/src/lib/liaSimple.ts'
+      - 'apps/frontend/tests/pack-checkout-paper.test.mjs'
       - 'packages/lia-intent/src/simple.ts'
       - 'docs/LIA_SIMPLE_P0.md'
       - '.github/workflows/lia-simple-paper-p0-ci.yml'
@@ -22,6 +23,7 @@ on:
       - 'services/access-api/tests/lia-simple*.test.mjs'
       - 'apps/frontend/src/components/PackCheckout.tsx'
       - 'apps/frontend/src/lib/liaSimple.ts'
+      - 'apps/frontend/tests/pack-checkout-paper.test.mjs'
       - 'packages/lia-intent/src/simple.ts'
       - '.github/workflows/lia-simple-paper-p0-ci.yml'
 
@@ -68,3 +70,6 @@ jobs:
         run: npm ci --prefix apps/frontend --no-audit --no-fund
       - name: Typecheck existing Packs UI and simple API client
         run: npm --prefix apps/frontend run typecheck
+      - name: Verify the real Packs PAPER button without commercial checkout
+        run: node --test apps/frontend/tests/pack-checkout-paper.test.mjs
+
