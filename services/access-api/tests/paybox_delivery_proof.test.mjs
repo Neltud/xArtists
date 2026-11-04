@@ -73,10 +73,11 @@ test('legacy simulated payment cannot masquerade as delivered NFT', async () => 
 })
 
 test('on-chain delivery presentation requires all three proof fields', () => {
-  const paid = {status:'paid',server_confirmed:true,delivery:'confirmed',delivered_at:'2026-11-02T19:00:00.000Z'}
+  const paid = {status:'paid',server_confirmed:true,payment_verified:true,provider_tx_id:'psp_test_1',
+    delivery:'confirmed',delivered_at:'2026-11-02T19:00:00.000Z'}
   assert.equal(publicOrderDelivery(paid).delivery_verified,false)
   assert.equal(publicOrderDelivery({...paid,chain_tx_hash:'tx'}).delivery_verified,false)
-  const unverified = {...paid,chain_tx_hash:'tx',nft_identifier:'XAISNT-3d8a6b-01'}
+  const unverified = {...paid,chain_tx_hash:'ab'.repeat(32),nft_identifier:'XAISNT-3d8a6b-01'}
   assert.equal(publicOrderDelivery(unverified).delivery_verified,false)
   const verified = {...unverified,delivery_verified:true}
   assert.deepEqual(publicOrderDelivery(verified),{
@@ -85,4 +86,57 @@ test('on-chain delivery presentation requires all three proof fields', () => {
   assert.deepEqual(publicOrderDelivery({...verified,status:'refunded'}),{
     delivery:'none',delivery_verified:false,delivered_at:null,
   })
+})
+
+const storedProof = () => ({
+  status:'paid',server_confirmed:true,payment_verified:true,provider_tx_id:'psp_verified_fixture',
+  delivery:'confirmed',delivery_verified:true,chain_tx_hash:'ab'.repeat(32),
+  nft_identifier:'XAISNT-3d8a6b-01',delivered_at:'2026-11-02T19:00:00.000Z',
+})
+
+test('a failed or expired order cannot present an old stored proof as confirmed', () => {
+  for (const status of ['created','redirected','failed','expired','late_paid','refused','cancelled','refunded','unknown']) {
+    const result=publicOrderDelivery({...storedProof(),status})
+    assert.equal(result.delivery_verified,false,status)
+    assert.equal(result.delivered_at,null,status)
+    assert.notEqual(result.delivery,'confirmed',status)
+  }
+})
+
+test('payment revocation or a missing PSP binding invalidates a stored confirmation', () => {
+  for (const patch of [
+    {server_confirmed:false},{payment_verified:false},{server_confirmed:'true'},
+    {payment_verified:'true'},{provider_tx_id:null},{provider_tx_id:''},
+    {provider_tx_id:'id with spaces'},
+  ]) {
+    const result=publicOrderDelivery({...storedProof(),...patch})
+    assert.equal(result.delivery_verified,false,JSON.stringify(patch))
+    assert.equal(result.delivered_at,null)
+  }
+})
+
+test('truthy malformed chain evidence never becomes a public NFT receipt', () => {
+  for (const patch of [
+    {chain_tx_hash:'tx'},{chain_tx_hash:[]},{chain_tx_hash:'g'.repeat(64)},
+    {nft_identifier:'not-an-nft'},{nft_identifier:'XAISNT-3d8a6b-00'},
+    {nft_identifier:'XAISNT-3d8a6b-1'},{nft_identifier:{id:'XAISNT-3d8a6b-01'}},
+    {delivered_at:'not-a-date'},{delivered_at:true},{delivered_at:'2026-11-02'},
+    {delivered_at:'2026-02-30T12:00:00.000Z'},
+    {delivered_at:'2199-01-01T00:00:00.000Z'},
+  ]) {
+    const result=publicOrderDelivery({...storedProof(),...patch})
+    assert.equal(result.delivery_verified,false,JSON.stringify(patch))
+    assert.equal(result.delivered_at,null)
+  }
+})
+
+test('coherent stored proof is presented across paid and mint lifecycle states without mutating the ledger', () => {
+  for (const status of ['paid','mint_queued','mint_confirmed','active']) {
+    const row=Object.freeze({...storedProof(),status})
+    const before=JSON.stringify(row)
+    assert.deepEqual(publicOrderDelivery(row),{
+      delivery:'confirmed',delivery_verified:true,delivered_at:row.delivered_at,
+    })
+    assert.equal(JSON.stringify(row),before)
+  }
 })
