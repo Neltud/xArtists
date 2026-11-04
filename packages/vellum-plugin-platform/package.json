@@ -1,0 +1,17 @@
+{
+  "name": "@xartists/vellum-plugin-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "Signed plugin manifest verification, paper-only least privilege and paper-only revenue estimates",
+  "exports": {
+    "./registry": "./src/platform.mjs",
+    "./paper-revenue": "./src/revenue.mjs"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
+}
