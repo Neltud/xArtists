@@ -1,8 +1,26 @@
 /** Structured LIA paper-only API: does not touch hosted checkout or sign a transaction. */
 import { getAccessApiBase } from './stripe'
+import { ensureAccessToken, getAccessToken, clearAccessSession } from './accessSession'
 import type {
   SimpleIntent, SimpleIntentHttpRequest, PreparedSimpleIntent, SimplePaperReceipt,
 } from '../../../../packages/lia-intent/src/simple'
+
+/**
+ * Existing old ACCESS JWTs may predate the server's SIWX proof claim.
+ * Ask for a fresh normal wallet-login signature when needed, not an intent
+ * signature or blockchain transaction. The API verifies the claim itself.
+ */
+export async function ensureSimplePaperToken(address: string): Promise<string | null> {
+  const cached = getAccessToken(address)
+  if (cached) {
+    try {
+      const payload = JSON.parse(atob(cached.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+      if (payload.wallet_proof_verified === true) return cached
+    } catch { /* stale/invalid JWT */ }
+    clearAccessSession()
+  }
+  return ensureAccessToken({ address })
+}
 
 async function submit(request: SimpleIntentHttpRequest, accessToken: string): Promise<unknown> {
   const base = getAccessApiBase()
