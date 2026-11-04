@@ -66,3 +66,15 @@ test('Pages workflow checks stamped version against authoritative release manife
   assert.match(workflow, /VITE_LIA_LIVE_TRADING:/)
   assert.match(workflow, /VITE_PAYBOX_ENABLED:/)
 })
+
+test('Scheduled Pages watchdog is read-only and detects competing docs publisher', () => {
+  const watchdog = readFileSync(new URL('../../../.github/workflows/pages-live-watchdog.yml', import.meta.url), 'utf8')
+  assert.match(watchdog, /schedule:/)
+  assert.match(watchdog, /workflow_dispatch:/)
+  assert.match(watchdog, /status=success/)
+  assert.match(watchdog, /\.source_sha \/\/ "missing"/)
+  assert.match(watchdog, /last successful Vite build/)
+  assert.match(watchdog, /Source = GitHub Actions, not main\/docs/)
+  assert.match(watchdog, /auction marketplace tro\/sale offres/)
+  assert.doesNotMatch(watchdog, /actions\/deploy-pages|PAYBOX_CHECKOUT_ENABLED=1|MINT_LIVE_ENABLED=1|LIA_LIVE_TRADING=1/)
+})
