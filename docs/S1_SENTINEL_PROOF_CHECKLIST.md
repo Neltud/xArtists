@@ -23,11 +23,15 @@ Depuis un poste Linux avec `curl` et `jq` et **sans authentifiants** :
       mint_live_enabled,mint_micro_price,lia_live_trading,tro_solana_bridge
     }'
     curl -fsS --max-time 30 "$API/health" |
-      jq -e '.ok == true and .paybox_checkout_enabled == false and .mint_live_enabled == false and .mint_dry_run == true and .lia_live_trading == 0'
+      jq -e '.ok == true and .paybox_checkout_enabled == false and .mint_live_enabled == false and .mint_dry_run == true and ((.lia_live_trading | tostring) == "0")'
     curl -i -sS --max-time 30 "$API/v1/ops/orders-store/status"
     curl -i -sS --max-time 30 "$API/v1/ops/mint-jobs-store/status"
 
+Le champ `lia_live_trading` peut être sérialisé par l'API comme chaîne `"0"` (état public observé) ou nombre `0`. Le test `jq` doit accepter **ces deux représentations uniquement** sans jamais accepter `"1"`, `1`, `true` ou absence du champ. Ce test ne débloque aucun paiement.
+
 Interprétation : `/health` est un *état de configuration*, pas une preuve PayBox. `orders-store/status` réalise `SELECT to_regclass('public.paybox_orders') IS NOT NULL` et ne démontre que connexion/table. `mint-jobs-store/status` vérifie la table `public.mint_jobs` sur **le DSN de cette API** sans migration. HTTP 503 ou `table_ready=false` = bloquer toute exécution S1 ; ne **pas** créer la table en réponse à un statut public. Les sondes sont coalescées/cache 30 s : horodater chaque observation, noter le SHA déployé indépendamment, ne pas inférer des mesures plus récentes que les réponses.
+
+**P0 frontend indépendant (#362) :** ne pas proposer de test S1 à des acheteurs tant que le publisher Pages concurrent `pages-build-deployment` republie le vieux `./docs`, que `build-info.json.source_sha` ne correspond pas au dernier artifact Vite, que `/auction/` retourne 404 ou que le portail TRO affiche une erreur de chargement CSS. Dans [Settings → Pages](https://github.com/Neltud/xArtists/settings/pages), le propriétaire doit choisir **Source = GitHub Actions** ; ensuite le pipeline `static.yml` doit servir le SHA exact et les liens doivent être ouverts par navigateur et GET indépendants. La correction Pages est **nécessaire**, mais **jamais suffisante** à l'autorisation S1. Voir [incident #362](https://github.com/Neltud/xArtists/issues/362).
 
 Vérification publique sans paiement :
 
