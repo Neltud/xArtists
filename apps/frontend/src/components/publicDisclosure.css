@@ -1,0 +1,31 @@
+.xa-public-disclosure{border:1px solid #36413c;border-radius:14px;background:#111a17;overflow:hidden}
+.xa-public-disclosure>h2,.xa-public-disclosure>h3{margin:0!important;font:inherit!important}
+.xa-public-disclosure button[aria-controls]{display:flex;align-items:center;justify-content:space-between;gap:18px;width:100%;min-height:58px;padding:18px 20px;text-align:left;color:#f1f5ed;background:transparent;border:0;cursor:pointer}
+.xa-public-disclosure button[aria-controls]:hover{background:#ffffff06}
+.xa-public-disclosure button[aria-controls]:focus-visible{outline:2px solid #cdf58b;outline-offset:-4px;border-radius:12px}
+.xa-public-disclosure__title{display:block;font-size:14px;font-weight:650;line-height:1.5}
+.xa-public-disclosure__subtitle{display:block;margin-top:4px;font-size:12px;font-weight:400;color:#b4c0b7;line-height:1.6}
+.xa-public-disclosure__icon{flex:none;display:grid;place-items:center;min-width:28px;min-height:28px;font-size:22px;color:#cdf58b}
+.xa-public-disclosure__body{padding:0 20px 22px;font-size:13px;line-height:1.8;color:#c3cdc5}
+.xa-public-disclosure__body[hidden]{display:none}
+.rwa-public{width:100%;max-width:940px;margin:0 auto;padding:12px 0 64px}
+.rwa-public__lead{max-width:680px;margin-bottom:22px}
+.rwa-public__lead h1{font-size:clamp(30px,5vw,48px);letter-spacing:-.045em;line-height:1.15;margin:12px 0;color:#f3f5ee}
+.rwa-public__lead>p:last-child{color:#b5bdb8;font-size:14px;line-height:1.8}
+.rwa-public__notice{border:1px solid #b4965366;border-radius:12px;padding:16px;background:#b4965310;color:#f2dcaa;font-size:12px;line-height:1.8}
+.rwa-public__actions{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 28px}
+.rwa-public__actions a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 18px;border:1px solid #465443;border-radius:8px;color:#e4f4d7;font-size:12px;font-weight:650}
+.rwa-public__actions a:first-child{background:#cdf58b;color:#18220d;border-color:#cdf58b}
+.rwa-public__actions a:focus-visible{outline:2px solid #cdf58b;outline-offset:3px}
+.rwa-public__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:28px}
+.rwa-public__card{min-width:0;border:1px solid #35403a;border-radius:16px;padding:20px;background:linear-gradient(135deg,#1c2520,#121a16);display:flex;flex-direction:column;gap:15px}
+.rwa-public__card header{display:flex;align-items:center;gap:15px}
+.rwa-public__mark{display:grid;place-items:center;flex:none;width:54px;height:64px;border:1px solid #8ca68b55;border-radius:5px;color:#c1d5ae;font-size:28px;background:linear-gradient(140deg,#344733,#19221d)}
+.rwa-public__card h2{margin:0;font-size:18px;line-height:1.4;color:#f1f6ec}
+.rwa-public__artist{font-size:12px;color:#b4c1b6;margin:4px 0 0}
+.rwa-public__label{font-size:11px;line-height:1.7;color:#edcf91}
+.rwa-public__custody{font-size:11px;line-height:1.7;color:#c4cec6}
+.rwa-public__card .xa-public-disclosure{margin-top:auto;background:#0d1511}
+.rwa-public__tools{display:grid;gap:12px;margin-top:28px}
+.rwa-public__footnote{font-size:11px;color:#a9b7ac;line-height:1.8;margin:24px 0}
+@media(max-width:640px){.rwa-public__grid{grid-template-columns:1fr}.rwa-public__card{padding:17px}.rwa-public__actions a{flex:1}.xa-public-disclosure button[aria-controls]{padding:16px}.xa-public-disclosure__body{padding:0 16px 18px}}

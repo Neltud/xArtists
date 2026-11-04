@@ -5,6 +5,7 @@ on:
     paths:
       - 'e2e/public-ux-preview.config.ts'
       - 'e2e/public-ux-responsive.spec.ts'
+      - 'e2e/public-route-inventory.spec.ts'
       - '.github/workflows/ux-local-preview-ci.yml'
       - '.github/workflows/e2e.yml'
       - 'playwright.config.ts'
@@ -37,8 +38,12 @@ jobs:
           npm install --prefix apps/frontend --ignore-scripts
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
+      - name: Frontend release and public-safety contracts
+        run: npm run test:release --prefix apps/frontend
       - name: Build THIS PR's frontend
         run: npm run build --prefix apps/frontend
+      - name: Typecheck frontend components
+        run: npm run typecheck --prefix apps/frontend
       - name: Responsive no-wallet assertions on local Vite preview
         run: npx playwright test --config=e2e/public-ux-preview.config.ts
       - uses: actions/upload-artifact@v4

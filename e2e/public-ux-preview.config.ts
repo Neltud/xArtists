@@ -6,7 +6,7 @@ import { defineConfig, devices } from '@playwright/test'
  */
 export default defineConfig({
   testDir: '.',
-  testMatch: /public-ux-responsive\.spec\.ts$/,
+  testMatch: /public-(?:ux-responsive|route-inventory)\.spec\.ts$/,
   forbidOnly: !!process.env.CI,
   fullyParallel: false,
   retries: 1,

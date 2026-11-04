@@ -10,6 +10,37 @@ async function visit(page: import('@playwright/test').Page, path: string) {
 }
 
 test.describe('xArtists public accessibility, local built frontend only', () => {
+  for (const width of [390, 1440]) {
+    test(`optional TRO and RWA detail opens by keyboard at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 })
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await visit(page, '/finance/tro/sale/')
+      const roadmap = page.locator('#tro-roadmap-details-trigger')
+      await expect(roadmap).toHaveAttribute('aria-expanded', 'false')
+      await expect(page.getByText(/Bridge Solana : désactivé/)).toBeVisible()
+      await expect(page.getByRole('button', { name: 'Bridge non disponible', exact: true })).toBeDisabled()
+      await roadmap.press('Enter')
+      await expect(roadmap).toHaveAttribute('aria-expanded', 'true')
+      await expect(page.locator('#tro-roadmap-details')).toBeVisible()
+      await roadmap.press('Space')
+      await expect(page.locator('#tro-roadmap-details')).toBeHidden()
+
+      await visit(page, '/explore/rwa/')
+      await expect(page.locator('.rwa-public__card')).toHaveCount(3)
+      await expect(page.locator('#rwa-study-0')).toBeHidden()
+      await expect(page.getByText(/Garde physique : non vérifiée/).first()).toBeVisible()
+      await page.locator('#rwa-study-0-trigger').click()
+      await expect(page.getByText(/Valeur fictive indicative/).first()).toBeVisible()
+      const preparation = page.locator('#rwa-preparation-trigger')
+      await preparation.click()
+      const title = page.locator('#rwa-preparation input:not([type="file"])').first()
+      await title.fill('Étude locale de vérification')
+      await preparation.click()
+      await preparation.click()
+      await expect(title).toHaveValue('Étude locale de vérification')
+      await page.screenshot({ animations: 'disabled', fullPage: true, path: `artifacts/ux-mobile/rwa-details-${width}.png` })
+    })
+  }
   for (const width of [360, 390, 430]) {
     test(`mobile ${width}px: no auto-WebGL and direct museum/market/auction/studio dock`, async ({ page }) => {
       await page.setViewportSize({ width, height: 844 })
