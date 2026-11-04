@@ -1,0 +1,39 @@
+name: Release manifest and Pages stamp — read-only gate
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.release-please-manifest.json'
+      - 'CHANGELOG.md'
+      - 'apps/frontend/scripts/write-build-info.mjs'
+      - 'apps/frontend/tests/release-build-stamp.test.mjs'
+      - '.github/workflows/static.yml'
+      - '.github/workflows/release-stamp-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.release-please-manifest.json'
+      - 'apps/frontend/scripts/write-build-info.mjs'
+      - 'apps/frontend/tests/release-build-stamp.test.mjs'
+      - '.github/workflows/static.yml'
+permissions:
+  contents: read
+jobs:
+  release-stamp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify release-stamp fixtures and Pages gate without network or payments
+        run: node --test apps/frontend/tests/release-build-stamp.test.mjs
+      - name: Verify root Release Please version
+        run: |
+          node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+            const m=JSON.parse(readFileSync(".release-please-manifest.json", "utf8"));
+            if (!/^\\d+\\.\\d+\\.\\d+$/.test(m["."])) throw new Error("invalid release version");
+            console.log("Root release version: " + m["."]);
+          '
