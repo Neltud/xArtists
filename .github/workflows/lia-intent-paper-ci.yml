@@ -1,0 +1,52 @@
+name: LIA intent paper contracts
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'packages/lia-intent/**'
+      - 'services/access-api/src/quote.mjs'
+      - '.github/workflows/lia-intent-paper-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/lia-intent/**'
+      - 'services/access-api/src/quote.mjs'
+      - '.github/workflows/lia-intent-paper-ci.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lia-intent-paper-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      LIA_LIVE_TRADING: '0'
+      VITE_LIA_LIVE_TRADING: '0'
+    defaults:
+      run:
+        working-directory: packages/lia-intent
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Install pinned isolated package dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Typecheck and test paper workflows against the existing quote engine
+        run: npm test
+      - name: Preserve dependency resolution for lockfile review
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lia-intent-dependency-lock
+          path: packages/lia-intent/package-lock.json
+          if-no-files-found: error
+          retention-days: 7

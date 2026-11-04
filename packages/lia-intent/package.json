@@ -1,0 +1,16 @@
+{
+  "name": "@xartists/lia-intent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Server-only, paper-only LIA intent contracts and BUY_PACK workflow",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test tests/*.test.mjs"
+  },
+  "dependencies": { "bech32": "2.0.0", "zod": "4.1.12" },
+  "devDependencies": { "@types/node": "22.15.30", "typescript": "5.9.3" }
+}
