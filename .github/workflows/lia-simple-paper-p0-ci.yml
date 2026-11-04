@@ -1,0 +1,70 @@
+name: LIA structured paper P0
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/liaSimple.mjs'
+      - 'services/access-api/src/server.mjs'
+      - 'services/access-api/src/verifyAccess.mjs'
+      - 'services/access-api/tests/lia-simple*.test.mjs'
+      - 'apps/frontend/src/components/PackCheckout.tsx'
+      - 'apps/frontend/src/lib/liaSimple.ts'
+      - 'packages/lia-intent/src/simple.ts'
+      - 'docs/LIA_SIMPLE_P0.md'
+      - '.github/workflows/lia-simple-paper-p0-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/liaSimple.mjs'
+      - 'services/access-api/src/server.mjs'
+      - 'services/access-api/src/verifyAccess.mjs'
+      - 'services/access-api/tests/lia-simple*.test.mjs'
+      - 'apps/frontend/src/components/PackCheckout.tsx'
+      - 'apps/frontend/src/lib/liaSimple.ts'
+      - 'packages/lia-intent/src/simple.ts'
+      - '.github/workflows/lia-simple-paper-p0-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  backend-paper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      LIA_LIVE_TRADING: '0'
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      MINT_LIVE_ENABLED: 'false'
+      REQUIRE_SIWX: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate API source
+        run: |
+          node --check services/access-api/src/liaSimple.mjs
+          node --check services/access-api/src/server.mjs
+          node --check services/access-api/src/verifyAccess.mjs
+      - name: Install existing API dependencies
+        run: npm ci --prefix services/access-api --no-audit --no-fund --ignore-scripts
+      - name: Execute isolated Rule1 and HTTP auth tests
+        run: node --test services/access-api/tests/lia-simple.test.mjs services/access-api/tests/lia-simple-http.test.mjs
+
+  packs-typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked frontend dependencies
+        run: npm ci --prefix apps/frontend --no-audit --no-fund
+      - name: Typecheck existing Packs UI and simple API client
+        run: npm --prefix apps/frontend run typecheck
