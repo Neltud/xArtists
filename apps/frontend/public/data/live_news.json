@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-04T10:30:20.261Z",
+  "updatedAt": "2026-11-04T19:24:17.780Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793820257180",
+      "timestamp": "19:24",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.39 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793818076000",
+      "timestamp": "18:47",
+      "source": "CoinTelegraph",
+      "title": "Riot shares surge on $28B AI lease as Hut 8 sinks on revenue miss",
+      "link": "https://cointelegraph.com/news/riots-28b-ai-deal-lifts-shares-as-hut-8-faces-transition-costs?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793815362000",
+      "timestamp": "18:02",
+      "source": "CoinTelegraph",
+      "title": "Circle’s ARC token sale lifts earnings as lower yields weigh on USDC income",
+      "link": "https://cointelegraph.com/news/circles-arc-token-sale-earnings-yields-usdc-income?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793806163000",
+      "timestamp": "15:29",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin hits $80.5K as US stocks rally on midterm election results",
+      "link": "https://cointelegraph.com/markets/bitcoin-price-us-stocks-rally-midterm-election-result?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1793800063000",
+      "timestamp": "13:47",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793799892000",
+      "timestamp": "13:44",
+      "source": "CoinTelegraph",
+      "title": "France backs reporting for self-custodied crypto worth 100K euros or more",
+      "link": "https://cointelegraph.com/news/france-approves-amendment-self-custodied-crypto-wallets-100k?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793794335000",
+      "timestamp": "12:12",
+      "source": "CoinTelegraph",
+      "title": "Canton’s CC rises 4% as SEC staff view it as ‘digital commodity’",
+      "link": "https://cointelegraph.com/markets/cantons-cc-rises-sec-no-action-letter-digital-commodity?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793788738000",
+      "timestamp": "10:38",
+      "source": "CoinDesk",
+      "title": "Bitcoin rebounds from midterm dip as DeFi leads gains",
+      "link": "https://www.coindesk.com/markets/2026/11/04/bitcoin-rebounds-from-midterm-dip-as-defi-leads-gains"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793787530000",
+      "timestamp": "10:18",
+      "source": "CoinDesk",
+      "title": "ZachXBT names French bank Crédit Mutuel Arkéa as suspected victim of $133 million crypto theft",
+      "link": "https://www.coindesk.com/business/2026/11/04/zachxbt-names-french-bank-credit-mutuel-arkea-as-suspected-victim-of-usd133-million-crypto-theft"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793786613000",
+      "timestamp": "10:03",
+      "source": "CoinDesk",
+      "title": "Elon Musk floats space data centers as Democratic sweep puts pressure on AI trade",
+      "link": "https://www.coindesk.com/markets/2026/11/04/elon-musk-floats-space-data-centers-as-democratic-sweep-puts-pressure-on-ai-trade"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793784178000",
+      "timestamp": "09:22",
+      "source": "CoinDesk",
+      "title": "Morgan Stanley says it is among the first banks to tokenize real world assets",
+      "link": "https://www.coindesk.com/markets/2026/11/04/morgan-stanley-says-it-is-among-the-first-banks-to-put-u-s-stocks-and-treasuries-on-a-blockchain"
+    },
     {
       "id": "egld-1793788218688",
       "timestamp": "10:30",
@@ -46,20 +123,6 @@
       "link": "https://cointelegraph.com/markets/bitcoin-bounces-from-7-week-low-under-76k-as-democrats-eye-congress-sweep?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-5-1793772213000",
-      "timestamp": "06:03",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793784178000",
-      "timestamp": "09:22",
-      "source": "CoinDesk",
-      "title": "Morgan Stanley says it is among the first banks to tokenize real world assets",
-      "link": "https://www.coindesk.com/markets/2026/11/04/morgan-stanley-says-it-is-among-the-first-banks-to-put-u-s-stocks-and-treasuries-on-a-blockchain"
-    },
-    {
       "id": "rss-CoinDesk-1-1793779444000",
       "timestamp": "08:04",
       "source": "CoinDesk",
@@ -79,13 +142,6 @@
       "source": "CoinDesk",
       "title": "Jack Dorsey's Block faces $764 million DOJ settlement as bitcoin profit plunges 50%",
       "link": "https://www.coindesk.com/markets/2026/11/04/jack-dorsey-s-block-faces-usd764-million-doj-settlement-as-bitcoin-profit-plunges-50"
-    },
-    {
-      "id": "egld-1793754214619",
-      "timestamp": "01:03",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.39 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-0-1793753116000",
@@ -142,62 +198,6 @@
       "source": "CoinDesk",
       "title": "What happens if North Korea steals Wall Street's tokenized assets next",
       "link": "https://www.coindesk.com/business/2026/11/03/what-happens-if-north-korea-steals-wall-street-s-tokenized-assets-next"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793744084000",
-      "timestamp": "22:14",
-      "source": "CoinDesk",
-      "title": "CFTC gets into legal clash over stock perps after having cleared path for crypto version",
-      "link": "https://www.coindesk.com/policy/2026/11/03/cftc-gets-into-legal-clash-over-stock-perps-after-having-cleared-path-for-crypto-version"
-    },
-    {
-      "id": "egld-1793738830993",
-      "timestamp": "20:47",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.41 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793734699000",
-      "timestamp": "19:38",
-      "source": "CoinTelegraph",
-      "title": "US midterms: Prediction markets favor Democrats in key crypto races",
-      "link": "https://cointelegraph.com/news/us-midterm-prediction-markets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1793724421000",
-      "timestamp": "16:47",
-      "source": "CoinTelegraph",
-      "title": "Wall Street killed Bitcoin’s wild rallies: 10x’s Markus Thielen",
-      "link": "https://cointelegraph.com/magazine/wall-street-killed-bitcoins-wild-rallies-markus-thielen?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793724246000",
-      "timestamp": "16:44",
-      "source": "CoinTelegraph",
-      "title": "Binance traces $6.3B hack to fake job interviews, compromised AI tool",
-      "link": "https://cointelegraph.com/news/binance-fake-job-interviews-compromised-ai-tool-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793720682000",
-      "timestamp": "15:44",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin price defends $76K lows as analysts see stocks pricing in ‘political gridlock’",
-      "link": "https://cointelegraph.com/markets/bitcoin-price-defends-76k-lows-as-analysis-sees-stocks-pricing-in-political-gridlock?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793713987000",
-      "timestamp": "13:53",
-      "source": "CoinTelegraph",
-      "title": "What’s at stake for crypto as the US votes in the 2026 midterms?",
-      "link": "https://cointelegraph.com/news/us-midterms-2026-stake-crypto-election-day?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793724910000",
-      "timestamp": "16:55",
-      "source": "CoinDesk",
-      "title": "Justin Sun seeks sanctions against Trump-linked World Liberty Financial over UAE ties",
-      "link": "https://www.coindesk.com/policy/2026/11/03/justin-sun-seeks-sanctions-against-trump-linked-world-liberty-financial-over-uae-ties"
     }
   ]
 }
