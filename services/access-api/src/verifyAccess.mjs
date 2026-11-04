@@ -154,7 +154,7 @@ export async function resolveAccessLevel(address) {
   })
 }
 
-export function issueAccessToken(access, address, secret) {
+export function issueAccessToken(access, address, secret, { walletProofVerified = false } = {}) {
   if (!secret || secret.length < 16) {
     return { token: null, error: 'JWT_SECRET missing or too short (min 16)' }
   }
@@ -164,6 +164,8 @@ export function issueAccessToken(access, address, secret) {
     level: access.status,
     access_level: access.status,
     reason: access.reason,
+    // Only a server-verified SIWX challenge may grant the LIA P0 paper capability.
+    wallet_proof_verified: walletProofVerified === true,
     iat: nowSec,
     exp: nowSec + JWT_TTL_SEC,
     iss: 'xartists-access-api',
