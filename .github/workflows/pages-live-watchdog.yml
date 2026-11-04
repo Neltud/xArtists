@@ -1,0 +1,66 @@
+# Read-only integrity alarm; does not publish, change Pages settings or mutate finance.
+# The GitHub Pages Source must be "GitHub Actions", NOT "main /docs".
+name: Pages served SHA watchdog — read-only
+on:
+  schedule:
+    - cron: '17 */4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  verify-pages-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Compare live Pages SHA against last successful Vite Actions publisher
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Last successful Vite artifact deploy, NOT last commit on main:
+          # data-only [skip ci] commits must not be treated as Vite releases.
+          curl -fsSL --retry 3 --max-time 20 \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/static.yml/runs?branch=main&status=success&per_page=20" \
+            -o /tmp/xartists-actions-runs.json
+          expected=$(jq -er '.workflow_runs | map(select(.conclusion == "success" and (.event == "push" or .event == "workflow_dispatch"))) | .[0].head_sha' /tmp/xartists-actions-runs.json)
+          if ! [[ "$expected" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "::error::Could not identify a successful main Vite Pages publisher"
+            exit 1
+          fi
+          ok=0
+          for attempt in 1 2 3; do
+            status=$(curl -sS -L --max-time 20 -H 'Cache-Control: no-cache' \
+              -o /tmp/xartists-public-info.json -w '%{http_code}' \
+              "https://neltud.github.io/xArtists/build-info.json?watchdog=${GITHUB_RUN_ID}&attempt=${attempt}") || status=000
+            actual=$(jq -r '.source_sha // "missing"' /tmp/xartists-public-info.json 2>/dev/null || echo "missing")
+            if [ "$status" = 200 ] && [ "$actual" = "$expected" ]; then
+              ok=1
+              break
+            fi
+            echo "Pages stale/unavailable: HTTP $status; expected Vite $expected, got $actual"
+            sleep 3
+          done
+          if [ "$ok" != 1 ]; then
+            echo "::error::P0 pages publisher collision: public Pages != last successful Vite build. Check GitHub Settings > Pages > Build and deployment > Source = GitHub Actions, not main/docs. See issue #362."
+            exit 1
+          fi
+          echo "Verified live Vite artifact SHA: $expected"
+
+      - name: Check important public deep links without checkout or sends
+        run: |
+          set -euo pipefail
+          for path in auction marketplace tro/sale offres; do
+            status=$(curl -sS -L --max-time 20 \
+              -o /tmp/xartists-public-route.html -w '%{http_code}' \
+              "https://neltud.github.io/xArtists/${path}/?watchdog=${GITHUB_RUN_ID}") || status=000
+            if [ "$status" != 200 ] || ! grep -q '/xArtists/assets/' /tmp/xartists-public-route.html; then
+              echo "::error::Public deep link ${path} did not serve Vite assets (HTTP ${status})"
+              exit 1
+            fi
+          done
+          echo "Public read-only routes passed (no payment or smart-contract action)."
