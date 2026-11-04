@@ -9,6 +9,7 @@ on:
       - 'apps/frontend/tests/release-build-stamp.test.mjs'
       - '.github/workflows/static.yml'
       - '.github/workflows/release-stamp-ci.yml'
+      - '.github/workflows/pages-live-watchdog.yml'
   push:
     branches: [main]
     paths:
