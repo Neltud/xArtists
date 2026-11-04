@@ -432,6 +432,7 @@ async function handleRequest(req, res) {
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : ''
     const payload = verifyJwt(token, JWT_SECRET)
     if (!payload || payload.iss !== 'xartists-access-api' ||
+        payload.wallet_proof_verified !== true ||
         typeof payload.sub !== 'string') {
       json(res, 401, { ok: false, error: 'wallet_auth_required' }); return
     }
@@ -521,7 +522,7 @@ async function handleRequest(req, res) {
       json(res, 401, { ok: false, status: 'SAMPLE', hasAccess: false, reason: 'siwx_required_for_full_access' })
       return
     }
-    const issued = issueAccessToken(access, address || null, JWT_SECRET)
+    const issued = issueAccessToken(access, address || null, JWT_SECRET, { walletProofVerified: verified === true })
     if (issued.error && access.status === 'FULL') {
       json(res, 503, { ok: false, error: issued.error, status: 'SAMPLE', hasAccess: false })
       return
