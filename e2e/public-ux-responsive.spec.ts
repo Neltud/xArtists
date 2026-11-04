@@ -46,7 +46,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await expect(page.getByRole('heading', { name: /huit étapes|eight steps/i })).toBeVisible()
     await expect(page.locator('a[href*="/slot"]')).toHaveCount(0)
     for (const path of ['/museum', '/marketplace', '/auction', '/studio', '/lia', '/offres', '/legal']) {
-      await expect(page.locator(`a[href*="${path}"]`).first()).toBeVisible()
+      await expect(page.locator(`ol a[href*="${path}"]`).first()).toBeVisible()
     }
     await page.screenshot({ path: 'artifacts/ux-mobile/guide-390.png' })
   })
