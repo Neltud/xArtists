@@ -1,193 +1,37 @@
-import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * Moniteur agent — max data: tableur signaux, KPI, spark, stratégies.
+ * Public pack monitor: no seeded scores, random ticks or invented LONG/SHORT rows.
+ * A verified signal adapter can be added later only with provenance and timestamps.
  */
-import { useEffect, useMemo, useState } from 'react'
 import type { PackId } from '../config/agentPacks'
 import { AGENT_PACKS } from '../config/agentPacks'
+import { useI18n } from '../i18n/I18nContext'
 
-type Props = { packId: PackId }
-
-type SignalRow = {
-  id: string
-  kind: string
-  detail: string
-  ts: string
-  score: number
-  bias: 'LONG' | 'SHORT' | 'FLAT'
-}
-
-const STRATEGY_POOL: Record<PackId, string[]> = {
-  pulse: ['MICRO_ARB', 'MOMENTUM', 'MEAN_REVERSION', 'BOARD_TICK', 'FLOW', 'PULSE_EDGE'],
-  yield: ['YIELD_CLAIM', 'LP_REBALANCE', 'COMPOUND', 'HATOM_VIEW', 'FEE_SWEEP'],
-  sentinel: ['GUARD_ALERT', 'RISK_SLEEVE', 'DRAWDOWN_WATCH', 'BOARD_ALERT', 'VOL_SPIKE'],
-}
-
-function seedSignals(packId: PackId): SignalRow[] {
-  const pool = STRATEGY_POOL[packId]
-  const now = Date.now()
-  return pool.map((kind, i) => {
-    const score = 58 + ((i * 13 + packId.length * 5) % 35)
-    return {
-      id: `${packId}-${i}`,
-      kind,
-      detail: i % 2 === 0 ? 'paper · à valider' : 'clone LIA · lecture',
-      ts: new Date(now - i * 75_000).toISOString().slice(11, 19),
-      score,
-      bias: score > 78 ? 'LONG' : score < 62 ? 'SHORT' : 'FLAT',
-    }
-  })
-}
-
-export default function PackAgentMonitor({ packId }: Props) {
-  const pack = AGENT_PACKS.find(p => p.id === packId)!
-  const [signals, setSignals] = useState(() => seedSignals(packId))
-  const [tick, setTick] = useState(0)
-  const [egld, setEgld] = useState<number | null>(null)
-
-  useEffect(() => {
-    setSignals(seedSignals(packId))
-  }, [packId])
-
-  useEffect(() => {
-    let c = false
-    ;(async () => {
-      try {
-        const r = await fetch('https://api.multiversx.com/economics', { cache: 'no-store' })
-        if (r.ok) {
-          const j = await r.json()
-          if (!c) setEgld(Number(j.price) || null)
-        }
-      } catch {
-        /* */
-      }
-    })()
-    return () => {
-      c = true
-    }
-  }, [])
-
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      setTick(t => t + 1)
-      setSignals(prev => {
-        const pool = STRATEGY_POOL[packId]
-        const kind = pool[Math.floor(Math.random() * pool.length)]
-        const score = 55 + Math.floor(Math.random() * 40)
-        const row: SignalRow = {
-          id: `${packId}-${Date.now()}`,
-          kind,
-          detail: 'clone LIA · paper tick',
-          ts: new Date().toISOString().slice(11, 19),
-          score,
-          bias: score > 78 ? 'LONG' : score < 62 ? 'SHORT' : 'FLAT',
-        }
-        return [row, ...prev].slice(0, 12)
-      })
-    }, 10_000)
-    return () => window.clearInterval(id)
-  }, [packId])
-
-  const perf = useMemo(() => {
-    if (!signals.length) return 0
-    return Math.round(signals.reduce((s, r) => s + r.score, 0) / signals.length)
-  }, [signals])
-
-  const longN = signals.filter(s => s.bias === 'LONG').length
-  const shortN = signals.filter(s => s.bias === 'SHORT').length
+export default function PackAgentMonitor({ packId }: { packId: PackId }) {
+  const pack = AGENT_PACKS.find(p => p.id === packId)
+  const { lang } = useI18n()
+  const fr = lang === 'fr'
 
   return (
-    <section className="rounded-2xl border border-cyan-500/20 bg-gradient-to-b from-cyan-950/20 to-black/40 p-4 space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <p className="text-[10px] uppercase tracking-wider text-cyan-300/80 font-semibold">
-            {xaRender("Moniteur · ")}{xaRender(pack.name)} · {xaRender(pack.tierLabel)}
-          </p>
-          <p className="text-sm text-white font-medium mt-0.5">{xaRender("Clone LIA · data dense · paper")}</p>
-        </div>
-        <div className="text-right">
-          <p className="text-2xl font-bold text-white tabular-nums">{xaRender(perf)}</p>
-          <p className="text-[10px] text-zinc-500">{xaRender("score moyen · tick ")}{xaRender(tick)}</p>
-        </div>
+    <section className="xa-truth-card" aria-label={fr ? 'Suivi des agents' : 'Agent monitoring'}>
+      <div className="xa-truth-card-heading">
+        <span className="xa-truth-label">{fr ? 'Suivi transparent · paper-first' : 'Transparent monitoring · paper-first'}</span>
+        <h3>{pack?.name || packId}</h3>
+        <p>{fr
+          ? 'Aucun score, signal d’achat/vente, volume ou événement d’agent ne peut être certifié pour ce pack à ce stade.'
+          : 'No score, buy/sell signal, volume or agent event is certified for this pack at this time.'}</p>
       </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
-        <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
-          <p className="text-zinc-500">{xaRender("EGLD")}</p>
-          <p className="text-white font-semibold tabular-nums">
-            {xaRender(egld != null ? `$${egld.toFixed(2)}` : '—')}
-          </p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
-          <p className="text-zinc-500">{xaRender("LONG / SHORT")}</p>
-          <p className="text-white font-semibold tabular-nums">
-            <span className="text-emerald-400">{xaRender(longN)}</span>
-            {xaRender(' / ')}
-            <span className="text-rose-400">{xaRender(shortN)}</span>
-          </p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
-          <p className="text-zinc-500">{xaRender("Part pool")}</p>
-          <p className="text-white font-semibold text-xs">{xaRender("Répartition non attestée")}</p>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-black/40 px-3 py-2">
-          <p className="text-zinc-500">{xaRender("Intensité")}</p>
-          <p className="text-white font-semibold">×{xaRender(pack.signalIntensity)}</p>
-        </div>
+      <div className="xa-truth-status-grid">
+        <div><span>{fr ? 'Flux agent validé' : 'Verified agent feed'}</span><strong>—</strong><small>{fr ? 'Indisponible' : 'Unavailable'}</small></div>
+        <div><span>{fr ? 'Dernière action confirmée' : 'Last confirmed action'}</span><strong>—</strong><small>{fr ? 'Aucune donnée certifiée' : 'No certified data'}</small></div>
+        <div><span>{fr ? 'Performance' : 'Performance'}</span><strong>—</strong><small>{fr ? 'Non calculable' : 'Not available'}</small></div>
       </div>
-
-      <div className="rounded-xl border border-white/10 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-[11px] mono min-w-[480px]">
-            <thead>
-              <tr className="bg-white/[0.04] text-zinc-500 text-left">
-                <th className="px-2 py-1.5">#</th>
-                <th className="px-2 py-1.5">{xaRender("Signal")}</th>
-                <th className="px-2 py-1.5">{xaRender("Score")}</th>
-                <th className="px-2 py-1.5">{xaRender("Bias")}</th>
-                <th className="px-2 py-1.5">{xaRender("UTC")}</th>
-                <th className="px-2 py-1.5">{xaRender("Note")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {xaRender(signals.map((s, i) => (
-                <tr key={s.id} className="border-t border-white/[0.05]">
-                  <td className="px-2 py-1.5 text-zinc-600">{xaRender(String(i + 1).padStart(2, '0'))}</td>
-                  <td className="px-2 py-1.5 text-cyan-200/90 font-medium">{xaRender(s.kind)}</td>
-                  <td className="px-2 py-1.5 tabular-nums text-zinc-200">{xaRender(s.score)}</td>
-                  <td
-                    className={`px-2 py-1.5 font-semibold ${
-                      s.bias === 'LONG'
-                        ? 'text-emerald-400'
-                        : s.bias === 'SHORT'
-                          ? 'text-rose-400'
-                          : 'text-zinc-500'
-                    }`}
-                  >
-                    {xaRender(s.bias)}
-                  </td>
-                  <td className="px-2 py-1.5 text-zinc-500">{xaRender(s.ts)}</td>
-                  <td className="px-2 py-1.5 text-zinc-600 truncate max-w-[120px]">{xaRender(s.detail)}</td>
-                </tr>
-              )))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-1.5">
-        {xaRender(pack.strategies.map(s => (
-          <span
-            key={s}
-            className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] mono text-zinc-400"
-          >
-            {xaRender(s)}
-          </span>
-        )))}
-      </div>
-
-      <p className="text-[10px] text-zinc-600 leading-relaxed">
-        {xaRender("Paper only — pas un rendement. Signaux + part pool affichés ; fonds sous ta signature. ")}</p>
+      {pack?.strategies?.length ? <div className="xa-truth-strategies">
+        <p>{fr ? 'Fonctions envisagées (non actives)' : 'Planned capabilities (not active)'}</p>
+        <div>{pack.strategies.map(strategy => <span key={strategy}>{strategy}</span>)}</div>
+      </div> : null}
+      <p className="xa-truth-footnote">{fr
+        ? 'Les données de test générées périodiquement ont été retirées. Aucun ordre, staking, swap ou mint live n’est activé ici.'
+        : 'Periodically generated test data has been removed. No live order, staking, swap or mint is activated here.'}</p>
     </section>
   )
 }
