@@ -190,3 +190,14 @@ html[data-motion="off"] .xa-orbital-axis{animation:none}
  .xa-first-art.xa-orbital-art{display:none}
 }
 @media(max-width:490px){.xa-roadmap-milestone{padding:18px}.xa-home-roadmap{padding:19px}}
+
+/* Keep the existing mobile dialog and five-slot dock; group its links semantically. */
+.xa-mobile-menu .xa-mobile-menu-group{padding:10px 0 12px;border-bottom:1px solid var(--xa-border)}
+.xa-mobile-menu .xa-nav-group-caption{font-size:11px;font-weight:650;letter-spacing:.04em;color:var(--xa-muted);padding:12px 10px 5px}
+.xa-mobile-menu .xa-mobile-menu-group>a{display:flex;gap:17px;align-items:center;padding:12px 10px;min-height:44px;font-size:17px;letter-spacing:-.02em;border-bottom:0}
+.xa-mobile-menu .xa-mobile-menu-group>a>span{font:10px 'JetBrains Mono',monospace;color:var(--xa-dim)}
+.xa-mobile-menu .xa-mobile-menu-group>a>svg{margin-inline-start:auto;color:var(--xa-accent)}
+.xa-mobile-menu .xa-mobile-menu-group>a:focus-visible{outline:2px solid var(--xa-accent);outline-offset:-2px;border-radius:8px}
+.xa-first-tile .xa-module-status{font-size:10px;margin:0 0 3px}
+.xa-roadmap-page>h1{font-size:clamp(32px,5vw,62px);letter-spacing:-.04em;line-height:1.1;font-weight:550;margin:20px 0 10px}
+@media(max-width:390px){.xa-mobile-menu .xa-mobile-menu-group>a{font-size:16px}}
