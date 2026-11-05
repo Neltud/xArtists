@@ -25,6 +25,7 @@ import { mintDispatchConfig, probeMintJobsStore } from './mintDispatch.mjs'
 import { oidcMintPullEnabled, verifyGitHubOidc, eligibleOidcOrders, claimOidcMintOrder, ackOidcMintOrder } from './mintOidcPull.mjs'
 import { loadOrders } from './orders.mjs'
 import { troBridgeStatus } from './troBridgeStatus.mjs'
+import { createOpenSeaPreviewService } from './openseaPreview.mjs'
 import { tryHandleAuction, auctionPublicConfig } from './auctionHttp.mjs'
 import {studioMediaConfig,mediaJwt,mediaActor,readCreatorMedia,
   uploadStudioMedia,pinStudioMetadata} from './creatorMedia.mjs'
@@ -65,6 +66,8 @@ const PACK_CATALOG = {
 
 // Single P0 paper path: the backend owns the fiat catalogue, Rule1 quote and JWT wallet identity.
 // Existing PSP checkout remains independently gated; this never calls createOrder or mint.
+const OPENSEA_PREVIEW = createOpenSeaPreviewService()
+
 const LIA_SIMPLE = createSimpleIntentService({
   quoteProvider: async ({ packTier, nowMs }) => {
     const rate = envFxRate()
@@ -173,6 +176,8 @@ async function handleRequest(req, res) {
       physical_store: physicalConfig().storage,
       studio_media_upload:studioMediaConfig().enabled ? 'pinata_ipfs' : 'off',
       tro_solana_bridge:'off',
+      opensea_preview_configured: Boolean(process.env.OPEN_SEA_API_KEY),
+      opensea_order_execution_enabled: false,
       auction_enabled: auctionPublicConfig().enabled,
       auction_demo_writes_enabled: auctionPublicConfig().demo_writes_enabled,
       auction_settle: false,
@@ -188,6 +193,15 @@ async function handleRequest(req, res) {
   if (req.method === 'GET' && pth === '/v1/ops/orders-store/status') {
     const status = await probeOrdersStore()
     json(res, status.ok ? 200 : 503, status)
+    return
+  }
+
+  // OpenSea multichain catalogue: GET metadata only. Wallet signing/order execution
+  // is always external at opensea.io; never handled by xArtists PayBox or relayer.
+  if (pth === '/v1/marketplace/opensea/collection') {
+    if (req.method !== 'GET') { json(res, 405, { ok: false, error: 'method_not_allowed' }); return }
+    const outcome = await OPENSEA_PREVIEW(u.searchParams.get('chain'), u.searchParams.get('slug'))
+    json(res, outcome.status, outcome.body)
     return
   }
 
