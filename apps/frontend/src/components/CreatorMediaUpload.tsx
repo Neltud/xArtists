@@ -5,9 +5,20 @@ import { useEffect, useState } from 'react'
 import { useWallet } from '../context/WalletContext'
 import { signAccessMessage } from '../lib/signAccessMessage'
 import { getAccessApiBase } from '../lib/stripe'
+import { makePreservationManifest } from '../lib/mediaArchiveManifest'
 
-type Pinned={mediaUri:string;metadataUri:string;attributes:string;title:string}
+type Pinned={mediaUri:string;metadataUri:string;attributes:string;title:string;sha256:string;bytes:number;mime:string}
 type Props={title:string;onReady:(pin:Pinned|null)=>void}
+function exportPreservationReceipt(pin:Pinned){
+  const manifest=makePreservationManifest(pin)
+  const blob=new Blob([JSON.stringify(manifest,null,2)+'\n'],{type:'application/json'})
+  const url=URL.createObjectURL(blob)
+  const a=document.createElement('a')
+  a.href=url
+  a.download='xartists-preservation-'+pin.sha256.slice(0,12)+'.json'
+  a.click()
+  window.setTimeout(()=>URL.revokeObjectURL(url),1000)
+}
 const allowed:Record<string,number>={
   'image/jpeg':16*1024*1024,'image/png':16*1024*1024,
   'image/webp':16*1024*1024,'video/mp4':48*1024*1024,
@@ -74,14 +85,15 @@ export default function CreatorMediaUpload({title,onReady}:Props){
       })
       const data=await uploadResponse.json().catch(()=>({error:'upload_response_invalid'}))
       if(!uploadResponse.ok)throw new Error(data.error||'Erreur upload IPFS.')
-      if(!data.uploadId||!data.uri)throw new Error('Upload non confirmé par le serveur.')
+      if(!data.uploadId||!data.uri||!/^[a-f0-9]{64}$/.test(String(data.sha256||''))||data.bytes!==file.size||data.mime!==file.type)
+        throw new Error('Réponse upload incomplète ou incohérente : média non validé.')
       const meta=await postJson(base,'/v1/studio/media/metadata',{
         uploadId:data.uploadId,title:title.trim(),description:description.trim(),rightsAccepted:rights,
       },session.token)
       if(!meta.mediaUri||!meta.metadataUri||!meta.attributes)
         throw new Error('Métadonnées IPFS non confirmées.')
       const result={mediaUri:meta.mediaUri as string,metadataUri:meta.metadataUri as string,
-        attributes:meta.attributes as string,title:title.trim()}
+        attributes:meta.attributes as string,title:title.trim(),sha256:data.sha256 as string,bytes:data.bytes as number,mime:data.mime as string}
       setPinned(result);onReady(result)
     }catch(e){setError(e instanceof Error?e.message:'Echec de la préparation IPFS.')}
     finally{setPending(false)}
@@ -98,7 +110,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         Vérification du service d’upload… Aucun fichier n’est transmis pendant cette étape.
       </p>}
       {enabled===false&&<p role="status" className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs leading-relaxed text-amber-100">
-        Upload IPFS indisponible : la photo ou vidéo sélectionnée reste uniquement sur votre appareil.
+        La publication des œuvres est temporairement indisponible : votre photo ou vidéo reste uniquement sur votre appareil.
         L’aperçu local n’est pas un fichier publié, une transaction ou un NFT minté.
         Pour préparer une œuvre, utilisez une URI IPFS/HTTPS que vous hébergez vous-même ;
         ne signez aucune transaction avant d’avoir vérifié le média, les droits et la collection.
@@ -135,10 +147,15 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         {pending?'Publication média + métadonnées IPFS…':'Publier sur IPFS et préparer le mint'}
       </button>
       {pinned&&!stale&&<div role="status" className="space-y-1 rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-2 text-xs text-emerald-100">
-        <p className="font-semibold">Média et métadonnées épinglés sur IPFS. Le NFT n'est PAS encore minté.</p>
+        <p className="font-semibold">Média et métadonnées signalés comme épinglés sur IPFS. Une vérification indépendante de leur disponibilité reste nécessaire. Le NFT n'est PAS encore minté.</p>
         <p className="break-all">Média : {pinned.mediaUri}</p>
         <p className="break-all">Métadonnées : {pinned.metadataUri}</p>
-        <p>Étape suivante : vérifier la collection et signer le mint dans votre wallet.</p>
+        <p>Étape suivante : conserver l'original, vérifier sa disponibilité et la collection avant de signer le mint.</p>
+        <button type="button" className="btn-secondary mt-2 min-h-[44px] w-full whitespace-normal text-xs"
+          onClick={()=>{try{exportPreservationReceipt(pinned)}catch(e){setError(e instanceof Error?e.message:'Fiche de sauvegarde invalide.')}}}>
+          Télécharger la fiche de conservation (JSON, copies à confirmer)
+        </button>
+        <p>Cette fiche n'est ni une sauvegarde, ni une preuve de conservation permanente.</p>
       </div>}
       {stale&&<p className="text-xs text-amber-200">Le titre a changé depuis l'upload. Republiez les métadonnées avant de minter.</p>}
       {error&&<p role="alert" className="text-xs text-rose-200">{error}</p>}
