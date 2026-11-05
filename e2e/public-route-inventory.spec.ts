@@ -91,6 +91,7 @@ test('mobile dock links navigate to the five public destinations', async ({ page
   const canonical: Record<string, string> = {
     '/': '/', '/museum': '/explore/museum', '/marketplace': '/explore/market',
     '/auction': '/explore/auction', '/studio': '/create/studio',
+    '/finance/governance': '/finance/governance',
   }
   for (const href of hrefs) {
     const path = new URL(href, page.url()).pathname.slice(BASE.length).replace(/\/$/, '') || '/'
