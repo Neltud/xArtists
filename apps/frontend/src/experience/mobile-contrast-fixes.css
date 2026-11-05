@@ -187,7 +187,7 @@ html[data-theme="light"] .xa-module-body .xa-staking-page [class*="border-zinc-"
   max-width: 100%;
 }
 .xa-nft-factory .grid > * { overflow-wrap: anywhere; }
-.xa-nft-factory :is(input,textarea,select) {
+.xa-nft-factory :is(input:not([type=checkbox]):not([type=radio]),textarea,select) {
   width: 100%;
   box-sizing: border-box;
 }
