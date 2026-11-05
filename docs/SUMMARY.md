@@ -8,7 +8,6 @@
   * [Explorer sur mobile : Marketplace, enchères et Studio](presentation/mobile-marketplace-auctions.md)
   * [Artistes et créateurs](presentation/artistes-et-createurs.md)
   * [Préserver vos œuvres : IPFS, Arweave et sauvegardes](presentation/conserver-les-oeuvres.md)
-  * [Conserver vos images, vidéos et NFT](presentation/stockage-preservation-media.md)
   * [Collectionneurs et visiteurs](presentation/collectionneurs-et-visiteurs.md)
   * [Démarrer sur web, mobile et xPortal](presentation/demarrer-sur-mobile.md)
 * [LIA et intelligence artificielle](presentation/lia-et-agents-ia.md)
