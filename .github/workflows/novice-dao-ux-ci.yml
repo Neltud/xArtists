@@ -1,0 +1,52 @@
+name: xArtists accessible onboarding + DAO navigation
+
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/experience/**'
+      - 'apps/frontend/src/components/DaoGovernance.tsx'
+      - 'apps/frontend/src/pages/DaoPage.tsx'
+      - 'apps/frontend/tests/novice-dao-navigation.test.mjs'
+      - '.github/workflows/novice-dao-ux-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/frontend/src/experience/**'
+      - 'apps/frontend/src/components/DaoGovernance.tsx'
+      - 'apps/frontend/src/pages/DaoPage.tsx'
+      - 'apps/frontend/tests/novice-dao-navigation.test.mjs'
+      - '.github/workflows/novice-dao-ux-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  beginner-paths:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    env:
+      VITE_LIA_LIVE_TRADING: '0'
+      VITE_GENESIS_COMMERCIAL_GO: '0'
+      MINT_LIVE_ENABLED: 'false'
+      PAYBOX_CHECKOUT_ENABLED: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Locked frontend install
+        working-directory: apps/frontend
+        run: npm ci --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+      - name: Beginner UX / full discovery / DAO paper tests
+        working-directory: apps/frontend
+        run: node --test tests/novice-dao-navigation.test.mjs
+      - name: Verify public route aliases
+        working-directory: apps/frontend
+        run: npm run check:routes
+      - name: TypeScript release gate
+        working-directory: apps/frontend
+        run: npm run typecheck
+      - name: Build production frontend
+        working-directory: apps/frontend
+        run: npm run build
