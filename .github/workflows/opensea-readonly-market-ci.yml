@@ -1,0 +1,73 @@
+name: OpenSea Solana/Polygon read-only marketplace
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/src/openseaPreview.mjs'
+      - 'services/access-api/src/server.mjs'
+      - 'services/access-api/tests/opensea-preview.test.mjs'
+      - 'apps/frontend/src/components/market/OpenSeaCollectionPanel.tsx'
+      - 'apps/frontend/src/pages/MarketplacePage.tsx'
+      - 'apps/frontend/tests/opensea-readonly.test.mjs'
+      - '.github/workflows/opensea-readonly-market-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/openseaPreview.mjs'
+      - 'services/access-api/src/server.mjs'
+      - 'services/access-api/tests/opensea-preview.test.mjs'
+      - 'apps/frontend/src/components/market/OpenSeaCollectionPanel.tsx'
+      - 'apps/frontend/src/pages/MarketplacePage.tsx'
+      - 'apps/frontend/tests/opensea-readonly.test.mjs'
+      - '.github/workflows/opensea-readonly-market-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      OPEN_SEA_API_KEY: ''
+      LIA_LIVE_TRADING: '0'
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      MINT_LIVE_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate module and server JavaScript
+        run: |
+          node --check services/access-api/src/openseaPreview.mjs
+          node --check services/access-api/src/server.mjs
+      - name: OpenSea provider mock + adversarial tests (no network/signature)
+        run: node --test services/access-api/tests/opensea-preview.test.mjs
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VITE_GENESIS_COMMERCIAL_GO: '0'
+      VITE_LIA_LIVE_TRADING: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked frontend dependencies
+        working-directory: apps/frontend
+        run: npm ci --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+      - name: Test read-only UI contract and all route aliases
+        working-directory: apps/frontend
+        run: |
+          node --test tests/opensea-readonly.test.mjs
+          npm run check:routes
+      - name: TypeScript release gate
+        working-directory: apps/frontend
+        run: npm run typecheck
+      - name: Build frontend
+        working-directory: apps/frontend
+        run: npm run build
