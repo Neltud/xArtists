@@ -23,7 +23,7 @@ const SFT_STAKE_KEY = 'xartists_nft_stake_units_v1'
 
 const DEFAULT_PROPOSALS: Proposal[] = [
   { id: 'p1', titleKey: 'dao.prop1.title', bodyKey: 'dao.prop1.body', status: 'demo', yes: 0, no: 0 },
-  { id: 'p2', titleKey: 'dao.prop2.title', bodyKey: 'dao.prop2.body', status: 'active', yes: 0, no: 0 },
+  { id: 'p2', titleKey: 'dao.prop2.title', bodyKey: 'dao.prop2.body', status: 'demo', yes: 0, no: 0 },
 ]
 
 function loadVotes(): Record<string, 'yes' | 'no'> {
@@ -86,7 +86,7 @@ export default function DaoGovernance() {
   return (
     <div className="space-y-5">
       <details className="rounded-2xl border border-purple-500/30 bg-black/85 backdrop-blur-md p-4 shadow-2xl space-y-3">
-        <summary className="cursor-pointer text-sm font-semibold text-white">{c('dao.votingPower')} · {c('demoLabel')}</summary>
+        <summary className="cursor-pointer text-sm font-semibold text-white">{t('dao.votingPower')} · {c('demoLabel')}</summary>
         <div className="mt-4 space-y-3">
         <p className="text-[10px] uppercase tracking-[0.2em] text-purple-300/90">
           {xaRender("DAO · ")}{xaRender(t('dao.votingPower'))}
@@ -148,7 +148,7 @@ export default function DaoGovernance() {
                 </button>
                 <button
                   type="button"
-                  disabled={p.status !== 'active'}
+                  disabled={p.status !== 'demo'}
                   onClick={() => cast(p.id, 'no')}
                   className={`rounded-xl border px-4 py-2 text-xs font-semibold min-h-[44px] ${
                     mine === 'no'
