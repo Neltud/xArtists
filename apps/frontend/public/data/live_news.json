@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-05T01:18:41.530Z",
+  "updatedAt": "2026-11-05T10:23:36.531Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793874216139",
+      "timestamp": "10:23",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.37 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793871329000",
+      "timestamp": "09:35",
+      "source": "CoinTelegraph",
+      "title": "South Korea seeks 4th crypto tax delay, targets 2029 start",
+      "link": "https://cointelegraph.com/news/south-korea-crypto-tax-fourth-delay-2029?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793869482000",
+      "timestamp": "09:04",
+      "source": "CoinTelegraph",
+      "title": "France budget rejection sidelines stablecoin tax, wallet reporting",
+      "link": "https://cointelegraph.com/news/france-rejects-budget-revenue-sidelines-crypto-amendments?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793866950000",
+      "timestamp": "08:22",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin, Ether ETFs draw $128M as crypto rebounds after midterms",
+      "link": "https://cointelegraph.com/markets/bitcoin-ether-etfs-turn-green-post-election-rebound?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1793863386000",
+      "timestamp": "07:23",
+      "source": "CoinTelegraph",
+      "title": "Crédit Mutuel Arkéa resumes operations after attack, assesses losses",
+      "link": "https://cointelegraph.com/news/credit-mutuel-arkea-resumes-operations-133m-crypto-theft?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793859672000",
+      "timestamp": "06:21",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793858549000",
+      "timestamp": "06:02",
+      "source": "CoinTelegraph",
+      "title": "Binance, Polymarket seek Polygon hard fork to recover $6.8M in stolen crypto",
+      "link": "https://cointelegraph.com/news/polygon-hard-fork-binance-polymarket-6-8m-hack-recovery?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793857621000",
+      "timestamp": "05:47",
+      "source": "CoinDesk",
+      "title": "Zcash is about to freeze $16 million in its oldest privacy pool",
+      "link": "https://www.coindesk.com/tech/2026/11/05/zcash-is-about-to-freeze-usd16-million-in-its-oldest-privacy-pool"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793856532000",
+      "timestamp": "05:28",
+      "source": "CoinDesk",
+      "title": "The pile of lawsuits against Kalshi just grew by one",
+      "link": "https://www.coindesk.com/policy/2026/11/05/the-pile-of-lawsuits-against-kalshi-just-grew-by-one"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793856306000",
+      "timestamp": "05:25",
+      "source": "CoinDesk",
+      "title": "XRP Ledger fixes a disclosed bug that could have led to the creation of new tokens",
+      "link": "https://www.coindesk.com/markets/2026/11/05/xrp-ledger-closes-bug-that-let-approved-token-burners-create-new-tokens"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793855625000",
+      "timestamp": "05:13",
+      "source": "CoinDesk",
+      "title": "Bitcoin holds above $80,000 as Zcash jumps 12% in post-election crypto rebound",
+      "link": "https://www.coindesk.com/markets/2026/11/05/bitcoin-holds-above-usd80-000-as-zcash-jumps-12-in-post-election-crypto-rebound"
+    },
     {
       "id": "egld-1793841521174",
       "timestamp": "01:18",
@@ -16,13 +93,6 @@
       "source": "CoinTelegraph",
       "title": "Mercado Bitcoin says phased reopening to begin Monday, will cover losses",
       "link": "https://cointelegraph.com/news/mercado-bitcoin-phased-reopening-to-begin-monday-pledges-to-cover-losses?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793832863000",
-      "timestamp": "22:54",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-2-1793831518000",
@@ -128,76 +198,6 @@
       "source": "CoinDesk",
       "title": "Bitcoin rebounds from midterm dip as DeFi leads gains",
       "link": "https://www.coindesk.com/markets/2026/11/04/bitcoin-rebounds-from-midterm-dip-as-defi-leads-gains"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793787530000",
-      "timestamp": "10:18",
-      "source": "CoinDesk",
-      "title": "ZachXBT names French bank Crédit Mutuel Arkéa as suspected victim of $133 million crypto theft",
-      "link": "https://www.coindesk.com/business/2026/11/04/zachxbt-names-french-bank-credit-mutuel-arkea-as-suspected-victim-of-usd133-million-crypto-theft"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793786613000",
-      "timestamp": "10:03",
-      "source": "CoinDesk",
-      "title": "Elon Musk floats space data centers as Democratic sweep puts pressure on AI trade",
-      "link": "https://www.coindesk.com/markets/2026/11/04/elon-musk-floats-space-data-centers-as-democratic-sweep-puts-pressure-on-ai-trade"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793784178000",
-      "timestamp": "09:22",
-      "source": "CoinDesk",
-      "title": "Morgan Stanley says it is among the first banks to tokenize real world assets",
-      "link": "https://www.coindesk.com/markets/2026/11/04/morgan-stanley-says-it-is-among-the-first-banks-to-put-u-s-stocks-and-treasuries-on-a-blockchain"
-    },
-    {
-      "id": "egld-1793788218688",
-      "timestamp": "10:30",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.45 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793785087000",
-      "timestamp": "09:38",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin ETFs lose $1.16B as Bitwise calls selling ‘short-term’",
-      "link": "https://cointelegraph.com/markets/bitcoin-etf-shed-1-16-billion-bitwise-short-term-risk-off?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793784454000",
-      "timestamp": "09:27",
-      "source": "CoinTelegraph",
-      "title": "US midterm elections 2026 as it happened: Democrats win control of Congress",
-      "link": "https://cointelegraph.com/news/us-midterms-2026-live-results-and-what-they-mean-for-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1793783755000",
-      "timestamp": "09:15",
-      "source": "CoinTelegraph",
-      "title": "Binance hackers move 81% of stolen Solana, route funds via THORChain",
-      "link": "https://cointelegraph.com/news/binance-hackers-move-81-stolen-solana-route-thorchain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793778627000",
-      "timestamp": "07:50",
-      "source": "CoinTelegraph",
-      "title": "Democrats win US House to secure control of Congress in midterms",
-      "link": "https://cointelegraph.com/news/democrats-win-us-house-congress-control?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793777147000",
-      "timestamp": "07:25",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin bounces from 7-week low under $76K as Democrats sweep Congress",
-      "link": "https://cointelegraph.com/markets/bitcoin-bounces-from-7-week-low-under-76k-as-democrats-eye-congress-sweep?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793779444000",
-      "timestamp": "08:04",
-      "source": "CoinDesk",
-      "title": "Zcash grants committee drops plan to redirect 98,000 ZEC to future mining rewards",
-      "link": "https://www.coindesk.com/markets/2026/11/04/zcash-grants-committee-drops-plan-to-redirect-98-000-zec-to-future-mining-rewards"
     }
   ]
 }
