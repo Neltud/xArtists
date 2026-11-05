@@ -14,7 +14,7 @@ const CID=/^(?:Qm[1-9A-HJ-NP-Za-km-z]{44}|baf[a-z2-7]{20,})$/
 export function makePreservationManifest(pin:ReportedPin){
  const parts=pin.mediaUri.startsWith('ipfs://')?pin.mediaUri.slice(7).split('/'):[]
  const meta=pin.metadataUri.startsWith('ipfs://')?pin.metadataUri.slice(7).split('/'):[]
- if(parts.length!==2||!CID.test(parts[0])||!/^artwork-[a-f0-9]{24}\\.(?:jpg|png|webp|mp4)$/.test(parts[1])||
+ if(parts.length!==2||!CID.test(parts[0])||!/^artwork-[a-f0-9]{24}\.(?:jpg|png|webp|mp4)$/.test(parts[1])||
     meta.length!==1||!CID.test(meta[0])||
     !/^[a-f0-9]{64}$/.test(pin.sha256)||!Number.isSafeInteger(pin.bytes)||pin.bytes<=0||
     !['image/jpeg','image/png','image/webp','video/mp4'].includes(pin.mime))
