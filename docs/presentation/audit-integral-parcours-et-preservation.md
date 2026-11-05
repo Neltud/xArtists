@@ -59,7 +59,7 @@ Cette classification ne remplace **pas** un service backend de capacités. Toute
 | Espace | History · `/workspace/history` | Aperçu | Événements et statuts issus de traces réelles, pas de démo LIVE |
 | Espace | Status · `/workspace/status` | Consultation | Distinction claire entre heartbeat backend, lecture et mutation financière |
 | Espace | Legal · `/legal` | Consultation | Conditions, propriétaire artistique, RGPD et facturation |
-| Total | **40 modules** | 10 consultation / 21 aperçu / 9 préparation* | *Calculer les comptes depuis le registre, pas depuis cette ligne rédigée manuellement* |
+| Total | **40 modules** | 10 consultation / 24 aperçu / 6 préparation* | *Comptage conservateur de la classification éditoriale, pas des transactions disponibles* |
 
 > Note : les listes sont basées sur l'état éditorial de `publicReadiness.ts`; ne pas utiliser ce tableau comme preuve d'une transaction. Les alias `/marketplace`, `/auction`, `/studio`, `/dao`, `/staking`, `/lp`, `/nft-factory` restent les liens orientés grand public.
 
