@@ -22,6 +22,10 @@ test('public status differentiates source age, checking time and simulated perfo
   assert.match(overview, /Simulation only/)
   assert.match(overview, /not realized/)
   assert.match(overview, /Last published balance/)
+  assert.match(overview, /assessTelemetrySource/)
+  assert.match(overview, /status\?\.mindset\?\.vellum_ts/)
+  assert.match(overview, /reportedStrategy \|\| 'Unavailable — model delayed or unsourced'/)
+  assert.doesNotMatch(overview, /status\?\.mindset\?\.strategy \|\| hub\?\.strategy/)
   assert.doesNotMatch(overview, /\{hub\.note\}/)
 })
 
@@ -36,4 +40,6 @@ test('LIA top-level page remains browse-only and exposes market, auction and pac
   assert.match(page, /Simulated P&L is not realized profit/)
   assert.doesNotMatch(page, /\{hub\?\.note\}/)
   assert.doesNotMatch(page, /LIVE user-sign xPortal/)
+  assert.match(page, /Vellum strategy withheld/)
+  assert.match(page, /producerFreshness\.is_stale/)
 })

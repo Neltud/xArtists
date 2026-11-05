@@ -8,6 +8,9 @@ on:
       - 'apps/frontend/src/components/lia/LiaHubControlRoomLazy.tsx'
       - 'apps/frontend/src/components/lia/LiaMobileOverview.tsx'
       - 'apps/frontend/tests/lia-public-first.test.mjs'
+      - 'apps/frontend/tests/telemetry-truth.test.mjs'
+      - 'apps/frontend/src/lia/telemetryTruth.mjs'
+      - 'apps/frontend/src/lia/telemetryTruth.d.mts'
       - '.github/workflows/lia-public-ux-ci.yml'
   push:
     branches: [main]
@@ -16,6 +19,9 @@ on:
       - 'apps/frontend/src/components/lia/LiaHubControlRoomLazy.tsx'
       - 'apps/frontend/src/components/lia/LiaMobileOverview.tsx'
       - 'apps/frontend/tests/lia-public-first.test.mjs'
+      - 'apps/frontend/tests/telemetry-truth.test.mjs'
+      - 'apps/frontend/src/lia/telemetryTruth.mjs'
+      - 'apps/frontend/src/lia/telemetryTruth.d.mts'
       - '.github/workflows/lia-public-ux-ci.yml'
 
 permissions:
@@ -37,7 +43,7 @@ jobs:
         run: npm ci --legacy-peer-deps --ignore-scripts --no-audit --no-fund
       - name: Public-first status and no-live-claim regressions
         working-directory: apps/frontend
-        run: node --test tests/lia-public-first.test.mjs
+        run: node --test tests/lia-public-first.test.mjs tests/telemetry-truth.test.mjs
       - name: TypeScript check
         working-directory: apps/frontend
         run: npm run typecheck
