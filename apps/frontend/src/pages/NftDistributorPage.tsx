@@ -48,7 +48,7 @@ export default function NftDistributorPage() {
   const [quantity, setQuantity] = useState(12)
   const [seed, setSeed] = useState('xartists-original-collection-2026')
   const [designMode, setDesignMode] = useState<'template' | 'layers'>('template')
-  const [template, setTemplate] = useState('chromatic')
+  const [template, setTemplate] = useState<'chromatic' | 'botanical' | 'monochrome'>('chromatic')
   const [layersJson, setLayersJson] = useState(starterLayers)
   const [rightsConfirmed, setRightsConfirmed] = useState(false)
   const [art, setArt] = useState<ArtCollectionDraft | null>(null)
@@ -199,7 +199,7 @@ export default function NftDistributorPage() {
         </div>
         {designMode === 'template'
           ? <label className="block space-y-1 text-sm">Modèle
-              <select className="w-full rounded-lg border border-white/15 bg-black/50 p-2" value={template} onChange={e => setTemplate(e.target.value)}>
+              <select className="w-full rounded-lg border border-white/15 bg-black/50 p-2" value={template} onChange={e => setTemplate(e.target.value as 'chromatic' | 'botanical' | 'monochrome')}>
                 {Object.entries(ART_TEMPLATES).map(([id, data]) => <option key={id} value={id}>{data.label}</option>)}
               </select>
             </label>
