@@ -104,3 +104,20 @@ test('Malformed NFT response and disabled NFT fail closed', async () => {
   assert.equal(result.status, 200)
   assert.deepEqual(result.body.items, [])
 })
+
+test('Per-instance API usage is rate-limited; cached views remain usable', async () => {
+  const calls = []
+  const preview = createOpenSeaPreviewService({
+    apiKey: KEY, fetchImpl: fakeFetch(calls), clock: () => 1_000,
+  })
+  for (let i = 0; i < 30; i++) {
+    const result = await preview('solana', 'collection-' + i)
+    assert.equal(result.status, 200)
+  }
+  const blocked = await preview('solana', 'collection-30')
+  assert.equal(blocked.status, 429)
+  assert.equal(blocked.body.error, 'opensea_busy')
+  assert.equal(calls.length, 60)
+  assert.equal((await preview('solana', 'collection-0')).status, 200)
+  assert.equal(calls.length, 60)
+})
