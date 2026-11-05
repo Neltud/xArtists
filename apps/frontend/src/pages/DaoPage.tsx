@@ -3,17 +3,21 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
 import { Link } from 'react-router-dom'
 import DaoGovernance from '../components/DaoGovernance'
 import { useI18n } from '../i18n/I18nContext'
+import { useCopy } from '../experience/state'
 
 export default function DaoPage() {
   const { t } = useI18n()
+  const c = useCopy()
   return (
-    <div className="animate-fade-in space-y-6 max-w-xl mx-auto pb-16">
+    <div className="animate-fade-in space-y-6 max-w-3xl mx-auto pb-16 px-4">
       <header className="space-y-1">
         <p className="section-label">{xaRender(t('dao.kicker'))}</p>
         <h1 className="section-title display text-2xl">{xaRender(t('dao.title'))}</h1>
-        <p className="text-sm text-zinc-400">{xaRender(t('dao.lead'))}</p>
+        <p className="text-sm leading-relaxed text-zinc-300">{c('daoIntroPlain')}</p>
+        <p className="text-sm text-amber-200">{c('daoGovernanceUnavailable')}</p>
       </header>
       <DaoGovernance />
+      <Link to="/directory?group=finance" className="text-sm underline text-cyan-200">{c('directory')}</Link>
       <div className="flex flex-wrap gap-2 text-sm">
         <Link to="/staking" className="btn-secondary text-sm">
           {xaRender("Staking & Yield ")}</Link>
