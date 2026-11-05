@@ -192,7 +192,7 @@ export default function NftDistributorPage() {
     } catch { setCopyStatus('Presse-papiers non disponible. Tu peux sélectionner et copier le brief.') }
   }
 
-  return <div className="mx-auto max-w-7xl space-y-8 px-4 py-7 sm:px-8" data-testid="nft-factory-paper">
+  return <div className="xa-nft-factory mx-auto max-w-7xl space-y-8 px-4 py-7 sm:px-8" data-testid="nft-factory-paper">
     <header className="space-y-3">
       <p className="text-xs uppercase tracking-[.2em] text-lime-300">xArtists / Studio / NFT Factory</p>
       <h1 className="text-3xl font-semibold sm:text-5xl">Art Generator & distributeurs NFT</h1>
@@ -240,7 +240,7 @@ export default function NftDistributorPage() {
           : <div className="space-y-3 rounded-lg border border-white/15 p-3">
               <p className="text-sm font-semibold">Choix de calques & raretés</p>
               {visualLayers.map((layer, li) => <div key={li} className="space-y-2 rounded-lg border border-white/10 bg-black/20 p-3">
-                <div className="flex items-center gap-2">
+                <div className="xa-nft-layer-row flex items-center gap-2">
                   <label className="flex-1 text-xs">Nom du calque
                     <input className="mt-1 w-full rounded-lg border border-white/15 bg-black/40 p-2" value={layer.name}
                       onChange={e => editLayers(items => { items[li].name = e.target.value })}/>
@@ -248,7 +248,7 @@ export default function NftDistributorPage() {
                   <button type="button" className="btn-secondary text-xs" disabled={visualLayers.length<=1}
                     onClick={() => editLayers(items => { items.splice(li, 1) })}>Supprimer</button>
                 </div>
-                {layer.variants.map((v,vi) => <div key={vi} className="flex items-end gap-2">
+                {layer.variants.map((v,vi) => <div key={vi} className="xa-nft-variant-row flex items-end gap-2">
                   <label className="flex-1 text-xs">Design / variante
                     <input className="mt-1 w-full rounded-lg border border-white/15 bg-black/40 p-2" value={v.value}
                       onChange={e=>editLayers(items=>{items[li].variants[vi].value=e.target.value})}/>

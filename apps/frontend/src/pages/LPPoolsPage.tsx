@@ -298,7 +298,7 @@ export default function LPPoolsPage() {
                 </p>
               </div>
               <span className="rounded-full border border-white/15 px-2 py-0.5 text-[10px] text-zinc-400">
-                {xaRender("active ")}</span>
+                {xaRender("DEX externe ")}</span>
             </div>
             <div className="grid grid-cols-3 gap-2 text-[12px]">
               <div>
@@ -322,7 +322,7 @@ export default function LPPoolsPage() {
                 target="_blank"
                 rel="noreferrer"
               >
-                {xaRender("Add liquidity ↗ ")}</a>
+                {xaRender("Ouvrir le DEX ↗ ")}</a>
               {xaRender(p.dexscreener && (
                 <a className="btn-secondary text-sm" href={p.dexscreener} target="_blank" rel="noreferrer">
                   {xaRender("DexScreener ")}</a>

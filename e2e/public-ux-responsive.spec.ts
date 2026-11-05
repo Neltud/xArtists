@@ -2,6 +2,18 @@ import { test, expect } from '@playwright/test'
 import { mkdirSync } from 'node:fs'
 
 const BASE = '/xArtists'
+function contrastRatio(foreground: string, background: string): number {
+  const luminance = (color: string) => {
+    const rgb = color.replace(/^rgba?\(/, '').split(',').slice(0, 3).map(channel => Number.parseFloat(channel.trim()))
+    const linear = rgb.map(n => {
+      const channel = n / 255
+      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4
+    })
+    return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722
+  }
+  const a = luminance(foreground), b = luminance(background)
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+}
 mkdirSync('artifacts/ux-mobile', { recursive: true })
 
 async function visit(page: import('@playwright/test').Page, path: string) {
@@ -117,6 +129,84 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await page.setViewportSize({width:390,height:844})
     await expect(page.locator('.xa-orbital-stage')).toBeHidden()
     await expect(page.locator('.xa-mobile-dock')).toBeVisible()
+  })
+
+  test('phone screenshots: compact connected-wallet header always exposes menu and music via dialog', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('xartists_wallet', JSON.stringify({connected:true,address:'erd1'+'q'.repeat(58),method:'paste_readonly'})))
+    for (const width of [360, 390, 430]) {
+      await page.setViewportSize({ width, height: 844 })
+      await visit(page, '/auction/')
+      const header = page.locator('.xa-header-inner')
+      await expect(header).toBeVisible()
+      const menu = page.locator('.xa-mobile-trigger')
+      await expect(menu).toBeVisible()
+      await expect(page.locator('.xa-connect svg')).toBeVisible()
+      await expect(page.locator('.xa-connect span')).toBeHidden()
+      await expect(page.locator('.xa-connect')).toHaveAttribute('aria-label', /erd1qqqq/)
+      await expect(page.locator('.music-player-toggle')).toBeHidden()
+      const box = await menu.boundingBox()
+      expect(box, 'menu has measurable hit target').toBeTruthy()
+      expect(box!.width).toBeGreaterThanOrEqual(35)
+      expect(box!.x + box!.width).toBeLessThanOrEqual(width)
+      await menu.click()
+      await expect(page.locator('.xa-mobile-lang select')).toBeVisible()
+      await expect(page.locator('.xa-mobile-music')).toBeVisible()
+      await page.keyboard.press('Escape')
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
+      expect(overflow, `header overflow at ${width}px`).toBeLessThanOrEqual(12)
+      await page.screenshot({ animations: 'disabled', path: `artifacts/ux-mobile/header-readability-${width}.png` })
+    }
+  })
+
+  test('phone screenshots: auction and guide disclaimers remain readable in light theme', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await visit(page, '/auction/')
+    await expect(page.locator('.xa-auction-preview')).toBeVisible()
+    const preview = await page.locator('.xa-auction-preview').evaluate(el => ({
+      background: getComputedStyle(el).backgroundColor,
+      text: getComputedStyle(el.querySelector('h2')!).color,
+    }))
+    expect(preview.background).toBe('rgb(32, 37, 30)')
+    expect(contrastRatio(preview.text, preview.background)).toBeGreaterThanOrEqual(7)
+    const warning = await page.locator('.xa-auction-public-notice').evaluate(el => getComputedStyle(el).color)
+    expect(warning).not.toBe('rgb(255, 237, 213)')
+    await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/auction-contrast-390.png' })
+    await visit(page, '/guide/')
+    const guideNotice = page.locator('header [role="status"]')
+    await expect(guideNotice).toBeVisible()
+    expect(await guideNotice.evaluate(el => getComputedStyle(el).color)).toBe('rgb(107, 74, 19)')
+  })
+
+  test('phone screenshots: NFT factory layers and inputs do not escape viewport', async ({ page }) => {
+    for (const width of [360, 390]) {
+      await page.setViewportSize({ width, height: 844 })
+      await visit(page, '/nft-factory/')
+      await expect(page.locator('.xa-nft-factory')).toBeVisible()
+      await page.getByLabel('Mode de design').selectOption('layers')
+      const rights = page.locator('.xa-nft-factory input[type="checkbox"]').first()
+      await expect(rights).toBeVisible()
+      expect(await rights.evaluate(el => el.getBoundingClientRect().width)).toBeLessThan(32)
+      await expect(page.locator('.xa-nft-variant-row').first()).toBeVisible()
+      const offscreen = await page.locator('.xa-nft-factory').evaluate(el =>
+        [...el.querySelectorAll('input, textarea, select, button, .card, .xa-nft-layer-row, .xa-nft-variant-row')]
+          .filter(node => {
+            const rect = node.getBoundingClientRect()
+            return rect.width > 0 && (rect.right > window.innerWidth + 2 || rect.left < -2)
+          })
+          .map(node => ({ tag: node.tagName, className: node.className, right: Math.round(node.getBoundingClientRect().right) }))
+      )
+      expect(offscreen, `NFT Factory clipped controls at ${width}px`).toEqual([])
+      await page.screenshot({ animations: 'disabled', path: `artifacts/ux-mobile/nft-layers-fit-${width}.png` })
+    }
+  })
+
+  test('phone screenshot: staking pool cards use readable light surfaces', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await visit(page, '/staking/')
+    const card = page.locator('.xa-staking-pool-card').first()
+    await expect(card).toBeVisible()
+    expect(await card.evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(245, 247, 243)')
+    await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/staking-pool-contrast-390.png' })
   })
 
   test('visitor guide at 390px never links to retired Slot, and offers legal access', async ({ page }) => {

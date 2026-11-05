@@ -2,6 +2,7 @@ import type { Lang } from '../i18n/types'
 export const order: Lang[] = ['fr','en','es','de','ru','uk','zh','ar']
 // Each row is checked at build time; languages never inherit another locale.
 export const copy: Record<string, string[]> = {
+  musicLabel: ["Musique d’ambiance","Background music","Música ambiental","Hintergrundmusik","Фоновая музыка","Фонова музика","背景音乐","موسيقى الخلفية"],
   stageBrowse: ["À consulter","Browse now","Disponible para consultar","Jetzt ansehen","Доступно для просмотра","Доступно для перегляду","现在可浏览","متاح للتصفح"],
   stagePreview: ["En aperçu","Preview only","Vista previa","Vorschau","Предпросмотр","Попередній перегляд","预览体验","معاينة فقط"],
   stageRoadmap: ["En préparation","In preparation","En preparación","In Vorbereitung","В разработке","У підготовці","准备中","قيد الإعداد"],

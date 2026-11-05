@@ -1,0 +1,243 @@
+/*
+ * xArtists · screenshot-driven mobile legibility repairs (5 November 2026).
+ * The public shell is light-first, while legacy tools were authored dark-first.
+ * These fixes are scoped to UI surfaces; no transaction state is touched.
+ */
+
+/* Prevent the logo + a whole wallet address from pushing Search/Menu offscreen. */
+@media (max-width: 840px) {
+  .xa-header-inner {
+    width: calc(100% - 24px);
+    display: flex;
+    gap: 8px;
+  }
+  .xa-logo { flex: 1 1 auto; min-width: 0; gap: 5px; }
+  .xa-logo > span {
+    min-width: 0;
+    font-size: clamp(18px, 2.5vw, 23px);
+    white-space: nowrap;
+    letter-spacing: -.04em;
+  }
+  .xa-logo svg { width: 27px; height: 27px; flex: 0 0 27px; }
+  .xa-header-actions { display: flex; flex: 0 0 auto; min-width: 0; gap: 4px; }
+  .xa-header-actions .xa-lang { display: none; }
+  .xa-search-trigger { width: 36px; min-width: 36px; height: 40px; }
+  .xa-connect {
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+    min-height: 40px;
+    padding: 0;
+    border-radius: 11px;
+  }
+  .xa-connect svg { display: block; width: 18px; height: 18px; }
+  .xa-connect span { display: none; }
+  .xa-mobile-trigger { display: inline-flex; width: 38px; min-width: 38px; height: 40px; }
+  .xa-theme-toggle { width: 40px; min-width: 40px; height: 40px; }
+}
+@media (max-width: 390px) {
+  .xa-header-inner { width: calc(100% - 18px); gap: 4px; }
+  .xa-header-actions { gap: 2px; }
+  .xa-logo > span { font-size: 18px; }
+  .xa-logo svg { width: 25px; height: 25px; flex-basis: 25px; }
+  .xa-theme-toggle { width: 36px; min-width: 36px; height: 36px; }
+  .xa-connect { width: 36px; min-width: 36px; max-width: 36px; min-height: 36px; }
+  .xa-mobile-trigger { width: 36px; min-width: 36px; height: 36px; }
+}
+
+/* Browser language and soundtrack stay available inside the mobile dialog. */
+.xa-mobile-utilities { display: grid; gap: 4px; margin-top: 12px; }
+.xa-mobile-lang, .xa-mobile-music {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid var(--xa-border);
+  border-radius: 10px;
+  color: var(--xa-text);
+  background: var(--xa-panel);
+  font-size: 13px;
+  text-align: start;
+}
+.xa-mobile-lang select {
+  margin-inline-start: auto;
+  max-width: 55%;
+  min-height: 38px;
+  padding: 4px 8px;
+  color: var(--xa-text);
+  border: 1px solid var(--xa-border);
+  background: var(--xa-bg);
+  border-radius: 7px;
+}
+.xa-mobile-music:hover { background: var(--xa-panel2); }
+
+/* The persistent music bubble overlaps cards and the dock on narrow screens.
+   Access stays available in the mobile Menu; existing playback is not stopped. */
+@media (max-width: 720px) {
+  .music-player-toggle { display: none; }
+  .xa-app > main {
+    padding-bottom: calc(116px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* WCAG-oriented dark ink for dark-first Tailwind utility colors converted to
+   white cards by the shell. Do not recolor dark-theme modules. */
+html[data-theme="light"] .xa-module-body [class*="text-amber-"],
+html[data-theme="light"] .xa-module-body [class*="text-yellow-"],
+html[data-theme="light"] .xa-module-body [class*="text-orange-"] {
+  color: #6b4a13 !important;
+}
+html[data-theme="light"] .xa-module-body [class*="text-green-"],
+html[data-theme="light"] .xa-module-body [class*="text-emerald-"],
+html[data-theme="light"] .xa-module-body [class*="text-lime-"] {
+  color: #286039 !important;
+}
+html[data-theme="light"] .xa-module-body [class*="text-rose-"],
+html[data-theme="light"] .xa-module-body [class*="text-red-"] {
+  color: #913948 !important;
+}
+html[data-theme="light"] .xa-module-body [class*="bg-amber-"] {
+  border-color: #dbbb79;
+}
+html[data-theme="light"] .xa-module-body input::placeholder,
+html[data-theme="light"] .xa-module-body textarea::placeholder { color: #647065; opacity: 1; }
+html[data-theme="light"] .xa-module-body .card {
+  color: var(--xa-text);
+}
+.xa-module-body :is(pre, code) {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.xa-module-body .xa-module-content,
+.xa-module-body > div {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Auction: use an intentional dark artwork showcase, never near-white text on
+   a white panel. The rest of the page inherits the light xArtists palette. */
+.xa-auction-page { min-width: 0; }
+.xa-auction-public-notice {
+  color: var(--xa-muted);
+  border-inline-start: 3px solid var(--xa-accent);
+  padding-inline-start: 12px;
+  max-width: 720px;
+}
+.xa-auction-status {
+  border: 1px solid var(--xa-border);
+  background: var(--xa-panel2);
+  color: var(--xa-text);
+  line-height: 1.7;
+}
+.xa-auction-status > p:not(:first-child) { color: var(--xa-muted); }
+.xa-auction-technical summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--xa-muted);
+}
+html[data-theme="light"] .xa-module-body .xa-auction-preview {
+  background: #20251e !important;
+  border-color: #495346 !important;
+  color: #f3f5ef !important;
+}
+html[data-theme="light"] .xa-module-body .xa-auction-preview > div:first-child {
+  background: #28291f !important;
+}
+html[data-theme="light"] .xa-module-body .xa-auction-preview h2,
+html[data-theme="light"] .xa-module-body .xa-auction-preview a {
+  color: #fff6e6 !important;
+}
+html[data-theme="light"] .xa-module-body .xa-auction-preview p:not([class*="text-amber-"]) {
+  color: #d7ddd3 !important;
+}
+html[data-theme="light"] .xa-module-body .xa-auction-preview [class*="text-amber-"] {
+  color: #ffdf9b !important;
+}
+
+/* Actual DEX cards are public *read-only* context and must be readable on light
+   surfaces; the external action is visually distinct from an xArtists checkout. */
+html[data-theme="light"] .xa-module-body .xa-staking-pool-card {
+  background: var(--xa-panel) !important;
+  border: 1px solid var(--xa-border) !important;
+  color: var(--xa-text);
+  box-shadow: 0 4px 16px #162a1112;
+}
+html[data-theme="light"] .xa-module-body .xa-staking-page [class*="bg-zinc-900"],
+html[data-theme="light"] .xa-module-body .xa-staking-page [class*="bg-zinc-950"] {
+  background: var(--xa-panel2) !important;
+}
+html[data-theme="light"] .xa-module-body .xa-staking-page [class*="border-zinc-"] {
+  border-color: var(--xa-border) !important;
+}
+
+/* NFT Factory: the two-column paper draft and its flex editors cannot enlarge
+   a module beyond the mobile viewport. Never hide information using overflow:clip. */
+.xa-nft-factory,
+.xa-nft-factory > *,
+.xa-nft-factory .grid,
+.xa-nft-factory .grid > *,
+.xa-nft-factory .card,
+.xa-nft-factory label,
+.xa-nft-factory :is(input,textarea,select,pre) {
+  min-width: 0;
+  max-width: 100%;
+}
+.xa-nft-factory .grid > * { overflow-wrap: anywhere; }
+.xa-nft-factory :is(input:not([type=checkbox]):not([type=radio]),textarea,select) {
+  width: 100%;
+  box-sizing: border-box;
+}
+.xa-nft-factory :is(pre,code) {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.xa-nft-factory .xa-nft-layer-row > label,
+.xa-nft-factory .xa-nft-variant-row > label {
+  min-width: 0;
+}
+@media (max-width: 720px) {
+  .xa-nft-factory { padding-inline: 0 !important; }
+  .xa-nft-factory .grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .xa-nft-factory .card { min-width: 0; max-width: 100%; }
+  .xa-nft-factory .xa-nft-layer-row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .xa-nft-factory .xa-nft-layer-row > label { flex: 1 1 100%; }
+  .xa-nft-factory .xa-nft-variant-row {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(65px,82px);
+    gap: 8px;
+    align-items: end;
+  }
+  .xa-nft-factory .xa-nft-variant-row > button {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  .xa-nft-factory .xa-nft-variant-row > label { width: 100%; }
+}
+
+/* Active dock remains in view; normal page content can scroll fully above it. */
+@media (max-width: 720px) {
+  .xa-module-body { min-width: 0; }
+  .xa-mobile-dock { touch-action: manipulation; }
+}
+
+/* Unavailable commercial CTAs remain readable without looking clickable. */
+.xa-module-body .xa-nft-factory .btn-primary:disabled,
+.xa-module-body .xa-nft-factory button:disabled {
+  opacity: 1 !important;
+  background: var(--xa-panel2) !important;
+  color: var(--xa-muted) !important;
+  border: 1px dashed var(--xa-border) !important;
+  cursor: not-allowed;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+  text-align: center;
+}

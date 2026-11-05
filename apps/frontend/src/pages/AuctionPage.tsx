@@ -28,7 +28,7 @@ export default function AuctionPage() {
       const base = apiBase()
       if (!base) {
         setEnabled(false)
-        setError('API non configurée — salle en lecture design only')
+        setError('La salle est accessible en démonstration, sans enchères réelles.')
         return
       }
       try {
@@ -56,28 +56,27 @@ export default function AuctionPage() {
   }, [])
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 text-left">
+    <div className="xa-auction-page mx-auto max-w-3xl px-4 py-8 text-left">
       <p className="text-[10px] uppercase tracking-[0.25em] text-zinc-500">Explore · Auction</p>
-      <h1 className="mt-2 text-2xl font-medium text-amber-50/95">Salle des enchères</h1>
+      <h1 className="mt-2 text-2xl font-medium text-[var(--xa-text)]">Salle des enchères</h1>
       <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-        Œuvres physiques, objets de collection et lots hybrid (NFT de provenance). Règlement EUR prévu
-        post-adjudication — payout et transfert NFT jamais automatiques sur le seul webhook.
+        Découvrez des œuvres physiques et des créations liées à des NFT de provenance. Les enchères, paiements en euros et transferts de propriété ne sont pas encore ouverts : chaque lot doit d’abord être vérifié.
       </p>
 
       <nav aria-label="Découvrir les espaces de vente xArtists" className="mt-5 flex flex-wrap gap-3">
         <Link to="/marketplace" className="inline-flex min-h-[44px] items-center rounded-xl bg-amber-100 px-4 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">
           Explorer la Marketplace
         </Link>
-        <Link to="/studio" className="inline-flex min-h-[44px] items-center rounded-xl border border-amber-100/30 px-4 py-3 text-sm text-amber-100 hover:bg-amber-100/10">
+        <Link to="/studio" className="inline-flex min-h-[44px] items-center rounded-xl border border-amber-100/30 px-4 py-3 text-sm text-[var(--xa-text)] hover:bg-[var(--xa-panel2)]">
           Préparer une œuvre au Studio
         </Link>
       </nav>
-      <p role="status" className="mt-3 text-xs leading-relaxed text-amber-200/85">
+      <p role="status" className="xa-auction-public-notice mt-3 text-xs leading-relaxed">
         Salle publique consultable. La consultation d'une œuvre ne constitue pas une enchère ni une commande.
         {enabled === false ? ' Aucune enchère ni adjudication réelle n’est acceptée actuellement.' : ''}
       </p>
 
-      <section aria-labelledby="auction-editorial-preview" className="mt-7 grid overflow-hidden rounded-3xl border border-amber-200/20 bg-[#151410] sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+      <section aria-labelledby="auction-editorial-preview" className="xa-auction-preview mt-7 grid overflow-hidden rounded-3xl border border-amber-200/20 bg-[#151410] sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <div className="flex min-h-[225px] items-center justify-center bg-[#221f1b] p-4">
           <img src={TUDURI_WORKS[0].url} alt={TUDURI_WORKS[0].name} loading="lazy" className="max-h-72 w-full object-contain" />
         </div>
@@ -98,12 +97,10 @@ export default function AuctionPage() {
       </section>
 
       {enabled === false && (
-        <div className="mt-6 rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-400">
-          <p className="font-medium text-amber-100/90">Mode design — enchères non activées</p>
-          <p className="mt-2 text-[12px]">
-            Flag serveur <code className="text-zinc-300">AUCTION_ENABLED</code> à off. Pipeline RWA / Studio
-            restent les chemins de garde et de mint.
-          </p>
+        <div className="xa-auction-status mt-6 rounded-2xl p-4 text-sm">
+          <p className="font-medium">Enchères en préparation — aucune mise possible</p>
+          <p className="mt-2 text-[12px]">Les lots sont présentés pour information. Aucun paiement, transfert de propriété ni adjudication n’est disponible dans cette salle.</p>
+          <details className="xa-auction-technical mt-2 text-[12px]"><summary>Détails techniques</summary><p>La fonction d’enchères publiques n’est pas activée. Les contrôles de provenance et les étapes de garde restent à valider avant ouverture.</p></details>
           {error ? <p className="mt-2 text-[11px] text-zinc-500">{error}</p> : null}
         </div>
       )}
