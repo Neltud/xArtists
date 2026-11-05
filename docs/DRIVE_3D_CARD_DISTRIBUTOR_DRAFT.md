@@ -1,7 +1,7 @@
 # xArtists — distributeur de cartes 3D à partir de Google Drive (DRAFT / NO-GO)
 
 ## Source vérifiée le 2026-11-05
-Dossier Drive **xArtists Galerie NFT collection** : `1D7_uSML8pCpXn96K3DQYxw7JFSp0Xiv1`. Inventaire de premier niveau : **291 PNG** ; l'utilisateur mentionne **281**. Ne sélectionner aucun sous-ensemble ni numéro de série sans validation du créateur. Ne pas rendre le Drive public, copier les originaux ni publier les URL de fichiers dans le frontend.
+Dossier Drive **xArtists Galerie NFT collection** : `1D7_uSML8pCpXn96K3DQYxw7JFSp0Xiv1`. Inventaire de premier niveau : **291 PNG** ; le créateur a confirmé **les 291 PNG** comme périmètre de préparation. Aucun fichier ne doit être exclu. Ne pas rendre le Drive public, copier les originaux ni publier les URL de fichiers dans le frontend.
 
 ## Objectif produit
 Un distributeur/minting studio sélectionne une œuvre autorisée, compose une **carte 3D** (recto : œuvre intacte en texture ; verso : provenance, titre, numéro, attributs), rend une preview, permet revue/validation, prépare métadonnées et annonce une offre marketplace. Le rendu 3D n'est pas une impression physique et ne doit pas être présenté comme telle.
@@ -17,7 +17,7 @@ Un distributeur/minting studio sélectionne une œuvre autorisée, compose une *
 8. **Séparation stricte** : ce catalogue d'œuvres ne crée aucun droit sur les abonnements Club + News (10 EUR/mois, off-chain) ni sur les packs Genesis Pulse/Yield/Sentinel.
 
 ## Contrôles d'acceptation
-- Exactitude des 291 fichiers détectés et sélection documentée des 281 si retenus.
+- Exactitude des 291 fichiers détectés, sans exclusion ; contrôler noms, formats, doublons et séquence avant tout rendu.
 - 1 fichier Drive autorisé → 1 identifiant stable → 1 preview 3D traçable ; aucun doublon d'édition.
 - Fichier modifié / checksum différent → nouvelle revue obligatoire.
 - Échec de rendu ou de pinning → aucune annonce de mint réussi.
@@ -25,7 +25,7 @@ Un distributeur/minting studio sélectionne une œuvre autorisée, compose une *
 - Aucun paiement réel, déploiement, transfert blockchain, écriture Drive ou publication de collection avant GO explicite.
 
 ## Questions ouvertes
-- Faut-il 291 œuvres ou seulement 281 ? Si 281, quelle règle d'exclusion exacte ?
+- **Résolu : les 291 PNG sont inclus**, sans exception volontaire.
 - Quel réseau et quelle marketplace cibles, quelle collection/ticker, quels prix, quelles royalties ?
 - La carte 3D est-elle uniquement numérique ou aussi imprimée physiquement ?
 - Attestation de droits sur toutes les images.
