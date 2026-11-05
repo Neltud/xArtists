@@ -95,3 +95,19 @@ html{scroll-behavior:smooth;scroll-padding-top:100px}body{background:var(--xa-bg
 @media(max-width:760px){.xa-first-hero{grid-template-columns:1fr;min-height:0}.xa-first-art{display:none}.xa-first-access{grid-template-columns:1fr}.xa-first-tools{align-items:start;flex-direction:column}.xa-first-visit{padding-bottom:110px}.xa-first-tile{min-height:190px}.xa-first-heading{align-items:start}}
 @media(max-width:490px){.xa-first-tiles{grid-template-columns:1fr}.xa-first-tile{min-height:0}.xa-first-hero{padding:24px 20px}.xa-first-actions .xa-button{width:100%}.xa-first-heading{flex-direction:column;gap:6px}.xa-first-tools .xa-button{width:100%}}
 @media(prefers-reduced-motion:reduce){.xa-first-tile:hover{transform:none}}
+
+/* Keep full DAO + module navigation legible without adding another navbar row. */
+@media(min-width:961px){
+ .xa-header-inner{gap:clamp(10px,1.7vw,24px)}
+ .xa-desktop-nav{gap:clamp(9px,1.35vw,20px)}
+ .xa-desktop-nav a{font-size:12px}
+}
+@media(min-width:961px) and (max-width:1120px){
+ .xa-header-inner{width:calc(100% - 36px)}
+ .xa-logo>span{font-size:21px}
+ .xa-desktop-nav a{font-size:11px}
+ .xa-header-actions{gap:4px}
+}
+@media(max-width:1200px) and (min-width:721px){
+ .xa-footer-links{flex-wrap:wrap}
+}
