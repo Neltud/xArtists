@@ -1,5 +1,5 @@
 /**
- * Public pack monitor: no seeded scores, random ticks or invented LONG/SHORT rows.
+ * Public pack monitor: no seeded scores, random ticks or invented trade-direction rows.
  * A verified signal adapter can be added later only with provenance and timestamps.
  */
 import type { PackId } from '../config/agentPacks'
