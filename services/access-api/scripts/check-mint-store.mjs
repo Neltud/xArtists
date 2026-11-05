@@ -1,5 +1,7 @@
 /**
- * Run inside the access-api service: node services/access-api/scripts/check-mint-store.mjs
+ * Inside the Render API image (operator shell only):
+ *   node /opt/xartists/access-api/scripts/check-mint-store.mjs
+ * From a source checkout: node services/access-api/scripts/check-mint-store.mjs
  * Read-only. Uses the service's DATABASE_URL; never prints credentials or raw errors.
  * Does not create tables, inspect orders, dispatch jobs or enable financial gates.
  */
