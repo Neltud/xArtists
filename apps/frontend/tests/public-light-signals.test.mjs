@@ -47,7 +47,7 @@ test('homepage carries explicit public posture and editions are non-moving illus
   assert.match(page, /welcomeNoBridge/)
   assert.match(page, /welcomeEuros/)
   assert.match(page, /to="\/lia" className="xa-first-context-link"/)
-  assert.match(page, /to="\/dao"/)
+  assert.match(page, /to:'\/dao'/)
   assert.match(shelf, /autoRotate=\{false\}/)
   assert.match(shelf, /numéros d’édition illustratifs, non mintés/)
   assert.match(card, /autoRotate = false,/)
