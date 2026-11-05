@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-05T10:23:36.531Z",
+  "updatedAt": "2026-11-05T19:32:18.386Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793907137846",
+      "timestamp": "19:32",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.24 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793905339000",
+      "timestamp": "19:02",
+      "source": "CoinTelegraph",
+      "title": "Binance, Deribit revoke SignalPlus API keys after fake Teams invite attack",
+      "link": "https://cointelegraph.com/news/binance-deribit-revoke-signalplus-api-fake-teams-attack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793903565000",
+      "timestamp": "18:32",
+      "source": "CoinTelegraph",
+      "title": "Fed, OCC check US banks after Binance hack as experts flag security risks",
+      "link": "https://cointelegraph.com/news/fed-occ-check-us-banks-binance-hack-security-risks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793902178000",
+      "timestamp": "18:09",
+      "source": "CoinTelegraph",
+      "title": "Europe’s largest asset manager Amundi tokenizes equity index fund on Ethereum",
+      "link": "https://cointelegraph.com/news/amundi-tokenizes-european-equity-index-fund-ethereum?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1793900425000",
+      "timestamp": "17:40",
+      "source": "CoinTelegraph",
+      "title": "Paraguay president resigns after collapse of Ueno digital bank",
+      "link": "https://cointelegraph.com/news/paraguay-president-resigns-after-collapse-ueno-digital-bank?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793897321000",
+      "timestamp": "16:48",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin crashes 6% to 7-week low as US stocks erase election gains",
+      "link": "https://cointelegraph.com/markets/bitcoin-price-crashes-7-week-low-stocks-election-gains?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793886361000",
+      "timestamp": "13:46",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793897901000",
+      "timestamp": "16:58",
+      "source": "CoinDesk",
+      "title": "What is TraderTraitor, the hacking squad behind the $6.3 billion Binance heist",
+      "link": "https://www.coindesk.com/business/2026/11/05/what-is-tradertraitor-the-hacking-squad-behind-the-usd6-3-billion-binance-heist"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793897348000",
+      "timestamp": "16:49",
+      "source": "CoinDesk",
+      "title": "Standard Chartered and SBI back crypto insurer Soter as funding reaches $23.5 million",
+      "link": "https://www.coindesk.com/business/2026/11/05/soter-raises-usd23-5m-plus-btc-and-eth-as-banks-demand-theft-protection"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793895212000",
+      "timestamp": "16:13",
+      "source": "CoinDesk",
+      "title": "Crypto for Advisors: Where investors stake crypto shapes how much of the reward they keep",
+      "link": "https://www.coindesk.com/coindesk-indices/2026/11/05/crypto-for-advisors-where-investors-stake-crypto-shapes-how-much-of-the-reward-they-keep"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793888510000",
+      "timestamp": "14:21",
+      "source": "CoinDesk",
+      "title": "Gate CEO says crypto exchanges must prove they can survive a hack like Binance’s",
+      "link": "https://www.coindesk.com/business/2026/11/05/gate-ceo-says-crypto-exchanges-must-prove-they-can-survive-a-hack-like-binance-s"
+    },
     {
       "id": "egld-1793874216139",
       "timestamp": "10:23",
@@ -37,13 +114,6 @@
       "source": "CoinTelegraph",
       "title": "Crédit Mutuel Arkéa resumes operations after attack, assesses losses",
       "link": "https://cointelegraph.com/news/credit-mutuel-arkea-resumes-operations-133m-crypto-theft?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793859672000",
-      "timestamp": "06:21",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-5-1793858549000",
@@ -128,76 +198,6 @@
       "source": "CoinDesk",
       "title": "Tokenization and stablecoins may weather Democrats' sweep as broader crypto rules face uncertainty",
       "link": "https://www.coindesk.com/policy/2026/11/04/tokenization-and-stablecoins-may-weather-democrats-sweep-as-broader-crypto-rules-face-uncertainty"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793832702000",
-      "timestamp": "22:51",
-      "source": "CoinDesk",
-      "title": "Crypto's Washington hopes fade, but Grayscale and BlackRock see growth ahead",
-      "link": "https://www.coindesk.com/business/2026/11/04/crypto-s-washington-hopes-fade-but-grayscale-and-blackrock-see-growth-ahead"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793824152000",
-      "timestamp": "20:29",
-      "source": "CoinDesk",
-      "title": "Crypto's powerhouse super PAC suffers costly setback as Democrats sweep Congress",
-      "link": "https://www.coindesk.com/news-analysis/2026/11/04/crypto-s-powerhouse-super-pac-fairshake-found-its-kryptonite"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793808689000",
-      "timestamp": "16:11",
-      "source": "CoinDesk",
-      "title": "U.S. Democratic sweep could be the final nail in the ‘Clarity Act’s coffin’",
-      "link": "https://www.coindesk.com/policy/2026/11/04/u-s-democratic-sweep-could-be-the-final-nail-in-the-clarity-act-s-coffin"
-    },
-    {
-      "id": "egld-1793820257180",
-      "timestamp": "19:24",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.39 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793818076000",
-      "timestamp": "18:47",
-      "source": "CoinTelegraph",
-      "title": "Riot shares surge on $28B AI lease as Hut 8 sinks on revenue miss",
-      "link": "https://cointelegraph.com/news/riots-28b-ai-deal-lifts-shares-as-hut-8-faces-transition-costs?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793815362000",
-      "timestamp": "18:02",
-      "source": "CoinTelegraph",
-      "title": "Circle’s ARC token sale lifts earnings as lower yields weigh on USDC income",
-      "link": "https://cointelegraph.com/news/circles-arc-token-sale-earnings-yields-usdc-income?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1793806163000",
-      "timestamp": "15:29",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin hits $80.5K as US stocks rally on midterm election results",
-      "link": "https://cointelegraph.com/markets/bitcoin-price-us-stocks-rally-midterm-election-result?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793799892000",
-      "timestamp": "13:44",
-      "source": "CoinTelegraph",
-      "title": "France backs reporting for self-custodied crypto worth 100K euros or more",
-      "link": "https://cointelegraph.com/news/france-approves-amendment-self-custodied-crypto-wallets-100k?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793794335000",
-      "timestamp": "12:12",
-      "source": "CoinTelegraph",
-      "title": "Canton’s CC rises 4% as SEC staff view it as ‘digital commodity’",
-      "link": "https://cointelegraph.com/markets/cantons-cc-rises-sec-no-action-letter-digital-commodity?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793788738000",
-      "timestamp": "10:38",
-      "source": "CoinDesk",
-      "title": "Bitcoin rebounds from midterm dip as DeFi leads gains",
-      "link": "https://www.coindesk.com/markets/2026/11/04/bitcoin-rebounds-from-midterm-dip-as-defi-leads-gains"
     }
   ]
 }
