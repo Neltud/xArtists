@@ -62,6 +62,9 @@ jobs:
       - name: Install locked Access API dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
         working-directory: services/access-api
+      - name: Deny unauthenticated mint confirmation even with forged receipt inputs
+        working-directory: services/access-api
+        run: node --test tests/mintDispatch.test.mjs
       - name: Prove exactly-once across separate PostgreSQL clients
         run: node --test tests/mintDispatchPostgres.test.mjs
         working-directory: services/access-api

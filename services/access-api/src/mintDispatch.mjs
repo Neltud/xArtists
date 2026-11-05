@@ -484,20 +484,23 @@ export async function maybeDispatchMintAfterPaid(order, env = process.env, fetch
   )
 }
 
-export async function markMintJobConfirmed(orderId, { chainTxHash, nftIdentifier } = {}, env = process.env) {
-  return withMintJobLock(
-    orderId,
-    async (db) => {
-      const j = db.jobs[orderId]
-      if (!j) return null
-      j.status = MINT_JOB_STATUS.CONFIRMED
-      j.chain_tx_hash = chainTxHash || j.chain_tx_hash
-      j.nft_identifier = nftIdentifier || j.nft_identifier
-      j.updated_at = new Date().toISOString()
-      return j
-    },
-    env,
-  )
+/**
+ * S2 is NOT implemented as an authenticated, atomic ledger-to-chain commit.
+ * A caller-provided hash and NFT identifier are NOT proof of mainnet finality,
+ * buyer ownership, PSP settlement or uniqueness across orders.
+ *
+ * Legacy export retained for compatibility but deliberately made inert.
+ * The future implementation MUST use a separate authenticated operator flow:
+ * independently verified chain receipt + payment/refund recheck + durable
+ * one-to-one reservations + one PostgreSQL commit. This function must never
+ * mark a mint confirmed or grant buyer delivery on its own.
+ */
+export async function markMintJobConfirmed() {
+  return {
+    ok: false,
+    reason: 's2_verified_receipt_and_atomic_delivery_commit_required',
+    delivery_verified: false,
+  }
 }
 
 /**
