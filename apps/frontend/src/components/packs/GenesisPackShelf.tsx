@@ -20,7 +20,7 @@ export default function GenesisPackShelf() {
           <h2 id="genesis-title">{c('agents')}</h2>
           <p>
             {xaLocalize(
-              '1 achat = 1 œuvre SFT unique d’édition · recto peinture · verso données · prix catalogue €',
+              'Pulse, Yield et Sentinel · aperçu artistique statique · informations de catalogue. Aucun achat ou mint live ici.',
             )}
           </p>
         </div>
@@ -41,8 +41,9 @@ export default function GenesisPackShelf() {
             >
               <div className="p-3 pb-0">
                 <GenesisCard3D
+                  autoRotate={false}
                   id={pack.id}
-                  sampleEdition={pack.id === 'pulse' ? 47 : pack.id === 'yield' ? 112 : 3}
+                  sampleEdition={1}
                 />
               </div>
               <div className="flex flex-1 flex-col gap-2 p-3">
@@ -61,7 +62,7 @@ export default function GenesisPackShelf() {
                 <p className="text-[11px] text-zinc-500">{xaRender(visual.mediaMotif)}</p>
                 <div className="xa-genesis-price mt-1 flex items-baseline gap-2">
                   <strong className="text-lg tabular-nums text-white">{pack.priceEur.list} €</strong>
-                  <span className="text-[12px] text-zinc-500">≈ {pack.priceEgld.list} EGLD</span>
+                  <span className="text-[12px] text-zinc-500">Catalogue indicatif</span>
                 </div>
                 <p className="xa-genesis-cap text-[12px]" style={{ color: visual.accent }}>
                   <strong className="tabular-nums">{edition.maxSupply}</strong>
@@ -87,7 +88,7 @@ export default function GenesisPackShelf() {
 
       <p className="mt-3 text-[11px] text-zinc-600">
         {xaLocalize(
-          'Œuvres Genesis — série inspirée Nelson Tuduri. Mint SFT post-paiement. Catalogue 110 / 75 / 50 € · EGLD au taux (ref. 100 € ≈ 30 EGLD).',
+          'Aperçus visuels et numéros d’édition illustratifs, non mintés. Prix de catalogue non contractuels. Paiements et mint SFT publics désactivés (paper-first).',
         )}
       </p>
     </section>

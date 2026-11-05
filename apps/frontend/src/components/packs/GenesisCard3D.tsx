@@ -1,6 +1,6 @@
 /**
  * Carte Genesis 3D — recto peinture (œuvre) · verso HUD (metadata).
- * Rotation Y continue (pause au hover / focus). prefers-reduced-motion = face fixe.
+ * Rotation Y optionnelle uniquement (désactivée par défaut). prefers-reduced-motion = face fixe.
  */
 import { useId, useState } from 'react'
 import { PACK_EDITION, PACK_VISUAL, type PackId } from '../../config/agentPacks'
@@ -43,7 +43,7 @@ const NOISE =
 
 export default function GenesisCard3D({
   id,
-  autoRotate = true,
+  autoRotate = false,
   className = '',
   sampleEdition = 47,
 }: Props) {

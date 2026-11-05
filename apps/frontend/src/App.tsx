@@ -11,6 +11,7 @@ import Shell from './experience/Shell'
 import {groups,modules} from './experience/modules'
 import {Home,GroupPage,ModulePage,Directory,NotFound,ArtworkDetail} from './experience/Pages'
 import './experience/experience.css'
+import './experience/public-finish.css'
 
 const PackLandingPage = lazy(() => import('./pages/PackLandingPage'))
 const HousePage = lazy(() => import('./pages/HousePage'))
