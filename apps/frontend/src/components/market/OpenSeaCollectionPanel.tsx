@@ -74,7 +74,7 @@ export default function OpenSeaCollectionPanel() {
       const u = new URL('/v1/marketplace/opensea/collection', API_BASE + '/')
       u.searchParams.set('chain', chain)
       u.searchParams.set('slug', cleanSlug)
-      const timeout = setTimeout(() => controller.abort(), 10_000)
+      const timeout = setTimeout(() => controller.abort('timeout'), 10_000)
       let response: Response
       try {
         response = await fetch(u.toString(), { method: 'GET', cache: 'no-store', signal: controller.signal })
@@ -86,7 +86,9 @@ export default function OpenSeaCollectionPanel() {
         throw new Error(messageForStatus(response.status, payload.error))
       setResult(payload as Preview)
     } catch (e) {
-      if (!controller.signal.aborted) {
+      if (controller.signal.reason === 'timeout') {
+        setError('Le catalogue OpenSea ne répond pas dans les 10 secondes. Réessayer plus tard.')
+      } else if (!controller.signal.aborted) {
         setError(e instanceof Error ? e.message : messageForStatus(503))
       }
     } finally {
