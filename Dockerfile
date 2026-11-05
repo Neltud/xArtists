@@ -22,6 +22,8 @@ WORKDIR /opt/xartists/access-api
 COPY services/access-api/package.json services/access-api/package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund
 COPY services/access-api/src ./src
+# Bundle the operator-only read-only diagnostic; do not run it at startup.
+COPY services/access-api/scripts/check-mint-store.mjs ./scripts/check-mint-store.mjs
 
 # Preserve nginx:1.27-alpine as the final image to avoid altering the
 # public frontend's Nginx routing or layout.
