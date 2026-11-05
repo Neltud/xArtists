@@ -28,7 +28,7 @@ export default function AuctionPage() {
       const base = apiBase()
       if (!base) {
         setEnabled(false)
-        setError('API non configurée — salle en lecture design only')
+        setError('La salle est accessible en démonstration, sans enchères réelles.')
         return
       }
       try {
@@ -60,8 +60,7 @@ export default function AuctionPage() {
       <p className="text-[10px] uppercase tracking-[0.25em] text-zinc-500">Explore · Auction</p>
       <h1 className="mt-2 text-2xl font-medium text-[var(--xa-text)]">Salle des enchères</h1>
       <p className="mt-3 text-sm leading-relaxed text-zinc-400">
-        Œuvres physiques, objets de collection et lots hybrid (NFT de provenance). Règlement EUR prévu
-        post-adjudication — payout et transfert NFT jamais automatiques sur le seul webhook.
+        Découvrez des œuvres physiques et des créations liées à des NFT de provenance. Les enchères, paiements en euros et transferts de propriété ne sont pas encore ouverts : chaque lot doit d’abord être vérifié.
       </p>
 
       <nav aria-label="Découvrir les espaces de vente xArtists" className="mt-5 flex flex-wrap gap-3">
