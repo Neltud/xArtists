@@ -33,9 +33,9 @@ export function getStripePublishableKey(): string | undefined {
 }
 
 export function isStripeConfigured(): boolean {
-  // Fail-closed: Payment Links alone are NOT enough (no server reconciliation).
-  // Stripe only if API can create a session that the backend can confirm.
-  return Boolean(getAccessApiBase())
+  // P0: checkout serveur, webhook signé et rapprochement non certifiés.
+  // Une URL d'API seule ne prouve pas que le paiement est sécurisé.
+  return false
 }
 
 /** Optional per-pack Payment Links from Stripe Dashboard — not used for checkout (fail-closed). */
@@ -97,6 +97,8 @@ export async function startStripeCardPayment(opts: {
   packId: PackId
   buyerAddress: string
 }): Promise<'redirect' | 'unavailable'> {
+  // Bloque aussi les appels directs tant que la chaîne de paiement n'est pas certifiée.
+  if (!isStripeConfigured()) return 'unavailable'
   const api = getAccessApiBase()
   if (!api) return 'unavailable'
   try {
