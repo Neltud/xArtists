@@ -4,17 +4,16 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
  */
 import { useMemo, useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { canVoteDao, TRO_GOVERNANCE_ADDRESS } from '../config/scStatus'
+import { TRO_GOVERNANCE_ADDRESS } from '../config/scStatus'
 import { useTroStakedBalance } from '../hooks/useTroStakedBalance'
-import { useWallet } from '../context/WalletContext'
-import { requestOpenConnect } from '../lib/walletEvents'
+import { useCopy } from '../experience/state'
 import { useI18n } from '../i18n/I18nContext'
 
 type Proposal = {
   id: string
   titleKey: string
   bodyKey: string
-  status: 'active' | 'closed'
+  status: 'demo' | 'closed'
   yes: number
   no: number
 }
@@ -23,7 +22,7 @@ const STORAGE_KEY = 'xartists_dao_votes_v1'
 const SFT_STAKE_KEY = 'xartists_nft_stake_units_v1'
 
 const DEFAULT_PROPOSALS: Proposal[] = [
-  { id: 'p1', titleKey: 'dao.prop1.title', bodyKey: 'dao.prop1.body', status: 'active', yes: 0, no: 0 },
+  { id: 'p1', titleKey: 'dao.prop1.title', bodyKey: 'dao.prop1.body', status: 'demo', yes: 0, no: 0 },
   { id: 'p2', titleKey: 'dao.prop2.title', bodyKey: 'dao.prop2.body', status: 'active', yes: 0, no: 0 },
 ]
 
@@ -46,8 +45,7 @@ function loadSftUnits(): number {
 
 export default function DaoGovernance() {
   const { t } = useI18n()
-  const live = canVoteDao()
-  const { connected, address } = useWallet()
+  const c = useCopy()
   const { userTro, loading } = useTroStakedBalance()
   const [votes, setVotes] = useState(loadVotes)
   const [sftUnits, setSftUnits] = useState(0)
@@ -62,14 +60,6 @@ export default function DaoGovernance() {
 
   const cast = useCallback(
     (proposalId: string, choice: 'yes' | 'no') => {
-      if (!connected) {
-        requestOpenConnect()
-        return
-      }
-      if (votingPower <= 0) {
-        setMsg(t('dao.noPower'))
-        return
-      }
       const next = { ...votes, [proposalId]: choice }
       setVotes(next)
       try {
@@ -80,26 +70,24 @@ export default function DaoGovernance() {
             proposalId,
             choice,
             votingPower,
-            address: address || null,
+            address: null,
             at: new Date().toISOString(),
-            onChain: live,
+            onChain: false,
           }),
         )
       } catch {
         /* */
       }
-      setMsg(
-        live
-          ? `Vote ${choice.toUpperCase()} enregistré (poids ${votingPower.toFixed(2)}) — TX SC à brancher.`
-          : `Vote ${choice.toUpperCase()} enregistré en local (poids ${votingPower.toFixed(2)}).`,
-      )
+      setMsg(c('daoPracticeSaved'))
     },
-    [connected, votingPower, votes, address, live, t],
+    [votingPower, votes, c],
   )
 
   return (
     <div className="space-y-5">
-      <div className="rounded-2xl border border-purple-500/30 bg-black/85 backdrop-blur-md p-4 shadow-2xl space-y-3">
+      <details className="rounded-2xl border border-purple-500/30 bg-black/85 backdrop-blur-md p-4 shadow-2xl space-y-3">
+        <summary className="cursor-pointer text-sm font-semibold text-white">{c('dao.votingPower')} · {c('demoLabel')}</summary>
+        <div className="mt-4 space-y-3">
         <p className="text-[10px] uppercase tracking-[0.2em] text-purple-300/90">
           {xaRender("DAO · ")}{xaRender(t('dao.votingPower'))}
         </p>
@@ -126,10 +114,12 @@ export default function DaoGovernance() {
           </Link>
         </div>
         <p className="text-[10px] text-zinc-600">
-          {xaRender("Gouvernance SC : ")}{xaRender(live ? 'LIVE' : 'gates')} · {xaRender(TRO_GOVERNANCE_ADDRESS.slice(0, 18))}…
+          {xaRender("Contrat indicatif : ")}{xaRender(TRO_GOVERNANCE_ADDRESS.slice(0, 18))}…
         </p>
-      </div>
+        </div>
+      </details>
 
+      <p role="status" className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] p-4 text-sm text-amber-100">{c('daoDemoWarning')}</p>
       <div className="space-y-3">
         {xaRender(DEFAULT_PROPOSALS.map(p => {
           const mine = votes[p.id]
@@ -140,13 +130,13 @@ export default function DaoGovernance() {
             >
               <div className="flex items-start justify-between gap-2">
                 <h3 className="text-sm font-semibold text-white">{xaRender(t(p.titleKey))}</h3>
-                <span className="text-[10px] uppercase text-amber-200/80">{xaRender(p.status)}</span>
+                <span className="text-[10px] uppercase text-amber-200/80">{c('demoLabel')}</span>
               </div>
               <p className="text-[13px] text-zinc-400">{xaRender(t(p.bodyKey))}</p>
               <div className="flex flex-wrap gap-2 pt-1">
                 <button
                   type="button"
-                  disabled={p.status !== 'active'}
+                  disabled={p.status !== 'demo'}
                   onClick={() => cast(p.id, 'yes')}
                   className={`rounded-xl border px-4 py-2 text-xs font-semibold min-h-[44px] ${
                     mine === 'yes'
@@ -154,7 +144,7 @@ export default function DaoGovernance() {
                       : 'border-white/15 bg-white/5 text-zinc-200'
                   }`}
                 >
-                  {xaRender(t('dao.voteYes'))}
+                  {c('daoPracticeYes')}
                 </button>
                 <button
                   type="button"
@@ -166,7 +156,7 @@ export default function DaoGovernance() {
                       : 'border-white/15 bg-white/5 text-zinc-200'
                   }`}
                 >
-                  {xaRender(t('dao.voteNo'))}
+                  {c('daoPracticeNo')}
                 </button>
                 {xaRender(mine ? (
                   <span className="self-center text-[11px] text-zinc-500">
