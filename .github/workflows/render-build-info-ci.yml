@@ -1,0 +1,47 @@
+name: Render frontend build identity
+
+on:
+  pull_request:
+    paths:
+      - 'Dockerfile'
+      - 'ops/render-service-entrypoint.sh'
+      - 'ops/write-render-build-info.mjs'
+      - 'ops/render-build-info.test.mjs'
+      - '.github/workflows/render-build-info-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'Dockerfile'
+      - 'ops/render-service-entrypoint.sh'
+      - 'ops/write-render-build-info.mjs'
+      - 'ops/render-build-info.test.mjs'
+      - '.github/workflows/render-build-info-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  render-frontend-stamp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check the frontend startup shell and public stamp script syntax
+        run: |
+          sh -n ops/render-service-entrypoint.sh
+          node --check ops/write-render-build-info.mjs
+      - name: Test immutable build source evidence and unavailable fallback
+        run: node --test ops/render-build-info.test.mjs
+      - name: Verify stamp is frontend-only and Nginx will not fake HTTP 200
+        run: |
+          set -euo pipefail
+          grep -Fq 'if ! node /usr/local/lib/xartists/write-render-build-info.mjs; then' ops/render-service-entrypoint.sh
+          grep -Fq 'location = /xArtists/build-info.json {' Dockerfile
+          grep -Fq 'try_files $uri =404;' Dockerfile
+          grep -Fq 'COPY ops/write-render-build-info.mjs /usr/local/lib/xartists/write-render-build-info.mjs' Dockerfile
+          grep -Fq "exec node /opt/xartists/access-api/src/server.mjs" ops/render-service-entrypoint.sh
