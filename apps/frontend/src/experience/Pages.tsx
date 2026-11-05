@@ -45,7 +45,7 @@ export function Home(){
   <section className="xa-first-journeys" aria-labelledby="xa-first-what">
    <div className="xa-first-heading">
     <div><p className="xa-eyebrow">xArtists</p><h2 id="xa-first-what">{c('welcomeAsk')}</h2></div>
-    <Link to="/guide" className="xa-text-link">{c('help')}<Icon name="arrow" size={16}/></Link>
+    <div className="xa-first-quicklinks"><Link to="/auction" className="xa-text-link">{c('auction')}<Icon name="arrow" size={16}/></Link><Link to="/guide" className="xa-text-link">{c('help')}<Icon name="arrow" size={16}/></Link></div>
    </div>
    <ul className="xa-first-tiles">
     {journeys.map((a,i)=><li key={a.id}>
