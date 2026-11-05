@@ -42,13 +42,17 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     })
   }
   for (const width of [360, 390, 430]) {
-    test(`mobile ${width}px: no auto-WebGL and direct museum/market/auction/studio dock`, async ({ page }) => {
+    test(`mobile ${width}px: no auto-WebGL and direct market/auction/studio/DAO dock`, async ({ page }) => {
       await page.setViewportSize({ width, height: 844 })
       await visit(page, '/')
       await expect(page.locator('.xa-mobile-dock')).toBeVisible()
       await expect(page.locator('.xa-mobile-dock a')).toHaveCount(5)
-      await expect(page.locator('.xa-hero-2d-button')).toBeVisible()
-      await expect(page.locator('.xa-hero-visual canvas')).toHaveCount(0)
+      await expect(page.locator('.xa-first-hero')).toBeVisible()
+      await expect(page.locator('.xa-first-tile')).toHaveCount(4)
+      await expect(page.locator('.xa-first-hero canvas')).toHaveCount(0)
+      for (const path of ['/marketplace', '/auction', '/studio', '/finance/governance']) {
+        await expect(page.locator(`.xa-mobile-dock a[href*="${path}"]`)).toHaveCount(1)
+      }
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
       expect(overflow, `Home horizontal overflow at ${width}px: ${overflow}px`).toBeLessThanOrEqual(12)
       await page.screenshot({ animations: 'disabled', path: `artifacts/ux-mobile/home-${width}.png` })
@@ -59,16 +63,31 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await page.setViewportSize({ width: 1440, height: 900 })
     await visit(page, '/')
     await expect(page.locator('.xa-desktop-nav')).toBeVisible()
+    await expect(page.locator('.xa-first-hero')).toBeVisible()
+    await expect(page.locator('.xa-first-tile')).toHaveCount(4)
     await expect(page.locator('a[href*="marketplace"], a[href*="/explore/market"]').first()).toBeVisible()
     await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/home-desktop-1440.png' })
+  })
+
+  test('light-first theme toggle is visible and dark preference survives reload', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await visit(page, '/')
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+    const toggle = page.locator('.xa-theme-toggle')
+    await expect(toggle).toBeVisible()
+    await toggle.click()
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+    await page.reload()
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
   })
 
   test('reduced motion requests a lightweight static Home, even on desktop', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await visit(page, '/')
-    await expect(page.locator('.xa-hero-2d-button')).toBeVisible()
-    await expect(page.locator('.xa-hero-visual canvas')).toHaveCount(0)
+    await expect(page.locator('.xa-first-hero')).toBeVisible()
+    await expect(page.locator('.xa-first-hero canvas')).toHaveCount(0)
+    await expect(page.locator('.xa-first-journeys')).toBeVisible()
   })
 
   test('visitor guide at 390px never links to retired Slot, and offers legal access', async ({ page }) => {
