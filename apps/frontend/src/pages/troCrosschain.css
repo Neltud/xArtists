@@ -58,3 +58,15 @@
 @media (max-width:850px){.tro-portal__hero{grid-template-columns:1fr;gap:15px;padding-top:42px}.tro-portal__visual{min-height:340px;max-width:430px;width:100%;margin:0 auto}.tro-portal__orbitlabel--a{right:2%}.tro-portal__cards{grid-template-columns:1fr}.tro-portal__card{min-height:320px}.tro-portal__steps{grid-template-columns:1fr}.tro-portal__bottom{grid-template-columns:1fr}.tro-portal__bottomlinks{text-align:left;flex-flow:row wrap}}
 @media (max-width:450px){.tro-portal{padding:20px 17px 80px}.tro-portal__lead h1{font-size:clamp(47px,13vw,70px)}.tro-portal__hero{padding-top:36px}.tro-portal__visual{min-height:275px}.tro-portal__sphere{width:58%}.tro-portal__orbitlabel{font-size:8px;padding:8px}.tro-portal__status-separator{display:none}.tro-portal__statusline{align-items:flex-start;flex-direction:column;padding:15px}.tro-portal__offers,.tro-portal__process{padding-top:66px}.tro-portal__actions .tro-portal__btn{width:100%}}
 @media (prefers-reduced-motion:reduce){.tro-portal__btn{transition:none}.tro-portal__btn:hover{transform:none}}
+
+/* Keep availability above the first action and optional detail out of the way. */
+.tro-portal__availability{display:inline-block;margin:18px 0 0;padding:10px 12px;border:1px solid #b4965366;border-radius:8px;color:#f2dcaa;background:#b4965310;font-size:12px;line-height:1.7}
+.tro-portal__lead h1{font-size:clamp(40px,5.6vw,73px);letter-spacing:-.055em}
+.tro-portal__hero{min-height:460px;padding:48px 0 36px}
+.tro-portal__offers,.tro-portal__process{padding-top:42px}
+.tro-portal__sectionhead{margin-bottom:22px}
+.tro-portal__card{min-height:340px}
+.tro-portal__bottom{margin-top:42px;padding:28px 0}
+.tro-portal__bottom h2{font-size:clamp(25px,3vw,36px)}
+.tro-portal a:focus-visible,.tro-portal button:focus-visible{outline:2px solid var(--tro-lime);outline-offset:4px}
+@media(max-width:640px){.tro-portal__hero{display:block;min-height:0;padding:28px 0}.tro-portal__visual{display:none}.tro-portal__lead h1{font-size:clamp(36px,9vw,54px);margin:18px 0}.tro-portal__intro{font-size:14px;line-height:1.75}.tro-portal__actions{margin-top:20px}.tro-portal__offers,.tro-portal__process{padding-top:30px}.tro-portal__sectionhead h2{font-size:29px}.tro-portal__card{min-height:0;gap:12px;padding:21px}.tro-portal__bottom{margin-top:30px}.tro-portal__micro,.tro-portal__card small{color:#b3bfae}.tro-portal__tag{letter-spacing:.08em}}

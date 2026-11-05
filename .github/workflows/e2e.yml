@@ -1,4 +1,4 @@
-name: E2E Playwright
+name: Pages deployed smoke — read-only, not PR UI
 
 on:
   push:
@@ -7,12 +7,14 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   e2e:
+    name: Published Pages health (not this PR's frontend)
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    # Soft until Pages smoke is proven green on main (SOURCE_OF_TRUTH).
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
@@ -25,19 +27,33 @@ jobs:
         run: |
           set -euo pipefail
           # Prefer npm install: root package-lock periodically drifts on Playwright floating ranges.
-          # Hard CI gate for this PR is access-api validate, not Pages E2E.
           npm install --ignore-scripts
           npx playwright install --with-deps chromium
 
-      - name: Run E2E against Pages
+      - name: Run deployed-site smoke only (no local UX specs)
         env:
           E2E_BASE_URL: https://neltud.github.io/xArtists
           CI: true
         run: npx playwright test --config=playwright.config.ts
 
+      - name: Explain validation scope
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'SUMMARY'
+          ### Published Pages smoke
+          Target: https://neltud.github.io/xArtists
+
+          This job checks the already published website. It does not build or validate this PR's frontend.
+          The separate UX local preview workflow builds this PR and runs the responsive suite.
+          Failed HTTP, rendering or asset checks fail this job; no soft-success override is applied.
+          No wallet, payment, bid, mint, trade, bridge or deployment is performed.
+          SUMMARY
+
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: always()
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: pages-deployed-smoke-report
+          path: |
+            playwright-report/pages-deployed/
+            test-results/
           retention-days: 7

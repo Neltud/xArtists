@@ -1,134 +1,102 @@
-import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
-/** RWA catalog — physical works + AI valuation proxy (paper). */
-import { useEffect, useState } from 'react'
+import { renderChild as xaRender } from '../i18n/phraseRuntime'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { asText } from '../lib/safeRender'
-import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
-import PhysicalWorkFlowPanel from '../components/PhysicalWorkFlowPanel'
+import PublicDisclosure from '../components/PublicDisclosure'
+
+const PhysicalNftCertifier = lazy(() => import('../components/PhysicalNftCertifier'))
+const PhysicalWorkFlowPanel = lazy(() => import('../components/PhysicalWorkFlowPanel'))
 
 type Item = {
-  id?: string
-  title?: string
-  artist?: string
-  style?: string
-  condition?: string
-  shipment_status?: string
-  listed?: boolean
-  valuation?: {
-    score?: number
-    price_proxy_usd?: number
-    momentum?: number
-    disclaimer?: string
-  }
+  id?: string; title?: string; artist?: string; style?: string; shipment_status?: string
+  valuation?: { score?: number; price_proxy_usd?: number; momentum?: number }
   certificate_hash?: string
 }
 
-async function loadCatalog(): Promise<Item[]> {
-  const bases = [
-    `${import.meta.env.BASE_URL || '/'}data/`,
-    'https://neltud.github.io/xArtists/data/',
-  ]
-  for (const b of bases) {
+async function loadCatalog(signal: AbortSignal): Promise<Item[] | null> {
+  const bases = [`${import.meta.env.BASE_URL || '/'}data/`, 'https://neltud.github.io/xArtists/data/']
+  for (const base of bases) {
     try {
-      const r = await fetch(`${b}rwa_catalog.json`, { cache: 'no-store' })
-      if (!r.ok) continue
-      const j = await r.json()
-      return Array.isArray(j.items) ? j.items : []
-    } catch {
-      /* */
-    }
+      const response = await fetch(base + 'rwa_catalog.json', { cache: 'no-store', signal })
+      if (!response.ok) continue
+      const data = await response.json()
+      if (data.paper === true && Array.isArray(data.items)) return data.items
+    } catch { if (signal.aborted) return null }
   }
-  return []
+  return null
 }
 
 export default function RwaCatalogPage() {
   const [items, setItems] = useState<Item[]>([])
-
+  const [state, setState] = useState<'loading' | 'ready' | 'offline'>('loading')
   useEffect(() => {
-    let c = false
-    ;(async () => {
-      const list = await loadCatalog()
-      if (!c) setItems(list)
-    })()
-    return () => {
-      c = true
-    }
+    let cancelled = false
+    const abort = new AbortController()
+    const timer = window.setTimeout(() => abort.abort(), 10_000)
+    loadCatalog(abort.signal).then(list => {
+      if (cancelled) return
+      setItems(list || [])
+      setState(list === null ? 'offline' : 'ready')
+    }).finally(() => window.clearTimeout(timer))
+    return () => { cancelled = true; abort.abort(); window.clearTimeout(timer) }
   }, [])
 
-  return (
-    <div className="animate-fade-in space-y-6 max-w-3xl mx-auto pb-16">
-      <header>
-        <p className="section-label">{xaRender("RWA")}</p>
-        <h1 className="section-title display text-2xl">{xaRender("Physical · Digital")}</h1>
-        <p className="text-sm text-zinc-400">
-          {xaRender("Catalogue d’études : données et valorisations simulées, sans authentification d’œuvre, expertise, garde physique, vente ni mint attestés. ")}</p>
-      </header>
-
-      <p role="status" className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm leading-6 text-amber-100">Catalogue de démonstration publié le 5 octobre 2026. Aucune valeur en USD, certification ou mention « en dépôt » ci-dessous ne constitue une évaluation, un titre de propriété ou une preuve de garde. Aucun lot n’est proposé à la vente.</p>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        {xaRender(items.map(it => {
-          const score = Number(it.valuation?.score ?? 0)
-          return (
-            <article
-              key={asText(it.id)}
-              className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-3"
-            >
-              <div className="aspect-[4/3] rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-950 flex items-center justify-center text-zinc-600 text-xs">
-                {xaRender(asText(it.style, 'artwork'))}
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-white">{xaRender(asText(it.title))}</h2>
-                <p className="text-[12px] text-zinc-400">{xaRender(asText(it.artist))}</p>
-                <p className="mt-2 text-xs font-semibold text-amber-200">Exemple éditorial · pas de mise en vente certifiée</p>
-              </div>
-              <div>
-                <div className="flex justify-between text-[10px] uppercase tracking-wider text-zinc-500 mb-1">
-                  <span>{xaRender("Score IA simulé")}</span>
-                  <span>{xaRender(asText(score.toFixed(0)))} / 100</span>
-                </div>
-                <div className="h-2 rounded-full bg-black/50 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-cyan-600 to-emerald-400"
-                    style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
-                  />
-                </div>
-                <p className="text-[12px] tabular-nums text-zinc-300 mt-1">
-                  {xaRender("Valeur fictive indicative $")}{xaRender(asText(it.valuation?.price_proxy_usd))} {xaRender(" · indicateur de démonstration")}
-                  <span className="sr-only">{xaRender(asText(it.valuation?.momentum))}</span>
-                </p>
-              </div>
-              <p className="text-[11px] text-zinc-500">
-                {xaRender("Garde physique : non vérifiée · déclaration source : ")}<span className="text-zinc-300">{xaRender(asText(it.shipment_status, 'indisponible'))}</span>
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Link to="/marketplace" className="btn-secondary text-[11px]">
-                  {xaRender("Market ")}</Link>
-                <Link to="/studio" className="btn-secondary text-[11px]">
-                  {xaRender("Studio mint ")}</Link>
-              </div>
-              <p className="text-[9px] text-zinc-600 mono truncate">
-                {xaRender("cert ")}{xaRender(asText(it.certificate_hash?.slice(0, 16)))}…
-              </p>
-            </article>
-          )
-        }))}
-        {xaRender(!items.length && (
-          <p className="text-zinc-500 text-sm col-span-2">{xaRender("Aucune œuvre de démonstration disponible. Aucun listing ou certificat de propriété n’est présumé.")}</p>
-        ))}
-      </div>
-
-      <section className="space-y-2 border-t border-white/10 pt-6">
-        <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">{xaRender("Certification phygital")}</p>
-        <PhysicalNftCertifier />
-      </section>
-
-      <PhysicalWorkFlowPanel />
-
-      <p className="text-[10px] text-zinc-600 border-t border-white/5 pt-3">
-        {xaRender("Fiches illustratives uniquement. Les décisions de propriété, de conservation, de livraison et de publication NFT exigent des documents et des signatures indépendants.")}</p>
-      <Link to="/lia" className="btn-secondary text-sm">
-        {xaRender("← LIA hub ")}</Link>
+  return <main className="rwa-public" id="rwa-catalog">
+    <header className="rwa-public__lead">
+      <p className="section-label">{xaRender("RWA")}</p>
+      <h1>{xaRender("Physical · Digital")}</h1>
+      <p>Explorer les œuvres physiques, leur documentation et leur lien avec le numérique.</p>
+    </header>
+    <p role="status" className="rwa-public__notice">Catalogue de démonstration publié le 5 octobre 2026.
+      Données et valeurs simulées. Aucun lot proposé à la vente, aucune expertise,
+      certification de propriété ou garde physique attestée.</p>
+    <nav className="rwa-public__actions" aria-label="Explorer l’art">
+      <Link to="/marketplace">Explorer la Marketplace <span aria-hidden="true"> ↗</span></Link>
+      <Link to="/studio">Découvrir le Studio <span aria-hidden="true"> ↗</span></Link>
+    </nav>
+    {state === 'loading' && <p role="status" className="rwa-public__footnote">Chargement du catalogue…</p>}
+    {state === 'offline' && <p role="status" className="rwa-public__notice">
+      Catalogue indisponible. Aucun listing ou certificat de propriété n’est présumé.</p>}
+    <div className="rwa-public__grid" aria-busy={state === 'loading'}>
+      {items.map((item, index) => {
+        const score = Number(item.valuation?.score ?? 0)
+        return <article key={asText(item.id, String(index))} className="rwa-public__card">
+          <header>
+            <div className="rwa-public__mark" aria-hidden="true">◇</div>
+            <div><h2>{xaRender(asText(item.title))}</h2>
+              <p className="rwa-public__artist">{xaRender(asText(item.artist))}</p></div>
+          </header>
+          <p className="rwa-public__label">Exemple éditorial · pas de mise en vente certifiée</p>
+          <p className="rwa-public__custody">Garde physique : non vérifiée</p>
+          <PublicDisclosure id={'rwa-study-' + index} level={3}
+            title="Voir les données simulées" subtitle={xaRender(asText(item.style, 'artwork'))}>
+            <p>{xaRender("Score IA simulé")} : {Number.isFinite(score) ? Math.min(100, Math.max(0, score)).toFixed(0) : '—'} / 100</p>
+            <p>{xaRender("Valeur fictive indicative $")}{xaRender(asText(item.valuation?.price_proxy_usd))}
+              {xaRender(" · indicateur de démonstration")}</p>
+            <p>Déclaration source : {xaRender(asText(item.shipment_status, 'indisponible'))}.
+              Cette déclaration ne prouve pas la garde de l’œuvre.</p>
+            {item.certificate_hash && <p className="break-all">
+              Identifiant de démonstration : {asText(item.certificate_hash)}</p>}
+          </PublicDisclosure>
+        </article>
+      })}
+      {state === 'ready' && !items.length && <p className="rwa-public__footnote">
+        {xaRender("Aucune œuvre de démonstration disponible. Aucun listing ou certificat de propriété n’est présumé.")}</p>}
     </div>
-  )
+    <div className="rwa-public__tools">
+      <PublicDisclosure id="rwa-preparation" title="Préparer la documentation d’une œuvre"
+        subtitle="Outil de démonstration — aucun certificat vérifié ni mint automatique.">
+        <p>Les documents produits sont des brouillons non vérifiés. Ils ne constituent
+          ni une expertise d’authenticité, ni un titre de propriété.</p>
+        <Suspense fallback={<p role="status">Chargement de l’outil…</p>}><PhysicalNftCertifier /></Suspense>
+      </PublicDisclosure>
+      <PublicDisclosure id="rwa-custody" title="Comprendre la garde et la livraison"
+        subtitle="Préparation du suivi physique ; les justificatifs restent indispensables.">
+        <Suspense fallback={<p role="status">Chargement du suivi…</p>}><PhysicalWorkFlowPanel /></Suspense>
+      </PublicDisclosure>
+    </div>
+    <p className="rwa-public__footnote">
+      {xaRender("Fiches illustratives uniquement. Les décisions de propriété, de conservation, de livraison et de publication NFT exigent des documents et des signatures indépendants.")}</p>
+    <Link to="/lia" className="btn-secondary text-sm">{xaRender("← LIA hub ")}</Link>
+  </main>
 }

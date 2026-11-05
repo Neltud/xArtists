@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getAccessApiBase } from '../lib/stripe'
 import { TRO_TOKEN_ID, TRO_YIELD_POOLS } from '../config/troPools'
+import PublicDisclosure from '../components/PublicDisclosure'
 // Styles are loaded eagerly by experience/modules.ts to prevent lazy CSS preload failures.
 
 const EXPLORER = 'https://explorer.multiversx.com/tokens/' + TRO_TOKEN_ID
@@ -80,30 +81,24 @@ export default function TroCrosschainPage() {
   return (
     <main className="tro-portal" id="tro-main">
       <div className="tro-portal__aura" aria-hidden="true" />
-      <nav className="tro-portal__crumb" aria-label="Navigation">
-        <Link to="/finance">Finance</Link>
-        <span aria-hidden="true">/</span>
-        <Link to="/tro">Token $TRO</Link>
-        <span aria-hidden="true">/</span>
-        <span>Solana & acquisition</span>
-      </nav>
 
       <section className="tro-portal__hero" aria-labelledby="tro-hero-title">
         <div className="tro-portal__lead">
           <p className="tro-portal__eyebrow"><span aria-hidden="true">✳</span> XARTISTS · TOKEN & INTEROPÉRABILITÉ</p>
-          <h1 id="tro-hero-title">One token.<br/><em>New horizons.</em></h1>
+          <h1 id="tro-hero-title">$TRO, aujourd’hui.<br/><em>Solana, en préparation.</em></h1>
           <p className="tro-portal__intro">
-            Découvrez $TRO sur MultiversX. Suivez les étapes qui permettront,
-            après audit, une représentation vérifiée sur Solana. Aucun dépôt ni
-            vente directe n’est encore ouvert sur cette page.
+            Le token d’origine est sur MultiversX. La représentation Solana prévue
+            sera adossée 1:1 à des réserves vérifiées. Aucun dépôt ni achat direct
+            n’est ouvert ici.
           </p>
+          <p className="tro-portal__availability">Bridge Solana : désactivé · Vente directe : non activée</p>
           <div className="tro-portal__actions">
             <a href={EXPLORER} target="_blank" rel="noopener noreferrer"
               className="tro-portal__btn tro-portal__btn--primary">
               Consulter $TRO sur Explorer <span aria-hidden="true">↗</span>
             </a>
-            <Link to="/studio" className="tro-portal__btn tro-portal__btn--outline">
-              Créer un NFT artiste <span aria-hidden="true">→</span>
+            <Link to="/guide" className="tro-portal__btn tro-portal__btn--outline">
+              Comprendre xArtists <span aria-hidden="true">→</span>
             </Link>
           </div>
           <p className="tro-portal__micro">
@@ -122,10 +117,7 @@ export default function TroCrosschainPage() {
 
       <div className="tro-portal__statusline" role="status" aria-live="polite">
         <span className="tro-portal__status-indicator" aria-hidden="true"/>
-        <strong>Bridge Solana : désactivé</strong>
-        <span className="tro-portal__status-separator" aria-hidden="true"/>
-        <span>Vente directe : non activée</span>
-        <span className="tro-portal__status-separator" aria-hidden="true"/>
+        <strong>Statut de la représentation Solana</strong>
         <span>API : {apiState === 'loading' ? 'vérification…' : apiState === 'ok' ? 'statut consulté' : 'indisponible, sécurité conservée'}</span>
       </div>
 
@@ -162,7 +154,8 @@ export default function TroCrosschainPage() {
             </div>
             <h3>$TRO / Solana</h3>
             <p className="tro-portal__tokenid">Mint SPL officiel : non attesté</p>
-            <p>Une représentation Solana nécessite une gouvernance et une preuve de couverture entre les deux chaînes.</p>
+            <p>Modèle cible : représentation 1:1, sans nouvelle offre indépendante.
+              La couverture, le bridge et les autorités d’émission restent à vérifier.</p>
             <div className="tro-portal__cardactions">
               <button type="button" disabled aria-disabled="true"
                 className="tro-portal__btn tro-portal__btn--disabled">
@@ -175,12 +168,9 @@ export default function TroCrosschainPage() {
         </div>
       </section>
 
-      <section className="tro-portal__process" aria-labelledby="tro-roadmap-title">
-        <div className="tro-portal__sectionhead">
-          <p className="tro-portal__eyebrow">02 / CONSTRUCTION DU BRIDGE</p>
-          <h2 id="tro-roadmap-title">La confiance avant la vitesse.</h2>
-          <p>Un pont entre deux blockchains se déploie après preuves de sécurité, pas à partir d’un simple formulaire.</p>
-        </div>
+      <section className="tro-portal__process" aria-label="Préparation du bridge">
+        <PublicDisclosure id="tro-roadmap-details" title="Comment la représentation 1:1 sera vérifiée"
+          subtitle="Jeton d’origine, réserves, autorités et essais indépendants — 4 étapes.">
         <ol className="tro-portal__steps">
           {preparation.map(item => (
             <li key={item.number}>
@@ -189,12 +179,13 @@ export default function TroCrosschainPage() {
             </li>
           ))}
         </ol>
+        </PublicDisclosure>
       </section>
 
       <section className="tro-portal__bottom" aria-label="Transparence et liens">
         <div>
           <p className="tro-portal__eyebrow">03 / TRANSPARENCE</p>
-          <h2>Jamais de fausse liquidité.</h2>
+          <h2>Des étapes vérifiables.</h2>
           <p>Le bridge et le checkout direct restent fermés. {launchReady ? 'En revue.' : 'Aucun prix public de vente directe, taux de conversion ou mint Solana ne sont affirmés.'} 
             Les œuvres physiques et leurs ventes Shopify/Etsy restent distinctes de $TRO et des NFTs.</p>
         </div>
