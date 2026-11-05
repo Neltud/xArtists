@@ -110,7 +110,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         Vérification du service d’upload… Aucun fichier n’est transmis pendant cette étape.
       </p>}
       {enabled===false&&<p role="status" className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs leading-relaxed text-amber-100">
-        La publication des œuvres est temporairement indisponible : votre photo ou vidéo reste uniquement sur votre appareil.
+        Upload IPFS indisponible : la publication des œuvres est suspendue, votre photo ou vidéo reste uniquement sur votre appareil.
         L’aperçu local n’est pas un fichier publié, une transaction ou un NFT minté.
         Pour préparer une œuvre, utilisez une URI IPFS/HTTPS que vous hébergez vous-même ;
         ne signez aucune transaction avant d’avoir vérifié le média, les droits et la collection.
