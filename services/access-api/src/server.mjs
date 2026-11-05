@@ -5,6 +5,8 @@
  * Signals: read-only daily signal (never executes trades).
  */
 import http from 'node:http'
+import { handleStripe } from './stripeHttp.mjs'
+import { stripeSandboxConfig } from './stripeCheckout.mjs'
 import { resolveAccessLevel, issueAccessToken, verifyJwt } from './verifyAccess.mjs'
 import { createChallenge, verifySignedChallenge, requireSiwx, erdToPubkey } from './siwx.mjs'
 import { createSimpleIntentService } from './liaSimple.mjs'
@@ -137,6 +139,9 @@ async function handleRequest(req, res) {
   const u = new URL(req.url || '/', `http://127.0.0.1:${PORT}`)
   const pth = u.pathname.replace(/\/$/, '') || '/'
 
+  if (await handleStripe(req, res, { path: pth, json, readRawAndBody,
+    verifyJwt, erdToPubkey, jwtSecret: JWT_SECRET, originAllowed: liaSimpleOriginAllowed })) return
+
   if (req.method === 'GET' && pth === '/health') {
     json(res, 200, {
       ok: true,
@@ -144,7 +149,9 @@ async function handleRequest(req, res) {
       require_siwx: requireSiwx(),
       moonpay_configured: Boolean(MOONPAY.ready),
       moonpay_mode: MOONPAY.ready ? MOONPAY.mode : 'off',
-      stripe_configured: Boolean(STRIPE_KEY),
+      stripe_configured: Boolean(STRIPE_KEY), // legacy key presence only, not checkout readiness
+      stripe_live_checkout_enabled: false,
+      stripe_sandbox: stripeSandboxConfig(),
       paybox_configured: PAYBOX.ready,
       paybox_checkout_enabled: payboxCheckoutEnabled(),
       paybox_mode: PAYBOX.ready ? PAYBOX.mode : 'off',
@@ -777,3 +784,4 @@ server.listen(PORT, () => {
     `access-api :${server.address().port} paybox=${PAYBOX.ready} ipn=${IPN_POLICY.algorithm}/${IPN_POLICY.keySize} mint=${MINT_CFG.enabled ? (MINT_CFG.dryRun ? 'dry_run' : 'live_armed') : 'off'} signals=on`,
   )
 })
+

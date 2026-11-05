@@ -1,0 +1,46 @@
+name: Stripe sandbox adapter
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'services/access-api/**'
+      - '.github/workflows/stripe-sandbox-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/**'
+      - '.github/workflows/stripe-sandbox-ci.yml'
+permissions:
+  contents: read
+jobs:
+  sandbox-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: stripe_ci
+          POSTGRES_PASSWORD: local_ci_only
+          POSTGRES_DB: stripe_sandbox_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U stripe_ci -d stripe_sandbox_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      STRIPE_TEST_DATABASE_URL: postgres://stripe_ci:local_ci_only@127.0.0.1:5432/stripe_sandbox_ci
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      MINT_LIVE_ENABLED: 'false'
+      LIA_LIVE_TRADING: '0'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install existing locked API dependencies
+        run: npm ci --prefix services/access-api --ignore-scripts --no-audit --no-fund
+      - name: Run API regression and real ephemeral PostgreSQL tests
+        run: npm test --prefix services/access-api
