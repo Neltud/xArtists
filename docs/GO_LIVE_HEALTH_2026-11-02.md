@@ -1,50 +1,17 @@
 # GO live health snapshot — 2026-11-02 ~20:38 CET
 
-**Probed autonomously** (no secrets read).
+## Archive remplacée pour les décisions de lancement
 
-## access-api — `https://xartists-access-api.onrender.com/health`
+**Ce snapshot du 2 novembre est historique.** Pour les blocages et preuves exigées, consulter [GO live status](GO_LIVE_STATUS.md). Le 4 novembre, deux sondes initiales de `/health` ont reçu HTTP 503 ; deux relectures suivantes répondent OK et confirment checkout/live mint/trading/bridge/enchères désactivés. Render indique #378 déployée. Le stockage orders est prêt, mais `/v1/ops/mint-jobs-store/status` répond toujours 503. Les constats détaillés et les limites figurent dans le statut actualisé.
 
-| Field | Value | Gate |
-|-------|-------|------|
-| ok | true | ✅ |
-| paybox_configured | true | ✅ |
-| paybox_mode | **prod** | ✅ armé |
-| orders_backend | **postgres** | ✅ |
-| packs | pulse, yield, sentinel | ✅ |
-| signals_daily | true | ✅ |
-| mint_dry_run | **true** | ✅ safe |
-| mint_live_enabled | **false** | ✅ safe |
-| mint_dispatch_enabled | **false** | ⚠️ dispatch not armed |
-| lia_live_trading | **0** | ✅ |
-| tro_solana_bridge | off | ✅ |
-| studio_media_upload | off | ✅ |
-| physical_works | off | ✅ |
+Les valeurs historiques étaient : `paybox_mode=prod`, `orders_backend=postgres`, `mint_dry_run=true`, `mint_live_enabled=false`, `mint_dispatch_enabled=false`, `lia_live_trading=0`. Elles ne sont ni une garantie de disponibilité actuelle, ni une preuve de règlement PSP, ni une preuve NFT.
 
-### Interpretation
+## Correction des anciennes recommandations
 
-- **PayBox prod + Postgres** = commercial path **code+backend ready**.
-- **Mint dispatch disabled** = IPN will mark paid but **will not** call GitHub Actions until `MINT_DISPATCH_ENABLED=1` + PAT.
-- Recommended next env (Render dashboard, human):
-  ```
-  MINT_DISPATCH_ENABLED=1
-  MINT_DRY_RUN=1
-  MINT_LIVE_ENABLED=0
-  MINT_GITHUB_PAT=<repo workflow>
-  ```
-- Do **not** set `MINT_LIVE_ENABLED=1` until PEM + micro/liquidity GO.
+- **Prod + Postgres ne signifie pas « commercial ready ».** Il faut les preuves de paiement signé, livraison atomique, propriété et remboursement de [#281](https://github.com/Neltud/xArtists/issues/281).
+- Le chemin de préparation a évolué vers **OIDC pull dry-run**. L'ancienne recommandation de créer un PAT et d'armer le dispatch push est retirée. Vérifier l'architecture et les contrôles actuels avant toute modification.
+- Une acceptation de job GitHub ou OIDC n'est pas un mint confirmé.
+- Le constat historique « toutes les routes critiques HTTP 200 » ne s'applique plus : sondes du 4 novembre, Auction et Offres 404, page TRO en erreur de CSS ; [#362](https://github.com/Neltud/xArtists/issues/362).
+- Aucun flag commercial ou trading ne doit être activé sur la base de cette archive. La PR #378 fusionnée fournit uniquement une simulation PAPER.
 
-## Pages
-
-All critical routes HTTP 200 (packs ×3, TRO sale, lia_status, daily_signal).
-
-## Automation
-
-Workflow: `.github/workflows/go-public-smoke.yml` (schedule 6h + dispatch).
-
-## Still human-only
-
-1. Render env mint dispatch arm (dry)
-2. `SC_DEPLOYER_PEM` confirm
-3. Buyer erd1 + optional micro mint
-4. S1 real card payment
-5. Whop TCA `prod_`
+Aucun secret, PAT, PEM ou contenu client ne doit être ajouté à ce document.
