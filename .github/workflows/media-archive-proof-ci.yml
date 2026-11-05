@@ -1,0 +1,35 @@
+name: Artist media archive — offline integrity contracts
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/media-integrity-check.mjs'
+      - 'scripts/ops/tests/media-integrity-check.test.mjs'
+      - 'apps/frontend/src/lib/mediaArchiveManifest.ts'
+      - 'apps/frontend/src/components/CreatorMediaUpload.tsx'
+      - 'apps/frontend/tests/media-preservation-export.test.mjs'
+      - '.github/workflows/media-archive-proof-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ops/media-integrity-check.mjs'
+      - 'scripts/ops/tests/media-integrity-check.test.mjs'
+      - '.github/workflows/media-archive-proof-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  readback-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Offline immutable-media evidence checks (no credentials or network needed)
+        run: node --test scripts/ops/tests/media-integrity-check.test.mjs
+      - name: Public Studio backup-receipt safety checks
+        run: node --test apps/frontend/tests/media-preservation-export.test.mjs
