@@ -6,7 +6,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   --atelier-bg: var(--xa-bg);
   --atelier-panel: var(--xa-surface);
   --atelier-border: var(--xa-border);
