@@ -123,6 +123,20 @@ export default function CommercialLaunchPage() {
         </div>
       </section>
 
+      <section aria-labelledby="club-news" className="rounded-3xl border border-amber-100/25 bg-[#171a20] p-6 sm:p-9">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-200">xArtists Club + News</p>
+        <h2 id="club-news" className="mt-3 font-serif text-3xl text-white">10 € / {lang === 'fr' ? 'mois' : 'month'}</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-300">{lang === 'fr'
+          ? 'Abonnement numérique hors blockchain, sans NFT. Accès pendant chaque période mensuelle effectivement payée : xArtists TV News, actualités du monde de l’art, magazine et critiques, événements NFT et rencontres, curateurs et veille des ventes et enchères avec liens vers Artprice.'
+          : 'Off-chain digital subscription, without an NFT. Access for each successfully paid monthly period: xArtists TV News, art world news, magazine reviews, NFT events and meetings, curators, and art sales and auctions coverage linking to Artprice.'}</p>
+        <p role="status" className="mt-4 text-sm font-semibold text-amber-200">{lang === 'fr'
+          ? 'Offre annoncée, souscription indisponible : aucun paiement ni droit d’accès activé sur cette page.'
+          : 'Offer preview only: subscription checkout is unavailable and no payment or access is activated on this page.'}</p>
+        <p className="mt-2 text-xs leading-6 text-zinc-400">{lang === 'fr'
+          ? 'Distinct des packs NFT Genesis et de TCA/Whop. Aucun NFT, mint, wallet ou transaction on-chain. Les conditions de renouvellement, d’annulation et de fourniture seront publiées avant ouverture.'
+          : 'Separate from Genesis NFT packs and TCA/Whop. No NFT, mint, wallet or on-chain transaction. Renewal, cancellation and delivery terms will be published before launch.'}</p>
+      </section>
+
       <section aria-labelledby="commercial-how" className="rounded-3xl border border-white/10 bg-white/[0.035] p-6 sm:p-9">
         <h2 id="commercial-how" className="font-serif text-2xl text-white">{c.how}</h2>
         <ol className="mt-5 grid gap-5 text-sm leading-7 text-zinc-300 md:grid-cols-3">
