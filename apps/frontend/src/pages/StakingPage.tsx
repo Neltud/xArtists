@@ -46,7 +46,7 @@ export default function StakingPage() {
   }, [])
 
   return (
-    <div className="animate-fade-in space-y-6">
+    <div className="xa-staking-page animate-fade-in space-y-6">
       <header>
         <h1 className="text-2xl font-bold flex flex-wrap items-center gap-2">
           <TokenIcon token="TRO" size={28} />
@@ -111,7 +111,7 @@ export default function StakingPage() {
               return (
                 <article
                   key={p.id}
-                  className="rounded-2xl border border-white/10 bg-zinc-950/60 p-4 space-y-3"
+                  className="xa-staking-pool-card rounded-2xl border border-white/10 bg-zinc-950/60 p-4 space-y-3"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-start gap-2">
@@ -228,7 +228,7 @@ export default function StakingPage() {
       {xaRender(tab === 'Help' && (
         <div className="card text-sm text-zinc-400 space-y-2">
           <p>
-            <strong className="text-zinc-200">{xaRender("Yield ≠ DAO :")}</strong> {xaRender(" farming LP sur DEX ; vote = holders + LP power sur /dao. ")}</p>
+            <strong className="text-zinc-200">{xaRender("Yield ≠ DAO :")}</strong> {xaRender(" farming LP sur DEX ; le vote DAO dépend uniquement du montant de $TRO staké (pas des NFT ou des parts LP). ")}</p>
           <p>
             <strong className="text-zinc-200">{xaRender("Gas :")}</strong> {xaRender(" garder de l'EGLD. ")}</p>
           <p>
