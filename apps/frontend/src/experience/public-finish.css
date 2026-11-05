@@ -1,0 +1,158 @@
+/* Public editorial finish — applied after experience.css.
+   Neutral light surfaces first; dark remains an explicit saved preference. */
+.xa-app {
+  background: var(--xa-bg);
+  color: var(--xa-text);
+}
+.xa-theme-toggle {
+  border: 1px solid var(--xa-border);
+  background: var(--xa-panel);
+  color: var(--xa-text);
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+}
+.xa-theme-toggle:hover { background: var(--xa-panel2); }
+.xa-theme-toggle:focus-visible { outline: 2px solid var(--xa-accent); outline-offset: 3px; }
+
+.xa-hero {
+  min-height: 610px;
+  padding-top: 88px;
+  padding-bottom: 86px;
+}
+.xa-hero-copy { max-width: 790px; }
+.xa-hero-actions { gap: 12px; flex-wrap: wrap; }
+.xa-section { padding-top: clamp(55px, 6vw, 90px); }
+.xa-highlight, .xa-universe, .xa-module-card {
+  border-radius: 18px;
+}
+.xa-highlight-copy, .xa-universe-caption { padding-bottom: 8px; }
+.xa-public-trust {
+  margin: 36px 0 0;
+  padding: 22px clamp(20px, 3vw, 40px);
+  border: 1px solid var(--xa-border);
+  border-radius: 18px;
+  background: var(--xa-panel);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.xa-public-trust strong { display: block; font-size: 16px; letter-spacing: -.02em; }
+.xa-public-trust p { color: var(--xa-muted); margin: 5px 0 0; line-height: 1.65; max-width: 750px; font-size: 13px; }
+.xa-public-trust a { white-space: nowrap; color: var(--xa-accent); font-size: 13px; font-weight: 700; }
+.xa-hero-actions .xa-button.quiet { border: 1px solid var(--xa-border); border-radius: 999px; padding-inline: 19px; }
+.xa-hero-actions .xa-button.primary { border-radius: 999px; }
+.xa-hero-bottom { letter-spacing: .05em; }
+
+.xa-truth-card {
+  color: var(--xa-text);
+  border: 1px solid var(--xa-border);
+  border-radius: 18px;
+  background: var(--xa-panel);
+  padding: clamp(18px, 3vw, 32px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+.xa-truth-card-heading { max-width: 660px; }
+.xa-truth-label {
+  display: inline-block;
+  color: var(--xa-accent);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin-bottom: 9px;
+}
+.xa-truth-card h3 { font-size: clamp(22px, 2.6vw, 30px); font-weight: 750; margin: 0 0 8px; letter-spacing: -.04em; }
+.xa-truth-card-heading p { color: var(--xa-muted); margin: 0; line-height: 1.6; font-size: 14px; }
+.xa-truth-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.xa-truth-status-grid > div {
+  min-width: 0;
+  border: 1px solid var(--xa-border);
+  border-radius: 12px;
+  padding: 15px;
+  background: var(--xa-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.xa-truth-status-grid span { font-size: 11px; color: var(--xa-muted); }
+.xa-truth-status-grid strong { color: var(--xa-text); font-size: 23px; font-weight: 600; }
+.xa-truth-status-grid small { color: var(--xa-muted); font-size: 11px; line-height: 1.4; }
+.xa-truth-footnote { color: var(--xa-muted); margin: 0; font-size: 12px; line-height: 1.7; }
+.xa-truth-strategies p { color: var(--xa-muted); font-size: 12px; margin-bottom: 10px; }
+.xa-truth-strategies > div, .xa-truth-links { display: flex; gap: 8px; flex-wrap: wrap; }
+.xa-truth-strategies span {
+  border: 1px solid var(--xa-border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--xa-muted);
+}
+.xa-truth-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 15px;
+  border: 1px solid var(--xa-border);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--xa-accent);
+}
+.xa-truth-links a:hover { background: var(--xa-panel2); }
+.xa-truth-intents { margin-top: 16px; }
+.xa-truth-intents > p { margin: 0 0 10px; }
+
+html[data-theme="light"] .xa-header,
+html[data-theme="light"] .xa-footer,
+html[data-theme="light"] .xa-hero,
+html[data-theme="light"] .xa-app main { background-color: #fafaf8; }
+html[data-theme="light"] .xa-hero-grid { opacity: .14; }
+html[data-theme="light"] .xa-highlight,
+html[data-theme="light"] .xa-universe,
+html[data-theme="light"] .xa-module-card,
+html[data-theme="light"] .xa-preferences-panel,
+html[data-theme="light"] .xa-genesis-card {
+  background: #fff !important;
+  box-shadow: 0 8px 30px rgba(29, 45, 27, .035) !important;
+  border-color: rgba(26, 40, 28, .10) !important;
+}
+html[data-theme="light"] .xa-highlight:hover,
+html[data-theme="light"] .xa-universe:hover,
+html[data-theme="light"] .xa-module-card:hover { border-color: rgba(65, 105, 29, .35) !important; }
+html[data-theme="light"] .xa-genesis-series,
+html[data-theme="light"] .xa-genesis-card .xa-genesis-price span,
+html[data-theme="light"] .xa-genesis-card .xa-genesis-cap,
+html[data-theme="light"] .xa-genesis-card .text-zinc-400,
+html[data-theme="light"] .xa-genesis-card .text-zinc-500 { color: #566458; }
+html[data-theme="light"] .xa-genesis-card .xa-genesis-price strong { color: #202920; }
+html[data-theme="light"] .xa-genesis-card-head h3 { color: #202920 !important; }
+html[data-theme="light"] .xa-hero-2d-visual { background: radial-gradient(circle at 42% 38%, rgba(65,105,29,.06), transparent 54%); }
+html[data-theme="light"] .xa-module-sidebar { border-color: var(--xa-border); }
+
+/* Dark remains visually intentional; do not impose white cards in dark. */
+html[data-theme="dark"] .xa-public-trust,
+html[data-theme="dark"] .xa-truth-card { background: #181b17; }
+
+@media (max-width: 900px) {
+  .xa-hero { min-height: 540px; }
+  .xa-public-trust { align-items: flex-start; flex-direction: column; }
+}
+@media (max-width: 720px) {
+  .xa-hero { min-height: auto; padding-top: 50px; padding-bottom: 64px; }
+  .xa-section { padding-top: 52px; }
+  .xa-truth-status-grid { grid-template-columns: 1fr; }
+  .xa-theme-toggle { min-width: 40px; }
+  .xa-public-trust { margin-top: 25px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xa-hero *, .xa-genesis-card * { animation-duration: .01ms !important; }
+}
