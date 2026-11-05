@@ -169,6 +169,9 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await visit(page, '/nft-factory/')
       await expect(page.locator('.xa-nft-factory')).toBeVisible()
       await page.getByLabel('Mode de design').selectOption('layers')
+      const rights = page.locator('.xa-nft-factory input[type="checkbox"]').first()
+      await expect(rights).toBeVisible()
+      expect(await rights.evaluate(el => el.getBoundingClientRect().width)).toBeLessThan(32)
       await expect(page.locator('.xa-nft-variant-row').first()).toBeVisible()
       const offscreen = await page.locator('.xa-nft-factory').evaluate(el =>
         [...el.querySelectorAll('input, textarea, select, button, .card, .xa-nft-layer-row, .xa-nft-variant-row')]
