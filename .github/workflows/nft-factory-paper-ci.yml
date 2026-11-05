@@ -1,0 +1,56 @@
+name: NFT Factory paper-only generation and distributors
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/frontend/src/lib/distributorPaper.mjs'
+      - 'apps/frontend/src/lib/distributorPaper.d.mts'
+      - 'apps/frontend/src/lib/artCollectionPaper.mjs'
+      - 'apps/frontend/src/lib/artCollectionPaper.d.mts'
+      - 'apps/frontend/src/pages/NftDistributorPage.tsx'
+      - 'apps/frontend/src/experience/modules.ts'
+      - 'apps/frontend/src/components/StudioCreatorHub.tsx'
+      - 'apps/frontend/tests/distributorPaper.test.mjs'
+      - 'apps/frontend/tests/artCollectionPaper.test.mjs'
+      - '.github/workflows/nft-factory-paper-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/frontend/src/lib/distributorPaper.mjs'
+      - 'apps/frontend/src/lib/artCollectionPaper.mjs'
+      - 'apps/frontend/src/pages/NftDistributorPage.tsx'
+      - 'apps/frontend/src/experience/modules.ts'
+      - '.github/workflows/nft-factory-paper-ci.yml'
+permissions:
+  contents: read
+jobs:
+  paper-unit-and-routes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      VITE_LIA_LIVE_TRADING: '0'
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      MINT_LIVE_ENABLED: 'false'
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked frontend dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Validate both paper engines and no paid calls
+        run: |
+          node --test tests/artCollectionPaper.test.mjs tests/distributorPaper.test.mjs
+          node --check src/lib/artCollectionPaper.mjs
+          node --check src/lib/distributorPaper.mjs
+      - name: Check TypeScript, navigation integrity and static routes
+        run: |
+          npm run typecheck
+          npm run check:routes
+      - name: Prepare production static build (no commercial flags)
+        run: npm run build
