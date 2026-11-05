@@ -11,6 +11,7 @@ export type Module = { id: string; path: string; aliases: string[]; label: strin
 const module = (id:string,path:string,aliases:string[],label:string,group:Group,icon:string,page:()=>Promise<any>,tags:string[]=[]):Module => ({id,path,aliases,label,group,icon,page:lazy(page),tags,load:page})
 export const modules:Module[] = [
   module('app','/app',['/install','/mobile'],'appAccess','workspace','globe',()=>import('../pages/DappAccessPage'),['xPortal','iOS','Android','PWA']),
+  module('maison','/explore/maison',[],'maison','explore','museum',()=>import('../pages/MaisonHubPage'),['Art','Curation','RWA']),
   module('museum','/explore/museum',['/museum','/gallery'],'museum','explore','museum',()=>import('../pages/MuseumPage'),['3D','WebGL','NFT']),
   module('auction','/explore/auction',['/auction','/encheres'],'auction','explore','market',()=>import('../pages/AuctionPage'),['RWA','Auction','NFT']),
   module('rwa','/explore/rwa',['/rwa','/rwa_catalog'],'rwa','explore','cube',()=>import('../pages/RwaCatalogPage'),['RWA','NFC']),
