@@ -4,7 +4,7 @@ import { mkdirSync } from 'node:fs'
 const BASE = '/xArtists'
 function contrastRatio(foreground: string, background: string): number {
   const luminance = (color: string) => {
-    const rgb = (color.match(/\\d+(?:\\.\\d+)?/g) || []).slice(0, 3).map(Number)
+    const rgb = (color.match(/\d+(?:\.\d+)?/g) || []).slice(0, 3).map(Number)
     const linear = rgb.map(n => {
       const channel = n / 255
       return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4
