@@ -112,3 +112,10 @@ html{scroll-behavior:smooth;scroll-padding-top:100px}body{background:var(--xa-bg
 @media(max-width:1200px) and (min-width:721px){
  .xa-footer-links{flex-wrap:wrap}
 }
+
+/* Explain each module in plain language; tech keywords are optional. */
+.xa-module-intro{font-size:14px;line-height:1.65;color:var(--xa-muted);max-width:750px;margin:6px 0 16px}
+.xa-module-preview{font-size:12px;color:var(--xa-text);border-inline-start:2px solid var(--xa-accent);padding-inline-start:12px;margin-block:8px 14px}
+.xa-module-technical{margin:8px 0 22px}
+.xa-module-technical summary{cursor:pointer;min-height:44px;padding:11px 0;font-size:12px;color:var(--xa-muted)}
+.xa-module-technical[open] .xa-module-tags{margin-top:4px;margin-bottom:10px}
