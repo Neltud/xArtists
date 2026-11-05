@@ -90,6 +90,35 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await expect(page.locator('.xa-first-journeys')).toBeVisible()
   })
 
+  test('editorial roadmap is readable on mobile and desktop without wallet or fake checkout', async ({ page }) => {
+    for(const width of [390, 1440]){
+      await page.setViewportSize({width,height:900})
+      await visit(page, '/roadmap/')
+      await expect(page.locator('.xa-roadmap-page h1')).toBeVisible()
+      await expect(page.locator('.xa-roadmap-milestone')).toHaveCount(6)
+      await expect(page.locator('.xa-roadmap-milestone a[href*="/issues/"]')).toHaveCount(6)
+      await expect(page.locator('.xa-roadmap-note')).toBeVisible()
+      await expect(page.locator('.xa-mobile-dock')).toHaveCount(1)
+      const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)
+      expect(overflow, `roadmap horizontal overflow at ${width}px`).toBeLessThanOrEqual(12)
+      await page.screenshot({animations:'disabled',path:`artifacts/ux-mobile/roadmap-${width}.png`})
+    }
+  })
+
+  test('CSS orbital art stays optional, stops for reduced motion and does not obstruct mobile', async ({ page }) => {
+    await page.setViewportSize({width:1440,height:900})
+    await visit(page,'/')
+    await expect(page.locator('.xa-orbital-stage')).toBeVisible()
+    await expect(page.locator('.xa-orbital-panel')).toHaveCount(3)
+    await expect(page.locator('.xa-orbital-stage canvas')).toHaveCount(0)
+    await page.emulateMedia({reducedMotion:'reduce'})
+    const animation=await page.locator('.xa-orbital-axis').evaluate(node=>getComputedStyle(node).animationName)
+    expect(animation).toBe('none')
+    await page.setViewportSize({width:390,height:844})
+    await expect(page.locator('.xa-orbital-stage')).toBeHidden()
+    await expect(page.locator('.xa-mobile-dock')).toBeVisible()
+  })
+
   test('visitor guide at 390px never links to retired Slot, and offers legal access', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await visit(page, '/guide/')
