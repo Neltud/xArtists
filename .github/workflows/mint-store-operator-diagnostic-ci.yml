@@ -3,6 +3,7 @@ name: Mint store operator diagnosis (read-only)
 on:
   pull_request:
     paths:
+      - 'Dockerfile'
       - 'services/access-api/scripts/check-mint-store.mjs'
       - 'services/access-api/tests/mintStoreOperatorCheck.test.mjs'
       - 'services/access-api/tests/mintStoreOperatorPostgres.test.mjs'
@@ -10,6 +11,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'Dockerfile'
       - 'services/access-api/scripts/check-mint-store.mjs'
       - 'services/access-api/tests/mintStoreOperatorCheck.test.mjs'
       - 'services/access-api/tests/mintStoreOperatorPostgres.test.mjs'
@@ -31,6 +33,11 @@ jobs:
           node-version: '22'
       - name: Syntax check of read-only diagnostic
         run: node --check services/access-api/scripts/check-mint-store.mjs
+      - name: Ensure private diagnostic is packaged but never auto-executed
+        run: |
+          set -euo pipefail
+          grep -Fq 'COPY services/access-api/scripts/check-mint-store.mjs ./scripts/check-mint-store.mjs' Dockerfile
+          ! grep -Fq 'check-mint-store.mjs' ops/render-service-entrypoint.sh
       - name: Verify bounded metadata probes, rollback and redaction
         run: node --test services/access-api/tests/mintStoreOperatorCheck.test.mjs
 
