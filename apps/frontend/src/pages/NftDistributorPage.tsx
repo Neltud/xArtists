@@ -136,6 +136,40 @@ export default function NftDistributorPage() {
       setDrawError(error instanceof Error ? error.message : 'Tirage indisponible')
     }
   }
+  const visualLayers = useMemo(() => {
+    try {
+      const parsed: unknown = JSON.parse(layersJson)
+      if (!Array.isArray(parsed) || parsed.length > 8 ||
+          parsed.some(item => !item || typeof item !== 'object' ||
+            !Array.isArray(item.variants) || item.variants.length > 12)) return []
+      return parsed as { name: string; variants: { value: string; weight: number }[] }[]
+    } catch { return [] }
+  }, [layersJson])
+  const editLayers = (apply: (items: typeof visualLayers) => void) => {
+    const next = visualLayers.map(layer => ({
+      name: layer.name, variants: layer.variants.map(v => ({ value: v.value, weight: v.weight })),
+    }))
+    apply(next)
+    setLayersJson(JSON.stringify(next, null, 2))
+  }
+  const updateExtraAttributes = (value: string) => {
+    const parts = value.split(/[;\\n]+/).map(x => x.trim()).filter(Boolean)
+    const attrs = parts.map(line => {
+      const pos = line.indexOf('=')
+      return { trait_type: pos < 0 ? line : line.slice(0, pos).trim(),
+        value: pos < 0 ? '' : line.slice(pos + 1).trim() }
+    })
+    setOverrides(prev => {
+      const patch = { ...(prev[String(edition)] || {}) }
+      if (attrs.length) patch.extraAttributes = attrs
+      else delete patch.extraAttributes
+      const result = { ...prev }
+      if (Object.keys(patch).length) result[String(edition)] = patch
+      else delete result[String(edition)]
+      return result
+    })
+  }
+
   const updateEdition = (field: 'name' | 'description', value: string) => {
     setOverrides(prev => {
       const entry = { ...(prev[String(edition)] || {}) }
@@ -203,10 +237,41 @@ export default function NftDistributorPage() {
                 {Object.entries(ART_TEMPLATES).map(([id, data]) => <option key={id} value={id}>{data.label}</option>)}
               </select>
             </label>
-          : <label className="block space-y-1 text-sm">Calques et variantes pondérées (JSON)
-              <textarea className="w-full rounded-lg border border-white/15 bg-black/50 p-3 font-mono text-xs" rows={10} value={layersJson} onChange={e => setLayersJson(e.target.value)}/>
-              <span className="text-xs text-zinc-500">1–8 calques, 1–12 variantes par calque, poids 1–1000. Chaque NFT reçoit une combinaison déterministe de traits.</span>
-            </label>}
+          : <div className="space-y-3 rounded-lg border border-white/15 p-3">
+              <p className="text-sm font-semibold">Choix de calques & raretés</p>
+              {visualLayers.map((layer, li) => <div key={li} className="space-y-2 rounded-lg border border-white/10 bg-black/20 p-3">
+                <div className="flex items-center gap-2">
+                  <label className="flex-1 text-xs">Nom du calque
+                    <input className="mt-1 w-full rounded-lg border border-white/15 bg-black/40 p-2" value={layer.name}
+                      onChange={e => editLayers(items => { items[li].name = e.target.value })}/>
+                  </label>
+                  <button type="button" className="btn-secondary text-xs" disabled={visualLayers.length<=1}
+                    onClick={() => editLayers(items => { items.splice(li, 1) })}>Supprimer</button>
+                </div>
+                {layer.variants.map((v,vi) => <div key={vi} className="flex items-end gap-2">
+                  <label className="flex-1 text-xs">Design / variante
+                    <input className="mt-1 w-full rounded-lg border border-white/15 bg-black/40 p-2" value={v.value}
+                      onChange={e=>editLayers(items=>{items[li].variants[vi].value=e.target.value})}/>
+                  </label>
+                  <label className="w-20 text-xs">Poids
+                    <input type="number" min={1} max={1000}
+                      className="mt-1 w-full rounded-lg border border-white/15 bg-black/40 p-2" value={v.weight}
+                      onChange={e=>editLayers(items=>{items[li].variants[vi].weight=Number(e.target.value)})}/>
+                  </label>
+                  <button type="button" className="btn-secondary text-xs" disabled={layer.variants.length<=1}
+                    onClick={()=>editLayers(items=>{items[li].variants.splice(vi,1)})}>×</button>
+                </div>)}
+                <button type="button" className="btn-secondary text-xs" disabled={layer.variants.length>=12}
+                  onClick={()=>editLayers(items=>{items[li].variants.push({value:'Nouvelle variante',weight:1})})}>+ Variante</button>
+              </div>)}
+              <button type="button" className="btn-secondary text-xs" disabled={visualLayers.length>=8}
+                onClick={()=>editLayers(items=>{items.push({name:'Nouveau calque',variants:[{value:'Première variante',weight:1}]})})}>+ Calque</button>
+              <p className="text-xs text-zinc-500">Chaque poids fixe une fréquence relative estimée, sans garantir un nombre exact. Les métadonnées restent des brouillons.</p>
+              <details className="text-xs"><summary className="cursor-pointer text-zinc-300">Éditeur JSON avancé</summary>
+                <textarea className="mt-2 w-full rounded-lg border border-white/15 bg-black/50 p-3 font-mono" rows={8}
+                  value={layersJson} onChange={e=>setLayersJson(e.target.value)}/>
+              </details>
+            </div>}
         <label className="block space-y-1 text-sm">Seed de variation
           <input className="w-full rounded-lg border border-white/15 bg-black/50 p-2 font-mono text-xs" value={seed} maxLength={128} onChange={e => setSeed(e.target.value)}/>
         </label>
@@ -253,6 +318,13 @@ export default function NftDistributorPage() {
               <textarea className="w-full rounded-lg border border-white/15 bg-black/50 p-2" rows={3}
                 value={overrides[String(edition)]?.description ?? picked.description} maxLength={600}
                 onChange={e => updateEdition('description', e.target.value)}/>
+            </label>
+            <label className="block space-y-1 text-sm">Attributs personnalisés de ce NFT
+              <input className="w-full rounded-lg border border-white/15 bg-black/50 p-2 text-xs"
+                placeholder="Signature=Artiste; Ambiance=Éthérée"
+                value={(overrides[String(edition)]?.extraAttributes || []).map(x=>x.trait_type+'='+x.value).join('; ')}
+                onChange={e=>updateExtraAttributes(e.target.value)}/>
+              <span className="text-xs text-zinc-500">Ajoute 0–8 traits supplémentaires sous la forme Attribut=Valeur, séparés par « ; ». Ne remplace pas les traits calculés depuis les calques.</span>
             </label>
             <div className="flex flex-wrap gap-1.5">
               {picked.attributes.map((trait,i) => <span key={trait.trait_type+i} className="rounded-full border border-white/15 px-2 py-1 text-[11px]">{trait.trait_type}: {trait.value}</span>)}
