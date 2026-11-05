@@ -15,7 +15,7 @@
 * [Œuvres, offres et droits](presentation/ouverture-demandes-2026-11-03.md)
   * [Confiance et transparence](presentation/confiance-et-transparence.md)
   * [Statut réel des fonctionnalités](presentation/etat-du-produit.md)
-  * [Audit détaillé des 40 modules et préservation des œuvres](presentation/audit-integral-parcours-et-preservation.md)
+  * [Conserver et publier ses œuvres (IPFS, archives et ventes)](presentation/conserver-et-publier-ses-oeuvres.md)
   * [Prix, droits et livraison](security/pricing-delivery.md)
   * [$TRO — présentation et limites](presentation/tro-et-economie.md)
 * [À propos et assistance](presentation/questions-frequentes.md)
