@@ -119,3 +119,85 @@ html{scroll-behavior:smooth;scroll-padding-top:100px}body{background:var(--xa-bg
 .xa-module-technical{margin:8px 0 22px}
 .xa-module-technical summary{cursor:pointer;min-height:44px;padding:11px 0;font-size:12px;color:var(--xa-muted)}
 .xa-module-technical[open] .xa-module-tags{margin-top:4px;margin-bottom:10px}
+
+
+/* Public hierarchy: consultation > preview > roadmap (editorial, not runtime execution). */
+.xa-module-status{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font-size:11px;line-height:1.4;font-weight:650;padding:5px 9px;border:1px solid var(--xa-border);border-radius:999px;background:var(--xa-bg);color:var(--xa-text)}
+.xa-module-status[data-stage="browse"]{border-color:color-mix(in srgb,var(--xa-accent) 55%,var(--xa-border))}
+.xa-module-status[data-stage="preview"]{color:var(--xa-muted)}
+.xa-module-status[data-stage="roadmap"]{border-style:dashed;color:var(--xa-muted)}
+.xa-module-status-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.75}
+.xa-public-stage-section{margin-top:28px}
+.xa-public-stage-section>.xa-stage-heading{display:flex;gap:12px;align-items:baseline;justify-content:space-between;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--xa-border)}
+.xa-stage-heading h2{font-size:clamp(20px,2vw,26px);font-weight:600;letter-spacing:-.025em}
+.xa-stage-heading p{font-size:13px;line-height:1.6;color:var(--xa-muted);max-width:680px}
+.xa-public-stage-section .xa-module-grid{margin-top:18px}
+.xa-directory-stage-controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 22px}
+.xa-directory-stage-controls button{border:1px solid var(--xa-border);background:var(--xa-panel);color:var(--xa-muted);border-radius:999px;padding:10px 15px;min-height:44px;font-size:12px}
+.xa-directory-stage-controls button[aria-pressed="true"]{background:var(--xa-text);border-color:var(--xa-text);color:var(--xa-bg)}
+.xa-page-readiness{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:10px 0 17px}
+.xa-page-readiness p{font-size:12px;color:var(--xa-muted);line-height:1.5;max-width:560px}
+.xa-home-readiness{margin-top:clamp(34px,5vw,58px)}
+.xa-home-readiness-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.xa-home-readiness-links>a{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:19px;border-radius:13px;border:1px solid var(--xa-border);background:var(--xa-panel);font-size:14px;font-weight:600;min-height:68px}
+.xa-home-readiness-links>a:hover,.xa-home-readiness-links>a:focus-visible{border-color:var(--xa-accent)}
+.xa-home-roadmap{margin-top:26px;padding:22px 26px;border:1px solid var(--xa-border);border-radius:16px;display:flex;justify-content:space-between;gap:20px;align-items:center;background:var(--xa-panel)}
+.xa-home-roadmap h2{font-size:clamp(19px,2.2vw,27px);font-weight:600;margin-bottom:8px}
+.xa-home-roadmap p{font-size:13px;line-height:1.6;color:var(--xa-muted);max-width:560px}
+.xa-home-roadmap>a{flex:none;min-height:44px}
+.xa-roadmap-page{padding-top:clamp(28px,5vw,64px);padding-bottom:100px}
+.xa-roadmap-lead{font-size:clamp(15px,1.5vw,18px);line-height:1.7;color:var(--xa-muted);max-width:830px;margin:15px 0 25px}
+.xa-roadmap-stage{margin-top:38px}
+.xa-roadmap-stage-heading{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.xa-roadmap-stage-heading h2{font-size:clamp(22px,2.4vw,32px);letter-spacing:-.03em;font-weight:600}
+.xa-roadmap-stage>p{color:var(--xa-muted);line-height:1.7;max-width:800px;margin-bottom:16px}
+.xa-roadmap-selected{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.xa-roadmap-selected>a,.xa-roadmap-milestone{border:1px solid var(--xa-border);border-radius:14px;background:var(--xa-panel);padding:22px;min-width:0}
+.xa-roadmap-selected>a{display:flex;justify-content:space-between;gap:14px;align-items:center;font-weight:600;font-size:14px}
+.xa-roadmap-selected>a:hover{border-color:var(--xa-accent)}
+.xa-roadmap-milestones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:20px}
+.xa-roadmap-milestone h3{font-size:18px;font-weight:600;letter-spacing:-.02em;margin:10px 0}
+.xa-roadmap-milestone p{color:var(--xa-muted);line-height:1.65;font-size:13px;min-height:45px}
+.xa-roadmap-milestone a{display:inline-flex;align-items:center;gap:6px;font-size:12px;margin-top:16px;text-decoration:underline;text-underline-offset:3px}
+.xa-roadmap-note{padding:16px 20px;border-inline-start:3px solid var(--xa-accent);background:var(--xa-panel);font-size:13px;color:var(--xa-muted);line-height:1.65;margin-top:22px}
+
+/* Atelier orbital: slow, entirely CSS-3D art, no synthetic telemetry or WebGL. */
+.xa-first-art.xa-orbital-art{isolation:isolate;filter:none;transform:none}
+.xa-orbital-stage{position:relative;width:100%;aspect-ratio:1;perspective:720px;transform-style:preserve-3d;display:block}
+.xa-orbital-halo{position:absolute;inset:8%;border:1px solid color-mix(in srgb,var(--xa-accent) 40%,var(--xa-border));border-radius:50%;transform:rotate(-28deg) rotateY(60deg);opacity:.55}
+.xa-orbital-halo-two{inset:1%;transform:rotate(28deg) rotateX(68deg);opacity:.4}
+.xa-orbital-axis{position:absolute;inset:9%;transform-style:preserve-3d;transform:rotateX(-12deg) rotateY(20deg);animation:xa-orbital-rotate 32s linear infinite}
+.xa-orbital-panel{position:absolute;left:calc(50% - 40px);top:calc(50% - 57px);width:80px;height:114px;display:grid;place-items:center;overflow:hidden;padding:6px;background:var(--xa-panel);border:1px solid color-mix(in srgb,var(--xa-accent) 26%,var(--xa-border));box-shadow:0 15px 30px #0002,0 1px 7px #0001;border-radius:7px;backface-visibility:hidden}
+.xa-orbital-panel-one{transform:rotateY(0deg) translateZ(95px)}
+.xa-orbital-panel-two{transform:rotateY(120deg) translateZ(95px)}
+.xa-orbital-panel-three{transform:rotateY(240deg) translateZ(95px)}
+.xa-first-art .xa-orbital-work{position:relative;display:block;width:100%;height:100%;font-size:initial;line-height:normal;opacity:1;transform:none;filter:none;overflow:hidden;border-radius:3px}
+.xa-orbital-work-one{background:radial-gradient(circle at 54% 40%,#e7a378 0 15%,transparent 16%),linear-gradient(145deg,#f3eadc 8%,#af6b54 52%,#47352d)}
+.xa-orbital-work-two{background:radial-gradient(ellipse at 20% 25%,#c6dcb4 0 22%,transparent 23%),linear-gradient(165deg,#8da2b2,#f0e5d2 52%,#55756b)}
+.xa-orbital-work-three{background:linear-gradient(155deg,#e6ca86 5%,#a66a90 43%,#564a88 85%)}
+.xa-orbital-work em{position:absolute;display:block;border:2px solid #ffffff88;border-radius:50%;width:65%;height:49%;top:28%;left:19%;transform:rotate(23deg)}
+.xa-orbital-work-two em{border-radius:2px;transform:rotate(-35deg);width:60%;height:65%;top:18%}
+.xa-orbital-work-three em{border-width:10px;border-color:#f4e5d2a9;left:15%;top:15%;height:75%;width:75%;border-radius:0;transform:rotate(27deg)}
+.xa-first-art .xa-orbital-signature{position:absolute;inset:34%;display:grid;place-items:center;z-index:2;font-size:66px;line-height:1;color:var(--xa-text);background:color-mix(in srgb,var(--xa-panel) 82%,transparent);box-shadow:0 10px 28px #0002;border-radius:50%;opacity:.95;transform:none;filter:none;pointer-events:none}
+@keyframes xa-orbital-rotate{from{transform:rotateX(-12deg) rotateY(20deg)}to{transform:rotateX(-12deg) rotateY(380deg)}}
+html[data-motion="off"] .xa-orbital-axis{animation:none}
+@media(prefers-reduced-motion:reduce){.xa-orbital-axis{animation:none!important}}
+@media(max-width:760px){
+ .xa-home-readiness-links,.xa-roadmap-selected{grid-template-columns:1fr}
+ .xa-home-roadmap{align-items:flex-start;flex-direction:column}
+ .xa-roadmap-milestones{grid-template-columns:1fr}
+ /* Preserve the current fast mobile hero: decorative 3D is not mounted visually. */
+ .xa-first-art.xa-orbital-art{display:none}
+}
+@media(max-width:490px){.xa-roadmap-milestone{padding:18px}.xa-home-roadmap{padding:19px}}
+
+/* Keep the existing mobile dialog and five-slot dock; group its links semantically. */
+.xa-mobile-menu .xa-mobile-menu-group{padding:10px 0 12px;border-bottom:1px solid var(--xa-border)}
+.xa-mobile-menu .xa-nav-group-caption{font-size:11px;font-weight:650;letter-spacing:.04em;color:var(--xa-muted);padding:12px 10px 5px}
+.xa-mobile-menu .xa-mobile-menu-group>a{display:flex;gap:17px;align-items:center;padding:12px 10px;min-height:44px;font-size:17px;letter-spacing:-.02em;border-bottom:0}
+.xa-mobile-menu .xa-mobile-menu-group>a>span{font:10px 'JetBrains Mono',monospace;color:var(--xa-dim)}
+.xa-mobile-menu .xa-mobile-menu-group>a>svg{margin-inline-start:auto;color:var(--xa-accent)}
+.xa-mobile-menu .xa-mobile-menu-group>a:focus-visible{outline:2px solid var(--xa-accent);outline-offset:-2px;border-radius:8px}
+.xa-first-tile .xa-module-status{font-size:10px;margin:0 0 3px}
+.xa-roadmap-page>h1{font-size:clamp(32px,5vw,62px);letter-spacing:-.04em;line-height:1.1;font-weight:550;margin:20px 0 10px}
+@media(max-width:390px){.xa-mobile-menu .xa-mobile-menu-group>a{font-size:16px}}

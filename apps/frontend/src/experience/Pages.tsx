@@ -1,7 +1,8 @@
 import {Suspense,useCallback,useEffect,useMemo,useState} from 'react'
 import {Link,useLocation,useParams,useSearchParams} from 'react-router-dom'
 import {modules,groups,type Group,type Module} from './modules'
-import { isCoreModule } from './softLaunch'
+import { publicStage, stageRank, PUBLIC_STAGE_ORDER, type PublicStage } from './publicReadiness'
+import OrbitalArt from './OrbitalArt'
 import {useCopy} from './state'
 import {useI18n} from '../i18n/I18nContext'
 import Icon from './Icon'
@@ -12,7 +13,8 @@ import { MultiversXProvider } from '../context/MultiversXContext'
 const API='https://api.multiversx.com'
 
 export function Loader(){const c=useCopy();return <div className="xa-loading" role="status"><span className="xa-loader"/><span>{c('commonLoading')}</span></div>}
-export function ModuleCard({module:m,index=0}:{module:Module;index?:number}){const c=useCopy();return <Link className="xa-module-card" to={m.path}><div className="xa-card-top"><span className="xa-module-icon"><Icon name={m.icon} size={23}/></span><span className="xa-card-number">{String(index+1).padStart(2,'0')}</span><Icon name="diagonal" size={17}/></div><h3>{c(m.label)}</h3><div className="xa-card-tags"><span>{c(m.group)}</span>{!isCoreModule(m)&&<span>{c('demoLabel')}</span>}</div></Link>}
+export function StageBadge({stage}:{stage:PublicStage}){const c=useCopy();return <span className="xa-module-status" data-stage={stage}><span className="xa-module-status-dot"/>{c(stage==='browse'?'stageBrowse':stage==='preview'?'stagePreview':'stageRoadmap')}</span>}
+export function ModuleCard({module:m,index=0}:{module:Module;index?:number}){const c=useCopy(),stage=publicStage(m.id);return <Link className="xa-module-card" to={m.path}><div className="xa-card-top"><span className="xa-module-icon"><Icon name={m.icon} size={23}/></span><span className="xa-card-number">{String(index+1).padStart(2,'0')}</span><Icon name="diagonal" size={17}/></div><h3>{c(m.label)}</h3><div className="xa-card-tags"><span>{c(m.group)}</span></div><StageBadge stage={stage}/></Link>}
 export function NetworkStrip(){
  const c=useCopy(),{lang}=useI18n(),[data,setData]=useState<any>(null),[loading,setLoading]=useState(true),[error,setError]=useState(false)
  const load=useCallback(()=>{const abort=new AbortController();setLoading(true);setError(false);const timer=setTimeout(()=>abort.abort(),10000);Promise.all([fetch(`${API}/economics`,{signal:abort.signal}).then(r=>{if(!r.ok)throw Error();return r.json()}),fetch(`${API}/stats`,{signal:abort.signal}).then(r=>{if(!r.ok)throw Error();return r.json()})]).then(([e,s])=>setData({...e,epoch:s.epoch})).catch(()=>setError(true)).finally(()=>{setLoading(false);clearTimeout(timer)});return()=>{abort.abort();clearTimeout(timer)}},[])
@@ -23,10 +25,10 @@ export function NetworkStrip(){
 export function Home(){
  const c=useCopy()
  const journeys=[
-  {id:'visit',to:'/museum',label:c('welcomeExplore'),desc:c('welcomeExploreDesc'),icon:'museum'},
-  {id:'create',to:'/studio',label:c('welcomeCreate'),desc:c('welcomeCreateDesc'),icon:'create'},
-  {id:'market',to:'/marketplace',label:c('welcomeMarket'),desc:c('welcomeMarketDesc'),icon:'market'},
-  {id:'dao',to:'/dao',label:c('welcomeDao'),desc:c('welcomeDaoDesc'),icon:'network'},
+  {id:'visit',to:'/museum',module:'museum',label:c('welcomeExplore'),desc:c('welcomeExploreDesc'),icon:'museum'},
+  {id:'create',to:'/studio',module:'studio',label:c('welcomeCreate'),desc:c('welcomeCreateDesc'),icon:'create'},
+  {id:'market',to:'/marketplace',module:'market',label:c('welcomeMarket'),desc:c('welcomeMarketDesc'),icon:'market'},
+  {id:'dao',to:'/dao',module:'dao',label:c('welcomeDao'),desc:c('welcomeDaoDesc'),icon:'network'},
  ]
  return <div className="xa-container xa-first-visit">
   <section className="xa-first-hero" aria-labelledby="xa-first-title">
@@ -36,11 +38,11 @@ export function Home(){
     <p className="xa-first-lead">{c('welcomeIntro')}</p>
     <div className="xa-first-actions">
      <Link className="xa-button primary" to="/museum">{c('welcomeExplore')}<Icon name="arrow" size={17}/></Link>
-     <Link className="xa-button secondary" to="/directory">{c('directory')}<Icon name="arrow" size={17}/></Link>
+     <Link className="xa-button secondary" to="/roadmap">{c('roadmapLabel')}<Icon name="arrow" size={17}/></Link>
     </div>
     <p className="xa-first-privacy">{c('optional')}</p>
    </div>
-   <div className="xa-first-art" aria-hidden="true"><span>✳</span><i/><i/><i/></div>
+   <OrbitalArt/>
   </section>
   <section className="xa-first-journeys" aria-labelledby="xa-first-what">
    <div className="xa-first-heading">
@@ -52,11 +54,16 @@ export function Home(){
       <Link className="xa-first-tile" to={a.to}>
        <span className="xa-first-tile-top"><Icon name={a.icon} size={24}/><span>0{i+1}</span></span>
        <strong>{a.label}</strong>
+       <StageBadge stage={publicStage(a.module)}/>
        <span className="xa-first-tile-desc">{a.desc}</span>
        <span className="xa-first-tile-bottom">{c('open')}<Icon name="arrow" size={17}/></span>
       </Link>
     </li>)}
    </ul>
+  </section>
+  <section className="xa-home-roadmap" aria-labelledby="xa-home-roadmap-title">
+   <div><h2 id="xa-home-roadmap-title">{c('roadmapTitle')}</h2><p>{c('roadmapFutureLead')}</p></div>
+   <Link className="xa-button secondary" to="/roadmap">{c('roadmapLabel')}<Icon name="arrow" size={16}/></Link>
   </section>
   <section className="xa-first-access" aria-labelledby="xa-first-networks">
    <div>
@@ -88,7 +95,7 @@ export function GroupPage({group}:{group:Group}){
  const [q,setQ]=useState('')
  const needle=q.trim().toLowerCase()
  const list=modules.filter(m=>m.group===group&&
-  [c(m.label),c(m.group),...m.tags].join(' ').toLowerCase().includes(needle))
+  [c(m.label),c(m.group),...m.tags].join(' ').toLowerCase().includes(needle)).sort((a,b)=>stageRank(a.id)-stageRank(b.id))
  return <div className={`xa-container xa-group-page group-${group}`}>
   <div className="xa-page-intro">
    <div><div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><span>{c(group)}</span></div>
@@ -103,7 +110,7 @@ export function GroupPage({group}:{group:Group}){
     <input value={q} onChange={e=>setQ(e.target.value)} placeholder={c('search')} aria-label={c('search')}/>
    </label>
   </div>
-  <div className="xa-module-grid">{list.map((m,k)=><ModuleCard key={m.id} module={m} index={k}/>)}</div>
+  {PUBLIC_STAGE_ORDER.map(stage=>{const items=list.filter(m=>publicStage(m.id)===stage);return items.length?<section key={stage} className="xa-public-stage-section"><div className="xa-stage-heading"><h2>{c(stage==='browse'?'stageBrowse':stage==='preview'?'stagePreview':'stageRoadmap')}</h2><p>{c(stage==='browse'?'roadmapNowLead':stage==='preview'?'roadmapPreviewLead':'roadmapFutureLead')}</p></div><div className="xa-module-grid">{items.map((m,k)=><ModuleCard key={m.id} module={m} index={k}/>)}</div></section>:null})}
   {!list.length&&<p className="xa-empty" role="status">{c('noResults')}</p>}
   <p className="mt-8 text-sm text-[color:var(--xa-muted)]">
    <Link className="xa-text-link" to={`/directory?group=${group}`}>{c('directory')}<Icon name="arrow" size={17}/></Link>
@@ -113,8 +120,8 @@ export function GroupPage({group}:{group:Group}){
   </details>}
  </div>
 }
-export function Directory(){const c=useCopy();const [params,setParams]=useSearchParams();const group=params.get('group')||'all',q=params.get('q')||'';const set=(key:string,val:string)=>setParams(p=>{const next=new URLSearchParams(p);val&&val!=='all'?next.set(key,val):next.delete(key);return next},{replace:true});const list=modules.filter(m=>(group==='all'||m.group===group)&&[c(m.label),c(m.group),...m.tags,m.path,...m.aliases].join(' ').toLowerCase().includes(q.toLowerCase()));return <div className="xa-container xa-directory-page"><div className="xa-page-intro"><div><div className="xa-eyebrow">xArtists / {c('modules')}</div><h1>{c('directory')}<span>↗</span></h1><p>{c('welcomeToolsLead')}</p></div><span className="xa-directory-count">{list.length.toString().padStart(2,'0')}<small>{c('modules')}</small></span></div><div className="xa-directory-controls"><div className="xa-filter-tabs" role="group" aria-label={c('filter')}>{['all',...groups].map(g=><button key={g} className={group===g?'active':''} onClick={()=>set('group',g)} aria-pressed={group===g}>{c(g)}</button>)}</div><label className="xa-filter-search"><Icon name="search" size={17}/><input value={q} onChange={e=>set('q',e.target.value)} placeholder={c('search')} aria-label={c('search')}/></label></div><div className="xa-module-grid">{list.map((m,i)=><ModuleCard module={m} index={i} key={m.id}/>)}</div>{!list.length&&<p className="xa-empty" role="status">{c('noResults')}</p>}</div>}
-export function ModulePage({module:m}:{module:Module}){const c=useCopy(),Page=m.page;const [navOpen,setNavOpen]=useState(false);const related=modules.filter(x=>x.group===m.group&&x.id!==m.id);return <div className="xa-container xa-module-page"><div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><Link to={'/'+m.group}>{c(m.group)}</Link><Icon name="chevron" size={12}/><span>{c(m.label)}</span></div><div className="xa-module-layout"><aside className={`xa-module-sidebar ${navOpen?'is-open':''}`}><button className="xa-sidebar-toggle" onClick={()=>setNavOpen(!navOpen)} aria-expanded={navOpen}><Icon name="layers" size={18}/>{c(m.group)}<Icon name="chevron" size={14}/></button><nav aria-label={c(m.group)}><Link to={'/'+m.group} className="xa-sidebar-back"><Icon name="arrow" size={15}/>{c(m.group)}</Link>{modules.filter(x=>x.group===m.group).map(x=><Link to={x.path} key={x.id} className={m.id===x.id?'active':''} aria-current={m.id===x.id?'page':undefined} onClick={()=>setNavOpen(false)}><Icon name={x.icon} size={17}/>{c(x.label)}</Link>)}<div className="xa-sidebar-bottom"><Link to={'/directory?group='+m.group}><Icon name="search" size={17}/>{c('directory')}</Link></div></nav></aside><div className="xa-module-content">{m.id!=='tro-crosschain'&&m.id!=='rwa'&&<><header className="xa-module-heading"><div><div className="xa-eyebrow">{c(m.group)}</div><h1>{c(m.label)}</h1></div><span className="xa-module-icon"><Icon name={m.icon} size={26}/></span></header><p className="xa-module-intro">{m.id==='market'?c('welcomeMarketDesc'):m.id==='studio'?c('welcomeCreateDesc'):m.id==='dao'?c('daoIntroPlain'):c(m.group+'Desc')}</p>{!isCoreModule(m)&&<p className="xa-module-preview">{c('demoLabel')} · {c('welcomeToolsLead')}</p>}<details className="xa-module-technical"><summary>{c('welcomeAdvanced')}</summary><div className="xa-module-tags">{m.tags.map(tag=><span key={tag}>{tag}</span>)}</div></details></>}<section className="xa-module-body" aria-label={c(m.label)}><Suspense fallback={<Loader/>}><RouteErrorBoundary key={m.id} label={c(m.label)}>{(m.id==='hatom'||m.id==='tip')?<MultiversXProvider><Page/></MultiversXProvider>:<Page/>}</RouteErrorBoundary></Suspense></section><div className="xa-related"><h2>{c('related')}</h2><div>{related.slice(0,3).map(x=><Link key={x.id} to={x.path}><Icon name={x.icon} size={18}/><span>{c(x.label)}</span><Icon name="diagonal" size={15}/></Link>)}</div></div></div></div></div>}
+export function Directory(){const c=useCopy();const [params,setParams]=useSearchParams();const group=params.get('group')||'all',q=params.get('q')||'',stage=params.get('stage')||'all';const set=(key:string,val:string)=>setParams(p=>{const next=new URLSearchParams(p);val&&val!=='all'?next.set(key,val):next.delete(key);return next},{replace:true});const list=modules.filter(m=>(group==='all'||m.group===group)&&[c(m.label),c(m.group),...m.tags,m.path,...m.aliases].join(' ').toLowerCase().includes(q.toLowerCase())).filter(m=>stage==='all'||publicStage(m.id)===stage).sort((a,b)=>stageRank(a.id)-stageRank(b.id));return <div className="xa-container xa-directory-page"><div className="xa-page-intro"><div><div className="xa-eyebrow">xArtists / {c('modules')}</div><h1>{c('directory')}<span>↗</span></h1><p>{c('welcomeToolsLead')}</p></div><span className="xa-directory-count">{list.length.toString().padStart(2,'0')}<small>{c('modules')}</small></span></div><div className="xa-directory-controls"><div className="xa-filter-tabs" role="group" aria-label={c('filter')}>{['all',...groups].map(g=><button key={g} className={group===g?'active':''} onClick={()=>set('group',g)} aria-pressed={group===g}>{c(g)}</button>)}</div><label className="xa-filter-search"><Icon name="search" size={17}/><input value={q} onChange={e=>set('q',e.target.value)} placeholder={c('search')} aria-label={c('search')}/></label></div><div className="xa-directory-stage-controls" role="group" aria-label={c('roadmapLabel')}>{(['all',...PUBLIC_STAGE_ORDER] as const).map(item=><button type="button" key={item} aria-pressed={stage===item} onClick={()=>set('stage',item)}>{c(item==='all'?'stageAll':item==='browse'?'stageBrowse':item==='preview'?'stagePreview':'stageRoadmap')}</button>)}</div><div className="xa-module-grid">{list.map((m,i)=><ModuleCard module={m} index={i} key={m.id}/>)}</div>{!list.length&&<p className="xa-empty" role="status">{c('noResults')}</p>}</div>}
+export function ModulePage({module:m}:{module:Module}){const c=useCopy(),Page=m.page;const [navOpen,setNavOpen]=useState(false);const related=modules.filter(x=>x.group===m.group&&x.id!==m.id).sort((a,b)=>stageRank(a.id)-stageRank(b.id));return <div className="xa-container xa-module-page"><div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><Link to={'/'+m.group}>{c(m.group)}</Link><Icon name="chevron" size={12}/><span>{c(m.label)}</span></div><div className="xa-module-layout"><aside className={`xa-module-sidebar ${navOpen?'is-open':''}`}><button className="xa-sidebar-toggle" onClick={()=>setNavOpen(!navOpen)} aria-expanded={navOpen}><Icon name="layers" size={18}/>{c(m.group)}<Icon name="chevron" size={14}/></button><nav aria-label={c(m.group)}><Link to={'/'+m.group} className="xa-sidebar-back"><Icon name="arrow" size={15}/>{c(m.group)}</Link>{modules.filter(x=>x.group===m.group).map(x=><Link to={x.path} key={x.id} className={m.id===x.id?'active':''} aria-current={m.id===x.id?'page':undefined} onClick={()=>setNavOpen(false)}><Icon name={x.icon} size={17}/>{c(x.label)}</Link>)}<div className="xa-sidebar-bottom"><Link to={'/directory?group='+m.group}><Icon name="search" size={17}/>{c('directory')}</Link></div></nav></aside><div className="xa-module-content"><div className="xa-page-readiness"><StageBadge stage={publicStage(m.id)}/><p>{c(publicStage(m.id)==='browse'?'readinessBrowseHint':publicStage(m.id)==='preview'?'readinessPreviewHint':'readinessRoadmapHint')}</p></div>{m.id!=='tro-crosschain'&&m.id!=='rwa'&&<><header className="xa-module-heading"><div><div className="xa-eyebrow">{c(m.group)}</div><h1>{c(m.label)}</h1></div><span className="xa-module-icon"><Icon name={m.icon} size={26}/></span></header><p className="xa-module-intro">{m.id==='market'?c('welcomeMarketDesc'):m.id==='studio'?c('welcomeCreateDesc'):m.id==='dao'?c('daoIntroPlain'):c(m.group+'Desc')}</p><details className="xa-module-technical"><summary>{c('welcomeAdvanced')}</summary><div className="xa-module-tags">{m.tags.map(tag=><span key={tag}>{tag}</span>)}</div></details></>}<section className="xa-module-body" aria-label={c(m.label)}><Suspense fallback={<Loader/>}><RouteErrorBoundary key={m.id} label={c(m.label)}>{(m.id==='hatom'||m.id==='tip')?<MultiversXProvider><Page/></MultiversXProvider>:<Page/>}</RouteErrorBoundary></Suspense></section><div className="xa-related"><h2>{c('related')}</h2><div>{related.slice(0,3).map(x=><Link key={x.id} to={x.path}><Icon name={x.icon} size={18}/><span>{c(x.label)}</span><Icon name="diagonal" size={15}/></Link>)}</div></div></div></div></div>}
 
 type Artwork={identifier:string;name?:string;collection?:string;url?:string;thumbnailUrl?:string;media?:{url?:string;thumbnailUrl?:string}[];attributes?:any;metadata?:any;creator?:string;owner?:string}
 const imageOf=(n:Artwork)=>n.media?.[0]?.thumbnailUrl||n.thumbnailUrl||n.media?.[0]?.url||n.url
