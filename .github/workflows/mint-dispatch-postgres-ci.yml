@@ -5,6 +5,7 @@ on:
     paths:
       - 'services/access-api/src/mintDispatch.mjs'
       - 'services/access-api/tests/mintDispatchPostgres.test.mjs'
+      - 'services/access-api/tests/mintJobReadOnlyPostgres.test.mjs'
       - 'services/access-api/src/orders.mjs'
       - 'services/access-api/src/server.mjs'
       - 'services/access-api/tests/ordersStoreProbePostgres.test.mjs'
@@ -17,6 +18,7 @@ on:
     paths:
       - 'services/access-api/src/mintDispatch.mjs'
       - 'services/access-api/tests/mintDispatchPostgres.test.mjs'
+      - 'services/access-api/tests/mintJobReadOnlyPostgres.test.mjs'
       - 'services/access-api/src/orders.mjs'
       - 'services/access-api/src/server.mjs'
       - 'services/access-api/tests/ordersStoreProbePostgres.test.mjs'
@@ -62,6 +64,9 @@ jobs:
         working-directory: services/access-api
       - name: Prove exactly-once across separate PostgreSQL clients
         run: node --test tests/mintDispatchPostgres.test.mjs
+        working-directory: services/access-api
+      - name: Verify durable lookup with SELECT-only role (no mutation or dispatch)
+        run: node --test tests/mintJobReadOnlyPostgres.test.mjs
         working-directory: services/access-api
       - name: Verify read-only order-store readiness against isolated PostgreSQL
         run: node --test tests/ordersStoreProbePostgres.test.mjs
