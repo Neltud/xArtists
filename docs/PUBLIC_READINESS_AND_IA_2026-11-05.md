@@ -33,7 +33,7 @@ Dans l'expérience précédente, la différence entre un **module accessible**, 
 - Mint + livraison NFT, avec stockage sécurisé, preuve S1/S2 et propriété réelle (#281).
 - Paiement EUR/crypto, quote signée, réconciliation et remboursements (#370).
 - Listings Solana / Polygon natifs, distincts de la découverte OpenSea (#391).
-- Vote DAO on-chain, pouvoir strictement proportionnel au **$TRO staké** et audit (#328 ; gouvernance également #393).
+- Vote DAO on-chain, pouvoir strictement proportionnel au **$TRO staké** et audit (#393).
 - Collatéral, liquidité et bridge $TRO après contrôle émetteur (#298).
 - Mandats signés et protections anti-rejeu des agents exécutants (#369).
 
