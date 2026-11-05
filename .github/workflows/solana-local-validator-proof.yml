@@ -1,4 +1,4 @@
-name: Solana local-validator microtransfer proof (no public network)
+name: Solana local ledger — transfer and zero-supply TRO mint proof
 
 # Deterministic faucet-independent ledger test: ephemeral local RPC only.
 on:
@@ -6,12 +6,16 @@ on:
     paths:
       - 'scripts/ops/solana_local_validator_micro_transfer.mjs'
       - 'scripts/ops/solana_local_validator_micro_transfer.test.mjs'
+      - 'scripts/ops/solana_local_validator_tro_mint.mjs'
+      - 'scripts/ops/solana_local_validator_tro_mint.test.mjs'
       - '.github/workflows/solana-local-validator-proof.yml'
   push:
     branches: [main]
     paths:
       - 'scripts/ops/solana_local_validator_micro_transfer.mjs'
       - 'scripts/ops/solana_local_validator_micro_transfer.test.mjs'
+      - 'scripts/ops/solana_local_validator_tro_mint.mjs'
+      - 'scripts/ops/solana_local_validator_tro_mint.test.mjs'
       - '.github/workflows/solana-local-validator-proof.yml'
   workflow_dispatch:
 
@@ -36,7 +40,14 @@ jobs:
         run: |
           set -euo pipefail
           node --check scripts/ops/solana_local_validator_micro_transfer.mjs
-          node --test scripts/ops/solana_local_validator_micro_transfer.test.mjs
+          node --test scripts/ops/solana_local_validator_micro_transfer.test.mjs scripts/ops/solana_local_validator_tro_mint.test.mjs
+          node --check scripts/ops/solana_local_validator_tro_mint.mjs
+      - name: Install pinned SPL SDK for the isolated local mint proof
+        run: |
+          mkdir -p "$RUNNER_TEMP/xartists-solana-sdk"
+          printf '%s\n' '{"private":true}' > "$RUNNER_TEMP/xartists-solana-sdk/package.json"
+          npm install --prefix "$RUNNER_TEMP/xartists-solana-sdk" --no-save --package-lock=false --ignore-scripts \
+            @solana/web3.js@1.98.4 @solana/spl-token@0.4.14
       - name: Download official Agave 4.3.0 local validator (pinned version)
         shell: bash
         run: |
@@ -49,10 +60,13 @@ jobs:
           tar -xjf "$RUNNER_TEMP/solana-release.tar.bz2" -C "$RUNNER_TEMP"
           test -x "$RUNNER_TEMP/solana-release/bin/solana-test-validator"
           echo "$RUNNER_TEMP/solana-release/bin" >> "$GITHUB_PATH"
-      - name: Transfer 1000 lamports with local-faucet test balances
+      - name: Prove transfer and six-decimal zero-supply SPL account on local ledger
         shell: bash
         env:
           XARTISTS_ALLOW_LOCAL_VALIDATOR_SEND: '1'
+          XARTISTS_ALLOW_LOCAL_TRO_MINT: '1'
+          XARTISTS_LOCAL_TRO_PROOF: ${{ runner.temp }}/tro-local-mint-proof.json
+          NODE_PATH: ${{ runner.temp }}/xartists-solana-sdk/node_modules
         run: |
           set -euo pipefail
           export PATH="$RUNNER_TEMP/solana-release/bin:$PATH"
@@ -83,3 +97,11 @@ jobs:
             exit 1
           fi
           node scripts/ops/solana_local_validator_micro_transfer.mjs
+          node scripts/ops/solana_local_validator_tro_mint.mjs
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tro-local-zero-supply-mint-proof
+          path: ${{ runner.temp }}/tro-local-mint-proof.json
+          retention-days: 10
