@@ -8,8 +8,10 @@ const hero=source('../src/experience/HomeHeroSculpture.tsx')
 const css=source('../src/experience/experience.css')
 const locale=source('../src/experience/locale.ts')
 
-test('Home does not mount WebGL by default: delegated to a user-and-device-gated wrapper',()=>{
-  assert.match(pages, /<HomeHeroSculpture variant=\{variant\}\/>/)
+test('Novice Home never mounts WebGL; optional 3D remains gated',()=>{
+  const home = pages.slice(pages.indexOf('export function Home()'), pages.indexOf('export function GroupPage'))
+  assert.doesNotMatch(home, /HomeHeroSculpture|<Sculpture/)
+  assert.match(home, /xa-first-hero/)
   assert.doesNotMatch(pages, /<Sculpture variant=\{variant\}/)
   assert.match(hero, /const Sculpture = lazy\(\(\) => import\('\.\/Sculpture'\)\)/)
   assert.match(hero, /desktopAllowed \|\| userEnabled/)

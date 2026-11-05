@@ -55,6 +55,18 @@ export default function DappAccessPage() {
   return <div className="xa-access">
     <div className="xa-access-intro"><h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">{c('appAccess')}</h1><p>{c('accessLead')}</p></div>
     {!online && <p className="xa-access-notice" role="status">{c('accessOffline')}</p>}
+    <section className="xa-first-access" aria-label={c('welcomeNetworks')}>
+      <div>
+        <h2>{c('welcomeNetworks')}</h2>
+        <p>{c('welcomeNetworksDesc')}</p>
+        <p className="xa-first-access-warning">{c('welcomeNoBridge')}</p>
+      </div>
+      <div className="xa-first-network-list">
+        <Link to="/marketplace" className="xa-first-network"><span>{c('welcomeMx')}</span><Icon name="arrow" size={16}/></Link>
+        <Link to="/marketplace?tab=opensea" className="xa-first-network"><span>{c('welcomeOpenSea')}</span><Icon name="arrow" size={16}/></Link>
+        <Link to="/offres" className="xa-first-network"><span>{c('welcomeEuros')}</span><Icon name="arrow" size={16}/></Link>
+      </div>
+    </section>
     <div className="xa-access-grid">
       <section className="xa-access-card"><span className="xa-module-icon"><Icon name="globe" size={25}/></span><h2>{c('accessBrowser')}</h2><p>{c('accessBrowserLead')}</p><Link className="xa-button primary" to="/explore">{c('explore')}<Icon name="arrow" size={17}/></Link></section>
       <section className="xa-access-card"><span className="xa-module-icon"><Icon name="wallet" size={25}/></span><h2>xPortal</h2><p>{c('accessXportalLead')}</p><button type="button" className="xa-button secondary" onClick={requestOpenConnect} disabled={!online}>{c('connect')}<Icon name="wallet" size={17}/></button></section>
