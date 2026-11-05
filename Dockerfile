@@ -30,11 +30,12 @@ RUN apk add --no-cache nodejs \
     && node -e "if (Number(process.versions.node.split('.')[0]) < 20) process.exit(1)"
 COPY --from=build /app/apps/frontend/dist /usr/share/nginx/html/xArtists
 COPY --from=api /opt/xartists/access-api /opt/xartists/access-api
+COPY ops/write-render-build-info.mjs /usr/local/lib/xartists/write-render-build-info.mjs
 COPY ops/render-service-entrypoint.sh /usr/local/bin/xartists-entrypoint
 RUN chmod 755 /usr/local/bin/xartists-entrypoint
 
 # Existing SPA fallback, unchanged.
-RUN printf 'server {\n  listen 80;\n  root /usr/share/nginx/html;\n  location /xArtists/ {\n    try_files $uri $uri/ /xArtists/index.html;\n  }\n  location / {\n    return 302 /xArtists/;\n  }\n}\n' > /etc/nginx/conf.d/default.conf
+RUN printf 'server {\n  listen 80;\n  root /usr/share/nginx/html;\n  # The build identity is a real JSON file, never a successful SPA fallback.\n  location = /xArtists/build-info.json {\n    add_header Cache-Control "no-store" always;\n    try_files $uri =404;\n  }\n  location /xArtists/ {\n    try_files $uri $uri/ /xArtists/index.html;\n  }\n  location / {\n    return 302 /xArtists/;\n  }\n}\n' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 80 8787
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s \
