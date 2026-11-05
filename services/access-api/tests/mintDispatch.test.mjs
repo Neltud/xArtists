@@ -11,6 +11,7 @@ import {
   maybeDispatchMintAfterPaid,
   dispatchMintOnPayment,
   getMintJob,
+  markMintJobConfirmed,
   MINT_JOB_STATUS,
 } from '../src/mintDispatch.mjs'
 
@@ -260,5 +261,49 @@ describe('guards', () => {
       { MINT_DISPATCH_ENABLED: '1', MINT_JOBS_PATH: jobsPath },
     )
     assert.equal(r.skipped, true)
+  })
+})
+
+
+describe('S2 confirmation cannot be inferred from job data', () => {
+  it('rejects hash and NFT identifier even after mocked HTTP 204, preserving pending delivery', async () => {
+    const env = envBase()
+    const order = {
+      server_confirmed: true, payment_verified: true, status: 'paid',
+      order_id: 'qa_s2_guard_1', provider_tx_id: 'psp_qa_guard',
+      pack_id: 'pulse',
+      buyer_address: 'erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gqag2',
+      amount_cents: 11000, currency: 'EUR',
+    }
+    const dispatch = await maybeDispatchMintAfterPaid(order, env, async () => ({
+      status: 204, json: async () => ({}),
+    }))
+    assert.equal(dispatch.ok, true)
+    const before = await getMintJob(order.order_id, env)
+    assert.equal(before.status, MINT_JOB_STATUS.SUBMITTED)
+    assert.equal(before.mode, 'dry_run')
+
+    const forgedReceipt = {
+      chainTxHash: 'a'.repeat(64),
+      nftIdentifier: 'XAISNT-3d8a6b-01',
+    }
+    const result = await markMintJobConfirmed(order.order_id, forgedReceipt, env)
+    assert.deepEqual(result, {
+      ok: false,
+      reason: 's2_verified_receipt_and_atomic_delivery_commit_required',
+      delivery_verified: false,
+    })
+    const after = await getMintJob(order.order_id, env)
+    assert.deepEqual(after, before)
+    assert.equal(after.chain_tx_hash, null)
+    assert.equal(after.nft_identifier, null)
+    assert.equal(after.status, MINT_JOB_STATUS.SUBMITTED)
+  })
+
+  it('denies S2 confirmation with no database and missing proof', async () => {
+    assert.equal((await markMintJobConfirmed('unknown', {}, {
+      DATABASE_URL: 'postgres://unreachable.invalid/no',
+    })).delivery_verified, false)
+    assert.equal((await markMintJobConfirmed()).ok, false)
   })
 })
