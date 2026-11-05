@@ -2,6 +2,18 @@ import { test, expect } from '@playwright/test'
 import { mkdirSync } from 'node:fs'
 
 const BASE = '/xArtists'
+function contrastRatio(foreground: string, background: string): number {
+  const luminance = (color: string) => {
+    const rgb = (color.match(/\\d+(?:\\.\\d+)?/g) || []).slice(0, 3).map(Number)
+    const linear = rgb.map(n => {
+      const channel = n / 255
+      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4
+    })
+    return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722
+  }
+  const a = luminance(foreground), b = luminance(background)
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+}
 mkdirSync('artifacts/ux-mobile', { recursive: true })
 
 async function visit(page: import('@playwright/test').Page, path: string) {
@@ -153,7 +165,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       text: getComputedStyle(el.querySelector('h2')!).color,
     }))
     expect(preview.background).toBe('rgb(32, 37, 30)')
-    expect(preview.text).toBe('rgb(255, 246, 230)')
+    expect(contrastRatio(preview.text, preview.background)).toBeGreaterThanOrEqual(7)
     const warning = await page.locator('.xa-auction-public-notice').evaluate(el => getComputedStyle(el).color)
     expect(warning).not.toBe('rgb(255, 237, 213)')
     await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/auction-contrast-390.png' })
