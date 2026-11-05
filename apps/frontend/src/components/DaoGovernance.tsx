@@ -1,8 +1,8 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * DAO governance UI — pouvoir de vote = TRO staké + SFT/NFT stakés.
+ * DAO governance UI — pouvoir de vote uniquement proportionnel au TRO staké.
  */
-import { useMemo, useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { TRO_GOVERNANCE_ADDRESS } from '../config/scStatus'
 import { useTroStakedBalance } from '../hooks/useTroStakedBalance'
@@ -19,7 +19,6 @@ type Proposal = {
 }
 
 const STORAGE_KEY = 'xartists_dao_votes_v1'
-const SFT_STAKE_KEY = 'xartists_nft_stake_units_v1'
 
 const DEFAULT_PROPOSALS: Proposal[] = [
   { id: 'p1', titleKey: 'dao.prop1.title', bodyKey: 'dao.prop1.body', status: 'demo', yes: 0, no: 0 },
@@ -34,29 +33,15 @@ function loadVotes(): Record<string, 'yes' | 'no'> {
   }
 }
 
-function loadSftUnits(): number {
-  try {
-    const n = Number(localStorage.getItem(SFT_STAKE_KEY) || '0')
-    return Number.isFinite(n) && n > 0 ? n : 0
-  } catch {
-    return 0
-  }
-}
-
 export default function DaoGovernance() {
   const { t } = useI18n()
   const c = useCopy()
   const { userTro, loading } = useTroStakedBalance()
   const [votes, setVotes] = useState(loadVotes)
-  const [sftUnits, setSftUnits] = useState(0)
   const [msg, setMsg] = useState('')
 
-  useEffect(() => {
-    setSftUnits(loadSftUnits())
-  }, [])
-
   const troStaked = userTro ?? 0
-  const votingPower = useMemo(() => Math.max(0, troStaked) + Math.max(0, sftUnits), [troStaked, sftUnits])
+  const votingPower = Math.max(0, troStaked)
 
   const cast = useCallback(
     (proposalId: string, choice: 'yes' | 'no') => {
@@ -94,23 +79,16 @@ export default function DaoGovernance() {
         <p className="text-2xl font-semibold text-white tabular-nums">
           {xaRender(loading ? '…' : votingPower.toFixed(2))}
         </p>
-        <p className="text-[12px] text-zinc-400">{xaRender(t('dao.formula'))}</p>
-        <div className="grid grid-cols-2 gap-2 text-[12px]">
+        <p className="text-[12px] text-zinc-400">{c('daoPowerTroOnly')}</p>
+        <div className="grid grid-cols-1 gap-2 text-[12px]">
           <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
             <p className="text-zinc-500">{xaRender(t('dao.troStaked'))}</p>
             <p className="font-semibold text-emerald-200/90 tabular-nums">{xaRender(troStaked.toFixed(2))}</p>
-          </div>
-          <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
-            <p className="text-zinc-500">{xaRender(t('dao.sftStaked'))}</p>
-            <p className="font-semibold text-cyan-200/90 tabular-nums">{xaRender(sftUnits.toFixed(0))} u</p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link to="/staking" className="btn-primary text-xs">
             {xaRender(t('dao.stakeTro'))}
-          </Link>
-          <Link to="/staking" className="btn-secondary text-xs">
-            {xaRender(t('dao.stakeNft'))}
           </Link>
         </div>
         <p className="text-[10px] text-zinc-600">
