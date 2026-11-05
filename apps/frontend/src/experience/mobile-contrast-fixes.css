@@ -226,3 +226,18 @@ html[data-theme="light"] .xa-module-body .xa-staking-page [class*="border-zinc-"
   .xa-module-body { min-width: 0; }
   .xa-mobile-dock { touch-action: manipulation; }
 }
+
+/* Unavailable commercial CTAs remain readable without looking clickable. */
+.xa-module-body .xa-nft-factory .btn-primary:disabled,
+.xa-module-body .xa-nft-factory button:disabled {
+  opacity: 1 !important;
+  background: var(--xa-panel2) !important;
+  color: var(--xa-muted) !important;
+  border: 1px dashed var(--xa-border) !important;
+  cursor: not-allowed;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+  text-align: center;
+}
