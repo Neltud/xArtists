@@ -25,14 +25,14 @@ Problems:
 
 ### A — Fixed on-chain catalogue (recommended MVP)
 
-- SC stores immutable or governance-timelocked prices: Pulse 33 / Yield 22.5 / Sentinel 15 EGLD (or EUR-oracle later).
+- SC stores immutable or governance-timelocked prices specified in a separately reviewed catalogue. This roadmap does not authorize any EGLD amount, oracle conversion or production price.
 - `buyPack(packType)` requires `msg.value == packPrice[packType]` — **no** pre-tx price mutate.
 - Endpoint: user wallet **or** deployer relay with **user signature** + payment already proven off-chain is a different product; pure chain path = user pays value.
 - Ops: **one-time** admin `setPackPrice` to Rule1 when funded, then **remove** admin hot path from CI (or timelock).
 
 ### B — Payment token / stable escrow SC
 
-- Fiat PayBox → credit internal ledger → user claims NFT with EIP-712/MultiversX signed voucher from **hot claim key** (not full deployer).
+- Fiat PSP settlement → durable verified order ledger → user claims NFT with a strictly domain-separated MultiversX voucher signed by a bounded claim authority (not the deployer). Domain isolation, replay protection and actual chain identity are unresolved release gates (#328).
 - Claim function: `claimPack(orderId, pack, sig)` mints/transfers **one** NFT; voucher single-use in SC mapping.
 - No global price window; no setPackPrice in mint workflow.
 
@@ -67,7 +67,7 @@ Until then: **dry-run + OIDC pull only**.
 | Pages / packs UX / museum / signals | **YES** |
 | API + PayBox config + SIWX | **YES** |
 | OIDC dry-run mint pull | **YES** |
-| Public card checkout | **NO** until `PAYBOX_CHECKOUT_ENABLED` + support |
+| Public card checkout | **NO** until #281 end-to-end signed PSP/IPN + persistent delivery + refund proof, support, independent review and separate operator GO; a feature flag alone is insufficient |
 | Live chain mint | **NO** until atomic path |
 | LIA trading | **NO** |
 | Solana bridge | **NO** |
