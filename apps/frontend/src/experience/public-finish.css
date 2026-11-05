@@ -40,6 +40,7 @@
 }
 .xa-public-trust strong { display: block; font-size: 16px; letter-spacing: -.02em; }
 .xa-public-trust p { color: var(--xa-muted); margin: 5px 0 0; line-height: 1.65; max-width: 750px; font-size: 13px; }
+.xa-public-trust-links { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
 .xa-public-trust a { white-space: nowrap; color: var(--xa-accent); font-size: 13px; font-weight: 700; }
 .xa-hero-actions .xa-button.quiet { border: 1px solid var(--xa-border); border-radius: 999px; padding-inline: 19px; }
 .xa-hero-actions .xa-button.primary { border-radius: 999px; }
