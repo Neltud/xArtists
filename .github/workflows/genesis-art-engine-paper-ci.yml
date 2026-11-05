@@ -1,0 +1,37 @@
+name: Genesis Art Engine paper contracts
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'packages/genesis-art-engine/**'
+      - '.github/workflows/genesis-art-engine-paper-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/genesis-art-engine/**'
+      - '.github/workflows/genesis-art-engine-paper-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  paper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      LIA_LIVE_TRADING: '0'
+      VITE_LIA_LIVE_TRADING: '0'
+      CREATOR_MEDIA_UPLOAD_ENABLED: '0'
+    defaults:
+      run:
+        working-directory: packages/genesis-art-engine
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify isolated paper-only contract
+        run: npm test
