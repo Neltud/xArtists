@@ -125,7 +125,7 @@ export default function StakingPage() {
                     </div>
                     {xaRender(live?.state && (
                       <span className="text-[10px] rounded-full border border-white/10 px-2 py-0.5 text-zinc-400">
-                        {xaRender(live.state)}
+                        {xaRender('DEX · ' + live.state)}
                       </span>
                     ))}
                   </div>
@@ -162,7 +162,7 @@ export default function StakingPage() {
                       rel="noreferrer"
                       className="btn-primary text-xs"
                     >
-                      {xaRender("Add liquidity ↗ ")}</a>
+                      {xaRender("Ouvrir le DEX ↗ ")}</a>
                     {xaRender(p.dexscreener && (
                       <a
                         href={p.dexscreener}
