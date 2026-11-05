@@ -5,6 +5,8 @@ on:
     paths:
       - 'Dockerfile'
       - 'ops/render-service-entrypoint.sh'
+      - 'ops/write-render-build-info.mjs'
+      - 'ops/render-build-info.test.mjs'
       - '.github/workflows/render-dual-role-ci.yml'
       - 'services/access-api/package.json'
       - 'services/access-api/package-lock.json'
@@ -28,14 +30,16 @@ jobs:
         run: |
           set -euo pipefail
           docker run --rm -d --name xa-frontend-role \
-            -e XARTISTS_ROLE=frontend -p 18080:80 xartists-shared-render:ci
+            -e XARTISTS_ROLE=frontend -e RENDER_GIT_COMMIT="${GITHUB_SHA}" -p 18080:80 xartists-shared-render:ci
+          docker run --rm -d --name xa-frontend-unstamped \
+            -e XARTISTS_ROLE=frontend -p 18081:80 xartists-shared-render:ci
           docker run --rm -d --name xa-api-role \
             -e XARTISTS_ROLE=api -e PORT=8787 \
             -e PAYBOX_CHECKOUT_ENABLED=0 -e MINT_DISPATCH_ENABLED=0 \
             -e MINT_DRY_RUN=1 -e MINT_LIVE_ENABLED=0 \
             -e LIA_LIVE_TRADING=0 \
             -p 18787:8787 xartists-shared-render:ci
-          trap 'docker logs xa-api-role || true; docker rm -f xa-api-role xa-frontend-role >/dev/null 2>&1 || true' EXIT
+          trap 'docker logs xa-api-role || true; docker rm -f xa-api-role xa-frontend-role xa-frontend-unstamped >/dev/null 2>&1 || true' EXIT
           ready_front=0
           ready_api=0
           for i in $(seq 1 40); do
@@ -68,3 +72,36 @@ jobs:
           assert h.get('tro_solana_bridge') == 'off'
           print('Dual role PASS: frontend HTML /xArtists; independent JSON API /health; all financial gates OFF')
           PY
+
+          # Prove the REAL Nginx image returns JSON bound to this checked-out
+          # commit, rather than a React 404 screen with HTTP 200.
+          python3 - <<'PY'
+          import json
+          import os
+          from urllib.request import urlopen
+          with urlopen('http://127.0.0.1:18080/xArtists/build-info.json', timeout=5) as r:
+              assert r.status == 200
+              assert r.headers.get_content_type() == 'application/json'
+              assert 'no-store' in r.headers.get('Cache-Control', '')
+              stamp = json.load(r)
+          assert stamp['source_sha'] == os.environ['GITHUB_SHA']
+          assert stamp['stamp_source'] == 'render-runtime'
+          assert stamp['base_url'] == '/xArtists/'
+          assert stamp['public_route_count'] > 50
+          assert stamp['lia_live_trading'] is False
+          assert 'built_at' not in stamp
+          print('Render stamp PASS: JSON identity matches checkout, not fake HTML')
+          PY
+
+          # Without RENDER_GIT_COMMIT, the same image must FAIL CLOSED (404),
+          # even while the frontend SPA remains available.
+          missing_status=000
+          for i in $(seq 1 25); do
+            missing_status=$(curl -sS --max-time 3 -o /tmp/xa-unstamped.txt -w '%{http_code}' \
+              http://127.0.0.1:18081/xArtists/build-info.json || true)
+            if [ "$missing_status" = 404 ]; then break; fi
+            sleep 1
+          done
+          test "$missing_status" = 404
+          echo 'Missing runtime commit PASS: build-info HTTP 404 (no SPA fallback)'
+
