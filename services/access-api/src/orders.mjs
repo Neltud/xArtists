@@ -343,17 +343,33 @@ export async function getOrderForBuyer(orderId, requester) {
 /**
  * Public delivery state: a successful payment is not a delivered NFT.
  * Legacy delivery='simulated' and legacy delivered_at timestamps do not grant rights.
- * Only an explicit trusted delivery_verified flag AND correlated chain tx,
- * NFT identifier and timestamp may qualify as confirmed. The PayBox IPN
+ * Only an explicit trusted delivery_verified flag, reconciled payment state,
+ * and well-formed chain/NFT/timestamp fields may qualify as confirmed. This
+ * validates the stored projection; it does NOT verify a receipt on-chain.
+ * The PayBox IPN
  * never sets that flag; a future on-chain verifier must set it separately.
  */
 export function publicOrderDelivery(order) {
   const invalidated = [ORDER_STATUS.REFUNDED, ORDER_STATUS.CANCELLED, ORDER_STATUS.REFUSED]
     .includes(order?.status)
+  const paidLifecycle = [ORDER_STATUS.PAID, ORDER_STATUS.MINT_QUEUED,
+    ORDER_STATUS.MINT_CONFIRMED, ORDER_STATUS.ACTIVE].includes(order?.status)
+  const paymentBound = paidLifecycle && order?.server_confirmed === true &&
+    order?.payment_verified === true && typeof order?.provider_tx_id === 'string' &&
+    /^[A-Za-z0-9_\-:.]{1,128}$/.test(order.provider_tx_id)
+  const nft = typeof order?.nft_identifier === 'string'
+    ? /^[A-Z0-9]{3,20}-[0-9a-f]{6}-((?:[0-9a-f]{2})+)$/i.exec(order.nft_identifier)
+    : null
+  const deliveredAt = typeof order?.delivered_at === 'string' &&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/.test(order.delivered_at)
+    ? Date.parse(order.delivered_at) : NaN
+  const validDate = Number.isFinite(deliveredAt) && new Date(deliveredAt).toISOString() ===
+    order.delivered_at.replace(/(?:\.(\d{1,3}))?Z$/, (_, fraction = '') => '.' + fraction.padEnd(3, '0') + 'Z')
   const verified = Boolean(
-    order && !invalidated && order.delivery_verified === true &&
-    order.delivery === 'confirmed' && order.chain_tx_hash &&
-    order.nft_identifier && order.delivered_at,
+    paymentBound && order?.delivery_verified === true && order.delivery === 'confirmed' &&
+    typeof order.chain_tx_hash === 'string' && /^[0-9a-f]{64}$/i.test(order.chain_tx_hash) &&
+    nft && /[1-9a-f]/i.test(nft[1]) && validDate &&
+    deliveredAt <= Date.now() + 60_000,
   )
   return {
     delivery: verified ? 'confirmed' : !invalidated && order?.server_confirmed === true ? 'pending' : 'none',
