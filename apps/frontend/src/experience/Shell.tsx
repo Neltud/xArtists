@@ -35,9 +35,9 @@ export function Footer(){const c=useCopy();return <footer className="xa-footer">
 /** Five direct mobile destinations, with canonical + alias route matching. */
 const MOBILE_DESTINATIONS = [
  {to:'/',label:'home',icon:'orb',paths:['/']},
- {to:'/explore/museum',label:'explore',icon:'museum',paths:['/museum','/gallery','/explore/museum']},
- {to:'/create/studio',label:'create',icon:'create',paths:['/studio','/create/studio']},
- {to:'/explore/market',label:'market',icon:'market',paths:['/marketplace','/market','/market-place','/explore/market']},
+ {to:'/marketplace',label:'market',icon:'market',paths:['/marketplace','/market','/market-place','/explore/market']},
+ {to:'/auction',label:'auction',icon:'gavel',paths:['/auction','/encheres','/explore/auction']},
+ {to:'/studio',label:'create',icon:'create',paths:['/studio','/create/studio']},
  {to:'/finance/governance',label:'dao',icon:'network',paths:['/dao','/finance/governance']},
 ] as const
 function MobileDock(){
