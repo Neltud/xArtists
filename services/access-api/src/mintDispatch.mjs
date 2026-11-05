@@ -500,9 +500,24 @@ export async function markMintJobConfirmed(orderId, { chainTxHash, nftIdentifier
   )
 }
 
+/**
+ * Read one job without any transaction, schema migration, queue-wide load,
+ * advisory lock, DELETE or UPSERT. In particular, a GET must not rewrite
+ * unrelated jobs or require the service's PostgreSQL role to have DDL rights.
+ * The write paths continue to use withMintJobLock and their original gates.
+ */
 export async function getMintJob(orderId, env = process.env) {
   if (usePostgresJobs(env)) {
-    return withMintJobLock(orderId, async (db) => db.jobs[orderId] || null, env)
+    const p = await getPool(env)
+    const result = await p.query({
+      text: 'SELECT payload FROM public.mint_jobs WHERE order_id = $1',
+      values: [String(orderId)],
+      query_timeout: 3_000,
+    })
+    const job = result.rows[0]?.payload
+    // Never present a malformed or cross-order payload as valid evidence.
+    return job && typeof job === 'object' && job.order_id === String(orderId)
+      ? job : null
   }
   const db = loadJobsFile(env)
   return db.jobs[orderId] || null
