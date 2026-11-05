@@ -10,8 +10,9 @@ import { requestOpenConnect } from '../lib/walletEvents'
 import { canListBuyNft } from '../config/scStatus'
 import RwaPhysicalPanel from '../components/market/RwaPhysicalPanel'
 import DigitalPacksPanel from '../components/market/DigitalPacksPanel'
+import OpenSeaCollectionPanel from '../components/market/OpenSeaCollectionPanel'
 
-type Shelf='art'|'rwa'|'packs'
+type Shelf='art'|'rwa'|'packs'|'opensea'
 type Listing={
   listing_id?:string|number; identifier?:string;token?:string
   name?:string;price?:string|number;price_egld?:string|number
@@ -22,6 +23,7 @@ const SHELVES:{id:Shelf;name:string;summary:string}[]=[
   {id:'art',name:'Art numérique',summary:'NFT JPG, images et vidéos MP4 de créateurs'},
   {id:'rwa',name:'Œuvres physiques',summary:'Provenance, livraison et certificats phygitaux'},
   {id:'packs',name:'Packs IA',summary:'Pulse, Yield et Sentinel — droits d’accès distincts'},
+  {id:'opensea',name:'Polygon · Solana',summary:'NFT externes OpenSea · consultation et liens vérifiables'},
 ]
 function asText(value:unknown,max=120):string{
   return typeof value==='string'?value.slice(0,max):value==null?'':String(value).slice(0,max)
@@ -54,7 +56,7 @@ export default function MarketplacePage(){
   const live=canListBuyNft()
   const [params,setParams]=useSearchParams()
   const param=params.get('tab')
-  const selected:Shelf=param==='rwa'||param==='packs'?'rwa'===param?'rwa':'packs':'art'
+  const selected:Shelf=param==='rwa'||param==='packs'||param==='opensea'?param:'art'
   const [listings,setListings]=useState<Listing[]>([])
   const [loading,setLoading]=useState(false)
   const [sourceReady,setSourceReady]=useState(false)
@@ -123,7 +125,7 @@ export default function MarketplacePage(){
       </p>
     </header>
 
-    <nav aria-label="Catégories d’œuvres" className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+    <nav aria-label="Catégories d’œuvres" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
       {SHELVES.map(s=><button key={s.id} type="button" onClick={()=>navigate(s.id)}
         aria-current={selected===s.id?'page':undefined}
         className={'min-h-[78px] rounded-2xl border px-4 py-3 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 '+
@@ -197,6 +199,8 @@ export default function MarketplacePage(){
       </ul>}
     </section>}
 
+    {selected==='opensea'&&<OpenSeaCollectionPanel />}
+
     {selected==='rwa'&&<section className="space-y-4" aria-label="Œuvres physiques">
       <div>
         <h2 className="text-lg font-semibold text-white">Art physique · provenance & livraison</h2>
@@ -237,6 +241,7 @@ export default function MarketplacePage(){
 
     <footer className="flex flex-wrap gap-3 border-t border-white/10 pt-5 text-xs text-zinc-400">
       <Link to="/studio" className="hover:text-cyan-200">Creator Studio</Link>
+      <Link to="/marketplace?tab=opensea" className="hover:text-cyan-200">OpenSea · Solana / Polygon</Link>
       <Link to="/rwa" className="hover:text-cyan-200">Provenance RWA</Link>
       <Link to="/museum" className="hover:text-cyan-200">Musée</Link>
       <Link to="/auction" className="hover:text-cyan-200">Enchères</Link>
