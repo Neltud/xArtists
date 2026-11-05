@@ -78,7 +78,7 @@ export function Home(){
   <details className="xa-first-details">
    <summary>{c('welcomeAdvanced')}</summary>
    <p>{c('welcomeMx')}. {c('welcomeOpenSea')}. {c('welcomeEuros')}. {c('welcomeNoBridge')}</p>
-   <Link to="/go-live">{c('status')}<Icon name="arrow" size={14}/></Link>
+   <Link to="/lia" className="xa-first-context-link">{c('lia')}<Icon name="arrow" size={14}/></Link> <Link to="/go-live" className="xa-first-context-link">{c('status')}<Icon name="arrow" size={14}/></Link>
   </details>
  </div>
 }
