@@ -17,6 +17,8 @@ export default function StudioCreatorHub() {
           {xaRender("Jumeau 3D / sculpture ")}</Link>
         <Link to="/venues" className="text-cyan-400 hover:underline">
           {xaRender("Louer un mur ")}</Link>
+        <Link to="/create/nft-factory" className="text-cyan-400 hover:underline">
+          {xaRender("NFT Factory · Générateur & distributeurs ")}</Link>
         <Link to="/marketplace" className="text-cyan-400 hover:underline">
           {xaRender("Marketplace ")}</Link>
         <Link to="/my-packs" className="text-cyan-400 hover:underline">
