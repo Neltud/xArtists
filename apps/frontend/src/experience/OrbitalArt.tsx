@@ -9,9 +9,9 @@ export default function OrbitalArt(){
    <div className="xa-orbital-halo xa-orbital-halo-one"/>
    <div className="xa-orbital-halo xa-orbital-halo-two"/>
    <div className="xa-orbital-axis">
-    <div className="xa-orbital-panel xa-orbital-panel-one"><span className="xa-orbital-work xa-orbital-work-one"><i/></span></div>
-    <div className="xa-orbital-panel xa-orbital-panel-two"><span className="xa-orbital-work xa-orbital-work-two"><i/></span></div>
-    <div className="xa-orbital-panel xa-orbital-panel-three"><span className="xa-orbital-work xa-orbital-work-three"><i/></span></div>
+    <div className="xa-orbital-panel xa-orbital-panel-one"><span className="xa-orbital-work xa-orbital-work-one"><em/></span></div>
+    <div className="xa-orbital-panel xa-orbital-panel-two"><span className="xa-orbital-work xa-orbital-work-two"><em/></span></div>
+    <div className="xa-orbital-panel xa-orbital-panel-three"><span className="xa-orbital-work xa-orbital-work-three"><em/></span></div>
    </div>
    <span className="xa-orbital-signature">✳</span>
   </div>
