@@ -132,6 +132,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
   })
 
   test('phone screenshots: compact connected-wallet header always exposes menu and music via dialog', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('xartists_wallet', JSON.stringify({connected:true,address:'erd1'+'q'.repeat(58),method:'paste_readonly'})))
     for (const width of [360, 390, 430]) {
       await page.setViewportSize({ width, height: 844 })
       await visit(page, '/auction/')
@@ -141,6 +142,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(menu).toBeVisible()
       await expect(page.locator('.xa-connect svg')).toBeVisible()
       await expect(page.locator('.xa-connect span')).toBeHidden()
+      await expect(page.locator('.xa-connect')).toHaveAttribute('aria-label', /erd1qqqq/)
       await expect(page.locator('.music-player-toggle')).toBeHidden()
       const box = await menu.boundingBox()
       expect(box, 'menu has measurable hit target').toBeTruthy()
