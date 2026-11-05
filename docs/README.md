@@ -1,5 +1,5 @@
 ---
-description: Guide public xArtists. Art, musée, Studio, LIA, NFT et disponibilité vérifiée au 3 novembre 2026.
+description: Guide public xArtists. Musée, Studio, NFT, conservation des œuvres et statuts vérifiés au 5 novembre 2026.
 icon: house
 ---
 
@@ -33,10 +33,10 @@ Les packs Genesis **Pulse (110 €), Yield (75 €), Sentinel (50 €)** sont pr
 
 ## Transparence et lancement
 
-**3 novembre 2026 : GO découverte publique, NO-GO transactions commerciales.** Navigation Marketplace/Enchères et interface LIA améliorées dans le dépôt GitHub. Une fusion de PR n'est pas en soi la preuve du déploiement sur tous les appareils.
+**5 novembre 2026 : interface de découverte publique déployée ; fonctions financières à vérifier individuellement.** Les modules sont classés en consultation, aperçu et préparation. La présence d'une route n'atteste jamais le paiement, le mint, l'enchère ou le bridge en production. Les vérifications publiques se trouvent dans [la roadmap](https://neltud.github.io/xArtists/roadmap/).
 
 Paiement, enchères réelles, mint automatique, bridge et trading nécessitent une vérification de bout en bout et des autorisations distinctes. Les données paper/shadow ne sont pas des gains réels.
 
 Le présent GitBook est un guide visiteurs. Les runbooks, prompts d'agents et audits historiques sont retirés de la navigation publique ; certains fichiers techniques demeurent visibles dans le [dépôt GitHub](https://github.com/Neltud/xArtists), qui ne doit pas être confondu avec une documentation privée.
 
-[**La Maison xArtists**](presentation/) · [**Confiance et transparence**](presentation/confiance-et-transparence.md) · [**English overview**](presentation/english-overview.md)
+[**La Maison xArtists**](presentation/) · [**Conserver vos œuvres**](presentation/conserver-les-oeuvres.md) · [**Confiance et transparence**](presentation/confiance-et-transparence.md) · [**English overview**](presentation/english-overview.md)
