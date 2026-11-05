@@ -31,3 +31,11 @@ export function restorePublicRoute(): void {
     if (route) window.history.replaceState(window.history.state, '', route)
   } catch { /* A malformed external link must not stop the app from loading. */ }
 }
+
+/** Product routes are real pages even though they are not module-registry entries. */
+export function packNameForPublicPath(path: string): string | null {
+  const match = normalizePublicPath(path).match(/^\/(?:packs|intelligence\/agents)\/(pulse|yield|sentinel)$/)
+  if (!match) return null
+  const names: Record<string, string> = { pulse: 'Pulse', yield: 'Yield', sentinel: 'Sentinel' }
+  return names[match[1]]
+}

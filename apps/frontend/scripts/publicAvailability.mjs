@@ -5,6 +5,10 @@ import ts from 'typescript'
 /** The route registry also supplies static entry points for hosts without rewrites. */
 export function publicRoutes(source) {
   const routes = new Set(['/', '/explore', '/create', '/intelligence', '/finance', '/workspace', '/directory', '/sitemap', '/hub', '/slot', '/maison', '/manifesto', '/house', '/offres', '/offers'])
+  for (const pack of ['pulse', 'yield', 'sentinel']) {
+    routes.add('/packs/' + pack)
+    routes.add('/intelligence/agents/' + pack)
+  }
   const file = ts.createSourceFile('modules.ts', source, ts.ScriptTarget.Latest, true)
   function visit(node) {
     if (ts.isCallExpression(node) && node.expression.getText(file) === 'module') {

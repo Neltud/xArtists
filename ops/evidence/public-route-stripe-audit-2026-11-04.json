@@ -1,0 +1,1237 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-11-04T18:25:56.042Z",
+  "source": {
+    "repository": "Neltud/xArtists",
+    "commit": "6bfb33b86d1a1c506fc224a02f22d0f301efb5a7",
+    "module_count": 38,
+    "enumerated_route_count": 116,
+    "missing_module_components": []
+  },
+  "method": {
+    "reader": "TinyFish public JavaScript-rendered extraction",
+    "cache_ttl": 0,
+    "read_only": true,
+    "limitations": [
+      "No wallet/payment/mint, mobile/touch, accessibility or penetration test.",
+      "HTTP or extraction success is not proof of module functionality.",
+      "Dynamic artwork IDs not exhaustively enumerated."
+    ]
+  },
+  "deployment": {
+    "observed_source_sha": "0483ecd4f51b4ccdf1fc93db0dbd82095725a300",
+    "observed_built_at": "2026-11-02T19:15:03.903Z",
+    "observed_route_count": 102,
+    "issue": "https://github.com/Neltud/xArtists/issues/362"
+  },
+  "runtime": {
+    "health_initial": 503,
+    "health_recheck": "ok=true",
+    "orders_store_recheck": "ok=true,table_ready=true",
+    "mint_jobs_store_recheck": 503,
+    "stripe_configured": false,
+    "paybox_checkout_enabled": false,
+    "mint_live_enabled": false,
+    "lia_live_trading": "0",
+    "studio_media_upload": "off",
+    "physical_works": "off",
+    "tro_solana_bridge": "off"
+  },
+  "rechecks": {
+    "/explore": "rendered",
+    "/entities": "rendered",
+    "/tro/sale": "rendered",
+    "/finance/tro/sale": "rendered on recheck; initial CSS failure",
+    "/explore/auction": "404 reconfirmed",
+    "/directory?lab=1": "37 public entries; 38 source modules"
+  },
+  "stripe": {
+    "account": "Nelsonprods",
+    "livemode": true,
+    "checkout_enabled": false,
+    "catalog": [
+      {
+        "pack": "pulse",
+        "product": "xartists_pack_pulse_v1",
+        "price": "price_1UY8mqC32ZgDj14c8Rp5ryXb",
+        "unit_amount": 11000
+      },
+      {
+        "pack": "yield",
+        "product": "xartists_pack_yield_v1",
+        "price": "price_1UY8n5C32ZgDj14cRmaNJVoE",
+        "unit_amount": 7500
+      },
+      {
+        "pack": "sentinel",
+        "product": "xartists_pack_sentinel_v1",
+        "price": "price_1UY8n9C32ZgDj14cTEFJDxtn",
+        "unit_amount": 5000
+      }
+    ],
+    "currency": "eur",
+    "price_type": "one_time"
+  },
+  "routes": [
+    {
+      "path": "/",
+      "url": "https://neltud.github.io/xArtists/",
+      "title": "Home — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/explore",
+      "url": "https://neltud.github.io/xArtists/explore/",
+      "title": null,
+      "initial_extraction": "error",
+      "error": "empty_content",
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/create",
+      "url": "https://neltud.github.io/xArtists/create/",
+      "title": "Create — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/intelligence",
+      "url": "https://neltud.github.io/xArtists/intelligence/",
+      "title": "Intelligence — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/finance",
+      "url": "https://neltud.github.io/xArtists/finance/",
+      "title": "Finance — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/workspace",
+      "url": "https://neltud.github.io/xArtists/workspace/",
+      "title": "My space — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/directory",
+      "url": "https://neltud.github.io/xArtists/directory/",
+      "title": "All modules — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/sitemap",
+      "url": "https://neltud.github.io/xArtists/sitemap/",
+      "title": "All modules — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/hub",
+      "url": "https://neltud.github.io/xArtists/hub/",
+      "title": "Home — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/slot",
+      "url": "https://neltud.github.io/xArtists/slot/",
+      "title": "Home — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/maison",
+      "url": "https://neltud.github.io/xArtists/maison/",
+      "title": null,
+      "initial_extraction": "error",
+      "error": "page_not_found",
+      "http_error_status": 404,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/manifesto",
+      "url": "https://neltud.github.io/xArtists/manifesto/",
+      "title": null,
+      "initial_extraction": "error",
+      "error": "page_not_found",
+      "http_error_status": 404,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/house",
+      "url": "https://neltud.github.io/xArtists/house/",
+      "title": null,
+      "initial_extraction": "error",
+      "error": "page_not_found",
+      "http_error_status": 404,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/offres",
+      "url": "https://neltud.github.io/xArtists/offres/",
+      "title": null,
+      "initial_extraction": "error",
+      "error": "page_not_found",
+      "http_error_status": 404,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/offers",
+      "url": "https://neltud.github.io/xArtists/offers/",
+      "title": null,
+      "initial_extraction": "error",
+      "error": "page_not_found",
+      "http_error_status": 404,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/app",
+      "url": "https://neltud.github.io/xArtists/app/",
+      "title": "Access the app — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/install",
+      "url": "https://neltud.github.io/xArtists/install/",
+      "title": "Access the app — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/mobile",
+      "url": "https://neltud.github.io/xArtists/mobile/",
+      "title": "Access the app — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/explore/museum",
+      "url": "https://neltud.github.io/xArtists/explore/museum/",
+      "title": "Immersive museum — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/museum",
+      "url": "https://neltud.github.io/xArtists/museum/",
+      "title": "Immersive museum — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/gallery",
+      "url": "https://neltud.github.io/xArtists/gallery/",
+      "title": "Immersive museum — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/explore/auction",
+      "url": "https://neltud.github.io/xArtists/explore/auction/",
+      "title": null,
+      "initial_extraction": "error",
+      "error": "page_not_found",
+      "http_error_status": 404,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/auction",
+      "url": "https://neltud.github.io/xArtists/auction/",
+      "title": null,
+      "initial_extraction": "error",
+      "error": "page_not_found",
+      "http_error_status": 404,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/encheres",
+      "url": "https://neltud.github.io/xArtists/encheres/",
+      "title": null,
+      "initial_extraction": "error",
+      "error": "page_not_found",
+      "http_error_status": 404,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/explore/rwa",
+      "url": "https://neltud.github.io/xArtists/explore/rwa/",
+      "title": "RWA catalogue — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/rwa",
+      "url": "https://neltud.github.io/xArtists/rwa/",
+      "title": "RWA catalogue — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/rwa_catalog",
+      "url": "https://neltud.github.io/xArtists/rwa_catalog/",
+      "title": "RWA catalogue — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/explore/market",
+      "url": "https://neltud.github.io/xArtists/explore/market/",
+      "title": "Marketplace — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/market",
+      "url": "https://neltud.github.io/xArtists/market/",
+      "title": "Marketplace — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/marketplace",
+      "url": "https://neltud.github.io/xArtists/marketplace/",
+      "title": "Marketplace — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/market-place",
+      "url": "https://neltud.github.io/xArtists/market-place/",
+      "title": "Marketplace — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/explore/tours",
+      "url": "https://neltud.github.io/xArtists/explore/tours/",
+      "title": "Art tours — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/tours",
+      "url": "https://neltud.github.io/xArtists/tours/",
+      "title": "Art tours — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/agents/voyage",
+      "url": "https://neltud.github.io/xArtists/agents/voyage/",
+      "title": "Art tours — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/intelligence/voyage",
+      "url": "https://neltud.github.io/xArtists/intelligence/voyage/",
+      "title": "Art tours — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/explore/analytics",
+      "url": "https://neltud.github.io/xArtists/explore/analytics/",
+      "title": "Market analytics — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/market/analytics",
+      "url": "https://neltud.github.io/xArtists/market/analytics/",
+      "title": "Market analytics — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/explore/editions",
+      "url": "https://neltud.github.io/xArtists/explore/editions/",
+      "title": "Editions — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/editions",
+      "url": "https://neltud.github.io/xArtists/editions/",
+      "title": "Editions — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/explore/venues",
+      "url": "https://neltud.github.io/xArtists/explore/venues/",
+      "title": "Exhibition spaces — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/venues",
+      "url": "https://neltud.github.io/xArtists/venues/",
+      "title": "Exhibition spaces — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/create/studio",
+      "url": "https://neltud.github.io/xArtists/create/studio/",
+      "title": "Creative studio — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/studio",
+      "url": "https://neltud.github.io/xArtists/studio/",
+      "title": "Creative studio — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/create/digital-twin",
+      "url": "https://neltud.github.io/xArtists/create/digital-twin/",
+      "title": "Digital twin — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/digital-twin",
+      "url": "https://neltud.github.io/xArtists/digital-twin/",
+      "title": "Digital twin — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/create/academy",
+      "url": "https://neltud.github.io/xArtists/create/academy/",
+      "title": "TCA Academy — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/tca",
+      "url": "https://neltud.github.io/xArtists/tca/",
+      "title": "TCA Academy — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/classroom",
+      "url": "https://neltud.github.io/xArtists/classroom/",
+      "title": "TCA Academy — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/create/visibility",
+      "url": "https://neltud.github.io/xArtists/create/visibility/",
+      "title": "Visibility & media — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/ads",
+      "url": "https://neltud.github.io/xArtists/ads/",
+      "title": "Visibility & media — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/intelligence/lia",
+      "url": "https://neltud.github.io/xArtists/intelligence/lia/",
+      "title": "LIA · Overview — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/lia",
+      "url": "https://neltud.github.io/xArtists/lia/",
+      "title": "LIA · Overview — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/intelligence/agents",
+      "url": "https://neltud.github.io/xArtists/intelligence/agents/",
+      "title": "AI agents — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/agents",
+      "url": "https://neltud.github.io/xArtists/agents/",
+      "title": "AI agents — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/packs",
+      "url": "https://neltud.github.io/xArtists/packs/",
+      "title": "AI agents — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/intelligence/command",
+      "url": "https://neltud.github.io/xArtists/intelligence/command/",
+      "title": "Command center — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/command-center",
+      "url": "https://neltud.github.io/xArtists/command-center/",
+      "title": "Command center — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/command",
+      "url": "https://neltud.github.io/xArtists/command/",
+      "title": "Command center — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/cc",
+      "url": "https://neltud.github.io/xArtists/cc/",
+      "title": "Command center — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/intelligence/lightning",
+      "url": "https://neltud.github.io/xArtists/intelligence/lightning/",
+      "title": "Lightning agent — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/agents/lightning",
+      "url": "https://neltud.github.io/xArtists/agents/lightning/",
+      "title": "Lightning agent — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/intelligence/simulation",
+      "url": "https://neltud.github.io/xArtists/intelligence/simulation/",
+      "title": "Simulation lab — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/simulation",
+      "url": "https://neltud.github.io/xArtists/simulation/",
+      "title": "Simulation lab — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/sim",
+      "url": "https://neltud.github.io/xArtists/sim/",
+      "title": "Simulation lab — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/intelligence/network",
+      "url": "https://neltud.github.io/xArtists/intelligence/network/",
+      "title": "Agent network — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/entities",
+      "url": "https://neltud.github.io/xArtists/entities/",
+      "title": null,
+      "initial_extraction": "error",
+      "error": "empty_content",
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/entity",
+      "url": "https://neltud.github.io/xArtists/entity/",
+      "title": "Agent network — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/finance/trading",
+      "url": "https://neltud.github.io/xArtists/finance/trading/",
+      "title": "Trading — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/trading",
+      "url": "https://neltud.github.io/xArtists/trading/",
+      "title": "Trading — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/finance/tro",
+      "url": "https://neltud.github.io/xArtists/finance/tro/",
+      "title": "$TRO ecosystem — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/tro",
+      "url": "https://neltud.github.io/xArtists/tro/",
+      "title": "$TRO ecosystem — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/finance/tro/sale",
+      "url": "https://neltud.github.io/xArtists/finance/tro/sale/",
+      "title": "$TRO · Achat & Solana — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": "Page unavailable · $TRO · Achat & Solana",
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/tro/sale",
+      "url": "https://neltud.github.io/xArtists/tro/sale/",
+      "title": null,
+      "initial_extraction": "error",
+      "error": "empty_content",
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/buy-tro",
+      "url": "https://neltud.github.io/xArtists/buy-tro/",
+      "title": "$TRO · Achat & Solana — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": "Page unavailable · $TRO · Achat & Solana",
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/tro/bridge",
+      "url": "https://neltud.github.io/xArtists/tro/bridge/",
+      "title": "$TRO · Achat & Solana — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": "Page unavailable · $TRO · Achat & Solana",
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/solana/tro",
+      "url": "https://neltud.github.io/xArtists/solana/tro/",
+      "title": "$TRO · Achat & Solana — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": "Page unavailable · $TRO · Achat & Solana",
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/finance/staking",
+      "url": "https://neltud.github.io/xArtists/finance/staking/",
+      "title": "Staking — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/staking",
+      "url": "https://neltud.github.io/xArtists/staking/",
+      "title": "Staking — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/finance/liquidity",
+      "url": "https://neltud.github.io/xArtists/finance/liquidity/",
+      "title": "Liquidity pools — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/lp",
+      "url": "https://neltud.github.io/xArtists/lp/",
+      "title": "Liquidity pools — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/finance/hatom",
+      "url": "https://neltud.github.io/xArtists/finance/hatom/",
+      "title": "Hatom DeFi — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": "Page unavailable · Hatom DeFi",
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/hatom",
+      "url": "https://neltud.github.io/xArtists/hatom/",
+      "title": "Hatom DeFi — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": "Page unavailable · Hatom DeFi",
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/finance/burnify",
+      "url": "https://neltud.github.io/xArtists/finance/burnify/",
+      "title": "Burnify — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/burnify",
+      "url": "https://neltud.github.io/xArtists/burnify/",
+      "title": "Burnify — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/finance/governance",
+      "url": "https://neltud.github.io/xArtists/finance/governance/",
+      "title": "Governance — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/dao",
+      "url": "https://neltud.github.io/xArtists/dao/",
+      "title": "Governance — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/finance/sale",
+      "url": "https://neltud.github.io/xArtists/finance/sale/",
+      "title": "Token sale — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/sale",
+      "url": "https://neltud.github.io/xArtists/sale/",
+      "title": "Token sale — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/finance/support",
+      "url": "https://neltud.github.io/xArtists/finance/support/",
+      "title": "Support creativity — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": "Page unavailable · Support creativity",
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/tip",
+      "url": "https://neltud.github.io/xArtists/tip/",
+      "title": "Support creativity — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": "Page unavailable · Support creativity",
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/workspace/wallet",
+      "url": "https://neltud.github.io/xArtists/workspace/wallet/",
+      "title": "My wallet — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/wallet",
+      "url": "https://neltud.github.io/xArtists/wallet/",
+      "title": "My wallet — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/workspace/portfolio",
+      "url": "https://neltud.github.io/xArtists/workspace/portfolio/",
+      "title": "My portfolio — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/portfolio",
+      "url": "https://neltud.github.io/xArtists/portfolio/",
+      "title": "My portfolio — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/workspace/agents",
+      "url": "https://neltud.github.io/xArtists/workspace/agents/",
+      "title": "My agents — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/my-packs",
+      "url": "https://neltud.github.io/xArtists/my-packs/",
+      "title": "My agents — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/salles",
+      "url": "https://neltud.github.io/xArtists/salles/",
+      "title": "My agents — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/workspace/identity",
+      "url": "https://neltud.github.io/xArtists/workspace/identity/",
+      "title": "My identity — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/identity",
+      "url": "https://neltud.github.io/xArtists/identity/",
+      "title": "My identity — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/workspace/payments",
+      "url": "https://neltud.github.io/xArtists/workspace/payments/",
+      "title": "My payments — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/payments",
+      "url": "https://neltud.github.io/xArtists/payments/",
+      "title": "My payments — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/workspace/history",
+      "url": "https://neltud.github.io/xArtists/workspace/history/",
+      "title": "History — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/history",
+      "url": "https://neltud.github.io/xArtists/history/",
+      "title": "History — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/workspace/status",
+      "url": "https://neltud.github.io/xArtists/workspace/status/",
+      "title": "Service status — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/go-live",
+      "url": "https://neltud.github.io/xArtists/go-live/",
+      "title": "Service status — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/legal",
+      "url": "https://neltud.github.io/xArtists/legal/",
+      "title": "Legal information — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/legal/terms",
+      "url": "https://neltud.github.io/xArtists/legal/terms/",
+      "title": "Legal information — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/mentions-legales",
+      "url": "https://neltud.github.io/xArtists/mentions-legales/",
+      "title": "Legal information — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/guide",
+      "url": "https://neltud.github.io/xArtists/guide/",
+      "title": "Getting started — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/demo",
+      "url": "https://neltud.github.io/xArtists/demo/",
+      "title": "Getting started — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": false
+    },
+    {
+      "path": "/packs/pulse",
+      "url": "https://neltud.github.io/xArtists/packs/pulse/",
+      "title": "This dimension is yet to be discovered. — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": true
+    },
+    {
+      "path": "/intelligence/agents/pulse",
+      "url": "https://neltud.github.io/xArtists/intelligence/agents/pulse/",
+      "title": "This dimension is yet to be discovered. — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": true
+    },
+    {
+      "path": "/packs/yield",
+      "url": "https://neltud.github.io/xArtists/packs/yield/",
+      "title": "This dimension is yet to be discovered. — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": true
+    },
+    {
+      "path": "/intelligence/agents/yield",
+      "url": "https://neltud.github.io/xArtists/intelligence/agents/yield/",
+      "title": "This dimension is yet to be discovered. — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": true
+    },
+    {
+      "path": "/packs/sentinel",
+      "url": "https://neltud.github.io/xArtists/packs/sentinel/",
+      "title": "This dimension is yet to be discovered. — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": true
+    },
+    {
+      "path": "/intelligence/agents/sentinel",
+      "url": "https://neltud.github.io/xArtists/intelligence/agents/sentinel/",
+      "title": "This dimension is yet to be discovered. — xArtists",
+      "initial_extraction": "rendered",
+      "error": null,
+      "http_error_status": null,
+      "runtime_error": null,
+      "pack_title_mismatch": true
+    }
+  ]
+}
