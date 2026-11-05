@@ -5,12 +5,14 @@ on:
     paths:
       - 'services/access-api/scripts/check-mint-store.mjs'
       - 'services/access-api/tests/mintStoreOperatorCheck.test.mjs'
+      - 'services/access-api/tests/mintStoreOperatorPostgres.test.mjs'
       - '.github/workflows/mint-store-operator-diagnostic-ci.yml'
   push:
     branches: [main]
     paths:
       - 'services/access-api/scripts/check-mint-store.mjs'
       - 'services/access-api/tests/mintStoreOperatorCheck.test.mjs'
+      - 'services/access-api/tests/mintStoreOperatorPostgres.test.mjs'
       - '.github/workflows/mint-store-operator-diagnostic-ci.yml'
 
 permissions:
@@ -31,3 +33,36 @@ jobs:
         run: node --check services/access-api/scripts/check-mint-store.mjs
       - name: Verify bounded metadata probes, rollback and redaction
         run: node --test services/access-api/tests/mintStoreOperatorCheck.test.mjs
+
+  postgres-operator-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: xartists_mint_operator_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d xartists_mint_operator_ci"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 15
+    env:
+      TEST_MINT_OPERATOR_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/xartists_mint_operator_ci
+      ALLOW_EPHEMERAL_MINT_OPERATOR_PG_TEST: '1'
+      PGSSL: '0'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked API dependencies for ephemeral PostgreSQL only
+        run: npm ci --prefix services/access-api --no-audit --no-fund --ignore-scripts
+      - name: Verify actual schema and privilege checks with zero operator writes
+        run: node --test services/access-api/tests/mintStoreOperatorPostgres.test.mjs
