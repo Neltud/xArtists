@@ -1,0 +1,33 @@
+name: Mint store operator diagnosis (read-only)
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/scripts/check-mint-store.mjs'
+      - 'services/access-api/tests/mintStoreOperatorCheck.test.mjs'
+      - '.github/workflows/mint-store-operator-diagnostic-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/scripts/check-mint-store.mjs'
+      - 'services/access-api/tests/mintStoreOperatorCheck.test.mjs'
+      - '.github/workflows/mint-store-operator-diagnostic-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  operator-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check of read-only diagnostic
+        run: node --check services/access-api/scripts/check-mint-store.mjs
+      - name: Verify bounded metadata probes, rollback and redaction
+        run: node --test services/access-api/tests/mintStoreOperatorCheck.test.mjs
