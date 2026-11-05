@@ -5,6 +5,16 @@ noIndex: true
 
 # GO\_LIVE Status — 1 octobre 2026
 
+## Point au 5 novembre 2026 — précisions postérieures au snapshot ci-dessous
+
+- L'incident [#362](https://github.com/Neltud/xArtists/issues/362) est **clos** ; les PR [#358](https://github.com/Neltud/xArtists/pull/358) et [#361](https://github.com/Neltud/xArtists/pull/361) ont été fusionnées. Les phrases ci-dessous sur un incident Pages encore ouvert et ces PR non fusionnées décrivent uniquement la photographie du **4 novembre**, pas la situation présente.
+- La correction d'affichage de la fraîcheur LIA [#360](https://github.com/Neltud/xArtists/pull/360) est fusionnée. Cela ne remplace pas la preuve d'un éditeur Vellum authentifié et régulier.
+- Le projet Neon **sandbox** `xartists-access-sandbox` contient désormais en lecture seule les tables `public.paybox_orders` et `public.mint_jobs` (constat du 5 novembre). Cela **ne démontre pas** que le DSN Render pointe vers cette sandbox, ni la disponibilité de la table dans la base de production. Les anciennes sondes HTTP 503 ci-dessous ne sont pas des preuves actuelles.
+- Le site et les routes effectives, le SHA de publication, le statut Render, les paiements PSP signés, la propriété NFT et la livraison atomique doivent être recontrôlés indépendamment avant tout GO. **Statut financier : NO-GO.**
+- Ne jamais placer de PEM/seed ni d'authentifiants dans un dépôt, même sous forme de secret CI non évalué.
+
+
+
 ## Décision actualisée — 4 novembre 2026
 
 **NO-GO global.** Le titre conserve la date historique ; les constats du 1 octobre ne constituent plus une validation de lancement.
