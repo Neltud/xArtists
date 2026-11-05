@@ -7,6 +7,7 @@ export const OPENSEA_NETWORKS = Object.freeze(['polygon', 'solana'])
 const HOST = 'https://api.opensea.io'
 const MAX_ITEMS = 20
 const MAX_CACHE_ENTRIES = 32
+const MAX_CACHE_MISSES_PER_MINUTE = 30
 const TTL_MS = 60_000
 
 export function validateOpenSeaRequest(chain, slug) {
@@ -66,6 +67,8 @@ export function createOpenSeaPreviewService({
 } = {}) {
   const cache = new Map()
   const pending = new Map()
+  let requestWindowStarted = clock()
+  let cacheMisses = 0
   async function request(path) {
     const response = await fetchImpl(HOST + path, {
       method: 'GET',
@@ -113,8 +116,12 @@ export function createOpenSeaPreviewService({
     const cached = cache.get(key)
     if (cached && cached.expires > clock()) return cached.result
     if (pending.has(key)) return pending.get(key)
-    // Public discovery quota is deliberately small per API instance.
-    if (pending.size >= 5) return { status: 429, body: { ok: false, error: 'opensea_busy' } }
+    // Bound requests against the API key, not just concurrent sockets. Cache hits
+    // do not consume provider quota. This is per instance, not a distributed WAF.
+    if (clock() - requestWindowStarted >= 60_000) { requestWindowStarted = clock(); cacheMisses = 0 }
+    if (cacheMisses >= MAX_CACHE_MISSES_PER_MINUTE || pending.size >= 5)
+      return { status: 429, body: { ok: false, error: 'opensea_busy' } }
+    cacheMisses++
     const promise = load(chain, slug).then(result => {
       if (result.status === 200) {
         cache.set(key, { expires: clock() + TTL_MS, result })
