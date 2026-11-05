@@ -14,8 +14,8 @@
 | Stage | Action |
 |-------|--------|
 | A — Checkout never completed | No charge · no order paid · nothing to refund |
-| B — Paid, no mint job / dry-run only | Refund via PayBox merchant backoffice · mark order `refunded` in ops notes · do **not** dispatch live mint |
-| C — Paid + dry-run workflow only | Same as B · no chain asset moved |
+| B — Paid, no mint job / dry-run only | Refund through the PSP backoffice under controlled operator policy; preserve actual PSP refund evidence before recording refunded status · do **not** dispatch live mint |
+| C — Paid + dry-run workflow only | Same as B, with PSP refund evidence and reconciliation · no chain asset moved |
 | D — Paid + live NFT already with buyer | **Not supported automatically** · case-by-case (buy-back / off-platform) until policy + tooling exist |
 
 Today production is **B/C only** capable: live mint denied (#310), checkout typically off.
