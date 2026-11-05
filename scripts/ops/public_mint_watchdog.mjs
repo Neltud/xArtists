@@ -75,11 +75,12 @@ async function fetchJsonReadOnly(label, url, fetchImpl = fetch, attempts = 8) {
 }
 
 export async function runPublicMintWatchdog(fetchImpl = fetch) {
-  const data = {}
-  for (const [key, url] of Object.entries(PROBE_URLS)) {
-    data[key] = await fetchJsonReadOnly(key, url, fetchImpl)
-  }
-  return evaluatePublicMintReadiness(data)
+  // Parallel bounded retries: one slow or sleeping Render service cannot
+  // multiply the timeout by the number of independent public GET probes.
+  const values = await Promise.all(Object.entries(PROBE_URLS).map(
+    async ([key, url]) => [key, await fetchJsonReadOnly(key, url, fetchImpl)],
+  ))
+  return evaluatePublicMintReadiness(Object.fromEntries(values))
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
