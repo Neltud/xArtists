@@ -13,6 +13,12 @@ const ROOMS = [
     body: 'Salles WebGL et accrochages. Expérience de collection, pas de grille de floor price.',
   },
   {
+    to: '/explore/market?tab=opensea',
+    kicker: 'Marché NFT multichaîne',
+    title: 'OpenSea · Solana & Polygon',
+    body: 'Explorer les collections réellement prises en charge, puis vérifier toute vente directement sur OpenSea. Pas de mint ni de paiement dans xArtists.',
+  },
+  {
     to: '/explore/auction',
     kicker: 'Temps',
     title: 'Salle des enchères',
