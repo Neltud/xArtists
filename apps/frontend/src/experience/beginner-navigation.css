@@ -77,7 +77,7 @@
 
 /* Guide page: replaces fixed white/near-white utility classes that became
  * unreadable on the official default white/light shell. */
-.xa-guide-page { max-width: 1100px; padding-block: 32px 90px; }
+.xa-guide-page { width: 100%; max-width: 1100px; margin-inline: 0; padding-block: 32px 90px; }
 .xa-guide-header { margin: 26px 0 38px; max-width: 780px; }
 .xa-guide-header h1 {
   color: var(--xa-text);
