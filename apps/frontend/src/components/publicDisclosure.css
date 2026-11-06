@@ -29,3 +29,45 @@
 .rwa-public__tools{display:grid;gap:12px;margin-top:28px}
 .rwa-public__footnote{font-size:11px;color:#a9b7ac;line-height:1.8;margin:24px 0}
 @media(max-width:640px){.rwa-public__grid{grid-template-columns:1fr}.rwa-public__card{padding:17px}.rwa-public__actions a{flex:1}.xa-public-disclosure button[aria-controls]{padding:16px}.xa-public-disclosure__body{padding:0 16px 18px}}
+
+
+/* RWA beginner quick links and default-light editorial contrast.
+   Technical demo cards stay dark by intent, with bright copy within them. */
+.rwa-public__quicknav { align-items: stretch; }
+.rwa-public__quicknav a {
+  flex: 1 1 175px;
+  min-width: 0;
+  min-height: 46px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+#rwa-list,#rwa-tools { scroll-margin-top: 114px; }
+html[data-theme="light"] .rwa-public__lead h1 { color: var(--xa-text); }
+html[data-theme="light"] .rwa-public__lead > p:last-child,
+html[data-theme="light"] .rwa-public__footnote { color: var(--xa-muted); }
+html[data-theme="light"] .rwa-public__notice {
+  color: #6b4a13;
+  background: #fff8e9;
+  border-color: #d5b87b;
+}
+html[data-theme="light"] .rwa-public__actions a {
+  color: var(--xa-text);
+  border-color: var(--xa-border);
+  background: var(--xa-panel);
+}
+html[data-theme="light"] .rwa-public__actions a:first-child {
+  color: var(--xa-accent-ink);
+  background: var(--xa-accent);
+  border-color: var(--xa-accent);
+}
+html[data-theme="light"] .rwa-public__actions a:hover {
+  border-color: var(--xa-accent);
+}
+.rwa-public__actions a:focus-visible {
+  outline: 3px solid var(--xa-accent);
+  outline-offset: 3px;
+}
+@media (max-width: 450px) {
+  .rwa-public__quicknav { display: grid; grid-template-columns: minmax(0,1fr); }
+  .rwa-public__quicknav a { min-width: 0; }
+}
