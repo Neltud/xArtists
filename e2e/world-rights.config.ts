@@ -1,4 +1,6 @@
 import {defineConfig,devices} from '@playwright/test'
+import {fileURLToPath} from 'node:url'
+
 export default defineConfig({
   testDir:'./world-rights',testMatch:'*.browser.ts',timeout:30000,workers:2,retries:1,
   use:{baseURL:'http://127.0.0.1:4173',trace:'retain-on-failure'},
@@ -10,5 +12,12 @@ export default defineConfig({
     {name:'firefox-mobile-layout',use:{browserName:'firefox',viewport:{width:390,height:844}}},
     {name:'webkit-mobile',use:{...devices['iPhone 13'],browserName:'webkit'}},
   ],
-  webServer:{command:'npm run preview --prefix apps/frontend -- --host 127.0.0.1 --port 4173',url:'http://127.0.0.1:4173/xArtists/',reuseExistingServer:false,timeout:60000}
+  webServer:{
+    // Playwright defaults to the config directory (e2e/), not the repository root.
+    cwd:fileURLToPath(new URL('../',import.meta.url)),
+    command:'npm run preview --prefix apps/frontend -- --host 127.0.0.1 --port 4173',
+    url:'http://127.0.0.1:4173/xArtists/',
+    reuseExistingServer:false,
+    timeout:60000
+  }
 })
