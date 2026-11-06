@@ -174,7 +174,15 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await visit(page, '/guide/')
     const guideNotice = page.locator('header [role="status"]')
     await expect(guideNotice).toBeVisible()
-    expect(await guideNotice.evaluate(el => getComputedStyle(el).color)).toBe('rgb(107, 74, 19)')
+    const guideColors = await guideNotice.evaluate(el => {
+      const probe = document.createElement('span')
+      probe.style.color = 'var(--xa-bg)'
+      el.append(probe)
+      const background = getComputedStyle(probe).color
+      probe.remove()
+      return { foreground: getComputedStyle(el).color, background }
+    })
+    expect(contrastRatio(guideColors.foreground, guideColors.background), 'guide copy must contrast with the light background').toBeGreaterThanOrEqual(4.5)
   })
 
   test('phone screenshots: NFT factory layers and inputs do not escape viewport', async ({ page }) => {
@@ -213,11 +221,49 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await page.setViewportSize({ width: 390, height: 844 })
     await visit(page, '/guide/')
     await expect(page.getByRole('heading', { name: /huit étapes|eight steps/i })).toBeVisible()
+    await expect(page.locator('main h1')).toHaveCount(1)
     await expect(page.locator('a[href*="/slot"]')).toHaveCount(0)
-    for (const path of ['/museum', '/marketplace', '/auction', '/studio', '/lia', '/offres', '/legal']) {
-      await expect(page.locator(`ol a[href*="${path}"]`).first()).toBeVisible()
+    await expect(page.locator('.xa-guide-steps a')).toHaveCount(4)
+    for (const path of ['/museum', '/studio', '/marketplace', '/dao']) {
+      await expect(page.locator(`.xa-guide-steps a[href*="${path}"]`)).toBeVisible()
     }
+    const advancedGuide = page.locator('.xa-guide-advanced')
+    await expect(advancedGuide).not.toHaveAttribute('open', '')
+    await advancedGuide.locator('summary').press('Enter')
+    await expect(advancedGuide).toHaveAttribute('open', '')
+    for (const path of ['/auction', '/lia', '/offres', '/legal']) {
+      await expect(advancedGuide.locator(`a[href*="${path}"]`)).toBeVisible()
+    }
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
+    expect(overflow, 'guide horizontal overflow at 390px').toBeLessThanOrEqual(12)
     await page.screenshot({ animations: 'disabled', fullPage: true, path: 'artifacts/ux-mobile/guide-390.png' })
+  })
+
+  test('mobile menu reveals beginner actions, then optional specialist tools by keyboard', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await visit(page, '/')
+    await page.locator('.xa-mobile-trigger').click()
+    await expect(page.locator('.xa-mobile-start')).toBeVisible()
+    for (const path of ['/museum', '/studio', '/marketplace', '/guide']) {
+      await expect(page.locator(`.xa-mobile-start a[href*="${path}"]`)).toBeVisible()
+    }
+    const advancedMenu = page.locator('.xa-mobile-advanced')
+    await expect(advancedMenu).not.toHaveAttribute('open', '')
+    await advancedMenu.locator('summary').press('Enter')
+    await expect(advancedMenu).toHaveAttribute('open', '')
+    await expect(advancedMenu.locator('a[href*="/dao"]')).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(page.locator('.xa-mobile-menu')).toBeHidden()
+  })
+
+  test('module directory exposes four simple paths while retaining complete filtered catalogue', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await visit(page, '/directory/')
+    await expect(page.locator('.xa-directory-starter')).toHaveCount(4)
+    await expect(page.locator('.xa-directory-page .xa-module-card').first()).toBeVisible()
+    await expect(page.locator('.xa-directory-stage-controls')).toBeVisible()
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
+    expect(overflow, 'directory horizontal overflow at 390px').toBeLessThanOrEqual(12)
   })
 
   test('previous crashing Hatom and Support route render headings without provider error', async ({ page }) => {
