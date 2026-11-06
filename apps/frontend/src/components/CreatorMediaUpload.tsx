@@ -1,7 +1,7 @@
 /** Artist-controlled JPG/PNG/WebP/MP4 → IPFS pin → metadata → NFT mint URI.
  * No browser token for Pinata; uploads only through signed backend with daily quota.
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useWallet } from '../context/WalletContext'
 import { signAccessMessage } from '../lib/signAccessMessage'
 import { getAccessApiBase } from '../lib/stripe'
@@ -30,6 +30,13 @@ export default function CreatorMediaUpload({title,onReady}:Props){
   const [pending,setPending]=useState(false)
   const [error,setError]=useState('')
   const [pinned,setPinned]=useState<Pinned|null>(null)
+  // Ignore completion of a previous upload after a wallet/file/rights/title change.
+  const revision=useRef(0)
+  useEffect(()=>{
+    revision.current+=1
+    setPinned(null)
+    onReady(null)
+  },[title,address])
   useEffect(()=>{
     if(!file){setPreview('');return}
     const url=URL.createObjectURL(file);setPreview(url)
@@ -45,6 +52,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
     return ()=>c.abort()
   },[base])
   const pick=(next:File|null)=>{
+    revision.current+=1
     setError('');setFile(next);setPinned(null);onReady(null)
     if(next && (!allowed[next.type]||next.size<=0||next.size>allowed[next.type])){
       setFile(null)
@@ -59,31 +67,39 @@ export default function CreatorMediaUpload({title,onReady}:Props){
     if(!connected||!address||method!=='xportal'){setError('Connexion xPortal et signature requises.');return}
     if(title.trim().length<2||title.trim().length>50){setError('Titre de 2 à 50 caractères requis.');return}
     if(!rights){setError("Confirmez que vous détenez les droits de publier ce média.");return}
+    const attempt=++revision.current
+    const chosenFile=file,chosenTitle=title.trim(),chosenDescription=description.trim()
+    const stillCurrent=()=>revision.current===attempt
     setPending(true)
     try{
       const ch=await postJson(base,'/v1/studio/media/challenge',{address})
+      if(!stillCurrent())return
       if(!ch.message||!ch.nonce)throw new Error('Challenge de connexion indisponible.')
       const signed=await signAccessMessage(ch.message)
+      if(!stillCurrent())return
       if(!signed.ok)throw new Error('Signature xPortal requise : '+signed.error)
       const session=await postJson(base,'/v1/studio/media/session',
         {address,message:ch.message,nonce:ch.nonce,signature:signed.signature})
+      if(!stillCurrent())return
       if(!session.token)throw new Error('Session artiste non créée.')
       const uploadResponse=await fetch(base+'/v1/studio/media/upload',{
-        method:'POST',headers:{Authorization:'Bearer '+session.token,'Content-Type':file.type},
-        body:file,
+        method:'POST',headers:{Authorization:'Bearer '+session.token,'Content-Type':chosenFile.type},
+        body:chosenFile,
       })
       const data=await uploadResponse.json().catch(()=>({error:'upload_response_invalid'}))
+      if(!stillCurrent())return
       if(!uploadResponse.ok)throw new Error(data.error||'Erreur upload IPFS.')
       if(!data.uploadId||!data.uri)throw new Error('Upload non confirmé par le serveur.')
       const meta=await postJson(base,'/v1/studio/media/metadata',{
-        uploadId:data.uploadId,title:title.trim(),description:description.trim(),rightsAccepted:rights,
+        uploadId:data.uploadId,title:chosenTitle,description:chosenDescription,rightsAccepted:true,
       },session.token)
+      if(!stillCurrent())return
       if(!meta.mediaUri||!meta.metadataUri||!meta.attributes)
         throw new Error('Métadonnées IPFS non confirmées.')
       const result={mediaUri:meta.mediaUri as string,metadataUri:meta.metadataUri as string,
-        attributes:meta.attributes as string,title:title.trim()}
+        attributes:meta.attributes as string,title:chosenTitle}
       setPinned(result);onReady(result)
-    }catch(e){setError(e instanceof Error?e.message:'Echec de la préparation IPFS.')}
+    }catch(e){if(stillCurrent())setError(e instanceof Error?e.message:'Echec de la préparation IPFS.')}
     finally{setPending(false)}
   }
   const stale=!!pinned&&pinned.title!==title.trim()
@@ -119,12 +135,12 @@ export default function CreatorMediaUpload({title,onReady}:Props){
       <label className="block text-xs text-zinc-300">
         Description publique du NFT (facultative)
         <textarea value={description} rows={2} maxLength={800}
-          onChange={e=>{setDescription(e.target.value);setPinned(null);onReady(null)}}
+          onChange={e=>{revision.current+=1;setDescription(e.target.value);setPinned(null);onReady(null)}}
           className="mt-1 block w-full rounded-lg border border-white/10 bg-zinc-950 p-2 text-sm text-white"
           placeholder="Technique, histoire, contexte et droits de l'œuvre"/>
       </label>
       <label className="flex items-start gap-2 text-xs leading-relaxed text-zinc-300">
-        <input type="checkbox" checked={rights} onChange={e=>setRights(e.target.checked)}
+        <input type="checkbox" checked={rights} onChange={e=>{revision.current+=1;setRights(e.target.checked);setPinned(null);onReady(null)}}
           className="mt-0.5" />
         Je possède les droits de reproduire et publier ce média. Je comprends qu'une publication
         IPFS et un NFT ne sont pas automatiquement supprimables.
