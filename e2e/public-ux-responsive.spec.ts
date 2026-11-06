@@ -327,4 +327,45 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await expect(page.getByRole('button', { name: /Terms of use|Conditions d’utilisation/ })).toBeVisible()
     await page.screenshot({ animations: 'disabled', fullPage: true, path: 'artifacts/ux-mobile/legal-390.png' })
   })
+  test('RWA and $TRO headings contrast with default light and optional dark theme',async ({page})=>{
+    await page.setViewportSize({width:390,height:844})
+    for(const [path,selector] of [['/explore/rwa/','.rwa-public__lead h1'],['/finance/tro/sale/','#tro-hero-title']] as const){
+      await visit(page,path)
+      for(const theme of ['light','dark'] as const){
+        await expect(page.locator('html')).toHaveAttribute('data-theme',theme)
+        const colors=await page.locator(selector).evaluate(el=>({
+          ink:getComputedStyle(el).color,paper:getComputedStyle(document.body).backgroundColor
+        }))
+        expect(contrastRatio(colors.ink,colors.paper),path+' '+theme+' contrast').toBeGreaterThanOrEqual(7)
+        if(theme==='light')await page.locator('.xa-theme-toggle').click()
+      }
+      await page.locator('.xa-theme-toggle').click()
+      await expect(page.locator('main')).toHaveCount(1)
+    }
+  })
+
+  test('mobile RWA and $TRO anchor links reveal safe information without horizontal overflow',async ({page})=>{
+    await page.emulateMedia({reducedMotion:'reduce'})
+    for(const width of [360,390,430]){
+      await page.setViewportSize({width,height:844})
+      await visit(page,'/explore/rwa/')
+      await expect(page.locator('.rwa-public__quicknav a')).toHaveCount(4)
+      await expect(page.getByText(/Catalogue de démonstration/).first()).toBeVisible()
+      await page.locator('.rwa-public__quicknav a[href="#rwa-tools"]').click()
+      await expect(page).toHaveURL(/#rwa-tools$/)
+      await expect(page.locator('#rwa-preparation-trigger')).toHaveAttribute('aria-expanded','false')
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth),'RWA overflow '+width).toBeLessThanOrEqual(12)
+      await visit(page,'/finance/tro/sale/')
+      await expect(page.locator('.tro-portal__quicknav a')).toHaveCount(3)
+      await expect(page.getByText(/Bridge Solana : désactivé/)).toBeVisible()
+      await page.locator('.tro-portal__quicknav a[href="#tro-roadmap-details-trigger"]').click()
+      await expect(page).toHaveURL(/#tro-roadmap-details-trigger$/)
+      await expect(page.locator('#tro-roadmap-details-trigger')).toHaveAttribute('aria-expanded','false')
+      await page.locator('#tro-roadmap-details-trigger').press('Enter')
+      await expect(page.locator('#tro-roadmap-details-trigger')).toHaveAttribute('aria-expanded','true')
+      await expect(page.getByRole('button',{name:'Bridge non disponible',exact:true})).toBeDisabled()
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth),'TRO overflow '+width).toBeLessThanOrEqual(12)
+    }
+  })
+
 })
