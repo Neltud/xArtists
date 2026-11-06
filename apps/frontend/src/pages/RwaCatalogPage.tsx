@@ -41,7 +41,7 @@ export default function RwaCatalogPage() {
     return () => { cancelled = true; abort.abort(); window.clearTimeout(timer) }
   }, [])
 
-  return <main className="rwa-public" id="rwa-catalog">
+  return <div className="rwa-public" id="rwa-catalog">
     <header className="rwa-public__lead">
       <p className="section-label">{xaRender("RWA")}</p>
       <h1>{xaRender("Physical · Digital")}</h1>
@@ -100,5 +100,5 @@ export default function RwaCatalogPage() {
     <p className="rwa-public__footnote">
       {xaRender("Fiches illustratives uniquement. Les décisions de propriété, de conservation, de livraison et de publication NFT exigent des documents et des signatures indépendants.")}</p>
     <Link to="/lia" className="btn-secondary text-sm">{xaRender("← LIA hub ")}</Link>
-  </main>
+  </div>
 }
