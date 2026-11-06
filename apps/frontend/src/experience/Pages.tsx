@@ -10,6 +10,7 @@ import {matchesModuleSearch} from './moduleSearch'
 import RouteErrorBoundary from '../components/RouteErrorBoundary'
 import GenesisPackShelf from '../components/packs/GenesisPackShelf'
 import HomeHeroSculpture from './HomeHeroSculpture'
+import DriveArtShowcase from './DriveArtShowcase'
 import { MultiversXProvider } from '../context/MultiversXContext'
 const API='https://api.multiversx.com'
 
@@ -46,6 +47,7 @@ export function Home(){
    </div>
    <OrbitalArt/>
   </section>
+  <DriveArtShowcase />
   <section className="xa-first-journeys" aria-labelledby="xa-first-what">
    <div className="xa-first-heading">
     <div><p className="xa-eyebrow">xArtists</p><h2 id="xa-first-what">{c('welcomeAsk')}</h2></div>
