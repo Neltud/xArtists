@@ -1,0 +1,30 @@
+name: LIA read-only memory safety
+on:
+  pull_request:
+    paths:
+      - 'lia/memory/**'
+      - 'lia/circuit/autonomous_loop.py'
+      - 'lia/circuit/guarded_cycle.py'
+      - '.github/workflows/lia-memory-guard-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'lia/memory/**'
+      - 'lia/circuit/autonomous_loop.py'
+      - 'lia/circuit/guarded_cycle.py'
+      - '.github/workflows/lia-memory-guard-ci.yml'
+permissions:
+  contents: read
+jobs:
+  memory-fail-closed:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate syntax without network access
+        run: python -m compileall -q lia/memory/onchain_memory.py lia/circuit/autonomous_loop.py lia/circuit/guarded_cycle.py
+      - name: Verify missing and partial chain samples fail closed
+        run: python -m unittest discover -s lia/memory -p 'test_onchain_memory.py' -v
