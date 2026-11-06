@@ -1,0 +1,34 @@
+name: Plugin entitlement paper gate
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/src/pluginEntitlements.mjs'
+      - 'services/access-api/tests/plugin-entitlements.test.mjs'
+      - 'services/access-api/migrations/plugin_entitlements_v1.sql'
+      - 'docs/security/PLUGIN_ENTITLEMENTS_PAPER_V1.md'
+      - '.github/workflows/plugin-entitlements-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/pluginEntitlements.mjs'
+      - 'services/access-api/tests/plugin-entitlements.test.mjs'
+      - '.github/workflows/plugin-entitlements-ci.yml'
+permissions:
+  contents: read
+jobs:
+  fail-closed:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      PLUGIN_ENTITLEMENTS_ENABLED: '0'
+      VITE_LIA_LIVE_TRADING: '0'
+      VITE_PAYBOX_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static module verification
+        run: node --check services/access-api/src/pluginEntitlements.mjs
+      - name: Isolated synthetic entitlement tests (no gateway, DB, wallet or charge)
+        run: node --test services/access-api/tests/plugin-entitlements.test.mjs
