@@ -5,6 +5,27 @@ var api='https://xartists-access-api.onrender.com',status=document.getElementByI
 var labels={x:'X',youtube:'YouTube',instagram:'Instagram',tiktok:'TikTok',facebook:'Facebook',threads:'Threads',linkedin:'LinkedIn',pinterest:'Pinterest',snapchat:'Snapchat',twitch:'Twitch',reddit:'Reddit',bluesky:'Bluesky',mastodon:'Mastodon',other:'Autre · revue manuelle'};
 function fill(id,items){var node=document.getElementById(id);items.forEach(function(value){var option=document.createElement('option');option.value=value;option.textContent=labels[value]||value.replace(/_/g,' ');node.appendChild(option);});}
 fill('platform',core.platforms);fill('format',core.formats);
+// A configured backend is not proof of a signed-in YouTube session or copyright.
+// Never show an actionable OAuth button when the read-only connector is disabled.
+var youtubeControls=['connect','disconnect','inspect'].map(function(id){return document.getElementById(id);});
+function youtubeAvailable(value){youtubeControls.forEach(function(button){button.disabled=!value;});}
+youtubeAvailable(false);
+(async function checkYouTubeAvailability(){
+  try{
+    var controller=new AbortController(),timer=setTimeout(function(){controller.abort();},6000);
+    var response;
+    try{response=await fetch(api+'/world-rights/status',{signal:controller.signal,cache:'no-store',credentials:'omit'});}
+    finally{clearTimeout(timer);}
+    if(!response.ok)throw Error('backend_unavailable');
+    var data=await response.json();
+    if(!data||data.youtube!=='configured_readonly'||data.payments!==false||data.publishing!==false||data.delivery!==false)throw Error('not_configured');
+    youtubeAvailable(true);
+    status.textContent='YouTube : connexion en lecture seule disponible. Aucun compte connecté ; aucun droit d’auteur vérifié.';
+  }catch(e){
+    youtubeAvailable(false);
+    status.textContent='YouTube : connexion indisponible ou non configurée. Préparation manuelle disponible sans compte.';
+  }
+})();
 function feedback(message){document.getElementById('feedback').textContent=message;}
 function render(d){current=d;document.getElementById('result').textContent=JSON.stringify(d,null,2);var list=document.getElementById('blockers');list.replaceChildren();d.blockers.forEach(function(text){var li=document.createElement('li');li.textContent=text;list.appendChild(li);});feedback(d.blockers.length?'Dossier à compléter. Aucune autorisation de vente.':'Dossier préparé pour revue. Les preuves restent non vérifiées.');document.getElementById('export').disabled=false;}
 function invalidate(){current=null;document.getElementById('export').disabled=true;document.getElementById('result').textContent='';document.getElementById('blockers').replaceChildren();feedback('Modifications en cours : préparez une nouvelle version du dossier.');}
