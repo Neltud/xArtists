@@ -22,7 +22,6 @@ export default function DemoTourPage() {
   ]
 
   return <div className="xa-container xa-guide-page">
-    <div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><span>{c('help')}</span></div>
     <header className="xa-guide-header">
       <p className="xa-eyebrow">{c('guideSteps')}</p>
       <h1>{c('guideTitle')}</h1>
