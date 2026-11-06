@@ -182,3 +182,36 @@
   .xa-guide-step, .xa-directory-starter { transition: none; }
   .xa-guide-step:hover, .xa-directory-starter:hover { transform: none; }
 }
+
+/* Both searches use the same Unicode fold; leave the directory recoverable
+   when a visitor combines category, maturity and a free-text query. */
+.xa-directory-controls { flex-wrap: wrap; gap: 12px 18px; }
+.xa-directory-controls > .xa-filter-search {
+  flex: 1 1 240px;
+  min-width: min(100%, 240px);
+}
+.xa-directory-controls > .xa-filter-search input {
+  min-width: 0;
+}
+.xa-directory-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid var(--xa-border);
+  border-radius: 10px;
+  background: var(--xa-panel);
+  color: var(--xa-text);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+.xa-directory-reset:hover { border-color: var(--xa-accent); }
+.xa-directory-reset:focus-visible { outline: 3px solid var(--xa-accent); outline-offset: 3px; }
+@media (max-width: 560px) {
+  .xa-directory-controls > .xa-filter-tabs { width: 100%; }
+  .xa-directory-controls > .xa-filter-search { flex-basis: 100%; }
+  .xa-directory-reset { width: 100%; }
+}

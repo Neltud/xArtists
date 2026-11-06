@@ -10,7 +10,7 @@ const access=read('../src/pages/DappAccessPage.tsx')
 const modules=read('../src/experience/modules.ts')
 const app=read('../src/App.tsx')
 
-test('public guide has eight clear, wallet-free working navigation steps',()=>{
+test('public guide shows four beginner routes before four optional advanced routes',()=>{
   const destinations=[...guide.matchAll(/\{ to: '([^']+)', label:/g)].map(m=>m[1])
   assert.deepEqual(destinations,['/museum','/studio','/marketplace','/dao','/auction','/lia','/offres','/legal'])
   assert.ok(guide.indexOf('const steps = [') < guide.indexOf('const extra = ['), 'beginner route choices must precede advanced routes')

@@ -13,12 +13,13 @@ import { packNameForPublicPath } from '../lib/publicRoutes'
 import Dialog from './Dialog'
 import {useCopy,useExperience} from './state'
 import {text} from './locale'
+import {matchesModuleSearch} from './moduleSearch'
 import './beginner-navigation.css'
 
 function Logo(){return <Link to="/" className="xa-logo" aria-label="xArtists"><svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><path d="m8 7 12 13L32 7M8 33l12-13 12 13" stroke="currentColor" strokeWidth="6" fill="none"/><path d="m8 7 24 26" stroke="var(--xa-accent)" strokeWidth="6"/></svg><span>xArtists<span className="xa-logo-dot">®</span></span></Link>}
 export function Search({onClose}:{onClose:()=>void}){
  const c=useCopy(), {lang}=useI18n(),[q,setQ]=useState(''),[selected,setSelected]=useState(0)
- const results=useMemo(()=>{const needle=q.toLocaleLowerCase(lang).normalize('NFD').replace(/[\u0300-\u036f]/g,'');return modules.filter(m=>[c(m.label),c(m.group),m.path,...m.aliases,...m.tags].join(' ').toLocaleLowerCase(lang).normalize('NFD').replace(/[\u0300-\u036f]/g,'').includes(needle))},[q,lang])
+ const results=useMemo(()=>modules.filter(m=>matchesModuleSearch(q,[c(m.label),c(m.group),m.path,...m.aliases,...m.tags],lang)),[q,lang])
  useEffect(()=>setSelected(0),[q])
  useEffect(()=>{if(results[selected])document.getElementById('search-'+results[selected].id)?.scrollIntoView({block:'nearest'})},[selected])
  return <Dialog title={c('searchLabel')} onClose={onClose} className="xa-search-dialog"><div className="xa-search-input"><Icon name="search"/><input autoFocus value={q} placeholder={c('search')} aria-label={c('searchLabel')} role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="xa-search-results" aria-activedescendant={results[selected]?`search-${results[selected].id}`:undefined} onChange={e=>setQ(e.target.value)} onKeyDown={e=>{if(e.key==='ArrowDown'){e.preventDefault();setSelected(i=>Math.min(i+1,results.length-1))}if(e.key==='ArrowUp'){e.preventDefault();setSelected(i=>Math.max(i-1,0))}if(e.key==='Enter'&&results[selected]){e.preventDefault();document.getElementById('search-'+results[selected].id)?.click()}}}/><kbd>ESC</kbd></div><div className="xa-search-results" id="xa-search-results" role="listbox">{results.length?results.map((m,i)=><Link key={m.id} id={`search-${m.id}`} role="option" aria-selected={selected===i} to={m.path} onClick={onClose} className={selected===i?'selected':''} onMouseEnter={()=>setSelected(i)}><span className="xa-search-symbol"><Icon name={m.icon}/></span><span><b>{c(m.label)}</b><small>{c(m.group)} · {m.tags.join(' / ')}</small></span><Icon name="diagonal" size={16}/></Link>):<p className="xa-empty">{c('noResults')}</p>}</div><div className="xa-dialog-foot">{results.length} {c('modules')} <span>↑ ↓ &nbsp; ↵</span></div></Dialog>

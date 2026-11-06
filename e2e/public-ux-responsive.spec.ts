@@ -220,7 +220,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
   test('visitor guide at 390px never links to retired Slot, and offers legal access', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await visit(page, '/guide/')
-    await expect(page.getByRole('heading', { name: /huit étapes|eight steps/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /quatre étapes|four steps/i })).toBeVisible()
     await expect(page.locator('main h1')).toHaveCount(1)
     await expect(page.locator('a[href*="/slot"]')).toHaveCount(0)
     await expect(page.locator('.xa-guide-steps a')).toHaveCount(4)
@@ -370,6 +370,37 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(page.getByRole('button',{name:'Bridge non disponible',exact:true})).toBeDisabled()
       expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth),'TRO overflow '+width).toBeLessThanOrEqual(12)
     }
+  })
+
+  test('beginner guide is honestly four main choices in French, Spanish and Arabic RTL', async ({ page }) => {
+    await page.setViewportSize({width:390,height:844})
+    for(const [lang,title,dir] of [
+      ['fr',/quatre étapes/i,'ltr'],
+      ['es',/cuatro pasos/i,'ltr'],
+      ['ar',/أربع خطوات/,'rtl'],
+    ] as const) {
+      await visit(page,'/guide/?lang='+lang)
+      await expect(page.locator('html')).toHaveAttribute('lang',lang)
+      await expect(page.locator('html')).toHaveAttribute('dir',dir)
+      await expect(page.locator('.xa-guide-page h1')).toHaveText(title)
+      await expect(page.locator('.xa-guide-steps a')).toHaveCount(4)
+      await expect(page.locator('.xa-guide-advanced')).not.toHaveAttribute('open','')
+      await expect(page.locator('.xa-guide-notice')).toBeVisible()
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth),'guide overflow '+lang).toBeLessThanOrEqual(12)
+    }
+  })
+
+  test('global search matches a French term without accents, like the directory',async({page})=>{
+    await page.setViewportSize({width:1440,height:900})
+    await visit(page,'/guide/?lang=fr')
+    await page.locator('.xa-search-trigger').click()
+    const search=page.locator('.xa-search-dialog input[role="combobox"]')
+    await expect(search).toBeVisible()
+    await search.fill('musee')
+    await expect(page.locator('.xa-search-results [role="option"]')).toHaveCount(1)
+    await expect(page.locator('.xa-search-results')).toContainText('Musée immersif')
+    await search.press('Enter')
+    await expect(page).toHaveURL(/\/explore\/museum\/?/)
   })
 
 })
