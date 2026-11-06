@@ -41,17 +41,22 @@
       "confirmed": false
     }
   ],
-  "note": "Exactly one setSpecialRole transaction per collection; three transactions total. Two roles per transaction. This file is NOT a signed or broadcast-ready transaction.",
+  "unsignedPayloads": "docs/ops/PACK_ROLE_GRANT_UNSIGNED_2026-11-06.json",
+  "humanReview": "docs/ops/PACK_ROLE_GRANT_REVIEW_2026-11-06.md",
+  "note": "Exactly one setSpecialRole transaction per collection; three transactions total. Two roles per transaction. The unsigned data fields are in unsignedPayloads. This file is NOT a signed or broadcast-ready transaction. Nonce and gas price stay with the wallet.",
   "excludedRoles": [
     "ESDTTransferRole",
     "ESDTRoleNFTBurn",
     "ESDTRoleModifyCreator",
-    "ESDTRoleModifyRoyalties"
+    "ESDTRoleModifyRoyalties",
+    "ESDTRoleNFTAddURI",
+    "ESDTRoleNFTSetNewURIs"
   ],
   "preconditions": [
     "Fresh owner, token properties and existing special roles checked on chain",
     "Owner must sign each exact transaction in a trusted MultiversX wallet after reviewing receiver, data and fees",
     "Gas/nonce must be obtained live by the trusted wallet, not copied from this plan",
+    "Do not use the Studio Signer setSpecialRole button; it grants only ESDTRoleNFTCreate",
     "After each success re-query getSpecialRoles on chain and record block and tx hash",
     "No ESDTSetNewURIs until real media CID and byte-for-byte verification from two independent gateways"
   ]
