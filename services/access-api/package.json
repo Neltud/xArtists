@@ -6,7 +6,8 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "start": "node src/server.mjs",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "preflight:studio:ipfs": "node scripts/check-studio-ipfs.mjs"
   },
   "dependencies": {
     "@multiversx/sdk-core": "13.17.2",
