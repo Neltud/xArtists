@@ -15,6 +15,8 @@ type OwnedNft = {
   type?: string
   media?: unknown
 }
+const PACK_COLLECTIONS = new Set(['XAIPLS-2cf72b','XAIYLD-987e24','XAISNT-3d8a6b'])
+const isRestrictedPack = (collection: string) => PACK_COLLECTIONS.has(collection)
 const addressPattern = /^erd1[a-z0-9]{58}$/
 const identifierPattern = /^[A-Za-z0-9]{3,12}-[a-f0-9]{6}-[a-f0-9]{2,16}$/
 const hasMetadataUri = (n: OwnedNft) =>
@@ -113,6 +115,7 @@ export default function ExistingNftReadiness() {
           const token = choices[collection] || items[0]?.identifier || ''
           const selected = items.find(n => n.identifier === token) || items[0]
           const media = hasMetadataUri(selected)
+          const restrictedPack = isRestrictedPack(collection)
           const price = prices[collection] || ''
           const valid = /^(?:0|[1-9][0-9]{0,4})(?:\.[0-9]{1,18})?$/.test(price) && Number(price) > 0
           return <div key={collection} className="min-w-0 rounded-xl border border-[var(--xa-border)] p-3 space-y-2">
@@ -124,7 +127,8 @@ export default function ExistingNftReadiness() {
               </select>
             </label>
             <p className="text-xs text-[var(--xa-muted)]">
-              {media ? 'URI média déclarée sur la chaîne — récupération IPFS non vérifiée' :
+              {restrictedPack ? 'Pack d’accès sous NO-GO : rôle de réparation, CID et preuve de média manquants. Aucune annonce EGLD.' :
+                media ? 'URI média déclarée sur la chaîne — récupération IPFS non vérifiée' :
                 'Image/URI manquante : corriger les métadonnées avant publication'}
             </p>
             <label className="block text-xs text-[var(--xa-muted)]">Prix envisagé en EGLD
@@ -137,10 +141,10 @@ export default function ExistingNftReadiness() {
                 rel="noopener noreferrer" className="text-xs underline underline-offset-4 min-h-[44px] inline-flex items-center">
                 Voir le NFT sur Explorer
               </a>
-              <button type="button" className="btn-secondary text-xs min-h-[44px]" disabled={!valid}
+              <button type="button" className="btn-secondary text-xs min-h-[44px]" disabled={!valid || !media || restrictedPack}
                 onClick={() => setNotice(exportDraft(collection, token, price, media) ?
                   'Brouillon EGLD exporté. Aucun NFT listé ni argent transféré.' : 'Prix EGLD invalide.')}>
-                Exporter brouillon EGLD
+                {restrictedPack ? "Pack bloqué — NO-GO" : !media ? "Média requis avant brouillon" : "Exporter brouillon EGLD"}
               </button>
             </div>
           </div>
