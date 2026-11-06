@@ -1,0 +1,91 @@
+/* Creator Studio: theme-aware, accessible primary workflow.
+ * Scoped to the collection + IPFS + mint workspace; do not override
+ * specialist Physical/Agent Pack UIs or dark-mode card designs.
+ */
+.xa-creator-studio .xa-studio-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .65rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.xa-creator-studio .xa-studio-steps li {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  padding: .85rem;
+  border: 1px solid var(--xa-border);
+  border-radius: .95rem;
+  background: var(--xa-surface);
+}
+.xa-creator-studio .xa-studio-steps strong {
+  color: var(--xa-text);
+  font-size: .76rem;
+  letter-spacing: -.01em;
+}
+.xa-creator-studio .xa-studio-steps span {
+  color: var(--xa-text-secondary);
+  font-size: .72rem;
+  line-height: 1.45;
+}
+@media(max-width:720px) {
+  .xa-creator-studio .xa-studio-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+html[data-theme="light"] .xa-creator-studio .xa-studio-workflow {
+  background: #fff;
+  border-color: #dce3da;
+  box-shadow: 0 8px 30px rgba(27, 50, 24, .035);
+}
+/* The Studio retained dark-mode Tailwind text utilities after the app switched
+ * to light by default. Only adjust the explicitly scoped artist workflow. */
+html[data-theme="light"] .xa-studio-workflow :is(.text-white,.text-zinc-200,.text-zinc-300) {
+  color: #1c2b20 !important;
+}
+html[data-theme="light"] .xa-studio-workflow :is(.text-zinc-400,.text-zinc-500,.text-zinc-600) {
+  color: #526458 !important;
+}
+html[data-theme="light"] .xa-studio-workflow :is(input:not([type="checkbox"]),textarea) {
+  color: #1b291e !important;
+  background-color: #fff !important;
+  border-color: #cbd5ca !important;
+}
+html[data-theme="light"] .xa-studio-workflow :is(input:not([type="checkbox"]),textarea):focus-visible {
+  outline: 2px solid #547b37;
+  outline-offset: 2px;
+}
+html[data-theme="light"] .xa-studio-workflow input[type="file"]::file-selector-button {
+  background: #e9efea;
+  color: #21382a;
+  border: 0;
+  border-radius: .5rem;
+  padding: .35rem .65rem;
+  margin-right: .7rem;
+}
+html[data-theme="light"] .xa-studio-workflow :is(.text-amber-100,.text-amber-200) {
+  color: #855111 !important;
+}
+html[data-theme="light"] .xa-studio-workflow .text-rose-200 {
+  color: #9b2444 !important;
+}
+html[data-theme="light"] .xa-studio-workflow .text-emerald-100,
+html[data-theme="light"] .xa-studio-workflow .text-emerald-300\/90 {
+  color: #1d6948 !important;
+}
+html[data-theme="light"] .xa-studio-workflow .text-cyan-200 {
+  color: #20607e !important;
+}
+html[data-theme="light"] .xa-studio-workflow .border-white\/10 {
+  border-color: #dbe3d9 !important;
+}
+html[data-theme="light"] .xa-studio-workflow .border-white\/15 {
+  border-color: #cbd9c8 !important;
+}
+@media(prefers-reduced-motion:reduce) {
+  .xa-creator-studio .xa-studio-steps *,
+  .xa-creator-studio .xa-studio-workflow * {
+    animation-duration: .01ms !important;
+  }
+}

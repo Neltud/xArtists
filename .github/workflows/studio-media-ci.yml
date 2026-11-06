@@ -7,6 +7,8 @@ on:
       - 'services/access-api/**'
       - 'apps/frontend/src/components/CreatorMediaUpload.tsx'
       - 'apps/frontend/src/pages/StudioPage.tsx'
+      - 'apps/frontend/src/styles/creator-studio-light.css'
+      - 'apps/frontend/tests/studio-light-first.test.mjs'
       - 'apps/frontend/src/pages/MarketplacePage.tsx'
       - 'apps/frontend/src/components/market/RwaPhysicalPanel.tsx'
       - '.github/workflows/studio-media-ci.yml'
@@ -48,6 +50,9 @@ jobs:
       - name: Strict global TypeScript (issue 271 resolved)
         working-directory: apps/frontend
         run: npm run typecheck
+      - name: Studio light-first and no-wallet copy regression
+        working-directory: apps/frontend
+        run: node --test tests/studio-light-first.test.mjs
       - name: Production build
         working-directory: apps/frontend
         run: npm run build

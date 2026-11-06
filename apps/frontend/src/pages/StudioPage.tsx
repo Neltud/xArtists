@@ -1,4 +1,5 @@
 import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
+import '../styles/creator-studio-light.css'
 /** Creator Studio — collections + mint + list + certification phygital. */
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -118,15 +119,22 @@ export default function StudioPage() {
   }
 
   return (
-    <div className="animate-fade-in space-y-6 max-w-xl mx-auto pb-16">
+    <div className="xa-creator-studio animate-fade-in space-y-6 max-w-3xl mx-auto pb-16">
       <header className="space-y-1">
         <p className="section-label">{xaRender("Création")}</p>
         <h1 className="section-title display text-2xl">{xaRender("Creator Studio")}</h1>
         <p className="text-sm text-zinc-400">
-          {xaRender("Collection existante ou nouvelle → mint → list Marketplace. Signature xPortal uniquement. ")}</p>
+          {xaRender("Prépare ton œuvre, publie-la sur IPFS, puis crée ton NFT avec la signature de ton propre wallet. Aucun mint automatique. ")}</p>
       </header>
 
-      <section className="card space-y-3">
+      <ol className="xa-studio-steps" aria-label="Étapes pour créer un NFT artiste">
+        <li><strong>1 · Wallet</strong><span>Connecte ton compte artiste.</span></li>
+        <li><strong>2 · Collection</strong><span>Choisis une collection et vérifie ton rôle.</span></li>
+        <li><strong>3 · IPFS</strong><span>Prépare et publie les médias avec leurs droits.</span></li>
+        <li><strong>4 · Signature</strong><span>Contrôle les frais et confirme dans ton wallet.</span></li>
+      </ol>
+
+      <section className="card xa-studio-workflow space-y-3">
         <h2 className="text-sm font-semibold text-white">
           {xaRender("Mes collections (")}{xaRender(ownedCollections.length)})
         </h2>
@@ -168,7 +176,7 @@ export default function StudioPage() {
         ))}
       </section>
 
-      <section className="card space-y-3">
+      <section className="card xa-studio-workflow space-y-3">
         <h2 className="text-sm font-semibold text-white">{xaRender("Nouvelle collection (optionnel)")}</h2>
         {xaRender(connected && (
           <p className="text-[12px] text-zinc-500 mono truncate">{xaRender(asText(address))}</p>
@@ -194,7 +202,7 @@ export default function StudioPage() {
             disabled={mint.pending || !canAttemptSign}
             onClick={() => void runIssue()}
           >
-            {xaRender(mint.pending ? 'Signature…' : 'Issue collection')}
+            {xaRender(mint.pending ? 'Signature…' : 'Créer une collection')}
           </button>
           <button
             type="button"
@@ -202,19 +210,24 @@ export default function StudioPage() {
             disabled={mint.pending || !activeCollectionId}
             onClick={() => void runRole()}
           >
-            {xaRender("Set NFTCreate role ")}</button>
+            {xaRender("Autoriser la création NFT ")}</button>
         </div>
         <p className="text-[11px] text-zinc-600">
           {xaRender("Après issue : récupère le token id sur l’explorer (TICKER-xxxxxx), colle-le ci-dessus, puis rôle + mint. ")}</p>
       </section>
 
-      <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">{xaRender("Mint NFT")}</h2>
+      <section className="card xa-studio-workflow space-y-3">
+        <h2 className="text-sm font-semibold text-white">{xaRender("Préparer et créer mon NFT")}</h2>
+        <label className="block text-sm font-medium" htmlFor="xa-studio-nft-name">
+          Nom de l’œuvre à publier
+        </label>
         <input
+          id="xa-studio-nft-name"
           value={nftName}
           onChange={e => setNftName(e.target.value)}
           className="w-full rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white"
           placeholder={xaLocalize("Nom de l’œuvre")}
+          maxLength={50}
         />
         <CreatorMediaUpload title={nftName} onReady={pin => {
           setPinnedMedia(pin)
@@ -236,7 +249,7 @@ export default function StudioPage() {
           disabled={mint.pending || !activeCollectionId || !nftMediaUri.trim() || !mint.canSign}
           onClick={() => void runMint()}
         >
-          {xaRender(mint.pending ? 'Signature…' : 'Créer NFT')}
+          {xaRender(mint.pending ? 'Signature…' : 'Signer la création NFT')}
         </button>
         {mint.lastTx && <p className="break-all text-xs text-cyan-200">Session / Tx : {mint.lastTx}
           {/^[a-f0-9]{64}$/i.test(mint.lastTx) && <a
@@ -246,7 +259,7 @@ export default function StudioPage() {
         {xaRender(mint.error && <p className="text-[12px] text-amber-200/90">{xaRender(asText(mint.error))}</p>)}
       </section>
 
-      <section className="card space-y-3">
+      <section className="card xa-studio-workflow space-y-3">
         <h2 className="text-sm font-semibold text-white">{xaRender("Mes NFT (")}{xaRender(owned.length)})</h2>
         {xaRender(connected && owned.length === 0 && (
           <p className="text-[13px] text-zinc-500">{xaRender("Aucun NFT — mint ou importe une collection.")}</p>
