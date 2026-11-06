@@ -133,7 +133,7 @@ export default function LiaShadowPanel() {
             {xaRender("LIA Shadow · paper ")}</p>
           <h2 className="text-lg font-semibold text-white">{xaRender("War room")}</h2>
           <p className="text-[12px] text-zinc-500">
-            {xaRender("Stratégie + ledger virtuel + STVP 7j. Aucune TX on-chain. ")}</p>
+            {xaRender("Simulation manuelle : stratégie et ledger fictifs · aucune donnée agent certifiée et aucune TX on-chain. ")}</p>
         </div>
         <span className="rounded-full border border-cyan-500/30 px-2 py-0.5 text-[10px] text-cyan-200">
           {xaRender("PAPER ")}</span>
@@ -182,7 +182,7 @@ export default function LiaShadowPanel() {
           disabled={busy}
           onClick={() => void runTick()}
         >
-          {xaRender(busy ? '…' : 'Tick décision')}
+          {xaRender(busy ? '…' : 'Simuler un scénario (paper)')}
         </button>
         <button
           type="button"
