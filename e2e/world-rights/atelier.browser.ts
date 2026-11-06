@@ -40,3 +40,24 @@ test('package download is a real ZIP and source import removes fake approval',as
  expect(await page.evaluate(()=>Boolean((window as any).evil))).toBe(false)
  expect(JSON.parse(await page.locator('#result').innerText()).listingAuthorized).toBe(false)
 })
+
+test('OAuth controls fail closed when backend is unavailable; local preparation still works',async({page})=>{
+ const connect=page.getByRole('button',{name:'Connecter YouTube · lecture seule'})
+ await expect(connect).toBeDisabled()
+ await expect(page.locator('#disconnect')).toBeDisabled()
+ await expect(page.locator('#inspect')).toBeDisabled()
+ await expect(page.locator('#connection-status')).toContainText('indisponible ou non configurée')
+ await page.getByLabel('Créateur',{exact:true}).fill('Créatrice')
+ await page.getByLabel('Titre du contenu').fill('Photo originale')
+ await page.getByRole('button',{name:'Préparer le dossier'}).click()
+ await expect(page.locator('#feedback')).toContainText('Dossier à compléter')
+})
+test('read-only backend readiness enables connection but does not claim a user is connected',async({page})=>{
+ await page.route('https://xartists-access-api.onrender.com/world-rights/status',route=>route.fulfill({
+   status:200,contentType:'application/json',
+   body:JSON.stringify({version:'0.6.0',youtube:'configured_readonly',payments:false,publishing:false,delivery:false})
+ }))
+ await page.reload()
+ await expect(page.getByRole('button',{name:'Connecter YouTube · lecture seule'})).toBeEnabled()
+ await expect(page.locator('#connection-status')).toContainText('Aucun compte connecté')
+})
