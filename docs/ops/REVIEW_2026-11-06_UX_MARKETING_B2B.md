@@ -64,7 +64,7 @@
 | PR | État observé | Condition avant merge |
 |---|---|---|
 | [xArtists #421](https://github.com/Neltud/xArtists/pull/421) | Draft, mergeable=true (dernier contrôle), CI verte mais gate manuel | Signed entitlement, paper-only; tests/review secrets, licence #416 bloquante |
-| [xArtists #415](https://github.com/Neltud/xArtists/pull/415) | Open, mergeable=true (dernier contrôle), verify échoué | World Rights web + YouTube RO; risque MIT/plugin payant #416, CI non vérifiée |
+| [xArtists #415](https://github.com/Neltud/xArtists/pull/415) | Open, mergeable=true (dernier contrôle), verify corrigé et CI 26/26 verte ; licence encore bloquante | World Rights web + YouTube RO; risque MIT/plugin payant #416, CI non vérifiée |
 | [xArtists #409](https://github.com/Neltud/xArtists/pull/409) | Open, mergeable=true | Release 0.130.0; avant fusion vérifier CI, tag/version, pas un GO commercial |
 | [xArtists #407](https://github.com/Neltud/xArtists/pull/407) | Draft, mergeable=false | Mint owner Pulse #005; media IPFS/signature/SC upgrade manquants : pas de merge |
 | [Xmvx-connector #1](https://github.com/Neltud/Xmvx-connector/pull/1) | Draft WIP | 0 changed file : pas de code prêt à relire; demander prototype + tests |
@@ -130,6 +130,6 @@ Audit navigateur public réalisé sans wallet ni achat : [enregistrement](https:
 - **Actions proposées :** authentifier les réseaux cibles avec consentement et contrôle de marque, préparer la ligne éditoriale art-first, valider une publication pilote YouTube avec média réel, instrumenter analytics consentis, puis étendre à LinkedIn/X après tests des liens de contact.
 
 ## Politique de fusion / déploiement
-**Contrôle CI :** #421 20 checks OK mais draft ; #415 25 checks OK / 1 verify KO, dont 6 tests Playwright sur le comportement OAuth lorsque backend absent ; #407 4 checks OK mais draft ; #409 aucun check sur son HEAD ; aucun résultat de fusion légale/financière n'en découle.\n\n**Ne pas merge automatiquement** les PR #407/#421 (draft), #415 (conflit licence) ou le connecteur WIP. #409 reste candidate seulement après CI/release-review. Aucune signature de wallet/autorisation transactionnelle fournie par cet audit.
+**Contrôle CI :** #421 20 checks OK mais draft ; #415 avait 25 checks OK et 1 verify KO (6 tests Playwright invalides par champs HTML requis manquants). Correction de test appliquée (f32bdbb) : 26/26 checks verts au dernier HEAD, **mais** licence #416, OAuth réel et livraisons restent non prouvés. #407 4 checks OK mais draft ; #409 aucun check sur son HEAD ; aucun résultat de fusion légale/financière n'en découle.\n\n**Ne pas merge automatiquement** les PR #407/#421 (draft), #415 (conflit licence) ou le connecteur WIP. #409 reste candidate seulement après CI/release-review. Aucune signature de wallet/autorisation transactionnelle fournie par cet audit.
 
 Le nouveau lot UX est un correctif proposé sur branche, **sans activation des flags financiers**. Les tests source ajoutés ne remplacent pas les tests de navigation déployée ni le contrôle xPortal depuis un téléphone réel.
