@@ -1,5 +1,5 @@
 /**
- * Deprecated canvas renderers. Former time-driven Math.sin graphs fabricated
+ * Deprecated canvas renderers. Former time-driven trigonometric graphs fabricated
  * throughput, APR, SHA validation and ZK quality scores for Pulse/Yield/Sentinel.
  * Retained as inert compatibility exports; do not use them as agent telemetry.
  */
