@@ -31,3 +31,11 @@ test('missing on-chain URI never implies content is pinned',()=>{
   assert.match(s,/Image\/URI manquante/)
   assert.match(s,/Les droits de vente et la propriété doivent être revérifiés/)
 })
+
+test('six access-pack NFTs cannot enter EGLD draft flow before media and roles',()=>{
+  assert.match(s,/new Set\(\['XAIPLS-2cf72b','XAIYLD-987e24','XAISNT-3d8a6b'\]\)/)
+  assert.match(s,/const restrictedPack = isRestrictedPack\(collection\)/)
+  assert.match(s,/disabled=\{!valid \|\| !media \|\| restrictedPack\}/)
+  assert.match(s,/Pack bloqué — NO-GO/)
+  assert.match(s,/Média requis avant brouillon/)
+})
