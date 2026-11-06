@@ -130,7 +130,7 @@ export default function LiaMobileOverview() {
           </Link>
         ))}
       </div>
-      <p className="text-xs text-zinc-500">The immersive holographic view is optional; use the button above to open it.</p>
+      <p className="text-xs text-zinc-500">The former immersive holographic view is suspended until every animated pack metric is backed by authenticated, source-timestamped data.</p>
     </section>
   )
 }
