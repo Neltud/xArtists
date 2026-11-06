@@ -324,6 +324,8 @@ export default function MuseumPage() {
         ))}
       </header>
 
+      {museumId === 'xartists' && <DriveArtShowcase compact />}
+
       <div className="flex flex-wrap gap-2">
         {xaRender((['explore', 'venue', 'map', 'mine', 'pulse'] as Mode[]).map(m => (
           <button
