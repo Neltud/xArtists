@@ -116,13 +116,13 @@ function ArtworkGrid({
         {xaRender(frames.map(f => (
           <a
             key={f.id}
-            href={f.href || '#'}
+            href={f.href || undefined}
             target="_blank"
             rel="noreferrer"
             className="rounded-xl border border-white/10 overflow-hidden bg-black/30"
           >
             {xaRender(f.image ? (
-              <img src={f.image} alt="" className="w-full aspect-square object-cover" loading="lazy" />
+              <img src={f.image} alt={f.title} className="w-full aspect-square object-contain bg-zinc-950" loading="lazy" decoding="async" />
             ) : (
               <div className="w-full aspect-square bg-zinc-900" />
             ))}
