@@ -27,10 +27,8 @@ function fmt(raw: number | string | undefined | null): string {
 export default function DashboardSource({ className = '' }: { className?: string }) {
   const empire = useEmpireWallet()
   const access = useAgentAccess()
-  const { env } = usePulse()
-  const sentiment = typeof env?.sentiment === 'number' ? env.sentiment : 0
+  const { source } = usePulse()
   const mode = (typeof getAppMode === 'function' ? getAppMode() : 'paper') ?? 'paper'
-  const bullish = sentiment >= 0
 
   return (
     <div
@@ -41,14 +39,8 @@ export default function DashboardSource({ className = '' }: { className?: string
         <span className="text-[10px] uppercase tracking-widest text-cyan-300">
           {xaRender("Command · ")}{xaRender(String(mode).toUpperCase())}
         </span>
-        <span
-          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-            bullish
-              ? 'text-amber-300 border-amber-500/40 bg-amber-500/10'
-              : 'text-rose-300 border-rose-500/40 bg-rose-500/10'
-          }`}
-        >
-          {xaRender(bullish ? 'BULLISH' : 'BEARISH')} {xaRender((sentiment * 100).toFixed(0))}%
+        <span className="text-[10px] font-medium border border-[color:var(--xa-border)] px-2 py-0.5 rounded-full text-[color:var(--xa-muted)]">
+          Signal agents : {source}
         </span>
       </div>
 
