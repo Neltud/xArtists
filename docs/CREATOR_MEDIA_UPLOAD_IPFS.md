@@ -37,13 +37,15 @@ Aucun secret n'est ajouté au dépôt, aucune variable distante n'a été modifi
 | `POST /v1/studio/media/upload` | Fichier binaire JPEG/PNG/WebP/MP4 (avec Authorization Bearer) → Pinata, IPFS URI |
 | `POST /v1/studio/media/metadata` | Vérifie le propriétaire du média et son attestation de droits ; retourne métadonnées IPFS |
 
+Prérequis obligatoire avant toute activation : exécuter et vérifier les migrations SQL 004 puis 005 sur la **base Render effectivement utilisée**, sous approbation opérateur. Sans schéma, le service échoue en mode fermé ; ne pas appliquer ces migrations par supposition à un sandbox Neon non confirmé.
+
 Journal et quota dans `xartists_studio_media` : maximum 8 uploads par wallet sur 24 heures. Les réservations échouées comptent dans le quota pour prévenir les abus ; une reprise/expurge nécessite un opérateur humain. Le module reste désactivé sans base SQL persistante.
 
 ### Prévention des métadonnées contradictoires (6 novembre 2026)
 
 - La première publication de métadonnées réserve le média en statut `metadata_pinning` **avant** l'appel Pinata, pour empêcher deux requêtes simultanées de créer deux JSON concurrents.
 - Lors de l'enregistrement final, le serveur conserve `metadata_sha256`, une empreinte des champs exacts du JSON publié (titre, description, URI, wallet, hash), ainsi que `metadata_uri`. Un retry identique retourne le CID existant ; un retry avec contenu différent renvoie HTTP 409 `metadata_immutable_request_mismatch`. Il faut préparer un **nouvel upload** pour un JSON différent ; on n'annonce jamais l'ancien CID comme s'il contenait le nouveau titre.
-- La colonne `metadata_sha256` est ajoutée si nécessaire à l'ouverture d'une transaction média. La connexion SQL du service doit avoir le droit d'altérer la table historique ; contrôler cette migration **avant** d'activer la fonctionnalité. Éviter une permission DDL permanente en production : provisionner le schéma en migration opérateur, puis restreindre les rôles selon la politique SQL.
+- La colonne `metadata_sha256` et le statut `metadata_pinning` nécessitent la migration opérateur **`services/access-api/migrations/005_creator_media_metadata_idempotency.sql`**, après la migration 004. L'ancienne contrainte SQL (004) n'autorise pas `metadata_pinning` : **sans 005, l'upload échoue**. Le backend n'exécute plus de DDL lors des uploads : aucune création ou altération silencieuse de table par le wallet.
 - Si Pinata échoue de façon certaine, la réservation revient à `pinned` pour permettre un nouvel essai. Une interruption de processus pendant la requête peut laisser `metadata_pinning` : c'est **un état à réconcilier par opérateur**, pas un motif pour inventer un CID ou effacer automatiquement le quota.
 - L'interface invalide une publication en cours dès que l'artiste change de fichier, de wallet, de titre, de description ou d'attestation de droits. Une requête Pinata déjà expédiée peut néanmoins avoir consommé du stockage/quota ; aucune fin de tâche obsolète ne doit armer le bouton de mint avec les anciennes métadonnées.
 
