@@ -63,8 +63,8 @@
 
 | PR | État observé | Condition avant merge |
 |---|---|---|
-| [xArtists #421](https://github.com/Neltud/xArtists/pull/421) | Draft, mergeable=false | Signed entitlement, paper-only; tests/review secrets, licence #416 bloquante |
-| [xArtists #415](https://github.com/Neltud/xArtists/pull/415) | Open, mergeable=false | World Rights web + YouTube RO; risque MIT/plugin payant #416, CI non vérifiée |
+| [xArtists #421](https://github.com/Neltud/xArtists/pull/421) | Draft, mergeable=true (dernier contrôle), CI verte mais gate manuel | Signed entitlement, paper-only; tests/review secrets, licence #416 bloquante |
+| [xArtists #415](https://github.com/Neltud/xArtists/pull/415) | Open, mergeable=true (dernier contrôle), verify échoué | World Rights web + YouTube RO; risque MIT/plugin payant #416, CI non vérifiée |
 | [xArtists #409](https://github.com/Neltud/xArtists/pull/409) | Open, mergeable=true | Release 0.130.0; avant fusion vérifier CI, tag/version, pas un GO commercial |
 | [xArtists #407](https://github.com/Neltud/xArtists/pull/407) | Draft, mergeable=false | Mint owner Pulse #005; media IPFS/signature/SC upgrade manquants : pas de merge |
 | [Xmvx-connector #1](https://github.com/Neltud/Xmvx-connector/pull/1) | Draft WIP | 0 changed file : pas de code prêt à relire; demander prototype + tests |
@@ -116,6 +116,6 @@
 | Aucune performance marketing sourcée | P1 | Faire baseline consentie, éviter promesses ROI | Growth |
 
 ## Politique de fusion / déploiement
-**Ne pas merge automatiquement** les PR #407/#421 (draft), #415 (conflit licence) ou le connecteur WIP. #409 reste candidate seulement après CI/release-review. Aucune signature de wallet/autorisation transactionnelle fournie par cet audit.
+**Contrôle CI :** #421 20 checks OK mais draft ; #415 25 checks OK / 1 verify KO, dont 6 tests Playwright sur le comportement OAuth lorsque backend absent ; #407 4 checks OK mais draft ; #409 aucun check sur son HEAD ; aucun résultat de fusion légale/financière n'en découle.\n\n**Ne pas merge automatiquement** les PR #407/#421 (draft), #415 (conflit licence) ou le connecteur WIP. #409 reste candidate seulement après CI/release-review. Aucune signature de wallet/autorisation transactionnelle fournie par cet audit.
 
 Le nouveau lot UX est un correctif proposé sur branche, **sans activation des flags financiers**. Les tests source ajoutés ne remplacent pas les tests de navigation déployée ni le contrôle xPortal depuis un téléphone réel.
