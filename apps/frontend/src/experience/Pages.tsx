@@ -141,7 +141,7 @@ export function Directory(){
   <div className="xa-directory-controls">
    <div className="xa-filter-tabs" role="group" aria-label={c('filter')}>{['all',...groups].map(g=><button type="button" key={g} className={group===g?'active':''} onClick={()=>set('group',g)} aria-pressed={group===g}>{c(g)}</button>)}</div>
    <label className="xa-filter-search"><Icon name="search" size={17}/><input type="search" value={q} onChange={e=>set('q',e.target.value)} placeholder={c('search')} aria-label={c('search')}/></label>
-   {hasFilters&&<button type="button" className="xa-directory-reset" onClick={()=>setParams(new URLSearchParams(),{replace:true})}>{c('directoryReset')}</button>}
+   {hasFilters&&<button type="button" className="xa-directory-reset" onClick={()=>setParams(p=>{const next=new URLSearchParams(p);for(const key of ['group','q','stage'])next.delete(key);return next},{replace:true})}>{c('directoryReset')}</button>}
   </div>
   <div className="xa-directory-stage-controls" role="group" aria-label={c('roadmapLabel')}>{(['all',...PUBLIC_STAGE_ORDER] as const).map(item=><button type="button" key={item} aria-pressed={stage===item} onClick={()=>set('stage',item)}>{c(item==='all'?'stageAll':item==='browse'?'stageBrowse':item==='preview'?'stagePreview':'stageRoadmap')}</button>)}</div>
   <div className="xa-module-grid">{list.map((m,i)=><ModuleCard module={m} index={i} key={m.id}/>)}</div>
