@@ -1,0 +1,57 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import {readFileSync} from 'node:fs'
+
+const file = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
+const rwa = file('../src/pages/RwaCatalogPage.tsx')
+const tro = file('../src/pages/TroCrosschainPage.tsx')
+const rwaCss = file('../src/components/publicDisclosure.css')
+const troCss = file('../src/pages/troCrosschain.css')
+const shell = file('../src/experience/Shell.tsx')
+
+test('RWA offers human-readable in-page steps without deleting source links', () => {
+  assert.match(rwa, /aria-label="Que faire sur cette page \?"/)
+  assert.match(rwa, /href="#rwa-list"/)
+  assert.match(rwa, /href="#rwa-tools"/)
+  assert.match(rwa, /id="rwa-list"/)
+  assert.match(rwa, /id="rwa-tools"/)
+  assert.match(rwa, /to="\/marketplace"/)
+  assert.match(rwa, /to="\/studio"/)
+})
+test('$TRO explains readiness before short in-page navigation, never solicits a deposit', () => {
+  assert.ok(tro.indexOf('Bridge Solana : désactivé') < tro.indexOf('tro-portal__quicknav'))
+  assert.match(tro, /href="#tro-options-title"/)
+  assert.match(tro, /href="#tro-roadmap-details-trigger"/)
+  assert.match(tro, /href="#tro-transparency"/)
+  assert.match(tro, /id="tro-transparency"/)
+  assert.match(tro, /const launchReady = false && bridgeReady && saleReady/)
+  assert.match(tro, /Bridge non disponible/)
+  assert.doesNotMatch(tro, /placeOrder\(|sendTransaction\(|signTransaction\(/)
+})
+test('both module routes respect the one-main global app landmark', () => {
+  assert.match(shell, /<main id="xa-main"/)
+  assert.doesNotMatch(rwa, /<main\b/)
+  assert.doesNotMatch(tro, /<main\b/)
+  assert.match(rwa, /<div className="rwa-public"/)
+  assert.match(tro, /<div className="tro-portal"/)
+})
+test('theme-safe typography and warning colors remain contrast-aware', () => {
+  assert.match(troCss, /html\[data-theme="light"\] \.tro-portal__lead h1/)
+  assert.match(troCss, /html\[data-theme="light"\] \.tro-portal__availability/)
+  assert.match(troCss, /html\[data-theme="light"\] \.tro-portal__card \{ color: #f2f7ef;/)
+  assert.match(rwaCss, /html\[data-theme="light"\] \.rwa-public__lead h1/)
+  assert.match(rwaCss, /html\[data-theme="light"\] \.rwa-public__notice/)
+  assert.match(rwaCss, /html\[data-theme="light"\] \.rwa-public__actions a/)
+})
+test('responsive anchors and keyboard targets do not hide any paid safety notices', () => {
+  assert.match(troCss, /min-height: 44px/)
+  assert.match(rwaCss, /min-height: 46px/)
+  assert.match(troCss, /focus-visible/)
+  assert.match(rwaCss, /focus-visible/)
+  assert.match(troCss, /max-width: 380px/)
+  assert.match(rwaCss, /max-width: 450px/)
+  assert.match(rwa, /Catalogue de démonstration/)
+  assert.match(rwa, /Garde physique : non vérifiée/)
+  assert.match(tro, /Mint SPL officiel : non attesté/)
+  assert.match(tro, /Aucune adresse de dépôt ou transaction à signer/)
+})

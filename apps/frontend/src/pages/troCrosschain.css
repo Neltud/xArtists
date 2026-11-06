@@ -70,3 +70,100 @@
 .tro-portal__bottom h2{font-size:clamp(25px,3vw,36px)}
 .tro-portal a:focus-visible,.tro-portal button:focus-visible{outline:2px solid var(--tro-lime);outline-offset:4px}
 @media(max-width:640px){.tro-portal__hero{display:block;min-height:0;padding:28px 0}.tro-portal__visual{display:none}.tro-portal__lead h1{font-size:clamp(36px,9vw,54px);margin:18px 0}.tro-portal__intro{font-size:14px;line-height:1.75}.tro-portal__actions{margin-top:20px}.tro-portal__offers,.tro-portal__process{padding-top:30px}.tro-portal__sectionhead h2{font-size:29px}.tro-portal__card{min-height:0;gap:12px;padding:21px}.tro-portal__bottom{margin-top:30px}.tro-portal__micro,.tro-portal__card small{color:#b3bfae}.tro-portal__tag{letter-spacing:.08em}}
+
+
+/* Visitor-first table of contents: anchors only, no transaction or wallet action. */
+.tro-portal__quicknav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  align-items: center;
+  margin: 16px 0 6px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--xa-border);
+}
+.tro-portal__quicknav-label {
+  margin-inline-end: 5px;
+  font-size: 11px;
+  color: var(--xa-muted);
+  font-weight: 700;
+}
+.tro-portal__quicknav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  min-height: 44px;
+  border: 1px solid var(--xa-border);
+  border-radius: 10px;
+  background: var(--xa-panel);
+  color: var(--xa-text);
+  text-align: center;
+  line-height: 1.45;
+  font-size: 12px;
+  font-weight: 660;
+}
+.tro-portal__quicknav a:hover {
+  border-color: var(--xa-accent);
+  background: var(--xa-panel2);
+}
+.tro-portal__quicknav a:focus-visible {
+  outline: 3px solid var(--xa-accent);
+  outline-offset: 2px;
+}
+#tro-options-title, #tro-roadmap-details-trigger, #tro-transparency {
+  scroll-margin-top: 114px;
+}
+
+/* The master shell is LIGHT by default. The legacy standalone $TRO portal
+   used bright letters on a transparent (therefore white) background.
+   Preserve intentionally dark inner token cards while correcting readable
+   editorial surfaces in light mode. Dark mode retains original styling. */
+html[data-theme="light"] .tro-portal { color: var(--xa-text); }
+html[data-theme="light"] .tro-portal__lead h1,
+html[data-theme="light"] .tro-portal__sectionhead h2,
+html[data-theme="light"] .tro-portal__bottom h2 { color: var(--xa-text); }
+html[data-theme="light"] .tro-portal__lead h1 em,
+html[data-theme="light"] .tro-portal__eyebrow { color: var(--xa-accent); }
+html[data-theme="light"] .tro-portal__intro,
+html[data-theme="light"] .tro-portal__micro,
+html[data-theme="light"] .tro-portal__sectionhead > p:last-child,
+html[data-theme="light"] .tro-portal__bottom p:not(.tro-portal__eyebrow) {
+  color: var(--xa-muted);
+}
+html[data-theme="light"] .tro-portal__availability {
+  color: #6b4a13;
+  background: #fff8e9;
+  border-color: #d5b87b;
+}
+html[data-theme="light"] .tro-portal__btn--outline {
+  color: var(--xa-text);
+  border-color: var(--xa-border);
+  background: var(--xa-panel);
+}
+html[data-theme="light"] .tro-portal__statusline {
+  color: var(--xa-muted);
+  background: var(--xa-panel);
+  border-color: var(--xa-border);
+}
+html[data-theme="light"] .tro-portal__statusline strong { color: var(--xa-text); }
+html[data-theme="light"] .tro-portal__bottomlinks { color: var(--xa-text); }
+html[data-theme="light"] .tro-portal__card { color: #f2f7ef; }
+/* Light editorial links must be visible and not resemble a disabled trade. */
+html[data-theme="light"] .tro-portal__bottomlinks a:hover { color: var(--xa-accent); }
+@media (max-width: 640px) {
+  .tro-portal__quicknav {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .tro-portal__quicknav-label { grid-column: 1 / -1; }
+  .tro-portal__quicknav a { padding: 10px; }
+  .tro-portal__quicknav a:last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 380px) {
+  .tro-portal__quicknav { grid-template-columns: 1fr; }
+  .tro-portal__quicknav-label,
+  .tro-portal__quicknav a:last-child { grid-column: auto; }
+}
