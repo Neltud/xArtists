@@ -63,6 +63,37 @@ Journal et quota dans `xartists_studio_media` : maximum 8 uploads par wallet sur
 - MultiversX recommande l'image/vidéo à 64 Mo maximum pour la création de miniatures. La limite Studio de 48 MiB MP4 reste volontairement plus basse.
 - Les artistes dont le backend n'est pas configuré peuvent **continuer à utiliser une URI externe IPFS/HTTPS durable déjà publiée**, sans prétendre qu'un fichier local est uploadé.
 
+## Contrôle indépendant des octets IPFS (préparation P0 #402)
+
+Le backend contient un outil d'opérateur **en lecture seule** qui consulte, sans JWT ni mutation, des fichiers déjà publiés sur IPFS par leurs CIDs. Le contrôle vérifie **les octets complets** et l'empreinte SHA-256 originale sur deux chemins HTTPS distincts : `gateway.pinata.cloud` (Pinata) et `ipfs.io` (IPFS Foundation). Les requêtes sont séquentielles, limitées à 48 MiB par actif et 12 actifs par manifest, avec timeout, contrôle de taille en streaming, sans suivi de redirection et sans journalisation d'URI ou de secret.
+
+Préparer **localement**, à partir de CIDs réels et de SHA-256 des fichiers originaux, un fichier JSON d'entrée comme suit. Les champs entre chevrons doivent être remplacés par les valeurs **réelles**, jamais par `pending` :
+
+```json
+{
+  "assets": [
+    {
+      "mediaUri": "ipfs://<CID_REEL>/recto.png",
+      "sha256": "<SHA256_ORIGINAL_64_HEX>",
+      "bytes": 655591
+    }
+  ]
+}
+```
+
+Lancer uniquement après la publication et l'attestation des droits :
+
+```sh
+cd services/access-api
+npm run verify:studio:ipfs -- /chemin/vers/public-readback-manifest.json
+```
+
+La sortie `ok:true` signifie uniquement que **deux services de récupération HTTP** ont renvoyé la même longueur et la même empreinte que l'original au moment du test. Un HTTP 200 avec HTML, une redirection, un fichier tronqué ou un autre SHA donnent un échec. Le diagnostic ne crée **aucun** CID, ne télécharge **aucune** œuvre non renseignée explicitement, ne publie aucun fichier et ne déclenche aucune transaction ou facturation.
+
+**Limites essentielles :** deux gateways HTTP ne constituent **pas deux fournisseurs de pin indépendants** et ne prouvent aucune pérennité. `ipfs.io` et `dweb.link` partagent en réalité le **même backend** de passerelles IPFS Foundation ; on ne les compte pas deux fois. Les passerelles publiques sont best-effort et les redirections/nouvelles politiques d'accès peuvent faire échouer le test même si un CID existe. `independentPinProvidersVerified:false`, `independentBackupsVerified:false` et `nftMintVerified:false` restent donc toujours dans le reçu du script. Pour clore #402, il faut en plus des **preuves de pin sur deux infrastructures de stockage réellement indépendantes**, des tests de récupération et des sauvegardes/restores documentés.
+
+Références : [IPFS Foundation — passerelles publiques](https://docs.ipfs.tech/concepts/public-utilities/), [IPFS Foundation — transition des gateways (août 2026)](https://blog.ipfs.tech/2026-08-beyond-sponsored-gateways/), [IPFS — pins et récupération](https://docs.ipfs.tech/quickstart/pin/).
+
 ## Marketplace V3
 
 Le parcours public distingue désormais trois rayons :
