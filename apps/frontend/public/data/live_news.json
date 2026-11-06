@@ -1,21 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-05T19:32:18.386Z",
+  "updatedAt": "2026-11-06T01:22:59.587Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1793928179080",
+      "timestamp": "01:22",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.22 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1793924389000",
+      "timestamp": "00:19",
+      "source": "CoinTelegraph",
+      "title": "Core Scientific to quit Bitcoin mining by year-end as AI business surges",
+      "link": "https://cointelegraph.com/news/core-scientific-to-quit-bitcoin-mining-by-year-end-as-ai-business-surges?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1793919821000",
+      "timestamp": "23:03",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1793918598000",
+      "timestamp": "22:43",
+      "source": "CoinTelegraph",
+      "title": "American Bitcoin’s $126M profit masks mining pressure as rivals turn to AI",
+      "link": "https://cointelegraph.com/news/american-bitcoins-126m-profit-masks-mining-pressure-ai?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1793917122000",
+      "timestamp": "22:18",
+      "source": "CoinTelegraph",
+      "title": "Asian crypto exchanges batten down the hatches as hacks surge: Asia Express",
+      "link": "https://cointelegraph.com/magazine/asian-crypto-exchanges-bunker-down-as-hacks-surge-asia-express?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793914759000",
+      "timestamp": "21:39",
+      "source": "CoinTelegraph",
+      "title": "Crypto ally French Hill wins reelection but set to lose House chair",
+      "link": "https://cointelegraph.com/news/crypto-ally-french-hill-wins-reelection-arkansas?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793905339000",
+      "timestamp": "19:02",
+      "source": "CoinTelegraph",
+      "title": "Binance, Deribit revoke SignalPlus API keys after fake Teams invite attack",
+      "link": "https://cointelegraph.com/news/binance-deribit-revoke-signalplus-api-fake-teams-attack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1793905185000",
+      "timestamp": "18:59",
+      "source": "CoinDesk",
+      "title": "U.S. Justice Department assembles force to shield against foreign AI threats",
+      "link": "https://www.coindesk.com/policy/2026/11/05/u-s-justice-department-assembles-force-to-shield-against-foreign-ai-threats"
+    },
+    {
+      "id": "rss-CoinDesk-1-1793904520000",
+      "timestamp": "18:48",
+      "source": "CoinDesk",
+      "title": "Bitcion tumbles to $76,000 as collapsing AI trade drags stocks sharply lower",
+      "link": "https://www.coindesk.com/markets/2026/11/05/bitcoin-crypto-stocks-caught-in-ai-trade-meltdown-but-wintermute-trader-sees-glass-half-full"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793897901000",
+      "timestamp": "16:58",
+      "source": "CoinDesk",
+      "title": "What is TraderTraitor, the hacking squad behind the $6.3 billion Binance heist?",
+      "link": "https://www.coindesk.com/business/2026/11/05/what-is-tradertraitor-the-hacking-squad-behind-the-usd6-3-billion-binance-heist"
+    },
+    {
+      "id": "rss-CoinDesk-3-1793897348000",
+      "timestamp": "16:49",
+      "source": "CoinDesk",
+      "title": "Standard Chartered and SBI back crypto insurer Soter as funding reaches $23.5 million",
+      "link": "https://www.coindesk.com/business/2026/11/05/soter-raises-usd23-5m-plus-btc-and-eth-as-banks-demand-theft-protection"
+    },
     {
       "id": "egld-1793907137846",
       "timestamp": "19:32",
       "source": "EGLD",
       "title": "Cotation publique · $3.24 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793905339000",
-      "timestamp": "19:02",
-      "source": "CoinTelegraph",
-      "title": "Binance, Deribit revoke SignalPlus API keys after fake Teams invite attack",
-      "link": "https://cointelegraph.com/news/binance-deribit-revoke-signalplus-api-fake-teams-attack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-1-1793903565000",
@@ -44,27 +114,6 @@
       "source": "CoinTelegraph",
       "title": "Bitcoin crashes 6% to 7-week low as US stocks erase election gains",
       "link": "https://cointelegraph.com/markets/bitcoin-price-crashes-7-week-low-stocks-election-gains?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793886361000",
-      "timestamp": "13:46",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793897901000",
-      "timestamp": "16:58",
-      "source": "CoinDesk",
-      "title": "What is TraderTraitor, the hacking squad behind the $6.3 billion Binance heist",
-      "link": "https://www.coindesk.com/business/2026/11/05/what-is-tradertraitor-the-hacking-squad-behind-the-usd6-3-billion-binance-heist"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793897348000",
-      "timestamp": "16:49",
-      "source": "CoinDesk",
-      "title": "Standard Chartered and SBI back crypto insurer Soter as funding reaches $23.5 million",
-      "link": "https://www.coindesk.com/business/2026/11/05/soter-raises-usd23-5m-plus-btc-and-eth-as-banks-demand-theft-protection"
     },
     {
       "id": "rss-CoinDesk-2-1793895212000",
@@ -149,55 +198,6 @@
       "source": "CoinDesk",
       "title": "Bitcoin holds above $80,000 as Zcash jumps 12% in post-election crypto rebound",
       "link": "https://www.coindesk.com/markets/2026/11/05/bitcoin-holds-above-usd80-000-as-zcash-jumps-12-in-post-election-crypto-rebound"
-    },
-    {
-      "id": "egld-1793841521174",
-      "timestamp": "01:18",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.33 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793834417000",
-      "timestamp": "23:20",
-      "source": "CoinTelegraph",
-      "title": "Mercado Bitcoin says phased reopening to begin Monday, will cover losses",
-      "link": "https://cointelegraph.com/news/mercado-bitcoin-phased-reopening-to-begin-monday-pledges-to-cover-losses?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1793831518000",
-      "timestamp": "22:31",
-      "source": "CoinTelegraph",
-      "title": "BitMart founder says security team ‘severely understaffed’ after new hack",
-      "link": "https://cointelegraph.com/news/bitmart-hack-security-staffing-crypto-exchange-restructuring?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793830653000",
-      "timestamp": "22:17",
-      "source": "CoinTelegraph",
-      "title": "Crypto PACs eye 2028 ‘new map’ as Democrats take Congress",
-      "link": "https://cointelegraph.com/news/crypto-superpac-midterms?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793827800000",
-      "timestamp": "21:30",
-      "source": "CoinTelegraph",
-      "title": "How Aussie Bitcoiners can avoid 2027’s shock CGT hike",
-      "link": "https://cointelegraph.com/magazine/how-aussie-bitcoiners-can-avoid-2027s-shock-cgt-increase-part-1?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793819739000",
-      "timestamp": "19:15",
-      "source": "CoinTelegraph",
-      "title": "Trump-linked tokens lead crypto losses after Democrats sweep in the US midterms",
-      "link": "https://cointelegraph.com/news/trump-linked-tokens-lead-crypto-losses-after-democrats-sweep-in-the-us-midterms?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1793832900000",
-      "timestamp": "22:55",
-      "source": "CoinDesk",
-      "title": "Tokenization and stablecoins may weather Democrats' sweep as broader crypto rules face uncertainty",
-      "link": "https://www.coindesk.com/policy/2026/11/04/tokenization-and-stablecoins-may-weather-democrats-sweep-as-broader-crypto-rules-face-uncertainty"
     }
   ]
 }
