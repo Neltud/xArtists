@@ -79,7 +79,7 @@ export default function TroCrosschainPage() {
   const launchReady = false && bridgeReady && saleReady
 
   return (
-    <main className="tro-portal" id="tro-main">
+    <div className="tro-portal" id="tro-main">
       <div className="tro-portal__aura" aria-hidden="true" />
 
       <section className="tro-portal__hero" aria-labelledby="tro-hero-title">
@@ -203,6 +203,6 @@ export default function TroCrosschainPage() {
           <a href="https://github.com/Neltud/xArtists" target="_blank" rel="noopener noreferrer">Code public ↗</a>
         </div>
       </section>
-    </main>
+    </div>
   )
 }
