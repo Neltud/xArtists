@@ -30,7 +30,6 @@ function liaApiBase(): string {
 /** Local paper phrases when no API */
 const PAPER_PHRASES = [
   'Simulation locale illustrative : aucun sentiment de marché ou avis LIA vérifié.',
-
 ]
 
 export type LiaInterpreter = {
@@ -94,12 +93,12 @@ export function useLIAInterpreter(env: PulseEnvironment): LiaInterpreter {
     }
 
     if (!base) {
-      // Simulate network latency paper
+      // Local paper response without artificial network latency
       window.setTimeout(finishPaper, 0)
       window.setTimeout(() => {
         if (id === seq.current && Date.now() - started >= LIA_TIMEOUT_MS) {
           setShadow(s => (s.liaPending ? shadowOnLiaTimeout(s, current) : s))
-          setSource('pulse')
+          setSource('paper')
         }
       }, LIA_TIMEOUT_MS + 50)
       return
@@ -110,7 +109,7 @@ export function useLIAInterpreter(env: PulseEnvironment): LiaInterpreter {
       ctrl.abort()
       if (id === seq.current) {
         setShadow(s => shadowOnLiaTimeout(s, current))
-        setSource('pulse')
+        setSource('paper')
         setConfidence(0.4)
       }
     }, LIA_TIMEOUT_MS)
@@ -137,7 +136,7 @@ export function useLIAInterpreter(env: PulseEnvironment): LiaInterpreter {
         if (id !== seq.current) return
         if ((e as Error).name === 'AbortError') return
         setShadow(s => shadowOnLiaError(s, current, e instanceof Error ? e.message : 'LIA error'))
-        setSource('pulse')
+        setSource('paper')
         finishPaper()
       }
     })()
