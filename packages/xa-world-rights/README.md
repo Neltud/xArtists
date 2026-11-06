@@ -14,7 +14,7 @@ Download: https://neltud.github.io/xArtists/plugins/xa-world-rights/xa-world-rig
 
 ## Run locally
 Open web/app.html for the local dossier tool. Browser SHA-256 availability depends on the secure context; use an HTTPS/local web server if needed. YouTube connection requires the server integration; never paste OAuth secrets into this page.
-Python: install scripts/requirements.txt in your own environment, then run:
+Python: install skills/social-rights/scripts/requirements.txt in your own environment, then run:
 python -m unittest discover -s skills/social-rights/scripts -p 'test_*.py' -v
 
 ## Connection setup
@@ -35,3 +35,5 @@ CI browser engines do not certify every browser version, branded browser or phys
 A browser-local draft, a checked box, a Google connection, an unverified receipt candidate or a payment return never grants copyright or activates a sale. No public listing, bid, checkout, payment, mint, signature collection or real delivery is implemented.
 Existing receipts schema v1.0.0 remains unchanged. The Python register is still a simulation, not the production global exclusivity database.
 Older skill reference chapters describe prototype milestones 0.1–0.5; this README describes the repository/web integration. A saved source commit is not a successful deployment. Consult GitHub Actions and the deployed build-info.json for the actual source SHA.
+
+The included software follows the repository MIT license (LICENSE). This software license grants no rights to third-party social content.
