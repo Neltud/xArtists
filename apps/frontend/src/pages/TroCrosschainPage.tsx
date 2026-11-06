@@ -121,6 +121,13 @@ export default function TroCrosschainPage() {
         <span>API : {apiState === 'loading' ? 'vérification…' : apiState === 'ok' ? 'statut consulté' : 'indisponible, sécurité conservée'}</span>
       </div>
 
+      <nav className="tro-portal__quicknav" aria-label="Aller à une section de cette page">
+        <span className="tro-portal__quicknav-label">Sur cette page</span>
+        <a href="#tro-options-title">Le token aujourd’hui</a>
+        <a href="#tro-roadmap-details-trigger">Pourquoi le bridge est fermé</a>
+        <a href="#tro-transparency">Risques et liens utiles</a>
+      </nav>
+
       <section className="tro-portal__offers" aria-labelledby="tro-options-title">
         <div className="tro-portal__sectionhead">
           <p className="tro-portal__eyebrow">01 / ACCÈS AU TOKEN</p>
@@ -182,7 +189,7 @@ export default function TroCrosschainPage() {
         </PublicDisclosure>
       </section>
 
-      <section className="tro-portal__bottom" aria-label="Transparence et liens">
+      <section className="tro-portal__bottom" id="tro-transparency" aria-label="Transparence et liens">
         <div>
           <p className="tro-portal__eyebrow">03 / TRANSPARENCE</p>
           <h2>Des étapes vérifiables.</h2>
