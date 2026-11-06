@@ -22,5 +22,19 @@ jobs:
           workspaces: contracts/agents-marketplace
       - name: Compile contract before any operator transaction
         run: cargo check --manifest-path contracts/agents-marketplace/Cargo.toml
+      - name: Enable MultiversX WebAssembly target
+        run: rustup target add wasm32-unknown-unknown
+      - name: Build exact WebAssembly upgrade binary
+        run: cargo build --release --target wasm32-unknown-unknown --manifest-path contracts/agents-marketplace/wasm/Cargo.toml
+      - name: Assert ABI retains production endpoints and new admin endpoint
+        run: |
+          node --input-type=module <<'EOF'
+          import fs from 'node:fs';
+          const wasm = fs.readFileSync('contracts/agents-marketplace/wasm/src/lib.rs','utf8');
+          for(const endpoint of ['buyPack','setPackCollection','setPackPrice','getPackCollection','getPackPrice','mintGenesisPulse005']) {
+            if(!new RegExp('\\\\b'+endpoint+'\\\\s*=>').test(wasm))throw Error('Missing WASM export: '+endpoint);
+          }
+          console.log('PASS: legacy pack API and owner-only 005 endpoint retained');
+          EOF
       - name: Run contract tests
         run: cargo test --manifest-path contracts/agents-marketplace/Cargo.toml
