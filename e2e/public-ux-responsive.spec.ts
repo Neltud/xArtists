@@ -333,10 +333,14 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await visit(page,path)
       for(const theme of ['light','dark'] as const){
         await expect(page.locator('html')).toHaveAttribute('data-theme',theme)
-        const colors=await page.locator(selector).evaluate(el=>({
-          ink:getComputedStyle(el).color,paper:getComputedStyle(document.body).backgroundColor
-        }))
-        expect(contrastRatio(colors.ink,colors.paper),path+' '+theme+' contrast').toBeGreaterThanOrEqual(7)
+        // The app intentionally fades body background over .24s. Verify the
+        // settled theme instead of racing an in-progress color transition.
+        await expect.poll(async ()=>{
+          const colors=await page.locator(selector).evaluate(el=>({
+            ink:getComputedStyle(el).color,paper:getComputedStyle(document.body).backgroundColor
+          }))
+          return contrastRatio(colors.ink,colors.paper)
+        },{message:path+' '+theme+' settled contrast',timeout:3000}).toBeGreaterThanOrEqual(7)
         if(theme==='light')await page.locator('.xa-theme-toggle').click()
       }
       await page.locator('.xa-theme-toggle').click()
