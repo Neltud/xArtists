@@ -12,6 +12,26 @@
 - Neon : projet **xartists-access-sandbox** dans eu-central-1, branche sandbox. Le connecteur Neon n'expose pour l'instant que paybox_orders en table publique (hors tables neon_auth). Attention, il faut vérifier que l'URL de base Render cible réellement ce projet avant toute migration.
 - Aucun connecteur Pinata lié à ChatGPT ; la clé PINATA_JWT doit être créée sur le compte Pinata autorisé, puis saisie **uniquement dans les secrets Render**, jamais dans un chat, fichier public ou VITE_... .
 
+## Préflight sans écriture — ajouté le 6 novembre 2026
+
+Un diagnostic opérateur peut maintenant être exécuté dans le **service Render réellement associé à la bonne base** après mise à disposition des secrets **dans Render uniquement** :
+
+```sh
+cd services/access-api
+npm run preflight:studio:ipfs
+```
+
+Ce contrôle **ne publie rien**, n'exécute aucune mutation SQL, ne signe aucune transaction et n'affiche pas les valeurs des secrets. Il teste séparément :
+
+1. La présence d'un secret de session wallet de longueur acceptable.
+2. La connexion à PostgreSQL, la table `xartists_studio_media` de la migration 004, la colonne `metadata_sha256` et la contrainte `metadata_pinning` de la migration 005, ainsi que l'index du quota.
+3. Le droit d'authentification du `PINATA_JWT` au moyen d'un `GET https://api.pinata.cloud/data/testAuthentication` sans épinglage de fichier.
+4. La valeur **informative** du flag `CREATOR_MEDIA_UPLOAD_ENABLED` — le diagnostic ne l'active pas.
+
+Un diagnostic `ok: true` est seulement un **feu vert de configuration**, pas une preuve de permission effective de `pinFileToIPFS` / `pinJSONToIPFS`, de disponibilité publique du CID ou de mint. Les quotas, la disponibilité Pinata, l'identité de la base Render, le contenu et les droits doivent encore être validés dans un test de recette autorisé.
+
+**Statut vérifié le 6 novembre :** l'API publique renvoie `enabled: false`. Le profil navigateur Pinata de ChatGPT n'avait pas de session active ; une connexion humaine sécurisée a été proposée. La base `xartists-access-sandbox` inspectée contient `paybox_orders` et `mint_jobs` mais pas encore `xartists_studio_media` ; aucune migration n'y a été exécutée, car le lien avec Render n'est pas établi. Il faut conserver la posture **NO-GO upload / mint commercial** tant que les preuves ne sont pas complètes.
+
 ## Préflight opérationnel : NO-GO jusqu'à preuves vérifiées
 
 1. **Choisir une base durable et sécurisée.** Vérifier la cible PostgreSQL Render et ses accès. Appliquer la migration autorisée pour la table xartists_studio_media et les index de quota, avec les droits SQL minimaux nécessaires.
