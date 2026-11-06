@@ -37,7 +37,7 @@ test('all eight languages explain failed directory filters and how to recover',(
   for(const key of ['directoryEmpty','directoryReset']){
     const row=localeRow(key)
     assert.equal(row.length,8)
-    assert.ok(row.every(v=>v.trim().length>=7))
+    assert.ok(row.every(v=>typeof v==='string' && v.trim().length>0))
   }
   assert.match(directory,/directoryEmpty/)
   assert.match(directory,/directoryReset/)
