@@ -32,7 +32,7 @@ jobs:
           import fs from 'node:fs';
           const wasm = fs.readFileSync('contracts/agents-marketplace/wasm/src/lib.rs','utf8');
           for(const endpoint of ['buyPack','setPackCollection','setPackPrice','getPackCollection','getPackPrice','mintGenesisPulse005']) {
-            if(!new RegExp('\\\\b'+endpoint+'\\\\s*=>').test(wasm))throw Error('Missing WASM export: '+endpoint);
+            if(!new RegExp('\\b'+endpoint+'\\s*=>').test(wasm))throw Error('Missing WASM export: '+endpoint);
           }
           console.log('PASS: legacy pack API and owner-only 005 endpoint retained');
           EOF
