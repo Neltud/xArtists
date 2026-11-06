@@ -84,9 +84,8 @@ async function tx(f){
   const p=await db(),client=await p.connect()
   try{
     await client.query('BEGIN')
-    await client.query("CREATE TABLE IF NOT EXISTS xartists_studio_media (id TEXT PRIMARY KEY, wallet TEXT NOT NULL, mime TEXT NOT NULL, bytes INTEGER NOT NULL, sha256 TEXT, uri TEXT, status TEXT NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW(), metadata_uri TEXT)")
-    // Upgrade pre-existing Studio tables before any metadata operation.
-    await client.query('ALTER TABLE xartists_studio_media ADD COLUMN IF NOT EXISTS metadata_sha256 TEXT')
+    // Schema changes are operator-reviewed migrations (004 + 005), never
+    // silent DDL from an artist's upload request. A missing table fails closed.
     const result=await f(client)
     await client.query('COMMIT')
     return result
