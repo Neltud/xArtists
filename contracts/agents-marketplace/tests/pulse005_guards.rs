@@ -22,7 +22,7 @@ fn setup(configure_collection: bool) -> Setup {
     let mut world = BlockchainStateWrapper::new();
     let zero = rust_biguint!(0u64);
     let owner = world.create_user_account(&zero);
-    let buyer = world.create_user_account(&zero);
+    let buyer = world.create_user_account(&rust_biguint!(5_000_000_000_000_000_000u64));
     let recipient = world.create_user_account(&zero);
     let builder: Builder = contract_obj::<DebugApi>;
     let sc = world.create_sc_account(
@@ -119,5 +119,34 @@ fn p005_wrong_nonce_must_revert_without_delivery() {
     assert!(!t.minted_marker());
     t.world.check_nft_balance(
         &t.recipient, TOKEN, 1, &rust_biguint!(0u64), None::<&u32>,
+    );
+}
+
+#[test]
+fn p005_happy_path_four_existing_packs_then_atomic_fifth_delivery_once() {
+    let mut t = setup(true);
+    t.world.set_esdt_local_roles(t.sc.address_ref(), TOKEN, &[EsdtLocalRole::NftCreate]);
+    let buyer = t.buyer.clone();
+    let owner = t.owner.clone();
+    // Reproduce four existing nonce allocations by the legacy purchase route.
+    // The test buyer has mock EGLD only. No real payment is executed.
+    for _ in 0..4 {
+        t.world.execute_tx(
+            &buyer, &t.sc, &rust_biguint!(1_000_000_000_000_000_000u64),
+            |contract| contract.buy_pack(1),
+        ).assert_ok();
+    }
+
+    // Owner-only dedicated media mint should be the fifth NFT, transferred atomically.
+    t.mint(&owner, true).assert_ok();
+    assert!(t.minted_marker());
+    t.world.check_nft_balance(
+        &t.recipient, TOKEN, 5, &rust_biguint!(1u64), None::<&u32>,
+    );
+
+    // Replay is impossible even when the owner resubmits the same exact media URI.
+    t.mint(&owner, true).assert_user_error("Pulse 005 already minted");
+    t.world.check_nft_balance(
+        &t.recipient, TOKEN, 5, &rust_biguint!(1u64), None::<&u32>,
     );
 }
