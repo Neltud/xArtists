@@ -17,11 +17,11 @@ test('every module has exactly one conservative editorial stage and no stage mea
  const ids=[...modules.matchAll(/^\s*module\('([^']+)'/gm)].map(m=>m[1])
  const rows=[...registry.matchAll(/^\s*(?:'([^']+)'|([a-z-]+)): '(browse|preview|roadmap)',/gm)]
  const stages=new Map(rows.map(m=>[m[1]||m[2],m[3]]))
- assert.equal(ids.length,40)
+ assert.equal(ids.length,41)
  assert.equal(stages.size,ids.length)
  assert.deepEqual([...stages.keys()].sort(),[...ids].sort())
  for(const id of ['market','museum','legal','guide'])assert.equal(stages.get(id),'browse')
- for(const id of ['auction','studio','nft-factory','dao','lia'])assert.equal(stages.get(id),'preview')
+ for(const id of ['auction','studio','nft-factory','world-rights','dao','lia'])assert.equal(stages.get(id),'preview')
  for(const id of ['trading','staking','liquidity','burnify'])assert.equal(stages.get(id),'roadmap')
  assert.match(registry,/Unknown modules fail towards "roadmap"/)
  assert.doesNotMatch(registry,/checkout_enabled\s*=\s*true|mint_live_enabled\s*=\s*true/)
