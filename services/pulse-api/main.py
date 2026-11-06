@@ -1,7 +1,7 @@
 """
 xArtists Pulse API — tranche verticale Hype (Phase 1).
 GET /pulse · GET /health · WS /ws/pulse
-Simule le cycle Dual-Brain (Grok social → signal ENVIRONMENT_UPDATE).
+SIMULATION ONLY: deterministic rotating fixtures, NOT on-chain or LIA telemetry.
 Pas de PEM · lecture seule · prêt Docker.
 """
 from __future__ import annotations
@@ -78,12 +78,12 @@ PULSE_CYCLE: list[dict[str, Any]] = [
 ]
 
 _cycle = itertools.cycle(PULSE_CYCLE)
-_current: dict[str, Any] = {**PULSE_CYCLE[0], "ts": int(time.time()), "source": "seed"}
+_current: dict[str, Any] = {**PULSE_CYCLE[0], "ts": int(time.time()), "source": "simulated", "verified": False, "demo": True}
 _tick_lock = asyncio.Lock()
 
 
 def _stamp(env: dict[str, Any]) -> dict[str, Any]:
-    return {**env, "ts": int(time.time()), "source": "pulse-api"}
+    return {**env, "ts": int(time.time()), "source": "simulated", "verified": False, "demo": True}
 
 
 async def _ticker() -> None:
@@ -101,7 +101,7 @@ async def startup() -> None:
 
 @app.get("/health")
 async def health() -> dict[str, str]:
-    return {"status": "ok", "service": "pulse-api"}
+    return {"status": "ok", "service": "pulse-api", "data_mode": "simulated", "verified": "false"}
 
 
 @app.get("/pulse")
