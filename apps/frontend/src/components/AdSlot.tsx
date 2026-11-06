@@ -84,7 +84,7 @@ export default function AdSlot({
     return (
       <aside
         className={`rounded-2xl border border-dashed border-amber-400/40 bg-gradient-to-br from-amber-500/10 to-violet-500/5 overflow-hidden ${className}`}
-        aria-label={xaLocalize("Espace publicitaire disponible")}
+        aria-label={xaLocalize("Emplacement éditorial en préparation")}
         data-ad-slot={id}
       >
         <Link
@@ -94,7 +94,7 @@ export default function AdSlot({
           <p className="text-[10px] uppercase tracking-[0.2em] text-amber-200/80 mb-1">
             {xaRender("Espace pub · ")}{xaRender(id)}
           </p>
-          <p className="text-base font-semibold text-amber-50">{xaRender("Votre publicité ici")}</p>
+          <p className="text-base font-semibold text-amber-50">{xaRender("Emplacement éditorial en préparation")}</p>
           <p className="text-sm text-amber-100/80 mt-1">{xaRender("Découvrir les emplacements envisagés") }</p>
           <p className="text-[10px] text-zinc-500 mt-2">{xaRender("Présentation uniquement · aucune réservation ouverte") }</p>
         </Link>
