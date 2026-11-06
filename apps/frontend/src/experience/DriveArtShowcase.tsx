@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import type { CSSProperties } from 'react'
 import { useI18n } from '../i18n/I18nContext'
 
 /**
@@ -36,7 +37,7 @@ export default function DriveArtShowcase({ compact = false }: { compact?: boolea
       </div>
       <div className="xa-drive-exhibition-works" role="list" aria-label={fr ? 'Œuvres sélectionnées' : 'Selected artworks'}>
         {DRIVE_EXHIBITION.map((work, i) =>
-          <figure className="xa-drive-exhibition-work" role="listitem" key={work.id} style={{ '--xa-art-index': i } as React.CSSProperties}>
+          <figure className="xa-drive-exhibition-work" role="listitem" key={work.id} style={{ '--xa-art-index': i } as CSSProperties}>
             <img src={srcFor(work.file)} alt={work.alt} decoding="async" loading={compact ? 'lazy' : i === 0 ? 'eager' : 'lazy'} />
             <figcaption><span>xArtists</span><strong>{work.id.slice(-4)}</strong></figcaption>
           </figure>)}
