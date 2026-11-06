@@ -1,8 +1,9 @@
 """
-LIA On-Chain Memory — MultiversX Explorer / API
-================================================
-Charge toutes les transactions du wallet LIA, les classe,
-construit une mémoire exploitable pour les décisions CT/MT/LT.
+LIA Chain-Derived Memory — read-only MultiversX Explorer / API
+===============================================================
+Lit un échantillon récent de transactions publiques et le stocke en JSON local.
+Aucune mémoire n'est écrite sur la chaîne et cet échantillon n'est pas exhaustif.
+Ne jamais interpréter une mémoire manquante comme autorisation de trading.
 
 API: https://api.multiversx.com/accounts/{addr}/transactions
 Explorer: https://explorer.multiversx.com/accounts/{addr}
@@ -184,7 +185,13 @@ def hours_since_last_swap(snap: MemorySnapshot) -> float:
 
 
 def should_pace_trade(snap: MemorySnapshot, min_hours_between: float = 0.5) -> tuple[bool, str]:
-    """True if enough time passed since last swap (cadence guard)."""
+    """Fail-closed cadence check on an incomplete chain-derived local sample."""
+    if snap.tx_count <= 0:
+        return False, "pace blocked: no chain transactions in the current sample"
+    if snap.last_swap_ts <= 0:
+        return False, "pace blocked: last swap unknown (sample is not full history)"
+    if snap.last_swap_ts > time.time() + 60:
+        return False, "pace blocked: future-dated swap timestamp"
     h = hours_since_last_swap(snap)
     if h < min_hours_between:
         return False, f"pace: last swap {h:.2f}h ago < {min_hours_between}h"
