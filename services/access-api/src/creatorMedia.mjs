@@ -85,6 +85,8 @@ async function tx(f){
   try{
     await client.query('BEGIN')
     await client.query("CREATE TABLE IF NOT EXISTS xartists_studio_media (id TEXT PRIMARY KEY, wallet TEXT NOT NULL, mime TEXT NOT NULL, bytes INTEGER NOT NULL, sha256 TEXT, uri TEXT, status TEXT NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW(), metadata_uri TEXT)")
+    // Upgrade pre-existing Studio tables before any metadata operation.
+    await client.query('ALTER TABLE xartists_studio_media ADD COLUMN IF NOT EXISTS metadata_sha256 TEXT')
     const result=await f(client)
     await client.query('COMMIT')
     return result
@@ -148,6 +150,10 @@ export function createStudioMetadata(row,body,wallet){
   }
   return meta
 }
+/** Deterministic proof binding metadata inputs to the immutable pinned JSON. */
+export function studioMetadataFingerprint(row,body,wallet){
+  return digest(Buffer.from(JSON.stringify(createStudioMetadata(row,body,wallet))))
+}
 export async function pinStudioMetadata(wallet,body,request=fetch){
   erdToPubkey(wallet)
   if(!studioMediaConfig().enabled)throw fail('studio_media_upload_disabled',503)
@@ -158,27 +164,52 @@ export async function pinStudioMetadata(wallet,body,request=fetch){
     return r.rows[0]||null
   })
   if(!row)throw fail('media_record_not_found',404)
+  if(row.status==='metadata_pinning')throw fail('metadata_pinning_in_progress',409)
   const content=createStudioMetadata(row,body,wallet)
+  const requestedDigest=digest(Buffer.from(JSON.stringify(content)))
   if(row.metadata_uri){
+    // An earlier publication is immutable: never report a different title as uploaded.
+    // Legacy rows without a fingerprint must be reviewed before a reuse is asserted.
+    if(row.metadata_sha256!==requestedDigest)throw fail('metadata_immutable_request_mismatch',409)
     return {mediaUri:row.uri,metadataUri:row.metadata_uri,
       attributes:'metadata:'+row.metadata_uri.replace('ipfs://','')+';tags:xartists,studio'}
   }
-  let res
+  // Claim the metadata job before the external call. A concurrent request cannot
+  // publish a conflicting second JSON or overwrite the first winning CID.
+  const claimed=await tx(async c=>{
+    const r=await c.query(
+      "UPDATE xartists_studio_media SET status='metadata_pinning' WHERE id=$1 AND wallet=$2 AND status='pinned' AND metadata_uri IS NULL RETURNING id",
+      [id,wallet])
+    return r.rowCount===1
+  })
+  if(!claimed)throw fail('metadata_pinning_in_progress_or_complete',409)
   try{
-    res=await request('https://api.pinata.cloud/pinning/pinJSONToIPFS',{
-      method:'POST',headers:{Authorization:'Bearer '+process.env.PINATA_JWT,
-        'Content-Type':'application/json'},
-      body:JSON.stringify({pinataContent:content,
-        pinataMetadata:{name:'xartists-metadata-'+id+'.json'},
-        pinataOptions:{cidVersion:1}}),
-      signal:AbortSignal.timeout(30000)})
-  }catch{throw fail('pinata_service_unavailable',503)}
-  if(!res.ok)throw fail('pinata_metadata_failed',502)
-  const response=await res.json().catch(()=>({}))
-  const cid=safePinataCid(response.IpfsHash)
-  const metadataUri='ipfs://'+cid
-  await tx(c=>c.query("UPDATE xartists_studio_media SET metadata_uri=$2 WHERE id=$1 AND wallet=$3 AND status='pinned'",
-    [id,metadataUri,wallet]))
-  return {mediaUri:row.uri,metadataUri,
-    attributes:'metadata:'+cid+';tags:xartists,studio'}
+    let res
+    try{
+      res=await request('https://api.pinata.cloud/pinning/pinJSONToIPFS',{
+        method:'POST',headers:{Authorization:'Bearer '+process.env.PINATA_JWT,
+          'Content-Type':'application/json'},
+        body:JSON.stringify({pinataContent:content,
+          pinataMetadata:{name:'xartists-metadata-'+id+'.json'},
+          pinataOptions:{cidVersion:1}}),
+        signal:AbortSignal.timeout(30000)})
+    }catch{throw fail('pinata_service_unavailable',503)}
+    if(!res.ok)throw fail('pinata_metadata_failed',502)
+    const response=await res.json().catch(()=>({}))
+    const cid=safePinataCid(response.IpfsHash)
+    const metadataUri='ipfs://'+cid
+    const saved=await tx(c=>c.query(
+      "UPDATE xartists_studio_media SET metadata_uri=$2,metadata_sha256=$3,status='pinned' WHERE id=$1 AND wallet=$4 AND status='metadata_pinning' AND metadata_uri IS NULL",
+      [id,metadataUri,requestedDigest,wallet]))
+    if(saved.rowCount!==1)throw fail('metadata_commit_conflict',409)
+    return {mediaUri:row.uri,metadataUri,
+      attributes:'metadata:'+cid+';tags:xartists,studio'}
+  }catch(e){
+    // A provider failure is retriable. An unrecorded provider success might have
+    // produced an orphan CID; never claim a mint or a confirmed metadata URI.
+    await tx(c=>c.query(
+      "UPDATE xartists_studio_media SET status='pinned' WHERE id=$1 AND wallet=$2 AND status='metadata_pinning' AND metadata_uri IS NULL",
+      [id,wallet])).catch(()=>{})
+    throw e
+  }
 }
