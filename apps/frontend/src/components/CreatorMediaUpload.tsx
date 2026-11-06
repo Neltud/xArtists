@@ -19,6 +19,18 @@ async function postJson(base:string,path:string,body:unknown,token?:string){
   if(!r.ok)throw new Error(String(j.error||'HTTP '+r.status))
   return j
 }
+const studioMediaErrors:Record<string,string>={
+  metadata_immutable_request_mismatch:'Les métadonnées déjà publiées sont immuables. Sélectionnez à nouveau votre fichier pour créer une nouvelle publication.',
+  metadata_pinning_in_progress:'Une publication des métadonnées est déjà en cours. Réessayez après vérification de son état.',
+  metadata_pinning_in_progress_or_complete:'La publication est en cours ou déjà terminée. Vérifiez son état avant de recommencer.',
+  daily_upload_quota_exhausted:'Quota de huit publications sur 24 heures atteint pour ce wallet.',
+  pinata_service_unavailable:'Pinata ne répond pas actuellement. Aucun mint n’a été créé.',
+  studio_upload_not_configured:'Le service IPFS sécurisé n’est pas encore activé sur le serveur.',
+}
+const explainStudioMediaError=(error:unknown)=>{
+  const code=error instanceof Error?error.message:'media_upload_unavailable'
+  return studioMediaErrors[code]||code
+}
 export default function CreatorMediaUpload({title,onReady}:Props){
   const {connected,address,method}=useWallet()
   const base=getAccessApiBase()
@@ -99,7 +111,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
       const result={mediaUri:meta.mediaUri as string,metadataUri:meta.metadataUri as string,
         attributes:meta.attributes as string,title:chosenTitle}
       setPinned(result);onReady(result)
-    }catch(e){if(stillCurrent())setError(e instanceof Error?e.message:'Echec de la préparation IPFS.')}
+    }catch(e){if(stillCurrent())setError(explainStudioMediaError(e))}
     finally{setPending(false)}
   }
   const stale=!!pinned&&pinned.title!==title.trim()
