@@ -1,85 +1,18 @@
-import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
-/**
- * Market tape — flux paper discret (pas de promesse de profit).
- * snap optionnel : jamais de crash sur .mode si props absentes.
- */
-import { useEffect, useState } from 'react'
-import { paperTapeLine, type AmbientSnapshot, type TapeLine } from '../lib/ambientAura'
+/** Unsourced synthetic paper ticks are disabled in the public command center. */
+import type { AmbientSnapshot } from '../lib/ambientAura'
 
-const LOADING_TICKS = [
-  'sync pulse…',
-  'cache métriques…',
-  'sentiment · vol…',
-  'lia shadow…',
-]
-
-const FALLBACK_SNAP: AmbientSnapshot = {
-  mode: 'stable',
-  trend: 'STABLE',
-  volatility: 0.3,
-  confidence: 0.5,
-  label: 'stable',
-  paper: true,
-}
-
-export default function MarketTape({ snap }: { snap?: AmbientSnapshot | null }) {
-  const safe = snap ?? FALLBACK_SNAP
-  const [lines, setLines] = useState<TapeLine[]>([])
-  const [seq, setSeq] = useState(0)
-  const [tickIdx, setTickIdx] = useState(0)
-
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      setSeq(s => {
-        const n = s + 1
-        const row = paperTapeLine(safe, n)
-        setLines(prev => [row, ...prev].slice(0, 8))
-        return n
-      })
-    }, 4200)
-    return () => window.clearInterval(id)
-  }, [safe])
-
-  useEffect(() => {
-    if (lines.length > 0) return
-    const id = window.setInterval(() => setTickIdx(i => (i + 1) % LOADING_TICKS.length), 900)
-    return () => window.clearInterval(id)
-  }, [lines.length])
-
-  const cacheHint = [
-    safe.mode ? `mode ${safe.mode}` : null,
-    safe.trend ? `trend ${safe.trend}` : null,
-    Number.isFinite(safe.volatility) ? `vol ${(safe.volatility * 100).toFixed(0)}%` : null,
-    Number.isFinite(safe.confidence) ? `conf ${(safe.confidence * 100).toFixed(0)}%` : null,
-  ]
-    .filter(Boolean)
-    .join(' · ')
-
+export default function MarketTape({ snap: _snap }: { snap?: AmbientSnapshot | null }) {
   return (
-    <aside className="rounded-xl border border-white/10 bg-black/40 overflow-hidden">
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/10">
-        <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-tech">{xaRender("Tape")}</span>
-        <span className="text-[9px] text-amber-200/70">{xaRender("paper only")}</span>
+    <aside className="xa-truth-card" aria-label="État du ruban de signaux">
+      <div className="xa-truth-card-heading">
+        <span className="xa-truth-label">Tape · suspendu</span>
+        <h3>Pas de ruban agent live</h3>
+        <p>
+          Les anciens ticks toutes les 4,2 secondes étaient générés localement.
+          Aucune donnée de marché ou opération d'agent ne doit être déduite de ces ticks.
+        </p>
       </div>
-      <ul className="max-h-28 overflow-y-auto px-3 py-2 space-y-1 font-mono text-[11px] text-zinc-400">
-        {xaRender(lines.length === 0 && (
-          <li className="text-zinc-500 flex flex-col gap-0.5">
-            <span className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/80 animate-pulse" aria-hidden />
-              {xaRender(LOADING_TICKS[tickIdx])}
-            </span>
-            {xaRender(cacheHint ? (
-              <span className="text-[10px] text-zinc-600 truncate">{xaRender("cache · ")}{xaRender(cacheHint)}</span>
-            ) : null)}
-          </li>
-        ))}
-        {xaRender(lines.map(l => (
-          <li key={l.id} className="flex gap-2">
-            <span className="text-zinc-600 shrink-0">{xaRender(l.kind)}</span>
-            <span className="truncate">{xaRender(l.text)}</span>
-          </li>
-        )))}
-      </ul>
+      <p className="xa-truth-footnote">Source vérifiée : indisponible · Paper-first · aucune exécution attestée.</p>
     </aside>
   )
 }
