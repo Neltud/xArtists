@@ -11,6 +11,8 @@ import { canListBuyNft } from '../config/scStatus'
 import RwaPhysicalPanel from '../components/market/RwaPhysicalPanel'
 import DigitalPacksPanel from '../components/market/DigitalPacksPanel'
 import OpenSeaCollectionPanel from '../components/market/OpenSeaCollectionPanel'
+import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
+import DriveArtShowcase from '../experience/DriveArtShowcase'
 
 type Shelf='art'|'rwa'|'packs'|'opensea'
 type Listing={
@@ -135,6 +137,8 @@ export default function MarketplacePage(){
       </button>)}
     </nav>
 
+    {selected==='art'&&<DriveArtShowcase compact />}
+    {selected==='art'&&<ExistingNftReadiness />}
     {selected==='art'&&<section className="space-y-4" aria-label="Art numérique">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
