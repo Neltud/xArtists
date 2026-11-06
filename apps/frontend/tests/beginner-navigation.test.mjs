@@ -12,7 +12,7 @@ const moduleDefinitions = read('../src/experience/modules.ts')
 test('desktop navigation makes help a top-level choice, without removing the DAO', () => {
   assert.match(shell, /\['guide','\/guide',c\('help'\)\]/)
   assert.match(shell, /\['dao','\/finance\/governance',c\('dao'\)\]/)
-  assert.match(shell, /className="xa-theme-toggle"/)
+  assert.match(shell, /className="xa-icon-button xa-theme-toggle"/)
   assert.match(shell, /<MobileDock\/>/)
 })
 
