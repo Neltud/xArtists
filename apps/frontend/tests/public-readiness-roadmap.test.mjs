@@ -30,7 +30,8 @@ test('every module has exactly one conservative editorial stage and no stage mea
 test('public roadmap is routed, discoverable, translated and linked to verifiable release issues',()=>{
  assert.match(app,/path="\/roadmap" element=\{<PublicRoadmap\/>\}/)
  assert.match(app,/path="\/feuille-de-route"/)
- assert.match(shell,/\['roadmap','\/roadmap',c\('roadmapLabel'\)\]/)
+ assert.match(shell,/\['guide','\/guide',c\('help'\)\]/)
+ assert.match(pages,/to="\/roadmap"/)
  assert.match(shell,/to="\/roadmap" onClick=\{closeMobile\}/)
  assert.match(road,/publicMilestones\.map/)
  assert.match(road,/github\.com\/Neltud\/xArtists\/issues/)
