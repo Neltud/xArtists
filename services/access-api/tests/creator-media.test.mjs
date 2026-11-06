@@ -7,7 +7,7 @@ import {createChallenge} from '../src/siwx.mjs'
 import {signJwt} from '../src/verifyAccess.mjs'
 import {startServer,post} from './server-fixture.mjs'
 import {studioMediaConfig,mediaJwt,mediaActor,validateCreatorMedia,readCreatorMedia,
-  createStudioMetadata,safePinataCid} from '../src/creatorMedia.mjs'
+  createStudioMetadata,studioMetadataFingerprint,safePinataCid} from '../src/creatorMedia.mjs'
 
 const {Address}=sdk
 const owner=new Address(crypto.generateKeyPairSync('ed25519').publicKey.export({
@@ -79,6 +79,18 @@ test('image metadata is pinned only for owning wallet with rights explicitly att
     /media_record_not_owned_or_pinned/)
   assert.throws(()=>createStudioMetadata(row,{title:'My painting',rightsAccepted:false},owner),
     /media_rights_confirmation_required/)
+})
+test('published metadata fingerprint binds exact title, description, media and artist',()=>{
+  const request={title:'My painting',description:'Oil',rightsAccepted:true}
+  const fingerprint=studioMetadataFingerprint(row,request,owner)
+  assert.match(fingerprint,/^[a-f0-9]{64}$/)
+  assert.equal(fingerprint,studioMetadataFingerprint(row,{...request},owner))
+  assert.notEqual(fingerprint,studioMetadataFingerprint(row,{...request,title:'Altered'},owner))
+  assert.notEqual(fingerprint,studioMetadataFingerprint(row,{...request,description:'New text'},owner))
+  assert.notEqual(fingerprint,studioMetadataFingerprint({...row,sha256:'b'.repeat(64)},request,owner))
+  assert.throws(()=>studioMetadataFingerprint(row,request,attacker),/media_record_not_owned_or_pinned/)
+  assert.throws(()=>studioMetadataFingerprint({...row,status:'metadata_pinning'},request,owner),
+    /media_record_not_owned_or_pinned/)
 })
 test('MP4 metadata uses animation_url, not a misleading image field',()=>{
   const meta=createStudioMetadata({...row,mime:'video/mp4',
