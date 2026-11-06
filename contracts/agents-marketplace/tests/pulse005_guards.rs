@@ -46,9 +46,15 @@ fn uri(filename: &str) -> ManagedBuffer<DebugApi> {
 }
 
 impl Setup {
-    fn mint(&mut self, caller: &Address, metadata: ManagedBuffer<DebugApi>) -> TxResult {
+    fn mint(&mut self, caller: &Address, valid_metadata: bool) -> TxResult {
         let recipient = self.recipient.clone();
         self.world.execute_tx(caller, &self.sc, &rust_biguint!(0u64), |contract| {
+            // Managed values MUST be created within the scenario's VM stack.
+            let metadata = if valid_metadata {
+                uri("metadata.json")
+            } else {
+                ManagedBuffer::from(&b"ipfs://pending"[..])
+            };
             contract.mint_genesis_pulse_005(
                 ManagedAddress::from(&recipient),
                 metadata,
@@ -73,7 +79,7 @@ impl Setup {
 fn p005_only_stored_contract_owner_may_initiate_mint() {
     let mut t = setup(true);
     let buyer = t.buyer.clone();
-    t.mint(&buyer, uri("metadata.json")).assert_user_error("only owner");
+    t.mint(&buyer, true).assert_user_error("only owner");
     assert!(!t.minted_marker());
 }
 
@@ -81,7 +87,7 @@ fn p005_only_stored_contract_owner_may_initiate_mint() {
 fn p005_requires_exact_pulse_collection() {
     let mut t = setup(false);
     let owner = t.owner.clone();
-    t.mint(&owner, uri("metadata.json")).assert_user_error("Pulse collection missing");
+    t.mint(&owner, true).assert_user_error("Pulse collection missing");
     assert!(!t.minted_marker());
 }
 
@@ -89,7 +95,7 @@ fn p005_requires_exact_pulse_collection() {
 fn p005_requires_pinned_metadata_filename_not_a_placeholder() {
     let mut t = setup(true);
     let owner = t.owner.clone();
-    t.mint(&owner, ManagedBuffer::from(&b"ipfs://pending"[..]))
+    t.mint(&owner, false)
         .assert_user_error("invalid IPFS media URI length");
     assert!(!t.minted_marker());
 }
@@ -98,7 +104,7 @@ fn p005_requires_pinned_metadata_filename_not_a_placeholder() {
 fn p005_missing_nft_create_role_cannot_mint_or_reserve_marker() {
     let mut t = setup(true);
     let owner = t.owner.clone();
-    let result = t.mint(&owner, uri("metadata.json"));
+    let result = t.mint(&owner, true);
     assert!(!result.result_status.is_success(), "roleless create should fail");
     assert!(!t.minted_marker(), "failed mint must not record one-shot success");
 }
@@ -109,7 +115,7 @@ fn p005_wrong_nonce_must_revert_without_delivery() {
     t.world.set_esdt_local_roles(t.sc.address_ref(), TOKEN, &[EsdtLocalRole::NftCreate]);
     let owner = t.owner.clone();
     // New test collection emits nonce 1: the special #005 endpoint MUST reject it.
-    t.mint(&owner, uri("metadata.json")).assert_user_error("Pulse nonce 005 no longer available");
+    t.mint(&owner, true).assert_user_error("Pulse nonce 005 no longer available");
     assert!(!t.minted_marker());
     t.world.check_nft_balance(
         &t.recipient, TOKEN, 1, &rust_biguint!(0u64), None::<&u32>,
