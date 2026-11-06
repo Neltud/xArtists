@@ -29,7 +29,7 @@ from lia.circuit.signal_hub import build_fused_signal
 from lia.decision.multi_horizon import decide, Intent
 
 try:
-    from lia.memory.onchain_memory import build_memory, hours_since_last_swap, DEFAULT_WALLET
+    from lia.memory.onchain_memory import build_memory, hours_since_last_swap, should_pace_trade, DEFAULT_WALLET
 except Exception:
     DEFAULT_WALLET = "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6"
 
@@ -38,6 +38,9 @@ except Exception:
 
     def hours_since_last_swap(snap):
         return 999.0
+
+    def should_pace_trade(*a, **k):
+        return False, "chain_memory_unavailable"
 
 
 def run_guarded_cycle(
@@ -156,15 +159,22 @@ def run_guarded_cycle(
 
     hours_swap = 999.0
     memory_meta: dict[str, Any] = {}
+    memory_pace_ok = not fetch_memory  # Explicit offline/paper simulation only.
     if fetch_memory:
         try:
             snap = build_memory(address=wallet, size=40)
             hours_swap = hours_since_last_swap(snap)
-            memory_meta = {"tx_count": snap.tx_count, "by_kind": snap.by_kind}
+            memory_pace_ok, memory_reason = should_pace_trade(snap)
+            memory_meta = {"tx_count": snap.tx_count, "by_kind": snap.by_kind,
+                           "pace_ok": memory_pace_ok, "pace_msg": memory_reason}
         except Exception as e:
-            memory_meta = {"error": str(e)}
+            memory_pace_ok = False
+            memory_meta = {"error": str(e), "pace_ok": False,
+                           "pace_msg": "chain_memory_unavailable"}
 
     can_open, reason = circuit.can_open()
+    if can_open and not memory_pace_ok:
+        can_open, reason = False, "chain_memory_unavailable_or_incomplete"
     equity = float(circuit.streak.compound_equity_usd + circuit.streak.yield_sleeve_usd)
     peak = float(circuit.streak.peak_equity_usd or equity)
     if equity <= 0:

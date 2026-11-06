@@ -95,7 +95,10 @@ def run_autonomous_cycle(
                 circuit_can_open = False
                 circuit_reason = pace_msg
         except Exception as e:
-            memory_meta = {"error": str(e), "pace_ok": True}
+            # Missing API memory is unknown, never a passed execution gate.
+            circuit_can_open = False
+            circuit_reason = "chain_memory_unavailable"
+            memory_meta = {"error": str(e), "pace_ok": False, "pace_msg": circuit_reason}
 
     hours_dca = (now - float(state.get("last_dca_ts") or 0)) / 3600.0
     hours_reb = (now - float(state.get("last_rebalance_ts") or 0)) / 3600.0
