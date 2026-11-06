@@ -126,28 +126,8 @@ export function startAgent8008Bridge() {
     const ce = e as CustomEvent
     void handleLiaIntentDetail(ce.detail)
   })
-  let lastHypeTs = 0
-  window.addEventListener('xartists:pulse', (e: Event) => {
-    const d = (e as CustomEvent).detail as {
-      env?: { sentiment?: number; category?: string; vibe?: string; asset?: string }
-    }
-    const env = d?.env
-    if (!env || typeof env.sentiment !== 'number') return
-    if (env.sentiment < 0.55) return
-    const now = Date.now()
-    if (now - lastHypeTs < 60_000) return
-    lastHypeTs = now
-    void handleLiaIntentDetail({
-      lip: {
-        type: 'PULSE_HYPE',
-        agent: AGENT_8008.id,
-        paper: true,
-        sentiment: env.sentiment,
-        category: env.category,
-        vibe: env.vibe,
-        asset: env.asset,
-        raw: `PULSE_HYPE ${env.category} sent=${env.sentiment}`,
-      },
-    })
-  })
+  // The former xartists:pulse -> PULSE_HYPE bridge was fed by an 8s
+  // simulated cycle. Disabled until provenance and source timestamps can
+  // be authenticated server-side. Never forward browser-only market claims.
+
 }
