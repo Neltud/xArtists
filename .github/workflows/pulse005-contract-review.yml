@@ -21,6 +21,6 @@ jobs:
         with:
           workspaces: contracts/agents-marketplace
       - name: Compile contract before any operator transaction
-        run: cargo check --locked --manifest-path contracts/agents-marketplace/Cargo.toml
+        run: cargo check --manifest-path contracts/agents-marketplace/Cargo.toml
       - name: Run contract tests
-        run: cargo test --locked --manifest-path contracts/agents-marketplace/Cargo.toml
+        run: cargo test --manifest-path contracts/agents-marketplace/Cargo.toml
