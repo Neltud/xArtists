@@ -115,6 +115,20 @@
 | UX 3D dépendante GPU et tactile | P1 | Recette smartphone + fallback 2D | UX / QA |
 | Aucune performance marketing sourcée | P1 | Faire baseline consentie, éviter promesses ROI | Growth |
 
+
+## Vérification externe du site publié et marketing (6 novembre 2026)
+
+### Recette publique du site déjà publié (pas cette branche)
+Audit navigateur public réalisé sans wallet ni achat : [enregistrement](https://agent.tinyfish.ai/runs/f05c36e5-debe-4d82-9033-33e1c1ab019d).
+**7 parcours sur 7 ont chargé** : accueil, musée, alias galerie, marketplace, studio, offres et visibilité. La galerie redirige volontairement vers le musée ; marketplace annonce l'absence de ventes vérifiées ; Studio annonce l'upload IPFS indisponible ; parcours sponsors signale la vente fermée.
+**Limites :** la visite a confirmé l'affichage des CTA mais n'a pas soumis tous les formulaires ni testé les signatures. Le navigateur n'a pas simulé 360/390 px ; **responsive tactile, WebGL bas de gamme et image WalletConnect dans xPortal restent inconclusifs**. Ce n'est ni une preuve de qualité exhaustive ni une preuve du futur déploiement de la PR.
+
+### Metricool — état réellement connecté, lecture seule
+- Marque Metricool **7765529** : **YouTube uniquement** apparaît connecté dans les paramètres; aucun compte X/Twitter, LinkedIn ou Bluesky vérifié dans cette marque.
+- **9 publications planifiées dans la fenêtre novembre 2026** inspectée, toutes marquées `draft=true`, `autoPublish=false` et `PENDING` par leur réseau. **Ne pas annoncer une campagne sociale déjà publiée à partir de ces brouillons**, y compris les dates révolues.
+- Aucun chiffre sourcé d'impressions, de leads sponsor, de ventes ou d'abonnements attribuables à cette campagne dans ces lectures. La mesure d'audience et les annonces payantes restent à concevoir.
+- **Actions proposées :** authentifier les réseaux cibles avec consentement et contrôle de marque, préparer la ligne éditoriale art-first, valider une publication pilote YouTube avec média réel, instrumenter analytics consentis, puis étendre à LinkedIn/X après tests des liens de contact.
+
 ## Politique de fusion / déploiement
 **Contrôle CI :** #421 20 checks OK mais draft ; #415 25 checks OK / 1 verify KO, dont 6 tests Playwright sur le comportement OAuth lorsque backend absent ; #407 4 checks OK mais draft ; #409 aucun check sur son HEAD ; aucun résultat de fusion légale/financière n'en découle.\n\n**Ne pas merge automatiquement** les PR #407/#421 (draft), #415 (conflit licence) ou le connecteur WIP. #409 reste candidate seulement après CI/release-review. Aucune signature de wallet/autorisation transactionnelle fournie par cet audit.
 
