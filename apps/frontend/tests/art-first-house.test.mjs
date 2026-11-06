@@ -17,9 +17,9 @@ test('Art-first hierarchy prioritizes museum, auction, RWA and Studio', () => {
   assert.match(core, /'rwa'/)
   // Desktop now surfaces Marketplace before Auctions; RWA remains discoverable
   // in the mobile menu and Explore. Do not assert the superseded desktop nav.
-  const links = ["/explore/museum',c('explore')","/create/studio',c('create')","/explore/market',c('market')","/finance/governance',c('dao')","/roadmap',c('roadmapLabel')"]
+  const links = ["/explore/museum',c('explore')","/create/studio',c('create')","/explore/market',c('market')","/finance/governance',c('dao')","/guide',c('help')"]
   const navIndexes = links.map(link => nav.indexOf(link))
-  assert.ok(navIndexes.every(i => i >= 0), 'explore, create, market, DAO and directory must be direct desktop destinations')
+  assert.ok(navIndexes.every(i => i >= 0), 'explore, create, market, DAO and beginner help must be direct desktop destinations')
   assert.deepEqual([...navIndexes].sort((a,b) => a-b), navIndexes)
   assert.match(nav, /to="\/rwa"/)
   assert.match(nav, /to="\/auction" onClick=\{closeMobile\}/)
