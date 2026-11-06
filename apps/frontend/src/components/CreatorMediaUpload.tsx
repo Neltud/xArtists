@@ -23,6 +23,7 @@ const studioMediaErrors:Record<string,string>={
   metadata_immutable_request_mismatch:'Les métadonnées déjà publiées sont immuables. Sélectionnez à nouveau votre fichier pour créer une nouvelle publication.',
   metadata_pinning_in_progress:'Une publication des métadonnées est déjà en cours. Réessayez après vérification de son état.',
   metadata_pinning_in_progress_or_complete:'La publication est en cours ou déjà terminée. Vérifiez son état avant de recommencer.',
+  metadata_pin_result_unknown_reconcile:'Réponse Pinata incertaine : les métadonnées peuvent déjà être publiques. Ne recommencez pas l’upload avant une vérification de l’opérateur.',
   daily_upload_quota_exhausted:'Quota de huit publications sur 24 heures atteint pour ce wallet.',
   pinata_service_unavailable:'Pinata ne répond pas actuellement. Aucun mint n’a été créé.',
   studio_upload_not_configured:'Le service IPFS sécurisé n’est pas encore activé sur le serveur.',
@@ -40,6 +41,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
   const [description,setDescription]=useState('')
   const [rights,setRights]=useState(false)
   const [pending,setPending]=useState(false)
+  const [needsReconciliation,setNeedsReconciliation]=useState(false)
   const [error,setError]=useState('')
   const [pinned,setPinned]=useState<Pinned|null>(null)
   // Ignore completion of a previous upload after a wallet/file/rights/title change.
@@ -66,13 +68,14 @@ export default function CreatorMediaUpload({title,onReady}:Props){
   const pick=(next:File|null)=>{
     revision.current+=1
     setError('');setFile(next);setPinned(null);onReady(null)
+    setNeedsReconciliation(false)
     if(next && (!allowed[next.type]||next.size<=0||next.size>allowed[next.type])){
       setFile(null)
       setError('Format attendu : JPG, PNG, WebP (max 16 Mo) ou MP4 (max 48 Mo).')
     }
   }
   const pin=async()=>{
-    if(pending)return
+    if(pending||needsReconciliation)return
     setError('')
     if(!file||!allowed[file.type]){setError('Choisissez un fichier JPG, PNG, WebP ou MP4.');return}
     if(!base||!enabled){setError('Upload non activé côté serveur : configuration Pinata et PostgreSQL requise.');return}
@@ -111,7 +114,14 @@ export default function CreatorMediaUpload({title,onReady}:Props){
       const result={mediaUri:meta.mediaUri as string,metadataUri:meta.metadataUri as string,
         attributes:meta.attributes as string,title:chosenTitle}
       setPinned(result);onReady(result)
-    }catch(e){if(stillCurrent())setError(explainStudioMediaError(e))}
+    }catch(e){
+      if(stillCurrent()){
+        const code=e instanceof Error?e.message:''
+        if(code==='metadata_pin_result_unknown_reconcile')
+          setNeedsReconciliation(true)
+        setError(explainStudioMediaError(e))
+      }
+    }
     finally{setPending(false)}
   }
   const stale=!!pinned&&pinned.title!==title.trim()
@@ -158,7 +168,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         IPFS et un NFT ne sont pas automatiquement supprimables.
       </label>
       <button type="button" className="btn-primary text-sm min-h-[44px] disabled:opacity-50"
-        disabled={!enabled||pending||!file||!rights||!connected||method!=='xportal'}
+        disabled={!enabled||pending||needsReconciliation||!file||!rights||!connected||method!=='xportal'}
         onClick={()=>void pin()}>
         {pending?'Publication média + métadonnées IPFS…':'Publier sur IPFS et préparer le mint'}
       </button>
@@ -168,6 +178,10 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         <p className="break-all">Métadonnées : {pinned.metadataUri}</p>
         <p>Étape suivante : vérifier la collection et signer le mint dans votre wallet.</p>
       </div>}
+      {needsReconciliation&&<p role="status" className="text-xs text-amber-200">
+        Publication suspendue pour ce fichier : une réponse Pinata est incertaine.
+        Une vérification de l’opérateur est requise avant tout nouvel essai.
+      </p>}
       {stale&&<p className="text-xs text-amber-200">Le titre a changé depuis l'upload. Republiez les métadonnées avant de minter.</p>}
       {error&&<p role="alert" className="text-xs text-rose-200">{error}</p>}
     </div>
