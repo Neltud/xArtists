@@ -63,6 +63,8 @@ jobs:
               assert 'plugin.json' in names and 'web/app.html' in names
               assert not any('..' in pathlib.PurePosixPath(n).parts or n.endswith(('.pyc','.sqlite')) for n in names)
               assert 'world-rights' in z.read('README.md').decode().lower()
+              for name in ['app.html','app.css','core.js','app.js']:
+                  assert z.read('web/'+name) == (archive.parent/name).read_bytes()
           PY
       - name: Install frontend and browser-test dependencies
         run: |
