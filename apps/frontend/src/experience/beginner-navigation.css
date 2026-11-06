@@ -1,0 +1,184 @@
+/*
+ * Beginner-first IA · intentional light/dark tokens, touch targets and
+ * disclosure patterns. Styles do not override commercial state or theme.
+ */
+.xa-first-actions { flex-wrap: wrap; }
+.xa-first-actions > a { min-height: 44px; }
+
+.xa-mobile-start > a { min-height: 48px; }
+.xa-mobile-start > a > svg:first-child { flex: 0 0 auto; color: var(--xa-accent); }
+.xa-mobile-start > a > svg:last-child { margin-inline-start: auto; }
+.xa-mobile-advanced {
+  margin-block: 10px 4px;
+  border: 1px solid var(--xa-border);
+  border-radius: 12px;
+  background: var(--xa-panel);
+}
+.xa-mobile-advanced > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 14px;
+  color: var(--xa-text);
+  font-weight: 650;
+  cursor: pointer;
+  list-style: none;
+}
+.xa-mobile-advanced > summary::-webkit-details-marker { display:none; }
+.xa-mobile-advanced[open] > summary > svg { transform: rotate(180deg); }
+.xa-mobile-advanced > .xa-mobile-menu-group { padding: 0 12px 12px; }
+.xa-mobile-advanced > .xa-mobile-menu-group > a { min-height: 44px; }
+.xa-mobile-advanced :is(summary,a):focus-visible,
+.xa-guide-page a:focus-visible,
+.xa-guide-page summary:focus-visible,
+.xa-directory-starters a:focus-visible {
+  outline: 3px solid var(--xa-accent);
+  outline-offset: 3px;
+}
+
+/* A human-first shortcut layer before the complete 40+ tool directory. */
+.xa-directory-starters {
+  margin-block: 10px 28px;
+  border-bottom: 1px solid var(--xa-border);
+  padding-bottom: 22px;
+}
+.xa-directory-starters > h2 {
+  margin: 0 0 14px;
+  font-size: clamp(18px, 2vw, 23px);
+  font-weight: 680;
+  letter-spacing: -.02em;
+  color: var(--xa-text);
+}
+.xa-directory-starter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.xa-directory-starter {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  min-height: 118px;
+  padding: 17px;
+  border: 1px solid var(--xa-border);
+  border-radius: 14px;
+  background: var(--xa-panel);
+  color: var(--xa-text);
+  text-decoration: none;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.xa-directory-starter:hover { border-color: var(--xa-accent); transform: translateY(-2px); }
+.xa-directory-starter > svg { color: var(--xa-accent); }
+.xa-directory-starter > strong { font-size: 15px; }
+.xa-directory-starter > small { color: var(--xa-muted); line-height: 1.5; font-size: 12px; }
+
+/* Guide page: replaces fixed white/near-white utility classes that became
+ * unreadable on the official default white/light shell. */
+.xa-guide-page { max-width: 1100px; padding-block: 32px 90px; }
+.xa-guide-header { margin: 26px 0 38px; max-width: 780px; }
+.xa-guide-header h1 {
+  color: var(--xa-text);
+  font-size: clamp(30px, 5vw, 48px);
+  line-height: 1.15;
+  letter-spacing: -.04em;
+  margin: 10px 0 16px;
+}
+.xa-guide-lead { color: var(--xa-muted); line-height: 1.8; max-width: 660px; }
+.xa-guide-notice {
+  margin-top: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 720px;
+  padding-inline-start: 12px;
+  border-inline-start: 3px solid var(--xa-border);
+  color: var(--xa-muted);
+  line-height: 1.65;
+}
+.xa-guide-notice svg { flex: 0 0 auto; margin-top: 3px; color: var(--xa-accent); }
+.xa-guide-section h2 {
+  color: var(--xa-text);
+  font-size: clamp(20px, 2.5vw, 26px);
+  margin: 0 0 16px;
+}
+.xa-guide-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 16px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.xa-guide-steps > li { min-width: 0; }
+.xa-guide-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 6px 12px;
+  height: 100%;
+  min-height: 195px;
+  padding: 22px;
+  border: 1px solid var(--xa-border);
+  border-radius: 16px;
+  background: var(--xa-panel);
+  color: var(--xa-text);
+  text-decoration: none;
+  transition: transform .15s ease, border-color .15s ease;
+}
+.xa-guide-step:hover { transform: translateY(-2px); border-color: var(--xa-accent); }
+.xa-guide-step-icon { grid-row: 1; grid-column: 1; color: var(--xa-accent); }
+.xa-guide-step-number { grid-row: 1; grid-column: 2; justify-self: end; color: var(--xa-muted); font-size: 12px; }
+.xa-guide-step > strong { grid-column: 1/-1; font-size: 20px; letter-spacing: -.02em; }
+.xa-guide-step-lead { grid-column: 1/-1; color: var(--xa-muted); font-size: 14px; line-height: 1.6; }
+.xa-guide-step-link { grid-column: 1/-1; color: var(--xa-text); display: flex; gap: 8px; align-items: center; font-weight: 650; font-size: 13px; }
+.xa-guide-advanced { margin-block: 24px 28px; border-block: 1px solid var(--xa-border); }
+.xa-guide-advanced > summary {
+  padding: 17px 0;
+  cursor: pointer;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--xa-text);
+  font-weight: 650;
+  list-style: none;
+}
+.xa-guide-advanced > summary::-webkit-details-marker { display: none; }
+.xa-guide-advanced[open] > summary > svg { transform: rotate(180deg); }
+.xa-guide-extra { display: grid; gap: 8px; padding-bottom: 18px; }
+.xa-guide-extra-link {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) 2fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 14px;
+  background: var(--xa-panel2);
+  border: 1px solid var(--xa-border);
+  border-radius: 10px;
+  color: var(--xa-text);
+  text-decoration: none;
+}
+.xa-guide-extra-link > span { color: var(--xa-muted); font-size: 13px; line-height: 1.5; }
+.xa-guide-extra-link:hover { border-color: var(--xa-accent); }
+.xa-guide-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.xa-guide-actions a { min-height: 44px; }
+
+@media(max-width: 880px) {
+  .xa-directory-starter-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media(max-width: 560px) {
+  .xa-guide-page { padding-top: 22px; }
+  .xa-guide-steps, .xa-directory-starter-grid { grid-template-columns: minmax(0,1fr); }
+  .xa-guide-step { min-height: 170px; padding: 18px; }
+  .xa-guide-extra-link { grid-template-columns: 1fr auto; }
+  .xa-guide-extra-link > span { grid-column: 1; }
+  .xa-guide-extra-link > svg { grid-column: 2; grid-row: 1; }
+  .xa-directory-starter { min-height: 96px; }
+}
+@media(prefers-reduced-motion: reduce) {
+  .xa-guide-step, .xa-directory-starter { transition: none; }
+  .xa-guide-step:hover, .xa-directory-starter:hover { transform: none; }
+}
