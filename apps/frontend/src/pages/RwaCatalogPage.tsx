@@ -50,14 +50,16 @@ export default function RwaCatalogPage() {
     <p role="status" className="rwa-public__notice">Catalogue de démonstration publié le 5 octobre 2026.
       Données et valeurs simulées. Aucun lot proposé à la vente, aucune expertise,
       certification de propriété ou garde physique attestée.</p>
-    <nav className="rwa-public__actions" aria-label="Explorer l’art">
+    <nav className="rwa-public__actions rwa-public__quicknav" aria-label="Que faire sur cette page ?">
+      <a href="#rwa-list">Voir les œuvres de démonstration</a>
+      <a href="#rwa-tools">Préparer mes documents (démo)</a>
       <Link to="/marketplace">Explorer la Marketplace <span aria-hidden="true"> ↗</span></Link>
       <Link to="/studio">Découvrir le Studio <span aria-hidden="true"> ↗</span></Link>
     </nav>
     {state === 'loading' && <p role="status" className="rwa-public__footnote">Chargement du catalogue…</p>}
     {state === 'offline' && <p role="status" className="rwa-public__notice">
       Catalogue indisponible. Aucun listing ou certificat de propriété n’est présumé.</p>}
-    <div className="rwa-public__grid" aria-busy={state === 'loading'}>
+    <div className="rwa-public__grid" id="rwa-list" aria-label="Œuvres illustratives" aria-busy={state === 'loading'}>
       {items.map((item, index) => {
         const score = Number(item.valuation?.score ?? 0)
         return <article key={asText(item.id, String(index))} className="rwa-public__card">
@@ -83,7 +85,7 @@ export default function RwaCatalogPage() {
       {state === 'ready' && !items.length && <p className="rwa-public__footnote">
         {xaRender("Aucune œuvre de démonstration disponible. Aucun listing ou certificat de propriété n’est présumé.")}</p>}
     </div>
-    <div className="rwa-public__tools">
+    <div className="rwa-public__tools" id="rwa-tools">
       <PublicDisclosure id="rwa-preparation" title="Préparer la documentation d’une œuvre"
         subtitle="Outil de démonstration — aucun certificat vérifié ni mint automatique.">
         <p>Les documents produits sont des brouillons non vérifiés. Ils ne constituent
