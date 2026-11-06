@@ -4,13 +4,17 @@ import { readFileSync } from 'node:fs'
 
 const source = (path) => readFileSync(new URL('../src/' + path, import.meta.url), 'utf8')
 
-test('LIA defaults to accessible 2D even on desktop; 3D is explicitly opt-in', () => {
+test('LIA exposes read-only snapshots; unsourced immersive 3D is suspended', () => {
   const lazy = source('components/lia/LiaHubControlRoomLazy.tsx')
-  assert.match(lazy, /useState\(false\)/)
-  assert.match(lazy, /Enter immersive view \(3D\)/)
-  assert.match(lazy, /lazy\(\(\) => import\('\.\/LiaHubControlRoom'\)\)/)
-  assert.doesNotMatch(lazy, /matchMedia\(/)
+  const legacy = source('components/lia/LiaHubControlRoom.tsx')
+  const renderers = source('components/lia/holoRenderers.ts')
+  assert.match(lazy, /Vue holographique suspendue/)
+  assert.match(lazy, /LiaMobileOverview/)
+  assert.doesNotMatch(lazy, /Enter immersive view|lazy\(/)
+  assert.doesNotMatch(legacy, /WebGLRenderer|requestAnimationFrame|setInterval/)
+  assert.doesNotMatch(renderers, /Math\.sin|requestAnimationFrame|APR est\.|SHA-256 · OK/)
 })
+
 
 test('public status differentiates source age, checking time and simulated performance', () => {
   const overview = source('components/lia/LiaMobileOverview.tsx')
