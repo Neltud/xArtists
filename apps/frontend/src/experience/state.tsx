@@ -8,6 +8,7 @@ export function ExperienceProvider({children}:{children:ReactNode}){
  const [motion,setMotion]=useState(()=>stored('xa-motion')==='off'?false:stored('xa-motion')==='on'?true:!(typeof window!=='undefined'&&window.matchMedia('(prefers-reduced-motion: reduce)').matches))
  const [theme,setTheme]=useState<'dark'|'light'>(()=>stored('xa-theme')==='dark'?'dark':'light')
  useEffect(()=>{document.documentElement.dataset.theme=theme;document.documentElement.classList.toggle('dark',theme==='dark');try{localStorage.setItem('xa-theme',theme)}catch{}},[theme])
+ useEffect(()=>{const id=window.requestAnimationFrame(()=>document.documentElement.classList.add('xa-theme-ready'));return()=>window.cancelAnimationFrame(id)},[])
  useEffect(()=>{document.documentElement.dataset.motion=motion?'on':'off';try{localStorage.setItem('xa-motion',motion?'on':'off')}catch{}},[motion])
  return <Ctx.Provider value={{motion,setMotion,theme,setTheme}}>{children}</Ctx.Provider>
 }
