@@ -1,53 +1,60 @@
 /**
- * Public no-wallet visitor guide. Technical operations and closed experiments
- * belong to operator/lab pages, never the visitor first journey.
+ * Wallet-optional beginner journey. Core destinations first, specialist/finance
+ * tools in an explicit disclosure. All labels come from the 8-locale catalogue.
  */
 import { Link } from 'react-router-dom'
 import { useCopy } from '../experience/state'
+import Icon from '../experience/Icon'
 
 export default function DemoTourPage() {
   const c = useCopy()
   const steps = [
-    { to: '/', label: c('home'), lead: c('heroLead') },
-    { to: '/museum', label: c('museum'), lead: c('museumLead') },
-    { to: '/marketplace', label: c('market'), lead: c('guideMarketLead') },
+    { to: '/museum', label: c('welcomeExplore'), lead: c('welcomeExploreDesc'), icon: 'museum' },
+    { to: '/studio', label: c('welcomeCreate'), lead: c('welcomeCreateDesc'), icon: 'create' },
+    { to: '/marketplace', label: c('welcomeMarket'), lead: c('welcomeMarketDesc'), icon: 'market' },
+    { to: '/dao', label: c('welcomeDao'), lead: c('welcomeDaoDesc'), icon: 'network' },
+  ]
+  const extra = [
     { to: '/auction', label: c('auction'), lead: c('auctionLead') },
-    { to: '/studio', label: c('studio'), lead: c('studioLead') },
     { to: '/lia', label: c('lia'), lead: c('liaLead') },
     { to: '/offres', label: c('guideOffers'), lead: c('guideOffersLead') },
     { to: '/legal', label: c('legal'), lead: c('guideLegalLead') },
   ]
 
-  return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 pb-28 sm:px-6 sm:py-12">
-      <header className="space-y-4">
-        <p className="xa-eyebrow">{c('guideSteps')}</p>
-        <h1 className="text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl">{c('guideTitle')}</h1>
-        <p className="max-w-2xl text-sm leading-7 text-zinc-300">{c('guideIntro')}</p>
-        <p role="status" className="max-w-3xl rounded-xl border border-amber-300/25 bg-amber-300/10 px-4 py-3 text-sm leading-6 text-amber-100">
-          {c('guideSaleNotice')}
-        </p>
-      </header>
-
-      <section aria-label={c('guideSteps')}>
-        <ol className="grid gap-3 md:grid-cols-2">
-          {steps.map((step, index) => (
-            <li key={step.to}>
-              <Link to={step.to} className="group flex h-full min-h-[112px] flex-col gap-2 rounded-2xl border border-white/15 bg-white/[0.035] p-4 transition-colors hover:border-cyan-300/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300">
-                <span className="text-xs font-mono text-cyan-200/80">{String(index + 1).padStart(2, '0')}</span>
-                <h2 className="text-base font-semibold text-white">{step.label}</h2>
-                <p className="text-xs leading-5 text-zinc-300">{step.lead}</p>
-              </Link>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <nav aria-label={c('guideSteps')} className="flex flex-wrap gap-3">
-        <Link to="/app" className="xa-button secondary">{c('appAccess')}</Link>
-        <Link to="/legal" className="xa-button secondary">{c('legal')}</Link>
-        <Link to="/marketplace" className="xa-button primary">{c('market')}</Link>
-      </nav>
-    </div>
-  )
+  return <div className="xa-container xa-guide-page">
+    <div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><span>{c('help')}</span></div>
+    <header className="xa-guide-header">
+      <p className="xa-eyebrow">{c('guideSteps')}</p>
+      <h1>{c('guideTitle')}</h1>
+      <p className="xa-guide-lead">{c('guideIntro')}</p>
+      <p className="xa-guide-notice" role="status"><Icon name="shield" size={18}/>{c('guideSaleNotice')}</p>
+    </header>
+    <section className="xa-guide-section" aria-labelledby="xa-guide-start">
+      <h2 id="xa-guide-start">{c('welcomeAsk')}</h2>
+      <ol className="xa-guide-steps">
+        {steps.map((step, index) => <li key={step.to}>
+          <Link className="xa-guide-step" to={step.to}>
+            <span className="xa-guide-step-icon"><Icon name={step.icon} size={23}/></span>
+            <span className="xa-guide-step-number">{String(index + 1).padStart(2, '0')}</span>
+            <strong>{step.label}</strong>
+            <span className="xa-guide-step-lead">{step.lead}</span>
+            <span className="xa-guide-step-link">{c('open')}<Icon name="arrow" size={17}/></span>
+          </Link>
+        </li>)}
+      </ol>
+    </section>
+    <details className="xa-guide-advanced">
+      <summary>{c('welcomeAdvanced')}<Icon name="chevron" size={17}/></summary>
+      <div className="xa-guide-extra">
+        {extra.map(step => <Link key={step.to} to={step.to} className="xa-guide-extra-link">
+          <strong>{step.label}</strong><span>{step.lead}</span><Icon name="arrow" size={17}/>
+        </Link>)}
+      </div>
+    </details>
+    <nav className="xa-guide-actions" aria-label={c('guideSteps')}>
+      <Link to="/directory" className="xa-button secondary">{c('directory')}<Icon name="arrow" size={16}/></Link>
+      <Link to="/roadmap" className="xa-button secondary">{c('roadmapLabel')}<Icon name="arrow" size={16}/></Link>
+      <Link to="/museum" className="xa-button primary">{c('welcomeExplore')}<Icon name="arrow" size={16}/></Link>
+    </nav>
+  </div>
 }
