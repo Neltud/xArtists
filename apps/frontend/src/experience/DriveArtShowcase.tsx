@@ -13,7 +13,7 @@ export const DRIVE_EXHIBITION = [
   { id: 'xArtists0286', file: 'xArtists0286.png', alt: 'Œuvre xArtists 0286 — portrait graphique sur fond rouge profond' },
 ] as const
 
-const srcFor = (file: string) => new URL('art/drive/' + file, new URL(import.meta.env.BASE_URL, window.location.origin)).href
+const srcFor = (file: string) => `${import.meta.env.BASE_URL}art/drive/${file}`
 
 export default function DriveArtShowcase({ compact = false }: { compact?: boolean }) {
   const { lang } = useI18n()
