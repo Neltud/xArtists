@@ -1,7 +1,7 @@
 /**
  * Pulse → paramètres musée 3D (plus lumineux par défaut pour lisibilité mobile).
  */
-import { PULSE_DEMO_CYCLE, type PulseEnvironment } from './pulseDemo'
+import type { PulseEnvironment } from './pulseDemo'
 
 export type MuseumPulseParams = {
   fogDensity: number
@@ -36,33 +36,20 @@ export function mapPulseToMuseum(env: PulseEnvironment, room: string): MuseumPul
   }
 }
 
-export function pulseFromIndex(i: number, room = 'stone'): MuseumPulseParams {
-  const env = PULSE_DEMO_CYCLE[i % PULSE_DEMO_CYCLE.length]
-  return mapPulseToMuseum(env, room)
+/** Legacy adapter: never derive 'live' museum lighting from demo fixtures. */
+export function pulseFromIndex(_i: number, room = 'stone'): MuseumPulseParams {
+  return mapPulseToMuseum({
+    type: 'ENVIRONMENT_UPDATE',
+    sentiment: 0,
+    intensity: 'low',
+    color_target: '#8b948b',
+    vibe: 'unavailable',
+    category: 'UNVERIFIED',
+    context: 'Static illustrative environment',
+  }, room)
 }
 
+/** Public API is deliberately closed until its producer is independently verified. */
 export async function fetchPulseState(): Promise<PulseEnvironment | null> {
-  try {
-    const api = (import.meta as { env?: { VITE_PULSE_API?: string } }).env?.VITE_PULSE_API
-    if (api) {
-      const r = await fetch(`${api.replace(/\/$/, '')}/pulse`, { cache: 'no-store' })
-      if (r.ok) {
-        const j = await r.json()
-        if (typeof j.sentiment === 'number') return j as PulseEnvironment
-      }
-    }
-  } catch {
-    /* fall through */
-  }
-  try {
-    const base = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL || '/'
-    const url = `${base}data/pulse_state.json?t=${Date.now()}`
-    const r = await fetch(url, { cache: 'no-store' })
-    if (!r.ok) return null
-    const j = await r.json()
-    if (typeof j.sentiment === 'number') return j as PulseEnvironment
-  } catch {
-    /* static demo */
-  }
   return null
 }
