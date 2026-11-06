@@ -12,11 +12,13 @@ const app=read('../src/App.tsx')
 
 test('public guide has eight clear, wallet-free working navigation steps',()=>{
   const destinations=[...guide.matchAll(/\{ to: '([^']+)', label:/g)].map(m=>m[1])
-  assert.deepEqual(destinations,['/','/museum','/marketplace','/auction','/studio','/lia','/offres','/legal'])
+  assert.deepEqual(destinations,['/museum','/studio','/marketplace','/dao','/auction','/lia','/offres','/legal'])
+  assert.ok(guide.indexOf('const steps = [') < guide.indexOf('const extra = ['), 'beginner route choices must precede advanced routes')
+  assert.match(guide,/xa-guide-advanced/)
   assert.match(guide,/guideSaleNotice/)
   assert.doesNotMatch(guide,/\/slot|Primordial Slot|GO_LIVE|Phase4ReadinessBanner|house funded|SC live/)
   assert.match(app,/path="\/offres"/)
-  for(const path of ['/museum','/marketplace','/auction','/studio','/lia','/legal']){
+  for(const path of ['/museum','/marketplace','/auction','/studio','/lia','/legal','/dao']){
     assert.ok(modules.includes("'"+path+"'"),'Route alias expected: '+path)
   }
 })
