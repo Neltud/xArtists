@@ -23,9 +23,6 @@ import LiveAssetTape from '../components/LiveAssetTape'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
 import { holderStatus } from '../lib/holderAccess'
-import { usePulse } from '../hooks/usePulse'
-import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
-import { toAmbientSnapshot } from '../lib/ambientAura'
 import { setEmpireZone } from '../store/empireStore'
 import { useI18n } from '../i18n/I18nContext'
 import { useToast } from '../components/ui/Toast'
@@ -37,15 +34,6 @@ type Room = 'hub' | 'pulse' | 'yield' | 'sentinel'
 type EcoTab = 'defi' | 'liquidity' | 'holders'
 
 const ROOM_IDS: Room[] = ['hub', 'pulse', 'yield', 'sentinel']
-
-const ROOM_WALL: Record<
-  Exclude<Room, 'hub'>,
-  { color: [number, number, number]; sentiment: number; volatility: number; pulseSpeed: number }
-> = {
-  pulse: { color: [0.98, 0.75, 0.14], sentiment: 0.35, volatility: 0.55, pulseSpeed: 1.4 },
-  yield: { color: [0.58, 0.64, 0.72], sentiment: 0.1, volatility: 0.28, pulseSpeed: 0.85 },
-  sentinel: { color: [0.65, 0.55, 0.98], sentiment: -0.15, volatility: 0.4, pulseSpeed: 0.7 },
-}
 
 function parseRoom(v: string | null): Room | null {
   if (!v) return null
@@ -77,12 +65,6 @@ function CommandCenterInner() {
   const roomParam = parseRoom(params.get('room'))
   const [room, setRoom] = useState<Room>(roomParam || 'hub')
   const [eco, setEco] = useState<EcoTab>('defi')
-  const { env } = usePulse()
-  const lia = useLIAInterpreter(env)
-  const ambientSnap = useMemo(
-    () => toAmbientSnapshot(lia?.uniforms, lia?.confidence ?? 0.5, false),
-    [lia?.uniforms, lia?.confidence],
-  )
   const { push } = useToast()
   const tunnelRef = useRef(false)
 
@@ -154,7 +136,6 @@ function CommandCenterInner() {
   const activePackId: PackId | null =
     room === 'pulse' || room === 'yield' || room === 'sentinel' ? room : null
   const pack = activePackId ? getPack(activePackId) : null
-  const wallCfg = activePackId ? ROOM_WALL[activePackId] : null
 
   return (
     <div className="animate-fade-in space-y-4 pb-24 max-w-5xl mx-auto">
@@ -210,13 +191,11 @@ function CommandCenterInner() {
 
       {xaRender(room === 'hub' && (
         <>
-          <MarketTape snap={ambientSnap} />
+          <MarketTape />
           <LiveAssetTape />
           <CommandWall
             room="hub"
             paper
-            sentiment={ambientSnap.mode === 'bear' ? -0.4 : 0.2}
-            volatility={0.35}
           />
           <DashboardSource />
           <AgentRoster />
@@ -225,7 +204,7 @@ function CommandCenterInner() {
               <AgentNftOrb
                 key={p.id}
                 packId={p.id}
-                aura={ambientSnap.mode}
+                aura="stable"
                 onSelect={() => onRoomClick(p.id)}
               />
             )))}
@@ -240,16 +219,14 @@ function CommandCenterInner() {
       {xaRender(room === 'pulse' && (
         <>
           <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[12px] text-amber-100">
-            {xaRender("GOLD — trading HF · TCA · LIA · tape live ")}</div>
-          <MarketTape snap={ambientSnap} />
+            {xaRender("GOLD — aperçu des capacités · signaux agent non vérifiés ")}</div>
+          <MarketTape />
           <LiveAssetTape />
           <CommandWall
             room="pulse"
             paper
-            sentiment={wallCfg!.sentiment}
-            volatility={wallCfg!.volatility}
           />
-          <AgentNftOrb packId="pulse" aura={ambientSnap.mode} />
+          <AgentNftOrb packId="pulse" aura="stable" />
           <LiaShadowPanel />
           <AgentStrategyConfigPanel />
           <LiaSignalPanel />
@@ -266,8 +243,6 @@ function CommandCenterInner() {
           <CommandWall
             room="yield"
             paper
-            sentiment={wallCfg!.sentiment}
-            volatility={wallCfg!.volatility}
           />
           <AgentNftOrb packId="yield" aura="stable" />
           <section className="space-y-2">
@@ -311,8 +286,6 @@ function CommandCenterInner() {
           <CommandWall
             room="sentinel"
             paper
-            sentiment={wallCfg!.sentiment}
-            volatility={wallCfg!.volatility}
           />
           <AgentNftOrb packId="sentinel" aura="bear" />
           <section className="rounded-2xl border border-violet-500/20 bg-black/40 p-4 space-y-2">
