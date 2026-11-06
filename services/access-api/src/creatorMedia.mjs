@@ -153,12 +153,12 @@ export function createStudioMetadata(row,body,wallet){
 export function studioMetadataFingerprint(row,body,wallet){
   return digest(Buffer.from(JSON.stringify(createStudioMetadata(row,body,wallet))))
 }
-export async function pinStudioMetadata(wallet,body,request=fetch){
+export async function pinStudioMetadata(wallet,body,request=fetch,dbTx=tx){
   erdToPubkey(wallet)
   if(!studioMediaConfig().enabled)throw fail('studio_media_upload_disabled',503)
   const id=String(body?.uploadId||'')
   if(!/^[a-f0-9-]{36}$/.test(id))throw fail('invalid_media_record')
-  const row=await tx(async c=>{
+  const row=await dbTx(async c=>{
     const r=await c.query('SELECT * FROM xartists_studio_media WHERE id=$1 AND wallet=$2',[id,wallet])
     return r.rows[0]||null
   })
@@ -175,13 +175,17 @@ export async function pinStudioMetadata(wallet,body,request=fetch){
   }
   // Claim the metadata job before the external call. A concurrent request cannot
   // publish a conflicting second JSON or overwrite the first winning CID.
-  const claimed=await tx(async c=>{
+  const claimed=await dbTx(async c=>{
     const r=await c.query(
       "UPDATE xartists_studio_media SET status='metadata_pinning' WHERE id=$1 AND wallet=$2 AND status='pinned' AND metadata_uri IS NULL RETURNING id",
       [id,wallet])
     return r.rowCount===1
   })
   if(!claimed)throw fail('metadata_pinning_in_progress_or_complete',409)
+  // Fail closed on an ambiguous Pinata outcome: a timeout, malformed 2xx
+  // reply or failed DB commit might have already pinned immutable JSON. Retrying
+  // could create another published CID with inconsistent artist metadata.
+  let definitivelyRejected=false
   try{
     let res
     try{
@@ -192,21 +196,29 @@ export async function pinStudioMetadata(wallet,body,request=fetch){
           pinataMetadata:{name:'xartists-metadata-'+id+'.json'},
           pinataOptions:{cidVersion:1}}),
         signal:AbortSignal.timeout(30000)})
-    }catch{throw fail('pinata_service_unavailable',503)}
-    if(!res.ok)throw fail('pinata_metadata_failed',502)
+    }catch{throw fail('metadata_pin_result_unknown_reconcile',503)}
+    if(!res.ok){
+      // A definite non-2xx reply is the only case we permit to be retried
+      // automatically. The failed request still consumes an artist quota slot.
+      definitivelyRejected=true
+      throw fail('pinata_metadata_failed',502)
+    }
     const response=await res.json().catch(()=>({}))
     const cid=safePinataCid(response.IpfsHash)
     const metadataUri='ipfs://'+cid
-    const saved=await tx(c=>c.query(
+    const saved=await dbTx(c=>c.query(
       "UPDATE xartists_studio_media SET metadata_uri=$2,metadata_sha256=$3,status='pinned' WHERE id=$1 AND wallet=$4 AND status='metadata_pinning' AND metadata_uri IS NULL",
       [id,metadataUri,requestedDigest,wallet]))
     if(saved.rowCount!==1)throw fail('metadata_commit_conflict',409)
     return {mediaUri:row.uri,metadataUri,
       attributes:'metadata:'+cid+';tags:xartists,studio'}
   }catch(e){
-    // A provider failure is retriable. An unrecorded provider success might have
-    // produced an orphan CID; never claim a mint or a confirmed metadata URI.
-    await tx(c=>c.query(
+    if(!definitivelyRejected){
+      // Hold metadata_pinning for operator reconciliation. In particular,
+      // never re-arm a second pin on an unknown provider or DB outcome.
+      throw fail('metadata_pin_result_unknown_reconcile',503)
+    }
+    await dbTx(c=>c.query(
       "UPDATE xartists_studio_media SET status='pinned' WHERE id=$1 AND wallet=$2 AND status='metadata_pinning' AND metadata_uri IS NULL",
       [id,wallet])).catch(()=>{})
     throw e
