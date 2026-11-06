@@ -18,7 +18,9 @@ type AdCreative = {
 }
 
 function isActive(c: AdCreative | undefined): boolean {
-  if (!c || c.status === 'inactive') return false
+  // Public sponsor bookings remain OFF: only first-party demo creatives are eligible.
+  // A JSON status alone is never proof of a third-party sponsorship contract.
+  if (!c || c.status !== 'active' || c.advertiser !== 'xArtists Ops') return false
   const now = Date.now()
   if (c.startsAt && Date.parse(c.startsAt) > now) return false
   if (c.endsAt && Date.parse(c.endsAt) < now) return false
