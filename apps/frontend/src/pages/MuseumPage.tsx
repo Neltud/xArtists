@@ -12,6 +12,7 @@ import {
   type FrameItem,
 } from '../components/museum/MuseumCorridor'
 import MuseumHall from '../components/museum/MuseumHall'
+import DriveArtShowcase from '../experience/DriveArtShowcase'
 import AdSlot from '../components/AdSlot'
 import {useCopy} from '../experience/state'
 import Icon from '../experience/Icon'
