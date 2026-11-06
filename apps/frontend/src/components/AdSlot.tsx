@@ -95,8 +95,8 @@ export default function AdSlot({
             {xaRender("Espace pub · ")}{xaRender(id)}
           </p>
           <p className="text-base font-semibold text-amber-50">{xaRender("Votre publicité ici")}</p>
-          <p className="text-sm text-amber-100/80 mt-1">{xaRender("Enchères · réserver un slot")}</p>
-          <p className="text-[10px] text-zinc-500 mt-2">{xaRender("Paper bid · pas un investissement")}</p>
+          <p className="text-sm text-amber-100/80 mt-1">{xaRender("Découvrir les emplacements envisagés") }</p>
+          <p className="text-[10px] text-zinc-500 mt-2">{xaRender("Présentation uniquement · aucune réservation ouverte") }</p>
         </Link>
       </aside>
     )
@@ -135,7 +135,7 @@ export default function AdSlot({
         </div>
       ))}
       <p className="text-[10px] uppercase tracking-wide text-zinc-500 px-3 py-2 border-t border-white/5">
-        {xaRender("Publicité · enchère xArtists · pas un investissement ")}</p>
+        {xaRender(ad.advertiser === 'xArtists Ops' ? 'Présentation xArtists · emplacement témoin, non vendu' : 'Contenu sponsorisé · annonceur tiers') }</p>
     </div>
   )
 
