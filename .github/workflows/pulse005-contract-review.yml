@@ -1,0 +1,26 @@
+name: Genesis Pulse 005 guarded contract CI
+
+on:
+  pull_request:
+    paths:
+      - 'contracts/agents-marketplace/**'
+      - '.github/workflows/pulse005-contract-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: contracts/agents-marketplace
+      - name: Compile contract before any operator transaction
+        run: cargo check --locked --manifest-path contracts/agents-marketplace/Cargo.toml
+      - name: Run contract tests
+        run: cargo test --locked --manifest-path contracts/agents-marketplace/Cargo.toml
