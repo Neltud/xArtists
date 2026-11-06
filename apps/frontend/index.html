@@ -10,6 +10,13 @@
         document.documentElement.classList.toggle("dark", xaTheme === "dark");
       } catch (_) { document.documentElement.dataset.theme = "light"; }
     </script>
+    <!-- Prevent a light/dark flash while stylesheets and React initialize. -->
+    <style>
+      html[data-theme="light"] { background: #fafaf8; color: #202920; color-scheme: light; }
+      html[data-theme="dark"] { background: #10120f; color: #f2f3ed; color-scheme: dark; }
+      html[data-theme="light"] body { background: #fafaf8; color: #202920; }
+      html[data-theme="dark"] body { background: #10120f; color: #f2f3ed; }
+    </style>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />

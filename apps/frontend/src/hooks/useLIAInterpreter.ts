@@ -29,11 +29,7 @@ function liaApiBase(): string {
 
 /** Local paper phrases when no API */
 const PAPER_PHRASES = [
-  'Volume constructive sur EGLD — biais haussier mesuré.',
-  'Régime calme · accumulation discrète.',
-  'Tension macro · volatilité en hausse.',
-  'Narrative art / builders — sentiment positif local.',
-  'Risk-off temporaire · rester flexible.',
+  'Simulation locale illustrative : aucun sentiment de marché ou avis LIA vérifié.',
 ]
 
 export type LiaInterpreter = {
@@ -49,8 +45,8 @@ export function useLIAInterpreter(env: PulseEnvironment): LiaInterpreter {
   const [shadow, setShadow] = useState(() => createShadowState(env))
   const [uniforms, setUniforms] = useState<ShaderUniformsTarget>(() => compileSemantic(env))
   const [phrase, setPhrase] = useState<string | null>(null)
-  const [source, setSource] = useState<'lia' | 'paper' | 'pulse'>('pulse')
-  const [confidence, setConfidence] = useState(0.5)
+  const [source, setSource] = useState<'lia' | 'paper' | 'pulse'>('paper')
+  const [confidence, setConfidence] = useState(0)
   const targetRef = useRef<ShaderUniformsTarget>(compileSemantic(env))
   const envRef = useRef(env)
   envRef.current = env
@@ -88,21 +84,21 @@ export function useLIAInterpreter(env: PulseEnvironment): LiaInterpreter {
 
     const finishPaper = () => {
       if (id !== seq.current) return
-      const p = PAPER_PHRASES[Math.floor(Math.random() * PAPER_PHRASES.length)]
+      const p = PAPER_PHRASES[0]
       const withCtx = context ? `${p} · contexte: ${context.slice(0, 80)}` : p
       setPhrase(withCtx)
-      setSource(base ? 'lia' : 'paper')
-      setConfidence(0.55 + Math.random() * 0.25)
+      setSource('paper')
+      setConfidence(0)
       setShadow(s => shadowOnLiaDone(s, current, withCtx))
     }
 
     if (!base) {
-      // Simulate network latency paper
-      window.setTimeout(finishPaper, 400 + Math.random() * 600)
+      // Local paper response without artificial network latency
+      window.setTimeout(finishPaper, 0)
       window.setTimeout(() => {
         if (id === seq.current && Date.now() - started >= LIA_TIMEOUT_MS) {
           setShadow(s => (s.liaPending ? shadowOnLiaTimeout(s, current) : s))
-          setSource('pulse')
+          setSource('paper')
         }
       }, LIA_TIMEOUT_MS + 50)
       return
@@ -113,7 +109,7 @@ export function useLIAInterpreter(env: PulseEnvironment): LiaInterpreter {
       ctrl.abort()
       if (id === seq.current) {
         setShadow(s => shadowOnLiaTimeout(s, current))
-        setSource('pulse')
+        setSource('paper')
         setConfidence(0.4)
       }
     }, LIA_TIMEOUT_MS)
@@ -140,7 +136,7 @@ export function useLIAInterpreter(env: PulseEnvironment): LiaInterpreter {
         if (id !== seq.current) return
         if ((e as Error).name === 'AbortError') return
         setShadow(s => shadowOnLiaError(s, current, e instanceof Error ? e.message : 'LIA error'))
-        setSource('pulse')
+        setSource('paper')
         finishPaper()
       }
     })()

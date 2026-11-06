@@ -7,10 +7,8 @@ import LiaHubControlRoomLazy from '../components/lia/LiaHubControlRoomLazy'
 import { Link } from 'react-router-dom'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
-import { fetchProtocolProfile } from '../lia/protocolProfile'
 import { fetchEgldPrice } from '../lia/priceTick'
 import { persistShadowExport } from '../lia/shadowExport'
-import { matrixFromPulse } from '../lia/decisionCycle'
 import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumStatus'
 import { fetchLiaHubStatus, type LiaHubStatus } from '../lia/hubStatus'
 import { fetchLiaStatus, type LiaStatusV1 } from '../lia/liaStatus'
@@ -73,8 +71,7 @@ export default function LiaPage() {
   const refresh = useCallback(async () => {
     setLoading(true)
     try {
-      const [p, v, px, txList, hubSt, st] = await Promise.all([
-        fetchProtocolProfile(),
+      const [v, px, txList, hubSt, st] = await Promise.all([
         fetchVellumLastRun(),
         fetchEgldPrice(true),
         fetchRecentTx(8),
@@ -92,18 +89,10 @@ export default function LiaPage() {
         /* offline */
       }
       persistShadowExport(px.priceUsd || 0)
-      matrixFromPulse({
-        assetId: 'EGLD',
-        price: px.priceUsd,
-        sentiment: typeof env?.sentiment === 'number' ? env.sentiment : 0,
-        volatility: 0.35,
-        confidence: lia.confidence ?? 0.5,
-        rce: p.egldUsd || 0,
-      })
     } finally {
       setLoading(false)
     }
-  }, [env, lia.confidence])
+  }, [])
 
   useEffect(() => {
     void refresh()
