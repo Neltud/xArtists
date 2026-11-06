@@ -49,6 +49,12 @@ test('OAuth controls fail closed when backend is unavailable; local preparation 
  await expect(page.locator('#connection-status')).toContainText('indisponible ou non configurée')
  await page.getByLabel('Créateur',{exact:true}).fill('Créatrice')
  await page.getByLabel('Titre du contenu').fill('Photo originale')
+ // HTML form validation requires these fields even when OAuth is unavailable.
+ // Leave the declarations unchecked: the resulting dossier must remain unverified.
+ await page.getByLabel('Prix indicatif en EUR').fill('1.00')
+ await page.getByLabel('Territoire',{exact:true}).fill('France')
+ await page.getByLabel('Usages autorisés envisagés').fill('Présentation éditoriale')
+ await page.getByLabel('Durée',{exact:true}).fill('30 jours')
  await page.getByRole('button',{name:'Préparer le dossier'}).click()
  await expect(page.locator('#feedback')).toContainText('Dossier à compléter')
 })
