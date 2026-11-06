@@ -10,6 +10,7 @@ export type Group = 'explore' | 'create' | 'intelligence' | 'finance' | 'workspa
 export type Module = { id: string; path: string; aliases: string[]; label: string; group: Group; icon: string; page: LazyExoticComponent<ComponentType<any>>; tags: string[]; load: ()=>Promise<any> }
 const module = (id:string,path:string,aliases:string[],label:string,group:Group,icon:string,page:()=>Promise<any>,tags:string[]=[]):Module => ({id,path,aliases,label,group,icon,page:lazy(page),tags,load:page})
 export const modules:Module[] = [
+  module('world-rights','/create/world-rights',['/world-rights','/plugins/xa-world-rights'],'XA World Rights','create','shield',()=>import('../pages/WorldRightsPage'),['Licences','Royalties','Social','Plugin']),
   module('app','/app',['/install','/mobile'],'appAccess','workspace','globe',()=>import('../pages/DappAccessPage'),['xPortal','iOS','Android','PWA']),
   module('maison','/explore/maison',[],'maison','explore','museum',()=>import('../pages/MaisonHubPage'),['Art','Curation','RWA']),
   module('museum','/explore/museum',['/museum','/gallery'],'museum','explore','museum',()=>import('../pages/MuseumPage'),['3D','WebGL','NFT']),
