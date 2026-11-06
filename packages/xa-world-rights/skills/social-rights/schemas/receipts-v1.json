@@ -1,0 +1,289 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "receiptId",
+    "kind",
+    "environment",
+    "issuedAt",
+    "orderId",
+    "buyerId",
+    "creatorId",
+    "assetHash",
+    "proposalDigest",
+    "contractDigest",
+    "source",
+    "payload"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "kind": {
+      "enum": [
+        "contract",
+        "payment",
+        "delivery"
+      ]
+    },
+    "environment": {
+      "const": "simulation"
+    },
+    "issuedAt": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "orderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "buyerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "creatorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "assetHash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "proposalDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "contractDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "system",
+        "eventId",
+        "artifactHash",
+        "evidenceRef"
+      ],
+      "properties": {
+        "system": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "artifactHash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "evidenceRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      }
+    },
+    "payload": {
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "xArtists receipt candidate v1 \u2014 structure only, never verification",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "contract"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "signedArtifactHash",
+              "signers",
+              "signatureEvidenceRef"
+            ],
+            "properties": {
+              "signedArtifactHash": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "signers": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "creator",
+                  "buyer"
+                ],
+                "properties": {
+                  "creator": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512
+                  },
+                  "buyer": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512
+                  }
+                }
+              },
+              "signatureEvidenceRef": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "payment"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "contractReceiptId",
+              "amountBaseUnits",
+              "asset",
+              "rail",
+              "network",
+              "settlementEvidenceRef"
+            ],
+            "properties": {
+              "contractReceiptId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "amountBaseUnits": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]*$"
+              },
+              "asset": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "rail": {
+                "enum": [
+                  "paybox",
+                  "stripe",
+                  "xmoney",
+                  "btc_onchain",
+                  "lightning",
+                  "crypto_other"
+                ]
+              },
+              "network": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "settlementEvidenceRef": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "delivery"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "contractReceiptId",
+              "paymentReceiptId",
+              "recipientId",
+              "fileHash",
+              "accessStart",
+              "accessEnd",
+              "receiptEvidenceRef"
+            ],
+            "properties": {
+              "contractReceiptId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "paymentReceiptId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "recipientId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "fileHash": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "accessStart": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "accessEnd": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "receiptEvidenceRef": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

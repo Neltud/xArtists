@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "author": {
+    "name": "X Artists"
+  },
+  "description": "XA World Rights developer package: local rights preparation, simulated registry and receipts, plus an operator-configured YouTube read-only web integration. Commerce remains disabled.",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "capabilities": [],
+        "category": "Productivity",
+        "defaultPrompt": [
+          "Prépare la licence de mon contenu social et une proposition de listing à prix fixe, sans publication.",
+          "Audite les droits, royalties et conflits d’exclusivité de cette vidéo avant une vente.",
+          "Simule une enchère fiat ou crypto avec consentement du créateur, sans encaissement."
+        ],
+        "developerName": "X Artists",
+        "displayName": "XA World Rights",
+        "longDescription": "XA World Rights prépare la valorisation des textes, photos, vidéos, carrousels, podcasts et autres contenus sociaux : droits, consentement, exclusivités, prix, offres et royalties. Catalogue de 13 réseaux et revue d’éligibilité locale. Aucun connecteur actif, paiement ou déploiement.",
+        "shortDescription": "Licences de contenus sociaux"
+      }
+    }
+  },
+  "name": "xartists-social-rights",
+  "version": "0.6.0"
+}

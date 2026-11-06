@@ -1,0 +1,86 @@
+name: XA World Rights — package, API and browser compatibility
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'packages/xa-world-rights/**'
+      - 'apps/frontend/public/plugins/xa-world-rights/**'
+      - 'apps/frontend/src/pages/WorldRightsPage.tsx'
+      - 'apps/frontend/src/experience/modules.ts'
+      - 'apps/frontend/src/experience/Shell.tsx'
+      - 'apps/frontend/tests/xa-world-rights.test.mjs'
+      - 'services/access-api/src/worldRightsHttp.mjs'
+      - 'services/access-api/src/server.mjs'
+      - 'services/access-api/tests/world-rights.test.mjs'
+      - 'e2e/world-rights/**'
+      - 'e2e/world-rights.config.ts'
+      - '.github/workflows/xa-world-rights-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/xa-world-rights/**'
+      - 'apps/frontend/public/plugins/xa-world-rights/**'
+      - 'services/access-api/src/worldRightsHttp.mjs'
+      - 'e2e/world-rights/**'
+      - '.github/workflows/xa-world-rights-ci.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      WORLD_RIGHTS_YOUTUBE_ENABLED: '0'
+      LIA_LIVE_TRADING: '0'
+      VITE_LIA_LIVE_TRADING: '0'
+      VITE_PAYBOX_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify imported Python registry and receipt contracts
+        run: |
+          python -m pip install -r packages/xa-world-rights/skills/social-rights/scripts/requirements.txt
+          python -m unittest discover -s packages/xa-world-rights/skills/social-rights/scripts -p 'test_*.py' -v
+          python packages/xa-world-rights/skills/social-rights/scripts/validate_listing.py --self-test
+      - name: Test real HTTP boundaries with fake Google responses; no OAuth account or payment
+        run: |
+          node --check services/access-api/src/worldRightsHttp.mjs
+          node --test services/access-api/tests/world-rights.test.mjs
+          node --test apps/frontend/tests/xa-world-rights.test.mjs
+      - name: Verify downloadable source archive
+        run: |
+          python - <<'PY'
+          import pathlib,zipfile
+          archive=pathlib.Path('apps/frontend/public/plugins/xa-world-rights/xa-world-rights-0.6.0.zip')
+          with zipfile.ZipFile(archive) as z:
+              assert z.testzip() is None
+              names=z.namelist()
+              assert 'plugin.json' in names and 'web/app.html' in names
+              assert not any('..' in pathlib.PurePosixPath(n).parts or n.endswith(('.pyc','.sqlite')) for n in names)
+              assert 'world-rights' in z.read('README.md').decode().lower()
+              for name in ['app.html','app.css','core.js','app.js']:
+                  assert z.read('web/'+name) == (archive.parent/name).read_bytes()
+          PY
+      - name: Install frontend and browser-test dependencies
+        run: |
+          npm install --ignore-scripts
+          npm ci --prefix apps/frontend --legacy-peer-deps
+      - name: Build exact PR source and run frontend release contracts
+        run: |
+          npm run test:release --prefix apps/frontend
+          npm run build --prefix apps/frontend
+      - name: Install Chromium, Firefox and WebKit
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Desktop and mobile browser tests, with no external OAuth
+        run: npx playwright test --config=e2e/world-rights.config.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xa-world-rights-browser-results
+          path: test-results/
+          retention-days: 7

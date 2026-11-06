@@ -5,6 +5,7 @@
  * Signals: read-only daily signal (never executes trades).
  */
 import http from 'node:http'
+import { createWorldRightsHandler } from './worldRightsHttp.mjs'
 import { handleStripe } from './stripeHttp.mjs'
 import { stripeSandboxConfig } from './stripeCheckout.mjs'
 import { resolveAccessLevel, issueAccessToken, verifyJwt } from './verifyAccess.mjs'
@@ -35,6 +36,7 @@ import {
   processShopifyPhysicalWebhook, readPhysicalRaw,
 } from './physicalFulfillment.mjs'
 
+const WORLD_RIGHTS = createWorldRightsHandler()
 const PORT = Number(process.env.PORT || 8787)
 const JWT_SECRET = process.env.ACCESS_JWT_SECRET || process.env.JWT_SECRET || ''
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || ''
@@ -141,6 +143,7 @@ async function handleRequest(req, res) {
   if (req.method === 'OPTIONS') { json(res, 204, {}); return }
   const u = new URL(req.url || '/', `http://127.0.0.1:${PORT}`)
   const pth = u.pathname.replace(/\/$/, '') || '/'
+  if (await WORLD_RIGHTS(req, res, u)) return
 
   if (await handleStripe(req, res, { path: pth, json, readRawAndBody,
     verifyJwt, erdToPubkey, jwtSecret: JWT_SECRET, originAllowed: liaSimpleOriginAllowed })) return
