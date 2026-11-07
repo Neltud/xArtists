@@ -1,0 +1,13 @@
+{
+  "kind": "xartists_pack_media_readback",
+  "nftIdentifier": "XAIPLS-2cf72b-01",
+  "ipfsUri": null,
+  "sha256": null,
+  "contentType": "image/png",
+  "maxBytes": 16000000,
+  "gateways": [
+    "https://ipfs.io",
+    "https://dweb.link"
+  ],
+  "note": "Fill only after verified owner-approved pack artwork has been uploaded. Placeholder null values force NO-GO. Both gateways are retrieval endpoints, NOT proof of two independent storage providers."
+}
