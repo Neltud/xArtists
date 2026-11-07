@@ -107,7 +107,7 @@ export default function TroPage() {
   const sources = Object.keys(TREASURY_FLOW_MATRIX) as RevenueSource[]
 
   return (
-    <div className="animate-fade-in max-w-3xl mx-auto space-y-6 pb-16">
+    <div className="animate-fade-in max-w-3xl mx-auto space-y-6 pb-28 sm:pb-16">
       <PageGuide page="tro" />
 
       <header className="space-y-2">
