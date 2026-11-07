@@ -1,0 +1,102 @@
+{
+  "Treasury rule, not a balance": [
+    "Règle de trésorerie, pas un solde",
+    "Treasury rule, not a balance",
+    "Regla de tesorería, no un saldo",
+    "Tresorregel, kein Saldo",
+    "Правило казны, не остаток",
+    "Правило скарбниці, не залишок",
+    "金库规则，不是余额",
+    "قاعدة الخزينة، وليست رصيداً"
+  ],
+  "These shares apply only to fees sent later into treasury-splitter. That contract is not deployed, so this bar is not a wallet balance.": [
+    "Ces parts ne concernent que des frais envoyés plus tard au treasury-splitter. Ce contrat n'est pas déployé : la barre n'est pas un solde de wallet.",
+    "These shares apply only to fees sent later into treasury-splitter. That contract is not deployed, so this bar is not a wallet balance.",
+    "Estas partes solo aplican a comisiones enviadas más tarde al treasury-splitter. Ese contrato no está desplegado: la barra no es un saldo.",
+    "Diese Anteile gelten nur für Gebühren, die später an den Treasury-Splitter gehen. Der Vertrag ist nicht deployed: der Balken ist kein Wallet-Saldo.",
+    "Эти доли относятся только к комиссиям, которые позже уйдут в treasury-splitter. Контракт не развернут: полоса не баланс.",
+    "Ці частки стосуються лише комісій, які пізніше підуть у treasury-splitter. Контракт не розгорнуто: смуга не є балансом.",
+    "这些份额只适用于以后送入 treasury-splitter 的费用。该合约尚未部署，这条不是钱包余额。",
+    "هذه الحصص للرسوم التي تُرسل لاحقاً إلى treasury-splitter فقط. العقد غير منشور، والشريط ليس رصيد محفظة."
+  ],
+  "Hover or focus a share. This bar is not the burned TRO.": [
+    "Survolez ou sélectionnez une part. Cette barre n'est pas le TRO brûlé.",
+    "Hover or focus a share. This bar is not the burned TRO.",
+    "Pase el cursor o enfoque una parte. Esta barra no es el TRO quemado.",
+    "Eine Anteil fläche zeigen oder fokussieren. Dieser Balken ist nicht das verbrannte TRO.",
+    "Наведите или выберите долю. Эта полоса не сжженный TRO.",
+    "Наведіть або виберіть частку. Ця смуга не спалений TRO.",
+    "悬停或聚焦某一份。这条不是已销毁的 TRO。",
+    "مرّر أو حدّد حصة. هذا الشريط ليس TRO المحروق."
+  ],
+  "TRO redistribution is another 40/30/20/10: pool, stake, rewards and burn. It is not this bar.": [
+    "La redistribution des TRO est une autre règle 40/30/20/10 : pool, stake, récompenses et burn. Ce n'est pas cette barre.",
+    "TRO redistribution is another 40/30/20/10: pool, stake, rewards and burn. It is not this bar.",
+    "La redistribución de TRO es otra regla 40/30/20/10: pool, stake, recompensas y burn. No es esta barra.",
+    "Die TRO-Umverteilung ist eine andere 40/30/20/10-Regel: Pool, Stake, Rewards und Burn. Nicht dieser Balken.",
+    "Редистрибуция TRO — другое правило 40/30/20/10: пул, стейк, награды и сжигание. Это не эта полоса.",
+    "Редистрибуція TRO — інше правило 40/30/20/10: пул, стейк, винагороди і спалення. Це не ця смуга.",
+    "TRO 再分配是另一套 40/30/20/10：池、质押、奖励和销毁。不是这条。",
+    "إعادة توزيع TRO قاعدة أخرى 40/30/20/10: بركة ورهن ومكافآت وحرق. ليست هذا الشريط."
+  ],
+  "Art program. Nothing has been sent here.": [
+    "Programme artistique. Rien n'a été envoyé ici.",
+    "Art program. Nothing has been sent here.",
+    "Programa artístico. No se ha enviado nada aquí.",
+    "Kunstprogramm. Hierhin wurde nichts gesendet.",
+    "Арт-программа. Сюда ничего не отправлено.",
+    "Мистецька програма. Сюди нічого не надіслано.",
+    "艺术计划。这里尚未收到任何资金。",
+    "برنامج فني. لم يُرسل شيء إلى هنا."
+  ],
+  "Risk buffer. Nothing has been sent here.": [
+    "Réserve de risque. Rien n'a été envoyé ici.",
+    "Risk buffer. Nothing has been sent here.",
+    "Reserva de riesgo. No se ha enviado nada aquí.",
+    "Risikopuffer. Hierhin wurde nichts gesendet.",
+    "Резерв на риск. Сюда ничего не отправлено.",
+    "Резерв на ризик. Сюди нічого не надіслано.",
+    "风险缓冲。这里尚未收到任何资金。",
+    "احتياطي مخاطر. لم يُرسل شيء إلى هنا."
+  ],
+  "Creator incentive. Nothing has been sent here.": [
+    "Incitation créateur. Rien n'a été envoyé ici.",
+    "Creator incentive. Nothing has been sent here.",
+    "Incentivo al creador. No se ha enviado nada aquí.",
+    "Anreiz für Creator. Hierhin wurde nichts gesendet.",
+    "Стимул создателя. Сюда ничего не отправлено.",
+    "Стимул творця. Сюди нічого не надіслано.",
+    "创作者激励。这里尚未收到任何资金。",
+    "حافز المبدع. لم يُرسل شيء إلى هنا."
+  ],
+  "Gas and operations. Nothing has been sent here.": [
+    "Gaz et opérations. Rien n'a été envoyé ici.",
+    "Gas and operations. Nothing has been sent here.",
+    "Gas y operaciones. No se ha enviado nada aquí.",
+    "Gas und Betrieb. Hierhin wurde nichts gesendet.",
+    "Газ и операции. Сюда ничего не отправлено.",
+    "Газ і операції. Сюди нічого не надіслано.",
+    "Gas 与运营。这里尚未收到任何资金。",
+    "الغاز والتشغيل. لم يُرسل شيء إلى هنا."
+  ],
+  "Planned init only. The owner could change the shares after a real deployment.": [
+    "Initialisation prévue seulement. Le propriétaire ne pourrait changer les parts qu'après un déploiement réel.",
+    "Planned init only. The owner could change the shares after a real deployment.",
+    "Solo la inicialización prevista. El propietario podría cambiar las partes tras un despliegue real.",
+    "Nur die geplante Initialisierung. Der Owner könnte die Anteile erst nach einem echten Deploy ändern.",
+    "Только планируемая инициализация. Владелец сможет изменить доли лишь после реального деплоя.",
+    "Лише запланована ініціалізація. Власник зможе змінити частки лише після реального деплою.",
+    "仅为计划中的初始化。只有真正部署后，所有者才能改变份额。",
+    "تهيئة مخططة فقط. لا يمكن للمالك تغيير الحصص إلا بعد نشر حقيقي."
+  ],
+  "This total is tokens already destroyed. It is not a slice of the treasury rule.": [
+    "Ce total est des jetons déjà détruits. Ce n'est pas une part de la règle de trésorerie.",
+    "This total is tokens already destroyed. It is not a slice of the treasury rule.",
+    "Este total son tokens ya destruidos. No es una parte de la regla de tesorería.",
+    "Diese Summe sind bereits zerstörte Token. Sie ist kein Anteil der Tresorregel.",
+    "Это уже уничтоженные токены. Это не доля правила казны.",
+    "Це вже знищені токени. Це не частка правила скарбниці.",
+    "这是已经销毁的代币总量，不是金库规则的一份。",
+    "هذا المجموع رموز دُمّرت بالفعل. ليس حصة من قاعدة الخزينة."
+  ]
+}

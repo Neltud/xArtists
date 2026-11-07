@@ -58,9 +58,9 @@ def main() -> None:
     data["split_indicative_bps"] = {
         "mission": 4000,
         "reserve": 3000,
-        "ops": 2000,
-        "reward": 1000,
-        "note": "Align TREASURY_POLICY / splitter SC when live",
+        "reward": 2000,
+        "ops": 1000,
+        "note": "Matches scripts/deploy_treasury_splitter.sh. Not an on-chain balance.",
     }
     data["create_steps"] = [
         "mxpy wallet new --format pem --outfile mission.pem",
