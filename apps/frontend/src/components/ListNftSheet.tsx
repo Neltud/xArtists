@@ -7,6 +7,7 @@ import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
 import { canListBuyNft } from '../config/scStatus'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useWallet } from '../context/WalletContext'
+import { egldTextToWei } from '../lib/egldExactAmount.mjs'
 
 export type ListTarget = {
   collection: string
@@ -35,9 +36,8 @@ export default function ListNftSheet({ target, onClose, onListed }: Props) {
 
   const onSubmit = async () => {
     setMsg(null)
-    const p = parseFloat(price)
-    if (!(p > 0)) {
-      setMsg('Prix invalide')
+    try { egldTextToWei(price) } catch {
+      setMsg('Prix EGLD invalide (18 décimales maximum, supérieur à zéro).')
       return
     }
     if (!connected) {
@@ -56,9 +56,9 @@ export default function ListNftSheet({ target, onClose, onListed }: Props) {
       await listNft({
         tokenId: target.collection,
         nonce: target.nonce,
-        priceEgld: p,
+        priceEgld: price,
       })
-      setMsg('TX soumise — confirme dans le wallet')
+      setMsg('Transaction soumise — vérifier la confirmation et la garde NFT sur Explorer')
       onListed?.()
     } catch (e) {
       setMsg(e instanceof Error ? e.message : 'Échec list')
@@ -86,9 +86,8 @@ export default function ListNftSheet({ target, onClose, onListed }: Props) {
 
         <label className="block text-xs text-zinc-400">
           {xaRender("Prix (EGLD) ")}<input
-            type="number"
-            min="0"
-            step="0.01"
+            type="text"
+            inputMode="decimal"
             value={price}
             onChange={e => setPrice(e.target.value)}
             className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-white"
