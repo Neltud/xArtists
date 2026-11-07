@@ -1,56 +1,56 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-07T00:38:28.248Z",
+  "updatedAt": "2026-11-07T09:38:44.463Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1794011907704",
-      "timestamp": "00:38",
+      "id": "egld-1794044323959",
+      "timestamp": "09:38",
       "source": "EGLD",
-      "title": "Cotation publique · $3.21 (API MultiversX economics)",
+      "title": "Cotation publique · $3.16 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1794002415000",
+      "id": "rss-CoinTelegraph-0-1794042635000",
+      "timestamp": "09:10",
+      "source": "CoinTelegraph",
+      "title": "Suspicious prediction market activity seen before election poll release: NYT",
+      "link": "https://cointelegraph.com/news/suspicious-prediction-market-activity-seen-before-election-poll-release-nyt?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794037524000",
+      "timestamp": "07:45",
+      "source": "CoinTelegraph",
+      "title": "Nvidia may face a more hostile post-election Washington: Report",
+      "link": "https://cointelegraph.com/news/nvidia-may-be-facing-a-more-hostile-post-election-washington-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794002415000",
       "timestamp": "22:00",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1793999125000",
+      "id": "rss-CoinTelegraph-3-1793999125000",
       "timestamp": "21:05",
       "source": "CoinTelegraph",
       "title": "US Treasury cuts off MEXC over alleged $16B in illicit transactions",
       "link": "https://cointelegraph.com/news/us-treasury-bans-mexc-over-alleged-16b-illicit-transactions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1793998283000",
+      "id": "rss-CoinTelegraph-4-1793998283000",
       "timestamp": "20:51",
       "source": "CoinTelegraph",
       "title": "Gnosis Pay breach exposes card details, personal data and crypto wallet information",
       "link": "https://cointelegraph.com/news/gnosis-pay-breach-exposes-card-details-personal-data-crypto-wallet-information?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1793997385000",
+      "id": "rss-CoinTelegraph-5-1793997385000",
       "timestamp": "20:36",
       "source": "CoinTelegraph",
       "title": "Binance hack is ‘cyber war,’ TRM Labs executive says",
       "link": "https://cointelegraph.com/interview/trm-labs-binance-hack-interview?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1793995467000",
-      "timestamp": "20:04",
-      "source": "CoinTelegraph",
-      "title": "US 401(k) proposal leaves door open to altcoins, but hurdles remain",
-      "link": "https://cointelegraph.com/news/us-401k-proposal-leaves-door-open-altcoins-hurdles?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793990865000",
-      "timestamp": "18:47",
-      "source": "CoinTelegraph",
-      "title": "Russia finalizes crypto trading rules ahead of Nov. 17 rollout",
-      "link": "https://cointelegraph.com/news/russia-finalizes-crypto-trading-rules-november-rollout?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-0-1793995758000",
@@ -79,6 +79,27 @@
       "source": "CoinDesk",
       "title": "Thailand moves to block Bitget as crypto exchange's local acquisition faces uncertainty",
       "link": "https://www.coindesk.com/business/2026/11/05/thailand-moves-to-block-bitget-as-crypto-exchange-s-local-acquisition-faces-uncertainty"
+    },
+    {
+      "id": "egld-1794011907704",
+      "timestamp": "00:38",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.21 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1793995467000",
+      "timestamp": "20:04",
+      "source": "CoinTelegraph",
+      "title": "US 401(k) proposal leaves door open to altcoins, but hurdles remain",
+      "link": "https://cointelegraph.com/news/us-401k-proposal-leaves-door-open-altcoins-hurdles?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1793990865000",
+      "timestamp": "18:47",
+      "source": "CoinTelegraph",
+      "title": "Russia finalizes crypto trading rules ahead of Nov. 17 rollout",
+      "link": "https://cointelegraph.com/news/russia-finalizes-crypto-trading-rules-november-rollout?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "egld-1793991327313",
@@ -177,27 +198,6 @@
       "source": "CoinDesk",
       "title": "Zcash’s landmark NU7 upgrade goes live, speeding up private payments",
       "link": "https://www.coindesk.com/tech/2026/11/06/zcash-s-landmark-nu7-upgrade-goes-live-speeding-up-private-payments"
-    },
-    {
-      "id": "rss-CoinDesk-1-1793931863000",
-      "timestamp": "02:24",
-      "source": "CoinDesk",
-      "title": "Hyperliquid treasury firm seeking U.S. regulatory nod as a domestic futures platform",
-      "link": "https://www.coindesk.com/policy/2026/11/05/hyperliquid-treasury-firm-seeking-u-s-regulatory-nod-as-a-domestic-futures-platform"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793928600000",
-      "timestamp": "01:30",
-      "source": "CoinDesk",
-      "title": "Bitcoin developer proposes ‘landmines’ to make quantum thieves lose their own BTC",
-      "link": "https://www.coindesk.com/tech/2026/11/05/bitcoin-developer-proposes-landmines-to-make-quantum-thieves-lose-their-own-btc"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793905185000",
-      "timestamp": "18:59",
-      "source": "CoinDesk",
-      "title": "U.S. Justice Department assembles force to shield against foreign AI threats",
-      "link": "https://www.coindesk.com/policy/2026/11/05/u-s-justice-department-assembles-force-to-shield-against-foreign-ai-threats"
     }
   ]
 }
