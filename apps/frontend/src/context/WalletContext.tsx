@@ -120,6 +120,15 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const applyLiveSession = (address: string) => {
+    // Restoring a WalletConnect session must not bypass the explicit LIA-ops
+    // wallet ban enforced for manual/user Connect. Ops keys stay outside dApp.
+    if (!isValidErd(address) || address.toLowerCase() === LIA_WALLET.toLowerCase()) {
+      clearXPortalSession()
+      clearStorage()
+      setState({ connected: false, address: '', method: null, sessionLive: false })
+      setEmpireWallet({ connected: false, address: null, method: null })
+      return
+    }
     setState({
       connected: true,
       address,
