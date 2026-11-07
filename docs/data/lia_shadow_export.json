@@ -1,45 +1,45 @@
 {
   "schema": "lia_shadow_export/v1",
-  "ts": "2026-11-06T11:56:10Z",
+  "ts": "2026-11-07T18:33:22Z",
   "paper": true,
-  "fills": 133,
-  "shadow_pnl_usd": 5.7419,
-  "win_rate": 0.6015,
+  "fills": 138,
+  "shadow_pnl_usd": 5.7741,
+  "win_rate": 0.5942,
   "last_shadow": [
     {
-      "id": "b2398d99-549",
+      "id": "f023232e-08b",
       "side": "BUY",
       "asset": "TRO",
-      "pnl_usd": -0.0704,
-      "ts": "2026-11-05T05:56:33Z"
+      "pnl_usd": -0.029,
+      "ts": "2026-11-06T19:14:03Z"
     },
     {
-      "id": "4e8c5adf-422",
+      "id": "41b59253-d67",
       "side": "BUY",
       "asset": "TRO",
-      "pnl_usd": 0.0693,
-      "ts": "2026-11-05T14:29:14Z"
+      "pnl_usd": -0.0896,
+      "ts": "2026-11-07T00:00:07Z"
     },
     {
-      "id": "787f50a7-4a3",
+      "id": "6c32e00a-a12",
       "side": "BUY",
       "asset": "TRO",
-      "pnl_usd": 0.0644,
-      "ts": "2026-11-05T21:50:24Z"
+      "pnl_usd": 0.0891,
+      "ts": "2026-11-07T05:49:10Z"
     },
     {
-      "id": "439cd102-6ca",
+      "id": "19826392-483",
       "side": "BUY",
       "asset": "EGLD",
-      "pnl_usd": 0.1898,
-      "ts": "2026-11-06T02:06:15Z"
+      "pnl_usd": 0.0674,
+      "ts": "2026-11-07T12:43:17Z"
     },
     {
-      "id": "04857d8a-c08",
+      "id": "a7d0c695-ece",
       "side": "BUY",
       "asset": "TRO",
-      "pnl_usd": -0.1193,
-      "ts": "2026-11-06T11:56:09Z"
+      "pnl_usd": -0.0057,
+      "ts": "2026-11-07T18:33:22Z"
     }
   ],
   "friction_model": {
