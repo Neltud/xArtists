@@ -32,7 +32,7 @@ Sources : https://explorer.multiversx.com/collections/XAIPLS-2cf72b et https://a
 
 ## Images xArtists issues du Drive du créateur
 
-La branche `feat/drive-art-egld-readiness-20261106` contient cinq PNG réels récupérés dans `xArtists Galerie NFT collection`, sans invention de logos ni de sources ; quatre œuvres sont utilisées dans la vitrine galerie, et Genesis Pulse #005 HD sert de réserve éditoriale. Ce sont des **assets statiques de présentation** et non des fichiers épinglés IPFS ou des NFT nouvellement mintés.
+La branche `feat/drive-art-egld-readiness-20261106` publie quatre PNG originaux choisis dans `xArtists Galerie NFT collection` pour la vitrine artistique, sans invention de logos ni de sources. Le master HD Genesis Pulse #005 n'est **pas** dans les assets publics : il reste hors publication tant que son usage n'est pas validé. Ce sont des **assets statiques de présentation** et non des fichiers épinglés IPFS ou des NFT nouvellement mintés.
 
 ### Critères de clôture / GO
 - [ ] Endpoint upload IPFS auth disponible et pin confirmé ; backup et 2 readbacks SHA identiques.
