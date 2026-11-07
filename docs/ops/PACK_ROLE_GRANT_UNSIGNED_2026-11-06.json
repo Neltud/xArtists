@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "kind": "xartists_pack_role_grant_unsigned_transactions",
+  "generatedDate": "2026-11-06",
+  "network": "multiversx-mainnet",
+  "chainId": "1",
+  "mode": "REVIEW_ONLY_NOT_SIGNED_NOT_BROADCAST",
+  "observedAt": {
+    "metachainNonce": 39512645,
+    "metachainRound": 40376113,
+    "rolesStillMissing": true,
+    "canAddSpecialRoles": true
+  },
+  "encoding": {
+    "addressHex": "32-byte public key, verified against @multiversx/sdk-core 13.17.2 Address.getPublicKey, same rule as apps/frontend/src/lib/studioOnChainMint.ts walletAddressToHex",
+    "systemContractPubkey": "000000000000000000010000000000000000000000000000000000000002ffff",
+    "argumentEncoding": "ASCII hex of collection ticker and role name",
+    "nonce": "OMITTED ON PURPOSE. Wallet must use the live account nonce. Do not reuse a nonce copied from chat or from this file.",
+    "gasPrice": "OMITTED. Wallet uses the network minimum, currently 1000000000.",
+    "gasLimit": 60000000,
+    "gasLimitSource": "Same ceiling as docs and .github/workflows/configure-pack-collections.yml for setSpecialRole. Not a fresh simulation of this payload. Do not lower it in the wallet."
+  },
+  "sender": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g",
+  "receiver": "erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzllls8a5w6u",
+  "value": "0",
+  "function": "setSpecialRole",
+  "roleRecipient": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g",
+  "roleRecipientHex": "b64cf0b0256cd0797b5044332b10c7d4ee6e02caaec9a74efd3b51d2ec9b65cc",
+  "roles": [
+    {"name": "ESDTRoleSetNewURI", "hex": "45534454526f6c655365744e6577555249"},
+    {"name": "ESDTRoleNFTUpdate", "hex": "45534454526f6c654e4654557064617465"}
+  ],
+  "explicitlyAbsent": [
+    "ESDTRoleNFTCreate",
+    "ESDTRoleNFTAddURI",
+    "ESDTTransferRole",
+    "ESDTRoleNFTBurn",
+    "ESDTRoleModifyCreator",
+    "ESDTRoleModifyRoyalties",
+    "ESDTRoleNFTSetNewURIs"
+  ],
+  "transactions": [
+    {
+      "order": 1,
+      "collection": "XAIPLS-2cf72b",
+      "collectionHex": "584149504c532d326366373262",
+      "data": "setSpecialRole@584149504c532d326366373262@b64cf0b0256cd0797b5044332b10c7d4ee6e02caaec9a74efd3b51d2ec9b65cc@45534454526f6c655365744e6577555249@45534454526f6c654e4654557064617465",
+      "signed": false,
+      "broadcast": false,
+      "txHash": null
+    },
+    {
+      "order": 2,
+      "collection": "XAIYLD-987e24",
+      "collectionHex": "584149594c442d393837653234",
+      "data": "setSpecialRole@584149594c442d393837653234@b64cf0b0256cd0797b5044332b10c7d4ee6e02caaec9a74efd3b51d2ec9b65cc@45534454526f6c655365744e6577555249@45534454526f6c654e4654557064617465",
+      "signed": false,
+      "broadcast": false,
+      "txHash": null
+    },
+    {
+      "order": 3,
+      "collection": "XAISNT-3d8a6b",
+      "collectionHex": "584149534e542d336438613662",
+      "data": "setSpecialRole@584149534e542d336438613662@b64cf0b0256cd0797b5044332b10c7d4ee6e02caaec9a74efd3b51d2ec9b65cc@45534454526f6c655365744e6577555249@45534454526f6c654e4654557064617465",
+      "signed": false,
+      "broadcast": false,
+      "txHash": null
+    }
+  ],
+  "doNotUse": "apps/frontend Studio button Signer setSpecialRole. buildSetNftCreateRoleTx grants only ESDTRoleNFTCreate and would not repair URIs.",
+  "afterEachSuccess": "Re-query https://api.multiversx.com/collections/{id} and getSpecialRoles. Record tx hash and block. Do not send ESDTSetNewURIs, mint, transfer, or any listing."
+}

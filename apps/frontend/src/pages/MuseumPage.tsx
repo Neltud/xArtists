@@ -12,6 +12,7 @@ import {
   type FrameItem,
 } from '../components/museum/MuseumCorridor'
 import MuseumHall from '../components/museum/MuseumHall'
+import DriveArtShowcase from '../experience/DriveArtShowcase'
 import AdSlot from '../components/AdSlot'
 import {useCopy} from '../experience/state'
 import Icon from '../experience/Icon'
@@ -322,6 +323,8 @@ export default function MuseumPage() {
           </p>
         ))}
       </header>
+
+      {museumId === 'xartists' && <DriveArtShowcase compact />}
 
       <div className="flex flex-wrap gap-2">
         {xaRender((['explore', 'venue', 'map', 'mine', 'pulse'] as Mode[]).map(m => (
