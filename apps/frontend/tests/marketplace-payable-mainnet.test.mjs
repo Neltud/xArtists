@@ -22,7 +22,7 @@ test('marketplace unlock cannot be based only on a compile-time flag',()=>{
 })
 
 test('public auction page does not have a bid transaction button',()=>{
-  assert.match(auction,/aucune enchère ni adjudication réelle n’est acceptée actuellement/)
+  assert.match(auction,/Aucune enchère ni adjudication réelle n’est acceptée actuellement/)
   assert.doesNotMatch(auction,/placeBid\s*\(/)
   assert.doesNotMatch(auction,/sendTransaction\s*\(/)
 })
