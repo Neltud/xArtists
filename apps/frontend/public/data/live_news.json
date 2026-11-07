@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-07T17:28:07.297Z",
+  "updatedAt": "2026-11-07T21:28:43.995Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1794072486766",
-      "timestamp": "17:28",
+      "id": "egld-1794086923467",
+      "timestamp": "21:28",
       "source": "EGLD",
-      "title": "Cotation publique · $3.13 (API MultiversX economics)",
+      "title": "Cotation publique · $3.10 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -53,18 +53,39 @@
       "link": "https://cointelegraph.com/news/nvidia-may-be-facing-a-more-hostile-post-election-washington-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinDesk-0-1793995758000",
+      "id": "rss-CoinDesk-0-1794073006000",
+      "timestamp": "17:36",
+      "source": "CoinDesk",
+      "title": "U.S. Treasury moves to cut off crypto exchange MEXC over $16 billion in alleged illicit flows",
+      "link": "https://www.coindesk.com/business/2026/11/07/u-s-treasury-moves-to-cut-off-crypto-exchange-mexc-over-usd16-billion-in-alleged-illicit-flows"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794070260000",
+      "timestamp": "16:51",
+      "source": "CoinDesk",
+      "title": "Gnosis Pay breach exposes card numbers, home addresses and linked crypto wallets",
+      "link": "https://www.coindesk.com/business/2026/11/07/gnosis-pay-breach-exposes-card-numbers-home-addresses-and-linked-crypto-wallets"
+    },
+    {
+      "id": "rss-CoinDesk-2-1793995758000",
       "timestamp": "20:09",
       "source": "CoinDesk",
       "title": "Apple, Meta reject OKX–ICE tokenized stock plans, leaving crypto firms as the ones to watch",
       "link": "https://www.coindesk.com/policy/2026/11/06/apple-meta-reject-okx-ice-tokenized-stock-plans-leaving-crypto-firms-as-the-ones-to-watch"
     },
     {
-      "id": "rss-CoinDesk-1-1793986948000",
+      "id": "rss-CoinDesk-3-1793986948000",
       "timestamp": "17:42",
       "source": "CoinDesk",
       "title": "U.S. prediction markets regulator issues demand that clashes directly with courts",
       "link": "https://www.coindesk.com/policy/2026/11/06/u-s-prediction-markets-regulator-issues-demand-that-clashes-directly-with-courts"
+    },
+    {
+      "id": "egld-1794072486766",
+      "timestamp": "17:28",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.13 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinDesk-2-1793978798000",
@@ -177,27 +198,6 @@
       "source": "CoinDesk",
       "title": "U.S. added 165,000 jobs in October, blowing past 65,000 estimate",
       "link": "https://www.coindesk.com/markets/2026/11/06/u-s-added-165-000-jobs-in-october-blowing-past-65-000-estimate"
-    },
-    {
-      "id": "egld-1793960698619",
-      "timestamp": "10:24",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.28 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793955636000",
-      "timestamp": "09:00",
-      "source": "CoinTelegraph",
-      "title": "Zcash NU7 upgrade goes live, leaves 12,224 ZEC stranded in Sprout pool",
-      "link": "https://cointelegraph.com/news/zcash-nu7-upgrade-15m-sprout-funds-unspendable?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793954574000",
-      "timestamp": "08:42",
-      "source": "CoinTelegraph",
-      "title": "Hyperliquid Strategies seeks futures registration for perps",
-      "link": "https://cointelegraph.com/news/nasdaq-hyperliquid-strategies-futures-broker-license-onchain-perps?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
