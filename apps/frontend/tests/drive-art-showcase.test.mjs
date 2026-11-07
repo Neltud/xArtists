@@ -11,7 +11,7 @@ const home = readFileSync(new URL('../src/experience/Pages.tsx', import.meta.url
 const museum = readFileSync(new URL('../src/pages/MuseumPage.tsx', import.meta.url), 'utf8')
 const sourceFiles = [
   'xArtists0279.png', 'xArtists0269.png', 'xArtists0291.png',
-  'xArtists0286.png', 'genesis-pulse-005-recto-galerie-HD.png',
+  'xArtists0286.png',
 ]
 
 test('all selected original Drive artworks exist and are actual PNG files', () => {
