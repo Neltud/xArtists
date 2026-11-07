@@ -46,7 +46,7 @@ Tous ont `uris: [""]`, image indexer `https://media.multiversx.com/nfts/thumbnai
 
 Donc **un NFT de chaque collection pack est détenu par le wallet admin**, pas par le wallet de déploiement. Le wallet de déploiement ne peut pas lister Yield ni Sentinel : il ne les détient pas. Le propriétaire de collection n'est pas le détenteur de tous les nonces.
 
-Les cinq PNG Drive de la PR #426 restent des assets de galerie. Les coller automatiquement sur ces packs mélangerait une œuvre de vitrine et un jeton `product:access`. La réparation n'utilise que le média que le propriétaire désigne pour chaque nonce, avec CID, SHA-256 et deux lectures gateway identiques.
+Les quatre PNG Drive effectivement publiés par la PR #426 restent des assets de galerie. Le master HD Genesis Pulse #005 reste exclu des ressources publiques. Les coller automatiquement sur ces packs mélangerait une œuvre de vitrine et un jeton `product:access`. La réparation n'utilise que le média que le propriétaire désigne pour chaque nonce, avec CID, SHA-256 et deux lectures gateway identiques.
 
 ## IPFS et domaine
 
