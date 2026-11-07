@@ -24,7 +24,7 @@ export interface ListNftParams {
 
 export interface BuyNftParams {
   listingId: number
-  priceEgld: number
+  priceEgld: string
 }
 
 export interface PlaceBidParams {
