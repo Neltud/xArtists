@@ -11,6 +11,7 @@ import {
   AGENTS_MARKETPLACE_ADDRESS,
   MARKETPLACE_ADDRESS,
   MARKETPLACE_LIVE,
+  LIA_OPS,
   NFT_STAKING_ADDRESS,
   NFT_STAKING_LIVE,
   SLOT_CASINO_ADDRESS,
@@ -162,8 +163,8 @@ export function slotReceiverOrThrow(): string {
   return SLOT_CASINO_ADDRESS
 }
 
-export function isLiaOpsWallet(_addr?: string | null): boolean {
-  return false
+export function isLiaOpsWallet(addr?: string | null): boolean {
+  return typeof addr === 'string' && addr.toLowerCase() === LIA_OPS.toLowerCase()
 }
 
 export function slotStatusLabel(): string {

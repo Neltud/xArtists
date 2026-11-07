@@ -7,6 +7,7 @@
 import { useCallback, useState } from 'react'
 import { useSendTransaction } from './useSendTransaction'
 import { useWallet } from '../context/WalletContext'
+import { egldTextToWei } from '../lib/egldExactAmount.mjs'
 import {
   isMarketplaceLive,
   marketplaceReceiverOrThrow,
@@ -16,23 +17,23 @@ import {
 export interface ListNftParams {
   tokenId: string
   nonce: number
-  priceEgld: number
+  priceEgld: string
   royaltyBps?: number
   royaltyReceiver?: string
 }
 
 export interface BuyNftParams {
   listingId: number
-  priceEgld: number
+  priceEgld: string
 }
 
 export interface PlaceBidParams {
   listingId: number
-  amountEgld: number
+  amountEgld: string
 }
 
-function egldToAtomic(egld: number): string {
-  return BigInt(Math.round(egld * 1e18)).toString()
+function egldToAtomic(egld: string): string {
+  return egldTextToWei(egld)
 }
 
 function strToHex(s: string): string {
@@ -95,7 +96,7 @@ export function useMarketplaceTx() {
   const [error, setError] = useState<string | null>(null)
   const [lastTx, setLastTx] = useState<string | null>(null)
   const { send } = useSendTransaction()
-  const { address } = useWallet()
+  const { address, canAttemptSign } = useWallet()
   const live = isMarketplaceLive()
 
   const run = useCallback(
@@ -106,6 +107,12 @@ export function useMarketplaceTx() {
       if (!live) {
         setError(BLOCKED)
         throw new Error(BLOCKED)
+      }
+      // A cached wallet address is not proof of an active signing session.
+      if (!address || !canAttemptSign) {
+        const msg = 'Wallet signataire actif requis (xPortal, Web Wallet ou extension).'
+        setError(msg)
+        throw new Error(msg)
       }
       setPending(true)
       setError(null)
@@ -120,7 +127,9 @@ export function useMarketplaceTx() {
           setError(m)
           throw new Error(m)
         }
-        if (res.sessionId) setLastTx(res.sessionId)
+        // SDK session IDs are not Explorer transaction hashes.
+        // Never claim a confirmed mint, listing or payment after submission only.
+        if (res.sessionId && /^[0-9a-f]{64}$/i.test(res.sessionId)) setLastTx(res.sessionId)
         return res
       } catch (e) {
         const msg = errStr(e)
@@ -130,7 +139,7 @@ export function useMarketplaceTx() {
         setPending(false)
       }
     },
-    [send, live],
+    [send, live, address, canAttemptSign],
   )
 
   const listNft = useCallback(
@@ -171,7 +180,7 @@ export function useMarketplaceTx() {
         },
         {
           processing: 'Listing NFT…',
-          success: 'Listé',
+          success: 'TX soumise — listing non encore confirmé',
           fail: 'Échec list',
         },
       )
@@ -191,7 +200,7 @@ export function useMarketplaceTx() {
         },
         {
           processing: 'Achat NFT…',
-          success: 'Acheté',
+          success: 'TX soumise — achat non encore confirmé',
           fail: 'Échec buy',
         },
       )
@@ -209,7 +218,7 @@ export function useMarketplaceTx() {
           data: `placeBid@${numToHex(p.listingId)}`,
           chainID: '1',
         },
-        { processing: 'Enchère…', success: 'Bid', fail: 'Échec bid' },
+        { processing: 'Enchère…', success: 'TX soumise — enchère non encore confirmée', fail: 'Échec bid' },
       ),
     [run],
   )

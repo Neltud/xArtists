@@ -137,7 +137,7 @@ export default function NFTDetailModal({
     }
     try {
       await fn()
-      setTxMsg('TX soumise — confirme dans le wallet si demandé')
+      setTxMsg('Transaction soumise — vérifier le résultat final sur Explorer avant de considérer la vente ou l’enchère acquise')
     } catch (e: unknown) {
       setTxMsg(e instanceof Error ? e.message : 'Erreur')
     }
@@ -248,7 +248,7 @@ export default function NFTDetailModal({
                   type="button"
                   disabled={txDisabled}
                   className="btn-primary text-sm"
-                  onClick={guard(() => buyNft({ listingId: id, priceEgld: parseFloat(buyPrice) }))}
+                  onClick={guard(() => buyNft({ listingId: id, priceEgld: buyPrice }))}
                 >
                   {xaRender("Buy ")}</button>
               </div>
@@ -270,7 +270,7 @@ export default function NFTDetailModal({
                     listNft({
                       tokenId: nft.collection,
                       nonce: nft.nonce,
-                      priceEgld: parseFloat(listPrice),
+                      priceEgld: listPrice,
                     })
                   )}
                 >
@@ -290,7 +290,7 @@ export default function NFTDetailModal({
                   type="button"
                   disabled={txDisabled}
                   className="btn-primary text-sm"
-                  onClick={guard(() => placeBid({ listingId: id, amountEgld: parseFloat(bidPrice) }))}
+                  onClick={guard(() => placeBid({ listingId: id, amountEgld: bidPrice }))}
                 >
                   {xaRender("Place bid ")}</button>
                 <button

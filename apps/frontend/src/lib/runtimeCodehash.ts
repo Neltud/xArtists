@@ -113,6 +113,11 @@ export async function refreshRuntimeCodehashes(): Promise<Cache> {
         cache.slotBalance = bal
         // Hash match is not enough: isPayable=false rejects spinEgld.
         cache.slot = okHash && acc.isPayable === true
+      } else if (j.key === 'marketplace') {
+        // MAINNET P0: buyNft and placeBid carry EGLD; an account-level
+        // non-payable contract will reject funds even when endpoint and codeHash match.
+        // Missing isPayable metadata must also fail closed, not default to true.
+        cache.marketplace = okHash && acc.isPayable === true
       } else {
         cache[j.key] = okHash
       }
