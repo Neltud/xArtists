@@ -1,7 +1,7 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * $TRO burn feed — JSON ops + total on-chain MultiversX (Burnify role).
- * Not a trading performance metric.
+ * Not a trading performance metric and not a treasury-split slice.
  */
 import { useEffect, useState } from 'react'
 
@@ -61,7 +61,6 @@ export default function TroBurnFeed() {
     }
   }, [])
 
-  // Live total from MultiversX (authoritative burnt field)
   useEffect(() => {
     let cancelled = false
     ;(async () => {
@@ -98,8 +97,11 @@ export default function TroBurnFeed() {
             Σ {xaRender(total.toLocaleString(undefined, { maximumFractionDigits: 3 }))} {xaRender(" TRO ")}</span>
         ))}
       </div>
-      <p className="text-[11px] text-zinc-500 mb-3">
+      <p className="text-[11px] text-zinc-500 mb-2">
         {xaRender("Preuve de déflation on-chain · Burnify (ESDTRoleLocalBurn) · pas une métrique de performance ")}</p>
+      <p className="text-[11px] text-[var(--xa-muted)] mb-3 leading-relaxed">
+        {xaRender("This total is tokens already destroyed. It is not a slice of the treasury rule.")}
+      </p>
 
       {xaRender(total != null && total > 0 && (
         <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 px-3 py-2 mb-3 text-xs text-zinc-300">
