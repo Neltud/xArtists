@@ -241,3 +241,51 @@ html[data-theme="light"] .xa-module-body .xa-staking-page [class*="border-zinc-"
   line-height: 1.45;
   text-align: center;
 }
+
+
+/* Roadmap mobile: compact step cards and preserve the fixed navigation safe area.
+   Screenshot regression (Nov 6, Android 360-390 px): step 02 cards consumed
+   nearly a viewport and the bottom dock overlaid the start of step 03.
+   Keep all milestones and links visible; never hide interactive content. */
+@media (max-width: 760px) {
+  .xa-roadmap-page {
+    padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px));
+  }
+  .xa-roadmap-stage {
+    margin-top: 26px;
+    scroll-margin-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  }
+  .xa-roadmap-stage-heading {
+    margin-bottom: 10px;
+  }
+  .xa-roadmap-stage > p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  .xa-roadmap-selected {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .xa-roadmap-selected > a {
+    min-height: 64px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+  .xa-roadmap-selected > a > svg {
+    flex: 0 0 auto;
+  }
+  .xa-roadmap-milestones {
+    gap: 10px;
+  }
+  .xa-mobile-dock {
+    padding-bottom: max(3px, env(safe-area-inset-bottom, 0px));
+  }
+  .xa-roadmap-page a:focus-visible,
+  .xa-mobile-dock a:focus-visible {
+    outline: 2px solid var(--xa-accent);
+    outline-offset: 3px;
+  }
+}

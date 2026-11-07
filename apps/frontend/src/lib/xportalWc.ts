@@ -58,8 +58,15 @@ export function cancelXPortalLogin(){loginAbort?.abort()}
 function makeProvider(Ctor:WcCtor,projectId:string){
  const origin=typeof window!=='undefined'?window.location.origin:'https://neltud.github.io'
  const appUrl=new URL(import.meta.env.BASE_URL,origin).href
+ // Official existing xArtists brand assets only (never use a generated wallet logo).
+ // Put the smaller PWA icon first for mobile wallet preview; retain the full brand PNG as fallback.
+ // Keep absolute HTTPS URLs so xPortal can fetch them outside the browser session.
+ const walletIcons=[
+   new URL('icons/icon-192.png',appUrl).href,
+   new URL('xartists-logo.png',appUrl).href,
+ ]
  let provider:XcProvider
- provider=new Ctor(makeCallbacks(()=>provider),MAINNET,WALLET_CONNECT_V2_RELAY_URL,projectId,{metadata:{name:'xArtists',description:'Art, NFT and creative intelligence on MultiversX',url:appUrl,icons:[new URL('xartists-logo.png',appUrl).href]}})
+ provider=new Ctor(makeCallbacks(()=>provider),MAINNET,WALLET_CONNECT_V2_RELAY_URL,projectId,{metadata:{name:'xArtists',description:'Art, NFT and creative intelligence on MultiversX',url:appUrl,icons:walletIcons}})
  return provider
 }
 

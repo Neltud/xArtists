@@ -18,7 +18,9 @@ type AdCreative = {
 }
 
 function isActive(c: AdCreative | undefined): boolean {
-  if (!c || c.status === 'inactive') return false
+  // Public sponsor bookings remain OFF: only first-party demo creatives are eligible.
+  // A JSON status alone is never proof of a third-party sponsorship contract.
+  if (!c || c.status !== 'active' || c.advertiser !== 'xArtists Ops') return false
   const now = Date.now()
   if (c.startsAt && Date.parse(c.startsAt) > now) return false
   if (c.endsAt && Date.parse(c.endsAt) < now) return false
@@ -84,7 +86,7 @@ export default function AdSlot({
     return (
       <aside
         className={`rounded-2xl border border-dashed border-amber-400/40 bg-gradient-to-br from-amber-500/10 to-violet-500/5 overflow-hidden ${className}`}
-        aria-label={xaLocalize("Espace publicitaire disponible")}
+        aria-label={xaLocalize("Emplacement éditorial en préparation")}
         data-ad-slot={id}
       >
         <Link
@@ -94,9 +96,9 @@ export default function AdSlot({
           <p className="text-[10px] uppercase tracking-[0.2em] text-amber-200/80 mb-1">
             {xaRender("Espace pub · ")}{xaRender(id)}
           </p>
-          <p className="text-base font-semibold text-amber-50">{xaRender("Votre publicité ici")}</p>
-          <p className="text-sm text-amber-100/80 mt-1">{xaRender("Enchères · réserver un slot")}</p>
-          <p className="text-[10px] text-zinc-500 mt-2">{xaRender("Paper bid · pas un investissement")}</p>
+          <p className="text-base font-semibold text-amber-50">{xaRender("Emplacement éditorial en préparation")}</p>
+          <p className="text-sm text-amber-100/80 mt-1">{xaRender("Découvrir les emplacements envisagés") }</p>
+          <p className="text-[10px] text-zinc-500 mt-2">{xaRender("Présentation uniquement · aucune réservation ouverte") }</p>
         </Link>
       </aside>
     )
@@ -135,7 +137,7 @@ export default function AdSlot({
         </div>
       ))}
       <p className="text-[10px] uppercase tracking-wide text-zinc-500 px-3 py-2 border-t border-white/5">
-        {xaRender("Publicité · enchère xArtists · pas un investissement ")}</p>
+        {xaRender(ad.advertiser === 'xArtists Ops' ? 'Présentation xArtists · emplacement témoin, non vendu' : 'Contenu sponsorisé · annonceur tiers') }</p>
     </div>
   )
 
