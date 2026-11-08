@@ -35,6 +35,7 @@ test('DAO is a primary nav destination on mobile, desktop, and module directory'
   assert.match(shell, /to="\/dao" onClick=\{closeMobile\}/)
   assert.match(shell, /to="\/dao">\{c\('dao'\)\}/)
   assert.match(shell, /to:'\/finance\/governance',label:'dao'/)
+  assert.match(shell, /to:'\/museum',label:'explore'/)
   assert.match(pages, /const list=modules\.filter\(m=>/)
   assert.match(pages, /group==='all'\|\|m\.group===group/)
   assert.match(pages, /matchesModuleSearch\(q,/)
