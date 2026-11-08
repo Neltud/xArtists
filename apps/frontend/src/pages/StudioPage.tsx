@@ -11,6 +11,7 @@ import { canListBuyNft, canBuyAgent } from '../config/scStatus'
 import PackCheckout from '../components/PackCheckout'
 import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
 import CreatorMediaUpload from '../components/CreatorMediaUpload'
+import ArtworkTurntableLab from '../components/ArtworkTurntableLab'
 import { useToast } from '../components/ui/Toast'
 import { asText } from '../lib/safeRender'
 import { saveStudioCollection } from '../lib/studioOnChainMint'
@@ -215,6 +216,8 @@ export default function StudioPage() {
         <p className="text-[11px] text-zinc-600">
           {xaRender("Après issue : récupère le token id sur l’explorer (TICKER-xxxxxx), colle-le ci-dessus, puis rôle + mint. ")}</p>
       </section>
+
+      <ArtworkTurntableLab />
 
       <section className="card xa-studio-workflow space-y-3">
         <h2 className="text-sm font-semibold text-white">{xaRender("Préparer et créer mon NFT")}</h2>
