@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs'
 
 const ui=readFileSync(new URL('../src/components/CreatorMediaUpload.tsx', import.meta.url),'utf8')
 const studio=readFileSync(new URL('../src/pages/StudioPage.tsx', import.meta.url),'utf8')
+const modelPreview=readFileSync(new URL('../src/components/StudioGlbPreview.tsx',import.meta.url),'utf8')
 
 test('GLB models have a separate server-mediated upload gate and local-only selection',()=>{
   assert.match(ui,/model\/gltf-binary/)
@@ -11,7 +12,11 @@ test('GLB models have a separate server-mediated upload gate and local-only sele
   assert.match(ui,/modelEnabled/)
   assert.match(ui,/setModelEnabled\(j\?\.modelEnabled===true\)/)
   assert.match(ui,/file\.type==='model\/gltf-binary'&&!modelEnabled/)
-  assert.match(ui,/GLB ne constitue pas un scan certifié/)
+  assert.match(ui,/<StudioGlbPreview file=\{file\}\/>/)
+  assert.match(modelPreview,/checkLocalGlb\(bytes\)/)
+  assert.match(modelPreview,/GLTFLoader/)
+  assert.match(modelPreview,/OrbitControls/)
+  assert.match(modelPreview,/aucune publication/i)
   assert.doesNotMatch(ui,/PINATA_JWT|process\.env|localStorage\.setItem/)
 })
 
