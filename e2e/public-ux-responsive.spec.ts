@@ -67,6 +67,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       }
       const menu = page.locator('.xa-mobile-trigger')
       await menu.click()
+      await page.locator('.xa-mobile-advanced summary').click()
       await expect(page.locator('.xa-mobile-menu a[href*="/auction"]')).toBeVisible()
       await expect(page.locator('.xa-mobile-menu a[href*="/create/world-rights"]')).toBeVisible()
       await page.keyboard.press('Escape')
