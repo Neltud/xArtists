@@ -12,6 +12,7 @@ import PackCheckout from '../components/PackCheckout'
 import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
 import CreatorMediaUpload from '../components/CreatorMediaUpload'
 import ArtworkTurntableLab from '../components/ArtworkTurntableLab'
+import MainnetJourney from '../components/MainnetJourney'
 import { useToast } from '../components/ui/Toast'
 import { asText } from '../lib/safeRender'
 import { saveStudioCollection } from '../lib/studioOnChainMint'
@@ -127,6 +128,8 @@ export default function StudioPage() {
         <p className="text-sm text-zinc-400">
           {xaRender("Prépare ton œuvre, publie-la sur IPFS, puis crée ton NFT avec la signature de ton propre wallet. Aucun mint automatique. ")}</p>
       </header>
+
+      <MainnetJourney current="studio" />
 
       <ol className="xa-studio-steps" aria-label="Étapes pour créer un NFT artiste">
         <li><strong>1 · Wallet</strong><span>Connecte ton compte artiste.</span></li>

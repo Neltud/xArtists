@@ -11,6 +11,7 @@ import RouteErrorBoundary from '../components/RouteErrorBoundary'
 import GenesisPackShelf from '../components/packs/GenesisPackShelf'
 import HomeHeroSculpture from './HomeHeroSculpture'
 import DriveArtShowcase from './DriveArtShowcase'
+import MainnetJourney from '../components/MainnetJourney'
 import { MultiversXProvider } from '../context/MultiversXContext'
 const API='https://api.multiversx.com'
 
@@ -47,6 +48,7 @@ export function Home(){
    </div>
    <OrbitalArt/>
   </section>
+  <MainnetJourney current="home" />
   <DriveArtShowcase />
   <section className="xa-first-journeys" aria-labelledby="xa-first-what">
    <div className="xa-first-heading">
