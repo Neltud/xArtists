@@ -15,9 +15,9 @@ export function currentPrimarySection(pathname:string):PrimarySection|null {
     return 'guide'
   if(path==='/dao'||path==='/finance/governance'||path.startsWith('/finance/governance/'))
     return 'dao'
-  if(['/market','/marketplace','/market-place','/auction','/encheres','/market/analytics']
+  if(['/market','/marketplace','/market-place','/auction','/encheres','/market/analytics','/rwa','/rwa_catalog']
       .includes(path)||path.startsWith('/explore/market')||
-      path.startsWith('/explore/auction'))return 'market'
+      path.startsWith('/explore/auction')||path.startsWith('/explore/rwa')||path.startsWith('/explore/analytics'))return 'market'
   if(path==='/studio'||path==='/nft-factory'||path==='/digital-twin'||
       path==='/world-rights'||path==='/plugins/xa-world-rights'||
       path==='/distributeurs'||path.startsWith('/create/'))return 'create'
