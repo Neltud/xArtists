@@ -2,7 +2,7 @@
 
 //! RWA Escrow Bridge — lock EGLD for physical / phygital purchase.
 //! States: Open → Released | Refunded | Cancelled | Disputed
-//! Release: payer confirmReceipt OR attestor submitVerificationProof (NFC/AR hash).
+//! Release: independent receipt, authenticity, quality and ownership gates; attestor executes.
 //! Dispute: 7-day cooling enforced on resolveDispute. CEI, pause, 2-step ownership.
 //! P1 (2026-10-16): seller ≠ payer; Kevin-vector hardening (param validation).
 
@@ -27,6 +27,7 @@ pub struct Escrow<M: ManagedTypeApi> {
     pub receipt_confirmed: bool,
     pub verification_confirmed: bool,
     pub quality_confirmed: bool,
+    pub quality_proof_hash: ManagedBuffer<M>,
     pub ownership_confirmed: bool,
     pub ownership_proof_hash: ManagedBuffer<M>,
 }
@@ -130,6 +131,7 @@ pub trait RwaEscrowBridge {
             receipt_confirmed: false,
             verification_confirmed: false,
             quality_confirmed: false,
+            quality_proof_hash: ManagedBuffer::new(),
             ownership_confirmed: false,
             ownership_proof_hash: ManagedBuffer::new(),
         };
@@ -178,6 +180,7 @@ pub trait RwaEscrowBridge {
         require!(quality_hash.len() > 0 && quality_hash.len() <= MAX_HASH_LEN, "invalid proof");
         let mut esc = self.escrows(id).get();
         require!(esc.status == 0u8, "not open");
+        esc.quality_proof_hash = quality_hash;
         esc.quality_confirmed = true;
         self.escrows(id).set(&esc);
     }
@@ -253,6 +256,10 @@ pub trait RwaEscrowBridge {
 
         let amount = esc.amount.clone();
         if favor_seller {
+            require!(esc.receipt_confirmed, "receipt not confirmed");
+            require!(esc.verification_confirmed, "authenticity not verified");
+            require!(esc.quality_confirmed, "quality not verified");
+            require!(esc.ownership_confirmed, "ownership not reassigned");
             esc.status = 1u8;
             self.escrows(id).set(&esc);
             let seller = esc.seller.clone();
