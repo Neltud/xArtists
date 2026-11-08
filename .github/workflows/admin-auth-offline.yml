@@ -1,0 +1,23 @@
+name: Admin authorization offline crypto tests
+
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/lib/adminAuth*.mjs'
+      - 'apps/frontend/tests/admin-auth*.test.mjs'
+      - '.github/workflows/admin-auth-offline.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-admin-auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node --test apps/frontend/tests/admin-auth-message.test.mjs apps/frontend/tests/admin-auth-signature-test.test.mjs
