@@ -26,9 +26,9 @@ export function createAdminChallengeStore(opts = {}) {
   /** @type {Map<string, { admin: string, action: string, issuedAtMs: number, expiresAtMs: number, consumed: boolean, contract?: string, escrowId?: string, favorSeller?: boolean, target?: string }>} */
   const byNonce = new Map()
 
-  function purgeExpired(at) {
+  function purgeConsumed() {
     for (const [nonce, row] of byNonce) {
-      if (row.expiresAtMs <= at || row.consumed) byNonce.delete(nonce)
+      if (row.consumed) byNonce.delete(nonce)
     }
   }
 
@@ -46,7 +46,7 @@ export function createAdminChallengeStore(opts = {}) {
      */
     issue(input) {
       const at = nowMs()
-      purgeExpired(at)
+      purgeConsumed()
       if (!input || typeof input !== 'object') return { ok: false, error: 'missing_input' }
       if (!ADMIN_ACTIONS.includes(input.action)) return { ok: false, error: 'bad_action' }
       const admin = String(input.adminBech32 || '').trim().toLowerCase()
@@ -107,11 +107,10 @@ export function createAdminChallengeStore(opts = {}) {
 
     /**
      * Atomically consume a nonce if it matches admin + action and is still valid.
-     * Single-use: second call returns replay.
+     * Single-use: second call returns replay / unknown.
      */
     consume({ nonce, adminBech32, action, atMs } = {}) {
       const at = atMs == null ? nowMs() : atMs
-      purgeExpired(at)
       const n = String(nonce || '').trim()
       if (!n) return { ok: false, error: 'empty_nonce' }
       const row = byNonce.get(n)
