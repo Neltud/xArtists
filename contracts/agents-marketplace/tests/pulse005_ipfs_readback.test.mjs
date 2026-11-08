@@ -13,7 +13,7 @@ const data={
   'recto.png':Buffer.from('FAKE_PNG_FIXTURE_DO_NOT_PUBLISH'),
   'verso.png':Buffer.from('FAKE_REVERSE_FIXTURE_DO_NOT_PUBLISH'),
   'animation.mp4':Buffer.from('FAKE_MP4_FIXTURE_DO_NOT_PUBLISH'),
-  'metadata.json':Buffer.from(JSON.stringify({name:'UNVERIFIED MOCK ONLY'})),
+  'metadata.json':Buffer.from(JSON.stringify({name:'Genesis Pulse #005',image:'ipfs://'+CID+'/recto.png',animation_url:'ipfs://'+CID+'/animation.mp4',fixture:'UNVERIFIED MOCK ONLY'})),
 }
 function manifest() {
   return {schema:'xartists.pulse005.readback.v1',collection:'XAIPLS-2cf72b',
@@ -91,4 +91,14 @@ test('file traversal cannot be supplied via manifest file keys',()=>fixture(asyn
   m.files['../secret.txt']={cid:CID,sha256:'a'.repeat(64)}
   await assert.rejects(()=>verifyPulse005(m,{directory,gateways,fetcher:successFetch}),
     /manifest_required_four_files/)
+}))
+
+test('metadata cannot advertise a different collection or media URI',()=>fixture(async directory=>{
+  const forged=JSON.stringify({name:'Genesis Pulse #005',image:'ipfs://fake/recto.png',
+    animation_url:'ipfs://'+CID+'/animation.mp4'})
+  await writeFile(join(directory,'metadata.json'),Buffer.from(forged))
+  const m=manifest()
+  m.files['metadata.json'].sha256=sha(Buffer.from(forged))
+  await assert.rejects(()=>verifyPulse005(m,{directory,gateways,fetcher:successFetch}),
+    /metadata_uri_or_title_mismatch/)
 }))
