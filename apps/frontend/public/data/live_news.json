@@ -1,56 +1,56 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-08T04:38:13.194Z",
+  "updatedAt": "2026-11-08T12:48:43.581Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1794112692639",
-      "timestamp": "04:38",
+      "id": "egld-1794142123148",
+      "timestamp": "12:48",
       "source": "EGLD",
-      "title": "Cotation publique · $3.04 (API MultiversX economics)",
+      "title": "Cotation publique · $2.96 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1794061320000",
+      "id": "rss-CoinTelegraph-0-1794131328000",
+      "timestamp": "09:48",
+      "source": "CoinTelegraph",
+      "title": "Amsterdam protesters break into Microsoft data center construction site: Report",
+      "link": "https://cointelegraph.com/news/amsterdam-data-center-protesters-break-into-construction-site-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794125576000",
+      "timestamp": "08:12",
+      "source": "CoinTelegraph",
+      "title": "Binance’s finance chief Kaiser Ng to leave company, report says",
+      "link": "https://cointelegraph.com/news/binances-finance-chief-kaiser-ng-to-leave-company-report-says?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794061320000",
       "timestamp": "14:22",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1794060960000",
+      "id": "rss-CoinTelegraph-3-1794060960000",
       "timestamp": "14:16",
       "source": "CoinTelegraph",
       "title": "Ex-FBI counterintelligence agent stole almost $2.5M in crypto",
       "link": "https://cointelegraph.com/news/ex-fbi-counterintelligence-agent-stole-almost-25m-in-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1794058200000",
+      "id": "rss-CoinTelegraph-4-1794058200000",
       "timestamp": "13:30",
       "source": "CoinTelegraph",
       "title": "Bitcoin holders have received eCash — What can you do with it?",
       "link": "https://cointelegraph.com/magazine/bitcoin-holders-have-received-ecash-what-can-you-with-it?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1794049847000",
+      "id": "rss-CoinTelegraph-5-1794049847000",
       "timestamp": "11:10",
       "source": "CoinTelegraph",
       "title": "US sanctions Canadian money-exchange firms over Iran ties",
       "link": "https://cointelegraph.com/news/us-sanctions-canadian-money-exchange-firms-over-iran-ties?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794042635000",
-      "timestamp": "09:10",
-      "source": "CoinTelegraph",
-      "title": "Suspicious prediction market activity seen before election poll release: NYT",
-      "link": "https://cointelegraph.com/news/suspicious-prediction-market-activity-seen-before-election-poll-release-nyt?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794037524000",
-      "timestamp": "07:45",
-      "source": "CoinTelegraph",
-      "title": "Nvidia may face a more hostile post-election Washington: Report",
-      "link": "https://cointelegraph.com/news/nvidia-may-be-facing-a-more-hostile-post-election-washington-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-0-1794078796000",
@@ -79,6 +79,27 @@
       "source": "CoinDesk",
       "title": "Apple, Meta reject OKX–ICE tokenized stock plans, leaving crypto firms as the ones to watch",
       "link": "https://www.coindesk.com/policy/2026/11/06/apple-meta-reject-okx-ice-tokenized-stock-plans-leaving-crypto-firms-as-the-ones-to-watch"
+    },
+    {
+      "id": "egld-1794112692639",
+      "timestamp": "04:38",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.04 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794042635000",
+      "timestamp": "09:10",
+      "source": "CoinTelegraph",
+      "title": "Suspicious prediction market activity seen before election poll release: NYT",
+      "link": "https://cointelegraph.com/news/suspicious-prediction-market-activity-seen-before-election-poll-release-nyt?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794037524000",
+      "timestamp": "07:45",
+      "source": "CoinTelegraph",
+      "title": "Nvidia may face a more hostile post-election Washington: Report",
+      "link": "https://cointelegraph.com/news/nvidia-may-be-facing-a-more-hostile-post-election-washington-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "egld-1794086923467",
@@ -177,27 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Strive buys 15,124 Bitcoin in October, closes in on top treasury holders",
       "link": "https://cointelegraph.com/news/strive-buys-bitcoin-october-top-btc-corporate-holders?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1793987373000",
-      "timestamp": "17:49",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin price dips under $75K as crypto markets miss tech-stock rebound",
-      "link": "https://cointelegraph.com/markets/bitcoin-price-under-75k-crypto-markets-tech-stock?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1793975400000",
-      "timestamp": "14:30",
-      "source": "CoinTelegraph",
-      "title": "What Democrats’ US midterm sweep means for the CLARITY Act",
-      "link": "https://cointelegraph.com/magazine/clarity-act-faces-new-test-under-democratic-congress?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793973434000",
-      "timestamp": "13:57",
-      "source": "CoinTelegraph",
-      "title": "Nigeria sets new crypto licensing rules, bans algorithmic stablecoins",
-      "link": "https://cointelegraph.com/news/nigeria-algorithmic-stablecoin-ban-crypto-licensing?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
