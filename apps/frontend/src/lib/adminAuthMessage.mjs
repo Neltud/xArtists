@@ -75,7 +75,9 @@ export function parseAndValidateAdminAuthMessage(text, opts = {}) {
   for (let i = 1; i < lines.length; i++) {
     const idx = lines[i].indexOf('=')
     if (idx < 1) return { ok: false, error: 'bad_kv' }
-    map[lines[i].slice(0, idx)] = lines[i].slice(idx + 1)
+    const key = lines[i].slice(0, idx)
+    if (Object.hasOwn(map, key)) return { ok: false, error: 'duplicate_field' }
+    map[key] = lines[i].slice(idx + 1)
   }
 
   const required = [
@@ -94,20 +96,29 @@ export function parseAndValidateAdminAuthMessage(text, opts = {}) {
     if (!(k in map)) return { ok: false, error: `missing_${k}` }
   }
 
+  if (Object.keys(map).length !== required.length) return { ok: false, error: 'unexpected_field' }
   if (map.chainId !== ADMIN_AUTH_CHAIN_ID) return { ok: false, error: 'bad_chain' }
   if (!ADMIN_ACTIONS.includes(map.action)) return { ok: false, error: 'bad_action' }
   if (!isBech32(map.admin)) return { ok: false, error: 'bad_admin' }
   if (expectedAdmin && map.admin !== expectedAdmin) return { ok: false, error: 'admin_mismatch' }
 
+  if (map.contract !== '-' && !isBech32(map.contract)) return { ok: false, error: 'bad_contract' }
+  if (map.target !== '-' && !isBech32(map.target)) return { ok: false, error: 'bad_target' }
+  if (!/^(?:-|0|[1-9][0-9]*)$/.test(map.escrowId)) return { ok: false, error: 'bad_escrow_id' }
+  if (!['-', '0', '1'].includes(map.favorSeller)) return { ok: false, error: 'bad_favor_seller' }
+  if (map.action === 'resolveDispute' && (map.escrowId === '-' || map.favorSeller === '-')) return { ok: false, error: 'missing_dispute_fields' }
+  if (['refund','cancelByOwner'].includes(map.action) && map.escrowId === '-') return { ok: false, error: 'missing_escrow_id' }
+  if (map.action !== 'resolveDispute' && map.favorSeller !== '-') return { ok: false, error: 'unexpected_favor_seller' }
   const issuedAt = Number(map.issuedAt)
   const expiresAt = Number(map.expiresAt)
-  if (!Number.isFinite(issuedAt) || !Number.isFinite(expiresAt)) return { ok: false, error: 'bad_time' }
+  if (!/^[1-9][0-9]*$/.test(map.issuedAt) || !/^[1-9][0-9]*$/.test(map.expiresAt) || !Number.isSafeInteger(issuedAt) || !Number.isSafeInteger(expiresAt)) return { ok: false, error: 'bad_time' }
   if (expiresAt <= issuedAt) return { ok: false, error: 'expiry_before_issue' }
   if (expiresAt - issuedAt > ADMIN_AUTH_MAX_TTL_MS) return { ok: false, error: 'ttl_too_long' }
   if (now > expiresAt) return { ok: false, error: 'expired' }
   if (now + 30_000 < issuedAt) return { ok: false, error: 'issued_in_future' }
-  if (!map.nonce || map.nonce.length < 8 || map.nonce.length > 128) return { ok: false, error: 'bad_nonce' }
+  if (!/^[A-Za-z0-9_-]{8,128}$/.test(map.nonce)) return { ok: false, error: 'bad_nonce' }
 
+  if (buildAdminAuthMessage({action:map.action,adminBech32:map.admin,contractBech32:map.contract === '-' ? undefined : map.contract,escrowId:map.escrowId === '-' ? undefined : map.escrowId,favorSeller:map.favorSeller === '-' ? undefined : map.favorSeller === '1',targetBech32:map.target === '-' ? undefined : map.target,nonce:map.nonce,issuedAtMs:issuedAt,expiresAtMs:expiresAt,chainId:map.chainId}) !== text) return { ok: false, error: 'noncanonical_message' }
   return {
     ok: true,
     action: map.action,
@@ -146,8 +157,8 @@ function validateAdminAuthFields(input) {
   if (!isBech32(input.adminBech32)) errors.push('bad_admin')
   if (input.contractBech32 && !isBech32(input.contractBech32)) errors.push('bad_contract')
   if (input.targetBech32 && !isBech32(input.targetBech32)) errors.push('bad_target')
-  if (!input.nonce || String(input.nonce).trim().length < 8) errors.push('bad_nonce')
-  if (!Number.isFinite(input.issuedAtMs) || !Number.isFinite(input.expiresAtMs)) errors.push('bad_time')
+  if (!/^[A-Za-z0-9_-]{8,128}$/.test(String(input.nonce || ''))) errors.push('bad_nonce')
+  if (!Number.isSafeInteger(input.issuedAtMs) || !Number.isSafeInteger(input.expiresAtMs)) errors.push('bad_time')
   else if (input.expiresAtMs <= input.issuedAtMs) errors.push('expiry_before_issue')
   else if (input.expiresAtMs - input.issuedAtMs > ADMIN_AUTH_MAX_TTL_MS) errors.push('ttl_too_long')
   if (input.action === 'resolveDispute' && typeof input.favorSeller !== 'boolean') {
