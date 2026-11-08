@@ -1,5 +1,4 @@
 import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
-import '../styles/creator-studio-light.css'
 /** Creator Studio — collections + mint + list + certification phygital. */
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
