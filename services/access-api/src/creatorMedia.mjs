@@ -12,6 +12,7 @@ const FORMATS = Object.freeze({
   'image/png': { ext:'png', limit: 16 * 1024 * 1024 },
   'image/webp': { ext:'webp', limit: 16 * 1024 * 1024 },
   'video/mp4': { ext:'mp4', limit: 48 * 1024 * 1024 },
+  'model/gltf-binary': { ext:'glb', limit: 32 * 1024 * 1024 },
 })
 const MAX_UPLOADS_DAY=8
 const SHA64=/^[a-f0-9]{64}$/i
@@ -24,7 +25,8 @@ export function studioMediaConfig(env=process.env){
     && String(env.PINATA_JWT||'').length>=40
     && Boolean(String(env.DATABASE_URL||'').trim())
     && String(env.ACCESS_JWT_SECRET||env.JWT_SECRET||'').length>=16
-  return {enabled,provider:enabled?'pinata_ipfs':'disabled',maxImageMiB:16,maxVideoMiB:48,
+  return {enabled,modelEnabled:enabled && env.STUDIO_GLB_UPLOAD_ENABLED==='1',
+    provider:enabled?'pinata_ipfs':'disabled',maxImageMiB:16,maxVideoMiB:48,maxModelMiB:32,
     maxUploadsPerWalletDaily:MAX_UPLOADS_DAY,signer:'artist_wallet'}
 }
 export function mediaJwt(address,secret){
@@ -41,6 +43,45 @@ export function mediaActor(headers,secret){
   if(claims?.purpose!=='studio_media')return null
   try{erdToPubkey(claims.sub);return claims.sub}catch{return null}
 }
+/** Fail closed: only a self-contained glTF 2.0 binary model is accepted.
+ * No HTTP(S), ipfs://, file://, or relative external resources may be referenced.
+ * The result is still artist-supplied, NOT evidence of a true scan or safe geometry.
+ */
+export function validateStudioGlb(buffer){
+  if (!Buffer.isBuffer(buffer)||buffer.length<20||buffer.toString('ascii',0,4)!=='glTF'||
+      buffer.readUInt32LE(4)!==2||buffer.readUInt32LE(8)!==buffer.length)
+    throw fail('glb_header_invalid')
+  let offset=12,chunkIndex=0,json=null,binCount=0
+  while(offset<buffer.length){
+    if(offset+8>buffer.length)throw fail('glb_chunk_invalid')
+    const size=buffer.readUInt32LE(offset),type=buffer.readUInt32LE(offset+4)
+    if(size%4!==0||size===0||offset+8+size>buffer.length)
+      throw fail('glb_chunk_invalid')
+    if(chunkIndex===0){
+      if(type!==0x4e4f534a||size>4*1024*1024)throw fail('glb_json_chunk_invalid')
+      try{json=JSON.parse(buffer.toString('utf8',offset+8,offset+8+size).trimEnd())}
+      catch{throw fail('glb_json_chunk_invalid')}
+    }else{
+      if(type!==0x004e4942||binCount!==0)throw fail('glb_chunk_invalid')
+      binCount++
+    }
+    offset+=size+8
+    chunkIndex++
+  }
+  if(offset!==buffer.length||!json||json.asset?.version!=='2.0'||
+      !Array.isArray(json.scenes)||!Array.isArray(json.nodes)||
+      !Array.isArray(json.meshes)||json.meshes.length===0)
+    throw fail('glb_structure_invalid')
+  if(!binCount||!Array.isArray(json.buffers)||json.buffers.length!==1||
+      !Number.isSafeInteger(json.buffers[0]?.byteLength)||json.buffers[0].byteLength<=0)
+    throw fail('glb_structure_invalid')
+  // Ensure there is no way for the model to fetch other assets when displayed.
+  for(const collection of [json.buffers,json.images||[],json.shaders||[]]){
+    if(!Array.isArray(collection)||collection.some(item=>!item||typeof item!=='object'||'uri' in item))
+      throw fail('glb_external_resource_forbidden')
+  }
+  return {meshCount:json.meshes.length}
+}
 export function validateCreatorMedia(buffer,type){
   const mime=String(type||'').split(';')[0].toLowerCase().trim()
   const cfg=FORMATS[mime]
@@ -52,6 +93,7 @@ export function validateCreatorMedia(buffer,type){
   if(mime==='image/png')magic=buffer.length>=8 && buffer.subarray(0,8).equals(Buffer.from('89504e470d0a1a0a','hex'))
   if(mime==='image/webp')magic=buffer.length>=12 && buffer.toString('ascii',0,4)==='RIFF' && buffer.toString('ascii',8,12)==='WEBP'
   if(mime==='video/mp4')magic=buffer.length>=16 && buffer.toString('ascii',4,8)==='ftyp'
+  if(mime==='model/gltf-binary'){validateStudioGlb(buffer);magic=true}
   if(!magic)throw fail('media_content_signature_invalid')
   return {mime,ext:cfg.ext,bytes:buffer.length,sha256:digest(buffer)}
 }
@@ -59,6 +101,8 @@ export async function readCreatorMedia(req){
   const mime=String(req.headers['content-type']||'').split(';')[0].toLowerCase().trim()
   const spec=FORMATS[mime]
   if(!spec)throw fail('unsupported_media_type')
+  if(mime==='model/gltf-binary'&&!studioMediaConfig().modelEnabled)
+    throw fail('studio_glb_upload_disabled',503)
   const declared=Number(req.headers['content-length'])
   if(!Number.isFinite(declared)||declared<=0||declared>spec.limit)throw fail('media_size_invalid',413)
   const chunks=[];let sum=0
@@ -109,6 +153,8 @@ export async function uploadStudioMedia(media,wallet,request=fetch){
   erdToPubkey(wallet)
   const check=validateCreatorMedia(media.buffer,media.mime)
   if(!studioMediaConfig().enabled)throw fail('studio_media_upload_disabled',503)
+  if(check.mime==='model/gltf-binary'&&!studioMediaConfig().modelEnabled)
+    throw fail('studio_glb_upload_disabled',503)
   const uploadId=await reserve(wallet,check)
   const filename='artwork-'+check.sha256.slice(0,24)+'.'+check.ext
   const fd=new FormData()
@@ -142,6 +188,9 @@ export function createStudioMetadata(row,body,wallet){
     description:description||'Original artwork published by the artist using xArtists Creator Studio.',
     ...(row.mime==='video/mp4'
       ? {animation_url:row.uri,properties:{category:'video',mime:row.mime}}
+      : row.mime==='model/gltf-binary'
+      ? {animation_url:row.uri,properties:{category:'model',mime:row.mime,
+          note:'3D asset; preview image and scan fidelity require independent review'}}
       : {image:row.uri,properties:{category:'image',mime:row.mime}}),
     attributes:[{trait_type:'Creator wallet',value:wallet},
       {trait_type:'SHA-256',value:row.sha256},
