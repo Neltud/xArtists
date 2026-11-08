@@ -7,7 +7,7 @@
 | Check | Result |
 |-------|--------|
 | 10 product SC codeHashes | Match registry (10/10) |
-| `agents_marketplace.isPayable` | **false** → pack EGLD intake blocked |
+| `agents_marketplace.isPayable` | **false** → transferts directs bloqués, **pas nécessairement l'endpoint payable** |
 | `nft_marketplace.isPayable` | **true** · 1 NFT held (`ASFT-a6273a-01`) |
 | `slot_casino.isPayable` | **false** (by design) |
 | `rwa-escrow-bridge` | **Not registered** |
@@ -29,7 +29,11 @@
 
 ## Next owner-gated steps (optional, sequential)
 
-1. Decide whether to set agents SC payable (signed).
+1. Do **not** upgrade merely to set payable metadata: the flag applies to direct transfers, not endpoint payments (MultiversX official docs). Review the endpoint instead.
 2. IPFS + URI roles before pack media claims.
 3. Pulse #005 only after CID proofs (#407).
 4. RWA only as fresh audited deploy (#430).
+
+## Correction 2026-11-08 : flag Payable
+
+The prior inference `isPayable=false => buyPack EGLD impossible` was incorrect. Per https://docs.multiversx.com/developers/developer-reference/sc-payments/, code metadata `isPayable` controls **direct contract transfers**, whereas endpoint payments are governed by `#[payable]`. The commercial NO-GO still stands for empty NFT URIs, unverified media and quote inconsistency. Do not sign an unnecessary payable-only upgrade.
