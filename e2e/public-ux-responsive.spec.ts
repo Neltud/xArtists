@@ -139,6 +139,11 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       expect(stick && dock, 'joystick and dock should be measurable').toBeTruthy()
       if (stick && dock) {
         expect(stick.y + stick.height, 'joystick must not hide under mobile dock').toBeLessThan(dock.y)
+        const bottomHud = await stage.locator('.xa-museum-bottom-hud').boundingBox()
+        expect(bottomHud, 'the inspect/walk HUD should be present').toBeTruthy()
+        if (bottomHud) {
+          expect(bottomHud.y + bottomHud.height, 'inspect/walk HUD must not hide under mobile dock').toBeLessThan(dock.y)
+        }
       }
       await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/museum-touch-stage-390.png' })
     } finally {
