@@ -41,3 +41,20 @@ test('dispute and refund are not bypassed by normal release', () => {
   assert.match(method('fn refund(', '#[endpoint(cancelByOwner)]'), /esc\.status == 0u8/)
   assert.match(method('fn release(', 'fn release_to_seller('), /esc\.status == 0u8/)
 })
+
+test('quality attestation retains auditable proof hash', () => {
+  assert.match(source, /pub quality_proof_hash: ManagedBuffer<M>/)
+  assert.match(source, /quality_proof_hash: ManagedBuffer::new\(\)/)
+  const body = method('fn attest_quality_inspection(', 'fn attest_ownership_reassignment(')
+  assert.match(body, /esc\.quality_proof_hash = quality_hash/)
+  assert.match(body, /esc\.quality_confirmed = true/)
+})
+test('dispute resolution cannot release seller funds without all four gates', () => {
+  const body = method('fn resolve_dispute(', '#[endpoint(refund)]')
+  const seller = body.slice(body.indexOf('if favor_seller {'), body.indexOf('} else {'))
+  assert.ok(seller.length > 0)
+  for (const gate of ['receipt_confirmed','verification_confirmed','quality_confirmed','ownership_confirmed']) {
+    assert.match(seller, new RegExp('require!\\(esc\\.' + gate))
+  }
+  assert.ok(seller.indexOf('require!(esc.ownership_confirmed') < seller.indexOf('direct_egld'))
+})
