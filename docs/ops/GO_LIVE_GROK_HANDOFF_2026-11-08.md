@@ -13,7 +13,7 @@ operator authorization, signature, or automated deployment approval.
 | GitHub PR #407 | Draft; head `7a64a1706b7189d3ebabbfa05fa71f899b9a2b7f`, 4/4 CI green on inspected head | Mint NO-GO pending real IPFS, upgrade and signer evidence |
 | GitHub PR #430 | Draft; head `66386bbef910d36350900564fd7e7b2bca4121e5`, 14/14 CI green on inspected head | RWA on-chain NO-GO; no legacy storage migration proof or audited authority |
 | Render xartists-access-api | Render marked deploy `dep-dbo9g1dg1s2s7389b51g` `live`; startup application log on port 10000 | Process starts, but HTTP routes need independent probe |
-| Backend external probe | `/health`, `/v1/studio/media/config` and `/world-rights/status` returned HTTP 503 in an external probe; root and `/build-info.json` returned 404 | **P0 investigation**, not a confirmed fully usable access API |
+| Backend external probe | First external probe: HTTP 503 on `/health` and Studio config; **repeat fresh probe: both respond successfully**. `/health` reports `ok:true`, `paybox_checkout_enabled:false`, Stripe live checkout disabled. Studio config reports `enabled:false`, `modelEnabled:false`. Render frontend build stamp agrees on source SHA. | **Transient 503 observed; recovered at repeat**, investigate intermittency/monitor, do not claim persistent outage |
 | Direct Grok access | No current xAI/Grok plugin connection discovered | No Grok finding can be claimed until an actual xAI API response is recorded |
 
 Verification can change. The exact target commit, timestamp, and HTTP status must
@@ -52,11 +52,12 @@ xAI API execution returns a report, **Grok has NOT been contacted**.
 
 ## Priority release blockers (in order)
 
-1. **Access API 503:** compare Render service role, health route, externally
-   reachable API hostname, reverse-proxy routing, headers, cold-start and app
-   logs with network observations. Test with two independent clients at the
-   same timestamp. Do not declare API healthy just because Render deploy
-   status says `live`. Keep any checkout/upload release switches OFF.
+1. **Access API intermittent 503:** fresh repeat probe returned healthy HTTP
+   responses, while first probe returned 503. Instrument periodic read-only
+   health and Studio-config checks, service role, cold-start/restarts and
+   exact timestamps. **Do not claim ongoing outage or perfect SLA.** The
+   recovered `/health` confirms Paybox checkout disabled and Stripe live
+   checkout disabled; Studio IPFS/GLB uploads remain off.
 2. **Studio IPFS/GLB:** confirm actual Render service database and migrations,
    signed artist wallet session, default-off GLB gate, same-wallet pinned
    poster, exact-byte SHA-256 from 2 independent gateways, pin receipts,
@@ -100,7 +101,7 @@ Released main: 0ff763f0b4778a1d5baba5dc8b16d046d3ca561d
 PR #407: 7a64a1706b7189d3ebabbfa05fa71f899b9a2b7f — draft — 4/4 CI green
 PR #430: 66386bbef910d36350900564fd7e7b2bca4121e5 — draft — 14/14 CI green
 Public Pages: version 0.130.0, browse only
-Render: deploy live, HTTP 503 on probed API routes — investigate P0
+Render: deploy live; initial probe 503, fresh health/Studio probes OK — investigate intermittent availability
 Your assignment: challenge both PRs, prioritize reproducible P0 test failures;
 do not modify or merge any of their files without an assigned handoff.
 No keys, personal data, on-chain tx, payment or live trading authorization.
