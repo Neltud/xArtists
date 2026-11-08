@@ -129,6 +129,12 @@ export async function verifyPulse005(manifest, {
       // Full legal/copyright fields, ERC-721/MultiversX conventions, and recipient
       // are independently reviewed by a human. No automatic certification here.
       if (!json || typeof json !== 'object' || Array.isArray(json)) throw Error('metadata_json_invalid')
+      const front='ipfs://'+manifest.files['recto.png'].cid+'/recto.png'
+      const video='ipfs://'+manifest.files['animation.mp4'].cid+'/animation.mp4'
+      if (json.name !== 'Genesis Pulse #005' || json.image !== front ||
+          json.animation_url !== video) {
+        throw Error('metadata_uri_or_title_mismatch')
+      }
     }
     const hashes = []
     for (const base of prefix) {
