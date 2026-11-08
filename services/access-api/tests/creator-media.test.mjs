@@ -185,3 +185,8 @@ test('GLB metadata is labeled model/animation, not photo or video',()=>{
   assert.equal(meta.properties.category,'model')
   assert.equal(meta.properties.mime,'model/gltf-binary')
 })
+
+test('GLB rejects impossible BIN byte counts and unknown URL-capable glTF extensions',()=>{
+  assert.throws(()=>validateStudioGlb(fixtureGlb({buffers:[{byteLength:100}]})),/glb_buffer_length_invalid/)
+  assert.throws(()=>validateStudioGlb(fixtureGlb({extensionsUsed:['SOME_REMOTE_RESOURCE_extension']})),/glb_extension_unsupported/)
+})
