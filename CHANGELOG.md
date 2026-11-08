@@ -1,5 +1,111 @@
 # Changelog — xArtists
 
+## [0.130.0](https://github.com/Neltud/xArtists/compare/v0.129.1...v0.130.0) (2026-11-08)
+
+> **Release scope:** source and UI preview milestone only. A version tag does not activate live minting, checkout, RWA escrow transfers, LIA real trading or an authenticated paid plugin download; those functions require separate verified release gates.
+
+
+### Features
+
+* **art-first:** Maison xArtists and curated navigation ([#315](https://github.com/Neltud/xArtists/issues/315)) ([e55e21b](https://github.com/Neltud/xArtists/commit/e55e21bbe13ed19c361556103408bd73a9bec3c0))
+* **art-id:** artwork evidence and read-only NFT reassessment primitives ([#322](https://github.com/Neltud/xArtists/issues/322)) ([b3f3871](https://github.com/Neltud/xArtists/commit/b3f3871a9e4b1d624e88753ee0f80663c896d47a))
+* **art-id:** bounded PNG decoder, CRC and calibration lab ([#329](https://github.com/Neltud/xArtists/issues/329)) ([5513394](https://github.com/Neltud/xArtists/commit/5513394503bdd70edc15d8a65d2ef2393aabc4cc))
+* **art-id:** deterministic DCT pHash candidate recognition from decoded pixels ([#326](https://github.com/Neltud/xArtists/issues/326)) ([07cc5df](https://github.com/Neltud/xArtists/commit/07cc5dfe5f81dcbffffdac9f62a4064404847e87))
+* **art:** publish xArtists originals and safe EGLD NFT preflight ([c3b56e5](https://github.com/Neltud/xArtists/commit/c3b56e51039154431eadebe94dad5434d4fb73ca))
+* **auction:** mount P1 sandbox-only auction API and UI ([#314](https://github.com/Neltud/xArtists/issues/314)) ([ae66fbd](https://github.com/Neltud/xArtists/commit/ae66fbdb359ce8397d2ebb300e8caaf712663d17))
+* **claim:** canonical voucher V1 offline codec and post-IPN guard (phase 0) ([#312](https://github.com/Neltud/xArtists/issues/312)) ([15487b3](https://github.com/Neltud/xArtists/commit/15487b36618b2d9c9c159acd647c0b5473b6a2e2))
+* **claim:** isolated offline MultiversX SC with 12 mocked VM tests (NO DEPLOY) ([#325](https://github.com/Neltud/xArtists/issues/325)) ([468bd26](https://github.com/Neltud/xArtists/commit/468bd2681614a2998feca523a01117fa5af37850))
+* **claim:** offline revoke and compose gates, unified voucher codec, mint_jobs runbook ([#318](https://github.com/Neltud/xArtists/issues/318)) ([750e115](https://github.com/Neltud/xArtists/commit/750e1157e4d96256564125c00615a5259035a4d2))
+* **club:** offre Club + News 10 €/mois hors chaîne (préparation sécurisée) ([#405](https://github.com/Neltud/xArtists/issues/405)) ([6c0aca5](https://github.com/Neltud/xArtists/commit/6c0aca59f1b44ee47e9626e66ebbf1eebb873671))
+* **commercial:** publish discovery-only offers and lead enquiries (NO CHECKOUT) ([#337](https://github.com/Neltud/xArtists/issues/337)) ([465b121](https://github.com/Neltud/xArtists/commit/465b121718faaae6f1071bebb7635de3b0c60a39))
+* **genesis:** isolated paper quote, credit reservation and guarded provider adapter ([#374](https://github.com/Neltud/xArtists/issues/374)) ([58ef7b9](https://github.com/Neltud/xArtists/commit/58ef7b9c15feaeee3a7540a26714a22100455cc6))
+* **lia:** P0 structured BUY_PACK Rule1 paper flow, minimal API + Packs button ([#378](https://github.com/Neltud/xArtists/issues/378)) ([de0ec71](https://github.com/Neltud/xArtists/commit/de0ec71559a6bdea86bb09771b61c89060d1fdad))
+* **lia:** public-first Control Room and truthful telemetry ([#345](https://github.com/Neltud/xArtists/issues/345)) ([dd3a1a2](https://github.com/Neltud/xArtists/commit/dd3a1a2a13374ea723679a7853c0d060772aabee))
+* **marketplace:** OpenSea Solana + Polygon read-only discovery ([#391](https://github.com/Neltud/xArtists/issues/391)) ([#392](https://github.com/Neltud/xArtists/issues/392)) ([473bb14](https://github.com/Neltud/xArtists/commit/473bb149ba3aa670b71f2e4b1f09b4017915e0a6))
+* **market:** show LIA wallet and escrow-held NFTs from MultiversX ([#437](https://github.com/Neltud/xArtists/issues/437)) ([53852de](https://github.com/Neltud/xArtists/commit/53852deba4f86474bde03dbe17b4fa3dddf9d1c2))
+* **memory:** Merkle proofs and unanchored commitment candidates ([#420](https://github.com/Neltud/xArtists/issues/420)) ([f882da9](https://github.com/Neltud/xArtists/commit/f882da9931130d1df51967a95f8353aed19dd288))
+* **mvx:** prepare read-only S2 NFT receipt verification ([#297](https://github.com/Neltud/xArtists/issues/297)) ([f618e1f](https://github.com/Neltud/xArtists/commit/f618e1fc69322cdafb877d0fc4c169b36d5aa456))
+* **nav:** visible Control Room LIA on Home and mobile menu ([#349](https://github.com/Neltud/xArtists/issues/349)) ([fbd54bc](https://github.com/Neltud/xArtists/commit/fbd54bc150c97871eb249d567f51591e181ea777))
+* **nft:** paper-only human/agent Art Factory, per-NFT metadata and fixed-price distributor drafts ([#390](https://github.com/Neltud/xArtists/issues/390)) ([c35d000](https://github.com/Neltud/xArtists/commit/c35d0007e898188bf0fedee78dabbd6d308e9e57))
+* **ops:** PAT-free GitHub OIDC dry-run mint pull ([#304](https://github.com/Neltud/xArtists/issues/304)) ([87b49dc](https://github.com/Neltud/xArtists/commit/87b49dc39733dc03eb9433c098bfafdfb2997cd2))
+* **ops:** prove read-only Postgres order-store readiness ([#290](https://github.com/Neltud/xArtists/issues/290)) ([da591e9](https://github.com/Neltud/xArtists/commit/da591e9349c86854eee605333c7df3d42a512c1c))
+* **ops:** read-only Render-bound mint_jobs readiness proof ([#335](https://github.com/Neltud/xArtists/issues/335)) ([57560e7](https://github.com/Neltud/xArtists/commit/57560e7be99d3e11e99b90eafc27fce3a56ebbad))
+* **ops:** ship read-only mint store diagnostic and ephemeral PG tests ([#381](https://github.com/Neltud/xArtists/issues/381)) ([29e833d](https://github.com/Neltud/xArtists/commit/29e833de6b03e4fb9e03379e6d7f526c0ccac542))
+* **P0:** IPFS byte-for-byte readback without treating gateways as replicas ([03b6f03](https://github.com/Neltud/xArtists/commit/03b6f0385a578ce760f5a0347a0d2d466cd9bd89))
+* **plugins:** add fail-closed paid entitlement verifier ([#419](https://github.com/Neltud/xArtists/issues/419)) ([4368471](https://github.com/Neltud/xArtists/commit/4368471514ad5ecc955edcc123b06fb5bb3d291f))
+* **public:** all modules navigable, DAO and beginner multichain UX ([#397](https://github.com/Neltud/xArtists/issues/397)) ([980eaaa](https://github.com/Neltud/xArtists/commit/980eaaad61270d5ecedc00d1bc3955351f721cb8))
+* **security:** fail-closed paper-only plugin entitlement primitives ([e81a9b5](https://github.com/Neltud/xArtists/commit/e81a9b54ff4b5ae6519345495f011539c388049f))
+* **stripe:** integrate isolated test-only Checkout and signed sandbox ledger ([#383](https://github.com/Neltud/xArtists/issues/383)) ([3836cb3](https://github.com/Neltud/xArtists/commit/3836cb3954d271dfe0632324d0eb167a391603c8))
+* **studio:** diagnostic Pinata + SQL en lecture seule avant activation IPFS ([#411](https://github.com/Neltud/xArtists/issues/411)) ([ec6d6b5](https://github.com/Neltud/xArtists/commit/ec6d6b585691f90b0cb9bc13063af9dd8ba32003))
+* **ux:** 4-step beginner guide and unified 8-locale module discovery ([#424](https://github.com/Neltud/xArtists/issues/424)) ([e147207](https://github.com/Neltud/xArtists/commit/e147207166a68b74006dc004bf16bb6342742487))
+* **ux:** beginner-first navigation and light-readable guide ([#422](https://github.com/Neltud/xArtists/issues/422)) ([9ad82b7](https://github.com/Neltud/xArtists/commit/9ad82b77590d7b3d81c427b178cf337fc8274f95))
+* **ux:** compact public TRO/RWA and harden 110-route coverage ([#358](https://github.com/Neltud/xArtists/issues/358)) ([a2d5fa1](https://github.com/Neltud/xArtists/commit/a2d5fa16180769ae21b786440ce103ce79b5550c))
+* **ux:** public readiness, roadmap and orbital 3D homepage ([#398](https://github.com/Neltud/xArtists/issues/398)) ([13aad62](https://github.com/Neltud/xArtists/commit/13aad62633f3bc41bd9f7f5383c21d11dca43e4d))
+* **ux:** RWA and TRO readable mobile journeys ([#423](https://github.com/Neltud/xArtists/issues/423)) ([9dd1a39](https://github.com/Neltud/xArtists/commit/9dd1a392fd2fc01e3ee91981d919687acbc9eb0b))
+
+
+### Bug Fixes
+
+* **api:** allow both official frontend origins with exact CORS policy ([#295](https://github.com/Neltud/xArtists/issues/295)) ([627409a](https://github.com/Neltud/xArtists/commit/627409a293ec7d9f455edf6360a2de4271c52d4e))
+* **commercial:** recognize /offres/ trailing slash in browser SEO title ([#342](https://github.com/Neltud/xArtists/issues/342)) ([a8d1677](https://github.com/Neltud/xArtists/commit/a8d16778155feead4a7f4e637911c30f40a674d6))
+* **commercial:** restore reliable public enquiries without broken mail domain ([#340](https://github.com/Neltud/xArtists/issues/340)) ([4cb6679](https://github.com/Neltud/xArtists/commit/4cb6679c2f418ad74db52e250cb32af9593412b3))
+* **commercial:** SEO title, metadata and link previews for xArtists offers ([#339](https://github.com/Neltud/xArtists/issues/339)) ([702e5a5](https://github.com/Neltud/xArtists/commit/702e5a5a944689389d92af8bdefa375db3f5edfc))
+* **gitbook:** drop invalid page metadata and unblock import ([#351](https://github.com/Neltud/xArtists/issues/351)) ([d0610c3](https://github.com/Neltud/xArtists/commit/d0610c3993f1532351a143fea0ad5263581c9bf7))
+* **gitbook:** valid YAML and standard public nav ([#350](https://github.com/Neltud/xArtists/issues/350)) ([5f92e60](https://github.com/Neltud/xArtists/commit/5f92e6069217d5265ec0ed1c23029384708d1deb))
+* **ipfs:** reject HTTP 200 HTML fallback during Studio media readback ([#436](https://github.com/Neltud/xArtists/issues/436)) ([e4412e0](https://github.com/Neltud/xArtists/commit/e4412e0f6f30e94435b0eed501a2196910f71c0f))
+* **lia:** fail closed when chain memory is unknown ([#417](https://github.com/Neltud/xArtists/issues/417)) ([93ec865](https://github.com/Neltud/xArtists/commit/93ec86519c16f8638f252d87b2c59983227aa07e))
+* **lia:** fail-closed source freshness, withhold stale Vellum signals ([#347](https://github.com/Neltud/xArtists/issues/347)) ([#360](https://github.com/Neltud/xArtists/issues/360)) ([b8ca75c](https://github.com/Neltud/xArtists/commit/b8ca75c334dde6d05f76db0c811794f25ad02a50))
+* **mainnet:** exact EGLD amounts and wallet/payable guards ([5fb5d71](https://github.com/Neltud/xArtists/commit/5fb5d71afdeb5946b50ce2f53524dbde412c50e6))
+* **marketing:** truthful PayBox checkout availability and social launch kit ([#300](https://github.com/Neltud/xArtists/issues/300)) ([1ba3021](https://github.com/Neltud/xArtists/commit/1ba3021f897e8c0e4b80d70baf54606863761ea6))
+* **mint:** make PostgreSQL job reads strictly read-only ([#387](https://github.com/Neltud/xArtists/issues/387)) ([999c2aa](https://github.com/Neltud/xArtists/commit/999c2aac487e53d04e4b461206d10e838fe354de))
+* **mobile:** contrast, wallet header, NFT layer reflow and safe DeFi copy ([#399](https://github.com/Neltud/xArtists/issues/399)) ([e15f756](https://github.com/Neltud/xArtists/commit/e15f7560513a18851086faa91022659c38998cd0))
+* **mobile:** direct Marketplace + Auctions and one-row navigation ([#344](https://github.com/Neltud/xArtists/issues/344)) ([108bd2b](https://github.com/Neltud/xArtists/commit/108bd2b6b469c156a12d7a75468ff3b8a7b3896c))
+* **P0 UX:** finance route providers, no-send visibility, RWA paper proof ([#357](https://github.com/Neltud/xArtists/issues/357)) ([b1f732b](https://github.com/Neltud/xArtists/commit/b1f732ba47ef1544cac646be6db0bf905aca1b68))
+* **P0:** detect wrong Render API image and gate PayBox checkout ([#288](https://github.com/Neltud/xArtists/issues/288)) ([7731d8d](https://github.com/Neltud/xArtists/commit/7731d8dee663f721c205d2505edc88730f26479e))
+* **pages:** HTTP 200 direct routes for commercial offers on GitHub Pages ([#338](https://github.com/Neltud/xArtists/issues/338)) ([a88e102](https://github.com/Neltud/xArtists/commit/a88e102995f26c60f51ff37d9fffde5b0014c55d))
+* **pages:** preserve route-aware GitHub Pages 404 recovery ([#343](https://github.com/Neltud/xArtists/issues/343)) ([9731d49](https://github.com/Neltud/xArtists/commit/9731d494dc7ba6723eb04930eaf766b0e1a4cd36))
+* **pages:** recover stale dynamic CSS/JS chunks via user-triggered reload ([#299](https://github.com/Neltud/xArtists/issues/299)) ([9236c0b](https://github.com/Neltud/xArtists/commit/9236c0bcbe2d0df55cd75fdde3d4a3b01b5063db))
+* **pages:** verify release source, route entries and lazy assets ([#361](https://github.com/Neltud/xArtists/issues/361)) ([5b9232c](https://github.com/Neltud/xArtists/commit/5b9232c574a23f34720576cc1fbd3917532dd48e))
+* **paybox:** payment does not imply NFT delivery ([#282](https://github.com/Neltud/xArtists/issues/282)) ([a98424c](https://github.com/Neltud/xArtists/commit/a98424cd7a9e4853c29d57fcb9437f36d7b0fd19))
+* **public:** fail-closed pack signals and light-first editorial UX ([#408](https://github.com/Neltud/xArtists/issues/408)) ([89dc96b](https://github.com/Neltud/xArtists/commit/89dc96b75b933b9f197b22a3406d04f7498cfeb5))
+* **public:** light-first homepage and truthful pack telemetry ([#396](https://github.com/Neltud/xArtists/issues/396)) ([bcc99f1](https://github.com/Neltud/xArtists/commit/bcc99f1ef6874eefbb53a06a2d77bc0a0a215042))
+* **public:** pack titles and 116 public route inventory ([#384](https://github.com/Neltud/xArtists/issues/384)) ([a396b47](https://github.com/Neltud/xArtists/commit/a396b47112841f95feef8c2294897c0158c5cff5))
+* **public:** visitor guide, legal a11y and 38-module audit ([#356](https://github.com/Neltud/xArtists/issues/356)) ([3569a0f](https://github.com/Neltud/xArtists/commit/3569a0f7121adf0e004893d5ab3d52294de4126e))
+* **render:** role-aware shared image restores API while preserving frontend ([#289](https://github.com/Neltud/xArtists/issues/289)) ([0ef849e](https://github.com/Neltud/xArtists/commit/0ef849e22c2bebe693ecf4bb6cfd6d4e2b4cad68))
+* **render:** verified frontend source stamp with strict JSON fallback ([#386](https://github.com/Neltud/xArtists/issues/386)) ([0c36768](https://github.com/Neltud/xArtists/commit/0c36768824840225d09caf31778a8128653a3779))
+* **security:** enforce S1/S2 exact price and refund-aware evidence freshness ([#309](https://github.com/Neltud/xArtists/issues/309)) ([fa65489](https://github.com/Neltud/xArtists/commit/fa6548992541dafeb827396c958a4eb30bcdc9a8))
+* **Studio:** contraste thème clair et parcours artiste guidé ([#412](https://github.com/Neltud/xArtists/issues/412)) ([3a5f7eb](https://github.com/Neltud/xArtists/commit/3a5f7eb042534c3344ed19971b0706085d991409))
+* **studio:** éviter les doublons IPFS après une réponse Pinata incertaine ([#413](https://github.com/Neltud/xArtists/issues/413)) ([769adc9](https://github.com/Neltud/xArtists/commit/769adc90cfc691cbdfa5354b186cead4dae23679))
+* **studio:** fiabiliser l’upload Pinata et les métadonnées IPFS immuables ([#410](https://github.com/Neltud/xArtists/issues/410)) ([d4aa704](https://github.com/Neltud/xArtists/commit/d4aa7040035278c558e12b060dc5387582e0efc7))
+* **tro:** load sale portal CSS eagerly to stabilize public deep links ([#294](https://github.com/Neltud/xArtists/issues/294)) ([295edf9](https://github.com/Neltud/xArtists/commit/295edf9f0ec3520f6226fa8562db5157d42339e7))
+* **tro:** supply audit and Burnify fail-closed guards ([#352](https://github.com/Neltud/xArtists/issues/352)) ([82f1ac6](https://github.com/Neltud/xArtists/commit/82f1ac6224212312fc93ba467f2ee9227cca08b9))
+* **ux:** accessible loading for public routes and unique home headings ([#434](https://github.com/Neltud/xArtists/issues/434)) ([4d3c3b8](https://github.com/Neltud/xArtists/commit/4d3c3b8ea83d1a4994ae5f53b02ca6be704e0c53))
+* **ux:** official xArtists wallet logo, responsive museum and truthful sponsor previews ([c31a0c8](https://github.com/Neltud/xArtists/commit/c31a0c80e6a9f9063a065ac75738250779178487))
+
+
+### Performance
+
+* **ux:** mobile 2D home hero and explicit immersive opt-in ([#355](https://github.com/Neltud/xArtists/issues/355)) ([a2215aa](https://github.com/Neltud/xArtists/commit/a2215aa17b3be3fe9938af3456e2cf4e2bcb210a))
+
+
+### Documentation
+
+* **auction:** physical + minted collectibles sale room design ([#317](https://github.com/Neltud/xArtists/issues/317)) ([16b6a33](https://github.com/Neltud/xArtists/commit/16b6a330fc5a8f38dd41ac46a9752e3eeff185bc))
+* **audit:** define issue 428 mainnet evidence gates and NO-GO ([#431](https://github.com/Neltud/xArtists/issues/431)) ([029a02e](https://github.com/Neltud/xArtists/commit/029a02e4fb3e0f86e94e63c406b475987f19b3c6))
+* **claim:** claimPack testnet design, 900s TTL and eight-case matrix ([#321](https://github.com/Neltud/xArtists/issues/321)) ([6b06e9e](https://github.com/Neltud/xArtists/commit/6b06e9e1d019d22cce2a78d3e7221f51d8c73d45))
+* **claim:** review deployment-tx-bound V2 voucher alternative ([#328](https://github.com/Neltud/xArtists/issues/328)) ([#333](https://github.com/Neltud/xArtists/issues/333)) ([af4a419](https://github.com/Neltud/xArtists/commit/af4a419f11bd1edc0278e9cc3ff7c620eeff087e))
+* **gitbook:** curated public visitor guides and truthful status ([#346](https://github.com/Neltud/xArtists/issues/346)) ([70b6652](https://github.com/Neltud/xArtists/commit/70b66524a0fee8c3ff56a91fe6cf7a81612a481b))
+* **go:** safe live surfaces — refund ladder + public claims map ([#319](https://github.com/Neltud/xArtists/issues/319)) ([f26094a](https://github.com/Neltud/xArtists/commit/f26094ac26019ac619c06e5dadd5d0325a7d6bfe))
+* **launch:** correct stale GO claims after final public preflight ([#380](https://github.com/Neltud/xArtists/issues/380)) ([efcf56b](https://github.com/Neltud/xArtists/commit/efcf56b51ba26506bae04cdce8ffb66b9748c2c3))
+* **marketing:** truthful 30s Shorts storyboard and reviewed multichannel preview copy ([#311](https://github.com/Neltud/xArtists/issues/311)) ([95c8af4](https://github.com/Neltud/xArtists/commit/95c8af48d7d84fa9afceac6f4127cb652595b4ae))
+* **ops:** current OIDC and S1/S2 launch evidence ([#307](https://github.com/Neltud/xArtists/issues/307)) ([24d416b](https://github.com/Neltud/xArtists/commit/24d416bb72756147f5c6af92af1a82909382efca))
+* **ops:** S1 Sentinel proof checklist — prepare only, zero commercial activation ([#281](https://github.com/Neltud/xArtists/issues/281)) ([#359](https://github.com/Neltud/xArtists/issues/359)) ([22c12b1](https://github.com/Neltud/xArtists/commit/22c12b1eb4ae4f0b9835696ebe8cc90c3f0b4d99))
+* **ops:** triage all 23 issues and release backlog safely ([3f25426](https://github.com/Neltud/xArtists/commit/3f25426fa3c45e1379c7cc96eb793c8c4fa57380))
+* **packs:** align historical NFT pack catalog with verified Stripe prices and closed checkout ([#385](https://github.com/Neltud/xArtists/issues/385)) ([239cba8](https://github.com/Neltud/xArtists/commit/239cba82fd8ed29ab51ba3d34afcae49c836c2a7))
+* **paybox:** owner-confirmed Solana recipient, safe funding preflight ([#354](https://github.com/Neltud/xArtists/issues/354)) ([09392b0](https://github.com/Neltud/xArtists/commit/09392b02681a97684c4a28ae158c729221c1d573))
+* **plugins:** audit suite licensing, permissions and mainnet release gates ([#433](https://github.com/Neltud/xArtists/issues/433)) ([5200cdd](https://github.com/Neltud/xArtists/commit/5200cdd91ec8e437dad0ade4b79f2fee988f7ed6))
+* **security:** atomic mint roadmap — refuse non-atomic live; GO-all … ([#316](https://github.com/Neltud/xArtists/issues/316)) ([f100b53](https://github.com/Neltud/xArtists/commit/f100b53f050c3e0a376e6048c8f1d63dc41dee2a))
+
 ## [0.129.1](https://github.com/Neltud/xArtists/compare/v0.129.0...v0.129.1) (2026-11-02)
 
 
