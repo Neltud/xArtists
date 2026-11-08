@@ -429,7 +429,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       const studio=page.locator('[data-mainnet-journey="studio"]')
       await expect(studio).toBeVisible()
       await expect(studio.locator('a[aria-current="step"]')).toContainText('Studio')
-      await expect(page.getByRole('button',{name:/Connecter wallet/i}).first()).toBeVisible()
+      await expect(studio.getByRole('button',{name:/xPortal/i})).toBeVisible()
       const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)
       expect(overflow,'journey width '+width).toBeLessThanOrEqual(12)
       await page.screenshot({animations:'disabled',
