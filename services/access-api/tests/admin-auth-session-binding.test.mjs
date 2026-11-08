@@ -5,92 +5,95 @@ import {
   assertChallengeIssuanceAllowed,
 } from '../src/adminAuthSessionBinding.mjs'
 
-const ADMIN = 'erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g'
-const OTHER = 'erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l'
+const ADMIN='erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g'
+const OTHER='erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l'
+const SERVER='trusted_backend_session_123456789'
+const proof={serverSessionId:SERVER,adminBech32:ADMIN,method:'siwx'}
 
-test('rejects paste_readonly and unknown methods', () => {
-  const binder = createAdminSessionBinder({ adminAllowlist: [ADMIN] })
-  assert.equal(
-    binder.bindSession({ adminBech32: ADMIN, method: 'paste_readonly' }).error,
-    'paste_identity_forbidden',
-  )
-  assert.equal(
-    binder.bindSession({ adminBech32: ADMIN, method: 'magic_link' }).error,
-    'unsupported_auth_method',
-  )
+// Mock only: in production the resolver must inspect a separately verified
+// server-issued SIWX session. It cannot trust wallet identities from the input.
+function verified(opts={}) {
+  return createAdminSessionBinder({
+    adminAllowlist:[ADMIN],nowMs:()=>1_700_000_000_000,
+    verifyWalletSession:async({serverSessionId,adminBech32,method})=>{
+      if(opts.deny) return {ok:false}
+      if(serverSessionId!==SERVER||adminBech32!==ADMIN||method!=='siwx')return {ok:false}
+      return {ok:true,sessionId:SERVER,admin:ADMIN,method:'siwx'}
+    },...opts,
+  })
+}
+
+test('paper session binder refuses bare address + wallet method by default',async()=>{
+  const binder=createAdminSessionBinder({adminAllowlist:[ADMIN]})
+  const result=await binder.bindSession({adminBech32:ADMIN,method:'siwx'})
+  assert.equal(result.ok,false)
+  assert.equal(result.error,'wallet_session_verifier_required')
+  assert.equal(binder.size(),0)
 })
 
-test('allowlist and session admin match required for challenge issue', () => {
-  let t = 1_700_000_000_000
-  const binder = createAdminSessionBinder({
-    nowMs: () => t,
-    adminAllowlist: [ADMIN],
-    randomId: () => 'sess_fixed_1',
-  })
-  assert.equal(
-    binder.bindSession({ adminBech32: OTHER, method: 'extension' }).error,
-    'admin_not_allowlisted',
-  )
-  const bound = binder.bindSession({ adminBech32: ADMIN, method: 'extension' })
-  assert.equal(bound.ok, true)
-
-  const ok = assertChallengeIssuanceAllowed({
-    binder,
-    sessionId: bound.sessionId,
-    adminBech32: ADMIN,
-    atMs: t + 1_000,
-  })
-  assert.equal(ok.ok, true)
-
-  assert.equal(
-    assertChallengeIssuanceAllowed({
-      binder,
-      sessionId: bound.sessionId,
-      adminBech32: OTHER,
-      atMs: t + 1_000,
-    }).error,
-    'session_admin_mismatch',
-  )
+test('rejects pasted identity, untrusted authentication methods, and missing SIWX server session',async()=>{
+  const binder=verified()
+  assert.equal((await binder.bindSession({adminBech32:ADMIN,method:'paste_readonly'})).error,
+    'paste_identity_forbidden')
+  assert.equal((await binder.bindSession({adminBech32:ADMIN,method:'magic_link'})).error,
+    'unsupported_auth_method')
+  assert.equal((await binder.bindSession({adminBech32:ADMIN,method:'siwx'})).error,
+    'server_session_required')
+  assert.equal(binder.size(),0)
 })
 
-test('expired session cannot issue challenges', () => {
-  let t = 1_700_000_000_000
-  const binder = createAdminSessionBinder({
-    nowMs: () => t,
-    adminAllowlist: [ADMIN],
-    randomId: () => 'sess_fixed_2',
-  })
-  const bound = binder.bindSession({
-    adminBech32: ADMIN,
-    method: 'web_wallet',
-    ttlMs: 120_000,
-  })
-  t = t + 120_001
-  assert.equal(
-    assertChallengeIssuanceAllowed({
-      binder,
-      sessionId: bound.sessionId,
-      adminBech32: ADMIN,
-      atMs: t,
-    }).error,
-    'session_expired',
-  )
+test('only server-verified wallet session can be bound for the exact allowlisted owner',async()=>{
+  const binder=verified()
+  assert.equal((await binder.bindSession({...proof,adminBech32:OTHER})).error,'admin_not_allowlisted')
+  assert.equal((await binder.bindSession({...proof,serverSessionId:'not_a_real_server_session_xxxxx'})).error,
+    'wallet_session_not_verified')
+  const bound=await binder.bindSession(proof)
+  assert.equal(bound.ok,true)
+  assert.equal(bound.mode,'paper_session_bound')
+  assert.equal(assertChallengeIssuanceAllowed({
+    binder,sessionId:bound.sessionId,adminBech32:ADMIN,atMs:1_700_000_000_100
+  }).ok,true)
+  assert.equal(assertChallengeIssuanceAllowed({
+    binder,sessionId:bound.sessionId,adminBech32:OTHER,atMs:1_700_000_000_100
+  }).error,'session_admin_mismatch')
 })
 
-test('missing operator allowlist fails closed even for apparently authenticated methods', () => {
-  const binder = createAdminSessionBinder()
-  const denied = binder.bindSession({adminBech32: ADMIN, method:'extension'})
-  assert.equal(denied.ok,false)
-  assert.equal(denied.error,'admin_not_allowlisted')
+test('fail closed when trusted session resolver explicitly rejects or throws',async()=>{
+  const denied=verified({deny:true})
+  assert.equal((await denied.bindSession(proof)).error,'wallet_session_not_verified')
+  const crashed=createAdminSessionBinder({adminAllowlist:[ADMIN],
+    verifyWalletSession:async()=>{throw Error('identity_provider_unavailable')}})
+  assert.equal((await crashed.bindSession(proof)).error,'wallet_session_not_verified')
+  assert.equal(crashed.size(),0)
 })
 
-test('default session IDs are cryptographically random 256-bit URL-safe tokens', () => {
-  const binder = createAdminSessionBinder({adminAllowlist:[ADMIN]})
-  const first = binder.bindSession({adminBech32:ADMIN,method:'siwx'})
-  const second = binder.bindSession({adminBech32:ADMIN,method:'siwx'})
-  assert.equal(first.ok,true)
-  assert.equal(second.ok,true)
-  assert.match(first.sessionId,/^[A-Za-z0-9_-]{43}$/)
-  assert.match(second.sessionId,/^[A-Za-z0-9_-]{43}$/)
-  assert.notEqual(first.sessionId,second.sessionId)
+test('expired sessions cannot issue new admin challenges',async()=>{
+  let t=1_700_000_000_000
+  const binder=createAdminSessionBinder({
+    adminAllowlist:[ADMIN],nowMs:()=>t,
+    verifyWalletSession:async()=>({ok:true,sessionId:SERVER,admin:ADMIN,method:'siwx'}),
+  })
+  const bound=await binder.bindSession({...proof,ttlMs:120_000})
+  assert.equal(bound.ok,true)
+  t+=120_001
+  assert.equal(assertChallengeIssuanceAllowed({
+    binder,sessionId:bound.sessionId,adminBech32:ADMIN,atMs:t
+  }).error,'session_expired')
+})
+
+test('missing operator allowlist denies even a trusted resolver',async()=>{
+  const binder=createAdminSessionBinder({verifyWalletSession:async()=>({
+    ok:true,sessionId:SERVER,admin:ADMIN,method:'siwx',
+  })})
+  assert.equal((await binder.bindSession(proof)).error,'admin_not_allowlisted')
+})
+
+test('default locally bound IDs are cryptographically random 256-bit tokens',async()=>{
+  const binder=verified()
+  const a=await binder.bindSession(proof),b=await binder.bindSession(proof)
+  assert.equal(a.ok,true)
+  assert.equal(b.ok,true)
+  assert.match(a.sessionId,/^[A-Za-z0-9_-]{43}$/)
+  assert.match(b.sessionId,/^[A-Za-z0-9_-]{43}$/)
+  assert.notEqual(a.sessionId,b.sessionId)
 })
