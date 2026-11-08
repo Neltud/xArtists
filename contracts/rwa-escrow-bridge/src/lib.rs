@@ -26,6 +26,7 @@ pub struct Escrow<M: ManagedTypeApi> {
     pub proof_hash: ManagedBuffer<M>,
     pub receipt_confirmed: bool,
     pub verification_confirmed: bool,
+    pub quality_confirmed: bool,
     pub ownership_confirmed: bool,
     pub ownership_proof_hash: ManagedBuffer<M>,
 }
@@ -128,6 +129,7 @@ pub trait RwaEscrowBridge {
             proof_hash: ManagedBuffer::new(),
             receipt_confirmed: false,
             verification_confirmed: false,
+            quality_confirmed: false,
             ownership_confirmed: false,
             ownership_proof_hash: ManagedBuffer::new(),
         };
@@ -166,6 +168,20 @@ pub trait RwaEscrowBridge {
         self.escrows(id).set(&esc);
     }
 
+    // A separate quality inspection proof is required; authenticity proof alone
+    // cannot satisfy the physical-condition gate.
+    #[endpoint(attestQualityInspection)]
+    fn attest_quality_inspection(&self, id: u64, quality_hash: ManagedBuffer) {
+        require!(!self.paused().get(), "paused");
+        require!(!self.escrows(id).is_empty(), "not found");
+        require!(self.blockchain().get_caller() == self.attestor().get(), "only attestor");
+        require!(quality_hash.len() > 0 && quality_hash.len() <= MAX_HASH_LEN, "invalid proof");
+        let mut esc = self.escrows(id).get();
+        require!(esc.status == 0u8, "not open");
+        esc.quality_confirmed = true;
+        self.escrows(id).set(&esc);
+    }
+
     // The attestor must independently verify the legal transfer and vault/NFT
     // beneficiary reassignment. A hash alone is not independently validated
     // by this contract: the attestor is a trusted external boundary.
@@ -189,7 +205,8 @@ pub trait RwaEscrowBridge {
         let mut esc = self.escrows(id).get();
         require!(esc.status == 0u8, "not open or disputed");
         require!(esc.receipt_confirmed, "receipt not confirmed");
-        require!(esc.verification_confirmed, "authenticity and quality not verified");
+        require!(esc.verification_confirmed, "authenticity not verified");
+        require!(esc.quality_confirmed, "quality not verified");
         require!(esc.ownership_confirmed, "ownership not reassigned");
         require!(self.blockchain().get_caller() == self.attestor().get(), "only attestor");
         self.release_to_seller(id, &mut esc);
