@@ -224,7 +224,9 @@ pub trait RwaEscrowBridge {
 
     fn release_to_seller(&self, id: u64, esc: &mut Escrow<Self::Api>) {
         esc.status = 1u8;
-        self.escrows(id).set(esc);
+        // Reborrow immutably: moving &mut Escrow into set() makes the later
+        // payment/beneficiary reads illegal under Rust ownership rules.
+        self.escrows(id).set(&*esc);
         let amount = esc.amount.clone();
         let seller = esc.seller.clone();
         self.send().direct_egld(&seller, &amount);
