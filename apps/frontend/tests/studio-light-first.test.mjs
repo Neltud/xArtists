@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs'
 
 const source=readFileSync(new URL('../src/pages/StudioPage.tsx',import.meta.url),'utf8')
 const css=readFileSync(new URL('../src/styles/creator-studio-light.css',import.meta.url),'utf8')
+const modules=readFileSync(new URL('../src/experience/modules.ts',import.meta.url),'utf8')
 const media=readFileSync(new URL('../src/components/CreatorMediaUpload.tsx',import.meta.url),'utf8')
 
 test('artist Studio has legible light-first scoped workspace with dark-mode fallback',()=>{
