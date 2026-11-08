@@ -19,17 +19,17 @@ The `GET /v1/studio/media/config` endpoint reports `modelEnabled` and `maxModelM
 - `asset.version=2.0`, scene/node/mesh declarations.
 - Reject any external image, shader or buffer URI (even `data:`), and reject unknown extensions; no external network fetch is permitted from the model.
 - Use the existing artist wallet JWT scope, PostgreSQL quota, SHA-256 registry and server-side Pinata file wrapping. No wallet private key is passed to the backend.
-- JSON metadata uses `animation_url: ipfs://CID/artwork-HASH.glb`, `properties.category: model`, `mime: model/gltf-binary`. Upload success is not minting or certification.
+- For a model, upload an authentic JPEG/PNG/WebP cover image and the GLB with the SAME SIWX-authenticated wallet; the final JSON uses `image: ipfs://POSTER-CID/...` and `animation_url: ipfs://MODEL-CID/artwork-HASH.glb`, `properties.category: model`, `mime: model/gltf-binary`, and `properties.image_sha256`. Immutable metadata fingerprint includes both uploads. Upload success is not minting or certification.
 
-**This validator is intentionally conservative**, not a malware sandbox or complete glTF conformance parser. It blocks dangerous external dependencies, but three-dimensional model complexity, GPU denial-of-service, malicious structured data and provenance require separate review. Add geometry bounds, renderer fault handling, independent gateway readback, and resource budgets before public GLB display. Preview poster pairing is not implemented in this PR; a model-only NFT metadata record may not render as artwork in all marketplaces.
+**This validator is intentionally conservative**, not a malware sandbox or complete glTF conformance parser. It blocks dangerous external dependencies, but three-dimensional model complexity, GPU denial-of-service, malicious structured data and provenance require separate review. Add geometry bounds, renderer fault handling, independent gateway readback, and resource budgets before public GLB display. Preview poster pairing is now mandatory for GLB metadata: a second same-wallet, previously pinned JPEG/PNG/WebP produces the public `image` URI plus exact `image_sha256`; the GLB remains in `animation_url`. A model-only NFT metadata record fails closed. Two uploads count toward the existing 8/day per-wallet quota.
 
 ## To activate after review
 
 1. Merge and verify the frontend/backend CI and manual 3D GLB validation fixtures.
 2. Prove Render access-api is deployed from the intended commit, has migrations 004/005 on its **actual** Postgres and backend-only `PINATA_JWT`, with safe CORS and quota.
-3. Run a noncommercial signed test upload with a dedicated wallet, with two-gateway IPFS readback and byte-by-byte SHA-256 match. Confirm pinned asset permanence independently.
+3. Run a noncommercial signed test upload with a dedicated wallet: GLB, cover JPEG/PNG/WebP, and the resulting metadata JSON. Each asset must pass two-gateway IPFS readback and byte-by-byte SHA-256 match. Confirm pin durability independently.
 4. Get explicit operator approval before setting `STUDIO_GLB_UPLOAD_ENABLED=1` in Render; never put the JWT in the dApp, in Git or in conversation.
-5. Keep minting gated on wallet-confirmed collection/role, preview image pairing, verified metadata and finality of MultiversX transactions. Minting, physical-art ownership, artist rights and marketplace listing are all separate gates.
+5. Keep minting gated on wallet-confirmed collection/role, SAME-WALLET verified image/model pairing, verified metadata and finality of MultiversX transactions. Minting, physical-art ownership, artist rights and marketplace listing are all separate gates.
 
 ## N. TUDURI proof-of-concept
 
