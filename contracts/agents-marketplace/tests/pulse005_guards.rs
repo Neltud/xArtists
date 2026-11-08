@@ -66,6 +66,20 @@ impl Setup {
         })
     }
 
+    fn mint_with_metadata_uri(&mut self, caller: &Address, metadata_uri: &[u8]) -> TxResult {
+        let recipient = self.recipient.clone();
+        self.world.execute_tx(caller, &self.sc, &rust_biguint!(0u64), |contract| {
+            contract.mint_genesis_pulse_005(
+                ManagedAddress::from(&recipient),
+                ManagedBuffer::from(metadata_uri),
+                uri("recto.png"),
+                uri("verso.png"),
+                uri("animation.mp4"),
+                ManagedBuffer::from(&[0x77u8; 32][..]),
+            );
+        })
+    }
+
     fn minted_marker(&mut self) -> bool {
         let mut minted = false;
         self.world.execute_query(&self.sc, |contract| {
@@ -149,4 +163,26 @@ fn p005_happy_path_four_existing_packs_then_atomic_fifth_delivery_once() {
     t.world.check_nft_balance(
         &t.recipient, TOKEN, 5, &rust_biguint!(1u64), None::<&u32>,
     );
+}
+
+#[test]
+fn p005_rejects_fake_long_cid_even_with_expected_filename() {
+    let mut t = setup(true);
+    let owner = t.owner.clone();
+    t.mint_with_metadata_uri(
+        &owner,
+        b"ipfs://bafyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!/metadata.json",
+    ).assert_user_error("invalid IPFS CID character");
+    assert!(!t.minted_marker());
+}
+
+#[test]
+fn p005_refuses_non_directory_cid_or_incorrect_prefix() {
+    let mut t = setup(true);
+    let owner = t.owner.clone();
+    t.mint_with_metadata_uri(
+        &owner,
+        b"ipfs://Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/metadata.json",
+    ).assert_user_error("requires CIDv1 bafy");
+    assert!(!t.minted_marker());
 }
