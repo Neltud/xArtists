@@ -2,6 +2,20 @@
 
 **Mainnet upgrade: NO-GO.** This PR's `Escrow` type derives TopEncode/TopDecode and is stored under `#[storage_mapper("escrows")]`. A change in fields changes the serialized binary layout of existing records. An in-place upgrade can make historic escrows fail to decode. Static Rust/JS tests do not prove an upgrade is safe.
 
+## What is actually deployed?
+
+The current `main` configuration `data/contracts.json` lists **no**
+`rwa-escrow-bridge` mainnet address, and the public UI labels the escrow
+contract pre-mainnet/not live. This is not proof that no independently
+deployed legacy instance exists. **Do not claim existing customer escrows,
+balances or legal positions until an independently verified contract address
+and state snapshot are obtained.**
+
+If there is genuinely no deployed v1 contract and no locked funds, **a new
+audited v2 deployment** is preferable to any migration. The legacy layout
+compatibility gate still prevents an unsafe upgrade if a v1 instance is
+identified later.
+
 ## Exact source layout
 
 Legacy fields in canonical order:
