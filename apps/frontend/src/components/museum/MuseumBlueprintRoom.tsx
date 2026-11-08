@@ -575,6 +575,7 @@ export default function MuseumBlueprintRoom({
             return (
               <button
                 key={it.frame.id + '-' + i}
+                aria-label={`Inspecter l’œuvre : ${it.frame.title}`}
                 type="button"
                 className="absolute focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
                 data-art={it.frame.id}
@@ -713,7 +714,7 @@ export default function MuseumBlueprintRoom({
                 <a href={inspect.href} target="_blank" rel="noreferrer" className="btn-secondary text-xs">
                   {xaRender("Source ↗ ")}</a>
               ))}
-              <button type="button" className="btn-ghost text-xs min-h-[44px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300" onClick={() => setInspect(null)}>
+              <button type="button" autoFocus className="btn-ghost text-xs min-h-[44px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300" onClick={() => setInspect(null)}>
                 {xaRender("Fermer ")}</button>
             </div>
           </div>
