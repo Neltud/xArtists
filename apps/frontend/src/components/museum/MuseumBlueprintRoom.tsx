@@ -148,8 +148,8 @@ function Pad({ label, on }: { label: string; on: (v: boolean) => void }) {
   return (
     <button
       type="button"
-      className="h-11 w-11 rounded-xl border border-white/15 bg-black/55 text-white text-sm font-bold active:bg-cyan-500/30 touch-manipulation select-none"
-      aria-label={label}
+      className="h-11 w-11 rounded-xl border border-white/25 bg-black/70 text-white text-sm font-bold active:bg-cyan-500/30 touch-manipulation select-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+      aria-label={({ '↑': 'Avancer', '↓': 'Reculer', '←': 'Aller à gauche', '→': 'Aller à droite' } as Record<string, string>)[label] || label}
       onPointerDown={e => {
         e.preventDefault()
         ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
@@ -158,6 +158,9 @@ function Pad({ label, on }: { label: string; on: (v: boolean) => void }) {
       onPointerUp={() => on(false)}
       onPointerCancel={() => on(false)}
       onPointerLeave={() => on(false)}
+      onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); on(true) } }}
+      onKeyUp={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); on(false) } }}
+      onBlur={() => on(false)}
     >
       {xaRender(label)}
     </button>
@@ -435,7 +438,7 @@ export default function MuseumBlueprintRoom({
         </div>
         <button
           type="button"
-          className="text-[10px] uppercase tracking-wider text-zinc-500 border border-white/10 rounded-full px-2.5 py-1 hover:text-zinc-300"
+          className="text-[12px] min-h-[44px] uppercase tracking-wider text-zinc-200 border border-white/20 rounded-full px-3 py-2 hover:text-white focus-visible:outline focus-visible:outline-cyan-300"
           onClick={() => setShowDetails(s => !s)}
         >
           {xaRender(showDetails ? 'Masquer' : 'Détails')} · I
@@ -445,7 +448,7 @@ export default function MuseumBlueprintRoom({
       {xaRender(showDetails && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
           <div className="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2">
-            <p className="text-zinc-600 uppercase tracking-wider text-[9px]">{xaRender("Surface")}</p>
+            <p className="text-zinc-300 uppercase tracking-wider text-[12px]">{xaRender("Surface")}</p>
             <p className="text-zinc-200 tabular-nums mt-0.5">{xaRender(area)} m²</p>
           </div>
           <div className="rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2">
@@ -572,8 +575,9 @@ export default function MuseumBlueprintRoom({
             return (
               <button
                 key={it.frame.id + '-' + i}
+                aria-label={`Inspecter l’œuvre : ${it.frame.title}`}
                 type="button"
-                className="absolute focus:outline-none"
+                className="absolute focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
                 data-art={it.frame.id}
                 style={{
                   left: left + floorW / 2,
@@ -623,7 +627,7 @@ export default function MuseumBlueprintRoom({
         <div className="absolute top-2 left-2 right-2 flex justify-between gap-2 pointer-events-none">
           <div
             ref={hudNearRef}
-            className={`rounded-lg px-2.5 py-1.5 text-[10px] backdrop-blur border max-w-[72%] truncate ${
+            className={`rounded-lg px-2.5 py-1.5 text-[12px] backdrop-blur border max-w-[72%] truncate ${
               lightText
                 ? 'bg-white/75 border-stone-300 text-stone-700'
                 : 'bg-black/60 border-white/10 text-zinc-300'
@@ -631,7 +635,7 @@ export default function MuseumBlueprintRoom({
           >
             {xaRender(nearTitle)}
           </div>
-          <div ref={hudPosRef} className="text-[9px] font-mono text-zinc-600 self-center">
+          <div ref={hudPosRef} className="text-[12px] font-mono text-zinc-200 self-center">
             —
           </div>
         </div>
@@ -647,7 +651,7 @@ export default function MuseumBlueprintRoom({
           </div>
           <button
             type="button"
-            className="rounded-full border border-cyan-400/40 bg-cyan-500/20 text-cyan-50 text-xs font-semibold px-4 py-2.5 active:scale-95 shadow-lg"
+            className="rounded-full border border-cyan-400/40 bg-cyan-500/20 text-cyan-50 text-[13px] min-h-[44px] font-semibold px-4 py-2.5 active:scale-95 shadow-lg"
             onClick={() => {
               const f = framed.find(x => x.frame.id === nearestId.current)
               if (f) setInspect(f.frame)
@@ -667,6 +671,8 @@ export default function MuseumBlueprintRoom({
         <div
           className="fixed inset-0 z-[90] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-3"
           role="dialog"
+          aria-label={`Détails de l’œuvre : ${inspect.title}`}
+          onKeyDown={e => { if (e.key === 'Escape') { e.stopPropagation(); setInspect(null) } }}
           aria-modal
           onClick={() => setInspect(null)}
         >
@@ -679,7 +685,7 @@ export default function MuseumBlueprintRoom({
                 {xaRender(inspect.image && !broken[inspect.id] ? (
                   <img
                     src={inspect.image}
-                    alt=""
+                    alt={inspect.title}
                     className="w-full h-full object-cover"
                     decoding="async"
                     {...{fetchpriority:'high'}}
@@ -700,7 +706,7 @@ export default function MuseumBlueprintRoom({
             </div>
             <div className="flex flex-wrap gap-2">
               {xaRender(allowBuy && (
-                <button type="button" className="btn-primary text-xs" onClick={onBuy}>
+                <button type="button" className="btn-primary text-xs min-h-[44px]" onClick={onBuy}>
                   {xaRender(marketLive ? 'Acheter…' : 'Intention d’achat')}
                 </button>
               ))}
@@ -708,7 +714,7 @@ export default function MuseumBlueprintRoom({
                 <a href={inspect.href} target="_blank" rel="noreferrer" className="btn-secondary text-xs">
                   {xaRender("Source ↗ ")}</a>
               ))}
-              <button type="button" className="btn-ghost text-xs" onClick={() => setInspect(null)}>
+              <button type="button" autoFocus className="btn-ghost text-xs min-h-[44px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300" onClick={() => setInspect(null)}>
                 {xaRender("Fermer ")}</button>
             </div>
           </div>

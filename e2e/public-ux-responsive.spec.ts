@@ -77,6 +77,80 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     })
   }
 
+  for (const width of [360, 390, 430]) {
+    test(`museum at ${width}px: modes are clear, keyboard-accessible and do not overflow`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 844 })
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await visit(page, '/museum')
+      const museum = page.locator('.xa-museum-page')
+      await expect(museum).toBeVisible()
+      const modes = page.getByRole('group', { name: 'Parcours du musée' })
+      const buttons = modes.getByRole('button')
+      await expect(buttons).toHaveCount(5)
+      await expect(buttons.first()).toHaveAttribute('aria-pressed', 'true')
+      const touchHeight = await buttons.first().evaluate(el => el.getBoundingClientRect().height)
+      expect(touchHeight, 'museum mode control must be at least 44px high').toBeGreaterThanOrEqual(44)
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+      expect(overflow, `museum overflow at ${width}px`).toBeLessThanOrEqual(12)
+      await page.screenshot({ animations: 'disabled', path: `artifacts/ux-mobile/museum-${width}.png` })
+      const skip = page.getByRole('link', { name: 'Accéder directement à la visite' })
+      await expect(skip).toBeVisible()
+      await skip.click()
+      await expect(modes).toBeVisible()
+      const scene = page.locator('.xa-museum-stage, .xa-museum-page [role="application"]').first()
+      await expect(scene).toBeAttached({ timeout: 20000 })
+      await scene.scrollIntoViewIfNeeded()
+      await page.screenshot({ animations: 'disabled', path: `artifacts/ux-mobile/museum-stage-${width}.png` })
+      const webglButton = scene.locator('.xa-museum-hud-actions button').first()
+      if (await webglButton.count()) {
+        const height = await webglButton.evaluate(el => el.getBoundingClientRect().height)
+        expect(height, 'immersive museum HUD target must be 44px high').toBeGreaterThanOrEqual(44)
+      }
+      await buttons.nth(2).focus()
+      await buttons.nth(2).press('Enter')
+      await expect(buttons.nth(2)).toHaveAttribute('aria-pressed', 'true')
+    })
+  }
+
+  test('touch museum at 390px: joystick and fullscreen controls remain reachable', async ({ browser }) => {
+    const context = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      isMobile: true,
+      hasTouch: true,
+      deviceScaleFactor: 1,
+      reducedMotion: 'reduce',
+      serviceWorkers: 'block',
+    })
+    try {
+      const page = await context.newPage()
+      await visit(page, '/museum')
+      await page.getByRole('link', { name: 'Accéder directement à la visite' }).click()
+      const stage = page.locator('.xa-museum-stage')
+      await expect(stage).toBeVisible({ timeout: 20000 })
+      await stage.scrollIntoViewIfNeeded()
+      const fullscreen = stage.getByRole('button', { name: /plein écran|full screen/i })
+      await expect(fullscreen).toBeVisible()
+      const hudHeight = await fullscreen.evaluate(el => el.getBoundingClientRect().height)
+      expect(hudHeight).toBeGreaterThanOrEqual(44)
+      const joystick = stage.locator('.xa-museum-joystick')
+      await expect(joystick).toBeVisible()
+      const stick = await joystick.boundingBox()
+      const dock = await page.locator('.xa-mobile-dock').boundingBox()
+      expect(stick && dock, 'joystick and dock should be measurable').toBeTruthy()
+      if (stick && dock) {
+        expect(stick.y + stick.height, 'joystick must not hide under mobile dock').toBeLessThan(dock.y)
+        const bottomHud = await stage.locator('.xa-museum-bottom-hud').boundingBox()
+        expect(bottomHud, 'the inspect/walk HUD should be present').toBeTruthy()
+        if (bottomHud) {
+          expect(bottomHud.y + bottomHud.height, 'inspect/walk HUD must not hide under mobile dock').toBeLessThan(dock.y)
+        }
+      }
+      await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/museum-touch-stage-390.png' })
+    } finally {
+      await context.close()
+    }
+  })
+
   test('desktop 1440px Home remains navigable, without wallet', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await visit(page, '/')

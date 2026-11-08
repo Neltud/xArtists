@@ -73,8 +73,8 @@ function PadBtn({ label, onPress }: { label: string; onPress: (on: boolean) => v
   return (
     <button
       type="button"
-      className="h-11 w-11 rounded-xl border border-white/15 bg-black/55 text-white text-sm font-bold active:bg-cyan-500/30 touch-manipulation select-none"
-      aria-label={label}
+      className="h-11 w-11 rounded-xl border border-white/25 bg-black/70 text-white text-sm font-bold active:bg-cyan-500/30 touch-manipulation select-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+      aria-label={({ '↑': 'Avancer', '↓': 'Reculer', '←': 'Aller à gauche', '→': 'Aller à droite' } as Record<string, string>)[label] || label}
       onPointerDown={e => {
         e.preventDefault()
         ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
@@ -83,6 +83,9 @@ function PadBtn({ label, onPress }: { label: string; onPress: (on: boolean) => v
       onPointerUp={() => onPress(false)}
       onPointerCancel={() => onPress(false)}
       onPointerLeave={() => onPress(false)}
+      onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); onPress(true) } }}
+      onKeyUp={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); onPress(false) } }}
+      onBlur={() => onPress(false)}
     >
       {xaRender(label)}
     </button>
@@ -224,7 +227,7 @@ export default function MuseumGameHall({
           {xaRender(layout.label)}
           <InfoTip k="museumGame" />
         </span>
-        <span className="mono text-zinc-600 text-[10px]">{xaRender(Math.round((z / maxZ) * 100))}%</span>
+        <span className="mono text-zinc-300 text-[12px]">{xaRender(Math.round((z / maxZ) * 100))}%</span>
       </div>
 
       <div
@@ -301,8 +304,9 @@ export default function MuseumGameHall({
             return (
               <button
                 key={item.id}
+                aria-label={`Inspecter l’œuvre : ${item.title}`}
                 type="button"
-                className="absolute focus:outline-none"
+                className="absolute focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
                 style={{
                   left: `${xPct}%`,
                   top: `${yPct}%`,
@@ -366,7 +370,7 @@ export default function MuseumGameHall({
 
         <div className="absolute top-2 left-2 right-2 flex justify-between gap-2 pointer-events-none">
           <div
-            className={`rounded-lg px-2 py-1 text-[10px] backdrop-blur border ${
+            className={`rounded-lg px-2 py-1 text-[12px] backdrop-blur border ${
               lightText
                 ? 'bg-white/70 border-stone-300 text-stone-700'
                 : 'bg-black/55 border-white/10 text-zinc-400'
@@ -390,7 +394,7 @@ export default function MuseumGameHall({
           </div>
           <button
             type="button"
-            className="rounded-full border border-cyan-400/40 bg-cyan-500/20 text-cyan-50 text-xs font-semibold px-4 py-2.5 active:scale-95 shadow-lg disabled:opacity-40"
+            className="rounded-full border border-cyan-400/40 bg-cyan-500/20 text-cyan-50 text-[13px] min-h-[44px] font-semibold px-4 py-2.5 active:scale-95 shadow-lg disabled:opacity-40"
             disabled={!nearest}
             onClick={() => nearest && setInspect(nearest)}
           >
@@ -408,6 +412,8 @@ export default function MuseumGameHall({
         <div
           className="fixed inset-0 z-[90] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4"
           role="dialog"
+          aria-label={`Détails de l’œuvre : ${inspect.title}`}
+          onKeyDown={e => { if (e.key === 'Escape') { e.stopPropagation(); setInspect(null) } }}
           aria-modal
           onClick={() => setInspect(null)}
         >
@@ -420,7 +426,7 @@ export default function MuseumGameHall({
                 {xaRender(inspect.image && !broken[inspect.id] ? (
                   <img
                     src={inspect.image}
-                    alt=""
+                    alt={inspect.title}
                     className="w-full h-full object-cover"
                     decoding="async"
                     fetchPriority="high"
@@ -441,7 +447,7 @@ export default function MuseumGameHall({
             </div>
             <div className="flex flex-wrap gap-2">
               {xaRender(allowBuy && (
-                <button type="button" className="btn-primary text-xs" onClick={onBuy}>
+                <button type="button" className="btn-primary text-xs min-h-[44px]" onClick={onBuy}>
                   {xaRender(marketLive ? 'Acheter…' : 'Intention d’achat')}
                 </button>
               ))}
@@ -457,7 +463,7 @@ export default function MuseumGameHall({
                 >
                   {xaRender("Source ↗ ")}</a>
               ))}
-              <button type="button" className="btn-ghost text-xs" onClick={() => setInspect(null)}>
+              <button type="button" autoFocus className="btn-ghost text-xs min-h-[44px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300" onClick={() => setInspect(null)}>
                 {xaRender("Fermer ")}</button>
             </div>
           </div>

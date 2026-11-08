@@ -15,6 +15,7 @@ import './experience/experience.css'
 import './experience/public-finish.css'
 import './experience/drive-art.css'
 import './experience/mobile-contrast-fixes.css'
+import './experience/museum-a11y.css'
 
 const PackLandingPage = lazy(() => import('./pages/PackLandingPage'))
 const HousePage = lazy(() => import('./pages/HousePage'))
