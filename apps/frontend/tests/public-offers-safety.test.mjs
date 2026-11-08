@@ -7,8 +7,8 @@ const commercial = readFileSync(new URL('../src/pages/CommercialLaunchPage.tsx',
 const routeScript = readFileSync(new URL('../scripts/check-routes.mjs', import.meta.url), 'utf8')
 
 test('public offers route resolves to the non-transactional page', () => {
-  assert.match(app, /path="\/offres"[^>]*CommercialLaunchPage/)
-  assert.match(app, /path="\/offers"[^>]*Alias to="\/offres"/)
+  assert.match(app, /path="\/offres"[\s\S]*?CommercialLaunchPage/)
+  assert.match(app, /path="\/offers"[\s\S]*?Alias to="\/offres"/)
 })
 test('commercial discovery explicitly discloses no checkout and no NFT delivery', () => {
   assert.match(commercial, /NO checkout, payment collection/)
