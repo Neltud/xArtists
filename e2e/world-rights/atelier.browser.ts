@@ -32,7 +32,11 @@ test('creator can prepare and download a non-authorizing dossier',async({page})=
 })
 test('public premium distribution is unavailable; source import removes fake approval',async({page,request})=>{
  const response=await request.get('/xArtists/plugins/xa-world-rights/xa-world-rights-0.6.0.zip')
- expect(response.status()).toBe(404)
+ // Vite dev/preview may return the SPA index with HTTP 200 for missing paths.
+ // Guard the actual bytes and MIME instead of assuming a 404 status.
+ const data=await response.body()
+ expect(data.subarray(0,2).toString('ascii')).not.toBe('PK')
+ expect(String(response.headers()['content-type']||'')).not.toMatch(/application\/(zip|octet-stream)/)
  await expect(page.locator('#licensing-status')).toContainText('nécessitent une licence vérifiée')
  await expect(page.getByRole('link',{name:/Télécharger le plugin/})).toHaveCount(0)
  const imported={schemaVersion:'0.6.0',creator:'Imported',title:'<script>window.evil=true</script>',platform:'youtube',format:'short_video',source:'https://youtube.com/watch?v=aaaaaaaaaaa',offer:{amountBaseUnits:'10000',royaltyBps:800,mode:'fixed'},licence:{use:'Editorial',territory:'FR',term:'90 days',exclusive:false},liveReady:true,listingAuthorized:true}
