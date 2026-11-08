@@ -80,6 +80,17 @@
     height: min(54svh, 480px);
     min-height: 400px;
   }
+  /* The fixed 5-item mobile dock sits above the bottom of a partially
+     visible gallery. Keep every scene action above its interactive area. */
+  .xa-museum-stage:not(.is-fullscreen) .xa-museum-joystick-wrap {
+    bottom: 86px;
+  }
+  .xa-museum-stage:not(.is-fullscreen) .xa-museum-look-hint {
+    bottom: 92px;
+  }
+  .xa-museum-stage:not(.is-fullscreen) .xa-museum-bottom-hud {
+    bottom: 76px;
+  }
   .xa-museum-stage .xa-museum-hud {
     padding: 12px;
     gap: 8px;
