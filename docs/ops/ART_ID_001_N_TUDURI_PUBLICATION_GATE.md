@@ -69,3 +69,14 @@ A local (not uploaded to GitHub) V9 distribution package now exists for this art
 **Delivery rule:** use a native `<video controls playsinline preload="metadata">` with an MP4 fallback and verified poster URI for public mobile artworks. Only show interactive GLB viewer when hosted over HTTPS with proper CORS, correct `model/gltf-binary` MIME and successful load status. On loader error, present poster/video instead of a blank page. Do not mislabel photo crossfades as a 3D scan or assume a mobile browser will fetch relative files from `content://`.
 
 **Before public release:** obtain media CIDs and hash readback proofs via signed Studio session; confirm publication scope for source media; secure HTTPS URLs and run real-device browser checks. Never declare IPFS pinning or mainnet NFT mint based solely on exported local files.
+
+
+## V12 → V13 visual quality verdict (2026-11-08)
+
+The previous V12 generated turntable MP4 was reviewed and **rejected as a public artwork preview**: 360 × 640 px, only 4 seconds, low-fidelity interpolated texture and overly regular estimated geometry. It must not be automatically selected as marketplace poster or preview.
+
+Two separate local V13 previews were exported and decoded successfully (not uploaded to Git):
+- **Recommended public candidate:** `N_TUDURI_presentation_PHOTOS_REELLES_V13_960p.mp4`, H.264, 960 × 1706, 30 fps, 14.667 seconds; gallery slideshow of four real artist photos, returning to signed front, soft transitions, no fabricated intermediate 3D view. **This is not a continuous 3D rotation.**
+- **Experimental only:** `N_TUDURI_rotation_3D_MODELE_EXPERIMENTAL_v13.mp4`, H.264, 720 × 1280, 30 fps, 8 seconds; simulated 360° from estimated V12 geometry and four-view photographic UV atlas, visually improved over V12 but still not photogrammetric or metrically certified.
+
+Neither V13 is pinned, hosted or minted. Before publishing either, respect artist's licensing and separate `studio_media` signature/IPFS pin/readback workflow. A true 360° validated GLB requires multi-view camera pose estimation and additional capture; quality of a rendered MP4 does **not** prove the geometric scan.
