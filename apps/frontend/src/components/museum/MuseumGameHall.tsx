@@ -304,6 +304,7 @@ export default function MuseumGameHall({
             return (
               <button
                 key={item.id}
+                aria-label={`Inspecter l’œuvre : ${item.title}`}
                 type="button"
                 className="absolute focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
                 style={{
@@ -462,7 +463,7 @@ export default function MuseumGameHall({
                 >
                   {xaRender("Source ↗ ")}</a>
               ))}
-              <button type="button" className="btn-ghost text-xs min-h-[44px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300" onClick={() => setInspect(null)}>
+              <button type="button" autoFocus className="btn-ghost text-xs min-h-[44px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300" onClick={() => setInspect(null)}>
                 {xaRender("Fermer ")}</button>
             </div>
           </div>
