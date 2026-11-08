@@ -58,6 +58,7 @@ export default function NftDistributorPage() {
   const [overrides, setOverrides] = useState<NonNullable<ArtPlanInput['overrides']>>({})
   const [brief, setBrief] = useState('Œuvres abstraites originales, peintures, palette iris et cuivre, composition éditoriale')
   const [copyStatus, setCopyStatus] = useState('')
+  const [factoryStep, setFactoryStep] = useState<'create' | 'verify' | 'publish'>('create')
 
   const [distributorTitle, setDistributorTitle] = useState('Distributeur Collection')
   const [collectionId, setCollectionId] = useState('')
@@ -193,28 +194,45 @@ export default function NftDistributorPage() {
     } catch { setCopyStatus('Presse-papiers non disponible. Tu peux sélectionner et copier le brief.') }
   }
 
-  return <div className="xa-nft-factory mx-auto max-w-7xl space-y-8 px-4 py-7 sm:px-8" data-testid="nft-factory-paper">
+  return <div className="xa-nft-factory xa-nft-wizard mx-auto max-w-5xl space-y-6 px-4 py-7 sm:px-8" data-testid="nft-factory-paper">
     <header className="space-y-3">
       <p className="text-xs uppercase tracking-[.2em] text-lime-300">xArtists / Studio / NFT Factory</p>
-      <h1 className="text-3xl font-semibold sm:text-5xl">Art Generator & distributeurs NFT</h1>
-      <p className="max-w-3xl text-sm leading-6 text-zinc-400">Humain, artiste ou agent IA : conçois une collection avec modèles ou calques, prépare les métadonnées NFT individuellement, puis configure son distributeur à prix fixe.</p>
-      <div className="rounded-xl border border-amber-500/35 bg-amber-400/10 p-4 text-sm text-amber-100" role="status">
-        <b>PRÉPARATION / PAPER ONLY.</b> Aucun fournisseur IA, débit de crédits réels, dépôt IPFS, paiement, transaction wallet ou smart contract déployé n’est connecté à ce parcours. Ne transfère aucun NFT à une adresse non vérifiée.
+      <h1 className="text-3xl font-semibold sm:text-5xl">Créer une collection NFT, simplement</h1>
+      <p className="max-w-3xl text-base leading-relaxed text-[color:var(--xa-muted)]">Trois étapes sans jargon : imaginez vos œuvres, vérifiez votre fichier, puis préparez leur publication. Aucun portefeuille nécessaire pour commencer.</p>
+      <div className="rounded-xl border border-[color:var(--xa-border)] bg-[color:var(--xa-panel2)] p-4 text-sm leading-relaxed text-[color:var(--xa-text)]" role="note">
+        <b>Découverte gratuite.</b> Vous préparez un projet, sans générer d’image ni réaliser de paiement. Publication NFT et ventes indisponibles dans cette étape.
       </div>
     </header>
 
+    <nav aria-label="Étapes de création NFT" className="xa-factory-steps grid gap-2 sm:grid-cols-3" id="factory-steps">
+      {([
+        { id: 'create', number: '1', title: 'Créer', hint: 'Votre collection' },
+        { id: 'verify', number: '2', title: 'Vérifier', hint: 'Votre œuvre et les droits' },
+        { id: 'publish', number: '3', title: 'Publier', hint: 'Voir les étapes restantes' },
+      ] as const).map(step => (
+        <button key={step.id} type="button"
+          aria-current={factoryStep === step.id ? 'step' : undefined}
+          onClick={() => setFactoryStep(step.id)}
+          className={'xa-factory-step rounded-2xl border px-4 py-3 min-h-[72px] text-left ' +
+            (factoryStep === step.id ? 'xa-factory-step-active' : '')}>
+          <span className="block text-base font-semibold">{step.number}. {step.title}</span>
+          <span className="block mt-1 text-xs text-[color:var(--xa-muted)]">{step.hint}</span>
+        </button>
+      ))}
+    </nav>
+    <p className="sr-only" role="status" aria-live="polite">
+      {factoryStep === 'create' ? 'Étape 1 : créer'
+        : factoryStep === 'verify' ? 'Étape 2 : vérifier' : 'Étape 3 : préparer la publication'}
+    </p>
+
+    {factoryStep === 'create' && <section className="space-y-5" aria-labelledby="factory-create-heading">
+      <div className="space-y-1">
+        <h2 className="text-2xl font-semibold" id="factory-create-heading">1. Imaginez votre collection</h2>
+        <p className="text-sm text-[color:var(--xa-muted)]">Choisissez un nom, un style et le nombre de NFT. L'aperçu n'est pas une image générée.</p>
+      </div>
     <div className="grid gap-5 lg:grid-cols-2">
       <section className="card space-y-4" aria-labelledby="generator-heading">
-        <h2 id="generator-heading" className="text-xl font-semibold">1. Génération de collection</h2>
-        <label className="block space-y-1 text-sm">Type de créateur
-          <select className="w-full rounded-lg border border-white/15 bg-black/50 p-2" value={creatorType} onChange={e => setCreatorType(e.target.value as CreatorType)}>
-            <option value="human_artist">Humain / artiste</option>
-            <option value="ai_agent">Agent IA créateur (mandat requis pour payer/minter)</option>
-          </select>
-        </label>
-        {creatorType === 'ai_agent' && <label className="block space-y-1 text-sm">Identifiant de l’agent
-          <input className="w-full rounded-lg border border-white/15 bg-black/50 p-2" placeholder="agent:studio-bot" value={agentId} maxLength={100} onChange={e => setAgentId(e.target.value)}/>
-        </label>}
+        <h2 id="generator-heading" className="text-xl font-semibold">Votre collection</h2>
         <label className="block space-y-1 text-sm">Nom de collection
           <input className="w-full rounded-lg border border-white/15 bg-black/50 p-2" value={collectionTitle} maxLength={80} onChange={e => setCollectionTitle(e.target.value)}/>
         </label>
@@ -273,12 +291,20 @@ export default function NftDistributorPage() {
                   value={layersJson} onChange={e=>setLayersJson(e.target.value)}/>
               </details>
             </div>}
+        <details className="xa-factory-advanced rounded-xl border border-[color:var(--xa-border)] p-3">
+          <summary className="cursor-pointer min-h-[44px] py-3 text-sm font-semibold">Réglages avancés (agents, paramètres, devis simulé)</summary>
+          <div className="space-y-4 pt-3">
+        <label className="block space-y-1 text-sm">Type de créateur
+          <select className="w-full rounded-lg border border-white/15 bg-black/50 p-2" value={creatorType} onChange={e => setCreatorType(e.target.value as CreatorType)}>
+            <option value="human_artist">Humain / artiste</option>
+            <option value="ai_agent">Agent IA créateur (mandat requis pour payer/minter)</option>
+          </select>
+        </label>
+        {creatorType === 'ai_agent' && <label className="block space-y-1 text-sm">Identifiant de l’agent
+          <input className="w-full rounded-lg border border-white/15 bg-black/50 p-2" placeholder="agent:studio-bot" value={agentId} maxLength={100} onChange={e => setAgentId(e.target.value)}/>
+        </label>}
         <label className="block space-y-1 text-sm">Seed de variation
           <input className="w-full rounded-lg border border-white/15 bg-black/50 p-2 font-mono text-xs" value={seed} maxLength={128} onChange={e => setSeed(e.target.value)}/>
-        </label>
-        <label className="flex items-start gap-2 text-xs text-zinc-300">
-          <input type="checkbox" className="mt-1" checked={rightsConfirmed} onChange={e => setRightsConfirmed(e.target.checked)} />
-          Je confirme disposer des droits nécessaires sur les instructions, images, calques et références que je fournirai. Cette déclaration ne remplace pas une vérification Art-ID.
         </label>
         <div className="rounded-xl border border-white/10 bg-black/30 p-3">
           <p className="text-xs uppercase tracking-wide text-zinc-400">Devis de génération</p>
@@ -286,10 +312,12 @@ export default function NftDistributorPage() {
           <p className="mt-1 text-xs text-zinc-500">Tarif simulé de référence : 3 crédits papier / image, version paper-1. <strong>Aucun prix EUR, réservation de crédit réel ou fournisseur IA n’est encore configuré.</strong></p>
           <button type="button" disabled className="btn-primary mt-3 text-xs">Payer et générer (désactivé jusqu’à vérification)</button>
         </div>
+          </div>
+        </details>
       </section>
 
       <section className="card space-y-4" aria-labelledby="metadata-heading">
-        <h2 id="metadata-heading" className="text-xl font-semibold">2. Variations et métadonnées par NFT</h2>
+        <h2 id="metadata-heading" className="text-xl font-semibold">Aperçu des éditions</h2>
         {artError && <div role="alert" className="rounded-lg border border-rose-500/30 p-3 text-xs text-rose-200">{artError}</div>}
         {art && <>
           <div className="grid grid-cols-3 gap-2">
@@ -309,6 +337,8 @@ export default function NftDistributorPage() {
               {art.editions.map(item => <option key={item.edition} value={item.edition}>NFT #{item.edition}</option>)}
             </select>
           </label>
+          <details className="xa-factory-advanced rounded-xl border border-[color:var(--xa-border)] p-3">
+            <summary className="cursor-pointer py-3 min-h-[44px] text-sm font-semibold">Personnaliser une fiche NFT (avancé)</summary>
           {picked && <>
             <label className="block space-y-1 text-sm">Nom de ce NFT
               <input className="w-full rounded-lg border border-white/15 bg-black/50 p-2"
@@ -332,6 +362,7 @@ export default function NftDistributorPage() {
             </div>
             <pre className="max-h-64 overflow-auto rounded-lg bg-black/40 p-3 text-[10px] leading-5 text-zinc-300">{JSON.stringify(picked, null, 2)}</pre>
           </>}
+          </details>
           <button type="button" className="btn-secondary text-sm" onClick={() => exportJson('xartists-collection-metadata-DRAFT.json', art)}>
             Exporter {art.quantity} fiches NFT (brouillon JSON)
           </button>
@@ -341,8 +372,8 @@ export default function NftDistributorPage() {
     </div>
 
     <section className="card space-y-3" aria-labelledby="ai-provider-heading">
-      <h2 id="ai-provider-heading" className="text-xl font-semibold">3. Génération d’images avec IA — préproduction</h2>
-      <p className="text-sm text-zinc-400">Le brief et le plan de traits prépareront les appels à un fournisseur IA choisi (OpenAI, GPU AMD/NVIDIA ou autre). Aucune génération réelle n’est simulée comme terminée.</p>
+      <h2 id="ai-provider-heading" className="text-xl font-semibold">Décrivez votre style</h2>
+      <p className="text-sm text-zinc-400">Décrivez votre idée en quelques mots. Vous pourrez copier ce brief ; aucune image n’est produite à cette étape.</p>
       <label className="block space-y-1 text-sm">Instructions de style et de création
         <textarea className="w-full rounded-lg border border-white/15 bg-black/50 p-3" rows={3} maxLength={1200} value={brief} onChange={e=>setBrief(e.target.value)}/>
       </label>
@@ -350,8 +381,54 @@ export default function NftDistributorPage() {
       {copyStatus && <p role="status" className="text-xs text-zinc-300">{copyStatus}</p>}
       <p className="text-xs text-zinc-500">À prévoir : contrôle des droits Art-ID/Physical Steward, quote fournisseur signé, budget et autorisation du créateur, réservation idempotente, rendu par calques/modèle, revue humaine, IPFS puis signature wallet.</p>
     </section>
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <p className="text-sm text-[color:var(--xa-muted)]">{art ? art.quantity + ' fiches NFT préparées (sans images)' : 'Complétez les informations de la collection.'}</p>
+      <button type="button" className="btn-primary min-h-[48px] text-sm"
+        disabled={!art} onClick={() => setFactoryStep('verify')}>Continuer : vérifier mon œuvre</button>
+    </div>
+    </section>}
 
+    {factoryStep === 'verify' && <section className="space-y-5" aria-labelledby="factory-verify-heading">
+      <div className="space-y-1">
+        <h2 id="factory-verify-heading" className="text-2xl font-semibold">2. Vérifiez votre œuvre</h2>
+        <p className="text-sm text-[color:var(--xa-muted)]">Choisissez un vrai fichier et déclarez vos droits. Le contrôle du fichier reste sur votre appareil.</p>
+      </div>
+      <div className="card space-y-2">
+        <h3 className="text-lg font-semibold">Déclaration des droits</h3>
+        <p className="text-sm text-[color:var(--xa-muted)]">Vous devez avoir le droit d'utiliser cette œuvre. Votre déclaration ne remplace pas une vérification.</p>
+        <label className="flex items-start gap-2 text-xs text-zinc-300">
+          <input type="checkbox" className="mt-1" checked={rightsConfirmed} onChange={e => setRightsConfirmed(e.target.checked)} />
+          Je confirme disposer des droits nécessaires sur les instructions, images, calques et références que je fournirai. Cette déclaration ne remplace pas une vérification Art-ID.
+        </label>
+      </div>
     <CreatorEvidenceHandoff art={art} edition={edition} brief={brief} rightsDeclared={rightsConfirmed}/>
+    <div className="flex flex-wrap gap-3">
+      <button type="button" className="btn-secondary min-h-[44px]" onClick={() => setFactoryStep('create')}>Retour à ma collection</button>
+      <button type="button" className="btn-primary min-h-[44px]" onClick={() => setFactoryStep('publish')}>Voir ce qu’il manque pour publier</button>
+    </div>
+    </section>}
+
+    {factoryStep === 'publish' && <section className="space-y-5" aria-labelledby="factory-publish-heading">
+      <div className="space-y-1">
+        <h2 id="factory-publish-heading" className="text-2xl font-semibold">3. Préparez votre publication</h2>
+        <p className="text-sm text-[color:var(--xa-muted)]">Voici ce qui fonctionne et ce qui manque. Cet écran ne réalise aucune transaction.</p>
+      </div>
+      <div className="card space-y-4">
+        <p className="text-lg font-semibold">{art?.title || 'Collection à compléter'}</p>
+        <dl className="grid gap-3 text-sm sm:grid-cols-2">
+          <div><dt className="font-semibold">Collection</dt><dd>{art ? art.quantity + ' brouillons préparés' : 'À créer'}</dd></div>
+          <div><dt className="font-semibold">Droits</dt><dd>{rightsConfirmed ? 'Déclarés, pas encore vérifiés' : 'Déclaration manquante'}</dd></div>
+          <div><dt className="font-semibold">Fichiers</dt><dd>Hébergement et preuves IPFS non confirmés</dd></div>
+          <div><dt className="font-semibold">NFT / ventes</dt><dd>Non activés dans la Factory</dd></div>
+        </dl>
+        <p className="rounded-xl border border-[color:var(--xa-border)] bg-[color:var(--xa-panel2)] p-3 text-sm leading-relaxed">
+          <strong>Publication non disponible ici.</strong> Les droits, médias et métadonnées doivent d'abord être vérifiés. La signature du propriétaire est demandée séparément, dans Creator Studio.
+        </p>
+        <Link to="/create/studio" className="btn-secondary inline-flex min-h-[44px] items-center text-sm">Poursuivre dans Creator Studio</Link>
+      </div>
+      <details className="xa-factory-advanced rounded-2xl border border-[color:var(--xa-border)] bg-[color:var(--xa-panel)] p-4">
+        <summary className="cursor-pointer py-3 text-base font-semibold">Options avancées : distributeur et simulation</summary>
+        <p className="mb-4 text-sm text-[color:var(--xa-muted)]">Aucun smart contract déployé, dépôt, vente ou tirage payant ici.</p>
 
     <div className="grid gap-5 lg:grid-cols-2">
       <section className="card space-y-4" aria-labelledby="distributor-heading">
@@ -414,6 +491,9 @@ export default function NftDistributorPage() {
         <p className="text-xs text-zinc-500">Avant toute vente réelle : tirage non anticipable et auditable (commit/reveal ou oracle vérifié), anti-réentrance, inventaire atomique, remboursement sûr, audit contractuel, limites d’achat et restrictions légales éventuelles.</p>
       </section>
     </div>
+      </details>
+      <button type="button" className="btn-secondary min-h-[44px]" onClick={() => setFactoryStep('verify')}>Retour aux vérifications</button>
+    </section>}
     <footer className="flex flex-wrap items-center gap-4 text-sm text-zinc-400">
       <Link className="underline hover:text-white" to="/create/studio">Studio NFT / wallet artiste</Link>
       <Link className="underline hover:text-white" to="/marketplace">Marketplace</Link>
