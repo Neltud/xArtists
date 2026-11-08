@@ -112,6 +112,40 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     })
   }
 
+  test('touch museum at 390px: joystick and fullscreen controls remain reachable', async ({ browser }) => {
+    const context = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      isMobile: true,
+      hasTouch: true,
+      deviceScaleFactor: 1,
+      reducedMotion: 'reduce',
+      serviceWorkers: 'block',
+    })
+    try {
+      const page = await context.newPage()
+      await visit(page, '/museum')
+      await page.getByRole('link', { name: 'Accéder directement à la visite' }).click()
+      const stage = page.locator('.xa-museum-stage')
+      await expect(stage).toBeVisible({ timeout: 20000 })
+      await stage.scrollIntoViewIfNeeded()
+      const fullscreen = stage.getByRole('button', { name: /plein écran|fullscreen/i })
+      await expect(fullscreen).toBeVisible()
+      const hudHeight = await fullscreen.evaluate(el => el.getBoundingClientRect().height)
+      expect(hudHeight).toBeGreaterThanOrEqual(44)
+      const joystick = stage.locator('.xa-museum-joystick')
+      await expect(joystick).toBeVisible()
+      const stick = await joystick.boundingBox()
+      const dock = await page.locator('.xa-mobile-dock').boundingBox()
+      expect(stick && dock, 'joystick and dock should be measurable').toBeTruthy()
+      if (stick && dock) {
+        expect(stick.y + stick.height, 'joystick must not hide under mobile dock').toBeLessThan(dock.y)
+      }
+      await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/museum-touch-stage-390.png' })
+    } finally {
+      await context.close()
+    }
+  })
+
   test('desktop 1440px Home remains navigable, without wallet', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await visit(page, '/')
