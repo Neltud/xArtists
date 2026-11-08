@@ -11,3 +11,5 @@ multiversx-sc = "0.50"
 
 [dev-dependencies]
 multiversx-sc-scenario = "0.50"
+
+[workspace]
