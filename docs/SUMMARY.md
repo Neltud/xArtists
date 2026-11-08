@@ -16,6 +16,8 @@
   * [Confiance et transparence](presentation/confiance-et-transparence.md)
   * [Statut réel des fonctionnalités](presentation/etat-du-produit.md)
   * [Prix, droits et livraison](security/pricing-delivery.md)
+  * [Release publique v0.130.0 — 8 novembre](RELEASE_2026-11-08_PUBLIC.md)
+  * [Revue design et accessibilité — 8 novembre](audits/DESIGN_REVIEW_2026-11-08.md)
   * [$TRO — présentation et limites](presentation/tro-et-economie.md)
 * [À propos et assistance](presentation/questions-frequentes.md)
   * [Feuille de route](presentation/feuille-de-route.md)
