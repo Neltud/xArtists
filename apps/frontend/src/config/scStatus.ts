@@ -62,6 +62,11 @@ export const AGENTS_FEE_BPS = 300
  * verifies endpoint payment behavior, URI-backed NFT creation, prices and owner test.
  * Do not flip from env config or a green CI alone.
  */
+/**
+ * Applies to BOTH fiat and crypto public pack purchases. No env flag,
+ * healthy API or owner-direct payable metadata can bypass this checkpoint.
+ */
+export const AGENT_PACK_PUBLIC_COMMERCE_RELEASED = false
 export const AGENT_PACK_PUBLIC_MINT_RELEASED = false
 
 export function isUsableScAddress(addr: string | undefined | null): boolean {
