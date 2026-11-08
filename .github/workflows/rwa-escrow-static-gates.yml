@@ -20,3 +20,20 @@ jobs:
         with:
           node-version: '20'
       - run: node --test contracts/rwa-escrow-bridge/tests/release_gates.static.test.mjs contracts/rwa-escrow-bridge/tests/legacy_storage_no_go.test.mjs
+
+  rustvm-escrow:
+    name: RustVM escrow payout/dispute scenarios (offline)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: contracts/rwa-escrow-bridge
+      - name: Compile escrow contract and run transactional VM scenarios
+        run: cargo test --manifest-path contracts/rwa-escrow-bridge/Cargo.toml --test rwa_escrow_vm -- --nocapture
+      - name: Explicit migration go/no-go
+        run: |
+          echo "RustVM only validates fresh contracts and mocked transactions."
+          echo "NO-GO: no on-chain legacy storage migration, audit, or production upgrade authorized."
