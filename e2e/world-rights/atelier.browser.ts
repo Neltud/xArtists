@@ -30,10 +30,11 @@ test('creator can prepare and download a non-authorizing dossier',async({page})=
  await page.getByLabel('Prix indicatif en EUR').fill('251')
  await expect(page.getByRole('button',{name:'Exporter le dossier JSON'})).toBeDisabled()
 })
-test('package download is a real ZIP and source import removes fake approval',async({page,request})=>{
+test('public premium distribution is unavailable; source import removes fake approval',async({page,request})=>{
  const response=await request.get('/xArtists/plugins/xa-world-rights/xa-world-rights-0.6.0.zip')
- expect(response.ok()).toBe(true)
- const buffer=await response.body();expect(buffer.subarray(0,2).toString()).toBe('PK')
+ expect(response.status()).toBe(404)
+ await expect(page.locator('#licensing-status')).toContainText('nécessitent une licence vérifiée')
+ await expect(page.getByRole('link',{name:/Télécharger le plugin/})).toHaveCount(0)
  const imported={schemaVersion:'0.6.0',creator:'Imported',title:'<script>window.evil=true</script>',platform:'youtube',format:'short_video',source:'https://youtube.com/watch?v=aaaaaaaaaaa',offer:{amountBaseUnits:'10000',royaltyBps:800,mode:'fixed'},licence:{use:'Editorial',territory:'FR',term:'90 days',exclusive:false},liveReady:true,listingAuthorized:true}
  await page.locator('#import').setInputFiles({name:'draft.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(imported))})
  await expect(page.locator('#feedback')).toContainText('Dossier à compléter')
