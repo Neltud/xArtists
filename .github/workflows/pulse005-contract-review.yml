@@ -38,3 +38,5 @@ jobs:
           EOF
       - name: Run contract tests
         run: cargo test --manifest-path contracts/agents-marketplace/Cargo.toml
+      - name: Fail-closed readback tests (mock gateways, no live IPFS or mint)
+        run: node --test contracts/agents-marketplace/tests/pulse005_ipfs_readback.test.mjs
