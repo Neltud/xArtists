@@ -1,6 +1,6 @@
 # RWA escrow release gates — draft, NO-GO
 
-This patch prevents direct EGLD release by either `confirmReceipt` or `submitVerificationProof` alone. The attestor must submit an ownership reassignment attestation, then explicitly call `release`. The payer confirms receipt. Verification attestation must cover authenticity **and** physical quality. Any dispute blocks the normal release.
+This patch prevents direct EGLD release by either `confirmReceipt` or `submitVerificationProof` alone. The attestor must submit an ownership reassignment attestation, then explicitly call `release`. The payer confirms receipt. The attestor submits separate authenticity and physical quality proofs. Any dispute blocks the normal release.
 
 ## Critical limitations
 
@@ -21,3 +21,9 @@ This patch prevents direct EGLD release by either `confirmReceipt` or `submitVer
 7. End-to-end mock of fiat PSP escrow + legal transfer + vault ledger + NFT beneficiary reconciliation, including partial failures.
 
 **Status:** code proposal only; tests not executed; no deployment, payment, mint or merge authorized.
+
+## Static regression suite
+
+`node --test contracts/rwa-escrow-bridge/tests/release_gates.static.test.mjs`
+
+This suite checks source-level invariants only. It does **not** compile Rust, execute on a MultiversX VM, validate evidence, or establish security. Real scenario tests and a migration plan remain mandatory.
