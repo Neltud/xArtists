@@ -185,21 +185,28 @@ export async function uploadStudioMedia(media,wallet,request=fetch){
     [uploadId,check.sha256,uri,wallet]))
   return {uploadId,uri,cid,mime:check.mime,bytes:check.bytes,sha256:check.sha256}
 }
-export function createStudioMetadata(row,body,wallet){
+export function createStudioMetadata(row,body,wallet,previewRow=null){
   if(row.wallet!==wallet||row.status!=='pinned'||!row.uri||!SHA64.test(row.sha256))
     throw fail('media_record_not_owned_or_pinned',403)
   const title=String(body?.title||'').trim().slice(0,50)
   const description=String(body?.description||'').trim().slice(0,800)
   if(title.length<2||title.length>50)throw fail('metadata_title_invalid')
   if(body.rightsAccepted!==true)throw fail('media_rights_confirmation_required',403)
+  // Marketplaces need a verified static poster: an orphan GLB with no image is
+  // not a publication-ready NFT. It must be another pinned record of THIS wallet.
+  if(row.mime==='model/gltf-binary' && (!previewRow||previewRow.wallet!==wallet||
+      previewRow.status!=='pinned'||!/^image\/(jpeg|png|webp)$/.test(previewRow.mime)||
+      !previewRow.uri||!SHA64.test(previewRow.sha256)))
+    throw fail('glb_preview_required_or_not_owned',403)
   const meta={
     name:title,
     description:description||'Original artwork published by the artist using xArtists Creator Studio.',
     ...(row.mime==='video/mp4'
       ? {animation_url:row.uri,properties:{category:'video',mime:row.mime}}
       : row.mime==='model/gltf-binary'
-      ? {animation_url:row.uri,properties:{category:'model',mime:row.mime,
-          note:'3D asset; preview image and scan fidelity require independent review'}}
+      ? {image:previewRow.uri,animation_url:row.uri,properties:{category:'model',mime:row.mime,
+          image_sha256:previewRow.sha256,
+          note:'3D asset; scan fidelity and physical rights require independent review'}}
       : {image:row.uri,properties:{category:'image',mime:row.mime}}),
     attributes:[{trait_type:'Creator wallet',value:wallet},
       {trait_type:'SHA-256',value:row.sha256},
@@ -208,8 +215,8 @@ export function createStudioMetadata(row,body,wallet){
   return meta
 }
 /** Deterministic proof binding metadata inputs to the immutable pinned JSON. */
-export function studioMetadataFingerprint(row,body,wallet){
-  return digest(Buffer.from(JSON.stringify(createStudioMetadata(row,body,wallet))))
+export function studioMetadataFingerprint(row,body,wallet,previewRow=null){
+  return digest(Buffer.from(JSON.stringify(createStudioMetadata(row,body,wallet,previewRow))))
 }
 export async function pinStudioMetadata(wallet,body,request=fetch,dbTx=tx){
   erdToPubkey(wallet)
@@ -222,7 +229,17 @@ export async function pinStudioMetadata(wallet,body,request=fetch,dbTx=tx){
   })
   if(!row)throw fail('media_record_not_found',404)
   if(row.status==='metadata_pinning')throw fail('metadata_pinning_in_progress',409)
-  const content=createStudioMetadata(row,body,wallet)
+  let previewRow=null
+  if(row.mime==='model/gltf-binary'){
+    const previewId=String(body?.previewUploadId||'')
+    if(!/^[a-f0-9-]{36}$/.test(previewId)||previewId===id)
+      throw fail('glb_preview_required_or_not_owned',403)
+    previewRow=await dbTx(async c=>{
+      const r=await c.query('SELECT * FROM xartists_studio_media WHERE id=$1 AND wallet=$2',[previewId,wallet])
+      return r.rows[0]||null
+    })
+  }
+  const content=createStudioMetadata(row,body,wallet,previewRow)
   const requestedDigest=digest(Buffer.from(JSON.stringify(content)))
   if(row.metadata_uri){
     // An earlier publication is immutable: never report a different title as uploaded.
