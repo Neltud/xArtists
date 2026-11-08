@@ -33,7 +33,7 @@ The `GET /v1/studio/media/config` endpoint reports `modelEnabled` and `maxModelM
 
 ## N. TUDURI proof-of-concept
 
-The downloadable **xArtists 3D Lab V12** preview is a 25 cm high *interpreted* 3D mesh from four artist-declared cardinal views (front/right/back/left), UV atlas 2048×1024 sourced from real photos, 56,542 seam-split vertices / 112,640 faces, standalone GLB SHA-256 `4bd63c052dd5150fc8123605c686a98a40d940d3da642969fa5bbd3b8d80b918`. Mesh is watertight **after position-only UV seam welding**. Width ~12.18 cm, depth ~10.57 cm are **model assumptions**, not measurements. Actual reported 7 cm diameter has unspecified location.
+The downloadable **xArtists 3D Lab V12** preview is a 25 cm high *interpreted* 3D mesh from four artist-declared cardinal views (front/right/back/left), UV atlas 2048×1024 sourced from real photos, 56,542 seam-split vertices / 112,640 faces, Y-up glTF standalone GLB SHA-256 `2536573760f4459dd1dc99a07b54ce92521c6faf4d999febae0efee558fa9f38`. Mesh is watertight **after position-only UV seam welding**. Width ~12.18 cm, depth ~10.57 cm are **model assumptions**, not measurements. Actual reported 7 cm diameter has unspecified location.
 
 **Angles not SfM-solved:** four artist-labeled cardinal views are nominal 0°, 90°, 180°, 270°. Original HEVC video includes varying distance, tilt and handling and cannot be treated as a uniform calibrated orbit. The new model is better visually than V8 but remains an interpretive geometry and photographic UV, not a certified measured scan. No IPFS CID or on-chain token exists.
 
