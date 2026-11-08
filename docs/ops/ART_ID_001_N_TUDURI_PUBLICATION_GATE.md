@@ -54,3 +54,18 @@ Local conversation attachment: `N_TUDURI_3D_lab_v8_prepublication.zip` (not comm
 **Marketplace GO**: mint gate + listing transaction and contract readback.
 
 All three remain **NO-GO** until evidence exists.
+
+
+## Mobile visualisation and photo-real preview (2026-11-08 V9)
+
+An Android screenshot reproduced a local-file problem: opening `viewer.html` through a `content://media/external/file` URL made `GLTFLoader.load('./model.glb')` fail with `Failed to fetch`. This is **not** evidence of a malformed GLB.
+
+A local (not uploaded to GitHub) V9 distribution package now exists for this artwork:
+- H.264 720x1280 / 24 fps / ~22.7-second MP4 made from **the artist's four original photographs plus an excerpt of the original video**, i.e. a photo-real media presentation, **not a photogrammetric 3D turntable**.
+- A single-file offline HTML photo explorer with four embedded reference images, touch navigation, slider and autoplay, QA-tested on Chromium mobile viewport. Transitions are between photographs, not continuous 360-degree reconstructed geometry.
+- A separate experimental single-file HTML 3D prototype embedding the GLB bytewise and parsing it with `GLTFLoader.parse(ArrayBuffer, '', onLoad, onError)` rather than fetching a relative local path. Three.js itself still requires CDN/network access; Android `content://` module execution is not proven reliable. Prefer hosting in xArtists under HTTPS.
+- No media or source photograph has been committed to this public repository. Local package is `N_TUDURI_diffusion_mobile_v9.zip` in the conversation artifacts.
+
+**Delivery rule:** use a native `<video controls playsinline preload="metadata">` with an MP4 fallback and verified poster URI for public mobile artworks. Only show interactive GLB viewer when hosted over HTTPS with proper CORS, correct `model/gltf-binary` MIME and successful load status. On loader error, present poster/video instead of a blank page. Do not mislabel photo crossfades as a 3D scan or assume a mobile browser will fetch relative files from `content://`.
+
+**Before public release:** obtain media CIDs and hash readback proofs via signed Studio session; confirm publication scope for source media; secure HTTPS URLs and run real-device browser checks. Never declare IPFS pinning or mainnet NFT mint based solely on exported local files.
