@@ -142,3 +142,4 @@ export default function CreatorEvidenceHandoff({ art, edition, brief, rightsDecl
       La Factory ne lance aucune transaction. Un distributeur reste un <strong>brouillon non déployé</strong>.
     </p>
   </section>
+}
