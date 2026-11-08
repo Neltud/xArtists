@@ -12,6 +12,22 @@
 6. **Art-ID et Steward** : contrôle de provenance et doublons via **xArtists Art-ID Forensics**, revue de droit d'auteur et consentement, vérification distincte d'éventuelles œuvres physiques via **Physical Art Steward** ; aucune revendication de propriété matérielle par simple NFT. Si un contrôle n'est pas connecté, afficher `not_verified`, jamais `verified`. Trailer Producer peut générer une promotion séparée à partir des médias approuvés, sans les muter.
 7. **Mint** : le Studio existant prépare l'émission `issueNonFungible`, rôle `ESDTRoleNFTCreate`, pin metadata IPFS, validation nonce/titre/royalties et transaction **signée par le wallet artiste**. Le paiement de la *génération d'images* et celui de la *vente NFT* restent deux rails distincts. Les packs Genesis Pulse/Yield/Sentinel ne doivent jamais être créés par le minter d'œuvres génériques.
 
+## Pont réel de preuves locales — sprint du 8 novembre 2026
+
+La route `/create/nft-factory` intègre désormais **CreatorEvidenceHandoff**, un maillon local et non commercial. Après préparation du plan de collection, l'artiste sélectionne un fichier réel (JPG, PNG, WebP, MP4 ou GLB) pour **une édition identifiée**. Le navigateur lit les octets à la demande et calcule le **SHA-256 des bytes exacts**, sans requête réseau. Les en-têtes de formats et les tailles maximales sont filtrés ; ce n'est pas une validation complète de contenu. Le serveur `creatorMedia.mjs` doit toujours refaire les contrôles avant tout upload.
+
+- L'empreinte `fileSha256` lie le fichier choisi. `dossierDigest` lie aussi le `planDigest`, l'édition, sa métadonnée courante, le brief et les déclarations de droits ; changer une édition ou un brief invalide le dossier.
+- Les exports `xa-handoff/1` distinguent **création NFT** (brief + déclaration de droits) de **promotion vidéo** (source + permission promotionnelle déclarée). Chaque entrée porte `verification: unverified` et les dossiers restent `blocked` même après déclaration : un tiers doit revérifier les droits et les preuves.
+- Le fichier et les instructions de création ne sont pas envoyés à un fournisseur par cet outil. Le JSON n'est ni une licence ni un CID, et son hash ne prouve pas l'originalité d'une image ou la propriété de la sculpture représentée.
+- Les garde-fous restent **`ipfsPinned:false`, `mintEnabled:false`, `paymentExecuted:false`, `contractDeployed:false`, `trailerPublished:false`**.
+- La poursuite réelle passe séparément par [Creator Studio](../apps/frontend/src/pages/StudioPage.tsx), et seulement si le service d'upload est activé : signature SIWX de connexion, quota backend, Pinata sécurisé, métadonnées et vérification indépendante des CID. Ensuite `useStudioMintTx` exige l'approbation wallet et les rôles NFTCreate ; le distributeur attend un SC audité, inventaire/droits de propriété, hasard non manipulable et politique de remboursement.
+
+### Gardes pour les agents
+
+Un créateur déclaré `ai_agent` produit un obstacle supplémentaire `scoped_signed_agent_mandate_required`. Les seules preuves locales ne donnent **jamais** un mandat agent, une autorisation de paiement ni une signature wallet. La création d'œuvres, le mint, leur vente et leur promotion relèvent de permissions distinctes et révocables.
+
+**Livré dans cette branche :** module pur `creatorEvidencePaper.mjs`, définitions TypeScript, composant, tests des changements d'octets/briefs, erreurs MIME, GLB, déclarations et verrous. Ce n'est **pas** un service IPFS ou un distributeur déployé.
+
 ## Deux modèles de distributeur par collection
 
 **A. Stock déjà minté (escrow_inventory)**
@@ -61,7 +77,7 @@ Pour le SC payant, concevoir puis auditer un engagement aléatoire non anticipab
 
 ## Liens dépôt
 
-- Backend de préparation IA : [PR #374](https://github.com/Neltud/xArtists/pull/374), en **draft** au 5 novembre, crédits papier et aucun fournisseur réel.
+- Backend de préparation IA : [PR #374](https://github.com/Neltud/xArtists/pull/374), **fusionnée** au 8 novembre, crédits papier et aucun fournisseur réel.
 - Issue génération : [#373](https://github.com/Neltud/xArtists/issues/373).
 - Issue plugin registry et permissions : [#375](https://github.com/Neltud/xArtists/issues/375).
 - Gates paiements/mint : [#281](https://github.com/Neltud/xArtists/issues/281).
