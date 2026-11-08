@@ -151,7 +151,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         ne signez aucune transaction avant d’avoir vérifié le média, les droits et la collection.
       </p>}
       <label className="block text-xs text-zinc-300">
-        Photo, vidéo ou modèle 3D original
+        Photo ou vidéo originale (ou modèle 3D GLB)
         <input type="file" accept=".jpg,.jpeg,.png,.webp,.mp4,.glb,image/jpeg,image/png,image/webp,video/mp4,model/gltf-binary"
           className="mt-1 block w-full rounded-lg border border-white/10 p-2 text-xs text-white"
           onChange={e=>pick(e.target.files?.[0]||null)}/>
