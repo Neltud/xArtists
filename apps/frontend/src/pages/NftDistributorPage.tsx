@@ -5,6 +5,7 @@
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import '../experience/nft-factory-wizard.css'
 import CreatorEvidenceHandoff from '../components/CreatorEvidenceHandoff'
 import { useWallet } from '../context/WalletContext'
 import { ART_TEMPLATES, prepareArtCollection } from '../lib/artCollectionPaper.mjs'
