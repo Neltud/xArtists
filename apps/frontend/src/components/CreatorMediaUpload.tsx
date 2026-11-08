@@ -74,10 +74,16 @@ export default function CreatorMediaUpload({title,onReady}:Props){
     return ()=>c.abort()
   },[base])
   const pick=(next:File|null)=>{
+    // Android document providers may label .glb as application/octet-stream.
+    // Normalize ONLY the exact .glb extension; backend verifies glTF magic/chunks.
+    const chosen=next && /\.glb$/i.test(next.name) &&
+      (next.type==='' || next.type==='application/octet-stream')
+      ? new File([next],next.name,{type:'model/gltf-binary',lastModified:next.lastModified})
+      : next
     revision.current+=1
-    setError('');setFile(next);setPinned(null);onReady(null)
+    setError('');setFile(chosen);setPinned(null);onReady(null)
     setNeedsReconciliation(false)
-    if(next && (!allowed[next.type]||next.size<=0||next.size>allowed[next.type])){
+    if(chosen && (!allowed[chosen.type]||chosen.size<=0||chosen.size>allowed[chosen.type])){
       setFile(null)
       setError('Format attendu : JPG, PNG, WebP (16 Mio), MP4 (48 Mio) ou GLB (32 Mio).')
     }
