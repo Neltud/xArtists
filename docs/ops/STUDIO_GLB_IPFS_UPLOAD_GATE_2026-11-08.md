@@ -38,3 +38,15 @@ The downloadable **xArtists 3D Lab V12** preview is a 25 cm high *interpreted* 3
 **Angles not SfM-solved:** four artist-labeled cardinal views are nominal 0°, 90°, 180°, 270°. Original HEVC video includes varying distance, tilt and handling and cannot be treated as a uniform calibrated orbit. The new model is better visually than V8 but remains an interpretive geometry and photographic UV, not a certified measured scan. No IPFS CID or on-chain token exists.
 
 The ZIP remains a conversation artifact, not a committed public GitHub media file; original photos should not be leaked into repository by routine deployments.
+
+## V14 preflight for N. TUDURI (2026-11-08)
+
+A separate local, verified ZIP `N_TUDURI_V14_IPFS_PREFLIGHT.zip` was built from the existing V12 prototype and the real signed-front photograph. Neither item was uploaded or committed to Git.
+
+- GLB (self-contained UV-textured prototype; 112,640 triangles): **SHA-256** `2536573760f4459dd1dc99a07b54ce92521c6faf4d999febae0efee558fa9f38` (unchanged source binary).
+- JPEG poster 1080 × 1080 (unaltered real artwork image on neutral margins): **SHA-256** `5d63ce8d5684e289e28e09e1460454bafcd05308759e165e293955260ec630dd`.
+- Bundled manifest, local preflight verifier, example NFT metadata with placeholder URIs, and publication checklist. ZIP integrity and standalone hash checks passed.
+- Model, poster and NFT JSON require **three independently verified IPFS CIDs**, with the image and model upload IDs stored under **the same authenticated artist wallet**. No CID, pin receipt, on-chain token or marketplace listing exists yet.
+- Creator Studio allows two uploads for a model (GLB and poster), consuming two of the eight daily quota slots, before pinning one immutable metadata JSON with `image` + `animation_url`. Do not enable production until the actual Render database and migrations are established and the artist confirms publication.
+
+**Visual NO-GO remains:** even with a technically valid GLB and preview poster, the V12 surface is extrapolated from four uncalibrated photographs and does not constitute a metric photogrammetric scan. An authentic full scan needs a controlled camera orbit, measured object scale and SfM/MVS validation.
