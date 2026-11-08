@@ -24,6 +24,10 @@ pub struct Escrow<M: ManagedTypeApi> {
     pub status: u8,
     pub dispute_opened_at: u64,
     pub proof_hash: ManagedBuffer<M>,
+    pub receipt_confirmed: bool,
+    pub verification_confirmed: bool,
+    pub ownership_confirmed: bool,
+    pub ownership_proof_hash: ManagedBuffer<M>,
 }
 
 #[multiversx_sc::contract]
@@ -122,6 +126,10 @@ pub trait RwaEscrowBridge {
             status: 0u8,
             dispute_opened_at: 0u64,
             proof_hash: ManagedBuffer::new(),
+            receipt_confirmed: false,
+            verification_confirmed: false,
+            ownership_confirmed: false,
+            ownership_proof_hash: ManagedBuffer::new(),
         };
         self.escrows(id).set(&esc);
         self.trade_escrow_id(&trade_id).set(id);
@@ -135,7 +143,8 @@ pub trait RwaEscrowBridge {
         let mut esc = self.escrows(id).get();
         require!(esc.status == 0u8, "not open");
         require!(self.blockchain().get_caller() == esc.payer, "only payer");
-        self.release_to_seller(id, &mut esc);
+        esc.receipt_confirmed = true;
+        self.escrows(id).set(&esc);
     }
 
     #[endpoint(submitVerificationProof)]
@@ -153,6 +162,36 @@ pub trait RwaEscrowBridge {
             "invalid proof"
         );
         esc.proof_hash = proof_hash;
+        esc.verification_confirmed = true;
+        self.escrows(id).set(&esc);
+    }
+
+    // The attestor must independently verify the legal transfer and vault/NFT
+    // beneficiary reassignment. A hash alone is not independently validated
+    // by this contract: the attestor is a trusted external boundary.
+    #[endpoint(attestOwnershipReassignment)]
+    fn attest_ownership_reassignment(&self, id: u64, proof_hash: ManagedBuffer) {
+        require!(!self.paused().get(), "paused");
+        require!(!self.escrows(id).is_empty(), "not found");
+        require!(self.blockchain().get_caller() == self.attestor().get(), "only attestor");
+        require!(proof_hash.len() > 0 && proof_hash.len() <= MAX_HASH_LEN, "invalid proof");
+        let mut esc = self.escrows(id).get();
+        require!(esc.status == 0u8, "not open");
+        esc.ownership_proof_hash = proof_hash;
+        esc.ownership_confirmed = true;
+        self.escrows(id).set(&esc);
+    }
+
+    #[endpoint(release)]
+    fn release(&self, id: u64) {
+        require!(!self.paused().get(), "paused");
+        require!(!self.escrows(id).is_empty(), "not found");
+        let mut esc = self.escrows(id).get();
+        require!(esc.status == 0u8, "not open or disputed");
+        require!(esc.receipt_confirmed, "receipt not confirmed");
+        require!(esc.verification_confirmed, "authenticity and quality not verified");
+        require!(esc.ownership_confirmed, "ownership not reassigned");
+        require!(self.blockchain().get_caller() == self.attestor().get(), "only attestor");
         self.release_to_seller(id, &mut esc);
     }
 
