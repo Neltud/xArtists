@@ -111,7 +111,7 @@ function ArtworkGrid({
     <section className="space-y-2">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-semibold text-white">{xaRender(title)}</h3>
-        <p className="text-[11px] text-zinc-500 tabular-nums">{xaRender(cap)}</p>
+        <p className="text-[13px] text-zinc-300 tabular-nums">{xaRender(cap)}</p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {xaRender(frames.map(f => (
@@ -120,14 +120,14 @@ function ArtworkGrid({
             href={f.href || undefined}
             target="_blank"
             rel="noreferrer"
-            className="rounded-xl border border-white/10 overflow-hidden bg-black/30"
+            className="rounded-xl border border-white/10 overflow-hidden bg-black/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-300"
           >
             {xaRender(f.image ? (
               <img src={f.image} alt={f.title} className="w-full aspect-square object-contain bg-zinc-950" loading="lazy" decoding="async" />
             ) : (
               <div className="w-full aspect-square bg-zinc-900" />
             ))}
-            <p className="text-[11px] text-zinc-300 truncate px-2 py-1">{xaRender(f.title)}</p>
+            <p className="text-[13px] leading-snug text-zinc-100 px-2 py-2 break-words">{xaRender(f.title)}</p>
           </a>
         )))}
       </div>
@@ -311,7 +311,7 @@ export default function MuseumPage() {
           {xaRender(catalogLoading ? ' · catalogue…' : '')}
         </p>
         {xaRender(wallCount > 0 && (
-          <p className="text-[11px] text-zinc-500">
+          <p className="text-[13px] text-[color:var(--xa-text-secondary)]">
             {xaRender("Capacité salle : ")}{xaRender(wallCount)} {xaRender(" murs · jusqu'à ")}{xaRender(MUSEUM_CAPACITY.maxArtworksPerWall)}{xaRender(' ')}
             {xaRender("œuvres/mur (")}{xaRender(wallCount * MUSEUM_CAPACITY.maxArtworksPerWall)} {xaRender(" slots) · affichage max")}{xaRender(' ')}
             {xaRender(MUSEUM_CAPACITY.maxArtworksPublic)}
@@ -326,13 +326,14 @@ export default function MuseumPage() {
 
       {museumId === 'xartists' && <DriveArtShowcase compact />}
 
-      <div className="flex flex-wrap gap-2">
+      <div role="group" aria-label="Parcours du musée" className="flex flex-wrap gap-2">
         {xaRender((['explore', 'venue', 'map', 'mine', 'pulse'] as Mode[]).map(m => (
           <button
             key={m}
             type="button"
             onClick={() => setMode(m)}
-            className={`rounded-full px-3 py-1.5 text-[12px] border ${
+             aria-pressed={mode === m}
+            className={`rounded-full px-3 py-2 min-h-[44px] text-[13px] font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--xa-accent)] border ${
               mode === m
                 ? 'border-[color:var(--xa-border-strong)] bg-[color:var(--xa-accent-soft)] text-[color:var(--xa-text)]'
                 : 'border-white/10 text-zinc-400'
@@ -404,7 +405,7 @@ export default function MuseumPage() {
         <HolderPulseTab nfts={account.nfts || []} frames={hallFrames} connected={connected} />
       ))}
 
-      <p className="text-[11px] text-zinc-600">
+      <p className="text-[13px] leading-relaxed text-[color:var(--xa-text-secondary)]">
         <button
           type="button"
           className="underline-offset-2 hover:underline"
