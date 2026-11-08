@@ -110,8 +110,8 @@ function ArtworkGrid({
   return (
     <section className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-white">{xaRender(title)}</h3>
-        <p className="text-[13px] text-zinc-300 tabular-nums">{xaRender(cap)}</p>
+        <h3 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender(title)}</h3>
+        <p className="text-[13px] text-[color:var(--xa-text-secondary)] tabular-nums">{xaRender(cap)}</p>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {xaRender(frames.map(f => (
@@ -120,14 +120,14 @@ function ArtworkGrid({
             href={f.href || undefined}
             target="_blank"
             rel="noreferrer"
-            className="rounded-xl border border-white/10 overflow-hidden bg-black/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-300"
+            className="rounded-xl border border-[color:var(--xa-border)] overflow-hidden bg-[color:var(--xa-panel)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-300"
           >
             {xaRender(f.image ? (
               <img src={f.image} alt={f.title} className="w-full aspect-square object-contain bg-zinc-950" loading="lazy" decoding="async" />
             ) : (
               <div className="w-full aspect-square bg-zinc-900" />
             ))}
-            <p className="text-[13px] leading-snug text-zinc-100 px-2 py-2 break-words">{xaRender(f.title)}</p>
+            <p className="text-[13px] leading-snug text-[color:var(--xa-text)] px-2 py-2 break-words">{xaRender(f.title)}</p>
           </a>
         )))}
       </div>
@@ -336,7 +336,7 @@ export default function MuseumPage() {
             className={`rounded-full px-3 py-2 min-h-[44px] text-[13px] font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--xa-accent)] border ${
               mode === m
                 ? 'border-[color:var(--xa-border-strong)] bg-[color:var(--xa-accent-soft)] text-[color:var(--xa-text)]'
-                : 'border-white/10 text-zinc-400'
+                : 'border-[color:var(--xa-border)] text-[color:var(--xa-text-secondary)]'
             }`}
           >
             {c({explore:'museumVisit',venue:'museumWalls',map:'tours',mine:'museumCollection',pulse:'intelligence'}[m])}
