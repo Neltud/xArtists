@@ -80,18 +80,17 @@ export default function CreatorEvidenceHandoff({ art, edition, brief, rightsDecl
 
   return <section className="card space-y-4" aria-labelledby="creator-evidence-heading" data-testid="creator-local-handoff">
     <div className="space-y-2">
-      <h2 id="creator-evidence-heading" className="text-xl font-semibold">3 bis. Preuve du média et transmission aux modules</h2>
+      <h2 id="creator-evidence-heading" className="text-xl font-semibold">Préparer votre fichier</h2>
       <p className="text-sm leading-relaxed text-[color:var(--xa-text-secondary)]">
-        Choisis le fichier réel de l’édition, puis calcule sa signature SHA-256 <strong>sur cet appareil</strong>.
-        Deux dossiers distincts sont préparés pour la création NFT et la bande-annonce.
-        Le calcul n’envoie pas le fichier et ne prouve ni les droits d’auteur ni sa publication sur IPFS.
+        Choisissez le fichier original correspondant à votre œuvre. La vérification se fait <strong>sur cet appareil</strong>,
+        sans transmettre le fichier. Ce contrôle ne remplace pas une vérification des droits.
       </p>
     </div>
     <p className="text-sm text-[color:var(--xa-text)]">
       Édition : <strong>{art?.editions[edition - 1]?.name || 'Plan de collection à compléter'}</strong>
     </p>
     <label className="block space-y-1 text-sm">
-      Fichier original à examiner (JPG, PNG, WebP ≤16 Mio · MP4 ≤48 Mio · GLB ≤32 Mio)
+      Votre photo, vidéo ou sculpture 3D (JPG, PNG, WebP, MP4 ou GLB)
       <input type="file"
         accept=".jpg,.jpeg,.png,.webp,.mp4,.glb,image/jpeg,image/png,image/webp,video/mp4,model/gltf-binary"
         className="block w-full min-h-[44px] rounded-xl border border-[color:var(--xa-border)] p-3 text-sm"
@@ -101,6 +100,8 @@ export default function CreatorEvidenceHandoff({ art, edition, brief, rightsDecl
     {file && <p className="text-xs break-words text-[color:var(--xa-text-secondary)]">
       Sélection locale : {file.name} · {(file.size / 1048576).toFixed(2)} Mio
     </p>}
+    <details className="xa-factory-advanced rounded-xl border border-[color:var(--xa-border)] p-3">
+      <summary className="cursor-pointer min-h-[44px] py-3 text-sm font-semibold">Bande-annonce : autorisation de promotion (facultatif)</summary>
     <label className="flex items-start gap-3 text-sm leading-relaxed">
       <input type="checkbox" checked={promotionPermission}
         className="mt-1 h-4 w-4"
@@ -109,19 +110,23 @@ export default function CreatorEvidenceHandoff({ art, edition, brief, rightsDecl
       Je déclare disposer d’une permission de promotion pour cette version du média.
       Cette déclaration n’est pas une licence vérifiée ni une autorisation de publier une vidéo.
     </label>
+    </details>
     <button type="button" className="btn-secondary min-h-[44px] text-sm"
       onClick={() => { void prepare() }} disabled={!file || !art || busy}>
-      {busy ? 'Calcul SHA-256 local…' : 'Vérifier les octets et préparer les dossiers'}
+      {busy ? 'Vérification du fichier…' : 'Vérifier mon fichier'}
     </button>
     {error && <p role="alert" className="rounded-lg border border-amber-500/40 p-3 text-sm text-amber-700 dark:text-amber-200">
       Impossible de préparer la preuve locale : {error}. Aucun fichier transmis.
     </p>}
     {verified && <div className="space-y-3 rounded-xl border border-[color:var(--xa-border)] p-3" role="status">
-      <p className="text-sm font-semibold">SHA-256 du fichier calculé — vérification locale uniquement</p>
-      <p className="font-mono break-all text-xs">{verified.fileSha256}</p>
-      <p className="text-xs text-[color:var(--xa-text-secondary)]">Engagement du dossier : <span className="font-mono break-all">{verified.dossierDigest}</span></p>
-      <p className="text-sm">Création : <strong>à revoir</strong> · Trailer : <strong>à revoir</strong> · IPFS : <strong>non publié</strong> · NFT : <strong>non minté</strong></p>
-      <div className="flex flex-wrap gap-2">
+      <p className="text-sm font-semibold">Votre fichier a été lu et identifié sur votre appareil.</p>
+      <p className="text-sm">Il n'a pas été envoyé sur IPFS et aucun NFT n'a été créé. Les droits et la promotion restent à vérifier.</p>
+      <details className="xa-factory-advanced rounded-xl border border-[color:var(--xa-border)] p-3">
+        <summary className="cursor-pointer min-h-[44px] py-3 text-sm font-semibold">Voir les détails techniques et exporter les dossiers</summary>
+        <p className="text-sm font-semibold">SHA-256 du fichier (local)</p>
+        <p className="font-mono break-all text-xs">{verified.fileSha256}</p>
+        <p className="text-xs text-[color:var(--xa-text-secondary)]">Empreinte du dossier : <span className="font-mono break-all">{verified.dossierDigest}</span></p>
+        <div className="mt-3 flex flex-wrap gap-2">
         <button type="button" className="btn-secondary min-h-[44px] text-sm"
           onClick={() => exportJson('xartists-preuve-locale-PAPER.json', verified)}>
           Exporter la preuve locale
@@ -134,12 +139,13 @@ export default function CreatorEvidenceHandoff({ art, edition, brief, rightsDecl
           onClick={() => exportJson('xartists-trailer-handoff-BLOCKED.json', verified.trailerHandoff)}>
           Dossier Trailer (non vérifié)
         </button>
-      </div>
+        </div>
+      </details>
     </div>}
     <p className="text-sm text-[color:var(--xa-text-secondary)]">
-      Après contrôle indépendant des droits, poursuis dans <Link to="/create/studio" className="underline font-semibold">Creator Studio</Link> :
-      upload IPFS sécurisé si le serveur l’autorise, vérification des CID, rôle NFTCreate et signature par le wallet propriétaire.
-      La Factory ne lance aucune transaction. Un distributeur reste un <strong>brouillon non déployé</strong>.
+      Une fois vos droits et votre fichier vérifiés, poursuivez dans <Link to="/create/studio" className="underline font-semibold">Creator Studio</Link>.
+      La publication IPFS et la création NFT demandent des vérifications et votre signature séparées.
+      Rien n'est publié ou vendu depuis cet écran.
     </p>
   </section>
 }
