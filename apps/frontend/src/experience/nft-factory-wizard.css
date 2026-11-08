@@ -1,0 +1,77 @@
+/* Guided NFT Factory: light-first, legible on phones and usable in dark theme. */
+.xa-nft-wizard .xa-factory-step {
+  color: var(--xa-text);
+  background: var(--xa-panel);
+  border-color: var(--xa-border);
+  transition: background-color .16s ease, border-color .16s ease;
+}
+.xa-nft-wizard .xa-factory-step:hover,
+.xa-nft-wizard .xa-factory-step:focus-visible {
+  border-color: var(--xa-accent);
+  background: var(--xa-panel2);
+}
+.xa-nft-wizard .xa-factory-step-active {
+  border: 2px solid var(--xa-accent);
+  padding: 11px 15px;
+  background: var(--xa-panel2);
+  box-shadow: 0 1px 8px rgba(48,72,27,.1);
+}
+.xa-nft-wizard .xa-factory-advanced {
+  color: var(--xa-text);
+  background: var(--xa-panel2);
+}
+.xa-nft-wizard .xa-factory-advanced summary {
+  color: var(--xa-text);
+  touch-action: manipulation;
+}
+.xa-nft-wizard .xa-factory-advanced summary:focus-visible {
+  outline: 2px solid var(--xa-accent);
+  outline-offset: 3px;
+}
+.xa-nft-wizard .card {
+  border: 1px solid var(--xa-border);
+  background: var(--xa-panel);
+  color: var(--xa-text);
+}
+.xa-nft-wizard .card :is(input:not([type="checkbox"]):not([type="file"]),textarea,select) {
+  min-height: 44px;
+  background-color: var(--xa-panel);
+  color: var(--xa-text);
+  border-color: var(--xa-border);
+}
+.xa-nft-wizard .card label {
+  color: var(--xa-text);
+}
+.xa-nft-wizard .card [class*="text-zinc-"] {
+  color: var(--xa-muted);
+}
+.xa-nft-wizard .card [class*="text-amber-"],
+.xa-nft-wizard .card [class*="text-rose-"] {
+  color: var(--xa-text);
+}
+.xa-nft-wizard .xa-factory-step:focus-visible {
+  outline: 3px solid var(--xa-accent);
+  outline-offset: 3px;
+}
+.xa-nft-wizard .xa-factory-advanced[open] > summary {
+  margin-bottom: 8px;
+}
+@media (max-width: 640px) {
+  .xa-nft-wizard .xa-factory-steps { grid-template-columns: 1fr 1fr 1fr; }
+  .xa-nft-wizard .xa-factory-step {
+    padding-inline: 10px;
+    min-height: 72px;
+  }
+  .xa-nft-wizard .xa-factory-step-active { padding-inline: 9px; }
+  .xa-nft-wizard .xa-factory-step > span:first-child { font-size: 14px; }
+  .xa-nft-wizard .xa-factory-step > span:last-child {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+}
+@media (max-width: 355px) {
+  .xa-nft-wizard .xa-factory-steps { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xa-nft-wizard .xa-factory-step { transition: none; }
+}
