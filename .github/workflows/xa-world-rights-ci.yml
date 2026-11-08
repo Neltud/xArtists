@@ -52,19 +52,18 @@ jobs:
           node --check services/access-api/src/worldRightsHttp.mjs
           node --test services/access-api/tests/world-rights.test.mjs
           node --test apps/frontend/tests/xa-world-rights.test.mjs
-      - name: Verify downloadable source archive
+      - name: Fail closed — no public premium ZIP or free plugin download
         run: |
           python - <<'PY'
-          import pathlib,zipfile
-          archive=pathlib.Path('apps/frontend/public/plugins/xa-world-rights/xa-world-rights-0.6.0.zip')
-          with zipfile.ZipFile(archive) as z:
-              assert z.testzip() is None
-              names=z.namelist()
-              assert 'plugin.json' in names and 'web/app.html' in names
-              assert not any('..' in pathlib.PurePosixPath(n).parts or n.endswith(('.pyc','.sqlite')) for n in names)
-              assert 'world-rights' in z.read('README.md').decode().lower()
-              for name in ['app.html','app.css','core.js','app.js']:
-                  assert z.read('web/'+name) == (archive.parent/name).read_bytes()
+          import pathlib
+          site=pathlib.Path('apps/frontend/public/plugins/xa-world-rights')
+          assert not list(site.glob('*.zip')), 'public plugin ZIP must not ship'
+          html=(site/'app.html').read_text()
+          assert 'Télécharger le plugin et ses sources' not in html
+          assert 'licence vérifiée' in html
+          licence=pathlib.Path('packages/xa-world-rights/LICENSE').read_text()
+          assert 'All rights reserved' in licence
+          assert 'prior MIT' in licence
           PY
       - name: Install frontend and browser-test dependencies
         run: |
