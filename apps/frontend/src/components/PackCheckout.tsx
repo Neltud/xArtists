@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom'
 import { AGENT_PACKS, AGENT_PACK_SC_SNAPSHOT, type PackId } from '../config/agentPacks'
 import { useWallet } from '../context/WalletContext'
 import CheckoutModal from './CheckoutModal'
-import { canBuyAgent } from '../config/scStatus'
+import { canBuyAgent, AGENT_PACK_PUBLIC_COMMERCE_RELEASED } from '../config/scStatus'
 import LottieIcon from './LottieIcon'
 import { availablePayMethods } from '../lib/payments'
 import { getAccessApiBase } from '../lib/stripe'
@@ -43,7 +43,7 @@ export default function PackCheckout({
   useEffect(() => {
     setMerchantCheckoutReady(false)
     setCryptoCheckoutReady(false)
-    if (!commercialGoRequested) return
+    if (!commercialGoRequested || !AGENT_PACK_PUBLIC_COMMERCE_RELEASED) return
     const abort = new AbortController()
     const api = getAccessApiBase() || 'https://xartists-access-api.onrender.com'
     fetch(api + '/health', { signal: abort.signal, cache: 'no-store' })
@@ -95,7 +95,7 @@ export default function PackCheckout({
   }, [forcedId])
 
   const pack = PACKS.find(p => p.id === selected)
-  const checkoutAvailable = commercialGoRequested && (merchantCheckoutReady || cryptoCheckoutReady)
+  const checkoutAvailable = AGENT_PACK_PUBLIC_COMMERCE_RELEASED && commercialGoRequested && (merchantCheckoutReady || cryptoCheckoutReady)
   const isGuest = !connected || !address?.startsWith('erd1')
 
   const roomKey = (id: PackId) =>
