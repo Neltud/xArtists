@@ -34,7 +34,7 @@ jobs:
       MINT_LIVE_ENABLED: 'false'
       LIA_LIVE_TRADING: '0'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: actions/setup-node@v4

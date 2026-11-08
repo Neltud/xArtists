@@ -76,7 +76,7 @@ jobs:
       ISSUE_COST: "50000000000000000"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Mainnet gate
         run: |

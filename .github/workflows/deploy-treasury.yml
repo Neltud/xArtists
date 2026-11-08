@@ -27,7 +27,7 @@ jobs:
       PROXY: https://gateway.multiversx.com
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Gate
         run: |
           if [ "${{ github.event.inputs.confirm_mainnet }}" != "DEPLOY_MAINNET" ]; then exit 1; fi
