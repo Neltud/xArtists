@@ -56,6 +56,11 @@ async function inspectGateway(asset,gateway,request){
     })
   }catch{return {gateway:gateway.id,verified:false,reason:'gateway_unreachable_or_redirect'}}
   if(!response.ok)return {gateway:gateway.id,verified:false,reason:'gateway_http_non_2xx'}
+  // A gateway may return a branded HTML error page with HTTP 200.
+  // Reject it before considering any bytes as a verified media asset.
+  const contentType=response.headers?.get?.('content-type')?.split(';')[0]?.trim()?.toLowerCase()
+  if(contentType==='text/html'||contentType==='application/xhtml+xml')
+    return {gateway:gateway.id,verified:false,reason:'gateway_html_not_media'}
   if(!response.body||typeof response.body[Symbol.asyncIterator]!=='function')
     return {gateway:gateway.id,verified:false,reason:'gateway_stream_unavailable'}
   const lengthHeader=response.headers?.get?.('content-length')
