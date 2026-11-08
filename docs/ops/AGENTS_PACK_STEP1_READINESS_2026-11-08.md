@@ -6,31 +6,29 @@ SC : `erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg`
 Owner : `erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g`  
 codeHash live : `igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=`
 
-## 1. Blocage protocole (critique)
+## 1. Contract metadata — clarification officielle
 
-| Flag compte SC | Valeur live |
-|----------------|-------------|
+| Flag compte SC | Valeur observée le 8 novembre |
+|----------------|------------------------------|
 | `isPayable` | **false** |
 | `isPayableBySmartContract` | **false** |
 | `isUpgradeable` | true |
 
-`buyPack` est `#[payable("EGLD")]` dans le code, mais le **compte** refuse l’EGLD tant que `isPayable` est false.  
-→ **Aucun achat pack EGLD possible** avant correction owner-signed.
+**Correction importante :** selon la documentation officielle MultiversX,
+`isPayable=false` empêche les **transferts directs** au contrat, mais **n'empêche pas en soi un paiement EGLD à un endpoint** déclaré `#[payable("EGLD")]`.
+Voir https://docs.multiversx.com/developers/developer-reference/sc-payments/ .
 
-### Action owner (hors de ce canal)
+**Ne pas effectuer d'upgrade payable avec le même WASM comme prérequis obligatoire.**
+L'acceptation effective de `buyPack` reste à prouver par une simulation ou micro-opération owner **après** validation du modèle NFT/IPFS. Changer le metadata payable élargirait les possibilités de transfert direct sans réparer les NFT sans URI.
 
-Changer les code-metadata du contrat **sans changer le bytecode** (même codeHash), en activant **Payable** (et idéalement garder Upgradeable + Readable) :
+### Action owner (seulement après préparation IPFS et revue)
 
-1. Wallet owner uniquement.
-2. Transaction d’**upgrade** MultiversX avec le **même WASM** déjà déployé et metadata :
-   - Upgradeable = true
-   - Readable = true
-   - **Payable = true**
-   - PayableBySC = selon politique (recommandation : false tant que non requis)
-3. Après inclusion : re-lire `accounts/{sc}` → `isPayable` doit être `true`.
-4. Ne pas ouvrir l’UI d’achat tant que le point 3 n’est pas prouvé + section 4.
+1. Vérifier le même codeHash, l'endpoint `buyPack`, son ABI, les valeurs exactes retournées par `getPackPrice` et la politique de sécurité.
+2. Corriger la création des NFT pour utiliser des URI IPFS non vides, via une évolution contractuelle auditée, ou prouver un processus de réparation des nonces sous rôles appropriés.
+3. Re-probe après changement, puis seulement envisager un micro-test signé par le wallet owner.
+4. Garder toutes les ventes publiques suspendues tant que le média, la livraison, les droits et le prix ne sont pas prouvés.
 
-> Ce dépôt **ne signe pas** et **ne diffuse pas** cette transaction.
+> Ce dépôt **ne signe pas** et **ne diffuse pas** de transaction.
 
 ## 2. Prix on-chain (VM query `getPackPrice`) — vérité
 
@@ -45,7 +43,7 @@ Changer les code-metadata du contrat **sans changer le bytecode** (même codeHas
 
 **Écart prix :** la doc “Pulse 10 EGLD” est **fausse** vs chaîne (1 EGLD). Toute UI qui affiche 10 EGLD doit être corrigée **avant** commerce.
 
-Endpoint owner pour ajuster si besoin (après payable) : `setPackPrice(pack_type, price_atomic)` — **ne pas appeler** depuis ce canal.
+Endpoint owner pour ajuster si besoin (après revue séparée) : `setPackPrice(pack_type, price_atomic)` — **ne pas appeler** depuis ce canal.
 
 ## 3. Collections & rôles
 
@@ -55,7 +53,7 @@ Endpoint owner pour ajuster si besoin (après payable) : `setPackPrice(pack_type
 | XAIYLD-987e24 | 1 | oui | **non** |
 | XAISNT-3d8a6b | (configurée) | (à re-vérifier avant vente) | **non** |
 
-`buyPack` crée des NFT avec **`uris` vide** (code actuel). Même avec payable=true, les nouveaux packs sortent **sans média** — inacceptable pour une vente grand public.
+`buyPack` crée des NFT avec **`uris` vide** (code actuel). Même si les appels au endpoint `buyPack` acceptent l'EGLD, les nouveaux packs sortent **sans média** — inacceptable pour une vente grand public.
 
 ### Avant vente réelle
 
@@ -65,11 +63,11 @@ Endpoint owner pour ajuster si besoin (après payable) : `setPackPrice(pack_type
 
 ## 4. Critères GO pack EGLD (tous obligatoires)
 
-- [ ] `isPayable === true` prouvé sur l’API accounts
+- [ ] `buyPack` et son paiement EGLD évalués selon la règle **endpoint payable**, indépendamment du flag de transfert direct `isPayable`
 - [ ] UI / docs affichent **1 / 5 / 2.5 EGLD** (ou nouveaux prix après `setPackPrice` on-chain)
 - [ ] Médias non vides pour tout nonce vendable (create-time URI ou réparation)
 - [ ] Test micro-montant documenté (owner) + readback explorer
-- [ ] Backend `mint_live` / checkout fiat restent **indépendants** — ne pas les allumer “parce que payable”
+- [ ] Backend `mint_live` / checkout fiat restent **indépendants** — ne pas les allumer sur la base du seul codeHash ou du flag payable
 - [ ] LIA live trading reste **OFF**
 
 ## 5. Explicit non-actions (cette étape)
@@ -80,6 +78,6 @@ Endpoint owner pour ajuster si besoin (après payable) : `setPackPrice(pack_type
 - Pas d’ouverture Paybox/Stripe
 - Pas de merge #407 / #430 comme live
 
-## 6. Prochaine étape après owner payable
+## 6. Prochaine étape
 
-Re-probe accounts → mettre à jour `contracts.json` `flags_live.agents_marketplace.isPayable` → puis seulement parcours média / micro-achat owner.
+D'abord médias/IPFS/URI et audit des prix, puis re-probe du contrat et un micro-achat owner sous contrôle, sans commande publique. Le flag `isPayable` n'est pas un seuil d'ouverture du `buyPack`.
