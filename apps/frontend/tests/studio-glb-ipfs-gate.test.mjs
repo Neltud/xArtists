@@ -27,3 +27,13 @@ test('Studio preserves artist-signed mint and separate metadata path',()=>{
   assert.match(ui,/rightsAccepted:true/)
   assert.match(ui,/studio_glb_upload_disabled/)
 })
+
+test('GLB publication submits same-session poster before immutable metadata',()=>{
+  assert.match(ui,/const \[posterFile,setPosterFile\]=useState<File\|null>\(null\)/)
+  assert.match(ui,/previewUploadId/)
+  assert.match(ui,/posterResponse=await fetch\(base\+'\/v1\/studio\/media\/upload'/)
+  assert.match(ui,/body:chosenPoster/)
+  assert.match(ui,/uploadId:data\.uploadId,previewUploadId,title:/)
+  assert.match(ui,/!modelEnabled\|\|!posterFile/)
+  assert.match(ui,/Image de couverture obligatoire/)
+})
