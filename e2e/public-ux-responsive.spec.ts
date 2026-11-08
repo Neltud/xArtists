@@ -128,7 +128,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       const stage = page.locator('.xa-museum-stage')
       await expect(stage).toBeVisible({ timeout: 20000 })
       await stage.scrollIntoViewIfNeeded()
-      const fullscreen = stage.getByRole('button', { name: /plein écran|fullscreen/i })
+      const fullscreen = stage.getByRole('button', { name: /plein écran|full screen/i })
       await expect(fullscreen).toBeVisible()
       const hudHeight = await fullscreen.evaluate(el => el.getBoundingClientRect().height)
       expect(hudHeight).toBeGreaterThanOrEqual(44)
