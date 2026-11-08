@@ -9,13 +9,14 @@ test('happy path: issue → MessageComputer sign → verify → consume', async 
   assert.equal(result.mode, 'paper_pipeline_complete')
 })
 
-test('tampered message fails before consume', async () => {
+test('message tampered after sign fails UserVerifier', async () => {
   const result = await runAdminAuthPipelineOffline({
     action: 'setPaused',
-    tamperMessage: true,
+    tamperAfterSign: true,
   })
   assert.equal(result.ok, false)
-  assert.ok(['parse', 'verify'].includes(result.stage))
+  assert.equal(result.stage, 'verify')
+  assert.equal(result.error, 'invalid_signature')
 })
 
 test('double consume is blocked', async () => {

@@ -26,7 +26,7 @@ function ephemeralSecret() {
  * @param {number} [opts.nowMs]
  * @param {number} [opts.ttlMs]
  * @param {object} [opts.extra] fields for challenge (escrowId, favorSeller, …)
- * @param {boolean} [opts.tamperMessage]
+ * @param {boolean} [opts.tamperAfterSign] mutate message after signing (integrity check)
  * @param {boolean} [opts.skipConsume]
  * @param {boolean} [opts.doubleConsume]
  */
@@ -50,11 +50,7 @@ export async function runAdminAuthPipelineOffline(opts = {}) {
   })
   if (!issued.ok) return { ok: false, stage: 'issue', error: issued.error }
 
-  let messageText = issued.message
-  if (opts.tamperMessage) {
-    messageText = messageText.replace(`action=${action}`, 'action=setAttestor')
-  }
-
+  const messageText = issued.message
   const parsed = parseAndValidateAdminAuthMessage(messageText, {
     expectedAdminBech32: admin,
     nowMs: clock + 1_000,
@@ -67,9 +63,20 @@ export async function runAdminAuthPipelineOffline(opts = {}) {
   })
   const computer = new MessageComputer()
   message.signature = await secretKey.sign(computer.computeBytesForSigning(message))
+
+  let verifyMessage = message
+  if (opts.tamperAfterSign) {
+    const tamperedText = messageText.replace(`action=${action}`, 'action=setAttestor')
+    verifyMessage = new Message({
+      data: new TextEncoder().encode(tamperedText),
+      address,
+      signature: message.signature,
+    })
+  }
+
   const verified = await UserVerifier.fromAddress(address).verify(
-    computer.computeBytesForVerifying(message),
-    message.signature,
+    computer.computeBytesForVerifying(verifyMessage),
+    verifyMessage.signature,
   )
   if (!verified) return { ok: false, stage: 'verify', error: 'invalid_signature' }
 
