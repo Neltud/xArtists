@@ -22,5 +22,11 @@ jobs:
           node-version: '20'
       - run: npm ci --ignore-scripts
         working-directory: apps/frontend
-      - run: node --test tests/admin-auth-message.test.mjs tests/admin-auth-signature-test.test.mjs tests/admin-auth-address-binding.test.mjs tests/admin-auth-sdk-address.test.mjs
+      - run: >-
+          node --test
+          tests/admin-auth-message.test.mjs
+          tests/admin-auth-signature-test.test.mjs
+          tests/admin-auth-address-binding.test.mjs
+          tests/admin-auth-sdk-address.test.mjs
+          tests/admin-auth-message-computer.test.mjs
         working-directory: apps/frontend
