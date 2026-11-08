@@ -9,7 +9,7 @@ Base: `docs/ops/AGENTS_PACK_STEP1_READINESS_2026-11-08.md` and `AGENTS_PACK_PRIC
 - UI catalogue `AGENT_PACKS.priceEgld.list` contained **33 / 22.5 / 15 EGLD**, distinct from SC `getPackPrice` **1 / 5 / 2.5 EGLD**; those anchors cannot fund `buyPack`.
 - EUR catalogue **110 / 75 / 50 EUR** is a separate fiat product/pricing rail. No spot EGLD conversion or fiat entitlement should be inferred.
 - `canBuyAgent()` previously required codehash and address only, not on-chain `isPayable` or media/URI evidence. `buyPack` creates empty URI vectors on deployed code.
-- Deployed contract is **isPayable=false** by the referenced step-1 probe. Setting payable alone **does not** make pack NFTs media-ready.
+- Deployed contract is **isPayable=false** for **direct transfers** (re-read via mainnet API); this does **not** by itself disallow a `#[payable("EGLD")]` endpoint. See https://docs.multiversx.com/developers/developer-reference/sc-payments/. No payable-only upgrade required to fix `buyPack`.
 
 ## Changes on PREP branch
 
@@ -22,7 +22,7 @@ Base: `docs/ops/AGENTS_PACK_STEP1_READINESS_2026-11-08.md` and `AGENTS_PACK_PRIC
 ## Required independent validation (not yet performed in this PREP step)
 
 - CI: `cd apps/frontend && npm ci --legacy-peer-deps && npm run test:release && npm run typecheck && npm run build`.
-- Fresh chain `accounts/{agentsSc}`: `isPayable=true` **after owner approval**, unchanged expected codeHash if same WASM, and `getPackPrice` retested for three packs.
+- Fresh chain `accounts/{agentsSc}` and `getPackPrice` retested for three packs. Do **not** demand `isPayable=true` as a precondition for an EGLD payable endpoint; it only governs direct transfers.
 - Rights-cleared artwork and metadata → content-addressed IPFS upload and independent gateway exact-byte readback.
 - Contract upgrade review for create-time nonempty URI OR owner-signed token URI role assignment / existing nonce repair. **Owner wallet only.**
 - Controlled owner micro-test, receipt and NFT metadata verification, followed by separate commercial and fiat clearance.
