@@ -15,16 +15,20 @@ permissions:
 jobs:
   admin-auth-access-api:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Unit tests (no production DB)
+      - name: Install lockfile-pinned SDK for offline MultiversX protocol verification
+        working-directory: services/access-api
+        run: npm ci --ignore-scripts
+      - name: Unit tests (no production DB, no HTTP admin route)
         working-directory: services/access-api
         run: >-
           node --test
           tests/admin-auth-session-binding.test.mjs
           tests/admin-auth-challenge-store-unit.test.mjs
           tests/admin-auth-challenge-pg.test.mjs
+          tests/admin-auth-wallet-sdk.test.mjs
