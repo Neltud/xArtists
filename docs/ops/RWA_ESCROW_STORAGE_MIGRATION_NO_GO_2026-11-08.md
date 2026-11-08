@@ -50,3 +50,30 @@ The new struct is **NOT** byte-compatible with the historical mapper. It does no
 - Operator/governance approval and chain-specific rollback/runbook
 
 The new test `contracts/rwa-escrow-bridge/tests/legacy_storage_no_go.test.mjs` proves the **existence** of the mismatch; success on this test is deliberately negative evidence for a direct upgrade. PR #430 remains draft, and **must not** be merged/deployed as production contract upgrade based only on green CI.
+
+
+## Compiled RustVM evidence — 2026-11-08
+
+The repo previously had only JS source-pattern checks; compiling the isolated 0.50 contract
+disclosed and fixed three real errors:
+- Cargo project needed an isolated `[workspace]` for its own 0.50 toolchain.
+- The contract uses `#[upgrade]` rather than the unsupported `#[endpoint(upgrade)]` form.
+- `openEscrow` event's two unindexed fields (amount and deadline) must be encoded
+  as one `EscrowOpenedData` event payload, and `SingleValueMapper::set` must
+  immutably reborrow the escrow before post-write payment fields are read.
+
+**Verified CI**: `RWA escrow static release-gate checks` workflow
+`42497570695`, `RustVM escrow payout/dispute scenarios (offline)`:
+**4 passed, 0 failed**. The four actual VM tests cover:
+1. four independent logical gating flags plus non-attestor rejection and release-once balance;
+2. unauthorized proof attempts plus deadline-based refund and zero double-pay;
+3. cooling interval, forbidden seller payout with missing proofs, payer reimbursement;
+4. seller-favoring dispute resolution only after complete pre-dispute proof, owner-only decision.
+
+This is a deterministic **fresh-instance RustVM** test, not a production
+MultiversX GoVM or existing-state upgrade simulation. The source's new
+`openEscrow` event data ABI differs from its original draft and requires
+indexer consumers to use the struct payload after any future deployment.
+No real EGLD, contract upgrade, deployment or legal ownership transfer occurred.
+Legacy storage readback, independent audit and attestor authority policy
+remain hard blockers. **Mainnet NO-GO remains.**
