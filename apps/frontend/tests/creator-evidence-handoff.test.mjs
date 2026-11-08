@@ -90,7 +90,7 @@ test('rejects fake MIME headers, oversized files, incomplete bytes and altered m
   await assert.rejects(prepare(art,media(),{edition:0}),/invalid_paper_edition/)
   await assert.rejects(prepare(art,media(),{edition:3}),/invalid_paper_edition/)
   await assert.rejects(prepare(art,media(),{rightsDeclared:false}),/rights_declaration_out_of_sync/)
-  await assert.rejects(prepare(art,media(),{creativeBrief:'trop court'}),/invalid_creative_brief/)
+  await assert.rejects(prepare(art,media(),{creativeBrief:'court'}),/invalid_creative_brief/)
   await assert.rejects(prepare({...art,editions:[{...art.editions[0],image:'ipfs://unproven'},art.editions[1]]}),/edition_must_be_unminted_paper_metadata/)
   await assert.rejects(prepare({...art,planDigest:'x'.repeat(64)}),/invalid_paper_edition|edition_must_be_unminted_paper_metadata/)
 })
