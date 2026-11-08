@@ -5,6 +5,7 @@
  */
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import CreatorEvidenceHandoff from '../components/CreatorEvidenceHandoff'
 import { useWallet } from '../context/WalletContext'
 import { ART_TEMPLATES, prepareArtCollection } from '../lib/artCollectionPaper.mjs'
 import type { ArtCollectionDraft, ArtPlanInput, CreatorType } from '../lib/artCollectionPaper.mjs'
@@ -349,6 +350,8 @@ export default function NftDistributorPage() {
       {copyStatus && <p role="status" className="text-xs text-zinc-300">{copyStatus}</p>}
       <p className="text-xs text-zinc-500">À prévoir : contrôle des droits Art-ID/Physical Steward, quote fournisseur signé, budget et autorisation du créateur, réservation idempotente, rendu par calques/modèle, revue humaine, IPFS puis signature wallet.</p>
     </section>
+
+    <CreatorEvidenceHandoff art={art} edition={edition} brief={brief} rightsDeclared={rightsConfirmed}/>
 
     <div className="grid gap-5 lg:grid-cols-2">
       <section className="card space-y-4" aria-labelledby="distributor-heading">
