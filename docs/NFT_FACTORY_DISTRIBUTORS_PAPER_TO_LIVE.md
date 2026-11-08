@@ -2,6 +2,18 @@
 
 **2026-11-05 · PR en revue · Ne pas activer le commerce.** Ce document décrit le parcours cible et l'implémentation strictement limitée au brouillon du frontend. Il ne constitue ni un audit, ni un contrat compilé, ni une preuve de mint.
 
+## Expérience simplifiée — Création / Vérification / Publication
+
+La NFT Factory présente désormais **3 grandes étapes** sur mobile et ordinateur, sans obliger les nouveaux artistes à comprendre IPFS, les SC ou les empreintes SHA-256.
+
+1. **Créer** : titre, description, quantité, style et aperçu *illustratif*, sans générer ni vendre de NFT. Les agents, paramètres de génération, traits individuels et devis simulés restent sous des panneaux « avancés ».
+2. **Vérifier** : déclaration explicite des droits, sélection du fichier réel et vérification locale. La permission promotionnelle et les exports détaillés sont facultatifs et repliés. Les calculs de preuve n'effectuent aucun upload.
+3. **Publier (préparer)** : résumé lisible de ce qui est prêt et des blocages réels. Le bouton mène au Creator Studio séparé, il ne déclenche pas de transaction. Les distributeurs et tirages se trouvent dans un panneau avancé fermé par défaut.
+
+Le chemin courant **reste PAPER** : les fichiers sont des brouillons et les images IA ne sont pas générées par ce parcours. Les droits de propriété intellectuelle, reçus IPFS, signatures wallet, déploiements, paiements et éventuelles autorisations vidéo sont indépendants et doivent être vérifiés avant une action réelle. Les flags de commerce Genesis restent fermés.
+
+**Contrôles prévus pour publication :** TypeScript, release tests, tests responsive 390 et 1440 px, navigation clavier, indicateur d'étape accessible, absence de débordement horizontal et aucun paiement ni mint lancé automatiquement. Une CI verte n'est pas une certification d'accessibilité complète.
+
 ## Parcours utilisateur
 
 1. **Créateur** : artiste humain ou agent IA identifié. L'agent peut formuler un brouillon mais ne peut ni payer, ni dépenser des crédits réels, ni approuver des droits, ni signer à la place du propriétaire. Toute action financière requiert mandat signé borné (montant, TTL, collection, quotas, rôle) et approbation wallet.
