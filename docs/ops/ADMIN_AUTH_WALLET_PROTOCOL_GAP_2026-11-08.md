@@ -71,3 +71,40 @@ MessageComputer/UserVerifier** signature.
 authorization, durable single-use consumption coupling, multisig owner policy,
 live database migration, contract deployment and legal attestor approvals
 remain separate unverified conditions.
+
+
+## Transactional wallet proof redemption — tested with real disposable PostgreSQL
+
+**New internal-only module:** `services/access-api/src/adminAuthProofRedemption.mjs`.
+It obtains one trusted pool client, begins a transaction, loads the exact database
+challenge with `SELECT ... FOR UPDATE`, calls
+`verifySdkAdminWalletProof` against that **database row**, and atomically sets
+`consumed_at_ms` before `COMMIT`. Invalid signature, replay, expired challenge,
+missing allowlist, wrong action/admin and SQL failures return `ok:false` and
+`authorizesActions:false`. Failed operations roll back; verified receipts never
+trigger HTTP, JWT, payment, escrow release, signing or SC transactions.
+
+**Verified GitHub Actions:** job `42499449148`, disposable `postgres:16-alpine`
+with isolated schema and ephemeral credentials only. **30/30 tests passed,
+0 skipped.** Includes a *real PostgreSQL* 12-request concurrent race:
+exactly one winner, 11 denied. Wrong-wallet signatures do not consume
+the row, and timeout/expiry checks reject it. Unit mock separately checks
+rollback on update/commit failure.
+
+**Server-session gate hardened:** `adminAuthSessionBinding.mjs` now refuses to
+bind from a bare `erd1...` address plus selected wallet method; a
+trusted-server `verifyWalletSession` resolver must validate an actual separate
+SIWX login session. There is still **no production SIWX resolver** connected,
+so the binder remains paper-only. It is not safe to accept a callback or
+`verified:true` flag originating from a browser request.
+
+No administrator route, multisig configuration or authority changes were
+enabled by this feature. The missing integration is a separately reviewed
+SIWX login/session validator, strict cookie/CSRF controls, server-side
+admin policy and on-chain multisig approval (plus explicit legal attestor
+approval). No use of Neon/Render production database or secret was made.
+
+Tests can be reproduced by the isolated GitHub Actions workflow
+`.github/workflows/admin-auth-access-api.yml`; its database URL intentionally
+targets the disposable GitHub Actions PostgreSQL service, not a production
+host.
