@@ -1,0 +1,136 @@
+/*
+ * Museum UX pass — November 2026.
+ * Scoped to museum; light-first editorial pages stay light while immersive
+ * scene controls retain their intentional high-contrast dark overlay.
+ * No changes to wallet, market, payments, mint or 3D camera movement.
+ */
+.xa-museum-page .xa-museum-select-row > span {
+  font-size: 13px;
+  line-height: 1.55;
+}
+.xa-museum-page .xa-museum-select-row > label {
+  min-width: 0;
+  max-width: 100%;
+}
+.xa-museum-page .xa-museum-select-row select {
+  min-height: 44px !important;
+  font-size: 14px;
+}
+
+.xa-museum-stage .xa-museum-hud button,
+.xa-museum-stage .xa-museum-art-tour button {
+  width: auto;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 12px;
+}
+.xa-museum-stage .xa-museum-hud button > span {
+  font-size: 12px;
+}
+.xa-museum-stage .xa-museum-art-tour > span {
+  font-size: 12px;
+  line-height: 1.5;
+  padding-inline: 10px;
+}
+.xa-museum-stage .xa-museum-room-name .xa-eyebrow,
+.xa-museum-stage .xa-museum-room-name > span:last-child {
+  font-size: 11px;
+  line-height: 1.5;
+}
+.xa-museum-stage .xa-museum-control-caption,
+.xa-museum-stage .xa-museum-look-hint > span,
+.xa-museum-stage .xa-museum-walk-hint {
+  font-size: 12px;
+  line-height: 1.45;
+}
+.xa-museum-stage .xa-museum-image-status {
+  font-size: 12px;
+}
+.xa-museum-stage .xa-museum-inspect {
+  min-height: 44px;
+  font-size: 12px;
+}
+.xa-museum-stage .xa-museum-hud button:focus-visible,
+.xa-museum-stage .xa-museum-art-tour button:focus-visible,
+.xa-museum-stage .xa-museum-joystick:focus-visible,
+.xa-museum-stage .xa-museum-inspect:focus-visible,
+.xa-museum-stage .xa-museum-help button:focus-visible,
+.xa-museum-stage canvas:focus-visible {
+  outline: 3px solid #e1ff9f;
+  outline-offset: 2px;
+}
+.xa-museum-stage .xa-museum-help button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  margin-top: 0;
+  border-radius: 8px;
+}
+.xa-museum-stage .xa-museum-help p {
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .xa-museum-stage .xa-museum-hud {
+    padding: 12px;
+    gap: 8px;
+  }
+  .xa-museum-stage .xa-museum-room-name {
+    min-width: 0;
+    max-width: 47%;
+    overflow-wrap: anywhere;
+  }
+  .xa-museum-stage .xa-museum-hud-actions {
+    max-width: 53%;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .xa-museum-stage .xa-museum-hud button,
+  .xa-museum-stage .xa-museum-hud button:has(span) {
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    padding: 0;
+  }
+  .xa-museum-stage .xa-museum-art-tour {
+    top: 148px;
+    left: 12px;
+  }
+  .xa-museum-stage .xa-museum-art-tour button {
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+  }
+  .xa-museum-stage .xa-museum-help {
+    top: 201px;
+    inset-inline: 12px;
+    max-width: calc(100% - 24px);
+  }
+  .xa-museum-stage .xa-museum-image-status { top: 205px; }
+  .xa-museum-stage .xa-museum-inspect > span { font-size: 12px; }
+  .xa-museum-stage .xa-museum-walk-hint {
+    max-width: 70%;
+    padding: 10px 12px;
+  }
+  .xa-museum-stage .xa-museum-look-hint > span {
+    max-width: 98px;
+  }
+  .xa-museum-page .xa-museum-select-row > span { font-size: 13px; }
+  .xa-museum-page [role="group"][aria-label="Parcours du musée"] button {
+    min-height: 44px;
+  }
+}
+@media (max-width: 390px) {
+  .xa-museum-stage .xa-museum-art-tour { top: 158px; }
+  .xa-museum-stage .xa-museum-help { top: 211px; }
+  .xa-museum-stage .xa-museum-image-status { top: 215px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xa-museum-page .card-play,
+  .xa-museum-page [role="group"][aria-label="Parcours du musée"] button {
+    transition: none;
+  }
+}
