@@ -82,8 +82,8 @@ export function Home(){
     <Link to="/offres" className="xa-first-network"><span>{c('welcomeEuros')}</span><Icon name="arrow" size={16}/></Link>
    </div>
   </section>
-  <section className="xa-first-tools" aria-labelledby="xa-first-tools">
-   <div><h2 id="xa-first-tools">{c('welcomeSeeAll')}</h2><p>{c('welcomeToolsLead')}</p></div>
+  <section className="xa-first-tools" aria-labelledby="xa-first-tools-title">
+   <div><h2 id="xa-first-tools-title">{c('welcomeSeeAll')}</h2><p>{c('welcomeToolsLead')}</p></div>
    <Link to="/directory" className="xa-button secondary">{c('directory')}<Icon name="arrow" size={16}/></Link>
   </section>
   <details className="xa-first-details">
