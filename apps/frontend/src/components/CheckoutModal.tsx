@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getPack, PACK_VISUAL, AGENT_PACK_SC_SNAPSHOT, type PackId } from '../config/agentPacks'
 import { useWallet } from '../context/WalletContext'
-import { canBuyAgent } from '../config/scStatus'
+import { canBuyAgent, AGENT_PACK_PUBLIC_COMMERCE_RELEASED } from '../config/scStatus'
 import { requestOpenConnect } from '../lib/walletEvents'
 import {
   availablePayMethods,
@@ -54,7 +54,7 @@ function saveIntent(payload: Record<string, unknown>) {
  * No mutation, no secrets, no payment.
  */
 async function confirmGenesisCommerceNow(rail: 'fiat' | 'crypto', method?: PayMethod): Promise<boolean> {
-  if (import.meta.env.VITE_GENESIS_COMMERCIAL_GO !== '1') return false
+  if (!AGENT_PACK_PUBLIC_COMMERCE_RELEASED || import.meta.env.VITE_GENESIS_COMMERCIAL_GO !== '1') return false
   const api = getAccessApiBase() || 'https://xartists-access-api.onrender.com'
   const abort = new AbortController()
   const timeout = setTimeout(() => abort.abort(), 5_000)
