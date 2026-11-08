@@ -322,11 +322,17 @@ export default function MuseumPage() {
             {xaRender(travelBanner)}
           </p>
         ))}
+        <a
+          href="#museum-visit"
+          className="inline-flex items-center min-h-[44px] rounded-xl border border-[color:var(--xa-border)] bg-[color:var(--xa-panel)] px-4 text-[13px] font-semibold text-[color:var(--xa-text)] hover:bg-[color:var(--xa-panel2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--xa-accent)]"
+        >
+          {xaRender('Accéder directement à la visite')}
+        </a>
       </header>
 
       {museumId === 'xartists' && <DriveArtShowcase compact />}
 
-      <div role="group" aria-label="Parcours du musée" className="flex flex-wrap gap-2">
+      <div id="museum-visit" tabIndex={-1} role="group" aria-label="Parcours du musée" className="flex flex-wrap gap-2 scroll-mt-28">
         {xaRender((['explore', 'venue', 'map', 'mine', 'pulse'] as Mode[]).map(m => (
           <button
             key={m}
