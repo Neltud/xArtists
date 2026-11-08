@@ -14,7 +14,7 @@ test('commercial discovery explicitly discloses no checkout and no NFT delivery'
   assert.match(commercial, /NO checkout, payment collection/)
   assert.match(commercial, /aucune commande ni paiement accepté sur cette page/)
   assert.match(commercial, /no orders or payments are accepted on this page/)
-  assert.match(commercial, /no NFT certificate, automatic access or entitlement/)
+  assert.match(commercial, /NFT certificate, automatic access or entitlement in this page/)
 })
 test('public offers page has no direct wallet, mint or payment execution calls', () => {
   assert.doesNotMatch(commercial, /\b(?:fetch|axios\.post|window\.ethereum\.request|sendTransaction|signAndSendTransactions|mintNft|mintNFT|createCheckoutSession)\s*\(/)
