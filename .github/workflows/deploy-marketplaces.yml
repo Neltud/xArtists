@@ -46,7 +46,7 @@ jobs:
       SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Mainnet hard gate
         run: |

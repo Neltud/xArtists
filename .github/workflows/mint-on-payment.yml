@@ -117,7 +117,7 @@ jobs:
     env:
       SC_DEPLOYER_PEM: ${{ secrets.SC_DEPLOYER_PEM }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Resolve collection
         id: col

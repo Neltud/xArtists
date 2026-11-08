@@ -30,7 +30,7 @@ jobs:
       TRO_TOKEN: TRO-94c925
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Gate
         run: |
