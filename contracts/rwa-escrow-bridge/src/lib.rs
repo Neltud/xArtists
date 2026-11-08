@@ -32,6 +32,13 @@ pub struct Escrow<M: ManagedTypeApi> {
     pub ownership_proof_hash: ManagedBuffer<M>,
 }
 
+// MultiversX 0.50 event macros accept at most one unindexed data argument.
+#[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
+pub struct EscrowOpenedData<M: ManagedTypeApi> {
+    pub amount: BigUint<M>,
+    pub deadline: u64,
+}
+
 #[multiversx_sc::contract]
 pub trait RwaEscrowBridge {
     #[init]
@@ -137,7 +144,7 @@ pub trait RwaEscrowBridge {
         };
         self.escrows(id).set(&esc);
         self.trade_escrow_id(&trade_id).set(id);
-        self.open_event(id, &trade_id, &payer, &seller, &payment, deadline);
+        self.open_event(id, &trade_id, &payer, &seller, &EscrowOpenedData { amount: payment, deadline });
     }
 
     #[endpoint(confirmReceipt)]
@@ -351,8 +358,7 @@ pub trait RwaEscrowBridge {
         #[indexed] trade_id: &ManagedBuffer,
         #[indexed] payer: &ManagedAddress,
         #[indexed] seller: &ManagedAddress,
-        amount: &BigUint,
-        deadline: u64,
+        data: &EscrowOpenedData<Self::Api>,
     );
 
     #[event("release")]
