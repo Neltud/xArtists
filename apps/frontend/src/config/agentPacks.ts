@@ -244,6 +244,19 @@ export const AGENT_PACKS: AgentPackProfile[] = [
   },
 ]
 
+/**
+ * Historical read-only mainnet snapshot, not a transaction quote.
+ * From docs/ops/AGENTS_PACK_PRICE_MATRIX_2026-11-08.json.
+ * The list prices above (33/22.5/15 EGLD) are catalog anchors only.
+ * Never derive buyPack transaction value from those anchors or this staleable snapshot.
+ */
+export const AGENT_PACK_SC_SNAPSHOT = {
+  observedAt: '2026-11-08T18:40:00Z',
+  isPayable: false,
+  pricesEgld: { pulse: 1, yield: 5, sentinel: 2.5 },
+  commerceGo: false,
+} as const
+
 export const AGENT_PACKS_EUR = {
   pulse: { id: 'pulse', name: 'Pulse Pack (Gold)', priceEur: 110, priceCents: 11000 },
   yield: { id: 'yield', name: 'Yield Pack (Silver)', priceEur: 75, priceCents: 7500 },
