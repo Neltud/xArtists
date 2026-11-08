@@ -43,3 +43,31 @@ Les helpers `adminAuthSignatureTest` / binding qui vérifient l'UTF-8 brut reste
 5. Tests VM escrow
 
 Aucun endpoint admin live. Aucune clé ops. Aucun broadcast.
+
+
+## Backend SDK signature verifier — offline primitive added (2026-11-08)
+
+`services/access-api/src/adminAuthWalletVerifier.mjs` now accepts **only**
+a trusted, already-issued PostgreSQL challenge row and an exact 64-byte
+hex signature. It recomputes the canonical message bytes using the same
+`buildMessage` serializer used at issue time, checks domain/chain ID,
+action, nonce, TTL and spent state, verifies a configured admin allowlist and
+the exact Bech32/SDK address, then checks the **MultiversX
+MessageComputer/UserVerifier** signature.
+
+- A raw UTF-8 Ed25519 signature fails, as it should for xPortal.
+- Wrong wallet, altered action/nonce, expired or consumed row, missing
+  allowlist and malformed signature all fail closed.
+- A valid signature returns `authorizesActions:false` and issues **no**
+  JWT, session, cookie, escrow command, wallet transaction, or payout.
+- The module is NOT exposed as a public admin route. It must eventually be
+  connected to an authenticated session and atomic PostgreSQL nonce consume
+  in one reviewed server-side operation.
+- Reference offline CI: `Admin auth access-api paper tests`,
+  workflow `42498134283`: **13 tests total, 12 passed, 0 failed, 1 skipped**
+  (the skipped test is not proof of PostgreSQL integration).
+
+**Still NO-GO for privileges:** wallet-session binding, transaction/action
+authorization, durable single-use consumption coupling, multisig owner policy,
+live database migration, contract deployment and legal attestor approvals
+remain separate unverified conditions.
