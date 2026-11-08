@@ -14,9 +14,12 @@ const SESSION_TTL_MS = 30 * 60 * 1000
  * @param {() => number} [opts.nowMs]
  * @param {() => string} [opts.randomId]
  * @param {Set<string> | string[]} [opts.adminAllowlist] bech32 admins permitted
+ * @param {(challenge:{serverSessionId:string,adminBech32:string,method:string})=>Promise<object>} [opts.verifyWalletSession]
+ *   Trusted server-only SIWX session resolver. Never a callback from a browser.
  */
 export function createAdminSessionBinder(opts = {}) {
   const nowMs = opts.nowMs || (() => Date.now())
+  const verifyWalletSession = opts.verifyWalletSession
   const randomId =
     opts.randomId ||
     (() => randomBytes(32).toString('base64url'))
@@ -31,10 +34,11 @@ export function createAdminSessionBinder(opts = {}) {
     mode: 'paper_session_binding',
 
     /**
-     * Establish a session after a verified wallet challenge (caller responsibility).
-     * method must not be paste_readonly.
+     * Default DENY unless a trusted backend SIWX resolver independently validates
+     * the actual server-side session. A bare erd1 address + method is not proof.
+     * No privilege/cookie/HTTP route is issued even when a binding is successful.
      */
-    bindSession({ adminBech32, method, ttlMs } = {}) {
+    async bindSession({ adminBech32, method, ttlMs, serverSessionId } = {}) {
       const admin = String(adminBech32 || '').trim().toLowerCase()
       if (!/^erd1[a-z0-9]{58}$/.test(admin)) return { ok: false, error: 'bad_admin' }
       // A missing operator allowlist is a DENY, never an open-access default.
@@ -45,6 +49,16 @@ export function createAdminSessionBinder(opts = {}) {
       if (!['extension', 'web_wallet', 'walletconnect', 'hardware', 'siwx'].includes(method)) {
         return { ok: false, error: 'unsupported_auth_method' }
       }
+      if(typeof verifyWalletSession!=='function')return {ok:false,error:'wallet_session_verifier_required'}
+      if(typeof serverSessionId!=='string'||!/^[A-Za-z0-9_-]{16,256}$/.test(serverSessionId))
+        return {ok:false,error:'server_session_required'}
+      let verified
+      try {
+        verified=await verifyWalletSession({serverSessionId,adminBech32:admin,method})
+      } catch {return {ok:false,error:'wallet_session_not_verified'}}
+      if(!verified||verified.ok!==true||verified.admin!==admin||
+         verified.method!==method||verified.sessionId!==serverSessionId)
+        return {ok:false,error:'wallet_session_not_verified'}
       const ttl = ttlMs == null ? SESSION_TTL_MS : Number(ttlMs)
       if (!Number.isSafeInteger(ttl) || ttl < 60_000 || ttl > SESSION_TTL_MS) {
         return { ok: false, error: 'bad_ttl' }
