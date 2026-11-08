@@ -7,6 +7,7 @@ const readSource = (path) => readFileSync(new URL(`../src/${path}`, import.meta.
 test('Agents pack crypto transaction remains explicitly fail-closed in PREP', () => {
   const sc = readSource('config/scStatus.ts')
   assert.match(sc, /export const AGENT_PACK_PUBLIC_MINT_RELEASED = false/)
+  assert.match(sc, /export const AGENT_PACK_PUBLIC_COMMERCE_RELEASED = false/)
   assert.match(sc, /export function canBuyAgent\(\): boolean\s*\{\s*return \(\s*AGENT_PACK_PUBLIC_MINT_RELEASED &&/)
 })
 
@@ -29,4 +30,11 @@ test('Last observed SC price values stay distinct from fiat catalogue anchors', 
   assert.match(source, /pricesEgld: \{ pulse: 1, yield: 5, sentinel: 2\.5 \}/)
   assert.match(source, /commerceGo: false/)
   assert.match(source, /priceEur: \{ min: 50, max: PACK_PRICE_EUR\.max, list: 110 \}/)
+})
+
+test('All pack checkout rails require explicit content-ready commercial clearance', () => {
+  const panel = readSource('components/PackCheckout.tsx')
+  const modal = readSource('components/CheckoutModal.tsx')
+  assert.match(panel, /const checkoutAvailable = AGENT_PACK_PUBLIC_COMMERCE_RELEASED && commercialGoRequested/)
+  assert.match(modal, /if \(!AGENT_PACK_PUBLIC_COMMERCE_RELEASED \|\| import\.meta\.env\.VITE_GENESIS_COMMERCIAL_GO !== '1'\) return false/)
 })
