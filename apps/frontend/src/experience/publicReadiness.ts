@@ -6,6 +6,7 @@
  */
 export type PublicStage = 'browse' | 'preview' | 'roadmap'
 const publicStages: Record<string, PublicStage> = {
+ 'world-rights': 'preview',
  app: 'browse',
  maison: 'browse',
  museum: 'browse',

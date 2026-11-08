@@ -7,6 +7,7 @@ import type { Module } from './modules'
 
 /** Soft-launch perimeter: Genesis packs + museum + market + LIA paper + essentials */
 export const CORE_MODULE_IDS = new Set([
+  'world-rights',
   'museum',
   'maison',
   'dao',
