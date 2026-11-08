@@ -77,6 +77,28 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     })
   }
 
+  for (const width of [360, 390, 430]) {
+    test(`museum at ${width}px: modes are clear, keyboard-accessible and do not overflow`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 844 })
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await visit(page, '/museum')
+      const museum = page.locator('.xa-museum-page')
+      await expect(museum).toBeVisible()
+      const modes = page.getByRole('group', { name: 'Parcours du musée' })
+      const buttons = modes.getByRole('button')
+      await expect(buttons).toHaveCount(5)
+      await expect(buttons.first()).toHaveAttribute('aria-pressed', 'true')
+      const touchHeight = await buttons.first().evaluate(el => el.getBoundingClientRect().height)
+      expect(touchHeight, 'museum mode control must be at least 44px high').toBeGreaterThanOrEqual(44)
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+      expect(overflow, `museum overflow at ${width}px`).toBeLessThanOrEqual(12)
+      await page.screenshot({ animations: 'disabled', path: `artifacts/ux-mobile/museum-${width}.png` })
+      await buttons.nth(2).focus()
+      await buttons.nth(2).press('Enter')
+      await expect(buttons.nth(2)).toHaveAttribute('aria-pressed', 'true')
+    })
+  }
+
   test('desktop 1440px Home remains navigable, without wallet', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await visit(page, '/')
