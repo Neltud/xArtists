@@ -3,7 +3,7 @@
   "chain_id": "1",
   "updated": "2026-11-08",
   "probed_at": "2026-11-08T18:36:01Z",
-  "chain_note": "Re-probe 2026-11-08. All product SC codeHashes match prior registry. agents_marketplace isPayable=false → buyPack EGLD not receivable at protocol. nft_marketplace isPayable=true with ASFT holding. slot_casino isPayable=false by design. No rwa-escrow-bridge address registered. Pulse XAIPLS nonces 1-4 indexed, URI empty, #005 absent. Labels SC_DEPLOYED_HASH_OK ≠ COMMERCE_ENABLED. LIA_LIVE_TRADING remains gated off in app/API. This file is truth/config only — not a commercial go-live.",
+  "chain_note": "Re-probe 2026-11-08. All product SC codeHashes match prior registry. agents_marketplace isPayable=false (direct transfers only; buyPack payable endpoint may accept EGLD). Pack commerce NO-GO: empty URI, media and quote proof pending. nft_marketplace isPayable=true with ASFT holding. slot_casino isPayable=false by design. No rwa-escrow-bridge address registered. Pulse XAIPLS nonces 1-4 indexed, URI empty, #005 absent. Labels SC_DEPLOYED_HASH_OK ≠ COMMERCE_ENABLED. LIA_LIVE_TRADING remains gated off in app/API. This file is truth/config only — not a commercial go-live.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -43,7 +43,7 @@
   "commerce_readiness": {
     "venue_split": "NO_PUBLIC_COMMERCE_CLAIM",
     "nft_marketplace": "PAYABLE_LISTING_REVIEW",
-    "agents_marketplace": "BLOCKED_NOT_PAYABLE",
+    "agents_marketplace": "BLOCKED_URI_MEDIA_PRICE_EVIDENCE",
     "nft_staking": "NO_PUBLIC_COMMERCE_CLAIM",
     "tro_staking": "NO_PUBLIC_COMMERCE_CLAIM",
     "tro_staking_legacy": "NO_PUBLIC_COMMERCE_CLAIM",
