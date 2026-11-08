@@ -16,6 +16,23 @@ jobs:
   admin-auth-access-api:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: xartists_ci
+          POSTGRES_PASSWORD: ci_only_ephemeral
+          POSTGRES_DB: xartists_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U xartists_ci -d xartists_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      # Disposable CI database only. Never point this job at production/Neon.
+      ADMIN_AUTH_TEST_DATABASE_URL: postgres://xartists_ci:ci_only_ephemeral@localhost:5432/xartists_ci
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -32,3 +49,5 @@ jobs:
           tests/admin-auth-challenge-store-unit.test.mjs
           tests/admin-auth-challenge-pg.test.mjs
           tests/admin-auth-wallet-sdk.test.mjs
+          tests/admin-auth-proof-redemption.test.mjs
+          tests/admin-auth-proof-pg.test.mjs
