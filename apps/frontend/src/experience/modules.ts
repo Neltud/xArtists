@@ -3,6 +3,9 @@ import { normalizePublicPath } from '../lib/publicRoutes'
 // Critical $TRO landing-page styles must be available before lazy route resolution.
 // Avoid a separate CSS-preload failure on direct Pages / Render deep links.
 import '../pages/troCrosschain.css'
+// Creator Studio must remain styled on direct canonical /create/studio URLs.
+// Load its small, light-first stylesheet before any lazy StudioPage chunk.
+import '../styles/creator-studio-light.css'
 // $TRO sale is informational and essential: bundle it eagerly to avoid stale
 // lazy-chunk preload errors across direct GitHub Pages and PWA deep links.
 import TroCrosschainPage from '../pages/TroCrosschainPage'
