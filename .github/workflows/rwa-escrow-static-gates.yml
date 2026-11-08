@@ -19,4 +19,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node --test contracts/rwa-escrow-bridge/tests/release_gates.static.test.mjs
+      - run: node --test contracts/rwa-escrow-bridge/tests/release_gates.static.test.mjs contracts/rwa-escrow-bridge/tests/legacy_storage_no_go.test.mjs
