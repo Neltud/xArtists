@@ -4,10 +4,12 @@ import {readFileSync} from 'node:fs'
 
 const source=readFileSync(new URL('../src/pages/StudioPage.tsx',import.meta.url),'utf8')
 const css=readFileSync(new URL('../src/styles/creator-studio-light.css',import.meta.url),'utf8')
+const modules=readFileSync(new URL('../src/experience/modules.ts',import.meta.url),'utf8')
 const media=readFileSync(new URL('../src/components/CreatorMediaUpload.tsx',import.meta.url),'utf8')
 
 test('artist Studio has legible light-first scoped workspace with dark-mode fallback',()=>{
-  assert.match(source,/import '\.\.\/styles\/creator-studio-light\.css'/)
+  assert.match(modules,/import '\.\.\/styles\/creator-studio-light\.css'/)
+  assert.doesNotMatch(source,/import '\.\.\/styles\/creator-studio-light\.css'/)
   assert.match(source,/xa-creator-studio/)
   assert.equal((source.match(/card xa-studio-workflow/g)||[]).length,4)
   assert.match(css,/html\[data-theme="light"\] \.xa-studio-workflow/)
