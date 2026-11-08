@@ -149,7 +149,7 @@ function Pad({ label, on }: { label: string; on: (v: boolean) => void }) {
     <button
       type="button"
       className="h-11 w-11 rounded-xl border border-white/25 bg-black/70 text-white text-sm font-bold active:bg-cyan-500/30 touch-manipulation select-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
-      aria-label={{ '↑': 'Avancer', '↓': 'Reculer', '←': 'Aller à gauche', '→': 'Aller à droite' }[label] || label}
+      aria-label={({ '↑': 'Avancer', '↓': 'Reculer', '←': 'Aller à gauche', '→': 'Aller à droite' } as Record<string, string>)[label] || label}
       onPointerDown={e => {
         e.preventDefault()
         ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
