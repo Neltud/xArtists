@@ -1,8 +1,9 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-11-01",
-  "chain_note": "Product SCs re-probed 1 Nov 2026 05:48 UTC, epoch 2280, refreshRate 600. CodeHashes unchanged (agents buyPack igm9oUpgad…). getPackPrice 10 / 5 / 2.5 EGLD. Agents balance 0.013 EGLD = historical micro tests, not those prices. Market 0.0175 EGLD, listing #2 only. The 0.25 EGLD figure is a historical proof, not a live display price. Slot house 0.5 EGLD, isPayable=false. LIA ops 0.907888 EGLD nonce 1487. The 30 Oct 05:36 freeze (nonce 1479, 1.585598 EGLD) was broken the same day 17:20–17:29 UTC: 8 signed txs including removeLiquidity TROMEX and a 7.09 EGLD transfer to the $TRO owner. Not a clearance to continue. EGLD $3.44 API, mcap ~$106.92M, APR 9.12%. Treasury dest still not claimable. Korean warning still extended through 16–20 Nov (Upbit 207379109). Jour 9/29 at probe, 15 j avant le 16 nov. Withdrawals-only on Upbit (last observed 30 Oct) is not a clearance. Bithumb FET window 2–6 Nov is not an EGLD clearance. Workflow default VITE_LIA_LIVE_TRADING=0. Not a trading go-live.",
+  "updated": "2026-11-08",
+  "probed_at": "2026-11-08T18:36:01Z",
+  "chain_note": "Re-probe 2026-11-08. All product SC codeHashes match prior registry. agents_marketplace isPayable=false (direct transfers only; buyPack payable endpoint may accept EGLD). Pack commerce NO-GO: empty URI, media and quote proof pending. nft_marketplace isPayable=true with ASFT holding. slot_casino isPayable=false by design. No rwa-escrow-bridge address registered. Pulse XAIPLS nonces 1-4 indexed, URI empty, #005 absent. Labels SC_DEPLOYED_HASH_OK ≠ COMMERCE_ENABLED. LIA_LIVE_TRADING remains gated off in app/API. This file is truth/config only — not a commercial go-live.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -28,40 +29,65 @@
     "slot_casino": "UZ0nX6dWsSgkVqjnFnR5zPNPk1UrNtR5SsrYf96VJCs="
   },
   "status": {
-    "venue_split": "LIVE",
-    "nft_marketplace": "LIVE",
-    "agents_marketplace": "LIVE",
-    "nft_staking": "LIVE",
-    "tro_staking": "LIVE",
-    "tro_governance": "LIVE",
-    "agent_stake_escrow": "LIVE",
-    "treasury_splitter": "LIVE",
-    "slot_casino": "LIVE"
+    "venue_split": "SC_DEPLOYED_HASH_OK",
+    "nft_marketplace": "SC_DEPLOYED_HASH_OK",
+    "agents_marketplace": "SC_DEPLOYED_HASH_OK",
+    "nft_staking": "SC_DEPLOYED_HASH_OK",
+    "tro_staking": "SC_DEPLOYED_HASH_OK",
+    "tro_staking_legacy": "SC_DEPLOYED_HASH_OK",
+    "tro_governance": "SC_DEPLOYED_HASH_OK",
+    "agent_stake_escrow": "SC_DEPLOYED_HASH_OK",
+    "treasury_splitter": "SC_DEPLOYED_HASH_OK",
+    "slot_casino": "SC_DEPLOYED_HASH_OK"
+  },
+  "commerce_readiness": {
+    "venue_split": "NO_PUBLIC_COMMERCE_CLAIM",
+    "nft_marketplace": "PAYABLE_LISTING_REVIEW",
+    "agents_marketplace": "BLOCKED_URI_MEDIA_PRICE_EVIDENCE",
+    "nft_staking": "NO_PUBLIC_COMMERCE_CLAIM",
+    "tro_staking": "NO_PUBLIC_COMMERCE_CLAIM",
+    "tro_staking_legacy": "NO_PUBLIC_COMMERCE_CLAIM",
+    "tro_governance": "NO_PUBLIC_COMMERCE_CLAIM",
+    "agent_stake_escrow": "NO_PUBLIC_COMMERCE_CLAIM",
+    "treasury_splitter": "NO_PUBLIC_COMMERCE_CLAIM",
+    "slot_casino": "BLOCKED_NOT_PAYABLE_BY_DESIGN"
   },
   "balances_egld_probe": {
-    "slot_casino": 0.5,
+    "venue_split": 0.0,
     "nft_marketplace": 0.0175,
-    "others": 0,
-    "probed": "2026-11-01T05:48:00Z",
-    "slot_isPayable": false,
-    "market_isPayable": true,
-    "market_fees_egld": 0.0075,
-    "lia_ops_egld": 0.907888,
-    "tro_stake_atomic": "3000000",
-    "epoch": 2280,
-    "egld_usd": 3.44,
-    "agents_marketplace": 0.013,
-    "lia_ops_nonce": 1487
+    "agents_marketplace": 0.033,
+    "nft_staking": 0.0,
+    "tro_staking": 0.0,
+    "tro_staking_legacy": 0.0,
+    "tro_governance": 0.0,
+    "agent_stake_escrow": 0.0,
+    "treasury_splitter": 0.0,
+    "slot_casino": 0.5,
+    "probed": "2026-11-08T18:36:01Z",
+    "lia_ops_egld": 0.005341715,
+    "lia_ops_nonce": 117,
+    "lia_ops_address": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g",
+    "nft_marketplace_nfts_held": 1,
+    "nft_marketplace_nft_ids": ["ASFT-a6273a-01"]
   },
-  "proofs": {
-    "buyNft_egld_epoch_2250": 0.25,
-    "collection": "ASFT-a6273a-01",
-    "listing_1": "inactive",
-    "listing_2": "active — buy this id only; 0.25 EGLD is a historical proof, not the live SC balance (0.0175)",
-    "placeBid_listing_2_egld": 0.01,
-    "buyNft_retry_wrong_id": "fail:inactive",
-    "spinEgld_real": "blocked: account isPayable=false",
-    "slot_min_bet_egld": 0.001
+  "flags_live": {
+    "venue_split": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
+    "nft_marketplace": {"isPayable": true, "isPayableBySmartContract": true, "isUpgradeable": true, "codeHash_match": true},
+    "agents_marketplace": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
+    "nft_staking": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
+    "tro_staking": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
+    "tro_staking_legacy": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
+    "tro_governance": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
+    "agent_stake_escrow": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
+    "treasury_splitter": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
+    "slot_casino": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true}
+  },
+  "pulse_collection": {
+    "collection": "XAIPLS-2cf72b",
+    "indexed_count": 4,
+    "nonces": [4, 3, 2, 1],
+    "empty_uri_count": 4,
+    "nonce_5_present": false
   },
   "never_fund": {
     "legacy_marketplace": "erd1qqqqqqqqqqqqqpgqjzn7zjyevwez8n0zfevpvnrwyp2ln879yj7sj8354t",
@@ -83,11 +109,15 @@
     "agent_stake_escrow": "erd1qqqqqqqqqqqqqpgqzyvwldu6jq8w6ry6s856dl0uy7g0v37vvhxqndvzr3"
   },
   "verification": {
-    "marketplace_mainnet": {
-      "codeHash": "8TTszCmNyPZXjrzQ/fSKXX8+QzW7wFtCfdmiKsZBgFc=",
-      "code_empty": false,
-      "verdict": "LIVE payable · buy listing #2 only · 0.25 EGLD is a historical proof, not the 0.0175 SC balance · #1 inactive"
-    },
-    "agents_marketplace": "LIVE codeHash igm9oUpgad… (buyPack upgrade) · 0.013 EGLD test dust · official prices Pulse 10 / Yield 5 / Sentinel 2.5 EGLD"
+    "agents_marketplace": "SC_DEPLOYED_HASH_OK · isPayable=false · pack EGLD intake blocked at protocol · not commerce GO",
+    "nft_marketplace": "SC_DEPLOYED_HASH_OK · isPayable=true · listing inventory must be reviewed before buyNft UX claims",
+    "rwa_escrow_bridge": "NOT_REGISTERED · PR #430 draft only · mainnet NO-GO",
+    "pulse_005": "NOT_MINTED · URI empty on 1-4 · PR #407 draft · mainnet mint NO-GO"
+  },
+  "app_gates_note": {
+    "lia_live_trading": "OFF on Pages build-info and Render health",
+    "mint_live_enabled": false,
+    "studio_media_upload": "off",
+    "paybox_checkout_enabled": false
   }
 }

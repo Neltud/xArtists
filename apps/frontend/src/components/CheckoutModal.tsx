@@ -6,9 +6,9 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getPack, PACK_VISUAL, type PackId } from '../config/agentPacks'
+import { getPack, PACK_VISUAL, AGENT_PACK_SC_SNAPSHOT, type PackId } from '../config/agentPacks'
 import { useWallet } from '../context/WalletContext'
-import { canBuyAgent } from '../config/scStatus'
+import { canBuyAgent, AGENT_PACK_PUBLIC_COMMERCE_RELEASED } from '../config/scStatus'
 import { requestOpenConnect } from '../lib/walletEvents'
 import {
   availablePayMethods,
@@ -54,7 +54,7 @@ function saveIntent(payload: Record<string, unknown>) {
  * No mutation, no secrets, no payment.
  */
 async function confirmGenesisCommerceNow(rail: 'fiat' | 'crypto', method?: PayMethod): Promise<boolean> {
-  if (import.meta.env.VITE_GENESIS_COMMERCIAL_GO !== '1') return false
+  if (!AGENT_PACK_PUBLIC_COMMERCE_RELEASED || import.meta.env.VITE_GENESIS_COMMERCIAL_GO !== '1') return false
   const api = getAccessApiBase() || 'https://xartists-access-api.onrender.com'
   const abort = new AbortController()
   const timeout = setTimeout(() => abort.abort(), 5_000)
@@ -255,7 +255,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
             </h2>
             <p className="text-[12px] text-[color:var(--xa-text-secondary)] mt-0.5 mono tabular-nums">
               <strong className="text-base text-[color:var(--xa-text)]">{xaRender(pack.priceEur.list)} €</strong>
-              {' · '}{xaRender('Ancre EGLD')} {xaRender(pack.priceEgld.list)}
+              {' · '}{xaRender('Crypto : tarif à revalider sur la chaîne')}
             </p>
             <p
               className="mt-2 inline-flex rounded-full border px-2 py-1 text-[10px] tabular-nums"
@@ -286,9 +286,9 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
 
           <button
             type="button"
-            disabled={railLocked}
+            disabled={railLocked || !mintLive}
             onClick={() => {
-              if (railLocked) return
+              if (railLocked || !mintLive) return
               setRail('crypto')
               setMsg('')
             }}
@@ -299,8 +299,8 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
             <p className="text-sm font-semibold text-white">{xaRender(t('checkout.rail.web3'))}</p>
             <p className="text-[11px] text-zinc-400 mt-0.5">{xaRender(t('checkout.rail.crypto.desc'))}</p>
             <p className="text-[11px] mt-1 mono" style={{ color: visual.accent }}>
-              {xaRender(pack.priceEgld.list)} {xaRender(" EGLD ·")}{xaRender(' ')}
-              {xaRender(mintLive ? t('checkout.rail.crypto.mintOpen') : t('checkout.rail.crypto.mintSoon'))}
+              {xaRender(`Dernier relevé SC : ${AGENT_PACK_SC_SNAPSHOT.pricesEgld[pack.id]} EGLD (08/11) · non exécutable`)}
+              {xaRender(mintLive ? t('checkout.rail.crypto.mintOpen') : ' · Mint suspendu')}
             </p>
           </button>
 
@@ -386,7 +386,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
           <button
             type="button"
             className="btn-primary w-full text-sm"
-            disabled={busy || packTxPending || !hasErd1 || (rail === 'fiat' && !hasFiat)}
+            disabled={busy || packTxPending || !hasErd1 || (rail === 'fiat' && !hasFiat) || (rail === 'crypto' && !mintLive)}
             onClick={() => setTermsOpen(true)}
           >
             {xaRender(busy || packTxPending

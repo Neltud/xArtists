@@ -1,0 +1,49 @@
+{
+  "probed_at": "2026-11-08T18:40:00Z",
+  "sc": "erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg",
+  "isPayable": false,
+  "isPaused": false,
+  "codeHash": "igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=",
+  "packs": [
+    {
+      "pack_type": 1,
+      "name": "Pulse",
+      "collection": "XAIPLS-2cf72b",
+      "price_egld": 1,
+      "price_atomic": "1000000000000000000",
+      "fiat_catalog_eur": 110,
+      "doc_price_egld_legacy": 10,
+      "doc_price_accurate": false
+    },
+    {
+      "pack_type": 2,
+      "name": "Yield",
+      "collection": "XAIYLD-987e24",
+      "price_egld": 5,
+      "price_atomic": "5000000000000000000",
+      "fiat_catalog_eur": 75,
+      "doc_price_egld_legacy": 5,
+      "doc_price_accurate": true
+    },
+    {
+      "pack_type": 3,
+      "name": "Sentinel",
+      "collection": "XAISNT-3d8a6b",
+      "price_egld": 2.5,
+      "price_atomic": "2500000000000000000",
+      "fiat_catalog_eur": 50,
+      "doc_price_egld_legacy": 2.5,
+      "doc_price_accurate": true
+    }
+  ],
+  "commerce_go": false,
+  "blockers": [
+    "buyPack creates empty NFT URIs; content and delivery unverified",
+    "buyPack mints empty uris",
+    "no ESDTRoleSetNewURI on collections",
+    "Pulse legacy doc price 10 EGLD mismatches chain 1 EGLD"
+  ],
+  "isPayableFlagScope": "direct_transfers_only",
+  "endpointBuyPackPaymentReadiness": "not_cleared_for_public_sales",
+  "payableDocs": "https://docs.multiversx.com/developers/developer-reference/sc-payments/"
+}
