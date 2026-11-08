@@ -177,13 +177,22 @@ test('GLB upload requires separate, default-off operator switch even if image up
   await assert.rejects(()=>readCreatorMedia(req),/studio_glb_upload_disabled/)
 })
 
-test('GLB metadata is labeled model/animation, not photo or video',()=>{
+test('GLB metadata requires an image already pinned by the same artist wallet',()=>{
   const model={...row,mime:'model/gltf-binary',uri:row.uri.replace('.jpg','.glb')}
-  const meta=createStudioMetadata(model,{title:'Sculpture model',rightsAccepted:true},owner)
+  const poster={...row,mime:'image/jpeg'}
+  const body={title:'Sculpture model',rightsAccepted:true}
+  assert.throws(()=>createStudioMetadata(model,body,owner),/glb_preview_required_or_not_owned/)
+  assert.throws(()=>createStudioMetadata(model,body,owner,{...poster,wallet:attacker}),/glb_preview_required_or_not_owned/)
+  assert.throws(()=>createStudioMetadata(model,body,owner,{...poster,status:'reserved'}),/glb_preview_required_or_not_owned/)
+  assert.throws(()=>createStudioMetadata(model,body,owner,{...poster,mime:'video/mp4'}),/glb_preview_required_or_not_owned/)
+  const meta=createStudioMetadata(model,body,owner,poster)
   assert.equal(meta.animation_url,model.uri)
-  assert.equal(meta.image,undefined)
+  assert.equal(meta.image,poster.uri)
   assert.equal(meta.properties.category,'model')
   assert.equal(meta.properties.mime,'model/gltf-binary')
+  assert.equal(meta.properties.image_sha256,hash)
+  assert.notEqual(studioMetadataFingerprint(model,body,owner,poster),
+    studioMetadataFingerprint(model,body,owner,{...poster,sha256:'b'.repeat(64)}))
 })
 
 test('GLB rejects impossible BIN byte counts and unknown URL-capable glTF extensions',()=>{
