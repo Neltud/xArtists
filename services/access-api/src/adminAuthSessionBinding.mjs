@@ -5,6 +5,8 @@
  * Does NOT issue JWT cookies, open routes, or grant SC powers.
  */
 
+import { randomBytes } from 'node:crypto'
+
 const SESSION_TTL_MS = 30 * 60 * 1000
 
 /**
@@ -17,7 +19,7 @@ export function createAdminSessionBinder(opts = {}) {
   const nowMs = opts.nowMs || (() => Date.now())
   const randomId =
     opts.randomId ||
-    (() => `sess_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`)
+    (() => randomBytes(32).toString('base64url'))
   const allowlist = new Set(
     [...(opts.adminAllowlist || [])].map((a) => String(a).trim().toLowerCase()),
   )
@@ -35,7 +37,8 @@ export function createAdminSessionBinder(opts = {}) {
     bindSession({ adminBech32, method, ttlMs } = {}) {
       const admin = String(adminBech32 || '').trim().toLowerCase()
       if (!/^erd1[a-z0-9]{58}$/.test(admin)) return { ok: false, error: 'bad_admin' }
-      if (allowlist.size && !allowlist.has(admin)) return { ok: false, error: 'admin_not_allowlisted' }
+      // A missing operator allowlist is a DENY, never an open-access default.
+      if (!allowlist.size || !allowlist.has(admin)) return { ok: false, error: 'admin_not_allowlisted' }
       if (!method || method === 'paste_readonly' || method === 'paste') {
         return { ok: false, error: 'paste_identity_forbidden' }
       }
