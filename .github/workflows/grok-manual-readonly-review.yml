@@ -1,0 +1,55 @@
+name: Grok independent mainnet review (manual, read-only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Choose one isolated, already-public PR to review"
+        required: true
+        type: choice
+        options:
+          - pulse005
+          - rwa
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: grok-review-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  external-second-opinion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Local security tests, no external model request
+        run: node --test scripts/ops/tests/grok-readonly-review.test.mjs
+      - name: Check opt-in API configuration
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          if [ -z "$XAI_API_KEY" ]; then
+            echo "::error::XAI_API_KEY GitHub Actions secret is not configured. No Grok review was run."
+            exit 1
+          fi
+      - name: Ask Grok for a non-authoritative independent review
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
+          REVIEW_TARGET: ${{ inputs.target }}
+        run: node scripts/ops/grok-readonly-review.mjs
+      - name: Upload review as non-authoritative artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: grok-${{ inputs.target }}-independent-review
+          path: grok-review-report.md
+          if-no-files-found: error
+          retention-days: 14
