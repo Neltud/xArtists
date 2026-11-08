@@ -1,0 +1,123 @@
+/* xArtists 2026 / MultiversX-first visitor journey.
+ * Dedicated light/dark design tokens. No transaction styling or enable flags. */
+.xa-mainnet-journey {
+  width: 100%;
+  color: var(--xa-text);
+  background: var(--xa-panel);
+  border: 1px solid var(--xa-border);
+  border-radius: 22px;
+  padding: clamp(18px, 3vw, 30px);
+  margin-block: 24px 28px;
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--xa-text) 4%, transparent);
+}
+.xa-mainnet-journey-heading { display: flex; justify-content: space-between; gap: 20px; }
+.xa-mainnet-journey-network {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 9px;
+  color: var(--xa-accent);
+  font-size: 11px;
+  letter-spacing: .065em;
+  font-weight: 680;
+}
+.xa-mainnet-journey-network > span {
+  width: 7px; height: 7px;
+  border-radius: 50%; background: currentColor;
+}
+.xa-mainnet-journey h2 {
+  color: var(--xa-text);
+  font-size: clamp(19px, 2.3vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -.025em;
+  font-weight: 650;
+  margin: 0 0 8px;
+}
+.xa-mainnet-journey-heading p:last-child {
+  max-width: 700px;
+  margin: 0;
+  color: var(--xa-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.xa-mainnet-journey-steps {
+  list-style: none; margin: 22px 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px;
+}
+.xa-mainnet-journey-steps > li { min-width: 0; }
+.xa-mainnet-journey-link {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  min-width: 0;
+  min-height: 92px;
+  border-radius: 13px;
+  padding: 14px;
+  border: 1px solid var(--xa-border);
+  color: var(--xa-text);
+  text-decoration: none;
+  background: var(--xa-panel2);
+  transition: border-color .15s ease, transform .15s ease, background .15s ease;
+}
+.xa-mainnet-journey-link.is-current {
+  border-color: var(--xa-accent);
+  background: color-mix(in srgb, var(--xa-accent) 9%, var(--xa-panel));
+}
+.xa-mainnet-journey-link:hover { border-color: var(--xa-accent); transform: translateY(-2px); }
+.xa-mainnet-journey-link:focus-visible,
+.xa-mainnet-journey-tool:focus-visible {
+  outline: 3px solid var(--xa-accent);
+  outline-offset: 3px;
+}
+.xa-mainnet-journey-symbol {
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--xa-border);
+  border-radius: 11px;
+  width: 41px;
+  height: 41px;
+  color: var(--xa-accent);
+  background: var(--xa-panel);
+}
+.xa-mainnet-journey-step-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.xa-mainnet-journey-number { font-size: 10px; font-variant-numeric: tabular-nums; color: var(--xa-muted); }
+.xa-mainnet-journey-step-copy strong { font-size: 14px; font-weight: 670; overflow-wrap: anywhere; }
+.xa-mainnet-journey-step-copy small { font-size: 11px; color: var(--xa-muted); line-height: 1.4; }
+.xa-mainnet-journey-link > svg:last-child { flex: none; color: var(--xa-muted); }
+.xa-mainnet-journey-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+  margin-top: 18px; padding-top: 15px;
+  border-top: 1px solid var(--xa-border);
+}
+.xa-mainnet-journey-footer > p {
+  flex: 1 1 250px; max-width: 610px; margin: 0;
+  font-size: 11px; line-height: 1.6; color: var(--xa-muted);
+}
+.xa-mainnet-journey-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.xa-mainnet-journey-tool {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; min-height: 44px; padding: 8px 13px;
+  background: var(--xa-panel2); border: 1px solid var(--xa-border);
+  border-radius: 9px; color: var(--xa-text); font-weight: 600;
+  font-size: 12px; text-decoration: none; cursor: pointer;
+}
+.xa-mainnet-journey-tool:hover { border-color: var(--xa-accent); }
+.xa-mainnet-journey-wallet { color: var(--xa-muted); font-size: 11px; }
+@media (max-width: 780px) {
+  .xa-mainnet-journey-steps { grid-template-columns: 1fr; gap: 8px; }
+  .xa-mainnet-journey-link { min-height: 64px; padding: 11px 13px; }
+  .xa-mainnet-journey-symbol { width: 37px; height: 37px; }
+  .xa-mainnet-journey-link > svg:last-child { margin-inline-start: auto; }
+}
+@media (max-width: 490px) {
+  .xa-mainnet-journey { padding: 16px; margin-block: 14px 20px; border-radius: 16px; }
+  .xa-mainnet-journey-steps { margin-top: 15px; }
+  .xa-mainnet-journey-actions { width: 100%; }
+  .xa-mainnet-journey-tool { flex: 1 1 auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xa-mainnet-journey-link { transition: none; }
+  .xa-mainnet-journey-link:hover { transform: none; }
+}
