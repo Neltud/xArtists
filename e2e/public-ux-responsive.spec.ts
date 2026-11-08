@@ -54,7 +54,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     })
   }
   for (const width of [360, 390, 430]) {
-    test(`mobile ${width}px: no auto-WebGL and direct market/auction/studio/DAO dock`, async ({ page }) => {
+    test(`mobile ${width}px: no auto-WebGL and five discover-first mobile destinations`, async ({ page }) => {
       await page.setViewportSize({ width, height: 844 })
       await visit(page, '/')
       await expect(page.locator('.xa-mobile-dock')).toBeVisible()
@@ -62,9 +62,15 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(page.locator('.xa-first-hero')).toBeVisible()
       await expect(page.locator('.xa-first-tile')).toHaveCount(4)
       await expect(page.locator('.xa-first-hero canvas')).toHaveCount(0)
-      for (const path of ['/marketplace', '/auction', '/studio', '/finance/governance']) {
+      for (const path of ['/museum', '/studio', '/marketplace', '/finance/governance']) {
         await expect(page.locator(`.xa-mobile-dock a[href*="${path}"]`)).toHaveCount(1)
       }
+      const menu = page.locator('.xa-mobile-trigger')
+      await menu.click()
+      await page.locator('.xa-mobile-advanced summary').click()
+      await expect(page.locator('.xa-mobile-menu a[href*="/auction"]')).toBeVisible()
+      await expect(page.locator('.xa-mobile-menu a[href*="/create/world-rights"]')).toBeVisible()
+      await page.keyboard.press('Escape')
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
       expect(overflow, `Home horizontal overflow at ${width}px: ${overflow}px`).toBeLessThanOrEqual(12)
       await page.screenshot({ animations: 'disabled', path: `artifacts/ux-mobile/home-${width}.png` })

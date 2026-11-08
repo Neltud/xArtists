@@ -215,3 +215,58 @@
   .xa-directory-controls > .xa-filter-search { flex-basis: 100%; }
   .xa-directory-reset { width: 100%; }
 }
+
+/* Navigation v2: discovery-first without sacrificing direct legacy routes. */
+.xa-header .xa-search-trigger {
+  min-height: 44px;
+  border-radius: 10px;
+  padding-inline: 9px;
+  gap: 7px;
+}
+.xa-header-search-label {
+  color: var(--xa-text);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.xa-search-all {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-inline: 10px;
+  border-radius: 8px;
+  color: var(--xa-text);
+  font-weight: 650;
+  font-size: 12px;
+  text-decoration: none;
+}
+.xa-search-all:hover { background: var(--xa-panel2); }
+.xa-search-all:focus-visible {
+  outline: 3px solid var(--xa-accent);
+  outline-offset: 2px;
+}
+.xa-mobile-advanced .xa-mobile-menu-group + .xa-mobile-menu-group {
+  margin-block-start: 8px;
+  border-block-start: 1px solid var(--xa-border);
+}
+.xa-mobile-advanced .xa-nav-group-caption {
+  color: var(--xa-muted);
+  letter-spacing: .06em;
+}
+/* Keep light mode high-contrast, dark mode token-driven, and touch targets >=44px. */
+.xa-desktop-nav a[aria-current="page"] {
+  color: var(--xa-text);
+}
+@media (max-width: 1320px) {
+  .xa-header-search-label { display: none; }
+}
+@media (max-width: 560px) {
+  .xa-mobile-dock a { min-height: 44px; }
+  .xa-search-all { min-height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xa-search-all,
+  .xa-mobile-advanced summary { transition: none; }
+}

@@ -14,14 +14,15 @@ const icons = read('src/experience/Icon.tsx')
 const availability = read('scripts/publicAvailability.mjs')
 const deploy = read('../../.github/workflows/static.yml')
 
-test('mobile dock has exactly five independent direct destinations, with Marketplace and Auction', () => {
+test('mobile dock has five visitor-first destinations; auctions remain in the menu', () => {
   const match = shell.match(/const MOBILE_DESTINATIONS = \[([\s\S]*?)\] as const/)
   assert.ok(match, 'must have explicit, testable dock destination registry')
   const destinations = [...match[1].matchAll(/to:'([^']+)'/g)].map(m=>m[1])
-  assert.deepEqual(destinations, ['/', '/marketplace', '/auction', '/studio', '/finance/governance'])
+  assert.deepEqual(destinations, ['/', '/museum', '/studio', '/marketplace', '/finance/governance'])
   assert.match(shell, /<Link to="\/museum" onClick=\{closeMobile\}>/)
   assert.match(shell, /<Link to="\/dao" onClick=\{closeMobile\}>/)
   assert.match(shell, /aria-current=\{active\?'page':undefined\}/)
+  assert.match(shell, /'\/explore\/museum'/)
   assert.match(shell, /'\/explore\/market'/)
   assert.match(shell, /'\/explore\/auction'/)
   assert.match(shell, /'\/create\/studio'/)
