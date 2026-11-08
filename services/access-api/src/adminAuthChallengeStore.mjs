@@ -26,7 +26,7 @@ function normalizeAdmin(value) {
   return String(value || '').trim().toLowerCase()
 }
 
-function buildMessage(row) {
+export function buildMessage(row) {
   const lines = [
     DOMAIN,
     `chainId=${CHAIN_ID}`,
