@@ -75,6 +75,15 @@ export function validateStudioGlb(buffer){
   if(!binCount||!Array.isArray(json.buffers)||json.buffers.length!==1||
       !Number.isSafeInteger(json.buffers[0]?.byteLength)||json.buffers[0].byteLength<=0)
     throw fail('glb_structure_invalid')
+  // First BIN chunk must contain the referenced bytes with at most 3 bytes of 4-byte padding.
+  // Do not accept malicious descriptors that claim unattached data.
+  const binBytes=buffer.length-(12+8+buffer.readUInt32LE(12))-8
+  if(json.buffers[0].byteLength>binBytes||binBytes-json.buffers[0].byteLength>3)
+    throw fail('glb_buffer_length_invalid')
+  const allowedExtensions=new Set(['KHR_materials_unlit','KHR_texture_transform'])
+  if(!Array.isArray(json.extensionsUsed||[])||
+      (json.extensionsUsed||[]).some(ext=>!allowedExtensions.has(ext)))
+    throw fail('glb_extension_unsupported')
   // Ensure there is no way for the model to fetch other assets when displayed.
   for(const collection of [json.buffers,json.images||[],json.shaders||[]]){
     if(!Array.isArray(collection)||collection.some(item=>!item||typeof item!=='object'||'uri' in item))
