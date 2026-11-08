@@ -35,6 +35,7 @@ const studioMediaErrors:Record<string,string>={
   glb_chunk_invalid:'GLB invalide : données internes incohérentes.',
   glb_json_chunk_invalid:'GLB invalide : description glTF non lisible.',
   glb_structure_invalid:'GLB invalide : maillage glTF 2.0 incomplet.',
+  glb_preview_required_or_not_owned:'Modèle 3D : une image de couverture préalablement épinglée et liée au même wallet est obligatoire.' ,
 }
 const explainStudioMediaError=(error:unknown)=>{
   const code=error instanceof Error?error.message:'media_upload_unavailable'
@@ -47,6 +48,8 @@ export default function CreatorMediaUpload({title,onReady}:Props){
   const [modelEnabled,setModelEnabled]=useState(false)
   const [file,setFile]=useState<File|null>(null)
   const [preview,setPreview]=useState('')
+  const [posterFile,setPosterFile]=useState<File|null>(null)
+  const [posterPreview,setPosterPreview]=useState('')
   const [description,setDescription]=useState('')
   const [rights,setRights]=useState(false)
   const [pending,setPending]=useState(false)
@@ -66,6 +69,12 @@ export default function CreatorMediaUpload({title,onReady}:Props){
     return ()=>{URL.revokeObjectURL(url)}
   },[file])
   useEffect(()=>{
+    if(!posterFile){setPosterPreview('');return}
+    const url=URL.createObjectURL(posterFile)
+    setPosterPreview(url)
+    return ()=>URL.revokeObjectURL(url)
+  },[posterFile])
+  useEffect(()=>{
     if(!base){setEnabled(false);setModelEnabled(false);return}
     const c=new AbortController()
     fetch(base+'/v1/studio/media/config',{signal:c.signal,cache:'no-store'})
@@ -82,7 +91,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
       ? new File([next],next.name,{type:'model/gltf-binary',lastModified:next.lastModified})
       : next
     revision.current+=1
-    setError('');setFile(chosen);setPinned(null);onReady(null)
+    setError('');setFile(chosen);setPosterFile(null);setPinned(null);onReady(null)
     setNeedsReconciliation(false)
     if(chosen && (!allowed[chosen.type]||chosen.size<=0||chosen.size>allowed[chosen.type])){
       setFile(null)
@@ -92,14 +101,17 @@ export default function CreatorMediaUpload({title,onReady}:Props){
   const pin=async()=>{
     if(pending||needsReconciliation)return
     setError('')
-    if(!file||!allowed[file.type]){setError('Choisissez un fichier JPG, PNG, WebP ou MP4.');return}
+    if(!file||!allowed[file.type]){setError('Choisissez un fichier JPG, PNG, WebP, MP4 ou GLB.');return}
+    if(file.type==='model/gltf-binary' && (!posterFile || !['image/jpeg','image/png','image/webp'].includes(posterFile.type) || posterFile.size<1 || posterFile.size>16*1024*1024)) {
+      setError('Choisissez une image de couverture JPG, PNG ou WebP de 16 Mio maximum pour ce GLB.');return
+    }
     if(!base||!enabled){setError('Upload non activé côté serveur : configuration Pinata et PostgreSQL requise.');return}
     if(file.type==='model/gltf-binary'&&!modelEnabled){setError('Upload GLB désactivé côté serveur : contrôle opérateur requis.');return}
     if(!connected||!address||method!=='xportal'){setError('Connexion xPortal et signature requises.');return}
     if(title.trim().length<2||title.trim().length>50){setError('Titre de 2 à 50 caractères requis.');return}
     if(!rights){setError("Confirmez que vous détenez les droits de publier ce média.");return}
     const attempt=++revision.current
-    const chosenFile=file,chosenTitle=title.trim(),chosenDescription=description.trim()
+    const chosenFile=file,chosenPoster=posterFile,chosenTitle=title.trim(),chosenDescription=description.trim()
     const stillCurrent=()=>revision.current===attempt
     setPending(true)
     try{
@@ -121,8 +133,21 @@ export default function CreatorMediaUpload({title,onReady}:Props){
       if(!stillCurrent())return
       if(!uploadResponse.ok)throw new Error(data.error||'Erreur upload IPFS.')
       if(!data.uploadId||!data.uri)throw new Error('Upload non confirmé par le serveur.')
+      let previewUploadId: string | undefined
+      if(chosenFile.type==='model/gltf-binary') {
+        if(!chosenPoster)throw new Error('Image de couverture manquante.')
+        const posterResponse=await fetch(base+'/v1/studio/media/upload',{
+          method:'POST',headers:{Authorization:'Bearer '+session.token,'Content-Type':chosenPoster.type},
+          body:chosenPoster,
+        })
+        const poster=await posterResponse.json().catch(()=>({error:'upload_response_invalid'}))
+        if(!stillCurrent())return
+        if(!posterResponse.ok)throw new Error(poster.error||'Échec de publication de la couverture IPFS.')
+        if(!poster.uploadId||!poster.uri)throw new Error('Épinglage de la couverture non confirmé.')
+        previewUploadId=poster.uploadId
+      }
       const meta=await postJson(base,'/v1/studio/media/metadata',{
-        uploadId:data.uploadId,title:chosenTitle,description:chosenDescription,rightsAccepted:true,
+        uploadId:data.uploadId,previewUploadId,title:chosenTitle,description:chosenDescription,rightsAccepted:true,
       },session.token)
       if(!stillCurrent())return
       if(!meta.mediaUri||!meta.metadataUri||!meta.attributes)
@@ -167,7 +192,22 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         {file.type==='video/mp4'
           ? <video src={preview} controls playsInline preload="metadata" className="w-full max-h-64 rounded-lg bg-black"/>
           : file.type==='model/gltf-binary'
-          ? <StudioGlbPreview file={file}/>
+          ? <>
+              <StudioGlbPreview file={file}/>
+              <label className="block text-xs text-zinc-300">Image de couverture obligatoire pour le NFT 3D (JPG, PNG, WebP ; 16 Mio max)
+                <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                  className="mt-1 block w-full rounded-lg border border-white/10 p-2 text-xs text-white"
+                  onChange={e=>{
+                    const next=e.target.files?.[0]||null
+                    revision.current+=1;setPinned(null);onReady(null)
+                    if(next && (!['image/jpeg','image/png','image/webp'].includes(next.type)||next.size<1||next.size>16*1024*1024)){
+                      setPosterFile(null);setError('Couverture JPG/PNG/WebP jusqu’à 16 Mio uniquement.')
+                    }else{setPosterFile(next);setError('')}
+                  }} />
+              </label>
+              {posterPreview&&<img src={posterPreview} alt="Aperçu local de la couverture du modèle 3D" className="max-h-48 w-full rounded-lg object-contain bg-black" />}
+              <p className="text-xs text-zinc-400">Le modèle GLB et son image de couverture seront deux fichiers épinglés séparément sur IPFS, puis liés dans un seul JSON de métadonnées. Deux uploads décomptés du quota journalier.</p>
+            </>
           : <img src={preview} alt="Aperçu local avant publication IPFS" className="max-h-64 w-full rounded-lg object-contain bg-black"/>}
         <p className="break-all text-xs text-zinc-400">{file.name} · {(file.size/1048576).toFixed(2)} Mo</p>
         <p className="text-xs text-zinc-400">Aperçu local uniquement : aucune publication IPFS ni création de NFT.</p>
@@ -186,7 +226,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         IPFS et un NFT ne sont pas automatiquement supprimables.
       </label>
       <button type="button" className="btn-primary text-sm min-h-[44px] disabled:opacity-50"
-        disabled={!enabled||pending||needsReconciliation||!file||!rights||!connected||method!=='xportal'||(file.type==='model/gltf-binary'&&!modelEnabled)}
+        disabled={!enabled||pending||needsReconciliation||!file||!rights||!connected||method!=='xportal'||(file.type==='model/gltf-binary'&&(!modelEnabled||!posterFile))}
         onClick={()=>void pin()}>
         {pending?'Publication média + métadonnées IPFS…':'Publier sur IPFS et préparer le mint'}
       </button>
