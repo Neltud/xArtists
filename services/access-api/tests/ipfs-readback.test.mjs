@@ -118,3 +118,14 @@ test('gateway identities are fixed; no artist-provided hostname or SSRF URL',()=
     assert.equal(parsed.password,'')
   }
 })
+
+test('HTTP 200 HTML gateway fallback is never accepted as media',async()=>{
+  const result=await verifyIpfsReadbackManifest(manifest,{
+    request:async()=>new Response('<html>gateway unavailable</html>',{
+      status:200,headers:{'content-type':'text/html; charset=utf-8'},
+    }),
+  })
+  assert.equal(result.ok,false)
+  assert.equal(result.checks[0].gateways[0].reason,'gateway_html_not_media')
+  assert.equal(result.independentPinProvidersVerified,false)
+})
