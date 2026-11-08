@@ -14,6 +14,7 @@ import OpenSeaCollectionPanel from '../components/market/OpenSeaCollectionPanel'
 import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
 import LiaAndEscrowNfts from '../components/market/LiaAndEscrowNfts'
 import DriveArtShowcase from '../experience/DriveArtShowcase'
+import MainnetJourney from '../components/MainnetJourney'
 
 type Shelf='art'|'rwa'|'packs'|'opensea'
 type Listing={
@@ -127,6 +128,8 @@ export default function MarketplacePage(){
         Les certificats ne sont pas automatiquement des titres de propriété.
       </p>
     </header>
+
+    <MainnetJourney current="market" />
 
     <nav aria-label="Catégories d’œuvres" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
       {SHELVES.map(s=><button key={s.id} type="button" onClick={()=>navigate(s.id)}
