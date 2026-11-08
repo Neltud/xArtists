@@ -1,0 +1,22 @@
+name: RWA escrow static release-gate checks
+
+on:
+  pull_request:
+    paths:
+      - 'contracts/rwa-escrow-bridge/**'
+      - '.github/workflows/rwa-escrow-static-gates.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-release-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node --test contracts/rwa-escrow-bridge/tests/release_gates.static.test.mjs
