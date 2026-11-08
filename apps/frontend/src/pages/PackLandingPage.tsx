@@ -10,6 +10,7 @@ import Pack3DCockpit from '../components/packs/Pack3DCockpit'
 import GenesisCard3D from '../components/packs/GenesisCard3D'
 import {
   AGENT_PACKS,
+  AGENT_PACK_SC_SNAPSHOT,
   PACK_COMMERCIAL,
   PACK_EDITION,
   PACK_VISUAL,
@@ -73,7 +74,7 @@ export default function PackLandingPage() {
         <div className="flex flex-wrap gap-3 items-baseline">
           <strong className="text-3xl tabular-nums text-[color:var(--xa-text)]">{pack.priceEur.list} €</strong>
           <span className="text-[14px] text-[color:var(--xa-text-muted)]">
-            ≈ {pack.priceEgld.list} EGLD · estimation catalogue, non contractuelle
+            Relevé SC du 08/11 : {AGENT_PACK_SC_SNAPSHOT.pricesEgld[id]} EGLD · vente fermée
           </span>
         </div>
         <p className="text-[12px] text-[color:var(--xa-text-muted)]">
@@ -117,7 +118,7 @@ export default function PackLandingPage() {
       </section>
 
       <p role="status" className="rounded-xl border border-amber-300/25 bg-amber-300/[0.06] px-4 py-3 text-[12px] text-[color:var(--xa-text-secondary)]">
-        {xaRender('Packs Genesis : les prix affichés sont indicatifs, pas des devis payables. La disponibilité de l’achat doit être confirmée dans le checkout ; l’aperçu ne réalise aucun paiement et ne délivre aucun NFT.')}
+        {xaRender('Packs Genesis : vente suspendue. Le prix en euros est un catalogue, le relevé EGLD est historique et non payable. Aucun paiement ni NFT livré par cet aperçu.')}
       </p>
 
       <Pack3DCockpit packId={id} showIntents={false} />
@@ -126,7 +127,7 @@ export default function PackLandingPage() {
         <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaLocalize('Checkout dApp')}</h2>
         <p className="text-[12px] text-[color:var(--xa-text-muted)]">
           {xaLocalize(
-            'Paiement one-time via access-api / PayBox. Mint SFT + My Packs après validation. Mode paper jusqu’au GO.',
+            'Parcours prévu : paiement authentifié, mint et livraison SFT, puis Mes Packs. Actuellement : simulation uniquement, aucun achat réel.',
           )}
         </p>
         <PackCheckout packId={id} onPaperDone={pid => setTheater(pid)} onClear={() => undefined} />

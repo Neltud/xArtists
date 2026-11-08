@@ -30,19 +30,24 @@ Le **Creator Studio** accepte JPG/PNG/WebP/MP4 mais l'upload automatique Pinata 
 | **Yield** | Silver | **€75** | 500 |
 | **Sentinel** | Platinum | **€50** | 777 |
 
-Genesis packs are **one-time purchases**, associated with limited-edition MultiversX SFT artworks and durable access rights. They **are not subscriptions**. Cryptocurrency quotes, payments, NFT delivery and entitlements require the separately validated live path; do not infer their availability from a displayed catalogue price.
+Genesis packs are **planned one-time purchases**, associated with limited-edition MultiversX NFT artworks and advertised durable access rights. They **are not subscriptions**. **Sales are currently suspended.** Recorded `getPackPrice` values on 8 November were Pulse **1 EGLD**, Yield **5 EGLD** and Sentinel **2.5 EGLD**, which do not constitute executable quotes or parity with the EUR catalogue. Existing pack NFTs have empty media URIs; delivery and access entitlements have not been validated for public sales.
 
 **Whop TCA Membership is separate:** recurring services while subscribed; no Genesis SFT automatically included. See [commercial model](docs/COMMERCIAL_MODEL.md), [public buying guide](docs/security/guide-public-packs-whop.md) and [current availability](https://xartists.gitbook.io/xartists/presentation/etat-du-produit).
 
-## Release status — November 2, 2026
+## Release status — November 8, 2026 (v0.130.0)
 
-- **Public web app:** deployed on GitHub Pages. V3 mobile changes from [PR #262](https://github.com/Neltud/xArtists/pull/262) are merged.
+- **Public web app:** v0.130.0 deployed on GitHub Pages, source [c00f1388](https://github.com/Neltud/xArtists/commit/c00f13888d88ccfbb05275a4fa7d9f97715ab812) independently verified in the public build manifest. The 8 November clarity/UX patch is a subsequent documentation and discovery enhancement, not a new commercial authorization.
 - **LIA intelligence:** read-only/paper by default. **Autonomous LIA Ops trading is NOT authorised.**
 - **MultiversX mainnet:** contracts and NFT references exist, but a deployment is not proof of safe commercial delivery.
-- **Card payments:** PayBox production adapter is configured in the API, but end-to-end real payment → authenticated IPN → NFT entitlement → refund proof is **not confirmed**. At the last checked health response, live mint/dispatch flags were **disabled**.
+- **Genesis pack payments:** **closed on both crypto and fiat rails** in the web checkout. The UI displays €110 / €75 / €50 as a catalogue only; the last recorded smart-contract prices are **1 / 5 / 2.5 EGLD** (8 November snapshot), not a real-time quote. Existing NFTs have empty media URIs. PayBox payment → authenticated IPN → NFT entitlement → refund proof remains **unconfirmed**.
 - **Public financial launch:** **NO-GO until capability-specific human approval and evidence**. No claim of yield, investment performance or guaranteed gains.
 
-For the dated evidence and remaining P0/P1 checks, see [Launch audit (2026-11-02)](docs/LAUNCH_AUDIT_2026-11-02.md). Historical operational logs and prior mainnet statements are not current launch authorisations.
+For the latest source-backed status, see [Release 0.130.0 — 8 November](docs/RELEASE_2026-11-08_PUBLIC.md), [Design/UX review](docs/presentation/revue-design-2026-11-08.md), [8 November chain-readiness evidence](docs/ops/AGENTS_PACK_STEP2_FRONTEND_NO_GO_2026-11-08.md), and [launch audit (2 November)](docs/LAUNCH_AUDIT_2026-11-02.md). Historical operations are not current launch authorisations.
+
+
+## Design & accessibility — 8 November review
+
+The public desktop flow was checked without a wallet (home → museum → agents → marketplace). Strengths include wallet-optional discovery, clear breadcrumbs, a theme switch and prominent preview markers. Outstanding priorities: **remove legacy EGLD estimates from every discovery route**, increase small labels to readable sizes, review artwork image alternatives and secondary-text contrast, and verify **mobile 375–414 px**, keyboard focus and reduced-motion behavior in a browser. Read the [design review and release checklist](docs/audits/DESIGN_REVIEW_2026-11-08.md). This is a targeted desktop review, **not** a full WCAG or mobile certification.
 
 ## Developer quick start
 

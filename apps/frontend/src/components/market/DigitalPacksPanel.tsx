@@ -5,7 +5,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/p
  */
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AGENT_PACKS, type PackId } from '../../config/agentPacks'
+import { AGENT_PACKS, AGENT_PACK_SC_SNAPSHOT, type PackId } from '../../config/agentPacks'
 import { PACK_COLLECTIONS } from '../../config/packNftMetadata'
 import {
   fetchAllPackMarkets,
@@ -80,8 +80,8 @@ export default function DigitalPacksPanel() {
 
               <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
                 <div className="rounded-lg border border-white/10 bg-black/40 px-2 py-1.5">
-                  <p className="text-[9px] uppercase text-zinc-600">{xaRender("Mint list")}</p>
-                  <p className="tabular-nums text-cyan-100 font-medium">{xaRender(p.priceEgld.list)} {xaRender(" EGLD")}</p>
+                  <p className="text-[11px] uppercase text-zinc-300">{xaRender("SC · relevé 08/11")}</p>
+                  <p className="tabular-nums text-cyan-100 font-medium">{xaRender(AGENT_PACK_SC_SNAPSHOT.pricesEgld[p.id])} {xaRender(" EGLD")}</p>
                 </div>
                 <div className="rounded-lg border border-white/10 bg-black/40 px-2 py-1.5">
                   <p className="text-[9px] uppercase text-zinc-600">{xaRender("Floor")}</p>
@@ -104,7 +104,7 @@ export default function DigitalPacksPanel() {
                   to={`/agents`}
                   className="btn-primary text-[11px] min-h-[40px] inline-flex items-center px-3"
                 >
-                  {xaRender("Acheter pack ")}</Link>
+                  {xaRender("Découvrir pack ")}</Link>
                 {xaRender(snap?.xoxnoUrl && (
                   <a
                     href={snap.xoxnoUrl}
@@ -121,7 +121,7 @@ export default function DigitalPacksPanel() {
       </ul>
 
       <p className="text-[11px] text-zinc-600 leading-relaxed">
-        {xaRender("Entitlements d&apos;accès (signaux / salles) — pas un fonds, pas d&apos;APY promis. Prix mint officiels : 10 / 5 / 2.5 EGLD. Données collection via api.multiversx.com. ")}</p>
+        {xaRender("Packs d&apos;accès (signaux / salles) — pas de rendement promis. Prix SC observés le 08/11 : 1 / 5 / 2,5 EGLD, non exécutables. Ventes et livraison NFT suspendues. Données collection via api.multiversx.com.")}</p>
     </section>
   )
 }

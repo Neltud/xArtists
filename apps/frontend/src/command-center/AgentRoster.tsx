@@ -3,7 +3,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
  * Agent roster — 3 packs with ownership + CTA.
  */
 import { Link } from 'react-router-dom'
-import { AGENT_PACKS, type PackId } from '../config/agentPacks'
+import { AGENT_PACKS, AGENT_PACK_SC_SNAPSHOT, type PackId } from '../config/agentPacks'
 import { useAgentAccess } from '../store/empireStore'
 
 export default function AgentRoster() {
@@ -46,7 +46,7 @@ export default function AgentRoster() {
               <p className="text-[11px] text-zinc-400 leading-snug">{xaRender(p.tagline)}</p>
               <ul className="text-[10px] text-zinc-500 space-y-0.5">
                 <li>{xaRender("Signal ")}{xaRender(p.signalIntensity)}{xaRender("/3 · risk ")}{xaRender(p.risk)}</li>
-                <li>{xaRender("Floor ")}{xaRender(p.priceEgld.min)}–{xaRender(p.priceEgld.list)} {xaRender(" EGLD")}</li>
+                <li>{xaRender(`SC 08/11 : ${AGENT_PACK_SC_SNAPSHOT.pricesEgld[p.id]} EGLD · non payable`)}</li>
               </ul>
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {xaRender(owned ? (

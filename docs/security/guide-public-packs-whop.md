@@ -19,6 +19,8 @@ Les offres Whop xArtists sont des abonnements mensuels distincts : elles donnent
 
 ## Disponibilité et transparence
 
+**Au 8 novembre 2026, les ventes packs restent suspendues (fiat et crypto) et aucun achat public n'est autorisé.** Les prix en euros affichés sont un catalogue : 110 / 75 / 50 € ; les prix enregistrés en chaîne (relevé du 8 novembre) sont 1 / 5 / 2,5 EGLD, mais ne sont pas des devis exécutables. Les NFT pack existants possèdent des URI média vides, donc la livraison publique n'est pas homologuée.
+
 **Le lancement commercial général reste soumis à validation.** Le test réel PayBox Sentinel 50 €, la vérification de l'IPN signé, l'attribution des droits et le remboursement ne sont pas encore déclarés réussis dans le dossier Sprint 2. [Consulter les critères de validation](../sprint-2-validation-commerciale.md).
 
 LIA reste en mode **paper** pour le trading : aucun rendement ou gain n'est garanti. Une démonstration technique n'est pas une autorisation de trading live.

@@ -1,6 +1,6 @@
 # Disponibilité de xArtists
 
-**Mise à jour : 3 novembre 2026.** Un site accessible, un contrat existant et une transaction commerciale autorisée sont trois choses différentes.
+**Mise à jour : 8 novembre 2026.** Un site accessible, un contrat existant et une transaction commerciale autorisée sont trois choses différentes.
 
 [**Ouvrir le site**](https://neltud.github.io/xArtists/) · [**Voir LIA**](https://neltud.github.io/xArtists/intelligence/lia) · [**Offres**](https://neltud.github.io/xArtists/offres/)
 
@@ -18,6 +18,14 @@
 | $TRO / Solana | **Informations** | Non, bridge interchaînes fermé |
 | xPortal | **Interface de connexion** | Toute transaction exige une signature explicite |
 
+## Prix Genesis et preuves mainnet — 8 novembre
+
+Le catalogue public est **Pulse 110 € / Yield 75 € / Sentinel 50 €**. La dernière lecture documentée de `getPackPrice` donnait **1 / 5 / 2,5 EGLD**, et non les anciens tarifs catalogue ≈ 33 / 22,5 / 15 EGLD. Ce relevé **n'est pas un devis payable**, et la parité fiat/crypto n'est pas démontrée.
+
+Les jetons des trois collections existent sur mainnet, mais les NFT pack indexés ont des **URI média vides**. Les rôles d'ajout d'URI/actualisation ne sont pas attribués au minter. Aucun checkout pack public ne doit être ouvert avant média IPFS vérifié, livraison NFT et droits confirmés.
+
+`isPayable=false` concerne les **transferts directs** : ce flag n'interdit pas à lui seul les paiements à un endpoint explicitement `#[payable("EGLD")]`. Ne pas exiger un upgrade payable-only injustifié. [Preuves et précautions](../ops/AGENTS_PACK_STEP1_READINESS_2026-11-08.md) · [Release 0.130.0](../RELEASE_2026-11-08_PUBLIC.md).
+
 ## Données LIA : vérifier la date de la source
 
 L'[agrégateur LIA](https://neltud.github.io/xArtists/data/lia_status.json) publie un **snapshot daté du 3 novembre à 12 h 44 CET** avec le mode paper activé. Le [miroir hub/Vellum](https://neltud.github.io/xArtists/data/lia_hub_status.json) porte encore la date du **7 octobre 2026** : il est obsolète.
@@ -26,7 +34,7 @@ La Control Room distingue désormais l'heure de publication, le délai de la sou
 
 ## Livraison logicielle versus activation marchande
 
-Les [PR #344 (navigation)](https://github.com/Neltud/xArtists/pull/344) et [#345 (LIA)](https://github.com/Neltud/xArtists/pull/345) ont été fusionnées après leurs contrôles CI. La publication GitHub Pages de chaque changement doit encore être prouvée par un contrôle HTTP et sur appareils réels.
+La dApp v0.130.0 est publiée sur GitHub Pages ; son manifeste public a confirmé le source SHA [`c00f1388`](https://github.com/Neltud/xArtists/commit/c00f13888d88ccfbb05275a4fa7d9f97715ab812) le 8 novembre. La [PR #447](https://github.com/Neltud/xArtists/pull/447) a été fusionnée : vérité tarifaire et verrouillage des ventes packs fiat et crypto. La revue design du 8 novembre a relevé des petits libellés et des estimations EGLD encore présentes sur certaines pages découverte ; leur correction fait l'objet d'une release séparée.
 
 **GO découverte uniquement. NO-GO checkout PayBox, mint NFT réel, enchères et trading.** Les flags techniques du sprint étaient désactivés. Il manque toujours les preuves d'encaissement signé et remboursable, de réconciliation de commande, d'attribution NFT et de livraison finale. L'existence d'un contrat mainnet n'ouvre pas automatiquement tous les usages.
 

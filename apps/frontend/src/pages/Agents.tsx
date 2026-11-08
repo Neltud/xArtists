@@ -5,7 +5,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
 import PackOpenTheater from '../components/PackOpenTheater'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
-import { AGENT_PACKS, PACK_EDITION, PACK_VISUAL, type PackId } from '../config/agentPacks'
+import { AGENT_PACKS, AGENT_PACK_SC_SNAPSHOT, PACK_EDITION, PACK_VISUAL, type PackId } from '../config/agentPacks'
 import { PACK_COLLECTIONS } from '../config/packNftMetadata'
 
 const PACKS = AGENT_PACKS
@@ -36,7 +36,7 @@ export default function Agents() {
         <h1 className="section-title display">{xaRender('Pulse · Yield · Sentinel')}</h1>
         <p className="section-lead text-[color:var(--xa-text-secondary)]">
           {xaRender(
-            'Entitlements d’accès (signaux / salles) — pas un fonds, pas d’APY promis. Séries plafonnées. 110 / 75 / 50 € · ≈ 33 / 22,5 / 15 EGLD (ref. 100 € ≈ 30 EGLD).',
+            'Packs d’accès (signaux / salles) en découverte — pas un fonds, pas d’APY promis. Catalogue 110 / 75 / 50 €. Les ventes et les livraisons NFT sont suspendues.',
           )}
         </p>
         <div className="flex flex-wrap gap-2 text-[11px] text-[color:var(--xa-text-muted)]">
@@ -44,7 +44,7 @@ export default function Agents() {
           <span className="rounded-full border border-[color:var(--xa-border)] px-2 py-0.5">{xaRender('Yield 500')}</span>
           <span className="rounded-full border border-[color:var(--xa-border)] px-2 py-0.5">{xaRender('Sentinel 777')}</span>
           <span className="rounded-full border border-[color:var(--xa-accent)]/30 bg-[color:var(--xa-accent-soft)] px-2 py-0.5 text-[color:var(--xa-accent)]">
-            {xaRender('Sandbox · mint simulé')}
+            {xaRender('Découverte · aucun paiement ni NFT livré')}
           </span>
         </div>
       </header>
@@ -69,7 +69,7 @@ export default function Agents() {
                       {xaRender(p.icon)} {xaRender(p.name)}
                     </p>
                     <span
-                      className="text-[9px] font-bold uppercase tracking-wide rounded-full px-1.5 py-0.5 border"
+                      className="text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-1 border"
                       style={{ borderColor: vis.border, color: vis.accent, background: vis.accentSoft }}
                     >
                       {xaRender(p.tierLabel)}
@@ -83,8 +83,8 @@ export default function Agents() {
                         {xaRender(String(p.priceEur.list))}{' '}
                         <span className="text-sm text-[color:var(--xa-text-muted)]">{xaRender('€')}</span>
                       </p>
-                      <p className="text-[10px] text-[color:var(--xa-text-muted)]">
-                        {xaRender('≈ ')}{xaRender(String(p.priceEgld.list))} {xaRender('EGLD')}
+                      <p className="text-[12px] mt-1 text-[color:var(--xa-text-secondary)]">
+                        {xaRender(`Relevé SC 08/11 : ${AGENT_PACK_SC_SNAPSHOT.pricesEgld[p.id]} EGLD · vente fermée`)}
                       </p>
                     </div>
                     <div className="text-right">
@@ -197,7 +197,7 @@ export default function Agents() {
 
       <div className="rounded-xl border border-[color:var(--xa-border)] px-3 py-3 text-[11px] text-[color:var(--xa-text-muted)] space-y-1">
         <p className="font-medium text-[color:var(--xa-text-secondary)]">{xaRender('Rappel flux')}</p>
-        <p>{xaRender('1. Choisir pack → 2. Wallet erd1 → 3. Payer (serveur) → 4. Salle / CC selon tier')}</p>
+        <p>{xaRender('Parcours prévu (non actif) : choisir un pack → signer via wallet → paiement vérifié → NFT livré → accès confirmé.')}</p>
         <p>{xaRender('Pulse débloque hub CC + TCA + LIA full. Yield / Sentinel = salle dédiée.')}</p>
       </div>
     </div>
