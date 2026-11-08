@@ -409,4 +409,33 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await expect(page).toHaveURL(/\/explore\/museum\/?/)
   })
 
+  test('Home → Marketplace → Studio mainnet journey remains wallet-free to browse',async({page})=>{
+    for(const width of [390,1440]){
+      await page.setViewportSize({width,height:844})
+      await page.emulateMedia({reducedMotion:'reduce'})
+      await visit(page,'/?lang=fr')
+      const home=page.locator('[data-mainnet-journey="home"]')
+      await expect(home).toBeVisible()
+      await expect(home.locator('.xa-mainnet-journey-steps a')).toHaveCount(3)
+      await expect(home.getByText('MultiversX · mainnet')).toBeVisible()
+      await expect(home.getByRole('button',{name:'Connecter xPortal'})).toBeVisible()
+      await expect(home.locator('a[href="https://explorer.multiversx.com/"]')).toHaveAttribute('target','_blank')
+      await home.locator('a[href*="/marketplace"]').click()
+      const market=page.locator('[data-mainnet-journey="market"]')
+      await expect(market).toBeVisible()
+      await expect(market.locator('a[aria-current="step"]')).toHaveCount(1)
+      await expect(market.locator('a[aria-current="step"]')).toContainText('Marketplace')
+      await market.locator('a[href*="/studio"]').click()
+      const studio=page.locator('[data-mainnet-journey="studio"]')
+      await expect(studio).toBeVisible()
+      await expect(studio.locator('a[aria-current="step"]')).toContainText('Studio')
+      await expect(page.getByRole('button',{name:/Connecter wallet/i}).first()).toBeVisible()
+      const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)
+      expect(overflow,'journey width '+width).toBeLessThanOrEqual(12)
+      await page.screenshot({animations:'disabled',
+        path:`artifacts/ux-mobile/mainnet-journey-${width}.png`})
+    }
+  })
+
+
 })
