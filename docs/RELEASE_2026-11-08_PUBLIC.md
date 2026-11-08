@@ -46,7 +46,7 @@ Les prix ci-dessus sont un **relevé daté** et ne constituent ni un cours de co
 
 Le parcours desktop public sans wallet a été inspecté sur accueil, musée, agents et marché. Les forces sont la découverte sans portefeuille, les statuts « Preview only », le moteur de recherche, le choix de langue et les chemins de navigation. Un défaut P0 de transparence a été observé : certaines pages de présentation utilisaient encore les anciens prix ≈ 33 / 22,5 / 15 EGLD. Le correctif post-release retire ces montants de ces vues et conserve l'indication explicite « vente fermée ».
 
-Voir [Revue design — 8 novembre](audits/DESIGN_REVIEW_2026-11-08.md) pour les risques de lisibilité, d'alternatives d'images et les contrôles mobiles encore à faire.
+Voir [Revue design — 8 novembre](presentation/revue-design-2026-11-08.md) pour les risques de lisibilité, d'alternatives d'images et les contrôles mobiles encore à faire.
 
 ## Vérifications requises pour la prochaine publication
 
