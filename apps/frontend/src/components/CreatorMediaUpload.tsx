@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useWallet } from '../context/WalletContext'
 import { signAccessMessage } from '../lib/signAccessMessage'
 import { getAccessApiBase } from '../lib/stripe'
+import StudioGlbPreview from './StudioGlbPreview'
 
 type Pinned={mediaUri:string;metadataUri:string;attributes:string;title:string}
 type Props={title:string;onReady:(pin:Pinned|null)=>void}
@@ -166,7 +167,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         {file.type==='video/mp4'
           ? <video src={preview} controls playsInline preload="metadata" className="w-full max-h-64 rounded-lg bg-black"/>
           : file.type==='model/gltf-binary'
-          ? <p role="status" className="rounded-lg bg-zinc-950 p-4 text-xs text-zinc-300">Modèle GLB sélectionné. La géométrie et les textures ne sont pas encore affichées ici. Vérifiez le modèle dans le 3D Lab avant publication. Un GLB ne constitue pas un scan certifié.</p>
+          ? <StudioGlbPreview file={file}/>
           : <img src={preview} alt="Aperçu local avant publication IPFS" className="max-h-64 w-full rounded-lg object-contain bg-black"/>}
         <p className="break-all text-xs text-zinc-400">{file.name} · {(file.size/1048576).toFixed(2)} Mo</p>
         <p className="text-xs text-zinc-400">Aperçu local uniquement : aucune publication IPFS ni création de NFT.</p>
