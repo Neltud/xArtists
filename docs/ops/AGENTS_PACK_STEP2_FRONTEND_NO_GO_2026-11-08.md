@@ -13,11 +13,11 @@ Base: `docs/ops/AGENTS_PACK_STEP1_READINESS_2026-11-08.md` and `AGENTS_PACK_PRIC
 
 ## Changes on PREP branch
 
-1. `scStatus.ts`: explicit `AGENT_PACK_PUBLIC_MINT_RELEASED=false` and mandatory gate in `canBuyAgent`. Every existing caller (including `useAgentPackTx`) remains blocked.
+1. `scStatus.ts`: explicit `AGENT_PACK_PUBLIC_MINT_RELEASED=false` and `AGENT_PACK_PUBLIC_COMMERCE_RELEASED=false` safety gates. Existing `canBuyAgent` mint callers and both pack checkout rails remain blocked.
 2. `agentPacks.ts`: named historical SC snapshot, not a quote, preserving catalog EUR and EGLD anchors for non-transactional context.
 3. `PackCheckout.tsx`: displays historical observed SC prices with date and NO-GO qualifier rather than EGLD catalog anchors.
-4. `CheckoutModal.tsx`: crypto rail disabled while `canBuyAgent` false; hides transactional-looking static anchor, enforces disabled continuation. Fiat commercial readiness remains **independent**, unchanged.
-5. Regression test: `apps/frontend/tests/pack-mainnet-prep-no-go.test.mjs` checks visible PREP boundary.
+4. `CheckoutModal.tsx`: crypto rail disabled while `canBuyAgent` false; hides transactional-looking static anchor, enforces disabled continuation. Fiat provider readiness remains technically separate, but **both fiat and crypto pack purchases are hard-stopped** by `AGENT_PACK_PUBLIC_COMMERCE_RELEASED=false` until verified NFT delivery.
+5. Regression test: `apps/frontend/tests/pack-mainnet-prep-no-go.test.mjs` checks PREP boundary and independent fiat/crypto checkout fail-closed.
 
 ## Required independent validation (not yet performed in this PREP step)
 
