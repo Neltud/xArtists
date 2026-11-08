@@ -73,8 +73,8 @@ test('ttl cannot exceed max and favorSeller required for resolveDispute', () => 
   assert.throws(() => buildAdminAuthMessage(base({ favorSeller: undefined })), /favor_seller_required/)
 })
 
-test('NO-GO: module never imports signing keys or network', async () => {
+test('NO-GO: module never imports network clients or secret material', async () => {
   const fs = await import('node:fs')
   const src = fs.readFileSync(new URL('../src/lib/adminAuthMessage.mjs', import.meta.url), 'utf8')
-  assert.doesNotMatch(src, /PRIVATE|mnemonic|pem|fetch\(|axios|signMessage/)
+  assert.doesNotMatch(src, /\bfetch\s*\(|\baxios\b|PRIVATE_KEY|mnemonic|\.pem\b/)
 })

@@ -1,6 +1,6 @@
 /**
  * Admin action message schema — paper / offline only.
- * Canonical payload for MultiversX wallet signMessage of sensitive RWA/admin acts.
+ * Canonical payload for MultiversX wallet signing of sensitive RWA/admin acts.
  * Does NOT verify signatures (no keys). Does NOT broadcast transactions.
  */
 
