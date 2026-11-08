@@ -9,7 +9,7 @@
       "pack_type": 1,
       "name": "Pulse",
       "collection": "XAIPLS-2cf72b",
-      "price_egld": 1.0,
+      "price_egld": 1,
       "price_atomic": "1000000000000000000",
       "fiat_catalog_eur": 110,
       "doc_price_egld_legacy": 10,
@@ -19,7 +19,7 @@
       "pack_type": 2,
       "name": "Yield",
       "collection": "XAIYLD-987e24",
-      "price_egld": 5.0,
+      "price_egld": 5,
       "price_atomic": "5000000000000000000",
       "fiat_catalog_eur": 75,
       "doc_price_egld_legacy": 5,
@@ -38,9 +38,12 @@
   ],
   "commerce_go": false,
   "blockers": [
-    "isPayable=false",
+    "buyPack creates empty NFT URIs; content and delivery unverified",
     "buyPack mints empty uris",
     "no ESDTRoleSetNewURI on collections",
     "Pulse legacy doc price 10 EGLD mismatches chain 1 EGLD"
-  ]
+  ],
+  "isPayableFlagScope": "direct_transfers_only",
+  "endpointBuyPackPaymentReadiness": "not_cleared_for_public_sales",
+  "payableDocs": "https://docs.multiversx.com/developers/developer-reference/sc-payments/"
 }
