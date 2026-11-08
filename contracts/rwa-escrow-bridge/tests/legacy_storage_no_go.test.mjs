@@ -30,7 +30,7 @@ test('new receipt/quality/ownership fields make live in-place storage upgrade un
  // This is intentional negative evidence. A passing test does NOT certify a
  // migration: on-chain legacy SingleValueMapper<Escrow> decoding is unresolved.
  assert.match(contract,/#\[storage_mapper\("escrows"\)\]/)
- assert.match(contract,/#\[endpoint\(upgrade\)\]/)
+ assert.match(contract,/#\[upgrade\]/)
 })
 
 test('release gating must not be confused with an approved storage migration',()=>{
