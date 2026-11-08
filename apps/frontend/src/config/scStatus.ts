@@ -55,6 +55,15 @@ export const KNOWN_EMPTY_MARKETPLACE = false
 export const NFT_MARKET_FEE_BPS = 250
 export const AGENTS_FEE_BPS = 300
 
+/**
+ * PREP gate (2026-11-08): codehash parity is not a commercial clearance.
+ * Current mainnet Agents SC isPayable=false and buyPack creates empty URIs.
+ * Keep all caller paths fail-closed until an independently reviewed change
+ * verifies payable metadata, URI-backed NFT creation, prices and owner test.
+ * Do not flip from env config or a green CI alone.
+ */
+export const AGENT_PACK_PUBLIC_MINT_RELEASED = false
+
 export function isUsableScAddress(addr: string | undefined | null): boolean {
   return !!addr && addr.startsWith('erd1') && addr.length >= 60
 }
@@ -77,6 +86,7 @@ export function canListBuyNft(): boolean {
 
 export function canBuyAgent(): boolean {
   return (
+    AGENT_PACK_PUBLIC_MINT_RELEASED &&
     isLiveGate(AGENTS_LIVE, runtimeCodehashOk('agents')) &&
     isUsableScAddress(AGENTS_MARKETPLACE_ADDRESS)
   )
