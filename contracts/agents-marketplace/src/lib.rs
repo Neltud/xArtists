@@ -241,10 +241,10 @@ pub trait AgentsMarketplace {
             "unexpected Pulse collection"
         );
         require!(metadata_sha256.len() == 32, "expected raw 32-byte metadata sha256");
-        self.require_pinned_ipfs_uri(&metadata_uri, b"/metadata.json");
-        self.require_pinned_ipfs_uri(&recto_uri, b"/recto.png");
-        self.require_pinned_ipfs_uri(&verso_uri, b"/verso.png");
-        self.require_pinned_ipfs_uri(&animation_uri, b"/animation.mp4");
+        self.require_cidv1_media_uri(&metadata_uri, b"/metadata.json");
+        self.require_cidv1_media_uri(&recto_uri, b"/recto.png");
+        self.require_cidv1_media_uri(&verso_uri, b"/verso.png");
+        self.require_cidv1_media_uri(&animation_uri, b"/animation.mp4");
 
         // MultiversX metadata convention: metadata:CID/metadata.json;tags:...
         let mut attributes = ManagedBuffer::from(&b"metadata:"[..]);
@@ -279,7 +279,10 @@ pub trait AgentsMarketplace {
         self.genesis_pulse_005_event(&recipient, nonce, &metadata_sha256);
     }
 
-    fn require_pinned_ipfs_uri(&self, uri: &ManagedBuffer, expected_filename: &[u8]) {
+    /// On-chain syntax gate ONLY: a well-formed CID is not proof of a live pin.
+    /// Off-chain exact-byte SHA-256 and independent gateway readback are mandatory
+    /// and must be approved before the owner ever submits this transaction.
+    fn require_cidv1_media_uri(&self, uri: &ManagedBuffer, expected_filename: &[u8]) {
         require!(
             uri.len() > 7 + 25 + expected_filename.len() && uri.len() <= 180,
             "invalid IPFS media URI length"
@@ -291,6 +294,21 @@ pub trait AgentsMarketplace {
             .copy_slice(uri.len() - expected_filename.len(), expected_filename.len())
             .unwrap_or_else(|| sc_panic!("invalid IPFS filename"));
         require!(tail == ManagedBuffer::from(expected_filename), "wrong IPFS media filename");
+        // This isolated owner mint explicitly supports canonical CIDv1 base32
+        // directory URIs (bafy...), avoiding arbitrary hosts or fake "CID" paths.
+        let cid_len = uri.len() - 7 - expected_filename.len();
+        require!(cid_len >= 40 && cid_len <= 90, "invalid IPFS CID length");
+        let mut prefix = [0u8; 4];
+        uri.load_slice(7, &mut prefix);
+        require!(prefix == *b"bafy", "requires CIDv1 bafy");
+        for i in 7..(7 + cid_len) {
+            let mut c = [0u8; 1];
+            uri.load_slice(i, &mut c);
+            require!(
+                (c[0] >= b'a' && c[0] <= b'z') || (c[0] >= b'2' && c[0] <= b'7'),
+                "invalid IPFS CID character"
+            );
+        }
     }
 
     #[endpoint(listAgentAction)]
