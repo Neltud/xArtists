@@ -28,3 +28,14 @@ An independent, downloadable N. TUDURI V10 demo has also been produced in the co
 
 `node --test apps/frontend/tests/studio-photo-turntable.test.mjs` for static gates.
 For runtime, use frontend build and real mobile browser checks. The independent V10 demo was exercised in Chromium's mobile viewport with the browser offline; no external requests or JS errors observed. This does **not** establish real-device Android validation.
+
+
+## MP4 timeline extraction (2026-11-08 sprint extension)
+
+The Studio preview also accepts a user-selected **local MP4**, validates size (up to 120 MiB) and video metadata (0.5–180 s), lets artists choose start/end seconds and 8/12/16/24/36 extracted still frames, and decodes in a 720-pixel canvas at JPEG quality 0.86. Progress, cancellation, timeout, object-URL cleanup and browser codec errors are handled without network upload or wallet involvement.
+
+**Critical distinction:** timestamps are sampled uniformly in **time**, not in camera yaw. The original N. TUDURI 60-second HEVC video changes height, distance and orientation and includes handling/tilting and close-ups. Sampling all 60 seconds is not a faithful 360° turntable. The user must choose a steady orbit segment, correct view order and reject unusable images. The displayed degrees are indicative, not measured angles. Prefer a steady filmed orbit with constant distance, fixed object orientation and diffuse illumination for a credible turntable.
+
+MP4 is a *container*; some browsers cannot decode HEVC/H.265 (including the original HEVC source). If playback fails, locally transcode to compatible H.264 (outside the browser) before importing. Unsupported codecs fail with an explicit message; the client does not silently claim extraction succeeded. Large original videos may consume substantial local resources even without upload.
+
+Unit-test the pure sampling function with `node --test apps/frontend/tests/studio-video-frames.test.mjs`, and run frontend TS/build and real-device browser tests before merging. This does not reconstruct geometry, solve photogrammetry, export GLB or publish IPFS.
