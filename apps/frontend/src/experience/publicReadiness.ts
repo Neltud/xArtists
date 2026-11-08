@@ -67,8 +67,8 @@ export function readinessCounts(ids: string[]): Record<PublicStage, number> {
 export const publicMilestones = [
  {id: 'mint', labelKey: 'roadmapMint', detailKey: 'roadmapMintDetail', issue: 281},
  {id: 'payments', labelKey: 'roadmapPayments', detailKey: 'roadmapPaymentsDetail', issue: 370},
- {id: 'market', labelKey: 'roadmapListings', detailKey: 'roadmapListingsDetail', issue: 391},
+ {id: 'market', labelKey: 'roadmapListings', detailKey: 'roadmapListingsDetail', issue: 428},
  {id: 'dao', labelKey: 'roadmapDao', detailKey: 'roadmapDaoDetail', issue: 393},
- {id: 'bridge', labelKey: 'roadmapBridge', detailKey: 'roadmapBridgeDetail', issue: 298},
+ // Cross-chain bridge is deliberately deferred until after MultiversX release 1.
  {id: 'lia', labelKey: 'roadmapLia', detailKey: 'roadmapLiaDetail', issue: 369},
 ] as const
