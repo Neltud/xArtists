@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-07T21:28:43.995Z",
+  "updatedAt": "2026-11-08T04:38:13.194Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1794086923467",
-      "timestamp": "21:28",
+      "id": "egld-1794112692639",
+      "timestamp": "04:38",
       "source": "EGLD",
-      "title": "Cotation publique · $3.10 (API MultiversX economics)",
+      "title": "Cotation publique · $3.04 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -53,25 +53,39 @@
       "link": "https://cointelegraph.com/news/nvidia-may-be-facing-a-more-hostile-post-election-washington-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinDesk-0-1794073006000",
+      "id": "rss-CoinDesk-0-1794078796000",
+      "timestamp": "19:13",
+      "source": "CoinDesk",
+      "title": "Binance users in some European countries told to pull crypto before fees kick in, with accounts closing by year end",
+      "link": "https://www.coindesk.com/business/2026/11/07/binance-users-in-some-european-countries-told-to-pull-crypto-before-fees-kick-in-with-accounts-closing-by-year-end"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794073006000",
       "timestamp": "17:36",
       "source": "CoinDesk",
       "title": "U.S. Treasury moves to cut off crypto exchange MEXC over $16 billion in alleged illicit flows",
       "link": "https://www.coindesk.com/business/2026/11/07/u-s-treasury-moves-to-cut-off-crypto-exchange-mexc-over-usd16-billion-in-alleged-illicit-flows"
     },
     {
-      "id": "rss-CoinDesk-1-1794070260000",
+      "id": "rss-CoinDesk-2-1794070260000",
       "timestamp": "16:51",
       "source": "CoinDesk",
       "title": "Gnosis Pay breach exposes card numbers, home addresses and linked crypto wallets",
       "link": "https://www.coindesk.com/business/2026/11/07/gnosis-pay-breach-exposes-card-numbers-home-addresses-and-linked-crypto-wallets"
     },
     {
-      "id": "rss-CoinDesk-2-1793995758000",
+      "id": "rss-CoinDesk-3-1793995758000",
       "timestamp": "20:09",
       "source": "CoinDesk",
       "title": "Apple, Meta reject OKX–ICE tokenized stock plans, leaving crypto firms as the ones to watch",
       "link": "https://www.coindesk.com/policy/2026/11/06/apple-meta-reject-okx-ice-tokenized-stock-plans-leaving-crypto-firms-as-the-ones-to-watch"
+    },
+    {
+      "id": "egld-1794086923467",
+      "timestamp": "21:28",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.10 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinDesk-3-1793986948000",
@@ -184,20 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Nigeria sets new crypto licensing rules, bans algorithmic stablecoins",
       "link": "https://cointelegraph.com/news/nigeria-algorithmic-stablecoin-ban-crypto-licensing?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793971388000",
-      "timestamp": "13:23",
-      "source": "CoinTelegraph",
-      "title": "Ethereum devs won’t fork Glamsterdam on Hoodi until smart contract risks resolved",
-      "link": "https://cointelegraph.com/news/ethereum-devs-fork-glamsterdam-hoodi-smart-contract-risks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793971914000",
-      "timestamp": "13:31",
-      "source": "CoinDesk",
-      "title": "U.S. added 165,000 jobs in October, blowing past 65,000 estimate",
-      "link": "https://www.coindesk.com/markets/2026/11/06/u-s-added-165-000-jobs-in-october-blowing-past-65-000-estimate"
     }
   ]
 }
