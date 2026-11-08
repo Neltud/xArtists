@@ -30,4 +30,5 @@ jobs:
           tests/admin-auth-sdk-address.test.mjs
           tests/admin-auth-message-computer.test.mjs
           tests/admin-auth-challenge.test.mjs
+          tests/admin-auth-pipeline.test.mjs
         working-directory: apps/frontend
