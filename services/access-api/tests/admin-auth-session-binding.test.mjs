@@ -76,3 +76,21 @@ test('expired session cannot issue challenges', () => {
     'session_expired',
   )
 })
+
+test('missing operator allowlist fails closed even for apparently authenticated methods', () => {
+  const binder = createAdminSessionBinder()
+  const denied = binder.bindSession({adminBech32: ADMIN, method:'extension'})
+  assert.equal(denied.ok,false)
+  assert.equal(denied.error,'admin_not_allowlisted')
+})
+
+test('default session IDs are cryptographically random 256-bit URL-safe tokens', () => {
+  const binder = createAdminSessionBinder({adminAllowlist:[ADMIN]})
+  const first = binder.bindSession({adminBech32:ADMIN,method:'siwx'})
+  const second = binder.bindSession({adminBech32:ADMIN,method:'siwx'})
+  assert.equal(first.ok,true)
+  assert.equal(second.ok,true)
+  assert.match(first.sessionId,/^[A-Za-z0-9_-]{43}$/)
+  assert.match(second.sessionId,/^[A-Za-z0-9_-]{43}$/)
+  assert.notEqual(first.sessionId,second.sessionId)
+})
