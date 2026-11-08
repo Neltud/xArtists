@@ -1,0 +1,27 @@
+name: Grok review integration safety (offline)
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/grok-readonly-review.mjs'
+      - 'scripts/ops/tests/grok-readonly-review.test.mjs'
+      - '.github/workflows/grok-manual-readonly-review.yml'
+      - '.github/workflows/grok-review-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  review-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check (no network call, no xAI credentials)
+        run: node --check scripts/ops/grok-readonly-review.mjs
+      - name: Unit tests of restrictions, no network call
+        run: node --test scripts/ops/tests/grok-readonly-review.test.mjs
