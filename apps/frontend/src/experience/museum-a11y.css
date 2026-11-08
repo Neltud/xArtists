@@ -74,18 +74,28 @@
 }
 
 @media (max-width: 720px) {
+  /* Keep the 3D movement affordances above the fixed mobile dock.
+     Fullscreen is still independently available for immersive viewing. */
+  .xa-museum-stage:not(.is-fullscreen) {
+    height: min(54svh, 480px);
+    min-height: 400px;
+  }
   .xa-museum-stage .xa-museum-hud {
     padding: 12px;
     gap: 8px;
   }
   .xa-museum-stage .xa-museum-room-name {
     min-width: 0;
-    max-width: 47%;
+    flex: 1 1 auto;
+    max-width: calc(100% - 196px);
     overflow-wrap: anywhere;
   }
   .xa-museum-stage .xa-museum-hud-actions {
-    max-width: 53%;
-    flex-wrap: wrap;
+    flex: 0 0 auto;
+    max-width: none;
+    width: 188px;
+    gap: 4px;
+    flex-wrap: nowrap;
     justify-content: flex-end;
   }
   .xa-museum-stage .xa-museum-hud button,
@@ -96,7 +106,7 @@
     padding: 0;
   }
   .xa-museum-stage .xa-museum-art-tour {
-    top: 148px;
+    top: 122px;
     left: 12px;
   }
   .xa-museum-stage .xa-museum-art-tour button {
@@ -105,11 +115,11 @@
     width: 44px;
   }
   .xa-museum-stage .xa-museum-help {
-    top: 201px;
+    top: 176px;
     inset-inline: 12px;
     max-width: calc(100% - 24px);
   }
-  .xa-museum-stage .xa-museum-image-status { top: 205px; }
+  .xa-museum-stage .xa-museum-image-status { top: 181px; }
   .xa-museum-stage .xa-museum-inspect > span { font-size: 12px; }
   .xa-museum-stage .xa-museum-walk-hint {
     max-width: 70%;
@@ -124,9 +134,9 @@
   }
 }
 @media (max-width: 390px) {
-  .xa-museum-stage .xa-museum-art-tour { top: 158px; }
-  .xa-museum-stage .xa-museum-help { top: 211px; }
-  .xa-museum-stage .xa-museum-image-status { top: 215px; }
+  .xa-museum-stage .xa-museum-art-tour { top: 134px; }
+  .xa-museum-stage .xa-museum-help { top: 188px; }
+  .xa-museum-stage .xa-museum-image-status { top: 193px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .xa-museum-page .card-play,
