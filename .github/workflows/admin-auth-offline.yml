@@ -29,4 +29,5 @@ jobs:
           tests/admin-auth-address-binding.test.mjs
           tests/admin-auth-sdk-address.test.mjs
           tests/admin-auth-message-computer.test.mjs
+          tests/admin-auth-challenge.test.mjs
         working-directory: apps/frontend
