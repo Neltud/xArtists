@@ -2,6 +2,8 @@
 
 ## [0.130.0](https://github.com/Neltud/xArtists/compare/v0.129.1...v0.130.0) (2026-11-08)
 
+> **Release scope:** source and UI preview milestone only. A version tag does not activate live minting, checkout, RWA escrow transfers, LIA real trading or an authenticated paid plugin download; those functions require separate verified release gates.
+
 
 ### Features
 
