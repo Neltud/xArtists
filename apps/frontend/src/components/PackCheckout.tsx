@@ -5,7 +5,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { AGENT_PACKS, type PackId } from '../config/agentPacks'
+import { AGENT_PACKS, AGENT_PACK_SC_SNAPSHOT, type PackId } from '../config/agentPacks'
 import { useWallet } from '../context/WalletContext'
 import CheckoutModal from './CheckoutModal'
 import { canBuyAgent } from '../config/scStatus'
@@ -222,7 +222,7 @@ export default function PackCheckout({
               <span className="font-semibold text-white">
                 {xaRender(p.icon)} {xaRender(p.name)}
               </span>
-              <span className="block text-[11px] text-zinc-500">{xaRender(p.priceEgld.list)} {xaRender(" EGLD")}</span>
+              <span className="block text-[11px] text-zinc-500">{xaRender(`SC (relevé 08/11) : ${AGENT_PACK_SC_SNAPSHOT.pricesEgld[p.id]} EGLD · vente fermée`)}</span>
             </button>
           )))}
         </div>
@@ -278,7 +278,7 @@ export default function PackCheckout({
 
           {!checkoutAvailable && (
             <p role="status" className="text-[12px] text-amber-200/90 leading-relaxed">
-              {xaRender('Aucun achat ni mint disponible actuellement. Les prix sont indicatifs et l’aperçu ne délivre aucun droit NFT.')}
+              {xaRender('Aucun achat ni mint disponible. Les prix EUR sont un catalogue distinct ; les montants EGLD sont un relevé historique non exécutable. L’aperçu ne délivre aucun droit NFT.')}
             </p>
           )}
 
@@ -286,7 +286,7 @@ export default function PackCheckout({
             <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/[0.06] px-3 py-2">
               <p className="font-medium text-cyan-100/90">{xaRender(t('packCheckout.crypto'))}</p>
               <p className="text-zinc-400 mt-0.5">
-                {xaRender(t('packCheckout.cryptoLine', { amount: pack.priceEgld.list }))}
+                {xaRender(`Relevé SC 08/11 : ${AGENT_PACK_SC_SNAPSHOT.pricesEgld[pack.id]} EGLD (pas un devis)`)}
                 {xaRender(' · ')}
                 {xaRender(cryptoCheckoutReady ? t('packCheckout.mintLive') : t('packCheckout.mintSoon'))}
               </p>
