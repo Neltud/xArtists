@@ -7,7 +7,7 @@ import {createChallenge} from '../src/siwx.mjs'
 import {signJwt} from '../src/verifyAccess.mjs'
 import {startServer,post} from './server-fixture.mjs'
 import {studioMediaConfig,mediaJwt,mediaActor,validateCreatorMedia,readCreatorMedia,
-  createStudioMetadata,studioMetadataFingerprint,safePinataCid} from '../src/creatorMedia.mjs'
+  createStudioMetadata,studioMetadataFingerprint,safePinataCid,validateStudioGlb} from '../src/creatorMedia.mjs'
 
 const {Address}=sdk
 const owner=new Address(crypto.generateKeyPairSync('ed25519').publicKey.export({
@@ -115,4 +115,73 @@ test('all creator upload endpoints fail closed before Pinata and database are co
     assert.equal((await post(srv.base+'/v1/studio/media/metadata',{title:'test'})).status,503)
     assert.equal((await post(srv.base+'/v1/studio/media/upload',{data:'fake'})).status,503)
   }finally{await srv.close()}
+})
+
+function fixtureGlb(jsonOverrides={}){
+  const json={asset:{version:'2.0'},scenes:[{nodes:[0]}],nodes:[{mesh:0}],
+    meshes:[{primitives:[{attributes:{POSITION:0}}]}],buffers:[{byteLength:12}],
+    ...jsonOverrides}
+  const bytes=Buffer.from(JSON.stringify(json))
+  const pad=(4-bytes.length%4)%4
+  const jsonBytes=Buffer.concat([bytes,Buffer.alloc(pad,0x20)])
+  const bin=Buffer.alloc(12,0)
+  const glb=Buffer.alloc(12+8+jsonBytes.length+8+bin.length)
+  glb.write('glTF',0,'ascii')
+  glb.writeUInt32LE(2,4)
+  glb.writeUInt32LE(glb.length,8)
+  glb.writeUInt32LE(jsonBytes.length,12)
+  glb.writeUInt32LE(0x4e4f534a,16)
+  jsonBytes.copy(glb,20)
+  const offset=20+jsonBytes.length
+  glb.writeUInt32LE(bin.length,offset)
+  glb.writeUInt32LE(0x004e4942,offset+4)
+  bin.copy(glb,offset+8)
+  return glb
+}
+
+test('GLB self-contained glTF 2.0 validates magic, version, exact length and JSON',()=>{
+  const source=fixtureGlb()
+  assert.equal(validateStudioGlb(source).meshCount,1)
+  assert.equal(validateCreatorMedia(source,'model/gltf-binary').ext,'glb')
+  assert.equal(validateCreatorMedia(source,'model/gltf-binary').bytes,source.length)
+  assert.throws(()=>validateCreatorMedia(source,'image/png'),/media_content_signature_invalid/)
+  assert.throws(()=>validateStudioGlb(Buffer.from('not a GLB')),/glb_header_invalid/)
+  const badVersion=Buffer.from(source);badVersion.writeUInt32LE(1,4)
+  assert.throws(()=>validateStudioGlb(badVersion),/glb_header_invalid/)
+  const badLength=Buffer.from(source);badLength.writeUInt32LE(source.length+4,8)
+  assert.throws(()=>validateStudioGlb(badLength),/glb_header_invalid/)
+  const truncated=source.subarray(0,source.length-4)
+  assert.throws(()=>validateStudioGlb(truncated),/glb_header_invalid/)
+  assert.throws(()=>validateStudioGlb(fixtureGlb({asset:{version:'1.0'}})),/glb_structure_invalid/)
+  assert.throws(()=>validateStudioGlb(fixtureGlb({meshes:[]})),/glb_structure_invalid/)
+})
+
+test('GLB refuses external references even with otherwise valid chunk magic',()=>{
+  assert.throws(()=>validateStudioGlb(fixtureGlb({buffers:[{byteLength:12,uri:'https://evil.example/mesh.bin'}]})),
+    /glb_external_resource_forbidden/)
+  assert.throws(()=>validateStudioGlb(fixtureGlb({images:[{uri:'ipfs://bafy/texture.jpg'}]})),
+    /glb_external_resource_forbidden/)
+  assert.throws(()=>validateStudioGlb(fixtureGlb({images:[{uri:'data:image/png;base64,AAA='}]})),
+    /glb_external_resource_forbidden/)
+})
+
+test('GLB upload requires separate, default-off operator switch even if image upload enabled',async()=>{
+  const env={CREATOR_MEDIA_UPLOAD_ENABLED:'1',PINATA_JWT:'X'.repeat(90),
+    DATABASE_URL:'postgres://dev-fixture',ACCESS_JWT_SECRET:'Z'.repeat(40)}
+  assert.equal(studioMediaConfig(env).modelEnabled,false)
+  assert.equal(studioMediaConfig({...env,STUDIO_GLB_UPLOAD_ENABLED:'1'}).modelEnabled,true)
+  assert.equal(studioMediaConfig({...env,STUDIO_GLB_UPLOAD_ENABLED:'0'}).modelEnabled,false)
+  assert.equal(studioMediaConfig({...env,STUDIO_GLB_UPLOAD_ENABLED:'1',DATABASE_URL:''}).modelEnabled,false)
+  const req=Readable.from([fixtureGlb()])
+  req.headers={'content-length':String(fixtureGlb().length),'content-type':'model/gltf-binary'}
+  await assert.rejects(()=>readCreatorMedia(req),/studio_glb_upload_disabled/)
+})
+
+test('GLB metadata is labeled model/animation, not photo or video',()=>{
+  const model={...row,mime:'model/gltf-binary',uri:row.uri.replace('.jpg','.glb')}
+  const meta=createStudioMetadata(model,{title:'Sculpture model',rightsAccepted:true},owner)
+  assert.equal(meta.animation_url,model.uri)
+  assert.equal(meta.image,undefined)
+  assert.equal(meta.properties.category,'model')
+  assert.equal(meta.properties.mime,'model/gltf-binary')
 })
