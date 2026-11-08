@@ -51,3 +51,12 @@ Le front **ne doit pas** proposer `resolveDispute` tant que :
 - Vérification crypto de signature (nécessite SDK + clés de test éphémères)
 - Endpoint HTTP admin
 - Binding session cookie
+
+## 2026-11-08 — vérification Ed25519 éphémère hors ligne
+
+- `apps/frontend/src/lib/adminAuthSignatureTest.mjs` vérifie une signature Ed25519 de test sur les octets UTF-8 exacts du message canonique.
+- `apps/frontend/tests/admin-auth-signature-test.test.mjs` génère des clés éphémères en mémoire et couvre signature valide, modification du message, mauvaise clé, expiration et champs malformés.
+- Le parseur refuse désormais les champs dupliqués, valeurs non canoniques, identifiants de litige invalides et dates non entières.
+- **Limite de sécurité :** ce vérificateur ne lie PAS la clé publique à une adresse MultiversX bech32 ; le champ admin n'est qu'une chaîne validée. Il ne vérifie ni le contexte exact de signature wallet, ni la session serveur, ni l'anti-replay persistant. Ne jamais l'utiliser pour un endpoint admin ou un privilège propriétaire.
+- Commande de test : `node --test apps/frontend/tests/admin-auth-message.test.mjs apps/frontend/tests/admin-auth-signature-test.test.mjs`.
+- Prochaine étape : vérifier les vecteurs officiels de signature wallet, décoder l'adresse bech32 avec un SDK audité, comparer la clé publique, valider domaine et chaîne, puis consommer atomiquement le nonce dans un stockage durable avec session authentifiée.
